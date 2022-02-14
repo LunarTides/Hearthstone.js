@@ -1,0 +1,15 @@
+{
+    "name": "Inspire Test",
+    "type": "Minion",
+    "stats": [1, 1],
+    "desc": "Inspire: Gain +1/+1.",
+    "mana": 1,
+    "tribe": "Beast",
+    "class": "Neutral",
+    "rarity": "Free",
+    "set": "Legacy",
+
+    "inspire": [
+        "this.stats = [this.stats[0] + 1, this.stats[1] + 1];"
+    ]
+}

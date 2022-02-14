@@ -1,0 +1,14 @@
+{
+    "name": "Overload Test",
+    "type": "Spell",
+    "desc": "Gain 2 Mana Crystals this turn only. Overload: 2",
+    "mana": 0,
+    "class": "Neutral",
+    "rarity": "Free",
+    "set": "Core",
+
+    "outcast": [
+        "game.turn.mana += 2",
+        "game.turn.overload += 2"
+    ]
+}
