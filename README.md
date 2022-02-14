@@ -1,1 +1,1 @@
-"# Hearthstone.js" 
+# Hearthstone.js
