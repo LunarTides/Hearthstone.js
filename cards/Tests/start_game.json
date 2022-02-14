@@ -1,0 +1,15 @@
+{
+    "name": "Start of Game Test",
+    "type": "Minion",
+    "stats": [1, 1],
+    "desc": "Start of Game: Gain +1/+1.",
+    "mana": 1,
+    "tribe": "Beast",
+    "class": "Neutral",
+    "rarity": "Free",
+    "set": "Legacy",
+
+    "startofgame": [
+        "this.stats = [this.stats[0] + 1, this.stats[1] + 1];"
+    ]
+}

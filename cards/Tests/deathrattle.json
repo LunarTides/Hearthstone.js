@@ -1,0 +1,15 @@
+{
+    "name": "Deathrattle Test",
+    "type": "Minion",
+    "stats": [2, 1],
+    "desc": "Deathrattle: Win the game.",
+    "mana": 1,
+    "tribe": "Beast",
+    "class": "Neutral",
+    "rarity": "Free",
+    "set": "Legacy",
+
+    "deathrattle": [
+        "game.endGame(game.turn)"
+    ]
+}
