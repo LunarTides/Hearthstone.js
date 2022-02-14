@@ -1,1 +1,0 @@
-# Hearthstone.js
