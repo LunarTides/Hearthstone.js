@@ -33,10 +33,11 @@ class Minion {
         this.keywords = this.blueprint.keywords || [];
         this.oghealth = null;
         this.corrupted = this.blueprint.corrupted || false;
-        this.hasAttacked = false;
         this.frozen = false;
         this.immune = false;
         this.echo = false;
+        this.canAttackHero = true;
+        this.attackTimes = 1;
 
         this.turn = null;
 
@@ -183,6 +184,17 @@ class Minion {
         this.keywords = this.keywords.filter(k => k != keyword);
     }
 
+    resetAttackTimes() {
+        this.attackTimes = 1;
+
+        if (this.keywords.includes("Windfury")) {
+            this.attackTimes = 2;
+        }
+        if (this.keywords.includes("Mega-Windfury")) {
+            this.attackTimes = 3;
+        }
+    }
+
     addHealth(amount) {
         this.stats[1] += amount;
         
@@ -217,6 +229,20 @@ class Minion {
 
     addDeathrattle(deathrattle) {
         this.deathrattle += '\n' + deathrattle;
+    }
+
+    silence() {
+        this.name = this.blueprint.name;
+        this.type = this.blueprint.type;
+        this.stats = this.blueprint.stats;
+        this.desc = this.blueprint.desc;
+        this.mana = this.blueprint.mana;
+        this.tribe = this.blueprint.tribe;
+        this.class = this.blueprint.class;
+        this.rarity = this.blueprint.rarity;
+        this.set = this.blueprint.set;
+
+        this.keywords = [];
     }
 
     activateBattlecry(game) {
@@ -282,7 +308,7 @@ class Spell {
         this.class = this.blueprint.class;
         this.rarity = this.blueprint.rarity;
         this.set = this.blueprint.set;
-        this.keywords = this.blueprint.keywords;
+        this.keywords = this.blueprint.keywords || [];
         this.corrupted = this.blueprint.corrupted || false;
 
         this.echo = false;
@@ -409,8 +435,9 @@ class Weapon {
         this.rarity = this.blueprint.rarity;
         this.set = this.blueprint.set;
         this.stats = this.blueprint.stats;
-        this.keywords = this.blueprint.keywords;
+        this.keywords = this.blueprint.keywords || [];
         this.corrupted = this.blueprint.corrupted || false;
+        this.attackTimes = 1;
 
         this.echo = false;
 
@@ -513,6 +540,17 @@ class Weapon {
         this.keywords = this.keywords.filter(k => k != keyword);
     }
 
+    resetAttackTimes() {
+        this.attackTimes = 1;
+
+        if (this.keywords.includes("Windfury")) {
+            this.attackTimes = 2;
+        }
+        if (this.keywords.includes("Mega-Windfury")) {
+            this.attackTimes = 3;
+        }
+    }
+
     addHealth(amount) {
         this.stats[1] += amount;
     }
@@ -589,6 +627,7 @@ class Player {
         this.frozen = false;
         this.immune = false;
         this.overload = 0;
+        this.spellDamage = 0;
     }
 
     getName() {
@@ -718,12 +757,8 @@ class Player {
 
             if (t == false) return false;
 
-            if (t == "face") {
-                game.turn.remHealth(1);
-
-                return;
-            } else if (t == "enemy face") {
-                game.nextTurn.remHealth(1);
+            if (t instanceof Player) {
+                t.remHealth(1);
             } else {
                 game.attackMinion(1, t);
             }
@@ -736,13 +771,7 @@ class Player {
 
             if (t == false) return false;
 
-            if (t == "face") {
-                this.addHealth(2);
-            } else if (t == "enemy face") {
-                game.nextTurn.addHealth(2);
-            } else {
-                t.addHealth(2);
-            }
+            t.addHealth(2);
         }
         else if (this.class == "Rogue") {
             this.weapon = new Weapon("Wicked Knife");
@@ -975,8 +1004,11 @@ class Game {
 
         this.getBoard()[this.plrNameToIndex(this.turn.getName())].forEach(m => {
             m.activateStartOfTurn(this);
-            m.hasAttacked = false;
+            m.canAttackHero = true;
+            m.resetAttackTimes();
         });
+
+        if (this.turn.weapon) this.turn.weapon.resetAttackTimes();
 
         this.turn.drawCard();
 
@@ -1081,13 +1113,28 @@ class Game {
     }
 
     playMinion(minion, player) {
+        player.spellDamage = 0;
+
         var p = this.plrNameToIndex(player.getName());
 
         if (minion.keywords.includes("Charge")) {
             minion.turn = this.turns - 1;
         }
 
+        if (minion.keywords.includes("Rush")) {
+            minion.turn = this.turns - 1;
+            minion.canAttackHero = false;
+        }
+
         this.board[p].push(minion);
+
+        this.getBoard()[p].forEach(m => {
+            m.keywords.forEach(k => {
+                if (k.startsWith("Spell Damage +")) {
+                    player.spellDamage += parseInt(k.split("+")[1]);
+                }
+            });
+        });
     }
 
     killMinions() {
@@ -1146,12 +1193,10 @@ class Game {
             this.killMinions();
 
             return;
-        } else if (!minion.hasAttacked) {
+        } else if (minion.attackTimes > 0) {
             if (minion.getStats()[0] <= 0) return false;
 
             minion.stats = [minion.stats[0], minion.stats[1] - target.stats[0]];
-
-            minion.hasAttacked = true;
 
             if (target.keywords.includes("Divine Shield")) {
                 target.removeKeyword("Divine Shield");
@@ -1196,6 +1241,14 @@ function chooseOne(prompt, options, times = 1) {
         return choices[0];
     } else {
         return choices;
+    }
+}
+
+function spellDmg(target, damage) {
+    if (target instanceof Minion) {
+        target.stats = [target.stats[0], target.stats[1] - (damage + game.turn.spellDamage)];
+    } else if (target instanceof Player) {
+        target.remHealth(damage + game.turn.spellDamage);
     }
 }
 
@@ -1258,20 +1311,30 @@ function selectTarget(prompt, force = null) {
     var t = rl.question(`\n${prompt} (type 'face' to select a hero | type 'back' to go back) `);
 
     if (t.startsWith("b")) {
-        return false;
+        var t2 = rl.question(`WARNING: Going back might cause unexpected things to happen. Do you still want to go back? (y / n) `);
+        
+        if (t2.startsWith("y")) {
+            return false;
+        }
     }
 
     var bn = game.getBoard()[game.plrNameToIndex(game.nextTurn.getName())];
     var bo = game.getBoard()[game.plrNameToIndex(game.turn.getName())];
 
+    if (!t.startsWith("f") && !bo[parseInt(t)] && !bn[parseInt(t)]) {
+        selectTarget(prompt);
+
+        return false;
+    }
+
     if (!force) {
         if (t.startsWith("f")) {
             var t2 = rl.question(`Do you want to select the enemy hero, or your own hero? (y: enemy, n: self) `);
     
-            return (t2.startsWith("y")) ? "enemy face" : "face";
+            return (t2.startsWith("y")) ? game.nextTurn : game.turn;
         }
         
-        if (game.board[game.plrNameToIndex(game.nextTurn.getName())].length >= parseInt(t) && game.board[game.plrNameToIndex(game.turn.getName())].length >= parseInt(t)) {
+        if (bn.length >= parseInt(t) && bo.length >= parseInt(t)) {
             var t2 = rl.question(`Do you want to select your opponent's (${bn[parseInt(t) - 1].name}) or your own (${bo[parseInt(t) - 1].name})? (y: opponent, n: self | type 'back' to go back) `);
         
             if (t2.startsWith("b")) {
@@ -1285,7 +1348,9 @@ function selectTarget(prompt, force = null) {
         }
     } else {
         if (t.startsWith("f")) {
-            return "face";
+            if (force == "enemy") return game.nextTurn;
+
+            return game.turn;
         }
 
         t2 = (force == "enemy" ? "y" : "n");
@@ -1427,12 +1492,10 @@ function doTurn() {
         else if (q === "attack") {
             var attacker = selectTarget("Which minion do you want to attack with?", "self");
             if (attacker === false) return;
+            if (attacker.frozen) return;
 
             var target = selectTarget("Which minion do you want to attack?", "enemy");
             if (target === false) return;
-
-            if (attacker instanceof Minion && attacker.frozen) return;
-            if (attacker == "face" && curr.frozen) return;
 
             var prevent = false;
 
@@ -1454,15 +1517,17 @@ function doTurn() {
 
             p1 = (p1 === 0) ? 1 : 0;
 
-            if (target === "face") {
+            if (target instanceof Player) {
                 if (game.nextTurn.immune) return;
+                if (attacker instanceof Minion && !attacker.canAttackHero) return;
 
-                if (attacker === "face") {
+                if (attacker instanceof Player) {
 
                     game.nextTurn.remHealth(curr.attack);
     
-                    if (curr.weapon) {
+                    if (curr.weapon && curr.weapon.attackTimes > 0) {
                         curr.weapon.stats[1] -= 1;
+                        curr.weapon.attackTimes -= 1;
     
                         curr.weapon.activateOnAttack(game);
     
@@ -1488,20 +1553,27 @@ function doTurn() {
                     return;
                 }
 
-                if (attacker.hasAttacked) {
+                if (attacker.attackTimes == 0) {
                     console.log("That minion has already attacked this turn!");
                     return;
                 }
 
-                attacker.hasAttacked = true;
+                if (attacker.keywords.includes("Stealth")) {
+                    attacker.removeKeyword("Stealth");
+                }
+
+                attacker.attackTimes -= 1;
 
                 game.nextTurn.remHealth(attacker.stats[0]);
 
                 if (attacker.keywords.includes("Lifesteal")) {
                     curr.addHealth(attacker.stats[0]);
                 }
-            } else if (attacker === "face") {
+
+                return;
+            } else if (attacker instanceof Player) {
                 if (target instanceof Minion && target.immune) return;
+                if (target instanceof Minion && target.keywords.includes("Stealth")) return;
 
                 if (target === undefined) {
                     console.log("Invalid minion");
@@ -1511,8 +1583,9 @@ function doTurn() {
                 target.stats = [target.stats[0], target.stats[1] - curr.attack];
                 curr.remHealth(target.stats[0]);
 
-                if (curr.weapon) {
+                if (curr.weapon && curr.weapon.attackTimes > 0) {
                     curr.weapon.stats[1] -= 1;
+                    curr.weapon.attackTimes -= 1;
 
                     curr.weapon.activateOnAttack(game);
 
@@ -1544,7 +1617,15 @@ function doTurn() {
                 return;
             }
 
+            if (target.keywords.includes("Stealth")) return;
+
             if (game.attackMinion(attacker, target)) {
+                attacker.attackTimes -= 1;
+
+                if (attacker.keywords.includes("Stealth")) {
+                    attacker.removeKeyword("Stealth");
+                }
+
                 attacker.activateOnAttack(game);
 
                 if (attacker.keywords.includes("Lifesteal")) {

@@ -9,6 +9,7 @@
     "keywords": ["Twinspell"],
 
     "cast": [
-        "game.turn.mana += 1"
+        "game.turn.mana += 1",
+        "spellDmg(selectTarget(`Deal ${2 + game.turn.spellDamage} damage.`), 2)"
     ]
 }
