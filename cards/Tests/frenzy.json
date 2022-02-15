@@ -1,0 +1,15 @@
+{
+    "name": "Frenzy Test",
+    "type": "Minion",
+    "stats": [1, 2],
+    "desc": "Frenzy: Gain +1/+1.",
+    "mana": 1,
+    "tribe": "Beast",
+    "class": "Neutral",
+    "rarity": "Free",
+    "set": "Legacy",
+
+    "frenzy": [
+        "this.stats = [this.stats[0] + 1, this.stats[1] + 1];"
+    ]
+}

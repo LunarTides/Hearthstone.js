@@ -51,6 +51,9 @@ class Minion {
         this.hasOutcast = this.blueprint.outcast != undefined;
         this.hasStartOfGame = this.blueprint.startofgame != undefined;
         this.hasOverkill = this.blueprint.overkill != undefined;
+        this.hasFrenzy = this.blueprint.frenzy != undefined;
+        this.hasHonorableKill = this.blueprint.honorablekill != undefined;
+        this.hasSpellburst = this.blueprint.spellburst != undefined;
 
         if (this.hasBattlecry) {
             this.battlecry = this.blueprint.battlecry.join('\n');
@@ -81,6 +84,15 @@ class Minion {
         }
         if (this.hasOverkill) {
             this.overkill = this.blueprint.overkill.join('\n');
+        }
+        if (this.hasFrenzy) {
+            this.frenzy = this.blueprint.frenzy.join('\n');
+        }
+        if (this.hasHonorableKill) {
+            this.honorablekill = this.blueprint.honorablekill.join('\n');
+        }
+        if (this.hasSpellburst) {
+            this.spellburst = this.blueprint.spellburst.join('\n');
         }
     }
 
@@ -293,6 +305,22 @@ class Minion {
     activateOverkill(game) {
         if (!this.hasOverkill) return false;
         eval(this.overkill);
+    }
+
+    activateFrenzy(game) {
+        if (!this.hasFrenzy) return false;
+        eval(this.frenzy);
+    }
+
+    activateHonorableKill(game) {
+        if (!this.hasHonorableKill) return false;
+        eval(this.honorablekill);
+    }
+
+    activateSpellburst(game) {
+        if (!this.hasSpellburst) return false;
+        eval(this.spellburst);
+        this.hasSpellburst = false;
     }
 
 }
@@ -716,6 +744,8 @@ class Player {
     }
 
     drawCard() {
+        shuffle(this.deck);
+
         if (this.deck.length <= 0) {
             this.fatigue++;
 
@@ -1020,6 +1050,51 @@ class Game {
             return false;
         }
 
+        if (card.keywords.includes("Tradeable")) {
+            var q = rl.question(`Would you like to trade ${card.getName()} for a random card in your deck? (y: trade / n: play) `);
+
+            if (q.startsWith("y")) {
+                if (player.getMana() < 1) {
+                    return false;
+                }
+
+                player.setMana(player.getMana() - 1);
+
+                player.deck.push(card);
+
+                var n = []
+
+                var found = false;
+
+                player.getHand().forEach(function(c) {
+                    if (c.name === card.name && !found) {
+                        found = true;
+                    } else {
+                        n.push(c);
+                    }
+                });
+
+                if (card instanceof Spell && card.keywords.includes("Twinspell")) {
+                    card.removeKeyword("Twinspell");
+                    card.setDesc(card.getDesc().split("Twinspell")[0].trim());
+        
+                    n.push(card);
+                }
+        
+                if (card.keywords.includes("Echo")) {
+                    let clone = Object.assign(Object.create(Object.getPrototypeOf(card)), card)
+                    clone.echo = true;
+        
+                    n.push(clone);
+                }
+        
+                player.setHand(n);
+
+                player.drawCard();
+                return false;
+            }
+        }
+
         player.setMana(player.getMana() - card.getCost());
         
         var n = []
@@ -1056,6 +1131,10 @@ class Game {
             card.activateBattlecry(this);
         } else if (card.getType() === "Spell") {
             card.activateCast(this);
+
+            this.getBoard()[this.plrNameToIndex(player.getName())].forEach(m => {
+                m.activateSpellburst(this);
+            });
         } else if (card.getType() === "Weapon") {
             player.setWeapon(card);
 
@@ -1190,6 +1269,10 @@ class Game {
 
             target.stats = [target.stats[0], target.stats[1] - minion];
 
+            if (target.stats[1] > 0) {
+                target.activateFrenzy(this);
+            }
+
             this.killMinions();
 
             return;
@@ -1197,6 +1280,10 @@ class Game {
             if (minion.getStats()[0] <= 0) return false;
 
             minion.stats = [minion.stats[0], minion.stats[1] - target.stats[0]];
+
+            if (minion.stats[1] > 0) {
+                minion.activateFrenzy(this);
+            }
 
             if (target.keywords.includes("Divine Shield")) {
                 target.removeKeyword("Divine Shield");
@@ -1206,13 +1293,51 @@ class Game {
 
             target.stats = [target.stats[0], target.stats[1] - minion.stats[0]];
 
+            if (target.getStats()[1] > 0) {
+                target.activateFrenzy(this);
+            }
+
             if (target.getStats()[1] < 0) {
                 minion.activateOverkill(this);
+            }
+
+            if (target.getStats()[1] == 0) {
+                minion.activateHonorableKill(this);
             }
 
             return true;
         }
     }
+}
+
+// https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+function shuffle(array) {
+    let currentIndex = array.length, randomIndex;
+
+    while (currentIndex != 0) {
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+
+        [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+    }
+
+    return array;
+}
+
+function recruit(amount = 1, mana_range = [0, 10]) {
+    shuffle(game.turn.deck)
+
+    var times = 0;
+
+    game.turn.deck.forEach(c => {
+        if (c.type == "Minion" && c.mana >= mana_range[0] && c.mana <= mana_range[1] && times < amount) {
+            game.playMinion(c, game.turn);
+
+            times++;
+
+            return;
+        }
+    });
 }
 
 function chooseOne(prompt, options, times = 1) {
@@ -1247,6 +1372,12 @@ function chooseOne(prompt, options, times = 1) {
 function spellDmg(target, damage) {
     if (target instanceof Minion) {
         target.stats = [target.stats[0], target.stats[1] - (damage + game.turn.spellDamage)];
+    
+        if (target.stats[1] > 0) {
+            target.activateFrenzy(game);
+        }
+
+        this.killMinions();
     } else if (target instanceof Player) {
         target.remHealth(damage + game.turn.spellDamage);
     }
@@ -1321,7 +1452,7 @@ function selectTarget(prompt, force = null) {
     var bn = game.getBoard()[game.plrNameToIndex(game.nextTurn.getName())];
     var bo = game.getBoard()[game.plrNameToIndex(game.turn.getName())];
 
-    if (!t.startsWith("f") && !bo[parseInt(t)] && !bn[parseInt(t)]) {
+    if (!t.startsWith("f") && !bo[parseInt(t) - 1] && !bn[parseInt(t) - 1]) {
         selectTarget(prompt);
 
         return false;
@@ -1583,6 +1714,10 @@ function doTurn() {
                 target.stats = [target.stats[0], target.stats[1] - curr.attack];
                 curr.remHealth(target.stats[0]);
 
+                if (target.stats[1] > 0) {
+                    target.activateFrenzy(game);
+                }
+
                 if (curr.weapon && curr.weapon.attackTimes > 0) {
                     curr.weapon.stats[1] -= 1;
                     curr.weapon.attackTimes -= 1;
@@ -1669,6 +1804,9 @@ while (game.player1.getDeck().length < 30) {
 while (game.player2.getDeck().length < 30) {
     game.player2.deck.push(new Minion("Sheep"));
 }
+
+shuffle(game.player1.deck);
+shuffle(game.player2.deck);
 
 game.startGame();
 
