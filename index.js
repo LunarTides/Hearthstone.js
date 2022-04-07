@@ -908,14 +908,13 @@ class Game {
     }
 
     startGame() {
-        this.player1.drawCard();
-        this.player1.drawCard();
-        this.player1.drawCard();
+        for (let i = 0; i < 3; i++) {
+            this.player1.drawCard()
+        }
 
-        this.player2.drawCard();
-        this.player2.drawCard();
-        this.player2.drawCard();
-        this.player2.drawCard();
+        for (let i = 0; i < 4; i++) {
+            this.player2.drawCard();
+        }
         this.player2.hand.push(new Spell("The Coin"));
 
         this.player1.setMaxMana(1);
@@ -966,7 +965,7 @@ class Game {
                 _c.push(c);
             }
         });*/
-        _c = this.player1.hand.filter(c => !c.echo)
+        let _c = this.player1.hand.filter(c => !c.echo)
 
         this.player1.setHand(_c);
 
