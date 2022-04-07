@@ -2,13 +2,13 @@ const fs = require('fs');
 const { exit } = require('process');
 const rl = require('readline-sync');
 
-cards = {};
+var cards = {};
 
 function importCards(path) {
     fs.readdirSync(path, { withFileTypes: true }).forEach(file => {
-        if (file.name.endsWith(".json")) {
-            var json = require(`${path}/${file.name}`);
-            cards[json.name] = json;
+        if (file.name.endsWith(".js")) {
+            var f = require(`${path}/${file.name}`);
+            cards[f.name] = f;
         } else if (file.isDirectory()) {
             importCards(`${path}/${file.name}`);
         }
@@ -22,7 +22,7 @@ class Minion {
         this.blueprint = cards[name];
 
         this.name = name;
-        this.type = this.blueprint.type;
+        this.type = "Minion";
         this.stats = this.blueprint.stats;
         this.desc = this.blueprint.desc;
         this.mana = this.blueprint.mana;
@@ -54,46 +54,6 @@ class Minion {
         this.hasFrenzy = this.blueprint.frenzy != undefined;
         this.hasHonorableKill = this.blueprint.honorablekill != undefined;
         this.hasSpellburst = this.blueprint.spellburst != undefined;
-
-        if (this.hasBattlecry) {
-            this.battlecry = this.blueprint.battlecry.join('\n');
-        }
-        if (this.hasDeathrattle) {
-            this.deathrattle = this.blueprint.deathrattle.join('\n');
-        }
-        if (this.hasInspire) {
-            this.inspire = this.blueprint.inspire.join('\n');
-        }
-        if (this.hasEndOfTurn) {
-            this.endofturn = this.blueprint.endofturn.join('\n');
-        }
-        if (this.hasStartOfTurn) {
-            this.startofturn = this.blueprint.startofturn.join('\n');
-        }
-        if (this.hasCombo) {
-            this.combo = this.blueprint.combo.join('\n');
-        }
-        if (this.hasOnAttack) {
-            this.onattack = this.blueprint.onattack.join('\n');
-        }
-        if (this.hasOutcast) {
-            this.outcast = this.blueprint.outcast.join('\n');
-        }
-        if (this.hasStartOfGame) {
-            this.startofgame = this.blueprint.startofgame.join('\n');
-        }
-        if (this.hasOverkill) {
-            this.overkill = this.blueprint.overkill.join('\n');
-        }
-        if (this.hasFrenzy) {
-            this.frenzy = this.blueprint.frenzy.join('\n');
-        }
-        if (this.hasHonorableKill) {
-            this.honorablekill = this.blueprint.honorablekill.join('\n');
-        }
-        if (this.hasSpellburst) {
-            this.spellburst = this.blueprint.spellburst.join('\n');
-        }
     }
 
     getName() {
@@ -190,6 +150,15 @@ class Minion {
 
     addKeyword(keyword) {
         this.keywords.push(keyword);
+
+        if (this.keywords.includes("Charge")) {
+            this.turn = game.turns - 1;
+        }
+
+        if (this.keywords.includes("Rush")) {
+            this.turn = game.turns - 1;
+            this.canAttackHero = false;
+        }
     }
 
     removeKeyword(keyword) {
@@ -240,7 +209,8 @@ class Minion {
     }
 
     addDeathrattle(deathrattle) {
-        this.deathrattle += '\n' + deathrattle;
+        // TODO: Make this work with the new card system
+        this.deathrattle += deathrattle;
     }
 
     silence() {
@@ -259,67 +229,67 @@ class Minion {
 
     activateBattlecry(game) {
         if (!this.hasBattlecry) return false;
-        eval(this.battlecry);
+        this.blueprint.battlecry(game.turn, game, this);
     }
 
     activateDeathrattle(game) {
         if (!this.hasDeathrattle) return false;
-        eval(this.deathrattle);
+        this.blueprint.deathrattle(game.turn, game, this);
     }
 
     activateInspire(game) {
         if (!this.hasInspire) return false;
-        eval(this.inspire);
+        this.blueprint.inspire(game.turn, game, this);
     }
 
     activateEndOfTurn(game) {
         if (!this.hasEndOfTurn) return false;
-        eval(this.endofturn);
+        this.blueprint.endofturn(game.turn, game, this);
     }
 
     activateStartOfTurn(game) {
         if (!this.hasStartOfTurn) return false;
-        eval(this.startofturn);
+        this.blueprint.startofturn(game.turn, game, this);
     }
 
     activateCombo(game) {
         if (!this.hasCombo) return false;
-        eval(this.combo);
+        this.blueprint.combo(game.turn, game, this);
     }
 
     activateOnAttack(game) {
         if (!this.hasOnAttack) return false;
-        eval(this.onAttack);
+        this.blueprint.onAttack(game.turn, game, this);
     }
 
     activateOutcast(game) {
         if (!this.hasOutcast) return false;
-        eval(this.outcast);
+        this.blueprint.outcast(game.turn, game, this);
     }
 
     activateStartOfGame(game) {
         if (!this.hasStartOfGame) return false;
-        eval(this.startofgame);
+        this.blueprint.startofgame(game.turn, game, this);
     }
 
     activateOverkill(game) {
         if (!this.hasOverkill) return false;
-        eval(this.overkill);
+        this.blueprint.overkill(game.turn, game, this);
     }
 
     activateFrenzy(game) {
         if (!this.hasFrenzy) return false;
-        eval(this.frenzy);
+        this.blueprint.frenzy(game.turn, game, this);
     }
 
     activateHonorableKill(game) {
         if (!this.hasHonorableKill) return false;
-        eval(this.honorablekill);
+        this.blueprint.honorablekill(game.turn, game, this);
     }
 
     activateSpellburst(game) {
         if (!this.hasSpellburst) return false;
-        eval(this.spellburst);
+        this.blueprint.spellburst(game.turn, game, this);
         this.hasSpellburst = false;
     }
 
@@ -345,19 +315,6 @@ class Spell {
         this.hasCombo = this.blueprint.combo != undefined;
         this.hasOutcast = this.blueprint.outcast != undefined;
         this.hasCastOnDraw = this.blueprint.castondraw != undefined;
-
-        if (this.hasCast) {
-            this.cast = this.blueprint.cast.join('\n');
-        }
-        if (this.hasCombo) {
-            this.combo = this.blueprint.combo.join('\n');
-        }
-        if (this.hasOutcast) {
-            this.outcast = this.blueprint.outcast.join('\n');
-        }
-        if (this.hasCastOnDraw) {
-            this.castondraw = this.blueprint.castondraw.join('\n');
-        }
     }
 
     getName() {
@@ -430,22 +387,22 @@ class Spell {
 
     activateCast(game) {
         if (!this.hasCast) return false;
-        eval(this.cast);
+        this.blueprint.cast(game.turn, game, this);
     }
 
     activateCombo(game) {
         if (!this.hasCombo) return false;
-        eval(this.combo);
+        this.blueprint.combo(game.turn, game, this);
     }
 
     activateOutcast(game) {
         if (!this.hasOutcast) return false;
-        eval(this.outcast);
+        this.blueprint.outcast(game.turn, game, this);
     }
 
     activateCastOnDraw(game) {
         if (!this.hasCastOnDraw) return false;
-        eval(this.castondraw);
+        this.blueprint.castondraw(game.turn, game, this);
         return true;
     }
 
@@ -596,40 +553,43 @@ class Weapon {
     }
 
     addBattlecry(battlecry) {
+        // TODO: Make this work with the new card system
         this.battlecry += '\n' + battlecry;
     }
 
     addDeathrattle(deathrattle) {
+        // TODO: Make this work with the new card system
         this.deathrattle += '\n' + deathrattle;
     }
 
     addOnAttack(onattack) {
+        // TODO: Make this work with the new card system
         this.onattack += '\n' + onattack;
     }
 
     activateBattlecry(game) {
         if (!this.hasBattlecry) return false;
-        eval(this.battlecry);
+        this.blueprint.battlecry(game.turn, game, this);
     }
 
     activateDeathrattle(game) {
         if (!this.hasDeathrattle) return false;
-        eval(this.deathrattle);
+        this.blueprint.deathrattle(game.turn, game, this);
     }
 
     activateOnAttack(game) {
         if (!this.hasOnAttack) return false;
-        eval(this.onattack);
+        this.blueprint.onattack(game.turn, game, this);
     }
 
     activateCombo(game) {
         if (!this.hasCombo) return false;
-        eval(this.combo);
+        this.blueprint.combo(game.turn, game, this);
     }
 
     activateOutcast(game) {
         if (!this.hasOutcast) return false;
-        eval(this.outcast);
+        this.blueprint.outcast(game.turn, game, this);
     }
 }
 
@@ -637,6 +597,7 @@ class Weapon {
 class Player {
     constructor(name) {
         this.name = name;
+        this.id = null;
         this.deck = [];
         this.hand = [];
         this.mana = 0;
@@ -744,7 +705,7 @@ class Player {
     }
 
     drawCard() {
-        shuffle(this.deck);
+        //this.game.functions.shuffle(this.deck); // Removed incase this messes with Lorekeeper Polkelt
 
         if (this.deck.length <= 0) {
             this.fatigue++;
@@ -783,7 +744,7 @@ class Player {
             this.game.nextTurn.remHealth(2);
         }
         else if (this.class == "Mage") {
-            var t = selectTarget("Deal 1 damage to a minion");
+            var t = this.game.functions.selectTarget("Deal 1 damage.");
 
             if (t == false) return false;
 
@@ -797,7 +758,7 @@ class Player {
             game.playMinion(new Minion("Silver Hand Recruit"), this);
         }
         else if (this.class == "Priest") {
-            var t = selectTarget("Restore 2 health to a minion");
+            var t = this.game.functions.selectTarget("Restore 2 health.");
 
             if (t == false) return false;
 
@@ -809,7 +770,7 @@ class Player {
         else if (this.class == "Shaman") {
             const totem_cards = ["Healing Totem", "Searing Totem", "Stoneclaw Totem", "Strength Totem"];
 
-            game.getBoard()[game.plrNameToIndex(game.turn.getName())].forEach(m => {
+            game.getBoard()[this.id].forEach(m => {
                 if (totem_cards.includes(m.name)) {
                     totem_cards.splice(totem_cards.indexOf(m.name), 1);
                 }
@@ -819,7 +780,7 @@ class Player {
                 return;
             }
 
-            game.playMinion(new Minion(totem_cards[Math.floor(Math.random() * totem_cards.length)]), this);
+            game.playMinion(new Minion(game.functions.randList(totem_cards)), this);
         }
         else if (this.class == "Warlock") {
             this.remHealth(2);
@@ -830,10 +791,8 @@ class Player {
             this.armor += 2;
         }
 
-        this.game.getBoard().forEach((_, i) => {
-            this.game.getBoard()[i].forEach(m => {
-                m.activateInspire(this.game);
-            });
+        this.game.getBoard()[this.id].forEach(m => {
+            m.activateInspire(this.game);
         });
 
         this.setMana(this.getMana() - this.heroPowerCost);
@@ -845,7 +804,7 @@ class Player {
 }
 
 class Game {
-    constructor(player1, player2) {
+    constructor(player1, player2, functions) {
         // Choose a random player to be player 1
         if (Math.random() < 0.5) {
             this.player1 = player1;
@@ -857,6 +816,17 @@ class Game {
 
         this.turn = this.player1;
         this.nextTurn = this.player2;
+
+        this.functions = functions;
+        this.cards = cards;
+
+        this.Minion = Minion;
+        this.Weapon = Weapon;
+        this.Spell = Spell;
+        this.Player = Player;
+
+        this.player1.id = 0;
+        this.player2.id = 1;
 
         this.turns = 0;
         this.winner = null;
@@ -989,23 +959,26 @@ class Game {
             m.activateEndOfTurn(this);
         });
 
-        var _c = [];
+        /*var _c = [];
 
         this.player1.hand.forEach(c => {
             if (!c.echo) {
                 _c.push(c);
             }
-        });
+        });*/
+        _c = this.player1.hand.filter(c => !c.echo)
 
         this.player1.setHand(_c);
 
-        _c = [];
+        /*_c = [];
 
         this.player2.hand.forEach(c => {
             if (!c.echo) {
                 _c.push(c);
             }
-        });
+        });*/
+
+        _c = this.player2.hand.filter(c => !c.echo)
 
         this.player2.setHand(_c);
 
@@ -1196,6 +1169,8 @@ class Game {
 
         var p = this.plrNameToIndex(player.getName());
 
+        minion.turn = this.turns;
+
         if (minion.keywords.includes("Charge")) {
             minion.turn = this.turns - 1;
         }
@@ -1310,44 +1285,119 @@ class Game {
     }
 }
 
-// https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
-function shuffle(array) {
-    let currentIndex = array.length, randomIndex;
+class Functions {
+    // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+    shuffle(array) {
+        let currentIndex = array.length, randomIndex;
 
-    while (currentIndex != 0) {
-        randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex--;
+        while (currentIndex != 0) {
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
 
-        [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+        }
+
+        return array;
     }
 
-    return array;
-}
+    randList(list) {
+        return list[Math.floor(Math.random() * list.length)];
+    }
 
-function recruit(amount = 1, mana_range = [0, 10]) {
-    shuffle(game.turn.deck)
+    recruit(amount = 1, mana_range = [0, 10]) {
+        var array = this.shuffle(game.turn.deck)
 
-    var times = 0;
+        var times = 0;
 
-    game.turn.deck.forEach(c => {
-        if (c.type == "Minion" && c.mana >= mana_range[0] && c.mana <= mana_range[1] && times < amount) {
-            game.playMinion(c, game.turn);
+        array.forEach(c => {
+            if (c.type == "Minion" && c.mana >= mana_range[0] && c.mana <= mana_range[1] && times < amount) {
+                game.playMinion(c, game.turn);
 
-            times++;
+                times++;
 
-            return;
+                return;
+            }
+        });
+    }
+
+    chooseOne(prompt, options, times = 1) {
+        choices = [];
+
+        for (var i = 0; i < times; i++) {
+            var p = `\n${prompt} [`;
+
+            options.forEach((v, i) => {
+                p += `${i + 1}: ${v}, `;
+            });
+
+            p = p.slice(0, -2);
+            p += "] ";
+
+            var choice = rl.question(p);
+
+            choices.push(parseInt(choice) - 1);
         }
-    });
-}
 
-function chooseOne(prompt, options, times = 1) {
-    choices = [];
+        console.log(choices);
 
-    for (var i = 0; i < times; i++) {
+        //exit()
+
+        if (times === 1) {
+            return choices[0];
+        } else {
+            return choices;
+        }
+    }
+
+    spellDmg(target, damage) {
+        if (target instanceof Minion) {
+            target.stats = [target.stats[0], target.stats[1] - (damage + game.turn.spellDamage)];
+        
+            if (target.stats[1] > 0) {
+                target.activateFrenzy(game);
+            }
+
+            this.killMinions();
+        } else if (target instanceof Player) {
+            target.remHealth(damage + game.turn.spellDamage);
+        }
+    }
+
+    discover(prompt, amount = 3, flags = [], add_to_hand = true) {
+        var possible_cards = [];
+        var values = [];
+
+        Object.entries(cards).forEach((c, _) => {
+            c = c[1];
+
+            if (c.type == "Spell" && c.class == "Neutral") {}
+            else if (c.class === game.turn.class || c.class == "Neutral") {
+                if (flags.includes("Minion") && c.type !== "Minion") return;
+                if (flags.includes("Spell") && c.type !== "Spell") return;
+                if (flags.includes("Weapon") && c.type !== "Weapon") return;
+
+                possible_cards.push(c);
+            }
+        });
+
+        if (possible_cards.length == 0) return;
+
+        for (var i = 0; i < amount; i++) {
+            var c = possible_cards[Math.floor(Math.random() * possible_cards.length)];
+
+            values.push(c);
+            possible_cards.splice(possible_cards.indexOf(c), 1);
+        }
+
         var p = `\n${prompt} [`;
 
-        options.forEach((v, i) => {
-            p += `${i + 1}: ${v}, `;
+        if (values.length <= 0) return;
+
+        values.forEach((v, i) => {
+            // Check for a TypeError and ignore it
+            try {
+                p += `${i + 1}: ${v.name}, `;
+            } catch (e) {}
         });
 
         p = p.slice(0, -2);
@@ -1355,150 +1405,103 @@ function chooseOne(prompt, options, times = 1) {
 
         var choice = rl.question(p);
 
-        choices.push(parseInt(choice) - 1);
-    }
+        if (!values[parseInt(choice) - 1])
+            return this.discover(prompt, amount, flags, add_to_hand);
 
-    console.log(choices);
+        var card = values[parseInt(choice) - 1];
 
-    //exit()
+        if (add_to_hand) {
+            var c = null;
 
-    if (times === 1) {
-        return choices[0];
-    } else {
-        return choices;
-    }
-}
+            if (card.type == 'Minion') c = new Minion(card.name);
+            if (card.type == 'Spell') c = new Spell(card.name);
+            if (card.type == 'Weapon') c = new Weapon(card.name);
 
-function spellDmg(target, damage) {
-    if (target instanceof Minion) {
-        target.stats = [target.stats[0], target.stats[1] - (damage + game.turn.spellDamage)];
-    
-        if (target.stats[1] > 0) {
-            target.activateFrenzy(game);
+            curr.hand.push(c);
+
+            return c;
+        } else {
+            return card;
         }
-
-        this.killMinions();
-    } else if (target instanceof Player) {
-        target.remHealth(damage + game.turn.spellDamage);
-    }
-}
-
-function discover(prompt, amount = 3, flags = [], add_to_hand = true) {
-    var possible_cards = [];
-    var values = [];
-
-    Object.entries(cards).forEach((c, _) => {
-        c = c[1];
-
-        if (c.class === game.turn.class) {
-            if (flags.includes("Minion") && c.type !== "Minion") return;
-            if (flags.includes("Spell") && c.type !== "Spell") return;
-            if (flags.includes("Weapon") && c.type !== "Weapon") return;
-
-            possible_cards.push(c);
-        }
-    });
-
-    if (possible_cards.length == 0) return;
-
-    for (var i = 0; i < amount; i++) {
-        var c = possible_cards[Math.floor(Math.random() * possible_cards.length)];
-
-        values.push(c);
-        possible_cards.splice(possible_cards.indexOf(c), 1);
     }
 
-    var p = `\n${prompt} [`;
-
-    if (values.length <= 0) return;
-
-    values.forEach((v, i) => {
-        p += `${i + 1}: ${v.name}, `;
-    });
-
-    p = p.slice(0, -2);
-    p += "] ";
-
-    var choice = rl.question(p);
-
-    var card = values[parseInt(choice) - 1];
-
-    if (add_to_hand) {
-        var c = null;
-
-        if (card.type == 'Minion') c = new Minion(card.name);
-        if (card.type == 'Spell') c = new Spell(card.name);
-        if (card.type == 'Weapon') c = new Weapon(card.name);
-
-        curr.hand.push(c);
-
-        return c;
-    } else {
-        return card;
-    }
-}
-
-function selectTarget(prompt, force = null) {
-    var t = rl.question(`\n${prompt} (type 'face' to select a hero | type 'back' to go back) `);
-
-    if (t.startsWith("b")) {
-        var t2 = rl.question(`WARNING: Going back might cause unexpected things to happen. Do you still want to go back? (y / n) `);
+    selectTarget(prompt, force = null, force_type = null) {
+        if (force_type == null) {
+            var t = rl.question(`\n${prompt} (type 'face' to select a hero | type 'back' to go back) `);
+        } else if (force_type == "minion") {
+            var t = rl.question(`\n${prompt} (type 'back' to go back) `);
+        } else if (force_type == "hero") {
+            if (!force) {
+                var t2 = rl.question(`Do you want to select the enemy hero, or your own hero? (y: enemy, n: self) `);
         
-        if (t2.startsWith("y")) {
-            return false;
+                return (t2.startsWith("y")) ? game.nextTurn : game.turn;
+            } else {
+                if (force == "enemy") return game.nextTurn;
+                else return game.turn;
+            }
         }
-    }
 
-    var bn = game.getBoard()[game.plrNameToIndex(game.nextTurn.getName())];
-    var bo = game.getBoard()[game.plrNameToIndex(game.turn.getName())];
-
-    if (!t.startsWith("f") && !bo[parseInt(t) - 1] && !bn[parseInt(t) - 1]) {
-        selectTarget(prompt);
-
-        return false;
-    }
-
-    if (!force) {
-        if (t.startsWith("f")) {
-            var t2 = rl.question(`Do you want to select the enemy hero, or your own hero? (y: enemy, n: self) `);
-    
-            return (t2.startsWith("y")) ? game.nextTurn : game.turn;
-        }
-        
-        if (bn.length >= parseInt(t) && bo.length >= parseInt(t)) {
-            var t2 = rl.question(`Do you want to select your opponent's (${bn[parseInt(t) - 1].name}) or your own (${bo[parseInt(t) - 1].name})? (y: opponent, n: self | type 'back' to go back) `);
-        
-            if (t2.startsWith("b")) {
-                selectTarget(prompt);
-
+        if (t.startsWith("b")) {
+            var t2 = rl.question(`WARNING: Going back might cause unexpected things to happen. Do you still want to go back? (y / n) `);
+            
+            if (t2.startsWith("y")) {
                 return false;
             }
+        }
+
+        var bn = game.getBoard()[game.nextTurn.id];
+        var bo = game.getBoard()[game.turn.id];
+
+        if (!t.startsWith("f") && !bo[parseInt(t) - 1] && !bn[parseInt(t) - 1]) {
+            this.selectTarget(prompt);
+
+            return false;
+        }
+
+        if (!force) {
+            if (t.startsWith("f") && force_type != "minion") {
+                var t2 = rl.question(`Do you want to select the enemy hero, or your own hero? (y: enemy, n: self) `);
+        
+                return (t2.startsWith("y")) ? game.nextTurn : game.turn;
+            }
+            
+            if (bn.length >= parseInt(t) && bo.length >= parseInt(t)) {
+                var t2 = rl.question(`Do you want to select your opponent's (${bn[parseInt(t) - 1].name}) or your own (${bo[parseInt(t) - 1].name})? (y: opponent, n: self | type 'back' to go back) `);
+            
+                if (t2.startsWith("b")) {
+                    this.selectTarget(prompt);
+
+                    return false;
+                }
+            } else {
+                if (bn.length >= parseInt(t)) var t2 = "y";
+                else if (bo.length >= parseInt(t)) var t2 = "n";
+            }
         } else {
-            if (bn.length >= parseInt(t)) var t2 = "y";
-            else if (bo.length >= parseInt(t)) var t2 = "n";
+            if (t.startsWith("f") && force_type != "minion") {
+                if (force == "enemy") return game.nextTurn;
+
+                return game.turn;
+            }
+
+            t2 = (force == "enemy" ? "y" : "n");
         }
-    } else {
-        if (t.startsWith("f")) {
-            if (force == "enemy") return game.nextTurn;
 
-            return game.turn;
+        if (t2.startsWith("y")) {
+            var m = bn[parseInt(t) - 1];
+        } else {
+            var m = bo[parseInt(t) - 1];
         }
 
-        t2 = (force == "enemy" ? "y" : "n");
-    }
+        if (force_type == "hero") return;
 
-    if (t2.startsWith("y")) {
-        var m = bn[parseInt(t) - 1];
-    } else {
-        var m = bo[parseInt(t) - 1];
-    }
+        if (m === undefined) {
+            console.log("Invalid minion");
+            return false;
+        }
 
-    if (m === undefined) {
-        console.log("Invalid minion");
-        return false;
+        return m;
     }
-
-    return m;
 }
 
 function doTurn() {
@@ -1546,15 +1549,17 @@ function doTurn() {
     game.getBoard().forEach((_, i) => {
         var t = `- ${game.plrIndexToName(i)} -`;
 
-        console.log(t)
+        console.log(t) // This is not for debugging, do not comment out
 
         if (game.getBoard()[i].length == 0) {
             console.log("(None)");
         } else {
-            game.getBoard()[i].forEach(m => {
-                var keywords = m.getKeywords().length > 0 ? ` [${m.getKeywords().join(", ")}]` : "";
+            game.getBoard()[i].forEach((m, n) => {
+                //console.log(m)
 
-                console.log(`${m.getName()} (${m.getStats().join(" / ")})${keywords}`);
+                var keywords = m.getKeywords().length > 0 ? ` {${m.getKeywords().join(", ")}}` : "";
+
+                console.log(`${m.getName()} (${m.getStats().join(" / ")})${keywords} [${n + 1}]`);
             });
         }
         console.log("-".repeat(t.length));
@@ -1621,11 +1626,11 @@ function doTurn() {
             game.endTurn();
         }
         else if (q === "attack") {
-            var attacker = selectTarget("Which minion do you want to attack with?", "self");
+            var attacker = game.functions.selectTarget("Which minion do you want to attack with?", "self");
             if (attacker === false) return;
             if (attacker.frozen) return;
 
-            var target = selectTarget("Which minion do you want to attack?", "enemy");
+            var target = game.functions.selectTarget("Which minion do you want to attack?", "enemy");
             if (target === false) return;
 
             var prevent = false;
@@ -1751,7 +1756,7 @@ function doTurn() {
                 console.log("That minion has cannot attack this turn!");
                 return;
             }
-
+            
             if (target.keywords.includes("Stealth")) return;
 
             if (game.attackMinion(attacker, target)) {
@@ -1796,7 +1801,7 @@ function doTurn() {
     game.playCard(card, curr);
 }
 
-const game = new Game(new Player('Isak'), new Player('Sondre'));
+const game = new Game(new Player('Isak'), new Player('Sondre'), new Functions());
 
 while (game.player1.getDeck().length < 30) {
     game.player1.deck.push(new Minion("Sheep"));
@@ -1805,8 +1810,8 @@ while (game.player2.getDeck().length < 30) {
     game.player2.deck.push(new Minion("Sheep"));
 }
 
-shuffle(game.player1.deck);
-shuffle(game.player2.deck);
+game.functions.shuffle(game.player1.deck);
+game.functions.shuffle(game.player2.deck);
 
 game.startGame();
 
