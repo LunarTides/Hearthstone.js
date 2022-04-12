@@ -227,6 +227,16 @@ class Minion {
         this.set = this.blueprint.set;
 
         this.keywords = [];
+
+        this.hasDeathrattle = false;
+        this.hasEndOfTurn = false;
+        this.hasStartOfTurn = false;
+        this.hasInspire = false;
+        this.hasOnAttack = false;
+        this.hasOverkill = false;
+        this.hasFrenzy = false;
+        this.hasHonorableKill = false;
+        this.hasSpellburst = false;
     }
 
     activateBattlecry(game) {
