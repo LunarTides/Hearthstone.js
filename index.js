@@ -33,6 +33,8 @@ class Minion {
         this.keywords = this.blueprint.keywords || [];
         this.oghealth = null;
         this.corrupted = this.blueprint.corrupted || false;
+        this.colossal = this.blueprint.colossal || false;
+        this.dormant = this.blueprint.dormant || false;
         this.frozen = false;
         this.immune = false;
         this.echo = false;
@@ -1008,6 +1010,16 @@ class Game {
             m.activateStartOfTurn(this);
             m.canAttackHero = true;
             m.resetAttackTimes();
+
+            if (m.dormant) {
+                if (game.turns > m.dormant) {
+                    m.dormant = false;
+                    m.frozen = false;
+                    m.immune = false;
+                }
+
+                m.turn = game.turns;
+            }
         });
 
         if (this.turn.weapon) this.turn.weapon.resetAttackTimes();
@@ -1098,7 +1110,22 @@ class Game {
         player.setHand(n);
 
         if (card.getType() === "Minion") {
-            game.playMinion(card, player);
+            if (card.colossal) {
+                card.colossal.forEach((v, i) => {
+                    let minion = new Minion(v[0]);
+                    minion.setName(v[1]);
+
+                    game.playMinion(minion, player);
+                });
+            } else {
+                game.playMinion(card, player);
+            }
+
+            if (card.dormant) {
+                card.frozen = true;
+                card.immune = true;
+                card.dormant = card.dormant + game.turns;
+            }
 
             card.activateBattlecry(this);
         } else if (card.getType() === "Spell") {
@@ -1388,7 +1415,7 @@ class Functions {
             possible_cards.splice(possible_cards.indexOf(c), 1);
         }
 
-        var p = `\n${prompt} [`;
+        var p = `\n${prompt}\n[`;
 
         if (values.length <= 0) return;
 
@@ -1501,6 +1528,32 @@ class Functions {
 
         return m;
     }
+
+    dredge(prompt = "Choose One:") {
+        // Look at the bottom three cards of the deck and put one on the top.
+        var cards = game.turn.deck.slice(0, 3);
+
+        var p = `\n${prompt}\n[`;
+
+        if (cards.length <= 0) return;
+
+        cards.forEach((c, i) => {
+            p += `${i + 1}: ${c.name}, `;
+        });
+
+        p = p.slice(0, -2);
+
+        p += "] ";
+
+        var choice = rl.question(p);
+
+        if (!cards[parseInt(choice) - 1]) return;
+
+        var card = cards[parseInt(choice) - 1];
+
+        game.turn.deck.push(card);
+        game.turn.deck.splice(game.turn.deck.indexOf(card), 1);
+    }
 }
 
 function doTurn() {
@@ -1554,11 +1607,12 @@ function doTurn() {
             console.log("(None)");
         } else {
             game.getBoard()[i].forEach((m, n) => {
-                //console.log(m)
-
                 var keywords = m.getKeywords().length > 0 ? ` {${m.getKeywords().join(", ")}}` : "";
+                var frozen = m.frozen && !m.dormant ? " (Frozen)" : "";
+                var immune = m.immune && !m.dormant ? " (Immune)" : "";
+                var dormant = m.dormant ? " (Dormant)" : "";
 
-                console.log(`${m.getName()} (${m.getStats().join(" / ")})${keywords} [${n + 1}]`);
+                console.log(`${m.getName()} (${m.getStats().join(" / ")})${keywords}${frozen}${immune}${dormant} [${n + 1}]`);
             });
         }
         console.log("-".repeat(t.length));
@@ -1623,6 +1677,13 @@ function doTurn() {
         if (q === "end") {
             prevPlr = curr;
             game.endTurn();
+        }
+        else if (q == "view") {
+            var minion = game.functions.selectTarget("Which minion do you want to view?", null, "minion");
+
+            if (minion === undefined) return;
+
+            viewMinion(minion);
         }
         else if (q === "attack") {
             var attacker = game.functions.selectTarget("Which minion do you want to attack with?", "self");
@@ -1798,6 +1859,30 @@ function doTurn() {
     }
 
     game.playCard(card, curr);
+}
+
+function viewMinion(minion, detailed = false) {
+    console.log(`{${minion.getCost()}} ${minion.getName()} [${minion.blueprint.stats.join(' / ')}]\n`);
+    if (minion.getDesc()) console.log(minion.getDesc() + "\n");
+    console.log("Tribe: " + minion.getTribe());
+    console.log("Class: " + minion.getClass());
+    console.log("Is Frozen: " + minion.frozen && !minion.dormant);
+    console.log("Is Immune: " + minion.immune && !minion.dormant);
+    console.log("Is Dormant: " + minion.dormant != false);
+    if (detailed) {
+        console.log("Is Corrupted: " + minion.corrupted);
+        console.log("Rarity: " + minion.getRarity());
+        console.log("Set: " + minion.getSet());
+        console.log("Turn played: " + minion.turn);
+    }
+
+    let q = rl.question("\nDo you want to view more info, or do you want to go back? [more / back] ");
+
+    if (q.toLowerCase().startsWith("m")) {
+        viewMinion(minion, true)
+    } else {
+        return;
+    }
 }
 
 const game = new Game(new Player('Isak'), new Player('Sondre'), new Functions());
