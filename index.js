@@ -40,6 +40,7 @@ class Minion {
         this.echo = false;
         this.canAttackHero = true;
         this.attackTimes = 1;
+        this.plr = game.turn;
 
         this.turn = null;
 
@@ -56,6 +57,8 @@ class Minion {
         this.hasFrenzy = this.blueprint.frenzy != undefined;
         this.hasHonorableKill = this.blueprint.honorablekill != undefined;
         this.hasSpellburst = this.blueprint.spellburst != undefined;
+
+        this.deathrattles = this.hasDeathrattle ? [this.blueprint.deathrattle] : [];
     }
 
     getName() {
@@ -199,20 +202,23 @@ class Minion {
     }
 
     setDeathrattle(deathrattle) {
-        this.deathrattle = deathrattle;
+        this.hasDeathrattle = true;
+        this.deathrattles = deathrattle;
     }
 
     setEndOfTurn(endofturn) {
+        this.hasEndOfTurn = true;
         this.endofturn = endofturn;
     }
 
     setStartOfTurn(startofturn) {
+        this.hasStartOfTurn = true;
         this.startofturn = startofturn;
     }
 
     addDeathrattle(deathrattle) {
-        // TODO: Make this work with the new card system
-        this.deathrattle += deathrattle;
+        this.hasDeathrattle = true;
+        this.deathrattles.push(deathrattle);
     }
 
     silence() {
@@ -241,67 +247,69 @@ class Minion {
 
     activateBattlecry(game) {
         if (!this.hasBattlecry) return false;
-        this.blueprint.battlecry(game.turn, game, this);
+        this.blueprint.battlecry(this.plr, game, this);
     }
 
     activateDeathrattle(game) {
         if (!this.hasDeathrattle) return false;
-        this.blueprint.deathrattle(game.turn, game, this);
+        this.deathrattles.forEach(deathrattle => {
+            deathrattle(this.plr, game, this);
+        });
     }
 
     activateInspire(game) {
         if (!this.hasInspire) return false;
-        this.blueprint.inspire(game.turn, game, this);
+        this.blueprint.inspire(this.plr, game, this);
     }
 
     activateEndOfTurn(game) {
         if (!this.hasEndOfTurn) return false;
-        this.blueprint.endofturn(game.turn, game, this);
+        this.blueprint.endofturn(this.plr, game, this);
     }
 
     activateStartOfTurn(game) {
         if (!this.hasStartOfTurn) return false;
-        this.blueprint.startofturn(game.turn, game, this);
+        this.blueprint.startofturn(this.plr, game, this);
     }
 
     activateCombo(game) {
         if (!this.hasCombo) return false;
-        this.blueprint.combo(game.turn, game, this);
+        this.blueprint.combo(this.plr, game, this);
     }
 
     activateOnAttack(game) {
         if (!this.hasOnAttack) return false;
-        this.blueprint.onAttack(game.turn, game, this);
+        this.blueprint.onAttack(this.plr, game, this);
     }
 
     activateOutcast(game) {
         if (!this.hasOutcast) return false;
-        this.blueprint.outcast(game.turn, game, this);
+        this.blueprint.outcast(this.plr, game, this);
     }
 
     activateStartOfGame(game) {
         if (!this.hasStartOfGame) return false;
-        this.blueprint.startofgame(game.turn, game, this);
+        this.blueprint.startofgame(this.plr, game, this);
     }
 
     activateOverkill(game) {
         if (!this.hasOverkill) return false;
-        this.blueprint.overkill(game.turn, game, this);
+        this.blueprint.overkill(this.plr, game, this);
     }
 
     activateFrenzy(game) {
         if (!this.hasFrenzy) return false;
-        this.blueprint.frenzy(game.turn, game, this);
+        this.blueprint.frenzy(this.plr, game, this);
     }
 
     activateHonorableKill(game) {
         if (!this.hasHonorableKill) return false;
-        this.blueprint.honorablekill(game.turn, game, this);
+        this.blueprint.honorablekill(this.plr, game, this);
     }
 
     activateSpellburst(game) {
         if (!this.hasSpellburst) return false;
-        this.blueprint.spellburst(game.turn, game, this);
+        this.blueprint.spellburst(this.plr, game, this);
         this.hasSpellburst = false;
     }
 
@@ -320,6 +328,7 @@ class Spell {
         this.set = this.blueprint.set;
         this.keywords = this.blueprint.keywords || [];
         this.corrupted = this.blueprint.corrupted || false;
+        this.plr = game.turn;
 
         this.echo = false;
 
@@ -399,22 +408,22 @@ class Spell {
 
     activateCast(game) {
         if (!this.hasCast) return false;
-        this.blueprint.cast(game.turn, game, this);
+        this.blueprint.cast(this.plr, game, this);
     }
 
     activateCombo(game) {
         if (!this.hasCombo) return false;
-        this.blueprint.combo(game.turn, game, this);
+        this.blueprint.combo(this.plr, game, this);
     }
 
     activateOutcast(game) {
         if (!this.hasOutcast) return false;
-        this.blueprint.outcast(game.turn, game, this);
+        this.blueprint.outcast(this.plr, game, this);
     }
 
     activateCastOnDraw(game) {
         if (!this.hasCastOnDraw) return false;
-        this.blueprint.castondraw(game.turn, game, this);
+        this.blueprint.castondraw(this.plr, game, this);
         return true;
     }
 
@@ -435,6 +444,7 @@ class Weapon {
         this.keywords = this.blueprint.keywords || [];
         this.corrupted = this.blueprint.corrupted || false;
         this.attackTimes = 1;
+        this.plr = game.turn;
 
         this.echo = false;
 
@@ -444,21 +454,7 @@ class Weapon {
         this.hasCombo = this.blueprint.combo != undefined;
         this.hasOutcast = this.blueprint.outcast != undefined;
 
-        if (this.hasBattlecry) {
-            this.battlecry = this.blueprint.battlecry.join('\n');
-        }
-        if (this.hasDeathrattle) {
-            this.deathrattle = this.blueprint.deathrattle.join('\n');
-        }
-        if (this.hasOnAttack) {
-            this.onattack = this.blueprint.onattack.join('\n');
-        }
-        if (this.hasCombo) {
-            this.combo = this.blueprint.combo.join('\n');
-        }
-        if (this.hasOutcast) {
-            this.outcast = this.blueprint.outcast.join('\n');
-        }
+        this.deathrattles = this.hasDeathrattle ? [this.blueprint.deathrattle] : [];
     }
 
     getName() {
@@ -564,44 +560,36 @@ class Weapon {
         this.stats[0] -= amount;
     }
 
-    addBattlecry(battlecry) {
-        // TODO: Make this work with the new card system
-        this.battlecry += '\n' + battlecry;
-    }
-
     addDeathrattle(deathrattle) {
-        // TODO: Make this work with the new card system
-        this.deathrattle += '\n' + deathrattle;
-    }
-
-    addOnAttack(onattack) {
-        // TODO: Make this work with the new card system
-        this.onattack += '\n' + onattack;
+        this.hasDeathrattle = true;
+        this.deathrattles.push(deathrattle);
     }
 
     activateBattlecry(game) {
         if (!this.hasBattlecry) return false;
-        this.blueprint.battlecry(game.turn, game, this);
+        this.blueprint.battlecry(this.plr, game, this);
     }
 
     activateDeathrattle(game) {
         if (!this.hasDeathrattle) return false;
-        this.blueprint.deathrattle(game.turn, game, this);
+        this.deathrattles.forEach(deathrattle => {
+            deathrattle(this.plr, game, this);
+        });
     }
 
     activateOnAttack(game) {
         if (!this.hasOnAttack) return false;
-        this.blueprint.onattack(game.turn, game, this);
+        this.blueprint.onattack(this.plr, game, this);
     }
 
     activateCombo(game) {
         if (!this.hasCombo) return false;
-        this.blueprint.combo(game.turn, game, this);
+        this.blueprint.combo(this.plr, game, this);
     }
 
     activateOutcast(game) {
         if (!this.hasOutcast) return false;
-        this.blueprint.outcast(game.turn, game, this);
+        this.blueprint.outcast(this.plr, game, this);
     }
 }
 
@@ -1203,7 +1191,7 @@ class Game {
     playMinion(minion, player) {
         player.spellDamage = 0;
 
-        var p = this.plrNameToIndex(player.getName());
+        var p = player.id;
 
         minion.turn = this.turns;
 
@@ -1234,7 +1222,11 @@ class Game {
             this.getBoard()[p].forEach(m => {
                 if (m.getHealth() <= 0) {
                     m.activateDeathrattle(this);
+                }
+            });
 
+            this.getBoard()[p].forEach(m => {
+                if (m.getHealth() <= 0) {
                     if (m.keywords.includes("Reborn")) {
                         m.removeKeyword("Reborn");
 
@@ -1694,6 +1686,9 @@ function doTurn() {
             if (minion === undefined) return;
 
             viewMinion(minion);
+        }
+        else if (q == "/eval") {
+            eval(rl.question("\nWhat do you want to evaluate? "));
         }
         else if (q === "attack") {
             var attacker = game.functions.selectTarget("Which minion do you want to attack with?", "self");
