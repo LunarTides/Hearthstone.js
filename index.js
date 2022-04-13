@@ -31,7 +31,7 @@ class Minion {
         this.rarity = this.blueprint.rarity;
         this.set = this.blueprint.set;
         this.keywords = this.blueprint.keywords || [];
-        this.oghealth = null;
+        this.oghealth = this.stats[1];
         this.corrupted = this.blueprint.corrupted || false;
         this.colossal = this.blueprint.colossal || false;
         this.dormant = this.blueprint.dormant || false;
@@ -167,8 +167,12 @@ class Minion {
         this.keywords = this.keywords.filter(k => k != keyword);
     }
 
-    addStats(attack = 0, health = 0) {
+    addStats(attack = 0, health = 0, restore = false) {
         this.stats = [this.stats[0] + attack, this.stats[1] + health];
+
+        if (restore && this.stats[1] > this.oghealth) {
+            this.stats = [this.stats[0], this.oghealth];
+        }
     }
 
     remStats(attack = 0, health = 0) {
@@ -1365,6 +1369,10 @@ class Functions {
 
     randList(list) {
         return list[Math.floor(Math.random() * list.length)];
+    }
+
+    randInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
     recruit(amount = 1, mana_range = [0, 10]) {
