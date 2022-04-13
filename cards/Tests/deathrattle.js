@@ -10,9 +10,7 @@ module.exports = {
     set: "Rise of Shadows",
 
     deathrattle(plr, game) {
-        // filter out all cards that aren't 2-cost minions
-        var target = game.functions.selectTarget(`Deal ${2 + plr.spellDamage} damage.`);
-
-        game.functions.spellDmg(target, 2);
+        game.playMinion(new game.Minion("Plant"), plr);
+        game.playMinion(new game.Minion("Plant"), plr);
     }
 }

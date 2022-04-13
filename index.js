@@ -41,6 +41,7 @@ class Minion {
         this.canAttackHero = true;
         this.attackTimes = 1;
         this.plr = game.turn;
+        this.stealthDuration = 0;
 
         this.turn = null;
 
@@ -121,10 +122,6 @@ class Minion {
         this.type = type;
     }
 
-    setStats(stats) {
-        this.stats = stats;
-    }
-
     setDesc(desc) {
         this.desc = desc;
     }
@@ -168,6 +165,22 @@ class Minion {
 
     removeKeyword(keyword) {
         this.keywords = this.keywords.filter(k => k != keyword);
+    }
+
+    addStats(attack = 0, health = 0) {
+        this.stats = [this.stats[0] + attack, this.stats[1] + health];
+    }
+
+    remStats(attack = 0, health = 0) {
+        this.stats = [this.stats[0] - attack, this.stats[1] - health];
+    }
+
+    setStats(attack = this.stats[0], health = this.stats[1]) {
+        this.stats = [attack, health];
+    }
+
+    setStealthDuration(duration) {
+        this.stealthDuration = game.turns + duration;
     }
 
     resetAttackTimes() {
@@ -521,10 +534,6 @@ class Weapon {
         this.set = set;
     }
 
-    setStats(stats) {
-        this.stats = stats;
-    }
-
     addKeyword(keyword) {
         this.keywords.push(keyword);
     }
@@ -617,6 +626,7 @@ class Player {
         this.immune = false;
         this.overload = 0;
         this.spellDamage = 0;
+        this.counter = [];
     }
 
     getName() {
@@ -744,7 +754,7 @@ class Player {
             this.game.nextTurn.remHealth(2);
         }
         else if (this.class == "Mage") {
-            var t = this.game.functions.selectTarget("Deal 1 damage.");
+            var t = this.game.functions.selectTarget("Deal 1 damage.", true);
 
             if (t == false) return false;
 
@@ -758,7 +768,7 @@ class Player {
             game.playMinion(new Minion("Silver Hand Recruit"), this);
         }
         else if (this.class == "Priest") {
-            var t = this.game.functions.selectTarget("Restore 2 health.");
+            var t = this.game.functions.selectTarget("Restore 2 health.", true);
 
             if (t == false) return false;
 
@@ -1009,14 +1019,23 @@ class Game {
             m.canAttackHero = true;
             m.resetAttackTimes();
 
+            if (m.stealthDuration > 0 && this.turns > m.stealthDuration) {
+                m.stealthDuration = 0;
+                m.removeKeyword("Stealth");
+            }
+
             if (m.dormant) {
                 if (game.turns > m.dormant) {
                     m.dormant = false;
                     m.frozen = false;
                     m.immune = false;
+
+                    m.activateBattlecry(this);
                 }
 
                 m.turn = game.turns;
+            } else {
+                m.frozen = false;
             }
         });
 
@@ -1123,10 +1142,18 @@ class Game {
                 card.frozen = true;
                 card.immune = true;
                 card.dormant = card.dormant + game.turns;
+            } else {
+                card.activateBattlecry(this);
+            }
+        } else if (card.getType() === "Spell") {
+            if (player.counter && player.counter.includes("Spell")) {
+                player.counter.splice(player.counter.indexOf("Spell"), 1);
+
+                rl.question("Your spell has been countered.\n")
+
+                return;
             }
 
-            card.activateBattlecry(this);
-        } else if (card.getType() === "Spell") {
             card.activateCast(this);
 
             this.getBoard()[this.plrNameToIndex(player.getName())].forEach(m => {
@@ -1204,6 +1231,14 @@ class Game {
             minion.canAttackHero = false;
         }
 
+        if (player.counter && player.counter.includes("Minion")) {
+            player.counter.splice(player.counter.indexOf("Minion"), 1);
+
+            rl.question("Your minion has been countered.\n")
+
+            return;
+        }
+
         this.board[p].push(minion);
 
         this.getBoard()[p].forEach(m => {
@@ -1230,7 +1265,7 @@ class Game {
                     if (m.keywords.includes("Reborn")) {
                         m.removeKeyword("Reborn");
 
-                        m.stats = [m.stats[0], 1];
+                        m.setStats(m.stats[0], 1)
 
                         n.push(m);
                     }
@@ -1270,7 +1305,7 @@ class Game {
                 return false;
             }
 
-            target.stats = [target.stats[0], target.stats[1] - minion];
+            target.remStats(0, minion)
 
             if (target.stats[1] > 0) {
                 target.activateFrenzy(this);
@@ -1282,7 +1317,7 @@ class Game {
         } else if (minion.attackTimes > 0) {
             if (minion.getStats()[0] <= 0) return false;
 
-            minion.stats = [minion.stats[0], minion.stats[1] - target.stats[0]];
+            minion.remStats(0, target.stats[0])
 
             if (minion.stats[1] > 0) {
                 minion.activateFrenzy(this);
@@ -1294,7 +1329,7 @@ class Game {
                 return false;
             }
 
-            target.stats = [target.stats[0], target.stats[1] - minion.stats[0]];
+            target.remStats(0, minion.stats[0])
 
             if (target.getStats()[1] > 0) {
                 target.activateFrenzy(this);
@@ -1379,7 +1414,7 @@ class Functions {
 
     spellDmg(target, damage) {
         if (target instanceof Minion) {
-            target.stats = [target.stats[0], target.stats[1] - (damage + game.turn.spellDamage)];
+            target.remStats(0, damage + game.turn.spellDamage);
         
             if (target.stats[1] > 0) {
                 target.activateFrenzy(game);
@@ -1411,7 +1446,7 @@ class Functions {
         if (possible_cards.length == 0) return;
 
         for (var i = 0; i < amount; i++) {
-            var c = possible_cards[Math.floor(Math.random() * possible_cards.length)];
+            var c = game.functions.randList(possible_cards);
 
             values.push(c);
             possible_cards.splice(possible_cards.indexOf(c), 1);
@@ -1453,7 +1488,7 @@ class Functions {
         }
     }
 
-    selectTarget(prompt, force = null, force_type = null) {
+    selectTarget(prompt, elusive = false, force = null, force_type = null) {
         if (force_type == null) {
             var t = rl.question(`\n${prompt} (type 'face' to select a hero | type 'back' to go back) `);
         } else if (force_type == "minion") {
@@ -1481,7 +1516,7 @@ class Functions {
         var bo = game.getBoard()[game.turn.id];
 
         if (!t.startsWith("f") && !bo[parseInt(t) - 1] && !bn[parseInt(t) - 1]) {
-            this.selectTarget(prompt);
+            this.selectTarget(prompt, elusive, force, force_type);
 
             return false;
         }
@@ -1497,7 +1532,7 @@ class Functions {
                 var t2 = rl.question(`Do you want to select your opponent's (${bn[parseInt(t) - 1].name}) or your own (${bo[parseInt(t) - 1].name})? (y: opponent, n: self | type 'back' to go back) `);
             
                 if (t2.startsWith("b")) {
-                    this.selectTarget(prompt);
+                    this.selectTarget(prompt, elusive, force, force_type);
 
                     return false;
                 }
@@ -1528,6 +1563,11 @@ class Functions {
             return false;
         }
 
+        if (m.keywords.includes("Elusive") && elusive) {
+            console.log("Can't be targeted by Spells or Hero Powers");
+            return false;
+        } 
+
         return m;
     }
 
@@ -1555,6 +1595,138 @@ class Functions {
 
         game.turn.deck.push(card);
         game.turn.deck.splice(game.turn.deck.indexOf(card), 1);
+    }
+
+    adapt(minion, prompt = "Choose One:") {
+        var possible_cards = [
+            "Crackling Shield",
+            "Flaming Claws",
+            "Living Spores",
+            "Lightning Speed",
+            "Liquid Membrane",
+            "Massive",
+            "Volcanic Might",
+            "Rocky Carapace",
+            "Shrouding Mist",
+            "Poison Spit"
+        ];
+        var values = [];
+
+        for (var i = 0; i < 3; i++) {
+            var c = game.functions.randList(possible_cards);
+
+            values.push(c);
+            possible_cards.splice(possible_cards.indexOf(c), 1);
+        }
+
+        var p = `\n${prompt}\n[`;
+
+        values.forEach((v, i) => {
+            // Check for a TypeError and ignore it
+            try {
+                p += `${i + 1}: ${v}, `;
+            } catch (e) {}
+        });
+
+        p = p.slice(0, -2);
+        p += "] ";
+
+        var choice = rl.question(p);
+
+        switch (values[parseInt(choice) - 1]) {
+            case "Crackling Shield":
+                minion.addKeyword("Divine Shield");
+
+                break;
+            case "Flaming Claws":
+                minion.addStats(3, 0);
+
+                break;
+            case "Living Spores":
+                minion.addDeathrattle((plr, game) => {
+                    game.playMinion(new game.Minion("Plant"), plr);
+                    game.playMinion(new game.Minion("Plant"), plr);
+                });
+
+                break;
+            case "Lightning Speed":
+                minion.addKeyword("Windfury");
+
+                break;
+            case "Liquid Membrane":
+                minion.addKeyword("Elusive");
+
+                break;
+            case "Massive":
+                minion.addKeyword("Taunt");
+
+                break;
+            case "Volcanic Might":
+                minion.addStats(1, 1);
+
+                break;
+            case "Rocky Carapace":
+                minion.addStats(0, 3);
+
+                break;
+            case "Shrouding Mist":
+                minion.addKeyword("Stealth");
+                minion.setStealthDuration(1);
+
+                break;
+            case "Poison Spit":
+                minion.addKeyword("Poisonous");
+
+                break;
+            default:
+                break;
+        }
+    }
+
+    invoke(plr) {
+        // Filter all cards in "plr"'s deck with a name that starts with "Galakrond, the "
+        
+        // --- REMOVE FOR DEBUGGING ---
+        var cards = plr.deck.filter(c => c.name.startsWith("Galakrond, the "));
+        if (cards.length <= 0) return;
+        // ----------------------------
+
+        switch (plr.class) {
+            case "Priest":
+                // Add a random Priest minion to your hand.
+                var possible_cards = plr.deck.filter(c => c.type == "Minion" && c.class == "Priest");
+                if (possible_cards.length <= 0) return;
+
+                var card = game.functions.randList(possible_cards);
+                plr.hand.push(card);
+
+                break;
+            case "Rogue":
+                // Add a Lackey to your hand.
+                const lackey_cards = ["Ethereal Lackey", "Faceless Lackey", "Goblin Lackey", "Kobold Lackey", "Witchy Lackey"];
+
+                plr.hand.push(new Minion(game.functions.randList(lackey_cards)));
+
+                break;
+            case "Shaman":
+                // Summon a 2/1 Elemental with Rush.
+                game.playMinion(new Minion("Windswept Elemental"), plr);
+
+                break;
+            case "Warlock":
+                // Summon two 1/1 Imps.
+                game.playMinion(new Minion("Draconic Imp"), plr);
+                game.playMinion(new Minion("Draconic Imp"), plr);
+
+                break;
+            case "Warrior":
+                // Give your hero +3 Attack this turn.
+                plr.attack += 3;
+
+                break;
+            default:
+                break;
+        }
     }
 }
 
@@ -1681,7 +1853,7 @@ function doTurn() {
             game.endTurn();
         }
         else if (q == "view") {
-            var minion = game.functions.selectTarget("Which minion do you want to view?", null, "minion");
+            var minion = game.functions.selectTarget("Which minion do you want to view?", false, null, "minion");
 
             if (minion === undefined) return;
 
@@ -1691,11 +1863,11 @@ function doTurn() {
             eval(rl.question("\nWhat do you want to evaluate? "));
         }
         else if (q === "attack") {
-            var attacker = game.functions.selectTarget("Which minion do you want to attack with?", "self");
+            var attacker = game.functions.selectTarget("Which minion do you want to attack with?", false, "self");
             if (attacker === false) return;
             if (attacker.frozen) return;
 
-            var target = game.functions.selectTarget("Which minion do you want to attack?", "enemy");
+            var target = game.functions.selectTarget("Which minion do you want to attack?", false, "enemy");
             if (target === false) return;
 
             var prevent = false;
@@ -1781,7 +1953,7 @@ function doTurn() {
                     return;
                 }
 
-                target.stats = [target.stats[0], target.stats[1] - curr.attack];
+                target.remStats(0, curr.attack);
                 curr.remHealth(target.stats[0]);
 
                 if (target.stats[1] > 0) {
