@@ -13,7 +13,6 @@ module.exports = {
         var t = game.getBoard()[plr.id];
 
         if (t.length > 0) {
-            console.log()
             game.getBoard()[plr.id][game.functions.randInt(0, t.length - 1)].addStats(1, 0);
         }
     }

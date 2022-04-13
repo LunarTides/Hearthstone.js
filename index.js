@@ -1,6 +1,7 @@
 const fs = require('fs');
 const { exit } = require('process');
 const rl = require('readline-sync');
+const crypto = require('crypto');
 
 var cards = {};
 
@@ -610,6 +611,7 @@ class Weapon {
 class Player {
     constructor(name) {
         this.name = name;
+        this.passcode = "";
         this.id = null;
         this.deck = [];
         this.hand = [];
@@ -960,7 +962,7 @@ class Game {
     }
 
     endGame(p) {
-        process.stdout.write('\x1Bc');
+        console.clear();
 
         console.log(`Player ${p.getName()} wins!`);
 
@@ -972,37 +974,17 @@ class Game {
             m.activateEndOfTurn(this);
         });
 
-        /*var _c = [];
-
-        this.player1.hand.forEach(c => {
-            if (!c.echo) {
-                _c.push(c);
-            }
-        });*/
         let _c = this.player1.hand.filter(c => !c.echo)
-
         this.player1.setHand(_c);
 
-        /*_c = [];
-
-        this.player2.hand.forEach(c => {
-            if (!c.echo) {
-                _c.push(c);
-            }
-        });*/
-
         _c = this.player2.hand.filter(c => !c.echo)
-
         this.player2.setHand(_c);
 
         this.turn.attack = 0;
-
         this.turn = this.nextTurn;
-    
+
         this.turn.setMaxMana(this.turn.getMaxMana() + 1);
-
         if (this.turn.maxMana > 10) this.turn.maxMana = 10;
-
         this.turn.setMana(this.turn.getMaxMana());
 
         this.nextTurn = (this.nextTurn === this.player1) ? this.player2 : this.player1;
@@ -1011,6 +993,23 @@ class Game {
     }
 
     startTurn() {
+        // Clear console
+        console.clear();
+
+        printName()
+
+        const passcode = rl.question(`\nPlayer ${this.turn.id + 1} (${this.turn.name}), please enter your passcode: `, {hideEchoBack: true});
+
+        if (this.turn.passcode != crypto.createHash('sha256').update(passcode).digest('hex')) {
+            rl.question("Incorrect passcode!\n");
+            this.startTurn();
+            return;
+        }
+
+        console.clear();
+
+        printName()
+
         if (this.turn.weapon !== null) {
             this.turn.attack += this.turn.weapon.stats[0];
         }
@@ -1741,11 +1740,9 @@ class Functions {
 function doTurn() {
     game.killMinions();
 
-    process.stdout.write('\x1Bc'); 
+    console.clear();
 
-    console.log("|-----------------------------|");
-    console.log("|       HEARTHSTONE.JS        |");
-    console.log("|-----------------------------|");
+    printName();
 
     curr = game.getTurn();
 
@@ -2046,6 +2043,12 @@ function doTurn() {
     game.playCard(card, curr);
 }
 
+function printName() {
+    console.log("|-----------------------------|");
+    console.log("|       HEARTHSTONE.JS        |");
+    console.log("|-----------------------------|");
+}
+
 function viewMinion(minion, detailed = false) {
     console.log(`{${minion.getCost()}} ${minion.getName()} [${minion.blueprint.stats.join(' / ')}]\n`);
     if (minion.getDesc()) console.log(minion.getDesc() + "\n");
@@ -2070,7 +2073,27 @@ function viewMinion(minion, detailed = false) {
     }
 }
 
-const game = new Game(new Player('Isak'), new Player('Sondre'), new Functions());
+console.clear();
+printName();
+
+const name1 = rl.question("\nPlayer 1, what is your name? ");
+const name2 = rl.question("Player 2, what is your name? ");
+
+console.clear();
+printName();
+const passcode1 = rl.question(`\nPlayer 1 (${name1}), please enter your passcode: `, {hideEchoBack: true});
+console.clear();
+printName();
+const passcode2 = rl.question(`\nPlayer 2 (${name2}), please enter your passcode: `, {hideEchoBack: true});
+console.clear();
+
+const player1 = new Player(name1);
+const player2 = new Player(name2);
+
+player1.passcode = crypto.createHash('sha256').update(passcode1).digest('hex');
+player2.passcode = crypto.createHash('sha256').update(passcode2).digest('hex');
+
+const game = new Game(player1, player2, new Functions());
 
 while (game.player1.getDeck().length < 30) {
     game.player1.deck.push(new Minion("Sheep"));
