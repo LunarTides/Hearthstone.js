@@ -253,6 +253,8 @@ class Minion {
 
         this.keywords = [];
 
+        this.deathrattles = [];
+
         this.hasDeathrattle = false;
         this.hasEndOfTurn = false;
         this.hasStartOfTurn = false;
