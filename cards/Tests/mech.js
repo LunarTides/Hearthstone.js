@@ -1,12 +1,11 @@
 module.exports = {
-    name: "Colossal Test Left Arm",
+    name: "Mech Test",
     type: "Minion",
-    stats: [2, 1],
+    stats: [1, 1],
     desc: "",
-    mana: 1,
-    tribe: "Beast",
+    mana: 0,
+    tribe: "Mech",
     class: "Neutral",
     rarity: "Free",
     set: "Legacy",
-    uncollectible: true
 }

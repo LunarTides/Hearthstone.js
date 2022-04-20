@@ -19,7 +19,7 @@ function importCards(path) {
 importCards(__dirname + '/cards');
 
 class Minion {
-    constructor(name) {
+    constructor(name, plr) {
         this.blueprint = cards[name];
 
         this.name = name;
@@ -41,8 +41,9 @@ class Minion {
         this.echo = false;
         this.canAttackHero = true;
         this.attackTimes = 1;
-        this.plr = game.turn;
+        this.plr = plr;
         this.stealthDuration = 0;
+        this.uncollectible = this.blueprint.uncollectible || false;
 
         this.turn = null;
 
@@ -334,7 +335,7 @@ class Minion {
 }
 
 class Spell {
-    constructor(name) {
+    constructor(name, plr) {
         this.blueprint = cards[name];
 
         this.name = name;
@@ -346,7 +347,8 @@ class Spell {
         this.set = this.blueprint.set;
         this.keywords = this.blueprint.keywords || [];
         this.corrupted = this.blueprint.corrupted || false;
-        this.plr = game.turn;
+        this.plr = plr;
+        this.uncollectible = this.blueprint.uncollectible || false;
 
         this.echo = false;
 
@@ -448,7 +450,7 @@ class Spell {
 }
 
 class Weapon {
-    constructor(name) {
+    constructor(name, plr) {
         this.blueprint = cards[name];
 
         this.name = name;
@@ -462,7 +464,8 @@ class Weapon {
         this.keywords = this.blueprint.keywords || [];
         this.corrupted = this.blueprint.corrupted || false;
         this.attackTimes = 1;
-        this.plr = game.turn;
+        this.plr = plr;
+        this.uncollectible = this.blueprint.uncollectible || false;
 
         this.echo = false;
 
@@ -771,7 +774,7 @@ class Player {
             }
         }
         else if (this.class == "Paladin") {
-            game.playMinion(new Minion("Silver Hand Recruit"), this);
+            game.playMinion(new Minion("Silver Hand Recruit", this), this);
         }
         else if (this.class == "Priest") {
             var t = this.game.functions.selectTarget("Restore 2 health.", true);
@@ -781,7 +784,7 @@ class Player {
             t.addHealth(2);
         }
         else if (this.class == "Rogue") {
-            this.weapon = new Weapon("Wicked Knife");
+            this.weapon = new Weapon("Wicked Knife", this);
         }
         else if (this.class == "Shaman") {
             const totem_cards = ["Healing Totem", "Searing Totem", "Stoneclaw Totem", "Strength Totem"];
@@ -796,7 +799,7 @@ class Player {
                 return;
             }
 
-            game.playMinion(new Minion(game.functions.randList(totem_cards)), this);
+            game.playMinion(new Minion(game.functions.randList(totem_cards), this), this);
         }
         else if (this.class == "Warlock") {
             this.remHealth(2);
@@ -931,7 +934,7 @@ class Game {
         for (let i = 0; i < 4; i++) {
             this.player2.drawCard();
         }
-        this.player2.hand.push(new Spell("The Coin"));
+        this.player2.hand.push(new Spell("The Coin", this.player2));
 
         this.player1.setMaxMana(1);
         this.player1.setMana(1);
@@ -1129,10 +1132,44 @@ class Game {
 
         player.setHand(n);
 
+        if (card.getType() == "Minion" && game.board[player.id].length > 0 && card.keywords.includes("Magnetic")) {
+            let hasMech = false;
+
+            game.board[player.id].forEach(m => {
+                if (m.tribe == "Mech") {
+                    hasMech = true;
+                }
+            });
+
+            while (hasMech) {
+                let m = rl.question("Do you want to magnetize this minion to a mech? (y: yes / n: no) ");
+                if (!m.toLowerCase().startsWith("y")) break;
+
+                let loc = game.functions.selectTarget(`\nWhich minion do you want this to Magnetize to: `, false, "self", "minion");
+
+                if (loc.tribe == "Mech") {
+                    loc.addStats(card.stats[0], card.stats[1]);
+
+                    card.keywords.forEach(k => {
+                        loc.addKeyword(k);
+                    });
+
+                    loc.oghealth += card.oghealth;
+
+                    card.deathrattles.forEach(d => {
+                        loc.addDeathrattle(d);
+                    });
+
+                    return true;
+                }
+            }
+
+        }
+
         if (card.getType() === "Minion") {
             if (card.colossal) {
                 card.colossal.forEach((v, i) => {
-                    let minion = new Minion(v[0]);
+                    let minion = new Minion(v[0], player);
                     minion.setName(v[1]);
 
                     game.playMinion(minion, player);
@@ -1187,11 +1224,11 @@ class Game {
                     var t = null;
 
                     if (c.corrupted[0] == "Minion") {
-                        t = new Minion(c.corrupted[1]);
+                        t = new Minion(c.corrupted[1], player);
                     } else if (c.corrupted[0] == "Spell") {
-                        t = new Spell(c.corrupted[1]);
+                        t = new Spell(c.corrupted[1], player);
                     } else if (c.corrupted[0] == "Weapon") {
-                        t = new Weapon(c.corrupted[1]);
+                        t = new Weapon(c.corrupted[1], player);
                     }
 
                     this.turn.hand.push(t);
@@ -1433,59 +1470,76 @@ class Functions {
         }
     }
 
-    discover(prompt, amount = 3, flags = [], add_to_hand = true) {
-        var possible_cards = [];
-        var values = [];
+    accountForUncollectible(cards) {
+        return cards.filter(c => !c.uncollectible);
+    }
 
-        Object.entries(cards).forEach((c, _) => {
-            c = c[1];
+    discover(prompt, amount = 3, flags = [], add_to_hand = true, _cards = []) {
+        let values = _cards;
 
-            if (c.type == "Spell" && c.class == "Neutral") {}
-            else if (c.class === game.turn.class || c.class == "Neutral") {
-                if (flags.includes("Minion") && c.type !== "Minion") return;
-                if (flags.includes("Spell") && c.type !== "Spell") return;
-                if (flags.includes("Weapon") && c.type !== "Weapon") return;
+        if (_cards.length == 0) {
+            let possible_cards = [];
 
-                possible_cards.push(c);
+            Object.entries(cards).forEach((c, _) => {
+                c = c[1];
+
+                if (c.type == "Spell" && c.class == "Neutral") {}
+                else if (c.class === game.turn.class || c.class == "Neutral") {
+                    if (flags.includes("Minion") && c.type !== "Minion") return;
+                    if (flags.includes("Spell") && c.type !== "Spell") return;
+                    if (flags.includes("Weapon") && c.type !== "Weapon") return;
+
+                    possible_cards.push(c);
+                }
+            });
+
+            possible_cards = this.accountForUncollectible(possible_cards);
+
+            if (possible_cards.length == 0) return;
+
+            for (var i = 0; i < amount; i++) {
+                var c = game.functions.randList(possible_cards);
+
+                values.push(c);
+                possible_cards.splice(possible_cards.indexOf(c), 1);
             }
-        });
-
-        if (possible_cards.length == 0) return;
-
-        for (var i = 0; i < amount; i++) {
-            var c = game.functions.randList(possible_cards);
-
-            values.push(c);
-            possible_cards.splice(possible_cards.indexOf(c), 1);
         }
 
-        var p = `\n${prompt}\n[`;
+        var p = `\n${prompt}\n[\n`;
 
         if (values.length <= 0) return;
 
         values.forEach((v, i) => {
+            let stats = v.type == "Minion" ? ` [${v.stats[0]} / ${v.stats[1]}] ` : "";
+            let desc = `(${v.desc})` || "";
+
             // Check for a TypeError and ignore it
             try {
-                p += `${i + 1}: ${v.name}, `;
+                p += `${i + 1}: {${v.mana}} ${v.name}${stats}${desc} (${v.type}),\n`;
             } catch (e) {}
         });
 
         p = p.slice(0, -2);
-        p += "] ";
+        p += "\n] ";
 
         var choice = rl.question(p);
 
-        if (!values[parseInt(choice) - 1])
-            return this.discover(prompt, amount, flags, add_to_hand);
+        if (!values[parseInt(choice) - 1]) {
+            console.clear();
+            printName();
+            printAll(curr);
+
+            return this.discover(prompt, amount, flags, add_to_hand, values);
+        }
 
         var card = values[parseInt(choice) - 1];
 
         if (add_to_hand) {
             var c = null;
 
-            if (card.type == 'Minion') c = new Minion(card.name);
-            if (card.type == 'Spell') c = new Spell(card.name);
-            if (card.type == 'Weapon') c = new Weapon(card.name);
+            if (card.type == 'Minion') c = new Minion(card.name, curr);
+            if (card.type == 'Spell') c = new Spell(card.name, curr);
+            if (card.type == 'Weapon') c = new Weapon(card.name, curr);
 
             curr.hand.push(c);
 
@@ -1596,7 +1650,13 @@ class Functions {
 
         var choice = rl.question(p);
 
-        if (!cards[parseInt(choice) - 1]) return;
+        if (!cards[parseInt(choice) - 1]) {
+            console.clear();
+            printName();
+            printAll(game.turn);
+
+            return this.dredge(prompt);
+        }
 
         var card = cards[parseInt(choice) - 1];
 
@@ -1606,16 +1666,16 @@ class Functions {
 
     adapt(minion, prompt = "Choose One:") {
         var possible_cards = [
-            "Crackling Shield",
-            "Flaming Claws",
-            "Living Spores",
-            "Lightning Speed",
-            "Liquid Membrane",
-            "Massive",
-            "Volcanic Might",
-            "Rocky Carapace",
-            "Shrouding Mist",
-            "Poison Spit"
+            ["Crackling Shield", "Divine Shield"],
+            ["Flaming Claws", "+3 Attack"],
+            ["Living Spores", "Deathrattle: Summon two 1/1 Plants."],
+            ["Lightning Speed", "Windfury"],
+            ["Liquid Membrane", "Can't be targeted by spells or Hero Powers."],
+            ["Massive", "Taunt"],
+            ["Volcanic Might", "+1/+1"],
+            ["Rocky Carapace", "+3 Health"],
+            ["Shrouding Mist", "Stealth until your next turn."],
+            ["Poison Spit", "Poisonous"]
         ];
         var values = [];
 
@@ -1626,21 +1686,21 @@ class Functions {
             possible_cards.splice(possible_cards.indexOf(c), 1);
         }
 
-        var p = `\n${prompt}\n[`;
+        var p = `\n${prompt}\n[\n`;
 
         values.forEach((v, i) => {
             // Check for a TypeError and ignore it
             try {
-                p += `${i + 1}: ${v}, `;
+                p += `${i + 1}: ${v[0]}; ${v[1]},\n`;
             } catch (e) {}
         });
 
         p = p.slice(0, -2);
-        p += "] ";
+        p += "\n] ";
 
         var choice = rl.question(p);
 
-        switch (values[parseInt(choice) - 1]) {
+        switch (values[parseInt(choice) - 1][0]) {
             case "Crackling Shield":
                 minion.addKeyword("Divine Shield");
 
@@ -1712,18 +1772,18 @@ class Functions {
                 // Add a Lackey to your hand.
                 const lackey_cards = ["Ethereal Lackey", "Faceless Lackey", "Goblin Lackey", "Kobold Lackey", "Witchy Lackey"];
 
-                plr.hand.push(new Minion(game.functions.randList(lackey_cards)));
+                plr.hand.push(new Minion(game.functions.randList(lackey_cards), plr));
 
                 break;
             case "Shaman":
                 // Summon a 2/1 Elemental with Rush.
-                game.playMinion(new Minion("Windswept Elemental"), plr);
+                game.playMinion(new Minion("Windswept Elemental", plr), plr);
 
                 break;
             case "Warlock":
                 // Summon two 1/1 Imps.
-                game.playMinion(new Minion("Draconic Imp"), plr);
-                game.playMinion(new Minion("Draconic Imp"), plr);
+                game.playMinion(new Minion("Draconic Imp", plr), plr);
+                game.playMinion(new Minion("Draconic Imp", plr), plr);
 
                 break;
             case "Warrior":
@@ -1752,65 +1812,7 @@ function doTurn() {
 
     prevPlr = curr;
 
-    console.log(`\n${curr.getName()}'s turn\n`);
-
-    console.log("------------------------------");
-
-    console.log(`Mana: ${curr.getMana()} / ${curr.getMaxMana()}`);
-    console.log(`Health: ${curr.health} + ${curr.armor} / ${curr.maxHealth}\n`);
-
-    console.log(`Attack: ${curr.attack}`);
-    console.log(`Weapon: ${curr.weapon === null ? "None" : `${curr.weapon.name} (${curr.weapon.getStats().join(' / ')})`}\n`);
-
-    console.log(`Deck Size: ${curr.getDeck().length}`);
-    
-    console.log("------------------------------");
-    
-    console.log(`Opponent's Mana: ${game.nextTurn.getMana()} / ${game.nextTurn.getMaxMana()}`);
-    console.log(`Opponent's Health: ${game.nextTurn.health} + ${game.nextTurn.armor} / ${game.nextTurn.maxHealth}\n`);
-
-    console.log(`Opponent's Weapon: ${game.nextTurn.weapon === null ? "None" : `${game.nextTurn.weapon.name} (${game.nextTurn.weapon.getStats().join(' / ')})`}\n`);
-
-    console.log(`Opponent's Hand Size: ${game.nextTurn.getHand().length}`);
-    console.log(`Opponent's Deck Size: ${game.nextTurn.getDeck().length}`);
-
-    console.log("------------------------------");
-
-    console.log("\n--- Board ---\n");
-    game.getBoard().forEach((_, i) => {
-        var t = `- ${game.plrIndexToName(i)} -`;
-
-        console.log(t) // This is not for debugging, do not comment out
-
-        if (game.getBoard()[i].length == 0) {
-            console.log("(None)");
-        } else {
-            game.getBoard()[i].forEach((m, n) => {
-                var keywords = m.getKeywords().length > 0 ? ` {${m.getKeywords().join(", ")}}` : "";
-                var frozen = m.frozen && !m.dormant ? " (Frozen)" : "";
-                var immune = m.immune && !m.dormant ? " (Immune)" : "";
-                var dormant = m.dormant ? " (Dormant)" : "";
-
-                console.log(`${m.getName()} (${m.getStats().join(" / ")})${keywords}${frozen}${immune}${dormant} [${n + 1}]`);
-            });
-        }
-        console.log("-".repeat(t.length));
-    });
-    console.log("\n-------------")
-
-    console.log("\n--- Hand ---");
-    console.log("({cost} Name [attack / health] (type) [id])\n");
-
-    curr.getHand().forEach((card, i) => {
-        if (card.type === "Minion" || card.type === "Weapon") {
-            var desc = card.getDesc().length > 0 ? ` (${card.getDesc()}) ` : " ";
-            console.log(`{${card.getCost()}} ${card.getName()} [${card.getStats().join(' / ')}]${desc}(${card.getType()}) [${i + 1}]`);
-        } else {
-            var desc = card.getDesc().length > 0 ? ` (${card.getDesc()}) ` : " ";
-            console.log(`{${card.getCost()}} ${card.getName()}${desc}(${card.getType()}) [${i + 1}]`);
-        }
-    });
-    console.log("------------")
+    printAll(curr);
 
     var q = rl.question("\nWhich card do you want to play? (type 'hero power' to use your hero power) ");
 
@@ -1829,11 +1831,11 @@ function doTurn() {
         q = t.join(" ");
 
         if (type === "minion") {
-            var m = new Minion(q);
+            var m = new Minion(q, curr);
         } else if (type === "spell") {
-            var m = new Spell(q);
+            var m = new Spell(q, curr);
         } else if (type === "weapon") {
-            var m = new Weapon(q);
+            var m = new Weapon(q, curr);
         } else {
             console.log("Invalid card type");
             return;
@@ -2049,6 +2051,68 @@ function printName() {
     console.log("|-----------------------------|");
 }
 
+function printAll(curr) {
+    console.log(`\n${curr.getName()}'s turn\n`);
+
+    console.log("-------------------------------");
+
+    console.log(`Mana: ${curr.getMana()} / ${curr.getMaxMana()}`);
+    console.log(`Health: ${curr.health} + ${curr.armor} / ${curr.maxHealth}\n`);
+
+    console.log(`Attack: ${curr.attack}`);
+    console.log(`Weapon: ${curr.weapon === null ? "None" : `${curr.weapon.name} (${curr.weapon.getStats().join(' / ')})`}\n`);
+
+    console.log(`Deck Size: ${curr.getDeck().length}`);
+    
+    console.log("-------------------------------");
+    
+    console.log(`Opponent's Mana: ${game.nextTurn.getMana()} / ${game.nextTurn.getMaxMana()}`);
+    console.log(`Opponent's Health: ${game.nextTurn.health} + ${game.nextTurn.armor} / ${game.nextTurn.maxHealth}\n`);
+
+    console.log(`Opponent's Weapon: ${game.nextTurn.weapon === null ? "None" : `${game.nextTurn.weapon.name} (${game.nextTurn.weapon.getStats().join(' / ')})`}\n`);
+
+    console.log(`Opponent's Hand Size: ${game.nextTurn.getHand().length}`);
+    console.log(`Opponent's Deck Size: ${game.nextTurn.getDeck().length}`);
+
+    console.log("-------------------------------");
+
+    console.log("\n--- Board ---\n");
+    game.getBoard().forEach((_, i) => {
+        var t = `- ${game.plrIndexToName(i)} -`;
+
+        console.log(t) // This is not for debugging, do not comment out
+
+        if (game.getBoard()[i].length == 0) {
+            console.log("(None)");
+        } else {
+            game.getBoard()[i].forEach((m, n) => {
+                var keywords = m.getKeywords().length > 0 ? ` {${m.getKeywords().join(", ")}}` : "";
+                var frozen = m.frozen && !m.dormant ? " (Frozen)" : "";
+                var immune = m.immune && !m.dormant ? " (Immune)" : "";
+                var dormant = m.dormant ? " (Dormant)" : "";
+
+                console.log(`${m.getName()} (${m.getStats().join(" / ")})${keywords}${frozen}${immune}${dormant} [${n + 1}]`);
+            });
+        }
+        console.log("-".repeat(t.length));
+    });
+    console.log("\n-------------")
+
+    console.log("\n--- Hand ---");
+    console.log("({cost} Name [attack / health] (type) [id])\n");
+
+    curr.getHand().forEach((card, i) => {
+        if (card.type === "Minion" || card.type === "Weapon") {
+            var desc = card.getDesc().length > 0 ? ` (${card.getDesc()}) ` : " ";
+            console.log(`{${card.getCost()}} ${card.getName()} [${card.getStats().join(' / ')}]${desc}(${card.getType()}) [${i + 1}]`);
+        } else {
+            var desc = card.getDesc().length > 0 ? ` (${card.getDesc()}) ` : " ";
+            console.log(`{${card.getCost()}} ${card.getName()}${desc}(${card.getType()}) [${i + 1}]`);
+        }
+    });
+    console.log("------------")
+}
+
 function viewMinion(minion, detailed = false) {
     console.log(`{${minion.getCost()}} ${minion.getName()} [${minion.blueprint.stats.join(' / ')}]\n`);
     if (minion.getDesc()) console.log(minion.getDesc() + "\n");
@@ -2096,10 +2160,10 @@ player2.passcode = crypto.createHash('sha256').update(passcode2).digest('hex');
 const game = new Game(player1, player2, new Functions());
 
 while (game.player1.getDeck().length < 30) {
-    game.player1.deck.push(new Minion("Sheep"));
+    game.player1.deck.push(new Minion("Sheep", game.player1));
 }
 while (game.player2.getDeck().length < 30) {
-    game.player2.deck.push(new Minion("Sheep"));
+    game.player2.deck.push(new Minion("Sheep", game.player2));
 }
 
 game.functions.shuffle(game.player1.deck);

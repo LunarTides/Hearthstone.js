@@ -43,12 +43,13 @@ Adapt            (DONE)
 Invoke           (DONE)
 Dormant          (DONE)
 Counter          (DONE)
+Magnetic         (DONE)
 
-Magnetic         (Not Implemented) [Magnetic should only work when the minion is placed to the left of another, but my code doesn't support placing it on the left. It only appends the minion to the board. This requires a rewrite of the minion placment system]
 Secret           (Not Implemented) [The same story as with counter, which is the fact that it is a trap which will be triggered whenever the opponent does something]
 Sidequest        (Not Implemented) [Same story as with secret]
 Quest            (Not Implemented) [Sidequest but bigger]
 Questline        (Not Implemented) [Quest but bigger]
+
 Passive          (Not Implemented) [This is not a priority since as far as I know, there are no cards that have this in the main game]
 
 '''

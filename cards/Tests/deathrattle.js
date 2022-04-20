@@ -10,7 +10,7 @@ module.exports = {
     set: "Rise of Shadows",
 
     deathrattle(plr, game) {
-        game.playMinion(new game.Minion("Plant"), plr);
-        game.playMinion(new game.Minion("Plant"), plr);
+        game.playMinion(new game.Minion("Plant", plr), plr);
+        game.playMinion(new game.Minion("Plant", plr), plr);
     }
 }

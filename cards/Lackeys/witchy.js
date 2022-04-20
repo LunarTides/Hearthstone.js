@@ -14,10 +14,10 @@ module.exports = {
 
         if (target.mana < 10) {
             let minions = Object.values(game.cards).filter(card => card.type === "Minion" && card.mana === target.mana + 1);
+            minions = game.functions.accountForUncollectible(minions);
             let rand = game.functions.randList(minions);
-            console.log(rand)
 
-            game.playMinion(new game.Minion(rand.name), plr);
+            game.playMinion(new game.Minion(rand.name, plr), plr);
             
             target.silence();
             target.stats = [0, 0];
