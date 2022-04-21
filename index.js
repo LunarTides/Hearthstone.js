@@ -2276,7 +2276,7 @@ function printAll(curr) {
     console.log(`Attack: ${curr.attack}`);
     console.log(`Weapon: ${curr.weapon === null ? "None" : `${curr.weapon.name} (${curr.weapon.getStats().join(' / ')})`}\n`);
 
-    console.log(`Secrets: ${curr.secrets.length == 0 ? "None" : curr.secrets.length + 1}`);
+    console.log(`Secrets: ${curr.secrets.length == 0 ? "None" : curr.secrets.map(x => x["name"]).join(', ')}`);
     console.log(`Sidequests: ${curr.sidequests.length == 0 ? "None" : curr.sidequests.map(x => x["name"] + " (" + x["progress"][0] + " / " + x["progress"][1] + ")").join(', ')}`);
     console.log(`Quest: ${curr.quests.length == 0 ? "None" : curr.quests[0]["name"] + " (" + curr.quests[0]["progress"][0] + " / " + curr.quests[0]["progress"][1] + ")"}`);
     console.log(`Questline: ${curr.questlines.length == 0 ? "None" : curr.questlines[0]["name"] + " (" + curr.questlines[0]["progress"][0] + " / " + curr.questlines[0]["progress"][1] + ")"}\n`);
