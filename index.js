@@ -1477,7 +1477,7 @@ class GameStats {
 
         game.nextTurn.secrets.forEach(s => {
             if (s["key"] == key) {
-                s["progress"][0]++;
+                if (!s["manual_progression"]) s["progress"][0]++;
 
                 if ((s["value"] + this[key][game.turn.id].length - 1) == this[key][game.turn.id].length) {
                     if (s["callback"](val, game, s["turn"])) {
@@ -1488,7 +1488,7 @@ class GameStats {
         });
         game.turn.sidequests.forEach(s => {
             if (s["key"] == key) {
-                s["progress"][0]++;
+                if (!s["manual_progression"]) s["progress"][0]++;
 
                 if ((s["value"] + this[key][game.turn.id].length - 1) == this[key][game.turn.id].length) {
                     if (s["callback"](val, game, s["turn"])) {
@@ -1499,7 +1499,7 @@ class GameStats {
         });
         game.turn.quests.forEach(s => {
             if (s["key"] == key) {
-                s["progress"][0]++;
+                if (!s["manual_progression"]) s["progress"][0]++;
 
                 if ((s["value"] + this[key][game.turn.id].length - 1) == this[key][game.turn.id].length) {
                     if (s["callback"](val, game, s["turn"])) {
@@ -1510,7 +1510,7 @@ class GameStats {
         });
         game.turn.questlines.forEach(s => {
             if (s["key"] == key) {
-                s["progress"][0]++;
+                if (!s["manual_progression"]) s["progress"][0]++;
 
                 if (s["key"] == key && (s["value"] + this[key][game.turn.id].length - 1) == this[key][game.turn.id].length) {
                     if (s["callback"](val, game, s["turn"])) {
@@ -1543,6 +1543,15 @@ class Functions {
 
     randInt(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    progressQuest(name, value) {
+        let quest = game.turn.secrets.find(s => s["name"] == name);
+        if (!quest) quest = game.turn.sidequests.find(s => s["name"] == name);
+        if (!quest) quest = game.turn.quests.find(s => s["name"] == name);
+        if (!quest) quest = game.turn.questlines.find(s => s["name"] == name);
+
+        quest["progress"][0] += value;
     }
 
     recruit(amount = 1, mana_range = [0, 10]) {
@@ -1958,7 +1967,7 @@ class Functions {
         }
     }
 
-    addSecret(plr, card, key, val, callback) {
+    addSecret(plr, card, key, val, callback, manual_progression = false) {
         if (plr.secrets.length >= 3 || plr.secrets.filter(s => s.name == card.name).length > 0) {
             plr.hand.push(card);
             plr.mana += card.mana;
@@ -1966,9 +1975,9 @@ class Functions {
             return false;
         }
 
-        plr.secrets.push({"name": card.name, "progress": [0, val], "key": key, "value": val, "turn": game.turns, "callback": callback});
+        plr.secrets.push({"name": card.name, "progress": [0, val], "key": key, "value": val, "turn": game.turns, "callback": callback, "manual_progression": manual_progression});
     }
-    addSidequest(plr, card, key, val, callback) {
+    addSidequest(plr, card, key, val, callback, manual_progression = false) {
         if (plr.sidequests.length >= 3 || plr.sidequests.filter(s => s.name == card.name).length > 0) {
             plr.hand.push(card);
             plr.mana += card.mana;
@@ -1976,9 +1985,9 @@ class Functions {
             return false;
         }
 
-        plr.sidequests.push({"name": card.name, "progress": [0, val], "key": key, "value": val, "turn": game.turns, "callback": callback});
+        plr.sidequests.push({"name": card.name, "progress": [0, val], "key": key, "value": val, "turn": game.turns, "callback": callback, "manual_progression": manual_progression});
     }
-    addQuest(plr, card, key, val, callback) {
+    addQuest(plr, card, key, val, callback, manual_progression = false) {
         if (plr.quests.length > 0) {
             plr.hand.push(card);
             plr.mana += card.mana;
@@ -1986,9 +1995,9 @@ class Functions {
             return false;
         }
 
-        plr.quests.push({"name": card.name, "progress": [0, val], "key": key, "value": val, "turn": game.turns, "callback": callback});
+        plr.quests.push({"name": card.name, "progress": [0, val], "key": key, "value": val, "turn": game.turns, "callback": callback, "manual_progression": manual_progression});
     }
-    addQuestline(plr, card, key, val, callback) {
+    addQuestline(plr, card, key, val, callback, manual_progression = false) {
         if (plr.questlines.length > 0) {
             plr.hand.push(card);
             plr.mana += card.mana;
@@ -1996,7 +2005,7 @@ class Functions {
             return false;
         }
 
-        plr.questlines.push({"name": card.name, "progress": [0, val], "key": key, "value": val, "turn": game.turns, "callback": callback});
+        plr.questlines.push({"name": card.name, "progress": [0, val], "key": key, "value": val, "turn": game.turns, "callback": callback, "manual_progression": manual_progression});
     }
 }
 

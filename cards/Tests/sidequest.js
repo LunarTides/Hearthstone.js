@@ -15,8 +15,10 @@ module.exports = {
             if (heroAttacked.length < 1) {
                 game.turn.armor += 5;
 
+                game.functions.progressQuest(this.name, 1);
+
                 return true;
             }
-        });
+        }, true);
     }
 }
