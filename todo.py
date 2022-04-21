@@ -44,11 +44,10 @@ Invoke           (DONE)
 Dormant          (DONE)
 Counter          (DONE)
 Magnetic         (DONE)
-
-Secret           (Not Implemented) [The same story as with counter, which is the fact that it is a trap which will be triggered whenever the opponent does something]
-Sidequest        (Not Implemented) [Same story as with secret]
-Quest            (Not Implemented) [Sidequest but bigger]
-Questline        (Not Implemented) [Quest but bigger]
+Secret           (DONE)
+Sidequest        (DONE)
+Quest            (DONE)
+Questline        (DONE)
 
 Passive          (Not Implemented) [This is not a priority since as far as I know, there are no cards that have this in the main game]
 

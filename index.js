@@ -172,8 +172,14 @@ class Minion {
     addStats(attack = 0, health = 0, restore = false) {
         this.stats = [this.stats[0] + attack, this.stats[1] + health];
 
-        if (restore && this.stats[1] > this.oghealth) {
-            this.stats = [this.stats[0], this.oghealth];
+        if (restore) {
+            if (this.stats[1] > this.oghealth) {
+                game.stats.update("restoredHealth", this.oghealth);
+
+                this.stats = [this.stats[0], this.oghealth];
+            } else {
+                game.stats.update("restoredHealth", health);
+            }
         }
     }
 
@@ -638,6 +644,10 @@ class Player {
         this.overload = 0;
         this.spellDamage = 0;
         this.counter = [];
+        this.secrets = [];
+        this.sidequests = [];
+        this.quests = [];
+        this.questlines = [];
     }
 
     getName() {
@@ -721,6 +731,8 @@ class Player {
         this.health -= a;
 
         if (this.health <= 0) {
+            this.game.stats.update("fatalDamageTimes", 1);
+
             this.game.endGame(game.nextTurn);
         }
     }
@@ -746,6 +758,9 @@ class Player {
 
         if (this.getHand().length < 10) this.hand.push(card);
 
+        game.stats.update("cardsDrawn", card);
+        game.stats.update("cardsDrawnThisTurn", card);
+
         return card;
     }
 
@@ -755,9 +770,13 @@ class Player {
         if (this.getMana() < this.heroPowerCost || !this.canUseHeroPower) return false;
 
         if (this.class == "Demon Hunter") {
+            game.stats.update("heroAttackGained", 1);
+
             this.attack += 1;
         }
         else if (this.class == "Druid") {
+            game.stats.update("heroAttackGained", 1);
+
             this.attack += 1;
             this.armor += 1;
         }
@@ -765,7 +784,7 @@ class Player {
             this.game.nextTurn.remHealth(2);
         }
         else if (this.class == "Mage") {
-            var t = this.game.functions.selectTarget("Deal 1 damage.", true);
+            var t = this.game.functions.selectTarget("Deal 1 damage.", "heropower");
 
             if (t == false) return false;
 
@@ -776,10 +795,14 @@ class Player {
             }
         }
         else if (this.class == "Paladin") {
-            game.playMinion(new Minion("Silver Hand Recruit", this), this);
+            let minion = new Minion("Silver Hand Recruit", this);
+
+            game.stats.update("minionsSummoned", minion);
+
+            game.playMinion(minion, this);
         }
         else if (this.class == "Priest") {
-            var t = this.game.functions.selectTarget("Restore 2 health.", true);
+            var t = this.game.functions.selectTarget("Restore 2 health.", "heropower");
 
             if (t == false) return false;
 
@@ -801,9 +824,15 @@ class Player {
                 return;
             }
 
-            game.playMinion(new Minion(game.functions.randList(totem_cards), this), this);
+            let minion = new Minion(game.functions.randList(totem_cards), this);
+
+            game.stats.update("minionsSummoned", minion);
+
+            game.playMinion(minion, this);
         }
         else if (this.class == "Warlock") {
+            game.stats.update("damageTakenOnOwnTurn", 2);
+
             this.remHealth(2);
 
             this.drawCard();
@@ -817,6 +846,8 @@ class Player {
         });
 
         this.setMana(this.getMana() - this.heroPowerCost);
+
+        game.stats.update("heroPowers", this.class);
 
         this.canUseHeroPower = false;
 
@@ -840,6 +871,7 @@ class Game {
 
         this.functions = functions;
         this.cards = cards;
+        this.stats = new GameStats();
 
         this.Minion = Minion;
         this.Weapon = Weapon;
@@ -975,7 +1007,14 @@ class Game {
     }
 
     endTurn() {
-        this.getBoard()[this.plrNameToIndex(this.turn.getName())].forEach(m => {
+        game.stats.update("turnEnds", game.turns);
+        game.stats.cardsDrawnThisTurn[game.turn.id] = [];
+
+        if (game.turn.mana > 0) {
+            game.stats.update("unspentMana", game.turn.mana);
+        }
+
+        this.getBoard()[this.turn.id].forEach(m => {
             m.activateEndOfTurn(this);
         });
 
@@ -998,6 +1037,8 @@ class Game {
     }
 
     startTurn() {
+        game.stats.update("turnStarts", game.turns);
+
         // Clear console
         console.clear();
 
@@ -1134,6 +1175,8 @@ class Game {
 
         player.setHand(n);
 
+        
+
         if (card.getType() == "Minion" && game.board[player.id].length > 0 && card.keywords.includes("Magnetic")) {
             let hasMech = false;
 
@@ -1148,6 +1191,8 @@ class Game {
                 if (!m.toLowerCase().startsWith("y")) break;
 
                 let loc = game.functions.selectTarget(`\nWhich minion do you want this to Magnetize to: `, false, "self", "minion");
+
+                game.stats.update("minionsPlayed", [card, game.turns]);
 
                 if (loc.tribe == "Mech") {
                     loc.addStats(card.stats[0], card.stats[1]);
@@ -1169,6 +1214,8 @@ class Game {
         }
 
         if (card.getType() === "Minion") {
+            game.stats.update("minionsPlayed", [card, game.turns]);
+
             if (card.colossal) {
                 card.colossal.forEach((v, i) => {
                     let minion = new Minion(v[0], player);
@@ -1195,6 +1242,8 @@ class Game {
 
                 return;
             }
+
+            game.stats.update("spellsCast", card);
 
             card.activateCast(this);
 
@@ -1304,6 +1353,8 @@ class Game {
 
             this.getBoard()[p].forEach(m => {
                 if (m.getHealth() <= 0) {
+                    game.stats.update("minionsKilled", m);
+
                     if (m.keywords.includes("Reborn")) {
                         m.removeKeyword("Reborn");
 
@@ -1359,6 +1410,9 @@ class Game {
         } else if (minion.attackTimes > 0) {
             if (minion.getStats()[0] <= 0) return false;
 
+            game.stats.update("minionsThatAttacked", minion);
+            game.stats.update("minionsAttacked", target);
+
             minion.remStats(0, target.stats[0])
 
             if (minion.stats[1] > 0) {
@@ -1387,6 +1441,84 @@ class Game {
 
             return true;
         }
+    }
+}
+
+class GameStats {
+    constructor() {
+        this.spellsCast = [[], []];
+        this.spellsCastOnMinions = [[], []];
+        this.minionsPlayed = [[], []];
+        this.minionsKilled = [[], []];
+        this.minionsAttacked = [[], []];
+        this.minionsThatAttacked = [[], []];
+        this.minionsThatAttackedHero = [[], []];
+        this.turnStarts = [[], []];
+        this.turnEnds = [[], []];
+        this.heroAttacked = [[], []];
+        this.heroAttacks = [[], []];
+        this.heroPowers = [[], []];
+        this.fatalDamageTimes = [[], []];
+        this.enemyAttacks = [[], []];
+        this.restoredHealth = [[], []];
+        this.cardsAddedToHand = [[], []];
+        this.cardsDiscarded = [[], []];
+        this.cardsDrawn = [[], []];
+        this.minionsSummoned = [[], []];
+        this.unspentMana = [[], []];
+        this.cardsDrawnThisTurn = [[], []];
+        this.heroAttackGained = [[], []];
+        this.spellsThatDealtDamage = [[], []];
+        this.damageTakenOnOwnTurn = [[], []];
+    }
+
+    update(key, val) {
+        this[key][game.turn.id].push(val);
+
+        game.nextTurn.secrets.forEach(s => {
+            if (s["key"] == key) {
+                s["progress"][0]++;
+
+                if ((s["value"] + this[key][game.turn.id].length - 1) == this[key][game.turn.id].length) {
+                    if (s["callback"](val, game, s["turn"])) {
+                        game.nextTurn.secrets.splice(game.nextTurn.secrets.indexOf(s), 1);
+                    }
+                }
+            }
+        });
+        game.turn.sidequests.forEach(s => {
+            if (s["key"] == key) {
+                s["progress"][0]++;
+
+                if ((s["value"] + this[key][game.turn.id].length - 1) == this[key][game.turn.id].length) {
+                    if (s["callback"](val, game, s["turn"])) {
+                        game.turn.sidequests.splice(game.turn.sidequests.indexOf(s), 1);
+                    }
+                }
+            }
+        });
+        game.turn.quests.forEach(s => {
+            if (s["key"] == key) {
+                s["progress"][0]++;
+
+                if ((s["value"] + this[key][game.turn.id].length - 1) == this[key][game.turn.id].length) {
+                    if (s["callback"](val, game, s["turn"])) {
+                        game.turn.quests.splice(game.turn.quests.indexOf(s), 1);
+                    }
+                }
+            }
+        });
+        game.turn.questlines.forEach(s => {
+            if (s["key"] == key) {
+                s["progress"][0]++;
+
+                if (s["key"] == key && (s["value"] + this[key][game.turn.id].length - 1) == this[key][game.turn.id].length) {
+                    if (s["callback"](val, game, s["turn"])) {
+                        game.turn.questlines.splice(game.turn.questlines.indexOf(s), 1);
+                    }
+                }
+            }
+        });
     }
 }
 
@@ -1459,6 +1591,8 @@ class Functions {
     }
 
     spellDmg(target, damage) {
+        game.stats.update("spellsThatDealtDamage", [target, damage]);
+
         if (target instanceof Minion) {
             target.remStats(0, damage + game.turn.spellDamage);
         
@@ -1470,6 +1604,10 @@ class Functions {
         } else if (target instanceof Player) {
             target.remHealth(damage + game.turn.spellDamage);
         }
+    }
+
+    accountForSpellDmg(damage) {
+        return damage + game.turn.spellDamage;
     }
 
     accountForUncollectible(cards) {
@@ -1542,6 +1680,8 @@ class Functions {
             if (card.type == 'Minion') c = new Minion(card.name, curr);
             if (card.type == 'Spell') c = new Spell(card.name, curr);
             if (card.type == 'Weapon') c = new Weapon(card.name, curr);
+
+            game.stats.update("cardsAddedToHand", c);
 
             curr.hand.push(c);
 
@@ -1628,6 +1768,10 @@ class Functions {
 
         if (m.keywords.includes("Elusive") && elusive) {
             console.log("Can't be targeted by Spells or Hero Powers");
+            
+            if (elusive === true) {
+                game.stats.update("spellsCastOnMinions", m);
+            }
             return false;
         } 
 
@@ -1774,28 +1918,71 @@ class Functions {
                 // Add a Lackey to your hand.
                 const lackey_cards = ["Ethereal Lackey", "Faceless Lackey", "Goblin Lackey", "Kobold Lackey", "Witchy Lackey"];
 
-                plr.hand.push(new Minion(game.functions.randList(lackey_cards), plr));
+                let min = new Minion(game.functions.randList(lackey_cards));
+
+                game.stats.update("cardsAddedToHand", min);
+
+                plr.hand.push(min, plr);
 
                 break;
             case "Shaman":
                 // Summon a 2/1 Elemental with Rush.
-                game.playMinion(new Minion("Windswept Elemental", plr), plr);
+                let m = new Minion("Windswept Elemental", plr);
+
+                game.stats.update("minionsSummoned", m);
+
+                game.playMinion(m, plr);
 
                 break;
             case "Warlock":
                 // Summon two 1/1 Imps.
-                game.playMinion(new Minion("Draconic Imp", plr), plr);
-                game.playMinion(new Minion("Draconic Imp", plr), plr);
+                let minion1 = new Minion("Draconic Imp", plr);
+                let minion2 = new Minion("Draconic Imp", plr);
+
+                game.stats.update("minionsSummoned", minion1);
+                game.stats.update("minionsSummoned", minion2);
+
+                game.playMinion(minion1, plr);
+                game.playMinion(minion2, plr);
 
                 break;
             case "Warrior":
                 // Give your hero +3 Attack this turn.
+                game.stats.update("heroAttackGained", 3);
+                
                 plr.attack += 3;
 
                 break;
             default:
                 break;
         }
+    }
+
+    addSecret(plr, card, key, val, callback) {
+        plr.secrets.push({"name": card.name, "progress": [0, val], "key": key, "value": val, "turn": game.turns, "callback": callback});
+    }
+    addSidequest(plr, card, key, val, callback) {
+        plr.sidequests.push({"name": card.name, "progress": [0, val], "key": key, "value": val, "turn": game.turns, "callback": callback});
+    }
+    addQuest(plr, card, key, val, callback) {
+        if (plr.quests.length > 0) {
+            plr.hand.push(card);
+            plr.mana += card.mana;
+            
+            return false;
+        }
+
+        plr.quests.push({"name": card.name, "progress": [0, val], "key": key, "value": val, "turn": game.turns, "callback": callback});
+    }
+    addQuestline(plr, card, key, val, callback) {
+        if (plr.questlines.length > 0) {
+            plr.hand.push(card);
+            plr.mana += card.mana;
+            
+            return false;
+        }
+
+        plr.questlines.push({"name": card.name, "progress": [0, val], "key": key, "value": val, "turn": game.turns, "callback": callback});
     }
 }
 
@@ -1828,20 +2015,20 @@ function doTurn() {
         var t = q.split(" ");
 
         t.shift();
-        var type = t.shift();
 
         q = t.join(" ");
 
-        if (type === "minion") {
-            var m = new Minion(q, curr);
-        } else if (type === "spell") {
-            var m = new Spell(q, curr);
-        } else if (type === "weapon") {
-            var m = new Weapon(q, curr);
-        } else {
-            console.log("Invalid card type");
-            return;
+        let card = Object.values(game.cards).find(c => c.name.toLowerCase() == q.toLowerCase());
+
+        if (card.type === "Minion") {
+            var m = new Minion(card.name, curr);
+        } else if (card.type === "Spell") {
+            var m = new Spell(card.name, curr);
+        } else if (card.type === "Weapon") {
+            var m = new Weapon(card.name, curr);
         }
+
+        game.stats.update("cardsAddedToHand", m);
 
         curr.hand.push(m);
     } else if (q.startsWith("/class ")) {
@@ -1905,6 +2092,10 @@ function doTurn() {
 
                 if (attacker instanceof Player) {
 
+                    game.stats.update("enemyAttacks", "hero");
+                    game.stats.update("heroAttacks", [attacker, target]);
+                    game.stats.update("heroAttacked", [attacker, target, game.turns]);
+
                     game.nextTurn.remHealth(curr.attack);
     
                     if (curr.weapon && curr.weapon.attackTimes > 0) {
@@ -1940,6 +2131,11 @@ function doTurn() {
                     return;
                 }
 
+                game.stats.update("minionsThatAttacked", [attacker, target]);
+                game.stats.update("minionsThatAttackedHero", [attacker, target]);
+                game.stats.update("enemyAttacks", [attacker, target]);
+                game.stats.update("heroAttacked", [attacker, target, game.turns]);
+
                 if (attacker.keywords.includes("Stealth")) {
                     attacker.removeKeyword("Stealth");
                 }
@@ -1961,6 +2157,8 @@ function doTurn() {
                     console.log("Invalid minion");
                     return;
                 }
+
+                game.stats.update("minionsAttacked", target);
 
                 target.remStats(0, curr.attack);
                 curr.remHealth(target.stats[0]);
@@ -2064,6 +2262,11 @@ function printAll(curr) {
     console.log(`Attack: ${curr.attack}`);
     console.log(`Weapon: ${curr.weapon === null ? "None" : `${curr.weapon.name} (${curr.weapon.getStats().join(' / ')})`}\n`);
 
+    console.log(`Secrets: ${curr.secrets.length == 0 ? "None" : curr.secrets.map(x => x["name"]).join(', ')}`);
+    console.log(`Sidequests: ${curr.sidequests.length == 0 ? "None" : curr.sidequests.map(x => x["name"]).join(', ')}`);
+    console.log(`Quest: ${curr.quests.length == 0 ? "None" : curr.quests[0]["name"] + " (" + curr.quests[0]["progress"][0] + " / " + curr.quests[0]["progress"][1] + ")"}`);
+    console.log(`Questline: ${curr.questlines.length == 0 ? "None" : curr.questlines[0]["name"] + " (" + curr.questlines[0]["progress"][0] + " / " + curr.questlines[0]["progress"][1] + ")"}\n`);
+
     console.log(`Deck Size: ${curr.getDeck().length}`);
     
     console.log("-------------------------------");
@@ -2072,6 +2275,11 @@ function printAll(curr) {
     console.log(`Opponent's Health: ${game.nextTurn.health} + ${game.nextTurn.armor} / ${game.nextTurn.maxHealth}\n`);
 
     console.log(`Opponent's Weapon: ${game.nextTurn.weapon === null ? "None" : `${game.nextTurn.weapon.name} (${game.nextTurn.weapon.getStats().join(' / ')})`}\n`);
+
+    console.log(`Secrets: ${game.nextTurn.secrets.length == 0 ? "None" : game.nextTurn.secrets.map(x => x["name"]).join(', ')}`);
+    console.log(`Sidequests: ${game.nextTurn.sidequests.length == 0 ? "None" : game.nextTurn.sidequests.map(x => x["name"]).join(', ')}`);
+    console.log(`Quest: ${game.nextTurn.quests.length == 0 ? "None" : game.nextTurn.quests[0]["name"] + " (" + game.nextTurn.quests[0]["progress"][0] + " / " + game.nextTurn.quests[0]["progress"][1] + ")"}`);
+    console.log(`Questline: ${game.nextTurn.questlines.length == 0 ? "None" : game.nextTurn.questlines[0]["name"] + " (" + game.nextTurn.questlines[0]["progress"][0] + " / " + game.nextTurn.queslines[0]["progress"][1] + ")"}\n`);
 
     console.log(`Opponent's Hand Size: ${game.nextTurn.getHand().length}`);
     console.log(`Opponent's Deck Size: ${game.nextTurn.getDeck().length}`);
