@@ -1959,7 +1959,7 @@ class Functions {
     }
 
     addSecret(plr, card, key, val, callback) {
-        if (plr.sidequests.length >= 3 || plr.secrets.filter(s => s.name == card.name).length > 0) {
+        if (plr.secrets.length >= 3 || plr.secrets.filter(s => s.name == card.name).length > 0) {
             plr.hand.push(card);
             plr.mana += card.mana;
             
