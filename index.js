@@ -1594,7 +1594,7 @@ class Functions {
         game.stats.update("spellsThatDealtDamage", [target, damage]);
 
         if (target instanceof Minion) {
-            target.remStats(0, damage + game.turn.spellDamage);
+            target.remStats(0, this.accountForSpellDmg(damage));
         
             if (target.stats[1] > 0) {
                 target.activateFrenzy(game);
@@ -1602,7 +1602,7 @@ class Functions {
 
             this.killMinions();
         } else if (target instanceof Player) {
-            target.remHealth(damage + game.turn.spellDamage);
+            target.remHealth(this.accountForSpellDmg(damage));
         }
     }
 
@@ -1959,9 +1959,23 @@ class Functions {
     }
 
     addSecret(plr, card, key, val, callback) {
+        if (plr.sidequests.length >= 3 || plr.secrets.filter(s => s.name == card.name).length > 0) {
+            plr.hand.push(card);
+            plr.mana += card.mana;
+            
+            return false;
+        }
+
         plr.secrets.push({"name": card.name, "progress": [0, val], "key": key, "value": val, "turn": game.turns, "callback": callback});
     }
     addSidequest(plr, card, key, val, callback) {
+        if (plr.sidequests.length >= 3 || plr.sidequests.filter(s => s.name == card.name).length > 0) {
+            plr.hand.push(card);
+            plr.mana += card.mana;
+            
+            return false;
+        }
+
         plr.sidequests.push({"name": card.name, "progress": [0, val], "key": key, "value": val, "turn": game.turns, "callback": callback});
     }
     addQuest(plr, card, key, val, callback) {
@@ -2262,8 +2276,8 @@ function printAll(curr) {
     console.log(`Attack: ${curr.attack}`);
     console.log(`Weapon: ${curr.weapon === null ? "None" : `${curr.weapon.name} (${curr.weapon.getStats().join(' / ')})`}\n`);
 
-    console.log(`Secrets: ${curr.secrets.length == 0 ? "None" : curr.secrets.map(x => x["name"]).join(', ')}`);
-    console.log(`Sidequests: ${curr.sidequests.length == 0 ? "None" : curr.sidequests.map(x => x["name"]).join(', ')}`);
+    console.log(`Secrets: ${curr.secrets.length == 0 ? "None" : curr.secrets.length + 1}`);
+    console.log(`Sidequests: ${curr.sidequests.length == 0 ? "None" : curr.sidequests.map(x => x["name"] + " (" + x["progress"][0] + " / " + x["progress"][1] + ")").join(', ')}`);
     console.log(`Quest: ${curr.quests.length == 0 ? "None" : curr.quests[0]["name"] + " (" + curr.quests[0]["progress"][0] + " / " + curr.quests[0]["progress"][1] + ")"}`);
     console.log(`Questline: ${curr.questlines.length == 0 ? "None" : curr.questlines[0]["name"] + " (" + curr.questlines[0]["progress"][0] + " / " + curr.questlines[0]["progress"][1] + ")"}\n`);
 
@@ -2276,8 +2290,8 @@ function printAll(curr) {
 
     console.log(`Opponent's Weapon: ${game.nextTurn.weapon === null ? "None" : `${game.nextTurn.weapon.name} (${game.nextTurn.weapon.getStats().join(' / ')})`}\n`);
 
-    console.log(`Secrets: ${game.nextTurn.secrets.length == 0 ? "None" : game.nextTurn.secrets.map(x => x["name"]).join(', ')}`);
-    console.log(`Sidequests: ${game.nextTurn.sidequests.length == 0 ? "None" : game.nextTurn.sidequests.map(x => x["name"]).join(', ')}`);
+    console.log(`Secrets: ${game.nextTurn.secrets.length == 0 ? "None" : curr.secrets.length + 1}`);
+    console.log(`Sidequests: ${game.nextTurn.sidequests.length == 0 ? "None" : game.nextTurn.sidequests.map(x => x["name"] + " (" + x["progress"][0] + " / " + x["progress"][1] + ")").join(', ')}`);
     console.log(`Quest: ${game.nextTurn.quests.length == 0 ? "None" : game.nextTurn.quests[0]["name"] + " (" + game.nextTurn.quests[0]["progress"][0] + " / " + game.nextTurn.quests[0]["progress"][1] + ")"}`);
     console.log(`Questline: ${game.nextTurn.questlines.length == 0 ? "None" : game.nextTurn.questlines[0]["name"] + " (" + game.nextTurn.questlines[0]["progress"][0] + " / " + game.nextTurn.queslines[0]["progress"][1] + ")"}\n`);
 
