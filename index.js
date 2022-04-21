@@ -3,6 +3,8 @@ const { exit } = require('process');
 const rl = require('readline-sync');
 const crypto = require('crypto');
 
+const _debug = true;
+
 var cards = {};
 
 function importCards(path) {
@@ -23,6 +25,7 @@ class Minion {
         this.blueprint = cards[name];
 
         this.name = name;
+        this.displayName = this.blueprint.displayName || this.name;
         this.type = "Minion";
         this.stats = this.blueprint.stats;
         this.desc = this.blueprint.desc;
@@ -206,10 +209,10 @@ class Minion {
         }
     }
 
-    addHealth(amount) {
+    addHealth(amount, restore = true) {
         this.stats[1] += amount;
         
-        if (this.stats[1] > this.oghealth) {
+        if (restore && this.stats[1] > this.oghealth) {
             this.stats[1] = this.oghealth;
         }
     }
@@ -347,12 +350,14 @@ class Spell {
         this.blueprint = cards[name];
 
         this.name = name;
+        this.displayName = this.blueprint.displayName || this.name;
         this.type = this.blueprint.type;
         this.desc = this.blueprint.desc;
         this.mana = this.blueprint.mana;
         this.class = this.blueprint.class;
         this.rarity = this.blueprint.rarity;
         this.set = this.blueprint.set;
+        this.spellClass = this.blueprint.spellClass || null;
         this.keywords = this.blueprint.keywords || [];
         this.corrupted = this.blueprint.corrupted || false;
         this.plr = plr;
@@ -462,6 +467,7 @@ class Weapon {
         this.blueprint = cards[name];
 
         this.name = name;
+        this.displayName = this.blueprint.displayName || this.name;
         this.type = this.blueprint.type;
         this.desc = this.blueprint.desc;
         this.mana = this.blueprint.mana;
@@ -815,8 +821,8 @@ class Player {
             const totem_cards = ["Healing Totem", "Searing Totem", "Stoneclaw Totem", "Strength Totem"];
 
             game.getBoard()[this.id].forEach(m => {
-                if (totem_cards.includes(m.name)) {
-                    totem_cards.splice(totem_cards.indexOf(m.name), 1);
+                if (totem_cards.includes(m.displayName)) {
+                    totem_cards.splice(totem_cards.indexOf(m.displayName), 1);
                 }
             });
 
@@ -999,7 +1005,7 @@ class Game {
     }
 
     endGame(p) {
-        console.clear();
+        printName();
 
         console.log(`Player ${p.getName()} wins!`);
 
@@ -1039,20 +1045,17 @@ class Game {
     startTurn() {
         game.stats.update("turnStarts", game.turns);
 
-        // Clear console
-        console.clear();
+        if (this.turn.passcode) {
+            printName()
 
-        printName()
+            const passcode = rl.question(`\nPlayer ${this.turn.id + 1} (${this.turn.name}), please enter your passcode: `, {hideEchoBack: true});
 
-        const passcode = rl.question(`\nPlayer ${this.turn.id + 1} (${this.turn.name}), please enter your passcode: `, {hideEchoBack: true});
-
-        if (this.turn.passcode != crypto.createHash('sha256').update(passcode).digest('hex')) {
-            rl.question("Incorrect passcode!\n");
-            this.startTurn();
-            return;
+            if (this.turn.passcode != crypto.createHash('sha256').update(passcode).digest('hex')) {
+                rl.question("Incorrect passcode!\n");
+                this.startTurn();
+                return;
+            }
         }
-
-        console.clear();
 
         printName()
 
@@ -1101,7 +1104,7 @@ class Game {
         }
 
         if (card.keywords.includes("Tradeable")) {
-            var q = rl.question(`Would you like to trade ${card.getName()} for a random card in your deck? (y: trade / n: play) `);
+            var q = rl.question(`Would you like to trade ${card.displayName} for a random card in your deck? (y: trade / n: play) `);
 
             if (q.startsWith("y")) {
                 if (player.getMana() < 1) {
@@ -1117,7 +1120,7 @@ class Game {
                 var found = false;
 
                 player.getHand().forEach(function(c) {
-                    if (c.name === card.name && !found) {
+                    if (c.displayName === card.displayName && !found) {
                         found = true;
                     } else {
                         n.push(c);
@@ -1152,7 +1155,7 @@ class Game {
         var found = false;
 
         player.getHand().forEach(function(c) {
-            if (c.name === card.name && !found) {
+            if (c.displayName === card.displayName && !found) {
                 found = true;
             } else {
                 n.push(c);
@@ -1295,7 +1298,7 @@ class Game {
             var found = false;
 
             this.turn.getHand().forEach(function(c) {
-                if (c.name === corrupted.name && !found) {
+                if (c.displayName === corrupted.displayName && !found) {
                     found = true;
                 } else {
                     n.push(c);
@@ -1571,7 +1574,7 @@ class Functions {
     }
 
     chooseOne(prompt, options, times = 1) {
-        choices = [];
+        let choices = [];
 
         for (var i = 0; i < times; i++) {
             var p = `\n${prompt} [`;
@@ -1587,10 +1590,6 @@ class Functions {
 
             choices.push(parseInt(choice) - 1);
         }
-
-        console.log(choices);
-
-        //exit()
 
         if (times === 1) {
             return choices[0];
@@ -1609,7 +1608,7 @@ class Functions {
                 target.activateFrenzy(game);
             }
 
-            this.killMinions();
+            game.killMinions();
         } else if (target instanceof Player) {
             target.remHealth(this.accountForSpellDmg(damage));
         }
@@ -1664,7 +1663,7 @@ class Functions {
 
             // Check for a TypeError and ignore it
             try {
-                p += `${i + 1}: {${v.mana}} ${v.name}${stats}${desc} (${v.type}),\n`;
+                p += `${i + 1}: {${v.mana}} ${v.displayName}${stats}${desc} (${v.type}),\n`;
             } catch (e) {}
         });
 
@@ -1674,8 +1673,6 @@ class Functions {
         var choice = rl.question(p);
 
         if (!values[parseInt(choice) - 1]) {
-            console.clear();
-            printName();
             printAll(curr);
 
             return this.discover(prompt, amount, flags, add_to_hand, values);
@@ -1741,7 +1738,7 @@ class Functions {
             }
             
             if (bn.length >= parseInt(t) && bo.length >= parseInt(t)) {
-                var t2 = rl.question(`Do you want to select your opponent's (${bn[parseInt(t) - 1].name}) or your own (${bo[parseInt(t) - 1].name})? (y: opponent, n: self | type 'back' to go back) `);
+                var t2 = rl.question(`Do you want to select your opponent's (${bn[parseInt(t) - 1].displayName}) or your own (${bo[parseInt(t) - 1].displayName})? (y: opponent, n: self | type 'back' to go back) `);
             
                 if (t2.startsWith("b")) {
                     this.selectTarget(prompt, elusive, force, force_type);
@@ -1796,7 +1793,7 @@ class Functions {
         if (cards.length <= 0) return;
 
         cards.forEach((c, i) => {
-            p += `${i + 1}: ${c.name}, `;
+            p += `${i + 1}: ${c.displayName}, `;
         });
 
         p = p.slice(0, -2);
@@ -1806,8 +1803,6 @@ class Functions {
         var choice = rl.question(p);
 
         if (!cards[parseInt(choice) - 1]) {
-            console.clear();
-            printName();
             printAll(game.turn);
 
             return this.dredge(prompt);
@@ -1817,6 +1812,8 @@ class Functions {
 
         game.turn.deck.push(card);
         game.turn.deck.splice(game.turn.deck.indexOf(card), 1);
+
+        return card;
     }
 
     adapt(minion, prompt = "Choose One:") {
@@ -1909,7 +1906,7 @@ class Functions {
         // Filter all cards in "plr"'s deck with a name that starts with "Galakrond, the "
         
         // --- REMOVE FOR DEBUGGING ---
-        var cards = plr.deck.filter(c => c.name.startsWith("Galakrond, the "));
+        var cards = plr.deck.filter(c => c.displayName.startsWith("Galakrond, the "));
         if (cards.length <= 0) return;
         // ----------------------------
 
@@ -1968,24 +1965,24 @@ class Functions {
     }
 
     addSecret(plr, card, key, val, callback, manual_progression = false) {
-        if (plr.secrets.length >= 3 || plr.secrets.filter(s => s.name == card.name).length > 0) {
+        if (plr.secrets.length >= 3 || plr.secrets.filter(s => s.displayName == card.displayName).length > 0) {
             plr.hand.push(card);
             plr.mana += card.mana;
             
             return false;
         }
 
-        plr.secrets.push({"name": card.name, "progress": [0, val], "key": key, "value": val, "turn": game.turns, "callback": callback, "manual_progression": manual_progression});
+        plr.secrets.push({"name": card.displayName, "progress": [0, val], "key": key, "value": val, "turn": game.turns, "callback": callback, "manual_progression": manual_progression});
     }
     addSidequest(plr, card, key, val, callback, manual_progression = false) {
-        if (plr.sidequests.length >= 3 || plr.sidequests.filter(s => s.name == card.name).length > 0) {
+        if (plr.sidequests.length >= 3 || plr.sidequests.filter(s => s.displayName == card.displayName).length > 0) {
             plr.hand.push(card);
             plr.mana += card.mana;
             
             return false;
         }
 
-        plr.sidequests.push({"name": card.name, "progress": [0, val], "key": key, "value": val, "turn": game.turns, "callback": callback, "manual_progression": manual_progression});
+        plr.sidequests.push({"name": card.displayName, "progress": [0, val], "key": key, "value": val, "turn": game.turns, "callback": callback, "manual_progression": manual_progression});
     }
     addQuest(plr, card, key, val, callback, manual_progression = false) {
         if (plr.quests.length > 0) {
@@ -1995,7 +1992,7 @@ class Functions {
             return false;
         }
 
-        plr.quests.push({"name": card.name, "progress": [0, val], "key": key, "value": val, "turn": game.turns, "callback": callback, "manual_progression": manual_progression});
+        plr.quests.push({"name": card.displayName, "progress": [0, val], "key": key, "value": val, "turn": game.turns, "callback": callback, "manual_progression": manual_progression});
     }
     addQuestline(plr, card, key, val, callback, manual_progression = false) {
         if (plr.questlines.length > 0) {
@@ -2005,14 +2002,12 @@ class Functions {
             return false;
         }
 
-        plr.questlines.push({"name": card.name, "progress": [0, val], "key": key, "value": val, "turn": game.turns, "callback": callback, "manual_progression": manual_progression});
+        plr.questlines.push({"name": card.displayName, "progress": [0, val], "key": key, "value": val, "turn": game.turns, "callback": callback, "manual_progression": manual_progression});
     }
 }
 
 function doTurn() {
     game.killMinions();
-
-    console.clear();
 
     printName();
 
@@ -2269,6 +2264,8 @@ function doTurn() {
 }
 
 function printName() {
+    process.stdout.write('\033c');
+
     console.log("|-----------------------------|");
     console.log("|       HEARTHSTONE.JS        |");
     console.log("|-----------------------------|");
@@ -2283,7 +2280,7 @@ function printAll(curr) {
     console.log(`Health: ${curr.health} + ${curr.armor} / ${curr.maxHealth}\n`);
 
     console.log(`Attack: ${curr.attack}`);
-    console.log(`Weapon: ${curr.weapon === null ? "None" : `${curr.weapon.name} (${curr.weapon.getStats().join(' / ')})`}\n`);
+    console.log(`Weapon: ${curr.weapon === null ? "None" : `${curr.weapon.displayName} (${curr.weapon.getStats().join(' / ')})`}\n`);
 
     console.log(`Secrets: ${curr.secrets.length == 0 ? "None" : curr.secrets.map(x => x["name"]).join(', ')}`);
     console.log(`Sidequests: ${curr.sidequests.length == 0 ? "None" : curr.sidequests.map(x => x["name"] + " (" + x["progress"][0] + " / " + x["progress"][1] + ")").join(', ')}`);
@@ -2297,7 +2294,7 @@ function printAll(curr) {
     console.log(`Opponent's Mana: ${game.nextTurn.getMana()} / ${game.nextTurn.getMaxMana()}`);
     console.log(`Opponent's Health: ${game.nextTurn.health} + ${game.nextTurn.armor} / ${game.nextTurn.maxHealth}\n`);
 
-    console.log(`Opponent's Weapon: ${game.nextTurn.weapon === null ? "None" : `${game.nextTurn.weapon.name} (${game.nextTurn.weapon.getStats().join(' / ')})`}\n`);
+    console.log(`Opponent's Weapon: ${game.nextTurn.weapon === null ? "None" : `${game.nextTurn.weapon.displayName} (${game.nextTurn.weapon.getStats().join(' / ')})`}\n`);
 
     console.log(`Secrets: ${game.nextTurn.secrets.length == 0 ? "None" : game.nextTurn.secrets.length + 1}`);
     console.log(`Sidequests: ${game.nextTurn.sidequests.length == 0 ? "None" : game.nextTurn.sidequests.map(x => x["name"] + " (" + x["progress"][0] + " / " + x["progress"][1] + ")").join(', ')}`);
@@ -2324,7 +2321,7 @@ function printAll(curr) {
                 var immune = m.immune && !m.dormant ? " (Immune)" : "";
                 var dormant = m.dormant ? " (Dormant)" : "";
 
-                console.log(`${m.getName()} (${m.getStats().join(" / ")})${keywords}${frozen}${immune}${dormant} [${n + 1}]`);
+                console.log(`${m.displayName} (${m.getStats().join(" / ")})${keywords}${frozen}${immune}${dormant} [${n + 1}]`);
             });
         }
         console.log("-".repeat(t.length));
@@ -2337,17 +2334,17 @@ function printAll(curr) {
     curr.getHand().forEach((card, i) => {
         if (card.type === "Minion" || card.type === "Weapon") {
             var desc = card.getDesc().length > 0 ? ` (${card.getDesc()}) ` : " ";
-            console.log(`{${card.getCost()}} ${card.getName()} [${card.getStats().join(' / ')}]${desc}(${card.getType()}) [${i + 1}]`);
+            console.log(`{${card.getCost()}} ${card.displayName} [${card.getStats().join(' / ')}]${desc}(${card.getType()}) [${i + 1}]`);
         } else {
             var desc = card.getDesc().length > 0 ? ` (${card.getDesc()}) ` : " ";
-            console.log(`{${card.getCost()}} ${card.getName()}${desc}(${card.getType()}) [${i + 1}]`);
+            console.log(`{${card.getCost()}} ${card.displayName}${desc}(${card.getType()}) [${i + 1}]`);
         }
     });
     console.log("------------")
 }
 
 function viewMinion(minion, detailed = false) {
-    console.log(`{${minion.getCost()}} ${minion.getName()} [${minion.blueprint.stats.join(' / ')}]\n`);
+    console.log(`{${minion.getCost()}} ${minion.displayName} [${minion.blueprint.stats.join(' / ')}]\n`);
     if (minion.getDesc()) console.log(minion.getDesc() + "\n");
     console.log("Tribe: " + minion.getTribe());
     console.log("Class: " + minion.getClass());
@@ -2370,27 +2367,29 @@ function viewMinion(minion, detailed = false) {
     }
 }
 
-console.clear();
-printName();
+let game;
 
-const name1 = rl.question("\nPlayer 1, what is your name? ");
-const name2 = rl.question("Player 2, what is your name? ");
+if (!_debug) {
+    printName();
 
-console.clear();
-printName();
-const passcode1 = rl.question(`\nPlayer 1 (${name1}), please enter your passcode: `, {hideEchoBack: true});
-console.clear();
-printName();
-const passcode2 = rl.question(`\nPlayer 2 (${name2}), please enter your passcode: `, {hideEchoBack: true});
-console.clear();
+    const name1 = rl.question("\nPlayer 1, what is your name? ");
+    const name2 = rl.question("Player 2, what is your name? ");
 
-const player1 = new Player(name1);
-const player2 = new Player(name2);
+    printName();
+    const passcode1 = rl.question(`\nPlayer 1 (${name1}), please enter your passcode: `, {hideEchoBack: true});
+    printName();
+    const passcode2 = rl.question(`\nPlayer 2 (${name2}), please enter your passcode: `, {hideEchoBack: true});
 
-player1.passcode = crypto.createHash('sha256').update(passcode1).digest('hex');
-player2.passcode = crypto.createHash('sha256').update(passcode2).digest('hex');
+    const player1 = new Player(name1);
+    const player2 = new Player(name2);
 
-const game = new Game(player1, player2, new Functions());
+    player1.passcode = crypto.createHash('sha256').update(passcode1).digest('hex');
+    player2.passcode = crypto.createHash('sha256').update(passcode2).digest('hex');
+
+    game = new Game(player1, player2, new Functions());
+} else {
+    game = new Game(new Player("Isak"), new Player("Sondre"), new Functions());
+}
 
 while (game.player1.getDeck().length < 30) {
     game.player1.deck.push(new Minion("Sheep", game.player1));
