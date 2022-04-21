@@ -2290,7 +2290,7 @@ function printAll(curr) {
 
     console.log(`Opponent's Weapon: ${game.nextTurn.weapon === null ? "None" : `${game.nextTurn.weapon.name} (${game.nextTurn.weapon.getStats().join(' / ')})`}\n`);
 
-    console.log(`Secrets: ${game.nextTurn.secrets.length == 0 ? "None" : curr.secrets.length + 1}`);
+    console.log(`Secrets: ${game.nextTurn.secrets.length == 0 ? "None" : game.nextTurn.secrets.length + 1}`);
     console.log(`Sidequests: ${game.nextTurn.sidequests.length == 0 ? "None" : game.nextTurn.sidequests.map(x => x["name"] + " (" + x["progress"][0] + " / " + x["progress"][1] + ")").join(', ')}`);
     console.log(`Quest: ${game.nextTurn.quests.length == 0 ? "None" : game.nextTurn.quests[0]["name"] + " (" + game.nextTurn.quests[0]["progress"][0] + " / " + game.nextTurn.quests[0]["progress"][1] + ")"}`);
     console.log(`Questline: ${game.nextTurn.questlines.length == 0 ? "None" : game.nextTurn.questlines[0]["name"] + " (" + game.nextTurn.questlines[0]["progress"][0] + " / " + game.nextTurn.queslines[0]["progress"][1] + ")"}\n`);
