@@ -1165,8 +1165,6 @@ class Game {
 
         player.setHand(n);
 
-        
-
         if (card.getType() == "Minion" && game.board[player.id].length > 0 && card.keywords.includes("Magnetic")) {
             let hasMech = false;
 
@@ -1535,6 +1533,16 @@ class Functions {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
+    getType(card) {
+        if (card.tribe) {
+            return "Minion";
+        } else if (card.stats) {
+            return "Weapon";
+        } else {
+            return "Spell";
+        }
+    }
+
     progressQuest(name, value) {
         let quest = game.turn.secrets.find(s => s["name"] == name);
         if (!quest) quest = game.turn.sidequests.find(s => s["name"] == name);
@@ -1617,12 +1625,13 @@ class Functions {
 
             Object.entries(cards).forEach((c, _) => {
                 c = c[1];
+                let type = this.getType(c);
 
-                if (c.getType() == "Spell" && c.class == "Neutral") {}
+                if (type == "Spell" && c.class == "Neutral") {}
                 else if (c.class === game.turn.class || c.class == "Neutral") {
-                    if (flags.includes("Minion") && c.getType() !== "Minion") return;
-                    if (flags.includes("Spell") && c.getType() !== "Spell") return;
-                    if (flags.includes("Weapon") && c.getType() !== "Weapon") return;
+                    if (flags.includes("Minion") && type !== "Minion") return;
+                    if (flags.includes("Spell") && type !== "Spell") return;
+                    if (flags.includes("Weapon") && type !== "Weapon") return;
 
                     possible_cards.push(c);
                 }
@@ -1669,10 +1678,11 @@ class Functions {
 
         if (add_to_hand) {
             var c = null;
+            let type = this.getType(card);
 
-            if (card.getType() == 'Minion') c = new Minion(card.name, curr);
-            if (card.getType() == 'Spell') c = new Spell(card.name, curr);
-            if (card.getType() == 'Weapon') c = new Weapon(card.name, curr);
+            if (type == 'Minion') c = new Minion(card.name, curr);
+            if (type == 'Spell') c = new Spell(card.name, curr);
+            if (type == 'Weapon') c = new Weapon(card.name, curr);
 
             game.stats.update("cardsAddedToHand", c);
 
@@ -1900,7 +1910,7 @@ class Functions {
         switch (plr.class) {
             case "Priest":
                 // Add a random Priest minion to your hand.
-                var possible_cards = plr.deck.filter(c => c.getType() == "Minion" && c.class == "Priest");
+                var possible_cards = cards.filter(c => this.getType(c) == "Minion" && c.class == "Priest");
                 if (possible_cards.length <= 0) return;
 
                 var card = game.functions.randList(possible_cards);
@@ -2026,15 +2036,8 @@ function doTurn() {
         let card = Object.values(game.cards).find(c => c.name.toLowerCase() == q.toLowerCase());
 
         let m;
-        let type;
 
-        if (card.tribe) {
-            type = "Minion";
-        } else if (card.stats) {
-            type = "Weapon";
-        } else {
-            type = "Spell";
-        }
+        let type = game.functions.getType(card);
 
         if (type === "Minion") {
             m = new Minion(card.name, curr);
