@@ -8,7 +8,9 @@ module.exports = {
 
     cast(plr, game, card) {
         plr.hand.forEach(c => {
-            c.addStats(1, 1);
+            if (c.type === "Minion") {
+                c.addStats(1, 1);
+            }
         });
 
         plr.deck = [new game.Spell("Sunken Gardens", plr), ...plr.deck];

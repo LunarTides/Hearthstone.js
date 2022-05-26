@@ -8,15 +8,21 @@ module.exports = {
 
     cast(plr, game, card) {
         plr.hand.forEach(c => {
-            c.addStats(1, 1);
+            if (c.type === "Minion") {
+                c.addStats(1, 1);
+            }
         });
 
         plr.deck.forEach(c => {
-            c.addStats(1, 1);
+            if (c.type === "Minion") {
+                c.addStats(1, 1);
+            }
         });
 
         game.board[plr.id].forEach(c => {
-            c.addStats(1, 1);
+            if (c.type === "Minion") {
+                c.addStats(1, 1);
+            }
         });
     }
 }

@@ -169,17 +169,8 @@ class Minion {
     }
 
     addStats(attack = 0, health = 0, restore = false) {
-        this.stats = [this.stats[0] + attack, this.stats[1] + health];
-
-        if (restore) {
-            if (this.stats[1] > this.oghealth) {
-                game.stats.update("restoredHealth", this.oghealth);
-
-                this.stats = [this.stats[0], this.oghealth];
-            } else {
-                game.stats.update("restoredHealth", health);
-            }
-        }
+        this.addAttack(attack);
+        this.addHealth(health, restore);
     }
 
     remStats(attack = 0, health = 0) {
@@ -208,8 +199,13 @@ class Minion {
     addHealth(amount, restore = true) {
         this.stats[1] += amount;
         
-        if (restore && this.stats[1] > this.oghealth) {
-            this.stats[1] = this.oghealth;
+        if (restore) {
+            if (this.stats[1] > this.oghealth) {
+                game.stats.update("restoredHealth", this.oghealth);
+                this.stats[1] = this.oghealth;
+            } else {
+                game.stats.update("restoredHealth", this.oghealth);
+            }
         }
     }
 
@@ -2029,12 +2025,24 @@ function doTurn() {
 
         let card = Object.values(game.cards).find(c => c.name.toLowerCase() == q.toLowerCase());
 
-        if (card.getType() === "Minion") {
-            var m = new Minion(card.name, curr);
-        } else if (card.getType() === "Spell") {
-            var m = new Spell(card.name, curr);
-        } else if (card.getType() === "Weapon") {
-            var m = new Weapon(card.name, curr);
+        let m;
+        let type;
+
+        if (card.tribe) {
+            type = "Minion";
+        } else if (card.stats) {
+            type = "Weapon";
+        } else {
+            type = "Spell";
+        }
+
+        if (type === "Minion") {
+            m = new Minion(card.name, curr);
+            console.log(m)
+        } else if (type === "Spell") {
+            m = new Spell(card.name, curr);
+        } else if (type === "Weapon") {
+            m = new Weapon(card.name, curr);
         }
 
         game.stats.update("cardsAddedToHand", m);
