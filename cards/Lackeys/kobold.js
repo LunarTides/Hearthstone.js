@@ -1,6 +1,5 @@
 module.exports = {
     name: "Kobold Lackey",
-    type: "Minion",
     stats: [1, 1],
     desc: "Battlecry: Deal 2 damage.",
     mana: 1,

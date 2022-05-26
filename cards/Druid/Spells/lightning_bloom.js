@@ -1,6 +1,5 @@
 module.exports = {
     name: "Lightning Bloom",
-    type: "Spell",
     desc: "Gain 2 Mana Crystals this turn only. Overload: (2)",
     mana: 0,
     class: "Druid",

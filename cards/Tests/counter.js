@@ -1,6 +1,5 @@
 module.exports = {
     name: "Counter Test",
-    type: "Minion",
     stats: [1, 1],
     desc: "Battlecry: Counter the opponents next Minion.",
     mana: 1,

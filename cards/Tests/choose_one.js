@@ -1,6 +1,5 @@
 module.exports = {
     name: "Choose One Test",
-    type: "Spell",
     desc: "Choose One - Gain 1 Mana Crystal this turn only; or Draw a Card.",
     mana: 0,
     class: "Neutral",

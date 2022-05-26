@@ -1,6 +1,5 @@
 module.exports = {
     name: "Adorable Infestation",
-    type: "Spell",
     desc: "Give a minion +1/+1. Summon a 1/1 Cub. Add a Cub to your hand.",
     mana: 1,
     class: "Druid",

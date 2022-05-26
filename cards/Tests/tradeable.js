@@ -1,6 +1,5 @@
 module.exports = {
     name: "Tradeable Test",
-    type: "Spell",
     desc: "Tradeable. Gain 1 Mana Crystal this turn only.",
     mana: 0,
     class: "Neutral",

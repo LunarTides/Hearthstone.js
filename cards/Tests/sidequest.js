@@ -1,6 +1,5 @@
 module.exports = {
     name: "Sidequest Test",
-    type: "Spell",
     desc: "Sidequest: Take no damage for a turn. Reward: Gain +5 Armor.",
     mana: 1,
     class: "Mage",

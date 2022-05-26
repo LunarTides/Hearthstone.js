@@ -1,6 +1,5 @@
 module.exports = {
     name: "Frenzy Test",
-    type: "Minion",
     stats: [1, 2],
     desc: "Frenzy: Gain +1/+1.",
     mana: 1,

@@ -1,6 +1,5 @@
 module.exports = {
     name: "Acornbearer",
-    type: "Minion",
     stats: [2, 1],
     desc: "Deathrattle: Add two 1/1 Squirrels to your hand.",
     mana: 1,

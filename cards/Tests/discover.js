@@ -1,6 +1,5 @@
 module.exports = {
     name: "Discover Test",
-    type: "Spell",
     desc: "Discover a card.",
     mana: 0,
     class: "Neutral",

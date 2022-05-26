@@ -1,6 +1,5 @@
 module.exports = {
     name: "Pounce",
-    type: "Spell",
     desc: "Give your hero +2 Attack this turn.",
     mana: 0,
     class: "Druid",

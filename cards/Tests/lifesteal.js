@@ -1,6 +1,5 @@
 module.exports = {
     name: "Lifesteal Test",
-    type: "Minion",
     stats: [5, 1],
     desc: "Lifesteal.",
     mana: 1,

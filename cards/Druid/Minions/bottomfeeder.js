@@ -1,6 +1,5 @@
 module.exports = {
     name: "Bottomfeeder",
-    type: "Minion",
     stats: [1, 1],
     desc: "Deathrattle: Add a Bottomfeeder to the bottom of your deck with permanent +2/+2.",
     mana: 1,

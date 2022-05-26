@@ -1,6 +1,5 @@
 module.exports = {
     name: "Dormant Test",
-    type: "Minion",
     stats: [1, 1],
     desc: "Dormant for 2 turns.",
     mana: 1,

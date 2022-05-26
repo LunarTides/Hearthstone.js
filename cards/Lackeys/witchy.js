@@ -1,6 +1,5 @@
 module.exports = {
     name: "Witchy Lackey",
-    type: "Minion",
     stats: [1, 1],
     desc: "Battlecry: Transform a friendly minion into one that costs (1) more.",
     mana: 1,

@@ -1,6 +1,5 @@
 module.exports = {
     name: "Spellburst Test",
-    type: "Minion",
     stats: [1, 2],
     desc: "Spellburst: Gain +1/+1.",
     mana: 1,

@@ -1,6 +1,5 @@
 module.exports = {
     name: "Aquatic Form",
-    type: "Spell",
     desc: "Dredge. If you have the Mana to play the card this turn, draw it.",
     mana: 0,
     class: "Druid",

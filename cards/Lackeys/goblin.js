@@ -1,6 +1,5 @@
 module.exports = {
     name: "Goblin Lackey",
-    type: "Minion",
     stats: [1, 1],
     desc: "Battlecry: Give a friendly minion +1 Attack and Rush.",
     mana: 1,

@@ -1,6 +1,5 @@
 module.exports = {
     name: "Honorable Kill Test",
-    type: "Minion",
     stats: [1, 2],
     desc: "Honorable Kill: Gain +1/+1.",
     mana: 1,

@@ -1,6 +1,5 @@
 module.exports = {
     name: "Divine Shield Test",
-    type: "Minion",
     stats: [1, 1],
     desc: "Divine Shield.",
     mana: 1,

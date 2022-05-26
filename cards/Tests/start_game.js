@@ -1,6 +1,5 @@
 module.exports = {
     name: "Start of Game Test",
-    type: "Minion",
     stats: [1, 1],
     desc: "Start of Game: Gain +1/+1.",
     mana: 1,

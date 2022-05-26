@@ -1,6 +1,5 @@
 module.exports = {
     name: "Faceless Lackey",
-    type: "Minion",
     stats: [1, 1],
     desc: "Battlecry: Summon a random 2-Cost minion.",
     mana: 1,

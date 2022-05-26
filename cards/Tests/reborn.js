@@ -1,6 +1,5 @@
 module.exports = {
     name: "Reborn Test",
-    type: "Minion",
     stats: [1, 2],
     desc: "Reborn.",
     mana: 1,

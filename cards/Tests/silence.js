@@ -1,6 +1,5 @@
 module.exports = {
     name: "Silence Test",
-    type: "Minion",
     stats: [3, 2],
     desc: "Stealth. Divine Shield. Taunt. Charge. Battlecry: Silence this minion.",
     mana: 1,

@@ -1,6 +1,5 @@
 module.exports = {
     name: "Silver Hand Recruit",
-    type: "Minion",
     stats: [1, 1],
     desc: "",
     mana: 1,

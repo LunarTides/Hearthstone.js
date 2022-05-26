@@ -1,6 +1,5 @@
 module.exports = {
     name: "Sheep",
-    type: "Minion",
     stats: [1, 1],
     desc: "",
     mana: 1,

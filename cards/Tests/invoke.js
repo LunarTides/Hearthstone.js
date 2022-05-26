@@ -1,6 +1,5 @@
 module.exports = {
     name: "Invoke Test",
-    type: "Minion",
     stats: [1, 1],
     desc: "Battlecry: Invoke 2 times.",
     mana: 1,

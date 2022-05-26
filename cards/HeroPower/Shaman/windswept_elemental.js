@@ -1,6 +1,5 @@
 module.exports = {
     name: "Windswept Elemental",
-    type: "Minion",
     stats: [2, 1],
     desc: "Rush",
     mana: 2,

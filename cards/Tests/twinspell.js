@@ -1,6 +1,5 @@
 module.exports = {
     name: "Twinspell Test",
-    type: "Spell",
     desc: "Gain 1 Mana Crystal this turn only. Twinspell.",
     mana: 0,
     class: "Neutral",

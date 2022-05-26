@@ -1,6 +1,5 @@
 module.exports = {
     name: "Inspire Test",
-    type: "Minion",
     stats: [1, 1],
     desc: "Inspire: Gain +1/+1.",
     mana: 2,

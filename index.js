@@ -123,10 +123,6 @@ class Minion {
         this.name = name;
     }
 
-    setType(type) {
-        this.type = type;
-    }
-
     setDesc(desc) {
         this.desc = desc;
     }
@@ -250,8 +246,11 @@ class Minion {
     }
 
     silence() {
+        /*this.forEach(att => {
+            this[att] = this.blueprint[att];
+        })*/ // TODO: Make this work?
+
         this.name = this.blueprint.name;
-        this.type = this.blueprint.type;
         this.stats = this.blueprint.stats;
         this.desc = this.blueprint.desc;
         this.mana = this.blueprint.mana;
@@ -351,7 +350,7 @@ class Spell {
 
         this.name = name;
         this.displayName = this.blueprint.displayName || this.name;
-        this.type = this.blueprint.type;
+        this.type = "Spell";
         this.desc = this.blueprint.desc;
         this.mana = this.blueprint.mana;
         this.class = this.blueprint.class;
@@ -405,10 +404,6 @@ class Spell {
 
     setName(name) {
         this.name = name;
-    }
-
-    setType(type) {
-        this.type = type;
     }
 
     setDesc(desc) {
@@ -468,7 +463,7 @@ class Weapon {
 
         this.name = name;
         this.displayName = this.blueprint.displayName || this.name;
-        this.type = this.blueprint.type;
+        this.type = "Weapon";
         this.desc = this.blueprint.desc;
         this.mana = this.blueprint.mana;
         this.class = this.blueprint.class;
@@ -530,10 +525,6 @@ class Weapon {
 
     setName(name) {
         this.name = name;
-    }
-
-    setType(type) {
-        this.type = type;
     }
 
     setDesc(desc) {
@@ -1563,7 +1554,7 @@ class Functions {
         var times = 0;
 
         array.forEach(c => {
-            if (c.type == "Minion" && c.mana >= mana_range[0] && c.mana <= mana_range[1] && times < amount) {
+            if (c.getType() == "Minion" && c.mana >= mana_range[0] && c.mana <= mana_range[1] && times < amount) {
                 game.playMinion(c, game.turn);
 
                 times++;
@@ -1631,11 +1622,11 @@ class Functions {
             Object.entries(cards).forEach((c, _) => {
                 c = c[1];
 
-                if (c.type == "Spell" && c.class == "Neutral") {}
+                if (c.getType() == "Spell" && c.class == "Neutral") {}
                 else if (c.class === game.turn.class || c.class == "Neutral") {
-                    if (flags.includes("Minion") && c.type !== "Minion") return;
-                    if (flags.includes("Spell") && c.type !== "Spell") return;
-                    if (flags.includes("Weapon") && c.type !== "Weapon") return;
+                    if (flags.includes("Minion") && c.getType() !== "Minion") return;
+                    if (flags.includes("Spell") && c.getType() !== "Spell") return;
+                    if (flags.includes("Weapon") && c.getType() !== "Weapon") return;
 
                     possible_cards.push(c);
                 }
@@ -1658,12 +1649,12 @@ class Functions {
         if (values.length <= 0) return;
 
         values.forEach((v, i) => {
-            let stats = v.type == "Minion" ? ` [${v.stats[0]} / ${v.stats[1]}] ` : "";
+            let stats = v.getType() == "Minion" ? ` [${v.stats[0]} / ${v.stats[1]}] ` : "";
             let desc = `(${v.desc})` || "";
 
             // Check for a TypeError and ignore it
             try {
-                p += `${i + 1}: {${v.mana}} ${v.displayName}${stats}${desc} (${v.type}),\n`;
+                p += `${i + 1}: {${v.mana}} ${v.displayName}${stats}${desc} (${v.getType()}),\n`;
             } catch (e) {}
         });
 
@@ -1683,9 +1674,9 @@ class Functions {
         if (add_to_hand) {
             var c = null;
 
-            if (card.type == 'Minion') c = new Minion(card.name, curr);
-            if (card.type == 'Spell') c = new Spell(card.name, curr);
-            if (card.type == 'Weapon') c = new Weapon(card.name, curr);
+            if (card.getType() == 'Minion') c = new Minion(card.name, curr);
+            if (card.getType() == 'Spell') c = new Spell(card.name, curr);
+            if (card.getType() == 'Weapon') c = new Weapon(card.name, curr);
 
             game.stats.update("cardsAddedToHand", c);
 
@@ -1913,7 +1904,7 @@ class Functions {
         switch (plr.class) {
             case "Priest":
                 // Add a random Priest minion to your hand.
-                var possible_cards = plr.deck.filter(c => c.type == "Minion" && c.class == "Priest");
+                var possible_cards = plr.deck.filter(c => c.getType() == "Minion" && c.class == "Priest");
                 if (possible_cards.length <= 0) return;
 
                 var card = game.functions.randList(possible_cards);
@@ -2038,11 +2029,11 @@ function doTurn() {
 
         let card = Object.values(game.cards).find(c => c.name.toLowerCase() == q.toLowerCase());
 
-        if (card.type === "Minion") {
+        if (card.getType() === "Minion") {
             var m = new Minion(card.name, curr);
-        } else if (card.type === "Spell") {
+        } else if (card.getType() === "Spell") {
             var m = new Spell(card.name, curr);
-        } else if (card.type === "Weapon") {
+        } else if (card.getType() === "Weapon") {
             var m = new Weapon(card.name, curr);
         }
 
@@ -2332,7 +2323,7 @@ function printAll(curr) {
     console.log("({cost} Name [attack / health] (type) [id])\n");
 
     curr.getHand().forEach((card, i) => {
-        if (card.type === "Minion" || card.type === "Weapon") {
+        if (card.getType() === "Minion" || card.getType() === "Weapon") {
             var desc = card.getDesc().length > 0 ? ` (${card.getDesc()}) ` : " ";
             console.log(`{${card.getCost()}} ${card.displayName} [${card.getStats().join(' / ')}]${desc}(${card.getType()}) [${i + 1}]`);
         } else {
@@ -2393,8 +2384,6 @@ if (!_debug) {
 
 while (game.player1.getDeck().length < 30) {
     game.player1.deck.push(new Minion("Sheep", game.player1));
-}
-while (game.player2.getDeck().length < 30) {
     game.player2.deck.push(new Minion("Sheep", game.player2));
 }
 

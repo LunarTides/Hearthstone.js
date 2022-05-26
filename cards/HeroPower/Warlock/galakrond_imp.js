@@ -1,6 +1,5 @@
 module.exports = {
     name: "Draconic Imp",
-    type: "Minion",
     stats: [1, 1],
     desc: "",
     mana: 1,

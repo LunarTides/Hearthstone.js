@@ -1,6 +1,5 @@
 module.exports = {
     name: "Poison Weapon Test",
-    type: "Weapon",
     stats: [1, 3],
     desc: "Poisonous.",
     mana: 1,

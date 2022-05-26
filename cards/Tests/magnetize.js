@@ -1,6 +1,5 @@
 module.exports = {
     name: "Magnetic Test",
-    type: "Minion",
     stats: [2, 1],
     desc: "Magnetic. Battlecry: Adapt.",
     mana: 1,

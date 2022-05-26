@@ -1,6 +1,5 @@
 module.exports = {
     name: "Healing Totem",
-    type: "Minion",
     stats: [0, 2],
     desc: "At the end of your turn, restore 1 Health to all friendly minions.",
     mana: 1,
