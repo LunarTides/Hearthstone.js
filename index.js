@@ -287,6 +287,7 @@ class Minion {
         if (this.blueprint.battlecry(this.plr, game, this) === -1) {
             this.setStats(0, 0);
             game.functions.addToHand(this, this.plr, false);
+            this.plr.mana += this.mana;
         }
     }
 
@@ -460,6 +461,7 @@ class Spell {
         if (!this.hasCast) return false;
         if (this.blueprint.cast(this.plr, game, this) === -1) {
             game.functions.addToHand(this, this.plr, false);
+            this.plr.mana += this.mana;
         }
     }
 
@@ -615,7 +617,9 @@ class Weapon {
     activateBattlecry(game) {
         if (!this.hasBattlecry) return false;
         if (this.blueprint.battlecry(this.plr, game, this) === -1) {
+            this.setStats(0, 0);
             game.functions.addToHand(this, this.plr, false);
+            this.plr.mana += this.mana;
         }
     }
 
