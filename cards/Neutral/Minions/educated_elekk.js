@@ -10,15 +10,13 @@ module.exports = {
 
     passive(plr, game, card, trigger) {
         if (trigger[0] == "spellsCast") {
-            if (!card.storage.includes(trigger[1])) {
-                card.storage.push(trigger[1]);
-            }
+            card.storage.push(trigger[1]);
         }
     },
 
     deathrattle(plr, game, card) {
         card.storage.forEach(c => {
-            plr.shuffleIntoDeck(new game.Minion(c.name, plr));
+            plr.shuffleIntoDeck(new game.Spell(c.name, plr));
         });
 
         card.storage = [];

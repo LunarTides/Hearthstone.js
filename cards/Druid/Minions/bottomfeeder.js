@@ -13,7 +13,6 @@ module.exports = {
 
         minion.setStats(card.stats[0], card.oghealth);
         minion.addStats(2, 2);
-        minion.oghealth = minion.stats[0];
 
         plr.addToBottomOfDeck(minion);
     }

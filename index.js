@@ -182,6 +182,10 @@ class Minion {
 
     setStats(attack = this.stats[0], health = this.stats[1]) {
         this.stats = [attack, health];
+
+        if (health > this.oghealth) {
+            this.oghealth = health;
+        }
     }
 
     setStealthDuration(duration) {
@@ -209,6 +213,8 @@ class Minion {
             } else {
                 game.stats.update("restoredHealth", this.oghealth);
             }
+        } else {
+            this.oghealth = this.stats[1];
         }
     }
 
@@ -271,13 +277,16 @@ class Minion {
         this.hasFrenzy = false;
         this.hasHonorableKill = false;
         this.hasSpellburst = false;
+        this.hasPassive = false;
+        this.hasUnpassive = false;
     }
 
     activateBattlecry(game) {
         if (this.hasPassive) this.activatePassive(game, ["battlecry", this]);
         if (!this.hasBattlecry) return false;
         if (this.blueprint.battlecry(this.plr, game, this) === -1) {
-            game.functions.addToHand(this, this.plr);
+            this.setStats(0, 0);
+            game.functions.addToHand(this, this.plr, false);
         }
     }
 
@@ -450,7 +459,7 @@ class Spell {
     activateCast(game) {
         if (!this.hasCast) return false;
         if (this.blueprint.cast(this.plr, game, this) === -1) {
-            game.functions.addToHand(this, this.plr);
+            game.functions.addToHand(this, this.plr, false);
         }
     }
 
@@ -606,7 +615,7 @@ class Weapon {
     activateBattlecry(game) {
         if (!this.hasBattlecry) return false;
         if (this.blueprint.battlecry(this.plr, game, this) === -1) {
-            game.functions.addToHand(this, this.plr);
+            game.functions.addToHand(this, this.plr, false);
         }
     }
 
@@ -805,7 +814,7 @@ class Player {
             }
         }
 
-        if (this.getHand().length < 10) this.hand.push(card);
+        this.game.functions.addToHand(card, this, false);
 
         game.stats.update("cardsDrawn", card);
         game.stats.update("cardsDrawnThisTurn", card);
@@ -1013,7 +1022,7 @@ class Game {
         for (let i = 0; i < 4; i++) {
             this.player2.drawCard();
         }
-        this.player2.hand.push(new Spell("The Coin", this.player2));
+        this.functions.addToHand(new Spell("The Coin", this.player2), this.player2, false)
 
         this.player1.setMaxMana(1);
         this.player1.setMana(1);
@@ -1322,7 +1331,7 @@ class Game {
                         t = new Weapon(c.corrupted[1], player);
                     }
 
-                    this.turn.hand.push(t);
+                    this.functions.addToHand(t, this.turn, false);
 
                     return;
                 }
@@ -1367,6 +1376,13 @@ class Game {
 
             rl.question("Your minion has been countered.\n")
 
+            return;
+        }
+
+        if (this.board[p].length >= 7) {
+            rl.question("\nYou can only have 7 minions on the board.\n");
+            this.functions.addToHand(minion, player, false);
+            player.mana += minion.mana;
             return;
         }
 
@@ -1686,10 +1702,12 @@ class Functions {
         return cards.filter(c => !c.uncollectible);
     }
 
-    addToHand(card, player) {
-        player.hand.push(card);
+    addToHand(card, player, updateStats = true) {
+        if (player.getHand().length < 10) {
+            player.hand.push(card);
         
-        game.stats.update("cardsAddedToHand", card);
+            if (updateStats) game.stats.update("cardsAddedToHand", card);
+        }
     }
 
     discover(prompt, amount = 3, flags = [], add_to_hand = true, _cards = []) {
@@ -1987,7 +2005,7 @@ class Functions {
                 if (possible_cards.length <= 0) return;
 
                 var card = game.functions.randList(possible_cards);
-                plr.hand.push(card);
+                this.addToHand(card, plr);
 
                 break;
             case "Rogue":
@@ -2020,7 +2038,7 @@ class Functions {
 
     addSecret(plr, card, key, val, callback, manual_progression = false) {
         if (plr.secrets.length >= 3 || plr.secrets.filter(s => s.displayName == card.displayName).length > 0) {
-            plr.hand.push(card);
+            this.addToHand(card, plr);
             plr.mana += card.mana;
             
             return false;
@@ -2030,7 +2048,7 @@ class Functions {
     }
     addSidequest(plr, card, key, val, callback, manual_progression = false) {
         if (plr.sidequests.length >= 3 || plr.sidequests.filter(s => s.displayName == card.displayName).length > 0) {
-            plr.hand.push(card);
+            this.addToHand(card, plr);
             plr.mana += card.mana;
             
             return false;
@@ -2040,7 +2058,7 @@ class Functions {
     }
     addQuest(plr, card, key, val, callback, manual_progression = false) {
         if (plr.quests.length > 0) {
-            plr.hand.push(card);
+            this.addToHand(card, plr);
             plr.mana += card.mana;
             
             return false;
@@ -2050,7 +2068,7 @@ class Functions {
     }
     addQuestline(plr, card, key, val, callback, manual_progression = false) {
         if (plr.questlines.length > 0) {
-            plr.hand.push(card);
+            this.addToHand(card, plr);
             plr.mana += card.mana;
             
             return false;
@@ -2075,7 +2093,10 @@ function doTurn() {
 
     printAll(curr);
 
-    var q = rl.question("\nWhich card do you want to play? (type 'hero power' to use your hero power) ");
+    let input = "\nWhich card do you want to play? ";
+    if (game.turns <= 2) input += "(type 'help' for further information <- This will disappear once you end your turn) ";
+
+    var q = rl.question(input);
 
     if (q === "hero power") {
         curr.heroPower();
@@ -2123,12 +2144,25 @@ function doTurn() {
             prevPlr = curr;
             game.endTurn();
         }
+        else if (q === "help") {
+            printName();
+            rl.question("\n(In order to run a command; input the name of the command and follow further instruction.)\n\nAvailable commands:\n\nend - Ends your turn\nattack - Attack\nview - View a minion\nhero power - Use your hero power\ndetail - Get more details about opponent\nhelp - Displays this message\n\nPress enter to continue...");
+        }
         else if (q == "view") {
             var minion = game.functions.selectTarget("Which minion do you want to view?", false, null, "minion");
 
             if (minion === undefined) return;
 
             viewMinion(minion);
+        }
+        else if (q == "detail") {
+            printName();
+            printAll(curr, true);
+
+            rl.question("Press enter to continue...");
+
+            printName();
+            printAll(curr);
         }
         else if (q == "/eval") {
             eval(rl.question("\nWhat do you want to evaluate? "));
@@ -2328,7 +2362,7 @@ function printName() {
     console.log("|-----------------------------|");
 }
 
-function printAll(curr) {
+function printAll(curr, detailed = false) {
     console.log(`\n${curr.getName()}'s turn\n`);
 
     console.log("-------------------------------");
@@ -2345,21 +2379,27 @@ function printAll(curr) {
     console.log(`Questline: ${curr.questlines.length == 0 ? "None" : curr.questlines[0]["name"] + " (" + curr.questlines[0]["progress"][0] + " / " + curr.questlines[0]["progress"][1] + ")"}\n`);
 
     console.log(`Deck Size: ${curr.getDeck().length}`);
-    
+
     console.log("-------------------------------");
-    
-    console.log(`Opponent's Mana: ${game.nextTurn.getMana()} / ${game.nextTurn.getMaxMana()}`);
-    console.log(`Opponent's Health: ${game.nextTurn.health} + ${game.nextTurn.armor} / ${game.nextTurn.maxHealth}\n`);
 
-    console.log(`Opponent's Weapon: ${game.nextTurn.weapon === null ? "None" : `${game.nextTurn.weapon.displayName} (${game.nextTurn.weapon.getStats().join(' / ')})`}\n`);
+    if (detailed) {
+        console.log(`Opponent's Mana: ${game.nextTurn.getMana()} / ${game.nextTurn.getMaxMana()}`);
+        console.log(`Opponent's Health: ${game.nextTurn.health} + ${game.nextTurn.armor} / ${game.nextTurn.maxHealth}\n`);
 
-    console.log(`Secrets: ${game.nextTurn.secrets.length == 0 ? "None" : game.nextTurn.secrets.length + 1}`);
-    console.log(`Sidequests: ${game.nextTurn.sidequests.length == 0 ? "None" : game.nextTurn.sidequests.map(x => x["name"] + " (" + x["progress"][0] + " / " + x["progress"][1] + ")").join(', ')}`);
-    console.log(`Quest: ${game.nextTurn.quests.length == 0 ? "None" : game.nextTurn.quests[0]["name"] + " (" + game.nextTurn.quests[0]["progress"][0] + " / " + game.nextTurn.quests[0]["progress"][1] + ")"}`);
-    console.log(`Questline: ${game.nextTurn.questlines.length == 0 ? "None" : game.nextTurn.questlines[0]["name"] + " (" + game.nextTurn.questlines[0]["progress"][0] + " / " + game.nextTurn.queslines[0]["progress"][1] + ")"}\n`);
+        console.log(`Opponent's Weapon: ${game.nextTurn.weapon === null ? "None" : `${game.nextTurn.weapon.displayName} (${game.nextTurn.weapon.getStats().join(' / ')})`}\n`);
 
-    console.log(`Opponent's Hand Size: ${game.nextTurn.getHand().length}`);
-    console.log(`Opponent's Deck Size: ${game.nextTurn.getDeck().length}`);
+        console.log(`Secrets: ${game.nextTurn.secrets.length == 0 ? "None" : game.nextTurn.secrets.length + 1}`);
+        console.log(`Sidequests: ${game.nextTurn.sidequests.length == 0 ? "None" : game.nextTurn.sidequests.map(x => x["name"] + " (" + x["progress"][0] + " / " + x["progress"][1] + ")").join(', ')}`);
+        console.log(`Quest: ${game.nextTurn.quests.length == 0 ? "None" : game.nextTurn.quests[0]["name"] + " (" + game.nextTurn.quests[0]["progress"][0] + " / " + game.nextTurn.quests[0]["progress"][1] + ")"}`);
+        console.log(`Questline: ${game.nextTurn.questlines.length == 0 ? "None" : game.nextTurn.questlines[0]["name"] + " (" + game.nextTurn.questlines[0]["progress"][0] + " / " + game.nextTurn.queslines[0]["progress"][1] + ")"}\n`);
+
+        console.log(`Opponent's Hand Size: ${game.nextTurn.getHand().length}`);
+        console.log(`Opponent's Deck Size: ${game.nextTurn.getDeck().length}`);
+    } else {
+        console.log(`Opponent's Health: ${game.nextTurn.health} + ${game.nextTurn.armor} / ${game.nextTurn.maxHealth}`);
+        console.log(`Opponent's Deck Size: ${game.nextTurn.getDeck().length}`);
+        console.log(`Opponent's Weapon: ${game.nextTurn.weapon === null ? "None" : `${game.nextTurn.weapon.displayName} (${game.nextTurn.weapon.getStats().join(' / ')})`}`);
+    }
 
     console.log("-------------------------------");
 

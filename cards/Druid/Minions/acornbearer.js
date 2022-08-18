@@ -9,7 +9,7 @@ module.exports = {
     set: "Rise of Shadows",
 
     deathrattle(plr, game, card) {
-        plr.hand.push(new game.Minion("Acornbearer Squirrel", plr));
-        plr.hand.push(new game.Minion("Acornbearer Squirrel", plr));
+        game.functions.addToHand(new game.Minion("Acornbearer Squirrel", plr), plr);
+        game.functions.addToHand(new game.Minion("Acornbearer Squirrel", plr), plr);
     }
 }

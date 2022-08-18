@@ -1,7 +1,7 @@
 module.exports = {
     name: "Colossal Test",
     stats: [5, 3],
-    desc: "Colossal +2.",
+    desc: "Colossal +2. Dredge.",
     mana: 1,
     tribe: "Beast",
     class: "Neutral",
