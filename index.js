@@ -197,7 +197,7 @@ class Minion {
     }
 
     addHealth(amount, restore = true) {
-        this.stats[1] += amount;
+        this.setStats(this.stats[0], this.stats[1] + amount);
         
         if (restore) {
             if (this.stats[1] > this.oghealth) {
@@ -210,7 +210,7 @@ class Minion {
     }
 
     addAttack(amount) {
-        this.stats[0] += amount;
+        this.setStats(this.stats[0] + amount, this.stats[1]);
     }
 
     remHealth(amount) {
@@ -272,7 +272,9 @@ class Minion {
 
     activateBattlecry(game) {
         if (!this.hasBattlecry) return false;
-        this.blueprint.battlecry(this.plr, game, this);
+        if (this.blueprint.battlecry(this.plr, game, this) === -1) {
+            game.functions.addToHand(this, this.plr);
+        }
     }
 
     activateDeathrattle(game) {
@@ -432,7 +434,9 @@ class Spell {
 
     activateCast(game) {
         if (!this.hasCast) return false;
-        this.blueprint.cast(this.plr, game, this);
+        if (this.blueprint.cast(this.plr, game, this) === -1) {
+            game.functions.addToHand(this, this.plr);
+        }
     }
 
     activateCombo(game) {
@@ -585,7 +589,9 @@ class Weapon {
 
     activateBattlecry(game) {
         if (!this.hasBattlecry) return false;
-        this.blueprint.battlecry(this.plr, game, this);
+        if (this.blueprint.battlecry(this.plr, game, this) === -1) {
+            game.functions.addToHand(this, this.plr);
+        }
     }
 
     activateDeathrattle(game) {
@@ -693,6 +699,12 @@ class Player {
         if (maxMana > 10) maxMana = 10;
     }
 
+    refreshMana(mana) {
+        this.mana += mana;
+
+        if (this.mana > this.maxMana) this.mana = this.maxMana;
+    }
+
     setGame(game) {
         this.game = game;
     }
@@ -705,6 +717,12 @@ class Player {
 
     addOverload(amount) {
         this.overload += amount;
+    }
+
+    addAttack(amount) {
+        this.attack += amount;
+
+        game.stats.update("heroAttackGained", amount);
     }
 
     addHealth(amount) {
@@ -723,10 +741,16 @@ class Player {
 
         this.health -= a;
 
+        if (game.turn == this) {
+            game.stats.update("damageTakenOnOwnTurn", amount);
+        }
+
         if (this.health <= 0) {
             this.game.stats.update("fatalDamageTimes", 1);
 
-            this.game.endGame(game.nextTurn);
+            if (this.health <= 0) { // This is done to allow secrets to prevent death
+                this.game.endGame(game.nextTurn);
+            }
         }
     }
 
@@ -763,14 +787,10 @@ class Player {
         if (this.getMana() < this.heroPowerCost || !this.canUseHeroPower) return false;
 
         if (this.class == "Demon Hunter") {
-            game.stats.update("heroAttackGained", 1);
-
-            this.attack += 1;
+            this.addAttack(1);
         }
         else if (this.class == "Druid") {
-            game.stats.update("heroAttackGained", 1);
-
-            this.attack += 1;
+            this.addAttack(1);
             this.armor += 1;
         }
         else if (this.class == "Hunter") {
@@ -788,11 +808,7 @@ class Player {
             }
         }
         else if (this.class == "Paladin") {
-            let minion = new Minion("Silver Hand Recruit", this);
-
-            game.stats.update("minionsSummoned", minion);
-
-            game.playMinion(minion, this);
+            game.playMinion(new Minion("Silver Hand Recruit", this), this);
         }
         else if (this.class == "Priest") {
             var t = this.game.functions.selectTarget("Restore 2 health.", "heropower");
@@ -817,15 +833,9 @@ class Player {
                 return;
             }
 
-            let minion = new Minion(game.functions.randList(totem_cards), this);
-
-            game.stats.update("minionsSummoned", minion);
-
-            game.playMinion(minion, this);
+            game.playMinion(new Minion(game.functions.randList(totem_cards), this), this);
         }
         else if (this.class == "Warlock") {
-            game.stats.update("damageTakenOnOwnTurn", 2);
-
             this.remHealth(2);
 
             this.drawCard();
@@ -951,6 +961,11 @@ class Game {
         if (index == 1) return this.player2.getName();
 
         return null;
+    }
+
+    plrIndexToPlayer(index) {
+        if (index == 0) return this.player1;
+        if (index == 1) return this.player2;
     }
 
     startGame() {
@@ -1209,10 +1224,10 @@ class Game {
                     let minion = new Minion(v[0], player);
                     minion.setName(v[1]);
 
-                    game.playMinion(minion, player);
+                    game.playMinion(minion, player, false);
                 });
             } else {
-                game.playMinion(card, player);
+                game.playMinion(card, player, false);
             }
 
             if (card.dormant) {
@@ -1294,7 +1309,7 @@ class Game {
         }
     }
 
-    playMinion(minion, player) {
+    playMinion(minion, player, summoned = true) {
         player.spellDamage = 0;
 
         var p = player.id;
@@ -1320,6 +1335,10 @@ class Game {
 
         this.board[p].push(minion);
 
+        if (summoned) {
+            game.stats.update("minionsSummoned", minion);
+        }
+
         this.getBoard()[p].forEach(m => {
             m.keywords.forEach(k => {
                 if (k.startsWith("Spell Damage +")) {
@@ -1330,7 +1349,7 @@ class Game {
     }
 
     killMinions() {
-        for (var p = 0; p < 2; p++) {
+        for (var p = 0; p <= 1; p++) {
             var n = [];
             
             this.getBoard()[p].forEach(m => {
@@ -1344,11 +1363,14 @@ class Game {
                     game.stats.update("minionsKilled", m);
 
                     if (m.keywords.includes("Reborn")) {
-                        m.removeKeyword("Reborn");
+                        let minion = new Minion(m.getName(), this.plrIndexToPlayer(p));
 
-                        m.setStats(m.stats[0], 1)
+                        minion.removeKeyword("Reborn");
+                        minion.setStats(minion.stats[0], 1);
 
-                        n.push(m);
+                        this.playMinion(minion, this.plrIndexToPlayer(p), false);
+
+                        n.push(minion);
                     }
                 } else {
                     n.push(m);
@@ -1617,6 +1639,12 @@ class Functions {
         return cards.filter(c => !c.uncollectible);
     }
 
+    addToHand(card, player) {
+        player.hand.push(card);
+        
+        game.stats.update("cardsAddedToHand", card);
+    }
+
     discover(prompt, amount = 3, flags = [], add_to_hand = true, _cards = []) {
         let values = _cards;
 
@@ -1684,9 +1712,7 @@ class Functions {
             if (type == 'Spell') c = new Spell(card.name, curr);
             if (type == 'Weapon') c = new Weapon(card.name, curr);
 
-            game.stats.update("cardsAddedToHand", c);
-
-            curr.hand.push(c);
+            this.addToHand(c, curr);
 
             return c;
         } else {
@@ -1921,39 +1947,23 @@ class Functions {
                 // Add a Lackey to your hand.
                 const lackey_cards = ["Ethereal Lackey", "Faceless Lackey", "Goblin Lackey", "Kobold Lackey", "Witchy Lackey"];
 
-                let min = new Minion(game.functions.randList(lackey_cards));
-
-                game.stats.update("cardsAddedToHand", min);
-
-                plr.hand.push(min, plr);
+                this.addToHand(new Minion(game.functions.randList(lackey_cards)), plr);
 
                 break;
             case "Shaman":
                 // Summon a 2/1 Elemental with Rush.
-                let m = new Minion("Windswept Elemental", plr);
-
-                game.stats.update("minionsSummoned", m);
-
-                game.playMinion(m, plr);
+                game.playMinion(new Minion("Windswept Elemental", plr), plr);
 
                 break;
             case "Warlock":
                 // Summon two 1/1 Imps.
-                let minion1 = new Minion("Draconic Imp", plr);
-                let minion2 = new Minion("Draconic Imp", plr);
-
-                game.stats.update("minionsSummoned", minion1);
-                game.stats.update("minionsSummoned", minion2);
-
-                game.playMinion(minion1, plr);
-                game.playMinion(minion2, plr);
+                game.playMinion(new Minion("Draconic Imp", plr), plr);
+                game.playMinion(new Minion("Draconic Imp", plr), plr);
 
                 break;
             case "Warrior":
-                // Give your hero +3 Attack this turn.
-                game.stats.update("heroAttackGained", 3);
-                
-                plr.attack += 3;
+                // Give your hero +3 Attack this turn.                
+                plr.addAttack(3);
 
                 break;
             default:
@@ -2048,9 +2058,7 @@ function doTurn() {
             m = new Weapon(card.name, curr);
         }
 
-        game.stats.update("cardsAddedToHand", m);
-
-        curr.hand.push(m);
+        game.functions.addToHand(m, curr);
     } else if (q.startsWith("/class ")) {
         var t = q.split(" ");
 

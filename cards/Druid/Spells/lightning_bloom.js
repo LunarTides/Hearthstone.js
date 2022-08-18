@@ -1,13 +1,13 @@
 module.exports = {
     name: "Lightning Bloom",
-    desc: "Gain 2 Mana Crystals this turn only. Overload: (2)",
+    desc: "Refresh 2 Mana Crystals. Overload: (2)",
     mana: 0,
-    class: "Druid",
+    class: "Druid & Shaman",
     rarity: "Common",
     set: "Scholomance Academy",
 
     cast(plr, game, card) {
-        plr.mana += 2;
+        plr.refreshMana(2);
         plr.overload += 2;
     }
 }

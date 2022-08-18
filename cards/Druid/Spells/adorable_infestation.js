@@ -9,9 +9,11 @@ module.exports = {
     cast(plr, game, card) {
         let target = game.functions.selectTarget("Give a minion +1/+1.", true, null, "minion");
 
-        if (target) {
-            target.addStats(1, 1);
+        if (!target) {
+            return -1;
         }
+
+        target.addStats(1, 1);
 
         game.playMinion(new game.Minion("Marsuul Cub", plr), plr);
 

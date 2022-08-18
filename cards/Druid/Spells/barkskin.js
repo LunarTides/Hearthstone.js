@@ -10,9 +10,11 @@ module.exports = {
     cast(plr, game, card) {
         let target = game.functions.selectTarget("Give a minion +3 Health.", true, null, "minion");
 
-        if (target) {
-            target.addStats(0, 3);
+        if (!target) {
+            return -1;
         }
+
+        target.addStats(0, 3);
 
         plr.armor += 3;
     }

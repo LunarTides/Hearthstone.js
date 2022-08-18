@@ -11,10 +11,14 @@ module.exports = {
         
         if (choice == 0) {
             var target = game.functions.selectTarget("Deal 2 damage to a minion.", true, null, "minion");
-            if (target) game.functions.spellDmg(target, 2);
+            if (!target) return -1;
+            
+            game.functions.spellDmg(target, 2);
         } else {
             var target = game.functions.selectTarget("Restore 5 health.", true);
-            if (target) target.addHealth(5, true);
+            if (!target) return -1;
+            
+            target.addHealth(5, true);
         }
     }
 }
