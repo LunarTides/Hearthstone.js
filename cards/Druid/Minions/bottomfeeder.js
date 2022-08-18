@@ -15,6 +15,6 @@ module.exports = {
         minion.addStats(2, 2);
         minion.oghealth = minion.stats[0];
 
-        plr.deck = [minion, ...plr.deck];
+        plr.addToBottomOfDeck(minion);
     }
 }

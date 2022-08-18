@@ -12,6 +12,7 @@ Overkill         (DONE)
 Frenzy           (DONE)
 Honorable Kill   (DONE)
 Spellburst       (DONE)
+Passive          (DONE)
 -----------------------
 
 Choose One       (DONE)
@@ -48,7 +49,5 @@ Secret           (DONE)
 Sidequest        (DONE)
 Quest            (DONE)
 Questline        (DONE)
-
-Passive          (Not Implemented) [This is not a priority since as far as I know, there are no cards that have this in the main game]
 
 '''

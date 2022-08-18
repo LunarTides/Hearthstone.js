@@ -47,6 +47,7 @@ class Minion {
         this.plr = plr;
         this.stealthDuration = 0;
         this.uncollectible = this.blueprint.uncollectible || false;
+        this.storage = []; // Allow cards to store data for later use
 
         this.turn = null;
 
@@ -63,6 +64,8 @@ class Minion {
         this.hasFrenzy = this.blueprint.frenzy != undefined;
         this.hasHonorableKill = this.blueprint.honorablekill != undefined;
         this.hasSpellburst = this.blueprint.spellburst != undefined;
+        this.hasPassive = this.blueprint.passive != undefined;
+        this.hasUnpassive = this.blueprint.unpassive != undefined;
 
         this.deathrattles = this.hasDeathrattle ? [this.blueprint.deathrattle] : [];
     }
@@ -271,6 +274,7 @@ class Minion {
     }
 
     activateBattlecry(game) {
+        if (this.hasPassive) this.activatePassive(game, ["battlecry", this]);
         if (!this.hasBattlecry) return false;
         if (this.blueprint.battlecry(this.plr, game, this) === -1) {
             game.functions.addToHand(this, this.plr);
@@ -340,6 +344,16 @@ class Minion {
         this.hasSpellburst = false;
     }
 
+    activatePassive(game, trigger) {
+        if (!this.hasPassive) return false;
+        this.blueprint.passive(this.plr, game, this, trigger);
+    }
+
+    activateUnpassive(game, ignore = true) {
+        if (!this.hasUnpassive) return false;
+        this.blueprint.unpassive(this.plr, game, this, ignore);
+    }
+
 }
 
 class Spell {
@@ -359,6 +373,7 @@ class Spell {
         this.corrupted = this.blueprint.corrupted || false;
         this.plr = plr;
         this.uncollectible = this.blueprint.uncollectible || false;
+        this.storage = []; // Allow cards to store data for later use
 
         this.echo = false;
 
@@ -475,6 +490,7 @@ class Weapon {
         this.attackTimes = 1;
         this.plr = plr;
         this.uncollectible = this.blueprint.uncollectible || false;
+        this.storage = []; // Allow cards to store data for later use
 
         this.echo = false;
 
@@ -754,6 +770,22 @@ class Player {
         }
     }
 
+    shuffleIntoDeck(card, updateStats = true) {
+        // Add the card into a random position in the deck
+        var pos = Math.floor(Math.random() * this.deck.length);
+        this.deck.splice(pos, 0, card);
+
+        if (updateStats) {
+            this.game.stats.update("cardsAddedToDeck", card);
+        }
+    }
+
+    addToBottomOfDeck(card) {
+        this.deck = [card, ...this.deck];
+
+        this.game.stats.update("cardsAddedToDeck", card);
+    }
+
     drawCard() {
         //this.game.functions.shuffle(this.deck); // Removed incase this messes with Lorekeeper Polkelt
 
@@ -968,6 +1000,11 @@ class Game {
         if (index == 1) return this.player2;
     }
 
+    getOtherPlayer(player) {
+        if (player == this.player1) return this.player2;
+        if (player == this.player2) return this.player1;
+    }
+
     startGame() {
         for (let i = 0; i < 3; i++) {
             this.player1.drawCard()
@@ -1115,7 +1152,7 @@ class Game {
 
                 player.setMana(player.getMana() - 1);
 
-                player.deck.push(card);
+                player.shuffleIntoDeck(card);
 
                 var n = []
 
@@ -1371,6 +1408,8 @@ class Game {
                         this.playMinion(minion, this.plrIndexToPlayer(p), false);
 
                         n.push(minion);
+                    } else {
+                        m.activateUnpassive(this, false);
                     }
                 } else {
                     n.push(m);
@@ -1472,6 +1511,7 @@ class GameStats {
         this.enemyAttacks = [[], []];
         this.restoredHealth = [[], []];
         this.cardsAddedToHand = [[], []];
+        this.cardsAddedToDeck = [[], []];
         this.cardsDiscarded = [[], []];
         this.cardsDrawn = [[], []];
         this.minionsSummoned = [[], []];
@@ -1484,6 +1524,13 @@ class GameStats {
 
     update(key, val) {
         this[key][game.turn.id].push(val);
+
+        game.getBoard().forEach(p => {
+            p.forEach(m => {
+                m.activateUnpassive(game);
+                m.activatePassive(game, [key, val]);
+            });
+        });
 
         game.nextTurn.secrets.forEach(s => {
             if (s["key"] == key) {
@@ -1833,7 +1880,7 @@ class Functions {
 
         var card = cards[parseInt(choice) - 1];
 
-        game.turn.deck.push(card);
+        game.turn.shuffleIntoDeck(card);
         game.turn.deck.splice(game.turn.deck.indexOf(card), 1);
 
         return card;
@@ -2401,13 +2448,64 @@ if (!_debug) {
     game = new Game(new Player("Isak"), new Player("Sondre"), new Functions());
 }
 
-while (game.player1.getDeck().length < 30) {
-    game.player1.deck.push(new Minion("Sheep", game.player1));
-    game.player2.deck.push(new Minion("Sheep", game.player2));
+function createVarFromFoundType(name, curr) {
+    let card = Object.values(game.cards).find(c => c.name.toLowerCase() == name.toLowerCase());
+
+    let m;
+
+    let type = game.functions.getType(card);
+
+    if (type === "Minion") {
+        m = new Minion(card.name, curr);
+    } else if (type === "Spell") {
+        m = new Spell(card.name, curr);
+    } else if (type === "Weapon") {
+        m = new Weapon(card.name, curr);
+    }
+
+    return m;
 }
 
-game.functions.shuffle(game.player1.deck);
-game.functions.shuffle(game.player2.deck);
+function importDeck(code, plr) {
+    // The code is base64 encoded, so we need to decode it
+    code = Buffer.from(code, 'base64').toString('ascii');
+    let deck = code.split(", ");
+    let _deck = [];
+
+    // Find all cards with "x2" in front of them, and remove it and add the card twice
+    for (let i = 0; i < deck.length; i++) {
+        if (deck[i].startsWith("x2 ")) {
+            let m = createVarFromFoundType(deck[i].substring(3), plr);
+
+            _deck.push(m, m);
+        } else {
+            let m = createVarFromFoundType(deck[i], plr);
+
+            _deck.push(m);
+        }
+    }
+
+    game.functions.shuffle(_deck);
+
+    return _deck;
+}
+
+printName();
+
+const deckcode1 = rl.question("\nPlayer 1, please type in your deckcode (Leave this empty for a test deck): ");
+printName();
+const deckcode2 = rl.question("\nPlayer 2, please type in your deckcode (Leave this empty for a test deck): ");
+
+if (deckcode1.length > 0) {
+    game.player1.deck = importDeck(deckcode1, game.player1);
+} else {
+    while (game.player1.getDeck().length < 30) game.player1.deck.push(new Minion("Sheep", game.player1));
+}
+if (deckcode2.length > 0) {
+    game.player2.deck = importDeck(deckcode2, game.player2);
+} else {
+    while (game.player2.getDeck().length < 30) game.player2.deck.push(new Minion("Sheep", game.player2));
+}
 
 game.startGame();
 
