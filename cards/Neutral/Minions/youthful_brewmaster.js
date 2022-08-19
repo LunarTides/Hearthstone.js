@@ -16,6 +16,6 @@ module.exports = {
         }
 
         game.functions.addToHand(new game.Minion(target.getName(), plr), plr);
-        target.setStats(0, 0);
+        target.destroy();
     }
 }

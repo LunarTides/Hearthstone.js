@@ -18,9 +18,7 @@ module.exports = {
 
             game.playMinion(new game.Minion(rand.name, plr), plr);
             
-            target.silence();
-            target.stats = [0, 0];
-            game.killMinions();
+            target.destroy();
         }
     }
 }

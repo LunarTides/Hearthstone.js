@@ -177,7 +177,8 @@ class Minion {
     }
 
     remStats(attack = 0, health = 0) {
-        this.stats = [this.stats[0] - attack, this.stats[1] - health];
+        this.remAttack(attack);
+        this.remHealth(health);
     }
 
     setStats(attack = this.stats[0], health = this.stats[1]) {
@@ -186,6 +187,11 @@ class Minion {
         if (health > this.oghealth) {
             this.oghealth = health;
         }
+    }
+
+    destroy() {
+        this.silence();
+        this.setStats(0, 0);
     }
 
     setStealthDuration(duration) {
@@ -223,11 +229,11 @@ class Minion {
     }
 
     remHealth(amount) {
-        this.stats[1] -= amount;
+        this.stats = [this.stats[0], this.stats[1] - amount];
     }
 
     remAttack(amount) {
-        this.stats[0] -= amount;
+        this.stats = [this.stats[0] - amount, this.stats[1]];
     }
 
     setDeathrattle(deathrattle) {
@@ -285,7 +291,7 @@ class Minion {
         if (this.hasPassive) this.activatePassive(game, ["battlecry", this]);
         if (!this.hasBattlecry) return false;
         if (this.blueprint.battlecry(this.plr, game, this) === -1) {
-            this.setStats(0, 0);
+            this.destroy();
             game.functions.addToHand(this, this.plr, false);
             this.plr.mana += this.mana;
         }
@@ -510,6 +516,9 @@ class Weapon {
         this.hasOnAttack = this.blueprint.onattack != undefined;
         this.hasCombo = this.blueprint.combo != undefined;
         this.hasOutcast = this.blueprint.outcast != undefined;
+        this.hasStartOfTurn = this.blueprint.startofturn != undefined;
+        this.hasPassive = this.blueprint.passive != undefined;
+        this.hasUnpassive = this.blueprint.unpassive != undefined;
 
         this.deathrattles = this.hasDeathrattle ? [this.blueprint.deathrattle] : [];
     }
@@ -593,6 +602,11 @@ class Weapon {
         }
     }
 
+    remStats(attack = 0, health = 0) {
+        this.remAttack(attack);
+        this.remHealth(health);
+    }
+
     addHealth(amount) {
         this.stats[1] += amount;
     }
@@ -602,11 +616,17 @@ class Weapon {
     }
 
     remHealth(amount) {
-        this.stats[1] -= amount;
+        this.stats = [this.stats[0], this.stats[1] - amount];
+
+        if (this.stats[1] <= 0) {
+            this.activateDeathrattle(this.plr.game);
+
+            this.plr.weapon = null;
+        }
     }
 
     remAttack(amount) {
-        this.stats[0] -= amount;
+        this.stats = [this.stats[0] - amount, this.stats[1]];
     }
 
     addDeathrattle(deathrattle) {
@@ -615,9 +635,10 @@ class Weapon {
     }
 
     activateBattlecry(game) {
+        if (this.hasPassive) this.activatePassive(game, ["battlecry", this]);
         if (!this.hasBattlecry) return false;
         if (this.blueprint.battlecry(this.plr, game, this) === -1) {
-            this.setStats(0, 0);
+            this.destroy();
             game.functions.addToHand(this, this.plr, false);
             this.plr.mana += this.mana;
         }
@@ -644,6 +665,21 @@ class Weapon {
         if (!this.hasOutcast) return false;
         this.blueprint.outcast(this.plr, game, this);
     }
+
+    activateStartOfTurn(game) {
+        if (!this.hasStartOfTurn) return false;
+        this.blueprint.startofturn(this.plr, game, this);
+    }
+
+    activatePassive(game, trigger) {
+        if (!this.hasPassive) return false;
+        this.blueprint.passive(this.plr, game, this, trigger);
+    }
+
+    activateUnpassive(game, ignore = true) {
+        if (!this.hasUnpassive) return false;
+        this.blueprint.unpassive(this.plr, game, this, ignore);
+    }
 }
 
 
@@ -662,6 +698,7 @@ class Player {
         this.attack = 0;
         this.armor = 0;
         this.class = "Mage";
+        this.hero_power = this.class;
         this.heroPowerCost = 2;
         this.canUseHeroPower = true;
         this.weapon = null;
@@ -827,21 +864,21 @@ class Player {
     }
 
     heroPower() {
-        if (this.class == "Demon Hunter") this.heroPowerCost = 1;
+        if (this.hero_power == "Demon Hunter") this.heroPowerCost = 1;
 
         if (this.getMana() < this.heroPowerCost || !this.canUseHeroPower) return false;
 
-        if (this.class == "Demon Hunter") {
+        if (this.hero_power == "Demon Hunter") {
             this.addAttack(1);
         }
-        else if (this.class == "Druid") {
+        else if (this.hero_power == "Druid") {
             this.addAttack(1);
             this.armor += 1;
         }
-        else if (this.class == "Hunter") {
+        else if (this.hero_power == "Hunter") {
             this.game.nextTurn.remHealth(2);
         }
-        else if (this.class == "Mage") {
+        else if (this.hero_power == "Mage") {
             var t = this.game.functions.selectTarget("Deal 1 damage.", "heropower");
 
             if (t == false) return false;
@@ -852,20 +889,20 @@ class Player {
                 game.attackMinion(1, t);
             }
         }
-        else if (this.class == "Paladin") {
+        else if (this.hero_power == "Paladin") {
             game.playMinion(new Minion("Silver Hand Recruit", this), this);
         }
-        else if (this.class == "Priest") {
+        else if (this.hero_power == "Priest") {
             var t = this.game.functions.selectTarget("Restore 2 health.", "heropower");
 
             if (t == false) return false;
 
             t.addHealth(2);
         }
-        else if (this.class == "Rogue") {
+        else if (this.hero_power == "Rogue") {
             this.weapon = new Weapon("Wicked Knife", this);
         }
-        else if (this.class == "Shaman") {
+        else if (this.hero_power == "Shaman") {
             const totem_cards = ["Healing Totem", "Searing Totem", "Stoneclaw Totem", "Strength Totem"];
 
             game.getBoard()[this.id].forEach(m => {
@@ -880,12 +917,12 @@ class Player {
 
             game.playMinion(new Minion(game.functions.randList(totem_cards), this), this);
         }
-        else if (this.class == "Warlock") {
+        else if (this.hero_power == "Warlock") {
             this.remHealth(2);
 
             this.drawCard();
         }
-        else if (this.class == "Warrior") {
+        else if (this.hero_power == "Warrior") {
             this.armor += 2;
         }
 
@@ -895,7 +932,7 @@ class Player {
 
         this.setMana(this.getMana() - this.heroPowerCost);
 
-        game.stats.update("heroPowers", this.class);
+        game.stats.update("heroPowers", this.hero_power);
 
         this.canUseHeroPower = false;
 
@@ -920,6 +957,9 @@ class Game {
         this.functions = functions;
         this.cards = cards;
         this.stats = new GameStats();
+
+        this.printName = printName;
+        this.input = rl.question;
 
         this.Minion = Minion;
         this.Weapon = Weapon;
@@ -1111,12 +1151,19 @@ class Game {
 
         printName()
 
-        if (this.turn.weapon !== null) {
+        if (this.turn.weapon && this.turn.weapon.stats[0]) {
             this.turn.attack += this.turn.weapon.stats[0];
         }
 
         this.turn.mana -= this.turn.overload;
         this.turn.overload = 0;
+
+        if (this.player1.weapon) {
+            this.player1.weapon.activateStartOfTurn(this);
+        }
+        if (this.player2.weapon) {
+            this.player2.weapon.activateStartOfTurn(this);
+        }
 
         this.getBoard()[this.plrNameToIndex(this.turn.getName())].forEach(m => {
             m.activateStartOfTurn(this);
@@ -1143,7 +1190,7 @@ class Game {
             }
         });
 
-        if (this.turn.weapon) this.turn.weapon.resetAttackTimes();
+        if (this.turn.weapon && this.turn.weapon.stats[0]) this.turn.weapon.resetAttackTimes();
 
         this.turn.drawCard();
 
@@ -1551,6 +1598,15 @@ class GameStats {
                 m.activatePassive(game, [key, val]);
             });
         });
+        
+        if (game.player1.weapon) {
+            game.player1.weapon.activateUnpassive(game);
+            game.player1.weapon.activatePassive(game, [key, val]);
+        }
+        if (game.player2.weapon) {
+            game.player2.weapon.activateUnpassive(game);
+            game.player2.weapon.activatePassive(game, [key, val]);
+        }
 
         game.nextTurn.secrets.forEach(s => {
             if (s["key"] == key) {
@@ -1686,7 +1742,7 @@ class Functions {
         game.stats.update("spellsThatDealtDamage", [target, damage]);
 
         if (target instanceof Minion) {
-            target.remStats(0, this.accountForSpellDmg(damage));
+            game.attackMinion(this.accountForSpellDmg(damage), target);
         
             if (target.stats[1] > 0) {
                 target.activateFrenzy(game);
@@ -2211,17 +2267,11 @@ function doTurn() {
 
                     game.nextTurn.remHealth(curr.attack);
     
-                    if (curr.weapon && curr.weapon.attackTimes > 0) {
-                        curr.weapon.stats[1] -= 1;
+                    if (curr.weapon && curr.weapon.attackTimes > 0 && curr.weapon.stats[0]) {
+                        curr.weapon.remStats(0, 1);
                         curr.weapon.attackTimes -= 1;
     
                         curr.weapon.activateOnAttack(game);
-    
-                        if (curr.weapon.stats[1] <= 0) {
-                            curr.weapon.activateDeathrattle(game);
-    
-                            curr.weapon = null;
-                        }
                     }
     
                     curr.attack = 0;
@@ -2273,27 +2323,21 @@ function doTurn() {
 
                 game.stats.update("minionsAttacked", target);
 
-                target.remStats(0, curr.attack);
+                game.attackMinion(curr.attack, target);
                 curr.remHealth(target.stats[0]);
 
                 if (target.stats[1] > 0) {
                     target.activateFrenzy(game);
                 }
 
-                if (curr.weapon && curr.weapon.attackTimes > 0) {
-                    curr.weapon.stats[1] -= 1;
+                if (curr.weapon && curr.weapon.attackTimes > 0 && curr.weapon.stats[0]) {
+                    curr.weapon.remStats(0, 1);
                     curr.weapon.attackTimes -= 1;
 
                     curr.weapon.activateOnAttack(game);
 
-                    if (curr.weapon.stats[1] <= 0) {
-                        curr.weapon.activateDeathrattle(game);
-
-                        curr.weapon = null;
-                    }
-
                     if (curr.weapon.keywords.includes("Poisonous")) {
-                        target.stats[1] = 0;
+                        target.setStats(target.stats[0], 0);
                     }
                 }
 
@@ -2330,11 +2374,11 @@ function doTurn() {
                 }
 
                 if (attacker.keywords.includes("Poisonous")) {
-                    target.stats[1] = 0;
+                    target.setStats(target.stats[0], 0);
                 }
 
                 if (target.keywords.includes("Poisonous")) {
-                    attacker.stats[1] = 0;
+                    attacker.setStats(attacker.stats[0], 0);
                 }
 
                 game.killMinions();

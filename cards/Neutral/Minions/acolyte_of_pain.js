@@ -9,7 +9,7 @@ module.exports = {
     set: "Core",
 
     passive(plr, game, card, trigger) {
-        if (trigger[0] = "minionsAttacked" && trigger[1] == card) {
+        if (trigger[0] == "minionsAttacked" && trigger[1] == card) {
             plr.drawCard();
         }
     }

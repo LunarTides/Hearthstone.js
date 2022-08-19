@@ -11,7 +11,7 @@ module.exports = {
     battlecry(plr, game) {
         var target = game.functions.selectTarget("Give a friendly minion +1 Attack and Rush", "friendly", "minion");
 
-        target.stats = [target.stats[0] + 1, target.stats[1]];
+        target.setStats(target.stats[0] + 1, target.stats[1]);
         target.addKeyword("Rush");
     }
 }
