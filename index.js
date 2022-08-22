@@ -290,11 +290,7 @@ class Minion {
     activateBattlecry(game) {
         if (this.hasPassive) this.activatePassive(game, ["battlecry", this]);
         if (!this.hasBattlecry) return false;
-        if (this.blueprint.battlecry(this.plr, game, this) === -1) {
-            this.destroy();
-            game.functions.addToHand(this, this.plr, false);
-            this.plr.mana += this.mana;
-        }
+        return this.blueprint.battlecry(this.plr, game, this);
     }
 
     activateDeathrattle(game) {
@@ -465,10 +461,7 @@ class Spell {
 
     activateCast(game) {
         if (!this.hasCast) return false;
-        if (this.blueprint.cast(this.plr, game, this) === -1) {
-            game.functions.addToHand(this, this.plr, false);
-            this.plr.mana += this.mana;
-        }
+        return this.blueprint.cast(this.plr, game, this);
     }
 
     activateCombo(game) {
@@ -637,11 +630,7 @@ class Weapon {
     activateBattlecry(game) {
         if (this.hasPassive) this.activatePassive(game, ["battlecry", this]);
         if (!this.hasBattlecry) return false;
-        if (this.blueprint.battlecry(this.plr, game, this) === -1) {
-            this.destroy();
-            game.functions.addToHand(this, this.plr, false);
-            this.plr.mana += this.mana;
-        }
+        return this.blueprint.battlecry(this.plr, game, this);
     }
 
     activateDeathrattle(game) {
@@ -1314,6 +1303,33 @@ class Game {
         }
 
         if (card.getType() === "Minion") {
+            if (player.counter && player.counter.includes("Minion")) {
+                player.counter.splice(player.counter.indexOf("Minion"), 1);
+    
+                rl.question("Your minion has been countered.\n")
+    
+                return;
+            }
+    
+            if (this.board[player.id].length >= 7) {
+                rl.question("\nYou can only have 7 minions on the board.\n");
+                this.functions.addToHand(card, player, false);
+                player.mana += card.mana;
+                return;
+            }
+
+            if (card.dormant) {
+                card.frozen = true;
+                card.immune = true;
+                card.dormant = card.dormant + game.turns;
+            } else {
+                if (card.activateBattlecry(this) === -1) {
+                    this.functions.addToHand(card, player, false);
+                    player.mana += card.mana;
+                    return;
+                }
+            }
+
             game.stats.update("minionsPlayed", [card, game.turns]);
 
             if (card.colossal) {
@@ -1326,14 +1342,6 @@ class Game {
             } else {
                 game.playMinion(card, player, false);
             }
-
-            if (card.dormant) {
-                card.frozen = true;
-                card.immune = true;
-                card.dormant = card.dormant + game.turns;
-            } else {
-                card.activateBattlecry(this);
-            }
         } else if (card.getType() === "Spell") {
             if (player.counter && player.counter.includes("Spell")) {
                 player.counter.splice(player.counter.indexOf("Spell"), 1);
@@ -1343,9 +1351,13 @@ class Game {
                 return;
             }
 
-            game.stats.update("spellsCast", card);
+            if (card.activateCast(this) === -1) {
+                this.functions.addToHand(card, player, false);
+                player.mana += card.mana;
+                return;
+            }
 
-            card.activateCast(this);
+            game.stats.update("spellsCast", card);
 
             this.getBoard()[this.plrNameToIndex(player.getName())].forEach(m => {
                 m.activateSpellburst(this);
@@ -1420,21 +1432,6 @@ class Game {
         if (minion.keywords.includes("Rush")) {
             minion.turn = this.turns - 1;
             minion.canAttackHero = false;
-        }
-
-        if (player.counter && player.counter.includes("Minion")) {
-            player.counter.splice(player.counter.indexOf("Minion"), 1);
-
-            rl.question("Your minion has been countered.\n")
-
-            return;
-        }
-
-        if (this.board[p].length >= 7) {
-            rl.question("\nYou can only have 7 minions on the board.\n");
-            this.functions.addToHand(minion, player, false);
-            player.mana += minion.mana;
-            return;
         }
 
         this.board[p].push(minion);
