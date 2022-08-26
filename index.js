@@ -2402,55 +2402,59 @@ function doTurn() {
 function printName() {
     process.stdout.write('\033c');
 
+    return;
+
     console.log("|-----------------------------|");
     console.log("|       HEARTHSTONE.JS        |");
     console.log("|-----------------------------|");
 }
 
 function printAll(curr, detailed = false) {
-    console.log(`\n${curr.getName()}'s turn\n`);
+    console.log(`Mana: ${curr.getMana()} / ${curr.getMaxMana()} | Opponent's Mana: ${game.nextTurn.getMana()} / ${game.nextTurn.getMaxMana()}`);
+    console.log(`Health: ${curr.health} + ${curr.armor} / ${curr.maxHealth} | Opponent's Health: ${game.nextTurn.health} + ${game.nextTurn.armor} / ${game.nextTurn.maxHealth}`);
 
-    console.log("-------------------------------");
+    wpnstr = "";
+    if (curr.attack > 0) wpnstr += `Attack: ${curr.attack}`;
+    if (wpnstr && curr.weapon) wpnstr += " | ";
+    if (curr.weapon) wpnstr += `Weapon: ${curr.weapon.displayName} (${curr.weapon.getStats().join(' / ')})`;
+    if (curr.weapon && game.nextTurn.weapon) wpnstr += " | ";
+    if (game.nextTurn.weapon) wpnstr += `Opponent's Weapon: ${game.nextTurn.weapon.displayName} (${game.nextTurn.weapon.getStats().join(' / ')})`;
 
-    console.log(`Mana: ${curr.getMana()} / ${curr.getMaxMana()}`);
-    console.log(`Health: ${curr.health} + ${curr.armor} / ${curr.maxHealth}\n`);
+    if (wpnstr) console.log(wpnstr);
 
-    console.log(`Attack: ${curr.attack}`);
-    console.log(`Weapon: ${curr.weapon === null ? "None" : `${curr.weapon.displayName} (${curr.weapon.getStats().join(' / ')})`}\n`);
-
-    console.log(`Secrets: ${curr.secrets.length == 0 ? "None" : curr.secrets.map(x => x["name"]).join(', ')}`);
-    console.log(`Sidequests: ${curr.sidequests.length == 0 ? "None" : curr.sidequests.map(x => x["name"] + " (" + x["progress"][0] + " / " + x["progress"][1] + ")").join(', ')}`);
-    console.log(`Quest: ${curr.quests.length == 0 ? "None" : curr.quests[0]["name"] + " (" + curr.quests[0]["progress"][0] + " / " + curr.quests[0]["progress"][1] + ")"}`);
-    console.log(`Questline: ${curr.questlines.length == 0 ? "None" : curr.questlines[0]["name"] + " (" + curr.questlines[0]["progress"][0] + " / " + curr.questlines[0]["progress"][1] + ")"}\n`);
-
-    console.log(`Deck Size: ${curr.getDeck().length}`);
-
-    console.log("-------------------------------");
+    if (curr.secrets.length > 0)
+        console.log(`Secrets: ${curr.secrets.map(x => x["name"]).join(', ')}`);
+    if (curr.sidequests.length > 0)
+        console.log(`Sidequests: ${curr.sidequests.map(x => x["name"] + " (" + x["progress"][0] + " / " + x["progress"][1] + ")").join(', ')}`);
+    if (curr.quests.length > 0)
+        console.log(`Quest: ${curr.quests[0]["name"] + " (" + curr.quests[0]["progress"][0] + " / " + curr.quests[0]["progress"][1] + ")"}`);
+    if (curr.questlines.length > 0)
+        console.log(`Questline: ${curr.questlines[0]["name"] + " (" + curr.questlines[0]["progress"][0] + " / " + curr.questlines[0]["progress"][1] + ")"}\n`);
+        
+    console.log(`Deck Size: ${curr.getDeck().length} | Opponent's Deck Size: ${game.nextTurn.getDeck().length}`);
 
     if (detailed) {
-        console.log(`Opponent's Mana: ${game.nextTurn.getMana()} / ${game.nextTurn.getMaxMana()}`);
-        console.log(`Opponent's Health: ${game.nextTurn.health} + ${game.nextTurn.armor} / ${game.nextTurn.maxHealth}\n`);
+        console.log("-------------------------------");
 
-        console.log(`Opponent's Weapon: ${game.nextTurn.weapon === null ? "None" : `${game.nextTurn.weapon.displayName} (${game.nextTurn.weapon.getStats().join(' / ')})`}\n`);
-
-        console.log(`Secrets: ${game.nextTurn.secrets.length == 0 ? "None" : game.nextTurn.secrets.length + 1}`);
-        console.log(`Sidequests: ${game.nextTurn.sidequests.length == 0 ? "None" : game.nextTurn.sidequests.map(x => x["name"] + " (" + x["progress"][0] + " / " + x["progress"][1] + ")").join(', ')}`);
-        console.log(`Quest: ${game.nextTurn.quests.length == 0 ? "None" : game.nextTurn.quests[0]["name"] + " (" + game.nextTurn.quests[0]["progress"][0] + " / " + game.nextTurn.quests[0]["progress"][1] + ")"}`);
-        console.log(`Questline: ${game.nextTurn.questlines.length == 0 ? "None" : game.nextTurn.questlines[0]["name"] + " (" + game.nextTurn.questlines[0]["progress"][0] + " / " + game.nextTurn.queslines[0]["progress"][1] + ")"}\n`);
+        if (game.nextTurn.secrets.length > 0)
+            console.log(`Opponent's Secrets: ${game.nextTurn.secrets.length + 1}`);
+        if (game.nextTurn.sidequests.length > 0)
+            console.log(`Opponent's Sidequests: ${game.nextTurn.sidequests.map(x => x["name"] + " (" + x["progress"][0] + " / " + x["progress"][1] + ")").join(', ')}`);
+        if (game.nextTurn.quests.length > 0)
+            console.log(`Opponent's Quest: ${game.nextTurn.quests[0]["name"] + " (" + game.nextTurn.quests[0]["progress"][0] + " / " + game.nextTurn.quests[0]["progress"][1] + ")"}`);
+        if (game.nextTurn.questlines.length > 0)
+            console.log(`Opponent's Questline: ${game.nextTurn.questlines[0]["name"] + " (" + game.nextTurn.questlines[0]["progress"][0] + " / " + game.nextTurn.questlines[0]["progress"][1] + ")"}\n`);
 
         console.log(`Opponent's Hand Size: ${game.nextTurn.getHand().length}`);
-        console.log(`Opponent's Deck Size: ${game.nextTurn.getDeck().length}`);
-    } else {
-        console.log(`Opponent's Health: ${game.nextTurn.health} + ${game.nextTurn.armor} / ${game.nextTurn.maxHealth}`);
-        console.log(`Opponent's Deck Size: ${game.nextTurn.getDeck().length}`);
-        console.log(`Opponent's Weapon: ${game.nextTurn.weapon === null ? "None" : `${game.nextTurn.weapon.displayName} (${game.nextTurn.weapon.getStats().join(' / ')})`}`);
     }
 
-    console.log("-------------------------------");
-
-    console.log("\n--- Board ---\n");
+    console.log("\n--- Board ---");
     game.getBoard().forEach((_, i) => {
-        var t = `- ${game.plrIndexToName(i)} -`;
+        if (i == curr.id) {
+            var t = `--- You ---`
+        } else {
+            var t = "--- Opponent ---"
+        }
 
         console.log(t) // This is not for debugging, do not comment out
 
@@ -2463,23 +2467,22 @@ function printAll(curr, detailed = false) {
                 var immune = m.immune && !m.dormant ? " (Immune)" : "";
                 var dormant = m.dormant ? " (Dormant)" : "";
 
-                console.log(`${m.displayName} (${m.getStats().join(" / ")})${keywords}${frozen}${immune}${dormant} [${n + 1}]`);
+                console.log(`[${n + 1}] ${m.displayName} (${m.getStats().join(" / ")})${keywords}${frozen}${immune}${dormant}`);
             });
         }
-        console.log("-".repeat(t.length));
     });
-    console.log("\n-------------")
+    console.log("-------------")
 
-    console.log("\n--- Hand ---");
-    console.log("({cost} Name [attack / health] (type) [id])\n");
+    console.log(`\n--- ${curr.getName()}'s Hand ---`);
+    console.log("([id] {cost} Name [attack / health] (type))\n");
 
     curr.getHand().forEach((card, i) => {
         if (card.getType() === "Minion" || card.getType() === "Weapon") {
             var desc = card.getDesc().length > 0 ? ` (${card.getDesc()}) ` : " ";
-            console.log(`{${card.getCost()}} ${card.displayName} [${card.getStats().join(' / ')}]${desc}(${card.getType()}) [${i + 1}]`);
+            console.log(`[${i + 1}] {${card.getCost()}} ${card.displayName} [${card.getStats().join(' / ')}]${desc}(${card.getType()})`);
         } else {
             var desc = card.getDesc().length > 0 ? ` (${card.getDesc()}) ` : " ";
-            console.log(`{${card.getCost()}} ${card.displayName}${desc}(${card.getType()}) [${i + 1}]`);
+            console.log(`[${i + 1}] {${card.getCost()}} ${card.displayName}${desc}(${card.getType()})`);
         }
     });
     console.log("------------")
