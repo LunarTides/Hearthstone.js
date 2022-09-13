@@ -28,6 +28,7 @@ class Minion {
         this.id = Math.floor(Math.random() * 671678679546789); // Assign random id to every card to hopefully fix a bug where all minions with the same names have linked stats
         this.name = name;
         this.displayName = this.blueprint.displayName || this.name;
+        this._displayName = this.displayName;
         this.type = "Minion";
         this.stats = this.blueprint.stats;
         this.desc = this.blueprint.desc;
@@ -37,6 +38,7 @@ class Minion {
         this.rarity = this.blueprint.rarity;
         this.set = this.blueprint.set;
         this.keywords = this.blueprint.keywords || [];
+        this._keywords = [];
         this.oghealth = this.stats[1];
         this.corrupted = this.blueprint.corrupted || false;
         this.colossal = this.blueprint.colossal || false;
@@ -50,6 +52,7 @@ class Minion {
         this.stealthDuration = 0;
         this.uncollectible = this.blueprint.uncollectible || false;
         this.storage = []; // Allow cards to store data for later use
+        this._storage = [];
 
         this.turn = null;
 
@@ -70,6 +73,7 @@ class Minion {
         this.hasUnpassive = this.blueprint.unpassive != undefined;
 
         this.deathrattles = this.hasDeathrattle ? [this.blueprint.deathrattle] : [];
+        this._deathrattles = [];
     }
 
     getName() {
@@ -263,34 +267,12 @@ class Minion {
     }
 
     silence() {
-        /*this.forEach(att => {
-            this[att] = this.blueprint[att];
-        })*/ // TODO: Make this work?
-
-        this.name = this.blueprint.name;
-        this.stats = this.blueprint.stats;
-        this.desc = this.blueprint.desc;
-        this.mana = this.blueprint.mana;
-        this.tribe = this.blueprint.tribe;
-        this.class = this.blueprint.class;
-        this.rarity = this.blueprint.rarity;
-        this.set = this.blueprint.set;
-
-        this.keywords = [];
-
-        this.deathrattles = [];
-
-        this.hasDeathrattle = false;
-        this.hasEndOfTurn = false;
-        this.hasStartOfTurn = false;
-        this.hasInspire = false;
-        this.hasOnAttack = false;
-        this.hasOverkill = false;
-        this.hasFrenzy = false;
-        this.hasHonorableKill = false;
-        this.hasSpellburst = false;
-        this.hasPassive = false;
-        this.hasUnpassive = false;
+        Object.keys(this).forEach(att => {
+            if (att.startsWith("has")) this[att] = false;
+            else if (this["_" + att]) this[att] = this["_" + att];
+            else if (this.blueprint[att]) this[att] = this.blueprint[att];
+        });
+        this.desc = "";
     }
 
     activateBattlecry(game) {
