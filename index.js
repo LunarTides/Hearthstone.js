@@ -3,7 +3,8 @@ const { exit } = require('process');
 const rl = require('readline-sync');
 const crypto = require('crypto');
 
-const _debug = true;
+const _debug = true; // Enables commands like /give, /class and /eval. Disables naming and assigning passcodes to players.
+                     // Enable for debugging, disable for actual play.
 
 var cards = {};
 
@@ -24,6 +25,7 @@ class Minion {
     constructor(name, plr) {
         this.blueprint = cards[name];
 
+        this.id = Math.floor(Math.random() * 671678679546789); // Assign random id to every card to hopefully fix a bug where all minions with the same names have linked stats
         this.name = name;
         this.displayName = this.blueprint.displayName || this.name;
         this.type = "Minion";
@@ -161,7 +163,7 @@ class Minion {
             this.turn = game.turns - 1;
         }
 
-        if (this.keywords.includes("Rush")) {
+        if (this.keywords.includes("Rush") && this.turn == game.turns) {
             this.turn = game.turns - 1;
             this.canAttackHero = false;
         }
@@ -187,6 +189,10 @@ class Minion {
         if (health > this.oghealth) {
             this.oghealth = health;
         }
+    }
+
+    resetOgHealth() {
+        this.oghealth = this.stats[1];
     }
 
     destroy() {
@@ -372,6 +378,7 @@ class Spell {
     constructor(name, plr) {
         this.blueprint = cards[name];
 
+        this.id = Math.floor(Math.random() * 671678679546789);
         this.name = name;
         this.displayName = this.blueprint.displayName || this.name;
         this.type = "Spell";
@@ -486,6 +493,7 @@ class Weapon {
     constructor(name, plr) {
         this.blueprint = cards[name];
 
+        this.id = Math.floor(Math.random() * 671678679546789);
         this.name = name;
         this.displayName = this.blueprint.displayName || this.name;
         this.type = "Weapon";
@@ -789,10 +797,12 @@ class Player {
     remHealth(amount) {
         var a = amount;
 
-        while (this.armor > 0) {
+        while (this.armor > 0 && a > 0) {
             a--;
             this.armor--;
         }
+
+        if (a <= 0) return true;
 
         this.health -= a;
 
@@ -826,8 +836,6 @@ class Player {
     }
 
     drawCard() {
-        //this.game.functions.shuffle(this.deck); // Removed incase this messes with Lorekeeper Polkelt
-
         if (this.deck.length <= 0) {
             this.fatigue++;
 
@@ -854,6 +862,7 @@ class Player {
 
     heroPower() {
         if (this.hero_power == "Demon Hunter") this.heroPowerCost = 1;
+        else this.heroPowerCost = 2; // This is to prevent changing hero power to demon hunter and changing back to decrease cost to 1
 
         if (this.getMana() < this.heroPowerCost || !this.canUseHeroPower) return false;
 
@@ -870,7 +879,7 @@ class Player {
         else if (this.hero_power == "Mage") {
             var t = this.game.functions.selectTarget("Deal 1 damage.", "heropower");
 
-            if (t == false) return false;
+            if (!t) return false;
 
             if (t instanceof Player) {
                 t.remHealth(1);
@@ -884,7 +893,7 @@ class Player {
         else if (this.hero_power == "Priest") {
             var t = this.game.functions.selectTarget("Restore 2 health.", "heropower");
 
-            if (t == false) return false;
+            if (!t) return false;
 
             t.addHealth(2);
         }
@@ -1118,7 +1127,7 @@ class Game {
         if (this.turn.maxMana > 10) this.turn.maxMana = 10;
         this.turn.setMana(this.turn.getMaxMana());
 
-        this.nextTurn = (this.nextTurn === this.player1) ? this.player2 : this.player1;
+        this.nextTurn = this.getOtherPlayer(this.turn);
 
         this.turns += 1;
     }
@@ -1524,7 +1533,7 @@ class Game {
             if (minion.getStats()[0] <= 0) return false;
 
             game.stats.update("minionsThatAttacked", minion);
-            game.stats.update("minionsAttacked", target);
+            game.stats.update("minionsAttacked", minion);
 
             minion.remStats(0, target.stats[0])
 
@@ -1537,6 +1546,8 @@ class Game {
 
                 return false;
             }
+
+            game.stats.update("minionsAttacked", target);
 
             target.remStats(0, minion.stats[0])
 
@@ -2162,6 +2173,8 @@ function doTurn() {
     }
 
     else if (q.startsWith("/give ")) {
+        if (!_debug) return;
+
         var t = q.split(" ");
 
         t.shift();
@@ -2185,6 +2198,8 @@ function doTurn() {
 
         game.functions.addToHand(m, curr);
     } else if (q.startsWith("/class ")) {
+        if (!_debug) return;
+
         var t = q.split(" ");
 
         t.shift();
@@ -2222,6 +2237,8 @@ function doTurn() {
             printAll(curr);
         }
         else if (q == "/eval") {
+            if (!_debug) return;
+
             eval(rl.question("\nWhat do you want to evaluate? "));
         }
         else if (q === "attack") {
