@@ -21,67 +21,160 @@ function importCards(path) {
 
 importCards(__dirname + '/cards');
 
-class Minion {
-    constructor(name, plr) {
+class Card {
+    constructor(name, plr, hasArray) {
         this.blueprint = cards[name];
 
-        this.id = Math.floor(Math.random() * 671678679546789); // Assign random id to every card to hopefully fix a bug where all minions with the same names have linked stats
+        this.id = Math.floor(Math.random() * 671678679546789);
         this.name = name;
-        this.displayName = this.blueprint.displayName || this.name;
-        this._displayName = this.displayName;
-        this.type = "Minion";
-        this.stats = this.blueprint.stats;
-        this.desc = this.blueprint.desc;
-        this.mana = this.blueprint.mana;
-        this.tribe = this.blueprint.tribe;
-        this.class = this.blueprint.class;
-        this.rarity = this.blueprint.rarity;
-        this.set = this.blueprint.set;
-        this.keywords = this.blueprint.keywords || [];
-        this._keywords = [];
-        this.oghealth = this.stats[1];
-        this.corrupted = this.blueprint.corrupted || false;
-        this.colossal = this.blueprint.colossal || false;
-        this.dormant = this.blueprint.dormant || false;
-        this.frozen = false;
-        this.immune = false;
-        this.echo = false;
-        this.canAttackHero = true;
-        this.attackTimes = 1;
         this.plr = plr;
-        this.stealthDuration = 0;
-        this.uncollectible = this.blueprint.uncollectible || false;
+
+        this.displayName = this.check(this.displayName, name);
+        this.type = "Card";
+
+        this.keywords = this.check(this.blueprint.keywords, []);
         this.storage = []; // Allow cards to store data for later use
-        this._storage = [];
 
         this.turn = null;
 
-        this.hasBattlecry = this.blueprint.battlecry != undefined;
-        this.hasDeathrattle = this.blueprint.deathrattle != undefined;
-        this.hasInspire = this.blueprint.inspire != undefined;
-        this.hasEndOfTurn = this.blueprint.endofturn != undefined;
-        this.hasStartOfTurn = this.blueprint.startofturn != undefined;
-        this.hasCombo = this.blueprint.combo != undefined;
-        this.hasOnAttack = this.blueprint.onattack != undefined;
-        this.hasOutcast = this.blueprint.outcast != undefined;
-        this.hasStartOfGame = this.blueprint.startofgame != undefined;
-        this.hasOverkill = this.blueprint.overkill != undefined;
-        this.hasFrenzy = this.blueprint.frenzy != undefined;
-        this.hasHonorableKill = this.blueprint.honorablekill != undefined;
-        this.hasSpellburst = this.blueprint.spellburst != undefined;
-        this.hasPassive = this.blueprint.passive != undefined;
-        this.hasUnpassive = this.blueprint.unpassive != undefined;
+        this.echo = false;
+        
+        Object.entries(this.blueprint).forEach(i => {
+            if (typeof i[1] !== Function) this[i[0]] = i[1];
+        });
 
-        this.deathrattles = this.hasDeathrattle ? [this.blueprint.deathrattle] : [];
-        this._deathrattles = [];
+        let h = [];
+
+        Object.keys(this).forEach(i => {
+            if (i in ["corrupted", "colossal", "dormant", "uncollectible"]) h.push(i);
+        });
+        h.forEach(i => {
+            this[i] = this.check(i);
+        });
+
+        hasArray.forEach(i => { // You have to define hasArray when extending this class
+            // this.hasBattlecry = false;
+            this["has" + i[0].toUpperCase() + i.slice(1)] = this.blueprint[i] != undefined;
+        });
+    }
+
+    check(check, alt_value=false) {
+        return check || alt_value;
     }
 
     getName() {
         return this.name;
     }
-
     getType() {
         return this.type;
+    }
+    getDesc() {
+        return this.desc;
+    }
+    getMana() {
+        return this.mana;
+    }
+    getClass() {
+        return this.class;
+    }
+    getRarity() {
+        return this.rarity;
+    }
+    getSet() {
+        return this.set;
+    }
+    getKeywords() {
+        return this.keywords;
+    }
+    getBlueprint() {
+        return this.blueprint;
+    }
+
+
+    setName(name) {
+        this.name = name;
+    }
+    setType(type) {
+        this.type = type;
+    }
+    setDesc(desc) {
+        this.desc = desc;
+    }
+    setMana(mana) {
+        this.mana = mana;
+    }
+    setClass(_class) {
+        this.class = _class;
+    }
+    setRarity(rarity) {
+        this.rarity = rarity;
+    }
+    setSet(set) {
+        this.set = set;
+    }
+    setKeywords(keywords) {
+        this.keywords = keywords;
+    }
+    setBlueprint(blueprint) {
+        this.blueprint = blueprint;
+    }
+
+    addKeyword(keyword) {
+        this.keywords.push(keyword);
+
+        if (this.keywords.includes("Charge") && this.turn == game.turns) {
+            this.turn = game.turns - 1;
+        }
+
+        if (this.keywords.includes("Rush") && this.turn == game.turns) {
+            this.turn = game.turns - 1;
+            this.canAttackHero = false;
+        }
+    }
+
+    removeKeyword(keyword) {
+        this.keywords = this.keywords.filter(k => k != keyword);
+    }
+}
+
+class Minion extends Card {
+    constructor(name, plr) {
+        const hasArray = [ // Put all the different function keywords a minion can have
+            "battlecry",
+            "deathrattle",
+            "inspire",
+            "endofturn",
+            "startofturn",
+            "combo",
+            "onattack",
+            "outcast",
+            "startofgame",
+            "overkill",
+            "frenzy",
+            "honorablekill",
+            "spellburst",
+            "passive",
+            "unpassive"
+        ];
+
+        super(name, plr, hasArray);
+
+        this.type = "Minion";
+
+        this.oghealth = this.stats[1];
+        this.attackTimes = 1;
+        this.stealthDuration = 0;
+
+        this.frozen = false;
+        this.immune = false;
+        this.canAttackHero = true;
+
+        this.deathrattles = this.hasDeathrattle ? [this.blueprint.deathrattle] : [];
+
+        this._displayName = this.displayName;
+        this._keywords = [];
+        this._storage = [];
+        this._deathrattles = [];
     }
 
     getStats() {
@@ -96,85 +189,12 @@ class Minion {
         return this.stats[1];
     }
 
-    getDesc() {
-        return this.desc;
-    }
-
-    getCost() {
-        return this.mana;
-    }
-
     getTribe() {
         return this.tribe;
     }
 
-    getClass() {
-        return this.class;
-    }
-
-    getRarity() {
-        return this.rarity;
-    }
-
-    getSet() {
-        return this.set;
-    }
-
-    getKeywords() {
-        return this.keywords;
-    }
-
-    getBlueprint() {
-        return this.blueprint;
-    }
-
-    setName(name) {
-        this.name = name;
-    }
-
-    setDesc(desc) {
-        this.desc = desc;
-    }
-
-    setMana(mana) {
-        this.mana = mana;
-    }
-
     setTribe(tribe) {
         this.tribe = tribe;
-    }
-
-    setClass(c) {
-        this.class = c;
-    }
-
-    setRarity(rarity) {
-        this.rarity = rarity;
-    }
-
-    setSet(set) {
-        this.set = set;
-    }
-
-    setKeywords(keywords) {
-        this.keywords = keywords;
-    }
-
-    addKeyword(keyword) {
-        this.keywords.push(keyword);
-
-        if (this.keywords.includes("Charge")) {
-            this.turn = game.turns - 1;
-        }
-
-        if (this.keywords.includes("Rush") && this.turn == game.turns) {
-            this.turn = game.turns - 1;
-            this.canAttackHero = false;
-        }
-    }
-
-    removeKeyword(keyword) {
-        this.keywords = this.keywords.filter(k => k != keyword);
     }
 
     addStats(attack = 0, health = 0, restore = false) {
@@ -252,12 +272,12 @@ class Minion {
     }
 
     setEndOfTurn(endofturn) {
-        this.hasEndOfTurn = true;
+        this.hasEndofturn = true;
         this.endofturn = endofturn;
     }
 
     setStartOfTurn(startofturn) {
-        this.hasStartOfTurn = true;
+        this.hasStartofturn = true;
         this.startofturn = startofturn;
     }
 
@@ -294,12 +314,12 @@ class Minion {
     }
 
     activateEndOfTurn(game) {
-        if (!this.hasEndOfTurn) return false;
+        if (!this.hasEndofturn) return false;
         this.blueprint.endofturn(this.plr, game, this);
     }
 
     activateStartOfTurn(game) {
-        if (!this.hasStartOfTurn) return false;
+        if (!this.hasStartofturn) return false;
         this.blueprint.startofturn(this.plr, game, this);
     }
 
@@ -309,7 +329,7 @@ class Minion {
     }
 
     activateOnAttack(game) {
-        if (!this.hasOnAttack) return false;
+        if (!this.hasOnattack) return false;
         this.blueprint.onAttack(this.plr, game, this);
     }
 
@@ -319,7 +339,7 @@ class Minion {
     }
 
     activateStartOfGame(game) {
-        if (!this.hasStartOfGame) return false;
+        if (!this.hasStartofgame) return false;
         this.blueprint.startofgame(this.plr, game, this);
     }
 
@@ -334,7 +354,7 @@ class Minion {
     }
 
     activateHonorableKill(game) {
-        if (!this.hasHonorableKill) return false;
+        if (!this.hasHonorablekill) return false;
         this.blueprint.honorablekill(this.plr, game, this);
     }
 
@@ -356,96 +376,20 @@ class Minion {
 
 }
 
-class Spell {
+class Spell extends Card {
     constructor(name, plr) {
-        this.blueprint = cards[name];
+        const hasArray = [
+            "cast",
+            "combo",
+            "outcast",
+            "castondraw"
+        ];
 
-        this.id = Math.floor(Math.random() * 671678679546789);
-        this.name = name;
-        this.displayName = this.blueprint.displayName || this.name;
+        super(name, plr, hasArray);
+
         this.type = "Spell";
-        this.desc = this.blueprint.desc;
-        this.mana = this.blueprint.mana;
-        this.class = this.blueprint.class;
-        this.rarity = this.blueprint.rarity;
-        this.set = this.blueprint.set;
-        this.spellClass = this.blueprint.spellClass || null;
-        this.keywords = this.blueprint.keywords || [];
-        this.corrupted = this.blueprint.corrupted || false;
-        this.plr = plr;
-        this.uncollectible = this.blueprint.uncollectible || false;
-        this.storage = []; // Allow cards to store data for later use
 
-        this.echo = false;
-
-        this.hasCast = this.blueprint.cast != undefined;
-        this.hasCombo = this.blueprint.combo != undefined;
-        this.hasOutcast = this.blueprint.outcast != undefined;
-        this.hasCastOnDraw = this.blueprint.castondraw != undefined;
-    }
-
-    getName() {
-        return this.name;
-    }
-
-    getType() {
-        return this.type;
-    }
-
-    getDesc() {
-        return this.desc;
-    }
-
-    getCost() {
-        return this.mana;
-    }
-
-    getClass() {
-        return this.class;
-    }
-
-    getRarity() {
-        return this.rarity;
-    }
-
-    getSet() {
-        return this.set;
-    }
-
-    getBlueprint() {
-        return this.blueprint;
-    }
-
-    setName(name) {
-        this.name = name;
-    }
-
-    setDesc(desc) {
-        this.desc = desc;
-    }
-
-    setMana(mana) {
-        this.mana = mana;
-    }
-
-    setClass(c) {
-        this.class = c;
-    }
-
-    setRarity(rarity) {
-        this.rarity = rarity;
-    }
-
-    setSet(set) {
-        this.set = set;
-    }
-
-    addKeyword(keyword) {
-        this.keywords.push(keyword);
-    }
-
-    removeKeyword(keyword) {
-        this.keywords = this.keywords.filter(k => k != keyword);
+        this.spellClass = this.check(this.blueprint.spellClass, null);
     }
 
     activateCast(game) {
@@ -464,114 +408,41 @@ class Spell {
     }
 
     activateCastOnDraw(game) {
-        if (!this.hasCastOnDraw) return false;
+        if (!this.hasCastondraw) return false;
         this.blueprint.castondraw(this.plr, game, this);
         return true;
     }
 
 }
 
-class Weapon {
+class Weapon extends Card {
     constructor(name, plr) {
-        this.blueprint = cards[name];
+        const hasArray = [
+            "battlecry",
+            "deathrattle",
+            "onattack",
+            "combo",
+            "outcast",
+            "startofturn",
+            "passive",
+            "unpassive"
+        ];
 
-        this.id = Math.floor(Math.random() * 671678679546789);
-        this.name = name;
-        this.displayName = this.blueprint.displayName || this.name;
+        super(name, plr, hasArray);
+
         this.type = "Weapon";
-        this.desc = this.blueprint.desc;
-        this.mana = this.blueprint.mana;
-        this.class = this.blueprint.class;
-        this.rarity = this.blueprint.rarity;
-        this.set = this.blueprint.set;
-        this.stats = this.blueprint.stats;
-        this.keywords = this.blueprint.keywords || [];
-        this.corrupted = this.blueprint.corrupted || false;
+
         this.attackTimes = 1;
-        this.plr = plr;
-        this.uncollectible = this.blueprint.uncollectible || false;
-        this.storage = []; // Allow cards to store data for later use
-
-        this.echo = false;
-
-        this.hasBattlecry = this.blueprint.battlecry != undefined;
-        this.hasDeathrattle = this.blueprint.deathrattle != undefined;
-        this.hasOnAttack = this.blueprint.onattack != undefined;
-        this.hasCombo = this.blueprint.combo != undefined;
-        this.hasOutcast = this.blueprint.outcast != undefined;
-        this.hasStartOfTurn = this.blueprint.startofturn != undefined;
-        this.hasPassive = this.blueprint.passive != undefined;
-        this.hasUnpassive = this.blueprint.unpassive != undefined;
 
         this.deathrattles = this.hasDeathrattle ? [this.blueprint.deathrattle] : [];
-    }
-
-    getName() {
-        return this.name;
-    }
-
-    getType() {
-        return this.type;
-    }
-
-    getDesc() {
-        return this.desc;
-    }
-
-    getCost() {
-        return this.mana;
-    }
-
-    getClass() {
-        return this.class;
-    }
-
-    getRarity() {
-        return this.rarity;
-    }
-
-    getSet() {
-        return this.set;
     }
 
     getStats() {
         return this.stats;
     }
 
-    getBlueprint() {
-        return this.blueprint;
-    }
-
-    setName(name) {
-        this.name = name;
-    }
-
-    setDesc(desc) {
-        this.desc = desc;
-    }
-
-    setMana(mana) {
-        this.mana = mana;
-    }
-
-    setClass(c) {
-        this.class = c;
-    }
-
-    setRarity(rarity) {
-        this.rarity = rarity;
-    }
-
     setSet(set) {
         this.set = set;
-    }
-
-    addKeyword(keyword) {
-        this.keywords.push(keyword);
-    }
-
-    removeKeyword(keyword) {
-        this.keywords = this.keywords.filter(k => k != keyword);
     }
 
     resetAttackTimes() {
@@ -631,7 +502,7 @@ class Weapon {
     }
 
     activateOnAttack(game) {
-        if (!this.hasOnAttack) return false;
+        if (!this.hasOnattack) return false;
         this.blueprint.onattack(this.plr, game, this);
     }
 
@@ -646,7 +517,7 @@ class Weapon {
     }
 
     activateStartOfTurn(game) {
-        if (!this.hasStartOfTurn) return false;
+        if (!this.hasStartofturn) return false;
         this.blueprint.startofturn(this.plr, game, this);
     }
 
@@ -1178,7 +1049,7 @@ class Game {
     }
 
     playCard(card, player) {
-        if (player.getMana() < card.getCost()) {
+        if (player.getMana() < card.getMana()) {
             return false;
         }
 
@@ -1227,7 +1098,7 @@ class Game {
             }
         }
 
-        player.setMana(player.getMana() - card.getCost());
+        player.setMana(player.getMana() - card.getMana());
         
         var n = []
 
@@ -2478,17 +2349,17 @@ function printAll(curr, detailed = false) {
     curr.getHand().forEach((card, i) => {
         if (card.getType() === "Minion" || card.getType() === "Weapon") {
             var desc = card.getDesc().length > 0 ? ` (${card.getDesc()}) ` : " ";
-            console.log(`[${i + 1}] {${card.getCost()}} ${card.displayName} [${card.getStats().join(' / ')}]${desc}(${card.getType()})`);
+            console.log(`[${i + 1}] {${card.getMana()}} ${card.displayName} [${card.getStats().join(' / ')}]${desc}(${card.getType()})`);
         } else {
             var desc = card.getDesc().length > 0 ? ` (${card.getDesc()}) ` : " ";
-            console.log(`[${i + 1}] {${card.getCost()}} ${card.displayName}${desc}(${card.getType()})`);
+            console.log(`[${i + 1}] {${card.getMana()}} ${card.displayName}${desc}(${card.getType()})`);
         }
     });
     console.log("------------")
 }
 
 function viewMinion(minion, detailed = false) {
-    console.log(`{${minion.getCost()}} ${minion.displayName} [${minion.blueprint.stats.join(' / ')}]\n`);
+    console.log(`{${minion.getMana()}} ${minion.displayName} [${minion.blueprint.stats.join(' / ')}]\n`);
     if (minion.getDesc()) console.log(minion.getDesc() + "\n");
     console.log("Tribe: " + minion.getTribe());
     console.log("Class: " + minion.getClass());
