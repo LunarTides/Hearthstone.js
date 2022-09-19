@@ -13,6 +13,7 @@ Frenzy           (DONE)
 Honorable Kill   (DONE)
 Spellburst       (DONE)
 Passive          (DONE)
+Infuse           (DONE)
 -----------------------
 
 Choose One       (DONE)
