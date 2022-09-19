@@ -31,6 +31,7 @@ class Card {
             "infuse",
             "combo",
 
+            // Minion / Weapon keywords
             "battlecry",
             "deathrattle",
             "inspire",
@@ -45,6 +46,7 @@ class Card {
             "passive",
             "unpassive",
 
+            // Spell keywords
             "cast",
             "castondraw"
         ]
@@ -72,15 +74,12 @@ class Card {
         this.infuse_num = this.check(this.blueprint.infuse_num, -1);
         
         Object.entries(this.blueprint).forEach(i => {
-            if (typeof i[1] !== Function) this[i[0]] = i[1];
+            if (typeof i[1] !== "function") this[i[0]] = i[1];
+            else this[i[0]] = [i[1]];
         });
 
-        let h = [];
-
-        Object.keys(this).forEach(i => {
-            if (i in ["corrupted", "colossal", "dormant", "uncollectible"]) h.push(i);
-        });
-        h.forEach(i => {
+        const exists = ["corrupted", "colossal", "dormant", "uncollectible"];
+        Object.keys(exists).forEach(i => {
             this[i] = this.check(i);
         });
 
@@ -118,8 +117,8 @@ class Card {
     getKeywords() {
         return this.keywords;
     }
-    getBlueprint() {
-        return this.blueprint;
+    getTribe() {
+        return this.tribe;
     }
 
 
@@ -147,8 +146,15 @@ class Card {
     setKeywords(keywords) {
         this.keywords = keywords;
     }
-    setBlueprint(blueprint) {
-        this.blueprint = blueprint;
+    setFunction(name, val) {
+        const _name = name[0].toUpperCase() + name.slice(1).toLowerCase();
+
+        this["has" + _name] = true;
+        this[name] = val;
+    }
+    addDeathrattle(deathrattle) {
+        this.hasDeathrattle = true;
+        this.deathrattles.push(deathrattle);
     }
 
     addKeyword(keyword) {
@@ -163,9 +169,61 @@ class Card {
             this.canAttackHero = false;
         }
     }
-
     removeKeyword(keyword) {
         this.keywords = this.keywords.filter(k => k != keyword);
+    }
+
+    getStats() {
+        return this.stats;
+    }
+    setStats(stats) {
+        this.stats = stats;
+    }
+
+    addStats(attack = 0, health = 0) {
+        this.addAttack(attack);
+        this.addHealth(health);
+    }
+    remStats(attack = 0, health = 0) {
+        this.remAttack(attack);
+        this.remHealth(health);
+    }
+
+    addHealth(amount) {
+        this.setStats(this.stats[0], this.stats[1] + amount)
+    }
+    addAttack(amount) {
+        this.setStats(this.stats[0] + amount, this.stats[1]);
+    }
+    remHealth(amount) {
+        this.setStats(this.stats[0], this.stats[1] - amount);
+    }
+    remAttack(amount) {
+        this.setStats(this.stats[0] - amount, this.stats[1]);
+    }
+
+    resetAttackTimes() {
+        this.attackTimes = 1;
+
+        if (this.keywords.includes("Windfury")) {
+            this.attackTimes = 2;
+        }
+        if (this.keywords.includes("Mega-Windfury")) {
+            this.attackTimes = 3;
+        }
+    }
+
+    silence() {
+        Object.keys(this).forEach(att => {
+            if (att.startsWith("has")) this[att] = false;
+            else if (this["_" + att]) this[att] = this["_" + att];
+            else if (this.blueprint[att]) this[att] = this.blueprint[att];
+        });
+        this.desc = "";
+    }
+    destroy() {
+        this.silence();
+        this.setStats(0, 0);
     }
 
     activate(name, before, after, ...args) {
@@ -173,13 +231,14 @@ class Card {
 
         if (before) before(name, before, after, ...args);
         if (!this["has" + _name]) return false;
-        const ret = this.blueprint[name](...args);
+        let ret = [];
+        this[name].forEach(i => ret.push(i(...args)));
         if (after) after(name, before, after, ret, ...args);
         return ret;
     }
 
     activateDefault(name, card, ...args) {
-        if (typeof args[0] === Array && typeof args[0][0] === String) return this.activate(name, null, null, card.plr, game, ...args);
+        if (typeof args[0] === "object" && typeof args[0][0] === "string") return this.activate(name, null, null, card.plr, game, ...args);
         else return this.activate(name, null, null, card.plr, game, card, ...args);
     }
 }
@@ -196,44 +255,11 @@ class Minion extends Card {
 
         this.frozen = false;
         this.immune = false;
+        this.dormant = false;
+        this.corrupted = false;
         this.canAttackHero = true;
 
         this.deathrattles = this.hasDeathrattle ? [this.blueprint.deathrattle] : [];
-
-        this._displayName = this.displayName;
-        this._keywords = [];
-        this._storage = [];
-        this._deathrattles = [];
-    }
-
-    getStats() {
-        return this.stats;
-    }
-
-    getAttack() {
-        return this.stats[0];
-    }
-
-    getHealth() {
-        return this.stats[1];
-    }
-
-    getTribe() {
-        return this.tribe;
-    }
-
-    setTribe(tribe) {
-        this.tribe = tribe;
-    }
-
-    addStats(attack = 0, health = 0, restore = false) {
-        this.addAttack(attack);
-        this.addHealth(health, restore);
-    }
-
-    remStats(attack = 0, health = 0) {
-        this.remAttack(attack);
-        this.remHealth(health);
     }
 
     setStats(attack = this.stats[0], health = this.stats[1]) {
@@ -248,24 +274,8 @@ class Minion extends Card {
         this.oghealth = this.stats[1];
     }
 
-    destroy() {
-        this.silence();
-        this.setStats(0, 0);
-    }
-
     setStealthDuration(duration) {
         this.stealthDuration = game.turns + duration;
-    }
-
-    resetAttackTimes() {
-        this.attackTimes = 1;
-
-        if (this.keywords.includes("Windfury")) {
-            this.attackTimes = 2;
-        }
-        if (this.keywords.includes("Mega-Windfury")) {
-            this.attackTimes = 3;
-        }
     }
 
     addHealth(amount, restore = true) {
@@ -281,54 +291,6 @@ class Minion extends Card {
         } else {
             this.oghealth = this.stats[1];
         }
-    }
-
-    addAttack(amount) {
-        this.setStats(this.stats[0] + amount, this.stats[1]);
-    }
-
-    remHealth(amount) {
-        this.stats = [this.stats[0], this.stats[1] - amount];
-    }
-
-    remAttack(amount) {
-        this.stats = [this.stats[0] - amount, this.stats[1]];
-    }
-
-    setDeathrattle(deathrattle) {
-        this.hasDeathrattle = true;
-        this.deathrattles = deathrattle;
-    }
-
-    setEndOfTurn(endofturn) {
-        this.hasEndofturn = true;
-        this.endofturn = endofturn;
-    }
-
-    setStartOfTurn(startofturn) {
-        this.hasStartofturn = true;
-        this.startofturn = startofturn;
-    }
-
-    addDeathrattle(deathrattle) {
-        this.hasDeathrattle = true;
-        this.deathrattles.push(deathrattle);
-    }
-
-    silence() {
-        Object.keys(this).forEach(att => {
-            if (att.startsWith("has")) this[att] = false;
-            else if (this["_" + att]) this[att] = this["_" + att];
-            else if (this.blueprint[att]) this[att] = this.blueprint[att];
-        });
-        this.desc = "";
-    }
-
-    activateDeathrattle(game) {
-        if (!this.hasDeathrattle) return false;
-        this.deathrattles.forEach(deathrattle => {
-            deathrattle(this.plr, game, this);
-        });
     }
 
 }
@@ -354,62 +316,14 @@ class Weapon extends Card {
         this.deathrattles = this.hasDeathrattle ? [this.blueprint.deathrattle] : [];
     }
 
-    getStats() {
-        return this.stats;
-    }
-
-    setStats(stats) {
-        this.stats = stats;
-    }
-
-    resetAttackTimes() {
-        this.attackTimes = 1;
-
-        if (this.keywords.includes("Windfury")) {
-            this.attackTimes = 2;
-        }
-        if (this.keywords.includes("Mega-Windfury")) {
-            this.attackTimes = 3;
-        }
-    }
-
-    remStats(attack = 0, health = 0) {
-        this.remAttack(attack);
-        this.remHealth(health);
-    }
-
-    addHealth(amount) {
-        this.stats[1] += amount;
-    }
-
-    addAttack(amount) {
-        this.stats[0] += amount;
-    }
-
     remHealth(amount) {
-        this.stats = [this.stats[0], this.stats[1] - amount];
+        this.setStats(this.stats[0], this.stats[1] - amount);
 
         if (this.stats[1] <= 0) {
-            this.activateDeathrattle(this.plr.game);
+            this.activateDefault("deathrattle", this);
 
             this.plr.weapon = null;
         }
-    }
-
-    remAttack(amount) {
-        this.stats = [this.stats[0] - amount, this.stats[1]];
-    }
-
-    addDeathrattle(deathrattle) {
-        this.hasDeathrattle = true;
-        this.deathrattles.push(deathrattle);
-    }
-
-    activateDeathrattle(game) {
-        if (!this.hasDeathrattle) return false;
-        this.deathrattles.forEach(deathrattle => {
-            deathrattle(this.plr, game, this);
-        });
     }
 }
 
@@ -1197,13 +1111,13 @@ class Game {
             var n = [];
             
             this.getBoard()[p].forEach(m => {
-                if (m.getHealth() <= 0) {
-                    m.activateDeathrattle(this);
+                if (m.getStats()[1] <= 0) {
+                    m.activateDefault("deathrattle", m);
                 }
             });
 
             this.getBoard()[p].forEach(m => {
-                if (m.getHealth() <= 0) {
+                if (m.getStats()[1] <= 0) {
                     game.stats.update("minionsKilled", m);
 
                     if (m.keywords.includes("Reborn")) {
@@ -2235,9 +2149,14 @@ function viewMinion(minion, detailed = false) {
     if (minion.getDesc()) console.log(minion.getDesc() + "\n");
     console.log("Tribe: " + minion.getTribe());
     console.log("Class: " + minion.getClass());
-    console.log("Is Frozen: " + minion.frozen && !minion.dormant);
-    console.log("Is Immune: " + minion.immune && !minion.dormant);
-    console.log("Is Dormant: " + minion.dormant != false);
+
+    const frozen = minion.frozen && !minion.dormant;
+    const immune = minion.immune && !minion.immune;
+    const dormant = minion.dormant && !minion.dormant;
+
+    console.log("Is Frozen: " + frozen);
+    console.log("Is Immune: " + immune);
+    console.log("Is Dormant: " + dormant);
     if (detailed) {
         console.log("Is Corrupted: " + minion.corrupted);
         console.log("Rarity: " + minion.getRarity());
