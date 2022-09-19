@@ -3,7 +3,8 @@ const { exit } = require('process');
 const rl = require('readline-sync');
 const crypto = require('crypto');
 
-const _debug = true;
+const _debug = true; // Enables commands like /give, /class and /eval. Disables naming and assigning passcodes to players.
+                     // Enable for debugging, disable for actual play.
 
 var cards = {};
 
@@ -20,62 +21,189 @@ function importCards(path) {
 
 importCards(__dirname + '/cards');
 
-class Minion {
+class Card {
     constructor(name, plr) {
         this.blueprint = cards[name];
 
+        const hasArray = [
+            // Mutual keywords
+            "outcast",
+            "infuse",
+            "combo",
+
+            "battlecry",
+            "deathrattle",
+            "inspire",
+            "endofturn",
+            "startofturn",
+            "onattack",
+            "startofgame",
+            "overkill",
+            "frenzy",
+            "honorablekill",
+            "spellburst",
+            "passive",
+            "unpassive",
+
+            "cast",
+            "castondraw"
+        ]
+
+        this.__ids = []
+        
+        for (let i = 0; i < 100; i++) {
+            // This is to prevent cards from getting linked. Don't use this variable
+            this.__ids.push(Math.floor(Math.random() * 671678679546789));
+        }
+        
         this.name = name;
-        this.displayName = this.blueprint.displayName || this.name;
-        this.type = "Minion";
-        this.stats = this.blueprint.stats;
-        this.desc = this.blueprint.desc;
-        this.mana = this.blueprint.mana;
-        this.tribe = this.blueprint.tribe;
-        this.class = this.blueprint.class;
-        this.rarity = this.blueprint.rarity;
-        this.set = this.blueprint.set;
-        this.keywords = this.blueprint.keywords || [];
-        this.oghealth = this.stats[1];
-        this.corrupted = this.blueprint.corrupted || false;
-        this.colossal = this.blueprint.colossal || false;
-        this.dormant = this.blueprint.dormant || false;
-        this.frozen = false;
-        this.immune = false;
-        this.echo = false;
-        this.canAttackHero = true;
-        this.attackTimes = 1;
         this.plr = plr;
-        this.stealthDuration = 0;
-        this.uncollectible = this.blueprint.uncollectible || false;
+
+        this.displayName = this.check(this.displayName, name);
+        this.type = "Card";
+
+        this.keywords = this.check(this.blueprint.keywords, []);
         this.storage = []; // Allow cards to store data for later use
 
         this.turn = null;
 
-        this.hasBattlecry = this.blueprint.battlecry != undefined;
-        this.hasDeathrattle = this.blueprint.deathrattle != undefined;
-        this.hasInspire = this.blueprint.inspire != undefined;
-        this.hasEndOfTurn = this.blueprint.endofturn != undefined;
-        this.hasStartOfTurn = this.blueprint.startofturn != undefined;
-        this.hasCombo = this.blueprint.combo != undefined;
-        this.hasOnAttack = this.blueprint.onattack != undefined;
-        this.hasOutcast = this.blueprint.outcast != undefined;
-        this.hasStartOfGame = this.blueprint.startofgame != undefined;
-        this.hasOverkill = this.blueprint.overkill != undefined;
-        this.hasFrenzy = this.blueprint.frenzy != undefined;
-        this.hasHonorableKill = this.blueprint.honorablekill != undefined;
-        this.hasSpellburst = this.blueprint.spellburst != undefined;
-        this.hasPassive = this.blueprint.passive != undefined;
-        this.hasUnpassive = this.blueprint.unpassive != undefined;
+        this.echo = false;
 
-        this.deathrattles = this.hasDeathrattle ? [this.blueprint.deathrattle] : [];
+        this.infuse_num = this.check(this.blueprint.infuse_num, -1);
+        
+        Object.entries(this.blueprint).forEach(i => {
+            if (typeof i[1] !== Function) this[i[0]] = i[1];
+        });
+
+        let h = [];
+
+        Object.keys(this).forEach(i => {
+            if (i in ["corrupted", "colossal", "dormant", "uncollectible"]) h.push(i);
+        });
+        h.forEach(i => {
+            this[i] = this.check(i);
+        });
+
+        hasArray.forEach(i => { // You have to define hasArray when extending this class
+            // this.hasBattlecry = false;
+            this["has" + i[0].toUpperCase() + i.slice(1)] = this.blueprint[i] != undefined;
+        });
+    }
+
+    check(check, alt_value=false) {
+        return check || alt_value;
     }
 
     getName() {
         return this.name;
     }
-
     getType() {
         return this.type;
+    }
+    getDesc() {
+        return this.desc;
+    }
+    getMana() {
+        return this.mana;
+    }
+    getClass() {
+        return this.class;
+    }
+    getRarity() {
+        return this.rarity;
+    }
+    getSet() {
+        return this.set;
+    }
+    getKeywords() {
+        return this.keywords;
+    }
+    getBlueprint() {
+        return this.blueprint;
+    }
+
+
+    setName(name) {
+        this.name = name;
+    }
+    setType(type) {
+        this.type = type;
+    }
+    setDesc(desc) {
+        this.desc = desc;
+    }
+    setMana(mana) {
+        this.mana = mana;
+    }
+    setClass(_class) {
+        this.class = _class;
+    }
+    setRarity(rarity) {
+        this.rarity = rarity;
+    }
+    setSet(set) {
+        this.set = set;
+    }
+    setKeywords(keywords) {
+        this.keywords = keywords;
+    }
+    setBlueprint(blueprint) {
+        this.blueprint = blueprint;
+    }
+
+    addKeyword(keyword) {
+        this.keywords.push(keyword);
+
+        if (this.keywords.includes("Charge") && this.turn == game.turns) {
+            this.turn = game.turns - 1;
+        }
+
+        if (this.keywords.includes("Rush") && this.turn == game.turns) {
+            this.turn = game.turns - 1;
+            this.canAttackHero = false;
+        }
+    }
+
+    removeKeyword(keyword) {
+        this.keywords = this.keywords.filter(k => k != keyword);
+    }
+
+    activate(name, before, after, ...args) {
+        const _name = name[0].toUpperCase() + name.slice(1).toLowerCase();
+
+        if (before) before(name, before, after, ...args);
+        if (!this["has" + _name]) return false;
+        const ret = this.blueprint[name](...args);
+        if (after) after(name, before, after, ret, ...args);
+        return ret;
+    }
+
+    activateDefault(name, card, ...args) {
+        if (typeof args[0] === Array && typeof args[0][0] === String) return this.activate(name, null, null, card.plr, game, ...args);
+        else return this.activate(name, null, null, card.plr, game, card, ...args);
+    }
+}
+
+class Minion extends Card {
+    constructor(name, plr) {
+        super(name, plr);
+
+        this.type = "Minion";
+
+        this.oghealth = this.stats[1];
+        this.attackTimes = 1;
+        this.stealthDuration = 0;
+
+        this.frozen = false;
+        this.immune = false;
+        this.canAttackHero = true;
+
+        this.deathrattles = this.hasDeathrattle ? [this.blueprint.deathrattle] : [];
+
+        this._displayName = this.displayName;
+        this._keywords = [];
+        this._storage = [];
+        this._deathrattles = [];
     }
 
     getStats() {
@@ -90,85 +218,12 @@ class Minion {
         return this.stats[1];
     }
 
-    getDesc() {
-        return this.desc;
-    }
-
-    getCost() {
-        return this.mana;
-    }
-
     getTribe() {
         return this.tribe;
     }
 
-    getClass() {
-        return this.class;
-    }
-
-    getRarity() {
-        return this.rarity;
-    }
-
-    getSet() {
-        return this.set;
-    }
-
-    getKeywords() {
-        return this.keywords;
-    }
-
-    getBlueprint() {
-        return this.blueprint;
-    }
-
-    setName(name) {
-        this.name = name;
-    }
-
-    setDesc(desc) {
-        this.desc = desc;
-    }
-
-    setMana(mana) {
-        this.mana = mana;
-    }
-
     setTribe(tribe) {
         this.tribe = tribe;
-    }
-
-    setClass(c) {
-        this.class = c;
-    }
-
-    setRarity(rarity) {
-        this.rarity = rarity;
-    }
-
-    setSet(set) {
-        this.set = set;
-    }
-
-    setKeywords(keywords) {
-        this.keywords = keywords;
-    }
-
-    addKeyword(keyword) {
-        this.keywords.push(keyword);
-
-        if (this.keywords.includes("Charge")) {
-            this.turn = game.turns - 1;
-        }
-
-        if (this.keywords.includes("Rush")) {
-            this.turn = game.turns - 1;
-            this.canAttackHero = false;
-        }
-    }
-
-    removeKeyword(keyword) {
-        this.keywords = this.keywords.filter(k => k != keyword);
     }
 
     addStats(attack = 0, health = 0, restore = false) {
@@ -187,6 +242,10 @@ class Minion {
         if (health > this.oghealth) {
             this.oghealth = health;
         }
+    }
+
+    resetOgHealth() {
+        this.oghealth = this.stats[1];
     }
 
     destroy() {
@@ -242,12 +301,12 @@ class Minion {
     }
 
     setEndOfTurn(endofturn) {
-        this.hasEndOfTurn = true;
+        this.hasEndofturn = true;
         this.endofturn = endofturn;
     }
 
     setStartOfTurn(startofturn) {
-        this.hasStartOfTurn = true;
+        this.hasStartofturn = true;
         this.startofturn = startofturn;
     }
 
@@ -257,40 +316,12 @@ class Minion {
     }
 
     silence() {
-        /*this.forEach(att => {
-            this[att] = this.blueprint[att];
-        })*/ // TODO: Make this work?
-
-        this.name = this.blueprint.name;
-        this.stats = this.blueprint.stats;
-        this.desc = this.blueprint.desc;
-        this.mana = this.blueprint.mana;
-        this.tribe = this.blueprint.tribe;
-        this.class = this.blueprint.class;
-        this.rarity = this.blueprint.rarity;
-        this.set = this.blueprint.set;
-
-        this.keywords = [];
-
-        this.deathrattles = [];
-
-        this.hasDeathrattle = false;
-        this.hasEndOfTurn = false;
-        this.hasStartOfTurn = false;
-        this.hasInspire = false;
-        this.hasOnAttack = false;
-        this.hasOverkill = false;
-        this.hasFrenzy = false;
-        this.hasHonorableKill = false;
-        this.hasSpellburst = false;
-        this.hasPassive = false;
-        this.hasUnpassive = false;
-    }
-
-    activateBattlecry(game) {
-        if (this.hasPassive) this.activatePassive(game, ["battlecry", this]);
-        if (!this.hasBattlecry) return false;
-        return this.blueprint.battlecry(this.plr, game, this);
+        Object.keys(this).forEach(att => {
+            if (att.startsWith("has")) this[att] = false;
+            else if (this["_" + att]) this[att] = this["_" + att];
+            else if (this.blueprint[att]) this[att] = this.blueprint[att];
+        });
+        this.desc = "";
     }
 
     activateDeathrattle(game) {
@@ -300,288 +331,35 @@ class Minion {
         });
     }
 
-    activateInspire(game) {
-        if (!this.hasInspire) return false;
-        this.blueprint.inspire(this.plr, game, this);
-    }
-
-    activateEndOfTurn(game) {
-        if (!this.hasEndOfTurn) return false;
-        this.blueprint.endofturn(this.plr, game, this);
-    }
-
-    activateStartOfTurn(game) {
-        if (!this.hasStartOfTurn) return false;
-        this.blueprint.startofturn(this.plr, game, this);
-    }
-
-    activateCombo(game) {
-        if (!this.hasCombo) return false;
-        this.blueprint.combo(this.plr, game, this);
-    }
-
-    activateOnAttack(game) {
-        if (!this.hasOnAttack) return false;
-        this.blueprint.onAttack(this.plr, game, this);
-    }
-
-    activateOutcast(game) {
-        if (!this.hasOutcast) return false;
-        this.blueprint.outcast(this.plr, game, this);
-    }
-
-    activateStartOfGame(game) {
-        if (!this.hasStartOfGame) return false;
-        this.blueprint.startofgame(this.plr, game, this);
-    }
-
-    activateOverkill(game) {
-        if (!this.hasOverkill) return false;
-        this.blueprint.overkill(this.plr, game, this);
-    }
-
-    activateFrenzy(game) {
-        if (!this.hasFrenzy) return false;
-        this.blueprint.frenzy(this.plr, game, this);
-    }
-
-    activateHonorableKill(game) {
-        if (!this.hasHonorableKill) return false;
-        this.blueprint.honorablekill(this.plr, game, this);
-    }
-
-    activateSpellburst(game) {
-        if (!this.hasSpellburst) return false;
-        this.blueprint.spellburst(this.plr, game, this);
-        this.hasSpellburst = false;
-    }
-
-    activatePassive(game, trigger) {
-        if (!this.hasPassive) return false;
-        this.blueprint.passive(this.plr, game, this, trigger);
-    }
-
-    activateUnpassive(game, ignore = true) {
-        if (!this.hasUnpassive) return false;
-        this.blueprint.unpassive(this.plr, game, this, ignore);
-    }
-
 }
 
-class Spell {
+class Spell extends Card {
     constructor(name, plr) {
-        this.blueprint = cards[name];
+        super(name, plr);
 
-        this.name = name;
-        this.displayName = this.blueprint.displayName || this.name;
         this.type = "Spell";
-        this.desc = this.blueprint.desc;
-        this.mana = this.blueprint.mana;
-        this.class = this.blueprint.class;
-        this.rarity = this.blueprint.rarity;
-        this.set = this.blueprint.set;
-        this.spellClass = this.blueprint.spellClass || null;
-        this.keywords = this.blueprint.keywords || [];
-        this.corrupted = this.blueprint.corrupted || false;
-        this.plr = plr;
-        this.uncollectible = this.blueprint.uncollectible || false;
-        this.storage = []; // Allow cards to store data for later use
 
-        this.echo = false;
-
-        this.hasCast = this.blueprint.cast != undefined;
-        this.hasCombo = this.blueprint.combo != undefined;
-        this.hasOutcast = this.blueprint.outcast != undefined;
-        this.hasCastOnDraw = this.blueprint.castondraw != undefined;
+        this.spellClass = this.check(this.blueprint.spellClass, null);
     }
-
-    getName() {
-        return this.name;
-    }
-
-    getType() {
-        return this.type;
-    }
-
-    getDesc() {
-        return this.desc;
-    }
-
-    getCost() {
-        return this.mana;
-    }
-
-    getClass() {
-        return this.class;
-    }
-
-    getRarity() {
-        return this.rarity;
-    }
-
-    getSet() {
-        return this.set;
-    }
-
-    getBlueprint() {
-        return this.blueprint;
-    }
-
-    setName(name) {
-        this.name = name;
-    }
-
-    setDesc(desc) {
-        this.desc = desc;
-    }
-
-    setMana(mana) {
-        this.mana = mana;
-    }
-
-    setClass(c) {
-        this.class = c;
-    }
-
-    setRarity(rarity) {
-        this.rarity = rarity;
-    }
-
-    setSet(set) {
-        this.set = set;
-    }
-
-    addKeyword(keyword) {
-        this.keywords.push(keyword);
-    }
-
-    removeKeyword(keyword) {
-        this.keywords = this.keywords.filter(k => k != keyword);
-    }
-
-    activateCast(game) {
-        if (!this.hasCast) return false;
-        return this.blueprint.cast(this.plr, game, this);
-    }
-
-    activateCombo(game) {
-        if (!this.hasCombo) return false;
-        this.blueprint.combo(this.plr, game, this);
-    }
-
-    activateOutcast(game) {
-        if (!this.hasOutcast) return false;
-        this.blueprint.outcast(this.plr, game, this);
-    }
-
-    activateCastOnDraw(game) {
-        if (!this.hasCastOnDraw) return false;
-        this.blueprint.castondraw(this.plr, game, this);
-        return true;
-    }
-
 }
 
-class Weapon {
+class Weapon extends Card {
     constructor(name, plr) {
-        this.blueprint = cards[name];
+        super(name, plr);
 
-        this.name = name;
-        this.displayName = this.blueprint.displayName || this.name;
         this.type = "Weapon";
-        this.desc = this.blueprint.desc;
-        this.mana = this.blueprint.mana;
-        this.class = this.blueprint.class;
-        this.rarity = this.blueprint.rarity;
-        this.set = this.blueprint.set;
-        this.stats = this.blueprint.stats;
-        this.keywords = this.blueprint.keywords || [];
-        this.corrupted = this.blueprint.corrupted || false;
+
         this.attackTimes = 1;
-        this.plr = plr;
-        this.uncollectible = this.blueprint.uncollectible || false;
-        this.storage = []; // Allow cards to store data for later use
-
-        this.echo = false;
-
-        this.hasBattlecry = this.blueprint.battlecry != undefined;
-        this.hasDeathrattle = this.blueprint.deathrattle != undefined;
-        this.hasOnAttack = this.blueprint.onattack != undefined;
-        this.hasCombo = this.blueprint.combo != undefined;
-        this.hasOutcast = this.blueprint.outcast != undefined;
-        this.hasStartOfTurn = this.blueprint.startofturn != undefined;
-        this.hasPassive = this.blueprint.passive != undefined;
-        this.hasUnpassive = this.blueprint.unpassive != undefined;
 
         this.deathrattles = this.hasDeathrattle ? [this.blueprint.deathrattle] : [];
-    }
-
-    getName() {
-        return this.name;
-    }
-
-    getType() {
-        return this.type;
-    }
-
-    getDesc() {
-        return this.desc;
-    }
-
-    getCost() {
-        return this.mana;
-    }
-
-    getClass() {
-        return this.class;
-    }
-
-    getRarity() {
-        return this.rarity;
-    }
-
-    getSet() {
-        return this.set;
     }
 
     getStats() {
         return this.stats;
     }
 
-    getBlueprint() {
-        return this.blueprint;
-    }
-
-    setName(name) {
-        this.name = name;
-    }
-
-    setDesc(desc) {
-        this.desc = desc;
-    }
-
-    setMana(mana) {
-        this.mana = mana;
-    }
-
-    setClass(c) {
-        this.class = c;
-    }
-
-    setRarity(rarity) {
-        this.rarity = rarity;
-    }
-
-    setSet(set) {
-        this.set = set;
-    }
-
-    addKeyword(keyword) {
-        this.keywords.push(keyword);
-    }
-
-    removeKeyword(keyword) {
-        this.keywords = this.keywords.filter(k => k != keyword);
+    setStats(stats) {
+        this.stats = stats;
     }
 
     resetAttackTimes() {
@@ -627,47 +405,11 @@ class Weapon {
         this.deathrattles.push(deathrattle);
     }
 
-    activateBattlecry(game) {
-        if (this.hasPassive) this.activatePassive(game, ["battlecry", this]);
-        if (!this.hasBattlecry) return false;
-        return this.blueprint.battlecry(this.plr, game, this);
-    }
-
     activateDeathrattle(game) {
         if (!this.hasDeathrattle) return false;
         this.deathrattles.forEach(deathrattle => {
             deathrattle(this.plr, game, this);
         });
-    }
-
-    activateOnAttack(game) {
-        if (!this.hasOnAttack) return false;
-        this.blueprint.onattack(this.plr, game, this);
-    }
-
-    activateCombo(game) {
-        if (!this.hasCombo) return false;
-        this.blueprint.combo(this.plr, game, this);
-    }
-
-    activateOutcast(game) {
-        if (!this.hasOutcast) return false;
-        this.blueprint.outcast(this.plr, game, this);
-    }
-
-    activateStartOfTurn(game) {
-        if (!this.hasStartOfTurn) return false;
-        this.blueprint.startofturn(this.plr, game, this);
-    }
-
-    activatePassive(game, trigger) {
-        if (!this.hasPassive) return false;
-        this.blueprint.passive(this.plr, game, this, trigger);
-    }
-
-    activateUnpassive(game, ignore = true) {
-        if (!this.hasUnpassive) return false;
-        this.blueprint.unpassive(this.plr, game, this, ignore);
     }
 }
 
@@ -789,10 +531,12 @@ class Player {
     remHealth(amount) {
         var a = amount;
 
-        while (this.armor > 0) {
+        while (this.armor > 0 && a > 0) {
             a--;
             this.armor--;
         }
+
+        if (a <= 0) return true;
 
         this.health -= a;
 
@@ -826,8 +570,6 @@ class Player {
     }
 
     drawCard() {
-        //this.game.functions.shuffle(this.deck); // Removed incase this messes with Lorekeeper Polkelt
-
         if (this.deck.length <= 0) {
             this.fatigue++;
 
@@ -839,7 +581,7 @@ class Player {
         var card = this.deck.pop()
 
         if (card.type == "Spell") {
-            if (card.activateCastOnDraw(this.game)) {
+            if (card.activateDefault("castondraw", card)) {
                 return null;
             }
         }
@@ -854,6 +596,7 @@ class Player {
 
     heroPower() {
         if (this.hero_power == "Demon Hunter") this.heroPowerCost = 1;
+        else this.heroPowerCost = 2; // This is to prevent changing hero power to demon hunter and changing back to decrease cost to 1
 
         if (this.getMana() < this.heroPowerCost || !this.canUseHeroPower) return false;
 
@@ -870,7 +613,7 @@ class Player {
         else if (this.hero_power == "Mage") {
             var t = this.game.functions.selectTarget("Deal 1 damage.", "heropower");
 
-            if (t == false) return false;
+            if (!t) return false;
 
             if (t instanceof Player) {
                 t.remHealth(1);
@@ -884,7 +627,7 @@ class Player {
         else if (this.hero_power == "Priest") {
             var t = this.game.functions.selectTarget("Restore 2 health.", "heropower");
 
-            if (t == false) return false;
+            if (!t) return false;
 
             t.addHealth(2);
         }
@@ -916,7 +659,7 @@ class Player {
         }
 
         this.game.getBoard()[this.id].forEach(m => {
-            m.activateInspire(this.game);
+            m.activateDefault("inspire", m);
         });
 
         this.setMana(this.getMana() - this.heroPowerCost);
@@ -1064,23 +807,23 @@ class Game {
 
         this.player1.deck.forEach(c => {
             if (c.getType() == "Minion") {
-                c.activateStartOfGame(this);
+                c.activateDefault("startofgame", c);
             }
         });
         this.player2.deck.forEach(c => {
             if (c.getType() == "Minion") {
-                c.activateStartOfGame(this);
+                c.activateDefault("startofgame", c);
             }
         });
 
         this.player1.hand.forEach(c => {
             if (c.getType() == "Minion") {
-                c.activateStartOfGame(this);
+                c.activateDefault("startofgame", c);
             }
         });
         this.player2.hand.forEach(c => {
             if (c.getType() == "Minion") {
-                c.activateStartOfGame(this);
+                c.activateDefault("startofgame", c);
             }
         });
     }
@@ -1102,7 +845,7 @@ class Game {
         }
 
         this.getBoard()[this.turn.id].forEach(m => {
-            m.activateEndOfTurn(this);
+            m.activateDefault("endofturn", m);
         });
 
         let _c = this.player1.hand.filter(c => !c.echo)
@@ -1118,7 +861,7 @@ class Game {
         if (this.turn.maxMana > 10) this.turn.maxMana = 10;
         this.turn.setMana(this.turn.getMaxMana());
 
-        this.nextTurn = (this.nextTurn === this.player1) ? this.player2 : this.player1;
+        this.nextTurn = this.getOtherPlayer(this.turn);
 
         this.turns += 1;
     }
@@ -1147,15 +890,15 @@ class Game {
         this.turn.mana -= this.turn.overload;
         this.turn.overload = 0;
 
-        if (this.player1.weapon) {
-            this.player1.weapon.activateStartOfTurn(this);
+        if (this.player1.weapon && this.turn == this.player1) {
+            this.player1.weapon.activateDefault("startofturn", this.player1.weapon);
         }
-        if (this.player2.weapon) {
-            this.player2.weapon.activateStartOfTurn(this);
+        if (this.player2.weapon && this.turn == this.player2) {
+            this.player2.weapon.activateDefault("startofturn", this.player2.weapon);
         }
 
         this.getBoard()[this.plrNameToIndex(this.turn.getName())].forEach(m => {
-            m.activateStartOfTurn(this);
+            m.activateDefault("startofturn", m);
             m.canAttackHero = true;
             m.resetAttackTimes();
 
@@ -1170,7 +913,7 @@ class Game {
                     m.frozen = false;
                     m.immune = false;
 
-                    m.activateBattlecry(this);
+                    m.activate("battlecry", () => m.activateDefault("passive", m, ["battlecry", m]), null, m.plr, this, m);
                 }
 
                 m.turn = game.turns;
@@ -1187,7 +930,7 @@ class Game {
     }
 
     playCard(card, player) {
-        if (player.getMana() < card.getCost()) {
+        if (player.getMana() < card.getMana()) {
             return false;
         }
 
@@ -1236,7 +979,7 @@ class Game {
             }
         }
 
-        player.setMana(player.getMana() - card.getCost());
+        player.setMana(player.getMana() - card.getMana());
         
         var n = []
 
@@ -1323,7 +1066,7 @@ class Game {
                 card.immune = true;
                 card.dormant = card.dormant + game.turns;
             } else {
-                if (card.activateBattlecry(this) === -1) {
+                if (card.activate("battlecry", () => card.activateDefault("passive", card, ["battlecry", card]), null, card.plr, this, card) === -1) {
                     this.functions.addToHand(card, player, false);
                     player.mana += card.mana;
                     return;
@@ -1351,7 +1094,7 @@ class Game {
                 return;
             }
 
-            if (card.activateCast(this) === -1) {
+            if (card.activateDefault("cast", card) === -1) {
                 this.functions.addToHand(card, player, false);
                 player.mana += card.mana;
                 return;
@@ -1360,16 +1103,16 @@ class Game {
             game.stats.update("spellsCast", card);
 
             this.getBoard()[this.plrNameToIndex(player.getName())].forEach(m => {
-                m.activateSpellburst(this);
+                m.activate("spellburst", null, () => m.hasSpellburst = false, m.plr, this, m);
             });
         } else if (card.getType() === "Weapon") {
             player.setWeapon(card);
 
-            card.activateBattlecry(this);
+            card.activate("battlecry", () => card.activateDefault("passive", card, ["battlecry", card]), null, card.plr, this, card);
         }
 
         if (player.hasPlayedCardThisTurn) {
-            card.activateCombo(this);
+            card.activateDefault("combo", card);
         }
 
         player.hasPlayedCardThisTurn = true;
@@ -1473,7 +1216,7 @@ class Game {
 
                         n.push(minion);
                     } else {
-                        m.activateUnpassive(this, false);
+                        m.activateDefault("unpassive", m, false);
                     }
                 } else {
                     n.push(m);
@@ -1514,7 +1257,7 @@ class Game {
             target.remStats(0, minion)
 
             if (target.stats[1] > 0) {
-                target.activateFrenzy(this);
+                target.activateDefault("frenzy", target);
             }
 
             this.killMinions();
@@ -1524,12 +1267,12 @@ class Game {
             if (minion.getStats()[0] <= 0) return false;
 
             game.stats.update("minionsThatAttacked", minion);
-            game.stats.update("minionsAttacked", target);
+            game.stats.update("minionsAttacked", minion);
 
             minion.remStats(0, target.stats[0])
 
             if (minion.stats[1] > 0) {
-                minion.activateFrenzy(this);
+                minion.activateDefault("frenzy", minion);
             }
 
             if (target.keywords.includes("Divine Shield")) {
@@ -1538,18 +1281,20 @@ class Game {
                 return false;
             }
 
+            game.stats.update("minionsAttacked", target);
+
             target.remStats(0, minion.stats[0])
 
             if (target.getStats()[1] > 0) {
-                target.activateFrenzy(this);
+                target.activateDefault("frenzy", target);
             }
 
             if (target.getStats()[1] < 0) {
-                minion.activateOverkill(this);
+                minion.activateDefault("overkill", minion);
             }
 
             if (target.getStats()[1] == 0) {
-                minion.activateHonorableKill(this);
+                minion.activateDefault("honorablekill", minion);
             }
 
             return true;
@@ -1586,69 +1331,60 @@ class GameStats {
         this.damageTakenOnOwnTurn = [[], []];
     }
 
-    update(key, val) {
-        this[key][game.turn.id].push(val);
+    cardUpdate(key, val) {
+        game.turn.getHand().forEach(p => {
+            // Infuse
+            if (key == "minionsKilled" && val.plr == game.turn && p.infuse_num >= 0) {
+                p.setDesc(p.desc.replace(`Infuse (${p.infuse_num})`, `Infuse (${p.infuse_num - 1})`));
+                p.infuse_num -= 1;
+
+                if (p.infuse_num == 0) {
+                    p.activateDefault("infuse", p);
+                    p.setDesc(p.desc.replace(`Infuse (${p.infuse_num})`, "Infused"));
+                }
+            }
+        });
 
         game.getBoard().forEach(p => {
             p.forEach(m => {
-                m.activateUnpassive(game);
-                m.activatePassive(game, [key, val]);
+                m.activateDefault("unpassive", m, true);
+                m.activateDefault("passive", m, [key, val]);
             });
         });
         
         if (game.player1.weapon) {
-            game.player1.weapon.activateUnpassive(game);
-            game.player1.weapon.activatePassive(game, [key, val]);
+            game.player1.weapon.activateDefault("unpassive", game.player1.weapon, true);
+            game.player1.weapon.activateDefault("passive", game.player1.weapon, [key, val]);
         }
         if (game.player2.weapon) {
-            game.player2.weapon.activateUnpassive(game);
-            game.player2.weapon.activatePassive(game, [key, val]);
+            game.player2.weapon.activateDefault("unpassive", game.player2.weapon, true);
+            game.player2.weapon.activateDefault("passive", game.player2.weapon, [key, val]);
         }
+    }
 
-        game.nextTurn.secrets.forEach(s => {
+    questUpdate(quests_name, key, val, plr = game.turn) {
+        plr[quests_name].forEach(s => {
             if (s["key"] == key) {
                 if (!s["manual_progression"]) s["progress"][0]++;
 
                 if ((s["value"] + this[key][game.turn.id].length - 1) == this[key][game.turn.id].length) {
                     if (s["callback"](val, game, s["turn"])) {
-                        game.nextTurn.secrets.splice(game.nextTurn.secrets.indexOf(s), 1);
+                        plr[quests_name].splice(plr[quests_name].indexOf(s), 1);
                     }
                 }
             }
         });
-        game.turn.sidequests.forEach(s => {
-            if (s["key"] == key) {
-                if (!s["manual_progression"]) s["progress"][0]++;
+    }
 
-                if ((s["value"] + this[key][game.turn.id].length - 1) == this[key][game.turn.id].length) {
-                    if (s["callback"](val, game, s["turn"])) {
-                        game.turn.sidequests.splice(game.turn.sidequests.indexOf(s), 1);
-                    }
-                }
-            }
-        });
-        game.turn.quests.forEach(s => {
-            if (s["key"] == key) {
-                if (!s["manual_progression"]) s["progress"][0]++;
+    update(key, val) {
+        this[key][game.turn.id].push(val);
 
-                if ((s["value"] + this[key][game.turn.id].length - 1) == this[key][game.turn.id].length) {
-                    if (s["callback"](val, game, s["turn"])) {
-                        game.turn.quests.splice(game.turn.quests.indexOf(s), 1);
-                    }
-                }
-            }
-        });
-        game.turn.questlines.forEach(s => {
-            if (s["key"] == key) {
-                if (!s["manual_progression"]) s["progress"][0]++;
+        this.cardUpdate(key, val);
 
-                if (s["key"] == key && (s["value"] + this[key][game.turn.id].length - 1) == this[key][game.turn.id].length) {
-                    if (s["callback"](val, game, s["turn"])) {
-                        game.turn.questlines.splice(game.turn.questlines.indexOf(s), 1);
-                    }
-                }
-            }
-        });
+        this.questUpdate("secrets",    key, val, game.nextTurn);
+        this.questUpdate("sidequests", key, val);
+        this.questUpdate("quests",     key, val);
+        this.questUpdate("questlines", key, val);
     }
 }
 
@@ -1742,7 +1478,7 @@ class Functions {
             game.attackMinion(this.accountForSpellDmg(damage), target);
         
             if (target.stats[1] > 0) {
-                target.activateFrenzy(game);
+                target.activateDefault("frenzy", target);
             }
 
             game.killMinions();
@@ -2162,6 +1898,8 @@ function doTurn() {
     }
 
     else if (q.startsWith("/give ")) {
+        if (!_debug) return;
+
         var t = q.split(" ");
 
         t.shift();
@@ -2185,6 +1923,8 @@ function doTurn() {
 
         game.functions.addToHand(m, curr);
     } else if (q.startsWith("/class ")) {
+        if (!_debug) return;
+
         var t = q.split(" ");
 
         t.shift();
@@ -2222,6 +1962,8 @@ function doTurn() {
             printAll(curr);
         }
         else if (q == "/eval") {
+            if (!_debug) return;
+
             eval(rl.question("\nWhat do you want to evaluate? "));
         }
         else if (q === "attack") {
@@ -2268,7 +2010,7 @@ function doTurn() {
                         curr.weapon.remStats(0, 1);
                         curr.weapon.attackTimes -= 1;
     
-                        curr.weapon.activateOnAttack(game);
+                        curr.weapon.activateDefault("onattack", curr.weapon);
                     }
     
                     curr.attack = 0;
@@ -2324,14 +2066,14 @@ function doTurn() {
                 curr.remHealth(target.stats[0]);
 
                 if (target.stats[1] > 0) {
-                    target.activateFrenzy(game);
+                    target.activateDefault("frenzy", target);
                 }
 
                 if (curr.weapon && curr.weapon.attackTimes > 0 && curr.weapon.stats[0]) {
                     curr.weapon.remStats(0, 1);
                     curr.weapon.attackTimes -= 1;
 
-                    curr.weapon.activateOnAttack(game);
+                    curr.weapon.activateDefault("onattack", curr.weapon);
 
                     if (curr.weapon.keywords.includes("Poisonous")) {
                         target.setStats(target.stats[0], 0);
@@ -2364,7 +2106,7 @@ function doTurn() {
                     attacker.removeKeyword("Stealth");
                 }
 
-                attacker.activateOnAttack(game);
+                attacker.activateDefault("onattack", attacker);
 
                 if (attacker.keywords.includes("Lifesteal")) {
                     curr.addHealth(attacker.stats[0]);
@@ -2393,7 +2135,7 @@ function doTurn() {
     }
 
     if (q == curr.hand.length || q == 1) {
-        card.activateOutcast(game);
+        card.activateDefault("outcast", card);
     }
 
     game.playCard(card, curr);
@@ -2479,17 +2221,17 @@ function printAll(curr, detailed = false) {
     curr.getHand().forEach((card, i) => {
         if (card.getType() === "Minion" || card.getType() === "Weapon") {
             var desc = card.getDesc().length > 0 ? ` (${card.getDesc()}) ` : " ";
-            console.log(`[${i + 1}] {${card.getCost()}} ${card.displayName} [${card.getStats().join(' / ')}]${desc}(${card.getType()})`);
+            console.log(`[${i + 1}] {${card.getMana()}} ${card.displayName} [${card.getStats().join(' / ')}]${desc}(${card.getType()})`);
         } else {
             var desc = card.getDesc().length > 0 ? ` (${card.getDesc()}) ` : " ";
-            console.log(`[${i + 1}] {${card.getCost()}} ${card.displayName}${desc}(${card.getType()})`);
+            console.log(`[${i + 1}] {${card.getMana()}} ${card.displayName}${desc}(${card.getType()})`);
         }
     });
     console.log("------------")
 }
 
 function viewMinion(minion, detailed = false) {
-    console.log(`{${minion.getCost()}} ${minion.displayName} [${minion.blueprint.stats.join(' / ')}]\n`);
+    console.log(`{${minion.getMana()}} ${minion.displayName} [${minion.blueprint.stats.join(' / ')}]\n`);
     if (minion.getDesc()) console.log(minion.getDesc() + "\n");
     console.log("Tribe: " + minion.getTribe());
     console.log("Class: " + minion.getClass());
@@ -2563,9 +2305,10 @@ function importDeck(code, plr) {
     // Find all cards with "x2" in front of them, and remove it and add the card twice
     for (let i = 0; i < deck.length; i++) {
         if (deck[i].startsWith("x2 ")) {
-            let m = createVarFromFoundType(deck[i].substring(3), plr);
+            let m1 = createVarFromFoundType(deck[i].substring(3), plr);
+            let m2 = createVarFromFoundType(deck[i].substring(3), plr);
 
-            _deck.push(m, m);
+            _deck.push(m1, m2);
         } else {
             let m = createVarFromFoundType(deck[i], plr);
 
