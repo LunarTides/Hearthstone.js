@@ -443,10 +443,12 @@ class Player {
         this.attack += weapon.getStats()[0];
     }
 
-    setHero(hero) {
+    setHero(hero, armor) {
         this.hero = hero;
 
         this.hero_power = "hero";
+
+        this.armor += armor;
     }
 
     addOverload(amount) {
@@ -1058,7 +1060,7 @@ class Game {
 
             card.activate("battlecry", () => card.activateDefault("passive", card, ["battlecry", card]), null, card.plr, this, card);
         } else if (card.getType() === "Hero") {
-            player.setHero(card);
+            player.setHero(card, 5);
 
             card.activate("battlecry", () => card.activateDefault("passive", card, ["battlecry", card]), null, card.plr, this, card);
         }
