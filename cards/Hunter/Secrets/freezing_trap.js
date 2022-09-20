@@ -5,6 +5,7 @@ module.exports = {
     class: "Hunter",
     rarity: "Common",
     set: "Core",
+    spellClass: "Frost",
 
     cast(plr, game, card) {
         game.functions.addSecret(plr, card, "minionsThatAttacked", 1, (minion, game, turn) => {

@@ -1441,12 +1441,6 @@ class Functions {
 
         if (target instanceof Minion) {
             game.attackMinion(this.accountForSpellDmg(damage), target);
-        
-            if (target.stats[1] > 0) {
-                target.activateDefault("frenzy", target);
-            }
-
-            game.killMinions();
         } else if (target instanceof Player) {
             target.remHealth(this.accountForSpellDmg(damage));
         }
