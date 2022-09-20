@@ -90,6 +90,10 @@ class Card {
             // this.hasBattlecry = false;
             this["has" + i[0].toUpperCase() + i.slice(1)] = this.blueprint[i] != undefined;
         });
+
+        Object.entries(this).forEach(i => {
+            this["_" + i[0]] = i[1];
+        });
     }
 
     check(check, alt_value=false) {
@@ -930,6 +934,7 @@ class Game {
         }
 
         player.setMana(player.getMana() - card.getMana());
+        card.setMana(card._mana);
         
         var n = []
 
@@ -1222,7 +1227,7 @@ class Game {
         } else if (minion.attackTimes > 0) {
             if (minion.getStats()[0] <= 0) return false;
 
-            game.stats.update("minionsThatAttacked", minion);
+            game.stats.update("minionsThatAttacked", [minion, target]);
             game.stats.update("minionsAttacked", minion);
 
             minion.remStats(0, target.stats[0])
@@ -1325,7 +1330,9 @@ class GameStats {
 
                 if ((s["value"] + this[key][game.turn.id].length - 1) == this[key][game.turn.id].length) {
                     if (s["callback"](val, game, s["turn"])) {
+                        s["progress"][0]++;
                         plr[quests_name].splice(plr[quests_name].indexOf(s), 1);
+                        rl.question("\nYou triggered the opponents's '" + s.name + "'.\n")
                     }
                 }
             }
@@ -2139,7 +2146,7 @@ function printAll(curr, detailed = false) {
         console.log("-------------------------------");
 
         if (game.nextTurn.secrets.length > 0)
-            console.log(`Opponent's Secrets: ${game.nextTurn.secrets.length + 1}`);
+            console.log(`Opponent's Secrets: ${game.nextTurn.secrets.length}`);
         if (game.nextTurn.sidequests.length > 0)
             console.log(`Opponent's Sidequests: ${game.nextTurn.sidequests.map(x => x["name"] + " (" + x["progress"][0] + " / " + x["progress"][1] + ")").join(', ')}`);
         if (game.nextTurn.quests.length > 0)
