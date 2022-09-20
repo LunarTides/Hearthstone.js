@@ -183,8 +183,12 @@ class Card {
     getStats() {
         return this.stats;
     }
-    setStats(stats) {
-        this.stats = stats;
+    setStats(attack = this.stats[0], health = this.stats[1]) {
+        this.stats = [attack, health];
+
+        if (health > this.oghealth) {
+            this.oghealth = health;
+        }
     }
 
     addStats(attack = 0, health = 0) {
@@ -208,6 +212,9 @@ class Card {
     remAttack(amount) {
         this.setStats(this.stats[0] - amount, this.stats[1]);
     }
+    resetOgHealth() {
+        this.oghealth = this.stats[1];
+    }
 
     resetAttackTimes() {
         this.attackTimes = 1;
@@ -221,12 +228,15 @@ class Card {
     }
 
     silence() {
+        this.activateDefault("unpassive", false);
+
         Object.keys(this).forEach(att => {
             if (att.startsWith("has")) this[att] = false;
             else if (this["_" + att]) this[att] = this["_" + att];
             else if (this.blueprint[att]) this[att] = this.blueprint[att];
         });
         this.desc = "";
+        this.keywords = [];
     }
     destroy() {
         this.silence();
@@ -259,9 +269,10 @@ class Minion extends Card {
 
         this.type = "Minion";
 
-        this.oghealth = this.stats[1];
         this.attackTimes = 1;
         this.stealthDuration = 0;
+
+        this.oghealth = this.stats[1];
 
         this.frozen = false;
         this.immune = false;
@@ -270,18 +281,6 @@ class Minion extends Card {
         this.canAttackHero = true;
 
         this.deathrattles = this.hasDeathrattle ? [this.blueprint.deathrattle] : [];
-    }
-
-    setStats(attack = this.stats[0], health = this.stats[1]) {
-        this.stats = [attack, health];
-
-        if (health > this.oghealth) {
-            this.oghealth = health;
-        }
-    }
-
-    resetOgHealth() {
-        this.oghealth = this.stats[1];
     }
 
     setStealthDuration(duration) {
@@ -322,6 +321,8 @@ class Weapon extends Card {
         this.type = "Weapon";
 
         this.attackTimes = 1;
+
+        this.oghealth = this.stats[1];
 
         this.deathrattles = this.hasDeathrattle ? [this.blueprint.deathrattle] : [];
     }
@@ -440,6 +441,15 @@ class Player {
         if (this.mana > this.maxMana) this.mana = this.maxMana;
     }
 
+    gainEmptyMana(mana) {
+        this.setMaxMana(this.getMaxMana() + mana);
+    }
+
+    gainMana(mana) {
+        this.gainEmptyMana(mana);
+        this.refreshMana(this.getMana() + mana);
+    }
+
     setGame(game) {
         this.game = game;
     }
@@ -448,6 +458,14 @@ class Player {
         this.weapon = weapon;
 
         this.attack += weapon.getStats()[0];
+    }
+
+    destroyWeapon(triggerDeathrattle = false) {
+        if (!this.weapon) return false;
+
+        if (triggerDeathrattle) this.weapon.activateDefault("deathrattle");
+        this.weapon.destroy();
+        this.weapon = null;
     }
 
     setHero(hero, armor) {
@@ -982,7 +1000,7 @@ class Game {
 
                 let loc = game.functions.selectTarget(`\nWhich minion do you want this to Magnetize to: `, false, "self", "minion");
 
-                game.stats.update("minionsPlayed", [card, game.turns]);
+                game.stats.update("minionsPlayed", card);
 
                 if (loc.tribe == "Mech") {
                     loc.addStats(card.stats[0], card.stats[1]);
@@ -1031,7 +1049,7 @@ class Game {
                 }
             }
 
-            game.stats.update("minionsPlayed", [card, game.turns]);
+            game.stats.update("minionsPlayed", card);
 
             if (card.colossal) {
                 card.colossal.forEach((v, i) => {
@@ -1293,6 +1311,8 @@ class GameStats {
         this.heroAttackGained = [[], []];
         this.spellsThatDealtDamage = [[], []];
         this.damageTakenOnOwnTurn = [[], []];
+
+        this.jadeCounter = 0;
     }
 
     cardUpdate(key, val) {
@@ -1355,19 +1375,20 @@ class GameStats {
 }
 
 class Functions {
-    // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+    // https://dev.to/codebubb/how-to-shuffle-an-array-in-javascript-2ikj - Vladyslav
     shuffle(array) {
-        let currentIndex = array.length, randomIndex;
-
-        while (currentIndex != 0) {
-            randomIndex = Math.floor(Math.random() * currentIndex);
-            currentIndex--;
-
-            [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+        const newArray = [...array]
+        const length = newArray.length
+      
+        for (let start = 0; start < length; start++) {
+          const randomPosition = Math.floor((newArray.length - start) * Math.random())
+          const randomItem = newArray.splice(randomPosition, 1)
+      
+          newArray.push(...randomItem)
         }
-
-        return array;
-    }
+      
+        return newArray
+      }
 
     randList(list) {
         return list[Math.floor(Math.random() * list.length)];
@@ -1398,6 +1419,17 @@ class Functions {
         quest["progress"][0] += value;
     }
 
+    createJade(plr) {
+        if (game.stats.jadeCounter < 30) game.stats.jadeCounter += 1;
+        const count = game.stats.jadeCounter;
+
+        let jade = new Minion("Jade Golem", plr);
+        jade.setStats(count, count);
+        jade.setMana(count);
+
+        return jade;
+    }
+
     recruit(amount = 1, mana_range = [0, 10]) {
         var array = this.shuffle(game.turn.deck)
 
@@ -1405,11 +1437,11 @@ class Functions {
 
         array.forEach(c => {
             if (c.getType() == "Minion" && c.mana >= mana_range[0] && c.mana <= mana_range[1] && times < amount) {
-                game.playMinion(c, game.turn);
+                game.playMinion(new Minion(c.name, game.turn), game.turn);
 
                 times++;
 
-                return;
+                return c;
             }
         });
     }
@@ -1971,10 +2003,10 @@ function doTurn() {
                     game.nextTurn.remHealth(curr.attack);
     
                     if (curr.weapon && curr.weapon.attackTimes > 0 && curr.weapon.stats[0]) {
-                        curr.weapon.remStats(0, 1);
                         curr.weapon.attackTimes -= 1;
     
                         curr.weapon.activateDefault("onattack");
+                        curr.weapon.remStats(0, 1);
                     }
     
                     curr.attack = 0;
@@ -2290,9 +2322,7 @@ function importDeck(code, plr) {
         }
     }
 
-    game.functions.shuffle(_deck);
-
-    return _deck;
+    return game.functions.shuffle(_deck);
 }
 
 printName();
