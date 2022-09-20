@@ -244,9 +244,12 @@ class Card {
         return ret;
     }
 
-    activateDefault(name, card, ...args) {
-        if (typeof args[0] === "object" && typeof args[0][0] === "string") return this.activate(name, null, null, card.plr, game, ...args);
-        else return this.activate(name, null, null, card.plr, game, card, ...args);
+    activateDefault(name, ...args) {
+        return this.activate(name, null, null, this.plr, game, this, ...args);
+    }
+
+    activateBattlecry(...args) {
+        return this.activate("battlecry", () => this.activateDefault("passive", ["battlecry", this]), null, this.plr, game, this, ...args);
     }
 }
 
@@ -327,7 +330,7 @@ class Weapon extends Card {
         this.setStats(this.stats[0], this.stats[1] - amount);
 
         if (this.stats[1] <= 0) {
-            this.activateDefault("deathrattle", this);
+            this.activateDefault("deathrattle");
 
             this.plr.weapon = null;
         }
@@ -524,7 +527,7 @@ class Player {
         var card = this.deck.pop()
 
         if (card.type == "Spell") {
-            if (card.activateDefault("castondraw", card)) {
+            if (card.activateDefault("castondraw")) {
                 return null;
             }
         }
@@ -544,7 +547,7 @@ class Player {
         if (this.getMana() < this.heroPowerCost || !this.canUseHeroPower) return false;
 
         if (this.hero && this.hero_power == "hero") {
-            if (this.hero.activateDefault("heropower", this.hero) != -1) {
+            if (this.hero.activateDefault("heropower") != -1) {
                 this.setMana(this.getMana() - this.heroPowerCost);
 
                 game.stats.update("heroPowers", this.hero_power);
@@ -614,7 +617,7 @@ class Player {
         }
 
         this.game.getBoard()[this.id].forEach(m => {
-            m.activateDefault("inspire", m);
+            m.activateDefault("inspire");
         });
 
         this.setMana(this.getMana() - this.heroPowerCost);
@@ -762,23 +765,23 @@ class Game {
 
         this.player1.deck.forEach(c => {
             if (c.getType() == "Minion") {
-                c.activateDefault("startofgame", c);
+                c.activateDefault("startofgame");
             }
         });
         this.player2.deck.forEach(c => {
             if (c.getType() == "Minion") {
-                c.activateDefault("startofgame", c);
+                c.activateDefault("startofgame");
             }
         });
 
         this.player1.hand.forEach(c => {
             if (c.getType() == "Minion") {
-                c.activateDefault("startofgame", c);
+                c.activateDefault("startofgame");
             }
         });
         this.player2.hand.forEach(c => {
             if (c.getType() == "Minion") {
-                c.activateDefault("startofgame", c);
+                c.activateDefault("startofgame");
             }
         });
     }
@@ -800,7 +803,7 @@ class Game {
         }
 
         this.getBoard()[this.turn.id].forEach(m => {
-            m.activateDefault("endofturn", m);
+            m.activateDefault("endofturn");
         });
 
         let _c = this.player1.hand.filter(c => !c.echo)
@@ -845,14 +848,14 @@ class Game {
         this.turn.overload = 0;
 
         if (this.player1.weapon && this.turn == this.player1) {
-            this.player1.weapon.activateDefault("startofturn", this.player1.weapon);
+            this.player1.weapon.activateDefault("startofturn");
         }
         if (this.player2.weapon && this.turn == this.player2) {
-            this.player2.weapon.activateDefault("startofturn", this.player2.weapon);
+            this.player2.weapon.activateDefault("startofturn");
         }
 
         this.getBoard()[this.plrNameToIndex(this.turn.getName())].forEach(m => {
-            m.activateDefault("startofturn", m);
+            m.activateDefault("startofturn");
             m.canAttackHero = true;
             m.resetAttackTimes();
 
@@ -867,7 +870,7 @@ class Game {
                     m.frozen = false;
                     m.immune = false;
 
-                    m.activate("battlecry", () => m.activateDefault("passive", m, ["battlecry", m]), null, m.plr, this, m);
+                    m.activateBattlecry();
                 }
 
                 m.turn = game.turns;
@@ -1021,7 +1024,7 @@ class Game {
                 card.immune = true;
                 card.dormant = card.dormant + game.turns;
             } else {
-                if (card.activate("battlecry", () => card.activateDefault("passive", card, ["battlecry", card]), null, card.plr, this, card) === -1) {
+                if (card.activateBattlecry() === -1) {
                     this.functions.addToHand(card, player, false);
                     player.mana += card.mana;
                     return;
@@ -1049,7 +1052,7 @@ class Game {
                 return;
             }
 
-            if (card.activateDefault("cast", card) === -1) {
+            if (card.activateDefault("cast") === -1) {
                 this.functions.addToHand(card, player, false);
                 player.mana += card.mana;
                 return;
@@ -1063,15 +1066,15 @@ class Game {
         } else if (card.getType() === "Weapon") {
             player.setWeapon(card);
 
-            card.activate("battlecry", () => card.activateDefault("passive", card, ["battlecry", card]), null, card.plr, this, card);
+            card.activateBattlecry();
         } else if (card.getType() === "Hero") {
             player.setHero(card, 5);
 
-            card.activate("battlecry", () => card.activateDefault("passive", card, ["battlecry", card]), null, card.plr, this, card);
+            card.activateBattlecry();
         }
 
         if (player.hasPlayedCardThisTurn) {
-            card.activateDefault("combo", card);
+            card.activateDefault("combo");
         }
 
         player.hasPlayedCardThisTurn = true;
@@ -1159,7 +1162,7 @@ class Game {
             
             this.getBoard()[p].forEach(m => {
                 if (m.getStats()[1] <= 0) {
-                    m.activateDefault("deathrattle", m);
+                    m.activateDefault("deathrattle");
                 }
             });
 
@@ -1177,7 +1180,7 @@ class Game {
 
                         n.push(minion);
                     } else {
-                        m.activateDefault("unpassive", m, false);
+                        m.activateDefault("unpassive", false);
                     }
                 } else {
                     n.push(m);
@@ -1218,7 +1221,7 @@ class Game {
             target.remStats(0, minion)
 
             if (target.stats[1] > 0) {
-                target.activateDefault("frenzy", target);
+                target.activateDefault("frenzy");
             }
 
             this.killMinions();
@@ -1233,7 +1236,7 @@ class Game {
             minion.remStats(0, target.stats[0])
 
             if (minion.stats[1] > 0) {
-                minion.activateDefault("frenzy", minion);
+                minion.activateDefault("frenzy");
             }
 
             if (target.keywords.includes("Divine Shield")) {
@@ -1247,15 +1250,15 @@ class Game {
             target.remStats(0, minion.stats[0])
 
             if (target.getStats()[1] > 0) {
-                target.activateDefault("frenzy", target);
+                target.activateDefault("frenzy");
             }
 
             if (target.getStats()[1] < 0) {
-                minion.activateDefault("overkill", minion);
+                minion.activateDefault("overkill");
             }
 
             if (target.getStats()[1] == 0) {
-                minion.activateDefault("honorablekill", minion);
+                minion.activateDefault("honorablekill");
             }
 
             return true;
@@ -1300,7 +1303,7 @@ class GameStats {
                 p.infuse_num -= 1;
 
                 if (p.infuse_num == 0) {
-                    p.activateDefault("infuse", p);
+                    p.activateDefault("infuse");
                     p.setDesc(p.desc.replace(`Infuse (${p.infuse_num})`, "Infused"));
                 }
             }
@@ -1308,18 +1311,18 @@ class GameStats {
 
         game.getBoard().forEach(p => {
             p.forEach(m => {
-                m.activateDefault("unpassive", m, true);
-                m.activateDefault("passive", m, [key, val]);
+                m.activateDefault("unpassive", true);
+                m.activateDefault("passive", [key, val]);
             });
         });
         
         if (game.player1.weapon) {
-            game.player1.weapon.activateDefault("unpassive", game.player1.weapon, true);
-            game.player1.weapon.activateDefault("passive", game.player1.weapon, [key, val]);
+            game.player1.weapon.activateDefault("unpassive", true);
+            game.player1.weapon.activateDefault("passive", [key, val]);
         }
         if (game.player2.weapon) {
-            game.player2.weapon.activateDefault("unpassive", game.player2.weapon, true);
-            game.player2.weapon.activateDefault("passive", game.player2.weapon, [key, val]);
+            game.player2.weapon.activateDefault("unpassive", true);
+            game.player2.weapon.activateDefault("passive", [key, val]);
         }
     }
 
@@ -1971,7 +1974,7 @@ function doTurn() {
                         curr.weapon.remStats(0, 1);
                         curr.weapon.attackTimes -= 1;
     
-                        curr.weapon.activateDefault("onattack", curr.weapon);
+                        curr.weapon.activateDefault("onattack");
                     }
     
                     curr.attack = 0;
@@ -2027,14 +2030,14 @@ function doTurn() {
                 curr.remHealth(target.stats[0]);
 
                 if (target.stats[1] > 0) {
-                    target.activateDefault("frenzy", target);
+                    target.activateDefault("frenzy");
                 }
 
                 if (curr.weapon && curr.weapon.attackTimes > 0 && curr.weapon.stats[0]) {
                     curr.weapon.remStats(0, 1);
                     curr.weapon.attackTimes -= 1;
 
-                    curr.weapon.activateDefault("onattack", curr.weapon);
+                    curr.weapon.activateDefault("onattack");
 
                     if (curr.weapon.keywords.includes("Poisonous")) {
                         target.setStats(target.stats[0], 0);
@@ -2067,7 +2070,7 @@ function doTurn() {
                     attacker.removeKeyword("Stealth");
                 }
 
-                attacker.activateDefault("onattack", attacker);
+                attacker.activateDefault("onattack");
 
                 if (attacker.keywords.includes("Lifesteal")) {
                     curr.addHealth(attacker.stats[0]);
@@ -2096,7 +2099,7 @@ function doTurn() {
     }
 
     if (q == curr.hand.length || q == 1) {
-        card.activateDefault("outcast", card);
+        card.activateDefault("outcast");
     }
 
     game.playCard(card, curr);
