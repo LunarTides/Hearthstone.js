@@ -8,7 +8,7 @@ module.exports = {
 
     battlecry(plr, game, card) {
         plr.setMaxMaxMana(20);
-        plr.setMaxMana(plr.getMaxMana() + 1);
+        plr.gainEmptyMana(1);
         plr.drawCard();
     },
 
@@ -18,7 +18,7 @@ module.exports = {
         if (choice == 0) {            
             plr.drawCard();
         } else {
-            plr.setMaxMana(plr.getMaxMana() + 1);
+            plr.gainEmptyMana(1);
         }
     }
 }
