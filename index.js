@@ -1,7 +1,28 @@
+/*
+Hearthstone.js - Hearthstone but console based.
+Copyright (C) 2022  Isangedal
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 const fs = require('fs');
 const { exit } = require('process');
 const rl = require('readline-sync');
 const crypto = require('crypto');
+
+const license_url = 'https://github.com/Isangedal/Hearthstone.js/blob/main/LICENSE';
+const copyright_year = "2022";
 
 const _debug = true; // Enables commands like /give, /class and /eval. Disables naming and assigning passcodes to players.
                      // Enable for debugging, disable for actual play.
@@ -1957,6 +1978,10 @@ function doTurn() {
             printName();
             printAll(curr);
         }
+        else if (q == "license") {
+            var start = (process.platform == 'darwin'? 'open': process.platform == 'win32'? 'start': 'xdg-open');
+            require('child_process').exec(start + ' ' + license_url);
+        }
         else if (q == "/eval") {
             if (!_debug) return;
 
@@ -2148,6 +2173,8 @@ function printName() {
 }
 
 function printAll(curr, detailed = false) {
+    if (game.turns <= 2) console.log(`|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n|||                  Hearthstone.js | Copyright (C) ${copyright_year} | Isangedal                  |||\n||| This program is licensed under the GNU-GPL license. To learn more: type 'license' |||\n|||                     This will disppear once you end your turn.                    |||\n|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n`);
+
     console.log(`Mana: ${curr.getMana()} / ${curr.getMaxMana()} | Opponent's Mana: ${game.nextTurn.getMana()} / ${game.nextTurn.getMaxMana()}`);
     console.log(`Health: ${curr.health} + ${curr.armor} / ${curr.maxHealth} | Opponent's Health: ${game.nextTurn.health} + ${game.nextTurn.armor} / ${game.nextTurn.maxHealth}`);
 
