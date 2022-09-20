@@ -48,7 +48,10 @@ class Card {
 
             // Spell keywords
             "cast",
-            "castondraw"
+            "castondraw",
+
+            // Hero keywords
+            "heropower"
         ]
 
         this.__ids = []
@@ -61,7 +64,7 @@ class Card {
         this.name = name;
         this.plr = plr;
 
-        this.displayName = this.check(this.displayName, name);
+        this.displayName = this.check(this.blueprint.displayName, name);
         this.type = "Card";
 
         this.keywords = this.check(this.blueprint.keywords, []);
@@ -86,6 +89,10 @@ class Card {
         hasArray.forEach(i => { // You have to define hasArray when extending this class
             // this.hasBattlecry = false;
             this["has" + i[0].toUpperCase() + i.slice(1)] = this.blueprint[i] != undefined;
+        });
+
+        Object.entries(this).forEach(i => {
+            this["_" + i[0]] = i[1];
         });
     }
 
@@ -327,6 +334,14 @@ class Weapon extends Card {
     }
 }
 
+class Hero extends Card {
+    constructor(name, plr) {
+        super(name, plr);
+
+        this.type = "Hero";
+    }
+}
+
 
 class Player {
     constructor(name) {
@@ -337,6 +352,7 @@ class Player {
         this.hand = [];
         this.mana = 0;
         this.maxMana = 0;
+        this.maxMaxMana = 10;
         this.game = null;
         this.health = 30;
         this.maxHealth = this.health;
@@ -344,6 +360,7 @@ class Player {
         this.armor = 0;
         this.class = "Mage";
         this.hero_power = this.class;
+        this.hero = "";
         this.heroPowerCost = 2;
         this.canUseHeroPower = true;
         this.weapon = null;
@@ -407,7 +424,11 @@ class Player {
     setMaxMana(maxMana) {
         this.maxMana = maxMana;
 
-        if (maxMana > 10) maxMana = 10;
+        if (maxMana > this.maxMaxMana) this.maxMana = this.maxMaxMana;
+    }
+
+    setMaxMaxMana(maxMaxMana) {
+        this.maxMaxMana = maxMaxMana;
     }
 
     refreshMana(mana) {
@@ -424,6 +445,14 @@ class Player {
         this.weapon = weapon;
 
         this.attack += weapon.getStats()[0];
+    }
+
+    setHero(hero, armor) {
+        this.hero = hero;
+
+        this.hero_power = "hero";
+
+        this.armor += armor;
     }
 
     addOverload(amount) {
@@ -513,6 +542,18 @@ class Player {
         else this.heroPowerCost = 2; // This is to prevent changing hero power to demon hunter and changing back to decrease cost to 1
 
         if (this.getMana() < this.heroPowerCost || !this.canUseHeroPower) return false;
+
+        if (this.hero && this.hero_power == "hero") {
+            if (this.hero.activateDefault("heropower", this.hero) != -1) {
+                this.setMana(this.getMana() - this.heroPowerCost);
+
+                game.stats.update("heroPowers", this.hero_power);
+
+                this.canUseHeroPower = false;
+            }
+
+            return true;
+        }
 
         if (this.hero_power == "Demon Hunter") {
             this.addAttack(1);
@@ -772,7 +813,6 @@ class Game {
         this.turn = this.nextTurn;
 
         this.turn.setMaxMana(this.turn.getMaxMana() + 1);
-        if (this.turn.maxMana > 10) this.turn.maxMana = 10;
         this.turn.setMana(this.turn.getMaxMana());
 
         this.nextTurn = this.getOtherPlayer(this.turn);
@@ -894,6 +934,7 @@ class Game {
         }
 
         player.setMana(player.getMana() - card.getMana());
+        card.setMana(card._mana);
         
         var n = []
 
@@ -1023,6 +1064,10 @@ class Game {
             player.setWeapon(card);
 
             card.activate("battlecry", () => card.activateDefault("passive", card, ["battlecry", card]), null, card.plr, this, card);
+        } else if (card.getType() === "Hero") {
+            player.setHero(card, 5);
+
+            card.activate("battlecry", () => card.activateDefault("passive", card, ["battlecry", card]), null, card.plr, this, card);
         }
 
         if (player.hasPlayedCardThisTurn) {
@@ -1049,6 +1094,8 @@ class Game {
                         t = new Spell(c.corrupted[1], player);
                     } else if (c.corrupted[0] == "Weapon") {
                         t = new Weapon(c.corrupted[1], player);
+                    } else if (c.corrupted[0] == "Hero") {
+                        t = new Hero(c.corrupted[1], player);
                     }
 
                     this.functions.addToHand(t, this.turn, false);
@@ -1180,7 +1227,7 @@ class Game {
         } else if (minion.attackTimes > 0) {
             if (minion.getStats()[0] <= 0) return false;
 
-            game.stats.update("minionsThatAttacked", minion);
+            game.stats.update("minionsThatAttacked", [minion, target]);
             game.stats.update("minionsAttacked", minion);
 
             minion.remStats(0, target.stats[0])
@@ -1283,7 +1330,9 @@ class GameStats {
 
                 if ((s["value"] + this[key][game.turn.id].length - 1) == this[key][game.turn.id].length) {
                     if (s["callback"](val, game, s["turn"])) {
+                        s["progress"][0]++;
                         plr[quests_name].splice(plr[quests_name].indexOf(s), 1);
+                        rl.question("\nYou triggered the opponents's '" + s.name + "'.\n")
                     }
                 }
             }
@@ -1330,6 +1379,8 @@ class Functions {
             return "Minion";
         } else if (card.stats) {
             return "Weapon";
+        } else if (card.heropower) {
+            return "Hero";
         } else {
             return "Spell";
         }
@@ -1390,12 +1441,6 @@ class Functions {
 
         if (target instanceof Minion) {
             game.attackMinion(this.accountForSpellDmg(damage), target);
-        
-            if (target.stats[1] > 0) {
-                target.activateDefault("frenzy", target);
-            }
-
-            game.killMinions();
         } else if (target instanceof Player) {
             target.remHealth(this.accountForSpellDmg(damage));
         }
@@ -1483,6 +1528,7 @@ class Functions {
             if (type == 'Minion') c = new Minion(card.name, curr);
             if (type == 'Spell') c = new Spell(card.name, curr);
             if (type == 'Weapon') c = new Weapon(card.name, curr);
+            if (type == 'Hero') c = new Hero(card.name, curr);
 
             this.addToHand(c, curr);
 
@@ -1828,11 +1874,12 @@ function doTurn() {
 
         if (type === "Minion") {
             m = new Minion(card.name, curr);
-            console.log(m)
         } else if (type === "Spell") {
             m = new Spell(card.name, curr);
         } else if (type === "Weapon") {
             m = new Weapon(card.name, curr);
+        } else if (type === "Hero") {
+            m = new Hero(card.name, curr);
         }
 
         game.functions.addToHand(m, curr);
@@ -2093,7 +2140,7 @@ function printAll(curr, detailed = false) {
         console.log("-------------------------------");
 
         if (game.nextTurn.secrets.length > 0)
-            console.log(`Opponent's Secrets: ${game.nextTurn.secrets.length + 1}`);
+            console.log(`Opponent's Secrets: ${game.nextTurn.secrets.length}`);
         if (game.nextTurn.sidequests.length > 0)
             console.log(`Opponent's Sidequests: ${game.nextTurn.sidequests.map(x => x["name"] + " (" + x["progress"][0] + " / " + x["progress"][1] + ")").join(', ')}`);
         if (game.nextTurn.quests.length > 0)
@@ -2129,7 +2176,10 @@ function printAll(curr, detailed = false) {
     });
     console.log("-------------")
 
-    console.log(`\n--- ${curr.getName()}'s Hand ---`);
+    _class = curr.hero == "" ? curr.class : curr.hero.getName();
+    if (detailed) _class += ` | HP: ${curr.hero_power != "hero" ? curr.hero_power : curr.hero.getName()}`;
+
+    console.log(`\n--- ${curr.getName()} (${_class})'s Hand ---`);
     console.log("([id] {cost} Name [attack / health] (type))\n");
 
     curr.getHand().forEach((card, i) => {
@@ -2210,6 +2260,8 @@ function createVarFromFoundType(name, curr) {
         m = new Spell(card.name, curr);
     } else if (type === "Weapon") {
         m = new Weapon(card.name, curr);
+    } else if (type === "Hero") {
+        m = new Hero(card.name, curr);
     }
 
     return m;
