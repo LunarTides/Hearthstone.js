@@ -471,6 +471,14 @@ class Player {
         this.refreshMana(this.getMana() + mana);
     }
 
+    gainOverload(overload) {
+        this.overload += overload;
+
+        const plus = this.maxMana == this.maxMaxMana ? 0 : 1;
+
+        if (this.overload > this.mana + plus) this.overload = this.mana + plus;
+    }
+
     setGame(game) {
         this.game = game;
     }
@@ -704,9 +712,17 @@ class Game {
         this.winner = null;
         this.loser = null;
         this.board = [[], []];
+
+        this.passives = [];
         
         this.player1.setGame(this);
         this.player2.setGame(this);
+    }
+
+    activatePassives(trigger) {
+        let ret = [];
+        this.passives.forEach(i => ret.push(i(game, trigger)));
+        return ret;
     }
 
     getPlayer1() {
@@ -1372,6 +1388,8 @@ class GameStats {
             game.player2.weapon.activateDefault("unpassive", true);
             game.player2.weapon.activateDefault("passive", [key, val]);
         }
+
+        game.activatePassives([key, val]);
     }
 
     questUpdate(quests_name, key, val, plr = game.player) {
@@ -1379,14 +1397,15 @@ class GameStats {
             if (s["key"] == key) {
                 if (!s["manual_progression"]) s["progress"][0]++;
 
-                const normal_done = (s["value"] + this[key][game.player.id].length - 1) == this[key][game.player.id].length;
+                const normal_done = (s["value"] + this[key][plr.id].length - 1) == this[key][plr.id].length;
 
                 if (s["callback"](val, game, s["turn"], normal_done)) {
                     s["progress"][0]++;
                     plr[quests_name].splice(plr[quests_name].indexOf(s), 1);
-                    rl.question("\nYou triggered the opponents's '" + s.name + "'.\n")
 
-                    if (s["next"]) new Spell(s["next"], s["plr"]).activateDefault("cast");
+                    if (quests_name == "secrets") rl.question("\nYou triggered the opponents's '" + s.name + "'.\n");
+
+                    if (s["next"]) new Spell(s["next"], plr).activateDefault("cast");
                 }
             }
         });
@@ -1862,9 +1881,9 @@ class Functions {
             return false;
         }
 
-        if (!fake_val) fake_val == val;
+        if (fake_val) val = fake_val;
 
-        plr.secrets.push({"name": card.displayName, "progress": [0, fake_val], "key": key, "value": val, "turn": game.turns, "callback": callback, "fake_val": fake_val, "manual_progression": manual_progression});
+        plr.secrets.push({"name": card.displayName, "progress": [0, val], "key": key, "value": val, "turn": game.turns, "callback": callback, "fake_val": fake_val, "manual_progression": manual_progression});
     }
     addSidequest(plr, card, key, val, callback, fake_val = null, manual_progression = false) {
         if (plr.sidequests.length >= 3 || plr.sidequests.filter(s => s.displayName == card.displayName).length > 0) {
@@ -1874,9 +1893,9 @@ class Functions {
             return false;
         }
 
-        if (!fake_val) fake_val == val;
+        if (fake_val) val = fake_val;
 
-        plr.sidequests.push({"name": card.displayName, "progress": [0, fake_val], "key": key, "value": val, "turn": game.turns, "callback": callback, "fake_val": fake_val, "manual_progression": manual_progression});
+        plr.sidequests.push({"name": card.displayName, "progress": [0, val], "key": key, "value": val, "turn": game.turns, "callback": callback, "fake_val": fake_val, "manual_progression": manual_progression});
     }
     addQuest(plr, card, key, val, callback, fake_val = null, manual_progression = false) {
         if (plr.quests.length > 0) {
@@ -1886,9 +1905,9 @@ class Functions {
             return false;
         }
         
-        if (!fake_val) fake_val == val;
+        if (fake_val) val = fake_val;
 
-        plr.quests.push({"name": card.displayName, "progress": [0, fake_val], "key": key, "value": val, "turn": game.turns, "callback": callback, "fake_val": fake_val, "manual_progression": manual_progression});
+        plr.quests.push({"name": card.displayName, "progress": [0, val], "key": key, "value": val, "turn": game.turns, "callback": callback, "fake_val": fake_val, "manual_progression": manual_progression});
     }
     addQuestline(plr, card, key, val, callback, next, fake_val = null, manual_progression = false) {
         if (plr.questlines.length > 0) {
@@ -1898,9 +1917,9 @@ class Functions {
             return false;
         }
 
-        if (!fake_val) fake_val == val;
+        if (fake_val) val = fake_val;
 
-        plr.questlines.push({"name": card.displayName, "progress": [0, fake_val], "key": key, "value": val, "turn": game.turns, "callback": callback, "next": next, "manual_progression": manual_progression});
+        plr.questlines.push({"name": card.displayName, "progress": [0, val], "key": key, "value": val, "turn": game.turns, "callback": callback, "next": next, "manual_progression": manual_progression});
     }
 }
 
