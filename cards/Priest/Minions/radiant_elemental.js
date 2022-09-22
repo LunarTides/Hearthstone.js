@@ -10,10 +10,18 @@ module.exports = {
 
     passive(plr, game, card) {
         plr.hand.filter(c => c.type == "Spell").forEach(c => {
-            if (c.mana > 0) {
-                if (!card.storage.includes(c)) {
+            let cont = false;
+
+            card.storage.forEach(i => {
+                if (i[0] == c) {
+                    cont = true;
+                }
+            });
+
+            if (!cont) {
+                card.storage.push([c, c._mana]);
+                if (c.mana > 0) {
                     c.mana--;
-                    card.storage.push(c);
                 }
             }
         });
@@ -21,7 +29,7 @@ module.exports = {
 
     unpassive(plr, game, card) {
         card.storage.forEach(c => {
-            c.mana += 1;
+            c[0].mana = c[1];
         });
 
         card.storage = [];

@@ -9,12 +9,12 @@ module.exports = {
 
     cast(plr, game, card) {
         game.functions.addSecret(plr, card, "minionsThatAttackedHero", 1, (minion, game, turn) => {
-            if (minion[0].plr != game.turn) return false;
+            if (minion[0].plr != game.player) return false;
 
-            game.getBoard()[game.turn.id].forEach(i => {
+            game.getBoard()[game.player.id].forEach(i => {
                 game.functions.spellDmg(i, 2);
             });
-            game.functions.spellDmg(game.turn, 2);
+            game.functions.spellDmg(game.player, 2);
 
             return true;
         }, true);

@@ -525,7 +525,7 @@ class Player {
 
         this.health -= a;
 
-        if (game.turn == this) {
+        if (game.player == this) {
             game.stats.update("damageTakenOnOwnTurn", amount);
         }
 
@@ -533,7 +533,7 @@ class Player {
             this.game.stats.update("fatalDamageTimes", 1);
 
             if (this.health <= 0) { // This is done to allow secrets to prevent death
-                this.game.endGame(game.nextTurn);
+                this.game.endGame(game.opponent);
             }
         }
     }
@@ -605,10 +605,12 @@ class Player {
             this.armor += 1;
         }
         else if (this.hero_power == "Hunter") {
-            this.game.nextTurn.remHealth(2);
+            this.game.opponent.remHealth(2);
         }
         else if (this.hero_power == "Mage") {
-            var t = this.game.functions.selectTarget("Deal 1 damage.", "heropower");
+            // dontupdate means prevent selectting an elusive target, but don't update
+            // game.stats.spellsCastOnMinions
+            var t = this.game.functions.selectTarget("Deal 1 damage.", "dontupdate");
 
             if (!t) return false;
 
@@ -622,7 +624,7 @@ class Player {
             game.playMinion(new Minion("Silver Hand Recruit", this), this);
         }
         else if (this.hero_power == "Priest") {
-            var t = this.game.functions.selectTarget("Restore 2 health.", "heropower");
+            var t = this.game.functions.selectTarget("Restore 2 health.", "dontupdate");
 
             if (!t) return false;
 
@@ -680,8 +682,8 @@ class Game {
             this.player2 = player1;
         }
 
-        this.turn = this.player1;
-        this.nextTurn = this.player2;
+        this.player = this.player1;
+        this.opponent = this.player2;
 
         this.functions = functions;
         this.cards = cards;
@@ -715,8 +717,12 @@ class Game {
         return this.player2;
     }
 
-    getTurn() {
-        return this.turn;
+    getPlayer() {
+        return this.player;
+    }
+
+    getOpponent() {
+        return this.opponent;
     }
 
     getTurns() {
@@ -743,8 +749,12 @@ class Game {
         this.player2 = player2;
     }
 
-    setTurn(turn) {
-        this.turn = turn;
+    setPlayer(player) {
+        this.player = player;
+    }
+
+    setOpponent(opponent) {
+        this.opponent = opponent;
     }
 
     setTurns(turns) {
@@ -835,13 +845,13 @@ class Game {
 
     endTurn() {
         game.stats.update("turnEnds", game.turns);
-        game.stats.cardsDrawnThisTurn[game.turn.id] = [];
+        game.stats.cardsDrawnThisTurn[game.player.id] = [];
 
-        if (game.turn.mana > 0) {
-            game.stats.update("unspentMana", game.turn.mana);
+        if (game.player.mana > 0) {
+            game.stats.update("unspentMana", game.player.mana);
         }
 
-        this.getBoard()[this.turn.id].forEach(m => {
+        this.getBoard()[this.player.id].forEach(m => {
             m.activateDefault("endofturn");
         });
 
@@ -851,13 +861,13 @@ class Game {
         _c = this.player2.hand.filter(c => !c.echo)
         this.player2.setHand(_c);
 
-        this.turn.attack = 0;
-        this.turn = this.nextTurn;
+        this.player.attack = 0;
+        this.player = this.opponent;
 
-        this.turn.setMaxMana(this.turn.getMaxMana() + 1);
-        this.turn.setMana(this.turn.getMaxMana());
+        this.player.setMaxMana(this.player.getMaxMana() + 1);
+        this.player.setMana(this.player.getMaxMana());
 
-        this.nextTurn = this.getOtherPlayer(this.turn);
+        this.opponent = this.getOtherPlayer(this.player);
 
         this.turns += 1;
     }
@@ -865,12 +875,12 @@ class Game {
     startTurn() {
         game.stats.update("turnStarts", game.turns);
 
-        if (this.turn.passcode) {
+        if (this.player.passcode) {
             printName()
 
-            const passcode = rl.question(`\nPlayer ${this.turn.id + 1} (${this.turn.name}), please enter your passcode: `, {hideEchoBack: true});
+            const passcode = rl.question(`\nPlayer ${this.player.id + 1} (${this.player.name}), please enter your passcode: `, {hideEchoBack: true});
 
-            if (this.turn.passcode != crypto.createHash('sha256').update(passcode).digest('hex')) {
+            if (this.player.passcode != crypto.createHash('sha256').update(passcode).digest('hex')) {
                 rl.question("Incorrect passcode!\n");
                 this.startTurn();
                 return;
@@ -879,21 +889,21 @@ class Game {
 
         printName()
 
-        if (this.turn.weapon && this.turn.weapon.stats[0]) {
-            this.turn.attack += this.turn.weapon.stats[0];
+        if (this.player.weapon && this.player.weapon.stats[0]) {
+            this.player.attack += this.player.weapon.stats[0];
         }
 
-        this.turn.mana -= this.turn.overload;
-        this.turn.overload = 0;
+        this.player.mana -= this.player.overload;
+        this.player.overload = 0;
 
-        if (this.player1.weapon && this.turn == this.player1) {
+        if (this.player1.weapon && this.player == this.player1) {
             this.player1.weapon.activateDefault("startofturn");
         }
-        if (this.player2.weapon && this.turn == this.player2) {
+        if (this.player2.weapon && this.player == this.player2) {
             this.player2.weapon.activateDefault("startofturn");
         }
 
-        this.getBoard()[this.plrNameToIndex(this.turn.getName())].forEach(m => {
+        this.getBoard()[this.plrNameToIndex(this.player.getName())].forEach(m => {
             m.activateDefault("startofturn");
             m.canAttackHero = true;
             m.resetAttackTimes();
@@ -918,11 +928,12 @@ class Game {
             }
         });
 
-        if (this.turn.weapon && this.turn.weapon.stats[0]) this.turn.weapon.resetAttackTimes();
+        if (this.player.weapon && this.player.weapon.stats[0]) this.player.weapon.resetAttackTimes();
 
-        this.turn.drawCard();
+        this.player.drawCard();
 
-        this.turn.canUseHeroPower = true;
+        this.player.canUseHeroPower = true;
+        this.player.hasPlayedCardThisTurn = false;
     }
 
     playCard(card, player) {
@@ -1072,16 +1083,7 @@ class Game {
 
             game.stats.update("minionsPlayed", card);
 
-            if (card.colossal) {
-                card.colossal.forEach((v, i) => {
-                    let minion = new Minion(v[0], player);
-                    minion.setName(v[1]);
-
-                    game.playMinion(minion, player, false);
-                });
-            } else {
-                game.playMinion(card, player, false);
-            }
+            game.playMinion(card, player, false);
         } else if (card.getType() === "Spell") {
             if (player.counter && player.counter.includes("Spell")) {
                 player.counter.splice(player.counter.indexOf("Spell"), 1);
@@ -1118,29 +1120,23 @@ class Game {
 
         player.hasPlayedCardThisTurn = true;
 
+        this.stats.update("cardsPlayed", card);
+
         var corrupted = null;
 
-        this.turn.hand.forEach(c => {
-            if (c.length > 0 && c.keywords.includes("Corrupt")) {
+        card.plr.hand.forEach(c => {
+            if (c.keywords.includes("Corrupt")) {
                 if (card.mana > c.mana) {
                     corrupted = c;
 
                     c.removeKeyword("Corrupt");
                     c.addKeyword("Corrupted");
 
-                    var t = null;
+                    let t = null;
+                    
+                    eval(`t = new ${c.type}(c.corrupt, c.plr)`);
 
-                    if (c.corrupted[0] == "Minion") {
-                        t = new Minion(c.corrupted[1], player);
-                    } else if (c.corrupted[0] == "Spell") {
-                        t = new Spell(c.corrupted[1], player);
-                    } else if (c.corrupted[0] == "Weapon") {
-                        t = new Weapon(c.corrupted[1], player);
-                    } else if (c.corrupted[0] == "Hero") {
-                        t = new Hero(c.corrupted[1], player);
-                    }
-
-                    this.functions.addToHand(t, this.turn, false);
+                    this.functions.addToHand(t, c.plr, false);
 
                     return;
                 }
@@ -1152,7 +1148,7 @@ class Game {
 
             var found = false;
 
-            this.turn.getHand().forEach(function(c) {
+            this.player.getHand().forEach(function(c) {
                 if (c.displayName === corrupted.displayName && !found) {
                     found = true;
                 } else {
@@ -1164,7 +1160,7 @@ class Game {
         }
     }
 
-    playMinion(minion, player, summoned = true) {
+    playMinion(minion, player, summoned = true, trigger_colossal = true) {
         player.spellDamage = 0;
 
         var p = player.id;
@@ -1178,6 +1174,16 @@ class Game {
         if (minion.keywords.includes("Rush")) {
             minion.turn = this.turns - 1;
             minion.canAttackHero = false;
+        }
+
+        if (minion.colossal && trigger_colossal) {
+            minion.colossal.forEach((v, i) => {
+                let card = new Minion(v, player);
+
+                game.playMinion(card, player, false, false);
+            });
+
+            return;
         }
 
         this.board[p].push(minion);
@@ -1235,7 +1241,7 @@ class Game {
 
         var prevent = false;
 
-        game.getBoard()[game.plrNameToIndex(game.nextTurn.getName())].forEach(m => {
+        game.getBoard()[game.plrNameToIndex(game.opponent.getName())].forEach(m => {
             if (m.keywords.includes("Taunt") && m != target) {
                 prevent = true;
 
@@ -1326,6 +1332,7 @@ class GameStats {
         this.cardsAddedToDeck = [[], []];
         this.cardsDiscarded = [[], []];
         this.cardsDrawn = [[], []];
+        this.cardsPlayed = [[], []];
         this.minionsSummoned = [[], []];
         this.unspentMana = [[], []];
         this.cardsDrawnThisTurn = [[], []];
@@ -1337,9 +1344,9 @@ class GameStats {
     }
 
     cardUpdate(key, val) {
-        game.turn.getHand().forEach(p => {
+        game.player.getHand().forEach(p => {
             // Infuse
-            if (key == "minionsKilled" && val.plr == game.turn && p.infuse_num >= 0) {
+            if (key == "minionsKilled" && val.plr == game.player && p.infuse_num >= 0) {
                 p.setDesc(p.desc.replace(`Infuse (${p.infuse_num})`, `Infuse (${p.infuse_num - 1})`));
                 p.infuse_num -= 1;
 
@@ -1367,28 +1374,30 @@ class GameStats {
         }
     }
 
-    questUpdate(quests_name, key, val, plr = game.turn) {
+    questUpdate(quests_name, key, val, plr = game.player) {
         plr[quests_name].forEach(s => {
             if (s["key"] == key) {
                 if (!s["manual_progression"]) s["progress"][0]++;
 
-                if ((s["value"] + this[key][game.turn.id].length - 1) == this[key][game.turn.id].length) {
-                    if (s["callback"](val, game, s["turn"])) {
-                        s["progress"][0]++;
-                        plr[quests_name].splice(plr[quests_name].indexOf(s), 1);
-                        rl.question("\nYou triggered the opponents's '" + s.name + "'.\n")
-                    }
+                const normal_done = (s["value"] + this[key][game.player.id].length - 1) == this[key][game.player.id].length;
+
+                if (s["callback"](val, game, s["turn"], normal_done)) {
+                    s["progress"][0]++;
+                    plr[quests_name].splice(plr[quests_name].indexOf(s), 1);
+                    rl.question("\nYou triggered the opponents's '" + s.name + "'.\n")
+
+                    if (s["next"]) new Spell(s["next"], s["plr"]).activateDefault("cast");
                 }
             }
         });
     }
 
     update(key, val) {
-        this[key][game.turn.id].push(val);
+        this[key][game.player.id].push(val);
 
         this.cardUpdate(key, val);
 
-        this.questUpdate("secrets",    key, val, game.nextTurn);
+        this.questUpdate("secrets",    key, val, game.opponent);
         this.questUpdate("sidequests", key, val);
         this.questUpdate("quests",     key, val);
         this.questUpdate("questlines", key, val);
@@ -1432,10 +1441,10 @@ class Functions {
     }
 
     progressQuest(name, value) {
-        let quest = game.turn.secrets.find(s => s["name"] == name);
-        if (!quest) quest = game.turn.sidequests.find(s => s["name"] == name);
-        if (!quest) quest = game.turn.quests.find(s => s["name"] == name);
-        if (!quest) quest = game.turn.questlines.find(s => s["name"] == name);
+        let quest = game.player.secrets.find(s => s["name"] == name);
+        if (!quest) quest = game.player.sidequests.find(s => s["name"] == name);
+        if (!quest) quest = game.player.quests.find(s => s["name"] == name);
+        if (!quest) quest = game.player.questlines.find(s => s["name"] == name);
 
         quest["progress"][0] += value;
     }
@@ -1452,13 +1461,13 @@ class Functions {
     }
 
     recruit(amount = 1, mana_range = [0, 10]) {
-        var array = this.shuffle(game.turn.deck)
+        var array = this.shuffle(game.player.deck)
 
         var times = 0;
 
         array.forEach(c => {
             if (c.getType() == "Minion" && c.mana >= mana_range[0] && c.mana <= mana_range[1] && times < amount) {
-                game.playMinion(new Minion(c.name, game.turn), game.turn);
+                game.playMinion(new Minion(c.name, game.player), game.player);
 
                 times++;
 
@@ -1503,7 +1512,7 @@ class Functions {
     }
 
     accountForSpellDmg(damage) {
-        return damage + game.turn.spellDamage;
+        return damage + game.player.spellDamage;
     }
 
     accountForUncollectible(cards) {
@@ -1529,7 +1538,7 @@ class Functions {
                 let type = this.getType(c);
 
                 if (type == "Spell" && c.class == "Neutral") {}
-                else if (c.class === game.turn.class || c.class == "Neutral") {
+                else if (c.class === game.player.class || c.class == "Neutral") {
                     if (flags.includes("Minion") && type !== "Minion") return;
                     if (flags.includes("Spell") && type !== "Spell") return;
                     if (flags.includes("Weapon") && type !== "Weapon") return;
@@ -1594,96 +1603,96 @@ class Functions {
         }
     }
 
-    selectTarget(prompt, elusive = false, force = null, force_type = null) {
-        if (force_type == null) {
-            var t = rl.question(`\n${prompt} (type 'face' to select a hero | type 'back' to go back) `);
-        } else if (force_type == "minion") {
-            var t = rl.question(`\n${prompt} (type 'back' to go back) `);
-        } else if (force_type == "hero") {
-            if (!force) {
-                var t2 = rl.question(`Do you want to select the enemy hero, or your own hero? (y: enemy, n: self) `);
-        
-                return (t2.startsWith("y")) ? game.nextTurn : game.turn;
-            } else {
-                if (force == "enemy") return game.nextTurn;
-                else return game.turn;
-            }
+    selectTarget(prompt, elusive = false, force_side = null, force_class = null) {
+        // force_class = [null, "hero", "minion"]
+        // force_side = [null, "enemy", "self"]
+
+        if (force_class == "hero") {
+            var target = rl.question(`Do you want to select the enemy hero, or your own hero? (y: enemy, n: self) `);
+    
+            return (target.startsWith("y")) ? game.opponent : game.player;
         }
 
-        if (t.startsWith("b")) {
-            var t2 = rl.question(`WARNING: Going back might cause unexpected things to happen. Do you still want to go back? (y / n) `);
+        let p = `\n${prompt} (`;
+        if (force_class == null) p += "type 'face' to select a hero | ";
+        p += "type 'back' to go back) ";
+
+        var target = rl.question(p);
+
+        if (target.startsWith("b")) {
+            var return_question = rl.question(`WARNING: Going back might cause unexpected things to happen. Do you still want to go back? (y / n) `);
             
-            if (t2.startsWith("y")) {
-                return false;
-            }
+            if (return_question.startsWith("y")) return false;
         }
 
-        var bn = game.getBoard()[game.nextTurn.id];
-        var bo = game.getBoard()[game.turn.id];
+        var board_next = game.getBoard()[game.opponent.id];
+        var board_self = game.getBoard()[game.player.id];
 
-        if (!t.startsWith("f") && !bo[parseInt(t) - 1] && !bn[parseInt(t) - 1]) {
-            this.selectTarget(prompt, elusive, force, force_type);
+        const board_next_target = board_next[parseInt(target) - 1];
+        const board_self_target = board_self[parseInt(target) - 1];
+
+        let minion = undefined;
+
+        if (!target.startsWith("face") && !board_self_target && !board_next_target) {
+            // target != "face" and target is not a minion.
+            // The input is invalid
+
+            this.selectTarget(prompt, elusive, force_side, force_class);
 
             return false;
         }
 
-        if (!force) {
-            if (t.startsWith("f") && force_type != "minion") {
-                var t2 = rl.question(`Do you want to select the enemy hero, or your own hero? (y: enemy, n: self) `);
-        
-                return (t2.startsWith("y")) ? game.nextTurn : game.turn;
+        if (force_side) {
+            if (target.startsWith("face") && force_class != "minion") {
+                if (force_side == "enemy") return game.opponent;
+
+                return game.player;
             }
+
+            minion = (force_side == "enemy") ? board_next_target : board_self_target;
+        } else {
+            if (target.startsWith("face") && force_class != "minion") return this.selectTarget(prompt, false, null, "hero");
             
-            if (bn.length >= parseInt(t) && bo.length >= parseInt(t)) {
-                var t2 = rl.question(`Do you want to select your opponent's (${bn[parseInt(t) - 1].displayName}) or your own (${bo[parseInt(t) - 1].displayName})? (y: opponent, n: self | type 'back' to go back) `);
+            if (board_next.length >= parseInt(target) && board_self.length >= parseInt(target)) {
+                // Both players have a minion with the same index.
+                // Ask them which minion to select
+                var target2 = rl.question(`Do you want to select your opponent's (${board_next_target.displayName}) or your own (${board_self_target.displayName})? (y: opponent, n: self | type 'back' to go back) `);
             
-                if (t2.startsWith("b")) {
-                    this.selectTarget(prompt, elusive, force, force_type);
+                if (target2.startsWith("b")) {
+                    // Go back.
+                    this.selectTarget(prompt, elusive, force_side, force_class);
 
                     return false;
                 }
+
+                minion = (target2.startsWith("y")) ? board_next_target : board_self_target;
             } else {
-                if (bn.length >= parseInt(t)) var t2 = "y";
-                else if (bo.length >= parseInt(t)) var t2 = "n";
+                minion = board_next.length >= parseInt(target) ? board_next_target : board_self_target;
             }
-        } else {
-            if (t.startsWith("f") && force_type != "minion") {
-                if (force == "enemy") return game.nextTurn;
-
-                return game.turn;
-            }
-
-            t2 = (force == "enemy" ? "y" : "n");
         }
 
-        if (t2.startsWith("y")) {
-            var m = bn[parseInt(t) - 1];
-        } else {
-            var m = bo[parseInt(t) - 1];
-        }
-
-        if (force_type == "hero") return;
-
-        if (m === undefined) {
+        if (minion === undefined) {
             console.log("Invalid minion");
             return false;
         }
 
-        if (m.keywords.includes("Elusive") && elusive) {
+        if (minion.keywords.includes("Elusive") && elusive) {
             console.log("Can't be targeted by Spells or Hero Powers");
             
+            // elusive can be set to any value other than true to prevent targetting but not update
+            // spells cast on minions
             if (elusive === true) {
                 game.stats.update("spellsCastOnMinions", m);
             }
             return false;
         } 
 
-        return m;
+        return minion;
     }
 
     dredge(prompt = "Choose One:") {
         // Look at the bottom three cards of the deck and put one on the top.
-        var cards = game.turn.deck.slice(0, 3);
+        var cards = game.player.deck.slice(0, 3);
 
         var p = `\n${prompt}\n[`;
 
@@ -1700,15 +1709,15 @@ class Functions {
         var choice = rl.question(p);
 
         if (!cards[parseInt(choice) - 1]) {
-            printAll(game.turn);
+            printAll(game.player);
 
             return this.dredge(prompt);
         }
 
         var card = cards[parseInt(choice) - 1];
 
-        game.turn.shuffleIntoDeck(card);
-        game.turn.deck.splice(game.turn.deck.indexOf(card), 1);
+        game.player.shuffleIntoDeck(card);
+        game.player.deck.splice(game.player.deck.indexOf(card), 1);
 
         return card;
     }
@@ -1845,7 +1854,7 @@ class Functions {
         }
     }
 
-    addSecret(plr, card, key, val, callback, manual_progression = false) {
+    addSecret(plr, card, key, val, callback, fake_val = null, manual_progression = false) {
         if (plr.secrets.length >= 3 || plr.secrets.filter(s => s.displayName == card.displayName).length > 0) {
             this.addToHand(card, plr);
             plr.mana += card.mana;
@@ -1853,9 +1862,11 @@ class Functions {
             return false;
         }
 
-        plr.secrets.push({"name": card.displayName, "progress": [0, val], "key": key, "value": val, "turn": game.turns, "callback": callback, "manual_progression": manual_progression});
+        if (!fake_val) fake_val == val;
+
+        plr.secrets.push({"name": card.displayName, "progress": [0, fake_val], "key": key, "value": val, "turn": game.turns, "callback": callback, "fake_val": fake_val, "manual_progression": manual_progression});
     }
-    addSidequest(plr, card, key, val, callback, manual_progression = false) {
+    addSidequest(plr, card, key, val, callback, fake_val = null, manual_progression = false) {
         if (plr.sidequests.length >= 3 || plr.sidequests.filter(s => s.displayName == card.displayName).length > 0) {
             this.addToHand(card, plr);
             plr.mana += card.mana;
@@ -1863,19 +1874,23 @@ class Functions {
             return false;
         }
 
-        plr.sidequests.push({"name": card.displayName, "progress": [0, val], "key": key, "value": val, "turn": game.turns, "callback": callback, "manual_progression": manual_progression});
+        if (!fake_val) fake_val == val;
+
+        plr.sidequests.push({"name": card.displayName, "progress": [0, fake_val], "key": key, "value": val, "turn": game.turns, "callback": callback, "fake_val": fake_val, "manual_progression": manual_progression});
     }
-    addQuest(plr, card, key, val, callback, manual_progression = false) {
+    addQuest(plr, card, key, val, callback, fake_val = null, manual_progression = false) {
         if (plr.quests.length > 0) {
             this.addToHand(card, plr);
             plr.mana += card.mana;
             
             return false;
         }
+        
+        if (!fake_val) fake_val == val;
 
-        plr.quests.push({"name": card.displayName, "progress": [0, val], "key": key, "value": val, "turn": game.turns, "callback": callback, "manual_progression": manual_progression});
+        plr.quests.push({"name": card.displayName, "progress": [0, fake_val], "key": key, "value": val, "turn": game.turns, "callback": callback, "fake_val": fake_val, "manual_progression": manual_progression});
     }
-    addQuestline(plr, card, key, val, callback, manual_progression = false) {
+    addQuestline(plr, card, key, val, callback, next, fake_val = null, manual_progression = false) {
         if (plr.questlines.length > 0) {
             this.addToHand(card, plr);
             plr.mana += card.mana;
@@ -1883,7 +1898,9 @@ class Functions {
             return false;
         }
 
-        plr.questlines.push({"name": card.displayName, "progress": [0, val], "key": key, "value": val, "turn": game.turns, "callback": callback, "manual_progression": manual_progression});
+        if (!fake_val) fake_val == val;
+
+        plr.questlines.push({"name": card.displayName, "progress": [0, fake_val], "key": key, "value": val, "turn": game.turns, "callback": callback, "next": next, "manual_progression": manual_progression});
     }
 }
 
@@ -1892,7 +1909,7 @@ function doTurn() {
 
     printName();
 
-    curr = game.getTurn();
+    curr = game.getPlayer();
 
     if (curr !== prevPlr) {
         game.startTurn();
@@ -1997,7 +2014,7 @@ function doTurn() {
 
             var prevent = false;
 
-            game.getBoard()[game.plrNameToIndex(game.nextTurn.getName())].forEach(m => {
+            game.getBoard()[game.plrNameToIndex(game.opponent.getName())].forEach(m => {
                 if (m.keywords.includes("Taunt") && m != target) {
                     prevent = true;
     
@@ -2016,7 +2033,7 @@ function doTurn() {
             p1 = (p1 === 0) ? 1 : 0;
 
             if (target instanceof Player) {
-                if (game.nextTurn.immune) return;
+                if (game.opponent.immune) return;
                 if (attacker instanceof Minion && !attacker.canAttackHero) return;
 
                 if (attacker instanceof Player) {
@@ -2025,7 +2042,7 @@ function doTurn() {
                     game.stats.update("heroAttacks", [attacker, target]);
                     game.stats.update("heroAttacked", [attacker, target, game.turns]);
 
-                    game.nextTurn.remHealth(curr.attack);
+                    game.opponent.remHealth(curr.attack);
     
                     if (curr.weapon && curr.weapon.attackTimes > 0 && curr.weapon.stats[0]) {
                         curr.weapon.attackTimes -= 1;
@@ -2065,7 +2082,7 @@ function doTurn() {
 
                 attacker.attackTimes -= 1;
 
-                game.nextTurn.remHealth(attacker.stats[0]);
+                game.opponent.remHealth(attacker.stats[0]);
 
                 if (attacker.keywords.includes("Lifesteal")) {
                     curr.addHealth(attacker.stats[0]);
@@ -2175,15 +2192,15 @@ function printName() {
 function printAll(curr, detailed = false) {
     if (game.turns <= 2) console.log(`|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n|||                  Hearthstone.js | Copyright (C) ${copyright_year} | Isangedal                  |||\n||| This program is licensed under the GNU-GPL license. To learn more: type 'license' |||\n|||                     This will disppear once you end your turn.                    |||\n|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n`);
 
-    console.log(`Mana: ${curr.getMana()} / ${curr.getMaxMana()} | Opponent's Mana: ${game.nextTurn.getMana()} / ${game.nextTurn.getMaxMana()}`);
-    console.log(`Health: ${curr.health} + ${curr.armor} / ${curr.maxHealth} | Opponent's Health: ${game.nextTurn.health} + ${game.nextTurn.armor} / ${game.nextTurn.maxHealth}`);
+    console.log(`Mana: ${curr.getMana()} / ${curr.getMaxMana()} | Opponent's Mana: ${game.opponent.getMana()} / ${game.opponent.getMaxMana()}`);
+    console.log(`Health: ${curr.health} + ${curr.armor} / ${curr.maxHealth} | Opponent's Health: ${game.opponent.health} + ${game.opponent.armor} / ${game.opponent.maxHealth}`);
 
     wpnstr = "";
     if (curr.attack > 0) wpnstr += `Attack: ${curr.attack}`;
     if (wpnstr && curr.weapon) wpnstr += " | ";
     if (curr.weapon) wpnstr += `Weapon: ${curr.weapon.displayName} (${curr.weapon.getStats().join(' / ')})`;
-    if (curr.weapon && game.nextTurn.weapon) wpnstr += " | ";
-    if (game.nextTurn.weapon) wpnstr += `Opponent's Weapon: ${game.nextTurn.weapon.displayName} (${game.nextTurn.weapon.getStats().join(' / ')})`;
+    if (curr.weapon && game.opponent.weapon) wpnstr += " | ";
+    if (game.opponent.weapon) wpnstr += `Opponent's Weapon: ${game.opponent.weapon.displayName} (${game.opponent.weapon.getStats().join(' / ')})`;
 
     if (wpnstr) console.log(wpnstr);
 
@@ -2196,21 +2213,21 @@ function printAll(curr, detailed = false) {
     if (curr.questlines.length > 0)
         console.log(`Questline: ${curr.questlines[0]["name"] + " (" + curr.questlines[0]["progress"][0] + " / " + curr.questlines[0]["progress"][1] + ")"}\n`);
         
-    console.log(`Deck Size: ${curr.getDeck().length} | Opponent's Deck Size: ${game.nextTurn.getDeck().length}`);
+    console.log(`Deck Size: ${curr.getDeck().length} | Opponent's Deck Size: ${game.opponent.getDeck().length}`);
 
     if (detailed) {
         console.log("-------------------------------");
 
-        if (game.nextTurn.secrets.length > 0)
-            console.log(`Opponent's Secrets: ${game.nextTurn.secrets.length}`);
-        if (game.nextTurn.sidequests.length > 0)
-            console.log(`Opponent's Sidequests: ${game.nextTurn.sidequests.map(x => x["name"] + " (" + x["progress"][0] + " / " + x["progress"][1] + ")").join(', ')}`);
-        if (game.nextTurn.quests.length > 0)
-            console.log(`Opponent's Quest: ${game.nextTurn.quests[0]["name"] + " (" + game.nextTurn.quests[0]["progress"][0] + " / " + game.nextTurn.quests[0]["progress"][1] + ")"}`);
-        if (game.nextTurn.questlines.length > 0)
-            console.log(`Opponent's Questline: ${game.nextTurn.questlines[0]["name"] + " (" + game.nextTurn.questlines[0]["progress"][0] + " / " + game.nextTurn.questlines[0]["progress"][1] + ")"}\n`);
+        if (game.opponent.secrets.length > 0)
+            console.log(`Opponent's Secrets: ${game.opponent.secrets.length}`);
+        if (game.opponent.sidequests.length > 0)
+            console.log(`Opponent's Sidequests: ${game.opponent.sidequests.map(x => x["name"] + " (" + x["progress"][0] + " / " + x["progress"][1] + ")").join(', ')}`);
+        if (game.opponent.quests.length > 0)
+            console.log(`Opponent's Quest: ${game.opponent.quests[0]["name"] + " (" + game.opponent.quests[0]["progress"][0] + " / " + game.opponent.quests[0]["progress"][1] + ")"}`);
+        if (game.opponent.questlines.length > 0)
+            console.log(`Opponent's Questline: ${game.opponent.questlines[0]["name"] + " (" + game.opponent.questlines[0]["progress"][0] + " / " + game.opponent.questlines[0]["progress"][1] + ")"}\n`);
 
-        console.log(`Opponent's Hand Size: ${game.nextTurn.getHand().length}`);
+        console.log(`Opponent's Hand Size: ${game.opponent.getHand().length}`);
     }
 
     console.log("\n--- Board ---");

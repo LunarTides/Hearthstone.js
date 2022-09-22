@@ -8,11 +8,11 @@ module.exports = {
 
     cast(plr, game, card) {
         game.functions.addSidequest(plr, card, "turnStarts", 1, (_, game, turn) => {
-            heroAttacked = game.stats.heroAttacked[game.nextTurn.id];
+            heroAttacked = game.stats.heroAttacked[game.opponent.id];
             heroAttacked = heroAttacked.filter(x => x[2] == game.turns || x[2] == game.turns - 1);
 
             if (heroAttacked.length < 1) {
-                game.turn.armor += 5;
+                game.player.armor += 5;
 
                 game.functions.progressQuest(this.name, 1);
 

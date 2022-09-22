@@ -8,7 +8,7 @@ module.exports = {
     set: "Scholomance Academy",
 
     startofturn(plr, game, card) {
-        if (game.turn !== plr) return;
+        if (game.player !== plr) return;
 
         let top = plr.deck.pop();
         

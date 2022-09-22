@@ -9,6 +9,6 @@ module.exports = {
     set: "Legacy",
 
     battlecry(plr, game, minion) {
-        game.nextTurn.counter.push("Minion");
+        game.opponent.counter.push("Minion");
     }
 }

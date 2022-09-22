@@ -8,7 +8,7 @@ module.exports = {
     spellClass: "Shadow",
 
     cast(plr, game, card) {
-        var possible_cards = game.nextTurn.hand;
+        var possible_cards = game.opponent.hand;
         if (possible_cards.length <= 0) return;
 
         var card = game.functions.randList(possible_cards);

@@ -11,6 +11,7 @@ module.exports = {
         plr.maxMana += 2;
         plr.mana += 2;
         
-        game.nextTurn.maxMana += 2;
+        game.opponent.maxMana += 2;
+        game.opponent.mana += 2;
     }
 }

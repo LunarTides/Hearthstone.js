@@ -1,5 +1,6 @@
 module.exports = {
     name: "Colossal Test Right Arm",
+    displayName: "Right Arm",
     stats: [1, 2],
     desc: "",
     mana: 1,
