@@ -721,7 +721,7 @@ class Game {
 
     activatePassives(trigger) {
         let ret = [];
-        this.passives.forEach(i => ret.push(i(game, trigger)));
+        this.passives.forEach(i => ret.push(i(this, trigger)));
         return ret;
     }
 
@@ -814,11 +814,30 @@ class Game {
     }
 
     startGame() {
-        for (let i = 0; i < 3; i++) {
+        let plr1_hand = [];
+        let plr2_hand = [];
+
+        this.player1.deck.forEach((c) => {
+            if (c.desc.includes("Quest: ") || c.desc.includes("Questline: ")) {
+                plr1_hand.push(c);
+                this.player1.deck.splice(this.player1.deck.indexOf(c), 1);
+            }
+        });
+        this.player2.deck.forEach((c) => {
+            if (c.desc.includes("Quest: ") || c.desc.includes("Questline: ")) {
+                plr2_hand.push(c);
+                this.player2.deck.splice(this.player2.deck.indexOf(c), 1);
+            }
+        });
+
+        this.player1.setHand(plr1_hand);
+        this.player2.setHand(plr2_hand);
+
+        while (this.player1.hand.length < 3) {
             this.player1.drawCard()
         }
 
-        for (let i = 0; i < 4; i++) {
+        while (this.player2.hand.length < 4) {
             this.player2.drawCard();
         }
         this.functions.addToHand(new Spell("The Coin", this.player2), this.player2, false)
@@ -2365,23 +2384,53 @@ function createVarFromFoundType(name, curr) {
     return m;
 }
 
+function validateDeck(card, plr, deck) {
+    if (deck.length > 30) return false;
+
+    return validateCard(card, plr);
+}
+
+function validateCard(card, plr) {
+    if (plr.class != card.class && card.class != "Neutral") return false;
+    return true;
+}
+
 function importDeck(code, plr) {
     // The code is base64 encoded, so we need to decode it
     code = Buffer.from(code, 'base64').toString('ascii');
     let deck = code.split(", ");
     let _deck = [];
 
+    let changed_class = false;
+
     // Find all cards with "x2" in front of them, and remove it and add the card twice
     for (let i = 0; i < deck.length; i++) {
-        if (deck[i].startsWith("x2 ")) {
-            let m1 = createVarFromFoundType(deck[i].substring(3), plr);
-            let m2 = createVarFromFoundType(deck[i].substring(3), plr);
+        let card = deck[i];
+
+        let m = null;
+
+        if (card.startsWith("x2 ")) {
+            let m1 = createVarFromFoundType(card.substring(3), plr);
+            let m2 = createVarFromFoundType(card.substring(3), plr);
+            m = m1;
 
             _deck.push(m1, m2);
         } else {
-            let m = createVarFromFoundType(deck[i], plr);
+            m = createVarFromFoundType(card, plr);
 
             _deck.push(m);
+        }
+
+        if (!changed_class) {
+            plr.class = m.class;
+            plr.hero_power = m.class;
+        
+            changed_class = true;
+        }
+
+        if (!validateDeck(m, plr, _deck)) {
+            console.log("The Deck is not valid")
+            exit(1);
         }
     }
 
