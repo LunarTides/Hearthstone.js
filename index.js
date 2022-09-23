@@ -1,6 +1,6 @@
 /*
 Hearthstone.js - Hearthstone but console based.
-Copyright (C) 2022  Isangedal
+Copyright (C) 2022  Keatpole
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@ const { exit } = require('process');
 const rl = require('readline-sync');
 const crypto = require('crypto');
 
-const license_url = 'https://github.com/Isangedal/Hearthstone.js/blob/main/LICENSE';
+const license_url = 'https://github.com/Keatpole/Hearthstone.js/blob/main/LICENSE';
 const copyright_year = "2022";
 
 const _debug = true; // Enables commands like /give, /class and /eval. Disables naming and assigning passcodes to players.
@@ -107,7 +107,7 @@ class Card {
             this[i] = this.check(i);
         });
 
-        hasArray.forEach(i => { // You have to define hasArray when extending this class
+        hasArray.forEach(i => {
             // this.hasBattlecry = false;
             this["has" + i[0].toUpperCase() + i.slice(1)] = this.blueprint[i] != undefined;
         });
