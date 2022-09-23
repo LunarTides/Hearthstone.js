@@ -79,7 +79,7 @@ class Card {
         
         for (let i = 0; i < 100; i++) {
             // This is to prevent cards from getting linked. Don't use this variable
-            this.__ids.push(Math.floor(Math.random() * 671678679546789));
+            this.__ids.push(game.functions.randInt(0, 671678679546789));
         }
         
         this.name = name;
@@ -548,7 +548,7 @@ class Player {
 
     shuffleIntoDeck(card, updateStats = true) {
         // Add the card into a random position in the deck
-        var pos = Math.floor(Math.random() * this.deck.length);
+        var pos = this.randInt(0, this.deck.length);
         this.deck.splice(pos, 0, card);
 
         if (updateStats) {
@@ -618,6 +618,7 @@ class Player {
         else if (this.hero_power == "Mage") {
             // dontupdate means prevent selectting an elusive target, but don't update
             // game.stats.spellsCastOnMinions
+            // dontupdate can really be any value as long as it is not true or false
             var t = this.game.functions.selectTarget("Deal 1 damage.", "dontupdate");
 
             if (!t) return false;
@@ -682,7 +683,7 @@ class Player {
 class Game {
     constructor(player1, player2, functions) {
         // Choose a random player to be player 1
-        if (Math.random() < 0.5) {
+        if (functions.randInt(0, 10) < 5) {
             this.player1 = player1;
             this.player2 = player2;
         } else {
@@ -1449,7 +1450,7 @@ class Functions {
         const length = newArray.length
 
         for (let start = 0; start < length; start++) {
-            const randomPosition = Math.floor((newArray.length - start) * Math.random())
+            const randomPosition = this.randInt(0, (newArray.length - start) - 1);
             const randomItem = newArray.splice(randomPosition, 1)
 
             newArray.push(...randomItem)
@@ -1459,7 +1460,7 @@ class Functions {
     }
 
     randList(list) {
-        return list[Math.floor(Math.random() * list.length)];
+        return list[this.randInt(0, list.length - 1)];
     }
 
     randInt(min, max) {
@@ -2217,10 +2218,10 @@ function doTurn() {
     game.playCard(card, curr);
 }
 
-function printName() {
+function printName(name = false) {
     process.stdout.write('\033c');
 
-    return;
+    if (!name) return;
 
     console.log("|-----------------------------|");
     console.log("|       HEARTHSTONE.JS        |");
@@ -2228,7 +2229,7 @@ function printName() {
 }
 
 function printAll(curr, detailed = false) {
-    if (game.turns <= 2) console.log(`|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n|||                  Hearthstone.js | Copyright (C) ${copyright_year} | Isangedal                  |||\n||| This program is licensed under the GNU-GPL license. To learn more: type 'license' |||\n|||                     This will disppear once you end your turn.                    |||\n|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n`);
+    if (game.turns <= 2) console.log(`|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n|||                  Hearthstone.js | Copyright (C) ${copyright_year} | Keatpole                  |||\n||| This program is licensed under the GNU-GPL license. To learn more: type 'license' |||\n|||                     This will disppear once you end your turn.                    |||\n|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n`);
 
     console.log(`Mana: ${curr.getMana()} / ${curr.getMaxMana()} | Opponent's Mana: ${game.opponent.getMana()} / ${game.opponent.getMaxMana()}`);
     console.log(`Health: ${curr.health} + ${curr.armor} / ${curr.maxHealth} | Opponent's Health: ${game.opponent.health} + ${game.opponent.armor} / ${game.opponent.maxHealth}`);
