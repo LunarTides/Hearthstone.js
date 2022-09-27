@@ -18,7 +18,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 const fs = require('fs');
 const { exit } = require('process');
-const rl = require('readline-sync');
 const crypto = require('crypto');
 const { Game } = require("./game");
 const { Minion, Spell, Weapon, Hero, setup_card } = require("./card");
@@ -26,6 +25,7 @@ const { Player, setup_other } = require("./other");
 
 const license_url = 'https://github.com/Keatpole/Hearthstone.js/blob/main/LICENSE';
 const copyright_year = "2022";
+const version = "1.1.0";
 
 const _debug = true; // Enables commands like /give, /class and /eval. Disables naming and assigning passcodes to players.
                      // Enable for debugging, disable for actual play.
@@ -320,18 +320,33 @@ function doTurn() {
     game.playCard(card, curr);
 }
 
-function printName(name = false) {
+function cls() {
     process.stdout.write('\033c');
+}
+
+function printName(name = true) {
+    cls();
 
     if (!name) return;
 
     console.log("|-----------------------------|");
-    console.log("|       HEARTHSTONE.JS        |");
-    console.log("|-----------------------------|");
+    console.log(`|    HEARTHSTONE.JS V${version}    |`);
+    console.log("|-----------------------------|\n");
+}
+
+function printLicense(disappear = true) {
+    cls();
+
+    console.log(`|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||`)
+    console.log(`|||                  Hearthstone.js | Copyright (C) ${copyright_year} | Keatpole                   |||`)
+    console.log(`||| This program is licensed under the GNU-GPL license. To learn more: type 'license' |||`)
+    if (disappear)
+    console.log(`|||                     This will disppear once you end your turn.                    |||`)
+    console.log(`|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n`);
 }
 
 function printAll(curr, detailed = false) {
-    if (game.turns <= 2) console.log(`|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n|||                  Hearthstone.js | Copyright (C) ${copyright_year} | Keatpole                  |||\n||| This program is licensed under the GNU-GPL license. To learn more: type 'license' |||\n|||                     This will disppear once you end your turn.                    |||\n|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n`);
+    if (game.turns <= 2) printLicense();        
 
     console.log(`Mana: ${curr.getMana()} / ${curr.getMaxMana()} | Opponent's Mana: ${game.opponent.getMana()} / ${game.opponent.getMaxMana()}`);
     console.log(`Health: ${curr.health} + ${curr.armor} / ${curr.maxHealth} | Opponent's Health: ${game.opponent.health} + ${game.opponent.armor} / ${game.opponent.maxHealth}`);
@@ -469,13 +484,7 @@ if (!_debug) {
 
 game.setup({
     "cards": cards,
-    "printName": printName,
-    "input": rl.question,
-    "Minion": Minion,
-    "Spell": Spell,
-    "Weapon": Weapon,
-    "Hero": Hero,
-    "Player": Player
+    "printName": printName
 });
 
 setup_card(cards, game);

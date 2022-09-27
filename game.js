@@ -1,5 +1,6 @@
+const rl = require('readline-sync');
 const { Functions, Player } = require("./other");
-const { Minion, Spell } = require("./card");
+const { Minion, Spell, Weapon, Hero } = require("./card");
 
 class GameStats {
     constructor(game) {
@@ -115,8 +116,15 @@ class Game {
         this.player = this.player1;
         this.opponent = this.player2;
 
+        this.Minion = Minion;
+        this.Spell = Spell;
+        this.Weapon = Weapon;
+        this.Hero = Hero;
+        this.Player = Player;
+
         this.functions = functions;
         this.stats = new GameStats(this);
+        this.input = rl.question;
 
         this.player1.id = 0;
         this.player2.id = 1;
