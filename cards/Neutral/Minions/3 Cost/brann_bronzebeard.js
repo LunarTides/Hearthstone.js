@@ -10,7 +10,7 @@ module.exports = {
 
     passive(plr, game, card, trigger) {
         // Checking trigger[1].hasBattlecry is not required since activateDefault checks it anyway but it's there for clarity.
-        if (trigger[0] == "minionsPlayed" && trigger[1].hasBattlecry) {
+        if (trigger[0] == "minionsPlayed" && card.passiveCheck(trigger) && trigger[1].hasBattlecry) {
             trigger[1].activateDefault("battlecry");
         }
     }
