@@ -16,7 +16,7 @@ module.exports = {
 
     deathrattle(plr, game, card) {
         card.storage.forEach(c => {
-            plr.shuffleIntoDeck(new game.Spell(c.name, plr));
+            plr.shuffleIntoDeck(new game.Card(c.name, plr));
         });
 
         card.storage = [];

@@ -11,7 +11,7 @@ module.exports = {
         game.functions.addQuestline(plr, card, "cardsPlayed", 1, (val, game, turn, normal_done) => {
             if (val.plr == plr && val.desc.includes("Overload: ")) {
                 if (card.storage.length >= 2) {
-                    game.playMinion(new game.Minion("Living Earth", plr), plr);
+                    game.playMinion(new game.Card("Living Earth", plr), plr);
                     return true;
                 }
 

@@ -51,7 +51,7 @@ class Card {
 
         this.displayName = this.check(this.blueprint.displayName, name);
 
-        this.type = "Card";
+        this.type = game.functions.getType(this.blueprint);
 
         this.keywords = this.check(this.blueprint.keywords, []);
         this.storage = []; // Allow cards to store data for later use
@@ -66,6 +66,21 @@ class Card {
             if (typeof i[1] !== "function") this[i[0]] = i[1];
             else this[i[0]] = [i[1]];
         });
+
+        this.spellClass = this.check(this.blueprint.spellClass, null);
+
+        this.attackTimes = 1;
+        this.stealthDuration = 0;
+
+        if (this.type == "Minion" || this.type == "Weapon") this.oghealth = this.stats[1];
+
+        this.frozen = false;
+        this.immune = false;
+        this.dormant = false;
+        this.corrupted = false;
+        this.canAttackHero = true;
+
+        this.deathrattles = this.hasDeathrattle ? [this.blueprint.deathrattle] : [];
 
         const exists = ["corrupted", "colossal", "dormant", "uncollectible"];
         Object.keys(exists).forEach(i => {
@@ -186,20 +201,39 @@ class Card {
         this.remHealth(health);
     }
 
-    addHealth(amount) {
-        this.setStats(this.stats[0], this.stats[1] + amount)
+    addHealth(amount, restore = true) {
+        this.setStats(this.stats[0], this.stats[1] + amount);
+    
+        if (restore) {
+            if (this.stats[1] > this.oghealth) {
+                game.stats.update("restoredHealth", this.oghealth);
+                this.stats[1] = this.oghealth;
+            } else {
+                game.stats.update("restoredHealth", this.oghealth);
+            }
+        } else {
+            this.oghealth = this.stats[1];
+        }
     }
     addAttack(amount) {
         this.setStats(this.stats[0] + amount, this.stats[1]);
     }
     remHealth(amount) {
         this.setStats(this.stats[0], this.stats[1] - amount);
+
+        if (this.type == "Weapon" && this.stats[1] <= 0) {
+            this.activateDefault("deathrattle");
+            this.plr.weapon = null;
+        }
     }
     remAttack(amount) {
         this.setStats(this.stats[0] - amount, this.stats[1]);
     }
     resetOgHealth() {
         this.oghealth = this.stats[1];
+    }
+    setStealthDuration(duration) {
+        this.stealthDuration = game.turns + duration;
     }
 
     resetAttackTimes() {
@@ -253,93 +287,5 @@ class Card {
     }
 }
 
-class Minion extends Card {
-    constructor(name, plr) {
-        super(name, plr);
-
-        this.type = "Minion";
-
-        this.attackTimes = 1;
-        this.stealthDuration = 0;
-
-        this.oghealth = this.stats[1];
-
-        this.frozen = false;
-        this.immune = false;
-        this.dormant = false;
-        this.corrupted = false;
-        this.canAttackHero = true;
-
-        this.deathrattles = this.hasDeathrattle ? [this.blueprint.deathrattle] : [];
-    }
-
-    setStealthDuration(duration) {
-        this.stealthDuration = game.turns + duration;
-    }
-
-    addHealth(amount, restore = true) {
-        this.setStats(this.stats[0], this.stats[1] + amount);
-        
-        if (restore) {
-            if (this.stats[1] > this.oghealth) {
-                game.stats.update("restoredHealth", this.oghealth);
-                this.stats[1] = this.oghealth;
-            } else {
-                game.stats.update("restoredHealth", this.oghealth);
-            }
-        } else {
-            this.oghealth = this.stats[1];
-        }
-    }
-
-}
-
-class Spell extends Card {
-    constructor(name, plr) {
-        super(name, plr);
-
-        this.type = "Spell";
-
-        this.spellClass = this.check(this.blueprint.spellClass, null);
-    }
-}
-
-class Weapon extends Card {
-    constructor(name, plr) {
-        super(name, plr);
-
-        this.type = "Weapon";
-
-        this.attackTimes = 1;
-
-        this.oghealth = this.stats[1];
-
-        this.deathrattles = this.hasDeathrattle ? [this.blueprint.deathrattle] : [];
-    }
-
-    remHealth(amount) {
-        this.setStats(this.stats[0], this.stats[1] - amount);
-
-        if (this.stats[1] <= 0) {
-            this.activateDefault("deathrattle");
-
-            this.plr.weapon = null;
-        }
-    }
-}
-
-class Hero extends Card {
-    constructor(name, plr) {
-        super(name, plr);
-
-        this.type = "Hero";
-    }
-}
-
 exports.Card = Card;
-exports.Minion = Minion;
-exports.Spell = Spell;
-exports.Weapon = Weapon;
-exports.Hero = Hero;
-
 exports.setup_card = setup;

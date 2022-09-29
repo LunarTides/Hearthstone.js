@@ -11,7 +11,7 @@ module.exports = {
         game.functions.addSecret(plr, card, "minionsThatAttacked", 1, (minion, game, turn) => {
             if (minion[0].plr != game.player) return false;
 
-            let m = new game.Minion(minion[0].getName(), game.player);
+            let m = new game.Card(minion[0].getName(), game.player);
             m.mana += 2;
             game.functions.addToHand(m, m.plr, false);
 

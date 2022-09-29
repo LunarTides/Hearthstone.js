@@ -1,12 +1,12 @@
 const rl = require('readline-sync');
 const { Functions, Player } = require("./other");
-const { Minion, Spell, Weapon, Hero } = require("./card");
+const { Card } = require("./card");
 
 class GameStats {
     constructor(game) {
         this.game = game;
 
-        this.spellsCast = [[], []];
+        /*this.spellsCast = [[], []];
         this.spellsCastOnMinions = [[], []];
         this.minionsPlayed = [[], []];
         this.minionsKilled = [[], []];
@@ -31,7 +31,7 @@ class GameStats {
         this.cardsDrawnThisTurn = [[], []];
         this.heroAttackGained = [[], []];
         this.spellsThatDealtDamage = [[], []];
-        this.damageTakenOnOwnTurn = [[], []];
+        this.damageTakenOnOwnTurn = [[], []];*/
 
         this.jadeCounter = 0;
     }
@@ -82,13 +82,15 @@ class GameStats {
 
                     if (quests_name == "secrets") game.input("\nYou triggered the opponents's '" + s.name + "'.\n");
 
-                    if (s["next"]) new Spell(s["next"], plr).activateDefault("cast");
+                    if (s["next"]) new Card(s["next"], plr).activateDefault("cast");
                 }
             }
         });
     }
 
     update(key, val) {
+        if (!this[key]) this[key] = [[], []];
+
         this[key][this.game.player.id].push(val);
 
         this.cardUpdate(key, val);
@@ -116,12 +118,7 @@ class Game {
         this.player = this.player1;
         this.opponent = this.player2;
 
-        this.Minion = Minion;
-        this.Spell = Spell;
-        this.Weapon = Weapon;
-        this.Hero = Hero;
-        this.Player = Player;
-
+        this.Card = Card;
         this.functions = functions;
         this.stats = new GameStats(this);
         this.input = rl.question;
@@ -261,13 +258,13 @@ class Game {
         this.player2.setHand(plr2_hand);
 
         while (this.player1.hand.length < 3) {
-            this.player1.drawCard()
+            this.player1.drawCard(false);
         }
 
         while (this.player2.hand.length < 4) {
-            this.player2.drawCard();
+            this.player2.drawCard(false);
         }
-        this.functions.addToHand(new Spell("The Coin", this.player2), this.player2, false)
+        this.functions.addToHand(new Card("The Coin", this.player2), this.player2, false)
 
         this.player1.setMaxMana(1);
         this.player1.setMana(1);
@@ -427,7 +424,7 @@ class Game {
                     }
                 });
 
-                if (card instanceof Spell && card.keywords.includes("Twinspell")) {
+                if (card.type == "Spell" && card.keywords.includes("Twinspell")) {
                     card.removeKeyword("Twinspell");
                     card.setDesc(card.getDesc().split("Twinspell")[0].trim());
         
@@ -463,7 +460,7 @@ class Game {
             }
         });
 
-        if (card instanceof Spell && card.keywords.includes("Twinspell")) {
+        if (card.type == "Spell" && card.keywords.includes("Twinspell")) {
             card.removeKeyword("Twinspell");
             card.setDesc(card.getDesc().split("Twinspell")[0].trim());
 
@@ -640,7 +637,7 @@ class Game {
 
         if (minion.colossal && trigger_colossal) {
             minion.colossal.forEach((v, i) => {
-                let card = new Minion(v, player);
+                let card = new Card(v, player);
 
                 this.playMinion(card, player, false, false);
             });
@@ -678,7 +675,7 @@ class Game {
                     this.stats.update("minionsKilled", m);
 
                     if (m.keywords.includes("Reborn")) {
-                        let minion = new Minion(m.getName(), this.plrIndexToPlayer(p));
+                        let minion = new Card(m.getName(), this.plrIndexToPlayer(p));
 
                         minion.removeKeyword("Reborn");
                         minion.setStats(minion.stats[0], 1);
@@ -699,7 +696,7 @@ class Game {
     }
 
     attackMinion(minion, target) {
-        if (minion instanceof Minion && minion.frozen || minion instanceof Player && minion.frozen) return;
+        if (minion instanceof Card && minion.frozen || minion instanceof Player && minion.frozen) return;
 
         var prevent = false;
 
@@ -712,11 +709,11 @@ class Game {
         });
 
         if (prevent) {
-            if (target instanceof Minion && target.keywords.includes("Taunt")) {}
+            if (target instanceof Card && target.keywords.includes("Taunt")) {}
             else return false;
         }
 
-        if (target instanceof Minion && target.immune) return false;
+        if (target instanceof Card && target.immune) return false;
 
         if (!isNaN(minion)) {
             if (target.keywords.includes("Divine Shield")) {

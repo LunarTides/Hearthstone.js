@@ -13,6 +13,6 @@ module.exports = {
             }
         });
 
-        plr.addToBottomOfDeck(new game.Spell("Sunken Gardens", plr));
+        plr.addToBottomOfDeck(new game.Card("Sunken Gardens", plr));
     }
 }

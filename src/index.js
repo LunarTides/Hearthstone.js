@@ -20,7 +20,7 @@ const fs = require('fs');
 const { exit } = require('process');
 const crypto = require('crypto');
 const { Game } = require("./game");
-const { Minion, Spell, Weapon, Hero, setup_card } = require("./card");
+const { Card, setup_card } = require("./card");
 const { Player, setup_other } = require("./other");
 
 const license_url = 'https://github.com/Keatpole/Hearthstone.js/blob/main/LICENSE';
@@ -82,21 +82,7 @@ function doTurn() {
 
         let card = Object.values(game.cards).find(c => c.name.toLowerCase() == q.toLowerCase());
 
-        let m;
-
-        let type = game.functions.getType(card);
-
-        if (type === "Minion") {
-            m = new Minion(card.name, curr);
-        } else if (type === "Spell") {
-            m = new Spell(card.name, curr);
-        } else if (type === "Weapon") {
-            m = new Weapon(card.name, curr);
-        } else if (type === "Hero") {
-            m = new Hero(card.name, curr);
-        }
-
-        game.functions.addToHand(m, curr);
+        game.functions.addToHand(new Card(card.name, curr), curr);
     } else if (q.startsWith("/class ")) {
         if (!_debug) return;
 
@@ -164,7 +150,7 @@ function doTurn() {
             });
     
             if (prevent) {
-                if (target instanceof Minion && target.keywords.includes("Taunt")) {}
+                if (target instanceof Card && target.keywords.includes("Taunt")) {}
                 else return;
             }
 
@@ -175,7 +161,7 @@ function doTurn() {
 
             if (target instanceof Player) {
                 if (game.opponent.immune) return;
-                if (attacker instanceof Minion && !attacker.canAttackHero) return;
+                if (attacker instanceof Card && !attacker.canAttackHero) return;
 
                 if (attacker instanceof Player) {
 
@@ -231,8 +217,8 @@ function doTurn() {
 
                 return;
             } else if (attacker instanceof Player) {
-                if (target instanceof Minion && target.immune) return;
-                if (target instanceof Minion && target.keywords.includes("Stealth")) return;
+                if (target instanceof Card && target.immune) return;
+                if (target instanceof Card && target.keywords.includes("Stealth")) return;
 
                 if (target === undefined) {
                     console.log("Invalid minion");
@@ -493,21 +479,7 @@ setup_other(cards, game);
 function createVarFromFoundType(name, curr) {
     let card = Object.values(game.cards).find(c => c.name.toLowerCase() == name.toLowerCase());
 
-    let m;
-
-    let type = game.functions.getType(card);
-
-    if (type === "Minion") {
-        m = new Minion(card.name, curr);
-    } else if (type === "Spell") {
-        m = new Spell(card.name, curr);
-    } else if (type === "Weapon") {
-        m = new Weapon(card.name, curr);
-    } else if (type === "Hero") {
-        m = new Hero(card.name, curr);
-    }
-
-    return m;
+    return new Card(card.name, curr);
 }
 
 function validateDeck(card, plr, deck) {
@@ -572,12 +544,12 @@ const deckcode2 = game.input("\nPlayer 2, please type in your deckcode (Leave th
 if (deckcode1.length > 0) {
     game.player1.deck = importDeck(deckcode1, game.player1);
 } else {
-    while (game.player1.getDeck().length < 30) game.player1.deck.push(new Minion("Sheep", game.player1));
+    while (game.player1.getDeck().length < 30) game.player1.deck.push(new Card("Sheep", game.player1));
 }
 if (deckcode2.length > 0) {
     game.player2.deck = importDeck(deckcode2, game.player2);
 } else {
-    while (game.player2.getDeck().length < 30) game.player2.deck.push(new Minion("Sheep", game.player2));
+    while (game.player2.getDeck().length < 30) game.player2.deck.push(new Card("Sheep", game.player2));
 }
 
 game.startGame();

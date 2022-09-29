@@ -11,7 +11,7 @@ module.exports = {
         game.functions.addQuestline(plr, card, "cardsPlayed", 1, (val, game, turn, normal_done) => {
             if (val.plr == plr && val.desc.includes("Overload: ")) {
                 if (card.storage.length >= 2) {
-                    game.functions.addToHand(new game.Minion("Stormcaller Bru'kan", plr), plr);
+                    game.functions.addToHand(new game.Card("Stormcaller Bru'kan", plr), plr);
                     return true;
                 }
 

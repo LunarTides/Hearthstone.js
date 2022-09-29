@@ -15,7 +15,7 @@ module.exports = {
             return -1;
         }
 
-        game.functions.addToHand(new game.Minion(target.getName(), plr), plr);
+        game.functions.addToHand(new game.Card(target.getName(), plr), plr);
         target.destroy();
     }
 }

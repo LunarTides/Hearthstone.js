@@ -8,7 +8,7 @@ module.exports = {
     uncollectible: true,
 
     cast(plr, game, card) {
-        plr.shuffleIntoDeck(new game.Minion("Golden Monkey", plr));
+        plr.shuffleIntoDeck(new game.Card("Golden Monkey", plr));
 
         plr.drawCard();
     }

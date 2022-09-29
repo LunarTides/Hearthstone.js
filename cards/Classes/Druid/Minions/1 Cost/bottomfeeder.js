@@ -9,7 +9,7 @@ module.exports = {
     set: "Voyage to the Sunken City",
 
     deathrattle(plr, game, card) {
-        const minion = new game.Minion("Bottomfeeder", plr);
+        const minion = new game.Card("Bottomfeeder", plr);
 
         minion.setStats(card.stats[0], card.oghealth);
         minion.addStats(2, 2);

@@ -18,12 +18,12 @@ module.exports = {
 
         plr.hand.forEach(c => {
             let card = game.functions.randList(possible_cards);
-            new_hand.push(new game.Minion(card.name, plr));
+            new_hand.push(new game.Card(card.name, plr));
         });
 
         plr.deck.forEach(c => {
             let card = game.functions.randList(possible_cards);
-            new_deck.push(new game.Minion(card.name, plr));
+            new_deck.push(new game.Card(card.name, plr));
         });
 
         plr.setHand(new_hand);

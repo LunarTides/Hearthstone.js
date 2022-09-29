@@ -9,6 +9,6 @@ module.exports = {
     set: "Core",
 
     battlecry(plr, game, card) {
-        plr.shuffleIntoDeck(new game.Spell("Map to the Golden Monkey", plr));
+        plr.shuffleIntoDeck(new game.Card("Map to the Golden Monkey", plr));
     }
 }

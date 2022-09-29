@@ -15,7 +15,7 @@ module.exports = {
             game.playMinion(jade, plr);
         } else {
             for (let i = 0; i < 3; i++) {
-                plr.shuffleIntoDeck(new game.Spell("Jade Idol", plr));
+                plr.shuffleIntoDeck(new game.Card("Jade Idol", plr));
             }
         }
     }
