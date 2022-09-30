@@ -11,7 +11,6 @@ function setup(_cards, _game) {
 class Player {
     constructor(name) {
         this.name = name;
-        this.passcode = "";
         this.id = null;
         this.deck = [];
         this.hand = [];
@@ -356,6 +355,10 @@ class Functions {
         } else {
             return "Spell";
         }
+    }
+
+    getCardByName(name) {
+        return Object.values(game.cards).find(c => c.name.toLowerCase() == name.toLowerCase());
     }
 
     progressQuest(name, value) {

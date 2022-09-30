@@ -49,42 +49,36 @@ class Card {
         this.name = name;
         this.plr = plr;
 
-        this.displayName = this.check(this.blueprint.displayName, name);
+        this.displayName = name;
 
         this.type = game.functions.getType(this.blueprint);
 
-        this.keywords = this.check(this.blueprint.keywords, []);
+        this.keywords = [];
         this.storage = []; // Allow cards to store data for later use
 
         this.turn = null;
 
-        this.echo = false;
+        this.infuse_num = -1;
 
-        this.infuse_num = this.check(this.blueprint.infuse_num, -1);
+        this.spellClass = null;
         
         Object.entries(this.blueprint).forEach(i => {
-            if (typeof i[1] !== "function") this[i[0]] = i[1];
-            else this[i[0]] = [i[1]];
+            if (typeof i[1] == "function") this[i[0]] = [i[1]];
+            else this[i[0]] = i[1];
         });
-
-        this.spellClass = this.check(this.blueprint.spellClass, null);
 
         this.attackTimes = 1;
         this.stealthDuration = 0;
 
         if (this.type == "Minion" || this.type == "Weapon") this.oghealth = this.stats[1];
 
-        this.frozen = false;
-        this.immune = false;
-        this.dormant = false;
-        this.corrupted = false;
         this.canAttackHero = true;
 
         this.deathrattles = this.hasDeathrattle ? [this.blueprint.deathrattle] : [];
 
-        const exists = ["corrupted", "colossal", "dormant", "uncollectible"];
-        Object.keys(exists).forEach(i => {
-            this[i] = this.check(i);
+        const exists = ["corrupted", "colossal", "dormant", "uncollectible", "frozen", "immune", "echo"];
+        exists.forEach(i => {
+            this[i] = this.blueprint[i] || false;
         });
 
         hasArray.forEach(i => {
@@ -95,10 +89,6 @@ class Card {
         Object.entries(this).forEach(i => {
             this["_" + i[0]] = i[1];
         });
-    }
-
-    check(check, alt_value=false) {
-        return check || alt_value;
     }
 
     getName() {

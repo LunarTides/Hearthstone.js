@@ -1,6 +1,7 @@
 const rl = require('readline-sync');
 const { Functions, Player } = require("./other");
 const { Card } = require("./card");
+const { printName } = require("./interact");
 
 class GameStats {
     constructor(game) {
@@ -135,12 +136,6 @@ class Game {
         
         this.player1.setGame(this);
         this.player2.setGame(this);
-    }
-
-    setup(funcs) {
-        Object.entries(funcs).forEach(i => {
-            this[i[0]] = i[1];
-        });
     }
 
     activatePassives(trigger) {
@@ -295,7 +290,7 @@ class Game {
     }
 
     endGame(p) {
-        this.printName();
+        printName();
 
         console.log(`Player ${p.getName()} wins!`);
 
@@ -334,19 +329,7 @@ class Game {
     startTurn() {
         this.stats.update("turnStarts", this.turns);
 
-        if (this.player.passcode) {
-            this.printName()
-
-            const passcode = this.input(`\nPlayer ${this.player.id + 1} (${this.player.name}), please enter your passcode: `, {hideEchoBack: true});
-
-            if (this.player.passcode != crypto.createHash('sha256').update(passcode).digest('hex')) {
-                this.input("Incorrect passcode!\n");
-                this.startTurn();
-                return;
-            }
-        }
-
-        this.printName()
+        printName()
 
         if (this.player.weapon && this.player.weapon.stats[0]) {
             this.player.attack += this.player.weapon.stats[0];
@@ -696,24 +679,19 @@ class Game {
     }
 
     attackMinion(minion, target) {
-        if (minion instanceof Card && minion.frozen || minion instanceof Player && minion.frozen) return;
+        if (minion instanceof Card && minion.frozen || minion instanceof Player && minion.frozen) return false;
 
+        // Check if there is a minion with taunt
         var prevent = false;
 
-        this.getBoard()[this.plrNameToIndex(this.opponent.getName())].forEach(m => {
+        this.getBoard()[this.opponent.id].forEach(m => {
             if (m.keywords.includes("Taunt") && m != target) {
                 prevent = true;
-
-                return false;
+                return;
             }
         });
 
-        if (prevent) {
-            if (target instanceof Card && target.keywords.includes("Taunt")) {}
-            else return false;
-        }
-
-        if (target instanceof Card && target.immune) return false;
+        if (prevent || target.immune) return false;
 
         if (!isNaN(minion)) {
             if (target.keywords.includes("Divine Shield")) {
@@ -734,36 +712,41 @@ class Game {
         } else if (minion.attackTimes > 0) {
             if (minion.getStats()[0] <= 0) return false;
 
+            minion.attackTimes--;
+
+            this.stats.update("enemyAttacks", [minion, target]);
             this.stats.update("minionsThatAttacked", [minion, target]);
             this.stats.update("minionsAttacked", minion);
 
-            minion.remStats(0, target.stats[0])
+            minion.remStats(0, target.stats[0]);
 
-            if (minion.stats[1] > 0) {
-                minion.activateDefault("frenzy");
-            }
-
-            if (target.keywords.includes("Divine Shield")) {
-                target.removeKeyword("Divine Shield");
-
+            if (minion.keywords.includes("Divine Shield")) {
+                minion.removeKeyword("Divine Shield");
                 return false;
             }
 
-            this.stats.update("minionsAttacked", target);
+            if (minion.stats[1] > 0) minion.activateDefault("frenzy");
+
+            if (minion.keywords.includes("Stealth")) minion.removeKeyword("Stealth");
+        
+            minion.activateDefault("onattack");
+            this.stats.update("minionsAttacked", [minion, target]);
+        
+            if (target.keywords.includes("Poisonous")) minion.setStats(minion.stats[0], 0);
+
+            if (target.keywords.includes("Divine Shield")) {
+                target.removeKeyword("Divine Shield");
+                return false;
+            }
+
+            if (minion.keywords.includes("Lifesteal")) minion.plr.addHealth(minion.stats[0]);
+            if (minion.keywords.includes("Poisonous")) target.setStats(target.stats[0], 0);
 
             target.remStats(0, minion.stats[0])
 
-            if (target.getStats()[1] > 0) {
-                target.activateDefault("frenzy");
-            }
-
-            if (target.getStats()[1] < 0) {
-                minion.activateDefault("overkill");
-            }
-
-            if (target.getStats()[1] == 0) {
-                minion.activateDefault("honorablekill");
-            }
+            if (target.getStats()[1] > 0) target.activateDefault("frenzy");
+            if (target.getStats()[1] < 0) minion.activateDefault("overkill");
+            if (target.getStats()[1] == 0) minion.activateDefault("honorablekill");
 
             return true;
         }
