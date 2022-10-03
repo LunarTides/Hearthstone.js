@@ -1,5 +1,3 @@
-const { Card } = require("./card");
-
 let cards = {};
 let game = null;
 
@@ -83,6 +81,11 @@ class Player {
 
     setHand(hand) {
         this.hand = hand;
+    }
+
+    setClass(_class, hp = true) {
+        this.class = _class;
+        if (hp) this.hero_power = _class;
     }
 
     setMana(mana) {
@@ -275,7 +278,7 @@ class Player {
             }
         }
         else if (this.hero_power == "Paladin") {
-            game.playMinion(new Card("Silver Hand Recruit", this), this);
+            game.playMinion(new game.Card("Silver Hand Recruit", this), this);
         }
         else if (this.hero_power == "Priest") {
             var t = this.game.functions.selectTarget("Restore 2 health.", "dontupdate");
@@ -285,7 +288,7 @@ class Player {
             t.addHealth(2);
         }
         else if (this.hero_power == "Rogue") {
-            this.weapon = new Card("Wicked Knife", this);
+            this.weapon = new game.Card("Wicked Knife", this);
         }
         else if (this.hero_power == "Shaman") {
             const totem_cards = ["Healing Totem", "Searing Totem", "Stoneclaw Totem", "Strength Totem"];
@@ -300,7 +303,7 @@ class Player {
                 return;
             }
 
-            game.playMinion(new Card(game.functions.randList(totem_cards), this), this);
+            game.playMinion(new game.Card(game.functions.randList(totem_cards), this), this);
         }
         else if (this.hero_power == "Warlock") {
             this.remHealth(2);
@@ -378,7 +381,7 @@ class Functions {
         if (game.stats.jadeCounter < 30) game.stats.jadeCounter += 1;
         const count = game.stats.jadeCounter;
 
-        let jade = new Card("Jade Golem", plr);
+        let jade = new game.Card("Jade Golem", plr);
         jade.setStats(count, count);
         jade.setMana(count);
 
@@ -392,7 +395,7 @@ class Functions {
 
         array.forEach(c => {
             if (c.getType() == "Minion" && c.mana >= mana_range[0] && c.mana <= mana_range[1] && times < amount) {
-                game.playMinion(new Card(c.name, game.player), game.player);
+                game.playMinion(new game.Card(c.name, game.player), game.player);
 
                 times++;
 
@@ -429,7 +432,7 @@ class Functions {
     spellDmg(target, damage) {
         game.stats.update("spellsThatDealtDamage", [target, damage]);
 
-        if (target instanceof Card) {
+        if (target instanceof game.Card) {
             game.attackMinion(this.accountForSpellDmg(damage), target);
         } else if (target instanceof Player) {
             target.remHealth(this.accountForSpellDmg(damage));
@@ -512,7 +515,7 @@ class Functions {
         var card = values[parseInt(choice) - 1];
 
         if (add_to_hand) {
-            var c = new Card(card.name, curr);
+            var c = new game.Card(card.name, curr);
 
             this.addToHand(c, curr);
 
@@ -749,18 +752,18 @@ class Functions {
                 // Add a Lackey to your hand.
                 const lackey_cards = ["Ethereal Lackey", "Faceless Lackey", "Goblin Lackey", "Kobold Lackey", "Witchy Lackey"];
 
-                this.addToHand(new Card(game.functions.randList(lackey_cards)), plr);
+                this.addToHand(new game.Card(game.functions.randList(lackey_cards)), plr);
 
                 break;
             case "Shaman":
                 // Summon a 2/1 Elemental with Rush.
-                game.playMinion(new Card("Windswept Elemental", plr), plr);
+                game.playMinion(new game.Card("Windswept Elemental", plr), plr);
 
                 break;
             case "Warlock":
                 // Summon two 1/1 Imps.
-                game.playMinion(new Card("Draconic Imp", plr), plr);
-                game.playMinion(new Card("Draconic Imp", plr), plr);
+                game.playMinion(new game.Card("Draconic Imp", plr), plr);
+                game.playMinion(new game.Card("Draconic Imp", plr), plr);
 
                 break;
             case "Warrior":

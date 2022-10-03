@@ -93,8 +93,7 @@ function importDeck(code, plr) {
         }
 
         if (!changed_class) {
-            plr.class = m.class;
-            plr.hero_power = m.class;
+            plr.setClass(m.class);
         
             changed_class = true;
         }

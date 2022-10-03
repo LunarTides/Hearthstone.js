@@ -6,34 +6,6 @@ const { printName } = require("./interact");
 class GameStats {
     constructor(game) {
         this.game = game;
-
-        /*this.spellsCast = [[], []];
-        this.spellsCastOnMinions = [[], []];
-        this.minionsPlayed = [[], []];
-        this.minionsKilled = [[], []];
-        this.minionsAttacked = [[], []];
-        this.minionsThatAttacked = [[], []];
-        this.minionsThatAttackedHero = [[], []];
-        this.turnStarts = [[], []];
-        this.turnEnds = [[], []];
-        this.heroAttacked = [[], []];
-        this.heroAttacks = [[], []];
-        this.heroPowers = [[], []];
-        this.fatalDamageTimes = [[], []];
-        this.enemyAttacks = [[], []];
-        this.restoredHealth = [[], []];
-        this.cardsAddedToHand = [[], []];
-        this.cardsAddedToDeck = [[], []];
-        this.cardsDiscarded = [[], []];
-        this.cardsDrawn = [[], []];
-        this.cardsPlayed = [[], []];
-        this.minionsSummoned = [[], []];
-        this.unspentMana = [[], []];
-        this.cardsDrawnThisTurn = [[], []];
-        this.heroAttackGained = [[], []];
-        this.spellsThatDealtDamage = [[], []];
-        this.damageTakenOnOwnTurn = [[], []];*/
-
         this.jadeCounter = 0;
     }
 
@@ -120,6 +92,7 @@ class Game {
         this.opponent = this.player2;
 
         this.Card = Card;
+        this.Player = Player;
         this.functions = functions;
         this.stats = new GameStats(this);
         this.input = rl.question;
@@ -128,8 +101,6 @@ class Game {
         this.player2.id = 1;
 
         this.turns = 0;
-        this.winner = null;
-        this.loser = null;
         this.board = [[], []];
 
         this.passives = [];
@@ -168,14 +139,6 @@ class Game {
         return this.turns;
     }
 
-    getWinner() {
-        return this.winner;
-    }
-
-    getLoser() {
-        return this.loser;
-    }
-
     getBoard() {
         return this.board;
     }
@@ -198,14 +161,6 @@ class Game {
 
     setTurns(turns) {
         this.turns = turns;
-    }
-
-    setWinner(winner) {
-        this.winner = winner;
-    }
-
-    setLoser(loser) {
-        this.loser = loser;
     }
 
     setBoard(board) {

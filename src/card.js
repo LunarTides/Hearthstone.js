@@ -1,5 +1,3 @@
-const { Player } = require("./other");
-
 let cards = {};
 let game = null;
 
@@ -284,7 +282,7 @@ class Card {
             else ret = ret && trigger[1] == val;
         }
         if (check_plr) {
-            if (typeof trigger[1] == Player) ret = ret && !!trigger[1].filter(v => v.plr && v.plr == check_plr).length;
+            if (typeof trigger[1] == game.Player) ret = ret && !!trigger[1].filter(v => v.plr && v.plr == check_plr).length;
             else ret = ret && trigger[1].plr == check_plr;
         }
 

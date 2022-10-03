@@ -1,6 +1,3 @@
-const { Card } = require("./card");
-const { Player } = require("./other");
-
 let game = null;
 let debug = false;
 
@@ -21,7 +18,7 @@ function doTurnAttack() {
     var target = game.functions.selectTarget("Which minion do you want to attack?", false, "enemy");
     if (!target) return;
 
-    if (attacker instanceof Card && !attacker.canAttackHero || target.immune) return;
+    if (attacker instanceof game.Card && !attacker.canAttackHero || target.immune) return;
 
     // Check if there is a minion with taunt
     var prevent = false;
@@ -36,9 +33,9 @@ function doTurnAttack() {
     if (prevent) return;
 
     // Attacker is a player
-    if (attacker instanceof Player) {
+    if (attacker instanceof game.Player) {
         // Target is a player
-        if (target instanceof Player) {
+        if (target instanceof game.Player) {
             game.stats.update("enemyAttacks", [attacker, target]);
             game.stats.update("heroAttacks", [attacker, target]);
             game.stats.update("heroAttacked", [attacker, target, game.turns]);
@@ -151,7 +148,7 @@ function handleCmds(q) {
 
         let card = game.functions.getCardByName(name);
 
-        game.functions.addToHand(new Card(card.name, curr), curr);
+        game.functions.addToHand(new game.Card(card.name, curr), curr);
     }
     else if (q == "/eval") {
         if (!debug) return -1;
@@ -165,7 +162,7 @@ function handleCmds(q) {
     }
     else if (q === "help") {
         printName();
-        game.input("\n(In order to run a command; input the name of the command and follow further instruction.)\n\nAvailable commands:\n\nend - Ends your turn\nattack - Attack\nview - View a minion\nhero power - Use your hero power\ndetail - Get more details about opponent\nhelp - Displays this message\n\nPress enter to continue...");
+        game.input("\n(In order to run a command; input the name of the command and follow further instruction.)\n\nAvailable commands:\n\nend - Ends your turn\nattack - Attack\nview - View a minion\nhero power - Use your hero power\ndetail - Get more details about opponent\nhelp - Displays this message\nlicense - Opens a link to this project's license\n\nPress enter to continue...");
     }
     else if (q == "view") {
         var minion = game.functions.selectTarget("Which minion do you want to view?", false, null, "minion");
@@ -207,7 +204,7 @@ function doTurn() {
     printAll(curr);
 
     let input = "\nWhich card do you want to play? ";
-    if (game.turns <= 2) input += "(type 'help' for further information <- This will disappear once you end your turn) ";
+    if (game.turns <= 2 && !debug) input += "(type 'help' for further information <- This will disappear once you end your turn) ";
 
     var q = game.input(input);
 
@@ -220,9 +217,7 @@ function doTurn() {
         return;
     }
 
-    if (q == curr.hand.length || q == 1) {
-        card.activateDefault("outcast");
-    }
+    if (q == curr.hand.length || q == 1) card.activateDefault("outcast");
 
     game.playCard(card, curr);
 }
@@ -240,6 +235,8 @@ function printName(name = true) {
 }
 
 function printLicense(disappear = true) {
+    if (debug) return;
+
     cls();
 
     console.log(`|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||`)
