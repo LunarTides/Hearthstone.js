@@ -10,15 +10,14 @@ module.exports = {
 
     battlecry(plr, game, minion) {
         var target = game.functions.selectTarget("Transform a friendly minion into one that costs (1) more.", "friendly", "minion");
+        if (target.mana >= 10) return -1;
 
-        if (target.mana < 10) {
-            let minions = Object.values(game.cards).filter(card => card.type === "Minion" && card.mana === target.mana + 1);
-            minions = game.functions.accountForUncollectible(minions);
-            let rand = game.functions.randList(minions);
+        let minions = Object.values(game.cards).filter(card => card.type === "Minion" && card.mana === target.mana + 1);
+        minions = game.functions.accountForUncollectible(minions);
+        let rand = game.functions.randList(minions);
 
-            game.playMinion(new game.Card(rand.name, plr), plr);
-            
-            target.destroy();
-        }
+        game.playMinion(new game.Card(rand.name, plr), plr);
+        
+        target.destroy();
     }
 }

@@ -1,3 +1,5 @@
+const { Player } = require("./other");
+
 let cards = {};
 let game = null;
 
@@ -272,8 +274,21 @@ class Card {
         return this.activate("battlecry", () => this.activateDefault("passive", ["battlecry", this]), null, this.plr, game, this, ...args);
     }
 
-    passiveCheck(trigger, check_plr = this.plr) {
-        return trigger[1].plr == check_plr;
+    passiveCheck(trigger, key, val = null, check_plr = null) {
+        let ret;
+
+        if (Array.isArray(key)) ret = !!key.filter(v => v == trigger[0]).length;
+        else ret = trigger[0] == key;
+        if (val) {
+            if (Array.isArray(val)) ret = ret && !!val.filter(v => v == trigger[1]).length;
+            else ret = ret && trigger[1] == val;
+        }
+        if (check_plr) {
+            if (typeof trigger[1] == Player) ret = ret && !!trigger[1].filter(v => v.plr && v.plr == check_plr).length;
+            else ret = ret && trigger[1].plr == check_plr;
+        }
+
+        return ret;
     }
 }
 

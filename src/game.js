@@ -138,6 +138,10 @@ class Game {
         this.player2.setGame(this);
     }
 
+    set(key, val) {
+        this[key] = val;
+    }
+
     activatePassives(trigger) {
         let ret = [];
         this.passives.forEach(i => ret.push(i(this, trigger)));
@@ -716,7 +720,7 @@ class Game {
 
             this.stats.update("enemyAttacks", [minion, target]);
             this.stats.update("minionsThatAttacked", [minion, target]);
-            this.stats.update("minionsAttacked", minion);
+            this.stats.update("minionsAttacked", [minion, target]);
 
             minion.remStats(0, target.stats[0]);
 

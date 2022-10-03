@@ -9,11 +9,8 @@ module.exports = {
     set: "Journey to Un'Goro",
 
     passive(plr, game, card, trigger) {
-        // Checking trigger[1].hasDeathrattle is not required since activateDefault checks it anyway but it's there for clarity.
-        if (trigger[0] == "minionsSummoned" || trigger[0] == "minionsPlayed") {
-            if (trigger[1].hasDeathrattle && card.passiveCheck(trigger)) {
-                trigger[1].activateDefault("deathrattle");
-            }
-        }
+        if (!card.passiveCheck(trigger, ["minionsSummoned", "minionsPlayed"], null, plr)) return;
+        
+        trigger[1].activateDefault("deathrattle");
     }
 }

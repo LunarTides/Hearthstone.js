@@ -67,7 +67,7 @@ function doTurnAttack() {
 
         if (target.keywords.includes("Stealth")) return;
 
-        game.stats.update("minionsAttacked", target);
+        game.stats.update("minionsAttacked", [attacker, target]);
         game.stats.update("enemyAttacks", [attacker, target]);
 
         game.attackMinion(curr.attack, target);
@@ -145,7 +145,10 @@ function handleCmds(q) {
     else if (q.startsWith("/give ")) {
         if (!debug) return -1;
 
-        var name = q.split(" ").shift().join(" ");
+        let name = q.split(" ");
+        name.shift();
+        name = name.join(" ");
+
         let card = game.functions.getCardByName(name);
 
         game.functions.addToHand(new Card(card.name, curr), curr);

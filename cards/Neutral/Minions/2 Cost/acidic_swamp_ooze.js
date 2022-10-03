@@ -9,6 +9,6 @@ module.exports = {
     set: "Core",
 
     battlecry(plr, game, card) {
-        game.getOtherPlayer(plr).destroyWeapon(true);
+        plr.getOpponent().destroyWeapon(true);
     }
 }

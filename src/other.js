@@ -69,6 +69,10 @@ class Player {
         return this.weapon;
     }
 
+    getOpponent() {
+        return game.getOtherPlayer(this.id);
+    }
+
     setName(name) {
         this.name = name;
     }

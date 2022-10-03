@@ -114,6 +114,7 @@ setup_game();
 setup_card(cards, game);
 setup_interact(game, _debug);
 setup_other(cards, game);
+game.set("cards", cards);
 
 printName();
 const deckcode1 = game.input("\nPlayer 1, please type in your deckcode (Leave this empty for a test deck): ");

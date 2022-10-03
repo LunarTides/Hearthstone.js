@@ -9,15 +9,13 @@ module.exports = {
     set: "Scholomance Academy",
 
     passive(plr, game, card, trigger) {
-        if (trigger[0] == "spellsCast") {
-            card.storage.push(trigger[1]);
-        }
+        if (!card.passiveCheck(trigger, "spellsCast")) return;
+        
+        card.storage.push(trigger[1]);
     },
 
     deathrattle(plr, game, card) {
-        card.storage.forEach(c => {
-            plr.shuffleIntoDeck(new game.Card(c.name, plr));
-        });
+        card.storage.forEach(c => plr.shuffleIntoDeck(new game.Card(c.name, plr)));
 
         card.storage = [];
     }

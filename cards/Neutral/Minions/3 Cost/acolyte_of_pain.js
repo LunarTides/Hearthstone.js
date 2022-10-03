@@ -9,8 +9,14 @@ module.exports = {
     set: "Core",
 
     passive(plr, game, card, trigger) {
-        if (trigger[0] == "minionsAttacked" && trigger[1] == card) {
-            plr.drawCard();
-        }
+        if (!card.passiveCheck(trigger, "minionsAttacked") || trigger[1][1] != card) return;
+        if (!Array.isArray(card.storage) && card.stats[1] < card.storage) plr.drawCard();
+
+        card.storage = card.stats[1];
+    },
+
+    deathrattle(plr, game, card) {
+        // Quick fix
+        plr.drawCard();
     }
 }

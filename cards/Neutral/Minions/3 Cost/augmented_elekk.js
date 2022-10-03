@@ -9,8 +9,8 @@ module.exports = {
     set: "The Boomsday Project",
 
     passive(plr, game, card, trigger) {
-        if (trigger[0] == "cardsAddedToDeck" && card.passiveCheck(trigger)) {
-            plr.shuffleIntoDeck(trigger[1], false);
-        }
+        if (!card.passiveCheck(trigger, "cardsAddedToDeck", null, plr)) return;
+        
+        plr.shuffleIntoDeck(trigger[1], false);
     }
 }
