@@ -100,7 +100,7 @@ function doTurnAttack() {
 
     // Attacker is a minion
     // Target is a player
-    if (target instanceof Player) {
+    if (target instanceof game.Player) {
         game.stats.update("enemyAttacks", [attacker, target]);
         game.stats.update("heroAttacked", [attacker, target, game.turns]);
         game.stats.update("minionsThatAttacked", [attacker, target]);
