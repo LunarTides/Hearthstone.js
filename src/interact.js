@@ -4,8 +4,6 @@ let debug = false;
 const license_url = 'https://github.com/Keatpole/Hearthstone.js/blob/main/LICENSE';
 const copyright_year = "2022";
 
-var prevPlr = null;
-
 function setup(_game, _debug) {
     game = _game;
     debug = _debug;
@@ -157,8 +155,8 @@ function handleCmds(q) {
     }
 
     else if (q === "end") {
-        prevPlr = curr;
         game.endTurn();
+        game.startTurn();
     }
     else if (q === "help") {
         printName();
@@ -184,42 +182,39 @@ function handleCmds(q) {
         var start = (process.platform == 'darwin'? 'open': process.platform == 'win32'? 'start': 'xdg-open');
         require('child_process').exec(start + ' ' + license_url);
     }
-    else if (q === "attack") doTurnAttack();
+    else if (q === "attack") {
+        doTurnAttack();
+        game.killMinions();
+    }
     else return -1;
 }
 
-function doTurn() {
+function doTurnLogic(input, _ret_on_fail = true) {
     game.killMinions();
 
+    let curr = game.getPlayer();
+
+    if (handleCmds(input) !== -1) return;
+    
+    const card = curr.getHand()[parseInt(input) - 1];
+    if (!card) return "Invalid Card";
+    if (input == curr.hand.length || input == 1) card.activateDefault("outcast");
+    const ret = game.playCard(card, curr);
+
+    game.killMinions();
+
+    if (!!["mana", "space"].filter(s => s == ret).length) return true;
+    if (_ret_on_fail) return ret;
+}
+
+function doTurn() {
     printName();
-
-    curr = game.getPlayer();
-
-    if (curr !== prevPlr) {
-        game.startTurn();
-    }
-
-    prevPlr = curr;
-
-    printAll(curr);
+    printAll(game.getPlayer());
 
     let input = "\nWhich card do you want to play? ";
     if (game.turns <= 2 && !debug) input += "(type 'help' for further information <- This will disappear once you end your turn) ";
 
-    var q = game.input(input);
-
-    if (handleCmds(q) !== -1) return; 
-
-    var card = curr.getHand()[parseInt(q) - 1];
-    
-    if (card === undefined) {
-        console.log("Invalid card.");
-        return;
-    }
-
-    if (q == curr.hand.length || q == 1) card.activateDefault("outcast");
-
-    game.playCard(card, curr);
+    doTurnLogic(game.input(input), false);
 }
 
 const cls = () => process.stdout.write('\033c');
@@ -361,6 +356,7 @@ function viewMinion(minion, detailed = false) {
 }
 
 exports.doTurn = doTurn;
+exports.doTurnLogic = doTurnLogic
 exports.printName = printName;
 
 exports.setup_interact = setup;

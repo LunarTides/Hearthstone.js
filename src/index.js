@@ -17,7 +17,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 const fs = require("fs");
-const rl = require("readline-sync");
+const { question } = require("readline-sync");
 const { exit } = require('process');
 const { Game } = require("./game");
 const { Card, setup_card } = require("./card");
@@ -51,8 +51,8 @@ function setup_game() {
     player2 = new Player("Sondre")
 
     if (!_debug) {
-        player1.setName(rl.question("\nPlayer 1, what is your name? "));
-        player2.setName(rl.question("Player 2, what is your name? "));
+        player1.setName(question("\nPlayer 1, what is your name? "));
+        player2.setName(question("Player 2, what is your name? "));
     }
 
     game = new Game(player1, player2);

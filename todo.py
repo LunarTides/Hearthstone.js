@@ -51,4 +51,7 @@ Sidequest        (DONE)
 Quest            (DONE)
 Questline        (DONE)
 
+AI Opponent
+GUI
+
 '''

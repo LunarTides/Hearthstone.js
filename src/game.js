@@ -1,4 +1,4 @@
-const rl = require('readline-sync');
+const { question } = require('readline-sync');
 const { Functions, Player } = require("./other");
 const { Card } = require("./card");
 const { printName } = require("./interact");
@@ -53,7 +53,7 @@ class GameStats {
                     s["progress"][0]++;
                     plr[quests_name].splice(plr[quests_name].indexOf(s), 1);
 
-                    if (quests_name == "secrets") game.input("\nYou triggered the opponents's '" + s.name + "'.\n");
+                    if (quests_name == "secrets") this.game.input("\nYou triggered the opponents's '" + s.name + "'.\n");
 
                     if (s["next"]) new Card(s["next"], plr).activateDefault("cast");
                 }
@@ -95,7 +95,7 @@ class Game {
         this.Player = Player;
         this.functions = functions;
         this.stats = new GameStats(this);
-        this.input = rl.question;
+        this.input = question;
 
         this.player1.id = 0;
         this.player2.id = 1;
@@ -257,8 +257,10 @@ class Game {
     }
 
     endTurn() {
+        this.killMinions();
+
         this.stats.update("turnEnds", this.turns);
-        this.stats.cardsDrawnThisTurn[this.player.id] = [];
+        this.stats.cardsDrawnThisTurn = [[], []]
 
         if (this.player.mana > 0) {
             this.stats.update("unspentMana", this.player.mana);
@@ -286,6 +288,8 @@ class Game {
     }
 
     startTurn() {
+        this.killMinions();
+
         this.stats.update("turnStarts", this.turns);
 
         printName()
@@ -297,12 +301,7 @@ class Game {
         this.player.mana -= this.player.overload;
         this.player.overload = 0;
 
-        if (this.player1.weapon && this.player == this.player1) {
-            this.player1.weapon.activateDefault("startofturn");
-        }
-        if (this.player2.weapon && this.player == this.player2) {
-            this.player2.weapon.activateDefault("startofturn");
-        }
+        if (this.player.weapon) this.player.weapon.activateDefault("startofturn");
 
         this.getBoard()[this.plrNameToIndex(this.player.getName())].forEach(m => {
             m.activateDefault("startofturn");
@@ -338,8 +337,11 @@ class Game {
     }
 
     playCard(card, player) {
+        this.killMinions();
+
         if (player.getMana() < card.getMana()) {
-            return false;
+            this.input("Not enough mana.\n");
+            return "mana";
         }
 
         if (card.keywords.includes("Tradeable")) {
@@ -347,7 +349,8 @@ class Game {
 
             if (q.startsWith("y")) {
                 if (player.getMana() < 1) {
-                    return false;
+                    this.input("Not enough mana.\n");
+                    return "mana";
                 }
 
                 player.setMana(player.getMana() - 1);
@@ -383,7 +386,7 @@ class Game {
                 player.setHand(n);
 
                 player.drawCard();
-                return false;
+                return "traded";
             }
         }
 
@@ -448,7 +451,7 @@ class Game {
                         loc.addDeathrattle(d);
                     });
 
-                    return true;
+                    return "magnetize";
                 }
             }
 
@@ -460,14 +463,14 @@ class Game {
     
                 this.input("Your minion has been countered.\n")
     
-                return;
+                return "counter";
             }
     
             if (this.board[player.id].length >= 7) {
                 this.input("\nYou can only have 7 minions on the board.\n");
                 this.functions.addToHand(card, player, false);
                 player.mana += card.mana;
-                return;
+                return "space";
             }
 
             if (card.dormant) {
@@ -478,7 +481,7 @@ class Game {
                 if (card.activateBattlecry() === -1) {
                     this.functions.addToHand(card, player, false);
                     player.mana += card.mana;
-                    return;
+                    return "refund";
                 }
             }
 
@@ -491,13 +494,13 @@ class Game {
 
                 this.input("Your spell has been countered.\n")
 
-                return;
+                return "counter";
             }
 
             if (card.activateDefault("cast") === -1) {
                 this.functions.addToHand(card, player, false);
                 player.mana += card.mana;
-                return;
+                return "refund";
             }
 
             this.stats.update("spellsCast", card);
@@ -539,7 +542,7 @@ class Game {
 
                     this.functions.addToHand(t, c.plr, false);
 
-                    return;
+                    return "corrupt";
                 }
             }
         });
@@ -559,6 +562,8 @@ class Game {
 
             player.setHand(n);
         }
+
+        this.killMinions();
     }
 
     playMinion(minion, player, summoned = true, trigger_colossal = true) {
@@ -584,7 +589,7 @@ class Game {
                 this.playMinion(card, player, false, false);
             });
 
-            return;
+            return "colossal";
         }
 
         this.board[p].push(minion);
@@ -638,6 +643,8 @@ class Game {
     }
 
     attackMinion(minion, target) {
+        this.killMinions();
+
         if (minion instanceof Card && minion.frozen || minion instanceof Player && minion.frozen) return false;
 
         // Check if there is a minion with taunt
@@ -706,6 +713,8 @@ class Game {
             if (target.getStats()[1] > 0) target.activateDefault("frenzy");
             if (target.getStats()[1] < 0) minion.activateDefault("overkill");
             if (target.getStats()[1] == 0) minion.activateDefault("honorablekill");
+
+            this.killMinions();
 
             return true;
         }
