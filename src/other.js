@@ -352,6 +352,10 @@ class Functions {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
+    capitalize(str) {
+        return str[0].toUpperCase() + str.slice(1).toLowerCase();
+    }
+
     getType(card) {
         if (card.tribe) { // If you see this in the error log, the error occorred since the game failed to get the type of a minion. Error Code: #21
             return "Minion";

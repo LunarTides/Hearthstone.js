@@ -4,6 +4,8 @@ let debug = false;
 const license_url = 'https://github.com/Keatpole/Hearthstone.js/blob/main/LICENSE';
 const copyright_year = "2022";
 
+let curr;
+
 function setup(_game, _debug) {
     game = _game;
     debug = _debug;
@@ -192,7 +194,7 @@ function handleCmds(q) {
 function doTurnLogic(input, _ret_on_fail = true) {
     game.killMinions();
 
-    let curr = game.getPlayer();
+    curr = game.getPlayer();
 
     if (handleCmds(input) !== -1) return;
     

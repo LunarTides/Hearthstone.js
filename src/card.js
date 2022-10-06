@@ -9,45 +9,8 @@ function setup(_cards, _game) {
 class Card {
     constructor(name, plr) {
         this.blueprint = cards[name];
-
-        const hasArray = [
-            // Mutual keywords
-            "outcast",
-            "infuse",
-            "combo",
-
-            // Minion / Weapon keywords
-            "battlecry",
-            "deathrattle",
-            "inspire",
-            "endofturn",
-            "startofturn",
-            "onattack",
-            "startofgame",
-            "overkill",
-            "frenzy",
-            "honorablekill",
-            "spellburst",
-            "passive",
-            "unpassive",
-
-            // Spell keywords
-            "cast",
-            "castondraw",
-
-            // Hero keywords
-            "heropower"
-        ]
-
-        this.__ids = []
-        
-        for (let i = 0; i < 100; i++) {
-            // This is to prevent cards from getting linked. Don't use this variable
-            this.__ids.push(game.functions.randInt(0, 671678679546789));
-        }
         
         this.name = name;
-        this.plr = plr;
 
         this.displayName = name;
 
@@ -63,7 +26,10 @@ class Card {
         this.spellClass = null;
         
         Object.entries(this.blueprint).forEach(i => {
-            if (typeof i[1] == "function") this[i[0]] = [i[1]];
+            if (typeof i[1] == "function") {
+                this[i[0]] = [i[1]];
+                this["has" + game.functions.capitalize(i[0])] = true;
+            }
             else this[i[0]] = i[1];
         });
 
@@ -81,14 +47,17 @@ class Card {
             this[i] = this.blueprint[i] || false;
         });
 
-        hasArray.forEach(i => {
-            // this.hasBattlecry = false;
-            this["has" + i[0].toUpperCase() + i.slice(1)] = this.blueprint[i] != undefined;
-        });
-
         Object.entries(this).forEach(i => {
             this["_" + i[0]] = i[1];
         });
+
+        this.plr = plr;
+
+        this.__ids = []
+        for (let i = 0; i < 100; i++) {
+            // This is to prevent cards from getting linked. Don't use this variable
+            this.__ids.push(game.functions.randInt(0, 671678679546789));
+        }
     }
 
     getName() {
@@ -145,7 +114,7 @@ class Card {
         this.keywords = keywords;
     }
     setFunction(name, val) {
-        const _name = name[0].toUpperCase() + name.slice(1).toLowerCase();
+        const _name = game.functions.capitalize(name);
 
         this["has" + _name] = true;
         this[name] = val;
@@ -254,7 +223,7 @@ class Card {
     }
 
     activate(name, before, after, ...args) {
-        const _name = name[0].toUpperCase() + name.slice(1).toLowerCase();
+        const _name = game.functions.capitalize(name);
 
         if (before) before(name, before, after, ...args);
         if (!this["has" + _name]) return false;

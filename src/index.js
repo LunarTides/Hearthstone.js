@@ -27,12 +27,12 @@ const { doTurn, printName, setup_interact } = require("./interact");
 const _debug = true; // Enables commands like /give, /class and /eval. Disables naming players.
                      // Enable for debugging, disable for actual play.
 
-var cards = {};
+let cards = {};
 
 function importCards(path) {
     fs.readdirSync(path, { withFileTypes: true }).forEach(file => {
         if (file.name.endsWith(".js")) {
-            var f = require(`${path}/${file.name}`);
+            let f = require(`${path}/${file.name}`);
             cards[f.name] = f;
         } else if (file.isDirectory()) {
             importCards(`${path}/${file.name}`);
