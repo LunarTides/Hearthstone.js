@@ -223,13 +223,22 @@ class Card {
     }
 
     activate(name, before, after, ...args) {
-        const _name = game.functions.capitalize(name);
-
         if (before) before(name, before, after, ...args);
-        if (!this["has" + _name]) return false;
+        if (!this["has" + game.functions.capitalize(name)]) return false;
         let ret = [];
-        this[name].forEach(i => ret.push(i(...args)));
+        this[name].forEach(i => {
+            let r = i(...args);
+            ret.push(r);
+
+            if (r == -1 && name != "deathrattle") {
+                game.functions.addToHand(this, this.plr, false);
+                this.plr.mana += this.mana;
+                ret = -1;
+                return ret;
+            }
+        });
         if (after) after(name, before, after, ret, ...args);
+
         return ret;
     }
 

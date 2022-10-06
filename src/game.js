@@ -477,13 +477,7 @@ class Game {
                 card.frozen = true;
                 card.immune = true;
                 card.dormant = card.dormant + this.turns;
-            } else {
-                if (card.activateBattlecry() === -1) {
-                    this.functions.addToHand(card, player, false);
-                    player.mana += card.mana;
-                    return "refund";
-                }
-            }
+            } else if (card.activateBattlecry() === -1) return "refund";
 
             this.stats.update("minionsPlayed", card);
 
@@ -497,11 +491,7 @@ class Game {
                 return "counter";
             }
 
-            if (card.activateDefault("cast") === -1) {
-                this.functions.addToHand(card, player, false);
-                player.mana += card.mana;
-                return "refund";
-            }
+            if (card.activateDefault("cast") === -1) return "refund";
 
             this.stats.update("spellsCast", card);
 
