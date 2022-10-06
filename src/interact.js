@@ -16,9 +16,9 @@ function doTurnAttack() {
     if (!attacker || attacker.frozen) return;
 
     var target = game.functions.selectTarget("Which minion do you want to attack?", false, "enemy");
-    if (!target) return;
+    if (!target || target.immune) return;
 
-    if (attacker instanceof game.Card && !attacker.canAttackHero || target.immune) return;
+    if (attacker instanceof game.Card && !attacker.canAttackHero) return;
 
     // Check if there is a minion with taunt
     var prevent = false;
@@ -34,13 +34,15 @@ function doTurnAttack() {
 
     // Attacker is a player
     if (attacker instanceof game.Player) {
+        if (attacker.attack <= 0) return;
+
         // Target is a player
         if (target instanceof game.Player) {
             game.stats.update("enemyAttacks", [attacker, target]);
             game.stats.update("heroAttacks", [attacker, target]);
             game.stats.update("heroAttacked", [attacker, target, game.turns]);
 
-            target.remHealth(curr.attack);
+            target.remHealth(attacker.attack);
 
             if (attacker.weapon) {
                 const wpn = attacker.weapon;
@@ -67,7 +69,7 @@ function doTurnAttack() {
         game.stats.update("minionsAttacked", [attacker, target]);
         game.stats.update("enemyAttacks", [attacker, target]);
 
-        game.attackMinion(curr.attack, target);
+        game.attackMinion(attacker.attack, target);
         attacker.remHealth(target.stats[0]);
 
         if (target.stats[1] > 0) {
@@ -100,28 +102,36 @@ function doTurnAttack() {
 
     // Attacker is a minion
     // Target is a player
-    if (target instanceof game.Player) {
-        game.stats.update("enemyAttacks", [attacker, target]);
-        game.stats.update("heroAttacked", [attacker, target, game.turns]);
-        game.stats.update("minionsThatAttacked", [attacker, target]);
-        game.stats.update("minionsThatAttackedHero", [attacker, target]);
-
-        target.remHealth(attacker.stats[0]);
-        return;
-    }
-
-    // Target is a minion
 
     if (attacker.turn == game.getTurns()) {
         console.log("That minion cannot attack this turn!");
         return;
     }
     
-    if (attacker.attackTimes == 0) {
+    if (attacker.attackTimes <= 0) {
         console.log("That minion has already attacked this turn!");
         return;
     }
 
+    if (target instanceof game.Player) {
+        game.stats.update("enemyAttacks", [attacker, target]);
+        game.stats.update("heroAttacked", [attacker, target, game.turns]);
+        game.stats.update("minionsThatAttacked", [attacker, target]);
+        game.stats.update("minionsThatAttackedHero", [attacker, target]);
+
+        if (attacker.keywords.includes("Stealth")) {
+            attacker.removeKeyword("Stealth");
+        }
+    
+        if (attacker.keywords.includes("Lifesteal")) {
+            attacker.plr.addHealth(attacker.stats[0]);
+        }
+
+        target.remHealth(attacker.stats[0]);
+        return;
+    }
+
+    // Target is a minion
     if (target.keywords.includes("Stealth")) return;
 
     if (attacker.keywords.includes("Stealth")) {
@@ -129,7 +139,7 @@ function doTurnAttack() {
     }
 
     if (attacker.keywords.includes("Lifesteal")) {
-        curr.addHealth(attacker.stats[0]);
+        attacker.plr.addHealth(attacker.stats[0]);
     }
 
     game.attackMinion(attacker, target);

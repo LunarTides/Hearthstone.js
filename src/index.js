@@ -24,7 +24,7 @@ const { Card, setup_card } = require("./card");
 const { Player, setup_other } = require("./other");
 const { doTurn, printName, setup_interact } = require("./interact");
 
-const _debug = true; // Enables commands like /give, /class and /eval. Disables naming players.
+const _debug = true; // Enables commands like /give and /eval. Disables naming players.
                      // Enable for debugging, disable for actual play.
 
 let cards = {};
