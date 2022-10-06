@@ -285,6 +285,8 @@ class Game {
         this.opponent = this.getOtherPlayer(this.player);
 
         this.turns += 1;
+
+        this.startTurn();
     }
 
     startTurn() {

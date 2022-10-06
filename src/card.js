@@ -223,6 +223,8 @@ class Card {
     }
 
     activate(name, before, after, ...args) {
+        name = name.toLowerCase();
+
         if (before) before(name, before, after, ...args);
         if (!this["has" + game.functions.capitalize(name)]) return false;
         let ret = [];

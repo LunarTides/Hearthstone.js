@@ -147,7 +147,12 @@ function doTurnAttack() {
 }
 
 function handleCmds(q) {
-    if (q === "hero power") curr.heroPower();
+    if (q === "end") game.endTurn();
+    else if (q === "hero power") curr.heroPower();
+    else if (q === "attack") {
+        doTurnAttack();
+        game.killMinions();
+    }
 
     else if (q.startsWith("/give ")) {
         if (!debug) return -1;
@@ -166,10 +171,6 @@ function handleCmds(q) {
         eval(game.input("\nWhat do you want to evaluate? "));
     }
 
-    else if (q === "end") {
-        game.endTurn();
-        game.startTurn();
-    }
     else if (q === "help") {
         printName();
         game.input("\n(In order to run a command; input the name of the command and follow further instruction.)\n\nAvailable commands:\n\nend - Ends your turn\nattack - Attack\nview - View a minion\nhero power - Use your hero power\ndetail - Get more details about opponent\nhelp - Displays this message\nlicense - Opens a link to this project's license\n\nPress enter to continue...");
@@ -193,10 +194,6 @@ function handleCmds(q) {
     else if (q == "license") {
         var start = (process.platform == 'darwin'? 'open': process.platform == 'win32'? 'start': 'xdg-open');
         require('child_process').exec(start + ' ' + license_url);
-    }
-    else if (q === "attack") {
-        doTurnAttack();
-        game.killMinions();
     }
     else return -1;
 }
