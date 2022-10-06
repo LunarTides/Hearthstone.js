@@ -11,7 +11,7 @@ module.exports = {
     deathrattle(plr, game, card) {
         const minion = new game.Card("Bottomfeeder", plr);
 
-        minion.setStats(card.stats[0], card.oghealth);
+        minion.setStats(card.stats[0], card.maxHealth);
         minion.addStats(2, 2);
 
         plr.addToBottomOfDeck(minion);

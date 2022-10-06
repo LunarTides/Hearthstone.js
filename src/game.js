@@ -447,7 +447,7 @@ class Game {
                         loc.addKeyword(k);
                     });
 
-                    loc.oghealth += card.oghealth;
+                    loc.maxHealth += card.maxHealth;
 
                     card.deathrattles.forEach(d => {
                         loc.addDeathrattle(d);

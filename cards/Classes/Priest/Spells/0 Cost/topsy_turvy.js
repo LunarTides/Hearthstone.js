@@ -14,6 +14,6 @@ module.exports = {
         }
 
         target.setStats(target.stats[1], target.stats[0]);
-        target.resetOgHealth();
+        target.resetMaxHealth();
     }
 }

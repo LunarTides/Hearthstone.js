@@ -11,7 +11,6 @@ class Card {
         this.blueprint = cards[name];
         
         this.name = name;
-
         this.displayName = name;
 
         this.type = game.functions.getType(this.blueprint);
@@ -36,7 +35,7 @@ class Card {
         this.attackTimes = 1;
         this.stealthDuration = 0;
 
-        if (this.type == "Minion" || this.type == "Weapon") this.oghealth = this.stats[1];
+        if (this.type == "Minion" || this.type == "Weapon") this.maxHealth = this.stats[1];
 
         this.canAttackHero = true;
 
@@ -146,8 +145,8 @@ class Card {
     setStats(attack = this.stats[0], health = this.stats[1]) {
         this.stats = [attack, health];
 
-        if (health > this.oghealth) {
-            this.oghealth = health;
+        if (health > this.maxHealth) {
+            this.maxHealth = health;
         }
     }
 
@@ -164,14 +163,14 @@ class Card {
         this.setStats(this.stats[0], this.stats[1] + amount);
     
         if (restore) {
-            if (this.stats[1] > this.oghealth) {
-                game.stats.update("restoredHealth", this.oghealth);
-                this.stats[1] = this.oghealth;
+            if (this.stats[1] > this.maxHealth) {
+                game.stats.update("restoredHealth", this.maxHealth);
+                this.stats[1] = this.maxHealth;
             } else {
-                game.stats.update("restoredHealth", this.oghealth);
+                game.stats.update("restoredHealth", this.maxHealth);
             }
         } else {
-            this.oghealth = this.stats[1];
+            this.maxHealth = this.stats[1];
         }
     }
     addAttack(amount) {
@@ -188,8 +187,8 @@ class Card {
     remAttack(amount) {
         this.setStats(this.stats[0] - amount, this.stats[1]);
     }
-    resetOgHealth() {
-        this.oghealth = this.stats[1];
+    resetMaxHealth() {
+        this.maxHealth = this.stats[1];
     }
     setStealthDuration(duration) {
         this.stealthDuration = game.turns + duration;
