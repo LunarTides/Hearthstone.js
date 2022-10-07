@@ -114,7 +114,7 @@ class Player {
 
     gainMana(mana) {
         this.gainEmptyMana(mana);
-        this.refreshMana(this.getMana() + mana);
+        this.refreshMana(mana);
     }
 
     gainOverload(overload) {
@@ -220,7 +220,7 @@ class Player {
         var card = this.deck.pop()
 
         if (card.type == "Spell") {
-            if (card.activateDefault("castondraw")) {
+            if (card.activate("castondraw", null, null, this, game, card)) {
                 return null;
             }
         }
@@ -496,12 +496,12 @@ class Functions {
         if (values.length <= 0) return;
 
         values.forEach((v, i) => {
-            let stats = v.getType() == "Minion" ? ` [${v.stats[0]} / ${v.stats[1]}] ` : "";
+            let stats = this.getType(v) == "Minion" ? ` [${v.stats[0]} / ${v.stats[1]}]` : "";
             let desc = `(${v.desc})` || "";
 
             // Check for a TypeError and ignore it
             try {
-                p += `${i + 1}: {${v.mana}} ${v.displayName}${stats}${desc} (${v.getType()}),\n`;
+                p += `${i + 1}: {${v.mana}} ${v.displayName || v.name}${stats} ${desc} (${this.getType(v)}),\n`;
             } catch (e) {}
         });
 
@@ -511,17 +511,15 @@ class Functions {
         var choice = game.input(p);
 
         if (!values[parseInt(choice) - 1]) {
-            printAll(curr);
-
             return this.discover(prompt, amount, flags, add_to_hand, values);
         }
 
         var card = values[parseInt(choice) - 1];
 
         if (add_to_hand) {
-            var c = new game.Card(card.name, curr);
+            var c = new game.Card(card.name, game.player);
 
-            this.addToHand(c, curr);
+            this.addToHand(c, game.player);
 
             return c;
         } else {
@@ -611,7 +609,13 @@ class Functions {
                 game.stats.update("spellsCastOnMinions", m);
             }
             return false;
-        } 
+        }
+
+        if (minion.keywords.includes("Stealth") && game.player != minion.plr) {
+            console.log("This minion has stealth");
+
+            return false;
+        }
 
         return minion;
     }

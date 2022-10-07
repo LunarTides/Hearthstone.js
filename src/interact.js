@@ -18,7 +18,7 @@ function doTurnAttack() {
     var target = game.functions.selectTarget("Which minion do you want to attack?", false, "enemy");
     if (!target || target.immune) return;
 
-    if (attacker instanceof game.Card && !attacker.canAttackHero) return;
+    if (target instanceof game.Player && attacker instanceof game.Card && !attacker.canAttackHero) return;
 
     // Check if there is a minion with taunt
     var prevent = false;
@@ -134,14 +134,6 @@ function doTurnAttack() {
     // Target is a minion
     if (target.keywords.includes("Stealth")) return;
 
-    if (attacker.keywords.includes("Stealth")) {
-        attacker.removeKeyword("Stealth");
-    }
-
-    if (attacker.keywords.includes("Lifesteal")) {
-        attacker.plr.addHealth(attacker.stats[0]);
-    }
-
     game.attackMinion(attacker, target);
     game.killMinions();
 }
@@ -169,6 +161,20 @@ function handleCmds(q) {
         if (!debug) return -1;
 
         eval(game.input("\nWhat do you want to evaluate? "));
+    }
+    else if (q == "/debug") {
+        if (!debug) return -1;
+
+        game.player.maxMaxMana = 1000;
+        game.player.maxMana = 1000;
+        game.player.mana = 1000;
+
+        game.player.deck = [];
+        game.player.hand = [];
+
+        game.player.health += 10000;
+        game.player.armor += 100000;
+        game.player.fatigue = 0;
     }
 
     else if (q === "help") {

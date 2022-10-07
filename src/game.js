@@ -10,9 +10,11 @@ class GameStats {
     }
 
     cardUpdate(key, val) {
-        this.game.player.getHand().forEach(p => {
-            // Infuse
-            if (key == "minionsKilled" && val.plr == this.game.player && p.infuse_num >= 0) {
+        // Infuse
+        if (key == "minionsKilled") {
+            val.plr.getHand().forEach(p => {
+                if (p.infuse_num < 0) return;
+
                 p.setDesc(p.desc.replace(`Infuse (${p.infuse_num})`, `Infuse (${p.infuse_num - 1})`));
                 p.infuse_num -= 1;
 
@@ -20,8 +22,9 @@ class GameStats {
                     p.activateDefault("infuse");
                     p.setDesc(p.desc.replace(`Infuse (${p.infuse_num})`, "Infused"));
                 }
-            }
-        });
+            });
+        }
+        
 
         this.game.getBoard().forEach(p => {
             p.forEach(m => {
@@ -211,6 +214,9 @@ class Game {
         this.player1.setHand(plr1_hand);
         this.player2.setHand(plr2_hand);
 
+        this.player1.setMaxMana(1);
+        this.player1.setMana(1);
+
         while (this.player1.hand.length < 3) {
             this.player1.drawCard(false);
         }
@@ -219,9 +225,6 @@ class Game {
             this.player2.drawCard(false);
         }
         this.functions.addToHand(new Card("The Coin", this.player2), this.player2, false)
-
-        this.player1.setMaxMana(1);
-        this.player1.setMana(1);
 
         this.turns += 1;
 
@@ -528,9 +531,7 @@ class Game {
                     c.removeKeyword("Corrupt");
                     c.addKeyword("Corrupted");
 
-                    let t = null;
-                    
-                    eval(`t = new ${c.type}(c.corrupt, c.plr)`);
+                    let t = new Card(c.corrupt, c.plr);
 
                     this.functions.addToHand(t, c.plr, false);
 
@@ -676,31 +677,36 @@ class Game {
             this.stats.update("minionsThatAttacked", [minion, target]);
             this.stats.update("minionsAttacked", [minion, target]);
 
-            minion.remStats(0, target.stats[0]);
+            let dmgTarget = true;
+            let dmgMinion = true;
 
-            if (minion.keywords.includes("Divine Shield")) {
+            if (minion.immune) dmgMinion = false;
+
+            if (dmgMinion && minion.keywords.includes("Divine Shield")) {
                 minion.removeKeyword("Divine Shield");
-                return false;
+                dmgMinion = false;
             }
 
-            if (minion.stats[1] > 0) minion.activateDefault("frenzy");
+            if (dmgMinion) minion.remStats(0, target.stats[0]);
+
+            if (dmgMinion && minion.stats[1] > 0) minion.activateDefault("frenzy");
 
             if (minion.keywords.includes("Stealth")) minion.removeKeyword("Stealth");
         
             minion.activateDefault("onattack");
             this.stats.update("minionsAttacked", [minion, target]);
         
-            if (target.keywords.includes("Poisonous")) minion.setStats(minion.stats[0], 0);
+            if (dmgMinion && target.keywords.includes("Poisonous")) minion.setStats(minion.stats[0], 0);
 
             if (target.keywords.includes("Divine Shield")) {
                 target.removeKeyword("Divine Shield");
-                return false;
+                dmgTarget = false;
             }
 
-            if (minion.keywords.includes("Lifesteal")) minion.plr.addHealth(minion.stats[0]);
-            if (minion.keywords.includes("Poisonous")) target.setStats(target.stats[0], 0);
+            if (dmgTarget && minion.keywords.includes("Lifesteal")) minion.plr.addHealth(minion.stats[0]);
+            if (dmgTarget && minion.keywords.includes("Poisonous")) target.setStats(target.stats[0], 0);
 
-            target.remStats(0, minion.stats[0])
+            if (dmgTarget) target.remStats(0, minion.stats[0])
 
             if (target.getStats()[1] > 0) target.activateDefault("frenzy");
             if (target.getStats()[1] < 0) minion.activateDefault("overkill");

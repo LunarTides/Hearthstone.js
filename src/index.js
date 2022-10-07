@@ -45,6 +45,7 @@ importCards(__dirname + '/../cards');
 let game;
 let player1;
 let player2;
+let maxDeckLength = 30;
 
 function setup_game() {
     player1 = new Player("Isak");
@@ -58,11 +59,12 @@ function setup_game() {
     game = new Game(player1, player2);
 }
 function validateDeck(card, plr, deck) {
-    if (deck.length > 30) return false;
+    if (deck.length > maxDeckLength) return false;
     return validateCard(card, plr);
 }
 function validateCard(card, plr) {
     if (plr.class != card.class && card.class != "Neutral") return false;
+    if (card.uncollectible) return false;
     return true;
 }
 

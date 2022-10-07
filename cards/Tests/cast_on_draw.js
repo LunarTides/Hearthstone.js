@@ -7,6 +7,6 @@ module.exports = {
     set: "Core",
 
     castondraw(plr, game) {
-        plr.mana += 1;
+        plr.gainMana(1);
     }
 }

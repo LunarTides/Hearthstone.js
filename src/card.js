@@ -39,7 +39,7 @@ class Card {
 
         this.canAttackHero = true;
 
-        this.deathrattles = this.hasDeathrattle ? [this.blueprint.deathrattle] : [];
+        this.deathrattle = this.hasDeathrattle ? [this.blueprint.deathrattle] : [];
 
         const exists = ["corrupted", "colossal", "dormant", "uncollectible", "frozen", "immune", "echo"];
         exists.forEach(i => {
@@ -118,9 +118,9 @@ class Card {
         this["has" + _name] = true;
         this[name] = val;
     }
-    addDeathrattle(deathrattle) {
+    addDeathrattle(_deathrattle) {
         this.hasDeathrattle = true;
-        this.deathrattles.push(deathrattle);
+        this.deathrattle.push(_deathrattle);
     }
 
     addKeyword(keyword) {
