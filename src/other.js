@@ -384,10 +384,11 @@ class Functions {
     createJade(plr) {
         if (game.stats.jadeCounter < 30) game.stats.jadeCounter += 1;
         const count = game.stats.jadeCounter;
+        const mana = (count < 10) ? count : 10;
 
         let jade = new game.Card("Jade Golem", plr);
         jade.setStats(count, count);
-        jade.setMana(count);
+        jade.setMana(mana);
 
         return jade;
     }
@@ -434,12 +435,14 @@ class Functions {
     }
 
     spellDmg(target, damage) {
-        game.stats.update("spellsThatDealtDamage", [target, damage]);
+        const dmg = this.accountForSpellDmg(damage);
+
+        game.stats.update("spellsThatDealtDamage", [target, dmg]);
 
         if (target instanceof game.Card) {
-            game.attackMinion(this.accountForSpellDmg(damage), target);
+            game.attackMinion(dmg, target);
         } else if (target instanceof Player) {
-            target.remHealth(this.accountForSpellDmg(damage));
+            target.remHealth(dmg);
         }
     }
 
@@ -532,7 +535,7 @@ class Functions {
         // force_side = [null, "enemy", "self"]
 
         if (force_class == "hero") {
-            var target = game.input(`Do you want to select the enemy hero, or your own hero? (y: enemy, n: self) `);
+            const target = game.input(`Do you want to select the enemy hero, or your own hero? (y: enemy, n: self) `);
     
             return (target.startsWith("y")) ? game.opponent : game.player;
         }
@@ -541,16 +544,16 @@ class Functions {
         if (force_class == null) p += "type 'face' to select a hero | ";
         p += "type 'back' to go back) ";
 
-        var target = game.input(p);
+        const target = game.input(p);
 
         if (target.startsWith("b")) {
-            var return_question = game.input(`WARNING: Going back might cause unexpected things to happen. Do you still want to go back? (y / n) `);
+            const return_question = game.input(`WARNING: Going back might cause unexpected things to happen. Do you still want to go back? (y / n) `);
             
             if (return_question.startsWith("y")) return false;
         }
 
-        var board_next = game.getBoard()[game.opponent.id];
-        var board_self = game.getBoard()[game.player.id];
+        const board_next = game.getBoard()[game.opponent.id];
+        const board_self = game.getBoard()[game.player.id];
 
         const board_next_target = board_next[parseInt(target) - 1];
         const board_self_target = board_self[parseInt(target) - 1];
@@ -561,9 +564,7 @@ class Functions {
             // target != "face" and target is not a minion.
             // The input is invalid
 
-            this.selectTarget(prompt, elusive, force_side, force_class);
-
-            return false;
+            return this.selectTarget(prompt, elusive, force_side, force_class);
         }
 
         if (force_side) {
@@ -584,9 +585,7 @@ class Functions {
             
                 if (target2.startsWith("b")) {
                     // Go back.
-                    this.selectTarget(prompt, elusive, force_side, force_class);
-
-                    return false;
+                    return this.selectTarget(prompt, elusive, force_side, force_class);
                 }
 
                 minion = (target2.startsWith("y")) ? board_next_target : board_self_target;
@@ -601,7 +600,7 @@ class Functions {
         }
 
         if (minion.keywords.includes("Elusive") && elusive) {
-            console.log("Can't be targeted by Spells or Hero Powers");
+            game.input("Can't be targeted by Spells or Hero Powers");
             
             // elusive can be set to any value other than true to prevent targetting but not update
             // spells cast on minions

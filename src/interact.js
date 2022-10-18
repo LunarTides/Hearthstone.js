@@ -363,11 +363,8 @@ function viewMinion(minion, detailed = false) {
 
     let q = game.input("\nDo you want to view more info, or do you want to go back? [more / back] ");
 
-    if (q.toLowerCase().startsWith("m")) {
-        viewMinion(minion, true)
-    } else {
-        return;
-    }
+    if (q.toLowerCase().startsWith("m")) viewMinion(minion, true)
+    else return;
 }
 
 exports.doTurn = doTurn;

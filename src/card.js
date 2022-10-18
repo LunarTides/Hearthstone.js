@@ -228,7 +228,7 @@ class Card {
         if (!this["has" + game.functions.capitalize(name)]) return false;
         let ret = [];
         this[name].forEach(i => {
-            let r = i(...args);
+            let r = i(this.plr, game, this, ...args);
             ret.push(r);
 
             if (r == -1 && name != "deathrattle") {
@@ -244,11 +244,11 @@ class Card {
     }
 
     activateDefault(name, ...args) {
-        return this.activate(name, null, null, this.plr, game, this, ...args);
+        return this.activate(name, null, null, ...args);
     }
 
     activateBattlecry(...args) {
-        return this.activate("battlecry", () => this.activateDefault("passive", ["battlecry", this]), null, this.plr, game, this, ...args);
+        return this.activate("battlecry", () => this.activateDefault("passive", ["battlecry", this]), null, ...args);
     }
 
     passiveCheck(trigger, key, val = null, check_plr = null) {
