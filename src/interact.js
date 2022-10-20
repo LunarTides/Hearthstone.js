@@ -44,20 +44,18 @@ function doTurnAttack() {
 
             target.remHealth(attacker.attack);
 
-            if (attacker.weapon) {
-                const wpn = attacker.weapon;
-
-                if (wpn.attackTimes > 0 && wpn.stats[0]) {
-                    wpn.attackTimes -= 1;
-
-                    wpn.activateDefault("onattack");
-                    wpn.remStats(0, 1);
-                }
-
-                attacker.weapon = wpn;
-            }
-
             attacker.attack = 0;
+
+            if (!attacker.weapon) return;
+
+            const wpn = attacker.weapon;
+
+            if (wpn.attackTimes > 0 && wpn.stats[0]) {
+                wpn.attackTimes -= 1;
+
+                wpn.activateDefault("onattack");
+                wpn.remStats(0, 1);
+            }
 
             return;
         }
@@ -257,88 +255,290 @@ function printLicense(disappear = true) {
     console.log(`|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n`);
 }
 
-function printAll(curr, detailed = false) {
-    if (game.turns <= 2) printLicense();        
+function printAll(c, detailed = false) {
+    if (game.turns <= 2) printLicense();
 
-    console.log(`Mana: ${curr.getMana()} / ${curr.getMaxMana()} | Opponent's Mana: ${game.opponent.getMana()} / ${game.opponent.getMaxMana()}`);
-    console.log(`Health: ${curr.health} + ${curr.armor} / ${curr.maxHealth} | Opponent's Health: ${game.opponent.health} + ${game.opponent.armor} / ${game.opponent.maxHealth}`);
+    let op = game.getOpponent();
+    let curr = game.player;
 
-    wpnstr = "";
-    if (curr.attack > 0) wpnstr += `Attack: ${curr.attack}`;
-    if (wpnstr && curr.weapon) wpnstr += " | ";
-    if (curr.weapon) wpnstr += `Weapon: ${curr.weapon.displayName} (${curr.weapon.getStats().join(' / ')})`;
-    if (curr.weapon && game.opponent.weapon) wpnstr += " | ";
-    if (game.opponent.weapon) wpnstr += `Opponent's Weapon: ${game.opponent.weapon.displayName} (${game.opponent.weapon.getStats().join(' / ')})`;
+    let sb = "";
 
-    if (wpnstr) console.log(wpnstr);
+    /// Mana
+    // Current Player's Mana
+    sb += "Mana: ";
+    sb += curr.getMana();
+    sb += " / ";
+    sb += curr.getMaxMana();
 
-    if (curr.secrets.length > 0)
-        console.log(`Secrets: ${curr.secrets.map(x => x["name"]).join(', ')}`);
-    if (curr.sidequests.length > 0)
-        console.log(`Sidequests: ${curr.sidequests.map(x => x["name"] + " (" + x["progress"][0] + " / " + x["progress"][1] + ")").join(', ')}`);
-    if (curr.quests.length > 0)
-        console.log(`Quest: ${curr.quests[0]["name"] + " (" + curr.quests[0]["progress"][0] + " / " + curr.quests[0]["progress"][1] + ")"}`);
-    if (curr.questlines.length > 0)
-        console.log(`Questline: ${curr.questlines[0]["name"] + " (" + curr.questlines[0]["progress"][0] + " / " + curr.questlines[0]["progress"][1] + ")"}\n`);
+    sb += " | ";
+
+    // Opponent's Mana
+    sb += "Opponent's Mana: ";
+    sb += op.getMana();
+    sb += " / ";
+    sb += curr.getMaxMana();
+    // Mana End
+    console.log(sb);
+    sb = "";
+    
+    // Health
+    sb += "Health: ";
+    sb += curr.health;
+    sb += " + ";
+    sb += curr.armor;
+    sb += " / ";
+    sb += curr.maxHealth; // HP + AMR / MAXHP
+
+    sb += " | ";
+
+    // Opponent's Health
+    sb += "Opponent's Health: ";
+    sb += op.health;
+    sb += " + ";
+    sb += op.armor;
+    sb += " / ";
+    sb += op.maxHealth;
+    // Health End
+    console.log(sb);
+    sb = "";
+
+    // Weapon
+    if (curr.attack > 0 || game.player.weapon) sb += `Attack: ${curr.attack}`; // If you can attack, show the amount you can deal
+
+    if (game.player.weapon) {
+        // Current player has a weapon
+
+        sb += " | ";
+        sb += "Weapon: ";
+        sb += curr.weapon.displayName;
+        sb += " (";
+        sb += curr.weapon.getStats().join(' / ');
+        sb += ")"; // Attack: 1 | Weapon: Wicked Knife (1 / 1)
         
-    console.log(`Deck Size: ${curr.getDeck().length} | Opponent's Deck Size: ${game.opponent.getDeck().length}`);
+        if (op.weapon) sb += " | ";
+    }
 
+    if (game.opponent.weapon) {
+        // Opponent has a weapon
+
+        sb += "Opponent's Weapon: ";
+        sb += op.weapon.displayName;
+        sb += " (";
+        sb += op.weapon.getStats().join(' / ');
+        sb += ")";
+    }
+
+    // Weapon End
+    if (sb) console.log(sb);
+    sb = "";
+
+    // Secrets
+    if (curr.secrets.length > 0) {
+        sb += "Secrets: ";
+        sb += curr.secrets.map(x => x["name"]).join(', '); // Get all your secret's names
+    }
+    // Secrets End
+    if (sb) console.log(sb);
+    sb = "";
+
+    // Sidequests
+    if (curr.sidequests.length > 0) {
+        sb += "Sidequests: ";
+        sb += curr.sidequests.map(secret => {
+            secret["name"] +
+            " (" + secret["progress"][0] +
+            " / " + secret["progress"][1] +
+            ")"
+        }).join(', ');
+    }
+    // Sidequests End
+    if (sb) console.log(sb);
+    sb = "";
+
+    // Quests
+    if (curr.quests.length > 0) {
+        const quest = curr.quests[0];
+
+        sb += "Quest: ";
+        sb += quest["name"]
+        sb += " ("
+        sb += quest["progress"][0]
+        sb += " / "
+        sb += quest["progress"][1]
+        sb += ")";
+    }
+    // Quests End
+    if (sb) console.log(sb);
+    sb = "";
+
+    // Questlines
+    if (curr.questlines.length > 0) {
+        const questline = curr.questlines[0];
+
+        sb += "Questline: ";
+        sb += questline["name"]
+        sb += " ("
+        sb += questline["progress"][0]
+        sb += " / "
+        sb += questline["progress"][1]
+        sb += ")";
+        sb += "\n";
+    }
+    // Questlines End
+    if (sb) console.log(sb);
+    sb = "";
+
+    // Deck
+    sb += "Deck Size: ";
+    sb += curr.getDeck().length;
+    sb += " | ";
+
+    // Opponent's Deck
+    sb += "Opponent's Deck Size: ";
+    sb += op.getDeck().length;
+    // Deck End
+    console.log(sb);
+    sb = "";
+
+    // Detailed Info
     if (detailed) {
         console.log("-------------------------------");
 
-        if (game.opponent.secrets.length > 0)
-            console.log(`Opponent's Secrets: ${game.opponent.secrets.length}`);
-        if (game.opponent.sidequests.length > 0)
-            console.log(`Opponent's Sidequests: ${game.opponent.sidequests.map(x => x["name"] + " (" + x["progress"][0] + " / " + x["progress"][1] + ")").join(', ')}`);
-        if (game.opponent.quests.length > 0)
-            console.log(`Opponent's Quest: ${game.opponent.quests[0]["name"] + " (" + game.opponent.quests[0]["progress"][0] + " / " + game.opponent.quests[0]["progress"][1] + ")"}`);
-        if (game.opponent.questlines.length > 0)
-            console.log(`Opponent's Questline: ${game.opponent.questlines[0]["name"] + " (" + game.opponent.questlines[0]["progress"][0] + " / " + game.opponent.questlines[0]["progress"][1] + ")"}\n`);
+        if (op.secrets.length > 0) {
+            sb += "Opponent's Secrets: ";
+            sb += op.secrets.length;
 
-        console.log(`Opponent's Hand Size: ${game.opponent.getHand().length}`);
-    }
-
-    console.log("\n--- Board ---");
-    game.getBoard().forEach((_, i) => {
-        if (i == curr.id) {
-            var t = `--- You ---`
-        } else {
-            var t = "--- Opponent ---"
+            sb += "\n";
         }
+
+        if (op.sidequests.length > 0) {
+            sb += "Opponent's Sidequests: ";
+            sb += op.sidequests.map(sidequest => {
+                sidequest["name"] +
+                " (" +
+                sidequest["progress"][0] +
+                " / " +
+                sidequest["progress"][1] +
+                ")"
+            }).join(', ');
+
+            sb += "\n";
+        }
+        
+        if (op.quests.length > 0) {
+            const quest = op.quests[0];
+
+            sb += "Opponent's Quest: ";
+            sb += quest["name"];
+            sb += " (";
+            sb += quest["progress"][0];
+            sb += " / ";
+            sb += quest["progress"][1];
+            sb += ")";
+
+            sb += "\n";
+        }
+        if (op.questlines.length > 0) {
+            const questline = op.questlines[0];
+
+            sb += "Opponent's Questline: ";
+            sb += questline["name"];
+            sb += " (";
+            sb += questline["progress"][0];
+            sb += " / ";
+            sb += questline["progress"][1]
+            sb += ")";
+            
+            sb += "\n";
+        }
+
+        sb += "\n";
+
+        sb += "Opponent's Hand Size: ";
+        sb += op.getHand().length;
+    }
+    // Detailed Info End
+    if (sb) console.log(sb);
+    sb = "";
+
+    // Board
+    console.log("\n--- Board ---");
+    
+    game.getBoard().forEach((_, i) => {
+        const t = (i == curr.id) ? "--- You ---" : "--- Opponent ---";
 
         console.log(t) // This is not for debugging, do not comment out
 
         if (game.getBoard()[i].length == 0) {
             console.log("(None)");
-        } else {
-            game.getBoard()[i].forEach((m, n) => {
-                var keywords = m.getKeywords().length > 0 ? ` {${m.getKeywords().join(", ")}}` : "";
-                var frozen = m.frozen && !m.dormant ? " (Frozen)" : "";
-                var immune = m.immune && !m.dormant ? " (Immune)" : "";
-                var dormant = m.dormant ? " (Dormant)" : "";
-
-                console.log(`[${n + 1}] ${m.displayName} (${m.getStats().join(" / ")})${keywords}${frozen}${immune}${dormant}`);
-            });
+            return;
         }
+
+        game.getBoard()[i].forEach((m, n) => {
+            const keywords = m.getKeywords().length > 0 ? ` {${m.getKeywords().join(", ")}}` : "";
+            const frozen = m.frozen && !m.dormant ? " (Frozen)" : "";
+            const immune = m.immune && !m.dormant ? " (Immune)" : "";
+            const dormant = m.dormant ? " (Dormant)" : "";
+
+            sb += "[";
+            sb += n + 1;
+            sb += "] ";
+            sb += m.displayName;
+            sb += " (";
+            sb += m.getStats().join(" / ")
+            sb += ")";
+
+            sb += keywords;
+            sb += frozen
+            sb += immune
+            sb += dormant;
+
+            console.log(sb);
+            sb = "";
+        });
     });
     console.log("-------------")
 
-    _class = curr.hero == "" ? curr.class : curr.hero.getName();
-    if (detailed) _class += ` | HP: ${curr.hero_power != "hero" ? curr.hero_power : curr.hero.getName()}`;
+    let _class = (curr.hero == "") ? curr.class : curr.hero.getName();
+    if (detailed) {
+        _class += " | ";
+        _class += "HP: ";
+        _class += (curr.hero_power == "hero") ? curr.hero.getName() : curr.hero_power;
+    }
 
+    // Hand
     console.log(`\n--- ${curr.getName()} (${_class})'s Hand ---`);
     console.log("([id] {cost} Name [attack / health] (type))\n");
 
     curr.getHand().forEach((card, i) => {
+        const desc = card.getDesc().length > 0 ? ` (${card.getDesc()}) ` : " ";
+
+        sb += "[";
+        sb += i + 1;
+        sb += "]";
+        sb += " {";
+        sb += card.getMana();
+        sb += "} ";
+        sb += card.displayName;
+        
         if (card.getType() === "Minion" || card.getType() === "Weapon") {
-            var desc = card.getDesc().length > 0 ? ` (${card.getDesc()}) ` : " ";
-            console.log(`[${i + 1}] {${card.getMana()}} ${card.displayName} [${card.getStats().join(' / ')}]${desc}(${card.getType()})`);
-        } else {
-            var desc = card.getDesc().length > 0 ? ` (${card.getDesc()}) ` : " ";
-            console.log(`[${i + 1}] {${card.getMana()}} ${card.displayName}${desc}(${card.getType()})`);
+            sb += " [";
+            sb += card.getStats().join(" / ");
+            sb += "]";
         }
+
+        sb += desc;
+
+        sb += "(";
+        sb += card.getType();
+        sb += ")";
+
+        console.log(sb);
+        sb = ""
     });
-    console.log("------------")
+    // Hand End
+
+    console.log("------------");
 }
 
 function viewMinion(minion, detailed = false) {

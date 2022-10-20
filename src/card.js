@@ -180,8 +180,7 @@ class Card {
         this.setStats(this.stats[0], this.stats[1] - amount);
 
         if (this.type == "Weapon" && this.stats[1] <= 0) {
-            this.activateDefault("deathrattle");
-            this.plr.weapon = null;
+            this.plr.destroyWeapon(true);
         }
     }
     remAttack(amount) {
