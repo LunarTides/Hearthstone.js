@@ -163,16 +163,16 @@ function handleCmds(q) {
     else if (q == "/debug") {
         if (!debug) return -1;
 
-        game.player.maxMaxMana = 1000;
-        game.player.maxMana = 1000;
-        game.player.mana = 1000;
+        curr.maxMaxMana = 1000;
+        curr.maxMana = 1000;
+        curr.mana = 1000;
 
-        game.player.deck = [];
-        game.player.hand = [];
+        curr.deck = [];
+        curr.hand = [];
 
-        game.player.health += 10000;
-        game.player.armor += 100000;
-        game.player.fatigue = 0;
+        curr.health += 10000;
+        curr.armor += 100000;
+        curr.fatigue = 0;
     }
 
     else if (q === "help") {
@@ -255,11 +255,10 @@ function printLicense(disappear = true) {
     console.log(`|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n`);
 }
 
-function printAll(c, detailed = false) {
+function printAll(curr, detailed = false) {
     if (game.turns <= 2) printLicense();
 
     let op = game.getOpponent();
-    let curr = game.player;
 
     let sb = "";
 
@@ -303,9 +302,9 @@ function printAll(c, detailed = false) {
     sb = "";
 
     // Weapon
-    if (curr.attack > 0 || game.player.weapon) sb += `Attack: ${curr.attack}`; // If you can attack, show the amount you can deal
+    if (curr.attack > 0 || curr.weapon) sb += `Attack: ${curr.attack}`; // If you can attack, show the amount you can deal
 
-    if (game.player.weapon) {
+    if (curr.weapon) {
         // Current player has a weapon
 
         sb += " | ";
