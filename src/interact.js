@@ -126,6 +126,8 @@ function doTurnAttack() {
         }
 
         target.remHealth(attacker.stats[0]);
+
+        attacker.attackTimes--;
         return;
     }
 
