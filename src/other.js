@@ -151,10 +151,6 @@ class Player {
         this.armor += armor;
     }
 
-    addOverload(amount) {
-        this.overload += amount;
-    }
-
     addAttack(amount) {
         this.attack += amount;
 
@@ -220,7 +216,7 @@ class Player {
         var card = this.deck.pop()
 
         if (card.type == "Spell") {
-            if (card.activate("castondraw", null, null, this, game, card)) {
+            if (card.activate("castondraw")) {
                 return null;
             }
         }
@@ -243,6 +239,10 @@ class Player {
 
         if (this.hero && this.hero_power == "hero") {
             if (this.hero.activate("heropower") != -1) {
+                this.game.getBoard()[this.id].forEach(m => {
+                    m.activate("inspire");
+                });
+
                 this.setMana(this.getMana() - this.heroPowerCost);
 
                 game.stats.update("heroPowers", this.hero_power);

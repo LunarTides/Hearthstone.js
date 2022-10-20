@@ -233,8 +233,7 @@ class Card {
             if (r == -1 && name != "deathrattle") {
                 game.functions.addToHand(this, this.plr, false);
                 this.plr.mana += this.mana;
-                ret = -1;
-                return ret;
+                return -1;
             }
         });
 

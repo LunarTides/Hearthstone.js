@@ -501,7 +501,8 @@ class Game {
             this.stats.update("spellsCast", card);
 
             this.getBoard()[this.plrNameToIndex(player.getName())].forEach(m => {
-                m.activate("spellburst", null, () => m.hasSpellburst = false, m.plr, this, m);
+                m.activate("spellburst");
+                m.hasSpellburst = false;
             });
         } else if (card.getType() === "Weapon") {
             player.setWeapon(card);

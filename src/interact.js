@@ -153,6 +153,8 @@ function handleCmds(q) {
 
         let card = game.functions.getCardByName(name);
 
+        if (!card) return game.input("Invalid card: `" + name + "`.\n");
+
         game.functions.addToHand(new game.Card(card.name, curr), curr);
     }
     else if (q == "/eval") {
