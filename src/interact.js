@@ -53,7 +53,7 @@ function doTurnAttack() {
             if (wpn.attackTimes > 0 && wpn.stats[0]) {
                 wpn.attackTimes -= 1;
 
-                wpn.activateDefault("onattack");
+                wpn.activate("onattack");
                 wpn.remStats(0, 1);
             }
 
@@ -71,7 +71,7 @@ function doTurnAttack() {
         attacker.remHealth(target.stats[0]);
 
         if (target.stats[1] > 0) {
-            target.activateDefault("frenzy");
+            target.activate("frenzy");
         }
 
         if (attacker.weapon) {
@@ -80,7 +80,7 @@ function doTurnAttack() {
             if (wpn.attackTimes > 0 && wpn.stats[0]) {
                 wpn.attackTimes -= 1;
 
-                wpn.activateDefault("onattack");
+                wpn.activate("onattack");
                 wpn.remStats(0, 1);
 
                 if (wpn.keywords.includes("Poisonous")) {
@@ -211,7 +211,7 @@ function doTurnLogic(input, _ret_on_fail = true) {
     
     const card = curr.getHand()[parseInt(input) - 1];
     if (!card) return "Invalid Card";
-    if (input == curr.hand.length || input == 1) card.activateDefault("outcast");
+    if (input == curr.hand.length || input == 1) card.activate("outcast");
     const ret = game.playCard(card, curr);
 
     game.killMinions();

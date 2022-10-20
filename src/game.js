@@ -19,7 +19,7 @@ class GameStats {
                 p.infuse_num -= 1;
 
                 if (p.infuse_num == 0) {
-                    p.activateDefault("infuse");
+                    p.activate("infuse");
                     p.setDesc(p.desc.replace(`Infuse (${p.infuse_num})`, "Infused"));
                 }
             });
@@ -28,18 +28,18 @@ class GameStats {
 
         this.game.getBoard().forEach(p => {
             p.forEach(m => {
-                m.activateDefault("unpassive", true);
-                m.activateDefault("passive", [key, val]);
+                m.activate("unpassive", true);
+                m.activate("passive", [key, val]);
             });
         });
         
         if (this.game.player1.weapon) {
-            this.game.player1.weapon.activateDefault("unpassive", true);
-            this.game.player1.weapon.activateDefault("passive", [key, val]);
+            this.game.player1.weapon.activate("unpassive", true);
+            this.game.player1.weapon.activate("passive", [key, val]);
         }
         if (this.game.player2.weapon) {
-            this.game.player2.weapon.activateDefault("unpassive", true);
-            this.game.player2.weapon.activateDefault("passive", [key, val]);
+            this.game.player2.weapon.activate("unpassive", true);
+            this.game.player2.weapon.activate("passive", [key, val]);
         }
 
         this.game.activatePassives([key, val]);
@@ -58,7 +58,7 @@ class GameStats {
 
                     if (quests_name == "secrets") this.game.input("\nYou triggered the opponents's '" + s.name + "'.\n");
 
-                    if (s["next"]) new Card(s["next"], plr).activateDefault("cast");
+                    if (s["next"]) new Card(s["next"], plr).activate("cast");
                 }
             }
         });
@@ -230,23 +230,23 @@ class Game {
 
         this.player1.deck.forEach(c => {
             if (c.getType() == "Minion") {
-                c.activateDefault("startofgame");
+                c.activate("startofgame");
             }
         });
         this.player2.deck.forEach(c => {
             if (c.getType() == "Minion") {
-                c.activateDefault("startofgame");
+                c.activate("startofgame");
             }
         });
 
         this.player1.hand.forEach(c => {
             if (c.getType() == "Minion") {
-                c.activateDefault("startofgame");
+                c.activate("startofgame");
             }
         });
         this.player2.hand.forEach(c => {
             if (c.getType() == "Minion") {
-                c.activateDefault("startofgame");
+                c.activate("startofgame");
             }
         });
     }
@@ -270,7 +270,7 @@ class Game {
         }
 
         this.getBoard()[this.player.id].forEach(m => {
-            m.activateDefault("endofturn");
+            m.activate("endofturn");
         });
 
         let _c = this.player1.hand.filter(c => !c.echo)
@@ -306,10 +306,10 @@ class Game {
         this.player.mana -= this.player.overload;
         this.player.overload = 0;
 
-        if (this.player.weapon) this.player.weapon.activateDefault("startofturn");
+        if (this.player.weapon) this.player.weapon.activate("startofturn");
 
         this.getBoard()[this.plrNameToIndex(this.player.getName())].forEach(m => {
-            m.activateDefault("startofturn");
+            m.activate("startofturn");
             m.canAttackHero = true;
             m.resetAttackTimes();
 
@@ -496,7 +496,7 @@ class Game {
                 return "counter";
             }
 
-            if (card.activateDefault("cast") === -1) return "refund";
+            if (card.activate("cast") === -1) return "refund";
 
             this.stats.update("spellsCast", card);
 
@@ -514,7 +514,7 @@ class Game {
         }
 
         if (player.hasPlayedCardThisTurn) {
-            card.activateDefault("combo");
+            card.activate("combo");
         }
 
         player.hasPlayedCardThisTurn = true;
@@ -606,7 +606,7 @@ class Game {
             
             this.getBoard()[p].forEach(m => {
                 if (m.getStats()[1] <= 0) {
-                    m.activateDefault("deathrattle");
+                    m.activate("deathrattle");
                 }
             });
 
@@ -624,7 +624,7 @@ class Game {
 
                         n.push(minion);
                     } else {
-                        m.activateDefault("unpassive", false);
+                        m.activate("unpassive", false);
                     }
                 } else {
                     n.push(m);
@@ -662,7 +662,7 @@ class Game {
             target.remStats(0, minion)
 
             if (target.stats[1] > 0) {
-                target.activateDefault("frenzy");
+                target.activate("frenzy");
             }
 
             this.killMinions();
@@ -689,11 +689,11 @@ class Game {
 
             if (dmgMinion) minion.remStats(0, target.stats[0]);
 
-            if (dmgMinion && minion.stats[1] > 0) minion.activateDefault("frenzy");
+            if (dmgMinion && minion.stats[1] > 0) minion.activate("frenzy");
 
             if (minion.keywords.includes("Stealth")) minion.removeKeyword("Stealth");
         
-            minion.activateDefault("onattack");
+            minion.activate("onattack");
             this.stats.update("minionsAttacked", [minion, target]);
         
             if (dmgMinion && target.keywords.includes("Poisonous")) minion.setStats(minion.stats[0], 0);
@@ -708,9 +708,9 @@ class Game {
 
             if (dmgTarget) target.remStats(0, minion.stats[0])
 
-            if (target.getStats()[1] > 0) target.activateDefault("frenzy");
-            if (target.getStats()[1] < 0) minion.activateDefault("overkill");
-            if (target.getStats()[1] == 0) minion.activateDefault("honorablekill");
+            if (target.getStats()[1] > 0) target.activate("frenzy");
+            if (target.getStats()[1] < 0) minion.activate("overkill");
+            if (target.getStats()[1] == 0) minion.activate("honorablekill");
 
             this.killMinions();
 

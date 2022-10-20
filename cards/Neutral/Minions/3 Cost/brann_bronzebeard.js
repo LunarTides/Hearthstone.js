@@ -11,6 +11,6 @@ module.exports = {
     passive(plr, game, card, trigger) {
         if (!card.passiveCheck(trigger, "minionsPlayed", null, plr)) return;
         
-        trigger[1].activateDefault("battlecry");
+        trigger[1].activate("battlecry");
     }
 }

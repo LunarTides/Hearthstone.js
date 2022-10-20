@@ -138,7 +138,7 @@ class Player {
     destroyWeapon(triggerDeathrattle = false) {
         if (!this.weapon) return false;
 
-        if (triggerDeathrattle) this.weapon.activateDefault("deathrattle");
+        if (triggerDeathrattle) this.weapon.activate("deathrattle");
         this.weapon.destroy();
         this.weapon = null;
     }
@@ -242,7 +242,7 @@ class Player {
         if (this.getMana() < this.heroPowerCost || !this.canUseHeroPower) return false;
 
         if (this.hero && this.hero_power == "hero") {
-            if (this.hero.activateDefault("heropower") != -1) {
+            if (this.hero.activate("heropower") != -1) {
                 this.setMana(this.getMana() - this.heroPowerCost);
 
                 game.stats.update("heroPowers", this.hero_power);
@@ -315,7 +315,7 @@ class Player {
         }
 
         this.game.getBoard()[this.id].forEach(m => {
-            m.activateDefault("inspire");
+            m.activate("inspire");
         });
 
         this.setMana(this.getMana() - this.heroPowerCost);

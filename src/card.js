@@ -167,11 +167,10 @@ class Card {
                 game.stats.update("restoredHealth", this.maxHealth);
                 this.stats[1] = this.maxHealth;
             } else {
-                game.stats.update("restoredHealth", this.maxHealth);
+                game.stats.update("restoredHealth", this.stats[1]);
             }
-        } else {
-            this.maxHealth = this.stats[1];
         }
+        else this.resetMaxHealth(true);
     }
     addAttack(amount) {
         this.setStats(this.stats[0] + amount, this.stats[1]);
@@ -186,7 +185,9 @@ class Card {
     remAttack(amount) {
         this.setStats(this.stats[0] - amount, this.stats[1]);
     }
-    resetMaxHealth() {
+    resetMaxHealth(check = false) {
+        if (check && this.stats[1] <= this.maxHealth) return;
+
         this.maxHealth = this.stats[1];
     }
     setStealthDuration(duration) {
@@ -205,7 +206,7 @@ class Card {
     }
 
     silence() {
-        this.activateDefault("unpassive", false);
+        this.activate("unpassive", false);
 
         Object.keys(this).forEach(att => {
             if (att.startsWith("has")) this[att] = false;
@@ -220,10 +221,9 @@ class Card {
         this.setStats(0, 0);
     }
 
-    activate(name, before, after, ...args) {
+    activate(name, ...args) {
         name = name.toLowerCase();
 
-        if (before) before(name, before, after, ...args);
         if (!this["has" + game.functions.capitalize(name)]) return false;
         let ret = [];
         this[name].forEach(i => {
@@ -237,17 +237,13 @@ class Card {
                 return ret;
             }
         });
-        if (after) after(name, before, after, ret, ...args);
 
         return ret;
     }
 
-    activateDefault(name, ...args) {
-        return this.activate(name, null, null, ...args);
-    }
-
     activateBattlecry(...args) {
-        return this.activate("battlecry", () => this.activateDefault("passive", ["battlecry", this]), null, ...args);
+        this.activate("passive", ["battlecry", this]);
+        return this.activate("battlecry", ...args);
     }
 
     passiveCheck(trigger, key, val = null, check_plr = null) {

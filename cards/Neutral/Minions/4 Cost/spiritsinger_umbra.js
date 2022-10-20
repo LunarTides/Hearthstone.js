@@ -11,6 +11,6 @@ module.exports = {
     passive(plr, game, card, trigger) {
         if (!card.passiveCheck(trigger, ["minionsSummoned", "minionsPlayed"], null, plr)) return;
         
-        trigger[1].activateDefault("deathrattle");
+        trigger[1].activate("deathrattle");
     }
 }
