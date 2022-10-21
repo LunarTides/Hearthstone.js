@@ -2,6 +2,7 @@ const { question } = require('readline-sync');
 const { Functions, Player } = require("./other");
 const { Card } = require("./card");
 const { printName } = require("./interact");
+const { exit } = require("process")
 
 class GameStats {
     constructor(game) {

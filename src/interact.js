@@ -1,15 +1,21 @@
+const { exit } = require('process');
+
 let game = null;
 let debug = false;
+let maxDeckLength = 30; // Don't change this variable, if you want to change the max deck length, change the variable in index.js
 
 const license_url = 'https://github.com/Keatpole/Hearthstone.js/blob/main/LICENSE';
 const copyright_year = "2022";
 
 let curr;
 
-function setup(_game, _debug) {
+function setup(_game, _debug, _maxDeckLength) {
     game = _game;
     debug = _debug;
+    maxDeckLength = _maxDeckLength;
 }
+
+const cls = () => process.stdout.write('\033c');
 
 function doTurnAttack() {
     var attacker = game.functions.selectTarget("Which minion do you want to attack with?", false, "self");
@@ -137,7 +143,6 @@ function doTurnAttack() {
     game.attackMinion(attacker, target);
     game.killMinions();
 }
-
 function handleCmds(q) {
     if (q === "end") game.endTurn();
     else if (q === "hero power") curr.heroPower();
@@ -205,7 +210,6 @@ function handleCmds(q) {
     }
     else return -1;
 }
-
 function doTurnLogic(input, _ret_on_fail = true) {
     game.killMinions();
 
@@ -223,7 +227,6 @@ function doTurnLogic(input, _ret_on_fail = true) {
     if (!!["mana", "space"].filter(s => s == ret).length) return true;
     if (_ret_on_fail) return ret;
 }
-
 function doTurn() {
     printName();
     printAll(game.getPlayer());
@@ -234,7 +237,63 @@ function doTurn() {
     doTurnLogic(game.input(input), false);
 }
 
-const cls = () => process.stdout.write('\033c');
+function validateDeck(card, plr, deck) {
+    if (deck.length > maxDeckLength) return false;
+    return validateCard(card, plr);
+}
+function validateCard(card, plr) {
+    if (plr.class != card.class && card.class != "Neutral") return false;
+    if (card.uncollectible) return false;
+    return true;
+}
+function importDeck(code, plr) {
+    // The code is base64 encoded, so we need to decode it
+    code = Buffer.from(code, 'base64').toString('ascii');
+    let deck = code.split(", ");
+    let _deck = [];
+
+    let changed_class = false;
+
+    // Find all cards with "x2" in front of them, and remove it and add the card twice
+    for (let i = 0; i < deck.length; i++) {
+        let card = deck[i];
+
+        let m = null;
+
+        if (card.startsWith("x2 ")) {
+            let m1 = new game.Card(game.functions.getCardByName(card.substring(3)).name, plr);
+            let m2 = new game.Card(game.functions.getCardByName(card.substring(3)).name, plr);
+            m = m1;
+
+            _deck.push(m1, m2);
+        } else {
+            m = new game.Card(game.functions.getCardByName(card).name, plr);
+
+            _deck.push(m);
+        }
+
+        if (!changed_class) {
+            plr.setClass(m.class);
+        
+            changed_class = true;
+        }
+
+        if (!validateDeck(m, plr, _deck)) {
+            console.log("The Deck is not valid")
+            exit(1);
+        }
+    }
+
+    return game.functions.shuffle(_deck);
+}
+function deckCode(plr) {
+    printName();
+
+    const deckcode = game.input(`\nPlayer ${plr.id + 1}, please type in your deckcode (Leave this empty for a test deck): `);
+
+    if (deckcode.length > 0) plr.deck = importDeck(deckcode, plr);
+    else while (plr.getDeck().length < 30) plr.deck.push(new game.Card("Sheep", plr));
+}
 
 function printName(name = true) {
     cls();
@@ -245,7 +304,6 @@ function printName(name = true) {
     console.log(`|        HEARTHSTONE.JS       |`);
     console.log("|-----------------------------|\n");
 }
-
 function printLicense(disappear = true) {
     if (debug) return;
 
@@ -258,7 +316,6 @@ function printLicense(disappear = true) {
     console.log(`|||                     This will disppear once you end your turn.                    |||`)
     console.log(`|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n`);
 }
-
 function printAll(curr, detailed = false) {
     if (game.turns <= 2) printLicense();
 
@@ -482,6 +539,7 @@ function printAll(curr, detailed = false) {
             const frozen = m.frozen && !m.dormant ? " (Frozen)" : "";
             const immune = m.immune && !m.dormant ? " (Immune)" : "";
             const dormant = m.dormant ? " (Dormant)" : "";
+            const sleepy = (m.turn >= game.getTurns() - 1) || (m.attackTimes <= 0) ? " (Sleepy)" : "";
 
             sb += "[";
             sb += n + 1;
@@ -495,6 +553,7 @@ function printAll(curr, detailed = false) {
             sb += frozen
             sb += immune
             sb += dormant;
+            sb += sleepy;
 
             console.log(sb);
             sb = "";
@@ -543,7 +602,6 @@ function printAll(curr, detailed = false) {
 
     console.log("------------");
 }
-
 function viewMinion(minion, detailed = false) {
     console.log(`{${minion.getMana()}} ${minion.displayName} [${minion.blueprint.stats.join(' / ')}]\n`);
     if (minion.getDesc()) console.log(minion.getDesc() + "\n");
@@ -571,7 +629,7 @@ function viewMinion(minion, detailed = false) {
 }
 
 exports.doTurn = doTurn;
-exports.doTurnLogic = doTurnLogic
 exports.printName = printName;
+exports.deckCode = deckCode;
 
 exports.setup_interact = setup;
