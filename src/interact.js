@@ -19,10 +19,10 @@ const cls = () => process.stdout.write('\033c');
 
 function doTurnAttack() {
     var attacker = game.functions.selectTarget("Which minion do you want to attack with?", false, "self");
-    if (!attacker || attacker.frozen) return;
+    if (!attacker || attacker.frozen || attacker.dormant) return;
 
     var target = game.functions.selectTarget("Which minion do you want to attack?", false, "enemy");
-    if (!target || target.immune) return;
+    if (!target || target.immune || target.dormant) return;
 
     if (target instanceof game.Player && attacker instanceof game.Card && !attacker.canAttackHero) return;
 
@@ -536,8 +536,8 @@ function printAll(curr, detailed = false) {
 
         game.getBoard()[i].forEach((m, n) => {
             const keywords = m.getKeywords().length > 0 ? ` {${m.getKeywords().join(", ")}}` : "";
-            const frozen = m.frozen && !m.dormant ? " (Frozen)" : "";
-            const immune = m.immune && !m.dormant ? " (Immune)" : "";
+            const frozen = m.frozen ? " (Frozen)" : "";
+            const immune = m.immune ? " (Immune)" : "";
             const dormant = m.dormant ? " (Dormant)" : "";
             const sleepy = (m.turn >= game.getTurns() - 1) || (m.attackTimes <= 0) ? " (Sleepy)" : "";
 
@@ -608,9 +608,9 @@ function viewMinion(minion, detailed = false) {
     console.log("Tribe: " + minion.getTribe());
     console.log("Class: " + minion.getClass());
 
-    const frozen = minion.frozen && !minion.dormant;
-    const immune = minion.immune && !minion.immune;
-    const dormant = minion.dormant && !minion.dormant;
+    const frozen = minion.frozen;
+    const immune = minion.immune;
+    const dormant = minion.dormant;
 
     console.log("Is Frozen: " + frozen);
     console.log("Is Immune: " + immune);

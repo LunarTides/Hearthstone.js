@@ -322,9 +322,6 @@ class Game {
             if (m.dormant) {
                 if (this.turns > m.dormant) {
                     m.dormant = false;
-                    m.frozen = false;
-                    m.immune = false;
-
                     m.activateBattlecry();
                 }
 
@@ -453,7 +450,7 @@ class Game {
 
                     loc.maxHealth += card.maxHealth;
 
-                    card.deathrattles.forEach(d => {
+                    card.deathrattle.forEach(d => {
                         loc.addDeathrattle(d);
                     });
 
@@ -479,11 +476,8 @@ class Game {
                 return "space";
             }
 
-            if (card.dormant) {
-                card.frozen = true;
-                card.immune = true;
-                card.dormant = card.dormant + this.turns;
-            } else if (card.activateBattlecry() === -1) return "refund";
+            if (card.dormant) card.dormant = card.dormant + this.turns;
+            else if (card.activateBattlecry() === -1) return "refund";
 
             this.stats.update("minionsPlayed", card);
 
@@ -640,7 +634,9 @@ class Game {
     attackMinion(minion, target) {
         this.killMinions();
 
-        if (minion instanceof Card && minion.frozen || minion instanceof Player && minion.frozen) return false;
+        if (minion instanceof Player && minion.frozen) return false
+
+        if (minion instanceof Card && (minion.frozen || minion.dormant)) return false;
 
         // Check if there is a minion with taunt
         var prevent = false;
@@ -652,7 +648,7 @@ class Game {
             }
         });
 
-        if (prevent || target.immune) return false;
+        if (prevent || target.immune || target.dormant) return false;
 
         if (!isNaN(minion)) {
             if (target.keywords.includes("Divine Shield")) {
@@ -682,7 +678,7 @@ class Game {
             let dmgTarget = true;
             let dmgMinion = true;
 
-            if (minion.immune) dmgMinion = false;
+            if (minion.immune || minion.dormant) dmgMinion = false;
 
             if (dmgMinion && minion.keywords.includes("Divine Shield")) {
                 minion.removeKeyword("Divine Shield");
