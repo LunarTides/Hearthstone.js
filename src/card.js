@@ -18,12 +18,27 @@ class Card {
         this.keywords = [];
         this.storage = []; // Allow cards to store data for later use
 
-        this.turn = null;
+        this.turn = null; // The turn the card was played
 
-        this.infuse_num = -1;
+        this.infuse_num = -1; // The amount of infuse a card has. Set to -1 for no infuse.
 
         this.spellClass = null;
         
+        /*
+        Go through all blueprint variables and
+        set them in the card object
+        Example:
+        Blueprint: { name: "Sheep", stats: [1, 1], test: true }
+                                                   ^^^^^^^^^^
+        Do: this.test = true
+        
+        Function Example:
+        Blueprint: { name: "The Coin", mana: 0, cast(plr, game): { plr.gainMana(1) } }
+                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        Do: this.hasCast = true; this.cast = [{ plr.gainMana(1) }]
+                                             ^                   ^
+                            This is in an array so we can add multiple events on casts
+        */
         Object.entries(this.blueprint).forEach(i => {
             if (typeof i[1] == "function") {
                 this[i[0]] = [i[1]];
@@ -32,20 +47,24 @@ class Card {
             else this[i[0]] = i[1];
         });
 
-        this.attackTimes = 1;
-        this.stealthDuration = 0;
+        this.attackTimes = 1; // The number of times a minion can attack, windfury: 2, mega-windfury: 3
+        this.stealthDuration = 0; // The amount of turns stealth should last
 
+        // Set maxHealth if the card is a minion or weapon
         if (this.type == "Minion" || this.type == "Weapon") this.maxHealth = this.stats[1];
 
         this.canAttackHero = true;
 
+        // This is here to prevent errors
         this.deathrattle = this.hasDeathrattle ? [this.blueprint.deathrattle] : [];
 
+        // Set these variables to true or false.
         const exists = ["corrupted", "colossal", "dormant", "uncollectible", "frozen", "immune", "echo"];
         exists.forEach(i => {
             this[i] = this.blueprint[i] || false;
         });
 
+        // Make a backup of "this" to be used when silencing this card
         Object.entries(this).forEach(i => {
             this["_" + i[0]] = i[1];
         });
@@ -113,6 +132,11 @@ class Card {
         this.keywords = keywords;
     }
     setFunction(name, val) {
+        // Set has[Func] to true | false
+        // Example: name = "cast", val = false
+        // Do: this.hasCast = false;
+        // This prevents "cast" from being called when casting a spell, making it useless.
+
         const _name = game.functions.capitalize(name);
 
         this["has" + _name] = true;
@@ -206,11 +230,19 @@ class Card {
     }
 
     silence() {
+        // Tell the minion to undo it's passive.
+        // The false tells the minion that this is the last time it will call unpassive
+        // so it should finish whatever it is doing.
         this.activate("unpassive", false);
 
         Object.keys(this).forEach(att => {
+            // Set all attributes that starts with "has" to false
             if (att.startsWith("has")) this[att] = false;
+
+            // Check if a backup exists for the attribute. If it does; restore it.
             else if (this["_" + att]) this[att] = this["_" + att];
+
+            // Check if the attribute if defined in the blueprint. If it is; restore it.
             else if (this.blueprint[att]) this[att] = this.blueprint[att];
         });
         this.desc = "";
@@ -222,18 +254,29 @@ class Card {
     }
 
     activate(name, ...args) {
+        // This activates a function
+        // Example: activate("cast")¨
+        // Do: this.cast.forEach(cast_func => cast_func(plr, game, card))
+        // Returns a list of the return values from all the function calls
+
         name = name.toLowerCase();
 
+        // If the card has the function
         if (!this["has" + game.functions.capitalize(name)]) return false;
+
         let ret = [];
         this[name].forEach(i => {
             let r = i(this.plr, game, this, ...args);
             ret.push(r);
 
+            // If the return value is -1, meaning "refund", refund the card and stop the for loop
             if (r == -1 && name != "deathrattle") {
                 game.functions.addToHand(this, this.plr, false);
                 this.plr.mana += this.mana;
-                return -1;
+                ret = -1;
+
+                // Return from the for loop
+                return;
             }
         });
 

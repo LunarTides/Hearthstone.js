@@ -272,7 +272,7 @@ function importDeck(code, plr) {
             _deck.push(m);
         }
 
-        if (!changed_class) {
+        if (!changed_class && m.class != "Neutral") {
             plr.setClass(m.class);
         
             changed_class = true;

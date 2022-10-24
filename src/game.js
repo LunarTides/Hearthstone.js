@@ -33,14 +33,13 @@ class GameStats {
                 m.activate("passive", [key, val]);
             });
         });
-        
-        if (this.game.player1.weapon) {
-            this.game.player1.weapon.activate("unpassive", true);
-            this.game.player1.weapon.activate("passive", [key, val]);
-        }
-        if (this.game.player2.weapon) {
-            this.game.player2.weapon.activate("unpassive", true);
-            this.game.player2.weapon.activate("passive", [key, val]);
+
+        for (let i = 0; i < 2; i++) {
+            let wpn = this.game["player" + (i + 1)].weapon;
+            if (wpn) {
+                wpn.activate("unpassive", true);
+                wpn.activate("passive", [key, val]);
+            }
         }
 
         this.game.activatePassives([key, val]);
@@ -196,60 +195,39 @@ class Game {
     }
 
     startGame() {
-        let plr1_hand = [];
-        let plr2_hand = [];
+        let players_hands = [[], []];
 
-        this.player1.deck.forEach((c) => {
-            if (c.desc.includes("Quest: ") || c.desc.includes("Questline: ")) {
-                plr1_hand.push(c);
-                this.player1.deck.splice(this.player1.deck.indexOf(c), 1);
-            }
-        });
-        this.player2.deck.forEach((c) => {
-            if (c.desc.includes("Quest: ") || c.desc.includes("Questline: ")) {
-                plr2_hand.push(c);
-                this.player2.deck.splice(this.player2.deck.indexOf(c), 1);
-            }
-        });
+        // Add quest cards to the players hands
+        for (let i = 0; i < 2; i++) {
+            let deck = this["player" + (i + 1)].deck;
 
-        this.player1.setHand(plr1_hand);
-        this.player2.setHand(plr2_hand);
+            deck.forEach(c => {
+                if (c.desc.includes("Quest: ") || c.desc.includes("Questline: ")) {
+                    players_hands[i].push(c);
+                    deck.splice(deck.indexOf(c), 1);
+                }
+            })
+        }
+
+        this.player1.setHand(players_hands[0]);
+        this.player2.setHand(players_hands[1]);
 
         this.player1.setMaxMana(1);
         this.player1.setMana(1);
 
-        while (this.player1.hand.length < 3) {
-            this.player1.drawCard(false);
-        }
+        while (this.player1.hand.length < 3) this.player1.drawCard(false);
+        while (this.player2.hand.length < 4) this.player2.drawCard(false);
 
-        while (this.player2.hand.length < 4) {
-            this.player2.drawCard(false);
-        }
         this.functions.addToHand(new Card("The Coin", this.player2), this.player2, false)
 
         this.turns += 1;
 
-        this.player1.deck.forEach(c => {
-            if (c.getType() == "Minion") {
-                c.activate("startofgame");
-            }
-        });
-        this.player2.deck.forEach(c => {
-            if (c.getType() == "Minion") {
-                c.activate("startofgame");
-            }
-        });
+        for (let i = 0; i < 2; i++) {
+            const plr = this["player" + (i + 1)]
 
-        this.player1.hand.forEach(c => {
-            if (c.getType() == "Minion") {
-                c.activate("startofgame");
-            }
-        });
-        this.player2.hand.forEach(c => {
-            if (c.getType() == "Minion") {
-                c.activate("startofgame");
-            }
-        });
+            plr.deck.forEach(c => c.activate("startofgame"));
+            plr.hand.forEach(c => c.activate("startofgame"));
+        }
     }
 
     endGame(p) {
@@ -266,26 +244,24 @@ class Game {
         this.stats.update("turnEnds", this.turns);
         this.stats.cardsDrawnThisTurn = [[], []]
 
-        if (this.player.mana > 0) {
-            this.stats.update("unspentMana", this.player.mana);
+        let plr = this.player;
+
+        if (plr.mana > 0) {
+            this.stats.update("unspentMana", plr.mana);
         }
 
-        this.getBoard()[this.player.id].forEach(m => {
-            m.activate("endofturn");
-        });
+        this.getBoard()[plr.id].forEach(m => m.activate("endofturn"));
 
-        let _c = this.player1.hand.filter(c => !c.echo)
-        this.player1.setHand(_c);
+        // Remove echo cards
+        plr.setHand(plr.hand.filter(c => !c.echo));
 
-        _c = this.player2.hand.filter(c => !c.echo)
-        this.player2.setHand(_c);
+        plr.attack = 0;
 
-        this.player.attack = 0;
+
+        this.opponent.setMaxMana(this.opponent.getMaxMana() + 1);
+        this.opponent.setMana(this.opponent.getMaxMana());
+
         this.player = this.opponent;
-
-        this.player.setMaxMana(this.player.getMaxMana() + 1);
-        this.player.setMana(this.player.getMaxMana());
-
         this.opponent = this.getOtherPlayer(this.player);
 
         this.turns += 1;
@@ -302,6 +278,7 @@ class Game {
 
         if (this.player.weapon && this.player.weapon.stats[0]) {
             this.player.attack += this.player.weapon.stats[0];
+            this.player.weapon.resetAttackTimes();
         }
 
         this.player.mana -= this.player.overload;
@@ -330,8 +307,6 @@ class Game {
                 m.frozen = false;
             }
         });
-
-        if (this.player.weapon && this.player.weapon.stats[0]) this.player.weapon.resetAttackTimes();
 
         this.player.drawCard();
 
