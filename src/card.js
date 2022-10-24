@@ -131,15 +131,16 @@ class Card {
     setKeywords(keywords) {
         this.keywords = keywords;
     }
-    setFunction(name, val) {
+    setFunction(name, val, has = true) {
+        // Set a func to the val
         // Set has[Func] to true | false
-        // Example: name = "cast", val = false
-        // Do: this.hasCast = false;
+        // Example: name = "cast", val = [], has = false
+        // Do: this.hasCast = false; this.cast = [];
         // This prevents "cast" from being called when casting a spell, making it useless.
 
         const _name = game.functions.capitalize(name);
 
-        this["has" + _name] = true;
+        this["has" + _name] = has;
         this[name] = val;
     }
     addDeathrattle(_deathrattle) {
