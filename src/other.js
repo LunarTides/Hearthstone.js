@@ -1,9 +1,15 @@
+const { setup_card } = require("./card");
+const { setup_interact } = require("./interact");
+
 let cards = {};
 let game = null;
+let debug = false;
+let maxDeckLength = 30;
 
-function setup(_cards, _game) {
-    cards = _cards;
+function setup(_game, _debug, _maxDeckLength) {
     game = _game;
+    debug = _debug;
+    maxDeckLength = _maxDeckLength;
 }
 
 class Player {
@@ -710,6 +716,25 @@ class Functions {
 
         return jade;
     }
+    importCards(path) {
+        require("fs").readdirSync(path, { withFileTypes: true }).forEach(file => {
+            let p = `${path}\\${file.name}`;
+    
+            if (file.name == "zzzzzz.js") {
+                game.set("cards", cards);
+                setup_card(cards, game);
+                setup_interact(debug, maxDeckLength);
+            }
+
+            else if (file.name.endsWith(".js")) {
+                let f = require(p);
+                cards[f.name] = f;
+            }
+            else if (file.isDirectory()) this.importCards(p);
+        });
+
+        return cards;
+    }
 
     // Quest
     progressQuest(name, value) {
@@ -736,4 +761,4 @@ class Functions {
 exports.Functions = Functions;
 exports.Player = Player;
 
-exports.setup_other = setup;
+exports.setup = setup;

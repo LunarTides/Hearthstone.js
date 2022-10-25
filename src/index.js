@@ -1,18 +1,13 @@
-const { readdirSync } = require("fs");
 const { question } = require("readline-sync");
 
 const { Game } = require("./game");
-const { setup_card } = require("./card");
-const { setup_interact } = require("./interact");
-const { Player, setup_other } = require("./other");
+const { Player, setup } = require("./other");
 
 // Customization (You can change these)
 const debug = true; // Enables commands like /give, /eval and /debug. Disables naming players.
                     // Enable for debugging, disable for actual play.
 const maxDeckLength = 30;
 // -----------------------------------
-
-let cards = {};
 
 let player1 = new Player("Player 1");
 let player2 = new Player("Player 2");
@@ -23,22 +18,9 @@ if (!debug) {
     player2.name = question("Player 2, what is your name? ");
 }
 
-function importCards(path) {
-    readdirSync(path, { withFileTypes: true }).forEach(file => {
-        if (file.name.endsWith(".js")) {
-            let f = require(`${path}/${file.name}`);
-            cards[f.name] = f;
-        } else if (file.isDirectory()) {
-            importCards(`${path}/${file.name}`);
-        }
-    });
-}
-importCards(__dirname + '/../cards');
+setup(game, debug, maxDeckLength);
 
-game.set("cards", cards);
-setup_card(cards, game);
-setup_interact(debug, maxDeckLength);
-setup_other(cards, game);
+game.functions.importCards(__dirname + '\\..\\cards');
 
 // Ask the players for deck codes.
 game.interact.deckCode(player1);

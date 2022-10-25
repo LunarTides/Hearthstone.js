@@ -219,8 +219,6 @@ class Card {
 
         name = name.toLowerCase();
 
-        if (name == "battlecry") return this.activateBattlecry(...args);
-
         // If the card has the function
         if (!this["has" + game.functions.capitalize(name)]) return false;
 

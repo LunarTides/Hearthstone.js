@@ -9,7 +9,7 @@ const copyright_year = "2022";
 let curr;
 let game;
 
-function setup(_debug, _maxDeckLength) {
+function setup(_debug = debug, _maxDeckLength = maxDeckLength) {
     debug = _debug;
     maxDeckLength = _maxDeckLength;
 }
@@ -586,30 +586,18 @@ class Interact {
     
         console.log("------------");
     }
-    viewMinion(minion, detailed = false) {
+    viewMinion(minion) {
         console.log(`{${minion.mana}} ${minion.displayName} [${minion.blueprint.stats.join(' / ')}]\n`);
         if (minion.desc) console.log(minion.desc + "\n");
         console.log("Tribe: " + minion.tribe);
         console.log("Class: " + minion.class);
+        console.log("Rarity: " + minion.rarity);
+        console.log("Set: " + minion.set);
+        console.log("Turn played: " + minion.turn);
     
-        const frozen = minion.frozen;
-        const immune = minion.immune;
-        const dormant = minion.dormant;
+        game.input("\nPress enter to continue...\n");
     
-        console.log("Is Frozen: " + frozen);
-        console.log("Is Immune: " + immune);
-        console.log("Is Dormant: " + dormant);
-        if (detailed) {
-            console.log("Is Corrupted: " + minion.corrupted);
-            console.log("Rarity: " + minion.rarity);
-            console.log("Set: " + minion.set);
-            console.log("Turn played: " + minion.turn);
-        }
-    
-        let q = game.input("\nDo you want to view more info, or do you want to go back? [more / back] ");
-    
-        if (q.toLowerCase().startsWith("m")) this.viewMinion(minion, true)
-        else return;
+        return;
     }
 }
 
