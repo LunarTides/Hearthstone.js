@@ -13,8 +13,6 @@ function setup(_debug, _maxDeckLength) {
     maxDeckLength = _maxDeckLength;
 }
 
-const cls = () => process.stdout.write('\033c');
-
 class Interact {
     constructor(game) {
         this.game = game;
@@ -22,9 +20,9 @@ class Interact {
 
     doTurnAttack() {
         var attacker = this.game.functions.selectTarget("Which minion do you want to attack with?", false, "self");
-        if (!attacker || attacker.frozen || attacker.dormant) return;
-    
         var target = this.game.functions.selectTarget("Which minion do you want to attack?", false, "enemy");
+        
+        if (!attacker || attacker.frozen || attacker.dormant) return;
         if (!target || target.immune || target.dormant) return;
     
         if (target instanceof this.game.Player && attacker instanceof this.game.Card && !attacker.canAttackHero) return;
@@ -633,6 +631,8 @@ class Interact {
         else return;
     }
 }
+
+const cls = () => process.stdout.write('\033c');
 
 exports.Interact = Interact;
 

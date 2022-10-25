@@ -50,18 +50,15 @@ class Player {
         if (hp) this.hero_power = _class;
     }
 
-    setMaxMana(maxMana) {
-        this.maxMana = maxMana;
-
-        if (maxMana > this.maxMaxMana) this.maxMana = this.maxMaxMana;
-    }
     refreshMana(mana) {
         this.mana += mana;
 
         if (this.mana > this.maxMana) this.mana = this.maxMana;
     }
-    gainEmptyMana(mana) {
+    gainEmptyMana(mana, cap = false) {
         this.maxMana += mana;
+
+        if (cap && this.maxMana > this.maxMaxMana) this.maxMana = this.maxMaxMana;
     }
     gainMana(mana) {
         this.gainEmptyMana(mana);

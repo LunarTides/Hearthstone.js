@@ -189,7 +189,7 @@ class Game {
         plr.attack = 0;
 
 
-        this.opponent.maxMana += 1;
+        this.opponent.gainEmptyMana(1, true);
         this.opponent.mana = this.opponent.maxMana;
 
         this.player = this.opponent;
