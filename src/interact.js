@@ -189,7 +189,7 @@ class Interact {
     
             if (!card) return game.input("Invalid card: `" + name + "`.\n");
     
-            game.functions.addToHand(new game.Card(card.name, curr), curr);
+            curr.addToHand(new game.Card(card.name, curr));
         }
         else if (q == "/eval") {
             if (!debug) return -1;
@@ -430,7 +430,7 @@ class Interact {
         if (curr.quests.length > 0) {
             const quest = curr.quests[0];
     
-            sb += "Quest: ";
+            sb += "Quest(line): ";
             sb += quest["name"]
             sb += " ("
             sb += quest["progress"][0]
@@ -439,23 +439,6 @@ class Interact {
             sb += ")";
         }
         // Quests End
-        if (sb) console.log(sb);
-        sb = "";
-    
-        // Questlines
-        if (curr.questlines.length > 0) {
-            const questline = curr.questlines[0];
-    
-            sb += "Questline: ";
-            sb += questline["name"]
-            sb += " ("
-            sb += questline["progress"][0]
-            sb += " / "
-            sb += questline["progress"][1]
-            sb += ")";
-            sb += "\n";
-        }
-        // Questlines End
         if (sb) console.log(sb);
         sb = "";
     
@@ -499,7 +482,7 @@ class Interact {
             if (op.quests.length > 0) {
                 const quest = op.quests[0];
     
-                sb += "Opponent's Quest: ";
+                sb += "Opponent's Quest(line): ";
                 sb += quest["name"];
                 sb += " (";
                 sb += quest["progress"][0];
@@ -507,19 +490,6 @@ class Interact {
                 sb += quest["progress"][1];
                 sb += ")";
     
-                sb += "\n";
-            }
-            if (op.questlines.length > 0) {
-                const questline = op.questlines[0];
-    
-                sb += "Opponent's Questline: ";
-                sb += questline["name"];
-                sb += " (";
-                sb += questline["progress"][0];
-                sb += " / ";
-                sb += questline["progress"][1]
-                sb += ")";
-                
                 sb += "\n";
             }
     

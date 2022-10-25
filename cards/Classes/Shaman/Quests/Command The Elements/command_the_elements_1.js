@@ -7,17 +7,15 @@ module.exports = {
     set: "United in Stormwind",
 
     cast(plr, game, card) {
-        game.functions.addQuestline(plr, card, "cardsPlayed", 1, (val, game, turn, normal_done) => {
-            if (val.plr == plr && val.desc.includes("Overload: ")) {
-                if (card.storage.length >= 2) {
-                    plr.overload = 0;
-                    return true;
-                }
-
-                game.functions.progressQuest(card.displayName, 1);
-                card.storage.push(val);
-                return false;
+        game.functions.addQuest("Quest", plr, card, "overloadGained", 3, (val, game, turn, normal_done) => {
+            if (card.storage.length >= 2) {
+                plr.overload = 0;
+                return true;
             }
-        }, "Questline Test Part 2", 3, true);
+
+            game.functions.progressQuest(card.displayName, 1);
+            card.storage.push(val);
+            return false;
+        }, "Stir the Stones", true);
     }
 }

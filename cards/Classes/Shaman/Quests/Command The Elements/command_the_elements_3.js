@@ -8,17 +8,15 @@ module.exports = {
     uncollectible: true,
 
     cast(plr, game, card) {
-        game.functions.addQuestline(plr, card, "cardsPlayed", 1, (val, game, turn, normal_done) => {
-            if (val.plr == plr && val.desc.includes("Overload: ")) {
-                if (card.storage.length >= 2) {
-                    game.functions.addToHand(new game.Card("Stormcaller Bru'kan", plr), plr);
-                    return true;
-                }
-
-                game.functions.progressQuest(card.displayName, 1);
-                card.storage.push(val);
-                return false;
+        game.functions.addQuest("Quest", plr, card, "overloadGained", 3, (val, game, turn, normal_done) => {
+            if (card.storage.length >= 2) {
+                plr.addToHand(new game.Card("Stormcaller Bru'kan", plr));
+                return true;
             }
-        }, null, 3, true);
+
+            game.functions.progressQuest(card.displayName, 1);
+            card.storage.push(val);
+            return false;
+        }, null, true);
     }
 }

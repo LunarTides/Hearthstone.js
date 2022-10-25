@@ -15,7 +15,7 @@ module.exports = {
             return -1;
         }
 
-        game.functions.addToHand(new game.Card(target.name, plr), plr);
+        plr.addToHand(new game.Card(target.name, plr));
         target.destroy();
     }
 }

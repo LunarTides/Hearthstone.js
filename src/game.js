@@ -74,7 +74,6 @@ class GameStats {
         this.questUpdate("secrets",    key, val, this.game.opponent);
         this.questUpdate("sidequests", key, val);
         this.questUpdate("quests",     key, val);
-        this.questUpdate("questlines", key, val);
     }
 }
 
@@ -147,7 +146,7 @@ class Game {
         while (this.player1.hand.length < 3) this.player1.drawCard(false);
         while (this.player2.hand.length < 4) this.player2.drawCard(false);
 
-        this.functions.addToHand(new Card("The Coin", this.player2), this.player2, false)
+        this.player2.addToHand(new Card("The Coin", this.player2), false)
 
         this.turns += 1;
 
@@ -248,55 +247,43 @@ class Game {
     playCard(card, player) {
         this.killMinions();
 
-        if (player.mana < card.mana) return "mana";
-
         if (card.keywords.includes("Tradeable")) {
             var q = this.input(`Would you like to trade ${card.displayName} for a random card in your deck? (y: trade / n: play) `);
 
             if (q.startsWith("y")) {
                 if (player.mana < 1) return "mana";
 
-                player.mana -= - 1;
+                player.mana -= 1;
 
+                player.drawCard();
                 player.shuffleIntoDeck(card);
-
-                var n = []
-
-                var found = false;
-
-                player.hand.forEach(function(c) {
-                    if (c.displayName === card.displayName && !found) {
-                        found = true;
-                    } else {
-                        n.push(c);
-                    }
-                });
+                player.removeFromHand(card);
 
                 if (card.type == "Spell" && card.keywords.includes("Twinspell")) {
                     card.removeKeyword("Twinspell");
                     card.desc = card.desc.split("Twinspell")[0].trim();
         
-                    n.push(card);
+                    player.hand.push(card);
                 }
         
                 if (card.keywords.includes("Echo")) {
-                    let clone = Object.assign(Object.create(Object.getPrototypeOf(card)), card)
+                    let clone = Object.assign(Object.create(Object.getPrototypeOf(card)), card);
+                    clone.randomizeIds();
                     clone.echo = true;
         
-                    n.push(clone);
+                    player.hand.push(clone);
                 }
         
-                player.hand = n;
-
-                player.drawCard();
                 return "traded";
             }
         }
 
+        if (player.mana < card.mana) return "mana";
+
         player.mana -= card.mana;
         card.mana = card._mana;
         
-        player.hand = player.hand.filter(c => c !== card);
+        player.removeFromHand(card);
 
         if (card.type == "Spell" && card.keywords.includes("Twinspell")) {
             card.removeKeyword("Twinspell");
@@ -305,11 +292,12 @@ class Game {
             player.hand.push(card);
         }
 
-        if (card.keywords.includes("Echo")) {
-            let clone = Object.assign(Object.create(Object.getPrototypeOf(card)), card)
-            clone.echo = true;
+        let echo_clone = null;
 
-            player.hand.push(card);
+        if (card.keywords.includes("Echo")) {
+            echo_clone = Object.assign(Object.create(Object.getPrototypeOf(card)), card); // Create an exact copy of the card played
+            echo_clone.randomizeIds();
+            echo_clone.echo = true;
         }
 
         if (card.type == "Minion" && this.board[player.id].length > 0 && card.keywords.includes("Magnetic")) {
@@ -342,11 +330,15 @@ class Game {
                         loc.addDeathrattle(d);
                     });
 
+                    if (echo_clone) player.hand.push(echo_clone);
+
                     return "magnetize";
                 }
             }
 
         }
+
+        let ret = true;
 
         if (card.type === "Minion") {
             if (player.getOpponent().counter && player.getOpponent().counter.includes("Minion")) {
@@ -355,7 +347,7 @@ class Game {
             }
     
             if (this.board[player.id].length >= 7) {
-                this.functions.addToHand(card, player, false);
+                player.addToHand(card, false);
                 player.mana += card.mana;
                 return "space";
             }
@@ -363,9 +355,11 @@ class Game {
             if (card.dormant) card.dormant = card.dormant + this.turns;
             else if (card.activateBattlecry() === -1) return "refund";
 
+            if (echo_clone) player.hand.push(echo_clone);
+
             this.stats.update("minionsPlayed", card);
 
-            return this.playMinion(card, player, false);
+            ret = this.playMinion(card, player, false);
         } else if (card.type === "Spell") {
             if (player.getOpponent().counter && player.getOpponent().counter.includes("Spell")) {
                 player.getOpponent().counter.splice(player.getOpponent().counter.indexOf("Spell"), 1);
@@ -373,6 +367,8 @@ class Game {
             }
 
             if (card.activate("cast") === -1) return "refund";
+
+            if (echo_clone) player.hand.push(echo_clone);
 
             this.stats.update("spellsCast", card);
 
@@ -384,10 +380,14 @@ class Game {
             player.setWeapon(card);
 
             card.activateBattlecry();
+
+            if (echo_clone) player.hand.push(echo_clone);
         } else if (card.type === "Hero") {
             player.setHero(card, 5);
 
             card.activateBattlecry();
+
+            if (echo_clone) player.hand.push(echo_clone);
         }
 
         if (player.hasPlayedCardThisTurn) {
@@ -398,42 +398,19 @@ class Game {
 
         this.stats.update("cardsPlayed", card);
 
-        var corrupted = null;
-
         card.plr.hand.forEach(c => {
             if (c.keywords.includes("Corrupt")) {
                 if (card.mana > c.mana) {
-                    corrupted = c;
-
-                    c.removeKeyword("Corrupt");
-                    c.addKeyword("Corrupted");
-
                     let t = new Card(c.corrupt, c.plr);
-
-                    this.functions.addToHand(t, c.plr, false);
-
-                    return "corrupt";
+                    c.plr.addToHand(t, false);
+                    player.removeFromHand(c);
                 }
             }
         });
 
-        if (corrupted) {
-            var n = []
-
-            var found = false;
-
-            this.player.hand.forEach(function(c) {
-                if (c.displayName === corrupted.displayName && !found) {
-                    found = true;
-                } else {
-                    n.push(c);
-                }
-            });
-
-            player.hand = n;
-        }
-
         this.killMinions();
+
+        return ret;
     }
 
     playMinion(minion, player, summoned = true, trigger_colossal = true) {

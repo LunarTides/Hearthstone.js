@@ -7,6 +7,6 @@ module.exports = {
     set: "Core",
 
     cast(plr, game) {
-        plr.mana += 1;
+        plr.refreshMana(1, plr.maxMaxMana);
     }
 }

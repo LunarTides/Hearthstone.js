@@ -6,5 +6,6 @@ module.exports = {
     tribe: "Human",
     class: "Paladin",
     rarity: "Free",
-    set: "Legacy"
+    set: "Legacy",
+    keywords: ["Corrupted"]
 }

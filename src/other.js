@@ -36,7 +36,6 @@ class Player {
         this.secrets = [];
         this.sidequests = [];
         this.quests = [];
-        this.questlines = [];
     }
 
     getOpponent() {
@@ -50,10 +49,10 @@ class Player {
         if (hp) this.hero_power = _class;
     }
 
-    refreshMana(mana) {
+    refreshMana(mana, comp = this.maxMana) {
         this.mana += mana;
 
-        if (this.mana > this.maxMana) this.mana = this.maxMana;
+        if (this.mana > comp) this.mana = comp;
     }
     gainEmptyMana(mana, cap = false) {
         this.maxMana += mana;
@@ -70,6 +69,8 @@ class Player {
         const plus = this.maxMana == this.maxMaxMana ? 0 : 1;
 
         if (this.overload > this.mana + plus) this.overload = this.mana + plus;
+
+        game.stats.update("overloadGained", overload);
     }
 
     setWeapon(weapon) {
@@ -159,7 +160,7 @@ class Player {
             }
         }
 
-        this.game.functions.addToHand(card, this, false);
+        this.addToHand(card, false);
 
         if (update) {
             game.stats.update("cardsDrawn", card);
@@ -167,6 +168,16 @@ class Player {
         }
 
         return card;
+    }
+    addToHand(card, updateStats = true) {
+        if (this.hand.length < 10) {
+            this.hand.push(card);
+        
+            if (updateStats) game.stats.update("cardsAddedToHand", card);
+        }
+    }
+    removeFromHand(card) {
+        this.hand = this.hand.filter(c => c !== card);
     }
 
     heroPower() {
@@ -324,13 +335,6 @@ class Functions {
         return cards.filter(c => !c.uncollectible);
     }
 
-    addToHand(card, player, updateStats = true) {
-        if (player.hand.length < 10) {
-            player.hand.push(card);
-        
-            if (updateStats) game.stats.update("cardsAddedToHand", card);
-        }
-    }
     chooseOne(prompt, options, times = 1) {
         let choices = [];
 
@@ -415,7 +419,7 @@ class Functions {
         if (add_to_hand) {
             var c = new game.Card(card.name, game.player);
 
-            this.addToHand(c, game.player);
+            game.player.addToHand(c);
 
             return c;
         } else {
@@ -642,14 +646,14 @@ class Functions {
                 if (possible_cards.length <= 0) return;
 
                 var card = game.functions.randList(possible_cards);
-                this.addToHand(card, plr);
+                plr.addToHand(card);
 
                 break;
             case "Rogue":
                 // Add a Lackey to your hand.
                 const lackey_cards = ["Ethereal Lackey", "Faceless Lackey", "Goblin Lackey", "Kobold Lackey", "Witchy Lackey"];
 
-                this.addToHand(new game.Card(game.functions.randList(lackey_cards)), plr);
+                plr.addToHand(new game.Card(game.functions.randList(lackey_cards)));
 
                 break;
             case "Shaman":
@@ -704,57 +708,20 @@ class Functions {
         let quest = game.player.secrets.find(s => s["name"] == name);
         if (!quest) quest = game.player.sidequests.find(s => s["name"] == name);
         if (!quest) quest = game.player.quests.find(s => s["name"] == name);
-        if (!quest) quest = game.player.questlines.find(s => s["name"] == name);
 
         quest["progress"][0] += value;
     }
-    addSecret(plr, card, key, val, callback, fake_val = null, manual_progression = false) {
-        if (plr.secrets.length >= 3 || plr.secrets.filter(s => s.displayName == card.displayName).length > 0) {
-            this.addToHand(card, plr);
+    addQuest(type, plr, card, key, val, callback, next = null, manual_progression = false) {
+        const t = plr[type.toLowerCase() + "s"];
+
+        if ( (type.toLowerCase() == "quest" && t.length > 0) || ((type.toLowerCase() == "secret" || type.toLowerCase() == "sidequest") && (t.length >= 3 || t.filter(s => s.displayName == card.displayName).length > 0)) ) {
+            plr.addToHand(card);
             plr.mana += card.mana;
             
             return false;
         }
 
-        if (fake_val) val = fake_val;
-
-        plr.secrets.push({"name": card.displayName, "progress": [0, val], "key": key, "value": val, "turn": game.turns, "callback": callback, "fake_val": fake_val, "manual_progression": manual_progression});
-    }
-    addSidequest(plr, card, key, val, callback, fake_val = null, manual_progression = false) {
-        if (plr.sidequests.length >= 3 || plr.sidequests.filter(s => s.displayName == card.displayName).length > 0) {
-            this.addToHand(card, plr);
-            plr.mana += card.mana;
-            
-            return false;
-        }
-
-        if (fake_val) val = fake_val;
-
-        plr.sidequests.push({"name": card.displayName, "progress": [0, val], "key": key, "value": val, "turn": game.turns, "callback": callback, "fake_val": fake_val, "manual_progression": manual_progression});
-    }
-    addQuest(plr, card, key, val, callback, fake_val = null, manual_progression = false) {
-        if (plr.quests.length > 0) {
-            this.addToHand(card, plr);
-            plr.mana += card.mana;
-            
-            return false;
-        }
-        
-        if (fake_val) val = fake_val;
-
-        plr.quests.push({"name": card.displayName, "progress": [0, val], "key": key, "value": val, "turn": game.turns, "callback": callback, "fake_val": fake_val, "manual_progression": manual_progression});
-    }
-    addQuestline(plr, card, key, val, callback, next, fake_val = null, manual_progression = false) {
-        if (plr.questlines.length > 0) {
-            this.addToHand(card, plr);
-            plr.mana += card.mana;
-            
-            return false;
-        }
-
-        if (fake_val) val = fake_val;
-
-        plr.questlines.push({"name": card.displayName, "progress": [0, val], "key": key, "value": val, "turn": game.turns, "callback": callback, "next": next, "manual_progression": manual_progression});
+        plr[type.toLowerCase() + "s"].push({"name": card.displayName, "progress": [0, val], "key": key, "value": val, "turn": game.turns, "callback": callback, "next": next, "manual_progression": manual_progression});
     }
 }
 

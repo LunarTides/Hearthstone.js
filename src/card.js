@@ -71,6 +71,10 @@ class Card {
 
         this.plr = plr;
 
+        this.randomizeIds();
+    }
+
+    randomizeIds() {
         this.__ids = []
         for (let i = 0; i < 100; i++) {
             // This is to prevent cards from getting linked. Don't use this variable
@@ -223,7 +227,7 @@ class Card {
 
             // If the return value is -1, meaning "refund", refund the card and stop the for loop
             if (r == -1 && name != "deathrattle") {
-                game.functions.addToHand(this, this.plr, false);
+                this.plr.addToHand(this, false);
                 this.plr.mana += this.mana;
                 ret = -1;
 

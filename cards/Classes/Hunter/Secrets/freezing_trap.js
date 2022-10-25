@@ -8,16 +8,14 @@ module.exports = {
     spellClass: "Frost",
 
     cast(plr, game, card) {
-        game.functions.addSecret(plr, card, "minionsThatAttacked", 1, (minion, game, turn) => {
-            if (minion[0].plr != game.player) return false;
-
+        game.functions.addQuest("Secret", plr, card, "minionsThatAttacked", 1, (minion, game, turn) => {
             let m = new game.Card(minion[0].name, game.player);
             m.mana += 2;
-            game.functions.addToHand(m, m.plr, false);
+            m.plr.addToHand(m, false);
 
             minion[0].destroy();
 
             return true;
-        }, true);
+        }, null);
     }
 }

@@ -7,12 +7,12 @@ module.exports = {
     set: "Core",
 
     cast (plr, game) {
-        plr.gainMana(2);
+        plr.refreshMana(2, plr.maxMaxMana);
         plr.gainOverload(2);
     },
 
     outcast(plr, game) {
-        plr.gainMana(2);
+        plr.refreshMana(2, plr.maxMaxMana);
         plr.gainOverload(2);
     }
 }

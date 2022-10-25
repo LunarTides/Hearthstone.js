@@ -12,6 +12,6 @@ module.exports = {
         if (possible_cards.length <= 0) return;
 
         var card = game.functions.randList(possible_cards);
-        game.functions.addToHand(card, plr);
+        plr.addToHand(card);
     }
 }
