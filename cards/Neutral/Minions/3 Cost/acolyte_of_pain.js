@@ -10,9 +10,9 @@ module.exports = {
 
     passive(plr, game, card, trigger) {
         if (!card.passiveCheck(trigger, "minionsAttacked") || trigger[1][1] != card) return;
-        if (!Array.isArray(card.storage) && card.stats[1] < card.storage) plr.drawCard();
+        if (!Array.isArray(card.storage) && card.getHealth() < card.storage) plr.drawCard();
 
-        card.storage = card.stats[1];
+        card.storage = card.getHealth();
     },
 
     deathrattle(plr, game, card) {

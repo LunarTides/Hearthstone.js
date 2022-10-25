@@ -13,6 +13,6 @@ module.exports = {
             return -1;
         }
 
-        target.setStats(target.stats[1], target.stats[1]);
+        target.setStats(target.getHealth(), target.getHealth());
     }
 }

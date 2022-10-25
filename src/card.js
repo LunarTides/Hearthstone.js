@@ -51,7 +51,7 @@ class Card {
         this.stealthDuration = 0; // The amount of turns stealth should last
 
         // Set maxHealth if the card is a minion or weapon
-        if (this.type == "Minion" || this.type == "Weapon") this.maxHealth = this.stats[1];
+        if (this.type == "Minion" || this.type == "Weapon") this.maxHealth = this.getHealth();
 
         this.canAttackHero = true;
 
@@ -111,7 +111,14 @@ class Card {
         this.keywords = this.keywords.filter(k => k != keyword);
     }
 
-    setStats(attack = this.stats[0], health = this.stats[1]) {
+    getAttack() {
+        return this.stats[0];
+    }
+    getHealth() {
+        return this.stats[1];
+    }
+
+    setStats(attack = this.getAttack(), health = this.getHealth()) {
         this.stats = [attack, health];
 
         if (health > this.maxHealth) {
@@ -129,35 +136,35 @@ class Card {
     }
 
     addHealth(amount, restore = true) {
-        this.setStats(this.stats[0], this.stats[1] + amount);
+        this.setStats(this.getAttack(), this.getHealth() + amount);
     
         if (restore) {
-            if (this.stats[1] > this.maxHealth) {
+            if (this.getHealth() > this.maxHealth) {
                 game.stats.update("restoredHealth", this.maxHealth);
-                this.stats[1] = this.maxHealth;
+                this.getHealth() = this.maxHealth;
             } else {
-                game.stats.update("restoredHealth", this.stats[1]);
+                game.stats.update("restoredHealth", this.getHealth());
             }
         }
         else this.resetMaxHealth(true);
     }
     addAttack(amount) {
-        this.setStats(this.stats[0] + amount, this.stats[1]);
+        this.setStats(this.getAttack() + amount, this.getHealth());
     }
     remHealth(amount) {
-        this.setStats(this.stats[0], this.stats[1] - amount);
+        this.setStats(this.getAttack(), this.getHealth() - amount);
 
-        if (this.type == "Weapon" && this.stats[1] <= 0) {
+        if (this.type == "Weapon" && this.getHealth() <= 0) {
             this.plr.destroyWeapon(true);
         }
     }
     remAttack(amount) {
-        this.setStats(this.stats[0] - amount, this.stats[1]);
+        this.setStats(this.getAttack() - amount, this.getHealth());
     }
     resetMaxHealth(check = false) {
-        if (check && this.stats[1] <= this.maxHealth) return;
+        if (check && this.getHealth() <= this.maxHealth) return;
 
-        this.maxHealth = this.stats[1];
+        this.maxHealth = this.getHealth();
     }
     setStealthDuration(duration) {
         this.stealthDuration = game.turns + duration;

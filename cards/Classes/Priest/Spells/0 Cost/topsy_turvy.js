@@ -13,7 +13,7 @@ module.exports = {
             return -1;
         }
 
-        target.setStats(target.stats[1], target.stats[0]);
+        target.setStats(target.getHealth(), target.getAttack());
         target.resetMaxHealth();
     }
 }

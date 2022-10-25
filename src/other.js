@@ -82,7 +82,7 @@ class Player {
     setWeapon(weapon) {
         this.weapon = weapon;
 
-        this.attack += weapon.stats[0];
+        this.attack += weapon.getAttack();
     }
 
     destroyWeapon(triggerDeathrattle = false) {
@@ -449,7 +449,7 @@ class Functions {
         if (values.length <= 0) return;
 
         values.forEach((v, i) => {
-            let stats = this.getType(v) == "Minion" ? ` [${v.stats[0]} / ${v.stats[1]}]` : "";
+            let stats = this.getType(v) == "Minion" ? ` [${v.getAttack()} / ${v.getHealth()}]` : "";
             let desc = `(${v.desc})` || "";
 
             // Check for a TypeError and ignore it

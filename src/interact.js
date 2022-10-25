@@ -56,7 +56,7 @@ function doTurnAttack() {
 
             const wpn = attacker.weapon;
 
-            if (wpn.attackTimes > 0 && wpn.stats[0]) {
+            if (wpn.attackTimes > 0 && wpn.getAttack()) {
                 wpn.attackTimes -= 1;
 
                 wpn.activate("onattack");
@@ -74,23 +74,23 @@ function doTurnAttack() {
         game.stats.update("enemyAttacks", [attacker, target]);
 
         game.attackMinion(attacker.attack, target);
-        attacker.remHealth(target.stats[0]);
+        attacker.remHealth(target.getAttack());
 
-        if (target.stats[1] > 0) {
+        if (target.getHealth() > 0) {
             target.activate("frenzy");
         }
 
         if (attacker.weapon) {
             const wpn = attacker.weapon;
 
-            if (wpn.attackTimes > 0 && wpn.stats[0]) {
+            if (wpn.attackTimes > 0 && wpn.getAttack()) {
                 wpn.attackTimes -= 1;
 
                 wpn.activate("onattack");
                 wpn.remStats(0, 1);
 
                 if (wpn.keywords.includes("Poisonous")) {
-                    target.setStats(target.stats[0], 0);
+                    target.setStats(target.getAttack(), 0);
                 }
             }
 
@@ -128,10 +128,10 @@ function doTurnAttack() {
         }
     
         if (attacker.keywords.includes("Lifesteal")) {
-            attacker.plr.addHealth(attacker.stats[0]);
+            attacker.plr.addHealth(attacker.getAttack());
         }
 
-        target.remHealth(attacker.stats[0]);
+        target.remHealth(attacker.getAttack());
 
         attacker.attackTimes--;
         return;
@@ -228,6 +228,8 @@ function doTurnLogic(input, _ret_on_fail = true) {
     if (_ret_on_fail) return ret;
 }
 function doTurn() {
+    curr = game.player;
+
     printName();
     printAll(game.player);
 

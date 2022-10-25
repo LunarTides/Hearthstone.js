@@ -190,7 +190,7 @@ class Game {
         this.opponent.mana = this.opponent.maxMana;
 
         this.player = this.opponent;
-        this.opponent = this.player.getOpponent();
+        this.opponent = plr;
 
         this.turns += 1;
 
@@ -204,8 +204,8 @@ class Game {
 
         printName()
 
-        if (this.player.weapon && this.player.weapon.stats[0]) {
-            this.player.attack += this.player.weapon.stats[0];
+        if (this.player.weapon && this.player.weapon.getAttack()) {
+            this.player.attack += this.player.weapon.getAttack();
             this.player.weapon.resetAttackTimes();
         }
 
@@ -345,7 +345,7 @@ class Game {
                 this.stats.update("minionsPlayed", card);
 
                 if (loc.tribe == "Mech") {
-                    loc.addStats(card.stats[0], card.stats[1]);
+                    loc.addStats(card.getAttack(), card.getHealth());
 
                     card.keywords.forEach(k => {
                         loc.addKeyword(k);
@@ -504,20 +504,20 @@ class Game {
             var n = [];
             
             this.board[p].forEach(m => {
-                if (m.stats[1] <= 0) {
+                if (m.getHealth() <= 0) {
                     m.activate("deathrattle");
                 }
             });
 
             this.board[p].forEach(m => {
-                if (m.stats[1] <= 0) {
+                if (m.getHealth() <= 0) {
                     this.stats.update("minionsKilled", m);
 
                     if (m.keywords.includes("Reborn")) {
                         let minion = new Card(m.name, this["player" + (p + 1)]);
 
                         minion.removeKeyword("Reborn");
-                        minion.setStats(minion.stats[0], 1);
+                        minion.setStats(minion.getAttack(), 1);
 
                         this.playMinion(minion, this["player" + (p + 1)], false);
 
@@ -562,7 +562,7 @@ class Game {
 
             target.remStats(0, minion)
 
-            if (target.stats[1] > 0) {
+            if (target.getHealth() > 0) {
                 target.activate("frenzy");
             }
 
@@ -570,7 +570,7 @@ class Game {
 
             return;
         } else if (minion.attackTimes > 0) {
-            if (minion.stats[0] <= 0) return false;
+            if (minion.getAttack() <= 0) return false;
 
             minion.attackTimes--;
 
@@ -588,30 +588,30 @@ class Game {
                 dmgMinion = false;
             }
 
-            if (dmgMinion) minion.remStats(0, target.stats[0]);
+            if (dmgMinion) minion.remStats(0, target.getAttack());
 
-            if (dmgMinion && minion.stats[1] > 0) minion.activate("frenzy");
+            if (dmgMinion && minion.getHealth() > 0) minion.activate("frenzy");
 
             if (minion.keywords.includes("Stealth")) minion.removeKeyword("Stealth");
         
             minion.activate("onattack");
             this.stats.update("minionsAttacked", [minion, target]);
         
-            if (dmgMinion && target.keywords.includes("Poisonous")) minion.setStats(minion.stats[0], 0);
+            if (dmgMinion && target.keywords.includes("Poisonous")) minion.setStats(minion.getAttack(), 0);
 
             if (target.keywords.includes("Divine Shield")) {
                 target.removeKeyword("Divine Shield");
                 dmgTarget = false;
             }
 
-            if (dmgTarget && minion.keywords.includes("Lifesteal")) minion.plr.addHealth(minion.stats[0]);
-            if (dmgTarget && minion.keywords.includes("Poisonous")) target.setStats(target.stats[0], 0);
+            if (dmgTarget && minion.keywords.includes("Lifesteal")) minion.plr.addHealth(minion.getAttack());
+            if (dmgTarget && minion.keywords.includes("Poisonous")) target.setStats(target.getAttack(), 0);
 
-            if (dmgTarget) target.remStats(0, minion.stats[0])
+            if (dmgTarget) target.remStats(0, minion.getAttack())
 
-            if (target.stats[1] > 0) target.activate("frenzy");
-            if (target.stats[1] < 0) minion.activate("overkill");
-            if (target.stats[1] == 0) minion.activate("honorablekill");
+            if (target.getHealth() > 0) target.activate("frenzy");
+            if (target.getHealth() < 0) minion.activate("overkill");
+            if (target.getHealth() == 0) minion.activate("honorablekill");
 
             this.killMinions();
 
