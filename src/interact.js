@@ -20,6 +20,7 @@ class Interact {
         game = _game;
     }
 
+    // Constant interaction
     doTurnAttack() {
         var attacker = game.functions.selectTarget("Which minion do you want to attack with?", false, "self");
         var target = game.functions.selectTarget("Which minion do you want to attack?", false, "enemy");
@@ -248,6 +249,7 @@ class Interact {
         game.killMinions();
     }
 
+    // Deck stuff
     validateDeck(card, plr, deck) {
         if (deck.length > maxDeckLength) return false;
         return this.validateCard(card, plr);
@@ -306,6 +308,7 @@ class Interact {
         else while (plr.deck.length < 30) plr.deck.push(new game.Card("Sheep", plr));
     }
 
+    // Print game information
     printName(name = true) {
         cls();
     

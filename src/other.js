@@ -44,11 +44,7 @@ class Player {
         return game["player" + id];
     }
 
-    setClass(_class, hp = true) {
-        this.class = _class;
-        if (hp) this.hero_power = _class;
-    }
-
+    // Mana
     refreshMana(mana, comp = this.maxMana) {
         this.mana += mana;
 
@@ -73,6 +69,7 @@ class Player {
         game.stats.update("overloadGained", overload);
     }
 
+    // Weapons
     setWeapon(weapon) {
         this.weapon = weapon;
 
@@ -86,14 +83,7 @@ class Player {
         this.weapon = null;
     }
 
-    setHero(hero, armor = 5) {
-        this.hero = hero;
-
-        this.hero_power = "hero";
-
-        this.armor += armor;
-    }
-
+    // Stats
     addAttack(amount) {
         this.attack += amount;
 
@@ -129,6 +119,7 @@ class Player {
         }
     }
 
+    // Hand / Deck
     shuffleIntoDeck(card, updateStats = true) {
         // Add the card into a random position in the deck
         var pos = this.game.functions.randInt(0, this.deck.length);
@@ -180,6 +171,18 @@ class Player {
         this.hand = this.hand.filter(c => c !== card);
     }
 
+    // Hero power / Class
+    setClass(_class, hp = true) {
+        this.class = _class;
+        if (hp) this.hero_power = _class;
+    }
+    setHero(hero, armor = 5) {
+        this.hero = hero;
+
+        this.hero_power = "hero";
+
+        this.armor += armor;
+    }
     heroPower() {
         if (this.hero_power == "Demon Hunter") this.heroPowerCost = 1;
         else this.heroPowerCost = 2; // This is to prevent changing hero power to demon hunter and changing back to decrease cost to 1
@@ -274,10 +277,10 @@ class Player {
         this.canUseHeroPower = false;
 
     }
-
 }
 
 class Functions {
+    // QoL
     // https://dev.to/codebubb/how-to-shuffle-an-array-in-javascript-2ikj - Vladyslav
     shuffle(array) {
         const newArray = [...array]
@@ -302,6 +305,7 @@ class Functions {
         return str[0].toUpperCase() + str.slice(1).toLowerCase();
     }
 
+    // Getting card info
     getType(card) {
         if (card.tribe) { // If you see this in the error log, the error occorred since the game failed to get the type of a minion. Error Code: #21
             return "Minion";
@@ -317,6 +321,7 @@ class Functions {
         return Object.values(game.cards).find(c => c.name.toLowerCase() == name.toLowerCase());
     }
 
+    // Account for certain stats
     spellDmg(target, damage) {
         const dmg = this.accountForSpellDmg(damage);
 
@@ -335,6 +340,7 @@ class Functions {
         return cards.filter(c => !c.uncollectible);
     }
 
+    // Give user a prompt.
     chooseOne(prompt, options, times = 1) {
         let choices = [];
 
@@ -515,6 +521,7 @@ class Functions {
         return minion;
     }
 
+    // Keyword stuff
     dredge(prompt = "Choose One:") {
         // Look at the bottom three cards of the deck and put one on the top.
         var cards = game.player.deck.slice(0, 3);
@@ -704,6 +711,7 @@ class Functions {
         return jade;
     }
 
+    // Quest
     progressQuest(name, value) {
         let quest = game.player.secrets.find(s => s["name"] == name);
         if (!quest) quest = game.player.sidequests.find(s => s["name"] == name);

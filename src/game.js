@@ -122,6 +122,7 @@ class Game {
         return ret;
     }
 
+    // Start / End
     startGame() {
         let players_hands = [[], []];
 
@@ -157,7 +158,6 @@ class Game {
             plr.hand.forEach(c => c.activate("startofgame"));
         }
     }
-
     endGame(winner) {
         // Todo: Maybe add more stuff here
 
@@ -168,6 +168,7 @@ class Game {
         exit(0);
     }
 
+    // Start / End Turn
     endTurn() {
         this.killMinions();
 
@@ -198,7 +199,6 @@ class Game {
 
         this.startTurn();
     }
-
     startTurn() {
         this.killMinions();
 
@@ -244,6 +244,7 @@ class Game {
         this.player.hasPlayedCardThisTurn = false;
     }
 
+    // Playing cards
     playCard(card, player) {
         this.killMinions();
 
@@ -412,7 +413,6 @@ class Game {
 
         return ret;
     }
-
     playMinion(minion, player, summoned = true, trigger_colossal = true) {
         player.spellDamage = 0;
 
@@ -454,6 +454,7 @@ class Game {
         });
     }
 
+    // Interacting with minions
     killMinions() {
         for (var p = 0; p < 2; p++) {
             var n = [];
@@ -488,7 +489,6 @@ class Game {
             this.board[p] = n;
         }
     }
-
     attackMinion(minion, target) {
         this.killMinions();
 

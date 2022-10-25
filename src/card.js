@@ -99,6 +99,7 @@ class Card {
         this.deathrattle.push(_deathrattle);
     }
 
+    // Keywords
     addKeyword(keyword) {
         this.keywords.push(keyword);
 
@@ -115,13 +116,13 @@ class Card {
         this.keywords = this.keywords.filter(k => k != keyword);
     }
 
+    // Change stats
     getAttack() {
         return this.stats[0];
     }
     getHealth() {
         return this.stats[1];
     }
-
     setStats(attack = this.getAttack(), health = this.getHealth()) {
         this.stats = [attack, health];
 
@@ -129,7 +130,6 @@ class Card {
             this.maxHealth = health;
         }
     }
-
     addStats(attack = 0, health = 0) {
         this.addAttack(attack);
         this.addHealth(health);
@@ -138,7 +138,6 @@ class Card {
         this.remAttack(attack);
         this.remHealth(health);
     }
-
     addHealth(amount, restore = true) {
         this.setStats(this.getAttack(), this.getHealth() + amount);
     
@@ -170,10 +169,11 @@ class Card {
 
         this.maxHealth = this.getHealth();
     }
+
+    // Set other
     setStealthDuration(duration) {
         this.stealthDuration = game.turns + duration;
     }
-
     resetAttackTimes() {
         this.attackTimes = 1;
 
@@ -185,6 +185,7 @@ class Card {
         }
     }
 
+    // Doom buttons
     silence() {
         // Tell the minion to undo it's passive.
         // The false tells the minion that this is the last time it will call unpassive
@@ -209,6 +210,7 @@ class Card {
         this.setStats(0, 0);
     }
 
+    // Handling functions
     activate(name, ...args) {
         // This activates a function
         // Example: activate("cast")¨
@@ -216,6 +218,8 @@ class Card {
         // Returns a list of the return values from all the function calls
 
         name = name.toLowerCase();
+
+        if (name == "battlecry") return this.activateBattlecry(...args);
 
         // If the card has the function
         if (!this["has" + game.functions.capitalize(name)]) return false;
@@ -238,12 +242,10 @@ class Card {
 
         return ret;
     }
-
     activateBattlecry(...args) {
         this.activate("passive", ["battlecry", this]);
         return this.activate("battlecry", ...args);
     }
-
     passiveCheck(trigger, key, val = null, check_plr = null) {
         let ret;
 
