@@ -26,7 +26,7 @@ module.exports = {
             new_deck.push(new game.Card(card.name, plr));
         });
 
-        plr.setHand(new_hand);
-        plr.setDeck(new_deck);
+        plr.hand = new_hand;
+        plr.deck = new_deck;
     }
 }

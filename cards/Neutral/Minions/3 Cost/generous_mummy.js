@@ -10,7 +10,7 @@ module.exports = {
     keywords: ["Reborn"],
 
     passive(plr, game, card) {
-        game.getOtherPlayer(plr).hand.forEach(c => {
+        plr.getOpponent().hand.forEach(c => {
             let cont = false;
 
             card.storage.forEach(i => {

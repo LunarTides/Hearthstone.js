@@ -13,21 +13,21 @@ class GameStats {
     cardUpdate(key, val) {
         // Infuse
         if (key == "minionsKilled") {
-            val.plr.getHand().forEach(p => {
+            val.plr.hand.forEach(p => {
                 if (p.infuse_num < 0) return;
 
-                p.setDesc(p.desc.replace(`Infuse (${p.infuse_num})`, `Infuse (${p.infuse_num - 1})`));
+                p.desc = p.desc.replace(`Infuse (${p.infuse_num})`, `Infuse (${p.infuse_num - 1})`);
                 p.infuse_num -= 1;
 
                 if (p.infuse_num == 0) {
                     p.activate("infuse");
-                    p.setDesc(p.desc.replace(`Infuse (${p.infuse_num})`, "Infused"));
+                    p.desc = p.desc.replace(`Infuse (${p.infuse_num})`, "Infused");
                 }
             });
         }
         
 
-        this.game.getBoard().forEach(p => {
+        this.game.board.forEach(p => {
             p.forEach(m => {
                 m.activate("unpassive", true);
                 m.activate("passive", [key, val]);
@@ -108,8 +108,8 @@ class Game {
 
         this.passives = [];
         
-        this.player1.setGame(this);
-        this.player2.setGame(this);
+        this.player1.game = this;
+        this.player2.game = this;
     }
 
     set(key, val) {
@@ -120,78 +120,6 @@ class Game {
         let ret = [];
         this.passives.forEach(i => ret.push(i(this, trigger)));
         return ret;
-    }
-
-    getPlayer1() {
-        return this.player1;
-    }
-
-    getPlayer2() {
-        return this.player2;
-    }
-
-    getPlayer() {
-        return this.player;
-    }
-
-    getOpponent() {
-        return this.opponent;
-    }
-
-    getTurns() {
-        return this.turns;
-    }
-
-    getBoard() {
-        return this.board;
-    }
-
-    setPlayer1(player1) {
-        this.player1 = player1;
-    }
-
-    setPlayer2(player2) {
-        this.player2 = player2;
-    }
-
-    setPlayer(player) {
-        this.player = player;
-    }
-
-    setOpponent(opponent) {
-        this.opponent = opponent;
-    }
-
-    setTurns(turns) {
-        this.turns = turns;
-    }
-
-    setBoard(board) {
-        this.board = board;
-    }
-
-    plrNameToIndex(name) {
-        if (this.player1.getName() == name) return 0;
-        if (this.player2.getName() == name) return 1;
-        
-        return -1;
-    }
-
-    plrIndexToName(index) {
-        if (index == 0) return this.player1.getName();
-        if (index == 1) return this.player2.getName();
-
-        return null;
-    }
-
-    plrIndexToPlayer(index) {
-        if (index == 0) return this.player1;
-        if (index == 1) return this.player2;
-    }
-
-    getOtherPlayer(player) {
-        if (player == this.player1) return this.player2;
-        if (player == this.player2) return this.player1;
     }
 
     startGame() {
@@ -209,11 +137,11 @@ class Game {
             })
         }
 
-        this.player1.setHand(players_hands[0]);
-        this.player2.setHand(players_hands[1]);
+        this.player1.hand = players_hands[0];
+        this.player2.hand = players_hands[1];
 
-        this.player1.setMaxMana(1);
-        this.player1.setMana(1);
+        this.player1.maxMana = 1;
+        this.player1.mana = 1;
 
         while (this.player1.hand.length < 3) this.player1.drawCard(false);
         while (this.player2.hand.length < 4) this.player2.drawCard(false);
@@ -233,7 +161,7 @@ class Game {
     endGame(p) {
         printName();
 
-        console.log(`Player ${p.getName()} wins!`);
+        console.log(`Player ${p.name} wins!`);
 
         exit(0);
     }
@@ -250,19 +178,19 @@ class Game {
             this.stats.update("unspentMana", plr.mana);
         }
 
-        this.getBoard()[plr.id].forEach(m => m.activate("endofturn"));
+        this.board[plr.id].forEach(m => m.activate("endofturn"));
 
         // Remove echo cards
-        plr.setHand(plr.hand.filter(c => !c.echo));
+        plr.hand = plr.hand.filter(c => !c.echo);
 
         plr.attack = 0;
 
 
-        this.opponent.setMaxMana(this.opponent.getMaxMana() + 1);
-        this.opponent.setMana(this.opponent.getMaxMana());
+        this.opponent.maxMana += 1;
+        this.opponent.mana = this.opponent.maxMana;
 
         this.player = this.opponent;
-        this.opponent = this.getOtherPlayer(this.player);
+        this.opponent = this.player.getOpponent();
 
         this.turns += 1;
 
@@ -286,7 +214,7 @@ class Game {
 
         if (this.player.weapon) this.player.weapon.activate("startofturn");
 
-        this.getBoard()[this.plrNameToIndex(this.player.getName())].forEach(m => {
+        this.board[this.player.id].forEach(m => {
             m.activate("startofturn");
             m.canAttackHero = true;
             m.resetAttackTimes();
@@ -317,7 +245,7 @@ class Game {
     playCard(card, player) {
         this.killMinions();
 
-        if (player.getMana() < card.getMana()) {
+        if (player.mana < card.mana) {
             this.input("Not enough mana.\n");
             return "mana";
         }
@@ -326,12 +254,12 @@ class Game {
             var q = this.input(`Would you like to trade ${card.displayName} for a random card in your deck? (y: trade / n: play) `);
 
             if (q.startsWith("y")) {
-                if (player.getMana() < 1) {
+                if (player.mana < 1) {
                     this.input("Not enough mana.\n");
                     return "mana";
                 }
 
-                player.setMana(player.getMana() - 1);
+                player.mana -= - 1;
 
                 player.shuffleIntoDeck(card);
 
@@ -339,7 +267,7 @@ class Game {
 
                 var found = false;
 
-                player.getHand().forEach(function(c) {
+                player.hand.forEach(function(c) {
                     if (c.displayName === card.displayName && !found) {
                         found = true;
                     } else {
@@ -349,7 +277,7 @@ class Game {
 
                 if (card.type == "Spell" && card.keywords.includes("Twinspell")) {
                     card.removeKeyword("Twinspell");
-                    card.setDesc(card.getDesc().split("Twinspell")[0].trim());
+                    card.desc = card.desc.split("Twinspell")[0].trim();
         
                     n.push(card);
                 }
@@ -361,21 +289,21 @@ class Game {
                     n.push(clone);
                 }
         
-                player.setHand(n);
+                player.hand = n;
 
                 player.drawCard();
                 return "traded";
             }
         }
 
-        player.setMana(player.getMana() - card.getMana());
-        card.setMana(card._mana);
+        player.mana -= card.mana;
+        card.mana = card._mana;
         
         var n = []
 
         var found = false;
 
-        player.getHand().forEach(function(c) {
+        player.hand.forEach(function(c) {
             if (c.displayName === card.displayName && !found) {
                 found = true;
             } else {
@@ -385,7 +313,7 @@ class Game {
 
         if (card.type == "Spell" && card.keywords.includes("Twinspell")) {
             card.removeKeyword("Twinspell");
-            card.setDesc(card.getDesc().split("Twinspell")[0].trim());
+            card.desc = card.desc.split("Twinspell")[0].trim();
 
             n.push(card);
         }
@@ -397,9 +325,9 @@ class Game {
             n.push(clone);
         }
 
-        player.setHand(n);
+        player.hand = n;
 
-        if (card.getType() == "Minion" && this.board[player.id].length > 0 && card.keywords.includes("Magnetic")) {
+        if (card.type == "Minion" && this.board[player.id].length > 0 && card.keywords.includes("Magnetic")) {
             let hasMech = false;
 
             this.board[player.id].forEach(m => {
@@ -435,7 +363,7 @@ class Game {
 
         }
 
-        if (card.getType() === "Minion") {
+        if (card.type === "Minion") {
             if (player.counter && player.counter.includes("Minion")) {
                 player.counter.splice(player.counter.indexOf("Minion"), 1);
     
@@ -457,7 +385,7 @@ class Game {
             this.stats.update("minionsPlayed", card);
 
             this.playMinion(card, player, false);
-        } else if (card.getType() === "Spell") {
+        } else if (card.type === "Spell") {
             if (player.counter && player.counter.includes("Spell")) {
                 player.counter.splice(player.counter.indexOf("Spell"), 1);
 
@@ -470,15 +398,15 @@ class Game {
 
             this.stats.update("spellsCast", card);
 
-            this.getBoard()[this.plrNameToIndex(player.getName())].forEach(m => {
+            this.board[player.id].forEach(m => {
                 m.activate("spellburst");
                 m.hasSpellburst = false;
             });
-        } else if (card.getType() === "Weapon") {
+        } else if (card.type === "Weapon") {
             player.setWeapon(card);
 
             card.activateBattlecry();
-        } else if (card.getType() === "Hero") {
+        } else if (card.type === "Hero") {
             player.setHero(card, 5);
 
             card.activateBattlecry();
@@ -516,7 +444,7 @@ class Game {
 
             var found = false;
 
-            this.player.getHand().forEach(function(c) {
+            this.player.hand.forEach(function(c) {
                 if (c.displayName === corrupted.displayName && !found) {
                     found = true;
                 } else {
@@ -524,7 +452,7 @@ class Game {
                 }
             });
 
-            player.setHand(n);
+            player.hand = n;
         }
 
         this.killMinions();
@@ -562,7 +490,7 @@ class Game {
             this.stats.update("minionsSummoned", minion);
         }
 
-        this.getBoard()[p].forEach(m => {
+        this.board[p].forEach(m => {
             m.keywords.forEach(k => {
                 if (k.startsWith("Spell Damage +")) {
                     player.spellDamage += parseInt(k.split("+")[1]);
@@ -572,26 +500,26 @@ class Game {
     }
 
     killMinions() {
-        for (var p = 0; p <= 1; p++) {
+        for (var p = 0; p < 2; p++) {
             var n = [];
             
-            this.getBoard()[p].forEach(m => {
-                if (m.getStats()[1] <= 0) {
+            this.board[p].forEach(m => {
+                if (m.stats[1] <= 0) {
                     m.activate("deathrattle");
                 }
             });
 
-            this.getBoard()[p].forEach(m => {
-                if (m.getStats()[1] <= 0) {
+            this.board[p].forEach(m => {
+                if (m.stats[1] <= 0) {
                     this.stats.update("minionsKilled", m);
 
                     if (m.keywords.includes("Reborn")) {
-                        let minion = new Card(m.getName(), this.plrIndexToPlayer(p));
+                        let minion = new Card(m.name, this["player" + (p + 1)]);
 
                         minion.removeKeyword("Reborn");
                         minion.setStats(minion.stats[0], 1);
 
-                        this.playMinion(minion, this.plrIndexToPlayer(p), false);
+                        this.playMinion(minion, this["player" + (p + 1)], false);
 
                         n.push(minion);
                     } else {
@@ -616,7 +544,7 @@ class Game {
         // Check if there is a minion with taunt
         var prevent = false;
 
-        this.getBoard()[this.opponent.id].forEach(m => {
+        this.board[this.opponent.id].forEach(m => {
             if (m.keywords.includes("Taunt") && m != target) {
                 prevent = true;
                 return;
@@ -642,7 +570,7 @@ class Game {
 
             return;
         } else if (minion.attackTimes > 0) {
-            if (minion.getStats()[0] <= 0) return false;
+            if (minion.stats[0] <= 0) return false;
 
             minion.attackTimes--;
 
@@ -681,9 +609,9 @@ class Game {
 
             if (dmgTarget) target.remStats(0, minion.stats[0])
 
-            if (target.getStats()[1] > 0) target.activate("frenzy");
-            if (target.getStats()[1] < 0) minion.activate("overkill");
-            if (target.getStats()[1] == 0) minion.activate("honorablekill");
+            if (target.stats[1] > 0) target.activate("frenzy");
+            if (target.stats[1] < 0) minion.activate("overkill");
+            if (target.stats[1] == 0) minion.activate("honorablekill");
 
             this.killMinions();
 

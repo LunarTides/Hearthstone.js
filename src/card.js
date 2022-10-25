@@ -78,59 +78,6 @@ class Card {
         }
     }
 
-    getName() {
-        return this.name;
-    }
-    getType() {
-        return this.type;
-    }
-    getDesc() {
-        return this.desc;
-    }
-    getMana() {
-        return this.mana;
-    }
-    getClass() {
-        return this.class;
-    }
-    getRarity() {
-        return this.rarity;
-    }
-    getSet() {
-        return this.set;
-    }
-    getKeywords() {
-        return this.keywords;
-    }
-    getTribe() {
-        return this.tribe;
-    }
-
-
-    setName(name) {
-        this.name = name;
-    }
-    setType(type) {
-        this.type = type;
-    }
-    setDesc(desc) {
-        this.desc = desc;
-    }
-    setMana(mana) {
-        this.mana = mana;
-    }
-    setClass(_class) {
-        this.class = _class;
-    }
-    setRarity(rarity) {
-        this.rarity = rarity;
-    }
-    setSet(set) {
-        this.set = set;
-    }
-    setKeywords(keywords) {
-        this.keywords = keywords;
-    }
     setFunction(name, val, has = true) {
         // Set a func to the val
         // Set has[Func] to true | false
@@ -164,9 +111,6 @@ class Card {
         this.keywords = this.keywords.filter(k => k != keyword);
     }
 
-    getStats() {
-        return this.stats;
-    }
     setStats(attack = this.stats[0], health = this.stats[1]) {
         this.stats = [attack, health];
 

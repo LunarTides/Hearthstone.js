@@ -9,10 +9,10 @@ module.exports = {
     set: "Legacy",
 
     endofturn(plr, game) {
-        var t = game.getBoard()[plr.id];
+        var t = game.board[plr.id];
 
         if (t.length > 0) {
-            game.getBoard()[plr.id][game.functions.randInt(0, t.length - 1)].addStats(1, 0);
+            t[game.functions.randInt(0, t.length - 1)].addStats(1, 0);
         }
     }
 }

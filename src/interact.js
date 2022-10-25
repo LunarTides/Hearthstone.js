@@ -29,7 +29,7 @@ function doTurnAttack() {
     // Check if there is a minion with taunt
     var prevent = false;
 
-    game.getBoard()[game.opponent.id].forEach(m => {
+    game.board[game.opponent.id].forEach(m => {
         if (m.keywords.includes("Taunt") && m != target) {
             prevent = true;
             return;
@@ -107,7 +107,7 @@ function doTurnAttack() {
     // Attacker is a minion
     // Target is a player
 
-    if (attacker.turn == game.getTurns()) {
+    if (attacker.turn == game.turns) {
         console.log("That minion cannot attack this turn!");
         return;
     }
@@ -213,11 +213,11 @@ function handleCmds(q) {
 function doTurnLogic(input, _ret_on_fail = true) {
     game.killMinions();
 
-    curr = game.getPlayer();
+    curr = game.player;
 
     if (handleCmds(input) !== -1) return;
     
-    const card = curr.getHand()[parseInt(input) - 1];
+    const card = curr.hand[parseInt(input) - 1];
     if (!card) return "Invalid Card";
     if (input == curr.hand.length || input == 1) card.activate("outcast");
     const ret = game.playCard(card, curr);
@@ -229,7 +229,7 @@ function doTurnLogic(input, _ret_on_fail = true) {
 }
 function doTurn() {
     printName();
-    printAll(game.getPlayer());
+    printAll(game.player);
 
     let input = "\nWhich card do you want to play? ";
     if (game.turns <= 2 && !debug) input += "(type 'help' for further information <- This will disappear once you end your turn) ";
@@ -292,7 +292,7 @@ function deckCode(plr) {
     const deckcode = game.input(`\nPlayer ${plr.id + 1}, please type in your deckcode (Leave this empty for a test deck): `);
 
     if (deckcode.length > 0) plr.deck = importDeck(deckcode, plr);
-    else while (plr.getDeck().length < 30) plr.deck.push(new game.Card("Sheep", plr));
+    else while (plr.deck.length < 30) plr.deck.push(new game.Card("Sheep", plr));
 }
 
 function printName(name = true) {
@@ -319,24 +319,24 @@ function printLicense(disappear = true) {
 function printAll(curr, detailed = false) {
     if (game.turns <= 2) printLicense();
 
-    let op = game.getOpponent();
+    let op = curr.getOpponent();
 
     let sb = "";
 
     /// Mana
     // Current Player's Mana
     sb += "Mana: ";
-    sb += curr.getMana();
+    sb += curr.mana;
     sb += " / ";
-    sb += curr.getMaxMana();
+    sb += curr.maxMana;
 
     sb += " | ";
 
     // Opponent's Mana
     sb += "Opponent's Mana: ";
-    sb += op.getMana();
+    sb += op.mana;
     sb += " / ";
-    sb += curr.getMaxMana();
+    sb += curr.maxMana;
     // Mana End
     console.log(sb);
     sb = "";
@@ -372,7 +372,7 @@ function printAll(curr, detailed = false) {
         sb += "Weapon: ";
         sb += curr.weapon.displayName;
         sb += " (";
-        sb += curr.weapon.getStats().join(' / ');
+        sb += curr.weapon.stats.join(' / ');
         sb += ")"; // Attack: 1 | Weapon: Wicked Knife (1 / 1)
         
         if (op.weapon) sb += " | ";
@@ -384,7 +384,7 @@ function printAll(curr, detailed = false) {
         sb += "Opponent's Weapon: ";
         sb += op.weapon.displayName;
         sb += " (";
-        sb += op.weapon.getStats().join(' / ');
+        sb += op.weapon.stats.join(' / ');
         sb += ")";
     }
 
@@ -450,12 +450,12 @@ function printAll(curr, detailed = false) {
 
     // Deck
     sb += "Deck Size: ";
-    sb += curr.getDeck().length;
+    sb += curr.deck.length;
     sb += " | ";
 
     // Opponent's Deck
     sb += "Opponent's Deck Size: ";
-    sb += op.getDeck().length;
+    sb += op.deck.length;
     // Deck End
     console.log(sb);
     sb = "";
@@ -515,7 +515,7 @@ function printAll(curr, detailed = false) {
         sb += "\n";
 
         sb += "Opponent's Hand Size: ";
-        sb += op.getHand().length;
+        sb += op.hand.length;
     }
     // Detailed Info End
     if (sb) console.log(sb);
@@ -524,29 +524,29 @@ function printAll(curr, detailed = false) {
     // Board
     console.log("\n--- Board ---");
     
-    game.getBoard().forEach((_, i) => {
+    game.board.forEach((_, i) => {
         const t = (i == curr.id) ? "--- You ---" : "--- Opponent ---";
 
         console.log(t) // This is not for debugging, do not comment out
 
-        if (game.getBoard()[i].length == 0) {
+        if (game.board[i].length == 0) {
             console.log("(None)");
             return;
         }
 
-        game.getBoard()[i].forEach((m, n) => {
-            const keywords = m.getKeywords().length > 0 ? ` {${m.getKeywords().join(", ")}}` : "";
+        game.board[i].forEach((m, n) => {
+            const keywords = m.keywords.length > 0 ? ` {${m.keywords.join(", ")}}` : "";
             const frozen = m.frozen ? " (Frozen)" : "";
             const immune = m.immune ? " (Immune)" : "";
             const dormant = m.dormant ? " (Dormant)" : "";
-            const sleepy = (m.turn >= game.getTurns() - 1) || (m.attackTimes <= 0) ? " (Sleepy)" : "";
+            const sleepy = (m.turn >= game.turns - 1) || (m.attackTimes <= 0) ? " (Sleepy)" : "";
 
             sb += "[";
             sb += n + 1;
             sb += "] ";
             sb += m.displayName;
             sb += " (";
-            sb += m.getStats().join(" / ")
+            sb += m.stats.join(" / ")
             sb += ")";
 
             sb += keywords;
@@ -561,38 +561,38 @@ function printAll(curr, detailed = false) {
     });
     console.log("-------------")
 
-    let _class = (curr.hero == "") ? curr.class : curr.hero.getName();
+    let _class = (curr.hero == "") ? curr.class : curr.hero.name;
     if (detailed) {
         _class += " | ";
         _class += "HP: ";
-        _class += (curr.hero_power == "hero") ? curr.hero.getName() : curr.hero_power;
+        _class += (curr.hero_power == "hero") ? curr.hero.name : curr.hero_power;
     }
 
     // Hand
-    console.log(`\n--- ${curr.getName()} (${_class})'s Hand ---`);
+    console.log(`\n--- ${curr.name} (${_class})'s Hand ---`);
     console.log("([id] {cost} Name [attack / health] (type))\n");
 
-    curr.getHand().forEach((card, i) => {
-        const desc = card.getDesc().length > 0 ? ` (${card.getDesc()}) ` : " ";
+    curr.hand.forEach((card, i) => {
+        const desc = card.desc.length > 0 ? ` (${card.desc}) ` : " ";
 
         sb += "[";
         sb += i + 1;
         sb += "]";
         sb += " {";
-        sb += card.getMana();
+        sb += card.mana;
         sb += "} ";
         sb += card.displayName;
         
-        if (card.getType() === "Minion" || card.getType() === "Weapon") {
+        if (card.type === "Minion" || card.type === "Weapon") {
             sb += " [";
-            sb += card.getStats().join(" / ");
+            sb += card.stats.join(" / ");
             sb += "]";
         }
 
         sb += desc;
 
         sb += "(";
-        sb += card.getType();
+        sb += card.type;
         sb += ")";
 
         console.log(sb);
@@ -603,10 +603,10 @@ function printAll(curr, detailed = false) {
     console.log("------------");
 }
 function viewMinion(minion, detailed = false) {
-    console.log(`{${minion.getMana()}} ${minion.displayName} [${minion.blueprint.stats.join(' / ')}]\n`);
-    if (minion.getDesc()) console.log(minion.getDesc() + "\n");
-    console.log("Tribe: " + minion.getTribe());
-    console.log("Class: " + minion.getClass());
+    console.log(`{${minion.mana}} ${minion.displayName} [${minion.blueprint.stats.join(' / ')}]\n`);
+    if (minion.desc) console.log(minion.desc + "\n");
+    console.log("Tribe: " + minion.tribe);
+    console.log("Class: " + minion.class);
 
     const frozen = minion.frozen;
     const immune = minion.immune;
@@ -617,8 +617,8 @@ function viewMinion(minion, detailed = false) {
     console.log("Is Dormant: " + dormant);
     if (detailed) {
         console.log("Is Corrupted: " + minion.corrupted);
-        console.log("Rarity: " + minion.getRarity());
-        console.log("Set: " + minion.getSet());
+        console.log("Rarity: " + minion.rarity);
+        console.log("Set: " + minion.set);
         console.log("Turn played: " + minion.turn);
     }
 

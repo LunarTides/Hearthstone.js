@@ -39,48 +39,10 @@ class Player {
         this.questlines = [];
     }
 
-    getName() {
-        return this.name;
-    }
-
-    getDeck() {
-        return this.deck;
-    }
-
-    getHand() {
-        return this.hand;
-    }
-
-    getMana() {
-        return this.mana;
-    }
-
-    getMaxMana() {
-        return this.maxMana;
-    }
-
-    getGame() {
-        return this.game;
-    }
-
-    getWeapon() {
-        return this.weapon;
-    }
-
     getOpponent() {
-        return game.getOtherPlayer(this);
-    }
+        const id = (this.id == 1) ? 2 : 1;
 
-    setName(name) {
-        this.name = name;
-    }
-
-    setDeck(deck) {
-        this.deck = deck;
-    }
-
-    setHand(hand) {
-        this.hand = hand;
+        return game["player" + id];
     }
 
     setClass(_class, hp = true) {
@@ -88,18 +50,10 @@ class Player {
         if (hp) this.hero_power = _class;
     }
 
-    setMana(mana) {
-        this.mana = mana;
-    }
-
     setMaxMana(maxMana) {
         this.maxMana = maxMana;
 
         if (maxMana > this.maxMaxMana) this.maxMana = this.maxMaxMana;
-    }
-
-    setMaxMaxMana(maxMaxMana) {
-        this.maxMaxMana = maxMaxMana;
     }
 
     refreshMana(mana) {
@@ -109,7 +63,7 @@ class Player {
     }
 
     gainEmptyMana(mana) {
-        this.setMaxMana(this.getMaxMana() + mana);
+        this.maxMana += mana;
     }
 
     gainMana(mana) {
@@ -125,14 +79,10 @@ class Player {
         if (this.overload > this.mana + plus) this.overload = this.mana + plus;
     }
 
-    setGame(game) {
-        this.game = game;
-    }
-
     setWeapon(weapon) {
         this.weapon = weapon;
 
-        this.attack += weapon.getStats()[0];
+        this.attack += weapon.stats[0];
     }
 
     destroyWeapon(triggerDeathrattle = false) {
@@ -143,7 +93,7 @@ class Player {
         this.weapon = null;
     }
 
-    setHero(hero, armor) {
+    setHero(hero, armor = 5) {
         this.hero = hero;
 
         this.hero_power = "hero";
@@ -235,15 +185,15 @@ class Player {
         if (this.hero_power == "Demon Hunter") this.heroPowerCost = 1;
         else this.heroPowerCost = 2; // This is to prevent changing hero power to demon hunter and changing back to decrease cost to 1
 
-        if (this.getMana() < this.heroPowerCost || !this.canUseHeroPower) return false;
+        if (this.mana < this.heroPowerCost || !this.canUseHeroPower) return false;
 
         if (this.hero && this.hero_power == "hero") {
             if (this.hero.activate("heropower") != -1) {
-                this.game.getBoard()[this.id].forEach(m => {
+                this.game.board[this.id].forEach(m => {
                     m.activate("inspire");
                 });
 
-                this.setMana(this.getMana() - this.heroPowerCost);
+                this.mana = this.mana - this.heroPowerCost;
 
                 game.stats.update("heroPowers", this.hero_power);
 
@@ -293,7 +243,7 @@ class Player {
         else if (this.hero_power == "Shaman") {
             const totem_cards = ["Healing Totem", "Searing Totem", "Stoneclaw Totem", "Strength Totem"];
 
-            game.getBoard()[this.id].forEach(m => {
+            game.board[this.id].forEach(m => {
                 if (totem_cards.includes(m.displayName)) {
                     totem_cards.splice(totem_cards.indexOf(m.displayName), 1);
                 }
@@ -314,11 +264,11 @@ class Player {
             this.armor += 2;
         }
 
-        this.game.getBoard()[this.id].forEach(m => {
+        this.game.board[this.id].forEach(m => {
             m.activate("inspire");
         });
 
-        this.setMana(this.getMana() - this.heroPowerCost);
+        this.mana -= this.heroPowerCost;
 
         game.stats.update("heroPowers", this.hero_power);
 
@@ -388,7 +338,7 @@ class Functions {
 
         let jade = new game.Card("Jade Golem", plr);
         jade.setStats(count, count);
-        jade.setMana(mana);
+        jade.mana = mana;
 
         return jade;
     }
@@ -399,7 +349,7 @@ class Functions {
         var times = 0;
 
         array.forEach(c => {
-            if (c.getType() == "Minion" && c.mana >= mana_range[0] && c.mana <= mana_range[1] && times < amount) {
+            if (c.type == "Minion" && c.mana >= mana_range[0] && c.mana <= mana_range[1] && times < amount) {
                 game.playMinion(new game.Card(c.name, game.player), game.player);
 
                 times++;
@@ -455,7 +405,7 @@ class Functions {
     }
 
     addToHand(card, player, updateStats = true) {
-        if (player.getHand().length < 10) {
+        if (player.hand.length < 10) {
             player.hand.push(card);
         
             if (updateStats) game.stats.update("cardsAddedToHand", card);
@@ -552,8 +502,8 @@ class Functions {
             if (return_question.startsWith("y")) return false;
         }
 
-        const board_next = game.getBoard()[game.opponent.id];
-        const board_self = game.getBoard()[game.player.id];
+        const board_next = game.board[game.opponent.id];
+        const board_self = game.board[game.player.id];
 
         const board_next_target = board_next[parseInt(target) - 1];
         const board_self_target = board_self[parseInt(target) - 1];

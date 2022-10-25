@@ -11,7 +11,7 @@ module.exports = {
         game.functions.addSecret(plr, card, "minionsThatAttackedHero", 1, (minion, game, turn) => {
             if (minion[0].plr != game.player) return false;
 
-            game.getBoard()[game.player.id].forEach(i => {
+            game.board[game.player.id].forEach(i => {
                 game.functions.spellDmg(i, 2);
             });
             game.functions.spellDmg(game.player, 2);

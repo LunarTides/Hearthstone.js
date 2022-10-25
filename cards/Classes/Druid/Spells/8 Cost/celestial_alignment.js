@@ -8,16 +8,16 @@ module.exports = {
     spellClass: "Arcane",
 
     cast(plr, game, card) {
-        plr.setMaxMana(0);
-        plr.setMana(0);
+        plr.maxMana = 0;
+        plr.mana = 0;
 
         plr.hand.forEach(c => {
-            c.setMana(1);
+            c.mana = 1;
             c._mana = 1;
         });
 
         plr.deck.forEach(c => {
-            c.setMana(1);
+            c.mana = 1;
             c._mana = 1;
         });
     }

@@ -9,6 +9,6 @@ module.exports = {
     cast(plr, game, card) {
         plr.drawCard();
 
-        plr.armor += plr.getHand().length;
+        plr.armor += plr.hand.length;
     }
 }

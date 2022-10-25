@@ -7,7 +7,8 @@ module.exports = {
     set: "Fractured in Alterac Valley",
 
     battlecry(plr, game, card) {
-        plr.setMaxMaxMana(20);
+        plr.maxMaxMana = 20;
+        
         plr.gainEmptyMana(1);
         plr.drawCard();
     },

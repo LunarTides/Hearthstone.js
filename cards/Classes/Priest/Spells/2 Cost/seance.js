@@ -14,6 +14,6 @@ module.exports = {
             return -1;
         }
 
-        game.functions.addToHand(new game.Card(target.getName(), plr), plr);
+        game.functions.addToHand(new game.Card(target.name, plr), plr);
     }
 }

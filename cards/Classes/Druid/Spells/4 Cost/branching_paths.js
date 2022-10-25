@@ -13,7 +13,7 @@ module.exports = {
             if (choice == 0) {
                 plr.drawCard();
             } else if (choice == 1) {
-                game.getBoard()[plr.id].forEach(m => {
+                game.board[plr.id].forEach(m => {
                     m.addStats(1, 0);
                 });
             } else {
