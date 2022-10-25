@@ -1,7 +1,7 @@
 const { question } = require('readline-sync');
 const { Functions, Player } = require("./other");
 const { Card } = require("./card");
-const { printName } = require("./interact");
+const { Interact } = require("./interact");
 const { exit } = require("process")
 
 class GameStats {
@@ -98,6 +98,7 @@ class Game {
         this.Player = Player;
         this.functions = functions;
         this.stats = new GameStats(this);
+        this.interact = new Interact(this);
         this.input = question;
 
         this.player1.id = 0;
@@ -158,10 +159,12 @@ class Game {
         }
     }
 
-    endGame(p) {
-        printName();
+    endGame(winner) {
+        // Todo: Maybe add more stuff here
 
-        console.log(`Player ${p.name} wins!`);
+        this.interact.printName();
+
+        console.log(`Player ${winner.name} wins!`);
 
         exit(0);
     }
@@ -202,7 +205,7 @@ class Game {
 
         this.stats.update("turnStarts", this.turns);
 
-        printName()
+        this.interact.printName()
 
         if (this.player.weapon && this.player.weapon.getAttack()) {
             this.player.attack += this.player.weapon.getAttack();

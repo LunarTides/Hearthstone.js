@@ -55,17 +55,14 @@ class Player {
 
         if (maxMana > this.maxMaxMana) this.maxMana = this.maxMaxMana;
     }
-
     refreshMana(mana) {
         this.mana += mana;
 
         if (this.mana > this.maxMana) this.mana = this.maxMana;
     }
-
     gainEmptyMana(mana) {
         this.maxMana += mana;
     }
-
     gainMana(mana) {
         this.gainEmptyMana(mana);
         this.refreshMana(mana);
@@ -84,7 +81,6 @@ class Player {
 
         this.attack += weapon.getAttack();
     }
-
     destroyWeapon(triggerDeathrattle = false) {
         if (!this.weapon) return false;
 

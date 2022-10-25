@@ -8,7 +8,7 @@ const { question } = require("readline-sync");
 
 const { Game } = require("./game");
 const { setup_card } = require("./card");
-const { doTurn, deckCode, setup_interact } = require("./interact");
+const { setup_interact } = require("./interact");
 const { Player, setup_other } = require("./other");
 
 const _debug = true; // Enables commands like /give and /eval. Disables naming players.
@@ -40,12 +40,12 @@ importCards(__dirname + '/../cards');
 
 game.set("cards", cards);
 setup_card(cards, game);
-setup_interact(game, _debug, maxDeckLength);
+setup_interact(_debug, maxDeckLength);
 setup_other(cards, game);
 
-deckCode(player1);
-deckCode(player2);
+game.interact.deckCode(player1);
+game.interact.deckCode(player2);
 
 game.startGame();
 
-while (true) doTurn();
+while (true) game.interact.doTurn();
