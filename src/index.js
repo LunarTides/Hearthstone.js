@@ -1,8 +1,3 @@
-/*
-Hearthstone.js - Hearthstone but console based.
-Copyright (C) 2022  Keatpole
-*/
-
 const { readdirSync } = require("fs");
 const { question } = require("readline-sync");
 
@@ -11,9 +6,11 @@ const { setup_card } = require("./card");
 const { setup_interact } = require("./interact");
 const { Player, setup_other } = require("./other");
 
-const _debug = true; // Enables commands like /give and /eval. Disables naming players.
-                     // Enable for debugging, disable for actual play.
+// Customization (You can change these)
+const debug = true; // Enables commands like /give, /eval and /debug. Disables naming players.
+                    // Enable for debugging, disable for actual play.
 const maxDeckLength = 30;
+// -----------------------------------
 
 let cards = {};
 
@@ -21,7 +18,7 @@ let player1 = new Player("Player 1");
 let player2 = new Player("Player 2");
 let game = new Game(player1, player2);
 
-if (!_debug) {
+if (!debug) {
     player1.name = question("\nPlayer 1, what is your name? ");
     player2.name = question("Player 2, what is your name? ");
 }
@@ -40,9 +37,10 @@ importCards(__dirname + '/../cards');
 
 game.set("cards", cards);
 setup_card(cards, game);
-setup_interact(_debug, maxDeckLength);
+setup_interact(debug, maxDeckLength);
 setup_other(cards, game);
 
+// Ask the players for deck codes.
 game.interact.deckCode(player1);
 game.interact.deckCode(player2);
 
