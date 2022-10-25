@@ -248,19 +248,13 @@ class Game {
     playCard(card, player) {
         this.killMinions();
 
-        if (player.mana < card.mana) {
-            this.input("Not enough mana.\n");
-            return "mana";
-        }
+        if (player.mana < card.mana) return "mana";
 
         if (card.keywords.includes("Tradeable")) {
             var q = this.input(`Would you like to trade ${card.displayName} for a random card in your deck? (y: trade / n: play) `);
 
             if (q.startsWith("y")) {
-                if (player.mana < 1) {
-                    this.input("Not enough mana.\n");
-                    return "mana";
-                }
+                if (player.mana < 1) return "mana";
 
                 player.mana -= - 1;
 
@@ -302,33 +296,21 @@ class Game {
         player.mana -= card.mana;
         card.mana = card._mana;
         
-        var n = []
-
-        var found = false;
-
-        player.hand.forEach(function(c) {
-            if (c.displayName === card.displayName && !found) {
-                found = true;
-            } else {
-                n.push(c);
-            }
-        });
+        player.hand = player.hand.filter(c => c !== card);
 
         if (card.type == "Spell" && card.keywords.includes("Twinspell")) {
             card.removeKeyword("Twinspell");
             card.desc = card.desc.split("Twinspell")[0].trim();
 
-            n.push(card);
+            player.hand.push(card);
         }
 
         if (card.keywords.includes("Echo")) {
             let clone = Object.assign(Object.create(Object.getPrototypeOf(card)), card)
             clone.echo = true;
 
-            n.push(clone);
+            player.hand.push(card);
         }
-
-        player.hand = n;
 
         if (card.type == "Minion" && this.board[player.id].length > 0 && card.keywords.includes("Magnetic")) {
             let hasMech = false;
@@ -367,16 +349,12 @@ class Game {
         }
 
         if (card.type === "Minion") {
-            if (player.counter && player.counter.includes("Minion")) {
-                player.counter.splice(player.counter.indexOf("Minion"), 1);
-    
-                this.input("Your minion has been countered.\n")
-    
+            if (player.getOpponent().counter && player.getOpponent().counter.includes("Minion")) {
+                player.getOpponent().counter.splice(player.getOpponent().counter.indexOf("Minion"), 1);    
                 return "counter";
             }
     
             if (this.board[player.id].length >= 7) {
-                this.input("\nYou can only have 7 minions on the board.\n");
                 this.functions.addToHand(card, player, false);
                 player.mana += card.mana;
                 return "space";
@@ -387,13 +365,10 @@ class Game {
 
             this.stats.update("minionsPlayed", card);
 
-            this.playMinion(card, player, false);
+            return this.playMinion(card, player, false);
         } else if (card.type === "Spell") {
-            if (player.counter && player.counter.includes("Spell")) {
-                player.counter.splice(player.counter.indexOf("Spell"), 1);
-
-                this.input("Your spell has been countered.\n")
-
+            if (player.getOpponent().counter && player.getOpponent().counter.includes("Spell")) {
+                player.getOpponent().counter.splice(player.getOpponent().counter.indexOf("Spell"), 1);
                 return "counter";
             }
 

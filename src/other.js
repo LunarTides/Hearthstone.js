@@ -64,7 +64,6 @@ class Player {
         this.gainEmptyMana(mana);
         this.refreshMana(mana);
     }
-
     gainOverload(overload) {
         this.overload += overload;
 
@@ -99,13 +98,11 @@ class Player {
 
         game.stats.update("heroAttackGained", amount);
     }
-
     addHealth(amount) {
         this.health += amount;
 
         if (this.health > this.maxHealth) this.health = this.maxHealth;
     }
-
     remHealth(amount) {
         var a = amount;
 
@@ -140,13 +137,11 @@ class Player {
             this.game.stats.update("cardsAddedToDeck", card);
         }
     }
-
     addToBottomOfDeck(card) {
         this.deck = [card, ...this.deck];
 
         this.game.stats.update("cardsAddedToDeck", card);
     }
-
     drawCard(update = true) {
         if (this.deck.length <= 0) {
             this.fatigue++;
@@ -286,15 +281,12 @@ class Functions {
 
         return newArray
     }
-
     randList(list) {
         return list[this.randInt(0, list.length - 1)];
     }
-
     randInt(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
-
     capitalize(str) {
         return str[0].toUpperCase() + str.slice(1).toLowerCase();
     }
@@ -310,48 +302,35 @@ class Functions {
             return "Spell";
         }
     }
-
     getCardByName(name) {
         return Object.values(game.cards).find(c => c.name.toLowerCase() == name.toLowerCase());
     }
 
-    progressQuest(name, value) {
-        let quest = game.player.secrets.find(s => s["name"] == name);
-        if (!quest) quest = game.player.sidequests.find(s => s["name"] == name);
-        if (!quest) quest = game.player.quests.find(s => s["name"] == name);
-        if (!quest) quest = game.player.questlines.find(s => s["name"] == name);
+    spellDmg(target, damage) {
+        const dmg = this.accountForSpellDmg(damage);
 
-        quest["progress"][0] += value;
+        game.stats.update("spellsThatDealtDamage", [target, dmg]);
+
+        if (target instanceof game.Card) {
+            game.attackMinion(dmg, target);
+        } else if (target instanceof Player) {
+            target.remHealth(dmg);
+        }
+    }
+    accountForSpellDmg(damage) {
+        return damage + game.player.spellDamage;
+    }
+    accountForUncollectible(cards) {
+        return cards.filter(c => !c.uncollectible);
     }
 
-    createJade(plr) {
-        if (game.stats.jadeCounter < 30) game.stats.jadeCounter += 1;
-        const count = game.stats.jadeCounter;
-        const mana = (count < 10) ? count : 10;
-
-        let jade = new game.Card("Jade Golem", plr);
-        jade.setStats(count, count);
-        jade.mana = mana;
-
-        return jade;
+    addToHand(card, player, updateStats = true) {
+        if (player.hand.length < 10) {
+            player.hand.push(card);
+        
+            if (updateStats) game.stats.update("cardsAddedToHand", card);
+        }
     }
-
-    recruit(amount = 1, mana_range = [0, 10]) {
-        var array = this.shuffle(game.player.deck)
-
-        var times = 0;
-
-        array.forEach(c => {
-            if (c.type == "Minion" && c.mana >= mana_range[0] && c.mana <= mana_range[1] && times < amount) {
-                game.playMinion(new game.Card(c.name, game.player), game.player);
-
-                times++;
-
-                return c;
-            }
-        });
-    }
-
     chooseOne(prompt, options, times = 1) {
         let choices = [];
 
@@ -376,35 +355,6 @@ class Functions {
             return choices;
         }
     }
-
-    spellDmg(target, damage) {
-        const dmg = this.accountForSpellDmg(damage);
-
-        game.stats.update("spellsThatDealtDamage", [target, dmg]);
-
-        if (target instanceof game.Card) {
-            game.attackMinion(dmg, target);
-        } else if (target instanceof Player) {
-            target.remHealth(dmg);
-        }
-    }
-
-    accountForSpellDmg(damage) {
-        return damage + game.player.spellDamage;
-    }
-
-    accountForUncollectible(cards) {
-        return cards.filter(c => !c.uncollectible);
-    }
-
-    addToHand(card, player, updateStats = true) {
-        if (player.hand.length < 10) {
-            player.hand.push(card);
-        
-            if (updateStats) game.stats.update("cardsAddedToHand", card);
-        }
-    }
-
     discover(prompt, amount = 3, flags = [], add_to_hand = true, _cards = []) {
         let values = _cards;
 
@@ -472,7 +422,6 @@ class Functions {
             return card;
         }
     }
-
     selectTarget(prompt, elusive = false, force_side = null, force_class = null) {
         // force_class = [null, "hero", "minion"]
         // force_side = [null, "enemy", "self"]
@@ -581,7 +530,7 @@ class Functions {
         var choice = game.input(p);
 
         if (!cards[parseInt(choice) - 1]) {
-            printAll(game.player);
+            game.interact.printAll(game.player);
 
             return this.dredge(prompt);
         }
@@ -593,7 +542,6 @@ class Functions {
 
         return card;
     }
-
     adapt(minion, prompt = "Choose One:") {
         var possible_cards = [
             ["Crackling Shield", "Divine Shield"],
@@ -679,7 +627,6 @@ class Functions {
                 break;
         }
     }
-
     invoke(plr) {
         // Filter all cards in "plr"'s deck with a name that starts with "Galakrond, the "
         
@@ -725,7 +672,42 @@ class Functions {
                 break;
         }
     }
+    recruit(amount = 1, mana_range = [0, 10]) {
+        var array = this.shuffle(game.player.deck)
 
+        var times = 0;
+
+        array.forEach(c => {
+            if (c.type == "Minion" && c.mana >= mana_range[0] && c.mana <= mana_range[1] && times < amount) {
+                game.playMinion(new game.Card(c.name, game.player), game.player);
+
+                times++;
+
+                return c;
+            }
+        });
+    }
+
+    createJade(plr) {
+        if (game.stats.jadeCounter < 30) game.stats.jadeCounter += 1;
+        const count = game.stats.jadeCounter;
+        const mana = (count < 10) ? count : 10;
+
+        let jade = new game.Card("Jade Golem", plr);
+        jade.setStats(count, count);
+        jade.mana = mana;
+
+        return jade;
+    }
+
+    progressQuest(name, value) {
+        let quest = game.player.secrets.find(s => s["name"] == name);
+        if (!quest) quest = game.player.sidequests.find(s => s["name"] == name);
+        if (!quest) quest = game.player.quests.find(s => s["name"] == name);
+        if (!quest) quest = game.player.questlines.find(s => s["name"] == name);
+
+        quest["progress"][0] += value;
+    }
     addSecret(plr, card, key, val, callback, fake_val = null, manual_progression = false) {
         if (plr.secrets.length >= 3 || plr.secrets.filter(s => s.displayName == card.displayName).length > 0) {
             this.addToHand(card, plr);
