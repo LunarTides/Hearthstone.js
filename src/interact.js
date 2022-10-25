@@ -380,7 +380,7 @@ function printAll(curr, detailed = false) {
         if (op.weapon) sb += " | ";
     }
 
-    if (game.opponent.weapon) {
+    if (op.weapon) {
         // Opponent has a weapon
 
         sb += "Opponent's Weapon: ";

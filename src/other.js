@@ -40,7 +40,7 @@ class Player {
     }
 
     getOpponent() {
-        const id = (this.id == 1) ? 2 : 1;
+        const id = (this.id == 0) ? 2 : 1;
 
         return game["player" + id];
     }
