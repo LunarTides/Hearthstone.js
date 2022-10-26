@@ -18,7 +18,7 @@ class Card {
         this.keywords = [];
         this.storage = []; // Allow cards to store data for later use
 
-        this.turn = null; // The turn the card was played
+        this.turn = game.turns; // The turn the card was played
 
         this.infuse_num = -1; // The amount of infuse a card has. Set to -1 for no infuse.
 
@@ -54,6 +54,7 @@ class Card {
         if (this.type == "Minion" || this.type == "Weapon") this.maxHealth = this.getHealth();
 
         this.canAttackHero = true;
+        this.sleepy = true;
 
         // This is here to prevent errors
         this.deathrattle = this.hasDeathrattle ? [this.blueprint.deathrattle] : [];
@@ -103,12 +104,10 @@ class Card {
     addKeyword(keyword) {
         this.keywords.push(keyword);
 
-        if (this.keywords.includes("Charge") && this.turn == game.turns) {
-            this.turn = game.turns - 1;
-        }
+        if (this.keywords.includes("Charge")) this.sleepy = false;
 
-        if (this.keywords.includes("Rush") && this.turn == game.turns) {
-            this.turn = game.turns - 1;
+        if (this.keywords.includes("Rush")) {
+            this.sleepy = false;
             this.canAttackHero = false;
         }
     }

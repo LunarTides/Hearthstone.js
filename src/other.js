@@ -33,7 +33,6 @@ class Player {
         this.canUseHeroPower = true;
         this.weapon = null;
         this.fatigue = 0;
-        this.hasPlayedCardThisTurn = false;
         this.frozen = false;
         this.immune = false;
         this.overload = 0;
@@ -236,7 +235,7 @@ class Player {
             }
         }
         else if (this.hero_power == "Paladin") {
-            game.playMinion(new game.Card("Silver Hand Recruit", this), this);
+            game.summonMinion(new game.Card("Silver Hand Recruit", this), this);
         }
         else if (this.hero_power == "Priest") {
             var t = this.game.functions.selectTarget("Restore 2 health.", "dontupdate");
@@ -261,7 +260,7 @@ class Player {
                 return;
             }
 
-            game.playMinion(new game.Card(game.functions.randList(totem_cards), this), this);
+            game.summonMinion(new game.Card(game.functions.randList(totem_cards), this), this);
         }
         else if (this.hero_power == "Warlock") {
             this.remHealth(2);
@@ -606,8 +605,8 @@ class Functions {
                 break;
             case "Living Spores":
                 minion.addDeathrattle((plr, game) => {
-                    game.playMinion(new game.Card("Plant"), plr);
-                    game.playMinion(new game.Card("Plant"), plr);
+                    game.summonMinion(new game.Card("Plant"), plr);
+                    game.summonMinion(new game.Card("Plant"), plr);
                 });
 
                 break;
@@ -671,13 +670,13 @@ class Functions {
                 break;
             case "Shaman":
                 // Summon a 2/1 Elemental with Rush.
-                game.playMinion(new game.Card("Windswept Elemental", plr), plr);
+                game.summonMinion(new game.Card("Windswept Elemental", plr), plr);
 
                 break;
             case "Warlock":
                 // Summon two 1/1 Imps.
-                game.playMinion(new game.Card("Draconic Imp", plr), plr);
-                game.playMinion(new game.Card("Draconic Imp", plr), plr);
+                game.summonMinion(new game.Card("Draconic Imp", plr), plr);
+                game.summonMinion(new game.Card("Draconic Imp", plr), plr);
 
                 break;
             case "Warrior":
@@ -696,7 +695,7 @@ class Functions {
 
         array.forEach(c => {
             if (c.type == "Minion" && c.mana >= mana_range[0] && c.mana <= mana_range[1] && times < amount) {
-                game.playMinion(new game.Card(c.name, game.player), game.player);
+                game.summonMinion(new game.Card(c.name, game.player), game.player);
 
                 times++;
 

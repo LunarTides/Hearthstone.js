@@ -167,116 +167,101 @@ class Game {
 
         exit(0);
     }
-
-    // Start / End Turn
     endTurn() {
         this.killMinions();
 
+        // Update stats
         this.stats.update("turnEnds", this.turns);
-        this.stats.cardsDrawnThisTurn = [[], []]
+        this.stats.cardsDrawnThisTurn = [[], []];
 
         let plr = this.player;
+        let op = this.opponent;
 
-        if (plr.mana > 0) {
-            this.stats.update("unspentMana", plr.mana);
-        }
-
+        // Trigger endofturn
         this.board[plr.id].forEach(m => m.activate("endofturn"));
+        if (plr.weapon) plr.weapon.activate("endofturn");
+
+        // Trigger unspent mana
+        if (plr.mana > 0) this.stats.update("unspentMana", plr.mana);
 
         // Remove echo cards
         plr.hand = plr.hand.filter(c => !c.echo);
 
         plr.attack = 0;
 
-
-        this.opponent.gainEmptyMana(1, true);
-        this.opponent.mana = this.opponent.maxMana;
-
-        this.player = this.opponent;
-        this.opponent = plr;
-
-        this.turns += 1;
-
-        this.startTurn();
-    }
-    startTurn() {
-        this.killMinions();
+        // Turn starts
+        this.turns++;
 
         this.stats.update("turnStarts", this.turns);
+        
+        // Mana stuff
+        op.gainEmptyMana(1, true);
+        op.mana = op.maxMana - op.overload;
+        op.overload = 0;
 
-        this.interact.printName()
+        // Weapon stuff
+        if (op.weapon) {
+            op.weapon.activate("startofturn");
 
-        if (this.player.weapon && this.player.weapon.getAttack()) {
-            this.player.attack += this.player.weapon.getAttack();
-            this.player.weapon.resetAttackTimes();
+            if (op.weapon.getAttack() > 0) {
+                op.attack += op.weapon.getAttack();
+                op.weapon.resetAttackTimes();
+            }
         }
 
-        this.player.mana -= this.player.overload;
-        this.player.overload = 0;
+        // Minion start of turn
+        this.board[op.id].forEach(m => {
+            // Dormant
+            if (m.dormant) {
+                if (this.turns > m.dormant) {
+                    m.dormant = false;
+                    m.turn = this.turns;
+                    m.activateBattlecry();
+                }
 
-        if (this.player.weapon) this.player.weapon.activate("startofturn");
+                return;
+            }
 
-        this.board[this.player.id].forEach(m => {
             m.activate("startofturn");
             m.canAttackHero = true;
+            m.sleepy = false;
+            m.frozen = false;
             m.resetAttackTimes();
 
+            // Stealth duration
             if (m.stealthDuration > 0 && this.turns > m.stealthDuration) {
                 m.stealthDuration = 0;
                 m.removeKeyword("Stealth");
             }
-
-            if (m.dormant) {
-                if (this.turns > m.dormant) {
-                    m.dormant = false;
-                    m.activateBattlecry();
-                }
-
-                m.turn = this.turns;
-            } else {
-                m.frozen = false;
-            }
         });
 
-        this.player.drawCard();
+        // Draw card
+        op.drawCard();
 
-        this.player.canUseHeroPower = true;
-        this.player.hasPlayedCardThisTurn = false;
+        op.canUseHeroPower = true;
+
+        this.player = op;
+        this.opponent = plr;
     }
 
     // Playing cards
     playCard(card, player) {
         this.killMinions();
 
-        if (card.keywords.includes("Tradeable")) {
+        while (card.keywords.includes("Tradeable")) {
             var q = this.input(`Would you like to trade ${card.displayName} for a random card in your deck? (y: trade / n: play) `);
 
-            if (q.startsWith("y")) {
-                if (player.mana < 1) return "mana";
+            if (!q.startsWith("y")) break;
+            
+            if (player.mana < 1) return "mana";
 
-                player.mana -= 1;
+            player.mana -= 1;
 
-                player.drawCard();
-                player.shuffleIntoDeck(card);
-                player.removeFromHand(card);
-
-                if (card.type == "Spell" && card.keywords.includes("Twinspell")) {
-                    card.removeKeyword("Twinspell");
-                    card.desc = card.desc.split("Twinspell")[0].trim();
-        
-                    player.hand.push(card);
-                }
-        
-                if (card.keywords.includes("Echo")) {
-                    let clone = Object.assign(Object.create(Object.getPrototypeOf(card)), card);
-                    clone.randomizeIds();
-                    clone.echo = true;
-        
-                    player.hand.push(clone);
-                }
-        
-                return "traded";
-            }
+            player.drawCard();
+            player.shuffleIntoDeck(card);
+            player.removeFromHand(card);
+    
+            return "traded";
         }
 
         if (player.mana < card.mana) return "mana";
@@ -301,79 +286,77 @@ class Game {
             echo_clone.echo = true;
         }
 
-        if (card.type == "Minion" && this.board[player.id].length > 0 && card.keywords.includes("Magnetic")) {
-            let hasMech = false;
-
-            this.board[player.id].forEach(m => {
-                if (m.tribe == "Mech") {
-                    hasMech = true;
-                }
-            });
-
-            while (hasMech) {
-                let m = this.input("Do you want to magnetize this minion to a mech? (y: yes / n: no) ");
-                if (!m.toLowerCase().startsWith("y")) break;
-
-                let loc = this.functions.selectTarget(`\nWhich minion do you want this to Magnetize to: `, false, "self", "minion");
-
-                this.stats.update("minionsPlayed", card);
-
-                if (loc.tribe == "Mech") {
-                    loc.addStats(card.getAttack(), card.getHealth());
-
-                    card.keywords.forEach(k => {
-                        loc.addKeyword(k);
-                    });
-
-                    loc.maxHealth += card.maxHealth;
-
-                    card.deathrattle.forEach(d => {
-                        loc.addDeathrattle(d);
-                    });
-
-                    if (echo_clone) player.hand.push(echo_clone);
-
-                    return "magnetize";
-                }
-            }
-
-        }
-
         let ret = true;
 
+        let op = player.getOpponent();
+        let board = this.board[player.id];
+
+        if (op.counter && op.counter.includes(card.type)) {
+            op.counter.splice(op.counter.indexOf(card.type), 1);    
+            return "counter";
+        }
+
         if (card.type === "Minion") {
-            if (player.getOpponent().counter && player.getOpponent().counter.includes("Minion")) {
-                player.getOpponent().counter.splice(player.getOpponent().counter.indexOf("Minion"), 1);    
-                return "counter";
-            }
-    
-            if (this.board[player.id].length >= 7) {
+            if (board.length >= 7) {
                 player.addToHand(card, false);
                 player.mana += card.mana;
                 return "space";
             }
 
-            if (card.dormant) card.dormant = card.dormant + this.turns;
+            // Magnetize
+            if (card.keywords.includes("Magnetic") && board.length > 0) {
+                let mechs = board.filter(m => m.tribe == "Mech");
+    
+                // I'm using while loops to prevent a million indents
+                while (mechs.length > 0) {
+                    let q = this.input("Do you want to magnetize this minion to a mech? (y: yes / n: no) ");
+                    if (!q.toLowerCase().startsWith("y")) break;
+    
+                    let minion = this.functions.selectTarget(`\nWhich minion do you want this to Magnetize to: `, false, "self", "minion");
+                    if (minion.tribe != "Mech") return "invalid";
+    
+                    this.stats.update("minionsPlayed", card);
+                    
+                    minion.addStats(card.getAttack(), card.getHealth());
+    
+                    card.keywords.forEach(k => {
+                        minion.addKeyword(k);
+                    });
+    
+                    minion.maxHealth += card.maxHealth;
+    
+                    card.deathrattle.forEach(d => minion.addDeathrattle(d));
+    
+                    if (echo_clone) player.hand.push(echo_clone);
+    
+                    return "magnetize";
+                }
+    
+            }
+
+            if (card.dormant) card.dormant += this.turns;
             else if (card.activateBattlecry() === -1) return "refund";
 
             if (echo_clone) player.hand.push(echo_clone);
 
             this.stats.update("minionsPlayed", card);
 
-            ret = this.playMinion(card, player, false);
+            ret = this.summonMinion(card, player, false);
         } else if (card.type === "Spell") {
-            if (player.getOpponent().counter && player.getOpponent().counter.includes("Spell")) {
-                player.getOpponent().counter.splice(player.getOpponent().counter.indexOf("Spell"), 1);
-                return "counter";
-            }
-
             if (card.activate("cast") === -1) return "refund";
+
+            if (card.keywords.includes("Twinspell")) {
+                card.removeKeyword("Twinspell");
+                card.desc = card.desc.split("Twinspell")[0].trim();
+
+                player.hand.push(card);
+            }
 
             if (echo_clone) player.hand.push(echo_clone);
 
             this.stats.update("spellsCast", card);
 
-            this.board[player.id].forEach(m => {
+            board.forEach(m => {
                 m.activate("spellburst");
                 m.hasSpellburst = false;
             });
@@ -391,13 +374,11 @@ class Game {
             if (echo_clone) player.hand.push(echo_clone);
         }
 
-        if (player.hasPlayedCardThisTurn) {
-            card.activate("combo");
-        }
-
-        player.hasPlayedCardThisTurn = true;
-
         this.stats.update("cardsPlayed", card);
+        let stat = this.stats.cardsPlayed[player.id];
+
+        // If the previous card played was played on the same turn as this one, activate combo
+        if (stat.length > 1 && stat[stat.length - 2].turn == this.turns) card.activate("combo");
 
         card.plr.hand.forEach(c => {
             if (c.keywords.includes("Corrupt")) {
@@ -413,45 +394,43 @@ class Game {
 
         return ret;
     }
-    playMinion(minion, player, summoned = true, trigger_colossal = true) {
+    summonMinion(minion, player, update = true, trigger_colossal = true) {
+        if (update) this.stats.update("minionsSummoned", minion);
+
         player.spellDamage = 0;
 
-        var p = player.id;
-
-        minion.turn = this.turns;
-
-        if (minion.keywords.includes("Charge")) {
-            minion.turn = this.turns - 1;
-        }
+        if (minion.keywords.includes("Charge")) minion.sleepy = false;
 
         if (minion.keywords.includes("Rush")) {
-            minion.turn = this.turns - 1;
+            minion.sleepy = false;
             minion.canAttackHero = false;
         }
 
         if (minion.colossal && trigger_colossal) {
-            minion.colossal.forEach((v, i) => {
+            // minion.colossal is a string array.
+            // example: ["Left Arm", "", "Right Arm"]
+            // the "" gets replaced with the main minion
+
+            minion.colossal.forEach(v => {
+                if (v == "") return this.summonMinion(minion, player, false, false);
+
                 let card = new Card(v, player);
 
-                this.playMinion(card, player, false, false);
+                this.summonMinion(card, player, false, false);
             });
 
             return "colossal";
         }
 
-        this.board[p].push(minion);
+        this.board[player.id].push(minion);
 
-        if (summoned) {
-            this.stats.update("minionsSummoned", minion);
-        }
-
-        this.board[p].forEach(m => {
+        this.board[player.id].forEach(m => {
             m.keywords.forEach(k => {
-                if (k.startsWith("Spell Damage +")) {
-                    player.spellDamage += parseInt(k.split("+")[1]);
-                }
+                if (k.startsWith("Spell Damage +")) player.spellDamage += parseInt(k.split("+")[1]);
             });
         });
+
+        return minion;
     }
 
     // Interacting with minions
@@ -475,7 +454,7 @@ class Game {
                         minion.removeKeyword("Reborn");
                         minion.setStats(minion.getAttack(), 1);
 
-                        this.playMinion(minion, this["player" + (p + 1)], false);
+                        this.summonMinion(minion, this["player" + (p + 1)], false);
 
                         n.push(minion);
                     } else {
@@ -489,33 +468,17 @@ class Game {
             this.board[p] = n;
         }
     }
-    attackMinion(minion, target) {
+    attackMinion(attacker, target) {
         this.killMinions();
 
-        if (minion instanceof Player && minion.frozen) return false
-
-        if (minion instanceof Card && (minion.frozen || minion.dormant)) return false;
-
-        // Check if there is a minion with taunt
-        var prevent = false;
-
-        this.board[this.opponent.id].forEach(m => {
-            if (m.keywords.includes("Taunt") && m != target) {
-                prevent = true;
-                return;
-            }
-        });
-
-        if (prevent || target.immune || target.dormant) return false;
-
-        if (!isNaN(minion)) {
+        if (!isNaN(attacker)) {
             if (target.keywords.includes("Divine Shield")) {
                 target.removeKeyword("Divine Shield");
 
                 return false;
             }
 
-            target.remStats(0, minion)
+            target.remStats(0, attacker)
 
             if (target.getHealth() > 0) {
                 target.activate("frenzy");
@@ -524,54 +487,52 @@ class Game {
             this.killMinions();
 
             return;
-        } else if (minion.attackTimes > 0) {
-            if (minion.getAttack() <= 0) return false;
-
-            minion.attackTimes--;
-
-            this.stats.update("enemyAttacks", [minion, target]);
-            this.stats.update("minionsThatAttacked", [minion, target]);
-            this.stats.update("minionsAttacked", [minion, target]);
-
-            let dmgTarget = true;
-            let dmgMinion = true;
-
-            if (minion.immune || minion.dormant) dmgMinion = false;
-
-            if (dmgMinion && minion.keywords.includes("Divine Shield")) {
-                minion.removeKeyword("Divine Shield");
-                dmgMinion = false;
-            }
-
-            if (dmgMinion) minion.remStats(0, target.getAttack());
-
-            if (dmgMinion && minion.getHealth() > 0) minion.activate("frenzy");
-
-            if (minion.keywords.includes("Stealth")) minion.removeKeyword("Stealth");
-        
-            minion.activate("onattack");
-            this.stats.update("minionsAttacked", [minion, target]);
-        
-            if (dmgMinion && target.keywords.includes("Poisonous")) minion.setStats(minion.getAttack(), 0);
-
-            if (target.keywords.includes("Divine Shield")) {
-                target.removeKeyword("Divine Shield");
-                dmgTarget = false;
-            }
-
-            if (dmgTarget && minion.keywords.includes("Lifesteal")) minion.plr.addHealth(minion.getAttack());
-            if (dmgTarget && minion.keywords.includes("Poisonous")) target.setStats(target.getAttack(), 0);
-
-            if (dmgTarget) target.remStats(0, minion.getAttack())
-
-            if (target.getHealth() > 0) target.activate("frenzy");
-            if (target.getHealth() < 0) minion.activate("overkill");
-            if (target.getHealth() == 0) minion.activate("honorablekill");
-
-            this.killMinions();
-
-            return true;
         }
+
+        attacker.attackTimes--;
+
+        this.stats.update("enemyAttacks", [attacker, target]);
+        this.stats.update("minionsThatAttacked", [attacker, target]);
+        this.stats.update("minionsAttacked", [attacker, target]);
+
+        let dmgTarget = true;
+        let dmgMinion = true;
+
+        if (attacker.immune) dmgMinion = false;
+
+        if (dmgMinion && attacker.keywords.includes("Divine Shield")) {
+            attacker.removeKeyword("Divine Shield");
+            dmgMinion = false;
+        }
+
+        if (dmgMinion) attacker.remStats(0, target.getAttack());
+
+        if (dmgMinion && attacker.getHealth() > 0) attacker.activate("frenzy");
+
+        if (attacker.keywords.includes("Stealth")) attacker.removeKeyword("Stealth");
+    
+        attacker.activate("onattack");
+        this.stats.update("minionsAttacked", [attacker, target]);
+    
+        if (dmgMinion && target.keywords.includes("Poisonous")) attacker.setStats(attacker.getAttack(), 0);
+
+        if (target.keywords.includes("Divine Shield")) {
+            target.removeKeyword("Divine Shield");
+            dmgTarget = false;
+        }
+
+        if (dmgTarget && attacker.keywords.includes("Lifesteal")) attacker.plr.addHealth(attacker.getAttack());
+        if (dmgTarget && attacker.keywords.includes("Poisonous")) target.setStats(target.getAttack(), 0);
+
+        if (dmgTarget) target.remStats(0, attacker.getAttack())
+
+        if (target.getHealth() > 0) target.activate("frenzy");
+        if (target.getHealth() < 0) attacker.activate("overkill");
+        if (target.getHealth() == 0) attacker.activate("honorablekill");
+
+        this.killMinions();
+
+        return true;
     }
 }
 

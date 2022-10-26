@@ -10,7 +10,7 @@ module.exports = {
     cast(plr, game, card) {
         game.functions.addQuest("Quest", plr, card, "overloadGained", 3, (val, game, turn, normal_done) => {
             if (card.storage.length >= 2) {
-                game.playMinion(new game.Card("Living Earth", plr), plr);
+                game.summonMinion(new game.Card("Living Earth", plr), plr);
                 return true;
             }
 

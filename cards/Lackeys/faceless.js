@@ -14,6 +14,6 @@ module.exports = {
         minions = game.functions.accountForUncollectible(minions);
         rand = game.functions.randList(minions);
 
-        game.playMinion(new game.Card(rand.name, plr), plr);
+        game.summonMinion(new game.Card(rand.name, plr), plr);
     }
 }

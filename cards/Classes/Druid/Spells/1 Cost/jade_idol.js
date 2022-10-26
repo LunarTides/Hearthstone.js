@@ -12,7 +12,7 @@ module.exports = {
         if (choice == 0) {
             let jade = game.functions.createJade(plr);
 
-            game.playMinion(jade, plr);
+            game.summonMinion(jade, plr);
         } else {
             for (let i = 0; i < 3; i++) {
                 plr.shuffleIntoDeck(new game.Card("Jade Idol", plr));

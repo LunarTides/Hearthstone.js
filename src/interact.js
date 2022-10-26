@@ -17,7 +17,6 @@ function setup(_debug = debug, _maxDeckLength = maxDeckLength) {
 class Interact {
     constructor(_game) {
         game = _game;
-        game = _game;
     }
 
     // Constant interaction
@@ -31,16 +30,12 @@ class Interact {
         if (target instanceof game.Player && attacker instanceof game.Card && !attacker.canAttackHero) return;
     
         // Check if there is a minion with taunt
-        var prevent = false;
-    
-        game.board[game.opponent.id].forEach(m => {
-            if (m.keywords.includes("Taunt") && m != target) {
-                prevent = true;
-                return;
-            }
-        });
-    
-        if (prevent) return;
+        let taunts = game.board[game.opponent.id].filter(m => m.keywords.includes("Taunt"));
+        if (taunts.length > 0) {
+            // If the target is a card and has taunt, you are allowed to attack it
+            if (target instanceof game.Card && target.keywords.includes("Taunt")) {}
+            else return false;
+        }
     
         // Attacker is a player
         if (attacker instanceof game.Player) {
@@ -111,7 +106,7 @@ class Interact {
         // Attacker is a minion
         // Target is a player
     
-        if (attacker.turn == game.turns) {
+        if (attacker.sleepy) {
             console.log("That minion cannot attack this turn!");
             return;
         }
@@ -120,6 +115,8 @@ class Interact {
             console.log("That minion has already attacked this turn!");
             return;
         }
+
+        if (attacker.getAttack() <= 0) return false;
     
         if (target instanceof game.Player) {
             game.stats.update("enemyAttacks", [attacker, target]);
@@ -523,7 +520,7 @@ class Interact {
                 const frozen = m.frozen ? " (Frozen)" : "";
                 const immune = m.immune ? " (Immune)" : "";
                 const dormant = m.dormant ? " (Dormant)" : "";
-                const sleepy = (m.turn >= game.turns - 1) || (m.attackTimes <= 0) ? " (Sleepy)" : "";
+                const sleepy = (m.sleepy) || (m.attackTimes <= 0) ? " (Sleepy)" : "";
     
                 sb += "[";
                 sb += n + 1;

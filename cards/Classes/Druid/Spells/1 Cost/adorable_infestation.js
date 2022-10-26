@@ -15,7 +15,7 @@ module.exports = {
 
         target.addStats(1, 1);
 
-        game.playMinion(new game.Card("Marsuul Cub", plr), plr);
+        game.summonMinion(new game.Card("Marsuul Cub", plr), plr);
 
         plr.addToHand(new game.Card("Marsuul Cub", plr));
     }

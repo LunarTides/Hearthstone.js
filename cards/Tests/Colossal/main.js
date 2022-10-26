@@ -7,7 +7,7 @@ module.exports = {
     class: "Neutral",
     rarity: "Free",
     set: "Legacy",
-    colossal: ["Colossal Test Left Arm", "Colossal Test", "Colossal Test Right Arm"],
+    colossal: ["Colossal Test Left Arm", "", "Colossal Test Right Arm"],
 
     battlecry(plr, game) {
         game.functions.dredge();
