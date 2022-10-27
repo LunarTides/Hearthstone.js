@@ -20,7 +20,7 @@ module.exports = {
             });
 
             if (!cont) {
-                card.storage.push([c, c._mana]);
+                card.storage.push([c, c.backups.mana]);
                 if (c.mana > 0) {
                     c.mana--;
                 }

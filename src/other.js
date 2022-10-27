@@ -250,13 +250,34 @@ class Player {
             return;
         }
 
-        var card = this.deck.pop()
+        let card = this.deck.pop()
 
-        if (card.type == "Spell") {
-            if (card.activate("castondraw")) {
-                return null;
-            }
+        if (card.type == "Spell" && card.activate("castondraw")) return null;
+
+        this.addToHand(card, false);
+
+        if (update) {
+            game.stats.update("cardsDrawn", card);
+            game.stats.update("cardsDrawnThisTurn", card);
         }
+
+        return card;
+    }
+    drawSpecific(card, update = true) {
+        /**
+         * Draws a specific card from this player's deck
+         * 
+         * @param card (Card) The card to draw
+         * @param update (boolean) Should this trigger secrets / quests / passives
+         * 
+         * @returns undefined | null | (Card) The card drawn
+         */
+
+        if (this.deck.length <= 0) return;
+
+        this.deck = this.deck.filter(c => c !== card);
+
+        if (card.type == "Spell" && card.activate("castondraw")) return null;
 
         this.addToHand(card, false);
 
@@ -388,7 +409,7 @@ class Player {
 
             if (!t) return false;
 
-            t.addHealth(2);
+            t.addHealth(2, true);
         }
         else if (this.hero_power == "Rogue") {
             this.weapon = new game.Card("Wicked Knife", this);
@@ -489,7 +510,7 @@ class Functions {
             }
 
             target.remStats(0, attacker)
-            if (target.getHealth() > 0) target.activate("frenzy");
+            if (target.getHealth() > 0 && target.activate("frenzy") !== -1) target.setFunction("frenzy", () => {}, false);
 
             return true;
         }
@@ -513,7 +534,7 @@ class Functions {
 
         if (dmgMinion) attacker.remStats(0, target.getAttack());
 
-        if (dmgMinion && attacker.getHealth() > 0) attacker.activate("frenzy");
+        if (dmgMinion && attacker.getHealth() > 0 && attacker.activate("frenzy") !== -1) target.setFunction("frenzy", () => {}, false);
 
         if (attacker.keywords.includes("Stealth")) attacker.removeKeyword("Stealth");
     
@@ -532,7 +553,7 @@ class Functions {
 
         if (dmgTarget) target.remStats(0, attacker.getAttack())
 
-        if (target.getHealth() > 0) target.activate("frenzy");
+        if (target.getHealth() > 0 && target.activate("frenzy") !== -1) target.setFunction("frenzy", () => {}, false);
         if (target.getHealth() < 0) attacker.activate("overkill");
         if (target.getHealth() == 0) attacker.activate("honorablekill");
 

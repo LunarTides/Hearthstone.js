@@ -74,7 +74,7 @@ class Interact {
             attacker.remHealth(target.getAttack());
     
             if (target.getHealth() > 0) {
-                target.activate("frenzy");
+                if (target.activate("frenzy") !== -1) target.setFunction("frenzy", () => {}, false);
             }
     
             if (attacker.weapon) {
@@ -284,7 +284,7 @@ class Interact {
         if (location.cooldown <= 0) {
             if (location.activate("use") === -1) return -1;
             location.remStats(0, 1);
-            location.cooldown = location._cooldown;
+            location.cooldown = location.backups.cooldown;
             return true;
         }
 
@@ -630,13 +630,13 @@ class Interact {
                     sb += " {Durability: ";
                     sb += m.getHealth();
                     sb += " / ";
-                    sb += m._stats[1];
+                    sb += m.backups.stats[1];
                     sb += ", ";
         
                     sb += "Cooldown: ";
                     sb += m.cooldown;
                     sb += " / ";
-                    sb += m._cooldown;
+                    sb += m.backups.cooldown;
                     sb += "}";
 
                     sb += " [Location]";

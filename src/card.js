@@ -56,19 +56,20 @@ class Card {
         this.canAttackHero = true;
         this.sleepy = true;
 
-        // This is here to prevent errors
-        this.deathrattle = this.hasDeathrattle ? [this.blueprint.deathrattle] : [];
-
         // Set these variables to true or false.
         const exists = ["corrupted", "colossal", "dormant", "uncollectible", "frozen", "immune", "echo"];
         exists.forEach(i => {
             this[i] = this.blueprint[i] || false;
         });
 
+        let backups = {};
+
         // Make a backup of "this" to be used when silencing this card
         Object.entries(this).forEach(i => {
-            this["_" + i[0]] = i[1];
+            backups[i[0]] = i[1];
         });
+
+        this.backups = backups;
 
         this.plr = plr;
 
@@ -114,6 +115,8 @@ class Card {
          * @returns undefined
          */
 
+        if (!this.deathrattle) this.deathrattle = [];
+
         this.hasDeathrattle = true;
         this.deathrattle.push(_deathrattle);
     }
@@ -156,34 +159,36 @@ class Card {
     getHealth() {
         return this.stats[1];
     }
-    setStats(attack = this.getAttack(), health = this.getHealth()) {
+    setStats(attack = this.getAttack(), health = this.getHealth(), changeMaxHealth = true) {
         /**
          * Sets the minions attack to "attack" and the minions health to "health"
          * 
          * @param attack (number) [default=this.getAttack()] The attack to set
          * @param health (number) [default=this.getHealth()] The health to set
+         * @param changeMaxHealth (boolean) [default=true] Should change maxhealth to health if health is more than maxhealth
          * 
          * @returns undefined
          */
 
         this.stats = [attack, health];
 
-        if (health > this.maxHealth) {
+        if (changeMaxHealth && health > this.maxHealth) {
             this.maxHealth = health;
         }
     }
-    addStats(attack = 0, health = 0) {
+    addStats(attack = 0, health = 0, restore = false) {
         /**
          * Adds "attack" to the minions attack and "health" to the minions health
          * 
          * @param attack (number) [default=0] The attack to add
          * @param health (number) [default=0] The health to add
+         * @param restore (boolean) [default=false] Should cap the amount of stats added.
          * 
          * @returns undefined
          */
 
         this.addAttack(attack);
-        this.addHealth(health);
+        this.addHealth(health, restore);
     }
     remStats(attack = 0, health = 0) {
         /**
@@ -208,12 +213,12 @@ class Card {
          * @returns undefined
          */
 
-        this.setStats(this.getAttack(), this.getHealth() + amount);
+        this.setStats(this.getAttack(), this.getHealth() + amount, !restore);
     
         if (restore) {
             if (this.getHealth() > this.maxHealth) {
                 game.stats.update("restoredHealth", this.maxHealth);
-                this.getHealth() = this.maxHealth;
+                this.stats[1] = this.maxHealth;
             } else {
                 game.stats.update("restoredHealth", this.getHealth());
             }
@@ -321,7 +326,7 @@ class Card {
             if (att.startsWith("has")) this[att] = false;
 
             // Check if a backup exists for the attribute. If it does; restore it.
-            else if (this["_" + att]) this[att] = this["_" + att];
+            else if (this.backups[att]) this[att] = this.backups[att];
 
             // Check if the attribute if defined in the blueprint. If it is; restore it.
             else if (this.blueprint[att]) this[att] = this.blueprint[att];

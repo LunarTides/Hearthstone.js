@@ -328,7 +328,7 @@ class Game {
         if (player.mana < card.mana) return "mana";
 
         player.mana -= card.mana;
-        card.mana = card._mana;
+        card.mana = card.backups.mana;
         
         player.removeFromHand(card);
 
@@ -387,7 +387,7 @@ class Game {
     
                     minion.maxHealth += card.maxHealth;
     
-                    card.deathrattle.forEach(d => minion.addDeathrattle(d));
+                    if (card.deathrattle) card.deathrattle.forEach(d => minion.addDeathrattle(d));
     
                     if (echo_clone) player.hand.push(echo_clone);
     

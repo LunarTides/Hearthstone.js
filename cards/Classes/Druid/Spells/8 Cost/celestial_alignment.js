@@ -13,12 +13,12 @@ module.exports = {
 
         plr.hand.forEach(c => {
             c.mana = 1;
-            c._mana = 1;
+            c.backups.mana = 1;
         });
 
         plr.deck.forEach(c => {
             c.mana = 1;
-            c._mana = 1;
+            c.backups.mana = 1;
         });
     }
 }
