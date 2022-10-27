@@ -117,7 +117,7 @@ class Game {
         /**
          * Set this.key = val;
          * 
-         * @returns undefined
+         * @returns {undefined}
          */
 
         this[key] = val;
@@ -127,11 +127,11 @@ class Game {
         /**
          * Sets the game constants
          * 
-         * @param debug (boolean) [default=false] If debug mode should be enabled
-         * @param maxDeckLength (number) [default=30] Maximum cards you can have in a custom deck
-         * @param maxBoardSpace (number) [default=7] Maximum amount of minions you can have on the board at the same time
+         * @param {boolean} debug [default=false] If debug mode should be enabled
+         * @param {number} maxDeckLength [default=30] Maximum cards you can have in a custom deck
+         * @param {number} maxBoardSpace [default=7] Maximum amount of minions you can have on the board at the same time
          * 
-         * @returns undefined
+         * @returns {undefined}
          */
 
         this.constants = new Constants(debug, maxDeckLength, maxBoardSpace);
@@ -141,9 +141,9 @@ class Game {
         /**
          * Loops through this.passives and executes the function
          * 
-         * @param trigger (Array[key<string>, val<any>]) The thing that triggered the passives
+         * @param {Array[key<string>, val<any>]} trigger The thing that triggered the passives
          * 
-         * @returns (Array<any>) Return values of all the executed functions
+         * @returns {Array<any>} Return values of all the executed functions
          */
 
         let ret = [];
@@ -156,7 +156,7 @@ class Game {
         /**
          * Starts the game
          * 
-         * @returns undefined
+         * @returns {undefined}
          */
 
         let players_hands = [[], []];
@@ -197,9 +197,9 @@ class Game {
         /**
          * Ends the game and declares "winner" as the winner
          * 
-         * @param winner (Player) The winner
+         * @param {Player} winner The winner
          * 
-         * @returns undefined
+         * @returns {undefined}
          */
 
         // Todo: Maybe add more stuff here
@@ -214,7 +214,7 @@ class Game {
         /**
          * Ends the players turn and starts the opponents turn
          * 
-         * @returns undefined
+         * @returns {undefined}
          */
 
         this.killMinions();
@@ -301,10 +301,10 @@ class Game {
         /**
          * Play a card
          * 
-         * @param card (Card) The card to play
-         * @param player (Player) The card's owner
+         * @param {Card} card The card to play
+         * @param {Player} player The card's owner
          * 
-         * @returns "mana" | "traded" | "space" | "magnetize" | (Card) The return value of summonMinion
+         * @returns {string | Card} "mana" | "traded" | "space" | "magnetize" | (Card) The return value of summonMinion
          */
 
         this.killMinions();
@@ -384,7 +384,7 @@ class Game {
                     card.keywords.forEach(k => {
                         minion.addKeyword(k);
                     });
-    
+                        
                     minion.maxHealth += card.maxHealth;
     
                     if (card.deathrattle) card.deathrattle.forEach(d => minion.addDeathrattle(d));
@@ -470,12 +470,12 @@ class Game {
         /**
          * Summon a minion
          * 
-         * @param minion (Card) The minion to summon
-         * @param player (Player) The player who gets the minion
-         * @param update (boolean) [default=true] If the summon should trigger secrets / quests / passives.
-         * @param trigger_colossal (boolean) [default=true] If the minion has colossal, summon the other minions.
+         * @param {Card} minion The minion to summon
+         * @param {Player} player The player who gets the minion
+         * @param {boolean} update [default=true] If the summon should trigger secrets / quests / passives.
+         * @param {boolean} trigger_colossal [default=true] If the minion has colossal, summon the other minions.
          * 
-         * @returns (Card) The minion summoned
+         * @returns {Card} The minion summoned
          */
 
         if (update) this.stats.update("minionsSummoned", minion);
@@ -521,7 +521,7 @@ class Game {
         /**
          * Kill all minions with 0 or less health
          * 
-         * @returns undefined
+         * @returns {undefined}
          */
 
         for (var p = 0; p < 2; p++) {

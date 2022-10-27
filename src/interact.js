@@ -16,7 +16,7 @@ class Interact {
         /**
          * Asks the user to attack a minion or hero
          * 
-         * @returns undefined
+         * @returns {undefined}
          */
 
         var attacker = game.functions.selectTarget("Which minion do you want to attack with?", false, "self");
@@ -146,7 +146,7 @@ class Interact {
         /**
          * Checks if "q" is a command, if it is, do something, if not return -1
          * 
-         * @returns undefined | -1
+         * @returns {undefined} | -1
          */
 
         if (q === "end") game.endTurn();
@@ -224,9 +224,9 @@ class Interact {
         /**
          * Takes the input and checks if it is a command, if it is not, play the card with the id of input parsed into a number
          * 
-         * @param input (String) The user input
+         * @param {string} input The user input
          * 
-         * @returns "invalid" | The return value of game.playCard
+         * @returns {string | Card} "invalid" | The return value of game.playCard
          */
 
         game.killMinions();
@@ -246,7 +246,7 @@ class Interact {
         /**
          * Show information and asks the user for an input which is put into doTurnLogic
          * 
-         * @returns undefined | The return value of doTurnLogic
+         * @returns {undefined | string | Card} | The return value of doTurnLogic
          */
 
         curr = game.player;
@@ -296,11 +296,11 @@ class Interact {
         /**
          * Validate a deck
          * 
-         * @param card (Card) This gets passed into validateCard
-         * @param plr (Player) This gets passed into validateCard
-         * @param deck (Array<Card>) The deck of the player
+         * @param {Card} card This gets passed into validateCard
+         * @param {Player} plr This gets passed into validateCard
+         * @param {Array<Card>} deck The deck of the player
          * 
-         * @returns (boolean) Valid
+         * @returns {boolean} Valid
          */
 
         if (deck.length > game.constants.maxDeckLength) return false;
@@ -310,10 +310,10 @@ class Interact {
         /**
          * Checks if a card is a valid card to put into a players deck
          * 
-         * @param card (Card) The card to check
-         * @param plr (Player) The player to check against
+         * @param {Card} card The card to check
+         * @param {Player} plr The player to check against
          * 
-         * @returns (boolean) Valid
+         * @returns {boolean} Valid
          */
 
         if (plr.class != card.class && card.class != "Neutral") return false;
@@ -324,10 +324,10 @@ class Interact {
         /**
          * Imports a deck using a code and put the cards into the player's deck
          * 
-         * @param code (string) The base64 encoded deck code
-         * @param plr (Player) The player to put the cards into
+         * @param {string} code The base64 encoded deck code
+         * @param {Player} plr The player to put the cards into
          * 
-         * @returns (Array<Card>) The deck
+         * @returns {Array<Card>} The deck
          */
 
         // The code is base64 encoded, so we need to decode it
@@ -373,9 +373,9 @@ class Interact {
         /**
          * Asks the player to supply a deck code, if no code was given, fill the players deck with 30 Sheep
          * 
-         * @param plr (Player) The player to ask
+         * @param {Player} plr The player to ask
          * 
-         * @returns undefined
+         * @returns {undefined}
          */
 
         this.printName();
@@ -391,9 +391,9 @@ class Interact {
         /**
          * Prints the "watermark" border
          * 
-         * @param name (boolean) [default=true] If the watermark border should appear, if this is false, just clear the screen
+         * @param {boolean} name [default=true] If the watermark border should appear, if this is false, just clear the screen
          * 
-         * @returns undefined
+         * @returns {undefined}
          */
 
         cls();
@@ -408,7 +408,7 @@ class Interact {
         /**
          * Prints some license info
          * 
-         * @param disappear (boolean) [default=true] If this is true, "This will disappear once you end your turn" will show up.
+         * @param {boolean} disappear [default=true] If this is true, "This will disappear once you end your turn" will show up.
          * 
          * @returs undefined
          */
@@ -428,10 +428,10 @@ class Interact {
         /**
          * Prints all the information you need to understand the game state
          * 
-         * @param curr (Player) The current player
-         * @param detailed (boolean) [default=false] Show more, less important, information
+         * @param {Player} curr The current player
+         * @param {boolean} detailed [default=false] Show more, less important, information
          * 
-         * @returns undefined
+         * @returns {undefined}
          */
 
         if (game.turns <= 2) this.printLicense();
@@ -718,7 +718,7 @@ class Interact {
         /**
          * View information about a minion.
          * 
-         * @param minion (Card) The minion to show information about
+         * @param {Card} minion The minion to show information about
          */
 
         console.log(`{${minion.mana}} ${minion.displayName} [${minion.blueprint.stats.join(' / ')}]\n`);

@@ -80,7 +80,7 @@ class Card {
         /**
          * Create random id's for this card to prevent cards from being "linked"
          * 
-         * @returns undefined
+         * @returns {undefined}
          */
 
         this.__ids = []
@@ -94,11 +94,11 @@ class Card {
         /**
          * Set a keyword method to a value and sets this.has[name] to true
          * 
-         * @param name (string) The name of the keyword methos
-         * @param val (Function) The function to replace the keyword method
-         * @param has (boolean) [default=true] Sets this.has[name] to this value
+         * @param {string} name The name of the keyword methos
+         * @param {Function} val The function to replace the keyword method
+         * @param {boolean} has [default=true] Sets this.has[name] to this value
          * 
-         * @returns undefined
+         * @returns {undefined}
          */
 
         const _name = game.functions.capitalize(name);
@@ -110,9 +110,9 @@ class Card {
         /**
          * Adds a deathrattle to the card
          * 
-         * @param _deathrattle (Function) The deathrattle to add
+         * @param {Function} _deathrattle The deathrattle to add
          * 
-         * @returns undefined
+         * @returns {undefined}
          */
 
         if (!this.deathrattle) this.deathrattle = [];
@@ -126,9 +126,9 @@ class Card {
         /**
          * Adds a keyword to the minion
          * 
-         * @param keyword (string) The keyword to add
+         * @param {string} keyword The keyword to add
          * 
-         * @returns undefined
+         * @returns {undefined}
          */
 
         this.keywords.push(keyword);
@@ -144,9 +144,9 @@ class Card {
         /**
          * Removes a keyword from the minion
          * 
-         * @param keyword (string) The keyword to remove
+         * @param {string} keyword The keyword to remove
          * 
-         * @returns undefined
+         * @returns {undefined}
          */
 
         this.keywords = this.keywords.filter(k => k != keyword);
@@ -163,11 +163,11 @@ class Card {
         /**
          * Sets the minions attack to "attack" and the minions health to "health"
          * 
-         * @param attack (number) [default=this.getAttack()] The attack to set
-         * @param health (number) [default=this.getHealth()] The health to set
-         * @param changeMaxHealth (boolean) [default=true] Should change maxhealth to health if health is more than maxhealth
+         * @param {number} attack [default=this.getAttack()] The attack to set
+         * @param {number} health [default=this.getHealth()] The health to set
+         * @param {boolean} changeMaxHealth [default=true] Should change maxhealth to health if health is more than maxhealth
          * 
-         * @returns undefined
+         * @returns {undefined}
          */
 
         this.stats = [attack, health];
@@ -180,11 +180,11 @@ class Card {
         /**
          * Adds "attack" to the minions attack and "health" to the minions health
          * 
-         * @param attack (number) [default=0] The attack to add
-         * @param health (number) [default=0] The health to add
-         * @param restore (boolean) [default=false] Should cap the amount of stats added.
+         * @param {number} attack [default=0] The attack to add
+         * @param {number} health [default=0] The health to add
+         * @param {boolean} restore [default=false] Should cap the amount of stats added.
          * 
-         * @returns undefined
+         * @returns {undefined}
          */
 
         this.addAttack(attack);
@@ -194,10 +194,10 @@ class Card {
         /**
          * Removes "attack" from the minions attack and "health" from the minions health
          * 
-         * @param attack (number) [default=0] The attack to remove
-         * @param health (number) [default=0] The health to remove
+         * @param {number} attack [default=0] The attack to remove
+         * @param {number} health [default=0] The health to remove
          * 
-         * @returns undefined
+         * @returns {undefined}
          */
 
         this.remAttack(attack);
@@ -207,10 +207,10 @@ class Card {
         /**
          * Adds "amount" to the minions health
          * 
-         * @param amount (number) The health to add
-         * @param restore (boolean) Should reset health to maxHealth if it goes over maxHealth
+         * @param {number} amount The health to add
+         * @param {boolean} restore Should reset health to maxHealth if it goes over maxHealth
          * 
-         * @returns undefined
+         * @returns {undefined}
          */
 
         this.setStats(this.getAttack(), this.getHealth() + amount, !restore);
@@ -229,9 +229,9 @@ class Card {
         /**
          * Adds "amount" to the minions attack
          * 
-         * @param amount (number) The attack to add
+         * @param {number} amount The attack to add
          * 
-         * @returns undefined
+         * @returns {undefined}
          */
 
         this.setStats(this.getAttack() + amount, this.getHealth());
@@ -240,9 +240,9 @@ class Card {
         /**
          * Removes "amount" from the minions health
          * 
-         * @param amount (number) The health to remove
+         * @param {number} amount The health to remove
          * 
-         * @returns undefined
+         * @returns {undefined}
          */
 
         this.setStats(this.getAttack(), this.getHealth() - amount);
@@ -255,9 +255,9 @@ class Card {
         /**
          * Removes "amount" from the minions attack
          * 
-         * @param amount (number) The attack to remove
+         * @param {number} amount The attack to remove
          * 
-         * @returns undefined
+         * @returns {undefined}
          */
 
         this.setStats(this.getAttack() - amount, this.getHealth());
@@ -266,9 +266,9 @@ class Card {
         /**
          * Sets the max health of the minion to it's current health. If check is true it only sets max health if the current health is above it.
          * 
-         * @param check (boolean) Prevent lowering maxHealth
+         * @param {boolean} check Prevent lowering maxHealth
          * 
-         * @returns undefined
+         * @returns {undefined}
          */
 
         if (check && this.getHealth() <= this.maxHealth) return;
@@ -281,9 +281,9 @@ class Card {
         /**
          * Sets stealth to only last "duration" amount of turns
          * 
-         * @param duration (number) The amount of turns stealth should last
+         * @param {number} duration The amount of turns stealth should last
          * 
-         * @returns undefined
+         * @returns {undefined}
          */
 
         this.stealthDuration = game.turns + duration;
@@ -295,7 +295,7 @@ class Card {
          * 2 if it does,
          * 3 if it has mega-windfury
          * 
-         * @returns undefined
+         * @returns {undefined}
          */
 
         this.attackTimes = 1;
@@ -313,7 +313,7 @@ class Card {
         /**
          * Silences the minion
          * 
-         * @returns undefined
+         * @returns {undefined}
          */
 
         // Tell the minion to undo it's passive.
@@ -338,7 +338,7 @@ class Card {
         /**
          * Silences and kills the minion
          * 
-         * @returns undefined
+         * @returns {undefined}
          */
 
         this.silence();
@@ -350,14 +350,14 @@ class Card {
         /**
          * Activates a keyword method
          * 
-         * @param name (string) The method to activate
-         * @param args (...args) Pass these args to the method
+         * @param {string} name The method to activate
+         * @param {any} args Pass these args to the method
          * 
-         * @returns (Array<any>) All the return values of the method keywords
+         * @returns {Array<any>} All the return values of the method keywords
          */
 
         // This activates a function
-        // Example: activate("cast")¨
+        // Example: activate("cast")
         // Do: this.cast.forEach(cast_func => cast_func(plr, game, card))
         // Returns a list of the return values from all the function calls
 
@@ -396,9 +396,9 @@ class Card {
         /**
          * Activates a minion's battlecry
          * 
-         * @param args (...args) Any arguments to pass to battlecry
+         * @param {...args} args Any arguments to pass to battlecry
          * 
-         * @returns (Array<any>) The return values of all the battlecries triggered
+         * @returns {Array<any>} The return values of all the battlecries triggered
          */
 
         this.activate("passive", ["battlecry", this]);
@@ -408,7 +408,7 @@ class Card {
         /**
          * TODO: Explain this??
          * 
-         * @returns (boolean) 
+         * @returns {boolean} Success
          */
 
         let ret;

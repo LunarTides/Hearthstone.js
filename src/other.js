@@ -42,7 +42,7 @@ class Player {
         /**
          * Get this player's opponent
          * 
-         * @returns (Player) Opponent
+         * @returns {Player} Opponent
          */
 
         const id = (this.id == 0) ? 2 : 1;
@@ -55,10 +55,10 @@ class Player {
         /**
          * Adds "mana" to this.mana, then checks if this.mana is more than "comp", if it is, set this.mana to "comp"
          * 
-         * @param mana (number) The mana to add
-         * @param comp (number) [default=this.maxMana] The comperison
+         * @param {number} mana The mana to add
+         * @param {number} comp [default=this.maxMana] The comperison
          * 
-         * @returns undefined
+         * @returns {undefined}
          */
 
         this.mana += mana;
@@ -69,10 +69,10 @@ class Player {
         /**
          * Increases max mana by "mana", then if cap is true; check if max mana is more than max max mana, if it is, set max mana to max max mana
          * 
-         * @param mana (number) The mana to add
-         * @param cap (boolean) [default=false] Should prevent max mana going over max max mana
+         * @param {number} mana The mana to add
+         * @param {boolean} cap [default=false] Should prevent max mana going over max max mana
          * 
-         * @returns undefined 
+         * @returns {undefined} 
          */
 
         this.maxMana += mana;
@@ -83,9 +83,9 @@ class Player {
         /**
          * Increases both mana and max mana by "mana"
          * 
-         * @param mana (number) The number to increase mana and max mana by
+         * @param {number} mana The number to increase mana and max mana by
          * 
-         * @returns undefined
+         * @returns {undefined}
          */
 
         this.gainEmptyMana(mana);
@@ -95,9 +95,9 @@ class Player {
         /**
          * Increases the players overload by "overload"
          * 
-         * @param overload (number) The amount of overload to add
+         * @param {number} overload The amount of overload to add
          * 
-         * @returns undefined
+         * @returns {undefined}
          */
 
         this.overload += overload;
@@ -114,9 +114,9 @@ class Player {
         /**
          * Sets this player's weapon to "weapon"
          * 
-         * @param weapon (Card) The weapon to set
+         * @param {Card} weapon The weapon to set
          * 
-         * @returns undefined
+         * @returns {undefined}
          */
 
         this.weapon = weapon;
@@ -127,9 +127,9 @@ class Player {
         /**
          * Destroys this player's weapon
          * 
-         * @param triggerDeathrattle (boolean) [default=false] Should trigger the weapon's deathrattle
+         * @param {boolean} triggerDeathrattle [default=false] Should trigger the weapon's deathrattle
          * 
-         * @returns undefined
+         * @returns {undefined}
          */
 
         if (!this.weapon) return false;
@@ -144,9 +144,9 @@ class Player {
         /**
          * Increases the player's attack by "amount"
          * 
-         * @param amount (number) The amount the player's attack should increase by
+         * @param {number} amount The amount the player's attack should increase by
          * 
-         * @returns undefined
+         * @returns {undefined}
          */
 
         this.attack += amount;
@@ -157,9 +157,9 @@ class Player {
         /**
          * Increases the player's health by "amount"
          * 
-         * @param amount (number) The amount the player's health should increase by
+         * @param {number} amount The amount the player's health should increase by
          * 
-         * @returns undefined
+         * @returns {undefined}
          */
 
         this.health += amount;
@@ -170,9 +170,9 @@ class Player {
         /**
          * Decreases the player's health by "amount". If the player has armor, the armor gets decreased instead.
          * 
-         * @param amount (number) The amount the player's health should increase by
+         * @param {number} amount The amount the player's health should increase by
          * 
-         * @returns (boolean) Success
+         * @returns {boolean} Success
          */
 
         var a = amount;
@@ -206,10 +206,10 @@ class Player {
         /**
          * Shuffle a card into this player's deck
          * 
-         * @param card (Card) The card to shuffle
-         * @param updateStats (boolean) Should this trigger secrets / quests / passives
+         * @param {Card} card The card to shuffle
+         * @param {boolean} updateStats Should this trigger secrets / quests / passives
          * 
-         * @returns undefined
+         * @returns {undefined}
          */
 
         // Add the card into a random position in the deck
@@ -224,9 +224,9 @@ class Player {
         /**
          * Adds a card to the bottom of this player's deck
          * 
-         * @param card (Card) The card to add to the bottom of the deck
+         * @param {Card} card The card to add to the bottom of the deck
          * 
-         * @returns undefined
+         * @returns {undefined}
          */
 
         this.deck = [card, ...this.deck];
@@ -237,9 +237,9 @@ class Player {
         /**
          * Draws the card at the top of this player's deck
          * 
-         * @param update (boolean) Should this trigger secrets / quests / passives
+         * @param {boolean} update Should this trigger secrets / quests / passives
          * 
-         * @returns undefined | null | (Card) The card drawn
+         * @returns {undefined | null | Card} Card is the card drawn
          */
 
         if (this.deck.length <= 0) {
@@ -267,10 +267,10 @@ class Player {
         /**
          * Draws a specific card from this player's deck
          * 
-         * @param card (Card) The card to draw
-         * @param update (boolean) Should this trigger secrets / quests / passives
+         * @param {Card} card The card to draw
+         * @param {boolean} update Should this trigger secrets / quests / passives
          * 
-         * @returns undefined | null | (Card) The card drawn
+         * @returns {undefined | null | Card} Card is the card drawn
          */
 
         if (this.deck.length <= 0) return;
@@ -292,10 +292,10 @@ class Player {
         /**
          * Adds a card to the player's hand
          * 
-         * @param card (Card) The card to add
-         * @param updateStats (boolean) Should this trigger secrets / quests / passives
+         * @param {Card} card The card to add
+         * @param {boolean} updateStats Should this trigger secrets / quests / passives
          * 
-         * @returns undefined
+         * @returns {undefined}
          */
 
         if (this.hand.length < 10) {
@@ -308,9 +308,9 @@ class Player {
         /**
          * Removes a card from the player's hand
          * 
-         * @param card (Card) The card to remove
+         * @param {Card} card The card to remove
          * 
-         * @returns undefined
+         * @returns {undefined}
          */
 
         this.hand = this.hand.filter(c => c !== card);
@@ -321,10 +321,10 @@ class Player {
         /**
          * Sets the player's class to "_class"
          * 
-         * @param _class (string) The class that the player should be set to
-         * @param hp (boolean) Should the hero power be changed to that class's default hero power
+         * @param {string} _class The class that the player should be set to
+         * @param {boolean} hp Should the hero power be changed to that class's default hero power
          * 
-         * @returns undefined
+         * @returns {undefined}
          */
 
         this.class = _class;
@@ -334,10 +334,10 @@ class Player {
         /**
          * Sets the player's hero to "hero"
          * 
-         * @param hero (Card) The hero that the player should be set to
-         * @param armor (number) The amount of armor the player should gain
+         * @param {Card} hero The hero that the player should be set to
+         * @param {number} armor The amount of armor the player should gain
          * 
-         * @returns undefined
+         * @returns {undefined}
          */
 
         this.hero = hero;
@@ -351,7 +351,7 @@ class Player {
         /**
          * Activate the player's hero power.
          * 
-         * @returns -1 | (boolean) Success
+         * @returns {number | boolean} -1 | Success
          */
 
         if (this.hero_power == "Demon Hunter") this.heroPowerCost = 1;
@@ -476,7 +476,11 @@ class Functions {
         return newArray
     }
     randList(list) {
-        return list[this.randInt(0, list.length - 1)];
+        let item = list[this.randInt(0, list.length - 1)];
+        
+        if (item instanceof game.Card) item = new game.Card(item.name);
+
+        return item;
     }
     randInt(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
