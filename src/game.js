@@ -1,5 +1,5 @@
 const { question } = require('readline-sync');
-const { Functions, Player } = require("./other");
+const { Functions, Player, Constants } = require("./other");
 const { Card } = require("./card");
 const { Interact } = require("./interact");
 const { exit } = require("process")
@@ -98,6 +98,7 @@ class Game {
         this.functions = functions;
         this.stats = new GameStats(this);
         this.interact = new Interact(this);
+        this.constants = null;
         this.input = question;
 
         this.player1.id = 0;
@@ -114,6 +115,10 @@ class Game {
 
     set(key, val) {
         this[key] = val;
+    }
+
+    setConstants(debug = false, maxDeckLength = 30, maxBoardSpace = 7) {
+        this.constants = new Constants(debug, maxDeckLength, maxBoardSpace);
     }
 
     activatePassives(trigger) {
@@ -299,13 +304,14 @@ class Game {
             return "counter";
         }
 
-        if (card.type === "Minion") {
-            if (board.length >= 7) {
-                player.addToHand(card, false);
-                player.mana += card.mana;
-                return "space";
-            }
+        // If the board has more than the allowed amount of cards and the card played is a minion or location card, prevent it.
+        if (board.length >= this.constants.maxBoardSpace && ["Minion", "Location"].includes(card.type)) {
+            player.addToHand(card, false);
+            player.mana += card.mana;
+            return "space";
+        }
 
+        if (card.type === "Minion") {
             // Magnetize
             if (card.keywords.includes("Magnetic") && board.length > 0) {
                 let mechs = board.filter(m => m.tribe == "Mech");
@@ -376,12 +382,6 @@ class Game {
 
             if (echo_clone) player.hand.push(echo_clone);
         } else if (card.type === "Location") {
-            if (board.length >= 7) {
-                player.addToHand(card, false);
-                player.mana += card.mana;
-                return "space";
-            }
-
             card.setStats(0, card.getHealth());
             card.immune = true;
             card.cooldown = 0;

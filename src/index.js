@@ -7,6 +7,7 @@ const { Player, setup } = require("./other");
 const debug = true; // Enables commands like /give, /eval and /debug. Disables naming players.
                     // Enable for debugging, disable for actual play.
 const maxDeckLength = 30;
+const maxBoardSpace = 7;
 // -----------------------------------
 
 let player1 = new Player("Player 1");
@@ -18,7 +19,8 @@ if (!debug) {
     player2.name = question("Player 2, what is your name? ");
 }
 
-setup(game, debug, maxDeckLength);
+game.setConstants(debug, maxDeckLength, maxBoardSpace);
+setup(game);
 
 game.functions.importCards(__dirname + '\\..\\cards');
 

@@ -1,15 +1,10 @@
 const { setup_card } = require("./card");
-const { setup_interact } = require("./interact");
 
 let cards = {};
 let game = null;
-let debug = false;
-let maxDeckLength = 30;
 
-function setup(_game, _debug, _maxDeckLength) {
+function setup(_game) {
     game = _game;
-    debug = _debug;
-    maxDeckLength = _maxDeckLength;
 }
 
 class Player {
@@ -185,6 +180,7 @@ class Player {
         this.hero = hero;
 
         this.hero_power = "hero";
+        this.class = hero.class;
 
         this.armor += armor;
     }
@@ -281,6 +277,14 @@ class Player {
 
         this.canUseHeroPower = false;
 
+    }
+}
+
+class Constants {
+    constructor(debug, maxDeckLength, maxBoardSpace) {
+        this.debug = debug;
+        this.maxDeckLength = maxDeckLength;
+        this.maxBoardSpace = maxBoardSpace;
     }
 }
 
@@ -790,8 +794,7 @@ class Functions {
     
             if (file.name == "zzzzzz.js") {
                 game.set("cards", cards);
-                setup_card(cards, game);
-                setup_interact(debug, maxDeckLength);
+                setup_card(game, cards);
             }
 
             else if (file.name.endsWith(".js")) {
@@ -828,5 +831,6 @@ class Functions {
 
 exports.Functions = Functions;
 exports.Player = Player;
+exports.Constants = Constants;
 
 exports.setup = setup;

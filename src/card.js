@@ -1,9 +1,9 @@
-let cards = {};
 let game = null;
+let cards = [];
 
-function setup(_cards, _game) {
-    cards = _cards;
+function setup(_game, _cards) {
     game = _game;
+    cards = _cards
 }
 
 class Card {

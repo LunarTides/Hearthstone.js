@@ -1,18 +1,10 @@
 const { exit } = require('process');
 
-let debug = false;
-let maxDeckLength = 30; // Don't change this variable, if you want to change the max deck length, change the variable in index.js
-
 const license_url = 'https://github.com/Keatpole/Hearthstone.js/blob/main/LICENSE';
 const copyright_year = "2022";
 
 let curr;
 let game;
-
-function setup(_debug = debug, _maxDeckLength = maxDeckLength) {
-    debug = _debug;
-    maxDeckLength = _maxDeckLength;
-}
 
 class Interact {
     constructor(_game) {
@@ -182,7 +174,7 @@ class Interact {
         }
 
         else if (q.startsWith("/give ")) {
-            if (!debug) return -1;
+            if (!game.constants.debug) return -1;
     
             let name = q.split(" ");
             name.shift();
@@ -195,12 +187,12 @@ class Interact {
             curr.addToHand(new game.Card(card.name, curr));
         }
         else if (q == "/eval") {
-            if (!debug) return -1;
+            if (!game.constants.debug) return -1;
     
             eval(game.input("\nWhat do you want to evaluate? "));
         }
         else if (q == "/debug") {
-            if (!debug) return -1;
+            if (!game.constants.debug) return -1;
     
             curr.maxMaxMana = 1000;
             curr.maxMana = 1000;
@@ -237,7 +229,7 @@ class Interact {
         this.printAll(game.player);
     
         let input = "\nWhich card do you want to play? ";
-        if (game.turns <= 2 && !debug) input += "(type 'help' for further information <- This will disappear once you end your turn) ";
+        if (game.turns <= 2 && !game.constants.debug) input += "(type 'help' for further information <- This will disappear once you end your turn) ";
     
         const ret = this.doTurnLogic(game.input(input));
 
@@ -245,7 +237,7 @@ class Interact {
 
         if (ret == "mana") game.input("Not enough mana.\n");
         else if (ret == "counter") game.input("Your card has been countered.\n");
-        else if (ret == "space") game.input("You can only have 7 minions on the board.\n")
+        else if (ret == "space") game.input(`You can only have ${game.constants.maxBoardSpace} minions on the board.\n`)
         else if (ret == "invalid") game.input("Invalid card.\n");
 
         game.killMinions();
@@ -269,7 +261,7 @@ class Interact {
 
     // Deck stuff
     validateDeck(card, plr, deck) {
-        if (deck.length > maxDeckLength) return false;
+        if (deck.length > game.constants.maxDeckLength) return false;
         return this.validateCard(card, plr);
     }
     validateCard(card, plr) {
@@ -337,7 +329,7 @@ class Interact {
         console.log("|-----------------------------|\n");
     }
     printLicense(disappear = true) {
-        if (debug) return;
+        if (game.constants.debug) return;
     
         cls();
     
@@ -647,5 +639,3 @@ class Interact {
 const cls = () => process.stdout.write('\033c');
 
 exports.Interact = Interact;
-
-exports.setup_interact = setup;
