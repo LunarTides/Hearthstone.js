@@ -12,8 +12,7 @@ module.exports = {
         let target = game.functions.selectTarget("Become a copy of a minion.", false, null, "minion");
         if (!target) return -1;
 
-        let clone = Object.assign(Object.create(Object.getPrototypeOf(target)), target); // Create an exact copy of the target
-        clone.randomizeIds();
+        let clone = game.functions.cloneCard(target, plr); // Create an exact copy of the target
 
         self.destroy();
         game.summonMinion(clone, plr, false);

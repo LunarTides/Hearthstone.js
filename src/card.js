@@ -213,13 +213,15 @@ class Card {
          * @returns {undefined}
          */
 
+        let before = this.getHealth();
+
         this.setStats(this.getAttack(), this.getHealth() + amount, !restore);
     
         if (restore) {
             if (this.getHealth() > this.maxHealth) {
-                game.stats.update("restoredHealth", this.maxHealth);
+                if (this.getHealth() > before) game.stats.update("restoredHealth", this.maxHealth);
                 this.stats[1] = this.maxHealth;
-            } else {
+            } else if (this.getHealth() > before) {
                 game.stats.update("restoredHealth", this.getHealth());
             }
         }

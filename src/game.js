@@ -342,8 +342,7 @@ class Game {
         let echo_clone = null;
 
         if (card.keywords.includes("Echo")) {
-            echo_clone = Object.assign(Object.create(Object.getPrototypeOf(card)), card); // Create an exact copy of the card played
-            echo_clone.randomizeIds();
+            echo_clone = game.functions.cloneCard(card, player); // Create an exact copy of the card played
             echo_clone.echo = true;
         }
 

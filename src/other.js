@@ -501,6 +501,19 @@ class Functions {
     getCardByName(name) {
         return Object.values(game.cards).find(c => c.name.toLowerCase() == name.toLowerCase());
     }
+    cloneObject(object) {
+        return Object.assign(Object.create(Object.getPrototypeOf(object)), object);
+    }
+    cloneCard(card, plr) {
+        let clone = this.cloneObject(card);
+
+        clone.randomizeIds();
+        clone.sleepy = true;
+        clone.plr = plr;
+        clone.turn = game.turns;
+
+        return clone;
+    }
 
     // Damage
     attackMinion(attacker, target) {
