@@ -380,7 +380,7 @@ class Interact {
 
         this.printName();
     
-        const deckcode = game.input(`\nPlayer ${plr.id + 1}, please type in your deckcode (Leave this empty for a test deck): `);
+        const deckcode = game.input(`Player ${plr.id + 1}, please type in your deckcode (Leave this empty for a test deck): `);
     
         if (deckcode.length > 0) plr.deck = this.importDeck(deckcode, plr);
         else while (plr.deck.length < 30) plr.deck.push(new game.Card("Sheep", plr));
@@ -421,7 +421,7 @@ class Interact {
         console.log(`|||                  Hearthstone.js | Copyright (C) ${copyright_year} | Keatpole                   |||`)
         console.log(`||| This program is licensed under the GNU-GPL license. To learn more: type 'license' |||`)
         if (disappear)
-        console.log(`|||                     This will disappear once you end your turn.                    |||`)
+        console.log(`|||                     This will disappear once you end your turn.                   |||`)
         console.log(`|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n`);
     }
     printAll(curr, detailed = false) {

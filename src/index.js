@@ -15,7 +15,9 @@ let player2 = new Player("Player 2");
 let game = new Game(player1, player2);
 
 if (!debug) {
-    player1.name = question("\nPlayer 1, what is your name? ");
+    game.interact.printName();
+
+    player1.name = question("Player 1, what is your name? ");
     player2.name = question("Player 2, what is your name? ");
 }
 
