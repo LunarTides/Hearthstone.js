@@ -233,6 +233,9 @@ class Game {
                 m.stealthDuration = 0;
                 m.removeKeyword("Stealth");
             }
+
+            // Location cooldown
+            if (m.type == "Location" && m.cooldown > 0) m.cooldown--;
         });
 
         // Draw card
@@ -372,6 +375,22 @@ class Game {
             card.activateBattlecry();
 
             if (echo_clone) player.hand.push(echo_clone);
+        } else if (card.type === "Location") {
+            if (board.length >= 7) {
+                player.addToHand(card, false);
+                player.mana += card.mana;
+                return "space";
+            }
+
+            card.setStats(0, card.getHealth());
+            card.immune = true;
+            card.cooldown = 0;
+
+            if (echo_clone) player.hand.push(echo_clone);
+
+            this.stats.update("minionsPlayed", card);
+
+            ret = this.summonMinion(card, player, false);
         }
 
         this.stats.update("cardsPlayed", card);
@@ -467,72 +486,6 @@ class Game {
 
             this.board[p] = n;
         }
-    }
-    attackMinion(attacker, target) {
-        this.killMinions();
-
-        if (!isNaN(attacker)) {
-            if (target.keywords.includes("Divine Shield")) {
-                target.removeKeyword("Divine Shield");
-
-                return false;
-            }
-
-            target.remStats(0, attacker)
-
-            if (target.getHealth() > 0) {
-                target.activate("frenzy");
-            }
-
-            this.killMinions();
-
-            return;
-        }
-
-        attacker.attackTimes--;
-
-        this.stats.update("enemyAttacks", [attacker, target]);
-        this.stats.update("minionsThatAttacked", [attacker, target]);
-        this.stats.update("minionsAttacked", [attacker, target]);
-
-        let dmgTarget = true;
-        let dmgMinion = true;
-
-        if (attacker.immune) dmgMinion = false;
-
-        if (dmgMinion && attacker.keywords.includes("Divine Shield")) {
-            attacker.removeKeyword("Divine Shield");
-            dmgMinion = false;
-        }
-
-        if (dmgMinion) attacker.remStats(0, target.getAttack());
-
-        if (dmgMinion && attacker.getHealth() > 0) attacker.activate("frenzy");
-
-        if (attacker.keywords.includes("Stealth")) attacker.removeKeyword("Stealth");
-    
-        attacker.activate("onattack");
-        this.stats.update("minionsAttacked", [attacker, target]);
-    
-        if (dmgMinion && target.keywords.includes("Poisonous")) attacker.setStats(attacker.getAttack(), 0);
-
-        if (target.keywords.includes("Divine Shield")) {
-            target.removeKeyword("Divine Shield");
-            dmgTarget = false;
-        }
-
-        if (dmgTarget && attacker.keywords.includes("Lifesteal")) attacker.plr.addHealth(attacker.getAttack());
-        if (dmgTarget && attacker.keywords.includes("Poisonous")) target.setStats(target.getAttack(), 0);
-
-        if (dmgTarget) target.remStats(0, attacker.getAttack())
-
-        if (target.getHealth() > 0) target.activate("frenzy");
-        if (target.getHealth() < 0) attacker.activate("overkill");
-        if (target.getHealth() == 0) attacker.activate("honorablekill");
-
-        this.killMinions();
-
-        return true;
     }
 }
 

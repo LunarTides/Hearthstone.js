@@ -222,12 +222,20 @@ class Card {
         if (!this["has" + game.functions.capitalize(name)]) return false;
 
         let ret = [];
+        
         this[name].forEach(i => {
+            if (ret === -1) return;
+
             let r = i(this.plr, game, this, ...args);
             ret.push(r);
 
             // If the return value is -1, meaning "refund", refund the card and stop the for loop
             if (r == -1 && name != "deathrattle") {
+                if (name == "use") {
+                    ret = -1;
+                    return;
+                }
+
                 this.plr.addToHand(this, false);
                 this.plr.mana += this.mana;
                 ret = -1;

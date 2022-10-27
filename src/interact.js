@@ -72,7 +72,7 @@ class Interact {
             game.stats.update("minionsAttacked", [attacker, target]);
             game.stats.update("enemyAttacks", [attacker, target]);
     
-            game.attackMinion(attacker.attack, target);
+            game.functions.attackMinion(attacker.attack, target);
             attacker.remHealth(target.getAttack());
     
             if (target.getHealth() > 0) {
@@ -141,7 +141,7 @@ class Interact {
         // Target is a minion
         if (target.keywords.includes("Stealth")) return;
     
-        game.attackMinion(attacker, target);
+        game.functions.attackMinion(attacker, target);
         game.killMinions();
     }
     handleCmds(q) {
@@ -149,6 +149,11 @@ class Interact {
         else if (q === "hero power") curr.heroPower();
         else if (q === "attack") {
             this.doTurnAttack();
+            game.killMinions();
+        }
+        else if (q === "use") {
+            // Use location
+            this.useLocation();
             game.killMinions();
         }
         else if (q === "help") {
@@ -244,6 +249,22 @@ class Interact {
         else if (ret == "invalid") game.input("Invalid card.\n");
 
         game.killMinions();
+    }
+    useLocation() {
+        let locations = game.board[curr.id].filter(m => m.type == "Location");
+        if (locations.length <= 0) return false;
+
+        let location = game.functions.selectTarget("Which location do you want to use?", false, "self", "minion", ["allow_locations"]);
+        if (location.type != "Location") return false;
+        
+        if (location.cooldown <= 0) {
+            if (location.activate("use") === -1) return -1;
+            location.remStats(0, 1);
+            location.cooldown = location._cooldown;
+            return true;
+        }
+
+        return false;
     }
 
     // Deck stuff
@@ -516,11 +537,36 @@ class Interact {
             }
     
             game.board[i].forEach((m, n) => {
-                const keywords = m.keywords.length > 0 ? ` {${m.keywords.join(", ")}}` : "";
-                const frozen = m.frozen ? " (Frozen)" : "";
-                const immune = m.immune ? " (Immune)" : "";
-                const dormant = m.dormant ? " (Dormant)" : "";
-                const sleepy = (m.sleepy) || (m.attackTimes <= 0) ? " (Sleepy)" : "";
+                if (m.type == "Location") {            
+                    sb += "[";
+                    sb += n + 1;
+                    sb += "] ";
+                    sb += m.displayName;
+                    sb += " {Durability: ";
+                    sb += m.getHealth();
+                    sb += " / ";
+                    sb += m._stats[1];
+                    sb += ", ";
+        
+                    sb += "Cooldown: ";
+                    sb += m.cooldown;
+                    sb += " / ";
+                    sb += m._cooldown;
+                    sb += "}";
+
+                    sb += " [Location]";
+        
+                    console.log(sb);
+                    sb = "";
+
+                    return;
+                }
+
+                let keywords = m.keywords.length > 0 ? ` {${m.keywords.join(", ")}}` : "";
+                let frozen = m.frozen ? " (Frozen)" : "";
+                let dormant = m.dormant ? " (Dormant)" : "";
+                let immune = m.immune ? " (Immune)" : "";
+                let sleepy = (m.sleepy) || (m.attackTimes <= 0) ? " (Sleepy)" : "";
     
                 sb += "[";
                 sb += n + 1;
@@ -532,8 +578,8 @@ class Interact {
     
                 sb += keywords;
                 sb += frozen
-                sb += immune
                 sb += dormant;
+                sb += immune
                 sb += sleepy;
     
                 console.log(sb);

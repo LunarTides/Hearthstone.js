@@ -231,7 +231,7 @@ class Player {
             if (t instanceof Player) {
                 t.remHealth(1);
             } else {
-                game.attackMinion(1, t);
+                game.functions.attackMinion(1, t);
             }
         }
         else if (this.hero_power == "Paladin") {
@@ -312,32 +312,91 @@ class Functions {
 
     // Getting card info
     getType(card) {
-        if (card.tribe) { // If you see this in the error log, the error occorred since the game failed to get the type of a minion. Error Code: #21
-            return "Minion";
-        } else if (card.stats) {
-            return "Weapon";
-        } else if (card.heropower) {
-            return "Hero";
-        } else {
-            return "Spell";
-        }
+        if (card.cooldown) return "Location";
+        
+        else if (card.tribe) return "Minion"; // If you see this in the error log, the error occorred since the game failed to get the type of a minion. Error Code: #21
+        else if (card.stats) return "Weapon";
+        else if (card.heropower) return "Hero";
+        else return "Spell";
     }
     getCardByName(name) {
         return Object.values(game.cards).find(c => c.name.toLowerCase() == name.toLowerCase());
     }
 
-    // Account for certain stats
+    // Damage
+    attackMinion(attacker, target) {
+        game.killMinions();
+
+        // The first variable is a number
+        if (!isNaN(attacker)) {
+            if (target.keywords.includes("Divine Shield")) {
+                target.removeKeyword("Divine Shield");
+                return false;
+            }
+
+            target.remStats(0, attacker)
+            if (target.getHealth() > 0) target.activate("frenzy");
+
+            return true;
+        }
+
+        // The first variable is a minion
+        attacker.attackTimes--;
+
+        game.stats.update("enemyAttacks", [attacker, target]);
+        game.stats.update("minionsThatAttacked", [attacker, target]);
+        game.stats.update("minionsAttacked", [attacker, target]);
+
+        let dmgTarget = true;
+        let dmgMinion = true;
+
+        if (attacker.immune) dmgMinion = false;
+
+        if (dmgMinion && attacker.keywords.includes("Divine Shield")) {
+            attacker.removeKeyword("Divine Shield");
+            dmgMinion = false;
+        }
+
+        if (dmgMinion) attacker.remStats(0, target.getAttack());
+
+        if (dmgMinion && attacker.getHealth() > 0) attacker.activate("frenzy");
+
+        if (attacker.keywords.includes("Stealth")) attacker.removeKeyword("Stealth");
+    
+        attacker.activate("onattack");
+        game.stats.update("minionsAttacked", [attacker, target]);
+    
+        if (dmgMinion && target.keywords.includes("Poisonous")) attacker.setStats(attacker.getAttack(), 0);
+
+        if (target.keywords.includes("Divine Shield")) {
+            target.removeKeyword("Divine Shield");
+            dmgTarget = false;
+        }
+
+        if (dmgTarget && attacker.keywords.includes("Lifesteal")) attacker.plr.addHealth(attacker.getAttack());
+        if (dmgTarget && attacker.keywords.includes("Poisonous")) target.setStats(target.getAttack(), 0);
+
+        if (dmgTarget) target.remStats(0, attacker.getAttack())
+
+        if (target.getHealth() > 0) target.activate("frenzy");
+        if (target.getHealth() < 0) attacker.activate("overkill");
+        if (target.getHealth() == 0) attacker.activate("honorablekill");
+
+        return true;
+    }
     spellDmg(target, damage) {
         const dmg = this.accountForSpellDmg(damage);
 
         game.stats.update("spellsThatDealtDamage", [target, dmg]);
 
         if (target instanceof game.Card) {
-            game.attackMinion(dmg, target);
+            this.attackMinion(dmg, target);
         } else if (target instanceof Player) {
             target.remHealth(dmg);
         }
     }
+
+    // Account for certain stats
     accountForSpellDmg(damage) {
         return damage + game.player.spellDamage;
     }
@@ -437,7 +496,7 @@ class Functions {
             return card;
         }
     }
-    selectTarget(prompt, elusive = false, force_side = null, force_class = null) {
+    selectTarget(prompt, elusive = false, force_side = null, force_class = null, flags = []) {
         // force_class = [null, "hero", "minion"]
         // force_side = [null, "enemy", "self"]
 
@@ -507,7 +566,7 @@ class Functions {
         }
 
         if (minion.keywords.includes("Elusive") && elusive) {
-            game.input("Can't be targeted by Spells or Hero Powers");
+            game.input("Can't be targeted by Spells or Hero Powers.\n");
             
             // elusive can be set to any value other than true to prevent targetting but not update
             // spells cast on minions
@@ -518,9 +577,19 @@ class Functions {
         }
 
         if (minion.keywords.includes("Stealth") && game.player != minion.plr) {
-            console.log("This minion has stealth");
+            game.input("This minion has stealth.\n");
 
             return false;
+        }
+
+        // Location
+        if (minion.type == "Location") {
+            // Set the "allow_locations" flag to allow targetting locations.
+            if (!flags.includes("allow_locations")) {
+                game.input("You cannot target location cards.\n");
+
+                return false
+            }
         }
 
         return minion;
