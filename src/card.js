@@ -76,6 +76,12 @@ class Card {
     }
 
     randomizeIds() {
+        /**
+         * Create random id's for this card to prevent cards from being "linked"
+         * 
+         * @returns undefined
+         */
+
         this.__ids = []
         for (let i = 0; i < 100; i++) {
             // This is to prevent cards from getting linked. Don't use this variable
@@ -84,24 +90,44 @@ class Card {
     }
 
     setFunction(name, val, has = true) {
-        // Set a func to the val
-        // Set has[Func] to true | false
-        // Example: name = "cast", val = [], has = false
-        // Do: this.hasCast = false; this.cast = [];
-        // This prevents "cast" from being called when casting a spell, making it useless.
+        /**
+         * Set a keyword method to a value and sets this.has[name] to true
+         * 
+         * @param name (string) The name of the keyword methos
+         * @param val (Function) The function to replace the keyword method
+         * @param has (boolean) [default=true] Sets this.has[name] to this value
+         * 
+         * @returns undefined
+         */
 
         const _name = game.functions.capitalize(name);
 
         this["has" + _name] = has;
-        this[name] = val;
+        this[name] = [val];
     }
     addDeathrattle(_deathrattle) {
+        /**
+         * Adds a deathrattle to the card
+         * 
+         * @param _deathrattle (Function) The deathrattle to add
+         * 
+         * @returns undefined
+         */
+
         this.hasDeathrattle = true;
         this.deathrattle.push(_deathrattle);
     }
 
     // Keywords
     addKeyword(keyword) {
+        /**
+         * Adds a keyword to the minion
+         * 
+         * @param keyword (string) The keyword to add
+         * 
+         * @returns undefined
+         */
+
         this.keywords.push(keyword);
 
         if (this.keywords.includes("Charge")) this.sleepy = false;
@@ -112,6 +138,14 @@ class Card {
         }
     }
     removeKeyword(keyword) {
+        /**
+         * Removes a keyword from the minion
+         * 
+         * @param keyword (string) The keyword to remove
+         * 
+         * @returns undefined
+         */
+
         this.keywords = this.keywords.filter(k => k != keyword);
     }
 
@@ -123,6 +157,15 @@ class Card {
         return this.stats[1];
     }
     setStats(attack = this.getAttack(), health = this.getHealth()) {
+        /**
+         * Sets the minions attack to "attack" and the minions health to "health"
+         * 
+         * @param attack (number) [default=this.getAttack()] The attack to set
+         * @param health (number) [default=this.getHealth()] The health to set
+         * 
+         * @returns undefined
+         */
+
         this.stats = [attack, health];
 
         if (health > this.maxHealth) {
@@ -130,14 +173,41 @@ class Card {
         }
     }
     addStats(attack = 0, health = 0) {
+        /**
+         * Adds "attack" to the minions attack and "health" to the minions health
+         * 
+         * @param attack (number) [default=0] The attack to add
+         * @param health (number) [default=0] The health to add
+         * 
+         * @returns undefined
+         */
+
         this.addAttack(attack);
         this.addHealth(health);
     }
     remStats(attack = 0, health = 0) {
+        /**
+         * Removes "attack" from the minions attack and "health" from the minions health
+         * 
+         * @param attack (number) [default=0] The attack to remove
+         * @param health (number) [default=0] The health to remove
+         * 
+         * @returns undefined
+         */
+
         this.remAttack(attack);
         this.remHealth(health);
     }
     addHealth(amount, restore = true) {
+        /**
+         * Adds "amount" to the minions health
+         * 
+         * @param amount (number) The health to add
+         * @param restore (boolean) Should reset health to maxHealth if it goes over maxHealth
+         * 
+         * @returns undefined
+         */
+
         this.setStats(this.getAttack(), this.getHealth() + amount);
     
         if (restore) {
@@ -151,9 +221,25 @@ class Card {
         else this.resetMaxHealth(true);
     }
     addAttack(amount) {
+        /**
+         * Adds "amount" to the minions attack
+         * 
+         * @param amount (number) The attack to add
+         * 
+         * @returns undefined
+         */
+
         this.setStats(this.getAttack() + amount, this.getHealth());
     }
     remHealth(amount) {
+        /**
+         * Removes "amount" from the minions health
+         * 
+         * @param amount (number) The health to remove
+         * 
+         * @returns undefined
+         */
+
         this.setStats(this.getAttack(), this.getHealth() - amount);
 
         if (this.type == "Weapon" && this.getHealth() <= 0) {
@@ -161,9 +247,25 @@ class Card {
         }
     }
     remAttack(amount) {
+        /**
+         * Removes "amount" from the minions attack
+         * 
+         * @param amount (number) The attack to remove
+         * 
+         * @returns undefined
+         */
+
         this.setStats(this.getAttack() - amount, this.getHealth());
     }
     resetMaxHealth(check = false) {
+        /**
+         * Sets the max health of the minion to it's current health. If check is true it only sets max health if the current health is above it.
+         * 
+         * @param check (boolean) Prevent lowering maxHealth
+         * 
+         * @returns undefined
+         */
+
         if (check && this.getHealth() <= this.maxHealth) return;
 
         this.maxHealth = this.getHealth();
@@ -171,9 +273,26 @@ class Card {
 
     // Set other
     setStealthDuration(duration) {
+        /**
+         * Sets stealth to only last "duration" amount of turns
+         * 
+         * @param duration (number) The amount of turns stealth should last
+         * 
+         * @returns undefined
+         */
+
         this.stealthDuration = game.turns + duration;
     }
     resetAttackTimes() {
+        /**
+         * Sets the attack times of a minion to;
+         * 1 if doesn't have windfury,
+         * 2 if it does,
+         * 3 if it has mega-windfury
+         * 
+         * @returns undefined
+         */
+
         this.attackTimes = 1;
 
         if (this.keywords.includes("Windfury")) {
@@ -186,6 +305,12 @@ class Card {
 
     // Doom buttons
     silence() {
+        /**
+         * Silences the minion
+         * 
+         * @returns undefined
+         */
+
         // Tell the minion to undo it's passive.
         // The false tells the minion that this is the last time it will call unpassive
         // so it should finish whatever it is doing.
@@ -205,12 +330,27 @@ class Card {
         this.keywords = [];
     }
     destroy() {
+        /**
+         * Silences and kills the minion
+         * 
+         * @returns undefined
+         */
+
         this.silence();
         this.setStats(0, 0);
     }
 
     // Handling functions
     activate(name, ...args) {
+        /**
+         * Activates a keyword method
+         * 
+         * @param name (string) The method to activate
+         * @param args (...args) Pass these args to the method
+         * 
+         * @returns (Array<any>) All the return values of the method keywords
+         */
+
         // This activates a function
         // Example: activate("cast")¨
         // Do: this.cast.forEach(cast_func => cast_func(plr, game, card))
@@ -248,10 +388,24 @@ class Card {
         return ret;
     }
     activateBattlecry(...args) {
+        /**
+         * Activates a minion's battlecry
+         * 
+         * @param args (...args) Any arguments to pass to battlecry
+         * 
+         * @returns (Array<any>) The return values of all the battlecries triggered
+         */
+
         this.activate("passive", ["battlecry", this]);
         return this.activate("battlecry", ...args);
     }
     passiveCheck(trigger, key, val = null, check_plr = null) {
+        /**
+         * TODO: Explain this??
+         * 
+         * @returns (boolean) 
+         */
+
         let ret;
 
         if (Array.isArray(key)) ret = !!key.filter(v => v == trigger[0]).length;

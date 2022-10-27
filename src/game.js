@@ -114,14 +114,38 @@ class Game {
     }
 
     set(key, val) {
+        /**
+         * Set this.key = val;
+         * 
+         * @returns undefined
+         */
+
         this[key] = val;
     }
 
     setConstants(debug = false, maxDeckLength = 30, maxBoardSpace = 7) {
+        /**
+         * Sets the game constants
+         * 
+         * @param debug (boolean) [default=false] If debug mode should be enabled
+         * @param maxDeckLength (number) [default=30] Maximum cards you can have in a custom deck
+         * @param maxBoardSpace (number) [default=7] Maximum amount of minions you can have on the board at the same time
+         * 
+         * @returns undefined
+         */
+
         this.constants = new Constants(debug, maxDeckLength, maxBoardSpace);
     }
 
     activatePassives(trigger) {
+        /**
+         * Loops through this.passives and executes the function
+         * 
+         * @param trigger (Array[key<string>, val<any>]) The thing that triggered the passives
+         * 
+         * @returns (Array<any>) Return values of all the executed functions
+         */
+
         let ret = [];
         this.passives.forEach(i => ret.push(i(this, trigger)));
         return ret;
@@ -129,6 +153,12 @@ class Game {
 
     // Start / End
     startGame() {
+        /**
+         * Starts the game
+         * 
+         * @returns undefined
+         */
+
         let players_hands = [[], []];
 
         // Add quest cards to the players hands
@@ -164,6 +194,14 @@ class Game {
         }
     }
     endGame(winner) {
+        /**
+         * Ends the game and declares "winner" as the winner
+         * 
+         * @param winner (Player) The winner
+         * 
+         * @returns undefined
+         */
+
         // Todo: Maybe add more stuff here
 
         this.interact.printName();
@@ -173,6 +211,12 @@ class Game {
         exit(0);
     }
     endTurn() {
+        /**
+         * Ends the players turn and starts the opponents turn
+         * 
+         * @returns undefined
+         */
+
         this.killMinions();
 
         // Update stats
@@ -254,6 +298,15 @@ class Game {
 
     // Playing cards
     playCard(card, player) {
+        /**
+         * Play a card
+         * 
+         * @param card (Card) The card to play
+         * @param player (Player) The card's owner
+         * 
+         * @returns "mana" | "traded" | "space" | "magnetize" | (Card) The return value of summonMinion
+         */
+
         this.killMinions();
 
         while (card.keywords.includes("Tradeable")) {
@@ -414,6 +467,17 @@ class Game {
         return ret;
     }
     summonMinion(minion, player, update = true, trigger_colossal = true) {
+        /**
+         * Summon a minion
+         * 
+         * @param minion (Card) The minion to summon
+         * @param player (Player) The player who gets the minion
+         * @param update (boolean) [default=true] If the summon should trigger secrets / quests / passives.
+         * @param trigger_colossal (boolean) [default=true] If the minion has colossal, summon the other minions.
+         * 
+         * @returns (Card) The minion summoned
+         */
+
         if (update) this.stats.update("minionsSummoned", minion);
 
         player.spellDamage = 0;
@@ -454,6 +518,12 @@ class Game {
 
     // Interacting with minions
     killMinions() {
+        /**
+         * Kill all minions with 0 or less health
+         * 
+         * @returns undefined
+         */
+
         for (var p = 0; p < 2; p++) {
             var n = [];
             

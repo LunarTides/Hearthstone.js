@@ -13,6 +13,12 @@ class Interact {
 
     // Constant interaction
     doTurnAttack() {
+        /**
+         * Asks the user to attack a minion or hero
+         * 
+         * @returns undefined
+         */
+
         var attacker = game.functions.selectTarget("Which minion do you want to attack with?", false, "self");
         var target = game.functions.selectTarget("Which minion do you want to attack?", false, "enemy");
         
@@ -137,6 +143,12 @@ class Interact {
         game.killMinions();
     }
     handleCmds(q) {
+        /**
+         * Checks if "q" is a command, if it is, do something, if not return -1
+         * 
+         * @returns undefined | -1
+         */
+
         if (q === "end") game.endTurn();
         else if (q === "hero power") curr.heroPower();
         else if (q === "attack") {
@@ -209,6 +221,14 @@ class Interact {
         else return -1;
     }
     doTurnLogic(input) {
+        /**
+         * Takes the input and checks if it is a command, if it is not, play the card with the id of input parsed into a number
+         * 
+         * @param input (String) The user input
+         * 
+         * @returns "invalid" | The return value of game.playCard
+         */
+
         game.killMinions();
     
         curr = game.player;
@@ -223,6 +243,12 @@ class Interact {
         return game.playCard(card, curr);    
     }
     doTurn() {
+        /**
+         * Show information and asks the user for an input which is put into doTurnLogic
+         * 
+         * @returns undefined | The return value of doTurnLogic
+         */
+
         curr = game.player;
     
         this.printName();
@@ -232,17 +258,22 @@ class Interact {
         if (game.turns <= 2 && !game.constants.debug) input += "(type 'help' for further information <- This will disappear once you end your turn) ";
     
         const ret = this.doTurnLogic(game.input(input));
+        game.killMinions();
 
-        if (!ret) return;
+        if (!ret || ret === true) return ret;
 
         if (ret == "mana") game.input("Not enough mana.\n");
         else if (ret == "counter") game.input("Your card has been countered.\n");
         else if (ret == "space") game.input(`You can only have ${game.constants.maxBoardSpace} minions on the board.\n`)
         else if (ret == "invalid") game.input("Invalid card.\n");
-
-        game.killMinions();
     }
     useLocation() {
+        /**
+         * Asks the user to select a location card to use, and activate it.
+         * 
+         * @return (boolean) Success
+         */
+
         let locations = game.board[curr.id].filter(m => m.type == "Location");
         if (locations.length <= 0) return false;
 
@@ -261,15 +292,43 @@ class Interact {
 
     // Deck stuff
     validateDeck(card, plr, deck) {
+        /**
+         * Validate a deck
+         * 
+         * @param card (Card) This gets passed into validateCard
+         * @param plr (Player) This gets passed into validateCard
+         * @param deck (Array<Card>) The deck of the player
+         * 
+         * @returns (boolean) Valid
+         */
+
         if (deck.length > game.constants.maxDeckLength) return false;
         return this.validateCard(card, plr);
     }
     validateCard(card, plr) {
+        /**
+         * Checks if a card is a valid card to put into a players deck
+         * 
+         * @param card (Card) The card to check
+         * @param plr (Player) The player to check against
+         * 
+         * @returns (boolean) Valid
+         */
+
         if (plr.class != card.class && card.class != "Neutral") return false;
         if (card.uncollectible) return false;
         return true;
     }
     importDeck(code, plr) {
+        /**
+         * Imports a deck using a code and put the cards into the player's deck
+         * 
+         * @param code (string) The base64 encoded deck code
+         * @param plr (Player) The player to put the cards into
+         * 
+         * @returns (Array<Card>) The deck
+         */
+
         // The code is base64 encoded, so we need to decode it
         code = Buffer.from(code, 'base64').toString('ascii');
         let deck = code.split(", ");
@@ -310,6 +369,14 @@ class Interact {
         return game.functions.shuffle(_deck);
     }
     deckCode(plr) {
+        /**
+         * Asks the player to supply a deck code, if no code was given, fill the players deck with 30 Sheep
+         * 
+         * @param plr (Player) The player to ask
+         * 
+         * @returns undefined
+         */
+
         this.printName();
     
         const deckcode = game.input(`\nPlayer ${plr.id + 1}, please type in your deckcode (Leave this empty for a test deck): `);
@@ -320,6 +387,14 @@ class Interact {
 
     // Print game information
     printName(name = true) {
+        /**
+         * Prints the "watermark" border
+         * 
+         * @param name (boolean) [default=true] If the watermark border should appear, if this is false, just clear the screen
+         * 
+         * @returns undefined
+         */
+
         cls();
     
         if (!name) return;
@@ -329,6 +404,14 @@ class Interact {
         console.log("|-----------------------------|\n");
     }
     printLicense(disappear = true) {
+        /**
+         * Prints some license info
+         * 
+         * @param disappear (boolean) [default=true] If this is true, "This will disappear once you end your turn" will show up.
+         * 
+         * @returs undefined
+         */
+
         if (game.constants.debug) return;
     
         cls();
@@ -337,10 +420,19 @@ class Interact {
         console.log(`|||                  Hearthstone.js | Copyright (C) ${copyright_year} | Keatpole                   |||`)
         console.log(`||| This program is licensed under the GNU-GPL license. To learn more: type 'license' |||`)
         if (disappear)
-        console.log(`|||                     This will disppear once you end your turn.                    |||`)
+        console.log(`|||                     This will disappear once you end your turn.                    |||`)
         console.log(`|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n`);
     }
     printAll(curr, detailed = false) {
+        /**
+         * Prints all the information you need to understand the game state
+         * 
+         * @param curr (Player) The current player
+         * @param detailed (boolean) [default=false] Show more, less important, information
+         * 
+         * @returns undefined
+         */
+
         if (game.turns <= 2) this.printLicense();
     
         let op = curr.getOpponent();
@@ -622,6 +714,12 @@ class Interact {
         console.log("------------");
     }
     viewMinion(minion) {
+        /**
+         * View information about a minion.
+         * 
+         * @param minion (Card) The minion to show information about
+         */
+
         console.log(`{${minion.mana}} ${minion.displayName} [${minion.blueprint.stats.join(' / ')}]\n`);
         if (minion.desc) console.log(minion.desc + "\n");
         console.log("Tribe: " + minion.tribe);
