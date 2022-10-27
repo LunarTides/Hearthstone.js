@@ -7,7 +7,7 @@ module.exports = {
     class: "Warrior",
     rarity: "Rare",
     set: "Murder at Castle Nathria",
-    cooldown: 1,
+    cooldown: 2,
 
     use(plr, game, self) {
         let target = game.functions.selectTarget("Deal 1 damage to a minion and give it +2 Attack.", false, null, "minion");

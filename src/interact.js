@@ -262,6 +262,7 @@ class Interact {
 
         if (!ret || ret === true) return ret;
 
+        // Error Codes
         if (ret == "mana") game.input("Not enough mana.\n");
         else if (ret == "counter") game.input("Your card has been countered.\n");
         else if (ret == "space") game.input(`You can only have ${game.constants.maxBoardSpace} minions on the board.\n`)

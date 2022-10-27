@@ -39,6 +39,12 @@ class Player {
     }
 
     getOpponent() {
+        /**
+         * Get this player's opponent
+         * 
+         * @returns (Player) Opponent
+         */
+
         const id = (this.id == 0) ? 2 : 1;
 
         return game["player" + id];
@@ -46,20 +52,54 @@ class Player {
 
     // Mana
     refreshMana(mana, comp = this.maxMana) {
+        /**
+         * Adds "mana" to this.mana, then checks if this.mana is more than "comp", if it is, set this.mana to "comp"
+         * 
+         * @param mana (number) The mana to add
+         * @param comp (number) [default=this.maxMana] The comperison
+         * 
+         * @returns undefined
+         */
+
         this.mana += mana;
 
         if (this.mana > comp) this.mana = comp;
     }
     gainEmptyMana(mana, cap = false) {
+        /**
+         * Increases max mana by "mana", then if cap is true; check if max mana is more than max max mana, if it is, set max mana to max max mana
+         * 
+         * @param mana (number) The mana to add
+         * @param cap (boolean) [default=false] Should prevent max mana going over max max mana
+         * 
+         * @returns undefined 
+         */
+
         this.maxMana += mana;
 
         if (cap && this.maxMana > this.maxMaxMana) this.maxMana = this.maxMaxMana;
     }
     gainMana(mana) {
+        /**
+         * Increases both mana and max mana by "mana"
+         * 
+         * @param mana (number) The number to increase mana and max mana by
+         * 
+         * @returns undefined
+         */
+
         this.gainEmptyMana(mana);
         this.refreshMana(mana);
     }
     gainOverload(overload) {
+        /**
+         * Increases the players overload by "overload"
+         * 
+         * @param overload (number) The amount of overload to add
+         * 
+         * @returns undefined
+         */
+
         this.overload += overload;
 
         const plus = this.maxMana == this.maxMaxMana ? 0 : 1;
@@ -71,11 +111,27 @@ class Player {
 
     // Weapons
     setWeapon(weapon) {
+        /**
+         * Sets this player's weapon to "weapon"
+         * 
+         * @param weapon (Card) The weapon to set
+         * 
+         * @returns undefined
+         */
+
         this.weapon = weapon;
 
         this.attack += weapon.getAttack();
     }
     destroyWeapon(triggerDeathrattle = false) {
+        /**
+         * Destroys this player's weapon
+         * 
+         * @param triggerDeathrattle (boolean) [default=false] Should trigger the weapon's deathrattle
+         * 
+         * @returns undefined
+         */
+
         if (!this.weapon) return false;
 
         if (triggerDeathrattle) this.weapon.activate("deathrattle");
@@ -85,16 +141,40 @@ class Player {
 
     // Stats
     addAttack(amount) {
+        /**
+         * Increases the player's attack by "amount"
+         * 
+         * @param amount (number) The amount the player's attack should increase by
+         * 
+         * @returns undefined
+         */
+
         this.attack += amount;
 
         game.stats.update("heroAttackGained", amount);
     }
     addHealth(amount) {
+        /**
+         * Increases the player's health by "amount"
+         * 
+         * @param amount (number) The amount the player's health should increase by
+         * 
+         * @returns undefined
+         */
+
         this.health += amount;
 
         if (this.health > this.maxHealth) this.health = this.maxHealth;
     }
     remHealth(amount) {
+        /**
+         * Decreases the player's health by "amount". If the player has armor, the armor gets decreased instead.
+         * 
+         * @param amount (number) The amount the player's health should increase by
+         * 
+         * @returns (boolean) Success
+         */
+
         var a = amount;
 
         while (this.armor > 0 && a > 0) {
@@ -117,10 +197,21 @@ class Player {
                 this.game.endGame(game.opponent);
             }
         }
+
+        return true;
     }
 
     // Hand / Deck
     shuffleIntoDeck(card, updateStats = true) {
+        /**
+         * Shuffle a card into this player's deck
+         * 
+         * @param card (Card) The card to shuffle
+         * @param updateStats (boolean) Should this trigger secrets / quests / passives
+         * 
+         * @returns undefined
+         */
+
         // Add the card into a random position in the deck
         var pos = this.game.functions.randInt(0, this.deck.length);
         this.deck.splice(pos, 0, card);
@@ -130,11 +221,27 @@ class Player {
         }
     }
     addToBottomOfDeck(card) {
+        /**
+         * Adds a card to the bottom of this player's deck
+         * 
+         * @param card (Card) The card to add to the bottom of the deck
+         * 
+         * @returns undefined
+         */
+
         this.deck = [card, ...this.deck];
 
         this.game.stats.update("cardsAddedToDeck", card);
     }
     drawCard(update = true) {
+        /**
+         * Draws the card at the top of this player's deck
+         * 
+         * @param update (boolean) Should this trigger secrets / quests / passives
+         * 
+         * @returns undefined | null | (Card) The card drawn
+         */
+
         if (this.deck.length <= 0) {
             this.fatigue++;
 
@@ -161,6 +268,15 @@ class Player {
         return card;
     }
     addToHand(card, updateStats = true) {
+        /**
+         * Adds a card to the player's hand
+         * 
+         * @param card (Card) The card to add
+         * @param updateStats (boolean) Should this trigger secrets / quests / passives
+         * 
+         * @returns undefined
+         */
+
         if (this.hand.length < 10) {
             this.hand.push(card);
         
@@ -168,15 +284,41 @@ class Player {
         }
     }
     removeFromHand(card) {
+        /**
+         * Removes a card from the player's hand
+         * 
+         * @param card (Card) The card to remove
+         * 
+         * @returns undefined
+         */
+
         this.hand = this.hand.filter(c => c !== card);
     }
 
     // Hero power / Class
     setClass(_class, hp = true) {
+        /**
+         * Sets the player's class to "_class"
+         * 
+         * @param _class (string) The class that the player should be set to
+         * @param hp (boolean) Should the hero power be changed to that class's default hero power
+         * 
+         * @returns undefined
+         */
+
         this.class = _class;
         if (hp) this.hero_power = _class;
     }
     setHero(hero, armor = 5) {
+        /**
+         * Sets the player's hero to "hero"
+         * 
+         * @param hero (Card) The hero that the player should be set to
+         * @param armor (number) The amount of armor the player should gain
+         * 
+         * @returns undefined
+         */
+
         this.hero = hero;
 
         this.hero_power = "hero";
@@ -185,6 +327,12 @@ class Player {
         this.armor += armor;
     }
     heroPower() {
+        /**
+         * Activate the player's hero power.
+         * 
+         * @returns -1 | (boolean) Success
+         */
+
         if (this.hero_power == "Demon Hunter") this.heroPowerCost = 1;
         else this.heroPowerCost = 2; // This is to prevent changing hero power to demon hunter and changing back to decrease cost to 1
 
@@ -201,6 +349,8 @@ class Player {
                 game.stats.update("heroPowers", this.hero_power);
 
                 this.canUseHeroPower = false;
+
+                return -1;
             }
 
             return true;
@@ -592,7 +742,7 @@ class Functions {
             if (!flags.includes("allow_locations")) {
                 game.input("You cannot target location cards.\n");
 
-                return false
+                return false;
             }
         }
 
