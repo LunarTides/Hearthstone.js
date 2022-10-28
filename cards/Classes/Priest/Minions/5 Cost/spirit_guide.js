@@ -7,6 +7,7 @@ module.exports = {
     class: "Priest",
     rarity: "Common",
     set: "Fractured in Alterac Valley",
+    keywords: ["Taunt"],
 
     deathrattle(plr, game, self) {
         let possible_holy_cards = Object.values(plr.deck).filter(c => c.type == "Spell" && c.spellClass && c.spellClass == "Holy");

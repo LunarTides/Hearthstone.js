@@ -13,6 +13,8 @@ module.exports = {
         if (possible_cards.length <= 0) return;
 
         let card = game.functions.randList(possible_cards);
+        card = game.functions.cloneCard(card, plr);
+
         plr.addToHand(card);
     }
 }

@@ -328,7 +328,7 @@ class Game {
         if (player.mana < card.mana) return "mana";
 
         player.mana -= card.mana;
-        card.mana = card.backups.mana;
+        //card.mana = card.backups.mana;
         
         player.removeFromHand(card);
 
@@ -451,7 +451,7 @@ class Game {
         // If the previous card played was played on the same turn as this one, activate combo
         if (stat.length > 1 && stat[stat.length - 2].turn == this.turns) card.activate("combo");
 
-        card.plr.hand.forEach(c => {
+        player.hand.forEach(c => {
             if (c.keywords.includes("Corrupt")) {
                 if (card.mana > c.mana) {
                     let t = new Card(c.corrupt, c.plr);

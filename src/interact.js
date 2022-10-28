@@ -19,10 +19,10 @@ class Interact {
          * @returns {undefined}
          */
 
-        var attacker = game.functions.selectTarget("Which minion do you want to attack with?", false, "self");
-        var target = game.functions.selectTarget("Which minion do you want to attack?", false, "enemy");
-        
+        let attacker = game.functions.selectTarget("Which minion do you want to attack with?", false, "self");
         if (!attacker || attacker.frozen || attacker.dormant) return;
+        
+        let target = game.functions.selectTarget("Which minion do you want to attack?", false, "enemy");
         if (!target || target.immune || target.dormant) return;
     
         if (target instanceof game.Player && attacker instanceof game.Card && !attacker.canAttackHero) return;

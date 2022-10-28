@@ -10,28 +10,15 @@ module.exports = {
 
     passive(plr, game, card) {
         plr.hand.filter(c => c.type == "Spell").forEach(c => {
-            let cont = false;
+            if (c.mana <= 0) return;
 
-            card.storage.forEach(i => {
-                if (i[0] == c) {
-                    cont = true;
-                }
-            });
-
-            if (!cont) {
-                card.storage.push([c, c.backups.mana]);
-                if (c.mana > 0) {
-                    c.mana--;
-                }
-            }
+            c.mana--;
+            card.storage.push(c);
         });
     },
 
     unpassive(plr, game, card) {
-        card.storage.forEach(c => {
-            c[0].mana = c[1];
-        });
-
+        card.storage.forEach(c => c.mana++);
         card.storage = [];
     }
 }
