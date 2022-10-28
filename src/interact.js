@@ -226,14 +226,14 @@ class Interact {
          * 
          * @param {string} input The user input
          * 
-         * @returns {string | Card} "invalid" | The return value of game.playCard
+         * @returns {boolean | string | Card} true | "invalid" | The return value of game.playCard
          */
 
         game.killMinions();
     
         curr = game.player;
     
-        if (this.handleCmds(input) !== -1) return;
+        if (this.handleCmds(input) !== -1) return true;
         
         const card = curr.hand[parseInt(input) - 1];
         if (!card) return "invalid";
@@ -246,7 +246,7 @@ class Interact {
         /**
          * Show information and asks the user for an input which is put into doTurnLogic
          * 
-         * @returns {undefined | string | Card} | The return value of doTurnLogic
+         * @returns {boolean | string | Card} Success | The return value of doTurnLogic
          */
 
         curr = game.player;
@@ -260,13 +260,18 @@ class Interact {
         const ret = this.doTurnLogic(game.input(input));
         game.killMinions();
 
-        if (!ret || ret === true) return ret;
+        if (ret === true) return true; // If there were no errors, return true.
 
         // Error Codes
-        if (ret == "mana") game.input("Not enough mana.\n");
-        else if (ret == "counter") game.input("Your card has been countered.\n");
-        else if (ret == "space") game.input(`You can only have ${game.constants.maxBoardSpace} minions on the board.\n`)
-        else if (ret == "invalid") game.input("Invalid card.\n");
+        if (ret == "mana") console.log("Not enough mana.");
+        else if (ret == "counter") console.log("Your card has been countered.");
+        else if (ret == "space") console.log(`You can only have ${game.constants.maxBoardSpace} minions on the board.`)
+        else if (ret == "invalid") console.log("Invalid card.");
+        else console.log("An unknown error occurred.");
+
+        game.input();
+
+        return false;
     }
     useLocation() {
         /**
