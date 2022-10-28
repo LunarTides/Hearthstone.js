@@ -12,16 +12,22 @@ module.exports = {
         
         if (!top) return;
 
-        game.interact.printName();
-        game.interact.printAll(plr);
+        while (true) {
+            game.interact.printName();
+            game.interact.printAll(plr);
 
-        let answer = game.input("\nPut " + top.name + " on the bottom of your deck? (Y/N) ");
-        
-        if (answer.toLowerCase() == "y") {
-            plr.deck.unshift(top);
-            card.remStats(0, 1);
-        } else {
-            plr.deck.push(top);
+            let answer = game.input("\nPut " + top.name + " on the bottom of your deck? (Y/N) ");
+            
+            if (answer.toLowerCase() == "y") {
+                plr.deck.unshift(top);
+                card.remStats(0, 1);
+                break;
+            } else if (answer.toLowerCase() == "n") {
+                plr.deck.push(top);
+                break;
+            } else {
+                game.input(`ERROR: Unexpected user input '${answer}'. Valid inputs: [Y / N]\n`);
+            }
         }
     }
 }

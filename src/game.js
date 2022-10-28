@@ -2,7 +2,7 @@ const { question } = require('readline-sync');
 const { Functions, Player, Constants } = require("./other");
 const { Card } = require("./card");
 const { Interact } = require("./interact");
-const { exit } = require("process")
+const { exit } = require("process");
 
 class GameStats {
     constructor(game) {
@@ -134,7 +134,7 @@ class Game {
          * @returns {undefined}
          */
 
-        this.constants = new Constants(debug, maxDeckLength, maxBoardSpace);
+        this.constants = new Constants(this, debug, maxDeckLength, maxBoardSpace);
     }
 
     activatePassives(trigger) {

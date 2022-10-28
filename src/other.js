@@ -3,10 +3,6 @@ const { setup_card } = require("./card");
 let cards = {};
 let game = null;
 
-function setup(_game) {
-    game = _game;
-}
-
 class Player {
     constructor(name) {
         this.name = name;
@@ -452,7 +448,8 @@ class Player {
 }
 
 class Constants {
-    constructor(debug, maxDeckLength, maxBoardSpace) {
+    constructor(_game, debug, maxDeckLength, maxBoardSpace) {
+        game = _game;
         this.debug = debug;
         this.maxDeckLength = maxDeckLength;
         this.maxBoardSpace = maxBoardSpace;
@@ -1020,5 +1017,3 @@ class Functions {
 exports.Functions = Functions;
 exports.Player = Player;
 exports.Constants = Constants;
-
-exports.setup = setup;
