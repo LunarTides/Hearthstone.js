@@ -52,7 +52,7 @@ class Player {
          * Adds "mana" to this.mana, then checks if this.mana is more than "comp", if it is, set this.mana to "comp"
          * 
          * @param {number} mana The mana to add
-         * @param {number} comp [default=this.maxMana] The comperison
+         * @param {number} comp [default=Player's max mana] The comperison
          * 
          * @returns {undefined}
          */
@@ -203,7 +203,7 @@ class Player {
          * Shuffle a card into this player's deck
          * 
          * @param {Card} card The card to shuffle
-         * @param {boolean} updateStats Should this trigger secrets / quests / passives
+         * @param {boolean} updateStats [default=true] Should this trigger secrets / quests / passives
          * 
          * @returns {undefined}
          */
@@ -233,7 +233,7 @@ class Player {
         /**
          * Draws the card at the top of this player's deck
          * 
-         * @param {boolean} update Should this trigger secrets / quests / passives
+         * @param {boolean} update [default=true] Should this trigger secrets / quests / passives
          * 
          * @returns {undefined | null | Card} Card is the card drawn
          */
@@ -264,7 +264,7 @@ class Player {
          * Draws a specific card from this player's deck
          * 
          * @param {Card} card The card to draw
-         * @param {boolean} update Should this trigger secrets / quests / passives
+         * @param {boolean} update [default=true] Should this trigger secrets / quests / passives
          * 
          * @returns {undefined | null | Card} Card is the card drawn
          */
@@ -289,7 +289,7 @@ class Player {
          * Adds a card to the player's hand
          * 
          * @param {Card} card The card to add
-         * @param {boolean} updateStats Should this trigger secrets / quests / passives
+         * @param {boolean} updateStats [default=true] Should this trigger secrets / quests / passives
          * 
          * @returns {undefined}
          */
@@ -318,7 +318,7 @@ class Player {
          * Sets the player's class to "_class"
          * 
          * @param {string} _class The class that the player should be set to
-         * @param {boolean} hp Should the hero power be changed to that class's default hero power
+         * @param {boolean} hp [default=true] Should the hero power be changed to that class's default hero power
          * 
          * @returns {undefined}
          */
@@ -331,7 +331,7 @@ class Player {
          * Sets the player's hero to "hero"
          * 
          * @param {Card} hero The hero that the player should be set to
-         * @param {number} armor The amount of armor the player should gain
+         * @param {number} armor [default=5] The amount of armor the player should gain
          * 
          * @returns {undefined}
          */
@@ -460,6 +460,14 @@ class Functions {
     // QoL
     // https://dev.to/codebubb/how-to-shuffle-an-array-in-javascript-2ikj - Vladyslav
     shuffle(array) {
+        /**
+         * Shuffle the array and return the result
+         * 
+         * @param {any[]} array Array to shuffle
+         * 
+         * @returns {any[]} Shuffeled array
+         */
+
         const newArray = [...array]
         const length = newArray.length
 
@@ -473,6 +481,14 @@ class Functions {
         return newArray
     }
     randList(list) {
+        /**
+         * Return a random element from "list"
+         * 
+         * @param {any[]} list
+         * 
+         * @returns {any} Item
+         */
+
         let item = list[this.randInt(0, list.length - 1)];
         
         if (item instanceof game.Card) item = new game.Card(item.name);
@@ -480,14 +496,39 @@ class Functions {
         return item;
     }
     randInt(min, max) {
+        /**
+         * Return a random number from "min" to "max"
+         * 
+         * @param {number} min The minimum number
+         * @param {number} max The maximum number
+         * 
+         * @returns {number} The random number
+         */
+
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
     capitalize(str) {
+        /**
+         * Capitilizes and returns the string
+         * 
+         * @param {string} str String
+         * 
+         * @return {string} The string capitilized
+         */
+
         return str[0].toUpperCase() + str.slice(1).toLowerCase();
     }
 
     // Getting card info
     getType(card) {
+        /**
+         * Returns the type of a card
+         * 
+         * @param {Card | Blueprint} card The card to check
+         * 
+         * @returns {string} The type of the card
+         */
+
         if (card.cooldown) return "Location";
         
         else if (card.tribe) return "Minion"; // If you see this in the error log, the error occorred since the game failed to get the type of a minion. Error Code: #21
@@ -496,12 +537,37 @@ class Functions {
         else return "Spell";
     }
     getCardByName(name) {
+        /**
+         * Gets the card that has the same name as "name"
+         * 
+         * @param {string} name The name
+         * 
+         * @returns {Blueprint} The blueprint of the card
+         */
+
         return Object.values(game.cards).find(c => c.name.toLowerCase() == name.toLowerCase());
     }
     cloneObject(object) {
+        /**
+         * Clones the "object" and returns the clone
+         * 
+         * @param {object} object The object to clone
+         * 
+         * @returns {object} Clone
+         */
+
         return Object.assign(Object.create(Object.getPrototypeOf(object)), object);
     }
     cloneCard(card, plr) {
+        /**
+         * Clones a card, assigns it the to "plr", sets some essential properties
+         * 
+         * @param {Card} card The card to clone
+         * @param {Player} plr The owner of the card
+         * 
+         * @returns {Card} Clone
+         */
+
         let clone = this.cloneObject(card);
 
         clone.randomizeIds();
@@ -514,6 +580,15 @@ class Functions {
 
     // Damage
     attackMinion(attacker, target) {
+        /**
+         * Makes a minion or hero attack another minion or hero
+         * 
+         * @param {Card | Player} attacker The attacker
+         * @param {Card | Player} target The target
+         * 
+         * @returns {boolean} Success
+         */
+
         game.killMinions();
 
         // The first variable is a number
@@ -574,6 +649,15 @@ class Functions {
         return true;
     }
     spellDmg(target, damage) {
+        /**
+         * Deals damage to "target" based on your spell damage
+         * 
+         * @param {Card | Player} target The target
+         * @param {number} damage The damage to deal
+         * 
+         * @returns {number} The target's new health
+         */
+
         const dmg = this.accountForSpellDmg(damage);
 
         game.stats.update("spellsThatDealtDamage", [target, dmg]);
@@ -583,18 +667,46 @@ class Functions {
         } else if (target instanceof Player) {
             target.remHealth(dmg);
         }
+
+        return target.getHealth();
     }
 
     // Account for certain stats
     accountForSpellDmg(damage) {
+        /**
+         * Returns "damage" + The player's spell damage
+         * 
+         * @param {number} damage
+         * 
+         * @returns {number} Damage + spell damage
+         */
+
         return damage + game.player.spellDamage;
     }
     accountForUncollectible(cards) {
+        /**
+         * Filters out all cards that are uncollectible in a list
+         * 
+         * @param {Card[] | Blueprint[]} cards The list of cards
+         * 
+         * @returns {Card[] | Blueprint[]} The cards without the uncollectible cards
+         */
+
         return cards.filter(c => !c.uncollectible);
     }
 
     // Give user a prompt.
     chooseOne(prompt, options, times = 1) {
+        /**
+         * Asks the user a "prompt" give the user "options" and do it all "times" times
+         * 
+         * @param {string} prompt The prompt to ask the user
+         * @param {string[]} options The options to give the user
+         * @param {number} times [default=1] The amount of time to ask
+         * 
+         * @returns {string | string[]} The user's answer(s)
+         */
+
         let choices = [];
 
         for (var i = 0; i < times; i++) {
@@ -619,6 +731,18 @@ class Functions {
         }
     }
     discover(prompt, amount = 3, flags = [], add_to_hand = true, _cards = []) {
+        /**
+         * Asks the user a "prompt", show them "amount" cards based on "flags", if "add_to_hand", add the card chosen to the player's hand, else return the card chosen
+         * 
+         * @param {string} prompt The prompt to ask
+         * @param {number} amount [default=3] The amount of cards to show
+         * @param {string[]} flags [default=[]] Some flags to filter the cards shown, possible flags: ["Minion", "Spell", "Weapon"]
+         * @param {boolean} add_to_hand [default=true] If it should add the card chosen to the current player's hand
+         * @param {Card[]} _cards [default=[]] Do not use this variable, keep it at default
+         * 
+         * @returns {Card | Blueprint} Card if add_to_hand is true, Blueprint if add_to_hand is false.
+         */
+
         let values = _cards;
 
         if (_cards.length == 0) {
@@ -686,6 +810,19 @@ class Functions {
         }
     }
     selectTarget(prompt, elusive = false, force_side = null, force_class = null, flags = []) {
+        /**
+         * Asks the user a "prompt", the user can then select a minion or hero
+         * 
+         * @param {string} prompt The prompt to ask
+         * @param {boolean | string} elusive [default=false] Wether or not to prevent selecting elusive minions, if this is a string, allow selecting elusive minions but don't trigger secrets / quests
+         * @param {string | null} force_side [default=null] Force the user to only be able to select minions / the hero of a specific side: ["enemy", "self"]
+         * @param {string | null} force_class [default=null] Force the user to only be able to select a minion or a hero: ["hero", "minion"]
+         * @param {string[]} flags [default=[]] Change small behaviours ["allow_locations" => Allow selecting location, ]
+         * 
+         * @returns {Card | Player} The card or hero chosen
+         */
+
+
         // force_class = [null, "hero", "minion"]
         // force_side = [null, "enemy", "self"]
 
@@ -786,6 +923,14 @@ class Functions {
 
     // Keyword stuff
     dredge(prompt = "Choose One:") {
+        /**
+         * Asks the user a "prompt" and show 3 cards from their deck for the player to choose, the chosen card will be added to the top of their deck
+         * 
+         * @param {string} prompt [default="Choose One:"] The prompt to ask the user
+         * 
+         * @returns {Card} The card chosen
+         */
+
         // Look at the bottom three cards of the deck and put one on the top.
         var cards = game.player.deck.slice(0, 3);
 
@@ -817,6 +962,15 @@ class Functions {
         return card;
     }
     adapt(minion, prompt = "Choose One:") {
+        /**
+         * Asks the user a "prompt" and show 3 choices for the player to choose, and do something to the minion based on the choice
+         * 
+         * @param {Card} minion The minion to adapt
+         * @param {string} prompt [default="Choose One:"] The prompt to ask the user
+         * 
+         * @returns {string} The name of the adapt chosen. See the first values of possible_cards
+         */
+
         var possible_cards = [
             ["Crackling Shield", "Divine Shield"],
             ["Flaming Claws", "+3 Attack"],
@@ -850,9 +1004,10 @@ class Functions {
         p = p.slice(0, -2);
         p += "\n] ";
 
-        var choice = game.input(p);
+        let choice = game.input(p);
+        choice = values[parseInt(choice) - 1][0];
 
-        switch (values[parseInt(choice) - 1][0]) {
+        switch (choice) {
             case "Crackling Shield":
                 minion.addKeyword("Divine Shield");
 
@@ -900,8 +1055,18 @@ class Functions {
             default:
                 break;
         }
+
+        return choice;
     }
     invoke(plr) {
+        /**
+         * Call invoke on the player
+         * 
+         * @param {Player} plr The player
+         * 
+         * @returns {undefined}
+         */
+
         // Filter all cards in "plr"'s deck with a name that starts with "Galakrond, the "
         
         // --- REMOVE FOR DEBUGGING ---
@@ -946,23 +1111,44 @@ class Functions {
                 break;
         }
     }
-    recruit(amount = 1, mana_range = [0, 10]) {
-        var array = this.shuffle(game.player.deck)
+    recruit(plr = game.player, amount = 1, mana_range = [0, 10]) {
+        /**
+         * Put's a minion within "mana_range" from the plr's deck, into the board
+         * 
+         * @param {Player} plr [default=current player] The player
+         * @param {number} amount [default=1] The amount of minions to recruit
+         * @param {number[]} mana_range [default=[0, 10]] The minion recruited's mana has to be more than mana_range[0] and less than mana_range[1]
+         * 
+         * @returns {Card[]} Returns the cards recruited
+         */
 
-        var times = 0;
+        let array = this.shuffle(plr.deck)
+
+        let times = 0;
+
+        let cards = [];
 
         array.forEach(c => {
             if (c.type == "Minion" && c.mana >= mana_range[0] && c.mana <= mana_range[1] && times < amount) {
-                game.summonMinion(new game.Card(c.name, game.player), game.player);
+                game.summonMinion(new game.Card(c.name, plr), plr);
 
                 times++;
-
-                return c;
+                cards.push(c);
             }
         });
+
+        return cards;
     }
 
     createJade(plr) {
+        /**
+         * Creates and returns a jade golem with the correct stats and cost for the player
+         * 
+         * @param {Player} plr The jade golem's owner
+         * 
+         * @returns {Card} The jade golem
+         */
+
         if (game.stats.jadeCounter < 30) game.stats.jadeCounter += 1;
         const count = game.stats.jadeCounter;
         const mana = (count < 10) ? count : 10;
@@ -974,6 +1160,14 @@ class Functions {
         return jade;
     }
     importCards(path) {
+        /**
+         * Imports all cards from a folder and returns the cards
+         * 
+         * @param {string} path The path
+         * 
+         * @returns {Blueprint[]} The cards
+         */
+
         require("fs").readdirSync(path, { withFileTypes: true }).forEach(file => {
             let p = `${path}\\${file.name}`;
     
@@ -993,14 +1187,40 @@ class Functions {
     }
 
     // Quest
-    progressQuest(name, value) {
+    progressQuest(name, value = 1) {
+        /**
+         * Progress a quest by a value
+         * 
+         * @param {string} name The name of the quest
+         * @param {number} value [default=1] The amount to progress the quest by
+         * 
+         * @returns {number} The new progress
+         */
+
         let quest = game.player.secrets.find(s => s["name"] == name);
         if (!quest) quest = game.player.sidequests.find(s => s["name"] == name);
         if (!quest) quest = game.player.quests.find(s => s["name"] == name);
 
         quest["progress"][0] += value;
+
+        return quest["progress"][0];
     }
     addQuest(type, plr, card, key, val, callback, next = null, manual_progression = false) {
+        /**
+         * Adds a quest / secrets to a player
+         * 
+         * @param {string} type The type of the quest: ["Quest", "Sidequest", "Secret"]
+         * @param {Player} plr The player to add the quest to
+         * @param {Card} card The quest / secret
+         * @param {string} key The key of the quest
+         * @param {any} val The value that the quest needs
+         * @param {Function} callback The function to call when the key is invoked, arguments: {any[]} trigger [key, val] The trigger, {Game} game The game, {turn} The turn the quest was played, {boolean} normal_done If the game claims the quest is done
+         * @param {string} next [default=null] The name of the next quest / sidequest / secret that should be added when the quest is done
+         * @param {boolean} manual_progression [default=false] If the quest needs progressQuest function to be called to progress, or if it should do it automatically
+         * 
+         * @returns {undefined}
+         */
+
         const t = plr[type.toLowerCase() + "s"];
 
         if ( (type.toLowerCase() == "quest" && t.length > 0) || ((type.toLowerCase() == "secret" || type.toLowerCase() == "sidequest") && (t.length >= 3 || t.filter(s => s.displayName == card.displayName).length > 0)) ) {
