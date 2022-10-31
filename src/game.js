@@ -139,9 +139,9 @@ class Game {
         /**
          * Loops through this.passives and executes the function
          * 
-         * @param {Array[key<string>, val<any>]} trigger The thing that triggered the passives
+         * @param {any[]} trigger The thing that triggered the passives
          * 
-         * @returns {Array<any>} Return values of all the executed functions
+         * @returns {any[]} Return values of all the executed functions
          */
 
         let ret = [];

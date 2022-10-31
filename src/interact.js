@@ -315,7 +315,7 @@ class Interact {
          * 
          * @param {Card} card This gets passed into validateCard
          * @param {Player} plr This gets passed into validateCard
-         * @param {Array<Card>} deck The deck of the player
+         * @param {Card[]} deck The deck of the player
          * 
          * @returns {boolean} Valid
          */
@@ -344,7 +344,7 @@ class Interact {
          * @param {string} code The base64 encoded deck code
          * @param {Player} plr The player to put the cards into
          * 
-         * @returns {Array<Card>} The deck
+         * @returns {Card[]} The deck
          */
 
         // The code is base64 encoded, so we need to decode it

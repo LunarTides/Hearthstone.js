@@ -355,7 +355,7 @@ class Card {
          * @param {string} name The method to activate
          * @param {any} args Pass these args to the method
          * 
-         * @returns {Array<any>} All the return values of the method keywords
+         * @returns {any[]} All the return values of the method keywords
          */
 
         // This activates a function
@@ -400,7 +400,7 @@ class Card {
          * 
          * @param {...args} args Any arguments to pass to battlecry
          * 
-         * @returns {Array<any>} The return values of all the battlecries triggered
+         * @returns {any[]} The return values of all the battlecries triggered
          */
 
         this.activate("passive", ["battlecry", this]);
@@ -416,14 +416,16 @@ class Card {
         let ret;
 
         if (Array.isArray(key)) ret = !!key.filter(v => v == trigger[0]).length;
-        else ret = trigger[0] == key;
+        else ret = (trigger[0] == key);
+
         if (val) {
-            if (Array.isArray(val)) ret = ret && !!val.filter(v => v == trigger[1]).length;
-            else ret = ret && trigger[1] == val;
+            if (Array.isArray(val)) ret &&= !!val.filter(v => v == trigger[1]).length;
+            else ret &&= (trigger[1] == val);
         }
+
         if (check_plr) {
-            if (typeof trigger[1] == game.Player) ret = ret && !!trigger[1].filter(v => v.plr && v.plr == check_plr).length;
-            else ret = ret && trigger[1].plr == check_plr;
+            if (typeof trigger[1] == game.Player) ret &&= !!trigger[1].filter(v => v.plr && v.plr == check_plr).length;
+            else ret &&= (trigger[1].plr == check_plr);
         }
 
         return ret;
