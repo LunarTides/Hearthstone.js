@@ -750,7 +750,7 @@ class Functions {
         }
 
         if (minion === undefined) {
-            console.log("Invalid minion");
+            game.input("Invalid minion.\n");
             return false;
         }
 

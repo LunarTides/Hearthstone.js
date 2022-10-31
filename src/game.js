@@ -122,7 +122,6 @@ class Game {
 
         this[key] = val;
     }
-
     setConstants(debug = false, maxDeckLength = 30, maxBoardSpace = 7) {
         /**
          * Sets the game constants
@@ -136,7 +135,6 @@ class Game {
 
         this.constants = new Constants(this, debug, maxDeckLength, maxBoardSpace);
     }
-
     activatePassives(trigger) {
         /**
          * Loops through this.passives and executes the function
@@ -206,7 +204,7 @@ class Game {
 
         this.interact.printName();
 
-        console.log(`Player ${winner.name} wins!`);
+        game.input(`Player ${winner.name} wins!\n`);
 
         exit(0);
     }
@@ -250,12 +248,12 @@ class Game {
 
         // Weapon stuff
         if (op.weapon) {
-            op.weapon.activate("startofturn");
-
             if (op.weapon.getAttack() > 0) {
                 op.attack += op.weapon.getAttack();
                 op.weapon.resetAttackTimes();
             }
+
+            op.weapon.activate("startofturn");
         }
 
         // Minion start of turn

@@ -103,14 +103,14 @@ class Interact {
     
         // Attacker is a minion
         // Target is a player
-    
-        if (attacker.sleepy) {
-            console.log("That minion cannot attack this turn!");
+
+        if (attacker.attackTimes <= 0) {
+            game.input("That minion has already attacked this turn!\n");
             return;
         }
-        
-        if (attacker.attackTimes <= 0) {
-            console.log("That minion has already attacked this turn!");
+    
+        if (attacker.sleepy) {
+            game.input("That minion cannot attack this turn!\n");
             return;
         }
 
@@ -162,7 +162,19 @@ class Interact {
         }
         else if (q === "help") {
             this.printName();
-            game.input("\n(In order to run a command; input the name of the command and follow further instruction.)\n\nAvailable commands:\n\nend - Ends your turn\nattack - Attack\nview - View a minion\nhero power - Use your hero power\ndetail - Get more details about opponent\nhelp - Displays this message\nlicense - Opens a link to this project's license\n\nPress enter to continue...");
+            console.log("(In order to run a command; input the name of the command and follow further instruction.)\n");
+            console.log("Available commands:");
+            console.log("(name)     - (description)\n");
+
+            console.log("end        - Ends your turn");
+            console.log("attack     - Attack");
+            console.log("view       - View a minion");
+            console.log("hero power - Use your hero power");
+            console.log("detail     - Get more details about opponent");
+            console.log("help       - Displays this message");
+            console.log("license    - Opens a link to this project's license");
+            
+            game.input("\nPress enter to continue...\n");
         }
         else if (q == "view") {
             var minion = game.functions.selectTarget("Which minion do you want to view?", false, null, "minion");
@@ -175,7 +187,7 @@ class Interact {
             this.printName();
             this.printAll(curr, true);
     
-            game.input("Press enter to continue...");
+            game.input("Press enter to continue...\n");
     
             this.printName();
             this.printAll(curr);
@@ -252,7 +264,7 @@ class Interact {
         curr = game.player;
     
         this.printName();
-        this.printAll(game.player);
+        this.printAll(curr);
     
         let input = "\nWhich card do you want to play? ";
         if (game.turns <= 2 && !game.constants.debug) input += "(type 'help' for further information <- This will disappear once you end your turn) ";
@@ -260,7 +272,7 @@ class Interact {
         const ret = this.doTurnLogic(game.input(input));
         game.killMinions();
 
-        if (ret === true) return true; // If there were no errors, return true.
+        if (ret === true || ret instanceof game.Card) return ret; // If there were no errors, return true.
 
         // Error Codes
         if (ret == "mana") console.log("Not enough mana.");
@@ -367,7 +379,7 @@ class Interact {
             }
     
             if (!this.validateDeck(m, plr, _deck)) {
-                console.log("The Deck is not valid")
+                game.input("The Deck is not valid.\n")
                 exit(1);
             }
         }
