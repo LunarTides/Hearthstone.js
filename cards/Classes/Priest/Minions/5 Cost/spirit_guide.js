@@ -10,10 +10,15 @@ module.exports = {
     keywords: ["Taunt"],
 
     deathrattle(plr, game, self) {
+        const f = (l) => {
+            let card = game.functions.randList(l);
+            plr.drawSpecific(card);
+        }
+
         let possible_holy_cards = Object.values(plr.deck).filter(c => c.type == "Spell" && c.spellClass && c.spellClass == "Holy");
-        if (possible_holy_cards.length) plr.drawSpecific(new game.Card(game.functions.randList(possible_holy_cards).name, plr));
+        if (possible_holy_cards.length) f(possible_holy_cards);
 
         let possible_shadow_cards = Object.values(plr.deck).filter(c => c.type == "Spell" && c.spellClass && c.spellClass == "Shadow");
-        if (possible_shadow_cards.length) plr.drawSpecific(new game.Card(game.functions.randList(possible_shadow_cards), plr));
+        if (possible_shadow_cards.length) f(possible_shadow_cards);
     }
 }

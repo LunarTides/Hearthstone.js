@@ -402,6 +402,40 @@ class Interact {
         if (deckcode.length > 0) plr.deck = this.importDeck(deckcode, plr);
         else while (plr.deck.length < 30) plr.deck.push(new game.Card("Sheep", plr));
     }
+    mulligan(plr) {
+        /**
+         * Asks the player to mulligan their cards
+         * 
+         * @param {Player} plr The player to ask
+         * 
+         * @returns {string[]} An array of the index of the cards the player mulligan'd
+         */
+
+        this.printName();
+
+        let sb = "Your hand is: [ ";
+
+        plr.hand.forEach(c => {
+            sb += c.displayName + ", ";
+        });
+
+        sb = sb.slice(0, -2) + " ]\n";
+        sb += "Choose the cards to mulligan (1, 2, 3, ...):\n";
+        if (!game.constants.debug) sb += "(Example: 13 will mulligan your left and right most cards, 123 will mulligan your 3 leftmost cards, just pressing enter will not mulligan any cards):\n";
+
+        let input = game.input(sb).split("");
+
+        input.forEach(c => {
+            let ic = parseInt(c) - 1;
+            let card = plr.hand[ic];
+
+            plr.drawCard();
+            plr.shuffleIntoDeck(card, false);
+            plr.removeFromHand(card);
+        });
+
+        return input;
+    }
 
     // Print game information
     printName(name = true) {

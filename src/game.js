@@ -180,8 +180,6 @@ class Game {
         while (this.player1.hand.length < 3) this.player1.drawCard(false);
         while (this.player2.hand.length < 4) this.player2.drawCard(false);
 
-        this.player2.addToHand(new Card("The Coin", this.player2), false)
-
         this.turns += 1;
 
         for (let i = 0; i < 2; i++) {

@@ -10,9 +10,7 @@ module.exports = {
     cast(plr, game, card) {
         let target = game.functions.selectTarget("Double a minion's Health.", true, null, "minion");
 
-        if (!target) {
-            return -1;
-        }
+        if (!target) return -1;
 
         target.setStats(target.getAttack(), target.getHealth() * 2);
     }

@@ -65,9 +65,7 @@ class Card {
         let backups = {};
 
         // Make a backup of "this" to be used when silencing this card
-        Object.entries(this).forEach(i => {
-            backups[i[0]] = i[1];
-        });
+        Object.entries(this).forEach(i => backups[i[0]] = i[1]);
 
         this.backups = backups;
 
