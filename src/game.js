@@ -180,6 +180,8 @@ class Game {
         while (this.player1.hand.length < 3) this.player1.drawCard(false);
         while (this.player2.hand.length < 4) this.player2.drawCard(false);
 
+        this.player2.addToHand(new Card("The Coin", this.player2), false);
+
         this.turns += 1;
 
         for (let i = 0; i < 2; i++) {
@@ -202,7 +204,7 @@ class Game {
 
         this.interact.printName();
 
-        game.input(`Player ${winner.name} wins!\n`);
+        this.input(`Player ${winner.name} wins!\n`);
 
         exit(0);
     }
@@ -338,7 +340,7 @@ class Game {
         let echo_clone = null;
 
         if (card.keywords.includes("Echo")) {
-            echo_clone = game.functions.cloneCard(card, player); // Create an exact copy of the card played
+            echo_clone = this.functions.cloneCard(card, player); // Create an exact copy of the card played
             echo_clone.echo = true;
         }
 

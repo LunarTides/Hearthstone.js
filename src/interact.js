@@ -416,6 +416,8 @@ class Interact {
         let sb = "Your hand is: [ ";
 
         plr.hand.forEach(c => {
+            if (c.name == "The Coin") return;
+
             sb += c.displayName + ", ";
         });
 
@@ -428,6 +430,8 @@ class Interact {
         input.forEach(c => {
             let ic = parseInt(c) - 1;
             let card = plr.hand[ic];
+
+            if (card.name == "The Coin") return;
 
             plr.drawCard();
             plr.shuffleIntoDeck(card, false);

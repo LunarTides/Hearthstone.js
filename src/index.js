@@ -33,6 +33,4 @@ game.startGame();
 game.interact.mulligan(player1);
 game.interact.mulligan(player2);
 
-game.player2.addToHand(new game.Card("The Coin", game.player2), false);
-
 while (true) game.interact.doTurn();
