@@ -8,7 +8,7 @@ module.exports = {
     spellClass: "Shadow",
 
     cast(plr, game, card) {
-        let target = game.functions.selectTarget("Choose a minion.", true, null, "minion");
+        let target = game.functions.selectTarget("Add a copy of a minion to your hand.", true, null, "minion");
 
         if (!target) {
             return -1;

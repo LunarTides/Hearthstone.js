@@ -19,11 +19,20 @@ class Interact {
          * @returns {undefined}
          */
 
-        let attacker = game.functions.selectTarget("Which minion do you want to attack with?", false, "self");
-        if (!attacker || attacker.frozen || attacker.dormant) return;
-        
-        let target = game.functions.selectTarget("Which minion do you want to attack?", false, "enemy");
-        if (!target || target.immune || target.dormant) return;
+        let attacker, target;
+
+        if (game.player.is_ai) {
+            let ai = game.player.ai.chooseBattle();
+
+            attacker = ai[0];
+            target = ai[1];
+        } else {
+            attacker = game.functions.selectTarget("Which minion do you want to attack with?", false, "self");
+            if (!attacker || attacker.frozen || attacker.dormant) return;
+            
+            target = game.functions.selectTarget("Which minion do you want to attack?", false, "enemy");
+            if (!target || target.immune || target.dormant) return;
+        }
     
         if (target instanceof game.Player && attacker instanceof game.Card && !attacker.canAttackHero) return;
     
@@ -245,9 +254,11 @@ class Interact {
     
         curr = game.player;
     
-        if (this.handleCmds(input) !== -1) return true;
-        
-        const card = curr.hand[parseInt(input) - 1];
+        if (typeof input === "string" && this.handleCmds(input) !== -1) return true;
+
+        let card = curr.hand[parseInt(input) - 1];
+        if (input instanceof game.Card) card = input;
+
         if (!card) return "invalid";
         
         if (input == curr.hand.length || input == 1) card.activate("outcast");
@@ -263,6 +274,8 @@ class Interact {
 
         curr = game.player;
     
+        if (curr.is_ai) return this.doTurnLogic(curr.ai.calcMove());
+
         this.printName();
         this.printAll(curr);
     

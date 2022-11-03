@@ -12,6 +12,6 @@ module.exports = {
 
         if (!target) return -1;
 
-        target.setStats(target.getAttack(), target.getHealth() * 2);
+        target.addStats(0, target.getHealth());
     }
 }

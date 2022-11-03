@@ -3,6 +3,7 @@ const { Functions, Player, Constants } = require("./other");
 const { Card } = require("./card");
 const { Interact } = require("./interact");
 const { exit } = require("process");
+const { AI } = require('./ai');
 
 class GameStats {
     constructor(game) {
@@ -93,8 +94,12 @@ class Game {
         this.player = this.player1;
         this.opponent = this.player2;
 
+        if (player1.is_ai) player1.ai = new AI(player1);
+        if (player2.is_ai) player2.ai = new AI(player2);
+
         this.Card = Card;
         this.Player = Player;
+        this.AI = AI;
         this.functions = functions;
         this.stats = new GameStats(this);
         this.interact = new Interact(this);

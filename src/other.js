@@ -1,12 +1,15 @@
+const { setup_ai } = require("./ai");
 const { setup_card } = require("./card");
 
 let cards = {};
 let game = null;
 
 class Player {
-    constructor(name) {
+    constructor(name, is_ai) {
         this.name = name;
         this.id = null;
+        this.is_ai = is_ai;
+        this.ai = null;
         this.deck = [];
         this.hand = [];
         this.mana = 0;
@@ -480,7 +483,7 @@ class Functions {
 
         return newArray
     }
-    randList(list) {
+    randList(list, cpyCard = true) {
         /**
          * Return a random element from "list"
          * 
@@ -491,7 +494,7 @@ class Functions {
 
         let item = list[this.randInt(0, list.length - 1)];
         
-        if (item instanceof game.Card) item = new game.Card(item.name);
+        if (item instanceof game.Card && cpyCard) item = new game.Card(item.name);
 
         return item;
     }
@@ -825,6 +828,8 @@ class Functions {
 
         // force_class = [null, "hero", "minion"]
         // force_side = [null, "enemy", "self"]
+
+        if (game.player.is_ai) return game.player.ai.selectTarget(prompt, elusive, force_side, force_class, flags);
 
         if (force_class == "hero") {
             const target = game.input(`Do you want to select the enemy hero, or your own hero? (y: enemy, n: self) `);
@@ -1174,6 +1179,7 @@ class Functions {
             if (file.name == "zzzzzz.js") {
                 game.set("cards", cards);
                 setup_card(game, cards);
+                setup_ai(game, cards);
             }
 
             else if (file.name.endsWith(".js")) {
