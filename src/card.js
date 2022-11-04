@@ -3,7 +3,7 @@ let cards = [];
 
 function setup(_game, _cards) {
     game = _game;
-    cards = _cards
+    cards = _cards;
 }
 
 class Card {

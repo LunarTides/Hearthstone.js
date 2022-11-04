@@ -6,7 +6,8 @@ const debug = true; // Enables commands like /give, /eval and /debug. Disables n
                     // Enable for debugging, disable for actual play.
 const maxDeckLength = 30;
 const maxBoardSpace = 7;
-const AIMulliganThreshold = 0; // If you don't know what this is, keep it at it's default value.
+const AIMulliganThreshold = 8; // If you don't know what this is, keep it at it's default value.
+const AISpellValue = 4;
 // -----------------------------------
 
 let player1 = new Player("Player 1");
@@ -22,7 +23,7 @@ if (!debug) {
     player2.name = input("Player 2, what is your name? ");
 }
 
-game.setConstants(debug, maxDeckLength, maxBoardSpace, AIMulliganThreshold);
+game.setConstants(debug, maxDeckLength, maxBoardSpace, AIMulliganThreshold, AISpellValue);
 game.functions.importCards(__dirname + '\\..\\cards');
 
 // Ask the players for deck codes.

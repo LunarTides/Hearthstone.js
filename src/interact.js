@@ -267,7 +267,7 @@ class Interact {
                     }
 
                     if (t[1] instanceof game.Card) sb += t[1].name;
-                    else sb += `\n${t[1]}\n`;
+                    else sb += t[1];
 
                     console.log(sb + "),");
                 });

@@ -45,7 +45,6 @@ class GameStats {
 
         this.game.activatePassives([key, val]);
     }
-
     questUpdate(quests_name, key, val, plr = this.game.player) {
         plr[quests_name].forEach(s => {
             if (s["key"] == key) {
@@ -124,7 +123,7 @@ class Game {
 
         this[key] = val;
     }
-    setConstants(debug = false, maxDeckLength = 30, maxBoardSpace = 7, AIMulliganThreshold = 0) {
+    setConstants(debug, maxDeckLength, maxBoardSpace, AIMulliganThreshold, AISpellValue) {
         /**
          * Sets the game constants
          * 
@@ -135,7 +134,13 @@ class Game {
          * @returns {undefined}
          */
 
-        this.constants = {"debug": debug, "maxDeckLength": maxDeckLength, "maxBoardSpace": maxBoardSpace, "AIMulliganThreshold": AIMulliganThreshold};
+        this.constants = {
+            "debug": debug,
+            "maxDeckLength": maxDeckLength,
+            "maxBoardSpace": maxBoardSpace,
+            "AIMulliganThreshold": AIMulliganThreshold,
+            "AISpellValue": AISpellValue
+        };
     }
     activatePassives(trigger) {
         /**

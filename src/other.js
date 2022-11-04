@@ -1177,7 +1177,7 @@ class Functions {
             if (file.name == "zzzzzz.js") {
                 game.set("cards", cards);
                 setup_card(game, cards);
-                setup_ai(game, cards);
+                setup_ai(game);
             }
 
             else if (file.name.endsWith(".js")) {
