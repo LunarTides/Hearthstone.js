@@ -81,7 +81,7 @@ class GameStats {
 class Game {
     constructor(player1, player2) {
         // Choose a random player to be player 1
-        const functions = new Functions();
+        const functions = new Functions(this);
 
         if (functions.randInt(0, 10) < 5) {
             this.player1 = player1;
@@ -93,9 +93,6 @@ class Game {
 
         this.player = this.player1;
         this.opponent = this.player2;
-
-        if (player1.is_ai) player1.ai = new AI(player1);
-        if (player2.is_ai) player2.ai = new AI(player2);
 
         this.Card = Card;
         this.Player = Player;
@@ -127,7 +124,7 @@ class Game {
 
         this[key] = val;
     }
-    setConstants(debug = false, maxDeckLength = 30, maxBoardSpace = 7) {
+    setConstants(debug = false, maxDeckLength = 30, maxBoardSpace = 7, AIMulliganThreshold = 0) {
         /**
          * Sets the game constants
          * 
@@ -138,7 +135,7 @@ class Game {
          * @returns {undefined}
          */
 
-        this.constants = new Constants(this, debug, maxDeckLength, maxBoardSpace);
+        this.constants = {"debug": debug, "maxDeckLength": maxDeckLength, "maxBoardSpace": maxBoardSpace, "AIMulliganThreshold": AIMulliganThreshold};
     }
     activatePassives(trigger) {
         /**
@@ -188,6 +185,9 @@ class Game {
         this.player2.addToHand(new Card("The Coin", this.player2), false);
 
         this.turns += 1;
+
+        if (this.player1.is_ai) this.player1.ai = new AI(this.player1);
+        if (this.player2.is_ai) this.player2.ai = new AI(this.player2);
 
         for (let i = 0; i < 2; i++) {
             const plr = this["player" + (i + 1)]
@@ -313,7 +313,7 @@ class Game {
         this.killMinions();
 
         while (card.keywords.includes("Tradeable")) {
-            var q = this.input(`Would you like to trade ${card.displayName} for a random card in your deck? (y: trade / n: play) `);
+            let q = this.input(`Would you like to trade ${card.displayName} for a random card in your deck? (y: trade / n: play) `);
 
             if (!q.startsWith("y")) break;
             
@@ -526,8 +526,8 @@ class Game {
          * @returns {undefined}
          */
 
-        for (var p = 0; p < 2; p++) {
-            var n = [];
+        for (let p = 0; p < 2; p++) {
+            let n = [];
             
             this.board[p].forEach(m => {
                 if (m.getHealth() <= 0) {

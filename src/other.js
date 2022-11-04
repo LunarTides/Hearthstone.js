@@ -174,7 +174,7 @@ class Player {
          * @returns {boolean} Success
          */
 
-        var a = amount;
+        let a = amount;
 
         while (this.armor > 0 && a > 0) {
             a--;
@@ -212,7 +212,7 @@ class Player {
          */
 
         // Add the card into a random position in the deck
-        var pos = this.game.functions.randInt(0, this.deck.length);
+        let pos = this.game.functions.randInt(0, this.deck.length);
         this.deck.splice(pos, 0, card);
 
         if (updateStats) {
@@ -390,7 +390,7 @@ class Player {
             // dontupdate means prevent selectting an elusive target, but don't update
             // game.stats.spellsCastOnMinions
             // dontupdate can really be any value as long as it is not true or false
-            var t = this.game.functions.selectTarget("Deal 1 damage.", "dontupdate");
+            let t = this.game.functions.selectTarget("Deal 1 damage.", "dontupdate");
 
             if (!t) return false;
 
@@ -404,7 +404,7 @@ class Player {
             game.summonMinion(new game.Card("Silver Hand Recruit", this), this);
         }
         else if (this.hero_power == "Priest") {
-            var t = this.game.functions.selectTarget("Restore 2 health.", "dontupdate");
+            let t = this.game.functions.selectTarget("Restore 2 health.", "dontupdate");
 
             if (!t) return false;
 
@@ -450,16 +450,11 @@ class Player {
     }
 }
 
-class Constants {
-    constructor(_game, debug, maxDeckLength, maxBoardSpace) {
-        game = _game;
-        this.debug = debug;
-        this.maxDeckLength = maxDeckLength;
-        this.maxBoardSpace = maxBoardSpace;
-    }
-}
-
 class Functions {
+    constructor(_game) {
+        game = _game;
+    }
+
     // QoL
     // https://dev.to/codebubb/how-to-shuffle-an-array-in-javascript-2ikj - Vladyslav
     shuffle(array) {
@@ -609,6 +604,7 @@ class Functions {
 
         // The first variable is a minion
         attacker.attackTimes--;
+        attacker.sleepy = true;
 
         game.stats.update("enemyAttacks", [attacker, target]);
         game.stats.update("minionsThatAttacked", [attacker, target]);
@@ -712,8 +708,13 @@ class Functions {
 
         let choices = [];
 
-        for (var i = 0; i < times; i++) {
-            var p = `\n${prompt} [`;
+        for (let i = 0; i < times; i++) {
+            if (game.player.is_ai) {
+                choices.push(game.player.ai.chooseOne(options));
+                continue;
+            }
+
+            let p = `\n${prompt} [`;
 
             options.forEach((v, i) => {
                 p += `${i + 1}: ${v}, `;
@@ -722,7 +723,7 @@ class Functions {
             p = p.slice(0, -2);
             p += "] ";
 
-            var choice = game.input(p);
+            let choice = game.input(p);
 
             choices.push(parseInt(choice) - 1);
         }
@@ -741,9 +742,9 @@ class Functions {
          * @param {number} amount [default=3] The amount of cards to show
          * @param {string[]} flags [default=[]] Some flags to filter the cards shown, possible flags: ["Minion", "Spell", "Weapon"]
          * @param {boolean} add_to_hand [default=true] If it should add the card chosen to the current player's hand
-         * @param {Card[]} _cards [default=[]] Do not use this variable, keep it at default
+         * @param {Blueprint[]} _cards [default=[]] Do not use this variable, keep it at default
          * 
-         * @returns {Card | Blueprint} Card if add_to_hand is true, Blueprint if add_to_hand is false.
+         * @returns {Card} The card chosen.
          */
 
         let values = _cards;
@@ -769,17 +770,19 @@ class Functions {
 
             if (possible_cards.length == 0) return;
 
-            for (var i = 0; i < amount; i++) {
-                var c = game.functions.randList(possible_cards);
+            for (let i = 0; i < amount; i++) {
+                let c = game.functions.randList(possible_cards);
 
                 values.push(c);
                 possible_cards.splice(possible_cards.indexOf(c), 1);
             }
         }
 
-        var p = `\n${prompt}\n[\n`;
-
         if (values.length <= 0) return;
+
+        if (game.player.is_ai) return game.player.ai.discover(values);
+
+        let p = `\n${prompt}\n[\n`;
 
         values.forEach((v, i) => {
             let stats = this.getType(v) == "Minion" ? ` [${v.getAttack()} / ${v.getHealth()}]` : "";
@@ -794,23 +797,18 @@ class Functions {
         p = p.slice(0, -2);
         p += "\n] ";
 
-        var choice = game.input(p);
+        let choice = game.input(p);
 
         if (!values[parseInt(choice) - 1]) {
             return this.discover(prompt, amount, flags, add_to_hand, values);
         }
 
-        var card = values[parseInt(choice) - 1];
+        let card = values[parseInt(choice) - 1];
+        card = new game.Card(card.name, game.player);
 
-        if (add_to_hand) {
-            var c = new game.Card(card.name, game.player);
+        if (add_to_hand) game.player.addToHand(card);
 
-            game.player.addToHand(c);
-
-            return c;
-        } else {
-            return card;
-        }
+        return card;
     }
     selectTarget(prompt, elusive = false, force_side = null, force_class = null, flags = []) {
         /**
@@ -878,7 +876,7 @@ class Functions {
             if (board_next.length >= parseInt(target) && board_self.length >= parseInt(target)) {
                 // Both players have a minion with the same index.
                 // Ask them which minion to select
-                var target2 = game.input(`Do you want to select your opponent's (${board_next_target.displayName}) or your own (${board_self_target.displayName})? (y: opponent, n: self | type 'back' to go back) `);
+                let target2 = game.input(`Do you want to select your opponent's (${board_next_target.displayName}) or your own (${board_self_target.displayName})? (y: opponent, n: self | type 'back' to go back) `);
             
                 if (target2.startsWith("b")) {
                     // Go back.
@@ -937,9 +935,9 @@ class Functions {
          */
 
         // Look at the bottom three cards of the deck and put one on the top.
-        var cards = game.player.deck.slice(0, 3);
+        let cards = game.player.deck.slice(0, 3);
 
-        var p = `\n${prompt}\n[`;
+        let p = `\n${prompt}\n[`;
 
         if (cards.length <= 0) return;
 
@@ -951,7 +949,7 @@ class Functions {
 
         p += "] ";
 
-        var choice = game.input(p);
+        let choice = game.input(p);
 
         if (!cards[parseInt(choice) - 1]) {
             game.interact.printAll(game.player);
@@ -959,7 +957,7 @@ class Functions {
             return this.dredge(prompt);
         }
 
-        var card = cards[parseInt(choice) - 1];
+        let card = cards[parseInt(choice) - 1];
 
         game.player.shuffleIntoDeck(card);
         game.player.deck.splice(game.player.deck.indexOf(card), 1);
@@ -976,7 +974,7 @@ class Functions {
          * @returns {string} The name of the adapt chosen. See the first values of possible_cards
          */
 
-        var possible_cards = [
+        let possible_cards = [
             ["Crackling Shield", "Divine Shield"],
             ["Flaming Claws", "+3 Attack"],
             ["Living Spores", "Deathrattle: Summon two 1/1 Plants."],
@@ -988,16 +986,16 @@ class Functions {
             ["Shrouding Mist", "Stealth until your next turn."],
             ["Poison Spit", "Poisonous"]
         ];
-        var values = [];
+        let values = [];
 
-        for (var i = 0; i < 3; i++) {
-            var c = game.functions.randList(possible_cards);
+        for (let i = 0; i < 3; i++) {
+            let c = game.functions.randList(possible_cards);
 
             values.push(c);
             possible_cards.splice(possible_cards.indexOf(c), 1);
         }
 
-        var p = `\n${prompt}\n[\n`;
+        let p = `\n${prompt}\n[\n`;
 
         values.forEach((v, i) => {
             // Check for a TypeError and ignore it
@@ -1075,17 +1073,17 @@ class Functions {
         // Filter all cards in "plr"'s deck with a name that starts with "Galakrond, the "
         
         // --- REMOVE FOR DEBUGGING ---
-        var cards = plr.deck.filter(c => c.displayName.startsWith("Galakrond, the "));
+        let cards = plr.deck.filter(c => c.displayName.startsWith("Galakrond, the "));
         if (cards.length <= 0) return;
         // ----------------------------
 
         switch (plr.class) {
             case "Priest":
                 // Add a random Priest minion to your hand.
-                var possible_cards = cards.filter(c => this.getType(c) == "Minion" && c.class == "Priest");
+                let possible_cards = cards.filter(c => this.getType(c) == "Minion" && c.class == "Priest");
                 if (possible_cards.length <= 0) return;
 
-                var card = game.functions.randList(possible_cards);
+                let card = game.functions.randList(possible_cards);
                 plr.addToHand(card);
 
                 break;
@@ -1242,4 +1240,3 @@ class Functions {
 
 exports.Functions = Functions;
 exports.Player = Player;
-exports.Constants = Constants;

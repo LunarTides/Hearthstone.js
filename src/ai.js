@@ -8,6 +8,8 @@ function setup(_game, _cards) {
 
 class AI {
     constructor(plr) {
+        this.history = [];
+
         this.plr = plr;
     }
 
@@ -31,24 +33,25 @@ class AI {
             }
         });
 
-        if (!best_move) {
+        let ret = best_move;
+
+        if (!best_move || game.board[this.plr.id].length >= game.constants.maxBoardSpace) {
             // See if can hero power
-            if (this.plr.mana >= this.plr.heroPowerCost) return "hero power";
+            if (this.plr.mana >= this.plr.heroPowerCost && this.plr.canUseHeroPower) ret = "hero power";
 
             // See if can attack
-            if (game.board[this.plr.id].filter(m => !m.sleepy && !m.frozen && !m.dormant).length) {
-                if (game.board[this.plr.getOpponent().id].filter(m => !m.immune && !m.dormant).length)
-                    return "attack";
-            }
+            else if (game.board[this.plr.id].filter(m => !m.sleepy && !m.frozen && !m.dormant).length) ret = "attack";
 
             // See if has location
-            if (game.board[this.plr.id].filter(m => m.type == "Location" && m.cooldown == 0).length) return "use";
+            else if (game.board[this.plr.id].filter(m => m.type == "Location" && m.cooldown == 0).length) ret = "use";
 
-            return "end";
+            else ret = "end";
         }
-        return best_move;
-    }
 
+        this.history.push(["calcMove", [ret, best_score]]);
+
+        return ret;
+    }
     chooseBattle() {
         /**
          * Choose attacker and target
@@ -60,7 +63,7 @@ class AI {
         let attacker = game.board[this.plr.id].filter(m => !m.sleepy && !m.frozen && !m.dormant);
         attacker = game.functions.randList(attacker, false);
         
-        let target;
+        let target = undefined;
 
         // Check if there is a minion with taunt
         let taunts = game.board[this.plr.getOpponent().id].filter(m => m.keywords.includes("Taunt"));
@@ -70,9 +73,13 @@ class AI {
             target = game.functions.randList(target, false);
         }
 
+        // If the AI has no minions to attack, attack the enemy hero
+        if (!taunts.length && !target) target = this.plr.getOpponent();
+
+        this.history.push(["chooseBattle", [attacker, target]]);
+
         return [attacker, target];
     }
-
     selectTarget(prompt, elusive, force_side, force_class, flags) {
         /**
          * Analyze prompt and find if it is a good thing or not, if it is, select a friendly target
@@ -87,24 +94,40 @@ class AI {
 
         let score = this.analyzePositive(prompt);
 
-        let bsl = game.board[id].length;
-        let bol = game.board[op.id].length;
+        if (score > 0) side = "self";
+        else if (score < 0) side = "enemy";
 
-        if (score > 0 && bsl) side = "self";
-        else if (score < 0 && bol) side = "enemy";
-        else if (bsl || bol) side = (game.functions.randInt(0,1)) ? "self" : "enemy";
+        let sid = (side == "self") ? id : op.id;
+
+        if (game.board[0].length > 0 || game.board[1].length > 0) {
+            while (game.board[sid].length <= 0) {
+                side = (game.functions.randInt(0,1)) ? "self" : "enemy";
+                sid = (side == "self") ? id : op.id;
+            }
+        }
 
         if (force_side) side = force_side;
         if (force_class && force_class == "hero") {
-            if (side == "self") return this.plr;
-            else if (side == "enemy") return op;
+            let ret = -1;
 
-            return -1;
+            if (side == "self") ret = this.plr;
+            else if (side == "enemy") ret = op;
+
+            this.history.push(["selectTarget", ret]);
+
+            return ret;
         }
 
-        if (!side) return -1;
+        // The player has no minions, select their face
+        if (game.board[sid].length <= 0) {
+            let ret = -1;
 
-        let sid = (side == "self") ? id : op.id;
+            if (force_class != "minion") ret = game["player" + (sid + 1)];
+            
+            this.history.push(["selectTarget", ret]);
+
+            return ret;
+        }
 
         let selected = null;
 
@@ -114,16 +137,100 @@ class AI {
                 do selected = game.functions.randList(b, false);
                 while((!selected) || (elusive && selected.elusive));
 
-                if (selected) return selected;
+                if (selected) {
+                    this.history.push(["selectTarget", selected]);
+
+                    return selected;
+                }
             }
         }
 
         do selected = game.functions.randList(game.board[sid], false);
         while((!selected) || (elusive && selected.elusive) || (!flags["allow_locations"] && selected.type == "Location"));
 
-        if (selected) return selected;
+        if (selected) {
+            this.history.push(["selectTarget", selected]);
 
+            return selected;
+        }
+
+        this.history.push(["selectTarget", -1]);
         return -1;
+    }
+    discover(cards) {
+        /**
+         * Choose the "best" discover minion.
+         * 
+         * @param {Card[] | Blueprint[]} cards The cards to choose from
+         * 
+         * @returns {Card} Result
+         */
+
+        let best_card = null;
+        let best_score = -100000;
+
+        // Look for highest score
+        cards.forEach(c => {
+            let score = this.analyzePositive(c.desc);
+
+            if (score > best_score) {
+                best_card = c;
+                best_score = score;
+            }
+        });
+
+        this.history.push(["discover", [best_card, best_score]]);
+
+        return best_card;
+    }
+    chooseOne(options) {
+        /**
+         * Choose the "best" option from options
+         * 
+         * @param {string[]} options The options the ai can pick from
+         */
+
+
+        // I know this is a bad solution
+        // "Deal 2 damage to a minion; or Restore 5 Health."
+        // ^^^^^ It will always choose to restore 5 health, since it sees deal 2 damage as bad but oh well, future me problem.
+        let best_choice = null;
+        let best_score = -100000;
+ 
+        // Look for highest score
+        options.forEach((c, i) => {
+            let score = this.analyzePositive(c);
+
+            if (score > best_score) {
+            best_choice = i;
+            best_score = score;
+            }
+        });
+ 
+        this.history.push(["chooseOne", [best_choice, best_score]]);
+
+        return best_choice;
+    }
+    mulligan() {
+        /**
+         * Makes the ai mulligan cards
+         * 
+         * @returns {string} The indexes of the cards to mulligan. Look at mulligan() in interact.js for more details.
+         */
+
+        let to_mulligan = "";
+
+        this.plr.hand.forEach(c => {
+            if (c.name == "The Coin") return;
+
+            let score = this.analyzePositive(c.desc);
+
+            if (score <= game.constants.AIMulliganThreshold) to_mulligan += (this.plr.hand.indexOf(c) + 1).toString();
+        });
+
+        this.history.push(["mulligan", to_mulligan]);
+
+        return to_mulligan;
     }
 
     analyzePositive(str) {
@@ -134,8 +241,8 @@ class AI {
             // Filter out any characters not in the alphabet
             s = s.toLowerCase().split("").filter(c => ALPHABET.split("").includes(c)).join("");
 
-            if (["heal", "give", "gain", "+", "restore", "attack", "health", "copy"].includes(s)) score++;;
-            if (["deal", "remove", "damage", "silence", "-"].includes(s)) score--;
+            if (["heal", "give", "gain", "+", "restore", "attack", "health", "copy", "draw", "mana"].includes(s)) score++;;
+            if (["deal", "remove", "damage", "silence", "destroy", "kill", "-"].includes(s)) score--;
         });
 
         return score;

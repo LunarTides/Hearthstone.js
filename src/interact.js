@@ -142,6 +142,7 @@ class Interact {
             target.remHealth(attacker.getAttack());
     
             attacker.attackTimes--;
+            attacker.sleepy = true;
             return;
         }
     
@@ -186,7 +187,7 @@ class Interact {
             game.input("\nPress enter to continue...\n");
         }
         else if (q == "view") {
-            var minion = game.functions.selectTarget("Which minion do you want to view?", false, null, "minion");
+            let minion = game.functions.selectTarget("Which minion do you want to view?", false, null, "minion");
     
             if (minion === undefined) return -1;
     
@@ -202,7 +203,7 @@ class Interact {
             this.printAll(curr);
         }
         else if (q == "license") {
-            var start = (process.platform == 'darwin'? 'open': process.platform == 'win32'? 'start': 'xdg-open');
+            let start = (process.platform == 'darwin' ? 'open' : process.platform == 'win32' ? 'start' : 'xdg-open');
             require('child_process').exec(start + ' ' + license_url);
         }
 
@@ -237,6 +238,44 @@ class Interact {
             curr.health += 10000;
             curr.armor += 100000;
             curr.fatigue = 0;
+        }
+        else if (q == "/ai") {
+            if (!game.constants.debug) return -1;
+
+            console.log("AI Info:\n");
+
+            for (let i = 0; i < 2; i++) {
+                const plr = game["player" + (i + 1)];
+                if (!plr.is_ai) continue;
+
+                console.log(`AI${i} History: {`);
+
+                plr.ai.history.forEach((t, i) => {
+                    let sb = `${i} ${t[0]}: (`;
+
+                    if (t[1] instanceof Array) {
+                        if (t[1][0] instanceof game.Card) sb += t[1][0].name;
+                        else sb += t[1][0];
+
+                        sb += ", ";
+
+                        if (t[1][1] instanceof game.Card) sb += t[1][1].name;
+                        else sb += t[1][1];
+
+                        console.log(`${sb}),`);
+                        return;
+                    }
+
+                    if (t[1] instanceof game.Card) sb += t[1].name;
+                    else sb += `\n${t[1]}\n`;
+
+                    console.log(sb + "),");
+                });
+                
+                console.log("}");
+            }
+
+            game.input("\nPress enter to continue...");
         }
 
         else return -1;
@@ -274,7 +313,13 @@ class Interact {
 
         curr = game.player;
     
-        if (curr.is_ai) return this.doTurnLogic(curr.ai.calcMove());
+        if (curr.is_ai) {
+            let turn = this.doTurnLogic(curr.ai.calcMove());
+
+            game.killMinions();
+
+            return turn;
+        }
 
         this.printName();
         this.printAll(curr);
@@ -421,7 +466,7 @@ class Interact {
          * 
          * @param {Player} plr The player to ask
          * 
-         * @returns {string[]} An array of the index of the cards the player mulligan'd
+         * @returns {string} A string of the indexes of the cards the player mulligan'd
          */
 
         this.printName();
@@ -438,9 +483,12 @@ class Interact {
         sb += "Choose the cards to mulligan (1, 2, 3, ...):\n";
         if (!game.constants.debug) sb += "(Example: 13 will mulligan your left and right most cards, 123 will mulligan your 3 leftmost cards, just pressing enter will not mulligan any cards):\n";
 
-        let input = game.input(sb).split("");
+        let input;
 
-        input.forEach(c => {
+        if (plr.is_ai) input = plr.ai.mulligan();
+        else input = game.input(sb);
+
+        input.split("").forEach(c => {
             let ic = parseInt(c) - 1;
             let card = plr.hand[ic];
 
