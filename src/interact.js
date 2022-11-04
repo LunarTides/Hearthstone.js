@@ -24,6 +24,8 @@ class Interact {
         if (game.player.is_ai) {
             let ai = game.player.ai.chooseBattle();
 
+            if (ai[0] === -1) return false;
+
             attacker = ai[0];
             target = ai[1];
         } else {

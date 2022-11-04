@@ -31,7 +31,7 @@ game.interact.deckCode(player1);
 game.interact.deckCode(player2);
 
 //game.player1.is_ai = true; // Remove the // at the start of this line to make the starting player an ai
-//game.player2.is_ai = true; // Same here, except the player with the coin is the ai
+game.player2.is_ai = true; // Same here, except the player with the coin is the ai
 
 game.startGame();
 

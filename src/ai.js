@@ -7,6 +7,7 @@ function setup(_game) {
 class AI {
     constructor(plr) {
         this.history = [];
+        this.prevent = [];
 
         this.plr = plr;
     }
@@ -39,15 +40,15 @@ class AI {
             }
         });
 
-        if (!best_move || game.board[this.plr.id].length >= game.constants.maxBoardSpace) {
+        if (!best_move || (["Minion", "Location"].includes(best_move.type) && game.board[this.plr.id].length >= game.constants.maxBoardSpace)) {
             // See if can hero power
-            if (this.plr.mana >= this.plr.heroPowerCost && this.plr.canUseHeroPower) best_move = "hero power";
+            if (this.plr.mana >= this.plr.heroPowerCost && this.plr.canUseHeroPower && !this.prevent.includes("hero power")) best_move = "hero power";
 
             // See if can attack
-            else if (game.board[this.plr.id].filter(m => !m.sleepy && !m.frozen && !m.dormant).length) best_move = "attack";
+            else if (game.board[this.plr.id].filter(m => !m.sleepy && !m.frozen && !m.dormant).length && !this.prevent.includes("attack")) best_move = "attack";
 
             // See if has location
-            else if (game.board[this.plr.id].filter(m => m.type == "Location" && m.cooldown == 0).length) best_move = "use";
+            else if (game.board[this.plr.id].filter(m => m.type == "Location" && m.cooldown == 0).length && !this.prevent.includes("use")) best_move = "use";
 
             else best_move = "end";
         }
@@ -58,6 +59,8 @@ class AI {
             this.history.forEach((h, i) => {
                 if (h instanceof Array && h[0] == "selectTarget" && h[1] == "0,1") this.history[i][1] = "0,0";
             });
+
+            this.prevent = [];
         }
 
         return best_move;
@@ -77,14 +80,25 @@ class AI {
 
         // Check if there is a minion with taunt
         let taunts = game.board[this.plr.getOpponent().id].filter(m => m.keywords.includes("Taunt"));
-        if (taunts.length > 0) target = game.functions.randList(taunts, false);
+        if (taunts.length > 0) {
+            let _taunts = game.board[this.plr.getOpponent().id].filter(m => m.keywords.includes("Taunt") && !m.immune && !m.dormant);
+            target = game.functions.randList(_taunts, false);
+        }
         else {
             target = game.board[this.plr.getOpponent().id].filter(m => !m.immune && !m.dormant);
             target = game.functions.randList(target, false);
         }
 
         // If the AI has no minions to attack, attack the enemy hero
-        if (!taunts.length && !target) target = this.plr.getOpponent();
+        if (!target) {
+            if (taunts.length) {
+                attacker = -1;
+                target = -1;
+
+                this.prevent.push("attack");
+            }
+            else target = this.plr.getOpponent();
+        }
 
         this.history.push(["chooseBattle", [attacker, target]]);
 
