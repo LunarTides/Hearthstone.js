@@ -9,8 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "prompt": "^1.2.1",
-    "readline-sync": "^1.4.10",
-    "ws": "^8.4.2"
+    "readline-sync": "^1.4.10"
   }
 }

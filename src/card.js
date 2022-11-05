@@ -23,6 +23,15 @@ class Card {
         this.infuse_num = -1; // The amount of infuse a card has. Set to -1 for no infuse.
 
         this.spellClass = null;
+
+        this.attackTimes = 1; // The number of times a minion can attack, windfury: 2, mega-windfury: 3
+        this.stealthDuration = 0; // The amount of turns stealth should last
+
+        // Set maxHealth if the card is a minion or weapon
+        if (this.type == "Minion" || this.type == "Weapon") this.maxHealth = this.getHealth();
+
+        this.canAttackHero = true;
+        this.sleepy = true;
         
         /*
         Go through all blueprint variables and
@@ -46,15 +55,6 @@ class Card {
             }
             else this[i[0]] = i[1];
         });
-
-        this.attackTimes = 1; // The number of times a minion can attack, windfury: 2, mega-windfury: 3
-        this.stealthDuration = 0; // The amount of turns stealth should last
-
-        // Set maxHealth if the card is a minion or weapon
-        if (this.type == "Minion" || this.type == "Weapon") this.maxHealth = this.getHealth();
-
-        this.canAttackHero = true;
-        this.sleepy = true;
 
         // Set these variables to true or false.
         const exists = ["corrupted", "colossal", "dormant", "uncollectible", "frozen", "immune", "echo"];
@@ -81,7 +81,7 @@ class Card {
          * @returns {undefined}
          */
 
-        this.__ids = []
+        this.__ids = [];
         for (let i = 0; i < 100; i++) {
             // This is to prevent cards from getting linked. Don't use this variable
             this.__ids.push(game.functions.randInt(0, 671678679546789));
