@@ -28,7 +28,7 @@ class Card {
         this.stealthDuration = 0; // The amount of turns stealth should last
 
         // Set maxHealth if the card is a minion or weapon
-        if (this.type == "Minion" || this.type == "Weapon") this.maxHealth = this.getHealth();
+        if (this.type == "Minion" || this.type == "Weapon") this.maxHealth = this.blueprint.stats[1];
 
         this.canAttackHero = true;
         this.sleepy = true;

@@ -316,7 +316,10 @@ class Interact {
         curr = game.player;
     
         if (curr.is_ai) {
-            let turn = this.doTurnLogic(curr.ai.calcMove());
+            let input = curr.ai.calcMove();
+            if (!input) return;
+
+            let turn = this.doTurnLogic();
 
             game.killMinions();
 

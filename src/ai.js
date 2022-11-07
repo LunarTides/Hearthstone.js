@@ -31,7 +31,7 @@ class AI {
                 let r = false;
 
                 this.history.forEach((h, i) => {
-                    if (h instanceof Array && h[1] === "0,1" && this.history[i][1].split(",")[1] == "1") r = true;
+                    if (h instanceof Array && h[1] === "0,1") r = true;
                 });
                 if (r) return;
 
@@ -45,22 +45,22 @@ class AI {
             if (this.plr.mana >= this.plr.heroPowerCost && this.plr.canUseHeroPower && !this.prevent.includes("hero power")) best_move = "hero power";
 
             // See if can attack
-            else if (game.board[this.plr.id].filter(m => !m.sleepy && !m.frozen && !m.dormant).length && !this.prevent.includes("attack")) best_move = "attack";
+            else if (game.board[this.plr.id].filter(m => !m.sleepy && !m.frozen && !m.dormant).length) best_move = "attack";
 
             // See if has location
-            else if (game.board[this.plr.id].filter(m => m.type == "Location" && m.cooldown == 0).length && !this.prevent.includes("use")) best_move = "use";
+            else if (game.board[this.plr.id].filter(m => m.type == "Location" && m.cooldown == 0).length) best_move = "use";
 
             else best_move = "end";
+
+            this.history.push(["calcMove", best_move]);
         }
 
-        this.history.push(["calcMove", [best_move, best_score]]);
+        else this.history.push(["calcMove", [best_move, best_score]]);
 
         if (best_move == "end") {
             this.history.forEach((h, i) => {
                 if (h instanceof Array && h[0] == "selectTarget" && h[1] == "0,1") this.history[i][1] = "0,0";
             });
-
-            this.prevent = [];
         }
 
         return best_move;

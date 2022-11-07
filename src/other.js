@@ -1162,32 +1162,40 @@ class Functions {
 
         return jade;
     }
-    importCards(path) {
+    _importCards(path) {
         /**
-         * Imports all cards from a folder and returns the cards
+         * Imports all cards from a folder and returns the cards.
+         * Don't use.
          * 
          * @param {string} path The path
          * 
-         * @returns {Blueprint[]} The cards
+         * @returns {undefined}
          */
 
         require("fs").readdirSync(path, { withFileTypes: true }).forEach(file => {
             let p = `${path}\\${file.name}`;
-    
-            if (file.name == "zzzzzz.js") {
-                game.set("cards", cards);
-                setup_card(game, cards);
-                setup_ai(game);
-            }
 
-            else if (file.name.endsWith(".js")) {
+            if (file.name.endsWith(".js")) {
                 let f = require(p);
                 cards[f.name] = f;
             }
-            else if (file.isDirectory()) this.importCards(p);
+            else if (file.isDirectory()) this._importCards(p);
         });
+    }
+    importCards(path) {
+        /**
+         * Imports all cards from a folder
+         * 
+         * @param {string} path The path
+         * 
+         * @returns {undefined}
+         */
 
-        return cards;
+        this._importCards(path);
+
+        game.set("cards", cards);
+        setup_card(game, cards);
+        setup_ai(game);
     }
 
     // Quest
