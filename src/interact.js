@@ -182,6 +182,7 @@ class Interact {
             console.log("attack     - Attack");
             console.log("view       - View a minion");
             console.log("hero power - Use your hero power");
+            console.log("use        - Use a location card");
             console.log("detail     - Get more details about opponent");
             console.log("help       - Displays this message");
             console.log("license    - Opens a link to this project's license");
