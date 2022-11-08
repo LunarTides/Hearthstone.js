@@ -24,7 +24,7 @@ if (!debug) {
 }
 
 game.setConstants(debug, maxDeckLength, maxBoardSpace, AIMulliganThreshold, AISpellValue);
-game.functions.importCards(__dirname + '\\..\\cards');
+game.functions.importCards(__dirname + '/../cards');
 
 // Ask the players for deck codes.
 game.interact.deckCode(player1);

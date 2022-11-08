@@ -1173,7 +1173,7 @@ class Functions {
          */
 
         require("fs").readdirSync(path, { withFileTypes: true }).forEach(file => {
-            let p = `${path}\\${file.name}`;
+            let p = `${path}/${file.name}`;
 
             if (file.name.endsWith(".js")) {
                 let f = require(p);
