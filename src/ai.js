@@ -57,11 +57,9 @@ class AI {
 
         else this.history.push(["calcMove", [best_move, best_score]]);
 
-        if (best_move == "end") {
-            this.history.forEach((h, i) => {
-                if (h instanceof Array && h[0] == "selectTarget" && h[1] == "0,1") this.history[i][1] = "0,0";
-            });
-        }
+        this.history.forEach((h, i) => {
+            if (h instanceof Array && h[0] == "selectTarget" && h[1] == "0,1") this.history[i][1] = "0,0";
+        });
 
         return best_move;
     }

@@ -320,7 +320,7 @@ class Interact {
             let input = curr.ai.calcMove();
             if (!input) return;
 
-            let turn = this.doTurnLogic();
+            let turn = this.doTurnLogic(input);
 
             game.killMinions();
 
