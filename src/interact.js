@@ -251,10 +251,10 @@ class Interact {
                 const plr = game["player" + (i + 1)];
                 if (!plr.is_ai) continue;
 
-                console.log(`AI${i} History: {`);
+                console.log(`AI${i + 1} History: {`);
 
                 plr.ai.history.forEach((t, i) => {
-                    let sb = `${i} ${t[0]}: (`;
+                    let sb = `${i + 1} ${t[0]}: (`;
 
                     if (t[1] instanceof Array) {
                         if (t[1][0] instanceof game.Card) sb += t[1][0].name;

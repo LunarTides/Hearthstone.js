@@ -31,7 +31,7 @@ class AI {
                 let r = false;
 
                 this.history.forEach((h, i) => {
-                    if (h instanceof Array && h[1] === "0,1") r = true;
+                    if (h instanceof Array && h[1] === "0,1" && this.history[i - 1][1][0] == c) r = true;
                 });
                 if (r) return;
 
@@ -57,9 +57,11 @@ class AI {
 
         else this.history.push(["calcMove", [best_move, best_score]]);
 
-        this.history.forEach((h, i) => {
-            if (h instanceof Array && h[0] == "selectTarget" && h[1] == "0,1") this.history[i][1] = "0,0";
-        });
+        if (best_move == "end") {
+            this.history.forEach((h, i) => {
+                if (h instanceof Array && h[0] == "selectTarget" && h[1] == "0,1") this.history[i][1] = "0";
+            });
+        }
 
         return best_move;
     }
@@ -95,10 +97,13 @@ class AI {
 
                 this.prevent.push("attack");
             }
-            else target = this.plr.getOpponent();
+            else {
+                target = this.plr.getOpponent();
+                this.history.push(["chooseBattle", [attacker, "P" + (target.id + 1)]]);
+            }
         }
 
-        this.history.push(["chooseBattle", [attacker, target]]);
+        if (target instanceof game.Card) this.history.push(["chooseBattle", [attacker, target]]);
 
         return [attacker, target];
     }
@@ -145,7 +150,7 @@ class AI {
 
             if (force_class != "minion") ret = game["player" + (sid + 1)];
             
-            this.history.push(["selectTarget", ret]);
+            this.history.push(["selectTarget", "P" + (ret.id + 1)]);
 
             return ret;
         }
