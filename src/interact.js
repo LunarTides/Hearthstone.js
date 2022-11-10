@@ -337,6 +337,7 @@ class Interact {
         game.killMinions();
 
         if (ret === true || ret instanceof game.Card) return ret; // If there were no errors, return true.
+        if (["refund"].includes(ret)) return ret; // Ignore these error codes
 
         // Error Codes
         if (ret == "mana") console.log("Not enough mana.");

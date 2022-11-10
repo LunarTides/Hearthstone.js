@@ -14,7 +14,7 @@ module.exports = {
         
         let randomCard;
 
-        do randomCard = game.functions.randList(plr.hand);
+        do randomCard = game.functions.randList(plr.hand, false);
         while (randomCard.mana <= 0);
 
         randomCard.mana -= 1;
