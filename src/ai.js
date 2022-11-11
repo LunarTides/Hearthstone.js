@@ -73,21 +73,40 @@ class AI {
          */
 
         // Todo: Make this more advanced
-        let attacker = game.board[this.plr.id].filter(m => !m.sleepy && !m.frozen && !m.dormant);
-        attacker = game.functions.randList(attacker, false);
+        let worst_minion;
+        let worst_score = 100000;
         
-        let target = undefined;
+        game.board[this.plr.id].filter(m => !m.sleepy && !m.frozen && !m.dormant).forEach(m => {
+            let score = this.analyzePositiveCard(m.desc, m);
+
+            if (score < worst_score) {
+                worst_minion = m;
+                worst_score = score;
+            }
+        });
+
+        let attacker = worst_minion;
+        
+        let target; 
+        let targets;
+
+        let best_minion;
+        let best_score = -100000;
 
         // Check if there is a minion with taunt
         let taunts = game.board[this.plr.getOpponent().id].filter(m => m.keywords.includes("Taunt"));
-        if (taunts.length > 0) {
-            let _taunts = game.board[this.plr.getOpponent().id].filter(m => m.keywords.includes("Taunt") && !m.immune && !m.dormant);
-            target = game.functions.randList(_taunts, false);
-        }
-        else {
-            target = game.board[this.plr.getOpponent().id].filter(m => !m.immune && !m.dormant);
-            target = game.functions.randList(target, false);
-        }
+        if (taunts.length > 0) targets = taunts.filter(m => !m.immune && !m.dormant);
+        else targets = game.board[this.plr.getOpponent().id].filter(m => !m.immune && !m.dormant);
+
+        targets.forEach(m => {
+            let score = this.analyzePositiveCard(m.desc, m);
+
+            if (score > best_score) {
+                best_minion = m;
+                best_score = score;
+            }
+        });
+        target = best_minion
 
         // If the AI has no minions to attack, attack the enemy hero
         if (!target) {
@@ -103,7 +122,7 @@ class AI {
             }
         }
 
-        if (target instanceof game.Card) this.history.push(["chooseBattle", [attacker, target]]);
+        if (target instanceof game.Card) this.history.push([`chooseBattle, [${worst_score}, ${best_score}]`, [attacker, target]]);
 
         return [attacker, target];
     }
@@ -157,8 +176,22 @@ class AI {
 
         let selected = null;
 
+        let best_minion;
+        let best_score = -100000;
+
+        game.board[sid].forEach(m => {
+            if ((elusive && m.elusive) || m.type == "Location") return;
+            
+            let s = this.analyzePositiveCard(m.desc, m);
+
+            if (s > best_score) {
+                best_minion = m;
+                best_score = s;
+            }
+        });
+
         if (flags["allow_locations"]) {
-            let b = board[sid].filter(m => m.type == "Location" && m.cooldown == 0);
+            let b = game.board[sid].filter(m => m.type == "Location" && m.cooldown == 0);
             if (b) {
                 do selected = game.functions.randList(b, false);
                 while((!selected) || (elusive && selected.elusive));
@@ -170,12 +203,11 @@ class AI {
                 }
             }
         }
-
-        do selected = game.functions.randList(game.board[sid], false);
-        while((!selected) || (elusive && selected.elusive) || (!flags["allow_locations"] && selected.type == "Location"));
+        
+        selected = best_minion;
 
         if (selected) {
-            this.history.push(["selectTarget", selected]);
+            this.history.push(["selectTarget", [selected, best_score]]);
 
             return selected;
         }
