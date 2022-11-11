@@ -1,5 +1,5 @@
 const { question } = require('readline-sync');
-const { Functions, Player, Constants } = require("./other");
+const { Functions, Player } = require("./other");
 const { Card } = require("./card");
 const { Interact } = require("./interact");
 const { exit } = require("process");
@@ -123,7 +123,7 @@ class Game {
 
         this[key] = val;
     }
-    setConstants(debug, maxDeckLength, maxBoardSpace, AIMulliganThreshold, AISpellValue) {
+    setConstants(debug, maxDeckLength, maxBoardSpace, AIMulliganThreshold, AISpellValue, AIKeywordValue) {
         /**
          * Sets the game constants
          * 
@@ -139,7 +139,8 @@ class Game {
             "maxDeckLength": maxDeckLength,
             "maxBoardSpace": maxBoardSpace,
             "AIMulliganThreshold": AIMulliganThreshold,
-            "AISpellValue": AISpellValue
+            "AISpellValue": AISpellValue,
+            "AIKeywordValue": AIKeywordValue
         };
     }
     activatePassives(trigger) {

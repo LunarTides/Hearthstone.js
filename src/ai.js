@@ -24,7 +24,7 @@ class AI {
 
         // Look for highest score
         this.plr.hand.forEach(c => {
-            let score = this.analyzePositiveCard(c.desc, c);
+            let score = this.analyzePositiveCard(c);
 
             if (score > best_score && c.mana <= this.plr.mana) {
                 // Prevent the ai from playing the same card they returned from when selecting a target
@@ -77,7 +77,7 @@ class AI {
         let worst_score = 100000;
         
         game.board[this.plr.id].filter(m => !m.sleepy && !m.frozen && !m.dormant).forEach(m => {
-            let score = this.analyzePositiveCard(m.desc, m);
+            let score = this.analyzePositiveCard(m);
 
             if (score < worst_score) {
                 worst_minion = m;
@@ -99,7 +99,7 @@ class AI {
         else targets = game.board[this.plr.getOpponent().id].filter(m => !m.immune && !m.dormant);
 
         targets.forEach(m => {
-            let score = this.analyzePositiveCard(m.desc, m);
+            let score = this.analyzePositiveCard(m);
 
             if (score > best_score) {
                 best_minion = m;
@@ -182,7 +182,7 @@ class AI {
         game.board[sid].forEach(m => {
             if ((elusive && m.elusive) || m.type == "Location") return;
             
-            let s = this.analyzePositiveCard(m.desc, m);
+            let s = this.analyzePositiveCard(m);
 
             if (s > best_score) {
                 best_minion = m;
@@ -229,7 +229,7 @@ class AI {
 
         // Look for highest score
         cards.forEach(c => {
-            let score = this.analyzePositiveCard(c.desc, c);
+            let score = this.analyzePositiveCard(c);
 
             if (score > best_score) {
                 best_card = c;
@@ -282,7 +282,7 @@ class AI {
         this.plr.hand.forEach(c => {
             if (c.name == "The Coin") return;
 
-            let score = this.analyzePositiveCard(c.desc, c);
+            let score = this.analyzePositiveCard(c);
 
             if (score <= (game.constants.AIMulliganThreshold / 10)) to_mulligan += (this.plr.hand.indexOf(c) + 1).toString();
 
@@ -316,16 +316,18 @@ class AI {
 
         return score;
     }
-    analyzePositiveCard(str, c) {
+    analyzePositiveCard(c) {
         /**
          * Same as analyzePositive but changes the score based on a card's stats (if it has) and cost.
          */
 
-        let score = this.analyzePositive(str);
+        let score = this.analyzePositive(c.desc);
 
         if (c.type == "Minion" || c.type == "Weapon") score += (c.getAttack() + c.getHealth()) / 10;
         else score += game.constants.AISpellValue / 10;
         score -= c.mana / 4;
+
+        c.keywords.forEach(k => score += (game.constants.AIKeywordValue / 10));
 
         return score;
     }

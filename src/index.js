@@ -8,6 +8,7 @@ const maxDeckLength = 30;
 const maxBoardSpace = 7;
 const AIMulliganThreshold = 8; // If you don't know what this is, keep it at it's default value.
 const AISpellValue = 4;
+const AIKeywordValue = 2.5;
 // -----------------------------------
 
 let player1 = new Player("Player 1");
@@ -23,7 +24,7 @@ if (!debug) {
     player2.name = input("Player 2, what is your name? ");
 }
 
-game.setConstants(debug, maxDeckLength, maxBoardSpace, AIMulliganThreshold, AISpellValue);
+game.setConstants(debug, maxDeckLength, maxBoardSpace, AIMulliganThreshold, AISpellValue, AIKeywordValue);
 game.functions.importCards(__dirname + '/../cards');
 
 // Ask the players for deck codes.
