@@ -4,7 +4,7 @@ const config = require("../config.json");
 
 let player1 = new Player("Player 1");
 let player2 = new Player("Player 2");
-let game = new Game(player1, player2);
+let game = new Game(player1, player2, config);
 
 if (!config.debug) {
     const input = require("readline-sync").question; // Python input
@@ -15,7 +15,6 @@ if (!config.debug) {
     player2.name = input("Player 2, what is your name? ");
 }
 
-game.setConstants(config);
 game.functions.importCards(__dirname + '/../cards');
 
 // Ask the players for deck codes.

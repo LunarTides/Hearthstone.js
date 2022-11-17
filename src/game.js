@@ -78,7 +78,7 @@ class GameStats {
 }
 
 class Game {
-    constructor(player1, player2) {
+    constructor(player1, player2, config) {
         // Choose a random player to be player 1
         const functions = new Functions(this);
 
@@ -99,7 +99,7 @@ class Game {
         this.functions = functions;
         this.stats = new GameStats(this);
         this.interact = new Interact(this);
-        this.constants = {};
+        this.config = config;
         this.input = question;
 
         this.player1.id = 0;
@@ -122,17 +122,6 @@ class Game {
          */
 
         this[key] = val;
-    }
-    setConstants(constants) {
-        /**
-         * Sets the game constants
-         * 
-         * @param {Object<string>} constants The constants
-         * 
-         * @returns {undefined}
-         */
-
-        Object.entries(constants).forEach(c => this.constants[c[0]] = c[1]);
     }
     activatePassives(trigger) {
         /**
@@ -360,7 +349,7 @@ class Game {
         }
 
         // If the board has more than the allowed amount of cards and the card played is a minion or location card, prevent it.
-        if (board.length >= this.constants.maxBoardSpace && ["Minion", "Location"].includes(card.type)) {
+        if (board.length >= this.config.maxBoardSpace && ["Minion", "Location"].includes(card.type)) {
             player.addToHand(card, false);
             player.mana += card.mana;
             return "space";

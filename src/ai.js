@@ -40,7 +40,7 @@ class AI {
             }
         });
 
-        if (!best_move || (["Minion", "Location"].includes(best_move.type) && game.board[this.plr.id].length >= game.constants.maxBoardSpace)) {
+        if (!best_move || (["Minion", "Location"].includes(best_move.type) && game.board[this.plr.id].length >= game.config.maxBoardSpace)) {
             // See if can hero power
             if (this.plr.mana >= this.plr.heroPowerCost && this.plr.canUseHeroPower && !this.prevent.includes("hero power")) best_move = "hero power";
 
@@ -333,7 +333,7 @@ class AI {
 
             let score = this.analyzePositiveCard(c);
 
-            if (score <= (game.constants.AIMulliganThreshold / 10)) to_mulligan += (this.plr.hand.indexOf(c) + 1).toString();
+            if (score <= (game.config.AIMulliganThreshold / 10)) to_mulligan += (this.plr.hand.indexOf(c) + 1).toString();
 
             _scores += `${c.name}:${score}, `;
         });
@@ -373,10 +373,10 @@ class AI {
         let score = this.analyzePositive(c.desc);
 
         if (c.type == "Minion" || c.type == "Weapon") score += (c.getAttack() + c.getHealth()) / 10;
-        else score += game.constants.AISpellValue / 10;
+        else score += game.config.AISpellValue / 10;
         score -= c.mana / 4;
 
-        c.keywords.forEach(k => score += (game.constants.AIKeywordValue / 10));
+        c.keywords.forEach(k => score += (game.config.AIKeywordValue / 10));
 
         return score;
     }

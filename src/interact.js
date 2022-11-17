@@ -211,7 +211,7 @@ class Interact {
         }
 
         else if (q.startsWith("/give ")) {
-            if (!game.constants.debug) return -1;
+            if (!game.config.debug) return -1;
     
             let name = q.split(" ");
             name.shift();
@@ -224,12 +224,12 @@ class Interact {
             curr.addToHand(new game.Card(card.name, curr));
         }
         else if (q == "/eval") {
-            if (!game.constants.debug) return -1;
+            if (!game.config.debug) return -1;
     
             eval(game.input("\nWhat do you want to evaluate? "));
         }
         else if (q == "/debug") {
-            if (!game.constants.debug) return -1;
+            if (!game.config.debug) return -1;
     
             curr.maxMaxMana = 1000;
             curr.maxMana = 1000;
@@ -243,7 +243,7 @@ class Interact {
             curr.fatigue = 0;
         }
         else if (q == "/ai") {
-            if (!game.constants.debug) return -1;
+            if (!game.config.debug) return -1;
 
             console.log("AI Info:\n");
 
@@ -331,7 +331,7 @@ class Interact {
         this.printAll(curr);
     
         let input = "\nWhich card do you want to play? ";
-        if (game.turns <= 2 && !game.constants.debug) input += "(type 'help' for further information <- This will disappear once you end your turn) ";
+        if (game.turns <= 2 && !game.config.debug) input += "(type 'help' for further information <- This will disappear once you end your turn) ";
     
         const ret = this.doTurnLogic(game.input(input));
         game.killMinions();
@@ -342,7 +342,7 @@ class Interact {
         // Error Codes
         if (ret == "mana") console.log("Not enough mana.");
         else if (ret == "counter") console.log("Your card has been countered.");
-        else if (ret == "space") console.log(`You can only have ${game.constants.maxBoardSpace} minions on the board.`)
+        else if (ret == "space") console.log(`You can only have ${game.config.maxBoardSpace} minions on the board.`)
         else if (ret == "invalid") console.log("Invalid card.");
         else console.log("An unknown error occurred.");
 
@@ -385,7 +385,7 @@ class Interact {
          * @returns {boolean} Valid
          */
 
-        if (deck.length > game.constants.maxDeckLength) return false;
+        if (deck.length > game.config.maxDeckLength) return false;
         return this.validateCard(card, plr);
     }
     validateCard(card, plr) {
@@ -488,7 +488,7 @@ class Interact {
 
         sb = sb.slice(0, -2) + " ]\n";
         sb += "Choose the cards to mulligan (1, 2, 3, ...):\n";
-        if (!game.constants.debug) sb += "(Example: 13 will mulligan your left and right most cards, 123 will mulligan your 3 leftmost cards, just pressing enter will not mulligan any cards):\n";
+        if (!game.config.debug) sb += "(Example: 13 will mulligan your left and right most cards, 123 will mulligan your 3 leftmost cards, just pressing enter will not mulligan any cards):\n";
 
         let input;
 
@@ -536,7 +536,7 @@ class Interact {
          * @returs undefined
          */
 
-        if (game.constants.debug) return;
+        if (game.config.debug) return;
     
         cls();
     
