@@ -217,6 +217,9 @@ class Game {
 
         this.input(`Player ${winner.name} wins!\n`);
 
+        // If both players are ai's, show their moves when the game ends
+        if (this.player1.is_ai && this.player2.is_ai) this.interact.doTurnLogic("/ai");
+
         exit(0);
     }
     endTurn() {

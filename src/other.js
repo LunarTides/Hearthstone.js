@@ -489,7 +489,7 @@ class Functions {
 
         let item = list[this.randInt(0, list.length - 1)];
         
-        if (item instanceof game.Card && cpyCard) item = new game.Card(item.name);
+        if (item instanceof game.Card && cpyCard) item = new game.Card(item.name, item.plr);
 
         return item;
     }
@@ -733,6 +733,53 @@ class Functions {
         } else {
             return choices;
         }
+    }
+    question(plr, prompt, answers) {
+        /**
+         * Asks the user a "prompt", show them a list of answers and make them choose one
+         *
+         * @param {Player} plr The player to ask
+         * @param {string} prompt The prompt to show
+         * @param {string[]} answers The answers to choose from
+         *
+         * @returns {string} Chosen
+         */
+
+        let strbuilder = `\n${prompt} [`;
+
+        if (answers[0] == "Y" && answers[1] == "N") return this.yesNoQuestion(plr, prompt);
+
+        answers.forEach((v, i) => {
+            strbuilder += `${i + 1}: ${v}, `;
+        });
+
+        strbuilder = strbuilder.slice(0, -2);
+        strbuilder += "] ";
+
+        let choice;
+
+        if (plr.is_ai) choice = plr.ai.question(prompt, answers);
+        else choice = game.input(strbuilder); 
+
+
+        return answers[parseInt(choice) - 1];
+    }
+    yesNoQuestion(plr, prompt) {
+        /**
+         * Asks the user a yes/no question
+         *
+         * @param {Player} plr The player to ask
+         * @param {string} prompt The prompt to ask
+         *
+         * @returns {char} Y | N
+         */
+
+        let ask = `\n${prompt} [Y/N] `;
+
+        let choice;
+
+        if (plr.is_ai) return plr.ai.yesNoQuestion(prompt);
+        else return game.input(ask)
     }
     discover(prompt, amount = 3, flags = [], add_to_hand = true, _cards = []) {
         /**
@@ -1091,7 +1138,7 @@ class Functions {
                 // Add a Lackey to your hand.
                 const lackey_cards = ["Ethereal Lackey", "Faceless Lackey", "Goblin Lackey", "Kobold Lackey", "Witchy Lackey"];
 
-                plr.addToHand(new game.Card(game.functions.randList(lackey_cards)));
+                plr.addToHand(new game.Card(game.functions.randList(lackey_cards)), plr);
 
                 break;
             case "Shaman":

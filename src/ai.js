@@ -246,6 +246,8 @@ class AI {
          * Choose the "best" option from options
          * 
          * @param {string[]} options The options the ai can pick from
+         *
+         * @returns {number} The id of the question chosen
          */
 
         // I know this is a bad solution
@@ -267,6 +269,53 @@ class AI {
         this.history.push(["chooseOne", [best_choice, best_score]]);
 
         return best_choice;
+    }
+    question(prompt, options) {
+        /**
+         * Choose the "best" answer from options
+         *
+         * @param {string} prompt The prompt asked
+         * @param {string[]} options The options the ai can pick from
+         *
+         * @returns {number} The id of the option chosen
+         */
+
+        let best_choice = null;
+        let best_score = -100000;
+
+        options.forEach((v, i) => {
+            let score = this.analyzePositive(v);
+
+            if (score > best_score) {
+                best_choice = i;
+                best_score = score;
+            }
+        });
+
+        this.history.push([`question: ${prompt}`, [best_choice, best_score]]);
+
+        return best_choice + 1;
+    }
+    yesNoQuestion(prompt) {
+        /**
+         * Choose yes or no based on the prompt
+         *
+         * @param {string} prompt The prompt asked
+         *
+         * @returns {char} Y | N
+         */
+
+        let score = this.analyzePositive(prompt);
+        let ret;
+
+        if (score > 0) ret = 'Y';
+        else ret = 'N';
+
+        ret = 'Y'; // TODO: Make this whole function better
+
+        this.history.push(["yesNoQuestion", [prompt, ret]]);
+
+        return ret;
     }
     mulligan() {
         /**

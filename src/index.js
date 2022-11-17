@@ -9,6 +9,9 @@ const maxBoardSpace = 7;
 const AIMulliganThreshold = 8; // If you don't know what this is, keep it at it's default value.
 const AISpellValue = 4;
 const AIKeywordValue = 2.5;
+
+const P1AI = false; // Set this to "true" to make the starting player an ai
+const P2AI = false; // Set this to "true" to make the player with the coin an ai
 // -----------------------------------
 
 let player1 = new Player("Player 1");
@@ -31,8 +34,8 @@ game.functions.importCards(__dirname + '/../cards');
 game.interact.deckCode(player1);
 game.interact.deckCode(player2);
 
-//game.player1.is_ai = true; // Remove the // at the start of this line to make the starting player an ai
-//game.player2.is_ai = true; // Same here, except the player with the coin is the ai
+game.player1.is_ai = P1AI;
+game.player2.is_ai = P2AI;
 
 game.startGame();
 

@@ -16,7 +16,7 @@ module.exports = {
             game.interact.printName();
             game.interact.printAll(plr);
 
-            let answer = game.input("\nPut " + top.name + " on the bottom of your deck? (Y/N) ");
+            let answer = game.functions.question(plr, "Put " + top.name + " on the bottom of your deck?", ["Y", "N"]);
             
             if (answer.toLowerCase() == "y") {
                 plr.deck.unshift(top);
