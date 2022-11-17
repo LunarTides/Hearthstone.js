@@ -1,0 +1,12 @@
+{
+    "debug": true,
+    "maxDeckLength": 30,
+    "maxBoardSpace": 7,
+
+    "P1AI": false,
+    "P2AI": true,
+    
+    "AIMulliganThreshold": 8,
+    "AISpellValue": 4,
+    "AIKeywordValue": 2.5
+}

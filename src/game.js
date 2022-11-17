@@ -99,7 +99,7 @@ class Game {
         this.functions = functions;
         this.stats = new GameStats(this);
         this.interact = new Interact(this);
-        this.constants = null;
+        this.constants = {};
         this.input = question;
 
         this.player1.id = 0;
@@ -123,25 +123,16 @@ class Game {
 
         this[key] = val;
     }
-    setConstants(debug, maxDeckLength, maxBoardSpace, AIMulliganThreshold, AISpellValue, AIKeywordValue) {
+    setConstants(constants) {
         /**
          * Sets the game constants
          * 
-         * @param {boolean} debug [default=false] If debug mode should be enabled
-         * @param {number} maxDeckLength [default=30] Maximum cards you can have in a custom deck
-         * @param {number} maxBoardSpace [default=7] Maximum amount of minions you can have on the board at the same time
+         * @param {Object<string>} constants The constants
          * 
          * @returns {undefined}
          */
 
-        this.constants = {
-            "debug": debug,
-            "maxDeckLength": maxDeckLength,
-            "maxBoardSpace": maxBoardSpace,
-            "AIMulliganThreshold": AIMulliganThreshold,
-            "AISpellValue": AISpellValue,
-            "AIKeywordValue": AIKeywordValue
-        };
+        Object.entries(constants).forEach(c => this.constants[c[0]] = c[1]);
     }
     activatePassives(trigger) {
         /**
@@ -218,7 +209,7 @@ class Game {
         this.input(`Player ${winner.name} wins!\n`);
 
         // If both players are ai's, show their moves when the game ends
-        if (this.player1.is_ai && this.player2.is_ai) this.interact.doTurnLogic("/ai");
+        if (this.player1.is_ai || this.player2.is_ai) this.interact.doTurnLogic("/ai");
 
         exit(0);
     }
