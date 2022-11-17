@@ -21,9 +21,6 @@ game.functions.importCards(__dirname + '/../cards');
 game.interact.deckCode(player1);
 game.interact.deckCode(player2);
 
-game.player1.is_ai = config.P1AI;
-game.player2.is_ai = config.P2AI;
-
 game.startGame();
 
 game.interact.mulligan(player1);

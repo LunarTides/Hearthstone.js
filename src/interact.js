@@ -21,7 +21,7 @@ class Interact {
 
         let attacker, target;
 
-        if (game.player.is_ai) {
+        if (game.player.ai) {
             let ai = game.player.ai.chooseBattle();
 
             if (ai[0] === -1) return false;
@@ -249,7 +249,7 @@ class Interact {
 
             for (let i = 0; i < 2; i++) {
                 const plr = game["player" + (i + 1)];
-                if (!plr.is_ai) continue;
+                if (!plr.ai) continue;
 
                 console.log(`AI${i + 1} History: {`);
 
@@ -316,7 +316,7 @@ class Interact {
 
         curr = game.player;
     
-        if (curr.is_ai) {
+        if (curr.ai) {
             let input = curr.ai.calcMove();
             if (!input) return;
 
@@ -492,7 +492,7 @@ class Interact {
 
         let input;
 
-        if (plr.is_ai) input = plr.ai.mulligan();
+        if (plr.ai) input = plr.ai.mulligan();
         else input = game.input(sb);
 
         input.split("").forEach(c => {

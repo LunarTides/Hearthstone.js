@@ -5,10 +5,9 @@ let cards = {};
 let game = null;
 
 class Player {
-    constructor(name, is_ai) {
+    constructor(name) {
         this.name = name;
         this.id = null;
-        this.is_ai = is_ai;
         this.ai = null;
         this.deck = [];
         this.hand = [];
@@ -709,7 +708,7 @@ class Functions {
         let choices = [];
 
         for (let i = 0; i < times; i++) {
-            if (game.player.is_ai) {
+            if (game.player.ai) {
                 choices.push(game.player.ai.chooseOne(options));
                 continue;
             }
@@ -758,7 +757,7 @@ class Functions {
 
         let choice;
 
-        if (plr.is_ai) choice = plr.ai.question(prompt, answers);
+        if (plr.ai) choice = plr.ai.question(prompt, answers);
         else choice = game.input(strbuilder); 
 
 
@@ -778,7 +777,7 @@ class Functions {
 
         let choice;
 
-        if (plr.is_ai) return plr.ai.yesNoQuestion(prompt);
+        if (plr.ai) return plr.ai.yesNoQuestion(prompt);
         else return game.input(ask)
     }
     discover(prompt, amount = 3, flags = [], add_to_hand = true, _cards = []) {
@@ -827,7 +826,7 @@ class Functions {
 
         if (values.length <= 0) return;
 
-        if (game.player.is_ai) return game.player.ai.discover(values);
+        if (game.player.ai) return game.player.ai.discover(values);
 
         let p = `\n${prompt}\n[\n`;
 
@@ -874,7 +873,7 @@ class Functions {
         // force_class = [null, "hero", "minion"]
         // force_side = [null, "enemy", "self"]
 
-        if (game.player.is_ai) return game.player.ai.selectTarget(prompt, elusive, force_side, force_class, flags);
+        if (game.player.ai) return game.player.ai.selectTarget(prompt, elusive, force_side, force_class, flags);
 
         if (force_class == "hero") {
             const target = game.input(`Do you want to select the enemy hero, or your own hero? (y: enemy, n: self) `);

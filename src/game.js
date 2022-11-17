@@ -112,6 +112,9 @@ class Game {
         
         this.player1.game = this;
         this.player2.game = this;
+
+        if (config.P1AI) this.player1.ai = new AI(this.player1);
+        if (config.P2AI) this.player2.ai = new AI(this.player2);
     }
 
     set(key, val) {
@@ -172,9 +175,6 @@ class Game {
 
         this.turns += 1;
 
-        if (this.player1.is_ai) this.player1.ai = new AI(this.player1);
-        if (this.player2.is_ai) this.player2.ai = new AI(this.player2);
-
         for (let i = 0; i < 2; i++) {
             const plr = this["player" + (i + 1)]
 
@@ -198,7 +198,7 @@ class Game {
         this.input(`Player ${winner.name} wins!\n`);
 
         // If both players are ai's, show their moves when the game ends
-        if (this.player1.is_ai || this.player2.is_ai) this.interact.doTurnLogic("/ai");
+        if (this.player1.ai || this.player2.ai) this.interact.doTurnLogic("/ai");
 
         exit(0);
     }
