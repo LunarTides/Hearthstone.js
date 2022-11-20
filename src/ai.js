@@ -62,7 +62,7 @@ class AI {
 
         if (best_move == "end") {
             this.history.forEach((h, i) => {
-                if (h instanceof Array && h[0] == "selectTarget" && h[1] == "0,1") this.history[i][1] = "0";
+                if (h instanceof Array && h[0] == "selectTarget" && h[1] == "0,1") this.history[i][1] = null;
             });
         }
 
@@ -380,8 +380,12 @@ class AI {
             // Filter out any characters not in the alphabet
             s = s.toLowerCase().split("").filter(c => ALPHABET.split("").includes(c)).join("");
 
-            if (["heal", "give", "gain", "+", "restore", "attack", "health", "copy", "draw", "mana", "enemy", "trigger", "twice", "double"].includes(s)) score++;
-            if (["deal", "remove", "damage", "silence", "destroy", "kill", "-"].includes(s)) score--;
+            Object.entries(game.config.AISentiments).forEach(v => {
+                Object.entries(v[1]).forEach(k => {
+                    // If the sentiment is "positive", add to the score. If it is "negative", subtract from the score.
+                    if (k[0] == s) score -= (v[0] == "positive") ? -k[1] : k[1];
+                });
+            });
         });
 
         return score;

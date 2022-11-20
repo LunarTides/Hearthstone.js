@@ -8,5 +8,30 @@
     
     "AIMulliganThreshold": 8,
     "AISpellValue": 4,
-    "AIKeywordValue": 2.5
+    "AIKeywordValue": 2.5,
+    "AISentiments": {
+        "positive": {
+            "heal"   : 0.5,
+            "give"   : 2,
+            "gain"   : 1,
+            "restore": 0.5,
+            "attack" : 0.5,
+            "health" : 0.5,
+            "copy"   : 2,
+            "draw"   : 2,
+            "mana"   : 1,
+            "enemy"  : 1,
+            "trigger": 3,
+            "twice"  : 2,
+            "double" : 2
+        },
+        "negative": {
+            "deal"   : 1,
+            "remove" : 2,
+            "damage" : 1,
+            "silence": 5,
+            "destroy": 9,
+            "kill"   : 3
+        }
+    }
 }
