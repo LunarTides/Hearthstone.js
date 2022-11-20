@@ -144,8 +144,7 @@ class Interact {
     
             target.remHealth(attacker.getAttack());
     
-            attacker.attackTimes--;
-            attacker.sleepy = true;
+            attacker.decAttack();
             return;
         }
     
@@ -219,7 +218,6 @@ class Interact {
             name = name.join(" ");
     
             let card = game.functions.getCardByName(name);
-    
             if (!card) return game.input("Invalid card: `" + name + "`.\n");
     
             curr.addToHand(new game.Card(card.name, curr));
@@ -280,8 +278,8 @@ class Interact {
     
         if (typeof input === "string" && this.handleCmds(input) !== -1) return true;
         let card = curr.hand[parseInt(input) - 1];
-
         if (!card) return "invalid";
+
         if (input == curr.hand.length || input == 1) card.activate("outcast");
         return game.playCard(card, curr);    
     }
@@ -317,7 +315,7 @@ class Interact {
         game.killMinions();
 
         if (ret === true || ret instanceof game.Card) return ret; // If there were no errors, return true.
-        if (["refund"].includes(ret)) return ret; // Ignore these error codes
+        if (["refund", "magnetize"].includes(ret)) return ret; // Ignore these error codes
 
         // Error Codes
         if (ret == "mana") console.log("Not enough mana.");
@@ -692,7 +690,10 @@ class Interact {
                     return;
                 }
 
-                let keywords = m.keywords.length > 0 ? ` {${m.keywords.join(", ")}}` : "";
+                const excludedKeywords = ["Magnetic", "Corrupt", "Corrupted"];
+                let keywords = m.keywords.filter(k => !excludedKeywords.includes(k));
+                keywords = keywords.length > 0 ? ` {${keywords.join(", ")}}` : "";
+
                 let frozen = m.frozen ? " (Frozen)" : "";
                 let dormant = m.dormant ? " (Dormant)" : "";
                 let immune = m.immune ? " (Immune)" : "";

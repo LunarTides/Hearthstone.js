@@ -59,16 +59,16 @@ class Card {
             this[i] = this.blueprint[i] || false;
         });
 
-        let backups = {};
-
         // Make a backup of "this" to be used when silencing this card
+        let backups = {};
         Object.entries(this).forEach(i => backups[i[0]] = i[1]);
-
         this.backups = backups;
 
         this.plr = plr;
 
         this.randomizeIds();
+
+
     }
 
     randomizeIds() {
@@ -105,17 +105,20 @@ class Card {
          * 
          * @param {string} keyword The keyword to add
          * 
-         * @returns {undefined}
+         * @returns {boolean} Success
          */
+
+        if (this.keywords.includes(keyword)) return false;
 
         this.keywords.push(keyword);
 
-        if (this.keywords.includes("Charge")) this.sleepy = false;
-
-        if (this.keywords.includes("Rush")) {
+        if (keyword === "Charge") this.sleepy = false;
+        else if (keyword === "Rush") {
             this.sleepy = false;
             this.canAttackHero = false;
         }
+
+        return true;
     }
     removeKeyword(keyword) {
         /**
@@ -127,6 +130,18 @@ class Card {
          */
 
         this.keywords = this.keywords.filter(k => k != keyword);
+    }
+    decAttack() {
+        /**
+         * Decrement attackTimes and if it is 0, set sleepy to true
+         *
+         * @returns {boolean} If attacktimes is 0
+         */
+
+        this.attackTimes--;
+        if (this.attackTimes <= 0) this.sleepy = true;
+
+        return this.sleepy;
     }
 
     // Change stats

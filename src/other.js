@@ -602,8 +602,7 @@ class Functions {
         }
 
         // The first variable is a minion
-        attacker.attackTimes--;
-        attacker.sleepy = true;
+        attacker.decAttack();
 
         game.stats.update("enemyAttacks", [attacker, target]);
         game.stats.update("minionsThatAttacked", [attacker, target]);
@@ -1010,7 +1009,7 @@ class Functions {
 
         return card;
     }
-    adapt(minion, prompt = "Choose One:") {
+    adapt(minion, prompt = "Choose One:", _values = []) {
         /**
          * Asks the user a "prompt" and show 3 choices for the player to choose, and do something to the minion based on the choice
          * 
@@ -1032,13 +1031,15 @@ class Functions {
             ["Shrouding Mist", "Stealth until your next turn."],
             ["Poison Spit", "Poisonous"]
         ];
-        let values = [];
+        let values = _values;
 
-        for (let i = 0; i < 3; i++) {
-            let c = game.functions.randList(possible_cards);
+        if (values.length == 0) {
+            for (let i = 0; i < 3; i++) {
+                let c = game.functions.randList(possible_cards);
 
-            values.push(c);
-            possible_cards.splice(possible_cards.indexOf(c), 1);
+                values.push(c);
+                possible_cards.splice(possible_cards.indexOf(c), 1);
+            }
         }
 
         let p = `\n${prompt}\n[\n`;
@@ -1054,6 +1055,8 @@ class Functions {
         p += "\n] ";
 
         let choice = game.input(p);
+        if (parseInt(choice) > 3) return adapt(minion, prompt, values);
+
         choice = values[parseInt(choice) - 1][0];
 
         switch (choice) {
@@ -1223,6 +1226,16 @@ class Functions {
 
             if (file.name.endsWith(".js")) {
                 let f = require(p);
+                
+                // Deep freeze the blueprint
+                const deepFreeze = obj => {
+                    Object.keys(obj).forEach(prop => {
+                        if (typeof obj[prop] === 'object') deepFreeze(obj[prop]);
+                    });
+                    return Object.freeze(obj);
+                }
+                //deepFreeze(f); // This doesn't work since when adding a keyword, it gets added to the blueprint(?), and since this is using strict mode, it crashes. Fun. TODO: Get this working
+
                 cards[f.name] = f;
             }
             else if (file.isDirectory()) this._importCards(p);

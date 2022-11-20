@@ -356,10 +356,7 @@ class Game {
     
                 // I'm using while loops to prevent a million indents
                 while (mechs.length > 0) {
-                    let q = this.input("Do you want to magnetize this minion to a mech? (y: yes / n: no) ");
-                    if (!q.toLowerCase().startsWith("y")) break;
-    
-                    let minion = this.functions.selectTarget(`\nWhich minion do you want this to Magnetize to: `, false, "self", "minion");
+                    let minion = this.functions.selectTarget("Which minion do you want this to Magnetize to:", false, "self", "minion");
                     if (!minion) break;
                     if (minion.tribe != "Mech") return "invalid";
     
@@ -376,6 +373,18 @@ class Game {
                     if (card.deathrattle) card.deathrattle.forEach(d => minion.addDeathrattle(d));
                     if (echo_clone) player.addToHand(echo_clone);
     
+                    // Corrupt
+                    player.hand.forEach(c => {
+                        if (c.keywords.includes("Corrupt")) {
+                            if (card.mana > c.mana) {
+                                let t = new Card(c.corrupt, c.plr);
+
+                                c.plr.addToHand(t, false);
+                                player.removeFromHand(c);
+                            }
+                        }
+                    });
+
                     return "magnetize";
                 }
     
@@ -432,6 +441,7 @@ class Game {
                 if (card.mana > c.mana) {
                     let t = new Card(c.corrupt, c.plr);
                     c.plr.addToHand(t, false);
+
                     player.removeFromHand(c);
                 }
             }
