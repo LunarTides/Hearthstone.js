@@ -324,7 +324,7 @@ class Game {
         
         player.removeFromHand(card);
 
-		// Echo
+        // Echo
         let echo_clone = null;
 
         if (card.keywords.includes("Echo")) {
@@ -360,7 +360,7 @@ class Game {
                     if (!q.toLowerCase().startsWith("y")) break;
     
                     let minion = this.functions.selectTarget(`\nWhich minion do you want this to Magnetize to: `, false, "self", "minion");
-					if (!minion) break;
+                    if (!minion) break;
                     if (minion.tribe != "Mech") return "invalid";
     
                     this.stats.update("minionsPlayed", card);
@@ -419,7 +419,7 @@ class Game {
             ret = this.summonMinion(card, player, false);
         }
 
-		if (echo_clone) player.addToHand(echo_clone);
+        if (echo_clone) player.addToHand(echo_clone);
 
         this.stats.update("cardsPlayed", card);
         let stat = this.stats.cardsPlayed[player.id];
