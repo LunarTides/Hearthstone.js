@@ -324,13 +324,7 @@ class Game {
         
         player.removeFromHand(card);
 
-        if (card.type == "Spell" && card.keywords.includes("Twinspell")) {
-            card.removeKeyword("Twinspell");
-            card.desc = card.desc.split("Twinspell")[0].trim();
-
-            player.hand.push(card);
-        }
-
+		// Echo
         let echo_clone = null;
 
         if (card.keywords.includes("Echo")) {
@@ -351,7 +345,7 @@ class Game {
         // If the board has more than the allowed amount of cards and the card played is a minion or location card, prevent it.
         if (board.length >= this.config.maxBoardSpace && ["Minion", "Location"].includes(card.type)) {
             player.addToHand(card, false);
-            player.mana += card.mana;
+            player.refreshMana(card.mana);
             return "space";
         }
 
@@ -366,6 +360,7 @@ class Game {
                     if (!q.toLowerCase().startsWith("y")) break;
     
                     let minion = this.functions.selectTarget(`\nWhich minion do you want this to Magnetize to: `, false, "self", "minion");
+					if (!minion) break;
                     if (minion.tribe != "Mech") return "invalid";
     
                     this.stats.update("minionsPlayed", card);
@@ -375,12 +370,11 @@ class Game {
                     card.keywords.forEach(k => {
                         minion.addKeyword(k);
                     });
-                        
+
                     minion.maxHealth += card.maxHealth;
     
                     if (card.deathrattle) card.deathrattle.forEach(d => minion.addDeathrattle(d));
-    
-                    if (echo_clone) player.hand.push(echo_clone);
+                    if (echo_clone) player.addToHand(echo_clone);
     
                     return "magnetize";
                 }
@@ -389,8 +383,6 @@ class Game {
 
             if (card.dormant) card.dormant += this.turns;
             else if (card.activateBattlecry() === -1) return "refund";
-
-            if (echo_clone) player.hand.push(echo_clone);
 
             this.stats.update("minionsPlayed", card);
 
@@ -402,10 +394,8 @@ class Game {
                 card.removeKeyword("Twinspell");
                 card.desc = card.desc.split("Twinspell")[0].trim();
 
-                player.hand.push(card);
+                player.addToHand(card);
             }
-
-            if (echo_clone) player.hand.push(echo_clone);
 
             this.stats.update("spellsCast", card);
 
@@ -417,25 +407,19 @@ class Game {
             player.setWeapon(card);
 
             card.activateBattlecry();
-
-            if (echo_clone) player.hand.push(echo_clone);
         } else if (card.type === "Hero") {
             player.setHero(card, 5);
 
             card.activateBattlecry();
-
-            if (echo_clone) player.hand.push(echo_clone);
         } else if (card.type === "Location") {
             card.setStats(0, card.getHealth());
             card.immune = true;
             card.cooldown = 0;
 
-            if (echo_clone) player.hand.push(echo_clone);
-
-            this.stats.update("minionsPlayed", card);
-
             ret = this.summonMinion(card, player, false);
         }
+
+		if (echo_clone) player.addToHand(echo_clone);
 
         this.stats.update("cardsPlayed", card);
         let stat = this.stats.cardsPlayed[player.id];
