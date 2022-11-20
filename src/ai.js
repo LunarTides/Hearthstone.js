@@ -27,6 +27,9 @@ class AI {
             let score = this.analyzePositiveCard(c);
 
             if (score > best_score && c.mana <= this.plr.mana) {
+                // If the card is a minion and the player doesn't have the board space to play it, ignore the card
+                if (["Minion", "Location"].includes(c.type) && game.board[this.plr.id].length >= game.config.maxBoardSpace) return;
+
                 // Prevent the ai from playing the same card they returned from when selecting a target
                 let r = false;
 
@@ -40,7 +43,7 @@ class AI {
             }
         });
 
-        if (!best_move || (["Minion", "Location"].includes(best_move.type) && game.board[this.plr.id].length >= game.config.maxBoardSpace)) {
+        if (!best_move) {
             // See if can hero power
             if (this.plr.mana >= this.plr.heroPowerCost && this.plr.canUseHeroPower && !this.prevent.includes("hero power")) best_move = "hero power";
 
