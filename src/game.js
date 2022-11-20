@@ -401,7 +401,7 @@ class Game {
 
             board.forEach(m => {
                 m.activate("spellburst");
-                m.hasSpellburst = false;
+                m.spellburst = undefined;
             });
         } else if (card.type === "Weapon") {
             player.setWeapon(card);

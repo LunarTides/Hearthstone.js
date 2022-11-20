@@ -44,15 +44,12 @@ class Card {
         Function Example:
         Blueprint: { name: "The Coin", mana: 0, cast(plr, game): { plr.gainMana(1) } }
                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        Do: this.hasCast = true; this.cast = [{ plr.gainMana(1) }]
+        Do: this.cast = [{ plr.gainMana(1) }]
                                              ^                   ^
                             This is in an array so we can add multiple events on casts
         */
         Object.entries(this.blueprint).forEach(i => {
-            if (typeof i[1] == "function") {
-                this[i[0]] = [i[1]];
-                this["has" + game.functions.capitalize(i[0])] = true;
-            }
+            if (typeof i[1] == "function") this[i[0]] = [i[1]];
             else this[i[0]] = i[1];
         });
 
@@ -87,23 +84,6 @@ class Card {
             this.__ids.push(game.functions.randInt(0, 671678679546789));
         }
     }
-
-    setFunction(name, val, has = true) {
-        /**
-         * Set a keyword method to a value and sets this.has[name] to true
-         * 
-         * @param {string} name The name of the keyword methos
-         * @param {Function} val The function to replace the keyword method
-         * @param {boolean} has [default=true] Sets this.has[name] to this value
-         * 
-         * @returns {undefined}
-         */
-
-        const _name = game.functions.capitalize(name);
-
-        this["has" + _name] = has;
-        this[name] = [val];
-    }
     addDeathrattle(_deathrattle) {
         /**
          * Adds a deathrattle to the card
@@ -115,7 +95,6 @@ class Card {
 
         if (!this.deathrattle) this.deathrattle = [];
 
-        this.hasDeathrattle = true;
         this.deathrattle.push(_deathrattle);
     }
 
@@ -322,11 +301,8 @@ class Card {
         this.activate("unpassive", false);
 
         Object.keys(this).forEach(att => {
-            // Set all attributes that starts with "has" to false
-            if (att.startsWith("has")) this[att] = false;
-
             // Check if a backup exists for the attribute. If it does; restore it.
-            else if (this.backups[att]) this[att] = this.backups[att];
+            if (this.backups[att]) this[att] = this.backups[att];
 
             // Check if the attribute if defined in the blueprint. If it is; restore it.
             else if (this.blueprint[att]) this[att] = this.blueprint[att];
@@ -364,7 +340,7 @@ class Card {
         name = name.toLowerCase();
 
         // If the card has the function
-        if (!this["has" + game.functions.capitalize(name)]) return false;
+        if (!this[name]) return false;
 
         let ret = [];
         

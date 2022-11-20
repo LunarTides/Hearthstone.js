@@ -85,7 +85,7 @@ class Interact {
             attacker.remHealth(target.getAttack());
     
             if (target.getHealth() > 0) {
-                if (target.activate("frenzy") !== -1) target.setFunction("frenzy", () => {}, false);
+                if (target.activate("frenzy") !== -1) target.frenzy = undefined;
             }
     
             if (attacker.weapon) {
@@ -402,55 +402,6 @@ class Interact {
         if (card.uncollectible) return false;
         return true;
     }
-    importDeck(code, plr) {
-        /**
-         * Imports a deck using a code and put the cards into the player's deck
-         * 
-         * @param {string} code The base64 encoded deck code
-         * @param {Player} plr The player to put the cards into
-         * 
-         * @returns {Card[]} The deck
-         */
-
-        // The code is base64 encoded, so we need to decode it
-        code = Buffer.from(code, 'base64').toString('ascii');
-        let deck = code.split(", ");
-        let _deck = [];
-    
-        let changed_class = false;
-    
-        // Find all cards with "x2" in front of them, and remove it and add the card twice
-        for (let i = 0; i < deck.length; i++) {
-            let card = deck[i];
-    
-            let m = null;
-    
-            if (card.startsWith("x2 ")) {
-                let m1 = new game.Card(game.functions.getCardByName(card.substring(3)).name, plr);
-                let m2 = new game.Card(game.functions.getCardByName(card.substring(3)).name, plr);
-                m = m1;
-    
-                _deck.push(m1, m2);
-            } else {
-                m = new game.Card(game.functions.getCardByName(card).name, plr);
-    
-                _deck.push(m);
-            }
-    
-            if (!changed_class && m.class != "Neutral") {
-                plr.setClass(m.class);
-            
-                changed_class = true;
-            }
-    
-            if (!this.validateDeck(m, plr, _deck)) {
-                game.input("The Deck is not valid.\n")
-                exit(1);
-            }
-        }
-    
-        return game.functions.shuffle(_deck);
-    }
     deckCode(plr) {
         /**
          * Asks the player to supply a deck code, if no code was given, fill the players deck with 30 Sheep
@@ -464,7 +415,7 @@ class Interact {
     
         const deckcode = game.input(`Player ${plr.id + 1}, please type in your deckcode (Leave this empty for a test deck): `);
     
-        if (deckcode.length > 0) plr.deck = this.importDeck(deckcode, plr);
+        if (deckcode.length > 0) plr.deck = game.functions.importDeck(deckcode, plr);
         else while (plr.deck.length < 30) plr.deck.push(new game.Card("Sheep", plr));
     }
     mulligan(plr) {
@@ -495,16 +446,7 @@ class Interact {
         if (plr.ai) input = plr.ai.mulligan();
         else input = game.input(sb);
 
-        input.split("").forEach(c => {
-            let ic = parseInt(c) - 1;
-            let card = plr.hand[ic];
-
-            if (card.name == "The Coin") return;
-
-            plr.drawCard();
-            plr.shuffleIntoDeck(card, false);
-            plr.removeFromHand(card);
-        });
+        game.functions.mulligan(plr, input);
 
         return input;
     }
@@ -861,3 +803,6 @@ class Interact {
 const cls = () => process.stdout.write('\033c');
 
 exports.Interact = Interact;
+
+
+

@@ -596,7 +596,7 @@ class Functions {
             }
 
             target.remStats(0, attacker)
-            if (target.getHealth() > 0 && target.activate("frenzy") !== -1) target.setFunction("frenzy", () => {}, false);
+            if (target.getHealth() > 0 && target.activate("frenzy") !== -1) target.frenzy = undefined;
 
             return true;
         }
@@ -621,7 +621,7 @@ class Functions {
 
         if (dmgMinion) attacker.remStats(0, target.getAttack());
 
-        if (dmgMinion && attacker.getHealth() > 0 && attacker.activate("frenzy") !== -1) target.setFunction("frenzy", () => {}, false);
+        if (dmgMinion && attacker.getHealth() > 0 && attacker.activate("frenzy") !== -1) target.frenzy = undefined;
 
         if (attacker.keywords.includes("Stealth")) attacker.removeKeyword("Stealth");
     
@@ -640,7 +640,7 @@ class Functions {
 
         if (dmgTarget) target.remStats(0, attacker.getAttack())
 
-        if (target.getHealth() > 0 && target.activate("frenzy") !== -1) target.setFunction("frenzy", () => {}, false);
+        if (target.getHealth() > 0 && target.activate("frenzy") !== -1) target.frenzy = undefined;
         if (target.getHealth() < 0) attacker.activate("overkill");
         if (target.getHealth() == 0) attacker.activate("honorablekill");
 
@@ -1242,6 +1242,82 @@ class Functions {
         game.set("cards", cards);
         setup_card(game, cards);
         setup_ai(game);
+    }
+    importDeck(code, plr) {
+        /**
+         * Imports a deck using a code and put the cards into the player's deck
+         * 
+         * @param {string} code The base64 encoded deck code
+         * @param {Player} plr The player to put the cards into
+         * 
+         * @returns {Card[]} The deck
+         */
+
+        // The code is base64 encoded, so we need to decode it
+        code = Buffer.from(code, 'base64').toString('ascii');
+        let deck = code.split(", ");
+        let _deck = [];
+    
+        let changed_class = false;
+    
+        // Find all cards with "x2" in front of them, and remove it and add the card twice
+        for (let i = 0; i < deck.length; i++) {
+            let card = deck[i];
+    
+            let m = null;
+    
+            if (card.startsWith("x2 ")) {
+                let m1 = new game.Card(this.getCardByName(card.substring(3)).name, plr);
+                let m2 = new game.Card(this.getCardByName(card.substring(3)).name, plr);
+                m = m1;
+    
+                _deck.push(m1, m2);
+            } else {
+                m = new game.Card(this.getCardByName(card).name, plr);
+    
+                _deck.push(m);
+            }
+    
+            if (!changed_class && m.class != "Neutral") {
+                plr.setClass(m.class);
+            
+                changed_class = true;
+            }
+    
+            if (!game.interact.validateDeck(m, plr, _deck)) {
+                game.input("The Deck is not valid.\n")
+                exit(1);
+            }
+        }
+    
+        return this.shuffle(_deck);
+    }
+    mulligan(plr, input) {
+        /**
+         * Mulligans the cards from input. Read interact.mulligan for more info
+         *
+         * @param {Player} plr The player who mulligans
+         * @param {String} input The ids of the cards to mulligan
+         *
+         * @returns {Card[]} The cards mulligan'd
+         */
+
+        let cards = [];
+
+        input.split("").forEach(c => {
+            let ic = parseInt(c) - 1;
+            let card = plr.hand[ic];
+
+            if (card.name == "The Coin") return;
+
+            plr.drawCard();
+            plr.shuffleIntoDeck(card, false);
+            plr.removeFromHand(card);
+
+            cards.push(card);
+        });
+
+        return cards;
     }
 
     // Quest
