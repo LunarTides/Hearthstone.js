@@ -103,5 +103,10 @@ dist
 # TernJS port file
 .tern-port
 
-# Configuration Folders
+# Configuration directories
 .vscode/
+
+# Vim cache
+.*.un~ 
+.*.swp
+*~

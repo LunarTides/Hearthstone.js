@@ -415,7 +415,7 @@ class Interact {
     
         const deckcode = game.input(`Player ${plr.id + 1}, please type in your deckcode (Leave this empty for a test deck): `);
     
-        if (deckcode.length > 0) plr.deck = game.functions.importDeck(deckcode, plr);
+        if (deckcode.length > 0) game.functions.importDeck(deckcode, plr);
         else while (plr.deck.length < 30) plr.deck.push(new game.Card("Sheep", plr));
     }
     mulligan(plr) {
@@ -803,6 +803,7 @@ class Interact {
 const cls = () => process.stdout.write('\033c');
 
 exports.Interact = Interact;
+
 
 
 

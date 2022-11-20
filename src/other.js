@@ -1290,7 +1290,11 @@ class Functions {
             }
         }
     
-        return this.shuffle(_deck);
+        _deck = this.shuffle(_deck);
+
+        plr.deck = _deck;
+
+        return _deck;
     }
     mulligan(plr, input) {
         /**
@@ -1303,18 +1307,22 @@ class Functions {
          */
 
         let cards = [];
+        let mulligan = [];
 
         input.split("").forEach(c => {
-            let ic = parseInt(c) - 1;
-            let card = plr.hand[ic];
+            mulligan.push(plr.hand[parseInt(c) - 1]);
+        });
 
-            if (card.name == "The Coin") return;
+        plr.hand.forEach(c => {
+            if (!mulligan.includes(c)) return;
 
+            mulligan.splice(mulligan.indexOf(c), 1);
+            
             plr.drawCard();
-            plr.shuffleIntoDeck(card, false);
-            plr.removeFromHand(card);
+            plr.shuffleIntoDeck(c, false);
+            plr.removeFromHand(c);
 
-            cards.push(card);
+            cards.push(c);
         });
 
         return cards;
