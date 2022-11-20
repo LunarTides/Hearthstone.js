@@ -31,7 +31,7 @@ class AI {
                 let r = false;
 
                 this.history.forEach((h, i) => {
-                    if (h instanceof Array && h[1] === "0,1" && this.history[i - 1][1][0] == c) r = true;
+                    if (h instanceof Array && h[1] === "0,1" && this.history[i - 1][1][0] == c.name) r = true;
                 });
                 if (r) return;
 
@@ -55,7 +55,7 @@ class AI {
             this.history.push(["calcMove", best_move]);
         }
 
-        else this.history.push(["calcMove", [best_move, best_score]]);
+        else this.history.push(["calcMove", [best_move.name, best_score]]);
 
         if (best_move == "end") {
             this.history.forEach((h, i) => {
@@ -106,7 +106,7 @@ class AI {
                 best_score = score;
             }
         });
-        target = best_minion
+        target = best_minion;
 
         // If the AI has no minions to attack, attack the enemy hero
         if (!target) {
@@ -118,11 +118,28 @@ class AI {
             }
             else {
                 target = this.plr.getOpponent();
-                this.history.push(["chooseBattle", [attacker, "P" + (target.id + 1)]]);
             }
         }
+        if (!attacker && this.plr.attack > 0) {
+            attacker = this.plr;
+        }
 
-        if (target instanceof game.Card) this.history.push([`chooseBattle, [${worst_score}, ${best_score}]`, [attacker, target]]);
+        let arr = [];
+        let strbuilder = "";
+
+        if (attacker instanceof game.Player) arr.push("P" + (attacker.id + 1));
+        else {
+            arr.push(attacker.name);
+            strbuilder += worst_score + ", ";
+        }
+            
+        if (target instanceof game.Player) arr.push("P" + (target.id + 1));
+        else {
+            arr.push(target.name);
+            strbuilder += best_score;
+        }
+
+        this.history.push([`chooseBattle, [${strbuilder}]`, arr]);
 
         return [attacker, target];
     }
@@ -157,8 +174,9 @@ class AI {
 
             if (side == "self") ret = this.plr;
             else if (side == "enemy") ret = op;
+            _ret = (ret instanceof game.Player) ? "P" + (ret.id + 1) : ret;
 
-            this.history.push(["selectTarget", ret]);
+            this.history.push(["selectTarget", _ret]);
 
             return ret;
         }
@@ -197,7 +215,7 @@ class AI {
                 while((!selected) || (elusive && selected.elusive));
 
                 if (selected) {
-                    this.history.push(["selectTarget", selected]);
+                    this.history.push(["selectTarget", selected.name]);
 
                     return selected;
                 }
@@ -207,7 +225,7 @@ class AI {
         selected = best_minion;
 
         if (selected) {
-            this.history.push(["selectTarget", [selected, best_score]]);
+            this.history.push(["selectTarget", [selected.name, best_score]]);
 
             return selected;
         }
@@ -237,7 +255,7 @@ class AI {
             }
         });
 
-        this.history.push(["discover", [best_card, best_score]]);
+        this.history.push(["discover", [best_card.name, best_score]]);
 
         return best_card;
     }

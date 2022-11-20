@@ -24,7 +24,8 @@ class Interact {
         if (game.player.ai) {
             let ai = game.player.ai.chooseBattle();
 
-            if (ai[0] === -1) return false;
+            if (ai[0] === -1 || ai[1] === -1) return -1;
+            if (!ai[0] || !ai[1]) return null;
 
             attacker = ai[0];
             target = ai[1];
@@ -254,25 +255,7 @@ class Interact {
                 console.log(`AI${i + 1} History: {`);
 
                 plr.ai.history.forEach((t, i) => {
-                    let sb = `${i + 1} ${t[0]}: (`;
-
-                    if (t[1] instanceof Array) {
-                        if (t[1][0] instanceof game.Card) sb += t[1][0].name;
-                        else sb += t[1][0];
-
-                        sb += ", ";
-
-                        if (t[1][1] instanceof game.Card) sb += t[1][1].name;
-                        else sb += t[1][1];
-
-                        console.log(`${sb}),`);
-                        return;
-                    }
-
-                    if (t[1] instanceof game.Card) sb += t[1].name;
-                    else sb += t[1];
-
-                    console.log(sb + "),");
+                    console.log(`${i + 1} ${t[0]}: (${t[1]}),`);
                 });
                 
                 console.log("}");
@@ -293,18 +276,13 @@ class Interact {
          */
 
         game.killMinions();
-    
         curr = game.player;
     
         if (typeof input === "string" && this.handleCmds(input) !== -1) return true;
-
         let card = curr.hand[parseInt(input) - 1];
-        if (input instanceof game.Card) card = input;
 
         if (!card) return "invalid";
-        
         if (input == curr.hand.length || input == 1) card.activate("outcast");
-        
         return game.playCard(card, curr);    
     }
     doTurn() {
@@ -319,6 +297,8 @@ class Interact {
         if (curr.ai) {
             let input = curr.ai.calcMove();
             if (!input) return;
+
+            if (input instanceof game.Card) input = (curr.hand.indexOf(input) + 1).toString();
 
             let turn = this.doTurnLogic(input);
 
@@ -415,7 +395,7 @@ class Interact {
     
         const deckcode = game.input(`Player ${plr.id + 1}, please type in your deckcode (Leave this empty for a test deck): `);
     
-        if (deckcode.length > 0) game.functions.importDeck(deckcode, plr);
+        if (deckcode.length > 0) game.functions.importDeck(plr, deckcode);
         else while (plr.deck.length < 30) plr.deck.push(new game.Card("Sheep", plr));
     }
     mulligan(plr) {
@@ -803,6 +783,10 @@ class Interact {
 const cls = () => process.stdout.write('\033c');
 
 exports.Interact = Interact;
+
+
+
+
 
 
 

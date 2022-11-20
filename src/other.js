@@ -1243,12 +1243,12 @@ class Functions {
         setup_card(game, cards);
         setup_ai(game);
     }
-    importDeck(code, plr) {
+    importDeck(plr, code) {
         /**
          * Imports a deck using a code and put the cards into the player's deck
          * 
-         * @param {string} code The base64 encoded deck code
          * @param {Player} plr The player to put the cards into
+         * @param {string} code The base64 encoded deck code
          * 
          * @returns {Card[]} The deck
          */
@@ -1309,12 +1309,10 @@ class Functions {
         let cards = [];
         let mulligan = [];
 
-        input.split("").forEach(c => {
-            mulligan.push(plr.hand[parseInt(c) - 1]);
-        });
+        input.split("").forEach(c => mulligan.push(plr.hand[parseInt(c) - 1]));
 
         plr.hand.forEach(c => {
-            if (!mulligan.includes(c)) return;
+            if (!mulligan.includes(c) || c.name == "The Coin") return;
 
             mulligan.splice(mulligan.indexOf(c), 1);
             
