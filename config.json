@@ -9,21 +9,31 @@
     "AIMulliganThreshold": 8,
     "AISpellValue": 4,
     "AIKeywordValue": 2.5,
+    "AIFunctionValue": 20,
     "AISentiments": {
         "positive": {
-            "heal"   : 0.5,
-            "give"   : 2,
-            "gain"   : 1,
-            "restore": 0.5,
-            "attack" : 0.5,
-            "health" : 0.5,
-            "copy"   : 2,
-            "draw"   : 2,
-            "mana"   : 1,
-            "enemy"  : 1,
-            "trigger": 3,
-            "twice"  : 2,
-            "double" : 2
+            "heal"     : 0.5,
+            "give"     : 2,
+            "gain"     : 1,
+            "set"      : 1,
+            "restore"  : 0.5,
+            "attack"   : 0.5,
+            "health"   : 0.5,
+            "copy"     : 2,
+            "draw"     : 2,
+            "mana"     : 1,
+            "enemy"    : 1,
+            "trigger"  : 3,
+            "twice"    : 2,
+            "double"   : 2,
+            "your"     : 1,
+            "maximum"  : 1,
+            "crystal"  : 1,
+            "add"      : 2,
+            "hand"     : 1,
+            "permanent": 3,
+            "\\d+/\\d+": 1,
+            "\\+.*"    : 1
         },
         "negative": {
             "deal"   : 1,
@@ -31,7 +41,8 @@
             "damage" : 1,
             "silence": 5,
             "destroy": 9,
-            "kill"   : 3
+            "kill"   : 3,
+            "-.*"    : 1
         }
     }
 }

@@ -379,11 +379,22 @@ class AI {
         str.split(" ").forEach(s => {
             // Filter out any characters not in the alphabet
             s = s.toLowerCase().split("").filter(c => ALPHABET.split("").includes(c)).join("");
+            let ret = false;
 
             Object.entries(game.config.AISentiments).forEach(v => {
+                if (ret) return;
+
                 Object.entries(v[1]).forEach(k => {
+                    if (ret) return;
+
+                    const k0 = k[0].replace(/^(.*)[sd]$/, "$1"); // Remove the last "s" or "d" in order to account for plurals 
+
                     // If the sentiment is "positive", add to the score. If it is "negative", subtract from the score.
-                    if (k[0] == s) score -= (v[0] == "positive") ? -k[1] : k[1];
+                    if (new RegExp(k[0]).test(s) || new RegExp(k0).test(s)) {
+                        score -= (v[0] == "positive") ? -k[1] : k[1];
+                        ret = true;
+                        return;
+                    }
                 });
             });
         });
@@ -402,6 +413,9 @@ class AI {
         score -= c.mana / 4;
 
         c.keywords.forEach(k => score += (game.config.AIKeywordValue / 10));
+        Object.values(c).forEach(c => {
+            if (c instanceof Array && c[0] instanceof Function) score += (game.config.AIFunctionValue / 10);
+        });
 
         return score;
     }
