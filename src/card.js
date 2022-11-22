@@ -50,7 +50,7 @@ class Card {
         */
         Object.entries(this.blueprint).forEach(i => {
             if (typeof i[1] == "function") this[i[0]] = [i[1]];
-            else this[i[0]] = i[1];
+            else this[i[0]] = JSON.parse(JSON.stringify(i[1]));
         });
 
         // Set these variables to true or false.

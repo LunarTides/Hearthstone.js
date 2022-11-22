@@ -1227,15 +1227,6 @@ class Functions {
             if (file.name.endsWith(".js")) {
                 let f = require(p);
                 
-                // Deep freeze the blueprint
-                const deepFreeze = obj => {
-                    Object.keys(obj).forEach(prop => {
-                        if (typeof obj[prop] === 'object') deepFreeze(obj[prop]);
-                    });
-                    return Object.freeze(obj);
-                }
-                //deepFreeze(f); // This doesn't work since when adding a keyword, it gets added to the blueprint(?), and since this is using strict mode, it crashes. Fun. TODO: Get this working
-
                 cards[f.name] = f;
             }
             else if (file.isDirectory()) this._importCards(p);
