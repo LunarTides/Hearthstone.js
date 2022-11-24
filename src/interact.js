@@ -784,11 +784,3 @@ class Interact {
 const cls = () => process.stdout.write('\033c');
 
 exports.Interact = Interact;
-
-
-
-
-
-
-
-

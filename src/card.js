@@ -67,8 +67,6 @@ class Card {
         this.plr = plr;
 
         this.randomizeIds();
-
-
     }
 
     randomizeIds() {
