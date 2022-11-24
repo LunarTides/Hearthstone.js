@@ -1,4 +1,3 @@
-'''
 Levels:
     Critical
     Severe
@@ -11,4 +10,3 @@ Levels:
 
 - Fixed -
 [#2] When a minion gets a keyword added to them using something like adapt, the keyword gets added to the blueprint, making every new instance of the card have that keyword (High)
-'''

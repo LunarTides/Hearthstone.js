@@ -1,5 +1,3 @@
-'''
-
 ------ FUNCTIONS ------
 Battlecry        (DONE)
 Combo            (DONE)
@@ -52,5 +50,3 @@ Quest            (DONE)
 Questline        (DONE)
 
 GUI
-
-'''
