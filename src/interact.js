@@ -295,7 +295,6 @@ class Interact {
         if (curr.ai) {
             let input = curr.ai.calcMove();
             if (!input) return;
-
             if (input instanceof game.Card) input = (curr.hand.indexOf(input) + 1).toString();
 
             let turn = this.doTurnLogic(input);

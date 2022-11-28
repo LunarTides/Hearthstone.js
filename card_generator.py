@@ -22,7 +22,7 @@ if not _class: _class = "Neutral"
 rarity = input("Rarity: ")
 _set = input("Set: ")
 _keywords = input("Keywords: ").split(",")
-function = input("Functions: ").lower()
+function = input("Function: ").lower()
 
 displayName = f'displayName: "{_displayName}",\n    ' if _displayName != name else ''
 stats = f'stats: [{", ".join(_stats)}],\n    ' if mw and _stats else ''

@@ -369,16 +369,17 @@ class AI {
     analyzePositive(str) {
         /**
          * Analyze a string and return a score based on how "positive" the ai thinks it is
+         *
+         * @param {string} str The string to analyze
          * 
          * @returns {number} The score
          */
 
         let score = 0;
-        const ALPHABET = "abcdefghijklmnopqrstuvwxyz";
 
         str.split(" ").forEach(s => {
             // Filter out any characters not in the alphabet
-            s = s.toLowerCase().split("").filter(c => ALPHABET.split("").includes(c)).join("");
+            s = s.toLowerCase().replace(/[^a-z]/g, "");
             let ret = false;
 
             Object.entries(game.config.AISentiments).forEach(v => {
@@ -389,8 +390,8 @@ class AI {
 
                     const k0 = k[0].replace(/^(.*)[sd]$/, "$1"); // Remove the last "s" or "d" in order to account for plurals 
 
-                    // If the sentiment is "positive", add to the score. If it is "negative", subtract from the score.
                     if (new RegExp(k[0]).test(s) || new RegExp(k0).test(s)) {
+                        // If the sentiment is "positive", add to the score. If it is "negative", subtract from the score.
                         score -= (v[0] == "positive") ? -k[1] : k[1];
                         ret = true;
                         return;
@@ -404,6 +405,10 @@ class AI {
     analyzePositiveCard(c) {
         /**
          * Same as analyzePositive but changes the score based on a card's stats (if it has) and cost.
+         *
+         * @param {Card} c The card to analyze
+         *
+         * @returns {number} The score
          */
 
         let score = this.analyzePositive(c.desc);

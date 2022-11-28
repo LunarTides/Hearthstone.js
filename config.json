@@ -6,7 +6,7 @@
     "P1AI": false,
     "P2AI": true,
     
-    "AIMulliganThreshold": 8,
+    "AIMulliganThreshold": 40,
     "AISpellValue": 4,
     "AIKeywordValue": 2.5,
     "AIFunctionValue": 20,
