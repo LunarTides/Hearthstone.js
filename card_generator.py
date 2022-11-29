@@ -1,4 +1,10 @@
-from os import system as cmd
+import os
+
+'''with open(".latest_id", "r+") as f:
+    latest_id = int(f.readlines()[0]);
+    f.seek(0);
+    f.truncate();
+    f.write(str(latest_id + 1));'''
 
 editor = 'vim'
 
@@ -35,6 +41,9 @@ if _class == "Neutral": path = f"cards/Neutral/{_type}s/{mana} Cost/"
 else: path = f"cards/Classes/{_class}/{_type}s/{mana} Cost/"
 filename = f"{name.replace(' ', '_').lower()}.js"
 
+if not os.path.exists(path): os.makedirs(path) # If the path doesn't exist, create it.
+
+#'''id: ''' + str(latest_id + 1) + ''',
 with open(path + filename, "w+") as f:
     f.write('''module.exports = {
     name: "''' + name + '''",
@@ -43,7 +52,7 @@ with open(path + filename, "w+") as f:
     ''' + tribe + '''class: "''' + _class + '''",
     rarity: "''' + rarity + '''",
     set: "''' + _set + '''",
-    ''' + spellClass + keywords + '''
+    ''' + spellClass + keywords + '''        
     ''' + function + '''(plr, game, card) {
         
     }
@@ -51,4 +60,4 @@ with open(path + filename, "w+") as f:
 
     print(path);
 
-cmd(f'{editor} "{path}{filename}"')
+os.system(f'{editor} "{path}{filename}"')

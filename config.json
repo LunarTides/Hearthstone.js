@@ -6,10 +6,10 @@
     "P1AI": false,
     "P2AI": true,
     
-    "AIMulliganThreshold": 40,
+    "AIMulliganThreshold": 30,
     "AISpellValue": 4,
-    "AIKeywordValue": 2.5,
-    "AIFunctionValue": 20,
+    "AIKeywordValue": 5,
+    "AIFunctionValue": 10,
     "AISentiments": {
         "positive": {
             "\\+.*"    : 1,
