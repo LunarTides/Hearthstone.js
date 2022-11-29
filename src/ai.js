@@ -354,7 +354,7 @@ class AI {
 
             let score = this.analyzePositiveCard(c);
 
-            if (score <= (game.config.AIMulliganThreshold / 10)) to_mulligan += (this.plr.hand.indexOf(c) + 1).toString();
+            if (score <= game.config.AIMulliganThreshold) to_mulligan += (this.plr.hand.indexOf(c) + 1).toString();
 
             _scores += `${c.name}:${score}, `;
         });
@@ -413,13 +413,13 @@ class AI {
 
         let score = this.analyzePositive(c.desc);
 
-        if (c.type == "Minion" || c.type == "Weapon") score += (c.getAttack() + c.getHealth()) / 10;
-        else score += game.config.AISpellValue / 10;
-        score -= c.mana / 4;
+        if (c.type == "Minion" || c.type == "Weapon") score += (c.getAttack() + c.getHealth()) * game.config.AIStatsBias;
+        else score += game.config.AISpellValue;
+        score -= c.mana * game.config.AIManaBias;
 
-        c.keywords.forEach(k => score += (game.config.AIKeywordValue / 10));
+        c.keywords.forEach(k => score += game.config.AIKeywordValue);
         Object.values(c).forEach(c => {
-            if (c instanceof Array && c[0] instanceof Function) score += (game.config.AIFunctionValue / 10);
+            if (c instanceof Array && c[0] instanceof Function) score += game.config.AIFunctionValue;
         });
 
         return score;
