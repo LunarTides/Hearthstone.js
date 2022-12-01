@@ -6,6 +6,7 @@ module.exports = {
     class: "Demon Hunter",
     rarity: "Free",
     set: "Core",
+    hpCost: 1,
 
     heropower(plr, game, self) {
         plr.addAttack(1);

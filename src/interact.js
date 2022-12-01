@@ -15,7 +15,7 @@ class Interact {
     doTurnAttack() {
         /**
          * Asks the user to attack a minion or hero
-         * 
+         *
          * @returns {undefined}
          */
 
@@ -41,7 +41,7 @@ class Interact {
         game.killMinions();
 
         let ignore = ["divineshield"];
-        if (errorcode === true || ignore.includes(errorcode)) return true;
+        if (errorcode === true || ignore.includes(errorcode)) return errorcode;
 
         switch (errorcode) {
             case "taunt":
@@ -192,7 +192,6 @@ class Interact {
          */
 
         game.killMinions();
-        curr = game.player;
     
         if (typeof input === "string" && this.handleCmds(input) !== -1) return true;
         let card = curr.hand[parseInt(input) - 1];
@@ -209,7 +208,7 @@ class Interact {
          */
 
         curr = game.player;
-    
+
         if (curr.ai) {
             let input = curr.ai.calcMove();
             if (!input) return;
@@ -636,11 +635,11 @@ class Interact {
         });
         console.log("-------------")
     
-        let _class = (curr.hero == "") ? curr.heroClass : curr.hero.name;
-        if (detailed) {
+        let _class = curr.hero.name.includes("Starting Hero") ? curr.heroClass : curr.hero.name;
+        if (detailed && curr.hero.name.includes("Starting Hero")) {
             _class += " | ";
             _class += "HP: ";
-            _class += (curr.heroPower == "hero") ? curr.hero.name : curr.heroPower;
+            _class += curr.hero.name;
         }
     
         // Hand

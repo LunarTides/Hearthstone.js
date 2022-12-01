@@ -325,7 +325,6 @@ class Player {
          * Sets the player's class to "_class"
          * 
          * @param {string} heroClass The class that the player should be set to
-         * @param {boolean} hp [default=true] Should the hero power be changed to that class's default hero power
          * 
          * @returns {undefined}
          */
@@ -344,6 +343,7 @@ class Player {
 
         this.hero = hero;
         this.heroClass = hero.class;
+        this.heroPowerCost = hero.hpCost || 2;
 
         this.armor += armor;
     }
@@ -353,9 +353,6 @@ class Player {
          * 
          * @returns {number | boolean} -1 | Success
          */
-
-        if (this.hero.name.startsWith("Demon Hunter")) this.heroPowerCost = 1;
-        else this.heroPowerCost = 2; // This is to prevent changing hero power to demon hunter and changing back to decrease cost to 1
 
         if (this.mana < this.heroPowerCost || !this.canUseHeroPower) return false;
         if (!this.hero) return false;

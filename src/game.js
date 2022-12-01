@@ -515,7 +515,7 @@ class Game {
         /**
          * Makes a minion or hero attack another minion or hero
          * 
-         * @param {Card | Player} attacker The attacker
+         * @param {Card | Player | number} attacker The attacker | Amount of damage to deal
          * @param {Card | Player} target The target
          * 
          * @returns {boolean | string} Success | Errorcode: ["divineshield", "taunt", "stealth", "plrnoattack", "noattack", "hasattacked", "sleepy", "cantattackhero"]
