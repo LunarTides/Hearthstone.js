@@ -657,7 +657,7 @@ class Game {
 
         if (dmgMinion) attacker.remStats(0, target.getAttack());
 
-        if (dmgMinion && attacker.getHealth() > 0 && attacker.activate("frenzy") !== -1) target.frenzy = undefined;
+        if (dmgMinion && attacker.getHealth() > 0 && attacker.activate("frenzy") !== -1) attacker.frenzy = undefined;
 
         if (attacker.keywords.includes("Stealth")) attacker.removeKeyword("Stealth");
     

@@ -193,7 +193,7 @@ class Interact {
 
         game.killMinions();
     
-        if (typeof input === "string" && this.handleCmds(input) !== -1) return true;
+        if (this.handleCmds(input) !== -1) return true;
         let card = curr.hand[parseInt(input) - 1];
         if (!card) return "invalid";
 
