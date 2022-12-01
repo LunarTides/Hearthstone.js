@@ -148,16 +148,26 @@ class Game {
          * @returns {undefined}
          */
 
+
         let players_hands = [[], []];
 
         // Add quest cards to the players hands
         for (let i = 0; i < 2; i++) {
-            let deck = this["player" + (i + 1)].deck;
+            // Set the player's hero to the default hero for the class
+            let plr = this["player" + (i + 1)];
+            
+            let hero_card = plr.class + " Starting Hero";
+            hero_card = this.functions.getCardByName(hero_card);
+            if (!hero_card) {
+                console.log("File 'cards/StartingHeroes/" + plr.class.toLowerCase().replaceAll(" ", "_") + ".js' is either; Missing or Incorrect. Please copy the working 'cards/StartingHeroes/' folder from the github repo to restore a working copy. Error Code: 12");
+                require("process").exit(1);
+            }
+            plr.setHero(hero_card, 0);
 
-            deck.forEach(c => {
+            plr.deck.forEach(c => {
                 if (c.desc.includes("Quest: ") || c.desc.includes("Questline: ")) {
                     players_hands[i].push(c);
-                    deck.splice(deck.indexOf(c), 1);
+                    plr.deck.splice(plr.deck.indexOf(c), 1);
                 }
             })
         }

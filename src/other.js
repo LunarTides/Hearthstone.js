@@ -117,8 +117,8 @@ class Player {
          * @returns {undefined}
          */
 
+        this.destroyWeapon(true);
         this.weapon = weapon;
-
         this.attack += weapon.getAttack();
     }
     destroyWeapon(triggerDeathrattle = false) {
@@ -356,91 +356,17 @@ class Player {
         else this.heroPowerCost = 2; // This is to prevent changing hero power to demon hunter and changing back to decrease cost to 1
 
         if (this.mana < this.heroPowerCost || !this.canUseHeroPower) return false;
+        if (!this.hero || this.hero_power != "hero") return false;
 
-        if (this.hero && this.hero_power == "hero") {
-            if (this.hero.activate("heropower") != -1) {
-                this.game.board[this.id].forEach(m => {
-                    m.activate("inspire");
-                });
-
-                this.mana = this.mana - this.heroPowerCost;
-
-                game.stats.update("heroPowers", this.hero_power);
-
-                this.canUseHeroPower = false;
-
-                return -1;
-            }
-
+        if (this.hero.activate("heropower") != -1) {
+            this.game.board[this.id].forEach(m => m.activate("inspire"));
+            this.mana -= this.heroPowerCost;
+            game.stats.update("heroPowers", this.hero_power);
+            this.canUseHeroPower = false;
             return true;
         }
 
-        if (this.hero_power == "Demon Hunter") {
-            this.addAttack(1);
-        }
-        else if (this.hero_power == "Druid") {
-            this.addAttack(1);
-            this.armor += 1;
-        }
-        else if (this.hero_power == "Hunter") {
-            this.game.opponent.remHealth(2);
-        }
-        else if (this.hero_power == "Mage") {
-            // dontupdate means prevent selectting an elusive target, but don't update
-            // game.stats.spellsCastOnMinions
-            // dontupdate can really be any value as long as it is not true or false
-            let t = this.game.functions.selectTarget("Deal 1 damage.", "dontupdate");
-            if (!t) return false;
-
-            game.attack(1, t);
-        }
-        else if (this.hero_power == "Paladin") {
-            game.summonMinion(new game.Card("Silver Hand Recruit", this), this);
-        }
-        else if (this.hero_power == "Priest") {
-            let t = this.game.functions.selectTarget("Restore 2 health.", "dontupdate");
-
-            if (!t) return false;
-
-            t.addHealth(2, true);
-        }
-        else if (this.hero_power == "Rogue") {
-            this.weapon = new game.Card("Wicked Knife", this);
-        }
-        else if (this.hero_power == "Shaman") {
-            const totem_cards = ["Healing Totem", "Searing Totem", "Stoneclaw Totem", "Strength Totem"];
-
-            game.board[this.id].forEach(m => {
-                if (totem_cards.includes(m.displayName)) {
-                    totem_cards.splice(totem_cards.indexOf(m.displayName), 1);
-                }
-            });
-
-            if (totem_cards.length == 0) {
-                return;
-            }
-
-            game.summonMinion(new game.Card(game.functions.randList(totem_cards), this), this);
-        }
-        else if (this.hero_power == "Warlock") {
-            this.remHealth(2);
-
-            this.drawCard();
-        }
-        else if (this.hero_power == "Warrior") {
-            this.armor += 2;
-        }
-
-        this.game.board[this.id].forEach(m => {
-            m.activate("inspire");
-        });
-
-        this.mana -= this.heroPowerCost;
-
-        game.stats.update("heroPowers", this.hero_power);
-
-        this.canUseHeroPower = false;
-
+        return -1;
     }
 }
 
