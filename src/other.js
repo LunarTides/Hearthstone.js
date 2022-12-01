@@ -9,27 +9,32 @@ class Player {
         this.name = name;
         this.id = null;
         this.ai = null;
+        this.game = null;
+        this.fatigue = 0;
+
         this.deck = [];
         this.hand = [];
+
         this.mana = 0;
         this.maxMana = 0;
         this.maxMaxMana = 10;
-        this.game = null;
+        this.overload = 0;
+
         this.health = 30;
         this.maxHealth = this.health;
-        this.attack = 0;
         this.armor = 0;
-        this.class = "Mage";
-        this.hero_power = this.class;
+
         this.hero = "";
+        this.heroClass = "Mage";
         this.heroPowerCost = 2;
         this.canUseHeroPower = true;
+
         this.weapon = null;
-        this.fatigue = 0;
         this.frozen = false;
         this.immune = false;
-        this.overload = 0;
+        this.attack = 0;
         this.spellDamage = 0;
+
         this.counter = [];
         this.secrets = [];
         this.sidequests = [];
@@ -315,18 +320,17 @@ class Player {
     }
 
     // Hero power / Class
-    setClass(_class, hp = true) {
+    setClass(heroClass) {
         /**
          * Sets the player's class to "_class"
          * 
-         * @param {string} _class The class that the player should be set to
+         * @param {string} heroClass The class that the player should be set to
          * @param {boolean} hp [default=true] Should the hero power be changed to that class's default hero power
          * 
          * @returns {undefined}
          */
 
-        this.class = _class;
-        if (hp) this.hero_power = _class;
+        this.heroClass = heroClass;
     }
     setHero(hero, armor = 5) {
         /**
@@ -339,9 +343,7 @@ class Player {
          */
 
         this.hero = hero;
-
-        this.hero_power = "hero";
-        this.class = hero.class;
+        this.heroClass = hero.class;
 
         this.armor += armor;
     }
@@ -352,21 +354,20 @@ class Player {
          * @returns {number | boolean} -1 | Success
          */
 
-        if (this.hero_power == "Demon Hunter") this.heroPowerCost = 1;
+        if (this.hero.name.startsWith("Demon Hunter")) this.heroPowerCost = 1;
         else this.heroPowerCost = 2; // This is to prevent changing hero power to demon hunter and changing back to decrease cost to 1
 
         if (this.mana < this.heroPowerCost || !this.canUseHeroPower) return false;
-        if (!this.hero || this.hero_power != "hero") return false;
+        if (!this.hero) return false;
 
-        if (this.hero.activate("heropower") != -1) {
-            this.game.board[this.id].forEach(m => m.activate("inspire"));
-            this.mana -= this.heroPowerCost;
-            game.stats.update("heroPowers", this.hero_power);
-            this.canUseHeroPower = false;
-            return true;
-        }
+        if (this.hero.activate("heropower") == -1) return -1;
 
-        return -1;
+        this.game.board[this.id].forEach(m => m.activate("inspire"));
+        this.mana -= this.heroPowerCost;
+        this.canUseHeroPower = false;
+
+        game.stats.update("heroPowers", this.heroClass);
+        return true;
     }
 }
 
@@ -973,7 +974,7 @@ class Functions {
         if (cards.length <= 0) return;
         // ----------------------------
 
-        switch (plr.class) {
+        switch (plr.heroClass) {
             case "Priest":
                 // Add a random Priest minion to your hand.
                 let possible_cards = cards.filter(c => this.getType(c) == "Minion" && c.class == "Priest");

@@ -3,8 +3,8 @@ const { exit } = require('process');
 const license_url = 'https://github.com/Keatpole/Hearthstone.js/blob/main/LICENSE';
 const copyright_year = "2022";
 
-let curr;
 let game;
+let curr;
 
 class Interact {
     constructor(_game) {
@@ -21,8 +21,8 @@ class Interact {
 
         let attacker, target;
 
-        if (game.player.ai) {
-            let ai = game.player.ai.chooseBattle();
+        if (curr.ai) {
+            let ai = curr.ai.chooseBattle();
 
             if (ai[0] === -1 || ai[1] === -1) return -1;
             if (!ai[0] || !ai[1]) return null;
@@ -293,7 +293,7 @@ class Interact {
          * @returns {boolean} Valid
          */
 
-        if (plr.class != card.class && card.class != "Neutral") return false;
+        if (plr.heroClass != card.class && card.class != "Neutral") return false;
         if (card.uncollectible) return false;
         return true;
     }
@@ -636,11 +636,11 @@ class Interact {
         });
         console.log("-------------")
     
-        let _class = (curr.hero == "") ? curr.class : curr.hero.name;
+        let _class = (curr.hero == "") ? curr.heroClass : curr.hero.name;
         if (detailed) {
             _class += " | ";
             _class += "HP: ";
-            _class += (curr.hero_power == "hero") ? curr.hero.name : curr.hero_power;
+            _class += (curr.heroPower == "hero") ? curr.hero.name : curr.heroPower;
         }
     
         // Hand

@@ -8,9 +8,9 @@ module.exports = {
     set: "Core",
 
     heropower(plr, game, self) {
-        let target = game.functions.selectTargt("Restore 2 health.", "dontupdate");
+        let target = game.functions.selectTarget("Restore 2 health.", "dontupdate");
         if (!target) return -1;
 
-        t.addHealth(2, true);
+        target.addHealth(2, true);
     }
 }
