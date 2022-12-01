@@ -390,14 +390,9 @@ class Player {
             // game.stats.spellsCastOnMinions
             // dontupdate can really be any value as long as it is not true or false
             let t = this.game.functions.selectTarget("Deal 1 damage.", "dontupdate");
-
             if (!t) return false;
 
-            if (t instanceof Player) {
-                t.remHealth(1);
-            } else {
-                game.functions.attackMinion(1, t);
-            }
+            game.attack(1, t);
         }
         else if (this.hero_power == "Paladin") {
             game.summonMinion(new game.Card("Silver Hand Recruit", this), this);
@@ -576,75 +571,6 @@ class Functions {
     }
 
     // Damage
-    attackMinion(attacker, target) {
-        /**
-         * Makes a minion or hero attack another minion or hero
-         * 
-         * @param {Card | Player} attacker The attacker
-         * @param {Card | Player} target The target
-         * 
-         * @returns {boolean} Success
-         */
-
-        game.killMinions();
-
-        // The first variable is a number
-        if (!isNaN(attacker)) {
-            if (target.keywords.includes("Divine Shield")) {
-                target.removeKeyword("Divine Shield");
-                return false;
-            }
-
-            target.remStats(0, attacker)
-            if (target.getHealth() > 0 && target.activate("frenzy") !== -1) target.frenzy = undefined;
-
-            return true;
-        }
-
-        // The first variable is a minion
-        attacker.decAttack();
-
-        game.stats.update("enemyAttacks", [attacker, target]);
-        game.stats.update("minionsThatAttacked", [attacker, target]);
-        game.stats.update("minionsAttacked", [attacker, target]);
-
-        let dmgTarget = true;
-        let dmgMinion = true;
-
-        if (attacker.immune) dmgMinion = false;
-
-        if (dmgMinion && attacker.keywords.includes("Divine Shield")) {
-            attacker.removeKeyword("Divine Shield");
-            dmgMinion = false;
-        }
-
-        if (dmgMinion) attacker.remStats(0, target.getAttack());
-
-        if (dmgMinion && attacker.getHealth() > 0 && attacker.activate("frenzy") !== -1) target.frenzy = undefined;
-
-        if (attacker.keywords.includes("Stealth")) attacker.removeKeyword("Stealth");
-    
-        attacker.activate("onattack");
-        game.stats.update("minionsAttacked", [attacker, target]);
-    
-        if (dmgMinion && target.keywords.includes("Poisonous")) attacker.setStats(attacker.getAttack(), 0);
-
-        if (target.keywords.includes("Divine Shield")) {
-            target.removeKeyword("Divine Shield");
-            dmgTarget = false;
-        }
-
-        if (dmgTarget && attacker.keywords.includes("Lifesteal")) attacker.plr.addHealth(attacker.getAttack());
-        if (dmgTarget && attacker.keywords.includes("Poisonous")) target.setStats(target.getAttack(), 0);
-
-        if (dmgTarget) target.remStats(0, attacker.getAttack())
-
-        if (target.getHealth() > 0 && target.activate("frenzy") !== -1) target.frenzy = undefined;
-        if (target.getHealth() < 0) attacker.activate("overkill");
-        if (target.getHealth() == 0) attacker.activate("honorablekill");
-
-        return true;
-    }
     spellDmg(target, damage) {
         /**
          * Deals damage to "target" based on your spell damage
@@ -658,12 +584,7 @@ class Functions {
         const dmg = this.accountForSpellDmg(damage);
 
         game.stats.update("spellsThatDealtDamage", [target, dmg]);
-
-        if (target instanceof game.Card) {
-            this.attackMinion(dmg, target);
-        } else if (target instanceof Player) {
-            target.remHealth(dmg);
-        }
+        game.attack(dmg, target);
 
         return target.getHealth();
     }

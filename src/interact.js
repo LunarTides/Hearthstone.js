@@ -37,122 +37,40 @@ class Interact {
             if (!target || target.immune || target.dormant) return;
         }
     
-        if (target instanceof game.Player && attacker instanceof game.Card && !attacker.canAttackHero) return;
-    
-        // Check if there is a minion with taunt
-        let taunts = game.board[game.opponent.id].filter(m => m.keywords.includes("Taunt"));
-        if (taunts.length > 0) {
-            // If the target is a card and has taunt, you are allowed to attack it
-            if (target instanceof game.Card && target.keywords.includes("Taunt")) {}
-            else return false;
-        }
-    
-        // Attacker is a player
-        if (attacker instanceof game.Player) {
-            if (attacker.attack <= 0) return;
-    
-            // Target is a player
-            if (target instanceof game.Player) {
-                game.stats.update("enemyAttacks", [attacker, target]);
-                game.stats.update("heroAttacks", [attacker, target]);
-                game.stats.update("heroAttacked", [attacker, target, game.turns]);
-    
-                target.remHealth(attacker.attack);
-    
-                attacker.attack = 0;
-    
-                if (!attacker.weapon) return;
-    
-                const wpn = attacker.weapon;
-    
-                if (wpn.attackTimes > 0 && wpn.getAttack()) {
-                    wpn.attackTimes -= 1;
-    
-                    wpn.activate("onattack");
-                    wpn.remStats(0, 1);
-                }
-    
-                return;
-            }
-    
-            // Target is a minion
-    
-            if (target.keywords.includes("Stealth")) return;
-    
-            game.stats.update("minionsAttacked", [attacker, target]);
-            game.stats.update("enemyAttacks", [attacker, target]);
-    
-            game.functions.attackMinion(attacker.attack, target);
-            attacker.remHealth(target.getAttack());
-    
-            if (target.getHealth() > 0) {
-                if (target.activate("frenzy") !== -1) target.frenzy = undefined;
-            }
-    
-            if (attacker.weapon) {
-                const wpn = attacker.weapon;
-    
-                if (wpn.attackTimes > 0 && wpn.getAttack()) {
-                    wpn.attackTimes -= 1;
-    
-                    wpn.activate("onattack");
-                    wpn.remStats(0, 1);
-    
-                    if (wpn.keywords.includes("Poisonous")) {
-                        target.setStats(target.getAttack(), 0);
-                    }
-                }
-    
-                attacker.weapon = wpn;
-            }
-    
-            attacker.attack = 0;
-    
-            game.killMinions();
-    
-            return;
-        }
-    
-        // Attacker is a minion
-        // Target is a player
-
-        if (attacker.attackTimes <= 0) {
-            game.input("That minion has already attacked this turn!\n");
-            return;
-        }
-    
-        if (attacker.sleepy) {
-            game.input("That minion cannot attack this turn!\n");
-            return;
-        }
-
-        if (attacker.getAttack() <= 0) return false;
-    
-        if (target instanceof game.Player) {
-            game.stats.update("enemyAttacks", [attacker, target]);
-            game.stats.update("heroAttacked", [attacker, target, game.turns]);
-            game.stats.update("minionsThatAttacked", [attacker, target]);
-            game.stats.update("minionsThatAttackedHero", [attacker, target]);
-    
-            if (attacker.keywords.includes("Stealth")) {
-                attacker.removeKeyword("Stealth");
-            }
-        
-            if (attacker.keywords.includes("Lifesteal")) {
-                attacker.plr.addHealth(attacker.getAttack());
-            }
-    
-            target.remHealth(attacker.getAttack());
-    
-            attacker.decAttack();
-            return;
-        }
-    
-        // Target is a minion
-        if (target.keywords.includes("Stealth")) return;
-    
-        game.functions.attackMinion(attacker, target);
+        let errorcode = game.attack(attacker, target);
         game.killMinions();
+
+        let ignore = ["divineshield"];
+        if (errorcode === true || ignore.includes(errorcode)) return true;
+
+        switch (errorcode) {
+            case "taunt":
+                console.log("There is a minion with taunt in the way.");
+                break;
+            case "stealth":
+                console.log("That minion has stealth!");
+                break;
+            case "plrnoattack":
+                console.log("You don't have any attack.");
+                break;
+            case "noattack":
+                console.log("This minion has no attack.");
+                break;
+            case "hasattacked":
+                console.log("This minion has already attacked this turn.");
+                break;
+            case "sleepy":
+                console.log("This minion is exhausted.");
+                break;
+            case "cantattackhero":
+                console.log("This minion cannot attack heroes.");
+                break;
+            default:
+                console.log("An unknown error occurred. Error code: 19");
+                break;
+        }
+
+        game.input();
     }
     handleCmds(q) {
         /**

@@ -502,6 +502,179 @@ class Game {
     }
 
     // Interacting with minions
+    attack(attacker, target) {
+        /**
+         * Makes a minion or hero attack another minion or hero
+         * 
+         * @param {Card | Player} attacker The attacker
+         * @param {Card | Player} target The target
+         * 
+         * @returns {boolean | string} Success | Errorcode: ["divineshield", "taunt", "stealth", "plrnoattack", "noattack", "hasattacked", "sleepy", "cantattackhero"]
+         */
+
+        this.killMinions();
+
+        // Attacker is a number
+        if (!isNaN(attacker)) {
+            let dmg = attacker;
+
+            if (target instanceof Player) {
+                target.remHealth(dmg);
+                return true;
+            }
+
+            if (target.keywords.includes("Divine Shield")) {
+                target.removeKeyword("Divine Shield");
+                return "divineshield";
+            }
+
+            target.remStats(0, dmg)
+            if (target.getHealth() > 0 && target.activate("frenzy") !== -1) target.frenzy = undefined;
+
+            return true;
+        }
+
+        // Prevent attacking a player if the attacker cannot attack heroes
+        // Check if there is a minion with taunt
+        let taunts = this.board[this.opponent.id].filter(m => m.keywords.includes("Taunt"));
+        if (taunts.length > 0) {
+            // If the target is a card and has taunt, you are allowed to attack it
+            if (target instanceof Card && target.keywords.includes("Taunt")) {}
+            else return "taunt";
+        }
+
+        // Attacker is a player
+        if (attacker instanceof Player) {
+            if (attacker.attack <= 0) return "plrnoattack";
+
+            // Target is a player
+            if (target instanceof Player) {
+                this.stats.update("enemyAttacks", [attacker, target]);
+                this.stats.update("heroAttacks", [attacker, target]);
+                this.stats.update("heroAttacked", [attacker, target]);
+
+                target.remHealth(attacker.attack);
+                
+                attacker.attack = 0;
+                if (!attacker.weapon) return true;
+
+                const wpn = attacker.weapon;
+
+                // If the weapon would be part of the attack, remove 1 durability
+                if (wpn.attackTimes > 0 && wpn.getAttack()) {
+                    wpn.attackTimes -= 1;
+
+                    wpn.activate("onattack");
+                    wpn.remStats(0, 1);
+                }
+
+                return true;
+            }
+
+            // Target is a minion
+
+            if (target.keywords.includes("Stealth")) return "stealth";
+    
+            this.stats.update("minionsAttacked", [attacker, target]);
+            this.stats.update("enemyAttacks", [attacker, target]);
+    
+            this.attack(attacker.attack, target);
+            attacker.remHealth(target.getAttack());
+            attacker.attack = 0;
+    
+            if (target.getHealth() > 0 && target.activate("frenzy") !== -1) target.frenzy = undefined;
+
+            this.killMinions();
+            if (!attacker.weapon) return true;
+    
+            const wpn = attacker.weapon;
+
+            if (wpn.attackTimes > 0 && wpn.getAttack()) {
+                wpn.attackTimes -= 1;
+
+                wpn.activate("onattack");
+                wpn.remStats(0, 1);
+
+                if (wpn.keywords.includes("Poisonous")) target.setStats(target.getAttack(), 0);
+            }
+
+            attacker.weapon = wpn;
+            this.killMinions();
+    
+            return true;
+        }
+
+        // Attacker is a minion
+        if (attacker.attackTimes <= 0) return "hasattacked";
+        if (attacker.sleepy) return "sleepy";
+        if (attacker.getAttack() <= 0) return "noattack";
+
+        // Target is a player
+        if (target instanceof Player) {
+            if (!attacker.canAttackHero) return "cantattackhero";
+
+            this.stats.update("enemyAttacks", [attacker, target]);
+            this.stats.update("heroAttacked", [attacker, target]);
+            this.stats.update("minionsThatAttcked", [attacker, target]);
+            this.stats.update("minionsThatAttackedHero", [attacker, target]);
+
+            if (attacker.keywords.includes("Stealth")) attacker.removeKeyword("Stealth");
+            if (attacker.keywords.includes("Lifesteal")) attacker.plr.addHealth(attacker.getAttack());
+
+            target.remHealth(attacker.getAttack());
+            attacker.decAttack();
+
+            return true;
+        }
+
+        // Target is a minion
+        if (target.keywords.includes("Stealth")) return "stealth";
+
+        attacker.decAttack();
+
+        this.stats.update("enemyAttacks", [attacker, target]);
+        this.stats.update("minionsThatAttacked", [attacker, target]);
+        this.stats.update("minionsAttacked", [attacker, target]);
+
+        let dmgTarget = true;
+        let dmgMinion = true;
+
+        if (attacker.immune) dmgMinion = false;
+
+        if (dmgMinion && attacker.keywords.includes("Divine Shield")) {
+            attacker.removeKeyword("Divine Shield");
+            dmgMinion = false;
+        }
+
+        if (dmgMinion) attacker.remStats(0, target.getAttack());
+
+        if (dmgMinion && attacker.getHealth() > 0 && attacker.activate("frenzy") !== -1) target.frenzy = undefined;
+
+        if (attacker.keywords.includes("Stealth")) attacker.removeKeyword("Stealth");
+    
+        attacker.activate("onattack");
+        this.stats.update("minionsAttacked", [attacker, target]);
+    
+        if (dmgMinion && target.keywords.includes("Poisonous")) attacker.setStats(attacker.getAttack(), 0);
+
+        if (target.keywords.includes("Divine Shield")) {
+            target.removeKeyword("Divine Shield");
+            dmgTarget = false;
+        }
+
+        if (dmgTarget && attacker.keywords.includes("Lifesteal")) attacker.plr.addHealth(attacker.getAttack());
+        if (dmgTarget && attacker.keywords.includes("Poisonous")) target.setStats(target.getAttack(), 0);
+
+        if (dmgTarget) target.remStats(0, attacker.getAttack())
+
+        if (target.getHealth() > 0 && target.activate("frenzy") !== -1) target.frenzy = undefined;
+        if (target.getHealth() < 0) attacker.activate("overkill");
+        if (target.getHealth() == 0) attacker.activate("honorablekill");
+
+        this.killMinions();
+
+        return true;
+    }
     killMinions() {
         /**
          * Kill all minions with 0 or less health
