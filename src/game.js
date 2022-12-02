@@ -1,9 +1,10 @@
-const { question } = require('readline-sync');
-const { Functions, Player } = require("./other");
-const { Card } = require("./card");
-const { Interact } = require("./interact");
-const { exit } = require("process");
-const { AI } = require('./ai');
+const { question }  = require('readline-sync');
+const { exit }      = require("process");
+const { Functions } = require("./functions");
+const { Player }    = require("./player");
+const { Card }      = require("./card");
+const { Interact }  = require("./interact");
+const { AI }        = require('./ai');
 
 class GameStats {
     constructor(game) {

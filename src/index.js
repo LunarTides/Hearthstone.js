@@ -1,5 +1,5 @@
 const { Game } = require("./game");
-const { Player } = require("./other");
+const { Player } = require("./player");
 const config = require("../config.json");
 
 let player1 = new Player("Player 1");
