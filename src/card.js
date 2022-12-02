@@ -234,14 +234,18 @@ class Card {
          * 
          * @param {number} amount The health to remove
          * 
-         * @returns {undefined}
+         * @returns {boolean} Success
          */
+
+        if (this.immune) return true;
 
         this.setStats(this.getAttack(), this.getHealth() - amount);
 
         if (this.type == "Weapon" && this.getHealth() <= 0) {
             this.plr.destroyWeapon(true);
         }
+
+        return true;
     }
     remAttack(amount) {
         /**

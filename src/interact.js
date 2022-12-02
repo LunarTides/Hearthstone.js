@@ -24,17 +24,17 @@ class Interact {
         if (curr.ai) {
             let ai = curr.ai.chooseBattle();
 
-            if (ai[0] === -1 || ai[1] === -1) return -1;
-            if (!ai[0] || !ai[1]) return null;
+            if (ai.includes(-1)) return -1;
+            if (ai.includes(null)) return null;
 
             attacker = ai[0];
             target = ai[1];
         } else {
             attacker = game.functions.selectTarget("Which minion do you want to attack with?", false, "self");
-            if (!attacker || attacker.frozen || attacker.dormant) return;
-            
+            if (!attacker) return;
+
             target = game.functions.selectTarget("Which minion do you want to attack?", false, "enemy");
-            if (!target || target.immune || target.dormant) return;
+            if (!target) return;
         }
     
         let errorcode = game.attack(attacker, target);
@@ -48,7 +48,10 @@ class Interact {
                 console.log("There is a minion with taunt in the way.");
                 break;
             case "stealth":
-                console.log("That minion has stealth!");
+                console.log("That minion has stealth.");
+                break;
+            case "frozen":
+                console.log("That minion is frozen.");
                 break;
             case "plrnoattack":
                 console.log("You don't have any attack.");
@@ -87,8 +90,27 @@ class Interact {
         }
         else if (q === "use") {
             // Use location
-            this.useLocation();
+            let errorcode = this.useLocation();
             game.killMinions();
+
+            if (errorcode === true || curr.ai) return true;
+
+            switch (errorcode) {
+                case "nolocations":
+                    console.log("You have no location cards.");
+                    break;
+                case "invalidtype":
+                    console.log("That card is not a location card.");
+                    break;
+                case "cooldown":
+                    console.log("That location is on cooldown");
+                    break;
+                default:
+                    console.log("An unknown error occourred. Error code: 51");
+                    break;
+            }
+
+            game.input();
         }
         else if (q === "help") {
             this.printName();
@@ -109,8 +131,7 @@ class Interact {
         }
         else if (q == "view") {
             let minion = game.functions.selectTarget("Which minion do you want to view?", false, null, "minion");
-    
-            if (minion === undefined) return -1;
+            if (!minion) return -1;
     
             this.viewMinion(minion);
         }
@@ -164,14 +185,14 @@ class Interact {
 
             console.log("AI Info:\n");
 
-            for (let i = 0; i < 2; i++) {
-                const plr = game["player" + (i + 1)];
+            for (let i = 1; i <= 2; i++) {
+                const plr = game["player" + i];
                 if (!plr.ai) continue;
 
-                console.log(`AI${i + 1} History: {`);
+                console.log(`AI${i} History: {`);
 
-                plr.ai.history.forEach((t, i) => {
-                    console.log(`${i + 1} ${t[0]}: (${t[1]}),`);
+                plr.ai.history.forEach((t, j) => {
+                    console.log(`${j + 1} ${t[0]}: (${t[1]}),`);
                 });
                 
                 console.log("}");
@@ -252,19 +273,17 @@ class Interact {
          */
 
         let locations = game.board[curr.id].filter(m => m.type == "Location");
-        if (locations.length <= 0) return false;
+        if (locations.length <= 0) return "nolocations";
 
         let location = game.functions.selectTarget("Which location do you want to use?", false, "self", "minion", ["allow_locations"]);
-        if (location.type != "Location") return false;
+        if (location.type != "Location") return "invalidtype";
+        if (location.cooldown > 0) return "cooldown";
         
-        if (location.cooldown <= 0) {
-            if (location.activate("use") === -1) return -1;
-            location.remStats(0, 1);
-            location.cooldown = location.backups.cooldown;
-            return true;
-        }
-
-        return false;
+        if (location.activate("use") === -1) return -1;
+        
+        location.remStats(0, 1);
+        location.cooldown = location.backups.cooldown;
+        return true;
     }
 
     // Deck stuff

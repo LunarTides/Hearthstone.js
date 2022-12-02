@@ -1,5 +1,6 @@
 {
     "debug": true,
+    "minDeckLength": 30,
     "maxDeckLength": 30,
     "maxBoardSpace": 7,
 

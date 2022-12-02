@@ -518,7 +518,7 @@ class Game {
          * @param {Card | Player | number} attacker The attacker | Amount of damage to deal
          * @param {Card | Player} target The target
          * 
-         * @returns {boolean | string} Success | Errorcode: ["divineshield", "taunt", "stealth", "plrnoattack", "noattack", "hasattacked", "sleepy", "cantattackhero"]
+         * @returns {boolean | string} Success | Errorcode: ["divineshield", "taunt", "stealth", "frozen", "plrnoattack", "noattack", "hasattacked", "sleepy", "cantattackhero"]
          */
 
         this.killMinions();
@@ -551,6 +551,8 @@ class Game {
             if (target instanceof Card && target.keywords.includes("Taunt")) {}
             else return "taunt";
         }
+
+        if (attacker.frozen) return "frozen";
 
         // Attacker is a player
         if (attacker instanceof Player) {

@@ -178,6 +178,8 @@ class Player {
          * @returns {boolean} Success
          */
 
+        if (this.immune) return true;
+
         let a = amount;
 
         while (this.armor > 0 && a > 0) {
@@ -1137,6 +1139,11 @@ class Functions {
                 game.input("The Deck is not valid.\n")
                 exit(1);
             }
+        }
+
+        if (_deck.length < game.config.minDeckLength) {
+            game.input(`The deck needs between ${game.config.minDeckLength}-${game.config.maxDeckLength} cards.`);
+            exit(1);
         }
     
         _deck = this.shuffle(_deck);
