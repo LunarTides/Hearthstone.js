@@ -8,10 +8,10 @@
     "P2AI": true,
     
     "AIMulliganThreshold": 3,
-    "AIStatsBias"        : 0.1,
-    "AIManaBias"         : 0.5,
-    "AISpellValue"       : 0.4,
-    "AIKeywordValue"     : 0.5,
+    "AIStatsBias"        : 0.2,
+    "AIManaBias"         : 0.75,
+    "AISpellValue"       : 4,
+    "AIKeywordValue"     : 2,
     "AIFunctionValue"    : 1,
     "AISentiments": {
         "positive": {
