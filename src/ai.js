@@ -158,7 +158,7 @@ class AI {
 
         let side = null;
 
-        let score = this.analyzePositive(prompt);
+        let score = this.analyzePositive(prompt, false);
 
         if (score > 0) side = "self";
         else if (score < 0) side = "enemy";
@@ -366,36 +366,41 @@ class AI {
         return to_mulligan;
     }
 
-    analyzePositive(str) {
+    analyzePositive(str, context = true) {
         /**
          * Analyze a string and return a score based on how "positive" the ai thinks it is
          *
          * @param {string} str The string to analyze
+         * @param {bool} context Enable context analysis
          * 
          * @returns {number} The score
          */
 
         let score = 0;
 
-        str.split(" ").forEach(s => {
-            // Filter out any characters not in the alphabet
-            s = s.toLowerCase().replace(/[^a-z]/g, "");
-            let ret = false;
+        str.toLowerCase().split(/[^a-z0-9 ]/).forEach(i => {
+            i.trim().split(" ").forEach(s => {
+                // Filter out any characters not in the alphabet
+                s = s.replace(/[^a-z]/g, "");
+                let ret = false;
 
-            Object.entries(game.config.AISentiments).forEach(v => {
-                if (ret) return;
-
-                Object.entries(v[1]).forEach(k => {
+                Object.entries(game.config.AISentiments).forEach(v => {
                     if (ret) return;
 
-                    const k0 = k[0].replace(/^(.*)[sd]$/, "$1"); // Remove the last "s" or "d" in order to account for plurals 
+                    Object.entries(v[1]).forEach(k => {
+                        if (ret) return;
 
-                    if (new RegExp(k[0]).test(s) || new RegExp(k0).test(s)) {
-                        // If the sentiment is "positive", add to the score. If it is "negative", subtract from the score.
-                        score -= (v[0] == "positive") ? -k[1] : k[1];
-                        ret = true;
-                        return;
-                    }
+                        const k0 = k[0].replace(/^(.*)[sd]$/, "$1"); // Remove the last "s" or "d" in order to account for plurals 
+
+                        if (new RegExp(k[0]).test(s) || new RegExp(k0).test(s)) {
+                            // If the sentiment is "positive", add to the score. If it is "negative", subtract from the score.
+                            let pos = k[1];
+                            if (context && i.includes(["enemy", "enemies", "opponent"])) pos = -pos;
+                            score -= (v[0] == "positive") ? -pos : pos;
+                            ret = true;
+                            return;
+                        }
+                    });
                 });
             });
         });
