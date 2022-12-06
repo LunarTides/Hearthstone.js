@@ -9,6 +9,6 @@ module.exports = {
     set: "Whispers of the Old Gods",
 
     startofturn(plr, game, card) {
-        card.setStats(card.getAttack() * 2, card.getHealth());
+        card.addStats(card.getAttack(), 0);
     }
 }

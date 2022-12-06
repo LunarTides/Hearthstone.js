@@ -10,16 +10,17 @@ module.exports = {
 
     battlecry(plr, game, card) {
         var possible_cards = [
-            ["Demon Hunter", "Gain +1 Attack"],
-            ["Druid", "Gain +1 Attack and +1 Armor"],
-            ["Hunter", "Deal 2 damage to the enemy hero"],
-            ["Mage", "Deal 1 damage"],
+            ["Demon Hunter", "Gain +1 Attack."],
+            ["Druid", "Gain +1 Attack and +1 Armor."],
+            ["Hunter", "Deal 2 damage to the enemy hero."],
+            ["Mage", "Deal 1 damage."],
             ["Paladin", "Summon a 1/1 Silver Hand Recruit."],
-            ["Priest", "Heal 2 damage"],
-            ["Rogue", "Equip a 1/2 Dagger"],
-            ["Shaman", "Summon a random Totem"],
-            ["Warlock", "Take 2 damage, draw a card"],
-            ["Warrior", "Gain +2 Armor"]
+            ["Priest", "Heal 2 damage."],
+            ["Rogue", "Equip a 1/2 Dagger."],
+            ["Shaman", "Summon a random Totem."],
+            ["Warlock", "Take 2 damage, draw a card."],
+            ["Warrior", "Gain +2 Armor."],
+            ["Death Knight", "Summon a 1/1 Ghoul with Charge. It dies at the end of turn."]
         ];
 
         // Remove the value in possible_cards where the key equals plr.hero_power

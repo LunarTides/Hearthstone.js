@@ -607,7 +607,7 @@ class Game {
                 wpn.activate("onattack");
                 wpn.remStats(0, 1);
 
-                if (wpn.keywords.includes("Poisonous")) target.setStats(target.getAttack(), 0);
+                if (wpn.keywords.includes("Poisonous")) target.kill();
             }
 
             attacker.weapon = wpn;
@@ -667,7 +667,7 @@ class Game {
         attacker.activate("onattack");
         this.stats.update("minionsAttacked", [attacker, target]);
     
-        if (dmgMinion && target.keywords.includes("Poisonous")) attacker.setStats(attacker.getAttack(), 0);
+        if (dmgMinion && target.keywords.includes("Poisonous")) attacker.kill();
 
         if (target.keywords.includes("Divine Shield")) {
             target.removeKeyword("Divine Shield");
@@ -675,7 +675,7 @@ class Game {
         }
 
         if (dmgTarget && attacker.keywords.includes("Lifesteal")) attacker.plr.addHealth(attacker.getAttack());
-        if (dmgTarget && attacker.keywords.includes("Poisonous")) target.setStats(target.getAttack(), 0);
+        if (dmgTarget && attacker.keywords.includes("Poisonous")) target.kill();
 
         if (dmgTarget) target.remStats(0, attacker.getAttack())
 

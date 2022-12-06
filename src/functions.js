@@ -742,6 +742,12 @@ class Functions {
 
         // The code is base64 encoded, so we need to decode it
         code = Buffer.from(code, 'base64').toString('ascii');
+
+        let hero = code.split("### ")[1].trim();
+        code = code.split("### ")[2];
+
+        plr.setClass(hero);
+
         let deck = code.split(", ");
         let _deck = [];
     
@@ -750,36 +756,24 @@ class Functions {
         // Find all cards with "x2" in front of them, and remove it and add the card twice
         for (let i = 0; i < deck.length; i++) {
             let card = deck[i];
+
+            let times = 1;
+            if (/x\d /.test(card)) times = card[1];
+
+            let name = (times == 1) ? card : card.substring(3);
+            let m = new game.Card(name, plr);
+
+            for (let i = 0; i < times; i++) _deck.push(this.cloneCard(m, plr));
     
-            let m = null;
-    
-            if (card.startsWith("x2 ")) {
-                let m1 = new game.Card(this.getCardByName(card.substring(3)).name, plr);
-                let m2 = new game.Card(this.getCardByName(card.substring(3)).name, plr);
-                m = m1;
-    
-                _deck.push(m1, m2);
-            } else {
-                m = new game.Card(this.getCardByName(card).name, plr);
-    
-                _deck.push(m);
-            }
-    
-            if (!changed_class && m.class != "Neutral") {
-                plr.setClass(m.class);
-            
-                changed_class = true;
-            }
-    
-            if (!game.interact.validateDeck(m, plr, _deck)) {
+            if (game.config.validateDecks && !game.interact.validateDeck(m, plr, _deck)) {
                 game.input("The Deck is not valid.\n")
-                exit(1);
+                require("process").exit(1);
             }
         }
 
         if (_deck.length < game.config.minDeckLength) {
             game.input(`The deck needs between ${game.config.minDeckLength}-${game.config.maxDeckLength} cards.`);
-            exit(1);
+            require("process").exit(1);
         }
     
         _deck = this.shuffle(_deck);

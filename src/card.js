@@ -305,6 +305,10 @@ class Card {
     }
 
     // Doom buttons
+    kill() {
+        this.setStats(this.getAttack(), 0);
+        game.killMinions();
+    }
     silence() {
         /**
          * Silences the minion
@@ -335,7 +339,7 @@ class Card {
          */
 
         this.silence();
-        this.setStats(0, 0);
+        this.kill();
     }
 
     // Handling functions
