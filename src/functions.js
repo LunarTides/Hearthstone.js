@@ -98,7 +98,23 @@ class Functions {
          * @returns {Blueprint} The blueprint of the card
          */
 
-        return Object.values(game.cards).find(c => c.name.toLowerCase() == name.toLowerCase());
+        return this.getCards(false).find(c => c.name.toLowerCase() == name.toLowerCase());
+    }
+    getCards(uncollectible = true, cards = game.cards) {
+        /**
+         * Returns all cards
+         *
+         * @param {bool} uncollectible [default=true] Filter out all uncollectible cards
+         * @param {Blueprint[]} cards [default=All cards in the game] The cards to get
+         *
+         * @returns {Blueprint[]} Cards
+         */
+
+        cards = Object.values(cards);
+
+        if (uncollectible) cards = cards.filter(c => !c.uncollectible);
+
+        return cards;
     }
     cloneObject(object) {
         /**
