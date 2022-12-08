@@ -37,7 +37,7 @@ keywords = f'keywords: ["{keywords_1}"],\n    ' if mw and _keywords else ''
 tribe = f'tribe: "{_tribe}",\n    ' if mw and _tribe else ''
 spellClass = f'spellClass: "{_spellClass}",\n    ' if not mw and _spellClass else ''
 
-if _class == "Neutral": path = f"cards/Neutral/{_type}s/{mana} Cost/"
+if _class.lower() == "neutral": path = f"cards/Neutral/{_type}s/{mana} Cost/"
 else: path = f"cards/Classes/{_class}/{_type}s/{mana} Cost/"
 filename = f"{name.replace(' ', '_').lower()}.js"
 

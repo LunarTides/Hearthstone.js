@@ -774,12 +774,15 @@ class Functions {
             let card = deck[i];
 
             let times = 1;
-            if (/x\d /.test(card)) times = card[1];
+            if (/x\d+ /.test(card)) {
+                times = card.slice(1);
+                times = times.replace(/( \w+)+/, "");
+            }
 
-            let name = (times == 1) ? card : card.substring(3);
+            let name = (times == 1) ? card : card.substring(times.length + 2);
             let m = new game.Card(name, plr);
 
-            for (let i = 0; i < times; i++) _deck.push(this.cloneCard(m, plr));
+            for (let i = 0; i < parseInt(times); i++) _deck.push(this.cloneCard(m, plr));
     
             if (game.config.validateDecks && !game.interact.validateDeck(m, plr, _deck)) {
                 game.input("The Deck is not valid.\n")
