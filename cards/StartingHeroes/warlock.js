@@ -8,8 +8,7 @@ module.exports = {
     set: "Core",
 
     heropower(plr, game, self) {
-        this.remHealth(2);
-
-        this.drawCard();
+        plr.remHealth(2);
+        plr.drawCard();
     }
 }

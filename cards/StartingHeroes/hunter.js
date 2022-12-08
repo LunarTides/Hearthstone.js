@@ -8,6 +8,6 @@ module.exports = {
     set: "Core",
 
     heropower(plr, game, self) {
-        plr.getOpponent().remHealth(2);
+        game.attack(2, plr.getOpponent());
     }
 }
