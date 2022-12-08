@@ -270,7 +270,7 @@ class Functions {
          * @returns {char} Y | N
          */
 
-        let ask = `\n${prompt} [Y/N] `;
+        let ask = `\n${prompt} [` + 'Y'.green + ' | ' +  'N'.red + `] `;
 
         let choice;
 
@@ -385,7 +385,7 @@ class Functions {
         const target = game.input(p);
 
         if (target.startsWith("b")) {
-            const return_question = game.input(`WARNING: Going back might cause unexpected things to happen. Do you still want to go back? (y / n) `);
+            const return_question = this.yesNoQuestion(game.player, "WARNING: Going back might cause unexpected thing to happen. ".red + "Do you still want to go back?");
             
             if (return_question.startsWith("y")) return false;
         }

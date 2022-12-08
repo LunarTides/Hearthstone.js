@@ -1,3 +1,4 @@
+const colors = require("colors");
 const { exit } = require('process');
 
 const license_url = 'https://github.com/Keatpole/Hearthstone.js/blob/main/LICENSE';
@@ -42,37 +43,39 @@ class Interact {
 
         let ignore = ["divineshield"];
         if (errorcode === true || ignore.includes(errorcode)) return errorcode;
+        let err;
 
         switch (errorcode) {
             case "taunt":
-                console.log("There is a minion with taunt in the way.");
+                err = "There is a minion with taunt in the way";
                 break;
             case "stealth":
-                console.log("That minion has stealth.");
+                err = "That minion has stealth";
                 break;
             case "frozen":
-                console.log("That minion is frozen.");
+                err = "That minion is frozen";
                 break;
             case "plrnoattack":
-                console.log("You don't have any attack.");
+                err = "You don't have any attack";
                 break;
             case "noattack":
-                console.log("This minion has no attack.");
+                err = "This minion has no attack";
                 break;
             case "hasattacked":
-                console.log("This minion has already attacked this turn.");
+                err = "This minion has already attacked this turn";
                 break;
             case "sleepy":
-                console.log("This minion is exhausted.");
+                err = "This minion is exhausted";
                 break;
             case "cantattackhero":
-                console.log("This minion cannot attack heroes.");
+                err = "This minion cannot attack heroes";
                 break;
             default:
-                console.log("An unknown error occurred. Error code: 19");
+                err = "An unknown error occurred. Error code: 19";
                 break;
         }
 
+        console.log(`${err}.`.red);
         game.input();
     }
     handleCmds(q) {
@@ -94,22 +97,24 @@ class Interact {
             game.killMinions();
 
             if (errorcode === true || curr.ai) return true;
+            let err;
 
             switch (errorcode) {
                 case "nolocations":
-                    console.log("You have no location cards.");
+                    err = "You have no location cards";
                     break;
                 case "invalidtype":
-                    console.log("That card is not a location card.");
+                    err = "That card is not a location card";
                     break;
                 case "cooldown":
-                    console.log("That location is on cooldown");
+                    err = "That location is on cooldown";
                     break;
                 default:
-                    console.log("An unknown error occourred. Error code: 51");
+                    err = "An unknown error occourred. Error code: 51";
                     break;
             }
 
+            console.log(`${err}.`.red);
             game.input();
         }
         else if (q === "help") {
@@ -253,14 +258,16 @@ class Interact {
 
         if (ret === true || ret instanceof game.Card) return ret; // If there were no errors, return true.
         if (["refund", "magnetize"].includes(ret)) return ret; // Ignore these error codes
+        let err;
 
         // Error Codes
-        if (ret == "mana") console.log("Not enough mana.");
-        else if (ret == "counter") console.log("Your card has been countered.");
-        else if (ret == "space") console.log(`You can only have ${game.config.maxBoardSpace} minions on the board.`)
-        else if (ret == "invalid") console.log("Invalid card.");
-        else console.log("An unknown error occurred.");
+        if (ret == "mana") err = "Not enough mana";
+        else if (ret == "counter") err = "Your card has been countered";
+        else if (ret == "space") err = `You can only have ${game.config.maxBoardSpace} minions on the board`;
+        else if (ret == "invalid") err = "Invalid card";
+        else err = "An unknown error occurred";
 
+        console.log(`${err}.`.red);
         game.input();
 
         return false;
@@ -418,75 +425,86 @@ class Interact {
     
         let sb = "";
     
+        console.log("Your side  :                              | Your opponent's side".gray);
         /// Mana
         // Current Player's Mana
-        sb += "Mana: ";
-        sb += curr.mana;
+        sb += "Mana       : ";
+        sb += `${curr.mana}`.cyan;
         sb += " / ";
-        sb += curr.maxMana;
+        sb += `${curr.maxMana}`.cyan;
     
-        sb += " | ";
+        sb += "                        | ";
     
         // Opponent's Mana
-        sb += "Opponent's Mana: ";
-        sb += op.mana;
+        sb += "Mana: ";
+        sb += `${op.mana}`.cyan;
         sb += " / ";
-        sb += curr.maxMana;
+        sb += `${curr.maxMana}`.cyan;
         // Mana End
         console.log(sb);
         sb = "";
         
         // Health
-        sb += "Health: ";
-        sb += curr.health;
-        sb += " + ";
-        sb += curr.armor;
-        sb += " / ";
-        sb += curr.maxHealth; // HP + AMR / MAXHP
-    
-        sb += " | ";
+        sb += "Health     : ";
+        sb += `${curr.health}`.red;
+        sb += " (";
+        sb += `${curr.armor}`.gray;
+        sb += ") / ";
+        sb += `${curr.maxHealth}`.red; // HP + AMR / MAXHP
+
+        sb += "                  | ";
     
         // Opponent's Health
-        sb += "Opponent's Health: ";
-        sb += op.health;
-        sb += " + ";
-        sb += op.armor;
-        sb += " / ";
-        sb += op.maxHealth;
+        sb += "Health: ";
+        sb += `${op.health}`.red;
+        sb += " (";
+        sb += `${op.armor}`.gray;
+        sb += ") / ";
+        sb += `${op.maxHealth}`.red;
         // Health End
         console.log(sb);
         sb = "";
     
         // Weapon
-        if (curr.attack > 0 || curr.weapon) sb += `Attack: ${curr.attack}`; // If you can attack, show the amount you can deal
-    
         if (curr.weapon) {
             // Current player has a weapon
-    
-            sb += " | ";
-            sb += "Weapon: ";
-            sb += curr.weapon.displayName;
-            sb += " (";
-            sb += curr.weapon.stats.join(' / ');
-            sb += ")"; // Attack: 1 | Weapon: Wicked Knife (1 / 1)
-            
-            if (op.weapon) sb += " | ";
+            // Attack: 1 | Weapon: Wicked Knife (1 / 1)
+            sb += "Weapon     : ";
+            sb += `${curr.weapon.displayName} `.bold;
+
+            let wpnStats = `[${curr.weapon.stats.join(' / ')}]`;
+
+            sb += (curr.attack > 0) ? `${wpnStats}`.brightGreen : `${wpnStats}`.gray;
         }
     
         if (op.weapon) {
             // Opponent has a weapon
-    
-            sb += "Opponent's Weapon: ";
-            sb += op.weapon.displayName;
-            sb += " (";
-            sb += op.weapon.stats.join(' / ');
-            sb += ")";
+            if (!curr.weapon) sb += "                                "; // Show that this is the opponent's weapon, not yours
+            sb += "         | "; 
+            sb += "Weapon: ";
+            sb += `${op.weapon.displayName} `.bold;
+            let opWpnStats = `[${op.weapon.stats.join(' / ')}]`;
+
+            sb += (op.attack > 0) ? `${opWpnStats}`.brightGreen : `${opWpnStats}`.gray;
         }
     
         // Weapon End
         if (sb) console.log(sb);
         sb = "";
     
+        // Deck
+        sb += "Deck Size  : ";
+        sb += `${curr.deck.length}`.yellow;
+
+        sb += "                           | ";
+    
+        // Opponent's Deck
+        sb += "Deck Size: ";
+        sb += `${op.deck.length}`.yellow;
+        // Deck End
+        console.log(sb);
+        sb = "";
+
         // Secrets
         if (curr.secrets.length > 0) {
             sb += "Secrets: ";
@@ -516,26 +534,10 @@ class Interact {
     
             sb += "Quest(line): ";
             sb += quest["name"]
-            sb += " ("
-            sb += quest["progress"][0]
-            sb += " / "
-            sb += quest["progress"][1]
-            sb += ")";
+            sb += ` [${quest["progress"][0]} / ${quest["progress"][1]}]`.brightGreen;
         }
         // Quests End
         if (sb) console.log(sb);
-        sb = "";
-    
-        // Deck
-        sb += "Deck Size: ";
-        sb += curr.deck.length;
-        sb += " | ";
-    
-        // Opponent's Deck
-        sb += "Opponent's Deck Size: ";
-        sb += op.deck.length;
-        // Deck End
-        console.log(sb);
         sb = "";
     
         // Detailed Info
@@ -577,10 +579,10 @@ class Interact {
                 sb += "\n";
             }
     
-            sb += "\n";
+            if (sb) sb += "\n";
     
             sb += "Opponent's Hand Size: ";
-            sb += op.hand.length;
+            sb += `${op.hand.length}`.yellow;
         }
         // Detailed Info End
         if (sb) console.log(sb);
@@ -595,29 +597,28 @@ class Interact {
             console.log(t) // This is not for debugging, do not comment out
     
             if (game.board[i].length == 0) {
-                console.log("(None)");
+                console.log("(None)".gray);
                 return;
             }
     
             game.board[i].forEach((m, n) => {
                 if (m.type == "Location") {            
-                    sb += "[";
-                    sb += n + 1;
-                    sb += "] ";
-                    sb += m.displayName;
-                    sb += " {Durability: ";
-                    sb += m.getHealth();
-                    sb += " / ";
-                    sb += m.backups.stats[1];
+                    sb += `[${n + 1}] `;
+                    sb += `${m.displayName} `.bold;
+                    sb += "{";
+                    sb += "Durability: ".brightGreen;
+                    sb += `${m.getHealth()}`.brightGreen;
+                    sb += " / ".brightGreen;
+                    sb += `${m.backups.stats[1]}`.brightGreen;
                     sb += ", ";
         
-                    sb += "Cooldown: ";
-                    sb += m.cooldown;
-                    sb += " / ";
-                    sb += m.backups.cooldown;
+                    sb += "Cooldown: ".cyan;
+                    sb += `${m.cooldown}`.cyan;
+                    sb += " / ".cyan;
+                    sb += `${m.backups.cooldown}`.cyan;
                     sb += "}";
 
-                    sb += " [Location]";
+                    sb += " [Location]".yellow;
         
                     console.log(sb);
                     sb = "";
@@ -627,20 +628,16 @@ class Interact {
 
                 const excludedKeywords = ["Magnetic", "Corrupt", "Corrupted"];
                 let keywords = m.keywords.filter(k => !excludedKeywords.includes(k));
-                keywords = keywords.length > 0 ? ` {${keywords.join(", ")}}` : "";
+                keywords = keywords.length > 0 ? ` {${keywords.join(", ")}}`.gray : "";
 
-                let frozen = m.frozen ? " (Frozen)" : "";
-                let dormant = m.dormant ? " (Dormant)" : "";
-                let immune = m.immune ? " (Immune)" : "";
-                let sleepy = (m.sleepy) || (m.attackTimes <= 0) ? " (Sleepy)" : "";
+                let frozen = m.frozen ? " (Frozen)".gray : "";
+                let dormant = m.dormant ? " (Dormant)".gray : "";
+                let immune = m.immune ? " (Immune)".gray : "";
+                let sleepy = (m.sleepy) || (m.attackTimes <= 0) ? " (Sleepy)".gray : "";
     
-                sb += "[";
-                sb += n + 1;
-                sb += "] ";
-                sb += m.displayName;
-                sb += " (";
-                sb += m.stats.join(" / ")
-                sb += ")";
+                sb += `[${n + 1}] `;
+                sb += `${m.displayName} `.bold;
+                sb += `[${m.stats.join(" / ")}]`.brightGreen;
     
                 sb += keywords;
                 sb += frozen
@@ -663,31 +660,22 @@ class Interact {
     
         // Hand
         console.log(`\n--- ${curr.name} (${_class})'s Hand ---`);
-        console.log("([id] {cost} Name [attack / health] (type))\n");
+        console.log("([id] " + "{Cost}".cyan + " Name".bold + " [attack / health]".brightGreen + " (type)".yellow + ")\n");
     
         curr.hand.forEach((card, i) => {
-            const desc = card.desc.length > 0 ? ` (${card.desc}) ` : " ";
+            const desc = card.desc.length > 0 ? `(${card.desc}) ` : " ";
     
-            sb += "[";
-            sb += i + 1;
-            sb += "]";
-            sb += " {";
-            sb += card.mana;
-            sb += "} ";
-            sb += card.displayName;
+            sb += `[${i + 1}] `;
+            sb += `{${card.mana}} `.cyan;
+            sb += `${card.displayName} `.bold;
             
             if (card.type === "Minion" || card.type === "Weapon") {
-                sb += " [";
-                sb += card.stats.join(" / ");
-                sb += "]";
+                sb += `[${card.stats.join(" / ")}]`.brightGreen;
             }
     
             sb += desc;
-    
-            sb += "(";
-            sb += card.type;
-            sb += ")";
-    
+            sb += `(${card.type})`.yellow;
+
             console.log(sb);
             sb = ""
         });

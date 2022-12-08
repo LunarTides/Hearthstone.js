@@ -306,6 +306,12 @@ class Card {
 
     // Doom buttons
     kill() {
+        /**
+         * Kills a minion
+         *
+         * @returns {undefined}
+         */
+
         this.setStats(this.getAttack(), 0);
         game.killMinions();
     }
@@ -373,7 +379,7 @@ class Card {
 
             // If the return value is -1, meaning "refund", refund the card and stop the for loop
             if (r == -1 && name != "deathrattle") {
-                if (name == "use") {
+                if (["use", "heropower"].includes(name)) {
                     ret = -1;
                     return;
                 }
