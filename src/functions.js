@@ -767,9 +767,6 @@ class Functions {
         let deck = code.split(", ");
         let _deck = [];
     
-        let changed_class = false;
-    
-        // Find all cards with "x2" in front of them, and remove it and add the card twice
         for (let i = 0; i < deck.length; i++) {
             let card = deck[i];
 
@@ -784,7 +781,7 @@ class Functions {
 
             for (let i = 0; i < parseInt(times); i++) _deck.push(this.cloneCard(m, plr));
     
-            if (game.config.validateDecks && !game.interact.validateDeck(m, plr, _deck)) {
+            if (game.config.validateDecks && (!game.interact.validateDeck(m, plr, _deck) || m.rarity == "Legendary" && times > 1)) {
                 game.input("The Deck is not valid.\n")
                 require("process").exit(1);
             }
