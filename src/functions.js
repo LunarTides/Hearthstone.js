@@ -385,7 +385,7 @@ class Functions {
         const target = game.input(p);
 
         if (target.startsWith("b")) {
-            const return_question = this.yesNoQuestion(game.player, "WARNING: Going back might cause unexpected thing to happen. ".red + "Do you still want to go back?");
+            const return_question = this.yesNoQuestion(game.player, "WARNING: Going back might cause unexpected things to happen. ".red + "Do you still want to go back?");
             
             if (return_question.startsWith("y")) return false;
         }

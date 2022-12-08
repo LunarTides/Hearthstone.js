@@ -663,14 +663,14 @@ class Interact {
         console.log("([id] " + "{Cost}".cyan + " Name".bold + " [attack / health]".brightGreen + " (type)".yellow + ")\n");
     
         curr.hand.forEach((card, i) => {
-            const desc = card.desc.length > 0 ? `(${card.desc}) ` : " ";
+            const desc = card.desc.length > 0 ? ` (${card.desc}) ` : " ";
     
             sb += `[${i + 1}] `;
             sb += `{${card.mana}} `.cyan;
-            sb += `${card.displayName} `.bold;
+            sb += `${card.displayName}`.bold;
             
             if (card.type === "Minion" || card.type === "Weapon") {
-                sb += `[${card.stats.join(" / ")}]`.brightGreen;
+                sb += ` [${card.stats.join(" / ")}]`.brightGreen;
             }
     
             sb += desc;
