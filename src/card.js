@@ -45,7 +45,7 @@ class Card {
         Blueprint: { name: "The Coin", mana: 0, cast(plr, game): { plr.gainMana(1) } }
                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
         Do: this.cast = [{ plr.gainMana(1) }]
-                                             ^                   ^
+                        ^                   ^
                             This is in an array so we can add multiple events on casts
         */
         Object.entries(this.blueprint).forEach(i => {

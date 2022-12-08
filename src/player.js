@@ -322,17 +322,6 @@ class Player {
     }
 
     // Hero power / Class
-    setClass(heroClass) {
-        /**
-         * Sets the player's class to "_class"
-         * 
-         * @param {string} heroClass The class that the player should be set to
-         * 
-         * @returns {undefined}
-         */
-
-        this.heroClass = heroClass;
-    }
     setHero(hero, armor = 5) {
         /**
          * Sets the player's hero to "hero"

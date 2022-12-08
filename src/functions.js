@@ -762,7 +762,7 @@ class Functions {
         let hero = code.split("### ")[1].trim();
         code = code.split("### ")[2];
 
-        plr.setClass(hero);
+        plr.heroClass = hero;
 
         let deck = code.split(", ");
         let _deck = [];
