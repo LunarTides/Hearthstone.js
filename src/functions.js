@@ -21,17 +21,17 @@ class Functions {
          * @returns {any[]} Shuffeled array
          */
 
-        const newArray = [...array]
-        const length = newArray.length
+        const newArray = [...array];
+        const length = newArray.length;
 
         for (let start = 0; start < length; start++) {
             const randomPosition = this.randInt(0, (newArray.length - start) - 1);
-            const randomItem = newArray.splice(randomPosition, 1)
+            const randomItem = newArray.splice(randomPosition, 1);
 
-            newArray.push(...randomItem)
+            newArray.push(...randomItem);
         }
 
-        return newArray
+        return newArray;
     }
     randList(list, cpyCard = true) {
         /**
@@ -112,7 +112,7 @@ class Functions {
 
         cards = Object.values(cards);
 
-        if (uncollectible) cards = cards.filter(c => !c.uncollectible);
+        if (uncollectible) cards = this.accountForUncollectible(cards);
 
         return cards;
     }

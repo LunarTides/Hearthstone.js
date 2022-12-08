@@ -36,12 +36,12 @@ class GameStats {
             });
         });
 
-        for (let i = 0; i < 2; i++) {
-            let wpn = this.game["player" + (i + 1)].weapon;
-            if (wpn) {
-                wpn.activate("unpassive", true);
-                wpn.activate("passive", [key, val]);
-            }
+        for (let i = 1; i <= 2; i++) {
+            let wpn = this.game["player" + i].weapon;
+            if (!wpn) continue;
+
+            wpn.activate("unpassive", true);
+            wpn.activate("passive", [key, val]);
         }
 
         this.game.activatePassives([key, val]);
@@ -83,7 +83,7 @@ class Game {
         // Choose a random player to be player 1
         const functions = new Functions(this);
 
-        if (functions.randInt(0, 10) < 5) {
+        if (functions.randInt(0, 1)) {
             this.player1 = player1;
             this.player2 = player2;
         } else {
@@ -94,6 +94,12 @@ class Game {
         this.player = this.player1;
         this.opponent = this.player2;
 
+        this.player1.id = 0;
+        this.player2.id = 1;
+
+        this.player1.game = this;
+        this.player2.game = this;
+
         this.Card = Card;
         this.Player = Player;
         this.AI = AI;
@@ -103,16 +109,10 @@ class Game {
         this.config = config;
         this.input = question;
 
-        this.player1.id = 0;
-        this.player2.id = 1;
-
         this.turns = 0;
         this.board = [[], []];
 
         this.passives = [];
-        
-        this.player1.game = this;
-        this.player2.game = this;
 
         if (config.P1AI) this.player1.ai = new AI(this.player1);
         if (config.P2AI) this.player2.ai = new AI(this.player2);
@@ -149,7 +149,7 @@ class Game {
          * @returns {undefined}
          */
 
-        let players_hands = [[], []];
+        let players = [];
 
         // Add quest cards to the players hands
         for (let i = 0; i < 2; i++) {
@@ -165,32 +165,30 @@ class Game {
             plr.setHero(new Card(hero_card.name, plr), 0);
 
             plr.deck.forEach(c => {
-                if (c.desc.includes("Quest: ") || c.desc.includes("Questline: ")) {
-                    players_hands[i].push(c);
-                    plr.deck.splice(plr.deck.indexOf(c), 1);
-                }
-            })
+                if (!c.desc.includes("Quest: ") && !c.desc.includes("Questline: ")) return;
+
+                plr.addToHand(c, false);
+                plr.deck.splice(plr.deck.indexOf(c), 1);
+            });
+
+            let nCards = (plr.id == 0) ? 3 : 4;
+            while (plr.hand.length < nCards) plr.drawCard(false);
+
+            plr.deck.forEach(c => c.activate("startofgame"));
+            plr.hand.forEach(c => c.activate("startofgame"));
+
+            players.push(plr);
         }
 
-        this.player1.hand = players_hands[0];
-        this.player2.hand = players_hands[1];
+        this.player1 = players[0];
+        this.player2 = players[1];
 
         this.player1.maxMana = 1;
         this.player1.mana = 1;
 
-        while (this.player1.hand.length < 3) this.player1.drawCard(false);
-        while (this.player2.hand.length < 4) this.player2.drawCard(false);
-
         this.player2.addToHand(new Card("The Coin", this.player2), false);
 
         this.turns += 1;
-
-        for (let i = 0; i < 2; i++) {
-            const plr = this["player" + (i + 1)]
-
-            plr.deck.forEach(c => c.activate("startofgame"));
-            plr.hand.forEach(c => c.activate("startofgame"));
-        }
     }
     endGame(winner) {
         /**
@@ -320,9 +318,9 @@ class Game {
 
             player.mana -= 1;
 
-            player.drawCard();
-            player.shuffleIntoDeck(card);
             player.removeFromHand(card);
+            player.shuffleIntoDeck(card);
+            player.drawCard();
     
             return "traded";
         }
@@ -352,7 +350,7 @@ class Game {
             return "counter";
         }
 
-        // If the board has more than the allowed amount of cards and the card played is a minion or location card, prevent it.
+        // If the board has max capacity, and the card played is a minion or location card, prevent it.
         if (board.length >= this.config.maxBoardSpace && ["Minion", "Location"].includes(card.type)) {
             player.addToHand(card, false);
             player.refreshMana(card.mana);
@@ -368,7 +366,10 @@ class Game {
                 while (mechs.length > 0) {
                     let minion = this.functions.selectTarget("Which minion do you want this to Magnetize to:", false, "self", "minion");
                     if (!minion) break;
-                    if (minion.tribe != "Mech") return "invalid";
+                    if (minion.tribe != "Mech") {
+                        console.log("That minion is not a Mech.");
+                        continue;
+                    }
     
                     this.stats.update("minionsPlayed", card);
                     
@@ -494,7 +495,7 @@ class Game {
 
                 let card = new Card(v, player);
 
-                this.summonMinion(card, player, false, false);
+                this.summonMinion(card, player, false);
             });
 
             return "colossal";
@@ -525,7 +526,7 @@ class Game {
         this.killMinions();
 
         // Attacker is a number
-        if (!isNaN(attacker)) {
+        if (typeof(attacker) === "number") {
             let dmg = attacker;
 
             if (target instanceof Player) {
@@ -544,7 +545,6 @@ class Game {
             return true;
         }
 
-        // Prevent attacking a player if the attacker cannot attack heroes
         // Check if there is a minion with taunt
         let taunts = this.board[this.opponent.id].filter(m => m.keywords.includes("Taunt"));
         if (taunts.length > 0) {
@@ -584,14 +584,15 @@ class Game {
             }
 
             // Target is a minion
-
             if (target.keywords.includes("Stealth")) return "stealth";
     
             this.stats.update("minionsAttacked", [attacker, target]);
             this.stats.update("enemyAttacks", [attacker, target]);
     
             this.attack(attacker.attack, target);
-            attacker.remHealth(target.getAttack());
+            this.attack(target.attack, attacker);
+            this.killMinions();
+
             attacker.attack = 0;
     
             if (target.getHealth() > 0 && target.activate("frenzy") !== -1) target.frenzy = undefined;
@@ -649,25 +650,27 @@ class Game {
         this.stats.update("minionsAttacked", [attacker, target]);
 
         let dmgTarget = true;
-        let dmgMinion = true;
+        let dmgAttacker = true;
 
-        if (attacker.immune) dmgMinion = false;
+        if (attacker.immune) dmgAttacker = false;
 
-        if (dmgMinion && attacker.keywords.includes("Divine Shield")) {
+        if (dmgAttacker && attacker.keywords.includes("Divine Shield")) {
             attacker.removeKeyword("Divine Shield");
-            dmgMinion = false;
+            dmgAttacker = false;
         }
 
-        if (dmgMinion) attacker.remStats(0, target.getAttack());
-
-        if (dmgMinion && attacker.getHealth() > 0 && attacker.activate("frenzy") !== -1) attacker.frenzy = undefined;
+        if (dmgAttacker) {
+            attacker.remStats(0, target.getAttack());
+            
+            if (attacker.getHealth() > 0 && attacker.activate("frenzy") !== -1) attacker.frenzy = undefined;
+        }
 
         if (attacker.keywords.includes("Stealth")) attacker.removeKeyword("Stealth");
     
         attacker.activate("onattack");
         this.stats.update("minionsAttacked", [attacker, target]);
     
-        if (dmgMinion && target.keywords.includes("Poisonous")) attacker.kill();
+        if (dmgAttacker && target.keywords.includes("Poisonous")) attacker.kill();
 
         if (target.keywords.includes("Divine Shield")) {
             target.removeKeyword("Divine Shield");
@@ -698,30 +701,33 @@ class Game {
             let n = [];
             
             this.board[p].forEach(m => {
-                if (m.getHealth() <= 0) {
-                    m.activate("deathrattle");
-                }
+                if (m.getHealth() <= 0) m.activate("deathrattle");
             });
 
             this.board[p].forEach(m => {
-                if (m.getHealth() <= 0) {
-                    this.stats.update("minionsKilled", m);
-
-                    if (m.keywords.includes("Reborn")) {
-                        let minion = new Card(m.name, this["player" + (p + 1)]);
-
-                        minion.removeKeyword("Reborn");
-                        minion.setStats(minion.getAttack(), 1);
-
-                        this.summonMinion(minion, this["player" + (p + 1)], false);
-
-                        n.push(minion);
-                    } else {
-                        m.activate("unpassive", false);
-                    }
-                } else {
+                // Add minions with more than 0 health to n.
+                if (m.getHealth() > 0) {
                     n.push(m);
+                    return;
                 }
+
+                this.stats.update("minionsKilled", m);
+
+                if (!m.keywords.includes("Reborn")) {
+                    m.activate("unpassive", false); // Tell the minion that it is going to die
+                    return;
+                }
+
+                // Reborn
+                let plr = this["player" + (p + 1)];
+                let minion = new Card(m.name, plr);
+
+                minion.removeKeyword("Reborn");
+                minion.setStats(minion.getAttack(), 1);
+
+                this.summonMinion(minion, plr, false);
+
+                n.push(minion);
             });
 
             this.board[p] = n;
