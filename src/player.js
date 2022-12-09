@@ -39,6 +39,10 @@ class Player {
         this.secrets = [];
         this.sidequests = [];
         this.quests = [];
+
+        // Stats
+        this.jadeCounter = 0;
+        this.corpses = 0;
     }
 
     getOpponent() {
@@ -355,6 +359,25 @@ class Player {
         this.canUseHeroPower = false;
 
         game.stats.update("heroPowers", this.heroClass);
+        return true;
+    }
+
+    // Other
+    tradeCorpse(amount, callback) {
+        /**
+         * Calls "callback" if the player has "amount" corpses
+         *
+         * @param {number} amount The amount of corpses to trade
+         * @param {function} callback The function to call when the trade is successful; Params: None
+         *
+         * @returns {bool} Success
+         */
+
+        if (this.corpses < amount) return false;
+
+        this.corpses -= amount;
+        callback();
+
         return true;
     }
 }

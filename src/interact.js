@@ -434,9 +434,11 @@ class Interact {
         sb += `${curr.maxMana}`.cyan;
     
         sb += "                        | ";
-    
+        let to_remove = (curr.mana.toString().length + curr.maxMana.toString().length) - 2;
+        if (to_remove > 0) sb = sb.replace(" ".repeat(to_remove) + "|", "|");
+
         // Opponent's Mana
-        sb += "Mana: ";
+        sb += "Mana       : ";
         sb += `${op.mana}`.cyan;
         sb += " / ";
         sb += `${curr.maxMana}`.cyan;
@@ -452,10 +454,12 @@ class Interact {
         sb += ") / ";
         sb += `${curr.maxHealth}`.red; // HP + AMR / MAXHP
 
-        sb += "                  | ";
+        sb += "                       | ";
+        to_remove = (curr.health.toString().length + curr.armor.toString().length + curr.maxHealth.toString().length);
+        if (to_remove > 0) sb = sb.replace(" ".repeat(to_remove) + "|", "|");
     
         // Opponent's Health
-        sb += "Health: ";
+        sb += "Health     : ";
         sb += `${op.health}`.red;
         sb += " (";
         sb += `${op.armor}`.gray;
@@ -481,7 +485,7 @@ class Interact {
             // Opponent has a weapon
             if (!curr.weapon) sb += "                                "; // Show that this is the opponent's weapon, not yours
             sb += "         | "; 
-            sb += "Weapon: ";
+            sb += "Weapon     : ";
             sb += `${op.weapon.displayName} `.bold;
             let opWpnStats = `[${op.weapon.stats.join(' / ')}]`;
 
@@ -496,10 +500,12 @@ class Interact {
         sb += "Deck Size  : ";
         sb += `${curr.deck.length}`.yellow;
 
-        sb += "                           | ";
+        sb += "                            | ";
+        to_remove = (curr.deck.length.toString().length + curr.deck.length.toString().length) - 3;
+        if (to_remove > 0) sb = sb.replace(" ".repeat(to_remove) + "|", "|");
     
         // Opponent's Deck
-        sb += "Deck Size: ";
+        sb += "Deck Size  : ";
         sb += `${op.deck.length}`.yellow;
         // Deck End
         console.log(sb);
@@ -542,7 +548,34 @@ class Interact {
     
         // Detailed Info
         if (detailed) {
-            console.log("-------------------------------");
+            // Hand Size
+            sb += "Hand Size  : ";
+            sb += `${curr.hand.length}`.yellow;
+
+            sb += "                             | ";
+            to_remove = curr.hand.length.toString().length;
+            if (to_remove > 0) sb = sb.replace(" ".repeat(to_remove) + "|", "|");
+
+            // Opponents Hand Size
+            sb += "Hand Size  : ";
+            sb += `${op.hand.length}`.yellow;
+
+            console.log(sb);
+            sb = "";
+
+            // Corpses
+            sb += "Corpses    : ".gray;
+            sb += `${curr.corpses}`.yellow;
+            
+            sb += "                             | ";
+            to_remove = curr.corpses.toString().length;
+            if (to_remove > 0) sb = sb.replace(" ".repeat(to_remove) + "|", "|");
+
+            // Opponents Corpses
+            sb += "Corpses    : ".gray;
+            sb += `${op.corpses}`.yellow;
+
+            sb += "\n-------------------------------\n";
     
             if (op.secrets.length > 0) {
                 sb += "Opponent's Secrets: ";
@@ -578,11 +611,6 @@ class Interact {
     
                 sb += "\n";
             }
-    
-            if (sb) sb += "\n";
-    
-            sb += "Opponent's Hand Size: ";
-            sb += `${op.hand.length}`.yellow;
         }
         // Detailed Info End
         if (sb) console.log(sb);
@@ -636,8 +664,8 @@ class Interact {
                 let sleepy = (m.sleepy) || (m.attackTimes <= 0) ? " (Sleepy)".gray : "";
     
                 sb += `[${n + 1}] `;
-                sb += `${m.displayName} `.bold;
-                sb += `[${m.stats.join(" / ")}]`.brightGreen;
+                sb += game.functions.colorByRarity(m.displayName).bold;
+                sb += ` [${m.stats.join(" / ")}]`.brightGreen;
     
                 sb += keywords;
                 sb += frozen
@@ -667,7 +695,7 @@ class Interact {
     
             sb += `[${i + 1}] `;
             sb += `{${card.mana}} `.cyan;
-            sb += `${card.displayName}`.bold;
+            sb += game.functions.colorByRarity(card.displayName, card.rarity, true);
             
             if (card.type === "Minion" || card.type === "Weapon") {
                 sb += ` [${card.stats.join(" / ")}]`.brightGreen;

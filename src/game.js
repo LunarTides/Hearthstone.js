@@ -9,7 +9,6 @@ const { AI }        = require('./ai');
 class GameStats {
     constructor(game) {
         this.game = game;
-        this.jadeCounter = 0;
     }
 
     cardUpdate(key, val) {
@@ -111,6 +110,7 @@ class Game {
 
         this.turns = 0;
         this.board = [[], []];
+        this.graveyard = [[], []];
 
         this.passives = [];
 
@@ -698,6 +698,7 @@ class Game {
          */
 
         for (let p = 0; p < 2; p++) {
+            let plr = this["player" + (p + 1)];
             let n = [];
             
             this.board[p].forEach(m => {
@@ -705,6 +706,7 @@ class Game {
             });
 
             this.board[p].forEach(m => {
+
                 // Add minions with more than 0 health to n.
                 if (m.getHealth() > 0) {
                     n.push(m);
@@ -715,11 +717,12 @@ class Game {
 
                 if (!m.keywords.includes("Reborn")) {
                     m.activate("unpassive", false); // Tell the minion that it is going to die
+                    plr.corpses++;
+                    this.graveyard[p].push(m);
                     return;
                 }
 
                 // Reborn
-                let plr = this["player" + (p + 1)];
                 let minion = new Card(m.name, plr);
 
                 minion.removeKeyword("Reborn");

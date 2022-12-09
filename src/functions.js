@@ -116,6 +116,38 @@ class Functions {
 
         return cards;
     }
+    colorByRarity(str, rarity, bold = false) {
+        /**
+         * Colors "str" based on "rarity". Example: Rarity = "Legendary", return "str".gold
+         *
+         * @param {string} str The string to color
+         * @param {string} rarity The rarity
+         * @param {bool} bold Automatically apply bold
+         *
+         * @returns {string} The colored string
+         */
+
+        switch (rarity) {
+            case "Common":
+                str = str.gray;
+                break;
+            case "Rare":
+                str = str.blue;
+                break;
+            case "Epic":
+                str = str.brightMagenta;
+                break;
+            case "Legendary":
+                str = str.yellow;
+                break;
+            default:
+                break;
+        }
+
+        if (bold && rarity != "Legendary") str = str.bold;
+
+        return str;
+    }
     cloneObject(object) {
         /**
          * Clones the "object" and returns the clone
@@ -699,8 +731,8 @@ class Functions {
          * @returns {Card} The jade golem
          */
 
-        if (game.stats.jadeCounter < 30) game.stats.jadeCounter += 1;
-        const count = game.stats.jadeCounter;
+        if (plr.jadeCounter < 30) plr.jadeCounter += 1;
+        const count = plr.jadeCounter;
         const mana = (count < 10) ? count : 10;
 
         let jade = new game.Card("Jade Golem", plr);
