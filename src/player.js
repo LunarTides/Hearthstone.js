@@ -382,21 +382,6 @@ class Player {
 
         return true;
     }
-    testRunes(runeType, amount) {
-        /**
-         * Returns wether or not the player has "amount" or more of a specific rune type
-         *
-         * @param {string} runeType ["Blood", "Frost", "Unholy"]
-         * @param {number} amount The amount of the runes to have
-         *
-         * @returns {bool} If the player has enough runes
-         */
-
-        runeType = runeType[0];
-
-        if (this.runes.filter(r => r == runeType).length < amount) return false;
-        return true;
-    }
 }
 
 exports.Player = Player;

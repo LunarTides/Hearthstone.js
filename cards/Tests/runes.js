@@ -10,8 +10,6 @@ module.exports = {
     runes: "FF",
 
     battlecry(plr, game, self) {
-        if (!plr.testRunes("Frost", 2)) return;
-
         const manathirst = plr.maxMana >= 6;
         let sb = "";
         if (manathirst) sb += "Silence then freeze";

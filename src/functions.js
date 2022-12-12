@@ -805,7 +805,7 @@ class Functions {
                 runes.push(code[i]);
             }
             
-            code = code.slice(7);
+            code = code.slice(6);
             plr.runes = runes;
         }
 
