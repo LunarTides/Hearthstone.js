@@ -294,20 +294,6 @@ class Interact {
     }
 
     // Deck stuff
-    validateDeck(card, plr, deck) {
-        /**
-         * Validate a deck
-         * 
-         * @param {Card} card This gets passed into validateCard
-         * @param {Player} plr This gets passed into validateCard
-         * @param {Card[]} deck The deck of the player
-         * 
-         * @returns {boolean} Valid
-         */
-
-        if (deck.length > game.config.maxDeckLength) return false;
-        return this.validateCard(card, plr);
-    }
     validateCard(card, plr) {
         /**
          * Checks if a card is a valid card to put into a players deck
@@ -315,11 +301,15 @@ class Interact {
          * @param {Card} card The card to check
          * @param {Player} plr The player to check against
          * 
-         * @returns {boolean} Valid
+         * @returns {boolean | string} Valid | ["class", "uncollectible", "runes"]
          */
 
-        if (plr.heroClass != card.class && card.class != "Neutral") return false;
-        if (card.uncollectible) return false;
+        if (plr.heroClass != card.class && card.class != "Neutral") return "class";
+        if (card.uncollectible) return "uncollectible";
+
+        // Runes
+        if (card.runes && !plr.testRunes(card.runes, card.runes.length)) return "runes";
+
         return true;
     }
     deckCode(plr) {

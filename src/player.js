@@ -384,7 +384,7 @@ class Player {
     }
     testRunes(runeType, amount) {
         /**
-         * Calls "callback" if the player has "amount" runes
+         * Returns wether or not the player has "amount" or more of a specific rune type
          *
          * @param {string} runeType ["Blood", "Frost", "Unholy"]
          * @param {number} amount The amount of the runes to have

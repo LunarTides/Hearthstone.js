@@ -799,16 +799,13 @@ class Functions {
         // Runes
         if (hero == "Death Knight" && /^\[[A-Z]{3}\]/.test(code)) {
             // [BFU]
-
-            let _runes = code.slice(1);
             let runes = [];
 
-            for (let i = 0; i < 3; i++) {
-                runes.push(_runes[i]);
+            for (let i = 1; i <= 3; i++) {
+                runes.push(code[i]);
             }
             
-            code = code.slice(6);
-
+            code = code.slice(7);
             plr.runes = runes;
         }
 
@@ -829,8 +826,25 @@ class Functions {
 
             for (let i = 0; i < parseInt(times); i++) _deck.push(this.cloneCard(m, plr));
     
-            if (game.config.validateDecks && (!game.interact.validateDeck(m, plr, _deck) || m.rarity == "Legendary" && times > 1)) {
-                game.input("The Deck is not valid.\n")
+            let legendaryTest = (m.rarity == "Legendary" && times > 1);
+            let validateTest = (game.interact.validateCard(m, plr));
+
+            if (game.config.validateDecks && (validateTest !== true || legendaryTest)) {
+                let err;
+
+                switch (validateTest) {
+                    case "class":
+                        err = "You have a card from different class in your deck";
+                        break;
+                    case "uncollectible":
+                        err = "You have an uncollectible card in your deck";
+                        break;
+                    case "runes":
+                        err = "A card does not support your current runes";
+                        break;
+                }
+                if (legendaryTest) err = "There are more than 1 of a legendary in this deck";
+                game.input(`${err}.\nSpecific Card that caused the error: `.red + `${m.name}\n`.yellow);
                 require("process").exit(1);
             }
         }
@@ -838,8 +852,8 @@ class Functions {
         let max = game.config.maxDeckLength;
         let min = game.config.minDeckLength;
 
-        if (_deck.length < min) {
-            game.input("The deck needs " + ((min == max) ? `exactly ${max}` : `between ${min}-${max}`) + ` cards. Your deck has: ${_deck.length}.\n`);
+        if (_deck.length < min || _deck.length > max) {
+            game.input("The deck needs ".red + ((min == max) ? `exactly `.red + `${max}`.yellow : `between`.red + `${min}-${max}`.yellow) + ` cards. Your deck has: `.red + `${_deck.length}`.yellow + `.\n`.red);
             require("process").exit(1);
         }
     

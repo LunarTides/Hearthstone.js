@@ -7,6 +7,7 @@ module.exports = {
     class: "Neutral",
     rarity: "Free",
     set: "Legacy",
+    runes: "FF",
 
     battlecry(plr, game, self) {
         if (!plr.testRunes("Frost", 2)) return;
