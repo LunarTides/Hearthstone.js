@@ -431,6 +431,21 @@ class Card {
 
         return ret;
     }
+    manathirst(m, t, f) {
+        /**
+         * Returns t if "m" is more than or equal to the player's max mana
+         *
+         * @param {number} m The mana to test
+         * @param {any} t The value to return if true
+         * @param {any} f The value to return if false
+         * 
+         * @returns {any} t | f
+         */
+
+        if (this.plr.maxMana < m) return [false, f];
+
+        return [true, t];
+    }
 }
 
 exports.Card = Card;

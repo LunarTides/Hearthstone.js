@@ -9,17 +9,12 @@ module.exports = {
     set: "Legacy",
 
     battlecry(plr, game, self) {
-        const manathirst = plr.maxMana >= 6;
-        let sb = "";
-        if (manathirst) sb += "Silence then freeze";
-        else sb += "Freeze";
+        let [ret, prompt] = self.manathirst(6, "Silence then freeze an enemy minion.", "Freeze an enemy minion.");
 
-        sb += " an enemy minion.";
-        
-        let target = game.functions.selectTarget(sb, true, "enemy", "minion");
+        let target = game.functions.selectTarget(prompt, true, "enemy", "minion");
         if (!target) return -1;
 
-        if (manathirst) target.silence();
+        if (ret) target.silence();
         target.frozen = true;
     }
 }

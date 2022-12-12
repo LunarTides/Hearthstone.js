@@ -796,6 +796,22 @@ class Functions {
 
         plr.heroClass = hero;
 
+        // Runes
+        if (hero == "Death Knight" && /^\[[A-Z]{3}\]/.test(code)) {
+            // [BFU]
+
+            let _runes = code.slice(1);
+            let runes = [];
+
+            for (let i = 0; i < 3; i++) {
+                runes.push(_runes[i]);
+            }
+            
+            code = code.slice(6);
+
+            plr.runes = runes;
+        }
+
         let deck = code.split(", ");
         let _deck = [];
     
@@ -819,8 +835,11 @@ class Functions {
             }
         }
 
-        if (_deck.length < game.config.minDeckLength) {
-            game.input(`The deck needs between ${game.config.minDeckLength}-${game.config.maxDeckLength} cards.`);
+        let max = game.config.maxDeckLength;
+        let min = game.config.minDeckLength;
+
+        if (_deck.length < min) {
+            game.input("The deck needs " + ((min == max) ? `exactly ${max}` : `between ${min}-${max}`) + ` cards. Your deck has: ${_deck.length}.\n`);
             require("process").exit(1);
         }
     

@@ -43,6 +43,8 @@ class Player {
         // Stats
         this.jadeCounter = 0;
         this.corpses = 0;
+
+        this.runes = [];
     }
 
     getOpponent() {
@@ -378,6 +380,21 @@ class Player {
         this.corpses -= amount;
         callback();
 
+        return true;
+    }
+    testRunes(runeType, amount) {
+        /**
+         * Calls "callback" if the player has "amount" runes
+         *
+         * @param {string} runeType ["Blood", "Frost", "Unholy"]
+         * @param {number} amount The amount of the runes to have
+         *
+         * @returns {bool} If the player has enough runes
+         */
+
+        runeType = runeType[0];
+
+        if (this.runes.filter(r => r == runeType).length < amount) return false;
         return true;
     }
 }
