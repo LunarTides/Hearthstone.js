@@ -365,7 +365,7 @@ class Player {
     }
 
     // Other
-    tradeCorpse(amount, callback) {
+    tradeCorpses(amount, callback) {
         /**
          * Calls "callback" if the player has "amount" corpses
          *
@@ -375,6 +375,7 @@ class Player {
          * @returns {bool} Success
          */
 
+        if (this.heroClass != "Death Knight") return false;
         if (this.corpses < amount) return false;
 
         this.corpses -= amount;
