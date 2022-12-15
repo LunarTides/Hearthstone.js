@@ -1,3 +1,4 @@
+const { exit } = require("process");
 const { setup_ai } = require("./ai");
 const { setup_card } = require("./card");
 const { setup_player } = require("./player");
@@ -549,10 +550,9 @@ class Functions {
 
             for (let i = 0; i < parseInt(times); i++) _deck.push(this.cloneCard(m, plr));
     
-            let legendaryTest = (m.rarity == "Legendary" && times > 1);
             let validateTest = (game.interact.validateCard(m, plr));
 
-            if (game.config.validateDecks && (validateTest !== true || legendaryTest)) {
+            if (game.config.validateDecks && validateTest !== true) {
                 let err;
 
                 switch (validateTest) {
@@ -565,20 +565,53 @@ class Functions {
                     case "runes":
                         err = "A card does not support your current runes";
                         break;
+                    default:
+                        err = "";
+                        break;
                 }
-                if (legendaryTest) err = "There are more than 1 of a legendary in this deck";
                 game.input(`${err}.\nSpecific Card that caused the error: `.red + `${m.name}\n`.yellow);
-                require("process").exit(1);
+                exit(1);
             }
         }
 
         let max = game.config.maxDeckLength;
         let min = game.config.minDeckLength;
 
-        if (_deck.length < min || _deck.length > max) {
+        if ((_deck.length < min || _deck.length > max) && game.config.validateDecks) {
             game.input("The deck needs ".red + ((min == max) ? `exactly `.red + `${max}`.yellow : `between`.red + `${min}-${max}`.yellow) + ` cards. Your deck has: `.red + `${_deck.length}`.yellow + `.\n`.red);
-            require("process").exit(1);
+            exit(1);
         }
+
+        let cards = {};
+        _deck.forEach(c => {
+            if (!cards[c.name]) cards[c.name] = 0;
+            cards[c.name]++;
+        });
+        Object.entries(cards).forEach(v => {
+            let i = v[1];
+            v = v[0];
+
+            let errorcode;
+            if (i > 2) errorcode = "normal";
+            if (this.getCardByName(v).rarity == "Legendary" && i > 1) errorcode = "legendary";
+
+            if (errorcode && game.config.validateDecks) {
+                let err;
+                switch (errorcode) {
+                    case "normal":
+                        err = `There are more than `.red + game.config.maxOfOneCard.toString().yellow + " of a card in your deck".red;
+                        break
+                    case "legendary":
+                        err = `There are more than `.red + game.config.maxOfOneLegendary.toString().yellow + " of a legendary card in your deck".red;
+                        break
+                    default:
+                        err = "";
+                        break;
+                }
+                game.input(err + "\nSpecific card that caused this error: ".red + this.getCardByName(v).name.yellow + "\n");
+                exit(1);
+            }
+        });
     
         _deck = this.shuffle(_deck);
 
