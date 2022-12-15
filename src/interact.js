@@ -205,6 +205,47 @@ class Interact {
 
             game.input("\nPress enter to continue...");
         }
+        else if (q == "/stats") {
+            if (!game.config.debug) return -1;
+
+            console.log("Stats:\n");
+
+            for (let i = 1; i <= 2; i++) {
+                const plr = game["player" + i];
+                
+                console.log(`Player ${i}'s Stats: {`);
+
+                Object.keys(game.stats).forEach(s => {
+                    if (!game.stats[s][plr.id]) return;
+                    game.stats[s][plr.id].forEach(t => {
+                        if (t instanceof Array && t[0] instanceof game.Card) {
+                            let sb = `[${s}] ([`;
+                            t.forEach(v => {
+                                if (v instanceof game.Card) v = v.name;
+                                sb += `${v}, `;
+                            });
+                            sb = sb.slice(0, -2);
+                            sb += "]),";
+                            console.log(sb);
+                            return;
+                        }
+                        if (t instanceof game.Card || typeof(t) !== 'object') {
+                            if (t instanceof game.Card) t = t.name;
+                            console.log(`[${s}] (${t}),`);
+                            return;
+                        }
+
+                        console.log(`[${s}] (`);
+                        console.log(t);
+                        console.log("),");
+                    });
+                });
+
+                console.log("}");
+            }
+
+            game.input("\nPress enter to continue...");
+        }
 
         else return -1;
     }
