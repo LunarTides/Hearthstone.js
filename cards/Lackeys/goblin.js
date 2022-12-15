@@ -9,7 +9,8 @@ module.exports = {
     set: "Rise of Shadows",
 
     battlecry(plr, game) {
-        var target = game.functions.selectTarget("Give a friendly minion +1 Attack and Rush", "friendly", "minion");
+        let target = game.interact.selectTarget("Give a friendly minion +1 Attack and Rush", "friendly", "minion");
+        if (!target) return -1;
 
         target.addStats(1, 0);
         target.addKeyword("Rush");

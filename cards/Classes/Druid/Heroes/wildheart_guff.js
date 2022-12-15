@@ -14,7 +14,7 @@ module.exports = {
     },
 
     heropower(plr, game, card) {
-        var choice = game.functions.chooseOne('Draw a card; or Gain an empty Mana Crystal.', ['Draw', 'Mana']);
+        let choice = game.interact.chooseOne('Draw a card; or Gain an empty Mana Crystal.', ['Draw', 'Mana']);
         
         if (choice == 0) {            
             plr.drawCard();

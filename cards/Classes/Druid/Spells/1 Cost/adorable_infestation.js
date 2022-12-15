@@ -7,7 +7,7 @@ module.exports = {
     set: "Voyage to the Sunken City",
 
     cast(plr, game, card) {
-        let target = game.functions.selectTarget("Give a minion +1/+1.", true, null, "minion");
+        let target = game.interact.selectTarget("Give a minion +1/+1.", true, null, "minion");
 
         if (!target) {
             return -1;

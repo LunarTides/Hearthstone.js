@@ -31,10 +31,10 @@ class Interact {
             attacker = ai[0];
             target = ai[1];
         } else {
-            attacker = game.functions.selectTarget("Which minion do you want to attack with?", false, "self");
+            attacker = this.selectTarget("Which minion do you want to attack with?", false, "self");
             if (!attacker) return;
 
-            target = game.functions.selectTarget("Which minion do you want to attack?", false, "enemy");
+            target = this.selectTarget("Which minion do you want to attack?", false, "enemy");
             if (!target) return;
         }
     
@@ -361,6 +361,283 @@ class Interact {
         return input;
     }
 
+    // One-time things
+    chooseOne(prompt, options, times = 1) {
+        /**
+         * Asks the user a "prompt" give the user "options" and do it all "times" times
+         * 
+         * @param {string} prompt The prompt to ask the user
+         * @param {string[]} options The options to give the user
+         * @param {number} times [default=1] The amount of time to ask
+         * 
+         * @returns {string | string[]} The user's answer(s)
+         */
+
+        let choices = [];
+
+        for (let i = 0; i < times; i++) {
+            if (game.player.ai) {
+                choices.push(game.player.ai.chooseOne(options));
+                continue;
+            }
+
+            let p = `\n${prompt} [`;
+
+            options.forEach((v, i) => {
+                p += `${i + 1}: ${v}, `;
+            });
+
+            p = p.slice(0, -2);
+            p += "] ";
+
+            let choice = game.input(p);
+
+            choices.push(parseInt(choice) - 1);
+        }
+
+        if (times === 1) {
+            return choices[0];
+        } else {
+            return choices;
+        }
+    }
+    question(plr, prompt, answers) {
+        /**
+         * Asks the user a "prompt", show them a list of answers and make them choose one
+         *
+         * @param {Player} plr The player to ask
+         * @param {string} prompt The prompt to show
+         * @param {string[]} answers The answers to choose from
+         *
+         * @returns {string} Chosen
+         */
+
+        let strbuilder = `\n${prompt} [`;
+
+        if (answers[0] == "Y" && answers[1] == "N") return this.yesNoQuestion(plr, prompt);
+
+        answers.forEach((v, i) => {
+            strbuilder += `${i + 1}: ${v}, `;
+        });
+
+        strbuilder = strbuilder.slice(0, -2);
+        strbuilder += "] ";
+
+        let choice;
+
+        if (plr.ai) choice = plr.ai.question(prompt, answers);
+        else choice = game.input(strbuilder); 
+
+
+        return answers[parseInt(choice) - 1];
+    }
+    yesNoQuestion(plr, prompt) {
+        /**
+         * Asks the user a yes/no question
+         *
+         * @param {Player} plr The player to ask
+         * @param {string} prompt The prompt to ask
+         *
+         * @returns {char} Y | N
+         */
+
+        let ask = `\n${prompt} [` + 'Y'.green + ' | ' +  'N'.red + `] `;
+
+        let choice;
+
+        if (plr.ai) return plr.ai.yesNoQuestion(prompt);
+        else return game.input(ask)
+    }
+    discover(prompt, amount = 3, flags = [], add_to_hand = true, _cards = []) {
+        /**
+         * Asks the user a "prompt", show them "amount" cards based on "flags", if "add_to_hand", add the card chosen to the player's hand, else return the card chosen
+         * 
+         * @param {string} prompt The prompt to ask
+         * @param {number} amount [default=3] The amount of cards to show
+         * @param {string[]} flags [default=[]] Some flags to filter the cards shown, possible flags: ["Minion", "Spell", "Weapon"]
+         * @param {boolean} add_to_hand [default=true] If it should add the card chosen to the current player's hand
+         * @param {Blueprint[]} _cards [default=[]] Do not use this variable, keep it at default
+         * 
+         * @returns {Card} The card chosen.
+         */
+
+        let values = _cards;
+
+        if (_cards.length == 0) {
+            let possible_cards = [];
+
+            Object.entries(cards).forEach((c, _) => {
+                c = c[1];
+                let type = this.getType(c);
+
+                if (type == "Spell" && c.class == "Neutral") {}
+                else if (c.class === game.player.class || c.class == "Neutral") {
+                    if (flags.includes("Minion") && type !== "Minion") return;
+                    if (flags.includes("Spell") && type !== "Spell") return;
+                    if (flags.includes("Weapon") && type !== "Weapon") return;
+
+                    possible_cards.push(c);
+                }
+            });
+
+            possible_cards = this.accountForUncollectible(possible_cards);
+
+            if (possible_cards.length == 0) return;
+
+            for (let i = 0; i < amount; i++) {
+                let c = game.functions.randList(possible_cards);
+
+                values.push(c);
+                possible_cards.splice(possible_cards.indexOf(c), 1);
+            }
+        }
+
+        if (values.length <= 0) return;
+
+        if (game.player.ai) return game.player.ai.discover(values);
+
+        let p = `\n${prompt}\n[\n`;
+
+        values.forEach((v, i) => {
+            let stats = this.getType(v) == "Minion" ? ` [${v.getAttack()} / ${v.getHealth()}]` : "";
+            let desc = `(${v.desc})` || "";
+
+            // Check for a TypeError and ignore it
+            try {
+                p += `${i + 1}: {${v.mana}} ${v.displayName || v.name}${stats} ${desc} (${this.getType(v)}),\n`;
+            } catch (e) {}
+        });
+
+        p = p.slice(0, -2);
+        p += "\n] ";
+
+        let choice = game.input(p);
+
+        if (!values[parseInt(choice) - 1]) {
+            return this.discover(prompt, amount, flags, add_to_hand, values);
+        }
+
+        let card = values[parseInt(choice) - 1];
+        card = new game.Card(card.name, game.player);
+
+        if (add_to_hand) game.player.addToHand(card);
+
+        return card;
+    }
+    selectTarget(prompt, elusive = false, force_side = null, force_class = null, flags = []) {
+        /**
+         * Asks the user a "prompt", the user can then select a minion or hero
+         * 
+         * @param {string} prompt The prompt to ask
+         * @param {boolean | string} elusive [default=false] Wether or not to prevent selecting elusive minions, if this is a string, allow selecting elusive minions but don't trigger secrets / quests
+         * @param {string | null} force_side [default=null] Force the user to only be able to select minions / the hero of a specific side: ["enemy", "self"]
+         * @param {string | null} force_class [default=null] Force the user to only be able to select a minion or a hero: ["hero", "minion"]
+         * @param {string[]} flags [default=[]] Change small behaviours ["allow_locations" => Allow selecting location, ]
+         * 
+         * @returns {Card | Player} The card or hero chosen
+         */
+
+
+        // force_class = [null, "hero", "minion"]
+        // force_side = [null, "enemy", "self"]
+
+        if (game.player.ai) return game.player.ai.selectTarget(prompt, elusive, force_side, force_class, flags);
+
+        if (force_class == "hero") {
+            const target = game.input(`Do you want to select the enemy hero, or your own hero? (y: enemy, n: self) `);
+    
+            return (target.startsWith("y")) ? game.opponent : game.player;
+        }
+
+        let p = `\n${prompt} (`;
+        if (force_class == null) p += "type 'face' to select a hero | ";
+        p += "type 'back' to go back) ";
+
+        const target = game.input(p);
+
+        if (target.startsWith("b")) {
+            const return_question = this.yesNoQuestion(game.player, "WARNING: Going back might cause unexpected things to happen. ".red + "Do you still want to go back?");
+            
+            if (return_question.startsWith("y")) return false;
+        }
+
+        const board_next = game.board[game.opponent.id];
+        const board_self = game.board[game.player.id];
+
+        const board_next_target = board_next[parseInt(target) - 1];
+        const board_self_target = board_self[parseInt(target) - 1];
+
+        let minion = undefined;
+
+        if (!target.startsWith("face") && !board_self_target && !board_next_target) {
+            // target != "face" and target is not a minion.
+            // The input is invalid
+
+            return this.selectTarget(prompt, elusive, force_side, force_class);
+        }
+
+        if (force_side) {
+            if (target.startsWith("face") && force_class != "minion") {
+                if (force_side == "enemy") return game.opponent;
+
+                return game.player;
+            }
+
+            minion = (force_side == "enemy") ? board_next_target : board_self_target;
+        } else {
+            if (target.startsWith("face") && force_class != "minion") return this.selectTarget(prompt, false, null, "hero");
+            
+            if (board_next.length >= parseInt(target) && board_self.length >= parseInt(target)) {
+                // Both players have a minion with the same index.
+                // Ask them which minion to select
+                let target2 = game.input(`Do you want to select your opponent's (${board_next_target.displayName}) or your own (${board_self_target.displayName})? (y: opponent, n: self | type 'back' to go back) `);
+            
+                if (target2.startsWith("b")) {
+                    // Go back.
+                    return this.selectTarget(prompt, elusive, force_side, force_class);
+                }
+
+                minion = (target2.startsWith("y")) ? board_next_target : board_self_target;
+            } else {
+                minion = board_next.length >= parseInt(target) ? board_next_target : board_self_target;
+            }
+        }
+
+        if (minion === undefined) {
+            game.input("Invalid minion.\n");
+            return false;
+        }
+
+        if (minion.keywords.includes("Elusive") && elusive) {
+            game.input("Can't be targeted by Spells or Hero Powers.\n");
+            
+            // elusive can be set to any value other than true to prevent targetting but not update
+            // spells cast on minions
+            if (elusive === true) {
+                game.stats.update("spellsCastOnMinions", m);
+            }
+            return false;
+        }
+
+        if (minion.keywords.includes("Stealth") && game.player != minion.plr) {
+            game.input("This minion has stealth.\n");
+
+            return false;
+        }
+
+        // Location
+        if (minion.type == "Location") {
+            // Set the "allow_locations" flag to allow targetting locations.
+            if (!flags.includes("allow_locations")) {
+                game.input("You cannot target location cards.\n");
+
+                return false;
+            }
+        }
+
+        return minion;
+    }
+
     // Print game information
     printName(name = true) {
         /**
@@ -418,43 +695,26 @@ class Interact {
         console.log("Your side  :                              | Your opponent's side".gray);
         /// Mana
         // Current Player's Mana
-        sb += "Mana       : ";
-        sb += `${curr.mana}`.cyan;
-        sb += " / ";
-        sb += `${curr.maxMana}`.cyan;
-    
+        sb += `Mana       : ${curr.mana.toString().cyan} / ${curr.maxMana.toString().cyan}`;
         sb += "                        | ";
         let to_remove = (curr.mana.toString().length + curr.maxMana.toString().length) - 2;
         if (to_remove > 0) sb = sb.replace(" ".repeat(to_remove) + "|", "|");
 
         // Opponent's Mana
-        sb += "Mana       : ";
-        sb += `${op.mana}`.cyan;
-        sb += " / ";
-        sb += `${curr.maxMana}`.cyan;
+        sb += `Mana       : ${op.mana.toString().cyan} / ${curr.maxMana.toString().cyan}`;
         // Mana End
         console.log(sb);
         sb = "";
         
         // Health
-        sb += "Health     : ";
-        sb += `${curr.health}`.red;
-        sb += " (";
-        sb += `${curr.armor}`.gray;
-        sb += ") / ";
-        sb += `${curr.maxHealth}`.red; // HP + AMR / MAXHP
+        sb += `Health     : ${curr.health.toString().red} (${curr.armor.toString().gray}) / ${curr.maxHealth.toString().red}`;
 
         sb += "                       | ";
         to_remove = (curr.health.toString().length + curr.armor.toString().length + curr.maxHealth.toString().length);
         if (to_remove > 0) sb = sb.replace(" ".repeat(to_remove) + "|", "|");
     
         // Opponent's Health
-        sb += "Health     : ";
-        sb += `${op.health}`.red;
-        sb += " (";
-        sb += `${op.armor}`.gray;
-        sb += ") / ";
-        sb += `${op.maxHealth}`.red;
+        sb += `Health     : ${op.health.toString().red} (${op.armor.toString().gray}) / ${op.maxHealth.toString().red}`;
         // Health End
         console.log(sb);
         sb = "";
@@ -463,23 +723,21 @@ class Interact {
         if (curr.weapon) {
             // Current player has a weapon
             // Attack: 1 | Weapon: Wicked Knife (1 / 1)
-            sb += "Weapon     : ";
-            sb += `${curr.weapon.displayName} `.bold;
+            sb += `Weapon     : ${curr.weapon.displayName.bold}`;
 
-            let wpnStats = `[${curr.weapon.stats.join(' / ')}]`;
+            let wpnStats = ` [${curr.weapon.stats.join(' / ')}]`;
 
-            sb += (curr.attack > 0) ? `${wpnStats}`.brightGreen : `${wpnStats}`.gray;
+            sb += (curr.attack > 0) ? wpnStats.brightGreen : wpnStats.gray;
         }
     
         if (op.weapon) {
             // Opponent has a weapon
             if (!curr.weapon) sb += "                                "; // Show that this is the opponent's weapon, not yours
             sb += "         | "; 
-            sb += "Weapon     : ";
-            sb += `${op.weapon.displayName} `.bold;
-            let opWpnStats = `[${op.weapon.stats.join(' / ')}]`;
+            sb += `Weapon     : ${op.weapon.displayName.bold}`;
+            let opWpnStats = ` [${op.weapon.stats.join(' / ')}]`;
 
-            sb += (op.attack > 0) ? `${opWpnStats}`.brightGreen : `${opWpnStats}`.gray;
+            sb += (op.attack > 0) ? opWpnStats.brightGreen : opWpnStats.gray;
         }
     
         // Weapon End
@@ -487,16 +745,14 @@ class Interact {
         sb = "";
     
         // Deck
-        sb += "Deck Size  : ";
-        sb += `${curr.deck.length}`.yellow;
+        sb += `Deck Size  : ${curr.deck.length.toString().yellow}`;
 
         sb += "                            | ";
         to_remove = (curr.deck.length.toString().length + curr.deck.length.toString().length) - 3;
         if (to_remove > 0) sb = sb.replace(" ".repeat(to_remove) + "|", "|");
     
         // Opponent's Deck
-        sb += "Deck Size  : ";
-        sb += `${op.deck.length}`.yellow;
+        sb += `Deck Size  : ${op.deck.length.toString().yellow}`;
         // Deck End
         console.log(sb);
         sb = "";
@@ -504,7 +760,7 @@ class Interact {
         // Secrets
         if (curr.secrets.length > 0) {
             sb += "Secrets: ";
-            sb += curr.secrets.map(x => x["name"]).join(', '); // Get all your secret's names
+            sb += curr.secrets.map(x => x["name"].bold).join(', '); // Get all your secret's names
         }
         // Secrets End
         if (sb) console.log(sb);
@@ -513,10 +769,10 @@ class Interact {
         // Sidequests
         if (curr.sidequests.length > 0) {
             sb += "Sidequests: ";
-            sb += curr.sidequests.map(secret => {
-                secret["name"] +
-                " (" + secret["progress"][0] +
-                " / " + secret["progress"][1] +
+            sb += curr.sidequests.map(sidequest => {
+                sidequest["name"].bold +
+                " (" + sidequest["progress"][0].toString().brightGreen +
+                " / " + sidequest["progress"][1].toString().brightGreen +
                 ")"
             }).join(', ');
         }
@@ -527,10 +783,10 @@ class Interact {
         // Quests
         if (curr.quests.length > 0) {
             const quest = curr.quests[0];
+            const prog = quest["progress"];
     
-            sb += "Quest(line): ";
-            sb += quest["name"]
-            sb += ` [${quest["progress"][0]} / ${quest["progress"][1]}]`.brightGreen;
+            sb += `Quest(line): ${quest["name"].bold} `;
+            sb += `[${prog[0]} / ${prog[1]}]`.brightGreen;
         }
         // Quests End
         if (sb) console.log(sb);
@@ -539,23 +795,21 @@ class Interact {
         // Detailed Info
         if (detailed) {
             // Hand Size
-            sb += "Hand Size  : ";
-            sb += `${curr.hand.length}`.yellow;
+            sb += `Hand Size  : ${curr.hand.length.toString().yellow}`;
 
             sb += "                             | ";
             to_remove = curr.hand.length.toString().length;
             if (to_remove > 0) sb = sb.replace(" ".repeat(to_remove) + "|", "|");
 
             // Opponents Hand Size
-            sb += "Hand Size  : ";
-            sb += `${op.hand.length}`.yellow;
+            sb += `Hand Size  : ${op.hand.length.toString().yellow}`;
 
             console.log(sb);
             sb = "";
 
             // Corpses
             sb += "Corpses    : ".gray;
-            sb += `${curr.corpses}`.yellow;
+            sb += curr.corpses.toString().yellow;
             
             sb += "                             | ";
             to_remove = curr.corpses.toString().length;
@@ -563,25 +817,22 @@ class Interact {
 
             // Opponents Corpses
             sb += "Corpses    : ".gray;
-            sb += `${op.corpses}`.yellow;
+            sb += op.corpses.toString().yellow;
 
             sb += "\n-------------------------------\n";
     
             if (op.secrets.length > 0) {
-                sb += "Opponent's Secrets: ";
-                sb += op.secrets.length;
-    
-                sb += "\n";
+                sb += `Opponent's Secrets: ${op.secrets.length.toString().yellow}\n`;
             }
     
             if (op.sidequests.length > 0) {
                 sb += "Opponent's Sidequests: ";
                 sb += op.sidequests.map(sidequest => {
-                    sidequest["name"] +
+                    sidequest["name"].bold +
                     " (" +
-                    sidequest["progress"][0] +
+                    sidequest["progress"][0].toString().brightGreen +
                     " / " +
-                    sidequest["progress"][1] +
+                    sidequest["progress"][1].toString().brightGreen +
                     ")"
                 }).join(', ');
     
@@ -592,11 +843,11 @@ class Interact {
                 const quest = op.quests[0];
     
                 sb += "Opponent's Quest(line): ";
-                sb += quest["name"];
+                sb += quest["name"].bold;
                 sb += " (";
-                sb += quest["progress"][0];
+                sb += quest["progress"][0].toString().brightGreen;
                 sb += " / ";
-                sb += quest["progress"][1];
+                sb += quest["progress"][1].toString().brightGreen;
                 sb += ")";
     
                 sb += "\n";

@@ -9,7 +9,7 @@ module.exports = {
     set: "Legacy",
 
     battlecry(plr, game, self) {
-        let target = game.functions.selectTarget("Become a copy of a minion.", false, null, "minion");
+        let target = game.interact.selectTarget("Become a copy of a minion.", false, null, "minion");
         if (!target) return -1;
 
         let clone = game.functions.cloneCard(target, plr); // Create an exact copy of the target

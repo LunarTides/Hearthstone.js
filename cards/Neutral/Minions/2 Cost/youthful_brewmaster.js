@@ -9,7 +9,7 @@ module.exports = {
     set: "Core",
 
     battlecry(plr, game, card) {
-        let target = game.functions.selectTarget("Choose a minion.", false, "self", "minion");
+        let target = game.interact.selectTarget("Choose a minion.", false, "self", "minion");
 
         if (!target) {
             return -1;

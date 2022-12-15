@@ -7,7 +7,7 @@ module.exports = {
     set: "Legacy",
 
     cast(plr, game, card) {
-        let target = game.functions.selectTarget("Change a minion's Attack to be equal to its Health.", true, null, "minion");
+        let target = game.interact.selectTarget("Change a minion's Attack to be equal to its Health.", true, null, "minion");
 
         if (!target) {
             return -1;

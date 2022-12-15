@@ -7,7 +7,7 @@ module.exports = {
     set: "Saviors of Uldum",
 
     cast(plr, game, card) {
-        let target = game.functions.selectTarget("Give a minion Reborn.", true, null, "minion");
+        let target = game.interact.selectTarget("Give a minion Reborn.", true, null, "minion");
 
         if (!target) {
             return -1;

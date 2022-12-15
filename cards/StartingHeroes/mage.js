@@ -8,7 +8,7 @@ module.exports = {
     set: "Core",
 
     heropower(plr, game, self) {
-        const target = game.functions.selectTarget("Deal 1 damage.", "dontupdate");
+        const target = game.interact.selectTarget("Deal 1 damage.", "dontupdate");
         if (!target) return -1;
 
         game.attack(1, target);

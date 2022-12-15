@@ -9,7 +9,8 @@ module.exports = {
     set: "Rise of Shadows",
 
     battlecry(plr, game) {
-        var target = game.functions.selectTarget(`Deal ${2 + plr.spellDamage} damage.`);
+        let target = game.interact.selectTarget(`Deal ${2 + plr.spellDamage} damage.`);
+        if (!target) return -1;
 
         game.functions.spellDmg(target, 2);
     }

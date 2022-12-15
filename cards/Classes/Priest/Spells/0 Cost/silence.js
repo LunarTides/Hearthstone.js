@@ -8,7 +8,7 @@ module.exports = {
     spellClass: "Shadow",
 
     cast(plr, game, card) {
-        let target = game.functions.selectTarget("Silence a minion.", true, null, "minion");
+        let target = game.interact.selectTarget("Silence a minion.", true, null, "minion");
 
         if (!target) {
             return -1;

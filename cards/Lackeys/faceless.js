@@ -12,6 +12,7 @@ module.exports = {
         // filter out all cards that aren't 2-cost minions
         let minions = game.functions.getCards().filter(card => card.type === "Minion" && card.mana === 2);
         rand = game.functions.randList(minions);
+        if (!rand) return;
 
         game.summonMinion(new game.Card(rand.name, plr), plr);
     }

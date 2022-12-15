@@ -9,6 +9,6 @@ module.exports = {
     set: "Rise of Shadows",
 
     battlecry(plr, game) {
-        game.functions.discover("Discover a spell.", 3, ['Spell']);
+        game.interact.discover("Discover a spell.", 3, ['Spell']);
     }
 }

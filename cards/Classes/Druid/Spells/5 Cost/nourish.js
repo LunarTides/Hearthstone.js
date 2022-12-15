@@ -8,7 +8,7 @@ module.exports = {
     spellClass: "Nature",
 
     cast(plr, game, card) {
-        var choice = game.functions.chooseOne('Gain 2 Mana Crystals; or Draw 3 cards.', ['+2 Mana Crystals', '+3 Cards']);
+        let choice = game.interact.chooseOne('Gain 2 Mana Crystals; or Draw 3 cards.', ['+2 Mana Crystals', '+3 Cards']);
         
         if (choice == 0) {
             plr.gainMana(2);

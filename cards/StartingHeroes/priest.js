@@ -8,7 +8,7 @@ module.exports = {
     set: "Core",
 
     heropower(plr, game, self) {
-        let target = game.functions.selectTarget("Restore 2 health.", "dontupdate");
+        let target = game.interact.selectTarget("Restore 2 health.", "dontupdate");
         if (!target) return -1;
 
         target.addHealth(2, true);

@@ -364,7 +364,7 @@ class Game {
     
                 // I'm using while loops to prevent a million indents
                 while (mechs.length > 0) {
-                    let minion = this.functions.selectTarget("Which minion do you want this to Magnetize to:", false, "self", "minion");
+                    let minion = this.interact.selectTarget("Which minion do you want this to Magnetize to:", false, "self", "minion");
                     if (!minion) break;
                     if (minion.tribe != "Mech") {
                         console.log("That minion is not a Mech.");

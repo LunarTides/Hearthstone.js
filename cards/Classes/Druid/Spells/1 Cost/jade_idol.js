@@ -7,7 +7,7 @@ module.exports = {
     set: "Mean Streets of Gadgetzan",
 
     cast(plr, game, card) {
-        var choice = game.functions.chooseOne('Summon a Jade Golem; or Shuffle 3 copies of this card into your deck.', ['Jade Golem', 'Shuffle']);
+        let choice = game.interact.chooseOne('Summon a Jade Golem; or Shuffle 3 copies of this card into your deck.', ['Jade Golem', 'Shuffle']);
         
         if (choice == 0) {
             let jade = game.functions.createJade(plr);

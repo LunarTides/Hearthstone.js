@@ -7,7 +7,7 @@ module.exports = {
     set: "The Boomsday Project",
 
     cast(plr, game, card) {
-        let target = game.functions.selectTarget("Swap a minion's Attack and Health.", true, null, "minion");
+        let target = game.interact.selectTarget("Swap a minion's Attack and Health.", true, null, "minion");
 
         if (!target) {
             return -1;

@@ -7,7 +7,7 @@ module.exports = {
     set: "Kobolds & Catacombs",
 
     cast(plr, game, card) {
-        var choices = game.functions.chooseOne('Draw a card; Give your minions +1 Attack; Gain 6 Armor.', ['Draw', '+1 Attack', "+6 Armor"], 2);
+        let choices = game.interact.chooseOne('Draw a card; Give your minions +1 Attack; Gain 6 Armor.', ['Draw', '+1 Attack', "+6 Armor"], 2);
         
         choices.forEach(choice => {
             if (choice == 0) {
