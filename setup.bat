@@ -1,5 +1,5 @@
 @echo off
-node --version
+node --version > NUL
 
 if errorlevel 1 (
     echo "nodejs is not installed"
@@ -8,4 +8,4 @@ if errorlevel 1 (
     exit /b 1
 )
 
-npm i
+npm i > NUL

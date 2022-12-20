@@ -639,7 +639,7 @@ class Functions {
 
             mulligan.splice(mulligan.indexOf(c), 1);
             
-            plr.drawCard();
+            plr.drawCard(false);
             plr.shuffleIntoDeck(c, false);
             plr.removeFromHand(c);
 

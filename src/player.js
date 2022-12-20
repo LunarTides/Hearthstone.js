@@ -197,6 +197,8 @@ class Player {
 
         this.health -= a;
 
+        game.stats.update("damageTaken", amount);
+
         if (game.player == this) {
             game.stats.update("damageTakenOnOwnTurn", amount);
         }

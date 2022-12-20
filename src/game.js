@@ -371,8 +371,6 @@ class Game {
                         continue;
                     }
     
-                    this.stats.update("minionsPlayed", card);
-                    
                     minion.addStats(card.getAttack(), card.getHealth());
     
                     card.keywords.forEach(k => {
@@ -404,8 +402,6 @@ class Game {
             if (card.dormant) card.dormant += this.turns;
             else if (card.activateBattlecry() === -1) return "refund";
 
-            this.stats.update("minionsPlayed", card);
-
             ret = this.summonMinion(card, player, false);
         } else if (card.type === "Spell") {
             if (card.activate("cast") === -1) return "refund";
@@ -416,8 +412,6 @@ class Game {
 
                 player.addToHand(card);
             }
-
-            this.stats.update("spellsCast", card);
 
             board.forEach(m => {
                 m.activate("spellburst");
@@ -562,8 +556,6 @@ class Game {
             // Target is a player
             if (target instanceof Player) {
                 this.stats.update("enemyAttacks", [attacker, target]);
-                this.stats.update("heroAttacks", [attacker, target]);
-                this.stats.update("heroAttacked", [attacker, target]);
 
                 target.remHealth(attacker.attack);
                 
@@ -586,7 +578,6 @@ class Game {
             // Target is a minion
             if (target.keywords.includes("Stealth")) return "stealth";
     
-            this.stats.update("minionsAttacked", [attacker, target]);
             this.stats.update("enemyAttacks", [attacker, target]);
     
             this.attack(attacker.attack, target);
@@ -627,9 +618,6 @@ class Game {
             if (!attacker.canAttackHero) return "cantattackhero";
 
             this.stats.update("enemyAttacks", [attacker, target]);
-            this.stats.update("heroAttacked", [attacker, target]);
-            this.stats.update("minionsThatAttcked", [attacker, target]);
-            this.stats.update("minionsThatAttackedHero", [attacker, target]);
 
             if (attacker.keywords.includes("Stealth")) attacker.removeKeyword("Stealth");
             if (attacker.keywords.includes("Lifesteal")) attacker.plr.addHealth(attacker.getAttack());
@@ -646,8 +634,6 @@ class Game {
         attacker.decAttack();
 
         this.stats.update("enemyAttacks", [attacker, target]);
-        this.stats.update("minionsThatAttacked", [attacker, target]);
-        this.stats.update("minionsAttacked", [attacker, target]);
 
         let dmgTarget = true;
         let dmgAttacker = true;
@@ -668,7 +654,6 @@ class Game {
         if (attacker.keywords.includes("Stealth")) attacker.removeKeyword("Stealth");
     
         attacker.activate("onattack");
-        this.stats.update("minionsAttacked", [attacker, target]);
     
         if (dmgAttacker && target.keywords.includes("Poisonous")) attacker.kill();
 

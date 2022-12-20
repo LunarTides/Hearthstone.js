@@ -1,0 +1,30 @@
+// List of game stats (might not be updated)
+// NOTE: The word "Minion" can be replaced with "Location"; unless stated otherwise
+// NOTE: The word "Spell" can be replaced with "Weapon" or "Hero"; unless stated otherwise
+
+fatalDamageTimes:      {number:1}                            The player was dealt fatal damage
+
+turnEnds:              {number}                              The current turn (before turn counter increments)
+turnStarts:            {number}                              The current turn (after turn counter increments)
+restoredHealth:        {number}                              Health after restore
+unspentMana:           {number}                              The current mana the player has left
+overloadGained:        {number}                              Overload gained
+heroAttackGained:      {number}                              Amount of attack gained
+damageTaken:           {number}                              Amount of damage taken
+damageTakenOnOwnTurn:  {number}                              Amount of damage taken on the players turn
+
+cardsPlayed:           {Card:Any}                            Card played
+minionsSummoned:       {Card:Minion}                         The minion summoned
+minionsKilled:         {Card:Minion}                         The minion killed
+spellsCastOnMinions:   {Card:Minion}                         The minion the spell was cast on
+
+cardsAddedToDeck:      {Card}                                The card that was added to the players deck
+cardsAddedToHand:      {Card}                                The card added to hand
+cardsDrawn:            {Card}                                The card drawn
+cardsDrawnThisTurn:    {Card}                                The card drawn
+
+spellsThatDealtDamage: {Array<Card | Player, number>}        The target, Amount of damage
+enemyAttacks:          {Array<Card | Player, Card | Player>} The attacker, The target
+
+heroPowers:            {string}                              The heroclass of the heropower; (Warrior, Mage, Priest, ...)
+
