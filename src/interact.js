@@ -135,7 +135,7 @@ class Interact {
             game.input("\nPress enter to continue...\n");
         }
         else if (q == "view") {
-            let minion = game.functions.selectTarget("Which minion do you want to view?", false, null, "minion");
+            let minion = this.selectTarget("Which minion do you want to view?", false, null, "minion");
             if (!minion) return -1;
     
             this.viewMinion(minion);
@@ -323,7 +323,7 @@ class Interact {
         let locations = game.board[curr.id].filter(m => m.type == "Location");
         if (locations.length <= 0) return "nolocations";
 
-        let location = game.functions.selectTarget("Which location do you want to use?", false, "self", "minion", ["allow_locations"]);
+        let location = this.selectTarget("Which location do you want to use?", false, "self", "minion", ["allow_locations"]);
         if (location.type != "Location") return "invalidtype";
         if (location.cooldown > 0) return "cooldown";
         

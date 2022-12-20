@@ -361,7 +361,7 @@ class AI {
 
         _scores = _scores.slice(0, -2) + ")";
 
-        this.history.push(["mulligan", [to_mulligan, _scores]]);
+        this.history.push([`mulligan (T${game.config.AIMulliganThreshold})`, [to_mulligan, _scores]]);
 
         return to_mulligan;
     }
