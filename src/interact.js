@@ -364,7 +364,7 @@ class Interact {
 
         this.printName();
     
-        const deckcode = game.input(`Player ${plr.id + 1}, please type in your deckcode (Leave this empty for a test deck): `);
+        const deckcode = game.input(`Player ${plr.id + 1}, please type in your deckcode ` + `(Leave this empty for a test deck)`.gray + `: `);
     
         if (deckcode.length > 0) game.functions.importDeck(plr, deckcode);
         else while (plr.deck.length < 30) plr.deck.push(new game.Card("Sheep", plr));
@@ -385,12 +385,12 @@ class Interact {
         plr.hand.forEach(c => {
             if (c.name == "The Coin") return;
 
-            sb += c.displayName + ", ";
+            sb += game.functions.colorByRarity(c.displayName, c.rarity) + ", ";
         });
 
         sb = sb.slice(0, -2) + " ]\n";
         sb += "Choose the cards to mulligan (1, 2, 3, ...):\n";
-        if (!game.config.debug) sb += "(Example: 13 will mulligan your left and right most cards, 123 will mulligan your 3 leftmost cards, just pressing enter will not mulligan any cards):\n";
+        if (!game.config.debug) sb += "(Example: 13 will mulligan your left and right most cards, 123 will mulligan your 3 leftmost cards, just pressing enter will not mulligan any cards):\n".gray;
 
         let input;
 
@@ -455,8 +455,6 @@ class Interact {
 
         let strbuilder = `\n${prompt} [`;
 
-        if (answers[0] == "Y" && answers[1] == "N") return this.yesNoQuestion(plr, prompt);
-
         answers.forEach((v, i) => {
             strbuilder += `${i + 1}: ${v}, `;
         });
@@ -479,15 +477,26 @@ class Interact {
          * @param {Player} plr The player to ask
          * @param {string} prompt The prompt to ask
          *
-         * @returns {char} Y | N
+         * @returns {bool} true if Yes / false if No
          */
 
         let ask = `\n${prompt} [` + 'Y'.green + ' | ' +  'N'.red + `] `;
 
-        let choice;
-
         if (plr.ai) return plr.ai.yesNoQuestion(prompt);
-        else return game.input(ask)
+
+        let _choice = game.input(ask);
+        let choice = _choice.toUpperCase()[0];
+        if (!["Y", "N"].includes(choice)) {
+            console.log("Unexpected input: '".red + _choice.yellow + "'. Valid inputs: ".red + "[" + "Y".green + " | " + "N".red + "]");
+            game.input();
+
+            this.printName();
+            this.printAll(plr);
+
+            return this.yesNoQuestion(plr, prompt);
+        }
+
+        return choice === "Y";
     }
     discover(prompt, amount = 3, flags = [], add_to_hand = true, _cards = []) {
         /**
@@ -540,12 +549,12 @@ class Interact {
         let p = `\n${prompt}\n[\n`;
 
         values.forEach((v, i) => {
-            let stats = this.getType(v) == "Minion" ? ` [${v.getAttack()} / ${v.getHealth()}]` : "";
+            let stats = this.getType(v) == "Minion" ? ` [${v.getAttack()} / ${v.getHealth()}]`.brightGreen : "";
             let desc = `(${v.desc})` || "";
 
             // Check for a TypeError and ignore it
             try {
-                p += `${i + 1}: {${v.mana}} ${v.displayName || v.name}${stats} ${desc} (${this.getType(v)}),\n`;
+                p += `${i + 1}: ` + `{${v.mana}} `.cyan + game.functions.colorByRarity(`${v.displayName || v.name}`, v.rarity) + `${stats} ${desc} ` + `(${this.getType(v)})`.yellow + `,\n`;
             } catch (e) {}
         });
 
@@ -599,7 +608,7 @@ class Interact {
         if (target.startsWith("b")) {
             const return_question = this.yesNoQuestion(game.player, "WARNING: Going back might cause unexpected things to happen. ".red + "Do you still want to go back?");
             
-            if (return_question.startsWith("y")) return false;
+            if (return_question) return false;
         }
 
         const board_next = game.board[game.opponent.id];
@@ -631,7 +640,7 @@ class Interact {
             if (board_next.length >= parseInt(target) && board_self.length >= parseInt(target)) {
                 // Both players have a minion with the same index.
                 // Ask them which minion to select
-                let target2 = game.input(`Do you want to select your opponent's (${board_next_target.displayName}) or your own (${board_self_target.displayName})? (y: opponent, n: self | type 'back' to go back) `);
+                let target2 = game.input(`Do you want to select your opponent's (${game.functions.colorByRarity(board_next_target.displayName, board_next_target.rarity)}) or your own (${game.functions.colorByRarity(board_self_target.displayName, board_self_target.rarity)})? (y: opponent, n: self | type 'back' to go back) `);
             
                 if (target2.startsWith("b")) {
                     // Go back.
@@ -645,12 +654,12 @@ class Interact {
         }
 
         if (minion === undefined) {
-            game.input("Invalid minion.\n");
+            game.input("Invalid minion.\n".red);
             return false;
         }
 
         if (minion.keywords.includes("Elusive") && elusive) {
-            game.input("Can't be targeted by Spells or Hero Powers.\n");
+            game.input("Can't be targeted by Spells or Hero Powers.\n".red);
             
             // elusive can be set to any value other than true to prevent targetting but not update
             // spells cast on minions
@@ -661,7 +670,7 @@ class Interact {
         }
 
         if (minion.keywords.includes("Stealth") && game.player != minion.plr) {
-            game.input("This minion has stealth.\n");
+            game.input("This minion has stealth.\n".red);
 
             return false;
         }
@@ -669,11 +678,10 @@ class Interact {
         // Location
         if (minion.type == "Location") {
             // Set the "allow_locations" flag to allow targetting locations.
-            if (!flags.includes("allow_locations")) {
-                game.input("You cannot target location cards.\n");
+            if (flags.includes("allow_locations")) return minion;
+            game.input("You cannot target location cards.\n".red);
 
-                return false;
-            }
+            return false;
         }
 
         return minion;
@@ -759,12 +767,12 @@ class Interact {
         // Health End
         console.log(sb);
         sb = "";
-    
+
         // Weapon
         if (curr.weapon) {
             // Current player has a weapon
             // Attack: 1 | Weapon: Wicked Knife (1 / 1)
-            sb += `Weapon     : ${curr.weapon.displayName.bold}`;
+            sb += `Weapon     : ${game.functions.colorByRarity(curr.weapon.displayName, curr.weapon.rarity)}`;
 
             let wpnStats = ` [${curr.weapon.stats.join(' / ')}]`;
 
@@ -773,7 +781,9 @@ class Interact {
     
         if (op.weapon) {
             // Opponent has a weapon
-            if (!curr.weapon) sb += "                                "; // Show that this is the opponent's weapon, not yours
+            let len = sb.split(": ")[1];
+            if (!curr.weapon) sb += "                                 "; // Show that this is the opponent's weapon, not yours
+            
             sb += "         | "; 
             sb += `Weapon     : ${op.weapon.displayName.bold}`;
             let opWpnStats = ` [${op.weapon.stats.join(' / ')}]`;
@@ -946,7 +956,7 @@ class Interact {
                 let sleepy = (m.sleepy) || (m.attackTimes <= 0) ? " (Sleepy)".gray : "";
     
                 sb += `[${n + 1}] `;
-                sb += game.functions.colorByRarity(m.displayName).bold;
+                sb += game.functions.colorByRarity(m.displayName, m.rarity);
                 sb += ` [${m.stats.join(" / ")}]`.brightGreen;
     
                 sb += keywords;
@@ -977,7 +987,7 @@ class Interact {
     
             sb += `[${i + 1}] `;
             sb += `{${card.mana}} `.cyan;
-            sb += game.functions.colorByRarity(card.displayName, card.rarity, true);
+            sb += game.functions.colorByRarity(card.displayName, card.rarity);
             
             if (card.type === "Minion" || card.type === "Weapon") {
                 sb += ` [${card.stats.join(" / ")}]`.brightGreen;
@@ -1000,13 +1010,13 @@ class Interact {
          * @param {Card} minion The minion to show information about
          */
 
-        console.log(`{${minion.mana}} ${minion.displayName} [${minion.blueprint.stats.join(' / ')}]\n`);
+        console.log(`{${minion.mana}} `.cyan + game.functions.colorByRarity(`${minion.displayName} `, minion.rarity) + `[${minion.blueprint.stats.join(' / ')}]\n`.brightGreen);
         if (minion.desc) console.log(minion.desc + "\n");
-        console.log("Tribe: " + minion.tribe);
-        console.log("Class: " + minion.class);
-        console.log("Rarity: " + minion.rarity);
-        console.log("Set: " + minion.set);
-        console.log("Turn played: " + minion.turn);
+        console.log("Rarity: " + game.functions.colorByRarity(minion.rarity, minion.rarity));
+        console.log("Tribe: " + minion.tribe.gray);
+        console.log("Class: " + minion.class.gray);
+        console.log("Set: " + minion.set.gray);
+        console.log("Turn played: " + minion.turn.toString().yellow);
     
         game.input("\nPress enter to continue...\n");
     

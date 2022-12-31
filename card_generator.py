@@ -8,8 +8,8 @@ import os
 
 editor = 'vim'
 
-_type = input("Type: ")
-mw = _type.lower() in ["minion", "weapon"];
+_type = input("Type: ").capitalize()
+mw = _type.lower() in ["minion", "weapon"]
 
 _stats = ""
 _tribe = ""
@@ -23,7 +23,7 @@ else: _spellClass = input("Spell Class: ")
 desc = input("Desc: ")
 mana = input("Mana: ")
 if mw: _tribe = input("Tribe: ")
-_class = input("Class: ")
+_class = input("Class: ").capitalize()
 if not _class: _class = "Neutral"
 rarity = input("Rarity: ")
 _set = input("Set: ")
@@ -37,8 +37,7 @@ keywords = f'keywords: ["{keywords_1}"],\n    ' if mw and _keywords else ''
 tribe = f'tribe: "{_tribe}",\n    ' if mw and _tribe else ''
 spellClass = f'spellClass: "{_spellClass}",\n    ' if not mw and _spellClass else ''
 
-if _class.lower() == "neutral": path = f"cards/Neutral/{_type}s/{mana} Cost/"
-else: path = f"cards/Classes/{_class}/{_type}s/{mana} Cost/"
+path = f"cards/Classes/{_class}/{_type}s/{mana} Cost/"
 filename = f"{name.replace(' ', '_').lower()}.js"
 
 if not os.path.exists(path): os.makedirs(path) # If the path doesn't exist, create it.

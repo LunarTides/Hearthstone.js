@@ -117,13 +117,13 @@ class Functions {
 
         return cards;
     }
-    colorByRarity(str, rarity, bold = false) {
+    colorByRarity(str, rarity, bold = true) {
         /**
          * Colors "str" based on "rarity". Example: Rarity = "Legendary", return "str".gold
          *
          * @param {string} str The string to color
          * @param {string} rarity The rarity
-         * @param {bool} bold Automatically apply bold
+         * @param {bool} bold [default=true] Automatically apply bold
          *
          * @returns {string} The colored string
          */
