@@ -9,14 +9,18 @@ module.exports = {
     runes: ["BB"],
             
     cast(plr, game, card) {
+        let success;
+
         do {
-            plr.tradeCorpses(1, () => {
+            success = plr.tradeCorpses(1, () => {
                 game.board.forEach(b => {
                     b.forEach(c => {
                         game.attack(1, c);
                     });
                 });
             });
-        } while ((game.board[0].length || game.board[1].length) && plr.corpses > 0);
+
+            if (!success) break; // If plr.tradeCorpses returns false, return from the while loop.
+        } while (game.board[0].length || game.board[1].length);
     }
 }
