@@ -349,7 +349,7 @@ class Interact {
         if (card.uncollectible) return "uncollectible";
 
         // Runes
-        if (card.runes && !plr.testRunes(card.runes, card.runes.length)) return "runes";
+        if (card.runes && plr.runes.filter(r => r == card.runes[0]).length < card.runes.length) return "runes";
 
         return true;
     }
