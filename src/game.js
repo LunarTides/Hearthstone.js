@@ -156,13 +156,11 @@ class Game {
             // Set the player's hero to the default hero for the class
             let plr = this["player" + (i + 1)];
             
-            let hero_card = plr.heroClass + " Starting Hero";
-            hero_card = this.functions.getCardByName(hero_card);
-            if (!hero_card) {
+            let success = plr.setToStartingHero();
+            if (!success) {
                 console.log("File 'cards/StartingHeroes/" + plr.heroClass.toLowerCase().replaceAll(" ", "_") + ".js' is either; Missing or Incorrect. Please copy the working 'cards/StartingHeroes/' folder from the github repo to restore a working copy. Error Code: 12");
                 require("process").exit(1);
             }
-            plr.setHero(new Card(hero_card.name, plr), 0);
 
             plr.deck.forEach(c => {
                 if (!c.desc.includes("Quest: ") && !c.desc.includes("Questline: ")) return;

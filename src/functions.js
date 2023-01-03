@@ -521,7 +521,7 @@ class Functions {
         plr.heroClass = hero;
 
         // Runes
-        if (hero == "Death Knight" && /^\[[A-Z]{3}\]/.test(code)) {
+        if (/^\[[A-Z]{3}\]/.test(code)) {
             // [BFU]
             let runes = [];
 
@@ -530,7 +530,8 @@ class Functions {
             }
             
             code = code.slice(6);
-            plr.runes = runes;
+            if (hero == "Death Knight") plr.runes = runes;
+            else game.input("WARNING: This deck has runes in it, but the class is ".yellow + hero.brightYellow + ". Supported classes: ".yellow + "Death Knight\n".brightYellow);
         }
 
         let deck = code.split(", ");
@@ -557,7 +558,7 @@ class Functions {
 
                 switch (validateTest) {
                     case "class":
-                        err = "You have a card from different class in your deck";
+                        err = "You have a card from a different class in your deck";
                         break;
                     case "uncollectible":
                         err = "You have an uncollectible card in your deck";
@@ -582,6 +583,7 @@ class Functions {
             exit(1);
         }
 
+        // Check if you have more than 2 cards or more than 1 legendary in your deck. (The numbers can be changed in the config)
         let cards = {};
         _deck.forEach(c => {
             if (!cards[c.name]) cards[c.name] = 0;
@@ -592,8 +594,8 @@ class Functions {
             v = v[0];
 
             let errorcode;
-            if (i > 2) errorcode = "normal";
-            if (this.getCardByName(v).rarity == "Legendary" && i > 1) errorcode = "legendary";
+            if (i > game.config.maxOfOneCard) errorcode = "normal";
+            if (this.getCardByName(v).rarity == "Legendary" && i > game.config.maxOfOneLegendary) errorcode = "legendary";
 
             if (errorcode && game.config.validateDecks) {
                 let err;
@@ -608,7 +610,7 @@ class Functions {
                         err = "";
                         break;
                 }
-                game.input(err + "\nSpecific card that caused this error: ".red + this.getCardByName(v).name.yellow + "\n");
+                game.input(err + "\nSpecific card that caused this error: ".red + v.yellow + ". Amount: ".red + i.toString().yellow + ".\n".red);
                 exit(1);
             }
         });

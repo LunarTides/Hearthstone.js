@@ -346,6 +346,23 @@ class Player {
 
         this.armor += armor;
     }
+    setToStartingHero(heroClass = this.heroClass) {
+        /**
+         * Sets the player's hero to the default hero of "heroClass"
+         *
+         * @param {string} heroClass The class of the hero
+         *
+         * @returns {bool} Success
+         */
+
+        let hero_card = heroClass + " Starting Hero";
+        hero_card = game.functions.getCardByName(hero_card);
+
+        if (!hero_card) return false;
+        this.setHero(new game.Card(hero_card.name, this), 0);
+
+        return true;
+    }
     heroPower() {
         /**
          * Activate the player's hero power.
