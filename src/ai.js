@@ -402,6 +402,7 @@ class AI {
          * @returns {number} The score
          */
 
+        if (context) context = game.config.AIContextAnalysis;
         let score = 0;
 
         str.toLowerCase().split(/[^a-z0-9 ]/).forEach(i => {

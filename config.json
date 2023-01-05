@@ -10,6 +10,7 @@
     "P1AI": false,
     "P2AI": true,
     
+    "AIContextAnalysis"  : true,
     "AIMulliganThreshold": 3,
     "AIStatsBias"        : 0.2,
     "AIManaBias"         : 0.75,

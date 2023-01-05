@@ -24,7 +24,7 @@ class Card {
 
         this.spellClass = null;
 
-        this.attackTimes = 1; // The number of times a minion can attack, windfury: 2, mega-windfury: 3
+        this.attackTimes = 1; // The number of times a minion can attack, windfury: 2, mega-windfury: 4
         this.stealthDuration = 0; // The amount of turns stealth should last
 
         // Set maxHealth if the card is a minion or weapon
@@ -289,7 +289,7 @@ class Card {
          * Sets the attack times of a minion to;
          * 1 if doesn't have windfury,
          * 2 if it does,
-         * 3 if it has mega-windfury
+         * 4 if it has mega-windfury
          * 
          * @returns {undefined}
          */
@@ -300,7 +300,7 @@ class Card {
             this.attackTimes = 2;
         }
         if (this.keywords.includes("Mega-Windfury")) {
-            this.attackTimes = 3;
+            this.attackTimes = 4;
         }
     }
 
