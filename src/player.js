@@ -330,18 +330,19 @@ class Player {
     }
 
     // Hero power / Class
-    setHero(hero, armor = 5) {
+    setHero(hero, armor = 5, setHeroClass = true) {
         /**
          * Sets the player's hero to "hero"
          * 
          * @param {Card} hero The hero that the player should be set to
          * @param {number} armor [default=5] The amount of armor the player should gain
+         * @param {bool} setHeroClass [default=true] Set the players hero class.
          * 
          * @returns {undefined}
          */
 
         this.hero = hero;
-        this.heroClass = hero.class;
+        if (setHeroClass) this.heroClass = hero.class;
         this.heroPowerCost = hero.hpCost || 2;
 
         this.armor += armor;
@@ -359,7 +360,7 @@ class Player {
         hero_card = game.functions.getCardByName(hero_card);
 
         if (!hero_card) return false;
-        this.setHero(new game.Card(hero_card.name, this), 0);
+        this.setHero(new game.Card(hero_card.name, this), 0, false);
 
         return true;
     }
