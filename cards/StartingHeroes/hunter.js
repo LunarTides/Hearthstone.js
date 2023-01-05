@@ -6,6 +6,7 @@ module.exports = {
     class: "Hunter",
     rarity: "Free",
     set: "Core",
+    hpDesc: "Deal 2 damage to the enemy hero.",
 
     heropower(plr, game, self) {
         game.attack(2, plr.getOpponent());

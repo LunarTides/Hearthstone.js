@@ -6,6 +6,7 @@ module.exports = {
     class: "Warlock",
     rarity: "Free",
     set: "Core",
+    hpDesc: "Draw a card and take 2 damage.",
 
     heropower(plr, game, self) {
         plr.remHealth(2);

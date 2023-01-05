@@ -262,6 +262,32 @@ class AI {
 
         return best_card;
     }
+    dredge(cards) {
+        /**
+         * Choose the "best" card to dredge.
+         * 
+         * @param {Card[]} cards The cards to choose from
+         * 
+         * @returns {Card} Result
+         */
+
+        let best_card = null;
+        let best_score = -100000;
+
+        // Look for highest score
+        cards.forEach(c => {
+            let score = this.analyzePositiveCard(c);
+
+            if (score > best_score) {
+                best_card = c;
+                best_score = score;
+            }
+        });
+
+        this.history.push(["dredge", [best_card.name, best_score]]);
+
+        return best_card;
+    }
     chooseOne(options) {
         /**
          * Choose the "best" option from options

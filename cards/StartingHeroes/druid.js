@@ -6,6 +6,7 @@ module.exports = {
     class: "Druid",
     rarity: "Free",
     set: "Core",
+    hpDesc: "+1 Attack this turn. +1 Armor.",
 
     heropower(plr, game, self) {
         plr.addAttack(1);

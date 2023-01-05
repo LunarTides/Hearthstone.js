@@ -63,14 +63,25 @@ class Functions {
     }
     capitalize(str) {
         /**
-         * Capitilizes and returns the string
+         * Capitalizes and returns the string
          * 
          * @param {string} str String
          * 
-         * @return {string} The string capitilized
+         * @returns {string} The string capitilized
          */
 
         return str[0].toUpperCase() + str.slice(1).toLowerCase();
+    }
+    capitalizeAll(str) {
+        /**
+         * Capitalizes all words in string and returns it
+         *
+         * @param {string} str The string
+         *
+         * @returns {string} The string capitalized
+         */
+
+        return str.split(" ").map(k => this.capitalize(k)).join(" ");
     }
 
     // Getting card info
@@ -234,7 +245,16 @@ class Functions {
          */
 
         // Look at the bottom three cards of the deck and put one on the top.
-        let cards = game.player.deck.slice(0, 3);
+        let cards = game.player.deck.splice(0, 3);
+
+        // Check if ai
+        if (game.player.ai) {
+            let card = game.player.ai.dredge(cards);
+
+            game.player.deck.push(card);
+
+            return card;
+        }
 
         let p = `\n${prompt}\n[`;
 
@@ -250,16 +270,16 @@ class Functions {
 
         let choice = game.input(p);
 
-        if (!cards[parseInt(choice) - 1]) {
+        let card = parseInt(choice) - 1;
+        card = cards[card];
+
+        if (!card) {
             game.interact.printAll(game.player);
 
             return this.dredge(prompt);
         }
 
-        let card = cards[parseInt(choice) - 1];
-
-        game.player.shuffleIntoDeck(card);
-        game.player.deck.splice(game.player.deck.indexOf(card), 1);
+        game.player.deck.push(card);
 
         return card;
     }

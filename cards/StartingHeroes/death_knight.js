@@ -6,9 +6,9 @@ module.exports = {
     class: "Death Knight",
     rarity: "Free",
     set: "Core",
+    hpDesc: "Summon a 1/1 Ghoul with Charge. It dies at end of turn.",
 
     heropower(plr, game, self) {
-        // Summon a 1/1 Ghoul with Charge. It dies at end of turn.
         let minion = new game.Card("Death Knight Frail Ghoul", plr);
 
         game.summonMinion(minion, plr);

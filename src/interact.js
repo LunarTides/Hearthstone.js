@@ -2,7 +2,7 @@ const colors = require("colors");
 const { exit } = require('process');
 
 const license_url = 'https://github.com/Keatpole/Hearthstone.js/blob/main/LICENSE';
-const copyright_year = "2022";
+const copyright_year = "2023";
 
 let game;
 let curr;
@@ -86,7 +86,24 @@ class Interact {
          */
 
         if (q === "end") game.endTurn();
-        else if (q === "hero power") curr.heroPower();
+        else if (q === "hero power") {
+            if (curr.ai) {
+                curr.heroPower();
+                return;
+            }
+
+            if (curr.mana < (curr.hero.hpCost || 2)) {
+                game.input("You do not have enough mana.\n".red);
+                return;
+            }
+
+            this.printAll(curr);
+            let ask = this.yesNoQuestion(curr, curr.hero.hpDesc.yellow + " Are you sure you want to use this hero power?");
+            if (!ask) return;
+
+            this.printAll(curr);
+            curr.heroPower();
+        }
         else if (q === "attack") {
             this.doTurnAttack();
             game.killMinions();
@@ -141,12 +158,8 @@ class Interact {
             this.viewMinion(minion);
         }
         else if (q == "detail") {
-            this.printName();
             this.printAll(curr, true);
-    
             game.input("Press enter to continue...\n");
-    
-            this.printName();
             this.printAll(curr);
         }
         else if (q == "license") {
@@ -288,7 +301,6 @@ class Interact {
             return turn;
         }
 
-        this.printName();
         this.printAll(curr);
     
         let input = "\nWhich card do you want to play? ";
@@ -490,7 +502,6 @@ class Interact {
             console.log("Unexpected input: '".red + _choice.yellow + "'. Valid inputs: ".red + "[" + "Y".green + " | " + "N".red + "]");
             game.input();
 
-            this.printName();
             this.printAll(plr);
 
             return this.yesNoQuestion(plr, prompt);
@@ -735,7 +746,8 @@ class Interact {
          * @returns {undefined}
          */
 
-        if (game.turns <= 2) this.printLicense();
+        if (game.turns <= 2 && !game.config.debug) this.printLicense();
+        else this.printName();
     
         let op = curr.getOpponent();
     

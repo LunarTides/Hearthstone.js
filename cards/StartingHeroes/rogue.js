@@ -6,6 +6,7 @@ module.exports = {
     class: "Rogue",
     rarity: "Free",
     set: "Core",
+    hpDesc: "Equip a 1/2 Dagger.",
 
     heropower(plr, game, self) {
         const wpn = new game.Card("Wicked Knife", plr);

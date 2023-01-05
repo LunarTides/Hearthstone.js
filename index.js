@@ -25,6 +25,7 @@ game.interact.deckCode(p1);
 game.interact.deckCode(p2);
 
 game.startGame();
+game.set("dirname", __dirname);
 
 game.interact.mulligan(p1);
 game.interact.mulligan(p2);

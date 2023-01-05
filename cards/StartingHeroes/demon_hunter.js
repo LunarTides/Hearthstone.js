@@ -6,6 +6,7 @@ module.exports = {
     class: "Demon Hunter",
     rarity: "Free",
     set: "Core",
+    hpDesc: "+1 Attack this turn.",
     hpCost: 1,
 
     heropower(plr, game, self) {

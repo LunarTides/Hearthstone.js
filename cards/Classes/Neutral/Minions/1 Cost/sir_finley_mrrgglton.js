@@ -1,3 +1,5 @@
+const fs = require("fs");
+
 module.exports = {
     name: "Sir Finley Mrrgglton",
     stats: [1, 3],
@@ -9,19 +11,17 @@ module.exports = {
     set: "Core",
 
     battlecry(plr, game, card) {
-        var possible_cards = [
-            ["Demon Hunter", "Gain +1 Attack."],
-            ["Druid", "Gain +1 Attack and +1 Armor."],
-            ["Hunter", "Deal 2 damage to the enemy hero."],
-            ["Mage", "Deal 1 damage."],
-            ["Paladin", "Summon a 1/1 Silver Hand Recruit."],
-            ["Priest", "Heal 2 damage."],
-            ["Rogue", "Equip a 1/2 Dagger."],
-            ["Shaman", "Summon a random Totem."],
-            ["Warlock", "Take 2 damage, draw a card."],
-            ["Warrior", "Gain +2 Armor."],
-            ["Death Knight", "Summon a 1/1 Ghoul with Charge. It dies at the end of turn."]
-        ];
+        let possible_cards = [];
+
+        fs.readdirSync(game.dirname + "/cards/StartingHeroes").forEach(file => {
+            let name = file.slice(0, -3); // Remove ".js"
+            name = name.replaceAll("_", " "); // Remove underscores
+            name = game.functions.capitalizeAll(name); // Capitalize all words
+
+            let card = game.functions.getCardByName(name + " Starting Hero");
+
+            possible_cards.push([name, card.hpDesc]);
+        });
 
         // Remove the value in possible_cards where the key equals plr.hero_power
         possible_cards = possible_cards.filter(c => c[0] != plr.hero_power);
@@ -35,18 +35,26 @@ module.exports = {
             possible_cards.splice(possible_cards.indexOf(c), 1);
         }
 
+
         var p = `\nChoose a new Hero Power.\n[\n`;
 
         values.forEach((v, i) => {
             // Check for a TypeError and ignore it
             try {
-                p += `${i + 1}: ${v[0]}; ${v[1]},\n`;
+                p += `${i + 1}: ${v[0]}; ${v[1].slice(0, -1)},\n`;
             } catch (e) {}
         });
 
         p = p.slice(0, -2);
         p += "\n] ";
 
-        plr.hero_power = values[parseInt(game.input(p)) - 1][0];
+        let choice;
+
+        if (plr.ai) choice = plr.ai.chooseOne(values.map(k => k[1])) + 1;
+        else choice = game.input(p);
+        choice = parseInt(choice) - 1;
+        choice = values[choice][0];
+
+        plr.setToStartingHero(choice);
     }
 }
