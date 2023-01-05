@@ -148,6 +148,16 @@ class Interact {
             console.log("detail     - Get more details about opponent");
             console.log("help       - Displays this message");
             console.log("license    - Opens a link to this project's license");
+
+            const cond_color = (str) => {return (game.config.debug) ? str : str.gray};
+
+            console.log(cond_color("\n--- Debug Commands (") + ((game.config.debug) ? "ON".green : "OFF".red) + cond_color(") ---"));
+            console.log(cond_color("/give <Card Name> - Adds a card to your hand"));
+            console.log(cond_color("/eval <Code>      - Runs the code specified"));
+            console.log(cond_color("/debug            - Destroys your hand and deck and gives you infinite mana, health and armor"));
+            console.log(cond_color("/stats            - Gives you a list of the game stats that have happened in an alphabetical order"));
+            console.log(cond_color("/ai               - Gives you a list of the actions the ai(s) have taken in the order they took it"));
+            console.log(cond_color("---------------------------" + ((game.config.debug) ? "" : "-")));
             
             game.input("\nPress enter to continue...\n");
         }
@@ -179,10 +189,14 @@ class Interact {
     
             curr.addToHand(new game.Card(card.name, curr));
         }
-        else if (q == "/eval") {
+        else if (q.startsWith("/eval")) {
             if (!game.config.debug) return -1;
+
+            let code = q.split(" ");
+            code.shift();
+            code = code.join(" ");
     
-            eval(game.input("\nWhat do you want to evaluate? "));
+            eval(code);
         }
         else if (q == "/debug") {
             if (!game.config.debug) return -1;
