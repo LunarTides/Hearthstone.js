@@ -20,10 +20,10 @@ class GameStats {
                 p.desc = p.desc.replace(`Infuse (${p.infuse_num})`, `Infuse (${p.infuse_num - 1})`);
                 p.infuse_num -= 1;
 
-                if (p.infuse_num == 0) {
-                    p.activate("infuse");
-                    p.desc = p.desc.replace(`Infuse (${p.infuse_num})`, "Infused");
-                }
+                if (p.infuse_num != 0) return;
+
+                p.activate("infuse");
+                p.desc = p.desc.replace(`Infuse (${p.infuse_num})`, "Infused");
             });
         }
         
@@ -47,20 +47,19 @@ class GameStats {
     }
     questUpdate(quests_name, key, val, plr = this.game.player) {
         plr[quests_name].forEach(s => {
-            if (s["key"] == key) {
-                if (!s["manual_progression"]) s["progress"][0]++;
+            if (s["key"] != key) return;
 
-                const normal_done = (s["value"] + this[key][plr.id].length - 1) == this[key][plr.id].length;
+            if (!s["manual_progression"]) s["progress"][0]++;
 
-                if (s["callback"](val, this.game, s["turn"], normal_done)) {
-                    s["progress"][0]++;
-                    plr[quests_name].splice(plr[quests_name].indexOf(s), 1);
+            const normal_done = (s["value"] + this[key][plr.id].length - 1) == this[key][plr.id].length;
+            if (!s["callback"](val, this.game, s["turn"], normal_done)) return;
 
-                    if (quests_name == "secrets") this.game.input("\nYou triggered the opponents's '" + s.name + "'.\n");
+            s["progress"][0]++;
+            plr[quests_name].splice(plr[quests_name].indexOf(s), 1);
 
-                    if (s["next"]) new Card(s["next"], plr).activate("cast");
-                }
-            }
+            if (quests_name == "secrets") this.game.input("\nYou triggered the opponents's '" + s.name + "'.\n");
+
+            if (s["next"]) new Card(s["next"], plr).activate("cast");
         });
     }
 
@@ -382,13 +381,11 @@ class Game {
     
                     // Corrupt
                     player.hand.forEach(c => {
-                        if (c.keywords.includes("Corrupt")) {
-                            if (card.mana > c.mana) {
-                                let t = new Card(c.corrupt, c.plr);
+                        if (c.keywords.includes("Corrupt") && card.mana <= c.mana) {
+                            let t = new Card(c.corrupt, c.plr);
 
-                                c.plr.addToHand(t, false);
-                                player.removeFromHand(c);
-                            }
+                            c.plr.addToHand(t, false);
+                            player.removeFromHand(c);
                         }
                     });
 
@@ -440,13 +437,11 @@ class Game {
         if (stat.length > 1 && stat[stat.length - 2].turn == this.turns) card.activate("combo");
 
         player.hand.forEach(c => {
-            if (c.keywords.includes("Corrupt")) {
-                if (card.mana > c.mana) {
-                    let t = new Card(c.corrupt, c.plr);
-                    c.plr.addToHand(t, false);
+            if (c.keywords.includes("Corrupt") && card.mana > c.mana) {
+                let t = new Card(c.corrupt, c.plr);
+                c.plr.addToHand(t, false);
 
-                    player.removeFromHand(c);
-                }
+                player.removeFromHand(c);
             }
         });
 

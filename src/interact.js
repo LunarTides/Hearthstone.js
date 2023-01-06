@@ -493,7 +493,6 @@ class Interact {
         if (plr.ai) choice = plr.ai.question(prompt, answers);
         else choice = game.input(strbuilder); 
 
-
         return answers[parseInt(choice) - 1];
     }
     yesNoQuestion(plr, prompt) {
@@ -512,16 +511,16 @@ class Interact {
 
         let _choice = game.input(ask);
         let choice = _choice.toUpperCase()[0];
-        if (!["Y", "N"].includes(choice)) {
-            console.log("Unexpected input: '".red + _choice.yellow + "'. Valid inputs: ".red + "[" + "Y".green + " | " + "N".red + "]");
-            game.input();
 
-            this.printAll(plr);
+        if (["Y", "N"].includes(choice)) return choice === "Y";
 
-            return this.yesNoQuestion(plr, prompt);
-        }
+        // Invalid input
+        console.log("Unexpected input: '".red + _choice.yellow + "'. Valid inputs: ".red + "[" + "Y".green + " | " + "N".red + "]");
+        game.input();
 
-        return choice === "Y";
+        this.printAll(plr);
+
+        return this.yesNoQuestion(plr, prompt);
     }
     discover(prompt, amount = 3, flags = [], add_to_hand = true, _cards = []) {
         /**

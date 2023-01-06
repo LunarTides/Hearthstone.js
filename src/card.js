@@ -162,9 +162,7 @@ class Card {
 
         this.stats = [attack, health];
 
-        if (changeMaxHealth && health > this.maxHealth) {
-            this.maxHealth = health;
-        }
+        if (changeMaxHealth && health > this.maxHealth) this.maxHealth = health;
     }
     addStats(attack = 0, health = 0, restore = false) {
         /**
@@ -207,15 +205,14 @@ class Card {
 
         this.setStats(this.getAttack(), this.getHealth() + amount, !restore);
     
-        if (restore) {
-            if (this.getHealth() > this.maxHealth) {
-                if (this.getHealth() > before) game.stats.update("restoredHealth", this.maxHealth);
-                this.stats[1] = this.maxHealth;
-            } else if (this.getHealth() > before) {
-                game.stats.update("restoredHealth", this.getHealth());
-            }
+        if (!restore) return this.resetMaxHealth(true);
+
+        if (this.getHealth() > this.maxHealth) {
+            if (this.getHealth() > before) game.stats.update("restoredHealth", this.maxHealth);
+            this.stats[1] = this.maxHealth;
+        } else if (this.getHealth() > before) {
+            game.stats.update("restoredHealth", this.getHealth());
         }
-        else this.resetMaxHealth(true);
     }
     addAttack(amount) {
         /**
@@ -377,20 +374,20 @@ class Card {
             let r = i(this.plr, game, this, ...args);
             ret.push(r);
 
+            if (r != -1 || name == "deathrattle") return;
+
             // If the return value is -1, meaning "refund", refund the card and stop the for loop
-            if (r == -1 && name != "deathrattle") {
-                if (["use", "heropower"].includes(name)) {
-                    ret = -1;
-                    return;
-                }
-
-                this.plr.addToHand(this, false);
-                this.plr.mana += this.mana;
+            if (["use", "heropower"].includes(name)) {
                 ret = -1;
-
-                // Return from the for loop
                 return;
             }
+
+            this.plr.addToHand(this, false);
+            this.plr.mana += this.mana;
+            ret = -1;
+
+            // Return from the for loop
+            return;
         });
 
         return ret;

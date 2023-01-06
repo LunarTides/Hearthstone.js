@@ -26,21 +26,21 @@ class AI {
         this.plr.hand.forEach(c => {
             let score = this.analyzePositiveCard(c);
 
-            if (score > best_score && c.mana <= this.plr.mana) {
-                // If the card is a minion and the player doesn't have the board space to play it, ignore the card
-                if (["Minion", "Location"].includes(c.type) && game.board[this.plr.id].length >= game.config.maxBoardSpace) return;
+            if (score <= best_score || c.mana > this.plr.mana) return;
 
-                // Prevent the ai from playing the same card they returned from when selecting a target
-                let r = false;
+            // If the card is a minion and the player doesn't have the board space to play it, ignore the card
+            if (["Minion", "Location"].includes(c.type) && game.board[this.plr.id].length >= game.config.maxBoardSpace) return;
 
-                this.history.forEach((h, i) => {
-                    if (h instanceof Array && h[1] === "0,1" && this.history[i - 1][1][0] == c.name) r = true;
-                });
-                if (r) return;
+            // Prevent the ai from playing the same card they returned from when selecting a target
+            let r = false;
 
-                best_move = c;
-                best_score = score;
-            }
+            this.history.forEach((h, i) => {
+                if (h instanceof Array && h[1] === "0,1" && this.history[i - 1][1][0] == c.name) r = true;
+            });
+            if (r) return;
+
+            best_move = c;
+            best_score = score;
         });
 
         if (!best_move) {
@@ -82,10 +82,10 @@ class AI {
         game.board[this.plr.id].filter(m => !m.sleepy && !m.frozen && !m.dormant).forEach(m => {
             let score = this.analyzePositiveCard(m);
 
-            if (score < worst_score) {
-                worst_minion = m;
-                worst_score = score;
-            }
+            if (score >= worst_score) return;
+
+            worst_minion = m;
+            worst_score = score;
         });
 
         let attacker = worst_minion;
@@ -104,28 +104,24 @@ class AI {
         targets.forEach(m => {
             let score = this.analyzePositiveCard(m);
 
-            if (score > best_score) {
-                best_minion = m;
-                best_score = score;
-            }
+            if (score <= best_score) return;
+
+            best_minion = m;
+            best_score = score;
         });
         target = best_minion;
 
         // If the AI has no minions to attack, attack the enemy hero
         if (!target) {
-            if (taunts.length) {
+            if (!taunts.length) target = this.plr.getOpponent();
+            else {
                 attacker = -1;
                 target = -1;
 
                 this.prevent.push("attack");
             }
-            else {
-                target = this.plr.getOpponent();
-            }
         }
-        if (!attacker && this.plr.attack > 0) {
-            attacker = this.plr;
-        }
+        if (!attacker && this.plr.attack > 0) attacker = this.plr;
 
         let arr = [];
         let strbuilder = "";
@@ -205,10 +201,10 @@ class AI {
             
             let s = this.analyzePositiveCard(m);
 
-            if (s > best_score) {
-                best_minion = m;
-                best_score = s;
-            }
+            if (s <= best_score) return;
+
+            best_minion = m;
+            best_score = s;
         });
 
         if (flags["allow_locations"]) {
@@ -252,10 +248,10 @@ class AI {
         cards.forEach(c => {
             let score = this.analyzePositiveCard(c);
 
-            if (score > best_score) {
-                best_card = c;
-                best_score = score;
-            }
+            if (score <= best_score) return;
+
+            best_card = c;
+            best_score = score;
         });
 
         this.history.push(["discover", [best_card.name, best_score]]);
@@ -278,10 +274,10 @@ class AI {
         cards.forEach(c => {
             let score = this.analyzePositiveCard(c);
 
-            if (score > best_score) {
-                best_card = c;
-                best_score = score;
-            }
+            if (score <= best_score) return;
+
+            best_card = c;
+            best_score = score;
         });
 
         this.history.push(["dredge", [best_card.name, best_score]]);
@@ -307,10 +303,10 @@ class AI {
         options.forEach((c, i) => {
             let score = this.analyzePositive(c);
 
-            if (score > best_score) {
-                best_choice = i;
-                best_score = score;
-            }
+            if (score <= best_score) return;
+
+            best_choice = i;
+            best_score = score;
         });
  
         this.history.push(["chooseOne", [best_choice, best_score]]);
@@ -333,10 +329,10 @@ class AI {
         options.forEach((v, i) => {
             let score = this.analyzePositive(v);
 
-            if (score > best_score) {
-                best_choice = i;
-                best_score = score;
-            }
+            if (score <= best_score) return;
+
+            best_choice = i;
+            best_score = score;
         });
 
         this.history.push([`question: ${prompt}`, [best_choice, best_score]]);
@@ -380,7 +376,7 @@ class AI {
 
             let score = this.analyzePositiveCard(c);
 
-            if (score <= game.config.AIMulliganThreshold) to_mulligan += (this.plr.hand.indexOf(c) + 1).toString();
+            if (score < game.config.AIMulliganThreshold) to_mulligan += (this.plr.hand.indexOf(c) + 1).toString();
 
             _scores += `${c.name}:${score}, `;
         });
@@ -418,15 +414,14 @@ class AI {
                         if (ret) return;
 
                         const k0 = k[0].replace(/^(.*)[sd]$/, "$1"); // Remove the last "s" or "d" in order to account for plurals 
+                        if (!new RegExp(k[0]).test(s) && !new RegExp(k0).test(s)) return;
 
-                        if (new RegExp(k[0]).test(s) || new RegExp(k0).test(s)) {
-                            // If the sentiment is "positive", add to the score. If it is "negative", subtract from the score.
-                            let pos = k[1];
-                            if (context && i.includes(["enemy", "enemies", "opponent"])) pos = -pos;
-                            score -= (v[0] == "positive") ? -pos : pos;
-                            ret = true;
-                            return;
-                        }
+                        // If the sentiment is "positive", add to the score. If it is "negative", subtract from the score.
+                        let pos = k[1];
+                        if (context && i.includes(["enemy", "enemies", "opponent"])) pos = -pos;
+                        score -= (v[0] == "positive") ? -pos : pos;
+                        ret = true;
+                        return;
                     });
                 });
             });

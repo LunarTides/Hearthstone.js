@@ -311,11 +311,10 @@ class Player {
          * @returns {undefined}
          */
 
-        if (this.hand.length < 10) {
-            this.hand.push(card);
-        
-            if (updateStats) game.stats.update("cardsAddedToHand", card);
-        }
+        if (this.hand.length >= 10) return;
+        this.hand.push(card);
+
+        if (updateStats) game.stats.update("cardsAddedToHand", card);
     }
     removeFromHand(card) {
         /**

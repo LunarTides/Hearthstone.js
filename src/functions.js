@@ -455,12 +455,12 @@ class Functions {
         let cards = [];
 
         array.forEach(c => {
-            if (c.type == "Minion" && c.mana >= mana_range[0] && c.mana <= mana_range[1] && times < amount) {
-                game.summonMinion(new game.Card(c.name, plr), plr);
+            if (c.type != "Minion" || c.mana < mana_range[0] || c.mana > mana_range[1] || times >= amount) return;
 
-                times++;
-                cards.push(c);
-            }
+            game.summonMinion(new game.Card(c.name, plr), plr);
+
+            times++;
+            cards.push(c);
         });
 
         return cards;
@@ -573,26 +573,26 @@ class Functions {
     
             let validateTest = (game.interact.validateCard(m, plr));
 
-            if (game.config.validateDecks && validateTest !== true) {
-                let err;
+            if (!game.config.validateDecks || validateTest === true) continue;
 
-                switch (validateTest) {
-                    case "class":
-                        err = "You have a card from a different class in your deck";
-                        break;
-                    case "uncollectible":
-                        err = "You have an uncollectible card in your deck";
-                        break;
-                    case "runes":
-                        err = "A card does not support your current runes";
-                        break;
-                    default:
-                        err = "";
-                        break;
-                }
-                game.input(`${err}.\nSpecific Card that caused the error: `.red + `${m.name}\n`.yellow);
-                exit(1);
+            let err;
+
+            switch (validateTest) {
+                case "class":
+                    err = "You have a card from a different class in your deck";
+                    break;
+                case "uncollectible":
+                    err = "You have an uncollectible card in your deck";
+                    break;
+                case "runes":
+                    err = "A card does not support your current runes";
+                    break;
+                default:
+                    err = "";
+                    break;
             }
+            game.input(`${err}.\nSpecific Card that caused the error: `.red + `${m.name}\n`.yellow);
+            exit(1);
         }
 
         let max = game.config.maxDeckLength;
@@ -617,22 +617,22 @@ class Functions {
             if (i > game.config.maxOfOneCard) errorcode = "normal";
             if (this.getCardByName(v).rarity == "Legendary" && i > game.config.maxOfOneLegendary) errorcode = "legendary";
 
-            if (errorcode && game.config.validateDecks) {
-                let err;
-                switch (errorcode) {
-                    case "normal":
-                        err = `There are more than `.red + game.config.maxOfOneCard.toString().yellow + " of a card in your deck".red;
-                        break
-                    case "legendary":
-                        err = `There are more than `.red + game.config.maxOfOneLegendary.toString().yellow + " of a legendary card in your deck".red;
-                        break
-                    default:
-                        err = "";
-                        break;
-                }
-                game.input(err + "\nSpecific card that caused this error: ".red + v.yellow + ". Amount: ".red + i.toString().yellow + ".\n".red);
-                exit(1);
+            if (!game.config.validateDecks || !errorcode) return;
+
+            let err;
+            switch (errorcode) {
+                case "normal":
+                    err = `There are more than `.red + game.config.maxOfOneCard.toString().yellow + " of a card in your deck".red;
+                    break
+                case "legendary":
+                    err = `There are more than `.red + game.config.maxOfOneLegendary.toString().yellow + " of a legendary card in your deck".red;
+                    break
+                default:
+                    err = "";
+                    break;
             }
+            game.input(err + "\nSpecific card that caused this error: ".red + v.yellow + ". Amount: ".red + i.toString().yellow + ".\n".red);
+            exit(1);
         });
     
         _deck = this.shuffle(_deck);
