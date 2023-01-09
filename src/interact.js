@@ -142,6 +142,7 @@ class Interact {
 
             console.log("end        - Ends your turn");
             console.log("attack     - Attack");
+            console.log("concede    - Forfeits the game");
             console.log("view       - View a minion");
             console.log("hero power - Use your hero power");
             console.log("use        - Use a location card");
@@ -171,6 +172,12 @@ class Interact {
             this.printAll(curr, true);
             game.input("Press enter to continue...\n");
             this.printAll(curr);
+        }
+        else if (q == "concede") {
+            let confirmation = this.yesNoQuestion(curr, "Are you sure you want to concede?");
+            if (!confirmation) return;
+
+            game.endGame(curr.getOpponent());
         }
         else if (q == "license") {
             let start = (process.platform == 'darwin' ? 'open' : process.platform == 'win32' ? 'start' : 'xdg-open');
@@ -423,7 +430,12 @@ class Interact {
         if (plr.ai) input = plr.ai.mulligan();
         else input = game.input(sb);
 
-        game.functions.mulligan(plr, input);
+        let is_int = game.functions.mulligan(plr, input);
+
+        if (!is_int && input != "") {
+            game.input("Invalid input!\n".red);
+            return this.mulligan(plr);
+        }
 
         return input;
     }
@@ -439,6 +451,8 @@ class Interact {
          * 
          * @returns {string | string[]} The user's answer(s)
          */
+
+        this.printAll(curr);
 
         let choices = [];
 
@@ -458,6 +472,10 @@ class Interact {
             p += "] ";
 
             let choice = game.input(p);
+            if (!parseInt(choice)) {
+                game.input("Invalid input!\n".red);
+                return this.chooseOne(prompt, options, times);
+            }
 
             choices.push(parseInt(choice) - 1);
         }
@@ -479,6 +497,8 @@ class Interact {
          * @returns {string} Chosen
          */
 
+        this.printAll(curr);
+
         let strbuilder = `\n${prompt} [`;
 
         answers.forEach((v, i) => {
@@ -493,7 +513,13 @@ class Interact {
         if (plr.ai) choice = plr.ai.question(prompt, answers);
         else choice = game.input(strbuilder); 
 
-        return answers[parseInt(choice) - 1];
+        let answer = answers[parseInt(choice) - 1];
+        if (!answer) {
+            game.input("Invalid input!\n".red);
+            return this.question(plr, prompt, answers);
+        }
+
+        return answer;
     }
     yesNoQuestion(plr, prompt) {
         /**
@@ -504,6 +530,8 @@ class Interact {
          *
          * @returns {bool} true if Yes / false if No
          */
+
+        this.printAll(plr);
 
         let ask = `\n${prompt} [` + 'Y'.green + ' | ' +  'N'.red + `] `;
 
@@ -517,8 +545,6 @@ class Interact {
         // Invalid input
         console.log("Unexpected input: '".red + _choice.yellow + "'. Valid inputs: ".red + "[" + "Y".green + " | " + "N".red + "]");
         game.input();
-
-        this.printAll(plr);
 
         return this.yesNoQuestion(plr, prompt);
     }
@@ -535,14 +561,14 @@ class Interact {
          * @returns {Card} The card chosen.
          */
 
+        this.printAll(curr);
         let values = _cards;
 
         if (_cards.length == 0) {
             let possible_cards = [];
 
-            Object.entries(cards).forEach((c, _) => {
-                c = c[1];
-                let type = this.getType(c);
+            game.functions.getCards().forEach((c, _) => {
+                let type = game.functions.getType(c);
 
                 if (type == "Spell" && c.class == "Neutral") {}
                 else if (c.class === game.player.class || c.class == "Neutral") {
@@ -553,8 +579,6 @@ class Interact {
                     possible_cards.push(c);
                 }
             });
-
-            possible_cards = this.accountForUncollectible(possible_cards);
 
             if (possible_cards.length == 0) return;
 
@@ -573,12 +597,13 @@ class Interact {
         let p = `\n${prompt}\n[\n`;
 
         values.forEach((v, i) => {
-            let stats = this.getType(v) == "Minion" ? ` [${v.getAttack()} / ${v.getHealth()}]`.brightGreen : "";
+            v = game.functions.getCardByName(v.name);
+            let stats = v.type == "Minion" ? ` [${v.getAttack()} / ${v.getHealth()}]`.brightGreen : "";
             let desc = `(${v.desc})` || "";
 
             // Check for a TypeError and ignore it
             try {
-                p += `${i + 1}: ` + `{${v.mana}} `.cyan + game.functions.colorByRarity(`${v.displayName || v.name}`, v.rarity) + `${stats} ${desc} ` + `(${this.getType(v)})`.yellow + `,\n`;
+                p += `[${i + 1}] ` + `{${v.mana}} `.cyan + game.functions.colorByRarity(`${v.displayName || v.name}`, v.rarity) + `${stats} ${desc} ` + `(${game.functions.getType(v)})`.yellow + `,\n`;
             } catch (e) {}
         });
 

@@ -245,7 +245,7 @@ class Functions {
          */
 
         // Look at the bottom three cards of the deck and put one on the top.
-        let cards = game.player.deck.splice(0, 3);
+        let cards = game.player.deck.slice(0, 3);
 
         // Check if ai
         if (game.player.ai) {
@@ -255,6 +255,8 @@ class Functions {
 
             return card;
         }
+
+        game.interact.printAll(game.player);
 
         let p = `\n${prompt}\n[`;
 
@@ -274,11 +276,10 @@ class Functions {
         card = cards[card];
 
         if (!card) {
-            game.interact.printAll(game.player);
-
             return this.dredge(prompt);
         }
 
+        game.player.deck = game.player.deck.filter(c => c != card); // Removes the selected card from the players deck.
         game.player.deck.push(card);
 
         return card;
@@ -292,6 +293,8 @@ class Functions {
          * 
          * @returns {string} The name of the adapt chosen. See the first values of possible_cards
          */
+
+        game.interact.printAll(game.player);
 
         let possible_cards = [
             ["Crackling Shield", "Divine Shield"],
@@ -329,7 +332,12 @@ class Functions {
         p += "\n] ";
 
         let choice = game.input(p);
-        if (parseInt(choice) > 3) return adapt(minion, prompt, values);
+        if (!parseInt(choice)) {
+            game.input("Invalid choice!\n".red);
+            return this.adapt(minion, prompt, values);
+        }
+
+        if (parseInt(choice) > 3) return this.adapt(minion, prompt, values);
 
         choice = values[parseInt(choice) - 1][0];
 
@@ -650,6 +658,8 @@ class Functions {
          *
          * @returns {Card[]} The cards mulligan'd
          */
+
+        if (!parseInt(input)) return false;
 
         let cards = [];
         let mulligan = [];
