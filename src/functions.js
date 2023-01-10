@@ -540,13 +540,27 @@ class Functions {
          * @returns {Card[]} The deck
          */
 
+        const ERROR = (error_code, card_name = null) => {
+            console.log("This deck is not valid!\nError Code: ".red + error_code.yellow);
+            if (card_name) console.log("Specific Card that caused this error: ".red + card_name.yellow);
+            game.input();
+            exit(1);
+        }
+
         // The code is base64 encoded, so we need to decode it
         code = Buffer.from(code, 'base64').toString('ascii');
+        if (!code) ERROR("INVALIDB64");
 
-        let hero = code.split("### ")[1].trim();
+        if (code.split("### ").length != 3) ERROR("INVALIDCLASSHEADER");
+        let hero = code.split("### ")[1];
+
+        hero = hero.trim();
         code = code.split("### ")[2];
 
         plr.heroClass = hero;
+
+        let rune_classes = ["Death Knight"];
+        let rune_class = rune_classes.includes(hero);
 
         // Runes
         if (/^\[[A-Z]{3}\]/.test(code)) {
@@ -558,8 +572,11 @@ class Functions {
             }
             
             code = code.slice(6);
-            if (hero == "Death Knight") plr.runes = runes;
-            else game.input("WARNING: This deck has runes in it, but the class is ".yellow + hero.brightYellow + ". Supported classes: ".yellow + "Death Knight\n".brightYellow);
+            if (rune_class) plr.runes = runes;
+            else game.input("WARNING: This deck has runes in it, but the class is ".yellow + hero.brightYellow + ". Supported classes: ".yellow + rune_classes.join(", ").brightYellow + "\n");
+        }
+        else if (rune_class) {
+            game.input("WARNING: This class supports runes but there are no runes in this deck. This deck's class: ".yellow + hero.brightYellow + ". Supported classes: ".yellow + rune_classes.join(", ").brightYellow + "\n");
         }
 
         let deck = code.split(", ");
@@ -575,6 +592,11 @@ class Functions {
             }
 
             let name = (times == 1) ? card : card.substring(times.length + 2);
+            if (!this.getCardByName(name)) {
+                ERROR("NONEXISTANTCARD", name); 
+                //game.input("This deck is not valid. Error Code: ".red + "NONEXISTANTCARD".yellow + "\nCard that caused this error: \"".red + name.yellow + "\".\n".red);
+                //exit(1);
+            }
             let m = new game.Card(name, plr);
 
             for (let i = 0; i < parseInt(times); i++) _deck.push(this.cloneCard(m, plr));
