@@ -592,11 +592,8 @@ class Functions {
             }
 
             let name = (times == 1) ? card : card.substring(times.length + 2);
-            if (!this.getCardByName(name)) {
-                ERROR("NONEXISTANTCARD", name); 
-                //game.input("This deck is not valid. Error Code: ".red + "NONEXISTANTCARD".yellow + "\nCard that caused this error: \"".red + name.yellow + "\".\n".red);
-                //exit(1);
-            }
+            if (!this.getCardByName(name)) ERROR("NONEXISTANTCARD", name); // Check if the card exists
+
             let m = new game.Card(name, plr);
 
             for (let i = 0; i < parseInt(times); i++) _deck.push(this.cloneCard(m, plr));
