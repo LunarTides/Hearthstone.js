@@ -402,7 +402,9 @@ class AI {
         let score = 0;
 
         str.toLowerCase().split(/[^a-z0-9 ]/).forEach(i => {
-            i.trim().split(" ").forEach(s => {
+            i = i.trim();
+
+            i.split(" ").forEach(s => {
                 // Filter out any characters not in the alphabet
                 s = s.replace(/[^a-z]/g, "");
                 let ret = false;
@@ -417,8 +419,9 @@ class AI {
                         if (!new RegExp(k[0]).test(s) && !new RegExp(k0).test(s)) return;
 
                         // If the sentiment is "positive", add to the score. If it is "negative", subtract from the score.
+                        let opponent_test = /enemy|enemies|opponent/;
                         let pos = k[1];
-                        if (context && i.includes(["enemy", "enemies", "opponent"])) pos = -pos;
+                        if (context && opponent_test.test(i)) pos = -pos;
                         score -= (v[0] == "positive") ? -pos : pos;
                         ret = true;
                         return;

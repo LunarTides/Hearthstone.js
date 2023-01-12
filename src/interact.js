@@ -292,8 +292,6 @@ class Interact {
          * @returns {boolean | string | Card} true | "invalid" | The return value of game.playCard
          */
 
-        game.killMinions();
-    
         if (this.handleCmds(input) !== -1) return true;
         let card = curr.hand[parseInt(input) - 1];
         if (!card) return "invalid";

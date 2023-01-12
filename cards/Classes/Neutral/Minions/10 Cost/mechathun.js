@@ -10,6 +10,7 @@ module.exports = {
     set: "The Boomsday Project",
 
     deathrattle(plr, game, card) {
-        if (plr.deck.length == 0 && plr.hand.length == 0 && game[plr.id].length == 1) game.endGame(plr);
+        // This deathrattle gets called before the minion is removed from the board, so the board's length should be 1
+        if (plr.deck.length == 0 && plr.hand.length == 0 && game.board[plr.id].length == 1) game.endGame(plr);
     }
 }

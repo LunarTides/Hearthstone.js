@@ -31,7 +31,9 @@
             "copy"       : 2,
             "draw"       : 2,
             "mana"       : 1,
-            "enemy"      : 1,
+            "hand"       : 1,
+            "deck"       : 1,
+            "battlefield": 1,
             "trigger"    : 3,
             "twice"      : 2,
             "double"     : 2,
@@ -39,7 +41,6 @@
             "maximum"    : 1,
             "crystal"    : 1,
             "add"        : 2,
-            "hand"       : 1,
             "permanent"  : 3
         },
         "negative": {
