@@ -18,16 +18,6 @@ let filtered_cards = {};
 
 let deck = [];
 
-function buildMap(keys, values) {
-    const map = {};
-
-    for (let i = 0; i < keys.length; i++) {
-        map.set(keys[i], values[i]);
-    }
-
-    return map;
-}
-
 function askClass() {
     game.interact.printName();
     let _class = game.input("What class to you want to choose?\n" + classes.join(", ") + "\n");
