@@ -84,13 +84,27 @@ function showCards() {
     });
 }
 
-function chooseCard() {
-    let card = game.input("Which card do you want to choose? ");
-    card = functions.capitalizeAll(card);
+function findCard(card) {
+    let _card = card;
 
-    if (!Object.values(filtered_cards).map(c => c.name).includes(card)) return chooseCard();
+    if (card) {
+        _card = filtered_cards[functions.capitalizeAll(card)];
 
-    return filtered_cards[card];
+        if (!_card) _card = filtered_cards[card];
+    }
+
+    card = _card;
+
+    return card;
+}
+
+function chooseCard(prompt) {
+    let card = game.input(prompt);
+    card = findCard(card);
+
+    if (!card) return chooseCard();
+
+    return card;
 }
 
 function viewCard(c) {
@@ -98,6 +112,8 @@ function viewCard(c) {
 
     if (["Minion", "Weapon"].includes(functions.getType(c))) stats = ` [${c.stats.join(' / ')}]`.green;
     console.log(`{${c.mana}} `.cyan + functions.colorByRarity(c.name, c.rarity) + stats + ` (${c.desc}) ` + `(${functions.getType(c)})`.yellow);
+
+    game.input("\nPress enter to continue...");
 }
 
 function add(c) {
@@ -109,12 +125,27 @@ function remove(c) {
 
 function viewDeck() {
     game.interact.printName();
-    
+
+    let _cards = {};
+
     deck.forEach(c => {
-        console.log(functions.colorByRarity(c.name, c.rarity));
+        if (!_cards[c.name]) _cards[c.name] = [c, 0];
+        _cards[c.name][1]++;
     });
 
-    game.input("Press enter to continue...");
+    Object.values(_cards).forEach(c => {
+        let card = c[0];
+        let amount = c[1];
+
+        if (amount == 1) {
+            console.log(functions.colorByRarity(card.name, card.rarity));
+            return;
+        }
+
+        console.log(`x${amount} ` + functions.colorByRarity(card.name, card.rarity));
+    });
+    
+    game.input("\nPress enter to continue...");
 }
 
 function deckcode() {
@@ -166,9 +197,17 @@ function help() {
 }
 
 function handleCmds(cmd) {
-    if (cmd.startsWith("view")) {
-        let card = game.input("View a minion: ");
-        if (card) card = filtered_cards[functions.capitalizeAll(card)];
+    if (cmd == "view") {
+        let card = chooseCard("View a card: ");
+
+        viewCard(card);
+    }
+    else if (cmd.startsWith("view")) {
+        let card = cmd.split(" ");
+        card.shift();
+        card = card.join(" ");
+
+        card = findCard(card);
 
         if (!card) {
             game.input("Invalid card.\n".red);
@@ -178,20 +217,7 @@ function handleCmds(cmd) {
         viewCard(card);
     }
     else if (cmd == "add") {
-        let card = game.input("Add a card to the deck: ");
-        let _card = card;
-        if (card) {
-            _card = filtered_cards[functions.capitalizeAll(card)];
-            console.log(_card);
-
-            if (!_card) _card = filtered_cards[card];
-        }
-        card = _card;
-
-        if (!card) {
-            game.input("Invalid card.\n".red);
-            return;
-        }
+        let card = chooseCard("Add a card to the deck: ");
 
         add(card);
     }
@@ -200,13 +226,7 @@ function handleCmds(cmd) {
         card.shift();
         card = card.join(" ");
 
-        let _card = card;
-        if (card) {
-            _card = filtered_cards[functions.capitalizeAll(card)];
-
-            if (!_card) _card = filtered_cards[card];
-        }
-        card = _card;
+        card = findCard(card);
 
         if (!card) {
             game.input("Invalid card.\n".red);
@@ -215,9 +235,17 @@ function handleCmds(cmd) {
 
         add(card);
     }
+    else if (cmd == "remove") {
+        let card = chooseCard("Remove a card from the deck: ");
+
+        remove(card);
+    }
     else if (cmd.startsWith("remove")) {
-        let card = game.input("Remove a card from the deck: ");
-        if (card) card = filtered_cards[functions.capitalizeAll(card)];
+        let card = cmd.split(" ");
+        card.shift();
+        card = card.join(" ");
+
+        card = findCard(card);
 
         if (!card) {
             game.input("Invalid card.\n".red);
@@ -253,5 +281,5 @@ chosen_class = askClass();
 
 while (true) {
     showCards();
-    handleCmds(game.input("> "));
+    handleCmds(game.input("\n> "));
 }
