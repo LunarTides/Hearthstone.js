@@ -593,10 +593,10 @@ class Functions {
         // Runes
         if (/^\[[A-Z]{3}\]/.test(code)) {
             // [BFU]
-            let runes = [];
+            let runes = "";
 
             for (let i = 1; i <= 3; i++) {
-                runes.push(code[i]);
+                runes += code[i];
             }
             
             code = code.slice(6);

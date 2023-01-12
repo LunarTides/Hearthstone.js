@@ -44,7 +44,7 @@ class Player {
         this.jadeCounter = 0;
         this.corpses = 0;
 
-        this.runes = [];
+        this.runes = "";
     }
 
     getOpponent() {

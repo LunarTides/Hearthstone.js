@@ -6,7 +6,7 @@ module.exports = {
     rarity: "Rare",
     set: "March of the Lich King",
     spellClass: "Shadow",
-    runes: ["BB"],
+    runes: "BB",
             
     cast(plr, game, card) {
         let success;

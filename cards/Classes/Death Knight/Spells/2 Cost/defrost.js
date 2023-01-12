@@ -6,7 +6,7 @@ module.exports = {
     rarity: "Rare",
     set: "Core",
     spellClass: "Frost",
-    runes: ["F"],
+    runes: "F",
             
     cast(plr, game, card) {
         plr.drawCard();

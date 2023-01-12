@@ -17,6 +17,7 @@ let chosen_class;
 let filtered_cards = {};
 
 let deck = [];
+let runes = "";
 
 function askClass() {
     game.interact.printName();
@@ -25,7 +26,30 @@ function askClass() {
 
     if (!classes.includes(_class)) return askClass();
 
+    if (_class == "Death Knight") {
+        runes = [];
+
+        while (runes.length < 3) {
+            game.interact.printName();
+
+            let rune = game.input(`What runes do you want to add (${3 - runes.length} more)\nBlood, Frost, Unholy\n`);
+            if (!rune || !["B", "F", "U"].includes(rune[0].toUpperCase())) continue;
+
+            runes += rune[0].toUpperCase();
+        }
+    }
+
     return _class;
+}
+
+function charCount(str, letter) {
+    let letter_count = 0;
+
+    for (let i = 0; i < str.length; i++) {
+        if (str.charAt(i) == letter) letter_count++;
+    }
+
+    return letter_count;
 }
 
 function showCards() {
@@ -33,6 +57,19 @@ function showCards() {
     game.interact.printName();
     
     Object.entries(cards).forEach(c => {
+        if (c[1].runes) {
+            let r = c[1].runes;
+
+            let blood = charCount(r, "B");
+            let frost = charCount(r, "F");
+            let unholy = charCount(r, "U");
+
+            let b = charCount(runes, "B");
+            let f = charCount(runes, "F");
+            let u = charCount(runes, "U");
+
+            if (blood > b || frost > f || unholy > u) return;
+        }
         if ([chosen_class, "Neutral"].includes(c[1].class) && c[1].set != "Tests") filtered_cards[c[0]] = c[1];
     });
 
@@ -82,6 +119,7 @@ function viewDeck() {
 
 function deckcode() {
     let deckcode = `### ${chosen_class} ### `;
+    if (runes) deckcode += `[${runes}] `;
 
     let _cards = {};
 
@@ -165,7 +203,6 @@ function handleCmds(cmd) {
         let _card = card;
         if (card) {
             _card = filtered_cards[functions.capitalizeAll(card)];
-            console.log(_card);
 
             if (!_card) _card = filtered_cards[card];
         }
@@ -196,9 +233,10 @@ function handleCmds(cmd) {
         viewDeck();
     }
     else if (cmd.startsWith("class")) {
+        let _runes = runes;
         let new_class = askClass();
 
-        if (new_class == chosen_class) {
+        if (new_class == chosen_class && runes == _runes) {
             game.input("Your class was not changed\n".yellow);
             return;
         }
