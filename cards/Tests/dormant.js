@@ -6,7 +6,7 @@ module.exports = {
     tribe: "Beast",
     class: "Neutral",
     rarity: "Free",
-    set: "Legacy",
+    set: "Tests",
     dormant: 2,
 
     battlecry(plr, game) {

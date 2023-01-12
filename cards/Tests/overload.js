@@ -4,7 +4,7 @@ module.exports = {
     mana: 0,
     class: "Neutral",
     rarity: "Free",
-    set: "Core",
+    set: "Tests",
 
     cast (plr, game) {
         plr.refreshMana(2, plr.maxMaxMana);

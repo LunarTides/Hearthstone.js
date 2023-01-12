@@ -6,7 +6,7 @@ module.exports = {
     tribe: "",
     class: "Warrior",
     rarity: "Rare",
-    set: "Murder at Castle Nathria",
+    set: "Tests",
     cooldown: 2,
 
     use(plr, game, self) {

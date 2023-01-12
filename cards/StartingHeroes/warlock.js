@@ -7,6 +7,7 @@ module.exports = {
     rarity: "Free",
     set: "Core",
     hpDesc: "Draw a card and take 2 damage.",
+    uncollectible: true,
 
     heropower(plr, game, self) {
         plr.remHealth(2);

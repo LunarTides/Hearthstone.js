@@ -5,6 +5,7 @@ module.exports = {
     class: "Neutral",
     rarity: "Free",
     set: "Core",
+    uncollectible: true,
 
     cast(plr, game) {
         plr.refreshMana(1, plr.maxMaxMana);

@@ -4,7 +4,7 @@ module.exports = {
     mana: 0,
     class: "Neutral",
     rarity: "Free",
-    set: "Core",
+    set: "Tests",
     keywords: ["Tradeable"],
 
     cast(plr, game) {

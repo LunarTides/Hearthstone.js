@@ -6,7 +6,7 @@ module.exports = {
     tribe: "None",
     class: "Neutral",
     rarity: "Free",
-    set: "Rise of Shadows",
+    set: "Tests",
 
     deathrattle(plr, game) {
         game.playMinion(new game.Minion("Plant", plr), plr);

@@ -6,7 +6,7 @@ module.exports = {
     tribe: "Beast",
     class: "Neutral",
     rarity: "Free",
-    set: "Legacy",
+    set: "Tests",
     colossal: ["Colossal Test Left Arm", "", "Colossal Test Right Arm"],
 
     battlecry(plr, game) {

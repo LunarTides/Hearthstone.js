@@ -6,7 +6,7 @@ module.exports = {
     tribe: "Beast",
     class: "Neutral",
     rarity: "Free",
-    set: "Legacy",
+    set: "Tests",
 
     startofgame(plr, game, card) {
         card.addStats(1, 1);

@@ -7,6 +7,7 @@ module.exports = {
     rarity: "Free",
     set: "Core",
     hpDesc: "Equip a 1/2 Dagger.",
+    uncollectible: true,
 
     heropower(plr, game, self) {
         const wpn = new game.Card("Wicked Knife", plr);

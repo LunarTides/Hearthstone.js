@@ -6,5 +6,6 @@ module.exports = {
     tribe: "Beast",
     class: "Neutral",
     rarity: "Free",
-    set: "Legacy"
+    set: "Legacy",
+    uncollectible: true
 }

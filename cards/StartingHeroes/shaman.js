@@ -7,6 +7,7 @@ module.exports = {
     rarity: "Free",
     set: "Core",
     hpDesc: "Summon a random Totem.",
+    uncollectible: true,
 
     heropower(plr, game, self) {
         const totem_cards = ["Healing Totem", "Searing Totem", "Stoneclaw Totem", "Strength Totem"];

@@ -6,7 +6,7 @@ module.exports = {
     tribe: "Mech",
     class: "Neutral",
     rarity: "Free",
-    set: "Legacy",
+    set: "Tests",
     keywords: ["Magnetic", "Rush"],
 
     battlecry(plr, game, minion) {

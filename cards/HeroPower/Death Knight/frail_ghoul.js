@@ -9,6 +9,7 @@ module.exports = {
     rarity: "Free",
     set: "Basic",
     keywords: ["Charge"],
+    uncollectible: true,
 
     endofturn(plr, game, self) {
         self.kill();

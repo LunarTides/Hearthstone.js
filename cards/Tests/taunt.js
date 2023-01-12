@@ -6,6 +6,6 @@ module.exports = {
     tribe: "Human",
     class: "Neutral",
     rarity: "Free",
-    set: "Legacy",
+    set: "Tests",
     keywords: ["Taunt"]
 }

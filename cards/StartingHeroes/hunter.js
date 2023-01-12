@@ -7,6 +7,7 @@ module.exports = {
     rarity: "Free",
     set: "Core",
     hpDesc: "Deal 2 damage to the enemy hero.",
+    uncollectible: true,
 
     heropower(plr, game, self) {
         game.attack(2, plr.getOpponent());

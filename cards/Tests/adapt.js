@@ -6,7 +6,7 @@ module.exports = {
     tribe: "Beast",
     class: "Neutral",
     rarity: "Free",
-    set: "Legacy",
+    set: "Tests",
 
     battlecry(plr, game, minion) {
         game.functions.adapt(minion);

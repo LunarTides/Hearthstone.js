@@ -6,7 +6,7 @@ module.exports = {
     tribe: "None",
     class: "Neutral",
     rarity: "Free",
-    set: "Legacy",
+    set: "Tests",
 
     battlecry(plr, game, self) {
         let [ret, prompt] = self.manathirst(6, "Silence then freeze an enemy minion.", "Freeze an enemy minion.");

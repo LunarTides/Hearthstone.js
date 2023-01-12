@@ -5,6 +5,6 @@ module.exports = {
     mana: 1,
     class: "Neutral",
     rarity: "Free",
-    set: "Legacy",
+    set: "Tests",
     keywords: ["Poisonous"]
 }

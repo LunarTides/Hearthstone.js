@@ -4,7 +4,7 @@ module.exports = {
     mana: 0,
     class: "Neutral",
     rarity: "Free",
-    set: "Legacy",
+    set: "Tests",
 
     cast(plr, game) {
         var choice = game.functions.chooseOne('Gain 1 Mana Crystal this turn only; or Draw a Card.', ['1 Mana', 'Draw']);

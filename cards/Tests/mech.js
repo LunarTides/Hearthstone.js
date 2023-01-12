@@ -6,5 +6,5 @@ module.exports = {
     tribe: "Mech",
     class: "Neutral",
     rarity: "Free",
-    set: "Legacy",
+    set: "Tests",
 }

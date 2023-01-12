@@ -1,3 +1,4 @@
+const fs = require("fs");
 const { exit } = require("process");
 const { setup_ai } = require("./ai");
 const { setup_card } = require("./card");
@@ -110,23 +111,50 @@ class Functions {
          * @returns {Blueprint} The blueprint of the card
          */
 
-        return this.getCards(false).find(c => c.name.toLowerCase() == name.toLowerCase());
+        let card = game.cards[this.capitalizeAll(name)];
+
+        if (!card) card = game.cards[name];
+
+        return card;
     }
     getCards(uncollectible = true, cards = game.cards) {
         /**
          * Returns all cards
          *
          * @param {bool} uncollectible [default=true] Filter out all uncollectible cards
-         * @param {Blueprint[]} cards [default=All cards in the game] The cards to get
+         * @param {Blueprint{}} cards [default=All cards in the game] The cards to get
          *
-         * @returns {Blueprint[]} Cards
+         * @returns {Blueprint{}} Cards
          */
 
-        cards = Object.values(cards);
+        let _cards = {};
 
-        if (uncollectible) cards = this.accountForUncollectible(cards);
+        Object.entries(cards).forEach(c => {
+            if (!c[1].uncollectible && uncollectible) _cards[c[0]] = c[1];
+        });
 
-        return cards;
+        return _cards;
+    }
+    getClasses() {
+        /*
+         * Returns all classes in the game
+         *
+         * @returns {string[]} Classes
+         */
+
+        let classes = [];
+
+        fs.readdirSync(game.dirname + "/cards/StartingHeroes").forEach(file => {
+            let name = file.slice(0, -3); // Remove ".js"
+            name = name.replaceAll("_", " "); // Remove underscores
+            name = game.functions.capitalizeAll(name); // Capitalize all words
+
+            let card = game.functions.getCardByName(name + " Starting Hero");
+
+            classes.push(card.class);
+        });
+
+        return classes;
     }
     colorByRarity(str, rarity, bold = true) {
         /**

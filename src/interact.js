@@ -495,7 +495,7 @@ class Interact {
          * @returns {string} Chosen
          */
 
-        this.printAll(curr);
+        this.printAll(plr);
 
         let strbuilder = `\n${prompt} [`;
 

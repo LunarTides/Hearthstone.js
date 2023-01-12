@@ -7,4 +7,5 @@ module.exports = {
     class: "Neutral",
     rarity: "Free",
     set: "Journey to Un'Goro",
+    uncollectible: true
 }

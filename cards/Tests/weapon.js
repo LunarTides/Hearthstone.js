@@ -5,7 +5,7 @@ module.exports = {
     mana: 1,
     class: "Warrior",
     rarity: "Rare",
-    set: "Classic",
+    set: "Tests",
 
     battlecry(plr, game, card) {
         console.log("Test");

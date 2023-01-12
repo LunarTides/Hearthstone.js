@@ -4,7 +4,7 @@ module.exports = {
     mana: 1,
     class: "Mage",
     rarity: "Free",
-    set: "Legacy",
+    set: "Tests",
 
     cast(plr, game, card) {
         game.functions.addSidequest(plr, card, "turnStarts", 1, (_, game, turn) => {

@@ -7,6 +7,7 @@ module.exports = {
     rarity: "Free",
     set: "Core",
     hpDesc: "Deal 1 damage.",
+    uncollectible: true,
 
     heropower(plr, game, self) {
         const target = game.interact.selectTarget("Deal 1 damage.", "dontupdate");

@@ -7,6 +7,7 @@ module.exports = {
     class: "Neutral",
     rarity: "Free",
     set: "Rise of Shadows",
+    uncollectible: true,
 
     battlecry(plr, game, minion) {
         let target = game.interact.selectTarget("Transform a friendly minion into one that costs (1) more.", "friendly", "minion");
