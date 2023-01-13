@@ -2,8 +2,9 @@
 
 const colors = require("colors");
 const { Game } = require("../src/game");
+const config = require("../config");
 
-const game = new Game({},{},{});
+const game = new Game({}, {}, config);
 const functions = game.functions;
 game.dirname = __dirname + "/../";
 
@@ -55,6 +56,7 @@ function charCount(str, letter) {
 function showCards() {
     filtered_cards = {};
     game.interact.printName();
+    showConfig();
     
     Object.entries(cards).forEach(c => {
         if (c[1].runes) {
@@ -82,6 +84,35 @@ function showCards() {
         }
         console.log(functions.colorByRarity(c.name, c.rarity));
     });
+}
+
+function showConfig() {
+    let config_text = "### RULES ###";
+    console.log("#".repeat(config_text.length));
+    console.log(config_text);
+    console.log("#".repeat(config_text.length));
+
+    console.log("#");
+
+    console.log("# Validation: " + (config.validateDecks ? "ON".green : "OFF".red));
+
+    console.log("#\n# Rule 1. Minimum Deck Length: " + config.minDeckLength.toString().yellow);
+    console.log("# Rule 2. Maximum Deck Length: " + config.maxDeckLength.toString().yellow);
+
+    console.log("#\n# Rule 3. Maximum amount of cards for each card (eg. You can only have: " + "x".yellow + " Seances in a deck): " + config.maxOfOneCard.toString().yellow);
+    console.log("# Rule 4. Maximum amount of cards for each legendary card (Same as Rule 3 but for legendaries): " + config.maxOfOneLegendary.toString().yellow);
+
+    console.log("#");
+
+    console.log("# There are 3 types of deck states: Valid, Pseudo-Valid, Invalid");
+    console.log("# Valid decks will work properly");
+    console.log("# Pseudo-valid decks will be rejected by the deck importer for violating a rule");
+    console.log("# Invalid decks are decks with a fundemental problem that the deck importer cannot resolve. Eg. An invalid card in the deck.");
+    console.log("# Violating any of these rules while validation is enabled will result in a pseudo-valid deck.");
+
+    console.log("#");
+
+    console.log("#".repeat(config_text.length));
 }
 
 function findCard(card) {
@@ -126,6 +157,8 @@ function remove(c) {
 function viewDeck() {
     game.interact.printName();
 
+    console.log("Deck Size: " + deck.length.toString().yellow + "\n");
+
     let _cards = {};
 
     deck.forEach(c => {
@@ -149,26 +182,38 @@ function viewDeck() {
 }
 
 function deckcode() {
+    // Deck size warnings
+    if (deck.length > config.maxDeckLength || deck.length < config.minDeckLength) {
+        console.log("WARNING: Rule 1|2 violated.".yellow);
+    }
+
     let deckcode = `### ${chosen_class} ### `;
     if (runes) deckcode += `[${runes}] `;
 
     let _cards = {};
 
     deck.forEach(c => {
-        if (!_cards[c.name]) _cards[c.name] = 0;
-        _cards[c.name]++;
+        if (!_cards[c.name]) _cards[c.name] = [c, 0];
+        _cards[c.name][1]++;
     });
 
-    Object.entries(_cards).forEach(c => {
+    Object.values(_cards).forEach(c => {
         let card = c[0];
         let amount = c[1];
 
         if (amount == 1) {
-            deckcode += `${card}, `;
+            deckcode += `${card.name}, `;
             return;
         }
 
-        deckcode += `x${amount} ${card}, `;
+        deckcode += `x${amount} ${card.name}, `;
+
+        if (amount > config.maxOfOneLegendary && card.rarity == "Legendary") {
+            console.log("WARNING: Rule 4 violated. Offender: ".yellow + `{ Name: "${card.name}", Amount: "${amount}" }`);
+        }
+        else if (amount > config.maxOfOneCard) {
+            console.log("WARNING: Rule 3 violated. Offender: ".yellow + `{ Name: "${card.name}", Amount: "${amount}" }`);
+        }
     });
 
     deckcode = deckcode.slice(0, -2); // Remove the last ", "
