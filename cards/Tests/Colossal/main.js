@@ -8,6 +8,7 @@ module.exports = {
     rarity: "Free",
     set: "Tests",
     colossal: ["Colossal Test Left Arm", "", "Colossal Test Right Arm"],
+    uncollectible: true,
 
     battlecry(plr, game) {
         game.functions.dredge();

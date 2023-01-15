@@ -7,5 +7,6 @@ module.exports = {
     class: "Paladin",
     rarity: "Free",
     set: "Tests",
-    keywords: ["Rush"]
+    keywords: ["Rush"],
+    uncollectible: true,
 }

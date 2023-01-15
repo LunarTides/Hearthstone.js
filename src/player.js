@@ -402,6 +402,36 @@ class Player {
 
         return true;
     }
+    testRunes(runes) {
+        /**
+         * Returns true if the player has the correct runes
+         *
+         * @param {string} runes The runes to test against
+         *
+         * @return {bool} Wether or not the player has the correct runes
+         */
+
+        const charCount = (str, letter) => {
+            let letter_count = 0;
+
+            for (let i = 0; i < str.length; i++) {
+                if (str.charAt(i) == letter) letter_count++;
+            }
+
+            return letter_count;
+        }
+
+        let blood = charCount(runes, "B");
+        let frost = charCount(runes, "F");
+        let unholy = charCount(runes, "U");
+
+        let b = charCount(this.runes, "B");
+        let f = charCount(this.runes, "F");
+        let u = charCount(this.runes, "U");
+
+        if (blood > b || frost > f || unholy > u) return false;
+        return true;
+    }
 }
 
 exports.Player = Player;

@@ -8,5 +8,5 @@ module.exports = {
     class: "Neutral",
     rarity: "Free",
     set: "Tests",
-    uncollectible: true
+    uncollectible: true,
 }

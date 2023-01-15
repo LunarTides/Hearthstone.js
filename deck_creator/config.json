@@ -1,0 +1,7 @@
+{
+    "validateDecks": true,
+    "minDeckLength": 30,
+    "maxDeckLength": 30,
+    "maxOfOneCard": 2,
+    "maxOfOneLegendary": 1
+}

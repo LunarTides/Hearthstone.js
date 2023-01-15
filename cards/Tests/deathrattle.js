@@ -7,6 +7,7 @@ module.exports = {
     class: "Neutral",
     rarity: "Free",
     set: "Tests",
+    uncollectible: true,
 
     deathrattle(plr, game) {
         game.playMinion(new game.Minion("Plant", plr), plr);

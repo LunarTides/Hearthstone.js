@@ -5,6 +5,7 @@ module.exports = {
     class: "Neutral",
     rarity: "Free",
     set: "Tests",
+    uncollectible: true,
 
     castondraw(plr, game) {
         plr.gainMana(1);

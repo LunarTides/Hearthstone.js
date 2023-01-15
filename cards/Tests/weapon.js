@@ -6,6 +6,7 @@ module.exports = {
     class: "Warrior",
     rarity: "Rare",
     set: "Tests",
+    uncollectible: true,
 
     battlecry(plr, game, card) {
         console.log("Test");

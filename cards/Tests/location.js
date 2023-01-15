@@ -8,6 +8,7 @@ module.exports = {
     rarity: "Rare",
     set: "Tests",
     cooldown: 2,
+    uncollectible: true,
 
     use(plr, game, self) {
         let target = game.functions.selectTarget("Deal 1 damage to a minion and give it +2 Attack.", false, null, "minion");

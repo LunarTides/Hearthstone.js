@@ -5,6 +5,7 @@ module.exports = {
     class: "Neutral",
     rarity: "Free",
     set: "Tests",
+    uncollectible: true,
 
     cast(plr, game) {
         game.functions.chooseOne('Gain 1 Mana Crystal this turn only; or Draw a Card.', ['1 Mana', 'Draw'], 2).forEach(c => {

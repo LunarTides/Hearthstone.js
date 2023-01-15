@@ -7,5 +7,6 @@ module.exports = {
     class: "Paladin",
     rarity: "Free",
     set: "Tests",
-    keywords: ["Spell Damage +2"]
+    keywords: ["Spell Damage +2"],
+    uncollectible: true,
 }

@@ -5,6 +5,7 @@ module.exports = {
     class: "Neutral",
     rarity: "Free",
     set: "Tests",
+    uncollectible: true,
 
     cast(plr, game) {
         game.functions.discover("Discover a card.");

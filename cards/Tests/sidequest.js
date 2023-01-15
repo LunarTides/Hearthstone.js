@@ -5,6 +5,7 @@ module.exports = {
     class: "Mage",
     rarity: "Free",
     set: "Tests",
+    uncollectible: true,
 
     cast(plr, game, card) {
         game.functions.addSidequest(plr, card, "turnStarts", 1, (_, game, turn) => {

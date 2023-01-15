@@ -6,6 +6,7 @@ module.exports = {
     rarity: "Free",
     set: "Tests",
     keywords: ["Tradeable"],
+    uncollectible: true,
 
     cast(plr, game) {
         plr.mana += 1;

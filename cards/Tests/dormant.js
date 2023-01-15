@@ -8,6 +8,7 @@ module.exports = {
     rarity: "Free",
     set: "Tests",
     dormant: 2,
+    uncollectible: true,
 
     battlecry(plr, game) {
         game.functions.dredge();

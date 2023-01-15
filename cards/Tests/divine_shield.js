@@ -7,5 +7,6 @@ module.exports = {
     class: "Paladin",
     rarity: "Free",
     set: "Tests",
-    keywords: ["Divine Shield"]
+    keywords: ["Divine Shield"],
+    uncollectible: true,
 }

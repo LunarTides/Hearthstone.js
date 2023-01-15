@@ -7,6 +7,7 @@ module.exports = {
     class: "Neutral",
     rarity: "Free",
     set: "Tests",
+    uncollectible: true,
 
     startofgame(plr, game, card) {
         card.addStats(1, 1);

@@ -7,6 +7,7 @@ module.exports = {
     class: "Neutral",
     rarity: "Free",
     set: "Tests",
+    uncollectible: true,
 
     overkill(plr, game, minion) {
         minion.addStats(1, 1);

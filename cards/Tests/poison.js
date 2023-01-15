@@ -7,5 +7,6 @@ module.exports = {
     class: "Neutral",
     rarity: "Free",
     set: "Tests",
-    keywords: ["Poisonous"]
+    keywords: ["Poisonous"],
+    uncollectible: true,
 }

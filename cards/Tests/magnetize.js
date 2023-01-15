@@ -8,6 +8,7 @@ module.exports = {
     rarity: "Free",
     set: "Tests",
     keywords: ["Magnetic", "Rush"],
+    uncollectible: true,
 
     battlecry(plr, game, minion) {
         game.functions.adapt(minion);

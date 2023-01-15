@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/Keatpole/Hearthstone.js#readme",
   "dependencies": {
-    "colors": "^1.4.0"
+    "colors": "^1.4.0",
+    "readline-sync": "^1.4.10"
   }
 }

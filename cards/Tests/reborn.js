@@ -7,5 +7,6 @@ module.exports = {
     class: "Neutral",
     rarity: "Free",
     set: "Tests",
-    keywords: ["Reborn"]
+    keywords: ["Reborn"],
+    uncollectible: true,
 }

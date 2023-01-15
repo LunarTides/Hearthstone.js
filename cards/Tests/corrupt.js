@@ -8,5 +8,6 @@ module.exports = {
     rarity: "Free",
     set: "Tests",
     keywords: ["Corrupt"],
-    corrupt: "Corrupted Test"
+    corrupt: "Corrupted Test",
+    uncollectible: true,
 }

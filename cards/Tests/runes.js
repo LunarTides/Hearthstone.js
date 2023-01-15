@@ -8,6 +8,7 @@ module.exports = {
     rarity: "Free",
     set: "Tests",
     runes: "FF",
+    uncollectible: true,
 
     battlecry(plr, game, self) {
         const manathirst = plr.maxMana >= 6;

@@ -5,6 +5,7 @@ module.exports = {
     class: "Neutral",
     rarity: "Free",
     set: "Tests",
+    uncollectible: true,
 
     outcast(plr, game) {
         plr.mana += 3;

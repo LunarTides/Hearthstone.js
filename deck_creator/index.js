@@ -1,8 +1,16 @@
 'use strict';
 
 const colors = require("colors");
+
+try {
+    require("../src/game");
+} catch (err) {
+    require("readline-sync").question("ERROR: This program is dependant on the modules in Hearthstone.js, so the file 'index.js' needs to be in the directory 'Hearthstone.js/deck_creator'.\n".red);
+    require("process").exit(1);
+}
+
 const { Game } = require("../src/game");
-const config = require("../config");
+const config = require("./config");
 
 const game = new Game({}, {}, config);
 const functions = game.functions;
@@ -20,6 +28,8 @@ let filtered_cards = {};
 let deck = [];
 let runes = "";
 
+let plr = new game.Player("");
+
 function askClass() {
     game.interact.printName();
     let _class = game.input("What class to you want to choose?\n" + classes.join(", ") + "\n");
@@ -28,7 +38,7 @@ function askClass() {
     if (!classes.includes(_class)) return askClass();
 
     if (_class == "Death Knight") {
-        runes = [];
+        runes = "";
 
         while (runes.length < 3) {
             game.interact.printName();
@@ -38,6 +48,8 @@ function askClass() {
 
             runes += rune[0].toUpperCase();
         }
+
+        plr.runes = runes;
     }
 
     return _class;
@@ -59,20 +71,9 @@ function showCards() {
     showConfig();
     
     Object.entries(cards).forEach(c => {
-        if (c[1].runes) {
-            let r = c[1].runes;
+        if (c[1].runes && !plr.testRunes(c[1].runes)) return;
 
-            let blood = charCount(r, "B");
-            let frost = charCount(r, "F");
-            let unholy = charCount(r, "U");
-
-            let b = charCount(runes, "B");
-            let f = charCount(runes, "F");
-            let u = charCount(runes, "U");
-
-            if (blood > b || frost > f || unholy > u) return;
-        }
-        if ([chosen_class, "Neutral"].includes(c[1].class) && c[1].set != "Tests") filtered_cards[c[0]] = c[1];
+        if ([chosen_class, "Neutral"].includes(c[1].class)) filtered_cards[c[0]] = c[1];
     });
 
     let prev_class;
@@ -241,6 +242,23 @@ function help() {
     game.input("\nPress enter to continue...\n");
 }
 
+function getCardArg(cmd, callback) {
+    let card = cmd.split(" ");
+    card.shift();
+    card = card.join(" ");
+
+    card = findCard(card);
+
+    if (!card) {
+        game.input("Invalid card.\n".red);
+        return false;
+    }
+
+    callback(card);
+
+    return card;
+}
+
 function handleCmds(cmd) {
     if (cmd == "view") {
         let card = chooseCard("View a card: ");
@@ -248,18 +266,7 @@ function handleCmds(cmd) {
         viewCard(card);
     }
     else if (cmd.startsWith("view")) {
-        let card = cmd.split(" ");
-        card.shift();
-        card = card.join(" ");
-
-        card = findCard(card);
-
-        if (!card) {
-            game.input("Invalid card.\n".red);
-            return;
-        }
-
-        viewCard(card);
+        getCardArg(cmd, viewCard);
     }
     else if (cmd == "add") {
         let card = chooseCard("Add a card to the deck: ");
@@ -267,18 +274,7 @@ function handleCmds(cmd) {
         add(card);
     }
     else if (cmd.startsWith("add")) {
-        let card = cmd.split(" ");
-        card.shift();
-        card = card.join(" ");
-
-        card = findCard(card);
-
-        if (!card) {
-            game.input("Invalid card.\n".red);
-            return;
-        }
-
-        add(card);
+        getCardArg(cmd, add);
     }
     else if (cmd == "remove") {
         let card = chooseCard("Remove a card from the deck: ");
@@ -286,18 +282,7 @@ function handleCmds(cmd) {
         remove(card);
     }
     else if (cmd.startsWith("remove")) {
-        let card = cmd.split(" ");
-        card.shift();
-        card = card.join(" ");
-
-        card = findCard(card);
-
-        if (!card) {
-            game.input("Invalid card.\n".red);
-            return;
-        }
-
-        remove(card);
+        getCardArg(cmd, remove);
     }
     else if (cmd.startsWith("deckcode")) {
         deckcode();

@@ -8,6 +8,7 @@ module.exports = {
     rarity: "Free",
     set: "Tests",
     infuse_num: 2,
+    uncollectible: true,
 
     infuse(plr, game, minion) {
         minion.addStats(1, 1);

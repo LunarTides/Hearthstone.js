@@ -8,6 +8,7 @@ module.exports = {
     rarity: "Free",
     set: "Tests",
     keywords: ["Stealth", "Divine Shield", "Taunt", "Charge"],
+    uncollectible: true,
 
     battlecry(plr, game, card) {
         card.silence()

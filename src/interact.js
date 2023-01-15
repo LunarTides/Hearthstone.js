@@ -380,27 +380,7 @@ class Interact {
         if (card.uncollectible) return "uncollectible";
 
         // Runes
-        if (!card.runes) return true;
-
-        const charCount = (str, letter) => {
-            let letter_count = 0;
-
-            for (let i = 0; i < str.length; i++) {
-                if (str.charAt(i) == letter) letter_count++;
-            }
-
-            return letter_count;
-        }
-
-        let blood = charCount(card.runes, "B");
-        let frost = charCount(card.runes, "F");
-        let unholy = charCount(card.runes, "U");
-
-        let b = charCount(plr.runes, "B");
-        let f = charCount(plr.runes, "F");
-        let u = charCount(plr.runes, "U");
-
-        if (blood > b || frost > f || unholy > u) return "runes";
+        if (card.runes && !plr.testRunes(card.runes)) return "runes";
 
         return true;
     }
