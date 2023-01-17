@@ -212,28 +212,36 @@ function deckcode() {
     });
 
     let num_cards = Object.keys(__cards).sort().reverse();
+    let ___cards = {};
+
+    num_cards.forEach(n => {
+        if (!___cards[n]) ___cards[n] = [];
+        ___cards[n].push(__cards[n]);
+    });
 
     let str_cards = "";
 
     let prev_amount = 0;
-    for (let i = 0; i < num_cards.length; i++) {
-        let c = __cards[parseInt(num_cards[i])][0];
-
-        let card = c[0];
-        let amount = c[1];
+    Object.values(___cards).forEach((c, i) => {
+        c = c[0];
+        let amount = c[0][1];
 
         if (i == num_cards.length - 1) deckcode += `${amount},`;
         else deckcode += `${amount}:${__cards[amount].length},`; // "/3:5,2:8,1/";
 
-        str_cards += `${card.id},`;
+        c.forEach(v => {
+            let card = v[0];
 
-        if (amount > config.maxOfOneLegendary && card.rarity == "Legendary") {
-            console.log("WARNING: Rule 4 violated. Offender: ".yellow + `{ Name: "${card.name}", Amount: "${amount}" }`);
-        }
-        else if (amount > config.maxOfOneCard) {
-            console.log("WARNING: Rule 3 violated. Offender: ".yellow + `{ Name: "${card.name}", Amount: "${amount}" }`);
-        }
-    }
+            str_cards += `${card.id},`;
+
+            if (amount > config.maxOfOneLegendary && card.rarity == "Legendary") {
+                console.log("WARNING: Rule 4 violated. Offender: ".yellow + `{ Name: "${card.name}", Amount: "${amount}" }`);
+            }
+            else if (amount > config.maxOfOneCard) {
+                console.log("WARNING: Rule 3 violated. Offender: ".yellow + `{ Name: "${card.name}", Amount: "${amount}" }`);
+            }
+        });
+    });
 
     deckcode = deckcode.slice(0, -1); // Remove the last ", "
 
