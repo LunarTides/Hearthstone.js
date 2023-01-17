@@ -191,8 +191,10 @@ function deckcode() {
         console.log("WARNING: Rule 2 violated.".yellow);
     }
 
-    let deckcode = `### ${chosen_class} ### `;
+    let deckcode = `# ${chosen_class} # `;
     if (runes) deckcode += `[${runes}] `;
+
+    deckcode += "/";
 
     let _cards = {};
 
@@ -201,16 +203,29 @@ function deckcode() {
         _cards[c.name][1]++;
     });
 
+    let __cards = {};
+
     Object.values(_cards).forEach(c => {
+        let a = c[1];
+        if (!__cards[a]) __cards[a] = [];
+        __cards[a].push(c);
+    });
+
+    let num_cards = Object.keys(__cards).sort().reverse();
+
+    let str_cards = "";
+
+    let prev_amount = 0;
+    for (let i = 0; i < num_cards.length; i++) {
+        let c = __cards[parseInt(num_cards[i])][0];
+
         let card = c[0];
         let amount = c[1];
 
-        if (amount == 1) {
-            deckcode += `${card.name}, `;
-            return;
-        }
+        if (i == num_cards.length - 1) deckcode += `${amount},`;
+        else deckcode += `${amount}:${__cards[amount].length},`; // "/3:5,2:8,1/";
 
-        deckcode += `x${amount} ${card.name}, `;
+        str_cards += `${card.id},`;
 
         if (amount > config.maxOfOneLegendary && card.rarity == "Legendary") {
             console.log("WARNING: Rule 4 violated. Offender: ".yellow + `{ Name: "${card.name}", Amount: "${amount}" }`);
@@ -218,11 +233,13 @@ function deckcode() {
         else if (amount > config.maxOfOneCard) {
             console.log("WARNING: Rule 3 violated. Offender: ".yellow + `{ Name: "${card.name}", Amount: "${amount}" }`);
         }
-    });
+    }
 
-    deckcode = deckcode.slice(0, -2); // Remove the last ", "
+    deckcode = deckcode.slice(0, -1); // Remove the last ", "
 
-    deckcode = btoa(deckcode); // base64
+    deckcode += "/ ";
+    deckcode += str_cards;
+    deckcode = deckcode.slice(0, -1); // Remove the last ", "
 
     game.input(deckcode + "\n");
 }

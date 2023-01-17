@@ -594,14 +594,14 @@ class Functions {
         }
 
         // The code is base64 encoded, so we need to decode it
-        code = Buffer.from(code, 'base64').toString('ascii');
-        if (!code) ERROR("INVALIDB64");
+        //code = Buffer.from(code, 'base64').toString('ascii');
+        //if (!code) ERROR("INVALIDB64");
 
-        if (code.split("### ").length != 3) ERROR("INVALIDCLASSHEADER");
-        let hero = code.split("### ")[1];
+        if (code.split("# ").length != 3) ERROR("INVALIDCLASSHEADER");
+        let hero = code.split("# ")[1];
 
         hero = hero.trim();
-        code = code.split("### ")[2];
+        code = code.split("# ")[2];
 
         plr.heroClass = hero;
 
@@ -625,48 +625,59 @@ class Functions {
             game.input("WARNING: This class supports runes but there are no runes in this deck. This deck's class: ".yellow + hero.brightYellow + ". Supported classes: ".yellow + rune_classes.join(", ").brightYellow + "\n");
         }
 
-        let deck = code.split(", ");
+        let copyDefFormat = /\/(\d+:\d+,)*\d+\/ /;
+        if (!copyDefFormat.test(code)) ERROR("COPYDEFNOTFOUND"); // Find /3:5,2:8,1/
+
+        let copyDef = code.split("/")[1];
+
+        code = code.replace(copyDefFormat, "");
+
+        let deck = code.split(",");
         let _deck = [];
-    
-        for (let i = 0; i < deck.length; i++) {
-            let card = deck[i];
 
-            let times = 1;
-            if (/x\d+ /.test(card)) {
-                times = card.slice(1);
-                times = times.replace(/( \w+)+/, "");
-            }
+        let processed = 0;
 
-            let name = (times == 1) ? card : card.substring(times.length + 2);
-            if (!this.getCardByName(name)) ERROR("NONEXISTANTCARD", name); // Check if the card exists
+        copyDef.split(",").forEach(c => {
+            c = c.split(":");
 
-            let m = new game.Card(name, plr);
+            let copies = c[0];
+            let times = c[1] || deck.length;
 
-            for (let i = 0; i < parseInt(times); i++) _deck.push(this.cloneCard(m, plr));
-    
-            let validateTest = (game.interact.validateCard(m, plr));
+            let cards = deck.slice(processed, times);
 
-            if (!game.config.validateDecks || validateTest === true) continue;
+            cards.forEach(c => {
+                let card = this.getCardById(c);
+                if (!card) ERROR("NONEXISTANTCARD", c);
+                card = new game.Card(card.name, plr);
 
-            let err;
+                for (let i = 0; i < parseInt(copies); i++) _deck.push(this.cloneCard(card, plr));
 
-            switch (validateTest) {
-                case "class":
-                    err = "You have a card from a different class in your deck";
-                    break;
-                case "uncollectible":
-                    err = "You have an uncollectible card in your deck";
-                    break;
-                case "runes":
-                    err = "A card does not support your current runes";
-                    break;
-                default:
-                    err = "";
-                    break;
-            }
-            game.input(`${err}.\nSpecific Card that caused the error: `.red + `${m.name}\n`.yellow);
-            exit(1);
-        }
+                let validateTest = (game.interact.validateCard(card, plr));
+
+                if (!game.config.validateDecks || validateTest === true) return;
+
+                let err;
+
+                switch (validateTest) {
+                    case "class":
+                        err = "You have a card from a different class in your deck";
+                        break;
+                    case "uncollectible":
+                        err = "You have an uncollectible card in your deck";
+                        break;
+                    case "runes":
+                        err = "A card does not support your current runes";
+                        break;
+                    default:
+                        err = "";
+                        break;
+                }
+                game.input(`${err}.\nSpecific Card that caused the error: `.red + `${card.name}\n`.yellow);
+                exit(1);
+            });
+
+            processed += times;
+        });
 
         let max = game.config.maxDeckLength;
         let min = game.config.minDeckLength;
