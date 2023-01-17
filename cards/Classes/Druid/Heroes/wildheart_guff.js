@@ -5,6 +5,7 @@ module.exports = {
     class: "Druid",
     rarity: "Legendary",
     set: "Fractured in Alterac Valley",
+    id: 3,
 
     battlecry(plr, game, card) {
         plr.maxMaxMana = 20;

@@ -7,6 +7,7 @@ module.exports = {
     class: "Neutral",
     rarity: "Common",
     set: "United in Stormwind",
+    id: 35,
 
     startofturn(plr, game, card) {
         plr.drawCard();

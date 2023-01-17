@@ -7,5 +7,6 @@ module.exports = {
     class: "Druid",
     rarity: "Free",
     set: "Scholomance Academy",
-    uncollectible: true
+    uncollectible: true,
+    id: 7,
 }

@@ -8,5 +8,6 @@ module.exports = {
     class: "Druid",
     rarity: "Free",
     set: "Rise of Shadows",
-    uncollectible: true
+    uncollectible: true,
+    id: 4,
 }

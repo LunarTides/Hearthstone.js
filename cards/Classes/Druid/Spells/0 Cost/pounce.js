@@ -5,6 +5,7 @@ module.exports = {
     class: "Druid",
     rarity: "Common",
     set: "Rastakhan's Rumble",
+    id: 12,
 
     cast(plr, game, card) {
         plr.attack += 2;

@@ -7,6 +7,7 @@ module.exports = {
     class: "Neutral",
     rarity: "Common",
     set: "Core",
+    id: 34,
 
     deathrattle(plr, game, card) {
         game.player1.addHealth(4);

@@ -6,6 +6,7 @@ module.exports = {
     class: "Druid",
     rarity: "Legendary",
     set: "Kobolds & Catacombs",
+    id: 27,
 
     deathrattle(plr, game, card) {
         plr.gainMana(10);

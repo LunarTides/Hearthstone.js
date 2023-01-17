@@ -5,6 +5,7 @@ module.exports = {
     class: "Shaman",
     rarity: "Legendary",
     set: "United in Stormwind",
+    id: 74,
 
     cast(plr, game, card) {
         game.functions.addQuest("Quest", plr, card, "overloadGained", 3, (val, game, turn, normal_done) => {

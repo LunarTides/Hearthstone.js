@@ -7,5 +7,6 @@ module.exports = {
     class: "Shaman",
     rarity: "Free",
     set: "Descent of Dragons",
-    keywords: ["Rush"]
+    keywords: ["Rush"],
+    id: 86,
 }

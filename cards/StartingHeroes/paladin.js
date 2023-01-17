@@ -8,6 +8,7 @@ module.exports = {
     set: "Core",
     hpDesc: "Summon a 1/1 Silver Hand Recruit.",
     uncollectible: true,
+    id: 98,
 
     heropower(plr, game, self) {
         const card = new game.Card("Silver Hand Recruit", plr);

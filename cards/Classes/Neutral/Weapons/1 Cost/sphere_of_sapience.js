@@ -6,6 +6,7 @@ module.exports = {
     class: "Neutral",
     rarity: "Legendary",
     set: "Scholomance Academy",
+    id: 60,
 
     startofturn(plr, game, card) {
         let top = plr.deck.pop();

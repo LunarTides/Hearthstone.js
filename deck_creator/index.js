@@ -184,8 +184,11 @@ function viewDeck() {
 
 function deckcode() {
     // Deck size warnings
-    if (deck.length > config.maxDeckLength || deck.length < config.minDeckLength) {
-        console.log("WARNING: Rule 1|2 violated.".yellow);
+    if (deck.length < config.minDeckLength) {
+        console.log("WARNING: Rule 1 violated.".yellow);
+    }
+    if (deck.length > config.maxDeckLength) {
+        console.log("WARNING: Rule 2 violated.".yellow);
     }
 
     let deckcode = `### ${chosen_class} ### `;

@@ -7,6 +7,7 @@ module.exports = {
     class: "Neutral",
     rarity: "Rare",
     set: "Core",
+    id: 36,
 
     battlecry(plr, game, card) {
         plr.getOpponent().destroyWeapon(true);

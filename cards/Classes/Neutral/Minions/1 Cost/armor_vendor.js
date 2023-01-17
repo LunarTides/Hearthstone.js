@@ -7,6 +7,7 @@ module.exports = {
     class: "Neutral",
     rarity: "Rare",
     set: "Madness at the Darkmoon Faire",
+    id: 32,
 
     battlecry(plr, game, self) {
         game.player1.armor += 4;

@@ -7,6 +7,7 @@ module.exports = {
     class: "Shaman",
     rarity: "Free",
     set: "Legacy",
+    id: 82,
 
     endofturn(plr, game) {
         var t = game.board[plr.id];

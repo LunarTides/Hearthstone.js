@@ -6,6 +6,7 @@ module.exports = {
     rarity: "Free",
     set: "Legacy",
     spellClass: "Shadow",
+    id: 71,
 
     cast(plr, game, card) {
         var possible_cards = game.opponent.hand;

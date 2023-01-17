@@ -6,6 +6,7 @@ module.exports = {
     rarity: "Common",
     set: "The Boomsday Project",
     spellClass: "Nature",
+    id: 16,
 
     cast(plr, game, card) {
         plr.maxMana += 2;

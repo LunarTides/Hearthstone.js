@@ -6,6 +6,7 @@ module.exports = {
     rarity: "Common",
     set: "Core",
     spellClass: "Nature",
+    id: 21,
 
     cast(plr, game, card) {
         plr.gainEmptyMana(1);

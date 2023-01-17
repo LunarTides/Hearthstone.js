@@ -8,6 +8,7 @@ module.exports = {
     set: "Core",
     hpDesc: "Restore 2 Health.",
     uncollectible: true,
+    id: 99,
 
     heropower(plr, game, self) {
         let target = game.interact.selectTarget("Restore 2 health.", "dontupdate");

@@ -6,5 +6,6 @@ module.exports = {
     tribe: "Totem",
     class: "Shaman",
     rarity: "Free",
-    set: "Legacy"
+    set: "Legacy",
+    id: 83,
 }

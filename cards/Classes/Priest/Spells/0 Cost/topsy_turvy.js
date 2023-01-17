@@ -5,6 +5,7 @@ module.exports = {
     class: "Priest",
     rarity: "Common",
     set: "The Boomsday Project",
+    id: 68,
 
     cast(plr, game, card) {
         let target = game.interact.selectTarget("Swap a minion's Attack and Health.", true, null, "minion");

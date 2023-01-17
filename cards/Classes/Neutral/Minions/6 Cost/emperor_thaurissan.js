@@ -7,6 +7,7 @@ module.exports = {
     class: "Neutral",
     rarity: "Legendary",
     set: "Blackrock Mountain",
+    id: 52,
 
     endofturn(plr, game, card) {
         plr.hand.forEach(c => {

@@ -5,5 +5,6 @@ module.exports = {
     mana: 1,
     class: "Rogue",
     rarity: "Free",
-    set: "Legacy"
+    set: "Legacy",
+    id: 81,
 }

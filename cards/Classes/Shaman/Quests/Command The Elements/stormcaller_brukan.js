@@ -8,6 +8,7 @@ module.exports = {
     rarity: "Free",
     set: "United in Stormwind",
     uncollectible: true,
+    id: 78,
 
     battlecry(plr, game, card) {
         game.passives.push((game, trigger) => {

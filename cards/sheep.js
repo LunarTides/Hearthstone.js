@@ -7,5 +7,6 @@ module.exports = {
     class: "Neutral",
     rarity: "Free",
     set: "Legacy",
-    uncollectible: true
+    uncollectible: true,
+    id: 106,
 }

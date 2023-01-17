@@ -7,6 +7,7 @@ module.exports = {
     class: "Neutral",
     rarity: "Epic",
     set: "The Boomsday Project",
+    id: 42,
 
     passive(plr, game, card, trigger) {
         if (!card.passiveCheck(trigger, "cardsAddedToDeck", null, plr)) return;

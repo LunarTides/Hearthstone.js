@@ -7,6 +7,7 @@ module.exports = {
     class: "Neutral",
     rarity: "Free",
     set: "Legacy",
+    id: 39,
 
     battlecry(plr, game, card) {
         plr.drawCard();

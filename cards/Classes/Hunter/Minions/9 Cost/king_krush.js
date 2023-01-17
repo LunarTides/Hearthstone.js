@@ -8,4 +8,5 @@ module.exports = {
     rarity: "Legendary",
     set: "Core",
     keywords: ["Charge"],
+    id: 29,
 }

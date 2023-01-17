@@ -8,6 +8,7 @@ module.exports = {
     rarity: "Free",
     set: "Rise of Shadows",
     uncollectible: true,
+    id: 88,
 
     battlecry(plr, game) {
         game.interact.discover("Discover a spell.", 3, ['Spell']);

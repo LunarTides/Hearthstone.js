@@ -7,6 +7,7 @@ module.exports = {
     class: "Neutral",
     rarity: "Epic",
     set: "Scholomance Academy",
+    id: 44,
 
     passive(plr, game, card, trigger) {
         if (!card.passiveCheck(trigger, "spellsCast")) return;

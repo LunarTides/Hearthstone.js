@@ -6,6 +6,7 @@ module.exports = {
     rarity: "Common",
     set: "Core",
     spellClass: "Fire",
+    id: 30,
 
     cast(plr, game, card) {
         game.functions.addQuest("Secret", plr, card, "minionsThatAttackedHero", 1, (minion, game, turn) => {

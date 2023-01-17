@@ -6,6 +6,7 @@ module.exports = {
     rarity: "Common",
     set: "Kobolds and Catacombs",
     spellClass: "Nature",
+    id: 15,
 
     cast(plr, game, card) {
         let target = game.interact.selectTarget("Give a minion +3 Health.", true, null, "minion");

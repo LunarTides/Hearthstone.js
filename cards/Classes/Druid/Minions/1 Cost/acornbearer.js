@@ -7,6 +7,7 @@ module.exports = {
     class: "Druid",
     rarity: "Common",
     set: "Rise of Shadows",
+    id: 5,
 
     deathrattle(plr, game, card) {
         plr.addToHand(new game.Card("Acornbearer Squirrel", plr));

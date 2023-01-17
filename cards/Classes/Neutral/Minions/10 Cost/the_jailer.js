@@ -7,6 +7,7 @@ module.exports = {
     class: "Neutral",
     rarity: "Legendary",
     set: "Murder at Castle Nathria",
+    id: 58,
             
     battlecry(plr, game, card) {
         plr.deck = [];

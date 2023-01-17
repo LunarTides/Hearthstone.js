@@ -7,6 +7,7 @@ module.exports = {
     class: "Druid",
     rarity: "Epic",
     set: "Voyage to the Sunken City",
+    id: 6,
 
     deathrattle(plr, game, card) {
         const minion = new game.Card("Bottomfeeder", plr);

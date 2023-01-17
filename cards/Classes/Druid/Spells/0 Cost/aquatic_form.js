@@ -5,6 +5,7 @@ module.exports = {
     class: "Druid",
     rarity: "Rare",
     set: "Voyage to the Sunken City",
+    id: 9,
 
     cast(plr, game, card) {
         let c = game.functions.dredge();

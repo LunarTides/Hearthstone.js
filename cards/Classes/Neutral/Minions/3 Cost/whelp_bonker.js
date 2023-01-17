@@ -7,6 +7,7 @@ module.exports = {
     class: "Neutral",
     rarity: "Epic",
     set: "Fractured in Alterac Valley",
+    id: 46,
 
     frenzy(plr, game, self) {
         plr.drawCard();

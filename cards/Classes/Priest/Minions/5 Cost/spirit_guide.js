@@ -8,6 +8,7 @@ module.exports = {
     rarity: "Common",
     set: "Fractured in Alterac Valley",
     keywords: ["Taunt"],
+    id: 66,
 
     deathrattle(plr, game, self) {
         const f = (l) => {

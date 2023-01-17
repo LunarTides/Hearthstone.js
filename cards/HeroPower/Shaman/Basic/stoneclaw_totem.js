@@ -7,5 +7,6 @@ module.exports = {
     class: "Shaman",
     rarity: "Free",
     set: "Legacy",
-    keywords: ["Taunt"]
+    keywords: ["Taunt"],
+    id: 84,
 }

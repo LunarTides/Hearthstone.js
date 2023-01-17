@@ -8,6 +8,7 @@ module.exports = {
     set: "Core",
     hpDesc: "Gain 2 Armor.",
     uncollectible: true,
+    id: 103,
 
     heropower(plr, game, self) {
         plr.armor += 2;

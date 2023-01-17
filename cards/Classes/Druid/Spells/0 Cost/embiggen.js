@@ -6,6 +6,7 @@ module.exports = {
     rarity: "Epic",
     set: "Descent of Dragons",
     spellClass: "Nature",
+    id: 10,
 
     cast(plr, game, card) {
         let cards = plr.deck.filter(c => c.type === "Minion");

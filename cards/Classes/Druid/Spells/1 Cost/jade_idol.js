@@ -5,6 +5,7 @@ module.exports = {
     class: "Druid",
     rarity: "Rare",
     set: "Mean Streets of Gadgetzan",
+    id: 18,
 
     cast(plr, game, card) {
         let choice = game.interact.chooseOne('Summon a Jade Golem; or Shuffle 3 copies of this card into your deck.', ['Jade Golem', 'Shuffle']);

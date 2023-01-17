@@ -6,5 +6,6 @@ module.exports = {
     tribe: "Demon",
     class: "Warlock",
     rarity: "Free",
-    set: "Descent of Dragons"
+    set: "Descent of Dragons",
+    id: 87,
 }

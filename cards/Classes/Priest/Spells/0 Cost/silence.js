@@ -6,6 +6,7 @@ module.exports = {
     rarity: "Common",
     set: "Legacy",
     spellClass: "Shadow",
+    id: 67,
 
     cast(plr, game, card) {
         let target = game.interact.selectTarget("Silence a minion.", true, null, "minion");

@@ -7,6 +7,7 @@ module.exports = {
     class: "Neutral",
     rarity: "Legendary",
     set: "Legacy",
+    id: 55,
 
     battlecry(plr, game, card) {
         let target = game.interact.selectTarget("Set a hero's remaining Health to 15.", false, null, "hero");

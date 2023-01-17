@@ -10,6 +10,7 @@ module.exports = {
     set: "Basic",
     keywords: ["Charge"],
     uncollectible: true,
+    id: 79,
 
     endofturn(plr, game, self) {
         self.kill();

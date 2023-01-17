@@ -8,6 +8,7 @@ module.exports = {
     class: "Neutral",
     rarity: "Legendary",
     set: "The Boomsday Project",
+    id: 57,
 
     deathrattle(plr, game, card) {
         // This deathrattle gets called before the minion is removed from the board, so the board's length should be 1

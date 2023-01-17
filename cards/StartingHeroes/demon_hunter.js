@@ -9,6 +9,7 @@ module.exports = {
     hpDesc: "+1 Attack this turn.",
     hpCost: 1,
     uncollectible: true,
+    id: 94,
 
     heropower(plr, game, self) {
         plr.addAttack(1);

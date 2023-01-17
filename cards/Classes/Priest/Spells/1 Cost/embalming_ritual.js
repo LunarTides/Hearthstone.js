@@ -5,6 +5,7 @@ module.exports = {
     class: "Priest",
     rarity: "Common",
     set: "Saviors of Uldum",
+    id: 69,
 
     cast(plr, game, card) {
         let target = game.interact.selectTarget("Give a minion Reborn.", true, null, "minion");

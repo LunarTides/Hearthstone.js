@@ -7,5 +7,6 @@ module.exports = {
     class: "Neutral",
     rarity: "Free",
     set: "Mean Streets of Gadgetzan",
-    uncollectible: true
+    uncollectible: true,
+    id: 33,
 }

@@ -5,6 +5,7 @@ module.exports = {
     class: "Druid",
     rarity: "Common",
     set: "Rise of Shadows",
+    id: 17,
 
     cast(plr, game, card) {
         let choice = game.interact.chooseOne('Deal 2 damage to a minion; or Restore 5 Health.', ['2 Damage', '5 Health']);

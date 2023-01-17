@@ -7,6 +7,7 @@ module.exports = {
     class: "Neutral",
     rarity: "Legendary",
     set: "Core",
+    id: 48,
 
     battlecry(plr, game, card) {
         plr.shuffleIntoDeck(new game.Card("Map to the Golden Monkey", plr));

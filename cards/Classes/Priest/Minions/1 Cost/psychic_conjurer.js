@@ -7,6 +7,7 @@ module.exports = {
     class: "Priest",
     rarity: "Free",
     set: "Basic",
+    id: 62,
 
     battlecry(plr, game, self) {
         let possible_cards = game.opponent.deck;

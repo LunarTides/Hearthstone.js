@@ -8,5 +8,6 @@ module.exports = {
     rarity: "Free",
     set: "United in Stormwind",
     keywords: ["Taunt"],
-    uncollectible: true
+    uncollectible: true,
+    id: 77,
 }

@@ -5,6 +5,7 @@ module.exports = {
     class: "Druid",
     rarity: "Epic",
     set: "Kobolds & Catacombs",
+    id: 22,
 
     cast(plr, game, card) {
         let choices = game.interact.chooseOne('Draw a card; Give your minions +1 Attack; Gain 6 Armor.', ['Draw', '+1 Attack', "+6 Armor"], 2);

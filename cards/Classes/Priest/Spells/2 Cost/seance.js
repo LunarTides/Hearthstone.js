@@ -6,6 +6,7 @@ module.exports = {
     rarity: "Common",
     set: "Rastakhan's Rumble",
     spellClass: "Shadow",
+    id: 73,
 
     cast(plr, game, card) {
         let target = game.interact.selectTarget("Add a copy of a minion to your hand.", true, null, "minion");

@@ -7,6 +7,7 @@ module.exports = {
     class: "Neutral",
     rarity: "Legendary",
     set: "Journey to Un'Goro",
+    id: 50,
 
     passive(plr, game, card, trigger) {
         if (!card.passiveCheck(trigger, ["minionsSummoned", "minionsPlayed"], null, plr)) return;

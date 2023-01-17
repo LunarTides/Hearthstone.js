@@ -9,6 +9,7 @@ module.exports = {
     class: "Neutral",
     rarity: "Legendary",
     set: "Core",
+    id: 36,
 
     battlecry(plr, game, card) {
         let possible_cards = [];

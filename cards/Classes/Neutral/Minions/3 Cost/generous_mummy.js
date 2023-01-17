@@ -8,6 +8,7 @@ module.exports = {
     rarity: "Rare",
     set: "Saviors of Uldum",
     keywords: ["Reborn"],
+    id: 45,
 
     passive(plr, game, card) {
         plr.getOpponent().hand.forEach(c => {

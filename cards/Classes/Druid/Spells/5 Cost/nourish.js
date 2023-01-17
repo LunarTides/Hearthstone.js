@@ -6,6 +6,7 @@ module.exports = {
     rarity: "Rare",
     set: "Core",
     spellClass: "Nature",
+    id: 25,
 
     cast(plr, game, card) {
         let choice = game.interact.chooseOne('Gain 2 Mana Crystals; or Draw 3 cards.', ['+2 Mana Crystals', '+3 Cards']);

@@ -5,6 +5,7 @@ module.exports = {
     class: "Priest",
     rarity: "Common",
     set: "Legacy",
+    id: 70,
 
     cast(plr, game, card) {
         let target = game.interact.selectTarget("Change a minion's Attack to be equal to its Health.", true, null, "minion");

@@ -6,6 +6,7 @@ module.exports = {
     rarity: "Epic",
     set: "Kobolds & Catacombs",
     spellClass: "Nature",
+    id: 23,
 
     cast(plr, game, card) {
         plr.armor += 6;

@@ -7,6 +7,7 @@ module.exports = {
     class: "Neutral",
     rarity: "Rare",
     set: "Core",
+    id: 53,
 
     passive(plr, game, card, trigger) {
         if (!card.passiveCheck(trigger, "spellsCast", null, plr)) return;

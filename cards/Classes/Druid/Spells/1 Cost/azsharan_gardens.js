@@ -5,6 +5,7 @@ module.exports = {
     class: "Druid",
     rarity: "Common",
     set: "Voyage to the Sunken City",
+    id: 14,
 
     cast(plr, game, card) {
         plr.hand.forEach(c => {

@@ -6,6 +6,7 @@ module.exports = {
     rarity: "Epic",
     set: "Forged in the Barrens",
     spellClass: "Arcane",
+    id: 26,
 
     cast(plr, game, card) {
         plr.maxMana = 0;

@@ -7,6 +7,7 @@ module.exports = {
     class: "Neutral",
     rarity: "Common",
     set: "Core",
+    id: 38,
 
     deathrattle(plr, game, card) {
         plr.drawCard();

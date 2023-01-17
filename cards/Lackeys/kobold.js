@@ -8,6 +8,7 @@ module.exports = {
     rarity: "Free",
     set: "Rise of Shadows",
     uncollectible: true,
+    id: 91,
 
     battlecry(plr, game) {
         let target = game.interact.selectTarget(`Deal ${2 + plr.spellDamage} damage.`);

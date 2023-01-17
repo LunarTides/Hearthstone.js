@@ -8,4 +8,5 @@ module.exports = {
     rarity: "Legendary",
     set: "Journey to Un'Goro",
     keywords: ["Elusive"],
+    id: 8,
 }

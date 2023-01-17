@@ -8,6 +8,7 @@ module.exports = {
     rarity: "Free",
     set: "Rise of Shadows",
     uncollectible: true,
+    id: 89,
 
     battlecry(plr, game) {
         // filter out all cards that aren't 2-cost minions

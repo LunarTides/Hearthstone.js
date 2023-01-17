@@ -7,6 +7,7 @@ module.exports = {
     class: "Neutral",
     rarity: "Common",
     set: "Core",
+    id: 41,
 
     passive(plr, game, card, trigger) {
         if (!card.passiveCheck(trigger, "minionsAttacked") || trigger[1][1] != card) return;

@@ -7,6 +7,7 @@ module.exports = {
     class: "Priest",
     rarity: "Common",
     set: "Core",
+    id: 63,
 
     passive(plr, game, card) {
         plr.hand.filter(c => c.type == "Spell").forEach(c => {

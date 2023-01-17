@@ -6,6 +6,7 @@ module.exports = {
     rarity: "Free",
     set: "The League of Explorers",
     uncollectible: true,
+    id: 59,
 
     cast(plr, game, card) {
         plr.shuffleIntoDeck(new game.Card("Golden Monkey", plr));

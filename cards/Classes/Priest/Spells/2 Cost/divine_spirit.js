@@ -6,6 +6,7 @@ module.exports = {
     rarity: "Common",
     set: "Legacy",
     spellClass: "Holy",
+    id: 72,
 
     cast(plr, game, card) {
         let target = game.interact.selectTarget("Double a minion's Health.", true, null, "minion");

@@ -9,6 +9,7 @@ module.exports = {
     set: "Core",
     keywords: ["Taunt"],
     uncollectible: true,
+    id: 49,
 
     battlecry(plr, game, card) {
         let new_hand = [];

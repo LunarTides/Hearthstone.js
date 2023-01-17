@@ -8,6 +8,7 @@ module.exports = {
     rarity: "Legendary",
     set: "Core",
     keywords: ["Spell Damage +1"],
+    id: 37,
 
     deathrattle(plr, game, card) {
         plr.drawCard();

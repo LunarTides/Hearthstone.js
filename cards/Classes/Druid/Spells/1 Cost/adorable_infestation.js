@@ -5,6 +5,7 @@ module.exports = {
     class: "Druid",
     rarity: "Rare",
     set: "Voyage to the Sunken City",
+    id: 13,
 
     cast(plr, game, card) {
         let target = game.interact.selectTarget("Give a minion +1/+1.", true, null, "minion");

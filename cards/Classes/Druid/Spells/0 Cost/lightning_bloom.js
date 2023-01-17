@@ -5,6 +5,7 @@ module.exports = {
     class: "Druid & Shaman",
     rarity: "Common",
     set: "Scholomance Academy",
+    id: 11,
 
     cast(plr, game, card) {
         plr.refreshMana(2);

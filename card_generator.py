@@ -1,10 +1,10 @@
 import os
 
-'''with open(".latest_id", "r+") as f:
+with open(".latest_id", "r+") as f:
     latest_id = int(f.readlines()[0]);
     f.seek(0);
     f.truncate();
-    f.write(str(latest_id + 1));'''
+    f.write(str(latest_id + 1));
 
 editor = 'vim'
 
@@ -33,7 +33,7 @@ function = input("Function: ").lower()
 displayName = f'displayName: "{_displayName}",\n    ' if _displayName != name else ''
 stats = f'stats: [{", ".join(_stats)}],\n    ' if mw and _stats else ''
 keywords_1 = '", "'.join(_keywords)
-keywords = f'keywords: ["{keywords_1}"],\n    ' if mw and _keywords else ''
+keywords = f'keywords: ["{keywords_1}"],' if mw and _keywords else ''
 tribe = f'tribe: "{_tribe}",\n    ' if mw and _tribe else ''
 spellClass = f'spellClass: "{_spellClass}",\n    ' if not mw and _spellClass else ''
 
@@ -51,7 +51,9 @@ with open(path + filename, "w+") as f:
     ''' + tribe + '''class: "''' + _class + '''",
     rarity: "''' + rarity + '''",
     set: "''' + _set + '''",
-    ''' + spellClass + keywords + '''        
+    ''' + spellClass + keywords + '''
+    id: ''' + str(latest_id + 1) + ''',
+
     ''' + function + '''(plr, game, card) {
         
     }

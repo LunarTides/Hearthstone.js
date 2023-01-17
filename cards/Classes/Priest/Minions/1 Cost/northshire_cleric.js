@@ -7,6 +7,7 @@ module.exports = {
     class: "Priest",
     rarity: "Common",
     set: "Legacy",
+    id: 61,
 
     passive(plr, game, self, trigger) {
         if (!self.passiveCheck(trigger, "restoredHealth")) return false;

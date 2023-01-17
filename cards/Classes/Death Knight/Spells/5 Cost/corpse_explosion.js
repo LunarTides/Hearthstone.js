@@ -7,6 +7,7 @@ module.exports = {
     set: "March of the Lich King",
     spellClass: "Shadow",
     runes: "BB",
+    id: 2,
             
     cast(plr, game, card) {
         let success;

@@ -7,6 +7,7 @@ module.exports = {
     class: "Priest",
     rarity: "Rare",
     set: "Madness at the Darkmoon Faire",
+    id: 65,
 
     passive(plr, game, card, trigger) {
         if (!card.passiveCheck(trigger, "spellsCast", null, plr)) return;

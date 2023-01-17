@@ -7,6 +7,7 @@ module.exports = {
     class: "Neutral",
     rarity: "Common",
     set: "Core",
+    id: 40,
 
     battlecry(plr, game, card) {
         let target = game.interact.selectTarget("Choose a minion.", false, "self", "minion");

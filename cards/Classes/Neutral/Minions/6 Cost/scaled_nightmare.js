@@ -7,6 +7,7 @@ module.exports = {
     class: "Neutral",
     rarity: "Epic",
     set: "Whispers of the Old Gods",
+    id: 54,
 
     startofturn(plr, game, card) {
         card.addStats(card.getAttack(), 0);

@@ -5,6 +5,7 @@ module.exports = {
     class: "Druid",
     rarity: "Common",
     set: "Ashes of Outland",
+    id: 24,
 
     cast(plr, game, card) {
         plr.gainEmptyMana(2);

@@ -102,11 +102,12 @@ class Functions {
         else if (card.heropower) return "Hero";
         else return "Spell";
     }
-    getCardByName(name) {
+    getCardByName(name, refer = true) {
         /**
          * Gets the card that has the same name as "name"
          * 
          * @param {string} name The name
+         * @param {bool} refer [default=true] If this should call getCardById if it doesn't find the card from the name
          * 
          * @returns {Blueprint} The blueprint of the card
          */
@@ -114,6 +115,23 @@ class Functions {
         let card = game.cards[this.capitalizeAll(name)];
 
         if (!card) card = game.cards[name];
+        if (!card) return this.getCardById(name, false);
+
+        return card;
+    }
+    getCardById(id, refer = true) {
+        /**
+         * Gets the card that has the same id as "id"
+         * 
+         * @param {number} id The id
+         * @param {bool} refer [default=true] If this should call getCardByName if it doesn't find the card from the name
+         * 
+         * @returns {Blueprint} The blueprint of the card
+         */
+
+        let card = Object.values(game.cards).filter(c => c.id == id)[0];
+
+        if (!card) return this.getCardByName(id.toString(), false);
 
         return card;
     }

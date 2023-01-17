@@ -5,6 +5,7 @@ module.exports = {
     class: "Druid",
     rarity: "Common",
     set: "The Witchwood",
+    id: 20,
 
     cast(plr, game, card) {
         plr.drawCard();

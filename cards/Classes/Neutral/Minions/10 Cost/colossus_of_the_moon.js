@@ -8,4 +8,5 @@ module.exports = {
     rarity: "Legendary",
     set: "Saviors of Uldum",
     keywords: ["Divine Shield", "Reborn"],
+    id: 56,
 }

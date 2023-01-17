@@ -6,5 +6,6 @@ module.exports = {
     tribe: "None",
     class: "Paladin",
     rarity: "Free",
-    set: "Legacy"
+    set: "Legacy",
+    id: 80,
 }

@@ -6,6 +6,7 @@ module.exports = {
     rarity: "Free",
     set: "Core",
     uncollectible: true,
+    id: 107,
 
     cast(plr, game) {
         plr.refreshMana(1, plr.maxMaxMana);

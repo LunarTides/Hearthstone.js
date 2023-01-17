@@ -7,6 +7,7 @@ module.exports = {
     set: "Core",
     spellClass: "Frost",
     runes: "F",
+    id: 1,
             
     cast(plr, game, card) {
         plr.drawCard();

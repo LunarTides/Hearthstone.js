@@ -7,6 +7,7 @@ module.exports = {
     class: "Priest",
     rarity: "Common",
     set: "Legacy",
+    id: 64,
 
     passive(plr, game, self, trigger) {
         self.setStats(self.getHealth(), self.getHealth());
