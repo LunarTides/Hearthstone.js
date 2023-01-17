@@ -211,22 +211,13 @@ function deckcode() {
         __cards[a].push(c);
     });
 
-    let num_cards = Object.keys(__cards).sort().reverse();
-    let ___cards = {};
-
-    num_cards.forEach(n => {
-        if (!___cards[n]) ___cards[n] = [];
-        ___cards[n].push(__cards[n]);
-    });
-
     let str_cards = "";
 
     let prev_amount = 0;
-    Object.values(___cards).forEach((c, i) => {
-        c = c[0];
+    Object.values(__cards).forEach((c, i) => {
         let amount = c[0][1];
 
-        if (i == num_cards.length - 1) deckcode += `${amount},`;
+        if (i == Object.keys(__cards).length - 1) deckcode += `${amount},`;
         else deckcode += `${amount}:${__cards[amount].length},`; // "/3:5,2:8,1/";
 
         c.forEach(v => {
