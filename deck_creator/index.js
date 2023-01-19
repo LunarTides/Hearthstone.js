@@ -117,17 +117,13 @@ function showConfig() {
 }
 
 function findCard(card) {
-    let _card = card;
+    let _card;
 
-    if (card) {
-        _card = filtered_cards[functions.capitalizeAll(card)];
+    Object.keys(filtered_cards).forEach(c => {
+        if (c.toLowerCase() == card.toLowerCase()) _card = filtered_cards[c];
+    });
 
-        if (!_card) _card = filtered_cards[card];
-    }
-
-    card = _card;
-
-    return card;
+    return _card;
 }
 
 function chooseCard(prompt) {
@@ -292,7 +288,7 @@ function handleCmds(cmd) {
 
         add(card);
     }
-    else if (cmd.startsWith("add")) {
+    else if (cmd.startsWith("a")) {
         getCardArg(cmd, add);
     }
     else if (cmd == "remove") {
@@ -300,7 +296,7 @@ function handleCmds(cmd) {
 
         remove(card);
     }
-    else if (cmd.startsWith("remove")) {
+    else if (cmd.startsWith("r")) {
         getCardArg(cmd, remove);
     }
     else if (cmd.startsWith("deckcode")) {
