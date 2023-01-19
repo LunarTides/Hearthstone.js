@@ -29,10 +29,6 @@ function common(m = 0) {
     if (keywords) card.keywords = '["' + keywords.split(', ').join('", "') + '"]';
 }
 
-function minionOrWeapon(m) {
-    common(m);
-}
-
 function spell() {
     common()
 
@@ -51,7 +47,7 @@ function location() {
 
 const type = rl.question("Type: ");
 
-if (["minion", "weapon"].includes(type.toLowerCase())) minionOrWeapon(type.toLowerCase() == "weapon" ? 1 : 2);
+if (["minion", "weapon"].includes(type.toLowerCase())) common(type.toLowerCase() == "weapon" ? 1 : 2);
 else if (type.toLowerCase() == "spell") spell();
 else if (type.toLowerCase() == "location") location();
 else if (type.toLowerCase() == "hero") common();
