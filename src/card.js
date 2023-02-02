@@ -19,6 +19,7 @@ class Card {
         this.storage = []; // Allow cards to store data for later use
 
         this.turn = game.turns; // The turn the card was played
+        this.turnKilled = -1;
 
         this.infuse_num = -1; // The amount of infuse a card has. Set to -1 for no infuse.
 
@@ -32,7 +33,7 @@ class Card {
 
         this.canAttackHero = true;
         this.sleepy = true;
-        
+
         /*
         Go through all blueprint variables and
         set them in the card object
@@ -428,19 +429,24 @@ class Card {
 
         return ret;
     }
-    manathirst(m, t, f) {
+    manathirst(m, t = "", f = "") {
         /**
          * Returns t if "m" is more than or equal to the player's max mana
          *
          * @param {number} m The mana to test
-         * @param {any} t The value to return if true
-         * @param {any} f The value to return if false
+         * @param {any} [default=""] t The value to return if true
+         * @param {any} [default=""] f The value to return if false
          * 
          * @returns {any} t | f
          */
 
-        if (this.plr.maxMana < m) return [false, f];
+        if (this.plr.maxMana < m) {
+            if (!f) return false;
 
+            return [false, f];
+        }
+
+        if (!t) return true;
         return [true, t];
     }
 }

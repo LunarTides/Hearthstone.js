@@ -35,6 +35,9 @@ class Functions {
 
         return newArray;
     }
+    remove(list, element) {
+        list.splice(list.indexOf(element), 1);
+    }
     randList(list, cpyCard = true) {
         /**
          * Return a random element from "list"
@@ -112,9 +115,12 @@ class Functions {
          * @returns {Blueprint} The blueprint of the card
          */
 
-        let card = game.cards[this.capitalizeAll(name)];
+        let card;
 
-        if (!card) card = game.cards[name];
+        Object.keys(game.cards).forEach(c => {
+            if (c.toLowerCase() == name.toLowerCase()) card = game.cards[c];
+        });
+
         if (!card) return this.getCardById(name, false);
 
         return card;
@@ -361,7 +367,7 @@ class Functions {
                 let c = game.functions.randList(possible_cards);
 
                 values.push(c);
-                possible_cards.splice(possible_cards.indexOf(c), 1);
+                this.remove(possible_cards, c);
             }
         }
 
@@ -508,8 +514,9 @@ class Functions {
 
         let cards = [];
 
+        array = array.filter(c => c.type == "Minion" && c.mana >= mana_range[0] && c.mana <= mana_range[1]);
         array.forEach(c => {
-            if (c.type != "Minion" || c.mana < mana_range[0] || c.mana > mana_range[1] || times >= amount) return;
+            if (times >= amount) return;
 
             game.summonMinion(new game.Card(c.name, plr), plr);
 
@@ -745,7 +752,7 @@ class Functions {
         plr.hand.forEach(c => {
             if (!mulligan.includes(c) || c.name == "The Coin") return;
 
-            mulligan.splice(mulligan.indexOf(c), 1);
+            this.remove(mulligan, c);
             
             plr.drawCard(false);
             plr.shuffleIntoDeck(c, false);

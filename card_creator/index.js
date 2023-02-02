@@ -21,7 +21,7 @@ function common(m = 0) {
     if (m && stats) card.stats = "[" + stats.split("/").map(k => parseInt(k)).join(", ") + "]";
     card.desc = description;
     card.mana = parseInt(cost);
-    if (m && tribe) card.tribe = tribe;
+    if (m) card.tribe = tribe || "None";
     card.class = _class;
     card.rarity = rarity;
     card.set = set;
@@ -53,7 +53,7 @@ else if (type.toLowerCase() == "location") location();
 else if (type.toLowerCase() == "hero") common();
 
 const uncollectible = rl.keyInYN("Uncollectible?");
-card.uncollectible = uncollectible;
+if (uncollectible) card.uncollectible = uncollectible;
 
 let func = rl.question("Function: ");
 if (func) func = `\n\n    ${func.toLowerCase()}(plr, game, self) {\n\n    }`;

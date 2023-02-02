@@ -224,7 +224,12 @@ class Game {
         let op = this.opponent;
 
         // Trigger endofturn
-        this.board[plr.id].forEach(m => m.activate("endofturn"));
+        this.board[plr.id].forEach(m => {
+            m.activate("endofturn")
+
+            m.sleepy = false;
+            m.resetAttackTimes();
+        });
         if (plr.weapon) plr.weapon.activate("endofturn");
 
         // Trigger unspent mana
@@ -270,8 +275,8 @@ class Game {
 
             m.activate("startofturn");
             m.canAttackHero = true;
-            m.sleepy = false;
             m.frozen = false;
+            m.sleepy = false;
             m.resetAttackTimes();
 
             // Stealth duration
@@ -357,13 +362,13 @@ class Game {
         if (card.type === "Minion") {
             // Magnetize
             if (card.keywords.includes("Magnetic") && board.length > 0) {
-                let mechs = board.filter(m => m.tribe == "Mech");
+                let mechs = board.filter(m => m.tribe.includes("Mech"));
     
                 // I'm using while loops to prevent a million indents
                 while (mechs.length > 0) {
                     let minion = this.interact.selectTarget("Which minion do you want this to Magnetize to:", false, "self", "minion");
                     if (!minion) break;
-                    if (minion.tribe != "Mech") {
+                    if (!minion.tribe.includes("Mech")) {
                         console.log("That minion is not a Mech.");
                         continue;
                     }
@@ -460,6 +465,9 @@ class Game {
          * 
          * @returns {Card} The minion summoned
          */
+
+        // If the board has max capacity, and the card played is a minion or location card, prevent it.
+        if (this.board[player.id].length >= this.config.maxBoardSpace) return "space";
 
         if (update) this.stats.update("minionsSummoned", minion);
 
@@ -574,7 +582,6 @@ class Game {
             this.stats.update("enemyAttacks", [attacker, target]);
     
             this.attack(attacker.attack, target);
-            this.attack(target.attack, attacker);
             this.killMinions();
 
             attacker.attack = 0;
@@ -595,7 +602,7 @@ class Game {
                 if (wpn.keywords.includes("Poisonous")) target.kill();
             }
 
-            attacker.weapon = wpn;
+            if (wpn.getHealth() > 0) attacker.weapon = wpn;
             this.killMinions();
     
             return true;
@@ -705,6 +712,7 @@ class Game {
                 }
 
                 this.stats.update("minionsKilled", m);
+                m.turnKilled = this.turns;
 
                 if (!m.keywords.includes("Reborn")) {
                     m.activate("unpassive", false); // Tell the minion that it is going to die
