@@ -121,7 +121,7 @@ class Functions {
             if (c.toLowerCase() == name.toLowerCase()) card = game.cards[c];
         });
 
-        if (!card) return this.getCardById(name, false);
+        if (!card && refer) return this.getCardById(name, false);
 
         return card;
     }
@@ -137,7 +137,7 @@ class Functions {
 
         let card = Object.values(game.cards).filter(c => c.id == id)[0];
 
-        if (!card) return this.getCardByName(id.toString(), false);
+        if (!card && refer) return this.getCardByName(id.toString(), false);
 
         return card;
     }
