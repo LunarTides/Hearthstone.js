@@ -1,6 +1,6 @@
 module.exports = {
     name: "Death Knight Starting Hero",
-    displayName: "Lich King -- TODO: Change this to the proper displayname once i figure out what it is",
+    displayName: "The Lich King",
     desc: "Death knight starting hero",
     mana: 0,
     class: "Death Knight",

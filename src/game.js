@@ -624,6 +624,19 @@ class Game {
         // Target is a minion
         if (target.keywords.includes("Stealth")) return "stealth";
 
+        // Cleave
+        while (attacker.keywords.includes("Cleave")) {
+            let b = this.board[target.plr.id];
+
+            let index = b.indexOf(target);
+            if (index == -1) break;
+
+            if (index > 0) this.attack(attacker.getAttack(), b[index - 1]);
+            if (index < b.length - 1) this.attack(attacker.getAttack(), b[index + 1]);
+
+            break;
+        }
+
         attacker.decAttack();
 
         this.stats.update("enemyAttacks", [attacker, target]);

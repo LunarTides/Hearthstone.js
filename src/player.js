@@ -232,6 +232,8 @@ class Player {
         if (updateStats) {
             this.game.stats.update("cardsAddedToDeck", card);
         }
+
+        this.deck = game.functions.shuffle(this.deck);
     }
     addToBottomOfDeck(card) {
         /**

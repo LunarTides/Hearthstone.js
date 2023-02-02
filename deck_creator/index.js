@@ -55,16 +55,6 @@ function askClass() {
     return _class;
 }
 
-function charCount(str, letter) {
-    let letter_count = 0;
-
-    for (let i = 0; i < str.length; i++) {
-        if (str.charAt(i) == letter) letter_count++;
-    }
-
-    return letter_count;
-}
-
 function showCards() {
     filtered_cards = {};
     game.interact.printName();
