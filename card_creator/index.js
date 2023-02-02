@@ -55,8 +55,10 @@ else if (type.toLowerCase() == "hero") common();
 const uncollectible = rl.keyInYN("Uncollectible?");
 if (uncollectible) card.uncollectible = uncollectible;
 
+let func;
+
 if (type.toLowerCase() == "spell") func = "Cast";
-else let func = rl.question("Function: ");
+else func = rl.question("Function: ");
 
 let triggerText = ")";
 if (func.toLowerCase() == "passive") triggerText = ", trigger)";
