@@ -11,7 +11,7 @@ module.exports = {
     id: 119,
 
     battlecry(plr, game, self) {
-        let cards = game.board[plr.id].filter(m => m.tribe.includes("Undead") && m != self);
+        let cards = game.board[plr.id].filter(m => m.type == "Minion" && m.tribe.includes("Undead") && m != self);
         let card = game.functions.randList(cards, false);
         if (!card) return;
 
@@ -20,7 +20,7 @@ module.exports = {
     },
 
     deathrattle(plr, game, self) {
-        let cards = game.board[plr.id].filter(m => m.tribe.includes("Undead") && m != self);
+        let cards = game.board[plr.id].filter(m => m.type == "Minion" && m.tribe.includes("Undead") && m != self);
         let card = game.functions.randList(cards, false);
         if (!card) return;
 

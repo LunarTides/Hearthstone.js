@@ -798,7 +798,7 @@ class Interact {
         if (to_remove > 0) sb = sb.replace(" ".repeat(to_remove) + "|", "|");
 
         // Opponent's Mana
-        sb += `Mana       : ${op.mana.toString().cyan} / ${curr.maxMana.toString().cyan}`;
+        sb += `Mana       : ${op.mana.toString().cyan} / ${op.maxMana.toString().cyan}`;
         // Mana End
         console.log(sb);
         sb = "";

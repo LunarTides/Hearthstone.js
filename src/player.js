@@ -88,7 +88,7 @@ class Player {
 
         if (cap && this.maxMana > this.maxMaxMana) this.maxMana = this.maxMaxMana;
     }
-    gainMana(mana) {
+    gainMana(mana, cap = false) {
         /**
          * Increases both mana and max mana by "mana"
          * 
@@ -97,7 +97,7 @@ class Player {
          * @returns {undefined}
          */
 
-        this.gainEmptyMana(mana);
+        this.gainEmptyMana(mana, cap);
         this.refreshMana(mana);
     }
     gainOverload(overload) {
