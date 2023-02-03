@@ -711,7 +711,7 @@ class Interact {
             // elusive can be set to any value other than true to prevent targetting but not update
             // spells cast on minions
             if (elusive === true) {
-                game.stats.update("spellsCastOnMinions", m);
+                game.stats.update("spellsCastOnMinions", minion);
             }
             return false;
         }
