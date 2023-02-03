@@ -524,6 +524,10 @@ class Functions {
             cards.push(c);
         });
 
+        cards.forEach(c => {
+            this.remove(plr.deck, c);
+        });
+
         return cards;
     }
 

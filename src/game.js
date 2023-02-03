@@ -26,7 +26,6 @@ class GameStats {
                 p.desc = p.desc.replace(`Infuse (${p.infuse_num})`, "Infused");
             });
         }
-        
 
         this.game.board.forEach(p => {
             p.forEach(m => {
@@ -36,7 +35,17 @@ class GameStats {
         });
 
         for (let i = 1; i <= 2; i++) {
-            let wpn = this.game["player" + i].weapon;
+            let plr = this.game["player" + i];
+
+            // Activate spells in the players hand
+            plr.hand.forEach(c => {
+                if (c.type != "Spell") return;
+
+                c.activate("unpassive", true);
+                c.activate("passive", [key, val]);
+            });
+
+            let wpn = plr.weapon;
             if (!wpn) continue;
 
             wpn.activate("unpassive", true);
@@ -312,9 +321,9 @@ class Game {
         this.killMinions();
 
         while (card.keywords.includes("Tradeable")) {
-            let q = this.input(`Would you like to trade ${card.displayName} for a random card in your deck? (y: trade / n: play) `);
+            let q = this.interact.yesNoQuestion(player, "Would you like to trade " + this.functions.colorByRarity(card.displayName, card.rarity) + " for a random card in your deck?");
 
-            if (!q.startsWith("y")) break;
+            if (!q) break;
             
             if (player.mana < 1) return "mana";
 

@@ -237,6 +237,7 @@ class Card {
 
         if (this.immune) return true;
 
+        game.stats.update("minionsDamaged", [this, amount]);
         this.setStats(this.getAttack(), this.getHealth() - amount);
 
         if (this.type == "Weapon" && this.getHealth() <= 0) {

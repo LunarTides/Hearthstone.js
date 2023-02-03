@@ -16,6 +16,7 @@ module.exports = {
             if (game.player == plr) return;
 
             plr.armor -= 5;
+            if (plr.armor < 0) plr.armor = 0;
             game.passives.splice(self.storage[0] - 1, 1);
         })); 
     }
