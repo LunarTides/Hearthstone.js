@@ -10,7 +10,7 @@ module.exports = {
     keywords: ["Reborn"],
     id: 45,
 
-    passive(plr, game, card) {
+    passive(plr, game, card, key, val) {
         plr.getOpponent().hand.forEach(c => {
             if (c.mana <= 0) return;
 

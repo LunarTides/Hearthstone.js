@@ -9,8 +9,8 @@ module.exports = {
     set: "Naxxramas",
     id: 120,
 
-    passive(plr, game, self, trigger) {
-        if (!self.passiveCheck(trigger, "turnEnds")) return;
+    passive(plr, game, self, key, val) {
+        if (!self.passiveCheck([key, val], "turnEnds")) return;
 
         game.graveyard[plr.id].forEach(m => {
             if (m.plr == plr && m.turnKilled == game.turns) game.summonMinion(new game.Card(m.name, plr), plr);

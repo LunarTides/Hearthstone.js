@@ -11,9 +11,10 @@ module.exports = {
     id: 78,
 
     battlecry(plr, game, card) {
-        game.passives.push((game, trigger) => {
-            if (!card.passiveCheck(trigger, "spellsCast", null, plr)) return;
-            trigger[1].activate("cast");
+        game.passives.push((game, key, val) => {
+            if (!card.passiveCheck([key, val], "spellsCast", null, plr)) return;
+
+            val.activate("cast");
         });
     }
 }

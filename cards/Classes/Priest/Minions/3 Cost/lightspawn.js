@@ -9,7 +9,7 @@ module.exports = {
     set: "Legacy",
     id: 64,
 
-    passive(plr, game, self, trigger) {
+    passive(plr, game, self, key, val) {
         self.setStats(self.getHealth(), self.getHealth());
     }
 }

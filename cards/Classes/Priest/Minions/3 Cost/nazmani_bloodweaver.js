@@ -9,8 +9,8 @@ module.exports = {
     set: "Madness at the Darkmoon Faire",
     id: 65,
 
-    passive(plr, game, card, trigger) {
-        if (!card.passiveCheck(trigger, "spellsCast", null, plr)) return;
+    passive(plr, game, card, key, val) {
+        if (!card.passiveCheck([key, val], "spellsCast", null, plr)) return;
         if (plr.hand.filter(c => c.mana > 0).length <= 0) return;
         
         let randomCard;

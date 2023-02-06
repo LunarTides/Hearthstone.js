@@ -9,8 +9,8 @@ module.exports = {
     set: "Core",
     id: 53,
 
-    passive(plr, game, card, trigger) {
-        if (!card.passiveCheck(trigger, "spellsCast", null, plr)) return;
+    passive(plr, game, card, key, val) {
+        if (!card.passiveCheck([key, val], "spellsCast", null, plr)) return;
         
         plr.drawCard();
     }

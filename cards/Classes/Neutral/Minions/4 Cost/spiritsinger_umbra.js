@@ -9,9 +9,9 @@ module.exports = {
     set: "Journey to Un'Goro",
     id: 50,
 
-    passive(plr, game, card, trigger) {
-        if (!card.passiveCheck(trigger, ["minionsSummoned", "minionsPlayed"], null, plr)) return;
+    passive(plr, game, card, key, val) {
+        if (!card.passiveCheck([key, val], ["minionsSummoned", "minionsPlayed"], null, plr)) return;
         
-        trigger[1].activate("deathrattle");
+        val.activate("deathrattle");
     }
 }

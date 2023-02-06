@@ -61,7 +61,7 @@ if (type.toLowerCase() == "spell") func = "Cast";
 else func = rl.question("Function: ");
 
 let triggerText = ")";
-if (func.toLowerCase() == "passive") triggerText = ", trigger)";
+if (func.toLowerCase() == "passive") triggerText = ", key, val)";
 if (func) func = `\n\n    ${func.toLowerCase()}(plr, game, self${triggerText} {\n\n    }`;
 
 let _type = (type == "Hero") ? "Heroe" : type;

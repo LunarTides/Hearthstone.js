@@ -237,8 +237,8 @@ class Card {
 
         if (this.immune) return true;
 
-        game.stats.update("minionsDamaged", [this, amount]);
         this.setStats(this.getAttack(), this.getHealth() - amount);
+        game.stats.update("minionsDamaged", [this, amount]);
 
         if (this.type == "Weapon" && this.getHealth() <= 0) {
             this.plr.destroyWeapon(true);
@@ -403,7 +403,7 @@ class Card {
          * @returns {any[]} The return values of all the battlecries triggered
          */
 
-        this.activate("passive", ["battlecry", this]);
+        this.activate("passive", "battlecry", this, game.turns);
         return this.activate("battlecry", ...args);
     }
     passiveCheck(trigger, key, val = null, check_plr = null) {

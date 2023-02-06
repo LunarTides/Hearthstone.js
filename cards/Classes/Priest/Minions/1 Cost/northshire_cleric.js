@@ -9,8 +9,8 @@ module.exports = {
     set: "Legacy",
     id: 61,
 
-    passive(plr, game, self, trigger) {
-        if (!self.passiveCheck(trigger, "restoredHealth")) return false;
+    passive(plr, game, self, key, val) {
+        if (!self.passiveCheck([key, val], "restoredHealth")) return false;
 
         plr.drawCard();
     }

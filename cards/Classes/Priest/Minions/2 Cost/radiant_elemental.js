@@ -9,7 +9,7 @@ module.exports = {
     set: "Core",
     id: 63,
 
-    passive(plr, game, card) {
+    passive(plr, game, card, key, val) {
         plr.hand.filter(c => c.type == "Spell").forEach(c => {
             if (c.mana <= 0) return;
 

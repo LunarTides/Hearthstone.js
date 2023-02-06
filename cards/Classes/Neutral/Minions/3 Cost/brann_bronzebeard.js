@@ -9,9 +9,9 @@ module.exports = {
     set: "Core",
     id: 43,
 
-    passive(plr, game, card, trigger) {
-        if (!card.passiveCheck(trigger, "minionsPlayed", null, plr)) return;
+    passive(plr, game, card, key, val) {
+        if (!card.passiveCheck([key, val], "minionsPlayed", null, plr)) return;
         
-        trigger[1].activate("battlecry");
+        val.activate("battlecry");
     }
 }

@@ -9,10 +9,10 @@ module.exports = {
     set: "Scholomance Academy",
     id: 44,
 
-    passive(plr, game, card, trigger) {
-        if (!card.passiveCheck(trigger, "spellsCast")) return;
+    passive(plr, game, card, key, val) {
+        if (!card.passiveCheck([key, val], "spellsCast")) return;
         
-        card.storage.push(trigger[1]);
+        card.storage.push(val);
     },
 
     deathrattle(plr, game, card) {

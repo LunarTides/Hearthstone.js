@@ -30,7 +30,7 @@ class GameStats {
         this.game.board.forEach(p => {
             p.forEach(m => {
                 m.activate("unpassive", true);
-                m.activate("passive", [key, val]);
+                m.activate("passive", key, val);
             });
         });
 
@@ -42,14 +42,14 @@ class GameStats {
                 if (c.type != "Spell") return;
 
                 c.activate("unpassive", true);
-                c.activate("passive", [key, val]);
+                c.activate("passive", key, val);
             });
 
             let wpn = plr.weapon;
             if (!wpn) continue;
 
             wpn.activate("unpassive", true);
-            wpn.activate("passive", [key, val]);
+            wpn.activate("passive", key, val);
         }
 
         this.game.activatePassives([key, val]);
@@ -75,7 +75,7 @@ class GameStats {
     update(key, val) {
         if (!this[key]) this[key] = [[], []];
 
-        this[key][this.game.player.id].push(val);
+        this[key][this.game.player.id].push([val, this.game.turns]);
 
         this.cardUpdate(key, val);
 
@@ -565,9 +565,8 @@ class Game {
 
             // Target is a player
             if (target instanceof Player) {
-                this.stats.update("enemyAttacks", [attacker, target]);
-
                 target.remHealth(attacker.attack);
+                this.stats.update("enemyAttacks", [attacker, target]);
                 
                 attacker.attack = 0;
                 if (!attacker.weapon) return true;
@@ -588,9 +587,9 @@ class Game {
             // Target is a minion
             if (target.keywords.includes("Stealth")) return "stealth";
     
-            this.stats.update("enemyAttacks", [attacker, target]);
-    
             this.attack(attacker.attack, target);
+            this.stats.update("enemyAttacks", [attacker, target]);
+
             this.killMinions();
 
             attacker.attack = 0;
@@ -626,13 +625,12 @@ class Game {
         if (target instanceof Player) {
             if (!attacker.canAttackHero) return "cantattackhero";
 
-            this.stats.update("enemyAttacks", [attacker, target]);
-
             if (attacker.keywords.includes("Stealth")) attacker.removeKeyword("Stealth");
             if (attacker.keywords.includes("Lifesteal")) attacker.plr.addHealth(attacker.getAttack());
 
             target.remHealth(attacker.getAttack());
             attacker.decAttack();
+            this.stats.update("enemyAttacks", [attacker, target]);
 
             return true;
         }
@@ -654,8 +652,6 @@ class Game {
         }
 
         attacker.decAttack();
-
-        this.stats.update("enemyAttacks", [attacker, target]);
 
         let dmgTarget = true;
         let dmgAttacker = true;
@@ -688,6 +684,7 @@ class Game {
         if (dmgTarget && attacker.keywords.includes("Poisonous")) target.kill();
 
         if (dmgTarget) target.remStats(0, attacker.getAttack())
+        this.stats.update("enemyAttacks", [attacker, target]);
 
         if (target.getHealth() > 0 && target.activate("frenzy") !== -1) target.frenzy = undefined;
         if (target.getHealth() < 0) attacker.activate("overkill");

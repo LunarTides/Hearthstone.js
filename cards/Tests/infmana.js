@@ -8,7 +8,7 @@ module.exports = {
     uncollectible: true,
 
     cast(plr, game, self) {
-        game.passives.push((game, trigger) => {
+        game.passives.push((game, key, val) => {
             plr.gainMana(1000, true);
         });
     }

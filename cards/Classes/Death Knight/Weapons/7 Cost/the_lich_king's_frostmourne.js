@@ -10,11 +10,11 @@ module.exports = {
     uncollectible: true,
     id: 129,
 
-    passive(plr, game, self, trigger) {
-        if (!self.passiveCheck(trigger, "enemyAttacks")) return;
-        if (trigger[1][0] != plr || !trigger[1][1] instanceof game.Card) return;
+    passive(plr, game, self, key, val) {
+        if (!self.passiveCheck([key, val], "enemyAttacks")) return;
+        if (val[0] != plr || !val[1] instanceof game.Card) return;
 
-        if (trigger[1][1].getHealth() <= self.getAttack()) self.storage.push(trigger[1][1]); // The minion has not taken damage yet.
+        if (val[1].getHealth() <= 0) self.storage.push(val[1]); // The minion has not taken damage yet.
     },
 
     deathrattle(plr, game, self) {
