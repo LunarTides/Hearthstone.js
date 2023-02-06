@@ -376,7 +376,7 @@ class Interact {
          * @returns {boolean | string} Valid | ["class", "uncollectible", "runes"]
          */
 
-        if (plr.heroClass != card.class && card.class != "Neutral") return "class";
+        if (!card.class.split(" / ").includes(plr.heroClass) && card.class != "Neutral") return "class";
         if (card.uncollectible) return "uncollectible";
 
         // Runes

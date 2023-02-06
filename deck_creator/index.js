@@ -63,7 +63,8 @@ function showCards() {
     Object.entries(cards).forEach(c => {
         if (c[1].runes && !plr.testRunes(c[1].runes)) return;
 
-        if ([chosen_class, "Neutral"].includes(c[1].class)) filtered_cards[c[0]] = c[1];
+        let reg = new RegExp(chosen_class + "|Neutral");
+        if (reg.test(c[1].class.split(" / "))) filtered_cards[c[0]] = c[1];
     });
 
     let prev_class;

@@ -3,7 +3,7 @@ module.exports = {
     stats: [2, 4],
     desc: "Taunt",
     mana: 3,
-    class: "Warrior",
+    class: "Warrior / Paladin",
     rarity: "Free",
     set: "Madness at the Darkmoon Faire",
     keywords: ["Taunt"],
