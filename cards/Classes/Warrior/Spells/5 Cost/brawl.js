@@ -21,13 +21,12 @@ module.exports = {
 
         minion = game.board[side][minion];
 
-        let otherSide = (side == 0) ? 1 : 0;
+        game.board.forEach(p => {
+            p.forEach(m => {
+                if (m == minion) return;
 
-        game.board[otherSide] = [];
-        game.board[side].forEach(m => {
-            if (m == minion) return;
-
-            m.kill();
+                m.kill();
+            });
         });
     }
 }

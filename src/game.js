@@ -330,8 +330,8 @@ class Game {
             player.mana -= 1;
 
             player.removeFromHand(card);
-            player.shuffleIntoDeck(card);
             player.drawCard();
+            player.shuffleIntoDeck(card);
     
             return "traded";
         }

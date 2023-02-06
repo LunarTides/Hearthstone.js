@@ -354,7 +354,7 @@ class AI {
         if (score > 0) ret = 'Y';
         else ret = 'N';
 
-        ret = 'Y'; // TODO: Make this whole function better
+        ret = 'N'; // TODO: Make this whole function better
 
         this.history.push(["yesNoQuestion", [prompt, ret]]);
 
