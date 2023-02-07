@@ -11,8 +11,8 @@ module.exports = {
     cast(plr, game, self) {
         plr.armor += 10;
 
-        self.storage.push(game.passives.push((game, trigger) => {
-            if (!self.passiveCheck(trigger, "turnStarts")) return;
+        self.storage.push(game.passives.push((game, key, val) => {
+            if (!self.passiveCheck([key, val], "turnStarts")) return;
             if (game.player == plr) return;
 
             plr.armor -= 5;

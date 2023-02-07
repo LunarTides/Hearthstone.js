@@ -52,7 +52,7 @@ class GameStats {
             wpn.activate("passive", key, val);
         }
 
-        this.game.activatePassives([key, val]);
+        this.game.activatePassives(key, val);
     }
     questUpdate(quests_name, key, val, plr = this.game.player) {
         plr[quests_name].forEach(s => {
@@ -82,6 +82,14 @@ class GameStats {
         this.questUpdate("secrets",    key, val, this.game.opponent);
         this.questUpdate("sidequests", key, val);
         this.questUpdate("quests",     key, val);
+    }
+
+    increment(player, key, amount = 1) {
+        if (!this[key]) this[key] = [0, 0];
+
+        this[key][player.id] += amount;
+
+        return this[key][player.id];
     }
 }
 
@@ -135,17 +143,18 @@ class Game {
 
         this[key] = val;
     }
-    activatePassives(trigger) {
+    activatePassives(key, val) {
         /**
          * Loops through this.passives and executes the function
          * 
-         * @param {any[]} trigger The thing that triggered the passives
+         * @param {string} key The name of the event that triggered the passive (see stats.txt)
+         * @param {any[]?} val The value of the event
          * 
          * @returns {any[]} Return values of all the executed functions
          */
 
         let ret = [];
-        this.passives.forEach(i => ret.push(i(this, trigger)));
+        this.passives.forEach(i => ret.push(i(this, key, val)));
         return ret;
     }
 
@@ -262,7 +271,7 @@ class Game {
         // Weapon stuff
         if (op.weapon) {
             if (op.weapon.getAttack() > 0) {
-                op.attack += op.weapon.getAttack();
+                op.attack = op.weapon.getAttack();
                 op.weapon.resetAttackTimes();
             }
 
@@ -565,7 +574,7 @@ class Game {
 
             // Target is a player
             if (target instanceof Player) {
-                target.remHealth(attacker.attack);
+                this.attack(attacker.attack, target);
                 this.stats.update("enemyAttacks", [attacker, target]);
                 
                 attacker.attack = 0;

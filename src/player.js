@@ -144,6 +144,7 @@ class Player {
         if (!this.weapon) return false;
 
         if (triggerDeathrattle) this.weapon.activate("deathrattle");
+        this.attack -= this.weapon.getAttack();
         this.weapon.destroy();
         this.weapon = null;
     }
