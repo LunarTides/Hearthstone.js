@@ -546,13 +546,13 @@ class Interact {
 
         return this.yesNoQuestion(plr, prompt);
     }
-    discover(prompt, amount = 3, flags = [], add_to_hand = true, _cards = []) {
+    discover(prompt, cards = [], amount = 3, add_to_hand = true, _cards = []) {
         /**
-         * Asks the user a "prompt", show them "amount" cards based on "flags", if "add_to_hand", add the card chosen to the player's hand, else return the card chosen
+         * Asks the user a "prompt", show them "amount" cards. The cards are chosen from "cards". If "add_to_hand", add the card chosen to the player's hand, else return the card chosen
          * 
          * @param {string} prompt The prompt to ask
+         * @param {Card[] | Blueprint[]} cards [default=all cards] The cards to choose from
          * @param {number} amount [default=3] The amount of cards to show
-         * @param {string[]} flags [default=[]] Some flags to filter the cards shown, possible flags: ["Minion", "Spell", "Weapon"]
          * @param {boolean} add_to_hand [default=true] If it should add the card chosen to the current player's hand
          * @param {Blueprint[]} _cards [default=[]] Do not use this variable, keep it at default
          * 
@@ -562,29 +562,17 @@ class Interact {
         this.printAll(curr);
         let values = _cards;
 
+        if (!cards) cards = game.functions.getCards().filter(c => [game.player.class, "Neutral"].includes(c.class));
+        if (!cards) return;
+
+        let backup_cards = cards;
+
         if (_cards.length == 0) {
-            let possible_cards = [];
-
-            game.functions.getCards().forEach((c, _) => {
-                let type = game.functions.getType(c);
-
-                if (type == "Spell" && c.class == "Neutral") {}
-                else if (c.class === game.player.class || c.class == "Neutral") {
-                    if (flags.includes("Minion") && type !== "Minion") return;
-                    if (flags.includes("Spell") && type !== "Spell") return;
-                    if (flags.includes("Weapon") && type !== "Weapon") return;
-
-                    possible_cards.push(c);
-                }
-            });
-
-            if (possible_cards.length == 0) return;
-
             for (let i = 0; i < amount; i++) {
-                let c = game.functions.randList(possible_cards);
+                let c = game.functions.randList(cards, false);
 
                 values.push(c);
-                possible_cards.splice(possible_cards.indexOf(c), 1);
+                cards.splice(cards.indexOf(c), 1);
             }
         }
 
@@ -597,11 +585,11 @@ class Interact {
         values.forEach((v, i) => {
             v = game.functions.getCardByName(v.name);
             let stats = v.type == "Minion" ? ` [${v.getAttack()} / ${v.getHealth()}]`.brightGreen : "";
-            let desc = `(${v.desc})` || "";
+            let desc = v.desc ? `(${v.desc}) ` : "";
 
             // Check for a TypeError and ignore it
             try {
-                p += `[${i + 1}] ` + `{${v.mana}} `.cyan + game.functions.colorByRarity(`${v.displayName || v.name}`, v.rarity) + `${stats} ${desc} ` + `(${game.functions.getType(v)})`.yellow + `,\n`;
+                p += `[${i + 1}] ` + `{${v.mana}} `.cyan + game.functions.colorByRarity(`${v.displayName || v.name}`, v.rarity) + `${stats} ${desc}` + `(${game.functions.getType(v)})`.yellow + `,\n`;
             } catch (e) {}
         });
 
@@ -611,11 +599,12 @@ class Interact {
         let choice = game.input(p);
 
         if (!values[parseInt(choice) - 1]) {
-            return this.discover(prompt, amount, flags, add_to_hand, values);
+            return this.discover(prompt, backup_cards, amount, add_to_hand, values);
         }
 
         let card = values[parseInt(choice) - 1];
-        card = new game.Card(card.name, game.player);
+        if (!card instanceof game.Card) card = new game.Card(card.name, game.player);
+        else card = game.functions.cloneCard(card);
 
         if (add_to_hand) game.player.addToHand(card);
 

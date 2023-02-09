@@ -33,7 +33,7 @@ module.exports = {
             if (val == self || val.type != "Spell") return;
 
             self.storage[1].forEach(c => {
-                c[0].mana += c[1];
+                c[0].mana = c[1];
             });
 
             game.passives.splice(self.storage[0][0] - 1, 1);
@@ -45,7 +45,7 @@ module.exports = {
             if (game.player != plr) return;
 
             self.storage[1].forEach(c => {
-                c[0].mana += c[1];
+                c[0].mana = c[1];
             });
 
             if (self.storage[0].length > 1) game.passives.splice(self.storage[0][1] - 1, 1);

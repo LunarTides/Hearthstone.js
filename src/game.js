@@ -356,7 +356,7 @@ class Game {
         let echo_clone = null;
 
         if (card.keywords.includes("Echo")) {
-            echo_clone = this.functions.cloneCard(card, player); // Create an exact copy of the card played
+            echo_clone = this.functions.cloneCard(card); // Create an exact copy of the card played
             echo_clone.echo = true;
         }
 

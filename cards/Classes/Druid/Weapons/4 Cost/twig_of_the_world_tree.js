@@ -9,6 +9,6 @@ module.exports = {
     id: 27,
 
     deathrattle(plr, game, card) {
-        plr.gainMana(10);
+        plr.gainMana(10, true);
     }
 }

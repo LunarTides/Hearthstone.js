@@ -223,12 +223,11 @@ class Functions {
 
         return Object.assign(Object.create(Object.getPrototypeOf(object)), object);
     }
-    cloneCard(card, plr) {
+    cloneCard(card) {
         /**
-         * Clones a card, assigns it the to "plr", sets some essential properties
+         * Creates a perfect copy of a card, and sets some essential properties
          * 
          * @param {Card} card The card to clone
-         * @param {Player} plr The owner of the card
          * 
          * @returns {Card} Clone
          */
@@ -237,7 +236,6 @@ class Functions {
 
         clone.randomizeIds();
         clone.sleepy = true;
-        clone.plr = plr;
         clone.turn = game.turns;
 
         return clone;
@@ -661,7 +659,7 @@ class Functions {
                 if (!card) ERROR("NONEXISTANTCARD", c);
                 card = new game.Card(card.name, plr);
 
-                for (let i = 0; i < parseInt(copies); i++) _deck.push(this.cloneCard(card, plr));
+                for (let i = 0; i < parseInt(copies); i++) _deck.push(this.cloneCard(card));
 
                 let validateTest = (game.interact.validateCard(card, plr));
 

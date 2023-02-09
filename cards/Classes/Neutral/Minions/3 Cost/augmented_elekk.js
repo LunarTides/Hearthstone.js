@@ -12,6 +12,7 @@ module.exports = {
     passive(plr, game, card, key, val) {
         if (!card.passiveCheck([key, val], "cardsAddedToDeck", null, plr)) return;
         
-        plr.shuffleIntoDeck(val, false);
+        let copy = game.functions.cloneCard(val);
+        plr.shuffleIntoDeck(copy, false);
     }
 }

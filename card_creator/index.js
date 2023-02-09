@@ -56,15 +56,26 @@ const uncollectible = rl.keyInYN("Uncollectible?");
 if (uncollectible) card.uncollectible = uncollectible;
 
 let func;
+let _type = type.toLowerCase();
 
-if (type.toLowerCase() == "spell") func = "Cast";
-else func = rl.question("Function: ");
+if (_type == "spell") func = "Cast";
+else if (_type == "hero") func = "HeroPower";
+else if (_type == "location") func = "Use";
+else {
+    //func = rl.question("Function: ");
+    let reg = /^[A-Z].*?: /;
+    func = card.desc.match(reg);
+    if (!func && card.desc) func = "Passive: ";
+    else func = func[0];
+
+    func = func.slice(0, -2);
+}
 
 let triggerText = ")";
 if (func.toLowerCase() == "passive") triggerText = ", key, val)";
 if (func) func = `\n\n    ${func.toLowerCase()}(plr, game, self${triggerText} {\n\n    }`;
 
-let _type = (type == "Hero") ? "Heroe" : type;
+_type = (type == "Hero") ? "Heroe" : type;
 let path = `../cards/Classes/${card.class}/${_type}s/${card.mana} Cost/`;
 let filename = card.name.toLowerCase().replaceAll(" ", "_") + ".js";
 
@@ -82,5 +93,5 @@ fs.writeFileSync("../.latest_id", (id + 1).toString());
 if (!fs.existsSync(path)) fs.mkdirSync(path, { recursive: true });
 fs.writeFileSync(path + filename, content);
 
-console.log(path + filename);
+console.log('"' + path.replaceAll("/", "\\") + filename + '"');
 console.log(content);

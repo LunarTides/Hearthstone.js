@@ -17,7 +17,7 @@ module.exports = {
 
         plr.drawSpecific(card);
 
-        let copy = game.functions.cloneCard(card, plr);
+        let copy = game.functions.cloneCard(card);
         game.summonMinion(copy, plr);
     }
 }

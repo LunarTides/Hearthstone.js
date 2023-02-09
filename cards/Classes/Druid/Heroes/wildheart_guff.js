@@ -5,6 +5,7 @@ module.exports = {
     class: "Druid",
     rarity: "Legendary",
     set: "Fractured in Alterac Valley",
+    hpDesc: "Choose One - Draw a card; or Gain an empty Mana Crystal.",
     id: 3,
 
     battlecry(plr, game, card) {

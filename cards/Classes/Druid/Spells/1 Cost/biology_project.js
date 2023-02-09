@@ -9,10 +9,7 @@ module.exports = {
     id: 16,
 
     cast(plr, game, card) {
-        plr.maxMana += 2;
-        plr.mana += 2;
-        
-        game.opponent.maxMana += 2;
-        game.opponent.mana += 2;
+        plr.gainMana(2, true);
+        game.opponent.gainMana(2, true);
     }
 }

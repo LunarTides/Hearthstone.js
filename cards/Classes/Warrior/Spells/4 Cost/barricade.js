@@ -11,6 +11,6 @@ module.exports = {
         let minion = new game.Card("Race Guard", plr);
         
         game.summonMinion(minion, plr);
-        if (game.board[plr.id].length == 1) game.summonMinion(game.functions.cloneCard(minion, plr), plr);
+        if (game.board[plr.id].length == 1) game.summonMinion(game.functions.cloneCard(minion), plr);
     }
 }

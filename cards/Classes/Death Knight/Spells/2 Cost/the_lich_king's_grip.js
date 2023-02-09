@@ -17,7 +17,7 @@ module.exports = {
 
         game.functions.remove(plr.getOpponent().deck, minion);
 
-        minion = game.functions.cloneCard(minion, plr);
+        minion = game.functions.cloneCard(minion);
 
         plr.addToHand(minion);
     }
