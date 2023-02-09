@@ -39,6 +39,8 @@ class GameStats {
 
             // Activate spells in the players hand
             plr.hand.forEach(c => {
+                c.activate("handpassive", key, val);
+
                 if (c.type != "Spell") return;
 
                 c.activate("unpassive", true);

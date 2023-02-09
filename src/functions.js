@@ -159,6 +159,18 @@ class Functions {
 
         return _cards;
     }
+    highlander(plr) {
+        /* Returns true if the deck has no duplicates.
+         *
+         * @param {Player} plr The player to check
+         *
+         * @returns {bool} Highlander
+         */
+
+        let deck = plr.deck.map(c => c.name);
+
+        return (new Set(deck)).size == deck.length;
+    }
     getClasses() {
         /*
          * Returns all classes in the game
