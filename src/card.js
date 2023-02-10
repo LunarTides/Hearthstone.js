@@ -14,6 +14,7 @@ class Card {
         this.displayName = name;
 
         this.type = game.functions.getType(this.blueprint);
+        this.costType = "mana";
 
         this.keywords = [];
         this.storage = []; // Allow cards to store data for later use

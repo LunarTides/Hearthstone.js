@@ -347,9 +347,9 @@ class Game {
             return "traded";
         }
 
-        if (player.mana < card.mana) return "mana";
+        if (player[card.costType] < card.mana) return "mana";
 
-        player.mana -= card.mana;
+        player[card.costType] -= card.mana;
         //card.mana = card.backups.mana;
         
         player.removeFromHand(card);

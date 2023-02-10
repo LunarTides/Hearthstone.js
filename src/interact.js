@@ -325,15 +325,21 @@ class Interact {
         let input = "\nWhich card do you want to play? ";
         if (game.turns <= 2 && !game.config.debug) input += "(type 'help' for further information <- This will disappear once you end your turn) ";
     
-        const ret = this.doTurnLogic(game.input(input));
+        let user = game.input(input);
+        const ret = this.doTurnLogic(user);
         game.killMinions();
 
         if (ret === true || ret instanceof game.Card) return ret; // If there were no errors, return true.
         if (["refund", "magnetize", "traded"].includes(ret)) return ret; // Ignore these error codes
         let err;
 
+        // Get the card
+        let card = curr.hand[parseInt(user) - 1];
+        let cost = "mana";
+        if (card) cost = card.costType;
+
         // Error Codes
-        if (ret == "mana") err = "Not enough mana";
+        if (ret == "mana") err = `Not enough ${cost}`;
         else if (ret == "counter") err = "Your card has been countered";
         else if (ret == "space") err = `You can only have ${game.config.maxBoardSpace} minions on the board`;
         else if (ret == "invalid") err = "Invalid card";
@@ -546,7 +552,7 @@ class Interact {
 
         return this.yesNoQuestion(plr, prompt);
     }
-    discover(prompt, cards = [], amount = 3, add_to_hand = true, _cards = []) {
+    discover(prompt, cards = [], amount = 3, add_to_hand = true, clone = true, _cards = []) {
         /**
          * Asks the user a "prompt", show them "amount" cards. The cards are chosen from "cards". If "add_to_hand", add the card chosen to the player's hand, else return the card chosen
          * 
@@ -554,6 +560,7 @@ class Interact {
          * @param {Card[] | Blueprint[]} cards [default=all cards] The cards to choose from
          * @param {number} amount [default=3] The amount of cards to show
          * @param {boolean} add_to_hand [default=true] If it should add the card chosen to the current player's hand
+         * @param {boolean} clone [default=true] If the card chosen should be cloned before returning it.
          * @param {Blueprint[]} _cards [default=[]] Do not use this variable, keep it at default
          * 
          * @returns {Card} The card chosen.
@@ -565,7 +572,7 @@ class Interact {
         if (!cards) cards = game.functions.getCards().filter(c => [game.player.class, "Neutral"].includes(c.class));
         if (!cards) return;
 
-        let backup_cards = cards;
+        cards = cards.slice();
 
         if (_cards.length == 0) {
             for (let i = 0; i < amount; i++) {
@@ -599,12 +606,12 @@ class Interact {
         let choice = game.input(p);
 
         if (!values[parseInt(choice) - 1]) {
-            return this.discover(prompt, backup_cards, amount, add_to_hand, values);
+            return this.discover(prompt, cards, amount, add_to_hand, clone, values);
         }
 
         let card = values[parseInt(choice) - 1];
-        if (!card instanceof game.Card) card = new game.Card(card.name, game.player);
-        else card = game.functions.cloneCard(card);
+        if (!card instanceof game.Card || clone) card = new game.Card(card.name, game.player);
+        if (clone) card = game.functions.cloneCard(card);
 
         if (add_to_hand) game.player.addToHand(card);
 

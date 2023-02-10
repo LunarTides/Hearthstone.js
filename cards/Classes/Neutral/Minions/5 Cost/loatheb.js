@@ -10,13 +10,15 @@ module.exports = {
     id: 158,
 
     battlecry(plr, game, self) {
-        plr.getOpponent().hand.filter(c => c.type == "Spell").forEach(c => {
-            if (self.storage.map(k => k[0]).includes(c)) return;
-            let oldMana = c.mana;
+        let passiveIndex = game.passives.push((game, key, val) => {
+            plr.getOpponent().hand.filter(c => c.type == "Spell").forEach(c => {
+                if (self.storage.map(k => k[0]).includes(c)) return;
+                let oldMana = c.mana;
 
-            c.mana += 5;
+                c.mana += 5;
 
-            self.storage.push([c, oldMana]);
+                self.storage.push([c, oldMana]);
+            });
         });
 
         let turnEndsPassiveIndex = game.passives.push((game, key, val) => {
@@ -27,6 +29,7 @@ module.exports = {
                 c[0].mana = c[1];
             });
 
+            game.passives.splice(passiveIndex - 1, 1);
             game.passives.splice(turnEndsPassiveIndex - 1, 1);
         });
     }
