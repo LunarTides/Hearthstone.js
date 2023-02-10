@@ -22,6 +22,9 @@ module.exports = {
         game.functions.remove(plr.getOpponent().hand, opCard);
         game.functions.remove(plr.hand, plrCard);
 
+        opCard.plr = plr;
+        plrCard.plr = plr.getOpponent();
+
         // Add the cards
         plr.getOpponent().addToHand(game.functions.cloneCard(plrCard));
         plr.addToHand(game.functions.cloneCard(opCard));

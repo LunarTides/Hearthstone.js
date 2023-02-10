@@ -173,7 +173,7 @@ class AI {
 
             if (side == "self") ret = this.plr;
             else if (side == "enemy") ret = op;
-            _ret = (ret instanceof game.Player) ? "P" + (ret.id + 1) : ret;
+            let _ret = (ret instanceof game.Player) ? "P" + (ret.id + 1) : ret;
 
             this.history.push(["selectTarget", _ret]);
 
@@ -184,9 +184,11 @@ class AI {
         if (game.board[sid].length <= 0) {
             let ret = -1;
 
-            if (force_class != "minion") ret = game["player" + (sid + 1)];
-            
-            this.history.push(["selectTarget", "P" + (ret.id + 1)]);
+            if (force_class != "minion") {
+                ret = game["player" + (sid + 1)];
+                this.history.push(["selectTarget", "P" + (ret.id + 1)]);
+            }
+            else this.history.push(["selectTarget", -1]);
 
             return ret;
         }
@@ -224,7 +226,8 @@ class AI {
         selected = best_minion;
 
         if (selected) {
-            this.history.push(["selectTarget", [selected.name, best_score]]);
+            this.history.push(["selectTarget", `${selected.name},${best_score}`]);
+            //this.history.push(["selectTarget", [selected.name, best_score]]);
 
             return selected;
         }
