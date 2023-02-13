@@ -252,6 +252,29 @@ class Functions {
 
         return clone;
     }
+    doPlayerTargets(plr, callback) {
+        /**
+         * Calls "callback" on all "plr"'s targets 
+         *
+         * @param {Player} plr The player
+         * @param {function} callback The callback to call (args: {Card | Player})
+         */
+
+        game.board[plr.id].forEach(m => {
+            callback(m);
+        });
+
+        callback(plr);
+    }
+    addTempPassive(key, checkCallback, callback) {
+        let passiveIndex = game.passives.push((_, _key, _val) => {
+            if (_key != key || !checkCallback(_key, _val)) return;
+
+            callback();
+
+            game.passives.splice(passiveIndex - 1, 1);
+        });
+    }
 
     // Damage
     spellDmg(target, damage) {

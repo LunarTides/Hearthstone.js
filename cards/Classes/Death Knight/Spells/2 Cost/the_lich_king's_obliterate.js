@@ -14,6 +14,6 @@ module.exports = {
         if (!minion) return -1;
 
         game.attack(minion.getHealth(), plr);
-        minion.destroy();
+        minion.kill();
     }
 }

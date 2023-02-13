@@ -80,15 +80,14 @@ let path = `../cards/Classes/${card.class}/${_type}s/${card.mana} Cost/`;
 let filename = card.name.toLowerCase().replaceAll(" ", "_") + ".js";
 
 let id = parseInt(fs.readFileSync("../.latest_id", "utf8"));
-
+_id = card.uncollectible ? "" : `\n    id: ${id},`; // Don't add an id if the card is uncollectible. Id's are only used when creating/importing a deck.
 
 let content = Object.entries(card).map(c => `${c[0]}: ${(typeof(c[1]) == "string" && c[1][0] != "[") ? '"' + c[1] + '"' : c[1]}`);
 content = `module.exports = {
-    ${content.join(',\n    ')},
-    id: ${id},${func}
+    ${content.join(',\n    ')},${_id}${func}
 }`;
 
-fs.writeFileSync("../.latest_id", (id + 1).toString());
+if (!card.uncollectible) fs.writeFileSync("../.latest_id", (id + 1).toString());
 
 if (!fs.existsSync(path)) fs.mkdirSync(path, { recursive: true });
 fs.writeFileSync(path + filename, content);
