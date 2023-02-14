@@ -76,7 +76,18 @@ if (func.toLowerCase() == "passive") triggerText = ", key, val)";
 if (func) func = `\n\n    ${func.toLowerCase()}(plr, game, self${triggerText} {\n\n    }`;
 
 _type = (type == "Hero") ? "Heroe" : type;
-let path = `../cards/Classes/${card.class}/${_type}s/${card.mana} Cost/`;
+
+let _class = card.class;
+if (card.class.split(" / ").length > 1) {
+    let __class = card.class.split(" / ");
+
+    __class.forEach(c => {
+        _class += `${c}/`;
+    });
+
+    _class.slice(0, -1);
+}
+let path = `../cards/Classes/${_class}/${_type}s/${card.mana} Cost/`;
 let filename = card.name.toLowerCase().replaceAll(" ", "_") + ".js";
 
 let id = parseInt(fs.readFileSync("../.latest_id", "utf8"));
