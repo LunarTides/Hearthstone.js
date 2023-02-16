@@ -386,7 +386,7 @@ class Card {
             }
 
             this.plr.addToHand(this, false);
-            this.plr.mana += this.mana;
+            this.plr[this.costType] += this.mana;
             ret = -1;
 
             // Return from the for loop

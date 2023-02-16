@@ -375,7 +375,10 @@ class Game {
         // If the board has max capacity, and the card played is a minion or location card, prevent it.
         if (board.length >= this.config.maxBoardSpace && ["Minion", "Location"].includes(card.type)) {
             player.addToHand(card, false);
-            player.refreshMana(card.mana);
+
+            if (card.costType == "mana") player.refreshMana(card.mana);
+            else player[card.costType] += card.mana;
+
             return "space";
         }
 

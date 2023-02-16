@@ -1029,9 +1029,23 @@ class Interact {
     
         curr.hand.forEach((card, i) => {
             const desc = card.desc.length > 0 ? ` (${card.desc}) ` : " ";
+
+            let mana = `{${card.mana}} `;
+            switch (card.costType) {
+                case "mana":
+                    mana = mana.cyan;
+                    break;
+                case "armor":
+                    mana = mana.gray;
+                    break;
+                case "health":
+                    mana = mana.red;
+                default:
+                    break;
+            }
     
             sb += `[${i + 1}] `;
-            sb += `{${card.mana}} `.cyan;
+            sb += mana;
             sb += game.functions.colorByRarity(card.displayName, card.rarity);
             
             if (card.type === "Minion" || card.type === "Weapon") {
