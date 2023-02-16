@@ -214,6 +214,10 @@ class Player {
 
         return true;
     }
+    getHealth() {
+        // I have this here for compatibility with minions
+        return this.health;
+    }
 
     // Hand / Deck
     shuffleIntoDeck(card, updateStats = true) {

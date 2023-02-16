@@ -66,6 +66,7 @@ else {
     let reg = /^[A-Z].*?: /;
     func = card.desc.match(reg);
     if (!func && card.desc) func = "Passive: ";
+    else if (!card.desc) func = "";
     else func = func[0];
 
     func = func.slice(0, -2);
