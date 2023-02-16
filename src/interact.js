@@ -569,10 +569,11 @@ class Interact {
         this.printAll(curr);
         let values = _cards;
 
-        if (!cards) cards = Object.values(game.functions.getCards()).filter(c => [game.player.class, "Neutral"].includes(c.class));
+        if (!cards) cards = Object.values(game.functions.getCards()).filter(c => [game.player.heroClass, "Neutral"].includes(c.class));
         if (!cards) return;
 
         cards = cards.slice();
+        if (amount > cards.length) amount = cards.length;
 
         if (_cards.length == 0) {
             for (let i = 0; i < amount; i++) {

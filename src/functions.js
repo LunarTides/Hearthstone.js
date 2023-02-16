@@ -679,6 +679,9 @@ class Functions {
         let deck = code.split(",");
         let _deck = [];
 
+        let maxDeckLength = game.config.maxDeckLength;
+        let minDeckLength = game.config.minDeckLength;
+
         let processed = 0;
 
         copyDef.split(",").forEach(c => {
@@ -695,6 +698,11 @@ class Functions {
                 card = new game.Card(card.name, plr);
 
                 for (let i = 0; i < parseInt(copies); i++) _deck.push(this.cloneCard(card));
+
+                if (card.settings) {
+                    if (card.settings.maxDeckSize) maxDeckLength = card.settings.maxDeckSize;
+                    if (card.settings.minDeckSize) minDeckLength = card.settings.minDeckSize;
+                }
 
                 let validateTest = (game.interact.validateCard(card, plr));
 
@@ -723,8 +731,8 @@ class Functions {
             processed += times;
         });
 
-        let max = game.config.maxDeckLength;
-        let min = game.config.minDeckLength;
+        let max = maxDeckLength;
+        let min = minDeckLength;
 
         if ((_deck.length < min || _deck.length > max) && game.config.validateDecks) {
             game.input("The deck needs ".red + ((min == max) ? `exactly `.red + `${max}`.yellow : `between`.red + `${min}-${max}`.yellow) + ` cards. Your deck has: `.red + `${_deck.length}`.yellow + `.\n`.red);

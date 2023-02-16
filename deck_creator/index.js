@@ -30,6 +30,9 @@ let runes = "";
 
 let plr = new game.Player("");
 
+let maxDeckLength = config.maxDeckLength;
+let minDeckLength = config.minDeckLength;
+
 function askClass() {
     game.interact.printName();
     let _class = game.input("What class to you want to choose?\n" + classes.join(", ") + "\n");
@@ -88,8 +91,8 @@ function showConfig() {
 
     console.log("# Validation: " + (config.validateDecks ? "ON".green : "OFF".red));
 
-    console.log("#\n# Rule 1. Minimum Deck Length: " + config.minDeckLength.toString().yellow);
-    console.log("# Rule 2. Maximum Deck Length: " + config.maxDeckLength.toString().yellow);
+    console.log("#\n# Rule 1. Minimum Deck Length: " + minDeckLength.toString().yellow);
+    console.log("# Rule 2. Maximum Deck Length: " + maxDeckLength.toString().yellow);
 
     console.log("#\n# Rule 3. Maximum amount of cards for each card (eg. You can only have: " + "x".yellow + " Seances in a deck): " + config.maxOfOneCard.toString().yellow);
     console.log("# Rule 4. Maximum amount of cards for each legendary card (Same as Rule 3 but for legendaries): " + config.maxOfOneLegendary.toString().yellow);
@@ -137,6 +140,11 @@ function viewCard(c) {
 
 function add(c) {
     deck.push(c);
+
+    if (!c.settings) return;
+
+    maxDeckLength = c.settings.maxDeckSize || maxDeckLength
+    minDeckLength = c.settings.minDeckSize || minDeckLength
 }
 function remove(c) {
     deck.splice(deck.indexOf(c), 1);
@@ -171,10 +179,10 @@ function viewDeck() {
 
 function deckcode() {
     // Deck size warnings
-    if (deck.length < config.minDeckLength) {
+    if (deck.length < minDeckLength) {
         console.log("WARNING: Rule 1 violated.".yellow);
     }
-    if (deck.length > config.maxDeckLength) {
+    if (deck.length > maxDeckLength) {
         console.log("WARNING: Rule 2 violated.".yellow);
     }
 
