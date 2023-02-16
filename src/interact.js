@@ -1040,6 +1040,7 @@ class Interact {
                     break;
                 case "health":
                     mana = mana.red;
+                    break;
                 default:
                     break;
             }

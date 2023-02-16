@@ -104,5 +104,7 @@ if (!card.uncollectible) fs.writeFileSync("../.latest_id", (id + 1).toString());
 if (!fs.existsSync(path)) fs.mkdirSync(path, { recursive: true });
 fs.writeFileSync(path + filename, content);
 
-console.log('"' + path.replaceAll("/", "\\") + filename + '"');
-console.log(content);
+let _path = path.replaceAll("/", "\\") + filename;
+console.log('File created at: "' + _path + '"');
+
+require("child_process").exec(`start vim "${_path}"`);
