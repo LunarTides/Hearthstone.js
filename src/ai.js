@@ -113,7 +113,7 @@ class AI {
 
         // If the AI has no minions to attack, attack the enemy hero
         if (!target) {
-            if (!taunts.length) target = this.plr.getOpponent();
+            if (!taunts.length && attacker.canAttackHero || true) target = this.plr.getOpponent();
             else {
                 attacker = -1;
                 target = -1;
@@ -249,7 +249,7 @@ class AI {
 
         // Look for highest score
         cards.forEach(c => {
-            let score = this.analyzePositiveCard(c);
+            let score = this.analyzePositiveCard(new game.Card(c.name, this.plr));
 
             if (score <= best_score) return;
 

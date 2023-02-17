@@ -115,7 +115,7 @@ class Player {
 
         if (this.overload > this.mana + plus) this.overload = this.mana + plus;
 
-        game.stats.update("overloadGained", overload);
+        game.stats.update("overloadGained", overload, this);
     }
 
     // Weapons
@@ -161,7 +161,7 @@ class Player {
 
         this.attack += amount;
 
-        game.stats.update("heroAttackGained", amount);
+        game.stats.update("heroAttackGained", amount, this);
     }
     addHealth(amount) {
         /**
@@ -198,14 +198,14 @@ class Player {
 
         this.health -= a;
 
-        game.stats.update("damageTaken", amount);
+        game.stats.update("damageTaken", [this, amount], this);
 
         if (game.player == this) {
-            game.stats.update("damageTakenOnOwnTurn", amount);
+            game.stats.update("damageTakenOnOwnTurn", amount, this);
         }
 
         if (this.health <= 0) {
-            this.game.stats.update("fatalDamageTimes", 1);
+            this.game.stats.update("fatalDamageTimes", 1, this);
 
             if (this.health <= 0) { // This is done to allow secrets to prevent death
                 this.game.endGame(game.opponent);
@@ -235,7 +235,7 @@ class Player {
         this.deck.splice(pos, 0, card);
 
         if (updateStats) {
-            this.game.stats.update("cardsAddedToDeck", card);
+            this.game.stats.update("cardsAddedToDeck", card, this);
         }
 
         this.deck = game.functions.shuffle(this.deck);
@@ -251,7 +251,7 @@ class Player {
 
         this.deck = [card, ...this.deck];
 
-        this.game.stats.update("cardsAddedToDeck", card);
+        this.game.stats.update("cardsAddedToDeck", card, this);
     }
     drawCard(update = true) {
         /**
@@ -277,8 +277,8 @@ class Player {
         this.addToHand(card, false);
 
         if (update) {
-            game.stats.update("cardsDrawn", card);
-            game.stats.update("cardsDrawnThisTurn", card);
+            game.stats.update("cardsDrawn", card, this);
+            game.stats.update("cardsDrawnThisTurn", card, this);
         }
 
         return card;
@@ -302,8 +302,8 @@ class Player {
         this.addToHand(card, false);
 
         if (update) {
-            game.stats.update("cardsDrawn", card);
-            game.stats.update("cardsDrawnThisTurn", card);
+            game.stats.update("cardsDrawn", card, this);
+            game.stats.update("cardsDrawnThisTurn", card, this);
         }
 
         return card;
@@ -321,7 +321,7 @@ class Player {
         if (this.hand.length >= 10) return;
         this.hand.push(card);
 
-        if (updateStats) game.stats.update("cardsAddedToHand", card);
+        if (updateStats) game.stats.update("cardsAddedToHand", card, this);
     }
     removeFromHand(card) {
         /**
@@ -386,7 +386,7 @@ class Player {
         this.mana -= this.heroPowerCost;
         this.canUseHeroPower = false;
 
-        game.stats.update("heroPowers", this.heroClass);
+        game.stats.update("heroPowers", this.heroClass, this);
         return true;
     }
 

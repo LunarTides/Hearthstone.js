@@ -210,10 +210,10 @@ class Card {
         if (!restore) return this.resetMaxHealth(true);
 
         if (this.getHealth() > this.maxHealth) {
-            if (this.getHealth() > before) game.stats.update("restoredHealth", this.maxHealth);
+            if (this.getHealth() > before) game.stats.update("restoredHealth", this.maxHealth, this.plr);
             this.stats[1] = this.maxHealth;
         } else if (this.getHealth() > before) {
-            game.stats.update("restoredHealth", this.getHealth());
+            game.stats.update("restoredHealth", this.getHealth(), this.plr);
         }
     }
     addAttack(amount) {
@@ -239,7 +239,7 @@ class Card {
         if (this.immune) return true;
 
         this.setStats(this.getAttack(), this.getHealth() - amount);
-        game.stats.update("minionsDamaged", [this, amount]);
+        game.stats.update("minionsDamaged", [this, amount], this.plr);
 
         if (this.type == "Weapon" && this.getHealth() <= 0) {
             this.plr.destroyWeapon(true);

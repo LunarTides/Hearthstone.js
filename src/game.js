@@ -9,6 +9,8 @@ const { AI }        = require('./ai');
 class GameStats {
     constructor(game) {
         this.game = game;
+
+        this.history = {};
     }
 
     cardUpdate(key, val) {
@@ -56,7 +58,7 @@ class GameStats {
 
         this.game.activatePassives(key, val);
     }
-    questUpdate(quests_name, key, val, plr = this.game.player) {
+    questUpdate(quests_name, key, val, plr) {
         plr[quests_name].forEach(s => {
             if (s["key"] != key) return;
 
@@ -74,16 +76,18 @@ class GameStats {
         });
     }
 
-    update(key, val) {
+    update(key, val, plr) {
         if (!this[key]) this[key] = [[], []];
+        if (!this.history[this.game.turns]) this.history[this.game.turns] = [];
 
-        this[key][this.game.player.id].push([val, this.game.turns]);
+        this[key][plr.id].push([val, this.game.turns]);
+        this.history[this.game.turns].push([key, val, plr]);
 
         this.cardUpdate(key, val);
 
-        this.questUpdate("secrets",    key, val, this.game.opponent);
-        this.questUpdate("sidequests", key, val);
-        this.questUpdate("quests",     key, val);
+        this.questUpdate("secrets",    key, val, plr.getOpponent());
+        this.questUpdate("sidequests", key, val, plr);
+        this.questUpdate("quests",     key, val, plr);
     }
 
     increment(player, key, amount = 1) {
@@ -237,7 +241,7 @@ class Game {
         this.killMinions();
 
         // Update stats
-        this.stats.update("turnEnds", this.turns);
+        this.stats.update("turnEnds", this.turns, this.player);
         this.stats.cardsDrawnThisTurn = [[], []];
 
         let plr = this.player;
@@ -253,7 +257,7 @@ class Game {
         if (plr.weapon) plr.weapon.activate("endofturn");
 
         // Trigger unspent mana
-        if (plr.mana > 0) this.stats.update("unspentMana", plr.mana);
+        if (plr.mana > 0) this.stats.update("unspentMana", plr.mana, plr);
 
         // Remove echo cards
         plr.hand = plr.hand.filter(c => !c.echo);
@@ -263,7 +267,7 @@ class Game {
         // Turn starts
         this.turns++;
 
-        this.stats.update("turnStarts", this.turns);
+        this.stats.update("turnStarts", this.turns, op);
         
         // Mana stuff
         op.gainEmptyMana(1, true);
@@ -458,7 +462,7 @@ class Game {
 
         if (echo_clone) player.addToHand(echo_clone);
 
-        this.stats.update("cardsPlayed", card);
+        this.stats.update("cardsPlayed", card, player);
         let stat = this.stats.cardsPlayed[player.id];
 
         // If the previous card played was played on the same turn as this one, activate combo
@@ -492,7 +496,7 @@ class Game {
         // If the board has max capacity, and the card played is a minion or location card, prevent it.
         if (this.board[player.id].length >= this.config.maxBoardSpace) return "space";
 
-        if (update) this.stats.update("minionsSummoned", minion);
+        if (update) this.stats.update("minionsSummoned", minion, player);
 
         player.spellDamage = 0;
 
@@ -580,7 +584,7 @@ class Game {
             // Target is a player
             if (target instanceof Player) {
                 this.attack(attacker.attack, target);
-                this.stats.update("enemyAttacks", [attacker, target]);
+                this.stats.update("enemyAttacks", [attacker, target], attacker);
                 
                 attacker.attack = 0;
                 if (!attacker.weapon) return true;
@@ -602,7 +606,7 @@ class Game {
             if (target.keywords.includes("Stealth")) return "stealth";
     
             this.attack(attacker.attack, target);
-            this.stats.update("enemyAttacks", [attacker, target]);
+            this.stats.update("enemyAttacks", [attacker, target], attacker);
 
             this.killMinions();
 
@@ -644,7 +648,7 @@ class Game {
 
             target.remHealth(attacker.getAttack());
             attacker.decAttack();
-            this.stats.update("enemyAttacks", [attacker, target]);
+            this.stats.update("enemyAttacks", [attacker, target], attacker.plr);
 
             return true;
         }
@@ -698,7 +702,7 @@ class Game {
         if (dmgTarget && attacker.keywords.includes("Poisonous")) target.kill();
 
         if (dmgTarget) target.remStats(0, attacker.getAttack())
-        this.stats.update("enemyAttacks", [attacker, target]);
+        this.stats.update("enemyAttacks", [attacker, target], attacker.plr);
 
         if (target.getHealth() > 0 && target.activate("frenzy") !== -1) target.frenzy = undefined;
         if (target.getHealth() < 0) attacker.activate("overkill");
@@ -731,7 +735,7 @@ class Game {
                     return;
                 }
 
-                this.stats.update("minionsKilled", m);
+                this.stats.update("minionsKilled", m, this.player);
                 m.turnKilled = this.turns;
 
                 if (!m.keywords.includes("Reborn")) {

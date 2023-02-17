@@ -289,7 +289,7 @@ class Functions {
 
         const dmg = this.accountForSpellDmg(damage);
 
-        game.stats.update("spellsThatDealtDamage", [target, dmg]);
+        game.stats.update("spellsThatDealtDamage", [target, dmg], game.player);
         game.attack(dmg, target);
 
         return target.getHealth();

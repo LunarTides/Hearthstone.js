@@ -142,9 +142,10 @@ class Interact {
 
             console.log("end        - Ends your turn");
             console.log("attack     - Attack");
+            console.log("hero power - Use your hero power");
+            console.log("history    - Displays a history of actions");
             console.log("concede    - Forfeits the game");
             console.log("view       - View a minion");
-            console.log("hero power - Use your hero power");
             console.log("use        - Use a location card");
             console.log("detail     - Get more details about opponent");
             console.log("help       - Displays this message");
@@ -182,6 +183,60 @@ class Interact {
         else if (q == "license") {
             let start = (process.platform == 'darwin' ? 'open' : process.platform == 'win32' ? 'start' : 'xdg-open');
             require('child_process').exec(start + ' ' + license_url);
+        }
+        else if (q == "history") {
+            console.log("\nWARNING: The history feature is not perfect. Things will be out of order. Sorry about that.".yellow);
+            // History
+            let history = game.stats.history;
+
+            const doVal = (val, plr, hide) => {
+                if (val instanceof game.Card) {
+                    if (hide && val.plr != plr) val = "Hidden";
+                    else val = val.displayName;
+                }
+                else if (val instanceof game.Player) val = `Player ${val.id + 1}`;
+
+                return val;
+            }
+
+            Object.values(history).forEach((h, t) => {
+                let hasPrintedHeader = false;
+
+                h.forEach(c => {
+                    let [key, val, plr] = c;
+
+                    let bannedKeys = ["turnEnds", "turnStarts", "cardsDrawnThisTurn", "unspentMana", "damageTakenOnOwnTurn"];
+                    if (bannedKeys.includes(key)) return;
+
+                    let hideValueKeys = ["cardsDrawn", "cardsAddedToHand", "cardsAddedToDeck"]; // Example: If a card gets drawn, the other player can't see what card it was
+                    let shouldHide = hideValueKeys.includes(key);
+
+                    //if (key == "cardsDrawn") plr = plr.getOpponent(); // cardsDrawn gets called before the game switches who's turn it is. cardsDrawn is also always the first not banned key that gets called.
+
+                    if (!hasPrintedHeader) console.log(`\nTurn ${t + 1} - Player [${plr.name}]`); 
+                    hasPrintedHeader = true;
+
+                    val = doVal(val, game.player, shouldHide);
+
+                    if (val instanceof Array) {
+                        let strbuilder = "";
+
+                        val.forEach(v => {
+                            v = doVal(v, game.player, shouldHide);
+                            strbuilder += `${v}, `;
+                        });
+
+                        strbuilder = strbuilder.slice(0, -2);
+                        val = strbuilder;
+                    }
+
+                    key = key[0].toUpperCase() + key.slice(1);
+
+                    console.log(`${key}: ${val}`);
+                });
+            });
+
+            game.input("\nPress enter to continue...");
         }
 
         else if (q.startsWith("/give ")) {
@@ -708,7 +763,7 @@ class Interact {
             // elusive can be set to any value other than true to prevent targetting but not update
             // spells cast on minions
             if (elusive === true) {
-                game.stats.update("spellsCastOnMinions", minion);
+                game.stats.update("spellsCastOnMinions", minion, game.player);
             }
             return false;
         }
