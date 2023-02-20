@@ -20,11 +20,6 @@ module.exports = {
     },
 
     deathrattle(plr, game, self) {
-        let cards = game.board[plr.id].filter(m => m.type == "Minion" && m.tribe.includes("Undead") && m != self);
-        let card = game.functions.randList(cards, false);
-        if (!card) return;
-
-        card.addStats(5, 5);
-        card.addKeyword("Taunt");
+        self.activateBattlecry();
     }
 }

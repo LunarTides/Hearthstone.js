@@ -13,13 +13,13 @@ module.exports = {
             m.stats[0] = 1;
         });
 
-        game.functions.addTempPassive("turnStarts", (key, val) => {
+        game.functions.addPassive("turnStarts", (key, val) => {
             return game.player != plr;
         },
         () => {
             self.storage.forEach(v => {
                 v[0].stats[0] += v[1] - 1;
             });
-        });
+        }, 1);
     }
 }

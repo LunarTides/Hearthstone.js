@@ -266,13 +266,16 @@ class Functions {
 
         callback(plr);
     }
-    addTempPassive(key, checkCallback, callback) {
+    addPassive(key, checkCallback, callback, lifespan = 1) {
+        let times = 0;
+
         let passiveIndex = game.passives.push((_, _key, _val) => {
             if (_key != key || !checkCallback(_key, _val)) return;
 
-            callback();
+            let override = callback();
+            times++;
 
-            game.passives.splice(passiveIndex - 1, 1);
+            if (times == lifespan || override) game.passives.splice(passiveIndex - 1, 1);
         });
     }
 

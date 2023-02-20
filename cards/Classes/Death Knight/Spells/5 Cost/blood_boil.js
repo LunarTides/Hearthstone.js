@@ -16,10 +16,12 @@ module.exports = {
             infected.push(m);
         });
 
-        let passiveIndex = game.passives.push((_, key, val) => {
-            if (key != "turnEnds" || game.player != plr) return;
-
+        game.functions.addPassive("turnEnds", (key, val) => {
+            return game.player == plr;
+        },
+        () => {
             let _infected = infected.slice();
+
             _infected.forEach(m => {
                 if (m.getHealth() <= 0) {
                     game.functions.remove(infected, m);
@@ -34,8 +36,7 @@ module.exports = {
 
             if (infected.length > 0) return;
 
-            // This passive is now useless as there is no more infected minions.
-            game.passives.splice(passiveIndex - 1, 1);
-        });
+            return true; // This will remove the passive
+        }, -1); // -1 means the passive lasts forever, or until the callback returns true
     }
 }

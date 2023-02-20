@@ -21,9 +21,9 @@ module.exports = {
         target.destroy();
         game.summonMinion(clone, plr);
 
-        game.functions.addTempPassive("turnEnds", () => {}, () => {
+        game.functions.addPassive("turnEnds", () => {}, () => {
             clone.destroy();
             game.summonMinion(backup, plr.getOpponent());
-        });
+        }, 1);
     }
 }

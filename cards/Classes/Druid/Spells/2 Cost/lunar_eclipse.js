@@ -30,7 +30,7 @@ module.exports = {
         let reverted = false;
 
         // Remove reduction when card played
-        game.functions.addTempPassive("cardsPlayed",
+        game.functions.addPassive("cardsPlayed",
             // Test value
             (key, val) => {
                 return val != self && val.type == "Spell" && !reverted;
@@ -48,7 +48,7 @@ module.exports = {
         );
 
         // Remove reduction when turn ends
-        game.functions.addTempPassive("turnEnds",
+        game.functions.addPassive("turnEnds",
             (key, val) => {
                 return game.player == plr && !reverted;
             },

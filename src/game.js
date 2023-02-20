@@ -76,12 +76,12 @@ class GameStats {
         });
     }
 
-    update(key, val, plr) {
+    update(key, val, plr, updateHistory = true) {
         if (!this[key]) this[key] = [[], []];
-        if (!this.history[this.game.turns]) this.history[this.game.turns] = [];
+        if (updateHistory && !this.history[this.game.turns]) this.history[this.game.turns] = [];
 
         this[key][plr.id].push([val, this.game.turns]);
-        this.history[this.game.turns].push([key, val, plr]);
+        if (updateHistory) this.history[this.game.turns].push([key, val, plr]);
 
         this.cardUpdate(key, val);
 
@@ -386,6 +386,15 @@ class Game {
             return "space";
         }
 
+        // Add cardsplayed to history
+        let historyIndex;
+        if (!this.stats.history[this.turns]) this.stats.history[this.turns] = [];
+        historyIndex = this.stats.history[this.turns].push(["cardsPlayed", card, this.player]);
+
+        const removeFromHistory = () => {
+            this.stats.history[this.turns].splice(historyIndex - 1, 1);
+        }
+
         if (card.type === "Minion") {
             // Magnetize
             if (card.keywords.includes("Magnetic") && board.length > 0) {
@@ -427,11 +436,19 @@ class Game {
             }
 
             if (card.dormant) card.dormant += this.turns;
-            else if (card.activateBattlecry() === -1) return "refund";
+            else if (card.activateBattlecry() === -1) {
+                removeFromHistory();
+
+                return "refund";
+            }
 
             ret = this.summonMinion(card, player, false);
         } else if (card.type === "Spell") {
-            if (card.activate("cast") === -1) return "refund";
+            if (card.activate("cast") === -1) {
+                removeFromHistory();
+
+                return "refund";
+            }
 
             if (card.keywords.includes("Twinspell")) {
                 card.removeKeyword("Twinspell");
@@ -462,7 +479,7 @@ class Game {
 
         if (echo_clone) player.addToHand(echo_clone);
 
-        this.stats.update("cardsPlayed", card, player);
+        this.stats.update("cardsPlayed", card, player, false);
         let stat = this.stats.cardsPlayed[player.id];
 
         // If the previous card played was played on the same turn as this one, activate combo
