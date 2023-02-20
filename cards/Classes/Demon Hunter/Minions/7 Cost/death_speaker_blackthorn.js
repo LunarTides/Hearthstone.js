@@ -12,7 +12,7 @@ module.exports = {
     battlecry(plr, game, self) {
         let list = plr.deck.filter(c => c.type == "Minion" && c.deathrattle || false);
 
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i <= list.length; i++) {
             let minion = game.functions.randList(list, false);
             game.functions.remove(list, minion);
 

@@ -88,6 +88,9 @@ if (card.class.split(" / ").length > 1) {
 
     _class.slice(0, -1);
 }
+
+if (card.desc.startsWith("Secret: ")) _type = "Secret";
+
 let path = `../cards/Classes/${_class}/${_type}s/${card.mana} Cost/`;
 let filename = card.name.toLowerCase().replaceAll(" ", "_") + ".js";
 
@@ -107,4 +110,4 @@ fs.writeFileSync(path + filename, content);
 let _path = path.replaceAll("/", "\\") + filename;
 console.log('File created at: "' + _path + '"');
 
-require("child_process").exec(`start vim "${_path}"`);
+if (func) require("child_process").exec(`start vim "${_path}"`);
