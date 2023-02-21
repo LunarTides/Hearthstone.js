@@ -63,13 +63,13 @@ else if (_type == "hero") func = "HeroPower";
 else if (_type == "location") func = "Use";
 else {
     //func = rl.question("Function: ");
-    let reg = /^[A-Z].*?: /;
+    let reg = /[A-Z][a-z].*?:/;
     func = card.desc.match(reg);
     if (!func && card.desc) func = "Passive: ";
     else if (!card.desc) func = "";
     else func = func[0];
 
-    func = func.slice(0, -2);
+    func = func.slice(0, -1);
 }
 
 let triggerText = ")";

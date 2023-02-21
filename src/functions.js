@@ -262,6 +262,9 @@ class Functions {
                     case "w":
                         ret = ret.white;
                         break;
+                    case "a":
+                        ret = ret.gray;
+                        break;
 
                     case "R":
                         current_types = [];

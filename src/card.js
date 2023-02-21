@@ -433,6 +433,9 @@ class Card {
 
         return ret;
     }
+    clearCondition() {
+        this.desc += " (Condition cleared)".gray;
+    }
     manathirst(m, t = "", f = "") {
         /**
          * Returns t if "m" is more than or equal to the player's max mana

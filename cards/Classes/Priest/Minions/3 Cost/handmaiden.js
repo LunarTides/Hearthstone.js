@@ -15,7 +15,7 @@ module.exports = {
         if (self.storage.length == 0) self.storage.push(0);
         self.storage[0]++;
 
-        if (self.storage[0] >= 3) self.desc = self.backups.desc + " (Condition cleared)".gray;
+        if (self.storage[0] >= 3) self.clearCondition();
     },
 
     battlecry(plr, game, self) {
