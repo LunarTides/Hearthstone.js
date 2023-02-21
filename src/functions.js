@@ -224,6 +224,86 @@ class Functions {
 
         return str;
     }
+    parseTags(str) {
+        /**
+         * Parses color tags in "str". Example: "&bBattlecry: &rChoose a minion. Silence then destroy it."
+         *
+         * @param {string} str The string to parse
+         *
+         * @returns {string} The resulting string
+         */
+
+        const appendTypes = (c) => {
+            let ret = c;
+
+            current_types.forEach(t => {
+                switch (t) {
+                    case "r":
+                        ret = ret.red;
+                        break;
+                    case "g":
+                        ret = ret.green;
+                        break;
+                    case "b":
+                        ret = ret.blue;
+                        break;
+                    case "c":
+                        ret = ret.cyan;
+                        break;
+                    case "m":
+                        ret = ret.magenta;
+                        break;
+                    case "y":
+                        ret = ret.yellow;
+                        break;
+                    case "k":
+                        ret = ret.black;
+                        break;
+                    case "w":
+                        ret = ret.white;
+                        break;
+
+                    case "R":
+                        current_types = [];
+
+                        ret = ret.reset;
+                        break;
+                    case "B":
+                        ret = ret.bold;
+                        break;
+                    case "U":
+                        ret = ret.underline;
+                        break;
+                }
+            });
+
+            return ret;
+        }
+
+        let strbuilder = "";
+        let current_types = [];
+
+        // Loop through the characters in str
+        str.split("").forEach((c, i) => {
+            if (c != "&") {
+                if (i > 0 && str[i - 1] == "&") return; // Don't add the character if a & precedes it.
+
+                strbuilder += appendTypes(c);
+                return;
+            }
+
+            // c == "&"
+            if (i > 0 && str[i - 1] == "\\") { // If there is a backslash before the &, add the & to the string
+                strbuilder += appendTypes(c);
+                return;
+            }
+
+            let type = str[i + 1];
+            current_types.push(type);
+        });
+
+        return strbuilder;
+    }
     cloneObject(object) {
         /**
          * Clones the "object" and returns the clone

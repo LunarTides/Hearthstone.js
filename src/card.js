@@ -61,6 +61,8 @@ class Card {
             this[i] = this.blueprint[i] || false;
         });
 
+        this.desc = game.functions.parseTags(this.desc);
+
         // Make a backup of "this" to be used when silencing this card
         let backups = {};
         Object.entries(this).forEach(i => backups[i[0]] = i[1]);
