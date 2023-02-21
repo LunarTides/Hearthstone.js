@@ -634,7 +634,7 @@ class Functions {
 
         let cards = [];
 
-        list = array.filter(c => c.type == "Minion");
+        list = list.filter(c => c.type == "Minion");
         list.forEach(c => {
             if (times >= amount) return;
 
@@ -645,7 +645,7 @@ class Functions {
         });
 
         cards.forEach(c => {
-            this.remove(list, c);
+            this.remove(plr.deck, c);
         });
 
         return cards;
