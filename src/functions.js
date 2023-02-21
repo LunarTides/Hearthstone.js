@@ -616,25 +616,26 @@ class Functions {
                 break;
         }
     }
-    recruit(plr = game.player, amount = 1, mana_range = [0, 10]) {
+    recruit(plr, list = null, amount = 1) {
         /**
          * Put's a minion within "mana_range" from the plr's deck, into the board
          * 
          * @param {Player} plr [default=current player] The player
+         * @param {Card[]} list [default=current player's deck] The list to recruit from
          * @param {number} amount [default=1] The amount of minions to recruit
-         * @param {number[]} mana_range [default=[0, 10]] The minion recruited's mana has to be more than mana_range[0] and less than mana_range[1]
          * 
          * @returns {Card[]} Returns the cards recruited
          */
 
-        let array = this.shuffle(plr.deck)
+        if (list == null) list = plr.deck;
+        list = this.shuffle(list.slice());
 
         let times = 0;
 
         let cards = [];
 
-        array = array.filter(c => c.type == "Minion" && c.mana >= mana_range[0] && c.mana <= mana_range[1]);
-        array.forEach(c => {
+        list = array.filter(c => c.type == "Minion");
+        list.forEach(c => {
             if (times >= amount) return;
 
             game.summonMinion(new game.Card(c.name, plr), plr);
@@ -644,7 +645,7 @@ class Functions {
         });
 
         cards.forEach(c => {
-            this.remove(plr.deck, c);
+            this.remove(list, c);
         });
 
         return cards;

@@ -11,6 +11,8 @@ module.exports = {
     cast(plr, game, card) {
         plr.armor += 6;
 
-        game.functions.recruit(1, [0, 4]);
+        let list = plr.deck.filter(c => c.mana <= 4);
+
+        game.functions.recruit(plr, list);
     }
 }

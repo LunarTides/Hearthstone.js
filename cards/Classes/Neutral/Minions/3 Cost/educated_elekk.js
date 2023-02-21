@@ -10,7 +10,8 @@ module.exports = {
     id: 44,
 
     passive(plr, game, card, key, val) {
-        if (!card.passiveCheck([key, val], "spellsCast")) return;
+        if (key !== "cardsPlayed") return;
+        if (val.type !== "Spell") return;
         
         card.storage.push(val);
     },
