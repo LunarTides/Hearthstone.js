@@ -12,7 +12,7 @@ module.exports = {
 
     handpassive(plr, game, self, key, val) {
         if (key != "cardsPlayed") return;
-        if (val.type != "Minion") return;
+        if (val.type != "Minion" || val.plr != plr) return;
 
         self.storage.length = 0;
         self.desc = self.backups.desc + " (This is currently ".gray + game.functions.colorByRarity(val.displayName, val.rarity) + ")".gray;
