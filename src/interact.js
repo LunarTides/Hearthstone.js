@@ -624,7 +624,7 @@ class Interact {
         this.printAll(curr);
         let values = _cards;
 
-        if (!cards) cards = Object.values(game.functions.getCards()).filter(c => [game.player.heroClass, "Neutral"].includes(c.class));
+        if (!cards) cards = Object.values(game.functions.getCards()).filter(c => game.functions.validateClass(game.player, c));
         if (!cards) return;
 
         cards = cards.slice();

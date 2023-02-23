@@ -8,7 +8,7 @@ module.exports = {
     uncollectible: true,
     id: 107,
 
-    cast(plr, game) {
+    cast(plr, game, self) {
         plr.refreshMana(1, plr.maxMaxMana);
     }
 }

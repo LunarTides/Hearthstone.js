@@ -159,6 +159,9 @@ class Functions {
 
         return _cards;
     }
+    validateClass(plr, card) {
+        return [plr.heroClass, "Neutral"].includes(card.class);
+    }
     highlander(plr) {
         /* Returns true if the deck has no duplicates.
          *
