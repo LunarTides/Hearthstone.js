@@ -89,7 +89,7 @@ if (card.class.split(" / ").length > 1) {
     _class.slice(0, -1);
 }
 
-if (card.desc.startsWith("Secret: ")) _type = "Secret";
+if (card.desc.includes("Secret:")) _type = "Secret";
 
 let path = `../cards/Classes/${_class}/${_type}s/${card.mana} Cost/`;
 let filename = card.name.toLowerCase().replaceAll(" ", "_") + ".js";

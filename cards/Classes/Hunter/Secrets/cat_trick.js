@@ -11,7 +11,7 @@ module.exports = {
         game.functions.addQuest("Secret", plr, self, "cardsPlayed", 1, (card, _, turn) => {
             if (card.type != "Spell") return;
 
-            let panther = new game.Card("Cat Trick Panther");
+            let panther = new game.Card("Cat Trick Panther", plr);
             game.summonMinion(panther, plr);
 
             return true;
