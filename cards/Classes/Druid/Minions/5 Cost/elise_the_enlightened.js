@@ -16,6 +16,7 @@ module.exports = {
         let _hand = [];
 
         plr.hand.forEach(c => {
+            if ((plr.hand.length + _hand.length) >= 10) return;
             let copy = game.functions.cloneCard(c);
 
             _hand.push(copy);

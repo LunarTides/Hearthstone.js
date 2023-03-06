@@ -164,10 +164,25 @@ class Interact {
             game.input("\nPress enter to continue...\n");
         }
         else if (q == "view") {
-            let minion = this.selectTarget("Which minion do you want to view?", false, null, "minion");
-            if (!minion) return -1;
-    
-            this.viewMinion(minion);
+            let isHand = this.question(curr, "Do you want to view a minion on the board, or in your hand?", ["Board", "Hand"]);
+            isHand = isHand == "Hand";
+
+            if (!isHand) {
+                // allow_locations Makes selecting location cards allowed. This is disabled by default to prevent, for example, spells from killing the card.
+                let minion = this.selectTarget("Which minion do you want to view?", false, null, "minion", ["allow_locations"]);
+                if (!minion) return;
+        
+                this.viewCard(minion);
+
+                return;
+            }
+
+            let card = game.input("\nWhich card do you want to view? ");
+            if (!card || !parseInt(card)) return;
+
+            card = curr.hand[parseInt(card) - 1];
+
+            this.viewCard(card);
         }
         else if (q == "detail") {
             this.printAll(curr, true);
@@ -878,6 +893,9 @@ class Interact {
 
             sb += (curr.attack > 0) ? wpnStats.brightGreen : wpnStats.gray;
         }
+        else if (curr.attack) {
+            sb += `Attack     : ${curr.attack.toString().brightGreen}`;
+        }
     
         if (op.weapon) {
             // Opponent has a weapon
@@ -1118,24 +1136,35 @@ class Interact {
     
         console.log("------------");
     }
-    viewMinion(minion) {
-        /**
-         * View information about a minion.
-         * 
-         * @param {Card} minion The minion to show information about
-         */
+    viewCard(card) {
+        let mana = `{${card.mana}}`.cyan;
+        let name = game.functions.colorByRarity(`${card.displayName}`, card.rarity);
+        let desc = card.desc ? `${card.desc}` : "no description".gray;
+        let rarity = game.functions.colorByRarity(card.rarity, card.rarity);
+        let _class = card.class.gray;
+        let set = card.set.gray;
+        let turnPlayed = card.turn.toString().yellow;
 
-        console.log(`{${minion.mana}} `.cyan + game.functions.colorByRarity(`${minion.displayName} `, minion.rarity) + `[${minion.blueprint.stats.join(' / ')}]\n`.brightGreen);
-        if (minion.desc) console.log(minion.desc + "\n");
-        console.log("Rarity: " + game.functions.colorByRarity(minion.rarity, minion.rarity));
-        console.log("Tribe: " + minion.tribe.gray);
-        console.log("Class: " + minion.class.gray);
-        console.log("Set: " + minion.set.gray);
-        console.log("Turn played: " + minion.turn.toString().yellow);
-    
+        let stats = "";
+        let tribe = "";
+        let spellClass = "";
+        let locCooldown = "";
+
+        if (["Minion", "Weapon", "Location"].includes(card.type)) {
+            stats = ` [${card.blueprint.stats.join(' / ')}]`.brightGreen;
+        }
+
+        if (card.type == "Minion") tribe = "\nTribe: " + card.tribe.gray;
+        else if (card.type == "Spell") spellClass = "\nSpell Class: " + card.spellClass.cyan;
+        else if (card.type == "Location") locCooldown = "\nCooldown: " + card.blueprint.cooldown.toString().cyan;
+
+        console.log(`${mana} ${name}${stats} (${desc})` + ` (${card.type})\n`.yellow);
+        console.log(`Rarity: ${rarity}` + tribe + spellClass + locCooldown);
+        console.log(`Class: ${_class}`);
+        console.log(`Set: ${set}`);
+        console.log(`Turn Played: ${turnPlayed}`);
+
         game.input("\nPress enter to continue...\n");
-    
-        return;
     }
 }
 
