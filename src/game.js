@@ -100,7 +100,7 @@ class GameStats {
 }
 
 class Game {
-    constructor(player1, player2, config) {
+    constructor(player1, player2) {
         // Choose a random player to be player 1
         const functions = new Functions(this);
 
@@ -127,7 +127,7 @@ class Game {
         this.functions = functions;
         this.stats = new GameStats(this);
         this.interact = new Interact(this);
-        this.config = config;
+        this.config = {};
         this.input = question;
 
         this.turns = 0;
@@ -135,9 +135,11 @@ class Game {
         this.graveyard = [[], []];
 
         this.passives = [];
+    }
 
-        if (config.P1AI) this.player1.ai = new AI(this.player1);
-        if (config.P2AI) this.player2.ai = new AI(this.player2);
+    doConfigAI() {
+        if (this.config.P1AI) this.player1.ai = new AI(this.player1);
+        if (this.config.P2AI) this.player2.ai = new AI(this.player2);
     }
 
     set(key, val) {

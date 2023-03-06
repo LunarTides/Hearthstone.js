@@ -1,15 +1,4 @@
 {
-    "debug": true,
-    "validateDecks": true,
-    "minDeckLength": 30,
-    "maxDeckLength": 30,
-    "maxBoardSpace": 7,
-    "maxOfOneCard": 2,
-    "maxOfOneLegendary": 1,
-
-    "P1AI": false,
-    "P2AI": true,
-    
     "AIContextAnalysis"  : true,
     "AIMulliganThreshold": 3,
     "AIStatsBias"        : 0.2,

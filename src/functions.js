@@ -673,6 +673,18 @@ class Functions {
 
         return jade;
     }
+    importConfig(path) {
+        require("fs").readdirSync(path, { withFileTypes: true }).forEach(file => {
+            let c = `${path}/${file.name}`;
+
+            if (file.name.endsWith(".json")) {
+                let f = require(c);
+
+                game.config = Object.assign({}, game.config, f);
+            }
+            else if (file.isDirectory()) this.importConfig(c);
+        });
+    }
     _importCards(path) {
         /**
          * Imports all cards from a folder and returns the cards.
