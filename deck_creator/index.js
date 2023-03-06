@@ -257,8 +257,16 @@ function help() {
 }
 
 function getCardArg(cmd, callback) {
+    let times = 1;
+
     let card = cmd.split(" ");
     card.shift();
+
+    if (parseInt(card[0])) {
+        times = parseInt(card[0])
+        card.shift();
+    }
+
     card = card.join(" ");
 
     card = findCard(card);
@@ -268,7 +276,7 @@ function getCardArg(cmd, callback) {
         return false;
     }
 
-    callback(card);
+    for (let i = 0; i < times; i++) callback(card);
 
     return card;
 }
