@@ -6,9 +6,9 @@ Copyright (C) 2022  Keatpole
 const { Game } = require("./game");
 const { Player } = require("./player");
 
-const p1 = new Player("Player 1");
-const p2 = new Player("Player 2");
-const game = new Game(p1, p2);
+let p1;
+let p2;
+let game;
 
 let decks = [];
 function runner(_decks) {
@@ -17,14 +17,27 @@ function runner(_decks) {
 }
 
 function main() {
+    p1 = new Player("Player 1");
+    p2 = new Player("Player 2");
+    game = new Game(p1, p2);
+
+    game.running = true;
+
     game.interact.printName();
 
     game.functions.importCards(__dirname + '/../cards');
     game.functions.importConfig(__dirname + '/../config');
 
-    decks.forEach(d => {
-        let rng = game.functions.randInt(1, 2);
-        let plr = game["player" + rng];
+    decks.forEach((d, i) => {
+        if (i >= 2) return;
+
+        let rng;
+        let plr;
+
+        do {
+            rng = game.functions.randInt(1, 2);
+            plr = game["player" + rng];
+        } while(plr.deck.length > 0);
 
         game.functions.importDeck(plr, d);
 

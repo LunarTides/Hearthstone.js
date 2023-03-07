@@ -387,6 +387,7 @@ let opened_from_runner = false;
 let running = true;
 
 function runner() {
+    require(__dirname + "/../index").free_decks(); // Remove all decks
     opened_from_runner = true;
     running = true;
     main();

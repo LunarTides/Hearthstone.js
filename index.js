@@ -12,6 +12,9 @@ decks = [];
 function store_deck(deckcode) {
     decks.push(deckcode);
 }
+function free_decks() {
+    decks = [];
+}
 
 function devmode() {
     while (true) {
@@ -34,6 +37,7 @@ function devmode() {
 }
 
 exports.store_deck = store_deck;
+exports.free_decks = free_decks;
 
 while (true) {
     watermark();
