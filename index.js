@@ -1,28 +1,50 @@
-/*
-Hearthstone.js - Hearthstone but console based.
-Copyright (C) 2022  Keatpole
-*/
+const rl = require("readline-sync");
 
-const { Game } = require("./src/game");
-const { Player } = require("./src/player");
+const cls = () => process.stdout.write("\033c");
 
-const p1 = new Player("Player 1");
-const p2 = new Player("Player 2");
-const game = new Game(p1, p2);
+const watermark = () => {
+    cls();
+    console.log("Hearthstone.js Runner (C) 2023\n");
+}
 
-game.interact.printName();
+decks = [];
 
-game.functions.importCards(__dirname + '/cards');
-game.functions.importConfig(__dirname + '/config');
+function store_deck(deckcode) {
+    decks.push(deckcode);
+}
 
-// Ask the players for deck codes.
-game.interact.deckCode(p1);
-game.interact.deckCode(p2);
+function devmode() {
+    while (true) {
+        watermark();
 
-game.startGame();
-game.set("dirname", __dirname);
+        let user = rl.question("Create a (C)ard, Go (B)ack to Normal Mode: ");
+        if (!user) continue;
+        
+        user = user[0].toLowerCase();
 
-game.interact.mulligan(p1);
-game.interact.mulligan(p2);
+        if (user == "c") {
+            cls();
 
-while (true) game.interact.doTurn();
+            require("./card_creator/index").main();
+        }
+        else if (user == "b") {
+            break;
+        }
+    }
+}
+
+exports.store_deck = store_deck;
+
+while (true) {
+    watermark();
+
+    let user = rl.question("(P)lay, Create a (D)eck, Developer (M)ode, (E)xit: ");
+    if (!user) continue;
+
+    user = user[0].toLowerCase();
+
+    if (user == "p") require("./src/index").runner(decks);
+    else if (user == "d") require("./deck_creator/index").runner();
+    else if (user == "m") devmode();
+    else if (user == "e") process.exit(0);
+}

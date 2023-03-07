@@ -3,7 +3,7 @@
 const colors = require("colors");
 
 try {
-    require("../src/game");
+    require(__dirname + "/../src/game");
 } catch (err) {
     require("readline-sync").question("ERROR: This program is dependant on the modules in Hearthstone.js, so the file 'index.js' needs to be in the directory 'Hearthstone.js/deck_creator'.\n".red);
     require("process").exit(1);
@@ -15,7 +15,7 @@ const game = new Game({}, {});
 const functions = game.functions;
 game.dirname = __dirname + "/../";
 
-functions.importCards("../cards");
+functions.importCards(__dirname + "/../cards");
 functions.importConfig(__dirname + "/config");
 // ===========================================================
 
@@ -268,6 +268,7 @@ function help() {
     console.log("deck     - View the deck");
     console.log("deckcode - View the current deckcode");
     console.log("import   - Imports a deckcode (Overrides your deck)");
+    console.log("export   - Temporarily saves your deck to the runner so that when you choose to play, the decks get filled in automatically. (Only works when running the deck creator from the Hearthstone.js Runner)");
     console.log("class    - Change the class");
     console.log("help     - Displays this message");
     console.log("exit     - Quits the program");
@@ -342,6 +343,25 @@ function handleCmds(cmd) {
         game.config.validateDecks = false;
         deck = functions.importDeck(plr, _deckcode);
         game.config.validateDecks = true;
+
+        chosen_class = plr.heroClass;
+    }
+    else if (cmd.startsWith("export")) {
+        if (!opened_from_runner) {
+            game.input("ERROR: This command can only be used when the deck creator was opened using the Hearthstone.js Runner.\n".red);
+            return;
+        }
+
+        let [_deckcode, error] = deckcode();
+
+        if (error != "valid") {
+            game.input("ERROR: Cannot export invalid / pseudo-valid deckcodes.\n".red);
+            return;
+        }
+
+        require(__dirname + "/../index").store_deck(_deckcode);
+
+        game.input("Deck successfully exported.\n".green);
     }
     else if (cmd.startsWith("class")) {
         let _runes = runes;
@@ -359,13 +379,27 @@ function handleCmds(cmd) {
         help();
     }
     else if (cmd.startsWith("exit")) {
-        require("process").exit(0);
+        running = false;
     }
 }
 
-chosen_class = askClass();
+let opened_from_runner = false;
+let running = true;
 
-while (true) {
-    showCards();
-    handleCmds(game.input("\n> "));
+function runner() {
+    opened_from_runner = true;
+    main();
 }
+
+function main() {
+    chosen_class = askClass();
+
+    while (running) {
+        showCards();
+        handleCmds(game.input("\n> "));
+    }
+}
+
+exports.runner = runner;
+
+if (require.main == module) main();

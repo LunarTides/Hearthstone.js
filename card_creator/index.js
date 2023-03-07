@@ -3,18 +3,32 @@ const fs = require("fs");
 
 let card = {};
 
+let shouldExit = false;
+let type;
+
+function input(prompt) {
+    const ret = rl.question(prompt);
+
+    if (["exit", "stop", "quit", "back"].includes(ret.toLowerCase())) {
+        shouldExit = true;
+
+        console.log("Exiting... Please press enter until the program exits.");
+    }
+    return ret;
+}
+
 function common(m = 0) {
-    const name = rl.question("Name: ");
-    const displayName = rl.question("Display Name: ");
-    if (m > 0) var stats = rl.question("Stats: ");
-    const description = rl.question("Description: ");
-    const cost = rl.question("Mana Cost: ");
-    if (m > 1) var tribe = rl.question("Tribe: ");
-    const _class = rl.question("Class: ");
-    const rarity = rl.question("Rarity: ");
-    const set = rl.question("Set: ");
-    if (_class == "Death Knight") var runes = rl.question("Runes: ");
-    const keywords = rl.question("Keywords: ");
+    const name = input("Name: ");
+    const displayName = input("Display Name: ");
+    if (m > 0) var stats = input("Stats: ");
+    const description = input("Description: ");
+    const cost = input("Mana Cost: ");
+    if (m > 1) var tribe = input("Tribe: ");
+    const _class = input("Class: ");
+    const rarity = input("Rarity: ");
+    const set = input("Set: ");
+    if (_class == "Death Knight") var runes = input("Runes: ");
+    const keywords = input("Keywords: ");
 
     card.name = name;
     if (displayName) card.displayName = displayName;
@@ -32,7 +46,7 @@ function common(m = 0) {
 function spell() {
     common()
 
-    const spellClass = rl.question("Spell Class: ");
+    const spellClass = input("Spell Class: ");
 
     if (spellClass) card.spellClass = spellClass;
 }
@@ -40,74 +54,87 @@ function spell() {
 function location() {
     minionOrWeapon(1)
 
-    const cooldown = rl.question("Cooldown: ");
+    const cooldown = input("Cooldown: ");
 
     if (cooldown) card.cooldown = cooldown;
 }
 
-const type = rl.question("Type: ");
+function doCode() {
+    const uncollectible = rl.keyInYN("Uncollectible?");
+    if (uncollectible) card.uncollectible = uncollectible;
 
-if (["minion", "weapon"].includes(type.toLowerCase())) common(type.toLowerCase() == "weapon" ? 1 : 2);
-else if (type.toLowerCase() == "spell") spell();
-else if (type.toLowerCase() == "location") location();
-else if (type.toLowerCase() == "hero") common();
+    let func;
+    let _type = type.toLowerCase();
 
-const uncollectible = rl.keyInYN("Uncollectible?");
-if (uncollectible) card.uncollectible = uncollectible;
+    if (_type == "spell") func = "Cast";
+    else if (_type == "hero") func = "HeroPower";
+    else if (_type == "location") func = "Use";
+    else {
+        //func = input("Function: ");
+        let reg = /[A-Z][a-z].*?:/;
+        func = card.desc.match(reg);
+        if (!func && card.desc) func = "Passive: ";
+        else if (!card.desc) func = "";
+        else func = func[0];
 
-let func;
-let _type = type.toLowerCase();
+        func = func.slice(0, -1);
+    }
 
-if (_type == "spell") func = "Cast";
-else if (_type == "hero") func = "HeroPower";
-else if (_type == "location") func = "Use";
-else {
-    //func = rl.question("Function: ");
-    let reg = /[A-Z][a-z].*?:/;
-    func = card.desc.match(reg);
-    if (!func && card.desc) func = "Passive: ";
-    else if (!card.desc) func = "";
-    else func = func[0];
+    let triggerText = ")";
+    if (func.toLowerCase() == "passive") triggerText = ", key, val)";
+    if (func) func = `\n\n    ${func.toLowerCase()}(plr, game, self${triggerText} {\n\n    }`;
 
-    func = func.slice(0, -1);
-}
+    _type = (type == "Hero") ? "Heroe" : type;
 
-let triggerText = ")";
-if (func.toLowerCase() == "passive") triggerText = ", key, val)";
-if (func) func = `\n\n    ${func.toLowerCase()}(plr, game, self${triggerText} {\n\n    }`;
+    let _class = card.class;
+    if (card.class.split(" / ").length > 1) {
+        let __class = card.class.split(" / ");
 
-_type = (type == "Hero") ? "Heroe" : type;
+        __class.forEach(c => {
+            _class += `${c}/`;
+        });
 
-let _class = card.class;
-if (card.class.split(" / ").length > 1) {
-    let __class = card.class.split(" / ");
+        _class.slice(0, -1);
+    }
 
-    __class.forEach(c => {
-        _class += `${c}/`;
-    });
+    if (card.desc.includes("Secret:")) _type = "Secret";
 
-    _class.slice(0, -1);
-}
+    let path = __dirname + `/../cards/Classes/${_class}/${_type}s/${card.mana} Cost/`;
+    let filename = card.name.toLowerCase().replaceAll(" ", "_") + ".js";
 
-if (card.desc.includes("Secret:")) _type = "Secret";
+    let id = parseInt(fs.readFileSync(__dirname + "/../.latest_id", "utf8"));
+    _id = card.uncollectible ? "" : `\n    id: ${id},`; // Don't add an id if the card is uncollectible. Id's are only used when creating/importing a deck.
 
-let path = `../cards/Classes/${_class}/${_type}s/${card.mana} Cost/`;
-let filename = card.name.toLowerCase().replaceAll(" ", "_") + ".js";
-
-let id = parseInt(fs.readFileSync("../.latest_id", "utf8"));
-_id = card.uncollectible ? "" : `\n    id: ${id},`; // Don't add an id if the card is uncollectible. Id's are only used when creating/importing a deck.
-
-let content = Object.entries(card).map(c => `${c[0]}: ${(typeof(c[1]) == "string" && c[1][0] != "[") ? '"' + c[1] + '"' : c[1]}`);
-content = `module.exports = {
+    let content = Object.entries(card).map(c => `${c[0]}: ${(typeof(c[1]) == "string" && c[1][0] != "[") ? '"' + c[1] + '"' : c[1]}`);
+    content = `module.exports = {
     ${content.join(',\n    ')},${_id}${func}
 }`;
 
-if (!card.uncollectible) fs.writeFileSync("../.latest_id", (id + 1).toString());
+    if (!card.uncollectible) fs.writeFileSync(__dirname + "/../.latest_id", (id + 1).toString());
 
-if (!fs.existsSync(path)) fs.mkdirSync(path, { recursive: true });
-fs.writeFileSync(path + filename, content);
+    if (!fs.existsSync(path)) fs.mkdirSync(path, { recursive: true });
+    fs.writeFileSync(path + filename, content);
 
-let _path = path.replaceAll("/", "\\") + filename;
-console.log('File created at: "' + _path + '"');
+    let _path = path.replaceAll("/", "\\") + filename;
+    console.log('File created at: "' + _path + '"');
 
-if (func) require("child_process").exec(`start vim "${_path}"`);
+    if (func) require("child_process").exec(`start vim "${_path}"`);
+}
+
+function main() {
+    shouldExit = false;
+    console.log("Hearthstone.js Card Creator (C) 2023\n");
+
+    type = input("Type: ");
+
+    if (["minion", "weapon"].includes(type.toLowerCase())) common(type.toLowerCase() == "weapon" ? 1 : 2);
+    else if (type.toLowerCase() == "spell") spell();
+    else if (type.toLowerCase() == "location") location();
+    else if (type.toLowerCase() == "hero") common();
+
+    if (!shouldExit) doCode();
+}
+
+exports.main = main;
+
+if (require.main == module) main();
