@@ -388,6 +388,7 @@ let running = true;
 
 function runner() {
     opened_from_runner = true;
+    running = true;
     main();
 }
 
