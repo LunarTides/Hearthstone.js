@@ -341,8 +341,11 @@ function handleCmds(cmd) {
         let _deckcode = game.input("Please input a deckcode: ");
 
         game.config.validateDecks = false;
-        deck = functions.importDeck(plr, _deckcode);
+        let _deck = functions.importDeck(plr, _deckcode);
         game.config.validateDecks = true;
+
+        deck = [];
+        _deck.forEach(c => add(c)}); // You can just set deck = functions.importDeck(), but doing it that way doesn't account for renathal or any other card that changes the config in any way since that is done using the add function.
 
         chosen_class = plr.heroClass;
     }
