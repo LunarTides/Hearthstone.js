@@ -328,7 +328,10 @@ function handleCmds(cmd) {
     else if (cmd.startsWith("deckcode")) {
         let [_deckcode, error] = deckcode();
 
-        game.input(_deckcode + "\n");
+        let toPrint = _deckcode + "\n";
+        if (error == "invalid") toPrint = "";
+
+        game.input(toPrint);
     }
     else if (cmd.startsWith("deck")) {
         viewDeck();
@@ -356,7 +359,7 @@ function handleCmds(cmd) {
         help();
     }
     else if (cmd.startsWith("exit")) {
-        require("process").exit(1);
+        require("process").exit(0);
     }
 }
 
