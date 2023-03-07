@@ -345,7 +345,7 @@ function handleCmds(cmd) {
         game.config.validateDecks = true;
 
         deck = [];
-        _deck.forEach(c => add(c)}); // You can just set deck = functions.importDeck(), but doing it that way doesn't account for renathal or any other card that changes the config in any way since that is done using the add function.
+        _deck.forEach(c => add(c)); // You can just set deck = functions.importDeck(), but doing it that way doesn't account for renathal or any other card that changes the config in any way since that is done using the add function.
 
         chosen_class = plr.heroClass;
     }
