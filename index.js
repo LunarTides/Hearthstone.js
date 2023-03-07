@@ -15,8 +15,6 @@ game.interact.printName();
 game.functions.importCards(__dirname + '/cards');
 game.functions.importConfig(__dirname + '/config');
 
-game.doConfigAI();
-
 // Ask the players for deck codes.
 game.interact.deckCode(p1);
 game.interact.deckCode(p2);

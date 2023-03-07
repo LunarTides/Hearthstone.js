@@ -10,15 +10,16 @@ try {
 }
 
 const { Game } = require("../src/game");
-const config = require("./config");
 
-const game = new Game({}, {}, config);
+const game = new Game({}, {});
 const functions = game.functions;
 game.dirname = __dirname + "/../";
 
 functions.importCards("../cards");
+functions.importConfig(__dirname + "/config");
 // ===========================================================
 
+const config = game.config;
 const cards = functions.getCards();
 const classes = functions.getClasses();
 
@@ -178,12 +179,24 @@ function viewDeck() {
 }
 
 function deckcode() {
+    let pseudo = false;
+
     // Deck size warnings
     if (deck.length < minDeckLength) {
         console.log("WARNING: Rule 1 violated.".yellow);
+
+        pseudo = true;
     }
     if (deck.length > maxDeckLength) {
         console.log("WARNING: Rule 2 violated.".yellow);
+
+        pseudo = true;
+    }
+
+    // Check if the deck is empty
+    if (deck.length <= 0) {
+        console.log("ERROR: Could not generate deckcode as your deck is empty. The resulting deckcode would be invalid.".red);
+        return ["", "invalid"];
     }
 
     let deckcode = `# ${chosen_class} # `;
@@ -222,9 +235,13 @@ function deckcode() {
 
             if (amount > config.maxOfOneLegendary && card.rarity == "Legendary") {
                 console.log("WARNING: Rule 4 violated. Offender: ".yellow + `{ Name: "${card.name}", Amount: "${amount}" }`);
+
+                pseudo = true;
             }
             else if (amount > config.maxOfOneCard) {
                 console.log("WARNING: Rule 3 violated. Offender: ".yellow + `{ Name: "${card.name}", Amount: "${amount}" }`);
+
+                pseudo = true;
             }
         });
     });
@@ -235,7 +252,7 @@ function deckcode() {
     deckcode += str_cards;
     deckcode = deckcode.slice(0, -1); // Remove the last ", "
 
-    game.input(deckcode + "\n");
+    return pseudo ? [deckcode, "pseudo"] : [deckcode, "valid"];
 }
 
 function help() {
@@ -250,8 +267,10 @@ function help() {
     console.log("view     - View a card");
     console.log("deck     - View the deck");
     console.log("deckcode - View the current deckcode");
+    console.log("import   - Imports a deckcode (Overrides your deck)");
     console.log("class    - Change the class");
     console.log("help     - Displays this message");
+    console.log("exit     - Quits the program");
 
     game.input("\nPress enter to continue...\n");
 }
@@ -307,10 +326,19 @@ function handleCmds(cmd) {
         getCardArg(cmd, remove);
     }
     else if (cmd.startsWith("deckcode")) {
-        deckcode();
+        let [_deckcode, error] = deckcode();
+
+        game.input(_deckcode + "\n");
     }
     else if (cmd.startsWith("deck")) {
         viewDeck();
+    }
+    else if (cmd.startsWith("import")) {
+        let _deckcode = game.input("Please input a deckcode: ");
+
+        game.config.validateDecks = false;
+        deck = functions.importDeck(plr, _deckcode);
+        game.config.validateDecks = true;
     }
     else if (cmd.startsWith("class")) {
         let _runes = runes;
@@ -326,6 +354,9 @@ function handleCmds(cmd) {
     }
     else if (cmd.startsWith("help")) {
         help();
+    }
+    else if (cmd.startsWith("exit")) {
+        require("process").exit(1);
     }
 }
 

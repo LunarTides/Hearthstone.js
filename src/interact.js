@@ -472,9 +472,13 @@ class Interact {
         this.printName();
     
         const deckcode = game.input(`Player ${plr.id + 1}, please type in your deckcode ` + `(Leave this empty for a test deck)`.gray + `: `);
-    
-        if (deckcode.length > 0) game.functions.importDeck(plr, deckcode);
+
+        let error;
+
+        if (deckcode.length > 0) error = game.functions.importDeck(plr, deckcode);
         else while (plr.deck.length < 30) plr.deck.push(new game.Card("Sheep", plr));
+
+        if (error == "invalid") exit(1);
     }
     mulligan(plr) {
         /**

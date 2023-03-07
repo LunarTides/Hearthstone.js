@@ -684,6 +684,8 @@ class Functions {
             }
             else if (file.isDirectory()) this.importConfig(c);
         });
+
+        game.doConfigAI();
     }
     _importCards(path) {
         /**
@@ -736,14 +738,14 @@ class Functions {
             console.log("This deck is not valid!\nError Code: ".red + error_code.yellow);
             if (card_name) console.log("Specific Card that caused this error: ".red + card_name.yellow);
             game.input();
-            exit(1);
+            return "invalid";
         }
 
         // The code is base64 encoded, so we need to decode it
         //code = Buffer.from(code, 'base64').toString('ascii');
         //if (!code) ERROR("INVALIDB64");
 
-        if (code.split("# ").length != 3) ERROR("INVALIDCLASSHEADER");
+        if (code.split("# ").length != 3) return ERROR("INVALIDCLASSHEADER");
         let hero = code.split("# ")[1];
 
         hero = hero.trim();
@@ -772,7 +774,7 @@ class Functions {
         }
 
         let copyDefFormat = /\/(\d+:\d+,)*\d+\/ /;
-        if (!copyDefFormat.test(code)) ERROR("COPYDEFNOTFOUND"); // Find /3:5,2:8,1/
+        if (!copyDefFormat.test(code)) return ERROR("COPYDEFNOTFOUND"); // Find /3:5,2:8,1/
 
         let copyDef = code.split("/")[1];
 
@@ -786,6 +788,8 @@ class Functions {
 
         let processed = 0;
 
+        let retInvalid = false;
+
         copyDef.split(",").forEach(c => {
             c = c.split(":");
 
@@ -796,7 +800,10 @@ class Functions {
 
             cards.forEach(c => {
                 let card = this.getCardById(c);
-                if (!card) ERROR("NONEXISTANTCARD", c);
+                if (!card) {
+                    retInvalid = ERROR("NONEXISTANTCARD", c);
+                    return;
+                }
                 card = new game.Card(card.name, plr);
 
                 for (let i = 0; i < parseInt(copies); i++) _deck.push(this.cloneCard(card));
@@ -827,8 +834,10 @@ class Functions {
                         break;
                 }
                 game.input(`${err}.\nSpecific Card that caused the error: `.red + `${card.name}\n`.yellow);
-                exit(1);
+                retInvalid = true;
             });
+
+            if (retInvalid) return "invalid";
 
             processed += times;
         });
@@ -838,7 +847,7 @@ class Functions {
 
         if ((_deck.length < min || _deck.length > max) && game.config.validateDecks) {
             game.input("The deck needs ".red + ((min == max) ? `exactly `.red + `${max}`.yellow : `between`.red + `${min}-${max}`.yellow) + ` cards. Your deck has: `.red + `${_deck.length}`.yellow + `.\n`.red);
-            exit(1);
+            return "invalid";
         }
 
         // Check if you have more than 2 cards or more than 1 legendary in your deck. (The numbers can be changed in the config)
@@ -870,7 +879,7 @@ class Functions {
                     break;
             }
             game.input(err + "\nSpecific card that caused this error: ".red + v.yellow + ". Amount: ".red + i.toString().yellow + ".\n".red);
-            exit(1);
+            return "invalid";
         });
     
         _deck = this.shuffle(_deck);
