@@ -96,6 +96,7 @@ function doCode() {
 
         _class.slice(0, -1);
     }
+    if (!_class) _class = card.class;
 
     if (card.desc.includes("Secret:")) _type = "Secret";
 
