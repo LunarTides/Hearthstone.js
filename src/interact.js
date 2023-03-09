@@ -400,7 +400,7 @@ class Interact {
         game.killMinions();
 
         if (ret === true || ret instanceof game.Card) return ret; // If there were no errors, return true.
-        if (["refund", "magnetize", "traded"].includes(ret)) return ret; // Ignore these error codes
+        if (["refund", "magnetize", "traded", "colossal"].includes(ret)) return ret; // Ignore these error codes
         let err;
 
         // Get the card
