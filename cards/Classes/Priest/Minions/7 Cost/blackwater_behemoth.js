@@ -9,5 +9,5 @@ module.exports = {
     set: "Voyage to the Sunken City",
     keywords: ["Lifesteal"],
     colossal: ["Blackwater Behemoth Lure", ""],
-    id: 248
+    id: 247
 }
