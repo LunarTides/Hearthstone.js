@@ -34,6 +34,8 @@ let plr = new game.Player("");
 let maxDeckLength = config.maxDeckLength;
 let minDeckLength = config.minDeckLength;
 
+let cardId = "id";
+
 function askClass() {
     game.interact.printName();
     let _class = game.input("What class to you want to choose?\n" + classes.join(", ") + "\n");
@@ -231,7 +233,7 @@ function deckcode() {
         c.forEach(v => {
             let card = v[0];
 
-            str_cards += `${card.id},`;
+            str_cards += `${card[cardId]},`;
 
             if (amount > config.maxOfOneLegendary && card.rarity == "Legendary") {
                 console.log("WARNING: Rule 4 violated. Offender: ".yellow + `{ Name: "${card.name}", Amount: "${amount}" }`);
@@ -269,6 +271,7 @@ function help() {
     console.log("deckcode - View the current deckcode");
     console.log("import   - Imports a deckcode (Overrides your deck)");
     console.log("export   - Temporarily saves your deck to the runner so that when you choose to play, the decks get filled in automatically. (Only works when running the deck creator from the Hearthstone.js Runner)");
+    console.log("set      - Change some settings. Current settings: (name - Makes the deckcode generator use names instead of ids), (id - Makes the deckcode generator use ids instead of names [default])");
     console.log("class    - Change the class");
     console.log("help     - Displays this message");
     console.log("exit     - Quits the program");
@@ -377,6 +380,26 @@ function handleCmds(cmd) {
 
         deck = [];
         chosen_class = new_class;
+    }
+    else if (cmd.startsWith("set")) {
+        let setting = cmd.split(" ");
+        setting.shift();
+        setting = setting.join(" ");
+
+        switch (setting) {
+            case "id":
+                cardId = "id";
+                break;
+            case "name":
+                cardId = "name";
+                break;
+            default:
+                game.input(`'${setting}' is not a valid setting.\n`.red);
+                return;
+                break;
+        }
+
+        game.input("Setting successfully changed!\n".green);
     }
     else if (cmd.startsWith("help")) {
         help();
