@@ -118,6 +118,8 @@ function doCode() {
     let _path = path.replaceAll("/", "\\") + filename;
     console.log('File created at: "' + _path + '"');
 
+    rl.question();
+
     if (func) require("child_process").exec(`start vim "${_path}"`);
 }
 
