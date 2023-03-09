@@ -52,7 +52,7 @@ function spell() {
 }
 
 function location() {
-    minionOrWeapon(1)
+    common(1)
 
     const cooldown = input("Cooldown: ");
 
