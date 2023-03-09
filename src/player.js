@@ -176,11 +176,12 @@ class Player {
 
         if (this.health > this.maxHealth) this.health = this.maxHealth;
     }
-    remHealth(amount) {
+    remHealth(amount, update = true) {
         /**
          * Decreases the player's health by "amount". If the player has armor, the armor gets decreased instead.
          * 
          * @param {number} amount The amount the player's health should increase by
+         * @param {boolean} update If this should be added to the history or stats.
          * 
          * @returns {boolean} Success
          */
@@ -198,7 +199,7 @@ class Player {
 
         this.health -= a;
 
-        game.stats.update("damageTaken", [this, amount], this);
+        if (update) game.stats.update("damageTaken", [this, amount], this);
 
         if (game.player == this) {
             game.stats.update("damageTakenOnOwnTurn", amount, this);
