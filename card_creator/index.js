@@ -73,7 +73,7 @@ function doCode() {
         //func = input("Function: ");
         let reg = /[A-Z][a-z].*?:/;
         func = card.desc.match(reg);
-        if (!func && card.desc) func = "Passive: ";
+        if (!func && card.desc) func = "Passive:";
         else if (!card.desc) func = "";
         else func = func[0];
 
