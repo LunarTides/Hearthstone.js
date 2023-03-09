@@ -86,7 +86,7 @@ function doCode() {
 
     _type = (type == "Hero") ? "Heroe" : type;
 
-    let _class = card.class;
+    let _class = "";
     if (card.class.split(" / ").length > 1) {
         let __class = card.class.split(" / ");
 
