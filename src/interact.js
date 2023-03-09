@@ -113,7 +113,7 @@ class Interact {
             let errorcode = this.useLocation();
             game.killMinions();
 
-            if (errorcode === true || curr.ai) return true;
+            if (errorcode === true || errorcode === -1 || curr.ai) return true;
             let err;
 
             switch (errorcode) {
