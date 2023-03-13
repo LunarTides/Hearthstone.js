@@ -157,6 +157,7 @@ class Interact {
             console.log(cond_color("/give <Card Name> - Adds a card to your hand"));
             console.log(cond_color("/eval <Code>      - Runs the code specified"));
             console.log(cond_color("/debug            - Destroys your hand and deck and gives you infinite mana, health and armor"));
+            console.log(cond_color("/exit             - Force exits the game. There will be no winner, and it will take you straight back to the runner."));
             console.log(cond_color("/stats            - Gives you a list of the game stats that have happened in an alphabetical order"));
             console.log(cond_color("/ai               - Gives you a list of the actions the ai(s) have taken in the order they took it"));
             console.log(cond_color("---------------------------" + ((game.config.debug) ? "" : "-")));
@@ -288,6 +289,11 @@ class Interact {
             curr.health += 10000;
             curr.armor += 100000;
             curr.fatigue = 0;
+        }
+        else if (q == "/exit") {
+            if (!game.config.debug) return -1;
+
+            game.running = false;
         }
         else if (q == "/ai") {
             if (!game.config.debug) return -1;

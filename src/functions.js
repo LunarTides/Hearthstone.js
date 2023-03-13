@@ -239,6 +239,9 @@ class Functions {
         const appendTypes = (c) => {
             let ret = c;
 
+            // This line fixes a bug that makes, for example, `&rTest&R.` make the `.` be red when it should be white. This bug is why all new battlecries were `&BBattlecry:&R Deal...` instead of `&BBattlecry: &RDeal...`. I will see which one i choose in the future.
+            if (current_types.includes("R")) current_types = ["R"]; 
+
             current_types.forEach(t => {
                 switch (t) {
                     case "r":
@@ -299,7 +302,7 @@ class Functions {
             }
 
             // c == "&"
-            if (i > 0 && str[i - 1] == "\\") { // If there is a backslash before the &, add the & to the string
+            if (i > 0 && str[i - 1] == "\\") { // If there is a backslash before the &, add the & to the string. TODO: Make this actually work
                 strbuilder += appendTypes(c);
                 return;
             }

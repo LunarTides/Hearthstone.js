@@ -125,6 +125,9 @@ function doCode() {
 }
 
 function main() {
+    card = {};
+    shouldExit = false;
+
     shouldExit = false;
     console.log("Hearthstone.js Card Creator (C) 2023\n");
 

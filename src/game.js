@@ -426,11 +426,11 @@ class Game {
     
                     // Corrupt
                     player.hand.forEach(c => {
-                        if (c.keywords.includes("Corrupt") && card.mana <= c.mana) {
+                        if (c.corrupt && card.mana <= c.mana) {
                             let t = new Card(c.corrupt, c.plr);
 
-                            c.plr.addToHand(t, false);
                             player.removeFromHand(c);
+                            c.plr.addToHand(t, false);
                         }
                     });
 
@@ -490,11 +490,11 @@ class Game {
         if (stat.length > 1 && stat[stat.length - 2].turn == this.turns) card.activate("combo");
 
         player.hand.forEach(c => {
-            if (c.keywords.includes("Corrupt") && card.mana > c.mana) {
+            if (c.corrupt && card.mana > c.mana) {
                 let t = new Card(c.corrupt, c.plr);
-                c.plr.addToHand(t, false);
 
                 player.removeFromHand(c);
+                c.plr.addToHand(t, false);
             }
         });
 
