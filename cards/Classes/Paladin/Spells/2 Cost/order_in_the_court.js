@@ -10,7 +10,7 @@ module.exports = {
     cast(plr, game, self) {
         // What black magic is this?? Code "borrowed" from: https://stackoverflow.com/questions/8092776/how-to-sort-list-of-dicts-in-js
         plr.deck = plr.deck.sort((one, two) => {
-            return two.mana - one.mana;
+            return one.mana - two.mana;
         });
 
         plr.drawCard();

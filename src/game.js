@@ -128,6 +128,7 @@ class Game {
         this.stats = new GameStats(this);
         this.interact = new Interact(this);
         this.config = {};
+        this.cards = {};
         this.input = question;
 
         this.turns = 0;
@@ -270,8 +271,6 @@ class Game {
 
         // Turn starts
         this.turns++;
-
-        this.stats.update("turnStarts", this.turns, op);
         
         // Mana stuff
         op.gainEmptyMana(1, true);
@@ -321,6 +320,8 @@ class Game {
         op.drawCard();
 
         op.canUseHeroPower = true;
+
+        this.stats.update("turnStarts", this.turns, op);
 
         this.player = op;
         this.opponent = plr;
@@ -669,6 +670,7 @@ class Game {
 
             target.remHealth(attacker.getAttack());
             attacker.decAttack();
+            attacker.activate("onattack");
             this.stats.update("enemyAttacks", [attacker, target], attacker.plr);
 
             return true;

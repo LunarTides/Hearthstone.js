@@ -4,7 +4,6 @@ const { setup_ai } = require("./ai");
 const { setup_card } = require("./card");
 const { setup_player } = require("./player");
 
-let cards = {};
 let game = null;
 
 class Functions {
@@ -706,7 +705,7 @@ class Functions {
             if (file.name.endsWith(".js")) {
                 let f = require(p);
                 
-                cards[f.name] = f;
+                game.cards[f.name] = f;
             }
             else if (file.isDirectory()) this._importCards(p);
         });
@@ -720,10 +719,11 @@ class Functions {
          * @returns {undefined}
          */
 
+        game.cards = {};
+
         this._importCards(path);
 
-        game.set("cards", cards);
-        setup_card(game, cards);
+        setup_card(game, game.cards);
         setup_ai(game);
         setup_player(game);
     }

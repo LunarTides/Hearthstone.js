@@ -12,6 +12,11 @@ let game;
 
 let decks = [];
 function runner(_decks) {
+    try {
+        game.cards = {};
+        game.config = {};
+    } catch {};
+
     decks = _decks;
     main();
 }
