@@ -154,12 +154,12 @@ class Interact {
             const cond_color = (str) => {return (game.config.debug) ? str : str.gray};
 
             console.log(cond_color("\n--- Debug Commands (") + ((game.config.debug) ? "ON".green : "OFF".red) + cond_color(") ---"));
-            console.log(cond_color("/give <Card Name> - Adds a card to your hand"));
-            console.log(cond_color("/eval <Code>      - Runs the code specified"));
-            console.log(cond_color("/debug            - Destroys your hand and deck and gives you infinite mana, health and armor"));
-            console.log(cond_color("/exit             - Force exits the game. There will be no winner, and it will take you straight back to the runner."));
-            console.log(cond_color("/stats            - Gives you a list of the game stats that have happened in an alphabetical order"));
-            console.log(cond_color("/ai               - Gives you a list of the actions the ai(s) have taken in the order they took it"));
+            console.log(cond_color("/give <Card Name>  - Adds a card to your hand"));
+            console.log(cond_color("/eval [log] <Code> - Runs the code specified. If the word 'log' is before the code, instead console.log the code and wait for user input to continue."));
+            console.log(cond_color("/debug             - Gives you infinite mana, health and armor"));
+            console.log(cond_color("/exit              - Force exits the game. There will be no winner, and it will take you straight back to the runner."));
+            console.log(cond_color("/stats             - Gives you a list of the game stats that have happened in an alphabetical order"));
+            console.log(cond_color("/ai                - Gives you a list of the actions the ai(s) have taken in the order they took it"));
             console.log(cond_color("---------------------------" + ((game.config.debug) ? "" : "-")));
             
             game.input("\nPress enter to continue...\n");
@@ -270,9 +270,18 @@ class Interact {
         else if (q.startsWith("/eval")) {
             if (!game.config.debug) return -1;
 
+            let log = false;
+
             let code = q.split(" ");
             code.shift();
+
+            if (code[0] == "log") {
+                log = true;
+                code.shift();
+            }
+            
             code = code.join(" ");
+            if (log) code = `console.log(${code});game.input();`;
     
             eval(code);
         }
@@ -282,9 +291,6 @@ class Interact {
             curr.maxMaxMana = 1000;
             curr.maxMana = 1000;
             curr.mana = 1000;
-    
-            curr.deck = [];
-            curr.hand = [];
     
             curr.health += 10000;
             curr.armor += 100000;
