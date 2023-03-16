@@ -962,7 +962,7 @@ class Functions {
 
         if ( (type.toLowerCase() == "quest" && t.length > 0) || ((type.toLowerCase() == "secret" || type.toLowerCase() == "sidequest") && (t.length >= 3 || t.filter(s => s.displayName == card.displayName).length > 0)) ) {
             plr.addToHand(card);
-            plr.mana += card.mana;
+            //plr.mana += card.mana;
             
             return false;
         }

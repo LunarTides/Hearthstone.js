@@ -488,7 +488,7 @@ class Game {
         let stat = this.stats.cardsPlayed[player.id];
 
         // If the previous card played was played on the same turn as this one, activate combo
-        if (stat.length > 1 && stat[stat.length - 2].turn == this.turns) card.activate("combo");
+        if (stat.length > 1 && stat[stat.length - 2][0].turn == this.turns) card.activate("combo");
 
         player.hand.forEach(c => {
             if (c.corrupt && card.mana > c.mana) {

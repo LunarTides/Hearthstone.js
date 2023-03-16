@@ -9,6 +9,8 @@ class AI {
         this.history = [];
         this.prevent = [];
 
+        this.cards_played_this_turn = [];
+
         this.plr = plr;
     }
 
@@ -26,7 +28,7 @@ class AI {
         this.plr.hand.forEach(c => {
             let score = this.analyzePositiveCard(c);
 
-            if (score <= best_score || c.mana > this.plr.mana) return;
+            if (score <= best_score || c.mana > this.plr.mana || this.cards_played_this_turn.includes(c)) return;
 
             // If the card is a minion and the player doesn't have the board space to play it, ignore the card
             if (["Minion", "Location"].includes(c.type) && game.board[this.plr.id].length >= game.config.maxBoardSpace) return;
@@ -58,12 +60,18 @@ class AI {
             this.history.push(["calcMove", best_move]);
         }
 
-        else this.history.push(["calcMove", [best_move.name, best_score]]);
+        else {
+            this.history.push(["calcMove", [best_move.name, best_score]]);
+
+            this.cards_played_this_turn.push(best_move);
+        }
 
         if (best_move == "end") {
             this.history.forEach((h, i) => {
                 if (h instanceof Array && h[0] == "selectTarget" && h[1] == "0,1") this.history[i][1] = null;
             });
+
+            this.cards_played_this_turn = [];
         }
 
         return best_move;
