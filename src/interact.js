@@ -281,9 +281,19 @@ class Interact {
             }
             
             code = code.join(" ");
-            if (log) code = `console.log(${code});game.input();`;
+
+            if (log) {
+                if (code[code.length - 1] == ";") code = code.slice(0, -1);
+
+                code = `console.log(${code});game.input();`;
+            }
     
-            eval(code);
+            try {
+                eval(code);
+            } catch (err) {
+                console.log(`${err}`.red);
+                game.input();
+            }
         }
         else if (q == "/debug") {
             if (!game.config.debug) return -1;

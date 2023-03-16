@@ -97,9 +97,10 @@ class Functions {
          * @returns {string} The type of the card
          */
 
-        if (card.cooldown) return "Location";
+        if (typeof(card) != "object") throw new TypeError("Invalid card passed into `getType`. This can happen when, for example, a card name was mispelled somewhere.");
+        if (card.cooldown) return "Location"; // If you see this in the error log, the error occorred since the game failed to get the type of a card, however it passed the object check assertion. Please report this asap! Error Code: #21
         
-        else if (card.tribe) return "Minion"; // If you see this in the error log, the error occorred since the game failed to get the type of a minion. Error Code: #21
+        else if (card.tribe) return "Minion"; 
         else if (card.stats) return "Weapon";
         else if (card.heropower) return "Hero";
         else return "Spell";
