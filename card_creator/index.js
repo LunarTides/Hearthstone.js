@@ -59,8 +59,10 @@ function location() {
     if (cooldown) card.cooldown = cooldown;
 }
 
-function doCode() {
-    const uncollectible = rl.keyInYN("Uncollectible?");
+function doCode(_path = "", _filename = "") {
+    let uncollectible;
+
+    if (!card.uncollectible) uncollectible = rl.keyInYN("Uncollectible?");
     if (uncollectible) card.uncollectible = uncollectible;
 
     let func;
@@ -101,7 +103,10 @@ function doCode() {
     if (card.desc.includes("Secret:")) _type = "Secret";
 
     let path = __dirname + `/../cards/Classes/${_class}/${_type}s/${card.mana} Cost/`;
+    if (_path) path = _path;
+
     let filename = card.name.toLowerCase().replaceAll(" ", "_") + ".js";
+    if (_filename) filename = _filename;
 
     let id = parseInt(fs.readFileSync(__dirname + "/../.latest_id", "utf8"));
     _id = card.uncollectible ? "" : `\n    id: ${id},`; // Don't add an id if the card is uncollectible. Id's are only used when creating/importing a deck.
@@ -116,29 +121,42 @@ function doCode() {
     if (!fs.existsSync(path)) fs.mkdirSync(path, { recursive: true });
     fs.writeFileSync(path + filename, content);
 
-    let _path = path.replaceAll("/", "\\") + filename;
-    console.log('File created at: "' + _path + '"');
+    let __path = path.replaceAll("/", "\\") + filename;
+    console.log('File created at: "' + __path + '"');
 
-    rl.question();
+    if (!_path) rl.question();
 
-    if (func) require("child_process").exec(`start vim "${_path}"`);
+    if (func) require("child_process").exec(`start vim "${__path}"`);
 }
 
-function main() {
+function main(_type = "", _path = "", _filename = "", _card = null) {
     card = {};
-    shouldExit = false;
+    if (_card) card = _card;
 
     shouldExit = false;
-    console.log("Hearthstone.js Card Creator (C) 2023\n");
 
-    type = input("Type: ");
+    if (!_card) console.log("Hearthstone.js Card Creator (C) 2023\n");
+
+    if (_type == "") type = input("Type: ");
+    else type = _type;
+
+    if (_card) {
+        doCode(_path, _filename);
+        return;
+    }
 
     if (["minion", "weapon"].includes(type.toLowerCase())) common(type.toLowerCase() == "weapon" ? 1 : 2);
     else if (type.toLowerCase() == "spell") spell();
     else if (type.toLowerCase() == "location") location();
     else if (type.toLowerCase() == "hero") common();
+    else {
+        console.log("That is not a valid type!");
+        rl.question();
 
-    if (!shouldExit) doCode();
+        shouldExit = true;
+    }
+
+    if (!shouldExit) doCode(_path, _filename);
 }
 
 exports.main = main;
