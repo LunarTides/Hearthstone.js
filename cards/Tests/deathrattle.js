@@ -10,7 +10,7 @@ module.exports = {
     uncollectible: true,
 
     deathrattle(plr, game) {
-        game.playMinion(new game.Minion("Plant", plr), plr);
-        game.playMinion(new game.Minion("Plant", plr), plr);
+        game.summonMinion(new game.Card("Plant", plr), plr);
+        game.summonMinion(new game.Card("Plant", plr), plr);
     }
 }

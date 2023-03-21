@@ -92,7 +92,7 @@ class Interact {
                 return;
             }
 
-            if (curr.mana < (curr.hero.hpCost || 2)) {
+            if (curr.mana < curr.heroPowerCost) {
                 game.input("You do not have enough mana.\n".red);
                 return;
             }

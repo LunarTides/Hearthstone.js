@@ -273,7 +273,7 @@ class Player {
 
         let card = this.deck.pop()
 
-        if (card.type == "Spell" && card.activate("castondraw")) return null;
+        if (card.type == "Spell" && card.activate("castondraw")) return this.drawCard();
 
         this.addToHand(card, false);
 
