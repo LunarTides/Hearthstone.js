@@ -6,6 +6,11 @@
     "AISpellValue"       : 4,
     "AIKeywordValue"     : 2,
     "AIFunctionValue"    : 1,
+
+    "AIProtectThreshold" : 5,
+    "AIIgnoreThreshold"  : -1,
+    "AIRiskThreshold"    : 10,
+
     "AISentiments": {
         "positive": {
             "\\+\\d*"    : 1,

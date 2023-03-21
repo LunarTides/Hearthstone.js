@@ -50,7 +50,7 @@ class AI {
             if (this.plr.mana >= this.plr.heroPowerCost && this.plr.canUseHeroPower && !this.prevent.includes("hero power")) best_move = "hero power";
 
             // See if can attack
-            else if (game.board[this.plr.id].filter(m => !m.sleepy && !m.frozen && !m.dormant).length) best_move = "attack";
+            else if (game.board[this.plr.id].filter(m => !m.sleepy && !m.frozen && !m.dormant).length && !this.prevent.includes("attack")) best_move = "attack";
 
             // See if has location
             else if (game.board[this.plr.id].filter(m => m.type == "Location" && m.cooldown == 0).length) best_move = "use";
@@ -72,11 +72,191 @@ class AI {
             });
 
             this.cards_played_this_turn = [];
+            this.prevent = [];
         }
 
         return best_move;
     }
+
+    // ATTACKING
+    _attackFindTrades(board) {
+        /**
+         * Finds all possible trades for the ai and returns them
+         *
+         * @returns {[Card[][], Card[][]]} The trades: Perfect Trades: [[attacker, target], [attacker, target]], Imperfect Trades: <---- Same
+         */
+
+        let perfect_trades = [];
+        let imperfect_trades = [];
+
+        game.board[this.plr.id].forEach(a => {
+            let trades = [...perfect_trades, ...imperfect_trades];
+
+            let score = this.analyzePositiveCard(a);
+            if (score > game.config.AIProtectThreshold || trades.map(c => c[0]).includes(a)) return; // Don't attack with high-value minions.
+
+            if (a.sleepy || a.attackTimes <= 0) return;
+
+            game.board[this.plr.getOpponent().id].forEach(t => {
+                trades = [...perfect_trades, ...imperfect_trades];
+                if (trades.map(c => c[1]).includes(t)) return;
+
+                let score = this.analyzePositiveCard(t);
+                if (score < game.config.AIIgnoreThreshold) return; // Don't waste resources attacking useless targets.
+
+                if (a.getAttack() == t.getHealth()) perfect_trades.push([a, t]);
+                else if (a.getAttack() > t.getHealth()) imperfect_trades.push([a, t]);
+            });
+        });
+
+        return [perfect_trades, imperfect_trades];
+    }
+    _scorePlayer(player, board) {
+        let score = 0;
+
+        board.forEach(m => {
+            let [_minion, _score] = m;
+
+            score += score;
+        });
+
+        Object.entries(player).forEach(f => {
+            let [key, val] = f;
+
+            let i = ["health", "maxHealth", "armor", "maxMana"];
+            if (!i.includes(key)) return;
+
+            score += val;
+        });
+
+        score += player.deck.length;
+
+        return score;
+    }
+    _findWinner(board) {
+        let score = this._scorePlayer(this.plr, board[this.plr.id]);
+        let opScore = this._scorePlayer(this.plr.getOpponent(), board[this.plr.getOpponent().id]);
+
+        let winner = (score > opScore) ? this.plr : this.plr.getOpponent();
+        let s = (winner == this.plr) ? score : opScore;
+
+        return [winner, s];
+    }
+    _attackTrade(board) {
+        let [perfect_trades, imperfect_trades] = this._attackFindTrades();
+
+        let ret = null;
+        if (perfect_trades.length > 0) ret = perfect_trades[0];
+        else if (imperfect_trades.length > 0) ret = imperfect_trades[0];
+
+        this.history.push([`trade`, [ret[0].name, ret[1].name]]);
+
+        return ret;
+    }
+    _attackGeneral(board) {
+        let current_winner = this._findWinner(board);
+
+        let ret = null;
+
+        // Risky
+        let is_winner = current_winner[0] == this.plr;
+        let op_score = this._scorePlayer(this.plr.getOpponent(), board[this.plr.getOpponent().id]);
+        let risk_mode = current_winner[1] >= op_score + game.config.AIRiskThreshold // If the ai is winner by more than 'threshold' points, enable risk mode
+
+        let taunts = game.board[this.plr.getOpponent().id].filter(m => m.keywords.includes("Taunt")); // If there are taunts, override risk mode
+
+        if (is_winner && risk_mode && taunts.length <= 0) ret = this._attackGeneralRisky();
+        else ret = this._attackGeneralMinion();
+
+        this.history.push([`attack`, [ret[0].name, ret[1].name]]);
+
+        return ret;
+    }
+    _attackGeneralRisky() {
+        // Only attack the enemy hero
+        return [this._attackGeneralChooseAttacker(true), this.plr.getOpponent()];
+    }
+    _attackGeneralMinion() {
+        let target = this._attackGeneralChooseTarget();
+        return [this._attackGeneralChooseAttacker(target instanceof game.Player), target];
+    }
+    _attackGeneralChooseTarget() {
+        let highest_score = [null, -9999];
+
+        let board = game.board[this.plr.getOpponent().id];
+
+        // If there is a taunt, select that as the target
+        let taunts = board.filter(m => m.keywords.includes("Taunt"));
+        if (taunts.length > 0) return taunts[0];
+
+        board.forEach(m => {
+            let score = this.analyzePositiveCard(m);
+
+            if (score < highest_score[1]) return;
+
+            highest_score = [m, score];
+        });
+
+        if (!highest_score[0]) return this.plr.getOpponent();
+
+        if (!highest_score[0]) {
+            this.prevent.push("attack");
+            return -1;
+        }
+
+        return highest_score[0];
+    }
+    _attackGeneralChooseAttacker(target_is_player = false) {
+        let lowest_score = [null, 9999];
+
+        game.board[this.plr.id].forEach(m => {
+            let score = this.analyzePositiveCard(m);
+
+            if (score > lowest_score[1] || (score > game.config.AIProtectThreshold && !target_is_player)) return;
+
+            if (m.sleepy || m.attackTimes <= 0) return;
+            if (target_is_player && !m.canAttackHero) return;
+
+            lowest_score = [m, score];
+        });
+
+        if (!lowest_score[0] && this.plr.attack > 0) return this.plr;
+
+        if (!lowest_score[0]) {
+            this.prevent.push("attack");
+            return -1;
+        }
+
+        return lowest_score[0];
+    }
     chooseBattle() {
+        // Assign a score to all minions
+        let board = [[], []];
+        game.board.forEach((p, i) => {
+            p.forEach(m => {
+                let score = this.analyzePositiveCard(m);
+
+                board[i].push([m, score]);
+            });
+        });
+
+        let amount_of_trades = this._attackFindTrades().map(t => t.length).reduce((a, b) => a + b);
+
+        // The ai should skip the trade stage if in risk mode
+        let current_winner = this._findWinner(board);
+        let is_winner = current_winner[0] == this.plr;
+        let op_score = this._scorePlayer(this.plr.getOpponent(), board[this.plr.getOpponent().id]);
+        let risk_mode = current_winner[1] >= op_score + game.config.AIRiskThreshold // If the ai is winner by more than 'threshold' points, enable risk mode
+
+        let taunts = game.board[this.plr.getOpponent().id].filter(m => m.keywords.includes("Taunt"));
+
+        if (taunts.length > 0) return this._attackGeneral(board); // If there is a taunt, attack it before trading
+
+        if (amount_of_trades > 0 && !risk_mode) return this._attackTrade(board);
+        return this._attackGeneral(board);
+    }
+
+    old_chooseBattle() {
         /**
          * Choose attacker and target
          * 
@@ -150,6 +330,8 @@ class AI {
 
         return [attacker, target];
     }
+    // -------------
+
     selectTarget(prompt, elusive, force_side, force_class, flags) {
         /**
          * Analyze prompt and find if it is a good thing or not, if it is, select a friendly target
