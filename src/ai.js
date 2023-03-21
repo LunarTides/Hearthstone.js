@@ -117,7 +117,7 @@ class AI {
         board.forEach(m => {
             let [_minion, _score] = m;
 
-            score += score;
+            score += _score;
         });
 
         Object.entries(player).forEach(f => {
