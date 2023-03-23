@@ -10,6 +10,7 @@ class AI {
         this.prevent = [];
 
         this.cards_played_this_turn = [];
+        this.focus = null;
 
         this.plr = plr;
     }
@@ -170,6 +171,8 @@ class AI {
 
         this.history.push([`attack`, [ret[0].name, ret[1].name]]);
 
+        if (!this.focus && ret[1] instanceof game.Card) this.focus = ret[1];
+
         return ret;
     }
     _attackGeneralRisky() {
@@ -177,7 +180,14 @@ class AI {
         return [this._attackGeneralChooseAttacker(true), this.plr.getOpponent()];
     }
     _attackGeneralMinion() {
-        let target = this._attackGeneralChooseTarget();
+        let target;
+
+        // If the focused minion doesn't exist, select a new minion to focus
+        if (!game.board[this.plr.getOpponent().id].find(a => a == this.focus)) this.focus = null;
+
+        if (!this.focus) target = this._attackGeneralChooseTarget();
+        else target = this.focus
+
         return [this._attackGeneralChooseAttacker(target instanceof game.Player), target];
     }
     _attackGeneralChooseTarget() {

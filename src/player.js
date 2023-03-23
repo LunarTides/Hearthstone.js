@@ -209,7 +209,7 @@ class Player {
             this.game.stats.update("fatalDamageTimes", 1, this);
 
             if (this.health <= 0) { // This is done to allow secrets to prevent death
-                this.game.endGame(game.opponent);
+                this.game.endGame(this.getOpponent());
             }
         }
 
