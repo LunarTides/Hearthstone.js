@@ -116,13 +116,14 @@ function doCode(_path = "", _filename = "") {
     ${content.join(',\n    ')},${_id}${func}
 }`;
 
+    let __path = path.replaceAll("/", "\\") + filename;
+
     if (!debug) {
         if (!card.uncollectible) fs.writeFileSync(__dirname + "/../.latest_id", (id + 1).toString());
 
         if (!fs.existsSync(path)) fs.mkdirSync(path, { recursive: true });
         fs.writeFileSync(path + filename, content);
 
-        let __path = path.replaceAll("/", "\\") + filename;
         console.log('File created at: "' + __path + '"');
     } else {
         console.log(`\nNew ID: ${id + 1}`);
