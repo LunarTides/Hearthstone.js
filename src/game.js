@@ -352,6 +352,8 @@ class Game {
             player.removeFromHand(card);
             player.drawCard();
             player.shuffleIntoDeck(card);
+
+            this.stats.update("cardsTraded", card, player);
     
             return "traded";
         }

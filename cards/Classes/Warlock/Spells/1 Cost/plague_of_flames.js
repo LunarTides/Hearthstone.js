@@ -13,6 +13,8 @@ module.exports = {
             m.kill();
 
             let minion = game.functions.randList(game.board[plr.getOpponent().id], false);
+            if (!minion) return;
+
             minion.kill();
         });
     }
