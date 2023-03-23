@@ -302,7 +302,7 @@ class Game {
 
             m.activate("startofturn");
             m.canAttackHero = true;
-            m.frozen = false;
+            if (this.turns > m.frozen_turn + 1) m.frozen = false;
             m.sleepy = false;
             m.resetAttackTimes();
 

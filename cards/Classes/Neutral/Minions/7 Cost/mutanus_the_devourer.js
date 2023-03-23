@@ -10,11 +10,11 @@ module.exports = {
     id: 165,
 
     battlecry(plr, game, self) {
-        let minion = game.functions.randList(plr.getOpponent().hand, false);
+        let list = plr.getOpponent().hand.filter(c => c.type == "Minion");
+        let minion = game.functions.randList(list, false);
         if (!minion) return;
 
         game.functions.remove(plr.getOpponent().hand, minion);
-
         self.addStats(minion.getAttack(), minion.getHealth());
     }
 }

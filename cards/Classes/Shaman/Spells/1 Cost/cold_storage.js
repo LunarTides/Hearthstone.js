@@ -11,7 +11,7 @@ module.exports = {
         let target = game.interact.selectTarget(self.desc, true, null, "minion");
         if (!target) return -1;
 
-        target.frozen = true;
+        target.freeze();
 
         let copy = new game.Card(target.name, plr);
         plr.addToHand(copy);

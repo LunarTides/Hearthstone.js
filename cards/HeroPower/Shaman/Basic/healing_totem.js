@@ -8,6 +8,7 @@ module.exports = {
     rarity: "Free",
     set: "Legacy",
     id: 82,
+    uncollectible: true,
 
     endofturn(plr, game) {
         var t = game.board[plr.id];

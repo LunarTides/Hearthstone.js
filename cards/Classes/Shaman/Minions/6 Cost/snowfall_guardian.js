@@ -11,7 +11,7 @@ module.exports = {
     battlecry(plr, game, self) {
         game.board.forEach(p => {
             p.forEach(m => {
-                m.frozen = true;
+                m.freeze();
             });
         });
     }

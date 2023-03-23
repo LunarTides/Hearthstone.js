@@ -12,15 +12,15 @@ module.exports = {
 
     heropower(plr, game, self) {
         const totem_cards = ["Healing Totem", "Searing Totem", "Stoneclaw Totem", "Strength Totem"];
-        let _totem_cards;
+        let _totem_cards = [];
 
-        game.board[plr.id].forEach(m => {
-            if (totem_cards.includes(m.displayName)) {
-                _totem_cards.push(new game.Card(m.name, plr));
-            }
+        totem_cards.forEach(c => {
+            if (game.board[plr.id].map(m => m.name).includes(c)) return
+
+            _totem_cards.push(new game.Card(c, plr));
         });
 
-        if (_totem_cards.length == 0) return false;
+        if (_totem_cards.length == 0) return -1;
 
         const card = game.functions.randList(_totem_cards, false);
 

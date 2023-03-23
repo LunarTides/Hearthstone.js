@@ -23,6 +23,7 @@ class Card {
         this.turnKilled = -1;
 
         this.infuse_num = -1; // The amount of infuse a card has. Set to -1 for no infuse.
+        this.frozen_turn = -1;
 
         this.spellClass = null;
 
@@ -132,6 +133,12 @@ class Card {
          */
 
         this.keywords = this.keywords.filter(k => k != keyword);
+    }
+    freeze() {
+        this.frozen_turn = game.turns;
+        this.frozen = true;
+
+        game.stats.update("cardsFrozen", this, this.plr);
     }
     decAttack() {
         /**

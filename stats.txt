@@ -19,6 +19,7 @@ minionsKilled:         {Card:Minion}                         The minion killed
 minionsDamaged:        {Array<Card, number>}                 The minion damaged, the amount of damage
 spellsCastOnMinions:   {Card:Minion}                         The minion the spell was cast on
 cardsTraded:           {Card:Any}                            Card traded
+cardsFrozen:           {Card:Any}                            Card frozen
 
 cardsAddedToDeck:      {Card}                                The card that was added to the players deck
 cardsAddedToHand:      {Card}                                The card added to hand

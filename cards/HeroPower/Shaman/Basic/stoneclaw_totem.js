@@ -9,4 +9,5 @@ module.exports = {
     set: "Legacy",
     keywords: ["Taunt"],
     id: 84,
+    uncollectible: true,
 }

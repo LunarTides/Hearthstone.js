@@ -221,7 +221,7 @@ class Interact {
                 h.forEach(c => {
                     let [key, val, plr] = c;
 
-                    let bannedKeys = ["turnEnds", "turnStarts", "cardsDrawnThisTurn", "unspentMana", "damageTakenOnOwnTurn", "overloadGained", "heroAttackGained", "spellsThatDealtDamage"];
+                    let bannedKeys = ["turnEnds", "turnStarts", "cardsDrawnThisTurn", "unspentMana", "damageTakenOnOwnTurn", "overloadGained", "heroAttackGained", "spellsThatDealtDamage", "cardsFrozen"];
                     if (bannedKeys.includes(key)) return;
 
                     let hideValueKeys = ["cardsDrawn", "cardsAddedToHand", "cardsAddedToDeck"]; // Example: If a card gets drawn, the other player can't see what card it was
@@ -801,12 +801,11 @@ class Interact {
         if (minion.keywords.includes("Elusive") && elusive) {
             game.input("Can't be targeted by Spells or Hero Powers.\n".red);
             
-            // elusive can be set to any value other than true to prevent targetting but not update
-            // spells cast on minions
-            if (elusive === true) {
-                game.stats.update("spellsCastOnMinions", minion, game.player);
-            }
             return false;
+        }
+
+        if (elusive === true) {
+            game.stats.update("spellsCastOnMinions", minion, game.player);
         }
 
         if (minion.keywords.includes("Stealth") && game.player != minion.plr) {
