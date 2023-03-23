@@ -51,6 +51,19 @@ function spell() {
     if (spellClass) card.spellClass = spellClass;
 }
 
+function hero() {
+    common();
+
+    const hpDesc = input("Hero Power Description: ");
+    let hpCost = input("Hero Power Cost (Default: 2): ");
+
+    if (!hpCost) hpCost = 2;
+    hpCost = parseInt(hpCost);
+
+    if (hpDesc) card.hpDesc = hpDesc;
+    card.hpCost = hpCost;
+}
+
 function location() {
     common(1)
 
@@ -154,7 +167,7 @@ function main(_type = "", _path = "", _filename = "", _card = null) {
     if (["minion", "weapon"].includes(type.toLowerCase())) common(type.toLowerCase() == "weapon" ? 1 : 2);
     else if (type.toLowerCase() == "spell") spell();
     else if (type.toLowerCase() == "location") location();
-    else if (type.toLowerCase() == "hero") common();
+    else if (type.toLowerCase() == "hero") hero();
     else {
         console.log("That is not a valid type!");
         rl.question();
