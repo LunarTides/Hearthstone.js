@@ -1168,7 +1168,6 @@ class Interact {
         let desc = card.desc ? `${card.desc}` : "no description".gray;
         let rarity = game.functions.colorByRarity(card.rarity, card.rarity);
         let _class = card.class.gray;
-        let set = card.set.gray;
         let turnPlayed = card.turn.toString().yellow;
 
         let stats = "";
@@ -1187,7 +1186,6 @@ class Interact {
         console.log(`${mana} ${name}${stats} (${desc})` + ` (${card.type})\n`.yellow);
         console.log(`Rarity: ${rarity}` + tribe + spellClass + locCooldown);
         console.log(`Class: ${_class}`);
-        console.log(`Set: ${set}`);
         console.log(`Turn Played: ${turnPlayed}`);
 
         game.input("\nPress enter to continue...\n");

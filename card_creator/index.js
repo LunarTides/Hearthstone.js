@@ -6,6 +6,8 @@ let card = {};
 let shouldExit = false;
 let type;
 
+let debug = false;
+
 function input(prompt) {
     const ret = rl.question(prompt);
 
@@ -26,7 +28,6 @@ function common(m = 0) {
     if (m > 1) var tribe = input("Tribe: ");
     const _class = input("Class: ");
     const rarity = input("Rarity: ");
-    const set = input("Set: ");
     if (_class == "Death Knight") var runes = input("Runes: ");
     const keywords = input("Keywords: ");
 
@@ -38,7 +39,6 @@ function common(m = 0) {
     if (m > 1) card.tribe = tribe || "None";
     card.class = _class;
     card.rarity = rarity;
-    card.set = set;
     if (runes) card.runes = runes;
     if (keywords) card.keywords = '["' + keywords.split(', ').join('", "') + '"]';
 }
@@ -116,17 +116,22 @@ function doCode(_path = "", _filename = "") {
     ${content.join(',\n    ')},${_id}${func}
 }`;
 
-    if (!card.uncollectible) fs.writeFileSync(__dirname + "/../.latest_id", (id + 1).toString());
+    if (!debug) {
+        if (!card.uncollectible) fs.writeFileSync(__dirname + "/../.latest_id", (id + 1).toString());
 
-    if (!fs.existsSync(path)) fs.mkdirSync(path, { recursive: true });
-    fs.writeFileSync(path + filename, content);
+        if (!fs.existsSync(path)) fs.mkdirSync(path, { recursive: true });
+        fs.writeFileSync(path + filename, content);
 
-    let __path = path.replaceAll("/", "\\") + filename;
-    console.log('File created at: "' + __path + '"');
+        let __path = path.replaceAll("/", "\\") + filename;
+        console.log('File created at: "' + __path + '"');
+    } else {
+        console.log(`\nNew ID: ${id + 1}`);
+        console.log(`Content: ${content}`);
+    }
 
     if (!_path) rl.question();
 
-    if (func) require("child_process").exec(`start vim "${__path}"`);
+    if (func && !debug) require("child_process").exec(`start vim "${__path}"`);
 }
 
 function main(_type = "", _path = "", _filename = "", _card = null) {
