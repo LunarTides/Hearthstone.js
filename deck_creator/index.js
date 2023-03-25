@@ -35,6 +35,12 @@ let maxDeckLength = config.maxDeckLength;
 let minDeckLength = config.minDeckLength;
 
 let cardId = "id";
+let cardPage = 1;
+let cardsPerPage = 15;
+let cardSortType = "rarity";
+let cardSortOrder = "asc";
+let maxPage = cardPage;
+let viewClass;
 
 function askClass() {
     game.interact.printName();
@@ -61,25 +67,104 @@ function askClass() {
     return _class;
 }
 
+function sortCards(_cards) {
+    if (!["asc", "desc"].includes(cardSortOrder)) cardSortOrder = "asc"; // If the order is invalid, fall back to ascending
+    cardSortType = cardSortType.toLowerCase();
+    cardSortOrder = cardSortOrder.toLowerCase();
+
+    let type = cardSortType;
+    let order = cardSortOrder;
+
+    const calcOrder = (a, b) => {
+        if (order == "asc") return a - b;
+        else return b - a;
+    }
+
+    if (type == "rarity") {
+        let sortScores = ["Free", "Common", "Rare", "Epic", "Legendary"];
+
+        return _cards.sort((a, b) => {
+            let scoreA = sortScores.indexOf(a.rarity);
+            let scoreB = sortScores.indexOf(b.rarity);
+
+            return calcOrder(scoreA, scoreB);
+        });
+    }
+
+    if (type == "name") {
+        return _cards.sort((a, b) => {
+            let ret = a.name.localeCompare(b.name);
+            if (order == "desc") ret = -ret;
+
+            return ret;
+        });
+    }
+
+    if (["cost", "id"].includes(type)) {
+        return _cards.sort((a, b) => {
+            return calcOrder(a[type], b[type]);
+        });
+    }
+
+    // If 'type' isn't valid, fall back to sorting by rarity
+    cardSortType = "rarity";
+    return sortCards(_cards);
+}
+
 function showCards() {
     filtered_cards = {};
     game.interact.printName();
     showConfig();
-    
-    Object.entries(cards).forEach(c => {
-        if (c[1].runes && !plr.testRunes(c[1].runes)) return;
 
-        let reg = new RegExp(chosen_class + "|Neutral");
-        if (reg.test(c[1].class.split(" / "))) filtered_cards[c[0]] = c[1];
+    if (!viewClass) viewClass = chosen_class;
+
+    Object.values(cards).forEach(c => {
+        if (c.runes && !plr.testRunes(c.runes)) return;
+
+        //let reg = new RegExp(`^${chosen_class}|Neutral`);
+        let reg = new RegExp(`^${viewClass}`);
+
+        c.class.split(" / ").forEach(cl => {
+            if (!reg.test(cl)) return;
+
+            filtered_cards[c.name] = c;
+        });
     });
 
-    let prev_class;
+    let cpp = cardsPerPage;
+    let page = cardPage;
 
-    Object.values(filtered_cards).forEach(c => {
-        if (prev_class != c.class) {
-            console.log("\n" + c.class.rainbow);
-            prev_class = c.class;
-        }
+    maxPage = Math.ceil(Object.values(filtered_cards).length / cpp);
+    if (page > maxPage) page = maxPage;
+
+    console.log();
+
+    let oldSortType = cardSortType;
+    let oldSortOrder = cardSortOrder;
+    console.log(`Sorting by ${cardSortType.toUpperCase()}, ${cardSortOrder}ending.`);
+
+    let _filtered_cards = Object.values(filtered_cards);
+
+    // Sort
+    _filtered_cards = sortCards(_filtered_cards);
+
+    let sortTypeInvalid = oldSortType != cardSortType;
+    let sortOrderInvalid = oldSortOrder != cardSortOrder;
+
+    if (sortTypeInvalid) console.log(`Sorting by '${oldSortType.toUpperCase()}' failed! Falling back to ${cardSortType.toUpperCase()}.`.yellow);
+    if (sortOrderInvalid) console.log(`Ordering by '${oldSortOrder}ending' failed! Falling back to ${cardSortOrder}ending.`.yellow)
+
+    if (sortTypeInvalid || sortOrderInvalid) console.log(`\nSorting by ${cardSortType.toUpperCase()}, ${cardSortOrder}ending.`);
+
+    // Page logic
+    _filtered_cards = _filtered_cards.slice(cpp * (page - 1), cpp * page);
+
+    // Loop
+    console.log(`\nPage ${page} / ${maxPage}\n`);
+
+    console.log(viewClass.rainbow);
+
+    _filtered_cards.forEach(c => {
         console.log(functions.colorByRarity(c.name, c.rarity));
     });
 }
@@ -259,22 +344,42 @@ function deckcode() {
 
 function help() {
     game.interact.printName();
+
+    // Commands
+    console.log("Available commands:".bold);
     console.log("(In order to run a command; input the name of the command and follow further instruction.)\n");
+    console.log("(name) [optional] (required) - (description)\n");
 
-    console.log("Available commands:");
-    console.log("(name)   - (description)\n");
+    console.log("add [card]            - Add a card to the deck");
+    console.log("remove [card]         - Remove a card from the deck");
+    console.log("view [card]           - View a card");
+    console.log("page (num)            - View a different page");
+    console.log("cards (class)         - Show cards from 'class'");
+    console.log("sort (type) [order]   - Sorts by 'type' in 'order'ending order. (Type can be: ('rarity', 'name', 'cost', 'id'), Order can be: ('asc', 'desc')) (Example: sort cost asc - Will show cards ordered by cost, ascending.)");
+    console.log("deck                  - View the deck");
+    console.log("deckcode              - View the current deckcode");
+    console.log("import                - Imports a deckcode (Overrides your deck)");
+    console.log("export                - Temporarily saves your deck to the runner so that when you choose to play, the decks get filled in automatically. (Only works when running the deck creator from the Hearthstone.js Runner)");
+    console.log("set (setting) (value) - Change some settings. Look down to 'Set Subcommands' to see available settings");
+    console.log("class                 - Change the class");
+    console.log("help                  - Displays this message");
+    console.log("exit                  - Quits the program");
 
-    console.log("add      - Add a card to the deck");
-    console.log("remove   - Remove a card from the deck");
-    console.log("view     - View a card");
-    console.log("deck     - View the deck");
-    console.log("deckcode - View the current deckcode");
-    console.log("import   - Imports a deckcode (Overrides your deck)");
-    console.log("export   - Temporarily saves your deck to the runner so that when you choose to play, the decks get filled in automatically. (Only works when running the deck creator from the Hearthstone.js Runner)");
-    console.log("set      - Change some settings. Current settings: (name - Makes the deckcode generator use names instead of ids), (id - Makes the deckcode generator use ids instead of names [default])");
-    console.log("class    - Change the class");
-    console.log("help     - Displays this message");
-    console.log("exit     - Quits the program");
+    // Set
+    console.log("\nSet Subcommands:".bold);
+    console.log("(In order to use these; input 'set ', then one of the subcommands. Example: 'set cpp 20')\n");
+    console.log("(name) [optional] (required) - (description)\n");
+
+    console.log("name                     - Makes the deckcode generator use names instead of ids");
+    console.log("id                       - Makes the deckcode generator use ids instead of names");
+    console.log("cardsPerPage | cpp (num) - How many cards to show per page [default = 15]");
+
+    console.log("\nNote the 'cardsPerPage' commands has 2 different subcommands; cpp & cardsPerPage. Both do the same thing.".gray);
+
+    // Notes
+    console.log("\nNotes:".bold);
+
+    console.log("Type 'cards Neutral' to see Neutral cards.");
 
     game.input("\nPress enter to continue...\n");
 }
@@ -329,6 +434,35 @@ function handleCmds(cmd) {
     else if (cmd.startsWith("r")) {
         getCardArg(cmd, remove);
     }
+    else if (cmd.startsWith("p")) {
+        let page = cmd.split(" ");
+        page.shift();
+        page = page.join(" ");
+
+        page = parseInt(page)
+        if (!page) return;
+
+        if (page < 1) page = 1;
+        cardPage = parseInt(page);
+    }
+    else if (cmd.startsWith("cards")) {
+        let _class = cmd.split(" ");
+        _class.shift();
+        _class = _class.join(" ");
+        _class = functions.capitalizeAll(_class);
+
+        if (!classes.includes(_class) && _class != "Neutral") {
+            game.input("Invalid class!\n".red);
+            return;
+        }
+
+        if (![chosen_class, "Neutral"].includes(_class)) {
+            game.input(`Class '${_class}' is a different class. To see these cards, please switch class from '${chosen_class}' to '${_class}' to avoid confusion.\n`.red);
+            return;
+        }
+
+        viewClass = _class;
+    }
     else if (cmd.startsWith("deckcode")) {
         let [_deckcode, error] = deckcode();
 
@@ -336,6 +470,13 @@ function handleCmds(cmd) {
         if (error == "invalid") toPrint = "";
 
         game.input(toPrint);
+    }
+    else if (cmd.startsWith("sort")) {
+        let args = cmd.split(" ");
+        args.shift();
+
+        cardSortType = args[0];
+        cardSortOrder = args[1] || cardSortOrder;
     }
     else if (cmd.startsWith("deck")) {
         viewDeck();
@@ -380,11 +521,13 @@ function handleCmds(cmd) {
 
         deck = [];
         chosen_class = new_class;
+        if (viewClass != "Neutral") viewClass = chosen_class;
     }
     else if (cmd.startsWith("set")) {
         let setting = cmd.split(" ");
         setting.shift();
-        setting = setting.join(" ");
+        let args = setting.slice(1);
+        setting = setting[0];
 
         switch (setting) {
             case "id":
@@ -392,6 +535,10 @@ function handleCmds(cmd) {
                 break;
             case "name":
                 cardId = "name";
+                break;
+            case "cpp":
+            case "cardsPerPage":
+                cardsPerPage = parseInt(args);
                 break;
             default:
                 game.input(`'${setting}' is not a valid setting.\n`.red);

@@ -8,4 +8,5 @@ module.exports = {
     rarity: "Free",
     set: "Legacy",
     id: 80,
+    uncollectible: true
 }
