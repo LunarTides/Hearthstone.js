@@ -40,6 +40,7 @@ let cardsPerPage = 15;
 let cardSortType = "rarity";
 let cardSortOrder = "asc";
 let maxPage = cardPage;
+let searchQuery = "";
 let viewClass;
 
 function askClass() {
@@ -67,6 +68,10 @@ function askClass() {
     return _class;
 }
 
+function getDisplayName(card) {
+    return card.displayName || card.name;
+}
+
 function sortCards(_cards) {
     if (!["asc", "desc"].includes(cardSortOrder)) cardSortOrder = "asc"; // If the order is invalid, fall back to ascending
     cardSortType = cardSortType.toLowerCase();
@@ -91,9 +96,21 @@ function sortCards(_cards) {
         });
     }
 
-    if (type == "name") {
+    if (["name", "type"].includes(type)) {
         return _cards.sort((a, b) => {
-            let ret = a.name.localeCompare(b.name);
+            let typeA;
+            let typeB;
+
+            if (type == "name") {
+                typeA = getDisplayName(a);
+                typeB = getDisplayName(b);
+            }
+            else {
+                typeA = functions.getType(a);
+                typeB = functions.getType(b);
+            }
+
+            let ret = typeA.localeCompare(typeB);
             if (order == "desc") ret = -ret;
 
             return ret;
@@ -111,6 +128,65 @@ function sortCards(_cards) {
     return sortCards(_cards);
 }
 
+function searchCards(_cards) {
+    if (searchQuery == "") return _cards;
+
+    let ret_cards = [];
+
+    let query = searchQuery.split(":");
+
+    if (query.length <= 1) {
+        // The user didn't specify a key. Do a general search
+        query = query[0].toLowerCase();
+
+        _cards.forEach(c => {
+            let name = getDisplayName(c).toLowerCase();
+            let desc = c.desc.toLowerCase();
+
+            if (!name.includes(query) && !desc.includes(query)) return;
+
+            ret_cards.push(c);
+        });
+
+        return ret_cards;
+    }
+
+    let [key, val] = query;
+
+    val = val.toLowerCase();
+
+    const doReturn = (c) => {
+        let ret = c[key];
+
+        if (!ret) {
+            console.log(`\nKey '${key}' not valid!`.red);
+            return -1;
+        }
+
+        if (typeof(ret) === "string") return ret.toLowerCase().includes(val);
+        else if (typeof(ret) === "number") return ret == val;
+    }
+
+    let error = false;
+
+    _cards.forEach(c => {
+        if (error) return;
+
+        let ret = doReturn(c);
+
+        if (ret === -1) {
+            error = true;
+            return;
+        }
+
+        if (ret) ret_cards.push(c);
+    });
+
+    if (error) return false;
+
+    return ret_cards;
+}
+
 function showCards() {
     filtered_cards = {};
     game.interact.printName();
@@ -121,8 +197,7 @@ function showCards() {
     Object.values(cards).forEach(c => {
         if (c.runes && !plr.testRunes(c.runes)) return;
 
-        //let reg = new RegExp(`^${chosen_class}|Neutral`);
-        let reg = new RegExp(`^${viewClass}`);
+        let reg = new RegExp(`^${chosen_class}|Neutral`);
 
         c.class.split(" / ").forEach(cl => {
             if (!reg.test(cl)) return;
@@ -134,7 +209,18 @@ function showCards() {
     let cpp = cardsPerPage;
     let page = cardPage;
 
-    maxPage = Math.ceil(Object.values(filtered_cards).length / cpp);
+    // Search
+
+    if (searchQuery != "") console.log(`\nSearching for '${searchQuery}'.`);
+    let _filtered_cards = Object.values(filtered_cards).filter(c => c.class == viewClass);
+    _filtered_cards = searchCards(_filtered_cards);
+    if (_filtered_cards === false) {
+        game.input(`Search failed! Removing search query.\n`.red);
+        searchQuery = ""
+        return showCards();
+    }
+
+    maxPage = Math.ceil(_filtered_cards.length / cpp);
     if (page > maxPage) page = maxPage;
 
     console.log();
@@ -142,8 +228,6 @@ function showCards() {
     let oldSortType = cardSortType;
     let oldSortOrder = cardSortOrder;
     console.log(`Sorting by ${cardSortType.toUpperCase()}, ${cardSortOrder}ending.`);
-
-    let _filtered_cards = Object.values(filtered_cards);
 
     // Sort
     _filtered_cards = sortCards(_filtered_cards);
@@ -164,8 +248,18 @@ function showCards() {
 
     console.log(viewClass.rainbow);
 
+    let [wall, finishWall] = functions.createWall("-");
+
     _filtered_cards.forEach(c => {
-        console.log(functions.colorByRarity(c.name, c.rarity));
+        wall.push(getDisplayName(c) + " - " + c.id);
+    });
+
+    finishWall().forEach(b => {
+        b = b.split("-");
+
+        b = functions.colorByRarity(b[0], findCard(b[0].trim()).rarity) + "-" + b[1];
+
+        console.log(b);
     });
 }
 
@@ -201,8 +295,8 @@ function showConfig() {
 function findCard(card) {
     let _card;
 
-    Object.keys(filtered_cards).forEach(c => {
-        if (c.toLowerCase() == card.toLowerCase()) _card = filtered_cards[c];
+    Object.values(filtered_cards).forEach(c => {
+        if (getDisplayName(c).toLowerCase() == card.toLowerCase() || c.id == card) _card = c;
     });
 
     return _card;
@@ -221,7 +315,7 @@ function viewCard(c) {
     let stats = "";
 
     if (["Minion", "Weapon"].includes(functions.getType(c))) stats = ` [${c.stats.join(' / ')}]`.green;
-    console.log(`{${c.mana}} `.cyan + functions.colorByRarity(c.name, c.rarity) + stats + ` (${c.desc}) ` + `(${functions.getType(c)})`.yellow);
+    console.log(`{${c.mana}} `.cyan + functions.colorByRarity(getDisplayName(c), c.rarity) + stats + ` (${c.desc}) ` + `(${functions.getType(c)})`.yellow);
 
     game.input("\nPress enter to continue...");
 }
@@ -255,11 +349,11 @@ function viewDeck() {
         let amount = c[1];
 
         if (amount == 1) {
-            console.log(functions.colorByRarity(card.name, card.rarity));
+            console.log(functions.colorByRarity(getDisplayName(card), card.rarity));
             return;
         }
 
-        console.log(`x${amount} ` + functions.colorByRarity(card.name, card.rarity));
+        console.log(`x${amount} ` + functions.colorByRarity(getDisplayName(card), card.rarity));
     });
     
     game.input("\nPress enter to continue...");
@@ -350,12 +444,13 @@ function help() {
     console.log("(In order to run a command; input the name of the command and follow further instruction.)\n");
     console.log("(name) [optional] (required) - (description)\n");
 
-    console.log("add [card]            - Add a card to the deck");
-    console.log("remove [card]         - Remove a card from the deck");
-    console.log("view [card]           - View a card");
+    console.log("add [name | id]       - Add a card to the deck");
+    console.log("remove [card | id]    - Remove a card from the deck");
+    console.log("view [card | id]      - View a card");
     console.log("page (num)            - View a different page");
     console.log("cards (class)         - Show cards from 'class'");
-    console.log("sort (type) [order]   - Sorts by 'type' in 'order'ending order. (Type can be: ('rarity', 'name', 'cost', 'id'), Order can be: ('asc', 'desc')) (Example: sort cost asc - Will show cards ordered by cost, ascending.)");
+    console.log("sort (type) [order]   - Sorts by 'type' in 'order'ending order. (Type can be: ('rarity', 'name', 'cost', 'id', 'type'), Order can be: ('asc', 'desc')) (Example: sort cost asc - Will show cards ordered by cost, ascending.)");
+    console.log("search [query]        - Searches by query. Keys: ('name', 'desc', 'mana', 'rarity', 'id'), Examples: (search the - Search for all cards with the word 'the' in the name or description, case insensitive.), (search mana:2 - Search for all cards that costs 2 mana)");
     console.log("deck                  - View the deck");
     console.log("deckcode              - View the current deckcode");
     console.log("import                - Imports a deckcode (Overrides your deck)");
@@ -390,7 +485,7 @@ function getCardArg(cmd, callback) {
     let card = cmd.split(" ");
     card.shift();
 
-    if (parseInt(card[0])) {
+    if (card.length > 1 && parseInt(card[0])) {
         times = parseInt(card[0])
         card.shift();
     }
@@ -448,6 +543,9 @@ function handleCmds(cmd) {
     else if (cmd.startsWith("cards")) {
         let _class = cmd.split(" ");
         _class.shift();
+
+        if (_class.length <= 0) return;
+
         _class = _class.join(" ");
         _class = functions.capitalizeAll(_class);
 
@@ -475,8 +573,23 @@ function handleCmds(cmd) {
         let args = cmd.split(" ");
         args.shift();
 
+        if (args.length <= 0) return;
+
         cardSortType = args[0];
         cardSortOrder = args[1] || cardSortOrder;
+    }
+    else if (cmd.startsWith("search")) {
+        let args = cmd.split(" ");
+        args.shift();
+
+        if (args.length <= 0) {
+            searchQuery = "";
+            return;
+        }
+
+        args = args.join(" ");
+
+        searchQuery = args;
     }
     else if (cmd.startsWith("deck")) {
         viewDeck();
@@ -487,6 +600,8 @@ function handleCmds(cmd) {
         game.config.validateDecks = false;
         let _deck = functions.importDeck(plr, _deckcode);
         game.config.validateDecks = true;
+
+        if (_deck == "invalid") return;
 
         deck = [];
         _deck.forEach(c => add(c)); // You can just set deck = functions.importDeck(), but doing it that way doesn't account for renathal or any other card that changes the config in any way since that is done using the add function.
@@ -543,7 +658,6 @@ function handleCmds(cmd) {
             default:
                 game.input(`'${setting}' is not a valid setting.\n`.red);
                 return;
-                break;
         }
 
         game.input("Setting successfully changed!\n".green);

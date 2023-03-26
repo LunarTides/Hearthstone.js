@@ -86,6 +86,44 @@ class Functions {
 
         return str.split(" ").map(k => this.capitalize(k)).join(" ");
     }
+    createWall(sep) {
+        let wall = [];
+
+        const finishWall = () => {
+            let longest_brick = [];
+
+            wall.forEach(b => {
+                b = b.split(sep);
+
+                let length = b[0].length;
+
+                if (length <= longest_brick[1]) return;
+
+                longest_brick = [b, length];
+            });
+
+            let _wall = []
+
+            wall.forEach(b => {
+                b = b.split(sep);
+
+                let strbuilder = "";
+
+                let diff = longest_brick[1] - b[0].length;
+
+                strbuilder += b[0];
+                strbuilder += " ".repeat(diff);
+                strbuilder += sep;
+                strbuilder += b[1];
+
+                _wall.push(strbuilder);
+            });
+
+            return _wall;
+        }
+
+        return [wall, finishWall];
+    }
 
     // Getting card info
     getType(card) {
