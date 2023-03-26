@@ -118,6 +118,8 @@ function sortCards(_cards) {
     }
 
     if (["cost", "id"].includes(type)) {
+        if (type == "cost") type = "mana";
+
         return _cards.sort((a, b) => {
             return calcOrder(a[type], b[type]);
         });
