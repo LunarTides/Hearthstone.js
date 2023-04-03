@@ -40,7 +40,8 @@ let cardsPerPage = 15;
 let cardSortType = "rarity";
 let cardSortOrder = "asc";
 let maxPage = cardPage;
-let searchQuery = "";
+let prevSearchQuery = [];
+let searchQuery = [];
 let viewClass;
 
 function askClass() {
@@ -117,9 +118,7 @@ function sortCards(_cards) {
         });
     }
 
-    if (["cost", "id"].includes(type)) {
-        if (type == "cost") type = "mana";
-
+    if (["mana", "id"].includes(type)) {
         return _cards.sort((a, b) => {
             return calcOrder(a[type], b[type]);
         });
@@ -130,12 +129,12 @@ function sortCards(_cards) {
     return sortCards(_cards);
 }
 
-function searchCards(_cards) {
-    if (searchQuery == "") return _cards;
+function searchCards(_cards, sQuery) {
+    if (sQuery == []) return _cards;
 
     let ret_cards = [];
 
-    let query = searchQuery.split(":");
+    let query = sQuery.split(":");
 
     if (query.length <= 1) {
         // The user didn't specify a key. Do a general search
@@ -160,9 +159,31 @@ function searchCards(_cards) {
     const doReturn = (c) => {
         let ret = c[key];
 
-        if (!ret) {
+        if (!ret && ret !== 0) { // Javascript
             console.log(`\nKey '${key}' not valid!`.red);
             return -1;
+        }
+
+        // Mana even / odd
+        if (key == "mana") {
+            // Mana range
+            let regex = /\d+-\d+/; // 1-10
+            if (regex.test(val)) {
+                let _val = val.split("-");
+
+                let min = _val[0];
+                let max = _val[1];
+
+                return ret >= min && ret <= max;
+            }
+
+            if (val == "even") return ret % 2 == 0;
+            else if (val == "odd") return ret % 2 == 1;
+            else if (parseInt(val)) return ret == val;
+            else {
+                console.log(`\nValue '${val}' not valid!`.red);
+                return -1;
+            }
         }
 
         if (typeof(ret) === "string") return ret.toLowerCase().includes(val);
@@ -213,14 +234,34 @@ function showCards() {
 
     // Search
 
-    if (searchQuery != "") console.log(`\nSearching for '${searchQuery}'.`);
+    if (searchQuery.length > 0) console.log(`\nSearching for '${searchQuery.join(' ')}'.`);
+
     let _filtered_cards = Object.values(filtered_cards).filter(c => c.class == viewClass);
-    _filtered_cards = searchCards(_filtered_cards);
-    if (_filtered_cards === false) {
-        game.input(`Search failed! Removing search query.\n`.red);
-        searchQuery = ""
+
+    let searchFailed = false;
+
+    searchQuery.forEach(q => {
+        if (searchFailed) return;
+
+        _filtered_cards = searchCards(_filtered_cards, q);
+
+        if (_filtered_cards === false) {
+            game.input(`Search failed at '${q}'! Reverting back to last successfull query.\n`.red);
+            searchFailed = true;
+        }
+    });
+
+    if (_filtered_cards.length <= 0) {
+        game.input(`\nNo cards match search.\n`);
+        searchFailed = true;
+    }
+
+    if (searchFailed) {
+        searchQuery = prevSearchQuery;
         return showCards();
     }
+
+    prevSearchQuery = searchQuery;
 
     maxPage = Math.ceil(_filtered_cards.length / cpp);
     if (page > maxPage) page = maxPage;
@@ -451,8 +492,8 @@ function help() {
     console.log("view [card | id]      - View a card");
     console.log("page (num)            - View a different page");
     console.log("cards (class)         - Show cards from 'class'");
-    console.log("sort (type) [order]   - Sorts by 'type' in 'order'ending order. (Type can be: ('rarity', 'name', 'cost', 'id', 'type'), Order can be: ('asc', 'desc')) (Example: sort cost asc - Will show cards ordered by cost, ascending.)");
-    console.log("search [query]        - Searches by query. Keys: ('name', 'desc', 'mana', 'rarity', 'id'), Examples: (search the - Search for all cards with the word 'the' in the name or description, case insensitive.), (search mana:2 - Search for all cards that costs 2 mana)");
+    console.log("sort (type) [order]   - Sorts by 'type' in 'order'ending order. (Type can be: ('rarity', 'name', 'mana', 'id', 'type'), Order can be: ('asc', 'desc')) (Example: sort mana asc - Will show cards ordered by mana cost, ascending.)");
+    console.log("search [query]        - Searches by query. Keys: ('name', 'desc', 'mana', 'rarity', 'id'), Examples: (search the - Search for all cards with the word 'the' in the name or description, case insensitive.), (search mana:2 - Search for all cards that costs 2 mana, search mana:even name:r - Search for all even cost cards with 'r' in its name)");
     console.log("deck                  - View the deck");
     console.log("deckcode              - View the current deckcode");
     console.log("import                - Imports a deckcode (Overrides your deck)");
@@ -585,11 +626,11 @@ function handleCmds(cmd) {
         args.shift();
 
         if (args.length <= 0) {
-            searchQuery = "";
+            searchQuery = [];
             return;
         }
 
-        args = args.join(" ");
+        //args = args.join(" ");
 
         searchQuery = args;
     }
