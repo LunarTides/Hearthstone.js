@@ -34,6 +34,10 @@ let plr = new game.Player("");
 let maxDeckLength = config.maxDeckLength;
 let minDeckLength = config.minDeckLength;
 
+let warnings = {
+    latestCard: true
+}
+
 let cardId = "id";
 let cardPage = 1;
 let cardsPerPage = 15;
@@ -43,6 +47,11 @@ let maxPage = cardPage;
 let prevSearchQuery = [];
 let searchQuery = [];
 let viewClass;
+let view = "cards";
+let latestCard;
+let defaultCmd = "add";
+
+let rulesShown = false;
 
 function askClass() {
     game.interact.printName();
@@ -213,9 +222,8 @@ function searchCards(_cards, sQuery) {
 function showCards() {
     filtered_cards = {};
     game.interact.printName();
-    showConfig();
 
-    if (!viewClass) viewClass = chosen_class;
+    if (!viewClass || !["Neutral", chosen_class].includes(viewClass)) viewClass = chosen_class;
 
     Object.values(cards).forEach(c => {
         if (c.runes && !plr.testRunes(c.runes)) return;
@@ -229,12 +237,14 @@ function showCards() {
         });
     });
 
+    if (!rulesShown) showRules();
+
     let cpp = cardsPerPage;
     let page = cardPage;
 
     // Search
 
-    if (searchQuery.length > 0) console.log(`\nSearching for '${searchQuery.join(' ')}'.`);
+    if (searchQuery.length > 0) console.log(`Searching for '${searchQuery.join(' ')}'.`);
 
     let _filtered_cards = Object.values(filtered_cards).filter(c => c.class == viewClass);
 
@@ -266,7 +276,7 @@ function showCards() {
     maxPage = Math.ceil(_filtered_cards.length / cpp);
     if (page > maxPage) page = maxPage;
 
-    console.log();
+    if (!rulesShown) console.log(); // Add newline
 
     let oldSortType = cardSortType;
     let oldSortOrder = cardSortOrder;
@@ -304,9 +314,18 @@ function showCards() {
 
         console.log(b);
     });
+
+    console.log("\nCurrent deckcode output:");
+    let [_deckcode, error] = deckcode();
+    if (error == "valid") {
+        console.log("Valid deck!".green);
+        console.log(_deckcode);
+    }
+
+    if (!rulesShown) rulesShown = true;
 }
 
-function showConfig() {
+function showRules() {
     let config_text = "### RULES ###";
     console.log("#".repeat(config_text.length));
     console.log(config_text);
@@ -375,7 +394,7 @@ function remove(c) {
     deck.splice(deck.indexOf(c), 1);
 }
 
-function viewDeck() {
+function showDeck() {
     game.interact.printName();
 
     console.log("Deck Size: " + deck.length.toString().yellow + "\n");
@@ -387,19 +406,49 @@ function viewDeck() {
         _cards[c.name][1]++;
     });
 
+    let [wall, finishWall] = functions.createWall("-");
+
     Object.values(_cards).forEach(c => {
         let card = c[0];
         let amount = c[1];
 
-        if (amount == 1) {
-            console.log(functions.colorByRarity(getDisplayName(card), card.rarity));
+        let viewed = "";
+
+        if (amount > 1) viewed += `x${amount} `;
+        viewed += getDisplayName(card).replaceAll("-", "`") + ` - ${card.id}`;
+
+        wall.push(viewed);
+    });
+
+    finishWall().forEach(b => {
+        b = b.split("-");
+        b = [b[0].replaceAll("`", "-"), b[1]]; // Replace '`' with '-'
+
+        // Color b[0] by rarity
+        let r = /^x\d+ /;
+
+        if (r.test(b[0])) {
+            // Amount specified
+            let amount = b[0].split(r);
+            let card = findCard(b[0].replace(r, "").trim());
+            let name = functions.colorByRarity(amount[1], card.rarity);
+
+            console.log(`${r.exec(b[0])}${name}-${b[1]}`);
             return;
         }
 
-        console.log(`x${amount} ` + functions.colorByRarity(getDisplayName(card), card.rarity));
+        let card = findCard(b[0].trim());
+        let name = functions.colorByRarity(b[0], card.rarity);
+
+        console.log(`${name}-${b[1]}`);
     });
-    
-    game.input("\nPress enter to continue...");
+
+    console.log("\nCurrent deckcode output:");
+    let [_deckcode, error] = deckcode();
+    if (error == "valid") {
+        console.log("Valid deck!".green);
+        console.log(_deckcode);
+    }
 }
 
 function deckcode() {
@@ -407,12 +456,12 @@ function deckcode() {
 
     // Deck size warnings
     if (deck.length < minDeckLength) {
-        console.log("WARNING: Rule 1 violated.".yellow);
+        console.log("WARNING: Too few cards.".yellow);
 
         pseudo = true;
     }
     if (deck.length > maxDeckLength) {
-        console.log("WARNING: Rule 2 violated.".yellow);
+        console.log("WARNING: Too many cards.".yellow);
 
         pseudo = true;
     }
@@ -423,8 +472,12 @@ function deckcode() {
         return ["", "invalid"];
     }
 
-    let deckcode = `# ${chosen_class} # `;
-    if (runes) deckcode += `[${runes}] `;
+    let deckcode = `${chosen_class} `;
+    if (runes) {
+        // If the runes is 3 of one type, write, for example, 3B instead of BBB
+        if (new Set(runes.split("")).size == 1) deckcode += `[3${runes[0]}] `;
+        else deckcode += `[${runes}] `;
+    }
 
     deckcode += "/";
 
@@ -455,15 +508,20 @@ function deckcode() {
         c.forEach(v => {
             let card = v[0];
 
-            str_cards += `${card[cardId]},`;
+            let id = card[cardId];
+
+            // Extra optimization
+            if (cardId == "id") id = id.toString(36);
+
+            str_cards += `${id},`;
 
             if (amount > config.maxOfOneLegendary && card.rarity == "Legendary") {
-                console.log("WARNING: Rule 4 violated. Offender: ".yellow + `{ Name: "${card.name}", Amount: "${amount}" }`);
+                console.log("WARNING: Too many copies of a Legendary card. Maximum is: ".yellow + config.maxOfOneLegendary.toString() + ". Offender: ".yellow + `{ Name: "${card.name}", Amount: "${amount}" }`);
 
                 pseudo = true;
             }
             else if (amount > config.maxOfOneCard) {
-                console.log("WARNING: Rule 3 violated. Offender: ".yellow + `{ Name: "${card.name}", Amount: "${amount}" }`);
+                console.log("WARNING: Too many copies of a card. Maximum is: ".yellow + config.maxOfOneCard.toString() + ". Offender: ".yellow + `{ Name: "${card.name}", Amount: "${amount}" }`);
 
                 pseudo = true;
             }
@@ -473,6 +531,7 @@ function deckcode() {
     deckcode = deckcode.slice(0, -1); // Remove the last ", "
 
     deckcode += "/ ";
+
     deckcode += str_cards;
     deckcode = deckcode.slice(0, -1); // Remove the last ", "
 
@@ -494,12 +553,13 @@ function help() {
     console.log("cards (class)         - Show cards from 'class'");
     console.log("sort (type) [order]   - Sorts by 'type' in 'order'ending order. (Type can be: ('rarity', 'name', 'mana', 'id', 'type'), Order can be: ('asc', 'desc')) (Example: sort mana asc - Will show cards ordered by mana cost, ascending.)");
     console.log("search [query]        - Searches by query. Keys: ('name', 'desc', 'mana', 'rarity', 'id'), Examples: (search the - Search for all cards with the word 'the' in the name or description, case insensitive.), (search mana:2 - Search for all cards that costs 2 mana, search mana:even name:r - Search for all even cost cards with 'r' in its name)");
-    console.log("deck                  - View the deck");
+    console.log("deck                  - Toggle deck-view");
     console.log("deckcode              - View the current deckcode");
     console.log("import                - Imports a deckcode (Overrides your deck)");
     console.log("export                - Temporarily saves your deck to the runner so that when you choose to play, the decks get filled in automatically. (Only works when running the deck creator from the Hearthstone.js Runner)");
     console.log("set (setting) (value) - Change some settings. Look down to 'Set Subcommands' to see available settings");
     console.log("class                 - Change the class");
+    console.log("config | rules        - Displays the rules text that shows when first running the program");
     console.log("help                  - Displays this message");
     console.log("exit                  - Quits the program");
 
@@ -508,9 +568,11 @@ function help() {
     console.log("(In order to use these; input 'set ', then one of the subcommands. Example: 'set cpp 20')\n");
     console.log("(name) [optional] (required) - (description)\n");
 
-    console.log("name                     - Makes the deckcode generator use names instead of ids");
-    console.log("id                       - Makes the deckcode generator use ids instead of names");
-    console.log("cardsPerPage | cpp (num) - How many cards to show per page [default = 15]");
+    console.log("name                        - Makes the deckcode generator use names instead of ids");
+    console.log("id                          - Makes the deckcode generator use ids instead of names");
+    console.log("cardsPerPage | cpp (num)    - How many cards to show per page [default = 15]");
+    console.log("latestCardWarning | lcwarn  - If it should warn you when using the latest card, the latest card is used if the card chosen is invalid and the name specified begins with 'l'");
+    console.log("defaultCommand | dcmd (cmd) - The command that should run when the command is unspecified. ('add', 'remove', 'view') [default = 'add']");
 
     console.log("\nNote the 'cardsPerPage' commands has 2 different subcommands; cpp & cardsPerPage. Both do the same thing.".gray);
 
@@ -535,7 +597,16 @@ function getCardArg(cmd, callback) {
 
     card = card.join(" ");
 
+    let eligibleForLatest = false;
+    if (card.startsWith("l")) eligibleForLatest = true;
+
     card = findCard(card);
+
+    if (!card && eligibleForLatest) {
+        console.log(`Card not found. Using latest valid card instead.`.yellow);
+        if (warnings.latestCard) game.input();
+        card = latestCard;
+    }
 
     if (!card) {
         game.input("Invalid card.\n".red);
@@ -544,11 +615,18 @@ function getCardArg(cmd, callback) {
 
     for (let i = 0; i < times; i++) callback(card);
 
+    latestCard = card;
+
     return card;
 }
 
 function handleCmds(cmd) {
-    if (cmd == "view") {
+    if (cmd.startsWith("config") || cmd.startsWith("rules")) {
+        game.interact.printName();
+        showRules();
+        game.input("\nPress enter to continue...\n");
+    }
+    else if (cmd == "view") {
         let card = chooseCard("View a card: ");
 
         viewCard(card);
@@ -635,9 +713,10 @@ function handleCmds(cmd) {
         searchQuery = args;
     }
     else if (cmd.startsWith("deck")) {
-        viewDeck();
+        view = view == "cards" ? "deck" : "cards";
     }
     else if (cmd.startsWith("import")) {
+        console.log("WARNING: Deck importing is currently buggy. Please be patient.".yellow); // TODO: Fix deck importing, removing a card from the deck after importing will somehow remove an unrelated card
         let _deckcode = game.input("Please input a deckcode: ");
 
         game.config.validateDecks = false;
@@ -648,8 +727,10 @@ function handleCmds(cmd) {
 
         deck = [];
         _deck.forEach(c => add(c)); // You can just set deck = functions.importDeck(), but doing it that way doesn't account for renathal or any other card that changes the config in any way since that is done using the add function.
-
         chosen_class = plr.heroClass;
+        runes = plr.runes;
+
+        showCards();
     }
     else if (cmd.startsWith("export")) {
         if (!opened_from_runner) {
@@ -694,9 +775,28 @@ function handleCmds(cmd) {
             case "name":
                 cardId = "name";
                 break;
+            case "lcwarn":
+            case "latestCardWarning":
+                warnings.latestCard = !warnings.latestCard;
+                console.log(`Latest card warning is now: ${warnings.latestCard}.\n`);
+                break;
             case "cpp":
             case "cardsPerPage":
                 cardsPerPage = parseInt(args);
+                break;
+            case "dcmd":
+            case "defaultCommand":
+                if (args.length == 0) {
+                    defaultCmd = "add";
+                    console.log("Set default command to: " + "add".yellow);
+                    break;
+                }
+
+                if (!["add", "remove", "view"].includes(args[0])) return;
+                let cmd = args[0];
+
+                defaultCmd = cmd;
+                console.log("Set default command to: " + args[0].yellow);
                 break;
             default:
                 game.input(`'${setting}' is not a valid setting.\n`.red);
@@ -710,6 +810,11 @@ function handleCmds(cmd) {
     }
     else if (cmd.startsWith("exit")) {
         running = false;
+    }
+    else {
+        // Infer add
+        console.log(`Unable to find command. Trying '${defaultCmd} ${cmd}'`.yellow);
+        handleCmds(`${defaultCmd} ${cmd}`);
     }
 }
 
@@ -727,7 +832,8 @@ function main() {
     chosen_class = askClass();
 
     while (running) {
-        showCards();
+        if (view == "cards") showCards();
+        else if (view == "deck") showDeck();
         handleCmds(game.input("\n> "));
     }
 }

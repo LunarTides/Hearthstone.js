@@ -787,19 +787,38 @@ class Functions {
         //code = Buffer.from(code, 'base64').toString('ascii');
         //if (!code) ERROR("INVALIDB64");
 
-        if (code.split("# ").length != 3) return ERROR("INVALIDCLASSHEADER");
-        let hero = code.split("# ")[1];
+        let runeRegex = /\[[BFU]{3}\]/; // BFU
+        let altRuneRegex = /\[3[BFU]\]/; // BBB -> 3B
+
+        let runesExists = runeRegex.test(code) || altRuneRegex.test(code);
+
+        let sep = " /";
+
+        if (runesExists) sep = " [";
+        let hero = code.split(sep)[0];
 
         hero = hero.trim();
-        code = code.split("# ")[2];
+        code = sep[1] + code.split(sep)[1];
 
         plr.heroClass = hero;
 
         let rune_classes = ["Death Knight"];
         let rune_class = rune_classes.includes(hero);
 
+        const addRunes = (runes) => {
+            if (rune_class) plr.runes = runes;
+            else game.input("WARNING: This deck has runes in it, but the class is ".yellow + hero.brightYellow + ". Supported classes: ".yellow + rune_classes.join(", ").brightYellow + "\n");
+        }
+
         // Runes
-        if (/^\[[A-Z]{3}\]/.test(code)) {
+        if (altRuneRegex.test(code)) {
+            // [3B]
+            let rune = code[2];
+
+            code = code.slice(5);
+            addRunes(rune.repeat(3));
+        }
+        else if (runeRegex.test(code)) {
             // [BFU]
             let runes = "";
 
@@ -808,8 +827,7 @@ class Functions {
             }
             
             code = code.slice(6);
-            if (rune_class) plr.runes = runes;
-            else game.input("WARNING: This deck has runes in it, but the class is ".yellow + hero.brightYellow + ". Supported classes: ".yellow + rune_classes.join(", ").brightYellow + "\n");
+            addRunes(runes);
         }
         else if (rune_class) {
             game.input("WARNING: This class supports runes but there are no runes in this deck. This deck's class: ".yellow + hero.brightYellow + ". Supported classes: ".yellow + rune_classes.join(", ").brightYellow + "\n");
@@ -841,6 +859,8 @@ class Functions {
             let cards = deck.slice(processed, times);
 
             cards.forEach(c => {
+                c = parseInt(c, 36);
+
                 let card = this.getCardById(c);
                 if (!card) {
                     retInvalid = ERROR("NONEXISTANTCARD", c);
