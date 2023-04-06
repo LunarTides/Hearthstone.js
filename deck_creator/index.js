@@ -588,10 +588,21 @@ function help() {
     console.log("name                        - Makes the deckcode generator use names instead of ids");
     console.log("id                          - Makes the deckcode generator use ids instead of names");
     console.log("cardsPerPage | cpp (num)    - How many cards to show per page [default = 15]");
-    console.log("latestCardWarning | lcwarn  - If it should warn you when using the latest card, the latest card is used if the card chosen is invalid and the name specified begins with 'l'");
     console.log("defaultCommand | dcmd (cmd) - The command that should run when the command is unspecified. ('add', 'remove', 'view') [default = 'add']");
+    console.log("warning                     - Disables/enables certain warnings. Look down to 'Warnings' to see changeable warnings.");
 
     console.log("\nNote the 'cardsPerPage' commands has 2 different subcommands; cpp & cardsPerPage. Both do the same thing.".gray);
+
+    // Set Warning
+    console.log("\nWarnings:".bold);
+    console.log("(In order to use these; input 'set warning (name) [off | on]'. Example: 'set warning latestCard off')\n");
+    console.log("(name) [optional] (required) - (description)\n");
+
+    console.log("latestCard - Warning that shows up when attemping to use the latest card. The latest card is used if the card chosen in a command is invalid and the name specified begins with 'l'. Example: 'add latest' - Adds a copy of the latest card to the deck.");
+
+    console.log("\nNote: If you don't specify a state (off / on) it will toggle the state of the warning.");
+    console.log("Note: The word 'off' can be exchanged with 'disable', 'false', or '0'.");
+    console.log("Note: The word 'on' can be exchanged with 'enable', 'true', or '1'.");
 
     // Notes
     console.log("\nNotes:".bold);
@@ -798,6 +809,56 @@ function handleCmds(cmd) {
         handleCmds(`${reverse} latest`);
         if (lcWarn) warnings.latestCard = true;
     }
+    else if (cmd.startsWith("set warning")) {
+        let _cmd = cmd.split(" ");
+        _cmd.shift();
+        let args = _cmd.slice(1);
+
+        let key = args[0];
+
+        if (!Object.keys(warnings).includes(key)) {
+            game.input(`'${key}' is not a valid warning!\n`.red);
+            return;
+        }
+
+        let new_state;
+
+        if (args.length <= 1) new_state = !warnings[key]; // Toggle
+        else {
+            let val = args[1];
+
+            if (["off", "disable", "false", "0"].includes(val)) new_state = false;
+            else if (["on", "enable", "true", "1"].includes(val)) new_state = true;
+            else {
+                game.input(`${val} is not a valid state. View 'help' for more information.\n`.red);
+                return;
+            }
+        }
+
+        if (warnings[key] == new_state) {
+            let strbuilder = "";
+
+            strbuilder += "Warning '".yellow;
+            strbuilder += key.brightYellow;
+            strbuilder += "' is already ".yellow;
+            strbuilder += (new_state) ? "enabled".yellow : "disabled".yellow;
+            strbuilder += ".\n".yellow;
+
+            game.input(strbuilder);
+            return;
+        }
+
+        warnings[key] = new_state;
+
+        let strbuilder = "";
+
+        strbuilder += (new_state) ? "Enabled warning".green : "Disabled warning".red;
+        strbuilder += " '".yellow;
+        strbuilder += key.yellow;
+        strbuilder += "'.\n".yellow;
+
+        game.input(strbuilder);
+    }
     else if (cmd.startsWith("set")) {
         let setting = cmd.split(" ");
         setting.shift();
@@ -810,11 +871,6 @@ function handleCmds(cmd) {
                 break;
             case "name":
                 settings.deckcode.cardId = "name";
-                break;
-            case "lcwarn":
-            case "latestCardWarning":
-                warnings.latestCard = !warnings.latestCard;
-                console.log(`Latest card warning is now: ${warnings.latestCard}.\n`);
                 break;
             case "cpp":
             case "cardsPerPage":
