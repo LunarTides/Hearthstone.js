@@ -40,7 +40,8 @@ let warnings = {
 
 let settings = {
     card: {
-        latest: null
+        latest: null,
+        latestUndoable: null
     },
     view: {
         type: "cards",
@@ -60,8 +61,11 @@ let settings = {
     deckcode: {
         cardId: "id"
     },
+    commands: {
+        default: "add",
+        latest: null
+    },
     other: {
-        defaultCmd: "add",
         rulesShown: false
     }
 }
@@ -775,6 +779,25 @@ function handleCmds(cmd) {
         chosen_class = new_class;
         if (settings.view.class != "Neutral") settings.view.class = chosen_class;
     }
+    else if (cmd.startsWith("undo")) {
+        let command = settings.commands.latestUndoable.split(" ")[0];
+
+        let reverse;
+
+        if (command.startsWith("a")) reverse = "remove";
+        else if (command.startsWith("r")) reverse = "add";
+        else {
+            // This shouldn't ever happen, but oh well
+            console.log(`Command '${command}' cannot be undoed.`.red);
+            return;
+        }
+
+        let lcWarn = warnings.latestCard;
+
+        if (lcWarn) warnings.latestCard = false; // Temp remove the latest card warning if its on
+        handleCmds(`${reverse} latest`);
+        if (lcWarn) warnings.latestCard = true;
+    }
     else if (cmd.startsWith("set")) {
         let setting = cmd.split(" ");
         setting.shift();
@@ -800,7 +823,7 @@ function handleCmds(cmd) {
             case "dcmd":
             case "defaultCommand":
                 if (args.length == 0) {
-                    settings.other.defaultCmd = "add";
+                    settings.commands.default = "add";
                     console.log("Set default command to: " + "add".yellow);
                     break;
                 }
@@ -808,7 +831,7 @@ function handleCmds(cmd) {
                 if (!["add", "remove", "view"].includes(args[0])) return;
                 let cmd = args[0];
 
-                settings.other.defaultCmd = cmd;
+                settings.commands.default = cmd;
                 console.log("Set default command to: " + args[0].yellow);
                 break;
             default:
@@ -826,9 +849,12 @@ function handleCmds(cmd) {
     }
     else {
         // Infer add
-        console.log(`Unable to find command. Trying '${settings.other.defaultCmd} ${cmd}'`.yellow);
-        handleCmds(`${settings.other.defaultCmd} ${cmd}`);
+        console.log(`Unable to find command. Trying '${settings.commands.default} ${cmd}'`.yellow);
+        return handleCmds(`${settings.commands.default} ${cmd}`);
     }
+
+    settings.commands.latest = cmd;
+    if (["a", "r"].includes(cmd[0])) settings.commands.latestUndoable = cmd;
 }
 
 let opened_from_runner = false;
