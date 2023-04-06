@@ -744,21 +744,27 @@ function handleCmds(cmd) {
         settings.view.type = settings.view.type == "cards" ? "deck" : "cards";
     }
     else if (cmd.startsWith("import")) {
-        console.log("WARNING: Deck importing is currently buggy. Please be patient.".yellow); // TODO: Fix deck importing, removing a card from the deck after importing will somehow remove an unrelated card
         let _deckcode = game.input("Please input a deckcode: ");
 
         game.config.validateDecks = false;
-        let _deck = functions.importDeck(plr, _deckcode);
+        let _deck = functions.importDeck(plr, _deckcode).sort((a, b) => {
+            return a.name.localeCompare(b.name);
+        });
         game.config.validateDecks = true;
 
         if (_deck == "invalid") return;
 
         deck = [];
-        _deck.forEach(c => add(c)); // You can just set deck = functions.importDeck(), but doing it that way doesn't account for renathal or any other card that changes the config in any way since that is done using the add function.
+
+        // Update the filtered cards
         chosen_class = plr.heroClass;
         runes = plr.runes;
-
         showCards();
+
+        // Add the cards using handleCmds instead of add because for some reason, adding them with add
+        // causes a weird bug that makes modifying the deck impossible because removing a card
+        // removes a completly unrelated card because javascript.
+        _deck.forEach(c => handleCmds(`add ${getDisplayName(c)}`)); // You can just set deck = functions.importDeck(), but doing it that way doesn't account for renathal or any other card that changes the config in any way since that is done using the add function.
     }
     else if (cmd.startsWith("export")) {
         if (!opened_from_runner) {
