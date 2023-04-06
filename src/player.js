@@ -45,6 +45,8 @@ class Player {
         this.corpses = 0;
 
         this.runes = "";
+
+        this.forceTarget = null;
     }
 
     getOpponent() {

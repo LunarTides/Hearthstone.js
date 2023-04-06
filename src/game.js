@@ -402,6 +402,8 @@ class Game {
             this.stats.history[this.turns].splice(historyIndex - 1, 1);
         }
 
+        this.stats.update("cardsPlayedUnsafe", card, player, false);
+
         if (card.type === "Minion") {
             // Magnetize
             if (card.keywords.includes("Magnetic") && board.length > 0) {

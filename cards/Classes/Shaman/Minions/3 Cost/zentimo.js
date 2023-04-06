@@ -1,7 +1,7 @@
 module.exports = {
-    name: "Frozen Zentimo",
+    name: "Zentimo",
     stats: [1, 3],
-    desc: "Whenever you target a minion with a spell, freeze its neighbors.",
+    desc: "Whenever you target a minion with a spell, it also targets adjacent ones.",
     mana: 3,
     tribe: "None",
     class: "Shaman",
@@ -9,15 +9,42 @@ module.exports = {
     id: 316,
 
     passive(plr, game, self, key, val) {
-        // I know this isn't exactly what Zentimo does but the og description was impossible to implement.
-        // This desc does the same for this deck anyways
-        if (key != "spellsCastOnMinions") return;
+        if (key != "cardsPlayedUnsafe" && val != self) return;
 
-        let b = game.board[val.plr.id];
-        let index = b.indexOf(val);
-        if (index === -1) return;
+        let enabled = true;
+        let minion;
 
-        if (index > 0) b[index - 1].freeze();
-        if (index < b.length - 1) b[index + 1].freeze();
+        game.functions.addPassive("spellsCastOnMinions", (_key, _val) => {
+            minion = _val;
+            return true;
+        }, () => {
+            if (!enabled) return true;
+
+            let b = game.board[minion.plr.id];
+            let index = b.indexOf(minion);
+            if (index === -1) return true;
+
+            if (index > 0) {
+                plr.forceTarget = b[index - 1];
+                val.activate("cast");
+            }
+
+            if (index < b.length - 1) {
+                plr.forceTarget = b[index + 1];
+                val.activate("cast");
+            }
+
+            plr.forceTarget = null;
+
+            return true;
+        }, 1);
+
+        // Undo after cast function was called
+        game.functions.addPassive("cardsPlayed", (_key, _val) => {
+            return _val == val;
+        }, () => {
+            enabled = false;
+            return true;
+        }, 1);
     }
 }

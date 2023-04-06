@@ -731,6 +731,7 @@ class Interact {
         // force_class = [null, "hero", "minion"]
         // force_side = [null, "enemy", "self"]
 
+        if (game.player.forceTarget) return game.player.forceTarget;
         if (game.player.ai) return game.player.ai.selectTarget(prompt, elusive, force_side, force_class, flags);
 
         if (force_class == "hero") {

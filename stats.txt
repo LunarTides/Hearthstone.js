@@ -13,7 +13,8 @@ heroAttackGained:      {number}                              Amount of attack ga
 damageTaken:           {number}                              Amount of damage taken
 damageTakenOnOwnTurn:  {number}                              Amount of damage taken on the players turn
 
-cardsPlayed:           {Card:Any}                            Card played
+cardsPlayed:           {Card:Any}                            Card played (This gets triggered after the text of the card)
+cardsPlayedUnsafe:     {Card:Any}                            Card played (This gets triggered before the text of the card, which means it also gets triggered before the cancelling logic. So you have to handle cards being cancelled.)
 minionsSummoned:       {Card:Minion}                         The minion summoned
 minionsKilled:         {Card:Minion}                         The minion killed
 minionsDamaged:        {Array<Card, number>}                 The minion damaged, the amount of damage
