@@ -38,20 +38,33 @@ let warnings = {
     latestCard: true
 }
 
-let cardId = "id";
-let cardPage = 1;
-let cardsPerPage = 15;
-let cardSortType = "rarity";
-let cardSortOrder = "asc";
-let maxPage = cardPage;
-let prevSearchQuery = [];
-let searchQuery = [];
-let viewClass;
-let view = "cards";
-let latestCard;
-let defaultCmd = "add";
-
-let rulesShown = false;
+let settings = {
+    card: {
+        latest: null
+    },
+    view: {
+        type: "cards",
+        page: 1,
+        maxPage: null,
+        cpp: 15, // Cards per page
+        class: null
+    },
+    sort: {
+        type: "rarity",
+        order: "asc"
+    },
+    search: {
+        query: [],
+        prevQuery: []
+    },
+    deckcode: {
+        cardId: "id"
+    },
+    other: {
+        defaultCmd: "add",
+        rulesShown: false
+    }
+}
 
 function askClass() {
     game.interact.printName();
@@ -83,12 +96,12 @@ function getDisplayName(card) {
 }
 
 function sortCards(_cards) {
-    if (!["asc", "desc"].includes(cardSortOrder)) cardSortOrder = "asc"; // If the order is invalid, fall back to ascending
-    cardSortType = cardSortType.toLowerCase();
-    cardSortOrder = cardSortOrder.toLowerCase();
+    if (!["asc", "desc"].includes(settings.sort.order)) settings.sort.order = "asc"; // If the order is invalid, fall back to ascending
+    settings.sort.type = settings.sort.type.toLowerCase();
+    settings.sort.type = settings.sort.type.toLowerCase();
 
-    let type = cardSortType;
-    let order = cardSortOrder;
+    let type = settings.sort.type;
+    let order = settings.sort.order;
 
     const calcOrder = (a, b) => {
         if (order == "asc") return a - b;
@@ -134,7 +147,7 @@ function sortCards(_cards) {
     }
 
     // If 'type' isn't valid, fall back to sorting by rarity
-    cardSortType = "rarity";
+    settings.sort.type = "rarity";
     return sortCards(_cards);
 }
 
@@ -223,7 +236,7 @@ function showCards() {
     filtered_cards = {};
     game.interact.printName();
 
-    if (!viewClass || !["Neutral", chosen_class].includes(viewClass)) viewClass = chosen_class;
+    if (!settings.view.class || !["Neutral", chosen_class].includes(settings.view.class)) settings.view.class = chosen_class;
 
     Object.values(cards).forEach(c => {
         if (c.runes && !plr.testRunes(c.runes)) return;
@@ -237,20 +250,20 @@ function showCards() {
         });
     });
 
-    if (!rulesShown) showRules();
+    if (!settings.other.rulesShown) showRules();
 
-    let cpp = cardsPerPage;
-    let page = cardPage;
+    let cpp = settings.view.cpp;
+    let page = settings.view.page;
 
     // Search
 
-    if (searchQuery.length > 0) console.log(`Searching for '${searchQuery.join(' ')}'.`);
+    if (settings.search.query.length > 0) console.log(`Searching for '${settings.search.query.join(' ')}'.`);
 
-    let _filtered_cards = Object.values(filtered_cards).filter(c => c.class == viewClass);
+    let _filtered_cards = Object.values(filtered_cards).filter(c => c.class == settings.view.class);
 
     let searchFailed = false;
 
-    searchQuery.forEach(q => {
+    settings.search.query.forEach(q => {
         if (searchFailed) return;
 
         _filtered_cards = searchCards(_filtered_cards, q);
@@ -267,39 +280,39 @@ function showCards() {
     }
 
     if (searchFailed) {
-        searchQuery = prevSearchQuery;
+        settings.search.query = settings.search.prevQuery;
         return showCards();
     }
 
-    prevSearchQuery = searchQuery;
+    settings.search.prevQuery = settings.search.query;
 
-    maxPage = Math.ceil(_filtered_cards.length / cpp);
-    if (page > maxPage) page = maxPage;
+    settings.view.maxPage = Math.ceil(_filtered_cards.length / cpp);
+    if (page > settings.view.maxPage) page = settings.view.maxPage;
 
-    if (!rulesShown) console.log(); // Add newline
+    if (!settings.other.rulesShown) console.log(); // Add newline
 
-    let oldSortType = cardSortType;
-    let oldSortOrder = cardSortOrder;
-    console.log(`Sorting by ${cardSortType.toUpperCase()}, ${cardSortOrder}ending.`);
+    let oldSortType = settings.sort.type;
+    let oldSortOrder = settings.sort.order;
+    console.log(`Sorting by ${settings.sort.type.toUpperCase()}, ${settings.sort.order}ending.`);
 
     // Sort
     _filtered_cards = sortCards(_filtered_cards);
 
-    let sortTypeInvalid = oldSortType != cardSortType;
-    let sortOrderInvalid = oldSortOrder != cardSortOrder;
+    let sortTypeInvalid = oldSortType != settings.sort.type;
+    let sortOrderInvalid = oldSortOrder != settings.sort.order;
 
-    if (sortTypeInvalid) console.log(`Sorting by '${oldSortType.toUpperCase()}' failed! Falling back to ${cardSortType.toUpperCase()}.`.yellow);
-    if (sortOrderInvalid) console.log(`Ordering by '${oldSortOrder}ending' failed! Falling back to ${cardSortOrder}ending.`.yellow)
+    if (sortTypeInvalid) console.log(`Sorting by '${oldSortType.toUpperCase()}' failed! Falling back to ${settings.sort.type.toUpperCase()}.`.yellow);
+    if (sortOrderInvalid) console.log(`Ordering by '${oldSortOrder}ending' failed! Falling back to ${settings.sort.order}ending.`.yellow)
 
-    if (sortTypeInvalid || sortOrderInvalid) console.log(`\nSorting by ${cardSortType.toUpperCase()}, ${cardSortOrder}ending.`);
+    if (sortTypeInvalid || sortOrderInvalid) console.log(`\nSorting by ${settings.sort.type.toUpperCase()}, ${settings.sort.order}ending.`);
 
     // Page logic
     _filtered_cards = _filtered_cards.slice(cpp * (page - 1), cpp * page);
 
     // Loop
-    console.log(`\nPage ${page} / ${maxPage}\n`);
+    console.log(`\nPage ${page} / ${settings.view.maxPage}\n`);
 
-    console.log(viewClass.rainbow);
+    console.log(settings.view.class.rainbow);
 
     let [wall, finishWall] = functions.createWall("-");
 
@@ -322,7 +335,7 @@ function showCards() {
         console.log(_deckcode);
     }
 
-    if (!rulesShown) rulesShown = true;
+    if (!settings.other.rulesShown) settings.other.rulesShown = true;
 }
 
 function showRules() {
@@ -508,10 +521,10 @@ function deckcode() {
         c.forEach(v => {
             let card = v[0];
 
-            let id = card[cardId];
+            let id = card[settings.deckcode.cardId];
 
             // Extra optimization
-            if (cardId == "id") id = id.toString(36);
+            if (settings.deckcode.cardId == "id") id = id.toString(36);
 
             str_cards += `${id},`;
 
@@ -605,7 +618,7 @@ function getCardArg(cmd, callback) {
     if (!card && eligibleForLatest) {
         console.log(`Card not found. Using latest valid card instead.`.yellow);
         if (warnings.latestCard) game.input();
-        card = latestCard;
+        card = settings.card.latest;
     }
 
     if (!card) {
@@ -615,7 +628,7 @@ function getCardArg(cmd, callback) {
 
     for (let i = 0; i < times; i++) callback(card);
 
-    latestCard = card;
+    settings.card.latest = card;
 
     return card;
 }
@@ -659,7 +672,7 @@ function handleCmds(cmd) {
         if (!page) return;
 
         if (page < 1) page = 1;
-        cardPage = parseInt(page);
+        settings.view.page = parseInt(page);
     }
     else if (cmd.startsWith("cards")) {
         let _class = cmd.split(" ");
@@ -680,7 +693,7 @@ function handleCmds(cmd) {
             return;
         }
 
-        viewClass = _class;
+        settings.view.class = _class;
     }
     else if (cmd.startsWith("deckcode")) {
         let [_deckcode, error] = deckcode();
@@ -696,24 +709,24 @@ function handleCmds(cmd) {
 
         if (args.length <= 0) return;
 
-        cardSortType = args[0];
-        cardSortOrder = args[1] || cardSortOrder;
+        settings.sort.type = args[0];
+        if (args.length > 1) settings.sort.order = args[1];
     }
     else if (cmd.startsWith("search")) {
         let args = cmd.split(" ");
         args.shift();
 
         if (args.length <= 0) {
-            searchQuery = [];
+            settings.search.query = [];
             return;
         }
 
         //args = args.join(" ");
 
-        searchQuery = args;
+        settings.search.query = args;
     }
     else if (cmd.startsWith("deck")) {
-        view = view == "cards" ? "deck" : "cards";
+        settings.view.type = settings.view.type == "cards" ? "deck" : "cards";
     }
     else if (cmd.startsWith("import")) {
         console.log("WARNING: Deck importing is currently buggy. Please be patient.".yellow); // TODO: Fix deck importing, removing a card from the deck after importing will somehow remove an unrelated card
@@ -760,7 +773,7 @@ function handleCmds(cmd) {
 
         deck = [];
         chosen_class = new_class;
-        if (viewClass != "Neutral") viewClass = chosen_class;
+        if (settings.view.class != "Neutral") settings.view.class = chosen_class;
     }
     else if (cmd.startsWith("set")) {
         let setting = cmd.split(" ");
@@ -770,10 +783,10 @@ function handleCmds(cmd) {
 
         switch (setting) {
             case "id":
-                cardId = "id";
+                settings.deckcode.cardId = "id";
                 break;
             case "name":
-                cardId = "name";
+                settings.deckcode.cardId = "name";
                 break;
             case "lcwarn":
             case "latestCardWarning":
@@ -782,12 +795,12 @@ function handleCmds(cmd) {
                 break;
             case "cpp":
             case "cardsPerPage":
-                cardsPerPage = parseInt(args);
+                settings.view.cpp = parseInt(args);
                 break;
             case "dcmd":
             case "defaultCommand":
                 if (args.length == 0) {
-                    defaultCmd = "add";
+                    settings.other.defaultCmd = "add";
                     console.log("Set default command to: " + "add".yellow);
                     break;
                 }
@@ -795,7 +808,7 @@ function handleCmds(cmd) {
                 if (!["add", "remove", "view"].includes(args[0])) return;
                 let cmd = args[0];
 
-                defaultCmd = cmd;
+                settings.other.defaultCmd = cmd;
                 console.log("Set default command to: " + args[0].yellow);
                 break;
             default:
@@ -813,8 +826,8 @@ function handleCmds(cmd) {
     }
     else {
         // Infer add
-        console.log(`Unable to find command. Trying '${defaultCmd} ${cmd}'`.yellow);
-        handleCmds(`${defaultCmd} ${cmd}`);
+        console.log(`Unable to find command. Trying '${settings.other.defaultCmd} ${cmd}'`.yellow);
+        handleCmds(`${settings.other.defaultCmd} ${cmd}`);
     }
 }
 
@@ -832,8 +845,8 @@ function main() {
     chosen_class = askClass();
 
     while (running) {
-        if (view == "cards") showCards();
-        else if (view == "deck") showDeck();
+        if (settings.view.type == "cards") showCards();
+        else if (settings.view.type == "deck") showDeck();
         handleCmds(game.input("\n> "));
     }
 }
