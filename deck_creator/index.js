@@ -41,7 +41,6 @@ let warnings = {
 let settings = {
     card: {
         latest: null,
-        latestUndoable: null
     },
     view: {
         type: "cards",
@@ -63,7 +62,8 @@ let settings = {
     },
     commands: {
         default: "add",
-        latest: null
+        latest: null,
+        latestUndoable: null
     },
     other: {
         rulesShown: false
