@@ -75,8 +75,10 @@ function location() {
 function doCode(_path = "", _filename = "") {
     let uncollectible;
 
-    if (!card.uncollectible) uncollectible = rl.keyInYN("Uncollectible?");
+    if (!card.uncollectible && _filename == "") uncollectible = rl.keyInYN("Uncollectible?");
     if (uncollectible) card.uncollectible = uncollectible;
+
+    if (card.tribe == "") card.tribe = "None";
 
     let func;
     let _type = type.toLowerCase();
