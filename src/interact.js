@@ -221,7 +221,7 @@ class Interact {
                 h.forEach(c => {
                     let [key, val, plr] = c;
 
-                    let bannedKeys = ["turnEnds", "turnStarts", "cardsDrawnThisTurn", "unspentMana", "damageTakenOnOwnTurn", "overloadGained", "heroAttackGained", "spellsThatDealtDamage", "cardsFrozen"];
+                    let bannedKeys = ["turnEnds", "turnStarts", "cardsDrawnThisTurn", "unspentMana", "damageTakenOnOwnTurn", "overloadGained", "heroAttackGained", "spellsThatDealtDamage", "cardsFrozen", "cardsCancelled"];
                     if (bannedKeys.includes(key)) return;
 
                     let hideValueKeys = ["cardsDrawn", "cardsAddedToHand", "cardsAddedToDeck"]; // Example: If a card gets drawn, the other player can't see what card it was

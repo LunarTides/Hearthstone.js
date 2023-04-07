@@ -389,6 +389,8 @@ class Card {
             if (r != -1 || name == "deathrattle") return;
 
             // If the return value is -1, meaning "refund", refund the card and stop the for loop
+            game.stats.update("cardsCancelled", [this, name], this.plr);
+
             if (["use", "heropower"].includes(name)) {
                 ret = -1;
                 return;

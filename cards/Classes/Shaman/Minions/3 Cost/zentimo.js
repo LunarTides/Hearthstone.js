@@ -9,17 +9,14 @@ module.exports = {
     id: 316,
 
     passive(plr, game, self, key, val) {
-        if (key != "cardsPlayedUnsafe" && val != self) return;
+        if (key != "cardsPlayedUnsafe" || val == self) return;
 
-        let enabled = true;
         let minion;
 
-        game.functions.addPassive("spellsCastOnMinions", (_key, _val) => {
+        let removePassive = game.functions.addPassive("spellsCastOnMinions", (_key, _val) => {
             minion = _val;
             return true;
         }, () => {
-            if (!enabled) return true;
-
             let b = game.board[minion.plr.id];
             let index = b.indexOf(minion);
             if (index === -1) return true;
@@ -40,11 +37,20 @@ module.exports = {
         }, 1);
 
         // Undo after cast function was called
-        game.functions.addPassive("cardsPlayed", (_key, _val) => {
+        let cardsPlayedPassiveRemove;
+        let cardsCancelledPassiveRemove;
+
+        cardsPlayedPassiveRemove = game.functions.addPassive("cardsPlayed", (_key, _val) => {
             return _val == val;
         }, () => {
-            enabled = false;
-            return true;
+            removePassive();
+            cardsCancelledPassiveRemove();
+        }, 1);
+        cardsCancelledPassiveRemove = game.functions.addPassive("cardsCancelled", (_key, _val) => {
+            return _val[0] == val;
+        }, () => {
+            removePassive();
+            cardsPlayedPassiveRemove();
         }, 1);
     }
 }

@@ -393,8 +393,20 @@ class Functions {
 
         callback(plr);
     }
+    getPassiveIndex(index, length) {
+        let sub = length - game.passives.length;
+        index = index - sub;
+
+        return index;
+    }
     addPassive(key, checkCallback, callback, lifespan = 1) {
         let times = 0;
+
+        let passiveLength = game.passives.length + 1; // Adding one since it adds a new passive next line
+
+        const remove = (index, length) => {
+            game.passives.splice(this.getPassiveIndex(index, length) - 1, 1);
+        }
 
         let passiveIndex = game.passives.push((_, _key, _val) => {
             if (_key != key || !checkCallback(_key, _val)) return;
@@ -402,8 +414,10 @@ class Functions {
             let override = callback();
             times++;
 
-            if (times == lifespan || override) game.passives.splice(passiveIndex - 1, 1);
+            if (times == lifespan || override) remove();
         });
+
+        return remove;
     }
 
     // Damage
