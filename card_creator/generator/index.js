@@ -1,5 +1,6 @@
 const rl = require("readline-sync");
 const fs = require("fs");
+const cc = require("../index");
 
 function capitalize(str) {
     return str[0].toUpperCase() + str.slice(1).toLowerCase();
@@ -10,14 +11,17 @@ fs.readFile("./.ignore.cards.json", 'utf8', (err, data) => {
 
     data = JSON.parse(data);
 
+    let debug = !rl.keyInYN("Do you want the card to actually be created?");
+    cc.set_debug(debug);
+
     while (true) {
         let cardName = rl.question("Name: ");
 
         let filtered_cards = data.filter(c => c.name.toLowerCase() == cardName.toLowerCase());
 
         if (filtered_cards.length <= 0) {
-            rl.question("Invalid card.\n");
-            process.exit(1);
+            console.log("Invalid card.\n");
+            continue;
         }
 
         let card;
@@ -25,6 +29,15 @@ fs.readFile("./.ignore.cards.json", 'utf8', (err, data) => {
         if (filtered_cards.length > 1) {
             // Prompt the user to pick one
             filtered_cards.forEach((c, i) => {
+                // Get rid of useless information
+                delete c["id"];
+                delete c["artist"];
+                delete c["dbfId"];
+                delete c["heroPowerDbfId"];
+                delete c["flavor"];
+                delete c["mechanics"];
+                delete c["elite"];
+
                 console.log(`\n${i + 1}:`);
                 console.log(c);
             });
@@ -40,7 +53,8 @@ fs.readFile("./.ignore.cards.json", 'utf8', (err, data) => {
         let collectible = card.collectible || false;
         let mana = card.cost;
         let name = card.name;
-        let rarity = capitalize(card.rarity);
+        let rarity = "Free";
+        if (card.rarity) rarity = capitalize(card.rarity);
         let desc = card.text;
         let type = capitalize(card.type);
 
@@ -132,6 +146,6 @@ fs.readFile("./.ignore.cards.json", 'utf8', (err, data) => {
         card = Object.assign({}, _card, struct);
 
         console.log(card);
-        require("../index").main(type, null, null, card);
+        cc.main(type, null, null, card);
     }
 });

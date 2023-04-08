@@ -97,6 +97,11 @@ class Interact {
                 return;
             }
 
+            if (!curr.canUseHeroPower) {
+                game.input("You have already used your hero power this turn.\n".red);
+                return;
+            }
+
             this.printAll(curr);
             let ask = this.yesNoQuestion(curr, curr.hero.hpDesc.yellow + " Are you sure you want to use this hero power?");
             if (!ask) return;

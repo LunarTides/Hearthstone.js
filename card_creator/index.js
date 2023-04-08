@@ -180,6 +180,11 @@ function main(_type = "", _path = "", _filename = "", _card = null) {
     if (!shouldExit) doCode(_path, _filename);
 }
 
+function set_debug(state) {
+    debug = state;
+}
+
 exports.main = main;
+exports.set_debug = set_debug;
 
 if (require.main == module) main();
