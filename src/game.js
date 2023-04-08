@@ -10,6 +10,8 @@ class GameStats {
     constructor(game) {
         this.game = game;
 
+        this.gamePassives = 0;
+
         this.history = {};
     }
 
@@ -135,7 +137,7 @@ class Game {
         this.board = [[], []];
         this.graveyard = [[], []];
 
-        this.passives = [];
+        this.passives = {};
 
         this.running = true;
     }
@@ -165,7 +167,7 @@ class Game {
          */
 
         let ret = [];
-        this.passives.forEach(i => ret.push(i(this, key, val)));
+        Object.values(this.passives).forEach(i => ret.push(i(this, key, val)));
         return ret;
     }
 
@@ -632,6 +634,7 @@ class Game {
             if (target.keywords.includes("Stealth")) return "stealth";
     
             this.attack(attacker.attack, target);
+            this.attack(target.getAttack(), attacker);
             this.stats.update("enemyAttacks", [attacker, target], attacker);
 
             this.killMinions();

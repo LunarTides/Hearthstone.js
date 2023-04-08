@@ -15,13 +15,10 @@ module.exports = {
 
         plr.counter.push(type);
 
-        let minionsKilledPassiveIndex = game.passives.push((game, key, val) => {
-            if (key != "minionsKilled") return;
-            if (val != self) return;
-
+        game.functions.addPassive("minionsKilled", (val) => {
+            return val == self;
+        }, () => {
             game.functions.remove(plr.counter, type);
-
-            game.passives.splice(minionsKilledPassiveIndex - 1, 1);
-        });
+        }, 1);
     }
 }

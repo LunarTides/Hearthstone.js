@@ -22,26 +22,20 @@ module.exports = {
 
         card.desc += turnText;
 
-        let cardsPlayedPassiveIndex = game.passives.push((game, key, val) => {
-            if (key != "cardsPlayed") return;
-            if (val != card) return;
-
+        let remove = game.functions.addPassive("cardsPlayed", (val) => {
+            return val == card;
+        }, () => {
             let ogCard = cards.filter(c => c.name == card.name);
-            if (ogCard.length <= 0) return;
-            console.log(ogCard);
+            if (ogCard.length <= 0) return
 
             ogCard = ogCard[0];
 
             plr.drawSpecific(ogCard);
-        });
+        }, 1);
 
-        let endTurnPassiveIndex = game.passives.push((game, key, val) => {
-            if (key != "turnEnds") return;
-
+        game.functions.addPassive("turnEnds", true, () => {
             card.desc = desc;
-
-            game.passives.splice(cardsPlayedPassiveIndex - 1, 1);
-            game.passives.splice(endTurnPassiveIndex - 1, 1);
-        });
+            remove();
+        }, 1);
     }
 }

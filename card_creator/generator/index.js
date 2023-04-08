@@ -63,14 +63,14 @@ fs.readFile("./.ignore.cards.json", 'utf8', (err, data) => {
         desc = desc.replaceAll("</b>", "&R");
         desc = desc.replaceAll("[x]", "");
 
-        let displayName = rl.question("Display name (leave empty to not use display name): ") || name;
+        let realName = rl.question("Override name (this will set 'name' to be the displayname instead) (leave empty to not use display name): ") || name;
 
         let _card = {
-            name: name
+            name: realName
         };
 
-        if (displayName != name) {
-            _card.displayName = displayName;
+        if (realName != name) {
+            _card.displayName = name;
         }
 
         let struct;

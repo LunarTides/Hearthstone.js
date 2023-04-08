@@ -13,40 +13,40 @@ module.exports = {
     battlecry(plr, game, self) {
         plr.armor += 8;
 
-        let passiveIndex = game.passives.push((game, key, val) => {
+        let remove = game.functions.addPassive("", true, () => {
             plr.hand.filter(c => c.type == "Minion").forEach(m => {
                 m.costType = "armor";
             });
-        });
+        }, -1);
 
         let count = 0;
 
-        let cardsPlayedPassiveIndex = game.passives.push((game, key, val) => {
-            if (key != "cardsPlayed" || val.type != "Minion" || count == -1) return;
+        let removeCardsPlayed = game.functions.addPassive("cardsPlayed", (val) => {
+            return val.type == "Minion";
+        }, () => {
             if (count < 3) {
                 count++;
                 return;
-            };
+            }
+
+            // Reverse
+            remove();
 
             plr.hand.filter(c => c.type == "Minion").forEach(m => {
                 m.costType = "mana";
             });
 
-            count = -1;
-        });
+            return true;
+        }, -1);
 
-
-        let turnEndsPassiveIndex = game.passives.push((game, key, val) => {
-            if (key != "turnEnds") return;
-
+        game.functions.addPassive("turnEnds", true, () => {
             // Revert and remove the effect
+            remove();
+            removeCardsPlayed();
+
             plr.hand.filter(c => c.type == "Minion").forEach(m => {
                 m.costType = "mana";
             });
-
-            game.passives.splice(passiveIndex - 1, 1);
-            game.passives.splice(cardsPlayedPassiveIndex - 1, 1);
-            game.passives.splice(turnEndsPassiveIndex - 1, 1);
-        });
+        }, 1);
     }
 }

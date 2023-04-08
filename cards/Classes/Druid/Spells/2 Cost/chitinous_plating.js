@@ -10,13 +10,10 @@ module.exports = {
     cast(plr, game, self) {
         plr.armor += 4;
 
-        self.storage.push(game.passives.push((game, key, val) => {
-            if (!self.passiveCheck([key, val], "turnStarts")) return;
-            if (game.player == plr) return;
-
+        game.functions.addPassive("turnStarts", (val) => {
+            return game.player != plr;
+        }, () => {
             plr.armor += 4;
-
-            game.passives.splice(self.storage[0] - 1, 1);
-        }));
+        }, 1);
     }
 }

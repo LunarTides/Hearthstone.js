@@ -402,20 +402,27 @@ class Functions {
     addPassive(key, checkCallback, callback, lifespan = 1) {
         let times = 0;
 
-        let passiveLength = game.passives.length + 1; // Adding one since it adds a new passive next line
+        let id = game.stats.gamePassives;
 
-        const remove = (index, length) => {
-            game.passives.splice(this.getPassiveIndex(index, length) - 1, 1);
+        const remove = () => {
+            delete game.passives[id];
         }
 
-        let passiveIndex = game.passives.push((_, _key, _val) => {
-            if (_key != key || !checkCallback(_key, _val)) return;
+        game.passives[id] = (_, _key, _val) => {
+            // Im writing it like this to make it more readable
+            if (_key == key || key == "") {} // Validate key. If key is empty, match any key.
+            else return;
+
+            if (checkCallback === true || checkCallback(_val)) {}
+            else return;
 
             let override = callback();
             times++;
 
             if (times == lifespan || override) remove();
-        });
+        }
+
+        game.stats.gamePassives++;
 
         return remove;
     }

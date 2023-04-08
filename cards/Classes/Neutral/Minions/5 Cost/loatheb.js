@@ -10,27 +10,27 @@ module.exports = {
     id: 158,
 
     battlecry(plr, game, self) {
-        let passiveIndex = game.passives.push((game, key, val) => {
+        let cards = [];
+
+        let remove = game.functions.addPassive("", true, () => {
             plr.getOpponent().hand.filter(c => c.type == "Spell").forEach(c => {
-                if (self.storage.map(k => k[0]).includes(c)) return;
+                if (cards.map(k => k[0]).includes(c)) return; // If the card is in cards, ignore it
                 let oldMana = c.mana;
 
                 c.mana += 5;
 
-                self.storage.push([c, oldMana]);
+                cards.push([c, oldMana]);
             });
-        });
+        }, -1);
 
-        let turnEndsPassiveIndex = game.passives.push((game, key, val) => {
-            if (key != "turnEnds") return;
-            if (game.player == plr) return;
-
-            self.storage.forEach(c => {
+        game.functions.addPassive("turnEnds", (val) => {
+            return game.player != plr;
+        }, () => {
+            cards.forEach(c => {
                 c[0].mana = c[1];
             });
 
-            game.passives.splice(passiveIndex - 1, 1);
-            game.passives.splice(turnEndsPassiveIndex - 1, 1);
-        });
+            remove();
+        }, 1);
     }
 }

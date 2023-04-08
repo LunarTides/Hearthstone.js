@@ -8,8 +8,8 @@ module.exports = {
     uncollectible: true,
 
     cast(plr, game, self) {
-        game.passives.push((game, key, val) => {
+        game.functions.addPassive("", true, () => {
             plr.gainMana(1000, true);
-        });
+        }, -1);
     }
 }

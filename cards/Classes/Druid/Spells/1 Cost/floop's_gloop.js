@@ -11,19 +11,14 @@ module.exports = {
 
     cast(plr, game, self) {
         // Gain Mana
-        self.storage.push(game.passives.push((game, key, val) => {
-            if (!self.passiveCheck([key, val], "minionsKilled")) return;
-            
+        let remove = game.functions.addPassive("minionsKilled", true, () => {
             plr.refreshMana(1, plr.maxMaxMana);
-        }));
+        }, -1);
 
-        // Remove effect after 1 turn
-        self.storage.push(game.passives.push((game, key, val) => {
-            if (!self.passiveCheck([key, val], "turnEnds")) return;
-            if (!game.player == plr) return;
-
-            game.passives.splice(self.storage[0] - 1, 1);
-            game.passives.splice(self.storage[1] - 1, 1);
-        }));
+        game.functions.addPassive("turnEnds", (val) => {
+            return game.player == plr;
+        }, () => {
+            remove();
+        }, 1);
     }
 }

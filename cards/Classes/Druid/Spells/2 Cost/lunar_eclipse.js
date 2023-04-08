@@ -16,51 +16,41 @@ module.exports = {
         game.functions.spellDmg(minion, 3);
         
         // Your next spell this turn costs 2 less.
-        let passiveIndex = game.passives.push((game, key, val) => {
+        let cards = [];
+
+        let remove = game.functions.addPassive("", true, () => {
             plr.hand.filter(c => c.type == "Spell").forEach(c => {
-                if (self.storage.map(k => k[0]).includes(c)) return;
+                if (cards.map(k => k[0]).includes(c)) return; // If the card is in the cards list, ignore it.
                 let oldMana = c.mana;
 
                 c.mana -= 2;
                 if (c.mana < 0) c.mana = 0;
-                self.storage.push([c, oldMana]);
+                cards.push([c, oldMana]);
             });
-        });
-
-        let reverted = false;
+        }, -1);
 
         // Remove reduction when card played
-        game.functions.addPassive("cardsPlayed",
-            // Test value
-            (key, val) => {
-                return val != self && val.type == "Spell" && !reverted;
-            },
-            // Do logic
-            () => {
-                self.storage.forEach(c => {
-                    c[0].mana = c[1];
-                });
+        let removeCardsPlayed = game.functions.addPassive("cardsPlayed", (val) => {
+            return val != self && val.type == "Spell";
+        }, () => {
+            cards.forEach(c => {
+                c[0].mana = c[1];
+            });
 
-                game.passives.splice(passiveIndex - 1, 1);
-
-                reverted = true;
-            }
-        );
+            remove();
+        }, 1);
+        
 
         // Remove reduction when turn ends
-        game.functions.addPassive("turnEnds",
-            (key, val) => {
-                return game.player == plr && !reverted;
-            },
-            () => {
-                self.storage.forEach(c => {
-                    c[0].mana = c[1];
-                });
+        game.functions.addPassive("turnEnds", (val) => {
+            return game.player == plr;
+        }, () => {
+            cards.forEach(c => {
+                c[0].mana = c[1];
+            });
 
-                game.passives.splice(passiveIndex - 1, 1);
-
-                reverted = true;
-            }
-        );
+            remove();
+            removeCardsPlayed();
+        }, 1);
     }
 }

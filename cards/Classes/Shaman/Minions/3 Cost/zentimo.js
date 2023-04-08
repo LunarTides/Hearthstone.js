@@ -13,7 +13,7 @@ module.exports = {
 
         let minion;
 
-        let removePassive = game.functions.addPassive("spellsCastOnMinions", (_key, _val) => {
+        let removePassive = game.functions.addPassive("spellsCastOnMinions", (_val) => {
             minion = _val;
             return true;
         }, () => {
@@ -40,13 +40,13 @@ module.exports = {
         let cardsPlayedPassiveRemove;
         let cardsCancelledPassiveRemove;
 
-        cardsPlayedPassiveRemove = game.functions.addPassive("cardsPlayed", (_key, _val) => {
+        cardsPlayedPassiveRemove = game.functions.addPassive("cardsPlayed", (_val) => {
             return _val == val;
         }, () => {
             removePassive();
             cardsCancelledPassiveRemove();
         }, 1);
-        cardsCancelledPassiveRemove = game.functions.addPassive("cardsCancelled", (_key, _val) => {
+        cardsCancelledPassiveRemove = game.functions.addPassive("cardsCancelled", (_val) => {
             return _val[0] == val;
         }, () => {
             removePassive();
