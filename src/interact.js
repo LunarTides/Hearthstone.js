@@ -673,17 +673,7 @@ class Interact {
         if (cards.length <= 0) cards = Object.values(game.functions.getCards()).filter(c => game.functions.validateClass(game.player, c));
         if (cards.length <= 0 || !cards) return;
 
-        cards = cards.slice();
-        if (amount > cards.length) amount = cards.length;
-
-        if (_cards.length == 0) {
-            for (let i = 0; i < amount; i++) {
-                let c = game.functions.randList(cards, false);
-
-                values.push(c);
-                cards.splice(cards.indexOf(c), 1);
-            }
-        }
+        if (_cards.length == 0) values = game.functions.chooseItemsFromList(cards, amount, false);
 
         if (values.length <= 0) return;
 

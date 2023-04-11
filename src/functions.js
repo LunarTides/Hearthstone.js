@@ -52,6 +52,20 @@ class Functions {
 
         return item;
     }
+    chooseItemsFromList(list, amount, cpyCard = true) {
+        if (amount > list.length) amount = list.length;
+
+        list = list.slice(); // Make a copy of the list
+        let elements = [];
+
+        for (let i = 0; i < amount; i++) {
+            let el = this.randList(list, cpyCard);
+            elements.push(el);
+            list.splice(list.indexOf(el), 1);
+        }
+
+        return elements;
+    }
     randInt(min, max) {
         /**
          * Return a random number from "min" to "max"

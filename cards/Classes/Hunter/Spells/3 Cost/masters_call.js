@@ -1,7 +1,7 @@
 module.exports = {
     name: "Masters Call",
     displayName: "Master's Call",
-    desc: "Draw 3 Beasts from your deck.",
+    desc: "&BDiscover&R a minion in your deck. If all 3 are Beasts, draw them all.",
     mana: 3,
     class: "Hunter",
     rarity: "Epic",
@@ -9,17 +9,21 @@ module.exports = {
     id: 229,
 
     cast(plr, game, self) {
-        let list = plr.deck.filter(c => c.type == "Minion" && c.tribe.includes("Beast"));
+        let list = plr.deck.filter(c => c.type == "Minion");
         
-        let amount = 3;
+        let cards = game.functions.chooseItemsFromList(list, 3, false);
+        let non_beasts = cards.filter(c => !c.tribe.includes("Beast"));
 
-        if (list.length < amount) amount = list.length;
+        if (non_beasts.length <= 0) {
+            // All three are beasts.
+            cards.forEach(c => {
+                plr.drawSpecific(c);
+            });
 
-        for (let i = 0; i < amount; i++) {
-            let minion = game.functions.randList(list, false);
-            if (!minion) continue;
-
-            plr.drawSpecific(minion);
+            return;
         }
+
+        // Not all three are beasts.
+        game.interact.discover("Discover a minion in your deck.", cards);
     }
 }
