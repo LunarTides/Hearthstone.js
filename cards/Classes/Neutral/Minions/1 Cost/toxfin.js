@@ -10,7 +10,7 @@ module.exports = {
 
     battlecry(plr, game, self) {
         let target = game.interact.selectTarget(self.desc, false, "friendly", "minion");
-        if (!target || !target.tribe.includes("Murloc")) return -1;
+        if (!target || !game.functions.matchTribe(target.tribe, "Murloc")) return -1;
 
         target.addKeyword("Poisonous");
     }

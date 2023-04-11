@@ -10,7 +10,7 @@ module.exports = {
     id: 258,
 
     deathrattle(plr, game, self) {
-        let list = plr.deck.filter(c => c.type == "Minion" && c.tribe.includes("Dragon"));
+        let list = plr.deck.filter(c => c.type == "Minion" && game.functions.matchTribe(c.tribe, "Dragon"));
         let minion = game.functions.randList(list, false);
         if (!minion) return;
 

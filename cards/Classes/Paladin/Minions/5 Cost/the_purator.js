@@ -38,7 +38,7 @@ module.exports = {
 
         // Select and draw one of each minion type
         minion_types.forEach(t => {
-            let list = plr.deck.filter(c => c.type == "Minion" && c.tribe.includes(t));
+            let list = plr.deck.filter(c => c.type == "Minion" && game.functions.matchTribe(c.tribe, t));
             let minion = game.functions.randList(list, false);
             if (!minion) return; // This shouldnt ever happen since minion_types is based on what is in the player's deck but oh well
 

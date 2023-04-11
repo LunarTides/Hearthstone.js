@@ -19,7 +19,7 @@ module.exports = {
         let valid = game.turns - 1;
 
         game.graveyard[plr.id].forEach(m => {
-            if (valid >= m.turnKilled || !m.tribe.includes("Undead")) return;
+            if (valid >= m.turnKilled || !game.functions.matchTribe(m.tribe, "Undead")) return;
 
             card.mana -= 2;
             if (card.mana < 0) card.mana = 0;

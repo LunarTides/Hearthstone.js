@@ -9,7 +9,7 @@ module.exports = {
 
     cast(plr, game, self) {
         const doDraw = () => {
-            let list = plr.deck.filter(c => c.type == "Minion" && c.tribe.includes("Murloc"));
+            let list = plr.deck.filter(c => c.type == "Minion" && game.functions.matchTribe(c.tribe, "Murloc"));
             let minion = game.functions.randList(list, false);
             if (!minion) return;
 

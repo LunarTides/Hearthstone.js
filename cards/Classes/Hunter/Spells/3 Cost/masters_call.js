@@ -12,7 +12,7 @@ module.exports = {
         let list = plr.deck.filter(c => c.type == "Minion");
         
         let cards = game.functions.chooseItemsFromList(list, 3, false);
-        let non_beasts = cards.filter(c => !c.tribe.includes("Beast"));
+        let non_beasts = cards.filter(c => !game.functions.matchTribe(c.tribe, "Beast"));
 
         if (non_beasts.length <= 0) {
             // All three are beasts.

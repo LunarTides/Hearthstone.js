@@ -10,7 +10,7 @@ module.exports = {
 
     passive(plr, game, self, key, val) {
         if (key != "cardsPlayed") return;
-        if (val.type != "Minion" || !val.tribe.includes("Murloc") || val == self) return;
+        if (val.type != "Minion" || !game.functions.matchTribe(val.tribe, "Murloc") || val == self) return;
 
         game.functions.doPlayerTargets(plr.getOpponent(), t => {
             let dmg = 1;

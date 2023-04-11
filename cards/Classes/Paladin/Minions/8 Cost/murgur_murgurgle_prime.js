@@ -12,7 +12,7 @@ module.exports = {
     uncollectible: true,
 
     battlecry(plr, game, self) {
-        let list = Object.values(game.functions.getCards()).filter(c => game.functions.getType(c) == "Minion" && c.tribe.includes("Murloc"));
+        let list = Object.values(game.functions.getCards()).filter(c => game.functions.getType(c) == "Minion" && game.functions.matchTribe(c.tribe, "Murloc"));
 
         for (let i = 0; i < 4; i++) {
             let minion = game.functions.randList(list);

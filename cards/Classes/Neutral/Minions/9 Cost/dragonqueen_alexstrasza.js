@@ -12,7 +12,7 @@ module.exports = {
     battlecry(plr, game, self) {
         if (!game.functions.highlander(plr)) return;
 
-        let list = Object.values(game.functions.getCards()).filter(c => game.functions.getType(c) == "Minion" && c.tribe.includes("Dragon"));
+        let list = Object.values(game.functions.getCards()).filter(c => game.functions.getType(c) == "Minion" && game.functions.matchTribe(c.tribe, "Dragon"));
 
         for (let i = 0; i < 2; i++) {
             let card = game.functions.randList(list);
