@@ -214,6 +214,11 @@ class Functions {
     validateClass(plr, card) {
         return [plr.heroClass, "Neutral"].includes(card.class);
     }
+    matchTribe(card_tribe, tribe) {
+        if (/all/i.test(card_tribe)) return true; // If the card's tribe is "All".
+
+        return card_tribe.includes(tribe);
+    }
     highlander(plr) {
         /* Returns true if the deck has no duplicates.
          *

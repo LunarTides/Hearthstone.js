@@ -35,7 +35,7 @@ module.exports = {
 
         // Select and resurrect one of each minion type
         minion_types.forEach(t => {
-            let list = game.graveyard[plr.id].filter(c => c.tribe.includes(t));
+            let list = game.graveyard[plr.id].filter(c => game.functions.matchTribe(c.tribe, t));
             let minion = game.functions.randList(list); // By not putting false into the second argument, this also creates an imperfect copy of the minion
             // Also make sure that nzoth has enough space to be put on the board
             if (!minion || game.board[plr.id].length >= (game.config.maxBoardSpace - 1)) return;
