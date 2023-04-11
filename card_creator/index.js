@@ -131,6 +131,7 @@ function doCode(_path = "", _filename = "") {
     ${content.join(',\n    ')},${_id}${func}
 }`;
 
+    path = path.replace("card_creator/../", "");
     let __path = path.replaceAll("/", "\\") + filename;
 
     if (!debug) {
@@ -142,6 +143,7 @@ function doCode(_path = "", _filename = "") {
         console.log('File created at: "' + __path + '"');
     } else {
         console.log(`\nNew ID: ${id + 1}`);
+        console.log(`Would be path: "${__path}"`);
         console.log(`Content: ${content}`);
     }
 
