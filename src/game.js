@@ -131,7 +131,6 @@ class Game {
         this.interact = new Interact(this);
         this.config = {};
         this.cards = {};
-        this.input = question;
 
         this.turns = 0;
         this.board = [[], []];
@@ -139,7 +138,15 @@ class Game {
 
         this.passives = {};
 
+        this.no_input = false;
+
         this.running = true;
+    }
+
+    input(q, care = true) {
+        if (this.no_input && care) return "";
+
+        return question(q);
     }
 
     doConfigAI() {
