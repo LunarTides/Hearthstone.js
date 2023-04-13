@@ -17,7 +17,7 @@ module.exports = {
         });
 
         // Hero power
-        game.functions.addPassive("cardsPlayed", (key, val) => {
+        game.functions.addPassive("cardsPlayed", val => {
             return game.player == plr && val.type == "Minion";
         }, () => {
             let list = Object.values(game.functions.getCards());
