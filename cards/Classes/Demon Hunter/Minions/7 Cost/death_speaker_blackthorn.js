@@ -14,6 +14,8 @@ module.exports = {
 
         for (let i = 0; i <= list.length; i++) {
             let minion = game.functions.randList(list, false);
+            if (!minion) continue;
+
             game.functions.remove(list, minion);
 
             minion = game.functions.cloneCard(minion);

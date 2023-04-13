@@ -11,7 +11,15 @@ module.exports = {
 
     deathrattle(plr, game, self) {
         // Choose a card
-        let card = game.functions.randList(plr.hand, false);
+        let card;
+        let failsafe = 100;
+
+        do {
+            card = game.functions.randList(plr.hand, false);
+            failsafe--;
+        } while (!card && failsafe > 0);
+
+        if (!card && failsafe == 0) return; // If a card wasn't chosen after 100 attempts, cancel the deathrattle.
 
         if (card.desc == "") card.desc = "This card is Haunted".gray;
         else card.desc += " (This card is Haunted)".gray;

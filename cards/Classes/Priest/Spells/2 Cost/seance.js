@@ -11,9 +11,7 @@ module.exports = {
     cast(plr, game, card) {
         let target = game.interact.selectTarget("Add a copy of a minion to your hand.", true, null, "minion");
 
-        if (!target) {
-            return -1;
-        }
+        if (!target) return -1;
 
         plr.addToHand(new game.Card(target.name, plr));
     }

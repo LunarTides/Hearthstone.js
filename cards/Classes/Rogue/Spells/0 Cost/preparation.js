@@ -51,7 +51,7 @@ module.exports = {
         game.functions.addPassive("", () => {return true}, doDiscount, -1);
 
         game.functions.addPassive("turnEnds", () => {return true}, undo, 1);
-        game.functions.addPassive("cardsPlayed", (_, val) => {
+        game.functions.addPassive("cardsPlayed", (val) => {
             return val.type == "Spell" && val != self;
         }, undo, 1);
     }
