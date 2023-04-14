@@ -391,12 +391,7 @@ function chooseCard(prompt) {
 }
 
 function viewCard(c) {
-    let stats = "";
-
-    if (["Minion", "Weapon"].includes(functions.getType(c))) stats = ` [${c.stats.join(' / ')}]`.green;
-    console.log(`{${c.mana}} `.cyan + functions.colorByRarity(getDisplayName(c), c.rarity) + stats + ` (${c.desc}) ` + `(${functions.getType(c)})`.yellow);
-
-    game.input("\nPress enter to continue...");
+    console.log(game.interact.viewCard(c));
 }
 
 function add(c) {
