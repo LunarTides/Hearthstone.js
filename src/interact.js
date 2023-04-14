@@ -860,6 +860,39 @@ class Interact {
         console.log(`|||                     This will disappear once you end your turn.                   |||`)
         console.log(`|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n`);
     }
+    getReadableCard(card, i = -1) {
+        let sb = "";
+
+        const desc = card.desc.length > 0 ? ` (${card.desc}) ` : " ";
+
+        let mana = `{${card.mana}} `;
+        switch (card.costType) {
+            case "mana":
+                mana = mana.cyan;
+                break;
+            case "armor":
+                mana = mana.gray;
+                break;
+            case "health":
+                mana = mana.red;
+                break;
+            default:
+                break;
+        }
+
+        if (i !== -1) sb += `[${i}] `;
+        sb += mana;
+        sb += game.functions.colorByRarity(card.displayName, card.rarity);
+        
+        if (card.type === "Minion" || card.type === "Weapon") {
+            sb += ` [${card.stats.join(" / ")}]`.brightGreen;
+        }
+
+        sb += desc;
+        sb += `(${card.type})`.yellow;
+
+        return sb;
+    }
     printAll(curr, detailed = false) {
         /**
          * Prints all the information you need to understand the game state
@@ -1121,67 +1154,35 @@ class Interact {
         console.log(`\n--- ${curr.name} (${_class})'s Hand ---`);
         console.log("([id] " + "{Cost}".cyan + " Name".bold + " [attack / health]".brightGreen + " (type)".yellow + ")\n");
     
-        curr.hand.forEach((card, i) => {
-            const desc = card.desc.length > 0 ? ` (${card.desc}) ` : " ";
-
-            let mana = `{${card.mana}} `;
-            switch (card.costType) {
-                case "mana":
-                    mana = mana.cyan;
-                    break;
-                case "armor":
-                    mana = mana.gray;
-                    break;
-                case "health":
-                    mana = mana.red;
-                    break;
-                default:
-                    break;
-            }
-    
-            sb += `[${i + 1}] `;
-            sb += mana;
-            sb += game.functions.colorByRarity(card.displayName, card.rarity);
-            
-            if (card.type === "Minion" || card.type === "Weapon") {
-                sb += ` [${card.stats.join(" / ")}]`.brightGreen;
-            }
-    
-            sb += desc;
-            sb += `(${card.type})`.yellow;
-
-            console.log(sb);
-            sb = ""
-        });
+        curr.hand.forEach((card, i) => console.log(this.getReadableCard(card, i + 1)));
         // Hand End
     
         console.log("------------");
     }
-    viewCard(card) {
+    viewCard(card, help = true) {
         let mana = `{${card.mana}}`.cyan;
-        let name = game.functions.colorByRarity(`${card.displayName}`, card.rarity);
+        let name = game.functions.colorByRarity(`${card.displayName || card.name}`, card.rarity);
         let desc = card.desc ? `${card.desc}` : "no description".gray;
         let rarity = game.functions.colorByRarity(card.rarity, card.rarity);
         let _class = card.class.gray;
-        let turnPlayed = card.turn.toString().yellow;
 
         let stats = "";
         let tribe = "";
         let spellClass = "";
         let locCooldown = "";
 
+        let type = game.functions.getType(card);
+
         if (["Minion", "Weapon", "Location"].includes(card.type)) {
             stats = ` [${card.blueprint.stats.join(' / ')}]`.brightGreen;
         }
 
-        if (card.type == "Minion") tribe = "\nTribe: " + card.tribe.gray;
-        else if (card.type == "Spell") spellClass = "\nSpell Class: " + card.spellClass.cyan;
-        else if (card.type == "Location") locCooldown = "\nCooldown: " + card.blueprint.cooldown.toString().cyan;
+        if (type == "Minion") tribe = " (" + card.tribe.gray + ")";
+        else if (type == "Spell") spellClass = " (" + card.spellClass.cyan + ")";
+        else if (type == "Location") locCooldown = " (" + card.blueprint.cooldown.toString().cyan + ")";
 
-        console.log(`${mana} ${name}${stats} (${desc})` + ` (${card.type})\n`.yellow);
-        console.log(`Rarity: ${rarity}` + tribe + spellClass + locCooldown);
-        console.log(`Class: ${_class}`);
-        console.log(`Turn Played: ${turnPlayed}`);
+        if (help) console.log("{mana} ".cyan + "Name ".bold + "(" + "[attack / health] ".brightGreen + "if it has) (description) ".white + "(type) ".yellow + "((rarity) or (tribe) or (spell class) or (cooldown)) [".white + "class".gray + "]");
+        console.log(`${mana} ${name}${stats} (${desc})` + ` (${type})`.yellow + ` (${rarity})` + tribe + spellClass + locCooldown + ` [${_class}]`);
 
         game.input("\nPress enter to continue...\n");
     }

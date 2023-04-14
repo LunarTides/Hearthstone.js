@@ -390,15 +390,6 @@ function chooseCard(prompt) {
     return card;
 }
 
-function viewCard(c) {
-    let stats = "";
-
-    if (["Minion", "Weapon"].includes(functions.getType(c))) stats = ` [${c.stats.join(' / ')}]`.green;
-    console.log(`{${c.mana}} `.cyan + functions.colorByRarity(getDisplayName(c), c.rarity) + stats + ` (${c.desc}) ` + `(${functions.getType(c)})`.yellow);
-
-    game.input("\nPress enter to continue...");
-}
-
 function add(c) {
     deck.push(c);
 
@@ -657,10 +648,10 @@ function handleCmds(cmd) {
     else if (cmd == "view") {
         let card = chooseCard("View a card: ");
 
-        viewCard(card);
+        game.interact.viewCard(card);
     }
     else if (cmd.startsWith("view")) {
-        getCardArg(cmd, viewCard);
+        getCardArg(cmd, game.interact.viewCard);
     }
     else if (cmd == "add") {
         let card = chooseCard("Add a card to the deck: ");
