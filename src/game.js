@@ -49,6 +49,8 @@ class GameStats {
 
                 c.activate("unpassive", true);
                 c.activate("passive", key, val);
+
+                if (c.mana < 0) c.mana = 0;
             });
 
             let wpn = plr.weapon;

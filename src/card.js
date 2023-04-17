@@ -63,6 +63,7 @@ class Card {
         });
 
         this.desc = game.functions.parseTags(this.desc);
+        this.enchantments = [];
 
         // Make a backup of "this" to be used when silencing this card
         let backups = {};
@@ -345,6 +346,8 @@ class Card {
         });
         this.desc = "";
         this.keywords = [];
+
+        this.applyEnchantments(); // Remove active enchantments.
     }
     destroy() {
         /**
@@ -464,6 +467,61 @@ class Card {
 
         if (!t) return true;
         return [true, t];
+    }
+    applyEnchantments() {
+        // Apply baseline for int values.
+        Object.entries(this).filter(c => typeof(c[1]) == "number").forEach(ent => {
+            let [key, val] = ent;
+
+            // Apply backup if it exists, otherwise keep it the same.
+            this[key] = this.backups[key] || val;
+        });
+
+        this.enchantments.forEach(e => {
+            e = e[0];
+
+            // Seperate the keys and values
+            let equalsRegex = /\w+ = \w+/;
+            let otherRegex = /[-+*/^]\d+ \w+/;
+
+            let opEquals = equalsRegex.test(e);
+            let opOther = otherRegex.test(e);
+
+            let key;
+            let val;
+            let op = "";
+
+            if (opEquals) [key, val] = e.split(" = ");
+            else if (opOther) {
+                [val, key] = e.split(" ");
+                val = val.slice(1);
+
+                op = e[0];
+            }
+
+            val = parseInt(val);
+
+            // Totally safe piece of code :)
+            eval(`this[key] ${op}= val`);
+        });
+
+        return true;
+    }
+    addEnchantment(e, card) {
+        // DO NOT PASS USER INPUT DIRECTLY INTO THIS FUNCTION. IT CAN ALLOW FOR EASY CODE INJECTION
+        this.enchantments.push([e, card]);
+
+        this.applyEnchantments();
+    }
+    enchantmentExists(e, card) {
+        return this.enchantments.find(c => c[0] == e && c[1] == card);
+    }
+    removeEnchantment(e) {
+        let enchantment = this.enchantments.find(c => c[0] == e);
+        let index = this.enchantments.indexOf(enchantment);
+        this.enchantments.splice(enchantment, 1);
+
+        this.applyEnchantments();
     }
 }
 
