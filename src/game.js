@@ -51,6 +51,8 @@ class GameStats {
                 c.activate("passive", key, val);
 
                 c.applyEnchantments();
+            });
+            plr.hand.forEach(c => {
                 if (c.mana < 0) c.mana = 0;
             });
 

@@ -513,7 +513,7 @@ class Card {
             let [key, val] = ent;
 
             // Apply backup if it exists, otherwise keep it the same.
-            this[key] = this.backups[key] || val;
+            if (this.backups[key] || this.backups[key] === 0) this[key] = this.backups[key];
         });
 
         this.enchantments.forEach(e => {
@@ -535,30 +535,35 @@ class Card {
     }
     addEnchantment(e, card) {
         // DO NOT PASS USER INPUT DIRECTLY INTO THIS FUNCTION. IT CAN ALLOW FOR EASY CODE INJECTION
-        this.enchantments.push([e, card]);
+        let info = this.getEnchantmentInfo(e);
+
+        if (info.op == "=") this.enchantments.unshift([e, card]); // Add the enchantment to the beginning of the list
+        else this.enchantments.push([e, card]);
 
         this.applyEnchantments();
     }
     enchantmentExists(e, card) {
         return this.enchantments.find(c => c[0] == e && c[1] == card);
     }
-    removeEnchantment(e, update = true) {
-        let enchantment = this.enchantments.find(c => c[0] == e);
+    removeEnchantment(e, card, update = true) {
+        let enchantment = this.enchantments.find(c => c[0] == e && c[1] == card);
         let index = this.enchantments.indexOf(enchantment);
+        if (index === -1) return false;
+
         this.enchantments.splice(index, 1);
 
         if (!update) {
             this.applyEnchantments();
-            return;
+            return true;
         }
 
         let info = this.getEnchantmentInfo(e);
         let new_enchantment = `+0 ${info.key}`;
 
-        this.enchantments.push([new_enchantment, this]); // This will cause the variable to be reset since it is in the enchantments list.
-        this.applyEnchantments();
+        this.addEnchantment(new_enchantment, this); // This will cause the variable to be reset since it is in the enchantments list.
+        this.removeEnchantment(new_enchantment, this, false);
 
-        this.removeEnchantment(new_enchantment, false);
+        return true;
     }
 }
 
