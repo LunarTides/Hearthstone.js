@@ -494,7 +494,7 @@ class Card {
         const whitelisted_vars = ["maxHealth", "mana"];
 
         let vars = Object.entries(this);
-        vars = vars.filter(c => typeof(c[1]) == "number") // Filter for only numbers
+        vars = vars.filter(c => typeof(c[1]) == "number"); // Filter for only numbers
         vars = vars.filter(c => whitelisted_vars.includes(c[0])); // Filter for vars in the whitelist
 
         // Get keys
