@@ -777,11 +777,12 @@ class Game {
                     return;
                 }
 
+                m.activate("unpassive", false); // Tell the minion that it is going to die
                 this.stats.update("minionsKilled", m, this.player);
+
                 m.turnKilled = this.turns;
 
                 if (!m.keywords.includes("Reborn")) {
-                    m.activate("unpassive", false); // Tell the minion that it is going to die
                     plr.corpses++;
                     this.graveyard[p].push(m);
                     return;
@@ -794,6 +795,7 @@ class Game {
                 minion.setStats(minion.getAttack(), 1);
 
                 this.summonMinion(minion, plr, false);
+                minion.activate("passive", "reborn", m);
 
                 n.push(minion);
             });
