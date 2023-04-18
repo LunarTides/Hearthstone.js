@@ -13,7 +13,8 @@ module.exports = {
         if (key != "cardsPlayed" || val.type != "Spell" || val.mana <= 0 || !val.spellClass || !val.spellClass.includes("Shadow")) return;
 
         let copy = new game.Card(val.name, plr);
-        copy.mana = 0;
+        //copy.mana = 0;
+        copy.addEnchantment("mana = 0", self);
         plr.addToHand(copy);
     }
 }

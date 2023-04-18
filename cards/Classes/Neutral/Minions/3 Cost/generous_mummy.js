@@ -10,17 +10,20 @@ module.exports = {
     keywords: ["Reborn"],
     id: 45,
 
-    passive(plr, game, card, key, val) {
-        plr.getOpponent().hand.forEach(c => {
-            if (c.mana <= 0) return;
+    passive(plr, game, self, key, val) {
+        if (key == "minionsKilled" && val == self) return;
 
-            c.mana--;
-            card.storage.push(c);
+        plr.getOpponent().hand.forEach(c => {
+            if (!c.enchantmentExists("-1 mana", self)) c.addEnchantment("-1 mana", self);
         });
     },
 
-    unpassive(plr, game, card) {
-        card.storage.forEach(c => c.mana++);
-        card.storage = [];
+    unpassive(plr, game, self, ignore) {
+        if (ignore) return;
+
+        // If it gets to this point, this card is either about to be silenced, or killed.
+        plr.getOpponent().hand.forEach(c => {
+            c.removeEnchantment("-1 mana", self);
+        });
     }
 }

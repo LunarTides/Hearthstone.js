@@ -14,15 +14,17 @@ module.exports = {
         let spell = game.functions.randList(list, false);
         if (!spell) return;
 
-        let old_cost = spell.mana;
-        spell.mana = 0;
+        //let old_cost = spell.mana;
+        //spell.mana = 0;
+        spell.addEnchantment("mana = 0", self);
 
         plr.drawSpecific(spell);
 
         game.functions.addPassive("turnEnds", () => {
             return true;
         }, () => {
-            spell.mana = old_cost;
+            //spell.mana = old_cost;
+            spell.removeEnchantment("mana = 0", self);
         }, 1);
     }
 }

@@ -16,9 +16,8 @@ module.exports = {
 
         // Reduce the Cost of spells in your hand by (1)
         plr.hand.filter(c => c.type == "Spell").forEach(s => {
-            s.mana--;
-
-            if (s.mana < 0) s.mana = 0;
+            //s.mana--;
+            s.addEnchantment("-1 mana", self);
         });
     }
 }

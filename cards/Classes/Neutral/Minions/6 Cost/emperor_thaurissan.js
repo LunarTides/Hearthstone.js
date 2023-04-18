@@ -11,9 +11,7 @@ module.exports = {
 
     endofturn(plr, game, card) {
         plr.hand.forEach(c => {
-            if (c.mana > 0) {
-                c.mana -= 1;
-            }
+            c.addEnchantment("-1 mana", card);
         });
     }
 }

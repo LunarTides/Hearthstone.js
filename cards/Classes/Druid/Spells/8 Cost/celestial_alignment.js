@@ -8,18 +8,20 @@ module.exports = {
     spellClass: "Arcane",
     id: 26,
 
-    cast(plr, game, card) {
+    cast(plr, game, self) {
         plr.maxMana = 0;
         plr.mana = 0;
 
         plr.hand.forEach(c => {
-            c.mana = 1;
-            c.backups.mana = 1;
+            c.addEnchantment("mana = 1", self);
+            //c.mana = 1;
+            //c.backups.mana = 1;
         });
 
         plr.deck.forEach(c => {
-            c.mana = 1;
-            c.backups.mana = 1;
+            c.addEnchantment("mana = 1", self);
+            //c.mana = 1;
+            //c.backups.mana = 1;
         });
     }
 }

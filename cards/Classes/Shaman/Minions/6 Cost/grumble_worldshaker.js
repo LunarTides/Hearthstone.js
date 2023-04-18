@@ -12,7 +12,8 @@ module.exports = {
     battlecry(plr, game, self) {
         game.board[plr.id].forEach(m => {
             let copy = new game.Card(m.name, plr);
-            copy.mana = 1;
+            //copy.mana = 1;
+            copy.addEnchantment("mana = 1", self);
 
             plr.addToHand(copy);
 

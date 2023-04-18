@@ -9,8 +9,15 @@ module.exports = {
     id: 134,
 
     passive(plr, game, self, trigger) {
-        self.mana = self.backups.mana - plr.armor;
-        if (self.mana < 0) self.mana = 0;
+        //self.mana = self.backups.mana - plr.armor;
+        //if (self.mana < 0) self.mana = 0;
+        if (self.storage.length > 0) {
+            self.removeEnchantment(`-${self.storage[0]} mana`, self);
+            self.storage = [];
+        }
+
+        self.storage.push(plr.armor);
+        self.addEnchantment(`-${plr.armor} mana`, self);
     },
 
     cast(plr, game, self) {

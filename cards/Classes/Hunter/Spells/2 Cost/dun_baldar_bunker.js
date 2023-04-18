@@ -18,7 +18,8 @@ module.exports = {
             let card = game.functions.randList(list, false);
             if (!card) return;
 
-            card.mana = 1;
+            //card.mana = 1;
+            card.addEnchantment("mana = 1", self);
             plr.drawSpecific(card);
         }, 3);
     }

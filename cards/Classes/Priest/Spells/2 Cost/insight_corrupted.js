@@ -15,7 +15,8 @@ module.exports = {
         let minion = game.functions.randList(list, false);
         if (!minion) return;
 
-        minion.mana -= 2;
+        //minion.mana -= 2;
+        minion.addEnchantment("-2 mana", self);
         if (minion.mana < 0) minion.mana = 0;
 
         plr.drawSpecific(minion);

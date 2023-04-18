@@ -10,8 +10,16 @@ module.exports = {
     id: 180,
 
     passive(plr, game, self, key, val) {
-        self.mana = self.backups.mana - plr.hand.filter(c => c.type == "Spell").length;
-        if (self.mana < 0) self.mana = 0;
+        let cards = plr.hand.filter(c => c.type == "Spell").length;
+        //self.mana = self.backups.mana - plr.hand.filter(c => c.type == "Spell").length;
+        //if (self.mana < 0) self.mana = 0;
+        if (self.storage.length > 0) {
+            self.removeEnchantment(`-${self.storage[0]} mana`, self);
+            self.storage = [];
+        }
+
+        self.storage.push(cards);
+        self.addEnchantment(`-${cards} mana`, self);
     },
 
     cast(plr, game, self) {

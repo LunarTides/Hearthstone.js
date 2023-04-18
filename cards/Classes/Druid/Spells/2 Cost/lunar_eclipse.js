@@ -20,12 +20,7 @@ module.exports = {
 
         let remove = game.functions.addPassive("", true, () => {
             plr.hand.filter(c => c.type == "Spell").forEach(c => {
-                if (cards.map(k => k[0]).includes(c)) return; // If the card is in the cards list, ignore it.
-                let oldMana = c.mana;
-
-                c.mana -= 2;
-                if (c.mana < 0) c.mana = 0;
-                cards.push([c, oldMana]);
+                if (!c.enchantmentExists("-2 mana", self)) c.addEnchantment("-2 mana", self);
             });
         }, -1);
 
@@ -33,8 +28,8 @@ module.exports = {
         let removeCardsPlayed = game.functions.addPassive("cardsPlayed", (val) => {
             return val != self && val.type == "Spell";
         }, () => {
-            cards.forEach(c => {
-                c[0].mana = c[1];
+            plr.hand.filter(c => c.type == "Spell").forEach(c => {
+                c.removeEnchantment("-2 mana", self);
             });
 
             remove();
@@ -45,8 +40,8 @@ module.exports = {
         game.functions.addPassive("turnEnds", (val) => {
             return game.player == plr;
         }, () => {
-            cards.forEach(c => {
-                c[0].mana = c[1];
+            plr.hand.filter(c => c.type == "Spell").forEach(c => {
+                c.removeEnchantment("-2 mana", self);
             });
 
             remove();

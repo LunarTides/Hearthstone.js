@@ -21,8 +21,8 @@ module.exports = {
 
         // Condition cleared
         list.forEach(m => {
-            m.mana -= 3;
-            if (m.mana < 0) m.mana = 0;
+            //m.mana -= 3;
+            m.addEnchantment("-3 mana", self);
         });
     }
 }

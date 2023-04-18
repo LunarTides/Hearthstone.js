@@ -14,7 +14,8 @@ module.exports = {
         if (!card) return -1;
 
         card = new game.Card(card.name, plr);
-        card.mana -= 1;
+        //card.mana -= 1;
+        card.addEnchantment("-1 mana", self);
         plr.addToHand(card);
     }
 }

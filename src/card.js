@@ -63,6 +63,7 @@ class Card {
         });
 
         this.desc = game.functions.parseTags(this.desc);
+        this.enchantments = [];
 
         // Make a backup of "this" to be used when silencing this card
         let backups = {};
@@ -345,6 +346,8 @@ class Card {
         });
         this.desc = "";
         this.keywords = [];
+
+        this.applyEnchantments(); // Remove active enchantments.
     }
     destroy() {
         /**
@@ -464,6 +467,103 @@ class Card {
 
         if (!t) return true;
         return [true, t];
+    }
+    getEnchantmentInfo(e) {
+        let equalsRegex = /\w+ = \w+/;
+        let otherRegex = /[-+*/^]\d+ \w+/;
+
+        let opEquals = equalsRegex.test(e);
+        let opOther = otherRegex.test(e);
+
+        let key;
+        let val;
+        let op = "=";
+
+        if (opEquals) [key, val] = e.split(" = ");
+        else if (opOther) {
+            [val, key] = e.split(" ");
+            val = val.slice(1);
+
+            op = e[0];
+        }
+
+        return {"key": key, "val": val, "op": op};
+    }
+    applyEnchantments() {
+        // Apply baseline for int values.
+        const whitelisted_vars = ["maxHealth", "mana"];
+
+        let vars = Object.entries(this);
+        vars = vars.filter(c => typeof(c[1]) == "number"); // Filter for only numbers
+        vars = vars.filter(c => whitelisted_vars.includes(c[0])); // Filter for vars in the whitelist
+
+        // Get keys
+        let keys = [];
+
+        let enchantments = this.enchantments.map(e => e[0]); // Get a list of enchantments
+        enchantments.forEach(e => {
+            let info = this.getEnchantmentInfo(e);
+            let key = info.key;
+            
+            keys.push(key);
+        });
+
+        vars = vars.filter(c => keys.includes(c[0])); // Only reset the variables if the variable name is in the enchantments list
+        vars.forEach(ent => {
+            let [key, val] = ent;
+
+            // Apply backup if it exists, otherwise keep it the same.
+            if (this.backups[key] || this.backups[key] === 0) this[key] = this.backups[key];
+        });
+
+        this.enchantments.forEach(e => {
+            e = e[0];
+
+            // Seperate the keys and values
+            let info = this.getEnchantmentInfo(e);
+            let [key, val, op] = Object.values(info);
+            
+            if (op == "=") op = ""; // Otherwise `this[key] == val` happens
+
+            val = parseInt(val);
+
+            // Totally safe piece of code :)
+            eval(`this[key] ${op}= val`);
+        });
+
+        return true;
+    }
+    addEnchantment(e, card) {
+        // DO NOT PASS USER INPUT DIRECTLY INTO THIS FUNCTION. IT CAN ALLOW FOR EASY CODE INJECTION
+        let info = this.getEnchantmentInfo(e);
+
+        if (info.op == "=") this.enchantments.unshift([e, card]); // Add the enchantment to the beginning of the list
+        else this.enchantments.push([e, card]);
+
+        this.applyEnchantments();
+    }
+    enchantmentExists(e, card) {
+        return this.enchantments.find(c => c[0] == e && c[1] == card);
+    }
+    removeEnchantment(e, card, update = true) {
+        let enchantment = this.enchantments.find(c => c[0] == e && c[1] == card);
+        let index = this.enchantments.indexOf(enchantment);
+        if (index === -1) return false;
+
+        this.enchantments.splice(index, 1);
+
+        if (!update) {
+            this.applyEnchantments();
+            return true;
+        }
+
+        let info = this.getEnchantmentInfo(e);
+        let new_enchantment = `+0 ${info.key}`;
+
+        this.addEnchantment(new_enchantment, this); // This will cause the variable to be reset since it is in the enchantments list.
+        this.removeEnchantment(new_enchantment, this, false);
+
+        return true;
     }
 }
 

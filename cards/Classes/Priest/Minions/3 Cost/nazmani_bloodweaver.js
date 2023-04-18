@@ -10,7 +10,7 @@ module.exports = {
     id: 65,
 
     passive(plr, game, card, key, val) {
-        if (!card.passiveCheck([key, val], "spellsCast", null, plr)) return;
+        if (key != "cardsPlayed" || val.type != "Spell" || game.player != plr) return;
         if (plr.hand.filter(c => c.mana > 0).length <= 0) return;
         
         let randomCard;
@@ -18,6 +18,7 @@ module.exports = {
         do randomCard = game.functions.randList(plr.hand, false);
         while (randomCard.mana <= 0);
 
-        randomCard.mana -= 1;
+        //randomCard.mana -= 1;
+        randomCard.addEnchantment("-1 mana", card);
     }
 }

@@ -12,22 +12,28 @@ module.exports = {
     id: 252,
 
     battlecry(plr, game, self) {
-        self.activate("passive", "turnStarts", game.turns); // Fun and goofy code with no future consequence whatsoever! :)
+        self.activate("passive", "turnStarts", "fake"); // Fun and goofy code with no future consequence whatsoever! :)
     },
 
     passive(plr, game, self, key, val) {
-        if (key != "turnStarts" || game.player != plr) return;
+        if (key != "turnStarts" || (game.player == plr && val != "fake")) return;
 
-        if (typeof(self.storage) != "number") self.storage = 1; // 0 = Even, 1 = Odd. I do it this way in order to use the modulo operation
-        else self.storage = (self.storage == 0) ? 1 : 0;
+        if (self.storage.length <= 0) self.storage = {"polarity": 1, "cards": []}; // 0 = Even, 1 = Odd. I do it this way in order to use the modulo operation
+        else {
+            self.storage.polarity = (self.storage.polarity == 0) ? 1 : 0;
 
-        let hand = plr.hand.filter(c => c.mana % 2 == self.storage);
+            self.storage.cards.forEach(c => {
+                c.removeEnchantment("mana = 1", self);
+            });
+            self.storage.cards = [];
+        }
+
+        let hand = plr.hand.filter(c => c.mana % 2 == self.storage.polarity);
 
         hand.forEach(c => {
-            c.mana = 1;
-        });
-        plr.hand.filter(c => !hand.includes(c)).forEach(c => {
-            c.mana = c.backups.mana;
+            //c.mana = 1;
+            if (!c.enchantmentExists("mana = 1", self)) c.addEnchantment("mana = 1", self);
+            self.storage.cards.push(c);
         });
     }
 }
