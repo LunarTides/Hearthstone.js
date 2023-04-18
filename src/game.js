@@ -50,6 +50,7 @@ class GameStats {
                 c.activate("unpassive", true);
                 c.activate("passive", key, val);
 
+                c.applyEnchantments();
                 if (c.mana < 0) c.mana = 0;
             });
 

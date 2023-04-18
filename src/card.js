@@ -468,9 +468,48 @@ class Card {
         if (!t) return true;
         return [true, t];
     }
+    getEnchantmentInfo(e) {
+        let equalsRegex = /\w+ = \w+/;
+        let otherRegex = /[-+*/^]\d+ \w+/;
+
+        let opEquals = equalsRegex.test(e);
+        let opOther = otherRegex.test(e);
+
+        let key;
+        let val;
+        let op = "=";
+
+        if (opEquals) [key, val] = e.split(" = ");
+        else if (opOther) {
+            [val, key] = e.split(" ");
+            val = val.slice(1);
+
+            op = e[0];
+        }
+
+        return {"key": key, "val": val, "op": op};
+    }
     applyEnchantments() {
         // Apply baseline for int values.
-        Object.entries(this).filter(c => typeof(c[1]) == "number").forEach(ent => {
+        const whitelisted_vars = ["maxHealth", "mana"];
+
+        let vars = Object.entries(this);
+        vars = vars.filter(c => typeof(c[1]) == "number") // Filter for only numbers
+        vars = vars.filter(c => whitelisted_vars.includes(c[0])); // Filter for vars in the whitelist
+
+        // Get keys
+        let keys = [];
+
+        let enchantments = this.enchantments.map(e => e[0]); // Get a list of enchantments
+        enchantments.forEach(e => {
+            let info = this.getEnchantmentInfo(e);
+            let key = info.key;
+            
+            keys.push(key);
+        });
+
+        vars = vars.filter(c => keys.includes(c[0])); // Only reset the variables if the variable name is in the enchantments list
+        vars.forEach(ent => {
             let [key, val] = ent;
 
             // Apply backup if it exists, otherwise keep it the same.
@@ -481,23 +520,10 @@ class Card {
             e = e[0];
 
             // Seperate the keys and values
-            let equalsRegex = /\w+ = \w+/;
-            let otherRegex = /[-+*/^]\d+ \w+/;
-
-            let opEquals = equalsRegex.test(e);
-            let opOther = otherRegex.test(e);
-
-            let key;
-            let val;
-            let op = "";
-
-            if (opEquals) [key, val] = e.split(" = ");
-            else if (opOther) {
-                [val, key] = e.split(" ");
-                val = val.slice(1);
-
-                op = e[0];
-            }
+            let info = this.getEnchantmentInfo(e);
+            let [key, val, op] = Object.values(info);
+            
+            if (op == "=") op = ""; // Otherwise `this[key] == val` happens
 
             val = parseInt(val);
 
@@ -516,12 +542,23 @@ class Card {
     enchantmentExists(e, card) {
         return this.enchantments.find(c => c[0] == e && c[1] == card);
     }
-    removeEnchantment(e) {
+    removeEnchantment(e, update = true) {
         let enchantment = this.enchantments.find(c => c[0] == e);
         let index = this.enchantments.indexOf(enchantment);
-        this.enchantments.splice(enchantment, 1);
+        this.enchantments.splice(index, 1);
 
+        if (!update) {
+            this.applyEnchantments();
+            return;
+        }
+
+        let info = this.getEnchantmentInfo(e);
+        let new_enchantment = `+0 ${info.key}`;
+
+        this.enchantments.push([new_enchantment, this]); // This will cause the variable to be reset since it is in the enchantments list.
         this.applyEnchantments();
+
+        this.removeEnchantment(new_enchantment, false);
     }
 }
 
