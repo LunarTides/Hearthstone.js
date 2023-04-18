@@ -16,7 +16,8 @@ module.exports = {
             let card = game.functions.randList(list);
             card = new game.Card(card.name, plr);
 
-            card.mana = 1;
+            //card.mana = 1;
+            card.addEnchantment("mana = 1", self);
 
             plr.shuffleIntoDeck(card);
         }

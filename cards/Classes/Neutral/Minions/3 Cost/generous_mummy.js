@@ -12,15 +12,7 @@ module.exports = {
 
     passive(plr, game, card, key, val) {
         plr.getOpponent().hand.forEach(c => {
-            if (c.mana <= 0) return;
-
-            c.mana--;
-            card.storage.push(c);
+            if (!c.enchantmentExists("-1 mana", card)) c.addEnchantment("-1 mana", card);
         });
-    },
-
-    unpassive(plr, game, card) {
-        card.storage.forEach(c => c.mana++);
-        card.storage = [];
     }
 }

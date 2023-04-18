@@ -18,7 +18,8 @@ module.exports = {
             let card = game.functions.randList(list);
             card = new game.Card(card.name, plr);
 
-            card.mana = 0;
+            //card.mana = 0;
+            card.addEnchantment("mana = 0", self);
 
             plr.addToHand(card);
         }

@@ -12,8 +12,14 @@ module.exports = {
         let discount = (plr.hand.length - 1);
         if (discount < 0) discount = 0;
 
-        self.mana = self.backups.mana - discount;
-        if (self.mana < 0) self.mana = 0;
+        //self.mana = self.backups.mana - discount;
+        if (self.storage.length > 0) {
+            self.removeEnchantment(`-${self.storage[0]} mana`, self);
+            self.storage = [];
+        }
+
+        self.storage.push(discount);
+        if (!self.enchantmentExists(`-${discount} mana`, self)) self.addEnchantment(`-${discount} mana`, self);
     },
 
     cast(plr, game, self) {

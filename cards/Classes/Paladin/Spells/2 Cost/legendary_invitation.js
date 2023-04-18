@@ -15,6 +15,7 @@ module.exports = {
         let card = game.interact.discover("Discover a Legendary minion from another class.", list);
         if (!card) return -1;
 
-        card.mana = 0;
+        //card.mana = 0;
+        card.addEnchantment("mana = 0", self);
     }
 }

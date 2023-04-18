@@ -10,25 +10,17 @@ module.exports = {
     id: 158,
 
     battlecry(plr, game, self) {
-        let cards = [];
-
         let remove = game.functions.addPassive("", true, () => {
             plr.getOpponent().hand.filter(c => c.type == "Spell").forEach(c => {
-                if (cards.map(k => k[0]).includes(c)) return; // If the card is in cards, ignore it
-                let oldMana = c.mana;
-
-                c.mana += 5;
-
-                cards.push([c, oldMana]);
+                //c.mana += 5;
+                if (!c.enchantmentExists("+5 mana", self)) c.addEnchantment("+5 mana", self);
             });
         }, -1);
 
         game.functions.addPassive("turnEnds", (val) => {
             return game.player != plr;
         }, () => {
-            cards.forEach(c => {
-                c[0].mana = c[1];
-            });
+            c.removeEnchantment("+5 mana", self);
 
             remove();
         }, 1);
