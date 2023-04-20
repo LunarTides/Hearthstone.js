@@ -860,7 +860,7 @@ class Interact {
         cls();
     
         console.log(`|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||`)
-        console.log(`|||                  Hearthstone.js | Copyright (C) ${copyright_year} | Keatpole                   |||`)
+        console.log(`|||                  Hearthstone.js | Copyright (C) ${copyright_year} | SolarWinds                 |||`)
         console.log(`||| This program is licensed under the GNU-GPL license. To learn more: type 'license' |||`)
         if (disappear)
         console.log(`|||                     This will disappear once you end your turn.                   |||`)
