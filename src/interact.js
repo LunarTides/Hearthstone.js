@@ -30,11 +30,12 @@ class Interact {
             if (curr.ai[alt_model]) ai = curr.ai[alt_model]();
             else ai = curr.ai.attack();
 
-            if (ai.includes(-1)) return -1;
-            if (ai.includes(null)) return null;
-
             attacker = ai[0];
             target = ai[1];
+
+            console.log(ai);
+            if (attacker === -1 || target === -1) return -1;
+            if (attacker === null || target === null) return null;
         } else {
             attacker = this.selectTarget("Which minion do you want to attack with?", false, "self");
             if (!attacker) return;

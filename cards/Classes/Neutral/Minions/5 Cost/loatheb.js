@@ -20,7 +20,9 @@ module.exports = {
         game.functions.addPassive("turnEnds", (val) => {
             return game.player != plr;
         }, () => {
-            c.removeEnchantment("+5 mana", self);
+            plr.getOpponent().hand.filter(c => c.type == "Spell").forEach(c => {
+                c.removeEnchantment("+5 mana", self);
+            });
 
             remove();
         }, 1);
