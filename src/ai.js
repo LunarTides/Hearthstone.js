@@ -296,7 +296,7 @@ class AI {
 
         return lowest_score[0];
     }
-    chooseBattle() {
+    attack() {
         // Assign a score to all minions
         let board = [[], []];
         game.board.forEach((p, i) => {
@@ -322,7 +322,7 @@ class AI {
         return this._attackGeneral(board);
     }
 
-    old_chooseBattle() {
+    legacy_attack_1() { // This gets called if you set the ai attack model to 1
         /**
          * Choose attacker and target
          * 
@@ -392,7 +392,7 @@ class AI {
             strbuilder += best_score;
         }
 
-        this.history.push([`chooseBattle, [${strbuilder}]`, arr]);
+        this.history.push([`attack, [${strbuilder}]`, arr]);
 
         return [attacker, target];
     }
