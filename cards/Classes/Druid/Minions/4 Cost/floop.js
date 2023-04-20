@@ -15,7 +15,7 @@ module.exports = {
         if (val.type != "Minion" || val.plr != plr) return;
 
         self.storage.length = 0;
-        self.desc = self.backups.desc + " (This is currently ".gray + game.functions.colorByRarity(val.displayName, val.rarity) + ")".gray;
+        self.desc = self.backups.init.desc + " (This is currently ".gray + game.functions.colorByRarity(val.displayName, val.rarity) + ")".gray;
         self.storage.push(val);
     },
 

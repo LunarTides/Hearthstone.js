@@ -469,7 +469,7 @@ class Interact {
         if (location.activate("use") === -1) return -1;
         
         location.remStats(0, 1);
-        location.cooldown = location.backups.cooldown;
+        location.cooldown = location.backups.init.cooldown;
         return true;
     }
 
@@ -1106,13 +1106,13 @@ class Interact {
                     sb += "Durability: ".brightGreen;
                     sb += `${m.getHealth()}`.brightGreen;
                     sb += " / ".brightGreen;
-                    sb += `${m.backups.stats[1]}`.brightGreen;
+                    sb += `${m.backups.init.stats[1]}`.brightGreen;
                     sb += ", ";
         
                     sb += "Cooldown: ".cyan;
                     sb += `${m.cooldown}`.cyan;
                     sb += " / ".cyan;
-                    sb += `${m.backups.cooldown}`.cyan;
+                    sb += `${m.backups.init.cooldown}`.cyan;
                     sb += "}";
 
                     sb += " [Location]".yellow;
