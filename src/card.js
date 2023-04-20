@@ -66,8 +66,8 @@ class Card {
         this.enchantments = [];
 
         // Make a backup of "this" to be used when silencing this card
-        let backups = {};
-        Object.entries(this).forEach(i => backups[i[0]] = i[1]);
+        let backups = {"init": {}};
+        Object.entries(this).forEach(i => backups["init"][i[0]] = i[1]);
         this.backups = backups;
 
         this.plr = plr;
@@ -314,6 +314,19 @@ class Card {
         }
     }
 
+    createBackup() {
+        let key = Object.keys(this.backups).length;
+        this.backups[key] = {};
+        Object.entries(this).forEach(i => this.backups[key][i[0]] = i[1]);
+    }
+    restoreBackup(backup) {
+        Object.keys(backup).forEach(att => {
+            this[att] = backup[att];
+        });
+
+        return true;
+    }
+
     // Doom buttons
     kill() {
         /**
@@ -325,6 +338,7 @@ class Card {
         this.setStats(this.getAttack(), 0);
         game.killMinions();
     }
+    
     silence() {
         /**
          * Silences the minion
@@ -339,7 +353,7 @@ class Card {
 
         Object.keys(this).forEach(att => {
             // Check if a backup exists for the attribute. If it does; restore it.
-            if (this.backups[att]) this[att] = this.backups[att];
+            if (this.backups["init"][att]) this[att] = this.backups["init"][att];
 
             // Check if the attribute if defined in the blueprint. If it is; restore it.
             else if (this.blueprint[att]) this[att] = this.blueprint[att];
@@ -513,7 +527,7 @@ class Card {
             let [key, val] = ent;
 
             // Apply backup if it exists, otherwise keep it the same.
-            if (this.backups[key] || this.backups[key] === 0) this[key] = this.backups[key];
+            if (this.backups["init"][key] || this.backups["init"][key] === 0) this[key] = this.backups["init"][key];
         });
 
         this.enchantments.forEach(e => {
