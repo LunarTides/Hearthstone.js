@@ -23,7 +23,12 @@ class Interact {
         let attacker, target;
 
         if (curr.ai) {
-            let ai = curr.ai.chooseBattle();
+            let ai;
+
+            let alt_model = `legacy_attack_${game.config.AIAttackModel}`;
+
+            if (curr.ai[alt_model]) ai = curr.ai[alt_model]();
+            else ai = curr.ai.attack();
 
             if (ai.includes(-1)) return -1;
             if (ai.includes(null)) return null;
