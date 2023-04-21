@@ -16,6 +16,14 @@ class GameStats {
     }
 
     cardUpdate(key, val) {
+        /**
+         * Do card passives
+         *
+         * @param {str} key The key of the event
+         * @param {any} val The value of the event
+         *
+         * @returns {null}
+         */
         // Infuse
         if (key == "minionsKilled") {
             val.plr.hand.forEach(p => {
@@ -66,6 +74,16 @@ class GameStats {
         this.game.activatePassives(key, val);
     }
     questUpdate(quests_name, key, val, plr) {
+        /**
+         * Update quests and secrets
+         *
+         * @param {str} quests_name The type of quest to update: ["Secret", "Questline", "Quest", "Questline"]
+         * @param {str} key The key of the event
+         * @param {any} val The value of the event
+         * @param {Player} plr The owner of the quest
+         *
+         * @returns {null}
+         */
         plr[quests_name].forEach(s => {
             if (s["key"] != key) return;
 
@@ -84,6 +102,16 @@ class GameStats {
     }
 
     update(key, val, plr, updateHistory = true) {
+        /**
+         * Broadcast an event
+         *
+         * @param {str} key The key of the event
+         * @param {any} val The value of the event
+         * @param {Player} plr The player who caused the event to happen
+         * @param {bool} updateHistory [default=true] Whether or not to update the history
+         *
+         * @returns {null}
+         */
         if (!this[key]) this[key] = [[], []];
         if (updateHistory && !this.history[this.game.turns]) this.history[this.game.turns] = [];
 
@@ -98,6 +126,15 @@ class GameStats {
     }
 
     increment(player, key, amount = 1) {
+        /**
+         * Increment a stat
+         *
+         * @param {Player} player The player to update
+         * @param {str} key The key to increment
+         * @param {number} amount [default=1] The amount to increment by
+         *
+         * @returns {null}
+         */
         if (!this[key]) this[key] = [0, 0];
 
         this[key][player.id] += amount;
@@ -149,12 +186,25 @@ class Game {
     }
 
     input(q, care = true) {
+        /**
+         * Ask the user a question and returns their answer
+         *
+         * @param {str} q The question to ask
+         * @param {bool} care If this is false, it overrides game.no_input. Only use this when debugging.
+         *
+         * @returns {str} What the user answered
+         */
         if (this.no_input && care) return "";
 
         return question(q);
     }
 
     doConfigAI() {
+        /**
+         * Assigns an ai to the players if in the config.
+         *
+         * @returns {null}
+         */
         if (this.config.P1AI) this.player1.ai = new AI(this.player1);
         if (this.config.P2AI) this.player2.ai = new AI(this.player2);
     }

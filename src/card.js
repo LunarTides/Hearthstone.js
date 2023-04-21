@@ -136,6 +136,11 @@ class Card {
         this.keywords = this.keywords.filter(k => k != keyword);
     }
     freeze() {
+        /**
+         * Freeze the minion
+         *
+         * @returns {null}
+         */
         this.frozen_turn = game.turns;
         this.frozen = true;
 
@@ -315,11 +320,25 @@ class Card {
     }
 
     createBackup() {
+        /**
+         * Create a backup of the card
+         *
+         * @returns {number} The key of the backup. You can use it by doing `card.backups[key]`
+         */
         let key = Object.keys(this.backups).length;
         this.backups[key] = {};
         Object.entries(this).forEach(i => this.backups[key][i[0]] = i[1]);
+        
+        return key;
     }
     restoreBackup(backup) {
+        /**
+         * Restore a backup of the card
+         *
+         * @param {Object} backup The backup. It is recommended to supply a backup from `card.backups`.
+         *
+         * @returns {bool} Success
+         */
         Object.keys(backup).forEach(att => {
             this[att] = backup[att];
         });
@@ -460,6 +479,11 @@ class Card {
         return ret;
     }
     clearCondition() {
+        /**
+         * Add ` (Condition cleared)` to the description of the card.
+         *
+         * @returns {null}
+         */
         this.desc += " (Condition cleared)".gray;
     }
     manathirst(m, t = "", f = "") {
@@ -483,6 +507,13 @@ class Card {
         return [true, t];
     }
     getEnchantmentInfo(e) {
+        /**
+         * Get information from an enchantment. Example: "mana = 1" returns {"key": "mana", "val": "1", "op": "="}
+         *
+         * @param {str} e The enchantment string
+         *
+         * @returns {Object<key, val, op>} The info
+         */
         let equalsRegex = /\w+ = \w+/;
         let otherRegex = /[-+*/^]\d+ \w+/;
 
@@ -504,6 +535,11 @@ class Card {
         return {"key": key, "val": val, "op": op};
     }
     applyEnchantments() {
+        /**
+         * Runs through the enchantments list and applies each enchantment in order.
+         *
+         * @returns {bool} Success
+         */
         // Apply baseline for int values.
         const whitelisted_vars = ["maxHealth", "mana"];
 
@@ -548,6 +584,14 @@ class Card {
         return true;
     }
     addEnchantment(e, card) {
+        /**
+         * Add an enchantment to the card. The enchantments look something like this: "mana = 1", "+1 mana", "-1 mana"
+         *
+         * @param {str} e The enchantment string
+         * @param {Card} card The creator of the enchantment. If another card gives this card an enchantment then this paramater needs to be the card that gave this card the enchantment. This will allow that card to remove the enchantment or look for the enchantment later.
+         *
+         * @returns {null}
+         */
         // DO NOT PASS USER INPUT DIRECTLY INTO THIS FUNCTION. IT CAN ALLOW FOR EASY CODE INJECTION
         let info = this.getEnchantmentInfo(e);
 
@@ -557,9 +601,24 @@ class Card {
         this.applyEnchantments();
     }
     enchantmentExists(e, card) {
+        /**
+         * Checks if an enchantment exists.
+         *
+         * @param {str} e The enchantment to look for.
+         * @param {Card} card The owner of the enchantment. Look at `addEnchantment` for more info. This needs to be correct to find the right enchantment
+         *
+         * @returns {bool} If the enchantment exists
+         */
         return this.enchantments.find(c => c[0] == e && c[1] == card);
     }
     removeEnchantment(e, card, update = true) {
+        /**
+         * Removes an enchantment
+         *
+         * @param {str} e The enchantment to remove
+         * @param {Card} card The owner of the enchantment. Look at `enchantmentExists` for more info.
+         * @param {bool} update [default=true] Keep this enabled unless you know what you're doing.
+         */
         let enchantment = this.enchantments.find(c => c[0] == e && c[1] == card);
         let index = this.enchantments.indexOf(enchantment);
         if (index === -1) return false;
@@ -571,6 +630,7 @@ class Card {
             return true;
         }
 
+        // Update is enabled
         let info = this.getEnchantmentInfo(e);
         let new_enchantment = `+0 ${info.key}`;
 

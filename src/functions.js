@@ -35,6 +35,14 @@ class Functions {
         return newArray;
     }
     remove(list, element) {
+        /**
+         * Removes "element" from "list"
+         *
+         * @param {any[]} list The list to remove from
+         * @param {any} element The element to remove from the list
+         *
+         * @returns {null}
+         */
         list.splice(list.indexOf(element), 1);
     }
     randList(list, cpyCard = true) {
@@ -53,6 +61,15 @@ class Functions {
         return item;
     }
     chooseItemsFromList(list, amount, cpyCard = true) {
+        /**
+         * Returns "amount" random items from the list.
+         *
+         * @param {any[]} list
+         * @param {number} amount
+         * @param {bool} cpyCard If this is on and the element is a card, create an imperfect copy of that card.
+         *
+         * @returns {any[]} The items
+         */
         if (amount > list.length) amount = list.length;
 
         list = list.slice(); // Make a copy of the list
@@ -101,6 +118,24 @@ class Functions {
         return str.split(" ").map(k => this.capitalize(k)).join(" ");
     }
     createWall(sep) {
+        /**
+         * Creates a wall. If you add for example:
+         * 'Example - Example'
+         * 'Test - Hello World'
+         * 'This is the longest - Short'
+         * 'Tiny - This is even longer then that one!'
+         * to the wall and run finishWall, you will get:
+         * 'Example             - Example'
+         * 'Test                - Hello World'
+         * 'This is the longest - Short'
+         * 'Tiny                - This is even longer then that one!'
+         * ^^ These will be returned from finishWall in an array like this:
+         * ['Example             - Example', 'Test                - Hello World', etc...]
+         *
+         * @param {char} sep The seperator. In the exmaple above it is "-"
+         *
+         * @returns {str[], function} wall, finishWall -> {str[]}
+         */
         let wall = [];
 
         const finishWall = () => {
@@ -212,9 +247,25 @@ class Functions {
         return _cards;
     }
     validateClass(plr, card) {
+        /**
+         * Returns if the "card"'s class is the same as the "plr"'s or 'Neutral'
+         *
+         * @param {Player} plr
+         * @param {Card} card
+         *
+         * @returns {bool}
+         */
         return [plr.heroClass, "Neutral"].includes(card.class);
     }
     matchTribe(card_tribe, tribe) {
+        /**
+         * Returns if the "card_tribe" is "tribe" or 'All'
+         *
+         * @param {str} card_tribe
+         * @param {str} tribe
+         *
+         * @returns {bool}
+         */
         if (/all/i.test(card_tribe)) return true; // If the card's tribe is "All".
 
         return card_tribe.includes(tribe);
@@ -286,7 +337,7 @@ class Functions {
     }
     parseTags(str) {
         /**
-         * Parses color tags in "str". Example: "&bBattlecry: &rChoose a minion. Silence then destroy it."
+         * Parses color tags in "str". Example: "&BBattlecry:&R Choose a minion. Silence then destroy it."
          *
          * @param {string} str The string to parse
          *
@@ -412,13 +463,17 @@ class Functions {
 
         callback(plr);
     }
-    getPassiveIndex(index, length) {
-        let sub = length - game.passives.length;
-        index = index - sub;
-
-        return index;
-    }
     addPassive(key, checkCallback, callback, lifespan = 1) {
+        /**
+         * Add a game passive.
+         *
+         * @param {str} key The key to listen for. If this is an empty string, it will listen for any event.
+         * @param {function | bool} checkCallback This will trigger when the game passive triggers, but before the actual code. If this returns false, the game passive will not trigger. If you set this to `true`, it is the same as doing `() => {return true}`. This function gets the paramater: {any} val The value of the event
+         * @param {function} callback The code that will be ran if the game passive gets triggered and gets through checkCallback. If this returns true, the game passive will be destroyed.
+         * @param {number} lifespan How many times the game passive will trigger and call "callback" before self-destructing. Set this to -1 to make it last forever, or until it is manually destroyed using "callback".
+         *
+         * @returns {function} If you call this function, it will destroy the game passive.
+         */
         let times = 0;
 
         let id = game.stats.gamePassives;
@@ -755,6 +810,13 @@ class Functions {
         return jade;
     }
     importConfig(path) {
+        /**
+         * Imports the config from the "path" specified.
+         *
+         * @param {str} path The path to import from.
+         *
+         * @returns {null}
+         */
         require("fs").readdirSync(path, { withFileTypes: true }).forEach(file => {
             let c = `${path}/${file.name}`;
 
