@@ -81,6 +81,11 @@ class AI {
     }
 
     _canAttack() {
+        /**
+         * Checks if there are any minions that can attack on the ai's board
+         *
+         * @returns {bool} Can attack
+         */
         if (this.prevent.includes("attack")) return false;
 
         let valid_attackers = game.board[this.plr.id].filter(m => this._canMinionAttack(m));
@@ -89,6 +94,11 @@ class AI {
     }
 
     _canHeroPower() {
+        /**
+         * Returns if the ai can use their hero power
+         *
+         * @returns {bool} Can use hero power
+         */
         if (this.prevent.includes("hero power")) return false;
 
         let enoughMana = this.plr.mana >= this.plr.heroPowerCost;
@@ -98,6 +108,11 @@ class AI {
     }
 
     _canUseLocation() {
+        /**
+         * Returns if there are any location cards the ai can use.
+         *
+         * @returns {bool}
+         */
         return false; // TODO: Using is currently broken.
 
         if (this.prevent.includes("use")) return false;
@@ -108,6 +123,13 @@ class AI {
     }
 
     _canMinionAttack(m) {
+        /**
+         * Returns if the minion specified can attack
+         *
+         * @param {Card} m The minion to check
+         *
+         * @returns {bool} Can attack
+         */
         let booleans = !m.sleepy && !m.frozen && !m.dormant;
         let numbers = m.getAttack() && m.attackTimes;
 
@@ -115,13 +137,20 @@ class AI {
     }
 
     _canTargetMinion(m) {
+        /**
+         * Returns if the minion specified is targettable
+         *
+         * @param {Card} m Minion to check
+         *
+         * @returns {bool} If it is targettable
+         */
         let booleans = !m.dormant && !m.immune && !m.keywords.includes("Stealth");
 
         return booleans;
     }
 
     // ATTACKING
-    _attackFindTrades(board) {
+    _attackFindTrades() {
         /**
          * Finds all possible trades for the ai and returns them
          *
@@ -158,6 +187,14 @@ class AI {
         return [perfect_trades, imperfect_trades];
     }
     _scorePlayer(player, board) {
+        /**
+         * Returns a score for the player specified based on how good their position is.
+         *
+         * @param {Player} player The player to score
+         * @param {ScoreBoard} board The board to check
+         *
+         * @returns {number} Score
+         */
         let score = 0;
 
         board.forEach(m => {
@@ -180,6 +217,13 @@ class AI {
         return score;
     }
     _findWinner(board) {
+        /**
+         * Returns the player that is winning
+         *
+         * @param {ScoreBoard} board The board to check
+         *
+         * @returns {Array<Player, number>} Winner, Score
+         */
         let score = this._scorePlayer(this.plr, board[this.plr.id]);
         let opScore = this._scorePlayer(this.plr.getOpponent(), board[this.plr.getOpponent().id]);
 
@@ -189,13 +233,25 @@ class AI {
         return [winner, s];
     }
     _tauntExists(return_taunts = false) {
+        /**
+         * Returns if there is a taunt on the board
+         *
+         * @param {bool} return_taunts [default=false] If the function should return the taunts it found, or just if there is a taunt. If this is true it will return the taunts it found.
+         *
+         * @returns {Card[] | bool}
+         */
         let taunts = game.board[this.plr.getOpponent().id].filter(m => m.keywords.includes("Taunt"));
 
         if (return_taunts) return taunts;
 
         return taunts.length > 0;
     }
-    _attackTrade(board) {
+    _attackTrade() {
+        /**
+         * Does a trade
+         *
+         * @returns {Card[] | null} Attacker, Target
+         */
         let [perfect_trades, imperfect_trades] = this._attackFindTrades();
 
         let ret = null;
@@ -207,6 +263,13 @@ class AI {
         return ret;
     }
     _attackGeneral(board) {
+        /**
+         * Does a general attack
+         *
+         * @param {ScoreBoard} board
+         *
+         * @returns {Card[] | null} Attacker, Target
+         */
         let current_winner = this._findWinner(board);
 
         let ret = null;
@@ -228,10 +291,20 @@ class AI {
         return ret;
     }
     _attackGeneralRisky() {
+        /**
+         * Does a risky attack.
+         *
+         * @returns {Card[]} Attacker, Target
+         */
         // Only attack the enemy hero
         return [this._attackGeneralChooseAttacker(true), this.plr.getOpponent()];
     }
     _attackGeneralMinion() {
+        /**
+         * Does a general attack on a minion
+         *
+         * @returns {Card[]} Attacker, Target
+         */
         let target;
 
         // If the focused minion doesn't exist, select a new minion to focus
@@ -243,6 +316,11 @@ class AI {
         return [this._attackGeneralChooseAttacker(target instanceof game.Player), target];
     }
     _attackGeneralChooseTarget() {
+        /**
+         * Choose a target for a general attack
+         *
+         * @returns {Card | Player | -1} Target | Go back
+         */
         let highest_score = [null, -9999];
 
         let board = game.board[this.plr.getOpponent().id];
@@ -271,6 +349,13 @@ class AI {
         return highest_score[0];
     }
     _attackGeneralChooseAttacker(target_is_player = false) {
+        /**
+         * Choose an attacker for a general attack
+         *
+         * @param {bool} target_is_player [default=false] If the target is a player
+         *
+         * @returns {Card, Player, -1} Attacker, Go back
+         */
         let lowest_score = [null, 9999];
 
         let board = game.board[this.plr.id];
@@ -297,6 +382,11 @@ class AI {
         return lowest_score[0];
     }
     attack() {
+        /**
+         * Makes the ai attack
+         *
+         * @returns {Array<Card | Player | -1 | null, Card | Player | -1 | null>} Attacker, Target
+         */
         // Assign a score to all minions
         let board = [[], []];
         game.board.forEach((p, i) => {
@@ -318,7 +408,7 @@ class AI {
         let taunts = this._tauntExists();
         if (taunts) return this._attackGeneral(board); // If there is a taunt, attack it before trading
 
-        if (amount_of_trades > 0 && !risk_mode) return this._attackTrade(board);
+        if (amount_of_trades > 0 && !risk_mode) return this._attackTrade();
         return this._attackGeneral(board);
     }
 

@@ -867,6 +867,14 @@ class Interact {
         console.log(`|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n`);
     }
     getReadableCard(card, i = -1) {
+        /**
+         * Returns a card in a user readble state. If you console.log the result of this, the user will get all the information they need from the card.
+         *
+         * @param {Card} card The card
+         * @param {number} i [default=-1] If this is set, this function will add `[i]` to the beginning of the card. This is useful if there are many different cards to choose from.
+         *
+         * @returns {str} The readable card
+         */
         let sb = "";
 
         const desc = card.desc.length > 0 ? ` (${card.desc}) ` : " ";
@@ -1166,6 +1174,14 @@ class Interact {
         console.log("------------");
     }
     viewCard(card, help = true) {
+        /**
+         * Shows information from the card, console.log's it and waits for the user to press enter.
+         *
+         * @param {Card | Blueprint} card The card
+         * @param {bool} help [default=true] If it should show a help message which displays what the different fields mean.
+         *
+         * @returns {null}
+         */
         let mana = `{${card.mana}}`.cyan;
         let name = game.functions.colorByRarity(`${card.displayName || card.name}`, card.rarity);
         let desc = card.desc ? `${card.desc}` : "no description".gray;
