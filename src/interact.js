@@ -33,7 +33,6 @@ class Interact {
             attacker = ai[0];
             target = ai[1];
 
-            console.log(ai);
             if (attacker === -1 || target === -1) return -1;
             if (attacker === null || target === null) return null;
         } else {

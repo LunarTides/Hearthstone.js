@@ -12,7 +12,6 @@ module.exports = {
         let target = game.interact.selectTarget("Destroy a friendly minion.", true, "friendly", "minion");
         if (!target) return -1;
 
-        console.log(target);
         target.kill();
 
         game.board[plr.getOpponent().id].forEach(m => {
