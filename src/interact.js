@@ -1,7 +1,7 @@
 const colors = require("colors");
 const { exit } = require('process');
 
-const license_url = 'https://github.com/Keatpole/Hearthstone.js/blob/main/LICENSE';
+const license_url = 'https://github.com/SolarWindss/Hearthstone.js/blob/main/LICENSE';
 const copyright_year = "2023";
 
 let game;

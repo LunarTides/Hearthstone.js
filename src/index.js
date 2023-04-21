@@ -1,6 +1,6 @@
 /*
 Hearthstone.js - Hearthstone but console based.
-Copyright (C) 2022  Keatpole
+Copyright (C) 2022  SolarWinds
 */
 
 const { Game } = require("./game");
