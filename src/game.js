@@ -646,7 +646,6 @@ class Game {
                 return true;
             }
 
-            console.log(target);
             if (target.keywords.includes("Divine Shield")) {
                 target.removeKeyword("Divine Shield");
                 return "divineshield";
