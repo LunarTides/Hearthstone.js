@@ -67,7 +67,6 @@ function devmode() {
                 mana: 0,
                 class: name,
                 rarity: "Free",
-                set: "Core",
                 hpDesc: hpDesc,
                 hpCost: hpCost,
                 uncollectible: true

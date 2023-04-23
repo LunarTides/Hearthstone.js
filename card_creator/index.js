@@ -19,40 +19,88 @@ function input(prompt) {
     return ret;
 }
 
-function common(m = 0) {
+function applyCard(_card) {
+    Object.entries(_card).forEach(c => {
+        let [key, val] = c;
+
+        let required_keys = ["name", "desc", "mana", "class", "rarity", "stats", "hpDesc", "hpCost", "cooldown"];
+        if (!val && val !== 0 && !required_keys.includes(key)) return;
+
+        card[key] = val;
+    });
+}
+
+function common() {
     const name = input("Name: ");
     const displayName = input("Display Name: ");
-    if (m > 0) var stats = input("Stats: ");
     const description = input("Description: ");
     const cost = input("Mana Cost: ");
-    if (m > 1) var tribe = input("Tribe: ");
     const _class = input("Class: ");
     const rarity = input("Rarity: ");
-    if (_class == "Death Knight") var runes = input("Runes: ");
-    const keywords = input("Keywords: ");
+    let keywords = input("Keywords: ");
+    
+    let runes;
+    if (_class == "Death Knight") runes = input("Runes: ");
 
-    card.name = name;
-    if (displayName) card.displayName = displayName;
-    if (m && stats) card.stats = "[" + stats.split("/").map(k => parseInt(k)).join(", ") + "]";
-    card.desc = description;
-    card.mana = parseInt(cost);
-    if (m > 1) card.tribe = tribe || "None";
-    card.class = _class;
-    card.rarity = rarity;
-    if (runes) card.runes = runes;
-    if (keywords) card.keywords = '["' + keywords.split(', ').join('", "') + '"]';
+    if (keywords) keywords = '["' + keywords.split(', ').join('", "') + '"]';
+
+    return {"name": name, "displayName": displayName, "desc": description, "mana": parseInt(cost), "class": _class, "rarity": rarity, "runes": runes, "keywords": keywords};
+}
+
+function minion() {
+    let _card = common();
+
+    let stats = input("Stats: ");
+    const tribe = input("Tribe: ");
+
+    stats = "[" + stats.split("/").join(", ") + "]";
+
+    applyCard({
+        "name": _card.name,
+        "displayName": _card.displayName,
+        "stats": stats,
+        "desc": _card.desc,
+        "mana": _card.mana,
+        "tribe": tribe,
+        "class": _card.class,
+        "rarity": _card.rarity,
+        "runes": _card.runes,
+        "keywords": _card.keywords
+    });
 }
 
 function spell() {
-    common()
+    let _card = common();
 
     const spellClass = input("Spell Class: ");
 
-    if (spellClass) card.spellClass = spellClass;
+    let combined = Object.assign(_card, { "spellClass": spellClass });
+
+    applyCard(combined);
+}
+
+function weapon() {
+    let _card = common();
+
+    let stats = input("Stats: ");
+
+    stats = "[" + stats.split("/").join(", ") + "]";
+
+    applyCard({
+        "name": _card.name,
+        "displayName": _card.displayName,
+        "stats": stats,
+        "desc": _card.desc,
+        "mana": _card.mana,
+        "class": _card.class,
+        "rarity": _card.rarity,
+        "runes": _card.runes,
+        "keywords": _card.keywords
+    });
 }
 
 function hero() {
-    common();
+    let _card = common();
 
     const hpDesc = input("Hero Power Description: ");
     let hpCost = input("Hero Power Cost (Default: 2): ");
@@ -60,16 +108,35 @@ function hero() {
     if (!hpCost) hpCost = 2;
     hpCost = parseInt(hpCost);
 
-    if (hpDesc) card.hpDesc = hpDesc;
-    card.hpCost = hpCost;
+    let combined = Object.assign(_card, {
+        "hpDesc": hpDesc,
+        "hpCost": hpCost
+    });
+
+    applyCard(combined);
 }
 
 function location() {
-    common(1)
+    let _card = common()
+    
+    let durability = input("Durability (How many times you can trigger this location before it is destroyed): ");
+    let cooldown = input("Cooldown (Default: 2): ");
 
-    const cooldown = input("Cooldown: ");
+    if (!cooldown) cooldown = 2;
+    let stats = `[0, ${durability}]`;
 
-    if (cooldown) card.cooldown = cooldown;
+    applyCard({
+        "name": _card.name,
+        "displayName": _card.displayName,
+        "stats": stats,
+        "desc": _card.desc,
+        "mana": _card.mana,
+        "class": _card.class,
+        "rarity": _card.rarity,
+        "runes": _card.runes,
+        "keywords": _card.keywords,
+        "cooldown": cooldown
+    });
 }
 
 function doCode(_path = "", _filename = "") {
@@ -80,6 +147,7 @@ function doCode(_path = "", _filename = "") {
 
     if (card.tribe == "") card.tribe = "None";
 
+    // Get the cards 'function' (battlecry, cast, deathrattle, etc...)
     let func;
     let _type = type.toLowerCase();
 
@@ -101,8 +169,10 @@ function doCode(_path = "", _filename = "") {
     if (func.toLowerCase() == "passive") triggerText = ", key, val)";
     if (func) func = `\n\n    ${func.toLowerCase()}(plr, game, self${triggerText} {\n\n    }`;
 
+    // If the type is Hero, we want the card to go to '.../Heroes/...' and not to '.../Heros/...'
     _type = (type == "Hero") ? "Heroe" : type;
 
+    // If there are multiple classes in a card, put the card in a directory something like this '.../Class1/Class2/...'
     let _class = "";
     if (card.class.split(" / ").length > 1) {
         let __class = card.class.split(" / ");
@@ -115,6 +185,7 @@ function doCode(_path = "", _filename = "") {
     }
     if (!_class) _class = card.class;
 
+    // If the card has the word "Secret" in its description, put it in the ".../Secrets/..." folder.
     if (card.desc.includes("Secret:")) _type = "Secret";
 
     let path = __dirname + `/../cards/Classes/${_class}/${_type}s/${card.mana} Cost/`;
@@ -168,7 +239,8 @@ function main(_type = "", _path = "", _filename = "", _card = null) {
         return;
     }
 
-    if (["minion", "weapon"].includes(type.toLowerCase())) common(type.toLowerCase() == "weapon" ? 1 : 2);
+    if (type.toLowerCase() == "minion") minion();
+    else if (type.toLowerCase() == "weapon") weapon();
     else if (type.toLowerCase() == "spell") spell();
     else if (type.toLowerCase() == "location") location();
     else if (type.toLowerCase() == "hero") hero();
