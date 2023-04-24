@@ -640,6 +640,11 @@ function getCardArg(cmd, callback) {
 }
 
 function handleCmds(cmd) {
+    if (findCard(cmd)) {
+        // You just typed the name of a card.
+        return handleCmds(`${settings.commands.default} ${cmd}`);
+    }
+
     if (cmd.startsWith("config") || cmd.startsWith("rules")) {
         game.interact.printName();
         showRules();
