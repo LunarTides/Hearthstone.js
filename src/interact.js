@@ -684,23 +684,15 @@ class Interact {
 
         if (game.player.ai) return game.player.ai.discover(values);
 
-        let p = `\n${prompt}\n[\n`;
+        console.log(`\n${prompt}:`);
 
         values.forEach((v, i) => {
             v = game.functions.getCardByName(v.name);
-            let stats = v.type == "Minion" ? ` [${v.getAttack()} / ${v.getHealth()}]`.brightGreen : "";
-            let desc = v.desc ? `(${v.desc}) ` : "";
 
-            // Check for a TypeError and ignore it
-            try {
-                p += `[${i + 1}] ` + `{${v.mana}} `.cyan + game.functions.colorByRarity(`${v.displayName || v.name}`, v.rarity) + `${stats} ${desc}` + `(${game.functions.getType(v)})`.yellow + `,\n`;
-            } catch (e) {}
+            console.log(this.getReadableCard(v, i + 1));
         });
 
-        p = p.slice(0, -2);
-        p += "\n] ";
-
-        let choice = game.input(p);
+        let choice = game.input();
 
         if (!values[parseInt(choice) - 1]) {
             return this.discover(prompt, cards, amount, add_to_hand, clone, values);
@@ -869,7 +861,7 @@ class Interact {
         /**
          * Returns a card in a user readble state. If you console.log the result of this, the user will get all the information they need from the card.
          *
-         * @param {Card} card The card
+         * @param {Card | Blueprint} card The card
          * @param {number} i [default=-1] If this is set, this function will add `[i]` to the beginning of the card. This is useful if there are many different cards to choose from.
          *
          * @returns {str} The readable card
@@ -879,7 +871,7 @@ class Interact {
         const desc = card.desc.length > 0 ? ` (${card.desc}) ` : " ";
 
         let mana = `{${card.mana}} `;
-        switch (card.costType) {
+        switch (card.costType || "mana") {
             case "mana":
                 mana = mana.cyan;
                 break;
@@ -895,14 +887,14 @@ class Interact {
 
         if (i !== -1) sb += `[${i}] `;
         sb += mana;
-        sb += game.functions.colorByRarity(card.displayName, card.rarity);
+        sb += game.functions.colorByRarity(card.displayName || card.name, card.rarity);
         
         if (card.type === "Minion" || card.type === "Weapon") {
             sb += ` [${card.stats.join(" / ")}]`.brightGreen;
         }
 
         sb += desc;
-        sb += `(${card.type})`.yellow;
+        sb += `(${game.functions.getType(card)})`.yellow;
 
         return sb;
     }
@@ -1181,29 +1173,22 @@ class Interact {
          *
          * @returns {null}
          */
-        let mana = `{${card.mana}}`.cyan;
-        let name = game.functions.colorByRarity(`${card.displayName || card.name}`, card.rarity);
-        let desc = card.desc ? `${card.desc}` : "no description".gray;
-        let rarity = game.functions.colorByRarity(card.rarity, card.rarity);
+        let _card = this.getReadableCard(card);
+
         let _class = card.class.gray;
 
-        let stats = "";
         let tribe = "";
         let spellClass = "";
         let locCooldown = "";
 
         let type = game.functions.getType(card);
 
-        if (["Minion", "Weapon", "Location"].includes(card.type)) {
-            stats = ` [${card.blueprint.stats.join(' / ')}]`.brightGreen;
-        }
-
         if (type == "Minion") tribe = " (" + card.tribe.gray + ")";
         else if (type == "Spell") spellClass = " (" + card.spellClass.cyan + ")";
         else if (type == "Location") locCooldown = " (" + card.blueprint.cooldown.toString().cyan + ")";
 
         if (help) console.log("{mana} ".cyan + "Name ".bold + "(" + "[attack / health] ".brightGreen + "if it has) (description) ".white + "(type) ".yellow + "((rarity) or (tribe) or (spell class) or (cooldown)) [".white + "class".gray + "]");
-        console.log(`${mana} ${name}${stats} (${desc})` + ` (${type})`.yellow + ` (${rarity})` + tribe + spellClass + locCooldown + ` [${_class}]`);
+        console.log(`${_card} (${rarity})` + tribe + spellClass + locCooldown + ` [${_class}]`);
 
         game.input("\nPress enter to continue...\n");
     }
