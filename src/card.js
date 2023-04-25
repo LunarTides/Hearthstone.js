@@ -639,6 +639,23 @@ class Card {
 
         return true;
     }
+
+    perfectCopy() {
+        /**
+         * Return a perfect copy of this card. This will perfectly clone the card. This happens when, for example, a card gets temporarily removed from the board using card.destroy, then put back on the board.
+         *
+         * @returns {Card} A perfect copy of this card.
+         */
+
+        return game.functions.cloneCard(this);
+    }
+    imperfectCopy() {
+        /**
+         * Return an imperfect copy of this card. This happens when, for example, a card gets shuffled into your deck in vanilla Hearthstone.
+         */
+
+        return new Card(this.name, this.plr);
+    }
 }
 
 exports.Card = Card;
