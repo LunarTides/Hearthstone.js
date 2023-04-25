@@ -204,8 +204,8 @@ class Functions {
 
         let card;
 
-        Object.keys(game.cards).forEach(c => {
-            if (c.toLowerCase() == name.toLowerCase()) card = game.cards[c];
+        game.cards.forEach(c => {
+            if (c.name.toLowerCase() == name.toLowerCase()) card = c;
         });
 
         if (!card && refer) return this.getCardById(name, false);
@@ -222,7 +222,7 @@ class Functions {
          * @returns {Blueprint} The blueprint of the card
          */
 
-        let card = Object.values(game.cards).filter(c => c.id == id)[0];
+        let card = game.cards.filter(c => c.id == id)[0];
 
         if (!card && refer) return this.getCardByName(id.toString(), false);
 
@@ -233,15 +233,15 @@ class Functions {
          * Returns all cards
          *
          * @param {bool} uncollectible [default=true] Filter out all uncollectible cards
-         * @param {Blueprint{}} cards [default=All cards in the game] The cards to get
+         * @param {Blueprint[]} cards [default=All cards in the game] The cards to get
          *
-         * @returns {Blueprint{}} Cards
+         * @returns {Blueprint[]} Cards
          */
 
-        let _cards = {};
+        let _cards = [];
 
-        Object.entries(cards).forEach(c => {
-            if (!c[1].uncollectible && uncollectible) _cards[c[0]] = c[1];
+        cards.forEach(c => {
+            if (!c.uncollectible && uncollectible) _cards.push(c);
         });
 
         return _cards;
@@ -846,7 +846,7 @@ class Functions {
             if (file.name.endsWith(".js")) {
                 let f = require(p);
                 
-                game.cards[f.name] = f;
+                game.cards.push(f);
             }
             else if (file.isDirectory()) this._importCards(p);
         });
@@ -860,7 +860,7 @@ class Functions {
          * @returns {undefined}
          */
 
-        game.cards = {};
+        game.cards = [];
 
         this._importCards(path);
 

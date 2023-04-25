@@ -36,6 +36,7 @@ if (!editor) editor = 'vim';
 let reg = rl.question("Search: ");
 
 finishedCardsPath = `./${reg}_${finishedCardsPath}`;
+finishedCardsPath = finishedCardsPath.replace(/[^\w ]/g, "_"); // Remove any character that is not in /A-Za-z0-9_ /
 
 getFinishedCards(finishedCardsPath);
 searchCards(new RegExp(reg, "i")); // Ignore case
@@ -51,8 +52,20 @@ while (true) {
         console.log(`${i + 1}: ${_c}`);
     });
 
-    let index = rl.question("\nWhich card do you want to fix (type 'done' to finish): ");
+    let index = rl.question("\nWhich card do you want to fix (type 'done' to finish | type 'delete' to delete the save file): ");
     if (index.toLowerCase().startsWith("done")) break;
+    if (index.toLowerCase().startsWith("delete")) {
+        console.log("Deleting file...");
+
+        if (fs.existsSync(finishedCardsPath)) {
+            fs.unlinkSync(finishedCardsPath);
+            console.log("File deleted!");
+        }
+        else console.log("File not found!");
+
+        rl.question();
+        process.exit(0);
+    }
 
     index = parseInt(index) - 1;
     path = matchingCards[index];
@@ -65,7 +78,7 @@ while (true) {
     if (matchingCards.length <= 0) {
         // All cards have been patched
         rl.question("All cards patched!\n");
-        fs.unlinkSync(finishedCardsPath);
+        if (fs.existsSync(finishedCardsPath)) fs.unlinkSync(finishedCardsPath);
 
         process.exit(0); // Exit so it doesn't save
     }

@@ -9,7 +9,7 @@ module.exports = {
 
     cast(plr, game, self) {
         game.board[plr.getOpponent().id].forEach(m => {
-            let list = Object.values(game.functions.getCards());
+            let list = game.functions.getCards();
             list = list.filter(c => game.functions.getType(c) == "Minion" && c.mana == m.mana - 1);
 
             let minion = game.functions.randList(list);

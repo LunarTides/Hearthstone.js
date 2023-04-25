@@ -172,7 +172,7 @@ class Game {
         this.stats = new GameStats(this);
         this.interact = new Interact(this);
         this.config = {};
-        this.cards = {};
+        this.cards = [];
 
         this.turns = 0;
         this.board = [[], []];

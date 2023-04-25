@@ -13,7 +13,7 @@ module.exports = {
 
         game.functions.spellDmg(target, 2);
 
-        let list = Object.values(game.functions.getCards());
+        let list = game.functions.getCards();
         list = list.filter(c => game.functions.getType(c) == "Spell" && !game.functions.validateClass(plr, c));
         if (list.length <= 0) return;
 
