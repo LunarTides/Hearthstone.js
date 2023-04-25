@@ -9,7 +9,7 @@ module.exports = {
     id: 76,
 
     cast(plr, game, card) {
-        game.functions.addQuest("Quest", plr, card, "overloadGained", 3, (val, game, turn, normal_done) => {
+        game.functions.addQuest("Quest", plr, card, "GainOverload", 3, (val, game, turn, normal_done) => {
             if (card.storage.length >= 2) {
                 plr.addToHand(new game.Card("Stormcaller Bru'kan", plr));
                 return true;

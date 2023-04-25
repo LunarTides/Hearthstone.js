@@ -9,7 +9,7 @@ module.exports = {
     id: 314,
 
     battlecry(plr, game, self) {
-        let cardsPlayed = game.stats.cardsPlayed[plr.id];
+        let cardsPlayed = game.events.PlayCard[plr.id];
         cardsPlayed = cardsPlayed.map(c => c[0]).filter(c => c.battlecry && c.id != self.id);
         
         plrAi = plr.ai;

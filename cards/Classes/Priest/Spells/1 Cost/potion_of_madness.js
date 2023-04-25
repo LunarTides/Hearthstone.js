@@ -21,7 +21,7 @@ module.exports = {
         target.destroy();
         game.summonMinion(clone, plr);
 
-        game.functions.addPassive("turnEnds", true, () => {
+        game.functions.addEventListener("EndTurn", true, () => {
             clone.destroy();
             game.summonMinion(backup, plr.getOpponent());
         }, 1);

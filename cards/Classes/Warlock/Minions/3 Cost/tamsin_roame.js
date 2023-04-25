@@ -10,7 +10,7 @@ module.exports = {
     id: 299,
 
     passive(plr, game, self, key, val) {
-        if (key != "cardsPlayed" || val.type != "Spell" || val.mana <= 0 || !val.spellClass || !val.spellClass.includes("Shadow")) return;
+        if (key != "PlayCard" || val.type != "Spell" || val.mana <= 0 || !val.spellClass || !val.spellClass.includes("Shadow")) return;
 
         let copy = new game.Card(val.name, plr);
         //copy.mana = 0;

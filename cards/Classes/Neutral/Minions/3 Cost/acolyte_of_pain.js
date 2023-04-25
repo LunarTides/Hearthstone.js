@@ -10,7 +10,7 @@ module.exports = {
     id: 41,
 
     passive(plr, game, card, key, val) {
-        if (!card.passiveCheck([key, val], "minionsDamaged") || val[0] != card) return;
+        if (!card.passiveCheck([key, val], "DamageMinion") || val[0] != card) return;
 
         plr.drawCard();
     }

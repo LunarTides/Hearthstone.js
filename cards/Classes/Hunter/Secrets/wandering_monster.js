@@ -8,7 +8,7 @@ module.exports = {
     id: 225,
 
     cast(plr, game, self) {
-        game.functions.addQuest("Secret", plr, self, "enemyAttacks", 1, (val, _, turn) => {
+        game.functions.addQuest("Secret", plr, self, "Attack", 1, (val, _, turn) => {
             let [attacker, target] = val;
 
             if (target != plr) return;

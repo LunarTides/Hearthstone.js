@@ -8,7 +8,7 @@ module.exports = {
     id: 218,
 
     cast(plr, game, self) {
-        game.functions.addQuest("Secret", plr, self, "cardsPlayed", 1, (card, _, turn) => {
+        game.functions.addQuest("Secret", plr, self, "PlayCard", 1, (card, _, turn) => {
             if (card.type != "Spell") return;
 
             let panther = new game.Card("Cat Trick Panther", plr);

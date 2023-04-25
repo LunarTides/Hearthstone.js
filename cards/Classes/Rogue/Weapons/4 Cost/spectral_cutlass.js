@@ -10,7 +10,7 @@ module.exports = {
     id: 283,
 
     passive(plr, game, self, key, val) {
-        if (key != "cardsPlayed" || val.plr != plr || val == self || game.functions.validateClass(plr, val)) return;
+        if (key != "PlayCard" || val.plr != plr || val == self || game.functions.validateClass(plr, val)) return;
 
         // The card you played was from another class.
         self.addStats(0, 1);

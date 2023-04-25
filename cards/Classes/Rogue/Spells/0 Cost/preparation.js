@@ -22,7 +22,7 @@ module.exports = {
             return true;
         }
 
-        game.functions.addPassive("", true, () => {
+        game.functions.addEventListener("", true, () => {
             if (stop) return true;
 
             plr.hand.filter(c => c.type == "Spell").forEach(s => {
@@ -30,8 +30,8 @@ module.exports = {
             });
         }, -1);
 
-        game.functions.addPassive("turnEnds", () => {return true}, undo, 1);
-        game.functions.addPassive("cardsPlayed", (val) => {
+        game.functions.addEventListener("EndTurn", () => {return true}, undo, 1);
+        game.functions.addEventListener("PlayCard", (val) => {
             return val.type == "Spell" && val != self;
         }, undo, 1);
     }

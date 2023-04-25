@@ -144,7 +144,7 @@ class Card {
         this.frozen_turn = game.turns;
         this.frozen = true;
 
-        game.stats.update("cardsFrozen", this, this.plr);
+        game.events.broadcast("FreezeCard", this, this.plr);
     }
     decAttack() {
         /**
@@ -225,10 +225,10 @@ class Card {
         if (!restore) return this.resetMaxHealth(true);
 
         if (this.getHealth() > this.maxHealth) {
-            if (this.getHealth() > before) game.stats.update("restoredHealth", this.maxHealth, this.plr);
+            if (this.getHealth() > before) game.events.broadcast("HealthRestored", this.maxHealth, this.plr);
             this.stats[1] = this.maxHealth;
         } else if (this.getHealth() > before) {
-            game.stats.update("restoredHealth", this.getHealth(), this.plr);
+            game.events.broadcast("HealthRestored", this.getHealth(), this.plr);
         }
     }
     addAttack(amount) {
@@ -254,7 +254,7 @@ class Card {
         if (this.immune) return true;
 
         this.setStats(this.getAttack(), this.getHealth() - amount);
-        game.stats.update("minionsDamaged", [this, amount], this.plr);
+        game.events.broadcast("DamageMinion", [this, amount], this.plr);
 
         if (this.type == "Weapon" && this.getHealth() <= 0) {
             this.plr.destroyWeapon(true);
@@ -425,7 +425,7 @@ class Card {
             if (r != -1 || name == "deathrattle") return;
 
             // If the return value is -1, meaning "refund", refund the card and stop the for loop
-            game.stats.update("cardsCancelled", [this, name], this.plr);
+            game.events.broadcast("CancelCard", [this, name], this.plr);
 
             if (["use", "heropower"].includes(name)) {
                 ret = -1;

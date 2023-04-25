@@ -11,7 +11,7 @@ module.exports = {
     id: 45,
 
     passive(plr, game, self, key, val) {
-        if (key == "minionsKilled" && val == self) return;
+        if (key == "KillMinion" && val == self) return;
 
         plr.getOpponent().hand.forEach(c => {
             if (!c.enchantmentExists("-1 mana", self)) c.addEnchantment("-1 mana", self);

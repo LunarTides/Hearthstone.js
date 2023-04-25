@@ -17,7 +17,7 @@ module.exports = {
         });
 
         // Hero power
-        game.functions.addPassive("cardsPlayed", val => {
+        game.functions.addEventListener("PlayCard", val => {
             return game.player == plr && val.type == "Minion";
         }, () => {
             let list = game.functions.getCards();

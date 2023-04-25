@@ -16,7 +16,7 @@ module.exports = {
         }
 
         self.storage.push(2);
-        game.functions.addPassive("cardsTraded", (_key, _val) => {
+        game.functions.addEventListener("TradeCard", (_key, _val) => {
             return _val == self;
         }, () => {
             if (self.storage.length >= 2) return true;

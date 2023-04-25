@@ -20,7 +20,7 @@ module.exports = {
         }
 
         // Swap back next turn
-        game.functions.addPassive("turnEnds", () => {return true}, () => {
+        game.functions.addEventListener("EndTurn", () => {return true}, () => {
             // Put the player's hand into their deck
             plr.hand.forEach(c => {
                 plr.shuffleIntoDeck(c);

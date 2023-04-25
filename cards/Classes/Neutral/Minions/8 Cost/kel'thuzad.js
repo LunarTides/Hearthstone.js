@@ -10,7 +10,7 @@ module.exports = {
     id: 120,
 
     passive(plr, game, self, key, val) {
-        if (!self.passiveCheck([key, val], "turnEnds")) return;
+        if (!self.passiveCheck([key, val], "EndTurn")) return;
 
         game.graveyard[plr.id].forEach(m => {
             if (m.plr == plr && m.turnKilled == game.turns) game.summonMinion(new game.Card(m.name, plr), plr);

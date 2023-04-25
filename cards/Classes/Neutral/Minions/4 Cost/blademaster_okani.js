@@ -15,7 +15,7 @@ module.exports = {
 
         plr.counter.push(type);
 
-        game.functions.addPassive("minionsKilled", (val) => {
+        game.functions.addEventListener("KillMinion", (val) => {
             return val == self;
         }, () => {
             game.functions.remove(plr.counter, type);

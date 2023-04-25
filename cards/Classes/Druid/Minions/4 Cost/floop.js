@@ -11,7 +11,7 @@ module.exports = {
     id: 152,
 
     handpassive(plr, game, self, key, val) {
-        if (key != "cardsPlayed") return;
+        if (key != "PlayCard") return;
         if (val.type != "Minion" || val.plr != plr) return;
 
         self.storage.length = 0;
