@@ -9,7 +9,7 @@ module.exports = {
     id: 317,
 
     battlecry(plr, game, self) {
-        let list = Object.values(game.functions.getCards()).filter(c => !c.class.includes("Neutral"));
+        let list = game.functions.getCards().filter(c => !c.class.includes("Neutral"));
         let card = game.interact.discover("Discover a spell from any class.", list, 3, false);
         if (!card) return -1;
 

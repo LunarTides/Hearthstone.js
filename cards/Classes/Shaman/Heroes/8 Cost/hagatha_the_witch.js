@@ -20,7 +20,7 @@ module.exports = {
         game.functions.addPassive("cardsPlayed", val => {
             return game.player == plr && val.type == "Minion";
         }, () => {
-            let list = Object.values(game.functions.getCards());
+            let list = game.functions.getCards();
             list = list.filter(c => c.type == "Spell" && c.class == "Shaman");
 
             let card = game.functions.randList(list);

@@ -13,7 +13,7 @@ let game;
 let decks = [];
 function runner(_decks) {
     try {
-        game.cards = {};
+        game.cards = [];
         game.config = {};
     } catch {};
 

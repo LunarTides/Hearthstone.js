@@ -8,7 +8,7 @@ module.exports = {
     uncollectible: true,
 
     cast(plr, game, self) {
-        let list = Object.values(game.functions.getCards());
+        let list = game.functions.getCards();
         list = list.filter(c => game.functions.getType(c) == "Minion" && c.rarity == "Legendary" && c.class != plr.heroClass);
         if (list.length <= 0) return;
 

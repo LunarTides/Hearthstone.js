@@ -11,7 +11,7 @@ module.exports = {
 
     battlecry(plr, game, self) {
         // Discover
-        let list = Object.values(game.functions.getCards());
+        let list = game.functions.getCards();
         list = list.filter(c => game.functions.getType(c) == "Spell" && c.mana <= 3);
         if (list.length <= 0) return;
 

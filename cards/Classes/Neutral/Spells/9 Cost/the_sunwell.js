@@ -23,7 +23,7 @@ module.exports = {
     },
 
     cast(plr, game, self) {
-        let list = Object.values(game.functions.getCards()).filter(c => game.functions.getType(c) == "Spell");
+        let list = game.functions.getCards().filter(c => game.functions.getType(c) == "Spell");
         if (list.length == 0) return;
 
         // I do this approach to support changing max hand space later on

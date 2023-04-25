@@ -8,7 +8,7 @@ module.exports = {
     id: 278,
 
     cast(plr, game, self) {
-        let list = Object.values(game.functions.getCards());
+        let list = game.functions.getCards();
         list = list.filter(c => game.functions.getType(c) == "Spell" && !game.functions.validateClass(plr, c));
         if (list.length <= 0) return;
         

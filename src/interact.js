@@ -675,7 +675,7 @@ class Interact {
         this.printAll(curr);
         let values = _cards;
 
-        if (cards.length <= 0) cards = Object.values(game.functions.getCards()).filter(c => game.functions.validateClass(game.player, c));
+        if (cards.length <= 0) cards = game.functions.getCards().filter(c => game.functions.validateClass(game.player, c));
         if (cards.length <= 0 || !cards) return;
 
         if (_cards.length == 0) values = game.functions.chooseItemsFromList(cards, amount, false);

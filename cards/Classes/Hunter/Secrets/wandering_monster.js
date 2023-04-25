@@ -16,7 +16,7 @@ module.exports = {
             // The target is your hero
             target.addHealth(attacker.getAttack()); // Heal the target
 
-            let minions = Object.values(game.functions.getCards());
+            let minions = game.functions.getCards();
             minions = minions.filter(c => game.functions.getType(c) == "Minion" && c.mana == 3);
             let minion = game.functions.randList(minions);
             if (!minion) return;

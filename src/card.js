@@ -8,7 +8,7 @@ function setup(_game, _cards) {
 
 class Card {
     constructor(name, plr) {
-        this.blueprint = cards[name];
+        this.blueprint = cards.find(c => c.name == name);
         
         this.name = name;
         this.displayName = name;
