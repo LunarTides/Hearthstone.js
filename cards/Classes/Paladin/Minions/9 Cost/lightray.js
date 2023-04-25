@@ -11,8 +11,8 @@ module.exports = {
     id: 270,
 
     handpassive(plr, game, self, key, val) {
-        if (!game.stats.cardsPlayed) return; // Noone has played any cards yet.
-        let cards_played = game.stats.cardsPlayed[plr.id].map(c => c[0]).filter(c => c.class.includes("Paladin")).length;
+        if (!game.events.PlayCard) return; // Noone has played any cards yet.
+        let cards_played = game.events.PlayCard[plr.id].map(c => c[0]).filter(c => c.class.includes("Paladin")).length;
 
         //self.mana = self.backups.mana - cards_played;
         //if (self.mana < 0) self.mana = 0;

@@ -168,7 +168,7 @@ class Interact {
             console.log(cond_color("/eval [log] <Code> - Runs the code specified. If the word 'log' is before the code, instead console.log the code and wait for user input to continue."));
             console.log(cond_color("/debug             - Gives you infinite mana, health and armor"));
             console.log(cond_color("/exit              - Force exits the game. There will be no winner, and it will take you straight back to the runner."));
-            console.log(cond_color("/stats             - Gives you a list of the game stats that have happened in an alphabetical order"));
+            console.log(cond_color("/events            - Gives you a list of the events that have been broadcast in an alphabetical order"));
             console.log(cond_color("/ai                - Gives you a list of the actions the ai(s) have taken in the order they took it"));
             console.log(cond_color("---------------------------" + ((game.config.debug) ? "" : "-")));
             
@@ -213,7 +213,7 @@ class Interact {
         else if (q == "history") {
             console.log("\nWARNING: The history feature is not perfect. Things will be out of order. Sorry about that.".yellow);
             // History
-            let history = game.stats.history;
+            let history = game.events.history;
 
             const doVal = (val, plr, hide) => {
                 if (val instanceof game.Card) {
@@ -231,13 +231,11 @@ class Interact {
                 h.forEach(c => {
                     let [key, val, plr] = c;
 
-                    let bannedKeys = ["turnEnds", "turnStarts", "cardsDrawnThisTurn", "unspentMana", "damageTakenOnOwnTurn", "overloadGained", "heroAttackGained", "spellsThatDealtDamage", "cardsFrozen", "cardsCancelled"];
+                    let bannedKeys = ["EndTurn", "StartTurn", "UnspentMana", "GainOverload", "GainHeroAttack", "SpellDealsDamage", "FreezeCard", "CancelCard"];
                     if (bannedKeys.includes(key)) return;
 
-                    let hideValueKeys = ["cardsDrawn", "cardsAddedToHand", "cardsAddedToDeck"]; // Example: If a card gets drawn, the other player can't see what card it was
+                    let hideValueKeys = ["DrawCard", "AddCardToHand", "AddCardToDeck"]; // Example: If a card gets drawn, the other player can't see what card it was
                     let shouldHide = hideValueKeys.includes(key);
-
-                    //if (key == "cardsDrawn") plr = plr.getOpponent(); // cardsDrawn gets called before the game switches who's turn it is. cardsDrawn is also always the first not banned key that gets called.
 
                     if (!hasPrintedHeader) console.log(`\nTurn ${t + 1} - Player [${plr.name}]`); 
                     hasPrintedHeader = true;
@@ -341,19 +339,19 @@ class Interact {
 
             game.input("\nPress enter to continue...");
         }
-        else if (q == "/stats") {
+        else if (q == "/events") {
             if (!game.config.debug) return -1;
 
-            console.log("Stats:\n");
+            console.log("Events:\n");
 
             for (let i = 1; i <= 2; i++) {
                 const plr = game["player" + i];
                 
                 console.log(`Player ${i}'s Stats: {`);
 
-                Object.keys(game.stats).forEach(s => {
-                    if (!game.stats[s][plr.id]) return;
-                    game.stats[s][plr.id].forEach(t => {
+                Object.keys(game.events).forEach(s => {
+                    if (!game.events[s][plr.id]) return;
+                    game.events[s][plr.id].forEach(t => {
                         if (t instanceof Array && t[0] instanceof game.Card) {
                             let sb = `[${s}] ([`;
                             t.forEach(v => {
@@ -798,7 +796,7 @@ class Interact {
         }
 
         if (elusive === true) {
-            game.stats.update("spellsCastOnMinions", minion, game.player);
+            game.events.broadcast("CastSpellOnMinion", minion, game.player);
         }
 
         if (minion.keywords.includes("Stealth") && game.player != minion.plr) {

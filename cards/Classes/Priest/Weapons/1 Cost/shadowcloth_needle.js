@@ -9,7 +9,7 @@ module.exports = {
     id: 232,
 
     passive(plr, game, self, key, val) {
-        if (key != "cardsPlayed" || game.player != plr) return;
+        if (key != "PlayCard" || game.player != plr) return;
         if (val.type != "Spell" || !val.spellClass || !val.spellClass.includes("Shadow")) return;
 
         // The player cast a Shadow spell

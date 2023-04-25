@@ -9,11 +9,11 @@ module.exports = {
     id: 316,
 
     passive(plr, game, self, key, val) {
-        if (key != "cardsPlayedUnsafe" || val == self) return;
+        if (key != "PlayCardUnsafe" || val == self) return;
 
         let minion;
 
-        let removePassive = game.functions.addPassive("spellsCastOnMinions", (_val) => {
+        let removePassive = game.functions.addEventListener("CastSpellOnMinion", (_val) => {
             minion = _val;
             return true;
         }, () => {
@@ -40,13 +40,13 @@ module.exports = {
         let cardsPlayedPassiveRemove;
         let cardsCancelledPassiveRemove;
 
-        cardsPlayedPassiveRemove = game.functions.addPassive("cardsPlayed", (_val) => {
+        cardsPlayedPassiveRemove = game.functions.addEventListener("PlayCard", (_val) => {
             return _val == val;
         }, () => {
             removePassive();
             cardsCancelledPassiveRemove();
         }, 1);
-        cardsCancelledPassiveRemove = game.functions.addPassive("cardsCancelled", (_val) => {
+        cardsCancelledPassiveRemove = game.functions.addEventListener("CancelCard", (_val) => {
             return _val[0] == val;
         }, () => {
             removePassive();

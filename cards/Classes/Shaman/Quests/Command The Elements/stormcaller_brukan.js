@@ -13,7 +13,7 @@ module.exports = {
     battlecry(plr, game, card) {
         let spell;
 
-        game.functions.addPassive("cardsPlayed", (val) => {
+        game.functions.addEventListener("PlayCard", (val) => {
             spell = val;
             return val.type == "Spell" && game.player == plr;
         }, () => {

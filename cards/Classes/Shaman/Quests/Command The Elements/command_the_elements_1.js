@@ -8,7 +8,7 @@ module.exports = {
     id: 74,
 
     cast(plr, game, card) {
-        game.functions.addQuest("Quest", plr, card, "overloadGained", 3, (val, game, turn, normal_done) => {
+        game.functions.addQuest("Quest", plr, card, "GainOverload", 3, (val, game, turn, normal_done) => {
             if (card.storage.length >= 2) {
                 plr.overload = 0;
                 return true;

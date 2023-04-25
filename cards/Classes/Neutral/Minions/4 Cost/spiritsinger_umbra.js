@@ -10,7 +10,7 @@ module.exports = {
     id: 50,
 
     passive(plr, game, card, key, val) {
-        if (!card.passiveCheck([key, val], ["minionsSummoned", "minionsPlayed"], null, plr)) return;
+        if (!card.passiveCheck([key, val], ["SummonMinion", "minionsPlayed"], null, plr)) return;
         
         val.activate("deathrattle");
     }

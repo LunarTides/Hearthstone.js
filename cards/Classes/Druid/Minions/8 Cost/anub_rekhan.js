@@ -13,7 +13,7 @@ module.exports = {
     battlecry(plr, game, self) {
         plr.armor += 8;
 
-        let remove = game.functions.addPassive("", true, () => {
+        let remove = game.functions.addEventListener("", true, () => {
             plr.hand.filter(c => c.type == "Minion").forEach(m => {
                 m.costType = "armor";
             });
@@ -21,7 +21,7 @@ module.exports = {
 
         let count = 0;
 
-        let removeCardsPlayed = game.functions.addPassive("cardsPlayed", (val) => {
+        let removeCardsPlayed = game.functions.addEventListener("PlayCard", (val) => {
             return val.type == "Minion";
         }, () => {
             if (count < 3) {
@@ -39,7 +39,7 @@ module.exports = {
             return true;
         }, -1);
 
-        game.functions.addPassive("turnEnds", true, () => {
+        game.functions.addEventListener("EndTurn", true, () => {
             // Revert and remove the effect
             remove();
             removeCardsPlayed();

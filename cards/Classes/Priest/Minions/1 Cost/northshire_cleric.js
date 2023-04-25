@@ -10,7 +10,7 @@ module.exports = {
     id: 61,
 
     passive(plr, game, self, key, val) {
-        if (!self.passiveCheck([key, val], "restoredHealth")) return false;
+        if (!self.passiveCheck([key, val], "HealthRestored")) return false;
 
         plr.drawCard();
     }

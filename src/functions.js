@@ -463,26 +463,26 @@ class Functions {
 
         callback(plr);
     }
-    addPassive(key, checkCallback, callback, lifespan = 1) {
+    addEventListener(key, checkCallback, callback, lifespan = 1) {
         /**
-         * Add a game passive.
+         * Add an event listener.
          *
-         * @param {str} key The key to listen for. If this is an empty string, it will listen for any event.
-         * @param {function | bool} checkCallback This will trigger when the game passive triggers, but before the actual code. If this returns false, the game passive will not trigger. If you set this to `true`, it is the same as doing `() => {return true}`. This function gets the paramater: {any} val The value of the event
-         * @param {function} callback The code that will be ran if the game passive gets triggered and gets through checkCallback. If this returns true, the game passive will be destroyed.
-         * @param {number} lifespan How many times the game passive will trigger and call "callback" before self-destructing. Set this to -1 to make it last forever, or until it is manually destroyed using "callback".
+         * @param {str} key The event to listen for. If this is an empty string, it will listen for any event.
+         * @param {function | bool} checkCallback This will trigger when the event gets broadcast, but before the actual code in `callback`. If this returns false, the event listener will ignore the event. If you set this to `true`, it is the same as doing `() => {return true}`. This function gets the paramater: {any} val The value of the event
+         * @param {function} callback The code that will be ran if the event listener gets triggered and gets through `checkCallback`. If this returns true, the event listener will be destroyed.
+         * @param {number} lifespan How many times the event listener will trigger and call "callback" before self-destructing. Set this to -1 to make it last forever, or until it is manually destroyed using "callback".
          *
-         * @returns {function} If you call this function, it will destroy the game passive.
+         * @returns {function} If you call this function, it will destroy the event listener.
          */
         let times = 0;
 
-        let id = game.stats.gamePassives;
+        let id = game.events.eventListeners;
 
         const remove = () => {
-            delete game.passives[id];
+            delete game.eventListeners[id];
         }
 
-        game.passives[id] = (_, _key, _val) => {
+        game.eventListeners[id] = (_, _key, _val) => {
             // Im writing it like this to make it more readable
             if (_key == key || key == "") {} // Validate key. If key is empty, match any key.
             else return;
@@ -496,7 +496,7 @@ class Functions {
             if (times == lifespan || override) remove();
         }
 
-        game.stats.gamePassives++;
+        game.events.eventListeners++;
 
         return remove;
     }
@@ -514,7 +514,7 @@ class Functions {
 
         const dmg = this.accountForSpellDmg(damage);
 
-        game.stats.update("spellsThatDealtDamage", [target, dmg], game.player);
+        game.events.broadcast("SpellDealsDamage", [target, dmg], game.player);
         game.attack(dmg, target);
 
         return target.getHealth();

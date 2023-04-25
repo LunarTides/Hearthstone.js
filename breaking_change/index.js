@@ -67,6 +67,8 @@ while (true) {
         process.exit(0);
     }
 
+    if (!index || !parseInt(index)) continue;
+
     index = parseInt(index) - 1;
     path = matchingCards[index];
 

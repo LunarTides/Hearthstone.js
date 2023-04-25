@@ -22,7 +22,7 @@ module.exports = {
 
         card.desc += turnText;
 
-        let remove = game.functions.addPassive("cardsPlayed", (val) => {
+        let remove = game.functions.addEventListener("PlayCard", (val) => {
             return val == card;
         }, () => {
             let ogCard = cards.filter(c => c.name == card.name);
@@ -33,7 +33,7 @@ module.exports = {
             plr.drawSpecific(ogCard);
         }, 1);
 
-        game.functions.addPassive("turnEnds", true, () => {
+        game.functions.addEventListener("EndTurn", true, () => {
             card.desc = desc;
             remove();
         }, 1);

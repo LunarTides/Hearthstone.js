@@ -12,7 +12,7 @@ module.exports = {
     battlecry(plr, game, self) {
         plr.heroPowerCost = 0;
 
-        game.functions.addPassive("heroPowers", () => {
+        game.functions.addEventListener("HeroPower", () => {
             return game.player == plr;
         }, () => {
             plr.heroPowerCost = plr.hero.hpCost || 2;

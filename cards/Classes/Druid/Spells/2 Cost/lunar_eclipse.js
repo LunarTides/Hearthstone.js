@@ -18,14 +18,14 @@ module.exports = {
         // Your next spell this turn costs 2 less.
         let cards = [];
 
-        let remove = game.functions.addPassive("", true, () => {
+        let remove = game.functions.addEventListener("", true, () => {
             plr.hand.filter(c => c.type == "Spell").forEach(c => {
                 if (!c.enchantmentExists("-2 mana", self)) c.addEnchantment("-2 mana", self);
             });
         }, -1);
 
         // Remove reduction when card played
-        let removeCardsPlayed = game.functions.addPassive("cardsPlayed", (val) => {
+        let removeCardsPlayed = game.functions.addEventListener("PlayCard", (val) => {
             return val != self && val.type == "Spell";
         }, () => {
             plr.hand.filter(c => c.type == "Spell").forEach(c => {
@@ -37,7 +37,7 @@ module.exports = {
         
 
         // Remove reduction when turn ends
-        game.functions.addPassive("turnEnds", (val) => {
+        game.functions.addEventListener("EndTurn", (val) => {
             return game.player == plr;
         }, () => {
             plr.hand.filter(c => c.type == "Spell").forEach(c => {

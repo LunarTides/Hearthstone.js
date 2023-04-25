@@ -27,9 +27,9 @@ module.exports = {
         // Restore the minions 2 turns later.
         let counter = 0;
 
-        game.functions.addPassive("turnStarts", () => {
+        game.functions.addEventListener("StartTurn", () => {
             // Only do this when YOUR turn starts
-            // game.player gets updated after the turnStarts event. So if game.player == plr, it means that the opponent's turn is starting.
+            // game.player gets updated after the StartTurn event. So if game.player == plr, it means that the opponent's turn is starting.
             return game.player != plr;
         }, () => {
             counter++;

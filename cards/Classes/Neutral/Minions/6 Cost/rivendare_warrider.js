@@ -22,6 +22,6 @@ module.exports = {
         doShuffle("Korthazz", "Death");
         doShuffle("Zeliek", "Conquest");
 
-        game.stats.increment(plr, "rivendareCounter");
+        game.events.increment(plr, "rivendareCounter");
     }
 }

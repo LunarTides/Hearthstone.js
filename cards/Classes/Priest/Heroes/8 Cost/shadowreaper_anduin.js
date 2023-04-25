@@ -17,7 +17,7 @@ module.exports = {
             });
         });
 
-        game.functions.addPassive("cardsPlayed", (key, val) => {
+        game.functions.addEventListener("PlayCard", (key, val) => {
             return game.player == plr;
         }, () => {
             plr.canUseHeroPower = true;

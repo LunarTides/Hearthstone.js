@@ -8,7 +8,7 @@ module.exports = {
     id: 220,
 
     cast(plr, game, self) {
-        game.functions.addPassive("turnEnds", (key, val) => {
+        game.functions.addEventListener("EndTurn", (key, val) => {
             return game.player == plr;
         },
         () => {

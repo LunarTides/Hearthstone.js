@@ -12,7 +12,7 @@ module.exports = {
     uncollectible: true,
 
     deathrattle(plr, game, self) {
-        let stat = game.stats.increment(plr, "rivendareCounter");
+        let stat = game.events.increment(plr, "rivendareCounter");
 
         if (stat < 4) return;
 

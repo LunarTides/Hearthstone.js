@@ -10,9 +10,9 @@ module.exports = {
     id: 286,
 
     battlecry(plr, game, self) {
-        if (!game.stats.cardsPlayed) return;
+        if (!game.events.PlayCard) return;
 
-        let cardsPlayed = game.stats.cardsPlayed[plr.id].map(c => c[0]);
+        let cardsPlayed = game.events.PlayCard[plr.id].map(c => c[0]);
         cardsPlayed = cardsPlayed.filter(c => !game.functions.validateClass(plr, c) && c.id != self.id);
         if (cardsPlayed.length <= 0) return;
 

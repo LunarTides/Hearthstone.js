@@ -10,7 +10,7 @@ module.exports = {
     cast(plr, game, self) {
         plr.armor += 4;
 
-        game.functions.addPassive("turnStarts", (val) => {
+        game.functions.addEventListener("StartTurn", (val) => {
             return game.player != plr;
         }, () => {
             plr.armor += 4;

@@ -18,7 +18,7 @@ module.exports = {
             plr.addToHand(c, false);
         });
 
-        game.functions.addPassive("turnEnds", () => {
+        game.functions.addEventListener("EndTurn", () => {
             return true
         }, () => {
             plr.hand = old_hand;

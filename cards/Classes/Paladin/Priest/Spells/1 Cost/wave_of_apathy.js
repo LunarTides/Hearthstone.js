@@ -13,7 +13,7 @@ module.exports = {
             m.stats[0] = 1;
         });
 
-        game.functions.addPassive("turnStarts", (key, val) => {
+        game.functions.addEventListener("StartTurn", (key, val) => {
             return game.player != plr;
         },
         () => {

@@ -2,34 +2,32 @@
 // NOTE: The word "Minion" can be replaced with "Location"; unless stated otherwise
 // NOTE: The word "Spell" can be replaced with "Weapon" or "Hero"; unless stated otherwise
 
-fatalDamageTimes:      {number:1}                            The player was dealt fatal damage
+FatalDamage:           {null}                                The player was dealt fatal damage
 
-turnEnds:              {number}                              The current turn (before turn counter increments)
-turnStarts:            {number}                              The current turn (after turn counter increments)
-restoredHealth:        {number}                              Health after restore
-unspentMana:           {number}                              The current mana the player has left
-overloadGained:        {number}                              Overload gained
-heroAttackGained:      {number}                              Amount of attack gained
-damageTaken:           {number}                              Amount of damage taken
-damageTakenOnOwnTurn:  {number}                              Amount of damage taken on the players turn
+EndTurn:               {number}                              The current turn (before turn counter increments)
+StartTurn:             {number}                              The current turn (after turn counter increments)
+HealthRestored:        {number}                              Health after restore
+UnspentMana:           {number}                              The current mana the player has left
+GainOverload:          {number}                              Overload gained
+GainHeroAttack:        {number}                              Amount of attack gained
+TakeDamage:            {number}                              Amount of damage taken
 
-cardsPlayed:           {Card:Any}                            Card played (This gets triggered after the text of the card)
-cardsPlayedUnsafe:     {Card:Any}                            Card played (This gets triggered before the text of the card, which means it also gets triggered before the cancelling logic. So you have to handle cards being cancelled.)
-minionsSummoned:       {Card:Minion}                         The minion summoned
-minionsKilled:         {Card:Minion}                         The minion killed
-minionsDamaged:        {Array<Card, number>}                 The minion damaged, the amount of damage
-cardsCancelled:        {Array<Card, str>}                    The card cancelled, the function cancelled
-spellsCastOnMinions:   {Card:Minion}                         The minion the spell was cast on
-cardsTraded:           {Card:Any}                            Card traded
-cardsFrozen:           {Card:Any}                            Card frozen
+PlayCard:              {Card:Any}                            Card played (This gets triggered after the text of the card)
+PlayCardUnsafe:        {Card:Any}                            Card played (This gets triggered before the text of the card, which means it also gets triggered before the cancelling logic. So you have to handle cards being cancelled.)
+SummonMinion:          {Card:Minion}                         The minion summoned
+KillMinion:            {Card:Minion}                         The minion killed
+DamageMinion:          {Array<Card, number>}                 The minion damaged, the amount of damage
+CancelCard:            {Array<Card, str>}                    The card cancelled, the function cancelled
+CastSpellOnMinion:     {Card:Minion}                         The minion the spell was cast on
+TradeCard:             {Card:Any}                            Card traded
+FreezeCard:            {Card:Any}                            Card frozen
 
-cardsAddedToDeck:      {Card}                                The card that was added to the players deck
-cardsAddedToHand:      {Card}                                The card added to hand
-cardsDrawn:            {Card}                                The card drawn
-cardsDrawnThisTurn:    {Card}                                The card drawn
+AddCardToDeck:         {Card}                                The card that was added to the players deck
+AddCardToHand:         {Card}                                The card added to hand
+DrawCard:              {Card}                                The card drawn
 
-spellsThatDealtDamage: {Array<Card | Player, number>}        The target, Amount of damage
-enemyAttacks:          {Array<Card | Player, Card | Player>} The attacker, The target
+SpellDealsDamage:      {Array<Card | Player, number>}        The target, Amount of damage
+Attack:                {Array<Card | Player, Card | Player>} The attacker, The target
 
-heroPowers:            {string}                              The heroclass of the heropower; (Warrior, Mage, Priest, ...)
+HeroPower:             {string}                              The heroclass of the heropower; (Warrior, Mage, Priest, ...)
 
