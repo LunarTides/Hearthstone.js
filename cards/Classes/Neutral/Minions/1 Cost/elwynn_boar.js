@@ -10,7 +10,7 @@ module.exports = {
     id: 135,
 
     deathrattle(plr, game, self) {
-        let stat = game.stats.increment(plr, "elwynnBoarsKilled");
+        let stat = game.events.increment(plr, "elwynnBoarsKilled");
 
         if (stat <= 7) return;
 

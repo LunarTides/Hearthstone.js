@@ -10,7 +10,7 @@ module.exports = {
     id: 44,
 
     passive(plr, game, card, key, val) {
-        if (key !== "cardsPlayed") return;
+        if (key !== "PlayCard") return;
         if (val.type !== "Spell") return;
         
         card.storage.push(val);

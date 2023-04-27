@@ -10,7 +10,7 @@ module.exports = {
     id: 287,
 
     passive(plr, game, self, key, val) {
-        if (key != "minionsKilled" || val.plr != plr || !val.blueprint.deathrattle) return;
+        if (key != "KillMinion" || val.plr != plr || !val.blueprint.deathrattle) return;
 
         if (!self.deathrattle) self.deathrattle = [];
         self.deathrattle.push(val.blueprint.deathrattle);

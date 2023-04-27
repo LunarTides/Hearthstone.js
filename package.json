@@ -1,12 +1,16 @@
 {
   "name": "hearthstone.js",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "repository": {
+      "type": "git",
+      "url": "git+https://github.com/SolarWindss/Hearthstone.js.git"
+  },
+  "author": "SolarWinds",
   "license": "GPL-3.0-or-later",
   "dependencies": {
     "colors": "^1.4.0",

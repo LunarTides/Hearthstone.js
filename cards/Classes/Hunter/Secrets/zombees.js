@@ -9,7 +9,7 @@ module.exports = {
     id: 226,
 
     cast(plr, game, self) {
-        game.functions.addQuest("Secret", plr, self, "cardsPlayed", 1, (card, _, turn) => {
+        game.functions.addQuest("Secret", plr, self, "PlayCard", 1, (card, _, turn) => {
             if (card.type != "Minion") return;
 
             // The opponent has played a minion

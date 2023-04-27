@@ -1,7 +1,7 @@
 {
     "coop": {
         "dragonbuff": "Priest /1:14,2/ 1v,1x,1y,10,1o,11,21,14,15,16,18,1t,1g,1i,1w,1z,y,20,12,1r,19,1h",
-        "dragonbuffv2": "Priest /1:14,2/ z,1o,11,12,16,17,18,19,1t,1b,1h,1s,1u,21,20,1r,15,w,1q,1a,1p,1f",
+        "infiniteStats": "Priest /1:14,2/ w,z,10,11,16,17,18,19,1s,8w,1b,1e,6q,1h,1p,20,12,13,1r,15,1a,1f",
         "legendaryJade": "Druid /1:20,2/ g,i,z,10,11,14,16,17,k,l,1b,m,1c,n,o,1e,r,3,1h,q,12,13,15,19,p"
     },
     "versus": {

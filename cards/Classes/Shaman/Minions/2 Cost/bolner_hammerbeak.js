@@ -9,11 +9,11 @@ module.exports = {
     id: 312,
 
     passive(plr, game, self, key, val) {
-        if (key != "cardsPlayed") return;
+        if (key != "PlayCard") return;
         if (val.type != "Minion" || !val.battlecry) return;
 
         // Repeat the first Battlecry played this turn.
-        let cardsPlayed = game.stats.cardsPlayed[plr.id];
+        let cardsPlayed = game.events.PlayCard[plr.id];
         cardsPlayed = cardsPlayed.filter(c => c[1] == game.turns && c[0].battlecry && c[0] != val).map(c => c[0]);
 
         let minion = game.functions.randList(cardsPlayed);

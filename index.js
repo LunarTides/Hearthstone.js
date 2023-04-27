@@ -1,10 +1,14 @@
 const rl = require("readline-sync");
+const fs = require("fs");
+
+const version = "1.2.0";
+const copyrightYear = "2023";
 
 const cls = () => process.stdout.write("\033c");
 
 const watermark = () => {
     cls();
-    console.log("Hearthstone.js Runner (C) 2023\n");
+    console.log(`Hearthstone.js Runner V${version} (C) ${copyrightYear}\n`);
 }
 
 decks = [];
@@ -26,9 +30,27 @@ function devmode() {
         user = user[0].toLowerCase();
 
         if (user == "c") {
+            watermark();
+
+            let vanilla = rl.question("Create a (C)ustom Card, or import a (V)anilla Card: ");
+            if (!vanilla) continue;
+
+            vanilla = vanilla[0].toLowerCase() == "v";
+
             cls();
 
-            require("./card_creator/index").main();
+            if (vanilla) {
+                if (!fs.existsSync("./card_creator/generator/.ignore.cards.json")) {
+                    watermark();
+
+                    rl.question("Cards file not found! Go to 'card_creator/generator' and run either 'generate.bat' or 'generate.sh', then try again.\n");
+                    continue;
+                }
+
+                require("./card_creator/generator/index").main("./card_creator/generator");
+            } else {
+                require("./card_creator/index").main();
+            }
         }
         if (user == "s") {
             let _watermark = () => {
@@ -67,7 +89,6 @@ function devmode() {
                 mana: 0,
                 class: name,
                 rarity: "Free",
-                set: "Core",
                 hpDesc: hpDesc,
                 hpCost: hpCost,
                 uncollectible: true

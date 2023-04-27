@@ -12,7 +12,7 @@ module.exports = {
 
     battlecry(plr, game, self) {
         const discoverBloodRune = () => {
-            let list = Object.values(game.functions.getCards());
+            let list = game.functions.getCards();
             list = list.filter(c => (c.runes || "").includes("B"));
             if (list.length <= 0) return;
 

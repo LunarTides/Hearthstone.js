@@ -42,7 +42,18 @@ for (let _ = 0; _ < games; _++) {
     game.interact.mulligan(p1);
     game.interact.mulligan(p2);
 
-    while (game.running) game.interact.doTurn();
+    try {
+        while (game.running) game.interact.doTurn();
+    } catch(err) {
+        // If it crashes, show the ai's actions, and the history of the game before actually crashing
+        game.config.debug = true;
+        game.interact.handleCmds("/ai");
+        game.interact.handleCmds("history");
+
+        console.log("THE GAME CRASHED: LOOK ABOVE FOR THE HISTORY, AND THE AI'S LOGS.");
+
+        throw err;
+    }
 }
 
 console.log("Test passed!");

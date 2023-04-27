@@ -8,7 +8,7 @@ module.exports = {
     id: 282,
 
     cast(plr, game, self) {
-        let list = Object.values(game.functions.getCards());
+        let list = game.functions.getCards();
         list = list.filter(c => c.class == plr.getOpponent().heroClass);
         if (list.length <= 0) return;
         

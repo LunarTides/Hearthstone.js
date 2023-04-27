@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Keatpole/Hearthstone.js.git"
+    "url": "git+https://github.com/SolarWindss/Hearthstone.js.git"
   },
-  "author": "Keatpole",
+  "author": "SolarWinds",
   "license": "GPL-3.0-or-later",
   "bugs": {
-    "url": "https://github.com/Keatpole/Hearthstone.js/issues"
+    "url": "https://github.com/SolarWindss/Hearthstone.js/issues"
   },
-  "homepage": "https://github.com/Keatpole/Hearthstone.js#readme",
+  "homepage": "https://github.com/SolarWindss/Hearthstone.js#readme",
   "dependencies": {
     "colors": "^1.4.0",
     "readline-sync": "^1.4.10"

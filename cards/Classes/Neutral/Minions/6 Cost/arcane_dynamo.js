@@ -10,7 +10,7 @@ module.exports = {
     id: 193,
 
     battlecry(plr, game, self) {
-        let list = Object.values(game.functions.getCards());
+        let list = game.functions.getCards();
         list = list.filter(c => game.functions.getType(c) == "Spell" && c.mana >= 5 && [plr.heroClass, "Neutral"].includes(c.class));
         if (list.length <= 0) return;
 

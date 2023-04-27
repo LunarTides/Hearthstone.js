@@ -8,7 +8,7 @@ module.exports = {
     uncollectible: true,
 
     cast(plr, game, self) {
-        game.functions.addPassive("", true, () => {
+        game.functions.addEventListener("", true, () => {
             plr.gainMana(1000, true);
         }, -1);
     }

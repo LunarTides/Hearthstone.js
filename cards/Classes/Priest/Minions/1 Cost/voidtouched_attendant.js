@@ -10,7 +10,7 @@ module.exports = {
     id: 234,
 
     passive(plr, game, self, key, val) {
-        if (key != "damageTaken") return;
+        if (key != "TakeDamage") return;
 
         let [player, amount] = val;
 

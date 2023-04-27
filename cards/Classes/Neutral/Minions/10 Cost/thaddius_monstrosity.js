@@ -12,11 +12,11 @@ module.exports = {
     id: 252,
 
     battlecry(plr, game, self) {
-        self.activate("passive", "turnStarts", "fake"); // Fun and goofy code with no future consequence whatsoever! :)
+        self.activate("passive", "StartTurn", "fake"); // Fun and goofy code with no future consequence whatsoever! :)
     },
 
     passive(plr, game, self, key, val) {
-        if (key != "turnStarts" || (game.player == plr && val != "fake")) return;
+        if (key != "StartTurn" || (game.player == plr && val != "fake")) return;
 
         if (self.storage.length <= 0) self.storage = {"polarity": 1, "cards": []}; // 0 = Even, 1 = Odd. I do it this way in order to use the modulo operation
         else {

@@ -10,11 +10,11 @@ module.exports = {
     id: 133,
 
     deathrattle(plr, game, self) {
-        let stats = self.backups.stats;
+        let stats = self.backups.init.stats;
 
         let copy = new game.Card(self.name, plr);
         copy.stats = [stats[0] - 1, stats[1] - 1];
-        copy.backups.stats = copy.stats;
+        copy.backups.init.stats = copy.stats;
 
         game.summonMinion(copy, plr);
     }

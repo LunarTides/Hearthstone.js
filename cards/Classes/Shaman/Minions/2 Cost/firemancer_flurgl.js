@@ -9,7 +9,7 @@ module.exports = {
     id: 305,
 
     passive(plr, game, self, key, val) {
-        if (key != "cardsPlayed") return;
+        if (key != "PlayCard") return;
         if (val.type != "Minion" || !game.functions.matchTribe(val.tribe, "Murloc") || val == self) return;
 
         game.functions.doPlayerTargets(plr.getOpponent(), t => {

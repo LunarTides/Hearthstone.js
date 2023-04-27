@@ -8,7 +8,7 @@ module.exports = {
     id: 225,
 
     cast(plr, game, self) {
-        game.functions.addQuest("Secret", plr, self, "enemyAttacks", 1, (val, _, turn) => {
+        game.functions.addQuest("Secret", plr, self, "Attack", 1, (val, _, turn) => {
             let [attacker, target] = val;
 
             if (target != plr) return;
@@ -16,7 +16,7 @@ module.exports = {
             // The target is your hero
             target.addHealth(attacker.getAttack()); // Heal the target
 
-            let minions = Object.values(game.functions.getCards());
+            let minions = game.functions.getCards();
             minions = minions.filter(c => game.functions.getType(c) == "Minion" && c.mana == 3);
             let minion = game.functions.randList(minions);
             if (!minion) return;

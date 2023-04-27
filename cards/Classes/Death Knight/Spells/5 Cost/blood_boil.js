@@ -16,7 +16,7 @@ module.exports = {
             infected.push(m);
         });
 
-        game.functions.addPassive("turnEnds", (key, val) => {
+        game.functions.addEventListener("EndTurn", (key, val) => {
             return game.player == plr;
         },
         () => {

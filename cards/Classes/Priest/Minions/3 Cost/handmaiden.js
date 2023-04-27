@@ -10,7 +10,7 @@ module.exports = {
     id: 178,
 
     handpassive(plr, game, self, key, val) {
-        if (key != "cardsPlayed" || val.type != "Spell" || game.player != plr) return;
+        if (key != "PlayCard" || val.type != "Spell" || game.player != plr) return;
 
         if (self.storage.length == 0) self.storage.push(0);
         self.storage[0]++;

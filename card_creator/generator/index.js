@@ -6,8 +6,10 @@ function capitalize(str) {
     return str[0].toUpperCase() + str.slice(1).toLowerCase();
 }
 
-fs.readFile("./.ignore.cards.json", 'utf8', (err, data) => {
-    if (err) throw err;
+function main(home = ".") {
+    console.log("Hearthstone.js Vanilla Card Creator (C) 2023\n");
+
+    let data = fs.readFileSync(home + "/.ignore.cards.json", { encoding: 'utf8', flag: 'r' });
 
     data = JSON.parse(data);
 
@@ -148,4 +150,8 @@ fs.readFile("./.ignore.cards.json", 'utf8', (err, data) => {
         console.log(card);
         cc.main(type, null, null, card);
     }
-});
+}
+
+exports.main = main;
+
+if (require.main == module) main();

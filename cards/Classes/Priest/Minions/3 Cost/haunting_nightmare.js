@@ -24,7 +24,7 @@ module.exports = {
         if (card.desc == "") card.desc = "This card is Haunted".gray;
         else card.desc += " (This card is Haunted)".gray;
 
-        game.functions.addPassive("cardsPlayed", (key, val) => {
+        game.functions.addEventListener("PlayCard", (key, val) => {
             return val == card;
         }, () => {
             // The player played the haunted card

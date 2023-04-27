@@ -8,8 +8,8 @@ module.exports = {
     uncollectible: true,
 
     cast(plr, game, card) {
-        game.functions.addSidequest(plr, card, "turnStarts", 1, (_, game, turn) => {
-            heroAttacked = game.stats.heroAttacked[game.opponent.id];
+        game.functions.addSidequest(plr, card, "StartTurn", 1, (_, game, turn) => {
+            heroAttacked = game.events.heroAttacked[game.opponent.id];
             heroAttacked = heroAttacked.filter(x => x[2] == game.turns || x[2] == game.turns - 1);
 
             if (heroAttacked.length < 1) {

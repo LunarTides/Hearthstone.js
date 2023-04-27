@@ -12,7 +12,7 @@ module.exports = {
     battlecry(plr, game, self) {
         if (!game.functions.highlander(plr)) return;
 
-        let list = Object.values(game.functions.getCards()).filter(c => c.set == "Legacy");
+        let list = game.functions.getCards().filter(c => c.set == "Legacy");
 
         // The real zephrys is a lot more complicated but i'm not gonna bother, sorry
         game.interact.discover("Choose the perfect card.", list);

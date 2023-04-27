@@ -10,7 +10,7 @@ module.exports = {
     id: 276,
 
     battlecry(plr, game, self) {
-        let list = Object.values(game.functions.getCards()).filter(c => !game.functions.validateClass(plr, c));
+        let list = game.functions.getCards().filter(c => !game.functions.validateClass(plr, c));
         let card = game.functions.randList(list);
         if (!card) return;
         

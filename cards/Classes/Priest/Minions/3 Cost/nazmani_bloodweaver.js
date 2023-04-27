@@ -10,7 +10,7 @@ module.exports = {
     id: 65,
 
     passive(plr, game, card, key, val) {
-        if (key != "cardsPlayed" || val.type != "Spell" || game.player != plr) return;
+        if (key != "PlayCard" || val.type != "Spell" || game.player != plr) return;
         if (plr.hand.filter(c => c.mana > 0).length <= 0) return;
         
         let randomCard;

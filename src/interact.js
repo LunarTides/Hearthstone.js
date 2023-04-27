@@ -1,8 +1,9 @@
 const colors = require("colors");
 const { exit } = require('process');
 
-const license_url = 'https://github.com/Keatpole/Hearthstone.js/blob/main/LICENSE';
+const license_url = 'https://github.com/SolarWindss/Hearthstone.js/blob/main/LICENSE';
 const copyright_year = "2023";
+const version = "1.2.0";
 
 let game;
 let curr;
@@ -23,13 +24,18 @@ class Interact {
         let attacker, target;
 
         if (curr.ai) {
-            let ai = curr.ai.chooseBattle();
+            let ai;
 
-            if (ai.includes(-1)) return -1;
-            if (ai.includes(null)) return null;
+            let alt_model = `legacy_attack_${game.config.AIAttackModel}`;
+
+            if (curr.ai[alt_model]) ai = curr.ai[alt_model]();
+            else ai = curr.ai.attack();
 
             attacker = ai[0];
             target = ai[1];
+
+            if (attacker === -1 || target === -1) return -1;
+            if (attacker === null || target === null) return null;
         } else {
             attacker = this.selectTarget("Which minion do you want to attack with?", false, "self");
             if (!attacker) return;
@@ -163,7 +169,7 @@ class Interact {
             console.log(cond_color("/eval [log] <Code> - Runs the code specified. If the word 'log' is before the code, instead console.log the code and wait for user input to continue."));
             console.log(cond_color("/debug             - Gives you infinite mana, health and armor"));
             console.log(cond_color("/exit              - Force exits the game. There will be no winner, and it will take you straight back to the runner."));
-            console.log(cond_color("/stats             - Gives you a list of the game stats that have happened in an alphabetical order"));
+            console.log(cond_color("/events            - Gives you a list of the events that have been broadcast in an alphabetical order"));
             console.log(cond_color("/ai                - Gives you a list of the actions the ai(s) have taken in the order they took it"));
             console.log(cond_color("---------------------------" + ((game.config.debug) ? "" : "-")));
             
@@ -208,7 +214,7 @@ class Interact {
         else if (q == "history") {
             console.log("\nWARNING: The history feature is not perfect. Things will be out of order. Sorry about that.".yellow);
             // History
-            let history = game.stats.history;
+            let history = game.events.history;
 
             const doVal = (val, plr, hide) => {
                 if (val instanceof game.Card) {
@@ -226,13 +232,11 @@ class Interact {
                 h.forEach(c => {
                     let [key, val, plr] = c;
 
-                    let bannedKeys = ["turnEnds", "turnStarts", "cardsDrawnThisTurn", "unspentMana", "damageTakenOnOwnTurn", "overloadGained", "heroAttackGained", "spellsThatDealtDamage", "cardsFrozen", "cardsCancelled"];
+                    let bannedKeys = ["EndTurn", "StartTurn", "UnspentMana", "GainOverload", "GainHeroAttack", "SpellDealsDamage", "FreezeCard", "CancelCard"];
                     if (bannedKeys.includes(key)) return;
 
-                    let hideValueKeys = ["cardsDrawn", "cardsAddedToHand", "cardsAddedToDeck"]; // Example: If a card gets drawn, the other player can't see what card it was
+                    let hideValueKeys = ["DrawCard", "AddCardToHand", "AddCardToDeck"]; // Example: If a card gets drawn, the other player can't see what card it was
                     let shouldHide = hideValueKeys.includes(key);
-
-                    //if (key == "cardsDrawn") plr = plr.getOpponent(); // cardsDrawn gets called before the game switches who's turn it is. cardsDrawn is also always the first not banned key that gets called.
 
                     if (!hasPrintedHeader) console.log(`\nTurn ${t + 1} - Player [${plr.name}]`); 
                     hasPrintedHeader = true;
@@ -336,19 +340,19 @@ class Interact {
 
             game.input("\nPress enter to continue...");
         }
-        else if (q == "/stats") {
+        else if (q == "/events") {
             if (!game.config.debug) return -1;
 
-            console.log("Stats:\n");
+            console.log("Events:\n");
 
             for (let i = 1; i <= 2; i++) {
                 const plr = game["player" + i];
                 
                 console.log(`Player ${i}'s Stats: {`);
 
-                Object.keys(game.stats).forEach(s => {
-                    if (!game.stats[s][plr.id]) return;
-                    game.stats[s][plr.id].forEach(t => {
+                Object.keys(game.events).forEach(s => {
+                    if (!game.events[s][plr.id]) return;
+                    game.events[s][plr.id].forEach(t => {
                         if (t instanceof Array && t[0] instanceof game.Card) {
                             let sb = `[${s}] ([`;
                             t.forEach(v => {
@@ -464,7 +468,7 @@ class Interact {
         if (location.activate("use") === -1) return -1;
         
         location.remStats(0, 1);
-        location.cooldown = location.backups.cooldown;
+        location.cooldown = location.backups.init.cooldown;
         return true;
     }
 
@@ -670,7 +674,7 @@ class Interact {
         this.printAll(curr);
         let values = _cards;
 
-        if (cards.length <= 0) cards = Object.values(game.functions.getCards()).filter(c => game.functions.validateClass(game.player, c));
+        if (cards.length <= 0) cards = game.functions.getCards().filter(c => game.functions.validateClass(game.player, c));
         if (cards.length <= 0 || !cards) return;
 
         if (_cards.length == 0) values = game.functions.chooseItemsFromList(cards, amount, false);
@@ -679,23 +683,15 @@ class Interact {
 
         if (game.player.ai) return game.player.ai.discover(values);
 
-        let p = `\n${prompt}\n[\n`;
+        console.log(`\n${prompt}:`);
 
         values.forEach((v, i) => {
             v = game.functions.getCardByName(v.name);
-            let stats = v.type == "Minion" ? ` [${v.getAttack()} / ${v.getHealth()}]`.brightGreen : "";
-            let desc = v.desc ? `(${v.desc}) ` : "";
 
-            // Check for a TypeError and ignore it
-            try {
-                p += `[${i + 1}] ` + `{${v.mana}} `.cyan + game.functions.colorByRarity(`${v.displayName || v.name}`, v.rarity) + `${stats} ${desc}` + `(${game.functions.getType(v)})`.yellow + `,\n`;
-            } catch (e) {}
+            console.log(this.getReadableCard(v, i + 1));
         });
 
-        p = p.slice(0, -2);
-        p += "\n] ";
-
-        let choice = game.input(p);
+        let choice = game.input();
 
         if (!values[parseInt(choice) - 1]) {
             return this.discover(prompt, cards, amount, add_to_hand, clone, values);
@@ -801,7 +797,7 @@ class Interact {
         }
 
         if (elusive === true) {
-            game.stats.update("spellsCastOnMinions", minion, game.player);
+            game.events.broadcast("CastSpellOnMinion", minion, game.player);
         }
 
         if (minion.keywords.includes("Stealth") && game.player != minion.plr) {
@@ -854,19 +850,27 @@ class Interact {
         cls();
     
         console.log(`|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||`)
-        console.log(`|||                  Hearthstone.js | Copyright (C) ${copyright_year} | Keatpole                   |||`)
-        console.log(`||| This program is licensed under the GNU-GPL license. To learn more: type 'license' |||`)
+        console.log(`|||                Hearthstone.js V${version} | Copyright (C) ${copyright_year} | SolarWinds            |||`)
+        console.log(`||| This program is licensed under the GPL-3.0 license. To learn more: type 'license' |||`)
         if (disappear)
         console.log(`|||                     This will disappear once you end your turn.                   |||`)
         console.log(`|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n`);
     }
     getReadableCard(card, i = -1) {
+        /**
+         * Returns a card in a user readble state. If you console.log the result of this, the user will get all the information they need from the card.
+         *
+         * @param {Card | Blueprint} card The card
+         * @param {number} i [default=-1] If this is set, this function will add `[i]` to the beginning of the card. This is useful if there are many different cards to choose from.
+         *
+         * @returns {str} The readable card
+         */
         let sb = "";
 
         const desc = card.desc.length > 0 ? ` (${card.desc}) ` : " ";
 
         let mana = `{${card.mana}} `;
-        switch (card.costType) {
+        switch (card.costType || "mana") {
             case "mana":
                 mana = mana.cyan;
                 break;
@@ -882,14 +886,14 @@ class Interact {
 
         if (i !== -1) sb += `[${i}] `;
         sb += mana;
-        sb += game.functions.colorByRarity(card.displayName, card.rarity);
+        sb += game.functions.colorByRarity(card.displayName || card.name, card.rarity);
         
         if (card.type === "Minion" || card.type === "Weapon") {
             sb += ` [${card.stats.join(" / ")}]`.brightGreen;
         }
 
         sb += desc;
-        sb += `(${card.type})`.yellow;
+        sb += `(${game.functions.getType(card)})`.yellow;
 
         return sb;
     }
@@ -1101,13 +1105,13 @@ class Interact {
                     sb += "Durability: ".brightGreen;
                     sb += `${m.getHealth()}`.brightGreen;
                     sb += " / ".brightGreen;
-                    sb += `${m.backups.stats[1]}`.brightGreen;
+                    sb += `${m.backups.init.stats[1]}`.brightGreen;
                     sb += ", ";
         
                     sb += "Cooldown: ".cyan;
                     sb += `${m.cooldown}`.cyan;
                     sb += " / ".cyan;
-                    sb += `${m.backups.cooldown}`.cyan;
+                    sb += `${m.backups.init.cooldown}`.cyan;
                     sb += "}";
 
                     sb += " [Location]".yellow;
@@ -1160,29 +1164,30 @@ class Interact {
         console.log("------------");
     }
     viewCard(card, help = true) {
-        let mana = `{${card.mana}}`.cyan;
-        let name = game.functions.colorByRarity(`${card.displayName || card.name}`, card.rarity);
-        let desc = card.desc ? `${card.desc}` : "no description".gray;
-        let rarity = game.functions.colorByRarity(card.rarity, card.rarity);
+        /**
+         * Shows information from the card, console.log's it and waits for the user to press enter.
+         *
+         * @param {Card | Blueprint} card The card
+         * @param {bool} help [default=true] If it should show a help message which displays what the different fields mean.
+         *
+         * @returns {null}
+         */
+        let _card = this.getReadableCard(card);
+
         let _class = card.class.gray;
 
-        let stats = "";
         let tribe = "";
         let spellClass = "";
         let locCooldown = "";
 
         let type = game.functions.getType(card);
 
-        if (["Minion", "Weapon", "Location"].includes(card.type)) {
-            stats = ` [${card.blueprint.stats.join(' / ')}]`.brightGreen;
-        }
-
         if (type == "Minion") tribe = " (" + card.tribe.gray + ")";
         else if (type == "Spell") spellClass = " (" + card.spellClass.cyan + ")";
         else if (type == "Location") locCooldown = " (" + card.blueprint.cooldown.toString().cyan + ")";
 
-        if (help) console.log("{mana} ".cyan + "Name ".bold + "(" + "[attack / health] ".brightGreen + "if it has) (description) ".white + "(type) ".yellow + "((rarity) or (tribe) or (spell class) or (cooldown)) [".white + "class".gray + "]");
-        console.log(`${mana} ${name}${stats} (${desc})` + ` (${type})`.yellow + ` (${rarity})` + tribe + spellClass + locCooldown + ` [${_class}]`);
+        if (help) console.log("{mana} ".cyan + "Name ".bold + "(" + "[attack / health] ".brightGreen + "if it has) (description) ".white + "(type) ".yellow + "((tribe) or (spell class) or (cooldown)) [".white + "class".gray + "]");
+        console.log(_card + tribe + spellClass + locCooldown + ` [${_class}]`);
 
         game.input("\nPress enter to continue...\n");
     }

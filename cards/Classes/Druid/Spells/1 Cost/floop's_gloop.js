@@ -11,11 +11,11 @@ module.exports = {
 
     cast(plr, game, self) {
         // Gain Mana
-        let remove = game.functions.addPassive("minionsKilled", true, () => {
+        let remove = game.functions.addEventListener("KillMinion", true, () => {
             plr.refreshMana(1, plr.maxMaxMana);
         }, -1);
 
-        game.functions.addPassive("turnEnds", (val) => {
+        game.functions.addEventListener("EndTurn", (val) => {
             return game.player == plr;
         }, () => {
             remove();

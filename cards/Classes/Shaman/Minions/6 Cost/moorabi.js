@@ -9,7 +9,7 @@ module.exports = {
     id: 315,
 
     passive(plr, game, self, key, val) {
-        if (key != "cardsFrozen") return;
+        if (key != "FreezeCard") return;
         if (val == self) return;
 
         let copy = new game.Card(val.name, plr);

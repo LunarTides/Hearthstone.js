@@ -20,7 +20,7 @@ module.exports = {
 
         plr.drawSpecific(spell);
 
-        game.functions.addPassive("turnEnds", () => {
+        game.functions.addEventListener("EndTurn", () => {
             return true;
         }, () => {
             //spell.mana = old_cost;

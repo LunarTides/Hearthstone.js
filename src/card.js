@@ -8,7 +8,7 @@ function setup(_game, _cards) {
 
 class Card {
     constructor(name, plr) {
-        this.blueprint = cards[name];
+        this.blueprint = cards.find(c => c.name == name);
         
         this.name = name;
         this.displayName = name;
@@ -66,8 +66,8 @@ class Card {
         this.enchantments = [];
 
         // Make a backup of "this" to be used when silencing this card
-        let backups = {};
-        Object.entries(this).forEach(i => backups[i[0]] = i[1]);
+        let backups = {"init": {}};
+        Object.entries(this).forEach(i => backups["init"][i[0]] = i[1]);
         this.backups = backups;
 
         this.plr = plr;
@@ -109,7 +109,7 @@ class Card {
          * 
          * @param {string} keyword The keyword to add
          * 
-         * @returns {boolean} Success
+         * @returns {bool} Success
          */
 
         if (this.keywords.includes(keyword)) return false;
@@ -130,28 +130,33 @@ class Card {
          * 
          * @param {string} keyword The keyword to remove
          * 
-         * @returns {undefined}
+         * @returns {bool} Success
          */
 
         this.keywords = this.keywords.filter(k => k != keyword);
+
+        return true;
     }
     freeze() {
+        /**
+         * Freeze the minion
+         *
+         * @returns {null}
+         */
         this.frozen_turn = game.turns;
         this.frozen = true;
 
-        game.stats.update("cardsFrozen", this, this.plr);
+        game.events.broadcast("FreezeCard", this, this.plr);
     }
     decAttack() {
         /**
          * Decrement attackTimes and if it is 0, set sleepy to true
          *
-         * @returns {boolean} If attacktimes is 0
+         * @returns {null}
          */
 
         this.attackTimes--;
         if (this.attackTimes <= 0) this.sleepy = true;
-
-        return this.sleepy;
     }
 
     // Change stats
@@ -210,21 +215,26 @@ class Card {
          * @param {number} amount The health to add
          * @param {boolean} restore Should reset health to maxHealth if it goes over maxHealth
          * 
-         * @returns {undefined}
+         * @returns {bool} Success
          */
 
         let before = this.getHealth();
 
         this.setStats(this.getAttack(), this.getHealth() + amount, !restore);
     
-        if (!restore) return this.resetMaxHealth(true);
+        if (!restore) {
+            this.resetMaxHealth(true);
+            return true;
+        }
 
         if (this.getHealth() > this.maxHealth) {
-            if (this.getHealth() > before) game.stats.update("restoredHealth", this.maxHealth, this.plr);
+            if (this.getHealth() > before) game.events.broadcast("HealthRestored", this.maxHealth, this.plr);
             this.stats[1] = this.maxHealth;
         } else if (this.getHealth() > before) {
-            game.stats.update("restoredHealth", this.getHealth(), this.plr);
+            game.events.broadcast("HealthRestored", this.getHealth(), this.plr);
         }
+
+        return true;
     }
     addAttack(amount) {
         /**
@@ -232,10 +242,12 @@ class Card {
          * 
          * @param {number} amount The attack to add
          * 
-         * @returns {undefined}
+         * @returns {bool} Success
          */
 
         this.setStats(this.getAttack() + amount, this.getHealth());
+
+        return true;
     }
     remHealth(amount) {
         /**
@@ -249,7 +261,7 @@ class Card {
         if (this.immune) return true;
 
         this.setStats(this.getAttack(), this.getHealth() - amount);
-        game.stats.update("minionsDamaged", [this, amount], this.plr);
+        game.events.broadcast("DamageMinion", [this, amount], this.plr);
 
         if (this.type == "Weapon" && this.getHealth() <= 0) {
             this.plr.destroyWeapon(true);
@@ -263,10 +275,12 @@ class Card {
          * 
          * @param {number} amount The attack to remove
          * 
-         * @returns {undefined}
+         * @returns {bool} Success
          */
 
         this.setStats(this.getAttack() - amount, this.getHealth());
+
+        return true;
     }
     resetMaxHealth(check = false) {
         /**
@@ -314,6 +328,33 @@ class Card {
         }
     }
 
+    createBackup() {
+        /**
+         * Create a backup of the card
+         *
+         * @returns {number} The key of the backup. You can use it by doing `card.backups[key]`
+         */
+        let key = Object.keys(this.backups).length;
+        this.backups[key] = {};
+        Object.entries(this).forEach(i => this.backups[key][i[0]] = i[1]);
+        
+        return key;
+    }
+    restoreBackup(backup) {
+        /**
+         * Restore a backup of the card
+         *
+         * @param {Object} backup The backup. It is recommended to supply a backup from `card.backups`.
+         *
+         * @returns {bool} Success
+         */
+        Object.keys(backup).forEach(att => {
+            this[att] = backup[att];
+        });
+
+        return true;
+    }
+
     // Doom buttons
     kill() {
         /**
@@ -339,7 +380,7 @@ class Card {
 
         Object.keys(this).forEach(att => {
             // Check if a backup exists for the attribute. If it does; restore it.
-            if (this.backups[att]) this[att] = this.backups[att];
+            if (this.backups["init"][att]) this[att] = this.backups["init"][att];
 
             // Check if the attribute if defined in the blueprint. If it is; restore it.
             else if (this.blueprint[att]) this[att] = this.blueprint[att];
@@ -392,7 +433,7 @@ class Card {
             if (r != -1 || name == "deathrattle") return;
 
             // If the return value is -1, meaning "refund", refund the card and stop the for loop
-            game.stats.update("cardsCancelled", [this, name], this.plr);
+            game.events.broadcast("CancelCard", [this, name], this.plr);
 
             if (["use", "heropower"].includes(name)) {
                 ret = -1;
@@ -421,31 +462,12 @@ class Card {
         this.activate("passive", "battlecry", this, game.turns);
         return this.activate("battlecry", ...args);
     }
-    passiveCheck(trigger, key, val = null, check_plr = null) {
-        /**
-         * TODO: Explain this??
-         * 
-         * @returns {boolean} Success
-         */
-
-        let ret;
-
-        if (Array.isArray(key)) ret = !!key.filter(v => v == trigger[0]).length;
-        else ret = (trigger[0] == key);
-
-        if (val) {
-            if (Array.isArray(val)) ret &&= !!val.filter(v => v == trigger[1]).length;
-            else ret &&= (trigger[1] == val);
-        }
-
-        if (check_plr) {
-            if (typeof trigger[1] == game.Player) ret &&= !!trigger[1].filter(v => v.plr && v.plr == check_plr).length;
-            else ret &&= (trigger[1].plr == check_plr);
-        }
-
-        return ret;
-    }
     clearCondition() {
+        /**
+         * Add ` (Condition cleared)` to the description of the card.
+         *
+         * @returns {null}
+         */
         this.desc += " (Condition cleared)".gray;
     }
     manathirst(m, t = "", f = "") {
@@ -469,6 +491,13 @@ class Card {
         return [true, t];
     }
     getEnchantmentInfo(e) {
+        /**
+         * Get information from an enchantment. Example: "mana = 1" returns {"key": "mana", "val": "1", "op": "="}
+         *
+         * @param {str} e The enchantment string
+         *
+         * @returns {Object<key, val, op>} The info
+         */
         let equalsRegex = /\w+ = \w+/;
         let otherRegex = /[-+*/^]\d+ \w+/;
 
@@ -490,6 +519,11 @@ class Card {
         return {"key": key, "val": val, "op": op};
     }
     applyEnchantments() {
+        /**
+         * Runs through the enchantments list and applies each enchantment in order.
+         *
+         * @returns {bool} Success
+         */
         // Apply baseline for int values.
         const whitelisted_vars = ["maxHealth", "mana"];
 
@@ -513,7 +547,7 @@ class Card {
             let [key, val] = ent;
 
             // Apply backup if it exists, otherwise keep it the same.
-            if (this.backups[key] || this.backups[key] === 0) this[key] = this.backups[key];
+            if (this.backups["init"][key] || this.backups["init"][key] === 0) this[key] = this.backups["init"][key];
         });
 
         this.enchantments.forEach(e => {
@@ -534,6 +568,14 @@ class Card {
         return true;
     }
     addEnchantment(e, card) {
+        /**
+         * Add an enchantment to the card. The enchantments look something like this: "mana = 1", "+1 mana", "-1 mana"
+         *
+         * @param {str} e The enchantment string
+         * @param {Card} card The creator of the enchantment. If another card gives this card an enchantment then this paramater needs to be the card that gave this card the enchantment. This will allow that card to remove the enchantment or look for the enchantment later.
+         *
+         * @returns {bool} Success
+         */
         // DO NOT PASS USER INPUT DIRECTLY INTO THIS FUNCTION. IT CAN ALLOW FOR EASY CODE INJECTION
         let info = this.getEnchantmentInfo(e);
 
@@ -541,11 +583,30 @@ class Card {
         else this.enchantments.push([e, card]);
 
         this.applyEnchantments();
+
+        return true;
     }
     enchantmentExists(e, card) {
+        /**
+         * Checks if an enchantment exists.
+         *
+         * @param {str} e The enchantment to look for.
+         * @param {Card} card The owner of the enchantment. Look at `addEnchantment` for more info. This needs to be correct to find the right enchantment
+         *
+         * @returns {bool} If the enchantment exists
+         */
         return this.enchantments.find(c => c[0] == e && c[1] == card);
     }
     removeEnchantment(e, card, update = true) {
+        /**
+         * Removes an enchantment
+         *
+         * @param {str} e The enchantment to remove
+         * @param {Card} card The owner of the enchantment. Look at `enchantmentExists` for more info.
+         * @param {bool} update [default=true] Keep this enabled unless you know what you're doing.
+         *
+         * @returns {bool} Success
+         */
         let enchantment = this.enchantments.find(c => c[0] == e && c[1] == card);
         let index = this.enchantments.indexOf(enchantment);
         if (index === -1) return false;
@@ -557,6 +618,7 @@ class Card {
             return true;
         }
 
+        // Update is enabled
         let info = this.getEnchantmentInfo(e);
         let new_enchantment = `+0 ${info.key}`;
 
@@ -564,6 +626,23 @@ class Card {
         this.removeEnchantment(new_enchantment, this, false);
 
         return true;
+    }
+
+    perfectCopy() {
+        /**
+         * Return a perfect copy of this card. This will perfectly clone the card. This happens when, for example, a card gets temporarily removed from the board using card.destroy, then put back on the board.
+         *
+         * @returns {Card} A perfect copy of this card.
+         */
+
+        return game.functions.cloneCard(this);
+    }
+    imperfectCopy() {
+        /**
+         * Return an imperfect copy of this card. This happens when, for example, a card gets shuffled into your deck in vanilla Hearthstone.
+         */
+
+        return new Card(this.name, this.plr);
     }
 }
 

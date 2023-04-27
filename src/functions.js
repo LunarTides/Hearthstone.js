@@ -35,6 +35,14 @@ class Functions {
         return newArray;
     }
     remove(list, element) {
+        /**
+         * Removes "element" from "list"
+         *
+         * @param {any[]} list The list to remove from
+         * @param {any} element The element to remove from the list
+         *
+         * @returns {null}
+         */
         list.splice(list.indexOf(element), 1);
     }
     randList(list, cpyCard = true) {
@@ -53,6 +61,15 @@ class Functions {
         return item;
     }
     chooseItemsFromList(list, amount, cpyCard = true) {
+        /**
+         * Returns "amount" random items from the list.
+         *
+         * @param {any[]} list
+         * @param {number} amount
+         * @param {bool} cpyCard If this is on and the element is a card, create an imperfect copy of that card.
+         *
+         * @returns {any[]} The items
+         */
         if (amount > list.length) amount = list.length;
 
         list = list.slice(); // Make a copy of the list
@@ -101,6 +118,24 @@ class Functions {
         return str.split(" ").map(k => this.capitalize(k)).join(" ");
     }
     createWall(sep) {
+        /**
+         * Creates a wall. If you add for example:
+         * 'Example - Example'
+         * 'Test - Hello World'
+         * 'This is the longest - Short'
+         * 'Tiny - This is even longer then that one!'
+         * to the wall and run finishWall, you will get:
+         * 'Example             - Example'
+         * 'Test                - Hello World'
+         * 'This is the longest - Short'
+         * 'Tiny                - This is even longer then that one!'
+         * ^^ These will be returned from finishWall in an array like this:
+         * ['Example             - Example', 'Test                - Hello World', etc...]
+         *
+         * @param {char} sep The seperator. In the exmaple above it is "-"
+         *
+         * @returns {str[], function} wall, finishWall -> {str[]}
+         */
         let wall = [];
 
         const finishWall = () => {
@@ -169,8 +204,8 @@ class Functions {
 
         let card;
 
-        Object.keys(game.cards).forEach(c => {
-            if (c.toLowerCase() == name.toLowerCase()) card = game.cards[c];
+        game.cards.forEach(c => {
+            if (c.name.toLowerCase() == name.toLowerCase()) card = c;
         });
 
         if (!card && refer) return this.getCardById(name, false);
@@ -187,7 +222,7 @@ class Functions {
          * @returns {Blueprint} The blueprint of the card
          */
 
-        let card = Object.values(game.cards).filter(c => c.id == id)[0];
+        let card = game.cards.filter(c => c.id == id)[0];
 
         if (!card && refer) return this.getCardByName(id.toString(), false);
 
@@ -198,23 +233,39 @@ class Functions {
          * Returns all cards
          *
          * @param {bool} uncollectible [default=true] Filter out all uncollectible cards
-         * @param {Blueprint{}} cards [default=All cards in the game] The cards to get
+         * @param {Blueprint[]} cards [default=All cards in the game] The cards to get
          *
-         * @returns {Blueprint{}} Cards
+         * @returns {Blueprint[]} Cards
          */
 
-        let _cards = {};
+        let _cards = [];
 
-        Object.entries(cards).forEach(c => {
-            if (!c[1].uncollectible && uncollectible) _cards[c[0]] = c[1];
+        cards.forEach(c => {
+            if (!c.uncollectible && uncollectible) _cards.push(c);
         });
 
         return _cards;
     }
     validateClass(plr, card) {
+        /**
+         * Returns if the "card"'s class is the same as the "plr"'s or 'Neutral'
+         *
+         * @param {Player} plr
+         * @param {Card} card
+         *
+         * @returns {bool}
+         */
         return [plr.heroClass, "Neutral"].includes(card.class);
     }
     matchTribe(card_tribe, tribe) {
+        /**
+         * Returns if the "card_tribe" is "tribe" or 'All'
+         *
+         * @param {str} card_tribe
+         * @param {str} tribe
+         *
+         * @returns {bool}
+         */
         if (/all/i.test(card_tribe)) return true; // If the card's tribe is "All".
 
         return card_tribe.includes(tribe);
@@ -286,7 +337,7 @@ class Functions {
     }
     parseTags(str) {
         /**
-         * Parses color tags in "str". Example: "&bBattlecry: &rChoose a minion. Silence then destroy it."
+         * Parses color tags in "str". Put the `~` character before the `&` to not parse it. Example: "&BBattlecry:&R Choose a minion. Silence then destroy it."
          *
          * @param {string} str The string to parse
          *
@@ -352,14 +403,18 @@ class Functions {
         // Loop through the characters in str
         str.split("").forEach((c, i) => {
             if (c != "&") {
-                if (i > 0 && str[i - 1] == "&") return; // Don't add the character if a & precedes it.
-
+                if (i > 0 && str[i - 1] == "&") { // Don't add the character if a & precedes it.
+                    if (i > 1 && str[i - 2] == "~") {} // But do add the character if the & has been cancelled
+                    else return;
+                }
+                if (c == "~" && i < str.length && str[i + 1] == "&") return; // Don't add the "~" character if it is used to cancel the "&" character
+                
                 strbuilder += appendTypes(c);
                 return;
             }
 
             // c == "&"
-            if (i > 0 && str[i - 1] == "\\") { // If there is a backslash before the &, add the & to the string. TODO: Make this actually work
+            if (i > 0 && str[i - 1] == "~") { // If there is a `~` before the &, add the & to the string.
                 strbuilder += appendTypes(c);
                 return;
             }
@@ -412,22 +467,26 @@ class Functions {
 
         callback(plr);
     }
-    getPassiveIndex(index, length) {
-        let sub = length - game.passives.length;
-        index = index - sub;
-
-        return index;
-    }
-    addPassive(key, checkCallback, callback, lifespan = 1) {
+    addEventListener(key, checkCallback, callback, lifespan = 1) {
+        /**
+         * Add an event listener.
+         *
+         * @param {str} key The event to listen for. If this is an empty string, it will listen for any event.
+         * @param {function | bool} checkCallback This will trigger when the event gets broadcast, but before the actual code in `callback`. If this returns false, the event listener will ignore the event. If you set this to `true`, it is the same as doing `() => {return true}`. This function gets the paramater: {any} val The value of the event
+         * @param {function} callback The code that will be ran if the event listener gets triggered and gets through `checkCallback`. If this returns true, the event listener will be destroyed.
+         * @param {number} lifespan How many times the event listener will trigger and call "callback" before self-destructing. Set this to -1 to make it last forever, or until it is manually destroyed using "callback".
+         *
+         * @returns {function} If you call this function, it will destroy the event listener.
+         */
         let times = 0;
 
-        let id = game.stats.gamePassives;
+        let id = game.events.eventListeners;
 
         const remove = () => {
-            delete game.passives[id];
+            delete game.eventListeners[id];
         }
 
-        game.passives[id] = (_, _key, _val) => {
+        game.eventListeners[id] = (_, _key, _val) => {
             // Im writing it like this to make it more readable
             if (_key == key || key == "") {} // Validate key. If key is empty, match any key.
             else return;
@@ -441,7 +500,7 @@ class Functions {
             if (times == lifespan || override) remove();
         }
 
-        game.stats.gamePassives++;
+        game.events.eventListeners++;
 
         return remove;
     }
@@ -459,7 +518,7 @@ class Functions {
 
         const dmg = this.accountForSpellDmg(damage);
 
-        game.stats.update("spellsThatDealtDamage", [target, dmg], game.player);
+        game.events.broadcast("SpellDealsDamage", [target, dmg], game.player);
         game.attack(dmg, target);
 
         return target.getHealth();
@@ -755,6 +814,13 @@ class Functions {
         return jade;
     }
     importConfig(path) {
+        /**
+         * Imports the config from the "path" specified.
+         *
+         * @param {str} path The path to import from.
+         *
+         * @returns {null}
+         */
         require("fs").readdirSync(path, { withFileTypes: true }).forEach(file => {
             let c = `${path}/${file.name}`;
 
@@ -784,7 +850,7 @@ class Functions {
             if (file.name.endsWith(".js")) {
                 let f = require(p);
                 
-                game.cards[f.name] = f;
+                game.cards.push(f);
             }
             else if (file.isDirectory()) this._importCards(p);
         });
@@ -798,7 +864,7 @@ class Functions {
          * @returns {undefined}
          */
 
-        game.cards = {};
+        game.cards = [];
 
         this._importCards(path);
 
