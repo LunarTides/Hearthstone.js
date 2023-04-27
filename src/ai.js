@@ -10,6 +10,7 @@ class AI {
         this.prevent = [];
 
         this.cards_played_this_turn = [];
+        this.used_locations_this_turn = [];
         this.focus = null;
 
         this.plr = plr;
@@ -74,6 +75,7 @@ class AI {
             });
 
             this.cards_played_this_turn = [];
+            this.used_locations_this_turn = [];
             this.prevent = [];
         }
 
@@ -104,7 +106,11 @@ class AI {
         let enoughMana = this.plr.mana >= this.plr.heroPowerCost;
         let canUse = this.plr.canUseHeroPower;
 
-        return enoughMana && canUse;
+        let canHeroPower = enoughMana && canUse;
+
+        this.prevent.push("hero power"); // The ai has already used their hero power that turn.
+
+        return canHeroPower;
     }
 
     _canUseLocation() {
@@ -115,7 +121,7 @@ class AI {
          */
         if (this.prevent.includes("use")) return false;
 
-        let valid_locations = game.board[this.plr.id].filter(m => m.type == "Location" && m.cooldown == 0);
+        let valid_locations = game.board[this.plr.id].filter(m => m.type == "Location" && m.cooldown == 0 && !this.used_locations_this_turn.includes(m));
 
         return valid_locations.length > 0;
     }
@@ -493,7 +499,9 @@ class AI {
          */
 
         if (flags.includes("allow_locations")) {
-            let locations = game.board[this.plr.id].filter(m => m.type == "Location" && m.cooldown == 0);
+            let locations = game.board[this.plr.id].filter(m => m.type == "Location" && m.cooldown == 0 && !this.used_locations_this_turn.includes(m));
+            this.used_locations_this_turn.push(locations[0]);
+
             return locations[0];
         }
 
@@ -593,6 +601,8 @@ class AI {
 
         this.history.push(["discover", [best_card.name, best_score]]);
 
+        best_card = new game.Card(best_card.name, this.plr);
+
         return best_card;
     }
     dredge(cards) {
@@ -617,7 +627,9 @@ class AI {
             best_score = score;
         });
 
-        this.history.push(["dredge", [best_card.name, best_score]]);
+        let name = best_card ? best_card.name : null
+
+        this.history.push(["dredge", [name, best_score]]);
 
         return best_card;
     }
