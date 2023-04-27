@@ -404,7 +404,10 @@ class Game {
         this.killMinions();
 
         while (card.keywords.includes("Tradeable")) {
-            let q = this.interact.yesNoQuestion(player, "Would you like to trade " + this.functions.colorByRarity(card.displayName, card.rarity) + " for a random card in your deck?");
+            let q;
+
+            if (player.ai) q = player.ai.trade(card);
+            else q = this.interact.yesNoQuestion(player, "Would you like to trade " + this.functions.colorByRarity(card.displayName, card.rarity) + " for a random card in your deck?");
 
             if (!q) break;
             
