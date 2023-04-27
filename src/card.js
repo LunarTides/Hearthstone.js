@@ -109,7 +109,7 @@ class Card {
          * 
          * @param {string} keyword The keyword to add
          * 
-         * @returns {boolean} Success
+         * @returns {bool} Success
          */
 
         if (this.keywords.includes(keyword)) return false;
@@ -130,10 +130,12 @@ class Card {
          * 
          * @param {string} keyword The keyword to remove
          * 
-         * @returns {undefined}
+         * @returns {bool} Success
          */
 
         this.keywords = this.keywords.filter(k => k != keyword);
+
+        return true;
     }
     freeze() {
         /**
@@ -150,13 +152,11 @@ class Card {
         /**
          * Decrement attackTimes and if it is 0, set sleepy to true
          *
-         * @returns {boolean} If attacktimes is 0
+         * @returns {null}
          */
 
         this.attackTimes--;
         if (this.attackTimes <= 0) this.sleepy = true;
-
-        return this.sleepy;
     }
 
     // Change stats
@@ -215,14 +215,17 @@ class Card {
          * @param {number} amount The health to add
          * @param {boolean} restore Should reset health to maxHealth if it goes over maxHealth
          * 
-         * @returns {undefined}
+         * @returns {bool} Success
          */
 
         let before = this.getHealth();
 
         this.setStats(this.getAttack(), this.getHealth() + amount, !restore);
     
-        if (!restore) return this.resetMaxHealth(true);
+        if (!restore) {
+            this.resetMaxHealth(true);
+            return true;
+        }
 
         if (this.getHealth() > this.maxHealth) {
             if (this.getHealth() > before) game.events.broadcast("HealthRestored", this.maxHealth, this.plr);
@@ -230,6 +233,8 @@ class Card {
         } else if (this.getHealth() > before) {
             game.events.broadcast("HealthRestored", this.getHealth(), this.plr);
         }
+
+        return true;
     }
     addAttack(amount) {
         /**
@@ -237,10 +242,12 @@ class Card {
          * 
          * @param {number} amount The attack to add
          * 
-         * @returns {undefined}
+         * @returns {bool} Success
          */
 
         this.setStats(this.getAttack() + amount, this.getHealth());
+
+        return true;
     }
     remHealth(amount) {
         /**
@@ -268,10 +275,12 @@ class Card {
          * 
          * @param {number} amount The attack to remove
          * 
-         * @returns {undefined}
+         * @returns {bool} Success
          */
 
         this.setStats(this.getAttack() - amount, this.getHealth());
+
+        return true;
     }
     resetMaxHealth(check = false) {
         /**
@@ -357,7 +366,6 @@ class Card {
         this.setStats(this.getAttack(), 0);
         game.killMinions();
     }
-    
     silence() {
         /**
          * Silences the minion
@@ -590,7 +598,7 @@ class Card {
          * @param {str} e The enchantment string
          * @param {Card} card The creator of the enchantment. If another card gives this card an enchantment then this paramater needs to be the card that gave this card the enchantment. This will allow that card to remove the enchantment or look for the enchantment later.
          *
-         * @returns {null}
+         * @returns {bool} Success
          */
         // DO NOT PASS USER INPUT DIRECTLY INTO THIS FUNCTION. IT CAN ALLOW FOR EASY CODE INJECTION
         let info = this.getEnchantmentInfo(e);
@@ -599,6 +607,8 @@ class Card {
         else this.enchantments.push([e, card]);
 
         this.applyEnchantments();
+
+        return true;
     }
     enchantmentExists(e, card) {
         /**
@@ -618,6 +628,8 @@ class Card {
          * @param {str} e The enchantment to remove
          * @param {Card} card The owner of the enchantment. Look at `enchantmentExists` for more info.
          * @param {bool} update [default=true] Keep this enabled unless you know what you're doing.
+         *
+         * @returns {bool} Success
          */
         let enchantment = this.enchantments.find(c => c[0] == e && c[1] == card);
         let index = this.enchantments.indexOf(enchantment);
