@@ -51,6 +51,16 @@ class EventManager {
 
             // Activate spells in the players hand
             plr.hand.forEach(c => {
+                // Check for condition
+                let cleared_text = " (Condition cleared!)".brightGreen;
+                let cleared_text_alt = "Condition cleared!".brightGreen;
+                c.desc = c.desc.replace(cleared_text, "");
+                c.desc = c.desc.replace(cleared_text_alt, "");
+                if (c.activate("condition")[0] === true) {
+                    if (c.desc) c.desc += cleared_text;
+                    else c.desc += cleared_text_alt;
+                }
+
                 c.activate("handpassive", key, val);
 
                 if (c.type != "Spell") return;
@@ -423,6 +433,13 @@ class Game {
         }
 
         if (player[card.costType] < card.mana) return "mana";
+
+        // Condition
+        if (card.activate("condition")[0] === false) {
+            let warn = this.interact.yesNoQuestion(player, "WARNING: This card's condition is not fulfilled. Are you sure you want to play this card?".yellow);
+
+            if (!warn) return "refund";
+        }
 
         player[card.costType] -= card.mana;
         //card.mana = card.backups.mana;
