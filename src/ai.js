@@ -699,18 +699,36 @@ class AI {
          *
          * @param {string} prompt The prompt asked
          *
-         * @returns {char} Y | N
+         * @returns {bool} `true` if "Yes", `false` if "No"
          */
 
         let score = this.analyzePositive(prompt);
         let ret;
 
-        if (score > 0) ret = 'Y';
-        else ret = 'N';
-
-        ret = 'N'; // TODO: Make this whole function better
+        if (score > 0) ret = true;
+        else ret = false;
 
         this.history.push(["yesNoQuestion", [prompt, ret]]);
+
+        return ret;
+    }
+    trade(card) {
+        /**
+         * Returns if the card should be traded
+         *
+         * @param {Card} card
+         *
+         * @returns {bool} If the card should be traded
+         */
+
+        if (this.plr.deck.length <= 1) return false; // If the ai doesn't have any cards to trade into, don't trade the card.
+        if (this.plr.mana < 1) return false; // If the ai can't afford to trade, don't trade the card
+
+        let score = this.analyzePositiveCard(card);
+
+        let ret = score <= game.config.AITradeThreshold;
+
+        this.history.push(["trade", [card.name, ret, score]]);
 
         return ret;
     }
