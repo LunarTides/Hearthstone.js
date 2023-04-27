@@ -10,7 +10,7 @@ module.exports = {
     id: 43,
 
     passive(plr, game, card, key, val) {
-        if (!card.passiveCheck([key, val], "minionsPlayed", null, plr)) return;
+        if (key != "minionsPlayed" || game.player != plr) return;
         
         val.activate("battlecry");
     }

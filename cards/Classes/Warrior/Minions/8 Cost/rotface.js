@@ -10,7 +10,7 @@ module.exports = {
     id: 121,
 
     passive(plr, game, self, key, val) {
-        if (!self.passiveCheck([key, val], "DamageMinion")) return;
+        if (key != "DamageMinion") return;
         if (val[0] != self || self.getHealth() <= 0) return;
 
         let cards = game.functions.getCards().filter(c => c.rarity == "Legendary" && game.functions.getType(c) == "Minion");

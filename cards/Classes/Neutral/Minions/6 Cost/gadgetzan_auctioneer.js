@@ -10,7 +10,7 @@ module.exports = {
     id: 53,
 
     passive(plr, game, card, key, val) {
-        if (!card.passiveCheck([key, val], "spellsCast", null, plr)) return;
+        if (key != "spellsCast" || game.player != plr) return;
         
         plr.drawCard();
     }

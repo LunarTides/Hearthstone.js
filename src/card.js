@@ -462,30 +462,6 @@ class Card {
         this.activate("passive", "battlecry", this, game.turns);
         return this.activate("battlecry", ...args);
     }
-    passiveCheck(trigger, key, val = null, check_plr = null) {
-        /**
-         * TODO: Explain this??
-         * 
-         * @returns {boolean} Success
-         */
-
-        let ret;
-
-        if (Array.isArray(key)) ret = !!key.filter(v => v == trigger[0]).length;
-        else ret = (trigger[0] == key);
-
-        if (val) {
-            if (Array.isArray(val)) ret &&= !!val.filter(v => v == trigger[1]).length;
-            else ret &&= (trigger[1] == val);
-        }
-
-        if (check_plr) {
-            if (typeof trigger[1] == game.Player) ret &&= !!trigger[1].filter(v => v.plr && v.plr == check_plr).length;
-            else ret &&= (trigger[1].plr == check_plr);
-        }
-
-        return ret;
-    }
     clearCondition() {
         /**
          * Add ` (Condition cleared)` to the description of the card.

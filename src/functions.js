@@ -337,7 +337,7 @@ class Functions {
     }
     parseTags(str) {
         /**
-         * Parses color tags in "str". Example: "&BBattlecry:&R Choose a minion. Silence then destroy it."
+         * Parses color tags in "str". Put the `~` character before the `&` to not parse it. Example: "&BBattlecry:&R Choose a minion. Silence then destroy it."
          *
          * @param {string} str The string to parse
          *
@@ -403,14 +403,18 @@ class Functions {
         // Loop through the characters in str
         str.split("").forEach((c, i) => {
             if (c != "&") {
-                if (i > 0 && str[i - 1] == "&") return; // Don't add the character if a & precedes it.
-
+                if (i > 0 && str[i - 1] == "&") { // Don't add the character if a & precedes it.
+                    if (i > 1 && str[i - 2] == "~") {} // But do add the character if the & has been cancelled
+                    else return;
+                }
+                if (c == "~" && i < str.length && str[i + 1] == "&") return; // Don't add the "~" character if it is used to cancel the "&" character
+                
                 strbuilder += appendTypes(c);
                 return;
             }
 
             // c == "&"
-            if (i > 0 && str[i - 1] == "\\") { // If there is a backslash before the &, add the & to the string. TODO: Make this actually work
+            if (i > 0 && str[i - 1] == "~") { // If there is a `~` before the &, add the & to the string.
                 strbuilder += appendTypes(c);
                 return;
             }

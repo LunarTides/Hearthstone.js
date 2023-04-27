@@ -113,8 +113,6 @@ class AI {
          *
          * @returns {bool}
          */
-        return false; // TODO: Using is currently broken.
-
         if (this.prevent.includes("use")) return false;
 
         let valid_locations = game.board[this.plr.id].filter(m => m.type == "Location" && m.cooldown == 0);
@@ -419,7 +417,6 @@ class AI {
          * @returns {Card[]} Attacker and target
          */
 
-        // Todo: Make this more advanced
         let worst_minion;
         let worst_score = 100000;
         
@@ -495,7 +492,7 @@ class AI {
          * @returns {Card | Player | number} Target
          */
 
-        if (flags["allow_locations"]) {
+        if (flags.includes("allow_locations")) {
             let locations = game.board[this.plr.id].filter(m => m.type == "Location" && m.cooldown == 0);
             return locations[0];
         }
@@ -560,20 +557,6 @@ class AI {
             best_score = s;
         });
 
-        if (flags["allow_locations"]) {
-            let b = game.board[sid].filter(m => m.type == "Location" && m.cooldown == 0);
-            if (b) {
-                do selected = game.functions.randList(b, false);
-                while((!selected) || (elusive && selected.elusive));
-
-                if (selected) {
-                    this.history.push(["selectTarget", selected.name]);
-
-                    return selected;
-                }
-            }
-        }
-        
         selected = best_minion;
 
         if (selected) {

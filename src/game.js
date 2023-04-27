@@ -289,8 +289,6 @@ class Game {
          * @returns {undefined}
          */
 
-        // Todo: Maybe add more stuff here
-
         this.interact.printName();
 
         this.input(`Player ${winner.name} wins!\n`);
