@@ -1,11 +1,14 @@
 const rl = require("readline-sync");
 const fs = require("fs");
 
+const version = "1.2.0";
+const copyrightYear = "2023";
+
 const cls = () => process.stdout.write("\033c");
 
 const watermark = () => {
     cls();
-    console.log("Hearthstone.js Runner (C) 2023\n");
+    console.log(`Hearthstone.js Runner V${version} (C) ${copyrightYear}\n`);
 }
 
 decks = [];

@@ -3,6 +3,7 @@ const { exit } = require('process');
 
 const license_url = 'https://github.com/SolarWindss/Hearthstone.js/blob/main/LICENSE';
 const copyright_year = "2023";
+const version = "1.2.0";
 
 let game;
 let curr;
@@ -849,8 +850,8 @@ class Interact {
         cls();
     
         console.log(`|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||`)
-        console.log(`|||                  Hearthstone.js | Copyright (C) ${copyright_year} | SolarWinds                 |||`)
-        console.log(`||| This program is licensed under the GNU-GPL license. To learn more: type 'license' |||`)
+        console.log(`|||                Hearthstone.js V${version} | Copyright (C) ${copyright_year} | SolarWinds            |||`)
+        console.log(`||| This program is licensed under the GPL-3.0 license. To learn more: type 'license' |||`)
         if (disappear)
         console.log(`|||                     This will disappear once you end your turn.                   |||`)
         console.log(`|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n`);
