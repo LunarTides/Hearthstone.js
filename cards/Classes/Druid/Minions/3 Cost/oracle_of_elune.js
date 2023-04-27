@@ -10,7 +10,7 @@ module.exports = {
     id: 140,
 
     passive(plr, game, self, key, val) {
-        if (!self.passiveCheck([key, val], ["SummonMinion", "PlayCard"])) return;
+        if (!["SummonMinion", "PlayCard"].includes(key)) return; // If key is not "SummonMinion" or "PlayCard", return
         if (key == "PlayCard" && val.type != "Minion") return;
 
         if (val.mana > 2) return;

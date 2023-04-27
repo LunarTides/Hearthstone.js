@@ -1185,8 +1185,8 @@ class Interact {
         else if (type == "Spell") spellClass = " (" + card.spellClass.cyan + ")";
         else if (type == "Location") locCooldown = " (" + card.blueprint.cooldown.toString().cyan + ")";
 
-        if (help) console.log("{mana} ".cyan + "Name ".bold + "(" + "[attack / health] ".brightGreen + "if it has) (description) ".white + "(type) ".yellow + "((rarity) or (tribe) or (spell class) or (cooldown)) [".white + "class".gray + "]");
-        console.log(`${_card} (${rarity})` + tribe + spellClass + locCooldown + ` [${_class}]`);
+        if (help) console.log("{mana} ".cyan + "Name ".bold + "(" + "[attack / health] ".brightGreen + "if it has) (description) ".white + "(type) ".yellow + "((tribe) or (spell class) or (cooldown)) [".white + "class".gray + "]");
+        console.log(_card + tribe + spellClass + locCooldown + ` [${_class}]`);
 
         game.input("\nPress enter to continue...\n");
     }
