@@ -31,3 +31,4 @@ Attack:                {Array<Card | Player, Card | Player>} The attacker, The t
 
 HeroPower:             {string}                              The heroclass of the heropower; (Warrior, Mage, Priest, ...)
 
+Eval:                  {string}                              The code that was run

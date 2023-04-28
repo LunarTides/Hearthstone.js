@@ -299,6 +299,8 @@ class Interact {
     
             try {
                 eval(code);
+
+                game.events.broadcast("Eval", code, game.player);
             } catch (err) {
                 console.log(`${err}`.red);
                 game.input();
