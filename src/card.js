@@ -427,6 +427,9 @@ class Card {
         this[name].forEach(i => {
             if (ret === -1) return;
 
+            // Check if the method is conditioned
+            if (this.conditioned && this.conditioned.includes(name) && this.activate("condition")[0] === false) return;
+
             let r = i(this.plr, game, this, ...args);
             ret.push(r);
 
