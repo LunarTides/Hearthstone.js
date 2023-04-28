@@ -8,10 +8,13 @@ module.exports = {
     rarity: "Legendary",
     set: "Mean Streets of Gadgetzan",
     id: 242,
+    conditioned: ["battlecry"],
 
     battlecry(plr, game, self) {
-        if (!game.functions.highlander(plr)) return;
-
         plr.heroPowerCost = 0;
+    },
+
+    condition(plr, game, self) {
+        return game.functions.highlander(plr);
     }
 }

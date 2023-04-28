@@ -51,6 +51,8 @@ class EventManager {
 
             // Activate spells in the players hand
             plr.hand.forEach(c => {
+                c.activate("handpassive", key, val);
+
                 // Check for condition
                 let cleared_text = " (Condition cleared!)".brightGreen;
                 let cleared_text_alt = "Condition cleared!".brightGreen;
@@ -60,8 +62,6 @@ class EventManager {
                     if (c.desc) c.desc += cleared_text;
                     else c.desc += cleared_text_alt;
                 }
-
-                c.activate("handpassive", key, val);
 
                 if (c.type != "Spell") return;
 

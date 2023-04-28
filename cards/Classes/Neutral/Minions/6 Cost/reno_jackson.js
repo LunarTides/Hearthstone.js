@@ -8,10 +8,13 @@ module.exports = {
     rarity: "Legendary",
     set: "League of Explorers",
     id: 157,
+    conditioned: ["battlecry"],
 
     battlecry(plr, game, self) {
-        if (!game.functions.highlander(plr)) return;
-
         plr.health = plr.maxHealth;
+    },
+
+    condition(plr, game, self) {
+        return game.functions.highlander(plr);
     }
 }

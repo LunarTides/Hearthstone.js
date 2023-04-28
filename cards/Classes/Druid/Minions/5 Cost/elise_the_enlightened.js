@@ -8,10 +8,9 @@ module.exports = {
     rarity: "Legendary",
     set: "Saviors of Uldum",
     id: 156,
+    conditioned: ["battlecry"],
 
     battlecry(plr, game, self) {
-        if (!game.functions.highlander(plr)) return;
-
         // Duplicate the players hand
         let _hand = [];
 
@@ -23,5 +22,9 @@ module.exports = {
         });
 
         plr.hand = [...plr.hand, ..._hand]; // Wtf
+    },
+
+    condition(plr, game, self) {
+        return game.functions.highlander(plr);
     }
 }
