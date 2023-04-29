@@ -3,6 +3,7 @@ module.exports = {
     stats: [4, 2],
     desc: "Whenever your hero attacks, restore 2 Health to it.",
     mana: 4,
+    type: "Weapon",
     class: "Paladin",
     rarity: "Free",
     set: "Legacy",

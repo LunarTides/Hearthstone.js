@@ -3,6 +3,7 @@ module.exports = {
     stats: [3, 4],
     desc: "Whenever you shuffle a card into a deck, shuffle in an extra copy.",
     mana: 3,
+    type: "Minion",
     tribe: "Beast",
     class: "Neutral",
     rarity: "Epic",

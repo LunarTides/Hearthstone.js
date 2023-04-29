@@ -2,6 +2,7 @@ module.exports = {
     name: "Shadowreaper Anduin",
     desc: "&BBattlecry:&R Destroy all minions with 5 or more Attack.",
     mana: 8,
+    type: "Hero",
     class: "Priest",
     rarity: "Legendary",
     set: "Knights of the Frozen Throne",

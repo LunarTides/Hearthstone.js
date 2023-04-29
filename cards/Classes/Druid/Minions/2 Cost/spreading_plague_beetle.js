@@ -4,6 +4,7 @@ module.exports = {
     stats: [1, 5],
     desc: "Taunt",
     mana: 2,
+    type: "Minion",
     tribe: "Beast",
     class: "Druid",
     rarity: "Free",

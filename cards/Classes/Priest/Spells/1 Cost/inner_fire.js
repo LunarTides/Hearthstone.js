@@ -2,6 +2,7 @@ module.exports = {
     name: "Inner Fire",
     desc: "Change a minion's Attack to be equal to its Health.",
     mana: 1,
+    type: "Spell",
     class: "Priest",
     rarity: "Common",
     set: "Legacy",

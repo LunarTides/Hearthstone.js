@@ -3,6 +3,7 @@ module.exports = {
     displayName: "Malfurion Stormrage",
     desc: "Druid starting hero",
     mana: 0,
+    type: "Hero",
     class: "Druid",
     rarity: "Free",
     set: "Core",

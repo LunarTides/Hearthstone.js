@@ -3,6 +3,7 @@ module.exports = {
     stats: [1, 3],
     desc: "Whenever you target a minion with a spell, it also targets adjacent ones.",
     mana: 3,
+    type: "Minion",
     tribe: "None",
     class: "Shaman",
     rarity: "Legendary",

@@ -3,6 +3,7 @@ module.exports = {
     stats: [3, 4],
     desc: "Your deck size is 40. Your starting Health is 35.",
     mana: 3,
+    type: "Minion",
     tribe: "None",
     class: "Neutral",
     rarity: "Legendary",

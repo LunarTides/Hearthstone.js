@@ -2,6 +2,7 @@ module.exports = {
     name: "Drain Soul",
     desc: "&BLifesteal.&R Deal 3 damage to a minion.",
     mana: 2,
+    type: "Spell",
     class: "Warlock",
     rarity: "Common",
     set: "Knights of the Frozen Throne",

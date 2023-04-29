@@ -3,6 +3,7 @@ module.exports = {
     stats: [1, 3],
     desc: "Battlecry: Give 4 Armor to each hero.",
     mana: 1,
+    type: "Minion",
     tribe: "None",
     class: "Neutral",
     rarity: "Rare",

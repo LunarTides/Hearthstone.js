@@ -3,6 +3,7 @@ module.exports = {
     stats: [1, 3],
     desc: "Whenever this minion takes damage, draw a card.",
     mana: 3,
+    type: "Minion",
     tribe: "None",
     class: "Neutral",
     rarity: "Common",

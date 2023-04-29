@@ -3,6 +3,7 @@ module.exports = {
     displayName: "Valeera Sanguinar",
     desc: "Rogue starting hero",
     mana: 0,
+    type: "Hero",
     class: "Rogue",
     rarity: "Free",
     set: "Core",

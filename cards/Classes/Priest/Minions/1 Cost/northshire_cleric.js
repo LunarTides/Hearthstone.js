@@ -3,6 +3,7 @@ module.exports = {
     stats: [1, 3],
     desc: "Whenever a minion is healed, draw a card.",
     mana: 1,
+    type: "Minion",
     tribe: "None",
     class: "Priest",
     rarity: "Common",

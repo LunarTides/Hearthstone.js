@@ -2,6 +2,7 @@ module.exports = {
     name: "Gather Your Party",
     desc: "Recruit a minion.",
     mana: 6,
+    type: "Spell",
     class: "Warrior",
     rarity: "Rare",
     set: "Kobolds & Catacombs",

@@ -2,6 +2,7 @@ module.exports = {
     name: "Death Strike",
     desc: "Lifesteal. Deal 6 damage to a minion.",
     mana: 4,
+    type: "Spell",
     class: "Death Knight",
     rarity: "Common",
     set: "Core",

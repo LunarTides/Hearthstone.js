@@ -3,6 +3,7 @@ module.exports = {
     stats: [5, 5],
     desc: "Battlecry: If your deck has no duplicates, duplicate your hand.",
     mana: 5,
+    type: "Minion",
     tribe: "None",
     class: "Druid",
     rarity: "Legendary",

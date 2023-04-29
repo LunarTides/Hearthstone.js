@@ -3,6 +3,7 @@ module.exports = {
     stats: [1, 1],
     desc: "&BBattlecry: &RAdd a random card from another class to your hand.",
     mana: 1,
+    type: "Minion",
     tribe: "Pirate",
     class: "Rogue",
     rarity: "Common",

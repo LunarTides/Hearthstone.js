@@ -10,7 +10,7 @@ module.exports = {
 
     cast(plr, game, self) {
         // Discover a spell
-        let list = game.functions.getCards().filter(c => game.functions.getType(c) == "Spell" && [plr.heroClass, "Neutral"].includes(c.class));
+        let list = game.functions.getCards().filter(c => c.type == "Spell" && [plr.heroClass, "Neutral"].includes(c.class));
         if (list.length == 0) return;
         game.interact.discover("Discover a spell.", list);
 

@@ -4,6 +4,7 @@ module.exports = {
     stats: [6, 6],
     desc: "&BDeathrattle:&R Shuffle the other 3 Horsemen into your deck.",
     mana: 6,
+    type: "Minion",
     tribe: "Undead",
     class: "Neutral",
     rarity: "Legendary",

@@ -15,7 +15,7 @@ module.exports = {
         let new_hand = [];
         let new_deck = [];
 
-        let possible_cards = game.functions.getCards().filter(c => c.rarity == "Legendary" && game.functions.getType(c) == "Minion");
+        let possible_cards = game.functions.getCards().filter(c => c.rarity == "Legendary" && c.type == "Minion");
 
         plr.hand.forEach(c => {
             let card = game.functions.randList(possible_cards);

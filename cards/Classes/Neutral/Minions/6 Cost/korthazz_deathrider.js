@@ -4,6 +4,7 @@ module.exports = {
     stats: [6, 6],
     desc: "&BRush. Deathrattle:&R If you had all four Horsemen die this game, destroy the enemy hero.",
     mana: 6,
+    type: "Minion",
     tribe: "Undead",
     class: "Neutral",
     rarity: "Free",

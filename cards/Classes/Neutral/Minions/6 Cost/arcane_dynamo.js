@@ -11,7 +11,7 @@ module.exports = {
 
     battlecry(plr, game, self) {
         let list = game.functions.getCards();
-        list = list.filter(c => game.functions.getType(c) == "Spell" && c.mana >= 5 && [plr.heroClass, "Neutral"].includes(c.class));
+        list = list.filter(c => c.type == "Spell" && c.mana >= 5 && [plr.heroClass, "Neutral"].includes(c.class));
         if (list.length <= 0) return;
 
         game.interact.discover("Discover a spell that costs (5) or more", list);

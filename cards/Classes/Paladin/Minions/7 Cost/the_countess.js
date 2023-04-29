@@ -3,6 +3,7 @@ module.exports = {
     stats: [7, 7],
     desc: "&BBattlecry: &RIf your deck has no Neutral cards, add 3 &BLegendary&R Invitations to your hand.",
     mana: 7,
+    type: "Minion",
     tribe: "None",
     class: "Paladin",
     rarity: "Legendary",

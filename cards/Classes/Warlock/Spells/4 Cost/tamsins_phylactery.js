@@ -3,6 +3,7 @@ module.exports = {
     displayName: "Tamsin's Phylactery",
     desc: "&BDiscover&R a friendly &BDeathrattle&R minion that died this game. Give your minions its &BDeathrattle&R.",
     mana: 4,
+    type: "Spell",
     class: "Warlock",
     rarity: "Legendary",
     set: "Fractured in Alterac Valley",

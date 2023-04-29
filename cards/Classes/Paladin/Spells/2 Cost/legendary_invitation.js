@@ -9,7 +9,7 @@ module.exports = {
 
     cast(plr, game, self) {
         let list = game.functions.getCards();
-        list = list.filter(c => game.functions.getType(c) == "Minion" && c.rarity == "Legendary" && c.class != plr.heroClass);
+        list = list.filter(c => c.type == "Minion" && c.rarity == "Legendary" && c.class != plr.heroClass);
         if (list.length <= 0) return;
 
         let card = game.interact.discover("Discover a Legendary minion from another class.", list);

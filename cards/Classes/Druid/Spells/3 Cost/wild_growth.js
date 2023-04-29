@@ -2,6 +2,7 @@ module.exports = {
     name: "Wild Growth",
     desc: "Gain an empty Mana Crystal.",
     mana: 3,
+    type: "Spell",
     class: "Druid",
     rarity: "Common",
     set: "Core",

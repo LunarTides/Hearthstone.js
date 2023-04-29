@@ -2,6 +2,7 @@ module.exports = {
     name: "Shield Shatter",
     desc: "Deal 5 damage to all minions. Costs (1) less for each Armor you have.",
     mana: 10,
+    type: "Spell",
     class: "Warrior",
     rarity: "Rare",
     set: "Fractured in Alterac Valley",

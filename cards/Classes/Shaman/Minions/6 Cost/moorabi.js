@@ -3,6 +3,7 @@ module.exports = {
     stats: [4, 4],
     desc: "Whenever another minion is &BFrozen&R, add a copy of it to your hand.",
     mana: 6,
+    type: "Minion",
     tribe: "None",
     class: "Shaman",
     rarity: "Legendary",

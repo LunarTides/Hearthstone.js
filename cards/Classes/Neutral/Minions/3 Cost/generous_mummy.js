@@ -3,6 +3,7 @@ module.exports = {
     stats: [5, 4],
     desc: "Reborn. Your opponent's cards cost (1) less.",
     mana: 3,
+    type: "Minion",
     tribe: "None",
     class: "Neutral",
     rarity: "Rare",

@@ -3,6 +3,7 @@ module.exports = {
     stats: [5, 5],
     desc: "At the end of your turn, reduce the Cost of cards in your hand by (1).",
     mana: 6,
+    type: "Minion",
     tribe: "None",
     class: "Neutral",
     rarity: "Legendary",

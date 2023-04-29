@@ -2,6 +2,7 @@ module.exports = {
     name: "Embalming Ritual",
     desc: "Give a minion Reborn.",
     mana: 1,
+    type: "Spell",
     class: "Priest",
     rarity: "Common",
     set: "Saviors of Uldum",

@@ -3,6 +3,7 @@ module.exports = {
     stats: [3, 3],
     desc: "&BBattlecry:&R Repeat the last &BBattlecry&R you played.",
     mana: 3,
+    type: "Minion",
     tribe: "Beast",
     class: "Shaman",
     rarity: "Common",

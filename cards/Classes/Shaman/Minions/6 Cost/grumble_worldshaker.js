@@ -4,6 +4,7 @@ module.exports = {
     stats: [7, 7],
     desc: "&BBattlecry:&R Return your other minions to your hand. They cost (1).",
     mana: 6,
+    type: "Minion",
     tribe: "Elemental",
     class: "Shaman",
     rarity: "Legendary",

@@ -3,6 +3,7 @@ module.exports = {
     stats: [2, 3],
     desc: "&BBattlecry:&R Choose a friendly minion. Summon a 1/1 copy of it.",
     mana: 3,
+    type: "Minion",
     tribe: "None",
     class: "Priest",
     rarity: "Rare",

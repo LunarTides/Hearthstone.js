@@ -2,6 +2,7 @@ module.exports = {
     name: "Explosive Trap",
     desc: "Secret: When your hero is attacked, deal 2 damage to all enemies.",
     mana: 2,
+    type: "Spell",
     class: "Hunter",
     rarity: "Common",
     set: "Core",

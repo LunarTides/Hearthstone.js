@@ -3,6 +3,7 @@ module.exports = {
     stats: [5, 5],
     desc: "&Battlecry: Freeze&R all other minions.",
     mana: 6,
+    type: "Minion",
     tribe: "Elemental",
     class: "Shaman",
     rarity: "Common",

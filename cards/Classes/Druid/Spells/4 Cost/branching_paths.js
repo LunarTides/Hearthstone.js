@@ -2,6 +2,7 @@ module.exports = {
     name: "Branching Paths",
     desc: "Choose Twice - Draw a card; Give your minions +1 Attack; Gain 6 Armor.",
     mana: 4,
+    type: "Spell",
     class: "Druid",
     rarity: "Epic",
     set: "Kobolds & Catacombs",

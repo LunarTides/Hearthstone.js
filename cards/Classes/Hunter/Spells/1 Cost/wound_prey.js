@@ -2,6 +2,7 @@ module.exports = {
     name: "Wound Prey",
     desc: "Deal 1 damage. Summon a 1/1 Hyena with Rush.",
     mana: 1,
+    type: "Spell",
     class: "Hunter",
     rarity: "Common",
     set: "Forged in the Barrens",

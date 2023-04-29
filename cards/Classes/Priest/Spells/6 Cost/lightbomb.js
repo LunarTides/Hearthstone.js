@@ -2,6 +2,7 @@ module.exports = {
     name: "Lightbomb",
     desc: "Deal damage to each minion equal to its Attack.",
     mana: 6,
+    type: "Spell",
     class: "Priest",
     rarity: "Epic",
     set: "Goblins vs Gnomes",

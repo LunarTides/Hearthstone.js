@@ -2,6 +2,7 @@ module.exports = {
     name: "Crystal Power",
     desc: "Choose One - Deal 2 damage to a minion; or Restore 5 Health.",
     mana: 1,
+    type: "Spell",
     class: "Druid",
     rarity: "Common",
     set: "Rise of Shadows",

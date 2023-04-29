@@ -2,6 +2,7 @@ module.exports = {
     name: "Dreadlich Tamsin",
     desc: "&BBattlecry:&R Deal 3 damage to all minions. Shuffle 3 Rifts into your deck. Draw 3 cards.",
     mana: 6,
+    type: "Hero",
     class: "Warlock",
     rarity: "Legendary",
     set: "Fractured in Alterac Valley",

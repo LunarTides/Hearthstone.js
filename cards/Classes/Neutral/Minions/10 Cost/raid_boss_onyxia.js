@@ -3,6 +3,7 @@ module.exports = {
     stats: [8, 8],
     desc: "Rush. Immune while you control a Whelp. Battlecry: Summon six 2/1 Whelps with Rush.",
     mana: 10,
+    type: "Minion",
     tribe: "Dragon",
     class: "Neutral",
     rarity: "Legendary",

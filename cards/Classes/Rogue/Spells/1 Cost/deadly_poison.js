@@ -2,6 +2,7 @@ module.exports = {
     name: "Deadly Poison",
     desc: "Give your weapon +2 Attack.",
     mana: 1,
+    type: "Spell",
     class: "Rogue",
     rarity: "Free",
     set: "Legacy",

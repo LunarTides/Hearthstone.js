@@ -3,6 +3,7 @@ module.exports = {
     displayName: "Rexxar",
     desc: "Hunter starting hero",
     mana: 0,
+    type: "Hero",
     class: "Hunter",
     rarity: "Free",
     set: "Core",

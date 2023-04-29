@@ -2,6 +2,7 @@ module.exports = {
     name: "Asphyxiate",
     desc: "Destroy the highest Attack enemy minion.",
     mana: 3,
+    type: "Spell",
     class: "Death Knight",
     rarity: "Common",
     set: "Path of Arthas",

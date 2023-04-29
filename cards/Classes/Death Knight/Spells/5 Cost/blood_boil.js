@@ -2,6 +2,7 @@ module.exports = {
     name: "Blood Boil",
     desc: "Lifesteal. Infect all enemy minions. At the end of your turns, they take 2 damage.",
     mana: 5,
+    type: "Spell",
     class: "Death Knight",
     rarity: "Epic",
     set: "Path of Arthas",

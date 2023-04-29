@@ -2,6 +2,7 @@ module.exports = {
     name: "Wave of Apathy",
     desc: "Set the Attack of all enemy minions to 1 until your next turn.",
     mana: 1,
+    type: "Spell",
     class: "Paladin / Priest",
     rarity: "Common",
     set: "Scholomance Academy",

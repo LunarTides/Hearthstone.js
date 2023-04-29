@@ -4,6 +4,7 @@ module.exports = {
     stats: [15, 3],
     desc: "After your hero attacks, destroy your opponent's Mana Crystals.",
     mana: 10,
+    type: "Weapon",
     class: "Neutral",
     rarity: "Free",
     set: "United in Stormwind",

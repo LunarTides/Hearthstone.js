@@ -2,6 +2,7 @@ module.exports = {
     name: "Vampiric Blood",
     desc: "Give your hero +5 Health. Spend 3 Corpses to gain 5 more and draw a card.",
     mana: 2,
+    type: "Spell",
     class: "Death Knight",
     rarity: "Rare",
     set: "March of the Lich King",

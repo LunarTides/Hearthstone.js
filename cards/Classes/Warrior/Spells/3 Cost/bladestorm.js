@@ -2,6 +2,7 @@ module.exports = {
     name: "Bladestorm",
     desc: "Deal 1 damage to all minions. Repeat until one dies.",
     mana: 3,
+    type: "Spell",
     class: "Warrior",
     rarity: "Epic",
     set: "Ashes of Outland",

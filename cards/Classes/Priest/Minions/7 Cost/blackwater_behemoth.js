@@ -3,6 +3,7 @@ module.exports = {
     stats: [8, 10],
     desc: "&BColossal +1. Lifesteal.&R",
     mana: 7,
+    type: "Minion",
     tribe: "Beast",
     class: "Priest",
     rarity: "Legendary",

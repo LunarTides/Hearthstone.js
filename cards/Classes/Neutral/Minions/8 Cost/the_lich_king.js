@@ -3,6 +3,7 @@ module.exports = {
     stats: [8, 8],
     desc: "Taunt. At the end of your turn, add a random Lich King card to your hand.",
     mana: 8,
+    type: "Minion",
     tribe: "Undead",
     class: "Neutral",
     rarity: "Legendary",

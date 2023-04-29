@@ -2,6 +2,7 @@ module.exports = {
     name: "Secret Passage",
     desc: "Replace your hand with 4 cards from your deck. Swap back next turn.",
     mana: 1,
+    type: "Spell",
     class: "Rogue",
     rarity: "Epic",
     set: "Scholomance Academy",

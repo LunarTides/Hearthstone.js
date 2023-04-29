@@ -3,6 +3,7 @@ module.exports = {
     stats: [5, 5],
     desc: "&BTaunt.&R Costs (1) less for each Paladin card you've played this game.",
     mana: 9,
+    type: "Minion",
     tribe: "Elemental / Beast",
     class: "Paladin",
     rarity: "Common",

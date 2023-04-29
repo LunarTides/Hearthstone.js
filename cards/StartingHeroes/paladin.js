@@ -3,6 +3,7 @@ module.exports = {
     displayName: "Uther Lightbringer",
     desc: "Paladin starting hero",
     mana: 0,
+    type: "Hero",
     class: "Paladin",
     rarity: "Free",
     set: "Core",

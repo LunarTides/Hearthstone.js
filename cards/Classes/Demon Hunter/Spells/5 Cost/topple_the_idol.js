@@ -2,6 +2,7 @@ module.exports = {
     name: "Topple the Idol",
     desc: "Dredge. Deal damage to equal to its Cost to all minions.",
     mana: 5,
+    type: "Spell",
     class: "Demon Hunter",
     rarity: "Rare",
     set: "Throne of the Tides",

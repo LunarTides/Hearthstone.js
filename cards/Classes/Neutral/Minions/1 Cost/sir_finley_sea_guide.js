@@ -4,6 +4,7 @@ module.exports = {
     stats: [1, 3],
     desc: "&BBattlecry:&R Swap your hand with the bottom of your deck.",
     mana: 1,
+    type: "Minion",
     tribe: "Murloc",
     class: "Neutral",
     rarity: "Legendary",

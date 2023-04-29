@@ -3,6 +3,7 @@ module.exports = {
     displayName: "Anti-Magic Shell",
     desc: "Give your minions +2/+2 and \"Can't be targeted by spells or Hero Powers.\"",
     mana: 4,
+    type: "Spell",
     class: "Death Knight",
     rarity: "Free",
     set: "Knights of the Frozen Throne",

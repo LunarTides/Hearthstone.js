@@ -2,6 +2,7 @@ module.exports = {
     name: "Lightning Bloom",
     desc: "Refresh 2 Mana Crystals. Overload: (2)",
     mana: 0,
+    type: "Spell",
     class: "Druid & Shaman",
     rarity: "Common",
     set: "Scholomance Academy",

@@ -3,6 +3,7 @@ module.exports = {
     stats: [1, 1],
     desc: "Battlecry: Deal 2 damage.",
     mana: 1,
+    type: "Minion",
     tribe: "None",
     class: "Neutral",
     rarity: "Free",

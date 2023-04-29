@@ -3,6 +3,7 @@ module.exports = {
     stats: [5, 6],
     desc: "Taunt, Lifesteal. At the end of your turn, attack the lowest Health enemy.",
     mana: 6,
+    type: "Minion",
     tribe: "Undead",
     class: "Death Knight",
     rarity: "Common",

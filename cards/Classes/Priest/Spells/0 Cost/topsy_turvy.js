@@ -2,6 +2,7 @@ module.exports = {
     name: "Topsy Turvy",
     desc: "Swap a minion's Attack and Health.",
     mana: 0,
+    type: "Spell",
     class: "Priest",
     rarity: "Common",
     set: "The Boomsday Project",

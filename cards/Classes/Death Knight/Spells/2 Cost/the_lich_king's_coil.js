@@ -3,6 +3,7 @@ module.exports = {
     displayName: "Death Coil",
     desc: "Deal 5 damage to an enemy, or restore 5 Health to a friendly character.",
     mana: 2,
+    type: "Spell",
     class: "Death Knight",
     rarity: "Free",
     set: "Knights of the Frozen Throne",

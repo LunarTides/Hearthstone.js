@@ -3,6 +3,7 @@ module.exports = {
     stats: [7, 4],
     desc: "Deathrattle: If Feugen also died this game, summon Thaddius.",
     mana: 5,
+    type: "Minion",
     tribe: "Undead",
     class: "Neutral",
     rarity: "Legendary",

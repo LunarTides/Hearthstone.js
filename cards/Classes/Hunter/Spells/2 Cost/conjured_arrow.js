@@ -2,6 +2,7 @@ module.exports = {
     name: "Conjured Arrow",
     desc: "Deal 2 damage to a minion. Manathirst (6): Draw that many cards.",
     mana: 2,
+    type: "Spell",
     class: "Hunter",
     rarity: "Rare",
     set: "March of the Lich King",

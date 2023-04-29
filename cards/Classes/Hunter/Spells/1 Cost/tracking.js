@@ -2,6 +2,7 @@ module.exports = {
     name: "Tracking",
     desc: "Discover a card from your deck.",
     mana: 1,
+    type: "Spell",
     class: "Hunter",
     rarity: "Free",
     set: "Legacy",

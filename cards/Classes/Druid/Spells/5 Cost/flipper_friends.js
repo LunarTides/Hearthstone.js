@@ -2,6 +2,7 @@ module.exports = {
     name: "Flipper Friends",
     desc: "Choose One - Summon a 6/6 Orca with Taunt; or six 1/1 Otters with Rush.",
     mana: 5,
+    type: "Spell",
     class: "Druid",
     rarity: "Common",
     set: "Voyage to the Sunken City",

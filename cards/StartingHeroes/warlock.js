@@ -3,6 +3,7 @@ module.exports = {
     displayName: "Gul'dan",
     desc: "Warlock starting hero",
     mana: 0,
+    type: "Hero",
     class: "Warlock",
     rarity: "Free",
     set: "Core",

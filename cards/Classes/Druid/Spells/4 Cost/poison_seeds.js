@@ -2,6 +2,7 @@ module.exports = {
     name: "Poison Seeds",
     desc: "Destroy all minions and summon 2/2 Treants to replace them.",
     mana: 4,
+    type: "Spell",
     class: "Druid",
     rarity: "Common",
     set: "Naxxramas",

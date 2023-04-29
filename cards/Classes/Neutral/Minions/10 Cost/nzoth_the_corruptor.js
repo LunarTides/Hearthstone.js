@@ -4,6 +4,7 @@ module.exports = {
     stats: [5, 7],
     desc: "Battlecry: Summon your Deathrattle minions that died this game.",
     mana: 10,
+    type: "Minion",
     tribe: "None",
     class: "Neutral",
     rarity: "Legendary",

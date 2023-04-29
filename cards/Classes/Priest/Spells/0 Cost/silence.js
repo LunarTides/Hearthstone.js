@@ -2,6 +2,7 @@ module.exports = {
     name: "Silence",
     desc: "Silence a minion.",
     mana: 0,
+    type: "Spell",
     class: "Priest",
     rarity: "Common",
     set: "Legacy",

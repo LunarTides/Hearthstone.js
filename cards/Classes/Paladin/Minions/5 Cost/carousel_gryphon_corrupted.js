@@ -4,6 +4,7 @@ module.exports = {
     stats: [8, 8],
     desc: "&BCorrupted. Divine Shield, Taunt&R",
     mana: 5,
+    type: "Minion",
     tribe: "Mech / Beast",
     class: "Paladin",
     rarity: "Common",

@@ -3,6 +3,7 @@ module.exports = {
     stats: [6, 2],
     desc: "Deathrattle: Summon a minion from your deck.",
     mana: 6,
+    type: "Minion",
     tribe: "None",
     class: "Warrior",
     rarity: "Rare",

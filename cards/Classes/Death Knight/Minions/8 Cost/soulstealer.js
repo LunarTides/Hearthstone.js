@@ -3,6 +3,7 @@ module.exports = {
     stats: [5, 5],
     desc: "Battlecry: Destroy all other minions. Gain 1 Corpse for each enemy destroyed.",
     mana: 8,
+    type: "Minion",
     tribe: "Undead",
     class: "Death Knight",
     rarity: "Epic",

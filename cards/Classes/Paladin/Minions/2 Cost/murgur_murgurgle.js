@@ -3,6 +3,7 @@ module.exports = {
     stats: [2, 1],
     desc: "&BDivine Shield. Deathrattle:&R Shuffle 'Murgurgle Prime' into your deck.",
     mana: 2,
+    type: "Minion",
     tribe: "Murloc",
     class: "Paladin",
     rarity: "Legendary",

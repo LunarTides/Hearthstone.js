@@ -3,6 +3,7 @@ module.exports = {
     displayName: "Death and Decay",
     desc: "Deal 3 damage to all enemies.",
     mana: 3,
+    type: "Spell",
     class: "Death Knight",
     rarity: "Free",
     set: "Knights of the Frozen Throne",

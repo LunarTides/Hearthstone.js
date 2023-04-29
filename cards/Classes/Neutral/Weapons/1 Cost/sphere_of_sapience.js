@@ -3,6 +3,7 @@ module.exports = {
     stats: [0, 4],
     desc: "At the start of your turn, look at your top card. You can put it on the bottom and lose 1 Durability.",
     mana: 1,
+    type: "Weapon",
     class: "Neutral",
     rarity: "Legendary",
     set: "Scholomance Academy",

@@ -3,6 +3,7 @@ module.exports = {
     stats: [3, 6],
     desc: "Battlecry: Summon 3 Deathrattle minions that cost (5) or less from your deck.",
     mana: 7,
+    type: "Minion",
     tribe: "Quilboar",
     class: "Demon Hunter",
     rarity: "Legendary",

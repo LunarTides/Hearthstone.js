@@ -3,6 +3,7 @@ module.exports = {
     stats: [0, 2],
     desc: "At the end of your turn, give another friendly minion +1 Attack.",
     mana: 1,
+    type: "Minion",
     tribe: "Totem",
     class: "Shaman",
     rarity: "Free",

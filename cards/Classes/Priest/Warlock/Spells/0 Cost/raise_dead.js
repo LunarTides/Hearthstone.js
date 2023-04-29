@@ -2,6 +2,7 @@ module.exports = {
     name: "Raise Dead",
     desc: "Deal 3 damage to your hero. Return two friendly minions that died this game to your hand.",
     mana: 0,
+    type: "Spell",
     class: "Priest / Warlock",
     rarity: "Common",
     set: "Scholomance Academy",

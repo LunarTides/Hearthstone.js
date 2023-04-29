@@ -2,6 +2,7 @@ module.exports = {
     name: "Potion of Madness",
     desc: "Gain control of an enemy minion with 2 or less Attack until end of turn.",
     mana: 1,
+    type: "Spell",
     class: "Priest",
     rarity: "Common",
     set: "Mean Streets of Gadgetzan",

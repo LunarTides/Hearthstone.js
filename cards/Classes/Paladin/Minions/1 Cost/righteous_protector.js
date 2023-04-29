@@ -3,6 +3,7 @@ module.exports = {
     stats: [1, 1],
     desc: "&BTaunt. Divine Shield&R",
     mana: 1,
+    type: "Minion",
     tribe: "None",
     class: "Paladin",
     rarity: "Common",

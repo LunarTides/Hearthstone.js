@@ -3,6 +3,7 @@ module.exports = {
     stats: [4, 6],
     desc: "Battlecry: If your deck has no duplicates, fully heal your hero.",
     mana: 6,
+    type: "Minion",
     tribe: "None",
     class: "Neutral",
     rarity: "Legendary",

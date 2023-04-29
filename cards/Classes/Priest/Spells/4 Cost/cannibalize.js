@@ -2,6 +2,7 @@ module.exports = {
     name: "Cannibalize",
     desc: "Destroy a minion. Restore its Health to all friendly characters.",
     mana: 4,
+    type: "Spell",
     class: "Priest",
     rarity: "Rare",
     set: "Return to Naxxramas",
