@@ -601,7 +601,7 @@ class AI {
 
         this.history.push(["discover", [best_card.name, best_score]]);
 
-        best_card = new game.Card(best_card.name, this.plr);
+        best_card = new game.Card(best_card.name, this.plr); // `cards` can be a list of blueprints, so calling best_card.imperfectCopy is dangerous
 
         return best_card;
     }

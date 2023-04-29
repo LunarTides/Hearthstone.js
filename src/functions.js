@@ -56,7 +56,7 @@ class Functions {
 
         let item = list[this.randInt(0, list.length - 1)];
         
-        if (item instanceof game.Card && cpyCard) item = new game.Card(item.name, item.plr);
+        if (item instanceof game.Card && cpyCard) item = item.imperfectCopy();
 
         return item;
     }
@@ -766,7 +766,7 @@ class Functions {
         list.forEach(c => {
             if (times >= amount) return;
 
-            game.summonMinion(new game.Card(c.name, plr), plr);
+            game.summonMinion(c.imperfectCopy(), plr);
 
             times++;
             cards.push(c);
@@ -959,7 +959,7 @@ class Functions {
                 }
                 card = new game.Card(card.name, plr);
 
-                for (let i = 0; i < parseInt(copies); i++) _deck.push(this.cloneCard(card));
+                for (let i = 0; i < parseInt(copies); i++) _deck.push(card.perfectCopy());
 
                 if (card.settings) {
                     if (card.settings.maxDeckSize) maxDeckLength = card.settings.maxDeckSize;
