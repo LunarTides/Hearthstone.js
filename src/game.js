@@ -450,7 +450,7 @@ class Game {
         let echo_clone = null;
 
         if (card.keywords.includes("Echo")) {
-            echo_clone = this.functions.cloneCard(card); // Create an exact copy of the card played
+            echo_clone = card.perfectCopy(); // Create an exact copy of the card played
             echo_clone.echo = true;
         }
 
@@ -856,7 +856,7 @@ class Game {
                 }
 
                 // Reborn
-                let minion = new Card(m.name, plr);
+                let minion = m.imperfectCopy();
 
                 minion.removeKeyword("Reborn");
                 minion.setStats(minion.getAttack(), 1);

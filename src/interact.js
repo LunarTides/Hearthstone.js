@@ -692,7 +692,7 @@ class Interact {
 
         let card = values[parseInt(choice) - 1];
         if (!card instanceof game.Card || clone) card = new game.Card(card.name, game.player);
-        if (clone) card = game.functions.cloneCard(card);
+        if (clone) card = card.perfectCopy();
 
         if (add_to_hand) game.player.addToHand(card);
 
