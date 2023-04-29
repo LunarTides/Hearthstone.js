@@ -3,6 +3,7 @@ module.exports = {
     stats: [2, 3],
     desc: "&BBattlecry:&R If your deck has no Neutral cards, set a minion's stats to 1/1.",
     mana: 2,
+    type: "Minion",
     tribe: "None",
     class: "Paladin",
     rarity: "Rare",

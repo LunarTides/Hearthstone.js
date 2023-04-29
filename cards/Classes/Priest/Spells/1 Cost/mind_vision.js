@@ -2,6 +2,7 @@ module.exports = {
     name: "Mind Vision",
     desc: "Put a copy of a random card in your opponent's hand into your hand.",
     mana: 1,
+    type: "Spell",
     class: "Priest",
     rarity: "Free",
     set: "Legacy",

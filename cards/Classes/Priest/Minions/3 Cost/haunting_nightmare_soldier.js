@@ -4,6 +4,7 @@ module.exports = {
     stats: [4, 3],
     desc: "",
     mana: 3,
+    type: "Minion",
     tribe: "None",
     class: "Priest",
     rarity: "Free",

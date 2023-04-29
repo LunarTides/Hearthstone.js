@@ -3,6 +3,7 @@ module.exports = {
     displayName: "Tinker's Sharpsword Oil",
     desc: "Give your weapon +3 Attack. &BCombo:&R Give a random friendly minion +3 Attack.",
     mana: 4,
+    type: "Spell",
     class: "Rogue",
     rarity: "Common",
     set: "Goblins vs Gnomes",

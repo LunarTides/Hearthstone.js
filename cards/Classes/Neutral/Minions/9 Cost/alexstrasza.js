@@ -3,6 +3,7 @@ module.exports = {
     stats: [8, 8],
     desc: "Battlecry: Set a hero's remaining Health to 15.",
     mana: 9,
+    type: "Minion",
     tribe: "Dragon",
     class: "Neutral",
     rarity: "Legendary",

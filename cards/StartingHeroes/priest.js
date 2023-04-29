@@ -3,6 +3,7 @@ module.exports = {
     displayName: "Anduin Wrynn",
     desc: "Priest starting hero",
     mana: 0,
+    type: "Hero",
     class: "Priest",
     rarity: "Free",
     set: "Core",

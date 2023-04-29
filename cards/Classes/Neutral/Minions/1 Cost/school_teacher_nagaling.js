@@ -4,6 +4,7 @@ module.exports = {
     stats: [1, 1],
     desc: "Battlecry: Cast {0}.",
     mana: 1,
+    type: "Minion",
     tribe: "Naga",
     class: "Neutral",
     rarity: "Free",

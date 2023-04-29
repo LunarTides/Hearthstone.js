@@ -2,6 +2,7 @@ module.exports = {
     name: "Wicked Shipment",
     desc: "&BTradeable.&R Summon 2 1/1 Imps. (Upgrades by 2 when &BTraded&R!)",
     mana: 1,
+    type: "Spell",
     class: "Warlock",
     rarity: "Common",
     set: "Deadmines",

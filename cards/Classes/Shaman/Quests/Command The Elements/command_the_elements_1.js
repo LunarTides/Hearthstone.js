@@ -2,6 +2,7 @@ module.exports = {
     name: "Command The Elements",
     desc: "Questline: Play 3 cards with Overload. Reward: Unlock your Overloaded Mana Crystals.",
     mana: 1,
+    type: "Spell",
     class: "Shaman",
     rarity: "Legendary",
     set: "United in Stormwind",

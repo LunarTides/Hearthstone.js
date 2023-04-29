@@ -4,6 +4,7 @@ module.exports = {
     stats: [3, 4],
     desc: "While in your hand, this is a 3/4 copy of the last minion you played.",
     mana: 4,
+    type: "Minion",
     tribe: "None",
     class: "Druid",
     rarity: "Legendary",

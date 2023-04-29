@@ -2,6 +2,7 @@ module.exports = {
     name: "Eye Beam",
     desc: "Lifesteal. Deal 3 damage to a minion. Outcast: This costs (1).",
     mana: 3,
+    type: "Spell",
     class: "Demon Hunter",
     rarity: "Epic",
     set: "Demon Hunter Initiate",

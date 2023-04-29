@@ -2,6 +2,7 @@ module.exports = {
     name: "Prismatic Elemental",
     stats: [1, 3],
     desc: "&BBattlecry:&R &BDiscover&R a spell from any class. It costs (1) less.",
+    type: "Minion",
     mana: 2,
     tribe: "Elemental",
     class: "Mage",

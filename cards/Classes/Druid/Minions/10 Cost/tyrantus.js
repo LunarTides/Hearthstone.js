@@ -3,6 +3,7 @@ module.exports = {
     stats: [12, 12],
     desc: "Can't be targeted by spells or Hero Powers.",
     mana: 10,
+    type: "Minion",
     tribe: "Beast",
     class: "Druid",
     rarity: "Legendary",

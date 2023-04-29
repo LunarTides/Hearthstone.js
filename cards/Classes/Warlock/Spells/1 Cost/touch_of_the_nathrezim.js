@@ -2,6 +2,7 @@ module.exports = {
     name: "Touch of the Nathrezim",
     desc: "Deal 2 damage to a minion. If it dies, restore 3 Health to your hero.",
     mana: 1,
+    type: "Spell",
     class: "Warlock",
     rarity: "Rare",
     set: "United in Stormwind",

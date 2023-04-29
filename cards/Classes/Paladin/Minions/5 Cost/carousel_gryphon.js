@@ -3,6 +3,7 @@ module.exports = {
     stats: [5, 5],
     desc: "&BDivine Shield. Corrupt: &RGain +3/+3 and &BTaunt&R",
     mana: 5,
+    type: "Minion",
     tribe: "Mech / Beast",
     class: "Paladin",
     rarity: "Common",

@@ -3,6 +3,7 @@ module.exports = {
     stats: [4, 2],
     desc: "&BBattlecry: &RIf your deck has no Neutral cards, equip a 4/2 Truesilver Champion.",
     mana: 4,
+    type: "Minion",
     tribe: "None",
     class: "Paladin",
     rarity: "Rare",

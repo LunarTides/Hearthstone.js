@@ -14,7 +14,7 @@ module.exports = {
         game.functions.spellDmg(target, 2);
 
         let list = game.functions.getCards();
-        list = list.filter(c => game.functions.getType(c) == "Spell" && !game.functions.validateClass(plr, c));
+        list = list.filter(c => c.type == "Spell" && !game.functions.validateClass(plr, c));
         if (list.length <= 0) return;
 
         game.interact.discover("Discover a spell from another class.", list);

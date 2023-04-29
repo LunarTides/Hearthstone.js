@@ -3,6 +3,7 @@ module.exports = {
     stats: [0, 3],
     desc: "Give a minion +2/+1 and draw a card.",
     mana: 3,
+    type: "Location",
     class: "Priest",
     rarity: "Rare",
     set: "Murder at Castle Nathria",

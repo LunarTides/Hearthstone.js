@@ -11,7 +11,7 @@ module.exports = {
     conditioned: ["battlecry"],
 
     battlecry(plr, game, self) {
-        let list = game.functions.getCards().filter(c => game.functions.getType(c) == "Minion" && game.functions.matchTribe(c.tribe, "Dragon"));
+        let list = game.functions.getCards().filter(c => c.type == "Minion" && game.functions.matchTribe(c.tribe, "Dragon"));
 
         for (let i = 0; i < 2; i++) {
             let card = game.functions.randList(list);

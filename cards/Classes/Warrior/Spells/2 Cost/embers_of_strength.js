@@ -2,6 +2,7 @@ module.exports = {
     name: "Embers of Strength",
     desc: "Summon two 1/2 Guards with Taunt. Manathirst (6): Give them +1/+2.",
     mana: 2,
+    type: "Spell",
     class: "Warrior",
     rarity: "Rare",
     set: "March of the Lich King",

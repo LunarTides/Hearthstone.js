@@ -3,6 +3,7 @@ module.exports = {
     stats: [7, 7],
     desc: "&BDeathrattle:&R Your opponent draws 2 cards.",
     mana: 4,
+    type: "Minion",
     tribe: "Beast",
     class: "Neutral",
     rarity: "Common",

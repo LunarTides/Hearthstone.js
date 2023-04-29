@@ -3,6 +3,7 @@ module.exports = {
     stats: [3, 5],
     desc: "&BBattlecry:&R Fire your Hero Power at all enemies.",
     mana: 4,
+    type: "Minion",
     tribe: "None",
     class: "Mage",
     rarity: "Rare",

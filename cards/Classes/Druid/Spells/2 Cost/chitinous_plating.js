@@ -2,6 +2,7 @@ module.exports = {
     name: "Chitinous Plating",
     desc: "Gain 4 Armor. At the start of your next turn, gain 4 more.",
     mana: 2,
+    type: "Spell",
     class: "Druid",
     rarity: "Rare",
     set: "March of the Lich King",

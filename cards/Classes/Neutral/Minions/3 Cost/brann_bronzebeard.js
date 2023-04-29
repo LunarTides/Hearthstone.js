@@ -3,6 +3,7 @@ module.exports = {
     stats: [2, 4],
     desc: "Your Battlecries trigger twice.",
     mana: 3,
+    type: "Minion",
     tribe: "None",
     class: "Neutral",
     rarity: "Legendary",

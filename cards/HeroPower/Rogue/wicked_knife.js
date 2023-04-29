@@ -3,6 +3,7 @@ module.exports = {
     stats: [1, 2],
     desc: "",
     mana: 1,
+    type: "Weapon",
     class: "Rogue",
     rarity: "Free",
     set: "Legacy",

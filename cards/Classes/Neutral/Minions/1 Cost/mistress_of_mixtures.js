@@ -3,6 +3,7 @@ module.exports = {
     stats: [2, 2],
     desc: "Deathrattle: Restore 4 Health to each hero.",
     mana: 1,
+    type: "Minion",
     tribe: "None",
     class: "Neutral",
     rarity: "Common",

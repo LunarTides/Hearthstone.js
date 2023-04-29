@@ -2,6 +2,7 @@ module.exports = {
     name: "Barricade",
     desc: "Summon a 2/4 Guard with Taunt. If it's your only minion, summon another.",
     mana: 4,
+    type: "Spell",
     class: "Warrior / Paladin",
     rarity: "Common",
     set: "Madness at the Darkmoon Faire",

@@ -2,6 +2,7 @@ module.exports = {
     name: "Abyssal Depths",
     desc: "Draw your two lowest Cost minions.",
     mana: 3,
+    type: "Spell",
     class: "Demon Hunter",
     rarity: "Common",
     set: "Voyage to the Sunken City",

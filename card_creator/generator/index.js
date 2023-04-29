@@ -96,6 +96,7 @@ function main(home = ".") {
                 stats: `[${attack}, ${health}]`,
                 desc: desc,
                 mana: mana,
+                type: type,
                 tribe: races.join(" / "),
                 class: cardClass,
                 rarity: rarity
@@ -105,6 +106,7 @@ function main(home = ".") {
             struct = {
                 desc: desc,
                 mana: mana,
+                type: type,
                 class: cardClass,
                 rarity: rarity
             }
@@ -114,6 +116,7 @@ function main(home = ".") {
                 stats: `[${attack}, ${durability}]`,
                 desc: desc,
                 mana: mana,
+                type: type,
                 class: cardClass,
                 rarity: rarity
             }
@@ -122,6 +125,7 @@ function main(home = ".") {
             struct = {
                 desc: desc,
                 mana: mana,
+                type: type,
                 class: cardClass,
                 rarity: rarity,
                 hpDesc: "",
@@ -133,6 +137,7 @@ function main(home = ".") {
                 stats: `[0, ${health}]`,
                 desc: desc,
                 mana: mana,
+                type: type,
                 class: cardClass,
                 rarity: rarity,
                 cooldown: 2

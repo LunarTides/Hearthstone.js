@@ -3,6 +3,7 @@ module.exports = {
     stats: [10, 10],
     desc: "Battlecry: Destroy your deck. For the rest of the game, your minions are Immune.",
     mana: 10,
+    type: "Minion",
     tribe: "None",
     class: "Neutral",
     rarity: "Legendary",

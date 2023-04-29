@@ -13,7 +13,6 @@ class Card {
         this.name = name;
         this.displayName = name;
 
-        this.type = game.functions.getType(this.blueprint);
         this.costType = "mana";
 
         this.keywords = [];
@@ -29,9 +28,6 @@ class Card {
 
         this.attackTimes = 1; // The number of times a minion can attack, windfury: 2, mega-windfury: 4
         this.stealthDuration = 0; // The amount of turns stealth should last
-
-        // Set maxHealth if the card is a minion or weapon
-        if (this.type == "Minion" || this.type == "Weapon") this.maxHealth = this.blueprint.stats[1];
 
         this.canAttackHero = true;
         this.sleepy = true;
@@ -61,6 +57,9 @@ class Card {
         exists.forEach(i => {
             this[i] = this.blueprint[i] || false;
         });
+
+        // Set maxHealth if the card is a minion or weapon
+        if (this.type == "Minion" || this.type == "Weapon") this.maxHealth = this.blueprint.stats[1];
 
         this.desc = game.functions.parseTags(this.desc);
         this.enchantments = [];

@@ -2,6 +2,7 @@ module.exports = {
     name: "Flare",
     desc: "All minions lose Stealth. Destroy all enemy Secrets. Draw a card.",
     mana: 1,
+    type: "Spell",
     class: "Hunter",
     rarity: "Rare",
     set: "Legacy",

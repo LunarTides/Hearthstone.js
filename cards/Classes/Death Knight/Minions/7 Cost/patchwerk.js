@@ -3,6 +3,7 @@ module.exports = {
     stats: [4, 6],
     desc: "Battlecry: Destroy a random minion in your opponent's hand, deck, and battlefield.",
     mana: 7,
+    type: "Minion",
     tribe: "Undead",
     class: "Death Knight",
     rarity: "Legendary",

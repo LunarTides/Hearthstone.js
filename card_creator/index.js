@@ -44,7 +44,7 @@ function common() {
 
     if (keywords) keywords = '["' + keywords.split(', ').join('", "') + '"]';
 
-    return {"name": name, "displayName": displayName, "desc": description, "mana": parseInt(cost), "class": _class, "rarity": rarity, "runes": runes, "keywords": keywords};
+    return {"name": name, "displayName": displayName, "desc": description, "mana": parseInt(cost), "type": type, "class": _class, "rarity": rarity, "runes": runes, "keywords": keywords};
 }
 
 function minion() {
@@ -61,6 +61,7 @@ function minion() {
         "stats": stats,
         "desc": _card.desc,
         "mana": _card.mana,
+        "type": _card.type,
         "tribe": tribe,
         "class": _card.class,
         "rarity": _card.rarity,
@@ -92,6 +93,7 @@ function weapon() {
         "stats": stats,
         "desc": _card.desc,
         "mana": _card.mana,
+        "type": _card.type,
         "class": _card.class,
         "rarity": _card.rarity,
         "runes": _card.runes,
@@ -131,6 +133,7 @@ function location() {
         "stats": stats,
         "desc": _card.desc,
         "mana": _card.mana,
+        "type": _card.type,
         "class": _card.class,
         "rarity": _card.rarity,
         "runes": _card.runes,

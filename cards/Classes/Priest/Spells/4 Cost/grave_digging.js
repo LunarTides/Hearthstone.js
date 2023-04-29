@@ -2,6 +2,7 @@ module.exports = {
     name: "Grave Digging",
     desc: "Draw 2 cards.",
     mana: 2,
+    type: "Spell",
     class: "Priest",
     rarity: "Epic",
     set: "March of the Lich King",

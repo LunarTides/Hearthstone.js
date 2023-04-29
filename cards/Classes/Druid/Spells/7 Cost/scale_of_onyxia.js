@@ -2,6 +2,7 @@ module.exports = {
     name: "Scale of Onyxia",
     desc: "Fill your board with 2/1 Whelps with Rush.",
     mana: 7,
+    type: "Spell",
     class: "Druid",
     rarity: "Common",
     set: "Onyxia's Lair",

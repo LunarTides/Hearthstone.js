@@ -3,6 +3,7 @@ module.exports = {
     stats: [1, 3],
     desc: "&BBattlecry:&R Replace your hand with a copy of your opponent's until end of turn.",
     mana: 3,
+    type: "Minion",
     tribe: "None",
     class: "Priest",
     rarity: "Legendary",

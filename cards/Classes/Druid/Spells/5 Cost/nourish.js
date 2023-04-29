@@ -2,6 +2,7 @@ module.exports = {
     name: "Nourish",
     desc: "Choose One - Gain 2 Mana Crystals; or Draw 3 cards.",
     mana: 5,
+    type: "Spell",
     class: "Druid",
     rarity: "Rare",
     set: "Core",

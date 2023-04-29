@@ -2,6 +2,7 @@ module.exports = {
     name: "Seance",
     desc: "Choose a minion. Add a copy of it to your hand.",
     mana: 2,
+    type: "Spell",
     class: "Priest",
     rarity: "Common",
     set: "Rastakhan's Rumble",

@@ -12,7 +12,7 @@ module.exports = {
     battlecry(plr, game, self) {
         // Discover
         let list = game.functions.getCards();
-        list = list.filter(c => game.functions.getType(c) == "Spell" && c.mana <= 3);
+        list = list.filter(c => c.type == "Spell" && c.mana <= 3);
         if (list.length <= 0) return;
 
         let card = game.interact.discover("Discover a spell that costs (3) or less to teach it.", list, 3, false);

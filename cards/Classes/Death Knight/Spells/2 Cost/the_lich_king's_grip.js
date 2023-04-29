@@ -3,6 +3,7 @@ module.exports = {
     displayName: "Death Grip",
     desc: "Steal a minion from your opponent's deck and add it to your hand.",
     mana: 2,
+    type: "Spell",
     class: "Death Knight",
     rarity: "Free",
     set: "Knights of the Frozen Throne",

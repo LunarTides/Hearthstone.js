@@ -3,6 +3,7 @@ module.exports = {
     displayName: "Power Word: Shield",
     desc: "Give a minion +2 Health. Draw a card.",
     mana: 1,
+    type: "Spell",
     class: "Priest",
     rarity: "Free",
     set: "Legacy",

@@ -3,6 +3,7 @@ module.exports = {
     stats: [1, 3],
     desc: "Both heroes take one extra damage from all sources.",
     mana: 1,
+    type: "Minion",
     tribe: "None",
     class: "Priest",
     rarity: "Epic",

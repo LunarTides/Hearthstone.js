@@ -3,6 +3,7 @@ module.exports = {
     stats: [3, 2],
     desc: "&BBattlecry:&R Add a Windchill to your hand.",
     mana: 2,
+    type: "Minion",
     tribe: "Elemental",
     class: "Shaman",
     rarity: "Rare",

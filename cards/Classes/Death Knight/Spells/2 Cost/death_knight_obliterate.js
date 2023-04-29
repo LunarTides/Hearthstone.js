@@ -3,6 +3,7 @@ module.exports = {
     displayName: "Obliterate",
     desc: "Destroy a minion. Deal 3 damage to your hero.",
     mana: 2,
+    type: "Spell",
     class: "Death Knight",
     rarity: "Epic",
     set: "Core",

@@ -3,6 +3,7 @@ module.exports = {
     stats: [3, 2],
     desc: "Battlecry: Draw a Nature spell. Gain an empty Mana Crystal.",
     mana: 4,
+    type: "Minion",
     tribe: "None",
     class: "Druid",
     rarity: "Epic",

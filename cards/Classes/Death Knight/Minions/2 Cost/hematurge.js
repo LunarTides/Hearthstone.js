@@ -3,6 +3,7 @@ module.exports = {
     stats: [2, 3],
     desc: "Battlecry: Spend a Corpse to Discover a Blood Rune card.",
     mana: 2,
+    type: "Minion",
     tribe: "None",
     class: "Death Knight",
     rarity: "Rare",

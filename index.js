@@ -87,6 +87,7 @@ function devmode() {
                 displayName: displayName,
                 desc: name[0].toUpperCase() + name.slice(1).toLowerCase() + " starting hero",
                 mana: 0,
+                type: "Hero",
                 class: name,
                 rarity: "Free",
                 hpDesc: hpDesc,

@@ -2,6 +2,7 @@ module.exports = {
     name: "Order in the Court",
     desc: "Reorder your deck from highest Cost to lowest Cost. Draw a card.",
     mana: 2,
+    type: "Spell",
     class: "Paladin",
     rarity: "Rare",
     set: "Maw and Disorder",

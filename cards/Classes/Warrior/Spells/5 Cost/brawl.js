@@ -2,6 +2,7 @@ module.exports = {
     name: "Brawl",
     desc: "Destroy all minions except one.",
     mana: 5,
+    type: "Spell",
     class: "Warrior",
     rarity: "Epic",
     set: "Legacy",

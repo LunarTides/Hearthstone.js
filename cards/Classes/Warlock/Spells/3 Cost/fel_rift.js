@@ -2,6 +2,7 @@ module.exports = {
     name: "Fel Rift",
     desc: "&BCasts When Drawn.&R Summon a 3/3 Dread Imp.",
     mana: 3,
+    type: "Spell",
     class: "Warlock",
     rarity: "Free",
     set: "Fractured in Alterac Valley",

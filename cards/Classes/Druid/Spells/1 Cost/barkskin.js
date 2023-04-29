@@ -2,6 +2,7 @@ module.exports = {
     name: "Barkskin",
     desc: "Give a minion +3 Health. Gain 3 Armor.",
     mana: 1,
+    type: "Spell",
     class: "Druid",
     rarity: "Common",
     set: "Kobolds and Catacombs",

@@ -4,6 +4,7 @@ module.exports = {
     stats: [4, 4],
     desc: "Battlecry: Discover a card in each player's hand and swap them.",
     mana: 6,
+    type: "Minion",
     tribe: "None",
     class: "Neutral",
     rarity: "Legendary",

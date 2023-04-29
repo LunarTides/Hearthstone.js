@@ -2,6 +2,7 @@ module.exports = {
     name: "Overgrowth",
     desc: "Gain two empty Mana Crystals.",
     mana: 4,
+    type: "Spell",
     class: "Druid",
     rarity: "Common",
     set: "Ashes of Outland",

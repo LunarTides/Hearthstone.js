@@ -3,6 +3,7 @@ module.exports = {
     stats: [10, 10],
     desc: "Divine Shield. Reborn",
     mana: 10,
+    type: "Minion",
     tribe: "Undead",
     class: "Neutral",
     rarity: "Legendary",

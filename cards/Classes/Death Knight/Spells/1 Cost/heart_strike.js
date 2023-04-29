@@ -2,6 +2,7 @@ module.exports = {
     name: "Heart Strike",
     desc: "Deal 3 damage to a minion. If that kills it, gain a Corpse.",
     mana: 1,
+    type: "Spell",
     class: "Death Knight",
     rarity: "Common",
     set: "Core",

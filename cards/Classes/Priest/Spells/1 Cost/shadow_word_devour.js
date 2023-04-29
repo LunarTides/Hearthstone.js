@@ -3,6 +3,7 @@ module.exports = {
     displayName: "Shadow Word: Devour",
     desc: "Choose a minion. It steals 1 Health from ALL other minions.",
     mana: 1,
+    type: "Spell",
     class: "Priest",
     rarity: "Epic",
     set: "Fractured in Alterac Valley",

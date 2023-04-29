@@ -3,6 +3,7 @@ module.exports = {
     stats: [4, 5],
     desc: "&BColossal +1. Rush, Divine Shield&R. After this attacks, &BDredge&R.",
     mana: 7,
+    type: "Minion",
     tribe: "Mech",
     class: "Paladin",
     rarity: "Legendary",

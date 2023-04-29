@@ -3,6 +3,7 @@ module.exports = {
     stats: [1, 3],
     desc: "After a friendly minion dies, gain its &BDeathrattle&R.",
     mana: 1,
+    type: "Minion",
     tribe: "Undead",
     class: "Warlock",
     rarity: "Legendary",

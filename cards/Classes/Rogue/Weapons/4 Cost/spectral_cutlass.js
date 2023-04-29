@@ -3,6 +3,7 @@ module.exports = {
     stats: [2, 2],
     desc: "&BLifesteal.&R Whenever you play a card from another class, gain +1 Durability.",
     mana: 4,
+    type: "Weapon",
     class: "Rogue",
     rarity: "Epic",
     set: "The Witchwood",

@@ -3,6 +3,7 @@ module.exports = {
     stats: [3, 5],
     desc: "Battlecry: Shuffle the 'Map to the Golden Monkey' into your deck.",
     mana: 4,
+    type: "Minion",
     tribe: "None",
     class: "Neutral",
     rarity: "Legendary",

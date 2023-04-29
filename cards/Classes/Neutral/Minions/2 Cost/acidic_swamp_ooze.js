@@ -3,6 +3,7 @@ module.exports = {
     stats: [3, 2],
     desc: "Battlecry: Destroy your opponent's weapon.",
     mana: 2,
+    type: "Minion",
     tribe: "None",
     class: "Neutral",
     rarity: "Rare",

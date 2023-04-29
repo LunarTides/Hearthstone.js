@@ -3,6 +3,7 @@ module.exports = {
     stats: [8, 8],
     desc: "&BBattlecry: &RSend all other minions 2 turns into the future.",
     mana: 7,
+    type: "Minion",
     tribe: "Dragon",
     class: "Paladin",
     rarity: "Legendary",

@@ -3,6 +3,7 @@ module.exports = {
     stats: [0, 3],
     desc: "Destroy a friendly minion to summon a 4/5 Undead with &BRush&R",
     mana: 4,
+    type: "Location",
     class: "Death Knight",
     rarity: "Rare",
     set: "Return to Naxxramas",

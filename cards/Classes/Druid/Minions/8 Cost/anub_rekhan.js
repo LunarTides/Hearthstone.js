@@ -4,6 +4,7 @@ module.exports = {
     stats: [7, 7],
     desc: "Battlecry: Gain 8 Armor. Your next 3 minions this turn cost Armor instead of Mana.",
     mana: 8,
+    type: "Minion",
     tribe: "Undead",
     class: "Druid",
     rarity: "Legendary",

@@ -3,6 +3,7 @@ module.exports = {
     stats: [2, 2],
     desc: "Battlecry and Deathrattle: Draw a card.",
     mana: 3,
+    type: "Minion",
     tribe: "Undead",
     class: "Death Knight",
     rarity: "Common",

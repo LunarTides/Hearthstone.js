@@ -4,6 +4,7 @@ module.exports = {
     stats: [8, 8],
     desc: "Battlecry: Deal 7 damage randomly split between all enemies. Manathirst (10): Deal 14 instead.",
     mana: 8,
+    type: "Minion",
     tribe: "None",
     class: "Neutral",
     rarity: "Free",

@@ -3,6 +3,7 @@ module.exports = {
     stats: [5, 4],
     desc: "Deathrattle: Give a random friendly minion \"Deathrattle: Summon an Infectious Ghoul.\"",
     mana: 5,
+    type: "Minion",
     tribe: "Undead",
     class: "Neutral",
     rarity: "Rare",

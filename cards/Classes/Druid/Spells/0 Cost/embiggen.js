@@ -2,6 +2,7 @@ module.exports = {
     name: "Embiggen",
     desc: "Give all minions in your deck +2/+2. They cost (1) more (up to 10).",
     mana: 0,
+    type: "Spell",
     class: "Druid",
     rarity: "Epic",
     set: "Descent of Dragons",

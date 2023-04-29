@@ -2,6 +2,7 @@ module.exports = {
     name: "Tame the Flames",
     desc: "Questline: Play 3 cards with Overload. Reward: Stormcaller Bru'kan.",
     mana: 0,
+    type: "Spell",
     class: "Shaman",
     rarity: "Legendary",
     set: "United in Stormwind",
