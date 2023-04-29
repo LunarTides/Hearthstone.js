@@ -522,19 +522,10 @@ class Interact {
          * @returns {string} A string of the indexes of the cards the player mulligan'd
          */
 
-        this.printName();
+        this.printAll(plr);
 
-        let sb = "Your hand is: [ ";
-
-        plr.hand.forEach(c => {
-            if (c.name == "The Coin") return;
-
-            sb += game.functions.colorByRarity(c.displayName, c.rarity) + ", ";
-        });
-
-        sb = sb.slice(0, -2) + " ]\n";
-        sb += "Choose the cards to mulligan (1, 2, 3, ...):\n";
-        if (!game.config.debug) sb += "(Example: 13 will mulligan your left and right most cards, 123 will mulligan your 3 leftmost cards, just pressing enter will not mulligan any cards):\n".gray;
+        let sb = "\nChoose the cards to mulligan (1, 2, 3, ...):\n";
+        if (!game.config.debug) sb += "(Example: 13 will mulligan the cards with the ids 1 and 3, 123 will mulligan the cards with the ids 1, 2 and 3, just pressing enter will not mulligan any cards):\n".gray;
 
         let input;
 
