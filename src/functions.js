@@ -175,23 +175,6 @@ class Functions {
     }
 
     // Getting card info
-    getType(card) {
-        /**
-         * Returns the type of a card
-         * 
-         * @param {Card | Blueprint} card The card to check
-         * 
-         * @returns {string} The type of the card
-         */
-
-        if (typeof(card) != "object") throw new TypeError("Invalid card passed into `getType`. This can happen when, for example, a card name was mispelled somewhere.");
-        if (card.cooldown) return "Location"; // If you see this in the error log, the error occorred since the game failed to get the type of a card, however it passed the object check assertion. Please report this asap! Error Code: #21
-        
-        else if (card.tribe) return "Minion"; 
-        else if (card.stats) return "Weapon";
-        else if (card.heropower) return "Hero";
-        else return "Spell";
-    }
     getCardByName(name, refer = true) {
         /**
          * Gets the card that has the same name as "name"
@@ -292,6 +275,8 @@ class Functions {
         let classes = [];
 
         fs.readdirSync(game.dirname + "/cards/StartingHeroes").forEach(file => {
+            if (!file.endsWith(".js")) return; // Something is wrong with the file name.
+
             let name = file.slice(0, -3); // Remove ".js"
             name = name.replaceAll("_", " "); // Remove underscores
             name = game.functions.capitalizeAll(name); // Capitalize all words
@@ -725,7 +710,7 @@ class Functions {
         switch (plr.heroClass) {
             case "Priest":
                 // Add a random Priest minion to your hand.
-                let possible_cards = cards.filter(c => this.getType(c) == "Minion" && c.class == "Priest");
+                let possible_cards = cards.filter(c => c.type == "Minion" && c.class == "Priest");
                 if (possible_cards.length <= 0) return;
 
                 let card = game.functions.randList(possible_cards);

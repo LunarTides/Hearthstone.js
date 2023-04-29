@@ -133,8 +133,8 @@ function sortCards(_cards) {
                 typeB = getDisplayName(b);
             }
             else {
-                typeA = functions.getType(a);
-                typeB = functions.getType(b);
+                typeA = a.type;
+                typeB = b.type;
             }
 
             let ret = typeA.localeCompare(typeB);

@@ -895,7 +895,7 @@ class Interact {
         }
 
         sb += desc;
-        sb += `(${game.functions.getType(card)})`.yellow;
+        sb += `(${card.type})`.yellow;
 
         return sb;
     }
@@ -1182,7 +1182,7 @@ class Interact {
         let spellClass = "";
         let locCooldown = "";
 
-        let type = game.functions.getType(card);
+        let type = card.type;
 
         if (type == "Minion") tribe = " (" + card.tribe.gray + ")";
         else if (type == "Spell") spellClass = " (" + card.spellClass.cyan + ")";
