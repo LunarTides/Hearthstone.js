@@ -232,7 +232,7 @@ function main(_type = "", _path = "", _filename = "", _card = null) {
 
     shouldExit = false;
 
-    if (!_card) console.log("Hearthstone.js Card Creator (C) 2023\n");
+    if (!_card) console.log("Hearthstone.js Card Creator (C) 2022\n");
 
     if (_type == "") type = input("Type: ");
     else type = _type;

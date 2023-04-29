@@ -7,7 +7,7 @@ function capitalize(str) {
 }
 
 function main(home = ".") {
-    console.log("Hearthstone.js Vanilla Card Creator (C) 2023\n");
+    console.log("Hearthstone.js Vanilla Card Creator (C) 2022\n");
 
     let data = fs.readFileSync(home + "/.ignore.cards.json", { encoding: 'utf8', flag: 'r' });
 
