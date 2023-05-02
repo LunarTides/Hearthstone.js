@@ -25,7 +25,7 @@ class EventManager {
          * @returns {null}
          */
         // Infuse
-        if (key == "minionsKilled") {
+        if (key == "KillMinion") {
             val.plr.hand.forEach(p => {
                 if (p.infuse_num < 0) return;
 
