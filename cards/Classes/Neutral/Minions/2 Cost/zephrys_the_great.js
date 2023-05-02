@@ -15,7 +15,8 @@ module.exports = {
         let list = game.functions.getCards().filter(c => c.set == "Legacy");
 
         // The real zephrys is a lot more complicated but i'm not gonna bother, sorry
-        game.interact.discover("Choose the perfect card.", list);
+        let card = game.interact.discover("Choose the perfect card.", list);
+        plr.addToHand(card);
     },
 
     condition(plr, game, self) {

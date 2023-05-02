@@ -11,9 +11,11 @@ module.exports = {
 
     cast(plr, game, self) {
         let list = plr.getOpponent().hand;
-        game.interact.discover("Discover a copy of a card from your opponent's hand.", list);
+        let card = game.interact.discover("Discover a copy of a card from your opponent's hand.", list);
+        plr.addToHand(card);
 
         list = plr.getOpponent().deck;
-        game.interact.discover("Discover a copy of a card from your opponent's deck.", list);
+        card = game.interact.discover("Discover a copy of a card from your opponent's deck.", list);
+        plr.addToHand(card);
     }
 }

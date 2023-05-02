@@ -15,8 +15,7 @@ module.exports = {
         list = list.filter(c => c.type == "Spell" && c.mana <= 3);
         if (list.length <= 0) return;
 
-        let card = game.interact.discover("Discover a spell that costs (3) or less to teach it.", list, 3, false);
-        card = new game.Card(card.name, plr);
+        let card = game.interact.discover("Discover a spell that costs (3) or less to teach it.", list);
         if (!card) return;
 
         let minion = new game.Card("School Teacher Nagaling", plr);

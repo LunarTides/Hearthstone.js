@@ -12,6 +12,11 @@ module.exports = {
     id: 88,
 
     battlecry(plr, game) {
-        game.interact.discover("Discover a spell.", 3, ['Spell']);
+        let list = game.functions.getCards();
+        list = list.filter(c => c.type == "Spell");
+        if (list.length <= 0) return;
+
+        let card = game.interact.discover("Discover a spell.", list);
+        plr.addToHand(card);
     }
 }

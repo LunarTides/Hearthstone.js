@@ -658,15 +658,13 @@ class Interact {
 
         return this.yesNoQuestion(plr, prompt);
     }
-    discover(prompt, cards = [], amount = 3, add_to_hand = true, clone = true, _cards = []) {
+    discover(prompt, cards = [], amount = 3, _cards = []) {
         /**
-         * Asks the user a "prompt", show them "amount" cards. The cards are chosen from "cards". If "add_to_hand", add the card chosen to the player's hand, else return the card chosen
+         * Asks the user a "prompt", show them "amount" cards. The cards are chosen from "cards".
          * 
          * @param {string} prompt The prompt to ask
          * @param {Card[] | Blueprint[]} cards [default=all cards] The cards to choose from
          * @param {number} amount [default=3] The amount of cards to show
-         * @param {boolean} add_to_hand [default=true] If it should add the card chosen to the current player's hand
-         * @param {boolean} clone [default=true] If the card chosen should be cloned before returning it.
          * @param {Blueprint[]} _cards [default=[]] Do not use this variable, keep it at default
          * 
          * @returns {Card} The card chosen.
@@ -695,14 +693,11 @@ class Interact {
         let choice = game.input();
 
         if (!values[parseInt(choice) - 1]) {
-            return this.discover(prompt, cards, amount, add_to_hand, clone, values);
+            return this.discover(prompt, cards, amount, values);
         }
 
         let card = values[parseInt(choice) - 1];
-        if (!card instanceof game.Card || clone) card = new game.Card(card.name, game.player);
-        if (clone) card = card.perfectCopy();
-
-        if (add_to_hand) game.player.addToHand(card);
+        if (!card instanceof game.Card) card = new game.Card(card.name, game.player);
 
         return card;
     }

@@ -17,7 +17,8 @@ module.exports = {
             list = list.filter(c => (c.runes || "").includes("B"));
             if (list.length <= 0) return;
 
-            game.interact.discover("Discover a Blood Rune card.", list);
+            let card = game.interact.discover("Discover a Blood Rune card.", list);
+            plr.addToHand(card);
         }
 
         plr.tradeCorpses(1, discoverBloodRune);
