@@ -15,8 +15,9 @@ module.exports = {
         list = list.filter(m => m.blueprint.deathrattle);
         if (list.length <= 0) return;
 
-        let minion = game.interact.discover(self.desc, list, 3, false);
+        let minion = game.interact.discover(self.desc, list);
         if (!minion) return;
+        minion = minion.imperfectCopy();
 
         game.board[plr.id].forEach(m => {
             m.addDeathrattle(minion.blueprint.deathrattle);

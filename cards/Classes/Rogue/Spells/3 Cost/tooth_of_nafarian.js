@@ -13,10 +13,14 @@ module.exports = {
 
         game.functions.spellDmg(target, 2);
 
+        // Discover a spell from another class
         let list = game.functions.getCards();
         list = list.filter(c => c.type == "Spell" && !game.functions.validateClass(plr, c));
         if (list.length <= 0) return;
 
-        game.interact.discover("Discover a spell from another class.", list);
+        let spell = game.interact.discover("Discover a spell from another class.", list);
+        if (!spell) return;
+
+        plr.addToHand(spell);
     }
 }

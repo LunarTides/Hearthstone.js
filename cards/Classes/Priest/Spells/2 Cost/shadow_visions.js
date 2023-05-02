@@ -12,5 +12,8 @@ module.exports = {
         let list = plr.deck.filter(c => c.type == "Spell");
 
         let spell = game.interact.discover("Discover a copy of a spell in your deck.", list);
+        spell = spell.imperfectCopy();
+
+        plr.addToHand(spell);
     }
 }

@@ -14,6 +14,7 @@ module.exports = {
         list = list.filter(c => c.type == "Spell" && c.mana >= 5 && [plr.heroClass, "Neutral"].includes(c.class));
         if (list.length <= 0) return;
 
-        game.interact.discover("Discover a spell that costs (5) or more", list);
+        let card = game.interact.discover("Discover a spell that costs (5) or more", list);
+        plr.addToHand(card);
     }
 }

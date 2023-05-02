@@ -11,10 +11,9 @@ module.exports = {
 
     battlecry(plr, game, self) {
         let list = game.functions.getCards().filter(c => !c.class.includes("Neutral"));
-        let card = game.interact.discover("Discover a spell from any class.", list, 3, false);
+        let card = game.interact.discover("Discover a spell from any class.", list);
         if (!card) return -1;
 
-        card = new game.Card(card.name, plr);
         //card.mana -= 1;
         card.addEnchantment("-1 mana", self);
         plr.addToHand(card);
