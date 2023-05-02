@@ -5,7 +5,6 @@ module.exports = {
     type: "Spell",
     class: "Neutral",
     rarity: "Free",
-    set: "Tests",
     uncollectible: true,
 
     cast(plr, game, self) {
