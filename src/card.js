@@ -72,6 +72,8 @@ class Card {
         this.plr = plr;
 
         this.randomizeIds();
+
+        this.placeholder = this.activate("placeholders")[0]; // This is a list of replacements.
     }
 
     randomizeIds() {
@@ -628,6 +630,23 @@ class Card {
         this.removeEnchantment(new_enchantment, this, false);
 
         return true;
+    }
+
+    replacePlaceholders() {
+        /**
+         * Replaces the placeholders ('{0}') with its value
+         * 
+         * @returns {undefined}
+         */
+
+        if (!this.placeholder) return;
+
+        this.placeholder = this.activate("placeholders")[0];
+
+        this.placeholder.forEach((p, i) => {
+            this.desc = this.desc.replace(new RegExp(`{ph:${i}} .*? {/ph}`, 'g'), `{ph:${i}} ${p} {/ph}`);
+            this.desc = this.desc.replaceAll(`{${i}}`, `{ph:${i}} ${p} {/ph}`);
+        });
     }
 
     perfectCopy() {

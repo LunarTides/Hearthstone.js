@@ -55,6 +55,9 @@ class EventManager {
             plr.hand.forEach(c => {
                 c.activate("handpassive", key, val);
 
+                // Placeholders
+                c.replacePlaceholders();
+
                 // Check for condition
                 let cleared_text = " (Condition cleared!)".brightGreen;
                 let cleared_text_alt = "Condition cleared!".brightGreen;
@@ -71,6 +74,8 @@ class EventManager {
 
                 c.activate("unpassive", true);
                 c.activate("passive", key, val);
+
+                c.replacePlaceholders();
             });
             plr.hand.forEach(c => {
                 if (c.mana < 0) c.mana = 0;
@@ -134,7 +139,7 @@ class EventManager {
 
         this.questUpdate("secrets",    key, val, plr.getOpponent());
         this.questUpdate("sidequests", key, val, plr);
-        this.questUpdate("quests",     key, val, plr);
+        this.questUpdate("quests", key, val, plr);
     }
 
     increment(player, key, amount = 1) {
