@@ -7,7 +7,7 @@ module.exports = {
     rarity: "Free",
     set: "Fractured in Alterac Valley",
     spellClass: "Fel",
-    keywords: "Cast On Draw",
+    keywords: ["Cast On Draw"],
     uncollectible: true,
 
     cast(plr, game, self) {
