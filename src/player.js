@@ -271,11 +271,11 @@ class Player {
 
         let card = this.deck.pop()
 
-        if (card.type == "Spell" && card.activate("castondraw")) return this.drawCard();
+        if (update) game.events.broadcast("DrawCard", card, this);
+
+        if (card.type == "Spell" && card.keywords.includes("Cast On Draw") && card.activate("cast")) return this.drawCard();
 
         this.addToHand(card, false);
-
-        if (update) game.events.broadcast("DrawCard", card, this);
 
         return card;
     }
@@ -293,11 +293,11 @@ class Player {
 
         this.deck = this.deck.filter(c => c !== card);
 
-        if (card.type == "Spell" && card.activate("castondraw")) return null;
+        if (update) game.events.broadcast("DrawCard", card, this);
+
+        if (card.type == "Spell" && card.keywords.includes("Cast On Draw") && card.activate("cast")) return null;
 
         this.addToHand(card, false);
-
-        if (update) game.events.broadcast("DrawCard", card, this);
 
         return card;
     }
