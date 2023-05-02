@@ -41,6 +41,8 @@ class EventManager {
 
         this.game.board.forEach(p => {
             p.forEach(m => {
+                if (m.getHealth() <= 0) return; // This function gets called directly after a minion is killed.
+
                 m.activate("unpassive", true);
                 m.activate("passive", key, val);
             });
@@ -63,12 +65,12 @@ class EventManager {
                     else c.desc += cleared_text_alt;
                 }
 
+                c.applyEnchantments(); // Just in case. Remove for small performance boost
+
                 if (c.type != "Spell") return;
 
                 c.activate("unpassive", true);
                 c.activate("passive", key, val);
-
-                c.applyEnchantments();
             });
             plr.hand.forEach(c => {
                 if (c.mana < 0) c.mana = 0;
