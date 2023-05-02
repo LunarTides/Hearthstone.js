@@ -508,7 +508,16 @@ class Interact {
         let error;
 
         if (deckcode.length > 0) error = game.functions.importDeck(plr, deckcode);
-        else while (plr.deck.length < 30) plr.deck.push(new game.Card("Sheep", plr));
+        else {
+            if (!game.config.debug) {
+                // Give error message
+                game.input("Please enter a deckcode!\n".red);
+                return this.deckCode(plr); // Retry
+            }
+
+            // Debug mode is enabled, use the 30 Sheep debug deck.
+            while (plr.deck.length < 30) plr.deck.push(new game.Card("Sheep", plr)); // Debug deck
+        }
 
         if (error == "invalid") exit(1);
     }
