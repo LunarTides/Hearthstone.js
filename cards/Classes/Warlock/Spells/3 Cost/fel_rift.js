@@ -7,9 +7,10 @@ module.exports = {
     rarity: "Free",
     set: "Fractured in Alterac Valley",
     spellClass: "Fel",
+    keywords: ["Cast On Draw"],
     uncollectible: true,
 
-    castondraw(plr, game, self) {
+    cast(plr, game, self) {
         let imp = new game.Card("Dread Imp", plr);
 
         game.summonMinion(imp, plr);

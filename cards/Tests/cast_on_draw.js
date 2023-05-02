@@ -5,9 +5,10 @@ module.exports = {
     class: "Neutral",
     rarity: "Free",
     set: "Tests",
+    keywords: ["Cast On Draw"],
     uncollectible: true,
 
-    castondraw(plr, game) {
+    cast(plr, game) {
         plr.gainMana(1);
     }
 }
