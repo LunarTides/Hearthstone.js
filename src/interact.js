@@ -863,7 +863,18 @@ class Interact {
          */
         let sb = "";
 
-        const desc = card.desc.length > 0 ? ` (${card.desc}) ` : " ";
+        let desc = card.desc.length > 0 ? ` (${card.desc}) ` : " ";
+
+        // Extract placeholder value, remove the placeholder header and footer
+        if (card.placeholder) {
+            let reg = new RegExp(`{ph:.} (.*?) {/ph}`);
+
+            do {
+                let placeholder = reg.exec(desc)[1]; // Gets the capturing group result
+
+                desc = desc.replace(reg, placeholder);
+            } while (reg.exec(desc));
+        }
 
         let mana = `{${card.mana}} `;
         switch (card.costType || "mana") {
@@ -1179,7 +1190,10 @@ class Interact {
         let type = card.type;
 
         if (type == "Minion") tribe = " (" + card.tribe.gray + ")";
-        else if (type == "Spell") spellClass = " (" + card.spellClass.cyan + ")";
+        else if (type == "Spell") {
+            if (card.spellClass) spellClass = " (" + card.spellClass.cyan + ")";
+            else spellClass = " (None)";
+        }
         else if (type == "Location") locCooldown = " (" + card.blueprint.cooldown.toString().cyan + ")";
 
         if (help) console.log("{mana} ".cyan + "Name ".bold + "(" + "[attack / health] ".brightGreen + "if it has) (description) ".white + "(type) ".yellow + "((tribe) or (spell class) or (cooldown)) [".white + "class".gray + "]");
