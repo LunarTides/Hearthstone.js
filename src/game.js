@@ -139,7 +139,7 @@ class EventManager {
 
         this.questUpdate("secrets",    key, val, plr.getOpponent());
         this.questUpdate("sidequests", key, val, plr);
-        this.questUpdate("quests", key, val, plr);
+        this.questUpdate("quests",     key, val, plr);
     }
 
     increment(player, key, amount = 1) {

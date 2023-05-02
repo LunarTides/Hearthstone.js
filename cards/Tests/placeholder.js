@@ -8,7 +8,9 @@ module.exports = {
     set: "Tests",
     uncollectible: true,
 
-    cast(plr, game) {
+    cast(plr, game, self) {
+        if (self.storage.length <= 0) return;
+
         plr.gainMana(self.storage[0], true);
     },
 
