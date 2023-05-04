@@ -2,6 +2,7 @@ module.exports = {
     name: "Clever Disguise",
     desc: "Add 2 random spells from another class to your hand.",
     mana: 2,
+    type: "Spell",
     class: "Rogue",
     rarity: "Common",
     set: "Saviors of Uldum",

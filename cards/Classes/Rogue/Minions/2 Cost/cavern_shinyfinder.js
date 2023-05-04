@@ -3,6 +3,7 @@ module.exports = {
     stats: [3, 1],
     desc: "&BBattlecry: &RDraw a weapon from your deck.",
     mana: 2,
+    type: "Minion",
     tribe: "None",
     class: "Rogue",
     rarity: "Common",

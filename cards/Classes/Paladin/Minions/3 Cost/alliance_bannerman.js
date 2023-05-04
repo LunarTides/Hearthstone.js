@@ -3,6 +3,7 @@ module.exports = {
     stats: [2, 2],
     desc: "&BBattlecry:&R Draw a minion. Give minions in your hand +1/+1.",
     mana: 3,
+    type: "Minion",
     tribe: "None",
     class: "Paladin",
     rarity: "Common",

@@ -2,6 +2,7 @@ module.exports = {
     name: "Ice Fishing",
     desc: "Draw 2 Murlocs from your deck.",
     mana: 2,
+    type: "Spell",
     class: "Shaman",
     rarity: "Common",
     spellClass: "Frost",

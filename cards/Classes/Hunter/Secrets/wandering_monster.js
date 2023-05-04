@@ -2,6 +2,7 @@ module.exports = {
     name: "Wandering Monster",
     desc: "&BSecret:&R When an enemy attacks your hero, summon a 3-Cost minion as the new target.",
     mana: 2,
+    type: "Spell",
     class: "Hunter",
     rarity: "Rare",
     set: "Kobolds & Catacombs",

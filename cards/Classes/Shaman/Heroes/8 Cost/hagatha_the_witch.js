@@ -2,6 +2,7 @@ module.exports = {
     name: "Hagatha the Witch",
     desc: "&BBattlecry:&R Deal 3 damage to all minions.",
     mana: 8,
+    type: "Hero",
     class: "Shaman",
     rarity: "Legendary",
     hpDesc: "&BPassive.&R After you play a minion, add a random Shaman spell to your hand.",

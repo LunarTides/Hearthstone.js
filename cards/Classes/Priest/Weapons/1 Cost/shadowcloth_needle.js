@@ -3,6 +3,7 @@ module.exports = {
     stats: [0, 3],
     desc: "After you cast a Shadow spell, deal 1 damage to all enemies. Lose 1 Durability.",
     mana: 1,
+    type: "Weapon",
     class: "Priest",
     rarity: "Rare",
     set: "United in Stormwind",

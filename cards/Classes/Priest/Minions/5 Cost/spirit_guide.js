@@ -3,6 +3,7 @@ module.exports = {
     stats: [5, 5],
     desc: "Taunt. Deathrattle: Draw a Holy spell and a Shadow spell.",
     mana: 5,
+    type: "Minion",
     tribe: "None",
     class: "Priest",
     rarity: "Common",

@@ -3,6 +3,7 @@ module.exports = {
     stats: [4, 6],
     desc: "After this minion survives damage, summon a random Legendary minion.",
     mana: 8,
+    type: "Minion",
     tribe: "Undead",
     class: "Warrior",
     rarity: "Legendary",

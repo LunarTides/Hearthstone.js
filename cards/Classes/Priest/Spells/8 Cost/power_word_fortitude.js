@@ -3,6 +3,7 @@ module.exports = {
     displayName: "Power Word: Fortitude",
     desc: "Give a minion +3/+5. Costs (1) less for each spell in your hand.",
     mana: 8,
+    type: "Spell",
     class: "Priest",
     rarity: "Common",
     set: "Forged in the Barrens",

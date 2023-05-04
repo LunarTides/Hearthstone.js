@@ -3,6 +3,7 @@ module.exports = {
     stats: [7, 7],
     desc: "Battlecry: For the rest of the game, your spells cast twice.",
     mana: 5,
+    type: "Minion",
     tribe: "None",
     class: "Shaman",
     rarity: "Free",

@@ -3,6 +3,7 @@ module.exports = {
     stats: [1, 1],
     desc: "Battlecry: Summon a random 2-Cost minion.",
     mana: 1,
+    type: "Minion",
     tribe: "None",
     class: "Neutral",
     rarity: "Free",

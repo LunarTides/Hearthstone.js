@@ -3,6 +3,7 @@ module.exports = {
     stats: [2, 5],
     desc: "After you cast a spell, reduce the cost of a random card in your hand by (1).",
     mana: 3,
+    type: "Minion",
     tribe: "None",
     class: "Priest",
     rarity: "Rare",

@@ -3,6 +3,7 @@ module.exports = {
     stats: [2, 3],
     desc: "Your spells cost (1) less.",
     mana: 2,
+    type: "Minion",
     tribe: "Elemental",
     class: "Priest",
     rarity: "Common",

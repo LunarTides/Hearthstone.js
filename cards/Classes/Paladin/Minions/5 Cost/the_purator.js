@@ -3,6 +3,7 @@ module.exports = {
     stats: [4, 6],
     desc: "&BTaunt. Battlecry: &RIf your deck has no Neutral cards, draw a minion of each minion type.",
     mana: 5,
+    type: "Minion",
     tribe: "Mech",
     class: "Paladin",
     rarity: "Legendary",

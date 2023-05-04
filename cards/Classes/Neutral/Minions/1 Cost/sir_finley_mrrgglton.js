@@ -5,6 +5,7 @@ module.exports = {
     stats: [1, 3],
     desc: "Battlecry: Discover a new basic Hero Power.",
     mana: 1,
+    type: "Minion",
     tribe: "Murloc",
     class: "Neutral",
     rarity: "Legendary",

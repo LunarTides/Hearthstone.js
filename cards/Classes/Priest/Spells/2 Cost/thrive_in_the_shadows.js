@@ -2,6 +2,7 @@ module.exports = {
     name: "Thrive in the Shadows",
     desc: "Discover a spell from your deck.",
     mana: 2,
+    type: "Spell",
     class: "Priest",
     rarity: "Rare",
     set: "Core",

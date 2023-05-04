@@ -2,6 +2,7 @@ module.exports = {
     name: "The Sunwell",
     desc: "Fill your hand with random spells. Costs (1) less for each other card in your hand.",
     mana: 9,
+    type: "Spell",
     class: "Neutral",
     rarity: "Legendary",
     set: "March of the Lich King",

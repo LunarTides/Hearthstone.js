@@ -4,6 +4,7 @@ module.exports = {
     stats: [6, 3],
     desc: "&BDivine Shield. Battlecry:&R Summon 4 random Murlocs. Give them &BDivine Shield&R",
     mana: 8,
+    type: "Minion",
     tribe: "Mech / Murloc",
     class: "Paladin",
     rarity: "Free",

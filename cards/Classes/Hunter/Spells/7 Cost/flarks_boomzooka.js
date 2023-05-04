@@ -3,6 +3,7 @@ module.exports = {
     displayName: "Flark's Boom-Zooka",
     desc: "Summon 3 minions from your deck. They attack enemy minions, then die.",
     mana: 7,
+    type: "Spell",
     class: "Hunter",
     rarity: "Legendary",
     set: "The Boomsday Project",

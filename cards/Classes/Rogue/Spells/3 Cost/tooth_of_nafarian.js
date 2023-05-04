@@ -2,6 +2,7 @@ module.exports = {
     name: "Tooth of Nafarian",
     desc: "Deal 2 damage. &BDiscover&R a spell from another class.",
     mana: 3,
+    type: "Spell",
     class: "Rogue",
     rarity: "Common",
     set: "Onyxia's Lair",

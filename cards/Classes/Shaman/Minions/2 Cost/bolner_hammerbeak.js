@@ -3,6 +3,7 @@ module.exports = {
     stats: [1, 4],
     desc: "After you play a &BBattlecry&R minion, repeat the first &BBattlecry&R played this turn.",
     mana: 2,
+    type: "Minion",
     tribe: "None",
     class: "Shaman",
     rarity: "Legendary",
