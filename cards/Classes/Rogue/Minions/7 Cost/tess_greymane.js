@@ -3,6 +3,7 @@ module.exports = {
     stats: [6, 6],
     desc: "&BBattlecry:&R Replay every card from another class you've played this game.",
     mana: 7,
+    type: "Minion",
     tribe: "None",
     class: "Rogue",
     rarity: "Legendary",

@@ -2,6 +2,7 @@ module.exports = {
     name: "Shadow Visions",
     desc: "Discover a copy of a spell in your deck.",
     mana: 2,
+    type: "Spell",
     class: "Priest",
     rarity: "Epic",
     set: "Journey to Un'Goro",

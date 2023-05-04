@@ -3,6 +3,7 @@ module.exports = {
     stats: [6, 6],
     desc: "Taunt. Battlecry: Replace your hand and deck with Legendary minions.",
     mana: 4,
+    type: "Minion",
     tribe: "None",
     class: "Neutral",
     rarity: "Free",

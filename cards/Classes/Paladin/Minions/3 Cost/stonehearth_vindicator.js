@@ -3,6 +3,7 @@ module.exports = {
     stats: [3, 1],
     desc: "&BBattlecry: &RDraw a spell that costs (3) or less. It costs (0) this turn.",
     mana: 3,
+    type: "Minion",
     tribe: "None",
     class: "Paladin",
     rarity: "Epic",

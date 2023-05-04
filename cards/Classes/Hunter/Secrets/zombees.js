@@ -3,6 +3,7 @@ module.exports = {
     displayName: "ZOMBEEEES!!!",
     desc: "&BSecret:&R After your opponent plays a minion, summon four 1/1 Zombees to attack it.",
     mana: 2,
+    type: "Spell",
     class: "Hunter",
     rarity: "Common",
     set: "Return to Naxxramas",

@@ -3,6 +3,7 @@ module.exports = {
     stats: [2, 6],
     desc: "Battlecry: Secretly choose to Counter the next minion or spell your opponent plays while this is alive.",
     mana: 4,
+    type: "Minion",
     tribe: "None",
     class: "Neutral",
     rarity: "Legendary",

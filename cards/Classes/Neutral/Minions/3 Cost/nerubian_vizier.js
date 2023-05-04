@@ -3,6 +3,7 @@ module.exports = {
     stats: [2, 4],
     desc: "Battlecry: Discover a spell. If a friendly Undead died after your last turn, it costs (2) less.",
     mana: 3,
+    type: "Minion",
     tribe: "Undead",
     class: "Neutral",
     rarity: "Common",

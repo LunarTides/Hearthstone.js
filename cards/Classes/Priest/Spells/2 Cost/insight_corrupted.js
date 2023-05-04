@@ -3,6 +3,7 @@ module.exports = {
     displayName: "Insight",
     desc: "Corrupted. Draw a minion. Reduce its Cost by (2).",
     mana: 2,
+    type: "Spell",
     class: "Priest",
     rarity: "Common",
     set: "Madness at the Darkmoon Faire",

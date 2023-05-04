@@ -3,6 +3,7 @@ module.exports = {
     stats: [8, 8],
     desc: "Battlecry: If your deck has no duplicates, add 2 other random Dragons to your hand. They cost (0).",
     mana: 9,
+    type: "Minion",
     tribe: "Dragon",
     class: "Neutral",
     rarity: "Legendary",

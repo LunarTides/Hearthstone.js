@@ -2,6 +2,7 @@ module.exports = {
     name: "Legendary Invitation",
     desc: "&BDiscover&R a &BLegendary&R minion from another class. It costs (0).",
     mana: 2,
+    type: "Spell",
     class: "Paladin",
     rarity: "Free",
     set: "Murder at Castle Nathria",

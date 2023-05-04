@@ -2,6 +2,7 @@ module.exports = {
     name: "Preparation",
     desc: "The next spell you cast this turn costs (2) less.",
     mana: 0,
+    type: "Spell",
     class: "Rogue",
     rarity: "Epic",
     set: "Legacy",

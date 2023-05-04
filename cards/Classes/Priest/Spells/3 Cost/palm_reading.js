@@ -2,6 +2,7 @@ module.exports = {
     name: "Palm Reading",
     desc: "Discover a spell. Reduce the Cost of spells in your hand by (1).",
     mana: 3,
+    type: "Spell",
     class: "Priest",
     rarity: "Rare",
     set: "Madness at the Darkmoon Faire",

@@ -3,6 +3,7 @@ module.exports = {
     stats: [2, 6],
     desc: "Taunt. Battlecry: Your opponent summons a random minion from their hand.",
     mana: 2,
+    type: "Minion",
     tribe: "None",
     class: "Neutral",
     rarity: "Epic",

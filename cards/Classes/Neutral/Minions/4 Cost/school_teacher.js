@@ -3,6 +3,7 @@ module.exports = {
     stats: [4, 4],
     desc: "Battlecry: Add a 1/1 Nagaling to your hand. Discover a spell that costs (3) or less to teach it.",
     mana: 4,
+    type: "Minion",
     tribe: "Naga",
     class: "Neutral",
     rarity: "Epic",

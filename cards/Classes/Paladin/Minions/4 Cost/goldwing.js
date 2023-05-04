@@ -3,6 +3,7 @@ module.exports = {
     stats: [3, 5],
     desc: "&BRush. Battlecry: &RIf you're holding a Mech, gain &BWindfury&R.",
     mana: 4,
+    type: "Minion",
     tribe: "Mech / Dragon",
     class: "Paladin",
     rarity: "Rare",

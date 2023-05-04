@@ -3,6 +3,7 @@ module.exports = {
     stats: [4, 4],
     desc: "Battlecry: Eat a minion in your opponent's hand. Gain its stats.",
     mana: 7,
+    type: "Minion",
     tribe: "Murloc",
     class: "Neutral",
     rarity: "Legendary",

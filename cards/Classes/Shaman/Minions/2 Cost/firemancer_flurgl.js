@@ -3,6 +3,7 @@ module.exports = {
     stats: [2, 3],
     desc: "After you play a Murloc, deal 1 damage to all enemies.",
     mana: 2,
+    type: "Minion",
     tribe: "Murloc",
     class: "Shaman",
     rarity: "Legendary",

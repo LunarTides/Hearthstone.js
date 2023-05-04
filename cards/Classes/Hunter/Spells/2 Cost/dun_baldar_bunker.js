@@ -2,6 +2,7 @@ module.exports = {
     name: "Dun Baldar Bunker",
     desc: "At the end of your turn, draw a Secret and set its Cost to (1). Lasts 3 turns.",
     mana: 2,
+    type: "Spell",
     class: "Hunter",
     rarity: "Rare",
     set: "Fractured in Alterac Valley",

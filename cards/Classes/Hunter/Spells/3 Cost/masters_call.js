@@ -3,6 +3,7 @@ module.exports = {
     displayName: "Master's Call",
     desc: "&BDiscover&R a minion in your deck. If all 3 are Beasts, draw them all.",
     mana: 3,
+    type: "Spell",
     class: "Hunter",
     rarity: "Epic",
     set: "Rastakhan's Rumble",

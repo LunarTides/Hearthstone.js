@@ -3,6 +3,7 @@ module.exports = {
     displayName: "Jackpot!",
     desc: "Add two random spells from other classes that cost (5) or more to your hand.",
     mana: 2,
+    type: "Spell",
     class: "Rogue",
     rarity: "Common",
     set: "Throne of the Tides",

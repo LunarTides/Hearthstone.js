@@ -3,6 +3,7 @@ module.exports = {
     stats: [3, 2],
     desc: "Battlecry: If you've cast three spells while holding this, draw 3 cards.",
     mana: 3,
+    type: "Minion",
     tribe: "Naga",
     class: "Priest",
     rarity: "Rare",

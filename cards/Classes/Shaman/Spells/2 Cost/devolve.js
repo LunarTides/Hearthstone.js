@@ -2,6 +2,7 @@ module.exports = {
     name: "Devolve",
     desc: "Transform all enemy minions into random ones that cost (1) less.",
     mana: 2,
+    type: "Spell",
     class: "Shaman",
     rarity: "Rare",
     spellClass: "Nature",

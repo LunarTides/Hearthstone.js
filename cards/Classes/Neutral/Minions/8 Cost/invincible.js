@@ -3,6 +3,7 @@ module.exports = {
     stats: [5, 5],
     desc: "Reborn. Battlecry and Deathrattle: Give a random friendly Undead +5/+5 and Taunt.",
     mana: 8,
+    type: "Minion",
     tribe: "Undead Beast",
     class: "Neutral",
     rarity: "Legendary",

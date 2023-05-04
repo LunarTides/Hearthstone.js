@@ -3,6 +3,7 @@ module.exports = {
     stats: [3, 4],
     desc: "Battlecry: Discover a spell that costs (5) or more.",
     mana: 6,
+    type: "Minion",
     tribe: "None",
     class: "Neutral",
     rarity: "Rare",

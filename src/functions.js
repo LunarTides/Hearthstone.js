@@ -224,7 +224,7 @@ class Functions {
         let _cards = [];
 
         cards.forEach(c => {
-            if (!c.uncollectible && uncollectible) _cards.push(c);
+            if (!c.uncollectible || !uncollectible) _cards.push(c);
         });
 
         return _cards;
