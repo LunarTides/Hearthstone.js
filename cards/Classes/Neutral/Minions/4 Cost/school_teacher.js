@@ -20,7 +20,6 @@ module.exports = {
         if (!card) return;
 
         let minion = new game.Card("School Teacher Nagaling", plr);
-        minion.desc = minion.desc.replace("{0}", card.displayName);
         minion.storage.push(card);
 
         plr.addToHand(minion);

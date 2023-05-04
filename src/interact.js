@@ -697,7 +697,7 @@ class Interact {
         }
 
         let card = values[parseInt(choice) - 1];
-        if (!card instanceof game.Card) card = new game.Card(card.name, game.player);
+        if (!(card instanceof game.Card)) card = new game.Card(card.name, game.player);
 
         return card;
     }
