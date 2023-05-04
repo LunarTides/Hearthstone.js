@@ -869,11 +869,11 @@ class Interact {
         if (card.placeholder) {
             let reg = new RegExp(`{ph:.*?} (.*?) {/ph}`);
 
-            do {
+            while (reg.exec(desc)) {
                 let placeholder = reg.exec(desc)[1]; // Gets the capturing group result
 
                 desc = desc.replace(reg, placeholder);
-            } while (reg.exec(desc));
+            }
         }
 
         let mana = `{${card.mana}} `;

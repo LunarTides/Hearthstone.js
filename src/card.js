@@ -643,9 +643,13 @@ class Card {
 
         this.placeholder = this.activate("placeholders")[0];
 
-        this.placeholder.forEach((p, i) => {
-            this.desc = this.desc.replace(new RegExp(`{ph:${i}} .*? {/ph}`, 'g'), `{ph:${i}} ${p} {/ph}`);
-            this.desc = this.desc.replaceAll(`{${i}}`, `{ph:${i}} ${p} {/ph}`);
+        Object.entries(this.placeholder).forEach(p => {
+            let [key, val] = p;
+
+            let replacement = `{ph:${key}} ${val} {/ph}`;
+
+            this.desc = this.desc.replace(new RegExp(`{ph:${key}} .*? {/ph}`, 'g'), replacement);
+            this.desc = this.desc.replaceAll(`{${key}}`, replacement);
         });
     }
 
