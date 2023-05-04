@@ -867,7 +867,7 @@ class Interact {
 
         // Extract placeholder value, remove the placeholder header and footer
         if (card.placeholder) {
-            let reg = new RegExp(`{ph:.} (.*?) {/ph}`);
+            let reg = new RegExp(`{ph:.*?} (.*?) {/ph}`);
 
             do {
                 let placeholder = reg.exec(desc)[1]; // Gets the capturing group result
