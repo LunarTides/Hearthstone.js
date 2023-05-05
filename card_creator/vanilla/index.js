@@ -6,7 +6,7 @@ function capitalize(str) {
     return str[0].toUpperCase() + str.slice(1).toLowerCase();
 }
 
-function createCard(card) {
+function createCard(card, main) {
     // Harvest info
     let cardClass = capitalize(card.cardClass);
     let collectible = card.collectible || false;
@@ -109,14 +109,14 @@ function createCard(card) {
 
     card = Object.assign({}, _card, struct);
 
-    console.log(card);
+    if (main) console.log(card);
     cc.main(type, null, null, card);
 }
 
 function main(home = ".", card = null) {
     console.log("Hearthstone.js Vanilla Card Creator (C) 2022\n");
 
-    if (card) return createCard(card);
+    if (card) return createCard(card, false);
 
     let data = fs.readFileSync(home + "/.ignore.cards.json", { encoding: 'utf8', flag: 'r' });
 
@@ -159,7 +159,7 @@ function main(home = ".", card = null) {
         }
         else card = filtered_cards[0];
 
-        createCard(card);
+        createCard(card, true);
     }
 }
 

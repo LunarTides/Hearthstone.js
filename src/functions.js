@@ -952,9 +952,9 @@ ${aiHistory}
         let cards;
 
         try {
-            cards = fs.readFileSync("./../card_creator/vanilla/.ignore.cards.json");
+            cards = fs.readFileSync(game.dirname + "/../card_creator/vanilla/.ignore.cards.json");
         } catch (err) {
-            console.log("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, go to 'card_creator/vanilla/' and open 'generate.bat', then try again.");
+            console.log("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, go to 'card_creator/vanilla/' and open 'generate.bat', then try again.".red);
             game.input();
 
             process.exit(1);
@@ -990,16 +990,20 @@ ${aiHistory}
             // There was a card in the deck that isn't implemented in Hearthstone.js
             let vcc = require("./../card_creator/vanilla/index");
 
+            let createCard = game.input(`Some cards do not currently exist. You cannot play on this deck without them. Do you want to create these cards? (you will need to give the card logic yourself) [Y/N] `.yellow);
+
+            if (createCard.toLowerCase()[0] != "y") process.exit(1);
+
             invalidCards.forEach(c => {
-                let createCard = game.input(`Card '${c.name}' does not currently exist. You cannot play on this deck without it. Do you want to create this card? (you will need to give the card logic yourself) [Y/N] `.yellow);
-
-                if (createCard.toLowerCase()[0] != "y") process.exit(1);
-
                 // Create that card
+                console.log("Creating " + c.name.yellow);
                 vcc.main("./../card_creator", c);
             });
 
-            this.importCards("./../cards");
+            game.input("Press enter to try this deckcode again.\n");
+
+            this.importCards(__dirname + "/../cards");
+
             return this.decodeVanillaDeck(plr, code); // Try again
         }
 
