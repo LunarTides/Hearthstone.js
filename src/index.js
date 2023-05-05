@@ -61,7 +61,7 @@ function main() {
     try {
         while (game.running) game.interact.doTurn();
     } catch (err) {
-        game.functions.createCrashReport(err);
+        game.functions.createLogFile(err); // Create error report file
 
         throw err;
     }

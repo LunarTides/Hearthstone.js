@@ -527,7 +527,7 @@ class Interact {
 
         if (deckcode.length > 0) error = game.functions.importDeck(plr, deckcode);
         else {
-            if (!game.config.debug) {
+            if (!game.config.debug && game.config.branch == "stable") { // I want to be able to test without debug mode on in a non-stable branch
                 // Give error message
                 game.input("Please enter a deckcode!\n".red);
                 return this.deckCode(plr); // Retry
@@ -866,12 +866,13 @@ class Interact {
     
         cls();
     
-        console.log(`|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||`)
-        console.log(`|||                Hearthstone.js V${version} | Copyright (C) 2022 | SolarWinds            |||`)
-        console.log(`||| This program is licensed under the GPL-3.0 license. To learn more: type 'license' |||`)
+        let version = `Hearthstone.js V${game.config.version}-${game.config.branch} | Copyright (C) 2022 | SolarWindss`;
+        console.log('|'.repeat(version.length + 8));
+        console.log(`||| ${version} |||`)
+        console.log(`|||     This program is licensed under the GPL-3.0 license.   ` + ' '.repeat(game.config.branch.length) + "|||")
         if (disappear)
-        console.log(`|||                     This will disappear once you end your turn.                   |||`)
-        console.log(`|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n`);
+        console.log(`|||         This will disappear once you end your turn.       ` + ' '.repeat(game.config.branch.length) + `|||`)
+        console.log('|'.repeat(version.length + 8));
     }
     getReadableCard(card, i = -1) {
         /**
