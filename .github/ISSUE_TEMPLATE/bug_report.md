@@ -20,6 +20,9 @@ Steps to reproduce the behavior:
 **Expected behavior**
 A clear and concise description of what you expected to happen.
 
+**Log Files**
+Drag in the two log files that generated. If the game crashed drag in `logs/crashlog-XX.XX.XX-XX.XX.XX.txt` and the ai version. If the game didn't crash, make sure to exit the game by typing `exit` in the runner, and drag in `logs/log-XX.XX.XX-XX.XX.XX.txt` and the ai version.
+
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
