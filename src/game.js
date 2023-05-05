@@ -314,6 +314,9 @@ class Game {
         if ((this.player1.ai || this.player2.ai) && this.config.debug) this.interact.doTurnLogic("/ai");
 
         this.running = false;
+
+        // Create log file
+        this.functions.createLogFile();
     }
     endTurn() {
         /**
