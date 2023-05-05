@@ -4,6 +4,7 @@ module.exports = {
     stats: [1, 1],
     desc: "Charge. At the end of your turn, this minion dies.",
     mana: 1,
+    type: "Minion",
     tribe: "Undead",
     class: "Death Knight",
     rarity: "Free",

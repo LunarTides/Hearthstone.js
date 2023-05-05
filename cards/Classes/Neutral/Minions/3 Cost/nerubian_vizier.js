@@ -3,6 +3,7 @@ module.exports = {
     stats: [2, 4],
     desc: "Battlecry: Discover a spell. If a friendly Undead died after your last turn, it costs (2) less.",
     mana: 3,
+    type: "Minion",
     tribe: "Undead",
     class: "Neutral",
     rarity: "Common",
@@ -11,7 +12,7 @@ module.exports = {
 
     battlecry(plr, game, self) {
         let list = game.functions.getCards();
-        list = list.filter(c => game.functions.getType(c) == "Spell" && [plr.heroClass, "Neutral"].includes(c.class));
+        list = list.filter(c => c.type == "Spell" && [plr.heroClass, "Neutral"].includes(c.class));
         if (list.length == 0) return;
 
         let card = game.interact.discover("Discover a spell.", list);

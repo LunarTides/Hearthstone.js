@@ -3,6 +3,7 @@ const { exit } = require("process");
 const { setup_ai } = require("./ai");
 const { setup_card } = require("./card");
 const { setup_player } = require("./player");
+const { decode } = require("deckstrings"); // To decode vanilla deckcodes
 
 let game = null;
 
@@ -56,7 +57,7 @@ class Functions {
 
         let item = list[this.randInt(0, list.length - 1)];
         
-        if (item instanceof game.Card && cpyCard) item = new game.Card(item.name, item.plr);
+        if (item instanceof game.Card && cpyCard) item = item.imperfectCopy();
 
         return item;
     }
@@ -173,25 +174,93 @@ class Functions {
 
         return [wall, finishWall];
     }
+    createLogFile(err = null) {
+        /**
+         * Create a (crash)log file
+         *
+         * @param {Error} err If this is not null, create a crash report. If this is null, create a normal log file.
+         *
+         * @returns {null}
+         */
+        // Create a (crash-)log file
+        if (!fs.existsSync("./logs/")) fs.mkdirSync("./logs/");
+
+        // Get the day, month, year, hour, minute, and second, as 2 digit numbers.
+        let date = new Date();
+
+        let day = date.getDate().toString();
+        let month = (date.getMonth() + 1).toString(); // Month is 0-11 for some reason
+        let year = date.getFullYear().toString().slice(2); // Get the last 2 digits of the year
+
+        let hour = date.getHours().toString();
+        let minute = date.getMinutes().toString();
+        let second = date.getSeconds().toString();
+
+        if (day < 10) day = `0${day}`;
+        if (month < 10) month = `0${month}`;
+        if (year < 10) year = `0${year}`;
+
+        if (hour < 10) hour = `0${hour}`;
+        if (minute < 10) minute = `0${minute}`;
+        if (second < 10) second = `0${second}`;
+
+        // Assemble the time
+        let dateString = `${day}/${month}/${year} ${hour}:${minute}:${second}`; // 01/01/23 23:59:59
+        let dateStringFileFriendly = dateString.replace(/[/:]/g, ".").replaceAll(" ", "-"); // 01.01.23-23.59.59
+
+        // Grab the history of the game
+        let history = game.interact.handleCmds("history", false);
+
+        let name = "Log";
+        if (err) name = "Crash Log";
+
+        let errorContent = "";
+
+        if (err) errorContent = `
+Error:
+${err.stack}
+`
+
+        let content = `Hearthstone.js ${name}
+Date: ${dateString}
+Version: ${game.config.version}-${game.config.branch}
+
+Remember to attach the '-ai' log file as well when creating a bug report.
+
+History:
+${history}${errorContent}
+`
+
+        let filename = "log";
+        if (err) filename = "crashlog";
+
+        filename = `${filename}-${dateStringFileFriendly}`;
+
+        fs.writeFileSync(`./logs/${filename}.txt`, content);
+
+        // AI log
+        game.config.debug = true; // Do this so it can actually run '/ai'
+        let aiHistory = game.interact.handleCmds("/ai", false);
+
+        content = `Hearthstone.js ${name} Log
+Date: ${dateString}
+Version: ${game.config.version}-${game.config.branch}
+
+Remember to attach the main log file as well when making a bug report. The main log file is the one not ending in '-ai'.
+
+AI History:
+${aiHistory}
+`
+
+        fs.writeFileSync(`./logs/${filename}-ai.txt`, content);
+
+        if (!err) return;
+
+        console.log(`\nThe game crashed!\nCrash report created in 'logs/${filename}.txt' and 'logs/${filename}-ai.txt'\nPlease create a bug report at:\nhttps://github.com/SolarWindss/Hearthstone.js/issues`.yellow);
+        game.input();
+    }
 
     // Getting card info
-    getType(card) {
-        /**
-         * Returns the type of a card
-         * 
-         * @param {Card | Blueprint} card The card to check
-         * 
-         * @returns {string} The type of the card
-         */
-
-        if (typeof(card) != "object") throw new TypeError("Invalid card passed into `getType`. This can happen when, for example, a card name was mispelled somewhere.");
-        if (card.cooldown) return "Location"; // If you see this in the error log, the error occorred since the game failed to get the type of a card, however it passed the object check assertion. Please report this asap! Error Code: #21
-        
-        else if (card.tribe) return "Minion"; 
-        else if (card.stats) return "Weapon";
-        else if (card.heropower) return "Hero";
-        else return "Spell";
-    }
     getCardByName(name, refer = true) {
         /**
          * Gets the card that has the same name as "name"
@@ -241,7 +310,7 @@ class Functions {
         let _cards = [];
 
         cards.forEach(c => {
-            if (!c.uncollectible && uncollectible) _cards.push(c);
+            if (!c.uncollectible || !uncollectible) _cards.push(c);
         });
 
         return _cards;
@@ -292,6 +361,8 @@ class Functions {
         let classes = [];
 
         fs.readdirSync(game.dirname + "/cards/StartingHeroes").forEach(file => {
+            if (!file.endsWith(".js")) return; // Something is wrong with the file name.
+
             let name = file.slice(0, -3); // Remove ".js"
             name = name.replaceAll("_", " "); // Remove underscores
             name = game.functions.capitalizeAll(name); // Capitalize all words
@@ -565,6 +636,7 @@ class Functions {
         if (game.player.ai) {
             let card = game.player.ai.dredge(cards);
 
+            game.player.deck = game.player.deck.filter(c => c != card); // Removes the selected card from the players deck.
             game.player.deck.push(card);
 
             return card;
@@ -725,7 +797,7 @@ class Functions {
         switch (plr.heroClass) {
             case "Priest":
                 // Add a random Priest minion to your hand.
-                let possible_cards = cards.filter(c => this.getType(c) == "Minion" && c.class == "Priest");
+                let possible_cards = cards.filter(c => c.type == "Minion" && c.class == "Priest");
                 if (possible_cards.length <= 0) return;
 
                 let card = game.functions.randList(possible_cards);
@@ -781,7 +853,7 @@ class Functions {
         list.forEach(c => {
             if (times >= amount) return;
 
-            game.summonMinion(new game.Card(c.name, plr), plr);
+            game.summonMinion(c.imperfectCopy(), plr);
 
             times++;
             cards.push(c);
@@ -872,6 +944,145 @@ class Functions {
         setup_ai(game);
         setup_player(game);
     }
+    decodeVanillaDeck(plr, code) {
+        /**
+         * Turns a vanilla deckcode into a Hearthstone.js deckcode
+         *
+         * @param {Player} plr The player that will get the deckcode
+         * @param {string} code The deckcode
+         *
+         * @returns {string} The Hearthstone.js deckcode
+         */
+        let deck = decode(code); // Use the 'deckstrings' api's decode
+
+        let cards;
+
+        try {
+            cards = fs.readFileSync(game.dirname + "/../card_creator/vanilla/.ignore.cards.json");
+        } catch (err) {
+            console.log("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, go to 'card_creator/vanilla/' and open 'generate.bat', then try again.".red);
+            game.input();
+
+            process.exit(1);
+        }
+        cards = JSON.parse(cards);
+
+        delete deck.format; // We don't care about the format
+
+        let heroClass = cards.find(a => a.dbfId == deck.heroes[0]).cardClass;
+        heroClass = this.capitalize(heroClass);
+
+        if (heroClass == "Deathknight") heroClass = "Death Knight"; // Wtf hearthstone?
+        if (heroClass == "Demonhunter") heroClass = "Demon Hunter"; // I'm not sure if this actually happens, but considering it happened with death knight, you never know
+        
+        deck = deck.cards.map(c => [cards.find(a => a.dbfId == c[0]), c[1]]); // Get the full card object from the dbfId
+
+        let createdCards = this.getCards(false);
+        
+        let invalidCards = [];
+        deck.forEach(c => {
+            c = c[0];
+
+            if (createdCards.find(card => card.name == c.name || card.displayName == c.name)) return;
+
+            // The card doesn't exist.
+            console.log(`ERROR: Card '${c.name}' doesn't exist!`.red);
+            invalidCards.push(c);
+        });
+
+        if (invalidCards.length > 0) {
+            // There was a card in the deck that isn't implemented in Hearthstone.js
+            let createCard = game.input(`Some cards do not currently exist. You cannot play on this deck without them. Do you want to create these cards? (you will need to give the card logic yourself) [Y/N] `.yellow);
+
+            if (createCard.toLowerCase()[0] != "y") process.exit(1);
+
+            let vcc = require("./../card_creator/vanilla/index");
+
+            invalidCards.forEach(c => {
+                // Create that card
+                console.log("Creating " + c.name.yellow);
+                vcc.main("", c);
+            });
+
+            game.input("Press enter to try this deckcode again.\n");
+
+            this.importCards(__dirname + "/../cards");
+
+            return this.decodeVanillaDeck(plr, code); // Try again
+        }
+
+        let new_deck = [];
+
+        // All cards in the deck exists
+        let amounts = {};
+        deck.forEach(c => {
+            let name = cards.find(a => a.dbfId == c[0].dbfId).name;
+            // The name can still not be correct
+            if (!createdCards.find(a => a.name == name)) name = createdCards.find(a => a.displayName == name).name;
+
+            new_deck.push([new game.Card(name, plr), c[1]]);
+
+            if (!amounts[c[1]]) amounts[c[1]] = 0;
+            amounts[c[1]]++;
+        });
+
+        // Sort the `new_deck` array, lowest amount first
+        new_deck = new_deck.sort((a, b) => {
+            return a[1] - b[1];
+        });
+
+        // Assemble Hearthstone.js deckcode.
+        let deckcode = `${heroClass} `;
+
+        // Generate runes
+        let runes = "";
+
+        if (heroClass == "Death Knight") {
+            new_deck.forEach(c => {
+                c = c[0];
+
+                if (!c.runes) return;
+
+                runes += c.runes;
+            });
+
+            let sorted_runes = "";
+
+            if (runes.includes("B")) sorted_runes += "B";
+            if (runes.includes("F")) sorted_runes += "F";
+            if (runes.includes("U")) sorted_runes += "U";
+
+            runes = runes.replace("B", "");
+            runes = runes.replace("F", "");
+            runes = runes.replace("U", "");
+
+            sorted_runes += runes;
+
+            runes = sorted_runes.slice(0, 3); // Only use the first 3 characters
+
+            if (runes === "") runes = "3B";
+
+            if (runes[0] == runes[1] && runes[1] == runes[2]) runes = `3${runes[0]}`;
+
+            deckcode += `[${runes}] `;
+        }
+
+        deckcode += `/`;
+
+        // Amount format
+        Object.entries(amounts).forEach(a => {
+            let [key, amount] = a;
+
+            if (!amounts[parseInt(key) + 1]) deckcode += key; // If this is the last amount
+            else deckcode += `${key}:${amount},`;
+        });
+
+        deckcode += `/ `;
+
+        deckcode += new_deck.map(c => c[0].id.toString(36)).join(',');
+
+        return deckcode;
+    }
     importDeck(plr, code) {
         /**
          * Imports a deck using a code and put the cards into the player's deck
@@ -892,6 +1103,12 @@ class Functions {
         // The code is base64 encoded, so we need to decode it
         //code = Buffer.from(code, 'base64').toString('ascii');
         //if (!code) ERROR("INVALIDB64");
+        //
+        try {
+            decode(code); // If this doesn't crash, this is a vanilla deckcode
+
+            code = this.decodeVanillaDeck(plr, code);
+        } catch (err) {}; // This isn't a vanilla code, no worries, just parse it as a hearthstone.js deckcode.
 
         let runeRegex = /\[[BFU]{3}\]/; // BFU
         let altRuneRegex = /\[3[BFU]\]/; // BBB -> 3B
@@ -974,7 +1191,7 @@ class Functions {
                 }
                 card = new game.Card(card.name, plr);
 
-                for (let i = 0; i < parseInt(copies); i++) _deck.push(this.cloneCard(card));
+                for (let i = 0; i < parseInt(copies); i++) _deck.push(card.perfectCopy());
 
                 if (card.settings) {
                     if (card.settings.maxDeckSize) maxDeckLength = card.settings.maxDeckSize;

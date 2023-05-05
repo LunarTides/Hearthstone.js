@@ -3,6 +3,7 @@ module.exports = {
     stats: [1, 1],
     desc: "Battlecry: Transform a friendly minion into one that costs (1) more.",
     mana: 1,
+    type: "Minion",
     tribe: "None",
     class: "Neutral",
     rarity: "Free",

@@ -2,6 +2,7 @@ module.exports = {
     name: "Devolve",
     desc: "Transform all enemy minions into random ones that cost (1) less.",
     mana: 2,
+    type: "Spell",
     class: "Shaman",
     rarity: "Rare",
     spellClass: "Nature",
@@ -10,7 +11,7 @@ module.exports = {
     cast(plr, game, self) {
         game.board[plr.getOpponent().id].forEach(m => {
             let list = game.functions.getCards();
-            list = list.filter(c => game.functions.getType(c) == "Minion" && c.mana == m.mana - 1);
+            list = list.filter(c => c.type == "Minion" && c.mana == m.mana - 1);
 
             let minion = game.functions.randList(list);
             if (!minion) return;

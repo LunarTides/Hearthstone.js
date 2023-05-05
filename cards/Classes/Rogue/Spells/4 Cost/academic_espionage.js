@@ -2,6 +2,7 @@ module.exports = {
     name: "Academic Espionage",
     desc: "Shuffle 10 cards from your opponent's class into your deck. They cost (1).",
     mana: 4,
+    type: "Spell",
     class: "Rogue",
     rarity: "Epic",
     set: "The Boomsday Project",

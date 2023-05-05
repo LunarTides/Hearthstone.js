@@ -3,6 +3,7 @@ module.exports = {
     stats: [6, 8],
     desc: "At the end of each turn, summon all friendly minions that died this turn.",
     mana: 8,
+    type: "Minion",
     tribe: "Undead",
     class: "Neutral",
     rarity: "Legendary",

@@ -3,6 +3,7 @@ module.exports = {
     stats: [2, 1],
     desc: "&BBattlecry:&R Draw a card. Deal 2 damage to your hero.",
     mana: 1,
+    type: "Minion",
     tribe: "None",
     class: "Warlock",
     rarity: "Common",

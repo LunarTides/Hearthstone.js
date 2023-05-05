@@ -3,6 +3,7 @@ module.exports = {
     stats: [0, 4],
     desc: "This minion's Attack is always equal to its Health.",
     mana: 3,
+    type: "Minion",
     tribe: "Elemental",
     class: "Priest",
     rarity: "Common",

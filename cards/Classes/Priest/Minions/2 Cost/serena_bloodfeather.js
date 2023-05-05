@@ -3,6 +3,7 @@ module.exports = {
     stats: [1, 1],
     desc: "&BBattlecry:&R Choose an enemy minion. Steal Attack and Health from it until this has more.",
     mana: 2,
+    type: "Minion",
     tribe: "None",
     class: "Priest",
     rarity: "Legendary",

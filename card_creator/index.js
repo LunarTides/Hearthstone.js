@@ -44,7 +44,7 @@ function common() {
 
     if (keywords) keywords = '["' + keywords.split(', ').join('", "') + '"]';
 
-    return {"name": name, "displayName": displayName, "desc": description, "mana": parseInt(cost), "class": _class, "rarity": rarity, "runes": runes, "keywords": keywords};
+    return {"name": name, "displayName": displayName, "desc": description, "mana": parseInt(cost), "type": type, "class": _class, "rarity": rarity, "runes": runes, "keywords": keywords};
 }
 
 function minion() {
@@ -61,6 +61,7 @@ function minion() {
         "stats": stats,
         "desc": _card.desc,
         "mana": _card.mana,
+        "type": _card.type,
         "tribe": tribe,
         "class": _card.class,
         "rarity": _card.rarity,
@@ -92,6 +93,7 @@ function weapon() {
         "stats": stats,
         "desc": _card.desc,
         "mana": _card.mana,
+        "type": _card.type,
         "class": _card.class,
         "rarity": _card.rarity,
         "runes": _card.runes,
@@ -131,6 +133,7 @@ function location() {
         "stats": stats,
         "desc": _card.desc,
         "mana": _card.mana,
+        "type": _card.type,
         "class": _card.class,
         "rarity": _card.rarity,
         "runes": _card.runes,
@@ -139,103 +142,128 @@ function location() {
     });
 }
 
-function doCode(_path = "", _filename = "") {
-    let uncollectible;
-
-    if (!card.uncollectible && _filename == "") uncollectible = rl.keyInYN("Uncollectible?");
-    if (uncollectible) card.uncollectible = uncollectible;
-
-    if (card.tribe == "") card.tribe = "None";
-
-    // Get the cards 'function' (battlecry, cast, deathrattle, etc...)
+function getCardFunction(card_type) {
+    // Get the card's 'function' (battlecry, cast, deathrattle, etc...)
     let func;
-    let _type = type.toLowerCase();
 
-    if (_type == "spell") func = "Cast";
-    else if (_type == "hero") func = "HeroPower";
-    else if (_type == "location") func = "Use";
-    else {
+    if (card_type == "spell") func = "Cast"; // If the card is a spell, the function is 'cast'
+    else if (card_type == "hero") func = "HeroPower"; // If the card is a hero card, the function is 'heropower'
+    else if (card_type == "location") func = "Use"; // If the card is a location, the function is 'use'
+    else { // If the card is a Minion or Weapon
         //func = input("Function: ");
+
+        // Try to extract a function from the card's description
         let reg = /[A-Z][a-z].*?:/;
         func = card.desc.match(reg);
-        if (!func && card.desc) func = "Passive:";
-        else if (!card.desc) func = "";
-        else func = func[0];
 
-        func = func.slice(0, -1);
+        if (!func && card.desc) func = "Passive:"; // If it didn't find a function, but the card has text in its' description, the function is 'passive'
+        else if (!card.desc) func = ""; // If the card doesn't have a description, it doesn't get a default function.
+        else func = func[0]; // If it found a function, and the card has a description, the function is the function it found in the description.
+
+        func = func.slice(0, -1); // Remove the last ':'
     }
 
+    return func;
+}
+
+function createCard(override_path = "", override_filename = "") {
+    // If the user didn't specify a tribe, but the tribe exists, set the tribe to "None".
+    if (card.tribe == "") card.tribe = "None";
+
+    let file_friendly_type = type.toLowerCase();
+
+    let func = getCardFunction(file_friendly_type);
+
+    // Here it creates a default function signature
     let triggerText = ")";
     if (func.toLowerCase() == "passive") triggerText = ", key, val)";
-    if (func) func = `\n\n    ${func.toLowerCase()}(plr, game, self${triggerText} {\n\n    }`;
+    if (func) func = `\n\n    ${func.toLowerCase()}(plr, game, self${triggerText} {\n\n    }`; // Examples: '\n\n    passive(plr, game, self, key, val) {\n\n    }', '\n\n    battlecry(plr, game, self) {\n\n    }'
 
     // If the type is Hero, we want the card to go to '.../Heroes/...' and not to '.../Heros/...'
-    _type = (type == "Hero") ? "Heroe" : type;
+    file_friendly_type = (type == "Hero") ? "Heroe" : type;
 
     // If there are multiple classes in a card, put the card in a directory something like this '.../Class1/Class2/...'
-    let _class = "";
-    if (card.class.split(" / ").length > 1) {
-        let __class = card.class.split(" / ");
-
-        __class.forEach(c => {
-            _class += `${c}/`;
-        });
-
-        _class.slice(0, -1);
-    }
-    if (!_class) _class = card.class;
+    let classes = card.class.replaceAll(" / ", "/");
 
     // If the card has the word "Secret" in its description, put it in the ".../Secrets/..." folder.
-    if (card.desc.includes("Secret:")) _type = "Secret";
+    if (card.desc.includes("Secret:")) file_friendly_type = "Secret";
 
-    let path = __dirname + `/../cards/Classes/${_class}/${_type}s/${card.mana} Cost/`;
-    if (_path) path = _path;
+    // Create a path to put the card in.
+    let path = `${__dirname}/../cards/Classes/${classes}/${file_friendly_type}s/${card.mana} Cost/`;
+    if (override_path) path = override_path; // If this function was passed in a path, use that instead.
 
+    // Create a filename. Example: "Test Card" -> "test_card.js"
     let filename = card.name.toLowerCase().replaceAll(" ", "_") + ".js";
-    if (_filename) filename = _filename;
+    if (override_filename) filename = override_filename; // If this function was passed in a filename, use that instead.
 
+    // Get the latest card-id
     let id = parseInt(fs.readFileSync(__dirname + "/../.latest_id", "utf8"));
-    _id = card.uncollectible ? "" : `\n    id: ${id},`; // Don't add an id if the card is uncollectible. Id's are only used when creating/importing a deck.
+    let file_id = card.uncollectible ? "" : `\n    id: ${id},`; // Don't add an id if the card is uncollectible. Id's are only used when creating/importing a deck.
 
-    let content = Object.entries(card).map(c => `${c[0]}: ${(typeof(c[1]) == "string" && c[1][0] != "[") ? '"' + c[1] + '"' : c[1]}`);
+    // Generate the content of the card
+    // If the value is a string, put '"value"'. If it is not a string, put 'value'.
+    const getTypeValue = val => {
+        let ret = val;
+
+        if (typeof(val) === 'string' && val[0] != "[") ret = `"${val}"`; // If the value is a string, but not an array (arrays are parsed as strings, don't ask), set the value to '"value"'.
+
+        return ret;
+    }
+
+    let content = Object.entries(card).map(c => `${c[0]}: ${getTypeValue(c[1])}`); // name: "Test"
     content = `module.exports = {
-    ${content.join(',\n    ')},${_id}${func}
+    ${content.join(',\n    ')},${file_id}${func}
 }`;
 
+    // The path is now "./card_creator/../cards/...", replace this with "./cards/..."
     path = path.replace("card_creator/../", "");
-    let __path = path.replaceAll("/", "\\") + filename;
+    let file_path = path.replaceAll("/", "\\") + filename; // Replace '/' with '\' because windows
 
     if (!debug) {
-        if (!card.uncollectible) fs.writeFileSync(__dirname + "/../.latest_id", (id + 1).toString());
+        // If debug mode is disabled, write the card to disk.
+        
+        // If the card is not uncollectible, increment the id in '.latest_id' by 1
+        if (!card.uncollectible) fs.writeFileSync(__dirname + "/../.latest_id", (id + 1).toString()); 
 
+        // If the path the card would be written to doesn't exist, create it.
         if (!fs.existsSync(path)) fs.mkdirSync(path, { recursive: true });
+        // Write the file to the path
         fs.writeFileSync(path + filename, content);
 
-        console.log('File created at: "' + __path + '"');
+        console.log('File created at: "' + file_path + '"');
     } else {
-        console.log(`\nNew ID: ${id + 1}`);
-        console.log(`Would be path: "${__path}"`);
+        // If debug mode is enabled, just show some information about the card.
+        console.log(`\nNew ID: ${id + 1}`); // This is the id that would be written to '.latest_id'
+        console.log(`Would be path: "${file_path}"`);
         console.log(`Content: ${content}`);
     }
 
-    if (!_path) rl.question();
+    if (!override_path) rl.question(); // If the function was specified a path, assume the function was run from another file so don't pause it.
 
-    if (func && !debug) require("child_process").exec(`start vim "${__path}"`);
+    // Open vim on that card if it has a function to edit, and debug mode is disabled
+    if (func && !debug) require("child_process").exec(`start vim "${file_path}"`);
 }
 
-function main(_type = "", _path = "", _filename = "", _card = null) {
+function main(override_type = "", override_path = "", override_filename = "", override_card = null) {
+    // Reset the card
     card = {};
-    if (_card) card = _card;
 
+    // If this function was given a card, set the card to that card.
+    if (override_card) card = override_card;
+
+    // Reset the shouldExit switch
     shouldExit = false;
 
-    if (!_card) console.log("Hearthstone.js Card Creator (C) 2023\n");
+    // If the function was given a card, assume the function was run from another file, otherwise show a watermark.
+    if (!override_card) console.log("Hearthstone.js Card Creator (C) 2022\n");
 
-    if (_type == "") type = input("Type: ");
-    else type = _type;
+    // If the function wast passed a type, ask the user for the type of card they want to make
+    if (override_type) type = override_type;
+    else type = input("Type: ");
 
-    if (_card) {
-        doCode(_path, _filename);
+    // If a card was already specified, just create the card.
+    if (override_card) {
+        createCard(override_path, override_filename);
         return;
     }
 
@@ -245,13 +273,19 @@ function main(_type = "", _path = "", _filename = "", _card = null) {
     else if (type.toLowerCase() == "location") location();
     else if (type.toLowerCase() == "hero") hero();
     else {
+        // Invalid type
         console.log("That is not a valid type!");
         rl.question();
 
         shouldExit = true;
     }
 
-    if (!shouldExit) doCode(_path, _filename);
+    // Ask the user if the card should be uncollectible
+    let uncollectible = rl.keyInYN("Uncollectible?");
+    if (uncollectible) card.uncollectible = uncollectible;
+
+    // Actually create the card
+    if (!shouldExit) createCard(override_path, override_filename);
 }
 
 function set_debug(state) {
@@ -261,4 +295,5 @@ function set_debug(state) {
 exports.main = main;
 exports.set_debug = set_debug;
 
+// If the program was run directly, run 'main'. This is the same as "if __name__ == '__main__'" in python.
 if (require.main == module) main();

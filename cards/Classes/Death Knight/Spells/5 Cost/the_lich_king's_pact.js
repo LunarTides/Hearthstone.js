@@ -3,6 +3,7 @@ module.exports = {
     displayName: "Doom Pact",
     desc: "Destroy all minions. Remove the top card from your deck for each minion destroyed.",
     mana: 5,
+    type: "Spell",
     class: "Death Knight",
     rarity: "Free",
     set: "Knights of the Frozen Throne",

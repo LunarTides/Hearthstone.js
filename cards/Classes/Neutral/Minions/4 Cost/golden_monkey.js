@@ -3,6 +3,7 @@ module.exports = {
     stats: [6, 6],
     desc: "Taunt. Battlecry: Replace your hand and deck with Legendary minions.",
     mana: 4,
+    type: "Minion",
     tribe: "None",
     class: "Neutral",
     rarity: "Free",
@@ -15,7 +16,7 @@ module.exports = {
         let new_hand = [];
         let new_deck = [];
 
-        let possible_cards = game.functions.getCards().filter(c => c.rarity == "Legendary" && game.functions.getType(c) == "Minion");
+        let possible_cards = game.functions.getCards().filter(c => c.rarity == "Legendary" && c.type == "Minion");
 
         plr.hand.forEach(c => {
             let card = game.functions.randList(possible_cards);

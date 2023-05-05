@@ -2,6 +2,7 @@ module.exports = {
     name: "Bash",
     desc: "Deal 3 damage. Gain 3 Armor.",
     mana: 2,
+    type: "Spell",
     class: "Warrior",
     rarity: "Common",
     set: "The Grand Tournament",

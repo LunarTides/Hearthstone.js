@@ -2,6 +2,7 @@ module.exports = {
     name: "Bola Shot",
     desc: "Deal 1 damage to a minion and 2 damage to its neighbors.",
     mana: 2,
+    type: "Spell",
     class: "Hunter",
     rarity: "Common",
     set: "Darkmoon Races",

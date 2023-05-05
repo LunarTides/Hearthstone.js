@@ -498,11 +498,11 @@ class AI {
          * @returns {Card | Player | number} Target
          */
 
-        if (flags.includes("allow_locations")) {
+        if (flags.includes("allow_locations") && force_class != "hero") {
             let locations = game.board[this.plr.id].filter(m => m.type == "Location" && m.cooldown == 0 && !this.used_locations_this_turn.includes(m));
             this.used_locations_this_turn.push(locations[0]);
 
-            return locations[0];
+            if (locations.length > 0) return locations[0];
         }
 
         let op = this.plr.getOpponent();
@@ -515,6 +515,8 @@ class AI {
         if (score > 0) side = "self";
         else if (score < 0) side = "enemy";
 
+        if (force_side) side = force_side;
+
         let sid = (side == "self") ? id : op.id;
 
         if (game.board[sid].length <= 0 && force_class == "minion") {
@@ -523,7 +525,6 @@ class AI {
             return false;
         }
 
-        if (force_side) side = force_side;
         if (force_class && force_class == "hero") {
             let ret = -1;
 
@@ -538,7 +539,7 @@ class AI {
 
         // The player has no minions, select their face
         if (game.board[sid].length <= 0) {
-            let ret = -1;
+            let ret = false;
 
             if (force_class != "minion") {
                 ret = game["player" + (sid + 1)];
@@ -551,7 +552,7 @@ class AI {
 
         let selected = null;
 
-        let best_minion;
+        let best_minion = false;
         let best_score = -100000;
 
         game.board[sid].forEach(m => {
@@ -575,7 +576,7 @@ class AI {
         }
 
         this.history.push(["selectTarget", -1]);
-        return -1;
+        return false;
     }
     discover(cards) {
         /**
@@ -601,7 +602,7 @@ class AI {
 
         this.history.push(["discover", [best_card.name, best_score]]);
 
-        best_card = new game.Card(best_card.name, this.plr);
+        best_card = new game.Card(best_card.name, this.plr); // `cards` can be a list of blueprints, so calling best_card.imperfectCopy is dangerous
 
         return best_card;
     }

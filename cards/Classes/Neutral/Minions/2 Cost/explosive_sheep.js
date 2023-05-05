@@ -3,6 +3,7 @@ module.exports = {
     stats: [1, 1],
     desc: "&BDeathrattle:&R Deal 2 damage to all minions.",
     mana: 2,
+    type: "Minion",
     tribe: "Mech / Beast",
     class: "Neutral",
     rarity: "Common",

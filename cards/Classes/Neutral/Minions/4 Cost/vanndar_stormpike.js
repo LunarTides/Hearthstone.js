@@ -3,6 +3,7 @@ module.exports = {
     stats: [4, 4],
     desc: "Battlecry: If this costs less than every minion in your deck, reduce their Cost by (3).",
     mana: 4,
+    type: "Minion",
     tribe: "None",
     class: "Neutral",
     rarity: "Legendary",

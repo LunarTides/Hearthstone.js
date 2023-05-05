@@ -3,6 +3,7 @@ module.exports = {
     stats: [9, 9],
     desc: "Deathrattle: Resummon this with -1/-1.",
     mana: 9,
+    type: "Minion",
     tribe: "Undead",
     class: "Warrior",
     rarity: "Legendary",

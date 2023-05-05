@@ -2,6 +2,7 @@ module.exports = {
     name: "Wildheart Guff",
     desc: "Battlecry: Set your maximum Mana to 20. Gain an empty Mana Crystal. Draw a card.",
     mana: 5,
+    type: "Hero",
     class: "Druid",
     rarity: "Legendary",
     set: "Fractured in Alterac Valley",

@@ -3,6 +3,7 @@ module.exports = {
     displayName: "Master's Call",
     desc: "&BDiscover&R a minion in your deck. If all 3 are Beasts, draw them all.",
     mana: 3,
+    type: "Spell",
     class: "Hunter",
     rarity: "Epic",
     set: "Rastakhan's Rumble",
@@ -24,6 +25,7 @@ module.exports = {
         }
 
         // Not all three are beasts.
-        game.interact.discover("Discover a minion in your deck.", cards);
+        let minion = game.interact.discover("Discover a minion in your deck.", cards);
+        plr.addToHand(minion);
     }
 }

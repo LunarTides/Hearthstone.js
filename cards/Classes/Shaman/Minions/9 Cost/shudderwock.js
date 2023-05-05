@@ -3,6 +3,7 @@ module.exports = {
     stats: [6, 6],
     desc: "&BBattlecry:&R Repeat all other &BBattlecries&R from cards you played this game. (Targets chosen by an AI).",
     mana: 9,
+    type: "Minion",
     tribe: "None",
     class: "Shaman",
     rarity: "Legendary",

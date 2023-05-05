@@ -3,6 +3,7 @@ module.exports = {
     displayName: "Floop's Glorious Gloop",
     desc: "Whenever a minion dies this turn, gain 1 Mana Crystal this turn only.",
     mana: 1,
+    type: "Spell",
     class: "Druid",
     rarity: "Legendary",
     set: "The Boomsday Project",

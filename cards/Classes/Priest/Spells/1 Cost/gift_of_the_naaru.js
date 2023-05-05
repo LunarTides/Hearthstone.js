@@ -2,6 +2,7 @@ module.exports = {
     name: "Gift of the Naaru",
     desc: "Restore 3 Health to all characters. If any are still damaged, draw a card.",
     mana: 1,
+    type: "Spell",
     class: "Priest",
     rarity: "Epic",
     set: "Fractured in Alterac Valley",

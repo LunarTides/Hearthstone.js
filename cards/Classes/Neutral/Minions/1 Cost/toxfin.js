@@ -3,6 +3,7 @@ module.exports = {
     stats: [1, 2],
     desc: "&BBattlecry:&R Give a friendly Murloc &BPoisonous&R.",
     mana: 1,
+    type: "Minion",
     tribe: "Murloc",
     class: "Neutral",
     rarity: "Common",

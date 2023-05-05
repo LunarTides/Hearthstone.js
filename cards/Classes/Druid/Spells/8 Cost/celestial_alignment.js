@@ -2,6 +2,7 @@ module.exports = {
     name: "Celestial Alignment",
     desc: "Set your Mana Crystals to 0. Set the Cost of cards in your hand and deck to (1).",
     mana: 8,
+    type: "Spell",
     class: "Druid",
     rarity: "Epic",
     set: "Forged in the Barrens",

@@ -3,6 +3,7 @@ module.exports = {
     displayName: "Illidan Stormrage",
     desc: "Demon hunter starting hero",
     mana: 0,
+    type: "Hero",
     class: "Demon Hunter",
     rarity: "Free",
     set: "Core",

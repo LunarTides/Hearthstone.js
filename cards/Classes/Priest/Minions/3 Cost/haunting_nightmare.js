@@ -2,6 +2,7 @@ module.exports = {
     name: "Haunting Nightmare",
     desc: "&BDeathrattle:&R Haunt a card in your hand. When you play it, summon a 4/3 Soldier.",
     mana: 3,
+    type: "Minion",
     tribe: "Undead",
     class: "Priest",
     rarity: "Epic",

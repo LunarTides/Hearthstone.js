@@ -3,6 +3,7 @@ module.exports = {
     stats: [1, 3],
     desc: "Whenever you cast a Shadow spell that costs (1) or more, add a copy to your hand that costs (0).",
     mana: 3,
+    type: "Minion",
     tribe: "Undead",
     class: "Warlock",
     rarity: "Legendary",

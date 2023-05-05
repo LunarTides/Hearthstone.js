@@ -4,6 +4,7 @@ module.exports = {
     stats: [5, 7],
     desc: "&BBattlecry:&R Resurrect a friendly minion of each minion type.",
     mana: 9,
+    type: "Minion",
     tribe: "None",
     class: "Neutral",
     rarity: "Legendary",

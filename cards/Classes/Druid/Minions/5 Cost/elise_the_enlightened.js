@@ -3,15 +3,15 @@ module.exports = {
     stats: [5, 5],
     desc: "Battlecry: If your deck has no duplicates, duplicate your hand.",
     mana: 5,
+    type: "Minion",
     tribe: "None",
     class: "Druid",
     rarity: "Legendary",
     set: "Saviors of Uldum",
     id: 156,
+    conditioned: ["battlecry"],
 
     battlecry(plr, game, self) {
-        if (!game.functions.highlander(plr)) return;
-
         // Duplicate the players hand
         let _hand = [];
 
@@ -23,5 +23,9 @@ module.exports = {
         });
 
         plr.hand = [...plr.hand, ..._hand]; // Wtf
+    },
+
+    condition(plr, game, self) {
+        return game.functions.highlander(plr);
     }
 }

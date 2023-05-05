@@ -2,6 +2,7 @@ module.exports = {
     name: "Shard of the Naaru",
     desc: "Tradeable. Silence all enemy minions.",
     mana: 1,
+    type: "Spell",
     class: "Priest",
     rarity: "Common",
     set: "United in Stormwind",

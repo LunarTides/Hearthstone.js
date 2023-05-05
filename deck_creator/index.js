@@ -66,12 +66,18 @@ let settings = {
         latestUndoable: null
     },
     other: {
-        rulesShown: false
+        firstScreen: true
     }
 }
 
+function printName() {
+    game.interact.cls();
+    console.log("Hearthstone.js Deck Creator (C) 2022\n");
+}
+
 function askClass() {
-    game.interact.printName();
+    printName();
+
     let _class = game.input("What class to you want to choose?\n" + classes.join(", ") + "\n");
     if (_class) _class = functions.capitalizeAll(_class);
 
@@ -81,7 +87,7 @@ function askClass() {
         runes = "";
 
         while (runes.length < 3) {
-            game.interact.printName();
+            printName();
 
             let rune = game.input(`What runes do you want to add (${3 - runes.length} more)\nBlood, Frost, Unholy\n`);
             if (!rune || !["B", "F", "U"].includes(rune[0].toUpperCase())) continue;
@@ -133,8 +139,8 @@ function sortCards(_cards) {
                 typeB = getDisplayName(b);
             }
             else {
-                typeA = functions.getType(a);
-                typeB = functions.getType(b);
+                typeA = a.type;
+                typeB = b.type;
             }
 
             let ret = typeA.localeCompare(typeB);
@@ -238,7 +244,7 @@ function searchCards(_cards, sQuery) {
 
 function showCards() {
     filtered_cards = {};
-    game.interact.printName();
+    printName();
 
     if (!settings.view.class || !["Neutral", chosen_class].includes(settings.view.class)) settings.view.class = chosen_class;
 
@@ -254,7 +260,7 @@ function showCards() {
         });
     });
 
-    if (!settings.other.rulesShown) showRules();
+    //if (settings.other.firstScreen) showRules();
 
     let cpp = settings.view.cpp;
     let page = settings.view.page;
@@ -293,7 +299,7 @@ function showCards() {
     settings.view.maxPage = Math.ceil(_filtered_cards.length / cpp);
     if (page > settings.view.maxPage) page = settings.view.maxPage;
 
-    if (!settings.other.rulesShown) console.log(); // Add newline
+    //if (settings.other.firstScreen) console.log(); // Add newline
 
     let oldSortType = settings.sort.type;
     let oldSortOrder = settings.sort.order;
@@ -339,7 +345,11 @@ function showCards() {
         console.log(_deckcode);
     }
 
-    if (!settings.other.rulesShown) settings.other.rulesShown = true;
+    if (settings.other.firstScreen) {
+        console.log("Type 'rules' to see a list of rules.");
+
+        settings.other.firstScreen = false;
+    }
 }
 
 function showRules() {
@@ -403,7 +413,7 @@ function remove(c) {
 }
 
 function showDeck() {
-    game.interact.printName();
+    printName();
 
     console.log("Deck Size: " + deck.length.toString().yellow + "\n");
 
@@ -547,7 +557,7 @@ function deckcode() {
 }
 
 function help() {
-    game.interact.printName();
+    printName();
 
     // Commands
     console.log("Available commands:".bold);
@@ -646,7 +656,7 @@ function handleCmds(cmd) {
     }
 
     if (cmd.startsWith("config") || cmd.startsWith("rules")) {
-        game.interact.printName();
+        printName();
         showRules();
         game.input("\nPress enter to continue...\n");
     }

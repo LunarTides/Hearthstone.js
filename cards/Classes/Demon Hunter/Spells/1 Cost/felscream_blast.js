@@ -2,6 +2,7 @@ module.exports = {
     name: "Felscream Blast",
     desc: "Lifesteal. Deal 1 damage to a minion and its neighbors.",
     mana: 1,
+    type: "Spell",
     class: "Demon Hunter",
     rarity: "Common",
     set: "Madness at the Darkmoon Faire",

@@ -3,16 +3,16 @@ module.exports = {
     stats: [8, 8],
     desc: "Battlecry: If your deck has no duplicates, add 2 other random Dragons to your hand. They cost (0).",
     mana: 9,
+    type: "Minion",
     tribe: "Dragon",
     class: "Neutral",
     rarity: "Legendary",
     set: "Descent of Dragons",
     id: 164,
+    conditioned: ["battlecry"],
 
     battlecry(plr, game, self) {
-        if (!game.functions.highlander(plr)) return;
-
-        let list = game.functions.getCards().filter(c => game.functions.getType(c) == "Minion" && game.functions.matchTribe(c.tribe, "Dragon"));
+        let list = game.functions.getCards().filter(c => c.type == "Minion" && game.functions.matchTribe(c.tribe, "Dragon"));
 
         for (let i = 0; i < 2; i++) {
             let card = game.functions.randList(list);
@@ -23,5 +23,9 @@ module.exports = {
 
             plr.addToHand(card);
         }
+    },
+
+    condition(plr, game, self) {
+        return game.functions.highlander(plr);
     }
 }

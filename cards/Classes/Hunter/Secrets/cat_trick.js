@@ -2,6 +2,7 @@ module.exports = {
     name: "Cat Trick",
     desc: "Secret: After your opponent casts a spell, summon a 4/2 Panther with Stealth.",
     mana: 2,
+    type: "Spell",
     class: "Hunter",
     rarity: "Rare",
     set: "One Night in Karazhan",

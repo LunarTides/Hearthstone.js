@@ -2,6 +2,7 @@ module.exports = {
     name: "Biology Project",
     desc: "Each player gains 2 Mana Crystals.",
     mana: 1,
+    type: "Spell",
     class: "Druid",
     rarity: "Common",
     set: "The Boomsday Project",

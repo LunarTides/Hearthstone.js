@@ -3,6 +3,7 @@ module.exports = {
     stats: [3, 4],
     desc: "After you summon a minion, trigger its Deathrattle effect.",
     mana: 4,
+    type: "Minion",
     tribe: "None",
     class: "Neutral",
     rarity: "Legendary",

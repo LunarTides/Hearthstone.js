@@ -2,6 +2,7 @@ module.exports = {
     name: "Divine Spirit",
     desc: "Double a minion's Health.",
     mana: 2,
+    type: "Spell",
     class: "Priest",
     rarity: "Common",
     set: "Legacy",

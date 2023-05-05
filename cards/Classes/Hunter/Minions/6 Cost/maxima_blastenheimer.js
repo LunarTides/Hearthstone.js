@@ -3,6 +3,7 @@ module.exports = {
     stats: [4, 4],
     desc: "Battlecry: Summon a minion from your deck. It attacks the enemy hero, then dies.",
     mana: 6,
+    type: "Minion",
     tribe: "None",
     class: "Hunter",
     rarity: "Legendary",

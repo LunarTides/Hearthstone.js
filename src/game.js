@@ -25,7 +25,7 @@ class EventManager {
          * @returns {null}
          */
         // Infuse
-        if (key == "minionsKilled") {
+        if (key == "KillMinion") {
             val.plr.hand.forEach(p => {
                 if (p.infuse_num < 0) return;
 
@@ -41,6 +41,8 @@ class EventManager {
 
         this.game.board.forEach(p => {
             p.forEach(m => {
+                if (m.getHealth() <= 0) return; // This function gets called directly after a minion is killed.
+
                 m.activate("unpassive", true);
                 m.activate("passive", key, val);
             });
@@ -53,12 +55,27 @@ class EventManager {
             plr.hand.forEach(c => {
                 c.activate("handpassive", key, val);
 
+                // Placeholders
+                c.replacePlaceholders();
+
+                // Check for condition
+                let cleared_text = " (Condition cleared!)".brightGreen;
+                let cleared_text_alt = "Condition cleared!".brightGreen;
+                c.desc = c.desc.replace(cleared_text, "");
+                c.desc = c.desc.replace(cleared_text_alt, "");
+                if (c.activate("condition")[0] === true) {
+                    if (c.desc) c.desc += cleared_text;
+                    else c.desc += cleared_text_alt;
+                }
+
+                c.applyEnchantments(); // Just in case. Remove for small performance boost
+
                 if (c.type != "Spell") return;
 
                 c.activate("unpassive", true);
                 c.activate("passive", key, val);
 
-                c.applyEnchantments();
+                c.replacePlaceholders();
             });
             plr.hand.forEach(c => {
                 if (c.mana < 0) c.mana = 0;
@@ -297,6 +314,9 @@ class Game {
         if ((this.player1.ai || this.player2.ai) && this.config.debug) this.interact.doTurnLogic("/ai");
 
         this.running = false;
+
+        // Create log file
+        this.functions.createLogFile();
     }
     endTurn() {
         /**
@@ -424,6 +444,13 @@ class Game {
 
         if (player[card.costType] < card.mana) return "mana";
 
+        // Condition
+        if (card.activate("condition")[0] === false) {
+            let warn = this.interact.yesNoQuestion(player, "WARNING: This card's condition is not fulfilled. Are you sure you want to play this card?".yellow);
+
+            if (!warn) return "refund";
+        }
+
         player[card.costType] -= card.mana;
         //card.mana = card.backups.mana;
         
@@ -433,7 +460,7 @@ class Game {
         let echo_clone = null;
 
         if (card.keywords.includes("Echo")) {
-            echo_clone = this.functions.cloneCard(card); // Create an exact copy of the card played
+            echo_clone = card.perfectCopy(); // Create an exact copy of the card played
             echo_clone.echo = true;
         }
 
@@ -839,7 +866,7 @@ class Game {
                 }
 
                 // Reborn
-                let minion = new Card(m.name, plr);
+                let minion = m.imperfectCopy();
 
                 minion.removeKeyword("Reborn");
                 minion.setStats(minion.getAttack(), 1);

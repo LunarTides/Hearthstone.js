@@ -4,6 +4,7 @@ module.exports = {
     stats: [5, 5],
     desc: "Battlecry: Add Astalor, the Flamebringer to your hand. Manathirst (8): Gain 5 Armor.",
     mana: 5,
+    type: "Minion",
     tribe: "None",
     class: "Neutral",
     rarity: "Free",

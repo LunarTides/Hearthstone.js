@@ -3,6 +3,7 @@ module.exports = {
     displayName: "Thrall",
     desc: "Shaman starting hero",
     mana: 0,
+    type: "Hero",
     class: "Shaman",
     rarity: "Free",
     set: "Core",

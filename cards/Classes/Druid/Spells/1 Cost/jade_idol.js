@@ -2,6 +2,7 @@ module.exports = {
     name: "Jade Idol",
     desc: "Choose One - Summon a Jade Golem; or Shuffle 3 copies of this card into your deck.",
     mana: 1,
+    type: "Spell",
     class: "Druid",
     rarity: "Rare",
     set: "Mean Streets of Gadgetzan",

@@ -2,6 +2,7 @@ module.exports = {
     name: "Twig of the World Tree",
     stats: [1, 5],
     desc: "Deathrattle: Gain 10 Mana Crystals.",
+    type: "Weapon",
     mana: 4,
     class: "Druid",
     rarity: "Legendary",

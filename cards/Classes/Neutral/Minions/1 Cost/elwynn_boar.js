@@ -3,6 +3,7 @@ module.exports = {
     stats: [1, 1],
     desc: "Deathrattle: If you had 7 Elwynn Boars die this game, equip a 15/3 Sword of a Thousand Truths.",
     mana: 1,
+    type: "Minion",
     tribe: "Beast",
     class: "Neutral",
     rarity: "Epic",

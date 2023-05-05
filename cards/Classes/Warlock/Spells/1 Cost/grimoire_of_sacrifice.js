@@ -2,6 +2,7 @@ module.exports = {
     name: "Grimoire of Sacrifice",
     desc: "Destroy a friendly minion. Deal 2 damage to all enemy minions.",
     mana: 1,
+    type: "Spell",
     class: "Warlock",
     rarity: "Common",
     set: "Forged in the Barrens",

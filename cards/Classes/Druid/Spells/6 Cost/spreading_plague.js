@@ -2,6 +2,7 @@ module.exports = {
     name: "Spreading Plague",
     desc: "Summon a 1/5 Scarab with Taunt. If your opponent has more minions, cast this again.",
     mana: 6,
+    type: "Spell",
     class: "Druid",
     rarity: "Rare",
     set: "Knights of the Frozen Throne",

@@ -2,6 +2,7 @@ module.exports = {
     name: "Windchill",
     desc: "&BFreeze&R a minion. Draw a card.",
     mana: 1,
+    type: "Spell",
     class: "Shaman",
     rarity: "Common",
     spellClass: "Frost",

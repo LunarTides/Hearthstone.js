@@ -3,6 +3,7 @@ module.exports = {
     displayName: "Garrosh Hellscream",
     desc: "Warrior starting hero",
     mana: 0,
+    type: "Hero",
     class: "Warrior",
     rarity: "Free",
     set: "Core",

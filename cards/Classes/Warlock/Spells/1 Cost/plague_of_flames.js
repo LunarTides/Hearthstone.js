@@ -2,6 +2,7 @@ module.exports = {
     name: "Plague of Flames",
     desc: "Destroy all your minions. For each one, destroy a random enemy minion.",
     mana: 1,
+    type: "Spell",
     class: "Warlock",
     rarity: "Rare",
     set: "Saviors of Uldum",

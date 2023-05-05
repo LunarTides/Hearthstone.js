@@ -3,6 +3,7 @@ module.exports = {
     stats: [3, 2],
     desc: "After your hero attacks and kills a minion, gain 2 Corpses.",
     mana: 3,
+    type: "Weapon",
     class: "Death Knight",
     rarity: "Common",
     set: "March of the Lich King",

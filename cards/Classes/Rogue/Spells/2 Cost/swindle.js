@@ -2,6 +2,7 @@ module.exports = {
     name: "Swindle",
     desc: "Draw a spell. &BCombo:&R And a minion.",
     mana: 2,
+    type: "Spell",
     class: "Rogue",
     rarity: "Common",
     set: "Madness at the Darkmoon Faire",

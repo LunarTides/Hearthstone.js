@@ -3,6 +3,7 @@ module.exports = {
     displayName: "Obliterate",
     desc: "Destroy a minion. Your hero takes damage equal to its Health.",
     mana: 2,
+    type: "Spell",
     class: "Death Knight",
     rarity: "Free",
     set: "Knights of the Frozen Throne",

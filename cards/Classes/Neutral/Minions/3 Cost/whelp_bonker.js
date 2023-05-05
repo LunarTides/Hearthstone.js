@@ -3,6 +3,7 @@ module.exports = {
     stats: [1, 5],
     desc: "Frenzy and Honorable Kill: Draw a card.",
     mana: 3,
+    type: "Minion",
     tribe: "None",
     class: "Neutral",
     rarity: "Epic",

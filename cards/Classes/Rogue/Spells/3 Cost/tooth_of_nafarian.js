@@ -2,6 +2,7 @@ module.exports = {
     name: "Tooth of Nafarian",
     desc: "Deal 2 damage. &BDiscover&R a spell from another class.",
     mana: 3,
+    type: "Spell",
     class: "Rogue",
     rarity: "Common",
     set: "Onyxia's Lair",
@@ -13,10 +14,14 @@ module.exports = {
 
         game.functions.spellDmg(target, 2);
 
+        // Discover a spell from another class
         let list = game.functions.getCards();
-        list = list.filter(c => game.functions.getType(c) == "Spell" && !game.functions.validateClass(plr, c));
+        list = list.filter(c => c.type == "Spell" && !game.functions.validateClass(plr, c));
         if (list.length <= 0) return;
 
-        game.interact.discover("Discover a spell from another class.", list);
+        let spell = game.interact.discover("Discover a spell from another class.", list);
+        if (!spell) return;
+
+        plr.addToHand(spell);
     }
 }

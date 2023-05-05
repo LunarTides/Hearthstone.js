@@ -3,6 +3,7 @@ module.exports = {
     stats: [3, 4],
     desc: "Whenever a spell is played, this minion remembers it. Deathrattle: Shuffle the spells into your deck.",
     mana: 3,
+    type: "Minion",
     tribe: "Beast",
     class: "Neutral",
     rarity: "Epic",

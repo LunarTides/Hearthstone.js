@@ -3,6 +3,7 @@ module.exports = {
     stats: [3, 5],
     desc: "Taunt. Deathrattle: Summon a 1/2 Slime with Taunt.",
     mana: 5,
+    type: "Minion",
     tribe: "Undead",
     class: "Neutral",
     rarity: "Rare",

@@ -2,6 +2,7 @@ module.exports = {
     name: "Lunar Eclipse",
     desc: "Deal 3 damage to a minion. Your next spell this turn costs (2) less.",
     mana: 2,
+    type: "Spell",
     class: "Druid",
     rarity: "Common",
     set: "Madness at the Darkmoon Faire",

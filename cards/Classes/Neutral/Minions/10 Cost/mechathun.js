@@ -4,6 +4,7 @@ module.exports = {
     stats: [10, 10],
     desc: "Deathrattle: If you have no cards in your deck, hand, and battlefield, destroy the enemy hero.",
     mana: 10,
+    type: "Minion",
     tribe: "Mech",
     class: "Neutral",
     rarity: "Legendary",

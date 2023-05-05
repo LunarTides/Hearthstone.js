@@ -4,6 +4,7 @@ module.exports = {
     stats: [4, 4],
     desc: "Battlecry: Discover a card in each player's hand and swap them.",
     mana: 6,
+    type: "Minion",
     tribe: "None",
     class: "Neutral",
     rarity: "Legendary",
@@ -15,8 +16,8 @@ module.exports = {
 
         if (plr.hand.length <= 0 || opHand.length <= 0) return;
 
-        let opCard = game.interact.discover("Discover a card in your opponent's hand.", opHand, 3, false, false);
-        let plrCard = game.interact.discover("Discover a card in your hand.", plr.hand, 3, false, false);
+        let opCard = game.interact.discover("Discover a card in your opponent's hand.", opHand);
+        let plrCard = game.interact.discover("Discover a card in your hand.", plr.hand);
 
         // Remove the cards from the player's hands
         game.functions.remove(plr.getOpponent().hand, opCard);

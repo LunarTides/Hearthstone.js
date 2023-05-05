@@ -2,6 +2,7 @@ module.exports = {
     name: "Oaken Summons",
     desc: "Gain 6 Armor. Recruit a minion that costs (4) or less.",
     mana: 4,
+    type: "Spell",
     class: "Druid",
     rarity: "Epic",
     set: "Kobolds & Catacombs",

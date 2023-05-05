@@ -3,6 +3,7 @@ module.exports = {
     stats: [4, 8],
     desc: "Taunt. Deathrattle: Draw another Undead and summon a copy of it.",
     mana: 9,
+    type: "Minion",
     tribe: "Undead",
     class: "Neutral",
     rarity: "Rare",

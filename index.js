@@ -1,14 +1,12 @@
 const rl = require("readline-sync");
 const fs = require("fs");
-
-const version = "1.2.0";
-const copyrightYear = "2023";
+const { version, branch } = require("./config/general.json");
 
 const cls = () => process.stdout.write("\033c");
 
 const watermark = () => {
     cls();
-    console.log(`Hearthstone.js Runner V${version} (C) ${copyrightYear}\n`);
+    console.log(`Hearthstone.js Runner V${version}-${branch} (C) 2022\n`);
 }
 
 decks = [];
@@ -40,14 +38,14 @@ function devmode() {
             cls();
 
             if (vanilla) {
-                if (!fs.existsSync("./card_creator/generator/.ignore.cards.json")) {
+                if (!fs.existsSync("./card_creator/vanilla/.ignore.cards.json")) {
                     watermark();
 
-                    rl.question("Cards file not found! Go to 'card_creator/generator' and run either 'generate.bat' or 'generate.sh', then try again.\n");
+                    rl.question("Cards file not found! Go to 'card_creator/vanilla' and run either 'generate.bat' or 'generate.sh', then try again.\n");
                     continue;
                 }
 
-                require("./card_creator/generator/index").main("./card_creator/generator");
+                require("./card_creator/vanilla/index").main("./card_creator/vanilla");
             } else {
                 require("./card_creator/index").main();
             }
@@ -87,6 +85,7 @@ function devmode() {
                 displayName: displayName,
                 desc: name[0].toUpperCase() + name.slice(1).toLowerCase() + " starting hero",
                 mana: 0,
+                type: "Hero",
                 class: name,
                 rarity: "Free",
                 hpDesc: hpDesc,

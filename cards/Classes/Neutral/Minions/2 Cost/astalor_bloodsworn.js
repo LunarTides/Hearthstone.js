@@ -3,6 +3,7 @@ module.exports = {
     stats: [2, 2],
     desc: "Battlecry: Add Astalor, the Protector to your hand. Manathirst (5): Deal 2 damage.",
     mana: 2,
+    type: "Minion",
     tribe: "None",
     class: "Neutral",
     rarity: "Legendary",

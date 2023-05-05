@@ -2,6 +2,7 @@ module.exports = {
     name: "Tracking",
     desc: "Discover a card from your deck.",
     mana: 1,
+    type: "Spell",
     class: "Hunter",
     rarity: "Free",
     set: "Legacy",
@@ -10,7 +11,7 @@ module.exports = {
     cast(plr, game, self) {
         let list = plr.deck;
 
-        let card = game.interact.discover("Discover a card from your deck.", list, 3, false, false);
+        let card = game.interact.discover("Discover a card from your deck.", list);
 
         plr.drawSpecific(card);
     }

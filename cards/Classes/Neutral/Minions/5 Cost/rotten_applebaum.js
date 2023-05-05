@@ -3,6 +3,7 @@ module.exports = {
     stats: [4, 5],
     desc: "Taunt. Deathrattle: Restore 4 Health to your hero.",
     mana: 5,
+    type: "Minion",
     tribe: "Undead",
     class: "Neutral",
     rarity: "Common",

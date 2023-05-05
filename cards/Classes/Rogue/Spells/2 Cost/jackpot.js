@@ -3,6 +3,7 @@ module.exports = {
     displayName: "Jackpot!",
     desc: "Add two random spells from other classes that cost (5) or more to your hand.",
     mana: 2,
+    type: "Spell",
     class: "Rogue",
     rarity: "Common",
     set: "Throne of the Tides",
@@ -10,7 +11,7 @@ module.exports = {
 
     cast(plr, game, self) {
         let list = game.functions.getCards();
-        list = list.filter(c => game.functions.getType(c) == "Spell" && c.mana >= 5 && !game.functions.validateClass(plr, c));
+        list = list.filter(c => c.type == "Spell" && c.mana >= 5 && !game.functions.validateClass(plr, c));
         if (list.length <= 0) return;
 
         const addSpell = () => {

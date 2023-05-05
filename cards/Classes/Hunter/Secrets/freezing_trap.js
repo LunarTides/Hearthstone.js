@@ -2,6 +2,7 @@ module.exports = {
     name: "Freezing Trap",
     desc: "Secret: When an enemy minion attacks, return it to its owner's hand, it costs (2) more.",
     mana: 2,
+    type: "Spell",
     class: "Hunter",
     rarity: "Common",
     set: "Core",

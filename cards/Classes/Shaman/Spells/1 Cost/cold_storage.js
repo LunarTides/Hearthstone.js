@@ -2,6 +2,7 @@ module.exports = {
     name: "Cold Storage",
     desc: "&BFreeze&R a minion. Add a copy of it to your hand.",
     mana: 1,
+    type: "Spell",
     class: "Shaman",
     rarity: "Rare",
     spellClass: "Frost",

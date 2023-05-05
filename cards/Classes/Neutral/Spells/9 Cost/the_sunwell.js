@@ -2,6 +2,7 @@ module.exports = {
     name: "The Sunwell",
     desc: "Fill your hand with random spells. Costs (1) less for each other card in your hand.",
     mana: 9,
+    type: "Spell",
     class: "Neutral",
     rarity: "Legendary",
     set: "March of the Lich King",
@@ -23,7 +24,7 @@ module.exports = {
     },
 
     cast(plr, game, self) {
-        let list = game.functions.getCards().filter(c => game.functions.getType(c) == "Spell");
+        let list = game.functions.getCards().filter(c => c.type == "Spell");
         if (list.length == 0) return;
 
         // I do this approach to support changing max hand space later on

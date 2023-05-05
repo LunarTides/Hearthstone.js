@@ -4,6 +4,7 @@ module.exports = {
     stats: [5, 3],
     desc: "Deathrattle: Summon every minion killed by this weapon.",
     mana: 7,
+    type: "Weapon",
     class: "Death Knight",
     rarity: "Free",
     set: "Knights of the Frozen Throne",

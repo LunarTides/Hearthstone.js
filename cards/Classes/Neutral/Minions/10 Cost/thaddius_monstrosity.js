@@ -4,6 +4,7 @@ module.exports = {
     stats: [11, 11],
     desc: "&BTaunt.&R Your odd-Cost cards cost (1). (Swaps polarity each turn!)",
     mana: 10,
+    type: "Minion",
     tribe: "Undead",
     class: "Neutral",
     rarity: "Legendary",

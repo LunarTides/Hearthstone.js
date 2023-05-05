@@ -2,6 +2,7 @@ module.exports = {
     name: "Grievous Bite",
     desc: "Deal 2 damage to a minion and 1 damage to adjacent ones.",
     mana: 2,
+    type: "Spell",
     class: "Hunter",
     rarity: "Common",
     set: "Journey to Un'Goro",

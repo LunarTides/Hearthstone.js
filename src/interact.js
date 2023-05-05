@@ -2,8 +2,6 @@ const colors = require("colors");
 const { exit } = require('process');
 
 const license_url = 'https://github.com/SolarWindss/Hearthstone.js/blob/main/LICENSE';
-const copyright_year = "2023";
-const version = "1.2.0";
 
 let game;
 let curr;
@@ -84,7 +82,7 @@ class Interact {
         console.log(`${err}.`.red);
         game.input();
     }
-    handleCmds(q) {
+    handleCmds(q, ...args) {
         /**
          * Checks if "q" is a command, if it is, do something, if not return -1
          * 
@@ -212,9 +210,11 @@ class Interact {
             require('child_process').exec(start + ' ' + license_url);
         }
         else if (q == "history") {
-            console.log("\nWARNING: The history feature is not perfect. Things will be out of order. Sorry about that.".yellow);
+            if (args[0] === false) {}
+            else console.log("\nWARNING: The history feature is not perfect. Things will be out of order. Sorry about that.".yellow);
             // History
             let history = game.events.history;
+            let finished = "";
 
             const doVal = (val, plr, hide) => {
                 if (val instanceof game.Card) {
@@ -238,7 +238,7 @@ class Interact {
                     let hideValueKeys = ["DrawCard", "AddCardToHand", "AddCardToDeck"]; // Example: If a card gets drawn, the other player can't see what card it was
                     let shouldHide = hideValueKeys.includes(key);
 
-                    if (!hasPrintedHeader) console.log(`\nTurn ${t + 1} - Player [${plr.name}]`); 
+                    if (!hasPrintedHeader) finished += `\nTurn ${t + 1} - Player [${plr.name}]\n`; 
                     hasPrintedHeader = true;
 
                     val = doVal(val, game.player, shouldHide);
@@ -257,11 +257,19 @@ class Interact {
 
                     key = key[0].toUpperCase() + key.slice(1);
 
-                    console.log(`${key}: ${val}`);
+                    finished += `${key}: ${val}\n`;
                 });
             });
 
-            game.input("\nPress enter to continue...");
+
+            if (args[0] === false) {}
+            else {
+                console.log(finished);
+
+                game.input("\nPress enter to continue...");
+            }
+
+            return finished;
         }
 
         else if (q.startsWith("/give ")) {
@@ -299,9 +307,12 @@ class Interact {
     
             try {
                 eval(code);
+
+                game.events.broadcast("Eval", code, game.player);
             } catch (err) {
-                console.log(`${err}`.red);
-                game.input();
+                console.log("\nAn error happened while running this code! Here is the error:".red);
+                console.log(err.stack);
+                game.input("Press enter to continue...");
             }
         }
         else if (q == "/debug") {
@@ -323,22 +334,31 @@ class Interact {
         else if (q == "/ai") {
             if (!game.config.debug) return -1;
 
-            console.log("AI Info:\n");
+            let finished = "";
+
+            finished += "AI Info:\n\n";
 
             for (let i = 1; i <= 2; i++) {
                 const plr = game["player" + i];
                 if (!plr.ai) continue;
 
-                console.log(`AI${i} History: {`);
+                finished += `AI${i} History: {\n`;
 
                 plr.ai.history.forEach((t, j) => {
-                    console.log(`${j + 1} ${t[0]}: (${t[1]}),`);
+                    finished += `${j + 1} ${t[0]}: (${t[1]}),\n`;
                 });
                 
-                console.log("}");
+                finished += "}\n";
             }
 
-            game.input("\nPress enter to continue...");
+            if (args[0] === false) {}
+            else {
+                console.log(finished);
+
+                game.input("\nPress enter to continue...");
+            }
+
+            return finished;
         }
         else if (q == "/events") {
             if (!game.config.debug) return -1;
@@ -507,7 +527,16 @@ class Interact {
         let error;
 
         if (deckcode.length > 0) error = game.functions.importDeck(plr, deckcode);
-        else while (plr.deck.length < 30) plr.deck.push(new game.Card("Sheep", plr));
+        else {
+            if (!game.config.debug && game.config.branch == "stable") { // I want to be able to test without debug mode on in a non-stable branch
+                // Give error message
+                game.input("Please enter a deckcode!\n".red);
+                return this.deckCode(plr); // Retry
+            }
+
+            // Debug mode is enabled, use the 30 Sheep debug deck.
+            while (plr.deck.length < 30) plr.deck.push(new game.Card("Sheep", plr)); // Debug deck
+        }
 
         if (error == "invalid") exit(1);
     }
@@ -520,19 +549,10 @@ class Interact {
          * @returns {string} A string of the indexes of the cards the player mulligan'd
          */
 
-        this.printName();
+        this.printAll(plr);
 
-        let sb = "Your hand is: [ ";
-
-        plr.hand.forEach(c => {
-            if (c.name == "The Coin") return;
-
-            sb += game.functions.colorByRarity(c.displayName, c.rarity) + ", ";
-        });
-
-        sb = sb.slice(0, -2) + " ]\n";
-        sb += "Choose the cards to mulligan (1, 2, 3, ...):\n";
-        if (!game.config.debug) sb += "(Example: 13 will mulligan your left and right most cards, 123 will mulligan your 3 leftmost cards, just pressing enter will not mulligan any cards):\n".gray;
+        let sb = "\nChoose the cards to mulligan (1, 2, 3, ...):\n";
+        if (!game.config.debug) sb += "(Example: 13 will mulligan the cards with the ids 1 and 3, 123 will mulligan the cards with the ids 1, 2 and 3, just pressing enter will not mulligan any cards):\n".gray;
 
         let input;
 
@@ -657,15 +677,13 @@ class Interact {
 
         return this.yesNoQuestion(plr, prompt);
     }
-    discover(prompt, cards = [], amount = 3, add_to_hand = true, clone = true, _cards = []) {
+    discover(prompt, cards = [], amount = 3, _cards = []) {
         /**
-         * Asks the user a "prompt", show them "amount" cards. The cards are chosen from "cards". If "add_to_hand", add the card chosen to the player's hand, else return the card chosen
+         * Asks the user a "prompt", show them "amount" cards. The cards are chosen from "cards".
          * 
          * @param {string} prompt The prompt to ask
          * @param {Card[] | Blueprint[]} cards [default=all cards] The cards to choose from
          * @param {number} amount [default=3] The amount of cards to show
-         * @param {boolean} add_to_hand [default=true] If it should add the card chosen to the current player's hand
-         * @param {boolean} clone [default=true] If the card chosen should be cloned before returning it.
          * @param {Blueprint[]} _cards [default=[]] Do not use this variable, keep it at default
          * 
          * @returns {Card} The card chosen.
@@ -694,14 +712,11 @@ class Interact {
         let choice = game.input();
 
         if (!values[parseInt(choice) - 1]) {
-            return this.discover(prompt, cards, amount, add_to_hand, clone, values);
+            return this.discover(prompt, cards, amount, values);
         }
 
         let card = values[parseInt(choice) - 1];
-        if (!card instanceof game.Card || clone) card = new game.Card(card.name, game.player);
-        if (clone) card = game.functions.cloneCard(card);
-
-        if (add_to_hand) game.player.addToHand(card);
+        if (!(card instanceof game.Card)) card = new game.Card(card.name, game.player);
 
         return card;
     }
@@ -831,10 +846,13 @@ class Interact {
         cls();
     
         if (!name) return;
+
+        let watermarkString = `HEARTHSTONE.JS V${game.config.version}-${game.config.branch}`;
+        let border = "-".repeat(watermarkString.length + 2);
     
-        console.log("|-----------------------------|");
-        console.log(`|        HEARTHSTONE.JS       |`);
-        console.log("|-----------------------------|\n");
+        console.log(`|${border}|`);
+        console.log(`| ${watermarkString} |`);
+        console.log(`|${border}|\n`);
     }
     printLicense(disappear = true) {
         /**
@@ -849,12 +867,13 @@ class Interact {
     
         cls();
     
-        console.log(`|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||`)
-        console.log(`|||                Hearthstone.js V${version} | Copyright (C) ${copyright_year} | SolarWinds            |||`)
-        console.log(`||| This program is licensed under the GPL-3.0 license. To learn more: type 'license' |||`)
+        let version = `Hearthstone.js V${game.config.version}-${game.config.branch} | Copyright (C) 2022 | SolarWindss`;
+        console.log('|'.repeat(version.length + 8));
+        console.log(`||| ${version} |||`)
+        console.log(`|||     This program is licensed under the GPL-3.0 license.   ` + ' '.repeat(game.config.branch.length) + "|||")
         if (disappear)
-        console.log(`|||                     This will disappear once you end your turn.                   |||`)
-        console.log(`|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n`);
+        console.log(`|||         This will disappear once you end your turn.       ` + ' '.repeat(game.config.branch.length) + `|||`)
+        console.log('|'.repeat(version.length + 8));
     }
     getReadableCard(card, i = -1) {
         /**
@@ -867,7 +886,18 @@ class Interact {
          */
         let sb = "";
 
-        const desc = card.desc.length > 0 ? ` (${card.desc}) ` : " ";
+        let desc = card.desc.length > 0 ? ` (${card.desc}) ` : " ";
+
+        // Extract placeholder value, remove the placeholder header and footer
+        if (card.placeholder) {
+            let reg = new RegExp(`{ph:.*?} (.*?) {/ph}`);
+
+            while (reg.exec(desc)) {
+                let placeholder = reg.exec(desc)[1]; // Gets the capturing group result
+
+                desc = desc.replace(reg, placeholder);
+            }
+        }
 
         let mana = `{${card.mana}} `;
         switch (card.costType || "mana") {
@@ -893,7 +923,7 @@ class Interact {
         }
 
         sb += desc;
-        sb += `(${game.functions.getType(card)})`.yellow;
+        sb += `(${card.type})`.yellow;
 
         return sb;
     }
@@ -1180,16 +1210,22 @@ class Interact {
         let spellClass = "";
         let locCooldown = "";
 
-        let type = game.functions.getType(card);
+        let type = card.type;
 
         if (type == "Minion") tribe = " (" + card.tribe.gray + ")";
-        else if (type == "Spell") spellClass = " (" + card.spellClass.cyan + ")";
+        else if (type == "Spell") {
+            if (card.spellClass) spellClass = " (" + card.spellClass.cyan + ")";
+            else spellClass = " (None)";
+        }
         else if (type == "Location") locCooldown = " (" + card.blueprint.cooldown.toString().cyan + ")";
 
         if (help) console.log("{mana} ".cyan + "Name ".bold + "(" + "[attack / health] ".brightGreen + "if it has) (description) ".white + "(type) ".yellow + "((tribe) or (spell class) or (cooldown)) [".white + "class".gray + "]");
         console.log(_card + tribe + spellClass + locCooldown + ` [${_class}]`);
 
         game.input("\nPress enter to continue...\n");
+    }
+    cls() { // Do this so it doesn't crash because of "strict mode"
+        cls();
     }
 }
 

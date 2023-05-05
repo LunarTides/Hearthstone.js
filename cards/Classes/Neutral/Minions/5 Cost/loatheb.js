@@ -3,6 +3,7 @@ module.exports = {
     stats: [5, 5],
     desc: "Battlecry: Enemy spells cost (5) more next turn.",
     mana: 5,
+    type: "Minion",
     tribe: "Undead",
     class: "Neutral",
     rarity: "Legendary",

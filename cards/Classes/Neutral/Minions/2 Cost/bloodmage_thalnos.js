@@ -3,6 +3,7 @@ module.exports = {
     stats: [1, 1],
     desc: "Spell Damage +1. Deathrattle: Draw a card.",
     mana: 2,
+    type: "Minion",
     tribe: "None",
     class: "Neutral",
     rarity: "Legendary",

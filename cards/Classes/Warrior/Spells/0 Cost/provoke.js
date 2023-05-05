@@ -2,6 +2,7 @@ module.exports = {
     name: "Provoke",
     desc: "Tradeable. Choose a friendly minion. Enemy minions attack it.",
     mana: 0,
+    type: "Spell",
     class: "Warrior",
     rarity: "Epic",
     set: "United in Stormwind",

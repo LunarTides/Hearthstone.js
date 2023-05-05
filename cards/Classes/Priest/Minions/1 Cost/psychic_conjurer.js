@@ -3,6 +3,7 @@ module.exports = {
     stats: [1, 1],
     desc: "Battlecry: Copy a card in your opponent's deck and add it to your hand.",
     mana: 1,
+    type: "Minion",
     tribe: "None",
     class: "Priest",
     rarity: "Free",

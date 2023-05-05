@@ -3,6 +3,7 @@ module.exports = {
     displayName: "The Lich King",
     desc: "Death knight starting hero",
     mana: 0,
+    type: "Hero",
     class: "Death Knight",
     rarity: "Free",
     set: "Core",

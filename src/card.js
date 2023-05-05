@@ -13,7 +13,6 @@ class Card {
         this.name = name;
         this.displayName = name;
 
-        this.type = game.functions.getType(this.blueprint);
         this.costType = "mana";
 
         this.keywords = [];
@@ -29,9 +28,6 @@ class Card {
 
         this.attackTimes = 1; // The number of times a minion can attack, windfury: 2, mega-windfury: 4
         this.stealthDuration = 0; // The amount of turns stealth should last
-
-        // Set maxHealth if the card is a minion or weapon
-        if (this.type == "Minion" || this.type == "Weapon") this.maxHealth = this.blueprint.stats[1];
 
         this.canAttackHero = true;
         this.sleepy = true;
@@ -62,6 +58,9 @@ class Card {
             this[i] = this.blueprint[i] || false;
         });
 
+        // Set maxHealth if the card is a minion or weapon
+        if (this.type == "Minion" || this.type == "Weapon") this.maxHealth = this.blueprint.stats[1];
+
         this.desc = game.functions.parseTags(this.desc);
         this.enchantments = [];
 
@@ -73,6 +72,8 @@ class Card {
         this.plr = plr;
 
         this.randomizeIds();
+
+        this.placeholder = this.activate("placeholders")[0]; // This is a list of replacements.
     }
 
     randomizeIds() {
@@ -427,6 +428,9 @@ class Card {
         this[name].forEach(i => {
             if (ret === -1) return;
 
+            // Check if the method is conditioned
+            if (this.conditioned && this.conditioned.includes(name) && this.activate("condition")[0] === false) return;
+
             let r = i(this.plr, game, this, ...args);
             ret.push(r);
 
@@ -626,6 +630,27 @@ class Card {
         this.removeEnchantment(new_enchantment, this, false);
 
         return true;
+    }
+
+    replacePlaceholders() {
+        /**
+         * Replaces the placeholders ('{0}') with its value
+         * 
+         * @returns {undefined}
+         */
+
+        if (!this.placeholder) return;
+
+        this.placeholder = this.activate("placeholders")[0];
+
+        Object.entries(this.placeholder).forEach(p => {
+            let [key, val] = p;
+
+            let replacement = `{ph:${key}} ${val} {/ph}`;
+
+            this.desc = this.desc.replace(new RegExp(`{ph:${key}} .*? {/ph}`, 'g'), replacement);
+            this.desc = this.desc.replaceAll(`{${key}}`, replacement);
+        });
     }
 
     perfectCopy() {

@@ -2,6 +2,7 @@ module.exports = {
     name: "Clever Disguise",
     desc: "Add 2 random spells from another class to your hand.",
     mana: 2,
+    type: "Spell",
     class: "Rogue",
     rarity: "Common",
     set: "Saviors of Uldum",
@@ -9,7 +10,7 @@ module.exports = {
 
     cast(plr, game, self) {
         let list = game.functions.getCards();
-        list = list.filter(c => game.functions.getType(c) == "Spell" && !game.functions.validateClass(plr, c));
+        list = list.filter(c => c.type == "Spell" && !game.functions.validateClass(plr, c));
         if (list.length <= 0) return;
         
         const addSpell = () => {

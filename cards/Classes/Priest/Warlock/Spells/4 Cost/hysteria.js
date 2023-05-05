@@ -2,6 +2,7 @@ module.exports = {
     name: "Hysteria",
     desc: "Choose an enemy minion. It attacks random minions until it dies.",
     mana: 4,
+    type: "Spell",
     class: "Priest / Warlock",
     rarity: "Rare",
     set: "Darkmoon Races",

@@ -2,6 +2,7 @@ module.exports = {
     name: "Contraband Stash",
     desc: "Replay 5 cards from other classes you've played this game.",
     mana: 5,
+    type: "Spell",
     class: "Rogue",
     rarity: "Rare",
     set: "Fractured in Alterac Valley",

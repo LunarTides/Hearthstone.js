@@ -3,6 +3,7 @@ module.exports = {
     displayName: "Jaina Proudmoore",
     desc: "Mage starting hero",
     mana: 0,
+    type: "Hero",
     class: "Mage",
     rarity: "Free",
     set: "Core",

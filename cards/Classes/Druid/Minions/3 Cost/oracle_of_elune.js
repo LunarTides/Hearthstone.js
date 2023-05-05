@@ -3,6 +3,7 @@ module.exports = {
     stats: [2, 4],
     desc: "After you play a minion that costs (2) or less, summon a copy of it.",
     mana: 3,
+    type: "Minion",
     tribe: "None",
     class: "Druid",
     rarity: "Epic",

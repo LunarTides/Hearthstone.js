@@ -3,6 +3,7 @@ module.exports = {
     stats: [3, 4],
     desc: "Battlecry: Discover a spell that costs (5) or more.",
     mana: 6,
+    type: "Minion",
     tribe: "None",
     class: "Neutral",
     rarity: "Rare",
@@ -11,9 +12,10 @@ module.exports = {
 
     battlecry(plr, game, self) {
         let list = game.functions.getCards();
-        list = list.filter(c => game.functions.getType(c) == "Spell" && c.mana >= 5 && [plr.heroClass, "Neutral"].includes(c.class));
+        list = list.filter(c => c.type == "Spell" && c.mana >= 5 && [plr.heroClass, "Neutral"].includes(c.class));
         if (list.length <= 0) return;
 
-        game.interact.discover("Discover a spell that costs (5) or more", list);
+        let card = game.interact.discover("Discover a spell that costs (5) or more", list);
+        plr.addToHand(card);
     }
 }

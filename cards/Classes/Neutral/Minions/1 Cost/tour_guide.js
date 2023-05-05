@@ -3,6 +3,7 @@ module.exports = {
     stats: [1, 1],
     desc: "&BBattlecry:&R Your next Hero Power costs (0).",
     mana: 1,
+    type: "Minion",
     tribe: "None",
     class: "Neutral",
     rarity: "Common",

@@ -2,6 +2,7 @@ module.exports = {
     name: "Backfire",
     desc: "Draw 3 cards. Deal 3 damage to your hero.",
     mana: 3,
+    type: "Spell",
     class: "Warlock",
     rarity: "Common",
     set: "Darkmoon Races",

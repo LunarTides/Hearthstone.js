@@ -2,6 +2,7 @@ module.exports = {
     name: "Corpse Explosion",
     desc: "Detonate a Corpse to deal 1 damage to all minions. If any are still alive, repeat this.",
     mana: 5,
+    type: "Spell",
     class: "Death Knight",
     rarity: "Rare",
     set: "March of the Lich King",

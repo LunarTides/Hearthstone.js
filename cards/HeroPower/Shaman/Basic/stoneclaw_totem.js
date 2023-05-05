@@ -3,6 +3,7 @@ module.exports = {
     stats: [0, 2],
     desc: "Taunt",
     mana: 1,
+    type: "Minion",
     tribe: "Totem",
     class: "Shaman",
     rarity: "Free",

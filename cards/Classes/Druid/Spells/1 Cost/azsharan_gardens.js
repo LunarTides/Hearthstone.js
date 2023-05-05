@@ -2,6 +2,7 @@ module.exports = {
     name: "Azsharan Gardens",
     desc: "Give all minions in your hand +1/+1. Put a 'Sunken Gardens' on the bottom of your deck.",
     mana: 1,
+    type: "Spell",
     class: "Druid",
     rarity: "Common",
     set: "Voyage to the Sunken City",

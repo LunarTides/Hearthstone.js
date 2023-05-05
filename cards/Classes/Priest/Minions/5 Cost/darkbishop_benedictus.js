@@ -3,6 +3,7 @@ module.exports = {
     stats: [5, 6],
     desc: "&BStart of Game:&R If the spells in your deck are all Shadow, enter Shadowform.",
     mana: 5,
+    type: "Minion",
     tribe: "None",
     class: "Priest",
     rarity: "Legendary",

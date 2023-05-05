@@ -2,6 +2,7 @@ module.exports = {
     name: "Fel Barrage",
     desc: "Deal 2 damage to the lowest Health enemy, twice.",
     mana: 2,
+    type: "Spell",
     class: "Demon Hunter",
     rarity: "Common",
     set: "United in Stormwind",

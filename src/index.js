@@ -58,7 +58,13 @@ function main() {
     game.interact.mulligan(p1);
     game.interact.mulligan(p2);
 
-    while (game.running) game.interact.doTurn();
+    try {
+        while (game.running) game.interact.doTurn();
+    } catch (err) {
+        game.functions.createLogFile(err); // Create error report file
+
+        throw err;
+    }
 }
 
 exports.runner = runner;

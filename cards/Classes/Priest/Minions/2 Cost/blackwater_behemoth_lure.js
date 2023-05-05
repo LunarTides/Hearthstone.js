@@ -4,6 +4,7 @@ module.exports = {
     stats: [1, 4],
     desc: "At the end of your turn, force a random enemy minion to attack the Blackwater Behemoth.",
     mana: 2,
+    type: "Minion",
     tribe: "Beast",
     class: "Priest",
     rarity: "Free",

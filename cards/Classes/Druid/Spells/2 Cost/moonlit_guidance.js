@@ -2,6 +2,7 @@ module.exports = {
     name: "Moonlit Guidance",
     desc: "Discover a copy of a card in your deck. If you play it this turn, draw the original.",
     mana: 2,
+    type: "Spell",
     class: "Druid",
     rarity: "Rare",
     set: "United in Stormwind",
@@ -11,6 +12,7 @@ module.exports = {
     cast(plr, game, self) {
         let cards = plr.deck;
         let card = game.interact.discover("Discover a copy of a card in your deck.", cards);
+        card = card.imperfectCopy();
 
         let desc = card.desc;
         let turnText = "";

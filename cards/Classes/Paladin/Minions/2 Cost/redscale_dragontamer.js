@@ -3,6 +3,7 @@ module.exports = {
     stats: [2, 3],
     desc: "&BDeathrattle:&R Draw a Dragon.",
     mana: 2,
+    type: "Minion",
     tribe: "Murloc",
     class: "Paladin",
     rarity: "Common",

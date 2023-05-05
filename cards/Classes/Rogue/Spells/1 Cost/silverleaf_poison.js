@@ -2,6 +2,7 @@ module.exports = {
     name: "Silverleaf Poison",
     desc: "Give your weapon \"After your hero attacks, draw a card.\"",
     mana: 1,
+    type: "Spell",
     class: "Rogue",
     rarity: "Common",
     set: "Forged in the Barrens",

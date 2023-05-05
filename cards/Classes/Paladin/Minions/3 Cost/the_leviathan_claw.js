@@ -4,6 +4,7 @@ module.exports = {
     stats: [4, 2],
     desc: "&BRush, Divine Shield.&R After this attacks, draw a card.",
     mana: 3,
+    type: "Minion",
     tribe: "Mech",
     class: "Paladin",
     rarity: "Free",
