@@ -7,7 +7,7 @@ let decks = Object.values(JSON.parse(fs.readFileSync("decks.json")).versus);
 
 let games = process.env.games || 100;
 
-console.log(`Press enter to play ${games} games`);
+console.error(`Press enter to play ${games} games`);
 if (!process.env.games) console.log("Set the GAMES env variable to change how many games to play.");
 console.log("NOTE: If you see no progress being made for an extended period of time, chances are the game got stuck in an infinite loop.");
 rl.question();

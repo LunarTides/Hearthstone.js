@@ -82,7 +82,7 @@ class Interact {
         console.log(`${err}.`.red);
         game.input();
     }
-    handleCmds(q) {
+    handleCmds(q, ...args) {
         /**
          * Checks if "q" is a command, if it is, do something, if not return -1
          * 
@@ -210,9 +210,11 @@ class Interact {
             require('child_process').exec(start + ' ' + license_url);
         }
         else if (q == "history") {
-            console.log("\nWARNING: The history feature is not perfect. Things will be out of order. Sorry about that.".yellow);
+            if (args[0] === false) {}
+            else console.log("\nWARNING: The history feature is not perfect. Things will be out of order. Sorry about that.".yellow);
             // History
             let history = game.events.history;
+            let finished = "";
 
             const doVal = (val, plr, hide) => {
                 if (val instanceof game.Card) {
@@ -236,7 +238,7 @@ class Interact {
                     let hideValueKeys = ["DrawCard", "AddCardToHand", "AddCardToDeck"]; // Example: If a card gets drawn, the other player can't see what card it was
                     let shouldHide = hideValueKeys.includes(key);
 
-                    if (!hasPrintedHeader) console.log(`\nTurn ${t + 1} - Player [${plr.name}]`); 
+                    if (!hasPrintedHeader) finished += `\nTurn ${t + 1} - Player [${plr.name}]\n`; 
                     hasPrintedHeader = true;
 
                     val = doVal(val, game.player, shouldHide);
@@ -255,11 +257,19 @@ class Interact {
 
                     key = key[0].toUpperCase() + key.slice(1);
 
-                    console.log(`${key}: ${val}`);
+                    finished += `${key}: ${val}\n`;
                 });
             });
 
-            game.input("\nPress enter to continue...");
+
+            if (args[0] === false) {}
+            else {
+                console.log(finished);
+
+                game.input("\nPress enter to continue...");
+            }
+
+            return finished;
         }
 
         else if (q.startsWith("/give ")) {
@@ -323,22 +333,31 @@ class Interact {
         else if (q == "/ai") {
             if (!game.config.debug) return -1;
 
-            console.log("AI Info:\n");
+            let finished = "";
+
+            finished += "AI Info:\n\n";
 
             for (let i = 1; i <= 2; i++) {
                 const plr = game["player" + i];
                 if (!plr.ai) continue;
 
-                console.log(`AI${i} History: {`);
+                finished += `AI${i} History: {\n`;
 
                 plr.ai.history.forEach((t, j) => {
-                    console.log(`${j + 1} ${t[0]}: (${t[1]}),`);
+                    finished += `${j + 1} ${t[0]}: (${t[1]}),\n`;
                 });
                 
-                console.log("}");
+                finished += "}\n";
             }
 
-            game.input("\nPress enter to continue...");
+            if (args[0] === false) {}
+            else {
+                console.log(finished);
+
+                game.input("\nPress enter to continue...");
+            }
+
+            return finished;
         }
         else if (q == "/events") {
             if (!game.config.debug) return -1;

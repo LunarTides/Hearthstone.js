@@ -173,6 +173,67 @@ class Functions {
 
         return [wall, finishWall];
     }
+    createCrashReport(err) {
+        // Create a crash-log file
+        if (!fs.existsSync("./logs/")) fs.mkdirSync("./logs/");
+
+        let date = new Date();
+
+        let day = date.getDate().toString();
+        let month = (date.getMonth() + 1).toString(); // Month is 0-11 for some reason
+        let year = date.getFullYear().toString().slice(2); // Get the last 2 digits of the year
+
+        let hour = date.getHours().toString();
+        let minute = date.getMinutes().toString();
+        let second = date.getSeconds().toString();
+
+        if (day < 10) day = `0${day}`;
+        if (month < 10) month = `0${month}`;
+        if (year < 10) year = `0${year}`;
+
+        if (hour < 10) hour = `0${hour}`;
+        if (minute < 10) minute = `0${minute}`;
+        if (second < 10) second = `0${second}`;
+
+        let dateString = `${day}/${month}/${year} ${hour}:${minute}:${second}`; // 01/01/23 23:59:59
+        let dateStringFileFriendly = dateString.replace(/[/:]/g, ".").replaceAll(" ", "-"); // 01.01.23-23.59.59
+
+        let history = game.interact.handleCmds("history", false);
+
+        let content = `Hearthstone.js Crash Log
+Date: ${dateString}
+Version: ${game.config.version}-${game.config.branch}
+
+Remember to attach the '-ai' crash log file as well when creating a bug report.
+
+History:
+${history}
+
+Error:
+${err.stack}
+`
+
+        fs.writeFileSync(`./logs/crashlog-${dateStringFileFriendly}.txt`, content);
+
+        // AI crash log
+        game.config.debug = true; // Do this so it can actually run '/ai'
+        let aiHistory = game.interact.handleCmds("/ai", false);
+
+        content = `Hearthstone.js AI Crash Log
+Date: ${dateString}
+Version: ${game.config.version}-${game.config.branch}
+
+Remember to attach the main crash log file as well when making a bug report. The main crash log file is the one not ending in '-ai'.
+
+AI History:
+${aiHistory}
+`
+
+        fs.writeFileSync(`./logs/crashlog-${dateStringFileFriendly}-ai.txt`, content);
+
+        console.log(`\nThe game crashed!\nCrash report created in 'logs/crashlog-${dateStringFileFriendly}.txt' and 'logs/crashlog-${dateStringFileFriendly}-ai.txt'\nPlease create a bug report at:\nhttps://github.com/SolarWindss/Hearthstone.js/issues`.yellow);
+        game.input();
+    }
 
     // Getting card info
     getCardByName(name, refer = true) {
