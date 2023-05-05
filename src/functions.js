@@ -3,6 +3,7 @@ const { exit } = require("process");
 const { setup_ai } = require("./ai");
 const { setup_card } = require("./card");
 const { setup_player } = require("./player");
+const { decode } = require("deckstrings"); // To decode vanilla deckcodes
 
 let game = null;
 
@@ -942,6 +943,148 @@ ${aiHistory}
         setup_ai(game);
         setup_player(game);
     }
+    decodeVanillaDeck(plr, code) {
+        /**
+         * Turns a vanilla deckcode into a Hearthstone.js deckcode
+         */
+        let deck = decode(code);
+
+        let cards;
+
+        try {
+            cards = fs.readFileSync("./../card_creator/vanilla/.ignore.cards.json");
+        } catch (err) {
+            console.log("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, go to 'card_creator/vanilla/' and open 'generate.bat', then try again.");
+            game.input();
+
+            process.exit(1);
+        }
+        cards = JSON.parse(cards);
+
+        delete deck.format; // We don't care about the format
+
+        let heroClass = cards.find(a => a.dbfId == deck.heroes[0]).cardClass;
+        heroClass = this.capitalize(heroClass);
+
+        if (heroClass == "Deathknight") heroClass = "Death Knight"; // Wtf hearthstone?
+        
+        deck = deck.cards;
+
+        let new_deck = JSON.parse(JSON.stringify(deck));
+        deck = deck.map(c => [cards.find(a => a.dbfId == c[0]), c[1]]); // Get the full card object from the dbfId
+
+        let createdCards = this.getCards(false);
+        
+        let invalidCards = [];
+        deck.forEach(c => {
+            c = c[0];
+
+            if (createdCards.find(card => card.name == c.name || card.displayName == c.name)) return;
+
+            // The card doesn't exist.
+            console.log(`ERROR: Card '${c.name}' doesn't exist!`.red);
+            invalidCards.push(c);
+        });
+
+        if (invalidCards.length > 0) {
+            // There was a card in the deck that isn't implemented in Hearthstone.js
+            let vcc = require("./../card_creator/vanilla/index");
+
+            invalidCards.forEach(c => {
+                let createCard = game.input(`Card '${c.name}' does not currently exist. You cannot play on this deck without it. Do you want to create this card? (you will need to give the card logic yourself) [Y/N] `.yellow);
+
+                if (createCard.toLowerCase()[0] != "y") process.exit(1);
+
+                // Create that card
+                vcc.main("./../card_creator", c);
+            });
+
+            this.importCards("./../cards");
+            return this.decodeVanillaDeck(plr, code); // Try again
+        }
+
+        new_deck = [];
+
+        // All cards in the deck exists
+        let amounts = {};
+        deck.forEach(c => {
+            let name = cards.find(a => a.dbfId == c[0].dbfId).name;
+            // The name can still not be correct
+            if (!createdCards.find(a => a.name == name)) name = createdCards.find(a => a.displayName == name).name;
+
+            new_deck.push([new game.Card(name, plr), c[1]]);
+
+            if (!amounts[c[1]]) amounts[c[1]] = 0;
+            amounts[c[1]]++;
+        });
+
+        // Sort the `new_deck` array, lowest amount first
+        new_deck = new_deck.sort((a, b) => {
+            return a[1] - b[1];
+        });
+
+        // Assemble Hearthstone.js deckcode.
+        let deckcode = `${heroClass} `;
+
+        // Generate runes
+        let runes = "";
+
+        if (heroClass == "Death Knight") {
+            new_deck.forEach(c => {
+                c = c[0];
+
+                if (!c.runes) return;
+
+                c.runes.split("").forEach(r => {
+                    if (!runes.includes(r)) {
+                        runes += r;
+                    }
+                });
+
+                plr.runes = runes;
+
+                if (!plr.testRunes(c.runes)) {
+                    runes += c.runes;
+                }
+            });
+
+            let sorted_runes = "";
+
+            if (runes.includes("B")) sorted_runes += "B";
+            if (runes.includes("F")) sorted_runes += "F";
+            if (runes.includes("U")) sorted_runes += "U";
+
+            runes = runes.replace("B", "");
+            runes = runes.replace("F", "");
+            runes = runes.replace("U", "");
+
+            sorted_runes += runes;
+
+            runes = sorted_runes.slice(0, 3); // Only use the first 3 characters
+
+            if (runes === "") runes = "3B";
+
+            if (runes[0] == runes[1] && runes[1] == runes[2]) runes = `3${runes[0]}`;
+
+            deckcode += `[${runes}] `;
+        }
+
+        deckcode += `/`;
+
+        // Amount format
+        Object.entries(amounts).forEach(a => {
+            let [key, amount] = a;
+
+            if (!amounts[parseInt(key) + 1]) deckcode += key; // If this is the last amount
+            else deckcode += `${key}:${amount},`;
+        });
+
+        deckcode += `/ `;
+
+        deckcode += new_deck.map(c => c[0].id.toString(36)).join(',');
+
+        return deckcode;
+    }
     importDeck(plr, code) {
         /**
          * Imports a deck using a code and put the cards into the player's deck
@@ -962,6 +1105,12 @@ ${aiHistory}
         // The code is base64 encoded, so we need to decode it
         //code = Buffer.from(code, 'base64').toString('ascii');
         //if (!code) ERROR("INVALIDB64");
+        //
+        try {
+            decode(code); // If this doesn't crash, this is a vanilla deckcode
+
+            code = this.decodeVanillaDeck(plr, code);
+        } catch (err) {}; // This isn't a vanilla code, no worries, just parse it as a hearthstone.js deckcode.
 
         let runeRegex = /\[[BFU]{3}\]/; // BFU
         let altRuneRegex = /\[3[BFU]\]/; // BBB -> 3B

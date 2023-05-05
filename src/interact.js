@@ -310,8 +310,9 @@ class Interact {
 
                 game.events.broadcast("Eval", code, game.player);
             } catch (err) {
-                console.log(`${err}`.red);
-                game.input();
+                console.log("\nAn error happened while running this code! Here is the error:".red);
+                console.log(err.stack);
+                game.input("Press enter to continue...");
             }
         }
         else if (q == "/debug") {
