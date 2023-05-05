@@ -946,8 +946,13 @@ ${aiHistory}
     decodeVanillaDeck(plr, code) {
         /**
          * Turns a vanilla deckcode into a Hearthstone.js deckcode
+         *
+         * @param {Player} plr The player that will get the deckcode
+         * @param {string} code The deckcode
+         *
+         * @returns {string} The Hearthstone.js deckcode
          */
-        let deck = decode(code);
+        let deck = decode(code); // Use the 'deckstrings' api's decode
 
         let cards;
 
@@ -967,11 +972,9 @@ ${aiHistory}
         heroClass = this.capitalize(heroClass);
 
         if (heroClass == "Deathknight") heroClass = "Death Knight"; // Wtf hearthstone?
+        if (heroClass == "Demonhunter") heroClass = "Demon Hunter"; // I'm not sure if this actually happens, but considering it happened with death knight, you never know
         
-        deck = deck.cards;
-
-        let new_deck = JSON.parse(JSON.stringify(deck));
-        deck = deck.map(c => [cards.find(a => a.dbfId == c[0]), c[1]]); // Get the full card object from the dbfId
+        deck = deck.cards.map(c => [cards.find(a => a.dbfId == c[0]), c[1]]); // Get the full card object from the dbfId
 
         let createdCards = this.getCards(false);
         
@@ -988,16 +991,16 @@ ${aiHistory}
 
         if (invalidCards.length > 0) {
             // There was a card in the deck that isn't implemented in Hearthstone.js
-            let vcc = require("./../card_creator/vanilla/index");
-
             let createCard = game.input(`Some cards do not currently exist. You cannot play on this deck without them. Do you want to create these cards? (you will need to give the card logic yourself) [Y/N] `.yellow);
 
             if (createCard.toLowerCase()[0] != "y") process.exit(1);
 
+            let vcc = require("./../card_creator/vanilla/index");
+
             invalidCards.forEach(c => {
                 // Create that card
                 console.log("Creating " + c.name.yellow);
-                vcc.main("./../card_creator", c);
+                vcc.main("", c);
             });
 
             game.input("Press enter to try this deckcode again.\n");
@@ -1007,7 +1010,7 @@ ${aiHistory}
             return this.decodeVanillaDeck(plr, code); // Try again
         }
 
-        new_deck = [];
+        let new_deck = [];
 
         // All cards in the deck exists
         let amounts = {};
@@ -1039,17 +1042,7 @@ ${aiHistory}
 
                 if (!c.runes) return;
 
-                c.runes.split("").forEach(r => {
-                    if (!runes.includes(r)) {
-                        runes += r;
-                    }
-                });
-
-                plr.runes = runes;
-
-                if (!plr.testRunes(c.runes)) {
-                    runes += c.runes;
-                }
+                runes += c.runes;
             });
 
             let sorted_runes = "";
