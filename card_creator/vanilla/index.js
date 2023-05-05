@@ -6,8 +6,117 @@ function capitalize(str) {
     return str[0].toUpperCase() + str.slice(1).toLowerCase();
 }
 
-function main(home = ".") {
+function createCard(card, main) {
+    // Harvest info
+    let cardClass = capitalize(card.cardClass);
+    let collectible = card.collectible || false;
+    let mana = card.cost;
+    let name = card.name;
+    let rarity = "Free";
+    if (card.rarity) rarity = capitalize(card.rarity);
+    let desc = card.text;
+    let type = capitalize(card.type);
+
+    // Minion info
+    let attack = card.attack || -1;
+    let health = card.health || -1;
+    let race = card.race || null;
+    let races = [];
+    if (card.races) races = card.races.map(r => capitalize(r));
+
+    // Spell info
+    let spellClass = card.spellSchool || null;
+
+    // Weapon Info
+    let durability = card.durability || -1;
+
+    // Modify the desc
+    desc = desc.replaceAll("\n", " ");
+    desc = desc.replaceAll("<b>", "&B");
+    desc = desc.replaceAll("</b>", "&R");
+    desc = desc.replaceAll("[x]", "");
+
+    let realName = rl.question("Override name (this will set 'name' to be the displayname instead) (leave empty to not use display name): ") || name;
+
+    let _card = {
+        name: realName
+    };
+
+    if (realName != name) {
+        _card.displayName = name;
+    }
+
+    let struct;
+
+    if (type == "Minion") {
+        struct = {
+            stats: `[${attack}, ${health}]`,
+            desc: desc,
+            mana: mana,
+            type: type,
+            tribe: races.join(" / "),
+            class: cardClass,
+            rarity: rarity
+        }
+    }
+    else if (type == "Spell") {
+        struct = {
+            desc: desc,
+            mana: mana,
+            type: type,
+            class: cardClass,
+            rarity: rarity
+        }
+    }
+    else if (type == "Weapon") {
+        struct = {
+            stats: `[${attack}, ${durability}]`,
+            desc: desc,
+            mana: mana,
+            type: type,
+            class: cardClass,
+            rarity: rarity
+        }
+    }
+    else if (type == "Hero") {
+        struct = {
+            desc: desc,
+            mana: mana,
+            type: type,
+            class: cardClass,
+            rarity: rarity,
+            hpDesc: "",
+            hpCost: 2
+        }
+    }
+    else if (type == "Location") {
+        struct = {
+            stats: `[0, ${health}]`,
+            desc: desc,
+            mana: mana,
+            type: type,
+            class: cardClass,
+            rarity: rarity,
+            cooldown: 2
+        }
+    }
+    else {
+        console.log(`${type} is not a valid type!`);
+        process.exit(1);
+    }
+
+    if (!collectible) struct.uncollectible = true;
+
+    card = Object.assign({}, _card, struct);
+
+    if (main) console.log(card);
+    cc.main(type, null, null, card);
+}
+
+function main(home = ".", card = null) {
     console.log("Hearthstone.js Vanilla Card Creator (C) 2022\n");
+
+    if (card) return createCard(card, false);
 
     let data = fs.readFileSync(home + "/.ignore.cards.json", { encoding: 'utf8', flag: 'r' });
 
@@ -50,110 +159,7 @@ function main(home = ".") {
         }
         else card = filtered_cards[0];
 
-        // Harvest info
-        let cardClass = capitalize(card.cardClass);
-        let collectible = card.collectible || false;
-        let mana = card.cost;
-        let name = card.name;
-        let rarity = "Free";
-        if (card.rarity) rarity = capitalize(card.rarity);
-        let desc = card.text;
-        let type = capitalize(card.type);
-
-        // Minion info
-        let attack = card.attack || -1;
-        let health = card.health || -1;
-        let race = card.race || null;
-        let races = [];
-        if (card.races) races = card.races.map(r => capitalize(r));
-
-        // Spell info
-        let spellClass = card.spellSchool || null;
-
-        // Weapon Info
-        let durability = card.durability || -1;
-
-        // Modify the desc
-        desc = desc.replaceAll("\n", " ");
-        desc = desc.replaceAll("<b>", "&B");
-        desc = desc.replaceAll("</b>", "&R");
-        desc = desc.replaceAll("[x]", "");
-
-        let realName = rl.question("Override name (this will set 'name' to be the displayname instead) (leave empty to not use display name): ") || name;
-
-        let _card = {
-            name: realName
-        };
-
-        if (realName != name) {
-            _card.displayName = name;
-        }
-
-        let struct;
-
-        if (type == "Minion") {
-            struct = {
-                stats: `[${attack}, ${health}]`,
-                desc: desc,
-                mana: mana,
-                type: type,
-                tribe: races.join(" / "),
-                class: cardClass,
-                rarity: rarity
-            }
-        }
-        else if (type == "Spell") {
-            struct = {
-                desc: desc,
-                mana: mana,
-                type: type,
-                class: cardClass,
-                rarity: rarity
-            }
-        }
-        else if (type == "Weapon") {
-            struct = {
-                stats: `[${attack}, ${durability}]`,
-                desc: desc,
-                mana: mana,
-                type: type,
-                class: cardClass,
-                rarity: rarity
-            }
-        }
-        else if (type == "Hero") {
-            struct = {
-                desc: desc,
-                mana: mana,
-                type: type,
-                class: cardClass,
-                rarity: rarity,
-                hpDesc: "",
-                hpCost: 2
-            }
-        }
-        else if (type == "Location") {
-            struct = {
-                stats: `[0, ${health}]`,
-                desc: desc,
-                mana: mana,
-                type: type,
-                class: cardClass,
-                rarity: rarity,
-                cooldown: 2
-            }
-        }
-        else {
-            console.log(`${type} is not a valid type!`);
-            process.exit(1);
-        }
-
-        if (!collectible) struct.uncollectible = true;
-
-        card = Object.assign({}, _card, struct);
-
-        console.log(card);
-        cc.main(type, null, null, card);
+        createCard(card, true);
     }
 }
 
