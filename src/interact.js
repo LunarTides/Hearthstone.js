@@ -2,7 +2,6 @@ const colors = require("colors");
 const { exit } = require('process');
 
 const license_url = 'https://github.com/SolarWindss/Hearthstone.js/blob/main/LICENSE';
-const version = "1.2.0";
 
 let game;
 let curr;
@@ -827,10 +826,13 @@ class Interact {
         cls();
     
         if (!name) return;
+
+        let watermarkString = `HEARTHSTONE.JS V${game.config.version}-${game.config.branch}`;
+        let border = "-".repeat(watermarkString.length + 2);
     
-        console.log("|-----------------------------|");
-        console.log(`|    HEARTHSTONE.JS V${version}    |`);
-        console.log("|-----------------------------|\n");
+        console.log(`|${border}|`);
+        console.log(`| ${watermarkString} |`);
+        console.log(`|${border}|\n`);
     }
     printLicense(disappear = true) {
         /**

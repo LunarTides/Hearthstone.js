@@ -1,13 +1,12 @@
 const rl = require("readline-sync");
 const fs = require("fs");
-
-const version = "1.2.0";
+const { version, branch } = require("./config/general.json");
 
 const cls = () => process.stdout.write("\033c");
 
 const watermark = () => {
     cls();
-    console.log(`Hearthstone.js Runner V${version} (C) 2022\n`);
+    console.log(`Hearthstone.js Runner V${version}-${branch} (C) 2022\n`);
 }
 
 decks = [];
