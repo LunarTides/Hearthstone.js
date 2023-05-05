@@ -1,6 +1,6 @@
 {
   "name": "hearthstone.js",
-  "version": "1.3.0-dev",
+  "version": "1.3.0",
   "description": "",
   "main": "index.js",
   "scripts": {

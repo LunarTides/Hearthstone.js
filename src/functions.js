@@ -636,6 +636,7 @@ ${aiHistory}
         if (game.player.ai) {
             let card = game.player.ai.dredge(cards);
 
+            game.player.deck = game.player.deck.filter(c => c != card); // Removes the selected card from the players deck.
             game.player.deck.push(card);
 
             return card;
