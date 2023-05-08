@@ -453,7 +453,7 @@ class Game {
 
         player[card.costType] -= card.mana;
         //card.mana = card.backups.mana;
-        
+
         player.removeFromHand(card);
 
         // Echo
@@ -494,6 +494,9 @@ class Game {
         }
 
         this.events.broadcast("PlayCardUnsafe", card, player, false);
+
+        // Finale
+        if (player[card.costType] == 0) card.activate("finale");
 
         if (card.type === "Minion") {
             // Magnetize
