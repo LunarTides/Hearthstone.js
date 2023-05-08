@@ -228,7 +228,12 @@ class Card {
             return true;
         }
 
+        // Restore health
+
         if (this.getHealth() > this.maxHealth) {
+            // Too much health
+            this.activate("overheal"); // Overheal keyword
+
             if (this.getHealth() > before) game.events.broadcast("HealthRestored", this.maxHealth, this.plr);
             this.stats[1] = this.maxHealth;
         } else if (this.getHealth() > before) {
