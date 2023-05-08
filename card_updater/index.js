@@ -9,6 +9,8 @@ game.functions.importConfig("../config");
 
 let customCards = game.functions.getCards(false);
 
+console.log("WARNING: Make sure to run the generate script in `card_creator/vanilla/`. Also this program might find the incorrect card, so if it says that a card has 10 health instead of 2 sometimes, just ignore it.\n");
+
 customCards.forEach(c => {
     let vanilla = vanillaCards.find(a => a.name.toLowerCase() == (c.displayName || c.name).toLowerCase() && a.type.toLowerCase() == c.type.toLowerCase());
     if (!vanilla) return; // There is no vanilla version of that card.
@@ -32,7 +34,7 @@ function check(key, val, vanilla, card) {
     if (!vanilla[key] || ignore.includes(key)) return;
     if (val.toLowerCase() == vanilla[key].toString().toLowerCase()) return;
 
-    console.log("Outdate detected!");
+    console.log("Card outdated!");
     console.log(`Name: ${card.name}`);
     console.log(`Local: "${key}: ${val}"`);
     console.log(`New:   "${key}: ${vanilla[key]}"\n`);
