@@ -1,9 +1,9 @@
 const fs = require("fs");
+const deckstrings = require("deckstrings"); // To decode vanilla deckcodes
 const { exit } = require("process");
 const { setup_ai } = require("./ai");
 const { setup_card } = require("./card");
 const { setup_player } = require("./player");
-const { decode } = require("deckstrings"); // To decode vanilla deckcodes
 
 let game = null;
 
@@ -953,7 +953,7 @@ ${aiHistory}
          *
          * @returns {string} The Hearthstone.js deckcode
          */
-        let deck = decode(code); // Use the 'deckstrings' api's decode
+        let deck = deckstrings.decode(code); // Use the 'deckstrings' api's decode
 
         let cards;
 
@@ -1083,6 +1083,133 @@ ${aiHistory}
 
         return deckcode;
     }
+    encodeVanillaDeck(plr, code) {
+        /**
+         * Turns a Hearthstone.js deckcode into a vanilla deckcode
+         *
+         * @param {Player} plr The player that will get the deckcode
+         * @param {string} code The deckcode
+         *
+         * @returns {string} The vanilla deckcode
+         */
+
+        // WARNING: Jank code ahead. Beware!
+        //
+        // Reference: Death Knight [3B] /1:4,2/ 3f,5f,6f...
+
+        let deck = {"cards": [], "heroes": [], "format": null};
+
+        deck.format = deckstrings.FormatType.FT_WILD; // Wild
+
+        let vanillaHeroes = { // List of vanilla heroes dbfIds
+            "Warrior":      7,
+            "Hunter":       31,
+            "Druid":        274,
+            "Mage":         637,
+            "Paladin":      671,
+            "Priest":       813,
+            "Warlock":      893,
+            "Rogue":        930,
+            "Shaman":       1066,
+            "Demon Hunter": 56550,
+            "Death Knight": 78065
+        };
+
+        code = code.split(/[\[/]/);
+        let heroClass = code[0].trim();
+        heroClass = vanillaHeroes[heroClass];
+
+        deck.heroes.push(heroClass);
+
+        code.splice(0, 1); // Remove the class
+        if (code[0].endsWith("] ")) code.splice(0, 1); // Remove runes
+
+        let amountStr = code[0].trim();
+        let cards = code[1].trim();
+
+        // Now it's just the cards left
+        let vanillaCards;
+
+        try {
+            vanillaCards = fs.readFileSync(game.dirname + "/../card_creator/vanilla/.ignore.cards.json");
+        } catch (err) {
+            console.log("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, go to 'card_creator/vanilla/' and open 'generate.bat', then try again.".red);
+            game.input();
+
+            process.exit(1);
+        }
+        vanillaCards = JSON.parse(vanillaCards);
+
+        cards = cards.split(",").map(i => parseInt(i, 36));
+        cards = cards.map(i => this.getCardById(i));
+        cards = cards.map(c => new game.Card(c.name, plr));
+        cards = cards.map(c => c.displayName);
+
+        // Cards is now a list of names
+        let newCards = [];
+
+        cards.forEach((c, i) => {
+            let amount = 1;
+
+            // Find how many copies to put in the deck
+            let amountStrSplit = amountStr.split(":");
+
+            let found = false;
+            amountStrSplit.forEach((a, i2) => {
+                if (found) return;
+                if (i2 % 2 == 0) return; // We only want to look at every other one
+
+                if (i >= parseInt(a)) return;
+
+                // This is correct
+                found = true;
+
+                amount = parseInt(amountStrSplit[amountStrSplit.indexOf(a) - 1]);
+            });
+            if (!found) amount = parseInt(amountStr[amountStr.length - 1]);
+
+            let matches = vanillaCards.filter(a => a.name.toLowerCase() == c.toLowerCase());
+            matches = matches.filter(a => a.collectible); // You're welcome
+            matches = matches.filter(a => !a.id.includes("Prologue"));
+            matches = matches.filter(a => !a.id.includes("PVPDR")); // Idk what 'PVPDR' means, but ok
+            matches = matches.filter(a => a.set && !["battlegrounds", "hero_skins", "placeholder"].includes(a.set.toLowerCase()));
+
+            if (!matches) {
+                // Invalid card
+                console.log("ERROR: Invalid card found!".red);
+                game.input();
+                return;
+            }
+
+            if (matches.length > 1) {
+                // Ask the user to pick one
+                matches.forEach((m, i) => {
+                    delete m.artist;
+                    delete m.elite;
+                    delete m.collectible; // All cards here should already be collectible
+                    delete m.referencedTags;
+                    delete m.mechanics;
+                    delete m.race; // Just look at `m.races`
+
+                    console.log(`${i + 1}: `);
+                    console.log(m);
+                });
+
+                console.log(`Multiple cards with the name '${c}' detected! Please choose one:`.yellow);
+                let chosen = game.input();
+
+                matches = matches[parseInt(chosen) - 1];
+            }
+            else matches = matches[0];
+
+            newCards.push([matches.dbfId, amount]);
+        });
+
+        deck.cards = newCards;
+
+        deck = deckstrings.encode(deck);
+        return deck;
+    }
     importDeck(plr, code) {
         /**
          * Imports a deck using a code and put the cards into the player's deck
@@ -1105,7 +1232,7 @@ ${aiHistory}
         //if (!code) ERROR("INVALIDB64");
         //
         try {
-            decode(code); // If this doesn't crash, this is a vanilla deckcode
+            deckstrings.decode(code); // If this doesn't crash, this is a vanilla deckcode
 
             code = this.decodeVanillaDeck(plr, code);
         } catch (err) {}; // This isn't a vanilla code, no worries, just parse it as a hearthstone.js deckcode.
