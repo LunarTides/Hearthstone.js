@@ -526,7 +526,7 @@ class Interact {
 
         let error;
 
-        if (deckcode.length > 0) error = game.functions.importDeck(plr, deckcode);
+        if (deckcode.length > 0) error = game.functions.deckcode.import(plr, deckcode);
         else {
             if (!game.config.debug && game.config.branch == "stable") { // I want to be able to test without debug mode on in a non-stable branch
                 // Give error message

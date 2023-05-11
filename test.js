@@ -33,7 +33,7 @@ for (let _ = 0; _ < games; _++) {
     // Choose random decks for the players
     for (let i = 0; i < 2; i++) {
         let deck = game.functions.randList(decks);
-        game.functions.importDeck(game["player" + (i + 1)], deck);
+        game.functions.deckcode.import(game["player" + (i + 1)], deck);
     }
 
     game.startGame();
