@@ -44,7 +44,7 @@ function main() {
             plr = game["player" + rng];
         } while(plr.deck.length > 0);
 
-        game.functions.importDeck(plr, d);
+        game.functions.deckcode.import(plr, d);
 
         game.input(`Player ${rng}'s Deck was automatically set to: ${d}\n`); 
     });

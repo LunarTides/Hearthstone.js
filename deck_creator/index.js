@@ -339,14 +339,15 @@ function showCards() {
     });
 
     console.log("\nCurrent deckcode output:");
-    let [_deckcode, error] = deckcode();
-    if (error == "valid") {
+    let _deckcode = deckcode();
+
+    if (!_deckcode.error) {
         console.log("Valid deck!".green);
-        console.log(_deckcode);
+        console.log(_deckcode.code);
     }
 
     if (settings.other.firstScreen) {
-        console.log("Type 'rules' to see a list of rules.");
+        console.log("\nType 'rules' to see a list of rules.");
 
         settings.other.firstScreen = false;
     }
@@ -462,98 +463,50 @@ function showDeck() {
     });
 
     console.log("\nCurrent deckcode output:");
-    let [_deckcode, error] = deckcode();
-    if (error == "valid") {
+    let _deckcode = deckcode();
+    if (!_deckcode.error) {
         console.log("Valid deck!".green);
-        console.log(_deckcode);
+        console.log(_deckcode.code);
     }
 }
 
 function deckcode() {
-    let pseudo = false;
+    let _deckcode = game.functions.deckcode.export(deck, chosen_class, runes);
 
     // Deck size warnings
-    if (deck.length < minDeckLength) {
-        console.log("WARNING: Too few cards.".yellow);
+    if (_deckcode.error) {
+        let error = _deckcode.error;
 
-        pseudo = true;
+        let log = "WARNING: ".yellow;
+
+        let recoverable = true;
+
+        switch (error.msg) {
+            case "TooFewCards":
+                log += "Too few cards.".yellow;
+                break;
+            case "TooManyCards":
+                log += "Too many cards.".yellow;
+                break;
+            case "EmptyDeck":
+                log = "ERROR: Could not generate deckcode as your deck is empty. The resulting deckcode would be invalid.".red;
+                recoverable = false;
+
+                break;
+            case "TooManyCopies":
+                log += "Too many copies of a card. Maximum is: ".yellow + game.config.maxOfOneCard.toString() + ". Offender: ".yellow + `{ Name: "${error.info.card.name}", Copies: "${error.info.copies}" }`;
+                break;
+            case "TooManyLegendaryCopies":
+                log += "Too many copies of a Legendary card. Maximum is: ".yellow + game.config.maxOfOneLegendary.toString() + ". Offender: ".yellow + `{ Name: "${error.info.card.name}", Copies: "${error.info.copies}" }`;
+                break;
+        }
+
+        console.log(log);
+
+        _deckcode.error.recoverable = recoverable;
     }
-    if (deck.length > maxDeckLength) {
-        console.log("WARNING: Too many cards.".yellow);
 
-        pseudo = true;
-    }
-
-    // Check if the deck is empty
-    if (deck.length <= 0) {
-        console.log("ERROR: Could not generate deckcode as your deck is empty. The resulting deckcode would be invalid.".red);
-        return ["", "invalid"];
-    }
-
-    let deckcode = `${chosen_class} `;
-    if (runes) {
-        // If the runes is 3 of one type, write, for example, 3B instead of BBB
-        if (new Set(runes.split("")).size == 1) deckcode += `[3${runes[0]}] `;
-        else deckcode += `[${runes}] `;
-    }
-
-    deckcode += "/";
-
-    let _cards = {};
-
-    deck.forEach(c => {
-        if (!_cards[c.name]) _cards[c.name] = [c, 0];
-        _cards[c.name][1]++;
-    });
-
-    let __cards = {};
-
-    Object.values(_cards).forEach(c => {
-        let a = c[1];
-        if (!__cards[a]) __cards[a] = [];
-        __cards[a].push(c);
-    });
-
-    let str_cards = "";
-
-    let prev_amount = 0;
-    Object.values(__cards).forEach((c, i) => {
-        let amount = c[0][1];
-
-        if (i == Object.keys(__cards).length - 1) deckcode += `${amount},`;
-        else deckcode += `${amount}:${__cards[amount].length},`; // "/3:5,2:8,1/";
-
-        c.forEach(v => {
-            let card = v[0];
-
-            let id = card[settings.deckcode.cardId];
-
-            // Extra optimization
-            if (settings.deckcode.cardId == "id") id = id.toString(36);
-
-            str_cards += `${id},`;
-
-            if (amount > config.maxOfOneLegendary && card.rarity == "Legendary") {
-                console.log("WARNING: Too many copies of a Legendary card. Maximum is: ".yellow + config.maxOfOneLegendary.toString() + ". Offender: ".yellow + `{ Name: "${card.name}", Amount: "${amount}" }`);
-
-                pseudo = true;
-            }
-            else if (amount > config.maxOfOneCard) {
-                console.log("WARNING: Too many copies of a card. Maximum is: ".yellow + config.maxOfOneCard.toString() + ". Offender: ".yellow + `{ Name: "${card.name}", Amount: "${amount}" }`);
-
-                pseudo = true;
-            }
-        });
-    });
-
-    deckcode = deckcode.slice(0, -1); // Remove the last ", "
-
-    deckcode += "/ ";
-
-    deckcode += str_cards;
-    deckcode = deckcode.slice(0, -1); // Remove the last ", "
-
-    return pseudo ? [deckcode, "pseudo"] : [deckcode, "valid"];
+    return _deckcode;
 }
 
 function help() {
@@ -717,10 +670,10 @@ function handleCmds(cmd) {
         settings.view.class = _class;
     }
     else if (cmd.startsWith("deckcode")) {
-        let [_deckcode, error] = deckcode();
+        let _deckcode = deckcode();
 
-        let toPrint = _deckcode + "\n";
-        if (error == "invalid") toPrint = "";
+        let toPrint = _deckcode.code + "\n";
+        if (_deckcode.error && !_deckcode.error.recoverable) toPrint = "";
 
         game.input(toPrint);
     }
@@ -753,7 +706,7 @@ function handleCmds(cmd) {
         let _deckcode = game.input("Please input a deckcode: ");
 
         game.config.validateDecks = false;
-        let _deck = functions.importDeck(plr, _deckcode).sort((a, b) => {
+        let _deck = functions.deckcode.import(plr, _deckcode).sort((a, b) => {
             return a.name.localeCompare(b.name);
         });
         game.config.validateDecks = true;
@@ -778,14 +731,14 @@ function handleCmds(cmd) {
             return;
         }
 
-        let [_deckcode, error] = deckcode();
+        let _deckcode = deckcode();
 
-        if (error != "valid") {
+        if (_deckcode.error) {
             game.input("ERROR: Cannot export invalid / pseudo-valid deckcodes.\n".red);
             return;
         }
 
-        require(__dirname + "/../index").store_deck(_deckcode);
+        require(__dirname + "/../index").store_deck(_deckcode.code);
 
         game.input("Deck successfully exported.\n".green);
     }
