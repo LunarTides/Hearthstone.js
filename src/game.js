@@ -104,12 +104,16 @@ class EventManager {
         plr[quests_name].forEach(s => {
             if (s["key"] != key) return;
 
-            if (!s["manual_progression"]) s["progress"][0]++;
+            let [current, max] = s["progress"];
 
-            const normal_done = (s["value"] + this[key][plr.id].length - 1) == this[key][plr.id].length;
-            if (!s["callback"](val, this.game, s["turn"], normal_done)) return;
+            let done = current + 1 >= max;
+            if (s["callback"](val, s["turn"], done) === false) return;
 
             s["progress"][0]++;
+
+            if (!done) return;
+
+            // The quest/secret is done
             plr[quests_name].splice(plr[quests_name].indexOf(s), 1);
 
             if (quests_name == "secrets") this.game.input("\nYou triggered the opponents's '" + s.name + "'.\n");
