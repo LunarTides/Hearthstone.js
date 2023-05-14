@@ -41,7 +41,7 @@ function devmode() {
                 if (!fs.existsSync("./card_creator/vanilla/.ignore.cards.json")) {
                     watermark();
 
-                    rl.question("Cards file not found! Go to 'card_creator/vanilla' and run either 'generate.bat' or 'generate.sh', then try again.\n");
+                    rl.question("Cards file not found! Run 'genvanilla.bat' (requires an internet connection), then try again.\n");
                     continue;
                 }
 
