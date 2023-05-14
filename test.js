@@ -2,6 +2,7 @@ const rl = require("readline-sync");
 const fs = require("fs");
 const { Game } = require("./src/game");
 const { Player } = require("./src/player");
+const { set } = require("./src/shared");
 
 let decks = Object.values(JSON.parse(fs.readFileSync("decks.json")).versus);
 
@@ -17,6 +18,8 @@ for (let _ = 0; _ < games; _++) {
     const p1 = new Player("Player 1");
     const p2 = new Player("Player 2");
     const game = new Game(p1, p2);
+
+    set(game);
 
     game.running = true;
 

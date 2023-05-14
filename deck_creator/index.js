@@ -10,10 +10,13 @@ try {
 }
 
 const { Game } = require("../src/game");
+const { set } = require("../src/shared");
 
 const game = new Game({}, {});
 const functions = game.functions;
 game.dirname = __dirname + "/../";
+
+set(game);
 
 functions.importCards(__dirname + "/../cards");
 functions.importConfig(__dirname + "/config");

@@ -1,11 +1,11 @@
-let game = null;
+const { get } = require("./shared");
 
-function setup(_game) {
-    game = _game;
-}
+let game = get();
 
 class Player {
     constructor(name) {
+        this.getInternalGame();
+
         this.name = name;
         this.id = null;
         this.ai = null;
@@ -47,6 +47,10 @@ class Player {
         this.runes = "";
 
         this.forceTarget = null;
+    }
+
+    getInternalGame() {
+        game = get();
     }
 
     getOpponent() {
@@ -435,4 +439,3 @@ class Player {
 }
 
 exports.Player = Player;
-exports.setup_player = setup;
