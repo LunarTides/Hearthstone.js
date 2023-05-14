@@ -1162,52 +1162,6 @@ ${aiHistory}
     }
 
     // Keyword stuff
-    dredge(prompt = "Choose a card to Dredge:") {
-        /**
-         * Asks the user a "prompt" and show 3 cards from their deck for the player to choose, the chosen card will be added to the top of their deck
-         * 
-         * @param {string} prompt [default="Choose One:"] The prompt to ask the user
-         * 
-         * @returns {Card} The card chosen
-         */
-
-        // Look at the bottom three cards of the deck and put one on the top.
-        let cards = game.player.deck.slice(0, 3);
-
-        // Check if ai
-        if (game.player.ai) {
-            let card = game.player.ai.dredge(cards);
-
-            game.player.deck = game.player.deck.filter(c => c != card); // Removes the selected card from the players deck.
-            game.player.deck.push(card);
-
-            return card;
-        }
-
-        game.interact.printAll(game.player);
-
-        console.log(`\n${prompt}`);
-
-        if (cards.length <= 0) return;
-
-        cards.forEach((c, i) => {
-            console.log(game.interact.getReadableCard(c, i + 1));
-        });
-
-        let choice = game.input("> ");
-
-        let card = parseInt(choice) - 1;
-        card = cards[card];
-
-        if (!card) {
-            return this.dredge(prompt);
-        }
-
-        this.remove(game.player.deck, card); // Removes the selected card from the players deck.
-        game.player.deck.push(card);
-
-        return card;
-    }
     adapt(minion, prompt = "Choose One:", _values = []) {
         /**
          * Asks the user a "prompt" and show 3 choices for the player to choose, and do something to the minion based on the choice
