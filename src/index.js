@@ -33,6 +33,8 @@ function main() {
     game.functions.importCards(__dirname + '/../cards');
     game.functions.importConfig(__dirname + '/../config');
 
+    game.dirname = __dirname + "/../";
+
     decks.forEach((d, i) => {
         if (i >= 2) return;
 
@@ -53,7 +55,6 @@ function main() {
     if (p2.deck.length <= 0) game.interact.deckCode(p2);
 
     game.startGame();
-    game.set("dirname", __dirname);
 
     game.interact.mulligan(p1);
     game.interact.mulligan(p2);

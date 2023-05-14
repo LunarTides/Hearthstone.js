@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npx mocha"
   },
   "repository": {
     "type": "git",
@@ -17,5 +17,8 @@
     "colors": "^1.4.0",
     "deckstrings": "^2.2.1",
     "readline-sync": "^1.4.10"
+  },
+  "devDependencies": {
+    "mocha": "^10.2.0"
   }
 }

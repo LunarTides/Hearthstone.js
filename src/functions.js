@@ -35,7 +35,7 @@ class DeckcodeFunctions {
         try {
             deckstrings.decode(code); // If this doesn't crash, this is a vanilla deckcode
 
-            code = this.deckcode.fromVanilla(plr, code);
+            code = this.fromVanilla(plr, code);
         } catch (err) {}; // This isn't a vanilla code, no worries, just parse it as a hearthstone.js deckcode.
 
         let runeRegex = /\[[BFU]{3}\]/; // BFU
@@ -328,7 +328,7 @@ class DeckcodeFunctions {
         let vanillaCards;
 
         try {
-            vanillaCards = fs.readFileSync(game.dirname + "/../card_creator/vanilla/.ignore.cards.json");
+            vanillaCards = fs.readFileSync(game.dirname + "/card_creator/vanilla/.ignore.cards.json");
         } catch (err) {
             console.log("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, go to 'card_creator/vanilla/' and open 'generate.bat', then try again.".red);
             game.input();
@@ -421,7 +421,7 @@ class DeckcodeFunctions {
         let cards;
 
         try {
-            cards = fs.readFileSync(game.dirname + "/../card_creator/vanilla/.ignore.cards.json");
+            cards = fs.readFileSync(game.dirname + "/card_creator/vanilla/.ignore.cards.json");
         } catch (err) {
             console.log("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, go to 'card_creator/vanilla/' and open 'generate.bat', then try again.".red);
             game.input();
