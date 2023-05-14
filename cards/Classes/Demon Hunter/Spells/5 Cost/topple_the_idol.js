@@ -9,7 +9,7 @@ module.exports = {
     id: 210,
 
     cast(plr, game, self) {
-        let card = game.functions.dredge();
+        let card = game.interact.dredge();
 
         game.board.forEach(p => {
             p.forEach(m => {

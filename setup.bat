@@ -9,6 +9,3 @@ if errorlevel 1 (
 )
 
 npm i > NUL
-
-deck_creator\setup.bat
-card_creator\setup.bat

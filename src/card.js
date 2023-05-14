@@ -1,14 +1,12 @@
-let game = null;
-let cards = [];
+const { get } = require("./shared");
 
-function setup(_game, _cards) {
-    game = _game;
-    cards = _cards;
-}
+let game = get();
 
 class Card {
     constructor(name, plr) {
-        this.blueprint = cards.find(c => c.name == name);
+        game = get();
+
+        this.blueprint = game.cards.find(c => c.name == name);
         
         this.name = name;
         this.displayName = name;
@@ -32,6 +30,12 @@ class Card {
         this.canAttackHero = true;
         this.sleepy = true;
 
+        // Set these variables to true or false.
+        const exists = ["corrupted", "colossal", "dormant", "uncollectible", "frozen", "immune", "echo"];
+        exists.forEach(i => {
+            this[i] = this.blueprint[i] || false;
+        });
+
         /*
         Go through all blueprint variables and
         set them in the card object
@@ -50,12 +54,6 @@ class Card {
         Object.entries(this.blueprint).forEach(i => {
             if (typeof i[1] == "function") this[i[0]] = [i[1]];
             else this[i[0]] = JSON.parse(JSON.stringify(i[1]));
-        });
-
-        // Set these variables to true or false.
-        const exists = ["corrupted", "colossal", "dormant", "uncollectible", "frozen", "immune", "echo"];
-        exists.forEach(i => {
-            this[i] = this.blueprint[i] || false;
         });
 
         // Set maxHealth if the card is a minion or weapon
@@ -228,7 +226,12 @@ class Card {
             return true;
         }
 
+        // Restore health
+
         if (this.getHealth() > this.maxHealth) {
+            // Too much health
+            this.activate("overheal"); // Overheal keyword
+
             if (this.getHealth() > before) game.events.broadcast("HealthRestored", this.maxHealth, this.plr);
             this.stats[1] = this.maxHealth;
         } else if (this.getHealth() > before) {
@@ -259,7 +262,7 @@ class Card {
          * @returns {boolean} Success
          */
 
-        if (this.immune) return true;
+        if (this.immune && this.type != "Location") return true;
 
         this.setStats(this.getAttack(), this.getHealth() - amount);
         game.events.broadcast("DamageMinion", [this, amount], this.plr);
@@ -672,4 +675,3 @@ class Card {
 }
 
 exports.Card = Card;
-exports.setup_card = setup;

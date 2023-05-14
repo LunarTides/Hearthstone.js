@@ -104,12 +104,16 @@ class EventManager {
         plr[quests_name].forEach(s => {
             if (s["key"] != key) return;
 
-            if (!s["manual_progression"]) s["progress"][0]++;
+            let [current, max] = s["progress"];
 
-            const normal_done = (s["value"] + this[key][plr.id].length - 1) == this[key][plr.id].length;
-            if (!s["callback"](val, this.game, s["turn"], normal_done)) return;
+            let done = current + 1 >= max;
+            if (s["callback"](val, s["turn"], done) === false) return;
 
             s["progress"][0]++;
+
+            if (!done) return;
+
+            // The quest/secret is done
             plr[quests_name].splice(plr[quests_name].indexOf(s), 1);
 
             if (quests_name == "secrets") this.game.input("\nYou triggered the opponents's '" + s.name + "'.\n");
@@ -374,8 +378,15 @@ class Game {
             if (m.dormant) {
                 if (this.turns > m.dormant) {
                     m.dormant = false;
+                    m.sleepy = true;
+
+                    m.immune = m.backups.init.immune;
                     m.turn = this.turns;
+
+                    // If the battlecry use a function that depends on `game.player`
+                    this.player = op;
                     m.activateBattlecry();
+                    this.player = plr;
                 }
 
                 return;
@@ -453,7 +464,7 @@ class Game {
 
         player[card.costType] -= card.mana;
         //card.mana = card.backups.mana;
-        
+
         player.removeFromHand(card);
 
         // Echo
@@ -495,6 +506,9 @@ class Game {
 
         this.events.broadcast("PlayCardUnsafe", card, player, false);
 
+        // Finale
+        if (player[card.costType] == 0) card.activate("finale");
+
         if (card.type === "Minion") {
             // Magnetize
             if (card.keywords.includes("Magnetic") && board.length > 0) {
@@ -535,8 +549,7 @@ class Game {
     
             }
 
-            if (card.dormant) card.dormant += this.turns;
-            else if (card.activateBattlecry() === -1) {
+            if (!card.dormant && card.activateBattlecry() === -1) {
                 removeFromHistory();
 
                 return "refund";
@@ -613,6 +626,7 @@ class Game {
         // If the board has max capacity, and the card played is a minion or location card, prevent it.
         if (this.board[player.id].length >= this.config.maxBoardSpace) return "space";
 
+
         if (update) this.events.broadcast("SummonMinion", minion, player);
 
         player.spellDamage = 0;
@@ -633,11 +647,19 @@ class Game {
                 if (v == "") return this.summonMinion(minion, player, false, false);
 
                 let card = new Card(v, player);
+                card.dormant = minion.dormant;
 
                 this.summonMinion(card, player, false);
+
             });
 
             return "colossal";
+        }
+
+        if (minion.dormant) {
+            minion.dormant += this.turns;
+            minion.immune = true;
+            minion.sleepy = false;
         }
 
         this.board[player.id].push(minion);
@@ -659,7 +681,7 @@ class Game {
          * @param {Card | Player | number} attacker The attacker | Amount of damage to deal
          * @param {Card | Player} target The target
          * 
-         * @returns {boolean | string} Success | Errorcode: ["divineshield", "taunt", "stealth", "frozen", "plrnoattack", "noattack", "hasattacked", "sleepy", "cantattackhero"]
+         * @returns {boolean | string} Success | Errorcode: ["divineshield", "taunt", "stealth", "frozen", "plrnoattack", "noattack", "hasattacked", "sleepy", "cantattackhero", "immune"]
          */
 
         this.killMinions();
@@ -693,6 +715,8 @@ class Game {
         }
 
         if (attacker.frozen) return "frozen";
+        if (target.immune) return "immune";
+        if (attacker.dormant) return "dormant";
 
         // Attacker is a player
         if (attacker instanceof Player) {

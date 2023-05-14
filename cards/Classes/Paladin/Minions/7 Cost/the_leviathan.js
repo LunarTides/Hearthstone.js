@@ -13,6 +13,6 @@ module.exports = {
     id: 269,
 
     onattack(plr, game, self) {
-        game.functions.dredge();
+        game.interact.dredge();
     }
 }

@@ -2,6 +2,7 @@ const rl = require("readline-sync");
 const fs = require("fs");
 const { Game } = require("./src/game");
 const { Player } = require("./src/player");
+const { set } = require("./src/shared");
 
 let decks = Object.values(JSON.parse(fs.readFileSync("decks.json")).versus);
 
@@ -18,6 +19,8 @@ for (let _ = 0; _ < games; _++) {
     const p2 = new Player("Player 2");
     const game = new Game(p1, p2);
 
+    set(game);
+
     game.running = true;
 
     game.functions.importCards(__dirname + '/cards');
@@ -33,7 +36,7 @@ for (let _ = 0; _ < games; _++) {
     // Choose random decks for the players
     for (let i = 0; i < 2; i++) {
         let deck = game.functions.randList(decks);
-        game.functions.importDeck(game["player" + (i + 1)], deck);
+        game.functions.deckcode.import(game["player" + (i + 1)], deck);
     }
 
     game.startGame();

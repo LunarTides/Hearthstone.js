@@ -9,7 +9,7 @@ module.exports = {
     id: 9,
 
     cast(plr, game, card) {
-        let c = game.functions.dredge();
+        let c = game.interact.dredge();
 
         if (plr.mana >= c.mana) {
             plr.drawCard();

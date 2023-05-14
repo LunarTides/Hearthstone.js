@@ -1,11 +1,11 @@
-let game = null;
+const { get } = require("./shared");
 
-function setup(_game) {
-    game = _game;
-}
+let game = get();
 
 class AI {
     constructor(plr) {
+        game = get();
+
         this.history = [];
         this.prevent = [];
 
@@ -825,4 +825,3 @@ class AI {
 }
 
 exports.AI = AI;
-exports.setup_ai = setup;
