@@ -3,6 +3,7 @@ const assert = require('assert');
 const colors = require("colors");
 const { Player } = require("../src/player");
 const { Game } = require("../src/game");
+const { set } = require("../src/shared");
 
 // Setup the game / copied from the card updater
 const test_player1 = new Player("Test Player 1"); // Use this if a temp player crashes the game
@@ -10,6 +11,7 @@ const test_player2 = new Player("Test Player 2");
 
 const game = new Game(test_player1, test_player2);
 game.dirname = __dirname + "/../";
+set(game);
 
 const functions = game.functions;
 

@@ -1,14 +1,12 @@
-let game = null;
-let cards = [];
+const { get } = require("./shared");
 
-function setup(_game, _cards) {
-    game = _game;
-    cards = _cards;
-}
+let game = get();
 
 class Card {
     constructor(name, plr) {
-        this.blueprint = cards.find(c => c.name == name);
+        game = get();
+
+        this.blueprint = game.cards.find(c => c.name == name);
         
         this.name = name;
         this.displayName = name;
@@ -677,4 +675,3 @@ class Card {
 }
 
 exports.Card = Card;
-exports.setup_card = setup;

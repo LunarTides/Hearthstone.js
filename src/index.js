@@ -5,6 +5,7 @@ Copyright (C) 2022  SolarWinds
 
 const { Game } = require("./game");
 const { Player } = require("./player");
+const { set }  = require("./shared");
 
 let p1;
 let p2;
@@ -25,6 +26,8 @@ function main() {
     p1 = new Player("Player 1");
     p2 = new Player("Player 2");
     game = new Game(p1, p2);
+
+    set(game);
 
     game.running = true;
 

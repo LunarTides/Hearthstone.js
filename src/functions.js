@@ -1,9 +1,7 @@
 const fs = require("fs");
 const deckstrings = require("deckstrings"); // To decode vanilla deckcodes
 const { exit } = require("process");
-const { setup_ai } = require("./ai");
-const { setup_card } = require("./card");
-const { setup_player } = require("./player");
+const { set } = require("./shared");
 
 let game = null;
 let self = null;
@@ -1483,10 +1481,6 @@ ${aiHistory}
         game.cards = [];
 
         this._importCards(path);
-
-        setup_card(game, game.cards);
-        setup_ai(game);
-        setup_player(game);
     }
     mulligan(plr, input) {
         /**
