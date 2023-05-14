@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "npx mocha"
+    "test": "npx mocha",
+    "generate": "node card_creator/vanilla/generator"
   },
   "repository": {
     "type": "git",
