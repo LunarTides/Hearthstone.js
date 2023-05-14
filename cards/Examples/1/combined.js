@@ -12,7 +12,7 @@ module.exports = {
 
     battlecry(plr, game, self) {
         // Ordering is important. In the description it says that it dredges first, then adds +1/+1.
-        game.functions.dredge();
+        game.interact.dredge();
 
         self.addStats(1, 1);
     }

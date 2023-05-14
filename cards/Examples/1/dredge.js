@@ -10,7 +10,7 @@ module.exports = {
     uncollectible: true,
 
     battlecry(plr, game, self) {
-        // `game.functions` is an instance of the Functions class as defined in `src/functions.js`.
-        game.functions.dredge();
+        // `game.interact` is an instance of the Interact class as defined in `src/interact.js`.
+        game.interact.dredge();
     }
 }

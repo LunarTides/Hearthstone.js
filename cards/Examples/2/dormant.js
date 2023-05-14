@@ -12,6 +12,6 @@ module.exports = {
 
     battlecry(plr, game, self) {
         // The battlecry only triggers when the minion is no longer dormant.
-        game.functions.dredge();
+        game.interact.dredge();
     }
 }

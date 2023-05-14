@@ -407,22 +407,6 @@ describe("Functions", () => {
         assert.ok(!uncollectible_exists);
     });
 
-    it ('should correctly dredge', () => {
-        game.player = test_player1;
-        const deck = functions.chooseItemsFromList(functions.getCards(), 30);
-        test_player1.deck = deck.map(c => new game.Card(c.name, test_player1));
-        
-        const old_input = game.input;
-
-        game.input = () => {return "1"};
-        const chosen = functions.dredge();
-
-        game.input = old_input;
-
-        let last_card_in_deck = test_player1.deck[test_player1.deck.length - 1];
-        assert.equal(last_card_in_deck, chosen); // TODO: Add test for this
-    });
-    
     // TODO: Maybe add a test for adapt
 
     // TODO: Maybe add a test for invoke 

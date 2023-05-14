@@ -63,16 +63,22 @@ class Interact {
                 err = "You don't have any attack";
                 break;
             case "noattack":
-                err = "This minion has no attack";
+                err = "That minion has no attack";
                 break;
             case "hasattacked":
-                err = "This minion has already attacked this turn";
+                err = "That minion has already attacked this turn";
                 break;
             case "sleepy":
-                err = "This minion is exhausted";
+                err = "That minion is exhausted";
                 break;
             case "cantattackhero":
-                err = "This minion cannot attack heroes";
+                err = "Tht minion cannot attack heroes";
+                break;
+            case "immune":
+                err = "That minion is immune";
+                break;
+            case "dormant":
+                err = "That minion is dormant";
                 break;
             default:
                 err = "An unknown error occurred. Error code: 19";
@@ -567,6 +573,52 @@ class Interact {
         }
 
         return input;
+    }
+    dredge(prompt = "Choose a card to Dredge:") {
+        /**
+         * Asks the user a "prompt" and show 3 cards from their deck for the player to choose, the chosen card will be added to the top of their deck
+         * 
+         * @param {string} prompt [default="Choose One:"] The prompt to ask the user
+         * 
+         * @returns {Card} The card chosen
+         */
+
+        // Look at the bottom three cards of the deck and put one on the top.
+        let cards = game.player.deck.slice(0, 3);
+
+        // Check if ai
+        if (game.player.ai) {
+            let card = game.player.ai.dredge(cards);
+
+            game.functions.remove(game.player.deck, card); // Removes the selected card from the players deck.
+            game.player.deck.push(card);
+
+            return card;
+        }
+
+        this.printAll(game.player);
+
+        console.log(`\n${prompt}`);
+
+        if (cards.length <= 0) return;
+
+        cards.forEach((c, i) => {
+            console.log(this.getReadableCard(c, i + 1));
+        });
+
+        let choice = game.input("> ");
+
+        let card = parseInt(choice) - 1;
+        card = cards[card];
+
+        if (!card) {
+            return this.dredge(prompt);
+        }
+
+        game.functions.remove(game.player.deck, card); // Removes the selected card from the players deck.
+        game.player.deck.push(card);
+
+        return card;
     }
 
     // One-time things
@@ -1168,7 +1220,7 @@ class Interact {
                 sb += keywords;
                 sb += frozen
                 sb += dormant;
-                sb += immune
+                if (!m.dormant) sb += immune
                 sb += sleepy;
     
                 console.log(sb);

@@ -17,6 +17,6 @@ module.exports = {
     uncollectible: true,
 
     battlecry(plr, game) {
-        game.functions.dredge();
+        game.interact.dredge();
     }
 }
