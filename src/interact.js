@@ -63,16 +63,22 @@ class Interact {
                 err = "You don't have any attack";
                 break;
             case "noattack":
-                err = "This minion has no attack";
+                err = "That minion has no attack";
                 break;
             case "hasattacked":
-                err = "This minion has already attacked this turn";
+                err = "That minion has already attacked this turn";
                 break;
             case "sleepy":
-                err = "This minion is exhausted";
+                err = "That minion is exhausted";
                 break;
             case "cantattackhero":
-                err = "This minion cannot attack heroes";
+                err = "Tht minion cannot attack heroes";
+                break;
+            case "immune":
+                err = "That minion is immune";
+                break;
+            case "dormant":
+                err = "That minion is dormant";
                 break;
             default:
                 err = "An unknown error occurred. Error code: 19";
@@ -1168,7 +1174,7 @@ class Interact {
                 sb += keywords;
                 sb += frozen
                 sb += dormant;
-                sb += immune
+                if (!m.dormant) sb += immune
                 sb += sleepy;
     
                 console.log(sb);

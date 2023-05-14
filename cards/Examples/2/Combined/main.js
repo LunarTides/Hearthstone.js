@@ -9,7 +9,7 @@ module.exports = {
     rarity: "Legendary",
     runes: "BBB",
     colossal: ["Combined Example 2 Left Arm", "", "Combined Example 2 Right Arm"],
-    keywords: ["Dormant"],
     corrupt: "Combined Example 2 Corrupted",
+    dormant: 2,
     uncollectible: true
 }

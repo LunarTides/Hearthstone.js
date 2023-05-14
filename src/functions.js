@@ -1162,7 +1162,7 @@ ${aiHistory}
     }
 
     // Keyword stuff
-    dredge(prompt = "Choose One:") {
+    dredge(prompt = "Choose a card to Dredge:") {
         /**
          * Asks the user a "prompt" and show 3 cards from their deck for the player to choose, the chosen card will be added to the top of their deck
          * 
@@ -1186,19 +1186,15 @@ ${aiHistory}
 
         game.interact.printAll(game.player);
 
-        let p = `\n${prompt}\n[`;
+        console.log(`\n${prompt}`);
 
         if (cards.length <= 0) return;
 
         cards.forEach((c, i) => {
-            p += `${i + 1}: ${c.displayName}, `;
+            console.log(game.interact.getReadableCard(c, i + 1));
         });
 
-        p = p.slice(0, -2);
-
-        p += "] ";
-
-        let choice = game.input(p);
+        let choice = game.input("> ");
 
         let card = parseInt(choice) - 1;
         card = cards[card];
@@ -1207,7 +1203,7 @@ ${aiHistory}
             return this.dredge(prompt);
         }
 
-        game.player.deck = game.player.deck.filter(c => c != card); // Removes the selected card from the players deck.
+        this.remove(game.player.deck, card); // Removes the selected card from the players deck.
         game.player.deck.push(card);
 
         return card;

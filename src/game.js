@@ -378,8 +378,15 @@ class Game {
             if (m.dormant) {
                 if (this.turns > m.dormant) {
                     m.dormant = false;
+                    m.sleepy = true;
+
+                    m.immune = m.backups.init.immune;
                     m.turn = this.turns;
+
+                    // If the battlecry use a function that depends on `game.player`
+                    this.player = op;
                     m.activateBattlecry();
+                    this.player = plr;
                 }
 
                 return;
@@ -542,8 +549,7 @@ class Game {
     
             }
 
-            if (card.dormant) card.dormant += this.turns;
-            else if (card.activateBattlecry() === -1) {
+            if (!card.dormant && card.activateBattlecry() === -1) {
                 removeFromHistory();
 
                 return "refund";
@@ -620,6 +626,7 @@ class Game {
         // If the board has max capacity, and the card played is a minion or location card, prevent it.
         if (this.board[player.id].length >= this.config.maxBoardSpace) return "space";
 
+
         if (update) this.events.broadcast("SummonMinion", minion, player);
 
         player.spellDamage = 0;
@@ -640,11 +647,19 @@ class Game {
                 if (v == "") return this.summonMinion(minion, player, false, false);
 
                 let card = new Card(v, player);
+                card.dormant = minion.dormant;
 
                 this.summonMinion(card, player, false);
+
             });
 
             return "colossal";
+        }
+
+        if (minion.dormant) {
+            minion.dormant += this.turns;
+            minion.immune = true;
+            minion.sleepy = false;
         }
 
         this.board[player.id].push(minion);
@@ -666,7 +681,7 @@ class Game {
          * @param {Card | Player | number} attacker The attacker | Amount of damage to deal
          * @param {Card | Player} target The target
          * 
-         * @returns {boolean | string} Success | Errorcode: ["divineshield", "taunt", "stealth", "frozen", "plrnoattack", "noattack", "hasattacked", "sleepy", "cantattackhero"]
+         * @returns {boolean | string} Success | Errorcode: ["divineshield", "taunt", "stealth", "frozen", "plrnoattack", "noattack", "hasattacked", "sleepy", "cantattackhero", "immune"]
          */
 
         this.killMinions();
@@ -700,6 +715,8 @@ class Game {
         }
 
         if (attacker.frozen) return "frozen";
+        if (target.immune) return "immune";
+        if (attacker.dormant) return "dormant";
 
         // Attacker is a player
         if (attacker instanceof Player) {
