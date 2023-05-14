@@ -6,5 +6,5 @@ axios.get("https://api.hearthstonejson.com/v1/latest/enUS/cards.json")
         fs.writeFile(__dirname + "/.ignore.cards.json", JSON.stringify(res.data), err => {
             if (err) throw err;
         });
-        console.log(res.data);
+        console.log(`Found ${res.data.length} cards!`);
     });
