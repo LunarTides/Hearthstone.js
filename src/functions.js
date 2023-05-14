@@ -550,7 +550,7 @@ class DeckcodeFunctions {
 
 class Functions {
     constructor(_game) {
-        this.deckcode = new DeckcodeFunctions(this);
+        this.deckcode = new DeckcodeFunctions();
 
         game = _game;
         self = this; // Allow the other classes to access this class
@@ -1109,7 +1109,7 @@ ${aiHistory}
             if (checkCallback === true || checkCallback(_val)) {}
             else return;
 
-            let override = callback();
+            let override = callback(_val);
             times++;
 
             if (times == lifespan || override) remove();
@@ -1539,7 +1539,7 @@ ${aiHistory}
 
         return quest["progress"][0];
     }
-    addQuest(type, plr, card, key, val, callback, next = null, manual_progression = false) {
+    addQuest(type, plr, card, key, val, callback, next = null) {
         /**
          * Adds a quest / secrets to a player
          * 
@@ -1548,9 +1548,8 @@ ${aiHistory}
          * @param {Card} card The quest / secret
          * @param {string} key The key of the quest
          * @param {any} val The value that the quest needs
-         * @param {Function} callback The function to call when the key is invoked, arguments: {any[]} trigger [key, val] The trigger, {Game} game The game, {turn} The turn the quest was played, {boolean} normal_done If the game claims the quest is done
+         * @param {Function} callback The function to call when the key is invoked, arguments: {any[]} val The value, {turn} The turn the quest was played, {boolean} done If the the quest is done
          * @param {string} next [default=null] The name of the next quest / sidequest / secret that should be added when the quest is done
-         * @param {boolean} manual_progression [default=false] If the quest needs progressQuest function to be called to progress, or if it should do it automatically
          * 
          * @returns {undefined}
          */
@@ -1564,7 +1563,7 @@ ${aiHistory}
             return false;
         }
 
-        plr[type.toLowerCase() + "s"].push({"name": card.displayName, "progress": [0, val], "key": key, "value": val, "turn": game.turns, "callback": callback, "next": next, "manual_progression": manual_progression});
+        plr[type.toLowerCase() + "s"].push({"name": card.displayName, "progress": [0, val], "key": key, "value": val, "turn": game.turns, "callback": callback, "next": next});
     }
 }
 
