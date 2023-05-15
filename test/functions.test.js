@@ -467,14 +467,12 @@ describe("Functions", () => {
     });
 
     it ('should correctly add a quest', () => {
-        assert.ok(true); // TODO: Fix this once the new quest system is in place.
-        /*
         const player = test_player1;
 
         let done = false;
 
-        functions.addQuest("Quest", player, new game.Card("The Coin", player), "QuestTest", 3, (key, val, normal_done) => {
-            if (!normal_done) return;
+        functions.addQuest("Quest", player, new game.Card("The Coin", player), "QuestTest", 3, (key, val, _done) => {
+            if (!_done) return;
 
             done = true;
         });
@@ -489,11 +487,23 @@ describe("Functions", () => {
 
         game.events.broadcast("QuestTest", 1, player);
         assert.ok(done);
-        */
     });
 
     it ('should correctly progress quest', () => {
-        assert.ok(true); // TODO: Fix this when the new quest system is in place
+        const player = test_player1;
+
+        functions.addQuest("Quest", player, new game.Card("The Coin", player), "QuestTest", 3, (key, val, _done) => {});
+
+        assert.equal(player.quests[0].progress[0], 0);
+
+        functions.progressQuest("The Coin");
+        assert.equal(player.quests[0].progress[0], 1);
+
+        functions.progressQuest("The Coin");
+        assert.equal(player.quests[0].progress[0], 2);
+
+        functions.progressQuest("The Coin");
+        assert.equal(player.quests[0].progress[0], 3);
     });
 
     it ('should correctly import a deckcode', () => {

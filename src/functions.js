@@ -329,7 +329,7 @@ class DeckcodeFunctions {
         try {
             vanillaCards = fs.readFileSync(game.dirname + "/card_creator/vanilla/.ignore.cards.json");
         } catch (err) {
-            console.log("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, go to 'card_creator/vanilla/' and open 'generate.bat', then try again.".red);
+            console.log("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'genvanilla.bat' (requires an internet connection), then try again.".red);
             game.input();
 
             process.exit(1);
@@ -428,7 +428,7 @@ class DeckcodeFunctions {
         try {
             cards = fs.readFileSync(game.dirname + "/card_creator/vanilla/.ignore.cards.json");
         } catch (err) {
-            console.log("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, go to 'card_creator/vanilla/' and open 'generate.bat', then try again.".red);
+            console.log("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'genvanilla.bat' (requires an internet connection), then try again.".red);
             game.input();
 
             process.exit(1);
