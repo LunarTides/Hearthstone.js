@@ -19,7 +19,7 @@ game.dirname = __dirname + "/../";
 set(game);
 
 functions.importCards(__dirname + "/../cards");
-functions.importConfig(__dirname + "/config");
+functions.importConfig(__dirname + "/../config");
 // ===========================================================
 
 const config = game.config;
@@ -61,7 +61,8 @@ let settings = {
         prevQuery: []
     },
     deckcode: {
-        cardId: "id"
+        cardId: "id",
+        format: "js" // "js" | "vanilla"
     },
     commands: {
         default: "add",
@@ -474,9 +475,8 @@ function showDeck() {
 }
 
 function deckcode() {
-    let _deckcode = game.functions.deckcode.export(deck, chosen_class, runes);
+    let _deckcode = functions.deckcode.export(deck, chosen_class, runes);
 
-    // Deck size warnings
     if (_deckcode.error) {
         let error = _deckcode.error;
 
@@ -508,6 +508,8 @@ function deckcode() {
 
         _deckcode.error.recoverable = recoverable;
     }
+
+    if (settings.deckcode.format == "forcevanilla" || (settings.deckcode.format == "vanilla" && !_deckcode.error)) _deckcode.code = functions.deckcode.toVanilla(plr, _deckcode.code);
 
     return _deckcode;
 }
@@ -542,8 +544,7 @@ function help() {
     console.log("(In order to use these; input 'set ', then one of the subcommands. Example: 'set cpp 20')\n");
     console.log("(name) [optional] (required) - (description)\n");
 
-    console.log("name                        - Makes the deckcode generator use names instead of ids");
-    console.log("id                          - Makes the deckcode generator use ids instead of names");
+    console.log("format (format)             - Makes the deckcode generator output the deckcode as a different format. If you set this to 'vanilla', it is only going to show the deckcode as vanilla if it is a valid deckcode. If you set this to forcevanilla, it is going to lag a bit, but always show it as vanilla. If you set it to 'vanilla' or 'forcevanilla', you will be asked to choose a card if there are multiple vanilla cards with the same name. This should be rare, but just know that it might happen. ('js', 'vanilla', 'forcevanilla') [default = 'js']");
     console.log("cardsPerPage | cpp (num)    - How many cards to show per page [default = 15]");
     console.log("defaultCommand | dcmd (cmd) - The command that should run when the command is unspecified. ('add', 'remove', 'view') [default = 'add']");
     console.log("warning                     - Disables/enables certain warnings. Look down to 'Warnings' to see changeable warnings.");
@@ -622,7 +623,9 @@ function handleCmds(cmd) {
         game.interact.viewCard(card);
     }
     else if (cmd.startsWith("view")) {
-        getCardArg(cmd, game.interact.viewCard);
+        getCardArg(cmd, (card) => {
+            game.interact.viewCard(card);
+        });
     }
     else if (cmd == "add") {
         let card = chooseCard("Add a card to the deck: ");
@@ -834,11 +837,21 @@ function handleCmds(cmd) {
         setting = setting[0];
 
         switch (setting) {
-            case "id":
-                settings.deckcode.cardId = "id";
-                break;
-            case "name":
-                settings.deckcode.cardId = "name";
+            case "format":
+                if (args.length == 0) {
+                    settings.deckcode.format = "js";
+                    console.log("Reset deckcode format to: " + "js".yellow);
+                    break;
+                }
+
+                if (!["vanilla", "forcevanilla", "js"].includes(args[0])) {
+                    console.log("Invalid format!".red);
+                    game.input();
+                    return;
+                }
+
+                settings.deckcode.format = args[0];
+                console.log("Set deckcode format to: " + args[0].yellow);
                 break;
             case "cpp":
             case "cardsPerPage":
@@ -856,7 +869,7 @@ function handleCmds(cmd) {
                 let cmd = args[0];
 
                 settings.commands.default = cmd;
-                console.log("Set default command to: " + args[0].yellow);
+                console.log("Set default command to: " + cmd.yellow);
                 break;
             default:
                 game.input(`'${setting}' is not a valid setting.\n`.red);
