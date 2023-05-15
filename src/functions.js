@@ -278,12 +278,13 @@ class DeckcodeFunctions {
 
         return {"code": deckcode, "error": error};
     }
-    toVanilla(plr, code) {
+    toVanilla(plr, code, extraFiltering = true) {
         /**
          * Turns a Hearthstone.js deckcode into a vanilla deckcode
          *
          * @param {Player} plr The player that will get the deckcode
          * @param {string} code The deckcode
+         * @param {bool} extraFiltering If it should do extra filtering when there are more than 1 possible card. This may choose the wrong card. 
          *
          * @returns {string} The vanilla deckcode
          */
@@ -367,13 +368,19 @@ class DeckcodeFunctions {
             matches = matches.filter(a => a.collectible); // You're welcome
             matches = matches.filter(a => !a.id.includes("Prologue"));
             matches = matches.filter(a => !a.id.includes("PVPDR")); // Idk what 'PVPDR' means, but ok
-            matches = matches.filter(a => a.set && !["battlegrounds", "hero_skins", "placeholder"].includes(a.set.toLowerCase()));
+            matches = matches.filter(a => a.set && !["battlegrounds", "hero_skins", "placeholder", "vanilla"].includes(a.set.toLowerCase()));
+            matches = matches.filter(a => !a.set.includes("PLACEHOLDER"));
 
             if (!matches) {
                 // Invalid card
                 console.log("ERROR: Invalid card found!".red);
                 game.input();
                 return;
+            }
+
+            if (matches.length > 1 && extraFiltering) {
+                let _matches = matches.filter(a => a.howToEarn);
+                if (_matches.length > 0) matches = _matches;
             }
 
             if (matches.length > 1) {

@@ -938,7 +938,10 @@ class Interact {
          */
         let sb = "";
 
-        let desc = card.desc.length > 0 ? ` (${card.desc}) ` : " ";
+        let desc;
+
+        if (card instanceof game.Card) desc = card.desc.length > 0 ? ` (${card.desc}) ` : " ";
+        else desc = card.desc.length > 0 ? ` (${game.functions.parseTags(card.desc)})` : " ";
 
         // Extract placeholder value, remove the placeholder header and footer
         if (card.placeholder) {
@@ -1269,7 +1272,10 @@ class Interact {
             if (card.spellClass) spellClass = " (" + card.spellClass.cyan + ")";
             else spellClass = " (None)";
         }
-        else if (type == "Location") locCooldown = " (" + card.blueprint.cooldown.toString().cyan + ")";
+        else if (type == "Location") {
+            if (card instanceof game.Card) locCooldown = " (" + card.blueprint.cooldown.toString().cyan + ")";
+            else locCooldown = " (" + card.cooldown.toString().cyan + ")";
+        }
 
         if (help) console.log("{mana} ".cyan + "Name ".bold + "(" + "[attack / health] ".brightGreen + "if it has) (description) ".white + "(type) ".yellow + "((tribe) or (spell class) or (cooldown)) [".white + "class".gray + "]");
         console.log(_card + tribe + spellClass + locCooldown + ` [${_class}]`);
