@@ -556,6 +556,7 @@ class AI {
         let best_score = -100000;
 
         game.board[sid].forEach(m => {
+            if (!this._canTargetMinion(m)) return;
             if ((elusive && m.elusive) || m.type == "Location") return;
             
             let s = this.analyzePositiveCard(m);
