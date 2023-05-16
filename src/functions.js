@@ -1176,57 +1176,31 @@ ${aiHistory}
     }
     invoke(plr) {
         /**
-         * Call invoke on the player
+         * Invoke the player's Galakrond
          * 
          * @param {Player} plr The player
          * 
          * @returns {undefined}
          */
 
-        // Filter all cards in "plr"'s deck with a name that starts with "Galakrond, the "
-        
-        // --- REMOVE FOR DEBUGGING ---
-        let deck_cards = plr.deck.filter(c => c.displayName.startsWith("Galakrond, the "));
-        let hand_cards = plr.hand.filter(c => c.displayName.startsWith("Galakrond, the "));
-        if ((deck_cards.length + hand_cards.length <= 0) || !plr.hero.displayName.startsWith("Galakrond, the ")) return;
-        // ----------------------------
+        // Find the card in player's deck/hand/hero that begins with "Galakrond, the "
+        let deck_galakrond = plr.deck.find(c => c.displayName.startsWith("Galakrond, the "));
+        let hand_galakrond = plr.hand.find(c => c.displayName.startsWith("Galakrond, the "));
+        if ((!deck_galakrond && !hand_galakrond) && !plr.hero.displayName.startsWith("Galakrond, the ")) return;
 
-        switch (plr.heroClass) {
-            case "Priest":
-                // Add a random Priest minion to your hand.
-                let possible_cards = cards.filter(c => c.type == "Minion" && c.class == "Priest");
-                if (possible_cards.length <= 0) return;
+        plr.deck.filter(c => {
+            c.activate("invoke");
+        });
+        plr.hand.filter(c => {
+            c.activate("invoke");
+        });
+        game.board[plr.id].forEach(c => {
+            c.activate("invoke");
+        });
 
-                let card = game.functions.randList(possible_cards);
-                plr.addToHand(card);
-
-                break;
-            case "Rogue":
-                // Add a Lackey to your hand.
-                const lackey_cards = ["Ethereal Lackey", "Faceless Lackey", "Goblin Lackey", "Kobold Lackey", "Witchy Lackey"];
-
-                plr.addToHand(new game.Card(game.functions.randList(lackey_cards)), plr);
-
-                break;
-            case "Shaman":
-                // Summon a 2/1 Elemental with Rush.
-                game.summonMinion(new game.Card("Windswept Elemental", plr), plr);
-
-                break;
-            case "Warlock":
-                // Summon two 1/1 Imps.
-                game.summonMinion(new game.Card("Draconic Imp", plr), plr);
-                game.summonMinion(new game.Card("Draconic Imp", plr), plr);
-
-                break;
-            case "Warrior":
-                // Give your hero +3 Attack this turn.                
-                plr.addAttack(3);
-
-                break;
-            default:
-                break;
-        }
+        if (plr.hero.displayName.startsWith("Galakrond, the ")) plr.hero.activate("heropower");
+        else if (deck_galakrond) deck_galakrond.activate("heropower");
+        else if (hand_galakrond) hand_galakrond.activate("heropower");
     }
     recruit(plr, list = null, amount = 1) {
         /**
