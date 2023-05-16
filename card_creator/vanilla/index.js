@@ -8,13 +8,13 @@ function capitalize(str) {
 
 function createCard(card, main) {
     // Harvest info
-    let cardClass = capitalize(card.cardClass);
+    let cardClass = capitalize(card.cardClass || "Neutral");
     let collectible = card.collectible || false;
     let mana = card.cost;
     let name = card.name;
     let rarity = "Free";
     if (card.rarity) rarity = capitalize(card.rarity);
-    let desc = card.text;
+    let desc = card.text || "";
     let type = capitalize(card.type);
 
     // Minion info

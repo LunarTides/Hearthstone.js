@@ -1170,165 +1170,37 @@ ${aiHistory}
 
     // Keyword stuff
     adapt(minion, prompt = "Choose One:", _values = []) {
-        /**
-         * Asks the user a "prompt" and show 3 choices for the player to choose, and do something to the minion based on the choice
-         * 
-         * @param {Card} minion The minion to adapt
-         * @param {string} prompt [default="Choose One:"] The prompt to ask the user
-         * 
-         * @returns {string} The name of the adapt chosen. See the first values of possible_cards
-         */
+        const ADAPT = new game.Card("Adapt Helper", game.player);
 
-        game.interact.printAll(game.player);
-
-        let possible_cards = [
-            ["Crackling Shield", "Divine Shield"],
-            ["Flaming Claws", "+3 Attack"],
-            ["Living Spores", "Deathrattle: Summon two 1/1 Plants."],
-            ["Lightning Speed", "Windfury"],
-            ["Liquid Membrane", "Can't be targeted by spells or Hero Powers."],
-            ["Massive", "Taunt"],
-            ["Volcanic Might", "+1/+1"],
-            ["Rocky Carapace", "+3 Health"],
-            ["Shrouding Mist", "Stealth until your next turn."],
-            ["Poison Spit", "Poisonous"]
-        ];
-        let values = _values;
-
-        if (values.length == 0) {
-            for (let i = 0; i < 3; i++) {
-                let c = game.functions.randList(possible_cards);
-
-                values.push(c);
-                this.remove(possible_cards, c);
-            }
-        }
-
-        let p = `\n${prompt}\n[\n`;
-
-        values.forEach((v, i) => {
-            // Check for a TypeError and ignore it
-            try {
-                p += `${i + 1}: ${v[0]}; ${v[1]},\n`;
-            } catch (e) {}
-        });
-
-        p = p.slice(0, -2);
-        p += "\n] ";
-
-        let choice = game.input(p);
-        if (!parseInt(choice)) {
-            game.input("Invalid choice!\n".red);
-            return this.adapt(minion, prompt, values);
-        }
-
-        if (parseInt(choice) > 3) return this.adapt(minion, prompt, values);
-
-        choice = values[parseInt(choice) - 1][0];
-
-        switch (choice) {
-            case "Crackling Shield":
-                minion.addKeyword("Divine Shield");
-
-                break;
-            case "Flaming Claws":
-                minion.addStats(3, 0);
-
-                break;
-            case "Living Spores":
-                minion.addDeathrattle((plr, game) => {
-                    game.summonMinion(new game.Card("Plant"), plr);
-                    game.summonMinion(new game.Card("Plant"), plr);
-                });
-
-                break;
-            case "Lightning Speed":
-                minion.addKeyword("Windfury");
-
-                break;
-            case "Liquid Membrane":
-                minion.addKeyword("Elusive");
-
-                break;
-            case "Massive":
-                minion.addKeyword("Taunt");
-
-                break;
-            case "Volcanic Might":
-                minion.addStats(1, 1);
-
-                break;
-            case "Rocky Carapace":
-                minion.addStats(0, 3);
-
-                break;
-            case "Shrouding Mist":
-                minion.addKeyword("Stealth");
-                minion.setStealthDuration(1);
-
-                break;
-            case "Poison Spit":
-                minion.addKeyword("Poisonous");
-
-                break;
-            default:
-                break;
-        }
-
-        return choice;
+        ADAPT.activate("adapt", minion, prompt, _values);
     }
     invoke(plr) {
         /**
-         * Call invoke on the player
+         * Invoke the player's Galakrond
          * 
          * @param {Player} plr The player
          * 
          * @returns {undefined}
          */
 
-        // Filter all cards in "plr"'s deck with a name that starts with "Galakrond, the "
-        
-        // --- REMOVE FOR DEBUGGING ---
-        let cards = plr.deck.filter(c => c.displayName.startsWith("Galakrond, the "));
-        if (cards.length <= 0) return;
-        // ----------------------------
+        // Find the card in player's deck/hand/hero that begins with "Galakrond, the "
+        let deck_galakrond = plr.deck.find(c => c.displayName.startsWith("Galakrond, the "));
+        let hand_galakrond = plr.hand.find(c => c.displayName.startsWith("Galakrond, the "));
+        if ((!deck_galakrond && !hand_galakrond) && !plr.hero.displayName.startsWith("Galakrond, the ")) return;
 
-        switch (plr.heroClass) {
-            case "Priest":
-                // Add a random Priest minion to your hand.
-                let possible_cards = cards.filter(c => c.type == "Minion" && c.class == "Priest");
-                if (possible_cards.length <= 0) return;
+        plr.deck.filter(c => {
+            c.activate("invoke");
+        });
+        plr.hand.filter(c => {
+            c.activate("invoke");
+        });
+        game.board[plr.id].forEach(c => {
+            c.activate("invoke");
+        });
 
-                let card = game.functions.randList(possible_cards);
-                plr.addToHand(card);
-
-                break;
-            case "Rogue":
-                // Add a Lackey to your hand.
-                const lackey_cards = ["Ethereal Lackey", "Faceless Lackey", "Goblin Lackey", "Kobold Lackey", "Witchy Lackey"];
-
-                plr.addToHand(new game.Card(game.functions.randList(lackey_cards)), plr);
-
-                break;
-            case "Shaman":
-                // Summon a 2/1 Elemental with Rush.
-                game.summonMinion(new game.Card("Windswept Elemental", plr), plr);
-
-                break;
-            case "Warlock":
-                // Summon two 1/1 Imps.
-                game.summonMinion(new game.Card("Draconic Imp", plr), plr);
-                game.summonMinion(new game.Card("Draconic Imp", plr), plr);
-
-                break;
-            case "Warrior":
-                // Give your hero +3 Attack this turn.                
-                plr.addAttack(3);
-
-                break;
-            default:
-                break;
-        }
+        if (plr.hero.displayName.startsWith("Galakrond, the ")) plr.hero.activate("heropower");
+        else if (deck_galakrond) deck_galakrond.activate("heropower");
+        else if (hand_galakrond) hand_galakrond.activate("heropower");
     }
     recruit(plr, list = null, amount = 1) {
         /**
