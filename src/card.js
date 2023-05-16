@@ -263,6 +263,7 @@ class Card {
          */
 
         if (this.immune && this.type != "Location") return true;
+        if (this.keywords.includes("Stealth")) return true;
 
         this.setStats(this.getAttack(), this.getHealth() - amount);
         game.events.broadcast("DamageMinion", [this, amount], this.plr);
