@@ -4,7 +4,6 @@ const { exit } = require('process');
 const license_url = 'https://github.com/SolarWindss/Hearthstone.js/blob/main/LICENSE';
 
 let game;
-let curr;
 
 class Interact {
     constructor(_game) {
@@ -21,13 +20,13 @@ class Interact {
 
         let attacker, target;
 
-        if (curr.ai) {
+        if (game.player.ai) {
             let ai;
 
             let alt_model = `legacy_attack_${game.config.AIAttackModel}`;
 
-            if (curr.ai[alt_model]) ai = curr.ai[alt_model]();
-            else ai = curr.ai.attack();
+            if (game.player.ai[alt_model]) ai = game.player.ai[alt_model]();
+            else ai = game.player.ai.attack();
 
             attacker = ai[0];
             target = ai[1];
@@ -97,27 +96,27 @@ class Interact {
 
         if (q === "end") game.endTurn();
         else if (q === "hero power") {
-            if (curr.ai) {
-                curr.heroPower();
+            if (game.player.ai) {
+                game.player.heroPower();
                 return;
             }
 
-            if (curr.mana < curr.heroPowerCost) {
+            if (game.player.mana < game.player.heroPowerCost) {
                 game.input("You do not have enough mana.\n".red);
                 return;
             }
 
-            if (!curr.canUseHeroPower) {
+            if (!game.player.canUseHeroPower) {
                 game.input("You have already used your hero power this turn.\n".red);
                 return;
             }
 
-            this.printAll(curr);
-            let ask = this.yesNoQuestion(curr, curr.hero.hpDesc.yellow + " Are you sure you want to use this hero power?");
+            this.printAll();
+            let ask = this.yesNoQuestion(game.player, game.player.hero.hpDesc.yellow + " Are you sure you want to use this hero power?");
             if (!ask) return;
 
-            this.printAll(curr);
-            curr.heroPower();
+            this.printAll();
+            game.player.heroPower();
         }
         else if (q === "attack") {
             this.doTurnAttack();
@@ -128,7 +127,7 @@ class Interact {
             let errorcode = this.useLocation();
             game.killMinions();
 
-            if (errorcode === true || errorcode === -1 || curr.ai) return true;
+            if (errorcode === true || errorcode === -1 || game.player.ai) return true;
             let err;
 
             switch (errorcode) {
@@ -180,7 +179,7 @@ class Interact {
             game.input("\nPress enter to continue...\n");
         }
         else if (q == "view") {
-            let isHand = this.question(curr, "Do you want to view a minion on the board, or in your hand?", ["Board", "Hand"]);
+            let isHand = this.question("Do you want to view a minion on the board, or in your hand?", ["Board", "Hand"]);
             isHand = isHand == "Hand";
 
             if (!isHand) {
@@ -196,20 +195,20 @@ class Interact {
             let card = game.input("\nWhich card do you want to view? ");
             if (!card || !parseInt(card)) return;
 
-            card = curr.hand[parseInt(card) - 1];
+            card = game.player.hand[parseInt(card) - 1];
 
             this.viewCard(card);
         }
         else if (q == "detail") {
-            this.printAll(curr, true);
+            this.printAll(true);
             game.input("Press enter to continue...\n");
-            this.printAll(curr);
+            this.printAll();
         }
         else if (q == "concede") {
-            let confirmation = this.yesNoQuestion(curr, "Are you sure you want to concede?");
+            let confirmation = this.yesNoQuestion("Are you sure you want to concede?");
             if (!confirmation) return;
 
-            game.endGame(curr.getOpponent());
+            game.endGame(game.player.getOpponent());
         }
         else if (q == "license") {
             let start = (process.platform == 'darwin' ? 'open' : process.platform == 'win32' ? 'start' : 'xdg-open');
@@ -247,13 +246,13 @@ class Interact {
                     if (!hasPrintedHeader) finished += `\nTurn ${t + 1} - Player [${plr.name}]\n`; 
                     hasPrintedHeader = true;
 
-                    val = doVal(val, game.player, shouldHide);
+                    val = doVal(val, plr, shouldHide);
 
                     if (val instanceof Array) {
                         let strbuilder = "";
 
                         val.forEach(v => {
-                            v = doVal(v, game.player, shouldHide);
+                            v = doVal(v, plr, shouldHide);
                             strbuilder += `${v}, `;
                         });
 
@@ -288,7 +287,7 @@ class Interact {
             let card = game.functions.getCardByName(name);
             if (!card) return game.input("Invalid card: `" + name + "`.\n");
     
-            curr.addToHand(new game.Card(card.name, curr));
+            game.player.addToHand(new game.Card(card.name, game.player));
         }
         else if (q.startsWith("/eval")) {
             if (!game.config.debug) return -1;
@@ -324,13 +323,13 @@ class Interact {
         else if (q == "/debug") {
             if (!game.config.debug) return -1;
     
-            curr.maxMaxMana = 1000;
-            curr.maxMana = 1000;
-            curr.mana = 1000;
+            game.player.maxMaxMana = 1000;
+            game.player.maxMana = 1000;
+            game.player.mana = 1000;
     
-            curr.health += 10000;
-            curr.armor += 100000;
-            curr.fatigue = 0;
+            game.player.health += 10000;
+            game.player.armor += 100000;
+            game.player.fatigue = 0;
         }
         else if (q == "/exit") {
             if (!game.config.debug) return -1;
@@ -420,11 +419,11 @@ class Interact {
          */
 
         if (this.handleCmds(input) !== -1) return true;
-        let card = curr.hand[parseInt(input) - 1];
+        let card = game.player.hand[parseInt(input) - 1];
         if (!card) return "invalid";
 
-        if (input == curr.hand.length || input == 1) card.activate("outcast");
-        return game.playCard(card, curr);    
+        if (input == game.player.hand.length || input == 1) card.activate("outcast");
+        return game.playCard(card, game.player);    
     }
     doTurn() {
         /**
@@ -433,12 +432,10 @@ class Interact {
          * @returns {boolean | string | Card} Success | The return value of doTurnLogic
          */
 
-        curr = game.player;
-
-        if (curr.ai) {
-            let input = curr.ai.calcMove();
+        if (game.player.ai) {
+            let input = game.player.ai.calcMove();
             if (!input) return;
-            if (input instanceof game.Card) input = (curr.hand.indexOf(input) + 1).toString();
+            if (input instanceof game.Card) input = (game.player.hand.indexOf(input) + 1).toString();
 
             let turn = this.doTurnLogic(input);
 
@@ -447,7 +444,7 @@ class Interact {
             return turn;
         }
 
-        this.printAll(curr);
+        this.printAll();
     
         let input = "\nWhich card do you want to play? ";
         if (game.turns <= 2 && !game.config.debug) input += "(type 'help' for further information <- This will disappear once you end your turn) ";
@@ -461,7 +458,7 @@ class Interact {
         let err;
 
         // Get the card
-        let card = curr.hand[parseInt(user) - 1];
+        let card = game.player.hand[parseInt(user) - 1];
         let cost = "mana";
         if (card) cost = card.costType;
 
@@ -484,7 +481,7 @@ class Interact {
          * @return (boolean) Success
          */
 
-        let locations = game.board[curr.id].filter(m => m.type == "Location");
+        let locations = game.board[game.player.id].filter(m => m.type == "Location");
         if (locations.length <= 0) return "nolocations";
 
         let location = this.selectTarget("Which location do you want to use?", false, "self", "minion", ["allow_locations"]);
@@ -596,7 +593,7 @@ class Interact {
             return card;
         }
 
-        this.printAll(game.player);
+        this.printAll();
 
         console.log(`\n${prompt}`);
 
@@ -633,7 +630,7 @@ class Interact {
          * @returns {string | string[]} The user's answer(s)
          */
 
-        this.printAll(curr);
+        this.printAll();
 
         let choices = [];
 
@@ -741,7 +738,7 @@ class Interact {
          * @returns {Card} The card chosen.
          */
 
-        this.printAll(curr);
+        this.printAll();
         let values = _cards;
 
         if (cards.length <= 0) cards = game.functions.getCards().filter(c => game.functions.validateClass(game.player, c));
@@ -982,29 +979,31 @@ class Interact {
 
         return sb;
     }
-    printAll(curr, detailed = false) {
+    printAll(detailed = false) {
         /**
          * Prints all the information you need to understand the game state
          * 
-         * @param {Player} curr The current player
+         * @param {Player} plr The current player
          * @param {boolean} detailed [default=false] Show more, less important, information
          * 
          * @returns {undefined}
          */
 
+        const plr = game.player;
+
         if (game.turns <= 2 && !game.config.debug) this.printLicense();
         else this.printName();
     
-        let op = curr.getOpponent();
+        let op = plr.getOpponent();
     
         let sb = "";
     
         console.log("Your side  :                              | Your opponent's side".gray);
         /// Mana
         // Current Player's Mana
-        sb += `Mana       : ${curr.mana.toString().cyan} / ${curr.maxMana.toString().cyan}`;
+        sb += `Mana       : ${plr.mana.toString().cyan} / ${plr.maxMana.toString().cyan}`;
         sb += "                        | ";
-        let to_remove = (curr.mana.toString().length + curr.maxMana.toString().length) - 2;
+        let to_remove = (plr.mana.toString().length + plr.maxMana.toString().length) - 2;
         if (to_remove > 0) sb = sb.replace(" ".repeat(to_remove) + "|", "|");
 
         // Opponent's Mana
@@ -1014,10 +1013,10 @@ class Interact {
         sb = "";
         
         // Health
-        sb += `Health     : ${curr.health.toString().red} (${curr.armor.toString().gray}) / ${curr.maxHealth.toString().red}`;
+        sb += `Health     : ${plr.health.toString().red} (${plr.armor.toString().gray}) / ${plr.maxHealth.toString().red}`;
 
         sb += "                       | ";
-        to_remove = (curr.health.toString().length + curr.armor.toString().length + curr.maxHealth.toString().length);
+        to_remove = (plr.health.toString().length + plr.armor.toString().length + plr.maxHealth.toString().length);
         if (to_remove > 0) sb = sb.replace(" ".repeat(to_remove) + "|", "|");
     
         // Opponent's Health
@@ -1027,23 +1026,23 @@ class Interact {
         sb = "";
 
         // Weapon
-        if (curr.weapon) {
+        if (plr.weapon) {
             // Current player has a weapon
             // Attack: 1 | Weapon: Wicked Knife (1 / 1)
-            sb += `Weapon     : ${game.functions.colorByRarity(curr.weapon.displayName, curr.weapon.rarity)}`;
+            sb += `Weapon     : ${game.functions.colorByRarity(plr.weapon.displayName, plr.weapon.rarity)}`;
 
-            let wpnStats = ` [${curr.weapon.stats.join(' / ')}]`;
+            let wpnStats = ` [${plr.weapon.stats.join(' / ')}]`;
 
-            sb += (curr.attack > 0) ? wpnStats.brightGreen : wpnStats.gray;
+            sb += (plr.attack > 0) ? wpnStats.brightGreen : wpnStats.gray;
         }
-        else if (curr.attack) {
-            sb += `Attack     : ${curr.attack.toString().brightGreen}`;
+        else if (plr.attack) {
+            sb += `Attack     : ${plr.attack.toString().brightGreen}`;
         }
     
         if (op.weapon) {
             // Opponent has a weapon
             let len = sb.split(": ")[1];
-            if (!curr.weapon) sb += "                                 "; // Show that this is the opponent's weapon, not yours
+            if (!plr.weapon) sb += "                                 "; // Show that this is the opponent's weapon, not yours
             
             sb += "         | "; 
             sb += `Weapon     : ${op.weapon.displayName.bold}`;
@@ -1057,10 +1056,10 @@ class Interact {
         sb = "";
     
         // Deck
-        sb += `Deck Size  : ${curr.deck.length.toString().yellow}`;
+        sb += `Deck Size  : ${plr.deck.length.toString().yellow}`;
 
         sb += "                            | ";
-        to_remove = (curr.deck.length.toString().length + curr.deck.length.toString().length) - 3;
+        to_remove = (plr.deck.length.toString().length + plr.deck.length.toString().length) - 3;
         if (to_remove > 0) sb = sb.replace(" ".repeat(to_remove) + "|", "|");
     
         // Opponent's Deck
@@ -1070,18 +1069,18 @@ class Interact {
         sb = "";
 
         // Secrets
-        if (curr.secrets.length > 0) {
+        if (plr.secrets.length > 0) {
             sb += "Secrets: ";
-            sb += curr.secrets.map(x => x["name"].bold).join(', '); // Get all your secret's names
+            sb += plr.secrets.map(x => x["name"].bold).join(', '); // Get all your secret's names
         }
         // Secrets End
         if (sb) console.log(sb);
         sb = "";
     
         // Sidequests
-        if (curr.sidequests.length > 0) {
+        if (plr.sidequests.length > 0) {
             sb += "Sidequests: ";
-            sb += curr.sidequests.map(sidequest => {
+            sb += plr.sidequests.map(sidequest => {
                 sidequest["name"].bold +
                 " (" + sidequest["progress"][0].toString().brightGreen +
                 " / " + sidequest["progress"][1].toString().brightGreen +
@@ -1093,8 +1092,8 @@ class Interact {
         sb = "";
     
         // Quests
-        if (curr.quests.length > 0) {
-            const quest = curr.quests[0];
+        if (plr.quests.length > 0) {
+            const quest = plr.quests[0];
             const prog = quest["progress"];
     
             sb += `Quest(line): ${quest["name"].bold} `;
@@ -1107,10 +1106,10 @@ class Interact {
         // Detailed Info
         if (detailed) {
             // Hand Size
-            sb += `Hand Size  : ${curr.hand.length.toString().yellow}`;
+            sb += `Hand Size  : ${plr.hand.length.toString().yellow}`;
 
             sb += "                             | ";
-            to_remove = curr.hand.length.toString().length;
+            to_remove = plr.hand.length.toString().length;
             if (to_remove > 0) sb = sb.replace(" ".repeat(to_remove) + "|", "|");
 
             // Opponents Hand Size
@@ -1121,10 +1120,10 @@ class Interact {
 
             // Corpses
             sb += "Corpses    : ".gray;
-            sb += curr.corpses.toString().yellow;
+            sb += plr.corpses.toString().yellow;
             
             sb += "                             | ";
-            to_remove = curr.corpses.toString().length;
+            to_remove = plr.corpses.toString().length;
             if (to_remove > 0) sb = sb.replace(" ".repeat(to_remove) + "|", "|");
 
             // Opponents Corpses
@@ -1173,7 +1172,7 @@ class Interact {
         console.log("\n--- Board ---");
         
         game.board.forEach((_, i) => {
-            const t = (i == curr.id) ? "--- You ---" : "--- Opponent ---";
+            const t = (i == plr.id) ? "--- You ---" : "--- Opponent ---";
     
             console.log(t) // This is not for debugging, do not comment out
     
@@ -1232,18 +1231,18 @@ class Interact {
         });
         console.log("-------------")
     
-        let _class = curr.hero.name.includes("Starting Hero") ? curr.heroClass : curr.hero.name;
-        if (detailed && curr.hero.name.includes("Starting Hero")) {
+        let _class = plr.hero.name.includes("Starting Hero") ? plr.heroClass : plr.hero.name;
+        if (detailed && plr.hero.name.includes("Starting Hero")) {
             _class += " | ";
             _class += "HP: ";
-            _class += curr.hero.name;
+            _class += plr.hero.name;
         }
     
         // Hand
-        console.log(`\n--- ${curr.name} (${_class})'s Hand ---`);
+        console.log(`\n--- ${plr.name} (${_class})'s Hand ---`);
         console.log("([id] " + "{Cost}".cyan + " Name".bold + " [attack / health]".brightGreen + " (type)".yellow + ")\n");
     
-        curr.hand.forEach((card, i) => console.log(this.getReadableCard(card, i + 1)));
+        plr.hand.forEach((card, i) => console.log(this.getReadableCard(card, i + 1)));
         // Hand End
     
         console.log("------------");
