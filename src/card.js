@@ -262,7 +262,9 @@ class Card {
          * @returns {boolean} Success
          */
 
-        if (this.immune && this.type != "Location") return true;
+        if (this.type == "Location") return false; // Don't allow location cards to be damaged
+
+        if (this.immune) return true;
         if (this.keywords.includes("Stealth")) return true;
 
         this.setStats(this.getAttack(), this.getHealth() - amount);
