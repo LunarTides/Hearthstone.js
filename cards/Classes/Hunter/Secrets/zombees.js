@@ -10,8 +10,9 @@ module.exports = {
     id: 226,
 
     cast(plr, game, self) {
-        game.functions.addQuest("Secret", plr, self, "PlayCard", 1, (card, _, turn) => {
-            if (card.type != "Minion") return;
+        game.functions.addQuest("Secret", plr, self, "PlayCard", 1, (card, turn, done) => {
+            if (card.type != "Minion") return false;
+            if (!done) return;
 
             // The opponent has played a minion
             let zombees = [];
@@ -32,8 +33,6 @@ module.exports = {
 
                 if (card.getHealth() <= 0) minionKilled = true;
             });
-
-            return true;
-        }, null, true);
+        });
     }
 }

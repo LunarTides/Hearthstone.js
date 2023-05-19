@@ -10,15 +10,16 @@ module.exports = {
     id: 31,
 
     cast(plr, game, card) {
-        game.functions.addQuest("Secret", plr, card, "minionsThatAttacked", 1, (minion, game, turn) => {
-            let m = new game.Card(minion[0].name, game.player);
-            //m.mana += 2;
+        game.functions.addQuest("Secret", plr, card, "Attack", 1, (attack, turn, done) => {
+            let [attacker, target] = attack;
+            if (!attacker instanceof game.Card) return false;
+            if (!done) return;
+
+            let m = new game.Card(attacker.name, plr.getOpponent());
             m.addEnchantment("+2 mana", card);
-            m.plr.addToHand(m, false);
+            plr.getOpponent().addToHand(m, false);
 
-            minion[0].destroy();
-
-            return true;
-        }, null);
+            attacker.destroy();
+        });
     }
 }

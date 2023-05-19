@@ -9,10 +9,10 @@ module.exports = {
     id: 225,
 
     cast(plr, game, self) {
-        game.functions.addQuest("Secret", plr, self, "Attack", 1, (val, _, turn) => {
-            let [attacker, target] = val;
-
-            if (target != plr) return;
+        game.functions.addQuest("Secret", plr, self, "Attack", 1, (attack, turn, done) => {
+            let [attacker, target] = attack;
+            if (target != plr) return false;
+            if (!done) return;
 
             // The target is your hero
             target.addHealth(attacker.getAttack()); // Heal the target
@@ -29,8 +29,6 @@ module.exports = {
             attacker.sleepy = false;
             attacker.resetAttackTimes();
             game.attack(attacker, minion);
-
-            return true;
-        }, null, true);
+        });
     }
 }

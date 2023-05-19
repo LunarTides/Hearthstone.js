@@ -17,6 +17,8 @@ function getFinishedCards(path) {
 }
 
 function searchCards(query, path = "../cards") {
+    if (path = "../cards/Tests") return; // We don't care about test cards
+
     fs.readdirSync(path, { withFileTypes: true }).forEach(file => {
         let p = `${path}/${file.name}`;
 
