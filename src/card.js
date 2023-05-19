@@ -253,20 +253,6 @@ class Card {
 
         return true;
     }
-    remDur(amount) {
-        /**
-         * Removes "amount" from the location's durability
-         * 
-         * @param {number} amount The durability to remove
-         * 
-         * @returns {boolean} Success
-         */
-
-        if (this.type != "Location") return false;
-
-        this.setStats(0, this.getHealth() - amount);
-        return true;
-    }
     remHealth(amount) {
         /**
          * Removes "amount" from the minions health
@@ -276,7 +262,7 @@ class Card {
          * @returns {boolean} Success
          */
 
-        if (this.type == "Location") return false;
+        if (this.type == "Location") return false; // Don't allow location cards to be damaged
 
         if (this.immune) return true;
         if (this.keywords.includes("Stealth")) return true;
