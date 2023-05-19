@@ -490,7 +490,7 @@ class Interact {
         
         if (location.activate("use") === -1) return -1;
         
-        location.remStats(0, 1);
+        location.remDur(1);
         location.cooldown = location.backups.init.cooldown;
         return true;
     }
