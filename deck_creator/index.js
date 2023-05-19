@@ -474,7 +474,7 @@ function showDeck() {
     }
 }
 
-function deckcode() {
+function deckcode(parseVanillaOnPseudo = false) {
     let _deckcode = functions.deckcode.export(deck, chosen_class, runes);
 
     if (_deckcode.error) {
@@ -509,7 +509,7 @@ function deckcode() {
         _deckcode.error.recoverable = recoverable;
     }
 
-    if (settings.deckcode.format == "forcevanilla" || (settings.deckcode.format == "vanilla" && !_deckcode.error)) _deckcode.code = functions.deckcode.toVanilla(plr, _deckcode.code);
+    if (settings.deckcode.format == "vanilla" && (parseVanillaOnPseudo || !_deckcode.error)) _deckcode.code = functions.deckcode.toVanilla(plr, _deckcode.code);
 
     return _deckcode;
 }
@@ -544,7 +544,7 @@ function help() {
     console.log("(In order to use these; input 'set ', then one of the subcommands. Example: 'set cpp 20')\n");
     console.log("(name) [optional] (required) - (description)\n");
 
-    console.log("format (format)             - Makes the deckcode generator output the deckcode as a different format. If you set this to 'vanilla', it is only going to show the deckcode as vanilla if it is a valid deckcode. If you set this to forcevanilla, it is going to lag a bit, but always show it as vanilla. If you set it to 'vanilla' or 'forcevanilla', you will be asked to choose a card if there are multiple vanilla cards with the same name. This should be rare, but just know that it might happen. ('js', 'vanilla', 'forcevanilla') [default = 'js']");
+    console.log("format (format)             - Makes the deckcode generator output the deckcode as a different format. If you set this to 'vanilla', it is only going to show the deckcode as vanilla. If you set it to 'vanilla', you will be asked to choose a card if there are multiple vanilla cards with the same name. This should be rare, but just know that it might happen. ('js', 'vanilla') [default = 'js']");
     console.log("cardsPerPage | cpp (num)    - How many cards to show per page [default = 15]");
     console.log("defaultCommand | dcmd (cmd) - The command that should run when the command is unspecified. ('add', 'remove', 'view') [default = 'add']");
     console.log("warning                     - Disables/enables certain warnings. Look down to 'Warnings' to see changeable warnings.");
@@ -676,7 +676,7 @@ function handleCmds(cmd) {
         settings.view.class = _class;
     }
     else if (cmd.startsWith("deckcode")) {
-        let _deckcode = deckcode();
+        let _deckcode = deckcode(true);
 
         let toPrint = _deckcode.code + "\n";
         if (_deckcode.error && !_deckcode.error.recoverable) toPrint = "";
@@ -737,7 +737,12 @@ function handleCmds(cmd) {
             return;
         }
 
+        let setting = settings.deckcode.format;
+
+        // Export it as a Hearthstone.js formatted deckcode, since it is faster
+        settings.deckcode.format = "js";
         let _deckcode = deckcode();
+        settings.deckcode.format = setting;
 
         if (_deckcode.error) {
             game.input("ERROR: Cannot export invalid / pseudo-valid deckcodes.\n".red);
@@ -762,7 +767,9 @@ function handleCmds(cmd) {
         if (settings.view.class != "Neutral") settings.view.class = chosen_class;
     }
     else if (cmd.startsWith("undo")) {
-        let command = settings.commands.latestUndoable.split(" ")[0];
+        let command = settings.commands.latestUndoable.split(" ");
+        let args = command.slice(1);
+        command = command[0];
 
         let reverse;
 
@@ -774,11 +781,7 @@ function handleCmds(cmd) {
             return;
         }
 
-        let lcWarn = warnings.latestCard;
-
-        if (lcWarn) warnings.latestCard = false; // Temp remove the latest card warning if its on
-        handleCmds(`${reverse} latest`);
-        if (lcWarn) warnings.latestCard = true;
+        handleCmds(`${reverse} ` + args.join(" "));
     }
     else if (cmd.startsWith("set warning")) {
         let _cmd = cmd.split(" ");
@@ -844,7 +847,7 @@ function handleCmds(cmd) {
                     break;
                 }
 
-                if (!["vanilla", "forcevanilla", "js"].includes(args[0])) {
+                if (!["vanilla", "js"].includes(args[0])) {
                     console.log("Invalid format!".red);
                     game.input();
                     return;
