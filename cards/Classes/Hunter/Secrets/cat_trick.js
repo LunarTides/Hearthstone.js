@@ -9,13 +9,12 @@ module.exports = {
     id: 218,
 
     cast(plr, game, self) {
-        game.functions.addQuest("Secret", plr, self, "PlayCard", 1, (card, _, turn) => {
-            if (card.type != "Spell") return;
+        game.functions.addQuest("Secret", plr, self, "PlayCard", 1, (card, turn, done) => {
+            if (card.type != "Spell") return false;
+            if (!done) return;
 
             let panther = new game.Card("Cat Trick Panther", plr);
             game.summonMinion(panther, plr);
-
-            return true;
-        }, null, true);
+        });
     }
 }
