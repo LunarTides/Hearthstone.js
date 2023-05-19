@@ -179,7 +179,7 @@ class Interact {
             game.input("\nPress enter to continue...\n");
         }
         else if (q == "view") {
-            let isHand = this.question("Do you want to view a minion on the board, or in your hand?", ["Board", "Hand"]);
+            let isHand = this.question(game.player, "Do you want to view a minion on the board, or in your hand?", ["Board", "Hand"]);
             isHand = isHand == "Hand";
 
             if (!isHand) {
@@ -200,12 +200,12 @@ class Interact {
             this.viewCard(card);
         }
         else if (q == "detail") {
-            this.printAll(true);
+            this.printAll(null, true);
             game.input("Press enter to continue...\n");
             this.printAll();
         }
         else if (q == "concede") {
-            let confirmation = this.yesNoQuestion("Are you sure you want to concede?");
+            let confirmation = this.yesNoQuestion(game.player, "Are you sure you want to concede?");
             if (!confirmation) return;
 
             game.endGame(game.player.getOpponent());
@@ -246,13 +246,13 @@ class Interact {
                     if (!hasPrintedHeader) finished += `\nTurn ${t + 1} - Player [${plr.name}]\n`; 
                     hasPrintedHeader = true;
 
-                    val = doVal(val, plr, shouldHide);
+                    val = doVal(val, game.player, shouldHide);
 
                     if (val instanceof Array) {
                         let strbuilder = "";
 
                         val.forEach(v => {
-                            v = doVal(v, plr, shouldHide);
+                            v = doVal(v, game.player, shouldHide);
                             strbuilder += `${v}, `;
                         });
 
@@ -979,7 +979,7 @@ class Interact {
 
         return sb;
     }
-    printAll(detailed = false) {
+    printAll(plr = null, detailed = false) {
         /**
          * Prints all the information you need to understand the game state
          * 
@@ -989,7 +989,7 @@ class Interact {
          * @returns {undefined}
          */
 
-        const plr = game.player;
+        if (!plr) plr = game.player; 
 
         if (game.turns <= 2 && !game.config.debug) this.printLicense();
         else this.printName();
