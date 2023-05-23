@@ -2,6 +2,14 @@ const rl = require("readline-sync");
 const fs = require("fs");
 const cc = require("../index");
 
+const { Game } = require("../../src/game");
+
+const game = new Game({}, {});
+game.dirname = __dirname + "/../../";
+
+game.functions.importCards(__dirname + "/../../cards");
+game.functions.importConfig(__dirname + "/../../config");
+
 function capitalize(str) {
     return str[0].toUpperCase() + str.slice(1).toLowerCase();
 }
@@ -116,6 +124,8 @@ function createCard(card, main) {
 function main(home = ".", card = null) {
     console.log("Hearthstone.js Vanilla Card Creator (C) 2022\n");
 
+    cc.set_type("Vanilla"); // Vanilla Card Creator
+
     if (card) return createCard(card, false);
 
     let data = fs.readFileSync(home + "/.ignore.cards.json", { encoding: 'utf8', flag: 'r' });
@@ -129,10 +139,15 @@ function main(home = ".", card = null) {
         let cardName = rl.question("Name: ");
 
         let filtered_cards = data.filter(c => c.name.toLowerCase() == cardName.toLowerCase());
+        filtered_cards = game.functions.filterVanillaCards(filtered_cards);
 
         if (filtered_cards.length <= 0) {
             console.log("Invalid card.\n");
             continue;
+        }
+
+        if (filtered_cards.length > 1) {
+            filtered_cards = game.functions.filterVanillaCards(filtered_cards, true);
         }
 
         let card;
