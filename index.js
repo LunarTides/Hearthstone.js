@@ -2,6 +2,11 @@ const rl = require("readline-sync");
 const fs = require("fs");
 const { version, branch } = require("./config/general.json");
 
+const src = require("./src/index");                  // Source Code
+const dc = require("./deck_creator/index");          // Deck Creator
+const cc = require("./card_creator/index");          // Custom Card Creator
+const vcc = require("./card_creator/vanilla/index"); // Vanilla Card Creator
+
 const cls = () => process.stdout.write("\033c");
 
 const watermark = () => {
@@ -45,9 +50,9 @@ function devmode() {
                     continue;
                 }
 
-                require("./card_creator/vanilla/index").main("./card_creator/vanilla");
+                vcc.main("./card_creator/vanilla");
             } else {
-                require("./card_creator/index").main();
+                cc.main();
             }
         }
         if (user == "s") {
@@ -80,7 +85,9 @@ function devmode() {
             _watermark();
 
             let filename = name.toLowerCase().replaceAll(" ", "_") + ".js";
-            require("./card_creator/index").main("Hero", __dirname + "/cards/StartingHeroes/", filename, {
+
+            cc.set_type("Hero");
+            cc.main("Hero", __dirname + "/cards/StartingHeroes/", filename, {
                 name: name + " Starting Hero",
                 displayName: displayName,
                 desc: name[0].toUpperCase() + name.slice(1).toLowerCase() + " starting hero",
@@ -92,6 +99,7 @@ function devmode() {
                 hpCost: hpCost,
                 uncollectible: true
             });
+            cc.set_type("Custom"); // Reset
 
             console.log("\nClass Created!");
             rl.question(`Next steps:\n1. Open 'cards/StartingHeroes/${filename}' and add logic to the 'heropower' function.\n2. Now when using the Card Creator, type '${name}' into the 'Class' field to use that class\n3. When using the Deck Creator, type '${name}' to create a deck with cards from your new class.\nEnjoy!\n`);
@@ -113,8 +121,8 @@ while (true) {
 
     user = user[0].toLowerCase();
 
-    if (user == "p") require("./src/index").runner(decks);
-    else if (user == "d") require("./deck_creator/index").runner();
+    if (user == "p") src.runner(decks);
+    else if (user == "d") dc.runner();
     else if (user == "m") devmode();
     else if (user == "e") process.exit(0);
 }

@@ -365,11 +365,7 @@ class DeckcodeFunctions {
             if (!found) amount = parseInt(amountStr[amountStr.length - 1]);
 
             let matches = vanillaCards.filter(a => a.name.toLowerCase() == c.toLowerCase());
-            matches = matches.filter(a => a.collectible); // You're welcome
-            matches = matches.filter(a => !a.id.includes("Prologue"));
-            matches = matches.filter(a => !a.id.includes("PVPDR")); // Idk what 'PVPDR' means, but ok
-            matches = matches.filter(a => a.set && !["battlegrounds", "hero_skins", "placeholder", "vanilla"].includes(a.set.toLowerCase()));
-            matches = matches.filter(a => !a.set.includes("PLACEHOLDER"));
+            matches = self.filterVanillaCards(matches);
 
             if (!matches) {
                 // Invalid card
@@ -379,8 +375,7 @@ class DeckcodeFunctions {
             }
 
             if (matches.length > 1 && extraFiltering) {
-                let _matches = matches.filter(a => a.howToEarn);
-                if (_matches.length > 0) matches = _matches;
+                matches = self.filterVanillaCards(matches, true);
             }
 
             if (matches.length > 1) {
@@ -807,6 +802,29 @@ ${aiHistory}
 
         console.log(`\nThe game crashed!\nCrash report created in 'logs/${filename}.txt' and 'logs/${filename}-ai.txt'\nPlease create a bug report at:\nhttps://github.com/SolarWindss/Hearthstone.js/issues`.yellow);
         game.input();
+    }
+    filterVanillaCards(cards, dangerous = false) {
+        /**
+         * Filter out some useless vanilla cards
+         *
+         * @param {VanillaCard[]} cards The list of vanilla cards to filter
+         * @param {bool} dangerous If there are cards with a 'howToEarn' field, filter away any cards that don't have that.
+         *
+         * @returns {VanillaCard[]} The filtered cards
+         */
+
+        cards = cards.filter(a => a.collectible); // You're welcome
+        cards = cards.filter(a => !a.id.includes("Prologue"));
+        cards = cards.filter(a => !a.id.includes("PVPDR")); // Idk what 'PVPDR' means, but ok
+        cards = cards.filter(a => a.set && !["battlegrounds", "hero_skins", "placeholder", "vanilla"].includes(a.set.toLowerCase()));
+        cards = cards.filter(a => !a.set.includes("PLACEHOLDER"));
+
+        if (dangerous) {
+            const _cards = cards.filter(a => a.howToEarn);
+            if (_cards.length > 0) cards = _cards;
+        }
+
+        return cards;
     }
 
     // Getting card info

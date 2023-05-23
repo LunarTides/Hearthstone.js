@@ -6,7 +6,8 @@ let card = {};
 let shouldExit = false;
 let type;
 
-let debug = false;
+let debug = true;
+let cctype = "Custom";
 
 function input(prompt) {
     const ret = rl.question(prompt);
@@ -177,7 +178,10 @@ function createCard(override_path = "", override_filename = "") {
     // Here it creates a default function signature
     let triggerText = ")";
     if (func.toLowerCase() == "passive") triggerText = ", key, val)";
-    if (func) func = `\n\n    ${func.toLowerCase()}(plr, game, self${triggerText} {\n\n    }`; // Examples: '\n\n    passive(plr, game, self, key, val) {\n\n    }', '\n\n    battlecry(plr, game, self) {\n\n    }'
+
+    let cleaned_desc = card.desc.replace(/(?<!~)&\w/g, ""); // Regular expression created by ChatGPT, it removes the "&B"'s but keeps the "~&B"'s since the '~' is the tag's '\'
+
+    if (func) func = `\n\n    ${func.toLowerCase()}(plr, game, self${triggerText} {\n        // ${cleaned_desc}\n        \n    }`; // Examples: '\n\n    passive(plr, game, self, key, val) {\n        // Your battlecries trigger twice\n        }', '\n\n    battlecry(plr, game, self) {\n\n    }'
 
     // If the type is Hero, we want the card to go to '.../Heroes/...' and not to '.../Heros/...'
     file_friendly_type = (type == "Hero") ? "Heroe" : type;
@@ -211,7 +215,8 @@ function createCard(override_path = "", override_filename = "") {
     }
 
     let content = Object.entries(card).map(c => `${c[0]}: ${getTypeValue(c[1])}`); // name: "Test"
-    content = `module.exports = {
+    content = `// Created by the ${cctype} Card Creator
+module.exports = {
     ${content.join(',\n    ')},${file_id}${func}
 }`;
 
@@ -292,8 +297,13 @@ function set_debug(state) {
     debug = state;
 }
 
+function set_type(state) {
+    cctype = state;
+}
+
 exports.main = main;
 exports.set_debug = set_debug;
+exports.set_type = set_type;
 
 // If the program was run directly, run 'main'. This is the same as "if __name__ == '__main__'" in python.
 if (require.main == module) main();
