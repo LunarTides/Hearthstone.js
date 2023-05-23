@@ -6,7 +6,7 @@ let card = {};
 let shouldExit = false;
 let type;
 
-let debug = true;
+let debug = false;
 let cctype = "Custom";
 
 function input(prompt) {
