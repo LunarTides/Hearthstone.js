@@ -337,14 +337,10 @@ class Game {
         let plr = this.player;
         let op = this.opponent;
 
-        // Trigger endofturn
         this.board[plr.id].forEach(m => {
-            m.activate("endofturn")
-
             m.sleepy = false;
             m.resetAttackTimes();
         });
-        if (plr.weapon) plr.weapon.activate("endofturn");
 
         // Trigger unspent mana
         if (plr.mana > 0) this.events.broadcast("UnspentMana", plr.mana, plr);
@@ -368,8 +364,6 @@ class Game {
                 op.attack = op.weapon.getAttack();
                 op.weapon.resetAttackTimes();
             }
-
-            op.weapon.activate("startofturn");
         }
 
         // Minion start of turn
@@ -392,7 +386,6 @@ class Game {
                 return;
             }
 
-            m.activate("startofturn");
             m.canAttackHero = true;
             if (this.turns > m.frozen_turn + 1) m.frozen = false;
             m.sleepy = false;
@@ -764,7 +757,6 @@ class Game {
             if (wpn.attackTimes > 0 && wpn.getAttack()) {
                 wpn.attackTimes -= 1;
 
-                wpn.activate("onattack");
                 wpn.remStats(0, 1);
 
                 if (wpn.keywords.includes("Poisonous")) target.kill();
@@ -790,7 +782,6 @@ class Game {
 
             target.remHealth(attacker.getAttack());
             attacker.decAttack();
-            attacker.activate("onattack");
             this.events.broadcast("Attack", [attacker, target], attacker.plr);
 
             return true;

@@ -12,7 +12,9 @@ module.exports = {
     keywords: ["Taunt", "Lifesteal"],
     id: 194,
 
-    endofturn(plr, game, self) {
+    passive(plr, game, self, key, val) {
+        if (key != "EndTurn" || game.player != plr) return;
+
         const getHealth = (t) => {
             if (t instanceof game.Card) return t.getHealth();
             return t.health;

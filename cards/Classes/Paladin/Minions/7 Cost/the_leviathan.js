@@ -12,7 +12,12 @@ module.exports = {
     colossal: ["", "The Leviathan Claw"],
     id: 269,
 
-    onattack(plr, game, self) {
+    passive(plr, game, self, key, val) {
+        if (key != "Attack") return;
+
+        const [attacker, target] = val;
+        if (attacker != self) return;
+
         game.interact.dredge();
     }
 }

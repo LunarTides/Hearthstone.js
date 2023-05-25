@@ -13,7 +13,9 @@ module.exports = {
     uncollectible: true,
     id: 79,
 
-    endofturn(plr, game, self) {
+    passive(plr, game, self, key, val) {
+        if (key != "EndTurn" || game.player != plr) return;
+
         self.kill();
     }
 }

@@ -12,8 +12,17 @@ module.exports = {
     cast(plr, game, self) {
         if (!plr.weapon) return -1;
 
-        plr.weapon.onattack = [(plr, game, self) => {
+        if (!plr.weapon.passive) {
+            plr.weapon.passive = [];
+        }
+
+        plr.weapon.passive.push((plr, game, self, key, val) => {
+            if (key != "Attack") return
+
+            const [attacker, target] = val
+            if (attacker != plr) return;
+
             plr.drawCard();
-        }];
+        });
     }
 }
