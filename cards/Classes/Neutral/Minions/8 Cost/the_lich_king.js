@@ -11,7 +11,9 @@ module.exports = {
     keywords: ["Taunt"],
     id: 122,
 
-    endofturn(plr, game, self) {
+    passive(plr, game, self, key, val) {
+        if (key != "EndTurn" || game.player != plr) return;
+
         let cards = ["Anti-Magic Shell", "Army", "Goal", "Coil", "Grip", "Pact", "Frostmourne", "Obliterate"];
         let card = game.functions.randList(cards);
 

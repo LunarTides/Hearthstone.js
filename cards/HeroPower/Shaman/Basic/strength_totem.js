@@ -11,7 +11,9 @@ module.exports = {
     id: 85,
     uncollectible: true,
 
-    endofturn(plr, game) {
+    passive(plr, game, self, key, val) {
+        if (key != "EndTurn" || game.player != plr) return;
+
         var t = game.board[plr.id];
 
         if (t.length > 0) {

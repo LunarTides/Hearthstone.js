@@ -11,7 +11,12 @@ module.exports = {
     uncollectible: true,
     id: 136,
 
-    onattack(plr, game, self) {
+    passive(plr, game, self, key, val) {
+        if (key != "Attack") return;
+
+        const [attacker, target] = val;
+        if (attacker != plr) return;
+
         let op = plr.getOpponent();
 
         op.mana = 0;

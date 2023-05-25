@@ -10,7 +10,9 @@ module.exports = {
     set: "Blackrock Mountain",
     id: 52,
 
-    endofturn(plr, game, card) {
+    passive(plr, game, card, key, val) {
+        if (key != "EndTurn" || game.player != plr) return;
+
         plr.hand.forEach(c => {
             c.addEnchantment("-1 mana", card);
         });

@@ -9,7 +9,12 @@ module.exports = {
     set: "Kobolds & Catacombs",
     id: 131,
 
-    onattack(plr, game, self) {
+    passive(plr, game, self, key, val) {
+        if (key != "Attack") return;
+
+        const [attacker, target] = val;
+        if (attacker != plr) return;
+
         game.functions.recruit(plr);
     }
 }
