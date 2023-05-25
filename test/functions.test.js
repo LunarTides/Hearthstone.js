@@ -292,16 +292,9 @@ describe("Functions", () => {
 
     it ('should correctly parse tags', () => {
         const str = "&BBold&R, &rRed&R, &gGreen&R, &bBlue&R, &cCyan&R, &mMagenta&R, &yYellow&R, &kBlack&R, &aGray&R, &wWhite&R.";
-
-        // I'm so sorry
-        const expected = '\x1B[1mB\x1B[22m\x1B[1mo\x1B[22m\x1B[1ml\x1B[22m\x1B[1md\x1B[22m\x1B[0m,\x1B[0m \x1B[31mR\x1B[39m\x1B[31me\x1B[39m\x1B[31md\x1B[39m\x1B[0m,\x1B[0m \x1B[32mG\x1B[39m\x1B[32mr\x1B[39m\x1B[32me\x1B[39m\x1B[32me\x1B[39m\x1B[32mn\x1B[39m\x1B[0m,\x1B[0m \x1B[34mB\x1B[39m\x1B[34ml\x1B[39m\x1B[34mu\x1B[39m\x1B[34me\x1B[39m\x1B[0m,\x1B[0m \x1B[36mC\x1B[39m\x1B[36my\x1B[39m\x1B[36ma\x1B[39m\x1B[36mn\x1B[39m\x1B[0m,\x1B[0m \x1B[35mM\x1B[39m\x1B[35ma\x1B[39m\x1B[35mg\x1B[39m\x1B[35me\x1B[39m\x1B[35mn\x1B[39m\x1B[35mt\x1B[39m\x1B[35ma\x1B[39m\x1B[0m,\x1B[0m \x1B[33mY\x1B[39m\x1B[33me\x1B[39m\x1B[33ml\x1B[39m\x1B[33ml\x1B[39m\x1B[33mo\x1B[39m\x1B[33mw\x1B[39m\x1B[0m,\x1B[0m \x1B[30mB\x1B[39m\x1B[30ml\x1B[39m\x1B[30ma\x1B[39m\x1B[30mc\x1B[39m\x1B[30mk\x1B[39m\x1B[0m,\x1B[0m \x1B[90mG\x1B[39m\x1B[90mr\x1B[39m\x1B[90ma\x1B[39m\x1B[90my\x1B[39m\x1B[0m,\x1B[0m \x1B[37mW\x1B[39m\x1B[37mh\x1B[39m\x1B[37mi\x1B[39m\x1B[37mt\x1B[39m\x1B[37me\x1B[39m\x1B[0m.\x1B[0m';
+        const expected = '\x1B[1mBold\x1B[22m, \x1B[31mRed\x1B[39m, \x1B[32mGreen\x1B[39m, \x1B[34mBlue\x1B[39m, \x1B[36mCyan\x1B[39m, \x1B[35mMagenta\x1B[39m, \x1B[33mYellow\x1B[39m, \x1B[30mBlack\x1B[39m, \x1B[90mGray\x1B[39m, \x1B[37mWhite\x1B[39m.';
 
         const parsed = functions.parseTags(str);
-
-        /*
-        let raw = require('util').inspect(parsed, { colors: true }); // Thanks util for saving me hours of manually creating the abombination that is the expected variable.
-        console.log(raw);
-        */
 
         assert.equal(parsed, expected);
     });

@@ -1036,6 +1036,7 @@ ${aiHistory}
         }
 
         let strbuilder = "";
+        let word_strbuilder = "";
         let current_types = [];
 
         // Loop through the characters in str
@@ -1046,20 +1047,36 @@ ${aiHistory}
                     else return;
                 }
                 if (c == "~" && i < str.length && str[i + 1] == "&") return; // Don't add the "~" character if it is used to cancel the "&" character
-                
-                strbuilder += appendTypes(c);
+
+                // Add the character to the current word
+                word_strbuilder += c;
                 return;
             }
 
             // c == "&"
             if (i > 0 && str[i - 1] == "~") { // If there is a `~` before the &, add the & to the string.
-                strbuilder += appendTypes(c);
+                word_strbuilder += c;
                 return;
             }
 
+            // New tag
             let type = str[i + 1];
+
+            if (word_strbuilder) {
+                // There is a new tag, so the word is done. Add the word to the strbuilder
+                strbuilder += appendTypes(word_strbuilder);
+                word_strbuilder = "";
+            }
+
             current_types.push(type);
+
+            if (type == "R") {
+                // The type is "Reset"
+                current_types = [];
+            }
         });
+
+        strbuilder += appendTypes(word_strbuilder);
 
         return strbuilder;
     }
