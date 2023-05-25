@@ -472,14 +472,6 @@ class Card {
         this.activate("passive", "battlecry", this, game.turns);
         return this.activate("battlecry", ...args);
     }
-    clearCondition() {
-        /**
-         * Add ` (Condition cleared)` to the description of the card.
-         *
-         * @returns {null}
-         */
-        this.desc += " (Condition cleared)".gray;
-    }
     manathirst(m, t = "", f = "") {
         /**
          * Returns t if "m" is more than or equal to the player's max mana
@@ -645,11 +637,12 @@ class Card {
          * @returns {undefined}
          */
 
-        if (!this.placeholder) return;
+        if (!this.placeholders) return;
 
         this.placeholder = this.activate("placeholders")[0];
 
         Object.entries(this.placeholder).forEach(p => {
+            console.log("hello")
             let [key, val] = p;
 
             let replacement = `{ph:${key}} ${val} {/ph}`;
