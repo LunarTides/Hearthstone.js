@@ -1,15 +1,12 @@
 // Literally copy-pasted from ChatGPT
 const { execSync } = require('child_process');
+const fs = require('fs');
 
 // List of test files to execute individually
-const testFiles = [
-    'test/card.test.js',
-    'test/functions.test.js',
-    'test/game.test.js',
-];
+const testFiles = fs.readdirSync(__dirname + '/test/');
 
 // Execute each test file individually
-testFiles.forEach((testFile) => {
+testFiles.forEach(testFile => {
     try {
         execSync(`npx mocha ${testFile}`, { stdio: 'inherit' });
     } catch (error) {

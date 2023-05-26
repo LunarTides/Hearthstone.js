@@ -4,8 +4,6 @@ const { Player } = require("../src/player");
 const { Game } = require("../src/game");
 const { set } = require("../src/shared");
 
-set(null);
-
 // Setup the game / copied from the card updater
 const test_player1 = new Player("Test Player 1"); // Use this if a temp player crashes the game
 const test_player2 = new Player("Test Player 2");
@@ -628,5 +626,3 @@ describe("Game", () => {
         assert.equal(c.getHealth(), 1);
     });
 });
-
-set(null);
