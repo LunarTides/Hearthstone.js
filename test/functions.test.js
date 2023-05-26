@@ -5,6 +5,8 @@ const { Player } = require("../src/player");
 const { Game } = require("../src/game");
 const { set } = require("../src/shared");
 
+set(null);
+
 // Setup the game / copied from the card updater
 const test_player1 = new Player("Test Player 1"); // Use this if a temp player crashes the game
 const test_player2 = new Player("Test Player 2");
@@ -329,7 +331,7 @@ describe("Functions", () => {
 
     it ('should correctly create an event listener', () => {
         const amount = Object.values(game.eventListeners).length;
-        functions.addEventListener("Test", () => {return true}, () => {});
+        functions.addEventListener("Test", true, () => {}, -1);
 
         assert.ok(Object.values(game.eventListeners).length > amount);
     });
@@ -542,3 +544,5 @@ describe("Functions", () => {
         assert.equal(deckcode, expected);
     });
 });
+
+set(null);

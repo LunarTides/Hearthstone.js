@@ -642,7 +642,6 @@ class Card {
         this.placeholder = this.activate("placeholders")[0];
 
         Object.entries(this.placeholder).forEach(p => {
-            console.log("hello")
             let [key, val] = p;
 
             let replacement = `{ph:${key}} ${val} {/ph}`;

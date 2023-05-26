@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "npx mocha",
+    "test": "npm run test:custom",
+    "test:custom": "node run-tests.js",
     "generate": "node card_creator/vanilla/generator"
   },
   "repository": {

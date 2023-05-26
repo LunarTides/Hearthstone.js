@@ -47,6 +47,7 @@ class Player {
         this.runes = "";
 
         this.forceTarget = null;
+        this.inputQueue = null;
     }
 
     getInternalGame() {

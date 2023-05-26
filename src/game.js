@@ -217,6 +217,21 @@ class Game {
          */
         if (this.no_input && care) return "";
 
+        // Let the game make choices for the user
+        if (this.player.inputQueue) {
+            let queue = this.player.inputQueue;
+
+            if (typeof(queue) == "string") return queue;
+            else if (!queue instanceof Array) return question(q); // Invalid queue
+
+            const answer = queue[queue.length - 1];
+            this.functions.remove(queue, answer);
+
+            if (queue.length <= 0) this.player.inputQueue = null;
+
+            return answer;
+        }
+
         return question(q);
     }
 
@@ -227,7 +242,10 @@ class Game {
          * @returns {null}
          */
         if (this.config.P1AI) this.player1.ai = new AI(this.player1);
+        else this.player1.ai = null;
+
         if (this.config.P2AI) this.player2.ai = new AI(this.player2);
+        else this.player2.ai = null;
     }
 
     set(key, val) {
@@ -679,6 +697,8 @@ class Game {
 
         this.killMinions();
 
+        if (target.immune) return "immune";
+
         // Attacker is a number
         if (typeof(attacker) === "number") {
             let dmg = attacker;
@@ -708,7 +728,6 @@ class Game {
         }
 
         if (attacker.frozen) return "frozen";
-        if (target.immune) return "immune";
         if (attacker.dormant) return "dormant";
 
         // Attacker is a player
