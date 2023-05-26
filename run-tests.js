@@ -8,7 +8,7 @@ const testFiles = fs.readdirSync(__dirname + '/test/');
 // Execute each test file individually
 testFiles.forEach(testFile => {
     try {
-        execSync(`npx mocha ${testFile}`, { stdio: 'inherit' });
+        execSync(`npx mocha test/${testFile}`, { stdio: 'inherit' });
     } catch (error) {
         process.exitCode = 1;
     }
