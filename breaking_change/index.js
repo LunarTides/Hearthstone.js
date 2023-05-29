@@ -1,6 +1,14 @@
 const fs = require("fs");
 const rl = require("readline-sync");
 const child_process = require("child_process");
+const { Game } = require("../src/game");
+const { editor } = require("../config/general.json");
+
+const game = new Game({}, {});
+game.dirname = __dirname + "/../";
+
+game.functions.importCards("../cards");
+game.functions.importConfig("../config");
 
 let matchingCards = [];
 let finishedCards = [];
@@ -31,9 +39,6 @@ function searchCards(query, path = "../cards") {
         else if (file.isDirectory()) searchCards(query, p);
     });
 }
-
-let editor = rl.question("What command to execute for the cards. Eg 'vim': ");
-if (!editor) editor = 'vim';
 
 let reg = rl.question("Search: ");
 
@@ -75,7 +80,9 @@ while (true) {
     path = matchingCards[index];
 
     // `card` is the path to that card.
-    child_process.exec(`start ${editor} "${path}"`);
+    let success = game.functions.openWithArgs(editor, `"${path}"`);
+    if (!success) rl.question(); // The `openWithArgs` shows an error message for us, but we need to pause.
+
     finishedCards.push(path);
     matchingCards.splice(index, 1);
 

@@ -72,6 +72,7 @@ function createCard(card, main) {
             desc: desc,
             mana: mana,
             type: type,
+            spellClass: spellClass,
             class: cardClass,
             rarity: rarity
         }

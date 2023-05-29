@@ -1,6 +1,6 @@
 'use strict';
 
-const colors = require("colors");
+require("colors");
 
 try {
     require(__dirname + "/../src/game");

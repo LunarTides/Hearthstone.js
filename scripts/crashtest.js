@@ -1,10 +1,10 @@
 const rl = require("readline-sync");
 const fs = require("fs");
-const { Game } = require("./src/game");
-const { Player } = require("./src/player");
-const { set } = require("./src/shared");
+const { Game } = require("../src/game");
+const { Player } = require("../src/player");
+const { set } = require("../src/shared");
 
-let decks = Object.values(JSON.parse(fs.readFileSync("decks.json")).versus);
+let decks = Object.values(JSON.parse(fs.readFileSync("../decks.json")).versus);
 
 let games = process.env.games || 100;
 
@@ -23,8 +23,8 @@ for (let _ = 0; _ < games; _++) {
 
     game.running = true;
 
-    game.functions.importCards(__dirname + '/cards');
-    game.functions.importConfig(__dirname + '/config');
+    game.functions.importCards(__dirname + '/../cards');
+    game.functions.importConfig(__dirname + '/../config');
 
     // Setup the ais
     game.config.P1AI = true;

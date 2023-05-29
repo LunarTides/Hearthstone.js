@@ -1,6 +1,3 @@
-const colors = require("colors");
-const { exit } = require('process');
-
 const license_url = 'https://github.com/SolarWindss/Hearthstone.js/blob/main/LICENSE';
 
 let game;
@@ -80,7 +77,7 @@ class Interact {
                 err = "That minion is dormant";
                 break;
             default:
-                err = "An unknown error occurred. Error code: 19";
+                err = `An unknown error occurred. Error code: UnexpectedAttackingResult@${errorcode}`;
                 break;
         }
 
@@ -141,7 +138,7 @@ class Interact {
                     err = "That location is on cooldown";
                     break;
                 default:
-                    err = "An unknown error occourred. Error code: 51";
+                    err = `An unknown error occourred. Error code: UnexpectedUseLocationResult@${errorcode}`;
                     break;
             }
 
@@ -467,7 +464,7 @@ class Interact {
         else if (ret == "counter") err = "Your card has been countered";
         else if (ret == "space") err = `You can only have ${game.config.maxBoardSpace} minions on the board`;
         else if (ret == "invalid") err = "Invalid card";
-        else err = "An unknown error occurred";
+        else err = `An unknown error occurred. Error code: UnexpectedDoTurnResult@${ret}`;
 
         console.log(`${err}.`.red);
         game.input();
@@ -541,7 +538,7 @@ class Interact {
             while (plr.deck.length < 30) plr.deck.push(new game.Card("Sheep", plr)); // Debug deck
         }
 
-        if (error == "invalid") exit(1);
+        if (error == "invalid") process.exit(1);
     }
     mulligan(plr) {
         /**

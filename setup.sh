@@ -1,7 +1,8 @@
-node --version
+node --version > /dev/null
 
 if [ $? -eq 0 ]
-then 
+then
+    # Nodejs is installed
     npm i
 else
     echo "nodejs is not installed"
