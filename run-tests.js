@@ -1,4 +1,4 @@
-// Literally copy-pasted from ChatGPT
+// Partially copy-pasted from ChatGPT
 const { execSync } = require('child_process');
 const fs = require('fs');
 

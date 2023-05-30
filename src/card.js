@@ -157,6 +157,16 @@ class Card {
         this.attackTimes--;
         if (this.attackTimes <= 0) this.sleepy = true;
     }
+    ready() {
+        /**
+         * Makes this minion ready for attack
+         *
+         * @returns {null}
+         */
+
+        this.sleepy = false;
+        this.resetAttackTimes();
+    }
 
     // Change stats
     getAttack() {

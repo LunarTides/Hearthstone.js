@@ -223,7 +223,7 @@ class Game {
             if (typeof(queue) == "string") return queue;
             else if (!queue instanceof Array) return question(q); // Invalid queue
 
-            const answer = queue[queue.length - 1];
+            const answer = queue[0];
             this.functions.remove(queue, answer);
 
             if (queue.length <= 0) this.player.inputQueue = null;

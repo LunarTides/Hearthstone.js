@@ -87,13 +87,20 @@ describe("Card", () => {
     it ('should correctly decrease a minion\'s attack', () => {
         const card = testCard();
 
-        card.attackTimes = 1;
-        card.sleepy = false;
-
+        card.ready();
         card.decAttack();
 
         assert.equal(card.attackTimes, 0);
         assert.equal(card.sleepy, true);
+    });
+
+    it ('should ready a minion', () => {
+        const card = testCard();
+
+        card.ready();
+
+        assert.equal(card.attackTimes, 1);
+        assert.equal(card.sleepy, false);
     });
 
     it ('should correctly get/set the attack of a minion', () => {
