@@ -74,11 +74,13 @@ describe("Interact", () => {
         test_player1.canUseHeroPower = true;
         test_player1.setToStartingHero();
 
+        test_player2.health = 30;
+
         test_player1.inputQueue = ["yes", "face", "y"]; // Yes, use the hero power. Select a hero/face. Select the opponent's hero/face.
 
         interact.handleCmds("hero power");
 
-        assert.equal(test_player2.health, test_player2.maxHealth - 2); // Test_player2 should now have 2 less health
+        assert.equal(test_player2.health, 29); // Test_player2 should now have 2 less health
     });
     it ('should handle `attack` command', () => {
         let curm = summonMinion("Sheep", test_player1);
