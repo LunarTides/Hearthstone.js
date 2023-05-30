@@ -711,13 +711,14 @@ function handleCmds(cmd) {
     else if (cmd.startsWith("import")) {
         let _deckcode = game.input("Please input a deckcode: ");
 
+        let _deck = functions.deckcode.import(plr, _deckcode);
+        if (_deck == "invalid") return;
+
         game.config.validateDecks = false;
-        let _deck = functions.deckcode.import(plr, _deckcode).sort((a, b) => {
+        _deck = _deck.sort((a, b) => {
             return a.name.localeCompare(b.name);
         });
         game.config.validateDecks = true;
-
-        if (_deck == "invalid") return;
 
         deck = [];
 
