@@ -1,14 +1,13 @@
 const fs = require("fs");
 const rl = require("readline-sync");
-const child_process = require("child_process");
-const { Game } = require("../src/game");
-const { editor } = require("../config/general.json");
+const { Game } = require("../../src/game");
+const { editor } = require("../../config/general.json");
 
 const game = new Game({}, {});
 game.dirname = __dirname + "/../";
 
-game.functions.importCards("../cards");
-game.functions.importConfig("../config");
+game.functions.importCards(__dirname + "/../../cards");
+game.functions.importConfig(__dirname + "/../../config");
 
 let matchingCards = [];
 let finishedCards = [];
@@ -24,8 +23,8 @@ function getFinishedCards(path) {
     finishedCards = cards.split("\n");
 }
 
-function searchCards(query, path = "../cards") {
-    if (path == "../cards/Tests") return; // We don't care about test cards
+function searchCards(query, path = __dirname + "/../../cards") {
+    if (path == __dirname + "/../../cards/Tests") return; // We don't care about test cards
 
     fs.readdirSync(path, { withFileTypes: true }).forEach(file => {
         let p = `${path}/${file.name}`;
@@ -55,7 +54,7 @@ while (true) {
 
     matchingCards.forEach((c, i) => {
         // `c` is the path to the card.
-        let _c = c.replace("../cards/", "");
+        let _c = c.replace(__dirname + "/../../cards/", "");
         console.log(`${i + 1}: ${_c}`);
     });
 

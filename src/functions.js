@@ -855,7 +855,6 @@ ${aiHistory}
 
                     return true;
                 } catch (error) {
-                    console.log(error.stack)
                     return false;
                 }
             }
