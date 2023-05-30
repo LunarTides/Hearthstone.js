@@ -1,5 +1,13 @@
 const rl = require("readline-sync");
 const fs = require("fs");
+const { Game } = require("../src/game");
+const { editor } = require("../config/general.json");
+
+const game = new Game({}, {});
+game.dirname = __dirname + "/../";
+
+game.functions.importCards(__dirname + "/../cards");
+game.functions.importConfig(__dirname + "/../config");
 
 let card = {};
 
@@ -201,7 +209,7 @@ function createCard(override_path = "", override_filename = "") {
     if (override_filename) filename = override_filename; // If this function was passed in a filename, use that instead.
 
     // Get the latest card-id
-    let id = parseInt(fs.readFileSync(__dirname + "/../.latest_id", "utf8"));
+    let id = parseInt(fs.readFileSync(__dirname + "/../cards/.latest_id", "utf8"));
     let file_id = card.uncollectible ? "" : `\n    id: ${id},`; // Don't add an id if the card is uncollectible. Id's are only used when creating/importing a deck.
 
     // Generate the content of the card
@@ -228,7 +236,7 @@ module.exports = {
         // If debug mode is disabled, write the card to disk.
         
         // If the card is not uncollectible, increment the id in '.latest_id' by 1
-        if (!card.uncollectible) fs.writeFileSync(__dirname + "/../.latest_id", (id + 1).toString()); 
+        if (!card.uncollectible) fs.writeFileSync(__dirname + "/../cards/.latest_id", (id + 1).toString()); 
 
         // If the path the card would be written to doesn't exist, create it.
         if (!fs.existsSync(path)) fs.mkdirSync(path, { recursive: true });
@@ -245,8 +253,11 @@ module.exports = {
 
     if (!override_path) rl.question(); // If the function was specified a path, assume the function was run from another file so don't pause it.
 
-    // Open vim on that card if it has a function to edit, and debug mode is disabled
-    if (func && !debug) require("child_process").exec(`start vim "${file_path}"`);
+    // Open the defined editor on that card if it has a function to edit, and debug mode is disabled
+    if (func && !debug) {
+        let success = game.functions.openWithArgs(editor, `"${file_path}"`);
+        if (!success) rl.question();
+    }
 }
 
 function main(override_type = "", override_path = "", override_filename = "", override_card = null) {

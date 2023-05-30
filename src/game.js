@@ -1,5 +1,4 @@
 const { question }  = require('readline-sync');
-const { exit }      = require("process");
 const { Functions } = require("./functions");
 const { Player }    = require("./player");
 const { Card }      = require("./card");

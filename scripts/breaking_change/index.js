@@ -1,6 +1,13 @@
 const fs = require("fs");
 const rl = require("readline-sync");
-const child_process = require("child_process");
+const { Game } = require("../../src/game");
+const { editor } = require("../../config/general.json");
+
+const game = new Game({}, {});
+game.dirname = __dirname + "/../";
+
+game.functions.importCards(__dirname + "/../../cards");
+game.functions.importConfig(__dirname + "/../../config");
 
 let matchingCards = [];
 let finishedCards = [];
@@ -16,8 +23,8 @@ function getFinishedCards(path) {
     finishedCards = cards.split("\n");
 }
 
-function searchCards(query, path = "../cards") {
-    if (path == "../cards/Tests") return; // We don't care about test cards
+function searchCards(query, path = __dirname + "/../../cards") {
+    if (path == __dirname + "/../../cards/Tests") return; // We don't care about test cards
 
     fs.readdirSync(path, { withFileTypes: true }).forEach(file => {
         let p = `${path}/${file.name}`;
@@ -31,9 +38,6 @@ function searchCards(query, path = "../cards") {
         else if (file.isDirectory()) searchCards(query, p);
     });
 }
-
-let editor = rl.question("What command to execute for the cards. Eg 'vim': ");
-if (!editor) editor = 'vim';
 
 let reg = rl.question("Search: ");
 
@@ -50,7 +54,7 @@ while (true) {
 
     matchingCards.forEach((c, i) => {
         // `c` is the path to the card.
-        let _c = c.replace("../cards/", "");
+        let _c = c.replace(__dirname + "/../../cards/", "");
         console.log(`${i + 1}: ${_c}`);
     });
 
@@ -75,7 +79,9 @@ while (true) {
     path = matchingCards[index];
 
     // `card` is the path to that card.
-    child_process.exec(`start ${editor} "${path}"`);
+    let success = game.functions.openWithArgs(editor, `"${path}"`);
+    if (!success) rl.question(); // The `openWithArgs` shows an error message for us, but we need to pause.
+
     finishedCards.push(path);
     matchingCards.splice(index, 1);
 

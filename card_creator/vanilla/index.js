@@ -28,7 +28,6 @@ function createCard(card, main) {
     // Minion info
     let attack = card.attack || -1;
     let health = card.health || -1;
-    let race = card.race || null;
     let races = [];
     if (card.races) races = card.races.map(r => capitalize(r));
 
@@ -72,6 +71,7 @@ function createCard(card, main) {
             desc: desc,
             mana: mana,
             type: type,
+            spellClass: spellClass,
             class: cardClass,
             rarity: rarity
         }
@@ -121,14 +121,14 @@ function createCard(card, main) {
     cc.main(type, null, null, card);
 }
 
-function main(home = ".", card = null) {
+function main(card = null) {
     console.log("Hearthstone.js Vanilla Card Creator (C) 2022\n");
 
     cc.set_type("Vanilla"); // Vanilla Card Creator
 
     if (card) return createCard(card, false);
 
-    let data = fs.readFileSync(home + "/.ignore.cards.json", { encoding: 'utf8', flag: 'r' });
+    let data = fs.readFileSync(__dirname + "/.ignore.cards.json", { encoding: 'utf8', flag: 'r' });
 
     data = JSON.parse(data);
 

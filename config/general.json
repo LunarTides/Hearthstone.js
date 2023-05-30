@@ -11,5 +11,7 @@
     "P2AI": true,
 
     "version": "1.5.0",
-    "branch": "dev"
+    "branch": "dev",
+
+    "editor": "vim"
 }
