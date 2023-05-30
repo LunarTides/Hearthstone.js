@@ -1,7 +1,7 @@
 const fs = require("fs");
+const child_process = require("child_process");
 const deckstrings = require("deckstrings"); // To decode vanilla deckcodes
-const { exit } = require("process");
-const { set } = require("./shared");
+require("colors");
 
 let game = null;
 let self = null;
@@ -222,7 +222,6 @@ class DeckcodeFunctions {
             return {"code": "", "error": error};
         }
 
-        // Find the class
         let deckcode = `${heroClass} `;
 
         if (runes) {
@@ -329,7 +328,7 @@ class DeckcodeFunctions {
         try {
             vanillaCards = fs.readFileSync(game.dirname + "/card_creator/vanilla/.ignore.cards.json");
         } catch (err) {
-            console.log("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'genvanilla.bat' (requires an internet connection), then try again.".red);
+            console.log("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'scripts/genvanilla.bat' (requires an internet connection), then try again.".red);
             game.input();
 
             process.exit(1);
@@ -423,7 +422,7 @@ class DeckcodeFunctions {
         try {
             cards = fs.readFileSync(game.dirname + "/card_creator/vanilla/.ignore.cards.json");
         } catch (err) {
-            console.log("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'genvanilla.bat' (requires an internet connection), then try again.".red);
+            console.log("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'scripts/genvanilla.bat' (requires an internet connection), then try again.".red);
             game.input();
 
             process.exit(1);
@@ -727,7 +726,7 @@ class Functions {
          * @returns {null}
          */
         // Create a (crash-)log file
-        if (!fs.existsSync("./logs/")) fs.mkdirSync("./logs/");
+        if (!fs.existsSync(`${__dirname}/../logs/`)) fs.mkdirSync(`${__dirname}/../logs/`);
 
         // Get the day, month, year, hour, minute, and second, as 2 digit numbers.
         let date = new Date();
@@ -780,7 +779,7 @@ ${history}${errorContent}
 
         filename = `${filename}-${dateStringFileFriendly}`;
 
-        fs.writeFileSync(`./logs/${filename}.txt`, content);
+        fs.writeFileSync(`${__dirname}/../logs/${filename}.txt`, content);
 
         // AI log
         game.config.debug = true; // Do this so it can actually run '/ai'
@@ -796,7 +795,7 @@ AI History:
 ${aiHistory}
 `
 
-        fs.writeFileSync(`./logs/${filename}-ai.txt`, content);
+        fs.writeFileSync(`${__dirname}/../logs/${filename}-ai.txt`, content);
 
         if (!err) return;
 
@@ -825,6 +824,62 @@ ${aiHistory}
         }
 
         return cards;
+    }
+    openWithArgs(command, args) {
+        /**
+         * Open a program with args
+         * 
+         * @param {string} command The command/program to run
+         * @param {string} args The arguments
+         * 
+         * @returns {bool} Success
+         */
+
+        // Windows vs Linux. Pros and Cons:
+        if (process.platform == "win32") {
+            // Windows
+            child_process.exec(`start ${command} ${args}`);
+        } else {
+            // Linux (/ Mac)
+            args = args.replaceAll("\\", "/");
+
+            let attempts = [];
+
+            const isCommandAvailable = (test_command, args_specifier) => {
+                try {
+                    console.log(`${test_command} ${args_specifier}${command} ${args}`)
+                    attempts.push(test_command);
+
+                    child_process.execSync(`which ${test_command}`);
+                    child_process.exec(`${test_command} ${args_specifier}${command} ${args}`);
+
+                    return true;
+                } catch (error) {
+                    return false;
+                }
+            }
+
+            if (isCommandAvailable("x-terminal-emulator", "-e ")) {}
+            else if (isCommandAvailable("gnome-terminal", "-- ")) {}
+            else if (isCommandAvailable("xterm", "-e ")) {}
+            else if (isCommandAvailable("xfce4-terminal", "--command=")) {}
+            else {
+                console.log("Error: Failed to open program. Traceback:");
+                console.log("Operating system: Linux");
+                
+                attempts.forEach(a => {
+                    console.log(`Tried '${a}'... failed!`);
+                });
+
+                console.log("Please install any of these using your package manager.");
+                console.log("If you're not using linux, open up an issue on the github page.");
+                // rl.question(); <- It is your job to pause the program when you run this, since function.js functions should generally not pause the game.
+
+                return false;
+            }
+        }
+
+        return true;
     }
 
     // Getting card info

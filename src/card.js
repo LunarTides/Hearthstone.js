@@ -440,11 +440,12 @@ class Card {
             let r = i(this.plr, game, this, ...args);
             ret.push(r);
 
-            if (r != -1 || name == "deathrattle") return;
+            if (r != -1 || name == "deathrattle") return; // Deathrattle isn't cancellable
 
             // If the return value is -1, meaning "refund", refund the card and stop the for loop
             game.events.broadcast("CancelCard", [this, name], this.plr);
 
+            // These keyword methods shouldn't "refund" the card, just stop execution.
             if (["use", "heropower"].includes(name)) {
                 ret = -1;
                 return;
@@ -589,7 +590,7 @@ class Card {
         // DO NOT PASS USER INPUT DIRECTLY INTO THIS FUNCTION. IT CAN ALLOW FOR EASY CODE INJECTION
         let info = this.getEnchantmentInfo(e);
 
-        if (info.op == "=") this.enchantments.unshift([e, card]); // Add the enchantment to the beginning of the list
+        if (info.op == "=") this.enchantments.unshift([e, card]); // Add the enchantment to the beginning of the list, equal enchantments should apply first
         else this.enchantments.push([e, card]);
 
         this.applyEnchantments();

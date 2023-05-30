@@ -279,13 +279,12 @@ class AI {
         let ret = null;
 
         // Risky
-        let is_winner = current_winner[0] == this.plr;
         let op_score = this._scorePlayer(this.plr.getOpponent(), board[this.plr.getOpponent().id]);
         let risk_mode = current_winner[1] >= op_score + game.config.AIRiskThreshold // If the ai is winner by more than 'threshold' points, enable risk mode
 
         let taunts = this._tauntExists(); // If there are taunts, override risk mode
 
-        if (is_winner && risk_mode && !taunts) ret = this._attackGeneralRisky();
+        if (risk_mode && !taunts) ret = this._attackGeneralRisky();
         else ret = this._attackGeneralMinion();
 
         this.history.push([`attack`, [ret[0].name, ret[1].name]]);
@@ -405,7 +404,6 @@ class AI {
 
         // The ai should skip the trade stage if in risk mode
         let current_winner = this._findWinner(board);
-        let is_winner = current_winner[0] == this.plr;
         let op_score = this._scorePlayer(this.plr.getOpponent(), board[this.plr.getOpponent().id]);
         let risk_mode = current_winner[1] >= op_score + game.config.AIRiskThreshold // If the ai is winner by more than 'threshold' points, enable risk mode
 
@@ -460,7 +458,7 @@ class AI {
 
         // If the AI has no minions to attack, attack the enemy hero
         if (!target) {
-            if (!taunts.length && attacker.canAttackHero || true) target = this.plr.getOpponent();
+            if (!taunts.length && attacker.canAttackHero) target = this.plr.getOpponent();
             else {
                 attacker = -1;
                 target = -1;
@@ -647,6 +645,7 @@ class AI {
         // I know this is a bad solution
         // "Deal 2 damage to a minion; or Restore 5 Health."
         // ^^^^^ It will always choose to restore 5 health, since it sees deal 2 damage as bad but oh well, future me problem.
+        // ^^^^^ Update 29/05/23  TODO: Fix this
         let best_choice = null;
         let best_score = -100000;
  
@@ -816,7 +815,7 @@ class AI {
         else score += game.config.AISpellValue * game.config.AIStatsBias; // If the spell value is 4 then it the same value as a 2/2 minion
         score -= c.mana * game.config.AIManaBias;
 
-        c.keywords.forEach(k => score += game.config.AIKeywordValue);
+        c.keywords.forEach(() => score += game.config.AIKeywordValue);
         Object.values(c).forEach(c => {
             if (c instanceof Array && c[0] instanceof Function) score += game.config.AIFunctionValue;
         });

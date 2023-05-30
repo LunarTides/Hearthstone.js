@@ -1,6 +1,6 @@
 {
     "AIContextAnalysis"  : true,
-    "AIAttackModel"      : 2,
+    "AIAttackModel"      : -1,
     "AIMulliganThreshold": 3,
     "AITradeThreshold"   : 2,
     "AIStatsBias"        : 0.2,

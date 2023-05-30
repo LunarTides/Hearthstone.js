@@ -1,5 +1,4 @@
 let game = null;
-let cards = null;
 
 function set(new_game = null) {
     if (!new_game) return;
