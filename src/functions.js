@@ -364,17 +364,13 @@ class DeckcodeFunctions {
             if (!found) amount = parseInt(amountStr[amountStr.length - 1]);
 
             let matches = vanillaCards.filter(a => a.name.toLowerCase() == c.toLowerCase());
-            matches = self.filterVanillaCards(matches);
+            matches = self.filterVanillaCards(matches, true, extraFiltering);
 
             if (!matches) {
                 // Invalid card
                 console.log("ERROR: Invalid card found!".red);
                 game.input();
                 return;
-            }
-
-            if (matches.length > 1 && extraFiltering) {
-                matches = self.filterVanillaCards(matches, true);
             }
 
             if (matches.length > 1) {
@@ -802,7 +798,7 @@ ${aiHistory}
         console.log(`\nThe game crashed!\nCrash report created in 'logs/${filename}.txt' and 'logs/${filename}-ai.txt'\nPlease create a bug report at:\nhttps://github.com/SolarWindss/Hearthstone.js/issues`.yellow);
         game.input();
     }
-    filterVanillaCards(cards, dangerous = false) {
+    filterVanillaCards(cards, uncollectible = true, dangerous = false) {
         /**
          * Filter out some useless vanilla cards
          *
@@ -812,7 +808,7 @@ ${aiHistory}
          * @returns {VanillaCard[]} The filtered cards
          */
 
-        cards = cards.filter(a => a.collectible); // You're welcome
+        if (uncollectible) cards = cards.filter(a => a.collectible); // You're welcome
         cards = cards.filter(a => !a.id.includes("Prologue"));
         cards = cards.filter(a => !a.id.includes("PVPDR")); // Idk what 'PVPDR' means, but ok
         cards = cards.filter(a => a.set && !["battlegrounds", "hero_skins", "placeholder", "vanilla"].includes(a.set.toLowerCase()));

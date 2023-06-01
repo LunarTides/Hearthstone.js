@@ -139,15 +139,11 @@ function main(card = null) {
         let cardName = rl.question("Name: ");
 
         let filtered_cards = data.filter(c => c.name.toLowerCase() == cardName.toLowerCase());
-        filtered_cards = game.functions.filterVanillaCards(filtered_cards);
+        filtered_cards = game.functions.filterVanillaCards(filtered_cards, false, true);
 
         if (filtered_cards.length <= 0) {
             console.log("Invalid card.\n");
             continue;
-        }
-
-        if (filtered_cards.length > 1) {
-            filtered_cards = game.functions.filterVanillaCards(filtered_cards, true);
         }
 
         let card;
