@@ -703,7 +703,7 @@ class Interact {
          * @param {Player} plr The player to ask
          * @param {string} prompt The prompt to ask
          *
-         * @returns {bool} true if Yes / false if No
+         * @returns {boolean} true if Yes / false if No
          */
 
         this.printAll(plr);
@@ -928,7 +928,7 @@ class Interact {
          * @param {Card | Blueprint} card The card
          * @param {number} i [default=-1] If this is set, this function will add `[i]` to the beginning of the card. This is useful if there are many different cards to choose from.
          *
-         * @returns {str} The readable card
+         * @returns {string} The readable card
          */
         let sb = "";
 
@@ -1249,7 +1249,7 @@ class Interact {
          * Shows information from the card, console.log's it and waits for the user to press enter.
          *
          * @param {Card | Blueprint} card The card
-         * @param {bool} help [default=true] If it should show a help message which displays what the different fields mean.
+         * @param {boolean} help [default=true] If it should show a help message which displays what the different fields mean.
          *
          * @returns {null}
          */

@@ -339,7 +339,7 @@ class Player {
          * 
          * @param {Card} hero The hero that the player should be set to
          * @param {number} armor [default=5] The amount of armor the player should gain
-         * @param {bool} setHeroClass [default=true] Set the players hero class.
+         * @param {boolean} setHeroClass [default=true] Set the players hero class.
          * 
          * @returns {undefined}
          */
@@ -356,7 +356,7 @@ class Player {
          *
          * @param {string} heroClass The class of the hero
          *
-         * @returns {bool} Success
+         * @returns {boolean} Success
          */
 
         let hero_card = heroClass + " Starting Hero";
@@ -395,7 +395,7 @@ class Player {
          * @param {number} amount The amount of corpses to trade
          * @param {function} callback The function to call when the trade is successful; Params: None
          *
-         * @returns {bool} Success
+         * @returns {boolean} Success
          */
 
         if (this.heroClass != "Death Knight") return false;
@@ -412,7 +412,7 @@ class Player {
          *
          * @param {string} runes The runes to test against
          *
-         * @return {bool} Wether or not the player has the correct runes
+         * @return {boolean} Wether or not the player has the correct runes
          */
 
         const charCount = (str, letter) => {

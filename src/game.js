@@ -18,7 +18,7 @@ class EventManager {
         /**
          * Do card passives
          *
-         * @param {str} key The key of the event
+         * @param {string} key The key of the event
          * @param {any} val The value of the event
          *
          * @returns {null}
@@ -93,8 +93,8 @@ class EventManager {
         /**
          * Update quests and secrets
          *
-         * @param {str} quests_name The type of quest to update: ["Secret", "Questline", "Quest", "Questline"]
-         * @param {str} key The key of the event
+         * @param {string} quests_name The type of quest to update: ["Secret", "Questline", "Quest", "Questline"]
+         * @param {string} key The key of the event
          * @param {any} val The value of the event
          * @param {Player} plr The owner of the quest
          *
@@ -125,10 +125,10 @@ class EventManager {
         /**
          * Broadcast an event
          *
-         * @param {str} key The key of the event
+         * @param {string} key The key of the event
          * @param {any} val The value of the event
          * @param {Player} plr The player who caused the event to happen
-         * @param {bool} updateHistory [default=true] Whether or not to update the history
+         * @param {boolean} updateHistory [default=true] Whether or not to update the history
          *
          * @returns {null}
          */
@@ -150,7 +150,7 @@ class EventManager {
          * Increment a stat
          *
          * @param {Player} player The player to update
-         * @param {str} key The key to increment
+         * @param {string} key The key to increment
          * @param {number} amount [default=1] The amount to increment by
          *
          * @returns {null}
@@ -209,10 +209,10 @@ class Game {
         /**
          * Ask the user a question and returns their answer
          *
-         * @param {str} q The question to ask
-         * @param {bool} care If this is false, it overrides game.no_input. Only use this when debugging.
+         * @param {string} q The question to ask
+         * @param {boolean} care If this is false, it overrides game.no_input. Only use this when debugging.
          *
-         * @returns {str} What the user answered
+         * @returns {string} What the user answered
          */
         if (this.no_input && care) return "";
 

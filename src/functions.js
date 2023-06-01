@@ -283,7 +283,7 @@ class DeckcodeFunctions {
          *
          * @param {Player} plr The player that will get the deckcode
          * @param {string} code The deckcode
-         * @param {bool} extraFiltering If it should do extra filtering when there are more than 1 possible card. This may choose the wrong card. 
+         * @param {boolean} extraFiltering If it should do extra filtering when there are more than 1 possible card. This may choose the wrong card. 
          *
          * @returns {string} The vanilla deckcode
          */
@@ -606,7 +606,7 @@ class Functions {
          *
          * @param {any[]} list
          * @param {number} amount
-         * @param {bool} cpyCard If this is on and the element is a card, create an imperfect copy of that card.
+         * @param {boolean} cpyCard If this is on and the element is a card, create an imperfect copy of that card.
          *
          * @returns {any[]} The items
          */
@@ -803,7 +803,7 @@ ${aiHistory}
          * Filter out some useless vanilla cards
          *
          * @param {VanillaCard[]} cards The list of vanilla cards to filter
-         * @param {bool} dangerous If there are cards with a 'howToEarn' field, filter away any cards that don't have that.
+         * @param {boolean} dangerous If there are cards with a 'howToEarn' field, filter away any cards that don't have that.
          *
          * @returns {VanillaCard[]} The filtered cards
          */
@@ -828,7 +828,7 @@ ${aiHistory}
          * @param {string} command The command/program to run
          * @param {string} args The arguments
          * 
-         * @returns {bool} Success
+         * @returns {boolean} Success
          */
 
         // Windows vs Linux. Pros and Cons:
@@ -884,7 +884,7 @@ ${aiHistory}
          * Gets the card that has the same name as "name"
          * 
          * @param {string} name The name
-         * @param {bool} refer [default=true] If this should call getCardById if it doesn't find the card from the name
+         * @param {boolean} refer [default=true] If this should call getCardById if it doesn't find the card from the name
          * 
          * @returns {Blueprint} The blueprint of the card
          */
@@ -904,7 +904,7 @@ ${aiHistory}
          * Gets the card that has the same id as "id"
          * 
          * @param {number} id The id
-         * @param {bool} refer [default=true] If this should call getCardByName if it doesn't find the card from the name
+         * @param {boolean} refer [default=true] If this should call getCardByName if it doesn't find the card from the name
          * 
          * @returns {Blueprint} The blueprint of the card
          */
@@ -919,7 +919,7 @@ ${aiHistory}
         /**
          * Returns all cards
          *
-         * @param {bool} uncollectible [default=true] Filter out all uncollectible cards
+         * @param {boolean} uncollectible [default=true] Filter out all uncollectible cards
          * @param {Blueprint[]} cards [default=All cards in the game] The cards to get
          *
          * @returns {Blueprint[]} Cards
@@ -940,7 +940,7 @@ ${aiHistory}
          * @param {Player} plr
          * @param {Card} card
          *
-         * @returns {bool}
+         * @returns {boolean}
          */
         return [plr.heroClass, "Neutral"].includes(card.class);
     }
@@ -948,10 +948,10 @@ ${aiHistory}
         /**
          * Returns if the "card_tribe" is "tribe" or 'All'
          *
-         * @param {str} card_tribe
-         * @param {str} tribe
+         * @param {string} card_tribe
+         * @param {string} tribe
          *
-         * @returns {bool}
+         * @returns {boolean}
          */
         if (/all/i.test(card_tribe)) return true; // If the card's tribe is "All".
 
@@ -962,7 +962,7 @@ ${aiHistory}
          *
          * @param {Player} plr The player to check
          *
-         * @returns {bool} Highlander
+         * @returns {boolean} Highlander
          */
 
         let deck = plr.deck.map(c => c.name);
@@ -998,7 +998,7 @@ ${aiHistory}
          *
          * @param {string} str The string to color
          * @param {string} rarity The rarity
-         * @param {bool} bold [default=true] Automatically apply bold
+         * @param {boolean} bold [default=true] Automatically apply bold
          *
          * @returns {string} The colored string
          */
@@ -1177,8 +1177,8 @@ ${aiHistory}
         /**
          * Add an event listener.
          *
-         * @param {str} key The event to listen for. If this is an empty string, it will listen for any event.
-         * @param {function | bool} checkCallback This will trigger when the event gets broadcast, but before the actual code in `callback`. If this returns false, the event listener will ignore the event. If you set this to `true`, it is the same as doing `() => {return true}`. This function gets the paramater: {any} val The value of the event
+         * @param {string} key The event to listen for. If this is an empty string, it will listen for any event.
+         * @param {function | boolean} checkCallback This will trigger when the event gets broadcast, but before the actual code in `callback`. If this returns false, the event listener will ignore the event. If you set this to `true`, it is the same as doing `() => {return true}`. This function gets the paramater: {any} val The value of the event
          * @param {function} callback The code that will be ran if the event listener gets triggered and gets through `checkCallback`. If this returns true, the event listener will be destroyed.
          * @param {number} lifespan How many times the event listener will trigger and call "callback" before self-destructing. Set this to -1 to make it last forever, or until it is manually destroyed using "callback".
          *
@@ -1346,7 +1346,7 @@ ${aiHistory}
         /**
          * Imports the config from the "path" specified.
          *
-         * @param {str} path The path to import from.
+         * @param {string} path The path to import from.
          *
          * @returns {null}
          */
