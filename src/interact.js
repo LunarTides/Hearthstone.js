@@ -504,24 +504,6 @@ class Interact {
     // Deck stuff
 
     /**
-     * Checks if a card is a valid card to put into a players deck
-     * 
-     * @param {Card} card The card to check
-     * @param {Player} plr The player to check against
-     * 
-     * @returns {boolean | "class" | "uncollectible" | "runes"} Success | Errorcode
-     */
-    validateCard(card, plr) {
-        if (!card.class.split(" / ").includes(plr.heroClass) && card.class != "Neutral") return "class";
-        if (card.uncollectible) return "uncollectible";
-
-        // Runes
-        if (card.runes && !plr.testRunes(card.runes)) return "runes";
-
-        return true;
-    }
-
-    /**
      * Asks the player to supply a deck code, if no code was given, fill the players deck with 30 Sheep
      * 
      * @param {Player} plr The player to ask
