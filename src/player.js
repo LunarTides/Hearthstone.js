@@ -20,6 +20,11 @@ class Player {
         this.game = null;
         this.fatigue = 0;
 
+        /**
+         * @type {"Player"}
+         */
+        this.classType = "Player";
+
         this.deck = [];
         this.hand = [];
 

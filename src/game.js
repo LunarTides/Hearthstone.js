@@ -728,7 +728,7 @@ class Game {
         if (typeof(attacker) === "number") {
             let dmg = attacker;
 
-            if (target instanceof Player) {
+            if (target.classType == "Player") {
                 target.remHealth(dmg);
                 return true;
             }

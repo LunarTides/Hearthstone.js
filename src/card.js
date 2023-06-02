@@ -67,6 +67,11 @@ class Card {
         this.name = name;
         this.displayName = name;
 
+        /**
+         * @type {"Card"}
+         */
+        this.classType = "Card";
+
         this.costType = "mana";
 
         /**
@@ -78,6 +83,14 @@ class Card {
          * @type {Class}
          */
         this.class = "Mage";
+
+        this.dormant = false;
+        this.corrupted = false;
+        this.colossal = false;
+        this.uncollectible = false;
+        this.frozen = false;
+        this.immune = false;
+        this.echo = false;
 
         this.keywords = [];
         this.storage = []; // Allow cards to store data for later use
@@ -525,7 +538,7 @@ class Card {
      * @param {string} name The method to activate
      * @param {any} [args] Pass these args to the method
      * 
-     * @returns {any[]} All the return values of the method keywords
+     * @returns {any[] | -1} All the return values of the method keywords
      */
     activate(name, ...args) {
         // This activates a function
@@ -576,7 +589,7 @@ class Card {
      * 
      * @param {any} [args] Any arguments to pass to battlecry.
      * 
-     * @returns {any[]} The return values of all the battlecries triggered
+     * @returns {any[] | -1} The return values of all the battlecries triggered
      */
     activateBattlecry(...args) {
         this.activate("passive", "battlecry", this, game.turns);
