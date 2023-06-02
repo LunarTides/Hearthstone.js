@@ -184,9 +184,12 @@ class Game {
      */
     constructor(player1, player2) {
         // Choose a random player to be player 1
-        const functions = new Functions(this);
+        /**
+         * @type {Functions}
+         */
+        this.functions = new Functions(this);
 
-        if (functions.randInt(0, 1)) {
+        if (this.functions.randInt(0, 1)) {
             this.player1 = player1;
             this.player2 = player2;
         } else {
@@ -213,11 +216,6 @@ class Game {
         this.Card = Card;
         this.Player = Player;
         this.AI = AI;
-
-        /**
-         * @type {Functions}
-         */
-        this.functions = functions;
 
         /**
          * @type {EventManager}
