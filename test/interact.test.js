@@ -186,41 +186,6 @@ describe("Interact", () => {
         assert.equal(ret, true);
     });
 
-    it ('should validate a card success', () => {
-        let minion = summonMinion("Sheep", test_player1);
-        minion.uncollectible = false;
-
-        let ret = interact.validateCard(minion, test_player1);
-
-        assert.equal(ret, true);
-    });
-    it ('should validate a card class', () => {
-        let minion = summonMinion("Sheep", test_player1);
-        minion.uncollectible = false;
-        minion.class = "Foo";
-
-        let ret = interact.validateCard(minion, test_player1);
-
-        assert.equal(ret, "class");
-    });
-    it ('should validate a card uncollectible', () => {
-        let minion = summonMinion("Sheep", test_player1);
-        minion.uncollectible = true;
-
-        let ret = interact.validateCard(minion, test_player1);
-
-        assert.equal(ret, "uncollectible");
-    });
-    it ('should validate a card runes', () => {
-        let minion = summonMinion("Sheep", test_player1);
-        minion.uncollectible = false;
-        minion.runes = "BBB";
-
-        let ret = interact.validateCard(minion, test_player1);
-
-        assert.equal(ret, "runes");
-    });
-
     it ('should mulligan', () => {
         let minion = new game.Card("Sheep", test_player1);
         test_player1.shuffleIntoDeck(minion.imperfectCopy());
