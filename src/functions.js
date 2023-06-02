@@ -140,7 +140,7 @@ class DeckcodeFunctions {
                     if (card.settings.minDeckSize) minDeckLength = card.settings.minDeckSize;
                 }
 
-                let validateTest = (game.interact.validateCard(card, plr));
+                let validateTest = (self.validateCard(card, plr));
 
                 if (!game.config.validateDecks || validateTest === true) return;
 
@@ -1088,6 +1088,24 @@ ${aiHistory}
         if (/all/i.test(card_tribe)) return true; // If the card's tribe is "All".
 
         return card_tribe.includes(tribe);
+    }
+
+    /**
+     * Checks if a card is a valid card to put into a players deck
+     * 
+     * @param {Card} card The card to check
+     * @param {Player} plr The player to check against
+     * 
+     * @returns {boolean | "class" | "uncollectible" | "runes"} Success | Errorcode
+     */
+    validateCard(card, plr) {
+        if (!card.class.split(" / ").includes(plr.heroClass) && card.class != "Neutral") return "class";
+        if (card.uncollectible) return "uncollectible";
+
+        // Runes
+        if (card.runes && !plr.testRunes(card.runes)) return "runes";
+
+        return true;
     }
 
     /**
