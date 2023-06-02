@@ -233,6 +233,41 @@ describe("Functions", () => {
         assert.ok(game.functions.matchTribe(card.tribe, "Beast"));
     });
 
+    it ('should validate a card success', () => {
+        let minion = game.summonMinion(new game.Card("Sheep"), test_player1);
+        minion.uncollectible = false;
+
+        let ret = game.functions.validateCard(minion, test_player1);
+
+        assert.equal(ret, true);
+    });
+    it ('should validate a card class', () => {
+        let minion = game.summonMinion(new game.Card("Sheep"), test_player1);
+        minion.uncollectible = false;
+        minion.class = "Foo";
+
+        let ret = game.functions.validateCard(minion, test_player1);
+
+        assert.equal(ret, "class");
+    });
+    it ('should validate a card uncollectible', () => {
+        let minion = game.summonMinion(new game.Card("Sheep"), test_player1);
+        minion.uncollectible = true;
+
+        let ret = game.functions.validateCard(minion, test_player1);
+
+        assert.equal(ret, "uncollectible");
+    });
+    it ('should validate a card runes', () => {
+        let minion = game.summonMinion(new game.Card("Sheep"), test_player1);
+        minion.uncollectible = false;
+        minion.runes = "BBB";
+
+        let ret = game.functions.validateCard(minion, test_player1);
+
+        assert.equal(ret, "runes");
+    });
+
     it ('should check if the highlander function works', () => {
         // Deck does not have duplicates
         const player = new Player("Temp Player");

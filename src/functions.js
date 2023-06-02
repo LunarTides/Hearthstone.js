@@ -43,11 +43,15 @@ class DeckcodeFunctions {
         //code = Buffer.from(code, 'base64').toString('ascii');
         //if (!code) ERROR("INVALIDB64");
         //
+        let vanilla = false;
+
         try {
             deckstrings.decode(code); // If this doesn't crash, this is a vanilla deckcode
 
-            code = this.fromVanilla(plr, code);
+            vanilla = true;
         } catch (err) {}; // This isn't a vanilla code, no worries, just parse it as a hearthstone.js deckcode.
+
+        if (vanilla) code = this.fromVanilla(plr, code);
 
         let runeRegex = /\[[BFU]{3}\]/; // BFU
         let altRuneRegex = /\[3[BFU]\]/; // BBB -> 3B
@@ -137,7 +141,7 @@ class DeckcodeFunctions {
                     if (card.settings.minDeckSize) minDeckLength = card.settings.minDeckSize;
                 }
 
-                let validateTest = (game.interact.validateCard(card, plr));
+                let validateTest = (self.validateCard(card, plr));
 
                 if (!game.config.validateDecks || validateTest === true) return;
 
@@ -427,6 +431,9 @@ class DeckcodeFunctions {
     fromVanilla(plr, code) {
         let deck = deckstrings.decode(code); // Use the 'deckstrings' api's decode
 
+        /**
+         * @type {VanillaCard[]}
+         */
         let cards;
 
         try {
@@ -437,7 +444,7 @@ class DeckcodeFunctions {
 
             process.exit(1);
         }
-        cards = JSON.parse(cards);
+        cards = JSON.parse(cards.toString());
 
         delete deck.format; // We don't care about the format
 
@@ -856,13 +863,43 @@ ${aiHistory}
      * cards = filterVanillaCards(cards, true, true);
      * assert(cards.length, 1);
      */
-    filterVanillaCards(cards, uncollectible = true, dangerous = false) {
+    filterVanillaCards(cards, uncollectible = true, dangerous = false, keepHeroSkins = false) {
         if (uncollectible) cards = cards.filter(a => a.collectible); // You're welcome
-        cards = cards.filter(a => !a.id.includes("Prologue"));
-        cards = cards.filter(a => !a.id.includes("PVPDR")); // Idk what 'PVPDR' means, but ok
-        cards = cards.filter(a => a.set && !["battlegrounds", "hero_skins", "placeholder", "vanilla"].includes(a.set.toLowerCase()));
-        cards = cards.filter(a => !a.set.includes("PLACEHOLDER"));
+        cards = cards.filter(a => !a.id.startsWith("Prologue"));
+        cards = cards.filter(a => !a.id.startsWith("PVPDR")); // Idk what 'PVPDR' means, but ok
+        cards = cards.filter(a => !a.id.startsWith("DRGA_BOSS"));
+        cards = cards.filter(a => !a.id.startsWith("BG")); // Battlegrounds
+        cards = cards.filter(a => !a.id.startsWith("TB")); // Tavern Brawl
+        cards = cards.filter(a => !a.id.startsWith("LOOTA_"));
+        cards = cards.filter(a => !a.id.startsWith("DALA_"));
+        cards = cards.filter(a => !a.id.startsWith("GILA_"));
+        cards = cards.filter(a => !a.id.startsWith("BOTA_"));
+        cards = cards.filter(a => !a.id.startsWith("TRLA_"));
+        cards = cards.filter(a => !a.id.startsWith("DALA_"));
+        cards = cards.filter(a => !a.id.startsWith("ULDA_"));
+        cards = cards.filter(a => !a.id.startsWith("BTA_BOSS_"));
+        cards = cards.filter(a => !a.id.startsWith("Story_"));
+        cards = cards.filter(a => !a.id.startsWith("BOM_")); // Book of mercenaries
+        cards = cards.filter(a => !a.mechanics || !a.mechanics.includes("DUNGEON_PASSIVE_BUFF"));
+        cards = cards.filter(a => !a.battlegroundsNormalDbfId);
+        cards = cards.filter(a => a.set && !["battlegrounds", "placeholder", "vanilla", "credits"].includes(a.set.toLowerCase()));
+        cards = cards.filter(a => a.set && !a.set.includes("PLACEHOLDER_"));
+        cards = cards.filter(a => !a.mercenariesRole);
 
+        let __cards = [];
+
+        cards.forEach(a => {
+            // If the set is `HERO_SKINS`, only include it if it's id is `HERO_xx`, where the x's are a number.
+            if (a.set && a.set.includes("HERO_SKINS")) {
+                if (keepHeroSkins && /HERO_\d\d/.test(a.id)) __cards.push(a);
+
+                return;
+            }
+            __cards.push(a);
+        });
+
+        cards = __cards;
+        
         if (dangerous) {
             const _cards = cards.filter(a => a.howToEarn);
             if (_cards.length > 0) cards = _cards;
@@ -1052,6 +1089,24 @@ ${aiHistory}
         if (/all/i.test(card_tribe)) return true; // If the card's tribe is "All".
 
         return card_tribe.includes(tribe);
+    }
+
+    /**
+     * Checks if a card is a valid card to put into a players deck
+     * 
+     * @param {Card} card The card to check
+     * @param {Player} plr The player to check against
+     * 
+     * @returns {boolean | "class" | "uncollectible" | "runes"} Success | Errorcode
+     */
+    validateCard(card, plr) {
+        if (!card.class.split(" / ").includes(plr.heroClass) && card.class != "Neutral") return "class";
+        if (card.uncollectible) return "uncollectible";
+
+        // Runes
+        if (card.runes && !plr.testRunes(card.runes)) return "runes";
+
+        return true;
     }
 
     /**
