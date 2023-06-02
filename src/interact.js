@@ -1,5 +1,12 @@
+const { Card } = require('./card');
+const { Game } = require('./game');
+const { Player } = require('./player');
+
 const license_url = 'https://github.com/SolarWindss/Hearthstone.js/blob/main/LICENSE';
 
+/**
+ * @type {Game}
+ */
 let game;
 
 class Interact {
@@ -8,13 +15,12 @@ class Interact {
     }
 
     // Constant interaction
+    /**
+     * Asks the user to attack a minion or hero
+     *
+     * @returns {-1 | null | bool | Card} Cancel | Success
+     */
     doTurnAttack() {
-        /**
-         * Asks the user to attack a minion or hero
-         *
-         * @returns {undefined}
-         */
-
         let attacker, target;
 
         if (game.player.ai) {
@@ -84,13 +90,16 @@ class Interact {
         console.log(`${err}.`.red);
         game.input();
     }
-    handleCmds(q, ...args) {
-        /**
-         * Checks if "q" is a command, if it is, do something, if not return -1
-         * 
-         * @returns {undefined} | -1
-         */
 
+    /**
+     * Checks if "q" is a command, if it is, do something, if not return -1
+     * 
+     * @param {string} q The command
+     * @param {any} [args]
+     * 
+     * @returns {undefined | -1}
+     */
+    handleCmds(q, ...args) {
         if (q === "end") game.endTurn();
         else if (q === "hero power") {
             if (game.player.ai) {
@@ -406,15 +415,15 @@ class Interact {
 
         else return -1;
     }
-    doTurnLogic(input) {
-        /**
-         * Takes the input and checks if it is a command, if it is not, play the card with the id of input parsed into a number
-         * 
-         * @param {string} input The user input
-         * 
-         * @returns {boolean | string | Card} true | "invalid" | The return value of game.playCard
-         */
 
+    /**
+     * Takes the input and checks if it is a command, if it is not, play the card with the id of input parsed into a number
+     * 
+     * @param {string} input The user input
+     * 
+     * @returns {boolean | Card | "mana" | "traded" | "space" | "magnetize" | "colossal" | "invalid" | "refund"} true | The return value of `game.playCard`
+     */
+    doTurnLogic(input) {
         if (this.handleCmds(input) !== -1) return true;
         let card = game.player.hand[parseInt(input) - 1];
         if (!card) return "invalid";
@@ -422,16 +431,16 @@ class Interact {
         if (input == game.player.hand.length || input == 1) card.activate("outcast");
         return game.playCard(card, game.player);    
     }
-    doTurn() {
-        /**
-         * Show information and asks the user for an input which is put into doTurnLogic
-         * 
-         * @returns {boolean | string | Card} Success | The return value of doTurnLogic
-         */
 
+    /**
+     * Show information and asks the user for an input which is put into `doTurnLogic`
+     * 
+     * @returns {boolean | string | Card | "mana" | "traded" | "space" | "magnetize" | "colossal" | "invalid" | "refund"} Success | The return value of doTurnLogic
+     */
+    doTurn() {
         if (game.player.ai) {
             let input = game.player.ai.calcMove();
-            if (!input) return;
+            if (!input) return false;
             if (input instanceof game.Card) input = (game.player.hand.indexOf(input) + 1).toString();
 
             let turn = this.doTurnLogic(input);
@@ -471,13 +480,13 @@ class Interact {
 
         return false;
     }
-    useLocation() {
-        /**
-         * Asks the user to select a location card to use, and activate it.
-         * 
-         * @return (boolean) Success
-         */
 
+    /**
+     * Asks the user to select a location card to use, and activate it.
+     * 
+     * @return {boolean | -1} Success
+     */
+    useLocation() {
         let locations = game.board[game.player.id].filter(m => m.type == "Location");
         if (locations.length <= 0) return "nolocations";
 
@@ -493,16 +502,16 @@ class Interact {
     }
 
     // Deck stuff
-    validateCard(card, plr) {
-        /**
-         * Checks if a card is a valid card to put into a players deck
-         * 
-         * @param {Card} card The card to check
-         * @param {Player} plr The player to check against
-         * 
-         * @returns {boolean | string} Valid | ["class", "uncollectible", "runes"]
-         */
 
+    /**
+     * Checks if a card is a valid card to put into a players deck
+     * 
+     * @param {Card} card The card to check
+     * @param {Player} plr The player to check against
+     * 
+     * @returns {boolean | "class" | "uncollectible" | "runes"} Success | Errorcode
+     */
+    validateCard(card, plr) {
         if (!card.class.split(" / ").includes(plr.heroClass) && card.class != "Neutral") return "class";
         if (card.uncollectible) return "uncollectible";
 
@@ -511,15 +520,15 @@ class Interact {
 
         return true;
     }
-    deckCode(plr) {
-        /**
-         * Asks the player to supply a deck code, if no code was given, fill the players deck with 30 Sheep
-         * 
-         * @param {Player} plr The player to ask
-         * 
-         * @returns {undefined}
-         */
 
+    /**
+     * Asks the player to supply a deck code, if no code was given, fill the players deck with 30 Sheep
+     * 
+     * @param {Player} plr The player to ask
+     * 
+     * @returns {boolean} Success
+     */
+    deckCode(plr) {
         this.printName();
     
         const deckcode = game.input(`Player ${plr.id + 1}, please type in your deckcode ` + `(Leave this empty for a test deck)`.gray + `: `);
@@ -539,16 +548,18 @@ class Interact {
         }
 
         if (error == "invalid") process.exit(1);
-    }
-    mulligan(plr) {
-        /**
-         * Asks the player to mulligan their cards
-         * 
-         * @param {Player} plr The player to ask
-         * 
-         * @returns {string} A string of the indexes of the cards the player mulligan'd
-         */
 
+        return true;
+    }
+
+    /**
+     * Asks the player to mulligan their cards
+     * 
+     * @param {Player} plr The player to ask
+     * 
+     * @returns {string} A string of the indexes of the cards the player mulligan'd
+     */
+    mulligan(plr) {
         this.printAll(plr);
 
         let sb = "\nChoose the cards to mulligan (1, 2, 3, ...):\n";
@@ -568,15 +579,15 @@ class Interact {
 
         return input;
     }
-    dredge(prompt = "Choose a card to Dredge:") {
-        /**
-         * Asks the user a "prompt" and show 3 cards from their deck for the player to choose, the chosen card will be added to the top of their deck
-         * 
-         * @param {string} prompt [default="Choose One:"] The prompt to ask the user
-         * 
-         * @returns {Card} The card chosen
-         */
 
+    /**
+     * Asks the current player a `prompt` and shows 3 cards from their deck for the player to choose, the chosen card will be added to the top of their deck
+     * 
+     * @param {string} [prompt="Choose a card to Dredge:"] The prompt to ask the user
+     * 
+     * @returns {Card} The card chosen
+     */
+    dredge(prompt = "Choose a card to Dredge:") {
         // Look at the bottom three cards of the deck and put one on the top.
         let cards = game.player.deck.slice(0, 3);
 
@@ -616,17 +627,17 @@ class Interact {
     }
 
     // One-time things
-    chooseOne(prompt, options, times = 1) {
-        /**
-         * Asks the user a "prompt" give the user "options" and do it all "times" times
-         * 
-         * @param {string} prompt The prompt to ask the user
-         * @param {string[]} options The options to give the user
-         * @param {number} times [default=1] The amount of time to ask
-         * 
-         * @returns {string | string[]} The user's answer(s)
-         */
 
+    /**
+     * Asks the current player a `prompt` give the user `options` and do it all `times` times
+     * 
+     * @param {string} prompt The prompt to ask the user
+     * @param {string[]} options The options to give the user
+     * @param {number} [times=1] The amount of times to ask
+     * 
+     * @returns {string | string[]} The user's answer(s)
+     */
+    chooseOne(prompt, options, times = 1) {
         this.printAll();
 
         let choices = [];
@@ -661,17 +672,17 @@ class Interact {
             return choices;
         }
     }
-    question(plr, prompt, answers) {
-        /**
-         * Asks the user a "prompt", show them a list of answers and make them choose one
-         *
-         * @param {Player} plr The player to ask
-         * @param {string} prompt The prompt to show
-         * @param {string[]} answers The answers to choose from
-         *
-         * @returns {string} Chosen
-         */
 
+    /**
+     * Asks the `plr` a `prompt`, show them a list of `answers` and make them choose one
+     *
+     * @param {Player} plr The player to ask
+     * @param {string} prompt The prompt to show
+     * @param {string[]} answers The answers to choose from
+     *
+     * @returns {string} Chosen
+     */
+    question(plr, prompt, answers) {
         this.printAll(plr);
 
         let strbuilder = `\n${prompt} [`;
@@ -696,16 +707,16 @@ class Interact {
 
         return answer;
     }
-    yesNoQuestion(plr, prompt) {
-        /**
-         * Asks the user a yes/no question
-         *
-         * @param {Player} plr The player to ask
-         * @param {string} prompt The prompt to ask
-         *
-         * @returns {bool} true if Yes / false if No
-         */
 
+    /**
+     * Asks the user a yes/no question
+     *
+     * @param {Player} plr The player to ask
+     * @param {string} prompt The prompt to ask
+     *
+     * @returns {boolean} `true` if Yes / `false` if No
+     */
+    yesNoQuestion(plr, prompt) {
         this.printAll(plr);
 
         let ask = `\n${prompt} [` + 'Y'.green + ' | ' +  'N'.red + `] `;
@@ -723,18 +734,18 @@ class Interact {
 
         return this.yesNoQuestion(plr, prompt);
     }
-    discover(prompt, cards = [], amount = 3, _cards = []) {
-        /**
-         * Asks the user a "prompt", show them "amount" cards. The cards are chosen from "cards".
-         * 
-         * @param {string} prompt The prompt to ask
-         * @param {Card[] | Blueprint[]} cards [default=all cards] The cards to choose from
-         * @param {number} amount [default=3] The amount of cards to show
-         * @param {Blueprint[]} _cards [default=[]] Do not use this variable, keep it at default
-         * 
-         * @returns {Card} The card chosen.
-         */
 
+    /**
+     * Asks the user a "prompt", show them "amount" cards. The cards are chosen from "cards".
+     * 
+     * @param {string} prompt The prompt to ask
+     * @param {Card[] | import('./card').Blueprint[]} [cards=[]] The cards to choose from
+     * @param {number} [amount=3] The amount of cards to show
+     * @param {import('./card').Blueprint[]} [_cards=[]] Do not use this variable, keep it at default
+     * 
+     * @returns {Card | undefined} The card chosen.
+     */
+    discover(prompt, cards = [], amount = 3, _cards = []) {
         this.printAll();
         let values = _cards;
 
@@ -766,20 +777,19 @@ class Interact {
 
         return card;
     }
+
+    /**
+     * Asks the user a `prompt`, the user can then select a minion or hero
+     * 
+     * @param {string} prompt The prompt to ask
+     * @param {boolean | string} [elusive=false] Wether or not to prevent selecting elusive minions, if this is a string, allow selecting elusive minions but don't trigger secrets / quests
+     * @param {"enemy" | "self"} [force_side=null] Force the user to only be able to select minions / the hero of a specific side: ["enemy", "self"]
+     * @param {"hero" | "minion"} [force_class=null] Force the user to only be able to select a minion or a hero: ["hero", "minion"]
+     * @param {string[]} [flags=[]] Change small behaviours ["allow_locations" => Allow selecting location, ]
+     * 
+     * @returns {Card | Player} The card or hero chosen
+     */
     selectTarget(prompt, elusive = false, force_side = null, force_class = null, flags = []) {
-        /**
-         * Asks the user a "prompt", the user can then select a minion or hero
-         * 
-         * @param {string} prompt The prompt to ask
-         * @param {boolean | string} elusive [default=false] Wether or not to prevent selecting elusive minions, if this is a string, allow selecting elusive minions but don't trigger secrets / quests
-         * @param {string | null} force_side [default=null] Force the user to only be able to select minions / the hero of a specific side: ["enemy", "self"]
-         * @param {string | null} force_class [default=null] Force the user to only be able to select a minion or a hero: ["hero", "minion"]
-         * @param {string[]} flags [default=[]] Change small behaviours ["allow_locations" => Allow selecting location, ]
-         * 
-         * @returns {Card | Player} The card or hero chosen
-         */
-
-
         // force_class = [null, "hero", "minion"]
         // force_side = [null, "enemy", "self"]
 
@@ -880,15 +890,15 @@ class Interact {
     }
 
     // Print game information
-    printName(name = true) {
-        /**
-         * Prints the "watermark" border
-         * 
-         * @param {boolean} name [default=true] If the watermark border should appear, if this is false, just clear the screen
-         * 
-         * @returns {undefined}
-         */
 
+    /**
+     * Prints the "watermark" border
+     * 
+     * @param {boolean} [name=true] If the watermark border should appear, if this is false, just clear the screen
+     * 
+     * @returns {undefined}
+     */
+    printName(name = true) {
         cls();
     
         if (!name) return;
@@ -900,15 +910,15 @@ class Interact {
         console.log(`| ${watermarkString} |`);
         console.log(`|${border}|\n`);
     }
-    printLicense(disappear = true) {
-        /**
-         * Prints some license info
-         * 
-         * @param {boolean} disappear [default=true] If this is true, "This will disappear once you end your turn" will show up.
-         * 
-         * @returs undefined
-         */
 
+    /**
+     * Prints some license info
+     * 
+     * @param {boolean} [disappear=true] If this is true, "This will disappear once you end your turn" will show up.
+     * 
+     * @returns {undefined}
+     */
+    printLicense(disappear = true) {
         if (game.config.debug) return;
     
         cls();
@@ -921,15 +931,16 @@ class Interact {
         console.log(`|||         This will disappear once you end your turn.       ` + ' '.repeat(game.config.branch.length) + `|||`)
         console.log('|'.repeat(version.length + 8));
     }
+
+    /**
+     * Returns a card in a user readble state. If you console.log the result of this, the user will get all the information they need from the card.
+     *
+     * @param {Card | import('./card').Blueprint} card The card
+     * @param {number} [i=-1] If this is set, this function will add `[i]` to the beginning of the card. This is useful if there are many different cards to choose from.
+     *
+     * @returns {string} The readable card
+     */
     getReadableCard(card, i = -1) {
-        /**
-         * Returns a card in a user readble state. If you console.log the result of this, the user will get all the information they need from the card.
-         *
-         * @param {Card | Blueprint} card The card
-         * @param {number} i [default=-1] If this is set, this function will add `[i]` to the beginning of the card. This is useful if there are many different cards to choose from.
-         *
-         * @returns {str} The readable card
-         */
         let sb = "";
 
         let desc;
@@ -976,16 +987,16 @@ class Interact {
 
         return sb;
     }
-    printAll(plr = null, detailed = false) {
-        /**
-         * Prints all the information you need to understand the game state
-         * 
-         * @param {Player} plr The current player
-         * @param {boolean} detailed [default=false] Show more, less important, information
-         * 
-         * @returns {undefined}
-         */
 
+    /**
+     * Prints all the information you need to understand the game state
+     * 
+     * @param {Player} [plr=null] The player
+     * @param {boolean} [detailed=false] Show more, less important, information
+     * 
+     * @returns {undefined}
+     */
+    printAll(plr = null, detailed = false) {
         if (!plr) plr = game.player; 
 
         if (game.turns <= 2 && !game.config.debug) this.printLicense();
@@ -1244,15 +1255,16 @@ class Interact {
     
         console.log("------------");
     }
+
+    /**
+     * Shows information from the card, console.log's it and waits for the user to press enter.
+     *
+     * @param {Card | import('./card').Blueprint} card The card
+     * @param {boolean} [help=true] If it should show a help message which displays what the different fields mean.
+     *
+     * @returns {undefined}
+     */
     viewCard(card, help = true) {
-        /**
-         * Shows information from the card, console.log's it and waits for the user to press enter.
-         *
-         * @param {Card | Blueprint} card The card
-         * @param {bool} help [default=true] If it should show a help message which displays what the different fields mean.
-         *
-         * @returns {null}
-         */
         let _card = this.getReadableCard(card);
 
         let _class = card.class.gray;
@@ -1278,6 +1290,12 @@ class Interact {
 
         game.input("\nPress enter to continue...\n");
     }
+
+    /**
+     * Clears the screen.
+     * 
+     * @returns {undefined}
+     */
     cls() { // Do this so it doesn't crash because of "strict mode"
         cls();
     }

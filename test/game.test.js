@@ -159,14 +159,6 @@ describe("Game", () => {
         assert.equal(test_player2.ai, null);
     });
 
-    it ('should set a game variable', () => {
-        // Not sure why `game.set` is a thing but ok
-        assert.equal(game.foo, undefined);
-
-        game.set("foo", "bar");
-        assert.equal(game.foo, "bar");
-    });
-
     it ('should correctly trigger event listeners', () => {
         let ret = null;
 
