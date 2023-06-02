@@ -1,3 +1,6 @@
+delete require.cache[require.resolve("./card")];
+delete require.cache[require.resolve("./player")];
+
 const fs = require("fs");
 const child_process = require("child_process");
 const deckstrings = require("deckstrings"); // To decode vanilla deckcodes
@@ -124,7 +127,7 @@ class DeckcodeFunctions {
                     retInvalid = ERROR("NONEXISTANTCARD", c);
                     return;
                 }
-                card = new game.Card(card.name, plr);
+                card = new Card(card.name, plr);
 
                 for (let i = 0; i < parseInt(copies); i++) _deck.push(card.perfectCopy());
 
