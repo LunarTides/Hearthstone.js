@@ -1,5 +1,52 @@
+const { Game } = require("./game");
+const { Player } = require("./player");
 const { get } = require("./shared");
 
+/**
+ * @callback KeywordMethod
+ * @param {Player} plr
+ * @param {Game} game
+ * @param {Card} self
+ * 
+ * @param {import("./game").EventKeys} [key]
+ * @param {any} [val]
+ * 
+ * @returns {undefined | -1}
+ */
+
+/**
+ * @typedef {"Minion" | "Spell" | "Weapon" | "Hero" | "Location"} Type
+ */
+
+/**
+ * @typedef {"Death Knight" | "Demon Hunter" | "Druid" | "Hunter" | "Mage" | "Paladin" | "Priest" | "Rogue" | "Shaman" | "Warlock" | "Warrior"} Class
+ */
+
+/**
+ * @typedef {"Free" | "Common" | "Rare" | "Epic" | "Legendary"} Rarity
+ */
+
+/**
+ * @typedef {Object} Blueprint
+ * @property {string} name
+ * @property {string} desc
+ * @property {number} mana
+ * @property {Type} type
+ * @property {Class} class
+ * @property {Rarity} rarity
+ * 
+ * @property {boolean} [uncollectible=false]
+ * @property {number} [id]
+ * 
+ * @property {[number]} [stats]
+ * @property {string} [tribe]
+ * 
+ * @property {string} [spellClass]
+ */
+
+/**
+ * @type {Game}
+ */
 let game = get();
 
 class Card {
@@ -12,12 +59,25 @@ class Card {
     constructor(name, plr) {
         game = get();
 
+        /**
+         * @type {Blueprint}
+         */
         this.blueprint = game.cards.find(c => c.name == name);
         
         this.name = name;
         this.displayName = name;
 
         this.costType = "mana";
+
+        /**
+         * @type {Type}
+         */
+        this.type = "Undefined";
+
+        /**
+         * @type {Class}
+         */
+        this.class = "Mage";
 
         this.keywords = [];
         this.storage = []; // Allow cards to store data for later use
@@ -73,6 +133,9 @@ class Card {
         Object.entries(this).forEach(i => backups["init"][i[0]] = i[1]);
         this.backups = backups;
 
+        /**
+         * @type {Player}
+         */
         this.plr = plr;
 
         this.randomizeIds();
@@ -98,7 +161,7 @@ class Card {
     /**
      * Adds a deathrattle to the card
      * 
-     * @param {Function} _deathrattle The deathrattle to add
+     * @param {KeywordMethod} _deathrattle The deathrattle to add
      * 
      * @returns {boolean} Success
      */
@@ -194,9 +257,9 @@ class Card {
     /**
      * Sets the card's attack and health.
      * 
-     * @param {number | null} attack The attack to set
-     * @param {number | null} health The health to set
-     * @param {boolean} changeMaxHealth If the card's max health should be reset to it's current health if the health increases from running this function.
+     * @param {number} [attack=null] The attack to set
+     * @param {number} [health=null] The health to set
+     * @param {boolean} [changeMaxHealth=true] If the card's max health should be reset to it's current health if the health increases from running this function.
      * 
      * @returns {boolean} Success
      */
@@ -214,9 +277,9 @@ class Card {
     /**
      * Adds `attack` and `health` to the card.
      * 
-     * @param {number} attack The attack to add
-     * @param {number} health The health to add
-     * @param {boolean} restore Should cap the amount of health added to it's max health.
+     * @param {number} [attack=0] The attack to add
+     * @param {number} [health=0] The health to add
+     * @param {boolean} [restore=false] Should cap the amount of health added to it's max health.
      * 
      * @returns {boolean} Success
      */
@@ -230,8 +293,8 @@ class Card {
     /**
      * Removes `attack` and `health` from the card.
      * 
-     * @param {number} attack The attack to remove
-     * @param {number} health The health to remove
+     * @param {number} [attack=0] The attack to remove
+     * @param {number} [health=0] The health to remove
      * 
      * @returns {boolean} Success
      */
@@ -246,7 +309,7 @@ class Card {
      * Adds `amount` to the card's health
      * 
      * @param {number} amount The health to add
-     * @param {boolean} restore Should reset health to it's max health if it goes over it's max health
+     * @param {boolean} [restore=true] Should reset health to it's max health if it goes over it's max health
      * 
      * @returns {boolean} Success
      */
@@ -329,7 +392,7 @@ class Card {
     /**
      * Sets the max health of the card to it's current health. If check is true it only sets the max health if the current health is above it.
      * 
-     * @param {boolean} check Prevent lowering it's max health
+     * @param {boolean} [check=false] Prevent lowering it's max health
      * 
      * @returns {boolean} If it reset the card's max health.
      */
@@ -460,7 +523,7 @@ class Card {
      * Activates a keyword method
      * 
      * @param {string} name The method to activate
-     * @param {any} args Pass these args to the method
+     * @param {any} [args] Pass these args to the method
      * 
      * @returns {any[]} All the return values of the method keywords
      */
@@ -511,7 +574,7 @@ class Card {
     /**
      * Activates a card's battlecry
      * 
-     * @param {any} args Any arguments to pass to battlecry.
+     * @param {any} [args] Any arguments to pass to battlecry.
      * 
      * @returns {any[]} The return values of all the battlecries triggered
      */
@@ -525,10 +588,10 @@ class Card {
      * If `t` and `f` are not defined. This function only returns a boolean.
      *
      * @param {number} m The mana to test
-     * @param {any} t The value to return if true
-     * @param {any} f The value to return if false
+     * @param {any} [t=""] The value to return if true
+     * @param {any} [f=""] The value to return if false
      * 
-     * @returns {Array<boolean, any> | boolean}
+     * @returns {[boolean, any] | boolean}
      */
     manathirst(m, t = "", f = "") {
         if (this.plr.maxMana < m) {
@@ -664,7 +727,7 @@ class Card {
      * @param {string} e The enchantment to remove
      * @param {Card} card The owner of the enchantment.
      * @see {@link enchantmentExists} for more info about `card`.
-     * @param {boolean} update [default=true] Keep this enabled unless you know what you're doing.
+     * @param {boolean} [update=true] Keep this enabled unless you know what you're doing.
      *
      * @returns {boolean} Success
      */

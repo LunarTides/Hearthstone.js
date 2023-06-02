@@ -1,16 +1,47 @@
+const { Card } = require("./card");
+const { Game } = require("./game");
+const { Player } = require("./player");
 const { get } = require("./shared");
 
+/**
+ * @type {Game}
+ */
 let game = get();
 
+/**
+ * @typedef {[[Card, number]]} ScoreBoard
+ */
+
 class AI {
+    /**
+     * @param {Player} plr 
+     */
     constructor(plr) {
         game = get();
 
+        /**
+         * @type {[[string, any]]}
+         */
         this.history = [];
+
+        /**
+         * @type {string[]}
+         */
         this.prevent = [];
 
+        /**
+         * @type {Card[]}
+         */
         this.cards_played_this_turn = [];
+
+        /**
+         * @type {Card[]}
+         */
         this.used_locations_this_turn = [];
+
+        /**
+         * @type {Card | null}
+         */
         this.focus = null;
 
         this.plr = plr;
@@ -156,7 +187,7 @@ class AI {
     /**
      * Finds all possible trades for the ai and returns them
      *
-     * @returns {Array<Card[][], Card[][]>} `Perfect Trades`: [[attacker, target], ...], `Imperfect Trades`: [[attacker, target], ...]
+     * @returns {[Card[][], Card[][]]} `Perfect Trades`: [[attacker, target], ...], `Imperfect Trades`: [[attacker, target], ...]
      */
     _attackFindTrades() {
         let perfect_trades = [];
@@ -225,10 +256,9 @@ class AI {
      *
      * @param {ScoreBoard} board The board to check
      *
-     * @returns {Array<Player, number>} Winner, Score
+     * @returns {[Player, number]} Winner, Score
      */
     _findWinner(board) {
-        
         let score = this._scorePlayer(this.plr, board[this.plr.id]);
         let opScore = this._scorePlayer(this.plr.getOpponent(), board[this.plr.getOpponent().id]);
 
@@ -241,7 +271,7 @@ class AI {
     /**
      * Returns if there is a taunt on the board
      *
-     * @param {boolean} return_taunts If the function should return the taunts it found, or just if there is a taunt. If this is true it will return the taunts it found.
+     * @param {boolean} [return_taunts=false] If the function should return the taunts it found, or just if there is a taunt. If this is true it will return the taunts it found.
      *
      * @returns {Card[] | boolean}
      */
@@ -364,7 +394,7 @@ class AI {
     /**
      * Choose an attacker for a general attack
      *
-     * @param {boolean} target_is_player If the target is a player
+     * @param {boolean} [target_is_player=false] If the target is a player
      *
      * @returns {Card | Player | -1} Attacker | -1 (Go back)
      */
@@ -398,7 +428,7 @@ class AI {
     /**
      * Makes the ai attack
      *
-     * @returns {Array<Card | Player | -1 | null, Card | Player | -1 | null>} Attacker, Target
+     * @returns {[Card | Player | -1 | null, Card | Player | -1 | null]} Attacker, Target
      */
     attack() {
         // Assign a score to all minions
@@ -508,7 +538,7 @@ class AI {
      * @param {boolean} elusive If the ai should care about `This minion can't be targetted by spells or hero powers`.
      * @param {"friendly" | "enemy" | null} force_side The side the ai should be constrained to.
      * @param {"minion" | "hero" | null} force_class The type of target the ai should be constrained to.
-     * @param {Object.<string, bool>} flags Some flags
+     * @param {string[]} flags Some flags
      * 
      * @returns {Card | Player | number} The target selected.
      */
@@ -598,7 +628,7 @@ class AI {
     /**
      * Choose the "best" discover minion.
      * 
-     * @param {Card[] | Blueprint[]} cards The cards to choose from
+     * @param {Card[] | import("./card").Blueprint[]} cards The cards to choose from
      * 
      * @returns {Card} Result
      */

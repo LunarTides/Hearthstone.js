@@ -1,24 +1,33 @@
 const fs = require("fs");
 const child_process = require("child_process");
 const deckstrings = require("deckstrings"); // To decode vanilla deckcodes
+const { Player } = require("./player");
+const { Card } = require("./card");
+const { Game } = require("./game");
 require("colors");
 
+/**
+ * @type {Game}
+ */
 let game = null;
+
+/**
+ * @type {Functions}
+ */
 let self = null;
 
 class DeckcodeFunctions {
     constructor() {}
 
+    /**
+     * Imports a deck using a code and put the cards into the player's deck
+     * 
+     * @param {Player} plr The player to put the cards into the deck of
+     * @param {string} code The deck code
+     * 
+     * @returns {Card[]} The deck
+     */
     import(plr, code) {
-        /**
-         * Imports a deck using a code and put the cards into the player's deck
-         * 
-         * @param {Player} plr The player to put the cards into
-         * @param {string} code The base64 encoded deck code
-         * 
-         * @returns {Card[]} The deck
-         */
-
         const ERROR = (error_code, card_name = null) => {
             console.log("This deck is not valid!\nError Code: ".red + error_code.yellow);
             if (card_name) console.log("Specific Card that caused this error: ".red + card_name.yellow);
@@ -199,17 +208,17 @@ class DeckcodeFunctions {
 
         return _deck;
     }
-    export(deck, heroClass, runes) {
-        /*
-         * Generates a deckcode from a list of blueprints
-         *
-         * @param {Blueprint[]} deck The deck to create a deckcode from
-         * @param {string} heroClass The class of the deck. Example: "Priest"
-         * @param {string} runes The runes of the deck. Example: "BFU"
-         *
-         * @returns {Object<code: string, error: Object<msg: string, info: any> | null>} The deckcode, An error message alongside any additional information.
-         */
 
+    /**
+     * Generates a deckcode from a list of blueprints
+     *
+     * @param {import("./card").Blueprint[]} deck The deck to create a deckcode from
+     * @param {string} heroClass The class of the deck. Example: "Priest"
+     * @param {string} runes The runes of the deck. Example: "BFU"
+     *
+     * @returns {{code: string, error: null | {msg: string, info: any}}} The deckcode, An error message alongside any additional information.
+     */
+    export(deck, heroClass, runes) {
         let error = null;
 
         if (deck.length < game.config.minDeckLength) error = {"msg": "TooFewCards", "info": deck.length};
@@ -277,17 +286,17 @@ class DeckcodeFunctions {
 
         return {"code": deckcode, "error": error};
     }
-    toVanilla(plr, code, extraFiltering = true) {
-        /**
-         * Turns a Hearthstone.js deckcode into a vanilla deckcode
-         *
-         * @param {Player} plr The player that will get the deckcode
-         * @param {string} code The deckcode
-         * @param {boolean} extraFiltering If it should do extra filtering when there are more than 1 possible card. This may choose the wrong card. 
-         *
-         * @returns {string} The vanilla deckcode
-         */
 
+    /**
+     * Turns a Hearthstone.js deckcode into a vanilla deckcode
+     *
+     * @param {Player} plr The player that will get the deckcode
+     * @param {string} code The deckcode
+     * @param {boolean} extraFiltering If it should do extra filtering when there are more than 1 possible card. This may choose the wrong card. 
+     *
+     * @returns {string} The vanilla deckcode
+     */
+    toVanilla(plr, code, extraFiltering = true) {
         // WARNING: Jank code ahead. Beware!
         //
         // Reference: Death Knight [3B] /1:4,2/ 3f,5f,6f...
@@ -402,15 +411,16 @@ class DeckcodeFunctions {
         deck = deckstrings.encode(deck);
         return deck;
     }
+
+    /**
+     * Turns a vanilla deckcode into a Hearthstone.js deckcode
+     *
+     * @param {Player} plr The player that will get the deckcode
+     * @param {string} code The deckcode
+     *
+     * @returns {string} The Hearthstone.js deckcode
+     */
     fromVanilla(plr, code) {
-        /**
-         * Turns a vanilla deckcode into a Hearthstone.js deckcode
-         *
-         * @param {Player} plr The player that will get the deckcode
-         * @param {string} code The deckcode
-         *
-         * @returns {string} The Hearthstone.js deckcode
-         */
         let deck = deckstrings.decode(code); // Use the 'deckstrings' api's decode
 
         let cards;
@@ -553,15 +563,14 @@ class Functions {
 
     // QoL
     // https://dev.to/codebubb/how-to-shuffle-an-array-in-javascript-2ikj - Vladyslav
+    /**
+     * Shuffle the array and return the result
+     * 
+     * @param {any[]} array Array to shuffle
+     * 
+     * @returns {any[]} Shuffled array
+     */
     shuffle(array) {
-        /**
-         * Shuffle the array and return the result
-         * 
-         * @param {any[]} array Array to shuffle
-         * 
-         * @returns {any[]} Shuffeled array
-         */
-
         const newArray = [...array];
         const length = newArray.length;
 
@@ -574,42 +583,46 @@ class Functions {
 
         return newArray;
     }
-    remove(list, element) {
-        /**
-         * Removes "element" from "list"
-         *
-         * @param {any[]} list The list to remove from
-         * @param {any} element The element to remove from the list
-         *
-         * @returns {null}
-         */
-        list.splice(list.indexOf(element), 1);
-    }
-    randList(list, cpyCard = true) {
-        /**
-         * Return a random element from "list"
-         * 
-         * @param {any[]} list
-         * 
-         * @returns {any} Item
-         */
 
+    /**
+     * Removes `element` from `list`
+     *
+     * @param {any[]} list The list to remove from
+     * @param {any} element The element to remove from the list
+     *
+     * @returns {boolean} Success
+     */
+    remove(list, element) {
+        list.splice(list.indexOf(element), 1);
+        return true;
+    }
+
+    /**
+     * Return a random element from "list"
+     * 
+     * @param {any[]} list
+     * @param {boolean} cpyCard If this is true and the element is a card, create an imperfect copy of that card.
+     * 
+     * @returns {any} Item
+     */
+    randList(list, cpyCard = true) {
         let item = list[this.randInt(0, list.length - 1)];
         
         if (item instanceof game.Card && cpyCard) item = item.imperfectCopy();
 
         return item;
     }
+
+    /**
+     * Returns `amount` random items from `list`.
+     *
+     * @param {any[]} list
+     * @param {number} amount
+     * @param {boolean} cpyCard If this is true and the element is a card, create an imperfect copy of that card.
+     *
+     * @returns {any[]} The items
+     */
     chooseItemsFromList(list, amount, cpyCard = true) {
-        /**
-         * Returns "amount" random items from the list.
-         *
-         * @param {any[]} list
-         * @param {number} amount
-         * @param {boolean} cpyCard If this is on and the element is a card, create an imperfect copy of that card.
-         *
-         * @returns {any[]} The items
-         */
         if (amount > list.length) amount = list.length;
 
         list = list.slice(); // Make a copy of the list
@@ -623,59 +636,71 @@ class Functions {
 
         return elements;
     }
-    randInt(min, max) {
-        /**
-         * Return a random number from "min" to "max"
-         * 
-         * @param {number} min The minimum number
-         * @param {number} max The maximum number
-         * 
-         * @returns {number} The random number
-         */
 
+    /**
+     * Return a random number from "min" to "max"
+     * 
+     * @param {number} min The minimum number
+     * @param {number} max The maximum number
+     * 
+     * @returns {number} The random number
+     */
+    randInt(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
-    capitalize(str) {
-        /**
-         * Capitalizes and returns the string
-         * 
-         * @param {string} str String
-         * 
-         * @returns {string} The string capitilized
-         */
 
+    /**
+     * Capitalizes a string
+     * 
+     * @param {string} str String
+     * 
+     * @returns {string} The string capitalized
+     */
+    capitalize(str) {
         return str[0].toUpperCase() + str.slice(1).toLowerCase();
     }
-    capitalizeAll(str) {
-        /**
-         * Capitalizes all words in string and returns it
-         *
-         * @param {string} str The string
-         *
-         * @returns {string} The string capitalized
-         */
 
+    /**
+     * Capitalizes all words in string
+     *
+     * @param {string} str The string
+     *
+     * @returns {string} The string capitalized
+     */
+    capitalizeAll(str) {
         return str.split(" ").map(k => this.capitalize(k)).join(" ");
     }
-    createWall(sep) {
-        /**
-         * Creates a wall. If you add for example:
-         * 'Example - Example'
-         * 'Test - Hello World'
-         * 'This is the longest - Short'
-         * 'Tiny - This is even longer then that one!'
-         * to the wall and run finishWall, you will get:
-         * 'Example             - Example'
-         * 'Test                - Hello World'
-         * 'This is the longest - Short'
-         * 'Tiny                - This is even longer then that one!'
-         * ^^ These will be returned from finishWall in an array like this:
-         * ['Example             - Example', 'Test                - Hello World', etc...]
-         *
-         * @param {char} sep The seperator. In the exmaple above it is "-"
-         *
-         * @returns {str[], function} wall, finishWall -> {str[]}
-         */
+
+    /**
+     * Creates a wall.
+     *
+     * @param {string} sep The seperator.
+     *
+     * @returns {[str[], wallCallback]} [wall, finishWall]
+     * 
+     * @callback wallCallback
+     * @returns {str[]}
+     * 
+     * @example
+     * let [wall, finishWall] = createWall("-");
+     * wall.push('Example - Example');
+     * wall.push('Test - Hello World');
+     * wall.push('This is the longest - Short');
+     * wall.push('Tiny - This is even longer then that one!');
+     * 
+     * let foo = finishWall();
+     * 
+     * foo.forEach(bar => {
+     *     console.log(bar);
+     * });
+     * // Example             - Example
+     * // Test                - Hello World
+     * // This is the longest - Short
+     * // Tiny                - This is even longer then that one!
+     * 
+     * assert.equal(foo, ["Example             - Example", "Test                - Hello World", "This is the longest - Short", "Tiny                - This is even longer then that one!"]);
+     */
+    createWall(sep) {       
         let wall = [];
 
         const finishWall = () => {
@@ -713,14 +738,15 @@ class Functions {
 
         return [wall, finishWall];
     }
+
+    /**
+     * Create a (crash)log file
+     *
+     * @param {Error} err If this is set, create a crash report. If this is not set, create a normal log file.
+     *
+     * @returns {boolean} Success
+     */
     createLogFile(err = null) {
-        /**
-         * Create a (crash)log file
-         *
-         * @param {Error} err If this is not null, create a crash report. If this is null, create a normal log file.
-         *
-         * @returns {null}
-         */
         // Create a (crash-)log file
         if (!fs.existsSync(`${__dirname}/../logs/`)) fs.mkdirSync(`${__dirname}/../logs/`);
 
@@ -793,21 +819,40 @@ ${aiHistory}
 
         fs.writeFileSync(`${__dirname}/../logs/${filename}-ai.txt`, content);
 
-        if (!err) return;
+        if (!err) return true;
 
         console.log(`\nThe game crashed!\nCrash report created in 'logs/${filename}.txt' and 'logs/${filename}-ai.txt'\nPlease create a bug report at:\nhttps://github.com/SolarWindss/Hearthstone.js/issues`.yellow);
         game.input();
-    }
-    filterVanillaCards(cards, uncollectible = true, dangerous = false) {
-        /**
-         * Filter out some useless vanilla cards
-         *
-         * @param {VanillaCard[]} cards The list of vanilla cards to filter
-         * @param {boolean} dangerous If there are cards with a 'howToEarn' field, filter away any cards that don't have that.
-         *
-         * @returns {VanillaCard[]} The filtered cards
-         */
 
+        return true;
+    }
+
+    /**
+     * Filter out some useless vanilla cards
+     *
+     * @param {VanillaCard[]} cards The list of vanilla cards to filter
+     * @param {boolean} uncollectible If it should filter away uncollectible cards
+     * @param {boolean} dangerous If there are cards with a 'howToEarn' field, filter away any cards that don't have that.
+     *
+     * @returns {VanillaCard[]} The filtered cards
+     * 
+     * @example
+     * // The numbers here are not accurate, but you get the point.
+     * assert(cards.length, 21022);
+     * 
+     * cards = filterVanillaCards(cards, true, true);
+     * assert(cards.length, 1002);
+     * 
+     * 
+     * @example
+     * // You can get a vanilla card by name using this
+     * cards = cards.filter(c => c.name == "Brann Bronzebeard");
+     * assert(cards.length, 15);
+     * 
+     * cards = filterVanillaCards(cards, true, true);
+     * assert(cards.length, 1);
+     */
+    filterVanillaCards(cards, uncollectible = true, dangerous = false) {
         if (uncollectible) cards = cards.filter(a => a.collectible); // You're welcome
         cards = cards.filter(a => !a.id.includes("Prologue"));
         cards = cards.filter(a => !a.id.includes("PVPDR")); // Idk what 'PVPDR' means, but ok
@@ -821,16 +866,23 @@ ${aiHistory}
 
         return cards;
     }
-    openWithArgs(command, args) {
-        /**
-         * Open a program with args
-         * 
-         * @param {string} command The command/program to run
-         * @param {string} args The arguments
-         * 
-         * @returns {boolean} Success
-         */
 
+    /**
+     * Open a program with args
+     * 
+     * @param {string} command The command/program to run
+     * @param {string} args The arguments
+     * 
+     * @returns {boolean} Success
+     * 
+     * @example
+     * // Opens notepad to "foo.txt" in the main folder.
+     * let success = openWithArgs("notepad", "foo.txt");
+     * 
+     * // Wait until the user presses enter. This function automatically prints a traceback to the screen but will not pause by itself.
+     * if (!success) game.input();
+     */
+    openWithArgs(command, args) {
         // Windows vs Linux. Pros and Cons:
         if (process.platform == "win32") {
             // Windows
@@ -879,16 +931,16 @@ ${aiHistory}
     }
 
     // Getting card info
-    getCardByName(name, refer = true) {
-        /**
-         * Gets the card that has the same name as "name"
-         * 
-         * @param {string} name The name
-         * @param {boolean} refer [default=true] If this should call getCardById if it doesn't find the card from the name
-         * 
-         * @returns {Blueprint} The blueprint of the card
-         */
 
+    /**
+     * Returns the card with the name `name`.
+     * 
+     * @param {string} name The name
+     * @param {boolean} refer If this should call `getCardById` if it doesn't find the card from the name
+     * 
+     * @returns {import("./card").Blueprint} The blueprint of the card
+     */
+    getCardByName(name, refer = true) {
         let card;
 
         game.cards.forEach(c => {
@@ -899,32 +951,32 @@ ${aiHistory}
 
         return card;
     }
-    getCardById(id, refer = true) {
-        /**
-         * Gets the card that has the same id as "id"
-         * 
-         * @param {number} id The id
-         * @param {boolean} refer [default=true] If this should call getCardByName if it doesn't find the card from the name
-         * 
-         * @returns {Blueprint} The blueprint of the card
-         */
 
+    /**
+     * Returns the card with the id of `id`.
+     * 
+     * @param {number} id The id
+     * @param {boolean} refer If this should call `getCardByName` if it doesn't find the card from the id
+     * 
+     * @returns {import("./card").Blueprint} The blueprint of the card
+     */
+    getCardById(id, refer = true) {
         let card = game.cards.filter(c => c.id == id)[0];
 
         if (!card && refer) return this.getCardByName(id.toString(), false);
 
         return card;
     }
-    getCards(uncollectible = true, cards = game.cards) {
-        /**
-         * Returns all cards
-         *
-         * @param {boolean} uncollectible [default=true] Filter out all uncollectible cards
-         * @param {Blueprint[]} cards [default=All cards in the game] The cards to get
-         *
-         * @returns {Blueprint[]} Cards
-         */
 
+    /**
+     * Returns all cards added to Hearthstone.js
+     *
+     * @param {boolean} uncollectible Filter out all uncollectible cards
+     * @param {import("./card").Blueprint[]} cards This defaults to `game.cards`, which contains all cards in the game.
+     *
+     * @returns {import("./card").Blueprint[]} Cards
+     */
+    getCards(uncollectible = true, cards = game.cards) {
         let _cards = [];
 
         cards.forEach(c => {
@@ -933,49 +985,95 @@ ${aiHistory}
 
         return _cards;
     }
+
+    /**
+     * Returns if the `card`'s class is the same as the `plr`'s class or 'Neutral'
+     *
+     * @param {Player} plr
+     * @param {Card} card
+     *
+     * @returns {boolean} Result
+     * 
+     * @example
+     * assert.equal(card.class, "Mage");
+     * assert.equal(plr.class, "Mage");
+     * 
+     * // This should return true
+     * let result = validateClass(plr, card);
+     * assert.equal(result, true);
+     * 
+     * @example
+     * assert.equal(card.class, "Warrior");
+     * assert.equal(plr.class, "Mage");
+     * 
+     * // This should return false
+     * let result = validateClass(plr, card);
+     * assert.equal(result, false);
+     * 
+     * @example
+     * assert.equal(card.class, "Neutral");
+     * assert.equal(plr.class, "Mage");
+     * 
+     * // This should return true
+     * let result = validateClass(plr, card);
+     * assert.equal(result, true);
+     */
     validateClass(plr, card) {
-        /**
-         * Returns if the "card"'s class is the same as the "plr"'s or 'Neutral'
-         *
-         * @param {Player} plr
-         * @param {Card} card
-         *
-         * @returns {boolean}
-         */
         return [plr.heroClass, "Neutral"].includes(card.class);
     }
+
+    /**
+     * Returns if the `card_tribe` is `tribe` or 'All'
+     *
+     * @param {string} card_tribe
+     * @param {string} tribe
+     *
+     * @returns {boolean}
+     * 
+     * @example
+     * assert.equal(card.tribe, "Beast");
+     * 
+     * // This should return true
+     * let result = matchTribe(card.tribe, "Beast");
+     * assert.equal(result, true);
+     * 
+     * @example
+     * assert.equal(card.tribe, "All");
+     * 
+     * // This should return true
+     * let result = matchTribe(card.tribe, "Beast");
+     * assert.equal(result, true);
+     */
     matchTribe(card_tribe, tribe) {
-        /**
-         * Returns if the "card_tribe" is "tribe" or 'All'
-         *
-         * @param {string} card_tribe
-         * @param {string} tribe
-         *
-         * @returns {boolean}
-         */
         if (/all/i.test(card_tribe)) return true; // If the card's tribe is "All".
 
         return card_tribe.includes(tribe);
     }
-    highlander(plr) {
-        /* Returns true if the deck has no duplicates.
-         *
-         * @param {Player} plr The player to check
-         *
-         * @returns {boolean} Highlander
-         */
 
+    /**
+     * Returns true if the `plr`'s deck has no duplicates.
+     *
+     * @param {Player} plr The player to check
+     *
+     * @returns {boolean} Highlander
+     */
+    highlander(plr) {
         let deck = plr.deck.map(c => c.name);
 
         return (new Set(deck)).size == deck.length;
     }
-    getClasses() {
-        /*
-         * Returns all classes in the game
-         *
-         * @returns {string[]} Classes
-         */
 
+    /**
+     * Returns all classes in the game
+     *
+     * @returns {string[]} Classes
+     * 
+     * @example
+     * let classes = getClasses();
+     * 
+     * assert.equal(classes, ["Mage", "Warrior", "Druid", ...])
+     */
+    getClasses() {
         let classes = [];
 
         fs.readdirSync(game.dirname + "/cards/StartingHeroes").forEach(file => {
@@ -992,17 +1090,24 @@ ${aiHistory}
 
         return classes;
     }
-    colorByRarity(str, rarity, bold = true) {
-        /**
-         * Colors "str" based on "rarity". Example: Rarity = "Legendary", return "str".gold
-         *
-         * @param {string} str The string to color
-         * @param {string} rarity The rarity
-         * @param {boolean} bold [default=true] Automatically apply bold
-         *
-         * @returns {string} The colored string
-         */
 
+    /**
+     * Colors `str` based on `rarity`.
+     *
+     * @param {string} str The string to color
+     * @param {string} rarity The rarity
+     * @param {boolean} bold Automatically apply bold
+     *
+     * @returns {string} The colored string
+     * 
+     * @example
+     * assert(card.rarity, "Legendary");
+     * assert(card.name, "Sheep");
+     * 
+     * let colored = colorByRarity(card.name, card.rarity);
+     * assert.equal(colored, "Sheep".yellow);
+     */
+    colorByRarity(str, rarity, bold = true) {
         switch (rarity) {
             case "Common":
                 str = str.gray;
@@ -1024,15 +1129,36 @@ ${aiHistory}
 
         return str;
     }
-    parseTags(str) {
-        /**
-         * Parses color tags in "str". Put the `~` character before the `&` to not parse it. Example: "&BBattlecry:&R Choose a minion. Silence then destroy it."
-         *
-         * @param {string} str The string to parse
-         *
-         * @returns {string} The resulting string
-         */
 
+    /**
+     * Parses color tags in `str`.
+     * 
+     * The color tags available are:
+     * 
+     * ```
+     * 'r' = Red, 'g' = Green, 'b' = Blue
+     * 
+     * 'c' = Cyan, 'm' = Magenta, 'y' = Yellow, 'k' = Black
+     * 
+     * 'w' = White, 'a' = Gray
+     * 
+     * 'B' = Bold, 'R' = Reset
+     * ```
+     *
+     * @param {string} str The string to parse
+     *
+     * @returns {string} The resulting string
+     * 
+     * @example
+     * let parsed = parseTags("&BBattlecry:&R Test");
+     * assert.equal(parsed, "Battlecry:".bold + " Test");
+     * 
+     * @example
+     * // Add the `~` character to escape the tag
+     * let parsed = parseTags("~&BBattlecry:~&R Test");
+     * assert.equal(parsed, "&BBattlecry:&R Test");
+     */
+    parseTags(str) {
         const appendTypes = (c) => {
             let ret = c;
 
@@ -1131,26 +1257,27 @@ ${aiHistory}
 
         return strbuilder;
     }
-    cloneObject(object) {
-        /**
-         * Clones the "object" and returns the clone
-         * 
-         * @param {object} object The object to clone
-         * 
-         * @returns {object} Clone
-         */
 
+    /**
+     * Clones the `object`.
+     * 
+     * @param {Object} object The object to clone
+     * 
+     * @returns {Object} Clone
+     */
+    cloneObject(object) {
         return Object.assign(Object.create(Object.getPrototypeOf(object)), object);
     }
-    cloneCard(card) {
-        /**
-         * Creates a perfect copy of a card, and sets some essential properties
-         * 
-         * @param {Card} card The card to clone
-         * 
-         * @returns {Card} Clone
-         */
 
+    /**
+     * Creates a PERFECT copy of a card, and sets some essential properties.
+     * This is the exact same as `card.perfectCopy`, so use that instead.
+     * 
+     * @param {Card} card The card to clone
+     * 
+     * @returns {Card} Clone
+     */
+    cloneCard(card) {
         let clone = this.cloneObject(card);
 
         clone.randomizeIds();
@@ -1159,31 +1286,43 @@ ${aiHistory}
 
         return clone;
     }
-    doPlayerTargets(plr, callback) {
-        /**
-         * Calls "callback" on all "plr"'s targets 
-         *
-         * @param {Player} plr The player
-         * @param {function} callback The callback to call (args: {Card | Player})
-         */
 
+    /**
+     * Calls `callback` on all `plr`'s targets 
+     *
+     * @param {Player} plr The player
+     * @param {targetCallback} callback The callback to call
+     * 
+     * @returns {boolean} Success
+     * 
+     * @callback targetCallback
+     * @param {Card | Player} target The target
+     */
+    doPlayerTargets(plr, callback) {
         game.board[plr.id].forEach(m => {
             callback(m);
         });
 
         callback(plr);
+
+        return true;
     }
+
+    /**
+     * Add an event listener.
+     *
+     * @param {import("./game").EventKeys} key The event to listen for. If this is an empty string, it will listen for any event.
+     * @param {elCallback} checkCallback This will trigger when the event gets broadcast, but before the actual code in `callback`. If this returns false, the event listener will ignore the event. If you set this to `true`, it is the same as doing `() => {return true}`.
+     * @param {elCallback} callback The code that will be ran if the event listener gets triggered and gets through `checkCallback`. If this returns true, the event listener will be destroyed.
+     * @param {number} lifespan How many times the event listener will trigger and call "callback" before self-destructing. Set this to -1 to make it last forever, or until it is manually destroyed using "callback".
+     *
+     * @returns {function} If you call this function, it will destroy the event listener.
+     * 
+     * @callback elCallback
+     * @param {any} val The value of the event.
+     * @returns {bool | undefined} If this returns true, destroy the event listener.
+     */
     addEventListener(key, checkCallback, callback, lifespan = 1) {
-        /**
-         * Add an event listener.
-         *
-         * @param {string} key The event to listen for. If this is an empty string, it will listen for any event.
-         * @param {function | boolean} checkCallback This will trigger when the event gets broadcast, but before the actual code in `callback`. If this returns false, the event listener will ignore the event. If you set this to `true`, it is the same as doing `() => {return true}`. This function gets the paramater: {any} val The value of the event
-         * @param {function} callback The code that will be ran if the event listener gets triggered and gets through `checkCallback`. If this returns true, the event listener will be destroyed.
-         * @param {number} lifespan How many times the event listener will trigger and call "callback" before self-destructing. Set this to -1 to make it last forever, or until it is manually destroyed using "callback".
-         *
-         * @returns {function} If you call this function, it will destroy the event listener.
-         */
         let times = 0;
 
         let id = game.events.eventListeners;
@@ -1212,67 +1351,77 @@ ${aiHistory}
     }
 
     // Damage
-    spellDmg(target, damage) {
-        /**
-         * Deals damage to "target" based on your spell damage
-         * 
-         * @param {Card | Player} target The target
-         * @param {number} damage The damage to deal
-         * 
-         * @returns {number} The target's new health
-         */
 
+    /**
+     * Deals damage to `target` based on your spell damage
+     * 
+     * @param {Card | Player} target The target
+     * @param {number} damage The damage to deal
+     * 
+     * @returns {boolean} Success
+     */
+    spellDmg(target, damage) {
         const dmg = this.accountForSpellDmg(damage);
 
         game.events.broadcast("SpellDealsDamage", [target, dmg], game.player);
         game.attack(dmg, target);
 
-        return target.getHealth();
+        return true;
     }
 
     // Account for certain stats
-    accountForSpellDmg(damage) {
-        /**
-         * Returns "damage" + The player's spell damage
-         * 
-         * @param {number} damage
-         * 
-         * @returns {number} Damage + spell damage
-         */
 
+    /**
+     * Returns `damage` + The current player's spell damage
+     * 
+     * @param {number} damage
+     * 
+     * @returns {number} Damage + spell damage
+     */
+    accountForSpellDmg(damage) {
         return damage + game.player.spellDamage;
     }
-    accountForUncollectible(cards) {
-        /**
-         * Filters out all cards that are uncollectible in a list
-         * 
-         * @param {Card[] | Blueprint[]} cards The list of cards
-         * 
-         * @returns {Card[] | Blueprint[]} The cards without the uncollectible cards
-         */
 
+    /**
+     * Filters out all cards that are uncollectible in a list
+     * 
+     * @param {Card[] | import("./card").Blueprint[]} cards The list of cards
+     * 
+     * @returns {Card[] | import("./card").Blueprint[]} The cards without the uncollectible cards
+     */
+    accountForUncollectible(cards) {
         return cards.filter(c => !c.uncollectible);
     }
 
     // Keyword stuff
+
+    /**
+     * Asks the user a `prompt` and show 3 choices for the player to choose, and do something to the minion based on the choice.
+     * 
+     * @param {Card} minion The minion to adapt
+     * @param {string} prompt The prompt to ask the user
+     * @param {Card[]} _values DON'T TOUCH THIS UNLESS YOU KNOW WHAT YOU'RE DOING
+     * 
+     * @returns {string} The name of the adapt chosen.
+     */
     adapt(minion, prompt = "Choose One:", _values = []) {
         const ADAPT = new game.Card("Adapt Helper", game.player);
 
-        ADAPT.activate("adapt", minion, prompt, _values);
+        return ADAPT.activate("adapt", minion, prompt, _values);
     }
-    invoke(plr) {
-        /**
-         * Invoke the player's Galakrond
-         * 
-         * @param {Player} plr The player
-         * 
-         * @returns {undefined}
-         */
 
+    /**
+     * Invoke the `plr`'s Galakrond
+     * 
+     * @param {Player} plr The player
+     * 
+     * @returns {boolean} Success
+     */
+    invoke(plr) {
         // Find the card in player's deck/hand/hero that begins with "Galakrond, the "
         let deck_galakrond = plr.deck.find(c => c.displayName.startsWith("Galakrond, the "));
         let hand_galakrond = plr.hand.find(c => c.displayName.startsWith("Galakrond, the "));
-        if ((!deck_galakrond && !hand_galakrond) && !plr.hero.displayName.startsWith("Galakrond, the ")) return;
+        if ((!deck_galakrond && !hand_galakrond) && !plr.hero.displayName.startsWith("Galakrond, the ")) return false;
 
         plr.deck.filter(c => {
             c.activate("invoke");
@@ -1287,19 +1436,23 @@ ${aiHistory}
         if (plr.hero.displayName.startsWith("Galakrond, the ")) plr.hero.activate("heropower");
         else if (deck_galakrond) deck_galakrond.activate("heropower");
         else if (hand_galakrond) hand_galakrond.activate("heropower");
-    }
-    recruit(plr, list = null, amount = 1) {
-        /**
-         * Put's a minion within "mana_range" from the plr's deck, into the board
-         * 
-         * @param {Player} plr [default=current player] The player
-         * @param {Card[]} list [default=current player's deck] The list to recruit from
-         * @param {number} amount [default=1] The amount of minions to recruit
-         * 
-         * @returns {Card[]} Returns the cards recruited
-         */
 
+        return true;
+    }
+
+    /**
+     * Chooses a minion from `list` and puts it onto the board.
+     * 
+     * @param {Player} plr The player
+     * @param {Card[]} list The list to recruit from. This defaults to `plr`'s deck.
+     * @param {number} amount The amount of minions to recruit
+     * 
+     * @returns {Card[]} Returns the cards recruited
+     */
+    recruit(plr, list = null, amount = 1) {
         if (list == null) list = plr.deck;
+        let _list = list;
+
         list = this.shuffle(list.slice());
 
         let times = 0;
@@ -1317,21 +1470,20 @@ ${aiHistory}
         });
 
         cards.forEach(c => {
-            this.remove(plr.deck, c);
+            this.remove(_list, c);
         });
 
         return cards;
     }
 
+    /**
+     * Creates and returns a jade golem with the correct stats and cost for the player
+     * 
+     * @param {Player} plr The jade golem's owner
+     * 
+     * @returns {Card} The jade golem
+     */
     createJade(plr) {
-        /**
-         * Creates and returns a jade golem with the correct stats and cost for the player
-         * 
-         * @param {Player} plr The jade golem's owner
-         * 
-         * @returns {Card} The jade golem
-         */
-
         if (plr.jadeCounter < 30) plr.jadeCounter += 1;
         const count = plr.jadeCounter;
         const mana = (count < 10) ? count : 10;
@@ -1342,14 +1494,15 @@ ${aiHistory}
 
         return jade;
     }
+
+    /**
+     * Imports the config from the `path` specified.
+     *
+     * @param {string} path The path to import from.
+     *
+     * @returns {boolean} Success
+     */
     importConfig(path) {
-        /**
-         * Imports the config from the "path" specified.
-         *
-         * @param {string} path The path to import from.
-         *
-         * @returns {null}
-         */
         require("fs").readdirSync(path, { withFileTypes: true }).forEach(file => {
             let c = `${path}/${file.name}`;
 
@@ -1362,17 +1515,18 @@ ${aiHistory}
         });
 
         game.doConfigAI();
-    }
-    _importCards(path) {
-        /**
-         * Imports all cards from a folder and returns the cards.
-         * Don't use.
-         * 
-         * @param {string} path The path
-         * 
-         * @returns {undefined}
-         */
 
+        return true;
+    }
+
+    /**
+     * USE @see {@link importCards} INSTEAD. Imports all cards from a folder.
+     * 
+     * @param {string} path The path
+     * 
+     * @returns {boolean} Success
+     */
+    _importCards(path) {
         require("fs").readdirSync(path, { withFileTypes: true }).forEach(file => {
             let p = `${path}/${file.name}`;
 
@@ -1383,31 +1537,33 @@ ${aiHistory}
             }
             else if (file.isDirectory()) this._importCards(p);
         });
-    }
-    importCards(path) {
-        /**
-         * Imports all cards from a folder
-         * 
-         * @param {string} path The path
-         * 
-         * @returns {undefined}
-         */
 
+        return true;
+    }
+
+    /**
+     * Imports all cards from a folder
+     * 
+     * @param {string} path The path
+     * 
+     * @returns {boolean} Success
+     */
+    importCards(path) {
         game.cards = [];
 
-        this._importCards(path);
+        return this._importCards(path);
     }
-    mulligan(plr, input) {
-        /**
-         * Mulligans the cards from input. Read interact.mulligan for more info
-         *
-         * @param {Player} plr The player who mulligans
-         * @param {String} input The ids of the cards to mulligan
-         *
-         * @returns {Card[]} The cards mulligan'd
-         */
 
-        if (!parseInt(input)) return false;
+    /**
+     * Mulligans the cards from input. Read `interact.mulligan` for more info.
+     *
+     * @param {Player} plr The player who mulligans
+     * @param {String} input The ids of the cards to mulligan
+     *
+     * @returns {Card[] | TypeError} The cards mulligan'd
+     */
+    mulligan(plr, input) {
+        if (!parseInt(input)) return new TypeError("Can't parse `input` to int");
 
         let cards = [];
         let mulligan = [];
@@ -1430,16 +1586,16 @@ ${aiHistory}
     }
 
     // Quest
-    progressQuest(name, value = 1) {
-        /**
-         * Progress a quest by a value
-         * 
-         * @param {string} name The name of the quest
-         * @param {number} value [default=1] The amount to progress the quest by
-         * 
-         * @returns {number} The new progress
-         */
 
+    /**
+     * Progress a quest by a value
+     * 
+     * @param {string} name The name of the quest
+     * @param {number} value The amount to progress the quest by
+     * 
+     * @returns {number} The new progress
+     */
+    progressQuest(name, value = 1) {
         let quest = game.player.secrets.find(s => s["name"] == name);
         if (!quest) quest = game.player.sidequests.find(s => s["name"] == name);
         if (!quest) quest = game.player.quests.find(s => s["name"] == name);
@@ -1448,21 +1604,26 @@ ${aiHistory}
 
         return quest["progress"][0];
     }
-    addQuest(type, plr, card, key, val, callback, next = null) {
-        /**
-         * Adds a quest / secrets to a player
-         * 
-         * @param {string} type The type of the quest: ["Quest", "Sidequest", "Secret"]
-         * @param {Player} plr The player to add the quest to
-         * @param {Card} card The quest / secret
-         * @param {string} key The key of the quest
-         * @param {any} val The value that the quest needs
-         * @param {Function} callback The function to call when the key is invoked, arguments: {any[]} val The value, {turn} The turn the quest was played, {boolean} done If the the quest is done
-         * @param {string} next [default=null] The name of the next quest / sidequest / secret that should be added when the quest is done
-         * 
-         * @returns {undefined}
-         */
 
+    /**
+     * Adds a quest / secrets to a player
+     * 
+     * @param {"Quest" | "Sidequest" | "Secret"} type The type of the quest
+     * @param {Player} plr The player to add the quest to
+     * @param {Card} card The card that created the quest / secret
+     * @param {import("./game").EventKeys} key The key to listen for
+     * @param {any} val The value that the quest needs
+     * @param {questCallback} callback The function to call when the key is invoked.
+     * @param {string} next [default=null] The name of the next quest / sidequest / secret that should be added when the quest is done
+     * 
+     * @returns {bool} Success
+     * 
+     * @callback questCallback
+     * @param {any} val The value of the event
+     * @param {number} turn The turn the quest was played
+     * @param {boolean} done If the quest is done
+     */
+    addQuest(type, plr, card, key, val, callback, next = null) {
         const t = plr[type.toLowerCase() + "s"];
 
         if ( (type.toLowerCase() == "quest" && t.length > 0) || ((type.toLowerCase() == "secret" || type.toLowerCase() == "sidequest") && (t.length >= 3 || t.filter(s => s.displayName == card.displayName).length > 0)) ) {
@@ -1473,6 +1634,7 @@ ${aiHistory}
         }
 
         plr[type.toLowerCase() + "s"].push({"name": card.displayName, "progress": [0, val], "key": key, "value": val, "turn": game.turns, "callback": callback, "next": next});
+        return true;
     }
 }
 
