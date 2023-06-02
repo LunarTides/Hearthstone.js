@@ -7,8 +7,19 @@ const { Game } = require("./game");
 const { Player } = require("./player");
 const { set }  = require("./shared");
 
+/**
+ * @type {Player}
+ */
 let p1;
+
+/**
+ * @type {Player}
+ */
 let p2;
+
+/**
+ * @type {Game}
+ */
 let game;
 
 let decks = [];

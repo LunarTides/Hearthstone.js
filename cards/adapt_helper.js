@@ -7,16 +7,10 @@ module.exports = {
     rarity: "Free",
     uncollectible: true,
 
+    /**
+     * @see functions.js:adapt
+     */
     adapt(plr, game, self, minion, prompt = "Choose One:", _values = []) {
-        /**
-         * Asks the user a "prompt" and show 3 choices for the player to choose, and do something to the minion based on the choice
-         * 
-         * @param {Card} minion The minion to adapt
-         * @param {string} prompt [default="Choose One:"] The prompt to ask the user
-         * 
-         * @returns {string} The name of the adapt chosen. See the first values of possible_cards
-         */
-
         if (!minion) return;
 
         game.interact.printAll(plr);

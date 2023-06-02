@@ -1,8 +1,16 @@
+const { Card } = require("./card");
+const { Game } = require("./game");
 const { get } = require("./shared");
 
+/**
+ * @type {Game}
+ */
 let game = get();
 
 class Player {
+    /**
+     * @param {string} name 
+     */
     constructor(name) {
         this.getInternalGame();
 
@@ -11,6 +19,11 @@ class Player {
         this.ai = null;
         this.game = null;
         this.fatigue = 0;
+
+        /**
+         * @type {"Player"}
+         */
+        this.classType = "Player";
 
         this.deck = [];
         this.hand = [];
@@ -49,149 +62,167 @@ class Player {
         this.forceTarget = null;
     }
 
+    /**
+     * Update the `game` variable.
+     */
     getInternalGame() {
         game = get();
     }
 
+    /**
+     * Get this player's opponent
+     * 
+     * @returns {Player} Opponent
+     */
     getOpponent() {
-        /**
-         * Get this player's opponent
-         * 
-         * @returns {Player} Opponent
-         */
-
         const id = (this.id == 0) ? 2 : 1;
 
         return game["player" + id];
     }
 
     // Mana
-    refreshMana(mana, comp = this.maxMana) {
-        /**
-         * Adds "mana" to this.mana, then checks if this.mana is more than "comp", if it is, set this.mana to "comp"
-         * 
-         * @param {number} mana The mana to add
-         * @param {number} comp [default=Player's max mana] The comperison
-         * 
-         * @returns {undefined}
-         */
 
+    /**
+     * Adds mana to this player, then checks if the mana is more than `comp`, if it is, set mana to `comp`.
+     * 
+     * @param {number} mana The mana to add
+     * @param {number} [comp] The comperison
+     * 
+     * @returns {boolean} Success
+     */
+    refreshMana(mana, comp = this.maxMana) {
         this.mana += mana;
 
         if (this.mana > comp) this.mana = comp;
-    }
-    gainEmptyMana(mana, cap = false) {
-        /**
-         * Increases max mana by "mana", then if cap is true; check if max mana is more than max max mana, if it is, set max mana to max max mana
-         * 
-         * @param {number} mana The mana to add
-         * @param {boolean} cap [default=false] Should prevent max mana going over max max mana
-         * 
-         * @returns {undefined} 
-         */
 
+        return true;
+    }
+
+    /**
+     * Increases max mana by `mana`, then if `cap` is true; check if max mana is more than max max mana (10), if it is, set max mana to max max mana
+     * 
+     * @param {number} mana The mana to add
+     * @param {boolean} [cap=false] Should prevent max mana going over max max mana
+     * 
+     * @returns {boolean} Success 
+     */
+    gainEmptyMana(mana, cap = false) {
         this.maxMana += mana;
 
         if (cap && this.maxMana > this.maxMaxMana) this.maxMana = this.maxMaxMana;
-    }
-    gainMana(mana, cap = false) {
-        /**
-         * Increases both mana and max mana by "mana"
-         * 
-         * @param {number} mana The number to increase mana and max mana by
-         * 
-         * @returns {undefined}
-         */
 
+        return true;
+    }
+
+    /**
+     * Increases both mana and max mana by `mana`
+     * 
+     * @param {number} mana The number to increase mana and max mana by
+     * @param {boolean} [cap=false] Should prevent max mana going over max max mana (10)
+     * 
+     * @returns {boolean} Success
+     */
+    gainMana(mana, cap = false) {
         this.gainEmptyMana(mana, cap);
         this.refreshMana(mana);
+
+        return true;
     }
+
+    /**
+     * Increases the players overload by `overload`
+     * 
+     * @param {number} overload The amount of overload to add
+     * 
+     * @returns {boolean} Success
+     */
     gainOverload(overload) {
-        /**
-         * Increases the players overload by "overload"
-         * 
-         * @param {number} overload The amount of overload to add
-         * 
-         * @returns {undefined}
-         */
-
         this.overload += overload;
-
         const plus = this.maxMana == this.maxMaxMana ? 0 : 1;
 
         if (this.overload > this.mana + plus) this.overload = this.mana + plus;
 
         game.events.broadcast("GainOverload", overload, this);
+
+        return true;
     }
 
     // Weapons
-    setWeapon(weapon) {
-        /**
-         * Sets this player's weapon to "weapon"
-         * 
-         * @param {Card} weapon The weapon to set
-         * 
-         * @returns {undefined}
-         */
 
+    /**
+     * Sets this player's weapon to `weapon`
+     * 
+     * @param {Card} weapon The weapon to set
+     * 
+     * @returns {boolean} Success
+     */
+    setWeapon(weapon) {
         this.destroyWeapon(true);
         this.weapon = weapon;
         this.attack += weapon.getAttack();
-    }
-    destroyWeapon(triggerDeathrattle = false) {
-        /**
-         * Destroys this player's weapon
-         * 
-         * @param {boolean} triggerDeathrattle [default=false] Should trigger the weapon's deathrattle
-         * 
-         * @returns {undefined}
-         */
 
+        return true;
+    }
+
+    /**
+     * Destroys this player's weapon
+     * 
+     * @param {boolean} [triggerDeathrattle=false] Should trigger the weapon's deathrattle
+     * 
+     * @returns {boolean} Success
+     */
+    destroyWeapon(triggerDeathrattle = false) {
         if (!this.weapon) return false;
 
         if (triggerDeathrattle) this.weapon.activate("deathrattle");
         this.attack -= this.weapon.getAttack();
         this.weapon.destroy();
         this.weapon = null;
+
+        return true;
     }
 
     // Stats
-    addAttack(amount) {
-        /**
-         * Increases the player's attack by "amount"
-         * 
-         * @param {number} amount The amount the player's attack should increase by
-         * 
-         * @returns {undefined}
-         */
 
+    /**
+     * Increases the player's attack by `amount`.
+     * 
+     * @param {number} amount The amount the player's attack should increase by
+     * 
+     * @returns {boolean} Success
+     */
+    addAttack(amount) {
         this.attack += amount;
 
         game.events.broadcast("GainHeroAttack", amount, this);
-    }
-    addHealth(amount) {
-        /**
-         * Increases the player's health by "amount"
-         * 
-         * @param {number} amount The amount the player's health should increase by
-         * 
-         * @returns {undefined}
-         */
 
+        return true;
+    }
+
+    /**
+     * Increases the player's health by `amount`
+     * 
+     * @param {number} amount The amount the player's health should increase by
+     * 
+     * @returns {boolean} Success
+     */
+    addHealth(amount) {
         this.health += amount;
 
         if (this.health > this.maxHealth) this.health = this.maxHealth;
-    }
-    remHealth(amount, update = true) {
-        /**
-         * Decreases the player's health by "amount". If the player has armor, the armor gets decreased instead.
-         * 
-         * @param {number} amount The amount the player's health should increase by
-         * @param {boolean} update If this should be added to the history or stats.
-         * 
-         * @returns {boolean} Success
-         */
 
+        return true;
+    }
+
+    /**
+     * Decreases the player's health by `amount`. If the player has armor, the armor gets decreased instead.
+     * 
+     * @param {number} amount The amount the player's health should decrease by
+     * @param {boolean} update If this should broadcast the `TakeDamage` event.
+     * 
+     * @returns {boolean} Success
+     */
+    remHealth(amount, update = true) {
         if (this.immune) return true;
 
         let a = amount;
@@ -217,22 +248,28 @@ class Player {
 
         return true;
     }
+
+    /**
+     * Returns this player's health.
+     * 
+     * @returns {number}
+     */
     getHealth() {
         // I have this here for compatibility with minions
         return this.health;
     }
 
     // Hand / Deck
-    shuffleIntoDeck(card, updateStats = true) {
-        /**
-         * Shuffle a card into this player's deck
-         * 
-         * @param {Card} card The card to shuffle
-         * @param {boolean} updateStats [default=true] Should this trigger secrets / quests / passives
-         * 
-         * @returns {undefined}
-         */
 
+    /**
+     * Shuffle a card into this player's deck
+     * 
+     * @param {Card} card The card to shuffle
+     * @param {boolean} [updateStats=true] Should this broadcast the `AddCardToDeck` event.
+     * 
+     * @returns {boolean} Success
+     */
+    shuffleIntoDeck(card, updateStats = true) {
         // Add the card into a random position in the deck
         let pos = game.functions.randInt(0, this.deck.length);
         this.deck.splice(pos, 0, card);
@@ -242,29 +279,34 @@ class Player {
         }
 
         this.deck = game.functions.shuffle(this.deck);
-    }
-    addToBottomOfDeck(card) {
-        /**
-         * Adds a card to the bottom of this player's deck
-         * 
-         * @param {Card} card The card to add to the bottom of the deck
-         * 
-         * @returns {undefined}
-         */
 
+        return true;
+    }
+
+    /**
+     * Adds a card to the bottom of this player's deck
+     * 
+     * @param {Card} card The card to add to the bottom of the deck
+     * @param {boolean} [update=true] Should this broadcast the `AddCardToDeck` event.
+     * 
+     * @returns {boolean} Success
+     */
+    addToBottomOfDeck(card, update = true) {
         this.deck = [card, ...this.deck];
 
-        game.events.broadcast("AddCardToDeck", card, this);
-    }
-    drawCard(update = true) {
-        /**
-         * Draws the card at the top of this player's deck
-         * 
-         * @param {boolean} update [default=true] Should this trigger secrets / quests / passives
-         * 
-         * @returns {undefined | null | Card} Card is the card drawn
-         */
+        if (update) game.events.broadcast("AddCardToDeck", card, this);
 
+        return true;
+    }
+
+    /**
+     * Draws the card at the top of this player's deck
+     * 
+     * @param {boolean} [update=true] Should this broadcast the `DrawCard` event.
+     * 
+     * @returns {Card | undefined} Card is the card drawn
+     */
+    drawCard(update = true) {
         if (this.deck.length <= 0) {
             this.fatigue++;
 
@@ -283,82 +325,85 @@ class Player {
 
         return card;
     }
-    drawSpecific(card, update = true) {
-        /**
-         * Draws a specific card from this player's deck
-         * 
-         * @param {Card} card The card to draw
-         * @param {boolean} update [default=true] Should this trigger secrets / quests / passives
-         * 
-         * @returns {undefined | null | Card} Card is the card drawn
-         */
 
+    /**
+     * Draws a specific card from this player's deck
+     * 
+     * @param {Card} card The card to draw
+     * @param {boolean} [update=true] Should this broadcast the `DrawCard` event.
+     * 
+     * @returns {Card | undefined} Card is the card drawn
+     */
+    drawSpecific(card, update = true) {
         if (this.deck.length <= 0) return;
 
         this.deck = this.deck.filter(c => c !== card);
 
         if (update) game.events.broadcast("DrawCard", card, this);
 
-        if (card.type == "Spell" && card.keywords.includes("Cast On Draw") && card.activate("cast")) return null;
+        if (card.type == "Spell" && card.keywords.includes("Cast On Draw") && card.activate("cast")) return;
 
         this.addToHand(card, false);
 
         return card;
     }
-    addToHand(card, updateStats = true) {
-        /**
-         * Adds a card to the player's hand
-         * 
-         * @param {Card} card The card to add
-         * @param {boolean} updateStats [default=true] Should this trigger secrets / quests / passives
-         * 
-         * @returns {undefined}
-         */
 
-        if (this.hand.length >= 10) return;
+    /**
+     * Adds a card to the player's hand
+     * 
+     * @param {Card} card The card to add
+     * @param {boolean} [updateStats=true] Should this broadcast the `AddCardToHand` event.
+     * 
+     * @returns {boolean} Success
+     */
+    addToHand(card, updateStats = true) {
+        if (this.hand.length >= 10) return false;
         this.hand.push(card);
 
         if (updateStats) game.events.broadcast("AddCardToHand", card, this);
+        return true;
     }
-    removeFromHand(card) {
-        /**
-         * Removes a card from the player's hand
-         * 
-         * @param {Card} card The card to remove
-         * 
-         * @returns {undefined}
-         */
 
+    /**
+     * Removes a card from the player's hand
+     * 
+     * @param {Card} card The card to remove
+     * 
+     * @returns {boolean} Success
+     */
+    removeFromHand(card) {
         this.hand = this.hand.filter(c => c !== card);
+        return true;
     }
 
     // Hero power / Class
-    setHero(hero, armor = 5, setHeroClass = true) {
-        /**
-         * Sets the player's hero to "hero"
-         * 
-         * @param {Card} hero The hero that the player should be set to
-         * @param {number} armor [default=5] The amount of armor the player should gain
-         * @param {bool} setHeroClass [default=true] Set the players hero class.
-         * 
-         * @returns {undefined}
-         */
 
+    /**
+     * Sets the player's hero to `hero`
+     * 
+     * @param {Card} hero The hero that the player should be set to
+     * @param {number} [armor=5] The amount of armor the player should gain
+     * @param {boolean} [setHeroClass=true] Set the players hero class.
+     * 
+     * @returns {boolean} Success
+     */
+    setHero(hero, armor = 5, setHeroClass = true) {
         this.hero = hero;
         if (setHeroClass) this.heroClass = hero.class;
         this.heroPowerCost = hero.hpCost || 2;
 
         this.armor += armor;
+        return true;
     }
-    setToStartingHero(heroClass = this.heroClass) {
-        /**
-         * Sets the player's hero to the default hero of "heroClass"
-         *
-         * @param {string} heroClass The class of the hero
-         *
-         * @returns {bool} Success
-         */
 
+    /**
+     * Sets the player's hero to the default hero of `heroClass`
+     *
+     * @param {string} [heroClass] The class of the hero. This defaults to the player's class.
+     *
+     * @returns {boolean} Success
+     */
+    setToStartingHero(heroClass = this.heroClass) {
         let hero_card = heroClass + " Starting Hero";
         hero_card = game.functions.getCardByName(hero_card);
 
@@ -367,13 +412,13 @@ class Player {
 
         return true;
     }
-    heroPower() {
-        /**
-         * Activate the player's hero power.
-         * 
-         * @returns {number | boolean} -1 | Success
-         */
 
+    /**
+     * Activate the player's hero power.
+     * 
+     * @returns {boolean | -1} Success | Cancelled
+     */
+    heroPower() {
         if (this.mana < this.heroPowerCost || !this.canUseHeroPower) return false;
         if (!this.hero) return false;
 
@@ -388,16 +433,16 @@ class Player {
     }
 
     // Other
-    tradeCorpses(amount, callback) {
-        /**
-         * Calls "callback" if the player has "amount" corpses
-         *
-         * @param {number} amount The amount of corpses to trade
-         * @param {function} callback The function to call when the trade is successful; Params: None
-         *
-         * @returns {bool} Success
-         */
 
+    /**
+     * Calls `callback` if the player has `amount` corpses.
+     *
+     * @param {number} amount The amount of corpses to trade
+     * @param {Function} callback The function to call when the trade is successful. No parameters.
+     *
+     * @returns {boolean} Success
+     */
+    tradeCorpses(amount, callback) {
         if (this.heroClass != "Death Knight") return false;
         if (this.corpses < amount) return false;
 
@@ -406,15 +451,15 @@ class Player {
 
         return true;
     }
-    testRunes(runes) {
-        /**
-         * Returns true if the player has the correct runes
-         *
-         * @param {string} runes The runes to test against
-         *
-         * @return {bool} Wether or not the player has the correct runes
-         */
 
+    /**
+     * Returns true if the player has the correct runes
+     *
+     * @param {string} runes The runes to test against
+     *
+     * @return {boolean} Whether or not the player has the correct runes
+     */
+    testRunes(runes) {
         const charCount = (str, letter) => {
             let letter_count = 0;
 
