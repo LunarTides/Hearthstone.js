@@ -1,4 +1,5 @@
 const { Card } = require('./card');
+const { Game } = require('./game');
 const { Player } = require('./player');
 
 const license_url = 'https://github.com/SolarWindss/Hearthstone.js/blob/main/LICENSE';

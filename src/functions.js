@@ -1319,7 +1319,7 @@ ${aiHistory}
      * @returns {function} If you call this function, it will destroy the event listener.
      * 
      * @callback elCallback
-     * @param {any} val The value of the event.
+     * @param {any} [val] The value of the event.
      * @returns {bool | undefined} If this returns true, destroy the event listener.
      */
     addEventListener(key, checkCallback, callback, lifespan = 1) {
