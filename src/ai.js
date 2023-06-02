@@ -339,7 +339,7 @@ class AI {
     }
 
     /**
-     * Does a general attack on a minion
+     * Chooses the attacker and target
      * 
      * Use the return value of this function to actually attack by passing it into `game.attack`
      *

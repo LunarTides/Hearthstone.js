@@ -1,3 +1,4 @@
+const { AI } = require("./ai");
 const { Card } = require("./card");
 const { Game } = require("./game");
 const { get } = require("./shared");
@@ -14,10 +15,29 @@ class Player {
     constructor(name) {
         this.getInternalGame();
 
+        /**
+         * @type {string}
+         */
         this.name = name;
+
+        /**
+         * @type {number}
+         */
         this.id = null;
+
+        /**
+         * @type {AI | null}
+         */
         this.ai = null;
+
+        /**
+         * @type {Game}
+         */
         this.game = null;
+
+        /**
+         * @type {number}
+         */
         this.fatigue = 0;
 
         /**
@@ -25,7 +45,14 @@ class Player {
          */
         this.classType = "Player";
 
+        /**
+         * @type {Card[]}
+         */
         this.deck = [];
+
+        /**
+         * @type {Card[]}
+         */
         this.hand = [];
 
         this.mana = 0;
@@ -37,11 +64,21 @@ class Player {
         this.maxHealth = this.health;
         this.armor = 0;
 
-        this.hero = "";
+        /**
+         * @type {Card | null}
+         */
+        this.hero = null;
+
+        /**
+         * @type {import("./card").Class}
+         */
         this.heroClass = "Mage";
         this.heroPowerCost = 2;
         this.canUseHeroPower = true;
 
+        /**
+         * @type {Card | null}
+         */
         this.weapon = null;
         this.frozen = false;
         this.immune = false;
@@ -436,7 +473,7 @@ class Player {
     // Other
 
     /**
-     * Calls `callback` if the player has `amount` corpses.
+     * Calls `callback` if the player has `amount` corpses. Doesn't work if the player isn't a Death Knight, or if the player doesn't have enough corpses.
      *
      * @param {number} amount The amount of corpses to trade
      * @param {Function} callback The function to call when the trade is successful. No parameters.

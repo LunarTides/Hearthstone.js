@@ -4,6 +4,7 @@ const colors = require("colors");
 const { Player } = require("../src/player");
 const { Game } = require("../src/game");
 const { set } = require("../src/shared");
+const { Card } = require('../src/card');
 
 // Setup the game / copied from the card updater
 const test_player1 = new Player("Test Player 1"); // Use this if a temp player crashes the game
@@ -97,64 +98,145 @@ describe("Player", () => {
     });
 
     it ('should set weapon', () => {
-        // TODO: Add this
+        let weapon = new game.Card("Sheep", test_player1);
+        weapon.type = "Weapon";
+
+        let success = test_player1.setWeapon(weapon);
+
+        assert.equal(success, true);
     });
 
     it ('should destroy weapon', () => {
-        // TODO: Add this
-    });
+        let weapon = new game.Card("Sheep", test_player1);
+        weapon.type = "Weapon";
 
-    it ('should set weapon', () => {
-        // TODO: Add this
+        test_player1.setWeapon(weapon);
+
+        let success = test_player1.destroyWeapon();
+
+        assert.equal(success, true);
+        assert.notEqual(test_player1.weapon, weapon);
     });
 
     it ('should add attack', () => {
-        // TODO: Add this
+        let old_attack = test_player1.attack;
+
+        let success = test_player1.addAttack(2);
+
+        assert.equal(success, true);
+        assert.equal(test_player1.attack, old_attack + 2);
     });
 
     it ('should add health', () => {
-        // TODO: Add this
+        test_player1.health = 28;
+        let success = test_player1.addHealth(2);
+
+        assert.equal(success, true);
+        assert.equal(test_player1.health, 30);
+    });
+    it ('should not add health', () => {
+        test_player1.health = 30;
+        let success = test_player1.addHealth(2);
+
+        assert.equal(success, true);
+        assert.equal(test_player1.health, 30);
     });
 
     it ('should remove health', () => {
-        // TODO: Add this
+        test_player1.health = 30;
+        let success = test_player1.remHealth(2);
+
+        assert.equal(success, true);
+        assert.equal(test_player1.health, 28);
     });
 
     it ('should get health', () => {
-        // TODO: Add this
+        test_player1.health = 30;
+        let health = test_player1.getHealth();
+
+        assert.equal(health, 30);
     });
 
     it ('should shuffle into deck', () => {
-        // TODO: Add this
-        // Make sure the deck is shuffled afterwards
+        game.functions.deckcode.import(test_player1, "Death Knight [3B] /1:8,2/ 5o,66,5f,3b,3c,3e,5x,70,52,55,56,6y,6z,59,5a,2,5v,5g,3o");
+        let old_deck = test_player1.deck;
+
+        let card = new Card("Sheep", test_player1);
+        let success = test_player1.shuffleIntoDeck(card);
+        let same = 0;
+
+        test_player1.deck.forEach((c, i) => {
+            if (c.name == old_deck[i].name) same++;
+        });
+
+        assert.equal(success, true);
+        assert.ok(same <= 10); // We allow 10/31 cards to be at the same positions.
     });
 
     it ('should add to bottom of deck', () => {
-        // TODO: Add this
+        game.functions.deckcode.import(test_player1, "Death Knight [3B] /1:8,2/ 5o,66,5f,3b,3c,3e,5x,70,52,55,56,6y,6z,59,5a,2,5v,5g,3o");
+
+        let card = new Card("Sheep", test_player1);
+        let success = test_player1.addToBottomOfDeck(card);
+
+        assert.equal(success, true);
+        assert.equal(test_player1.deck[0].name, "Sheep");
     });
 
     it ('should draw card', () => {
-        // TODO: Add this
+        test_player1.deck = [new Card("Sheep", test_player1)];
+
+        let card = test_player1.drawCard();
+
+        assert.equal(card.name, "Sheep");
     });
 
     it ('should draw specific card', () => {
-        // TODO: Add this
+        game.functions.deckcode.import(test_player1, "Death Knight [3B] /1:8,2/ 5o,66,5f,3b,3c,3e,5x,70,52,55,56,6y,6z,59,5a,2,5v,5g,3o");
+
+        let card = new Card("Sheep", test_player1);
+        test_player1.addToBottomOfDeck(card);
+
+        let drawnCard = test_player1.drawSpecific(card);
+
+        assert.equal(drawnCard, card);
     });
 
     it ('should add card to hand', () => {
-        // TODO: Add this
+        let card = new Card("Sheep", test_player1);
+        card.name = "Foo";
+
+        let success = test_player1.addToHand(card);
+
+        assert.equal(success, true);
+        assert.ok(test_player1.hand.find((c) => c.name == card.name));
     });
 
     it ('should remove card from hand', () => {
-        // TODO: Add this
+        let card = new Card("Sheep", test_player1);
+        card.name = "Bar";
+
+        test_player1.addToHand(card);
+        let success = test_player1.removeFromHand(card);
+
+        assert.equal(success, true);
+        assert.ok(!test_player1.hand.find((c) => c.name == card.name));
     });
 
     it ('should set hero', () => {
-        // TODO: Add this
+        let hero = new Card("Warrior Starting Hero", test_player1);
+
+        test_player1.setHero(hero);
+
+        assert.equal(test_player1.hero, hero);
+        assert.equal(test_player1.armor, 5);
     });
 
     it ('should set to starting hero', () => {
-        // TODO: Add this
+        let success = test_player1.setToStartingHero("Mage");
+
+        assert.equal(success, true);
+        assert.equal(test_player1.hero.name, "Mage Starting Hero");
     });
 
     it ('should hero power', () => {
@@ -171,10 +253,31 @@ describe("Player", () => {
     });
     
     it ('should trade corpses', () => {
-        // TODO: Add this
+        let foo = "bar";
+
+        let success = test_player1.tradeCorpses(1, () => {foo = "baz"});
+        assert.equal(success, false);
+        assert.equal(foo, "bar");
+
+        test_player1.heroClass = "Death Knight";
+        test_player1.corpses = 10;
+
+        success = test_player1.tradeCorpses(1, () => {foo = "baz"});
+        assert.equal(success, true);
+        assert.equal(foo, "baz");
     });
 
     it ('should test runes', () => {
-        // TODO: Add this
+        test_player1.runes = "BFU";
+        assert.equal(test_player1.testRunes("BBB"), false);
+
+        test_player1.runes = "BBB";
+        assert.equal(test_player1.testRunes("BBB"), true);
+
+        test_player1.runes = "BFU";
+        assert.equal(test_player1.testRunes("BF"), true);
+
+        test_player1.runes = "BFU";
+        assert.equal(test_player1.testRunes("BFF"), false);
     });
 });
