@@ -36,6 +36,11 @@ class SimulationAI {
         this.simulation = null;
 
         /**
+         * @type {boolean}
+         */
+        this.canAttack = true;
+
+        /**
          * @type {Player}
          */
         this.plr = plr;
@@ -81,13 +86,19 @@ class SimulationAI {
 
         if (!best_move) {
             // Couldn't play any cards
-            best_move = "end";
+            if (this.canAttack) best_move = "attack";
+
+            else best_move = "end";
 
             this.history.push(["chooseMove", best_move]);
         } else {
             this.history.push(["chooseMove", [best_move.name, score]]);
 
             best_move = this.plr.hand.indexOf(best_move) + 1;
+        }
+
+        if (best_move == "end") {
+            this.canAttack = true;
         }
 
         return best_move;
@@ -104,8 +115,12 @@ class SimulationAI {
 
         this.simulation.board.forEach(c => {
             c.forEach(c => {
-                let s = (c.plr.id == this.plr.id) ? 1 : -1;
-                score += s;
+                let bias = (c.plr.id == this.plr.id) ? 1 : -1;
+                let s = this._evaluateCard(c);
+                if (bias == 1 && s < 0) s = 0;
+                if (bias == -1 && s > 0) s = -0;
+
+                score += s * bias;
             });
         });
 
@@ -138,7 +153,29 @@ class SimulationAI {
     }
 
     /**
-     * Calculate the best move and return the result
+     * Evaluates a card
+     * 
+     * @param {Card} c The card
+     * 
+     * @returns {number} The score
+     */
+    _evaluateCard(c) {
+        let score = 0;
+
+        if (c.type == "Minion" || c.type == "Weapon") score += (c.getAttack() + c.getHealth()) * game.config.AIStatsBias;
+        else score += game.config.AISpellValue * game.config.AIStatsBias; // If the spell value is 4 then it the same value as a 2/2 minion
+        score -= c.mana * game.config.AIManaBias;
+
+        c.keywords.forEach(() => score += game.config.AIKeywordValue);
+        Object.values(c).forEach(c => {
+            if (c instanceof Array && c[0] instanceof Function) score += game.config.AIFunctionValue;
+        });
+
+        return score;
+    }
+
+    /**
+     * Creates a simulation and stores it in `this.simulation`
      */
     _createSimulation() {
         // Make a deep copy of the current game
@@ -166,12 +203,87 @@ class SimulationAI {
         set(game);
     }
 
+    async attackTarget(attacker, target, best_attack) {
+        let abck, tbck;
+
+        if (attacker.classType == "Card") abck = attacker.createBackup();
+        if (target.classType == "Card") tbck = target.createBackup();
+        
+        let result = this.simulation.attack(attacker, target);
+        if (result !== true) return best_attack; // Invalid attack
+
+        let score = this._evaluate();
+
+        if (attacker.classType == "Card") {
+            attacker.restoreBackup(attacker.backups[abck]);
+            attacker.ready();
+        }
+
+        if (target.classType == "Card") target.restoreBackup(target.backups[tbck]);
+
+        if (score <= best_attack[2]) return best_attack;
+
+        return [attacker, target, score];
+    }
+
     /**
      * Makes the ai attack
      *
      * @returns {[Card | Player | -1 | null, Card | Player | -1 | null]} Attacker, Target
      */
-    attack() {return -1}
+    attack() {
+        this._createSimulation();
+
+        let board = this.simulation.board;
+        let thisboard = board[this.plr.id];
+        let opboard = board[this.plr.getOpponent().id];
+
+        /**
+         * @type {[Card | Player, Card | Player, number]}
+         */
+        let best_attack = [];
+
+        [...thisboard, this.plr].forEach(attacker => {
+            if (attacker.attackTimes <= 0 || attacker.sleepy || attacker.dormant || attacker.attack || (attacker.getAttack && !attacker.getAttack())) return;
+
+            // Attack a taunt if it exists
+            let taunts = opboard.filter(c => c.keywords.includes("Taunt"));
+            if (taunts.length > 0) {
+                let target = taunts[0];
+                best_attack = this.attackTarget(attacker, target, best_attack);
+                return;
+            }
+
+            [...opboard, this.plr.getOpponent()].forEach(target => {
+                if (attacker.classType == "Card" && !attacker.canAttackHero && target.classType == "Player") return;
+                if (target.classType == "Card" && target.keywords.includes("Stealth")) return;
+
+                
+                this.attackTarget(attacker, target, best_attack);
+            });
+        });
+
+        this.history.push(["attack", best_attack]);
+
+        if (best_attack.length <= 0) {
+            // No attacking
+            best_attack = [-1, -1];
+        } else {
+            best_attack = [best_attack[0], best_attack[1]];
+        }
+
+        this.canAttack = false;
+
+        return best_attack;
+    }
+
+    /**
+     * @warning Do not use this. This only exists to warn you that this doesn't exist
+     */
+    legacy_attack_1() {
+        game.input("WARNING: This AI model doesn't have a legacy attack. Please reset the `AIAttackModel` in the config back to -1.".yellow);
+        return this.attack(); // Use the default attack model
+    }
 
     /**
      * Makes the ai select a target.

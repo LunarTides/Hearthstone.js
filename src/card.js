@@ -251,6 +251,16 @@ class Card {
         return true;
     }
 
+    /**
+     * Readies the card for attack
+     * 
+     * @returns {boolean} Success
+     */
+    ready() {
+        this.sleepy = false;
+        return this.resetAttackTimes();
+    }
+
     // Change stats
 
     /**
