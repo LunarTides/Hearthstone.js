@@ -3,7 +3,7 @@ const { Functions } = require("./functions");
 const { Player }    = require("./player");
 const { Card }      = require("./card");
 const { Interact }  = require("./interact");
-const { AI }        = require('./ai');
+const { SimulationAI, SentimentAI } = require('./ai');
 
 // Event key typdef
 /**
@@ -215,7 +215,8 @@ class Game {
 
         this.Card = Card;
         this.Player = Player;
-        this.AI = AI;
+
+        this.AI = SimulationAI;
 
         /**
          * @type {EventManager}
@@ -237,7 +238,7 @@ class Game {
         this.turns = 0;
 
         /**
-         * @type {[[Card]]}
+         * @type {[[Card], [Card]]}
          */
         this.board = [[], []];
 
@@ -273,8 +274,17 @@ class Game {
      * @returns {boolean} Success
      */
     doConfigAI() {
-        if (this.config.P1AI) this.player1.ai = new AI(this.player1);
-        if (this.config.P2AI) this.player2.ai = new AI(this.player2);
+        let AI = (plr) => {
+            let ret = null;
+
+            if (this.config.AIModel == "sent") ret = new SentimentAI(plr);
+            else ret = new SimulationAI(plr);
+
+            return ret;
+        }
+
+        if (this.config.P1AI) this.player1.ai = AI(this.player1);
+        if (this.config.P2AI) this.player2.ai = AI(this.player2);
 
         return true;
     }

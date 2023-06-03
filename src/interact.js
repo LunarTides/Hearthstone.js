@@ -439,9 +439,9 @@ class Interact {
      */
     doTurn() {
         if (game.player.ai) {
-            let input = game.player.ai.calcMove();
+            let input = game.player.ai.chooseMove();
             if (!input) return false;
-            if (input instanceof game.Card) input = (game.player.hand.indexOf(input) + 1).toString();
+            input = input.toString();
 
             let turn = this.doTurnLogic(input);
 

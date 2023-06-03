@@ -1,3 +1,4 @@
+const { SentimentAI, SimulationAI } = require("./ai");
 const { Card } = require("./card");
 const { Game } = require("./game");
 const { get } = require("./shared");
@@ -16,7 +17,15 @@ class Player {
 
         this.name = name;
         this.id = null;
+
+        /**
+         * @type {SentimentAI | SimulationAI}
+         */
         this.ai = null;
+
+        /**
+         * @type {Game}
+         */
         this.game = null;
         this.fatigue = 0;
 

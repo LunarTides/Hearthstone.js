@@ -1,19 +1,261 @@
+delete require.cache[require.resolve("./functions")];
+
 const { Card } = require("./card");
+const { Functions } = require("./functions");
 const { Game } = require("./game");
+const { Interact } = require("./interact");
 const { Player } = require("./player");
-const { get } = require("./shared");
+const { get, set } = require("./shared");
+const lodash = require("lodash");
 
 /**
  * @type {Game}
  */
 let game = get();
 
-/**
- * @typedef {[[Card, number]]} ScoreBoard
- */
-
-class AI {
+class SimulationAI {
     /**
+     * @param {Player} plr 
+     */
+    constructor(plr) {
+        game = get();
+
+        /**
+         * @type {[[string, any]]}
+         */
+        this.history = [];
+
+        /**
+         * @type {Card | null}
+         */
+        this.focus = null;
+
+        /**
+         * @type {Game}
+         */
+        this.simulation = null;
+
+        /**
+         * @type {Player}
+         */
+        this.plr = plr;
+    }
+
+    /**
+     * Calculate the best move and return the result
+     * 
+     * @returns {Card | string} Result
+     */
+    chooseMove() {
+        // Makes a move in the simulation
+        this._createSimulation();
+
+        /**
+         * @type {[Card | string, number]}
+         */
+        let best_move = [];
+
+        this.plr.hand.forEach(card => {
+            this._createSimulation();
+
+            let index = this.plr.hand.indexOf(card);
+            if (index === -1) return false;
+            index += 1
+
+            // Play card
+            let result = this.simulation.interact.doTurnLogic(index.toString());
+            if (result !== true && !result instanceof Card || typeof result === "string") return; // Invalid move
+
+            let score = this._evaluate();
+
+            if (score <= best_move[1]) return;
+
+            // This card is now the best move
+            best_move = [card, score];
+        });
+
+        this._restoreGame();
+
+        let score = best_move[1];
+        best_move = best_move[0];
+
+        if (!best_move) {
+            // Couldn't play any cards
+            best_move = "end";
+
+            this.history.push(["chooseMove", best_move]);
+        } else {
+            this.history.push(["chooseMove", [best_move.name, score]]);
+
+            best_move = this.plr.hand.indexOf(best_move) + 1;
+        }
+
+        return best_move;
+    }
+
+    /**
+     * Evaluates the game
+     * 
+     * @returns {number} The score
+     */
+    _evaluate() {
+        let score = 0;
+        const VALUE_BIAS = 0.1;
+
+        this.simulation.board.forEach(c => {
+            c.forEach(c => {
+                let s = (c.plr.id == this.plr.id) ? 1 : -1;
+                score += s;
+            });
+        });
+
+        [this.simulation.player1, this.simulation.player2].forEach(p => {
+            Object.entries(p).forEach(e => {
+                let [key, val] = e;
+                if (typeof val !== "number") return;
+                if (val == 0) return;
+                if (["id"].includes(key)) return;
+
+                if (["fatigue", "heroPowerCost", "overload"].includes(key)) val = -val;
+
+                let bias = 1;
+                if (p.id != this.plr.id) bias = -1;
+
+                score += val * bias * VALUE_BIAS;
+            });
+        });
+
+        [this.simulation.player1, this.simulation.player2].forEach(p => {
+            [p.deck.length, p.hand.length, p.quests.length, p.sidequests.length, p.secrets.length].forEach(val => {
+                let bias = 1;
+                if (p.id != this.plr.id) bias = -1;
+
+                score += val * bias * VALUE_BIAS;
+            });
+        });
+
+        return score;
+    }
+
+    /**
+     * Calculate the best move and return the result
+     */
+    _createSimulation() {
+        // Make a deep copy of the current game
+        delete this.simulation;
+
+        this.simulation = lodash.cloneDeep(game);
+
+        this.simulation.interact = new Interact(this.simulation);
+        this.simulation.functions = new Functions(this.simulation);
+
+        this.simulation.player1 = lodash.cloneDeep(game.player1);
+        this.simulation.player2 = lodash.cloneDeep(game.player2);
+        this.simulation.player = this.simulation["player" + (game.player.id + 1)];
+        this.simulation.opponent = this.simulation["player" + (game.opponent.id + 1)];
+
+        set(game);
+    }
+
+    /**
+     * Restore the game
+     */
+    _restoreGame() {
+        game.interact = new Interact(game);
+        game.functions = new Functions(game);
+        set(game);
+    }
+
+    /**
+     * Makes the ai attack
+     *
+     * @returns {[Card | Player | -1 | null, Card | Player | -1 | null]} Attacker, Target
+     */
+    attack() {return -1}
+
+    /**
+     * Makes the ai select a target.
+     * 
+     * @param {string} prompt The prompt to show the ai.
+     * @param {boolean} elusive If the ai should care about `This minion can't be targetted by spells or hero powers`.
+     * @param {"friendly" | "enemy" | null} force_side The side the ai should be constrained to.
+     * @param {"minion" | "hero" | null} force_class The type of target the ai should be constrained to.
+     * @param {string[]} flags Some flags
+     * 
+     * @returns {Card | Player | number} The target selected.
+     */
+    selectTarget(prompt, elusive, force_side, force_class, flags) {return}
+
+    /**
+     * Choose the best minion to discover.
+     * 
+     * @param {Card[] | import("./card").Blueprint[]} cards The cards to choose from
+     * 
+     * @returns {Card} Result
+     */
+    discover(cards) {return}
+
+    /**
+     * Choose the "best" card to dredge.
+     * 
+     * @param {Card[]} cards The cards to choose from
+     * 
+     * @returns {Card} Result
+     */
+    dredge(cards) {return}
+
+    /**
+     * Choose the best option from `options`
+     * 
+     * @param {string[]} options The options the ai can pick from
+     *
+     * @returns {string} The question chosen
+     */
+    chooseOne(options) {return}
+
+    /**
+     * Choose the best answer from `options`
+     *
+     * @param {string} prompt The prompt to show to the ai
+     * @param {string[]} options The options the ai can pick from
+     *
+     * @returns {number} The index of the option chosen + 1
+     */
+    question(prompt, options) {return}
+
+    /**
+     * Choose yes or no based on the prompt
+     *
+     * @param {string} prompt The prompt to show to the ai
+     *
+     * @returns {boolean} `true` if "Yes", `false` if "No"
+     */
+    yesNoQuestion(prompt) {return}
+
+    /**
+     * Returns if the ai wants `card` to be traded
+     *
+     * @param {Card} card The card to check
+     *
+     * @returns {boolean} If the card should be traded
+     */
+    trade(card) {return}
+
+    /**
+     * Returns the list of cards the ai wants to mulligan.
+     * 
+     * @returns {string} The indexes of the cards to mulligan. Look in `Interact.mulligan` for more details.
+     */
+    mulligan() {return}
+}
+
+class SentimentAI {
+    /**
+     * @typedef {[[Card, number]]} ScoreBoard
+     */
+    /**
+     * This is the old Sentiment Analysis based AI.
+     * 
      * @param {Player} plr 
      */
     constructor(plr) {
@@ -52,7 +294,7 @@ class AI {
      * 
      * @returns {Card | string} Result
      */
-    calcMove() {
+    chooseMove() {
         let best_move = null;
         let best_score = -100000;
 
@@ -97,6 +339,8 @@ class AI {
             this.history.push(["calcMove", [best_move.name, best_score]]);
 
             this.cards_played_this_turn.push(best_move);
+
+            best_move = this.plr.hand.indexOf(best_move) + 1;
         }
 
         if (best_move == "end") {
@@ -339,7 +583,7 @@ class AI {
     }
 
     /**
-     * Does a general attack on a minion
+     * Chooses the attacker and target
      * 
      * Use the return value of this function to actually attack by passing it into `game.attack`
      *
@@ -871,4 +1115,5 @@ class AI {
     }
 }
 
-exports.AI = AI;
+exports.SimulationAI = SimulationAI;
+exports.SentimentAI = SentimentAI;

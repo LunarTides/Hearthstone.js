@@ -1,4 +1,5 @@
 {
+    "AIModel"            : "sim",
     "AIContextAnalysis"  : true,
     "AIAttackModel"      : -1,
     "AIMulliganThreshold": 3,
