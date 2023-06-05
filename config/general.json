@@ -1,5 +1,5 @@
 {
-    "debug": true,
+    "debug": false,
     "validateDecks": true,
     "minDeckLength": 30,
     "maxDeckLength": 30,
@@ -8,10 +8,10 @@
     "maxOfOneLegendary": 1,
 
     "P1AI": false,
-    "P2AI": true,
+    "P2AI": false,
 
     "version": "1.5.0",
-    "branch": "dev",
+    "branch": "stable",
 
     "editor": "vim"
 }
