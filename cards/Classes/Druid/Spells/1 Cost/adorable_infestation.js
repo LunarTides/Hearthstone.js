@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Adorable Infestation",
     desc: "Give a minion +1/+1. Summon a 1/1 Cub. Add a Cub to your hand.",
@@ -8,6 +13,9 @@ module.exports = {
     set: "Voyage to the Sunken City",
     id: 13,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, card) {
         let target = game.interact.selectTarget("Give a minion +1/+1.", true, null, "minion");
 

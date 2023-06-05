@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "The Leviathan",
     stats: [4, 5],
@@ -12,6 +17,9 @@ module.exports = {
     colossal: ["", "The Leviathan Claw"],
     id: 269,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     passive(plr, game, self, key, val) {
         if (key != "Attack") return;
 

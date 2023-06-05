@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Blood Boil",
     desc: "Lifesteal. Infect all enemy minions. At the end of your turns, they take 2 damage.",
@@ -10,6 +15,9 @@ module.exports = {
     spellClass: "Shadow",
     id: 192,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         let infected = [];
 

@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Inner Fire",
     desc: "Change a minion's Attack to be equal to its Health.",
@@ -8,6 +13,9 @@ module.exports = {
     set: "Legacy",
     id: 70,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, card) {
         let target = game.interact.selectTarget("Change a minion's Attack to be equal to its Health.", true, null, "minion");
 

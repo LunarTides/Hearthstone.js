@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Murgur Murgurgle",
     stats: [2, 1],
@@ -11,6 +16,9 @@ module.exports = {
     keywords: ["Divine Shield"],
     id: 256,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     deathrattle(plr, game, self) {
         let minion = new game.Card("Murgur Murgurgle Prime", plr);
         plr.shuffleIntoDeck(minion);

@@ -1,3 +1,8 @@
+// Created by Hand
+
+/**
+ * @type {import("../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Weapon Example",
     stats: [5, 3],

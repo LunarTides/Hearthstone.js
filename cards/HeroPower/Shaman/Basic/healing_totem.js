@@ -1,3 +1,8 @@
+// Created by Hand (before the Card Creator Existed)
+
+/**
+ * @type {import("../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Healing Totem",
     stats: [0, 2],
@@ -11,6 +16,9 @@ module.exports = {
     id: 82,
     uncollectible: true,
 
+    /**
+     * @type {import("../../../../src/types").KeywordMethod}
+     */
     passive(plr, game, self, key, val) {
         if (key != "EndTurn" || game.player != plr) return;
 

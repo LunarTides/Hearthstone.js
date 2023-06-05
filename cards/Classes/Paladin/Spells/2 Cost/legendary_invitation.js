@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Legendary Invitation",
     desc: "&BDiscover&R a &BLegendary&R minion from another class. It costs (0).",
@@ -8,6 +13,9 @@ module.exports = {
     set: "Murder at Castle Nathria",
     uncollectible: true,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         let list = game.functions.getCards();
         list = list.filter(c => c.type == "Minion" && c.rarity == "Legendary" && c.class != plr.heroClass);

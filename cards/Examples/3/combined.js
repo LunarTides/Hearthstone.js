@@ -1,3 +1,8 @@
+// Created by Hand
+
+/**
+ * @type {import("../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Combined Example 3",
     desc: "If the turn counter is an even number, gain mana equal to the turn counter (up to 10). Manathirst (7): Remove the condition. (Currently: {0})", // The things with `{...}` will be replaced in the `placeholder` function.
@@ -8,6 +13,9 @@ module.exports = {
     conditioned: ["cast"],
     uncollectible: true,
 
+    /**
+     * @type {import("../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         let turns = Math.ceil(game.turns / 2);
         if (turns > 10) turns = 10;
@@ -15,6 +23,9 @@ module.exports = {
         plr.gainMana(turns, true);
     },
 
+    /**
+     * @type {import("../../../src/types").KeywordMethod}
+     */
     condition(plr, game, self) {
         let turns = Math.ceil(game.turns / 2);
         if (turns > 10) turns = 10;
@@ -25,6 +36,9 @@ module.exports = {
         return even || manathirst;
     },
 
+    /**
+     * @type {import("../../../src/types").KeywordMethod}
+     */
     placeholders(plr, game, self) {
         let turns = Math.ceil(game.turns / 2);
         if (turns > 10) turns = 10;

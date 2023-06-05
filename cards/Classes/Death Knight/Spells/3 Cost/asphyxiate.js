@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Asphyxiate",
     desc: "Destroy the highest Attack enemy minion.",
@@ -10,6 +15,9 @@ module.exports = {
     spellClass: "Shadow",
     id: 250,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         let board = game.board[plr.getOpponent().id];
         if (board.length <= 0) return;

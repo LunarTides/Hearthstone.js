@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Golden Monkey",
     stats: [6, 6],
@@ -12,6 +17,9 @@ module.exports = {
     uncollectible: true,
     id: 49,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, card) {
         let new_hand = [];
         let new_deck = [];

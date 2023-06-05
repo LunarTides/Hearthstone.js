@@ -1,3 +1,8 @@
+// Created by Hand (before the Card Creator Existed)
+
+/**
+ * @type {import("../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Windswept Elemental",
     stats: [2, 1],

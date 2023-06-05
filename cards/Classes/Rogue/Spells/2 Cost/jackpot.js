@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Jackpot",
     displayName: "Jackpot!",
@@ -9,6 +14,9 @@ module.exports = {
     set: "Throne of the Tides",
     id: 279,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         let list = game.functions.getCards();
         list = list.filter(c => c.type == "Spell" && c.mana >= 5 && !game.functions.validateClass(plr, c));

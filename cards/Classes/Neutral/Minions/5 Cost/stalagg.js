@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Stalagg",
     stats: [7, 4],
@@ -10,6 +15,9 @@ module.exports = {
     set: "Naxxramas",
     id: 206,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     deathrattle(plr, game, self) {
         let feugenDied = false;
 

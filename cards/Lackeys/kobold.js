@@ -1,3 +1,8 @@
+// Created by Hand (before the Card Creator Existed)
+
+/**
+ * @type {import("../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Kobold Lackey",
     stats: [1, 1],
@@ -11,6 +16,9 @@ module.exports = {
     uncollectible: true,
     id: 91,
 
+    /**
+     * @type {import("../../src/types").KeywordMethod}
+     */
     battlecry(plr, game) {
         let target = game.interact.selectTarget(`Deal ${2 + plr.spellDamage} damage.`);
         if (!target) return -1;

@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Priest Starting Hero",
     displayName: "Anduin Wrynn",
@@ -11,6 +16,9 @@ module.exports = {
     uncollectible: true,
     id: 99,
 
+    /**
+     * @type {import("../../src/types").KeywordMethod}
+     */
     heropower(plr, game, self) {
         let target = game.interact.selectTarget("Restore 2 health.", "dontupdate");
         if (!target) return -1;

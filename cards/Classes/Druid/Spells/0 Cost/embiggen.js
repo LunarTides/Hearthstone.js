@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Embiggen",
     desc: "Give all minions in your deck +2/+2. They cost (1) more (up to 10).",
@@ -9,6 +14,9 @@ module.exports = {
     spellClass: "Nature",
     id: 10,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, card) {
         let cards = plr.deck.filter(c => c.type === "Minion");
 

@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Biology Project",
     desc: "Each player gains 2 Mana Crystals.",
@@ -9,6 +14,9 @@ module.exports = {
     spellClass: "Nature",
     id: 16,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, card) {
         plr.gainMana(2, true);
         game.opponent.gainMana(2, true);

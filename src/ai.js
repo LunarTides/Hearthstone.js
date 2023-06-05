@@ -8,10 +8,6 @@ const { get } = require("./shared");
  */
 let game = get();
 
-/**
- * @typedef {[[Card, number]]} ScoreBoard
- */
-
 class AI {
     /**
      * @param {Player} plr 
@@ -224,7 +220,7 @@ class AI {
      * Returns a score for the player specified based on how good their position is.
      *
      * @param {Player} player The player to score
-     * @param {ScoreBoard} board The board to check
+     * @param {import("./types").ScoreBoard} board The board to check
      *
      * @returns {number} Score
      */
@@ -254,7 +250,7 @@ class AI {
     /**
      * Returns the player that is winning
      *
-     * @param {ScoreBoard} board The board to check
+     * @param {import("./types").ScoreBoard} board The board to check
      *
      * @returns {[Player, number]} Winner, Score
      */
@@ -303,7 +299,7 @@ class AI {
     /**
      * Does a general attack
      *
-     * @param {ScoreBoard} board
+     * @param {import("./types").ScoreBoard} board
      *
      * @returns {[Card | -1]} Attacker, Target
      */

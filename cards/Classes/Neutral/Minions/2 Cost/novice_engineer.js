@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Novice Engineer",
     stats: [1, 1],
@@ -10,6 +15,9 @@ module.exports = {
     set: "Legacy",
     id: 39,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, card) {
         plr.drawCard();
     }

@@ -1,3 +1,10 @@
+// Created by Hand
+
+/**
+ * This is so you can get auto-completion if you're using Visual Studio Code.
+ * This will automatically show up if you created this card using the card creator or any of it's variants (Custom, Vanilla, Class)
+ * @type {import("../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Minion Example", // The name of the card. It MUST be unique.
     stats: [2, 1], // The stats. The first number is its attack, and the second number is its health.

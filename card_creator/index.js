@@ -189,7 +189,7 @@ function createCard(override_path = "", override_filename = "") {
 
     let cleaned_desc = card.desc.replace(/(?<!~)&\w/g, ""); // Regular expression created by ChatGPT, it removes the "&B"'s but keeps the "~&B"'s since the '~' is the tag's '\'
 
-    if (func) func = `\n\n    ${func.toLowerCase()}(plr, game, self${triggerText} {\n        // ${cleaned_desc}\n        \n    }`; // Examples: '\n\n    passive(plr, game, self, key, val) {\n        // Your battlecries trigger twice\n        }', '\n\n    battlecry(plr, game, self) {\n\n    }'
+    if (func) func = `${func.toLowerCase()}(plr, game, self${triggerText} {\n        // ${cleaned_desc}\n        \n    }`; // Examples: '\n\n    passive(plr, game, self, key, val) {\n        // Your battlecries trigger twice\n        }', '\n\n    battlecry(plr, game, self) {\n\n    }'
 
     // If the type is Hero, we want the card to go to '.../Heroes/...' and not to '.../Heros/...'
     file_friendly_type = (type == "Hero") ? "Heroe" : type;
@@ -202,6 +202,7 @@ function createCard(override_path = "", override_filename = "") {
 
     // Create a path to put the card in.
     let path = `${__dirname}/../cards/Classes/${classes}/${file_friendly_type}s/${card.mana} Cost/`;
+    path = path.replace("card_creator/../", "");
     if (override_path) path = override_path; // If this function was passed in a path, use that instead.
 
     // Create a filename. Example: "Test Card" -> "test_card.js"
@@ -222,14 +223,29 @@ function createCard(override_path = "", override_filename = "") {
         return ret;
     }
 
+    let type_path_rel = "../".repeat(path.split("/").indexOf("cards") - 1) + "src/types";
+    console.log(path)
+
+    let bpDocstring = `/**
+* @type {import("${type_path_rel}").Blueprint}
+*/`;
+
+    let methodDocstring = `/**
+     * @type {import("${type_path_rel}").KeywordMethod}
+     */`;
+
     let content = Object.entries(card).map(c => `${c[0]}: ${getTypeValue(c[1])}`); // name: "Test"
     content = `// Created by the ${cctype} Card Creator
+
+${bpDocstring}
 module.exports = {
-    ${content.join(',\n    ')},${file_id}${func}
+    ${content.join(',\n    ')},${file_id}
+    
+    ${methodDocstring}
+    ${func}
 }`;
 
     // The path is now "./card_creator/../cards/...", replace this with "./cards/..."
-    path = path.replace("card_creator/../", "");
     let file_path = path.replaceAll("/", "\\") + filename; // Replace '/' with '\' because windows
 
     if (!debug) {

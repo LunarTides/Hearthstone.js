@@ -1,5 +1,10 @@
+// Created by the Custom Card Creator
+
 const fs = require("fs");
 
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Sir Finley Mrrgglton",
     stats: [1, 3],
@@ -12,6 +17,9 @@ module.exports = {
     set: "Core",
     id: 36,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, card) {
         let possible_cards = [];
 

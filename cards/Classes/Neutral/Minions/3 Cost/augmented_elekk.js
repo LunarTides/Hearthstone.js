@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Augmented Elekk",
     stats: [3, 4],
@@ -10,6 +15,9 @@ module.exports = {
     set: "The Boomsday Project",
     id: 42,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     passive(plr, game, card, key, val) {
         if (key != "AddCardToDeck" || game.player != plr) return;
         

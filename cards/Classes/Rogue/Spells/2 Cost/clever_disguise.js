@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Clever Disguise",
     desc: "Add 2 random spells from another class to your hand.",
@@ -8,6 +13,9 @@ module.exports = {
     set: "Saviors of Uldum",
     id: 278,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         let list = game.functions.getCards();
         list = list.filter(c => c.type == "Spell" && !game.functions.validateClass(plr, c));

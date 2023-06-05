@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Reckless Apprentice",
     stats: [3, 5],
@@ -9,6 +14,9 @@ module.exports = {
     rarity: "Rare",
     id: 318,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         let oldHPCost = plr.heroPowerCost;
         let oldCUHP = plr.canUseHeroPower;

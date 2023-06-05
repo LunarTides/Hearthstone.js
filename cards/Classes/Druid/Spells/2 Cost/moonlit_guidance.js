@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Moonlit Guidance",
     desc: "Discover a copy of a card in your deck. If you play it this turn, draw the original.",
@@ -9,6 +14,9 @@ module.exports = {
     spellClass: "Arcane",
     id: 146,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         let cards = plr.deck;
         let card = game.interact.discover("Discover a copy of a card in your deck.", cards);

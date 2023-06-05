@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Celestial Alignment",
     desc: "Set your Mana Crystals to 0. Set the Cost of cards in your hand and deck to (1).",
@@ -9,6 +14,9 @@ module.exports = {
     spellClass: "Arcane",
     id: 26,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         plr.maxMana = 0;
         plr.mana = 0;

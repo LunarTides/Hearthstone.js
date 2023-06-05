@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Death Speaker Blackthorn",
     stats: [3, 6],
@@ -10,6 +15,9 @@ module.exports = {
     set: "Forged in the Barrens",
     id: 212,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         let list = plr.deck.filter(c => c.type == "Minion" && c.deathrattle || false);
 

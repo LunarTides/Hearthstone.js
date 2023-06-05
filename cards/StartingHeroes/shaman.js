@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Shaman Starting Hero",
     displayName: "Thrall",
@@ -11,6 +16,9 @@ module.exports = {
     uncollectible: true,
     id: 101,
 
+    /**
+     * @type {import("../../src/types").KeywordMethod}
+     */
     heropower(plr, game, self) {
         const totem_cards = ["Healing Totem", "Searing Totem", "Stoneclaw Totem", "Strength Totem"];
         let _totem_cards = [];

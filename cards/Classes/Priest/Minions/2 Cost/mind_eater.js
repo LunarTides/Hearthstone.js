@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Mind Eater",
     stats: [3, 2],
@@ -10,6 +15,9 @@ module.exports = {
     set: "March of the Lich King",
     id: 235,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     deathrattle(plr, game, self) {
         let list = plr.getOpponent().deck;
         let card = game.functions.randList(list);

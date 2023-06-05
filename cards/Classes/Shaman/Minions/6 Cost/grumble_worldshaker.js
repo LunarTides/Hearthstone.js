@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Grumble Worldshaker",
     displayName: "Grumble, Worldshaker",
@@ -10,6 +15,9 @@ module.exports = {
     rarity: "Legendary",
     id: 311,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         game.board[plr.id].forEach(m => {
             let copy = new game.Card(m.name, plr);

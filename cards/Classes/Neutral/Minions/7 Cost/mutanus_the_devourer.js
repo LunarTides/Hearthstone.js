@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Mutanus the Devourer",
     stats: [4, 4],
@@ -10,6 +15,9 @@ module.exports = {
     set: "Wailing Caverns",
     id: 165,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         let list = plr.getOpponent().hand.filter(c => c.type == "Minion");
         let minion = game.functions.randList(list, false);

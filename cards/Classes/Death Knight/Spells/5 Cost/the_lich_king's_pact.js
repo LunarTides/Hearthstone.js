@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "The Lich King's Pact",
     displayName: "Doom Pact",
@@ -11,6 +16,9 @@ module.exports = {
     uncollectible: true,
     id: 128,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         let minionsDestroyed = 0;
 

@@ -1,3 +1,8 @@
+// Created by Hand
+
+/**
+ * @type {import("../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Enchantment Example",
     stats: [1, 1],
@@ -9,6 +14,9 @@ module.exports = {
     rarity: "Free",
     uncollectible: true,
 
+    /**
+     * @type {import("../../../src/types").KeywordMethod}
+     */
     passive(plr, game, self, key, val) {
         // When changing cost of a card USE THE ENCHANTMENT SYSTEM.
         // We don't care about the event, we just want to run this code every now and then.
@@ -21,6 +29,9 @@ module.exports = {
         });
     },
 
+    /**
+     * @type {import("../../../src/types").KeywordMethod}
+     */
     unpassive(plr, game, self, ignore) {
         // This happens before `passive` every time.
         // If `ignore` is false, it means this minions is either:

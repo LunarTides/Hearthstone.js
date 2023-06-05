@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Dragonqueen Alexstrasza",
     stats: [8, 8],
@@ -11,6 +16,9 @@ module.exports = {
     id: 164,
     conditioned: ["battlecry"],
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         let list = game.functions.getCards().filter(c => c.type == "Minion" && game.functions.matchTribe(c.tribe, "Dragon"));
 
@@ -25,6 +33,9 @@ module.exports = {
         }
     },
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     condition(plr, game, self) {
         return game.functions.highlander(plr);
     }

@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Explosive Sheep",
     stats: [1, 1],
@@ -10,6 +15,9 @@ module.exports = {
     set: "Goblins vs Gnomes",
     id: 295,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     deathrattle(plr, game, self) {
         game.board.forEach(p => {
             p.forEach(m => {

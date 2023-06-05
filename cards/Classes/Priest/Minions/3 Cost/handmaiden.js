@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Handmaiden",
     stats: [3, 2],
@@ -11,6 +16,9 @@ module.exports = {
     id: 178,
     conditioned: ["battlecry"],
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     handpassive(plr, game, self, key, val) {
         if (key != "PlayCard" || val.type != "Spell" || game.player != plr) return;
 
@@ -18,10 +26,16 @@ module.exports = {
         self.storage[0]++;
     },
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         for (let i = 0; i < 3; i++) plr.drawCard();
     },
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     condition(plr, game, self) {
         return self.storage[0] >= 3;
     }

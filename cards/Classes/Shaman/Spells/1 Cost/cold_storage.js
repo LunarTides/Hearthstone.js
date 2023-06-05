@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Cold Storage",
     desc: "&BFreeze&R a minion. Add a copy of it to your hand.",
@@ -8,6 +13,9 @@ module.exports = {
     spellClass: "Frost",
     id: 302,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         let target = game.interact.selectTarget(self.desc, true, null, "minion");
         if (!target) return -1;

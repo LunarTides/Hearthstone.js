@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Flare",
     desc: "All minions lose Stealth. Destroy all enemy Secrets. Draw a card.",
@@ -8,6 +13,9 @@ module.exports = {
     set: "Legacy",
     id: 214,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         game.board.forEach(p => {
             p.forEach(m => {

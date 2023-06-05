@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Brawl",
     desc: "Destroy all minions except one.",
@@ -8,6 +13,9 @@ module.exports = {
     set: "Legacy",
     id: 116,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         // If the board is empty for both sides, refund the card
         if (game.board[0].length == 0 && game.board[1].length == 0) return -1;

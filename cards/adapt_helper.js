@@ -1,3 +1,8 @@
+// Created by Hand (before the Card Creator Existed)
+
+/**
+ * @type {import("../src/types").Blueprint}
+ */
 module.exports = {
     name: "Adapt Helper",
     desc: "&BAdapt&R a minion. (This card does not work by itself)",
@@ -9,6 +14,11 @@ module.exports = {
 
     /**
      * @see functions.js:adapt
+     * @type {import("../src/types").KeywordMethod}
+     * 
+     * @param {Card} minion
+     * @param {string} [prompt="Choose One:"]
+     * @param {string[]} [_values=[]]
      */
     adapt(plr, game, self, minion, prompt = "Choose One:", _values = []) {
         if (!minion) return;

@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Palm Reading",
     desc: "Discover a spell. Reduce the Cost of spells in your hand by (1).",
@@ -9,6 +14,9 @@ module.exports = {
     spellClass: "Shadow",
     id: 179,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         // Discover a spell
         let list = game.functions.getCards().filter(c => c.type == "Spell" && [plr.heroClass, "Neutral"].includes(c.class));

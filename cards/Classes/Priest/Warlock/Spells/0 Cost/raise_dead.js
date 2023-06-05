@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Raise Dead",
     desc: "Deal 3 damage to your hero. Return two friendly minions that died this game to your hand.",
@@ -9,6 +14,9 @@ module.exports = {
     spellClass: "Shadow",
     id: 230,
 
+    /**
+     * @type {import("../../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         game.functions.spellDmg(plr, 3);
 

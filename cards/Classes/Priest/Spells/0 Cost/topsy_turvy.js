@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Topsy Turvy",
     desc: "Swap a minion's Attack and Health.",
@@ -8,6 +13,9 @@ module.exports = {
     set: "The Boomsday Project",
     id: 68,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, card) {
         let target = game.interact.selectTarget("Swap a minion's Attack and Health.", true, null, "minion");
 

@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Drain Soul",
     desc: "&BLifesteal.&R Deal 3 damage to a minion.",
@@ -9,6 +14,9 @@ module.exports = {
     spellClass: "Shadow",
     id: 301,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         let target = game.interact.selectTarget(self.desc, true, null, "minion");
         if (!target) return -1;

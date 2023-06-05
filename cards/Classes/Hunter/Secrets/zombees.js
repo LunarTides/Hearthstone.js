@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Zombees",
     displayName: "ZOMBEEEES!!!",
@@ -9,6 +14,9 @@ module.exports = {
     set: "Return to Naxxramas",
     id: 226,
 
+    /**
+     * @type {import("../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         game.functions.addQuest("Secret", plr, self, "PlayCard", 1, (card, turn, done) => {
             if (card.type != "Minion") return false;

@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Khartut Defender",
     stats: [3, 4],
@@ -11,6 +16,9 @@ module.exports = {
     keywords: ["Taunt", "Reborn"],
     id: 211,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     deathrattle(plr, game, self) {
         plr.addHealth(3);
     }

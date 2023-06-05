@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Sleetbreaker",
     stats: [3, 2],
@@ -9,6 +14,9 @@ module.exports = {
     rarity: "Rare",
     id: 308,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         let card = new game.Card("Windchill", plr);
 

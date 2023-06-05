@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Noxious Cadaver",
     stats: [1, 2],
@@ -11,6 +16,9 @@ module.exports = {
     runes: "B",
     id: 183,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         let target = game.interact.selectTarget("Deal 2 damage to an enemy.", false, "enemy");
         if (!target) return -1;

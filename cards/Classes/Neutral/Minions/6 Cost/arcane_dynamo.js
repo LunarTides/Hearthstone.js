@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Arcane Dynamo",
     stats: [3, 4],
@@ -10,6 +15,9 @@ module.exports = {
     set: "The Boomsday Project",
     id: 193,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         let list = game.functions.getCards();
         list = list.filter(c => c.type == "Spell" && c.mana >= 5 && [plr.heroClass, "Neutral"].includes(c.class));

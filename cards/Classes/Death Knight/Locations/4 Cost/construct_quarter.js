@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Construct Quarter",
     stats: [0, 3],
@@ -10,6 +15,9 @@ module.exports = {
     cooldown: "2",
     id: 251,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     use(plr, game, self) {
         let target = game.interact.selectTarget("Destroy a friendly minion to summon a 4/5 Undead with Rush.", false, "friendly", "minion");
         if (!target) return -1;

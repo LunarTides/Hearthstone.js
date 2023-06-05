@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Rotface",
     stats: [4, 6],
@@ -10,6 +15,9 @@ module.exports = {
     set: "Knights of the Frozen Throne",
     id: 121,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     passive(plr, game, self, key, val) {
         if (key != "DamageMinion") return;
         if (val[0] != self || self.getHealth() <= 0) return;

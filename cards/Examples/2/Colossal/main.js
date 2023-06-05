@@ -1,3 +1,8 @@
+// Created by Hand
+
+/**
+ * @type {import("../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Colossal Example", // There's a pun here somewhere
     stats: [5, 3],
@@ -16,6 +21,9 @@ module.exports = {
      */
     uncollectible: true,
 
+    /**
+     * @type {import("../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game) {
         game.interact.dredge();
     }

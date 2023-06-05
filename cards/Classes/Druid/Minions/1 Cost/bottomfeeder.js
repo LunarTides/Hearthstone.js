@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Bottomfeeder",
     stats: [1, 1],
@@ -10,6 +15,9 @@ module.exports = {
     set: "Voyage to the Sunken City",
     id: 6,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     deathrattle(plr, game, card) {
         const minion = new game.Card("Bottomfeeder", plr);
 

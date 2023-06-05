@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Pounce",
     desc: "Give your hero +2 Attack this turn.",
@@ -8,6 +13,9 @@ module.exports = {
     set: "Rastakhan's Rumble",
     id: 12,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, card) {
         plr.attack += 2;
     }

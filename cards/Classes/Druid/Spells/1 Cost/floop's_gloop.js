@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Floop's Gloop",
     displayName: "Floop's Glorious Gloop",
@@ -10,6 +15,9 @@ module.exports = {
     spellClass: "Nature",
     id: 138,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         // Gain Mana
         let remove = game.functions.addEventListener("KillMinion", true, () => {

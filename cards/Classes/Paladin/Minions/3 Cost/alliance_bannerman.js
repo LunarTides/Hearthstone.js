@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Alliance Bannerman",
     stats: [2, 2],
@@ -10,6 +15,9 @@ module.exports = {
     set: "United in Stormwind",
     id: 259,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         let list = plr.deck.filter(c => c.type == "Minion");
         let minion = game.functions.randList(list, false);

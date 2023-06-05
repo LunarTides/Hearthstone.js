@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Prince Renathal",
     stats: [3, 4],
@@ -14,6 +19,9 @@ module.exports = {
     },
     id: 197,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     startofgame(plr, game, self) {
         plr.maxHealth = 35;
         plr.health = plr.maxHealth;

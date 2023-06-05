@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Raid Boss Onyxia",
     stats: [8, 8],
@@ -11,11 +16,17 @@ module.exports = {
     keywords: ["Rush"],
     id: 163,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     passive(plr, game, self, key, val) {
         if (game.board[plr.id].filter(m => m.name == "Onyxian Whelp").length) self.immune = true;
         else self.immune = false;
     },
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         let amount = 6 - game.board[plr.id].length;
 

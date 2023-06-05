@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Crystal Power",
     desc: "Choose One - Deal 2 damage to a minion; or Restore 5 Health.",
@@ -8,6 +13,9 @@ module.exports = {
     set: "Rise of Shadows",
     id: 17,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, card) {
         let choice = game.interact.chooseOne('Deal 2 damage to a minion; or Restore 5 Health.', ['2 Damage', '5 Health']);
         

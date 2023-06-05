@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Contraband Stash",
     desc: "Replay 5 cards from other classes you've played this game.",
@@ -8,6 +13,9 @@ module.exports = {
     set: "Fractured in Alterac Valley",
     id: 285,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         if (!game.events.PlayCard) return;
 

@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Cannibalize",
     desc: "Destroy a minion. Restore its Health to all friendly characters.",
@@ -9,6 +14,9 @@ module.exports = {
     spellClass: "Shadow",
     id: 241,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         let target = game.interact.selectTarget("Destroy a minion. Restore its Health to all friendly characters.", true, null, "minion");
         if (!target) return -1;

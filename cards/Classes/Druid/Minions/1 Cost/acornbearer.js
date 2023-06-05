@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Acornbearer",
     stats: [2, 1],
@@ -10,6 +15,9 @@ module.exports = {
     set: "Rise of Shadows",
     id: 5,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     deathrattle(plr, game, card) {
         plr.addToHand(new game.Card("Acornbearer Squirrel", plr));
         plr.addToHand(new game.Card("Acornbearer Squirrel", plr));

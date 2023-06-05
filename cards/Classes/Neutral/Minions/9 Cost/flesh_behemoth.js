@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Flesh Behemoth",
     stats: [4, 8],
@@ -11,6 +16,9 @@ module.exports = {
     keywords: ["Taunt"],
     id: 132,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     deathrattle(plr, game, self) {
         let cards = plr.deck.filter(c => c.type == "Minion" && game.functions.matchTribe(c.tribe, "Undead"));
         let card = game.functions.randList(cards, false);

@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Elwynn Boar Sword",
     displayName: "Sword of a Thousand Truths",
@@ -11,6 +16,9 @@ module.exports = {
     uncollectible: true,
     id: 136,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     passive(plr, game, self, key, val) {
         if (key != "Attack") return;
 

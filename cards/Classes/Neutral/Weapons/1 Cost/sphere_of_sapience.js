@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Sphere of Sapience",
     stats: [0, 4],
@@ -9,6 +14,9 @@ module.exports = {
     set: "Scholomance Academy",
     id: 60,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     passive(plr, game, self, key, val) {
         if (key != "StartTurn" || game.player == plr) return;
 

@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Astalor Protector",
     displayName: "Astalor, the Protector",
@@ -12,6 +17,9 @@ module.exports = {
     uncollectible: true,
     id: 148,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         plr.addToHand(new game.Card("Astalor Flamebringer", plr));
 

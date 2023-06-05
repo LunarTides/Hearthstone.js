@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Woecleaver",
     stats: [3, 3],
@@ -9,6 +14,9 @@ module.exports = {
     set: "Kobolds & Catacombs",
     id: 131,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     passive(plr, game, self, key, val) {
         if (key != "Attack") return;
 

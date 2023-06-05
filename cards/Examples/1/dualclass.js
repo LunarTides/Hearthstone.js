@@ -1,3 +1,8 @@
+// Created by Hand
+
+/**
+ * @type {import("../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Dual-Class Example",
     stats: [1, 1],

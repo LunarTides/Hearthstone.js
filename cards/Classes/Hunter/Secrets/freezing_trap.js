@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Freezing Trap",
     desc: "Secret: When an enemy minion attacks, return it to its owner's hand, it costs (2) more.",
@@ -9,6 +14,9 @@ module.exports = {
     spellClass: "Frost",
     id: 31,
 
+    /**
+     * @type {import("../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, card) {
         game.functions.addQuest("Secret", plr, card, "Attack", 1, (attack, turn, done) => {
             let [attacker, target] = attack;

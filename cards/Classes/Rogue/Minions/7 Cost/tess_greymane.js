@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Tess Greymane",
     stats: [6, 6],
@@ -10,6 +15,9 @@ module.exports = {
     set: "The Witchwood",
     id: 286,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         if (!game.events.PlayCard) return;
 

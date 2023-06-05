@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Psychic Conjurer",
     stats: [1, 1],
@@ -10,6 +15,9 @@ module.exports = {
     set: "Basic",
     id: 62,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         let possible_cards = game.opponent.deck;
         if (possible_cards.length <= 0) return;

@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Elise Starseeker",
     stats: [3, 5],
@@ -10,6 +15,9 @@ module.exports = {
     set: "Core",
     id: 48,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, card) {
         plr.shuffleIntoDeck(new game.Card("Map to the Golden Monkey", plr));
     }

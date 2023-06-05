@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Petting Zoo",
     desc: "Summon a 3/3 Strider. Repeat for each Secret you control.",
@@ -8,6 +13,9 @@ module.exports = {
     set: "Madness at the Darkmoon Faire",
     id: 227,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         let strider = new game.Card("Darkmoon Strider", plr);
 

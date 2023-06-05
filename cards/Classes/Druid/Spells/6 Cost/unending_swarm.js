@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Unending Swarm",
     desc: "Resurrect all friendly minions that costs (2) or less.",
@@ -8,6 +13,9 @@ module.exports = {
     set: "March of the Lich King",
     id: 143,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         game.graveyard[plr.id].forEach(m => {
             if (m.mana > 2) return;
