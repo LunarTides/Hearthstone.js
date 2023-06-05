@@ -10,6 +10,7 @@ module.exports = {
 
     cast(plr, game, self) {
         let card = game.interact.dredge();
+        if (!card) return;
 
         game.board.forEach(p => {
             p.forEach(m => {
