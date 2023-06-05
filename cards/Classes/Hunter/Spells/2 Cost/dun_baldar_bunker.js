@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Dun Baldar Bunker",
     desc: "At the end of your turn, draw a Secret and set its Cost to (1). Lasts 3 turns.",
@@ -8,6 +13,9 @@ module.exports = {
     set: "Fractured in Alterac Valley",
     id: 220,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         game.functions.addEventListener("EndTurn", (key, val) => {
             return game.player == plr;

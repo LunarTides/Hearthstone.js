@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Grimoire of Sacrifice",
     desc: "Destroy a friendly minion. Deal 2 damage to all enemy minions.",
@@ -9,6 +14,9 @@ module.exports = {
     spellClass: "Shadow",
     id: 288,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         let target = game.interact.selectTarget("Destroy a friendly minion.", true, "friendly", "minion");
         if (!target) return -1;

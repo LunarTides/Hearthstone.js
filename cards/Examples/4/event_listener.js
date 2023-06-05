@@ -1,3 +1,8 @@
+// Created by Hand
+
+/**
+ * @type {import("../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Event Listener Example",
     stats: [1, 1],
@@ -9,6 +14,9 @@ module.exports = {
     rarity: "Free",
     uncollectible: true,
 
+    /**
+     * @type {import("../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         // Add an event listener.
         // The first argument is the key to listen for.

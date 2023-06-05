@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Wave of Apathy",
     desc: "Set the Attack of all enemy minions to 1 until your next turn.",
@@ -8,6 +13,9 @@ module.exports = {
     set: "Scholomance Academy",
     id: 174,
 
+    /**
+     * @type {import("../../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         game.board[plr.getOpponent().id].forEach(m => {
             self.storage.push([m, m.getAttack()]);

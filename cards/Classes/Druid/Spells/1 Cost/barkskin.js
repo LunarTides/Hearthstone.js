@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Barkskin",
     desc: "Give a minion +3 Health. Gain 3 Armor.",
@@ -9,6 +14,9 @@ module.exports = {
     spellClass: "Nature",
     id: 15,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, card) {
         let target = game.interact.selectTarget("Give a minion +3 Health.", true, null, "minion");
 

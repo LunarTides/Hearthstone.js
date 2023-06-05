@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Hagatha the Witch",
     desc: "&BBattlecry:&R Deal 3 damage to all minions.",
@@ -9,6 +14,9 @@ module.exports = {
     hpCost: 0,
     id: 310,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         // Deal 3 damage to all minions.
         game.board.forEach(p => {
@@ -33,6 +41,9 @@ module.exports = {
         }, -1);
     },
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     heropower(plr, game, self) {
         if (plr.ai) return -1;
 

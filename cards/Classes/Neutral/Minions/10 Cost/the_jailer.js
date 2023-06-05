@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "The Jailer",
     stats: [10, 10],
@@ -9,7 +14,10 @@ module.exports = {
     rarity: "Legendary",
     set: "Murder at Castle Nathria",
     id: 58,
-            
+
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, card) {
         plr.deck = [];
 

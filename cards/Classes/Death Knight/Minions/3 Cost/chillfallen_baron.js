@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Chillfallen Baron",
     stats: [2, 2],
@@ -10,10 +15,16 @@ module.exports = {
     set: "Core",
     id: 187,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         plr.drawCard();
     },
     
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     deathrattle(plr, game, self) {
         plr.drawCard();
     }

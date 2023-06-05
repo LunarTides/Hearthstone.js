@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Radiant Elemental",
     stats: [2, 3],
@@ -10,6 +15,9 @@ module.exports = {
     set: "Core",
     id: 63,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     passive(plr, game, card, key, val) {
         plr.hand.filter(c => c.type == "Spell").forEach(c => {
             //c.mana--;

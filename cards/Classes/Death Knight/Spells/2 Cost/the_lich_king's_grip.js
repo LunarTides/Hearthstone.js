@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "The Lich King's Grip",
     displayName: "Death Grip",
@@ -11,6 +16,9 @@ module.exports = {
     uncollectible: true,
     id: 127,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         let minion = plr.getOpponent().deck.filter(c => c.type == "Minion");
         minion = game.functions.randList(minion, false);

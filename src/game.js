@@ -5,11 +5,6 @@ const { Card }      = require("./card");
 const { Interact }  = require("./interact");
 const { AI }        = require('./ai');
 
-// Event key typdef
-/**
- * @typedef {"FatalDamage" | "EndTurn" | "StartTurn" | "HealthRestored" | "UnspentMana" | "GainOverload" | "GainHeroAttack" | "TakeDamage" | "PlayCard" | "PlayCardUnsafe" | "SummonMinion" | "KillMinion" | "DamageMinion" | "CancelCard" | "CastSpellOnMinion" | "TradeCard" | "FreezeCard" | "AddCardToDeck" | "AddCardToHand" | "DrawCard" | "SpellDealsDamage" | "Attack" | "HeroPower" | "Eval"} EventKeys
- */
-
 class EventManager {
     /**
      * @param {Game} game 
@@ -25,8 +20,8 @@ class EventManager {
     /**
      * Do card passives
      *
-     * @param {EventKeys} key The key of the event
-     * @param {any} val The value of the event
+     * @param {import('./types').EventKeys} key The key of the event
+     * @param {import('./types').EventValues} val The value of the event
      *
      * @returns {boolean} Success
      */
@@ -103,8 +98,8 @@ class EventManager {
      * Update quests and secrets
      *
      * @param {"Secret" | "Quest" | "Questline"} quests_name The type of quest to update
-     * @param {EventKeys} key The key of the event
-     * @param {any} val The value of the event
+     * @param {import('./types').EventKeys} key The key of the event
+     * @param {import('./types').EventValues} val The value of the event
      * @param {Player} plr The owner of the quest
      *
      * @returns {bool} Success
@@ -136,8 +131,8 @@ class EventManager {
     /**
      * Broadcast an event
      *
-     * @param {EventKeys} key The key of the event
-     * @param {any} val The value of the event
+     * @param {import('./types').EventKeys} key The key of the event
+     * @param {import('./types').EventValues} val The value of the event
      * @param {Player} plr The player who caused the event to happen
      * @param {boolean} [updateHistory=true] Whether or not to update the history
      *

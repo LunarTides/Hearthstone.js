@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "The Countess",
     stats: [7, 7],
@@ -10,6 +15,9 @@ module.exports = {
     set: "Murder at Castle Nathria",
     id: 268,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         // Check for Neutral cards.
         let neutral_cards = plr.deck.filter(c => c.class.includes("Neutral"));

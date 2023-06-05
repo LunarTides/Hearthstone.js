@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Zephrys the Great",
     stats: [3, 2],
@@ -11,6 +16,9 @@ module.exports = {
     id: 168,
     conditioned: ["battlecry"],
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         let list = game.functions.getCards().filter(c => c.set == "Legacy");
 
@@ -19,6 +27,9 @@ module.exports = {
         plr.addToHand(card);
     },
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     condition(plr, game, self) {
         return game.functions.highlander(plr);
     }

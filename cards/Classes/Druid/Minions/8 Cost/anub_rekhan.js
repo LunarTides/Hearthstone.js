@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Anub Rekhan",
     displayName: "Anub'Rekhan",
@@ -11,6 +16,9 @@ module.exports = {
     set: "March of the Lich King",
     id: 166,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         plr.armor += 8;
 

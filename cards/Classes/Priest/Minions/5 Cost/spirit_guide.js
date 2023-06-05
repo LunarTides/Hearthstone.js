@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Spirit Guide",
     stats: [5, 5],
@@ -11,6 +16,9 @@ module.exports = {
     keywords: ["Taunt"],
     id: 66,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     deathrattle(plr, game, self) {
         const f = (l) => {
             let card = game.functions.randList(l);

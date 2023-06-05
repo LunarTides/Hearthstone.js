@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Divine Spirit",
     desc: "Double a minion's Health.",
@@ -9,6 +14,9 @@ module.exports = {
     spellClass: "Holy",
     id: 72,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, card) {
         let target = game.interact.selectTarget("Double a minion's Health.", true, null, "minion");
 

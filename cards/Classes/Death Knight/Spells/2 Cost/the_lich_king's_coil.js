@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "The Lich King's Coil",
     displayName: "Death Coil",
@@ -11,6 +16,9 @@ module.exports = {
     uncollectible: true,
     id: 126,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         let target = game.interact.selectTarget("Deal 5 damage to an enemy, or restore 5 Health to a friendly character.", true);
         if (!target) return -1;

@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Wound Prey",
     desc: "Deal 1 damage. Summon a 1/1 Hyena with Rush.",
@@ -8,6 +13,9 @@ module.exports = {
     set: "Forged in the Barrens",
     id: 216,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         let target = game.interact.selectTarget(`Deal ${1 + plr.spellDamage} damage`, true);
         if (!target) return -1;

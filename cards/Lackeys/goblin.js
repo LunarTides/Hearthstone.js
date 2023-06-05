@@ -1,3 +1,8 @@
+// Created by Hand (before the Card Creator Existed)
+
+/**
+ * @type {import("../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Goblin Lackey",
     stats: [1, 1],
@@ -11,6 +16,9 @@ module.exports = {
     uncollectible: true,
     id: 90,
 
+    /**
+     * @type {import("../../src/types").KeywordMethod}
+     */
     battlecry(plr, game) {
         let target = game.interact.selectTarget("Give a friendly minion +1 Attack and Rush", "friendly", "minion");
         if (!target) return -1;

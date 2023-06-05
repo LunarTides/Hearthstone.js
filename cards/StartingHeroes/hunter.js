@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Hunter Starting Hero",
     displayName: "Rexxar",
@@ -11,6 +16,9 @@ module.exports = {
     uncollectible: true,
     id: 96,
 
+    /**
+     * @type {import("../../src/types").KeywordMethod}
+     */
     heropower(plr, game, self) {
         game.attack(2, plr.getOpponent());
     }

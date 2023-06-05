@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Flipper Friends",
     desc: "Choose One - Summon a 6/6 Orca with Taunt; or six 1/1 Otters with Rush.",
@@ -9,6 +14,9 @@ module.exports = {
     spellClass: "Nature",
     id: 155,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         let choice = game.interact.chooseOne("Summon a 6/6 Orca with Taunt; or six 1/1 Otters with Rush", ["Orca", "Otter"]);
         let name = choice == 0 ? "Orca" : "Otter";

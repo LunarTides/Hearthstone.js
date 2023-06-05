@@ -1,3 +1,8 @@
+// Created by Hand (before the Card Creator Existed)
+
+/**
+ * @type {import("../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Faceless Lackey",
     stats: [1, 1],
@@ -11,6 +16,9 @@ module.exports = {
     uncollectible: true,
     id: 89,
 
+    /**
+     * @type {import("../../src/types").KeywordMethod}
+     */
     battlecry(plr, game) {
         // filter out all cards that aren't 2-cost minions
         let minions = game.functions.getCards().filter(card => card.type === "Minion" && card.mana === 2);

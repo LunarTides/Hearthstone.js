@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Death Knight Starting Hero",
     displayName: "The Lich King",
@@ -11,6 +16,9 @@ module.exports = {
     uncollectible: true,
     id: 93,
 
+    /**
+     * @type {import("../../src/types").KeywordMethod}
+     */
     heropower(plr, game, self) {
         let minion = new game.Card("Death Knight Frail Ghoul", plr);
 

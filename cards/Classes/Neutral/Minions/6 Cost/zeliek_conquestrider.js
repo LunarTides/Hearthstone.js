@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Zeliek Conquestrider",
     displayName: "Zeliek, Conquestrider",
@@ -12,6 +17,9 @@ module.exports = {
     keywords: ["Taunt"],
     uncollectible: true,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     deathrattle(plr, game, self) {
         let card = new game.Card("Blaumeaux Faminerider", plr);
         card.activate("deathrattle");

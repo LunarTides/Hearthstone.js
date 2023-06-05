@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Paladin Starting Hero",
     displayName: "Uther Lightbringer",
@@ -11,6 +16,9 @@ module.exports = {
     uncollectible: true,
     id: 98,
 
+    /**
+     * @type {import("../../src/types").KeywordMethod}
+     */
     heropower(plr, game, self) {
         const card = new game.Card("Silver Hand Recruit", plr);
 

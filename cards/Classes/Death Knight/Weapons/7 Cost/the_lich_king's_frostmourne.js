@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "The Lich King's Frostmourne",
     displayName: "Frostmourne",
@@ -11,6 +16,9 @@ module.exports = {
     uncollectible: true,
     id: 129,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     passive(plr, game, self, key, val) {
         if (key != "Attack") return;
         if (val[0] != plr || !val[1] instanceof game.Card) return;
@@ -18,6 +26,9 @@ module.exports = {
         if (val[1].getHealth() <= 0) self.storage.push(val[1]); // The minion has not taken damage yet.
     },
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     deathrattle(plr, game, self) {
         self.storage.forEach(m => {
             let minion = new game.Card(m.name, plr);

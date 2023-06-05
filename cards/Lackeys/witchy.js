@@ -1,3 +1,8 @@
+// Created by Hand (before the Card Creator Existed)
+
+/**
+ * @type {import("../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Witchy Lackey",
     stats: [1, 1],
@@ -11,6 +16,9 @@ module.exports = {
     uncollectible: true,
     id: 92,
 
+    /**
+     * @type {import("../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, minion) {
         let target = game.interact.selectTarget("Transform a friendly minion into one that costs (1) more.", "friendly", "minion");
         if (!target || target.mana >= 10) return -1;

@@ -1,3 +1,8 @@
+// Created by Hand
+
+/**
+ * @type {import("../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Passive Example",
     stats: [1, 1],
@@ -9,6 +14,9 @@ module.exports = {
     rarity: "Free",
     uncollectible: true,
 
+    /**
+     * @type {import("../../../src/types").KeywordMethod}
+     */
     passive(plr, game, self, key, val) {
         // Passive is kinda like a mini event listener.
         // The passive lasts as long as the minion is on the board. Use `handpassive` instead for the passive to last as long as the minion is in a hand.

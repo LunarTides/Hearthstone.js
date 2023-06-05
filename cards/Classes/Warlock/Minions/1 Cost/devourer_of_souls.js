@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Devourer of Souls",
     stats: [1, 3],
@@ -10,6 +15,9 @@ module.exports = {
     set: "March of the Lich King",
     id: 287,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     passive(plr, game, self, key, val) {
         if (key != "KillMinion" || val.plr != plr || !val.blueprint.deathrattle) return;
 

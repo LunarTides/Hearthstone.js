@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Blackwater Behemoth Lure",
     displayName: "Behemoth's Lure",
@@ -11,6 +16,9 @@ module.exports = {
     set: "Voyage to the Sunken City",
     uncollectible: true,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     passive(plr, game, self, key, val) {
         if (key != "EndTurn" || game.player != plr) return;
 

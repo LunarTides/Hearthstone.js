@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Deadly Poison",
     desc: "Give your weapon +2 Attack.",
@@ -9,6 +14,9 @@ module.exports = {
     spellClass: "Nature",
     id: 273,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         if (!plr.weapon) return -1;
 

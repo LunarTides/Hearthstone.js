@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Bladestorm",
     desc: "Deal 1 damage to all minions. Repeat until one dies.",
@@ -8,6 +13,9 @@ module.exports = {
     set: "Ashes of Outland",
     id: 112,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         let hasDied = false;
         let failsafe = 0;

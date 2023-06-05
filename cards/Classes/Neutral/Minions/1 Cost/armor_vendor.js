@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Armor Vendor",
     stats: [1, 3],
@@ -10,6 +15,9 @@ module.exports = {
     set: "Madness at the Darkmoon Faire",
     id: 32,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         game.player1.armor += 4;
         game.player2.armor += 4;

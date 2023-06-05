@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Maxima Blastenheimer",
     stats: [4, 4],
@@ -10,6 +15,9 @@ module.exports = {
     set: "Madness at the Darkmoon Faire",
     id: 221,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         let list = plr.deck.filter(c => c.type == "Minion");
         if (!list) return;

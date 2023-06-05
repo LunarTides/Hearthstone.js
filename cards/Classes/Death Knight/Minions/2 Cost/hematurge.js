@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Hematurge",
     stats: [2, 3],
@@ -11,6 +16,9 @@ module.exports = {
     runes: "BB",
     id: 184,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         const discoverBloodRune = () => {
             let list = game.functions.getCards();

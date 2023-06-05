@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Mage Starting Hero",
     displayName: "Jaina Proudmoore",
@@ -11,6 +16,9 @@ module.exports = {
     uncollectible: true,
     id: 97,
 
+    /**
+     * @type {import("../../src/types").KeywordMethod}
+     */
     heropower(plr, game, self) {
         const target = game.interact.selectTarget("Deal 1 damage.", "dontupdate");
         if (!target) return -1;

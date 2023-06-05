@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Explosive Trap",
     desc: "Secret: When your hero is attacked, deal 2 damage to all enemies.",
@@ -9,6 +14,9 @@ module.exports = {
     spellClass: "Fire",
     id: 30,
 
+    /**
+     * @type {import("../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, card) {
         game.functions.addQuest("Secret", plr, card, "Attack", 1, (attack, turn, done) => {
             let [attacker, target] = attack;

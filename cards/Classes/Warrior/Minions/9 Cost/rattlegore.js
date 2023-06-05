@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Rattlegore",
     stats: [9, 9],
@@ -10,6 +15,9 @@ module.exports = {
     set: "Scholomance Academy",
     id: 133,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     deathrattle(plr, game, self) {
         let stats = self.backups.init.stats;
 

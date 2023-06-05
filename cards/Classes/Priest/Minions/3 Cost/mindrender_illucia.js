@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Mindrender Illucia",
     stats: [1, 3],
@@ -10,6 +15,9 @@ module.exports = {
     set: "Scholomance Academy",
     id: 248,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         let old_hand = plr.hand;
 

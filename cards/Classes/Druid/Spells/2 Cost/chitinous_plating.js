@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Chitinous Plating",
     desc: "Gain 4 Armor. At the start of your next turn, gain 4 more.",
@@ -8,6 +13,9 @@ module.exports = {
     set: "March of the Lich King",
     id: 137,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         plr.armor += 4;
 

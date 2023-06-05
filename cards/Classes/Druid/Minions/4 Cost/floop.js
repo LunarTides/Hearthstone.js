@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Floop",
     displayName: "Flobbidinous Floop",
@@ -11,6 +16,9 @@ module.exports = {
     set: "The Boomsday Project",
     id: 152,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     handpassive(plr, game, self, key, val) {
         if (key != "PlayCard") return;
         if (val.type != "Minion" || val.plr != plr) return;
@@ -20,6 +28,9 @@ module.exports = {
         self.storage.push(val);
     },
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         if (self.storage.length == 0) return;
 

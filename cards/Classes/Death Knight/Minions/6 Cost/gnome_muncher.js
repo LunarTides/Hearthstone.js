@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Gnome Muncher",
     stats: [5, 6],
@@ -12,6 +17,9 @@ module.exports = {
     keywords: ["Taunt", "Lifesteal"],
     id: 194,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     passive(plr, game, self, key, val) {
         if (key != "EndTurn" || game.player != plr) return;
 

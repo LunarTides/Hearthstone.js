@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Tracking",
     desc: "Discover a card from your deck.",
@@ -8,6 +13,9 @@ module.exports = {
     set: "Legacy",
     id: 215,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         let list = plr.deck;
 

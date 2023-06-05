@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Cat Trick",
     desc: "Secret: After your opponent casts a spell, summon a 4/2 Panther with Stealth.",
@@ -8,6 +13,9 @@ module.exports = {
     set: "One Night in Karazhan",
     id: 218,
 
+    /**
+     * @type {import("../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         game.functions.addQuest("Secret", plr, self, "PlayCard", 1, (card, turn, done) => {
             if (card.type != "Spell") return false;

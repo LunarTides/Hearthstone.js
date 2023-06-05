@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Azsharan Gardens",
     desc: "Give all minions in your hand +1/+1. Put a 'Sunken Gardens' on the bottom of your deck.",
@@ -8,6 +13,9 @@ module.exports = {
     set: "Voyage to the Sunken City",
     id: 14,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, card) {
         plr.hand.forEach(c => {
             if (c.type === "Minion") {

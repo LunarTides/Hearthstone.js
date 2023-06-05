@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Duke Theotar",
     displayName: "Theotar, the Mad Duke",
@@ -11,6 +16,9 @@ module.exports = {
     set: "Murder at Castle Nathria",
     id: 167,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         let opHand = plr.getOpponent().hand;
 

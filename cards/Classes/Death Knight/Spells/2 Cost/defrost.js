@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Defrost",
     desc: "Draw a card. Spend 2 Corpses to draw another.",
@@ -9,7 +14,10 @@ module.exports = {
     spellClass: "Frost",
     runes: "F",
     id: 1,
-            
+
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, card) {
         plr.drawCard();
 

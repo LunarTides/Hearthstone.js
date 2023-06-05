@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Galakrond the Tempest",
     displayName: "Galakrond, the Tempest",
@@ -10,6 +15,9 @@ module.exports = {
     hpCost: 2,
     id: 325,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         const x = self.invoke_count;
         const y = (Math.ceil((x + 1) / 2) + Math.round(x * 0.15)) * 2;
@@ -31,6 +39,9 @@ module.exports = {
         plr.setWeapon(weapon);
     },
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     heropower(plr, game, self) {
         const card = new game.Card("Windswept Elemental", plr);
         if (!card) return;
@@ -38,6 +49,9 @@ module.exports = {
         game.summonMinion(card, plr);
     },
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     invoke(plr, game, self) {
         if (!self.invoke_count) self.invoke_count = 0;
         if (self.invoke_count >= 3) self.invoke_count = 3;
@@ -45,6 +59,9 @@ module.exports = {
         self.invoke_count++;
     },
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     placeholders(plr, game, self) {
         const x = self.invoke_count;
         const y = (Math.ceil((x + 1) / 2) + Math.round(x * 0.15)) * 2;

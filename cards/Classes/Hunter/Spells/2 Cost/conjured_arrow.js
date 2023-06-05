@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Conjured Arrow",
     desc: "Deal 2 damage to a minion. Manathirst (6): Draw that many cards.",
@@ -9,6 +14,9 @@ module.exports = {
     spellClass: "Arcane",
     id: 219,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         let dmg = 2 + plr.spellDamage;
 

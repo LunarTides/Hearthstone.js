@@ -3,48 +3,6 @@ const { Player } = require("./player");
 const { get } = require("./shared");
 
 /**
- * @callback KeywordMethod
- * @param {Player} plr
- * @param {Game} game
- * @param {Card} self
- * 
- * @param {import("./game").EventKeys} [key]
- * @param {any} [val]
- * 
- * @returns {undefined | -1}
- */
-
-/**
- * @typedef {"Minion" | "Spell" | "Weapon" | "Hero" | "Location"} Type
- */
-
-/**
- * @typedef {"Death Knight" | "Demon Hunter" | "Druid" | "Hunter" | "Mage" | "Paladin" | "Priest" | "Rogue" | "Shaman" | "Warlock" | "Warrior"} Class
- */
-
-/**
- * @typedef {"Free" | "Common" | "Rare" | "Epic" | "Legendary"} Rarity
- */
-
-/**
- * @typedef {Object} Blueprint
- * @property {string} name
- * @property {string} desc
- * @property {number} mana
- * @property {Type} type
- * @property {Class} class
- * @property {Rarity} rarity
- * 
- * @property {boolean} [uncollectible=false]
- * @property {number} [id]
- * 
- * @property {[number]} [stats]
- * @property {string} [tribe]
- * 
- * @property {string} [spellClass]
- */
-
-/**
  * @type {Game}
  */
 let game = get();
@@ -60,7 +18,7 @@ class Card {
         game = get();
 
         /**
-         * @type {Blueprint}
+         * @type {import("./types").Blueprint}
          */
         this.blueprint = game.cards.find(c => c.name == name);
         
@@ -83,14 +41,19 @@ class Card {
         this.costType = "mana";
 
         /**
-         * @type {Type}
+         * @type {import("./types").CardType}
          */
         this.type = "Undefined";
 
         /**
-         * @type {Class}
+         * @type {import("./types").CardClass}
          */
         this.class = "Mage";
+
+        /**
+         * @type {import("./types").CardRarity}
+         */
+        this.rarity = "Free";
 
         this.dormant = false;
         this.corrupted = false;
@@ -100,6 +63,9 @@ class Card {
         this.immune = false;
         this.echo = false;
 
+        /**
+         * @type {import("./types").CardKeyword}
+         */
         this.keywords = [];
         this.storage = []; // Allow cards to store data for later use
 
@@ -109,7 +75,10 @@ class Card {
         this.infuse_num = -1; // The amount of infuse a card has. Set to -1 for no infuse.
         this.frozen_turn = -1;
 
-        this.spellClass = null;
+        /**
+         * @type {import("./types").SpellSchool}
+         */
+        this.spellClass = "General";
 
         this.attackTimes = 1; // The number of times a minion can attack, windfury: 2, mega-windfury: 4
         this.stealthDuration = 0; // The amount of turns stealth should last
@@ -182,7 +151,7 @@ class Card {
     /**
      * Adds a deathrattle to the card
      * 
-     * @param {KeywordMethod} _deathrattle The deathrattle to add
+     * @param {import("./types").KeywordMethod} _deathrattle The deathrattle to add
      * 
      * @returns {boolean} Success
      */

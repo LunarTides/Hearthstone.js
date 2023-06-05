@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Anachronos",
     stats: [8, 8],
@@ -10,6 +15,9 @@ module.exports = {
     set: "March of the Lich King",
     id: 267,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         let minions = [[], []];
 

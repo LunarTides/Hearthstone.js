@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "NZoth God of the Deep",
     displayName: "N'Zoth, God of the Deep",
@@ -11,6 +16,9 @@ module.exports = {
     set: "Madness at the Darkmoon Faire",
     id: 271,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         // Code taken from The Purator
 

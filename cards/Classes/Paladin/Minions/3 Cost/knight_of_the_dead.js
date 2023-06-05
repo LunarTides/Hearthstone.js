@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Knight of the Dead",
     stats: [5, 5],
@@ -10,6 +15,9 @@ module.exports = {
     set: "Return to Naxxramas",
     id: 260,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         let manathirst = self.manathirst(7);
         

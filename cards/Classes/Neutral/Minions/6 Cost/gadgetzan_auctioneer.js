@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Gadgetzan Auctioneer",
     stats: [4, 4],
@@ -10,6 +15,9 @@ module.exports = {
     set: "Core",
     id: 53,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     passive(plr, game, card, key, val) {
         if (key != "spellsCast" || game.player != plr) return;
         

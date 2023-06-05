@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Kel'Thuzad",
     stats: [6, 8],
@@ -10,6 +15,9 @@ module.exports = {
     set: "Naxxramas",
     id: 120,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     passive(plr, game, self, key, val) {
         if (key != "EndTurn") return;
 

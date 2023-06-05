@@ -1,3 +1,8 @@
+// Created by Hand
+
+/**
+ * @type {import("../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Discover Example",
     desc: "Discover a spell.",
@@ -7,6 +12,9 @@ module.exports = {
     rarity: "Free",
     uncollectible: true,
 
+    /**
+     * @type {import("../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         // The discover function needs a list of cards to choose from.
         // This list will act like a pool of cards.

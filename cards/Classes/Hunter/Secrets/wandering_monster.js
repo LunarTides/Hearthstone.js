@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Wandering Monster",
     desc: "&BSecret:&R When an enemy attacks your hero, summon a 3-Cost minion as the new target.",
@@ -8,6 +13,9 @@ module.exports = {
     set: "Kobolds & Catacombs",
     id: 225,
 
+    /**
+     * @type {import("../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         game.functions.addQuest("Secret", plr, self, "Attack", 1, (attack, turn, done) => {
             let [attacker, target] = attack;

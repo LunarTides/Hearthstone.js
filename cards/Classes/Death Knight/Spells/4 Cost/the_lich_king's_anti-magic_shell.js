@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "The Lich King's Anti-Magic Shell",
     displayName: "Anti-Magic Shell",
@@ -11,6 +16,9 @@ module.exports = {
     uncollectible: true,
     id: 123,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         game.board[plr.id].forEach(m => {
             m.addStats(2, 2);

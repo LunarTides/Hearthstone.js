@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Blaumeaux Faminerider",
     displayName: "Blaumeaux, Faminerider",
@@ -12,6 +17,9 @@ module.exports = {
     keywords: ["Lifesteal"],
     uncollectible: true,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     deathrattle(plr, game, self) {
         let stat = game.events.increment(plr, "rivendareCounter");
 

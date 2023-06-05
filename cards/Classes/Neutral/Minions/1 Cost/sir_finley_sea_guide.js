@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Sir Finley Sea Guide",
     displayName: "Sir Finley, Sea Guide",
@@ -11,6 +16,9 @@ module.exports = {
     set: "Voyage to the Sunken City",
     id: 233,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         let bottom_of_deck = plr.deck.splice(0, plr.hand.length);
 

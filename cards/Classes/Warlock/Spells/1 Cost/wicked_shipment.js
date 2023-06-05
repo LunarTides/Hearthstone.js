@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Wicked Shipment",
     desc: "&BTradeable.&R Summon 2 1/1 Imps. (Upgrades by 2 when &BTraded&R!)",
@@ -9,6 +14,9 @@ module.exports = {
     keywords: ["Tradeable"],
     id: 300,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     passive(plr, game, self, key, val) {
         if (self.storage.length > 0) return;
 
@@ -40,6 +48,9 @@ module.exports = {
         }, -1);
     },
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         // Remove the passive
         self.storage.push("remove");

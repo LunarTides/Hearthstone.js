@@ -1,3 +1,8 @@
+// Created by Hand
+
+/**
+ * @type {import("../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Manathirst Example",
     stats: [1, 2],
@@ -9,6 +14,9 @@ module.exports = {
     rarity: "Free",
     uncollectible: true,
 
+    /**
+     * @type {import("../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         // self.manathirst(mana_to_check, first_prompt, second_prompt)
         // If the plr has `mana_to_check` or more mana, `ret` will be true, and `prompt` will be `first_prompt`. If the plr has less than `mana_to_check`, `ret` will be false, and `prompt` will be `second_prompt`.

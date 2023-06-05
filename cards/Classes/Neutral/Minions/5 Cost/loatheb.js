@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Loatheb",
     stats: [5, 5],
@@ -10,6 +15,9 @@ module.exports = {
     set: "Naxxramas",
     id: 158,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         let remove = game.functions.addEventListener("", true, () => {
             plr.getOpponent().hand.filter(c => c.type == "Spell").forEach(c => {

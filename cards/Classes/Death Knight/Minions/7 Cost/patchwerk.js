@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Patchwerk",
     stats: [4, 6],
@@ -11,6 +16,9 @@ module.exports = {
     runes: "B",
     id: 195,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         let op = plr.getOpponent();
 

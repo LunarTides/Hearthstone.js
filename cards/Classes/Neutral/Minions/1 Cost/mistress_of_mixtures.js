@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Mistress of Mixtures",
     stats: [2, 2],
@@ -10,6 +15,9 @@ module.exports = {
     set: "Core",
     id: 34,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     deathrattle(plr, game, card) {
         game.player1.addHealth(4);
         game.player2.addHealth(4);

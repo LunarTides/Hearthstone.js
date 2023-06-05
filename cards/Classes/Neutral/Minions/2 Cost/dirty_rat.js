@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Dirty Rat",
     stats: [2, 6],
@@ -11,6 +16,9 @@ module.exports = {
     keywords: ["Taunt"],
     id: 150,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         let list = plr.getOpponent().hand.filter(c => c.type == "Minion");
         let minion = game.functions.randList(list, false);

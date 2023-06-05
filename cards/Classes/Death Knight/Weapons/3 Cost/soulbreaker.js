@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Soulbreaker",
     stats: [3, 2],
@@ -10,6 +15,9 @@ module.exports = {
     runes: "B",
     id: 189,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     passive(plr, game, self, key, val) {
         if (key != "Attack") return;
 

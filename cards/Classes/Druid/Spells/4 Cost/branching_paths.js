@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Branching Paths",
     desc: "Choose Twice - Draw a card; Give your minions +1 Attack; Gain 6 Armor.",
@@ -8,6 +13,9 @@ module.exports = {
     set: "Kobolds & Catacombs",
     id: 22,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, card) {
         let choices = game.interact.chooseOne('Draw a card; Give your minions +1 Attack; Gain 6 Armor.', ['Draw', '+1 Attack', "+6 Armor"], 2);
         

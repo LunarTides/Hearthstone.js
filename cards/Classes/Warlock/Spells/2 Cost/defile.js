@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Defile",
     desc: "Deal 1 damage to all minions. If any die, cast this again.",
@@ -9,6 +14,9 @@ module.exports = {
     spellClass: "Shadow",
     id: 294,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         let died = false;
 

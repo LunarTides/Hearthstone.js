@@ -1,3 +1,8 @@
+// Created by Hand
+
+/**
+ * @type {import("../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Combined Example 2 Corrupted",
     stats: [9, 9],
@@ -11,6 +16,9 @@ module.exports = {
     keywords: ["Dormant"],
     uncollectible: true,
 
+    /**
+     * @type {import("../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         game.interact.dredge();
     }

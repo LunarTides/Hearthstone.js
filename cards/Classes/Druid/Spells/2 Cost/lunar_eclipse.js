@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Lunar Eclipse",
     desc: "Deal 3 damage to a minion. Your next spell this turn costs (2) less.",
@@ -9,6 +14,9 @@ module.exports = {
     spellClass: "Arcane",
     id: 139,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         // Deal 3 damage to a minion.
         let minion = game.interact.selectTarget("Deal 3 damage to a minion.", true, null, "minion");

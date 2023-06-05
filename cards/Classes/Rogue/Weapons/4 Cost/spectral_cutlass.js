@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Spectral Cutlass",
     stats: [2, 2],
@@ -10,6 +15,9 @@ module.exports = {
     keywords: ["Lifesteal"],
     id: 283,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     passive(plr, game, self, key, val) {
         if (key != "PlayCard" || val.plr != plr || val == self || game.functions.validateClass(plr, val)) return;
 

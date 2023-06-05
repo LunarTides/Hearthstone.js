@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Shadow Visions",
     desc: "Discover a copy of a spell in your deck.",
@@ -9,6 +14,9 @@ module.exports = {
     spellClass: "Shadow",
     id: 176,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         let list = plr.deck.filter(c => c.type == "Spell");
 

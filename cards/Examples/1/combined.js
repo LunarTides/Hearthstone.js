@@ -1,3 +1,8 @@
+// Created by Hand
+
+/**
+ * @type {import("../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Combined Example 1",
     stats: [4, 4],
@@ -10,6 +15,9 @@ module.exports = {
     keywords: ["Taunt", "Divine Shield"],
     uncollectible: true,
 
+    /**
+     * @type {import("../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         // Ordering is important. In the description it says that it dredges first, then adds +1/+1.
         game.interact.dredge();

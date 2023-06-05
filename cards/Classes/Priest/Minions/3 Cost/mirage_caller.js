@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Mirage Caller",
     stats: [2, 3],
@@ -9,6 +14,9 @@ module.exports = {
     rarity: "Rare",
     id: 320,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         let target = game.interact.selectTarget("Choose a friendly minion. Summon a 1/1 copy of it.", false, "friendly", "minion");
         if (!target) return -1;

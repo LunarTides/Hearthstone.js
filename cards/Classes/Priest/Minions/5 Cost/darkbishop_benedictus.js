@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Darkbishop Benedictus",
     stats: [5, 6],
@@ -10,6 +15,9 @@ module.exports = {
     set: "United in Stormwind",
     id: 243,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     startofgame(plr, game, self) {
         // Condition
         let filtered_deck = plr.deck.filter(c => c.type == "Spell" && (!c.spellClass || !c.spellClass.includes("Shadow")));

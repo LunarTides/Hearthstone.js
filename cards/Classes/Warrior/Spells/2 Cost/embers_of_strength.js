@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Embers of Strength",
     desc: "Summon two 1/2 Guards with Taunt. Manathirst (6): Give them +1/+2.",
@@ -9,6 +14,9 @@ module.exports = {
     spellClass: "Fire",
     id: 110,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         let minion = new game.Card("Emberbound Guard", plr);
 

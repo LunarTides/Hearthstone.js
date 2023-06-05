@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Galakrond the Wretched",
     displayName: "Galakrond, the Wretched",
@@ -10,6 +15,9 @@ module.exports = {
     hpCost: 2,
     id: 324,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         // Look in `Galakrond, the Nightmare` for an explanation of this formula
         const x = self.invoke_count;
@@ -27,7 +35,10 @@ module.exports = {
             game.summonMinion(card, plr);
         }
     },
-    
+
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     heropower(plr, game, self) {
         for (let i = 0; i < 2; i++) {
             const card = new game.Card("Draconic Imp", plr);
@@ -37,6 +48,9 @@ module.exports = {
         }
     },
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     invoke(plr, game, self) {
         if (!self.invoke_count) self.invoke_count = 0;
         if (self.invoke_count >= 3) self.invoke_count = 3;
@@ -44,6 +58,9 @@ module.exports = {
         self.invoke_count++;
     },
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     placeholders(plr, game, self) {
         const x = self.invoke_count;
         const y = Math.ceil((x + 1) / 2) + Math.round(x * 0.15);

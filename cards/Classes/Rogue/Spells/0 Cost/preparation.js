@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Preparation",
     desc: "The next spell you cast this turn costs (2) less.",
@@ -8,6 +13,9 @@ module.exports = {
     set: "Legacy",
     id: 272,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         let stop = false;
 

@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Swashburglar",
     stats: [1, 1],
@@ -10,6 +15,9 @@ module.exports = {
     set: "One Night in Karazhan",
     id: 276,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         let list = game.functions.getCards().filter(c => !game.functions.validateClass(plr, c));
         let card = game.functions.randList(list);

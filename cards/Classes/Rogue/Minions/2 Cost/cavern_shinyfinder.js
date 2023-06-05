@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Cavern Shinyfinder",
     stats: [3, 1],
@@ -10,6 +15,9 @@ module.exports = {
     set: "Kobolds & Catacombs",
     id: 277,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         let weapons = plr.deck.filter(c => c.type == "Weapon");
         let weapon = game.functions.randList(weapons, false);

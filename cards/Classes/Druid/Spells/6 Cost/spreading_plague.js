@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Spreading Plague",
     desc: "Summon a 1/5 Scarab with Taunt. If your opponent has more minions, cast this again.",
@@ -9,6 +14,9 @@ module.exports = {
     spellClass: "Nature",
     id: 159,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         let minion = new game.Card("Spreading Plague Beetle", plr);
 

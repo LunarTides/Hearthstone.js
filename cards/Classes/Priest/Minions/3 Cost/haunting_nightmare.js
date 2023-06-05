@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Haunting Nightmare",
     desc: "&BDeathrattle:&R Haunt a card in your hand. When you play it, summon a 4/3 Soldier.",
@@ -10,6 +15,9 @@ module.exports = {
     stats: [4, 3],
     id: 240,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     deathrattle(plr, game, self) {
         // Choose a card
         let card;

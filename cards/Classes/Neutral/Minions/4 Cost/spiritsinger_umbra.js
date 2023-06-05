@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Spiritsinger Umbra",
     stats: [3, 4],
@@ -10,6 +15,9 @@ module.exports = {
     set: "Journey to Un'Goro",
     id: 50,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     passive(plr, game, card, key, val) {
         if (!["SummonMinion", "PlayCard"].includes(key) || val.type != "Minion" || game.player != plr) return; // If key is not "SummonMinion" or "PlayCard", return
         

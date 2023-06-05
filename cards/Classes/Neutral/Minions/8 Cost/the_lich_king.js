@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "The Lich King",
     stats: [8, 8],
@@ -11,6 +16,9 @@ module.exports = {
     keywords: ["Taunt"],
     id: 122,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     passive(plr, game, self, key, val) {
         if (key != "EndTurn" || game.player != plr) return;
 

@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Kobold Librarian",
     stats: [2, 1],
@@ -10,6 +15,9 @@ module.exports = {
     set: "Kobolds & Catacombs",
     id: 289,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         plr.drawCard();
         game.attack(2, plr);

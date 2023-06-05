@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Bolner Hammerbeak",
     stats: [1, 4],
@@ -9,6 +14,9 @@ module.exports = {
     rarity: "Legendary",
     id: 312,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     passive(plr, game, self, key, val) {
         if (key != "PlayCard") return;
         if (val.type != "Minion" || !val.battlecry) return;

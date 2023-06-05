@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Fel Rift",
     desc: "&BCasts When Drawn.&R Summon a 3/3 Dread Imp.",
@@ -10,6 +15,9 @@ module.exports = {
     keywords: ["Cast On Draw"],
     uncollectible: true,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         let imp = new game.Card("Dread Imp", plr);
 

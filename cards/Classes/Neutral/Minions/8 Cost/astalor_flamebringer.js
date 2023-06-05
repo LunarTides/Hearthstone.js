@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Astalor Flamebringer",
     displayName: "Astalor, the Flamebringer",
@@ -12,6 +17,9 @@ module.exports = {
     uncollectible: true,
     id: 147,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         let manathirst = self.manathirst(10);
 

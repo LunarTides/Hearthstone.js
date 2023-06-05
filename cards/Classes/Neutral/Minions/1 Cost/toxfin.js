@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Toxfin",
     stats: [1, 2],
@@ -9,6 +14,9 @@ module.exports = {
     rarity: "Common",
     id: 306,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         let target = game.interact.selectTarget(self.desc, false, "friendly", "minion");
         if (!target || !game.functions.matchTribe(target.tribe, "Murloc")) return -1;

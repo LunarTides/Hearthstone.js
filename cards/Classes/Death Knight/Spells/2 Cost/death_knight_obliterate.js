@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Death Knight Obliterate",
     displayName: "Obliterate",
@@ -10,6 +15,9 @@ module.exports = {
     runes: "B",
     id: 185,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         let target = game.interact.selectTarget("Destroy a minion.", true, null, "minion");
         if (!target) return -1;

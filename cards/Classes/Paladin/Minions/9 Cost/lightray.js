@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Lightray",
     stats: [5, 5],
@@ -11,6 +16,9 @@ module.exports = {
     keywords: ["Taunt"],
     id: 270,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     handpassive(plr, game, self, key, val) {
         if (!game.events.PlayCard) return; // Noone has played any cards yet.
         let cards_played = game.events.PlayCard[plr.id].map(c => c[0]).filter(c => c.class.includes("Paladin")).length;

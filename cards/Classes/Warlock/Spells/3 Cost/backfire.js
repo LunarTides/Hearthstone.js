@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Backfire",
     desc: "Draw 3 cards. Deal 3 damage to your hero.",
@@ -9,6 +14,9 @@ module.exports = {
     spellClass: "Fire",
     id: 292,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         for (let i = 0; i < 3; i++) plr.drawCard();
         game.attack(3, plr);

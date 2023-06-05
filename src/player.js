@@ -70,7 +70,7 @@ class Player {
         this.hero = null;
 
         /**
-         * @type {import("./card").Class}
+         * @type {import("./types").CardClass}
          */
         this.heroClass = "Mage";
         this.heroPowerCost = 2;

@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Felscream Blast",
     desc: "Lifesteal. Deal 1 damage to a minion and its neighbors.",
@@ -9,6 +14,9 @@ module.exports = {
     spellClass: "Fel",
     id: 198,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         let target = game.interact.selectTarget("Lifesteal. Deal 1 damage to a minion and its neighbors.", true, null, "minion");
         if (!target) return -1

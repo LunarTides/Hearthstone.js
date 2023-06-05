@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Shadowreaper Anduin",
     desc: "&BBattlecry:&R Destroy all minions with 5 or more Attack.",
@@ -9,6 +14,9 @@ module.exports = {
     hpDesc: "Deal 2 damage. After you play a card, refresh this.",
     id: 244,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         game.board.forEach(p => {
             p.forEach(m => {
@@ -25,6 +33,9 @@ module.exports = {
         }, -1);
     },
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     heropower(plr, game, self) {
         let target = game.interact.selectTarget("Deal 2 damage.", true);
         if (!target) return -1;

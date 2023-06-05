@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Class Action Lawyer",
     stats: [2, 3],
@@ -10,6 +15,9 @@ module.exports = {
     set: "Maw and Disorder",
     id: 255,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         // Condition
         let list = plr.deck.filter(c => c.class == "Neutral");
