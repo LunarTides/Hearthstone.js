@@ -68,10 +68,18 @@ class Card {
         this.displayName = name;
 
         /**
+         * @type {number | null}
+         */
+        this.id = null;
+
+        /**
          * @type {"Card"}
          */
         this.classType = "Card";
 
+        /**
+         * @type {"mana" | "armor" | "health"}
+         */
         this.costType = "mana";
 
         /**
