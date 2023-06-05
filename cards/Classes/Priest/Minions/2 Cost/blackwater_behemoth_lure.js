@@ -11,7 +11,9 @@ module.exports = {
     set: "Voyage to the Sunken City",
     uncollectible: true,
 
-    endofturn(plr, game, self) {
+    passive(plr, game, self, key, val) {
+        if (key != "EndTurn" || game.player != plr) return;
+
         let minion = game.functions.randList(game.board[plr.getOpponent().id], false);
         if (!minion) return;
 

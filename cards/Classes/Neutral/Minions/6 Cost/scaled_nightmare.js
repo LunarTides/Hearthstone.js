@@ -10,7 +10,9 @@ module.exports = {
     set: "Whispers of the Old Gods",
     id: 54,
 
-    startofturn(plr, game, card) {
-        card.addStats(card.getAttack(), 0);
+    passive(plr, game, self, key, val) {
+        if (key != "StartTurn" || game.player == plr) return;
+
+        self.addStats(self.getAttack(), 0);
     }
 }

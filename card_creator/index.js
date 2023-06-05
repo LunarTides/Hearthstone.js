@@ -1,5 +1,13 @@
 const rl = require("readline-sync");
 const fs = require("fs");
+const { Game } = require("../src/game");
+const { editor } = require("../config/general.json");
+
+const game = new Game({}, {});
+game.dirname = __dirname + "/../";
+
+game.functions.importCards(__dirname + "/../cards");
+game.functions.importConfig(__dirname + "/../config");
 
 let card = {};
 
@@ -7,6 +15,7 @@ let shouldExit = false;
 let type;
 
 let debug = false;
+let cctype = "Custom";
 
 function input(prompt) {
     const ret = rl.question(prompt);
@@ -177,7 +186,10 @@ function createCard(override_path = "", override_filename = "") {
     // Here it creates a default function signature
     let triggerText = ")";
     if (func.toLowerCase() == "passive") triggerText = ", key, val)";
-    if (func) func = `\n\n    ${func.toLowerCase()}(plr, game, self${triggerText} {\n\n    }`; // Examples: '\n\n    passive(plr, game, self, key, val) {\n\n    }', '\n\n    battlecry(plr, game, self) {\n\n    }'
+
+    let cleaned_desc = card.desc.replace(/(?<!~)&\w/g, ""); // Regular expression created by ChatGPT, it removes the "&B"'s but keeps the "~&B"'s since the '~' is the tag's '\'
+
+    if (func) func = `\n\n    ${func.toLowerCase()}(plr, game, self${triggerText} {\n        // ${cleaned_desc}\n        \n    }`; // Examples: '\n\n    passive(plr, game, self, key, val) {\n        // Your battlecries trigger twice\n        }', '\n\n    battlecry(plr, game, self) {\n\n    }'
 
     // If the type is Hero, we want the card to go to '.../Heroes/...' and not to '.../Heros/...'
     file_friendly_type = (type == "Hero") ? "Heroe" : type;
@@ -197,7 +209,7 @@ function createCard(override_path = "", override_filename = "") {
     if (override_filename) filename = override_filename; // If this function was passed in a filename, use that instead.
 
     // Get the latest card-id
-    let id = parseInt(fs.readFileSync(__dirname + "/../.latest_id", "utf8"));
+    let id = parseInt(fs.readFileSync(__dirname + "/../cards/.latest_id", "utf8"));
     let file_id = card.uncollectible ? "" : `\n    id: ${id},`; // Don't add an id if the card is uncollectible. Id's are only used when creating/importing a deck.
 
     // Generate the content of the card
@@ -211,7 +223,8 @@ function createCard(override_path = "", override_filename = "") {
     }
 
     let content = Object.entries(card).map(c => `${c[0]}: ${getTypeValue(c[1])}`); // name: "Test"
-    content = `module.exports = {
+    content = `// Created by the ${cctype} Card Creator
+module.exports = {
     ${content.join(',\n    ')},${file_id}${func}
 }`;
 
@@ -223,7 +236,7 @@ function createCard(override_path = "", override_filename = "") {
         // If debug mode is disabled, write the card to disk.
         
         // If the card is not uncollectible, increment the id in '.latest_id' by 1
-        if (!card.uncollectible) fs.writeFileSync(__dirname + "/../.latest_id", (id + 1).toString()); 
+        if (!card.uncollectible) fs.writeFileSync(__dirname + "/../cards/.latest_id", (id + 1).toString()); 
 
         // If the path the card would be written to doesn't exist, create it.
         if (!fs.existsSync(path)) fs.mkdirSync(path, { recursive: true });
@@ -240,8 +253,11 @@ function createCard(override_path = "", override_filename = "") {
 
     if (!override_path) rl.question(); // If the function was specified a path, assume the function was run from another file so don't pause it.
 
-    // Open vim on that card if it has a function to edit, and debug mode is disabled
-    if (func && !debug) require("child_process").exec(`start vim "${file_path}"`);
+    // Open the defined editor on that card if it has a function to edit, and debug mode is disabled
+    if (func && !debug) {
+        let success = game.functions.openWithArgs(editor, `"${file_path}"`);
+        if (!success) rl.question();
+    }
 }
 
 function main(override_type = "", override_path = "", override_filename = "", override_card = null) {
@@ -292,8 +308,13 @@ function set_debug(state) {
     debug = state;
 }
 
+function set_type(state) {
+    cctype = state;
+}
+
 exports.main = main;
 exports.set_debug = set_debug;
+exports.set_type = set_type;
 
 // If the program was run directly, run 'main'. This is the same as "if __name__ == '__main__'" in python.
 if (require.main == module) main();

@@ -1,6 +1,6 @@
 'use strict';
 
-const colors = require("colors");
+require("colors");
 
 try {
     require(__dirname + "/../src/game");
@@ -19,7 +19,7 @@ game.dirname = __dirname + "/../";
 set(game);
 
 functions.importCards(__dirname + "/../cards");
-functions.importConfig(__dirname + "/config");
+functions.importConfig(__dirname + "/../config");
 // ===========================================================
 
 const config = game.config;
@@ -61,7 +61,8 @@ let settings = {
         prevQuery: []
     },
     deckcode: {
-        cardId: "id"
+        cardId: "id",
+        format: "js" // "js" | "vanilla"
     },
     commands: {
         default: "add",
@@ -473,10 +474,9 @@ function showDeck() {
     }
 }
 
-function deckcode() {
-    let _deckcode = game.functions.deckcode.export(deck, chosen_class, runes);
+function deckcode(parseVanillaOnPseudo = false) {
+    let _deckcode = functions.deckcode.export(deck, chosen_class, runes);
 
-    // Deck size warnings
     if (_deckcode.error) {
         let error = _deckcode.error;
 
@@ -508,6 +508,8 @@ function deckcode() {
 
         _deckcode.error.recoverable = recoverable;
     }
+
+    if (settings.deckcode.format == "vanilla" && (parseVanillaOnPseudo || !_deckcode.error)) _deckcode.code = functions.deckcode.toVanilla(plr, _deckcode.code);
 
     return _deckcode;
 }
@@ -542,8 +544,7 @@ function help() {
     console.log("(In order to use these; input 'set ', then one of the subcommands. Example: 'set cpp 20')\n");
     console.log("(name) [optional] (required) - (description)\n");
 
-    console.log("name                        - Makes the deckcode generator use names instead of ids");
-    console.log("id                          - Makes the deckcode generator use ids instead of names");
+    console.log("format (format)             - Makes the deckcode generator output the deckcode as a different format. If you set this to 'vanilla', it is only going to show the deckcode as vanilla. If you set it to 'vanilla', you will be asked to choose a card if there are multiple vanilla cards with the same name. This should be rare, but just know that it might happen. ('js', 'vanilla') [default = 'js']");
     console.log("cardsPerPage | cpp (num)    - How many cards to show per page [default = 15]");
     console.log("defaultCommand | dcmd (cmd) - The command that should run when the command is unspecified. ('add', 'remove', 'view') [default = 'add']");
     console.log("warning                     - Disables/enables certain warnings. Look down to 'Warnings' to see changeable warnings.");
@@ -622,7 +623,9 @@ function handleCmds(cmd) {
         game.interact.viewCard(card);
     }
     else if (cmd.startsWith("view")) {
-        getCardArg(cmd, game.interact.viewCard);
+        getCardArg(cmd, (card) => {
+            game.interact.viewCard(card);
+        });
     }
     else if (cmd == "add") {
         let card = chooseCard("Add a card to the deck: ");
@@ -673,7 +676,7 @@ function handleCmds(cmd) {
         settings.view.class = _class;
     }
     else if (cmd.startsWith("deckcode")) {
-        let _deckcode = deckcode();
+        let _deckcode = deckcode(true);
 
         let toPrint = _deckcode.code + "\n";
         if (_deckcode.error && !_deckcode.error.recoverable) toPrint = "";
@@ -708,13 +711,14 @@ function handleCmds(cmd) {
     else if (cmd.startsWith("import")) {
         let _deckcode = game.input("Please input a deckcode: ");
 
+        let _deck = functions.deckcode.import(plr, _deckcode);
+        if (_deck == "invalid") return;
+
         game.config.validateDecks = false;
-        let _deck = functions.deckcode.import(plr, _deckcode).sort((a, b) => {
+        _deck = _deck.sort((a, b) => {
             return a.name.localeCompare(b.name);
         });
         game.config.validateDecks = true;
-
-        if (_deck == "invalid") return;
 
         deck = [];
 
@@ -734,7 +738,12 @@ function handleCmds(cmd) {
             return;
         }
 
+        let setting = settings.deckcode.format;
+
+        // Export it as a Hearthstone.js formatted deckcode, since it is faster
+        settings.deckcode.format = "js";
         let _deckcode = deckcode();
+        settings.deckcode.format = setting;
 
         if (_deckcode.error) {
             game.input("ERROR: Cannot export invalid / pseudo-valid deckcodes.\n".red);
@@ -759,7 +768,9 @@ function handleCmds(cmd) {
         if (settings.view.class != "Neutral") settings.view.class = chosen_class;
     }
     else if (cmd.startsWith("undo")) {
-        let command = settings.commands.latestUndoable.split(" ")[0];
+        let command = settings.commands.latestUndoable.split(" ");
+        let args = command.slice(1);
+        command = command[0];
 
         let reverse;
 
@@ -771,11 +782,7 @@ function handleCmds(cmd) {
             return;
         }
 
-        let lcWarn = warnings.latestCard;
-
-        if (lcWarn) warnings.latestCard = false; // Temp remove the latest card warning if its on
-        handleCmds(`${reverse} latest`);
-        if (lcWarn) warnings.latestCard = true;
+        handleCmds(`${reverse} ` + args.join(" "));
     }
     else if (cmd.startsWith("set warning")) {
         let _cmd = cmd.split(" ");
@@ -834,11 +841,21 @@ function handleCmds(cmd) {
         setting = setting[0];
 
         switch (setting) {
-            case "id":
-                settings.deckcode.cardId = "id";
-                break;
-            case "name":
-                settings.deckcode.cardId = "name";
+            case "format":
+                if (args.length == 0) {
+                    settings.deckcode.format = "js";
+                    console.log("Reset deckcode format to: " + "js".yellow);
+                    break;
+                }
+
+                if (!["vanilla", "js"].includes(args[0])) {
+                    console.log("Invalid format!".red);
+                    game.input();
+                    return;
+                }
+
+                settings.deckcode.format = args[0];
+                console.log("Set deckcode format to: " + args[0].yellow);
                 break;
             case "cpp":
             case "cardsPerPage":
@@ -856,7 +873,7 @@ function handleCmds(cmd) {
                 let cmd = args[0];
 
                 settings.commands.default = cmd;
-                console.log("Set default command to: " + args[0].yellow);
+                console.log("Set default command to: " + cmd.yellow);
                 break;
             default:
                 game.input(`'${setting}' is not a valid setting.\n`.red);

@@ -9,15 +9,11 @@ module.exports = {
     id: 74,
 
     cast(plr, game, card) {
-        game.functions.addQuest("Quest", plr, card, "GainOverload", 3, (val, game, turn, normal_done) => {
-            if (card.storage.length >= 2) {
-                plr.overload = 0;
-                return true;
-            }
+        game.functions.addQuest("Quest", plr, card, "GainOverload", 3, (val, turn, done) => {
+            if (!done) return;
 
-            game.functions.progressQuest(card.displayName, 1);
-            card.storage.push(val);
-            return false;
-        }, "Stir the Stones", true);
+            // The quest is done
+            plr.overload = 0;
+        }, "Stir the Stones");
     }
 }

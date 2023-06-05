@@ -9,7 +9,9 @@ module.exports = {
     set: "Scholomance Academy",
     id: 60,
 
-    startofturn(plr, game, card) {
+    passive(plr, game, self, key, val) {
+        if (key != "StartTurn" || game.player == plr) return;
+
         let top = plr.deck.pop();
         
         if (!top) return;
@@ -21,7 +23,7 @@ module.exports = {
 
         if (answer) {
             plr.deck.unshift(top);
-            card.remStats(0, 1);
+            self.remStats(0, 1);
         } else plr.deck.push(top);
     }
 }

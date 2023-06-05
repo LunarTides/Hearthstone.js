@@ -10,6 +10,8 @@
     "P1AI": false,
     "P2AI": false,
 
-    "version": "1.4.0",
-    "branch": "stable"
+    "version": "1.5.0",
+    "branch": "stable",
+
+    "editor": "vim"
 }

@@ -3,6 +3,7 @@ module.exports = {
     stats: [2, 3],
     desc: "&BTaunt.&R This is an example card to show how to add keywords to cards.", // The description doesn't really matter, but it's nice to explain what the card does. The `&B` means Bold, and the `&R` means Reset. This just makes the word `Taunt.` bold, but nothing after it.
     mana: 1,
+    type: "Minion",
     tribe: "Beast",
     class: "Neutral",
     rarity: "Free",

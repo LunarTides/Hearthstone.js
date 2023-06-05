@@ -12,7 +12,12 @@ module.exports = {
     keywords: ["Rush", "Divine Shield"],
     uncollectible: true,
 
-    onattack(plr, game, self) {
+    passive(plr, game, self, key, val) {
+        if (key != "Attack") return;
+
+        const [attacker, target] = val;
+        if (attacker != self) return;
+        
         plr.drawCard();
     }
 }

@@ -1,17 +1,104 @@
+const { Game } = require("./game");
+const { Player } = require("./player");
 const { get } = require("./shared");
 
+/**
+ * @callback KeywordMethod
+ * @param {Player} plr
+ * @param {Game} game
+ * @param {Card} self
+ * 
+ * @param {import("./game").EventKeys} [key]
+ * @param {any} [val]
+ * 
+ * @returns {undefined | -1}
+ */
+
+/**
+ * @typedef {"Minion" | "Spell" | "Weapon" | "Hero" | "Location"} Type
+ */
+
+/**
+ * @typedef {"Death Knight" | "Demon Hunter" | "Druid" | "Hunter" | "Mage" | "Paladin" | "Priest" | "Rogue" | "Shaman" | "Warlock" | "Warrior"} Class
+ */
+
+/**
+ * @typedef {"Free" | "Common" | "Rare" | "Epic" | "Legendary"} Rarity
+ */
+
+/**
+ * @typedef {Object} Blueprint
+ * @property {string} name
+ * @property {string} desc
+ * @property {number} mana
+ * @property {Type} type
+ * @property {Class} class
+ * @property {Rarity} rarity
+ * 
+ * @property {boolean} [uncollectible=false]
+ * @property {number} [id]
+ * 
+ * @property {[number]} [stats]
+ * @property {string} [tribe]
+ * 
+ * @property {string} [spellClass]
+ */
+
+/**
+ * @type {Game}
+ */
 let game = get();
 
 class Card {
+    /**
+     * Create a card.
+     * 
+     * @param {string} name The name of the card
+     * @param {Player} plr The card's owner.
+     */
     constructor(name, plr) {
         game = get();
 
+        /**
+         * @type {Blueprint}
+         */
         this.blueprint = game.cards.find(c => c.name == name);
         
         this.name = name;
         this.displayName = name;
 
+        /**
+         * @type {number | null}
+         */
+        this.id = null;
+
+        /**
+         * @type {"Card"}
+         */
+        this.classType = "Card";
+
+        /**
+         * @type {"mana" | "armor" | "health"}
+         */
         this.costType = "mana";
+
+        /**
+         * @type {Type}
+         */
+        this.type = "Undefined";
+
+        /**
+         * @type {Class}
+         */
+        this.class = "Mage";
+
+        this.dormant = false;
+        this.corrupted = false;
+        this.colossal = false;
+        this.uncollectible = false;
+        this.frozen = false;
+        this.immune = false;
+        this.echo = false;
 
         this.keywords = [];
         this.storage = []; // Allow cards to store data for later use
@@ -67,6 +154,9 @@ class Card {
         Object.entries(this).forEach(i => backups["init"][i[0]] = i[1]);
         this.backups = backups;
 
+        /**
+         * @type {Player}
+         */
         this.plr = plr;
 
         this.randomizeIds();
@@ -74,43 +164,47 @@ class Card {
         this.placeholder = this.activate("placeholders")[0]; // This is a list of replacements.
     }
 
+    /**
+     * Create random id's for this card to prevent cards from being "linked"
+     * 
+     * @returns {boolean} Success
+     */
     randomizeIds() {
-        /**
-         * Create random id's for this card to prevent cards from being "linked"
-         * 
-         * @returns {undefined}
-         */
-
         this.__ids = [];
         for (let i = 0; i < 100; i++) {
             // This is to prevent cards from getting linked. Don't use this variable
             this.__ids.push(game.functions.randInt(0, 671678679546789));
         }
-    }
-    addDeathrattle(_deathrattle) {
-        /**
-         * Adds a deathrattle to the card
-         * 
-         * @param {Function} _deathrattle The deathrattle to add
-         * 
-         * @returns {undefined}
-         */
 
+        return true;
+    }
+
+    /**
+     * Adds a deathrattle to the card
+     * 
+     * @param {KeywordMethod} _deathrattle The deathrattle to add
+     * 
+     * @returns {boolean} Success
+     */
+    addDeathrattle(_deathrattle) {
         if (!this.deathrattle) this.deathrattle = [];
 
         this.deathrattle.push(_deathrattle);
+
+        // Just in case we want this function to ever fail, we make it return success.
+        return true;
     }
 
     // Keywords
-    addKeyword(keyword) {
-        /**
-         * Adds a keyword to the minion
-         * 
-         * @param {string} keyword The keyword to add
-         * 
-         * @returns {bool} Success
-         */
 
+    /**
+     * Adds a keyword to the card
+     * 
+     * @param {string} keyword The keyword to add
+     * 
+     * @returns {boolean} Success
+     */
+    addKeyword(keyword) {
         if (this.keywords.includes(keyword)) return false;
 
         this.keywords.push(keyword);
@@ -123,100 +217,134 @@ class Card {
 
         return true;
     }
-    removeKeyword(keyword) {
-        /**
-         * Removes a keyword from the minion
-         * 
-         * @param {string} keyword The keyword to remove
-         * 
-         * @returns {bool} Success
-         */
 
+    /**
+     * Removes a keyword from the card
+     * 
+     * @param {string} keyword The keyword to remove
+     * 
+     * @returns {boolean} Success
+     */
+    removeKeyword(keyword) {
         this.keywords = this.keywords.filter(k => k != keyword);
 
         return true;
     }
+
+    /**
+     * Freeze the card
+     *
+     * @returns {boolean} Success
+     */
     freeze() {
-        /**
-         * Freeze the minion
-         *
-         * @returns {null}
-         */
         this.frozen_turn = game.turns;
         this.frozen = true;
 
         game.events.broadcast("FreezeCard", this, this.plr);
+
+        return true;
     }
+
+    /**
+     * Mark a card as having attacked once, and if it runs out of attacks this turn, exhaust it.
+     *
+     * @returns {boolean} Success
+     */
     decAttack() {
+        this.attackTimes--;
+
+        const shouldExhaust = (this.attackTimes <= 0);
+        if (shouldExhaust) this.sleepy = true;
+
+        return true;
+    }
+    ready() {
         /**
-         * Decrement attackTimes and if it is 0, set sleepy to true
+         * Makes this minion ready for attack
          *
          * @returns {null}
          */
 
-        this.attackTimes--;
-        if (this.attackTimes <= 0) this.sleepy = true;
+        this.sleepy = false;
+        this.resetAttackTimes();
     }
 
     // Change stats
+
+    /**
+     * @returns {number} The card's attack
+     */
     getAttack() {
         return this.stats[0];
     }
+
+    /**
+     * @returns {number} The card's health
+     */
     getHealth() {
         return this.stats[1];
     }
-    setStats(attack = this.getAttack(), health = this.getHealth(), changeMaxHealth = true) {
-        /**
-         * Sets the minions attack to "attack" and the minions health to "health"
-         * 
-         * @param {number} attack [default=this.getAttack()] The attack to set
-         * @param {number} health [default=this.getHealth()] The health to set
-         * @param {boolean} changeMaxHealth [default=true] Should change maxhealth to health if health is more than maxhealth
-         * 
-         * @returns {undefined}
-         */
+
+    /**
+     * Sets the card's attack and health.
+     * 
+     * @param {number} [attack=null] The attack to set
+     * @param {number} [health=null] The health to set
+     * @param {boolean} [changeMaxHealth=true] If the card's max health should be reset to it's current health if the health increases from running this function.
+     * 
+     * @returns {boolean} Success
+     */
+    setStats(attack = null, health = null, changeMaxHealth = true) {
+        if (attack == null) attack = this.getAttack();
+        if (health == null) health = this.getHealth();
 
         this.stats = [attack, health];
 
         if (changeMaxHealth && health > this.maxHealth) this.maxHealth = health;
-    }
-    addStats(attack = 0, health = 0, restore = false) {
-        /**
-         * Adds "attack" to the minions attack and "health" to the minions health
-         * 
-         * @param {number} attack [default=0] The attack to add
-         * @param {number} health [default=0] The health to add
-         * @param {boolean} restore [default=false] Should cap the amount of stats added.
-         * 
-         * @returns {undefined}
-         */
 
+        return true;
+    }
+
+    /**
+     * Adds `attack` and `health` to the card.
+     * 
+     * @param {number} [attack=0] The attack to add
+     * @param {number} [health=0] The health to add
+     * @param {boolean} [restore=false] Should cap the amount of health added to it's max health.
+     * 
+     * @returns {boolean} Success
+     */
+    addStats(attack = 0, health = 0, restore = false) {
         this.addAttack(attack);
         this.addHealth(health, restore);
-    }
-    remStats(attack = 0, health = 0) {
-        /**
-         * Removes "attack" from the minions attack and "health" from the minions health
-         * 
-         * @param {number} attack [default=0] The attack to remove
-         * @param {number} health [default=0] The health to remove
-         * 
-         * @returns {undefined}
-         */
 
+        return true;
+    }
+
+    /**
+     * Removes `attack` and `health` from the card.
+     * 
+     * @param {number} [attack=0] The attack to remove
+     * @param {number} [health=0] The health to remove
+     * 
+     * @returns {boolean} Success
+     */
+    remStats(attack = 0, health = 0) {
         this.remAttack(attack);
         this.remHealth(health);
-    }
-    addHealth(amount, restore = true) {
-        /**
-         * Adds "amount" to the minions health
-         * 
-         * @param {number} amount The health to add
-         * @param {boolean} restore Should reset health to maxHealth if it goes over maxHealth
-         * 
-         * @returns {bool} Success
-         */
 
+        return true;
+    }
+
+    /**
+     * Adds `amount` to the card's health
+     * 
+     * @param {number} amount The health to add
+     * @param {boolean} [restore=true] Should reset health to it's max health if it goes over it's max health
+     * 
+     * @returns {boolean} Success
+     */
+    addHealth(amount, restore = true) {
         let before = this.getHealth();
 
         this.setStats(this.getAttack(), this.getHealth() + amount, !restore);
@@ -240,29 +368,34 @@ class Card {
 
         return true;
     }
-    addAttack(amount) {
-        /**
-         * Adds "amount" to the minions attack
-         * 
-         * @param {number} amount The attack to add
-         * 
-         * @returns {bool} Success
-         */
 
+    /**
+     * Adds `amount` to the card's attack
+     * 
+     * @param {number} amount The attack to add
+     * 
+     * @returns {boolean} Success
+     */
+    addAttack(amount) {
         this.setStats(this.getAttack() + amount, this.getHealth());
 
         return true;
     }
-    remHealth(amount) {
-        /**
-         * Removes "amount" from the minions health
-         * 
-         * @param {number} amount The health to remove
-         * 
-         * @returns {boolean} Success
-         */
 
-        if (this.immune && this.type != "Location") return true;
+    /**
+     * Damages a card.
+     * 
+     * Doesn't damage the card if it is a location card, is immune, or has Stealth.
+     * 
+     * @param {number} amount The health to remove
+     * 
+     * @returns {boolean} Success
+     */
+    remHealth(amount) {
+        if (this.type == "Location") return false; // Don't allow location cards to be damaged
+        if (this.keywords.includes("Stealth")) return false;
+
+        if (this.immune) return true;
 
         this.setStats(this.getAttack(), this.getHealth() - amount);
         game.events.broadcast("DamageMinion", [this, amount], this.plr);
@@ -273,55 +406,58 @@ class Card {
 
         return true;
     }
-    remAttack(amount) {
-        /**
-         * Removes "amount" from the minions attack
-         * 
-         * @param {number} amount The attack to remove
-         * 
-         * @returns {bool} Success
-         */
 
+    /**
+     * Removes `amount` from the card's attack
+     * 
+     * @param {number} amount The attack to remove
+     * 
+     * @returns {boolean} Success
+     */
+    remAttack(amount) {
         this.setStats(this.getAttack() - amount, this.getHealth());
 
         return true;
     }
-    resetMaxHealth(check = false) {
-        /**
-         * Sets the max health of the minion to it's current health. If check is true it only sets max health if the current health is above it.
-         * 
-         * @param {boolean} check Prevent lowering maxHealth
-         * 
-         * @returns {undefined}
-         */
 
-        if (check && this.getHealth() <= this.maxHealth) return;
+    /**
+     * Sets the max health of the card to it's current health. If check is true it only sets the max health if the current health is above it.
+     * 
+     * @param {boolean} [check=false] Prevent lowering it's max health
+     * 
+     * @returns {boolean} If it reset the card's max health.
+     */
+    resetMaxHealth(check = false) {
+        if (check && this.getHealth() <= this.maxHealth) return false;
 
         this.maxHealth = this.getHealth();
+        return true;
     }
 
     // Set other
+
+    /**
+     * Sets stealth to only last `duration` amount of turns
+     * 
+     * @param {number} duration The amount of turns stealth should last
+     * 
+     * @returns {boolean} Success.
+     */
     setStealthDuration(duration) {
-        /**
-         * Sets stealth to only last "duration" amount of turns
-         * 
-         * @param {number} duration The amount of turns stealth should last
-         * 
-         * @returns {undefined}
-         */
-
         this.stealthDuration = game.turns + duration;
-    }
-    resetAttackTimes() {
-        /**
-         * Sets the attack times of a minion to;
-         * 1 if doesn't have windfury,
-         * 2 if it does,
-         * 4 if it has mega-windfury
-         * 
-         * @returns {undefined}
-         */
 
+        return true;
+    }
+
+    /**
+     * Sets the attack times of a card to;
+     * 1 if doesn't have windfury,
+     * 2 if it does,
+     * 4 if it has mega-windfury.
+     * 
+     * @returns {boolean} Success
+     */
+    resetAttackTimes() {
         this.attackTimes = 1;
 
         if (this.keywords.includes("Windfury")) {
@@ -330,28 +466,31 @@ class Card {
         if (this.keywords.includes("Mega-Windfury")) {
             this.attackTimes = 4;
         }
+
+        return true;
     }
 
+    /**
+     * Create a backup of the card.
+     *
+     * @returns {number} The key of the backup. You can use it by doing `card.backups[key]`
+     */
     createBackup() {
-        /**
-         * Create a backup of the card
-         *
-         * @returns {number} The key of the backup. You can use it by doing `card.backups[key]`
-         */
         let key = Object.keys(this.backups).length;
         this.backups[key] = {};
         Object.entries(this).forEach(i => this.backups[key][i[0]] = i[1]);
         
         return key;
     }
+
+    /**
+     * Restore a backup of the card.
+     *
+     * @param {Object} backup The backup to restore. It is recommended to supply a backup from `card.backups`.
+     *
+     * @returns {boolean} Success
+     */
     restoreBackup(backup) {
-        /**
-         * Restore a backup of the card
-         *
-         * @param {Object} backup The backup. It is recommended to supply a backup from `card.backups`.
-         *
-         * @returns {bool} Success
-         */
         Object.keys(backup).forEach(att => {
             this[att] = backup[att];
         });
@@ -360,23 +499,25 @@ class Card {
     }
 
     // Doom buttons
-    kill() {
-        /**
-         * Kills a minion
-         *
-         * @returns {undefined}
-         */
 
+    /**
+     * Kills the card.
+     *
+     * @returns {boolean} Success
+     */
+    kill() {
         this.setStats(this.getAttack(), 0);
         game.killMinions();
-    }
-    silence() {
-        /**
-         * Silences the minion
-         * 
-         * @returns {undefined}
-         */
 
+        return true;
+    }
+
+    /**
+     * Silences the card.
+     * 
+     * @returns {boolean} Success
+     */
+    silence() {
         // Tell the minion to undo it's passive.
         // The false tells the minion that this is the last time it will call unpassive
         // so it should finish whatever it is doing.
@@ -394,28 +535,30 @@ class Card {
 
         this.applyEnchantments(); // Remove active enchantments.
     }
-    destroy() {
-        /**
-         * Silences and kills the minion
-         * 
-         * @returns {undefined}
-         */
 
+    /**
+     * Silences, then kills the card.
+     * 
+     * @returns {boolean} Success
+     */
+    destroy() {
         this.silence();
         this.kill();
+
+        return true;
     }
 
     // Handling functions
-    activate(name, ...args) {
-        /**
-         * Activates a keyword method
-         * 
-         * @param {string} name The method to activate
-         * @param {any} args Pass these args to the method
-         * 
-         * @returns {any[]} All the return values of the method keywords
-         */
 
+    /**
+     * Activates a keyword method
+     * 
+     * @param {string} name The method to activate
+     * @param {any} [args] Pass these args to the method
+     * 
+     * @returns {any[] | -1} All the return values of the method keywords
+     */
+    activate(name, ...args) {
         // This activates a function
         // Example: activate("cast")
         // Do: this.cast.forEach(cast_func => cast_func(plr, game, card))
@@ -437,11 +580,12 @@ class Card {
             let r = i(this.plr, game, this, ...args);
             ret.push(r);
 
-            if (r != -1 || name == "deathrattle") return;
+            if (r != -1 || name == "deathrattle") return; // Deathrattle isn't cancellable
 
             // If the return value is -1, meaning "refund", refund the card and stop the for loop
             game.events.broadcast("CancelCard", [this, name], this.plr);
 
+            // These keyword methods shouldn't "refund" the card, just stop execution.
             if (["use", "heropower"].includes(name)) {
                 ret = -1;
                 return;
@@ -457,37 +601,30 @@ class Card {
 
         return ret;
     }
-    activateBattlecry(...args) {
-        /**
-         * Activates a minion's battlecry
-         * 
-         * @param {...args} args Any arguments to pass to battlecry
-         * 
-         * @returns {any[]} The return values of all the battlecries triggered
-         */
 
+    /**
+     * Activates a card's battlecry
+     * 
+     * @param {any} [args] Any arguments to pass to battlecry.
+     * 
+     * @returns {any[] | -1} The return values of all the battlecries triggered
+     */
+    activateBattlecry(...args) {
         this.activate("passive", "battlecry", this, game.turns);
         return this.activate("battlecry", ...args);
     }
-    clearCondition() {
-        /**
-         * Add ` (Condition cleared)` to the description of the card.
-         *
-         * @returns {null}
-         */
-        this.desc += " (Condition cleared)".gray;
-    }
+    /**
+     * Returns `[true, t]` if `m` is more than or equal to the player's max mana, otherwise return `[false, f]`.
+     * 
+     * If `t` and `f` are not defined. This function only returns a boolean.
+     *
+     * @param {number} m The mana to test
+     * @param {any} [t=""] The value to return if true
+     * @param {any} [f=""] The value to return if false
+     * 
+     * @returns {[boolean, any] | boolean}
+     */
     manathirst(m, t = "", f = "") {
-        /**
-         * Returns t if "m" is more than or equal to the player's max mana
-         *
-         * @param {number} m The mana to test
-         * @param {any} [default=""] t The value to return if true
-         * @param {any} [default=""] f The value to return if false
-         * 
-         * @returns {any} t | f
-         */
-
         if (this.plr.maxMana < m) {
             if (!f) return false;
 
@@ -497,14 +634,19 @@ class Card {
         if (!t) return true;
         return [true, t];
     }
+
+    /**
+     * Get information from an enchantment.
+     *
+     * @param {string} e The enchantment string
+     * 
+     * @example
+     * let info = getEnchantmentInfo("mana = 1");
+     * assert.equal(info, {"key": "mana", "val": "1", "op": "="});
+     *
+     * @returns {{key: string, val: string, op: string}} The info
+     */
     getEnchantmentInfo(e) {
-        /**
-         * Get information from an enchantment. Example: "mana = 1" returns {"key": "mana", "val": "1", "op": "="}
-         *
-         * @param {str} e The enchantment string
-         *
-         * @returns {Object<key, val, op>} The info
-         */
         let equalsRegex = /\w+ = \w+/;
         let otherRegex = /[-+*/^]\d+ \w+/;
 
@@ -525,12 +667,13 @@ class Card {
 
         return {"key": key, "val": val, "op": op};
     }
+
+    /**
+     * Runs through this card's enchantments list and applies each enchantment in order.
+     *
+     * @returns {boolean} Success
+     */
     applyEnchantments() {
-        /**
-         * Runs through the enchantments list and applies each enchantment in order.
-         *
-         * @returns {bool} Success
-         */
         // Apply baseline for int values.
         const whitelisted_vars = ["maxHealth", "mana"];
 
@@ -574,46 +717,52 @@ class Card {
 
         return true;
     }
+
+    /**
+     * Add an enchantment to the card. The enchantments look something like this: `mana = 1`, `+1 mana`, `-1 mana`.
+     *
+     * @warning DO NOT PASS USER INPUT DIRECTLY INTO THIS FUNCTION.
+     * 
+     * @param {string} e The enchantment string
+     * @param {Card} card The creator of the enchantment. This will allow removing or looking up enchantment later.
+     *
+     * @returns {boolean} Success
+     */
     addEnchantment(e, card) {
-        /**
-         * Add an enchantment to the card. The enchantments look something like this: "mana = 1", "+1 mana", "-1 mana"
-         *
-         * @param {str} e The enchantment string
-         * @param {Card} card The creator of the enchantment. If another card gives this card an enchantment then this paramater needs to be the card that gave this card the enchantment. This will allow that card to remove the enchantment or look for the enchantment later.
-         *
-         * @returns {bool} Success
-         */
-        // DO NOT PASS USER INPUT DIRECTLY INTO THIS FUNCTION. IT CAN ALLOW FOR EASY CODE INJECTION
         let info = this.getEnchantmentInfo(e);
 
-        if (info.op == "=") this.enchantments.unshift([e, card]); // Add the enchantment to the beginning of the list
+        if (info.op == "=") this.enchantments.unshift([e, card]); // Add the enchantment to the beginning of the list, equal enchantments should apply first
         else this.enchantments.push([e, card]);
 
         this.applyEnchantments();
 
         return true;
     }
+
+    /**
+     * Checks if an enchantment exists.
+     *
+     * @param {string} e The enchantment to look for.
+     * @param {Card} card The owner of the enchantment. This needs to be correct to find the right enchantment.
+     * @see {@link addEnchantment} for more info about `card`.
+     * 
+     * @returns {boolean} If the enchantment exists
+     */
     enchantmentExists(e, card) {
-        /**
-         * Checks if an enchantment exists.
-         *
-         * @param {str} e The enchantment to look for.
-         * @param {Card} card The owner of the enchantment. Look at `addEnchantment` for more info. This needs to be correct to find the right enchantment
-         *
-         * @returns {bool} If the enchantment exists
-         */
         return this.enchantments.find(c => c[0] == e && c[1] == card);
     }
+
+    /**
+     * Removes an enchantment
+     *
+     * @param {string} e The enchantment to remove
+     * @param {Card} card The owner of the enchantment.
+     * @see {@link enchantmentExists} for more info about `card`.
+     * @param {boolean} [update=true] Keep this enabled unless you know what you're doing.
+     *
+     * @returns {boolean} Success
+     */
     removeEnchantment(e, card, update = true) {
-        /**
-         * Removes an enchantment
-         *
-         * @param {str} e The enchantment to remove
-         * @param {Card} card The owner of the enchantment. Look at `enchantmentExists` for more info.
-         * @param {bool} update [default=true] Keep this enabled unless you know what you're doing.
-         *
-         * @returns {bool} Success
-         */
         let enchantment = this.enchantments.find(c => c[0] == e && c[1] == card);
         let index = this.enchantments.indexOf(enchantment);
         if (index === -1) return false;
@@ -635,14 +784,25 @@ class Card {
         return true;
     }
 
+    /**
+     * Replaces the placeholders (`{0}`) with their values
+     * 
+     * @returns {boolean} Success
+     * 
+     * @example
+     * card.desc = "The current turn count is {0}";
+     * card.placeholders = [(plr, game, self) => {
+     *     let turns = Math.ceil(game.turns / 2);
+     * 
+     *     return {0: turns};
+     * }];
+     * card.replacePlaceholders();
+     * 
+     * // The `{ph:0}` tags are removed when displaying cards.
+     * assert.equal(card.desc, "The current turn count is {ph:0} 1 {/ph}");
+     */
     replacePlaceholders() {
-        /**
-         * Replaces the placeholders ('{0}') with its value
-         * 
-         * @returns {undefined}
-         */
-
-        if (!this.placeholder) return;
+        if (!this.placeholders) return;
 
         this.placeholder = this.activate("placeholders")[0];
 
@@ -654,22 +814,39 @@ class Card {
             this.desc = this.desc.replace(new RegExp(`{ph:${key}} .*? {/ph}`, 'g'), replacement);
             this.desc = this.desc.replaceAll(`{${key}}`, replacement);
         });
+
+        return true;
     }
 
+    /**
+     * Return a perfect copy of this card. This will perfectly clone the card. This happens when, for example, a card gets temporarily removed from the board using card.destroy, then put back on the board.
+     *
+     * @returns {Card} A perfect copy of this card.
+     * 
+     * @example
+     * let cloned = card.perfectCopy();
+     * let cloned2 = game.functions.cloneCard(card);
+     * 
+     * // This will actually fail since they're slightly different, but you get the point
+     * assert.equal(cloned, cloned2);
+     */
     perfectCopy() {
-        /**
-         * Return a perfect copy of this card. This will perfectly clone the card. This happens when, for example, a card gets temporarily removed from the board using card.destroy, then put back on the board.
-         *
-         * @returns {Card} A perfect copy of this card.
-         */
-
         return game.functions.cloneCard(this);
     }
-    imperfectCopy() {
-        /**
-         * Return an imperfect copy of this card. This happens when, for example, a card gets shuffled into your deck in vanilla Hearthstone.
-         */
 
+    /**
+     * Return an imperfect copy of this card. This happens when, for example, a card gets shuffled into your deck in vanilla Hearthstone.
+     * 
+     * @returns {Card} An imperfect copy of this card.
+     * 
+     * @example
+     * let cloned = card.imperfectCopy();
+     * let cloned2 = new Card(card.name, card.plr);
+     * 
+     * // This will actually fail since they're slightly different, but you get the point
+     * assert.equal(cloned, cloned2);
+     */
+    imperfectCopy() {
         return new Card(this.name, this.plr);
     }
 }

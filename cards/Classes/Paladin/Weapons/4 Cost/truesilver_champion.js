@@ -9,7 +9,12 @@ module.exports = {
     set: "Legacy",
     id: 263,
 
-    onattack(plr, game, self) {
+    passive(plr, game, self, key, val) {
+        if (key != "Attack") return
+
+        const [attacker, target] = val;
+        if (attacker != plr) return;
+
         plr.addHealth(2);
     }
 }

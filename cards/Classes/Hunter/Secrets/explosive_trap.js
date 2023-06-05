@@ -10,13 +10,14 @@ module.exports = {
     id: 30,
 
     cast(plr, game, card) {
-        game.functions.addQuest("Secret", plr, card, "minionsThatAttackedHero", 1, (minion, game, turn) => {
-            game.board[game.player.id].forEach(i => {
-                game.functions.spellDmg(i, 2);
-            });
-            game.functions.spellDmg(game.player, 2);
+        game.functions.addQuest("Secret", plr, card, "Attack", 1, (attack, turn, done) => {
+            let [attacker, target] = attack;
+            if (target != plr) return false;
+            if (!done) return;
 
-            return true;
-        }, null);
+            game.functions.doPlayerTargets(plr.getOpponent(), t => {
+                game.functions.spellDmg(t, 2);
+            });
+        });
     }
 }

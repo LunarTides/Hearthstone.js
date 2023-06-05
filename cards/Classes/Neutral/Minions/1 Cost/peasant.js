@@ -10,7 +10,9 @@ module.exports = {
     set: "United in Stormwind",
     id: 35,
 
-    startofturn(plr, game, card) {
+    passive(plr, game, self, key, val) {
+        if (key != "StartTurn" || game.player == plr) return;
+
         plr.drawCard();
     }
 }

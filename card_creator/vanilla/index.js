@@ -2,25 +2,32 @@ const rl = require("readline-sync");
 const fs = require("fs");
 const cc = require("../index");
 
+const { Game } = require("../../src/game");
+
+const game = new Game({}, {});
+game.dirname = __dirname + "/../../";
+
+game.functions.importCards(__dirname + "/../../cards");
+game.functions.importConfig(__dirname + "/../../config");
+
 function capitalize(str) {
     return str[0].toUpperCase() + str.slice(1).toLowerCase();
 }
 
 function createCard(card, main) {
     // Harvest info
-    let cardClass = capitalize(card.cardClass);
+    let cardClass = capitalize(card.cardClass || "Neutral");
     let collectible = card.collectible || false;
     let mana = card.cost;
     let name = card.name;
     let rarity = "Free";
     if (card.rarity) rarity = capitalize(card.rarity);
-    let desc = card.text;
+    let desc = card.text || "";
     let type = capitalize(card.type);
 
     // Minion info
     let attack = card.attack || -1;
     let health = card.health || -1;
-    let race = card.race || null;
     let races = [];
     if (card.races) races = card.races.map(r => capitalize(r));
 
@@ -64,6 +71,7 @@ function createCard(card, main) {
             desc: desc,
             mana: mana,
             type: type,
+            spellClass: spellClass,
             class: cardClass,
             rarity: rarity
         }
@@ -113,12 +121,14 @@ function createCard(card, main) {
     cc.main(type, null, null, card);
 }
 
-function main(home = ".", card = null) {
+function main(card = null) {
     console.log("Hearthstone.js Vanilla Card Creator (C) 2022\n");
+
+    cc.set_type("Vanilla"); // Vanilla Card Creator
 
     if (card) return createCard(card, false);
 
-    let data = fs.readFileSync(home + "/.ignore.cards.json", { encoding: 'utf8', flag: 'r' });
+    let data = fs.readFileSync(__dirname + "/.ignore.cards.json", { encoding: 'utf8', flag: 'r' });
 
     data = JSON.parse(data);
 
@@ -129,6 +139,7 @@ function main(home = ".", card = null) {
         let cardName = rl.question("Name: ");
 
         let filtered_cards = data.filter(c => c.name.toLowerCase() == cardName.toLowerCase());
+        filtered_cards = game.functions.filterVanillaCards(filtered_cards, false, true);
 
         if (filtered_cards.length <= 0) {
             console.log("Invalid card.\n");

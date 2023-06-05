@@ -1,12 +1,19 @@
 const { question }  = require('readline-sync');
-const { exit }      = require("process");
 const { Functions } = require("./functions");
 const { Player }    = require("./player");
 const { Card }      = require("./card");
 const { Interact }  = require("./interact");
 const { AI }        = require('./ai');
 
+// Event key typdef
+/**
+ * @typedef {"FatalDamage" | "EndTurn" | "StartTurn" | "HealthRestored" | "UnspentMana" | "GainOverload" | "GainHeroAttack" | "TakeDamage" | "PlayCard" | "PlayCardUnsafe" | "SummonMinion" | "KillMinion" | "DamageMinion" | "CancelCard" | "CastSpellOnMinion" | "TradeCard" | "FreezeCard" | "AddCardToDeck" | "AddCardToHand" | "DrawCard" | "SpellDealsDamage" | "Attack" | "HeroPower" | "Eval"} EventKeys
+ */
+
 class EventManager {
+    /**
+     * @param {Game} game 
+     */
     constructor(game) {
         this.game = game;
 
@@ -15,15 +22,15 @@ class EventManager {
         this.history = {};
     }
 
+    /**
+     * Do card passives
+     *
+     * @param {EventKeys} key The key of the event
+     * @param {any} val The value of the event
+     *
+     * @returns {boolean} Success
+     */
     cardUpdate(key, val) {
-        /**
-         * Do card passives
-         *
-         * @param {str} key The key of the event
-         * @param {any} val The value of the event
-         *
-         * @returns {null}
-         */
         // Infuse
         if (key == "KillMinion") {
             val.plr.hand.forEach(p => {
@@ -89,18 +96,20 @@ class EventManager {
         }
 
         this.game.triggerEventListeners(key, val);
+        return true;
     }
+
+    /**
+     * Update quests and secrets
+     *
+     * @param {"Secret" | "Quest" | "Questline"} quests_name The type of quest to update
+     * @param {EventKeys} key The key of the event
+     * @param {any} val The value of the event
+     * @param {Player} plr The owner of the quest
+     *
+     * @returns {bool} Success
+     */
     questUpdate(quests_name, key, val, plr) {
-        /**
-         * Update quests and secrets
-         *
-         * @param {str} quests_name The type of quest to update: ["Secret", "Questline", "Quest", "Questline"]
-         * @param {str} key The key of the event
-         * @param {any} val The value of the event
-         * @param {Player} plr The owner of the quest
-         *
-         * @returns {null}
-         */
         plr[quests_name].forEach(s => {
             if (s["key"] != key) return;
 
@@ -120,19 +129,21 @@ class EventManager {
 
             if (s["next"]) new Card(s["next"], plr).activate("cast");
         });
+
+        return true;
     }
 
+    /**
+     * Broadcast an event
+     *
+     * @param {EventKeys} key The key of the event
+     * @param {any} val The value of the event
+     * @param {Player} plr The player who caused the event to happen
+     * @param {boolean} [updateHistory=true] Whether or not to update the history
+     *
+     * @returns {bool} Success
+     */
     broadcast(key, val, plr, updateHistory = true) {
-        /**
-         * Broadcast an event
-         *
-         * @param {str} key The key of the event
-         * @param {any} val The value of the event
-         * @param {Player} plr The player who caused the event to happen
-         * @param {bool} updateHistory [default=true] Whether or not to update the history
-         *
-         * @returns {null}
-         */
         if (!this[key]) this[key] = [[], []];
         if (updateHistory && !this.history[this.game.turns]) this.history[this.game.turns] = [];
 
@@ -144,18 +155,20 @@ class EventManager {
         this.questUpdate("secrets",    key, val, plr.getOpponent());
         this.questUpdate("sidequests", key, val, plr);
         this.questUpdate("quests",     key, val, plr);
+
+        return true;
     }
 
+    /**
+     * Increment a stat
+     *
+     * @param {Player} player The player to update
+     * @param {string} key The key to increment
+     * @param {number} [amount=1] The amount to increment by
+     *
+     * @returns {number} The new value
+     */
     increment(player, key, amount = 1) {
-        /**
-         * Increment a stat
-         *
-         * @param {Player} player The player to update
-         * @param {str} key The key to increment
-         * @param {number} amount [default=1] The amount to increment by
-         *
-         * @returns {null}
-         */
         if (!this[key]) this[key] = [0, 0];
 
         this[key][player.id] += amount;
@@ -165,11 +178,18 @@ class EventManager {
 }
 
 class Game {
+    /**
+     * @param {Player} player1 
+     * @param {Player} player2 
+     */
     constructor(player1, player2) {
         // Choose a random player to be player 1
-        const functions = new Functions(this);
+        /**
+         * @type {Functions}
+         */
+        this.functions = new Functions(this);
 
-        if (functions.randInt(0, 1)) {
+        if (this.functions.randInt(0, 1)) {
             this.player1 = player1;
             this.player2 = player2;
         } else {
@@ -177,7 +197,14 @@ class Game {
             this.player2 = player1;
         }
 
+        /**
+         * @type {Player}
+         */
         this.player = this.player1;
+
+        /**
+         * @type {Player}
+         */
         this.opponent = this.player2;
 
         this.player1.id = 0;
@@ -189,14 +216,34 @@ class Game {
         this.Card = Card;
         this.Player = Player;
         this.AI = AI;
-        this.functions = functions;
+
+        /**
+         * @type {EventManager}
+         */
         this.events = new EventManager(this);
+
+        /**
+         * @type {Interact}
+         */
         this.interact = new Interact(this);
+
         this.config = {};
+
+        /**
+         * @type {Card[]}
+         */
         this.cards = [];
 
         this.turns = 0;
+
+        /**
+         * @type {[[Card]]}
+         */
         this.board = [[], []];
+
+        /**
+         * @type {[[Card]]}
+         */
         this.graveyard = [[], []];
 
         this.eventListeners = {};
@@ -204,64 +251,75 @@ class Game {
         this.no_input = false;
 
         this.running = true;
+        this.evaling = false;
     }
 
+    /**
+     * Ask the user a question and returns their answer
+     *
+     * @param {string} q The question to ask
+     * @param {boolean} [care=true] If this is false, it overrides `game.no_input`. Only use this when debugging.
+     *
+     * @returns {string} What the user answered
+     */
     input(q, care = true) {
-        /**
-         * Ask the user a question and returns their answer
-         *
-         * @param {str} q The question to ask
-         * @param {bool} care If this is false, it overrides game.no_input. Only use this when debugging.
-         *
-         * @returns {str} What the user answered
-         */
         if (this.no_input && care) return "";
+
+        // Let the game make choices for the user
+        if (this.player.inputQueue) {
+            let queue = this.player.inputQueue;
+
+            if (typeof(queue) == "string") return queue;
+            else if (!queue instanceof Array) return question(q); // Invalid queue
+
+            const answer = queue[0];
+            this.functions.remove(queue, answer);
+
+            if (queue.length <= 0) this.player.inputQueue = null;
+
+            return answer;
+        }
 
         return question(q);
     }
 
+    /**
+     * Assigns an ai to the players if in the config.
+     *
+     * @returns {boolean} Success
+     */
     doConfigAI() {
-        /**
-         * Assigns an ai to the players if in the config.
-         *
-         * @returns {null}
-         */
         if (this.config.P1AI) this.player1.ai = new AI(this.player1);
+        else this.player1.ai = null;
+
         if (this.config.P2AI) this.player2.ai = new AI(this.player2);
+        else this.player2.ai = null;
+
+        return true;
     }
 
-    set(key, val) {
-        /**
-         * Set this.key = val;
-         * 
-         * @returns {undefined}
-         */
-
-        this[key] = val;
-    }
+    /**
+     * Broadcast event to event listeners
+     * 
+     * @param {string} key The name of the event (see events.txt)
+     * @param {any[]} val The value of the event
+     * 
+     * @returns {any[]} Return values of all the executed functions
+     */
     triggerEventListeners(key, val) {
-        /**
-         * Broadcast event to event listeners
-         * 
-         * @param {string} key The name of the event (see events.txt)
-         * @param {any[]?} val The value of the event
-         * 
-         * @returns {any[]} Return values of all the executed functions
-         */
-
         let ret = [];
         Object.values(this.eventListeners).forEach(i => ret.push(i(this, key, val)));
         return ret;
     }
 
     // Start / End
-    startGame() {
-        /**
-         * Starts the game
-         * 
-         * @returns {undefined}
-         */
 
+    /**
+     * Starts the game
+     * 
+     * @returns {boolean} Success
+     */
+    startGame() {
         let players = [];
 
         // Add quest cards to the players hands
@@ -300,15 +358,19 @@ class Game {
         this.player2.addToHand(new Card("The Coin", this.player2), false);
 
         this.turns += 1;
+
+        return true;
     }
+
+    /**
+     * Ends the game and declares `winner` as the winner
+     * 
+     * @param {Player} winner The winner
+     * 
+     * @returns {bool} Success
+     */
     endGame(winner) {
-        /**
-         * Ends the game and declares "winner" as the winner
-         * 
-         * @param {Player} winner The winner
-         * 
-         * @returns {undefined}
-         */
+        if (!winner) return false;
 
         this.interact.printName();
 
@@ -321,14 +383,16 @@ class Game {
 
         // Create log file
         this.functions.createLogFile();
-    }
-    endTurn() {
-        /**
-         * Ends the players turn and starts the opponents turn
-         * 
-         * @returns {undefined}
-         */
 
+        return true;
+    }
+
+    /**
+     * Ends the players turn and starts the opponents turn
+     * 
+     * @returns {bool} Success
+     */
+    endTurn() {
         this.killMinions();
 
         // Update events
@@ -337,14 +401,10 @@ class Game {
         let plr = this.player;
         let op = this.opponent;
 
-        // Trigger endofturn
         this.board[plr.id].forEach(m => {
-            m.activate("endofturn")
-
             m.sleepy = false;
             m.resetAttackTimes();
         });
-        if (plr.weapon) plr.weapon.activate("endofturn");
 
         // Trigger unspent mana
         if (plr.mana > 0) this.events.broadcast("UnspentMana", plr.mana, plr);
@@ -368,8 +428,6 @@ class Game {
                 op.attack = op.weapon.getAttack();
                 op.weapon.resetAttackTimes();
             }
-
-            op.weapon.activate("startofturn");
         }
 
         // Minion start of turn
@@ -392,7 +450,6 @@ class Game {
                 return;
             }
 
-            m.activate("startofturn");
             m.canAttackHero = true;
             if (this.turns > m.frozen_turn + 1) m.frozen = false;
             m.sleepy = false;
@@ -417,18 +474,25 @@ class Game {
 
         this.player = op;
         this.opponent = plr;
+
+        return true;
     }
 
     // Playing cards
+
+    /**
+     * Play a card
+     * 
+     * @param {Card} card The card to play
+     * @param {Player} player The card's owner
+     * 
+     * @returns {Card | "mana" | "traded" | "space" | "magnetize" | "colossal" | "refund" | "invalid"}
+     */
     playCard(card, player) {
-        /**
-         * Play a card
-         * 
-         * @param {Card} card The card to play
-         * @param {Player} player The card's owner
-         * 
-         * @returns {string | Card} "mana" | "traded" | "space" | "magnetize" | (Card) The return value of summonMinion
-         */
+        if (!card || !player) {
+            if (this.evaling) throw new TypeError("Evaling Error - The `card` or `player` argument passed to `playCard` are invalid. Make sure you passed in both arguments.");
+            return "invalid";
+        }
 
         this.killMinions();
 
@@ -611,17 +675,22 @@ class Game {
 
         return ret;
     }
+
+    /**
+     * Summon a minion
+     * 
+     * @param {Card} minion The minion to summon
+     * @param {Player} player The player who gets the minion
+     * @param {boolean} [update=true] If the summon should broadcast an event.
+     * @param {boolean} [trigger_colossal=true] If the minion has colossal, summon the other minions.
+     * 
+     * @returns {Card | "space" | "colossal" | "invalid"} The minion summoned
+     */
     summonMinion(minion, player, update = true, trigger_colossal = true) {
-        /**
-         * Summon a minion
-         * 
-         * @param {Card} minion The minion to summon
-         * @param {Player} player The player who gets the minion
-         * @param {boolean} update [default=true] If the summon should trigger secrets / quests / passives.
-         * @param {boolean} trigger_colossal [default=true] If the minion has colossal, summon the other minions.
-         * 
-         * @returns {Card} The minion summoned
-         */
+        if (!minion || !player) {
+            if (this.evaling) throw new TypeError("Evaling Error - The `minion` or `player` argument passed to `summonMinion` are invalid. Make sure you passed in both arguments.");
+            return "invalid";
+        };
 
         // If the board has max capacity, and the card played is a minion or location card, prevent it.
         if (this.board[player.id].length >= this.config.maxBoardSpace) return "space";
@@ -674,23 +743,30 @@ class Game {
     }
 
     // Interacting with minions
+
+    /**
+     * Makes a minion or hero attack another minion or hero
+     * 
+     * @param {Card | Player | number} attacker The attacker | Amount of damage to deal
+     * @param {Card | Player} target The target
+     * 
+     * @returns {boolean | "divineshield" | "taunt" | "stealth" | "frozen" | "plrnoattack" | "noattack" | "hasattacked" | "sleepy" | "cantattackhero" | "immune" | "invalid"} Success | Errorcode
+     */
     attack(attacker, target) {
-        /**
-         * Makes a minion or hero attack another minion or hero
-         * 
-         * @param {Card | Player | number} attacker The attacker | Amount of damage to deal
-         * @param {Card | Player} target The target
-         * 
-         * @returns {boolean | string} Success | Errorcode: ["divineshield", "taunt", "stealth", "frozen", "plrnoattack", "noattack", "hasattacked", "sleepy", "cantattackhero", "immune"]
-         */
+        if (!attacker || !target) {
+            if (this.evaling) throw new TypeError("Evaling Error - The `attacker` or `target` argument passed to `attack` are invalid. Make sure you passed in both arguments.");
+            return "invalid";
+        }
 
         this.killMinions();
+
+        if (target.immune) return "immune";
 
         // Attacker is a number
         if (typeof(attacker) === "number") {
             let dmg = attacker;
 
-            if (target instanceof Player) {
+            if (target.classType == "Player") {
                 target.remHealth(dmg);
                 return true;
             }
@@ -715,15 +791,14 @@ class Game {
         }
 
         if (attacker.frozen) return "frozen";
-        if (target.immune) return "immune";
         if (attacker.dormant) return "dormant";
 
         // Attacker is a player
-        if (attacker instanceof Player) {
+        if (attacker.classType == "Player") {
             if (attacker.attack <= 0) return "plrnoattack";
 
             // Target is a player
-            if (target instanceof Player) {
+            if (target.classType == "Player") {
                 this.attack(attacker.attack, target);
                 this.events.broadcast("Attack", [attacker, target], attacker);
                 
@@ -764,7 +839,6 @@ class Game {
             if (wpn.attackTimes > 0 && wpn.getAttack()) {
                 wpn.attackTimes -= 1;
 
-                wpn.activate("onattack");
                 wpn.remStats(0, 1);
 
                 if (wpn.keywords.includes("Poisonous")) target.kill();
@@ -782,7 +856,7 @@ class Game {
         if (attacker.getAttack() <= 0) return "noattack";
 
         // Target is a player
-        if (target instanceof Player) {
+        if (target.classType == "Player") {
             if (!attacker.canAttackHero) return "cantattackhero";
 
             if (attacker.keywords.includes("Stealth")) attacker.removeKeyword("Stealth");
@@ -790,7 +864,6 @@ class Game {
 
             target.remHealth(attacker.getAttack());
             attacker.decAttack();
-            attacker.activate("onattack");
             this.events.broadcast("Attack", [attacker, target], attacker.plr);
 
             return true;
@@ -855,12 +928,14 @@ class Game {
 
         return true;
     }
+
+    /**
+     * Kill all minions with 0 or less health
+     * 
+     * @returns {number} The amount of minions killed
+     */
     killMinions() {
-        /**
-         * Kill all minions with 0 or less health
-         * 
-         * @returns {undefined}
-         */
+        let amount = 0;
 
         for (let p = 0; p < 2; p++) {
             let plr = this["player" + (p + 1)];
@@ -871,7 +946,6 @@ class Game {
             });
 
             this.board[p].forEach(m => {
-
                 // Add minions with more than 0 health to n.
                 if (m.getHealth() > 0) {
                     n.push(m);
@@ -882,6 +956,7 @@ class Game {
                 this.events.broadcast("KillMinion", m, this.player);
 
                 m.turnKilled = this.turns;
+                amount++;
 
                 if (!m.keywords.includes("Reborn")) {
                     plr.corpses++;
@@ -903,6 +978,8 @@ class Game {
 
             this.board[p] = n;
         }
+
+        return amount;
     }
 }
 
