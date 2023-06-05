@@ -316,6 +316,7 @@ class Interact {
                 code = `console.log(${code});game.input();`;
             }
     
+            game.evaling = true;
             try {
                 eval(code);
 
@@ -325,6 +326,7 @@ class Interact {
                 console.log(err.stack);
                 game.input("Press enter to continue...");
             }
+            game.evaling = false;
         }
         else if (q == "/debug") {
             if (!game.config.debug) return -1;

@@ -251,6 +251,7 @@ class Game {
         this.no_input = false;
 
         this.running = true;
+        this.evaling = false;
     }
 
     /**
@@ -369,6 +370,8 @@ class Game {
      * @returns {bool} Success
      */
     endGame(winner) {
+        if (!winner) return false;
+
         this.interact.printName();
 
         this.input(`Player ${winner.name} wins!\n`);
@@ -483,9 +486,14 @@ class Game {
      * @param {Card} card The card to play
      * @param {Player} player The card's owner
      * 
-     * @returns {Card | "mana" | "traded" | "space" | "magnetize" | "colossal" | "refund"}
+     * @returns {Card | "mana" | "traded" | "space" | "magnetize" | "colossal" | "refund" | "invalid"}
      */
     playCard(card, player) {
+        if (!card || !player) {
+            if (this.evaling) throw new TypeError("Evaling Error - The `card` or `player` argument passed to `playCard` are invalid. Make sure you passed in both arguments.");
+            return "invalid";
+        }
+
         this.killMinions();
 
         while (card.keywords.includes("Tradeable")) {
@@ -676,9 +684,14 @@ class Game {
      * @param {boolean} [update=true] If the summon should broadcast an event.
      * @param {boolean} [trigger_colossal=true] If the minion has colossal, summon the other minions.
      * 
-     * @returns {Card | "space" | "colossal"} The minion summoned
+     * @returns {Card | "space" | "colossal" | "invalid"} The minion summoned
      */
     summonMinion(minion, player, update = true, trigger_colossal = true) {
+        if (!minion || !player) {
+            if (this.evaling) throw new TypeError("Evaling Error - The `minion` or `player` argument passed to `summonMinion` are invalid. Make sure you passed in both arguments.");
+            return "invalid";
+        };
+
         // If the board has max capacity, and the card played is a minion or location card, prevent it.
         if (this.board[player.id].length >= this.config.maxBoardSpace) return "space";
 
@@ -737,9 +750,14 @@ class Game {
      * @param {Card | Player | number} attacker The attacker | Amount of damage to deal
      * @param {Card | Player} target The target
      * 
-     * @returns {boolean | "divineshield" | "taunt" | "stealth" | "frozen" | "plrnoattack" | "noattack" | "hasattacked" | "sleepy" | "cantattackhero" | "immune"} Success | Errorcode
+     * @returns {boolean | "divineshield" | "taunt" | "stealth" | "frozen" | "plrnoattack" | "noattack" | "hasattacked" | "sleepy" | "cantattackhero" | "immune" | "invalid"} Success | Errorcode
      */
     attack(attacker, target) {
+        if (!attacker || !target) {
+            if (this.evaling) throw new TypeError("Evaling Error - The `attacker` or `target` argument passed to `attack` are invalid. Make sure you passed in both arguments.");
+            return "invalid";
+        }
+
         this.killMinions();
 
         if (target.immune) return "immune";
