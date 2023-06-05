@@ -1,5 +1,6 @@
 delete require.cache[require.resolve("./card")];
 delete require.cache[require.resolve("./player")];
+delete require.cache[require.resolve("./ai")];
 
 const fs = require("fs");
 const child_process = require("child_process");

@@ -68,10 +68,18 @@ class Card {
         this.displayName = name;
 
         /**
+         * @type {number | null}
+         */
+        this.id = null;
+
+        /**
          * @type {"Card"}
          */
         this.classType = "Card";
 
+        /**
+         * @type {"mana" | "armor" | "health"}
+         */
         this.costType = "mana";
 
         /**
@@ -249,6 +257,16 @@ class Card {
         if (shouldExhaust) this.sleepy = true;
 
         return true;
+    }
+    ready() {
+        /**
+         * Makes this minion ready for attack
+         *
+         * @returns {null}
+         */
+
+        this.sleepy = false;
+        this.resetAttackTimes();
     }
 
     // Change stats
@@ -784,7 +802,7 @@ class Card {
      * assert.equal(card.desc, "The current turn count is {ph:0} 1 {/ph}");
      */
     replacePlaceholders() {
-        if (!this.placeholder) return;
+        if (!this.placeholders) return;
 
         this.placeholder = this.activate("placeholders")[0];
 

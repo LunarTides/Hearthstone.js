@@ -264,6 +264,21 @@ class Game {
     input(q, care = true) {
         if (this.no_input && care) return "";
 
+        // Let the game make choices for the user
+        if (this.player.inputQueue) {
+            let queue = this.player.inputQueue;
+
+            if (typeof(queue) == "string") return queue;
+            else if (!queue instanceof Array) return question(q); // Invalid queue
+
+            const answer = queue[0];
+            this.functions.remove(queue, answer);
+
+            if (queue.length <= 0) this.player.inputQueue = null;
+
+            return answer;
+        }
+
         return question(q);
     }
 
@@ -274,7 +289,10 @@ class Game {
      */
     doConfigAI() {
         if (this.config.P1AI) this.player1.ai = new AI(this.player1);
+        else this.player1.ai = null;
+
         if (this.config.P2AI) this.player2.ai = new AI(this.player2);
+        else this.player2.ai = null;
 
         return true;
     }
@@ -724,6 +742,8 @@ class Game {
     attack(attacker, target) {
         this.killMinions();
 
+        if (target.immune) return "immune";
+
         // Attacker is a number
         if (typeof(attacker) === "number") {
             let dmg = attacker;
@@ -753,15 +773,14 @@ class Game {
         }
 
         if (attacker.frozen) return "frozen";
-        if (target.immune) return "immune";
         if (attacker.dormant) return "dormant";
 
         // Attacker is a player
-        if (attacker instanceof Player) {
+        if (attacker.classType == "Player") {
             if (attacker.attack <= 0) return "plrnoattack";
 
             // Target is a player
-            if (target instanceof Player) {
+            if (target.classType == "Player") {
                 this.attack(attacker.attack, target);
                 this.events.broadcast("Attack", [attacker, target], attacker);
                 
@@ -819,7 +838,7 @@ class Game {
         if (attacker.getAttack() <= 0) return "noattack";
 
         // Target is a player
-        if (target instanceof Player) {
+        if (target.classType == "Player") {
             if (!attacker.canAttackHero) return "cantattackhero";
 
             if (attacker.keywords.includes("Stealth")) attacker.removeKeyword("Stealth");
