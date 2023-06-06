@@ -32,7 +32,7 @@ function createCard(card, main) {
     if (card.races) races = card.races.map(r => capitalize(r));
 
     // Spell info
-    let spellClass = card.spellSchool || null;
+    let spellClass = card.spellSchool ? capitalize(card.spellSchool) : null;
 
     // Weapon Info
     let durability = card.durability || -1;
@@ -132,8 +132,10 @@ function main(card = null) {
 
     data = JSON.parse(data);
 
-    let debug = !rl.keyInYN("Do you want the card to actually be created?");
-    cc.set_debug(debug);
+    if (game.config.debug) {
+        let debug = !rl.keyInYN("Do you want the card to actually be created?");
+        cc.set_debug(debug);
+    }
 
     while (true) {
         let cardName = rl.question("Name: ");

@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "School Teacher",
     stats: [4, 4],
@@ -10,6 +15,9 @@ module.exports = {
     set: "Voyage to the Sunken City",
     id: 191,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         // Discover
         let list = game.functions.getCards();

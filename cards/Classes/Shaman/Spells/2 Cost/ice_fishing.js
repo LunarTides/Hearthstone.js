@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Ice Fishing",
     desc: "Draw 2 Murlocs from your deck.",
@@ -8,6 +13,9 @@ module.exports = {
     spellClass: "Frost",
     id: 307,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         const doDraw = () => {
             let list = plr.deck.filter(c => c.type == "Minion" && game.functions.matchTribe(c.tribe, "Murloc"));

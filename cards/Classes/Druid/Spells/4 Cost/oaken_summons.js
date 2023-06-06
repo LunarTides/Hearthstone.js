@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Oaken Summons",
     desc: "Gain 6 Armor. Recruit a minion that costs (4) or less.",
@@ -9,6 +14,9 @@ module.exports = {
     spellClass: "Nature",
     id: 23,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, card) {
         plr.armor += 6;
 

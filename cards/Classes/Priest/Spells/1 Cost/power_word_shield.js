@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Power Word Shield",
     displayName: "Power Word: Shield",
@@ -10,6 +15,9 @@ module.exports = {
     spellClass: "Holy",
     id: 171,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         let target = game.interact.selectTarget("Give a minion +2 Health.", true, null, "minion");
         if (!target) return -1;

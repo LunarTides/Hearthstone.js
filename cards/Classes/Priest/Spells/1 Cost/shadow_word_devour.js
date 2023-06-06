@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Shadow Word Devour",
     displayName: "Shadow Word: Devour",
@@ -10,6 +15,9 @@ module.exports = {
     spellClass: "Shadow",
     id: 172,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         let target = game.interact.selectTarget("Choose a minion. It steals 1 Health from ALL other minions.", true, null, "minion");
         if (!target) return -1;

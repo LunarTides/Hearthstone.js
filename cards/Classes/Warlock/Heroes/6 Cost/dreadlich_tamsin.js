@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Dreadlich Tamsin",
     desc: "&BBattlecry:&R Deal 3 damage to all minions. Shuffle 3 Rifts into your deck. Draw 3 cards.",
@@ -9,6 +14,9 @@ module.exports = {
     hpDesc: "Shuffle a Rift into your deck. Draw a card.",
     id: 297,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         // Deal 3 damage to all minions.
         game.board.forEach(p => {
@@ -24,6 +32,9 @@ module.exports = {
         for (let i = 0; i < 3; i++) plr.drawCard();
     },
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     heropower(plr, game, self) {
         // Shuffle a Rift into your deck.
         let rift = new game.Card("Fel Rift", plr);

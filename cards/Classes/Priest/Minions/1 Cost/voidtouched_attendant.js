@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Voidtouched Attendant",
     stats: [1, 3],
@@ -10,6 +15,9 @@ module.exports = {
     set: "United in Stormwind",
     id: 234,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     passive(plr, game, self, key, val) {
         if (key != "TakeDamage") return;
 

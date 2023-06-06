@@ -580,7 +580,7 @@ class SentimentAI {
      * Returns a score for the player specified based on how good their position is.
      *
      * @param {Player} player The player to score
-     * @param {ScoreBoard} board The board to check
+     * @param {import("./types").ScoreBoard} board The board to check
      *
      * @returns {number} Score
      */
@@ -610,7 +610,7 @@ class SentimentAI {
     /**
      * Returns the player that is winning
      *
-     * @param {ScoreBoard} board The board to check
+     * @param {import("./types").ScoreBoard} board The board to check
      *
      * @returns {[Player, number]} Winner, Score
      */
@@ -651,7 +651,7 @@ class SentimentAI {
         if (perfect_trades.length > 0) ret = perfect_trades[0];
         else if (imperfect_trades.length > 0) ret = imperfect_trades[0];
 
-        this.history.push([`trade`, [ret[0].name, ret[1].name]]);
+        if (ret) this.history.push([`trade`, [ret[0].name, ret[1].name]]);
 
         return ret;
     }
@@ -659,9 +659,9 @@ class SentimentAI {
     /**
      * Does a general attack
      *
-     * @param {ScoreBoard} board
+     * @param {import("./types").ScoreBoard} board
      *
-     * @returns {Card[] | null} Attacker, Target
+     * @returns {[Card | -1]} Attacker, Target
      */
     _attackGeneral(board) {
         let current_winner = this._findWinner(board);
@@ -699,7 +699,7 @@ class SentimentAI {
      * 
      * Use the return value of this function to actually attack by passing it into `game.attack`
      *
-     * @returns {Card[]} Attacker, Target
+     * @returns {[Card | -1]} Attacker, Target
      */
     _attackGeneralMinion() {
         let target;
@@ -856,7 +856,7 @@ class SentimentAI {
 
         // If the AI has no minions to attack, attack the enemy hero
         if (!target) {
-            if (!taunts.length && attacker.canAttackHero) target = this.plr.getOpponent();
+            if (!taunts.length && attacker && attacker.canAttackHero) target = this.plr.getOpponent();
             else {
                 attacker = -1;
                 target = -1;
@@ -1042,7 +1042,7 @@ class SentimentAI {
      * 
      * @param {string[]} options The options the ai can pick from
      *
-     * @returns {string} The question chosen
+     * @returns {number} The index of the question chosen
      */
     chooseOne(options) {
         // I know this is a bad solution

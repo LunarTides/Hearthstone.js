@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Tamsins Phylactery",
     displayName: "Tamsin's Phylactery",
@@ -10,6 +15,9 @@ module.exports = {
     spellClass: "Shadow",
     id: 296,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         let list = game.graveyard[plr.id];
         list = list.filter(m => m.blueprint.deathrattle);

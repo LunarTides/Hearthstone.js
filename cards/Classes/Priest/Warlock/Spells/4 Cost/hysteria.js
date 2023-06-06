@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Hysteria",
     desc: "Choose an enemy minion. It attacks random minions until it dies.",
@@ -9,6 +14,9 @@ module.exports = {
     spellClass: "Shadow",
     id: 246,
 
+    /**
+     * @type {import("../../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         let target = game.interact.selectTarget("Choose an enemy minion. It attacks random minions until it dies.", true, "enemy", "minion");
         if (!target) return -1;

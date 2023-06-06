@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Flarks BoomZooka",
     displayName: "Flark's Boom-Zooka",
@@ -9,6 +14,9 @@ module.exports = {
     set: "The Boomsday Project",
     id: 228,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         let opBoard = game.board[plr.getOpponent().id];
         let currBoard = game.board[plr.id];

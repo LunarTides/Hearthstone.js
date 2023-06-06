@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "The Lich King's Goal",
     displayName: "Death and Decay",
@@ -11,6 +16,9 @@ module.exports = {
     uncollectible: true,
     id: 125,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         game.board[plr.getOpponent().id].forEach(m => {
             game.attack(3, m);

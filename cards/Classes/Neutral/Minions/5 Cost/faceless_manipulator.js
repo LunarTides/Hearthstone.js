@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Faceless Manipulator",
     stats: [3, 3],
@@ -10,6 +15,9 @@ module.exports = {
     set: "Legacy",
     id: 51,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         let target = game.interact.selectTarget("Become a copy of a minion.", false, null, "minion");
         if (!target) return -1;

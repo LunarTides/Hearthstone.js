@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Embalming Ritual",
     desc: "Give a minion Reborn.",
@@ -8,6 +13,9 @@ module.exports = {
     set: "Saviors of Uldum",
     id: 69,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, card) {
         let target = game.interact.selectTarget("Give a minion Reborn.", true, null, "minion");
 

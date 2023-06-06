@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Death Knight Frail Ghoul",
     displayName: "Frail Ghoul",
@@ -13,6 +18,9 @@ module.exports = {
     uncollectible: true,
     id: 79,
 
+    /**
+     * @type {import("../../../src/types").KeywordMethod}
+     */
     passive(plr, game, self, key, val) {
         if (key != "EndTurn" || game.player != plr) return;
 

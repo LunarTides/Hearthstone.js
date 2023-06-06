@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Masters Call",
     displayName: "Master's Call",
@@ -9,6 +14,9 @@ module.exports = {
     set: "Rastakhan's Rumble",
     id: 229,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         let list = plr.deck.filter(c => c.type == "Minion");
         

@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Brann Bronzebeard",
     stats: [2, 4],
@@ -10,6 +15,9 @@ module.exports = {
     set: "Core",
     id: 43,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     passive(plr, game, card, key, val) {
         if (key != "minionsPlayed" || game.player != plr) return;
         

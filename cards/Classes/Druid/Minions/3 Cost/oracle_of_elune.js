@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Oracle of Elune",
     stats: [2, 4],
@@ -10,6 +15,9 @@ module.exports = {
     set: "United in Stormwind",
     id: 140,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     passive(plr, game, self, key, val) {
         if (!["SummonMinion", "PlayCard"].includes(key)) return; // If key is not "SummonMinion" or "PlayCard", return
         if (key == "PlayCard" && val.type != "Minion") return;

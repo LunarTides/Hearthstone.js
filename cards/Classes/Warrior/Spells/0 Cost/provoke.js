@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Provoke",
     desc: "Tradeable. Choose a friendly minion. Enemy minions attack it.",
@@ -9,6 +14,9 @@ module.exports = {
     keywords: ["Tradeable"],
     id: 107,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         let minion = game.interact.selectTarget("Choose a friendly minion. Enemy minions attack it.", true, "friendly", "minion");
         if (!minion) return -1;

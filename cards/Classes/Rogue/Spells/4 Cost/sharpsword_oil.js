@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Sharpsword Oil",
     displayName: "Tinker's Sharpsword Oil",
@@ -9,12 +14,18 @@ module.exports = {
     set: "Goblins vs Gnomes",
     id: 284,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         if (!plr.weapon) return -1;
 
         plr.weapon.addStats(3, 0);
     },
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     combo(plr, game, self) {
         if (game.board[plr.id].length <= 0) return;
 

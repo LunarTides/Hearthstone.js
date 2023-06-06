@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Nazmani Bloodweaver",
     stats: [2, 5],
@@ -10,6 +15,9 @@ module.exports = {
     set: "Madness at the Darkmoon Faire",
     id: 65,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     passive(plr, game, card, key, val) {
         if (key != "PlayCard" || val.type != "Spell" || game.player != plr) return;
         if (plr.hand.filter(c => c.mana > 0).length <= 0) return;

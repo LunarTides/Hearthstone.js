@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Prismatic Elemental",
     stats: [1, 3],
@@ -9,6 +14,9 @@ module.exports = {
     rarity: "Epic",
     id: 317,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         let list = game.functions.getCards().filter(c => !c.class.includes("Neutral"));
         let card = game.interact.discover("Discover a spell from any class.", list);

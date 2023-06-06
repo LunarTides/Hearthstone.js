@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "The Lich King's Army",
     displayName: "Army of the Dead",
@@ -11,6 +16,9 @@ module.exports = {
     uncollectible: true,
     id: 124,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         let cards = plr.deck.splice(plr.deck.length - 5, 5);
 

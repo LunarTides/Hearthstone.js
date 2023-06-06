@@ -316,6 +316,7 @@ class Interact {
                 code = `console.log(${code});game.input();`;
             }
     
+            game.evaling = true;
             try {
                 eval(code);
 
@@ -325,6 +326,7 @@ class Interact {
                 console.log(err.stack);
                 game.input("Press enter to continue...");
             }
+            game.evaling = false;
         }
         else if (q == "/debug") {
             if (!game.config.debug) return -1;
@@ -567,7 +569,7 @@ class Interact {
      * 
      * @param {string} [prompt="Choose a card to Dredge:"] The prompt to ask the user
      * 
-     * @returns {Card} The card chosen
+     * @returns {Card | null} The card chosen
      */
     dredge(prompt = "Choose a card to Dredge:") {
         // Look at the bottom three cards of the deck and put one on the top.
@@ -587,7 +589,7 @@ class Interact {
 
         console.log(`\n${prompt}`);
 
-        if (cards.length <= 0) return;
+        if (cards.length <= 0) return null;
 
         cards.forEach((c, i) => {
             console.log(this.getReadableCard(c, i + 1));

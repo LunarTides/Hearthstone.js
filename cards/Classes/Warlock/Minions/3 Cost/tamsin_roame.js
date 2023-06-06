@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Tamsin Roame",
     stats: [1, 3],
@@ -10,6 +15,9 @@ module.exports = {
     set: "Forged in the Barrens",
     id: 299,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     passive(plr, game, self, key, val) {
         if (key != "PlayCard" || val.type != "Spell" || val.mana <= 0 || !val.spellClass || !val.spellClass.includes("Shadow")) return;
 

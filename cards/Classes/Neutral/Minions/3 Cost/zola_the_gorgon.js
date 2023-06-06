@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Zola the Gorgon",
     stats: [2, 2],
@@ -10,6 +15,9 @@ module.exports = {
     set: "Core",
     id: 47,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, card) {
         let target = game.interact.selectTarget("Add a copy of a minion to your hand.", true, "self", "minion");
 

@@ -1,3 +1,8 @@
+// Created by Hand
+
+/**
+ * @type {import("../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Battlecry Example",
     stats: [1, 2],
@@ -9,6 +14,11 @@ module.exports = {
     rarity: "Free",
     uncollectible: true,
 
+    /**
+     * This gives you code-completion for the plr, game, and self arguments if you're using Visual Studio Code.
+     * This will automatically show up if you created this card using the card creator or any of it's variants (Custom, Vanilla, Class)
+     * @type {import("../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) { // Instead of `battlecry`, you could put `deathrattle`, or `inspire`, for example.
         // The `plr` variable is the card's owner. This is an instance of the Player class as defined in `src/player.js`.
         // The `game` variable is the current game. This is an instance of the Game class as defined in `src/game.js`.

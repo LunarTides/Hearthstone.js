@@ -1,3 +1,8 @@
+// Created by Hand
+
+/**
+ * @type {import("../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Combined Example 4",
     desc: "Quest: Play 3 cards. Reward: Reduce the cost of the next 10 Minions you play by 1.",
@@ -7,6 +12,9 @@ module.exports = {
     rarity: "Legendary",
     uncollectible: true,
 
+    /**
+     * @type {import("../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         game.functions.addQuest("Quest", plr, self, "PlayCard", 3, (val, turn, done) => {
             if (val == self) return false;

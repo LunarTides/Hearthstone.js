@@ -1,3 +1,8 @@
+// Created by Hand
+
+/**
+ * @type {import("../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Combined Example 2 Right Arm",
     displayName: "Right Arm",

@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Galakrond the Nightmare",
     displayName: "Galakrond, the Nightmare",
@@ -10,6 +15,9 @@ module.exports = {
     hpCost: 2,
     id: 321,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         /*
          * 'x' is the amount of times invoked:
@@ -36,6 +44,9 @@ module.exports = {
         }
     },
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     heropower(plr, game, self) {
         const lackey_cards = ["Ethereal Lackey", "Faceless Lackey", "Goblin Lackey", "Kobold Lackey", "Witchy Lackey"];
 
@@ -45,6 +56,9 @@ module.exports = {
         plr.addToHand(lackey);
     },
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     invoke(plr, game, self) {
         if (!self.invoke_count) self.invoke_count = 0;
         if (self.invoke_count >= 3) self.invoke_count = 3;
@@ -52,6 +66,9 @@ module.exports = {
         self.invoke_count++;
     },
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     placeholders(plr, game, self) {
         const x = self.invoke_count;
         const y = Math.ceil((x + 1) / 2) + Math.round(x * 0.15);

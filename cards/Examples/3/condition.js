@@ -1,3 +1,8 @@
+// Created by Hand
+
+/**
+ * @type {import("../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Condition Example",
     stats: [5, 2],
@@ -10,6 +15,9 @@ module.exports = {
     conditioned: ["battlecry"], // By having this here, the battlecry function below will only trigger if the condition function returns true
     uncollectible: true,
 
+    /**
+     * @type {import("../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         // This will only trigger if the `condition` function below returns true.
         // Makes the card's owner draw a card.
@@ -19,6 +27,9 @@ module.exports = {
         plr.drawCard();
     },
 
+    /**
+     * @type {import("../../../src/types").KeywordMethod}
+     */
     condition(plr, game, self) {
         // `game.functions.highlander` will return true if the player has no duplicates in their deck.
         //

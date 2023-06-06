@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Soulstealer",
     stats: [5, 5],
@@ -11,6 +16,9 @@ module.exports = {
     runes: "BBB",
     id: 196,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         game.board.forEach(p => {
             p.forEach(m => {

@@ -1,3 +1,8 @@
+// Created by Hand
+
+/**
+ * @type {import("../../../../src/types").Blueprint}
+ */
 module.exports = {
     // Look in `main.js` first.
     // This will be summoned above the main minion

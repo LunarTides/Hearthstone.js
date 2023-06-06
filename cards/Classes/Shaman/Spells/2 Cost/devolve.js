@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Devolve",
     desc: "Transform all enemy minions into random ones that cost (1) less.",
@@ -8,6 +13,9 @@ module.exports = {
     spellClass: "Nature",
     id: 304,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         game.board[plr.getOpponent().id].forEach(m => {
             let list = game.functions.getCards();

@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Lightning Bloom",
     desc: "Refresh 2 Mana Crystals. Overload: (2)",
@@ -8,6 +13,9 @@ module.exports = {
     set: "Scholomance Academy",
     id: 11,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, card) {
         plr.refreshMana(2);
         plr.overload += 2;

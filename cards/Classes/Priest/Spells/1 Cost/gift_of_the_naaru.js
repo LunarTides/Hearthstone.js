@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Gift of the Naaru",
     desc: "Restore 3 Health to all characters. If any are still damaged, draw a card.",
@@ -9,6 +14,9 @@ module.exports = {
     spellClass: "Holy",
     id: 169,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         const doLogic = (t) => {
             t.addHealth(3);

@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "NZoth the Corruptor",
     displayName: "N'Zoth, the Corruptor",
@@ -11,6 +16,9 @@ module.exports = {
     set: "Whispers of the Old Gods",
     id: 213,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         let amount = game.board[plr.id].length + 1;
 

@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Invincible",
     stats: [5, 5],
@@ -11,6 +16,9 @@ module.exports = {
     keywords: ["Reborn"],
     id: 119,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         let cards = game.board[plr.id].filter(m => m.type == "Minion" && game.functions.matchTribe(m.tribe, "Undead") && m != self);
         let card = game.functions.randList(cards, false);
@@ -20,6 +28,9 @@ module.exports = {
         card.addKeyword("Taunt");
     },
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     deathrattle(plr, game, self) {
         self.activateBattlecry();
     }

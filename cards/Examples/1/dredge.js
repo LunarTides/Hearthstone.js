@@ -1,3 +1,8 @@
+// Created by Hand
+
+/**
+ * @type {import("../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Dredge Example",
     stats: [1, 1],
@@ -9,6 +14,9 @@ module.exports = {
     rarity: "Free",
     uncollectible: true,
 
+    /**
+     * @type {import("../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         // `game.interact` is an instance of the Interact class as defined in `src/interact.js`.
         game.interact.dredge();

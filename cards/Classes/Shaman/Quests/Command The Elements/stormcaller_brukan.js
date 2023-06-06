@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Stormcaller Bru'kan",
     stats: [7, 7],
@@ -11,6 +16,9 @@ module.exports = {
     uncollectible: true,
     id: 78,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, card) {
         let spell;
 

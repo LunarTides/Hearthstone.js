@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Warlock Starting Hero",
     displayName: "Gul'dan",
@@ -11,6 +16,9 @@ module.exports = {
     uncollectible: true,
     id: 102,
 
+    /**
+     * @type {import("../../src/types").KeywordMethod}
+     */
     heropower(plr, game, self) {
         plr.remHealth(2);
         plr.drawCard();

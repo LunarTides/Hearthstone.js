@@ -1,3 +1,8 @@
+// Created by Hand (before the Card Creator Existed)
+
+/**
+ * @type {import("../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Ethereal Lackey",
     stats: [1, 1],
@@ -11,6 +16,9 @@ module.exports = {
     uncollectible: true,
     id: 88,
 
+    /**
+     * @type {import("../../src/types").KeywordMethod}
+     */
     battlecry(plr, game) {
         let list = game.functions.getCards();
         list = list.filter(c => c.type == "Spell");

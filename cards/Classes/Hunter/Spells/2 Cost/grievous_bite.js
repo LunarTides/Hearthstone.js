@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Grievous Bite",
     desc: "Deal 2 damage to a minion and 1 damage to adjacent ones.",
@@ -8,6 +13,9 @@ module.exports = {
     set: "Journey to Un'Goro",
     id: 224,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         let target = game.interact.selectTarget("Deal 2 damage to a minion and 1 damage to adjacent ones.", true, null, "minion");
         if (!target) return -1;

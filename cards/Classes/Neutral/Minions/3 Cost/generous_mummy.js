@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Generous Mummy",
     stats: [5, 4],
@@ -11,6 +16,9 @@ module.exports = {
     keywords: ["Reborn"],
     id: 45,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     passive(plr, game, self, key, val) {
         if (key == "KillMinion" && val == self) return;
 
@@ -19,6 +27,9 @@ module.exports = {
         });
     },
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     unpassive(plr, game, self, ignore) {
         if (ignore) return;
 

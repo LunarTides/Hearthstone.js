@@ -5,11 +5,6 @@ const { Card }      = require("./card");
 const { Interact }  = require("./interact");
 const { SimulationAI, SentimentAI } = require('./ai');
 
-// Event key typdef
-/**
- * @typedef {"FatalDamage" | "EndTurn" | "StartTurn" | "HealthRestored" | "UnspentMana" | "GainOverload" | "GainHeroAttack" | "TakeDamage" | "PlayCard" | "PlayCardUnsafe" | "SummonMinion" | "KillMinion" | "DamageMinion" | "CancelCard" | "CastSpellOnMinion" | "TradeCard" | "FreezeCard" | "AddCardToDeck" | "AddCardToHand" | "DrawCard" | "SpellDealsDamage" | "Attack" | "HeroPower" | "Eval"} EventKeys
- */
-
 class EventManager {
     /**
      * @param {Game} game 
@@ -25,8 +20,8 @@ class EventManager {
     /**
      * Do card passives
      *
-     * @param {EventKeys} key The key of the event
-     * @param {any} val The value of the event
+     * @param {import('./types').EventKeys} key The key of the event
+     * @param {import('./types').EventValues} val The value of the event
      *
      * @returns {boolean} Success
      */
@@ -103,8 +98,8 @@ class EventManager {
      * Update quests and secrets
      *
      * @param {"Secret" | "Quest" | "Questline"} quests_name The type of quest to update
-     * @param {EventKeys} key The key of the event
-     * @param {any} val The value of the event
+     * @param {import('./types').EventKeys} key The key of the event
+     * @param {import('./types').EventValues} val The value of the event
      * @param {Player} plr The owner of the quest
      *
      * @returns {bool} Success
@@ -136,8 +131,8 @@ class EventManager {
     /**
      * Broadcast an event
      *
-     * @param {EventKeys} key The key of the event
-     * @param {any} val The value of the event
+     * @param {import('./types').EventKeys} key The key of the event
+     * @param {import('./types').EventValues} val The value of the event
      * @param {Player} plr The player who caused the event to happen
      * @param {boolean} [updateHistory=true] Whether or not to update the history
      *
@@ -252,6 +247,7 @@ class Game {
         this.no_input = false;
 
         this.running = true;
+        this.evaling = false;
     }
 
     /**
@@ -264,6 +260,21 @@ class Game {
      */
     input(q, care = true) {
         if (this.no_input && care) return "";
+
+        // Let the game make choices for the user
+        if (this.player.inputQueue) {
+            let queue = this.player.inputQueue;
+
+            if (typeof(queue) == "string") return queue;
+            else if (!queue instanceof Array) return question(q); // Invalid queue
+
+            const answer = queue[0];
+            this.functions.remove(queue, answer);
+
+            if (queue.length <= 0) this.player.inputQueue = null;
+
+            return answer;
+        }
 
         return question(q);
     }
@@ -284,7 +295,10 @@ class Game {
         }
 
         if (this.config.P1AI) this.player1.ai = AI(this.player1);
+        else this.player1.ai = null;
+
         if (this.config.P2AI) this.player2.ai = AI(this.player2);
+        else this.player2.ai = null;
 
         return true;
     }
@@ -361,6 +375,8 @@ class Game {
      * @returns {bool} Success
      */
     endGame(winner) {
+        if (!winner) return false;
+
         this.interact.printName();
 
         this.input(`Player ${winner.name} wins!\n`);
@@ -475,9 +491,14 @@ class Game {
      * @param {Card} card The card to play
      * @param {Player} player The card's owner
      * 
-     * @returns {Card | "mana" | "traded" | "space" | "magnetize" | "colossal" | "refund"}
+     * @returns {Card | "mana" | "traded" | "space" | "magnetize" | "colossal" | "refund" | "invalid"}
      */
     playCard(card, player) {
+        if (!card || !player) {
+            if (this.evaling) throw new TypeError("Evaling Error - The `card` or `player` argument passed to `playCard` are invalid. Make sure you passed in both arguments.");
+            return "invalid";
+        }
+
         this.killMinions();
 
         while (card.keywords.includes("Tradeable")) {
@@ -668,9 +689,14 @@ class Game {
      * @param {boolean} [update=true] If the summon should broadcast an event.
      * @param {boolean} [trigger_colossal=true] If the minion has colossal, summon the other minions.
      * 
-     * @returns {Card | "space" | "colossal"} The minion summoned
+     * @returns {Card | "space" | "colossal" | "invalid"} The minion summoned
      */
     summonMinion(minion, player, update = true, trigger_colossal = true) {
+        if (!minion || !player) {
+            if (this.evaling) throw new TypeError("Evaling Error - The `minion` or `player` argument passed to `summonMinion` are invalid. Make sure you passed in both arguments.");
+            return "invalid";
+        };
+
         // If the board has max capacity, and the card played is a minion or location card, prevent it.
         if (this.board[player.id].length >= this.config.maxBoardSpace) return "space";
 
@@ -729,10 +755,17 @@ class Game {
      * @param {Card | Player | number} attacker The attacker | Amount of damage to deal
      * @param {Card | Player} target The target
      * 
-     * @returns {boolean | "divineshield" | "taunt" | "stealth" | "frozen" | "plrnoattack" | "noattack" | "hasattacked" | "sleepy" | "cantattackhero" | "immune"} Success | Errorcode
+     * @returns {boolean | "divineshield" | "taunt" | "stealth" | "frozen" | "plrnoattack" | "noattack" | "hasattacked" | "sleepy" | "cantattackhero" | "immune" | "invalid"} Success | Errorcode
      */
     attack(attacker, target) {
+        if (!attacker || !target) {
+            if (this.evaling) throw new TypeError("Evaling Error - The `attacker` or `target` argument passed to `attack` are invalid. Make sure you passed in both arguments.");
+            return "invalid";
+        }
+
         this.killMinions();
+
+        if (target.immune) return "immune";
 
         // Attacker is a number
         if (typeof(attacker) === "number") {
@@ -763,15 +796,14 @@ class Game {
         }
 
         if (attacker.frozen) return "frozen";
-        if (target.immune) return "immune";
         if (attacker.dormant) return "dormant";
 
         // Attacker is a player
-        if (attacker instanceof Player) {
+        if (attacker.classType == "Player") {
             if (attacker.attack <= 0) return "plrnoattack";
 
             // Target is a player
-            if (target instanceof Player) {
+            if (target.classType == "Player") {
                 this.attack(attacker.attack, target);
                 this.events.broadcast("Attack", [attacker, target], attacker);
                 
@@ -829,7 +861,7 @@ class Game {
         if (attacker.getAttack() <= 0) return "noattack";
 
         // Target is a player
-        if (target instanceof Player) {
+        if (target.classType == "Player") {
             if (!attacker.canAttackHero) return "cantattackhero";
 
             if (attacker.keywords.includes("Stealth")) attacker.removeKeyword("Stealth");

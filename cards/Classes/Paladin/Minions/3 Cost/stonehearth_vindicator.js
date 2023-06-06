@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Stonehearth Vindicator",
     stats: [3, 1],
@@ -10,6 +15,9 @@ module.exports = {
     set: "Fractured in Alterac Valley",
     id: 261,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         let list = plr.deck.filter(c => c.type == "Spell" && c.mana <= 3);
         let spell = game.functions.randList(list, false);

@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Corpse Explosion",
     desc: "Detonate a Corpse to deal 1 damage to all minions. If any are still alive, repeat this.",
@@ -9,7 +14,10 @@ module.exports = {
     spellClass: "Shadow",
     runes: "BB",
     id: 2,
-            
+          
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, card) {
         let success;
 

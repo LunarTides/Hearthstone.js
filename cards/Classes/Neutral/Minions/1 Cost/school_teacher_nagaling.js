@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "School Teacher Nagaling",
     displayName: "Nagaling",
@@ -11,12 +16,18 @@ module.exports = {
     set: "Voyage to the Sunken City",
     uncollectible: true,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         if (self.storage.length <= 0) return;
 
         self.storage[0].activate("cast");
     },
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     placeholders(plr, game, self) {
         let spellName = undefined;
 

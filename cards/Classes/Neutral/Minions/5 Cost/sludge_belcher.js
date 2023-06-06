@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Sludge Belcher",
     stats: [3, 5],
@@ -11,6 +16,9 @@ module.exports = {
     keywords: ["Taunt"],
     id: 209,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     deathrattle(plr, game, self) {
         let minion = new game.Card("Sludge Belcher Slime", plr);
         game.summonMinion(minion, plr);

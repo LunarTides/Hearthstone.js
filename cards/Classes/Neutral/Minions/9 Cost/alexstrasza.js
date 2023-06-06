@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Alexstrasza",
     stats: [8, 8],
@@ -10,6 +15,9 @@ module.exports = {
     set: "Legacy",
     id: 55,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, card) {
         let target = game.interact.selectTarget("Set a hero's remaining Health to 15.", false, null, "hero");
         if (!target) return -1;

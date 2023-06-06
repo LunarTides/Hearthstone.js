@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Secret Passage",
     desc: "Replace your hand with 4 cards from your deck. Swap back next turn.",
@@ -8,6 +13,9 @@ module.exports = {
     set: "Scholomance Academy",
     id: 274,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         // Store the state of the player's hand for later
         let og_hand = plr.hand.slice(); // Do .slice() to make a copy of it instead of ref

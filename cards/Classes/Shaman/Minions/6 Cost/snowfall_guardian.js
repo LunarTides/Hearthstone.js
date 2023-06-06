@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Snowfall Guardian",
     stats: [5, 5],
@@ -9,6 +14,9 @@ module.exports = {
     rarity: "Common",
     id: 309,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         game.board.forEach(p => {
             p.forEach(m => {

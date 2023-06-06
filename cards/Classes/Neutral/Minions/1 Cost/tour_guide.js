@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Tour Guide",
     stats: [1, 1],
@@ -10,6 +15,9 @@ module.exports = {
     set: "Scholomance Academy",
     id: 298,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         plr.heroPowerCost = 0;
 

@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Rogue Starting Hero",
     displayName: "Valeera Sanguinar",
@@ -11,6 +16,9 @@ module.exports = {
     uncollectible: true,
     id: 100,
 
+    /**
+     * @type {import("../../src/types").KeywordMethod}
+     */
     heropower(plr, game, self) {
         const wpn = new game.Card("Wicked Knife", plr);
 

@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Vampiric Blood",
     desc: "Give your hero +5 Health. Spend 3 Corpses to gain 5 more and draw a card.",
@@ -9,6 +14,9 @@ module.exports = {
     runes: "BBB",
     id: 186,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         const give5Health = (drawFlag = true) => {
             plr.addHealth(5);

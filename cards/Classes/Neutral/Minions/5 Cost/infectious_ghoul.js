@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Infectious Ghoul",
     stats: [5, 4],
@@ -10,6 +15,9 @@ module.exports = {
     set: "March of the Lich King",
     id: 207,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     deathrattle(plr, game, self) {
         let list = game.board[plr.id].filter(m => m != self);
         let minion = game.functions.randList(list, false);

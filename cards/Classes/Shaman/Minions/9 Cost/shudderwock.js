@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Shudderwock",
     stats: [6, 6],
@@ -9,6 +14,9 @@ module.exports = {
     rarity: "Legendary",
     id: 314,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         let cardsPlayed = game.events.PlayCard[plr.id];
         cardsPlayed = cardsPlayed.map(c => c[0]).filter(c => c.battlecry && c.id != self.id);

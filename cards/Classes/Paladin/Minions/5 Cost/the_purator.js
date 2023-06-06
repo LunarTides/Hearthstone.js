@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "The Purator",
     stats: [4, 6],
@@ -11,6 +16,9 @@ module.exports = {
     keywords: ["Taunt"],
     id: 266,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         // Check for Neutral cards.
         let neutral_cards = plr.deck.filter(c => c.class.includes("Neutral"));

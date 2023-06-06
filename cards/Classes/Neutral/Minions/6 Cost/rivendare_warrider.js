@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Rivendare Warrider",
     displayName: "Rivendare, Warrider",
@@ -11,6 +16,9 @@ module.exports = {
     set: "Return to Naxxramas",
     id: 222,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     deathrattle(plr, game, self) {
         const doShuffle = (name, concept) => {
             name = `${name} ${concept}rider`;

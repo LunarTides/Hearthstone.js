@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "The Sunwell",
     desc: "Fill your hand with random spells. Costs (1) less for each other card in your hand.",
@@ -9,6 +14,9 @@ module.exports = {
     spellClass: "Holy",
     id: 181,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     passive(plr, game, self, key, val) {
         let discount = (plr.hand.length - 1);
         if (discount < 0) discount = 0;
@@ -23,6 +31,9 @@ module.exports = {
         if (!self.enchantmentExists(`-${discount} mana`, self)) self.addEnchantment(`-${discount} mana`, self);
     },
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         let list = game.functions.getCards().filter(c => c.type == "Spell");
         if (list.length == 0) return;

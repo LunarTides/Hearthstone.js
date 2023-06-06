@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Nourish",
     desc: "Choose One - Gain 2 Mana Crystals; or Draw 3 cards.",
@@ -9,6 +14,9 @@ module.exports = {
     spellClass: "Nature",
     id: 25,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, card) {
         let choice = game.interact.chooseOne('Gain 2 Mana Crystals; or Draw 3 cards.', ['+2 Mana Crystals', '+3 Cards']);
         

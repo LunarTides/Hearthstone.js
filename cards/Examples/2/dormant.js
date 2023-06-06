@@ -1,3 +1,8 @@
+// Created by Hand
+
+/**
+ * @type {import("../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Dormant Example",
     stats: [8, 8],
@@ -10,6 +15,9 @@ module.exports = {
     dormant: 2, // How many turns this minion should be dormant for.
     uncollectible: true,
 
+    /**
+     * @type {import("../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         // The battlecry only triggers when the minion is no longer dormant.
         game.interact.dredge();

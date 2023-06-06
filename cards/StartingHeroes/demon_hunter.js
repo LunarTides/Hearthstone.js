@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Demon Hunter Starting Hero",
     displayName: "Illidan Stormrage",
@@ -12,6 +17,9 @@ module.exports = {
     uncollectible: true,
     id: 94,
 
+    /**
+     * @type {import("../../src/types").KeywordMethod}
+     */
     heropower(plr, game, self) {
         plr.addAttack(1);
     }

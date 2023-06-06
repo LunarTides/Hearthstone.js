@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Thaddius Monstrosity",
     displayName: "Thaddius, Monstrosity",
@@ -12,10 +17,16 @@ module.exports = {
     keywords: ["Taunt"],
     id: 252,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     battlecry(plr, game, self) {
         self.activate("passive", "StartTurn", "fake"); // Fun and goofy code with no future consequence whatsoever! :)
     },
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     passive(plr, game, self, key, val) {
         if (key != "StartTurn" || (game.player == plr && val != "fake")) return;
 

@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Emperor Thaurissan",
     stats: [5, 5],
@@ -10,6 +15,9 @@ module.exports = {
     set: "Blackrock Mountain",
     id: 52,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     passive(plr, game, card, key, val) {
         if (key != "EndTurn" || game.player != plr) return;
 

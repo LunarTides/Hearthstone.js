@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Power Word Fortitude",
     displayName: "Power Word: Fortitude",
@@ -10,6 +15,9 @@ module.exports = {
     spellClass: "Holy",
     id: 180,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     passive(plr, game, self, key, val) {
         let cards = plr.hand.filter(c => c.type == "Spell").length;
         //self.mana = self.backups.mana - plr.hand.filter(c => c.type == "Spell").length;
@@ -23,6 +31,9 @@ module.exports = {
         self.addEnchantment(`-${cards} mana`, self);
     },
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         let target = game.interact.selectTarget("Give a minion +3/+5.", true, null, "minion");
         if (!target) return -1;

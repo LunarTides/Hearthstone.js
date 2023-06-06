@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Insight Corrupted",
     displayName: "Insight",
@@ -11,6 +16,9 @@ module.exports = {
     spellClass: "Shadow",
     uncollectible: true,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         let list = plr.deck.filter(c => c.type == "Minion");
         let minion = game.functions.randList(list, false);

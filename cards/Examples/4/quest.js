@@ -1,3 +1,8 @@
+// Created by Hand
+
+/**
+ * @type {import("../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Quest Example",
     desc: "Quest: Play 3 cards. Reward: Return those cards back to your hand.",
@@ -7,6 +12,9 @@ module.exports = {
     rarity: "Free",
     uncollectible: true,
 
+    /**
+     * @type {import("../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         let cards = [];
 

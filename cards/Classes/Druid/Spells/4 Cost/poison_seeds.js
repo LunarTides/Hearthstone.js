@@ -1,3 +1,8 @@
+// Created by the Custom Card Creator
+
+/**
+ * @type {import("../../../../../src/types").Blueprint}
+ */
 module.exports = {
     name: "Poison Seeds",
     desc: "Destroy all minions and summon 2/2 Treants to replace them.",
@@ -9,6 +14,9 @@ module.exports = {
     spellClass: "Nature",
     id: 145,
 
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
     cast(plr, game, self) {
         game.board.forEach(p => {
             p.forEach(m => {
