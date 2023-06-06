@@ -34,6 +34,11 @@ class SimulationAI {
         this.canAttack = true;
 
         /**
+         * @type {SentimentAI}
+         */
+        this.backup_ai = new SentimentAI(plr);
+
+        /**
          * @type {Player}
          */
         this.plr = plr;
@@ -291,10 +296,10 @@ class SimulationAI {
     }
 
     /**
-     * @warning Do not use this. This only exists to warn you that this doesn't exist
+     * @deprecated Do not use this. This only exists to warn you that this doesn't exist
      */
     legacy_attack_1() {
-        game.input("WARNING: This AI model doesn't have a legacy attack. Please reset the `AIAttackModel` in the config back to -1.".yellow);
+        game.input("WARNING: This AI model doesn't have a legacy attack. Please reset the `AIAttackModel` in the config back to -1.\n".yellow);
         return this.attack(); // Use the default attack model
     }
 
@@ -307,9 +312,12 @@ class SimulationAI {
      * @param {"minion" | "hero" | null} force_class The type of target the ai should be constrained to.
      * @param {string[]} flags Some flags
      * 
-     * @returns {Card | Player | number} The target selected.
+     * @returns {Card | Player | number | null} The target selected.
      */
-    selectTarget(prompt, elusive, force_side, force_class, flags) {return}
+    selectTarget(prompt, elusive, force_side, force_class, flags) {
+        // TODO: Maybe figure out a way to do this
+        return this.backup_ai.selectTarget(prompt, elusive, force_side, force_class, flags);
+    }
 
     /**
      * Choose the best minion to discover.
@@ -318,7 +326,10 @@ class SimulationAI {
      * 
      * @returns {Card} Result
      */
-    discover(cards) {return}
+    discover(cards) {
+        // TODO: Add this
+        return this.backup_ai.discover(cards);
+    }
 
     /**
      * Choose the "best" card to dredge.
@@ -327,7 +338,10 @@ class SimulationAI {
      * 
      * @returns {Card} Result
      */
-    dredge(cards) {return}
+    dredge(cards) {
+        // TODO: Add this
+        return this.backup_ai.dredge(cards);
+    }
 
     /**
      * Choose the best option from `options`
@@ -336,7 +350,10 @@ class SimulationAI {
      *
      * @returns {string} The question chosen
      */
-    chooseOne(options) {return}
+    chooseOne(options) {
+        // TODO: Add this
+        return this.backup_ai.chooseOne(options);
+    }
 
     /**
      * Choose the best answer from `options`
@@ -346,7 +363,9 @@ class SimulationAI {
      *
      * @returns {number} The index of the option chosen + 1
      */
-    question(prompt, options) {return}
+    question(prompt, options) {
+        return this.backup_ai.question(prompt, options);
+    }
 
     /**
      * Choose yes or no based on the prompt
@@ -355,7 +374,9 @@ class SimulationAI {
      *
      * @returns {boolean} `true` if "Yes", `false` if "No"
      */
-    yesNoQuestion(prompt) {return}
+    yesNoQuestion(prompt) {
+        return this.backup_ai.yesNoQuestion(prompt);
+    }
 
     /**
      * Returns if the ai wants `card` to be traded
@@ -364,14 +385,18 @@ class SimulationAI {
      *
      * @returns {boolean} If the card should be traded
      */
-    trade(card) {return}
+    trade(card) {
+        return this.backup_ai.trade(card);
+    }
 
     /**
      * Returns the list of cards the ai wants to mulligan.
      * 
      * @returns {string} The indexes of the cards to mulligan. Look in `Interact.mulligan` for more details.
      */
-    mulligan() {return}
+    mulligan() {
+        return this.backup_ai.mulligan();
+    }
 }
 
 class SentimentAI {

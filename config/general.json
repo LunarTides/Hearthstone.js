@@ -10,8 +10,7 @@
     "P1AI": false,
     "P2AI": true,
 
-    "version": "1.6.0",
-    "branch": "dev",
+    "editor": "code",
 
-    "editor": "code"
+    "topicBranchWarning": true
 }

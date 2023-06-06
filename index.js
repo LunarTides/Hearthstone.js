@@ -1,6 +1,6 @@
 const rl = require("readline-sync");
 const fs = require("fs");
-const { version, branch } = require("./config/general.json");
+const { version, branch } = require("./config/dont-change.json");
 
 const src = require("./src/index");                  // Source Code
 const dc = require("./deck_creator/index");          // Deck Creator

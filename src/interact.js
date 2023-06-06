@@ -169,6 +169,7 @@ class Interact {
             console.log("use        - Use a location card");
             console.log("detail     - Get more details about opponent");
             console.log("help       - Displays this message");
+            console.log("version    - Displays the version, branch, your settings preset, and some information about your current version.");
             console.log("license    - Opens a link to this project's license");
 
             const cond_color = (str) => {return (game.config.debug) ? str : str.gray};
@@ -219,6 +220,26 @@ class Interact {
         else if (q == "license") {
             let start = (process.platform == 'darwin' ? 'open' : process.platform == 'win32' ? 'start' : 'xdg-open');
             require('child_process').exec(start + ' ' + license_url);
+        }
+        else if (q == "version") {
+            let strbuilder = `You are on version: ${game.config.version} on `;
+
+            if (game.config.branch == "topic") strbuilder += "a topic branch";
+            else if (game.config.branch == "dev") strbuilder += "the develop (beta) branch";
+            else if (game.config.branch == "stable") strbuilder += "the stable (release) branch";
+
+            let _config = {};
+            _config.debug = game.config.debug;
+            _config.P2AI = game.config.P2AI;
+
+            if (JSON.stringify(_config) == '{"debug":true,"P2AI":true}') strbuilder += " using the debug settings preset";
+            else if (JSON.stringify(_config) == '{"debug":false,"P2AI":false}') strbuilder += " using the recommended settings preset";
+            else strbuilder += " using custom settings";
+
+            console.log(strbuilder + ".\n");
+
+            console.log(`Version Description:\n${game.config.versionText}`);
+            game.input("\nPress enter to continue...");
         }
         else if (q == "history") {
             if (args[0] === false) {}
@@ -893,6 +914,8 @@ class Interact {
         console.log(`|${border}|`);
         console.log(`| ${watermarkString} |`);
         console.log(`|${border}|\n`);
+
+        if (game.config.branch == "topic" && game.config.topicBranchWarning) console.log("WARNING: YOU ARE ON A TOPIC BRANCH. THIS VERSION IS NOT READY.\n");
     }
 
     /**
