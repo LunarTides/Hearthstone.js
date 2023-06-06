@@ -1,7 +1,5 @@
-delete require.cache[require.resolve("./functions")];
-
 const { Card } = require("./card");
-const { Functions } = require("./functions");
+let { Functions } = require("./functions");
 const { Game } = require("./game");
 const { Interact } = require("./interact");
 const { Player } = require("./player");
@@ -31,11 +29,6 @@ class SimulationAI {
         this.focus = null;
 
         /**
-         * @type {Game}
-         */
-        this.simulation = null;
-
-        /**
          * @type {boolean}
          */
         this.canAttack = true;
@@ -53,7 +46,7 @@ class SimulationAI {
      */
     chooseMove() {
         // Makes a move in the simulation
-        this._createSimulation();
+        let simulation = this._createSimulation();
 
         /**
          * @type {[Card | string, number]}
@@ -61,17 +54,17 @@ class SimulationAI {
         let best_move = [];
 
         this.plr.hand.forEach(card => {
-            this._createSimulation();
+            simulation = this._createSimulation();
 
             let index = this.plr.hand.indexOf(card);
             if (index === -1) return false;
             index += 1
 
             // Play card
-            let result = this.simulation.interact.doTurnLogic(index.toString());
+            let result = simulation.interact.doTurnLogic(index.toString());
             if (result !== true && !result instanceof Card || typeof result === "string") return; // Invalid move
 
-            let score = this._evaluate();
+            let score = this._evaluate(simulation);
 
             if (score <= best_move[1]) return;
 
@@ -107,13 +100,15 @@ class SimulationAI {
     /**
      * Evaluates the game
      * 
+     * @param {Game} simulation
+     * 
      * @returns {number} The score
      */
-    _evaluate() {
+    _evaluate(simulation) {
         let score = 0;
         const VALUE_BIAS = 0.1;
 
-        this.simulation.board.forEach(c => {
+        simulation.board.forEach(c => {
             c.forEach(c => {
                 let bias = (c.plr.id == this.plr.id) ? 1 : -1;
                 let s = this._evaluateCard(c);
@@ -124,7 +119,7 @@ class SimulationAI {
             });
         });
 
-        [this.simulation.player1, this.simulation.player2].forEach(p => {
+        [simulation.player1, simulation.player2].forEach(p => {
             Object.entries(p).forEach(e => {
                 let [key, val] = e;
                 if (typeof val !== "number") return;
@@ -140,7 +135,7 @@ class SimulationAI {
             });
         });
 
-        [this.simulation.player1, this.simulation.player2].forEach(p => {
+        [simulation.player1, simulation.player2].forEach(p => {
             [p.deck.length, p.hand.length, p.quests.length, p.sidequests.length, p.secrets.length].forEach(val => {
                 let bias = 1;
                 if (p.id != this.plr.id) bias = -1;
@@ -175,44 +170,61 @@ class SimulationAI {
     }
 
     /**
-     * Creates a simulation and stores it in `this.simulation`
+     * Creates and returns a simulation
+     * 
+     * @returns {Game} The simulation
      */
     _createSimulation() {
         // Make a deep copy of the current game
-        delete this.simulation;
+        delete require.cache[require.resolve("./functions")];
+        delete require.cache[require.resolve("./interact")];
+        let { Functions } = require("./functions");
+        let { Interact } = require("./interact");
 
-        this.simulation = lodash.cloneDeep(game);
+        let simulation = lodash.cloneDeep(game);
 
-        this.simulation.interact = new Interact(this.simulation);
-        this.simulation.functions = new Functions(this.simulation);
-
-        this.simulation.player1 = lodash.cloneDeep(game.player1);
-        this.simulation.player2 = lodash.cloneDeep(game.player2);
-        this.simulation.player = this.simulation["player" + (game.player.id + 1)];
-        this.simulation.opponent = this.simulation["player" + (game.opponent.id + 1)];
+        simulation.interact = new Interact(simulation);
+        simulation.functions = new Functions(simulation);
 
         set(game);
+
+        return simulation;
     }
 
     /**
      * Restore the game
      */
     _restoreGame() {
+        delete require.cache[require.resolve("./functions")];
+        delete require.cache[require.resolve("./interact")];
+        let { Functions } = require("./functions");
+        let { Interact } = require("./interact");
+
         game.interact = new Interact(game);
         game.functions = new Functions(game);
         set(game);
     }
 
-    async attackTarget(attacker, target, best_attack) {
+    /**
+     * 
+     * @param {Card | Player} attacker 
+     * @param {Card | Player} target 
+     * @param {[Card | Player, Card | Player, number]} best_attack 
+     * @param {Game} simulation
+     * 
+     * @returns {[Card | Player, Card | Player, number]}
+     */
+    attackTarget(attacker, target, best_attack, simulation) {
+        let health = target.getHealth();
         let abck, tbck;
 
         if (attacker.classType == "Card") abck = attacker.createBackup();
         if (target.classType == "Card") tbck = target.createBackup();
         
-        let result = this.simulation.attack(attacker, target);
+        let result = simulation.attack(attacker, target);
         if (result !== true) return best_attack; // Invalid attack
 
-        let score = this._evaluate();
+        let score = this._evaluate(simulation);
 
         if (attacker.classType == "Card") {
             attacker.restoreBackup(attacker.backups[abck]);
@@ -220,6 +232,7 @@ class SimulationAI {
         }
 
         if (target.classType == "Card") target.restoreBackup(target.backups[tbck]);
+        else target.health = health;
 
         if (score <= best_attack[2]) return best_attack;
 
@@ -232,9 +245,9 @@ class SimulationAI {
      * @returns {[Card | Player | -1 | null, Card | Player | -1 | null]} Attacker, Target
      */
     attack() {
-        this._createSimulation();
+        let simulation = this._createSimulation();
 
-        let board = this.simulation.board;
+        let board = game.board;
         let thisboard = board[this.plr.id];
         let opboard = board[this.plr.getOpponent().id];
 
@@ -250,29 +263,29 @@ class SimulationAI {
             let taunts = opboard.filter(c => c.keywords.includes("Taunt"));
             if (taunts.length > 0) {
                 let target = taunts[0];
-                best_attack = this.attackTarget(attacker, target, best_attack);
+                best_attack = this.attackTarget(attacker, target, best_attack, simulation);
                 return;
             }
 
             [...opboard, this.plr.getOpponent()].forEach(target => {
                 if (attacker.classType == "Card" && !attacker.canAttackHero && target.classType == "Player") return;
                 if (target.classType == "Card" && target.keywords.includes("Stealth")) return;
-
                 
-                this.attackTarget(attacker, target, best_attack);
+                best_attack = this.attackTarget(attacker, target, best_attack, simulation);
             });
         });
 
-        this.history.push(["attack", best_attack]);
+        this.history.push(["attack", best_attack.map(e => e.name || e)]);
 
         if (best_attack.length <= 0) {
             // No attacking
             best_attack = [-1, -1];
+            this.canAttack = false;
         } else {
             best_attack = [best_attack[0], best_attack[1]];
         }
 
-        this.canAttack = false;
+        this._restoreGame();
 
         return best_attack;
     }
