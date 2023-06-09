@@ -43,6 +43,11 @@ function createCard(card, main) {
     desc = desc.replaceAll("</b>", "&R");
     desc = desc.replaceAll("[x]", "");
 
+    const classes = game.functions.getClasses();
+    while (!classes.includes(cardClass)) {
+        cardClass = game.functions.capitalizeAll(game.input("Was not able to find the class of this card.\nWhat is the class of this card? ".red));
+    }
+
     let realName = rl.question("Override name (this will set 'name' to be the displayname instead) (leave empty to not use display name): ") || name;
 
     let _card = {
@@ -138,9 +143,9 @@ function main(card = null) {
     }
 
     while (true) {
-        let cardName = rl.question("Name: ");
+        let cardName = rl.question("Name / dbfId: ");
 
-        let filtered_cards = data.filter(c => c.name.toLowerCase() == cardName.toLowerCase());
+        let filtered_cards = data.filter(c => c.name.toLowerCase() == cardName.toLowerCase() || c.dbfId == cardName);
         filtered_cards = game.functions.filterVanillaCards(filtered_cards, false, true);
 
         if (filtered_cards.length <= 0) {
@@ -171,6 +176,8 @@ function main(card = null) {
             card = filtered_cards[picked - 1];
         }
         else card = filtered_cards[0];
+
+        console.log(`Found '${card.name}'\n`);
 
         createCard(card, true);
     }
