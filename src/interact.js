@@ -798,6 +798,28 @@ class Interact {
         // force_class = [null, "hero", "minion"]
         // force_side = [null, "enemy", "self"]
 
+        game.events.broadcast("TargetSelectionStarts", [prompt, elusive, force_side, force_class, flags], game.player);
+        let target = this._selectTarget(prompt, elusive, force_side, force_class, flags);
+
+        game.events.broadcast("TargetSelected", target, game.player);
+        return target;
+    }
+
+    /**
+     * Asks the user a `prompt`, the user can then select a minion or hero
+     * 
+     * @param {string} prompt The prompt to ask
+     * @param {boolean | string} [elusive=false] Wether or not to prevent selecting elusive minions, if this is a string, allow selecting elusive minions but don't trigger secrets / quests
+     * @param {"enemy" | "self"} [force_side=null] Force the user to only be able to select minions / the hero of a specific side: ["enemy", "self"]
+     * @param {"hero" | "minion"} [force_class=null] Force the user to only be able to select a minion or a hero: ["hero", "minion"]
+     * @param {string[]} [flags=[]] Change small behaviours ["allow_locations" => Allow selecting location, ]
+     * 
+     * @returns {Card | Player} The card or hero chosen
+     */
+    _selectTarget(prompt, elusive = false, force_side = null, force_class = null, flags = []) {
+        // force_class = [null, "hero", "minion"]
+        // force_side = [null, "enemy", "self"]
+
         if (game.player.forceTarget) return game.player.forceTarget;
         if (game.player.ai) return game.player.ai.selectTarget(prompt, elusive, force_side, force_class, flags);
 

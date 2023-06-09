@@ -100,7 +100,14 @@ class Player {
 
         this.runes = "";
 
+        /**
+         * @type {Card | Player}
+         */
         this.forceTarget = null;
+
+        /**
+         * @type {[Card | Player]}
+         */
         this.inputQueue = null;
     }
 
@@ -342,29 +349,38 @@ class Player {
     }
 
     /**
-     * Draws the card at the top of this player's deck
+     * Draws the card from the top of this player's deck
      * 
      * @param {boolean} [update=true] Should this broadcast the `DrawCard` event.
      * 
-     * @returns {Card | undefined} Card is the card drawn
+     * @returns {Card | number} The card drawn | The amount of fatigue the player was dealt
      */
     drawCard(update = true) {
+        // Fatigue
         if (this.deck.length <= 0) {
             this.fatigue++;
 
             this.remHealth(this.fatigue);
-            
-            return;
+            return this.fatigue;
         }
 
-        let card = this.deck.pop()
+        /**
+         * The card to draw
+         * 
+         * This is normally `{Card | undefined}`, because that is the return value of pop,
+         * however it only returns undefined if the list is empty, which is being handled
+         * by fatigue.
+         * 
+         * @type {Card}
+         */
+        let card = this.deck.pop();
 
         if (update) game.events.broadcast("DrawCard", card, this);
 
+        // Cast on draw
         if (card.type == "Spell" && card.keywords.includes("Cast On Draw") && card.activate("cast")) return this.drawCard();
 
         this.addToHand(card, false);
-
         return card;
     }
 

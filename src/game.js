@@ -407,8 +407,7 @@ class Game {
         let op = this.opponent;
 
         this.board[plr.id].forEach(m => {
-            m.sleepy = false;
-            m.resetAttackTimes();
+            m.ready();
         });
 
         // Trigger unspent mana
@@ -457,8 +456,7 @@ class Game {
 
             m.canAttackHero = true;
             if (this.turns > m.frozen_turn + 1) m.frozen = false;
-            m.sleepy = false;
-            m.resetAttackTimes();
+            m.ready();
 
             // Stealth duration
             if (m.stealthDuration > 0 && this.turns > m.stealthDuration) {

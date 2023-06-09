@@ -9,6 +9,7 @@
     "AISpellValue"       : 4,
     "AIKeywordValue"     : 2,
     "AIFunctionValue"    : 1,
+    "AINoDescPenalty"    : 3,
 
     "AIProtectThreshold" : 5,
     "AIIgnoreThreshold"  : -1,

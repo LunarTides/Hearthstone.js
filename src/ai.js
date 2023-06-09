@@ -34,6 +34,11 @@ class SimulationAI {
         this.canAttack = true;
 
         /**
+         * @type {Card | null}
+         */
+        this.on_card = null;
+
+        /**
          * @type {SentimentAI}
          */
         this.backup_ai = new SentimentAI(plr);
@@ -66,7 +71,10 @@ class SimulationAI {
             index += 1
 
             // Play card
+            this.on_card = card;
             let result = simulation.interact.doTurnLogic(index.toString());
+            this.on_card = null;
+
             if (result !== true && !result instanceof Card || typeof result === "string") return; // Invalid move
 
             let score = this._evaluate(simulation);
@@ -85,6 +93,9 @@ class SimulationAI {
         if (!best_move) {
             // Couldn't play any cards
             if (this.canAttack) best_move = "attack";
+
+            // TODO: Add hero power
+            // TODO: Add use locations
 
             else best_move = "end";
 
@@ -106,19 +117,21 @@ class SimulationAI {
      * Evaluates the game
      * 
      * @param {Game} simulation
+     * @param {boolean} [sentiment=true] If it should perform sentiment analysis on the card's desc.
      * 
      * @returns {number} The score
      */
-    _evaluate(simulation) {
+    _evaluate(simulation, sentiment = true) {
+        // TODO: Make this better
         let score = 0;
         const VALUE_BIAS = 0.1;
 
         simulation.board.forEach(c => {
             c.forEach(c => {
                 let bias = (c.plr.id == this.plr.id) ? 1 : -1;
-                let s = this._evaluateCard(c);
-                if (bias == 1 && s < 0) s = 0;
-                if (bias == -1 && s > 0) s = -0;
+                let s = this._evaluateCard(c, sentiment);
+                //if (bias == 1 && s < 0) s = 0;
+                //if (bias == -1 && s > 0) s = -0;
 
                 score += s * bias;
             });
@@ -156,10 +169,11 @@ class SimulationAI {
      * Evaluates a card
      * 
      * @param {Card} c The card
+     * @param {boolean} [sentiment=true] If it should perform sentiment analysis on the card's description
      * 
      * @returns {number} The score
      */
-    _evaluateCard(c) {
+    _evaluateCard(c, sentiment = true) {
         let score = 0;
 
         if (c.type == "Minion" || c.type == "Weapon") score += (c.getAttack() + c.getHealth()) * game.config.AIStatsBias;
@@ -170,6 +184,9 @@ class SimulationAI {
         Object.values(c).forEach(c => {
             if (c instanceof Array && c[0] instanceof Function) score += game.config.AIFunctionValue;
         });
+
+        if (sentiment) score += this.backup_ai.analyzePositive(c.desc);
+        if (!c.desc) score -= game.config.AINoDescPenalty;
 
         return score;
     }
@@ -190,8 +207,9 @@ class SimulationAI {
 
         simulation.interact = new Interact(simulation);
         simulation.functions = new Functions(simulation);
+        simulation.simulation = true; // Mark it as a simulation
 
-        set(game);
+        set(simulation);
 
         return simulation;
     }
@@ -280,14 +298,13 @@ class SimulationAI {
             });
         });
 
-        this.history.push(["attack", best_attack.map(e => e.name || e)]);
-
         if (best_attack.length <= 0) {
             // No attacking
             best_attack = [-1, -1];
             this.canAttack = false;
         } else {
             best_attack = [best_attack[0], best_attack[1]];
+            this.history.push(["attack", best_attack.map(e => e.name || e)]);
         }
 
         this._restoreGame();
@@ -315,8 +332,123 @@ class SimulationAI {
      * @returns {Card | Player | number | null} The target selected.
      */
     selectTarget(prompt, elusive, force_side, force_class, flags) {
-        // TODO: Maybe figure out a way to do this
-        return this.backup_ai.selectTarget(prompt, elusive, force_side, force_class, flags);
+        const fallback = () => {
+            console.log("Falling back...");
+            return this.backup_ai.selectTarget(prompt, elusive, force_side, force_class, flags);
+        }
+
+        /**
+         * @type {Card}
+         */
+        let card;
+
+        if (this.on_card) {
+            this.history.push(["SelectTargetEvaluation", this.on_card.name]);
+            card = this.on_card;
+        }
+        else {
+            // Figure out the card that called select target
+            let selections = game.events.PlayCardUnsafe;
+            if (!selections) return fallback();
+
+            selections = selections[this.plr.id];
+            if (!selections) return fallback();
+
+            card = selections[selections.length - 1];
+            if (!card) return fallback();
+            card = card[0];
+        }
+
+        // If one of the cards keyword methods has the word `selectTarget` in it.
+
+        /**
+         * @type {[[string, Function]]}
+         */
+        let functions = Object.entries(card.blueprint)
+            .filter(e => e[1] instanceof Function);
+
+        let func = functions.find(f => f[1].toString().includes("selectTarget"));
+        if (!func) return fallback();
+
+        let simulation = this._createSimulation();
+
+        let plr = simulation["player" + (this.plr.id + 1)];
+        let op = simulation["player" + (this.plr.getOpponent().id + 1)];
+        let currboard = simulation.board[this.plr.id];
+        let opboard = simulation.board[this.plr.getOpponent().id];
+
+        /**
+         * The targets that the ai can choose from
+         * 
+         * @type {[Card | Player]}
+         */
+        let targets = [
+            plr,
+            op,
+            ...currboard,
+            ...opboard
+        ];
+
+        if (force_side == "enemy") {
+            game.functions.remove(targets, plr);
+            game.functions.remove(targets, ...currboard);
+        }
+        else if (force_side == "friendly") {
+            game.functions.remove(targets, op);
+            game.functions.remove(targets, ...opboard);
+        }
+
+        if (force_class == "hero") {
+            targets = targets.filter(t => t.classType == "Player");
+        }
+        else if (force_class == "minion") {
+            targets = targets.filter(t => t.classType == "Card");
+        }
+
+        if (elusive) targets = targets.filter(t => t.classType != "Card" || !t.keywords.includes("Elusive"));
+
+        /**
+         * @type {[Card | Player, number]}
+         */
+        let best_target = [];
+
+        targets.forEach(t => {
+            if (flags.includes("allow_locations") && t.classType == "Card" && t.type != "Location") return;
+
+            const simulation = this._createSimulation();
+            const chosen_card = card.perfectCopy();
+            chosen_card.getInternalGame();
+            
+            // Simulate choosing that target.
+            let index;
+            if (currboard.includes(t)) index = [plr.id, currboard.indexOf(t)];
+            if (opboard.includes(t)) index = [plr.getOpponent().id, opboard.indexOf(t)];
+
+            simulation.player.forceTarget = t;
+            const result = chosen_card.activate(func[0]);
+
+            if (index) simulation.board[index[0]][index[1]] = t;
+            simulation.player.forceTarget = null;
+            
+            if (result == -1 || result.includes(-1)) return;
+
+            const score = this._evaluate(simulation);
+            if (score <= best_target[1]) return;
+
+            // This is the new best target
+            best_target = [t, score];
+        });
+        this._restoreGame();
+        new game.Card("Sheep", game.player1).getInternalGame();
+
+        this.history.push(["selectTarget", best_target.map(t => t.name || t)]);
+
+        if (best_target.length <= 0) {
+            // No targets
+            return null;
+        }
+
+        return best_target[0];
     }
 
     /**
@@ -364,6 +496,7 @@ class SimulationAI {
      * @returns {number} The index of the option chosen + 1
      */
     question(prompt, options) {
+        // TODO: Add this
         return this.backup_ai.question(prompt, options);
     }
 
@@ -375,6 +508,7 @@ class SimulationAI {
      * @returns {boolean} `true` if "Yes", `false` if "No"
      */
     yesNoQuestion(prompt) {
+        // TODO: Add this
         return this.backup_ai.yesNoQuestion(prompt);
     }
 
@@ -386,6 +520,7 @@ class SimulationAI {
      * @returns {boolean} If the card should be traded
      */
     trade(card) {
+        // TODO: Add this
         return this.backup_ai.trade(card);
     }
 
@@ -395,6 +530,7 @@ class SimulationAI {
      * @returns {string} The indexes of the cards to mulligan. Look in `Interact.mulligan` for more details.
      */
     mulligan() {
+        // TODO: Add this
         return this.backup_ai.mulligan();
     }
 }
@@ -482,11 +618,11 @@ class SentimentAI {
 
             else best_move = "end";
 
-            this.history.push(["calcMove", best_move]);
+            this.history.push(["chooseMove", best_move]);
         }
 
         else {
-            this.history.push(["calcMove", [best_move.name, best_score]]);
+            this.history.push(["chooseMove", [best_move.name, best_score]]);
 
             this.cards_played_this_turn.push(best_move);
 

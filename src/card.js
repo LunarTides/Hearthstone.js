@@ -64,7 +64,7 @@ class Card {
         this.echo = false;
 
         /**
-         * @type {import("./types").CardKeyword}
+         * @type {import("./types").CardKeyword[]}
          */
         this.keywords = [];
         this.storage = []; // Allow cards to store data for later use
@@ -131,6 +131,13 @@ class Card {
         this.randomizeIds();
 
         this.placeholder = this.activate("placeholders")[0]; // This is a list of replacements.
+    }
+
+    /**
+     * Updates the card module's game ref
+     */
+    getInternalGame() {
+        game = get();
     }
 
     /**
