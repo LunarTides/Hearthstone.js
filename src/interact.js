@@ -242,8 +242,6 @@ class Interact {
             game.input("\nPress enter to continue...");
         }
         else if (q == "history") {
-            if (args[0] === false) {}
-            else console.log("\nWARNING: The history feature is not perfect. Things will be out of order. Sorry about that.".yellow);
             // History
             let history = game.events.history;
             let finished = "";
