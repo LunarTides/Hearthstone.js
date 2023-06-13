@@ -5,4 +5,3 @@ node_modules/
 *-output\.txt
 \.vs
 logs/
-package-lock.*
