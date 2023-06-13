@@ -221,8 +221,6 @@ class Interact {
             require('child_process').exec(start + ' ' + license_url);
         }
         else if (q == "history") {
-            if (args[0] === false) {}
-            else console.log("\nWARNING: The history feature is not perfect. Things will be out of order. Sorry about that.".yellow);
             // History
             let history = game.events.history;
             let finished = "";

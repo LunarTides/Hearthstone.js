@@ -223,8 +223,7 @@ function createCard(override_path = "", override_filename = "") {
         return ret;
     }
 
-    let type_path_rel = "../".repeat(path.split("/").indexOf("cards") - 1) + "src/types";
-    console.log(path)
+    let type_path_rel = "../".repeat(path.split(/[\\/]/).indexOf("cards") - 1) + "src/types";
 
     let bpDocstring = `/**
 * @type {import("${type_path_rel}").Blueprint}
