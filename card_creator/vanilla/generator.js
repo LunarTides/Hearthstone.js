@@ -3,8 +3,6 @@ let fs = require("fs");
 const { Game } = require("../../src/game");
 
 const game = new Game({}, {});
-game.dirname = __dirname + "/../../";
-
 game.functions.importCards(__dirname + "/../../cards");
 game.functions.importConfig(__dirname + "/../../config");
 

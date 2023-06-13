@@ -4,8 +4,6 @@ const { Game } = require("../src/game");
 const { editor } = require("../config/general.json");
 
 const game = new Game({}, {});
-game.dirname = __dirname + "/../";
-
 game.functions.importCards(__dirname + "/../cards");
 game.functions.importConfig(__dirname + "/../config");
 
