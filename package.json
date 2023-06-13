@@ -21,6 +21,7 @@
     "readline-sync": "^1.4.10"
   },
   "devDependencies": {
-    "mocha": "^10.2.0"
+    "mocha": "^10.2.0",
+    "ts-migrate": "^0.1.35"
   }
 }
