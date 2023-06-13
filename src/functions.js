@@ -475,7 +475,7 @@ class DeckcodeFunctions {
 
             if (createCard.toLowerCase()[0] != "y") process.exit(1);
 
-            let vcc = require("./../card_creator/vanilla/index");
+            let vcc = require("../card_creator/vanilla/index");
 
             invalidCards.forEach(c => {
                 // Create that card

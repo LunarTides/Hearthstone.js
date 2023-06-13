@@ -1,7 +1,5 @@
 const { Card } = require("./card");
-let { Functions } = require("./functions");
 const { Game } = require("./game");
-const { Interact } = require("./interact");
 const { Player } = require("./player");
 const { get, set } = require("./shared");
 const lodash = require("lodash");
@@ -56,7 +54,6 @@ class SimulationAI {
      */
     chooseMove() {
         // Makes a move in the simulation
-        let simulation = this._createSimulation();
 
         /**
          * @type {[Card | string, number]}
@@ -64,7 +61,7 @@ class SimulationAI {
         let best_move = [];
 
         this.plr.hand.forEach(card => {
-            simulation = this._createSimulation();
+            let simulation = this._createSimulation();
 
             let index = this.plr.hand.indexOf(card);
             if (index === -1) return false;
@@ -515,7 +512,7 @@ class SimulationAI {
     }
 
     /**
-     * Choose the "best" card to dredge.
+     * Choose the best card to dredge.
      * 
      * @param {Card[]} cards The cards to choose from
      * 
@@ -587,9 +584,6 @@ class SimulationAI {
 }
 
 class SentimentAI {
-    /**
-     * @typedef {[[Card, number]]} ScoreBoard
-     */
     /**
      * This is the old Sentiment Analysis based AI.
      * 

@@ -1,6 +1,4 @@
 const { Card } = require("./card");
-const { Game } = require("./game");
-const { Player } = require("./player");
 
 /**
  * AI Scoreboard

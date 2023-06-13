@@ -33,10 +33,6 @@ class Player {
         /**
          * @type {Game}
          */
-
-        /**
-         * @type {Game}
-         */
         this.game = null;
 
         /**
