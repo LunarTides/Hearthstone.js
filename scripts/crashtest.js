@@ -40,8 +40,6 @@ for (let _ = 0; _ < games; _++) {
     }
 
     game.startGame();
-    game.dirname = __dirname;
-
     game.interact.mulligan(p1);
     game.interact.mulligan(p2);
 

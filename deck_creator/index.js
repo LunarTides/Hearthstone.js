@@ -14,7 +14,6 @@ const { set } = require("../src/shared");
 
 const game = new Game({}, {});
 const functions = game.functions;
-game.dirname = __dirname + "/../";
 
 set(game);
 

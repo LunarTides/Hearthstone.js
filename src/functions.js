@@ -343,7 +343,7 @@ class DeckcodeFunctions {
         let vanillaCards;
 
         try {
-            vanillaCards = fs.readFileSync(game.dirname + "/card_creator/vanilla/.ignore.cards.json");
+            vanillaCards = fs.readFileSync(__dirname + "/../card_creator/vanilla/.ignore.cards.json");
         } catch (err) {
             console.log("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'scripts/genvanilla.bat' (requires an internet connection), then try again.".red);
             game.input();
@@ -437,7 +437,7 @@ class DeckcodeFunctions {
         let cards;
 
         try {
-            cards = fs.readFileSync(game.dirname + "/card_creator/vanilla/.ignore.cards.json");
+            cards = fs.readFileSync(__dirname + "/../card_creator/vanilla/.ignore.cards.json");
         } catch (err) {
             console.log("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'scripts/genvanilla.bat' (requires an internet connection), then try again.".red);
             game.input();
@@ -1135,7 +1135,7 @@ ${aiHistory}
     getClasses() {
         let classes = [];
 
-        fs.readdirSync(game.dirname + "/cards/StartingHeroes").forEach(file => {
+        fs.readdirSync(__dirname + "/../cards/StartingHeroes").forEach(file => {
             if (!file.endsWith(".js")) return; // Something is wrong with the file name.
 
             let name = file.slice(0, -3); // Remove ".js"

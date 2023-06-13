@@ -9,7 +9,6 @@ const test_player1 = new Player("Test Player 1"); // Use this if a temp player c
 const test_player2 = new Player("Test Player 2");
 
 const game = new Game(test_player1, test_player2);
-game.dirname = __dirname + "/../";
 set(game);
 
 const functions = game.functions;

@@ -47,8 +47,6 @@ function main() {
     game.functions.importCards(__dirname + '/../cards');
     game.functions.importConfig(__dirname + '/../config');
 
-    game.dirname = __dirname + "/../";
-
     decks.forEach((d, i) => {
         if (i >= 2) return;
 
