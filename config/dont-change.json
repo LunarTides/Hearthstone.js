@@ -18,6 +18,7 @@
         "Mulligan": "not done",
         "Fix tests": "not done",
         "Fix todos / fixme's": "not done",
+        "Add prefix to ai config keys": "not done",
         "Optimize": "not done",
         "Finalize": "not done"
     },
@@ -26,6 +27,12 @@
         "one": "first pass",
         "two": "second pass",
         "three": "not done",
-        "four": "done"
+        "four": "done",
+        "this gives us": {
+            "one":   "[first pass] one",
+            "two":   "[second pass] two",
+            "three": "[ ] three",
+            "four":  "[x] four"
+        }
     }
 }
