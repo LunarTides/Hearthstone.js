@@ -473,7 +473,7 @@ class SimulationAI {
             /**
              * @type {Player}
              */
-            let simplr = simulation["player" + this.plr.id];
+            let simplr = simulation["player" + (this.plr.id + 1)];
             if (!card.__ids) card = new game.Card(card.name, this.plr);
 
             // We don't care about mana, so give the player infinite mana.

@@ -55,7 +55,6 @@ class EventManager {
 
             // Activate spells in the players hand
             plr.hand.forEach(c => {
-                console.log(c)
                 c.activate("handpassive", key, val);
 
                 // Placeholders

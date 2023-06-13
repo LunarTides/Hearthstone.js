@@ -242,6 +242,7 @@ class Interact {
 
             // Todo list
             console.log("Todo List:");
+            if (Object.keys(game.config.todo).length <= 0) console.log("None.");
 
             Object.entries(game.config.todo).forEach(e => {
                 let [name, state] = e;

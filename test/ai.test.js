@@ -37,12 +37,14 @@ interact.printAll = () => {};
 interact.printLicense = () => {};
 interact.cls = () => {};
 
+let ai;
+
 testSentimentModel().afterAll(() => {
     testSimulationModel();
 });
 
 function testSentimentModel() {
-    const ai = new SentimentAI(test_player1);
+    ai = new SentimentAI(test_player1);
 
     // Begin testing
     return describe("Sentiment AI", () => {
@@ -337,7 +339,7 @@ function testSentimentModel() {
 }
 
 function testSimulationModel() {
-    const ai = new SimulationAI(test_player1);
+    ai = new SimulationAI(test_player1);
 
     return describe("Simulation AI", () => {
         beforeEach(() => {
