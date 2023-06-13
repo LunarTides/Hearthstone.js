@@ -4,8 +4,6 @@ const { Game } = require("../../src/game");
 const { editor } = require("../../config/general.json");
 
 const game = new Game({}, {});
-game.dirname = __dirname + "/../";
-
 game.functions.importCards(__dirname + "/../../cards");
 game.functions.importConfig(__dirname + "/../../config");
 
@@ -25,9 +23,10 @@ function getFinishedCards(path) {
 
 /**
  * @param {RegExp | string} query 
- * @param {string} path 
+ * @param {string} [path=null] 
  */
-function searchCards(query, path = __dirname + "/../../cards") {
+function searchCards(query, path = null) {
+    if (!path) path = __dirname + "/../../cards";
     if (path == __dirname + "/../../cards/Tests") return; // We don't care about test cards
 
     fs.readdirSync(path, { withFileTypes: true }).forEach(file => {
