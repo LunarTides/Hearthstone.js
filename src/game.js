@@ -55,6 +55,7 @@ class EventManager {
 
             // Activate spells in the players hand
             plr.hand.forEach(c => {
+                console.log(c)
                 c.activate("handpassive", key, val);
 
                 // Placeholders
@@ -489,7 +490,7 @@ class Game {
      * @param {Card} card The card to play
      * @param {Player} player The card's owner
      * 
-     * @returns {Card | "mana" | "traded" | "space" | "magnetize" | "colossal" | "refund" | "invalid"}
+     * @returns {Card | boolean | "mana" | "traded" | "space" | "magnetize" | "colossal" | "refund" | "invalid"}
      */
     playCard(card, player) {
         if (!card || !player) {
@@ -697,8 +698,6 @@ class Game {
 
         // If the board has max capacity, and the card played is a minion or location card, prevent it.
         if (this.board[player.id].length >= this.config.maxBoardSpace) return "space";
-
-
         if (update) this.events.broadcast("SummonMinion", minion, player);
 
         player.spellDamage = 0;

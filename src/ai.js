@@ -237,7 +237,7 @@ class SimulationAI {
      * 
      * @returns {[Card | Player, Card | Player, number]}
      */
-    attackTarget(attacker, target, best_attack, simulation) {
+    _attackTarget(attacker, target, best_attack, simulation) {
         let health = target.getHealth();
         let abck, tbck;
 
@@ -286,7 +286,7 @@ class SimulationAI {
             let taunts = opboard.filter(c => c.keywords.includes("Taunt"));
             if (taunts.length > 0) {
                 let target = taunts[0];
-                best_attack = this.attackTarget(attacker, target, best_attack, simulation);
+                best_attack = this._attackTarget(attacker, target, best_attack, simulation);
                 return;
             }
 
@@ -294,7 +294,7 @@ class SimulationAI {
                 if (attacker.classType == "Card" && !attacker.canAttackHero && target.classType == "Player") return;
                 if (target.classType == "Card" && target.keywords.includes("Stealth")) return;
                 
-                best_attack = this.attackTarget(attacker, target, best_attack, simulation);
+                best_attack = this._attackTarget(attacker, target, best_attack, simulation);
             });
         });
 
@@ -455,12 +455,63 @@ class SimulationAI {
      * Choose the best minion to discover.
      * 
      * @param {Card[] | import("./card").Blueprint[]} cards The cards to choose from
+     * @param {boolean} [care_about_mana=true] DO NOT USE THIS. If the ai should care about the cost of cards.
      * 
      * @returns {Card} Result
      */
-    discover(cards) {
-        // TODO: Add this
-        return this.backup_ai.discover(cards);
+    discover(cards, care_about_mana = true) {
+        // FIXME: This function causes memory leaks.
+
+        /**
+         * @type {[Card | string, number]}
+         */
+        let best_card = [];
+
+        cards.forEach(card => {
+            let simulation = this._createSimulation();
+
+            /**
+             * @type {Player}
+             */
+            let simplr = simulation["player" + this.plr.id];
+            if (!card.__ids) card = new game.Card(card.name, this.plr);
+
+            // We don't care about mana, so give the player infinite mana.
+            if (!care_about_mana) simplr[card.costType] = 999999;
+
+            // Play card
+            // FIXME: Wave of Apathy made the score 4.440892098500626e-16
+            this.on_card = card;
+            let result = simulation.playCard(card, simplr);
+            this.on_card = null;
+
+            this._restoreGame();
+            if (result !== true && !result instanceof Card || typeof result === "string") return; // Invalid
+
+            let score = this._evaluate(simulation);
+            if (score <= best_card[1]) return;
+
+            // This card is now the best move
+            best_card = [card, score];
+        });
+
+        this._restoreGame();
+
+        let score = best_card[1];
+        best_card = best_card[0];
+
+        // If a card wasn't chosen, choose the first card.
+        if (!best_card) {
+            // As a backup, do this process all again but this time we don't care about the cost of cards.
+            if (care_about_mana) return this.discover(cards, false);
+
+            this.history.push(["discover", null]);
+            return cards[0];
+        }
+
+        this.history.push(["discover", [best_card.name, score]]);
+
+        return best_card;
     }
 
     /**

@@ -238,7 +238,20 @@ class Interact {
 
             console.log(strbuilder + ".\n");
 
-            console.log(`Version Description:\n${game.config.versionText}`);
+            console.log(`Version Description:\n${game.config.versionText}\n`);
+
+            // Todo list
+            console.log("Todo List:");
+
+            Object.entries(game.config.todo).forEach(e => {
+                let [name, state] = e;
+                
+                if (state == "done") state = "x";
+                else if (state == "not done") state = " ";
+
+                console.log(`[${state}] ${name}`);
+            });
+
             game.input("\nPress enter to continue...");
         }
         else if (q == "history") {

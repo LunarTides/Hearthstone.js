@@ -4,5 +4,28 @@
     "version": "1.6.0",
     "branch": "topic",
 
-    "versionText": "This topic branch adds a new ai model. This ai model is simulation based, so it plays every card in it's hand in a simulation of the game in order to find the best card.\n\nTHIS AI MODEL IS UNFINISHED. IT TAKES FOREVER, USES UP A LOT OF MEMORY, AND CURRENTLY THE ONLY NEW THINGS THE AI DOES IS PLAY CARDS, ATTACK, SELECT TARGETS. THE PREVIOUS MODEL DOES EVERYTHING ELSE."
+    "versionText": "This topic branch adds a new ai model. This ai model is simulation based, so it plays every card in it's hand in a simulation of the game in order to find the best card.\n\nTHIS AI MODEL IS UNFINISHED. IT IS IN FIRST-PASS AND SO WILL CAUSE MEMORY LEAKS, CRASHES AND BUGS. THIS MODEL TAKES FOREVER, USES UP A LOT OF MEMORY, AND CURRENTLY THE ONLY NEW THINGS THE AI DOES IS PLAY CARDS, ATTACK, SELECT TARGETS, DISCOVER. EVERYTHING ELSE IS HANDLED BY THE PREVIOUS MODEL.",
+    "todo": {
+        "Play cards": "first pass",
+        "Attack": "first pass",
+        "Select targets": "first pass",
+        "Discover": "first pass",
+        "Dredge": "not done",
+        "Choose one": "not done",
+        "Question": "not done",
+        "Yes / No question": "not done",
+        "Trade": "not done",
+        "Mulligan": "not done",
+        "Fix tests": "not done",
+        "Fix todos / fixme's": "not done",
+        "Optimize": "not done",
+        "Finalize": "not done"
+    },
+
+    "exampleTodo": {
+        "one": "first pass",
+        "two": "second pass",
+        "three": "not done",
+        "four": "done"
+    }
 }
