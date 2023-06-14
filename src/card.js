@@ -64,7 +64,7 @@ class Card {
         this.echo = false;
 
         /**
-         * @type {import("./types").CardKeyword}
+         * @type {import("./types").CardKeyword[]}
          */
         this.keywords = [];
         this.storage = []; // Allow cards to store data for later use
@@ -227,13 +227,13 @@ class Card {
 
         return true;
     }
+    
+    /**
+     * Makes this minion ready for attack
+     *
+     * @returns {null}
+     */
     ready() {
-        /**
-         * Makes this minion ready for attack
-         *
-         * @returns {null}
-         */
-
         this.sleepy = false;
         this.resetAttackTimes();
     }

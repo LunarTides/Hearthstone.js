@@ -42,10 +42,10 @@ function main() {
 
     game.running = true;
 
-    game.interact.printName();
-
     game.functions.importCards(__dirname + '/../cards');
     game.functions.importConfig(__dirname + '/../config');
+
+    game.interact.printName();
 
     decks.forEach((d, i) => {
         if (i >= 2) return;

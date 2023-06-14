@@ -20,9 +20,10 @@ module.exports = {
         game.functions.addQuest("Secret", plr, self, "Attack", 1, (attack, turn, done) => {
             let [attacker, target] = attack;
             if (target != plr) return false;
-            if (!done) return;
 
             // The target is your hero
+            if (!done) return;
+
             target.addHealth(attacker.getAttack()); // Heal the target
 
             let minions = game.functions.getCards();
