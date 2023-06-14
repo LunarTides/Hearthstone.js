@@ -1,0 +1,40 @@
+{
+    "DONT-CHANGE-ANYTHING-IN-THIS-FILE": "DONT CHANGE ANYTHING IN THIS FILE UNLESS YOU KNOW WHAT YOU'RE DOING",
+
+    "version": "1.6.0",
+    "branch": "dev",
+
+    "versionText": "This is the develop (beta) branch. This has more features, but is less stable. I would advise against using this branch if you can help it. The todo list is not final and can change.",
+    "todo": {
+        "Remove game.dirname": "done",
+        "Add regex toggle to the breaking change script": "done",
+        "Allow looking up vanilla cards using their dbfId": "done",
+        "Remove the warning from the history command": "done",
+        "Add a description to config todos": "not done",
+        "Replace forceTarget with inputQueue": "not done",
+        "Use a different method for the ai": "not done",
+        "Card creator multiple keyword method support": "not done",
+        "Rewrite some scripts in Rust": "not done",
+        "Add more input options to the card creator": "not done",
+        "Do more extensive testing": "not done",
+        "Add a guide script": "not done",
+        "Clean up the codebase": "not done",
+        "Make a command class in the deck creator": "not done",
+        "Make the card creator more like the deck creator": "not done",
+        "Bug fixing / stabilze": "not done",
+        "Bump version": "not done"
+    },
+
+    "exampleTodo": {
+        "one": "first pass",
+        "two": "second pass",
+        "three": "not done",
+        "four": "done",
+        "this gives us": {
+            "one":   "[first pass] one",
+            "two":   "[second pass] two",
+            "three": "[ ] three",
+            "four":  "[x] four"
+        }
+    }
+}

@@ -1,6 +1,6 @@
 const rl = require("readline-sync");
 const fs = require("fs");
-const { version, branch } = require("./config/general.json");
+const { version, branch } = require("./config/dont-change.json");
 
 const src = require("./src/index");                  // Source Code
 const dc = require("./deck_creator/index");          // Deck Creator
@@ -8,7 +8,8 @@ const cc = require("./card_creator/index");          // Custom Card Creator
 const vcc = require("./card_creator/vanilla/index"); // Vanilla Card Creator
 const ccc = require("./card_creator/class/index");   // Class Card Creator
 
-const cls = () => process.stdout.write("\033c");
+// TODO: Make sure this works on windows.
+const cls = () => process.stdout.write("\x1bc");
 
 const watermark = () => {
     cls();

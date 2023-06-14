@@ -232,12 +232,12 @@ class Game {
         this.turns = 0;
 
         /**
-         * @type {[[Card]]}
+         * @type {[[Card], [Card]]}
          */
         this.board = [[], []];
 
         /**
-         * @type {[[Card]]}
+         * @type {[[Card], [Card]]}
          */
         this.graveyard = [[], []];
 
@@ -397,8 +397,7 @@ class Game {
         let op = this.opponent;
 
         this.board[plr.id].forEach(m => {
-            m.sleepy = false;
-            m.resetAttackTimes();
+            m.ready();
         });
 
         // Trigger unspent mana
@@ -447,8 +446,7 @@ class Game {
 
             m.canAttackHero = true;
             if (this.turns > m.frozen_turn + 1) m.frozen = false;
-            m.sleepy = false;
-            m.resetAttackTimes();
+            m.ready();
 
             // Stealth duration
             if (m.stealthDuration > 0 && this.turns > m.stealthDuration) {
@@ -481,7 +479,7 @@ class Game {
      * @param {Card} card The card to play
      * @param {Player} player The card's owner
      * 
-     * @returns {Card | "mana" | "traded" | "space" | "magnetize" | "colossal" | "refund" | "invalid"}
+     * @returns {Card | boolean | "mana" | "traded" | "space" | "magnetize" | "colossal" | "refund" | "invalid"}
      */
     playCard(card, player) {
         if (!card || !player) {
@@ -689,8 +687,6 @@ class Game {
 
         // If the board has max capacity, and the card played is a minion or location card, prevent it.
         if (this.board[player.id].length >= this.config.maxBoardSpace) return "space";
-
-
         if (update) this.events.broadcast("SummonMinion", minion, player);
 
         player.spellDamage = 0;

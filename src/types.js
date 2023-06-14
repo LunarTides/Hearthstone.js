@@ -129,6 +129,8 @@ const { Player } = require("./player");
  * "SpellDealsDamage" |
  * "Attack" |
  * "HeroPower" |
+ * "TargetSelectionStarts" |
+ * "TargetSelected" |
  * "Eval"} EventKeys
  */
 
