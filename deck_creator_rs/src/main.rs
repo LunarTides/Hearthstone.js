@@ -8,10 +8,10 @@ use std::error::Error;
 fn main() -> Result<(), Box<dyn Error>> {
     let cards = lib::find_cards()?;
     let filtered_cards = lib::filter_cards(&cards, &mut |card| {
-        card.as_str().unwrap_or("").contains("spellClass")
+        card.get("spellClass").is_some()
     });
 
-    dbg!(&filtered_cards[0]);
+    println!("{:#?}", &filtered_cards);
 
     let mut term = Term::stdout();
 

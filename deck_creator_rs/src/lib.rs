@@ -6,7 +6,8 @@ pub mod lib {
     //! The library of the Card Creator
 
     use console::Term;
-    use json::JsonValue;
+    use serde_json;
+    use lazy_static::lazy_static;
     use regex::Regex;
     use std::{error::Error, fs, io::Write};
 
@@ -46,21 +47,56 @@ pub mod lib {
         Ok(user)
     }
 
-    /// Got help from by ChatGPT: https://chat.openai.com/share/43669cb2-3318-4ff3-9e8c-1ba39d2804bc
     fn extract_json_from_card(text: &str) -> Result<String, Box<dyn Error>> {
-        todo!("Fix this!");
+        lazy_static! {
+            // Todo: Make this use correct error handling if possible
+            static ref COMMENT_RE: Regex = Regex::new(r"(?sm)(//.*?$|/\*.*?\*/)").unwrap();
+            static ref FIELD_RE: Regex = Regex::new(r"(?m)^(.*?)(\w*)(: .*?)$").unwrap();
+            static ref LAST_FIELD_RE: Regex = Regex::new(r",\n}$").unwrap();
+            static ref FUNCTIONS_END_RE: Regex = Regex::new(r"\r?\n\s*?\r?\n\s*?").unwrap();
+        };
 
-        let re = Regex::new(r"(?ms)(?://.*)|^\s*\{\s*((?:[^{}]*,?\s*)*)\n\n")?;
-        let cleaned_text = re.replace_all(text, "");
-        let capture = re
-            .captures(&cleaned_text)
-            .ok_or("No JSON object found in the input.")?;
-        Ok(capture.get(1).map_or("", |m| m.as_str()).to_string())
+        // Remove comments
+        let cleaned_text = COMMENT_RE.replace_all(text, "");
+
+        // Remove trailing and leading whitespace
+        let mut cleaned_text = cleaned_text.trim().to_string();
+
+        // Remove everything above `module.exports = `.
+        cleaned_text = cleaned_text
+            .split("module.exports = ")
+            .nth(1)
+            .ok_or("module.exports not found.")?
+            .to_string();
+
+        // Remove module.exports
+        cleaned_text = cleaned_text.replace("module.exports = ", "");
+
+        // Remove functions
+        let mut result: String = FUNCTIONS_END_RE
+            .split(&cleaned_text)
+            .next()
+            .ok_or("Failed to split on double newline.")?
+            .trim()
+            .to_string();
+
+        // Remove the last comma
+        if result.ends_with(',') {
+            result.pop();
+            result.push_str("\n}");
+        } else {
+            result = LAST_FIELD_RE.replace(&result, "\n}").to_string();
+        }
+
+        // Now double-quote the keys
+        result = FIELD_RE.replace_all(&result, "$1\"$2\"$3").to_string();
+
+        Ok(result)
     }
 
     /// Finds and returns all cards from the cards folder
-    pub fn find_cards() -> Result<Vec<JsonValue>, Box<dyn Error>> {
-        let mut found: Vec<json::JsonValue> = vec![];
+    pub fn find_cards() -> Result<Vec<serde_json::Value>, Box<dyn Error>> {
+        let mut found: Vec<serde_json::Value> = vec![];
 
         for entry in WalkDir::new(CARDS_DIR).into_iter().filter_map(|e| e.ok()) {
             if entry.file_type().is_file() {
@@ -75,14 +111,16 @@ pub mod lib {
                 }
 
                 let path = entry.path();
-                let text = fs::read_to_string(path)?;
+                let mut text = fs::read_to_string(path)?;
 
-                // Todo: Fix this
-                //let text = extract_json_from_card(&text)?;
-                //dbg!(&text);
-                //let parsed = json::parse(&text)?;
+                // We don't care about uncollectible cards.
+                if text.contains("uncollectible: true") {
+                    continue;
+                }
 
-                let parsed = json::parse(&json::stringify(text))?;
+                text = extract_json_from_card(&text)?;
+                let parsed = serde_json::from_str(&text)?;
+
                 found.push(parsed);
             }
         }
@@ -103,22 +141,14 @@ pub mod lib {
     /// });
     /// # Ok::<(), Box<dyn std::error::Error>>(())
     /// ```
-    pub fn filter_cards<T>(cards: &[JsonValue], callback: &mut T) -> Vec<JsonValue>
+    pub fn filter_cards<T>(cards: &[serde_json::Value], callback: &mut T) -> Vec<serde_json::Value>
     where
-        T: FnMut(&&JsonValue) -> bool,
+        T: FnMut(&serde_json::Value) -> bool,
     {
         cards
             .iter()
             .filter(|card| callback(card))
             .map(|f| f.to_owned())
             .collect()
-    }
-
-    /// Check if a card's `key` is in the `values` array.
-    ///
-    /// # Examples
-    /// TODO: Add examples
-    pub fn card_key_in<T>(card: JsonValue, key: &str, values: &[T]) -> bool {
-        todo!()
     }
 }
