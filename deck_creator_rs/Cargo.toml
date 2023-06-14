@@ -1,5 +1,5 @@
 [package]
-name = "card_creator_rs"
+name = "deck_creator_rs"
 version = "0.1.0"
 edition = "2021"
 
@@ -8,4 +8,5 @@ edition = "2021"
 [dependencies]
 console = "0.15.7"
 json = "0.12.4"
+regex = "1.8.4"
 walkdir = "2.3.3"
