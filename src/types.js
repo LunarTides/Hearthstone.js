@@ -50,7 +50,7 @@ const { Player } = require("./player");
  * 
  * @typedef {"Arcane" |
  * "Fel" | 
- * Fore" |
+ * "Fire" |
  * "Frost" |
  * "Holy" |
  * "Nature" |
