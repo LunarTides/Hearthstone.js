@@ -222,38 +222,67 @@ class Interact {
             require('child_process').exec(start + ' ' + license_url);
         }
         else if (q == "version") {
-            let strbuilder = `You are on version: ${game.config.version} on `;
+            while (true) {
+                let todos = Object.entries(game.config.todo);
 
-            if (game.config.branch == "topic") strbuilder += "a topic branch";
-            else if (game.config.branch == "dev") strbuilder += "the develop (beta) branch";
-            else if (game.config.branch == "stable") strbuilder += "the stable (release) branch";
+                const print_info = () => {
+                    this.printAll(game.player);
 
-            let _config = {};
-            _config.debug = game.config.debug;
-            _config.P2AI = game.config.P2AI;
+                    let strbuilder = `\nYou are on version: ${game.config.version} on `;
+    
+                    if (game.config.branch == "topic") strbuilder += "a topic branch";
+                    else if (game.config.branch == "dev") strbuilder += "the develop (beta) branch";
+                    else if (game.config.branch == "stable") strbuilder += "the stable (release) branch";
+    
+                    let _config = {};
+                    _config.debug = game.config.debug;
+                    _config.P2AI = game.config.P2AI;
+    
+                    if (JSON.stringify(_config) == '{"debug":true,"P2AI":true}') strbuilder += " using the debug settings preset";
+                    else if (JSON.stringify(_config) == '{"debug":false,"P2AI":false}') strbuilder += " using the recommended settings preset";
+                    else strbuilder += " using custom settings";
+    
+                    console.log(strbuilder + ".\n");
+    
+                    console.log(`Version Description:\n${game.config.versionText}\n`);
 
-            if (JSON.stringify(_config) == '{"debug":true,"P2AI":true}') strbuilder += " using the debug settings preset";
-            else if (JSON.stringify(_config) == '{"debug":false,"P2AI":false}') strbuilder += " using the recommended settings preset";
-            else strbuilder += " using custom settings";
+                    console.log("Todo List:");
+                    if (todos.length <= 0) console.log("None.");
+                }
+                
+                print_info();
 
-            console.log(strbuilder + ".\n");
+                // Todo list
+                if (todos.length <= 0) {
+                    game.input("\nPress enter to continue...");
+                    break;
+                }
 
-            console.log(`Version Description:\n${game.config.versionText}\n`);
+                const print_todo = (todo, id, print_desc = false) => {
+                    let [name, info] = todo;
+                    let [state, desc] = info;
 
-            // Todo list
-            console.log("Todo List:");
-            if (Object.keys(game.config.todo).length <= 0) console.log("None.");
+                    if (state == "done") state = "x";
+                    else if (state == "not done") state = " ";
 
-            Object.entries(game.config.todo).forEach(e => {
-                let [name, state] = e;
+                    if (print_desc) console.log(`{${id}} [${state}] ${name}\n${desc}`);
+                    else console.log(`{${id}} [${state}] ${name}`);
+                }
 
-                if (state == "done") state = "x";
-                else if (state == "not done") state = " ";
+                todos.forEach((e, i) => print_todo(e, i + 1));
 
-                console.log(`[${state}] ${name}`);
-            });
+                let todo_id = parseInt(game.input("\nType the id of a todo to see more information about it (eg. 1): "));
+                if (!todo_id || todo_id > todos.length || todo_id <= 0) {
+                    break;
+                }
 
-            game.input("\nPress enter to continue...");
+                let todo = todos[todo_id - 1];
+
+                print_info();
+                print_todo(todo, todo_id, true);
+                
+                game.input("\nPress enter to continue...");
+            }
         }
         else if (q == "history") {
             // History
