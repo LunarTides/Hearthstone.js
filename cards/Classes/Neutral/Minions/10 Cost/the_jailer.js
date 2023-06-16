@@ -21,7 +21,7 @@ module.exports = {
     battlecry(plr, game, card) {
         plr.deck = [];
 
-        game.passives.push((_game, key, val) => {
+        game.eventListeners.push((_game, key, val) => {
             _game.board[plr.id].forEach(m => m.immune = true);
         });
     }

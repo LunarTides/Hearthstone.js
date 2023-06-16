@@ -111,121 +111,6 @@ class SimulationAI {
     }
 
     /**
-     * Evaluates the game
-     * 
-     * @param {Game} simulation
-     * @param {boolean} [sentiment=true] If it should perform sentiment analysis on the card's desc.
-     * 
-     * @returns {number} The score
-     */
-    _evaluate(simulation, sentiment = true) {
-        // TODO: Make this better
-        let score = 0;
-        const VALUE_BIAS = 0.1;
-
-        simulation.board.forEach(c => {
-            c.forEach(c => {
-                let bias = (c.plr.id == this.plr.id) ? 1 : -1;
-                let s = this._evaluateCard(c, sentiment);
-                //if (bias == 1 && s < 0) s = 0;
-                //if (bias == -1 && s > 0) s = -0;
-
-                score += s * bias;
-            });
-        });
-
-        [simulation.player1, simulation.player2].forEach(p => {
-            Object.entries(p).forEach(e => {
-                let [key, val] = e;
-                if (typeof val !== "number") return;
-                if (val == 0) return;
-                if (["id"].includes(key)) return;
-
-                if (["fatigue", "heroPowerCost", "overload"].includes(key)) val = -val;
-
-                let bias = 1;
-                if (p.id != this.plr.id) bias = -1;
-
-                score += val * bias * VALUE_BIAS;
-            });
-        });
-
-        [simulation.player1, simulation.player2].forEach(p => {
-            [p.deck.length, p.hand.length, p.quests.length, p.sidequests.length, p.secrets.length].forEach(val => {
-                let bias = 1;
-                if (p.id != this.plr.id) bias = -1;
-
-                score += val * bias * VALUE_BIAS;
-            });
-        });
-
-        return score;
-    }
-
-    /**
-     * Evaluates a card
-     * 
-     * @param {Card} c The card
-     * @param {boolean} [sentiment=true] If it should perform sentiment analysis on the card's description
-     * 
-     * @returns {number} The score
-     */
-    _evaluateCard(c, sentiment = true) {
-        let score = 0;
-
-        if (c.type == "Minion" || c.type == "Weapon") score += (c.getAttack() + c.getHealth()) * game.config.AIStatsBias;
-        else score += game.config.AISpellValue * game.config.AIStatsBias; // If the spell value is 4 then it the same value as a 2/2 minion
-        score -= c.mana * game.config.AIManaBias;
-
-        c.keywords.forEach(() => score += game.config.AIKeywordValue);
-        Object.values(c).forEach(c => {
-            if (c instanceof Array && c[0] instanceof Function) score += game.config.AIFunctionValue;
-        });
-
-        if (sentiment) score += this.backup_ai.analyzePositive(c.desc);
-        if (!c.desc) score -= game.config.AINoDescPenalty;
-
-        return score;
-    }
-
-    /**
-     * Creates and returns a simulation
-     * 
-     * @returns {Game} The simulation
-     */
-    _createSimulation() {
-        // Make a deep copy of the current game
-        delete require.cache[require.resolve("./functions")];
-        delete require.cache[require.resolve("./interact")];
-        let { Functions } = require("./functions");
-        let { Interact } = require("./interact");
-
-        let simulation = lodash.cloneDeep(game);
-
-        simulation.interact = new Interact(simulation);
-        simulation.functions = new Functions(simulation);
-        simulation.simulation = true; // Mark it as a simulation
-
-        set(simulation);
-
-        return simulation;
-    }
-
-    /**
-     * Restore the game
-     */
-    _restoreGame() {
-        delete require.cache[require.resolve("./functions")];
-        delete require.cache[require.resolve("./interact")];
-        let { Functions } = require("./functions");
-        let { Interact } = require("./interact");
-
-        game.interact = new Interact(game);
-        game.functions = new Functions(game);
-        set(game);
-    }
-
-    /**
      * 
      * @param {Card | Player} attacker 
      * @param {Card | Player} target 
@@ -265,6 +150,7 @@ class SimulationAI {
      * @returns {[Card | Player | -1 | null, Card | Player | -1 | null]} Attacker, Target
      */
     attack() {
+        // FIXME: The ai doesn't attack.
         let simulation = this._createSimulation();
 
         let board = game.board;
@@ -330,7 +216,7 @@ class SimulationAI {
      */
     selectTarget(prompt, elusive, force_side, force_class, flags) {
         const fallback = () => {
-            console.log("Falling back...");
+            game.log("Falling back...");
             return this.backup_ai.selectTarget(prompt, elusive, force_side, force_class, flags);
         }
 
@@ -456,59 +342,8 @@ class SimulationAI {
      * 
      * @returns {Card} Result
      */
-    discover(cards, care_about_mana = true) {
-        // FIXME: This function causes memory leaks.
-
-        /**
-         * @type {[Card | string, number]}
-         */
-        let best_card = [];
-
-        cards.forEach(card => {
-            let simulation = this._createSimulation();
-
-            /**
-             * @type {Player}
-             */
-            let simplr = simulation["player" + (this.plr.id + 1)];
-            if (!card.__ids) card = new game.Card(card.name, this.plr);
-
-            // We don't care about mana, so give the player infinite mana.
-            if (!care_about_mana) simplr[card.costType] = 999999;
-
-            // Play card
-            // FIXME: Wave of Apathy made the score 4.440892098500626e-16
-            this.on_card = card;
-            let result = simulation.playCard(card, simplr);
-            this.on_card = null;
-
-            this._restoreGame();
-            if (result !== true && !result instanceof Card || typeof result === "string") return; // Invalid
-
-            let score = this._evaluate(simulation);
-            if (score <= best_card[1]) return;
-
-            // This card is now the best move
-            best_card = [card, score];
-        });
-
-        this._restoreGame();
-
-        let score = best_card[1];
-        best_card = best_card[0];
-
-        // If a card wasn't chosen, choose the first card.
-        if (!best_card) {
-            // As a backup, do this process all again but this time we don't care about the cost of cards.
-            if (care_about_mana) return this.discover(cards, false);
-
-            this.history.push(["discover", null]);
-            return cards[0];
-        }
-
-        this.history.push(["discover", [best_card.name, score]]);
-
-        return best_card;
+    discover(cards) {
+        return this._selectFromCards(cards, "discover");
     }
 
     /**
@@ -519,8 +354,7 @@ class SimulationAI {
      * @returns {Card} Result
      */
     dredge(cards) {
-        // TODO: Add this
-        return this.backup_ai.dredge(cards);
+        return this._selectFromCards(cards, "dredge");
     }
 
     /**
@@ -580,6 +414,233 @@ class SimulationAI {
     mulligan() {
         // TODO: Add this
         return this.backup_ai.mulligan();
+    }
+
+    _selectFromCards(cards, history_name, care_about_mana = true) {
+        // This is currently being used by discover and dredge.
+
+        // This is awful, but this looks like a good template for the other ai methods.
+        // FIXME: This function causes memory leaks.
+        // ^^^^ It might just be horrendus performance.
+
+        // Temp fix for the performance, this skips the first loop.
+        if (true /* TEMP LINE */) care_about_mana = false;
+
+        /**
+         * @type {[Card | string, number]}
+         */
+        let best_card = [];
+
+        cards.forEach(card => {
+            // TODO: Maybe try to create as few simulations as possible.
+            this._restoreGame();
+            let simulation = this._createSimulation();
+
+            // Find the simulation version of this ai's player.
+            /**
+             * @type {Player}
+             */
+            let simplr = simulation["player" + (this.plr.id + 1)];
+
+            // If the card is a blueprint, turn it into a card.
+            if (!card.__ids) card = new game.Card(card.name, this.plr);
+
+            // The card is now always a card instance.
+
+            // We don't care about mana, so give the player infinite mana.
+            // TODO: There might be a better way, like setting the costtype to be something non-existant
+            // but that might be patched out later so i don't want to rely on it.
+            if (!care_about_mana) simplr[card.costType] = 999999;
+
+            // Play the card
+            // FIXME: Wave of Apathy made the score 4.440892098500626e-16
+            // ^^^^ The score is messed up overall. It is always 5-digits????
+            this.on_card = card;
+            let result = simulation.playCard(card, simplr);
+            this.on_card = null;
+
+            // Invalid card
+            if (result !== true && !result instanceof Card || typeof result === "string") {
+
+                return;
+            }
+
+            let score = this._evaluate(simulation);
+            if (score <= best_card[1]) return;
+
+            // This card is now the best card
+            best_card = [card, score];
+        });
+
+        // FIXME: Is this necessary after the last restore game in the loop above?
+        this._restoreGame();
+
+        let score = best_card[1];
+        best_card = best_card[0];
+
+        // If a card wasn't chosen, choose the first card.
+        if (!best_card) {
+            // As a backup, do this process all again but this time we don't care about the cost of cards.
+            // TODO: I'm not sure about this one. This looks like a nightmare on performance.
+            if (care_about_mana) return this.discover(cards, false);
+
+            // Choose the first discover card as the last resort.
+            this.history.push([history_name, null]);
+            return cards[0];
+        }
+
+        this.history.push([history_name, [best_card.name, score]]);
+
+        return best_card;
+    }
+
+    /**
+     * Evaluates the game
+     * 
+     * @param {Game} simulation
+     * @param {boolean} [sentiment=true] If it should perform sentiment analysis on the card's desc.
+     * 
+     * @returns {number} The score
+     */
+    _evaluate(simulation, sentiment = true) {
+        // TODO: Make this better
+        let score = 0;
+        const VALUE_BIAS = 0.1;
+
+        simulation.board.forEach(c => {
+            c.forEach(c => {
+                let bias = (c.plr.id == this.plr.id) ? 1 : -1;
+                let s = this._evaluateCard(c, sentiment);
+                //if (bias == 1 && s < 0) s = 0;
+                //if (bias == -1 && s > 0) s = -0;
+
+                score += s * bias;
+            });
+        });
+
+        [simulation.player1, simulation.player2].forEach(p => {
+            Object.entries(p).forEach(e => {
+                let [key, val] = e;
+                if (typeof val !== "number") return;
+                if (val == 0) return;
+                if (["id"].includes(key)) return;
+
+                if (["fatigue", "heroPowerCost", "overload"].includes(key)) val = -val;
+
+                let bias = 1;
+                if (p.id != this.plr.id) bias = -1;
+
+                score += val * bias * VALUE_BIAS;
+            });
+        });
+
+        [simulation.player1, simulation.player2].forEach(p => {
+            [p.deck.length, p.hand.length, p.quests.length, p.sidequests.length, p.secrets.length].forEach(val => {
+                let bias = 1;
+                if (p.id != this.plr.id) bias = -1;
+
+                score += val * bias * VALUE_BIAS;
+            });
+        });
+
+        return score;
+    }
+
+    /**
+     * Evaluates a card
+     * 
+     * @param {Card} c The card
+     * @param {boolean} [sentiment=true] If it should perform sentiment analysis on the card's description
+     * 
+     * @returns {number} The score
+     */
+    _evaluateCard(c, sentiment = true) {
+        let score = 0;
+
+        if (c.type == "Minion" || c.type == "Weapon") score += (c.getAttack() + c.getHealth()) * game.config.AIStatsBias;
+        else score += game.config.AISpellValue * game.config.AIStatsBias; // If the spell value is 4 then it the same value as a 2/2 minion
+        score -= c.mana * game.config.AIManaBias;
+
+        c.keywords.forEach(() => score += game.config.AIKeywordValue);
+        Object.values(c).forEach(c => {
+            if (c instanceof Array && c[0] instanceof Function) score += game.config.AIFunctionValue;
+        });
+
+        if (sentiment) score += this.backup_ai.analyzePositive(c.desc);
+        if (!c.desc) score -= game.config.AINoDescPenalty;
+
+        return score;
+    }
+
+    /**
+     * Creates and returns a simulation
+     * 
+     * @returns {Game} The simulation
+     */
+    _createSimulation() {
+        // Make a deep copy of the current game
+        // Don't copy these props
+        // FIXME: Why. Consistantly clones 16 nodes but gets caught in an infinite loop.
+        let cards = game.cards;
+        let events = game.events;
+        let graveyard = game.graveyard;
+        let config = game.config;
+        let p1 = game.player1;
+        let p2 = game.player2;
+        /*let curr = game.player;
+        let op = game.opponent;*/
+
+        delete game.cards;
+        delete game.events;
+        delete game.graveyard;
+        delete game.config;
+        delete game.player1;
+        delete game.player2;
+        /*delete game.player;
+        delete game.opponent;*/
+
+        let count = 0;
+        let simulation = lodash.cloneDeepWith(game, ()=>{count++});
+        console.log(`cloned total ${count} nodes from rows`);
+
+        game.cards = cards;
+        game.events = events;
+        game.graveyard = graveyard;
+        game.config = config;
+        game.player1 = p1;
+        game.player2 = p2;
+        /*game.player = curr;
+        game.opponent = op;*/
+
+        simulation.cards = cards;
+        simulation.events = events;
+        simulation.graveyard = graveyard;
+        simulation.config = config;
+        simulation.player1 = p1;
+        simulation.player2 = p2;
+        /*simulation.player = curr;
+        simulation.opponent = op;*/
+
+        [...simulation.player1.deck, ...simulation.player1.hand, ...simulation.player2.deck, ...simulation.player2.hand, ...simulation.player.deck, ...simulation.player.hand, ...simulation.opponent.deck, ...simulation.opponent.hand].forEach(c => {
+            c.plr = simulation["player" + (c.plr.id + 1)];
+        });
+
+        simulation.interact.setInternalGame(simulation);
+        simulation.functions.setInternalGame(simulation);
+        simulation.simulation = true; // Mark it as a simulation
+
+        set(simulation);
+
+        return simulation;
+    }
+
+    /**
+     * Restore the game
+     */
+    _restoreGame() {
+        game.interact.setInternalGame(game);
+        game.functions.setInternalGame(game);
+        set(game);
     }
 }
 

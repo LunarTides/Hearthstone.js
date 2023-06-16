@@ -244,6 +244,7 @@ class Game {
 
         this.eventListeners = {};
 
+        this.no_output = false;
         this.no_input = false;
 
         this.running = true;
@@ -255,10 +256,13 @@ class Game {
      *
      * @param {string} q The question to ask
      * @param {boolean} [care=true] If this is false, it overrides `game.no_input`. Only use this when debugging.
+     * @param {boolean} [complete_override=false] If this is true, it overrides everything. This is the same as doing `rl.question`. ONLY USE THIS WHEN DEBUGGING.
      *
      * @returns {string} What the user answered
      */
-    input(q, care = true) {
+    input(q, care = true, complete_override = false) {
+        if (complete_override) return question(q);
+
         if (this.no_input && care) return "";
 
         // Let the game make choices for the user
@@ -277,6 +281,22 @@ class Game {
         }
 
         return question(q);
+    }
+
+    /**
+     * Wrapper for console.log
+     * Use instead of console.log
+     * 
+     * @param {string} message The message to log
+     * @param {boolean} [care=true] If it should care about game.no_output
+     * 
+     * @returns {boolean} Sucess
+     */
+    log(message, care = true) {
+        if (this.no_output && care) return false;
+
+        console.log(message);
+        return true;
     }
 
     /**
@@ -334,7 +354,7 @@ class Game {
             
             let success = plr.setToStartingHero();
             if (!success) {
-                console.log("File 'cards/StartingHeroes/" + plr.heroClass.toLowerCase().replaceAll(" ", "_") + ".js' is either; Missing or Incorrect. Please copy the working 'cards/StartingHeroes/' folder from the github repo to restore a working copy. Error Code: 12");
+                this.log("File 'cards/StartingHeroes/" + plr.heroClass.toLowerCase().replaceAll(" ", "_") + ".js' is either; Missing or Incorrect. Please copy the working 'cards/StartingHeroes/' folder from the github repo to restore a working copy. Error Code: 12");
                 require("process").exit(1);
             }
 
@@ -379,7 +399,7 @@ class Game {
 
         this.interact.printName();
 
-        this.input(`Player ${winner.name} wins!\n`);
+        this.input(`Player ${winner.name} wins!\n`, false, true);
 
         // If any of the players are ai's, show their moves when the game ends
         if ((this.player1.ai || this.player2.ai) && this.config.debug) this.interact.doTurnLogic("/ai");
@@ -586,7 +606,7 @@ class Game {
                     let minion = this.interact.selectTarget("Which minion do you want this to Magnetize to:", false, "self", "minion");
                     if (!minion) break;
                     if (!minion.tribe.includes("Mech")) {
-                        console.log("That minion is not a Mech.");
+                        this.log("That minion is not a Mech.");
                         continue;
                     }
     

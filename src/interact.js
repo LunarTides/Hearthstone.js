@@ -14,6 +14,17 @@ class Interact {
         game = _game;
     }
 
+    /**
+     * Sets the game constant of the interact module.
+     * 
+     * DO NOT USE UNLESS YOU KNOW WHAT YOU'RE DOING.
+     * 
+     * @param {Game} _game
+     */
+    setInternalGame(_game) {
+        game = _game;
+    }
+
     // Constant interaction
     /**
      * Asks the user to attack a minion or hero
@@ -87,7 +98,7 @@ class Interact {
                 break;
         }
 
-        console.log(`${err}.`.red);
+        game.log(`${err}.`.red);
         game.input();
     }
 
@@ -151,37 +162,37 @@ class Interact {
                     break;
             }
 
-            console.log(`${err}.`.red);
+            game.log(`${err}.`.red);
             game.input();
         }
         else if (q === "help") {
             this.printName();
-            console.log("(In order to run a command; input the name of the command and follow further instruction.)\n");
-            console.log("Available commands:");
-            console.log("(name)     - (description)\n");
+            game.log("(In order to run a command; input the name of the command and follow further instruction.)\n");
+            game.log("Available commands:");
+            game.log("(name)     - (description)\n");
 
-            console.log("end        - Ends your turn");
-            console.log("attack     - Attack");
-            console.log("hero power - Use your hero power");
-            console.log("history    - Displays a history of actions");
-            console.log("concede    - Forfeits the game");
-            console.log("view       - View a minion");
-            console.log("use        - Use a location card");
-            console.log("detail     - Get more details about opponent");
-            console.log("help       - Displays this message");
-            console.log("version    - Displays the version, branch, your settings preset, and some information about your current version.");
-            console.log("license    - Opens a link to this project's license");
+            game.log("end        - Ends your turn");
+            game.log("attack     - Attack");
+            game.log("hero power - Use your hero power");
+            game.log("history    - Displays a history of actions");
+            game.log("concede    - Forfeits the game");
+            game.log("view       - View a minion");
+            game.log("use        - Use a location card");
+            game.log("detail     - Get more details about opponent");
+            game.log("help       - Displays this message");
+            game.log("version    - Displays the version, branch, your settings preset, and some information about your current version.");
+            game.log("license    - Opens a link to this project's license");
 
             const cond_color = (str) => {return (game.config.debug) ? str : str.gray};
 
-            console.log(cond_color("\n--- Debug Commands (") + ((game.config.debug) ? "ON".green : "OFF".red) + cond_color(") ---"));
-            console.log(cond_color("/give <Card Name>  - Adds a card to your hand"));
-            console.log(cond_color("/eval [log] <Code> - Runs the code specified. If the word 'log' is before the code, instead console.log the code and wait for user input to continue."));
-            console.log(cond_color("/debug             - Gives you infinite mana, health and armor"));
-            console.log(cond_color("/exit              - Force exits the game. There will be no winner, and it will take you straight back to the runner."));
-            console.log(cond_color("/events            - Gives you a list of the events that have been broadcast in an alphabetical order"));
-            console.log(cond_color("/ai                - Gives you a list of the actions the ai(s) have taken in the order they took it"));
-            console.log(cond_color("---------------------------" + ((game.config.debug) ? "" : "-")));
+            game.log(cond_color("\n--- Debug Commands (") + ((game.config.debug) ? "ON".green : "OFF".red) + cond_color(") ---"));
+            game.log(cond_color("/give <Card Name>  - Adds a card to your hand"));
+            game.log(cond_color("/eval [log] <Code> - Runs the code specified. If the word 'log' is before the code, instead game.log the code and wait for user input to continue."));
+            game.log(cond_color("/debug             - Gives you infinite mana, health and armor"));
+            game.log(cond_color("/exit              - Force exits the game. There will be no winner, and it will take you straight back to the runner."));
+            game.log(cond_color("/events            - Gives you a list of the events that have been broadcast in an alphabetical order"));
+            game.log(cond_color("/ai                - Gives you a list of the actions the ai(s) have taken in the order they took it"));
+            game.log(cond_color("---------------------------" + ((game.config.debug) ? "" : "-")));
             
             game.input("\nPress enter to continue...\n");
         }
@@ -236,13 +247,13 @@ class Interact {
             else if (JSON.stringify(_config) == '{"debug":false,"P2AI":false}') strbuilder += " using the recommended settings preset";
             else strbuilder += " using custom settings";
 
-            console.log(strbuilder + ".\n");
+            game.log(strbuilder + ".\n");
 
-            console.log(`Version Description:\n${game.config.versionText}\n`);
+            game.log(`Version Description:\n${game.config.versionText}\n`);
 
             // Todo list
-            console.log("Todo List:");
-            if (Object.keys(game.config.todo).length <= 0) console.log("None.");
+            game.log("Todo List:");
+            if (Object.keys(game.config.todo).length <= 0) game.log("None.");
 
             Object.entries(game.config.todo).forEach(e => {
                 let [name, state] = e;
@@ -250,7 +261,7 @@ class Interact {
                 if (state == "done") state = "x";
                 else if (state == "not done") state = " ";
 
-                console.log(`[${state}] ${name}`);
+                game.log(`[${state}] ${name}`);
             });
 
             game.input("\nPress enter to continue...");
@@ -308,7 +319,7 @@ class Interact {
 
             if (args[0] === false) {}
             else {
-                console.log(finished);
+                game.log(finished);
 
                 game.input("\nPress enter to continue...");
             }
@@ -346,7 +357,7 @@ class Interact {
             if (log) {
                 if (code[code.length - 1] == ";") code = code.slice(0, -1);
 
-                code = `console.log(${code});game.input();`;
+                code = `game.log(${code});game.input();`;
             }
     
             game.evaling = true;
@@ -355,8 +366,8 @@ class Interact {
 
                 game.events.broadcast("Eval", code, game.player);
             } catch (err) {
-                console.log("\nAn error happened while running this code! Here is the error:".red);
-                console.log(err.stack);
+                game.log("\nAn error happened while running this code! Here is the error:".red);
+                game.log(err.stack);
                 game.input("Press enter to continue...");
             }
             game.evaling = false;
@@ -399,7 +410,7 @@ class Interact {
 
             if (args[0] === false) {}
             else {
-                console.log(finished);
+                game.log(finished);
 
                 game.input("\nPress enter to continue...");
             }
@@ -409,12 +420,12 @@ class Interact {
         else if (q == "/events") {
             if (!game.config.debug) return -1;
 
-            console.log("Events:\n");
+            game.log("Events:\n");
 
             for (let i = 1; i <= 2; i++) {
                 const plr = game["player" + i];
                 
-                console.log(`Player ${i}'s Stats: {`);
+                game.log(`Player ${i}'s Stats: {`);
 
                 Object.keys(game.events).forEach(s => {
                     if (!game.events[s][plr.id]) return;
@@ -427,22 +438,22 @@ class Interact {
                             });
                             sb = sb.slice(0, -2);
                             sb += "]),";
-                            console.log(sb);
+                            game.log(sb);
                             return;
                         }
                         if (t instanceof game.Card || typeof(t) !== 'object') {
                             if (t instanceof game.Card) t = t.name;
-                            console.log(`[${s}] (${t}),`);
+                            game.log(`[${s}] (${t}),`);
                             return;
                         }
 
-                        console.log(`[${s}] (`);
-                        console.log(t);
-                        console.log("),");
+                        game.log(`[${s}] (`);
+                        game.log(t);
+                        game.log("),");
                     });
                 });
 
-                console.log("}");
+                game.log("}");
             }
 
             game.input("\nPress enter to continue...");
@@ -474,6 +485,16 @@ class Interact {
      */
     doTurn() {
         if (game.player.ai) {
+            this.printName();
+            game.log("The ai is thinking...", false);
+
+            // Set some game flags
+            let old_input = game.no_input;
+            let old_output = game.no_output;
+
+            game.no_input = true;
+            game.no_output = true;
+
             let input = game.player.ai.chooseMove();
             if (!input) return false;
             input = input.toString();
@@ -481,6 +502,9 @@ class Interact {
             let turn = this.doTurnLogic(input);
 
             game.killMinions();
+
+            game.no_input = old_input;
+            game.no_output = old_output;
 
             return turn;
         }
@@ -510,7 +534,7 @@ class Interact {
         else if (ret == "invalid") err = "Invalid card";
         else err = `An unknown error occurred. Error code: UnexpectedDoTurnResult@${ret}`;
 
-        console.log(`${err}.`.red);
+        game.log(`${err}.`.red);
         game.input();
 
         return false;
@@ -620,12 +644,12 @@ class Interact {
 
         this.printAll();
 
-        console.log(`\n${prompt}`);
+        game.log(`\n${prompt}`);
 
         if (cards.length <= 0) return null;
 
         cards.forEach((c, i) => {
-            console.log(this.getReadableCard(c, i + 1));
+            game.log(this.getReadableCard(c, i + 1));
         });
 
         let choice = game.input("> ");
@@ -746,7 +770,7 @@ class Interact {
         if (["Y", "N"].includes(choice)) return choice === "Y";
 
         // Invalid input
-        console.log("Unexpected input: '".red + _choice.yellow + "'. Valid inputs: ".red + "[" + "Y".green + " | " + "N".red + "]");
+        game.log("Unexpected input: '".red + _choice.yellow + "'. Valid inputs: ".red + "[" + "Y".green + " | " + "N".red + "]");
         game.input();
 
         return this.yesNoQuestion(plr, prompt);
@@ -775,12 +799,12 @@ class Interact {
 
         if (game.player.ai) return game.player.ai.discover(values);
 
-        console.log(`\n${prompt}:`);
+        game.log(`\n${prompt}:`);
 
         values.forEach((v, i) => {
             v = game.functions.getCardByName(v.name);
 
-            console.log(this.getReadableCard(v, i + 1));
+            game.log(this.getReadableCard(v, i + 1));
         });
 
         let choice = game.input();
@@ -945,11 +969,11 @@ class Interact {
         let watermarkString = `HEARTHSTONE.JS V${game.config.version}-${game.config.branch}`;
         let border = "-".repeat(watermarkString.length + 2);
     
-        console.log(`|${border}|`);
-        console.log(`| ${watermarkString} |`);
-        console.log(`|${border}|\n`);
+        game.log(`|${border}|`);
+        game.log(`| ${watermarkString} |`);
+        game.log(`|${border}|\n`);
 
-        if (game.config.branch == "topic" && game.config.topicBranchWarning) console.log("WARNING: YOU ARE ON A TOPIC BRANCH. THIS VERSION IS NOT READY.\n");
+        if (game.config.branch == "topic" && game.config.topicBranchWarning) game.log("WARNING: YOU ARE ON A TOPIC BRANCH. THIS VERSION IS NOT READY.\n");
     }
 
     /**
@@ -965,16 +989,16 @@ class Interact {
         cls();
     
         let version = `Hearthstone.js V${game.config.version}-${game.config.branch} | Copyright (C) 2022 | SolarWindss`;
-        console.log('|'.repeat(version.length + 8));
-        console.log(`||| ${version} |||`)
-        console.log(`|||     This program is licensed under the GPL-3.0 license.   ` + ' '.repeat(game.config.branch.length) + "|||")
+        game.log('|'.repeat(version.length + 8));
+        game.log(`||| ${version} |||`)
+        game.log(`|||     This program is licensed under the GPL-3.0 license.   ` + ' '.repeat(game.config.branch.length) + "|||")
         if (disappear)
-        console.log(`|||         This will disappear once you end your turn.       ` + ' '.repeat(game.config.branch.length) + `|||`)
-        console.log('|'.repeat(version.length + 8));
+        game.log(`|||         This will disappear once you end your turn.       ` + ' '.repeat(game.config.branch.length) + `|||`)
+        game.log('|'.repeat(version.length + 8));
     }
 
     /**
-     * Returns a card in a user readble state. If you console.log the result of this, the user will get all the information they need from the card.
+     * Returns a card in a user readble state. If you game.log the result of this, the user will get all the information they need from the card.
      *
      * @param {Card | import('./card').Blueprint} card The card
      * @param {number} [i=-1] If this is set, this function will add `[i]` to the beginning of the card. This is useful if there are many different cards to choose from.
@@ -1047,7 +1071,7 @@ class Interact {
     
         let sb = "";
     
-        console.log("Your side  :                              | Your opponent's side".gray);
+        game.log("Your side  :                              | Your opponent's side".gray);
         /// Mana
         // Current Player's Mana
         sb += `Mana       : ${plr.mana.toString().cyan} / ${plr.maxMana.toString().cyan}`;
@@ -1058,7 +1082,7 @@ class Interact {
         // Opponent's Mana
         sb += `Mana       : ${op.mana.toString().cyan} / ${op.maxMana.toString().cyan}`;
         // Mana End
-        console.log(sb);
+        game.log(sb);
         sb = "";
         
         // Health
@@ -1071,7 +1095,7 @@ class Interact {
         // Opponent's Health
         sb += `Health     : ${op.health.toString().red} (${op.armor.toString().gray}) / ${op.maxHealth.toString().red}`;
         // Health End
-        console.log(sb);
+        game.log(sb);
         sb = "";
 
         // Weapon
@@ -1101,7 +1125,7 @@ class Interact {
         }
     
         // Weapon End
-        if (sb) console.log(sb);
+        if (sb) game.log(sb);
         sb = "";
     
         // Deck
@@ -1114,7 +1138,7 @@ class Interact {
         // Opponent's Deck
         sb += `Deck Size  : ${op.deck.length.toString().yellow}`;
         // Deck End
-        console.log(sb);
+        game.log(sb);
         sb = "";
 
         // Secrets
@@ -1123,7 +1147,7 @@ class Interact {
             sb += plr.secrets.map(x => x["name"].bold).join(', '); // Get all your secret's names
         }
         // Secrets End
-        if (sb) console.log(sb);
+        if (sb) game.log(sb);
         sb = "";
     
         // Sidequests
@@ -1137,7 +1161,7 @@ class Interact {
             }).join(', ');
         }
         // Sidequests End
-        if (sb) console.log(sb);
+        if (sb) game.log(sb);
         sb = "";
     
         // Quests
@@ -1149,7 +1173,7 @@ class Interact {
             sb += `[${prog[0]} / ${prog[1]}]`.brightGreen;
         }
         // Quests End
-        if (sb) console.log(sb);
+        if (sb) game.log(sb);
         sb = "";
     
         // Detailed Info
@@ -1164,7 +1188,7 @@ class Interact {
             // Opponents Hand Size
             sb += `Hand Size  : ${op.hand.length.toString().yellow}`;
 
-            console.log(sb);
+            game.log(sb);
             sb = "";
 
             // Corpses
@@ -1214,19 +1238,19 @@ class Interact {
             }
         }
         // Detailed Info End
-        if (sb) console.log(sb);
+        if (sb) game.log(sb);
         sb = "";
     
         // Board
-        console.log("\n--- Board ---");
+        game.log("\n--- Board ---");
         
         game.board.forEach((_, i) => {
             const t = (i == plr.id) ? "--- You ---" : "--- Opponent ---";
     
-            console.log(t) // This is not for debugging, do not comment out
+            game.log(t) // This is not for debugging, do not comment out
     
             if (game.board[i].length == 0) {
-                console.log("(None)".gray);
+                game.log("(None)".gray);
                 return;
             }
     
@@ -1249,7 +1273,7 @@ class Interact {
 
                     sb += " [Location]".yellow;
         
-                    console.log(sb);
+                    game.log(sb);
                     sb = "";
 
                     return;
@@ -1274,11 +1298,11 @@ class Interact {
                 if (!m.dormant) sb += immune
                 sb += sleepy;
     
-                console.log(sb);
+                game.log(sb);
                 sb = "";
             });
         });
-        console.log("-------------")
+        game.log("-------------")
     
         let _class = plr.hero.name.includes("Starting Hero") ? plr.heroClass : plr.hero.name;
         if (detailed && plr.hero.name.includes("Starting Hero")) {
@@ -1288,17 +1312,17 @@ class Interact {
         }
     
         // Hand
-        console.log(`\n--- ${plr.name} (${_class})'s Hand ---`);
-        console.log("([id] " + "{Cost}".cyan + " Name".bold + " [attack / health]".brightGreen + " (type)".yellow + ")\n");
+        game.log(`\n--- ${plr.name} (${_class})'s Hand ---`);
+        game.log("([id] " + "{Cost}".cyan + " Name".bold + " [attack / health]".brightGreen + " (type)".yellow + ")\n");
     
-        plr.hand.forEach((card, i) => console.log(this.getReadableCard(card, i + 1)));
+        plr.hand.forEach((card, i) => game.log(this.getReadableCard(card, i + 1)));
         // Hand End
     
-        console.log("------------");
+        game.log("------------");
     }
 
     /**
-     * Shows information from the card, console.log's it and waits for the user to press enter.
+     * Shows information from the card, game.log's it and waits for the user to press enter.
      *
      * @param {Card | import('./card').Blueprint} card The card
      * @param {boolean} [help=true] If it should show a help message which displays what the different fields mean.
@@ -1326,8 +1350,8 @@ class Interact {
             else locCooldown = " (" + card.cooldown.toString().cyan + ")";
         }
 
-        if (help) console.log("{mana} ".cyan + "Name ".bold + "(" + "[attack / health] ".brightGreen + "if it has) (description) ".white + "(type) ".yellow + "((tribe) or (spell class) or (cooldown)) [".white + "class".gray + "]");
-        console.log(_card + tribe + spellClass + locCooldown + ` [${_class}]`);
+        if (help) game.log("{mana} ".cyan + "Name ".bold + "(" + "[attack / health] ".brightGreen + "if it has) (description) ".white + "(type) ".yellow + "((tribe) or (spell class) or (cooldown)) [".white + "class".gray + "]");
+        game.log(_card + tribe + spellClass + locCooldown + ` [${_class}]`);
 
         game.input("\nPress enter to continue...\n");
     }
@@ -1335,13 +1359,17 @@ class Interact {
     /**
      * Clears the screen.
      * 
-     * @returns {undefined}
+     * @param {boolean} care If it should not clear the screen if the no input and no output flags are set.
      */
-    cls() { // Do this so it doesn't crash because of "strict mode"
-        cls();
+    cls(care = true) { // Do this so it doesn't crash because of "strict mode"
+        cls(care);
     }
 }
 
-const cls = () => process.stdout.write('\033c');
+const cls = (care = true) => {
+    if (game.no_output && game.no_input && care) return;
+
+    process.stdout.write('\x1bc');
+}
 
 exports.Interact = Interact;

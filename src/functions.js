@@ -33,8 +33,8 @@ class DeckcodeFunctions {
      */
     import(plr, code) {
         const ERROR = (error_code, card_name = null) => {
-            console.log("This deck is not valid!\nError Code: ".red + error_code.yellow);
-            if (card_name) console.log("Specific Card that caused this error: ".red + card_name.yellow);
+            game.log("This deck is not valid!\nError Code: ".red + error_code.yellow);
+            if (card_name) game.log("Specific Card that caused this error: ".red + card_name.yellow);
             game.input();
             return "invalid";
         }
@@ -345,7 +345,7 @@ class DeckcodeFunctions {
         try {
             vanillaCards = fs.readFileSync(__dirname + "/../card_creator/vanilla/.ignore.cards.json");
         } catch (err) {
-            console.log("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'scripts/genvanilla.bat' (requires an internet connection), then try again.".red);
+            game.log("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'scripts/genvanilla.bat' (requires an internet connection), then try again.".red);
             game.input();
 
             process.exit(1);
@@ -385,7 +385,7 @@ class DeckcodeFunctions {
 
             if (!matches) {
                 // Invalid card
-                console.log("ERROR: Invalid card found!".red);
+                game.log("ERROR: Invalid card found!".red);
                 game.input();
                 return;
             }
@@ -400,11 +400,11 @@ class DeckcodeFunctions {
                     delete m.mechanics;
                     delete m.race; // Just look at `m.races`
 
-                    console.log(`${i + 1}: `);
-                    console.log(m);
+                    game.log(`${i + 1}: `);
+                    game.log(m);
                 });
 
-                console.log(`Multiple cards with the name '${c}' detected! Please choose one:`.yellow);
+                game.log(`Multiple cards with the name '${c}' detected! Please choose one:`.yellow);
                 let chosen = game.input();
 
                 matches = matches[parseInt(chosen) - 1];
@@ -439,7 +439,7 @@ class DeckcodeFunctions {
         try {
             cards = fs.readFileSync(__dirname + "/../card_creator/vanilla/.ignore.cards.json");
         } catch (err) {
-            console.log("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'scripts/genvanilla.bat' (requires an internet connection), then try again.".red);
+            game.log("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'scripts/genvanilla.bat' (requires an internet connection), then try again.".red);
             game.input();
 
             process.exit(1);
@@ -465,7 +465,7 @@ class DeckcodeFunctions {
             if (createdCards.find(card => card.name == c.name || card.displayName == c.name)) return;
 
             // The card doesn't exist.
-            console.log(`ERROR: Card '${c.name}' doesn't exist!`.red);
+            game.log(`ERROR: Card '${c.name}' doesn't exist!`.red);
             invalidCards.push(c);
         });
 
@@ -479,7 +479,7 @@ class DeckcodeFunctions {
 
             invalidCards.forEach(c => {
                 // Create that card
-                console.log("Creating " + c.name.yellow);
+                game.log("Creating " + c.name.yellow);
                 vcc.main("", c);
             });
 
@@ -570,6 +570,17 @@ class Functions {
 
         game = _game;
         self = this; // Allow the other classes to access this class
+    }
+
+    /**
+     * Sets the game constant of the functions module.
+     * 
+     * DO NOT USE UNLESS YOU KNOW WHAT YOU'RE DOING.
+     * 
+     * @param {Game} _game
+     */
+    setInternalGame(_game) {
+        game = _game;
     }
 
     // QoL
@@ -702,7 +713,7 @@ class Functions {
      * let foo = finishWall();
      * 
      * foo.forEach(bar => {
-     *     console.log(bar);
+     *     game.log(bar);
      * });
      * // Example             - Example
      * // Test                - Hello World
@@ -832,8 +843,8 @@ ${aiHistory}
 
         if (!err) return true;
 
-        console.log(`\nThe game crashed!\nCrash report created in 'logs/${filename}.txt' and 'logs/${filename}-ai.txt'\nPlease create a bug report at:\nhttps://github.com/SolarWindss/Hearthstone.js/issues`.yellow);
-        game.input();
+        game.log(`\nThe game crashed!\nCrash report created in 'logs/${filename}.txt' and 'logs/${filename}-ai.txt'\nPlease create a bug report at:\nhttps://github.com/SolarWindss/Hearthstone.js/issues`.yellow);
+        game.input("", false, true);
 
         return true;
     }
@@ -936,7 +947,7 @@ ${aiHistory}
 
             const isCommandAvailable = (test_command, args_specifier) => {
                 try {
-                    console.log(`${test_command} ${args_specifier}${command} ${args}`)
+                    game.log(`${test_command} ${args_specifier}${command} ${args}`)
                     attempts.push(test_command);
 
                     child_process.execSync(`which ${test_command}`);
@@ -953,15 +964,15 @@ ${aiHistory}
             else if (isCommandAvailable("xterm", "-e ")) {}
             else if (isCommandAvailable("xfce4-terminal", "--command=")) {}
             else {
-                console.log("Error: Failed to open program. Traceback:");
-                console.log("Operating system: Linux");
+                game.log("Error: Failed to open program. Traceback:");
+                game.log("Operating system: Linux");
                 
                 attempts.forEach(a => {
-                    console.log(`Tried '${a}'... failed!`);
+                    game.log(`Tried '${a}'... failed!`);
                 });
 
-                console.log("Please install any of these using your package manager.");
-                console.log("If you're not using linux, open up an issue on the github page.");
+                game.log("Please install any of these using your package manager.");
+                game.log("If you're not using linux, open up an issue on the github page.");
                 // rl.question(); <- It is your job to pause the program when you run this, since function.js functions should generally not pause the game.
 
                 return false;
