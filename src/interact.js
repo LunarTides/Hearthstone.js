@@ -1,6 +1,7 @@
 const { Card } = require('./card');
 const { Game } = require('./game');
 const { Player } = require('./player');
+const { get } = require('./shared');
 
 const license_url = 'https://github.com/SolarWindss/Hearthstone.js/blob/main/LICENSE';
 
@@ -16,13 +17,9 @@ class Interact {
 
     /**
      * Sets the game constant of the interact module.
-     * 
-     * DO NOT USE UNLESS YOU KNOW WHAT YOU'RE DOING.
-     * 
-     * @param {Game} _game
      */
-    setInternalGame(_game) {
-        game = _game;
+    getInternalGame() {
+        game = get();
     }
 
     // Constant interaction
@@ -489,9 +486,6 @@ class Interact {
             game.log("The ai is thinking...", false);
 
             // Set some game flags
-            let old_input = game.no_input;
-            let old_output = game.no_output;
-
             game.no_input = true;
             game.no_output = true;
 
@@ -503,8 +497,8 @@ class Interact {
 
             game.killMinions();
 
-            game.no_input = old_input;
-            game.no_output = old_output;
+            game.no_input = false;
+            game.no_output = false;
 
             return turn;
         }

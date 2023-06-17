@@ -4,13 +4,13 @@
     "version": "1.6.0",
     "branch": "topic",
 
-    "versionText": "This topic branch adds a new ai model. This ai model is simulation based, so it plays every card in it's hand in a simulation of the game in order to find the best card.\n\nTHIS AI MODEL IS UNFINISHED. IT IS IN THE FIRST PASS AND SO EXPECT MEMORY LEAKS, CRASHES AND BUGS. THIS MODEL TAKES FOREVER, USES UP A LOT OF MEMORY, AND CURRENTLY THE ONLY IMPLEMENTED ACTIONS THE AI CAN DO IS PLAY CARDS, ATTACK, SELECT TARGETS, DISCOVER. EVERYTHING ELSE IS HANDLED BY THE PREVIOUS MODEL.",
+    "versionText": "This topic branch adds a new ai model. This ai model is simulation based, so it plays every card in it's hand in a simulation of the game in order to find the best card.\n\nTHIS AI MODEL IS UNFINISHED. IT IS IN THE FIRST PASS AND SO EXPECT MEMORY LEAKS, CRASHES AND BUGS. THIS MODEL TAKES FOREVER, USES UP A LOT OF MEMORY, AND CURRENTLY THE ONLY IMPLEMENTED ACTIONS THE AI CAN DO IS PLAY CARDS, ATTACK, SELECT TARGETS, DISCOVER, DREDGE. EVERYTHING ELSE IS HANDLED BY THE PREVIOUS MODEL.",
     "todo": {
         "Play cards": "first pass",
         "Attack": "first pass",
         "Select targets": "first pass",
         "Discover": "first pass",
-        "Dredge": "not done",
+        "Dredge": "first pass",
         "Choose one": "not done",
         "Question": "not done",
         "Yes / No question": "not done",

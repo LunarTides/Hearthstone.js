@@ -8,6 +8,7 @@ const deckstrings = require("deckstrings"); // To decode vanilla deckcodes
 const { Player } = require("./player");
 const { Card } = require("./card");
 const { Game } = require("./game");
+const { get } = require("./shared");
 require("colors");
 
 /**
@@ -573,14 +574,10 @@ class Functions {
     }
 
     /**
-     * Sets the game constant of the functions module.
-     * 
-     * DO NOT USE UNLESS YOU KNOW WHAT YOU'RE DOING.
-     * 
-     * @param {Game} _game
+     * Sets the game constant of the interact module.
      */
-    setInternalGame(_game) {
-        game = _game;
+    getInternalGame() {
+        game = get();
     }
 
     // QoL

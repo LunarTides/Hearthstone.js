@@ -580,15 +580,17 @@ class SimulationAI {
     _createSimulation() {
         // Make a deep copy of the current game
         // Don't copy these props
-        // FIXME: Why. Consistantly clones 16 nodes but gets caught in an infinite loop.
+        // FIXME: Why. Gets caught in an infinite loop.
+        // FIXME: Mana increases without turn ending.
+        // FIXME: The ai cannot play cards.
         let cards = game.cards;
         let events = game.events;
         let graveyard = game.graveyard;
         let config = game.config;
         let p1 = game.player1;
         let p2 = game.player2;
-        /*let curr = game.player;
-        let op = game.opponent;*/
+        let curr = game.player;
+        let op = game.opponent;
 
         delete game.cards;
         delete game.events;
@@ -596,8 +598,8 @@ class SimulationAI {
         delete game.config;
         delete game.player1;
         delete game.player2;
-        /*delete game.player;
-        delete game.opponent;*/
+        delete game.player;
+        delete game.opponent;
 
         let count = 0;
         let simulation = lodash.cloneDeepWith(game, ()=>{count++});
@@ -609,8 +611,8 @@ class SimulationAI {
         game.config = config;
         game.player1 = p1;
         game.player2 = p2;
-        /*game.player = curr;
-        game.opponent = op;*/
+        game.player = curr;
+        game.opponent = op;
 
         simulation.cards = cards;
         simulation.events = events;
@@ -618,18 +620,17 @@ class SimulationAI {
         simulation.config = config;
         simulation.player1 = p1;
         simulation.player2 = p2;
-        /*simulation.player = curr;
-        simulation.opponent = op;*/
+        simulation.player = curr;
+        simulation.opponent = op;
+        simulation.simulation = true; // Mark it as a simulation
 
         [...simulation.player1.deck, ...simulation.player1.hand, ...simulation.player2.deck, ...simulation.player2.hand, ...simulation.player.deck, ...simulation.player.hand, ...simulation.opponent.deck, ...simulation.opponent.hand].forEach(c => {
             c.plr = simulation["player" + (c.plr.id + 1)];
         });
 
-        simulation.interact.setInternalGame(simulation);
-        simulation.functions.setInternalGame(simulation);
-        simulation.simulation = true; // Mark it as a simulation
-
         set(simulation);
+        simulation.interact.getInternalGame();
+        simulation.functions.getInternalGame();
 
         return simulation;
     }
@@ -638,9 +639,9 @@ class SimulationAI {
      * Restore the game
      */
     _restoreGame() {
-        game.interact.setInternalGame(game);
-        game.functions.setInternalGame(game);
         set(game);
+        game.interact.getInternalGame();
+        game.functions.getInternalGame();
     }
 }
 
