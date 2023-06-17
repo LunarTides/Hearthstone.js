@@ -54,6 +54,7 @@ class SimulationAI {
      */
     chooseMove() {
         // Makes a move in the simulation
+        // The ai is not even playing anything
 
         /**
          * @type {[Card | string, number]}

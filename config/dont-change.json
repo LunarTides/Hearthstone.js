@@ -6,21 +6,21 @@
 
     "versionText": "This topic branch adds a new ai model. This ai model is simulation based, so it plays every card in it's hand in a simulation of the game in order to find the best card.\n\nTHIS AI MODEL IS UNFINISHED. IT IS IN THE FIRST PASS AND SO EXPECT MEMORY LEAKS, CRASHES AND BUGS. THIS MODEL TAKES FOREVER, USES UP A LOT OF MEMORY, AND CURRENTLY THE ONLY IMPLEMENTED ACTIONS THE AI CAN DO IS PLAY CARDS, ATTACK, SELECT TARGETS, DISCOVER, DREDGE. EVERYTHING ELSE IS HANDLED BY THE PREVIOUS MODEL.",
     "todo": {
-        "Play cards": "first pass",
-        "Attack": "first pass",
-        "Select targets": "first pass",
-        "Discover": "first pass",
-        "Dredge": "first pass",
-        "Choose one": "not done",
-        "Question": "not done",
-        "Yes / No question": "not done",
-        "Trade": "not done",
-        "Mulligan": "not done",
-        "Fix tests": "not done",
-        "Fix todos / fixme's": "not done",
-        "Add prefix to ai config keys": "not done",
-        "Optimize": "not done",
-        "Finalize": "not done"
+        "Play cards": ["first pass", "Enable the new ai model to play cards / choose to attack / choose to hero power / choose to end their turn."],
+        "Attack": ["first pass", "Enable the new ai model to attack."],
+        "Select targets": ["first pass", "Enable the new ai model to select targets."],
+        "Discover": ["first pass", "Enable the new ai model to Discover a card."],
+        "Dredge": ["first pass", "Enable the new ai model to choose a card to Dredge."],
+        "Choose one": ["not done", "Enable the new ai model to choose an option from a list."],
+        "Question": ["not done", "Enable the new ai model to answer basic questions."],
+        "Yes / No question": ["not done", "Enable the new ai model to answer yes / no questions."],
+        "Trade": ["not done", "Enable the new ai model to choose to trade cards."],
+        "Mulligan": ["not done", "Enable the new ai model to Mulligan cards."],
+        "Fix tests": ["not done", "Fix the ai tests defined in `test/ai.test.js`."],
+        "Fix todos / fixme's": ["not done", "Fix `todo`'s and `fixme`'s in the new ai model's code."],
+        "Add prefix to ai config keys": ["not done", "Add a `sim` or `sent` or `simsent` prefix to the ai options to indicate which ai model(s) changing the option changes."],
+        "Optimize": ["not done", "Optimize the new ai model."],
+        "Finalize": ["not done", "Do all remaining tasks and put it in a beta state."]
     },
 
     "exampleTodo": {
