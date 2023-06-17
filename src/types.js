@@ -48,7 +48,7 @@ const { Card } = require("./card");
  * 
  * @typedef {"Arcane" |
  * "Fel" | 
- * Fore" |
+ * "Fire" |
  * "Frost" |
  * "Holy" |
  * "Nature" |

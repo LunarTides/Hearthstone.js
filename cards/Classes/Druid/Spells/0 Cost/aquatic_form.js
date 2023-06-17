@@ -18,6 +18,7 @@ module.exports = {
      */
     cast(plr, game, card) {
         let c = game.interact.dredge();
+        if (!c) return;
 
         if (plr.mana >= c.mana) {
             plr.drawCard();

@@ -234,13 +234,13 @@ class Card {
 
         return true;
     }
+    
+    /**
+     * Makes this minion ready for attack
+     *
+     * @returns {null}
+     */
     ready() {
-        /**
-         * Makes this minion ready for attack
-         *
-         * @returns {null}
-         */
-
         this.sleepy = false;
         this.resetAttackTimes();
     }

@@ -230,47 +230,78 @@ class Interact {
             require('child_process').exec(start + ' ' + license_url);
         }
         else if (q == "version") {
-            let strbuilder = `You are on version: ${game.config.version} on `;
+            while (true) {
+                let todos = Object.entries(game.config.todo);
 
-            if (game.config.branch == "topic") strbuilder += "a topic branch";
-            else if (game.config.branch == "dev") strbuilder += "the develop (beta) branch";
-            else if (game.config.branch == "stable") strbuilder += "the stable (release) branch";
+                const print_info = () => {
+                    this.printAll(game.player);
 
-            let _config = {};
-            _config.debug = game.config.debug;
-            _config.P2AI = game.config.P2AI;
+                    let strbuilder = `\nYou are on version: ${game.config.version} on `;
+    
+                    if (game.config.branch == "topic") strbuilder += "a topic branch";
+                    else if (game.config.branch == "dev") strbuilder += "the develop (beta) branch";
+                    else if (game.config.branch == "stable") strbuilder += "the stable (release) branch";
+    
+                    let _config = {};
+                    _config.debug = game.config.debug;
+                    _config.P2AI = game.config.P2AI;
+    
+                    if (JSON.stringify(_config) == '{"debug":true,"P2AI":true}') strbuilder += " using the debug settings preset";
+                    else if (JSON.stringify(_config) == '{"debug":false,"P2AI":false}') strbuilder += " using the recommended settings preset";
+                    else strbuilder += " using custom settings";
+    
+                    console.log(strbuilder + ".\n");
+    
+                    console.log(`Version Description:\n${game.config.versionText}\n`);
 
-            if (JSON.stringify(_config) == '{"debug":true,"P2AI":true}') strbuilder += " using the debug settings preset";
-            else if (JSON.stringify(_config) == '{"debug":false,"P2AI":false}') strbuilder += " using the recommended settings preset";
-            else strbuilder += " using custom settings";
-
-            game.log(strbuilder + ".\n");
-
-            game.log(`Version Description:\n${game.config.versionText}\n`);
-
-            // Todo list
-            game.log("Todo List:");
-            if (Object.keys(game.config.todo).length <= 0) game.log("None.");
-
-            Object.entries(game.config.todo).forEach(e => {
-                let [name, state] = e;
+                    console.log("Todo List:");
+                    if (todos.length <= 0) console.log("None.");
+                }
                 
-                if (state == "done") state = "x";
-                else if (state == "not done") state = " ";
+                print_info();
 
-                game.log(`[${state}] ${name}`);
-            });
+                // Todo list
+                if (todos.length <= 0) {
+                    game.input("\nPress enter to continue...");
+                    break;
+                }
 
-            game.input("\nPress enter to continue...");
+                const print_todo = (todo, id, print_desc = false) => {
+                    let [name, info] = todo;
+                    let [state, desc] = info;
+
+                    if (state == "done") state = "x";
+                    else if (state == "not done") state = " ";
+
+                    if (print_desc) console.log(`{${id}} [${state}] ${name}\n${desc}`);
+                    else console.log(`{${id}} [${state}] ${name}`);
+                }
+
+                todos.forEach((e, i) => print_todo(e, i + 1));
+
+                let todo_id = parseInt(game.input("\nType the id of a todo to see more information about it (eg. 1): "));
+                if (!todo_id || todo_id > todos.length || todo_id <= 0) {
+                    break;
+                }
+
+                let todo = todos[todo_id - 1];
+
+                print_info();
+                print_todo(todo, todo_id, true);
+                
+                game.input("\nPress enter to continue...");
+            }
         }
         else if (q == "history") {
             // History
             let history = game.events.history;
             let finished = "";
 
+            let history_debug = args.length >= 2 && args[1] == true;
+
             const doVal = (val, plr, hide) => {
                 if (val instanceof game.Card) {
-                    if (hide && val.plr != plr) val = "Hidden";
+                    if (hide && val.plr != plr && !history_debug) val = "Hidden";
                     else val = val.displayName;
                 }
                 else if (val instanceof game.Player) val = `Player ${val.id + 1}`;
@@ -285,10 +316,10 @@ class Interact {
                     let [key, val, plr] = c;
 
                     let bannedKeys = ["EndTurn", "StartTurn", "UnspentMana", "GainOverload", "GainHeroAttack", "SpellDealsDamage", "FreezeCard", "CancelCard", "Update"];
-                    if (bannedKeys.includes(key)) return;
+                    if (bannedKeys.includes(key) && !history_debug) return;
 
                     let hideValueKeys = ["DrawCard", "AddCardToHand", "AddCardToDeck"]; // Example: If a card gets drawn, the other player can't see what card it was
-                    let shouldHide = hideValueKeys.includes(key);
+                    let shouldHide = hideValueKeys.includes(key) && !history_debug;
 
                     if (!hasPrintedHeader) finished += `\nTurn ${t + 1} - Player [${plr.name}]\n`; 
                     hasPrintedHeader = true;

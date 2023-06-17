@@ -238,7 +238,7 @@ class Game {
         this.board = [[], []];
 
         /**
-         * @type {[[Card]]}
+         * @type {[[Card], [Card]]}
          */
         this.graveyard = [[], []];
 

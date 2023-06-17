@@ -793,7 +793,8 @@ class Functions {
         let dateStringFileFriendly = dateString.replace(/[/:]/g, ".").replaceAll(" ", "-"); // 01.01.23-23.59.59
 
         // Grab the history of the game
-        let history = game.interact.handleCmds("history", false);
+        // handleCmds("history", write_to_screen, debug)
+        let history = game.interact.handleCmds("history", false, true);
 
         let name = "Log";
         if (err) name = "Crash Log";

@@ -645,6 +645,7 @@ class SimulationAI {
     }
 }
 
+// FIXME: Ai gets stuck in infinite loop when using cathedral of atonement (location) | shadowcloth needle (0 attack wpn) | that minion has no attack.
 class SentimentAI {
     /**
      * This is the old Sentiment Analysis based AI.

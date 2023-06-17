@@ -99,10 +99,13 @@ class Player {
         /**
          * @type {Card | Player}
          */
+        /**
+         * @type {Card | Player}
+         */
         this.forceTarget = null;
 
         /**
-         * @type {[Card | Player]}
+         * @type {[Card | Player] | Card | Player}
          */
         this.inputQueue = null;
     }
@@ -302,6 +305,15 @@ class Player {
     getHealth() {
         // I have this here for compatibility with minions
         return this.health;
+    }
+    /**
+     * Returns this player's attack.
+     * 
+     * @returns {number}
+     */
+    getAttack() {
+        // I have this here for compatibility with minions
+        return this.attack;
     }
 
     // Hand / Deck
