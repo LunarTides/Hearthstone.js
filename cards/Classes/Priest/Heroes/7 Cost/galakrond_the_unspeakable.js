@@ -13,7 +13,7 @@ module.exports = {
     rarity: "Legendary",
     hpDesc: "Add a random Priest minion to your hand.",
     hpCost: 2,
-    id: 323,
+    id: 34,
 
     /**
      * @type {import("../../../../../src/types").KeywordMethod}

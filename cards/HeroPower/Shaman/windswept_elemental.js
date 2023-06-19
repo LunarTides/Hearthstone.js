@@ -14,6 +14,5 @@ module.exports = {
     rarity: "Free",
     set: "Descent of Dragons",
     keywords: ["Rush"],
-    id: 86,
     uncollectible: true,
 }

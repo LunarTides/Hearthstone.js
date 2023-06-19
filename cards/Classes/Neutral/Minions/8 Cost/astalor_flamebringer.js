@@ -15,7 +15,6 @@ module.exports = {
     rarity: "Free",
     set: "March of the Lich King",
     uncollectible: true,
-    id: 147,
 
     /**
      * @type {import("../../../../../src/types").KeywordMethod}

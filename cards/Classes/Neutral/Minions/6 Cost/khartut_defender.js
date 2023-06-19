@@ -14,7 +14,7 @@ module.exports = {
     rarity: "Rare",
     set: "Saviors of Uldum",
     keywords: ["Taunt", "Reborn"],
-    id: 211,
+    id: 26,
 
     /**
      * @type {import("../../../../../src/types").KeywordMethod}

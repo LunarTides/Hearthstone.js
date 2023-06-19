@@ -15,7 +15,7 @@ module.exports = {
     rarity: "Legendary",
     set: "Return to Naxxramas",
     keywords: ["Taunt"],
-    id: 252,
+    id: 33,
 
     /**
      * @type {import("../../../../../src/types").KeywordMethod}

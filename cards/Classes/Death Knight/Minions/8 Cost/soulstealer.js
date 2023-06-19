@@ -14,7 +14,7 @@ module.exports = {
     rarity: "Epic",
     set: "March of the Lich King",
     runes: "BBB",
-    id: 196,
+    id: 7,
 
     /**
      * @type {import("../../../../../src/types").KeywordMethod}

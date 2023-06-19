@@ -14,7 +14,6 @@ module.exports = {
     set: "Knights of the Frozen Throne",
     spellClass: "Shadow",
     uncollectible: true,
-    id: 123,
 
     /**
      * @type {import("../../../../../src/types").KeywordMethod}

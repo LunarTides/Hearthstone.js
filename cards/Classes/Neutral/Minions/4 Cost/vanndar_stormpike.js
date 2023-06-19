@@ -13,7 +13,7 @@ module.exports = {
     class: "Neutral",
     rarity: "Legendary",
     set: "Fractured in Alterac Valley",
-    id: 204,
+    id: 23,
 
     /**
      * @type {import("../../../../../src/types").KeywordMethod}

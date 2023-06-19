@@ -13,7 +13,7 @@ module.exports = {
     set: "Path of Arthas",
     runes: "BB",
     spellClass: "Shadow",
-    id: 250,
+    id: 11,
 
     /**
      * @type {import("../../../../../src/types").KeywordMethod}

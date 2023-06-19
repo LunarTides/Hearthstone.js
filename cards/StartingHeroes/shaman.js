@@ -14,7 +14,6 @@ module.exports = {
     set: "Core",
     hpDesc: "Summon a random Totem.",
     uncollectible: true,
-    id: 101,
 
     /**
      * @type {import("../../src/types").KeywordMethod}

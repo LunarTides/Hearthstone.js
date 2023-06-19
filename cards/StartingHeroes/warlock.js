@@ -14,7 +14,6 @@ module.exports = {
     set: "Core",
     hpDesc: "Draw a card and take 2 damage.",
     uncollectible: true,
-    id: 102,
 
     /**
      * @type {import("../../src/types").KeywordMethod}

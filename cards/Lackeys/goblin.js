@@ -14,7 +14,6 @@ module.exports = {
     rarity: "Free",
     set: "Rise of Shadows",
     uncollectible: true,
-    id: 90,
 
     /**
      * @type {import("../../src/types").KeywordMethod}

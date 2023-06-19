@@ -12,6 +12,5 @@ module.exports = {
     class: "Rogue",
     rarity: "Free",
     set: "Legacy",
-    id: 81,
     uncollectible: true
 }

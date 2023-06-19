@@ -13,7 +13,7 @@ module.exports = {
     class: "Death Knight",
     rarity: "Common",
     set: "Core",
-    id: 187,
+    id: 4,
 
     /**
      * @type {import("../../../../../src/types").KeywordMethod}

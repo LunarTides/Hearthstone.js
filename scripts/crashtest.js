@@ -4,7 +4,7 @@ const { Game } = require("../src/game");
 const { Player } = require("../src/player");
 const { set } = require("../src/shared");
 
-let decks = Object.values(JSON.parse(fs.readFileSync("../decks.json")).versus);
+let decks = Object.values(JSON.parse(fs.readFileSync("../decks.json")));
 
 let games = process.env.games || 100;
 

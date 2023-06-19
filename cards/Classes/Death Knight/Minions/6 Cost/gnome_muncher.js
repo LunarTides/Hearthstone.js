@@ -15,7 +15,7 @@ module.exports = {
     set: "Core",
     runes: "B",
     keywords: ["Taunt", "Lifesteal"],
-    id: 194,
+    id: 5,
 
     /**
      * @type {import("../../../../../src/types").KeywordMethod}

@@ -157,7 +157,7 @@ describe("Player", () => {
     });
 
     it ('should shuffle into deck', () => {
-        game.functions.deckcode.import(test_player1, "Death Knight [3B] /1:8,2/ 5o,66,5f,3b,3c,3e,5x,70,52,55,56,6y,6z,59,5a,2,5v,5g,3o");
+        game.functions.deckcode.import(test_player1, "Death Knight [3B] /1:8,2/ n,r,6,s,t,u,w,x,8,9,a,b,1,c,e,q,7,v,f");
         let old_deck = test_player1.deck;
 
         let card = new Card("Sheep", test_player1);
@@ -173,7 +173,7 @@ describe("Player", () => {
     });
 
     it ('should add to bottom of deck', () => {
-        game.functions.deckcode.import(test_player1, "Death Knight [3B] /1:8,2/ 5o,66,5f,3b,3c,3e,5x,70,52,55,56,6y,6z,59,5a,2,5v,5g,3o");
+        game.functions.deckcode.import(test_player1, "Death Knight [3B] /1:8,2/ n,r,6,s,t,u,w,x,8,9,a,b,1,c,e,q,7,v,f");
 
         let card = new Card("Sheep", test_player1);
         let success = test_player1.addToBottomOfDeck(card);
@@ -191,7 +191,7 @@ describe("Player", () => {
     });
 
     it ('should draw specific card', () => {
-        game.functions.deckcode.import(test_player1, "Death Knight [3B] /1:8,2/ 5o,66,5f,3b,3c,3e,5x,70,52,55,56,6y,6z,59,5a,2,5v,5g,3o");
+        game.functions.deckcode.import(test_player1, "Death Knight [3B] /1:8,2/ n,r,6,s,t,u,w,x,8,9,a,b,1,c,e,q,7,v,f");
 
         let card = new Card("Sheep", test_player1);
         test_player1.addToBottomOfDeck(card);

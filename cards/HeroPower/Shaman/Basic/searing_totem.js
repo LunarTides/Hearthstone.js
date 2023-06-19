@@ -13,6 +13,5 @@ module.exports = {
     class: "Shaman",
     rarity: "Free",
     set: "Legacy",
-    id: 83,
     uncollectible: true,
 }

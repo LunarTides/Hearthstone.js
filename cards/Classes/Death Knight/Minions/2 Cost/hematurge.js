@@ -14,7 +14,7 @@ module.exports = {
     rarity: "Rare",
     set: "Path of Arthas",
     runes: "BB",
-    id: 184,
+    id: 3,
 
     /**
      * @type {import("../../../../../src/types").KeywordMethod}

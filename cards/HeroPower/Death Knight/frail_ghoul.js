@@ -16,7 +16,6 @@ module.exports = {
     set: "Basic",
     keywords: ["Charge"],
     uncollectible: true,
-    id: 79,
 
     /**
      * @type {import("../../../src/types").KeywordMethod}

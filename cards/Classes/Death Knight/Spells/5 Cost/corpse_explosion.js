@@ -13,7 +13,7 @@ module.exports = {
     set: "March of the Lich King",
     spellClass: "Shadow",
     runes: "BB",
-    id: 2,
+    id: 14,
           
     /**
      * @type {import("../../../../../src/types").KeywordMethod}

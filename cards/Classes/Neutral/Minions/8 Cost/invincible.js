@@ -14,7 +14,7 @@ module.exports = {
     rarity: "Legendary",
     set: "March of the Lich King",
     keywords: ["Reborn"],
-    id: 119,
+    id: 28,
 
     /**
      * @type {import("../../../../../src/types").KeywordMethod}

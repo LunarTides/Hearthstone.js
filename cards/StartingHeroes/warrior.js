@@ -14,7 +14,6 @@ module.exports = {
     set: "Core",
     hpDesc: "Gain 2 Armor.",
     uncollectible: true,
-    id: 103,
 
     /**
      * @type {import("../../src/types").KeywordMethod}

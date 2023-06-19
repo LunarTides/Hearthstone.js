@@ -14,5 +14,4 @@ module.exports = {
     rarity: "Free",
     set: "Mean Streets of Gadgetzan",
     uncollectible: true,
-    id: 33,
 }

@@ -14,7 +14,7 @@ module.exports = {
     class: "Neutral",
     rarity: "Legendary",
     set: "Whispers of the Old Gods",
-    id: 213,
+    id: 32,
 
     /**
      * @type {import("../../../../../src/types").KeywordMethod}

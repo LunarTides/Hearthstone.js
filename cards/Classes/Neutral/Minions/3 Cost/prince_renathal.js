@@ -17,7 +17,7 @@ module.exports = {
         maxDeckSize: 40,
         minDeckSize: 40
     },
-    id: 197,
+    id: 21,
 
     /**
      * @type {import("../../../../../src/types").KeywordMethod}

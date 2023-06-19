@@ -14,7 +14,6 @@ module.exports = {
     set: "Core",
     hpDesc: "+1 Attack this turn. +1 Armor.",
     uncollectible: true,
-    id: 95,
 
     /**
      * @type {import("../../src/types").KeywordMethod}

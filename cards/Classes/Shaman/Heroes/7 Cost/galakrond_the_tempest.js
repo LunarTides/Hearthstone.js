@@ -13,7 +13,7 @@ module.exports = {
     rarity: "Legendary",
     hpDesc: "Summon a 2/1 Elemental with &BRush&R.",
     hpCost: 2,
-    id: 325,
+    id: 36,
 
     /**
      * @type {import("../../../../../src/types").KeywordMethod}

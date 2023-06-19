@@ -14,7 +14,7 @@ module.exports = {
     rarity: "Legendary",
     set: "Knights of the Frozen Throne",
     keywords: ["Taunt"],
-    id: 122,
+    id: 30,
 
     /**
      * @type {import("../../../../../src/types").KeywordMethod}

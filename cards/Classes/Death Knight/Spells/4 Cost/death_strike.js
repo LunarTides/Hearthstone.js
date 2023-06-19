@@ -12,7 +12,7 @@ module.exports = {
     rarity: "Common",
     set: "Core",
     runes: "B",
-    id: 190,
+    id: 12,
 
     /**
      * @type {import("../../../../../src/types").KeywordMethod}

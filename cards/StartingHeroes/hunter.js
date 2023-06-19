@@ -14,7 +14,6 @@ module.exports = {
     set: "Core",
     hpDesc: "Deal 2 damage to the enemy hero.",
     uncollectible: true,
-    id: 96,
 
     /**
      * @type {import("../../src/types").KeywordMethod}

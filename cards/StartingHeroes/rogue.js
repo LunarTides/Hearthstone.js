@@ -14,7 +14,6 @@ module.exports = {
     set: "Core",
     hpDesc: "Equip a 1/2 Dagger.",
     uncollectible: true,
-    id: 100,
 
     /**
      * @type {import("../../src/types").KeywordMethod}

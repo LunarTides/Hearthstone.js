@@ -14,7 +14,6 @@ module.exports = {
     set: "Core",
     hpDesc: "Summon a 1/1 Silver Hand Recruit.",
     uncollectible: true,
-    id: 98,
 
     /**
      * @type {import("../../src/types").KeywordMethod}

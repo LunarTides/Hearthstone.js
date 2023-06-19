@@ -13,6 +13,5 @@ module.exports = {
     class: "Warlock",
     rarity: "Free",
     set: "Descent of Dragons",
-    id: 87,
     uncollectible: true,
 }

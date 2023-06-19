@@ -13,7 +13,7 @@ module.exports = {
     class: "Neutral",
     rarity: "Rare",
     set: "Madness at the Darkmoon Faire",
-    id: 32,
+    id: 16,
 
     /**
      * @type {import("../../../../../src/types").KeywordMethod}

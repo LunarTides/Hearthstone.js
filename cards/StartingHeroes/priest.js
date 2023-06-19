@@ -14,7 +14,6 @@ module.exports = {
     set: "Core",
     hpDesc: "Restore 2 Health.",
     uncollectible: true,
-    id: 99,
 
     /**
      * @type {import("../../src/types").KeywordMethod}

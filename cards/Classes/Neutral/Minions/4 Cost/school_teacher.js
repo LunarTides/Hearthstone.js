@@ -13,7 +13,7 @@ module.exports = {
     class: "Neutral",
     rarity: "Epic",
     set: "Voyage to the Sunken City",
-    id: 191,
+    id: 22,
 
     /**
      * @type {import("../../../../../src/types").KeywordMethod}

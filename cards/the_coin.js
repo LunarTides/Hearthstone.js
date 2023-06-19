@@ -12,7 +12,6 @@ module.exports = {
     rarity: "Free",
     set: "Core",
     uncollectible: true,
-    id: 107,
 
     /**
      * @type {import("../src/types").KeywordMethod}

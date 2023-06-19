@@ -14,7 +14,6 @@ module.exports = {
     set: "Core",
     hpDesc: "Summon a 1/1 Ghoul with Charge. It dies at end of turn.",
     uncollectible: true,
-    id: 93,
 
     /**
      * @type {import("../../src/types").KeywordMethod}

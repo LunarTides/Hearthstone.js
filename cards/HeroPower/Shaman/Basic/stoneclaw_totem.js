@@ -14,6 +14,5 @@ module.exports = {
     rarity: "Free",
     set: "Legacy",
     keywords: ["Taunt"],
-    id: 84,
     uncollectible: true,
 }

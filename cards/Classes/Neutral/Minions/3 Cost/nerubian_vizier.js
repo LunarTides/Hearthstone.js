@@ -13,7 +13,7 @@ module.exports = {
     class: "Neutral",
     rarity: "Common",
     set: "March of the Lich King",
-    id: 188,
+    id: 20,
 
     /**
      * @type {import("../../../../../src/types").KeywordMethod}

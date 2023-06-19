@@ -13,7 +13,7 @@ module.exports = {
     class: "Neutral",
     rarity: "Legendary",
     set: "Core",
-    id: 43,
+    id: 19,
 
     /**
      * @type {import("../../../../../src/types").KeywordMethod}

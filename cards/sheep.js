@@ -14,5 +14,4 @@ module.exports = {
     rarity: "Free",
     set: "Legacy",
     uncollectible: true,
-    id: 106,
 }

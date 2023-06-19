@@ -14,5 +14,4 @@ module.exports = {
     rarity: "Free",
     set: "Journey to Un'Goro",
     uncollectible: true,
-    id: 105,
 }

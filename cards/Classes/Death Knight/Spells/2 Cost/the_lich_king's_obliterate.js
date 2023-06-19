@@ -13,7 +13,6 @@ module.exports = {
     rarity: "Free",
     set: "Knights of the Frozen Throne",
     uncollectible: true,
-    id: 130,
 
     /**
      * @type {import("../../../../../src/types").KeywordMethod}
