@@ -10,10 +10,19 @@ class EventManager {
      * @param {Game} game 
      */
     constructor(game) {
+        /**
+         * @type {Game}
+         */
         this.game = game;
 
+        /**
+         * @type {number}
+         */
         this.eventListeners = 0;
 
+        /**
+         * @type {Object<number, Array>}
+         */
         this.history = {};
     }
 
@@ -106,23 +115,28 @@ class EventManager {
      */
     questUpdate(quests_name, key, val, plr) {
         plr[quests_name].forEach(s => {
-            if (s["key"] != key) return;
+            /**
+             * @type {import('./types').QuestType}
+             */
+            let quest = s;
 
-            let [current, max] = s["progress"];
+            if (quest.key != key) return;
+
+            let [current, max] = quest.progress;
 
             let done = current + 1 >= max;
-            if (s["callback"](val, s["turn"], done) === false) return;
+            if (quest.callback(val, quest.turn, done) === false) return;
 
-            s["progress"][0]++;
+            quest.progress[0]++;
 
             if (!done) return;
 
             // The quest/secret is done
-            plr[quests_name].splice(plr[quests_name].indexOf(s), 1);
+            plr[quests_name].splice(plr[quests_name].indexOf(quest), 1);
 
-            if (quests_name == "secrets") this.game.input("\nYou triggered the opponents's '" + s.name + "'.\n");
+            if (quests_name == "secrets") this.game.input("\nYou triggered the opponents's '" + quest.name + "'.\n");
 
-            if (s["next"]) new Card(s["next"], plr).activate("cast");
+            if (quest.next) new Card(quest.next, plr).activate("cast");
         });
 
         return true;
@@ -184,6 +198,16 @@ class Game {
          */
         this.functions = new Functions(this);
 
+        /**
+         * @type {Player}
+         */
+        this.player1 = null;
+
+        /**
+         * @type {Player}
+         */
+        this.player2 = null;
+
         if (this.functions.randInt(0, 1)) {
             this.player1 = player1;
             this.player2 = player2;
@@ -222,6 +246,9 @@ class Game {
          */
         this.interact = new Interact(this);
 
+        /**
+         * @type {Object}
+         */
         this.config = {};
 
         /**
@@ -229,6 +256,9 @@ class Game {
          */
         this.cards = [];
 
+        /**
+         * @type {number}
+         */
         this.turns = 0;
 
         /**
@@ -243,9 +273,19 @@ class Game {
 
         this.eventListeners = {};
 
+        /**
+         * @type {boolean}
+         */
         this.no_input = false;
 
+        /**
+         * @type {boolean}
+         */
         this.running = true;
+
+        /**
+         * @type {boolean} If the program is currently evaluating code. Should only be enabled while running a `eval` function.
+         */
         this.evaling = false;
     }
 

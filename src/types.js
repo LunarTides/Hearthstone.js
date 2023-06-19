@@ -139,6 +139,24 @@ const { Player } = require("./player");
  */
 
 /**
+ * @callback QuestCallback
+ * @param {EventValues} val The value of the event
+ * @param {number} turn The turn the quest was played
+ * @param {boolean} done If the quest is done
+ */
+
+/**
+ * @typedef {Object} QuestType
+ * @property {string} name The quest owner's display name
+ * @property {number[]} progress [current, target]
+ * @property {EventKeys} key The key that the quest listens for
+ * @property {EventValues} value The value of the event
+ * @property {number} turn The turn that the quest was played
+ * @property {QuestCallback} callback The function to call when the correct event is broadcast
+ * @property {string} [next=null] The name of the card containing the next quest. Only used in questlines.
+ */
+
+/**
  * Card Blueprint
  * 
  * @typedef {Object} Blueprint

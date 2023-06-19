@@ -55,13 +55,39 @@ class Player {
          */
         this.hand = [];
 
+        /**
+         * @type {number}
+         */
         this.mana = 0;
+
+        /**
+         * @type {number}
+         */
         this.maxMana = 0;
+
+        /**
+         * @type {number}
+         */
         this.maxMaxMana = 10;
+
+        /**
+         * @type {number}
+         */
         this.overload = 0;
 
+        /**
+         * @type {number}
+         */
         this.health = 30;
+
+        /**
+         * @type {number}
+         */
         this.maxHealth = this.health;
+
+        /**
+         * @type {number}
+         */
         this.armor = 0;
 
         /**
@@ -73,27 +99,76 @@ class Player {
          * @type {import("./types").CardClass}
          */
         this.heroClass = "Mage";
+
+        /**
+         * @type {number}
+         */
         this.heroPowerCost = 2;
+
+        /**
+         * @type {boolean}
+         */
         this.canUseHeroPower = true;
 
         /**
          * @type {Card | null}
          */
         this.weapon = null;
+
+        /**
+         * @type {boolean}
+         */
         this.frozen = false;
+
+        /**
+         * @type {boolean}
+         */
         this.immune = false;
+
+        /**
+         * @type {number}
+         */
         this.attack = 0;
+
+        /**
+         * @type {number}
+         */
         this.spellDamage = 0;
 
+        /**
+         * @type {import("./types").CardType[]} "Spell" | "Minion"
+         */
         this.counter = [];
+
+        /**
+         * @type {import("./types").QuestType}
+         */
         this.secrets = [];
+
+        /**
+         * @type {import("./types").QuestType}
+         */
         this.sidequests = [];
+
+        /**
+         * @type {import("./types").QuestType}
+         */
         this.quests = [];
 
         // Stats
+        /**
+         * @type {number}
+         */
         this.jadeCounter = 0;
+
+        /**
+         * @type {number}
+         */
         this.corpses = 0;
 
+        /**
+         * @type {string} A three letter rune combination. For example "BBB" for 3 blood runes, or "BFU" for one of each rune.
+         */
         this.runes = "";
 
         /**
@@ -102,7 +177,7 @@ class Player {
         this.forceTarget = null;
 
         /**
-         * @type {Card | Player}
+         * @type {string[]}
          */
         this.inputQueue = null;
     }

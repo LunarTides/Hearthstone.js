@@ -10,6 +10,9 @@ const license_url = 'https://github.com/SolarWindss/Hearthstone.js/blob/main/LIC
 let game;
 
 class Interact {
+    /**
+     * @param {Game} _game 
+     */
     constructor(_game) {
         game = _game;
     }

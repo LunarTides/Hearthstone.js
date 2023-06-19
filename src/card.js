@@ -21,8 +21,15 @@ class Card {
          * @type {import("./types").Blueprint}
          */
         this.blueprint = game.cards.find(c => c.name == name);
-        
+
+        /**
+         * @type {string}
+         */
         this.name = name;
+
+        /**
+         * @type {string}
+         */
         this.displayName = name;
 
         /**
@@ -55,24 +62,81 @@ class Card {
          */
         this.rarity = "Free";
 
+        /**
+         * If the card is dormant | The turn that the dormant runs out
+         * 
+         * @type {false | number}
+         */
         this.dormant = false;
+
+        /**
+         * @type {boolean}
+         */
         this.corrupted = false;
-        this.colossal = false;
+
+        /**
+         * ["Name of the card above the minion", "", "Name of the card below the minion"]
+         * 
+         * The "" gets replaced by this minion.
+         * 
+         * @type {null | [string]}
+         */
+        this.colossal = null;
+
+        /**
+         * @type {boolean}
+         */
         this.uncollectible = false;
+
+        /**
+         * @type {boolean}
+         */
         this.frozen = false;
+
+        /**
+         * @type {boolean}
+         */
         this.immune = false;
+
+        /**
+         * @type {boolean}
+         */
         this.echo = false;
 
         /**
          * @type {import("./types").CardKeyword[]}
          */
         this.keywords = [];
+
+        /**
+         * @type {any[]}
+         */
         this.storage = []; // Allow cards to store data for later use
 
+        /**
+         * @type {number}
+         */
         this.turn = game.turns; // The turn the card was played
+
+        /**
+         * Set to -1 if the card is not dead.
+         * 
+         * @type {number}
+         */
         this.turnKilled = -1;
 
+        /**
+         * Set to -1 if the card does not have infuse.
+         * 
+         * @type {number}
+         */
         this.infuse_num = -1; // The amount of infuse a card has. Set to -1 for no infuse.
+
+        /**
+         * Set to -1 if the card is not frozen.
+         * 
+         * @type {number}
+         */
         this.frozen_turn = -1;
 
         /**
@@ -80,10 +144,41 @@ class Card {
          */
         this.spellClass = "General";
 
-        this.attackTimes = 1; // The number of times a minion can attack, windfury: 2, mega-windfury: 4
-        this.stealthDuration = 0; // The amount of turns stealth should last
+        /**
+         * The number of times a minion can attack in a turn;
+         * 1. default: 1,
+         * 2. windfury: 2,
+         * 3. mega-windfury: 4
+         * 
+         * @type {number}
+         */
+        this.attackTimes = 1;
 
+        /**
+         * The amount of turns stealth should last.
+         * 
+         * Set to 0 if the card is does not have a stealth duration.
+         * 
+         * @type {number}
+         */
+        this.stealthDuration = 0;
+
+        /**
+         * If the card can attack the hero.
+         * 
+         * This will be set to true if the card is a spell and other card types, so verify the type of the card before using this.
+         * 
+         * @type {boolean}
+         */
         this.canAttackHero = true;
+
+        /**
+         * If this is true, the card is exhausted and so can't attack this turn.
+         * 
+         * Automatically gets set to true when the card attacks, and gets set to false at the end of the player's turn.
+         * 
+         * @type {number}
+         */
         this.sleepy = true;
 
         // Set these variables to true or false.
@@ -112,15 +207,38 @@ class Card {
             else this[i[0]] = JSON.parse(JSON.stringify(i[1]));
         });
 
+        /**
+         * The maximum health of the card.
+         * 
+         * @type {null | number}
+         */
+        this.maxHealth = null;
+
         // Set maxHealth if the card is a minion or weapon
         if (this.type == "Minion" || this.type == "Weapon") this.maxHealth = this.blueprint.stats[1];
 
+        /**
+         * The card's description / text.
+         * 
+         * Might include color tags like `Example [033Example 2[142` so i discourage the use of this.
+         * 
+         * @type {string}
+         */
         this.desc = game.functions.parseTags(this.desc);
         this.enchantments = [];
 
         // Make a backup of "this" to be used when silencing this card
+        /**
+         * @type {Object<string, Card>}
+         */
         let backups = {"init": {}};
         Object.entries(this).forEach(i => backups["init"][i[0]] = i[1]);
+
+        /**
+         * The card objects don't include the methods so don't call any.
+         * 
+         * @type {Object<string, Card>}
+         */
         this.backups = backups;
 
         /**
@@ -130,6 +248,9 @@ class Card {
 
         this.randomizeIds();
 
+        /**
+         * @type {Object<any, string>}
+         */
         this.placeholder = this.activate("placeholders")[0]; // This is a list of replacements.
     }
 
@@ -230,8 +351,6 @@ class Card {
     
     /**
      * Makes this minion ready for attack
-     *
-     * @returns {null}
      */
     ready() {
         this.sleepy = false;

@@ -41,6 +41,9 @@ class AI {
          */
         this.focus = null;
 
+        /**
+         * @type {Player}
+         */
         this.plr = plr;
     }
 
