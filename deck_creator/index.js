@@ -82,7 +82,7 @@ function printName() {
 function askClass() {
     printName();
 
-    let _class = game.input("What class to you want to choose?\n" + classes.join(", ") + "\n");
+    let _class = game.input("What class do you want to choose?\n" + classes.join(", ") + "\n");
     if (_class) _class = functions.capitalizeAll(_class);
 
     if (!classes.includes(_class)) return askClass();
