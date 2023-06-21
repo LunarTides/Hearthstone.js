@@ -1,0 +1,40 @@
+{
+    "DONT-CHANGE-ANYTHING-IN-THIS-FILE": "DONT CHANGE ANYTHING IN THIS FILE UNLESS YOU KNOW WHAT YOU'RE DOING",
+
+    "version": "1.6.0",
+    "branch": "dev",
+
+    "versionText": "This is the develop (beta) branch. This has more features, but is less stable. I would advise against using this branch if you can help it. The todo list is not final and can change.",
+    "todo": {
+        "Remove game.dirname": ["done", "Remove the `game.dirname` field. This was added because i once misspelled '__dirname' as '__dirname__' and it didn't work, so i added `game.dirname`."],
+        "Add regex toggle to the breaking change script": ["done", "If you don't need/use/understand regex, having regex be enabled is a pain. So add a way to toggle it."],
+        "Allow looking up vanilla cards using their dbfId": ["done", "Look up cards using their dbfId instead of their name, since their name is not unique but their dbfId is. For example the dbfId of 'Jade Idol' is 40372"],
+        "Remove the warning from the history command": ["done", "When i first added the history command, it was buggy so i added a warning when you used it and forgot to remove it."],
+        "Add a description to config todos": ["done", "Add a description to each todo element."],
+        "Replace forceTarget with inputQueue": ["not done", "They do the same thing, inputQueue is just more powerful."],
+        "Use a different method for the ai": ["not done", "Add a new simulation-based ai model."],
+        "Card creator multiple keyword method support": ["not done", "Add support for multiple keyword methods in the card creator. So cards can have both a battlecry, and a deathrattle when generation it using the card creator."],
+        "Rewrite some scripts in Rust": ["not done", "Rewrite the deck creator, and maybe the card creator and it's variants, and maybe the other scripts as well in Rust."],
+        "Add more input options to the card creator": ["not done", "This is more techical but the readline-sync module i am using has multiple different input functions but i mostly use question."],
+        "Do more extensive testing": ["not done", "Have the test scripts do more testing per function it tests, to make sure it actually works the way it's supposed to."],
+        "Add a guide script": ["not done", "Add a script that guides you through the different things you can do. Like playing the game, creating decks, creating cards, and using the other scripts."],
+        "Clean up the codebase": ["not done", "Clean up the code to make it not as bad. I have learned a lot ever since i started this project and some of core code hasn't been updated much since then. Mainly the functions in `Game`, `Functions`, and the whole runner system."],
+        "Make a command class in the deck creator": ["not done", "Add a command class to the deck creator in order to handle commands better. I should also probably do this in the main code as well."],
+        "Make the card creator more like the deck creator": ["not done", "I don't know what this entails. This is likely to be scrapped."],
+        "Bug fixing / stabilze": ["not done", "Fix bugs and stabilze. Get the version ready for release."],
+        "Bump version": ["not done", "Update the version. Release the update."]
+    },
+
+    "exampleTodo": {
+        "one": ["first pass", "Description."],
+        "two": ["second pass", "Another description."],
+        "three": ["not done", "A third description."],
+        "four": ["done", "A fourth description."],
+        "this gives us": {
+            "one":   "[first pass] one",
+            "two":   "[second pass] two",
+            "three": "[ ] three",
+            "four":  "[x] four"
+        }
+    }
+}

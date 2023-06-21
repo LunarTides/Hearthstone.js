@@ -8,6 +8,7 @@ const { get } = require("./shared");
  */
 let game = get();
 
+// FIXME: Ai gets stuck in infinite loop when using cathedral of atonement (location) | shadowcloth needle (0 attack wpn) | that minion has no attack.
 class AI {
     /**
      * @param {Player} plr 
@@ -40,6 +41,9 @@ class AI {
          */
         this.focus = null;
 
+        /**
+         * @type {Player}
+         */
         this.plr = plr;
     }
 

@@ -55,13 +55,39 @@ class Player {
          */
         this.hand = [];
 
+        /**
+         * @type {number}
+         */
         this.mana = 0;
+
+        /**
+         * @type {number}
+         */
         this.maxMana = 0;
+
+        /**
+         * @type {number}
+         */
         this.maxMaxMana = 10;
+
+        /**
+         * @type {number}
+         */
         this.overload = 0;
 
+        /**
+         * @type {number}
+         */
         this.health = 30;
+
+        /**
+         * @type {number}
+         */
         this.maxHealth = this.health;
+
+        /**
+         * @type {number}
+         */
         this.armor = 0;
 
         /**
@@ -73,30 +99,86 @@ class Player {
          * @type {import("./types").CardClass}
          */
         this.heroClass = "Mage";
+
+        /**
+         * @type {number}
+         */
         this.heroPowerCost = 2;
+
+        /**
+         * @type {boolean}
+         */
         this.canUseHeroPower = true;
 
         /**
          * @type {Card | null}
          */
         this.weapon = null;
+
+        /**
+         * @type {boolean}
+         */
         this.frozen = false;
+
+        /**
+         * @type {boolean}
+         */
         this.immune = false;
+
+        /**
+         * @type {number}
+         */
         this.attack = 0;
+
+        /**
+         * @type {number}
+         */
         this.spellDamage = 0;
 
+        /**
+         * @type {import("./types").CardType[]} "Spell" | "Minion"
+         */
         this.counter = [];
+
+        /**
+         * @type {import("./types").QuestType}
+         */
         this.secrets = [];
+
+        /**
+         * @type {import("./types").QuestType}
+         */
         this.sidequests = [];
+
+        /**
+         * @type {import("./types").QuestType}
+         */
         this.quests = [];
 
         // Stats
+        /**
+         * @type {number}
+         */
         this.jadeCounter = 0;
+
+        /**
+         * @type {number}
+         */
         this.corpses = 0;
 
+        /**
+         * @type {string} A three letter rune combination. For example "BBB" for 3 blood runes, or "BFU" for one of each rune.
+         */
         this.runes = "";
 
+        /**
+         * @type {Card | Player}
+         */
         this.forceTarget = null;
+
+        /**
+         * @type {string[]}
+         */
         this.inputQueue = null;
     }
 
@@ -296,6 +378,15 @@ class Player {
         // I have this here for compatibility with minions
         return this.health;
     }
+    /**
+     * Returns this player's attack.
+     * 
+     * @returns {number}
+     */
+    getAttack() {
+        // I have this here for compatibility with minions
+        return this.attack;
+    }
 
     // Hand / Deck
 
@@ -338,25 +429,34 @@ class Player {
     }
 
     /**
-     * Draws the card at the top of this player's deck
+     * Draws the card from the top of this player's deck
      * 
      * @param {boolean} [update=true] Should this broadcast the `DrawCard` event.
      * 
-     * @returns {Card | undefined} Card is the card drawn
+     * @returns {Card | number} The card drawn | The amount of fatigue the player was dealt
      */
     drawCard(update = true) {
         if (this.deck.length <= 0) {
             this.fatigue++;
 
             this.remHealth(this.fatigue);
-            
-            return;
+            return this.fatigue;
         }
 
+         /**
+         * The card to draw
+         * 
+         * This is normally `{Card | undefined}`, because that is the return value of pop,
+         * however it only returns undefined if the list is empty, which is being handled
+         * by fatigue.
+         * 
+         * @type {Card}
+         */
         let card = this.deck.pop()
 
         if (update) game.events.broadcast("DrawCard", card, this);
 
+        // Cast on draw
         if (card.type == "Spell" && card.keywords.includes("Cast On Draw") && card.activate("cast")) return this.drawCard();
 
         this.addToHand(card, false);

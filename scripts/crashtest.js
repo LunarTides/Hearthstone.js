@@ -40,8 +40,6 @@ for (let _ = 0; _ < games; _++) {
     }
 
     game.startGame();
-    game.dirname = __dirname;
-
     game.interact.mulligan(p1);
     game.interact.mulligan(p2);
 
@@ -51,7 +49,7 @@ for (let _ = 0; _ < games; _++) {
         // If it crashes, show the ai's actions, and the history of the game before actually crashing
         game.config.debug = true;
         game.interact.handleCmds("/ai");
-        game.interact.handleCmds("history");
+        game.interact.handleCmds("history", true, true);
 
         console.log("THE GAME CRASHED: LOOK ABOVE FOR THE HISTORY, AND THE AI'S LOGS.");
 

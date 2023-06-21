@@ -1,23 +1,20 @@
-let game = null;
+let Shared = module.exports = {
+    game: null,
 
-function set(new_game = null) {
-    if (!new_game) return;
+    set(new_game = null) {
+        if (!new_game) return;
 
-    game = new_game;
+        Shared.game = new_game;
 
-    // Update the players' internal game
-    [game.player1, game.player2].forEach(p => {
-        if (!p.getInternalGame) return;
+        // Update the players' internal game
+        [Shared.game.player1, Shared.game.player2].forEach(p => {
+            if (!p.getInternalGame) return;
 
-        p.getInternalGame();
-    });
-}
+            p.getInternalGame();
+        });
+    },
 
-function get() {
-    return game;
-}
-
-module.exports = {
-    set,
-    get
+    get() {
+        return Shared.game;
+    }
 }

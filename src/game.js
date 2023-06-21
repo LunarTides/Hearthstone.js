@@ -10,10 +10,19 @@ class EventManager {
      * @param {Game} game 
      */
     constructor(game) {
+        /**
+         * @type {Game}
+         */
         this.game = game;
 
+        /**
+         * @type {number}
+         */
         this.eventListeners = 0;
 
+        /**
+         * @type {Object<number, Array>}
+         */
         this.history = {};
     }
 
@@ -106,23 +115,28 @@ class EventManager {
      */
     questUpdate(quests_name, key, val, plr) {
         plr[quests_name].forEach(s => {
-            if (s["key"] != key) return;
+            /**
+             * @type {import('./types').QuestType}
+             */
+            let quest = s;
 
-            let [current, max] = s["progress"];
+            if (quest.key != key) return;
+
+            let [current, max] = quest.progress;
 
             let done = current + 1 >= max;
-            if (s["callback"](val, s["turn"], done) === false) return;
+            if (quest.callback(val, quest.turn, done) === false) return;
 
-            s["progress"][0]++;
+            quest.progress[0]++;
 
             if (!done) return;
 
             // The quest/secret is done
-            plr[quests_name].splice(plr[quests_name].indexOf(s), 1);
+            plr[quests_name].splice(plr[quests_name].indexOf(quest), 1);
 
-            if (quests_name == "secrets") this.game.input("\nYou triggered the opponents's '" + s.name + "'.\n");
+            if (quests_name == "secrets") this.game.input("\nYou triggered the opponents's '" + quest.name + "'.\n");
 
-            if (s["next"]) new Card(s["next"], plr).activate("cast");
+            if (quest.next) new Card(quest.next, plr).activate("cast");
         });
 
         return true;
@@ -184,6 +198,16 @@ class Game {
          */
         this.functions = new Functions(this);
 
+        /**
+         * @type {Player}
+         */
+        this.player1 = null;
+
+        /**
+         * @type {Player}
+         */
+        this.player2 = null;
+
         if (this.functions.randInt(0, 1)) {
             this.player1 = player1;
             this.player2 = player2;
@@ -222,6 +246,9 @@ class Game {
          */
         this.interact = new Interact(this);
 
+        /**
+         * @type {Object}
+         */
         this.config = {};
 
         /**
@@ -229,23 +256,36 @@ class Game {
          */
         this.cards = [];
 
+        /**
+         * @type {number}
+         */
         this.turns = 0;
 
         /**
-         * @type {[[Card]]}
+         * @type {[[Card], [Card]]}
          */
         this.board = [[], []];
 
         /**
-         * @type {[[Card]]}
+         * @type {[[Card], [Card]]}
          */
         this.graveyard = [[], []];
 
         this.eventListeners = {};
 
+        /**
+         * @type {boolean}
+         */
         this.no_input = false;
 
+        /**
+         * @type {boolean}
+         */
         this.running = true;
+
+        /**
+         * @type {boolean} If the program is currently evaluating code. Should only be enabled while running a `eval` function.
+         */
         this.evaling = false;
     }
 
@@ -397,8 +437,7 @@ class Game {
         let op = this.opponent;
 
         this.board[plr.id].forEach(m => {
-            m.sleepy = false;
-            m.resetAttackTimes();
+            m.ready();
         });
 
         // Trigger unspent mana
@@ -447,8 +486,7 @@ class Game {
 
             m.canAttackHero = true;
             if (this.turns > m.frozen_turn + 1) m.frozen = false;
-            m.sleepy = false;
-            m.resetAttackTimes();
+            m.ready();
 
             // Stealth duration
             if (m.stealthDuration > 0 && this.turns > m.stealthDuration) {
@@ -481,7 +519,7 @@ class Game {
      * @param {Card} card The card to play
      * @param {Player} player The card's owner
      * 
-     * @returns {Card | "mana" | "traded" | "space" | "magnetize" | "colossal" | "refund" | "invalid"}
+     * @returns {Card | boolean | "mana" | "traded" | "space" | "magnetize" | "colossal" | "refund" | "invalid"}
      */
     playCard(card, player) {
         if (!card || !player) {
@@ -689,8 +727,6 @@ class Game {
 
         // If the board has max capacity, and the card played is a minion or location card, prevent it.
         if (this.board[player.id].length >= this.config.maxBoardSpace) return "space";
-
-
         if (update) this.events.broadcast("SummonMinion", minion, player);
 
         player.spellDamage = 0;

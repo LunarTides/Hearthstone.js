@@ -10,6 +10,9 @@ const license_url = 'https://github.com/SolarWindss/Hearthstone.js/blob/main/LIC
 let game;
 
 class Interact {
+    /**
+     * @param {Game} _game 
+     */
     constructor(_game) {
         game = _game;
     }
@@ -169,6 +172,7 @@ class Interact {
             console.log("use        - Use a location card");
             console.log("detail     - Get more details about opponent");
             console.log("help       - Displays this message");
+            console.log("version    - Displays the version, branch, your settings preset, and some information about your current version.");
             console.log("license    - Opens a link to this project's license");
 
             const cond_color = (str) => {return (game.config.debug) ? str : str.gray};
@@ -220,14 +224,79 @@ class Interact {
             let start = (process.platform == 'darwin' ? 'open' : process.platform == 'win32' ? 'start' : 'xdg-open');
             require('child_process').exec(start + ' ' + license_url);
         }
+        else if (q == "version") {
+            while (true) {
+                let todos = Object.entries(game.config.todo);
+
+                const print_info = () => {
+                    this.printAll(game.player);
+
+                    let strbuilder = `\nYou are on version: ${game.config.version} on `;
+    
+                    if (game.config.branch == "topic") strbuilder += "a topic branch";
+                    else if (game.config.branch == "dev") strbuilder += "the develop (beta) branch";
+                    else if (game.config.branch == "stable") strbuilder += "the stable (release) branch";
+    
+                    let _config = {};
+                    _config.debug = game.config.debug;
+                    _config.P2AI = game.config.P2AI;
+    
+                    if (JSON.stringify(_config) == '{"debug":true,"P2AI":true}') strbuilder += " using the debug settings preset";
+                    else if (JSON.stringify(_config) == '{"debug":false,"P2AI":false}') strbuilder += " using the recommended settings preset";
+                    else strbuilder += " using custom settings";
+    
+                    console.log(strbuilder + ".\n");
+    
+                    console.log(`Version Description:\n${game.config.versionText}\n`);
+
+                    console.log("Todo List:");
+                    if (todos.length <= 0) console.log("None.");
+                }
+                
+                print_info();
+
+                // Todo list
+                if (todos.length <= 0) {
+                    game.input("\nPress enter to continue...");
+                    break;
+                }
+
+                const print_todo = (todo, id, print_desc = false) => {
+                    let [name, info] = todo;
+                    let [state, desc] = info;
+
+                    if (state == "done") state = "x";
+                    else if (state == "not done") state = " ";
+
+                    if (print_desc) console.log(`{${id}} [${state}] ${name}\n${desc}`);
+                    else console.log(`{${id}} [${state}] ${name}`);
+                }
+
+                todos.forEach((e, i) => print_todo(e, i + 1));
+
+                let todo_id = parseInt(game.input("\nType the id of a todo to see more information about it (eg. 1): "));
+                if (!todo_id || todo_id > todos.length || todo_id <= 0) {
+                    break;
+                }
+
+                let todo = todos[todo_id - 1];
+
+                print_info();
+                print_todo(todo, todo_id, true);
+                
+                game.input("\nPress enter to continue...");
+            }
+        }
         else if (q == "history") {
             // History
             let history = game.events.history;
             let finished = "";
 
+            let history_debug = args.length >= 2 && args[1] == true;
+
             const doVal = (val, plr, hide) => {
                 if (val instanceof game.Card) {
-                    if (hide && val.plr != plr) val = "Hidden";
+                    if (hide && val.plr != plr && !history_debug) val = "Hidden";
                     else val = val.displayName;
                 }
                 else if (val instanceof game.Player) val = `Player ${val.id + 1}`;
@@ -242,10 +311,10 @@ class Interact {
                     let [key, val, plr] = c;
 
                     let bannedKeys = ["EndTurn", "StartTurn", "UnspentMana", "GainOverload", "GainHeroAttack", "SpellDealsDamage", "FreezeCard", "CancelCard", "Update"];
-                    if (bannedKeys.includes(key)) return;
+                    if (bannedKeys.includes(key) && !history_debug) return;
 
                     let hideValueKeys = ["DrawCard", "AddCardToHand", "AddCardToDeck"]; // Example: If a card gets drawn, the other player can't see what card it was
-                    let shouldHide = hideValueKeys.includes(key);
+                    let shouldHide = hideValueKeys.includes(key) && !history_debug;
 
                     if (!hasPrintedHeader) finished += `\nTurn ${t + 1} - Player [${plr.name}]\n`; 
                     hasPrintedHeader = true;
@@ -775,6 +844,28 @@ class Interact {
         // force_class = [null, "hero", "minion"]
         // force_side = [null, "enemy", "self"]
 
+        game.events.broadcast("TargetSelectionStarts", [prompt, elusive, force_side, force_class, flags], game.player);
+        let target = this._selectTarget(prompt, elusive, force_side, force_class, flags);
+
+        game.events.broadcast("TargetSelected", target, game.player);
+        return target;
+    }
+
+    /**
+     * Asks the user a `prompt`, the user can then select a minion or hero
+     * 
+     * @param {string} prompt The prompt to ask
+     * @param {boolean | string} [elusive=false] Wether or not to prevent selecting elusive minions, if this is a string, allow selecting elusive minions but don't trigger secrets / quests
+     * @param {"enemy" | "self"} [force_side=null] Force the user to only be able to select minions / the hero of a specific side: ["enemy", "self"]
+     * @param {"hero" | "minion"} [force_class=null] Force the user to only be able to select a minion or a hero: ["hero", "minion"]
+     * @param {string[]} [flags=[]] Change small behaviours ["allow_locations" => Allow selecting location, ]
+     * 
+     * @returns {Card | Player} The card or hero chosen
+     */
+    _selectTarget(prompt, elusive = false, force_side = null, force_class = null, flags = []) {
+        // force_class = [null, "hero", "minion"]
+        // force_side = [null, "enemy", "self"]
+
         if (game.player.forceTarget) return game.player.forceTarget;
         if (game.player.ai) return game.player.ai.selectTarget(prompt, elusive, force_side, force_class, flags);
 
@@ -891,6 +982,8 @@ class Interact {
         console.log(`|${border}|`);
         console.log(`| ${watermarkString} |`);
         console.log(`|${border}|\n`);
+
+        if (game.config.branch == "topic" && game.config.topicBranchWarning) console.log("WARNING: YOU ARE ON A TOPIC BRANCH. THIS VERSION IS NOT READY.\n");
     }
 
     /**
@@ -1283,6 +1376,6 @@ class Interact {
     }
 }
 
-const cls = () => process.stdout.write('\033c');
+const cls = () => process.stdout.write('\x1bc');
 
 exports.Interact = Interact;

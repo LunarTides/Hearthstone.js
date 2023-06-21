@@ -343,7 +343,7 @@ class DeckcodeFunctions {
         let vanillaCards;
 
         try {
-            vanillaCards = fs.readFileSync(game.dirname + "/card_creator/vanilla/.ignore.cards.json");
+            vanillaCards = fs.readFileSync(__dirname + "/../card_creator/vanilla/.ignore.cards.json");
         } catch (err) {
             console.log("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'scripts/genvanilla.bat' (requires an internet connection), then try again.".red);
             game.input();
@@ -437,7 +437,7 @@ class DeckcodeFunctions {
         let cards;
 
         try {
-            cards = fs.readFileSync(game.dirname + "/card_creator/vanilla/.ignore.cards.json");
+            cards = fs.readFileSync(__dirname + "/../card_creator/vanilla/.ignore.cards.json");
         } catch (err) {
             console.log("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'scripts/genvanilla.bat' (requires an internet connection), then try again.".red);
             game.input();
@@ -475,7 +475,7 @@ class DeckcodeFunctions {
 
             if (createCard.toLowerCase()[0] != "y") process.exit(1);
 
-            let vcc = require("./../card_creator/vanilla/index");
+            let vcc = require("../card_creator/vanilla/index");
 
             invalidCards.forEach(c => {
                 // Create that card
@@ -565,7 +565,13 @@ class DeckcodeFunctions {
 }
 
 class Functions {
+    /**
+     * @param {Game} _game 
+     */
     constructor(_game) {
+        /**
+         * @type {DeckcodeFunctions}
+         */
         this.deckcode = new DeckcodeFunctions();
 
         game = _game;
@@ -785,7 +791,8 @@ class Functions {
         let dateStringFileFriendly = dateString.replace(/[/:]/g, ".").replaceAll(" ", "-"); // 01.01.23-23.59.59
 
         // Grab the history of the game
-        let history = game.interact.handleCmds("history", false);
+        // handleCmds("history", write_to_screen, debug)
+        let history = game.interact.handleCmds("history", false, true);
 
         let name = "Log";
         if (err) name = "Crash Log";
@@ -1135,7 +1142,7 @@ ${aiHistory}
     getClasses() {
         let classes = [];
 
-        fs.readdirSync(game.dirname + "/cards/StartingHeroes").forEach(file => {
+        fs.readdirSync(__dirname + "/../cards/StartingHeroes").forEach(file => {
             if (!file.endsWith(".js")) return; // Something is wrong with the file name.
 
             let name = file.slice(0, -3); // Remove ".js"
@@ -1672,15 +1679,10 @@ ${aiHistory}
      * @param {Card} card The card that created the quest / secret
      * @param {import("./game").EventKeys} key The key to listen for
      * @param {any} val The value that the quest needs
-     * @param {questCallback} callback The function to call when the key is invoked.
-     * @param {string} next [default=null] The name of the next quest / sidequest / secret that should be added when the quest is done
+     * @param {import("./types").QuestCallback} callback The function to call when the key is invoked.
+     * @param {string} [next=null] The name of the next quest / sidequest / secret that should be added when the quest is done
      * 
      * @returns {bool} Success
-     * 
-     * @callback questCallback
-     * @param {any} val The value of the event
-     * @param {number} turn The turn the quest was played
-     * @param {boolean} done If the quest is done
      */
     addQuest(type, plr, card, key, val, callback, next = null) {
         const t = plr[type.toLowerCase() + "s"];

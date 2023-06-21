@@ -4,8 +4,6 @@ const { Game } = require("../../src/game");
 const { editor } = require("../../config/general.json");
 
 const game = new Game({}, {});
-game.dirname = __dirname + "/../";
-
 game.functions.importCards(__dirname + "/../../cards");
 game.functions.importConfig(__dirname + "/../../config");
 
@@ -23,7 +21,12 @@ function getFinishedCards(path) {
     finishedCards = cards.split("\n");
 }
 
-function searchCards(query, path = __dirname + "/../../cards") {
+/**
+ * @param {RegExp | string} query 
+ * @param {string} [path=null] 
+ */
+function searchCards(query, path = null) {
+    if (!path) path = __dirname + "/../../cards";
     if (path == __dirname + "/../../cards/Tests") return; // We don't care about test cards
 
     fs.readdirSync(path, { withFileTypes: true }).forEach(file => {
@@ -33,19 +36,34 @@ function searchCards(query, path = __dirname + "/../../cards") {
             // It is an actual card.
             let data = fs.readFileSync(p, { encoding: 'utf8', flag: 'r' });
 
+            // The query is not a regular expression
+
+            if (typeof query === 'string') {
+                if (data.includes(query)) matchingCards.push(p);
+                return;
+            }
+
+            // The query is a regex
+
+            /**
+             * @type {RegExp}
+             */
             if (query.test(data) && !finishedCards.includes(p)) matchingCards.push(p);
         }
         else if (file.isDirectory()) searchCards(query, p);
     });
 }
 
-let reg = rl.question("Search: ");
+let use_regex = rl.keyInYN("Do you want to use regular expressions? (Don't do this unless you know what regex is, and how to use it)");
+let search = rl.question("Search: ");
 
-finishedCardsPath = `./${reg}_${finishedCardsPath}`;
+if (use_regex) search = new RegExp(search, "i");
+
+finishedCardsPath = `./${search}_${finishedCardsPath}`;
 finishedCardsPath = finishedCardsPath.replace(/[^\w ]/g, "_"); // Remove any character that is not in /A-Za-z0-9_ /
 
 getFinishedCards(finishedCardsPath);
-searchCards(new RegExp(reg, "i")); // Ignore case
+searchCards(search); // Ignore case
 
 console.log(); // New line
 
