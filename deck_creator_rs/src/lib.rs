@@ -23,38 +23,6 @@ pub mod lib {
         }
     }
 
-    /// Writes `prompt` to `term`, and returns some user input.
-    ///
-    /// The prompt is written as-is. No added newlines.
-    ///
-    /// # Examples
-    /// ```
-    /// # use deck_creator_rs::lib;
-    /// # use console::Term;
-    /// let mut term = Term::stdout();
-    ///
-    /// let user = lib::input(&mut term, "Example? ")?;
-    ///
-    /// // Writes the user input to term
-    /// term.write_line(&user)?;
-    /// // Example? Foo
-    /// // Foo
-    /// # Ok::<(), Box<dyn std::error::Error>>(())
-    /// ```
-    pub fn input(term: &mut Term, prompt: &str) -> Result<String, Box<dyn Error>> {
-        if let Err(e) = term.write(prompt.as_bytes()) {
-            return Err(Box::new(e));
-        }
-
-        // Read line
-        let user = match term.read_line() {
-            Err(e) => return Err(Box::new(e)),
-            Ok(u) => u,
-        };
-
-        Ok(user)
-    }
-
     fn extract_json_from_card(text: &str) -> Result<String, Box<dyn Error>> {
         lazy_static! {
             // Todo: Make this use correct error handling if possible
@@ -100,6 +68,49 @@ pub mod lib {
         result = FIELD_RE.replace_all(&result, "$1\"$2\"$3").to_string();
 
         Ok(result)
+    }
+
+    /// Writes `prompt` to `term`, and returns some user input.
+    ///
+    /// The prompt is written as-is. No added newlines.
+    ///
+    /// # Examples
+    /// ```
+    /// # use deck_creator_rs::lib;
+    /// # use console::Term;
+    /// let mut term = Term::stdout();
+    ///
+    /// let user = lib::input(&mut term, "Example? ")?;
+    ///
+    /// // Writes the user input to term
+    /// term.write_line(&user)?;
+    /// // Example? Foo
+    /// // Foo
+    /// # Ok::<(), Box<dyn std::error::Error>>(())
+    /// ```
+    pub fn input(term: &mut Term, prompt: &str) -> Result<String, Box<dyn Error>> {
+        if let Err(e) = term.write(prompt.as_bytes()) {
+            return Err(Box::new(e));
+        }
+
+        // Read line
+        let user = match term.read_line() {
+            Err(e) => return Err(Box::new(e)),
+            Ok(u) => u,
+        };
+
+        Ok(user)
+    }
+
+    /// Clears the screen and shows a watermark.
+    pub fn print_watermark(term: &mut Term, clear_screen: bool) -> Result<(), Box<dyn Error>> {
+        if clear_screen {
+            term.clear_screen()?;
+        }
+
+        term.write_line("Hearthstone.js Deck Creator Rust (C) 2023\n")?;
+
+        Ok(())
     }
 
     /// Finds and returns all cards from the cards folder
@@ -205,6 +216,9 @@ pub mod lib {
             }
         }
 
+        // Sort the classes alphabetically
+        classes.sort_unstable();
+
         classes
     }
 
@@ -225,6 +239,7 @@ pub mod lib {
     pub fn pick_class(
         term: &mut Term,
         classes: &[String],
+        ignore_invalid_rune: bool,
     ) -> Result<(String, String), Box<dyn Error>> {
         let ask = format!(
             "What class do you want to choose?\n{}\n",
@@ -253,21 +268,49 @@ pub mod lib {
         // If the class is `Death Knight`
         let rune_classes = ["death knight"];
         if rune_classes.contains(&class.to_lowercase().as_str()) {
+            // Runes
+            lazy_static! {
+                static ref RUNE_RE: Regex = Regex::new(r"(?i)[BFU]").unwrap();
+            };
+
             while runes.chars().count() < 3 {
+                print_watermark(term, true)?;
+
                 let rune_question = format!(
                     "What runes do you want to add ({} more)\nBlood, Frost, Unholy\n",
                     3 - runes.chars().count()
                 );
                 let rune = input(term, &rune_question)?;
-                let rune = rune.chars().next().ok_or("Invalid rune")?;
+                let rune = rune.chars().next();
 
-                runes.push(rune);
+                if ignore_invalid_rune
+                    && (rune.is_none() || !RUNE_RE.is_match(rune.unwrap().to_string().as_str()))
+                {
+                    continue;
+                }
+
+                let handled_rune = rune.ok_or("Invalid rune")?;
+
+                runes.push(handled_rune);
             }
+
+            runes = runes.to_uppercase();
         }
 
-        runes = runes.to_uppercase();
-
         Ok((class, runes))
+    }
+
+    /// Runs `pick_class` until it returns an `Ok` value.
+    /// Might get stuck in an infinite loop so be careful.
+    pub fn pick_class_no_err(term: &mut Term, classes: &[String]) -> (String, String) {
+        loop {
+            // Discard any errors.
+            print_watermark(term, true).ok();
+
+            if let Ok(tuple) = pick_class(term, classes, true) {
+                return tuple;
+            }
+        }
     }
 
     /*

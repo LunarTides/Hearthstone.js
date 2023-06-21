@@ -7,12 +7,13 @@ use std::error::Error;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let mut term = Term::stdout();
+    lib::print_watermark(&mut term, true)?;
 
     let cards = lib::find_cards()?;
     let classes = lib::find_classes(&cards);
 
     // TODO: Add error handling.
-    let (class, runes) = lib::pick_class(&mut term, &classes)?;
+    let (class, runes) = lib::pick_class_no_err(&mut term, &classes);
 
     println!("{}", class);
     println!("{}", runes);
