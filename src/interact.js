@@ -266,6 +266,7 @@ class Interact {
                     let [state, desc] = info;
 
                     if (state == "done") state = "x";
+                    else if (state == "doing") state = "o";
                     else if (state == "not done") state = " ";
 
                     if (print_desc) console.log(`{${id}} [${state}] ${name}\n${desc}`);
