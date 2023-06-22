@@ -181,9 +181,7 @@ pub mod lib {
     /// Filter away uncollectible cards.
     pub fn filter_uncollectible(cards: &[Value]) -> Vec<Value> {
         filter_cards(cards, &mut |card| {
-            card.get("uncollectible").map_or(false, |uncollectible| {
-                uncollectible.as_bool().unwrap_or(false)
-            })
+            !card["uncollectible"].as_bool().unwrap_or(false)
         })
     }
 
@@ -263,7 +261,7 @@ pub mod lib {
             .then_some(0)
             .ok_or("Invalid class")?;
 
-        let mut runes = "".to_string();
+        let mut runes = String::from("");
 
         // If the class is `Death Knight`
         let rune_classes = ["death knight"];
@@ -313,9 +311,46 @@ pub mod lib {
         }
     }
 
-    /*
-    pub fn show_cards(cards: &[Value], class: &String) -> Result<(), Box<dyn Error>> {
+    /// Setup the cards to be used in some functions.
+    pub fn setup_cards(cards: &[Value], class: &String) -> Result<Vec<Value>, Box<dyn Error>> {
+        // Filter the cards
+        let class_re = Regex::new(format!(r"Neutral|{}", class).as_str())?;
+
+        let mut cards = filter_uncollectible(cards);
+        cards = filter_cards(&cards, &mut |card| {
+            class_re.is_match(card["class"].as_str().unwrap_or(""))
+        });
+
+        Ok(cards)
+    }
+
+    /// Show the cards
+    ///
+    /// Remember to supply the return value of `setup_cards` for the `cards` value.
+    pub fn show_cards(cards: &[Value], page: &usize) -> Result<(), Box<dyn Error>> {
+        // Cards per page
+        // TODO: Add this as a setting
+        let cpp = 15;
+
+        let in_bound = cpp * (page - 1);
+        let out_bound = cpp * page;
+
+        for card in cards[in_bound..out_bound].iter() {
+            println!("{}", card["name"].to_string().replace('"', ""));
+        }
+
+        Ok(())
+    }
+    
+    /// Handles a command
+    pub fn handle_command(command: String) -> Result<(), Box<dyn Error>> {
+        drop(command); // Remove this
         todo!()
     }
-    */
+
+    /// Does a loop
+    pub fn do_loop(term: &mut Term) -> Result<(), Box<dyn Error>> {
+        let user = input(term, "\n> ")?;
+        handle_command(user)
+    }
 }

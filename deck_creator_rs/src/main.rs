@@ -12,14 +12,21 @@ fn main() -> Result<(), Box<dyn Error>> {
     let cards = lib::find_cards()?;
     let classes = lib::find_classes(&cards);
 
-    // TODO: Add error handling.
     let (class, runes) = lib::pick_class_no_err(&mut term, &classes);
 
     println!("{}", class);
     println!("{}", runes);
 
-    let user = lib::input(&mut term, "Example? ")?;
-    term.write_line(&user)?;
+    let filtered_cards = lib::setup_cards(&cards, &class)?;
 
-    Ok(())
+    lib::show_cards(&filtered_cards, &1)?;
+
+    loop {
+        match lib::do_loop(&mut term) {
+            Err(err) => {
+                lib::input(&mut term, err.to_string().as_str()).ok();
+            },
+            Ok(t) => t,
+        }
+    }
 }
