@@ -11,6 +11,9 @@ const license_url = 'https://github.com/SolarWindss/Hearthstone.js/blob/main/LIC
 let game;
 
 class Interact {
+    /**
+     * @param {Game} _game 
+     */
     constructor(_game) {
         game = _game;
     }
@@ -271,6 +274,7 @@ class Interact {
                     let [state, desc] = info;
 
                     if (state == "done") state = "x";
+                    else if (state == "doing") state = "o";
                     else if (state == "not done") state = " ";
 
                     if (print_desc) console.log(`{${id}} [${state}] ${name}\n${desc}`);

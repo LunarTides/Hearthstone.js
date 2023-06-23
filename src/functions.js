@@ -566,7 +566,13 @@ class DeckcodeFunctions {
 }
 
 class Functions {
+    /**
+     * @param {Game} _game 
+     */
     constructor(_game) {
+        /**
+         * @type {DeckcodeFunctions}
+         */
         this.deckcode = new DeckcodeFunctions();
 
         game = _game;
@@ -1681,15 +1687,10 @@ ${aiHistory}
      * @param {Card} card The card that created the quest / secret
      * @param {import("./game").EventKeys} key The key to listen for
      * @param {any} val The value that the quest needs
-     * @param {questCallback} callback The function to call when the key is invoked.
-     * @param {string} next [default=null] The name of the next quest / sidequest / secret that should be added when the quest is done
+     * @param {import("./types").QuestCallback} callback The function to call when the key is invoked.
+     * @param {string} [next=null] The name of the next quest / sidequest / secret that should be added when the quest is done
      * 
      * @returns {bool} Success
-     * 
-     * @callback questCallback
-     * @param {any} val The value of the event
-     * @param {number} turn The turn the quest was played
-     * @param {boolean} done If the quest is done
      */
     addQuest(type, plr, card, key, val, callback, next = null) {
         const t = plr[type.toLowerCase() + "s"];

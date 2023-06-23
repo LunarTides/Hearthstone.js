@@ -681,6 +681,9 @@ class SentimentAI {
          */
         this.focus = null;
 
+        /**
+         * @type {Player}
+         */
         this.plr = plr;
     }
 
