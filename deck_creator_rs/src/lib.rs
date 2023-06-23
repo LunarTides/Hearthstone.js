@@ -9,11 +9,44 @@ pub mod lib {
     use lazy_static::lazy_static;
     use regex::Regex;
     use serde_json::{self, Value};
-    use std::{error::Error, fs, io::Write};
+    use std::{collections::HashMap, error::Error, fs, io::Write};
 
     use walkdir::WalkDir;
 
     const CARDS_DIR: &str = "../cards";
+
+    static ADD_COMMAND: Command = Command {
+        callback: |args, deck, cards| {
+            deck.push(find_card(cards, args).ok_or("Invalid Card.")?);
+            Ok(())
+        },
+    };
+    static REMOVE_COMMAND: Command = Command {
+        callback: |args, deck, cards| {
+            let card = find_card(cards, args).ok_or("Invalid Card.")?;
+            deck.swap_remove(
+                deck.iter()
+                    .position(|x| *x == card)
+                    .ok_or("Card not found in the deck.")?,
+            );
+            Ok(())
+        },
+    };
+
+    struct Command {
+        callback: fn(&String, &mut Vec<Value>, &Vec<Value>) -> Result<(), Box<dyn Error>>,
+    }
+
+    impl Command {
+        fn run(
+            &self,
+            args: &String,
+            deck: &mut Vec<Value>,
+            cards: &Vec<Value>,
+        ) -> Result<(), Box<dyn Error>> {
+            (self.callback)(args, deck, cards)
+        }
+    }
 
     fn capitalize(s: &str) -> String {
         let mut c = s.chars();
@@ -68,6 +101,19 @@ pub mod lib {
         result = FIELD_RE.replace_all(&result, "$1\"$2\"$3").to_string();
 
         Ok(result)
+    }
+
+    fn find_card(cards: &[Value], name_or_id: &String) -> Option<Value> {
+        let filtered = filter_cards(cards, &mut |card| {
+            card["name"].as_str().unwrap_or("").to_lowercase() == *name_or_id.to_lowercase()
+                || card["id"].to_string().eq(name_or_id)
+        });
+
+        if filtered.is_empty() {
+            return None;
+        }
+
+        Some(filtered[0].to_owned())
     }
 
     /// Writes `prompt` to `term`, and returns some user input.
@@ -329,28 +375,51 @@ pub mod lib {
     /// Remember to supply the return value of `setup_cards` for the `cards` value.
     pub fn show_cards(cards: &[Value], page: &usize) -> Result<(), Box<dyn Error>> {
         // Cards per page
-        // TODO: Add this as a setting
+        // TODO: Add cpp as a setting
+        // TODO: Add colors
+        // TODO: Implement wall logic
         let cpp = 15;
 
         let in_bound = cpp * (page - 1);
         let out_bound = cpp * page;
 
         for card in cards[in_bound..out_bound].iter() {
-            println!("{}", card["name"].to_string().replace('"', ""));
+            println!(
+                "{} - {}",
+                card["name"].to_string().replace('"', ""),
+                card["id"]
+            );
         }
 
         Ok(())
     }
-    
+
     /// Handles a command
-    pub fn handle_command(command: String) -> Result<(), Box<dyn Error>> {
-        drop(command); // Remove this
-        todo!()
+    pub fn handle_command(
+        command: String,
+        deck: &mut Vec<Value>,
+        cards: &Vec<Value>,
+    ) -> Result<(), Box<dyn Error>> {
+        // Update this when adding new commands
+        let commands = HashMap::from([("add", &ADD_COMMAND), ("remove", &REMOVE_COMMAND)]);
+
+        let args: String = command.split(' ').skip(1).collect::<Vec<&str>>().join(" ");
+        let command = command.split(' ').next().ok_or("Could not find command.")?;
+
+        commands
+            .get(command)
+            .ok_or("Could not find command.")?
+            .run(&args, deck, cards)
     }
 
     /// Does a loop
-    pub fn do_loop(term: &mut Term) -> Result<(), Box<dyn Error>> {
+    pub fn do_loop(
+        term: &mut Term,
+        deck: &mut Vec<Value>,
+        cards: &Vec<Value>,
+    ) -> Result<(), Box<dyn Error>> {
+        dbg!(&deck);
         let user = input(term, "\n> ")?;
-        handle_command(user)
+        handle_command(user, deck, cards)
     }
 }
