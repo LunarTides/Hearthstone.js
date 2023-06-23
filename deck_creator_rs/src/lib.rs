@@ -9,7 +9,7 @@ pub mod lib {
     use lazy_static::lazy_static;
     use regex::Regex;
     use serde_json::{self, Value};
-    use std::{collections::HashMap, error::Error, fs, io::Write};
+    use std::{collections::HashMap, error::Error, fs, io::Write, process::exit};
 
     use walkdir::WalkDir;
 
@@ -32,6 +32,11 @@ pub mod lib {
                     .ok_or("Card not found in the deck.")?,
             );
             Ok(())
+        },
+    };
+    static EXIT_COMMAND: Command = Command {
+        callback: |_, _, _| {
+            exit(0);
         },
     };
 
@@ -405,14 +410,30 @@ pub mod lib {
         deck: &mut Vec<Value>,
         cards: &Vec<Value>,
     ) -> Result<(), Box<dyn Error>> {
-        // Update this when adding new commands
-        let commands = HashMap::from([("add", &ADD_COMMAND), ("remove", &REMOVE_COMMAND)]);
+        // If the user wrote the name / id of a card
+        if find_card(cards, &command).is_some() {
+            // TODO: Add a setting to change the add command
+            return handle_command(String::from("add ") + &command, deck, cards);
+        }
 
-        let args: String = command.split(' ').skip(1).collect::<Vec<&str>>().join(" ");
-        let command = command.split(' ').next().ok_or("Could not find command.")?;
+        // Update this when adding new commands
+        let commands = HashMap::from([
+            ("a", &ADD_COMMAND),
+            ("r", &REMOVE_COMMAND),
+            ("e", &EXIT_COMMAND),
+        ]);
+
+        let args = command.split(' ').skip(1).collect::<Vec<&str>>().join(" ");
+        let command_name = command
+            .split(' ')
+            .next()
+            .ok_or("Could not find command.")?
+            .chars()
+            .next()
+            .ok_or("Invalid command.")?;
 
         commands
-            .get(command)
+            .get(command_name.to_string().as_str())
             .ok_or("Could not find command.")?
             .run(&args, deck, cards)
     }
