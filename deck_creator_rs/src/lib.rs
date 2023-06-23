@@ -24,6 +24,8 @@ pub mod lib {
     static REMOVE_COMMAND: Command = Command {
         callback: |args, deck, cards| {
             let card = find_card(cards, args).ok_or("Invalid Card.")?;
+
+            // TODO: Maybe add an option to choose `swap_remove` or `remove`.
             deck.swap_remove(
                 deck.iter()
                     .position(|x| *x == card)
@@ -33,8 +35,11 @@ pub mod lib {
         },
     };
 
+    //                        args,    deck,            cards
+    type CommandCallback = fn(&String, &mut Vec<Value>, &Vec<Value>) -> Result<(), Box<dyn Error>>;
+
     struct Command {
-        callback: fn(&String, &mut Vec<Value>, &Vec<Value>) -> Result<(), Box<dyn Error>>,
+        callback: CommandCallback,
     }
 
     impl Command {
