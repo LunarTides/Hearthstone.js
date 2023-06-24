@@ -17,10 +17,8 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let (class, runes) = lib::pick_class_no_err(&mut term, &classes);
 
-    println!("{}", class);
-    println!("{}", runes);
-
-    let filtered_cards = lib::setup_cards(&cards, &class)?;
+    let filtered_cards = lib::setup_cards(&cards, &class, &runes)?;
+    lib::setup_cmds()?;
 
     loop {
         lib::print_watermark(&mut term, true)?;

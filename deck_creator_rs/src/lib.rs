@@ -9,53 +9,37 @@ pub mod lib {
     use lazy_static::lazy_static;
     use regex::Regex;
     use serde_json::{self, Value};
-    use std::{collections::HashMap, error::Error, fs, io::Write, process::exit};
+    use std::{collections::HashMap, error::Error, fs, io::Write, process::exit, sync::Mutex};
 
     use walkdir::WalkDir;
 
     const CARDS_DIR: &str = "../cards";
 
-    static ADD_COMMAND: Command = Command {
-        callback: |args, deck, cards| {
-            deck.push(find_card(cards, args).ok_or("Invalid Card.")?);
-            Ok(())
-        },
-    };
-    static REMOVE_COMMAND: Command = Command {
-        callback: |args, deck, cards| {
-            let card = find_card(cards, args).ok_or("Invalid Card.")?;
-
-            // TODO: Maybe add an option to choose `swap_remove` or `remove`.
-            deck.swap_remove(
-                deck.iter()
-                    .position(|x| *x == card)
-                    .ok_or("Card not found in the deck.")?,
-            );
-            Ok(())
-        },
-    };
-    static EXIT_COMMAND: Command = Command {
-        callback: |_, _, _| {
-            exit(0);
-        },
-    };
-
-    //                        args,    deck,            cards
-    type CommandCallback = fn(&String, &mut Vec<Value>, &Vec<Value>) -> Result<(), Box<dyn Error>>;
-
-    struct Command {
+    /// Command struct
+    ///
+    /// TODO: Add better doc
+    #[derive(Clone)]
+    pub struct Command {
         callback: CommandCallback,
     }
 
     impl Command {
-        fn run(
-            &self,
-            args: &String,
-            deck: &mut Vec<Value>,
-            cards: &Vec<Value>,
-        ) -> Result<(), Box<dyn Error>> {
-            (self.callback)(args, deck, cards)
+        fn new(name: &str, callback: CommandCallback) -> Result<Command, Box<dyn Error>> {
+            let command = Command { callback };
+            COMMANDS.lock()?.insert(
+                name.chars().next().ok_or("Invalid command name.")?,
+                command.to_owned(),
+            );
+
+            Ok(command)
         }
+    }
+
+    //                        args,    deck,            cards
+    type CommandCallback = fn(&String, &mut Vec<Value>, &Vec<Value>) -> Result<(), Box<dyn Error>>;
+
+    lazy_static! {
+        static ref COMMANDS: Mutex<HashMap<char, Command>> = Mutex::new(HashMap::new());
     }
 
     fn capitalize(s: &str) -> String {
@@ -193,12 +177,6 @@ pub mod lib {
                 if path_str.contains("cards/Tests/") || path_str.contains("cards/Examples/") {
                     continue;
                 }
-
-                // We don't care about uncollectible cards.
-                // Removed since we want to keep the starting heroes.
-                /*if text.contains("uncollectible: true") && !text.contains(" Starting Hero\",") {
-                    continue;
-                }*/
 
                 text = extract_json_from_card(&text)?;
                 let parsed = serde_json::from_str(&text)?;
@@ -355,6 +333,7 @@ pub mod lib {
     }
 
     /// Runs `pick_class` until it returns an `Ok` value.
+    ///
     /// Might get stuck in an infinite loop so be careful.
     pub fn pick_class_no_err(term: &mut Term, classes: &[String]) -> (String, String) {
         loop {
@@ -368,8 +347,15 @@ pub mod lib {
     }
 
     /// Setup the cards to be used in some functions.
-    pub fn setup_cards(cards: &[Value], class: &String) -> Result<Vec<Value>, Box<dyn Error>> {
+    pub fn setup_cards(
+        cards: &[Value],
+        class: &String,
+        runes: &String,
+    ) -> Result<Vec<Value>, Box<dyn Error>> {
         // Filter the cards
+        // TODO: Remove cards that don't match the runes
+        drop(runes.to_owned());
+
         let class_re = Regex::new(format!(r"Neutral|{}", class).as_str())?;
 
         let mut cards = filter_uncollectible(cards);
@@ -378,6 +364,37 @@ pub mod lib {
         });
 
         Ok(cards)
+    }
+
+    /// Sets up the commands.
+    ///
+    /// TODO: Add better docs
+    pub fn setup_cmds() -> Result<(), Box<dyn Error>> {
+        // Add
+        Command::new("add", |args, deck, cards| {
+            deck.push(find_card(cards, args).ok_or("Invalid Card.")?);
+            Ok(())
+        })?;
+
+        // Remove
+        Command::new("remove", |args, deck, cards| {
+            let card = find_card(cards, args).ok_or("Invalid Card.")?;
+
+            // TODO: Maybe add an option to choose `swap_remove` or `remove`.
+            deck.swap_remove(
+                deck.iter()
+                    .position(|x| *x == card)
+                    .ok_or("Card not found in the deck.")?,
+            );
+            Ok(())
+        })?;
+
+        // Exit
+        Command::new("exit", |_, _, _| {
+            exit(0);
+        })?;
+
+        Ok(())
     }
 
     /// Show the cards
@@ -416,13 +433,6 @@ pub mod lib {
             return handle_command(String::from("add ") + &command, deck, cards);
         }
 
-        // Update this when adding new commands
-        let commands = HashMap::from([
-            ("a", &ADD_COMMAND),
-            ("r", &REMOVE_COMMAND),
-            ("e", &EXIT_COMMAND),
-        ]);
-
         let args = command.split(' ').skip(1).collect::<Vec<&str>>().join(" ");
         let command_name = command
             .split(' ')
@@ -432,10 +442,14 @@ pub mod lib {
             .next()
             .ok_or("Invalid command.")?;
 
-        commands
-            .get(command_name.to_string().as_str())
-            .ok_or("Could not find command.")?
-            .run(&args, deck, cards)
+        let binding = COMMANDS.lock()?;
+
+        let cmd = binding
+            .get(&command_name)
+            .ok_or("Could not find command.")?;
+
+        // Run the command
+        (cmd.callback)(&args, deck, cards)
     }
 
     /// Does a loop
@@ -444,7 +458,7 @@ pub mod lib {
         deck: &mut Vec<Value>,
         cards: &Vec<Value>,
     ) -> Result<(), Box<dyn Error>> {
-        dbg!(&deck);
+        dbg!(&deck); // TODO: Remove this line
         let user = input(term, "\n> ")?;
         handle_command(user, deck, cards)
     }
