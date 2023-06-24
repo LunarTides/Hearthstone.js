@@ -21,14 +21,13 @@ pub mod lib {
     }
 
     impl Command {
-        fn new(name: &str, callback: CommandCallback) -> Result<Command, Box<dyn Error>> {
+        fn create(name: &str, callback: CommandCallback) -> Result<(), Box<dyn Error>> {
             let command = Command { callback };
-            COMMANDS.lock()?.insert(
-                name.chars().next().ok_or("Invalid command name.")?,
-                command.to_owned(),
-            );
+            COMMANDS
+                .lock()?
+                .insert(name.chars().next().ok_or("Invalid command name.")?, command);
 
-            Ok(command)
+            Ok(())
         }
     }
 
@@ -368,13 +367,13 @@ pub mod lib {
     /// TODO: Add better docs
     pub fn setup_cmds() -> Result<(), Box<dyn Error>> {
         // Add
-        Command::new("add", |args, deck, cards| {
+        Command::create("add", |args, deck, cards| {
             deck.push(find_card(cards, args).ok_or("Invalid Card.")?);
             Ok(())
         })?;
 
         // Remove
-        Command::new("remove", |args, deck, cards| {
+        Command::create("remove", |args, deck, cards| {
             let card = find_card(cards, args).ok_or("Invalid Card.")?;
 
             // TODO: Maybe add an option to choose `swap_remove` or `remove`.
@@ -387,7 +386,7 @@ pub mod lib {
         })?;
 
         // Exit
-        Command::new("exit", |_, _, _| {
+        Command::create("exit", |_, _, _| {
             exit(0);
         })?;
 
