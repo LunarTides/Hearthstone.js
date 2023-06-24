@@ -15,11 +15,8 @@ pub mod lib {
 
     const CARDS_DIR: &str = "../cards";
 
-    /// Command struct
-    ///
-    /// TODO: Add better doc
     #[derive(Clone)]
-    pub struct Command {
+    struct Command {
         callback: CommandCallback,
     }
 
