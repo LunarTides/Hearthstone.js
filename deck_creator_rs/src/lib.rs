@@ -36,6 +36,15 @@ pub mod lib {
 
     lazy_static! {
         static ref COMMANDS: Mutex<HashMap<char, Command>> = Mutex::new(HashMap::new());
+
+        // `extract_json_from_card` regular expressions:
+        static ref COMMENT_RE: Regex = Regex::new(r"(?sm)(//.*?$|/\*.*?\*/)").unwrap();
+        static ref FIELD_RE: Regex = Regex::new(r"(?m)^(.*?)(\w*)(: .*?)$").unwrap();
+        static ref LAST_FIELD_RE: Regex = Regex::new(r",\n}$").unwrap();
+        static ref FUNCTIONS_END_RE: Regex = Regex::new(r"\r?\n\s*?\r?\n\s*?").unwrap();
+
+        // `pick_class` regular expressions:
+        static ref RUNE_RE: Regex = Regex::new(r"(?i)[BFU]").unwrap();
     }
 
     fn capitalize(s: &str) -> String {
@@ -47,14 +56,6 @@ pub mod lib {
     }
 
     fn extract_json_from_card(text: &str) -> Result<String, Box<dyn Error>> {
-        lazy_static! {
-            // Todo: Make this use correct error handling if possible
-            static ref COMMENT_RE: Regex = Regex::new(r"(?sm)(//.*?$|/\*.*?\*/)").unwrap();
-            static ref FIELD_RE: Regex = Regex::new(r"(?m)^(.*?)(\w*)(: .*?)$").unwrap();
-            static ref LAST_FIELD_RE: Regex = Regex::new(r",\n}$").unwrap();
-            static ref FUNCTIONS_END_RE: Regex = Regex::new(r"\r?\n\s*?\r?\n\s*?").unwrap();
-        };
-
         // Remove comments
         let cleaned_text = COMMENT_RE.replace_all(text, "");
 
@@ -297,9 +298,6 @@ pub mod lib {
         let rune_classes = ["death knight"];
         if rune_classes.contains(&class.to_lowercase().as_str()) {
             // Runes
-            lazy_static! {
-                static ref RUNE_RE: Regex = Regex::new(r"(?i)[BFU]").unwrap();
-            };
 
             while runes.chars().count() < 3 {
                 print_watermark(term, true)?;
