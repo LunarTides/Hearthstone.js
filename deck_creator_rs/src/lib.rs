@@ -21,21 +21,20 @@ pub mod lib {
     }
 
     impl Command {
-        fn create(name: &str, callback: CommandCallback) -> Result<(), Box<dyn Error>> {
+        fn create(name: String, callback: CommandCallback) -> Result<(), Box<dyn Error>> {
             let command = Command { callback };
-            COMMANDS
-                .lock()?
-                .insert(name.chars().next().ok_or("Invalid command name.")?, command);
+            COMMANDS.lock()?.insert(name, command);
 
             Ok(())
         }
     }
 
-    //                        args,    deck,            cards
-    type CommandCallback = fn(&String, &mut Vec<Value>, &Vec<Value>) -> Result<(), Box<dyn Error>>;
+    type CommandCallback =
+        fn(&String, &mut Vec<Value>, &Vec<Value>, &mut Term) -> Result<(), Box<dyn Error>>;
+    // ^^^^args,    deck,            cards,       terminal
 
     lazy_static! {
-        static ref COMMANDS: Mutex<HashMap<char, Command>> = Mutex::new(HashMap::new());
+        static ref COMMANDS: Mutex<HashMap<String, Command>> = Mutex::new(HashMap::new());
 
         // `extract_json_from_card` regular expressions:
         static ref COMMENT_RE: Regex = Regex::new(r"(?sm)(//.*?$|/\*.*?\*/)").unwrap();
@@ -365,13 +364,13 @@ pub mod lib {
     /// TODO: Add better docs
     pub fn setup_cmds() -> Result<(), Box<dyn Error>> {
         // Add
-        Command::create("add", |args, deck, cards| {
+        Command::create("add".into(), |args, deck, cards, _| {
             deck.push(find_card(cards, args).ok_or("Invalid Card.")?);
             Ok(())
         })?;
 
         // Remove
-        Command::create("remove", |args, deck, cards| {
+        Command::create("rem".into(), |args, deck, cards, _| {
             let card = find_card(cards, args).ok_or("Invalid Card.")?;
 
             // TODO: Maybe add an option to choose `swap_remove` or `remove`.
@@ -383,8 +382,11 @@ pub mod lib {
             Ok(())
         })?;
 
+        // Deck
+        Command::create("deck".into(), |_, deck, _, term| show_deck(deck, term))?;
+
         // Exit
-        Command::create("exit", |_, _, _| {
+        Command::create("exit".into(), |_, _, _, _| {
             exit(0);
         })?;
 
@@ -415,35 +417,45 @@ pub mod lib {
         Ok(())
     }
 
+    /// Show the deck
+    pub fn show_deck(deck: &mut [Value], term: &mut Term) -> Result<(), Box<dyn Error>> {
+        for card in deck.iter() {
+            println!(
+                "{} - {}",
+                card["name"].to_string().replace('"', ""),
+                card["id"]
+            );
+        }
+
+        input(term, "\nPress enter to continue...")?;
+
+        Ok(())
+    }
+
     /// Handles a command
     pub fn handle_command(
         command: String,
         deck: &mut Vec<Value>,
         cards: &Vec<Value>,
+        term: &mut Term,
     ) -> Result<(), Box<dyn Error>> {
         // If the user wrote the name / id of a card
         if find_card(cards, &command).is_some() {
             // TODO: Add a setting to change the add command
-            return handle_command(String::from("add ") + &command, deck, cards);
+            return handle_command(String::from("add ") + &command, deck, cards, term);
         }
 
         let args = command.split(' ').skip(1).collect::<Vec<&str>>().join(" ");
-        let command_name = command
-            .split(' ')
-            .next()
-            .ok_or("Could not find command.")?
-            .chars()
-            .next()
-            .ok_or("Invalid command.")?;
+        let command_name = command.split(' ').next().ok_or("Could not find command.")?;
 
-        let binding = COMMANDS.lock()?;
+        let commands_binding = COMMANDS.lock()?;
 
-        let cmd = binding
-            .get(&command_name)
+        let cmd = commands_binding
+            .get(&command_name.to_string())
             .ok_or("Could not find command.")?;
 
         // Run the command
-        (cmd.callback)(&args, deck, cards)
+        (cmd.callback)(&args, deck, cards, term)
     }
 
     /// Does a loop
@@ -454,6 +466,6 @@ pub mod lib {
     ) -> Result<(), Box<dyn Error>> {
         dbg!(&deck); // TODO: Remove this line
         let user = input(term, "\n> ")?;
-        handle_command(user, deck, cards)
+        handle_command(user, deck, cards, term)
     }
 }
