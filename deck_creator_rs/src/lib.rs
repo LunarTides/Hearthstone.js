@@ -9,33 +9,13 @@ pub mod lib {
     use lazy_static::lazy_static;
     use regex::Regex;
     use serde_json::{self, Value};
-    use std::{collections::HashMap, error::Error, fs, io::Write, process::exit, sync::Mutex};
+    use std::{error::Error, fs, io::Write, process::exit};
 
     use walkdir::WalkDir;
 
     const CARDS_DIR: &str = "../cards";
 
-    #[derive(Clone)]
-    struct Command {
-        callback: CommandCallback,
-    }
-
-    impl Command {
-        fn create(name: String, callback: CommandCallback) -> Result<(), Box<dyn Error>> {
-            let command = Command { callback };
-            COMMANDS.lock()?.insert(name, command);
-
-            Ok(())
-        }
-    }
-
-    type CommandCallback =
-        fn(&String, &mut Vec<Value>, &Vec<Value>, &mut Term) -> Result<(), Box<dyn Error>>;
-    // ^^^^args,    deck,            cards,       terminal
-
     lazy_static! {
-        static ref COMMANDS: Mutex<HashMap<String, Command>> = Mutex::new(HashMap::new());
-
         // `extract_json_from_card` regular expressions:
         static ref COMMENT_RE: Regex = Regex::new(r"(?sm)(//.*?$|/\*.*?\*/)").unwrap();
         static ref FIELD_RE: Regex = Regex::new(r"(?m)^(.*?)(\w*)(: .*?)$").unwrap();
@@ -241,7 +221,7 @@ pub mod lib {
             "What class do you want to choose?\n{}\n",
             &classes.join(", ")
         );
-        term.write(&ask.as_bytes())?;
+        term.write_all(ask.as_bytes())?;
         let class = term.read_line()?;
 
         // Capitalize every word
@@ -274,7 +254,7 @@ pub mod lib {
                     "What runes do you want to add ({} more)\nBlood, Frost, Unholy\n",
                     3 - runes.chars().count()
                 );
-                term.write(&rune_question.as_bytes())?;
+                term.write_all(rune_question.as_bytes())?;
                 let rune = term.read_line()?;
                 let rune = rune.chars().next();
 
@@ -329,40 +309,6 @@ pub mod lib {
         Ok(cards)
     }
 
-    /// Sets up the commands.
-    ///
-    /// TODO: Add better docs
-    pub fn setup_cmds() -> Result<(), Box<dyn Error>> {
-        // Add
-        Command::create("add".into(), |args, deck, cards, _| {
-            deck.push(find_card(cards, args).ok_or("Invalid Card.")?);
-            Ok(())
-        })?;
-
-        // Remove
-        Command::create("rem".into(), |args, deck, cards, _| {
-            let card = find_card(cards, args).ok_or("Invalid Card.")?;
-
-            // TODO: Maybe add an option to choose `swap_remove` or `remove`.
-            deck.swap_remove(
-                deck.iter()
-                    .position(|x| *x == card)
-                    .ok_or("Card not found in the deck.")?,
-            );
-            Ok(())
-        })?;
-
-        // Deck
-        Command::create("deck".into(), |_, deck, _, term| show_deck(deck, term))?;
-
-        // Exit
-        Command::create("exit".into(), |_, _, _, _| {
-            exit(0);
-        })?;
-
-        Ok(())
-    }
-
     /// Show the cards
     ///
     /// Remember to supply the return value of `setup_cards` for the `cards` value.
@@ -397,7 +343,7 @@ pub mod lib {
             );
         }
 
-        term.write(b"\nPress enter to continue...")?;
+        term.write_all("\nPress enter to continue...".as_bytes())?;
         term.read_line()?;
 
         Ok(())
@@ -417,16 +363,39 @@ pub mod lib {
         }
 
         let args = command.split(' ').skip(1).collect::<Vec<&str>>().join(" ");
-        let command_name = command.split(' ').next().ok_or("Could not find command.")?;
+        let command_name = command
+            .split(' ')
+            .next()
+            .ok_or("Could not find command.")?
+            .to_lowercase();
 
-        let commands_binding = COMMANDS.lock()?;
+        let card = find_card(cards, &args).ok_or("Invalid Card.");
 
-        let cmd = commands_binding
-            .get(&command_name.to_string())
-            .ok_or("Could not find command.")?;
+        // List of commands
+        if command_name.starts_with('a') {
+            // Add card
+            deck.push(card?);
+        } else if command_name.starts_with('r') {
+            // Remove card
+            let handled_card = card?;
 
-        // Run the command
-        (cmd.callback)(&args, deck, cards, term)
+            // TODO: Maybe add an option to choose `swap_remove` or `remove`.
+            deck.swap_remove(
+                deck.iter()
+                    .position(|x| *x == handled_card)
+                    .ok_or("Card not found in the deck.")?,
+            );
+        } else if command_name == "deck" {
+            // Show deck
+            show_deck(deck, term)?;
+        } else if command_name == "exit" {
+            // Exit
+            exit(0);
+        } else {
+            return Err("Invalid Command / Card".into());
+        }
+
+        Ok(())
     }
 
     /// Does a loop
@@ -437,7 +406,7 @@ pub mod lib {
     ) -> Result<(), Box<dyn Error>> {
         dbg!(&deck); // TODO: Remove this line
 
-        term.write(b"\n> ")?;
+        term.write_all(b"\n> ")?;
         let user = term.read_line()?;
 
         handle_command(user, deck, cards, term)

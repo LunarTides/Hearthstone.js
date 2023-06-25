@@ -16,9 +16,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut deck: Vec<Value> = vec![];
 
     let (class, runes) = lib::pick_class_no_err(&mut term, &classes);
-
     let filtered_cards = lib::setup_cards(&cards, &class, &runes)?;
-    lib::setup_cmds()?;
 
     loop {
         lib::print_watermark(&mut term, true)?;
