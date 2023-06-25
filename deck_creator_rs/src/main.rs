@@ -26,7 +26,8 @@ fn main() -> Result<(), Box<dyn Error>> {
 
         match lib::do_loop(&mut term, &mut deck, &filtered_cards) {
             Err(err) => {
-                lib::input(&mut term, (err.to_string() + "\n").as_str()).ok();
+                term.write_line(&err.to_string())?;
+                term.read_line()?;
             }
             Ok(t) => t,
         }

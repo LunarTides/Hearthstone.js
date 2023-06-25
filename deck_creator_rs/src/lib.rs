@@ -106,38 +106,6 @@ pub mod lib {
         Some(filtered[0].to_owned())
     }
 
-    /// Writes `prompt` to `term`, and returns some user input.
-    ///
-    /// The prompt is written as-is. No added newlines.
-    ///
-    /// # Examples
-    /// ```
-    /// # use deck_creator_rs::lib;
-    /// # use console::Term;
-    /// let mut term = Term::stdout();
-    ///
-    /// let user = lib::input(&mut term, "Example? ")?;
-    ///
-    /// // Writes the user input to term
-    /// term.write_line(&user)?;
-    /// // Example? Foo
-    /// // Foo
-    /// # Ok::<(), Box<dyn std::error::Error>>(())
-    /// ```
-    pub fn input(term: &mut Term, prompt: &str) -> Result<String, Box<dyn Error>> {
-        if let Err(e) = term.write(prompt.as_bytes()) {
-            return Err(Box::new(e));
-        }
-
-        // Read line
-        let user = match term.read_line() {
-            Err(e) => return Err(Box::new(e)),
-            Ok(u) => u,
-        };
-
-        Ok(user)
-    }
-
     /// Clears the screen and shows a watermark.
     pub fn print_watermark(term: &mut Term, clear_screen: bool) -> Result<(), Box<dyn Error>> {
         if clear_screen {
@@ -273,7 +241,8 @@ pub mod lib {
             "What class do you want to choose?\n{}\n",
             &classes.join(", ")
         );
-        let class = input(term, &ask)?;
+        term.write(&ask.as_bytes())?;
+        let class = term.read_line()?;
 
         // Capitalize every word
         let class = class
@@ -305,7 +274,8 @@ pub mod lib {
                     "What runes do you want to add ({} more)\nBlood, Frost, Unholy\n",
                     3 - runes.chars().count()
                 );
-                let rune = input(term, &rune_question)?;
+                term.write(&rune_question.as_bytes())?;
+                let rune = term.read_line()?;
                 let rune = rune.chars().next();
 
                 if ignore_invalid_rune
@@ -427,7 +397,8 @@ pub mod lib {
             );
         }
 
-        input(term, "\nPress enter to continue...")?;
+        term.write(b"\nPress enter to continue...")?;
+        term.read_line()?;
 
         Ok(())
     }
@@ -465,7 +436,10 @@ pub mod lib {
         cards: &Vec<Value>,
     ) -> Result<(), Box<dyn Error>> {
         dbg!(&deck); // TODO: Remove this line
-        let user = input(term, "\n> ")?;
+
+        term.write(b"\n> ")?;
+        let user = term.read_line()?;
+
         handle_command(user, deck, cards, term)
     }
 }
