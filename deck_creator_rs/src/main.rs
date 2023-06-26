@@ -9,6 +9,7 @@ use std::error::Error;
 fn main() -> Result<(), Box<dyn Error>> {
     let mut term = Term::stdout();
     lib::print_watermark(&mut term, true)?;
+    lib::setup_settings()?;
 
     let cards = lib::find_cards()?;
     let classes = lib::find_classes(&cards);

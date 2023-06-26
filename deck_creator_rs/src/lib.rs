@@ -9,13 +9,17 @@ pub mod lib {
     use lazy_static::lazy_static;
     use regex::Regex;
     use serde_json::{self, Value};
-    use std::{error::Error, fs, io::Write, process::exit};
+    use std::{collections::HashMap, error::Error, fs, io::Write, process::exit, sync::Mutex};
 
     use walkdir::WalkDir;
 
     const CARDS_DIR: &str = "../cards";
 
+    type SettingsHashMap = HashMap<&'static str, Option<String>>;
+
     lazy_static! {
+        static ref SETTINGS: Mutex<HashMap<&'static str, SettingsHashMap>> = Mutex::new(HashMap::new());
+
         // `extract_json_from_card` regular expressions:
         static ref COMMENT_RE: Regex = Regex::new(r"(?sm)(//.*?$|/\*.*?\*/)").unwrap();
         static ref FIELD_RE: Regex = Regex::new(r"(?m)^(.*?)(\w*)(: .*?)$").unwrap();
@@ -289,6 +293,30 @@ pub mod lib {
         }
     }
 
+    /// Sets up settings
+    ///
+    /// TODO: Better docs
+    pub fn setup_settings() -> Result<(), Box<dyn Error>> {
+        let mut settings = SETTINGS.lock()?;
+
+        let mut view_settings: SettingsHashMap = HashMap::new();
+        view_settings.insert("type", Some("cards".into()));
+        view_settings.insert("page", Some("1".into()));
+        view_settings.insert("maxPage", None);
+        view_settings.insert("cpp", Some("15".into()));
+        view_settings.insert("class", None);
+
+        let mut command_settings: SettingsHashMap = HashMap::new();
+        command_settings.insert("default", Some("add".into()));
+        command_settings.insert("latest", None);
+        command_settings.insert("latestUndoable", None);
+
+        settings.insert("view", view_settings);
+        settings.insert("commands", command_settings);
+
+        Ok(())
+    }
+
     /// Setup the cards to be used in some functions.
     pub fn setup_cards(
         cards: &[Value],
@@ -359,7 +387,23 @@ pub mod lib {
         // If the user wrote the name / id of a card
         if find_card(cards, &command).is_some() {
             // TODO: Add a setting to change the add command
-            return handle_command(String::from("add ") + &command, deck, cards, term);
+            let settings_binding = SETTINGS.lock()?;
+
+            let default_command = settings_binding
+                .get("commands")
+                .ok_or("Invalid settings!")?
+                .get("default")
+                .ok_or("Invalid settings!")?;
+            
+            let handled_default_command = default_command.unwrap_or(String::from("add"));
+            let name = handled_default_command.clone() + " ";
+
+            return handle_command(
+                name + &command,
+                deck,
+                cards,
+                term,
+            );
         }
 
         let args = command.split(' ').skip(1).collect::<Vec<&str>>().join(" ");
