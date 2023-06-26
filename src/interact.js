@@ -417,7 +417,7 @@ class Interact {
 
             let finished = "";
 
-            finished += "AI Info:\n\n";
+            if (!args[0] === false) finished += "AI Info:\n\n";
 
             for (let i = 1; i <= 2; i++) {
                 const plr = game["player" + i];
