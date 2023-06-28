@@ -16,174 +16,385 @@ class Player {
         this.getInternalGame();
 
         /**
+         * You might be looking for `Player.id`.
+         * 
+         * The player's name. For example: "Player 1".
+         * 
+         * There is no real use for this outside of the source code, so i would advise you to not use this.
+         * 
          * @type {string}
          */
         this.name = name;
 
         /**
+         * This is:
+         * 
+         * 0: if this is the starting player
+         * 
+         * 1: if this is the player that starts with the coin
+         * 
+         * You can use this in `game.board[Player.id]` in order to get this player's side of the board.
+         * 
+         * # Examples
+         * ```
+         * let board = game.board[player.id];
+         * 
+         * board.forEach(card => {
+         *     console.log(card.name);
+         * });
+         * ```
+         * 
          * @type {number}
          */
         this.id = null;
 
         /**
+         * The player's AI.
+         * 
+         * # Examples
+         * ```
+         * let discover = player.ai.discover();
+         * 
+         * console.log(discover);
+         * ```
+         * 
          * @type {AI | null}
          */
         this.ai = null;
 
         /**
-         * @type {Game}
-         */
-        this.game = null;
-
-        /**
+         * How much damage the player gets damaged the next time they draw a card from an empty deck.
+         * 
+         * This increments every time a player draws from an empty deck.
+         * 
          * @type {number}
          */
         this.fatigue = 0;
 
         /**
+         * The class type of the player. This is always `Player`.
+         * 
+         * You can use this if the type of a variable is ambigious (Card | Player) since the Card class always has this variable set to `Card`.
+         * 
+         * # Examples
+         * ```
+         * let target = game.functions.selectTarget("Example", false, null, null);
+         * 
+         * if (target.classType == "Player") {
+         *     console.log(target.health);
+         * } else if (target.classType == "Card") {
+         *     console.log(target.stats[1]);
+         * }
+         * 
+         * // ^^^ You can just use `target.getHealth()` in this situation since both classes have it.
+         * ```
+         * 
          * @type {"Player"}
          */
         this.classType = "Player";
 
         /**
+         * The player's deck.
+         * 
+         * This can be shuffled at any time so don't rely on the order of the cards.
+         * 
+         * # Examples
+         * ```
+         * player.deck.forEach(card => {
+         *     console.log(card.name);
+         * });
+         * ```
+         * 
          * @type {Card[]}
          */
         this.deck = [];
 
         /**
+         * The player's hand.
+         * 
+         * # Examples
+         * ```
+         * player.hand.forEach(card => {
+         *     console.log(card.name);
+         * });
+         * ```
+         * 
          * @type {Card[]}
          */
         this.hand = [];
 
         /**
+         * The amount of mana that the player CURRENTLY has.
+         * 
+         * # Examples
+         * ```
+         * // Use `player.refreshMana(2, player.maxMaxMana)` instead in a real situation.
+         * player.mana += 2;
+         * ```
+         * 
          * @type {number}
          */
         this.mana = 0;
 
         /**
+         * The max amount of mana the player has. This increments every turn until it reaches `player.maxMaxMana`.
+         * 
+         * # Examples
+         * ```
+         * // Use `player.gainEmptyMana(2)` instead in a real situation.
+         * player.maxMana += 2;
+         * ```
+         * 
          * @type {number}
          */
         this.maxMana = 0;
 
         /**
+         * The max amount of max mana the player can have. This is normally fixed at `10` but can be changed.
+         * 
+         * # Examples
+         * ```
+         * player.maxMaxMana = 20;
+         * // Now `player.maxMana` will increment every turn until it reaches 20.
+         * ```
+         * 
          * @type {number}
          */
         this.maxMaxMana = 10;
 
         /**
+         * The amount of overload the player has. See the overload mechanic on the Hearthstone Wiki.
+         * 
+         * # Examples
+         * ```
+         * // Use `player.gainOverload(2)` instead in a real situation.
+         * player.overload += 2;
+         * // Now the player will have 2 less mana next turn.
+         * ```
+         * 
          * @type {number}
          */
         this.overload = 0;
 
         /**
+         * The amount of health the player has.
+         * 
+         * # Examples
+         * ```
+         * // Use `player.remHealth(3)` instead in a real situation.
+         * player.health -= 3;
+         * ```
+         * 
          * @type {number}
          */
         this.health = 30;
 
         /**
+         * The maximum health the player can have. This is normally fixed to the amount of health the player starts with (`30`).
+         * 
+         * # Examples
+         * ```
+         * player.maxHealth = 40;
+         * ```
+         * 
          * @type {number}
          */
         this.maxHealth = this.health;
 
         /**
+         * The amount of armor the player has.
+         * 
+         * # Examples
+         * ```
+         * player.armor += 3;
+         * ```
+         * 
          * @type {number}
          */
         this.armor = 0;
 
         /**
+         * The hero card that the player has. This is normally set to one of the starting heroes.
+         * 
+         * # Examples
+         * ```
+         * // We're assuming that the player is a Priest, and hasn't played a hero card.
+         * assert.equal(typeof player.hero.heropower, 'function');
+         * assert.equal(player.hero.name, "Priest Starting Hero");
+         * 
+         * // Activate the hero's hero power. (`Restore 2 Health.`)
+         * player.hero.activate("heropower");
+         * ```
+         * 
          * @type {Card | null}
          */
         this.hero = null;
 
         /**
+         * The class the player is. This is set to either: Mage, Priest, Warlock, Warrior, ...
+         * 
          * @type {import("./types").CardClass}
          */
         this.heroClass = "Mage";
 
         /**
+         * How much the player's hero power costs.
+         * 
          * @type {number}
          */
         this.heroPowerCost = 2;
 
         /**
+         * If the player can use their hero power.
+         * 
          * @type {boolean}
          */
         this.canUseHeroPower = true;
 
         /**
+         * The player's weapon. Functions like any other card.
+         * 
+         * # Examples
+         * ```
+         * // Use `player.destroyWeapon()` instead in a real situation.
+         * player.weapon.kill();
+         * ```
+         * 
          * @type {Card | null}
          */
         this.weapon = null;
 
         /**
+         * If the player is frozen.
+         * 
+         * If a player is frozen, they can't attack.
+         * 
          * @type {boolean}
          */
         this.frozen = false;
 
         /**
+         * If the player is immune to damage.
+         * 
          * @type {boolean}
          */
         this.immune = false;
 
         /**
+         * How much attack the player has.
+         * 
          * @type {number}
          */
         this.attack = 0;
 
         /**
+         * How much spell damage the player has.
+         * 
          * @type {number}
          */
         this.spellDamage = 0;
 
         /**
-         * @type {import("./types").CardType[]} "Spell" | "Minion"
+         * The card types to counter.
+         * 
+         * If this player's counter includes "Minion", and this player plays a Minion, it gets countered.
+         * 
+         * @type {import("./types").CardType[]}
          */
         this.counter = [];
 
         /**
-         * @type {import("./types").QuestType}
+         * The secrets that the player has.
+         * 
+         * @type {import("./types").QuestType[]}
          */
         this.secrets = [];
 
         /**
-         * @type {import("./types").QuestType}
+         * The sidequests that the player has.
+         * 
+         * @type {import("./types").QuestType[]}
          */
         this.sidequests = [];
 
         /**
-         * @type {import("./types").QuestType}
+         * The quest that the player has.
+         * 
+         * @type {import("./types").QuestType[]}
          */
         this.quests = [];
 
         // Stats
         /**
+         * How much attack/health (+1) the player's next jade golem will have.
+         * 
          * @type {number}
          */
         this.jadeCounter = 0;
 
         /**
+         * How many corpses the player has.
+         * 
+         * This increases even if the player is not a Death Knight, so don't count on this number telling you if the player is a Death Knight or not.
+         * 
          * @type {number}
          */
         this.corpses = 0;
 
         /**
-         * @type {string} A three letter rune combination. For example "BBB" for 3 blood runes, or "BFU" for one of each rune.
+         * A three letter rune combination. For example "BBB" for 3 blood runes, or "BFU" for one of each rune.
+         * 
+         * @type {string}
          */
         this.runes = "";
 
         /**
+         * If this is not null, it will automatically choose this target when asked instead of asking the player.
+         * 
+         * # Example
+         * ```
+         * player.forceTarget = target;
+         * let chosen = game.interact.selectTarget("Example", false, null, null);
+         * player.forceTarget = null;
+         * 
+         * assert.equal(chosen, target);
+         * ```
+         * 
          * @type {Card | Player}
          */
         this.forceTarget = null;
 
         /**
-         * @type {string[]}
+         * Answers for the player.
+         * 
+         * If this is a list, whenever the game asks for input from the user, instead it answers with the first element from the list, then it removes that element from the list.
+         * 
+         * If this is a string, whenever the game asks for input from the user, instead it just answers with that string, and doesn't remove it.
+         * 
+         * # Example
+         * ```
+         * // Only run this code when the player's turn starts
+         * player.inputQueue = ["attack", "1", "1", "end"]; // Does these commands in order
+         * 
+         * // Once it has done all these commands, `player.inputQueue` = null
+         * ```
+         * 
+         * #### Or with just a string
+         * 
+         * ```
+         * // Whenever the game asks the player a question, just answer with `e` every time. This will most likely make the game unplayable, however in certain contexts this can be useful.
+         * player.inputQueue = "e";
+         * ```
+         * 
+         * @type {string[] | string}
          */
         this.inputQueue = null;
     }
 
     /**
-     * Update the `game` variable.
+     * Update the `game` variable stored in the player module.
+     * 
+     * I don't recommend calling this because it can cause major problems if done incorrectly.
      */
     getInternalGame() {
         game = get();
@@ -191,6 +402,13 @@ class Player {
 
     /**
      * Get this player's opponent
+     * 
+     * # Examples
+     * ```
+     * let opponent = player.getOpponent();
+     * 
+     * assert.notEqual(player.id, opponent.id);
+     * ```
      * 
      * @returns {Player} Opponent
      */
@@ -203,14 +421,43 @@ class Player {
     // Mana
 
     /**
-     * Adds mana to this player, then checks if the mana is more than `comp`, if it is, set mana to `comp`.
+     * Adds `mana` to this player, without going over `comp` mana.
+     * 
+     * # Examples
+     * ```
+     * assert.equal(player.maxMana, 7);
+     * assert.equal(player.mana, 5);
+     * 
+     * player.refreshMana(10);
+     * 
+     * assert.equal(player.mana, 7);
+     * ```
+     * If comp is `player.maxMaxMana`
+     * ```
+     * assert.equal(player.maxMana, 7);
+     * assert.equal(player.mana, 5);
+     * 
+     * player.refreshMana(10, player.maxMaxMana);
+     * 
+     * assert.equal(player.mana, 10);
+     * ```
+     * You can set comp to any value
+     * ```
+     * assert.equal(player.mana, 5);
+     * 
+     * player.refreshMana(10, 200);
+     * 
+     * assert.equal(player.mana, 15);
+     * ```
      * 
      * @param {number} mana The mana to add
-     * @param {number} [comp] The comperison
+     * @param {number} [comp] The comperison. This defaults to `player.maxMana`.
      * 
      * @returns {boolean} Success
      */
-    refreshMana(mana, comp = this.maxMana) {
+    refreshMana(mana, comp = null) {
+        if (!comp) comp = this.maxMana;
+
         this.mana += mana;
 
         if (this.mana > comp) this.mana = comp;
@@ -219,10 +466,27 @@ class Player {
     }
 
     /**
-     * Increases max mana by `mana`, then if `cap` is true; check if max mana is more than max max mana (10), if it is, set max mana to max max mana
+     * Increases max mana by `mana`, then if `cap` is true; avoid going over `player.maxMaxMana` (10) mana.
      * 
-     * @param {number} mana The mana to add
-     * @param {boolean} [cap=false] Should prevent max mana going over max max mana
+     * # Examples
+     * ```
+     * assert.equal(player.maxMana, 5);
+     * 
+     * player.gainEmptyMana(10);
+     * 
+     * assert.equal(player.maxMana, 15);
+     * ```
+     * If you set `cap` to true
+     * ```
+     * assert.equal(player.maxMana, 5);
+     * 
+     * player.gainEmptyMana(10, true);
+     * 
+     * assert.equal(player.maxMana, 10);
+     * ```
+     * 
+     * @param {number} mana The empty mana to add.
+     * @param {boolean} [cap=false] Should prevent going over max max mana
      * 
      * @returns {boolean} Success 
      */
@@ -235,7 +499,14 @@ class Player {
     }
 
     /**
-     * Increases both mana and max mana by `mana`
+     * Increases both mana and max mana by `mana`.
+     * 
+     * This function runs
+     * ```
+     * player.gainEmptyMana(mana, cap);
+     * player.refreshMana(mana);
+     * ```
+     * so look at these functions for more info.
      * 
      * @param {number} mana The number to increase mana and max mana by
      * @param {boolean} [cap=false] Should prevent max mana going over max max mana (10)
@@ -250,7 +521,7 @@ class Player {
     }
 
     /**
-     * Increases the players overload by `overload`
+     * Increases the players overload by `overload`. Overload will not take into affect until the player's next turn.
      * 
      * @param {number} overload The amount of overload to add
      * 
@@ -258,9 +529,6 @@ class Player {
      */
     gainOverload(overload) {
         this.overload += overload;
-        const plus = this.maxMana == this.maxMaxMana ? 0 : 1;
-
-        if (this.overload > this.mana + plus) this.overload = this.mana + plus;
 
         game.events.broadcast("GainOverload", overload, this);
 
@@ -345,16 +613,14 @@ class Player {
     remHealth(amount, update = true) {
         if (this.immune) return true;
 
-        let a = amount;
+        // Armor logic
+        let armor_magic = this.armor - amount;
+        this.armor = Math.max(armor_magic, 0);
 
-        while (this.armor > 0 && a > 0) {
-            a--;
-            this.armor--;
-        }
+        if (armor_magic >= 0) return;
 
-        if (a <= 0) return true;
-
-        this.health -= a;
+        // It is possible to write `this.health += armor_magic` since armor_magic is a negative number, but i do this for clarity.
+        this.health -= -armor_magic;
 
         if (update) game.events.broadcast("TakeDamage", [this, amount], this);
 

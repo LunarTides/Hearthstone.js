@@ -229,9 +229,6 @@ class Game {
         this.player1.id = 0;
         this.player2.id = 1;
 
-        this.player1.game = this;
-        this.player2.game = this;
-
         this.Card = Card;
         this.Player = Player;
         this.AI = AI;
