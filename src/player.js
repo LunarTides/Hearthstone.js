@@ -724,23 +724,21 @@ class Player {
      * @returns {Card | number} The card drawn | The amount of fatigue the player was dealt
      */
     drawCard(update = true) {
-        if (this.deck.length <= 0) {
+        let deck_length = this.deck.length;
+        
+        /**
+         * The card to draw
+         * 
+         * @type {Card}
+         */
+        let card = this.deck.pop();
+
+        if (deck_length <= 0 || card === undefined) {
             this.fatigue++;
 
             this.remHealth(this.fatigue);
             return this.fatigue;
         }
-
-         /**
-         * The card to draw
-         * 
-         * This is normally `{Card | undefined}`, because that is the return value of pop,
-         * however it only returns undefined if the list is empty, which is being handled
-         * by fatigue.
-         * 
-         * @type {Card}
-         */
-        let card = this.deck.pop()
 
         if (update) game.events.broadcast("DrawCard", card, this);
 
