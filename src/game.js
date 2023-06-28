@@ -111,7 +111,7 @@ class EventManager {
      * @param {import('./types').EventValues} val The value of the event
      * @param {Player} plr The owner of the quest
      *
-     * @returns {bool} Success
+     * @returns {boolean} Success
      */
     questUpdate(quests_name, key, val, plr) {
         plr[quests_name].forEach(s => {
@@ -150,9 +150,11 @@ class EventManager {
      * @param {Player} plr The player who caused the event to happen
      * @param {boolean} [updateHistory=true] Whether or not to update the history
      *
-     * @returns {bool} Success
+     * @returns {boolean} Success
      */
     broadcast(key, val, plr, updateHistory = true) {
+        if (this.game.suppressEvents) return false;
+
         if (!this[key]) this[key] = [[], []];
         if (updateHistory && !this.history[this.game.turns]) this.history[this.game.turns] = [];
 
@@ -284,6 +286,11 @@ class Game {
          * @type {boolean} If the program is currently evaluating code. Should only be enabled while running a `eval` function.
          */
         this.evaling = false;
+
+        /**
+         * @type {boolean} If it should prevent events from being broadcast.
+         */
+        this.suppressEvents = false;
     }
 
     /**
@@ -399,7 +406,7 @@ class Game {
      * 
      * @param {Player} winner The winner
      * 
-     * @returns {bool} Success
+     * @returns {boolean} Success
      */
     endGame(winner) {
         if (!winner) return false;
@@ -422,7 +429,7 @@ class Game {
     /**
      * Ends the players turn and starts the opponents turn
      * 
-     * @returns {bool} Success
+     * @returns {boolean} Success
      */
     endTurn() {
         this.killMinions();

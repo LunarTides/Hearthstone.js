@@ -540,6 +540,14 @@ class Player {
     /**
      * Sets this player's weapon to `weapon`
      * 
+     * # Examples
+     * ```
+     * let weapon_name = "some weapon name";
+     * 
+     * let weapon = new Card(weapon_name, player);
+     * player.setWeapon(weapon); 
+     * ```
+     * 
      * @param {Card} weapon The weapon to set
      * 
      * @returns {boolean} Success
@@ -554,6 +562,18 @@ class Player {
 
     /**
      * Destroys this player's weapon
+     * 
+     * # Examples
+     * ```
+     * // Assume the player has a weapon with 5 attack and the player hasn't attacked this turn.
+     * assert.equal(player.weapon.getAttack(), 5);
+     * assert.equal(player.attack, 5);
+     * 
+     * player.destroyWeapon(false); // Don't trigger the card's deathrattle. This is the default.
+     * 
+     * assert.equal(player.weapon, null);
+     * assert.equal(player.attack, 0);
+     * ```
      * 
      * @param {boolean} [triggerDeathrattle=false] Should trigger the weapon's deathrattle
      * 
@@ -604,6 +624,8 @@ class Player {
 
     /**
      * Decreases the player's health by `amount`. If the player has armor, the armor gets decreased instead.
+     * 
+     * This also handles the player being dealt a fatal attack. In other words, if this function causes the player to die, it will immediately end the game.
      * 
      * @param {number} amount The amount the player's health should decrease by
      * @param {boolean} update If this should broadcast the `TakeDamage` event.
@@ -657,7 +679,7 @@ class Player {
     // Hand / Deck
 
     /**
-     * Shuffle a card into this player's deck
+     * Shuffle a card into this player's deck. This will shuffle the deck.
      * 
      * @param {Card} card The card to shuffle
      * @param {boolean} [updateStats=true] Should this broadcast the `AddCardToDeck` event.
@@ -679,7 +701,7 @@ class Player {
     }
 
     /**
-     * Adds a card to the bottom of this player's deck
+     * Adds a card to the bottom of this player's deck. This keeps the order of the deck.
      * 
      * @param {Card} card The card to add to the bottom of the deck
      * @param {boolean} [update=true] Should this broadcast the `AddCardToDeck` event.
@@ -695,7 +717,7 @@ class Player {
     }
 
     /**
-     * Draws the card from the top of this player's deck
+     * Draws the card from the top of this player's deck.
      * 
      * @param {boolean} [update=true] Should this broadcast the `DrawCard` event.
      * 
@@ -733,22 +755,30 @@ class Player {
     /**
      * Draws a specific card from this player's deck
      * 
+     * # Examples
+     * ```
+     * // Get a random card from the player's deck, but do not run `card.perfectCopy` on it.
+     * let card = game.functions.randList(player.deck, false);
+     * 
+     * player.drawSpecific(card);
+     * ```
+     * 
      * @param {Card} card The card to draw
      * @param {boolean} [update=true] Should this broadcast the `DrawCard` event.
      * 
-     * @returns {Card | undefined} Card is the card drawn
+     * @returns {Card | undefined} The card drawn | Is undefined if the card wasn't found
      */
     drawSpecific(card, update = true) {
         if (this.deck.length <= 0) return;
 
-        this.deck = this.deck.filter(c => c !== card);
+        //this.deck = this.deck.filter(c => c !== card);
+        game.functions.remove(this.deck, card);
 
         if (update) game.events.broadcast("DrawCard", card, this);
 
         if (card.type == "Spell" && card.keywords.includes("Cast On Draw") && card.activate("cast")) return;
 
         this.addToHand(card, false);
-
         return card;
     }
 
@@ -769,6 +799,8 @@ class Player {
     }
 
     /**
+     * @deprecated Use `game.functions.remove(player.hand, card)` instead.
+     * 
      * Removes a card from the player's hand
      * 
      * @param {Card} card The card to remove
