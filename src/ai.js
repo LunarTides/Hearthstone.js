@@ -22,11 +22,6 @@ class SimulationAI {
         this.history = [];
 
         /**
-         * @type {Card | null}
-         */
-        this.focus = null;
-
-        /**
          * @type {boolean}
          */
         this.canAttack = true;
