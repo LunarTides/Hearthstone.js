@@ -343,7 +343,7 @@ class Game {
      */
     triggerEventListeners(key, val) {
         let ret = [];
-        Object.values(this.eventListeners).forEach(i => ret.push(i(this, key, val)));
+        Object.values(this.eventListeners).forEach(i => ret.push(i(key, val)));
         return ret;
     }
 
@@ -613,7 +613,7 @@ class Game {
     
                 // I'm using while loops to prevent a million indents
                 while (mechs.length > 0) {
-                    let minion = this.interact.selectTarget("Which minion do you want this to Magnetize to:", false, "self", "minion");
+                    let minion = this.interact.selectTarget("Which minion do you want this to Magnetize to:", false, "friendly", "minion");
                     if (!minion) break;
                     if (!minion.tribe.includes("Mech")) {
                         console.log("That minion is not a Mech.");

@@ -19,7 +19,7 @@ module.exports = {
      * @type {import("../../../../../src/types").KeywordMethod}
      */
     battlecry(plr, game, card) {
-        let target = game.interact.selectTarget("Choose a minion.", false, "self", "minion");
+        let target = game.interact.selectTarget("Choose a minion.", false, "friendly", "minion");
 
         if (!target) {
             return -1;

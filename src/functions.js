@@ -1392,7 +1392,7 @@ ${main_content}
             delete game.eventListeners[id];
         }
 
-        game.eventListeners[id] = (_, _key, _val) => {
+        game.eventListeners[id] = (_key, _val) => {
             // Im writing it like this to make it more readable
             if (_key == key || key == "") {} // Validate key. If key is empty, match any key.
             else return;
