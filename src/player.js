@@ -36,13 +36,12 @@ class Player {
          * You can use this in `game.board[Player.id]` in order to get this player's side of the board.
          * 
          * # Examples
-         * ```
+         * @example
          * let board = game.board[player.id];
          * 
          * board.forEach(card => {
          *     console.log(card.name);
          * });
-         * ```
          * 
          * @type {number}
          */
@@ -52,11 +51,10 @@ class Player {
          * The player's AI.
          * 
          * # Examples
-         * ```
+         * @example
          * let discover = player.ai.discover();
          * 
          * console.log(discover);
-         * ```
          * 
          * @type {AI | null}
          */
@@ -77,7 +75,7 @@ class Player {
          * You can use this if the type of a variable is ambigious (Card | Player) since the Card class always has this variable set to `Card`.
          * 
          * # Examples
-         * ```
+         * @example
          * let target = game.functions.selectTarget("Example", false, null, null);
          * 
          * if (target.classType == "Player") {
@@ -87,7 +85,6 @@ class Player {
          * }
          * 
          * // ^^^ You can just use `target.getHealth()` in this situation since both classes have it.
-         * ```
          * 
          * @type {"Player"}
          */
@@ -99,11 +96,10 @@ class Player {
          * This can be shuffled at any time so don't rely on the order of the cards.
          * 
          * # Examples
-         * ```
+         * @example
          * player.deck.forEach(card => {
          *     console.log(card.name);
          * });
-         * ```
          * 
          * @type {Card[]}
          */
@@ -113,11 +109,10 @@ class Player {
          * The player's hand.
          * 
          * # Examples
-         * ```
+         * @example
          * player.hand.forEach(card => {
          *     console.log(card.name);
          * });
-         * ```
          * 
          * @type {Card[]}
          */
@@ -127,10 +122,9 @@ class Player {
          * The amount of mana that the player CURRENTLY has.
          * 
          * # Examples
-         * ```
+         * @example
          * // Use `player.refreshMana(2, player.maxMaxMana)` instead in a real situation.
          * player.mana += 2;
-         * ```
          * 
          * @type {number}
          */
@@ -140,10 +134,9 @@ class Player {
          * The max amount of mana the player has. This increments every turn until it reaches `player.maxMaxMana`.
          * 
          * # Examples
-         * ```
+         * @example
          * // Use `player.gainEmptyMana(2)` instead in a real situation.
          * player.maxMana += 2;
-         * ```
          * 
          * @type {number}
          */
@@ -523,6 +516,14 @@ class Player {
     /**
      * Increases the players overload by `overload`. Overload will not take into affect until the player's next turn.
      * 
+     * ```
+     * assert.equal(player.overload, 0);
+     * 
+     * player.gainOverload(2);
+     * 
+     * assert.equal(player.overload, 2);
+     * ```
+     * 
      * @param {number} overload The amount of overload to add
      * 
      * @returns {boolean} Success
@@ -680,6 +681,15 @@ class Player {
 
     /**
      * Shuffle a card into this player's deck. This will shuffle the deck.
+     * 
+     * ```
+     * assert.equal(player.deck.length, 30);
+     * 
+     * card = new Card("Sheep", player);
+     * player.shuffleIntoDeck(card);
+     * 
+     * assert.equal(player.deck.length, 31);
+     * ```
      * 
      * @param {Card} card The card to shuffle
      * @param {boolean} [updateStats=true] Should this broadcast the `AddCardToDeck` event.

@@ -11,6 +11,8 @@ let game = get();
 // FIXME: Ai gets stuck in infinite loop when using cathedral of atonement (location) | shadowcloth needle (0 attack wpn) | that minion has no attack.
 class AI {
     /**
+     * Sentiment-based AI
+     * 
      * @param {Player} plr 
      */
     constructor(plr) {
@@ -48,7 +50,9 @@ class AI {
     }
 
     /**
-     * Calculate the best move and return the result
+     * Calculate the best move and return the result.
+     * 
+     * This can return: A card to play, "hero power", "attack", "use" or "end"
      * 
      * @returns {Card | string} Result
      */

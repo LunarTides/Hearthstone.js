@@ -309,6 +309,8 @@ class Card {
     }
 
     /**
+     * @deprecated Use `game.functions.remove(card.keywords, "Taunt")`
+     * 
      * Removes a keyword from the card
      * 
      * @param {string} keyword The keyword to remove
@@ -351,10 +353,14 @@ class Card {
     
     /**
      * Makes this minion ready for attack
+     * 
+     * @returns {boolean} Success
      */
     ready() {
         this.sleepy = false;
         this.resetAttackTimes();
+
+        return true;
     }
 
     // Change stats
