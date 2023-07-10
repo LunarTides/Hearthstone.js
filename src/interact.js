@@ -2,7 +2,7 @@ const { Card } = require('./card');
 const { Game } = require('./game');
 const { Player } = require('./player');
 
-const license_url = 'https://github.com/SolarWindss/Hearthstone.js/blob/main/LICENSE';
+const license_url = 'https://github.com/LunarTides/Hearthstone.js/blob/main/LICENSE';
 
 /**
  * @type {Game}
@@ -999,7 +999,7 @@ class Interact {
     
         cls();
     
-        let version = `Hearthstone.js V${game.config.version}-${game.config.branch} | Copyright (C) 2022 | SolarWindss`;
+        let version = `Hearthstone.js V${game.config.version}-${game.config.branch} | Copyright (C) 2022 | LunarTides`;
         console.log('|'.repeat(version.length + 8));
         console.log(`||| ${version} |||`)
         console.log(`|||     This program is licensed under the GPL-3.0 license.   ` + ' '.repeat(game.config.branch.length) + "|||")

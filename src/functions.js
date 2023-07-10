@@ -834,7 +834,7 @@ ${main_content}
 
         if (!err) return true;
 
-        console.log(`\nThe game crashed!\nCrash report created in 'logs/${filename}.txt'\nPlease create a bug report at:\nhttps://github.com/SolarWindss/Hearthstone.js/issues`.yellow);
+        console.log(`\nThe game crashed!\nCrash report created in 'logs/${filename}.txt'\nPlease create a bug report at:\nhttps://github.com/LunarTides/Hearthstone.js/issues`.yellow);
         game.input();
 
         return true;
