@@ -1,5 +1,5 @@
 const rl = require("readline-sync");
-const cc = require("../index");
+const lib = require("../lib");
 
 const { Game } = require("../../src/game");
 
@@ -9,7 +9,7 @@ game.functions.importConfig(__dirname + "/../../config");
 
 function main() {
     let watermark = () => {
-        process.stdout.write("\033c");
+        game.interact.cls();
         console.log("Hearthstone.js Class Creator (C) 2022\n");
         console.log("type 'back' at any step to cancel.\n");
     }
@@ -44,8 +44,7 @@ function main() {
 
     let filename = name.toLowerCase().replaceAll(" ", "_") + ".js";
 
-    cc.set_type("Class");
-    cc.main("Hero", __dirname + "/../../cards/StartingHeroes/", filename, {
+    let card = {
         name: name + " Starting Hero",
         displayName: displayName,
         desc: name[0].toUpperCase() + name.slice(1).toLowerCase() + " starting hero",
@@ -56,8 +55,10 @@ function main() {
         hpDesc: hpDesc,
         hpCost: hpCost,
         uncollectible: true
-    });
-    cc.set_type("Custom"); // Reset
+    };
+
+    lib.set_type("Class");
+    lib.create("Hero", card, __dirname + "/../../cards/StartingHeroes/", filename);
 
     console.log("\nClass Created!");
     rl.question(`Next steps:\n1. Open 'cards/StartingHeroes/${filename}' and add logic to the 'heropower' function.\n2. Now when using the Card Creator, type '${name}' into the 'Class' field to use that class\n3. When using the Deck Creator, type '${name}' to create a deck with cards from your new class.\nEnjoy!\n`);
