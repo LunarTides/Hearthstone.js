@@ -802,6 +802,10 @@ class Functions {
         // handleCmds("history", write_to_screen, debug)
         let history = game.interact.handleCmds("history", false, true);
 
+        // AI log
+        game.config.debug = true; // Do this so it can actually run '/ai'
+        let aiHistory = game.interact.handleCmds("/ai", false);
+
         let name = "Log";
         if (err) name = "Crash Log";
 
@@ -812,14 +816,21 @@ Error:
 ${err.stack}
 `
 
+        let history_content = `-- History --${history}`;
+        let ai_content = `
+-- AI Logs --
+${aiHistory}`;
+
+        let main_content = history_content;
+        if (game.config.P1AI || game.config.P2AI) main_content += ai_content;
+        main_content += errorContent;
+
         let content = `Hearthstone.js ${name}
 Date: ${dateString}
 Version: ${game.config.version}-${game.config.branch}
+Operating System: ${process.platform}
 
-Remember to attach the '-ai' log file as well when creating a bug report.
-
-History:
-${history}${errorContent}
+${main_content}
 `
 
         let filename = "log";
@@ -829,25 +840,9 @@ ${history}${errorContent}
 
         fs.writeFileSync(`${__dirname}/../logs/${filename}.txt`, content);
 
-        // AI log
-        game.config.debug = true; // Do this so it can actually run '/ai'
-        let aiHistory = game.interact.handleCmds("/ai", false);
-
-        content = `Hearthstone.js ${name} Log
-Date: ${dateString}
-Version: ${game.config.version}-${game.config.branch}
-
-Remember to attach the main log file as well when making a bug report. The main log file is the one not ending in '-ai'.
-
-AI History:
-${aiHistory}
-`
-
-        fs.writeFileSync(`${__dirname}/../logs/${filename}-ai.txt`, content);
-
         if (!err) return true;
 
-        game.log(`\nThe game crashed!\nCrash report created in 'logs/${filename}.txt' and 'logs/${filename}-ai.txt'\nPlease create a bug report at:\nhttps://github.com/SolarWindss/Hearthstone.js/issues`.yellow);
+        game.log(`\nThe game crashed!\nCrash report created in 'logs/${filename}.txt'\nPlease create a bug report at:\nhttps://github.com/LunarTides/Hearthstone.js/issues`.yellow);
         game.input("", false, true);
 
         return true;
@@ -1333,6 +1328,24 @@ ${aiHistory}
     }
 
     /**
+     * Removes color tags from a string. Look in `functions.parseTags` for more information.
+     * This only removes the TAGS, not the actual colors. Use `colors.strip` for that.
+     * 
+     * @example
+     * let str = "&BHello&R";
+     * 
+     * assert.equal(stripTags(str), "Hello");
+     * 
+     * @param {string} str
+     * 
+     * @returns {string}
+     */
+    stripTags(str) {
+        // Regular expression created by ChatGPT, it removes the "&B"'s but keeps the "~&B"'s since the '~' here works like an escape character.
+        return str.replace(/(?<!~)&\w/g, "");
+    }
+
+    /**
      * Clones the `object`.
      * 
      * @param {Object} object The object to clone
@@ -1405,7 +1418,7 @@ ${aiHistory}
             delete game.eventListeners[id];
         }
 
-        game.eventListeners[id] = (_, _key, _val) => {
+        game.eventListeners[id] = (_key, _val) => {
             // Im writing it like this to make it more readable
             if (_key == key || key == "") {} // Validate key. If key is empty, match any key.
             else return;

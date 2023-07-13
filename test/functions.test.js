@@ -1,6 +1,7 @@
 // Part of this code was copied from an example given by ChatGPT
 const assert = require('assert');
 const colors = require("colors");
+const fs = require('fs');
 const { Player } = require("../src/player");
 const { Game } = require("../src/game");
 const { Card } = require("../src/card");
@@ -560,6 +561,9 @@ describe("Functions", () => {
         assert.equal(test_player1.runes, "BBB");
         assert.equal(deck.length, 30);
     });
+
+    // Only do the following tests if the vanilla cards have been generated.
+    if (!fs.existsSync("./card_creator/vanilla/.ignore.cards.json")) return;
 
     it ('should correctly convert a deckcode to vanilla', () => {
         let deckcode = game.functions.deckcode.toVanilla(test_player1, "Death Knight [3B] /1:8,2/ 3c,5x,3e,5o,5f,3b,70,66,5v,59,5a,52,2,56,6y,5g,55,3o,6z");

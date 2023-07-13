@@ -1173,13 +1173,13 @@ class SentimentAI {
      * 
      * @param {string} prompt The prompt to show the ai.
      * @param {boolean} elusive If the ai should care about `This minion can't be targetted by spells or hero powers`.
-     * @param {"friendly" | "enemy" | null} force_side The side the ai should be constrained to.
-     * @param {"minion" | "hero" | null} force_class The type of target the ai should be constrained to.
-     * @param {string[]} flags Some flags
+     * @param {"friendly" | "enemy"} [force_side] The side the ai should be constrained to.
+     * @param {"minion" | "hero"} [force_class] The type of target the ai should be constrained to.
+     * @param {string[]} [flags=[]] Some flags
      * 
      * @returns {Card | Player | number} The target selected.
      */
-    selectTarget(prompt, elusive, force_side, force_class, flags) {
+    selectTarget(prompt, elusive, force_side = null, force_class = null, flags = []) {
         if (flags.includes("allow_locations") && force_class != "hero") {
             let locations = game.board[this.plr.id].filter(m => m.type == "Location" && m.cooldown == 0 && !this.used_locations_this_turn.includes(m));
             this.used_locations_this_turn.push(locations[0]);
