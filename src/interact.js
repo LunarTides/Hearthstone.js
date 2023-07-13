@@ -247,7 +247,17 @@ class Interact {
     
                     console.log(strbuilder + ".\n");
     
-                    console.log(`Version Description:\n${game.config.versionText}\n`);
+                    console.log(`Version Description:`);
+
+                    let introText;
+
+                    if (game.config.branch == "topic") introText = game.config.topicIntroText;
+                    else if (game.config.branch == "dev") introText = game.config.developIntroText;
+                    else if (game.config.branch == "stable") introText = game.config.stableIntroText;
+
+                    console.log(introText);
+                    if (game.config.versionText) console.log(game.config.versionText);
+                    console.log();
 
                     console.log("Todo List:");
                     if (todos.length <= 0) console.log("None.");
