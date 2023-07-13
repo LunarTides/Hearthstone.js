@@ -9,11 +9,12 @@ try {
     require("process").exit(1);
 }
 
+const { Functions } = require("../src/functions");
 const { Game } = require("../src/game");
 const { set } = require("../src/shared");
 
 const game = new Game({}, {});
-const functions = game.functions;
+let functions = game.functions;
 
 set(game);
 
@@ -32,9 +33,6 @@ let deck = [];
 let runes = "";
 
 let plr = new game.Player("");
-
-let maxDeckLength = config.maxDeckLength;
-let minDeckLength = config.minDeckLength;
 
 let warnings = {
     latestCard: true
@@ -366,8 +364,8 @@ function showRules() {
 
     console.log("# Validation: " + (config.validateDecks ? "ON".green : "OFF".red));
 
-    console.log("#\n# Rule 1. Minimum Deck Length: " + minDeckLength.toString().yellow);
-    console.log("# Rule 2. Maximum Deck Length: " + maxDeckLength.toString().yellow);
+    console.log("#\n# Rule 1. Minimum Deck Length: " + config.minDeckLength.toString().yellow);
+    console.log("# Rule 2. Maximum Deck Length: " + config.maxDeckLength.toString().yellow);
 
     console.log("#\n# Rule 3. Maximum amount of cards for each card (eg. You can only have: " + "x".yellow + " Seances in a deck): " + config.maxOfOneCard.toString().yellow);
     console.log("# Rule 4. Maximum amount of cards for each legendary card (Same as Rule 3 but for legendaries): " + config.maxOfOneLegendary.toString().yellow);
@@ -409,8 +407,10 @@ function add(c) {
 
     if (!c.settings) return;
 
-    maxDeckLength = c.settings.maxDeckSize || maxDeckLength
-    minDeckLength = c.settings.minDeckSize || minDeckLength
+    config.maxDeckLength = c.settings.maxDeckSize || config.maxDeckLength;
+    config.minDeckLength = c.settings.minDeckSize || config.minDeckLength;
+
+    functions = new Functions(game);
 }
 function remove(c) {
     deck.splice(deck.indexOf(c), 1);
@@ -565,6 +565,7 @@ function help() {
     console.log("\nNotes:".bold);
 
     console.log("Type 'cards Neutral' to see Neutral cards.");
+    console.log("There is a known bug where if you add 'Prince Renathal', and then remove him, the deck will still require 40 cards. The only way around this is to restart the deck creator."); // TODO: Fix this
 
     game.input("\nPress enter to continue...\n");
 }

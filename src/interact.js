@@ -2,7 +2,7 @@ const { Card } = require('./card');
 const { Game } = require('./game');
 const { Player } = require('./player');
 
-const license_url = 'https://github.com/SolarWindss/Hearthstone.js/blob/main/LICENSE';
+const license_url = 'https://github.com/LunarTides/Hearthstone.js/blob/main/LICENSE';
 
 /**
  * @type {Game}
@@ -40,7 +40,7 @@ class Interact {
             if (attacker === -1 || target === -1) return -1;
             if (attacker === null || target === null) return null;
         } else {
-            attacker = this.selectTarget("Which minion do you want to attack with?", false, "self");
+            attacker = this.selectTarget("Which minion do you want to attack with?", false, "friendly");
             if (!attacker) return;
 
             target = this.selectTarget("Which minion do you want to attack?", false, "enemy");
@@ -247,7 +247,17 @@ class Interact {
     
                     console.log(strbuilder + ".\n");
     
-                    console.log(`Version Description:\n${game.config.versionText}\n`);
+                    console.log(`Version Description:`);
+
+                    let introText;
+
+                    if (game.config.branch == "topic") introText = game.config.topicIntroText;
+                    else if (game.config.branch == "dev") introText = game.config.developIntroText;
+                    else if (game.config.branch == "stable") introText = game.config.stableIntroText;
+
+                    console.log(introText);
+                    if (game.config.versionText) console.log(game.config.versionText);
+                    console.log();
 
                     console.log("Todo List:");
                     if (todos.length <= 0) console.log("None.");
@@ -417,7 +427,7 @@ class Interact {
 
             let finished = "";
 
-            finished += "AI Info:\n\n";
+            if (!args[0] === false) finished += "AI Info:\n\n";
 
             for (let i = 1; i <= 2; i++) {
                 const plr = game["player" + i];
@@ -560,7 +570,7 @@ class Interact {
         let locations = game.board[game.player.id].filter(m => m.type == "Location");
         if (locations.length <= 0) return "nolocations";
 
-        let location = this.selectTarget("Which location do you want to use?", false, "self", "minion", ["allow_locations"]);
+        let location = this.selectTarget("Which location do you want to use?", false, "friendly", "minion", ["allow_locations"]);
         if (location.type != "Location") return "invalidtype";
         if (location.cooldown > 0) return "cooldown";
         
@@ -835,7 +845,7 @@ class Interact {
      * 
      * @param {string} prompt The prompt to ask
      * @param {boolean | string} [elusive=false] Wether or not to prevent selecting elusive minions, if this is a string, allow selecting elusive minions but don't trigger secrets / quests
-     * @param {"enemy" | "self"} [force_side=null] Force the user to only be able to select minions / the hero of a specific side: ["enemy", "self"]
+     * @param {"enemy" | "friendly"} [force_side=null] Force the user to only be able to select minions / the hero of a specific side: ["enemy", "self"]
      * @param {"hero" | "minion"} [force_class=null] Force the user to only be able to select a minion or a hero: ["hero", "minion"]
      * @param {string[]} [flags=[]] Change small behaviours ["allow_locations" => Allow selecting location, ]
      * 
@@ -857,7 +867,7 @@ class Interact {
      * 
      * @param {string} prompt The prompt to ask
      * @param {boolean | string} [elusive=false] Wether or not to prevent selecting elusive minions, if this is a string, allow selecting elusive minions but don't trigger secrets / quests
-     * @param {"enemy" | "self"} [force_side=null] Force the user to only be able to select minions / the hero of a specific side: ["enemy", "self"]
+     * @param {"enemy" | "friendly"} [force_side=null] Force the user to only be able to select minions / the hero of a specific side: ["enemy", "friendly"]
      * @param {"hero" | "minion"} [force_class=null] Force the user to only be able to select a minion or a hero: ["hero", "minion"]
      * @param {string[]} [flags=[]] Change small behaviours ["allow_locations" => Allow selecting location, ]
      * 
@@ -865,7 +875,7 @@ class Interact {
      */
     _selectTarget(prompt, elusive = false, force_side = null, force_class = null, flags = []) {
         // force_class = [null, "hero", "minion"]
-        // force_side = [null, "enemy", "self"]
+        // force_side = [null, "enemy", "friendly"]
 
         if (game.player.forceTarget) return game.player.forceTarget;
         if (game.player.ai) return game.player.ai.selectTarget(prompt, elusive, force_side, force_class, flags);
@@ -999,7 +1009,7 @@ class Interact {
     
         cls();
     
-        let version = `Hearthstone.js V${game.config.version}-${game.config.branch} | Copyright (C) 2022 | SolarWindss`;
+        let version = `Hearthstone.js V${game.config.version}-${game.config.branch} | Copyright (C) 2022 | LunarTides`;
         console.log('|'.repeat(version.length + 8));
         console.log(`||| ${version} |||`)
         console.log(`|||     This program is licensed under the GPL-3.0 license.   ` + ' '.repeat(game.config.branch.length) + "|||")

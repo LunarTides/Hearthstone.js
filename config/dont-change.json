@@ -19,7 +19,7 @@
         "two": ["second pass", "Another description."],
         "three": ["not done", "A third description."],
         "four": ["done", "A fourth description."],
-        "five": ["doing", "A fourth description."],
+        "five": ["doing", "A fifth description."],
         "this gives us": {
             "one":   "[first pass] one",
             "two":   "[second pass] two",
@@ -27,5 +27,9 @@
             "four":  "[x] four",
             "five":  "[o] five"
         }
-    }
+    },
+
+    "stableIntroText": "This is the main (stable) branch. This branch is older, but is more stable. I recommend you use this branch.",
+    "developIntroText": "This is the develop (beta) branch. This has more features, but is less stable. I would advise against using this branch if you can help it. The todo list is not final and can change.",
+    "topicIntroText": "This is a topic (feature) branch. This branch exists to add one single feature, can be highly unstable, and will be deleted in the future once the feature is done. I HIGHLY RECOMMEND NOT USING THIS BRANCH FOR ANY REASON."
 }
