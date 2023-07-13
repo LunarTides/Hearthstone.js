@@ -2,26 +2,11 @@
     "DONT-CHANGE-ANYTHING-IN-THIS-FILE": "DONT CHANGE ANYTHING IN THIS FILE UNLESS YOU KNOW WHAT YOU'RE DOING",
 
     "version": "1.6.0",
-    "branch": "dev",
+    "branch": "topic",
 
-    "versionText": "",
+    "versionText": "This branch adds documentation. It shouldn't mess with any code, so ignore the warnings this time.",
     "todo": {
-        "Remove game.dirname": ["done", "Remove the `game.dirname` field. This was added because i once misspelled '__dirname' as '__dirname__' and it didn't work, so i added `game.dirname`."],
-        "Add regex toggle to the breaking change script": ["done", "If you don't need/use/understand regex, having regex be enabled is a pain. So add a way to toggle it."],
-        "Allow looking up vanilla cards using their dbfId": ["done", "Look up cards using their dbfId instead of their name, since their name is not unique but their dbfId is. For example the dbfId of 'Jade Idol' is 40372"],
-        "Remove the warning from the history command": ["done", "When i first added the history command, it was buggy so i added a warning when you used it and forgot to remove it."],
-        "Add a description to config todos": ["done", "Add a description to each todo element."],
-        "Merge the two log files": ["done", "Merge the normal and the ai log files into one log file. I really didn't need two log files for logging."],
-        "Make renathal actually work with the dc": ["done", "Prince Renathal was bugged and so adding it in the deck creator didn't properlly set the max amount of cards to 40."],
-        "Seperate the custom card creator into its own file": ["done", "The custom card creator and the card creator library is currently in the same file, so if the vanilla card creator wants to create a card, it needs to call the custom card creator(?) which contains the library. This ment that the custom card creator had a lot of spaghetti code since it had to act like a library sometimes, and act like the custom card creator sometimes."],
-        "Draw multiple cards with one drawCard call": ["not done", "Currently if you want the player to draw 2 cards, you have to call the `player.drawCard` function 2 times. Instead i can make it so that you can put in how many cards you want the player to draw. For example: `player.drawCard(2)` makes the player draw 2 cards."],
-        "Discover filter class cards by default": ["not done", "Make it so the discover function automatically removes cards from the pool that doesn't match the class of the player. It does this by default if you don't include a custom pool, but most times you do want to include a custom pool and in that case, you have the remove those cards manually. Instead i will make it so it automatically does this, unless you explicitly tell it not to."],
-        "Add better documentation": ["doing", "Add better documentation to the different functions in the program."],
-        "Add back getters / setters for all modules": ["not done", "Add getters and setters back to the modules."],
-        "Add a lot more events": ["not done", "Add a dozen or so events, because why not."],
-        "Rewrite some scripts in Rust": ["doing", "Rewrite the deck creator, and maybe the card creator and it's variants, and maybe the other scripts as well in Rust."],
-        "Bug fixing / stabilze": ["not done", "Fix bugs and stabilze. Get the version ready for release."],
-        "Bump version": ["not done", "Update the version. Release the update."]
+        "Add better documentation": ["doing", "Add better documentation to the different functions in the program."]
     },
 
     "exampleTodo": {
