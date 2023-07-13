@@ -1320,6 +1320,24 @@ ${main_content}
     }
 
     /**
+     * Removes color tags from a string. Look in `functions.parseTags` for more information.
+     * This only removes the TAGS, not the actual colors. Use `colors.strip` for that.
+     * 
+     * @example
+     * let str = "&BHello&R";
+     * 
+     * assert.equal(stripTags(str), "Hello");
+     * 
+     * @param {string} str
+     * 
+     * @returns {string}
+     */
+    stripTags(str) {
+        // Regular expression created by ChatGPT, it removes the "&B"'s but keeps the "~&B"'s since the '~' here works like an escape character.
+        return str.replace(/(?<!~)&\w/g, "");
+    }
+
+    /**
      * Clones the `object`.
      * 
      * @param {Object} object The object to clone

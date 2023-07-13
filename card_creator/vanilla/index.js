@@ -1,6 +1,6 @@
 const rl = require("readline-sync");
 const fs = require("fs");
-const cc = require("../index");
+const lib = require("../lib");
 
 const { Game } = require("../../src/game");
 
@@ -42,6 +42,8 @@ function createCard(card, main) {
     desc = desc.replaceAll("[x]", "");
 
     const classes = game.functions.getClasses();
+    classes.push("Neutral");
+
     while (!classes.includes(cardClass)) {
         cardClass = game.functions.capitalizeAll(game.input("Was not able to find the class of this card.\nWhat is the class of this card? ".red));
     }
@@ -121,13 +123,13 @@ function createCard(card, main) {
     card = Object.assign({}, _card, struct);
 
     if (main) console.log(card);
-    cc.main(type, null, null, card);
+
+    lib.set_type("Vanilla"); // Vanilla Card Creator
+    lib.create(type, card, null, null);
 }
 
 function main(card = null) {
     console.log("Hearthstone.js Vanilla Card Creator (C) 2022\n");
-
-    cc.set_type("Vanilla"); // Vanilla Card Creator
 
     if (card) return createCard(card, false);
 
@@ -137,11 +139,12 @@ function main(card = null) {
 
     if (game.config.debug) {
         let debug = !rl.keyInYN("Do you want the card to actually be created?");
-        cc.set_debug(debug);
+        lib.set_debug(debug);
     }
 
     while (true) {
-        let cardName = rl.question("Name / dbfId: ");
+        let cardName = rl.question("Name / dbfId (Type 'back' to cancel): ");
+        if (["exit", "quit", "close", "back"].includes(cardName.toLowerCase())) break;
 
         let filtered_cards = data.filter(c => c.name.toLowerCase() == cardName.toLowerCase() || c.dbfId == cardName);
         filtered_cards = game.functions.filterVanillaCards(filtered_cards, false, true);
