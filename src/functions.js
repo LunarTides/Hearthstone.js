@@ -691,24 +691,21 @@ class Functions {
     /**
      * Creates a wall.
      *
+     * @param {any[]} bricks The array
      * @param {string} sep The seperator.
-     *
-     * @returns {[str[], wallCallback]} [wall, finishWall]
-     * 
-     * @callback wallCallback
-     * @returns {str[]}
-     * 
+     *  
      * @example
-     * let [wall, finishWall] = createWall("-");
-     * wall.push('Example - Example');
-     * wall.push('Test - Hello World');
-     * wall.push('This is the longest - Short');
-     * wall.push('Tiny - This is even longer then that one!');
      * 
-     * let foo = finishWall();
+     * let bricks = [];
+     * bricks.push('Example - Example');
+     * bricks.push('Test - Hello World');
+     * bricks.push('This is the longest - Short');
+     * bricks.push('Tiny - This is even longer then that one!');
      * 
-     * foo.forEach(bar => {
-     *     console.log(bar);
+     * let wall = createWall(bricks, "-");
+     * 
+     * wall.forEach(foo => {
+     *     console.log(foo);
      * });
      * // Example             - Example
      * // Test                - Hello World
@@ -717,43 +714,37 @@ class Functions {
      * 
      * assert.equal(foo, ["Example             - Example", "Test                - Hello World", "This is the longest - Short", "Tiny                - This is even longer then that one!"]);
      */
-    createWall(sep) {       
-        let wall = [];
+    createWall(bricks, sep) {       
+        let longest_brick = [];
 
-        const finishWall = () => {
-            let longest_brick = [];
+        bricks.forEach(b => {
+            b = b.split(sep);
 
-            wall.forEach(b => {
-                b = b.split(sep);
+            let length = b[0].length;
 
-                let length = b[0].length;
+            if (length <= longest_brick[1]) return;
 
-                if (length <= longest_brick[1]) return;
+            longest_brick = [b, length];
+        });
 
-                longest_brick = [b, length];
-            });
+        let wall = []
 
-            let _wall = []
+        bricks.forEach(b => {
+            b = b.split(sep);
 
-            wall.forEach(b => {
-                b = b.split(sep);
+            let strbuilder = "";
 
-                let strbuilder = "";
+            let diff = longest_brick[1] - b[0].length;
 
-                let diff = longest_brick[1] - b[0].length;
+            strbuilder += b[0];
+            strbuilder += " ".repeat(diff);
+            strbuilder += sep;
+            strbuilder += b[1];
 
-                strbuilder += b[0];
-                strbuilder += " ".repeat(diff);
-                strbuilder += sep;
-                strbuilder += b[1];
+            wall.push(strbuilder);
+        });
 
-                _wall.push(strbuilder);
-            });
-
-            return _wall;
-        }
-
-        return [wall, finishWall];
+        return wall;
     }
 
     /**

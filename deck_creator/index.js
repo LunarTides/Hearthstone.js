@@ -325,13 +325,14 @@ function showCards() {
 
     console.log(settings.view.class.rainbow);
 
-    let [wall, finishWall] = functions.createWall("-");
-
+    let bricks = [];
     _filtered_cards.forEach(c => {
-        wall.push(getDisplayName(c) + " - " + c.id);
+        bricks.push(getDisplayName(c) + " - " + c.id);
     });
 
-    finishWall().forEach(b => {
+    let wall = functions.createWall(bricks, "-");
+
+    wall.forEach(b => {
         b = b.split("-");
 
         b = functions.colorByRarity(b[0], findCard(b[0].trim()).rarity) + "-" + b[1];
@@ -428,7 +429,7 @@ function showDeck() {
         _cards[c.name][1]++;
     });
 
-    let [wall, finishWall] = functions.createWall("-");
+    let bricks = [];
 
     Object.values(_cards).forEach(c => {
         let card = c[0];
@@ -439,10 +440,12 @@ function showDeck() {
         if (amount > 1) viewed += `x${amount} `;
         viewed += getDisplayName(card).replaceAll("-", "`") + ` - ${card.id}`;
 
-        wall.push(viewed);
+        bricks.push(viewed);
     });
 
-    finishWall().forEach(b => {
+    let wall = functions.createWall(bricks, "-");
+
+    wall.forEach(b => {
         b = b.split("-");
         b = [b[0].replaceAll("`", "-"), b[1]]; // Replace '`' with '-'
 

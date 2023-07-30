@@ -12,8 +12,6 @@ let finishedCards = [];
 
 let finishedCardsPath = "patched_cards.txt";
 
-const cls = () => process.stdout.write('\033c');
-
 function getFinishedCards(path) {
     if (!fs.existsSync(path)) return; // If the file doesn't exist, return.
 
@@ -66,7 +64,7 @@ searchCards(search); // Ignore case
 console.log(); // New line
 
 while (true) {
-    cls();
+    game.interact.cls();
 
     matchingCards.forEach((c, i) => {
         // `c` is the path to the card.
