@@ -154,10 +154,9 @@ class EventManager {
      */
     broadcast(key, val, plr, updateHistory = true) {
         if (!this[key]) this[key] = [[], []];
-        if (updateHistory && !this.history[this.game.turns]) this.history[this.game.turns] = [];
-
         this[key][plr.id].push([val, this.game.turns]);
-        if (updateHistory) this.history[this.game.turns].push([key, val, plr]);
+
+        if (updateHistory) this.addHistory(key, val, plr);
 
         this.cardUpdate(key, val);
 
@@ -166,6 +165,18 @@ class EventManager {
         this.questUpdate("quests",     key, val, plr);
 
         return true;
+    }
+
+    /**
+     * Write an event to history. Done automatically by `broadcast`.
+     * 
+     * @param {import('./types').EventKeys} key The key of the event
+     * @param {import('./types').EventValues} val The value of the event
+     * @param {Player} plr The player who caused the event to happen
+     */
+    addHistory(key, val, plr) {
+        if (!this.history[this.game.turns]) this.history[this.game.turns] = [];
+        this.history[this.game.turns].push([key, val, plr]);
     }
 
     /**
@@ -360,6 +371,10 @@ class Game {
         // Add quest cards to the players hands
         for (let i = 0; i < 2; i++) {
             // Set the player's hero to the default hero for the class
+
+            /**
+             * @type {Player}
+             */
             let plr = this["player" + (i + 1)];
             
             let success = plr.setToStartingHero();
@@ -372,11 +387,16 @@ class Game {
                 if (!c.desc.includes("Quest: ") && !c.desc.includes("Questline: ")) return;
 
                 plr.addToHand(c, false);
+                this.events.addHistory("AddCardToHand", c, plr);
+
                 plr.deck.splice(plr.deck.indexOf(c), 1);
             });
 
             let nCards = (plr.id == 0) ? 3 : 4;
-            while (plr.hand.length < nCards) plr.drawCard(false);
+            while (plr.hand.length < nCards) {
+                let c = plr.drawCard(false);
+                this.events.addHistory("DrawCard", c, plr);
+            }
 
             plr.deck.forEach(c => c.activate("startofgame"));
             plr.hand.forEach(c => c.activate("startofgame"));
@@ -390,7 +410,10 @@ class Game {
         this.player1.maxMana = 1;
         this.player1.mana = 1;
 
-        this.player2.addToHand(new Card("The Coin", this.player2), false);
+        let the_coin = new Card("The Coin", this.player2);
+
+        this.player2.addToHand(the_coin, false);
+        this.events.addHistory("AddCardToHand", the_coin, this.player2);
 
         this.turns += 1;
 
@@ -411,7 +434,7 @@ class Game {
 
         this.input(`Player ${winner.name} wins!\n`);
 
-        // If any of the players are ai's, show their moves when the game ends
+        // If any of the players are ai's, show their logs when the game ends
         if ((this.player1.ai || this.player2.ai) && this.config.debug) this.interact.doTurnLogic("/ai");
 
         this.running = false;
@@ -428,6 +451,7 @@ class Game {
      * @returns {bool} Success
      */
     endTurn() {
+        // Kill all minions with 0 or less health
         this.killMinions();
 
         // Update events
@@ -999,9 +1023,20 @@ class Game {
                 let minion = m.imperfectCopy();
 
                 minion.removeKeyword("Reborn");
+
+                // Reduce the minion's health to 1, keep the minion's attack the same
                 minion.setStats(minion.getAttack(), 1);
 
                 this.summonMinion(minion, plr, false);
+
+                // Activate the minion's passive
+                // We're doing this because otherwise, the passive won't be activated this turn
+                // Normally when we summon a minion, it will be activated immediately, since the `PlayCard` event gets triggered immediately after playing the card
+                // but this is not the case here, since we are directly summoning the minion, and we told it to not broadcast the event.
+                // The `reborn` string is passed in order for the card to know why the passive was triggered. The card can explicitly look for the `reborn` string
+                // in its passive.
+                // So it looks like this:
+                // minion.activate(key, reason, minion);
                 minion.activate("passive", "reborn", m);
 
                 n.push(minion);

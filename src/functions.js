@@ -8,6 +8,7 @@ const deckstrings = require("deckstrings"); // To decode vanilla deckcodes
 const { Player } = require("./player");
 const { Card } = require("./card");
 const { Game } = require("./game");
+const { stripColors } = require("colors");
 require("colors");
 
 /**
@@ -695,7 +696,6 @@ class Functions {
      * @param {string} sep The seperator.
      *  
      * @example
-     * 
      * let bricks = [];
      * bricks.push('Example - Example');
      * bricks.push('Test - Hello World');
@@ -712,7 +712,7 @@ class Functions {
      * // This is the longest - Short
      * // Tiny                - This is even longer then that one!
      * 
-     * assert.equal(foo, ["Example             - Example", "Test                - Hello World", "This is the longest - Short", "Tiny                - This is even longer then that one!"]);
+     * assert.equal(wall, ["Example             - Example", "Test                - Hello World", "This is the longest - Short", "Tiny                - This is even longer then that one!"]);
      */
     createWall(bricks, sep) {       
         let longest_brick = [];
@@ -784,6 +784,7 @@ class Functions {
         // Grab the history of the game
         // handleCmds("history", write_to_screen, debug)
         let history = game.interact.handleCmds("history", false, true);
+        history = stripColors(history);
 
         // AI log
         game.config.debug = true; // Do this so it can actually run '/ai'
@@ -894,6 +895,7 @@ ${main_content}
         cards = __cards;
         
         if (dangerous) {
+            // If any of the cards have a 'howToEarn' field, filter away any cards that don't have that
             const _cards = cards.filter(a => a.howToEarn);
             if (_cards.length > 0) cards = _cards;
         }
@@ -1211,6 +1213,12 @@ ${main_content}
      * assert.equal(parsed, "&BBattlecry:&R Test");
      */
     parseTags(str) {
+        /**
+         * Appends text styling based on the current types.
+         *
+         * @param {string} c The text to be styled
+         * @return {string} The text with applied styling
+         */
         const appendTypes = (c) => {
             let ret = c;
 
@@ -1270,6 +1278,7 @@ ${main_content}
 
         // Loop through the characters in str
         str.split("").forEach((c, i) => {
+            // If c is not a tag
             if (c != "&") {
                 if (i > 0 && str[i - 1] == "&") { // Don't add the character if a & precedes it.
                     if (i > 1 && str[i - 2] == "~") {} // But do add the character if the & has been cancelled

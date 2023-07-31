@@ -299,6 +299,9 @@ class Interact {
             }
         }
         else if (q == "history") {
+            if (args[0] === true) {}
+            else console.log("Cards that are shown are collected while this screen is rendering. This means that it gets the information about the card from where it is when you ran this command, for example; the graveyard. This is why most cards have <1 health.".yellow);
+
             // History
             let history = game.events.history;
             let finished = "";
@@ -308,7 +311,7 @@ class Interact {
             const doVal = (val, plr, hide) => {
                 if (val instanceof game.Card) {
                     if (hide && val.plr != plr && !history_debug) val = "Hidden";
-                    else val = val.displayName;
+                    else val = this.getReadableCard(val) + " which belongs to: " + val.plr.name.blue + ", and has uuid: " + val.uuid.slice(0, 8);
                 }
                 else if (val instanceof game.Player) val = `Player ${val.id + 1}`;
 
@@ -317,17 +320,23 @@ class Interact {
 
             Object.values(history).forEach((h, t) => {
                 let hasPrintedHeader = false;
+                let prevPlayer;
 
                 h.forEach(c => {
                     let [key, val, plr] = c;
 
-                    let bannedKeys = ["EndTurn", "StartTurn", "UnspentMana", "GainOverload", "GainHeroAttack", "SpellDealsDamage", "FreezeCard", "CancelCard", "Update"];
-                    if (bannedKeys.includes(key) && !history_debug) return;
+                    if (plr != prevPlayer) hasPrintedHeader = false;
+                    prevPlayer = plr;
+
+                    let whitelistedKeys = ["HealthRestored", "UnspentMana", "GainOverload", "GainHeroAttack", "TakeDamage", "PlayCard", "SummonMinion", "KillMinion", "DamageMinion", "TradeCard", "FreezeCard", "AddCardToDeck", "AddCardToHand", "DrawCard", "Attack", "HeroPower", "TargetSelectionStarts", "TargetSelected"];
+
+                    if (whitelistedKeys.includes(key) || history_debug) {}
+                    else return;
 
                     let hideValueKeys = ["DrawCard", "AddCardToHand", "AddCardToDeck"]; // Example: If a card gets drawn, the other player can't see what card it was
                     let shouldHide = hideValueKeys.includes(key) && !history_debug;
 
-                    if (!hasPrintedHeader) finished += `\nTurn ${t + 1} - Player [${plr.name}]\n`; 
+                    if (!hasPrintedHeader) finished += `\nTurn ${t} - Player [${plr.name}]\n`; 
                     hasPrintedHeader = true;
 
                     val = doVal(val, game.player, shouldHide);
@@ -564,7 +573,7 @@ class Interact {
     /**
      * Asks the user to select a location card to use, and activate it.
      * 
-     * @return {boolean | -1} Success
+     * @return {boolean | "nolocations" | "invalidtype" | "cooldown" | -1} Success
      */
     useLocation() {
         let locations = game.board[game.player.id].filter(m => m.type == "Location");
@@ -1190,7 +1199,7 @@ class Interact {
         sb += `Deck Size  : ${plr.deck.length.toString().yellow}`;
 
         sb += "                            | ";
-        to_remove = (plr.deck.length.toString().length + plr.deck.length.toString().length) - 3;
+        to_remove = (plr.deck.length.toString().length + op.deck.length.toString().length) - 3;
         if (to_remove > 0) sb = sb.replace(" ".repeat(to_remove) + "|", "|");
     
         // Opponent's Deck
