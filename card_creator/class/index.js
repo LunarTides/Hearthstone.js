@@ -32,7 +32,7 @@ function main() {
 
         watermark();
         let val = rl.question(question + " ");
-        if (!val || val[0].toLowerCase() == "b") exited = true;
+        if (!val || val.toLowerCase() == "back") exited = true;
 
         answers.push(val);
     });
