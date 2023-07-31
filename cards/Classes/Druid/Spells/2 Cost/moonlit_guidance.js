@@ -19,7 +19,7 @@ module.exports = {
      */
     cast(plr, game, self) {
         let cards = plr.deck;
-        let card = game.interact.discover("Discover a copy of a card in your deck.", cards);
+        let card = game.interact.discover("Discover a copy of a card in your deck.", cards, false);
         card = card.imperfectCopy();
 
         let desc = card.desc;

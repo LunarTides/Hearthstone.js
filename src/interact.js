@@ -811,17 +811,20 @@ class Interact {
      * 
      * @param {string} prompt The prompt to ask
      * @param {Card[] | import('./card').Blueprint[]} [cards=[]] The cards to choose from
+     * @param {boolean} [filterClassCards=false] If it should filter away cards that do not belong to the player's class. Keep this at default if you are using `functions.getCards()`, disable this if you are using either player's deck / hand / graveyard / etc...
      * @param {number} [amount=3] The amount of cards to show
      * @param {import('./card').Blueprint[]} [_cards=[]] Do not use this variable, keep it at default
      * 
      * @returns {Card | undefined} The card chosen.
      */
-    discover(prompt, cards = [], amount = 3, _cards = []) {
+    discover(prompt, cards = [], filterClassCards = true, amount = 3, _cards = []) {
         this.printAll();
         let values = _cards;
 
-        if (cards.length <= 0) cards = game.functions.getCards().filter(c => game.functions.validateClass(game.player, c));
+        if (cards.length <= 0) cards = game.functions.getCards();
         if (cards.length <= 0 || !cards) return;
+
+        if (filterClassCards) cards = cards.filter(c => game.functions.validateClass(game.player, c));
 
         if (_cards.length == 0) values = game.functions.chooseItemsFromList(cards, amount, false);
 
@@ -840,7 +843,7 @@ class Interact {
         let choice = game.input();
 
         if (!values[parseInt(choice) - 1]) {
-            return this.discover(prompt, cards, amount, values);
+            return this.discover(prompt, cards, filterClassCards, amount, values);
         }
 
         let card = values[parseInt(choice) - 1];
@@ -1073,7 +1076,7 @@ class Interact {
         let desc;
 
         if (card instanceof game.Card) desc = card.desc.length > 0 ? ` (${card.desc}) ` : " ";
-        else desc = card.desc.length > 0 ? ` (${game.functions.parseTags(card.desc)})` : " ";
+        else desc = card.desc.length > 0 ? ` (${game.functions.parseTags(card.desc)}) ` : " ";
 
         // Extract placeholder value, remove the placeholder header and footer
         if (card.placeholder) {
