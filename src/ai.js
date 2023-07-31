@@ -19,31 +19,43 @@ class AI {
         game = get();
 
         /**
+         * The history of the AI. Also known as its "logs".
+         * 
          * @type {[[string, any]]}
          */
         this.history = [];
 
         /**
+         * Prevent the ai from doing the actions that are in this array
+         * 
          * @type {string[]}
          */
         this.prevent = [];
 
         /**
+         * The cards that the AI has played this turn
+         * 
          * @type {Card[]}
          */
         this.cards_played_this_turn = [];
 
         /**
+         * The locations that the AI has used this turn
+         * 
          * @type {Card[]}
          */
         this.used_locations_this_turn = [];
 
         /**
+         * The card that the AI has focused, and is trying to kill
+         * 
          * @type {Card | null}
          */
         this.focus = null;
 
         /**
+         * The player that the AI is playing for
+         * 
          * @type {Player}
          */
         this.plr = plr;
@@ -538,6 +550,8 @@ class AI {
     /**
      * Makes the ai select a target.
      * 
+     * Gets automatically called by `Interactive.selectTarget`, so use that instead.
+     * 
      * @param {string} prompt The prompt to show the ai.
      * @param {boolean} elusive If the ai should care about `This minion can't be targetted by spells or hero powers`.
      * @param {"friendly" | "enemy"} [force_side] The side the ai should be constrained to.
@@ -630,7 +644,7 @@ class AI {
     }
 
     /**
-     * Choose the "best" discover minion.
+     * Choose the "best" minion to discover.
      * 
      * @param {Card[] | import("./card").Blueprint[]} cards The cards to choose from
      * 

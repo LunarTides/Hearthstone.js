@@ -535,7 +535,9 @@ class Interact {
     }
 
     /**
-     * Show information and asks the user for an input which is put into `doTurnLogic`
+     * Show the game state and asks the user for an input which is put into `doTurnLogic`.
+     * 
+     * This is the core of the game loop.
      * 
      * @returns {boolean | string | Card | "mana" | "traded" | "space" | "magnetize" | "colossal" | "invalid" | "refund"} Success | The return value of doTurnLogic
      */
@@ -606,7 +608,11 @@ class Interact {
     // Deck stuff
 
     /**
-     * Asks the player to supply a deck code, if no code was given, fill the players deck with 30 Sheep
+     * Asks the player to supply a deck code, if no code was given, fill the players deck with 30 Sheep.
+     * 
+     * This does not fill the players deck with 30 Sheep if:
+     * - Debug mode is disabled
+     * - The program is running on the stable branch
      * 
      * @param {Player} plr The player to ask
      * 
@@ -866,7 +872,8 @@ class Interact {
     }
 
     /**
-     * Asks the user a `prompt`, the user can then select a minion or hero
+     * Asks the user a `prompt`, the user can then select a minion or hero.
+     * Broadcasts the `TargetSelectionStarts` and the `TargetSelected` event
      * 
      * @param {string} prompt The prompt to ask
      * @param {boolean | string} [elusive=false] Wether or not to prevent selecting elusive minions, if this is a string, allow selecting elusive minions but don't trigger secrets / quests
@@ -888,7 +895,8 @@ class Interact {
     }
 
     /**
-     * Asks the user a `prompt`, the user can then select a minion or hero
+     * Asks the user a `prompt`, the user can then select a minion or hero.
+     * Can broadcast the `CastSpellOnMinion` event.
      * 
      * @param {string} prompt The prompt to ask
      * @param {boolean | string} [elusive=false] Wether or not to prevent selecting elusive minions, if this is a string, allow selecting elusive minions but don't trigger secrets / quests

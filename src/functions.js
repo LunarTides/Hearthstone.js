@@ -12,11 +12,15 @@ const { stripColors } = require("colors");
 require("colors");
 
 /**
+ * The current game
+ * 
  * @type {Game}
  */
 let game = null;
 
 /**
+ * An instance of the Functions class, to be used in `DeckcodeFunctions`, for example.
+ * 
  * @type {Functions}
  */
 let self = null;
@@ -571,6 +575,8 @@ class Functions {
      */
     constructor(_game) {
         /**
+         * Functions related to deckcodes.
+         * 
          * @type {DeckcodeFunctions}
          */
         this.deckcode = new DeckcodeFunctions();
@@ -582,7 +588,9 @@ class Functions {
     // QoL
     // https://dev.to/codebubb/how-to-shuffle-an-array-in-javascript-2ikj - Vladyslav
     /**
-     * Shuffle the array and return the result
+     * Shuffle the array and return the result.
+     * 
+     * Does not change the original array.
      * 
      * @param {any[]} array Array to shuffle
      * 
@@ -603,7 +611,7 @@ class Functions {
     }
 
     /**
-     * Removes `element` from `list`
+     * Removes `element` from `list`.
      *
      * @param {any[]} list The list to remove from
      * @param {any} element The element to remove from the list
@@ -616,7 +624,7 @@ class Functions {
     }
 
     /**
-     * Return a random element from "list"
+     * Return a random element from `list`
      * 
      * @param {any[]} list
      * @param {boolean} cpyCard If this is true and the element is a card, create an imperfect copy of that card.
@@ -656,7 +664,7 @@ class Functions {
     }
 
     /**
-     * Return a random number from "min" to "max"
+     * Return a random number between `min` and `max`.
      * 
      * @param {number} min The minimum number
      * @param {number} max The maximum number
@@ -691,6 +699,9 @@ class Functions {
 
     /**
      * Creates a wall.
+     * 
+     * Walls are a formatting tool for strings, which makes them easier to read.
+     * Look at the example below.
      *
      * @param {any[]} bricks The array
      * @param {string} sep The seperator.
@@ -713,8 +724,17 @@ class Functions {
      * // Tiny                - This is even longer then that one!
      * 
      * assert.equal(wall, ["Example             - Example", "Test                - Hello World", "This is the longest - Short", "Tiny                - This is even longer then that one!"]);
+     * 
+     * @returns {string[]} The wall
      */
-    createWall(bricks, sep) {       
+    createWall(bricks, sep) {
+        // Find the longest brick, most characters to the left of the seperator.
+
+        /**
+         * The longest brick
+         * 
+         * @type {[string, number]} [brick, length]
+         */
         let longest_brick = [];
 
         bricks.forEach(b => {
@@ -727,6 +747,11 @@ class Functions {
             longest_brick = [b, length];
         });
 
+        /**
+         * The wall to return.
+         * 
+         * @type {string[]}
+         */
         let wall = []
 
         bricks.forEach(b => {
@@ -750,7 +775,7 @@ class Functions {
     /**
      * Create a (crash)log file
      *
-     * @param {Error} err If this is set, create a crash report. If this is not set, create a normal log file.
+     * @param {Error} err If this is set, create a crash log. If this is not set, create a normal log file.
      *
      * @returns {boolean} Success
      */
@@ -1190,12 +1215,16 @@ ${main_content}
      * The color tags available are:
      * 
      * ```
+     * // RGB
      * 'r' = Red, 'g' = Green, 'b' = Blue
      * 
+     * // CMYK
      * 'c' = Cyan, 'm' = Magenta, 'y' = Yellow, 'k' = Black
      * 
+     * // Other colors
      * 'w' = White, 'a' = Gray
      * 
+     * // Special
      * 'B' = Bold, 'R' = Reset
      * ```
      *
@@ -1321,6 +1350,7 @@ ${main_content}
 
     /**
      * Removes color tags from a string. Look in `functions.parseTags` for more information.
+     * 
      * This only removes the TAGS, not the actual colors. Use `colors.strip` for that.
      * 
      * @example
@@ -1367,7 +1397,7 @@ ${main_content}
     }
 
     /**
-     * Calls `callback` on all `plr`'s targets 
+     * Calls `callback` on all `plr`'s targets, including the player itself.
      *
      * @param {Player} plr The player
      * @param {targetCallback} callback The callback to call

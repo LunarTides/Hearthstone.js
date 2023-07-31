@@ -16,11 +16,15 @@ class EventManager {
         this.game = game;
 
         /**
+         * The amount of event listeners that have been added to the game, this never decreases.
+         * 
          * @type {number}
          */
         this.eventListeners = 0;
 
         /**
+         * The history of the game.
+         * 
          * @type {Object<number, Array>}
          */
         this.history = {};
@@ -223,16 +227,25 @@ class Game {
     constructor(player1, player2) {
         // Choose a random player to be player 1
         /**
+         * Some general functions that can be used.
+         * 
+         * This has a lot of abstraction, so don't be afraid to use them.
+         * Look in here for more.
+         * 
          * @type {Functions}
          */
         this.functions = new Functions(this);
 
         /**
+         * The player that starts first.
+         * 
          * @type {Player}
          */
         this.player1 = null;
 
         /**
+         * The player that starts with `The Coin`.
+         * 
          * @type {Player}
          */
         this.player2 = null;
@@ -246,11 +259,17 @@ class Game {
         }
 
         /**
+         * The player whose turn it is.
+         * 
          * @type {Player}
          */
         this.player = this.player1;
 
         /**
+         * The opponent of the player whose turn it is.
+         * 
+         * Same as `game.player.getOpponent()`.
+         * 
          * @type {Player}
          */
         this.opponent = this.player2;
@@ -263,66 +282,119 @@ class Game {
         this.AI = AI;
 
         /**
+         * Events & History managment and tracker.
+         * 
          * @type {EventManager}
          */
         this.events = new EventManager(this);
 
         /**
+         * This has a lot of functions for interacting with the user.
+         * 
+         * This is generally less useful than the `functions` object, since the majority of these functions are only used once in the source code.
+         * However, some functions are still useful. For example, the `selectTarget` function.
+         * 
          * @type {Interact}
          */
         this.interact = new Interact(this);
 
         /**
+         * Some configuration for the game.
+         * 
+         * Look in the `config` folder.
+         * 
          * @type {Object}
          */
         this.config = {};
 
         /**
+         * All of the cards that have been implemented so far.
+         * 
+         * Use `functions.getCards()` instead.
+         * 
          * @type {Card[]}
          */
         this.cards = [];
 
         /**
+         * The turn counter.
+         * 
+         * This goes up at the beginning of each player's turn.
+         * 
+         * This means that, for example, if `Player 1`'s turn is on turn 0, then when it's `Player 1`'s turn again, the turn counter is 2.
+         * 
+         * Do
+         * ```
+         * Math.floor(game.turns / 2)
+         * ```
+         * for a more conventional turn counter.
+         * 
          * @type {number}
          */
         this.turns = 0;
 
         /**
+         * The board of the game.
+         * 
+         * The 0th element is `game.player1`'s side of the board,
+         * and the 1st element is `game.player2`'s side of the board.
+         * 
          * @type {[[Card], [Card]]}
          */
         this.board = [[], []];
 
         /**
+         * The graveyard, a list of cards that have been killed.
+         * 
+         * The 0th element is `game.player1`'s graveyard,
+         * and the 1st element is `game.player2`'s graveyard.
+         * 
          * @type {[[Card], [Card]]}
          */
         this.graveyard = [[], []];
 
+        /**
+         * The event listeners that are attached to the game currently.
+         * 
+         * @type {Object<number, import('./types').KeywordMethod>}
+         */
         this.eventListeners = {};
 
         /**
+         * A list of event keys to suppress.
+         * 
+         * If an event with a key in this list is broadcast, it will add it to the history, and tick the game, but will not activate any passives / event listeners.
+         * 
          * @type {string[]}
          */
         this.suppressedEvents = [];
 
         /**
+         * Whether or not the game is currently accepting input from the user.
+         * 
+         * If this is true, the user can't interact with the game. This will most likely cause an infinite loop, unless both players are ai's.
+         * 
          * @type {boolean}
          */
         this.no_input = false;
 
         /**
+         * If the game is currently running.
+         * 
+         * If this is false, the game loop will end.
+         * 
          * @type {boolean}
          */
         this.running = true;
 
         /**
-         * @type {boolean} If the program is currently evaluating code. Should only be enabled while running a `eval` function.
+         * If the program is currently evaluating code. Should only be enabled while running a `eval` function.
+         * 
+         * This is used to throw errors in places that normally would just return null / "invalid".
+         * 
+         * @type {boolean}
          */
         this.evaling = false;
-
-        /**
-         * @type {boolean} If it should prevent events from being broadcast.
-         */
-        this.suppressEvents = false;
     }
 
     /**
@@ -356,6 +428,8 @@ class Game {
 
     /**
      * Assigns an ai to the players if in the config.
+     * 
+     * Unassigns the player's ai's if not in the config.
      *
      * @returns {boolean} Success
      */
