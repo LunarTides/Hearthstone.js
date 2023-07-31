@@ -690,7 +690,10 @@ class Card {
             // These keyword methods shouldn't "refund" the card, just stop execution.
             if (["use", "heropower"].includes(name)) return;
 
-            this.plr.addToHand(this, false);
+            game.suppressedEvents.push("AddCardToHand");
+            this.plr.addToHand(this);
+            game.suppressedEvents.pop();
+
             this.plr[this.costType] += this.mana;
 
             // Return from the for loop

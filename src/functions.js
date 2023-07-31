@@ -1654,8 +1654,14 @@ ${main_content}
 
             this.remove(mulligan, c);
             
-            plr.drawCard(false);
-            plr.shuffleIntoDeck(c, false);
+            game.suppressedEvents.push("DrawCard");
+            plr.drawCard();
+            game.suppressedEvents.pop();
+
+            game.suppressedEvents.push("AddCardToDeck");
+            plr.shuffleIntoDeck(c);
+            game.suppressedEvents.pop();
+
             plr.removeFromHand(c);
 
             cards.push(c);
