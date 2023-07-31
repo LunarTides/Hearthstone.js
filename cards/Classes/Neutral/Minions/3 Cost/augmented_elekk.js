@@ -22,6 +22,9 @@ module.exports = {
         if (key != "AddCardToDeck" || game.player != plr) return;
         
         let copy = game.functions.cloneCard(val);
-        plr.shuffleIntoDeck(copy, false);
+
+        game.suppressedEvents.push("AddCardToDeck");
+        plr.shuffleIntoDeck(copy);
+        game.suppressedEvents.pop();
     }
 }

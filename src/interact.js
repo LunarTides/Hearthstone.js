@@ -322,7 +322,7 @@ class Interact {
                 let hasPrintedHeader = false;
                 let prevPlayer;
 
-                h.forEach(c => {
+                h.forEach((c, i) => {
                     let [key, val, plr] = c;
 
                     if (plr != prevPlayer) hasPrintedHeader = false;
@@ -332,6 +332,19 @@ class Interact {
 
                     if (whitelistedKeys.includes(key) || history_debug) {}
                     else return;
+
+                    // If the `key` is "AddCardToHand", check if the previous history entry was `DrawCard`, and they both contained the exact same `val`.
+                    // If so, ignore it.
+                    if (key == "AddCardToHand" && i > 0) {
+                        let last_entry = history[t][i - 1];
+
+                        console.log(last_entry[1].uuid)
+                        console.log(val.uuid)
+
+                        if (last_entry[0] == "DrawCard" && last_entry[1].uuid == val.uuid) {
+                            return;
+                        }
+                    } 
 
                     let hideValueKeys = ["DrawCard", "AddCardToHand", "AddCardToDeck"]; // Example: If a card gets drawn, the other player can't see what card it was
                     let shouldHide = hideValueKeys.includes(key) && !history_debug;

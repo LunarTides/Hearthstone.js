@@ -336,13 +336,13 @@ class Player {
 
     /**
      * Decreases the player's health by `amount`. If the player has armor, the armor gets decreased instead.
+     * Broadcasts the `TakeDamage` event and the `FatalDamage`? event
      * 
      * @param {number} amount The amount the player's health should decrease by
-     * @param {boolean} update If this should broadcast the `TakeDamage` event.
      * 
      * @returns {boolean} Success
      */
-    remHealth(amount, update = true) {
+    remHealth(amount) {
         if (this.immune) return true;
 
         let a = amount;
@@ -356,7 +356,7 @@ class Player {
 
         this.health -= a;
 
-        if (update) game.events.broadcast("TakeDamage", [this, amount], this);
+        game.events.broadcast("TakeDamage", [this, amount], this);
 
         if (this.health <= 0) {
             game.events.broadcast("FatalDamage", null, this);
@@ -391,21 +391,19 @@ class Player {
     // Hand / Deck
 
     /**
-     * Shuffle a card into this player's deck
+     * Shuffle a card into this player's deck.
+     * Broadcasts the `AddCardToDeck` event
      * 
      * @param {Card} card The card to shuffle
-     * @param {boolean} [updateStats=true] Should this broadcast the `AddCardToDeck` event.
      * 
      * @returns {boolean} Success
      */
-    shuffleIntoDeck(card, updateStats = true) {
+    shuffleIntoDeck(card) {
         // Add the card into a random position in the deck
         let pos = game.functions.randInt(0, this.deck.length);
         this.deck.splice(pos, 0, card);
 
-        if (updateStats) {
-            game.events.broadcast("AddCardToDeck", card, this);
-        }
+        game.events.broadcast("AddCardToDeck", card, this);
 
         this.deck = game.functions.shuffle(this.deck);
 
@@ -413,29 +411,28 @@ class Player {
     }
 
     /**
-     * Adds a card to the bottom of this player's deck
+     * Adds a card to the bottom of this player's deck.
+     * Broadcasts the `AddCardToDeck` event
      * 
      * @param {Card} card The card to add to the bottom of the deck
-     * @param {boolean} [update=true] Should this broadcast the `AddCardToDeck` event.
      * 
      * @returns {boolean} Success
      */
-    addToBottomOfDeck(card, update = true) {
+    addToBottomOfDeck(card) {
         this.deck = [card, ...this.deck];
 
-        if (update) game.events.broadcast("AddCardToDeck", card, this);
+        game.events.broadcast("AddCardToDeck", card, this);
 
         return true;
     }
 
     /**
-     * Draws the card from the top of this player's deck
-     * 
-     * @param {boolean} [update=true] Should this broadcast the `DrawCard` event.
+     * Draws the card from the top of this player's deck.
+     * Broadcasts the `DrawCard` event
      * 
      * @returns {Card | number} The card drawn | The amount of fatigue the player was dealt
      */
-    drawCard(update = true) {
+    drawCard() {
         let deck_length = this.deck.length;
         
         /**
@@ -452,51 +449,55 @@ class Player {
             return this.fatigue;
         }
 
-        if (update) game.events.broadcast("DrawCard", card, this);
+        game.events.broadcast("DrawCard", card, this);
 
         // Cast on draw
         if (card.type == "Spell" && card.keywords.includes("Cast On Draw") && card.activate("cast")) return this.drawCard();
 
-        this.addToHand(card, false);
+        game.suppressedEvents.push("AddCardToHand");
+        this.addToHand(card);
+        game.suppressedEvents.pop();
 
         return card;
     }
 
     /**
-     * Draws a specific card from this player's deck
+     * Draws a specific card from this player's deck.
+     * Broadcasts the `DrawCard` event
      * 
      * @param {Card} card The card to draw
-     * @param {boolean} [update=true] Should this broadcast the `DrawCard` event.
      * 
      * @returns {Card | undefined} Card is the card drawn
      */
-    drawSpecific(card, update = true) {
+    drawSpecific(card) {
         if (this.deck.length <= 0) return;
 
         this.deck = this.deck.filter(c => c !== card);
 
-        if (update) game.events.broadcast("DrawCard", card, this);
+        game.events.broadcast("DrawCard", card, this);
 
         if (card.type == "Spell" && card.keywords.includes("Cast On Draw") && card.activate("cast")) return;
 
-        this.addToHand(card, false);
+        game.suppressedEvents.push("AddCardToHand");
+        this.addToHand(card);
+        game.suppressedEvents.pop();
 
         return card;
     }
 
     /**
-     * Adds a card to the player's hand
+     * Adds a card to the player's hand.
+     * Broadcasts the `AddCardToHand` event
      * 
      * @param {Card} card The card to add
-     * @param {boolean} [updateStats=true] Should this broadcast the `AddCardToHand` event.
      * 
      * @returns {boolean} Success
      */
-    addToHand(card, updateStats = true) {
+    addToHand(card) {
         if (this.hand.length >= 10) return false;
         this.hand.push(card);
 
-        if (updateStats) game.events.broadcast("AddCardToHand", card, this);
+        game.events.broadcast("AddCardToHand", card, this);
         return true;
     }
 

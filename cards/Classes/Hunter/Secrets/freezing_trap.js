@@ -25,7 +25,10 @@ module.exports = {
 
             let m = new game.Card(attacker.name, plr.getOpponent());
             m.addEnchantment("+2 mana", card);
-            plr.getOpponent().addToHand(m, false);
+
+            game.suppressedEvents.push("AddCardToHand");
+            plr.getOpponent().addToHand(m);
+            game.suppressedEvents.pop();
 
             attacker.destroy();
         });
