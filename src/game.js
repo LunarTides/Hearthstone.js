@@ -865,8 +865,6 @@ class Game {
                 // If the weapon would be part of the attack, remove 1 durability
                 if (wpn.attackTimes > 0 && wpn.getAttack()) {
                     wpn.attackTimes -= 1;
-
-                    wpn.activate("onattack");
                     wpn.remStats(0, 1);
                 }
 
@@ -959,9 +957,7 @@ class Game {
         }
 
         if (attacker.keywords.includes("Stealth")) attacker.removeKeyword("Stealth");
-    
-        attacker.activate("onattack");
-    
+        
         if (dmgAttacker && target.keywords.includes("Poisonous")) attacker.kill();
 
         if (target.keywords.includes("Divine Shield")) {
@@ -1013,11 +1009,10 @@ class Game {
                 m.turnKilled = this.turns;
                 amount++;
 
-                if (!m.keywords.includes("Reborn")) {
-                    plr.corpses++;
-                    this.graveyard[p].push(m);
-                    return;
-                }
+                plr.corpses++;
+                this.graveyard[p].push(m);
+
+                if (!m.keywords.includes("Reborn")) return;
 
                 // Reborn
                 let minion = m.imperfectCopy();
