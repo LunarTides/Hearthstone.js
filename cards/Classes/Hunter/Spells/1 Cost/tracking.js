@@ -19,7 +19,7 @@ module.exports = {
     cast(plr, game, self) {
         let list = plr.deck;
 
-        let card = game.interact.discover("Discover a card from your deck.", list);
+        let card = game.interact.discover("Discover a card from your deck.", list, false);
 
         plr.drawSpecific(card);
     }

@@ -33,7 +33,7 @@ module.exports = {
         }
 
         // Not all three are beasts.
-        let minion = game.interact.discover("Discover a minion in your deck.", cards);
+        let minion = game.interact.discover("Discover a minion in your deck.", cards, false);
         plr.addToHand(minion);
     }
 }

@@ -27,7 +27,7 @@ module.exports = {
         list = list.filter(c => c.type == "Spell" && !game.functions.validateClass(plr, c));
         if (list.length <= 0) return;
 
-        let spell = game.interact.discover("Discover a spell from another class.", list);
+        let spell = game.interact.discover("Discover a spell from another class.", list, false);
         if (!spell) return;
 
         plr.addToHand(spell);

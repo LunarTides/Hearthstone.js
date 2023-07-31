@@ -23,7 +23,7 @@ module.exports = {
         list = list.filter(m => m.blueprint.deathrattle);
         if (list.length <= 0) return;
 
-        let minion = game.interact.discover(self.desc, list);
+        let minion = game.interact.discover(self.desc, list, false);
         if (!minion) return;
         minion = minion.imperfectCopy();
 
