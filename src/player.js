@@ -740,7 +740,7 @@ class Player {
          */
         let card = this.deck.pop();
 
-        if (deck_length <= 0 || card === undefined) {
+        if (deck_length <= 0 || !card instanceof game.Card) {
             this.fatigue++;
 
             this.remHealth(this.fatigue);

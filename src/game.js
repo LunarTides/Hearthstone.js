@@ -886,7 +886,7 @@ class Game {
             minion.colossal.forEach(v => {
                 if (v == "") {
                     this.suppressedEvents.push("SummonMinion");
-                    let ret = this.summonMinion(card, player, false);
+                    let ret = this.summonMinion(minion, player, false);
                     this.suppressedEvents.pop();
 
                     return ret

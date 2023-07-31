@@ -338,9 +338,6 @@ class Interact {
                     if (key == "AddCardToHand" && i > 0) {
                         let last_entry = history[t][i - 1];
 
-                        console.log(last_entry[1].uuid)
-                        console.log(val.uuid)
-
                         if (last_entry[0] == "DrawCard" && last_entry[1].uuid == val.uuid) {
                             return;
                         }
