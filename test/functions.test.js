@@ -133,13 +133,9 @@ describe("Functions", () => {
             "Huuuuuge    - Looooong"
         ];
 
-        const [wall, finishWall] = game.functions.createWall("-");
+        const wall = game.functions.createWall(og, "-");
 
-        og.forEach(e => wall.push(e));
-
-        const fin = finishWall();
-
-        const not_matches = fin.filter(e => !expected.includes(e)); // `["test"] != ["test"]` for some reason so i need to do this
+        const not_matches = wall.filter(e => !expected.includes(e)); // `["test"] != ["test"]` for some reason so i need to do this
 
         assert.ok(not_matches.length === 0); // fin == expected
     });
@@ -150,22 +146,12 @@ describe("Functions", () => {
             "Example - This is an example string",
             "Huuuuuge - Looooong"
         ];
-        const expected = [
-            "Big         - Small",
-            "Test String - Hi",
-            "Example     - This is an example string",
-            "Huuuuuge    - Looooong"
-        ];
 
-        const [wall, finishWall] = game.functions.createWall("-");
+        const wall = game.functions.createWall(og, "-");
 
-        og.forEach(e => wall.push(e));
+        const changed = wall.filter(e => !og.includes(e));
 
-        const fin = finishWall();
-
-        const changed = fin.filter(e => !og.includes(e));
-
-        assert.ok(changed.length + 1 === og.length); // fin !== og. `changed` does not include the longest brick, account for it by adding 1
+        assert.ok(changed.length + 1 === og.length); // wall !== og. `changed` does not include the longest brick, account for it by adding 1
     });
 
     it ('should get a card by its name', () => {

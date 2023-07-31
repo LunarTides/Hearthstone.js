@@ -25,6 +25,9 @@ module.exports = {
         let clone = game.functions.cloneCard(target); // Create an exact copy of the target
 
         self.destroy();
-        game.summonMinion(clone, plr, false);
+
+        game.suppressedEvents.push("SummonMinion");
+        game.summonMinion(clone, plr);
+        game.suppressedEvents.pop();
     }
 }

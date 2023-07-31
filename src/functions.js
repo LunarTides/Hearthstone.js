@@ -8,6 +8,7 @@ const deckstrings = require("deckstrings"); // To decode vanilla deckcodes
 const { Player } = require("./player");
 const { Card } = require("./card");
 const { Game } = require("./game");
+const { stripColors } = require("colors");
 require("colors");
 
 /**
@@ -691,69 +692,59 @@ class Functions {
     /**
      * Creates a wall.
      *
+     * @param {any[]} bricks The array
      * @param {string} sep The seperator.
-     *
-     * @returns {[str[], wallCallback]} [wall, finishWall]
-     * 
-     * @callback wallCallback
-     * @returns {str[]}
-     * 
+     *  
      * @example
-     * let [wall, finishWall] = createWall("-");
-     * wall.push('Example - Example');
-     * wall.push('Test - Hello World');
-     * wall.push('This is the longest - Short');
-     * wall.push('Tiny - This is even longer then that one!');
+     * let bricks = [];
+     * bricks.push('Example - Example');
+     * bricks.push('Test - Hello World');
+     * bricks.push('This is the longest - Short');
+     * bricks.push('Tiny - This is even longer then that one!');
      * 
-     * let foo = finishWall();
+     * let wall = createWall(bricks, "-");
      * 
-     * foo.forEach(bar => {
-     *     console.log(bar);
+     * wall.forEach(foo => {
+     *     console.log(foo);
      * });
      * // Example             - Example
      * // Test                - Hello World
      * // This is the longest - Short
      * // Tiny                - This is even longer then that one!
      * 
-     * assert.equal(foo, ["Example             - Example", "Test                - Hello World", "This is the longest - Short", "Tiny                - This is even longer then that one!"]);
+     * assert.equal(wall, ["Example             - Example", "Test                - Hello World", "This is the longest - Short", "Tiny                - This is even longer then that one!"]);
      */
-    createWall(sep) {       
-        let wall = [];
+    createWall(bricks, sep) {       
+        let longest_brick = [];
 
-        const finishWall = () => {
-            let longest_brick = [];
+        bricks.forEach(b => {
+            b = b.split(sep);
 
-            wall.forEach(b => {
-                b = b.split(sep);
+            let length = b[0].length;
 
-                let length = b[0].length;
+            if (length <= longest_brick[1]) return;
 
-                if (length <= longest_brick[1]) return;
+            longest_brick = [b, length];
+        });
 
-                longest_brick = [b, length];
-            });
+        let wall = []
 
-            let _wall = []
+        bricks.forEach(b => {
+            b = b.split(sep);
 
-            wall.forEach(b => {
-                b = b.split(sep);
+            let strbuilder = "";
 
-                let strbuilder = "";
+            let diff = longest_brick[1] - b[0].length;
 
-                let diff = longest_brick[1] - b[0].length;
+            strbuilder += b[0];
+            strbuilder += " ".repeat(diff);
+            strbuilder += sep;
+            strbuilder += b[1];
 
-                strbuilder += b[0];
-                strbuilder += " ".repeat(diff);
-                strbuilder += sep;
-                strbuilder += b[1];
+            wall.push(strbuilder);
+        });
 
-                _wall.push(strbuilder);
-            });
-
-            return _wall;
-        }
-
-        return [wall, finishWall];
+        return wall;
     }
 
     /**
@@ -793,6 +784,7 @@ class Functions {
         // Grab the history of the game
         // handleCmds("history", write_to_screen, debug)
         let history = game.interact.handleCmds("history", false, true);
+        history = stripColors(history);
 
         // AI log
         game.config.debug = true; // Do this so it can actually run '/ai'
@@ -903,6 +895,7 @@ ${main_content}
         cards = __cards;
         
         if (dangerous) {
+            // If any of the cards have a 'howToEarn' field, filter away any cards that don't have that
             const _cards = cards.filter(a => a.howToEarn);
             if (_cards.length > 0) cards = _cards;
         }
@@ -1220,6 +1213,12 @@ ${main_content}
      * assert.equal(parsed, "&BBattlecry:&R Test");
      */
     parseTags(str) {
+        /**
+         * Appends text styling based on the current types.
+         *
+         * @param {string} c The text to be styled
+         * @return {string} The text with applied styling
+         */
         const appendTypes = (c) => {
             let ret = c;
 
@@ -1279,6 +1278,7 @@ ${main_content}
 
         // Loop through the characters in str
         str.split("").forEach((c, i) => {
+            // If c is not a tag
             if (c != "&") {
                 if (i > 0 && str[i - 1] == "&") { // Don't add the character if a & precedes it.
                     if (i > 1 && str[i - 2] == "~") {} // But do add the character if the & has been cancelled
@@ -1654,8 +1654,14 @@ ${main_content}
 
             this.remove(mulligan, c);
             
-            plr.drawCard(false);
-            plr.shuffleIntoDeck(c, false);
+            game.suppressedEvents.push("DrawCard");
+            plr.drawCard();
+            game.suppressedEvents.pop();
+
+            game.suppressedEvents.push("AddCardToDeck");
+            plr.shuffleIntoDeck(c);
+            game.suppressedEvents.pop();
+
             plr.removeFromHand(c);
 
             cards.push(c);

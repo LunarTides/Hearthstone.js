@@ -299,6 +299,9 @@ class Interact {
             }
         }
         else if (q == "history") {
+            if (args[0] === true) {}
+            else console.log("Cards that are shown are collected while this screen is rendering. This means that it gets the information about the card from where it is when you ran this command, for example; the graveyard. This is why most cards have <1 health.".yellow);
+
             // History
             let history = game.events.history;
             let finished = "";
@@ -308,7 +311,7 @@ class Interact {
             const doVal = (val, plr, hide) => {
                 if (val instanceof game.Card) {
                     if (hide && val.plr != plr && !history_debug) val = "Hidden";
-                    else val = val.displayName;
+                    else val = this.getReadableCard(val) + " which belongs to: " + val.plr.name.blue + ", and has uuid: " + val.uuid.slice(0, 8);
                 }
                 else if (val instanceof game.Player) val = `Player ${val.id + 1}`;
 
@@ -317,17 +320,36 @@ class Interact {
 
             Object.values(history).forEach((h, t) => {
                 let hasPrintedHeader = false;
+                let prevPlayer;
 
-                h.forEach(c => {
+                h.forEach((c, i) => {
                     let [key, val, plr] = c;
 
-                    let bannedKeys = ["EndTurn", "StartTurn", "UnspentMana", "GainOverload", "GainHeroAttack", "SpellDealsDamage", "FreezeCard", "CancelCard", "Update"];
-                    if (bannedKeys.includes(key) && !history_debug) return;
+                    if (plr != prevPlayer) hasPrintedHeader = false;
+                    prevPlayer = plr;
+
+                    let whitelistedKeys = ["HealthRestored", "UnspentMana", "GainOverload", "GainHeroAttack", "TakeDamage", "PlayCard", "SummonMinion", "KillMinion", "DamageMinion", "TradeCard", "FreezeCard", "AddCardToDeck", "AddCardToHand", "DrawCard", "Attack", "HeroPower", "TargetSelectionStarts", "TargetSelected"];
+
+                    if (whitelistedKeys.includes(key) || history_debug) {}
+                    else return;
+
+                    // If the `key` is "AddCardToHand", check if the previous history entry was `DrawCard`, and they both contained the exact same `val`.
+                    // If so, ignore it.
+                    if (key == "AddCardToHand" && i > 0) {
+                        let last_entry = history[t][i - 1];
+
+                        console.log(last_entry[1].uuid)
+                        console.log(val.uuid)
+
+                        if (last_entry[0] == "DrawCard" && last_entry[1].uuid == val.uuid) {
+                            return;
+                        }
+                    } 
 
                     let hideValueKeys = ["DrawCard", "AddCardToHand", "AddCardToDeck"]; // Example: If a card gets drawn, the other player can't see what card it was
                     let shouldHide = hideValueKeys.includes(key) && !history_debug;
 
-                    if (!hasPrintedHeader) finished += `\nTurn ${t + 1} - Player [${plr.name}]\n`; 
+                    if (!hasPrintedHeader) finished += `\nTurn ${t} - Player [${plr.name}]\n`; 
                     hasPrintedHeader = true;
 
                     val = doVal(val, game.player, shouldHide);
@@ -564,7 +586,7 @@ class Interact {
     /**
      * Asks the user to select a location card to use, and activate it.
      * 
-     * @return {boolean | -1} Success
+     * @return {boolean | "nolocations" | "invalidtype" | "cooldown" | -1} Success
      */
     useLocation() {
         let locations = game.board[game.player.id].filter(m => m.type == "Location");
@@ -802,17 +824,20 @@ class Interact {
      * 
      * @param {string} prompt The prompt to ask
      * @param {Card[] | import('./card').Blueprint[]} [cards=[]] The cards to choose from
+     * @param {boolean} [filterClassCards=false] If it should filter away cards that do not belong to the player's class. Keep this at default if you are using `functions.getCards()`, disable this if you are using either player's deck / hand / graveyard / etc...
      * @param {number} [amount=3] The amount of cards to show
      * @param {import('./card').Blueprint[]} [_cards=[]] Do not use this variable, keep it at default
      * 
      * @returns {Card | undefined} The card chosen.
      */
-    discover(prompt, cards = [], amount = 3, _cards = []) {
+    discover(prompt, cards = [], filterClassCards = true, amount = 3, _cards = []) {
         this.printAll();
         let values = _cards;
 
-        if (cards.length <= 0) cards = game.functions.getCards().filter(c => game.functions.validateClass(game.player, c));
+        if (cards.length <= 0) cards = game.functions.getCards();
         if (cards.length <= 0 || !cards) return;
+
+        if (filterClassCards) cards = cards.filter(c => game.functions.validateClass(game.player, c));
 
         if (_cards.length == 0) values = game.functions.chooseItemsFromList(cards, amount, false);
 
@@ -831,7 +856,7 @@ class Interact {
         let choice = game.input();
 
         if (!values[parseInt(choice) - 1]) {
-            return this.discover(prompt, cards, amount, values);
+            return this.discover(prompt, cards, filterClassCards, amount, values);
         }
 
         let card = values[parseInt(choice) - 1];
@@ -845,7 +870,7 @@ class Interact {
      * 
      * @param {string} prompt The prompt to ask
      * @param {boolean | string} [elusive=false] Wether or not to prevent selecting elusive minions, if this is a string, allow selecting elusive minions but don't trigger secrets / quests
-     * @param {"enemy" | "friendly"} [force_side=null] Force the user to only be able to select minions / the hero of a specific side: ["enemy", "self"]
+     * @param {"enemy" | "friendly"} [force_side=null] Force the user to only be able to select minions / the hero of a specific side: ["enemy", "friendly"]
      * @param {"hero" | "minion"} [force_class=null] Force the user to only be able to select a minion or a hero: ["hero", "minion"]
      * @param {string[]} [flags=[]] Change small behaviours ["allow_locations" => Allow selecting location, ]
      * 
@@ -853,7 +878,7 @@ class Interact {
      */
     selectTarget(prompt, elusive = false, force_side = null, force_class = null, flags = []) {
         // force_class = [null, "hero", "minion"]
-        // force_side = [null, "enemy", "self"]
+        // force_side = [null, "enemy", "friendly"]
 
         game.events.broadcast("TargetSelectionStarts", [prompt, elusive, force_side, force_class, flags], game.player);
         let target = this._selectTarget(prompt, elusive, force_side, force_class, flags);
@@ -877,94 +902,126 @@ class Interact {
         // force_class = [null, "hero", "minion"]
         // force_side = [null, "enemy", "friendly"]
 
+        // If the player is forced to select a target, select that target.
         if (game.player.forceTarget) return game.player.forceTarget;
+
+        // If the player is an ai, hand over control to the ai.
         if (game.player.ai) return game.player.ai.selectTarget(prompt, elusive, force_side, force_class, flags);
 
+        // If the player is forced to select a hero
         if (force_class == "hero") {
-            const target = game.input(`Do you want to select the enemy hero, or your own hero? (y: enemy, n: self) `);
+            const target = game.input(`Do you want to select the enemy hero, or your own hero? (y: enemy, n: friendly) `);
     
             return (target.startsWith("y")) ? game.opponent : game.player;
         }
 
+        // From this point, force_class is either
+        // 1. null
+        // 2. minion
+
+        // Ask the player to choose a target.
         let p = `\n${prompt} (`;
         if (force_class == null) p += "type 'face' to select a hero | ";
         p += "type 'back' to go back) ";
 
         const target = game.input(p);
 
+        // Player chose to go back
         if (target.startsWith("b")) {
+            return false; // This should always be safe.
+
+            // Make sure the player wants to go back
             const return_question = this.yesNoQuestion(game.player, "WARNING: Going back might cause unexpected things to happen. ".red + "Do you still want to go back?");
             
             if (return_question) return false;
         }
 
-        const board_next = game.board[game.opponent.id];
-        const board_self = game.board[game.player.id];
+        // Get a list of each side of the board
+        const board_opponent = game.board[game.opponent.id];
+        const board_friendly = game.board[game.player.id];
 
-        const board_next_target = board_next[parseInt(target) - 1];
-        const board_self_target = board_self[parseInt(target) - 1];
+        // Get each minion that matches the target.
+        const board_opponent_target = board_opponent[parseInt(target) - 1];
+        const board_friendly_target = board_friendly[parseInt(target) - 1];
 
-        let minion = undefined;
+        /**
+         * This is the resulting minion that the player chose, if any.
+         * 
+         * @type {Card}
+         */
+        let minion;
 
-        if (!target.startsWith("face") && !board_self_target && !board_next_target) {
+        // If the player didn't choose to attack a hero, and no minions could be found at the index requested, try again.
+        if (!target.startsWith("face") && !board_friendly_target && !board_opponent_target) {
             // target != "face" and target is not a minion.
             // The input is invalid
 
-            return this.selectTarget(prompt, elusive, force_side, force_class);
+            return this.selectTarget(prompt, elusive, force_side, force_class, flags);
         }
 
+        // If the player is forced to one side.
         if (force_side) {
+            // If the player chose a hero, and they are allowed to
             if (target.startsWith("face") && force_class != "minion") {
                 if (force_side == "enemy") return game.opponent;
 
                 return game.player;
             }
 
-            minion = (force_side == "enemy") ? board_next_target : board_self_target;
+            // Select the minion on the correct side of the board.
+            minion = (force_side == "enemy") ? board_opponent_target : board_friendly_target;
         } else {
-            if (target.startsWith("face") && force_class != "minion") return this.selectTarget(prompt, false, null, "hero");
+            // `force_side` == null, allow the user to select any side.
+
+            // If the player chose to target a hero, it will ask which hero.
+            if (target.startsWith("face") && force_class != "minion") return this.selectTarget(prompt, false, null, "hero", flags);
             
-            if (board_next.length >= parseInt(target) && board_self.length >= parseInt(target)) {
-                // Both players have a minion with the same index.
-                // Ask them which minion to select
-                let target2 = game.input(`Do you want to select your opponent's (${game.functions.colorByRarity(board_next_target.displayName, board_next_target.rarity)}) or your own (${game.functions.colorByRarity(board_self_target.displayName, board_self_target.rarity)})? (y: opponent, n: self | type 'back' to go back) `);
+            // Both players have a minion with the same index.
+            // Ask them which minion to select
+            if (board_opponent.length >= parseInt(target) && board_friendly.length >= parseInt(target)) {
+                let target2 = game.input(`Do you want to select your opponent's (${game.functions.colorByRarity(board_opponent_target.displayName, board_opponent_target.rarity)}) or your own (${game.functions.colorByRarity(board_friendly_target.displayName, board_friendly_target.rarity)})? (y: opponent, n: friendly | type 'back' to go back) `);
             
                 if (target2.startsWith("b")) {
                     // Go back.
-                    return this.selectTarget(prompt, elusive, force_side, force_class);
+                    return this.selectTarget(prompt, elusive, force_side, force_class, flags);
                 }
 
-                minion = (target2.startsWith("y")) ? board_next_target : board_self_target;
+                minion = (target2.startsWith("y")) ? board_opponent_target : board_friendly_target;
             } else {
-                minion = board_next.length >= parseInt(target) ? board_next_target : board_self_target;
+                minion = board_opponent.length >= parseInt(target) ? board_opponent_target : board_friendly_target;
             }
         }
 
+        // If you didn't select a valid minion, return.
         if (minion === undefined) {
             game.input("Invalid minion.\n".red);
             return false;
         }
 
+        // If the minion has elusive, and we care about elusives, prevent it from being targetted.
         if (minion.keywords.includes("Elusive") && elusive) {
             game.input("Can't be targeted by Spells or Hero Powers.\n".red);
             
             return false;
         }
 
+        // If elusive is EXACTLY true, broadcast an event.
+        // If you set elusive to be something that evaluates to true, it will prvent elusive targets from being targetted, and not broadcasting this event.
+        // TODO: Remove this once `game.suppressedEvents` becomes a thing.
         if (elusive === true) {
             game.events.broadcast("CastSpellOnMinion", minion, game.player);
         }
 
+        // If the minion has stealth, don't allow the opponent to target it.
+        // TODO: Does vanilla allow you to select your own stealthed minions? Figure this out.
         if (minion.keywords.includes("Stealth") && game.player != minion.plr) {
             game.input("This minion has stealth.\n".red);
 
             return false;
         }
 
-        // Location
-        if (minion.type == "Location") {
-            // Set the "allow_locations" flag to allow targetting locations.
-            if (flags.includes("allow_locations")) return minion;
+        // If the minion is a location, don't allow it to be selectted unless the `allow_locations` flag was set.
+        if (minion.type == "Location" && !flags.includes("allow_locations")) {
             game.input("You cannot target location cards.\n".red);
 
             return false;
@@ -1032,7 +1089,7 @@ class Interact {
         let desc;
 
         if (card instanceof game.Card) desc = card.desc.length > 0 ? ` (${card.desc}) ` : " ";
-        else desc = card.desc.length > 0 ? ` (${game.functions.parseTags(card.desc)})` : " ";
+        else desc = card.desc.length > 0 ? ` (${game.functions.parseTags(card.desc)}) ` : " ";
 
         // Extract placeholder value, remove the placeholder header and footer
         if (card.placeholder) {
@@ -1083,6 +1140,9 @@ class Interact {
      * @returns {undefined}
      */
     printAll(plr = null, detailed = false) {
+        // WARNING: Stinky and/or smelly code up ahead. Read at your own risk.
+        // TODO: Reformat this
+
         if (!plr) plr = game.player; 
 
         if (game.turns <= 2 && !game.config.debug) this.printLicense();
@@ -1097,6 +1157,8 @@ class Interact {
         // Current Player's Mana
         sb += `Mana       : ${plr.mana.toString().cyan} / ${plr.maxMana.toString().cyan}`;
         sb += "                        | ";
+
+        // TODO: Yeah no. Replace all of these.
         let to_remove = (plr.mana.toString().length + plr.maxMana.toString().length) - 2;
         if (to_remove > 0) sb = sb.replace(" ".repeat(to_remove) + "|", "|");
 
@@ -1153,7 +1215,7 @@ class Interact {
         sb += `Deck Size  : ${plr.deck.length.toString().yellow}`;
 
         sb += "                            | ";
-        to_remove = (plr.deck.length.toString().length + plr.deck.length.toString().length) - 3;
+        to_remove = (plr.deck.length.toString().length + op.deck.length.toString().length) - 3;
         if (to_remove > 0) sb = sb.replace(" ".repeat(to_remove) + "|", "|");
     
         // Opponent's Deck

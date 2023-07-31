@@ -23,6 +23,8 @@ module.exports = {
 
         let [player, amount] = val;
 
-        player.remHealth(1, false);
+        game.suppressedEvents.push("TakeDamage");
+        player.remHealth(1);
+        game.suppressedEvents.pop();
     }
 }

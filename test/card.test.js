@@ -142,7 +142,7 @@ describe("Card", () => {
         const card = testCard();
 
         card.setStats(5, 5); // The card has 5 health
-        card.remHealth(3, 3); // The card has 2 health
+        card.remHealth(3); // The card has 2 health
 
         card.addHealth(5); // Restore 5 health to the minion. 5+2 = 7, which is more than the max health, so set it to 5
 

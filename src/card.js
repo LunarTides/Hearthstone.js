@@ -260,11 +260,23 @@ class Card {
      * @returns {boolean} Success
      */
     randomizeIds() {
+        /**
+         * A list of ids, do not use.
+         * 
+         * @type {number[]}
+         */
         this.__ids = [];
         for (let i = 0; i < 100; i++) {
             // This is to prevent cards from getting linked. Don't use this variable
             this.__ids.push(game.functions.randInt(0, 671678679546789));
         }
+
+        /**
+         * The card's uuid. Gets randomly generated when the card gets created.
+         * 
+         * @type {string}
+         */
+        this.uuid = this.__ids.map(id => id.toString()[0]).join("");
 
         return true;
     }
@@ -665,13 +677,13 @@ class Card {
 
         let ret = [];
         
-        this[name].forEach(i => {
+        this[name].forEach(func => {
             if (ret === -1) return;
 
             // Check if the method is conditioned
             if (this.conditioned && this.conditioned.includes(name) && this.activate("condition")[0] === false) return;
 
-            let r = i(this.plr, game, this, ...args);
+            let r = func(this.plr, game, this, ...args);
             ret.push(r);
 
             if (r != -1 || name == "deathrattle") return; // Deathrattle isn't cancellable
@@ -679,15 +691,16 @@ class Card {
             // If the return value is -1, meaning "refund", refund the card and stop the for loop
             game.events.broadcast("CancelCard", [this, name], this.plr);
 
-            // These keyword methods shouldn't "refund" the card, just stop execution.
-            if (["use", "heropower"].includes(name)) {
-                ret = -1;
-                return;
-            }
-
-            this.plr.addToHand(this, false);
-            this.plr[this.costType] += this.mana;
             ret = -1;
+
+            // These keyword methods shouldn't "refund" the card, just stop execution.
+            if (["use", "heropower"].includes(name)) return;
+
+            game.suppressedEvents.push("AddCardToHand");
+            this.plr.addToHand(this);
+            game.suppressedEvents.pop();
+
+            this.plr[this.costType] += this.mana;
 
             // Return from the for loop
             return;
