@@ -553,12 +553,12 @@ class AI {
      * Gets automatically called by `Interactive.selectTarget`, so use that instead.
      * 
      * @param {string} prompt The prompt to show the ai.
-     * @param {boolean} elusive If the ai should care about `This minion can't be targetted by spells or hero powers`.
-     * @param {"friendly" | "enemy"} [force_side] The side the ai should be constrained to.
-     * @param {"minion" | "hero"} [force_class] The type of target the ai should be constrained to.
+     * @param {boolean | string} elusive If the ai should care about `This minion can't be targetted by spells or hero powers`.
+     * @param {"friendly" | "enemy" | null} [force_side=null] The side the ai should be constrained to.
+     * @param {"minion" | "hero" | null} [force_class=null] The type of target the ai should be constrained to.
      * @param {string[]} [flags=[]] Some flags
      * 
-     * @returns {Card | Player | number} The target selected.
+     * @returns {Card | Player | false} The target selected.
      */
     selectTarget(prompt, elusive, force_side = null, force_class = null, flags = []) {
         if (flags.includes("allow_locations") && force_class != "hero") {
@@ -735,7 +735,7 @@ class AI {
      * @param {string} prompt The prompt to show to the ai
      * @param {string[]} options The options the ai can pick from
      *
-     * @returns {number} The index of the option chosen + 1
+     * @returns {number | null} The index of the option chosen + 1
      */
     question(prompt, options) {
         let best_choice = null;
@@ -751,6 +751,8 @@ class AI {
         });
 
         this.history.push([`question: ${prompt}`, [best_choice, best_score]]);
+
+        if (!best_choice) return null;
 
         return best_choice + 1;
     }

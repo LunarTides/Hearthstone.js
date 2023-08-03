@@ -1,6 +1,16 @@
+const { Game } = require("./game");
+
 let Shared = module.exports = {
+    /**
+     * @type {Game | null}
+     */
     game: null,
 
+    /**
+     * Sets the game as a shared variable
+     * 
+     * @param {Game | null} [new_game]
+     */
     set(new_game = null) {
         if (!new_game) return;
 
@@ -14,6 +24,11 @@ let Shared = module.exports = {
         });
     },
 
+    /**
+     * Gets the shared game
+     * 
+     * @returns {Game | null}
+     */
     get() {
         return Shared.game;
     }

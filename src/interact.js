@@ -21,7 +21,7 @@ class Interact {
     /**
      * Asks the user to attack a minion or hero
      *
-     * @returns {-1 | null | bool | Card} Cancel | Success
+     * @returns {-1 | null | boolean | Card} Cancel | Success
      */
     doTurnAttack() {
         let attacker, target;
@@ -41,17 +41,17 @@ class Interact {
             if (attacker === null || target === null) return null;
         } else {
             attacker = this.selectTarget("Which minion do you want to attack with?", false, "friendly");
-            if (!attacker) return;
+            if (!attacker) return false;
 
             target = this.selectTarget("Which minion do you want to attack?", false, "enemy");
-            if (!target) return;
+            if (!target) return false;
         }
     
         let errorcode = game.attack(attacker, target);
         game.killMinions();
 
         let ignore = ["divineshield"];
-        if (errorcode === true || ignore.includes(errorcode)) return errorcode;
+        if (errorcode === true || ignore.includes(errorcode)) return true;
         let err;
 
         switch (errorcode) {
@@ -92,6 +92,7 @@ class Interact {
 
         console.log(`${err}.`.red);
         game.input();
+        return false;
     }
 
     /**
@@ -100,29 +101,28 @@ class Interact {
      * @param {string} q The command
      * @param {any} [args]
      * 
-     * @returns {undefined | -1}
+     * @returns {boolean | string | -1} a string if "args" is defined
      */
     handleCmds(q, ...args) {
         if (q === "end") game.endTurn();
         else if (q === "hero power") {
             if (game.player.ai) {
-                game.player.heroPower();
-                return;
+                return game.player.heroPower();
             }
 
             if (game.player.mana < game.player.heroPowerCost) {
                 game.input("You do not have enough mana.\n".red);
-                return;
+                return false;
             }
 
             if (!game.player.canUseHeroPower) {
                 game.input("You have already used your hero power this turn.\n".red);
-                return;
+                return false;
             }
 
             this.printAll();
             let ask = this.yesNoQuestion(game.player, game.player.hero.hpDesc.yellow + " Are you sure you want to use this hero power?");
-            if (!ask) return;
+            if (!ask) return false;
 
             this.printAll();
             game.player.heroPower();
@@ -195,11 +195,11 @@ class Interact {
             if (!isHand) {
                 // allow_locations Makes selecting location cards allowed. This is disabled by default to prevent, for example, spells from killing the card.
                 let minion = this.selectTarget("Which minion do you want to view?", false, null, "minion", ["allow_locations"]);
-                if (!minion) return;
+                if (!minion) return false;
         
                 this.viewCard(minion);
 
-                return;
+                return true;
             }
 
             let card = game.input("\nWhich card do you want to view? ");
@@ -210,13 +210,13 @@ class Interact {
             this.viewCard(card);
         }
         else if (q == "detail") {
-            this.printAll(null, true);
+            this.printAll(game.player, true);
             game.input("Press enter to continue...\n");
             this.printAll();
         }
         else if (q == "concede") {
             let confirmation = this.yesNoQuestion(game.player, "Are you sure you want to concede?");
-            if (!confirmation) return;
+            if (!confirmation) return false;
 
             game.endGame(game.player.getOpponent());
         }
@@ -388,7 +388,10 @@ class Interact {
             name = name.join(" ");
     
             let card = game.functions.getCardByName(name);
-            if (!card) return game.input("Invalid card: `" + name + "`.\n");
+            if (!card) {
+                game.input("Invalid card: `" + name + "`.\n");
+                return false;
+            }
     
             game.player.addToHand(new game.Card(card.name, game.player));
         }
@@ -512,7 +515,11 @@ class Interact {
             game.input("\nPress enter to continue...");
         }
 
+        // -1 if the command is not found
         else return -1;
+
+        // true if a command was ran, and no errors were found
+        return true;
     }
 
     /**
@@ -520,7 +527,7 @@ class Interact {
      * 
      * @param {string} input The user input
      * 
-     * @returns {boolean | Card | "mana" | "traded" | "space" | "magnetize" | "colossal" | "invalid" | "refund"} true | The return value of `game.playCard`
+     * @returns {true | Card | "mana" | "traded" | "space" | "magnetize" | "colossal" | "counter" | "invalid" | "refund"} true | The return value of `game.playCard`
      */
     doTurnLogic(input) {
         if (this.handleCmds(input) !== -1) return true;
@@ -528,7 +535,7 @@ class Interact {
         if (!card) return "invalid";
 
         if (input == game.player.hand.length || input == 1) card.activate("outcast");
-        return game.playCard(card, game.player);    
+        return game.playCard(card, game.player);
     }
 
     /**
@@ -592,6 +599,8 @@ class Interact {
         if (locations.length <= 0) return "nolocations";
 
         let location = this.selectTarget("Which location do you want to use?", false, "friendly", "minion", ["allow_locations"]);
+        if (!location) return "invalidtype";
+
         if (location.type != "Location") return "invalidtype";
         if (location.cooldown > 0) return "cooldown";
         
@@ -722,7 +731,7 @@ class Interact {
      * @param {string[]} options The options to give the user
      * @param {number} [times=1] The amount of times to ask
      * 
-     * @returns {string | string[]} The user's answer(s)
+     * @returns {number | number[]} The chosen answer(s) index(es)
      */
     chooseOne(prompt, options, times = 1) {
         this.printAll();
@@ -829,9 +838,9 @@ class Interact {
      * @param {Card[] | import('./types').Blueprint[]} [cards=[]] The cards to choose from
      * @param {boolean} [filterClassCards=false] If it should filter away cards that do not belong to the player's class. Keep this at default if you are using `functions.getCards()`, disable this if you are using either player's deck / hand / graveyard / etc...
      * @param {number} [amount=3] The amount of cards to show
-     * @param {import('./card').Blueprint[]} [_cards=[]] Do not use this variable, keep it at default
+     * @param {import('./types').Blueprint[]} [_cards=[]] Do not use this variable, keep it at default
      * 
-     * @returns {Card | undefined} The card chosen.
+     * @returns {Card | null} The card chosen.
      */
     discover(prompt, cards = [], filterClassCards = true, amount = 3, _cards = []) {
         this.printAll();
@@ -844,7 +853,7 @@ class Interact {
 
         if (_cards.length == 0) values = game.functions.chooseItemsFromList(cards, amount, false);
 
-        if (values.length <= 0) return;
+        if (values.length <= 0) return null;
 
         if (game.player.ai) return game.player.ai.discover(values);
 
@@ -859,6 +868,8 @@ class Interact {
         let choice = game.input();
 
         if (!values[parseInt(choice) - 1]) {
+            // Invalid input
+            // We still want the user to be able to select a card, so we force it to be valid
             return this.discover(prompt, cards, filterClassCards, amount, values);
         }
 
@@ -874,11 +885,11 @@ class Interact {
      * 
      * @param {string} prompt The prompt to ask
      * @param {boolean | string} [elusive=false] Wether or not to prevent selecting elusive minions, if this is a string, allow selecting elusive minions but don't trigger secrets / quests
-     * @param {"enemy" | "friendly"} [force_side=null] Force the user to only be able to select minions / the hero of a specific side: ["enemy", "friendly"]
-     * @param {"hero" | "minion"} [force_class=null] Force the user to only be able to select a minion or a hero: ["hero", "minion"]
+     * @param {"enemy" | "friendly" | null} [force_side=null] Force the user to only be able to select minions / the hero of a specific side: ["enemy", "friendly"]
+     * @param {"hero" | "minion" | null} [force_class=null] Force the user to only be able to select a minion or a hero: ["hero", "minion"]
      * @param {string[]} [flags=[]] Change small behaviours ["allow_locations" => Allow selecting location, ]
      * 
-     * @returns {Card | Player} The card or hero chosen
+     * @returns {Card | Player | false} The card or hero chosen
      */
     selectTarget(prompt, elusive = false, force_side = null, force_class = null, flags = []) {
         // force_class = [null, "hero", "minion"]
@@ -897,11 +908,11 @@ class Interact {
      * 
      * @param {string} prompt The prompt to ask
      * @param {boolean | string} [elusive=false] Wether or not to prevent selecting elusive minions, if this is a string, allow selecting elusive minions but don't trigger secrets / quests
-     * @param {"enemy" | "friendly"} [force_side=null] Force the user to only be able to select minions / the hero of a specific side: ["enemy", "friendly"]
-     * @param {"hero" | "minion"} [force_class=null] Force the user to only be able to select a minion or a hero: ["hero", "minion"]
+     * @param {"enemy" | "friendly" | null} [force_side=null] Force the user to only be able to select minions / the hero of a specific side: ["enemy", "friendly"]
+     * @param {"hero" | "minion" | null} [force_class=null] Force the user to only be able to select a minion or a hero: ["hero", "minion"]
      * @param {string[]} [flags=[]] Change small behaviours ["allow_locations" => Allow selecting location, ]
      * 
-     * @returns {Card | Player} The card or hero chosen
+     * @returns {Card | Player | false} The card or hero chosen
      */
     _selectTarget(prompt, elusive = false, force_side = null, force_class = null, flags = []) {
         // force_class = [null, "hero", "minion"]
@@ -1083,7 +1094,7 @@ class Interact {
     /**
      * Returns a card in a user readble state. If you console.log the result of this, the user will get all the information they need from the card.
      *
-     * @param {Card | import('./card').Blueprint} card The card
+     * @param {Card | import('./types').Blueprint} card The card
      * @param {number} [i=-1] If this is set, this function will add `[i]` to the beginning of the card. This is useful if there are many different cards to choose from.
      *
      * @returns {string} The readable card
@@ -1100,9 +1111,13 @@ class Interact {
         if (card.placeholder) {
             let reg = new RegExp(`{ph:.*?} (.*?) {/ph}`);
 
-            while (reg.exec(desc)) {
-                let placeholder = reg.exec(desc)[1]; // Gets the capturing group result
+            while (true) {
+                let regedDesc = reg.exec(card.desc);
+                
+                // There is nothing more to extract
+                if (!regedDesc) break;
 
+                let placeholder = regedDesc[1]; // Gets the capturing group result
                 desc = desc.replace(reg, placeholder);
             }
         }
@@ -1139,7 +1154,7 @@ class Interact {
     /**
      * Prints all the information you need to understand the game state
      * 
-     * @param {Player} [plr=null] The player
+     * @param {Player | nulll} [plr=null] The player
      * @param {boolean} [detailed=false] Show more, less important, information
      * 
      * @returns {undefined}
@@ -1148,7 +1163,7 @@ class Interact {
         // WARNING: Stinky and/or smelly code up ahead. Read at your own risk.
         // TODO: Reformat this
 
-        if (!plr) plr = game.player; 
+        if (!plr) plr = game.player;
 
         if (game.turns <= 2 && !game.config.debug) this.printLicense();
         else this.printName();
@@ -1412,7 +1427,7 @@ class Interact {
     /**
      * Shows information from the card, console.log's it and waits for the user to press enter.
      *
-     * @param {Card | import('./card').Blueprint} card The card
+     * @param {Card | import('./types').Blueprint} card The card
      * @param {boolean} [help=true] If it should show a help message which displays what the different fields mean.
      *
      * @returns {undefined}

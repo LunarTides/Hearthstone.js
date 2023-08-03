@@ -126,7 +126,7 @@ class EventManager {
     /**
      * Update quests and secrets
      *
-     * @param {"Secret" | "Quest" | "Questline"} quests_name The type of quest to update
+     * @param {"secrets" | "sidequests" | "quests"} quests_name The type of quest to update
      * @param {import('./types').EventKeys} key The key of the event
      * @param {import('./types').EventValues} val The value of the event
      * @param {Player} plr The owner of the quest
@@ -242,7 +242,7 @@ class Game {
         /**
          * The player that starts first.
          * 
-         * @type {Player}
+         * @type {Player | null}
          */
         this.player1 = null;
 
@@ -264,7 +264,7 @@ class Game {
         /**
          * The player whose turn it is.
          * 
-         * @type {Player}
+         * @type {Player | null}
          */
         this.player = this.player1;
 
@@ -340,7 +340,7 @@ class Game {
          * The board of the game.
          * 
          * The 0th element is `game.player1`'s side of the board,
-         * and the 1st element is `game.player2`'s side of the board.
+         * and the 1th element is `game.player2`'s side of the board.
          * 
          * @type {[[Card], [Card]]}
          */
@@ -403,12 +403,12 @@ class Game {
     /**
      * Ask the user a question and returns their answer
      *
-     * @param {string} q The question to ask
+     * @param {string} [q=""] The question to ask
      * @param {boolean} [care=true] If this is false, it overrides `game.no_input`. Only use this when debugging.
      *
      * @returns {string} What the user answered
      */
-    input(q, care = true) {
+    input(q = "", care = true) {
         if (this.no_input && care) return "";
 
         // Let the game make choices for the user
@@ -416,7 +416,7 @@ class Game {
             let queue = this.player.inputQueue;
 
             if (typeof(queue) == "string") return queue;
-            else if (!queue instanceof Array) return question(q); // Invalid queue
+            else if (!(queue instanceof Array)) return question(q); // Invalid queue
 
             const answer = queue[0];
             this.functions.remove(queue, answer);
@@ -498,7 +498,7 @@ class Game {
             let nCards = (plr.id == 0) ? 3 : 4;
             while (plr.hand.length < nCards) {
                 this.suppressedEvents.push("DrawCard");
-                plr.drawCard(false);
+                plr.drawCard();
                 this.suppressedEvents.pop();
             }
 
@@ -931,7 +931,7 @@ class Game {
      * @param {Card | Player | number} attacker The attacker | Amount of damage to deal
      * @param {Card | Player} target The target
      * 
-     * @returns {boolean | "divineshield" | "taunt" | "stealth" | "frozen" | "plrnoattack" | "noattack" | "hasattacked" | "sleepy" | "cantattackhero" | "immune" | "invalid"} Success | Errorcode
+     * @returns {true | "divineshield" | "taunt" | "stealth" | "frozen" | "plrnoattack" | "noattack" | "hasattacked" | "sleepy" | "cantattackhero" | "immune" | "dormant" | "invalid"} Success | Errorcode
      */
     attack(attacker, target) {
         if (!attacker || !target) {

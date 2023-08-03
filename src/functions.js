@@ -34,9 +34,17 @@ class DeckcodeFunctions {
      * @param {Player} plr The player to put the cards into the deck of
      * @param {string} code The deck code
      * 
-     * @returns {Card[]} The deck
+     * @returns {Card[] | "invalid"} The deck
      */
     import(plr, code) {
+        /**
+         * Cause the function to return an error
+         * 
+         * @param {string} error_code
+         * @param {string} [card_name]
+         *  
+         * @returns {"invalid"} 
+         */
         const ERROR = (error_code, card_name = null) => {
             console.log("This deck is not valid!\nError Code: ".red + error_code.yellow);
             if (card_name) console.log("Specific Card that caused this error: ".red + card_name.yellow);

@@ -175,6 +175,11 @@ const { Player } = require("./player");
  * 
  * @property {SpellSchool} [spellClass]
  * 
+ * @property {number} [cooldown]
+ * 
+ * @property {string} [hpDesc]
+ * @property {number} [hpCost]
+ * 
  * @property {CardKeyword[]} [keywords]
  * 
  * @property {string[]} [runes]

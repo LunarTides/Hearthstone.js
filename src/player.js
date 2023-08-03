@@ -45,7 +45,7 @@ class Player {
          * 
          * @type {number}
          */
-        this.id = null;
+        this.id = -1;
 
         /**
          * The player's AI.
@@ -353,7 +353,7 @@ class Player {
          * assert.equal(chosen, target);
          * ```
          * 
-         * @type {Card | Player}
+         * @type {Card | Player | null}
          */
         this.forceTarget = null;
 
@@ -379,7 +379,7 @@ class Player {
          * player.inputQueue = "e";
          * ```
          * 
-         * @type {string[] | string}
+         * @type {string[] | string | null}
          */
         this.inputQueue = null;
     }
@@ -444,7 +444,7 @@ class Player {
      * ```
      * 
      * @param {number} mana The mana to add
-     * @param {number} [comp] The comperison. This defaults to `player.maxMana`.
+     * @param {number | null} [comp=null] The comperison. This defaults to `player.maxMana`.
      * 
      * @returns {boolean} Success
      */
@@ -637,13 +637,17 @@ class Player {
         if (this.immune) return true;
 
         // Armor logic
-        let armor_magic = this.armor - amount;
-        this.armor = Math.max(armor_magic, 0);
+        let remainingArmor = this.armor - amount;
+        this.armor = Math.max(remainingArmor, 0);
 
-        if (armor_magic >= 0) return;
+        // Armor blocks all damage, return true since there were no errors.
+        if (remainingArmor >= 0) return true;
 
-        // It is possible to write `this.health += armor_magic` since armor_magic is a negative number, but i do this for clarity.
-        this.health -= -armor_magic;
+        // The amount of damage to take is however much damage penetrated the armor.
+        // The remaining armor is negative, so turn it into a positive number so it's easier to work with
+        amount = -remainingArmor;
+
+        this.health -= amount;
 
         game.events.broadcast("TakeDamage", [this, amount], this);
 
@@ -736,11 +740,11 @@ class Player {
         /**
          * The card to draw
          * 
-         * @type {Card}
+         * @type {Card | undefined}
          */
         let card = this.deck.pop();
 
-        if (deck_length <= 0 || !card instanceof game.Card) {
+        if (deck_length <= 0 || !(card instanceof game.Card)) {
             this.fatigue++;
 
             this.remHealth(this.fatigue);
@@ -750,7 +754,7 @@ class Player {
         game.events.broadcast("DrawCard", card, this);
 
         // Cast on draw
-        if (card.type == "Spell" && card.keywords.includes("Cast On Draw") && card.activate("cast")) return this.drawCard();
+        if (card.type == "Spell" && card.keywords.includes("Casts When Drawn") && card.activate("cast")) return this.drawCard();
 
         game.suppressedEvents.push("AddCardToHand");
         this.addToHand(card);
@@ -783,7 +787,7 @@ class Player {
 
         game.events.broadcast("DrawCard", card, this);
 
-        if (card.type == "Spell" && card.keywords.includes("Cast On Draw") && card.activate("cast")) return;
+        if (card.type == "Spell" && card.keywords.includes("Casts When Drawn") && card.activate("cast")) return;
 
         game.suppressedEvents.push("AddCardToHand");
         this.addToHand(card);
