@@ -826,7 +826,7 @@ class Interact {
      * Asks the user a "prompt", show them "amount" cards. The cards are chosen from "cards".
      * 
      * @param {string} prompt The prompt to ask
-     * @param {Card[] | import('./card').Blueprint[]} [cards=[]] The cards to choose from
+     * @param {Card[] | import('./types').Blueprint[]} [cards=[]] The cards to choose from
      * @param {boolean} [filterClassCards=false] If it should filter away cards that do not belong to the player's class. Keep this at default if you are using `functions.getCards()`, disable this if you are using either player's deck / hand / graveyard / etc...
      * @param {number} [amount=3] The amount of cards to show
      * @param {import('./card').Blueprint[]} [_cards=[]] Do not use this variable, keep it at default

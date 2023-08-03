@@ -232,6 +232,13 @@ class Card {
         this.spellClass = "General";
 
         /**
+         * The tribe the card belongs to.
+         * 
+         * @type {import("./types").MinionTribe}
+         */
+        this.tribe = "None";
+
+        /**
          * The number of times a minion can attack in a turn;
          * - Default: 1
          * - With Windfury: 2

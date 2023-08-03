@@ -20,7 +20,7 @@ module.exports = {
      */
     battlecry(plr, game, self) {
         let list = game.functions.getCards();
-        list = list.filter(c => c.type == "Spell" && [plr.heroClass, "Neutral"].includes(c.class));
+        list = list.filter(c => c.type == "Spell" && game.functions.validateClass(plr, c));
         if (list.length == 0) return;
 
         let card = game.interact.discover("Discover a spell.", list);

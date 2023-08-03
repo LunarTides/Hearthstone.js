@@ -53,6 +53,9 @@ class EventManager {
         }
 
         for (let i = 1; i <= 2; i++) {
+            /**
+             * @type {Player}
+             */
             let plr = this.game["player" + i];
 
             // Activate spells in the players hand

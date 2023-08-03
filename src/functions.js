@@ -999,7 +999,7 @@ ${main_content}
      * @param {string} name The name
      * @param {boolean} refer If this should call `getCardById` if it doesn't find the card from the name
      * 
-     * @returns {import("./card").Blueprint} The blueprint of the card
+     * @returns {import("./types").Blueprint} The blueprint of the card
      */
     getCardByName(name, refer = true) {
         let card;
@@ -1019,7 +1019,7 @@ ${main_content}
      * @param {number} id The id
      * @param {boolean} refer If this should call `getCardByName` if it doesn't find the card from the id
      * 
-     * @returns {import("./card").Blueprint} The blueprint of the card
+     * @returns {import("./types").Blueprint} The blueprint of the card
      */
     getCardById(id, refer = true) {
         let card = game.cards.filter(c => c.id == id)[0];
@@ -1033,9 +1033,9 @@ ${main_content}
      * Returns all cards added to Hearthstone.js
      *
      * @param {boolean} uncollectible Filter out all uncollectible cards
-     * @param {import("./card").Blueprint[]} cards This defaults to `game.cards`, which contains all cards in the game.
+     * @param {import("./types").Blueprint[]} cards This defaults to `game.cards`, which contains all cards in the game.
      *
-     * @returns {import("./card").Blueprint[]} Cards
+     * @returns {import("./types").Blueprint[]} Cards
      */
     getCards(uncollectible = true, cards = game.cards) {
         let _cards = [];
@@ -1051,7 +1051,7 @@ ${main_content}
      * Returns if the `card`'s class is the same as the `plr`'s class or 'Neutral'
      *
      * @param {Player} plr
-     * @param {Card} card
+     * @param {Card | import("./types").Blueprint} card
      *
      * @returns {boolean} Result
      * 
@@ -1086,8 +1086,8 @@ ${main_content}
     /**
      * Returns if the `card_tribe` is `tribe` or 'All'
      *
-     * @param {string} card_tribe
-     * @param {string} tribe
+     * @param {import("./types").MinionTribe} card_tribe
+     * @param {import("./types").MinionTribe} tribe
      *
      * @returns {boolean}
      * 
