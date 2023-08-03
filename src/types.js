@@ -2,6 +2,8 @@ const { Card } = require("./card");
 const { Game } = require("./game");
 const { Player } = require("./player");
 
+//@ts-check
+
 /**
  * AI Scoreboard
  * 
@@ -135,6 +137,12 @@ const { Player } = require("./player");
  */
 
 /**
+ * Game.prototype.playCard return values
+ * 
+ * @typedef {Card | true | "mana" | "traded" | "space" | "magnetize" | "colossal" | "refund" | "counter" | "invalid"} GamePlayCardReturn
+ */
+
+/**
  * @typedef {any} EventValues
  */
 
@@ -174,6 +182,11 @@ const { Player } = require("./player");
  * @property {MinionTribe} [tribe]
  * 
  * @property {SpellSchool} [spellClass]
+ * 
+ * @property {number} [cooldown]
+ * 
+ * @property {string} [hpDesc]
+ * @property {number} [hpCost]
  * 
  * @property {CardKeyword[]} [keywords]
  * 

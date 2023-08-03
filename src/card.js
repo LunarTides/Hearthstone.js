@@ -1,3 +1,4 @@
+//@ts-check
 const { Game } = require("./game");
 const { Player } = require("./player");
 const { get } = require("./shared");
@@ -62,6 +63,13 @@ class Card {
         this.id = null;
 
         /**
+         * The cost of the card.
+         * 
+         * @type {number}
+         */
+        this.mana = 0;
+
+        /**
          * The name of this class. This is if you are working with a type that is `Card | Player`.
          * In that case, this is `Card` if that type is `Card`, or `Player` if that type is `Player`.
          * 
@@ -118,6 +126,13 @@ class Card {
          * @type {boolean}
          */
         this.corrupted = false;
+
+        /**
+         * The _name_ of the corrupted counterpart of this card.
+         * 
+         * @type {null | string}
+         */
+        this.corrupt = null;
 
         /**
          * ["Name of the card above the minion", "", "Name of the card below the minion"]
@@ -239,6 +254,27 @@ class Card {
         this.tribe = "None";
 
         /**
+         * The cooldown of the location card.
+         * 
+         * @type {number}
+         */
+        this.cooldown = 0;
+
+        /**
+         * The description of the hero power.
+         * 
+         * @type {string}
+         */
+        this.hpDesc = "[PLACEHOLDER]";
+
+        /**
+         * The cost of the hero power.
+         * 
+         * @type {number}
+         */
+        this.hpCost = 2;
+
+        /**
          * The number of times a minion can attack in a turn;
          * - Default: 1
          * - With Windfury: 2
@@ -271,9 +307,30 @@ class Card {
          * 
          * Automatically gets set to true when the card attacks, and gets set to false at the end of the player's turn.
          * 
-         * @type {number}
+         * @type {boolean}
          */
         this.sleepy = true;
+
+        /**
+         * Placeholder key-value pairs.
+         * 
+         * This should not be used directly, unless you know what you are doing.
+         * 
+         * @example
+         * this.placeholder = {
+         *     "turn": game.turns,
+         * }
+         * 
+         * assert.equal(this.desc, "The current turn is: {turn}");
+         * // Eventually...
+         * assert.equal(this.desc, "The current turn is: 1");
+         */
+        this.placeholder = {};
+
+        /**
+         * @type {import("./types").KeywordMethod | false}
+         */
+        this.spellburst = false;
 
         // Set these variables to true or false.
         const exists = ["corrupted", "colossal", "dormant", "uncollectible", "frozen", "immune", "echo"];
@@ -351,6 +408,13 @@ class Card {
         this.randomizeIds();
 
         /**
+         * The card's uuid. Gets randomly generated when the card gets created.
+         * 
+         * @type {string}
+         */
+        this.uuid = this.__ids.map(id => id.toString()[0]).join("");
+
+        /**
          * The list of placeholder ids / replacement strings pairs.
          * 
          * @type {Object.<any, string>}
@@ -374,13 +438,6 @@ class Card {
             // This is to prevent cards from getting linked. Don't use this variable
             this.__ids.push(game.functions.randInt(0, 671678679546789));
         }
-
-        /**
-         * The card's uuid. Gets randomly generated when the card gets created.
-         * 
-         * @type {string}
-         */
-        this.uuid = this.__ids.map(id => id.toString()[0]).join("");
 
         return true;
     }

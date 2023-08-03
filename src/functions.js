@@ -1,3 +1,4 @@
+//@ts-check
 delete require.cache[require.resolve("./card")];
 delete require.cache[require.resolve("./player")];
 delete require.cache[require.resolve("./ai")];
@@ -34,10 +35,18 @@ class DeckcodeFunctions {
      * @param {Player} plr The player to put the cards into the deck of
      * @param {string} code The deck code
      * 
-     * @returns {Card[]} The deck
+     * @returns {Card[] | "invalid"} The deck
      */
     import(plr, code) {
-        const ERROR = (error_code, card_name = null) => {
+        /**
+         * Cause the function to return an error
+         * 
+         * @param {string} error_code
+         * @param {string} [card_name]
+         *  
+         * @returns {"invalid"} 
+         */
+        const ERROR = (error_code, card_name) => {
             console.log("This deck is not valid!\nError Code: ".red + error_code.yellow);
             if (card_name) console.log("Specific Card that caused this error: ".red + card_name.yellow);
             game.input();
@@ -855,6 +864,20 @@ ${main_content}
         game.input();
 
         return true;
+    }
+
+    /**
+     * Returns an AI Error with the provided information.
+     *
+     * @param {string} where - The function where the error occurred.
+     * @param {string} expected - The expected value.
+     * @param {string} actual - The actual value.
+     * @param {number} errorId - The id of the error. This is incase you have multiple possible errors in `where` and want to differentiate.
+     * 
+     * @returns {Error} - The AI Error with the provided information.
+     */
+    createAIError(where, expected, actual, errorId) {
+        return new Error(`AI Error at ${where}, expected: ${expected}, got: ${actual}. Error ID: ${errorId}`);
     }
 
     /**

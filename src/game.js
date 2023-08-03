@@ -1,3 +1,4 @@
+//@ts-check
 const { question }  = require('readline-sync');
 const { Functions } = require("./functions");
 const { Player }    = require("./player");
@@ -64,7 +65,9 @@ class EventManager {
                 c.replacePlaceholders();
 
                 // Check for condition
+                // @ts-ignore
                 let cleared_text = " (Condition cleared!)".brightGreen;
+                // @ts-ignore
                 let cleared_text_alt = "Condition cleared!".brightGreen;
                 c.desc = c.desc.replace(cleared_text, "");
                 c.desc = c.desc.replace(cleared_text_alt, "");
@@ -126,7 +129,7 @@ class EventManager {
     /**
      * Update quests and secrets
      *
-     * @param {"Secret" | "Quest" | "Questline"} quests_name The type of quest to update
+     * @param {"secrets" | "sidequests" | "quests"} quests_name The type of quest to update
      * @param {import('./types').EventKeys} key The key of the event
      * @param {import('./types').EventValues} val The value of the event
      * @param {Player} plr The owner of the quest
@@ -242,14 +245,14 @@ class Game {
         /**
          * The player that starts first.
          * 
-         * @type {Player}
+         * @type {Player | null}
          */
         this.player1 = null;
 
         /**
          * The player that starts with `The Coin`.
          * 
-         * @type {Player}
+         * @type {Player | null}
          */
         this.player2 = null;
 
@@ -340,9 +343,9 @@ class Game {
          * The board of the game.
          * 
          * The 0th element is `game.player1`'s side of the board,
-         * and the 1st element is `game.player2`'s side of the board.
+         * and the 1th element is `game.player2`'s side of the board.
          * 
-         * @type {[[Card], [Card]]}
+         * @type {[[Card], [Card]] | [[], []]}
          */
         this.board = [[], []];
 
@@ -352,7 +355,7 @@ class Game {
          * The 0th element is `game.player1`'s graveyard,
          * and the 1st element is `game.player2`'s graveyard.
          * 
-         * @type {[[Card], [Card]]}
+         * @type {[[Card], [Card]] | [[], []]}
          */
         this.graveyard = [[], []];
 
@@ -403,12 +406,12 @@ class Game {
     /**
      * Ask the user a question and returns their answer
      *
-     * @param {string} q The question to ask
+     * @param {string} [q=""] The question to ask
      * @param {boolean} [care=true] If this is false, it overrides `game.no_input`. Only use this when debugging.
      *
      * @returns {string} What the user answered
      */
-    input(q, care = true) {
+    input(q = "", care = true) {
         if (this.no_input && care) return "";
 
         // Let the game make choices for the user
@@ -416,7 +419,7 @@ class Game {
             let queue = this.player.inputQueue;
 
             if (typeof(queue) == "string") return queue;
-            else if (!queue instanceof Array) return question(q); // Invalid queue
+            else if (!(queue instanceof Array)) return question(q); // Invalid queue
 
             const answer = queue[0];
             this.functions.remove(queue, answer);
@@ -437,6 +440,8 @@ class Game {
      * @returns {boolean} Success
      */
     doConfigAI() {
+        if (!this.player1 || !this.player2) return false;
+
         if (this.config.P1AI) this.player1.ai = new AI(this.player1);
         else this.player1.ai = null;
 
@@ -498,7 +503,7 @@ class Game {
             let nCards = (plr.id == 0) ? 3 : 4;
             while (plr.hand.length < nCards) {
                 this.suppressedEvents.push("DrawCard");
-                plr.drawCard(false);
+                plr.drawCard();
                 this.suppressedEvents.pop();
             }
 
@@ -542,7 +547,7 @@ class Game {
         this.input(`Player ${winner.name} wins!\n`);
 
         // If any of the players are ai's, show their logs when the game ends
-        if ((this.player1.ai || this.player2.ai) && this.config.debug) this.interact.doTurnLogic("/ai");
+        if ((this.player1?.ai || this.player2?.ai) && this.config.debug) this.interact.doTurnLogic("/ai");
 
         this.running = false;
 
@@ -650,7 +655,7 @@ class Game {
      * @param {Card} card The card to play
      * @param {Player} player The card's owner
      * 
-     * @returns {Card | boolean | "mana" | "traded" | "space" | "magnetize" | "colossal" | "refund" | "invalid"}
+     * @returns {import('./types').GamePlayCardReturn}
      */
     playCard(card, player) {
         if (!card || !player) {
@@ -703,6 +708,9 @@ class Game {
             echo_clone.echo = true;
         }
 
+        /**
+         * @type {import('./types').GamePlayCardReturn}
+         */
         let ret = true;
 
         let op = player.getOpponent();
@@ -747,7 +755,8 @@ class Game {
                 // I'm using while loops to prevent a million indents
                 while (mechs.length > 0) {
                     let minion = this.interact.selectTarget("Which minion do you want this to Magnetize to:", false, "friendly", "minion");
-                    if (!minion) break;
+                    if (!minion || minion instanceof Player) break;
+
                     if (!minion.tribe.includes("Mech")) {
                         console.log("That minion is not a Mech.");
                         continue;
@@ -756,12 +765,25 @@ class Game {
                     minion.addStats(card.getAttack(), card.getHealth());
     
                     card.keywords.forEach(k => {
+                        // TSC for some reason, forgets that minion should be of `Card` type here, so we have to remind it. This is a workaround
+                        if (!(minion instanceof Card)) return;
+
                         minion.addKeyword(k);
                     });
 
-                    minion.maxHealth += card.maxHealth;
+                    if (minion.maxHealth && card.maxHealth) {
+                        minion.maxHealth += card.maxHealth;
+                    }
     
-                    if (card.deathrattle) card.deathrattle.forEach(d => minion.addDeathrattle(d));
+                    if (card.deathrattle) {
+                        card.deathrattle.forEach(d => {
+                            // Look at the comment above
+                            if (!(minion instanceof Card)) return;
+
+                            minion.addDeathrattle(d);
+                        });
+                    }
+
                     if (echo_clone) player.addToHand(echo_clone);
     
                     // Corrupt
@@ -807,7 +829,7 @@ class Game {
 
             board.forEach(m => {
                 m.activate("spellburst");
-                m.spellburst = undefined;
+                m.spellburst = false;
             });
         } else if (card.type === "Weapon") {
             player.setWeapon(card);
@@ -931,7 +953,7 @@ class Game {
      * @param {Card | Player | number} attacker The attacker | Amount of damage to deal
      * @param {Card | Player} target The target
      * 
-     * @returns {boolean | "divineshield" | "taunt" | "stealth" | "frozen" | "plrnoattack" | "noattack" | "hasattacked" | "sleepy" | "cantattackhero" | "immune" | "invalid"} Success | Errorcode
+     * @returns {true | "divineshield" | "taunt" | "stealth" | "frozen" | "plrnoattack" | "noattack" | "hasattacked" | "sleepy" | "cantattackhero" | "immune" | "invalid" | "dormant"} Success | Errorcode
      */
     attack(attacker, target) {
         if (!attacker || !target) {

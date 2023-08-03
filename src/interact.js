@@ -1,3 +1,4 @@
+//@ts-check
 const { Card } = require('./card');
 const { Game } = require('./game');
 const { Player } = require('./player');
@@ -21,7 +22,7 @@ class Interact {
     /**
      * Asks the user to attack a minion or hero
      *
-     * @returns {-1 | null | bool | Card} Cancel | Success
+     * @returns {-1 | null | boolean | Card} Cancel | Success
      */
     doTurnAttack() {
         let attacker, target;
@@ -41,17 +42,17 @@ class Interact {
             if (attacker === null || target === null) return null;
         } else {
             attacker = this.selectTarget("Which minion do you want to attack with?", false, "friendly");
-            if (!attacker) return;
+            if (!attacker) return false;
 
             target = this.selectTarget("Which minion do you want to attack?", false, "enemy");
-            if (!target) return;
+            if (!target) return false;
         }
     
         let errorcode = game.attack(attacker, target);
         game.killMinions();
 
         let ignore = ["divineshield"];
-        if (errorcode === true || ignore.includes(errorcode)) return errorcode;
+        if (errorcode === true || ignore.includes(errorcode)) return true;
         let err;
 
         switch (errorcode) {
@@ -92,6 +93,7 @@ class Interact {
 
         console.log(`${err}.`.red);
         game.input();
+        return false;
     }
 
     /**
@@ -100,29 +102,34 @@ class Interact {
      * @param {string} q The command
      * @param {any} [args]
      * 
-     * @returns {undefined | -1}
+     * @returns {boolean | string | -1} a string if "args" is not undefined
      */
     handleCmds(q, ...args) {
         if (q === "end") game.endTurn();
         else if (q === "hero power") {
             if (game.player.ai) {
-                game.player.heroPower();
-                return;
+                return game.player.heroPower();
             }
 
             if (game.player.mana < game.player.heroPowerCost) {
                 game.input("You do not have enough mana.\n".red);
-                return;
+                return false;
             }
 
             if (!game.player.canUseHeroPower) {
                 game.input("You have already used your hero power this turn.\n".red);
-                return;
+                return false;
             }
 
             this.printAll();
+
+            if (game.player.hero === null) {
+                game.input("You do not have a hero.\n".red);
+                return false;
+            }
+
             let ask = this.yesNoQuestion(game.player, game.player.hero.hpDesc.yellow + " Are you sure you want to use this hero power?");
-            if (!ask) return;
+            if (!ask) return false;
 
             this.printAll();
             game.player.heroPower();
@@ -189,34 +196,35 @@ class Interact {
             game.input("\nPress enter to continue...\n");
         }
         else if (q == "view") {
-            let isHand = this.question(game.player, "Do you want to view a minion on the board, or in your hand?", ["Board", "Hand"]);
-            isHand = isHand == "Hand";
+            let isHandAnswer = this.question(game.player, "Do you want to view a minion on the board, or in your hand?", ["Board", "Hand"]);
+            let isHand = isHandAnswer == "Hand";
 
             if (!isHand) {
                 // allow_locations Makes selecting location cards allowed. This is disabled by default to prevent, for example, spells from killing the card.
                 let minion = this.selectTarget("Which minion do you want to view?", false, null, "minion", ["allow_locations"]);
-                if (!minion) return;
+                if (!minion || minion instanceof Player) return false;
         
                 this.viewCard(minion);
 
-                return;
+                return true;
             }
 
-            let card = game.input("\nWhich card do you want to view? ");
-            if (!card || !parseInt(card)) return;
+            // View minion on the board
+            const cardId = game.input("\nWhich card do you want to view? ");
+            if (!cardId || !parseInt(cardId)) return false;
 
-            card = game.player.hand[parseInt(card) - 1];
+            const card = game.player.hand[parseInt(cardId) - 1];
 
             this.viewCard(card);
         }
         else if (q == "detail") {
-            this.printAll(null, true);
+            this.printAll(game.player, true);
             game.input("Press enter to continue...\n");
             this.printAll();
         }
         else if (q == "concede") {
             let confirmation = this.yesNoQuestion(game.player, "Are you sure you want to concede?");
-            if (!confirmation) return;
+            if (!confirmation) return false;
 
             game.endGame(game.player.getOpponent());
         }
@@ -383,12 +391,15 @@ class Interact {
         else if (q.startsWith("/give ")) {
             if (!game.config.debug) return -1;
     
-            let name = q.split(" ");
-            name.shift();
-            name = name.join(" ");
+            let nameSplit = q.split(" ");
+            nameSplit.shift();
+            const name = nameSplit.join(" ");
     
             let card = game.functions.getCardByName(name);
-            if (!card) return game.input("Invalid card: `" + name + "`.\n");
+            if (!card) {
+                game.input("Invalid card: `" + name + "`.\n");
+                return false;
+            }
     
             game.player.addToHand(new game.Card(card.name, game.player));
         }
@@ -397,15 +408,15 @@ class Interact {
 
             let log = false;
 
-            let code = q.split(" ");
-            code.shift();
+            let codeSplit = q.split(" ");
+            codeSplit.shift();
 
-            if (code[0] == "log") {
+            if (codeSplit[0] == "log") {
                 log = true;
-                code.shift();
+                codeSplit.shift();
             }
             
-            code = code.join(" ");
+            let code = codeSplit.join(" ");
 
             if (log) {
                 if (code[code.length - 1] == ";") code = code.slice(0, -1);
@@ -513,6 +524,8 @@ class Interact {
         }
 
         else return -1;
+
+        return true;
     }
 
     /**
@@ -520,15 +533,17 @@ class Interact {
      * 
      * @param {string} input The user input
      * 
-     * @returns {boolean | Card | "mana" | "traded" | "space" | "magnetize" | "colossal" | "invalid" | "refund"} true | The return value of `game.playCard`
+     * @returns {true | Card | "mana" | "traded" | "space" | "magnetize" | "colossal" | "counter" | "invalid" | "refund"} true | The return value of `game.playCard`
      */
     doTurnLogic(input) {
         if (this.handleCmds(input) !== -1) return true;
-        let card = game.player.hand[parseInt(input) - 1];
+        let parsedInput = parseInt(input);
+
+        let card = game.player.hand[parsedInput - 1];
         if (!card) return "invalid";
 
-        if (input == game.player.hand.length || input == 1) card.activate("outcast");
-        return game.playCard(card, game.player);    
+        if (parsedInput == game.player.hand.length || parsedInput == 1) card.activate("outcast");
+        return game.playCard(card, game.player);
     }
 
     /**
@@ -592,6 +607,10 @@ class Interact {
         if (locations.length <= 0) return "nolocations";
 
         let location = this.selectTarget("Which location do you want to use?", false, "friendly", "minion", ["allow_locations"]);
+        if (!location) return -1;
+
+        if (location instanceof Player) return "invalidtype";
+
         if (location.type != "Location") return "invalidtype";
         if (location.cooldown > 0) return "cooldown";
         
@@ -700,8 +719,8 @@ class Interact {
 
         let choice = game.input("> ");
 
-        let card = parseInt(choice) - 1;
-        card = cards[card];
+        const cardId = parseInt(choice) - 1;
+        let card = cards[cardId];
 
         if (!card) {
             return this.dredge(prompt);
@@ -722,7 +741,7 @@ class Interact {
      * @param {string[]} options The options to give the user
      * @param {number} [times=1] The amount of times to ask
      * 
-     * @returns {string | string[]} The user's answer(s)
+     * @returns {number | number[]} The chosen answer(s) index(es)
      */
     chooseOne(prompt, options, times = 1) {
         this.printAll();
@@ -770,6 +789,10 @@ class Interact {
      * @returns {string} Chosen
      */
     question(plr, prompt, answers) {
+        const RETRY = () => {
+            return this.question(plr, prompt, answers);
+        }
+
         this.printAll(plr);
 
         let strbuilder = `\n${prompt} [`;
@@ -781,15 +804,25 @@ class Interact {
         strbuilder = strbuilder.slice(0, -2);
         strbuilder += "] ";
 
+        /**
+         * @type {number}
+         */
         let choice;
 
-        if (plr.ai) choice = plr.ai.question(prompt, answers);
-        else choice = game.input(strbuilder); 
+        if (plr.ai) {
+            let aiChoice = plr.ai.question(prompt, answers);
+            if (!aiChoice) {
+                throw game.functions.createAIError("question", "some number", "null", 1);
+            }
 
-        let answer = answers[parseInt(choice) - 1];
+            choice = aiChoice;
+        }
+        else choice = parseInt(game.input(strbuilder));
+
+        let answer = answers[choice - 1];
         if (!answer) {
             game.input("Invalid input!\n".red);
-            return this.question(plr, prompt, answers);
+            RETRY();
         }
 
         return answer;
@@ -829,22 +862,58 @@ class Interact {
      * @param {Card[] | import('./types').Blueprint[]} [cards=[]] The cards to choose from
      * @param {boolean} [filterClassCards=false] If it should filter away cards that do not belong to the player's class. Keep this at default if you are using `functions.getCards()`, disable this if you are using either player's deck / hand / graveyard / etc...
      * @param {number} [amount=3] The amount of cards to show
-     * @param {import('./card').Blueprint[]} [_cards=[]] Do not use this variable, keep it at default
+     * @param {import('./types').Blueprint[]} [_cards=[]] Do not use this variable, keep it at default
      * 
-     * @returns {Card | undefined} The card chosen.
+     * @returns {Card | null} The card chosen.
      */
     discover(prompt, cards = [], filterClassCards = true, amount = 3, _cards = []) {
         this.printAll();
         let values = _cards;
 
         if (cards.length <= 0) cards = game.functions.getCards();
-        if (cards.length <= 0 || !cards) return;
+        if (cards.length <= 0 || !cards) return null;
 
-        if (filterClassCards) cards = cards.filter(c => game.functions.validateClass(game.player, c));
+        if (filterClassCards) {
+            // We need to filter the cards
+            // We can't directly filter cards that are of `Type1[] | Type2[]` using `Array.prototype.filter()`, so we have to create a custom implementation
+            // of the filter function
+            
+            /**
+             * Literally just the same as `Array.prototype.filter()`, but probably worse.
+             *
+             * @param {Array} list - The list to be filtered.
+             * @param {Function} filterFunction - The function used to filter the list.
+             * @returns {Array} - The filtered list.
+             */
+            function filterList(list, filterFunction) {
+                const filteredList = [];
+              
+                for (const element of list) {
+                    if (filterFunction(element)) {
+                        filteredList.push(element);
+                    }
+                }
+
+                return filteredList;
+            }
+
+            /**
+             * This function is a wrapper for the game.functions.validateClass() method. 
+             * It takes a card-like object as a parameter and passes it to the validateClass() method along with the game.player object.
+             *
+             * @param {Card | import('./types').Blueprint} cardLike - a card-like object (Card or Blueprint)
+             * @returns {boolean} the return value of the validateClass() method
+             */
+            function customValidateClass(cardLike) {
+                return game.functions.validateClass(game.player, cardLike);
+            }
+
+            cards = filterList(cards, customValidateClass);
+        }
 
         if (_cards.length == 0) values = game.functions.chooseItemsFromList(cards, amount, false);
 
-        if (values.length <= 0) return;
+        if (values.length <= 0) return null;
 
         if (game.player.ai) return game.player.ai.discover(values);
 
@@ -859,11 +928,21 @@ class Interact {
         let choice = game.input();
 
         if (!values[parseInt(choice) - 1]) {
+            // Invalid input
+            // We still want the user to be able to select a card, so we force it to be valid
             return this.discover(prompt, cards, filterClassCards, amount, values);
         }
 
-        let card = values[parseInt(choice) - 1];
-        if (!(card instanceof game.Card)) card = new game.Card(card.name, game.player);
+        /**
+         * @type {Card}
+         */
+        let card;
+
+        // Potential Blueprint card
+        let pbcard = values[parseInt(choice) - 1];
+
+        if (!(pbcard instanceof game.Card)) card = new game.Card(pbcard.name, game.player);
+        else card = pbcard;
 
         return card;
     }
@@ -874,11 +953,11 @@ class Interact {
      * 
      * @param {string} prompt The prompt to ask
      * @param {boolean | string} [elusive=false] Wether or not to prevent selecting elusive minions, if this is a string, allow selecting elusive minions but don't trigger secrets / quests
-     * @param {"enemy" | "friendly"} [force_side=null] Force the user to only be able to select minions / the hero of a specific side: ["enemy", "friendly"]
-     * @param {"hero" | "minion"} [force_class=null] Force the user to only be able to select a minion or a hero: ["hero", "minion"]
+     * @param {"enemy" | "friendly" | null} [force_side=null] Force the user to only be able to select minions / the hero of a specific side: ["enemy", "friendly"]
+     * @param {"hero" | "minion" | null} [force_class=null] Force the user to only be able to select a minion or a hero: ["hero", "minion"]
      * @param {string[]} [flags=[]] Change small behaviours ["allow_locations" => Allow selecting location, ]
      * 
-     * @returns {Card | Player} The card or hero chosen
+     * @returns {Card | Player | false} The card or hero chosen
      */
     selectTarget(prompt, elusive = false, force_side = null, force_class = null, flags = []) {
         // force_class = [null, "hero", "minion"]
@@ -897,11 +976,11 @@ class Interact {
      * 
      * @param {string} prompt The prompt to ask
      * @param {boolean | string} [elusive=false] Wether or not to prevent selecting elusive minions, if this is a string, allow selecting elusive minions but don't trigger secrets / quests
-     * @param {"enemy" | "friendly"} [force_side=null] Force the user to only be able to select minions / the hero of a specific side: ["enemy", "friendly"]
-     * @param {"hero" | "minion"} [force_class=null] Force the user to only be able to select a minion or a hero: ["hero", "minion"]
+     * @param {"enemy" | "friendly" | null} [force_side=null] Force the user to only be able to select minions / the hero of a specific side: ["enemy", "friendly"]
+     * @param {"hero" | "minion" | null} [force_class=null] Force the user to only be able to select a minion or a hero: ["hero", "minion"]
      * @param {string[]} [flags=[]] Change small behaviours ["allow_locations" => Allow selecting location, ]
      * 
-     * @returns {Card | Player} The card or hero chosen
+     * @returns {Card | Player | false} The card or hero chosen
      */
     _selectTarget(prompt, elusive = false, force_side = null, force_class = null, flags = []) {
         // force_class = [null, "hero", "minion"]
@@ -1083,7 +1162,7 @@ class Interact {
     /**
      * Returns a card in a user readble state. If you console.log the result of this, the user will get all the information they need from the card.
      *
-     * @param {Card | import('./card').Blueprint} card The card
+     * @param {Card | import('./types').Blueprint} card The card
      * @param {number} [i=-1] If this is set, this function will add `[i]` to the beginning of the card. This is useful if there are many different cards to choose from.
      *
      * @returns {string} The readable card
@@ -1097,18 +1176,26 @@ class Interact {
         else desc = card.desc.length > 0 ? ` (${game.functions.parseTags(card.desc)}) ` : " ";
 
         // Extract placeholder value, remove the placeholder header and footer
-        if (card.placeholder) {
+        if (card instanceof game.Card && card.placeholder) {
             let reg = new RegExp(`{ph:.*?} (.*?) {/ph}`);
 
-            while (reg.exec(desc)) {
-                let placeholder = reg.exec(desc)[1]; // Gets the capturing group result
+            while (true) {
+                let regedDesc = reg.exec(desc);
 
+                // There is nothing more to extract
+                if (!regedDesc) break;
+
+                let placeholder = regedDesc[1]; // Gets the capturing group result
                 desc = desc.replace(reg, placeholder);
             }
         }
 
         let mana = `{${card.mana}} `;
-        switch (card.costType || "mana") {
+
+        let costType = "mana";
+        if (card instanceof game.Card && card.costType) costType = card.costType;
+
+        switch (costType) {
             case "mana":
                 mana = mana.cyan;
                 break;
@@ -1122,12 +1209,16 @@ class Interact {
                 break;
         }
 
+        let displayName = card.name;
+        if (card instanceof game.Card) displayName = card.displayName;
+
         if (i !== -1) sb += `[${i}] `;
         sb += mana;
-        sb += game.functions.colorByRarity(card.displayName || card.name, card.rarity);
+        sb += game.functions.colorByRarity(displayName, card.rarity);
         
         if (card.type === "Minion" || card.type === "Weapon") {
-            sb += ` [${card.stats.join(" / ")}]`.brightGreen;
+            // @ts-ignore - card.stats is always non-null in this context / brightGreen does exist
+            sb += ` [${card.stats?.join(" / ")}]`.brightGreen;
         }
 
         sb += desc;
@@ -1139,7 +1230,7 @@ class Interact {
     /**
      * Prints all the information you need to understand the game state
      * 
-     * @param {Player} [plr=null] The player
+     * @param {Player | null} [plr=null] The player
      * @param {boolean} [detailed=false] Show more, less important, information
      * 
      * @returns {undefined}
@@ -1148,7 +1239,7 @@ class Interact {
         // WARNING: Stinky and/or smelly code up ahead. Read at your own risk.
         // TODO: Reformat this
 
-        if (!plr) plr = game.player; 
+        if (!plr) plr = game.player;
 
         if (game.turns <= 2 && !game.config.debug) this.printLicense();
         else this.printName();
@@ -1192,11 +1283,13 @@ class Interact {
             // Attack: 1 | Weapon: Wicked Knife (1 / 1)
             sb += `Weapon     : ${game.functions.colorByRarity(plr.weapon.displayName, plr.weapon.rarity)}`;
 
-            let wpnStats = ` [${plr.weapon.stats.join(' / ')}]`;
+            let wpnStats = ` [${plr.weapon.stats?.join(' / ')}]`;
 
+            // @ts-ignore
             sb += (plr.attack > 0) ? wpnStats.brightGreen : wpnStats.gray;
         }
         else if (plr.attack) {
+            // @ts-ignore
             sb += `Attack     : ${plr.attack.toString().brightGreen}`;
         }
     
@@ -1207,8 +1300,9 @@ class Interact {
             
             sb += "         | "; 
             sb += `Weapon     : ${op.weapon.displayName.bold}`;
-            let opWpnStats = ` [${op.weapon.stats.join(' / ')}]`;
+            let opWpnStats = ` [${op.weapon.stats?.join(' / ')}]`;
 
+            // @ts-ignore
             sb += (op.attack > 0) ? opWpnStats.brightGreen : opWpnStats.gray;
         }
     
@@ -1243,7 +1337,9 @@ class Interact {
             sb += "Sidequests: ";
             sb += plr.sidequests.map(sidequest => {
                 sidequest["name"].bold +
+                // @ts-ignore
                 " (" + sidequest["progress"][0].toString().brightGreen +
+                // @ts-ignore
                 " / " + sidequest["progress"][1].toString().brightGreen +
                 ")"
             }).join(', ');
@@ -1258,6 +1354,7 @@ class Interact {
             const prog = quest["progress"];
     
             sb += `Quest(line): ${quest["name"].bold} `;
+            // @ts-ignore
             sb += `[${prog[0]} / ${prog[1]}]`.brightGreen;
         }
         // Quests End
@@ -1302,8 +1399,10 @@ class Interact {
                 sb += op.sidequests.map(sidequest => {
                     sidequest["name"].bold +
                     " (" +
+                    // @ts-ignore
                     sidequest["progress"][0].toString().brightGreen +
                     " / " +
+                    // @ts-ignore
                     sidequest["progress"][1].toString().brightGreen +
                     ")"
                 }).join(', ');
@@ -1317,8 +1416,10 @@ class Interact {
                 sb += "Opponent's Quest(line): ";
                 sb += quest["name"].bold;
                 sb += " (";
+                // @ts-ignore
                 sb += quest["progress"][0].toString().brightGreen;
                 sb += " / ";
+                // @ts-ignore
                 sb += quest["progress"][1].toString().brightGreen;
                 sb += ")";
     
@@ -1331,9 +1432,9 @@ class Interact {
     
         // Board
         console.log("\n--- Board ---");
-        
+
         game.board.forEach((_, i) => {
-            const t = (i == plr.id) ? "--- You ---" : "--- Opponent ---";
+            const t = (i == plr?.id) ? "--- You ---" : "--- Opponent ---";
     
             console.log(t) // This is not for debugging, do not comment out
     
@@ -1347,10 +1448,14 @@ class Interact {
                     sb += `[${n + 1}] `;
                     sb += `${m.displayName} `.bold;
                     sb += "{";
+                    // @ts-ignore
                     sb += "Durability: ".brightGreen;
+                    // @ts-ignore
                     sb += `${m.getHealth()}`.brightGreen;
+                    // @ts-ignore
                     sb += " / ".brightGreen;
-                    sb += `${m.backups.init.stats[1]}`.brightGreen;
+                    // @ts-ignore
+                    sb += `${m.backups.init.stats?[1]:0}`.brightGreen;
                     sb += ", ";
         
                     sb += "Cooldown: ".cyan;
@@ -1369,7 +1474,7 @@ class Interact {
 
                 const excludedKeywords = ["Magnetic", "Corrupt", "Corrupted"];
                 let keywords = m.keywords.filter(k => !excludedKeywords.includes(k));
-                keywords = keywords.length > 0 ? ` {${keywords.join(", ")}}`.gray : "";
+                let keywordsString = keywords.length > 0 ? ` {${keywords.join(", ")}}`.gray : "";
 
                 let frozen = m.frozen ? " (Frozen)".gray : "";
                 let dormant = m.dormant ? " (Dormant)".gray : "";
@@ -1378,9 +1483,10 @@ class Interact {
     
                 sb += `[${n + 1}] `;
                 sb += game.functions.colorByRarity(m.displayName, m.rarity);
-                sb += ` [${m.stats.join(" / ")}]`.brightGreen;
+                // @ts-ignore
+                sb += ` [${m.stats?.join(" / ")}]`.brightGreen;
     
-                sb += keywords;
+                sb += keywordsString;
                 sb += frozen
                 sb += dormant;
                 if (!m.dormant) sb += immune
@@ -1392,8 +1498,8 @@ class Interact {
         });
         console.log("-------------")
     
-        let _class = plr.hero.name.includes("Starting Hero") ? plr.heroClass : plr.hero.name;
-        if (detailed && plr.hero.name.includes("Starting Hero")) {
+        let _class = plr.hero?.name.includes("Starting Hero") ? plr.heroClass : plr.hero?.name;
+        if (detailed && plr.hero?.name.includes("Starting Hero")) {
             _class += " | ";
             _class += "HP: ";
             _class += plr.hero.name;
@@ -1401,6 +1507,7 @@ class Interact {
     
         // Hand
         console.log(`\n--- ${plr.name} (${_class})'s Hand ---`);
+        // @ts-ignore
         console.log("([id] " + "{Cost}".cyan + " Name".bold + " [attack / health]".brightGreen + " (type)".yellow + ")\n");
     
         plr.hand.forEach((card, i) => console.log(this.getReadableCard(card, i + 1)));
@@ -1412,7 +1519,7 @@ class Interact {
     /**
      * Shows information from the card, console.log's it and waits for the user to press enter.
      *
-     * @param {Card | import('./card').Blueprint} card The card
+     * @param {Card | import('./types').Blueprint} card The card
      * @param {boolean} [help=true] If it should show a help message which displays what the different fields mean.
      *
      * @returns {undefined}
@@ -1428,16 +1535,17 @@ class Interact {
 
         let type = card.type;
 
-        if (type == "Minion") tribe = " (" + card.tribe.gray + ")";
+        if (type == "Minion") tribe = " (" + card.tribe?.gray + ")";
         else if (type == "Spell") {
             if (card.spellClass) spellClass = " (" + card.spellClass.cyan + ")";
             else spellClass = " (None)";
         }
         else if (type == "Location") {
-            if (card instanceof game.Card) locCooldown = " (" + card.blueprint.cooldown.toString().cyan + ")";
-            else locCooldown = " (" + card.cooldown.toString().cyan + ")";
+            if (card instanceof game.Card) locCooldown = " (" + card.blueprint.cooldown?.toString().cyan + ")";
+            else locCooldown = " (" + card.cooldown?.toString().cyan + ")";
         }
 
+        // @ts-ignore
         if (help) console.log("{mana} ".cyan + "Name ".bold + "(" + "[attack / health] ".brightGreen + "if it has) (description) ".white + "(type) ".yellow + "((tribe) or (spell class) or (cooldown)) [".white + "class".gray + "]");
         console.log(_card + tribe + spellClass + locCooldown + ` [${_class}]`);
 

@@ -3,6 +3,7 @@ Hearthstone.js - Hearthstone but console based.
 Copyright (C) 2022  LunarTides
 */
 
+//@ts-check
 const { Game } = require("./game");
 const { Player } = require("./player");
 const { set }  = require("./shared");
