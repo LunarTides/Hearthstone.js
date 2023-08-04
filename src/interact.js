@@ -341,7 +341,7 @@ class Interact {
                         if (last_entry[0] == "DrawCard" && last_entry[1].uuid == val.uuid) {
                             return;
                         }
-                    } 
+                    }
 
                     let hideValueKeys = ["DrawCard", "AddCardToHand", "AddCardToDeck"]; // Example: If a card gets drawn, the other player can't see what card it was
                     let shouldHide = hideValueKeys.includes(key) && !history_debug;
@@ -362,7 +362,7 @@ class Interact {
                         strbuilder = strbuilder.slice(0, -2);
                         val = strbuilder;
                     }
-
+                    
                     key = key[0].toUpperCase() + key.slice(1);
 
                     finished += `${key}: ${val}\n`;
@@ -1112,7 +1112,7 @@ class Interact {
             let reg = new RegExp(`{ph:.*?} (.*?) {/ph}`);
 
             while (true) {
-                let regedDesc = reg.exec(card.desc);
+                let regedDesc = reg.exec(desc);
                 
                 // There is nothing more to extract
                 if (!regedDesc) break;

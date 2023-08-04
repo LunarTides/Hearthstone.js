@@ -646,7 +646,7 @@ class AI {
     /**
      * Choose the "best" minion to discover.
      * 
-     * @param {Card[] | import("./card").Blueprint[]} cards The cards to choose from
+     * @param {Card[] | import("./types").Blueprint[]} cards The cards to choose from
      * 
      * @returns {Card} Result
      */
@@ -656,6 +656,8 @@ class AI {
 
         // Look for highest score
         cards.forEach(c => {
+            if (!c.name) return; // Card-like is invalid
+
             let score = this.analyzePositiveCard(new game.Card(c.name, this.plr));
 
             if (score <= best_score) return;

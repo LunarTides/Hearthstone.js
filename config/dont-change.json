@@ -19,7 +19,7 @@
         "Fix a clc bug": ["done", "Fix a class creator bug. If you answered any prompt with an answer that starts with 'b', it will exit the program."],
         "Remove update parameters from all functions": ["done", "A lot of player / card functions has an update parameter. Replace it with a more generalized solution."],
         "Add better documentation": ["done", "Add better documentation to the different functions in the program."],
-        "Bug fixing / stabilze": ["doing", "Fix bugs and stabilze. Get the version ready for release."],
+        "Bug fixing / stabilze": ["doing", "Fix bugs and stabilze. Get the version ready for release. Add all unit tests."],
         "Bump version": ["not done", "Update the version. Release the update."]
     },
 
