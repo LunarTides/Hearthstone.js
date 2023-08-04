@@ -233,7 +233,7 @@ class DeckcodeFunctions {
     /**
      * Generates a deckcode from a list of blueprints
      *
-     * @param {import("./card").Blueprint[]} deck The deck to create a deckcode from
+     * @param {import("./types").Blueprint[]} deck The deck to create a deckcode from
      * @param {string} heroClass The class of the deck. Example: "Priest"
      * @param {string} runes The runes of the deck. Example: "BFU"
      *
@@ -1428,7 +1428,7 @@ ${main_content}
     /**
      * Add an event listener.
      *
-     * @param {import("./game").EventKeys} key The event to listen for. If this is an empty string, it will listen for any event.
+     * @param {import("./types").EventKeys} key The event to listen for. If this is an empty string, it will listen for any event.
      * @param {elCallback} checkCallback This will trigger when the event gets broadcast, but before the actual code in `callback`. If this returns false, the event listener will ignore the event. If you set this to `true`, it is the same as doing `() => {return true}`.
      * @param {elCallback} callback The code that will be ran if the event listener gets triggered and gets through `checkCallback`. If this returns true, the event listener will be destroyed.
      * @param {number} lifespan How many times the event listener will trigger and call "callback" before self-destructing. Set this to -1 to make it last forever, or until it is manually destroyed using "callback".
@@ -1502,9 +1502,9 @@ ${main_content}
     /**
      * Filters out all cards that are uncollectible in a list
      * 
-     * @param {Card[] | import("./card").Blueprint[]} cards The list of cards
+     * @param {Card[] | import("./types").Blueprint[]} cards The list of cards
      * 
-     * @returns {Card[] | import("./card").Blueprint[]} The cards without the uncollectible cards
+     * @returns {Card[] | import("./types").Blueprint[]} The cards without the uncollectible cards
      */
     accountForUncollectible(cards) {
         return cards.filter(c => !c.uncollectible);
@@ -1734,7 +1734,7 @@ ${main_content}
      * @param {"Quest" | "Sidequest" | "Secret"} type The type of the quest
      * @param {Player} plr The player to add the quest to
      * @param {Card} card The card that created the quest / secret
-     * @param {import("./game").EventKeys} key The key to listen for
+     * @param {import("./types").EventKeys} key The key to listen for
      * @param {any} val The value that the quest needs
      * @param {import("./types").QuestCallback} callback The function to call when the key is invoked.
      * @param {string} [next=null] The name of the next quest / sidequest / secret that should be added when the quest is done

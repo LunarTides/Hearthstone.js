@@ -362,7 +362,7 @@ class Interact {
                         strbuilder = strbuilder.slice(0, -2);
                         val = strbuilder;
                     }
-                    
+
                     key = key[0].toUpperCase() + key.slice(1);
 
                     finished += `${key}: ${val}\n`;
@@ -599,7 +599,7 @@ class Interact {
         if (locations.length <= 0) return "nolocations";
 
         let location = this.selectTarget("Which location do you want to use?", false, "friendly", "minion", ["allow_locations"]);
-        if (!location) return "invalidtype";
+        if (!location) return -1;
 
         if (location.type != "Location") return "invalidtype";
         if (location.cooldown > 0) return "cooldown";
