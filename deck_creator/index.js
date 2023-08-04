@@ -912,6 +912,9 @@ function runner() {
 }
 
 function main() {
+    functions.importCards(__dirname + "/../cards");
+    functions.importConfig(__dirname + "/../config");
+
     chosen_class = askClass();
 
     while (running) {

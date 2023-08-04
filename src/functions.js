@@ -353,6 +353,10 @@ class DeckcodeFunctions {
         let cards = code[1].trim();
 
         // Now it's just the cards left
+
+        /**
+         * @type {VanillaCard[]}
+         */
         let vanillaCards;
 
         try {
@@ -396,10 +400,9 @@ class DeckcodeFunctions {
             let matches = vanillaCards.filter(a => a.name.toLowerCase() == c.toLowerCase());
             matches = self.filterVanillaCards(matches, true, extraFiltering);
 
-            if (!matches) {
+            if (matches.length == 0) {
                 // Invalid card
-                console.log("ERROR: Invalid card found!".red);
-                game.input();
+                game.input("ERROR: Invalid card found!".red);
                 return;
             }
 

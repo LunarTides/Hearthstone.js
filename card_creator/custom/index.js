@@ -204,8 +204,13 @@ function main() {
     if (uncollectible) card.uncollectible = uncollectible;
 
     // Actually create the card
+    console.log("Creating file...");
+
     lib.set_type("Custom");
-    return lib.create(type, card, null, null);
+    let filePath = lib.create(type, card, null, null);
+
+    game.input();
+    return filePath;
 }
 
 exports.main = main;
