@@ -25,7 +25,7 @@ module.exports = {
         if (list.length <= 0) return;
 
         let card = game.interact.discover("Discover a spell that costs (3) or less to teach it.", list);
-        if (!card) return;
+        if (!card) return -1;
 
         let minion = new game.Card("School Teacher Nagaling", plr);
         minion.storage.push(card);

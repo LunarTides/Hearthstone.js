@@ -319,6 +319,24 @@ describe("Functions", () => {
         assert.equal(parsed, expected);
     });
 
+    it ('should correctly escape tags', () => {
+        const str = "&BBold&R, ~&rRed~&R, &gGreen&R, ~&bBlue~&R, &cCyan&R, ~&mMagenta~&R, &yYellow&R, ~&kBlack~&R, &aGray&R, ~&wWhite~&R.";
+        const expected = '\x1B[1mBold\x1B[22m, &rRed&R, \x1B[32mGreen\x1B[39m, &bBlue&R, \x1B[36mCyan\x1B[39m, &mMagenta&R, \x1B[33mYellow\x1B[39m, &kBlack&R, \x1B[90mGray\x1B[39m, &wWhite&R.';
+
+        const parsed = game.functions.parseTags(str);
+
+        assert.equal(parsed, expected);
+    });
+
+    it ('should correctly strip tags', () => {
+        const str = "&BBold&R: ~&rEscaped~&R";
+        const expected = "Bold: &rEscaped&R";
+
+        const parsed = game.functions.stripTags(str);
+
+        assert.equal(parsed, expected);
+    });
+
     it ('should correctly clone an object', () => {
         let card = game.functions.getCards()[0];
         card = new Card(card.name, {});

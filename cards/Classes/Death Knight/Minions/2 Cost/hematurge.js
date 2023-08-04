@@ -26,6 +26,8 @@ module.exports = {
             if (list.length <= 0) return;
 
             let card = game.interact.discover("Discover a Blood Rune card.", list);
+            if (!card) return;
+
             plr.addToHand(card);
         }
 

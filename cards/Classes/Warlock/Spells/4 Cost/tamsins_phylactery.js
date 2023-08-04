@@ -24,7 +24,8 @@ module.exports = {
         if (list.length <= 0) return;
 
         let minion = game.interact.discover(self.desc, list, false);
-        if (!minion) return;
+        if (!minion) return -1;
+        
         minion = minion.imperfectCopy();
 
         game.board[plr.id].forEach(m => {

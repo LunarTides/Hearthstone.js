@@ -232,6 +232,7 @@ describe("Interact", () => {
 
         console.log = log;
 
+        assert.ok(card);
         assert.ok(card instanceof game.Card);
         assert.equal(card.type, "Minion");
         assert.ok(pool.map(c => c.name).includes(card.name));

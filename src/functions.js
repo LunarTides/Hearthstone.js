@@ -1374,8 +1374,17 @@ ${main_content}
      * @returns {string}
      */
     stripTags(str) {
-        // Regular expression created by ChatGPT, it removes the "&B"'s but keeps the "~&B"'s since the '~' here works like an escape character.
-        return str.replace(/(?<!~)&\w/g, "");
+        // Regular expressions created by AI's, it removes the "&B"'s but keeps the "~&B"'s since the '~' here works like an escape character.
+        // It does however remove the escape character itself.
+        let strippedString = str;
+
+        // Remove unescaped tags
+        strippedString = strippedString.replace(/(?<!~)&\w/g, "")
+
+        // Remove escape character
+        strippedString = strippedString.replace(/~&(\w)/g, "&$1")
+
+        return strippedString;
     }
 
     /**

@@ -23,6 +23,7 @@ module.exports = {
 
         // interact.discover(prompt, pool, if_it_should_filter_away_cards_that_are_not_the_players_class = true, amount_of_cards_to_choose_from = 3)
         let spell = game.interact.discover("Discover a spell", cards);
+        if (!spell) return -1;
 
         // Now we need to actually add the card to the player's hand
         plr.addToHand(spell);
