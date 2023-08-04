@@ -23,6 +23,13 @@ class EventManager {
         this.eventListeners = 0;
 
         /**
+         * The hooks that will be run when the game ticks.
+         * 
+         * @type {Function[]}
+         */
+        this.tickHooks = [];
+
+        /**
          * The history of the game.
          * 
          * @type {Object<number, Array>}
@@ -31,12 +38,14 @@ class EventManager {
     }
 
     /**
-     * The code in here gets executed very often
+     * Tick the game
      *
      * @param {string} key - The key of the event that triggered the tick
      * @param {any} val - The value of the event that triggered the tick
      */
     tick(key, val) {
+        // The code in here gets executed very often
+
         // Infuse
         if (key == "KillMinion") {
             val.plr.hand.forEach(p => {
@@ -79,6 +88,8 @@ class EventManager {
                 if (c.mana < 0) c.mana = 0;
             });
         }
+
+        this.tickHooks.forEach(hook => hook(key, val));
     }
 
     /**
@@ -202,6 +213,19 @@ class EventManager {
     addHistory(key, val, plr) {
         if (!this.history[this.game.turns]) this.history[this.game.turns] = [];
         this.history[this.game.turns].push([key, val, plr]);
+    }
+
+    /**
+     * Broadcast a dummy event. Use if you need to broadcast any event to kickstart an event listener, consider looking into `game.functions.hookToTick`.
+     * 
+     * Specifically, this broadcasts the `dummy` event. DO NOT LISTEN FOR THAT EVENT.
+     * 
+     * @param {Player} plr The player who caused the event to happen
+     * 
+     * @returns {boolean} Success
+     */
+    broadcastDummy(plr) {
+        return this.broadcast("dummy", null, plr, false);
     }
 
     /**

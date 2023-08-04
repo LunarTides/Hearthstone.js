@@ -19,12 +19,18 @@ module.exports = {
     /**
      * @type {import("../../../../../src/types").KeywordMethod}
      */
-    passive(plr, game, self, key, val) {
-        if (key == "KillMinion" && val == self) return;
+    battlecry(plr, game, self) {
+        // Ticks are called more often than passives
+        let unhook = game.functions.hookToTick(() => {
+            plr.getOpponent().hand.forEach(c => {
+                if (c.enchantmentExists("-1 mana", self)) return;
 
-        plr.getOpponent().hand.forEach(c => {
-            if (!c.enchantmentExists("-1 mana", self)) c.addEnchantment("-1 mana", self);
+                c.addEnchantment("-1 mana", self);
+            });
         });
+
+        // Store the unhook to be used later
+        self.storage.push(unhook);
     },
 
     /**
@@ -32,6 +38,9 @@ module.exports = {
      */
     unpassive(plr, game, self, ignore) {
         if (ignore) return;
+
+        // Unhook from the tick
+        if (self.storage.length >= 0) (self.storage[0]());
 
         // If it gets to this point, this card is either about to be silenced, or killed.
         plr.getOpponent().hand.forEach(c => {

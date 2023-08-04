@@ -546,6 +546,8 @@ class Interact {
      * @returns {boolean | string | Card | "mana" | "traded" | "space" | "magnetize" | "colossal" | "invalid" | "refund"} Success | The return value of doTurnLogic
      */
     doTurn() {
+        game.events.tick("Generic", "doTurn");
+
         if (game.player.ai) {
             let input = game.player.ai.calcMove();
             if (!input) return false;
