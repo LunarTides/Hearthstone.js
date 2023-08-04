@@ -218,14 +218,14 @@ class EventManager {
     /**
      * Broadcast a dummy event. Use if you need to broadcast any event to kickstart an event listener, consider looking into `game.functions.hookToTick`.
      * 
-     * Specifically, this broadcasts the `dummy` event. DO NOT LISTEN FOR THAT EVENT.
+     * Specifically, this broadcasts the `Dummy` event. DO NOT LISTEN FOR THAT EVENT.
      * 
      * @param {Player} plr The player who caused the event to happen
      * 
      * @returns {boolean} Success
      */
     broadcastDummy(plr) {
-        return this.broadcast("dummy", null, plr, false);
+        return this.broadcast("Dummy", null, plr, false);
     }
 
     /**

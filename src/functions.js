@@ -322,6 +322,9 @@ class DeckcodeFunctions {
         //
         // Reference: Death Knight [3B] /1:4,2/ 3f,5f,6f...
 
+        /**
+         * @type {import("deckstrings").DeckDefinition}
+         */
         let deck = {"cards": [], "heroes": [], "format": null};
 
         deck.format = deckstrings.FormatType.FT_WILD; // Wild
