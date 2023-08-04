@@ -1154,7 +1154,7 @@ class Interact {
     /**
      * Prints all the information you need to understand the game state
      * 
-     * @param {Player | nulll} [plr=null] The player
+     * @param {Player | null} [plr=null] The player
      * @param {boolean} [detailed=false] Show more, less important, information
      * 
      * @returns {undefined}

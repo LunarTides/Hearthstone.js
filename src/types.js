@@ -94,7 +94,7 @@ const { Player } = require("./player");
  * "Combo" |
  * "Outcast" |
  * "Overheal" |
- * "Casts When Drawn" |
+ * "Cast On Draw" |
  * "Charge" |
  * "Mega-Windfury" |
  * "Echo" |
