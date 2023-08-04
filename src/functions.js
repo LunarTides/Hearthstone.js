@@ -840,18 +840,21 @@ ${err.stack}
 `
 
         let history_content = `-- History --${history}`;
-        let ai_content = `
--- AI Logs --
-${aiHistory}`;
+        let ai_content = `\n-- AI Logs --\n${aiHistory}`;
+
+        let config = JSON.stringify(game.config, null, 2);
+        let config_content = `\n-- Config --\n${config}`;
 
         let main_content = history_content;
         if (game.config.P1AI || game.config.P2AI) main_content += ai_content;
+        main_content += config_content;
         main_content += errorContent;
 
         let content = `Hearthstone.js ${name}
 Date: ${dateString}
 Version: ${game.config.version}-${game.config.branch}
 Operating System: ${process.platform}
+Log File Version: 1
 
 ${main_content}
 `

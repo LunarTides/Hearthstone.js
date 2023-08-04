@@ -123,6 +123,7 @@ const { Player } = require("./player");
  * "CastSpellOnMinion" |
  * "TradeCard" |
  * "FreezeCard" |
+ * "CreateCard" |
  * "AddCardToDeck" |
  * "AddCardToHand" |
  * "DrawCard" |

@@ -391,6 +391,8 @@ class Card {
          * @type {Object.<any, string>}
          */
         this.placeholder = this.activate("placeholders")[0]; // This is a list of replacements.
+
+        game.events.broadcast("CreateCard", this, this.plr);
     }
 
     /**

@@ -392,7 +392,7 @@ class Game {
          * 
          * If an event with a key in this list is broadcast, it will add it to the history, and tick the game, but will not activate any passives / event listeners.
          * 
-         * @type {string[]}
+         * @type {import('./types').EventKeys[]}
          */
         this.suppressedEvents = [];
 
@@ -543,8 +543,6 @@ class Game {
         this.suppressedEvents.push("AddCardToHand");
         this.player2.addToHand(the_coin);
         this.suppressedEvents.pop();
-
-        this.events.addHistory("AddCardToHand", the_coin, this.player2);
 
         this.turns += 1;
 

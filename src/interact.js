@@ -310,7 +310,7 @@ class Interact {
 
             const doVal = (val, plr, hide) => {
                 if (val instanceof game.Card) {
-                    if (hide && val.plr != plr && !history_debug) val = "Hidden";
+                    if (hide && val.plr != plr) val = "Hidden";
                     else val = this.getReadableCard(val) + " which belongs to: " + val.plr.name.blue + ", and has uuid: " + val.uuid.slice(0, 8);
                 }
                 else if (val instanceof game.Player) val = `Player ${val.id + 1}`;
@@ -328,9 +328,7 @@ class Interact {
                     if (plr != prevPlayer) hasPrintedHeader = false;
                     prevPlayer = plr;
 
-                    let whitelistedKeys = ["HealthRestored", "UnspentMana", "GainOverload", "GainHeroAttack", "TakeDamage", "PlayCard", "SummonMinion", "KillMinion", "DamageMinion", "TradeCard", "FreezeCard", "AddCardToDeck", "AddCardToHand", "DrawCard", "Attack", "HeroPower", "TargetSelectionStarts", "TargetSelected"];
-
-                    if (whitelistedKeys.includes(key) || history_debug) {}
+                    if (game.config.whitelistedHistoryKeys.includes(key) || history_debug) {}
                     else return;
 
                     // If the `key` is "AddCardToHand", check if the previous history entry was `DrawCard`, and they both contained the exact same `val`.
@@ -343,8 +341,7 @@ class Interact {
                         }
                     }
 
-                    let hideValueKeys = ["DrawCard", "AddCardToHand", "AddCardToDeck"]; // Example: If a card gets drawn, the other player can't see what card it was
-                    let shouldHide = hideValueKeys.includes(key) && !history_debug;
+                    let shouldHide = game.config.hideValueHistoryKeys.includes(key) && !history_debug;
 
                     if (!hasPrintedHeader) finished += `\nTurn ${t} - Player [${plr.name}]\n`; 
                     hasPrintedHeader = true;
