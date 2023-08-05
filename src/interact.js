@@ -185,7 +185,6 @@ class Interact {
             console.log(cond_color("/eval [log] <Code> - Runs the code specified. If the word 'log' is before the code, instead console.log the code and wait for user input to continue."));
             console.log(cond_color("/debug             - Gives you infinite mana, health and armor"));
             console.log(cond_color("/exit              - Force exits the game. There will be no winner, and it will take you straight back to the runner."));
-            console.log(cond_color("/events            - Gives you a list of the events that have been broadcast in an alphabetical order"));
             console.log(cond_color("/ai                - Gives you a list of the actions the ai(s) have taken in the order they took it"));
             console.log(cond_color("---------------------------" + ((game.config.debug) ? "" : "-")));
             
@@ -473,48 +472,6 @@ class Interact {
 
             return finished;
         }
-        else if (q == "/events") {
-            if (!game.config.debug) return -1;
-
-            console.log("Events:\n");
-
-            for (let i = 1; i <= 2; i++) {
-                const plr = game["player" + i];
-                
-                console.log(`Player ${i}'s Stats: {`);
-
-                Object.keys(game.events).forEach(s => {
-                    if (!game.events[s][plr.id]) return;
-                    game.events[s][plr.id].forEach(t => {
-                        if (t instanceof Array && t[0] instanceof game.Card) {
-                            let sb = `[${s}] ([`;
-                            t.forEach(v => {
-                                if (v instanceof game.Card) v = v.name;
-                                sb += `${v}, `;
-                            });
-                            sb = sb.slice(0, -2);
-                            sb += "]),";
-                            console.log(sb);
-                            return;
-                        }
-                        if (t instanceof game.Card || typeof(t) !== 'object') {
-                            if (t instanceof game.Card) t = t.name;
-                            console.log(`[${s}] (${t}),`);
-                            return;
-                        }
-
-                        console.log(`[${s}] (`);
-                        console.log(t);
-                        console.log("),");
-                    });
-                });
-
-                console.log("}");
-            }
-
-            game.input("\nPress enter to continue...");
-        }
-
         // -1 if the command is not found
         else return -1;
 
