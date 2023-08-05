@@ -16,92 +16,386 @@ class Player {
         this.getInternalGame();
 
         /**
+         * You might be looking for `Player.id`.
+         * 
+         * The player's name. For example: "Player 1".
+         * 
+         * There is no real use for this outside of the source code, so i would advise you to not use this.
+         * 
          * @type {string}
          */
         this.name = name;
 
         /**
+         * This is:
+         * 
+         * 0: if this is the starting player
+         * 
+         * 1: if this is the player that starts with the coin
+         * 
+         * You can use this in `game.board[Player.id]` in order to get this player's side of the board.
+         * 
+         * # Examples
+         * @example
+         * let board = game.board[player.id];
+         * 
+         * board.forEach(card => {
+         *     console.log(card.name);
+         * });
+         * 
          * @type {number}
          */
-        this.id = null;
+        this.id = -1;
 
         /**
+         * The player's AI.
+         * 
+         * # Examples
+         * @example
+         * let discover = player.ai.discover();
+         * 
+         * console.log(discover);
+         * 
          * @type {AI | null}
          */
         this.ai = null;
 
         /**
-         * @type {Game}
-         */
-        this.game = null;
-
-        /**
+         * How much damage the player gets damaged the next time they draw a card from an empty deck.
+         * 
+         * This increments every time a player draws from an empty deck.
+         * 
          * @type {number}
          */
         this.fatigue = 0;
 
         /**
+         * The class type of the player. This is always `Player`.
+         * 
+         * You can use this if the type of a variable is ambigious (Card | Player) since the Card class always has this variable set to `Card`.
+         * 
+         * # Examples
+         * @example
+         * let target = game.functions.selectTarget("Example", false, null, null);
+         * 
+         * if (target.classType == "Player") {
+         *     console.log(target.health);
+         * } else if (target.classType == "Card") {
+         *     console.log(target.stats[1]);
+         * }
+         * 
+         * // ^^^ You can just use `target.getHealth()` in this situation since both classes have it.
+         * 
          * @type {"Player"}
          */
         this.classType = "Player";
 
         /**
+         * The player's deck.
+         * 
+         * This can be shuffled at any time so don't rely on the order of the cards.
+         * 
+         * # Examples
+         * @example
+         * player.deck.forEach(card => {
+         *     console.log(card.name);
+         * });
+         * 
          * @type {Card[]}
          */
         this.deck = [];
 
         /**
+         * The player's hand.
+         * 
+         * # Examples
+         * @example
+         * player.hand.forEach(card => {
+         *     console.log(card.name);
+         * });
+         * 
          * @type {Card[]}
          */
         this.hand = [];
 
+        /**
+         * The amount of mana that the player CURRENTLY has.
+         * 
+         * # Examples
+         * @example
+         * // Use `player.refreshMana(2, player.maxMaxMana)` instead in a real situation.
+         * player.mana += 2;
+         * 
+         * @type {number}
+         */
         this.mana = 0;
+
+        /**
+         * The max amount of mana the player has. This increments every turn until it reaches `player.maxMaxMana`.
+         * 
+         * # Examples
+         * @example
+         * // Use `player.gainEmptyMana(2)` instead in a real situation.
+         * player.maxMana += 2;
+         * 
+         * @type {number}
+         */
         this.maxMana = 0;
+
+        /**
+         * The max amount of max mana the player can have. This is normally fixed at `10` but can be changed.
+         * 
+         * # Examples
+         * ```
+         * player.maxMaxMana = 20;
+         * // Now `player.maxMana` will increment every turn until it reaches 20.
+         * ```
+         * 
+         * @type {number}
+         */
         this.maxMaxMana = 10;
+
+        /**
+         * The amount of overload the player has. See the overload mechanic on the Hearthstone Wiki.
+         * 
+         * # Examples
+         * ```
+         * // Use `player.gainOverload(2)` instead in a real situation.
+         * player.overload += 2;
+         * // Now the player will have 2 less mana next turn.
+         * ```
+         * 
+         * @type {number}
+         */
         this.overload = 0;
 
+        /**
+         * The amount of health the player has.
+         * 
+         * # Examples
+         * ```
+         * // Use `player.remHealth(3)` instead in a real situation.
+         * player.health -= 3;
+         * ```
+         * 
+         * @type {number}
+         */
         this.health = 30;
+
+        /**
+         * The maximum health the player can have. This is normally fixed to the amount of health the player starts with (`30`).
+         * 
+         * # Examples
+         * ```
+         * player.maxHealth = 40;
+         * ```
+         * 
+         * @type {number}
+         */
         this.maxHealth = this.health;
+
+        /**
+         * The amount of armor the player has.
+         * 
+         * # Examples
+         * ```
+         * player.armor += 3;
+         * ```
+         * 
+         * @type {number}
+         */
         this.armor = 0;
 
         /**
+         * The hero card that the player has. This is normally set to one of the starting heroes.
+         * 
+         * # Examples
+         * ```
+         * // We're assuming that the player is a Priest, and hasn't played a hero card.
+         * assert.equal(typeof player.hero.heropower, 'function');
+         * assert.equal(player.hero.name, "Priest Starting Hero");
+         * 
+         * // Activate the hero's hero power. (`Restore 2 Health.`)
+         * player.hero.activate("heropower");
+         * ```
+         * 
          * @type {Card | null}
          */
         this.hero = null;
 
         /**
+         * The class the player is. This is set to either: Mage, Priest, Warlock, Warrior, ...
+         * 
          * @type {import("./types").CardClass}
          */
         this.heroClass = "Mage";
+
+        /**
+         * How much the player's hero power costs.
+         * 
+         * @type {number}
+         */
         this.heroPowerCost = 2;
+
+        /**
+         * If the player can use their hero power.
+         * 
+         * @type {boolean}
+         */
         this.canUseHeroPower = true;
 
         /**
+         * The player's weapon. Functions like any other card.
+         * 
+         * # Examples
+         * ```
+         * // Use `player.destroyWeapon()` instead in a real situation.
+         * player.weapon.kill();
+         * ```
+         * 
          * @type {Card | null}
          */
         this.weapon = null;
+
+        /**
+         * If the player can attack.
+         * This is set to `true` by default, and only gets set to `false` once the player attacks, and is reset to `true` at the end of the turn.
+         * 
+         * @type {boolean}
+         */
+        this.canAttack = true;
+
+        /**
+         * If the player is frozen.
+         * 
+         * If a player is frozen, they can't attack.
+         * 
+         * @type {boolean}
+         */
         this.frozen = false;
+
+        /**
+         * If the player is immune to damage.
+         * 
+         * @type {boolean}
+         */
         this.immune = false;
+
+        /**
+         * How much attack the player has.
+         * 
+         * @type {number}
+         */
         this.attack = 0;
+
+        /**
+         * How much spell damage the player has.
+         * 
+         * @type {number}
+         */
         this.spellDamage = 0;
 
+        /**
+         * The card types to counter.
+         * 
+         * If this player's counter includes "Minion", and this player plays a Minion, it gets countered.
+         * 
+         * @type {import("./types").CardType[]}
+         */
         this.counter = [];
+
+        /**
+         * The secrets that the player has.
+         * 
+         * @type {import("./types").QuestType[]}
+         */
         this.secrets = [];
+
+        /**
+         * The sidequests that the player has.
+         * 
+         * @type {import("./types").QuestType[]}
+         */
         this.sidequests = [];
+
+        /**
+         * The quest that the player has.
+         * 
+         * @type {import("./types").QuestType[]}
+         */
         this.quests = [];
 
         // Stats
+        /**
+         * How much attack/health (+1) the player's next jade golem will have.
+         * 
+         * @type {number}
+         */
         this.jadeCounter = 0;
+
+        /**
+         * How many corpses the player has.
+         * 
+         * This increases even if the player is not a Death Knight, so don't count on this number telling you if the player is a Death Knight or not.
+         * 
+         * @type {number}
+         */
         this.corpses = 0;
 
+        /**
+         * A three letter rune combination. For example "BBB" for 3 blood runes, or "BFU" for one of each rune.
+         * 
+         * @type {string}
+         */
         this.runes = "";
 
+        /**
+         * If this is not null, it will automatically choose this target when asked instead of asking the player.
+         * 
+         * # Example
+         * ```
+         * player.forceTarget = target;
+         * let chosen = game.interact.selectTarget("Example", false, null, null);
+         * player.forceTarget = null;
+         * 
+         * assert.equal(chosen, target);
+         * ```
+         * 
+         * @type {Card | Player | null}
+         */
         this.forceTarget = null;
+
+        /**
+         * Answers for the player.
+         * 
+         * If this is a list, whenever the game asks for input from the user, instead it answers with the first element from the list, then it removes that element from the list.
+         * 
+         * If this is a string, whenever the game asks for input from the user, instead it just answers with that string, and doesn't remove it.
+         * 
+         * # Example
+         * ```
+         * // Only run this code when the player's turn starts
+         * player.inputQueue = ["attack", "1", "1", "end"]; // Does these commands in order
+         * 
+         * // Once it has done all these commands, `player.inputQueue` = null
+         * ```
+         * 
+         * #### Or with just a string
+         * 
+         * ```
+         * // Whenever the game asks the player a question, just answer with `e` every time. This will most likely make the game unplayable, however in certain contexts this can be useful.
+         * player.inputQueue = "e";
+         * ```
+         * 
+         * @type {string[] | string | null}
+         */
         this.inputQueue = null;
     }
 
     /**
-     * Update the `game` variable.
+     * Update the `game` variable stored in the player module.
+     * 
+     * I don't recommend calling this because it can cause major problems if done incorrectly.
      */
     getInternalGame() {
         game = get();
@@ -109,6 +403,13 @@ class Player {
 
     /**
      * Get this player's opponent
+     * 
+     * # Examples
+     * ```
+     * let opponent = player.getOpponent();
+     * 
+     * assert.notEqual(player.id, opponent.id);
+     * ```
      * 
      * @returns {Player} Opponent
      */
@@ -121,14 +422,43 @@ class Player {
     // Mana
 
     /**
-     * Adds mana to this player, then checks if the mana is more than `comp`, if it is, set mana to `comp`.
+     * Adds `mana` to this player, without going over `comp` mana.
+     * 
+     * # Examples
+     * ```
+     * assert.equal(player.maxMana, 7);
+     * assert.equal(player.mana, 5);
+     * 
+     * player.refreshMana(10);
+     * 
+     * assert.equal(player.mana, 7);
+     * ```
+     * If comp is `player.maxMaxMana`
+     * ```
+     * assert.equal(player.maxMana, 7);
+     * assert.equal(player.mana, 5);
+     * 
+     * player.refreshMana(10, player.maxMaxMana);
+     * 
+     * assert.equal(player.mana, 10);
+     * ```
+     * You can set comp to any value
+     * ```
+     * assert.equal(player.mana, 5);
+     * 
+     * player.refreshMana(10, 200);
+     * 
+     * assert.equal(player.mana, 15);
+     * ```
      * 
      * @param {number} mana The mana to add
-     * @param {number} [comp] The comperison
+     * @param {number | null} [comp=null] The comperison. This defaults to `player.maxMana`.
      * 
      * @returns {boolean} Success
      */
-    refreshMana(mana, comp = this.maxMana) {
+    refreshMana(mana, comp = null) {
+        if (!comp) comp = this.maxMana;
+
         this.mana += mana;
 
         if (this.mana > comp) this.mana = comp;
@@ -137,10 +467,27 @@ class Player {
     }
 
     /**
-     * Increases max mana by `mana`, then if `cap` is true; check if max mana is more than max max mana (10), if it is, set max mana to max max mana
+     * Increases max mana by `mana`, then if `cap` is true; avoid going over `player.maxMaxMana` (10) mana.
      * 
-     * @param {number} mana The mana to add
-     * @param {boolean} [cap=false] Should prevent max mana going over max max mana
+     * # Examples
+     * ```
+     * assert.equal(player.maxMana, 5);
+     * 
+     * player.gainEmptyMana(10);
+     * 
+     * assert.equal(player.maxMana, 15);
+     * ```
+     * If you set `cap` to true
+     * ```
+     * assert.equal(player.maxMana, 5);
+     * 
+     * player.gainEmptyMana(10, true);
+     * 
+     * assert.equal(player.maxMana, 10);
+     * ```
+     * 
+     * @param {number} mana The empty mana to add.
+     * @param {boolean} [cap=false] Should prevent going over max max mana
      * 
      * @returns {boolean} Success 
      */
@@ -153,7 +500,14 @@ class Player {
     }
 
     /**
-     * Increases both mana and max mana by `mana`
+     * Increases both mana and max mana by `mana`.
+     * 
+     * This function runs
+     * ```
+     * player.gainEmptyMana(mana, cap);
+     * player.refreshMana(mana);
+     * ```
+     * so look at these functions for more info.
      * 
      * @param {number} mana The number to increase mana and max mana by
      * @param {boolean} [cap=false] Should prevent max mana going over max max mana (10)
@@ -168,7 +522,15 @@ class Player {
     }
 
     /**
-     * Increases the players overload by `overload`
+     * Increases the players overload by `overload`. Overload will not take into affect until the player's next turn.
+     * 
+     * ```
+     * assert.equal(player.overload, 0);
+     * 
+     * player.gainOverload(2);
+     * 
+     * assert.equal(player.overload, 2);
+     * ```
      * 
      * @param {number} overload The amount of overload to add
      * 
@@ -176,9 +538,6 @@ class Player {
      */
     gainOverload(overload) {
         this.overload += overload;
-        const plus = this.maxMana == this.maxMaxMana ? 0 : 1;
-
-        if (this.overload > this.mana + plus) this.overload = this.mana + plus;
 
         game.events.broadcast("GainOverload", overload, this);
 
@@ -189,6 +548,14 @@ class Player {
 
     /**
      * Sets this player's weapon to `weapon`
+     * 
+     * # Examples
+     * ```
+     * let weapon_name = "some weapon name";
+     * 
+     * let weapon = new Card(weapon_name, player);
+     * player.setWeapon(weapon); 
+     * ```
      * 
      * @param {Card} weapon The weapon to set
      * 
@@ -204,6 +571,18 @@ class Player {
 
     /**
      * Destroys this player's weapon
+     * 
+     * # Examples
+     * ```
+     * // Assume the player has a weapon with 5 attack and the player hasn't attacked this turn.
+     * assert.equal(player.weapon.getAttack(), 5);
+     * assert.equal(player.attack, 5);
+     * 
+     * player.destroyWeapon(false); // Don't trigger the card's deathrattle. This is the default.
+     * 
+     * assert.equal(player.weapon, null);
+     * assert.equal(player.attack, 0);
+     * ```
      * 
      * @param {boolean} [triggerDeathrattle=false] Should trigger the weapon's deathrattle
      * 
@@ -255,26 +634,30 @@ class Player {
     /**
      * Decreases the player's health by `amount`. If the player has armor, the armor gets decreased instead.
      * 
+     * This also handles the player being dealt a fatal attack. In other words, if this function causes the player to die, it will immediately end the game.
+     * Broadcasts the `TakeDamage` event and the `FatalDamage`? event
+     * 
      * @param {number} amount The amount the player's health should decrease by
-     * @param {boolean} update If this should broadcast the `TakeDamage` event.
      * 
      * @returns {boolean} Success
      */
-    remHealth(amount, update = true) {
+    remHealth(amount) {
         if (this.immune) return true;
 
-        let a = amount;
+        // Armor logic
+        let remainingArmor = this.armor - amount;
+        this.armor = Math.max(remainingArmor, 0);
 
-        while (this.armor > 0 && a > 0) {
-            a--;
-            this.armor--;
-        }
+        // Armor blocks all damage, return true since there were no errors.
+        if (remainingArmor >= 0) return true;
 
-        if (a <= 0) return true;
+        // The amount of damage to take is however much damage penetrated the armor.
+        // The remaining armor is negative, so turn it into a positive number so it's easier to work with
+        amount = -remainingArmor;
 
-        this.health -= a;
+        this.health -= amount;
 
-        if (update) game.events.broadcast("TakeDamage", [this, amount], this);
+        game.events.broadcast("TakeDamage", [this, amount], this);
 
         if (this.health <= 0) {
             game.events.broadcast("FatalDamage", null, this);
@@ -296,25 +679,41 @@ class Player {
         // I have this here for compatibility with minions
         return this.health;
     }
+    /**
+     * Returns this player's attack.
+     * 
+     * @returns {number}
+     */
+    getAttack() {
+        // I have this here for compatibility with minions
+        return this.attack;
+    }
 
     // Hand / Deck
 
     /**
-     * Shuffle a card into this player's deck
+     * Shuffle a card into this player's deck. This will shuffle the deck.
+     * Broadcasts the `AddCardToDeck` event.
+     * 
+     * ```
+     * assert.equal(player.deck.length, 30);
+     * 
+     * card = new Card("Sheep", player);
+     * player.shuffleIntoDeck(card);
+     * 
+     * assert.equal(player.deck.length, 31);
+     * ```
      * 
      * @param {Card} card The card to shuffle
-     * @param {boolean} [updateStats=true] Should this broadcast the `AddCardToDeck` event.
      * 
      * @returns {boolean} Success
      */
-    shuffleIntoDeck(card, updateStats = true) {
+    shuffleIntoDeck(card) {
         // Add the card into a random position in the deck
         let pos = game.functions.randInt(0, this.deck.length);
         this.deck.splice(pos, 0, card);
 
-        if (updateStats) {
-            game.events.broadcast("AddCardToDeck", card, this);
-        }
+        game.events.broadcast("AddCardToDeck", card, this);
 
         this.deck = game.functions.shuffle(this.deck);
 
@@ -322,87 +721,108 @@ class Player {
     }
 
     /**
-     * Adds a card to the bottom of this player's deck
+     * Adds a card to the bottom of this player's deck. This keeps the order of the deck..
+     * Broadcasts the `AddCardToDeck` event
      * 
      * @param {Card} card The card to add to the bottom of the deck
-     * @param {boolean} [update=true] Should this broadcast the `AddCardToDeck` event.
      * 
      * @returns {boolean} Success
      */
-    addToBottomOfDeck(card, update = true) {
+    addToBottomOfDeck(card) {
         this.deck = [card, ...this.deck];
 
-        if (update) game.events.broadcast("AddCardToDeck", card, this);
+        game.events.broadcast("AddCardToDeck", card, this);
 
         return true;
     }
 
     /**
-     * Draws the card at the top of this player's deck
+     * Draws the card from the top of this player's deck.
+     * Broadcasts the `DrawCard` event
      * 
-     * @param {boolean} [update=true] Should this broadcast the `DrawCard` event.
-     * 
-     * @returns {Card | undefined} Card is the card drawn
+     * @returns {Card | number} The card drawn | The amount of fatigue the player was dealt
      */
-    drawCard(update = true) {
-        if (this.deck.length <= 0) {
+    drawCard() {
+        let deck_length = this.deck.length;
+        
+        /**
+         * The card to draw
+         * 
+         * @type {Card | undefined}
+         */
+        let card = this.deck.pop();
+
+        if (deck_length <= 0 || !(card instanceof game.Card)) {
             this.fatigue++;
 
             this.remHealth(this.fatigue);
-            
-            return;
+            return this.fatigue;
         }
 
-        let card = this.deck.pop()
+        game.events.broadcast("DrawCard", card, this);
 
-        if (update) game.events.broadcast("DrawCard", card, this);
-
+        // Cast on draw
         if (card.type == "Spell" && card.keywords.includes("Cast On Draw") && card.activate("cast")) return this.drawCard();
 
-        this.addToHand(card, false);
+        game.suppressedEvents.push("AddCardToHand");
+        this.addToHand(card);
+        game.suppressedEvents.pop();
 
         return card;
     }
 
     /**
-     * Draws a specific card from this player's deck
+     * Draws a specific card from this player's deck.
+     * Broadcasts the `DrawCard` event
+     * 
+     * # Examples
+     * ```
+     * // Get a random card from the player's deck, but do not run `card.perfectCopy` on it.
+     * let card = game.functions.randList(player.deck, false);
+     * 
+     * player.drawSpecific(card);
+     * ```
      * 
      * @param {Card} card The card to draw
-     * @param {boolean} [update=true] Should this broadcast the `DrawCard` event.
      * 
-     * @returns {Card | undefined} Card is the card drawn
+     * @returns {Card | undefined} The card drawn | Is undefined if the card wasn't found
      */
-    drawSpecific(card, update = true) {
+    drawSpecific(card) {
         if (this.deck.length <= 0) return;
 
-        this.deck = this.deck.filter(c => c !== card);
+        //this.deck = this.deck.filter(c => c !== card);
+        game.functions.remove(this.deck, card);
 
-        if (update) game.events.broadcast("DrawCard", card, this);
+        game.events.broadcast("DrawCard", card, this);
 
         if (card.type == "Spell" && card.keywords.includes("Cast On Draw") && card.activate("cast")) return;
 
-        this.addToHand(card, false);
+        game.suppressedEvents.push("AddCardToHand");
+        this.addToHand(card);
+        game.suppressedEvents.pop();
 
         return card;
     }
 
     /**
-     * Adds a card to the player's hand
+     * Adds a card to the player's hand.
+     * Broadcasts the `AddCardToHand` event
      * 
      * @param {Card} card The card to add
-     * @param {boolean} [updateStats=true] Should this broadcast the `AddCardToHand` event.
      * 
      * @returns {boolean} Success
      */
-    addToHand(card, updateStats = true) {
+    addToHand(card) {
         if (this.hand.length >= 10) return false;
         this.hand.push(card);
 
-        if (updateStats) game.events.broadcast("AddCardToHand", card, this);
+        game.events.broadcast("AddCardToHand", card, this);
         return true;
     }
 
     /**
+     * @deprecated Use `game.functions.remove(player.hand, card)` instead.
+     * 
      * Removes a card from the player's hand
      * 
      * @param {Card} card The card to remove

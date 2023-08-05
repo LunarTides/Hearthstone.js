@@ -1,6 +1,6 @@
 /*
 Hearthstone.js - Hearthstone but console based.
-Copyright (C) 2022  SolarWinds
+Copyright (C) 2022  LunarTides
 */
 
 const { Game } = require("./game");
@@ -42,13 +42,12 @@ function main() {
 
     game.running = true;
 
-    game.interact.printName();
-
     game.functions.importCards(__dirname + '/../cards');
     game.functions.importConfig(__dirname + '/../config');
 
-    game.dirname = __dirname + "/../";
+    game.interact.printName();
 
+    // If decks were exported by the deck creator, assign them to the players.
     decks.forEach((d, i) => {
         if (i >= 2) return;
 
@@ -64,6 +63,7 @@ function main() {
 
         game.input(`Player ${rng}'s Deck was automatically set to: ${d}\n`); 
     });
+
     // Ask the players for deck codes.
     if (p1.deck.length <= 0) game.interact.deckCode(p1);
     if (p2.deck.length <= 0) game.interact.deckCode(p2);
@@ -74,6 +74,7 @@ function main() {
     game.interact.mulligan(p2);
 
     try {
+        // Game loop
         while (game.running) game.interact.doTurn();
     } catch (err) {
         game.functions.createLogFile(err); // Create error report file

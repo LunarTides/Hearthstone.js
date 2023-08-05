@@ -9,12 +9,12 @@ try {
     require("process").exit(1);
 }
 
+const { Functions } = require("../src/functions");
 const { Game } = require("../src/game");
 const { set } = require("../src/shared");
 
 const game = new Game({}, {});
-const functions = game.functions;
-game.dirname = __dirname + "/../";
+let functions = game.functions;
 
 set(game);
 
@@ -33,9 +33,6 @@ let deck = [];
 let runes = "";
 
 let plr = new game.Player("");
-
-let maxDeckLength = config.maxDeckLength;
-let minDeckLength = config.minDeckLength;
 
 let warnings = {
     latestCard: true
@@ -328,13 +325,14 @@ function showCards() {
 
     console.log(settings.view.class.rainbow);
 
-    let [wall, finishWall] = functions.createWall("-");
-
+    let bricks = [];
     _filtered_cards.forEach(c => {
-        wall.push(getDisplayName(c) + " - " + c.id);
+        bricks.push(getDisplayName(c) + " - " + c.id);
     });
 
-    finishWall().forEach(b => {
+    let wall = functions.createWall(bricks, "-");
+
+    wall.forEach(b => {
         b = b.split("-");
 
         b = functions.colorByRarity(b[0], findCard(b[0].trim()).rarity) + "-" + b[1];
@@ -367,8 +365,8 @@ function showRules() {
 
     console.log("# Validation: " + (config.validateDecks ? "ON".green : "OFF".red));
 
-    console.log("#\n# Rule 1. Minimum Deck Length: " + minDeckLength.toString().yellow);
-    console.log("# Rule 2. Maximum Deck Length: " + maxDeckLength.toString().yellow);
+    console.log("#\n# Rule 1. Minimum Deck Length: " + config.minDeckLength.toString().yellow);
+    console.log("# Rule 2. Maximum Deck Length: " + config.maxDeckLength.toString().yellow);
 
     console.log("#\n# Rule 3. Maximum amount of cards for each card (eg. You can only have: " + "x".yellow + " Seances in a deck): " + config.maxOfOneCard.toString().yellow);
     console.log("# Rule 4. Maximum amount of cards for each legendary card (Same as Rule 3 but for legendaries): " + config.maxOfOneLegendary.toString().yellow);
@@ -410,8 +408,10 @@ function add(c) {
 
     if (!c.settings) return;
 
-    maxDeckLength = c.settings.maxDeckSize || maxDeckLength
-    minDeckLength = c.settings.minDeckSize || minDeckLength
+    config.maxDeckLength = c.settings.maxDeckSize || config.maxDeckLength;
+    config.minDeckLength = c.settings.minDeckSize || config.minDeckLength;
+
+    functions = new Functions(game);
 }
 function remove(c) {
     deck.splice(deck.indexOf(c), 1);
@@ -429,7 +429,7 @@ function showDeck() {
         _cards[c.name][1]++;
     });
 
-    let [wall, finishWall] = functions.createWall("-");
+    let bricks = [];
 
     Object.values(_cards).forEach(c => {
         let card = c[0];
@@ -440,10 +440,12 @@ function showDeck() {
         if (amount > 1) viewed += `x${amount} `;
         viewed += getDisplayName(card).replaceAll("-", "`") + ` - ${card.id}`;
 
-        wall.push(viewed);
+        bricks.push(viewed);
     });
 
-    finishWall().forEach(b => {
+    let wall = functions.createWall(bricks, "-");
+
+    wall.forEach(b => {
         b = b.split("-");
         b = [b[0].replaceAll("`", "-"), b[1]]; // Replace '`' with '-'
 
@@ -529,13 +531,14 @@ function help() {
     console.log("cards (class)         - Show cards from 'class'");
     console.log("sort (type) [order]   - Sorts by 'type' in 'order'ending order. (Type can be: ('rarity', 'name', 'mana', 'id', 'type'), Order can be: ('asc', 'desc')) (Example: sort mana asc - Will show cards ordered by mana cost, ascending.)");
     console.log("search [query]        - Searches by query. Keys: ('name', 'desc', 'mana', 'rarity', 'id'), Examples: (search the - Search for all cards with the word 'the' in the name or description, case insensitive.), (search mana:2 - Search for all cards that costs 2 mana, search mana:even name:r - Search for all even cost cards with 'r' in its name)");
+    console.log("undo                  - Undo the last action. (If you run this over and over, it will keep undo-ing and redo-ing the same action.)");
     console.log("deck                  - Toggle deck-view");
     console.log("deckcode              - View the current deckcode");
     console.log("import                - Imports a deckcode (Overrides your deck)");
     console.log("export                - Temporarily saves your deck to the runner so that when you choose to play, the decks get filled in automatically. (Only works when running the deck creator from the Hearthstone.js Runner)");
     console.log("set (setting) (value) - Change some settings. Look down to 'Set Subcommands' to see available settings");
     console.log("class                 - Change the class");
-    console.log("config | rules        - Displays the rules text that shows when first running the program");
+    console.log("config | rules        - Shows the rules for valid decks and invalid decks");
     console.log("help                  - Displays this message");
     console.log("exit                  - Quits the program");
 
@@ -554,7 +557,7 @@ function help() {
     // Set Warning
     console.log("\nWarnings:".bold);
     console.log("(In order to use these; input 'set warning (name) [off | on]'. Example: 'set warning latestCard off')\n");
-    console.log("(name) [optional] (required) - (description)\n");
+    console.log("(name) - (description)\n");
 
     console.log("latestCard - Warning that shows up when attemping to use the latest card. The latest card is used if the card chosen in a command is invalid and the name specified begins with 'l'. Example: 'add latest' - Adds a copy of the latest card to the deck.");
 
@@ -566,6 +569,7 @@ function help() {
     console.log("\nNotes:".bold);
 
     console.log("Type 'cards Neutral' to see Neutral cards.");
+    console.log("There is a known bug where if you add 'Prince Renathal', and then remove him, the deck will still require 40 cards. The only way around this is to restart the deck creator."); // TODO: Fix this
 
     game.input("\nPress enter to continue...\n");
 }
@@ -909,6 +913,9 @@ function runner() {
 }
 
 function main() {
+    functions.importCards(__dirname + "/../cards");
+    functions.importConfig(__dirname + "/../config");
+
     chosen_class = askClass();
 
     while (running) {

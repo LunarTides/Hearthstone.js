@@ -20,9 +20,10 @@ module.exports = {
         game.functions.addQuest("Secret", plr, self, "Attack", 1, (attack, turn, done) => {
             let [attacker, target] = attack;
             if (target != plr) return false;
-            if (!done) return;
 
             // The target is your hero
+            if (!done) return;
+
             target.addHealth(attacker.getAttack()); // Heal the target
 
             let minions = game.functions.getCards();
@@ -34,8 +35,14 @@ module.exports = {
 
             game.summonMinion(minion, plr);
 
-            attacker.sleepy = false;
-            attacker.resetAttackTimes();
+            if (attacker instanceof game.Card) attacker.ready();
+            else if (attacker instanceof game.Player) {
+                attacker.canAttack = true;
+
+                // Weapon durability goes down after the `Attack` event is broadcast, so just add 1 durability to the weapon to keep it alive
+                if (attacker.weapon) attacker.weapon.addStats(0, 1);
+            }
+
             game.attack(attacker, minion);
         });
     }

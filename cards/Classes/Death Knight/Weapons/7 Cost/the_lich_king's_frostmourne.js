@@ -21,7 +21,7 @@ module.exports = {
      */
     passive(plr, game, self, key, val) {
         if (key != "Attack") return;
-        if (val[0] != plr || !val[1] instanceof game.Card) return;
+        if (val[0] != plr || !(val[1] instanceof game.Card)) return;
 
         if (val[1].getHealth() <= 0) self.storage.push(val[1]); // The minion has not taken damage yet.
     },

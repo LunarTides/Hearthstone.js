@@ -23,7 +23,8 @@ module.exports = {
     battlecry(plr, game, card) {
         let possible_cards = [];
 
-        fs.readdirSync(game.dirname + "/../cards/StartingHeroes").forEach(file => {
+        // ~/cards/StartingHeroes
+        fs.readdirSync(__dirname + "/../../../../StartingHeroes").forEach(file => {
             let name = file.slice(0, -3); // Remove ".js"
             name = name.replaceAll("_", " "); // Remove underscores
             name = game.functions.capitalizeAll(name); // Capitalize all words

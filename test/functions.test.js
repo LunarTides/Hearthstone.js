@@ -1,6 +1,7 @@
 // Part of this code was copied from an example given by ChatGPT
 const assert = require('assert');
 const colors = require("colors");
+const fs = require('fs');
 const { Player } = require("../src/player");
 const { Game } = require("../src/game");
 const { Card } = require("../src/card");
@@ -11,7 +12,6 @@ const test_player1 = new Player("Test Player 1"); // Use this if a temp player c
 const test_player2 = new Player("Test Player 2");
 
 const game = new Game(test_player1, test_player2);
-game.dirname = __dirname + "/../";
 set(game);
 
 game.functions.importCards(__dirname + "/../cards");
@@ -25,6 +25,8 @@ game.interact.printName = () => {};
 game.interact.printAll = () => {};
 game.interact.printLicense = () => {};
 game.interact.cls = () => {};
+
+const createCard = (name, plr = null) => new Card(name, plr || test_player1);
 
 // Begin testing
 describe("Functions", () => {
@@ -76,7 +78,7 @@ describe("Functions", () => {
         // Grab 3 cards
         let cards = game.functions.getCards();
         cards = game.functions.chooseItemsFromList(cards, 3);
-        cards = cards.map(c => new Card(c.name, {}));
+        cards = cards.map(c => createCard(c.name));
 
         // Choose a random one
         const el = game.functions.randList(cards);
@@ -133,13 +135,9 @@ describe("Functions", () => {
             "Huuuuuge    - Looooong"
         ];
 
-        const [wall, finishWall] = game.functions.createWall("-");
+        const wall = game.functions.createWall(og, "-");
 
-        og.forEach(e => wall.push(e));
-
-        const fin = finishWall();
-
-        const not_matches = fin.filter(e => !expected.includes(e)); // `["test"] != ["test"]` for some reason so i need to do this
+        const not_matches = wall.filter(e => !expected.includes(e)); // `["test"] != ["test"]` for some reason so i need to do this
 
         assert.ok(not_matches.length === 0); // fin == expected
     });
@@ -150,22 +148,12 @@ describe("Functions", () => {
             "Example - This is an example string",
             "Huuuuuge - Looooong"
         ];
-        const expected = [
-            "Big         - Small",
-            "Test String - Hi",
-            "Example     - This is an example string",
-            "Huuuuuge    - Looooong"
-        ];
 
-        const [wall, finishWall] = game.functions.createWall("-");
+        const wall = game.functions.createWall(og, "-");
 
-        og.forEach(e => wall.push(e));
+        const changed = wall.filter(e => !og.includes(e));
 
-        const fin = finishWall();
-
-        const changed = fin.filter(e => !og.includes(e));
-
-        assert.ok(changed.length + 1 === og.length); // fin !== og. `changed` does not include the longest brick, account for it by adding 1
+        assert.ok(changed.length + 1 === og.length); // wall !== og. `changed` does not include the longest brick, account for it by adding 1
     });
 
     it ('should get a card by its name', () => {
@@ -176,7 +164,7 @@ describe("Functions", () => {
     });
 
     it ('should get a card by its id', () => {
-        const id = new Card("The Coin", {}).id; // Get "The Coin"'s id
+        const id = createCard("The Coin").id; // Get "The Coin"'s id
         const card = game.functions.getCardById(id);
 
         assert.ok(card.id == id);
@@ -184,7 +172,7 @@ describe("Functions", () => {
 
     it ('should get a list of collectible cards', () => {
         let cards = game.functions.getCards();
-        cards = cards.map(c => new Card(c.name, {}));
+        cards = cards.map(c => createCard(c.name));
 
         let uncollectible_cards = cards.filter(c => c.uncollectible);
 
@@ -193,8 +181,8 @@ describe("Functions", () => {
     it ('should get a list of all cards', () => {
         let all_cards = game.functions.getCards(false);
         let collectible_cards = game.functions.getCards();
-        all_cards = all_cards.map(c => new Card(c.name, {}));
-        collectible_cards = collectible_cards.map(c => new Card(c.name, {}));
+        all_cards = all_cards.map(c => createCard(c.name));
+        collectible_cards = collectible_cards.map(c => createCard(c.name));
 
         assert.notEqual(collectible_cards.length, all_cards.length);
     });
@@ -234,7 +222,7 @@ describe("Functions", () => {
     });
 
     it ('should validate a card success', () => {
-        let minion = game.summonMinion(new game.Card("Sheep"), test_player1);
+        let minion = game.summonMinion(createCard("Sheep"), test_player1);
         minion.uncollectible = false;
 
         let ret = game.functions.validateCard(minion, test_player1);
@@ -242,7 +230,7 @@ describe("Functions", () => {
         assert.equal(ret, true);
     });
     it ('should validate a card class', () => {
-        let minion = game.summonMinion(new game.Card("Sheep"), test_player1);
+        let minion = game.summonMinion(createCard("Sheep"), test_player1);
         minion.uncollectible = false;
         minion.class = "Foo";
 
@@ -251,7 +239,7 @@ describe("Functions", () => {
         assert.equal(ret, "class");
     });
     it ('should validate a card uncollectible', () => {
-        let minion = game.summonMinion(new game.Card("Sheep"), test_player1);
+        let minion = game.summonMinion(createCard("Sheep"), test_player1);
         minion.uncollectible = true;
 
         let ret = game.functions.validateCard(minion, test_player1);
@@ -259,7 +247,7 @@ describe("Functions", () => {
         assert.equal(ret, "uncollectible");
     });
     it ('should validate a card runes', () => {
-        let minion = game.summonMinion(new game.Card("Sheep"), test_player1);
+        let minion = game.summonMinion(createCard("Sheep"), test_player1);
         minion.uncollectible = false;
         minion.runes = "BBB";
 
@@ -278,16 +266,14 @@ describe("Functions", () => {
     });
     it ('should check if the highlander function works', () => {
         // Deck has duplicates
-        const player = new Player("Temp Player");
-
         let cards = game.functions.getCards();
         cards = game.functions.chooseItemsFromList(cards, 10);
-        cards = cards.map(c => new Card(c.name, player));
+        cards = cards.map(c => createCard(c.name, test_player2));
 
-        player.deck = cards;
-        player.deck.push(player.deck[0].imperfectCopy()); // Put a copy of the first card in the player's deck
+        test_player2.deck = cards;
+        test_player2.deck.push(test_player2.deck[0].imperfectCopy()); // Put a copy of the first card in the player's deck
 
-        assert.ok(!game.functions.highlander(player));
+        assert.ok(!game.functions.highlander(test_player2));
     });
 
     it ('should return the class names', () => {
@@ -333,9 +319,27 @@ describe("Functions", () => {
         assert.equal(parsed, expected);
     });
 
+    it ('should correctly escape tags', () => {
+        const str = "&BBold&R, ~&rRed~&R, &gGreen&R, ~&bBlue~&R, &cCyan&R, ~&mMagenta~&R, &yYellow&R, ~&kBlack~&R, &aGray&R, ~&wWhite~&R.";
+        const expected = '\x1B[1mBold\x1B[22m, &rRed&R, \x1B[32mGreen\x1B[39m, &bBlue&R, \x1B[36mCyan\x1B[39m, &mMagenta&R, \x1B[33mYellow\x1B[39m, &kBlack&R, \x1B[90mGray\x1B[39m, &wWhite&R.';
+
+        const parsed = game.functions.parseTags(str);
+
+        assert.equal(parsed, expected);
+    });
+
+    it ('should correctly strip tags', () => {
+        const str = "&BBold&R: ~&rEscaped~&R";
+        const expected = "Bold: &rEscaped&R";
+
+        const parsed = game.functions.stripTags(str);
+
+        assert.equal(parsed, expected);
+    });
+
     it ('should correctly clone an object', () => {
         let card = game.functions.getCards()[0];
-        card = new Card(card.name, {});
+        card = createCard(card.name);
 
         let cloned_card = game.functions.cloneObject(card);
 
@@ -344,7 +348,7 @@ describe("Functions", () => {
 
     it ('should correctly clone a card', () => {
         let card = game.functions.getCards()[0];
-        card = new Card(card.name, {});
+        card = createCard(card.name);
 
         let cloned_card = game.functions.cloneCard(card);
 
@@ -352,7 +356,7 @@ describe("Functions", () => {
     });
     it ('should correctly randomize the ids when cloning a card', () => {
         let card = game.functions.getCards()[0];
-        card = new Card(card.name, {});
+        card = createCard(card.name);
 
         let cloned_card = game.functions.cloneCard(card);
 
@@ -440,7 +444,7 @@ describe("Functions", () => {
 
     it ('should correctly recruit', () => {
         const deck = game.functions.chooseItemsFromList(game.functions.getCards(), 30);
-        test_player1.deck = deck.map(c => new Card(c.name, test_player1));
+        test_player1.deck = deck.map(c => createCard(c.name, test_player1));
 
         game.functions.recruit(test_player1);
 
@@ -450,18 +454,16 @@ describe("Functions", () => {
     });
 
     it ('should correctly create a 1/1 jade', () => {
-        const player = new Player("Temp Player");
-        const jade = game.functions.createJade(player);
+        const jade = game.functions.createJade(test_player1);
 
         assert.equal(jade.getHealth(), 1);
         assert.equal(jade.getAttack(), 1);
     });
     it ('should correctly create a 4/4 jade', () => {
-        const player = new Player("Temp Player");
-        game.functions.createJade(player);
-        game.functions.createJade(player);
-        game.functions.createJade(player);
-        const jade = game.functions.createJade(player);
+        game.functions.createJade(test_player2);
+        game.functions.createJade(test_player2);
+        game.functions.createJade(test_player2);
+        const jade = game.functions.createJade(test_player2);
 
         assert.equal(jade.getHealth(), 4);
         assert.equal(jade.getAttack(), 4);
@@ -474,23 +476,20 @@ describe("Functions", () => {
     // TODO: Maybe add test for importCards
 
     it ('should correctly mulligan', () => {
-        const player = new Player("Temp Player");
-
         const deck = game.functions.chooseItemsFromList(game.functions.getCards(), 27);
         const hand = game.functions.chooseItemsFromList(game.functions.getCards(), 3);
 
-        player.deck = deck.map(c => new Card(c.name, player));
-        player.hand = hand.map(c => new Card(c.name, player));
+        test_player1.deck = deck.map(c => createCard(c.name, test_player1));
+        test_player1.hand = hand.map(c => createCard(c.name, test_player1));
 
-        const old_deck = player.deck.slice();
-        const old_hand = player.hand.slice();
+        const old_hand = test_player1.hand.slice();
 
-        game.functions.mulligan(player, "13");
+        game.functions.mulligan(test_player1, "13");
 
         // The second card becomes the first card after the mulligan, and the new cards gets added onto it.
-        assert.equal(player.hand[0].name, old_hand[1].name);
-        assert.notEqual(player.hand[1].name, old_hand[0].name);
-        assert.notEqual(player.hand[2].name, old_hand[2].name);
+        assert.equal(test_player1.hand[0].name, old_hand[1].name);
+        assert.notEqual(test_player1.hand[1].name, old_hand[0].name);
+        assert.notEqual(test_player1.hand[2].name, old_hand[2].name);
     });
 
     it ('should correctly add a quest', () => {
@@ -498,7 +497,7 @@ describe("Functions", () => {
 
         let done = false;
 
-        game.functions.addQuest("Quest", player, new Card("The Coin", player), "QuestTest", 3, (key, val, _done) => {
+        game.functions.addQuest("Quest", player, createCard("The Coin", player), "QuestTest", 3, (key, val, _done) => {
             if (!_done) return;
 
             done = true;
@@ -519,7 +518,7 @@ describe("Functions", () => {
     it ('should correctly progress quest', () => {
         const player = test_player1;
 
-        game.functions.addQuest("Quest", player, new Card("The Coin", player), "QuestTest", 3, (key, val, _done) => {});
+        game.functions.addQuest("Quest", player, createCard("The Coin", player), "QuestTest", 3, (key, val, _done) => {});
 
         assert.equal(player.quests[0].progress[0], 0);
 
@@ -561,6 +560,9 @@ describe("Functions", () => {
         assert.equal(test_player1.runes, "BBB");
         assert.equal(deck.length, 30);
     });
+
+    // Only do the following tests if the vanilla cards have been generated.
+    if (!fs.existsSync("./card_creator/vanilla/.ignore.cards.json")) return;
 
     it ('should correctly convert a deckcode to vanilla', () => {
         let deckcode = game.functions.deckcode.toVanilla(test_player1, "Death Knight [3B] /1:8,2/ 3c,5x,3e,5o,5f,3b,70,66,5v,59,5a,52,2,56,6y,5g,55,3o,6z");

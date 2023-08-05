@@ -6,4 +6,4 @@ This is a passion project that I am working on in my spare time.
 
 To run, open setup.bat, then run.bat.
 
-[Trello Board](https://trello.com/b/yvBMr5Xq/hearthstonejs)
+~~[Trello Board](https://trello.com/b/yvBMr5Xq/hearthstonejs)~~ (Deprecated)

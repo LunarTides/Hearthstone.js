@@ -8,43 +8,63 @@ const { get } = require("./shared");
  */
 let game = get();
 
+// FIXME: Ai gets stuck in infinite loop when using cathedral of atonement (location) | shadowcloth needle (0 attack wpn) | that minion has no attack.
 class AI {
     /**
+     * Sentiment-based AI
+     * 
      * @param {Player} plr 
      */
     constructor(plr) {
         game = get();
 
         /**
+         * The history of the AI. Also known as its "logs".
+         * 
          * @type {[[string, any]]}
          */
         this.history = [];
 
         /**
+         * Prevent the ai from doing the actions that are in this array
+         * 
          * @type {string[]}
          */
         this.prevent = [];
 
         /**
+         * The cards that the AI has played this turn
+         * 
          * @type {Card[]}
          */
         this.cards_played_this_turn = [];
 
         /**
+         * The locations that the AI has used this turn
+         * 
          * @type {Card[]}
          */
         this.used_locations_this_turn = [];
 
         /**
+         * The card that the AI has focused, and is trying to kill
+         * 
          * @type {Card | null}
          */
         this.focus = null;
 
+        /**
+         * The player that the AI is playing for
+         * 
+         * @type {Player}
+         */
         this.plr = plr;
     }
 
     /**
-     * Calculate the best move and return the result
+     * Calculate the best move and return the result.
+     * 
+     * This can return: A card to play, "hero power", "attack", "use" or "end"
      * 
      * @returns {Card | string} Result
      */
@@ -411,7 +431,7 @@ class AI {
             lowest_score = [m, score];
         });
 
-        if (!lowest_score[0] && this.plr.attack > 0) return this.plr;
+        if (!lowest_score[0] && (this.plr.attack > 0 && this.plr.canAttack)) return this.plr;
 
         if (!lowest_score[0]) {
             this.prevent.push("attack");
@@ -504,7 +524,7 @@ class AI {
                 this.prevent.push("attack");
             }
         }
-        if (!attacker && this.plr.attack > 0) attacker = this.plr;
+        if (!attacker && (this.plr.attack > 0 && this.plr.canAttack)) attacker = this.plr;
 
         let arr = [];
         let strbuilder = "";
@@ -530,15 +550,17 @@ class AI {
     /**
      * Makes the ai select a target.
      * 
-     * @param {string} prompt The prompt to show the ai.
-     * @param {boolean} elusive If the ai should care about `This minion can't be targetted by spells or hero powers`.
-     * @param {"friendly" | "enemy" | null} force_side The side the ai should be constrained to.
-     * @param {"minion" | "hero" | null} force_class The type of target the ai should be constrained to.
-     * @param {string[]} flags Some flags
+     * Gets automatically called by `Interactive.selectTarget`, so use that instead.
      * 
-     * @returns {Card | Player | number} The target selected.
+     * @param {string} prompt The prompt to show the ai.
+     * @param {boolean | string} elusive If the ai should care about `This minion can't be targetted by spells or hero powers`.
+     * @param {"friendly" | "enemy" | null} [force_side=null] The side the ai should be constrained to.
+     * @param {"minion" | "hero" | null} [force_class=null] The type of target the ai should be constrained to.
+     * @param {string[]} [flags=[]] Some flags
+     * 
+     * @returns {Card | Player | false} The target selected.
      */
-    selectTarget(prompt, elusive, force_side, force_class, flags) {
+    selectTarget(prompt, elusive, force_side = null, force_class = null, flags = []) {
         if (flags.includes("allow_locations") && force_class != "hero") {
             let locations = game.board[this.plr.id].filter(m => m.type == "Location" && m.cooldown == 0 && !this.used_locations_this_turn.includes(m));
             this.used_locations_this_turn.push(locations[0]);
@@ -622,9 +644,9 @@ class AI {
     }
 
     /**
-     * Choose the "best" discover minion.
+     * Choose the "best" minion to discover.
      * 
-     * @param {Card[] | import("./card").Blueprint[]} cards The cards to choose from
+     * @param {Card[] | import("./types").Blueprint[]} cards The cards to choose from
      * 
      * @returns {Card} Result
      */
@@ -634,6 +656,8 @@ class AI {
 
         // Look for highest score
         cards.forEach(c => {
+            if (!c.name) return; // Card-like is invalid
+
             let score = this.analyzePositiveCard(new game.Card(c.name, this.plr));
 
             if (score <= best_score) return;
@@ -713,7 +737,7 @@ class AI {
      * @param {string} prompt The prompt to show to the ai
      * @param {string[]} options The options the ai can pick from
      *
-     * @returns {number} The index of the option chosen + 1
+     * @returns {number | null} The index of the option chosen + 1
      */
     question(prompt, options) {
         let best_choice = null;
@@ -729,6 +753,8 @@ class AI {
         });
 
         this.history.push([`question: ${prompt}`, [best_choice, best_score]]);
+
+        if (!best_choice) return null;
 
         return best_choice + 1;
     }

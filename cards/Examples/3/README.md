@@ -1,6 +1,3 @@
-### Battlecry
-Shows you a basic functional card.
-
 ### Manathirst
 Shows you how to make cards with the `Manathirst` keyword.
 

@@ -21,6 +21,7 @@ CancelCard:            {Array<Card, str>}                    The card cancelled,
 CastSpellOnMinion:     {Card:Minion}                         The minion the spell was cast on
 TradeCard:             {Card:Any}                            Card traded
 FreezeCard:            {Card:Any}                            Card frozen
+CreateCard             {Card:Any}                            Card created
 
 AddCardToDeck:         {Card}                                The card that was added to the players deck
 AddCardToHand:         {Card}                                The card added to hand
@@ -32,3 +33,5 @@ Attack:                {Array<Card | Player, Card | Player>} The attacker, The t
 HeroPower:             {string}                              The heroclass of the heropower; (Warrior, Mage, Priest, ...)
 
 Eval:                  {string}                              The code that was run
+TargetSelectionStarts: {Array<string, boolean | string, "enemy" | "self", "hero" | "minion", string[]>} prompt, elusive, force_side, force_class, flags
+TargetSelected:        {Card | Player} The target selected

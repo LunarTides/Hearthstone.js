@@ -1,14 +1,14 @@
 const rl = require("readline-sync");
 const fs = require("fs");
-const { version, branch } = require("./config/general.json");
+const { version, branch } = require("./config/dont-change.json");
 
 const src = require("./src/index");                  // Source Code
 const dc = require("./deck_creator/index");          // Deck Creator
-const cc = require("./card_creator/index");          // Custom Card Creator
+const ccc = require("./card_creator/custom/index");  // Custom Card Creator
 const vcc = require("./card_creator/vanilla/index"); // Vanilla Card Creator
-const ccc = require("./card_creator/class/index");   // Class Card Creator
+const clc = require("./card_creator/class/index");   // Class Creator
 
-const cls = () => process.stdout.write("\033c");
+const cls = () => process.stdout.write("\x1bc");
 
 const watermark = () => {
     cls();
@@ -44,7 +44,7 @@ function cardCreator() {
 
         vcc.main();
     } else {
-        cc.main();
+        ccc.main();
     }
 }
 
@@ -58,7 +58,7 @@ function devmode() {
         user = user[0].toLowerCase();
 
         if (user == "c") cardCreator();
-        if (user == "s") ccc.main();
+        if (user == "s") clc.main();
         else if (user == "b") break;
     }
 }

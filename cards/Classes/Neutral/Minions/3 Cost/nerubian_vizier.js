@@ -20,10 +20,11 @@ module.exports = {
      */
     battlecry(plr, game, self) {
         let list = game.functions.getCards();
-        list = list.filter(c => c.type == "Spell" && [plr.heroClass, "Neutral"].includes(c.class));
+        list = list.filter(c => c.type == "Spell");
         if (list.length == 0) return;
 
         let card = game.interact.discover("Discover a spell.", list);
+        if (!card) return -1;
 
         let valid = game.turns - 1;
 
@@ -33,5 +34,22 @@ module.exports = {
             //card.mana -= 2;
             card.addEnchantment("-2 mana", self);
         });
+
+        plr.addToHand(card);
+    },
+
+    /**
+     * @type {import("../../../../../src/types").KeywordMethod}
+     */
+    condition(plr, game, card) {
+        let valid = false;
+        
+        game.graveyard[plr.id].forEach(m => {
+            if (valid >= m.turnKilled || !game.functions.matchTribe(m.tribe, "Undead")) return;
+
+            valid = true;
+        });
+
+        return valid;
     }
 }

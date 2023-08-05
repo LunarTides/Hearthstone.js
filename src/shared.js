@@ -1,23 +1,35 @@
-let game = null;
+const { Game } = require("./game");
 
-function set(new_game = null) {
-    if (!new_game) return;
+let Shared = module.exports = {
+    /**
+     * @type {Game | null}
+     */
+    game: null,
 
-    game = new_game;
+    /**
+     * Sets the game as a shared variable
+     * 
+     * @param {Game | null} [new_game]
+     */
+    set(new_game = null) {
+        if (!new_game) return;
 
-    // Update the players' internal game
-    [game.player1, game.player2].forEach(p => {
-        if (!p.getInternalGame) return;
+        Shared.game = new_game;
 
-        p.getInternalGame();
-    });
-}
+        // Update the players' internal game
+        [Shared.game.player1, Shared.game.player2].forEach(p => {
+            if (!p.getInternalGame) return;
 
-function get() {
-    return game;
-}
+            p.getInternalGame();
+        });
+    },
 
-module.exports = {
-    set,
-    get
+    /**
+     * Gets the shared game
+     * 
+     * @returns {Game | null}
+     */
+    get() {
+        return Shared.game;
+    }
 }

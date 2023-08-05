@@ -9,7 +9,6 @@ const test_player1 = new Player("Test Player 1"); // Use this if a temp player c
 const test_player2 = new Player("Test Player 2");
 
 const game = new Game(test_player1, test_player2);
-game.dirname = __dirname + "/../";
 set(game);
 
 const functions = game.functions;
@@ -504,6 +503,11 @@ describe("Game", () => {
         testAttack("plrnoattack");
         attacker.attack = 1;
 
+        // Now go for hasattacked
+        attacker.canAttack = false;
+        testAttack("plrhasattacked");
+        attacker.canAttack = true;
+
         // Now go for frozen
         attacker.frozen = true;
         testAttack("frozen");
@@ -539,6 +543,11 @@ describe("Game", () => {
         attacker.attack = 0;
         testAttack("plrnoattack");
         attacker.attack = 1;
+
+        // Now go for hasattacked
+        attacker.canAttack = false;
+        testAttack("plrhasattacked");
+        attacker.canAttack = true;
 
         // Now go for frozen
         attacker.frozen = true;

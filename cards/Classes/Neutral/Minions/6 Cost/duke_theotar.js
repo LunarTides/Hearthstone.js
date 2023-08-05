@@ -24,8 +24,11 @@ module.exports = {
 
         if (plr.hand.length <= 0 || opHand.length <= 0) return;
 
-        let opCard = game.interact.discover("Discover a card in your opponent's hand.", opHand);
-        let plrCard = game.interact.discover("Discover a card in your hand.", plr.hand);
+        let opCard = game.interact.discover("Discover a card in your opponent's hand.", opHand, false);
+        if (!opCard) return -1;
+
+        let plrCard = game.interact.discover("Discover a card in your hand.", plr.hand, false);
+        if (!plrCard) return -1;
 
         // Remove the cards from the player's hands
         game.functions.remove(plr.getOpponent().hand, opCard);

@@ -9,7 +9,6 @@ const test_player1 = new Player("Test Player 1"); // Use this if a temp player c
 const test_player2 = new Player("Test Player 2");
 
 const game = new Game(test_player1, test_player2);
-game.dirname = __dirname + "/../";
 set(game);
 
 const functions = game.functions;
@@ -143,7 +142,7 @@ describe("Card", () => {
         const card = testCard();
 
         card.setStats(5, 5); // The card has 5 health
-        card.remHealth(3, 3); // The card has 2 health
+        card.remHealth(3); // The card has 2 health
 
         card.addHealth(5); // Restore 5 health to the minion. 5+2 = 7, which is more than the max health, so set it to 5
 

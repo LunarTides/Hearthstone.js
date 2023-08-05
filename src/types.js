@@ -50,7 +50,7 @@ const { Player } = require("./player");
  * 
  * @typedef {"Arcane" |
  * "Fel" | 
- * Fore" |
+ * "Fire" |
  * "Frost" |
  * "Holy" |
  * "Nature" |
@@ -94,7 +94,7 @@ const { Player } = require("./player");
  * "Combo" |
  * "Outcast" |
  * "Overheal" |
- * "Casts When Drawn" |
+ * "Cast On Draw" |
  * "Charge" |
  * "Mega-Windfury" |
  * "Echo" |
@@ -123,17 +123,38 @@ const { Player } = require("./player");
  * "CastSpellOnMinion" |
  * "TradeCard" |
  * "FreezeCard" |
+ * "CreateCard" |
  * "AddCardToDeck" |
  * "AddCardToHand" |
  * "DrawCard" |
  * "SpellDealsDamage" |
  * "Attack" |
  * "HeroPower" |
+ * "TargetSelectionStarts" |
+ * "TargetSelected" |
  * "Eval"} EventKeys
  */
 
 /**
  * @typedef {any} EventValues
+ */
+
+/**
+ * @callback QuestCallback
+ * @param {EventValues} val The value of the event
+ * @param {number} turn The turn the quest was played
+ * @param {boolean} done If the quest is done
+ */
+
+/**
+ * @typedef {Object} QuestType
+ * @property {string} name The quest owner's display name
+ * @property {number[]} progress [current, target]
+ * @property {EventKeys} key The key that the quest listens for
+ * @property {EventValues} value The value of the event
+ * @property {number} turn The turn that the quest was played
+ * @property {QuestCallback} callback The function to call when the correct event is broadcast
+ * @property {string} [next=null] The name of the card containing the next quest. Only used in questlines.
  */
 
 /**
@@ -155,7 +176,16 @@ const { Player } = require("./player");
  * 
  * @property {SpellSchool} [spellClass]
  * 
+ * @property {number} [cooldown]
+ * 
+ * @property {string} [hpDesc]
+ * @property {number} [hpCost]
+ * 
  * @property {CardKeyword[]} [keywords]
+ * 
+ * @property {string[]} [runes]
+ * @property {string[]} [colossal]
+ * @property {string} [corrupt]
  */
 
 /**
