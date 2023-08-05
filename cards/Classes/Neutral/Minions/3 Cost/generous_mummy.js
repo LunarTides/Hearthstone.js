@@ -40,7 +40,7 @@ module.exports = {
         if (ignore) return;
 
         // Unhook from the tick
-        if (self.storage.length >= 0) (self.storage[0]());
+        self.storage.forEach(unhook => unhook());
 
         // If it gets to this point, this card is either about to be silenced, or killed.
         plr.getOpponent().hand.forEach(c => {

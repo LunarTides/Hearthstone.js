@@ -35,8 +35,9 @@ module.exports = {
 
             game.summonMinion(minion, plr);
 
-            attacker.sleepy = false;
-            attacker.resetAttackTimes();
+            if (attacker instanceof game.Card) attacker.resetAttackTimes();
+            else attacker.canAttack = true;
+
             game.attack(attacker, minion);
         });
     }

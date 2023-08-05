@@ -32,6 +32,8 @@ module.exports = {
      * @type {import("../../../../../src/types").KeywordMethod}
      */
     deathrattle(plr, game, self) {
+        return; // TODO: Remove this when the bug is fixed.
+
         let stat = game.events.increment(plr, "elwynnBoarsKilled");
         if (stat <= 7) return;
 
