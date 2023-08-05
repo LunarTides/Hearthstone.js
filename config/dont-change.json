@@ -1,11 +1,17 @@
 {
     "DONT CHANGE ANYTHING IN THIS FILE": "DONT CHANGE ANYTHING IN THIS FILE UNLESS YOU KNOW WHAT YOU'RE DOING",
 
-    "version": "1.6.0",
-    "branch": "stable",
+    "version": "1.6.1",
+    "branch": "dev",
 
     "versionText": "",
-    "todo": {},
+    "todo": {
+        "Card Placeholder": "When a card gets referenced by name in another card's description, have it show more details about it when you entire detail mode.",
+        "History show revealed card": "Sometimes, a card gets hidden in the history. This is because the user shouldn't have access to that information. However when that card has been revealed (e.g. Playing it), it should be shown again everywhere where it was hidden.",
+        "Add a lot more events": "The more events, the better.",
+        "Add back getter / setters for all modules": "I removed all getters and setters a while ago. But that has caused some issues now in the future. This can also allow unifying players and cards so they can be used interchangeably as targets.",
+        "Rewrite the tools / scripts in Rust": "Pretty self-explanatory."
+    },
 
     "exampleTodo": {
         "one": ["first pass", "Description."],
