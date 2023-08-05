@@ -27,14 +27,14 @@
         "one": ["first pass", "Description."],
         "two": ["second pass", "Another description."],
         "three": ["not done", "A third description."],
-        "four": ["done", "A fourth description."],
-        "five": ["doing", "A fifth description."],
+        "four": ["doing", "A fourth description."],
+        "five": ["done", "A fifth description."],
         "this gives us": {
             "one":   "[first pass] one",
             "two":   "[second pass] two",
             "three": "[ ] three",
-            "four":  "[x] four",
-            "five":  "[o] five"
+            "four":  "[o] four",
+            "five":  "[x] five"
         }
     },
 

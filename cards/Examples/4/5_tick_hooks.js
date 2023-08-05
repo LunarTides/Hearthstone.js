@@ -44,7 +44,7 @@ module.exports = {
         if (ignore) return;
 
         // Unhook from the tick
-        if (self.storage.length >= 0) (self.storage[0])();
+        self.storage.forEach(unhook => unhook());
 
         // Undo the enchantment
         plr.hand.forEach(c => {
