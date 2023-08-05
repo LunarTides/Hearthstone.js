@@ -70,6 +70,9 @@ class Interact {
             case "noattack":
                 err = "That minion has no attack";
                 break;
+            case "plrhasattacked":
+                err = "Your hero has already attacked this turn";
+                break;
             case "hasattacked":
                 err = "That minion has already attacked this turn";
                 break;
@@ -1208,7 +1211,7 @@ class Interact {
 
             let wpnStats = ` [${plr.weapon.stats.join(' / ')}]`;
 
-            sb += (plr.attack > 0) ? wpnStats.brightGreen : wpnStats.gray;
+            sb += (plr.attack > 0 && plr.canAttack) ? wpnStats.brightGreen : wpnStats.gray;
         }
         else if (plr.attack) {
             sb += `Attack     : ${plr.attack.toString().brightGreen}`;
@@ -1216,7 +1219,6 @@ class Interact {
     
         if (op.weapon) {
             // Opponent has a weapon
-            let len = sb.split(": ")[1];
             if (!plr.weapon) sb += "                                 "; // Show that this is the opponent's weapon, not yours
             
             sb += "         | "; 

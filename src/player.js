@@ -258,6 +258,14 @@ class Player {
         this.weapon = null;
 
         /**
+         * If the player can attack.
+         * This is set to `true` by default, and only gets set to `false` once the player attacks, and is reset to `true` at the end of the turn.
+         * 
+         * @type {boolean}
+         */
+        this.canAttack = true;
+
+        /**
          * If the player is frozen.
          * 
          * If a player is frozen, they can't attack.
@@ -584,7 +592,6 @@ class Player {
         if (!this.weapon) return false;
 
         if (triggerDeathrattle) this.weapon.activate("deathrattle");
-        this.attack -= this.weapon.getAttack();
         this.weapon.destroy();
         this.weapon = null;
 

@@ -26,6 +26,8 @@ game.interact.printAll = () => {};
 game.interact.printLicense = () => {};
 game.interact.cls = () => {};
 
+const createCard = (name, plr = null) => new Card(name, plr || test_player1);
+
 // Begin testing
 describe("Functions", () => {
     it ('should shuffle an array', () => {
@@ -76,7 +78,7 @@ describe("Functions", () => {
         // Grab 3 cards
         let cards = game.functions.getCards();
         cards = game.functions.chooseItemsFromList(cards, 3);
-        cards = cards.map(c => new Card(c.name, {}));
+        cards = cards.map(c => createCard(c.name));
 
         // Choose a random one
         const el = game.functions.randList(cards);
@@ -162,7 +164,7 @@ describe("Functions", () => {
     });
 
     it ('should get a card by its id', () => {
-        const id = new Card("The Coin", {}).id; // Get "The Coin"'s id
+        const id = createCard("The Coin").id; // Get "The Coin"'s id
         const card = game.functions.getCardById(id);
 
         assert.ok(card.id == id);
@@ -170,7 +172,7 @@ describe("Functions", () => {
 
     it ('should get a list of collectible cards', () => {
         let cards = game.functions.getCards();
-        cards = cards.map(c => new Card(c.name, {}));
+        cards = cards.map(c => createCard(c.name));
 
         let uncollectible_cards = cards.filter(c => c.uncollectible);
 
@@ -179,8 +181,8 @@ describe("Functions", () => {
     it ('should get a list of all cards', () => {
         let all_cards = game.functions.getCards(false);
         let collectible_cards = game.functions.getCards();
-        all_cards = all_cards.map(c => new Card(c.name, {}));
-        collectible_cards = collectible_cards.map(c => new Card(c.name, {}));
+        all_cards = all_cards.map(c => createCard(c.name));
+        collectible_cards = collectible_cards.map(c => createCard(c.name));
 
         assert.notEqual(collectible_cards.length, all_cards.length);
     });
@@ -220,7 +222,7 @@ describe("Functions", () => {
     });
 
     it ('should validate a card success', () => {
-        let minion = game.summonMinion(new game.Card("Sheep"), test_player1);
+        let minion = game.summonMinion(createCard("Sheep"), test_player1);
         minion.uncollectible = false;
 
         let ret = game.functions.validateCard(minion, test_player1);
@@ -228,7 +230,7 @@ describe("Functions", () => {
         assert.equal(ret, true);
     });
     it ('should validate a card class', () => {
-        let minion = game.summonMinion(new game.Card("Sheep"), test_player1);
+        let minion = game.summonMinion(createCard("Sheep"), test_player1);
         minion.uncollectible = false;
         minion.class = "Foo";
 
@@ -237,7 +239,7 @@ describe("Functions", () => {
         assert.equal(ret, "class");
     });
     it ('should validate a card uncollectible', () => {
-        let minion = game.summonMinion(new game.Card("Sheep"), test_player1);
+        let minion = game.summonMinion(createCard("Sheep"), test_player1);
         minion.uncollectible = true;
 
         let ret = game.functions.validateCard(minion, test_player1);
@@ -245,7 +247,7 @@ describe("Functions", () => {
         assert.equal(ret, "uncollectible");
     });
     it ('should validate a card runes', () => {
-        let minion = game.summonMinion(new game.Card("Sheep"), test_player1);
+        let minion = game.summonMinion(createCard("Sheep"), test_player1);
         minion.uncollectible = false;
         minion.runes = "BBB";
 
@@ -264,16 +266,14 @@ describe("Functions", () => {
     });
     it ('should check if the highlander function works', () => {
         // Deck has duplicates
-        const player = new Player("Temp Player");
-
         let cards = game.functions.getCards();
         cards = game.functions.chooseItemsFromList(cards, 10);
-        cards = cards.map(c => new Card(c.name, player));
+        cards = cards.map(c => createCard(c.name, test_player2));
 
-        player.deck = cards;
-        player.deck.push(player.deck[0].imperfectCopy()); // Put a copy of the first card in the player's deck
+        test_player2.deck = cards;
+        test_player2.deck.push(test_player2.deck[0].imperfectCopy()); // Put a copy of the first card in the player's deck
 
-        assert.ok(!game.functions.highlander(player));
+        assert.ok(!game.functions.highlander(test_player2));
     });
 
     it ('should return the class names', () => {
@@ -339,7 +339,7 @@ describe("Functions", () => {
 
     it ('should correctly clone an object', () => {
         let card = game.functions.getCards()[0];
-        card = new Card(card.name, {});
+        card = createCard(card.name);
 
         let cloned_card = game.functions.cloneObject(card);
 
@@ -348,7 +348,7 @@ describe("Functions", () => {
 
     it ('should correctly clone a card', () => {
         let card = game.functions.getCards()[0];
-        card = new Card(card.name, {});
+        card = createCard(card.name);
 
         let cloned_card = game.functions.cloneCard(card);
 
@@ -356,7 +356,7 @@ describe("Functions", () => {
     });
     it ('should correctly randomize the ids when cloning a card', () => {
         let card = game.functions.getCards()[0];
-        card = new Card(card.name, {});
+        card = createCard(card.name);
 
         let cloned_card = game.functions.cloneCard(card);
 
@@ -444,7 +444,7 @@ describe("Functions", () => {
 
     it ('should correctly recruit', () => {
         const deck = game.functions.chooseItemsFromList(game.functions.getCards(), 30);
-        test_player1.deck = deck.map(c => new Card(c.name, test_player1));
+        test_player1.deck = deck.map(c => createCard(c.name, test_player1));
 
         game.functions.recruit(test_player1);
 
@@ -454,18 +454,16 @@ describe("Functions", () => {
     });
 
     it ('should correctly create a 1/1 jade', () => {
-        const player = new Player("Temp Player");
-        const jade = game.functions.createJade(player);
+        const jade = game.functions.createJade(test_player1);
 
         assert.equal(jade.getHealth(), 1);
         assert.equal(jade.getAttack(), 1);
     });
     it ('should correctly create a 4/4 jade', () => {
-        const player = new Player("Temp Player");
-        game.functions.createJade(player);
-        game.functions.createJade(player);
-        game.functions.createJade(player);
-        const jade = game.functions.createJade(player);
+        game.functions.createJade(test_player2);
+        game.functions.createJade(test_player2);
+        game.functions.createJade(test_player2);
+        const jade = game.functions.createJade(test_player2);
 
         assert.equal(jade.getHealth(), 4);
         assert.equal(jade.getAttack(), 4);
@@ -478,23 +476,20 @@ describe("Functions", () => {
     // TODO: Maybe add test for importCards
 
     it ('should correctly mulligan', () => {
-        const player = new Player("Temp Player");
-
         const deck = game.functions.chooseItemsFromList(game.functions.getCards(), 27);
         const hand = game.functions.chooseItemsFromList(game.functions.getCards(), 3);
 
-        player.deck = deck.map(c => new Card(c.name, player));
-        player.hand = hand.map(c => new Card(c.name, player));
+        test_player1.deck = deck.map(c => createCard(c.name, test_player1));
+        test_player1.hand = hand.map(c => createCard(c.name, test_player1));
 
-        const old_deck = player.deck.slice();
-        const old_hand = player.hand.slice();
+        const old_hand = test_player1.hand.slice();
 
-        game.functions.mulligan(player, "13");
+        game.functions.mulligan(test_player1, "13");
 
         // The second card becomes the first card after the mulligan, and the new cards gets added onto it.
-        assert.equal(player.hand[0].name, old_hand[1].name);
-        assert.notEqual(player.hand[1].name, old_hand[0].name);
-        assert.notEqual(player.hand[2].name, old_hand[2].name);
+        assert.equal(test_player1.hand[0].name, old_hand[1].name);
+        assert.notEqual(test_player1.hand[1].name, old_hand[0].name);
+        assert.notEqual(test_player1.hand[2].name, old_hand[2].name);
     });
 
     it ('should correctly add a quest', () => {
@@ -502,7 +497,7 @@ describe("Functions", () => {
 
         let done = false;
 
-        game.functions.addQuest("Quest", player, new Card("The Coin", player), "QuestTest", 3, (key, val, _done) => {
+        game.functions.addQuest("Quest", player, createCard("The Coin", player), "QuestTest", 3, (key, val, _done) => {
             if (!_done) return;
 
             done = true;
@@ -523,7 +518,7 @@ describe("Functions", () => {
     it ('should correctly progress quest', () => {
         const player = test_player1;
 
-        game.functions.addQuest("Quest", player, new Card("The Coin", player), "QuestTest", 3, (key, val, _done) => {});
+        game.functions.addQuest("Quest", player, createCard("The Coin", player), "QuestTest", 3, (key, val, _done) => {});
 
         assert.equal(player.quests[0].progress[0], 0);
 

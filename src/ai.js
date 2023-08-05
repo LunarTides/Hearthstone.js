@@ -431,7 +431,7 @@ class AI {
             lowest_score = [m, score];
         });
 
-        if (!lowest_score[0] && this.plr.attack > 0) return this.plr;
+        if (!lowest_score[0] && (this.plr.attack > 0 && this.plr.canAttack)) return this.plr;
 
         if (!lowest_score[0]) {
             this.prevent.push("attack");
@@ -524,7 +524,7 @@ class AI {
                 this.prevent.push("attack");
             }
         }
-        if (!attacker && this.plr.attack > 0) attacker = this.plr;
+        if (!attacker && (this.plr.attack > 0 && this.plr.canAttack)) attacker = this.plr;
 
         let arr = [];
         let strbuilder = "";

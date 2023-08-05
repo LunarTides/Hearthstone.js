@@ -598,8 +598,7 @@ class Game {
 
         // Remove echo cards
         plr.hand = plr.hand.filter(c => !c.echo);
-
-        plr.attack = 0;
+        plr.canAttack = true;
 
         // Turn starts
         this.turns++;
@@ -953,7 +952,7 @@ class Game {
      * @param {Card | Player | number} attacker The attacker | Amount of damage to deal
      * @param {Card | Player} target The target
      * 
-     * @returns {true | "divineshield" | "taunt" | "stealth" | "frozen" | "plrnoattack" | "noattack" | "hasattacked" | "sleepy" | "cantattackhero" | "immune" | "dormant" | "invalid"} Success | Errorcode
+     * @returns {true | "divineshield" | "taunt" | "stealth" | "frozen" | "plrnoattack" | "noattack" | "plrhasattacked" | "hasattacked" | "sleepy" | "cantattackhero" | "immune" | "dormant" | "invalid"} Success | Errorcode
      */
     attack(attacker, target) {
         if (!attacker || !target) {
@@ -999,13 +998,14 @@ class Game {
         // Attacker is a player
         if (attacker.classType == "Player") {
             if (attacker.attack <= 0) return "plrnoattack";
+            if (!attacker.canAttack) return "plrhasattacked";
 
             // Target is a player
             if (target.classType == "Player") {
                 this.attack(attacker.attack, target);
                 this.events.broadcast("Attack", [attacker, target], attacker);
                 
-                attacker.attack = 0;
+                attacker.canAttack = false;
                 if (!attacker.weapon) return true;
 
                 const wpn = attacker.weapon;
@@ -1028,7 +1028,7 @@ class Game {
 
             this.killMinions();
 
-            attacker.attack = 0;
+            attacker.canAttack = false;
     
             if (target.getHealth() > 0 && target.activate("frenzy") !== -1) target.frenzy = undefined;
 

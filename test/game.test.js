@@ -503,6 +503,11 @@ describe("Game", () => {
         testAttack("plrnoattack");
         attacker.attack = 1;
 
+        // Now go for hasattacked
+        attacker.canAttack = false;
+        testAttack("plrhasattacked");
+        attacker.canAttack = true;
+
         // Now go for frozen
         attacker.frozen = true;
         testAttack("frozen");
@@ -538,6 +543,11 @@ describe("Game", () => {
         attacker.attack = 0;
         testAttack("plrnoattack");
         attacker.attack = 1;
+
+        // Now go for hasattacked
+        attacker.canAttack = false;
+        testAttack("plrhasattacked");
+        attacker.canAttack = true;
 
         // Now go for frozen
         attacker.frozen = true;
