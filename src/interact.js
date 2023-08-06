@@ -310,12 +310,52 @@ class Interact {
 
             let history_debug = args.length >= 2 && args[1] == true;
 
+            const showCard = (val) => {
+                return this.getReadableCard(val) + " which belongs to: " + val.plr.name.blue + ", and has uuid: " + val.uuid.slice(0, 8);
+            }
+
+            /**
+             * Transform the `value` into a readable string
+             * 
+             * @param {any} val 
+             * @param {Player} plr 
+             * @param {boolean} hide If it should hide the card
+             * 
+             * @returns {any}
+             */
             const doVal = (val, plr, hide) => {
                 if (val instanceof game.Card) {
-                    if (hide && val.plr != plr) val = "Hidden";
-                    else val = this.getReadableCard(val) + " which belongs to: " + val.plr.name.blue + ", and has uuid: " + val.uuid.slice(0, 8);
+                    // If the card is not hidden, or the card belongs to the current player, show it
+                    if (!hide || val.plr == plr) return showCard(val);
+
+                    // Hide the card
+                    let revealed = false;
+
+                    // It has has been revealed, show it.
+                    Object.values(history).forEach(h => {
+                        if (revealed) return;
+
+                        h.forEach(c => {
+                            if (revealed) return;
+
+                            let [key, newVal, _] = c;
+
+                            if (game.config.whitelistedHistoryKeys.includes(key)) {}
+                            else return;
+
+                            if (game.config.hideValueHistoryKeys.includes(key)) return;
+
+                            if (val.uuid != newVal.uuid) return;
+
+                            // The card has been revealed.
+                            revealed = true;
+                        });
+                    });
+
+                    if (revealed) return "Hidden > Revealed as: " + showCard(val);
+                    else return "Hidden";
                 }
-                else if (val instanceof game.Player) val = `Player ${val.id + 1}`;
+                else if (val instanceof game.Player) return `Player ${val.id + 1}`;
 
                 return val;
             }
