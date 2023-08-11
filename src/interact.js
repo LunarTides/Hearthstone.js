@@ -1458,6 +1458,21 @@ class Interact {
     }
 
     /**
+     * Verifies that the diy card has been solved.
+     * 
+     * @returns {boolean} Success
+     */
+    verifyDIYSolution(condition) {
+        // Maybe spawn in diy cards mid-game in normal games to encourage players to solve them.
+        // Allow that to be toggled in the config.
+        if (condition) console.log("Success! You did it, well done!");
+        else console.log("Hm. This card doesn't seem to do what it's supposed to do... Maybe you should try to fix it? The card is in: './cards/Examples/DIY/'.");
+        
+        game.input();
+        return true;
+    }
+
+    /**
      * Clears the screen.
      * 
      * @returns {undefined}
