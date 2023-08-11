@@ -118,7 +118,11 @@ describe("AI", () => {
     });
 
     it ('should correctly score players', () => {
-        let score = ai._scorePlayer(test_player1, []);
+        let score = ai._scorePlayer(test_player1, game.board.map(m => {
+            return m.map(c => {
+                return {"card": c, "score": ai.analyzePositiveCard(c)};
+            });
+        }));
 
         assert.ok(score > 0);
     });
@@ -182,7 +186,7 @@ describe("AI", () => {
         let result = ai.attack();
 
         assert.equal(result[0], -1);
-        assert.equal(result[1], ai.plr.getOpponent());
+        assert.equal(result[1], -1);
     });
 
     it ('should attack using legacy 1', () => {

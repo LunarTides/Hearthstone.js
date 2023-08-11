@@ -497,12 +497,9 @@ class AI {
         /**
          * @type {import("./types").ScoredCard[][]}
          */
-        let board = [];
-        game.board.forEach((p, i) => {
-            p.forEach(m => {
-                let score = this.analyzePositiveCard(m);
-
-                board[i].push({"card": m, "score": score});
+        let board = game.board.map(m => {
+            return m.map(c => {
+                return {"card": c, "score": this.analyzePositiveCard(c)};
             });
         });
 

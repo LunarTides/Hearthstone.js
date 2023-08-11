@@ -389,7 +389,7 @@ describe("Card", () => {
 
         card.addEnchantment("+1 mana", card);
 
-        assert.equal(card.enchantments[0][0], "+1 mana");
+        assert.equal(card.enchantments[0].enchantment, "+1 mana");
     });
 
     it ('should correctly apply enchantents', () => {
