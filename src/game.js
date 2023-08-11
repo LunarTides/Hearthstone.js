@@ -24,6 +24,13 @@ class EventManager {
         this.eventListeners = 0;
 
         /**
+         * The hooks that will be run when the game ticks.
+         * 
+         * @type {Function[]}
+         */
+        this.tickHooks = [];
+
+        /**
          * The history of the game.
          * 
          * @type {Object<number, Array>}
@@ -32,12 +39,14 @@ class EventManager {
     }
 
     /**
-     * The code in here gets executed very often
+     * Tick the game
      *
      * @param {string} key - The key of the event that triggered the tick
      * @param {any} val - The value of the event that triggered the tick
      */
     tick(key, val) {
+        // The code in here gets executed very often
+
         // Infuse
         if (key == "KillMinion") {
             val.plr.hand.forEach(p => {
@@ -82,6 +91,8 @@ class EventManager {
                 if (c.mana < 0) c.mana = 0;
             });
         }
+
+        this.tickHooks.forEach(hook => hook(key, val));
     }
 
     /**
@@ -208,6 +219,19 @@ class EventManager {
     }
 
     /**
+     * Broadcast a dummy event. Use if you need to broadcast any event to kickstart an event listener, consider looking into `game.functions.hookToTick`.
+     * 
+     * Specifically, this broadcasts the `Dummy` event. DO NOT LISTEN FOR THAT EVENT.
+     * 
+     * @param {Player} plr The player who caused the event to happen
+     * 
+     * @returns {boolean} Success
+     */
+    broadcastDummy(plr) {
+        return this.broadcast("Dummy", null, plr, false);
+    }
+
+    /**
      * Increment a stat
      *
      * @param {Player} player The player to update
@@ -267,7 +291,7 @@ class Game {
         /**
          * The player whose turn it is.
          * 
-         * @type {Player}
+         * @type {Player | null}
          */
         this.player = this.player1;
 
@@ -371,7 +395,7 @@ class Game {
          * 
          * If an event with a key in this list is broadcast, it will add it to the history, and tick the game, but will not activate any passives / event listeners.
          * 
-         * @type {string[]}
+         * @type {import('./types').EventKeys[]}
          */
         this.suppressedEvents = [];
 
@@ -525,8 +549,6 @@ class Game {
         this.player2.addToHand(the_coin);
         this.suppressedEvents.pop();
 
-        this.events.addHistory("AddCardToHand", the_coin, this.player2);
-
         this.turns += 1;
 
         return true;
@@ -581,8 +603,7 @@ class Game {
 
         // Remove echo cards
         plr.hand = plr.hand.filter(c => !c.echo);
-
-        plr.attack = 0;
+        plr.canAttack = true;
 
         // Turn starts
         this.turns++;
@@ -953,7 +974,7 @@ class Game {
      * @param {Card | Player | number} attacker The attacker | Amount of damage to deal
      * @param {Card | Player} target The target
      * 
-     * @returns {true | "divineshield" | "taunt" | "stealth" | "frozen" | "plrnoattack" | "noattack" | "hasattacked" | "sleepy" | "cantattackhero" | "immune" | "invalid" | "dormant"} Success | Errorcode
+     * @returns {true | "divineshield" | "taunt" | "stealth" | "frozen" | "plrnoattack" | "noattack" | "plrhasattacked" | "hasattacked" | "sleepy" | "cantattackhero" | "immune" | "dormant" | "invalid"} Success | Errorcode
      */
     attack(attacker, target) {
         if (!attacker || !target) {
@@ -999,13 +1020,14 @@ class Game {
         // Attacker is a player
         if (attacker.classType == "Player") {
             if (attacker.attack <= 0) return "plrnoattack";
+            if (!attacker.canAttack) return "plrhasattacked";
 
             // Target is a player
             if (target.classType == "Player") {
                 this.attack(attacker.attack, target);
                 this.events.broadcast("Attack", [attacker, target], attacker);
                 
-                attacker.attack = 0;
+                attacker.canAttack = false;
                 if (!attacker.weapon) return true;
 
                 const wpn = attacker.weapon;
@@ -1028,7 +1050,7 @@ class Game {
 
             this.killMinions();
 
-            attacker.attack = 0;
+            attacker.canAttack = false;
     
             if (target.getHealth() > 0 && target.activate("frenzy") !== -1) target.frenzy = undefined;
 

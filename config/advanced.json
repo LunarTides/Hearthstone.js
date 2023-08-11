@@ -1,0 +1,30 @@
+{
+    "These are the keys that will show up when running the history command.": "Look in `events.txt` for a list of valid keys. Also, the log files override this list and instead shows every valid key.",
+    "whitelistedHistoryKeys": [
+        "HealthRestored",
+        "UnspentMana",
+        "GainOverload",
+        "GainHeroAttack",
+        "TakeDamage",
+        "PlayCard",
+        "SummonMinion",
+        "KillMinion",
+        "DamageMinion",
+        "TradeCard",
+        "FreezeCard",
+        "AddCardToDeck",
+        "AddCardToHand",
+        "DrawCard",
+        "Attack",
+        "HeroPower",
+        "TargetSelectionStarts",
+        "TargetSelected"
+    ],
+
+    "These keys will have their value hidden when running the history command.": "Unless you caused the event. The log files override this list and shows the value regardless.",
+    "hideValueHistoryKeys": [
+        "DrawCard",
+        "AddCardToHand",
+        "AddCardToDeck"
+    ]
+}

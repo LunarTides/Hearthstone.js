@@ -96,7 +96,7 @@ const { Player } = require("./player");
  * "Combo" |
  * "Outcast" |
  * "Overheal" |
- * "Casts When Drawn" |
+ * "Cast On Draw" |
  * "Charge" |
  * "Mega-Windfury" |
  * "Echo" |
@@ -125,6 +125,7 @@ const { Player } = require("./player");
  * "CastSpellOnMinion" |
  * "TradeCard" |
  * "FreezeCard" |
+ * "CreateCard" |
  * "AddCardToDeck" |
  * "AddCardToHand" |
  * "DrawCard" |

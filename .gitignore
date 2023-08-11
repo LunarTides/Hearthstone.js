@@ -1,7 +1,7 @@
 node_modules/
+logs/
 .*\.swp
 *~
 \.ignore.*
 *-output\.txt
 \.vs
-logs/

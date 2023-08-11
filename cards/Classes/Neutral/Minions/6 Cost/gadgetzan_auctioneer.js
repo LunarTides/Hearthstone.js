@@ -19,7 +19,7 @@ module.exports = {
      * @type {import("../../../../../src/types").KeywordMethod}
      */
     passive(plr, game, card, key, val) {
-        if (key != "spellsCast" || game.player != plr) return;
+        if (key != "PlayCard" || val.type !== "Spell" || game.player != plr) return;
         
         plr.drawCard();
     }

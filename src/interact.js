@@ -71,6 +71,9 @@ class Interact {
             case "noattack":
                 err = "That minion has no attack";
                 break;
+            case "plrhasattacked":
+                err = "Your hero has already attacked this turn";
+                break;
             case "hasattacked":
                 err = "That minion has already attacked this turn";
                 break;
@@ -102,7 +105,7 @@ class Interact {
      * @param {string} q The command
      * @param {any} [args]
      * 
-     * @returns {boolean | string | -1} a string if "args" is not undefined
+     * @returns {boolean | string | -1} a string if "args" is defined
      */
     handleCmds(q, ...args) {
         if (q === "end") game.endTurn();
@@ -189,7 +192,6 @@ class Interact {
             console.log(cond_color("/eval [log] <Code> - Runs the code specified. If the word 'log' is before the code, instead console.log the code and wait for user input to continue."));
             console.log(cond_color("/debug             - Gives you infinite mana, health and armor"));
             console.log(cond_color("/exit              - Force exits the game. There will be no winner, and it will take you straight back to the runner."));
-            console.log(cond_color("/events            - Gives you a list of the events that have been broadcast in an alphabetical order"));
             console.log(cond_color("/ai                - Gives you a list of the actions the ai(s) have taken in the order they took it"));
             console.log(cond_color("---------------------------" + ((game.config.debug) ? "" : "-")));
             
@@ -316,12 +318,52 @@ class Interact {
 
             let history_debug = args.length >= 2 && args[1] == true;
 
+            const showCard = (val) => {
+                return this.getReadableCard(val) + " which belongs to: " + val.plr.name.blue + ", and has uuid: " + val.uuid.slice(0, 8);
+            }
+
+            /**
+             * Transform the `value` into a readable string
+             * 
+             * @param {any} val 
+             * @param {Player} plr 
+             * @param {boolean} hide If it should hide the card
+             * 
+             * @returns {any}
+             */
             const doVal = (val, plr, hide) => {
                 if (val instanceof game.Card) {
-                    if (hide && val.plr != plr && !history_debug) val = "Hidden";
-                    else val = this.getReadableCard(val) + " which belongs to: " + val.plr.name.blue + ", and has uuid: " + val.uuid.slice(0, 8);
+                    // If the card is not hidden, or the card belongs to the current player, show it
+                    if (!hide || val.plr == plr) return showCard(val);
+
+                    // Hide the card
+                    let revealed = false;
+
+                    // It has has been revealed, show it.
+                    Object.values(history).forEach(h => {
+                        if (revealed) return;
+
+                        h.forEach(c => {
+                            if (revealed) return;
+
+                            let [key, newVal, _] = c;
+
+                            if (game.config.whitelistedHistoryKeys.includes(key)) {}
+                            else return;
+
+                            if (game.config.hideValueHistoryKeys.includes(key)) return;
+
+                            if (val.uuid != newVal.uuid) return;
+
+                            // The card has been revealed.
+                            revealed = true;
+                        });
+                    });
+
+                    if (revealed) return "Hidden > Revealed as: " + showCard(val);
+                    else return "Hidden";
                 }
-                else if (val instanceof game.Player) val = `Player ${val.id + 1}`;
+                else if (val instanceof game.Player) return `Player ${val.id + 1}`;
 
                 return val;
             }
@@ -336,9 +378,7 @@ class Interact {
                     if (plr != prevPlayer) hasPrintedHeader = false;
                     prevPlayer = plr;
 
-                    let whitelistedKeys = ["HealthRestored", "UnspentMana", "GainOverload", "GainHeroAttack", "TakeDamage", "PlayCard", "SummonMinion", "KillMinion", "DamageMinion", "TradeCard", "FreezeCard", "AddCardToDeck", "AddCardToHand", "DrawCard", "Attack", "HeroPower", "TargetSelectionStarts", "TargetSelected"];
-
-                    if (whitelistedKeys.includes(key) || history_debug) {}
+                    if (game.config.whitelistedHistoryKeys.includes(key) || history_debug) {}
                     else return;
 
                     // If the `key` is "AddCardToHand", check if the previous history entry was `DrawCard`, and they both contained the exact same `val`.
@@ -349,10 +389,9 @@ class Interact {
                         if (last_entry[0] == "DrawCard" && last_entry[1].uuid == val.uuid) {
                             return;
                         }
-                    } 
+                    }
 
-                    let hideValueKeys = ["DrawCard", "AddCardToHand", "AddCardToDeck"]; // Example: If a card gets drawn, the other player can't see what card it was
-                    let shouldHide = hideValueKeys.includes(key) && !history_debug;
+                    let shouldHide = game.config.hideValueHistoryKeys.includes(key) && !history_debug;
 
                     if (!hasPrintedHeader) finished += `\nTurn ${t} - Player [${plr.name}]\n`; 
                     hasPrintedHeader = true;
@@ -481,50 +520,10 @@ class Interact {
 
             return finished;
         }
-        else if (q == "/events") {
-            if (!game.config.debug) return -1;
-
-            console.log("Events:\n");
-
-            for (let i = 1; i <= 2; i++) {
-                const plr = game["player" + i];
-                
-                console.log(`Player ${i}'s Stats: {`);
-
-                Object.keys(game.events).forEach(s => {
-                    if (!game.events[s][plr.id]) return;
-                    game.events[s][plr.id].forEach(t => {
-                        if (t instanceof Array && t[0] instanceof game.Card) {
-                            let sb = `[${s}] ([`;
-                            t.forEach(v => {
-                                if (v instanceof game.Card) v = v.name;
-                                sb += `${v}, `;
-                            });
-                            sb = sb.slice(0, -2);
-                            sb += "]),";
-                            console.log(sb);
-                            return;
-                        }
-                        if (t instanceof game.Card || typeof(t) !== 'object') {
-                            if (t instanceof game.Card) t = t.name;
-                            console.log(`[${s}] (${t}),`);
-                            return;
-                        }
-
-                        console.log(`[${s}] (`);
-                        console.log(t);
-                        console.log("),");
-                    });
-                });
-
-                console.log("}");
-            }
-
-            game.input("\nPress enter to continue...");
-        }
-
+        // -1 if the command is not found
         else return -1;
 
+        // true if a command was ran, and no errors were found
         return true;
     }
 
@@ -554,6 +553,8 @@ class Interact {
      * @returns {boolean | string | Card | "mana" | "traded" | "space" | "magnetize" | "colossal" | "invalid" | "refund"} Success | The return value of doTurnLogic
      */
     doTurn() {
+        game.events.tick("GameLoop", "doTurn");
+
         if (game.player.ai) {
             let input = game.player.ai.calcMove();
             if (!input) return false;
@@ -860,7 +861,7 @@ class Interact {
      * 
      * @param {string} prompt The prompt to ask
      * @param {Card[] | import('./types').Blueprint[]} [cards=[]] The cards to choose from
-     * @param {boolean} [filterClassCards=false] If it should filter away cards that do not belong to the player's class. Keep this at default if you are using `functions.getCards()`, disable this if you are using either player's deck / hand / graveyard / etc...
+     * @param {boolean} [filterClassCards=true] If it should filter away cards that do not belong to the player's class. Keep this at default if you are using `functions.getCards()`, disable this if you are using either player's deck / hand / graveyard / etc...
      * @param {number} [amount=3] The amount of cards to show
      * @param {import('./types').Blueprint[]} [_cards=[]] Do not use this variable, keep it at default
      * 
@@ -952,7 +953,7 @@ class Interact {
      * Broadcasts the `TargetSelectionStarts` and the `TargetSelected` event
      * 
      * @param {string} prompt The prompt to ask
-     * @param {boolean | string} [elusive=false] Wether or not to prevent selecting elusive minions, if this is a string, allow selecting elusive minions but don't trigger secrets / quests
+     * @param {boolean | string} [elusive=false] Whether or not to prevent selecting elusive minions, if this is a string, allow selecting elusive minions but don't trigger secrets / quests
      * @param {"enemy" | "friendly" | null} [force_side=null] Force the user to only be able to select minions / the hero of a specific side: ["enemy", "friendly"]
      * @param {"hero" | "minion" | null} [force_class=null] Force the user to only be able to select a minion or a hero: ["hero", "minion"]
      * @param {string[]} [flags=[]] Change small behaviours ["allow_locations" => Allow selecting location, ]
@@ -975,7 +976,7 @@ class Interact {
      * Can broadcast the `CastSpellOnMinion` event.
      * 
      * @param {string} prompt The prompt to ask
-     * @param {boolean | string} [elusive=false] Wether or not to prevent selecting elusive minions, if this is a string, allow selecting elusive minions but don't trigger secrets / quests
+     * @param {boolean | string} [elusive=false] Whether or not to prevent selecting elusive minions, if this is a string, allow selecting elusive minions but don't trigger secrets / quests
      * @param {"enemy" | "friendly" | null} [force_side=null] Force the user to only be able to select minions / the hero of a specific side: ["enemy", "friendly"]
      * @param {"hero" | "minion" | null} [force_class=null] Force the user to only be able to select a minion or a hero: ["hero", "minion"]
      * @param {string[]} [flags=[]] Change small behaviours ["allow_locations" => Allow selecting location, ]
@@ -1181,7 +1182,7 @@ class Interact {
 
             while (true) {
                 let regedDesc = reg.exec(desc);
-
+                
                 // There is nothing more to extract
                 if (!regedDesc) break;
 
@@ -1286,7 +1287,7 @@ class Interact {
             let wpnStats = ` [${plr.weapon.stats?.join(' / ')}]`;
 
             // @ts-ignore
-            sb += (plr.attack > 0) ? wpnStats.brightGreen : wpnStats.gray;
+            sb += (plr.attack > 0 && plr.canAttack) ? wpnStats.brightGreen : wpnStats.gray;
         }
         else if (plr.attack) {
             // @ts-ignore
@@ -1295,7 +1296,6 @@ class Interact {
     
         if (op.weapon) {
             // Opponent has a weapon
-            let len = sb.split(": ")[1];
             if (!plr.weapon) sb += "                                 "; // Show that this is the opponent's weapon, not yours
             
             sb += "         | "; 

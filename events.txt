@@ -21,6 +21,7 @@ CancelCard:            {Array<Card, str>}                    The card cancelled,
 CastSpellOnMinion:     {Card:Minion}                         The minion the spell was cast on
 TradeCard:             {Card:Any}                            Card traded
 FreezeCard:            {Card:Any}                            Card frozen
+CreateCard             {Card:Any}                            Card created
 
 AddCardToDeck:         {Card}                                The card that was added to the players deck
 AddCardToHand:         {Card}                                The card added to hand

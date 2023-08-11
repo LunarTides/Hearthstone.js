@@ -20,6 +20,7 @@ module.exports = {
         let list = plr.deck;
 
         let card = game.interact.discover("Discover a card from your deck.", list, false);
+        if (!card) return -1;
 
         plr.drawSpecific(card);
     }

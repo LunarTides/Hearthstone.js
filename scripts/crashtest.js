@@ -8,12 +8,15 @@ let decks = Object.values(JSON.parse(fs.readFileSync("../decks.json")).versus);
 
 let games = process.env.games || 100;
 
-console.error(`Press enter to play ${games} games`);
+console.warn(`Press enter to play ${games} games`);
 if (!process.env.games) console.log("Set the GAMES env variable to change how many games to play.");
 console.log("NOTE: If you see no progress being made for an extended period of time, chances are the game got stuck in an infinite loop.");
 rl.question();
 
-for (let _ = 0; _ < games; _++) {
+for (let index = 0; index < games; index++) {
+    // If you're redirecting output to a file, show a progress bar
+    if (!process.stdout.isTTY) process.stderr.write(`\r\x1b[KPlaying game #${index + 1} / ${games}...`);
+
     // Test the main game
     const p1 = new Player("Player 1");
     const p2 = new Player("Player 2");
@@ -57,5 +60,5 @@ for (let _ = 0; _ < games; _++) {
     }
 }
 
-console.log("Test passed!");
+console.warn("Test passed!");
 rl.question();

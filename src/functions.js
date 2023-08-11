@@ -46,7 +46,7 @@ class DeckcodeFunctions {
          *  
          * @returns {"invalid"} 
          */
-        const ERROR = (error_code, card_name) => {
+        const ERROR = (error_code, card_name = null) => {
             console.log("This deck is not valid!\nError Code: ".red + error_code.yellow);
             if (card_name) console.log("Specific Card that caused this error: ".red + card_name.yellow);
             game.input();
@@ -234,7 +234,7 @@ class DeckcodeFunctions {
     /**
      * Generates a deckcode from a list of blueprints
      *
-     * @param {import("./card").Blueprint[]} deck The deck to create a deckcode from
+     * @param {import("./types").Blueprint[]} deck The deck to create a deckcode from
      * @param {string} heroClass The class of the deck. Example: "Priest"
      * @param {string} runes The runes of the deck. Example: "BFU"
      *
@@ -323,6 +323,9 @@ class DeckcodeFunctions {
         //
         // Reference: Death Knight [3B] /1:4,2/ 3f,5f,6f...
 
+        /**
+         * @type {import("deckstrings").DeckDefinition}
+         */
         let deck = {"cards": [], "heroes": [], "format": null};
 
         deck.format = deckstrings.FormatType.FT_WILD; // Wild
@@ -354,6 +357,10 @@ class DeckcodeFunctions {
         let cards = code[1].trim();
 
         // Now it's just the cards left
+
+        /**
+         * @type {VanillaCard[]}
+         */
         let vanillaCards;
 
         try {
@@ -397,10 +404,9 @@ class DeckcodeFunctions {
             let matches = vanillaCards.filter(a => a.name.toLowerCase() == c.toLowerCase());
             matches = self.filterVanillaCards(matches, true, extraFiltering);
 
-            if (!matches) {
+            if (matches.length == 0) {
                 // Invalid card
-                console.log("ERROR: Invalid card found!".red);
-                game.input();
+                game.input("ERROR: Invalid card found!".red);
                 return;
             }
 
@@ -835,18 +841,21 @@ ${err.stack}
 `
 
         let history_content = `-- History --${history}`;
-        let ai_content = `
--- AI Logs --
-${aiHistory}`;
+        let ai_content = `\n-- AI Logs --\n${aiHistory}`;
+
+        let config = JSON.stringify(game.config, null, 2);
+        let config_content = `\n-- Config --\n${config}`;
 
         let main_content = history_content;
         if (game.config.P1AI || game.config.P2AI) main_content += ai_content;
+        main_content += config_content;
         main_content += errorContent;
 
         let content = `Hearthstone.js ${name}
 Date: ${dateString}
 Version: ${game.config.version}-${game.config.branch}
 Operating System: ${process.platform}
+Log File Version: 1
 
 ${main_content}
 `
@@ -1386,8 +1395,17 @@ ${main_content}
      * @returns {string}
      */
     stripTags(str) {
-        // Regular expression created by ChatGPT, it removes the "&B"'s but keeps the "~&B"'s since the '~' here works like an escape character.
-        return str.replace(/(?<!~)&\w/g, "");
+        // Regular expressions created by AI's, it removes the "&B"'s but keeps the "~&B"'s since the '~' here works like an escape character.
+        // It does however remove the escape character itself.
+        let strippedString = str;
+
+        // Remove unescaped tags
+        strippedString = strippedString.replace(/(?<!~)&\w/g, "")
+
+        // Remove escape character
+        strippedString = strippedString.replace(/~&(\w)/g, "&$1")
+
+        return strippedString;
     }
 
     /**
@@ -1443,7 +1461,7 @@ ${main_content}
     /**
      * Add an event listener.
      *
-     * @param {import("./game").EventKeys} key The event to listen for. If this is an empty string, it will listen for any event.
+     * @param {import("./types").EventKeys} key The event to listen for. If this is an empty string, it will listen for any event.
      * @param {elCallback} checkCallback This will trigger when the event gets broadcast, but before the actual code in `callback`. If this returns false, the event listener will ignore the event. If you set this to `true`, it is the same as doing `() => {return true}`.
      * @param {elCallback} callback The code that will be ran if the event listener gets triggered and gets through `checkCallback`. If this returns true, the event listener will be destroyed.
      * @param {number} lifespan How many times the event listener will trigger and call "callback" before self-destructing. Set this to -1 to make it last forever, or until it is manually destroyed using "callback".
@@ -1482,6 +1500,24 @@ ${main_content}
         return remove;
     }
 
+    /**
+     * Hooks a callback function to the tick event.
+     *
+     * @param {Function} callback - The callback function to be hooked.
+     * @param {Card} card - The card that is hooking, if this is set, the hook will be automatically removed when the card is removed.
+     * 
+     * @returns {Function} a function that, when called, will remove the hook from the tick event.
+     */
+    hookToTick(callback) {
+        game.events.tickHooks.push(callback);
+
+        const unhook = () => {
+            this.remove(game.events.tickHooks, callback);
+        }
+
+        return unhook;
+    }
+
     // Damage
 
     /**
@@ -1517,9 +1553,9 @@ ${main_content}
     /**
      * Filters out all cards that are uncollectible in a list
      * 
-     * @param {Card[] | import("./card").Blueprint[]} cards The list of cards
+     * @param {Card[] | import("./types").Blueprint[]} cards The list of cards
      * 
-     * @returns {Card[] | import("./card").Blueprint[]} The cards without the uncollectible cards
+     * @returns {Card[] | import("./types").Blueprint[]} The cards without the uncollectible cards
      */
     accountForUncollectible(cards) {
         return cards.filter(c => !c.uncollectible);
@@ -1749,7 +1785,7 @@ ${main_content}
      * @param {"Quest" | "Sidequest" | "Secret"} type The type of the quest
      * @param {Player} plr The player to add the quest to
      * @param {Card} card The card that created the quest / secret
-     * @param {import("./game").EventKeys} key The key to listen for
+     * @param {import("./types").EventKeys} key The key to listen for
      * @param {any} val The value that the quest needs
      * @param {import("./types").QuestCallback} callback The function to call when the key is invoked.
      * @param {string} [next=null] The name of the next quest / sidequest / secret that should be added when the quest is done

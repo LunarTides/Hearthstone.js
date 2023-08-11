@@ -5,14 +5,15 @@ let Shared = module.exports = {
     /**
      * @type {Game | null}
      */
+    /**
+     * @type {Game | null}
+     */
     game: null,
 
     /**
      * Sets the game as a shared variable
      * 
      * @param {Game | null} [new_game]
-     *  
-     * @returns {undefined}
      */
     set(new_game = null) {
         if (!new_game) return;

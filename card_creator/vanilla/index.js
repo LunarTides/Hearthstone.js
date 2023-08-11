@@ -162,7 +162,6 @@ function main(card = null) {
                 // Get rid of useless information
                 delete c["id"];
                 delete c["artist"];
-                delete c["dbfId"];
                 delete c["heroPowerDbfId"];
                 delete c["flavor"];
                 delete c["mechanics"];

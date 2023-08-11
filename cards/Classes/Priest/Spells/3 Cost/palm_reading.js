@@ -21,7 +21,10 @@ module.exports = {
         // Discover a spell
         let list = game.functions.getCards().filter(c => c.type == "Spell" && [plr.heroClass, "Neutral"].includes(c.class));
         if (list.length == 0) return;
+        
         let spell = game.interact.discover("Discover a spell.", list);
+        if (!spell) return -1;
+
         plr.addToHand(spell);
 
         // Reduce the Cost of spells in your hand by (1)

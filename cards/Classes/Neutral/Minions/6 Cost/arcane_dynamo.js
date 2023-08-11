@@ -24,6 +24,8 @@ module.exports = {
         if (list.length <= 0) return;
 
         let card = game.interact.discover("Discover a spell that costs (5) or more", list);
+        if (!card) return -1;
+
         plr.addToHand(card);
     }
 }

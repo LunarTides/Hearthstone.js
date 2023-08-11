@@ -21,6 +21,8 @@ module.exports = {
         let list = plr.deck.filter(c => c.type == "Spell");
 
         let spell = game.interact.discover("Discover a spell from your deck.", list, false);
+        if (!spell) return -1;
+
         plr.drawSpecific(spell);
     }
 }

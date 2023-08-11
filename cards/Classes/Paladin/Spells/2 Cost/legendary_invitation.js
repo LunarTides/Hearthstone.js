@@ -26,5 +26,6 @@ module.exports = {
 
         //card.mana = 0;
         card.addEnchantment("mana = 0", self);
+        plr.addToHand(card);
     }
 }

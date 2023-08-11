@@ -1,40 +1,30 @@
 {
-    "DONT-CHANGE-ANYTHING-IN-THIS-FILE": "DONT CHANGE ANYTHING IN THIS FILE UNLESS YOU KNOW WHAT YOU'RE DOING",
+    "DONT CHANGE ANYTHING IN THIS FILE": "DONT CHANGE ANYTHING IN THIS FILE UNLESS YOU KNOW WHAT YOU'RE DOING",
 
-    "version": "1.6.0",
+    "version": "1.6.1",
     "branch": "dev",
 
     "versionText": "",
     "todo": {
-        "Remove game.dirname": ["done", "Remove the `game.dirname` field. This was added because i once misspelled '__dirname' as '__dirname__' and it didn't work, so i added `game.dirname`."],
-        "Add regex toggle to the breaking change script": ["done", "If you don't need/use/understand regex, having regex be enabled is a pain. So add a way to toggle it."],
-        "Allow looking up vanilla cards using their dbfId": ["done", "Look up cards using their dbfId instead of their name, since their name is not unique but their dbfId is. For example the dbfId of 'Jade Idol' is 40372"],
-        "Remove the warning from the history command": ["done", "When i first added the history command, it was buggy so i added a warning when you used it and forgot to remove it."],
-        "Add a description to config todos": ["done", "Add a description to each todo element."],
-        "Merge the two log files": ["done", "Merge the normal and the ai log files into one log file. I really didn't need two log files for logging."],
-        "Make renathal actually work with the dc": ["done", "Prince Renathal was bugged and so adding it in the deck creator didn't properlly set the max amount of cards to 40."],
-        "Seperate the custom card creator into its own file": ["done", "The custom card creator and the card creator library is currently in the same file, so if the vanilla card creator wants to create a card, it needs to call the custom card creator(?) which contains the library. This ment that the custom card creator had a lot of spaghetti code since it had to act like a library sometimes, and act like the custom card creator sometimes."],
-        "Discover filter class cards by default": ["done", "Make it so the discover function automatically removes cards from the pool that doesn't match the class of the player. It does this by default if you don't include a custom pool, but most times you do want to include a custom pool and in that case, you have the remove those cards manually. Instead i will make it so it automatically does this, unless you explicitly tell it not to."],
-        "Remove outdated event broadcast": ["done", "Remove the outdated event broadcast. Also make it so when minions with reborn dies, they still get moved to the graveyard and grant one corpse."],
-        "Fix a clc bug": ["done", "Fix a class creator bug. If you answered any prompt with an answer that starts with 'b', it will exit the program."],
-        "Remove update parameters from all functions": ["done", "A lot of player / card functions has an update parameter. Replace it with a more generalized solution."],
-        "Add better documentation": ["done", "Add better documentation to the different functions in the program."],
-        "Bug fixing / stabilze": ["doing", "Fix bugs and stabilze. Get the version ready for release."],
-        "Bump version": ["not done", "Update the version. Release the update."]
+        "History show revealed card": ["done", "Sometimes, a card gets hidden in the history. This is because the user shouldn't have access to that information. However when that card has been revealed (e.g. Playing it), it should be shown again everywhere where it was hidden."],
+        "Card Placeholder": ["not done", "When a card gets referenced by name in another card's description, have it show more details about it when you entire detail mode."],
+        "Add a lot more events": ["not done", "The more events, the better."],
+        "Add back getter / setters for all modules": ["not done", "I removed all getters and setters a while ago. But that has caused some issues now in the future. This can also allow unifying players and cards so they can be used interchangeably as targets."],
+        "Rewrite the tools / scripts in Rust": ["not done", "Pretty self-explanatory."]
     },
 
     "exampleTodo": {
         "one": ["first pass", "Description."],
         "two": ["second pass", "Another description."],
         "three": ["not done", "A third description."],
-        "four": ["done", "A fourth description."],
-        "five": ["doing", "A fifth description."],
+        "four": ["doing", "A fourth description."],
+        "five": ["done", "A fifth description."],
         "this gives us": {
             "one":   "[first pass] one",
             "two":   "[second pass] two",
             "three": "[ ] three",
-            "four":  "[x] four",
-            "five":  "[o] five"
+            "four":  "[o] four",
+            "five":  "[x] five"
         }
     },
 
