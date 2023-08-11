@@ -400,10 +400,7 @@ class Player {
      */
     getInternalGame() {
         let tempGame = get();
-        
-        if (!tempGame) {
-            throw new Error("Could not get shared game in player module after a call to getInternalGame()");
-        }
+        if (!tempGame) return;
 
         game = tempGame;
     }

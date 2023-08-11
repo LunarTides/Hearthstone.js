@@ -11,10 +11,7 @@ let game;
 
 function getInternalGame() {
     let tempGame = get();
-
-    if (!tempGame) {
-        throw new Error("Could not get shared game in ai module after a call to getInternalGame()");
-    }
+    if (!tempGame) return;
 
     game = tempGame;
 }
@@ -683,7 +680,7 @@ class AI {
 
             return ret;
         }
-
+        
         /**
          * @type {Card | false}
          */

@@ -5,9 +5,6 @@ let Shared = module.exports = {
     /**
      * @type {Game | null}
      */
-    /**
-     * @type {Game | null}
-     */
     game: null,
 
     /**
