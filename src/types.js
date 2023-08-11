@@ -5,9 +5,11 @@ const { Player } = require("./player");
 //@ts-check
 
 /**
- * AI Scoreboard
+ * A scored card
  * 
- * @typedef {[[Card, number]]} ScoreBoard
+ * @typedef {Object} ScoredCard
+ * @property {Card} card
+ * @property {number} score
  */
 
 /**
@@ -17,7 +19,8 @@ const { Player } = require("./player");
  * "Spell" |
  * "Weapon" |
  * "Hero" |
- * "Location"} CardType
+ * "Location" |
+ * "Undefined"} CardType
  */
 
 /**
@@ -102,7 +105,8 @@ const { Player } = require("./player");
  * "Echo" |
  * "Magnetic" |
  * "Twinspell" |
- * "Elusive"} CardKeyword
+ * "Elusive" |
+ * "Cleave"} CardKeyword
  */
 
 /**
@@ -134,6 +138,7 @@ const { Player } = require("./player");
  * "HeroPower" |
  * "TargetSelectionStarts" |
  * "TargetSelected" |
+ * "Dummy" |
  * "Eval"} EventKeys
  */
 

@@ -17,14 +17,14 @@ require("colors");
  * 
  * @type {Game}
  */
-let game = null;
+let game;
 
 /**
  * An instance of the Functions class, to be used in `DeckcodeFunctions`, for example.
  * 
  * @type {Functions}
  */
-let self = null;
+let self;
 
 class DeckcodeFunctions {
     constructor() {}
@@ -42,7 +42,7 @@ class DeckcodeFunctions {
          * Cause the function to return an error
          * 
          * @param {string} error_code
-         * @param {string} [card_name]
+         * @param {string | null} [card_name]
          *  
          * @returns {"invalid"} 
          */
@@ -75,11 +75,13 @@ class DeckcodeFunctions {
         let sep = " /";
 
         if (runesExists) sep = " [";
+        
         let hero = code.split(sep)[0];
 
         hero = hero.trim();
         code = sep[1] + code.split(sep)[1];
 
+        // @ts-ignore
         plr.heroClass = hero;
 
         let rune_classes = ["Death Knight"];
@@ -87,6 +89,7 @@ class DeckcodeFunctions {
 
         const addRunes = (runes) => {
             if (rune_class) plr.runes = runes;
+            // @ts-ignore
             else game.input("WARNING: This deck has runes in it, but the class is ".yellow + hero.brightYellow + ". Supported classes: ".yellow + rune_classes.join(", ").brightYellow + "\n");
         }
 
@@ -110,6 +113,7 @@ class DeckcodeFunctions {
             addRunes(runes);
         }
         else if (rune_class) {
+            // @ts-ignore
             game.input("WARNING: This class supports runes but there are no runes in this deck. This deck's class: ".yellow + hero.brightYellow + ". Supported classes: ".yellow + rune_classes.join(", ").brightYellow + "\n");
         }
 

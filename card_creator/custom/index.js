@@ -1,3 +1,4 @@
+//@ts-check
 const rl = require("readline-sync");
 const lib = require("../lib");
 const { Game } = require("../../src/game");

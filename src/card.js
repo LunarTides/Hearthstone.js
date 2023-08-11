@@ -6,7 +6,19 @@ const { get } = require("./shared");
 /**
  * @type {Game}
  */
-let game = get();
+let game;
+
+function getInternalGame() {
+   let tempGame = get();
+
+   if (!tempGame) {
+      throw new Error("Could not get shared game in card module after a call to getInternalGame()");
+   }
+
+   game = tempGame;
+}
+
+getInternalGame();
 
 class Card {
     /**
@@ -16,7 +28,12 @@ class Card {
      * @param {Player} plr The card's owner.
      */
     constructor(name, plr) {
-        game = get();
+        getInternalGame();
+
+        let blueprint = game.cards.find(c => c.name == name);
+        if (!blueprint) {
+            throw new Error(`Could not find card with name ${name}`);
+        }
 
         /**
          * The card's blueprint.
@@ -27,7 +44,7 @@ class Card {
          * 
          * @type {import("./types").Blueprint}
          */
-        this.blueprint = game.cards.find(c => c.name == name);
+        this.blueprint = blueprint;
 
         /**
          * This is the name of the card, it must be unique.
@@ -361,12 +378,15 @@ class Card {
         /**
          * The maximum health of the card.
          * 
-         * @type {null | number}
+         * Default: -1
+         * 
+         * @type {number}
          */
-        this.maxHealth = null;
+        this.maxHealth = -1;
 
         // Set maxHealth if the card is a minion or weapon
-        if (this.type == "Minion" || this.type == "Weapon") this.maxHealth = this.blueprint.stats[1];
+        this.type = this.blueprint.type; // Redundant, makes the TypeScript compiler shut up
+        if (this.type == "Minion" || this.type == "Weapon") this.maxHealth = this.blueprint.stats?.at(1) ?? -1;
 
         /**
          * The card's description / text.
@@ -379,13 +399,34 @@ class Card {
         this.desc = game.functions.parseTags(this.desc);
 
         /**
+         * @typedef {Object} EnchantmentDefinition
+         * @property {string} enchantment - The enchantment string. E.g. "-1 mana"
+         * @property {Card} owner - The card that the enchantment belongs to
+         */
+
+        /**
          * The card's enchantments.
+         * Formatted like this:
          * 
-         * @type {[[string, Card]]}
+         * ```json
+         * [
+         *     {
+         *         "enchantment": "-1 mana",
+         *         "owner": //some_card
+         *     }
+         * ]
+         * ```
+         * 
+         * @type {EnchantmentDefinition[]}
          */
         this.enchantments = [];
 
         // Make a backup of "this" to be used when silencing this card
+
+        /**
+         * @type {Object<string, Card>}
+         */
+        //@ts-ignore
         let backups = {"init": {}};
         Object.entries(this).forEach(i => backups["init"][i[0]] = i[1]);
 
@@ -404,6 +445,13 @@ class Card {
          * @type {Player}
          */
         this.plr = plr;
+
+        /**
+         * A list of ids, do not use.
+         * 
+         * @type {number[]}
+         */
+        this.__ids = [];
 
         this.randomizeIds();
 
@@ -430,11 +478,6 @@ class Card {
      * @returns {boolean} Success
      */
     randomizeIds() {
-        /**
-         * A list of ids, do not use.
-         * 
-         * @type {number[]}
-         */
         this.__ids = [];
         for (let i = 0; i < 100; i++) {
             // This is to prevent cards from getting linked. Don't use this variable
@@ -465,7 +508,7 @@ class Card {
     /**
      * Adds a keyword to the card
      * 
-     * @param {string} keyword The keyword to add
+     * @param {import("./types").CardKeyword} keyword The keyword to add
      * 
      * @returns {boolean} Success
      */
@@ -541,24 +584,32 @@ class Card {
     // Change stats
 
     /**
-     * @returns {number} The card's attack
+     * Returns the card's attack
+     * 
+     * Returns -1 if the card does not have attack
+     * 
+     * @returns {number}
      */
     getAttack() {
-        return this.stats[0];
+        return this.stats?.at(0) ?? -1;
     }
 
     /**
-     * @returns {number} The card's health
+     * Returns the card's health
+     * 
+     * Returns -1 if the card does not have health
+     * 
+     * @returns {number}
      */
     getHealth() {
-        return this.stats[1];
+        return this.stats?.at(1) ?? -1;
     }
 
     /**
      * Sets the card's attack and health.
      * 
-     * @param {number} [attack=null] The attack to set
-     * @param {number} [health=null] The health to set
+     * @param {number | null} [attack=null] The attack to set
+     * @param {number | null} [health=null] The health to set
      * @param {boolean} [changeMaxHealth=true] If the card's max health should be reset to it's current health if the health increases from running this function.
      * 
      * @returns {boolean} Success
@@ -569,7 +620,9 @@ class Card {
 
         this.stats = [attack, health];
 
-        if (changeMaxHealth && health > this.maxHealth) this.maxHealth = health;
+        if (changeMaxHealth && health > this.maxHealth) {
+            this.maxHealth = health;
+        }
 
         return true;
     }
@@ -614,8 +667,9 @@ class Card {
      * @returns {boolean} Success
      */
     addHealth(amount, restore = true) {
-        let before = this.getHealth();
+        if (!this.stats) return false;
 
+        let before = this.getHealth();
         this.setStats(this.getAttack(), this.getHealth() + amount, !restore);
     
         if (!restore) {
@@ -630,6 +684,7 @@ class Card {
             this.activate("overheal"); // Overheal keyword
 
             if (this.getHealth() > before) game.events.broadcast("HealthRestored", this.maxHealth, this.plr);
+
             this.stats[1] = this.maxHealth;
         } else if (this.getHealth() > before) {
             game.events.broadcast("HealthRestored", this.getHealth(), this.plr);
@@ -746,6 +801,7 @@ class Card {
      */
     createBackup() {
         let key = Object.keys(this.backups).length;
+        //@ts-ignore
         this.backups[key] = {};
         Object.entries(this).forEach(i => this.backups[key][i[0]] = i[1]);
         
@@ -803,6 +859,7 @@ class Card {
         this.keywords = [];
 
         this.applyEnchantments(); // Remove active enchantments.
+        return true;
     }
 
     /**
@@ -825,7 +882,7 @@ class Card {
      * @param {string} name The method to activate
      * @param {any} [args] Pass these args to the method
      * 
-     * @returns {any[] | -1} All the return values of the method keywords
+     * @returns {any[] | -1 | false} All the return values of the method keywords
      */
     activate(name, ...args) {
         // This activates a function
@@ -838,13 +895,16 @@ class Card {
         // If the card has the function
         if (!this[name]) return false;
 
+        /**
+         * @type {any[] | -1}
+         */
         let ret = [];
         
         this[name].forEach(func => {
             if (ret === -1) return;
 
             // Check if the method is conditioned
-            if (this.conditioned && this.conditioned.includes(name) && this.activate("condition")[0] === false) return;
+            if (this["conditioned"] && this["conditioned"].includes(name) && this.activate("condition")[0] === false) return;
 
             let r = func(this.plr, game, this, ...args);
             ret.push(r);
@@ -877,7 +937,7 @@ class Card {
      * 
      * @param {any} [args] Any arguments to pass to battlecry.
      * 
-     * @returns {any[] | -1} The return values of all the battlecries triggered
+     * @returns {any[] | -1 | false} The return values of all the battlecries triggered
      */
     activateBattlecry(...args) {
         this.activate("passive", "battlecry", this, game.turns);
@@ -923,8 +983,8 @@ class Card {
         let opEquals = equalsRegex.test(e);
         let opOther = otherRegex.test(e);
 
-        let key;
-        let val;
+        let key = "undefined";
+        let val = "undefined";
         let op = "=";
 
         if (opEquals) [key, val] = e.split(" = ");
@@ -954,7 +1014,7 @@ class Card {
         // Get keys
         let keys = [];
 
-        let enchantments = this.enchantments.map(e => e[0]); // Get a list of enchantments
+        let enchantments = this.enchantments.map(e => e.enchantment); // Get a list of enchantments
         enchantments.forEach(e => {
             let info = this.getEnchantmentInfo(e);
             let key = info.key;
@@ -971,18 +1031,18 @@ class Card {
         });
 
         this.enchantments.forEach(e => {
-            e = e[0];
+            let enchantment = e.enchantment;
 
             // Seperate the keys and values
-            let info = this.getEnchantmentInfo(e);
+            let info = this.getEnchantmentInfo(enchantment);
             let [key, val, op] = Object.values(info);
             
             if (op == "=") op = ""; // Otherwise `this[key] == val` happens
 
-            val = parseInt(val);
+            let numberVal = parseInt(val);
 
             // Totally safe piece of code :)
-            eval(`this[key] ${op}= val`);
+            eval(`this[key] ${op}= numberVal`);
         });
 
         return true;
@@ -1001,8 +1061,8 @@ class Card {
     addEnchantment(e, card) {
         let info = this.getEnchantmentInfo(e);
 
-        if (info.op == "=") this.enchantments.unshift([e, card]); // Add the enchantment to the beginning of the list, equal enchantments should apply first
-        else this.enchantments.push([e, card]);
+        if (info.op == "=") this.enchantments.unshift({"enchantment": e, "owner": card}); // Add the enchantment to the beginning of the list, equal enchantments should apply first
+        else this.enchantments.push({"enchantment": e, "owner": card});
 
         this.applyEnchantments();
 
@@ -1019,7 +1079,7 @@ class Card {
      * @returns {boolean} If the enchantment exists
      */
     enchantmentExists(e, card) {
-        return this.enchantments.find(c => c[0] == e && c[1] == card);
+        return this.enchantments.some(c => c.enchantment == e && c.owner == card);
     }
 
     /**
@@ -1033,7 +1093,9 @@ class Card {
      * @returns {boolean} Success
      */
     removeEnchantment(e, card, update = true) {
-        let enchantment = this.enchantments.find(c => c[0] == e && c[1] == card);
+        let enchantment = this.enchantments.find(c => c.enchantment == e && c.owner == card);
+        if (!enchantment) return false;
+
         let index = this.enchantments.indexOf(enchantment);
         if (index === -1) return false;
 
@@ -1072,7 +1134,7 @@ class Card {
      * assert.equal(card.desc, "The current turn count is {ph:0} 1 {/ph}");
      */
     replacePlaceholders() {
-        if (!this.placeholders) return;
+        if (!this["placeholders"]) return false;
 
         this.placeholder = this.activate("placeholders")[0];
 

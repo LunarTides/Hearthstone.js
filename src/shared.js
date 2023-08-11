@@ -22,6 +22,7 @@ let Shared = module.exports = {
 
         // Update the players' internal game
         [Shared.game.player1, Shared.game.player2].forEach(p => {
+            if (!p) return;
             if (!p.getInternalGame) return;
 
             p.getInternalGame();

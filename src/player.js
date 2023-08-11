@@ -769,7 +769,7 @@ class Player {
         game.events.broadcast("DrawCard", card, this);
 
         // Cast on draw
-        if (card.type == "Spell" && card.keywords.includes("Casts When Drawn") && card.activate("cast")) return this.drawCard();
+        if (card.type == "Spell" && card.keywords.includes("Cast On Draw") && card.activate("cast")) return this.drawCard();
 
         game.suppressedEvents.push("AddCardToHand");
         this.addToHand(card);
@@ -802,7 +802,7 @@ class Player {
 
         game.events.broadcast("DrawCard", card, this);
 
-        if (card.type == "Spell" && card.keywords.includes("Casts When Drawn") && card.activate("cast")) return;
+        if (card.type == "Spell" && card.keywords.includes("Cast On Draw") && card.activate("cast")) return;
 
         game.suppressedEvents.push("AddCardToHand");
         this.addToHand(card);

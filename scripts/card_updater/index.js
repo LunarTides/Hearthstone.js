@@ -1,3 +1,4 @@
+//@ts-check
 let vanillaCards = require("../../card_creator/vanilla/.ignore.cards.json");
 const { Game } = require("../../src/game");
 

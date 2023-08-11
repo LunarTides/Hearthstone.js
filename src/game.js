@@ -269,17 +269,18 @@ class Game {
         /**
          * The player that starts first.
          * 
-         * @type {Player | null}
+         * @type {Player}
          */
-        this.player1 = null;
+        this.player1 = player1; // Set this to player 1 temporarily, in order to never be null
 
         /**
          * The player that starts with `The Coin`.
          * 
-         * @type {Player | null}
+         * @type {Player}
          */
-        this.player2 = null;
+        this.player2 = player2;
 
+        // Choose a random player to be player 1 and player 2
         if (this.functions.randInt(0, 1)) {
             this.player1 = player1;
             this.player2 = player2;
@@ -291,7 +292,7 @@ class Game {
         /**
          * The player whose turn it is.
          * 
-         * @type {Player | null}
+         * @type {Player}
          */
         this.player = this.player1;
 
@@ -342,7 +343,7 @@ class Game {
          * 
          * Use `functions.getCards()` instead.
          * 
-         * @type {Card[]}
+         * @type {import('./types').Blueprint[]}
          */
         this.cards = [];
 
@@ -369,7 +370,7 @@ class Game {
          * The 0th element is `game.player1`'s side of the board,
          * and the 1th element is `game.player2`'s side of the board.
          * 
-         * @type {[[Card], [Card]] | [[], []]}
+         * @type {Card[][]}
          */
         this.board = [[], []];
 
@@ -379,7 +380,7 @@ class Game {
          * The 0th element is `game.player1`'s graveyard,
          * and the 1st element is `game.player2`'s graveyard.
          * 
-         * @type {[[Card], [Card]] | [[], []]}
+         * @type {Card[][]}
          */
         this.graveyard = [[], []];
 
@@ -464,8 +465,6 @@ class Game {
      * @returns {boolean} Success
      */
     doConfigAI() {
-        if (!this.player1 || !this.player2) return false;
-
         if (this.config.P1AI) this.player1.ai = new AI(this.player1);
         else this.player1.ai = null;
 
@@ -569,7 +568,7 @@ class Game {
         this.input(`Player ${winner.name} wins!\n`);
 
         // If any of the players are ai's, show their logs when the game ends
-        if ((this.player1?.ai || this.player2?.ai) && this.config.debug) this.interact.doTurnLogic("/ai");
+        if ((this.player1.ai || this.player2.ai) && this.config.debug) this.interact.doTurnLogic("/ai");
 
         this.running = false;
 
@@ -873,7 +872,7 @@ class Game {
         if (echo_clone) player.addToHand(echo_clone);
 
         this.events.broadcast("PlayCard", card, player, false);
-        let stat = this.events.PlayCard[player.id];
+        let stat = this.events["PlayCard"][player.id];
 
         // If the previous card played was played on the same turn as this one, activate combo
         if (stat.length > 1 && stat[stat.length - 2][0].turn == this.turns) card.activate("combo");
@@ -1001,7 +1000,7 @@ class Game {
             }
 
             target.remStats(0, dmg)
-            if (target.getHealth() > 0 && target.activate("frenzy") !== -1) target.frenzy = undefined;
+            if (target.getHealth() > 0 && target["frenzy"] && target.activate("frenzy") !== -1) target["frenzy"] = undefined;
 
             return true;
         }
@@ -1015,7 +1014,6 @@ class Game {
         }
 
         if (attacker.frozen) return "frozen";
-        if (attacker.dormant) return "dormant";
 
         // Attacker is a player
         if (attacker.classType == "Player") {
@@ -1052,7 +1050,7 @@ class Game {
 
             attacker.canAttack = false;
     
-            if (target.getHealth() > 0 && target.activate("frenzy") !== -1) target.frenzy = undefined;
+            if (target.getHealth() > 0 && target["frenzy"] && target.activate("frenzy") !== -1) target["frenzy"] = undefined;
 
             this.killMinions();
             if (!attacker.weapon) return true;
@@ -1074,6 +1072,7 @@ class Game {
         }
 
         // Attacker is a minion
+        if (attacker.dormant) return "dormant";
         if (attacker.attackTimes <= 0) return "hasattacked";
         if (attacker.sleepy) return "sleepy";
         if (attacker.getAttack() <= 0) return "noattack";
@@ -1123,7 +1122,7 @@ class Game {
         if (dmgAttacker) {
             attacker.remStats(0, target.getAttack());
             
-            if (attacker.getHealth() > 0 && attacker.activate("frenzy") !== -1) attacker.frenzy = undefined;
+            if (attacker.getHealth() > 0 && attacker["frenzy"] && attacker.activate("frenzy") !== -1) attacker["frenzy"] = undefined;
         }
 
         if (attacker.keywords.includes("Stealth")) attacker.removeKeyword("Stealth");
@@ -1141,7 +1140,7 @@ class Game {
         if (dmgTarget) target.remStats(0, attacker.getAttack())
         this.events.broadcast("Attack", [attacker, target], attacker.plr);
 
-        if (target.getHealth() > 0 && target.activate("frenzy") !== -1) target.frenzy = undefined;
+        if (target.getHealth() > 0 && target["frenzy"] && target.activate("frenzy") !== -1) target["frenzy"] = undefined;
         if (target.getHealth() < 0) attacker.activate("overkill");
         if (target.getHealth() == 0) attacker.activate("honorablekill");
 

@@ -701,6 +701,7 @@ class Interact {
         // Check if ai
         if (game.player.ai) {
             let card = game.player.ai.dredge(cards);
+            if (!card) return null;
 
             game.functions.remove(game.player.deck, card); // Removes the selected card from the players deck.
             game.player.deck.push(card);
@@ -742,7 +743,7 @@ class Interact {
      * @param {string[]} options The options to give the user
      * @param {number} [times=1] The amount of times to ask
      * 
-     * @returns {number | number[]} The chosen answer(s) index(es)
+     * @returns {number | null | (number | null)[]} The chosen answer(s) index(es)
      */
     chooseOne(prompt, options, times = 1) {
         this.printAll();

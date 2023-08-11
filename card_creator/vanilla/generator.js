@@ -1,3 +1,4 @@
+//@ts-check
 let axios = require("axios");
 let fs = require("fs");
 const { Game } = require("../../src/game");
