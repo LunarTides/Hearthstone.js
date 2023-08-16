@@ -390,6 +390,15 @@ class Player {
          * @type {string[] | string | null}
          */
         this.inputQueue = null;
+
+        /**
+         * If the player has `detail mode` enabled.
+         * 
+         * This gets enabled when the player enters the `detail` command.
+         * 
+         * @type {boolean}
+         */
+        this.detailedView = false;
     }
 
     /**

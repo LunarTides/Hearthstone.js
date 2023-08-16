@@ -212,9 +212,7 @@ class Interact {
             this.viewCard(card);
         }
         else if (q == "detail") {
-            this.printAll(game.player, true);
-            game.input("Press enter to continue...\n");
-            this.printAll();
+            game.player.detailedView = !game.player.detailedView;
         }
         else if (q == "concede") {
             let confirmation = this.yesNoQuestion(game.player, "Are you sure you want to concede?");
@@ -1098,7 +1096,17 @@ class Interact {
      *
      * @returns {string} The readable card
      */
-    getReadableCard(card, i = -1) {
+    getReadableCard(card, i = -1, _depth = 0) {
+        if (_depth > 0 && game.config.getReadableCardNoRecursion) {
+            if (game.config.debug || game.config.branch != "stable" || game.player.detailedView) return "RECURSION ATTEMPT BLOCKED";
+            else return "...";
+        }
+
+        if (_depth > game.config.getReadableCardMaxDepth) {
+            if (game.config.debug || game.config.branch != "stable" || game.player.detailedView) return "MAX DEPTH REACHED";
+            else return "...";
+        }
+
         let sb = "";
 
         let desc;
@@ -1108,7 +1116,7 @@ class Interact {
 
         // Extract placeholder value, remove the placeholder header and footer
         if (card.placeholder) {
-            let reg = new RegExp(`{ph:.*?} (.*?) {/ph}`);
+            let reg = new RegExp(`{ph:(.*?)} .*? {/ph}`);
 
             while (true) {
                 let regedDesc = reg.exec(desc);
@@ -1116,8 +1124,27 @@ class Interact {
                 // There is nothing more to extract
                 if (!regedDesc) break;
 
-                let placeholder = regedDesc[1]; // Gets the capturing group result
-                desc = desc.replace(reg, placeholder);
+                let key = regedDesc[1]; // Gets the capturing group result
+                let replacement = card.placeholder[key];
+
+                if (replacement instanceof game.Card) {
+                    // The replacement is a card
+                    let onlyShowName = (
+                        game.config.getReadableCardNoRecursion ||
+                        !game.player.detailedView
+                    );
+                    
+                    if (onlyShowName && !game.config.getReadableCardAlwaysShowFullCard) {
+                        // Only show the name of the card
+                        replacement = game.functions.colorByRarity(replacement.displayName, replacement.rarity);
+                    }
+                    else {
+                        // Show the full card using recursion
+                        replacement = this.getReadableCard(replacement, -1, _depth + 1);
+                    }
+                }
+
+                desc = desc.replace(reg, replacement);
             }
         }
 
@@ -1154,11 +1181,10 @@ class Interact {
      * Prints all the information you need to understand the game state
      * 
      * @param {Player | null} [plr=null] The player
-     * @param {boolean} [detailed=false] Show more, less important, information
      * 
      * @returns {undefined}
      */
-    printAll(plr = null, detailed = false) {
+    printAll(plr = null) {
         // WARNING: Stinky and/or smelly code up ahead. Read at your own risk.
         // TODO: Reformat this
 
@@ -1278,7 +1304,7 @@ class Interact {
         sb = "";
     
         // Detailed Info
-        if (detailed) {
+        if (plr.detailedView) {
             // Hand Size
             sb += `Hand Size  : ${plr.hand.length.toString().yellow}`;
 
@@ -1406,7 +1432,7 @@ class Interact {
         console.log("-------------")
     
         let _class = plr.hero.name.includes("Starting Hero") ? plr.heroClass : plr.hero.name;
-        if (detailed && plr.hero.name.includes("Starting Hero")) {
+        if (plr.detailedView && plr.hero.name.includes("Starting Hero")) {
             _class += " | ";
             _class += "HP: ";
             _class += plr.hero.name;
