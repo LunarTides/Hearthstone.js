@@ -1089,6 +1089,53 @@ class Interact {
     }
 
     /**
+     * Replaces placeholders in the description of a card object.
+     *
+     * @param {Card} card The card.
+     * @param {string} [overrideDesc=""] The description. If empty, it uses the card's description instead.
+     * @param {number} [_depth=0] - The depth of recursion.
+     * 
+     * @return {string} The modified description with placeholders replaced.
+     */
+    doPlaceholders(card, overrideDesc = "", _depth = 0) {
+        let reg = new RegExp(`{ph:(.*?)} .*? {/ph}`);
+
+        let desc = overrideDesc;
+        if (!overrideDesc) desc = card.desc;
+
+        while (true) {
+            let regedDesc = reg.exec(desc);
+            
+            // There is nothing more to extract
+            if (!regedDesc) break;
+
+            let key = regedDesc[1]; // Gets the capturing group result
+            let replacement = card.placeholder[key];
+
+            if (replacement instanceof game.Card) {
+                // The replacement is a card
+                let onlyShowName = (
+                    game.config.getReadableCardNoRecursion ||
+                    !game.player.detailedView
+                );
+                
+                if (onlyShowName && !game.config.getReadableCardAlwaysShowFullCard) {
+                    // Only show the name of the card
+                    replacement = game.functions.colorByRarity(replacement.displayName, replacement.rarity);
+                }
+                else {
+                    // Show the full card using recursion
+                    replacement = this.getReadableCard(replacement, -1, _depth + 1);
+                }
+            }
+
+            desc = desc.replace(reg, replacement);
+        }
+
+        return desc;
+    }
+
+    /**
      * Returns a card in a user readble state. If you console.log the result of this, the user will get all the information they need from the card.
      *
      * @param {Card | import('./types').Blueprint} card The card
@@ -1115,38 +1162,7 @@ class Interact {
         else desc = card.desc.length > 0 ? ` (${game.functions.parseTags(card.desc)}) ` : " ";
 
         // Extract placeholder value, remove the placeholder header and footer
-        if (card.placeholder) {
-            let reg = new RegExp(`{ph:(.*?)} .*? {/ph}`);
-
-            while (true) {
-                let regedDesc = reg.exec(desc);
-                
-                // There is nothing more to extract
-                if (!regedDesc) break;
-
-                let key = regedDesc[1]; // Gets the capturing group result
-                let replacement = card.placeholder[key];
-
-                if (replacement instanceof game.Card) {
-                    // The replacement is a card
-                    let onlyShowName = (
-                        game.config.getReadableCardNoRecursion ||
-                        !game.player.detailedView
-                    );
-                    
-                    if (onlyShowName && !game.config.getReadableCardAlwaysShowFullCard) {
-                        // Only show the name of the card
-                        replacement = game.functions.colorByRarity(replacement.displayName, replacement.rarity);
-                    }
-                    else {
-                        // Show the full card using recursion
-                        replacement = this.getReadableCard(replacement, -1, _depth + 1);
-                    }
-                }
-
-                desc = desc.replace(reg, replacement);
-            }
-        }
+        if (card.placeholder) desc = this.doPlaceholders(card, desc, _depth);
 
         let mana = `{${card.mana}} `;
         switch (card.costType || "mana") {
