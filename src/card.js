@@ -1048,9 +1048,8 @@ class Card {
         this.placeholder = this.activate("placeholders")[0];
 
         Object.entries(this.placeholder).forEach(p => {
-            let [key, val] = p;
-
-            let replacement = `{ph:${key}} ${val} {/ph}`;
+            let [key, _] = p;
+            let replacement = `{ph:${key}} placeholder {/ph}`;
 
             this.desc = this.desc.replace(new RegExp(`{ph:${key}} .*? {/ph}`, 'g'), replacement);
             this.desc = this.desc.replaceAll(`{${key}}`, replacement);
