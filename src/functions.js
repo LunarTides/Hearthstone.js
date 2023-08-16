@@ -1489,7 +1489,6 @@ ${main_content}
      * Hooks a callback function to the tick event.
      *
      * @param {Function} callback - The callback function to be hooked.
-     * @param {Card} card - The card that is hooking, if this is set, the hook will be automatically removed when the card is removed.
      * 
      * @returns {Function} a function that, when called, will remove the hook from the tick event.
      */

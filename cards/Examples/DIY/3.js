@@ -27,12 +27,79 @@ module.exports = {
 
         // The `target` variable needs to be set to the target, otherwise it will fail to verify the solution.
         function solution() {
-            // ONLY CHANGE / ADD / DELETE THE CODE HERE:
-            
+            // Put all your code inside this function please.
             
 
-            // -----------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
         }
+
+        // DON'T CHANGE ANYTHING BELOW THIS LINE
+        // Also there are some spoilers about the solution in the verification process down below
+        // so if you don't want to see it, don't scroll down
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         // Testing your solution.
         let correctParameters = false;

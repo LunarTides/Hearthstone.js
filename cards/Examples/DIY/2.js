@@ -23,11 +23,41 @@ module.exports = {
 
         // This is in a function so i can unit test it
         // This is to make sure you got the right solution, since otherwise it can cause bugs
+        
+        // Put all your code in this function please
         function solution() {
-            // ONLY CHANGE / ADD / DELETE THE CODE HERE:
+
             
-            // -----------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+            
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        // DON'T CHANGE ANYTHING BELOW THIS LINE
 
         // Testing your solution.
         let trueOgHealth = plr.health;

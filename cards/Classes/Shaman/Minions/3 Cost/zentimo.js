@@ -19,23 +19,24 @@ module.exports = {
      */
     passive(plr, game, self, key, val) {
         // Scenario:
-        // Player plays a spell that targets a minion:
-        // PlayCardUnsafe [PotentialSpell] gets broadcast
+        // [...] <-- Variables
+
+        // Player plays a spell:
+        // PlayCardUnsafe [Spell] gets broadcast
 
         // Zentimo responds with the following 3 actions:
         // CastSpellOnMinion event listener set up
         // PlayCard event listener set up
         // CancelCard event listener set up
 
-        // [PotentialSpell]'s text is ran. If it is not a spell that targets a minion (or the card gets cancelled), skip the next 2 lines
+        // [Spell]'s text is ran. If the spell doesn't target a minion (or the spell gets cancelled), skip the next 2 lines
         // CastSpellOnMinion [Target] gets broadcast
-        // CastSpellOnMinion event listener: Cast [PotentionalSpell] on [Target]'s neighbors.
+        // CastSpellOnMinion event listener: Cast [Spell] on [Target]'s neighbors.
 
-        // Either, PlayCard or CancelCard [PotentialSpell] gets broadcast.
+        // Either, PlayCard or CancelCard [Spell] gets broadcast.
         // PlayCard or CancelCard event listener: Tear down all event listeners that was created
 
-        if (key != "PlayCardUnsafe" || val == self) return;
-
+        if (key != "PlayCardUnsafe" || val.type != "Spell" || val == self) return;
 
         let removePassive = game.functions.addEventListener("CastSpellOnMinion", () => {
             return true;

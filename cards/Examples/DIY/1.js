@@ -21,9 +21,20 @@ module.exports = {
         // Battlecry: Give this minion +1/+1.
         
         // Try to give this minion +1/+1 yourself.
-        // ONLY CHANGE / ADD / DELETE THE CODE HERE:
+        
 
-        // -----------------------------------------
+
+
+
+
+
+
+
+
+
+
+        
+        // DON'T CHANGE ANYTHING BELOW THIS LINE
 
         // Testing your solution.
         game.interact.verifyDIYSolution(self.getAttack() == 2 && self.getHealth() == 2);
