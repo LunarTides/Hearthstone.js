@@ -431,10 +431,10 @@ describe("Card", () => {
         }];
 
         card.replacePlaceholders();
-        let fullCard = game.interact.getReadableCard(card);
+        let fullCard = game.interact.doPlaceholders(card);
 
         assert.equal(card.desc, "This card costs: {ph:cost} placeholder {/ph}.");
-        assert.ok(fullCard.includes("This card costs: 1"));
+        assert.equal(fullCard, card.desc.replace("{ph:cost} placeholder {/ph}", card.mana));
     });
 
     it ('should return a perfect copy', () => {
