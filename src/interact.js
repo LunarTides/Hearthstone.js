@@ -1502,13 +1502,16 @@ class Interact {
     /**
      * Verifies that the diy card has been solved.
      * 
+     * @param {boolean} condition The condition where, if true, congratulates the user
+     * @param {string} fileName The file's name in the `DIY` folder. E.g. `1.js`
+     * 
      * @returns {boolean} Success
      */
-    verifyDIYSolution(condition) {
-        // Maybe spawn in diy cards mid-game in normal games to encourage players to solve them.
+    verifyDIYSolution(condition, fileName = "") {
+        // TODO: Maybe spawn in diy cards mid-game in normal games to encourage players to solve them.
         // Allow that to be toggled in the config.
         if (condition) console.log("Success! You did it, well done!");
-        else console.log("Hm. This card doesn't seem to do what it's supposed to do... Maybe you should try to fix it? The card is in: './cards/Examples/DIY/'.");
+        else console.log(`Hm. This card doesn't seem to do what it's supposed to do... Maybe you should try to fix it? The card is in: './cards/Examples/DIY/${fileName}'.`);
         
         game.input();
         return true;

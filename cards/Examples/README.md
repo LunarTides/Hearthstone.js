@@ -11,4 +11,4 @@ In all stages, there is a README.md file. This shows you the order to look at th
 2. Look at the cards in `2`. These are a bit more advanced, where you will be modifying some values.
 3. Look in `3`. This is where you will write more actual code. (It can get overwhelming quick, sorry)
 4. Look in `4`. These are the most advanced concepts so far
-5. Look in `DIY`. These are DIY cards.
+5. Look in `DIY`. These are cards that have a description but no functionality by default. You have to write the code yourself, and play the card in-game to verify your solution.

@@ -124,6 +124,6 @@ module.exports = {
             target.getHealth() <= 0 &&
             correctParameters &&
             game.graveyard[plr.id].includes(target)
-        );
+        , "3.js");
     }
 }
