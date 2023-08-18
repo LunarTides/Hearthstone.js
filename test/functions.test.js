@@ -343,7 +343,7 @@ describe("Functions", () => {
 
         let cloned_card = game.functions.cloneObject(card);
 
-        assert.equal(card.__ids, cloned_card.__ids);
+        assert.equal(card.uuid, cloned_card.uuid);
     });
 
     it ('should correctly clone a card', () => {
@@ -360,7 +360,7 @@ describe("Functions", () => {
 
         let cloned_card = game.functions.cloneCard(card);
 
-        assert.notEqual(card.__ids, cloned_card.__ids);
+        assert.notEqual(card.uuid, cloned_card.uuid);
     });
 
     // TODO: Maybe add a test for `doPlayerTargets`

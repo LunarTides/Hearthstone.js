@@ -79,6 +79,8 @@ class DeckcodeFunctions {
         hero = hero.trim();
         code = sep[1] + code.split(sep)[1];
 
+        if (!self.getClasses().includes(hero)) return ERROR("INVALIDHERO");
+
         plr.heroClass = hero;
 
         let rune_classes = ["Death Knight"];
@@ -1415,7 +1417,7 @@ ${main_content}
     cloneCard(card) {
         let clone = this.cloneObject(card);
 
-        clone.randomizeIds();
+        clone.randomizeUUID();
         clone.sleepy = true;
         clone.turn = game.turns;
 
