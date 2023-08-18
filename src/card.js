@@ -802,7 +802,7 @@ class Card {
         let ret = [];
         
         this[name].forEach(func => {
-            if (ret === -1) return;
+            if (ret === game.constants.REFUND) return;
 
             // Check if the method is conditioned
             if (this.conditioned && this.conditioned.includes(name) && this.activate("condition")[0] === false) return;
@@ -810,12 +810,12 @@ class Card {
             let r = func(this.plr, game, this, ...args);
             ret.push(r);
 
-            if (r != -1 || name == "deathrattle") return; // Deathrattle isn't cancellable
+            if (r != game.constants.REFUND || name == "deathrattle") return; // Deathrattle isn't cancellable
 
             // If the return value is -1, meaning "refund", refund the card and stop the for loop
             game.events.broadcast("CancelCard", [this, name], this.plr);
 
-            ret = -1;
+            ret = game.constants.REFUND;
 
             // These keyword methods shouldn't "refund" the card, just stop execution.
             if (["use", "heropower"].includes(name)) return;

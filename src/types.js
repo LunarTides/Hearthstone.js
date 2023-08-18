@@ -145,6 +145,11 @@ const { Player } = require("./player");
  */
 
 /**
+ * @typedef {Object} GameConstants
+ * @property {-1} REFUND
+ */
+
+/**
  * @callback QuestCallback
  * @param {EventValues} val The value of the event
  * @param {number} turn The turn the quest was played

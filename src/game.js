@@ -422,6 +422,15 @@ class Game {
          * @type {boolean}
          */
         this.evaling = false;
+
+        /**
+         * Some constant values.
+         * 
+         * @type {import('./types').GameConstants}
+         */
+        this.constants = {
+            REFUND: -1
+        };
     }
 
     /**

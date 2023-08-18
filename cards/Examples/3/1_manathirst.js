@@ -31,7 +31,7 @@ module.exports = {
         //
         // Ask the user to select a target based on the `prompt`, the user can only select enemy minions
         let target = game.interact.selectTarget(prompt, self, "enemy", "minion");
-        if (!target) return -1; // The user cancelled their selection, if you return `-1`, the game refunds the card.
+        if (!target) return game.constants.REFUND; // The user cancelled their selection, if you return this, the game refunds the card.
 
         if (ret) target.silence(); // If the manathirst was successful, silence the target first
         target.freeze(); // Freeze the target

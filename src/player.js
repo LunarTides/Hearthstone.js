@@ -889,7 +889,7 @@ class Player {
         if (this.mana < this.heroPowerCost || !this.canUseHeroPower) return false;
         if (!this.hero) return false;
 
-        if (this.hero.activate("heropower") == -1) return -1;
+        if (this.hero.activate("heropower") == game.constants.REFUND) return -1;
 
         game.board[this.id].forEach(m => m.activate("inspire"));
         this.mana -= this.heroPowerCost;

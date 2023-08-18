@@ -606,7 +606,7 @@ class Interact {
         if (location.type != "Location") return "invalidtype";
         if (location.cooldown > 0) return "cooldown";
         
-        if (location.activate("use") === -1) return -1;
+        if (location.activate("use") === game.constants.REFUND) return -1;
         
         location.setStats(0, location.getHealth() - 1);
         location.cooldown = location.backups.init.cooldown;
