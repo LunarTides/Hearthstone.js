@@ -17,7 +17,7 @@
   "dependencies": {
     "axios": "^1.4.0",
     "colors": "^1.4.0",
-    "deckstrings": "^2.2.1",
+    "deckstrings": "^3.1.1",
     "readline-sync": "^1.4.10",
     "uuid": "^9.0.0"
   },
