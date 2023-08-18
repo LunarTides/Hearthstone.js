@@ -6,7 +6,7 @@
 module.exports = {
     name: "Kobold Lackey",
     stats: [1, 1],
-    desc: "Battlecry: Deal 2 damage.",
+    desc: "Battlecry: Deal $2 damage.",
     mana: 1,
     type: "Minion",
     tribe: "None",
@@ -20,9 +20,9 @@ module.exports = {
      * @type {import("../../src/types").KeywordMethod}
      */
     battlecry(plr, game, self) {
-        let target = game.interact.selectTarget(`Deal ${2 + plr.spellDamage} damage.`, self);
+        let target = game.interact.selectTarget(self.desc, self);
         if (!target) return -1;
 
-        game.functions.spellDmg(target, 2);
+        game.attack("$2", target);
     }
 }

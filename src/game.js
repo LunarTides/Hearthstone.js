@@ -32,6 +32,8 @@ class EventManager {
         /**
          * The history of the game.
          * 
+         * It looks like this: `history[turn] = [[key, val, plr], ...]`
+         * 
          * @type {Object<number, Array>}
          */
         this.history = {};
@@ -974,6 +976,17 @@ class Game {
         if (target.immune) return "immune";
 
         // Attacker is a number
+        let spellDmgRegex = /\$(\d+?)/;
+        if (spellDmgRegex.test(attacker)) {
+            let match = attacker.match(spellDmgRegex);
+            
+            let dmg = parseInt(match[1]);
+            dmg += this.player.spellDamage;
+
+            this.events.broadcast("SpellDealsDamage", [target, dmg], this.player);
+            attacker = dmg;
+        }
+
         if (typeof(attacker) === "number") {
             let dmg = attacker;
 

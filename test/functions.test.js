@@ -406,27 +406,6 @@ describe("Functions", () => {
         assert.ok(Object.values(game.eventListeners).length < amount);
     });
 
-    it ('should correctly account for spell damage', () => {
-        const player = new Player("Temp Player");
-        player.spellDamage = 2;
-        game.player = player;
-
-        const amount = game.functions.accountForSpellDmg(2);
-
-        assert.equal(amount, 4);
-    });
-
-    it ('should correctly apply spell damage', () => {
-        game.player = test_player1;
-        test_player1.spellDamage = 2;
-
-        const og_health = test_player1.getHealth();
-
-        const amount = game.functions.spellDmg(test_player1, 2);
-
-        assert.equal(test_player1.getHealth(), og_health - 4);
-    });
-
     it ('should correctly account for uncollectible cards', () => {
         let cards = game.functions.getCards(false);
         cards = game.functions.accountForUncollectible(cards);

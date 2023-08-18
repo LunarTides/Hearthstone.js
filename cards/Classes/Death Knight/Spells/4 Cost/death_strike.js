@@ -5,7 +5,7 @@
  */
 module.exports = {
     name: "Death Strike",
-    desc: "Lifesteal. Deal 6 damage to a minion.",
+    desc: "Lifesteal. Deal $6 damage to a minion.",
     mana: 4,
     type: "Spell",
     class: "Death Knight",
@@ -18,12 +18,10 @@ module.exports = {
      * @type {import("../../../../../src/types").KeywordMethod}
      */
     cast(plr, game, self) {
-        let dmg = 6 + plr.spellDamage;
-
-        let target = game.interact.selectTarget(`Lifesteal. Deal ${dmg} damage to a minion.`, self, null, "minion");
+        let target = game.interact.selectTarget(self.desc, self, null, "minion");
         if (!target) return -1;
 
-        game.functions.spellDmg(target, 6);
-        plr.addHealth(dmg);
+        game.attack("$6", target);
+        plr.addHealth(6 + plr.spellDamage);
     }
 }

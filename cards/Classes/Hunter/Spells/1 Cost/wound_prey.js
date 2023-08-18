@@ -5,7 +5,7 @@
  */
 module.exports = {
     name: "Wound Prey",
-    desc: "Deal 1 damage. Summon a 1/1 Hyena with Rush.",
+    desc: "Deal $1 damage. Summon a 1/1 Hyena with Rush.",
     mana: 1,
     type: "Spell",
     class: "Hunter",
@@ -17,10 +17,10 @@ module.exports = {
      * @type {import("../../../../../src/types").KeywordMethod}
      */
     cast(plr, game, self) {
-        let target = game.interact.selectTarget(`Deal ${1 + plr.spellDamage} damage`, self);
+        let target = game.interact.selectTarget(self.desc, self);
         if (!target) return -1;
 
-        game.functions.spellDmg(target, 1);
+        game.attack("$1", target);
 
         let hyena = new game.Card("Swift Hyena", plr);
         game.summonMinion(hyena, plr);

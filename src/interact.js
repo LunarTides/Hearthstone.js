@@ -1128,6 +1128,19 @@ class Interact {
             desc = desc.replace(reg, replacement);
         }
 
+        // Replace spell damage placeholders
+        reg = /\$(\d+?)/;
+
+        while (true) {
+            let regedDesc = reg.exec(desc);
+            if (!regedDesc) break;
+
+            let key = regedDesc[1]; // Gets the capturing group result
+            let replacement = parseInt(key) + game.player.spellDamage;
+
+            desc = desc.replace(reg, replacement);
+        }
+
         return desc;
     }
 
@@ -1158,7 +1171,7 @@ class Interact {
         else desc = card.desc.length > 0 ? ` (${game.functions.parseTags(card.desc)}) ` : " ";
 
         // Extract placeholder value, remove the placeholder header and footer
-        if (card.placeholder) desc = this.doPlaceholders(card, desc, _depth);
+        if (card.placeholder || /\$(\d+?)/.test(card.desc)) desc = this.doPlaceholders(card, desc, _depth);
 
         let mana = `{${card.mana}} `;
         switch (card.costType || "mana") {

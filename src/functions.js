@@ -1504,38 +1504,8 @@ ${main_content}
         return unhook;
     }
 
-    // Damage
-
-    /**
-     * Deals damage to `target` based on your spell damage
-     * 
-     * @param {Card | Player} target The target
-     * @param {number} damage The damage to deal
-     * 
-     * @returns {boolean} Success
-     */
-    spellDmg(target, damage) {
-        const dmg = this.accountForSpellDmg(damage);
-
-        game.events.broadcast("SpellDealsDamage", [target, dmg], game.player);
-        game.attack(dmg, target);
-
-        return true;
-    }
-
     // Account for certain stats
-
-    /**
-     * Returns `damage` + The current player's spell damage
-     * 
-     * @param {number} damage
-     * 
-     * @returns {number} Damage + spell damage
-     */
-    accountForSpellDmg(damage) {
-        return damage + game.player.spellDamage;
-    }
-
+    
     /**
      * Filters out all cards that are uncollectible in a list
      * 

@@ -5,7 +5,7 @@
  */
 module.exports = {
     name: "Crystal Power",
-    desc: "Choose One - Deal 2 damage to a minion; or Restore 5 Health.",
+    desc: "Choose One - Deal $2 damage to a minion; or Restore 5 Health.",
     mana: 1,
     type: "Spell",
     class: "Druid",
@@ -23,7 +23,7 @@ module.exports = {
             let target = game.interact.selectTarget("Deal 2 damage to a minion.", self, null, "minion");
             if (!target) return -1;
             
-            game.functions.spellDmg(target, 2);
+            game.attack("$2", target);
         } else {
             var target = game.interact.selectTarget("Restore 5 health.", self);
             if (!target) return -1;
