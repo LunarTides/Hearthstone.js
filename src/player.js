@@ -76,7 +76,7 @@ class Player {
          * 
          * # Examples
          * @example
-         * let target = game.functions.selectTarget("Example", false, null, null);
+         * let target = game.functions.selectTarget("Example", null, null, null);
          * 
          * if (target.classType == "Player") {
          *     console.log(target.health);
@@ -355,7 +355,7 @@ class Player {
          * # Example
          * ```
          * player.forceTarget = target;
-         * let chosen = game.interact.selectTarget("Example", false, null, null);
+         * let chosen = game.interact.selectTarget("Example", null, null, null);
          * player.forceTarget = null;
          * 
          * assert.equal(chosen, target);

@@ -18,7 +18,7 @@ module.exports = {
      * @type {import("../../../../../src/types").KeywordMethod}
      */
     cast(plr, game, self) {
-        let target = game.interact.selectTarget("Deal 3 damage to a minion. If that kills it, gain a Corpse", true, null, "minion");
+        let target = game.interact.selectTarget("Deal 3 damage to a minion. If that kills it, gain a Corpse", self, null, "minion");
         if (!target) return -1;
 
         let newHealth = game.functions.spellDmg(target, 3);

@@ -16,8 +16,8 @@ module.exports = {
     /**
      * @type {import("../../../../../src/types").KeywordMethod}
      */
-    cast(plr, game, card) {
-        let target = game.interact.selectTarget("Swap a minion's Attack and Health.", true, null, "minion");
+    cast(plr, game, self) {
+        let target = game.interact.selectTarget("Swap a minion's Attack and Health.", self, null, "minion");
 
         if (!target) {
             return -1;

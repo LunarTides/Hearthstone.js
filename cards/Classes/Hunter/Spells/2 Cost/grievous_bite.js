@@ -17,7 +17,7 @@ module.exports = {
      * @type {import("../../../../../src/types").KeywordMethod}
      */
     cast(plr, game, self) {
-        let target = game.interact.selectTarget("Deal 2 damage to a minion and 1 damage to adjacent ones.", true, null, "minion");
+        let target = game.interact.selectTarget("Deal 2 damage to a minion and 1 damage to adjacent ones.", self, null, "minion");
         if (!target) return -1;
 
         let board = game.board[target.plr.id];

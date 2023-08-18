@@ -21,7 +21,9 @@ module.exports = {
      */
     heropower(plr, game, self) {
         game.suppressedEvents.push("CastSpellOnMinion");
-        const target = game.interact.selectTarget("Deal 1 damage.", true);
+        // Use of `selectTarget` in the `heropower` keyword method requires the use of the `force_elusive` flag
+        // This flag causes the `CastSpellOnMinion` event to be broadcast, so suppress it since this isn't a spell
+        const target = game.interact.selectTarget("Deal 1 damage.", self, null, null, ["force_elusive"]);
         game.suppressedEvents.pop();
 
         if (!target) return -1;

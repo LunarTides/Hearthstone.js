@@ -20,7 +20,7 @@ module.exports = {
     cast(plr, game, self) {
         let dmg = 2 + plr.spellDamage;
 
-        let target = game.interact.selectTarget(`Deal ${dmg} damage to a minion.`);
+        let target = game.interact.selectTarget(`Deal ${dmg} damage to a minion.`, self);
         if (!target) return -1;
 
         game.functions.spellDmg(target, 2);

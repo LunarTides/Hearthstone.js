@@ -18,7 +18,7 @@ module.exports = {
      * @type {import("../../../../../../src/types").KeywordMethod}
      */
     cast(plr, game, self) {
-        let target = game.interact.selectTarget("Choose an enemy minion. It attacks random minions until it dies.", true, "enemy", "minion");
+        let target = game.interact.selectTarget("Choose an enemy minion. It attacks random minions until it dies.", self, "enemy", "minion");
         if (!target) return -1;
 
         const doAttack = () => {

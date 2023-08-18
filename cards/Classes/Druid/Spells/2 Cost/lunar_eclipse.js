@@ -19,7 +19,7 @@ module.exports = {
      */
     cast(plr, game, self) {
         // Deal 3 damage to a minion.
-        let minion = game.interact.selectTarget("Deal 3 damage to a minion.", true, null, "minion");
+        let minion = game.interact.selectTarget("Deal 3 damage to a minion.", self, null, "minion");
         if (!minion) return -1;
 
         game.functions.spellDmg(minion, 3);

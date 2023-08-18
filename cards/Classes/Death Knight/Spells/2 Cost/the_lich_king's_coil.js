@@ -20,7 +20,7 @@ module.exports = {
      * @type {import("../../../../../src/types").KeywordMethod}
      */
     cast(plr, game, self) {
-        let target = game.interact.selectTarget("Deal 5 damage to an enemy, or restore 5 Health to a friendly character.", true);
+        let target = game.interact.selectTarget("Deal 5 damage to an enemy, or restore 5 Health to a friendly character.", self);
         if (!target) return -1;
 
         if (target instanceof game.Card) {

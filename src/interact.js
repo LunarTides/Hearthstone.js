@@ -40,10 +40,10 @@ class Interact {
             if (attacker === -1 || target === -1) return -1;
             if (attacker === null || target === null) return null;
         } else {
-            attacker = this.selectTarget("Which minion do you want to attack with?", false, "friendly");
+            attacker = this.selectTarget("Which minion do you want to attack with?", null, "friendly");
             if (!attacker) return false;
 
-            target = this.selectTarget("Which minion do you want to attack?", false, "enemy");
+            target = this.selectTarget("Which minion do you want to attack?", null, "enemy");
             if (!target) return false;
         }
     
@@ -102,11 +102,12 @@ class Interact {
      * Checks if "q" is a command, if it is, do something, if not return -1
      * 
      * @param {string} q The command
-     * @param {any} [args]
+     * @param {boolean} [echo=true] If this is false, it doesn't log information to the screen. Only used by "history", "/ai"
+     * @param {boolean} [debug=false] If this is true, it does some additional, debug only, things. Only used by "history"
      * 
-     * @returns {boolean | string | -1} a string if "args" is defined
+     * @returns {boolean | string | -1} a string if "echo" is false
      */
-    handleCmds(q, ...args) {
+    handleCmds(q, echo = true, debug = false) {
         if (q === "end") game.endTurn();
         else if (q === "hero power") {
             if (game.player.ai) {
@@ -185,6 +186,7 @@ class Interact {
             console.log(cond_color("/eval [log] <Code> - Runs the code specified. If the word 'log' is before the code, instead console.log the code and wait for user input to continue."));
             console.log(cond_color("/debug             - Gives you infinite mana, health and armor"));
             console.log(cond_color("/exit              - Force exits the game. There will be no winner, and it will take you straight back to the runner."));
+            console.log(cond_color("/history           - Displays a history of actions. This doesn't hide any information, and is the same thing the log files uses."));
             console.log(cond_color("/ai                - Gives you a list of the actions the ai(s) have taken in the order they took it"));
             console.log(cond_color("---------------------------" + ((game.config.debug) ? "" : "-")));
             
@@ -196,7 +198,7 @@ class Interact {
 
             if (!isHand) {
                 // allow_locations Makes selecting location cards allowed. This is disabled by default to prevent, for example, spells from killing the card.
-                let minion = this.selectTarget("Which minion do you want to view?", false, null, "minion", ["allow_locations"]);
+                let minion = this.selectTarget("Which minion do you want to view?", null, null, "minion", ["allow_locations"]);
                 if (!minion) return false;
         
                 this.viewCard(minion);
@@ -299,14 +301,12 @@ class Interact {
             }
         }
         else if (q == "history") {
-            if (args[0] === true) {}
+            if (echo === false) {}
             else console.log("Cards that are shown are collected while this screen is rendering. This means that it gets the information about the card from where it is when you ran this command, for example; the graveyard. This is why most cards have <1 health.".yellow);
 
             // History
             let history = game.events.history;
             let finished = "";
-
-            let history_debug = args.length >= 2 && args[1] == true;
 
             const showCard = (val) => {
                 return this.getReadableCard(val) + " which belongs to: " + val.plr.name.blue + ", and has uuid: " + val.uuid.slice(0, 8);
@@ -368,7 +368,7 @@ class Interact {
                     if (plr != prevPlayer) hasPrintedHeader = false;
                     prevPlayer = plr;
 
-                    if (game.config.whitelistedHistoryKeys.includes(key) || history_debug) {}
+                    if (game.config.whitelistedHistoryKeys.includes(key) || debug) {}
                     else return;
 
                     // If the `key` is "AddCardToHand", check if the previous history entry was `DrawCard`, and they both contained the exact same `val`.
@@ -381,7 +381,7 @@ class Interact {
                         }
                     }
 
-                    let shouldHide = game.config.hideValueHistoryKeys.includes(key) && !history_debug;
+                    let shouldHide = game.config.hideValueHistoryKeys.includes(key) && !debug;
 
                     if (!hasPrintedHeader) finished += `\nTurn ${t} - Player [${plr.name}]\n`; 
                     hasPrintedHeader = true;
@@ -407,7 +407,7 @@ class Interact {
             });
 
 
-            if (args[0] === false) {}
+            if (echo === false) {}
             else {
                 console.log(finished);
 
@@ -486,7 +486,7 @@ class Interact {
 
             let finished = "";
 
-            if (!args[0] === false) finished += "AI Info:\n\n";
+            if (echo) finished += "AI Info:\n\n";
 
             for (let i = 1; i <= 2; i++) {
                 const plr = game["player" + i];
@@ -501,7 +501,7 @@ class Interact {
                 finished += "}\n";
             }
 
-            if (args[0] === false) {}
+            if (echo === false) {}
             else {
                 console.log(finished);
 
@@ -509,6 +509,11 @@ class Interact {
             }
 
             return finished;
+        }
+        else if (q == "/history") {
+            if (!game.config.debug) return -1;
+
+            this.handleCmds("history", true, true);
         }
         // -1 if the command is not found
         else return -1;
@@ -595,7 +600,7 @@ class Interact {
         let locations = game.board[game.player.id].filter(m => m.type == "Location");
         if (locations.length <= 0) return "nolocations";
 
-        let location = this.selectTarget("Which location do you want to use?", false, "friendly", "minion", ["allow_locations"]);
+        let location = this.selectTarget("Which location do you want to use?", null, "friendly", "minion", ["allow_locations"]);
         if (!location) return -1;
 
         if (location.type != "Location") return "invalidtype";
@@ -881,21 +886,21 @@ class Interact {
      * Broadcasts the `TargetSelectionStarts` and the `TargetSelected` event. Can broadcast the `CastSpellOnMinion` event.
      * 
      * @param {string} prompt The prompt to ask
-     * @param {boolean | string} [elusive=false] Whether or not to prevent selecting elusive minions, if this is a string, allow selecting elusive minions but don't trigger secrets / quests
+     * @param {Card | null} card The card that called this function.
      * @param {"enemy" | "friendly" | null} [force_side=null] Force the user to only be able to select minions / the hero of a specific side: ["enemy", "friendly"]
      * @param {"hero" | "minion" | null} [force_class=null] Force the user to only be able to select a minion or a hero: ["hero", "minion"]
-     * @param {string[]} [flags=[]] Change small behaviours ["allow_locations" => Allow selecting location, ]
+     * @param {import('./types').SelectTargetFlags[]} [flags=[]] Change small behaviours ["allow_locations" => Allow selecting location, ]
      * 
      * @returns {Card | Player | false} The card or hero chosen
      */
-    selectTarget(prompt, elusive = false, force_side = null, force_class = null, flags = []) {
+    selectTarget(prompt, card, force_side = null, force_class = null, flags = []) {
         // force_class = [null, "hero", "minion"]
         // force_side = [null, "enemy", "friendly"]
 
-        game.events.broadcast("TargetSelectionStarts", [prompt, elusive, force_side, force_class, flags], game.player);
-        let target = this._selectTarget(prompt, elusive, force_side, force_class, flags);
+        game.events.broadcast("TargetSelectionStarts", [prompt, card, force_side, force_class, flags], game.player);
+        let target = this._selectTarget(prompt, card, force_side, force_class, flags);
 
-        game.events.broadcast("TargetSelected", target, game.player);
+        game.events.broadcast("TargetSelected", [card, target], game.player);
         return target;
     }
 
@@ -904,14 +909,14 @@ class Interact {
      * Can broadcast the `CastSpellOnMinion` event.
      * 
      * @param {string} prompt The prompt to ask
-     * @param {boolean | string} [elusive=false] Whether or not to prevent selecting elusive minions, if this is a string, allow selecting elusive minions but don't trigger secrets / quests
+     * @param {Card | null} card The card that called this function.
      * @param {"enemy" | "friendly" | null} [force_side=null] Force the user to only be able to select minions / the hero of a specific side: ["enemy", "friendly"]
      * @param {"hero" | "minion" | null} [force_class=null] Force the user to only be able to select a minion or a hero: ["hero", "minion"]
-     * @param {string[]} [flags=[]] Change small behaviours ["allow_locations" => Allow selecting location, ]
+     * @param {import('./types').SelectTargetFlags[]} [flags=[]] Change small behaviours ["allow_locations" => Allow selecting location, ]
      * 
      * @returns {Card | Player | false} The card or hero chosen
      */
-    _selectTarget(prompt, elusive = false, force_side = null, force_class = null, flags = []) {
+    _selectTarget(prompt, card, force_side = null, force_class = null, flags = []) {
         // force_class = [null, "hero", "minion"]
         // force_side = [null, "enemy", "friendly"]
 
@@ -919,7 +924,7 @@ class Interact {
         if (game.player.forceTarget) return game.player.forceTarget;
 
         // If the player is an ai, hand over control to the ai.
-        if (game.player.ai) return game.player.ai.selectTarget(prompt, elusive, force_side, force_class, flags);
+        if (game.player.ai) return game.player.ai.selectTarget(prompt, card, force_side, force_class, flags);
 
         // If the player is forced to select a hero
         if (force_class == "hero") {
@@ -942,11 +947,6 @@ class Interact {
         // Player chose to go back
         if (target.startsWith("b")) {
             return false; // This should always be safe.
-
-            // Make sure the player wants to go back
-            const return_question = this.yesNoQuestion(game.player, "WARNING: Going back might cause unexpected things to happen. ".red + "Do you still want to go back?");
-            
-            if (return_question) return false;
         }
 
         // Get a list of each side of the board
@@ -969,7 +969,7 @@ class Interact {
             // target != "face" and target is not a minion.
             // The input is invalid
 
-            return this.selectTarget(prompt, elusive, force_side, force_class, flags);
+            return this.selectTarget(prompt, card, force_side, force_class, flags);
         }
 
         // If the player is forced to one side.
@@ -987,7 +987,7 @@ class Interact {
             // `force_side` == null, allow the user to select any side.
 
             // If the player chose to target a hero, it will ask which hero.
-            if (target.startsWith("face") && force_class != "minion") return this.selectTarget(prompt, false, null, "hero", flags);
+            if (target.startsWith("face") && force_class != "minion") return this.selectTarget(prompt, card, null, "hero", flags);
             
             // Both players have a minion with the same index.
             // Ask them which minion to select
@@ -996,7 +996,7 @@ class Interact {
             
                 if (target2.startsWith("b")) {
                     // Go back.
-                    return this.selectTarget(prompt, elusive, force_side, force_class, flags);
+                    return this.selectTarget(prompt, card, force_side, force_class, flags);
                 }
 
                 minion = (target2.startsWith("y")) ? board_opponent_target : board_friendly_target;
@@ -1011,17 +1011,15 @@ class Interact {
             return false;
         }
 
-        // If the minion has elusive, and we care about elusives, prevent it from being targetted.
-        if (minion.keywords.includes("Elusive") && elusive) {
-            game.input("Can't be targeted by Spells or Hero Powers.\n".red);
+        // If the minion has elusive, and the card that called this function is a spell
+        if ((card && card.type === "Spell") || flags.includes("force_elusive")) {
+            if (minion.keywords.includes("Elusive")) {
+                game.input("Can't be targeted by Spells or Hero Powers.\n".red);
             
-            return false;
-        }
+                return false;
+            }
 
-        // If elusive is EXACTLY true, broadcast an event.
-        // If you set elusive to be something that evaluates to true, it will prvent elusive targets from being targetted, and not broadcasting this event.
-        if (elusive) {
-            game.events.broadcast("CastSpellOnMinion", minion, game.player);
+            game.events.broadcast("CastSpellOnMinion", [card, minion], game.player);
         }
 
         // If the minion has stealth, don't allow the opponent to target it.

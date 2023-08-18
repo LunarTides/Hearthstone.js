@@ -19,7 +19,7 @@ module.exports = {
      * @type {import("../../../../../src/types").KeywordMethod}
      */
     cast(plr, game, self) {
-        let target = game.interact.selectTarget("Choose a minion. It steals 1 Health from ALL other minions.", true, null, "minion");
+        let target = game.interact.selectTarget("Choose a minion. It steals 1 Health from ALL other minions.", self, null, "minion");
         if (!target) return -1;
 
         game.board.forEach(p => {

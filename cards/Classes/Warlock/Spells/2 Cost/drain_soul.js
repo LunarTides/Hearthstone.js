@@ -18,7 +18,7 @@ module.exports = {
      * @type {import("../../../../../src/types").KeywordMethod}
      */
     cast(plr, game, self) {
-        let target = game.interact.selectTarget(self.desc, true, null, "minion");
+        let target = game.interact.selectTarget(self.desc, self, null, "minion");
         if (!target) return -1;
 
         game.functions.spellDmg(target, 3);

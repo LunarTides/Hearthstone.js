@@ -21,7 +21,7 @@ module.exports = {
      */
     heropower(plr, game, self) {
         game.suppressedEvents.push("CastSpellOnMinion");
-        let target = game.interact.selectTarget("Restore 2 health.", true);
+        let target = game.interact.selectTarget("Restore 2 health.", self, null, null, ["force_elusive"]);
         game.suppressedEvents.pop();
 
         if (!target) return -1;

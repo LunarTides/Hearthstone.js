@@ -16,16 +16,16 @@ module.exports = {
     /**
      * @type {import("../../../../../src/types").KeywordMethod}
      */
-    cast(plr, game, card) {
+    cast(plr, game, self) {
         let choice = game.interact.chooseOne('Deal 2 damage to a minion; or Restore 5 Health.', ['2 Damage', '5 Health']);
         
         if (choice == 0) {
-            let target = game.interact.selectTarget("Deal 2 damage to a minion.", true, null, "minion");
+            let target = game.interact.selectTarget("Deal 2 damage to a minion.", self, null, "minion");
             if (!target) return -1;
             
             game.functions.spellDmg(target, 2);
         } else {
-            var target = game.interact.selectTarget("Restore 5 health.", true);
+            var target = game.interact.selectTarget("Restore 5 health.", self);
             if (!target) return -1;
             
             target.addHealth(5, true);

@@ -19,8 +19,8 @@ module.exports = {
     /**
      * @type {import("../../src/types").KeywordMethod}
      */
-    battlecry(plr, game) {
-        let target = game.interact.selectTarget(`Deal ${2 + plr.spellDamage} damage.`);
+    battlecry(plr, game, self) {
+        let target = game.interact.selectTarget(`Deal ${2 + plr.spellDamage} damage.`, self);
         if (!target) return -1;
 
         game.functions.spellDmg(target, 2);

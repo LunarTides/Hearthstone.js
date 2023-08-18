@@ -823,7 +823,7 @@ class Functions {
         let dateStringFileFriendly = dateString.replace(/[/:]/g, ".").replaceAll(" ", "-"); // 01.01.23-23.59.59
 
         // Grab the history of the game
-        // handleCmds("history", write_to_screen, debug)
+        // handleCmds("history", echo, debug)
         let history = game.interact.handleCmds("history", false, true);
         history = stripColors(history);
 

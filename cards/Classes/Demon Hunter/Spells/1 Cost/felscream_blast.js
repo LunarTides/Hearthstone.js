@@ -18,7 +18,7 @@ module.exports = {
      * @type {import("../../../../../src/types").KeywordMethod}
      */
     cast(plr, game, self) {
-        let target = game.interact.selectTarget("Lifesteal. Deal 1 damage to a minion and its neighbors.", true, null, "minion");
+        let target = game.interact.selectTarget("Lifesteal. Deal 1 damage to a minion and its neighbors.", self, null, "minion");
         if (!target) return -1
 
         const doDamage = (t) => {
