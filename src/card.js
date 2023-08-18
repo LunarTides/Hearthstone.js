@@ -1,6 +1,7 @@
 const { Game } = require("./game");
 const { Player } = require("./player");
 const { get } = require("./shared");
+const { v4: uuidv4 } = require("uuid");
 
 /**
  * @type {Game}
@@ -376,14 +377,12 @@ class Card {
          */
         this.plr = plr;
 
-        this.randomizeIds();
-
         /**
          * The card's uuid. Gets randomly generated when the card gets created.
          * 
          * @type {string}
          */
-        this.uuid = this.__ids.map(id => id.toString()[0]).join("");
+        this.uuid = this.randomizeUUID();
 
         /**
          * The list of placeholder ids / replacement strings pairs.
@@ -396,23 +395,14 @@ class Card {
     }
 
     /**
-     * Create random id's for this card to prevent cards from being "linked"
+     * Randomizes the uuid for this card to prevent cards from being "linked"
      * 
-     * @returns {boolean} Success
+     * @returns {string} The uuid
      */
-    randomizeIds() {
-        /**
-         * A list of ids, do not use.
-         * 
-         * @type {number[]}
-         */
-        this.__ids = [];
-        for (let i = 0; i < 100; i++) {
-            // This is to prevent cards from getting linked. Don't use this variable
-            this.__ids.push(game.functions.randInt(0, 671678679546789));
-        }
+    randomizeUUID() {
+        this.uuid = uuidv4();
 
-        return true;
+        return this.uuid;
     }
 
     /**

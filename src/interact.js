@@ -633,14 +633,14 @@ class Interact {
             if (!game.config.debug && game.config.branch == "stable") { // I want to be able to test without debug mode on in a non-stable branch
                 // Give error message
                 game.input("Please enter a deckcode!\n".red);
-                return this.deckCode(plr); // Retry
+                return false;
             }
 
             // Debug mode is enabled, use the 30 Sheep debug deck.
             while (plr.deck.length < 30) plr.deck.push(new game.Card("Sheep", plr)); // Debug deck
         }
 
-        if (error == "invalid") process.exit(1);
+        if (error == "invalid") return false;
 
         return true;
     }
@@ -1093,7 +1093,7 @@ class Interact {
      *
      * @param {Card} card The card.
      * @param {string} [overrideDesc=""] The description. If empty, it uses the card's description instead.
-     * @param {number} [_depth=0] - The depth of recursion.
+     * @param {number} [_depth=0] The depth of recursion.
      * 
      * @return {string} The modified description with placeholders replaced.
      */

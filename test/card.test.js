@@ -37,13 +37,13 @@ describe("Card", () => {
         assert.equal(card.name, "Sheep");
     });
 
-    it ('should correctly randomize ids', () => {
+    it ('should correctly randomize uuid', () => {
         const card = testCard();
-        const ids = card.__ids;
+        const uuid = card.uuid;
 
-        card.randomizeIds();
+        card.randomizeUUID();
 
-        assert.notEqual(card.__ids, ids);
+        assert.notEqual(card.uuid, uuid);
     });
 
     it ('should correctly add a deathrattle', () => {
@@ -445,7 +445,7 @@ describe("Card", () => {
         const perfectCopy = card.perfectCopy();
 
         assert.equal(card.getAttack(), perfectCopy.getAttack());
-        assert.notEqual(card.__ids, perfectCopy.__ids);
+        assert.notEqual(card.uuid, perfectCopy.uuid);
     });
 
     it ('should return an imperfect copy', () => {
@@ -456,6 +456,6 @@ describe("Card", () => {
         const imperfectCopy = card.imperfectCopy();
 
         assert.notEqual(card.getAttack(), imperfectCopy.getAttack());
-        assert.notEqual(card.__ids, imperfectCopy.__ids);
+        assert.notEqual(card.uuid, imperfectCopy.uuid);
     });
 });
