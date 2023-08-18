@@ -363,8 +363,6 @@ describe("Functions", () => {
         assert.notEqual(card.uuid, cloned_card.uuid);
     });
 
-    // TODO: Maybe add a test for `doPlayerTargets`
-
     it ('should correctly create an event listener', () => {
         const amount = Object.values(game.eventListeners).length;
         game.functions.addEventListener("Test", () => {return true}, () => {});
@@ -438,10 +436,6 @@ describe("Functions", () => {
         assert.ok(!uncollectible_exists);
     });
 
-    // TODO: Maybe add a test for adapt
-
-    // TODO: Maybe add a test for invoke 
-
     it ('should correctly recruit', () => {
         const deck = game.functions.chooseItemsFromList(game.functions.getCards(), 30);
         test_player1.deck = deck.map(c => createCard(c.name, test_player1));
@@ -468,12 +462,6 @@ describe("Functions", () => {
         assert.equal(jade.getHealth(), 4);
         assert.equal(jade.getAttack(), 4);
     });
-    
-    // TODO: Maybe add test for importConfig
-
-    // TODO: Maybe add test for _importCards
-
-    // TODO: Maybe add test for importCards
 
     it ('should correctly mulligan', () => {
         const deck = game.functions.chooseItemsFromList(game.functions.getCards(), 27);

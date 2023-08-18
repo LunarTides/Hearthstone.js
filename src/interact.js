@@ -878,7 +878,7 @@ class Interact {
 
     /**
      * Asks the user a `prompt`, the user can then select a minion or hero.
-     * Broadcasts the `TargetSelectionStarts` and the `TargetSelected` event
+     * Broadcasts the `TargetSelectionStarts` and the `TargetSelected` event. Can broadcast the `CastSpellOnMinion` event.
      * 
      * @param {string} prompt The prompt to ask
      * @param {boolean | string} [elusive=false] Whether or not to prevent selecting elusive minions, if this is a string, allow selecting elusive minions but don't trigger secrets / quests
@@ -1020,13 +1020,11 @@ class Interact {
 
         // If elusive is EXACTLY true, broadcast an event.
         // If you set elusive to be something that evaluates to true, it will prvent elusive targets from being targetted, and not broadcasting this event.
-        // TODO: Remove this once `game.suppressedEvents` becomes a thing.
-        if (elusive === true) {
+        if (elusive) {
             game.events.broadcast("CastSpellOnMinion", minion, game.player);
         }
 
         // If the minion has stealth, don't allow the opponent to target it.
-        // TODO: Does vanilla allow you to select your own stealthed minions? Figure this out.
         if (minion.keywords.includes("Stealth") && game.player != minion.plr) {
             game.input("This minion has stealth.\n".red);
 
@@ -1202,7 +1200,7 @@ class Interact {
      */
     printAll(plr = null) {
         // WARNING: Stinky and/or smelly code up ahead. Read at your own risk.
-        // TODO: Reformat this
+        // TODO: #246 Reformat this
 
         if (!plr) plr = game.player;
 

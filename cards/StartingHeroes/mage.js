@@ -20,7 +20,10 @@ module.exports = {
      * @type {import("../../src/types").KeywordMethod}
      */
     heropower(plr, game, self) {
-        const target = game.interact.selectTarget("Deal 1 damage.", "dontupdate");
+        game.suppressedEvents.push("CastSpellOnMinion");
+        const target = game.interact.selectTarget("Deal 1 damage.", true);
+        game.suppressedEvents.pop();
+
         if (!target) return -1;
 
         game.attack(1, target);
