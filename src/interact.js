@@ -900,7 +900,7 @@ class Interact {
         game.events.broadcast("TargetSelectionStarts", [prompt, card, force_side, force_class, flags], game.player);
         let target = this._selectTarget(prompt, card, force_side, force_class, flags);
 
-        game.events.broadcast("TargetSelected", [card, target], game.player);
+        if (target) game.events.broadcast("TargetSelected", [card, target], game.player);
         return target;
     }
 
