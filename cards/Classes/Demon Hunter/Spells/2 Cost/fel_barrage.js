@@ -5,7 +5,7 @@
  */
 module.exports = {
     name: "Fel Barrage",
-    desc: "Deal 2 damage to the lowest Health enemy, twice.",
+    desc: "Deal $2 damage to the lowest Health enemy, twice.",
     mana: 2,
     type: "Spell",
     class: "Demon Hunter",
@@ -24,7 +24,7 @@ module.exports = {
             if (m.getHealth() < lowestHealth.getHealth()) lowestHealth = m;
         });
 
-        game.functions.spellDmg(lowestHealth, 2);
-        game.functions.spellDmg(lowestHealth, 2);
+        game.attack("$2", lowestHealth);
+        game.attack("$2", lowestHealth);
     }
 }

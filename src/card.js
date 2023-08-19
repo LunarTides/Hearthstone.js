@@ -2,6 +2,7 @@
 const { Game } = require("./game");
 const { Player } = require("./player");
 const { get } = require("./shared");
+const { v4: uuidv4 } = require("uuid");
 
 /**
  * @type {Game}
@@ -444,20 +445,11 @@ class Card {
         this.plr = plr;
 
         /**
-         * A list of ids, do not use.
-         * 
-         * @type {number[]}
-         */
-        this.__ids = [];
-
-        this.randomizeIds();
-
-        /**
          * The card's uuid. Gets randomly generated when the card gets created.
          * 
          * @type {string}
          */
-        this.uuid = this.__ids.map(id => id.toString()[0]).join("");
+        this.uuid = this.randomizeUUID();
 
         /**
          * The list of placeholder ids / replacement strings pairs.
@@ -470,18 +462,14 @@ class Card {
     }
 
     /**
-     * Create random id's for this card to prevent cards from being "linked"
+     * Randomizes the uuid for this card to prevent cards from being "linked"
      * 
-     * @returns {boolean} Success
+     * @returns {string} The uuid
      */
-    randomizeIds() {
-        this.__ids = [];
-        for (let i = 0; i < 100; i++) {
-            // This is to prevent cards from getting linked. Don't use this variable
-            this.__ids.push(game.functions.randInt(0, 671678679546789));
-        }
+    randomizeUUID() {
+        this.uuid = uuidv4();
 
-        return true;
+        return this.uuid;
     }
 
     /**
@@ -898,7 +886,7 @@ class Card {
         let ret = [];
         
         this[name].forEach(func => {
-            if (ret === -1) return;
+            if (ret === game.constants.REFUND) return;
 
             // Check if the method is conditioned
             if (this["conditioned"] && this["conditioned"].includes(name) && this.activate("condition")[0] === false) return;
@@ -906,12 +894,12 @@ class Card {
             let r = func(this.plr, game, this, ...args);
             ret.push(r);
 
-            if (r != -1 || name == "deathrattle") return; // Deathrattle isn't cancellable
+            if (r != game.constants.REFUND || name == "deathrattle") return; // Deathrattle isn't cancellable
 
             // If the return value is -1, meaning "refund", refund the card and stop the for loop
             game.events.broadcast("CancelCard", [this, name], this.plr);
 
-            ret = -1;
+            ret = game.constants.REFUND;
 
             // These keyword methods shouldn't "refund" the card, just stop execution.
             if (["use", "heropower"].includes(name)) return;
@@ -1136,9 +1124,8 @@ class Card {
         this.placeholder = this.activate("placeholders")[0];
 
         Object.entries(this.placeholder).forEach(p => {
-            let [key, val] = p;
-
-            let replacement = `{ph:${key}} ${val} {/ph}`;
+            let [key, _] = p;
+            let replacement = `{ph:${key}} placeholder {/ph}`;
 
             this.desc = this.desc.replace(new RegExp(`{ph:${key}} .*? {/ph}`, 'g'), replacement);
             this.desc = this.desc.replaceAll(`{${key}}`, replacement);

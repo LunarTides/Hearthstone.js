@@ -33,6 +33,8 @@ class EventManager {
         /**
          * The history of the game.
          * 
+         * It looks like this: `history[turn] = [[key, val, plr], ...]`
+         * 
          * @type {Object<number, Array>}
          */
         this.history = {};
@@ -426,6 +428,15 @@ class Game {
          * @type {boolean}
          */
         this.evaling = false;
+
+        /**
+         * Some constant values.
+         * 
+         * @type {import('./types').GameConstants}
+         */
+        this.constants = {
+            REFUND: -1
+        };
     }
 
     /**
@@ -774,7 +785,7 @@ class Game {
     
                 // I'm using while loops to prevent a million indents
                 while (mechs.length > 0) {
-                    let minion = this.interact.selectTarget("Which minion do you want this to Magnetize to:", false, "friendly", "minion");
+                    let minion = this.interact.selectTarget("Which minion do you want this to Magnetize to:", null, "friendly", "minion");
                     if (!minion || minion instanceof Player) break;
 
                     if (!minion.tribe.includes("Mech")) {
@@ -986,6 +997,17 @@ class Game {
         if (target.immune) return "immune";
 
         // Attacker is a number
+        let spellDmgRegex = /\$(\d+?)/;
+        if (spellDmgRegex.test(attacker)) {
+            let match = attacker.match(spellDmgRegex);
+            
+            let dmg = parseInt(match[1]);
+            dmg += this.player.spellDamage;
+
+            this.events.broadcast("SpellDealsDamage", [target, dmg], this.player);
+            attacker = dmg;
+        }
+
         if (typeof(attacker) === "number") {
             let dmg = attacker;
 

@@ -5,7 +5,7 @@
  */
 module.exports = {
     name: "Conjured Arrow",
-    desc: "Deal 2 damage to a minion. Manathirst (6): Draw that many cards.",
+    desc: "Deal $2 damage to a minion. Manathirst (6): Draw that many cards.",
     mana: 2,
     type: "Spell",
     class: "Hunter",
@@ -18,13 +18,11 @@ module.exports = {
      * @type {import("../../../../../src/types").KeywordMethod}
      */
     cast(plr, game, self) {
-        let dmg = 2 + plr.spellDamage;
-
-        let target = game.interact.selectTarget(`Deal ${dmg} damage to a minion.`);
+        let target = game.interact.selectTarget(self.desc, self);
         if (!target) return -1;
 
-        game.functions.spellDmg(target, 2);
+        game.attack("$2", target);
 
-        if (self.manathirst(6)) for (let i = 0; i < dmg; i++) plr.drawCard();
+        if (self.manathirst(6)) for (let i = 0; i < 2 + plr.spellDamage; i++) plr.drawCard();
     }
 }

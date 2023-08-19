@@ -18,7 +18,7 @@ module.exports = {
      * @type {import("../../../../../src/types").KeywordMethod}
      */
     cast(plr, game, self) {
-        let target = game.interact.selectTarget("Gain control of an enemy minion with 2 or less Attack until end of turn.", true, "enemy", "minion");
+        let target = game.interact.selectTarget("Gain control of an enemy minion with 2 or less Attack until end of turn.", self, "enemy", "minion");
         if (!target || target.getAttack() > 2) return -1;
 
         let backup = game.functions.cloneCard(target);

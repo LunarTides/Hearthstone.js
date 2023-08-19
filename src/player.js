@@ -77,7 +77,7 @@ class Player {
          * 
          * # Examples
          * @example
-         * let target = game.functions.selectTarget("Example", false, null, null);
+         * let target = game.functions.selectTarget("Example", null, null, null);
          * 
          * if (target.classType == "Player") {
          *     console.log(target.health);
@@ -356,7 +356,7 @@ class Player {
          * # Example
          * ```
          * player.forceTarget = target;
-         * let chosen = game.interact.selectTarget("Example", false, null, null);
+         * let chosen = game.interact.selectTarget("Example", null, null, null);
          * player.forceTarget = null;
          * 
          * assert.equal(chosen, target);
@@ -391,6 +391,15 @@ class Player {
          * @type {string[] | string | null}
          */
         this.inputQueue = null;
+
+        /**
+         * If the player has `detail mode` enabled.
+         * 
+         * This gets enabled when the player enters the `detail` command.
+         * 
+         * @type {boolean}
+         */
+        this.detailedView = false;
     }
 
     /**
@@ -884,7 +893,7 @@ class Player {
         if (this.mana < this.heroPowerCost || !this.canUseHeroPower) return false;
         if (!this.hero) return false;
 
-        if (this.hero.activate("heropower") == -1) return -1;
+        if (this.hero.activate("heropower") == game.constants.REFUND) return -1;
 
         game.board[this.id].forEach(m => m.activate("inspire"));
         this.mana -= this.heroPowerCost;

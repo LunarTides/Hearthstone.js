@@ -5,7 +5,7 @@
  */
 module.exports = {
     name: "Grievous Bite",
-    desc: "Deal 2 damage to a minion and 1 damage to adjacent ones.",
+    desc: "Deal $2 damage to a minion and $1 damage to adjacent ones.",
     mana: 2,
     type: "Spell",
     class: "Hunter",
@@ -17,7 +17,7 @@ module.exports = {
      * @type {import("../../../../../src/types").KeywordMethod}
      */
     cast(plr, game, self) {
-        let target = game.interact.selectTarget("Deal 2 damage to a minion and 1 damage to adjacent ones.", true, null, "minion");
+        let target = game.interact.selectTarget(self.desc, self, null, "minion");
         if (!target) return -1;
 
         let board = game.board[target.plr.id];
@@ -25,7 +25,7 @@ module.exports = {
         if (index == -1) return -1;
 
         const doAttack = (target, dmg) => {
-            game.functions.spellDmg(target, dmg);
+            game.attack(`$${dmg}`, target);
         }
 
         if (index > 0) doAttack(board[index - 1], 1);

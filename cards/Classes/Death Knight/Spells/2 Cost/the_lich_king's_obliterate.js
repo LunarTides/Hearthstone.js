@@ -19,7 +19,7 @@ module.exports = {
      * @type {import("../../../../../src/types").KeywordMethod}
      */
     cast(plr, game, self) {
-        let minion = game.interact.selectTarget("Destroy a minion. Your hero takes damage equal to its Health.", true, null, "minion");
+        let minion = game.interact.selectTarget("Destroy a minion. Your hero takes damage equal to its Health.", self, null, "minion");
         if (!minion) return -1;
 
         game.attack(minion.getHealth(), plr);

@@ -81,6 +81,8 @@ class DeckcodeFunctions {
         hero = hero.trim();
         code = sep[1] + code.split(sep)[1];
 
+        if (!self.getClasses().includes(hero)) return ERROR("INVALIDHERO");
+
         // @ts-ignore
         plr.heroClass = hero;
 
@@ -826,7 +828,7 @@ class Functions {
         let dateStringFileFriendly = dateString.replace(/[/:]/g, ".").replaceAll(" ", "-"); // 01.01.23-23.59.59
 
         // Grab the history of the game
-        // handleCmds("history", write_to_screen, debug)
+        // handleCmds("history", echo, debug)
         let history = game.interact.handleCmds("history", false, true);
         history = stripColors(history);
 
@@ -863,6 +865,9 @@ Log File Version: 1
 
 ${main_content}
 `
+
+        // Add a sha256 checksum to the content
+        content += require("crypto").createHash("sha256").update(content).digest("hex");
 
         let filename = "log";
         if (err) filename = "crashlog";
@@ -1434,7 +1439,7 @@ ${main_content}
     cloneCard(card) {
         let clone = this.cloneObject(card);
 
-        clone.randomizeIds();
+        clone.randomizeUUID();
         clone.sleepy = true;
         clone.turn = game.turns;
 
@@ -1508,7 +1513,6 @@ ${main_content}
      * Hooks a callback function to the tick event.
      *
      * @param {Function} callback - The callback function to be hooked.
-     * @param {Card} card - The card that is hooking, if this is set, the hook will be automatically removed when the card is removed.
      * 
      * @returns {Function} a function that, when called, will remove the hook from the tick event.
      */
@@ -1522,38 +1526,8 @@ ${main_content}
         return unhook;
     }
 
-    // Damage
-
-    /**
-     * Deals damage to `target` based on your spell damage
-     * 
-     * @param {Card | Player} target The target
-     * @param {number} damage The damage to deal
-     * 
-     * @returns {boolean} Success
-     */
-    spellDmg(target, damage) {
-        const dmg = this.accountForSpellDmg(damage);
-
-        game.events.broadcast("SpellDealsDamage", [target, dmg], game.player);
-        game.attack(dmg, target);
-
-        return true;
-    }
-
     // Account for certain stats
-
-    /**
-     * Returns `damage` + The current player's spell damage
-     * 
-     * @param {number} damage
-     * 
-     * @returns {number} Damage + spell damage
-     */
-    accountForSpellDmg(damage) {
-        return damage + game.player.spellDamage;
-    }
-
+    
     /**
      * Filters out all cards that are uncollectible in a list
      * 

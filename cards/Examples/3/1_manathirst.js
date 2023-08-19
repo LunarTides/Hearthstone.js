@@ -24,14 +24,14 @@ module.exports = {
 
         // Select a target to freeze (and silence)
         // The first argument is the prompt to ask the user.
-        // The second argument is if it should take `This minion can't be targetted by Spells or Hero Powers` into account.
+        // The second argument is this card (aka `self`).
         // The third argument is the alignment of the target the user is restrictted to. If this is "enemy", the user can only select enemy targets, if this is "friendly", the user can only select friendly targets, if this is null, the user can select any target.
         // The fourth argument is the type of target. If this is "minion", the user can only select minions, if this is "hero", the user can only select heroes, if this is null, the user can select minions AND heroes.
         // The third and fourth argument works together.
         //
-        // Ask the user to select a target based on the `prompt`, don't care about elusive targets, the user can only select enemy minions
-        let target = game.interact.selectTarget(prompt, false, "enemy", "minion");
-        if (!target) return -1; // The user cancelled their selection, if you return `-1`, the game refunds the card.
+        // Ask the user to select a target based on the `prompt`, the user can only select enemy minions
+        let target = game.interact.selectTarget(prompt, self, "enemy", "minion");
+        if (!target) return game.constants.REFUND; // The user cancelled their selection, if you return this, the game refunds the card.
 
         if (ret) target.silence(); // If the manathirst was successful, silence the target first
         target.freeze(); // Freeze the target
