@@ -861,6 +861,9 @@ Log File Version: 1
 ${main_content}
 `
 
+        // Add a sha256 checksum to the content
+        content += require("crypto").createHash("sha256").update(content).digest("hex");
+
         let filename = "log";
         if (err) filename = "crashlog";
 
