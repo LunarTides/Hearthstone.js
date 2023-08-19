@@ -5,7 +5,6 @@
  */
 module.exports = {
     name: "Spell Damage Example",
-    stats: [1, 1],
     desc: "Deal $3 damage to the enemy hero. As long as this is in your hand, your spell damage increases by 1 every time you play a card.", // Put a $ sign before the number to add spell damage
     mana: 0,
     type: "Spell",
