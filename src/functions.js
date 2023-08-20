@@ -1726,13 +1726,14 @@ ${main_content}
      * @param {string} name The name of the quest
      * @param {number} value The amount to progress the quest by
      * 
-     * @returns {number} The new progress
+     * @returns {number | null} The new progress
      */
-    progressQuest(name, value = 1) {
-        let quest = game.player.secrets.find(s => s["name"] == name);
-        if (!quest) quest = game.player.sidequests.find(s => s["name"] == name);
-        if (!quest) quest = game.player.quests.find(s => s["name"] == name);
-
+    progressQuest(plr, name, value = 1) {
+        let quest = plr.secrets.find(s => s["name"] == name);
+        if (!quest) quest = plr.sidequests.find(s => s["name"] == name);
+        if (!quest) quest = plr.quests.find(s => s["name"] == name);
+        
+        if (!quest) return null;
         quest["progress"][0] += value;
 
         return quest["progress"][0];
