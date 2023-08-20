@@ -187,6 +187,7 @@ class Interact {
             console.log(cond_color("/debug             - Gives you infinite mana, health and armor"));
             console.log(cond_color("/exit              - Force exits the game. There will be no winner, and it will take you straight back to the runner."));
             console.log(cond_color("/history           - Displays a history of actions. This doesn't hide any information, and is the same thing the log files uses."));
+            console.log(cond_color("/reload | /rl      - Reloads the cards and config in the game (Use '/freload' or '/frl' to ignore the confirmation prompt (or disable the prompt in the advanced config))"));
             console.log(cond_color("/ai                - Gives you a list of the actions the ai(s) have taken in the order they took it"));
             console.log(cond_color("---------------------------" + ((game.config.debug) ? "" : "-")));
             
@@ -509,6 +510,40 @@ class Interact {
             }
 
             return finished;
+        }
+        else if (q == "/reload" || q == "/rl") {
+            if (!game.config.debug) return -1;
+
+            if (game.config.DebugReloadCommandConfirmation && !debug) {
+                let sure = this.yesNoQuestion(game.player, "Are you sure you want to reload? This will reset all cards to their base state.".yellow);
+                if (!sure) return false;
+            }
+
+            console.log("Deleting cache...");
+            Object.keys(require.cache).forEach(k => delete require.cache[k]);
+
+            console.log("Importing cards...");
+            game.functions.importCards(__dirname + "/../cards");
+
+            console.log("Importing config...");
+            game.functions.importConfig(__dirname + "/../config");
+
+            // Go through all the cards and reload them
+            console.log("Reloading cards...");
+            
+            [game.player1, game.player2].forEach(p => {
+                p.hand.forEach(c => c.doBlueprint());
+                p.deck.forEach(c => c.doBlueprint());
+            });
+
+            game.board.forEach(p => {
+                p.forEach(c => c.doBlueprint());
+            });
+        }
+        else if (q == "/freload" || q == "/frl") {
+            if (!game.config.debug) return -1;
+
+            this.handleCmds("/reload", true, true);
         }
         else if (q == "/history") {
             if (!game.config.debug) return -1;

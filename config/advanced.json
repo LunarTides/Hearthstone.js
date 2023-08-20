@@ -1,4 +1,7 @@
 {
+    "If this is true, the game will ask for confirmation before reloading the cards": "This is because reloading the cards will reset them all to their base state.",
+    "DebugReloadCommandConfirmation": true,
+
     "This is how many cards `getReadableCard` can display at once.": "This is to prevent a card from referencing itself, which would cause an infinite loop. I highly recommend keeping this value below 20.",
     "getReadableCardMaxDepth": 10,
 

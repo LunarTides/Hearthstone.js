@@ -304,32 +304,6 @@ class Card {
          */
         this.sleepy = true;
 
-        // Set these variables to true or false.
-        const exists = ["corrupted", "colossal", "dormant", "uncollectible", "frozen", "immune", "echo"];
-        exists.forEach(i => {
-            this[i] = this.blueprint[i] || false;
-        });
-
-        /*
-        Go through all blueprint variables and
-        set them in the card object
-        Example:
-        Blueprint: { name: "Sheep", stats: [1, 1], test: true }
-                                                   ^^^^^^^^^^
-        Do: this.test = true
-        
-        Function Example:
-        Blueprint: { name: "The Coin", mana: 0, cast(plr, game): { plr.gainMana(1) } }
-                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        Do: this.cast = [{ plr.gainMana(1) }]
-                        ^                   ^
-                            This is in an array so we can add multiple events on casts
-        */
-        Object.entries(this.blueprint).forEach(i => {
-            if (typeof i[1] == "function") this[i[0]] = [i[1]];
-            else this[i[0]] = JSON.parse(JSON.stringify(i[1]));
-        });
-
         /**
          * The maximum health of the card.
          * 
@@ -337,8 +311,7 @@ class Card {
          */
         this.maxHealth = null;
 
-        // Set maxHealth if the card is a minion or weapon
-        if (this.type == "Minion" || this.type == "Weapon") this.maxHealth = this.blueprint.stats[1];
+        this.doBlueprint();
 
         /**
          * The card's description / text.
@@ -403,6 +376,43 @@ class Card {
         this.uuid = uuidv4();
 
         return this.uuid;
+    }
+
+    /**
+     * Sets fields based on the blueprint of the card.
+     */
+    doBlueprint() {
+        // Reset the blueprint
+        this.blueprint = game.cards.find(c => c.name == this.name);
+
+        // Set these variables to true or false.
+        const exists = ["corrupted", "colossal", "dormant", "uncollectible", "frozen", "immune", "echo"];
+        exists.forEach(i => {
+            this[i] = this.blueprint[i] || false;
+        });
+
+        /*
+        Go through all blueprint variables and
+        set them in the card object
+        Example:
+        Blueprint: { name: "Sheep", stats: [1, 1], test: true }
+                                                   ^^^^^^^^^^
+        Do: this.test = true
+        
+        Function Example:
+        Blueprint: { name: "The Coin", mana: 0, cast(plr, game): { plr.gainMana(1) } }
+                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        Do: this.cast = [{ plr.gainMana(1) }]
+                        ^                   ^
+                            This is in an array so we can add multiple events on casts
+        */
+        Object.entries(this.blueprint).forEach(i => {
+            if (typeof i[1] == "function") this[i[0]] = [i[1]];
+            else this[i[0]] = JSON.parse(JSON.stringify(i[1]));
+        });
+
+        // Set maxHealth if the card is a minion or weapon
+        if (this.type == "Minion" || this.type == "Weapon") this.maxHealth = this.blueprint.stats[1];
     }
 
     /**

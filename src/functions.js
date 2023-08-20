@@ -1630,6 +1630,8 @@ ${main_content}
      * @returns {boolean} Success
      */
     importConfig(path) {
+        game.config = {};
+
         require("fs").readdirSync(path, { withFileTypes: true }).forEach(file => {
             let c = `${path}/${file.name}`;
 
