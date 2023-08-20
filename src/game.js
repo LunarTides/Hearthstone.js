@@ -387,9 +387,18 @@ class Game {
         this.graveyard = [[], []];
 
         /**
+         * @callback EventListenerCallback
+         * 
+         * @param {import('./types').EventKeys} key The key of the event
+         * @param {import('./types').EventValues} val The value of the event
+         * 
+         * @returns {any} The return value
+         */
+
+        /**
          * The event listeners that are attached to the game currently.
          * 
-         * @type {Object<number, import('./types').KeywordMethod>}
+         * @type {Object<number, EventListenerCallback>}
          */
         this.eventListeners = {};
 
@@ -981,7 +990,7 @@ class Game {
     /**
      * Makes a minion or hero attack another minion or hero
      * 
-     * @param {Card | Player | number} attacker The attacker | Amount of damage to deal
+     * @param {Card | Player | number | string} attacker The attacker | Amount of damage to deal
      * @param {Card | Player} target The target
      * 
      * @returns {true | "divineshield" | "taunt" | "stealth" | "frozen" | "plrnoattack" | "noattack" | "plrhasattacked" | "hasattacked" | "sleepy" | "cantattackhero" | "immune" | "dormant" | "invalid"} Success | Errorcode
@@ -998,8 +1007,9 @@ class Game {
 
         // Attacker is a number
         let spellDmgRegex = /\$(\d+?)/;
-        if (spellDmgRegex.test(attacker)) {
+        if (typeof attacker === "string" && spellDmgRegex.test(attacker)) {
             let match = attacker.match(spellDmgRegex);
+            if (!match) return "invalid";
             
             let dmg = parseInt(match[1]);
             dmg += this.player.spellDamage;
@@ -1026,6 +1036,8 @@ class Game {
 
             return true;
         }
+
+        if (typeof attacker === "string") return "invalid";
 
         // Check if there is a minion with taunt
         let taunts = this.board[this.opponent.id].filter(m => m.keywords.includes("Taunt"));

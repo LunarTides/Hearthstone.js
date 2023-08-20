@@ -181,6 +181,31 @@ const { Player } = require("./player");
  */
 
 /**
+ * @typedef {Object} VanillaCard
+ * @property {string} id
+ * @property {number} dbfId
+ * @property {string} name
+ * @property {string} text
+ * @property {string} flavor
+ * @property {string} artist
+ * @property {CardClass} cardClass
+ * @property {boolean} collectible
+ * @property {number} cost
+ * @property {string[]} mechanics
+ * @property {CardRarity} rarity
+ * @property {string} set
+ * @property {CardType} type
+ * @property {string} [faction]
+ * @property {boolean} [elite]
+ * @property {number} [attack]
+ * @property {number} [health]
+ * 
+ * @property {string} [howToEarn]
+ * @property {number} [battlegroundsNormalDbfId]
+ * @property {string} [mercenariesRole]
+ */
+
+/**
  * Card Blueprint
  * 
  * @typedef {Object} Blueprint

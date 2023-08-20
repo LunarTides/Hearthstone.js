@@ -925,7 +925,8 @@ class Interact {
         console.log(`\n${prompt}:`);
 
         values.forEach((v, i) => {
-            v = game.functions.getCardByName(v.name);
+            let card = game.functions.getCardByName(v.name);
+            if (!card) return;
 
             console.log(this.getReadableCard(v, i + 1));
         });
@@ -1209,7 +1210,7 @@ class Interact {
             let key = regedDesc[1]; // Gets the capturing group result
             let replacement = parseInt(key) + game.player.spellDamage;
 
-            desc = desc.replace(reg, replacement);
+            desc = desc.replace(reg, replacement.toString());
         }
 
         return desc;
@@ -1242,7 +1243,10 @@ class Interact {
         else desc = card.desc.length > 0 ? ` (${game.functions.parseTags(card.desc)}) ` : " ";
 
         // Extract placeholder value, remove the placeholder header and footer
-        if (card instanceof game.Card && card.placeholder || /\$(\d+?)/.test(card.desc)) desc = this.doPlaceholders(card, desc, _depth);
+        if (card instanceof game.Card && card.placeholder || /\$(\d+?)/.test(card.desc)) {
+            //@ts-ignore
+            desc = this.doPlaceholders(card, desc, _depth);
+        }
 
         let mana = `{${card.mana}} `;
 

@@ -255,6 +255,13 @@ class Card {
         this.frozen_turn = -1;
 
         /**
+         * The runes of the card.
+         * 
+         * @type {string}
+         */
+        this.runes = "";
+
+        /**
          * If the card is a spell, this is the school of the spell. E.g. "Fire" or "Frost" or "Fel".
          * 
          * @type {import("./types").SpellSchool}

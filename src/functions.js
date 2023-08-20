@@ -365,7 +365,7 @@ class DeckcodeFunctions {
         // Now it's just the cards left
 
         /**
-         * @type {VanillaCard[]}
+         * @type {import("./types").VanillaCard[]}
          */
         let vanillaCards;
 
@@ -455,10 +455,13 @@ class DeckcodeFunctions {
      * @returns {string} The Hearthstone.js deckcode
      */
     fromVanilla(plr, code) {
+        /**
+         * @type {import("deckstrings").DeckDefinition}
+         */
         let deck = deckstrings.decode(code); // Use the 'deckstrings' api's decode
 
         /**
-         * @type {VanillaCard[]}
+         * @type {import("./types").VanillaCard[]}
          */
         let cards;
 
@@ -754,7 +757,7 @@ class Functions {
         /**
          * The longest brick
          * 
-         * @type {[string, number]} [brick, length]
+         * @type {(string | number)[]} [brick, length]
          */
         let longest_brick = [];
 
@@ -780,6 +783,7 @@ class Functions {
 
             let strbuilder = "";
 
+            // @ts-ignore
             let diff = longest_brick[1] - b[0].length;
 
             strbuilder += b[0];
@@ -796,7 +800,7 @@ class Functions {
     /**
      * Create a (crash)log file
      *
-     * @param {Error} err If this is set, create a crash log. If this is not set, create a normal log file.
+     * @param {Error | null} [err=null] If this is set, create a crash log. If this is not set, create a normal log file.
      *
      * @returns {boolean} Success
      */
@@ -815,13 +819,13 @@ class Functions {
         let minute = date.getMinutes().toString();
         let second = date.getSeconds().toString();
 
-        if (day < 10) day = `0${day}`;
-        if (month < 10) month = `0${month}`;
-        if (year < 10) year = `0${year}`;
+        if (parseInt(day) < 10) day = `0${day}`;
+        if (parseInt(month) < 10) month = `0${month}`;
+        if (parseInt(year) < 10) year = `0${year}`;
 
-        if (hour < 10) hour = `0${hour}`;
-        if (minute < 10) minute = `0${minute}`;
-        if (second < 10) second = `0${second}`;
+        if (parseInt(hour) < 10) hour = `0${hour}`;
+        if (parseInt(minute) < 10) minute = `0${minute}`;
+        if (parseInt(second) < 10) second = `0${second}`;
 
         // Assemble the time
         let dateString = `${day}/${month}/${year} ${hour}:${minute}:${second}`; // 01/01/23 23:59:59
@@ -830,6 +834,8 @@ class Functions {
         // Grab the history of the game
         // handleCmds("history", echo, debug)
         let history = game.interact.handleCmds("history", false, true);
+        if (typeof history !== "string") throw new Error("createLogFile history did not return a string.");
+
         history = stripColors(history);
 
         // AI log
@@ -901,11 +907,11 @@ ${main_content}
     /**
      * Filter out some useless vanilla cards
      *
-     * @param {VanillaCard[]} cards The list of vanilla cards to filter
+     * @param {import("./types").VanillaCard[]} cards The list of vanilla cards to filter
      * @param {boolean} uncollectible If it should filter away uncollectible cards
      * @param {boolean} dangerous If there are cards with a 'howToEarn' field, filter away any cards that don't have that.
      *
-     * @returns {VanillaCard[]} The filtered cards
+     * @returns {import("./types").VanillaCard[]} The filtered cards
      * 
      * @example
      * // The numbers here are not accurate, but you get the point.
@@ -1037,19 +1043,21 @@ ${main_content}
     /**
      * Returns the card with the name `name`.
      * 
-     * @param {string} name The name
+     * @param {string | number} name The name
      * @param {boolean} refer If this should call `getCardById` if it doesn't find the card from the name
      * 
-     * @returns {import("./types").Blueprint} The blueprint of the card
+     * @returns {import("./types").Blueprint | null} The blueprint of the card
      */
     getCardByName(name, refer = true) {
-        let card;
+        let card = null;
 
         game.cards.forEach(c => {
+            if (typeof name == "number") return;
+
             if (c.name.toLowerCase() == name.toLowerCase()) card = c;
         });
 
-        if (!card && refer) return this.getCardById(name, false);
+        if (!card && refer) card = this.getCardById(name, false);
 
         return card;
     }
@@ -1057,10 +1065,10 @@ ${main_content}
     /**
      * Returns the card with the id of `id`.
      * 
-     * @param {number} id The id
+     * @param {number | string} id The id
      * @param {boolean} refer If this should call `getCardByName` if it doesn't find the card from the id
      * 
-     * @returns {import("./types").Blueprint} The blueprint of the card
+     * @returns {import("./types").Blueprint | null} The blueprint of the card
      */
     getCardById(id, refer = true) {
         let card = game.cards.filter(c => c.id == id)[0];
@@ -1204,6 +1212,10 @@ ${main_content}
             name = game.functions.capitalizeAll(name); // Capitalize all words
 
             let card = game.functions.getCardByName(name + " Starting Hero");
+            if (!card) {
+                console.warn("Found card in the startingheroes folder that isn't a starting hero. If the game crashes, please note this in your bug report. Name: " + name + ". Error Code: StartingHeroInvalidHandler");
+                return;
+            }
 
             classes.push(card.class);
         });
@@ -1236,6 +1248,7 @@ ${main_content}
                 str = str.blue;
                 break;
             case "Epic":
+                // @ts-ignore
                 str = str.brightMagenta;
                 break;
             case "Legendary":
@@ -1245,6 +1258,7 @@ ${main_content}
                 break;
         }
 
+        // @ts-ignore
         if (bold && rarity != "Legendary") str = str.bold;
 
         return str;
@@ -1331,6 +1345,7 @@ ${main_content}
                         ret = ret.reset;
                         break;
                     case "B":
+                        // @ts-ignore
                         ret = ret.bold;
                         break;
                     case "U":
@@ -1468,18 +1483,21 @@ ${main_content}
     }
 
     /**
+     * @callback elCallback
+     * @param {any} [val] The value of the event.
+     * 
+     * @returns {boolean | undefined} If this returns true, destroy the event listener.
+     */
+
+    /**
      * Add an event listener.
      *
-     * @param {import("./types").EventKeys} key The event to listen for. If this is an empty string, it will listen for any event.
-     * @param {elCallback} checkCallback This will trigger when the event gets broadcast, but before the actual code in `callback`. If this returns false, the event listener will ignore the event. If you set this to `true`, it is the same as doing `() => {return true}`.
+     * @param {import("./types").EventKeys | ""} key The event to listen for. If this is an empty string, it will listen for any event.
+     * @param {elCallback | true} checkCallback This will trigger when the event gets broadcast, but before the actual code in `callback`. If this returns false, the event listener will ignore the event. If you set this to `true`, it is the same as doing `() => {return true}`.
      * @param {elCallback} callback The code that will be ran if the event listener gets triggered and gets through `checkCallback`. If this returns true, the event listener will be destroyed.
      * @param {number} lifespan How many times the event listener will trigger and call "callback" before self-destructing. Set this to -1 to make it last forever, or until it is manually destroyed using "callback".
      *
      * @returns {function} If you call this function, it will destroy the event listener.
-     * 
-     * @callback elCallback
-     * @param {any} [val] The value of the event.
-     * @returns {bool | undefined} If this returns true, destroy the event listener.
      */
     addEventListener(key, checkCallback, callback, lifespan = 1) {
         let times = 0;
@@ -1531,9 +1549,9 @@ ${main_content}
     /**
      * Filters out all cards that are uncollectible in a list
      * 
-     * @param {Card[] | import("./types").Blueprint[]} cards The list of cards
+     * @param {(Card | import("./types").Blueprint)[]} cards The list of cards
      * 
-     * @returns {Card[] | import("./types").Blueprint[]} The cards without the uncollectible cards
+     * @returns {(Card | import("./types").Blueprint)[]} The cards without the uncollectible cards
      */
     accountForUncollectible(cards) {
         return cards.filter(c => !c.uncollectible);
@@ -1548,12 +1566,15 @@ ${main_content}
      * @param {string} prompt The prompt to ask the user
      * @param {Card[]} _values DON'T TOUCH THIS UNLESS YOU KNOW WHAT YOU'RE DOING
      * 
-     * @returns {string} The name of the adapt chosen.
+     * @returns {any[] | -1} An array with the name of the adapt(s) chosen, or -1 if the user cancelled.
      */
     adapt(minion, prompt = "Choose One:", _values = []) {
         const ADAPT = new game.Card("Adapt Helper", game.player);
 
-        return ADAPT.activate("adapt", minion, prompt, _values);
+        let ret = ADAPT.activate("adapt", minion, prompt, _values);
+        if (ret === false) throw new Error("activate couldn't find adapt for ADAPT card.");
+
+        return ret;
     }
 
     /**
@@ -1567,7 +1588,7 @@ ${main_content}
         // Find the card in player's deck/hand/hero that begins with "Galakrond, the "
         let deck_galakrond = plr.deck.find(c => c.displayName.startsWith("Galakrond, the "));
         let hand_galakrond = plr.hand.find(c => c.displayName.startsWith("Galakrond, the "));
-        if ((!deck_galakrond && !hand_galakrond) && !plr.hero.displayName.startsWith("Galakrond, the ")) return false;
+        if ((!deck_galakrond && !hand_galakrond) && !plr.hero?.displayName.startsWith("Galakrond, the ")) return false;
 
         plr.deck.filter(c => {
             c.activate("invoke");
@@ -1579,7 +1600,7 @@ ${main_content}
             c.activate("invoke");
         });
 
-        if (plr.hero.displayName.startsWith("Galakrond, the ")) plr.hero.activate("heropower");
+        if (plr.hero?.displayName.startsWith("Galakrond, the ")) plr.hero.activate("heropower");
         else if (deck_galakrond) deck_galakrond.activate("heropower");
         else if (hand_galakrond) hand_galakrond.activate("heropower");
 
@@ -1590,7 +1611,7 @@ ${main_content}
      * Chooses a minion from `list` and puts it onto the board.
      * 
      * @param {Player} plr The player
-     * @param {Card[]} list The list to recruit from. This defaults to `plr`'s deck.
+     * @param {Card[] | null} list The list to recruit from. This defaults to `plr`'s deck.
      * @param {number} amount The amount of minions to recruit
      * 
      * @returns {Card[]} Returns the cards recruited
@@ -1745,12 +1766,14 @@ ${main_content}
      * @param {string} name The name of the quest
      * @param {number} value The amount to progress the quest by
      * 
-     * @returns {number} The new progress
+     * @returns {number | null} The new progress
      */
     progressQuest(name, value = 1) {
         let quest = game.player.secrets.find(s => s["name"] == name);
         if (!quest) quest = game.player.sidequests.find(s => s["name"] == name);
         if (!quest) quest = game.player.quests.find(s => s["name"] == name);
+        
+        if (!quest) return null;
 
         quest["progress"][0] += value;
 
@@ -1766,9 +1789,9 @@ ${main_content}
      * @param {import("./types").EventKeys} key The key to listen for
      * @param {any} val The value that the quest needs
      * @param {import("./types").QuestCallback} callback The function to call when the key is invoked.
-     * @param {string} [next=null] The name of the next quest / sidequest / secret that should be added when the quest is done
+     * @param {string | null} [next=null] The name of the next quest / sidequest / secret that should be added when the quest is done
      * 
-     * @returns {bool} Success
+     * @returns {boolean} Success
      */
     addQuest(type, plr, card, key, val, callback, next = null) {
         const t = plr[type.toLowerCase() + "s"];
