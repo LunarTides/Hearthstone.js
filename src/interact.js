@@ -520,38 +520,39 @@ class Interact {
                 if (!sure) return false;
             }
 
-            console.log("Deleting cache...");
-            Object.keys(require.cache).forEach(k => delete require.cache[k]);
+            let success = true;
 
-            console.log("Importing cards...");
-            game.functions.importCards(__dirname + "/../cards");
+            success &&= this.withStatus("Deleting cache", () => Object.keys(require.cache).forEach(k => delete require.cache[k]));
 
-            console.log("Importing config...");
-            game.functions.importConfig(__dirname + "/../config");
+            success &&= this.withStatus("Importing cards", () => game.functions.importCards(__dirname + "/../cards"));
+            success &&= this.withStatus("Importing config", () => game.functions.importConfig(__dirname + "/../config"));
 
             // Go through all the cards and reload them
-            console.log("Reloading cards...");
+            success &&= this.withStatus("Reloading cards", () => {
+                /**
+                 * Reloads a card
+                 * 
+                 * @param {Card} card 
+                 */
+                const reload = (card) => {
+                    let clonedCard = card.imperfectCopy();
 
-            /**
-             * Reloads a card
-             * 
-             * @param {Card} card 
-             */
-            const reload = (card) => {
-                let clonedCard = card.imperfectCopy();
+                    card.doBlueprint();
+                    card.backups["init"] = clonedCard.backups["init"];
+                }
 
-                card.doBlueprint();
-                card.backups["init"] = clonedCard.backups["init"];
-            }
+                [game.player1, game.player2].forEach(p => {
+                    p.hand.forEach(c => reload(c));
+                    p.deck.forEach(c => reload(c));
+                });
 
-            [game.player1, game.player2].forEach(p => {
-                p.hand.forEach(c => reload(c));
-                p.deck.forEach(c => reload(c));
+                game.board.forEach(p => {
+                    p.forEach(c => reload(c));
+                });
             });
 
-            game.board.forEach(p => {
-                p.forEach(c => reload(c));
-            });
+            if (!debug && success) game.input("\nThe cards have been reloaded.\nPress enter to continue...");
+            if (!success) game.input("\nSome steps failed. The game could not be fully reloaded. Please report this.\nPress enter to continue...");
         }
         else if (q == "/freload" || q == "/frl") {
             if (!game.config.debug) return -1;
@@ -1138,6 +1139,24 @@ class Interact {
         if (disappear)
         console.log(`|||         This will disappear once you end your turn.       ` + ' '.repeat(game.config.branch.length) + `|||`)
         console.log('|'.repeat(version.length + 8));
+    }
+
+    /**
+     * Shows `status`..., calls `callback`, then adds 'OK' or 'FAIL' to the end of that line depending on the result the callback
+     * 
+     * @param {string} status The status to show.
+     * @param {Function} callback The callback to call.
+     * 
+     * @returns {boolean} The return value of the callback. If the callback didn't explicitly return false then it was successful.
+     */
+    withStatus(status, callback) {
+        process.stdout.write(`${status}...`);
+        let success = callback() !== false;
+        
+        let msg = (success) ? "OK" : "FAIL";
+        process.stdout.write(`\r\x1b[K${status}...${msg}\n`);
+
+        return success;
     }
 
     /**
