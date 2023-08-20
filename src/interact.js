@@ -108,7 +108,11 @@ class Interact {
      * @returns {boolean | string | -1} a string if "echo" is false
      */
     handleCmds(q, echo = true, debug = false) {
-        if (q === "end") game.endTurn();
+        let args = q.split(" ");
+        let name = args[0];
+        args.shift();
+
+        if (name === "end") game.endTurn();
         else if (q === "hero power") {
             if (game.player.ai) {
                 return game.player.heroPower();
@@ -131,11 +135,11 @@ class Interact {
             this.printAll();
             game.player.heroPower();
         }
-        else if (q === "attack") {
+        else if (name === "attack") {
             this.doTurnAttack();
             game.killMinions();
         }
-        else if (q === "use") {
+        else if (name === "use") {
             // Use location
             let errorcode = this.useLocation();
             game.killMinions();
@@ -161,7 +165,7 @@ class Interact {
             console.log(`${err}.`.red);
             game.input();
         }
-        else if (q === "help") {
+        else if (name === "help") {
             this.printName();
             console.log("(In order to run a command; input the name of the command and follow further instruction.)\n");
             console.log("Available commands:");
@@ -193,7 +197,7 @@ class Interact {
             
             game.input("\nPress enter to continue...\n");
         }
-        else if (q == "view") {
+        else if (name === "view") {
             let isHand = this.question(game.player, "Do you want to view a minion on the board, or in your hand?", ["Board", "Hand"]);
             isHand = isHand == "Hand";
 
@@ -214,20 +218,20 @@ class Interact {
 
             this.viewCard(card);
         }
-        else if (q == "detail") {
+        else if (name === "detail") {
             game.player.detailedView = !game.player.detailedView;
         }
-        else if (q == "concede") {
+        else if (name === "concede") {
             let confirmation = this.yesNoQuestion(game.player, "Are you sure you want to concede?");
             if (!confirmation) return false;
 
             game.endGame(game.player.getOpponent());
         }
-        else if (q == "license") {
+        else if (name === "license") {
             let start = (process.platform == 'darwin' ? 'open' : process.platform == 'win32' ? 'start' : 'xdg-open');
             require('child_process').exec(start + ' ' + license_url);
         }
-        else if (q == "version") {
+        else if (name === "version") {
             while (true) {
                 let todos = Object.entries(game.config.todo);
 
@@ -301,7 +305,7 @@ class Interact {
                 game.input("\nPress enter to continue...");
             }
         }
-        else if (q == "history") {
+        else if (name === "history") {
             if (echo === false) {}
             else console.log("Cards that are shown are collected while this screen is rendering. This means that it gets the information about the card from where it is when you ran this command, for example; the graveyard. This is why most cards have <1 health.".yellow);
 
@@ -419,35 +423,30 @@ class Interact {
             return finished;
         }
 
-        else if (q.startsWith("/give ")) {
-            if (!game.config.debug) return -1;
-    
-            let name = q.split(" ");
-            name.shift();
-            name = name.join(" ");
-    
-            let card = game.functions.getCardByName(name);
+        else if (name.startsWith("/") && !game.config.debug) return -1;
+
+        else if (name === "/give") {    
+            if (args.length <= 0) return -1;
+
+            let card = game.functions.getCardByName(args[0]);
             if (!card) {
-                game.input("Invalid card: `" + name + "`.\n");
+                game.input("Invalid card: `" + args[0] + "`.\n");
                 return false;
             }
     
             game.player.addToHand(new game.Card(card.name, game.player));
         }
-        else if (q.startsWith("/eval")) {
-            if (!game.config.debug) return -1;
+        else if (name === "/eval") {
+            if (args.length <= 0) return -1;
 
             let log = false;
 
-            let code = q.split(" ");
-            code.shift();
-
-            if (code[0] == "log") {
+            if (args[0] == "log") {
                 log = true;
-                code.shift();
+                args.shift();
             }
-            
-            code = code.join(" ");
+
+            let code = args.join(" ");
 
             if (log) {
                 if (code[code.length - 1] == ";") code = code.slice(0, -1);
@@ -467,9 +466,7 @@ class Interact {
             }
             game.evaling = false;
         }
-        else if (q == "/debug") {
-            if (!game.config.debug) return -1;
-    
+        else if (name === "/debug") {    
             game.player.maxMaxMana = 1000;
             game.player.maxMana = 1000;
             game.player.mana = 1000;
@@ -478,14 +475,10 @@ class Interact {
             game.player.armor += 100000;
             game.player.fatigue = 0;
         }
-        else if (q == "/exit") {
-            if (!game.config.debug) return -1;
-
+        else if (name === "/exit") {
             game.running = false;
         }
-        else if (q == "/ai") {
-            if (!game.config.debug) return -1;
-
+        else if (name === "/ai") {
             let finished = "";
 
             if (echo) finished += "AI Info:\n\n";
@@ -512,9 +505,7 @@ class Interact {
 
             return finished;
         }
-        else if (q == "/reload" || q == "/rl") {
-            if (!game.config.debug) return -1;
-
+        else if (name === "/reload" || name === "/rl") {
             if (game.config.reloadCommandConfirmation && !debug) {
                 let sure = this.yesNoQuestion(game.player, "Are you sure you want to reload? This will reset all cards to their base state.".yellow);
                 if (!sure) return false;
@@ -554,14 +545,10 @@ class Interact {
             if (!debug && success) game.input("\nThe cards have been reloaded.\nPress enter to continue...");
             if (!success) game.input("\nSome steps failed. The game could not be fully reloaded. Please report this.\nPress enter to continue...");
         }
-        else if (q == "/freload" || q == "/frl") {
-            if (!game.config.debug) return -1;
-
+        else if (name === "/freload" || name === "/frl") {
             this.handleCmds("/reload", true, true);
         }
-        else if (q == "/history") {
-            if (!game.config.debug) return -1;
-
+        else if (name === "/history") {
             this.handleCmds("history", true, true);
         }
         // -1 if the command is not found
