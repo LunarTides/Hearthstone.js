@@ -330,10 +330,6 @@ class Card {
          */
         this.enchantments = [];
 
-        // Make a backup of "this" to be used when silencing this card
-        let backups = {"init": {}};
-        Object.entries(this).forEach(i => backups["init"][i[0]] = i[1]);
-
         /**
          * A list of backups of this card.
          * 
@@ -341,7 +337,11 @@ class Card {
          * 
          * @type {Object<string, Card>}
          */
-        this.backups = backups;
+        this.backups = {};
+
+        // Make a backup of "this" to be used when silencing this card
+        if (!this.backups["init"]) this.backups["init"] = {};
+        Object.entries(this).forEach(i => this.backups["init"][i[0]] = i[1]);
 
         /**
          * The owner of this card.

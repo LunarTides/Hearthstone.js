@@ -530,14 +530,26 @@ class Interact {
 
             // Go through all the cards and reload them
             console.log("Reloading cards...");
-            
+
+            /**
+             * Reloads a card
+             * 
+             * @param {Card} card 
+             */
+            const reload = (card) => {
+                let clonedCard = card.imperfectCopy();
+
+                card.doBlueprint();
+                card.backups["init"] = clonedCard.backups["init"];
+            }
+
             [game.player1, game.player2].forEach(p => {
-                p.hand.forEach(c => c.doBlueprint());
-                p.deck.forEach(c => c.doBlueprint());
+                p.hand.forEach(c => reload(c));
+                p.deck.forEach(c => reload(c));
             });
 
             game.board.forEach(p => {
-                p.forEach(c => c.doBlueprint());
+                p.forEach(c => reload(c));
             });
         }
         else if (q == "/freload" || q == "/frl") {
