@@ -356,6 +356,7 @@ class Interact {
                 }
                 else if (val instanceof game.Player) return `Player ${val.id + 1}`;
 
+                // Return val as-is if it is not a card / player
                 return val;
             }
 
@@ -514,7 +515,7 @@ class Interact {
         else if (q == "/reload" || q == "/rl") {
             if (!game.config.debug) return -1;
 
-            if (game.config.DebugReloadCommandConfirmation && !debug) {
+            if (game.config.reloadCommandConfirmation && !debug) {
                 let sure = this.yesNoQuestion(game.player, "Are you sure you want to reload? This will reset all cards to their base state.".yellow);
                 if (!sure) return false;
             }
@@ -676,14 +677,21 @@ class Interact {
     deckCode(plr) {
         this.printName();
     
-        let debugStatement = (game.config.debug || game.config.branch !== "stable") ? " (Leave this empty for a test deck)".gray : "";
+        /**
+         * If the test deck (30 Sheep) should be allowed
+         * 
+         * @type {boolean}
+         */
+        let allowTestDeck = game.config.debug || game.config.branch !== "stable";
+
+        let debugStatement = allowTestDeck ? " (Leave this empty for a test deck)".gray : "";
         const deckcode = game.input(`Player ${plr.id + 1}, please type in your deckcode${debugStatement}: `);
 
         let error;
 
         if (deckcode.length > 0) error = game.functions.deckcode.import(plr, deckcode);
         else {
-            if (!game.config.debug && game.config.branch == "stable") { // I want to be able to test without debug mode on in a non-stable branch
+            if (!allowTestDeck) { // I want to be able to test without debug mode on in a non-stable branch
                 // Give error message
                 game.input("Please enter a deckcode!\n".red);
                 return false;
@@ -1197,17 +1205,25 @@ class Interact {
      *
      * @param {Card | import('./types').Blueprint} card The card
      * @param {number} [i=-1] If this is set, this function will add `[i]` to the beginning of the card. This is useful if there are many different cards to choose from.
-     *
+     * @param {number} [_depth=0] The depth of recursion. DO NOT SET THIS MANUALLY.
+     * 
      * @returns {string} The readable card
      */
     getReadableCard(card, i = -1, _depth = 0) {
+        /**
+         * If it should show detailed errors regarding depth.
+         * 
+         * @type {boolean}
+         */
+        let showDetailedError = (game.config.debug || game.config.branch !== "stable" || game.player.detailedView);
+
         if (_depth > 0 && game.config.getReadableCardNoRecursion) {
-            if (game.config.debug || game.config.branch != "stable" || game.player.detailedView) return "RECURSION ATTEMPT BLOCKED";
+            if (showDetailedError) return "RECURSION ATTEMPT BLOCKED";
             else return "...";
         }
 
         if (_depth > game.config.getReadableCardMaxDepth) {
-            if (game.config.debug || game.config.branch != "stable" || game.player.detailedView) return "MAX DEPTH REACHED";
+            if (showDetailedError) return "MAX DEPTH REACHED";
             else return "...";
         }
 

@@ -314,16 +314,6 @@ class Card {
         this.doBlueprint();
 
         /**
-         * The card's description / text.
-         * 
-         * Might include color tags like `Example [033Example 2[142`.
-         * Use `colors.strip()` to remove these.
-         * 
-         * @type {string}
-         */
-        this.desc = game.functions.parseTags(this.desc);
-
-        /**
          * The card's enchantments.
          * 
          * @type {[[string, Card]]}
@@ -413,6 +403,16 @@ class Card {
 
         // Set maxHealth if the card is a minion or weapon
         if (this.type == "Minion" || this.type == "Weapon") this.maxHealth = this.blueprint.stats[1];
+
+        /**
+         * The card's description / text.
+         * 
+         * Might include color tags like `Example [033Example 2[142`.
+         * Use `colors.strip()` to remove these.
+         * 
+         * @type {string}
+         */
+        this.desc = game.functions.parseTags(this.desc);
     }
 
     /**
