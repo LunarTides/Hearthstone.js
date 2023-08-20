@@ -354,7 +354,7 @@ class Game {
          * 
          * Do
          * ```
-         * Math.floor(game.turns / 2)
+         * Math.ceil(game.turns / 2)
          * ```
          * for a more conventional turn counter.
          * 

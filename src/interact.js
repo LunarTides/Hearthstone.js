@@ -629,7 +629,8 @@ class Interact {
     deckCode(plr) {
         this.printName();
     
-        const deckcode = game.input(`Player ${plr.id + 1}, please type in your deckcode ` + `(Leave this empty for a test deck)`.gray + `: `);
+        let debugStatement = (game.config.debug || game.config.branch !== "stable") ? " (Leave this empty for a test deck)".gray : "";
+        const deckcode = game.input(`Player ${plr.id + 1}, please type in your deckcode${debugStatement}: `);
 
         let error;
 

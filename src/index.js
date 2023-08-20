@@ -24,6 +24,8 @@ let game;
 
 let decks = [];
 function runner(_decks) {
+    Object.keys(require.cache).forEach(k => delete require.cache[k]);
+
     try {
         game.cards = [];
         game.config = {};
