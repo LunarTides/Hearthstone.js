@@ -444,24 +444,29 @@ class Game {
      * @returns {string} What the user answered
      */
     input(q = "", care = true) {
-        if (this.no_input && care) return "";
+        const wrapper = (a) => {
+            this.events.broadcast("Input", a, this.player);
+            return a;
+        }
+
+        if (this.no_input && care) return wrapper("");
 
         // Let the game make choices for the user
         if (this.player.inputQueue) {
             let queue = this.player.inputQueue;
 
-            if (typeof(queue) == "string") return queue;
-            else if (!(queue instanceof Array)) return question(q); // Invalid queue
+            if (typeof(queue) == "string") return wrapper(queue);
+            else if (!(queue instanceof Array)) return wrapper(question(q)); // Invalid queue
 
             const answer = queue[0];
             this.functions.remove(queue, answer);
 
             if (queue.length <= 0) this.player.inputQueue = null;
 
-            return answer;
+            return wrapper(answer);
         }
 
-        return question(q);
+        return wrapper(question(q));
     }
 
     /**

@@ -132,7 +132,8 @@ const { Player } = require("./player");
  * "HeroPower" |
  * "TargetSelectionStarts" |
  * "TargetSelected" |
- * "Eval"} EventKeys
+ * "Eval" |
+ * "Input"} EventKeys
  */
 
 /**
