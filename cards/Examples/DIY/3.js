@@ -105,10 +105,10 @@ module.exports = {
         let correctParameters = false;
 
         game.functions.addEventListener("TargetSelectionStarts", true, (val) => {
-            let [prompt, elusive, force_side, force_class, flags] = val;
+            let [prompt, card, force_side, force_class, flags] = val;
 
             correctParameters = (
-                elusive == true &&
+                card == self &&
                 force_side == null &&
                 force_class == "minion" &&
                 flags.length == 0
@@ -124,6 +124,6 @@ module.exports = {
             target.getHealth() <= 0 &&
             correctParameters &&
             game.graveyard[plr.id].includes(target)
-        );
+        , "3.js");
     }
 }

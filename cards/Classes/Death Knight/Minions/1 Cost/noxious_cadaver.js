@@ -20,7 +20,7 @@ module.exports = {
      * @type {import("../../../../../src/types").KeywordMethod}
      */
     battlecry(plr, game, self) {
-        let target = game.interact.selectTarget("Deal 2 damage to an enemy.", false, "enemy");
+        let target = game.interact.selectTarget("Deal 2 damage to an enemy.", self, "enemy");
         if (!target) return -1;
 
         game.attack(2, target);

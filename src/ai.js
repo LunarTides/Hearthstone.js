@@ -553,14 +553,14 @@ class AI {
      * Gets automatically called by `Interactive.selectTarget`, so use that instead.
      * 
      * @param {string} prompt The prompt to show the ai.
-     * @param {boolean | string} elusive If the ai should care about `This minion can't be targetted by spells or hero powers`.
+     * @param {Card | null} card The card that called this function
      * @param {"friendly" | "enemy" | null} [force_side=null] The side the ai should be constrained to.
      * @param {"minion" | "hero" | null} [force_class=null] The type of target the ai should be constrained to.
-     * @param {string[]} [flags=[]] Some flags
+     * @param {import("./types").SelectTargetFlags[]} [flags=[]] Some flags
      * 
      * @returns {Card | Player | false} The target selected.
      */
-    selectTarget(prompt, elusive, force_side = null, force_class = null, flags = []) {
+    selectTarget(prompt, card, force_side = null, force_class = null, flags = []) {
         if (flags.includes("allow_locations") && force_class != "hero") {
             let locations = game.board[this.plr.id].filter(m => m.type == "Location" && m.cooldown == 0 && !this.used_locations_this_turn.includes(m));
             this.used_locations_this_turn.push(locations[0]);
@@ -620,7 +620,7 @@ class AI {
 
         game.board[sid].forEach(m => {
             if (!this._canTargetMinion(m)) return;
-            if ((elusive && m.elusive) || m.type == "Location") return;
+            if ((card && card.type == "Spell" && m.keywords.includes("Elusive")) || m.type == "Location") return;
             
             let s = this.analyzePositiveCard(m);
 

@@ -19,8 +19,8 @@ module.exports = {
     /**
      * @type {import("../../src/types").KeywordMethod}
      */
-    battlecry(plr, game) {
-        let target = game.interact.selectTarget("Give a friendly minion +1 Attack and Rush", "friendly", "minion");
+    battlecry(plr, game, self) {
+        let target = game.interact.selectTarget("Give a friendly minion +1 Attack and Rush", self, "friendly", "minion");
         if (!target) return -1;
 
         target.addStats(1, 0);

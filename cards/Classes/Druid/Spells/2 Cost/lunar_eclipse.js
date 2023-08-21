@@ -5,7 +5,7 @@
  */
 module.exports = {
     name: "Lunar Eclipse",
-    desc: "Deal 3 damage to a minion. Your next spell this turn costs (2) less.",
+    desc: "Deal $3 damage to a minion. Your next spell this turn costs (2) less.",
     mana: 2,
     type: "Spell",
     class: "Druid",
@@ -19,14 +19,12 @@ module.exports = {
      */
     cast(plr, game, self) {
         // Deal 3 damage to a minion.
-        let minion = game.interact.selectTarget("Deal 3 damage to a minion.", true, null, "minion");
+        let minion = game.interact.selectTarget("Deal 3 damage to a minion.", self, null, "minion");
         if (!minion) return -1;
 
-        game.functions.spellDmg(minion, 3);
+        game.attack("$3", minion);
         
         // Your next spell this turn costs 2 less.
-        let cards = [];
-
         let remove = game.functions.addEventListener("", true, () => {
             plr.hand.filter(c => c.type == "Spell").forEach(c => {
                 if (!c.enchantmentExists("-2 mana", self)) c.addEnchantment("-2 mana", self);

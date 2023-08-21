@@ -569,7 +569,8 @@ function help() {
     console.log("\nNotes:".bold);
 
     console.log("Type 'cards Neutral' to see Neutral cards.");
-    console.log("There is a known bug where if you add 'Prince Renathal', and then remove him, the deck will still require 40 cards. The only way around this is to restart the deck creator."); // TODO: Fix this
+    // TODO: #245 Fix this
+    console.log("There is a known bug where if you add 'Prince Renathal', and then remove him, the deck will still require 40 cards. The only way around this is to restart the deck creator.");
 
     game.input("\nPress enter to continue...\n");
 }

@@ -5,7 +5,7 @@
  */
 module.exports = {
     name: "Raise Dead",
-    desc: "Deal 3 damage to your hero. Return two friendly minions that died this game to your hand.",
+    desc: "Deal $3 damage to your hero. Return two friendly minions that died this game to your hand.",
     mana: 0,
     type: "Spell",
     class: "Priest / Warlock",
@@ -18,7 +18,7 @@ module.exports = {
      * @type {import("../../../../../../src/types").KeywordMethod}
      */
     cast(plr, game, self) {
-        game.functions.spellDmg(plr, 3);
+        game.attack("$3", plr);
 
         let grave = game.graveyard[plr.id];
 

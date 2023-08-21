@@ -40,10 +40,10 @@ class Interact {
             if (attacker === -1 || target === -1) return -1;
             if (attacker === null || target === null) return null;
         } else {
-            attacker = this.selectTarget("Which minion do you want to attack with?", false, "friendly");
+            attacker = this.selectTarget("Which minion do you want to attack with?", null, "friendly");
             if (!attacker) return false;
 
-            target = this.selectTarget("Which minion do you want to attack?", false, "enemy");
+            target = this.selectTarget("Which minion do you want to attack?", null, "enemy");
             if (!target) return false;
         }
     
@@ -102,12 +102,17 @@ class Interact {
      * Checks if "q" is a command, if it is, do something, if not return -1
      * 
      * @param {string} q The command
-     * @param {any} [args]
+     * @param {boolean} [echo=true] If this is false, it doesn't log information to the screen. Only used by "history", "/ai"
+     * @param {boolean} [debug=false] If this is true, it does some additional, debug only, things. Only used by "history"
      * 
-     * @returns {boolean | string | -1} a string if "args" is defined
+     * @returns {boolean | string | -1} a string if "echo" is false
      */
-    handleCmds(q, ...args) {
-        if (q === "end") game.endTurn();
+    handleCmds(q, echo = true, debug = false) {
+        let args = q.split(" ");
+        let name = args[0];
+        args.shift();
+
+        if (name === "end") game.endTurn();
         else if (q === "hero power") {
             if (game.player.ai) {
                 return game.player.heroPower();
@@ -130,11 +135,11 @@ class Interact {
             this.printAll();
             game.player.heroPower();
         }
-        else if (q === "attack") {
+        else if (name === "attack") {
             this.doTurnAttack();
             game.killMinions();
         }
-        else if (q === "use") {
+        else if (name === "use") {
             // Use location
             let errorcode = this.useLocation();
             game.killMinions();
@@ -160,7 +165,7 @@ class Interact {
             console.log(`${err}.`.red);
             game.input();
         }
-        else if (q === "help") {
+        else if (name === "help") {
             this.printName();
             console.log("(In order to run a command; input the name of the command and follow further instruction.)\n");
             console.log("Available commands:");
@@ -186,18 +191,20 @@ class Interact {
             console.log(cond_color("/set (name) (value) - Changes a setting to (value). Look in the config files for a list of settings."));
             console.log(cond_color("/debug              - Gives you infinite mana, health and armor"));
             console.log(cond_color("/exit               - Force exits the game. There will be no winner, and it will take you straight back to the runner."));
+            console.log(cond_color("/history            - Displays a history of actions. This doesn't hide any information, and is the same thing the log files uses."));
+            console.log(cond_color("/reload | /rl       - Reloads the cards and config in the game (Use '/freload' or '/frl' to ignore the confirmation prompt (or disable the prompt in the advanced config))"));
             console.log(cond_color("/ai                 - Gives you a list of the actions the ai(s) have taken in the order they took it"));
             console.log(cond_color("---------------------------" + ((game.config.debug) ? "" : "-")));
             
             game.input("\nPress enter to continue...\n");
         }
-        else if (q == "view") {
+        else if (name === "view") {
             let isHand = this.question(game.player, "Do you want to view a minion on the board, or in your hand?", ["Board", "Hand"]);
             isHand = isHand == "Hand";
 
             if (!isHand) {
                 // allow_locations Makes selecting location cards allowed. This is disabled by default to prevent, for example, spells from killing the card.
-                let minion = this.selectTarget("Which minion do you want to view?", false, null, "minion", ["allow_locations"]);
+                let minion = this.selectTarget("Which minion do you want to view?", null, null, "minion", ["allow_locations"]);
                 if (!minion) return false;
         
                 this.viewCard(minion);
@@ -212,22 +219,20 @@ class Interact {
 
             this.viewCard(card);
         }
-        else if (q == "detail") {
-            this.printAll(game.player, true);
-            game.input("Press enter to continue...\n");
-            this.printAll();
+        else if (name === "detail") {
+            game.player.detailedView = !game.player.detailedView;
         }
-        else if (q == "concede") {
+        else if (name === "concede") {
             let confirmation = this.yesNoQuestion(game.player, "Are you sure you want to concede?");
             if (!confirmation) return false;
 
             game.endGame(game.player.getOpponent());
         }
-        else if (q == "license") {
+        else if (name === "license") {
             let start = (process.platform == 'darwin' ? 'open' : process.platform == 'win32' ? 'start' : 'xdg-open');
             require('child_process').exec(start + ' ' + license_url);
         }
-        else if (q == "version") {
+        else if (name === "version") {
             while (true) {
                 let todos = Object.entries(game.config.todo);
 
@@ -301,15 +306,13 @@ class Interact {
                 game.input("\nPress enter to continue...");
             }
         }
-        else if (q == "history") {
-            if (args[0] === true) {}
+        else if (name === "history") {
+            if (echo === false) {}
             else console.log("Cards that are shown are collected while this screen is rendering. This means that it gets the information about the card from where it is when you ran this command, for example; the graveyard. This is why most cards have <1 health.".yellow);
 
             // History
             let history = game.events.history;
             let finished = "";
-
-            let history_debug = args.length >= 2 && args[1] == true;
 
             const showCard = (val) => {
                 return this.getReadableCard(val) + " which belongs to: " + val.plr.name.blue + ", and has uuid: " + val.uuid.slice(0, 8);
@@ -358,6 +361,7 @@ class Interact {
                 }
                 else if (val instanceof game.Player) return `Player ${val.id + 1}`;
 
+                // Return val as-is if it is not a card / player
                 return val;
             }
 
@@ -371,7 +375,7 @@ class Interact {
                     if (plr != prevPlayer) hasPrintedHeader = false;
                     prevPlayer = plr;
 
-                    if (game.config.whitelistedHistoryKeys.includes(key) || history_debug) {}
+                    if (game.config.whitelistedHistoryKeys.includes(key) || debug) {}
                     else return;
 
                     // If the `key` is "AddCardToHand", check if the previous history entry was `DrawCard`, and they both contained the exact same `val`.
@@ -384,7 +388,7 @@ class Interact {
                         }
                     }
 
-                    let shouldHide = game.config.hideValueHistoryKeys.includes(key) && !history_debug;
+                    let shouldHide = game.config.hideValueHistoryKeys.includes(key) && !debug;
 
                     if (!hasPrintedHeader) finished += `\nTurn ${t} - Player [${plr.name}]\n`; 
                     hasPrintedHeader = true;
@@ -410,7 +414,7 @@ class Interact {
             });
 
 
-            if (args[0] === false) {}
+            if (echo === false) {}
             else {
                 console.log(finished);
 
@@ -420,35 +424,32 @@ class Interact {
             return finished;
         }
 
-        else if (q.startsWith("/give ")) {
-            if (!game.config.debug) return -1;
-    
-            let name = q.split(" ");
-            name.shift();
-            name = name.join(" ");
-    
-            let card = game.functions.getCardByName(name);
+        else if (name.startsWith("/") && !game.config.debug) return -1;
+
+        else if (name === "/give") {    
+            if (args.length <= 0) return -1;
+
+            let cardName = args.join(" ");
+
+            let card = game.functions.getCardByName(cardName);
             if (!card) {
-                game.input("Invalid card: `" + name + "`.\n");
+                game.input("Invalid card: `" + cardName + "`.\n");
                 return false;
             }
     
             game.player.addToHand(new game.Card(card.name, game.player));
         }
-        else if (q.startsWith("/eval")) {
-            if (!game.config.debug) return -1;
+        else if (name === "/eval") {
+            if (args.length <= 0) return -1;
 
             let log = false;
 
-            let code = q.split(" ");
-            code.shift();
-
-            if (code[0] == "log") {
+            if (args[0] == "log") {
                 log = true;
-                code.shift();
+                args.shift();
             }
-            
-            code = code.join(" ");
+
+            let code = args.join(" ");
 
             if (log) {
                 if (code[code.length - 1] == ";") code = code.slice(0, -1);
@@ -468,9 +469,7 @@ class Interact {
             }
             game.evaling = false;
         }
-        else if (q == "/debug") {
-            if (!game.config.debug) return -1;
-    
+        else if (name === "/debug") {    
             game.player.maxMaxMana = 1000;
             game.player.maxMana = 1000;
             game.player.mana = 1000;
@@ -479,17 +478,13 @@ class Interact {
             game.player.armor += 100000;
             game.player.fatigue = 0;
         }
-        else if (q == "/exit") {
-            if (!game.config.debug) return -1;
-
+        else if (name === "/exit") {
             game.running = false;
         }
-        else if (q == "/ai") {
-            if (!game.config.debug) return -1;
-
+        else if (name === "/ai") {
             let finished = "";
 
-            if (!args[0] === false) finished += "AI Info:\n\n";
+            if (echo) finished += "AI Info:\n\n";
 
             for (let i = 1; i <= 2; i++) {
                 const plr = game["player" + i];
@@ -504,7 +499,7 @@ class Interact {
                 finished += "}\n";
             }
 
-            if (args[0] === false) {}
+            if (echo === false) {}
             else {
                 console.log(finished);
 
@@ -513,7 +508,7 @@ class Interact {
 
             return finished;
         }
-        else if (q.startsWith("/set")) {
+        else if (name === "/set") {
             if (!game.config.debug) return -1;
 
             let args = q.split(" ");
@@ -576,6 +571,52 @@ class Interact {
             game.doConfigAI();
             
             game.input();
+        }
+        else if (name === "/reload" || name === "/rl") {
+            if (game.config.reloadCommandConfirmation && !debug) {
+                let sure = this.yesNoQuestion(game.player, "Are you sure you want to reload? This will reset all cards to their base state.".yellow);
+                if (!sure) return false;
+            }
+
+            let success = true;
+
+            success &&= this.withStatus("Deleting cache", () => Object.keys(require.cache).forEach(k => delete require.cache[k]));
+
+            success &&= this.withStatus("Importing cards", () => game.functions.importCards(__dirname + "/../cards"));
+            success &&= this.withStatus("Importing config", () => game.functions.importConfig(__dirname + "/../config"));
+
+            // Go through all the cards and reload them
+            success &&= this.withStatus("Reloading cards", () => {
+                /**
+                 * Reloads a card
+                 * 
+                 * @param {Card} card 
+                 */
+                const reload = (card) => {
+                    let clonedCard = card.imperfectCopy();
+
+                    card.doBlueprint();
+                    card.backups["init"] = clonedCard.backups["init"];
+                }
+
+                [game.player1, game.player2].forEach(p => {
+                    p.hand.forEach(c => reload(c));
+                    p.deck.forEach(c => reload(c));
+                });
+
+                game.board.forEach(p => {
+                    p.forEach(c => reload(c));
+                });
+            });
+
+            if (!debug && success) game.input("\nThe cards have been reloaded.\nPress enter to continue...");
+            if (!success) game.input("\nSome steps failed. The game could not be fully reloaded. Please report this.\nPress enter to continue...");
+        }
+        else if (name === "/freload" || name === "/frl") {
+            this.handleCmds("/reload", true, true);
+        }
+        else if (name === "/history") {
+            this.handleCmds("history", true, true);
         }
         // -1 if the command is not found
         else return -1;
@@ -662,13 +703,13 @@ class Interact {
         let locations = game.board[game.player.id].filter(m => m.type == "Location");
         if (locations.length <= 0) return "nolocations";
 
-        let location = this.selectTarget("Which location do you want to use?", false, "friendly", "minion", ["allow_locations"]);
+        let location = this.selectTarget("Which location do you want to use?", null, "friendly", "minion", ["allow_locations"]);
         if (!location) return -1;
 
         if (location.type != "Location") return "invalidtype";
         if (location.cooldown > 0) return "cooldown";
         
-        if (location.activate("use") === -1) return -1;
+        if (location.activate("use") === game.constants.REFUND) return -1;
         
         location.setStats(0, location.getHealth() - 1);
         location.cooldown = location.backups.init.cooldown;
@@ -691,23 +732,31 @@ class Interact {
     deckCode(plr) {
         this.printName();
     
-        const deckcode = game.input(`Player ${plr.id + 1}, please type in your deckcode ` + `(Leave this empty for a test deck)`.gray + `: `);
+        /**
+         * If the test deck (30 Sheep) should be allowed
+         * 
+         * @type {boolean}
+         */
+        let allowTestDeck = game.config.debug || game.config.branch !== "stable";
+
+        let debugStatement = allowTestDeck ? " (Leave this empty for a test deck)".gray : "";
+        const deckcode = game.input(`Player ${plr.id + 1}, please type in your deckcode${debugStatement}: `);
 
         let error;
 
         if (deckcode.length > 0) error = game.functions.deckcode.import(plr, deckcode);
         else {
-            if (!game.config.debug && game.config.branch == "stable") { // I want to be able to test without debug mode on in a non-stable branch
+            if (!allowTestDeck) { // I want to be able to test without debug mode on in a non-stable branch
                 // Give error message
                 game.input("Please enter a deckcode!\n".red);
-                return this.deckCode(plr); // Retry
+                return false;
             }
 
             // Debug mode is enabled, use the 30 Sheep debug deck.
             while (plr.deck.length < 30) plr.deck.push(new game.Card("Sheep", plr)); // Debug deck
         }
 
-        if (error == "invalid") process.exit(1);
+        if (error == "invalid") return false;
 
         return true;
     }
@@ -945,24 +994,24 @@ class Interact {
 
     /**
      * Asks the user a `prompt`, the user can then select a minion or hero.
-     * Broadcasts the `TargetSelectionStarts` and the `TargetSelected` event
+     * Broadcasts the `TargetSelectionStarts` and the `TargetSelected` event. Can broadcast the `CastSpellOnMinion` event.
      * 
      * @param {string} prompt The prompt to ask
-     * @param {boolean | string} [elusive=false] Whether or not to prevent selecting elusive minions, if this is a string, allow selecting elusive minions but don't trigger secrets / quests
+     * @param {Card | null} card The card that called this function.
      * @param {"enemy" | "friendly" | null} [force_side=null] Force the user to only be able to select minions / the hero of a specific side: ["enemy", "friendly"]
      * @param {"hero" | "minion" | null} [force_class=null] Force the user to only be able to select a minion or a hero: ["hero", "minion"]
-     * @param {string[]} [flags=[]] Change small behaviours ["allow_locations" => Allow selecting location, ]
+     * @param {import('./types').SelectTargetFlags[]} [flags=[]] Change small behaviours ["allow_locations" => Allow selecting location, ]
      * 
      * @returns {Card | Player | false} The card or hero chosen
      */
-    selectTarget(prompt, elusive = false, force_side = null, force_class = null, flags = []) {
+    selectTarget(prompt, card, force_side = null, force_class = null, flags = []) {
         // force_class = [null, "hero", "minion"]
         // force_side = [null, "enemy", "friendly"]
 
-        game.events.broadcast("TargetSelectionStarts", [prompt, elusive, force_side, force_class, flags], game.player);
-        let target = this._selectTarget(prompt, elusive, force_side, force_class, flags);
+        game.events.broadcast("TargetSelectionStarts", [prompt, card, force_side, force_class, flags], game.player);
+        let target = this._selectTarget(prompt, card, force_side, force_class, flags);
 
-        game.events.broadcast("TargetSelected", target, game.player);
+        if (target) game.events.broadcast("TargetSelected", [card, target], game.player);
         return target;
     }
 
@@ -971,14 +1020,14 @@ class Interact {
      * Can broadcast the `CastSpellOnMinion` event.
      * 
      * @param {string} prompt The prompt to ask
-     * @param {boolean | string} [elusive=false] Whether or not to prevent selecting elusive minions, if this is a string, allow selecting elusive minions but don't trigger secrets / quests
+     * @param {Card | null} card The card that called this function.
      * @param {"enemy" | "friendly" | null} [force_side=null] Force the user to only be able to select minions / the hero of a specific side: ["enemy", "friendly"]
      * @param {"hero" | "minion" | null} [force_class=null] Force the user to only be able to select a minion or a hero: ["hero", "minion"]
-     * @param {string[]} [flags=[]] Change small behaviours ["allow_locations" => Allow selecting location, ]
+     * @param {import('./types').SelectTargetFlags[]} [flags=[]] Change small behaviours ["allow_locations" => Allow selecting location, ]
      * 
      * @returns {Card | Player | false} The card or hero chosen
      */
-    _selectTarget(prompt, elusive = false, force_side = null, force_class = null, flags = []) {
+    _selectTarget(prompt, card, force_side = null, force_class = null, flags = []) {
         // force_class = [null, "hero", "minion"]
         // force_side = [null, "enemy", "friendly"]
 
@@ -986,7 +1035,7 @@ class Interact {
         if (game.player.forceTarget) return game.player.forceTarget;
 
         // If the player is an ai, hand over control to the ai.
-        if (game.player.ai) return game.player.ai.selectTarget(prompt, elusive, force_side, force_class, flags);
+        if (game.player.ai) return game.player.ai.selectTarget(prompt, card, force_side, force_class, flags);
 
         // If the player is forced to select a hero
         if (force_class == "hero") {
@@ -1009,11 +1058,6 @@ class Interact {
         // Player chose to go back
         if (target.startsWith("b")) {
             return false; // This should always be safe.
-
-            // Make sure the player wants to go back
-            const return_question = this.yesNoQuestion(game.player, "WARNING: Going back might cause unexpected things to happen. ".red + "Do you still want to go back?");
-            
-            if (return_question) return false;
         }
 
         // Get a list of each side of the board
@@ -1036,7 +1080,7 @@ class Interact {
             // target != "face" and target is not a minion.
             // The input is invalid
 
-            return this.selectTarget(prompt, elusive, force_side, force_class, flags);
+            return this.selectTarget(prompt, card, force_side, force_class, flags);
         }
 
         // If the player is forced to one side.
@@ -1054,7 +1098,7 @@ class Interact {
             // `force_side` == null, allow the user to select any side.
 
             // If the player chose to target a hero, it will ask which hero.
-            if (target.startsWith("face") && force_class != "minion") return this.selectTarget(prompt, false, null, "hero", flags);
+            if (target.startsWith("face") && force_class != "minion") return this.selectTarget(prompt, card, null, "hero", flags);
             
             // Both players have a minion with the same index.
             // Ask them which minion to select
@@ -1063,7 +1107,7 @@ class Interact {
             
                 if (target2.startsWith("b")) {
                     // Go back.
-                    return this.selectTarget(prompt, elusive, force_side, force_class, flags);
+                    return this.selectTarget(prompt, card, force_side, force_class, flags);
                 }
 
                 minion = (target2.startsWith("y")) ? board_opponent_target : board_friendly_target;
@@ -1078,22 +1122,18 @@ class Interact {
             return false;
         }
 
-        // If the minion has elusive, and we care about elusives, prevent it from being targetted.
-        if (minion.keywords.includes("Elusive") && elusive) {
-            game.input("Can't be targeted by Spells or Hero Powers.\n".red);
+        // If the minion has elusive, and the card that called this function is a spell
+        if ((card && card.type === "Spell") || flags.includes("force_elusive")) {
+            if (minion.keywords.includes("Elusive")) {
+                game.input("Can't be targeted by Spells or Hero Powers.\n".red);
             
-            return false;
-        }
+                return false;
+            }
 
-        // If elusive is EXACTLY true, broadcast an event.
-        // If you set elusive to be something that evaluates to true, it will prvent elusive targets from being targetted, and not broadcasting this event.
-        // TODO: Remove this once `game.suppressedEvents` becomes a thing.
-        if (elusive === true) {
-            game.events.broadcast("CastSpellOnMinion", minion, game.player);
+            game.events.broadcast("CastSpellOnMinion", [card, minion], game.player);
         }
 
         // If the minion has stealth, don't allow the opponent to target it.
-        // TODO: Does vanilla allow you to select your own stealthed minions? Figure this out.
         if (minion.keywords.includes("Stealth") && game.player != minion.plr) {
             game.input("This minion has stealth.\n".red);
 
@@ -1156,14 +1196,110 @@ class Interact {
     }
 
     /**
+     * Shows `status`..., calls `callback`, then adds 'OK' or 'FAIL' to the end of that line depending on the result the callback
+     * 
+     * @param {string} status The status to show.
+     * @param {Function} callback The callback to call.
+     * 
+     * @returns {boolean} The return value of the callback. If the callback didn't explicitly return false then it was successful.
+     */
+    withStatus(status, callback) {
+        process.stdout.write(`${status}...`);
+        let success = callback() !== false;
+        
+        let msg = (success) ? "OK" : "FAIL";
+        process.stdout.write(`\r\x1b[K${status}...${msg}\n`);
+
+        return success;
+    }
+
+    /**
+     * Replaces placeholders in the description of a card object.
+     *
+     * @param {Card} card The card.
+     * @param {string} [overrideDesc=""] The description. If empty, it uses the card's description instead.
+     * @param {number} [_depth=0] The depth of recursion.
+     * 
+     * @return {string} The modified description with placeholders replaced.
+     */
+    doPlaceholders(card, overrideDesc = "", _depth = 0) {
+        let reg = new RegExp(`{ph:(.*?)} .*? {/ph}`);
+
+        let desc = overrideDesc;
+        if (!overrideDesc) desc = card.desc;
+
+        while (true) {
+            let regedDesc = reg.exec(desc);
+            
+            // There is nothing more to extract
+            if (!regedDesc) break;
+
+            let key = regedDesc[1]; // Gets the capturing group result
+            let replacement = card.placeholder[key];
+
+            if (replacement instanceof game.Card) {
+                // The replacement is a card
+                let onlyShowName = (
+                    game.config.getReadableCardNoRecursion ||
+                    !game.player.detailedView
+                );
+                
+                if (onlyShowName && !game.config.getReadableCardAlwaysShowFullCard) {
+                    // Only show the name of the card
+                    replacement = game.functions.colorByRarity(replacement.displayName, replacement.rarity);
+                }
+                else {
+                    // Show the full card using recursion
+                    replacement = this.getReadableCard(replacement, -1, _depth + 1);
+                }
+            }
+
+            desc = desc.replace(reg, replacement);
+        }
+
+        // Replace spell damage placeholders
+        reg = /\$(\d+?)/;
+
+        while (true) {
+            let regedDesc = reg.exec(desc);
+            if (!regedDesc) break;
+
+            let key = regedDesc[1]; // Gets the capturing group result
+            let replacement = parseInt(key) + game.player.spellDamage;
+
+            desc = desc.replace(reg, replacement);
+        }
+
+        return desc;
+    }
+
+    /**
      * Returns a card in a user readble state. If you console.log the result of this, the user will get all the information they need from the card.
      *
      * @param {Card | import('./types').Blueprint} card The card
      * @param {number} [i=-1] If this is set, this function will add `[i]` to the beginning of the card. This is useful if there are many different cards to choose from.
-     *
+     * @param {number} [_depth=0] The depth of recursion. DO NOT SET THIS MANUALLY.
+     * 
      * @returns {string} The readable card
      */
-    getReadableCard(card, i = -1) {
+    getReadableCard(card, i = -1, _depth = 0) {
+        /**
+         * If it should show detailed errors regarding depth.
+         * 
+         * @type {boolean}
+         */
+        let showDetailedError = (game.config.debug || game.config.branch !== "stable" || game.player.detailedView);
+
+        if (_depth > 0 && game.config.getReadableCardNoRecursion) {
+            if (showDetailedError) return "RECURSION ATTEMPT BLOCKED";
+            else return "...";
+        }
+
+        if (_depth > game.config.getReadableCardMaxDepth) {
+            if (showDetailedError) return "MAX DEPTH REACHED";
+            else return "...";
+        }
+
         let sb = "";
 
         let desc;
@@ -1172,19 +1308,7 @@ class Interact {
         else desc = card.desc.length > 0 ? ` (${game.functions.parseTags(card.desc)}) ` : " ";
 
         // Extract placeholder value, remove the placeholder header and footer
-        if (card.placeholder) {
-            let reg = new RegExp(`{ph:.*?} (.*?) {/ph}`);
-
-            while (true) {
-                let regedDesc = reg.exec(desc);
-                
-                // There is nothing more to extract
-                if (!regedDesc) break;
-
-                let placeholder = regedDesc[1]; // Gets the capturing group result
-                desc = desc.replace(reg, placeholder);
-            }
-        }
+        if (card.placeholder || /\$(\d+?)/.test(card.desc)) desc = this.doPlaceholders(card, desc, _depth);
 
         let mana = `{${card.mana}} `;
         switch (card.costType || "mana") {
@@ -1219,13 +1343,12 @@ class Interact {
      * Prints all the information you need to understand the game state
      * 
      * @param {Player | null} [plr=null] The player
-     * @param {boolean} [detailed=false] Show more, less important, information
      * 
      * @returns {undefined}
      */
-    printAll(plr = null, detailed = false) {
+    printAll(plr = null) {
         // WARNING: Stinky and/or smelly code up ahead. Read at your own risk.
-        // TODO: Reformat this
+        // TODO: #246 Reformat this
 
         if (!plr) plr = game.player;
 
@@ -1343,7 +1466,7 @@ class Interact {
         sb = "";
     
         // Detailed Info
-        if (detailed) {
+        if (plr.detailedView) {
             // Hand Size
             sb += `Hand Size  : ${plr.hand.length.toString().yellow}`;
 
@@ -1471,7 +1594,7 @@ class Interact {
         console.log("-------------")
     
         let _class = plr.hero.name.includes("Starting Hero") ? plr.heroClass : plr.hero.name;
-        if (detailed && plr.hero.name.includes("Starting Hero")) {
+        if (plr.detailedView && plr.hero.name.includes("Starting Hero")) {
             _class += " | ";
             _class += "HP: ";
             _class += plr.hero.name;
@@ -1525,13 +1648,16 @@ class Interact {
     /**
      * Verifies that the diy card has been solved.
      * 
+     * @param {boolean} condition The condition where, if true, congratulates the user
+     * @param {string} fileName The file's name in the `DIY` folder. E.g. `1.js`
+     * 
      * @returns {boolean} Success
      */
-    verifyDIYSolution(condition) {
-        // Maybe spawn in diy cards mid-game in normal games to encourage players to solve them.
+    verifyDIYSolution(condition, fileName = "") {
+        // TODO: Maybe spawn in diy cards mid-game in normal games to encourage players to solve them.
         // Allow that to be toggled in the config.
         if (condition) console.log("Success! You did it, well done!");
-        else console.log("Hm. This card doesn't seem to do what it's supposed to do... Maybe you should try to fix it? The card is in: './cards/Examples/DIY/'.");
+        else console.log(`Hm. This card doesn't seem to do what it's supposed to do... Maybe you should try to fix it? The card is in: './cards/Examples/DIY/${fileName}'.`);
         
         game.input();
         return true;

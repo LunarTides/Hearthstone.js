@@ -32,6 +32,8 @@ class EventManager {
         /**
          * The history of the game.
          * 
+         * It looks like this: `history[turn] = [[key, val, plr], ...]`
+         * 
          * @type {Object<number, Array>}
          */
         this.history = {};
@@ -69,6 +71,8 @@ class EventManager {
 
             // Activate spells in the players hand
             plr.hand.forEach(c => {
+                if (!(c instanceof Card)) throw new Error("Hand contains a non-card");
+                
                 // Placeholders
                 c.replacePlaceholders();
 
@@ -352,7 +356,7 @@ class Game {
          * 
          * Do
          * ```
-         * Math.floor(game.turns / 2)
+         * Math.ceil(game.turns / 2)
          * ```
          * for a more conventional turn counter.
          * 
@@ -422,6 +426,15 @@ class Game {
          * @type {boolean}
          */
         this.evaling = false;
+
+        /**
+         * Some constant values.
+         * 
+         * @type {import('./types').GameConstants}
+         */
+        this.constants = {
+            REFUND: -1
+        };
     }
 
     /**
@@ -433,24 +446,29 @@ class Game {
      * @returns {string} What the user answered
      */
     input(q = "", care = true) {
-        if (this.no_input && care) return "";
+        const wrapper = (a) => {
+            this.events.broadcast("Input", a, this.player);
+            return a;
+        }
+
+        if (this.no_input && care) return wrapper("");
 
         // Let the game make choices for the user
         if (this.player.inputQueue) {
             let queue = this.player.inputQueue;
 
-            if (typeof(queue) == "string") return queue;
-            else if (!(queue instanceof Array)) return question(q); // Invalid queue
+            if (typeof(queue) == "string") return wrapper(queue);
+            else if (!(queue instanceof Array)) return wrapper(question(q)); // Invalid queue
 
             const answer = queue[0];
             this.functions.remove(queue, answer);
 
             if (queue.length <= 0) this.player.inputQueue = null;
 
-            return answer;
+            return wrapper(answer);
         }
 
-        return question(q);
+        return wrapper(question(q));
     }
 
     /**
@@ -566,9 +584,6 @@ class Game {
         this.interact.printName();
 
         this.input(`Player ${winner.name} wins!\n`);
-
-        // If any of the players are ai's, show their logs when the game ends
-        if ((this.player1.ai || this.player2.ai) && this.config.debug) this.interact.doTurnLogic("/ai");
 
         this.running = false;
 
@@ -771,7 +786,7 @@ class Game {
     
                 // I'm using while loops to prevent a million indents
                 while (mechs.length > 0) {
-                    let minion = this.interact.selectTarget("Which minion do you want this to Magnetize to:", false, "friendly", "minion");
+                    let minion = this.interact.selectTarget("Which minion do you want this to Magnetize to:", null, "friendly", "minion");
                     if (!minion) break;
                     if (!minion.tribe.includes("Mech")) {
                         console.log("That minion is not a Mech.");
@@ -969,6 +984,17 @@ class Game {
         if (target.immune) return "immune";
 
         // Attacker is a number
+        let spellDmgRegex = /\$(\d+?)/;
+        if (spellDmgRegex.test(attacker)) {
+            let match = attacker.match(spellDmgRegex);
+            
+            let dmg = parseInt(match[1]);
+            dmg += this.player.spellDamage;
+
+            this.events.broadcast("SpellDealsDamage", [target, dmg], this.player);
+            attacker = dmg;
+        }
+
         if (typeof(attacker) === "number") {
             let dmg = attacker;
 

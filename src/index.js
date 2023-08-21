@@ -24,6 +24,8 @@ let game;
 
 let decks = [];
 function runner(_decks) {
+    Object.keys(require.cache).forEach(k => delete require.cache[k]);
+
     try {
         game.cards = [];
         game.config = {};
@@ -65,8 +67,12 @@ function main() {
     });
 
     // Ask the players for deck codes.
-    if (p1.deck.length <= 0) game.interact.deckCode(p1);
-    if (p2.deck.length <= 0) game.interact.deckCode(p2);
+    [p1, p2].forEach(plr => {
+        if (plr.deck.length > 0) return;
+        
+        // Put this in a while loop to make sure the function repeats if it fails.
+        while (!game.interact.deckCode(plr)) {};
+    });
 
     game.startGame();
 

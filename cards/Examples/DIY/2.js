@@ -82,6 +82,6 @@ module.exports = {
 
         plr.health = trueOgHealth;
 
-        game.interact.verifyDIYSolution(solved);
+        game.interact.verifyDIYSolution(solved, "2.js");
     }
 }

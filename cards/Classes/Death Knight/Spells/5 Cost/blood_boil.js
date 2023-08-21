@@ -5,7 +5,7 @@
  */
 module.exports = {
     name: "Blood Boil",
-    desc: "Lifesteal. Infect all enemy minions. At the end of your turns, they take 2 damage.",
+    desc: "Lifesteal. Infect all enemy minions. At the end of your turns, they take $2 damage.",
     mana: 5,
     type: "Spell",
     class: "Death Knight",
@@ -37,7 +37,7 @@ module.exports = {
                     return;
                 }
 
-                game.functions.spellDmg(m, 2);
+                game.attack("$2", m);
                 plr.addHealth(2 + plr.spellDamage); // Lifesteal
 
                 if (m.getHealth() <= 0) game.functions.remove(infected, m);

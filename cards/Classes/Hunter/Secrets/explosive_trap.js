@@ -5,7 +5,7 @@
  */
 module.exports = {
     name: "Explosive Trap",
-    desc: "Secret: When your hero is attacked, deal 2 damage to all enemies.",
+    desc: "Secret: When your hero is attacked, deal $2 damage to all enemies.",
     mana: 2,
     type: "Spell",
     class: "Hunter",
@@ -24,7 +24,7 @@ module.exports = {
             if (!done) return;
 
             game.functions.doPlayerTargets(plr.getOpponent(), t => {
-                game.functions.spellDmg(t, 2);
+                game.attack("$2", t);
             });
         });
     }
