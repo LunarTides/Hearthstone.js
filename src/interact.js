@@ -511,9 +511,6 @@ class Interact {
         else if (name === "/set") {
             if (!game.config.debug) return -1;
 
-            let args = q.split(" ");
-            args.shift();
-
             if (args.length != 2) {
                 game.input("Invalid amount of arguments!\n".red);
                 return false;
