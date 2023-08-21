@@ -193,6 +193,7 @@ class Interact {
             console.log(cond_color("/exit               - Force exits the game. There will be no winner, and it will take you straight back to the runner."));
             console.log(cond_color("/history            - Displays a history of actions. This doesn't hide any information, and is the same thing the log files uses."));
             console.log(cond_color("/reload | /rl       - Reloads the cards and config in the game (Use '/freload' or '/frl' to ignore the confirmation prompt (or disable the prompt in the advanced config))"));
+            console.log(cond_color("/cmd                - Shows you a list of debug commands you have run, and allows you to rerun them."));
             console.log(cond_color("/ai                 - Gives you a list of the actions the ai(s) have taken in the order they took it"));
             console.log(cond_color("---------------------------" + ((game.config.debug) ? "" : "-")));
             
@@ -507,6 +508,51 @@ class Interact {
             }
 
             return finished;
+        }
+        else if (name == "/cmd") {
+            let history = Object.values(game.events.history).map(t => t.filter(
+                v => v[0] == "Input" &&
+                v[1].startsWith("/") &&
+                v[2] == game.player &&
+                !v[1].startsWith("/cmd")
+            ));
+            
+            history.forEach((obj, i) => {
+                if (obj.length <= 0) return;
+
+                console.log(`\nTurn ${i}:`);
+
+                let index = 1;
+                obj.forEach(h => {
+                    /**
+                     * The user's input
+                     * 
+                     * @type {string}
+                     */
+                    let input = h[1];
+                    if (input === "") return;
+
+                    console.log(`[${index}] ${input}`);
+                    index++;
+                });
+            });
+
+            let turnIndex = parseInt(game.input("\nWhich turn does the command belong to? (eg. 1): "));
+            if (!turnIndex || turnIndex < 0 || !history[turnIndex]) return;
+
+            let commandIndex = parseInt(game.input("\nWhat is the index of the command in that turn? (eg. 1): "));
+            if (!commandIndex || commandIndex < 1 || !history[turnIndex][commandIndex - 1]) return;
+
+            let command = history[turnIndex][commandIndex - 1][1];
+            if (!command) return;
+
+            this.printAll();
+            let options = parseInt(game.input(`\nWhat would you like to do with this command?\n${command}\n\n(1. Run it, 2. Cancel): `));
+            if (!options || options === 2) return;
+
+            if (options === 1) {
+                this.doTurnLogic(command);
+            }
         }
         else if (name === "/set") {
             if (!game.config.debug) return -1;
