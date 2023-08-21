@@ -581,9 +581,6 @@ class Game {
 
         this.input(`Player ${winner.name} wins!\n`);
 
-        // If any of the players are ai's, show their logs when the game ends
-        if ((this.player1.ai || this.player2.ai) && this.config.debug) this.interact.doTurnLogic("/ai");
-
         this.running = false;
 
         // Create log file
