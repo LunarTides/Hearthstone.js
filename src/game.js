@@ -71,6 +71,8 @@ class EventManager {
 
             // Activate spells in the players hand
             plr.hand.forEach(c => {
+                if (!(c instanceof Card)) throw new Error("Hand contains a non-card");
+                
                 // Placeholders
                 c.replacePlaceholders();
 

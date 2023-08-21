@@ -428,9 +428,11 @@ class Interact {
         else if (name === "/give") {    
             if (args.length <= 0) return -1;
 
-            let card = game.functions.getCardByName(args[0]);
+            let cardName = args.join(" ");
+
+            let card = game.functions.getCardByName(cardName);
             if (!card) {
-                game.input("Invalid card: `" + args[0] + "`.\n");
+                game.input("Invalid card: `" + cardName + "`.\n");
                 return false;
             }
     
