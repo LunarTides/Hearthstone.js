@@ -648,6 +648,10 @@ class Interact {
                 game.board.forEach(p => {
                     p.forEach(c => reload(c));
                 });
+
+                game.graveyard.forEach(p => {
+                    p.forEach(c => reload(c));
+                });
             });
 
             if (!debug && success) game.input("\nThe cards have been reloaded.\nPress enter to continue...");
