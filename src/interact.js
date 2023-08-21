@@ -509,7 +509,7 @@ class Interact {
 
             return finished;
         }
-        else if (name == "/cmd") {
+        else if (name === "/cmd") {
             let history = Object.values(game.events.history).map(t => t.filter(
                 v => v[0] == "Input" &&
                 v[1].startsWith("/") &&
@@ -530,10 +530,8 @@ class Interact {
                      * @type {string}
                      */
                     let input = h[1];
-                    if (input === "") return;
 
-                    console.log(`[${index}] ${input}`);
-                    index++;
+                    console.log(`[${index++}] ${input}`);
                 });
             });
 
