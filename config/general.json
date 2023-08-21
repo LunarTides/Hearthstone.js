@@ -1,5 +1,5 @@
 {
-    "debug": false,
+    "debug": true,
     "validateDecks": true,
     "minDeckLength": 30,
     "maxDeckLength": 30,
@@ -8,7 +8,7 @@
     "maxOfOneLegendary": 1,
 
     "P1AI": false,
-    "P2AI": false,
+    "P2AI": true,
 
     "editor": "code",
 
