@@ -4,13 +4,11 @@
     "version": "1.6.1",
     "branch": "dev",
 
-    "versionText": "",
+    "versionText": "The update is almost done. Just bugfixing and testing left.",
     "todo": {
         "History show revealed card": ["done", "Sometimes, a card gets hidden in the history. This is because the user shouldn't have access to that information. However when that card has been revealed (e.g. Playing it), it should be shown again everywhere where it was hidden."],
         "Card Placeholder": ["done", "When a card gets referenced by name in another card's description, have it show more details about it when you entire detail mode."],
-        "Add a lot more events": ["not done", "The more events, the better."],
-        "Add back getter / setters for all modules": ["not done", "I removed all getters and setters a while ago. But that has caused some issues now in the future. This can also allow unifying players and cards so they can be used interchangeably as targets."],
-        "Rewrite the tools / scripts in Rust": ["not done", "Pretty self-explanatory."]
+        "Add a lot more events": ["done", "The more events, the better."]
     },
 
     "exampleTodo": {

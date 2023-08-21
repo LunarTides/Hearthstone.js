@@ -88,7 +88,7 @@ class Card {
          * 
          * This can be any value, as long as it is a defined _number_ in the `Player` class.
          * 
-         * @type {"mana" | "armor" | "health"}
+         * @type {import("./types").CostType}
          */
         this.costType = "mana";
 
@@ -311,14 +311,21 @@ class Card {
          */
         this.maxHealth = null;
 
-        this.doBlueprint();
-
         /**
          * The card's enchantments.
          * 
          * @type {[[string, Card]]}
          */
         this.enchantments = [];
+
+        this.doBlueprint();
+
+        /**
+         * The owner of this card.
+         * 
+         * @type {Player}
+         */
+        this.plr = plr;
 
         /**
          * A list of backups of this card.
@@ -332,13 +339,6 @@ class Card {
         // Make a backup of "this" to be used when silencing this card
         if (!this.backups["init"]) this.backups["init"] = {};
         Object.entries(this).forEach(i => this.backups["init"][i[0]] = i[1]);
-
-        /**
-         * The owner of this card.
-         * 
-         * @type {Player}
-         */
-        this.plr = plr;
 
         /**
          * The card's uuid. Gets randomly generated when the card gets created.

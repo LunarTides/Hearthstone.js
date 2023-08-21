@@ -46,6 +46,14 @@ const { Player } = require("./player");
  */
 
 /**
+ * Card Cost Type
+ * 
+ * @typedef {"mana" |
+ * "armor" |
+ * "health"} CostType
+ */
+
+/**
  * Card Spell Schools
  * 
  * @typedef {"Arcane" |
