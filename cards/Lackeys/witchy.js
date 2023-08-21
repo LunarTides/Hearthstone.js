@@ -20,7 +20,7 @@ module.exports = {
      * @type {import("../../src/types").KeywordMethod}
      */
     battlecry(plr, game, self) {
-        let target = game.interact.selectTarget("Transform a friendly minion into one that costs (1) more.", false, "friendly", "minion");
+        let target = game.interact.selectTarget("Transform a friendly minion into one that costs (1) more.", self, "friendly", "minion");
         if (!target || target.mana >= 10) return -1;
 
         let minions = game.functions.getCards().filter(card => card.type === "Minion" && card.mana === target.mana + 1);

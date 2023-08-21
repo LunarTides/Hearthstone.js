@@ -46,6 +46,14 @@ const { Player } = require("./player");
  */
 
 /**
+ * Card Cost Type
+ * 
+ * @typedef {"mana" |
+ * "armor" |
+ * "health"} CostType
+ */
+
+/**
  * Card Spell Schools
  * 
  * @typedef {"Arcane" |
@@ -132,11 +140,22 @@ const { Player } = require("./player");
  * "HeroPower" |
  * "TargetSelectionStarts" |
  * "TargetSelected" |
- * "Eval"} EventKeys
+ * "Eval" |
+ * "Input"} EventKeys
  */
 
 /**
  * @typedef {any} EventValues
+ */
+
+/**
+ * @typedef {"allow_locations" |
+ * "force_elusive"} SelectTargetFlags
+ */
+
+/**
+ * @typedef {Object} GameConstants
+ * @property {-1} REFUND
  */
 
 /**

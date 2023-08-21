@@ -15,7 +15,7 @@ module.exports = {
             if (heroAttacked.length < 1) {
                 game.player.armor += 5;
 
-                game.functions.progressQuest(this.name, 1);
+                game.functions.progressQuest(plr, this.name, 1);
 
                 return true;
             }

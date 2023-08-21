@@ -569,7 +569,8 @@ function help() {
     console.log("\nNotes:".bold);
 
     console.log("Type 'cards Neutral' to see Neutral cards.");
-    console.log("There is a known bug where if you add 'Prince Renathal', and then remove him, the deck will still require 40 cards. The only way around this is to restart the deck creator."); // TODO: Fix this
+    // TODO: #245 Fix this
+    console.log("There is a known bug where if you add 'Prince Renathal', and then remove him, the deck will still require 40 cards. The only way around this is to restart the deck creator.");
 
     game.input("\nPress enter to continue...\n");
 }
@@ -806,8 +807,8 @@ function handleCmds(cmd) {
         else {
             let val = args[1];
 
-            if (["off", "disable", "false", "0"].includes(val)) new_state = false;
-            else if (["on", "enable", "true", "1"].includes(val)) new_state = true;
+            if (["off", "disable", "false", "no", "0"].includes(val)) new_state = false;
+            else if (["on", "enable", "true", "yes", "1"].includes(val)) new_state = true;
             else {
                 game.input(`${val} is not a valid state. View 'help' for more information.\n`.red);
                 return;

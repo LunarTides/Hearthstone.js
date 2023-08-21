@@ -51,6 +51,8 @@ for (let index = 0; index < games; index++) {
     } catch(err) {
         // If it crashes, show the ai's actions, and the history of the game before actually crashing
         game.config.debug = true;
+        game.functions.createLogFile(err);
+
         game.interact.handleCmds("/ai");
         game.interact.handleCmds("history", true, true);
 

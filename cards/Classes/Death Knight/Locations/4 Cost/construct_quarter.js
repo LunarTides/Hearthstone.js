@@ -19,7 +19,7 @@ module.exports = {
      * @type {import("../../../../../src/types").KeywordMethod}
      */
     use(plr, game, self) {
-        let target = game.interact.selectTarget("Destroy a friendly minion to summon a 4/5 Undead with Rush.", false, "friendly", "minion");
+        let target = game.interact.selectTarget("Destroy a friendly minion to summon a 4/5 Undead with Rush.", self, "friendly", "minion");
         if (!target) return -1;
 
         target.kill();

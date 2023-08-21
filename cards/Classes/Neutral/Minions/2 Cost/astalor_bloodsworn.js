@@ -26,7 +26,7 @@ module.exports = {
             return;
         };
 
-        let target = game.interact.selectTarget("Deal 2 damage.", true);
+        let target = game.interact.selectTarget("Deal 2 damage.", self);
         if (!target) return -1;
 
         game.attack(2, target);

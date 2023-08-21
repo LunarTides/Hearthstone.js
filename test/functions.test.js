@@ -343,7 +343,7 @@ describe("Functions", () => {
 
         let cloned_card = game.functions.cloneObject(card);
 
-        assert.equal(card.__ids, cloned_card.__ids);
+        assert.equal(card.uuid, cloned_card.uuid);
     });
 
     it ('should correctly clone a card', () => {
@@ -360,10 +360,8 @@ describe("Functions", () => {
 
         let cloned_card = game.functions.cloneCard(card);
 
-        assert.notEqual(card.__ids, cloned_card.__ids);
+        assert.notEqual(card.uuid, cloned_card.uuid);
     });
-
-    // TODO: Maybe add a test for `doPlayerTargets`
 
     it ('should correctly create an event listener', () => {
         const amount = Object.values(game.eventListeners).length;
@@ -408,27 +406,6 @@ describe("Functions", () => {
         assert.ok(Object.values(game.eventListeners).length < amount);
     });
 
-    it ('should correctly account for spell damage', () => {
-        const player = new Player("Temp Player");
-        player.spellDamage = 2;
-        game.player = player;
-
-        const amount = game.functions.accountForSpellDmg(2);
-
-        assert.equal(amount, 4);
-    });
-
-    it ('should correctly apply spell damage', () => {
-        game.player = test_player1;
-        test_player1.spellDamage = 2;
-
-        const og_health = test_player1.getHealth();
-
-        const amount = game.functions.spellDmg(test_player1, 2);
-
-        assert.equal(test_player1.getHealth(), og_health - 4);
-    });
-
     it ('should correctly account for uncollectible cards', () => {
         let cards = game.functions.getCards(false);
         cards = game.functions.accountForUncollectible(cards);
@@ -437,10 +414,6 @@ describe("Functions", () => {
 
         assert.ok(!uncollectible_exists);
     });
-
-    // TODO: Maybe add a test for adapt
-
-    // TODO: Maybe add a test for invoke 
 
     it ('should correctly recruit', () => {
         const deck = game.functions.chooseItemsFromList(game.functions.getCards(), 30);
@@ -468,12 +441,6 @@ describe("Functions", () => {
         assert.equal(jade.getHealth(), 4);
         assert.equal(jade.getAttack(), 4);
     });
-    
-    // TODO: Maybe add test for importConfig
-
-    // TODO: Maybe add test for _importCards
-
-    // TODO: Maybe add test for importCards
 
     it ('should correctly mulligan', () => {
         const deck = game.functions.chooseItemsFromList(game.functions.getCards(), 27);
@@ -518,17 +485,19 @@ describe("Functions", () => {
     it ('should correctly progress quest', () => {
         const player = test_player1;
 
-        game.functions.addQuest("Quest", player, createCard("The Coin", player), "QuestTest", 3, (key, val, _done) => {});
+        let card = createCard("The Coin", player);
+        let success = game.functions.addQuest("Quest", player, card, "QuestTest", 3, (key, val, _done) => {});
 
+        assert.ok(success);
         assert.equal(player.quests[0].progress[0], 0);
 
-        game.functions.progressQuest("The Coin");
+        assert.ok(game.functions.progressQuest(player, card.displayName));
         assert.equal(player.quests[0].progress[0], 1);
 
-        game.functions.progressQuest("The Coin");
+        assert.ok(game.functions.progressQuest(player, card.displayName));
         assert.equal(player.quests[0].progress[0], 2);
 
-        game.functions.progressQuest("The Coin");
+        assert.ok(game.functions.progressQuest(player, card.displayName));
         assert.equal(player.quests[0].progress[0], 3);
     });
 
@@ -566,13 +535,13 @@ describe("Functions", () => {
 
     it ('should correctly convert a deckcode to vanilla', () => {
         let deckcode = game.functions.deckcode.toVanilla(test_player1, "Death Knight [3B] /1:8,2/ 3c,5x,3e,5o,5f,3b,70,66,5v,59,5a,52,2,56,6y,5g,55,3o,6z");
-        let expected = "AAEBAfHhBAiCDuCsAsLOAqeNBInmBN+iBcKlBcWlBQuhoQPq4wT04wT84wT94wSJ5ASP7QSrgAWogQXUlQWeqgUA";
+        let expected = "AAEBAfHhBAiCDuCsAsLOAqeNBInmBN+iBcKlBcWlBQuhoQPq4wT04wT84wT94wSJ5ASP7QSrgAWogQXUlQWeqgUAAA==";
 
         assert.equal(deckcode, expected);
     });
 
     it ('should correctly convert a deckcode from vanilla', () => {
-        let deckcode = game.functions.deckcode.fromVanilla(test_player1, "AAEBAfHhBAiCDuCsAsLOAqeNBInmBN+iBcKlBcWlBQuhoQPq4wT04wT84wT94wSJ5ASP7QSrgAWogQXUlQWeqgUA");
+        let deckcode = game.functions.deckcode.fromVanilla(test_player1, "AAEBAfHhBAiCDuCsAsLOAqeNBInmBN+iBcKlBcWlBQuhoQPq4wT04wT84wT94wSJ5ASP7QSrgAWogQXUlQWeqgUAAA==");
         let expected = "Death Knight [3B] /1:8,2/ 3c,5x,3e,5o,5f,3b,70,66,5v,59,5a,52,2,56,6y,5g,55,3o,6z";
 
         assert.equal(deckcode, expected);

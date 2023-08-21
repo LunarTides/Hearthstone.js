@@ -18,7 +18,7 @@ module.exports = {
      * @type {import("../../../../../src/types").KeywordMethod}
      */
     cast(plr, game, self) {
-        let target = game.interact.selectTarget("Destroy a friendly minion.", true, "friendly", "minion");
+        let target = game.interact.selectTarget("Destroy a friendly minion.", self, "friendly", "minion");
         if (!target) return -1;
 
         target.kill();

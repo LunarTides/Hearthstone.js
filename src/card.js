@@ -1,6 +1,7 @@
 const { Game } = require("./game");
 const { Player } = require("./player");
 const { get } = require("./shared");
+const { v4: uuidv4 } = require("uuid");
 
 /**
  * @type {Game}
@@ -87,7 +88,7 @@ class Card {
          * 
          * This can be any value, as long as it is a defined _number_ in the `Player` class.
          * 
-         * @type {"mana" | "armor" | "health"}
+         * @type {import("./types").CostType}
          */
         this.costType = "mana";
 
@@ -303,6 +304,77 @@ class Card {
          */
         this.sleepy = true;
 
+        /**
+         * The maximum health of the card.
+         * 
+         * @type {null | number}
+         */
+        this.maxHealth = null;
+
+        /**
+         * The card's enchantments.
+         * 
+         * @type {[[string, Card]]}
+         */
+        this.enchantments = [];
+
+        this.doBlueprint();
+
+        /**
+         * The owner of this card.
+         * 
+         * @type {Player}
+         */
+        this.plr = plr;
+
+        /**
+         * A list of backups of this card.
+         * 
+         * The card backups don't include the methods so don't call any.
+         * 
+         * @type {Object<string, Card>}
+         */
+        this.backups = {};
+
+        // Make a backup of "this" to be used when silencing this card
+        if (!this.backups["init"]) this.backups["init"] = {};
+        Object.entries(this).forEach(i => this.backups["init"][i[0]] = i[1]);
+
+        /**
+         * The card's uuid. Gets randomly generated when the card gets created.
+         * 
+         * @type {string}
+         */
+        this.uuid = this.randomizeUUID();
+
+        /**
+         * The list of placeholder ids / replacement strings pairs.
+         * 
+         * @type {Object.<any, string>}
+         */
+        this.placeholder = this.activate("placeholders")[0]; // This is a list of replacements.
+
+        game.events.broadcast("CreateCard", this, this.plr);
+    }
+
+    /**
+     * Randomizes the uuid for this card to prevent cards from being "linked"
+     * 
+     * @returns {string} The uuid
+     */
+    randomizeUUID() {
+        this.uuid = uuidv4();
+
+        return this.uuid;
+    }
+
+    /**
+     * Sets fields based on the blueprint of the card.
+     */
+    doBlueprint() {
+        // Reset the blueprint
+        this.blueprint = game.cards.find(c => c.name == this.name);
+
         // Set these variables to true or false.
         const exists = ["corrupted", "colossal", "dormant", "uncollectible", "frozen", "immune", "echo"];
         exists.forEach(i => {
@@ -329,13 +401,6 @@ class Card {
             else this[i[0]] = JSON.parse(JSON.stringify(i[1]));
         });
 
-        /**
-         * The maximum health of the card.
-         * 
-         * @type {null | number}
-         */
-        this.maxHealth = null;
-
         // Set maxHealth if the card is a minion or weapon
         if (this.type == "Minion" || this.type == "Weapon") this.maxHealth = this.blueprint.stats[1];
 
@@ -348,71 +413,6 @@ class Card {
          * @type {string}
          */
         this.desc = game.functions.parseTags(this.desc);
-
-        /**
-         * The card's enchantments.
-         * 
-         * @type {[[string, Card]]}
-         */
-        this.enchantments = [];
-
-        // Make a backup of "this" to be used when silencing this card
-        let backups = {"init": {}};
-        Object.entries(this).forEach(i => backups["init"][i[0]] = i[1]);
-
-        /**
-         * A list of backups of this card.
-         * 
-         * The card backups don't include the methods so don't call any.
-         * 
-         * @type {Object<string, Card>}
-         */
-        this.backups = backups;
-
-        /**
-         * The owner of this card.
-         * 
-         * @type {Player}
-         */
-        this.plr = plr;
-
-        this.randomizeIds();
-
-        /**
-         * The card's uuid. Gets randomly generated when the card gets created.
-         * 
-         * @type {string}
-         */
-        this.uuid = this.__ids.map(id => id.toString()[0]).join("");
-
-        /**
-         * The list of placeholder ids / replacement strings pairs.
-         * 
-         * @type {Object.<any, string>}
-         */
-        this.placeholder = this.activate("placeholders")[0]; // This is a list of replacements.
-
-        game.events.broadcast("CreateCard", this, this.plr);
-    }
-
-    /**
-     * Create random id's for this card to prevent cards from being "linked"
-     * 
-     * @returns {boolean} Success
-     */
-    randomizeIds() {
-        /**
-         * A list of ids, do not use.
-         * 
-         * @type {number[]}
-         */
-        this.__ids = [];
-        for (let i = 0; i < 100; i++) {
-            // This is to prevent cards from getting linked. Don't use this variable
-            this.__ids.push(game.functions.randInt(0, 671678679546789));
-        }
-
-        return true;
     }
 
     /**
@@ -812,7 +812,7 @@ class Card {
         let ret = [];
         
         this[name].forEach(func => {
-            if (ret === -1) return;
+            if (ret === game.constants.REFUND) return;
 
             // Check if the method is conditioned
             if (this.conditioned && this.conditioned.includes(name) && this.activate("condition")[0] === false) return;
@@ -820,12 +820,12 @@ class Card {
             let r = func(this.plr, game, this, ...args);
             ret.push(r);
 
-            if (r != -1 || name == "deathrattle") return; // Deathrattle isn't cancellable
+            if (r != game.constants.REFUND || name == "deathrattle") return; // Deathrattle isn't cancellable
 
             // If the return value is -1, meaning "refund", refund the card and stop the for loop
             game.events.broadcast("CancelCard", [this, name], this.plr);
 
-            ret = -1;
+            ret = game.constants.REFUND;
 
             // These keyword methods shouldn't "refund" the card, just stop execution.
             if (["use", "heropower"].includes(name)) return;
@@ -1048,9 +1048,8 @@ class Card {
         this.placeholder = this.activate("placeholders")[0];
 
         Object.entries(this.placeholder).forEach(p => {
-            let [key, val] = p;
-
-            let replacement = `{ph:${key}} ${val} {/ph}`;
+            let [key, _] = p;
+            let replacement = `{ph:${key}} placeholder {/ph}`;
 
             this.desc = this.desc.replace(new RegExp(`{ph:${key}} .*? {/ph}`, 'g'), replacement);
             this.desc = this.desc.replaceAll(`{${key}}`, replacement);

@@ -19,7 +19,7 @@ module.exports = {
      * @type {import("../../../../../src/types").KeywordMethod}
      */
     use(plr, game, self) {
-        let target = game.interact.selectTarget("Give a minion +2/+1.", true, null, "minion");
+        let target = game.interact.selectTarget("Give a minion +2/+1.", self, null, "minion");
         if (!target) return -1;
 
         target.addStats(2, 1);

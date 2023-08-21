@@ -17,8 +17,8 @@ module.exports = {
     /**
      * @type {import("../../../../../src/types").KeywordMethod}
      */
-    cast(plr, game, card) {
-        let target = game.interact.selectTarget("Add a copy of a minion to your hand.", true, null, "minion");
+    cast(plr, game, self) {
+        let target = game.interact.selectTarget("Add a copy of a minion to your hand.", self, null, "minion");
 
         if (!target) return -1;
 

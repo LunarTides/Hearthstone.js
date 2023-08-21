@@ -17,7 +17,7 @@ module.exports = {
      * @type {import("../../../../../src/types").KeywordMethod}
      */
     cast(plr, game, self) {
-        let target = game.interact.selectTarget("Deal 3 damage.", true);
+        let target = game.interact.selectTarget("Deal 3 damage.", self);
         if (!target) return -1;
 
         game.attack(3, target);

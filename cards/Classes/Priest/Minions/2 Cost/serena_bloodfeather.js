@@ -19,7 +19,7 @@ module.exports = {
      * @type {import("../../../../../src/types").KeywordMethod}
      */
     battlecry(plr, game, self) {
-        let target = game.interact.selectTarget("Choose an enemy minion. Steal Attack and Health from it until this has more.", false, "enemy", "minion");
+        let target = game.interact.selectTarget("Choose an enemy minion. Steal Attack and Health from it until this has more.", self, "enemy", "minion");
         if (!target) return -1;
 
         do {

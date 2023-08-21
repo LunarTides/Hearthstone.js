@@ -19,7 +19,7 @@ module.exports = {
      * @type {import("../../../../../src/types").KeywordMethod}
      */
     cast(plr, game, self) {
-        let target = game.interact.selectTarget("Give a minion +2 Health.", true, null, "minion");
+        let target = game.interact.selectTarget("Give a minion +2 Health.", self, null, "minion");
         if (!target) return -1;
 
         target.addStats(0, 2);

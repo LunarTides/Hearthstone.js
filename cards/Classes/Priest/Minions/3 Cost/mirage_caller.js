@@ -18,7 +18,7 @@ module.exports = {
      * @type {import("../../../../../src/types").KeywordMethod}
      */
     battlecry(plr, game, self) {
-        let target = game.interact.selectTarget("Choose a friendly minion. Summon a 1/1 copy of it.", false, "friendly", "minion");
+        let target = game.interact.selectTarget("Choose a friendly minion. Summon a 1/1 copy of it.", self, "friendly", "minion");
         if (!target) return -1;
 
         let copy = new game.Card(target.name, plr); // Create an imperfect copy
