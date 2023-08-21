@@ -484,7 +484,7 @@ class Game {
         }
         else this.player1.ai = null;
 
-        if (this.config.P2AI && !this.player2.ai) {
+        if (this.config.P2AI) {
             if (!this.player2.ai) this.player2.ai = new AI(this.player2);
         }
         else this.player2.ai = null;
