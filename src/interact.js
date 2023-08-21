@@ -181,11 +181,12 @@ class Interact {
             const cond_color = (str) => {return (game.config.debug) ? str : str.gray};
 
             console.log(cond_color("\n--- Debug Commands (") + ((game.config.debug) ? "ON".green : "OFF".red) + cond_color(") ---"));
-            console.log(cond_color("/give <Card Name>  - Adds a card to your hand"));
-            console.log(cond_color("/eval [log] <Code> - Runs the code specified. If the word 'log' is before the code, instead console.log the code and wait for user input to continue."));
-            console.log(cond_color("/debug             - Gives you infinite mana, health and armor"));
-            console.log(cond_color("/exit              - Force exits the game. There will be no winner, and it will take you straight back to the runner."));
-            console.log(cond_color("/ai                - Gives you a list of the actions the ai(s) have taken in the order they took it"));
+            console.log(cond_color("/give (name)        - Adds a card to your hand"));
+            console.log(cond_color("/eval [log] (code)  - Runs the code specified. If the word 'log' is before the code, instead console.log the code and wait for user input to continue."));
+            console.log(cond_color("/set (name) (value) - Changes a setting to (value). Look in the config files for a list of settings."));
+            console.log(cond_color("/debug              - Gives you infinite mana, health and armor"));
+            console.log(cond_color("/exit               - Force exits the game. There will be no winner, and it will take you straight back to the runner."));
+            console.log(cond_color("/ai                 - Gives you a list of the actions the ai(s) have taken in the order they took it"));
             console.log(cond_color("---------------------------" + ((game.config.debug) ? "" : "-")));
             
             game.input("\nPress enter to continue...\n");
@@ -511,6 +512,70 @@ class Interact {
             }
 
             return finished;
+        }
+        else if (q.startsWith("/set")) {
+            if (!game.config.debug) return -1;
+
+            let args = q.split(" ");
+            args.shift();
+
+            if (args.length != 2) {
+                game.input("Invalid amount of arguments!\n".red);
+                return false;
+            }
+
+            let [key, value] = args;
+
+            let setting = game.config[key];
+
+            if (setting === undefined) {
+                game.input("Invalid setting name!\n".red);
+                return false;
+            }
+
+            if (!(/number|boolean|string/.test(typeof setting))) {
+                game.input(`You cannot change this setting, as it is a '${typeof setting}', and you can only change: number, boolean, string.\n`.red);
+                return false;
+            }
+
+            if (key == "debug") {
+                game.input("You can't change the debug setting, as that could lock you out of the set command.\n".red);
+                return false;
+            }
+
+            let newValue;
+
+            if (["off", "disable", "false", "no", "0"].includes(value)) {
+                console.log(`Setting '${key}' has been disabled.`.green);
+                newValue = false;
+            }
+            else if (["on", "enable", "true", "yes", "1"].includes(value)) {
+                console.log(`Setting '${key}' has been disabled.`.green);
+                newValue = true;
+            }
+            else if (parseFloat(value)) {
+                console.log(`Setting '${key}' has been set to the float: ${value}.`.green);
+                newValue = parseFloat(value);
+            }
+            else if (parseInt(value)) {
+                console.log(`Setting '${key}' has been set to the integer: ${value}.`.green);
+                newValue = parseInt(value);
+            }
+            else {
+                console.log(`Setting '${key}' has been set to the string literal: ${value}.`.green);
+                newValue = value;
+            }
+
+            if (newValue === undefined) {
+                // This should never really happen
+                game.input("Invalid value!\n".red);
+                return false;
+            }
+
+            game.config[key] = newValue;
+            game.doConfigAI();
+            
+            game.input();
         }
         // -1 if the command is not found
         else return -1;

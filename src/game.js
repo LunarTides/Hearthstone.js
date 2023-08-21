@@ -461,10 +461,14 @@ class Game {
      * @returns {boolean} Success
      */
     doConfigAI() {
-        if (this.config.P1AI) this.player1.ai = new AI(this.player1);
+        if (this.config.P1AI) {
+            if (!this.player1.ai) this.player1.ai = new AI(this.player1);
+        }
         else this.player1.ai = null;
 
-        if (this.config.P2AI) this.player2.ai = new AI(this.player2);
+        if (this.config.P2AI && !this.player2.ai) {
+            if (!this.player2.ai) this.player2.ai = new AI(this.player2);
+        }
         else this.player2.ai = null;
 
         return true;

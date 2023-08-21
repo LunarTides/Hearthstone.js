@@ -806,8 +806,8 @@ function handleCmds(cmd) {
         else {
             let val = args[1];
 
-            if (["off", "disable", "false", "0"].includes(val)) new_state = false;
-            else if (["on", "enable", "true", "1"].includes(val)) new_state = true;
+            if (["off", "disable", "false", "no", "0"].includes(val)) new_state = false;
+            else if (["on", "enable", "true", "yes", "1"].includes(val)) new_state = true;
             else {
                 game.input(`${val} is not a valid state. View 'help' for more information.\n`.red);
                 return;
