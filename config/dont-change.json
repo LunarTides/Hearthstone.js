@@ -1,11 +1,22 @@
 {
     "DONT CHANGE ANYTHING IN THIS FILE": "DONT CHANGE ANYTHING IN THIS FILE UNLESS YOU KNOW WHAT YOU'RE DOING",
 
-    "version": "1.6.1",
-    "branch": "stable",
+    "version": "1.7.0",
+    "branch": "dev",
 
     "versionText": "",
-    "todo": {},
+    "todo": {
+        "Make Prince Renathal not as hardcoded": ["not done", "Prince Renathal right now is pretty hardcoded, so fix that."],
+        "Fix Elwynn Boar bug": ["not done", "Elwynn Boar can sometimes crash the game under some unknown circumstances."],
+        "Fix dc renathal bug": ["not done", "If you add Prince Renathal to a deck in the deck creator, then remove him, the deck will still require 40 cards. This is only a bug on the deck creator side, and the resulting deck would be pseudo-valid."],
+        "Add a command history": ["not done", "Add a command that allows you to see your command / input history. You could then choose a command and, for example, rerun it or maybe reverse it, etc..."],
+        "Cc multiple keyword methods": ["not done", "Allow the card creator to add multiple keyword methods per card."],
+        "Make a replay system": ["not done", "Add a replay system so you can save a game to a file to replay like a video. This would make bugfixing a lot easier."],
+        "Make the ccc more like the dc": ["not done", "Make the custom card creator more like the deck creator. More information in issue #15"],
+        "Add more input options to the ccc": ["not done", "Add more input options to the custom card creator, other than question."],
+        "Do more extensive testing": ["not done", "Do more extensive testing. Add more test cases per test, and make sure all function have a test."],
+        "Add a guide script": ["not done", "This could guide you through the game, the dc, and the cc (maybe even teach you how to make cards). It would be like a tutorial."]
+    },
 
     "exampleTodo": {
         "one": ["first pass", "Description."],
