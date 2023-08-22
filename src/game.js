@@ -447,7 +447,7 @@ class Game {
      */
     input(q = "", care = true) {
         const wrapper = (a) => {
-            this.events.broadcast("Input", a, this.player);
+            if (this.player) this.events.broadcast("Input", a, this.player);
             return a;
         }
 

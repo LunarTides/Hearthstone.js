@@ -738,6 +738,18 @@ class Card {
         return true;
     }
 
+    /**
+     * Bounces the card to the `plr`'s hand.
+     * 
+     * @param {Player | null} plr 
+     */
+    bounce(plr = null) {
+        if (!plr) plr = this.plr;
+
+        plr.addToHand(this.perfectCopy());
+        this.destroy();
+    }
+
     // Doom buttons
 
     /**

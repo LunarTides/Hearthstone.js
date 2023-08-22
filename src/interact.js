@@ -193,6 +193,7 @@ class Interact {
             console.log(cond_color("/exit               - Force exits the game. There will be no winner, and it will take you straight back to the runner."));
             console.log(cond_color("/history            - Displays a history of actions. This doesn't hide any information, and is the same thing the log files uses."));
             console.log(cond_color("/reload | /rl       - Reloads the cards and config in the game (Use '/freload' or '/frl' to ignore the confirmation prompt (or disable the prompt in the advanced config))"));
+            console.log(cond_color("/bounce (index)     - Bounces a friendly minion to your hand. It also refunds the mana cost of the minion."));
             console.log(cond_color("/cmd                - Shows you a list of debug commands you have run, and allows you to rerun them."));
             console.log(cond_color("/ai                 - Gives you a list of the actions the ai(s) have taken in the order they took it"));
             console.log(cond_color("---------------------------" + ((game.config.debug) ? "" : "-")));
@@ -478,6 +479,18 @@ class Interact {
             game.player.health += 10000;
             game.player.armor += 100000;
             game.player.fatigue = 0;
+        }
+        else if (name === "/bounce") {
+            if (args.length <= 0) return -1;
+
+            let index = parseInt(args[0]);
+            if (!index) return -1;
+
+            let card = game.board[game.player.id][index - 1];
+            if (!card) return -1;
+
+            card.bounce();
+            game.player.refreshMana(card.mana);
         }
         else if (name === "/exit") {
             game.running = false;
