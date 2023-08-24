@@ -11,9 +11,12 @@ try {
 
 const { Functions } = require("../src/functions");
 const { Game } = require("../src/game");
+const { Player } = require("../src/player");
 const { set } = require("../src/shared");
 
-const game = new Game({}, {});
+const player1 = new Player("Player 1");
+const player2 = new Player("Player 2");
+const game = new Game(player1, player2);
 let functions = game.functions;
 
 set(game);
