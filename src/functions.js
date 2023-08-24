@@ -136,22 +136,23 @@ class DeckcodeFunctions {
         let retInvalid = false;
 
         copyDef.split(",").forEach(c => {
-            c = c.split(":");
+            let def = c.split(":");
 
-            let copies = c[0];
-            let times = c[1] || deck.length;
+            let copies = def[0];
+            let times = parseInt(def[1]) || deck.length;
 
             let cards = deck.slice(processed, times);
 
             cards.forEach(c => {
-                c = parseInt(c, 36);
+                let id = parseInt(c, 36);
 
-                let card = self.getCardById(c);
-                if (!card) {
-                    retInvalid = ERROR("NONEXISTANTCARD", c);
+                let bp = self.getCardById(id);
+                if (!bp) {
+                    ERROR("NONEXISTANTCARD", id.toString());
+                    retInvalid = true;
                     return;
                 }
-                card = new Card(card.name, plr);
+                let card = new Card(bp.name, plr);
 
                 for (let i = 0; i < parseInt(copies); i++) _deck.push(card.perfectCopy());
 
@@ -207,12 +208,12 @@ class DeckcodeFunctions {
             cards[c.name]++;
         });
         Object.entries(cards).forEach(v => {
-            let i = v[1];
-            v = v[0];
+            let amount = v[1];
+            let cardName = v[0];
 
             let errorcode;
-            if (i > localSettings.maxOfOneCard) errorcode = "normal";
-            if (self.getCardByName(v).rarity == "Legendary" && i > localSettings.maxOfOneLegendary) errorcode = "legendary";
+            if (amount > localSettings.maxOfOneCard) errorcode = "normal";
+            if (self.getCardByName(cardName)?.rarity == "Legendary" && amount > localSettings.maxOfOneLegendary) errorcode = "legendary";
 
             if (!localSettings.validateDecks || !errorcode) return;
 
@@ -228,7 +229,7 @@ class DeckcodeFunctions {
                     err = "";
                     break;
             }
-            game.input(err + "\nSpecific card that caused this error: ".red + v.yellow + ". Amount: ".red + i.toString().yellow + ".\n".red);
+            game.input(err + "\nSpecific card that caused this error: ".red + cardName.yellow + ". Amount: ".red + amount.toString().yellow + ".\n".red);
             return "invalid";
         });
     
@@ -334,9 +335,7 @@ class DeckcodeFunctions {
         /**
          * @type {import("deckstrings").DeckDefinition}
          */
-        let deck = {"cards": [], "heroes": [], "format": null};
-
-        deck.format = deckstrings.FormatType.FT_WILD; // Wild
+        let deck = {"cards": [], "heroes": [], "format": 1};
 
         let vanillaHeroes = { // List of vanilla heroes dbfIds
             "Warrior":      7,
@@ -352,44 +351,53 @@ class DeckcodeFunctions {
             "Death Knight": 78065
         };
 
-        code = code.split(/[\[/]/);
-        let heroClass = code[0].trim();
-        heroClass = vanillaHeroes[heroClass];
+        let codeSplit = code.split(/[\[/]/);
+        let heroClass = codeSplit[0].trim();
 
-        deck.heroes.push(heroClass);
+        /**
+         * @type {number}
+         */
+        let heroClassId = vanillaHeroes[heroClass];
 
-        code.splice(0, 1); // Remove the class
-        if (code[0].endsWith("] ")) code.splice(0, 1); // Remove runes
+        deck.heroes.push(heroClassId);
 
-        let amountStr = code[0].trim();
-        let cards = code[1].trim();
+        codeSplit.splice(0, 1); // Remove the class
+        if (codeSplit[0].endsWith("] ")) codeSplit.splice(0, 1); // Remove runes
+
+        let amountStr = codeSplit[0].trim();
+        let cards = codeSplit[1].trim();
 
         // Now it's just the cards left
 
         /**
-         * @type {import("./types").VanillaCard[]}
+         * @type {string}
          */
-        let vanillaCards;
+        let vanillaCardsString;
 
         try {
-            vanillaCards = fs.readFileSync(__dirname + "/../card_creator/vanilla/.ignore.cards.json");
+            //@ts-ignore
+            vanillaCardsString = fs.readFileSync(__dirname + "/../card_creator/vanilla/.ignore.cards.json");
         } catch (err) {
             console.log("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'scripts/genvanilla.bat' (requires an internet connection), then try again.".red);
             game.input();
 
             process.exit(1);
         }
-        vanillaCards = JSON.parse(vanillaCards);
+        /**
+         * @type {import("./types").VanillaCard[]}
+         */
+        let vanillaCards = JSON.parse(vanillaCardsString);
 
-        cards = cards.split(",").map(i => parseInt(i, 36));
-        cards = cards.map(i => self.getCardById(i));
-        cards = cards.map(c => new game.Card(c.name, plr));
-        cards = cards.map(c => c.displayName);
+        let cardsSplit = cards.split(",").map(i => parseInt(i, 36));
+        let cardsSplitId = cardsSplit.map(i => self.getCardById(i));
+        // @ts-ignore
+        let cardsSplitCard = cardsSplitId.map(c => new game.Card(c.name, plr));
+        let trueCards = cardsSplitCard.map(c => c.displayName);
 
         // Cards is now a list of names
         let newCards = [];
 
-        cards.forEach((c, i) => {
+        trueCards.forEach((c, i) => {
             let amount = 1;
 
             // Find how many copies to put in the deck
@@ -418,14 +426,24 @@ class DeckcodeFunctions {
                 return;
             }
 
+            /**
+             * @type {import("./types").VanillaCard}
+             */
+            let match;
+
             if (matches.length > 1) {
                 // Ask the user to pick one
                 matches.forEach((m, i) => {
-                    delete m.artist;
                     delete m.elite;
+                    // @ts-ignore
+                    delete m.artist;
+                    // @ts-ignore
                     delete m.collectible; // All cards here should already be collectible
+                    // @ts-ignore
                     delete m.referencedTags;
+                    // @ts-ignore
                     delete m.mechanics;
+                    // @ts-ignore
                     delete m.race; // Just look at `m.races`
 
                     console.log(`${i + 1}: `);
@@ -435,17 +453,17 @@ class DeckcodeFunctions {
                 console.log(`Multiple cards with the name '${c}' detected! Please choose one:`.yellow);
                 let chosen = game.input();
 
-                matches = matches[parseInt(chosen) - 1];
+                match = matches[parseInt(chosen) - 1];
             }
-            else matches = matches[0];
+            else match = matches[0];
 
-            newCards.push([matches.dbfId, amount]);
+            newCards.push([match.dbfId, amount]);
         });
 
         deck.cards = newCards;
 
-        deck = deckstrings.encode(deck);
-        return deck;
+        let encodedDeck = deckstrings.encode(deck);
+        return encodedDeck;
     }
 
     /**
@@ -463,40 +481,54 @@ class DeckcodeFunctions {
         let deck = deckstrings.decode(code); // Use the 'deckstrings' api's decode
 
         /**
-         * @type {import("./types").VanillaCard[]}
+         * @type {string}
          */
-        let cards;
+        let cardsString;
 
         try {
-            cards = fs.readFileSync(__dirname + "/../card_creator/vanilla/.ignore.cards.json");
+            // @ts-ignore
+            cardsString = fs.readFileSync(__dirname + "/../card_creator/vanilla/.ignore.cards.json");
         } catch (err) {
             console.log("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'scripts/genvanilla.bat' (requires an internet connection), then try again.".red);
             game.input();
 
             process.exit(1);
         }
-        cards = JSON.parse(cards.toString());
 
+        /**
+         * @type {import("./types").VanillaCard[]}
+         */
+        let cards = JSON.parse(cardsString.toString());
+
+        // @ts-ignore
         delete deck.format; // We don't care about the format
 
-        let heroClass = cards.find(a => a.dbfId == deck.heroes[0]).cardClass;
-        heroClass = self.capitalize(heroClass);
+        let _heroClass = cards.find(a => a.dbfId == deck.heroes[0])?.cardClass;
+        let heroClass = self.capitalize(_heroClass?.toString() || game.player2.heroClass);
 
         if (heroClass == "Deathknight") heroClass = "Death Knight"; // Wtf hearthstone?
         if (heroClass == "Demonhunter") heroClass = "Demon Hunter"; // I'm not sure if this actually happens, but considering it happened with death knight, you never know
         
-        deck = deck.cards.map(c => [cards.find(a => a.dbfId == c[0]), c[1]]); // Get the full card object from the dbfId
+        /**
+         * @type {(import("./types").VanillaCard | undefined | number)[][]}
+         */
+        let deckDef = deck.cards.map(c => [cards.find(a => a.dbfId == c[0]), c[1]]); // Get the full card object from the dbfId
 
+        /**
+         * @type {import("./types").Blueprint[]}
+         */
         let createdCards = self.getCards(false);
         
         let invalidCards = [];
-        deck.forEach(c => {
-            c = c[0];
+        deckDef.forEach(c => {
+            let vanillaCard = c[0];
+            if (vanillaCard === undefined || typeof vanillaCard === "number") return;
 
-            if (createdCards.find(card => card.name == c.name || card.displayName == c.name)) return;
+            // @ts-ignore
+            if (createdCards.find(card => card.name == vanillaCard.name || card.displayName == vanillaCard.name)) return;
 
             // The card doesn't exist.
-            console.log(`ERROR: Card '${c.name}' doesn't exist!`.red);
+            console.log(`ERROR: Card '${vanillaCard.name}' doesn't exist!`.red);
             invalidCards.push(c);
         });
 
@@ -511,7 +543,7 @@ class DeckcodeFunctions {
             invalidCards.forEach(c => {
                 // Create that card
                 console.log("Creating " + c.name.yellow);
-                vcc.main("", c);
+                vcc.main(c);
             });
 
             game.input("Press enter to try this deckcode again.\n");
@@ -525,15 +557,20 @@ class DeckcodeFunctions {
 
         // All cards in the deck exists
         let amounts = {};
-        deck.forEach(c => {
-            let name = cards.find(a => a.dbfId == c[0].dbfId).name;
+        deckDef.forEach(c => {
+            let [vanillaCard, amount] = c;
+            if (vanillaCard === undefined || typeof vanillaCard === "number") return;
+
+            // @ts-ignore
+            let name = cards.find(a => a.dbfId == vanillaCard.dbfId).name;
             // The name can still not be correct
+            // @ts-ignore
             if (!createdCards.find(a => a.name == name)) name = createdCards.find(a => a.displayName == name).name;
 
-            new_deck.push([new game.Card(name, plr), c[1]]);
+            new_deck.push([new game.Card(name, plr), amount]);
 
-            if (!amounts[c[1]]) amounts[c[1]] = 0;
-            amounts[c[1]]++;
+            if (!amounts[amount]) amounts[amount] = 0;
+            amounts[amount]++;
         });
 
         // Sort the `new_deck` array, lowest amount first

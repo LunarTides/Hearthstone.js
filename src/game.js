@@ -85,8 +85,8 @@ class EventManager {
                 let cleared_text = " (Condition cleared!)".brightGreen;
                 // @ts-ignore
                 let cleared_text_alt = "Condition cleared!".brightGreen;
-                c.desc = c.desc.replace(cleared_text, "");
-                c.desc = c.desc.replace(cleared_text_alt, "");
+                c.desc = c.desc?.replace(cleared_text, "");
+                c.desc = c.desc?.replace(cleared_text_alt, "");
                 if (c.activate("condition")[0] === true) {
                     if (c.desc) c.desc += cleared_text;
                     else c.desc += cleared_text_alt;
@@ -549,7 +549,7 @@ class Game {
             }
 
             plr.deck.forEach(c => {
-                if (!c.desc.includes("Quest: ") && !c.desc.includes("Questline: ")) return;
+                if (!c.desc?.includes("Quest: ") && !c.desc?.includes("Questline: ")) return;
 
                 this.suppressedEvents.push("AddCardToHand");
                 plr.addToHand(c);
@@ -874,7 +874,7 @@ class Game {
 
             if (card.keywords.includes("Twinspell")) {
                 card.removeKeyword("Twinspell");
-                card.desc = card.desc.split("Twinspell")[0].trim();
+                card.desc = card.desc?.split("Twinspell")[0].trim();
 
                 player.addToHand(card);
             }
@@ -1208,13 +1208,13 @@ class Game {
             let n = [];
             
             this.board[p].forEach(m => {
-                if (p.type == "Location") return;
+                if (m.type == "Location") return;
                 if (m.getHealth() <= 0) m.activate("deathrattle");
             });
 
             this.board[p].forEach(m => {
                 // Add minions with more than 0 health to n.
-                if (m.getHealth() > 0 || p.type == "Location") {
+                if (m.getHealth() > 0 || m.type == "Location") {
                     n.push(m);
                     return;
                 }

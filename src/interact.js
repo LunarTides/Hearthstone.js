@@ -505,10 +505,14 @@ class Interact {
             }
 
             /**
+             * @type {[Card, number]}
+             */
+            let eventCards = game.events["PlayCard"][game.player.id];
+
+            /**
              * @type {Card}
              */
-            let card = game.events["PlayCard"][game.player.id];
-            card = card[card.length - 1][0];
+            let card = eventCards[eventCards.length - 1][0];
 
             // Remove the event so you can undo more than the last played card
             game.events["PlayCard"][game.player.id].pop();
@@ -592,17 +596,29 @@ class Interact {
             });
 
             let turnIndex = parseInt(game.input("\nWhich turn does the command belong to? (eg. 1): "));
-            if (!turnIndex || turnIndex < 0 || !history[turnIndex]) return;
+            if (!turnIndex || turnIndex < 0 || !history[turnIndex]) {
+                game.input("Invalid turn.\n".red);
+                return false;
+            }
 
             let commandIndex = parseInt(game.input("\nWhat is the index of the command in that turn? (eg. 1): "));
-            if (!commandIndex || commandIndex < 1 || !history[turnIndex][commandIndex - 1]) return;
+            if (!commandIndex || commandIndex < 1 || !history[turnIndex][commandIndex - 1]) {
+                game.input("Invalid command index.\n".red);
+                return false;
+            }
 
             let command = history[turnIndex][commandIndex - 1][1];
-            if (!command) return;
+            if (!command) {
+                game.input("Invalid command.\n".red);
+                return false;
+            }
 
             this.printAll();
             let options = parseInt(game.input(`\nWhat would you like to do with this command?\n${command}\n\n(1. Run it, 2. Cancel): `));
-            if (!options || options === 2) return;
+            if (!options || options === 2) {
+                game.input("Invalid option.\n".red);
+                return false;
+            }
 
             if (options === 1) {
                 this.doTurnLogic(command);
@@ -1389,7 +1405,7 @@ class Interact {
         let reg = new RegExp(`{ph:(.*?)} .*? {/ph}`);
 
         let desc = overrideDesc;
-        if (!overrideDesc) desc = card.desc;
+        if (!overrideDesc) desc = card.desc || "";
 
         while (true) {
             let regedDesc = reg.exec(desc);
@@ -1467,11 +1483,11 @@ class Interact {
 
         let desc;
 
-        if (card instanceof game.Card) desc = card.desc.length > 0 ? ` (${card.desc}) ` : " ";
+        if (card instanceof game.Card) desc = (card.desc || "").length > 0 ? ` (${card.desc}) ` : " ";
         else desc = card.desc.length > 0 ? ` (${game.functions.parseTags(card.desc)}) ` : " ";
 
         // Extract placeholder value, remove the placeholder header and footer
-        if (card instanceof game.Card && card.placeholder || /\$(\d+?)/.test(card.desc)) {
+        if (card instanceof game.Card && card.placeholder || /\$(\d+?)/.test(card.desc || "")) {
             //@ts-ignore
             desc = this.doPlaceholders(card, desc, _depth);
         }

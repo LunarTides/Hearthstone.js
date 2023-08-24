@@ -227,6 +227,7 @@ const { Player } = require("./player");
  * 
  * @property {boolean} [uncollectible=false]
  * @property {number} [id]
+ * @property {string} [displayName]
  * 
  * @property {[number]} [stats]
  * @property {MinionTribe} [tribe]
@@ -243,6 +244,7 @@ const { Player } = require("./player");
  * @property {string[]} [runes]
  * @property {string[]} [colossal]
  * @property {string} [corrupt]
+ * @property {Object} [settings]
  */
 
 /**

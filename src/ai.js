@@ -953,7 +953,7 @@ class AI {
      * @returns {number} The score
      */
     analyzePositiveCard(c) {
-        let score = this.analyzePositive(c.desc);
+        let score = this.analyzePositive(c.desc || "");
 
         if (c.type == "Minion" || c.type == "Weapon") score += (c.getAttack() + c.getHealth()) * game.config.AIStatsBias;
         else score += game.config.AISpellValue * game.config.AIStatsBias; // If the spell value is 4 then it the same value as a 2/2 minion

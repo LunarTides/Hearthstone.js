@@ -390,6 +390,19 @@ class Card {
          */
         this.enchantments = [];
 
+        /**
+         * This overrides `game.config` for the card's owner while importing the card in a deck.
+         * 
+         * # Examples
+         * ```js
+         * card.settings = {
+         *     "maxDeckLength": 40,
+         *     "minDeckLength": 40
+         * };
+         * ```
+         */
+        this.settings = {};
+
         this.doBlueprint();
 
         /**
@@ -413,6 +426,7 @@ class Card {
         this.backups = {};
 
         // Make a backup of "this" to be used when silencing this card
+        //@ts-ignore
         if (!this.backups["init"]) this.backups["init"] = {};
         Object.entries(this).forEach(i => this.backups["init"][i[0]] = i[1]);
 
@@ -449,7 +463,7 @@ class Card {
      */
     doBlueprint() {
         // Reset the blueprint
-        this.blueprint = game.cards.find(c => c.name == this.name);
+        this.blueprint = game.cards.find(c => c.name == this.name) || this.blueprint;
 
         // Set these variables to true or false.
         const exists = ["corrupted", "colossal", "dormant", "uncollectible", "frozen", "immune", "echo"];
@@ -478,7 +492,7 @@ class Card {
         });
 
         // Set maxHealth if the card is a minion or weapon
-        if (this.type == "Minion" || this.type == "Weapon") this.maxHealth = this.blueprint.stats[1];
+        if (this.type == "Minion" || this.type == "Weapon") this.maxHealth = this.blueprint.stats?.at(1) || 1;
 
         /**
          * The card's description / text.
@@ -488,7 +502,7 @@ class Card {
          * 
          * @type {string}
          */
-        this.desc = game.functions.parseTags(this.desc);
+        this.desc = game.functions.parseTags(this.desc || "");
     }
 
     /**
@@ -1158,8 +1172,8 @@ class Card {
             let [key, _] = p;
             let replacement = `{ph:${key}} placeholder {/ph}`;
 
-            this.desc = this.desc.replace(new RegExp(`{ph:${key}} .*? {/ph}`, 'g'), replacement);
-            this.desc = this.desc.replaceAll(`{${key}}`, replacement);
+            this.desc = this.desc?.replace(new RegExp(`{ph:${key}} .*? {/ph}`, 'g'), replacement);
+            this.desc = this.desc?.replaceAll(`{${key}}`, replacement);
         });
 
         return true;
