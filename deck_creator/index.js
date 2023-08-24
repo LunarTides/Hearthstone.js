@@ -411,8 +411,13 @@ function add(c) {
 
     if (!c.settings) return;
 
-    config.maxDeckLength = c.settings.maxDeckSize || config.maxDeckLength;
-    config.minDeckLength = c.settings.minDeckSize || config.minDeckLength;
+    if (c.settings) {
+        Object.entries(c.settings).forEach(setting => {
+            let [key, val] = setting;
+
+            config[key] = val;
+        });
+    }
 
     functions = new Functions(game);
 }
@@ -753,7 +758,7 @@ function handleCmds(cmd) {
         let _deckcode = deckcode();
         settings.deckcode.format = setting;
 
-        if (_deckcode.error) {
+        if (_deckcode.error && game.config.validateDecks) {
             game.input("ERROR: Cannot export invalid / pseudo-valid deckcodes.\n".red);
             return;
         }
