@@ -3,11 +3,8 @@ const fs = require("fs");
 const lib = require("../lib");
 
 const { Game } = require("../../src/game");
-const { Player } = require("../../src/player");
 
-const player1 = new Player("Player 1");
-const player2 = new Player("Player 2");
-const game = new Game(player1, player2);
+const game = new Game({}, {});
 game.functions.importCards(__dirname + "/../../cards");
 game.functions.importConfig(__dirname + "/../../config");
 
