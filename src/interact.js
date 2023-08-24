@@ -426,23 +426,32 @@ class Interact {
             return finished;
         }
 
-        else if (name.startsWith("/") && !game.config.debug) return -1;
+        else if (name.startsWith("/") && !game.config.debug) {
+            game.input("You are not allowed to use this command.".red);
+            return false;
+        }
 
         else if (name === "/give") {    
-            if (args.length <= 0) return -1;
+            if (args.length <= 0) {
+                game.input("Too few arguments.\n".red);
+                return false;
+            }
 
             let cardName = args.join(" ");
 
             let card = game.functions.getCardByName(cardName);
             if (!card) {
-                game.input("Invalid card: `" + cardName + "`.\n");
+                game.input("Invalid card: ".red + cardName.yellow + ".\n".red);
                 return false;
             }
     
             game.player.addToHand(new game.Card(card.name, game.player));
         }
         else if (name === "/eval") {
-            if (args.length <= 0) return -1;
+            if (args.length <= 0) {
+                game.input("Too few arguments.\n".red);
+                return -1;
+            }
 
             let log = false;
 
@@ -481,13 +490,22 @@ class Interact {
             game.player.fatigue = 0;
         }
         else if (name === "/bounce") {
-            if (args.length <= 0) return -1;
+            if (args.length <= 0) {
+                game.input("Too few arguments.\n".red);   
+                return false;
+            }
 
             let index = parseInt(args[0]);
-            if (!index) return -1;
+            if (!index) {
+                game.input("Not a number.\n".red);
+                return false;
+            }
 
             let card = game.board[game.player.id][index - 1];
-            if (!card) return -1;
+            if (!card) {
+                game.input("Could not find the card.\n".red);
+                return false;
+            }
 
             card.bounce();
             game.player.refreshMana(card.mana);
@@ -566,8 +584,6 @@ class Interact {
             }
         }
         else if (name === "/set") {
-            if (!game.config.debug) return -1;
-
             if (args.length != 2) {
                 game.input("Invalid amount of arguments!\n".red);
                 return false;
@@ -671,10 +687,10 @@ class Interact {
             if (!success) game.input("\nSome steps failed. The game could not be fully reloaded. Please report this.\nPress enter to continue...");
         }
         else if (name === "/freload" || name === "/frl") {
-            this.handleCmds("/reload", true, true);
+            return this.handleCmds("/reload", true, true);
         }
         else if (name === "/history") {
-            this.handleCmds("history", true, true);
+            return this.handleCmds("history", true, true);
         }
         // -1 if the command is not found
         else return -1;

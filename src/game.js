@@ -1171,12 +1171,13 @@ class Game {
             let n = [];
             
             this.board[p].forEach(m => {
+                if (p.type == "Location") return;
                 if (m.getHealth() <= 0) m.activate("deathrattle");
             });
 
             this.board[p].forEach(m => {
                 // Add minions with more than 0 health to n.
-                if (m.getHealth() > 0) {
+                if (m.getHealth() > 0 || p.type == "Location") {
                     n.push(m);
                     return;
                 }
