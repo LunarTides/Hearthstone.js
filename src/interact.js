@@ -193,7 +193,7 @@ class Interact {
             console.log(cond_color("/exit               - Force exits the game. There will be no winner, and it will take you straight back to the runner."));
             console.log(cond_color("/history            - Displays a history of actions. This doesn't hide any information, and is the same thing the log files uses."));
             console.log(cond_color("/reload | /rl       - Reloads the cards and config in the game (Use '/freload' or '/frl' to ignore the confirmation prompt (or disable the prompt in the advanced config))"));
-            console.log(cond_color("/bounce (index)     - Bounces a friendly minion to your hand. It also refunds the mana cost of the minion."));
+            console.log(cond_color("/undo               - Undoes the last card played. It gives the card back to your hand, and removes it from where it was. (This does not undo the actions of the card)"));
             console.log(cond_color("/cmd                - Shows you a list of debug commands you have run, and allows you to rerun them."));
             console.log(cond_color("/ai                 - Gives you a list of the actions the ai(s) have taken in the order they took it"));
             console.log(cond_color("---------------------------" + ((game.config.debug) ? "" : "-")));
@@ -489,25 +489,42 @@ class Interact {
             game.player.armor += 100000;
             game.player.fatigue = 0;
         }
-        else if (name === "/bounce") {
-            if (args.length <= 0) {
-                game.input("Too few arguments.\n".red);   
+        else if (name === "/undo") {
+            // Get the last played card
+            if (!game.events["PlayCard"] || game.events["PlayCard"][game.player.id].length <= 0) {
+                game.input("No cards to undo.\n".red);
                 return false;
             }
 
-            let index = parseInt(args[0]);
-            if (!index) {
-                game.input("Not a number.\n".red);
-                return false;
+            /**
+             * @type {Card}
+             */
+            let card = game.events["PlayCard"][game.player.id];
+            card = card[card.length - 1][0];
+
+            // Remove the event so you can undo more than the last played card
+            game.events["PlayCard"][game.player.id].pop();
+
+            // If the card can appear on the board, bounce it.
+            if (card.type === "Minion" || card.type === "Location") {
+                card.bounce();
+                game.player.refreshMana(card.mana);
+                return true;
             }
 
-            let card = game.board[game.player.id][index - 1];
-            if (!card) {
-                game.input("Could not find the card.\n".red);
-                return false;
+            card = card.perfectCopy();
+
+            // If the card is a weapon, destroy it before adding it to the player's hand.
+            if (card.type === "Weapon") {
+                game.player.destroyWeapon(true);
             }
 
-            card.bounce();
+            // If 
+            if (card.type === "Hero") {
+                game.player.setToStartingHero();
+            }
+
+            game.player.addToHand(card);
             game.player.refreshMana(card.mana);
         }
         else if (name === "/exit") {

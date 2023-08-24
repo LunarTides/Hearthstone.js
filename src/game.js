@@ -10,6 +10,9 @@ class EventManager {
      * @param {Game} game 
      */
     constructor(game) {
+        // An event looks like this:
+        // events[key] = {player1id: [[val1, turn], [val2, turn], [val3, turn], ...], player2id: [...]}
+
         /**
          * @type {Game}
          */
