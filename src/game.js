@@ -11,6 +11,9 @@ class EventManager {
      * @param {Game} game 
      */
     constructor(game) {
+        // An event looks like this:
+        // events[key] = {player1id: [[val1, turn], [val2, turn], [val3, turn], ...], player2id: [...]}
+
         /**
          * @type {Game}
          */
@@ -72,6 +75,8 @@ class EventManager {
 
             // Activate spells in the players hand
             plr.hand.forEach(c => {
+                if (!(c instanceof Card)) throw new Error("Hand contains a non-card");
+                
                 // Placeholders
                 c.replacePlaceholders();
 
@@ -195,6 +200,7 @@ class EventManager {
 
         // Check if the event is suppressed
         if (this.game.suppressedEvents.includes(key)) return false;
+        if (plr.classType !== "Player" || plr.id === -1) return false;
 
         if (!this[key]) this[key] = [[], []];
         this[key][plr.id].push([val, this.game.turns]);
@@ -358,7 +364,7 @@ class Game {
          * 
          * Do
          * ```
-         * Math.floor(game.turns / 2)
+         * Math.ceil(game.turns / 2)
          * ```
          * for a more conventional turn counter.
          * 
@@ -457,24 +463,29 @@ class Game {
      * @returns {string} What the user answered
      */
     input(q = "", care = true) {
-        if (this.no_input && care) return "";
+        const wrapper = (a) => {
+            if (this.player instanceof Player) this.events.broadcast("Input", a, this.player);
+            return a;
+        }
+
+        if (this.no_input && care) return wrapper("");
 
         // Let the game make choices for the user
         if (this.player.inputQueue) {
             let queue = this.player.inputQueue;
 
-            if (typeof(queue) == "string") return queue;
-            else if (!(queue instanceof Array)) return question(q); // Invalid queue
+            if (typeof(queue) == "string") return wrapper(queue);
+            else if (!(queue instanceof Array)) return wrapper(question(q)); // Invalid queue
 
             const answer = queue[0];
             this.functions.remove(queue, answer);
 
             if (queue.length <= 0) this.player.inputQueue = null;
 
-            return answer;
+            return wrapper(answer);
         }
 
-        return question(q);
+        return wrapper(question(q));
     }
 
     /**
@@ -485,10 +496,14 @@ class Game {
      * @returns {boolean} Success
      */
     doConfigAI() {
-        if (this.config.P1AI) this.player1.ai = new AI(this.player1);
+        if (this.config.P1AI) {
+            if (!this.player1.ai) this.player1.ai = new AI(this.player1);
+        }
         else this.player1.ai = null;
 
-        if (this.config.P2AI) this.player2.ai = new AI(this.player2);
+        if (this.config.P2AI) {
+            if (!this.player2.ai) this.player2.ai = new AI(this.player2);
+        }
         else this.player2.ai = null;
 
         return true;
@@ -586,9 +601,6 @@ class Game {
         this.interact.printName();
 
         this.input(`Player ${winner.name} wins!\n`);
-
-        // If any of the players are ai's, show their logs when the game ends
-        if ((this.player1.ai || this.player2.ai) && this.config.debug) this.interact.doTurnLogic("/ai");
 
         this.running = false;
 
@@ -1196,12 +1208,13 @@ class Game {
             let n = [];
             
             this.board[p].forEach(m => {
+                if (p.type == "Location") return;
                 if (m.getHealth() <= 0) m.activate("deathrattle");
             });
 
             this.board[p].forEach(m => {
                 // Add minions with more than 0 health to n.
-                if (m.getHealth() > 0) {
+                if (m.getHealth() > 0 || p.type == "Location") {
                     n.push(m);
                     return;
                 }

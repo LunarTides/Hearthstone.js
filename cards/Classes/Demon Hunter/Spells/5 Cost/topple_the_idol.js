@@ -22,7 +22,7 @@ module.exports = {
 
         game.board.forEach(p => {
             p.forEach(m => {
-                game.attack(card.mana, m);
+                game.attack(`$${card.mana}`, m);
             });
         });
     }

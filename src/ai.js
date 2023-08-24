@@ -613,7 +613,7 @@ class AI {
      * @param {Card | null} card The card that called this function
      * @param {"friendly" | "enemy" | null} [force_side=null] The side the ai should be constrained to.
      * @param {"minion" | "hero" | null} [force_class=null] The type of target the ai should be constrained to.
-     * @param {string[]} [flags=[]] Some flags
+     * @param {import("./types").SelectTargetFlags[]} [flags=[]] Some flags
      * 
      * @returns {Card | Player | false} The target selected.
      */

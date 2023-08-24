@@ -12,9 +12,12 @@ try {
 
 const { Functions } = require("../src/functions");
 const { Game } = require("../src/game");
+const { Player } = require("../src/player");
 const { set } = require("../src/shared");
 
-const game = new Game({}, {});
+const player1 = new Player("Player 1");
+const player2 = new Player("Player 2");
+const game = new Game(player1, player2);
 let functions = game.functions;
 
 set(game);
@@ -409,8 +412,13 @@ function add(c) {
 
     if (!c.settings) return;
 
-    config.maxDeckLength = c.settings.maxDeckSize || config.maxDeckLength;
-    config.minDeckLength = c.settings.minDeckSize || config.minDeckLength;
+    if (c.settings) {
+        Object.entries(c.settings).forEach(setting => {
+            let [key, val] = setting;
+
+            config[key] = val;
+        });
+    }
 
     functions = new Functions(game);
 }
@@ -751,7 +759,7 @@ function handleCmds(cmd) {
         let _deckcode = deckcode();
         settings.deckcode.format = setting;
 
-        if (_deckcode.error) {
+        if (_deckcode.error && game.config.validateDecks) {
             game.input("ERROR: Cannot export invalid / pseudo-valid deckcodes.\n".red);
             return;
         }
@@ -808,8 +816,8 @@ function handleCmds(cmd) {
         else {
             let val = args[1];
 
-            if (["off", "disable", "false", "0"].includes(val)) new_state = false;
-            else if (["on", "enable", "true", "1"].includes(val)) new_state = true;
+            if (["off", "disable", "false", "no", "0"].includes(val)) new_state = false;
+            else if (["on", "enable", "true", "yes", "1"].includes(val)) new_state = true;
             else {
                 game.input(`${val} is not a valid state. View 'help' for more information.\n`.red);
                 return;

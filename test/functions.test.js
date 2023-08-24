@@ -486,17 +486,19 @@ describe("Functions", () => {
     it ('should correctly progress quest', () => {
         const player = test_player1;
 
-        game.functions.addQuest("Quest", player, createCard("The Coin", player), "QuestTest", 3, (key, val, _done) => {});
+        let card = createCard("The Coin", player);
+        let success = game.functions.addQuest("Quest", player, card, "QuestTest", 3, (key, val, _done) => {});
 
+        assert.ok(success);
         assert.equal(player.quests[0].progress[0], 0);
 
-        game.functions.progressQuest("The Coin");
+        assert.ok(game.functions.progressQuest(player, card.displayName));
         assert.equal(player.quests[0].progress[0], 1);
 
-        game.functions.progressQuest("The Coin");
+        assert.ok(game.functions.progressQuest(player, card.displayName));
         assert.equal(player.quests[0].progress[0], 2);
 
-        game.functions.progressQuest("The Coin");
+        assert.ok(game.functions.progressQuest(player, card.displayName));
         assert.equal(player.quests[0].progress[0], 3);
     });
 

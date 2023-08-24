@@ -51,6 +51,14 @@ const { Player } = require("./player");
  */
 
 /**
+ * Card Cost Type
+ * 
+ * @typedef {"mana" |
+ * "armor" |
+ * "health"} CostType
+ */
+
+/**
  * Card Spell Schools
  * 
  * @typedef {"Arcane" |
@@ -139,7 +147,8 @@ const { Player } = require("./player");
  * "TargetSelectionStarts" |
  * "TargetSelected" |
  * "Dummy" |
- * "Eval"} EventKeys
+ * "Eval" |
+ * "Input"} EventKeys
  */
 
 /**

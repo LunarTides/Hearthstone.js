@@ -1,6 +1,6 @@
 {
   "name": "hearthstone.js",
-  "version": "1.6.1-dev",
+  "version": "1.7.0-dev",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -23,5 +23,9 @@
   },
   "devDependencies": {
     "mocha": "^10.2.0"
+  },
+  "engines": {
+    "node": ">=15.0.0",
+    "npm": ">=7.0.0"
   }
 }

@@ -129,8 +129,7 @@ class DeckcodeFunctions {
         let deck = code.split(",");
         let _deck = [];
 
-        let maxDeckLength = game.config.maxDeckLength;
-        let minDeckLength = game.config.minDeckLength;
+        let localSettings = JSON.parse(JSON.stringify(game.config));
 
         let processed = 0;
 
@@ -157,13 +156,16 @@ class DeckcodeFunctions {
                 for (let i = 0; i < parseInt(copies); i++) _deck.push(card.perfectCopy());
 
                 if (card.settings) {
-                    if (card.settings.maxDeckSize) maxDeckLength = card.settings.maxDeckSize;
-                    if (card.settings.minDeckSize) minDeckLength = card.settings.minDeckSize;
+                    Object.entries(card.settings).forEach(setting => {
+                        let [key, val] = setting;
+
+                        localSettings[key] = val;
+                    });
                 }
 
                 let validateTest = (self.validateCard(card, plr));
 
-                if (!game.config.validateDecks || validateTest === true) return;
+                if (!localSettings.validateDecks || validateTest === true) return;
 
                 let err;
 
@@ -190,10 +192,10 @@ class DeckcodeFunctions {
             processed += times;
         });
 
-        let max = maxDeckLength;
-        let min = minDeckLength;
+        let max = localSettings.maxDeckLength;
+        let min = localSettings.minDeckLength;
 
-        if ((_deck.length < min || _deck.length > max) && game.config.validateDecks) {
+        if ((_deck.length < min || _deck.length > max) && localSettings.validateDecks) {
             game.input("The deck needs ".red + ((min == max) ? `exactly `.red + `${max}`.yellow : `between`.red + `${min}-${max}`.yellow) + ` cards. Your deck has: `.red + `${_deck.length}`.yellow + `.\n`.red);
             return "invalid";
         }
@@ -209,18 +211,18 @@ class DeckcodeFunctions {
             v = v[0];
 
             let errorcode;
-            if (i > game.config.maxOfOneCard) errorcode = "normal";
-            if (self.getCardByName(v).rarity == "Legendary" && i > game.config.maxOfOneLegendary) errorcode = "legendary";
+            if (i > localSettings.maxOfOneCard) errorcode = "normal";
+            if (self.getCardByName(v).rarity == "Legendary" && i > localSettings.maxOfOneLegendary) errorcode = "legendary";
 
-            if (!game.config.validateDecks || !errorcode) return;
+            if (!localSettings.validateDecks || !errorcode) return;
 
             let err;
             switch (errorcode) {
                 case "normal":
-                    err = `There are more than `.red + game.config.maxOfOneCard.toString().yellow + " of a card in your deck".red;
+                    err = `There are more than `.red + localSettings.maxOfOneCard.toString().yellow + " of a card in your deck".red;
                     break
                 case "legendary":
-                    err = `There are more than `.red + game.config.maxOfOneLegendary.toString().yellow + " of a legendary card in your deck".red;
+                    err = `There are more than `.red + localSettings.maxOfOneLegendary.toString().yellow + " of a legendary card in your deck".red;
                     break
                 default:
                     err = "";
@@ -1670,6 +1672,8 @@ ${main_content}
      * @returns {boolean} Success
      */
     importConfig(path) {
+        game.config = {};
+
         require("fs").readdirSync(path, { withFileTypes: true }).forEach(file => {
             let c = `${path}/${file.name}`;
 
@@ -1768,13 +1772,12 @@ ${main_content}
      * 
      * @returns {number | null} The new progress
      */
-    progressQuest(name, value = 1) {
-        let quest = game.player.secrets.find(s => s["name"] == name);
-        if (!quest) quest = game.player.sidequests.find(s => s["name"] == name);
-        if (!quest) quest = game.player.quests.find(s => s["name"] == name);
+    progressQuest(plr, name, value = 1) {
+        let quest = plr.secrets.find(s => s["name"] == name);
+        if (!quest) quest = plr.sidequests.find(s => s["name"] == name);
+        if (!quest) quest = plr.quests.find(s => s["name"] == name);
         
         if (!quest) return null;
-
         quest["progress"][0] += value;
 
         return quest["progress"][0];

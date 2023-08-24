@@ -130,7 +130,7 @@ describe("AI", () => {
     it ('should find the current winner', () => {
         let score = ai._findWinner([[], []]);
 
-        assert.equal(score[0].id, test_player2.id);
+        assert.equal(score[0].id, ai.plr.getOpponent().id);
         assert.ok(score[1] > 0);
     });
     

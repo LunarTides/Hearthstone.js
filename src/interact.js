@@ -81,7 +81,7 @@ class Interact {
                 err = "That minion is exhausted";
                 break;
             case "cantattackhero":
-                err = "Tht minion cannot attack heroes";
+                err = "That minion cannot attack heroes";
                 break;
             case "immune":
                 err = "That minion is immune";
@@ -109,10 +109,15 @@ class Interact {
      * @returns {boolean | string | -1} a string if "echo" is false
      */
     handleCmds(q, echo = true, debug = false) {
-        if (q === "end") game.endTurn();
+        let args = q.split(" ");
+        let name = args[0];
+        args.shift();
+
+        if (name === "end") game.endTurn();
         else if (q === "hero power") {
             if (game.player.ai) {
-                return game.player.heroPower();
+                game.player.heroPower();
+                return true;
             }
 
             if (game.player.mana < game.player.heroPowerCost) {
@@ -125,7 +130,6 @@ class Interact {
                 return false;
             }
 
-            this.printAll();
 
             if (game.player.hero === null) {
                 game.input("You do not have a hero.\n".red);
@@ -138,11 +142,11 @@ class Interact {
             this.printAll();
             game.player.heroPower();
         }
-        else if (q === "attack") {
+        else if (name === "attack") {
             this.doTurnAttack();
             game.killMinions();
         }
-        else if (q === "use") {
+        else if (name === "use") {
             // Use location
             let errorcode = this.useLocation();
             game.killMinions();
@@ -168,7 +172,7 @@ class Interact {
             console.log(`${err}.`.red);
             game.input();
         }
-        else if (q === "help") {
+        else if (name === "help") {
             this.printName();
             console.log("(In order to run a command; input the name of the command and follow further instruction.)\n");
             console.log("Available commands:");
@@ -189,17 +193,21 @@ class Interact {
             const cond_color = (str) => {return (game.config.debug) ? str : str.gray};
 
             console.log(cond_color("\n--- Debug Commands (") + ((game.config.debug) ? "ON".green : "OFF".red) + cond_color(") ---"));
-            console.log(cond_color("/give <Card Name>  - Adds a card to your hand"));
-            console.log(cond_color("/eval [log] <Code> - Runs the code specified. If the word 'log' is before the code, instead console.log the code and wait for user input to continue."));
-            console.log(cond_color("/debug             - Gives you infinite mana, health and armor"));
-            console.log(cond_color("/exit              - Force exits the game. There will be no winner, and it will take you straight back to the runner."));
-            console.log(cond_color("/history           - Displays a history of actions. This doesn't hide any information, and is the same thing the log files uses."));
-            console.log(cond_color("/ai                - Gives you a list of the actions the ai(s) have taken in the order they took it"));
+            console.log(cond_color("/give (name)        - Adds a card to your hand"));
+            console.log(cond_color("/eval [log] (code)  - Runs the code specified. If the word 'log' is before the code, instead console.log the code and wait for user input to continue."));
+            console.log(cond_color("/set (name) (value) - Changes a setting to (value). Look in the config files for a list of settings."));
+            console.log(cond_color("/debug              - Gives you infinite mana, health and armor"));
+            console.log(cond_color("/exit               - Force exits the game. There will be no winner, and it will take you straight back to the runner."));
+            console.log(cond_color("/history            - Displays a history of actions. This doesn't hide any information, and is the same thing the log files uses."));
+            console.log(cond_color("/reload | /rl       - Reloads the cards and config in the game (Use '/freload' or '/frl' to ignore the confirmation prompt (or disable the prompt in the advanced config))"));
+            console.log(cond_color("/undo               - Undoes the last card played. It gives the card back to your hand, and removes it from where it was. (This does not undo the actions of the card)"));
+            console.log(cond_color("/cmd                - Shows you a list of debug commands you have run, and allows you to rerun them."));
+            console.log(cond_color("/ai                 - Gives you a list of the actions the ai(s) have taken in the order they took it"));
             console.log(cond_color("---------------------------" + ((game.config.debug) ? "" : "-")));
             
             game.input("\nPress enter to continue...\n");
         }
-        else if (q == "view") {
+        else if (name === "view") {
             let isHandAnswer = this.question(game.player, "Do you want to view a minion on the board, or in your hand?", ["Board", "Hand"]);
             let isHand = isHandAnswer == "Hand";
 
@@ -221,20 +229,20 @@ class Interact {
 
             this.viewCard(card);
         }
-        else if (q == "detail") {
+        else if (name === "detail") {
             game.player.detailedView = !game.player.detailedView;
         }
-        else if (q == "concede") {
+        else if (name === "concede") {
             let confirmation = this.yesNoQuestion(game.player, "Are you sure you want to concede?");
             if (!confirmation) return false;
 
             game.endGame(game.player.getOpponent());
         }
-        else if (q == "license") {
+        else if (name === "license") {
             let start = (process.platform == 'darwin' ? 'open' : process.platform == 'win32' ? 'start' : 'xdg-open');
             require('child_process').exec(start + ' ' + license_url);
         }
-        else if (q == "version") {
+        else if (name === "version") {
             while (true) {
                 let todos = Object.entries(game.config.todo);
 
@@ -308,7 +316,7 @@ class Interact {
                 game.input("\nPress enter to continue...");
             }
         }
-        else if (q == "history") {
+        else if (name === "history") {
             if (echo === false) {}
             else console.log("Cards that are shown are collected while this screen is rendering. This means that it gets the information about the card from where it is when you ran this command, for example; the graveyard. This is why most cards have <1 health.".yellow);
 
@@ -363,6 +371,7 @@ class Interact {
                 }
                 else if (val instanceof game.Player) return `Player ${val.id + 1}`;
 
+                // Return val as-is if it is not a card / player
                 return val;
             }
 
@@ -425,35 +434,41 @@ class Interact {
             return finished;
         }
 
-        else if (q.startsWith("/give ")) {
-            if (!game.config.debug) return -1;
-    
-            let nameSplit = q.split(" ");
-            nameSplit.shift();
-            const name = nameSplit.join(" ");
-    
-            let card = game.functions.getCardByName(name);
+        else if (name.startsWith("/") && !game.config.debug) {
+            game.input("You are not allowed to use this command.".red);
+            return false;
+        }
+
+        else if (name === "/give") {    
+            if (args.length <= 0) {
+                game.input("Too few arguments.\n".red);
+                return false;
+            }
+
+            let cardName = args.join(" ");
+
+            let card = game.functions.getCardByName(cardName);
             if (!card) {
-                game.input("Invalid card: `" + name + "`.\n");
+                game.input("Invalid card: ".red + cardName.yellow + ".\n".red);
                 return false;
             }
     
             game.player.addToHand(new game.Card(card.name, game.player));
         }
-        else if (q.startsWith("/eval")) {
-            if (!game.config.debug) return -1;
+        else if (name === "/eval") {
+            if (args.length <= 0) {
+                game.input("Too few arguments.\n".red);
+                return -1;
+            }
 
             let log = false;
 
-            let codeSplit = q.split(" ");
-            codeSplit.shift();
-
-            if (codeSplit[0] == "log") {
+            if (args[0] == "log") {
                 log = true;
-                codeSplit.shift();
+                args.shift();
             }
-            
-            let code = codeSplit.join(" ");
+
+            let code = args.join(" ");
 
             if (log) {
                 if (code[code.length - 1] == ";") code = code.slice(0, -1);
@@ -473,9 +488,7 @@ class Interact {
             }
             game.evaling = false;
         }
-        else if (q == "/debug") {
-            if (!game.config.debug) return -1;
-    
+        else if (name === "/debug") {    
             game.player.maxMaxMana = 1000;
             game.player.maxMana = 1000;
             game.player.mana = 1000;
@@ -484,14 +497,48 @@ class Interact {
             game.player.armor += 100000;
             game.player.fatigue = 0;
         }
-        else if (q == "/exit") {
-            if (!game.config.debug) return -1;
+        else if (name === "/undo") {
+            // Get the last played card
+            if (!game.events["PlayCard"] || game.events["PlayCard"][game.player.id].length <= 0) {
+                game.input("No cards to undo.\n".red);
+                return false;
+            }
 
+            /**
+             * @type {Card}
+             */
+            let card = game.events["PlayCard"][game.player.id];
+            card = card[card.length - 1][0];
+
+            // Remove the event so you can undo more than the last played card
+            game.events["PlayCard"][game.player.id].pop();
+
+            // If the card can appear on the board, bounce it.
+            if (card.type === "Minion" || card.type === "Location") {
+                card.bounce();
+                game.player.refreshMana(card.mana);
+                return true;
+            }
+
+            card = card.perfectCopy();
+
+            // If the card is a weapon, destroy it before adding it to the player's hand.
+            if (card.type === "Weapon") {
+                game.player.destroyWeapon(true);
+            }
+
+            // If the card is a hero, reset the player's hero to the default one from their class.
+            if (card.type === "Hero") {
+                game.player.setToStartingHero();
+            }
+
+            game.player.addToHand(card);
+            game.player.refreshMana(card.mana);
+        }
+        else if (name === "/exit") {
             game.running = false;
         }
-        else if (q == "/ai") {
-            if (!game.config.debug) return -1;
-
+        else if (name === "/ai") {
             let finished = "";
 
             if (echo) finished += "AI Info:\n\n";
@@ -518,10 +565,157 @@ class Interact {
 
             return finished;
         }
-        else if (q == "/history") {
-            if (!game.config.debug) return -1;
+        else if (name === "/cmd") {
+            let history = Object.values(game.events.history).map(t => t.filter(
+                v => v[0] == "Input" &&
+                v[1].startsWith("/") &&
+                v[2] == game.player &&
+                !v[1].startsWith("/cmd")
+            ));
+            
+            history.forEach((obj, i) => {
+                if (obj.length <= 0) return;
 
-            this.handleCmds("history", true, true);
+                console.log(`\nTurn ${i}:`);
+
+                let index = 1;
+                obj.forEach(h => {
+                    /**
+                     * The user's input
+                     * 
+                     * @type {string}
+                     */
+                    let input = h[1];
+
+                    console.log(`[${index++}] ${input}`);
+                });
+            });
+
+            let turnIndex = parseInt(game.input("\nWhich turn does the command belong to? (eg. 1): "));
+            if (!turnIndex || turnIndex < 0 || !history[turnIndex]) return;
+
+            let commandIndex = parseInt(game.input("\nWhat is the index of the command in that turn? (eg. 1): "));
+            if (!commandIndex || commandIndex < 1 || !history[turnIndex][commandIndex - 1]) return;
+
+            let command = history[turnIndex][commandIndex - 1][1];
+            if (!command) return;
+
+            this.printAll();
+            let options = parseInt(game.input(`\nWhat would you like to do with this command?\n${command}\n\n(1. Run it, 2. Cancel): `));
+            if (!options || options === 2) return;
+
+            if (options === 1) {
+                this.doTurnLogic(command);
+            }
+        }
+        else if (name === "/set") {
+            if (args.length != 2) {
+                game.input("Invalid amount of arguments!\n".red);
+                return false;
+            }
+
+            let [key, value] = args;
+
+            let setting = game.config[key];
+
+            if (setting === undefined) {
+                game.input("Invalid setting name!\n".red);
+                return false;
+            }
+
+            if (!(/number|boolean|string/.test(typeof setting))) {
+                game.input(`You cannot change this setting, as it is a '${typeof setting}', and you can only change: number, boolean, string.\n`.red);
+                return false;
+            }
+
+            if (key == "debug") {
+                game.input("You can't change the debug setting, as that could lock you out of the set command.\n".red);
+                return false;
+            }
+
+            let newValue;
+
+            if (["off", "disable", "false", "no", "0"].includes(value)) {
+                console.log(`Setting '${key}' has been disabled.`.green);
+                newValue = false;
+            }
+            else if (["on", "enable", "true", "yes", "1"].includes(value)) {
+                console.log(`Setting '${key}' has been disabled.`.green);
+                newValue = true;
+            }
+            else if (parseFloat(value)) {
+                console.log(`Setting '${key}' has been set to the float: ${value}.`.green);
+                newValue = parseFloat(value);
+            }
+            else if (parseInt(value)) {
+                console.log(`Setting '${key}' has been set to the integer: ${value}.`.green);
+                newValue = parseInt(value);
+            }
+            else {
+                console.log(`Setting '${key}' has been set to the string literal: ${value}.`.green);
+                newValue = value;
+            }
+
+            if (newValue === undefined) {
+                // This should never really happen
+                game.input("Invalid value!\n".red);
+                return false;
+            }
+
+            game.config[key] = newValue;
+            game.doConfigAI();
+            
+            game.input();
+        }
+        else if (name === "/reload" || name === "/rl") {
+            if (game.config.reloadCommandConfirmation && !debug) {
+                let sure = this.yesNoQuestion(game.player, "Are you sure you want to reload? This will reset all cards to their base state.".yellow);
+                if (!sure) return false;
+            }
+
+            let success = true;
+
+            success &&= this.withStatus("Deleting cache", () => Object.keys(require.cache).forEach(k => delete require.cache[k]));
+
+            success &&= this.withStatus("Importing cards", () => game.functions.importCards(__dirname + "/../cards"));
+            success &&= this.withStatus("Importing config", () => game.functions.importConfig(__dirname + "/../config"));
+
+            // Go through all the cards and reload them
+            success &&= this.withStatus("Reloading cards", () => {
+                /**
+                 * Reloads a card
+                 * 
+                 * @param {Card} card 
+                 */
+                const reload = (card) => {
+                    let clonedCard = card.imperfectCopy();
+
+                    card.doBlueprint();
+                    card.backups["init"] = clonedCard.backups["init"];
+                }
+
+                [game.player1, game.player2].forEach(p => {
+                    p.hand.forEach(c => reload(c));
+                    p.deck.forEach(c => reload(c));
+                });
+
+                game.board.forEach(p => {
+                    p.forEach(c => reload(c));
+                });
+
+                game.graveyard.forEach(p => {
+                    p.forEach(c => reload(c));
+                });
+            });
+
+            if (!debug && success) game.input("\nThe cards have been reloaded.\nPress enter to continue...");
+            if (!success) game.input("\nSome steps failed. The game could not be fully reloaded. Please report this.\nPress enter to continue...");
+        }
+        else if (name === "/freload" || name === "/frl") {
+            return this.handleCmds("/reload", true, true);
+        }
+        else if (name === "/history") {
+            return this.handleCmds("history", true, true);
         }
         // -1 if the command is not found
         else return -1;
@@ -641,13 +835,21 @@ class Interact {
     deckCode(plr) {
         this.printName();
     
-        const deckcode = game.input(`Player ${plr.id + 1}, please type in your deckcode ` + `(Leave this empty for a test deck)`.gray + `: `);
+        /**
+         * If the test deck (30 Sheep) should be allowed
+         * 
+         * @type {boolean}
+         */
+        let allowTestDeck = game.config.debug || game.config.branch !== "stable";
+
+        let debugStatement = allowTestDeck ? " (Leave this empty for a test deck)".gray : "";
+        const deckcode = game.input(`Player ${plr.id + 1}, please type in your deckcode${debugStatement}: `);
 
         let error;
 
         if (deckcode.length > 0) error = game.functions.deckcode.import(plr, deckcode);
         else {
-            if (!game.config.debug && game.config.branch == "stable") { // I want to be able to test without debug mode on in a non-stable branch
+            if (!allowTestDeck) { // I want to be able to test without debug mode on in a non-stable branch
                 // Give error message
                 game.input("Please enter a deckcode!\n".red);
                 return false;
@@ -1157,6 +1359,24 @@ class Interact {
     }
 
     /**
+     * Shows `status`..., calls `callback`, then adds 'OK' or 'FAIL' to the end of that line depending on the result the callback
+     * 
+     * @param {string} status The status to show.
+     * @param {Function} callback The callback to call.
+     * 
+     * @returns {boolean} The return value of the callback. If the callback didn't explicitly return false then it was successful.
+     */
+    withStatus(status, callback) {
+        process.stdout.write(`${status}...`);
+        let success = callback() !== false;
+        
+        let msg = (success) ? "OK" : "FAIL";
+        process.stdout.write(`\r\x1b[K${status}...${msg}\n`);
+
+        return success;
+    }
+
+    /**
      * Replaces placeholders in the description of a card object.
      *
      * @param {Card} card The card.
@@ -1221,17 +1441,25 @@ class Interact {
      *
      * @param {Card | import('./types').Blueprint} card The card
      * @param {number} [i=-1] If this is set, this function will add `[i]` to the beginning of the card. This is useful if there are many different cards to choose from.
-     *
+     * @param {number} [_depth=0] The depth of recursion. DO NOT SET THIS MANUALLY.
+     * 
      * @returns {string} The readable card
      */
     getReadableCard(card, i = -1, _depth = 0) {
+        /**
+         * If it should show detailed errors regarding depth.
+         * 
+         * @type {boolean}
+         */
+        let showDetailedError = (game.config.debug || game.config.branch !== "stable" || game.player.detailedView);
+
         if (_depth > 0 && game.config.getReadableCardNoRecursion) {
-            if (game.config.debug || game.config.branch != "stable" || game.player.detailedView) return "RECURSION ATTEMPT BLOCKED";
+            if (showDetailedError) return "RECURSION ATTEMPT BLOCKED";
             else return "...";
         }
 
         if (_depth > game.config.getReadableCardMaxDepth) {
-            if (game.config.debug || game.config.branch != "stable" || game.player.detailedView) return "MAX DEPTH REACHED";
+            if (showDetailedError) return "MAX DEPTH REACHED";
             else return "...";
         }
 
