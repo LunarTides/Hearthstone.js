@@ -197,6 +197,7 @@ class EventManager {
 
         // Check if the event is suppressed
         if (this.game.suppressedEvents.includes(key)) return false;
+        if (!(plr instanceof Player) || plr.id === -1) return false;
 
         if (!this[key]) this[key] = [[], []];
         this[key][plr.id].push([val, this.game.turns]);

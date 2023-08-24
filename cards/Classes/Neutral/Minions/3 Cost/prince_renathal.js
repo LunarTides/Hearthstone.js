@@ -14,8 +14,8 @@ module.exports = {
     rarity: "Legendary",
     set: "Murder at Castle Nathria",
     settings: {
-        maxDeckSize: 40,
-        minDeckSize: 40
+        maxDeckLength: 40,
+        minDeckLength: 40
     },
     id: 197,
 
