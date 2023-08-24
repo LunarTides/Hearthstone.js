@@ -450,7 +450,7 @@ class Game {
      */
     input(q = "", care = true) {
         const wrapper = (a) => {
-            if (this.player) this.events.broadcast("Input", a, this.player);
+            if (this.player instanceof Player) this.events.broadcast("Input", a, this.player);
             return a;
         }
 

@@ -80,7 +80,7 @@ class Interact {
                 err = "That minion is exhausted";
                 break;
             case "cantattackhero":
-                err = "Tht minion cannot attack heroes";
+                err = "That minion cannot attack heroes";
                 break;
             case "immune":
                 err = "That minion is immune";
@@ -115,7 +115,8 @@ class Interact {
         if (name === "end") game.endTurn();
         else if (q === "hero power") {
             if (game.player.ai) {
-                return game.player.heroPower();
+                game.player.heroPower();
+                return true;
             }
 
             if (game.player.mana < game.player.heroPowerCost) {
@@ -128,7 +129,6 @@ class Interact {
                 return false;
             }
 
-            this.printAll();
             let ask = this.yesNoQuestion(game.player, game.player.hero.hpDesc.yellow + " Are you sure you want to use this hero power?");
             if (!ask) return false;
 
@@ -519,7 +519,7 @@ class Interact {
                 game.player.destroyWeapon(true);
             }
 
-            // If 
+            // If the card is a hero, reset the player's hero to the default one from their class.
             if (card.type === "Hero") {
                 game.player.setToStartingHero();
             }
