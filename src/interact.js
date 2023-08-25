@@ -517,11 +517,17 @@ class Interact {
             // Remove the event so you can undo more than the last played card
             game.events["PlayCard"][game.player.id].pop();
 
-            // If the card can appear on the board, bounce it.
+            // If the card can appear on the board, remove it.
             if (card.type === "Minion" || card.type === "Location") {
-                card.bounce();
-                game.player.refreshMana(card.mana);
-                return true;
+                game.functions.remove(game.board[game.player.id], card);
+
+                // If the card has 0 or less health, restore it to its original health (according to the blueprint)
+                if (card.getHealth() <= 0) {
+                    if (!card.stats) throw new Error("Card has no stats!");
+                    if (!card.blueprint.stats) throw new Error("Card has no blueprint stats!");
+
+                    card.stats[1] = card.blueprint.stats[1];
+                }
             }
 
             card = card.perfectCopy();

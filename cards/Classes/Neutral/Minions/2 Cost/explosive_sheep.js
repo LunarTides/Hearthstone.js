@@ -19,10 +19,18 @@ module.exports = {
      * @type {import("../../../../../src/types").KeywordMethod}
      */
     deathrattle(plr, game, self) {
+        if (self.storage.length > 0 && self.storage[0]) return;
+
         game.board.forEach(p => {
             p.forEach(m => {
+                if (m === self) return;
                 m.remHealth(2);
             });
         });
+
+        // Deal 2 damage without triggering deathrattle again.
+        self.storage[0] = true;
+        self.remHealth(2);
+        self.storage[0] = false;
     }
 }

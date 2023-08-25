@@ -229,7 +229,7 @@ const { Player } = require("./player");
  * @property {number} [id]
  * @property {string} [displayName]
  * 
- * @property {[number]} [stats]
+ * @property {number[]} [stats]
  * @property {MinionTribe} [tribe]
  * 
  * @property {SpellSchool} [spellClass]
