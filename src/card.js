@@ -1,4 +1,3 @@
-//@ts-check
 const { Game } = require("./game");
 const { Player } = require("./player");
 const { get } = require("./shared");

@@ -1,4 +1,3 @@
-//@ts-check
 // This is a library
 
 const rl = require("readline-sync");
@@ -129,9 +128,7 @@ function create(override_type, override_card, override_path = "", override_filen
     }
 
     let content = Object.entries(card).map(c => `${c[0]}: ${getTypeValue(c[1])}`); // name: "Test"
-    content = `//@ts-check
-
-// Created by the ${cctype} Card Creator
+    content = `// Created by the ${cctype} Card Creator
 
 ${bpDocstring}
 module.exports = {

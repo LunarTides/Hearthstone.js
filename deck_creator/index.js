@@ -1,6 +1,3 @@
-//@ts-check
-'use strict';
-
 require("colors");
 
 try {

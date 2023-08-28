@@ -1,4 +1,3 @@
-//@ts-check
 const { AI } = require("./ai");
 const { Card } = require("./card");
 const { Game } = require("./game");

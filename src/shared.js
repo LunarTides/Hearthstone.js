@@ -1,4 +1,3 @@
-//@ts-check
 const { Game } = require("./game");
 
 let Shared = module.exports = {

@@ -1,4 +1,3 @@
-//@ts-check
 const rl = require("readline-sync");
 const fs = require("fs");
 const lib = require("../lib");

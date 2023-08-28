@@ -1,4 +1,3 @@
-//@ts-check
 // Part of this code was copied from an example given by ChatGPT
 const assert = require('assert');
 const colors = require("colors");

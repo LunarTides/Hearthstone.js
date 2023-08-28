@@ -1,4 +1,3 @@
-//@ts-check
 const assert = require('assert');
 const colors = require("colors");
 const { Player } = require("../src/player");

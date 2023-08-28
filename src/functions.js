@@ -1,4 +1,3 @@
-//@ts-check
 delete require.cache[require.resolve("./card")];
 delete require.cache[require.resolve("./player")];
 delete require.cache[require.resolve("./ai")];

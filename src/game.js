@@ -1,4 +1,3 @@
-//@ts-check
 const { question }  = require('readline-sync');
 const { Functions } = require("./functions");
 const { Player }    = require("./player");

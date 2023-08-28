@@ -1,4 +1,3 @@
-//@ts-check
 const fs = require("fs");
 const rl = require("readline-sync");
 const { Game } = require("../../src/game");
