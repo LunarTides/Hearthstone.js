@@ -455,6 +455,13 @@ class Game {
         this.evaling = false;
 
         /**
+         * If this game is a simulation
+         * 
+         * @type {boolean}
+         */
+        this.simulation = false;
+
+        /**
          * Some constant values.
          * 
          * @type {import('./types').GameConstants}
@@ -524,7 +531,7 @@ class Game {
      * @returns {boolean} Success
      */
     doConfigAI() {
-        let AI = (plr) => {
+        const AI = (plr) => {
             let ret = null;
 
             if (this.config.AIModel == "sent") ret = new SentimentAI(plr);

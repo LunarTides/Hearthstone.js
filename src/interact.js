@@ -124,7 +124,19 @@ class Interact {
         let name = args[0];
         args.shift();
 
-        if (name === "end") game.endTurn();
+        if (name === "end") {
+            if (game.player.ai) {
+                let oldNoOutput = game.no_output;
+                game.no_output = false;
+                this.printName();
+                game.no_output = oldNoOutput;
+                
+                console.timeEnd("AI Took");
+                if (game.config.debug && game.config.aiShowTimeAtEndOfTurn && !game.config.aiLogsEveryAction) game.input("", false);
+            }
+            if (game.opponent.ai) console.time("AI Took");
+            game.endTurn();
+        }
         else if (q === "hero power") {
             if (game.player.ai) {
                 game.player.heroPower();
@@ -786,13 +798,22 @@ class Interact {
 
         if (game.player.ai) {
             this.printName();
-            game.log("The ai is thinking...", false);
+            game.log("The ai is thinking...\n", false);
+            console.time("The AI took");
 
             // Set some game flags
             game.no_input = true;
             game.no_output = true;
 
             let input = game.player.ai.chooseMove();
+            let cardName = (typeof input === "string" && parseInt(input)) ? game.player.hand[parseInt(input) - 1].name : input;
+
+            // New line
+            game.log("", false);
+            console.timeEnd("The AI took");
+            game.log(`The AI chose: ${cardName} (${input})`, false);
+            if (game.config.debug && game.config.aiLogsEveryAction) game.input("", false);
+
             if (!input) return false;
             input = input.toString();
 
@@ -1368,6 +1389,7 @@ class Interact {
     printName(name = true) {
         cls();
     
+        // Todo: Remove this functionality
         if (!name) return;
 
         let watermarkString = `HEARTHSTONE.JS V${game.config.version}-${game.config.branch}`;

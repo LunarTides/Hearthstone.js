@@ -39,14 +39,14 @@ class SimulationAI {
         this.canAttack = true;
 
         /**
-         * @type {Card | null}
-         */
-        this.on_card = null;
-
-        /**
          * @type {SentimentAI}
          */
         this.backup_ai = new SentimentAI(plr);
+
+        /**
+         * @type {boolean}
+         */
+        this.logAction = (game.config.debug && game.config.aiLogsEveryAction);
 
         /**
          * @type {Player}
@@ -63,28 +63,129 @@ class SimulationAI {
         // Makes a move in the simulation
         // The ai is not even playing anything
 
+        game.log("AI: Choosing a move...", !this.logAction);
+
         /**
          * @type {[Card | string, number]}
          */
         let best_move = ["", -Infinity];
 
-        this.plr.hand.forEach(card => {
-            let simulation = this._createSimulation();
+        // This is more performant, but less correct.
+        /*// TODO: This doesn't quite work with `this._evaluate`
+        let simulation = this._createSimulation();
+        let lastScore = 0;
 
-            let index = this.plr.hand.indexOf(card);
+        let alreadyScored = [];
+
+        simulation.player.hand.forEach(card => {
+            let index = simulation.player.hand.indexOf(card);
             if (index === -1) return false;
-            index += 1
+            index += 1;
+
+            // If that card is already scored, skip it
+            if (alreadyScored.filter(c => c.name === card.name).some(c => {
+                let copy = c.perfectCopy();
+
+                delete copy.uuid;
+                delete copy.plr;
+                delete copy.backups;
+
+                // Check if copy == card
+                let cleanCard = card.perfectCopy();
+
+                // @ts-ignore
+                delete cleanCard.uuid;
+                // @ts-ignore
+                delete cleanCard.plr;
+                // @ts-ignore
+                delete cleanCard.backups;
+
+                return JSON.stringify(copy) === JSON.stringify(cleanCard);
+            })) {
+                game.log(`AI: Skipping already scored card ${card.name} [${index}]`, !this.logAction);
+                return;
+            }
+
+            game.log(`AI: Playing ${card.name} (${index}) in the simulation`, !this.logAction);
 
             // Play card
-            this.on_card = card;
+            // TODO: This might cause an infinite loop for cards that have a different costtype
+            simulation.player[card.costType] = this.plr[card.costType];
             let result = simulation.interact.doTurnLogic(index.toString());
-            this.on_card = null;
 
-            if (result !== true && !(result instanceof Card) || typeof result === "string") return; // Invalid move
+            if (result !== true && !(result instanceof Card) || typeof result === "string") {
+                game.log(`AI: Invalid move: ${result}`, !this.logAction);
+                return; // Invalid move
+            }
+
+            let score = this._evaluate(simulation) - lastScore;
+            lastScore = score;
+
+            alreadyScored.push(card);
+
+            if (score <= best_move[1]) {
+                game.log(`AI: Worse score (${score.toPrecision(2)}) than previous (${best_move[1].toPrecision(2)})`, !this.logAction);
+                return;
+            }
+
+            game.log(`AI: New best score (${score.toPrecision(2)}). Better than previous by ${(score - best_move[1]).toPrecision(2)}`, !this.logAction);
+
+            // This card is now the best move
+            best_move = [card, score];
+        });*/
+        let alreadyScored = [];
+        
+        this.plr.hand.forEach(card => {
+            let index = this.plr.hand.indexOf(card);
+            if (index === -1) return false;
+            index += 1;
+
+            // If that card is already scored, skip it
+            if (alreadyScored.filter(c => c.name === card.name).some(c => {
+                let copy = c.perfectCopy();
+
+                delete copy.uuid;
+                delete copy.plr;
+                delete copy.backups;
+
+                // Check if copy == card
+                let cleanCard = card.perfectCopy();
+
+                // @ts-ignore
+                delete cleanCard.uuid;
+                // @ts-ignore
+                delete cleanCard.plr;
+                // @ts-ignore
+                delete cleanCard.backups;
+
+                return JSON.stringify(copy) === JSON.stringify(cleanCard);
+            })) {
+                game.log(`AI: Skipping already scored card ${card.name} [${index}]`, !this.logAction);
+                return;
+            }
+
+            let simulation = this._createSimulation();
+
+            game.log(`AI: Playing ${card.name} [${index}] in the simulation`, !this.logAction);
+
+            // Play card
+            let result = simulation.interact.doTurnLogic(index.toString());
+
+            if (result !== true && !(result instanceof Card) || typeof result === "string") {
+                game.log(`AI: Invalid move: ${result}`, !this.logAction);
+                return; // Invalid move
+            }
 
             let score = this._evaluate(simulation);
 
-            if (score <= best_move[1]) return;
+            alreadyScored.push(card);
+
+            if (score <= best_move[1]) {
+                game.log(`AI: Worse score (${score.toPrecision(2)}) than previous (${best_move[1].toPrecision(2)})`, !this.logAction);
+                return;
+            }
+
+            game.log(`AI: New best score (${score.toPrecision(2)}). Better than previous by ${(score - best_move[1]).toPrecision(2)}`, !this.logAction);
 
             // This card is now the best move
             best_move = [card, score];
@@ -112,12 +213,18 @@ class SimulationAI {
         } else if (bestMoveType instanceof Card) {
             this.history.push({ type: "chooseMove", data: [bestMoveType.name, score] });
 
-            bestMoveType = (this.plr.hand.indexOf(bestMoveType) + 1).toString();
+            // @ts-ignore
+            let card = this.plr.hand.find(c => c.uuid === bestMoveType.uuid);
+            if (!card) throw game.functions.createAIError("choose_move_card_not_found", "card", card); // TODO: Implement this
+
+            bestMoveType = (this.plr.hand.indexOf(card) + 1).toString();
         }
 
         if (bestMoveType === "end") {
             this.canAttack = true;
         }
+
+        game.log(`AI: Chose ${bestMoveType} for ${score} points`, !this.logAction);
 
         return bestMoveType;
     }
@@ -169,6 +276,8 @@ class SimulationAI {
      */
     attack() {
         // FIXME: The ai doesn't attack.
+        game.log("AI: Attacking...", !this.logAction);
+
         let simulation = this._createSimulation();
 
         let board = game.board;
@@ -183,8 +292,8 @@ class SimulationAI {
         [...thisboard, this.plr].forEach(attacker => {
             // Validate attacker.
             // TODO: Move this into a function maybe
-            if (attacker instanceof Player && !attacker.attack) return;
-            if (attacker instanceof Card && (
+            if (attacker instanceof game.Player && !attacker.attack) return;
+            if (attacker instanceof game.Card && (
                 attacker.attackTimes <= 0 || 
                 attacker.sleepy || 
                 attacker.dormant || 
@@ -228,6 +337,13 @@ class SimulationAI {
 
         this._restoreGame();
 
+        // Log the attack
+        let names = best_attack.map(e => {
+            if (e instanceof Card) return e.name;
+            else return e;
+        });
+        game.log(`AI: Attacking ${names[1]} with ${names[0]}`, !this.logAction);
+
         return best_attack;
     }
 
@@ -251,8 +367,9 @@ class SimulationAI {
      * @returns {Card | Player | false} The target selected.
      */
     selectTarget(prompt, card, force_side, force_class, flags) {
+        game.log("AI: Selecting a target...", !this.logAction);
         const fallback = () => {
-            game.log("Falling back...");
+            game.log("AI: Falling back...", !this.logAction);
             return this.backup_ai.selectTarget(prompt, card, force_side, force_class, flags);
         }
 
@@ -371,6 +488,8 @@ class SimulationAI {
         });
         this.history.push({ type: "selectTarget", data: mapped });
 
+        game.log(`AI: Selected ${mapped[0]}`, !this.logAction);
+
         if (best_target.length <= 0) {
             // No targets
             return false;
@@ -472,6 +591,8 @@ class SimulationAI {
         // Temp fix for the performance, this skips the first loop.
         if (true /* TEMP LINE */) care_about_mana = false;
 
+        game.log("AI: Selecting a card...", !this.logAction);
+
         /**
          * @type {(Card | string | number)[]}
          */
@@ -501,9 +622,7 @@ class SimulationAI {
             // Play the card
             // FIXME: Wave of Apathy made the score 4.440892098500626e-16
             // ^^^^ The score is messed up overall. It is always 5-digits????
-            this.on_card = card;
             let result = simulation.playCard(card, simplr);
-            this.on_card = null;
 
             // Invalid card
             if (result !== true && !(result instanceof Card) || typeof result === "string") {
@@ -527,7 +646,12 @@ class SimulationAI {
         if (!card) {
             // As a backup, do this process all again but this time we don't care about the cost of cards.
             // TODO: I'm not sure about this one. This looks like a nightmare on performance.
-            if (care_about_mana) return this._selectFromCards(cards, history_name, false);
+            if (care_about_mana) {
+                game.log("AI: Chose invalid card. Trying again without mana...", !this.logAction);
+                return this._selectFromCards(cards, history_name, false);
+            }
+
+            game.log("AI: Chose invalid card.", !this.logAction);
 
             // Choose the first discover card as the last resort.
             this.history.push({ type: history_name, data: null });
@@ -535,6 +659,8 @@ class SimulationAI {
         }
 
         if (!(card instanceof Card)) throw game.functions.createAIError("selectFromCards_invalid_return_card", "Card", card);
+
+        game.log(`AI: Chose ${card.name}`, !this.logAction);
 
         this.history.push({ type: history_name, data: [card.name, score] });
 
@@ -551,6 +677,8 @@ class SimulationAI {
      */
     _evaluate(simulation, sentiment = true) {
         // TODO: Make this better
+        game.log("AI: Evaluating game state...", !this.logAction);
+
         let score = 0;
         const VALUE_BIAS = 0.1;
 
@@ -589,6 +717,8 @@ class SimulationAI {
                 score += val * bias * VALUE_BIAS;
             });
         });
+
+        game.log(`AI: Evaluation completed with a score of ${score.toPrecision(2)}`, !this.logAction);
 
         return score;
     }
@@ -630,61 +760,28 @@ class SimulationAI {
         // FIXME: Why. Gets caught in an infinite loop.
         // FIXME: Mana increases without turn ending.
         // FIXME: The ai cannot play cards.
-        let cards = game.cards;
-        let events = game.events;
-        let graveyard = game.graveyard;
-        let config = game.config;
-        let p1 = game.player1;
-        let p2 = game.player2;
-        let curr = game.player;
-        let op = game.opponent;
-
-        // @ts-ignore
-        delete game.cards;
-        // @ts-ignore
-        delete game.events;
-        // @ts-ignore
-        delete game.graveyard;
-        // @ts-ignore
-        delete game.player1;
-        // @ts-ignore
-        delete game.player2;
-        // @ts-ignore
-        delete game.player;
-        // @ts-ignore
-        delete game.opponent;
-        delete game.config;
+        game.log("AI: Creating simulation...", !this.logAction);
 
         let count = 0;
+
+        /**
+         * @type {Game}
+         */
         let simulation = lodash.cloneDeepWith(game, ()=>{count++});
-        console.log(`cloned total ${count} nodes from rows`);
-
-        game.cards = cards;
-        game.events = events;
-        game.graveyard = graveyard;
-        game.config = config;
-        game.player1 = p1;
-        game.player2 = p2;
-        game.player = curr;
-        game.opponent = op;
-
-        simulation.cards = cards;
-        simulation.events = events;
-        simulation.graveyard = graveyard;
-        simulation.config = config;
-        simulation.player1 = p1;
-        simulation.player2 = p2;
-        simulation.player = curr;
-        simulation.opponent = op;
+        game.log(`AI: Cloned total ${count} nodes from rows`, !this.logAction);
         simulation.simulation = true; // Mark it as a simulation
 
         [...simulation.player1.deck, ...simulation.player1.hand, ...simulation.player2.deck, ...simulation.player2.hand, ...simulation.player.deck, ...simulation.player.hand, ...simulation.opponent.deck, ...simulation.opponent.hand].forEach(c => {
             c.plr = simulation["player" + (c.plr.id + 1)];
         });
+        simulation.player.getInternalGame();
+        new game.Card("Sheep", simulation.player).getInternalGame();
 
         set(simulation);
         simulation.interact.getInternalGame();
         simulation.functions.getInternalGame();
+
+        game.log("AI: Simulation created", !this.logAction);
 
         return simulation;
     }
@@ -693,9 +790,13 @@ class SimulationAI {
      * Restore the game
      */
     _restoreGame() {
+        game.log("AI: Restoring game...", !this.logAction);
+
         set(game);
         game.interact.getInternalGame();
         game.functions.getInternalGame();
+
+        game.log("AI: Game restored", !this.logAction);
     }
 }
 

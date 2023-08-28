@@ -11,6 +11,12 @@
     "If this is true, `getReadableCard` will always show the full card in another card's description.": "Instead of it only being in detail mode.",
     "getReadableCardAlwaysShowFullCard": false,
 
+    "If this is true, it will `Press enter to continue` after every ai action.": "",
+    "aiLogsEveryAction": true,
+
+    "If this is true, it will show how long the ai took to complete their entire turn at the end of their turn.": "",
+    "aiShowTimeAtEndOfTurn": true,
+
     "These are the keys that will show up when running the history command.": "Look in `events.txt` for a list of valid keys. Also, the log files override this list and instead shows every valid key.",
     "whitelistedHistoryKeys": [
         "HealthRestored",

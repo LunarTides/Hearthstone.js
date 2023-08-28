@@ -29,6 +29,8 @@ functions.importConfig(__dirname + "/../config");
 
 game.config.P1AI = false;
 game.config.P2AI = false;
+game.config.aiLogsEveryAction = false;
+game.config.aiShowTimeAtEndOfTurn = false;
 
 game.doConfigAI();
 
