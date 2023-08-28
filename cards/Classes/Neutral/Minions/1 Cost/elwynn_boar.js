@@ -6,7 +6,7 @@
 module.exports = {
     name: "Elwynn Boar",
     stats: [1, 1],
-    // TODO: Remove this note when the bug is fixed.
+    // TODO: #244 Remove this note when the bug is fixed.
     desc: "&B[THIS CARD IS CURRENTLY BROKEN] Deathrattle:&R If you had 7 Elwynn Boars die this game, equip a 15/3 Sword of a Thousand Truths.",
     mana: 1,
     type: "Minion",
@@ -32,6 +32,8 @@ module.exports = {
      * @type {import("../../../../../src/types").KeywordMethod}
      */
     deathrattle(plr, game, self) {
+        return; // TODO: Remove this when the bug is fixed.
+
         let stat = game.events.increment(plr, "elwynnBoarsKilled");
         if (stat <= 7) return;
 

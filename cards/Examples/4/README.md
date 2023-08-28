@@ -9,3 +9,6 @@ Shows you how to listen for events on the game level.
 
 ### Quest
 Shows you how to make a quest.
+
+### Tick Hooks
+Shows you how to make hooks for game ticks.

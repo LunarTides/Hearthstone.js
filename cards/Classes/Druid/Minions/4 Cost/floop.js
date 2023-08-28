@@ -38,7 +38,10 @@ module.exports = {
         minion.stats = [3, 4];
 
         self.destroy();
-        game.summonMinion(minion, plr, false);
+
+        game.suppressedEvents.push("SummonMinion");
+        game.summonMinion(minion, plr);
+        game.suppressedEvents.pop();
 
         minion.activate("battlecry");
     }

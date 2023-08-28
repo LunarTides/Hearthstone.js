@@ -1,10 +1,14 @@
+//@ts-check
 const rl = require("readline-sync");
 const fs = require("fs");
 const lib = require("../lib");
 
 const { Game } = require("../../src/game");
+const { Player } = require("../../src/player");
 
-const game = new Game({}, {});
+const player1 = new Player("Player 1");
+const player2 = new Player("Player 2");
+const game = new Game(player1, player2);
 game.functions.importCards(__dirname + "/../../cards");
 game.functions.importConfig(__dirname + "/../../config");
 
@@ -162,7 +166,6 @@ function main(card = null) {
                 // Get rid of useless information
                 delete c["id"];
                 delete c["artist"];
-                delete c["dbfId"];
                 delete c["heroPowerDbfId"];
                 delete c["flavor"];
                 delete c["mechanics"];

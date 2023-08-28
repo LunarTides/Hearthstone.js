@@ -1,9 +1,13 @@
+//@ts-check
 const fs = require("fs");
 const rl = require("readline-sync");
 const { Game } = require("../../src/game");
 const { editor } = require("../../config/general.json");
+const { Player } = require("../../src/player");
 
-const game = new Game({}, {});
+const player1 = new Player("Player 1");
+const player2 = new Player("Player 2");
+const game = new Game(player1, player2);
 game.functions.importCards(__dirname + "/../../cards");
 game.functions.importConfig(__dirname + "/../../config");
 
@@ -11,8 +15,6 @@ let matchingCards = [];
 let finishedCards = [];
 
 let finishedCardsPath = "patched_cards.txt";
-
-const cls = () => process.stdout.write('\033c');
 
 function getFinishedCards(path) {
     if (!fs.existsSync(path)) return; // If the file doesn't exist, return.
@@ -33,22 +35,20 @@ function searchCards(query, path = null) {
         let p = `${path}/${file.name}`;
 
         if (file.name.endsWith(".js")) {
+            // It is already finished
+            if (finishedCards.includes(p)) return;
+
             // It is an actual card.
             let data = fs.readFileSync(p, { encoding: 'utf8', flag: 'r' });
 
             // The query is not a regular expression
-
             if (typeof query === 'string') {
                 if (data.includes(query)) matchingCards.push(p);
                 return;
             }
 
             // The query is a regex
-
-            /**
-             * @type {RegExp}
-             */
-            if (query.test(data) && !finishedCards.includes(p)) matchingCards.push(p);
+            if (query.test(data)) matchingCards.push(p);
         }
         else if (file.isDirectory()) searchCards(query, p);
     });
@@ -68,7 +68,7 @@ searchCards(search); // Ignore case
 console.log(); // New line
 
 while (true) {
-    cls();
+    game.interact.cls();
 
     matchingCards.forEach((c, i) => {
         // `c` is the path to the card.

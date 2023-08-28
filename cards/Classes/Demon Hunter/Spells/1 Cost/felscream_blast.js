@@ -5,7 +5,7 @@
  */
 module.exports = {
     name: "Felscream Blast",
-    desc: "Lifesteal. Deal 1 damage to a minion and its neighbors.",
+    desc: "Lifesteal. Deal $1 damage to a minion and its neighbors.",
     mana: 1,
     type: "Spell",
     class: "Demon Hunter",
@@ -18,11 +18,11 @@ module.exports = {
      * @type {import("../../../../../src/types").KeywordMethod}
      */
     cast(plr, game, self) {
-        let target = game.interact.selectTarget("Lifesteal. Deal 1 damage to a minion and its neighbors.", true, null, "minion");
+        let target = game.interact.selectTarget(self.desc, self, null, "minion");
         if (!target) return -1
 
         const doDamage = (t) => {
-            game.functions.spellDmg(t, 1);
+            game.attack("$1", t);
             plr.addHealth(1 + plr.spellDamage);
         }
 

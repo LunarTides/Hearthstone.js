@@ -19,7 +19,7 @@ module.exports = {
      */
     battlecry(plr, game, self) {
         let list = game.functions.getCards().filter(c => !c.class.includes("Neutral"));
-        let card = game.interact.discover("Discover a spell from any class.", list);
+        let card = game.interact.discover("Discover a spell from any class.", list, false);
         if (!card) return -1;
 
         //card.mana -= 1;

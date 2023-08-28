@@ -5,7 +5,7 @@
  */
 module.exports = {
     name: "Tooth of Nafarian",
-    desc: "Deal 2 damage. &BDiscover&R a spell from another class.",
+    desc: "Deal $2 damage. &BDiscover&R a spell from another class.",
     mana: 3,
     type: "Spell",
     class: "Rogue",
@@ -17,17 +17,17 @@ module.exports = {
      * @type {import("../../../../../src/types").KeywordMethod}
      */
     cast(plr, game, self) {
-        let target = game.interact.selectTarget(`Deal ${2 + plr.spellDamage} damage.`, true);
+        let target = game.interact.selectTarget(self.desc, self);
         if (!target) return -1;
 
-        game.functions.spellDmg(target, 2);
+        game.attack("$2", target);
 
         // Discover a spell from another class
         let list = game.functions.getCards();
         list = list.filter(c => c.type == "Spell" && !game.functions.validateClass(plr, c));
         if (list.length <= 0) return;
 
-        let spell = game.interact.discover("Discover a spell from another class.", list);
+        let spell = game.interact.discover("Discover a spell from another class.", list, false);
         if (!spell) return;
 
         plr.addToHand(spell);

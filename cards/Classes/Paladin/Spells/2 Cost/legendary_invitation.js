@@ -21,10 +21,11 @@ module.exports = {
         list = list.filter(c => c.type == "Minion" && c.rarity == "Legendary" && c.class != plr.heroClass);
         if (list.length <= 0) return;
 
-        let card = game.interact.discover("Discover a Legendary minion from another class.", list);
+        let card = game.interact.discover("Discover a Legendary minion from another class.", list, false);
         if (!card) return -1;
 
         //card.mana = 0;
         card.addEnchantment("mana = 0", self);
+        plr.addToHand(card);
     }
 }

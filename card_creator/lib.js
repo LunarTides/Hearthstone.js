@@ -1,11 +1,15 @@
+//@ts-check
 // This is a library
 
 const rl = require("readline-sync");
 const fs = require("fs");
 const { Game } = require("../src/game");
 const { editor } = require("../config/general.json");
+const { Player } = require("../src/player");
 
-const game = new Game({}, {});
+const player1 = new Player("Player 1");
+const player2 = new Player("Player 2");
+const game = new Game(player1, player2);
 game.functions.importCards(__dirname + "/../cards");
 game.functions.importConfig(__dirname + "/../config");
 
@@ -30,7 +34,7 @@ function getCardFunction(card_type) {
         func = card.desc.match(reg);
 
         if (!func && card.desc) func = "Passive:"; // If it didn't find a function, but the card has text in its' description, the function is 'passive'
-        else if (!card.desc) func = ""; // If the card doesn't have a description, it doesn't get a default function.
+        else if (!card.desc) func = ":"; // If the card doesn't have a description, it doesn't get a default function.
         else func = func[0]; // If it found a function, and the card has a description, the function is the function it found in the description.
 
         func = func.slice(0, -1); // Remove the last ':'
@@ -115,15 +119,23 @@ function create(override_type, override_card, override_path = "", override_filen
      * @type {import("${type_path_rel}").KeywordMethod}
      */`;
 
+    // If the card has a function, add the docstring to it.
+    let funcString = "";
+    if (func) {
+        funcString = `
+
+    ${methodDocstring}
+    ${func}`;
+    }
+
     let content = Object.entries(card).map(c => `${c[0]}: ${getTypeValue(c[1])}`); // name: "Test"
-    content = `// Created by the ${cctype} Card Creator
+    content = `//@ts-check
+
+// Created by the ${cctype} Card Creator
 
 ${bpDocstring}
 module.exports = {
-    ${content.join(',\n    ')},${file_id}
-    
-    ${methodDocstring}
-    ${func}
+    ${content.join(',\n    ')},${file_id}${funcString}
 }`;
 
     // Reset the type back to default.

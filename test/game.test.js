@@ -1,3 +1,4 @@
+//@ts-check
 const assert = require('assert');
 const colors = require("colors");
 const { Player } = require("../src/player");
@@ -503,6 +504,11 @@ describe("Game", () => {
         testAttack("plrnoattack");
         attacker.attack = 1;
 
+        // Now go for hasattacked
+        attacker.canAttack = false;
+        testAttack("plrhasattacked");
+        attacker.canAttack = true;
+
         // Now go for frozen
         attacker.frozen = true;
         testAttack("frozen");
@@ -538,6 +544,11 @@ describe("Game", () => {
         attacker.attack = 0;
         testAttack("plrnoattack");
         attacker.attack = 1;
+
+        // Now go for hasattacked
+        attacker.canAttack = false;
+        testAttack("plrhasattacked");
+        attacker.canAttack = true;
 
         // Now go for frozen
         attacker.frozen = true;

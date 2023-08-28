@@ -19,12 +19,15 @@ module.exports = {
      * @type {import("../../../../../src/types").KeywordMethod}
      */
     battlecry(plr, game, self) {
-        let target = game.interact.selectTarget("Become a copy of a minion.", false, null, "minion");
+        let target = game.interact.selectTarget("Become a copy of a minion.", self, null, "minion");
         if (!target) return -1;
 
         let clone = game.functions.cloneCard(target); // Create an exact copy of the target
 
         self.destroy();
-        game.summonMinion(clone, plr, false);
+
+        game.suppressedEvents.push("SummonMinion");
+        game.summonMinion(clone, plr);
+        game.suppressedEvents.pop();
     }
 }

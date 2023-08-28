@@ -1,3 +1,4 @@
+//@ts-check
 const { Card } = require('./card');
 const { Game } = require('./game');
 const { Player } = require('./player');
@@ -29,7 +30,7 @@ class Interact {
     /**
      * Asks the user to attack a minion or hero
      *
-     * @returns {-1 | null | bool | Card} Cancel | Success
+     * @returns {-1 | null | boolean | Card} Cancel | Success
      */
     doTurnAttack() {
         let attacker, target;
@@ -48,18 +49,18 @@ class Interact {
             if (attacker === -1 || target === -1) return -1;
             if (attacker === null || target === null) return null;
         } else {
-            attacker = this.selectTarget("Which minion do you want to attack with?", false, "friendly");
-            if (!attacker) return;
+            attacker = this.selectTarget("Which minion do you want to attack with?", null, "friendly");
+            if (!attacker) return false;
 
-            target = this.selectTarget("Which minion do you want to attack?", false, "enemy");
-            if (!target) return;
+            target = this.selectTarget("Which minion do you want to attack?", null, "enemy");
+            if (!target) return false;
         }
     
         let errorcode = game.attack(attacker, target);
         game.killMinions();
 
         let ignore = ["divineshield"];
-        if (errorcode === true || ignore.includes(errorcode)) return errorcode;
+        if (errorcode === true || ignore.includes(errorcode)) return true;
         let err;
 
         switch (errorcode) {
@@ -78,6 +79,9 @@ class Interact {
             case "noattack":
                 err = "That minion has no attack";
                 break;
+            case "plrhasattacked":
+                err = "Your hero has already attacked this turn";
+                break;
             case "hasattacked":
                 err = "That minion has already attacked this turn";
                 break;
@@ -85,7 +89,7 @@ class Interact {
                 err = "That minion is exhausted";
                 break;
             case "cantattackhero":
-                err = "Tht minion cannot attack heroes";
+                err = "That minion cannot attack heroes";
                 break;
             case "immune":
                 err = "That minion is immune";
@@ -100,46 +104,56 @@ class Interact {
 
         game.log(`${err}.`.red);
         game.input();
+        return false;
     }
 
     /**
      * Checks if "q" is a command, if it is, do something, if not return -1
      * 
      * @param {string} q The command
-     * @param {any} [args]
+     * @param {boolean} [echo=true] If this is false, it doesn't log information to the screen. Only used by "history", "/ai"
+     * @param {boolean} [debug=false] If this is true, it does some additional, debug only, things. Only used by "history"
      * 
-     * @returns {undefined | -1}
+     * @returns {boolean | string | -1} a string if "echo" is false
      */
-    handleCmds(q, ...args) {
-        if (q === "end") game.endTurn();
+    handleCmds(q, echo = true, debug = false) {
+        let args = q.split(" ");
+        let name = args[0];
+        args.shift();
+
+        if (name === "end") game.endTurn();
         else if (q === "hero power") {
             if (game.player.ai) {
                 game.player.heroPower();
-                return;
+                return true;
             }
 
             if (game.player.mana < game.player.heroPowerCost) {
                 game.input("You do not have enough mana.\n".red);
-                return;
+                return false;
             }
 
             if (!game.player.canUseHeroPower) {
                 game.input("You have already used your hero power this turn.\n".red);
-                return;
+                return false;
             }
 
-            this.printAll();
+            if (game.player.hero === null) {
+                game.input("You do not have a hero.\n".red);
+                return false;
+            }
+
             let ask = this.yesNoQuestion(game.player, game.player.hero.hpDesc.yellow + " Are you sure you want to use this hero power?");
-            if (!ask) return;
+            if (!ask) return false;
 
             this.printAll();
             game.player.heroPower();
         }
-        else if (q === "attack") {
+        else if (name === "attack") {
             this.doTurnAttack();
             game.killMinions();
         }
-        else if (q === "use") {
+        else if (name === "use") {
             // Use location
             let errorcode = this.useLocation();
             game.killMinions();
@@ -165,7 +179,7 @@ class Interact {
             game.log(`${err}.`.red);
             game.input();
         }
-        else if (q === "help") {
+        else if (name === "help") {
             this.printName();
             game.log("(In order to run a command; input the name of the command and follow further instruction.)\n");
             game.log("Available commands:");
@@ -183,56 +197,59 @@ class Interact {
             game.log("version    - Displays the version, branch, your settings preset, and some information about your current version.");
             game.log("license    - Opens a link to this project's license");
 
-            const cond_color = (str) => {return (game.config.debug) ? str : str.gray};
+            const cond_color = (/** @type {string} */ str) => {return (game.config.debug) ? str : str.gray};
 
             game.log(cond_color("\n--- Debug Commands (") + ((game.config.debug) ? "ON".green : "OFF".red) + cond_color(") ---"));
-            game.log(cond_color("/give <Card Name>  - Adds a card to your hand"));
-            game.log(cond_color("/eval [log] <Code> - Runs the code specified. If the word 'log' is before the code, instead game.log the code and wait for user input to continue."));
-            game.log(cond_color("/debug             - Gives you infinite mana, health and armor"));
-            game.log(cond_color("/exit              - Force exits the game. There will be no winner, and it will take you straight back to the runner."));
-            game.log(cond_color("/events            - Gives you a list of the events that have been broadcast in an alphabetical order"));
-            game.log(cond_color("/ai                - Gives you a list of the actions the ai(s) have taken in the order they took it"));
+            game.log(cond_color("/give (name)        - Adds a card to your hand"));
+            game.log(cond_color("/eval [log] (code)  - Runs the code specified. If the word 'log' is before the code, instead game.log the code and wait for user input to continue."));
+            game.log(cond_color("/set (name) (value) - Changes a setting to (value). Look in the config files for a list of settings."));
+            game.log(cond_color("/debug              - Gives you infinite mana, health and armor"));
+            game.log(cond_color("/exit               - Force exits the game. There will be no winner, and it will take you straight back to the runner."));
+            game.log(cond_color("/history            - Displays a history of actions. This doesn't hide any information, and is the same thing the log files uses."));
+            game.log(cond_color("/reload | /rl       - Reloads the cards and config in the game (Use '/freload' or '/frl' to ignore the confirmation prompt (or disable the prompt in the advanced config))"));
+            game.log(cond_color("/undo               - Undoes the last card played. It gives the card back to your hand, and removes it from where it was. (This does not undo the actions of the card)"));
+            game.log(cond_color("/cmd                - Shows you a list of debug commands you have run, and allows you to rerun them."));
+            game.log(cond_color("/ai                 - Gives you a list of the actions the ai(s) have taken in the order they took it"));
             game.log(cond_color("---------------------------" + ((game.config.debug) ? "" : "-")));
             
             game.input("\nPress enter to continue...\n");
         }
-        else if (q == "view") {
-            let isHand = this.question(game.player, "Do you want to view a minion on the board, or in your hand?", ["Board", "Hand"]);
-            isHand = isHand == "Hand";
+        else if (name === "view") {
+            let isHandAnswer = this.question(game.player, "Do you want to view a minion on the board, or in your hand?", ["Board", "Hand"]);
+            let isHand = isHandAnswer == "Hand";
 
             if (!isHand) {
                 // allow_locations Makes selecting location cards allowed. This is disabled by default to prevent, for example, spells from killing the card.
-                let minion = this.selectTarget("Which minion do you want to view?", false, null, "minion", ["allow_locations"]);
-                if (!minion) return;
+                let minion = this.selectTarget("Which minion do you want to view?", null, null, "minion", ["allow_locations"]);
+                if (!minion || minion instanceof Player) return false;
         
                 this.viewCard(minion);
 
-                return;
+                return true;
             }
 
-            let card = game.input("\nWhich card do you want to view? ");
-            if (!card || !parseInt(card)) return;
+            // View minion on the board
+            const cardId = game.input("\nWhich card do you want to view? ");
+            if (!cardId || !parseInt(cardId)) return false;
 
-            card = game.player.hand[parseInt(card) - 1];
+            const card = game.player.hand[parseInt(cardId) - 1];
 
             this.viewCard(card);
         }
-        else if (q == "detail") {
-            this.printAll(null, true);
-            game.input("Press enter to continue...\n");
-            this.printAll();
+        else if (name === "detail") {
+            game.player.detailedView = !game.player.detailedView;
         }
-        else if (q == "concede") {
+        else if (name === "concede") {
             let confirmation = this.yesNoQuestion(game.player, "Are you sure you want to concede?");
-            if (!confirmation) return;
+            if (!confirmation) return false;
 
             game.endGame(game.player.getOpponent());
         }
-        else if (q == "license") {
+        else if (name === "license") {
             let start = (process.platform == 'darwin' ? 'open' : process.platform == 'win32' ? 'start' : 'xdg-open');
             require('child_process').exec(start + ' ' + license_url);
         }
-        else if (q == "version") {
+        else if (name === "version") {
             while (true) {
                 let todos = Object.entries(game.config.todo);
 
@@ -253,9 +270,9 @@ class Interact {
                     else if (JSON.stringify(_config) == '{"debug":false,"P2AI":false}') strbuilder += " using the recommended settings preset";
                     else strbuilder += " using custom settings";
     
-                    console.log(strbuilder + ".\n");
+                    game.log(strbuilder + ".\n");
     
-                    console.log(`Version Description:`);
+                    game.log(`Version Description:`);
 
                     let introText;
 
@@ -263,12 +280,12 @@ class Interact {
                     else if (game.config.branch == "dev") introText = game.config.developIntroText;
                     else if (game.config.branch == "stable") introText = game.config.stableIntroText;
 
-                    console.log(introText);
-                    if (game.config.versionText) console.log(game.config.versionText);
-                    console.log();
+                    game.log(introText);
+                    if (game.config.versionText) game.log(game.config.versionText);
+                    game.log("");
 
-                    console.log("Todo List:");
-                    if (todos.length <= 0) console.log("None.");
+                    game.log("Todo List:");
+                    if (todos.length <= 0) game.log("None.");
                 }
                 
                 print_info();
@@ -279,7 +296,7 @@ class Interact {
                     break;
                 }
 
-                const print_todo = (todo, id, print_desc = false) => {
+                const print_todo = (/** @type {[string, string]} */ todo, /** @type {number} */ id, print_desc = false) => {
                     let [name, info] = todo;
                     let [state, desc] = info;
 
@@ -287,8 +304,8 @@ class Interact {
                     else if (state == "doing") state = "o";
                     else if (state == "not done") state = " ";
 
-                    if (print_desc) console.log(`{${id}} [${state}] ${name}\n${desc}`);
-                    else console.log(`{${id}} [${state}] ${name}`);
+                    if (print_desc) game.log(`{${id}} [${state}] ${name}\n${desc}`);
+                    else game.log(`{${id}} [${state}] ${name}`);
                 }
 
                 todos.forEach((e, i) => print_todo(e, i + 1));
@@ -306,36 +323,91 @@ class Interact {
                 game.input("\nPress enter to continue...");
             }
         }
-        else if (q == "history") {
+        else if (name === "history") {
+            if (echo === false) {}
+            else game.log("Cards that are shown are collected while this screen is rendering. This means that it gets the information about the card from where it is when you ran this command, for example; the graveyard. This is why most cards have <1 health.".yellow);
+
             // History
             let history = game.events.history;
             let finished = "";
 
-            let history_debug = args.length >= 2 && args[1] == true;
+            const showCard = (/** @type {Card} */ val) => {
+                return this.getReadableCard(val) + " which belongs to: " + val.plr.name.blue + ", and has uuid: " + val.uuid.slice(0, 8);
+            }
 
+            /**
+             * Transform the `value` into a readable string
+             * 
+             * @param {any} val 
+             * @param {Player} plr 
+             * @param {boolean} hide If it should hide the card
+             * 
+             * @returns {any}
+             */
             const doVal = (val, plr, hide) => {
                 if (val instanceof game.Card) {
-                    if (hide && val.plr != plr && !history_debug) val = "Hidden";
-                    else val = val.displayName;
-                }
-                else if (val instanceof game.Player) val = `Player ${val.id + 1}`;
+                    // If the card is not hidden, or the card belongs to the current player, show it
+                    if (!hide || val.plr == plr) return showCard(val);
 
+                    // Hide the card
+                    let revealed = false;
+
+                    // It has has been revealed, show it.
+                    Object.values(history).forEach(h => {
+                        if (revealed) return;
+
+                        h.forEach(c => {
+                            if (revealed) return;
+
+                            let [key, newVal, _] = c;
+
+                            if (game.config.whitelistedHistoryKeys.includes(key)) {}
+                            else return;
+
+                            if (game.config.hideValueHistoryKeys.includes(key)) return;
+
+                            if (val.uuid != newVal.uuid) return;
+
+                            // The card has been revealed.
+                            revealed = true;
+                        });
+                    });
+
+                    if (revealed) return "Hidden > Revealed as: " + showCard(val);
+                    else return "Hidden";
+                }
+                else if (val instanceof game.Player) return `Player ${val.id + 1}`;
+
+                // Return val as-is if it is not a card / player
                 return val;
             }
 
             Object.values(history).forEach((h, t) => {
                 let hasPrintedHeader = false;
+                let prevPlayer;
 
-                h.forEach(c => {
+                h.forEach((c, /** @type {number} */ i) => {
                     let [key, val, plr] = c;
 
-                    let bannedKeys = ["EndTurn", "StartTurn", "UnspentMana", "GainOverload", "GainHeroAttack", "SpellDealsDamage", "FreezeCard", "CancelCard", "Update"];
-                    if (bannedKeys.includes(key) && !history_debug) return;
+                    if (plr != prevPlayer) hasPrintedHeader = false;
+                    prevPlayer = plr;
 
-                    let hideValueKeys = ["DrawCard", "AddCardToHand", "AddCardToDeck"]; // Example: If a card gets drawn, the other player can't see what card it was
-                    let shouldHide = hideValueKeys.includes(key) && !history_debug;
+                    if (game.config.whitelistedHistoryKeys.includes(key) || debug) {}
+                    else return;
 
-                    if (!hasPrintedHeader) finished += `\nTurn ${t + 1} - Player [${plr.name}]\n`; 
+                    // If the `key` is "AddCardToHand", check if the previous history entry was `DrawCard`, and they both contained the exact same `val`.
+                    // If so, ignore it.
+                    if (key == "AddCardToHand" && i > 0) {
+                        let last_entry = history[t][i - 1];
+
+                        if (last_entry[0] == "DrawCard" && last_entry[1].uuid == val.uuid) {
+                            return;
+                        }
+                    }
+
+                    let shouldHide = game.config.hideValueHistoryKeys.includes(key) && !debug;
+
+                    if (!hasPrintedHeader) finished += `\nTurn ${t} - Player [${plr.name}]\n`; 
                     hasPrintedHeader = true;
 
                     val = doVal(val, game.player, shouldHide);
@@ -359,7 +431,7 @@ class Interact {
             });
 
 
-            if (args[0] === false) {}
+            if (echo === false) {}
             else {
                 game.log(finished);
 
@@ -369,32 +441,41 @@ class Interact {
             return finished;
         }
 
-        else if (q.startsWith("/give ")) {
-            if (!game.config.debug) return -1;
-    
-            let name = q.split(" ");
-            name.shift();
-            name = name.join(" ");
-    
-            let card = game.functions.getCardByName(name);
-            if (!card) return game.input("Invalid card: `" + name + "`.\n");
+        else if (name.startsWith("/") && !game.config.debug) {
+            game.input("You are not allowed to use this command.".red);
+            return false;
+        }
+
+        else if (name === "/give") {    
+            if (args.length <= 0) {
+                game.input("Too few arguments.\n".red);
+                return false;
+            }
+
+            let cardName = args.join(" ");
+
+            let card = game.functions.getCardByName(cardName);
+            if (!card) {
+                game.input("Invalid card: ".red + cardName.yellow + ".\n".red);
+                return false;
+            }
     
             game.player.addToHand(new game.Card(card.name, game.player));
         }
-        else if (q.startsWith("/eval")) {
-            if (!game.config.debug) return -1;
+        else if (name === "/eval") {
+            if (args.length <= 0) {
+                game.input("Too few arguments.\n".red);
+                return -1;
+            }
 
             let log = false;
 
-            let code = q.split(" ");
-            code.shift();
-
-            if (code[0] == "log") {
+            if (args[0] == "log") {
                 log = true;
-                code.shift();
+                args.shift();
             }
-            
-            code = code.join(" ");
+
+            let code = args.join(" ");
 
             if (log) {
                 if (code[code.length - 1] == ";") code = code.slice(0, -1);
@@ -414,9 +495,7 @@ class Interact {
             }
             game.evaling = false;
         }
-        else if (q == "/debug") {
-            if (!game.config.debug) return -1;
-    
+        else if (name === "/debug") {    
             game.player.maxMaxMana = 1000;
             game.player.maxMana = 1000;
             game.player.mana = 1000;
@@ -425,17 +504,61 @@ class Interact {
             game.player.armor += 100000;
             game.player.fatigue = 0;
         }
-        else if (q == "/exit") {
-            if (!game.config.debug) return -1;
+        else if (name === "/undo") {
+            // Get the last played card
+            if (!game.events["PlayCard"] || game.events["PlayCard"][game.player.id].length <= 0) {
+                game.input("No cards to undo.\n".red);
+                return false;
+            }
 
+            /**
+             * @type {[Card, number]}
+             */
+            let eventCards = game.events["PlayCard"][game.player.id];
+
+            /**
+             * @type {Card}
+             */
+            let card = eventCards[eventCards.length - 1][0];
+
+            // Remove the event so you can undo more than the last played card
+            game.events["PlayCard"][game.player.id].pop();
+
+            // If the card can appear on the board, remove it.
+            if (card.type === "Minion" || card.type === "Location") {
+                game.functions.remove(game.board[game.player.id], card);
+
+                // If the card has 0 or less health, restore it to its original health (according to the blueprint)
+                if (card.getHealth() <= 0) {
+                    if (!card.stats) throw new Error("Card has no stats!");
+                    if (!card.blueprint.stats) throw new Error("Card has no blueprint stats!");
+
+                    card.stats[1] = card.blueprint.stats[1];
+                }
+            }
+
+            card = card.perfectCopy();
+
+            // If the card is a weapon, destroy it before adding it to the player's hand.
+            if (card.type === "Weapon") {
+                game.player.destroyWeapon(true);
+            }
+
+            // If the card is a hero, reset the player's hero to the default one from their class.
+            if (card.type === "Hero") {
+                game.player.setToStartingHero();
+            }
+
+            game.player.addToHand(card);
+            game.player.refreshMana(card.mana);
+        }
+        else if (name === "/exit") {
             game.running = false;
         }
-        else if (q == "/ai") {
-            if (!game.config.debug) return -1;
-
+        else if (name === "/ai") {
             let finished = "";
 
-            if (!args[0] === false) finished += "AI Info:\n\n";
+            if (echo) finished += "AI Info:\n\n";
 
             for (let i = 1; i <= 2; i++) {
                 const plr = game["player" + i];
@@ -443,14 +566,14 @@ class Interact {
 
                 finished += `AI${i} History: {\n`;
 
-                plr.ai.history.forEach((t, j) => {
-                    finished += `${j + 1} ${t[0]}: (${t[1]}),\n`;
+                plr.ai.history.forEach((/** @type {import('./types').AIHistory} */ obj, /** @type {number} */ objIndex) => {
+                    finished += `${objIndex + 1} ${obj.type}: (${obj.data}),\n`;
                 });
                 
                 finished += "}\n";
             }
 
-            if (args[0] === false) {}
+            if (echo === false) {}
             else {
                 game.log(finished);
 
@@ -459,49 +582,175 @@ class Interact {
 
             return finished;
         }
-        else if (q == "/events") {
-            if (!game.config.debug) return -1;
+        else if (name === "/cmd") {
+            let history = Object.values(game.events.history).map(t => t.filter(
+                (/** @type {any[]} */ v) => v[0] == "Input" &&
+                v[1].startsWith("/") &&
+                v[2] == game.player &&
+                !v[1].startsWith("/cmd")
+            ));
+            
+            history.forEach((obj, i) => {
+                if (obj.length <= 0) return;
 
-            game.log("Events:\n");
+                game.log(`\nTurn ${i}:`);
 
-            for (let i = 1; i <= 2; i++) {
-                const plr = game["player" + i];
-                
-                game.log(`Player ${i}'s Stats: {`);
+                let index = 1;
+                obj.forEach((/** @type {string[]} */ h) => {
+                    /**
+                     * The user's input
+                     * 
+                     * @type {string}
+                     */
+                    let input = h[1];
 
-                Object.keys(game.events).forEach(s => {
-                    if (!game.events[s][plr.id]) return;
-                    game.events[s][plr.id].forEach(t => {
-                        if (t instanceof Array && t[0] instanceof game.Card) {
-                            let sb = `[${s}] ([`;
-                            t.forEach(v => {
-                                if (v instanceof game.Card) v = v.name;
-                                sb += `${v}, `;
-                            });
-                            sb = sb.slice(0, -2);
-                            sb += "]),";
-                            game.log(sb);
-                            return;
-                        }
-                        if (t instanceof game.Card || typeof(t) !== 'object') {
-                            if (t instanceof game.Card) t = t.name;
-                            game.log(`[${s}] (${t}),`);
-                            return;
-                        }
-
-                        game.log(`[${s}] (`);
-                        game.log(t);
-                        game.log("),");
-                    });
+                    game.log(`[${index++}] ${input}`);
                 });
+            });
 
-                game.log("}");
+            let turnIndex = parseInt(game.input("\nWhich turn does the command belong to? (eg. 1): "));
+            if (!turnIndex || turnIndex < 0 || !history[turnIndex]) {
+                game.input("Invalid turn.\n".red);
+                return false;
             }
 
-            game.input("\nPress enter to continue...");
-        }
+            let commandIndex = parseInt(game.input("\nWhat is the index of the command in that turn? (eg. 1): "));
+            if (!commandIndex || commandIndex < 1 || !history[turnIndex][commandIndex - 1]) {
+                game.input("Invalid command index.\n".red);
+                return false;
+            }
 
+            let command = history[turnIndex][commandIndex - 1][1];
+            if (!command) {
+                game.input("Invalid command.\n".red);
+                return false;
+            }
+
+            this.printAll();
+            let options = parseInt(game.input(`\nWhat would you like to do with this command?\n${command}\n\n(1. Run it, 2. Cancel): `));
+            if (!options || options === 2) {
+                game.input("Invalid option.\n".red);
+                return false;
+            }
+
+            if (options === 1) {
+                this.doTurnLogic(command);
+            }
+        }
+        else if (name === "/set") {
+            if (args.length != 2) {
+                game.input("Invalid amount of arguments!\n".red);
+                return false;
+            }
+
+            let [key, value] = args;
+
+            let setting = game.config[key];
+
+            if (setting === undefined) {
+                game.input("Invalid setting name!\n".red);
+                return false;
+            }
+
+            if (!(/number|boolean|string/.test(typeof setting))) {
+                game.input(`You cannot change this setting, as it is a '${typeof setting}', and you can only change: number, boolean, string.\n`.red);
+                return false;
+            }
+
+            if (key == "debug") {
+                game.input("You can't change the debug setting, as that could lock you out of the set command.\n".red);
+                return false;
+            }
+
+            let newValue;
+
+            if (["off", "disable", "false", "no", "0"].includes(value)) {
+                game.log(`Setting '${key}' has been disabled.`.green);
+                newValue = false;
+            }
+            else if (["on", "enable", "true", "yes", "1"].includes(value)) {
+                game.log(`Setting '${key}' has been disabled.`.green);
+                newValue = true;
+            }
+            else if (parseFloat(value)) {
+                game.log(`Setting '${key}' has been set to the float: ${value}.`.green);
+                newValue = parseFloat(value);
+            }
+            else if (parseInt(value)) {
+                game.log(`Setting '${key}' has been set to the integer: ${value}.`.green);
+                newValue = parseInt(value);
+            }
+            else {
+                game.log(`Setting '${key}' has been set to the string literal: ${value}.`.green);
+                newValue = value;
+            }
+
+            if (newValue === undefined) {
+                // This should never really happen
+                game.input("Invalid value!\n".red);
+                return false;
+            }
+
+            game.config[key] = newValue;
+            game.doConfigAI();
+            
+            game.input();
+        }
+        else if (name === "/reload" || name === "/rl") {
+            if (game.config.reloadCommandConfirmation && !debug) {
+                let sure = this.yesNoQuestion(game.player, "Are you sure you want to reload? This will reset all cards to their base state.".yellow);
+                if (!sure) return false;
+            }
+
+            let success = true;
+
+            success &&= this.withStatus("Deleting cache", () => Object.keys(require.cache).forEach(k => delete require.cache[k]));
+
+            success &&= this.withStatus("Importing cards", () => game.functions.importCards(__dirname + "/../cards"));
+            success &&= this.withStatus("Importing config", () => game.functions.importConfig(__dirname + "/../config"));
+
+            // Go through all the cards and reload them
+            success &&= this.withStatus("Reloading cards", () => {
+                /**
+                 * Reloads a card
+                 * 
+                 * @param {Card} card 
+                 */
+                const reload = (card) => {
+                    let clonedCard = card.imperfectCopy();
+
+                    card.doBlueprint();
+                    card.backups["init"] = clonedCard.backups["init"];
+                }
+
+                [game.player1, game.player2].forEach(p => {
+                    p.hand.forEach(c => reload(c));
+                    p.deck.forEach(c => reload(c));
+                });
+
+                game.board.forEach(p => {
+                    p.forEach(c => reload(c));
+                });
+
+                game.graveyard.forEach(p => {
+                    p.forEach(c => reload(c));
+                });
+            });
+
+            if (!debug && success) game.input("\nThe cards have been reloaded.\nPress enter to continue...");
+            if (!success) game.input("\nSome steps failed. The game could not be fully reloaded. Please report this.\nPress enter to continue...");
+        }
+        else if (name === "/freload" || name === "/frl") {
+            return this.handleCmds("/reload", true, true);
+        }
+        else if (name === "/history") {
+            return this.handleCmds("history", true, true);
+        }
+        // -1 if the command is not found
         else return -1;
+
+        // true if a command was ran, and no errors were found
+        return true;
     }
 
     /**
@@ -509,23 +758,29 @@ class Interact {
      * 
      * @param {string} input The user input
      * 
-     * @returns {boolean | Card | "mana" | "traded" | "space" | "magnetize" | "colossal" | "invalid" | "refund"} true | The return value of `game.playCard`
+     * @returns {true | Card | "mana" | "traded" | "space" | "magnetize" | "colossal" | "counter" | "invalid" | "refund"} true | The return value of `game.playCard`
      */
     doTurnLogic(input) {
         if (this.handleCmds(input) !== -1) return true;
-        let card = game.player.hand[parseInt(input) - 1];
+        let parsedInput = parseInt(input);
+
+        let card = game.player.hand[parsedInput - 1];
         if (!card) return "invalid";
 
-        if (input == game.player.hand.length || input == 1) card.activate("outcast");
-        return game.playCard(card, game.player);    
+        if (parsedInput == game.player.hand.length || parsedInput == 1) card.activate("outcast");
+        return game.playCard(card, game.player);
     }
 
     /**
-     * Show information and asks the user for an input which is put into `doTurnLogic`
+     * Show the game state and asks the user for an input which is put into `doTurnLogic`.
+     * 
+     * This is the core of the game loop.
      * 
      * @returns {boolean | string | Card | "mana" | "traded" | "space" | "magnetize" | "colossal" | "invalid" | "refund"} Success | The return value of doTurnLogic
      */
     doTurn() {
+        game.events.tick("GameLoop", "doTurn");
+
         if (game.player.ai) {
             this.printName();
             game.log("The ai is thinking...", false);
@@ -582,17 +837,21 @@ class Interact {
     /**
      * Asks the user to select a location card to use, and activate it.
      * 
-     * @return {boolean | -1} Success
+     * @return {boolean | "nolocations" | "invalidtype" | "cooldown" | -1} Success
      */
     useLocation() {
         let locations = game.board[game.player.id].filter(m => m.type == "Location");
         if (locations.length <= 0) return "nolocations";
 
-        let location = this.selectTarget("Which location do you want to use?", false, "friendly", "minion", ["allow_locations"]);
+        let location = this.selectTarget("Which location do you want to use?", null, "friendly", "minion", ["allow_locations"]);
+        if (!location) return -1;
+
+        if (!(location instanceof Card)) return "invalidtype";
+
         if (location.type != "Location") return "invalidtype";
         if (location.cooldown > 0) return "cooldown";
         
-        if (location.activate("use") === -1) return -1;
+        if (location.activate("use") === game.constants.REFUND) return -1;
         
         location.setStats(0, location.getHealth() - 1);
         location.cooldown = location.backups.init.cooldown;
@@ -602,7 +861,11 @@ class Interact {
     // Deck stuff
 
     /**
-     * Asks the player to supply a deck code, if no code was given, fill the players deck with 30 Sheep
+     * Asks the player to supply a deck code, if no code was given, fill the players deck with 30 Sheep.
+     * 
+     * This does not fill the players deck with 30 Sheep if:
+     * - Debug mode is disabled
+     * - The program is running on the stable branch
      * 
      * @param {Player} plr The player to ask
      * 
@@ -611,23 +874,31 @@ class Interact {
     deckCode(plr) {
         this.printName();
     
-        const deckcode = game.input(`Player ${plr.id + 1}, please type in your deckcode ` + `(Leave this empty for a test deck)`.gray + `: `);
+        /**
+         * If the test deck (30 Sheep) should be allowed
+         * 
+         * @type {boolean}
+         */
+        let allowTestDeck = game.config.debug || game.config.branch !== "stable";
+
+        let debugStatement = allowTestDeck ? " (Leave this empty for a test deck)".gray : "";
+        const deckcode = game.input(`Player ${plr.id + 1}, please type in your deckcode${debugStatement}: `);
 
         let error;
 
         if (deckcode.length > 0) error = game.functions.deckcode.import(plr, deckcode);
         else {
-            if (!game.config.debug && game.config.branch == "stable") { // I want to be able to test without debug mode on in a non-stable branch
+            if (!allowTestDeck) { // I want to be able to test without debug mode on in a non-stable branch
                 // Give error message
                 game.input("Please enter a deckcode!\n".red);
-                return this.deckCode(plr); // Retry
+                return false;
             }
 
             // Debug mode is enabled, use the 30 Sheep debug deck.
             while (plr.deck.length < 30) plr.deck.push(new game.Card("Sheep", plr)); // Debug deck
         }
 
-        if (error == "invalid") process.exit(1);
+        if (error == "invalid") return false;
 
         return true;
     }
@@ -674,6 +945,7 @@ class Interact {
         // Check if ai
         if (game.player.ai) {
             let card = game.player.ai.dredge(cards);
+            if (!card) return null;
 
             game.functions.remove(game.player.deck, card); // Removes the selected card from the players deck.
             game.player.deck.push(card);
@@ -693,8 +965,8 @@ class Interact {
 
         let choice = game.input("> ");
 
-        let card = parseInt(choice) - 1;
-        card = cards[card];
+        const cardId = parseInt(choice) - 1;
+        let card = cards[cardId];
 
         if (!card) {
             return this.dredge(prompt);
@@ -715,7 +987,7 @@ class Interact {
      * @param {string[]} options The options to give the user
      * @param {number} [times=1] The amount of times to ask
      * 
-     * @returns {string | string[]} The user's answer(s)
+     * @returns {number | null | (number | null)[]} The chosen answer(s) index(es)
      */
     chooseOne(prompt, options, times = 1) {
         this.printAll();
@@ -763,6 +1035,10 @@ class Interact {
      * @returns {string} Chosen
      */
     question(plr, prompt, answers) {
+        const RETRY = () => {
+            return this.question(plr, prompt, answers);
+        }
+
         this.printAll(plr);
 
         let strbuilder = `\n${prompt} [`;
@@ -774,15 +1050,26 @@ class Interact {
         strbuilder = strbuilder.slice(0, -2);
         strbuilder += "] ";
 
+        /**
+         * @type {number}
+         */
         let choice;
 
-        if (plr.ai) choice = plr.ai.question(prompt, answers);
-        else choice = game.input(strbuilder); 
+        if (plr.ai) {
+            let aiChoice = plr.ai.question(prompt, answers);
+            if (!aiChoice) {
+                // code, expected, actual
+                throw game.functions.createAIError("ai_question_return_invalid_at_question_function", "some number", aiChoice);
+            }
 
-        let answer = answers[parseInt(choice) - 1];
+            choice = aiChoice;
+        }
+        else choice = parseInt(game.input(strbuilder));
+
+        let answer = answers[choice - 1];
         if (!answer) {
             game.input("Invalid input!\n".red);
-            return this.question(plr, prompt, answers);
+            RETRY();
         }
 
         return answer;
@@ -819,29 +1106,69 @@ class Interact {
      * Asks the user a "prompt", show them "amount" cards. The cards are chosen from "cards".
      * 
      * @param {string} prompt The prompt to ask
-     * @param {Card[] | import('./card').Blueprint[]} [cards=[]] The cards to choose from
+     * @param {Card[] | import('./types').Blueprint[]} [cards=[]] The cards to choose from
+     * @param {boolean} [filterClassCards=true] If it should filter away cards that do not belong to the player's class. Keep this at default if you are using `functions.getCards()`, disable this if you are using either player's deck / hand / graveyard / etc...
      * @param {number} [amount=3] The amount of cards to show
-     * @param {import('./card').Blueprint[]} [_cards=[]] Do not use this variable, keep it at default
+     * @param {import('./types').Blueprint[]} [_cards=[]] Do not use this variable, keep it at default
      * 
-     * @returns {Card | undefined} The card chosen.
+     * @returns {Card | null} The card chosen.
      */
-    discover(prompt, cards = [], amount = 3, _cards = []) {
+    discover(prompt, cards = [], filterClassCards = true, amount = 3, _cards = []) {
         this.printAll();
         let values = _cards;
 
-        if (cards.length <= 0) cards = game.functions.getCards().filter(c => game.functions.validateClass(game.player, c));
-        if (cards.length <= 0 || !cards) return;
+        if (cards.length <= 0) cards = game.functions.getCards();
+        if (cards.length <= 0 || !cards) return null;
+
+        if (filterClassCards) {
+            // We need to filter the cards
+            // We can't directly filter cards that are of `Type1[] | Type2[]` using `Array.prototype.filter()`, so we have to create a custom implementation
+            // of the filter function
+            
+            /**
+             * Literally just the same as `Array.prototype.filter()`, but probably worse.
+             *
+             * @param {Array} list - The list to be filtered.
+             * @param {Function} filterFunction - The function used to filter the list.
+             * @returns {Array} - The filtered list.
+             */
+            function filterList(list, filterFunction) {
+                const filteredList = [];
+              
+                for (const element of list) {
+                    if (filterFunction(element)) {
+                        filteredList.push(element);
+                    }
+                }
+
+                return filteredList;
+            }
+
+            /**
+             * This function is a wrapper for the game.functions.validateClass() method. 
+             * It takes a card-like object as a parameter and passes it to the validateClass() method along with the game.player object.
+             *
+             * @param {Card | import('./types').Blueprint} cardLike - a card-like object (Card or Blueprint)
+             * @returns {boolean} the return value of the validateClass() method
+             */
+            function customValidateClass(cardLike) {
+                return game.functions.validateClass(game.player, cardLike);
+            }
+
+            cards = filterList(cards, customValidateClass);
+        }
 
         if (_cards.length == 0) values = game.functions.chooseItemsFromList(cards, amount, false);
 
-        if (values.length <= 0) return;
+        if (values.length <= 0) return null;
 
         if (game.player.ai) return game.player.ai.discover(values);
 
         game.log(`\n${prompt}:`);
 
         values.forEach((v, i) => {
-            v = game.functions.getCardByName(v.name);
+            let card = game.functions.getCardByName(v.name);
+            if (!card) return;
 
             game.log(this.getReadableCard(v, i + 1));
         });
@@ -849,140 +1176,175 @@ class Interact {
         let choice = game.input();
 
         if (!values[parseInt(choice) - 1]) {
-            return this.discover(prompt, cards, amount, values);
+            // Invalid input
+            // We still want the user to be able to select a card, so we force it to be valid
+            return this.discover(prompt, cards, filterClassCards, amount, values);
         }
 
-        let card = values[parseInt(choice) - 1];
-        if (!(card instanceof game.Card)) card = new game.Card(card.name, game.player);
+        /**
+         * @type {Card}
+         */
+        let card;
+
+        // Potential Blueprint card
+        let pbcard = values[parseInt(choice) - 1];
+
+        if (!(pbcard instanceof game.Card)) card = new game.Card(pbcard.name, game.player);
+        else card = pbcard;
 
         return card;
     }
 
     /**
-     * Asks the user a `prompt`, the user can then select a minion or hero
+     * Asks the user a `prompt`, the user can then select a minion or hero.
+     * Broadcasts the `TargetSelectionStarts` and the `TargetSelected` event. Can broadcast the `CastSpellOnMinion` event.
      * 
      * @param {string} prompt The prompt to ask
-     * @param {boolean | string} [elusive=false] Wether or not to prevent selecting elusive minions, if this is a string, allow selecting elusive minions but don't trigger secrets / quests
-     * @param {"enemy" | "friendly"} [force_side=null] Force the user to only be able to select minions / the hero of a specific side: ["enemy", "self"]
-     * @param {"hero" | "minion"} [force_class=null] Force the user to only be able to select a minion or a hero: ["hero", "minion"]
-     * @param {string[]} [flags=[]] Change small behaviours ["allow_locations" => Allow selecting location, ]
+     * @param {Card | null} card The card that called this function.
+     * @param {"enemy" | "friendly" | null} [force_side=null] Force the user to only be able to select minions / the hero of a specific side: ["enemy", "friendly"]
+     * @param {"hero" | "minion" | null} [force_class=null] Force the user to only be able to select a minion or a hero: ["hero", "minion"]
+     * @param {import('./types').SelectTargetFlags[]} [flags=[]] Change small behaviours ["allow_locations" => Allow selecting location, ]
      * 
-     * @returns {Card | Player} The card or hero chosen
+     * @returns {Card | Player | false} The card or hero chosen
      */
-    selectTarget(prompt, elusive = false, force_side = null, force_class = null, flags = []) {
+    selectTarget(prompt, card, force_side = null, force_class = null, flags = []) {
         // force_class = [null, "hero", "minion"]
-        // force_side = [null, "enemy", "self"]
+        // force_side = [null, "enemy", "friendly"]
 
-        game.events.broadcast("TargetSelectionStarts", [prompt, elusive, force_side, force_class, flags], game.player);
-        let target = this._selectTarget(prompt, elusive, force_side, force_class, flags);
+        game.events.broadcast("TargetSelectionStarts", [prompt, card, force_side, force_class, flags], game.player);
+        let target = this._selectTarget(prompt, card, force_side, force_class, flags);
 
-        game.events.broadcast("TargetSelected", target, game.player);
+        if (target) game.events.broadcast("TargetSelected", [card, target], game.player);
         return target;
     }
 
     /**
-     * Asks the user a `prompt`, the user can then select a minion or hero
+     * Asks the user a `prompt`, the user can then select a minion or hero.
+     * Can broadcast the `CastSpellOnMinion` event.
      * 
      * @param {string} prompt The prompt to ask
-     * @param {boolean | string} [elusive=false] Wether or not to prevent selecting elusive minions, if this is a string, allow selecting elusive minions but don't trigger secrets / quests
-     * @param {"enemy" | "friendly"} [force_side=null] Force the user to only be able to select minions / the hero of a specific side: ["enemy", "friendly"]
-     * @param {"hero" | "minion"} [force_class=null] Force the user to only be able to select a minion or a hero: ["hero", "minion"]
-     * @param {string[]} [flags=[]] Change small behaviours ["allow_locations" => Allow selecting location, ]
+     * @param {Card | null} card The card that called this function.
+     * @param {"enemy" | "friendly" | null} [force_side=null] Force the user to only be able to select minions / the hero of a specific side: ["enemy", "friendly"]
+     * @param {"hero" | "minion" | null} [force_class=null] Force the user to only be able to select a minion or a hero: ["hero", "minion"]
+     * @param {import('./types').SelectTargetFlags[]} [flags=[]] Change small behaviours ["allow_locations" => Allow selecting location, ]
      * 
-     * @returns {Card | Player} The card or hero chosen
+     * @returns {Card | Player | false} The card or hero chosen
      */
-    _selectTarget(prompt, elusive = false, force_side = null, force_class = null, flags = []) {
+    _selectTarget(prompt, card, force_side = null, force_class = null, flags = []) {
         // force_class = [null, "hero", "minion"]
         // force_side = [null, "enemy", "friendly"]
 
+        // If the player is forced to select a target, select that target.
         if (game.player.forceTarget) return game.player.forceTarget;
-        if (game.player.ai) return game.player.ai.selectTarget(prompt, elusive, force_side, force_class, flags);
 
+        // If the player is an ai, hand over control to the ai.
+        if (game.player.ai) return game.player.ai.selectTarget(prompt, card, force_side, force_class, flags);
+
+        // If the player is forced to select a hero
         if (force_class == "hero") {
-            const target = game.input(`Do you want to select the enemy hero, or your own hero? (y: enemy, n: self) `);
+            const target = game.input(`Do you want to select the enemy hero, or your own hero? (y: enemy, n: friendly) `);
     
             return (target.startsWith("y")) ? game.opponent : game.player;
         }
 
+        // From this point, force_class is either
+        // 1. null
+        // 2. minion
+
+        // Ask the player to choose a target.
         let p = `\n${prompt} (`;
         if (force_class == null) p += "type 'face' to select a hero | ";
         p += "type 'back' to go back) ";
 
         const target = game.input(p);
 
+        // Player chose to go back
         if (target.startsWith("b")) {
-            const return_question = this.yesNoQuestion(game.player, "WARNING: Going back might cause unexpected things to happen. ".red + "Do you still want to go back?");
-            
-            if (return_question) return false;
+            return false; // This should always be safe.
         }
 
-        const board_next = game.board[game.opponent.id];
-        const board_self = game.board[game.player.id];
+        // Get a list of each side of the board
+        const board_opponent = game.board[game.opponent.id];
+        const board_friendly = game.board[game.player.id];
 
-        const board_next_target = board_next[parseInt(target) - 1];
-        const board_self_target = board_self[parseInt(target) - 1];
+        // Get each minion that matches the target.
+        const board_opponent_target = board_opponent[parseInt(target) - 1];
+        const board_friendly_target = board_friendly[parseInt(target) - 1];
 
-        let minion = undefined;
+        /**
+         * This is the resulting minion that the player chose, if any.
+         * 
+         * @type {Card}
+         */
+        let minion;
 
-        if (!target.startsWith("face") && !board_self_target && !board_next_target) {
+        // If the player didn't choose to attack a hero, and no minions could be found at the index requested, try again.
+        if (!target.startsWith("face") && !board_friendly_target && !board_opponent_target) {
             // target != "face" and target is not a minion.
             // The input is invalid
 
-            return this.selectTarget(prompt, elusive, force_side, force_class);
+            return this.selectTarget(prompt, card, force_side, force_class, flags);
         }
 
+        // If the player is forced to one side.
         if (force_side) {
+            // If the player chose a hero, and they are allowed to
             if (target.startsWith("face") && force_class != "minion") {
                 if (force_side == "enemy") return game.opponent;
 
                 return game.player;
             }
 
-            minion = (force_side == "enemy") ? board_next_target : board_self_target;
+            // Select the minion on the correct side of the board.
+            minion = (force_side == "enemy") ? board_opponent_target : board_friendly_target;
         } else {
-            if (target.startsWith("face") && force_class != "minion") return this.selectTarget(prompt, false, null, "hero");
+            // `force_side` == null, allow the user to select any side.
+
+            // If the player chose to target a hero, it will ask which hero.
+            if (target.startsWith("face") && force_class != "minion") return this.selectTarget(prompt, card, null, "hero", flags);
             
-            if (board_next.length >= parseInt(target) && board_self.length >= parseInt(target)) {
-                // Both players have a minion with the same index.
-                // Ask them which minion to select
-                let target2 = game.input(`Do you want to select your opponent's (${game.functions.colorByRarity(board_next_target.displayName, board_next_target.rarity)}) or your own (${game.functions.colorByRarity(board_self_target.displayName, board_self_target.rarity)})? (y: opponent, n: self | type 'back' to go back) `);
+            // Both players have a minion with the same index.
+            // Ask them which minion to select
+            if (board_opponent.length >= parseInt(target) && board_friendly.length >= parseInt(target)) {
+                let target2 = game.input(`Do you want to select your opponent's (${game.functions.colorByRarity(board_opponent_target.displayName, board_opponent_target.rarity)}) or your own (${game.functions.colorByRarity(board_friendly_target.displayName, board_friendly_target.rarity)})? (y: opponent, n: friendly | type 'back' to go back) `);
             
                 if (target2.startsWith("b")) {
                     // Go back.
-                    return this.selectTarget(prompt, elusive, force_side, force_class);
+                    return this.selectTarget(prompt, card, force_side, force_class, flags);
                 }
 
-                minion = (target2.startsWith("y")) ? board_next_target : board_self_target;
+                minion = (target2.startsWith("y")) ? board_opponent_target : board_friendly_target;
             } else {
-                minion = board_next.length >= parseInt(target) ? board_next_target : board_self_target;
+                minion = board_opponent.length >= parseInt(target) ? board_opponent_target : board_friendly_target;
             }
         }
 
+        // If you didn't select a valid minion, return.
         if (minion === undefined) {
             game.input("Invalid minion.\n".red);
             return false;
         }
 
-        if (minion.keywords.includes("Elusive") && elusive) {
-            game.input("Can't be targeted by Spells or Hero Powers.\n".red);
+        // If the minion has elusive, and the card that called this function is a spell
+        if ((card && card.type === "Spell") || flags.includes("force_elusive")) {
+            if (minion.keywords.includes("Elusive")) {
+                game.input("Can't be targeted by Spells or Hero Powers.\n".red);
             
-            return false;
+                return false;
+            }
+
+            game.events.broadcast("CastSpellOnMinion", [card, minion], game.player);
         }
 
-        if (elusive === true) {
-            game.events.broadcast("CastSpellOnMinion", minion, game.player);
-        }
-
+        // If the minion has stealth, don't allow the opponent to target it.
         if (minion.keywords.includes("Stealth") && game.player != minion.plr) {
             game.input("This minion has stealth.\n".red);
 
             return false;
         }
 
-        // Location
-        if (minion.type == "Location") {
-            // Set the "allow_locations" flag to allow targetting locations.
-            if (flags.includes("allow_locations")) return minion;
+        // If the minion is a location, don't allow it to be selectted unless the `allow_locations` flag was set.
+        if (minion.type == "Location" && !flags.includes("allow_locations")) {
             game.input("You cannot target location cards.\n".red);
 
             return false;
@@ -1039,32 +1401,49 @@ class Interact {
     /**
      * Returns a card in a user readble state. If you game.log the result of this, the user will get all the information they need from the card.
      *
-     * @param {Card | import('./card').Blueprint} card The card
+     * @param {Card | import('./types').Blueprint} card The card
      * @param {number} [i=-1] If this is set, this function will add `[i]` to the beginning of the card. This is useful if there are many different cards to choose from.
-     *
+     * @param {number} [_depth=0] The depth of recursion. DO NOT SET THIS MANUALLY.
+     * 
      * @returns {string} The readable card
      */
-    getReadableCard(card, i = -1) {
+    getReadableCard(card, i = -1, _depth = 0) {
+        /**
+         * If it should show detailed errors regarding depth.
+         * 
+         * @type {boolean}
+         */
+        let showDetailedError = (game.config.debug || game.config.branch !== "stable" || game.player.detailedView);
+
+        if (_depth > 0 && game.config.getReadableCardNoRecursion) {
+            if (showDetailedError) return "RECURSION ATTEMPT BLOCKED";
+            else return "...";
+        }
+
+        if (_depth > game.config.getReadableCardMaxDepth) {
+            if (showDetailedError) return "MAX DEPTH REACHED";
+            else return "...";
+        }
+
         let sb = "";
 
         let desc;
 
-        if (card instanceof game.Card) desc = card.desc.length > 0 ? ` (${card.desc}) ` : " ";
-        else desc = card.desc.length > 0 ? ` (${game.functions.parseTags(card.desc)})` : " ";
+        if (card instanceof game.Card) desc = (card.desc || "").length > 0 ? ` (${card.desc}) ` : " ";
+        else desc = card.desc.length > 0 ? ` (${game.functions.parseTags(card.desc)}) ` : " ";
 
         // Extract placeholder value, remove the placeholder header and footer
-        if (card.placeholder) {
-            let reg = new RegExp(`{ph:.*?} (.*?) {/ph}`);
-
-            while (reg.exec(desc)) {
-                let placeholder = reg.exec(desc)[1]; // Gets the capturing group result
-
-                desc = desc.replace(reg, placeholder);
-            }
+        if (card instanceof game.Card && (card.placeholder || /\$(\d+?)/.test(card.desc || ""))) {
+            //@ts-ignore
+            desc = this.doPlaceholders(card, desc, _depth);
         }
 
         let mana = `{${card.mana}} `;
-        switch (card.costType || "mana") {
+
+        let costType = "mana";
+        if (card instanceof game.Card && card.costType) costType = card.costType;
+
+        switch (costType) {
             case "mana":
                 mana = mana.cyan;
                 break;
@@ -1078,12 +1457,16 @@ class Interact {
                 break;
         }
 
+        let displayName = card.name;
+        if (card instanceof game.Card) displayName = card.displayName;
+
         if (i !== -1) sb += `[${i}] `;
         sb += mana;
-        sb += game.functions.colorByRarity(card.displayName || card.name, card.rarity);
+        sb += game.functions.colorByRarity(displayName, card.rarity);
         
         if (card.type === "Minion" || card.type === "Weapon") {
-            sb += ` [${card.stats.join(" / ")}]`.brightGreen;
+            // @ts-ignore - card.stats is always non-null in this context / brightGreen does exist
+            sb += ` [${card.stats?.join(" / ")}]`.brightGreen;
         }
 
         sb += desc;
@@ -1095,13 +1478,15 @@ class Interact {
     /**
      * Prints all the information you need to understand the game state
      * 
-     * @param {Player} [plr=null] The player
-     * @param {boolean} [detailed=false] Show more, less important, information
+     * @param {Player | null} [plr=null] The player
      * 
      * @returns {undefined}
      */
-    printAll(plr = null, detailed = false) {
-        if (!plr) plr = game.player; 
+    printAll(plr = null) {
+        // WARNING: Stinky and/or smelly code up ahead. Read at your own risk.
+        // TODO: #246 Reformat this
+
+        if (!plr) plr = game.player;
 
         if (game.turns <= 2 && !game.config.debug) this.printLicense();
         else this.printName();
@@ -1115,6 +1500,8 @@ class Interact {
         // Current Player's Mana
         sb += `Mana       : ${plr.mana.toString().cyan} / ${plr.maxMana.toString().cyan}`;
         sb += "                        | ";
+
+        // TODO: Yeah no. Replace all of these.
         let to_remove = (plr.mana.toString().length + plr.maxMana.toString().length) - 2;
         if (to_remove > 0) sb = sb.replace(" ".repeat(to_remove) + "|", "|");
 
@@ -1143,23 +1530,25 @@ class Interact {
             // Attack: 1 | Weapon: Wicked Knife (1 / 1)
             sb += `Weapon     : ${game.functions.colorByRarity(plr.weapon.displayName, plr.weapon.rarity)}`;
 
-            let wpnStats = ` [${plr.weapon.stats.join(' / ')}]`;
+            let wpnStats = ` [${plr.weapon.stats?.join(' / ')}]`;
 
-            sb += (plr.attack > 0) ? wpnStats.brightGreen : wpnStats.gray;
+            // @ts-ignore
+            sb += (plr.attack > 0 && plr.canAttack) ? wpnStats.brightGreen : wpnStats.gray;
         }
         else if (plr.attack) {
+            // @ts-ignore
             sb += `Attack     : ${plr.attack.toString().brightGreen}`;
         }
     
         if (op.weapon) {
             // Opponent has a weapon
-            let len = sb.split(": ")[1];
             if (!plr.weapon) sb += "                                 "; // Show that this is the opponent's weapon, not yours
             
             sb += "         | "; 
             sb += `Weapon     : ${op.weapon.displayName.bold}`;
-            let opWpnStats = ` [${op.weapon.stats.join(' / ')}]`;
+            let opWpnStats = ` [${op.weapon.stats?.join(' / ')}]`;
 
+            // @ts-ignore
             sb += (op.attack > 0) ? opWpnStats.brightGreen : opWpnStats.gray;
         }
     
@@ -1171,7 +1560,7 @@ class Interact {
         sb += `Deck Size  : ${plr.deck.length.toString().yellow}`;
 
         sb += "                            | ";
-        to_remove = (plr.deck.length.toString().length + plr.deck.length.toString().length) - 3;
+        to_remove = (plr.deck.length.toString().length + op.deck.length.toString().length) - 3;
         if (to_remove > 0) sb = sb.replace(" ".repeat(to_remove) + "|", "|");
     
         // Opponent's Deck
@@ -1194,7 +1583,9 @@ class Interact {
             sb += "Sidequests: ";
             sb += plr.sidequests.map(sidequest => {
                 sidequest["name"].bold +
+                // @ts-ignore
                 " (" + sidequest["progress"][0].toString().brightGreen +
+                // @ts-ignore
                 " / " + sidequest["progress"][1].toString().brightGreen +
                 ")"
             }).join(', ');
@@ -1209,6 +1600,7 @@ class Interact {
             const prog = quest["progress"];
     
             sb += `Quest(line): ${quest["name"].bold} `;
+            // @ts-ignore
             sb += `[${prog[0]} / ${prog[1]}]`.brightGreen;
         }
         // Quests End
@@ -1216,7 +1608,7 @@ class Interact {
         sb = "";
     
         // Detailed Info
-        if (detailed) {
+        if (plr.detailedView) {
             // Hand Size
             sb += `Hand Size  : ${plr.hand.length.toString().yellow}`;
 
@@ -1253,8 +1645,10 @@ class Interact {
                 sb += op.sidequests.map(sidequest => {
                     sidequest["name"].bold +
                     " (" +
+                    // @ts-ignore
                     sidequest["progress"][0].toString().brightGreen +
                     " / " +
+                    // @ts-ignore
                     sidequest["progress"][1].toString().brightGreen +
                     ")"
                 }).join(', ');
@@ -1268,8 +1662,10 @@ class Interact {
                 sb += "Opponent's Quest(line): ";
                 sb += quest["name"].bold;
                 sb += " (";
+                // @ts-ignore
                 sb += quest["progress"][0].toString().brightGreen;
                 sb += " / ";
+                // @ts-ignore
                 sb += quest["progress"][1].toString().brightGreen;
                 sb += ")";
     
@@ -1284,7 +1680,7 @@ class Interact {
         game.log("\n--- Board ---");
         
         game.board.forEach((_, i) => {
-            const t = (i == plr.id) ? "--- You ---" : "--- Opponent ---";
+            const t = (i == plr?.id) ? "--- You ---" : "--- Opponent ---";
     
             game.log(t) // This is not for debugging, do not comment out
     
@@ -1298,10 +1694,14 @@ class Interact {
                     sb += `[${n + 1}] `;
                     sb += `${m.displayName} `.bold;
                     sb += "{";
+                    // @ts-ignore
                     sb += "Durability: ".brightGreen;
+                    // @ts-ignore
                     sb += `${m.getHealth()}`.brightGreen;
+                    // @ts-ignore
                     sb += " / ".brightGreen;
-                    sb += `${m.backups.init.stats[1]}`.brightGreen;
+                    // @ts-ignore
+                    sb += `${m.backups.init.stats?[1]:0}`.brightGreen;
                     sb += ", ";
         
                     sb += "Cooldown: ".cyan;
@@ -1320,7 +1720,7 @@ class Interact {
 
                 const excludedKeywords = ["Magnetic", "Corrupt", "Corrupted"];
                 let keywords = m.keywords.filter(k => !excludedKeywords.includes(k));
-                keywords = keywords.length > 0 ? ` {${keywords.join(", ")}}`.gray : "";
+                let keywordsString = keywords.length > 0 ? ` {${keywords.join(", ")}}`.gray : "";
 
                 let frozen = m.frozen ? " (Frozen)".gray : "";
                 let dormant = m.dormant ? " (Dormant)".gray : "";
@@ -1329,9 +1729,10 @@ class Interact {
     
                 sb += `[${n + 1}] `;
                 sb += game.functions.colorByRarity(m.displayName, m.rarity);
-                sb += ` [${m.stats.join(" / ")}]`.brightGreen;
+                // @ts-ignore
+                sb += ` [${m.stats?.join(" / ")}]`.brightGreen;
     
-                sb += keywords;
+                sb += keywordsString;
                 sb += frozen
                 sb += dormant;
                 if (!m.dormant) sb += immune
@@ -1343,8 +1744,8 @@ class Interact {
         });
         game.log("-------------")
     
-        let _class = plr.hero.name.includes("Starting Hero") ? plr.heroClass : plr.hero.name;
-        if (detailed && plr.hero.name.includes("Starting Hero")) {
+        let _class = plr.hero?.name.includes("Starting Hero") ? plr.heroClass : plr.hero?.name;
+        if (plr.detailedView && plr.hero?.name.includes("Starting Hero")) {
             _class += " | ";
             _class += "HP: ";
             _class += plr.hero.name;
@@ -1363,7 +1764,7 @@ class Interact {
     /**
      * Shows information from the card, game.log's it and waits for the user to press enter.
      *
-     * @param {Card | import('./card').Blueprint} card The card
+     * @param {Card | import('./types').Blueprint} card The card
      * @param {boolean} [help=true] If it should show a help message which displays what the different fields mean.
      *
      * @returns {undefined}
@@ -1379,20 +1780,38 @@ class Interact {
 
         let type = card.type;
 
-        if (type == "Minion") tribe = " (" + card.tribe.gray + ")";
+        if (type == "Minion") tribe = " (" + card.tribe?.gray + ")";
         else if (type == "Spell") {
             if (card.spellClass) spellClass = " (" + card.spellClass.cyan + ")";
             else spellClass = " (None)";
         }
         else if (type == "Location") {
-            if (card instanceof game.Card) locCooldown = " (" + card.blueprint.cooldown.toString().cyan + ")";
-            else locCooldown = " (" + card.cooldown.toString().cyan + ")";
+            if (card instanceof game.Card) locCooldown = " (" + card.blueprint.cooldown?.toString().cyan + ")";
+            else locCooldown = " (" + card.cooldown?.toString().cyan + ")";
         }
 
         if (help) game.log("{mana} ".cyan + "Name ".bold + "(" + "[attack / health] ".brightGreen + "if it has) (description) ".white + "(type) ".yellow + "((tribe) or (spell class) or (cooldown)) [".white + "class".gray + "]");
         game.log(_card + tribe + spellClass + locCooldown + ` [${_class}]`);
 
         game.input("\nPress enter to continue...\n");
+    }
+
+    /**
+     * Verifies that the diy card has been solved.
+     * 
+     * @param {boolean} condition The condition where, if true, congratulates the user
+     * @param {string} fileName The file's name in the `DIY` folder. E.g. `1.js`
+     * 
+     * @returns {boolean} Success
+     */
+    verifyDIYSolution(condition, fileName = "") {
+        // TODO: Maybe spawn in diy cards mid-game in normal games to encourage players to solve them.
+        // Allow that to be toggled in the config.
+        if (condition) game.log("Success! You did it, well done!");
+        else game.log(`Hm. This card doesn't seem to do what it's supposed to do... Maybe you should try to fix it? The card is in: './cards/Examples/DIY/${fileName}'.`);
+        
+        game.input();
+        return true;
     }
 
     /**

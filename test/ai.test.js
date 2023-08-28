@@ -1,3 +1,4 @@
+//@ts-check
 // Part of this code was copied from an example given by ChatGPT
 const assert = require('assert');
 const colors = require("colors");
@@ -123,8 +124,12 @@ function testSentimentModel() {
             assert.equal(trades[1].length, 0);
         });
 
-        it ('should correctly score players', () => {
-            let score = ai._scorePlayer(test_player1, []);
+    it ('should correctly score players', () => {
+        let score = ai._scorePlayer(test_player1, game.board.map(m => {
+            return m.map(c => {
+                return {"card": c, "score": ai.analyzePositiveCard(c)};
+            });
+        }));
 
             assert.ok(score > 0);
         });
@@ -132,7 +137,7 @@ function testSentimentModel() {
         it ('should find the current winner', () => {
             let score = ai._findWinner([[], []]);
 
-            assert.equal(score[0].id, test_player2.id);
+            assert.equal(score[0].id, ai.plr.getOpponent().id);
             assert.ok(score[1] > 0);
         });
         
@@ -188,7 +193,7 @@ function testSentimentModel() {
             let result = ai.attack();
 
             assert.equal(result[0], -1);
-            assert.equal(result[1], ai.plr.getOpponent());
+            assert.equal(result[1], -1);
         });
 
         it ('should attack using legacy 1', () => {
@@ -199,7 +204,7 @@ function testSentimentModel() {
         });
 
         it ('should select a target', () => {
-            let result = ai.selectTarget("Deal 1 damage.", false, null, null, []);
+            let result = ai.selectTarget("Deal 1 damage.", null, null, null, []);
 
             // There are no minions and the prompt is bad, so the ai should select the enemy hero
             assert.equal(result, ai.plr.getOpponent());

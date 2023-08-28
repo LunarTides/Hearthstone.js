@@ -17,49 +17,28 @@ module.exports = {
     /**
      * @type {import("../../../../../src/types").KeywordMethod}
      */
-    passive(plr, game, self, key, val) {
-        if (key != "PlayCardUnsafe" || val == self) return;
+    battlecry(plr, game, self) {
+        game.functions.addEventListener("CastSpellOnMinion", true, val => {
+            let [spell, minion] = val;
+            if (!spell) return;
 
-        let minion;
-
-        let removePassive = game.functions.addEventListener("CastSpellOnMinion", (_val) => {
-            minion = _val;
-            return true;
-        }, () => {
             let b = game.board[minion.plr.id];
             let index = b.indexOf(minion);
             if (index === -1) return true;
 
             if (index > 0) {
                 plr.forceTarget = b[index - 1];
-                val.activate("cast");
+                spell.activate("cast");
             }
 
             if (index < b.length - 1) {
                 plr.forceTarget = b[index + 1];
-                val.activate("cast");
+                spell.activate("cast");
             }
 
             plr.forceTarget = null;
 
             return true;
-        }, 1);
-
-        // Undo after cast function was called
-        let cardsPlayedPassiveRemove;
-        let cardsCancelledPassiveRemove;
-
-        cardsPlayedPassiveRemove = game.functions.addEventListener("PlayCard", (_val) => {
-            return _val == val;
-        }, () => {
-            removePassive();
-            cardsCancelledPassiveRemove();
-        }, 1);
-        cardsCancelledPassiveRemove = game.functions.addEventListener("CancelCard", (_val) => {
-            return _val[0] == val;
-        }, () => {
-            removePassive();
-            cardsPlayedPassiveRemove();
         }, 1);
     }
 }

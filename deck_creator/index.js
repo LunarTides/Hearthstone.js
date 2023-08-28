@@ -1,3 +1,4 @@
+//@ts-check
 'use strict';
 
 require("colors");
@@ -11,9 +12,12 @@ try {
 
 const { Functions } = require("../src/functions");
 const { Game } = require("../src/game");
+const { Player } = require("../src/player");
 const { set } = require("../src/shared");
 
-const game = new Game({}, {});
+const player1 = new Player("Player 1");
+const player2 = new Player("Player 2");
+const game = new Game(player1, player2);
 let functions = game.functions;
 
 set(game);
@@ -325,13 +329,14 @@ function showCards() {
 
     console.log(settings.view.class.rainbow);
 
-    let [wall, finishWall] = functions.createWall("-");
-
+    let bricks = [];
     _filtered_cards.forEach(c => {
-        wall.push(getDisplayName(c) + " - " + c.id);
+        bricks.push(getDisplayName(c) + " - " + c.id);
     });
 
-    finishWall().forEach(b => {
+    let wall = functions.createWall(bricks, "-");
+
+    wall.forEach(b => {
         b = b.split("-");
 
         b = functions.colorByRarity(b[0], findCard(b[0].trim()).rarity) + "-" + b[1];
@@ -407,8 +412,13 @@ function add(c) {
 
     if (!c.settings) return;
 
-    config.maxDeckLength = c.settings.maxDeckSize || config.maxDeckLength;
-    config.minDeckLength = c.settings.minDeckSize || config.minDeckLength;
+    if (c.settings) {
+        Object.entries(c.settings).forEach(setting => {
+            let [key, val] = setting;
+
+            config[key] = val;
+        });
+    }
 
     functions = new Functions(game);
 }
@@ -428,7 +438,7 @@ function showDeck() {
         _cards[c.name][1]++;
     });
 
-    let [wall, finishWall] = functions.createWall("-");
+    let bricks = [];
 
     Object.values(_cards).forEach(c => {
         let card = c[0];
@@ -439,10 +449,12 @@ function showDeck() {
         if (amount > 1) viewed += `x${amount} `;
         viewed += getDisplayName(card).replaceAll("-", "`") + ` - ${card.id}`;
 
-        wall.push(viewed);
+        bricks.push(viewed);
     });
 
-    finishWall().forEach(b => {
+    let wall = functions.createWall(bricks, "-");
+
+    wall.forEach(b => {
         b = b.split("-");
         b = [b[0].replaceAll("`", "-"), b[1]]; // Replace '`' with '-'
 
@@ -528,13 +540,14 @@ function help() {
     console.log("cards (class)         - Show cards from 'class'");
     console.log("sort (type) [order]   - Sorts by 'type' in 'order'ending order. (Type can be: ('rarity', 'name', 'mana', 'id', 'type'), Order can be: ('asc', 'desc')) (Example: sort mana asc - Will show cards ordered by mana cost, ascending.)");
     console.log("search [query]        - Searches by query. Keys: ('name', 'desc', 'mana', 'rarity', 'id'), Examples: (search the - Search for all cards with the word 'the' in the name or description, case insensitive.), (search mana:2 - Search for all cards that costs 2 mana, search mana:even name:r - Search for all even cost cards with 'r' in its name)");
+    console.log("undo                  - Undo the last action. (If you run this over and over, it will keep undo-ing and redo-ing the same action.)");
     console.log("deck                  - Toggle deck-view");
     console.log("deckcode              - View the current deckcode");
     console.log("import                - Imports a deckcode (Overrides your deck)");
     console.log("export                - Temporarily saves your deck to the runner so that when you choose to play, the decks get filled in automatically. (Only works when running the deck creator from the Hearthstone.js Runner)");
     console.log("set (setting) (value) - Change some settings. Look down to 'Set Subcommands' to see available settings");
     console.log("class                 - Change the class");
-    console.log("config | rules        - Displays the rules text that shows when first running the program");
+    console.log("config | rules        - Shows the rules for valid decks and invalid decks");
     console.log("help                  - Displays this message");
     console.log("exit                  - Quits the program");
 
@@ -553,7 +566,7 @@ function help() {
     // Set Warning
     console.log("\nWarnings:".bold);
     console.log("(In order to use these; input 'set warning (name) [off | on]'. Example: 'set warning latestCard off')\n");
-    console.log("(name) [optional] (required) - (description)\n");
+    console.log("(name) - (description)\n");
 
     console.log("latestCard - Warning that shows up when attemping to use the latest card. The latest card is used if the card chosen in a command is invalid and the name specified begins with 'l'. Example: 'add latest' - Adds a copy of the latest card to the deck.");
 
@@ -565,7 +578,8 @@ function help() {
     console.log("\nNotes:".bold);
 
     console.log("Type 'cards Neutral' to see Neutral cards.");
-    console.log("There is a known bug where if you add 'Prince Renathal', and then remove him, the deck will still require 40 cards. The only way around this is to restart the deck creator."); // TODO: Fix this
+    // TODO: #245 Fix this
+    console.log("There is a known bug where if you add 'Prince Renathal', and then remove him, the deck will still require 40 cards. The only way around this is to restart the deck creator.");
 
     game.input("\nPress enter to continue...\n");
 }
@@ -745,7 +759,7 @@ function handleCmds(cmd) {
         let _deckcode = deckcode();
         settings.deckcode.format = setting;
 
-        if (_deckcode.error) {
+        if (_deckcode.error && game.config.validateDecks) {
             game.input("ERROR: Cannot export invalid / pseudo-valid deckcodes.\n".red);
             return;
         }
@@ -802,8 +816,8 @@ function handleCmds(cmd) {
         else {
             let val = args[1];
 
-            if (["off", "disable", "false", "0"].includes(val)) new_state = false;
-            else if (["on", "enable", "true", "1"].includes(val)) new_state = true;
+            if (["off", "disable", "false", "no", "0"].includes(val)) new_state = false;
+            else if (["on", "enable", "true", "yes", "1"].includes(val)) new_state = true;
             else {
                 game.input(`${val} is not a valid state. View 'help' for more information.\n`.red);
                 return;
@@ -909,6 +923,9 @@ function runner() {
 }
 
 function main() {
+    functions.importCards(__dirname + "/../cards");
+    functions.importConfig(__dirname + "/../config");
+
     chosen_class = askClass();
 
     while (running) {

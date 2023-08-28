@@ -31,9 +31,12 @@ module.exports = {
         //     ) -> if the event should count towards the quest: bool
         // );
         game.functions.addQuest("Quest", plr, self, "PlayCard", 3, (val, turn, done) => {
+            // This code runs every time the `PlayCard` event gets broadcast.
+
             // If the card played was this card, it doesn't count towards this quest.
             if (val == self) return false;
 
+            // Otherwise, add it to the cards array, and count it.
             cards.push(val);
 
             if (!done) return;

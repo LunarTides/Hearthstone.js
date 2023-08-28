@@ -5,7 +5,7 @@
  */
 module.exports = {
     name: "Eye Beam",
-    desc: "Lifesteal. Deal 3 damage to a minion. Outcast: This costs (1).",
+    desc: "Lifesteal. Deal $3 damage to a minion. Outcast: This costs (1).",
     mana: 3,
     type: "Spell",
     class: "Demon Hunter",
@@ -18,10 +18,10 @@ module.exports = {
      * @type {import("../../../../../src/types").KeywordMethod}
      */
     cast(plr, game, self) {
-        let target = game.interact.selectTarget("Lifesteal. Deal 3 damage to a minion.", true, null, "minion");
+        let target = game.interact.selectTarget(self.desc, self, null, "minion");
         if (!target) return -1;
 
-        game.functions.spellDmg(target, 3);
+        game.attack("$3", target);
         plr.addHealth(3 + plr.spellDamage);
     },
 

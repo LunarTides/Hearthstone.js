@@ -27,7 +27,7 @@ module.exports = {
 
         for (let i = 0; i < amount; i++) {
             const card = plr.drawCard();
-            if (typeof card === 'number') continue;
+            if (!(card instanceof game.Card)) continue;
 
             card.addStats(4, 4);
         }

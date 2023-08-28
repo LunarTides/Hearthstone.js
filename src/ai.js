@@ -1,3 +1,4 @@
+//@ts-check
 const { Card } = require("./card");
 const { Game } = require("./game");
 const { Player } = require("./player");
@@ -7,14 +8,25 @@ const lodash = require("lodash");
 /**
  * @type {Game}
  */
-let game = get();
+let game;
+
+function getInternalGame() {
+    let tempGame = get();
+    if (!tempGame) return;
+
+    game = tempGame;
+}
+
+getInternalGame();
 
 class SimulationAI {
     /**
+     * This is the old Sentiment Analysis based AI.
+     * 
      * @param {Player} plr 
      */
     constructor(plr) {
-        game = get();
+        getInternalGame();
 
         /**
          * @type {[[string, any]]}
@@ -644,51 +656,67 @@ class SimulationAI {
 // FIXME: Ai gets stuck in infinite loop when using cathedral of atonement (location) | shadowcloth needle (0 attack wpn) | that minion has no attack.
 class SentimentAI {
     /**
-     * This is the old Sentiment Analysis based AI.
-     * 
      * @param {Player} plr 
      */
     constructor(plr) {
-        game = get();
+        getInternalGame();
+
 
         /**
-         * @type {[[string, any]]}
+         * The history of the AI. Also known as its "logs".
+         * 
+         * @type {import("./types").AIHistory[]}
          */
         this.history = [];
 
         /**
+         * Prevent the ai from doing the actions that are in this array
+         * 
          * @type {string[]}
          */
         this.prevent = [];
 
         /**
+         * The cards that the AI has played this turn
+         * 
          * @type {Card[]}
          */
         this.cards_played_this_turn = [];
 
         /**
+         * The locations that the AI has used this turn
+         * 
          * @type {Card[]}
          */
         this.used_locations_this_turn = [];
 
         /**
+         * The card that the AI has focused, and is trying to kill
+         * 
          * @type {Card | null}
          */
         this.focus = null;
 
         /**
+         * The player that the AI is playing for
+         * 
          * @type {Player}
          */
         this.plr = plr;
     }
 
     /**
-     * Calculate the best move and return the result
+     * Calculate the best move and return the result.
+     * 
+     * This can return: A card to play, "hero power", "attack", "use" or "end"
      * 
      * @returns {Card | string} Result
      */
     chooseMove() {
-        let best_move = null;
+        /**
+         * @type {Card | "hero power" | "attack" | "use" | "end" | null}
+         */
+        let best_move;
         let best_score = -100000;
 
         // Look for highest score
@@ -704,7 +732,7 @@ class SentimentAI {
             let r = false;
 
             this.history.forEach((h, i) => {
-                if (h instanceof Array && h[1] === "0,1" && this.history[i - 1][1][0] == c.name) r = true;
+                if (h.data instanceof Array && h.data[1] === "0,1" && this.history[i - 1].data[0] == c.name) r = true;
             });
             if (r) return;
 
@@ -713,6 +741,7 @@ class SentimentAI {
         });
 
         // If a card wasn't chosen
+        // @ts-ignore
         if (!best_move) {
             // See if can hero power
             if (this._canHeroPower()) best_move = "hero power";
@@ -725,11 +754,11 @@ class SentimentAI {
 
             else best_move = "end";
 
-            this.history.push(["chooseMove", best_move]);
+            this.history.push({"type": "chooseMove", "data": best_move});
         }
 
-        else {
-            this.history.push(["chooseMove", [best_move.name, best_score]]);
+        else if (best_move instanceof Card) {
+            this.history.push({"type": "chooseMove", "data": [best_move.name, best_score]});
 
             this.cards_played_this_turn.push(best_move);
 
@@ -738,7 +767,7 @@ class SentimentAI {
 
         if (best_move == "end") {
             this.history.forEach((h, i) => {
-                if (h instanceof Array && h[0] == "selectTarget" && h[1] == "0,1") this.history[i][1] = null;
+                if (h instanceof Array && h[0] == "selectTarget" && h[1] == "0,1") this.history[i].data = null;
             });
 
             this.cards_played_this_turn = [];
@@ -804,7 +833,7 @@ class SentimentAI {
         let booleans = !m.sleepy && !m.frozen && !m.dormant;
         let numbers = m.getAttack() && m.attackTimes;
 
-        return booleans && numbers;
+        return booleans && !!numbers;
     }
 
     /**
@@ -861,17 +890,15 @@ class SentimentAI {
      * Returns a score for the player specified based on how good their position is.
      *
      * @param {Player} player The player to score
-     * @param {import("./types").ScoreBoard} board The board to check
+     * @param {import("./types").ScoredCard[][]} board The board to check
      *
      * @returns {number} Score
      */
     _scorePlayer(player, board) {
         let score = 0;
 
-        board.forEach(m => {
-            let [_minion, _score] = m;
-
-            score += _score;
+        board[player.id].forEach(m => {
+            score += m.score;
         });
 
         Object.entries(player).forEach(f => {
@@ -891,13 +918,13 @@ class SentimentAI {
     /**
      * Returns the player that is winning
      *
-     * @param {import("./types").ScoreBoard} board The board to check
+     * @param {import("./types").ScoredCard[][]} board The board to check
      *
      * @returns {[Player, number]} Winner, Score
      */
     _findWinner(board) {
-        let score = this._scorePlayer(this.plr, board[this.plr.id]);
-        let opScore = this._scorePlayer(this.plr.getOpponent(), board[this.plr.getOpponent().id]);
+        let score = this._scorePlayer(this.plr, board);
+        let opScore = this._scorePlayer(this.plr.getOpponent(), board);
 
         let winner = (score > opScore) ? this.plr : this.plr.getOpponent();
         let s = (winner == this.plr) ? score : opScore;
@@ -932,7 +959,7 @@ class SentimentAI {
         if (perfect_trades.length > 0) ret = perfect_trades[0];
         else if (imperfect_trades.length > 0) ret = imperfect_trades[0];
 
-        if (ret) this.history.push([`trade`, [ret[0].name, ret[1].name]]);
+        if (ret) this.history.push({"type": "trade", "data": [ret[0].name, ret[1].name]});
 
         return ret;
     }
@@ -940,9 +967,9 @@ class SentimentAI {
     /**
      * Does a general attack
      *
-     * @param {import("./types").ScoreBoard} board
+     * @param {import("./types").ScoredCard[][]} board
      *
-     * @returns {[Card | -1]} Attacker, Target
+     * @returns {(Card | Player | -1)[]} Attacker, Target
      */
     _attackGeneral(board) {
         let current_winner = this._findWinner(board);
@@ -950,7 +977,7 @@ class SentimentAI {
         let ret = null;
 
         // Risky
-        let op_score = this._scorePlayer(this.plr.getOpponent(), board[this.plr.getOpponent().id]);
+        let op_score = this._scorePlayer(this.plr.getOpponent(), board);
         let risk_mode = current_winner[1] >= op_score + game.config.AIRiskThreshold // If the ai is winner by more than 'threshold' points, enable risk mode
 
         let taunts = this._tauntExists(); // If there are taunts, override risk mode
@@ -958,17 +985,26 @@ class SentimentAI {
         if (risk_mode && !taunts) ret = this._attackGeneralRisky();
         else ret = this._attackGeneralMinion();
 
-        this.history.push([`attack`, [ret[0].name, ret[1].name]]);
+        if (ret.includes(-1)) return [-1, -1];
 
-        if (!this.focus && ret[1] instanceof game.Card) this.focus = ret[1];
+        /**
+         * @type {(Card | Player)[]}
+         */
+        // @ts-ignore - `ret` here is this type, but ts doesn't know it. So this is a workaround
+        let returned = ret;
 
-        return ret;
+        this.history.push({"type": "attack", "data": [returned[0].name, returned[1].name]});
+
+        // If the ai is not focusing on a minion, focus on the returned minion
+        if (!this.focus && returned[1] instanceof game.Card) this.focus = returned[1];
+
+        return returned;
     }
 
     /**
      * Does a risky attack.
      *
-     * @returns {Card[]} Attacker, Target
+     * @returns {(Card | Player | -1)[]} Attacker, Target
      */
     _attackGeneralRisky() {
         // Only attack the enemy hero
@@ -980,7 +1016,7 @@ class SentimentAI {
      * 
      * Use the return value of this function to actually attack by passing it into `game.attack`
      *
-     * @returns {[Card | -1]} Attacker, Target
+     * @returns {(Card | Player | -1)[]} Attacker, Target
      */
     _attackGeneralMinion() {
         let target;
@@ -1000,32 +1036,42 @@ class SentimentAI {
      * @returns {Card | Player | -1} Target | -1 (Go back)
      */
     _attackGeneralChooseTarget() {
+        /**
+         * @type {(Card | Player | number | null)[]}
+         */
         let highest_score = [null, -9999];
 
         let board = game.board[this.plr.getOpponent().id];
 
         // If there is a taunt, select that as the target
         let taunts = this._tauntExists(true);
-        if (taunts.length > 0) return taunts[0];
+        if (taunts instanceof Array && taunts.length > 0) return taunts[0];
 
         board = board.filter(m => this._canTargetMinion(m));
 
         board.forEach(m => {
-            let score = this.analyzePositiveCard(m);
+            if (typeof highest_score[1] !== "number") highest_score[1] = -9999;
 
+            let score = this.analyzePositiveCard(m);
             if (score < highest_score[1]) return;
 
             highest_score = [m, score];
         });
 
-        if (!highest_score[0]) return this.plr.getOpponent();
+        let target = highest_score[0];
 
-        if (!highest_score[0]) {
+        // TODO: Does this never fail?
+        if (!target) return this.plr.getOpponent();
+
+        if (!target) {
             this.prevent.push("attack");
             return -1;
         }
 
-        return highest_score[0];
+        // Only -1 is a valid number
+        if (typeof target === "number" && target != -1) return -1;
+
+        return target;
     }
 
     /**
@@ -1036,12 +1082,16 @@ class SentimentAI {
      * @returns {Card | Player | -1} Attacker | -1 (Go back)
      */
     _attackGeneralChooseAttacker(target_is_player = false) {
+        /**
+         * @type {(Card | Player | number | null)[]}
+         */
         let lowest_score = [null, 9999];
 
         let board = game.board[this.plr.id];
         board = board.filter(c => this._canMinionAttack(c));
 
         board.forEach(m => {
+            if (typeof lowest_score[1] !== "number") lowest_score[1] = 9999;
             let score = this.analyzePositiveCard(m);
 
             if (score > lowest_score[1] || (score > game.config.AIProtectThreshold && !target_is_player)) return;
@@ -1052,29 +1102,35 @@ class SentimentAI {
             lowest_score = [m, score];
         });
 
-        if (!lowest_score[0] && this.plr.attack > 0) return this.plr;
+        let attacker = lowest_score[0];
 
-        if (!lowest_score[0]) {
+        // TODO: Does this never fail?
+        if (!attacker && (this.plr.attack > 0 && this.plr.canAttack)) return this.plr;
+
+        if (!attacker) {
             this.prevent.push("attack");
             return -1;
         }
 
-        return lowest_score[0];
+        // Only -1 is a valid number
+        if (typeof attacker === "number" && attacker != -1) return -1;
+
+        return attacker;
     }
 
     /**
      * Makes the ai attack
      *
-     * @returns {[Card | Player | -1 | null, Card | Player | -1 | null]} Attacker, Target
+     * @returns {(Card | Player | -1)[]} Attacker, Target
      */
     attack() {
         // Assign a score to all minions
-        let board = [[], []];
-        game.board.forEach((p, i) => {
-            p.forEach(m => {
-                let score = this.analyzePositiveCard(m);
-
-                board[i].push([m, score]);
+        /**
+         * @type {import("./types").ScoredCard[][]}
+         */
+        let board = game.board.map(m => {
+            return m.map(c => {
+                return {"card": c, "score": this.analyzePositiveCard(c)};
             });
         });
 
@@ -1082,13 +1138,13 @@ class SentimentAI {
 
         // The ai should skip the trade stage if in risk mode
         let current_winner = this._findWinner(board);
-        let op_score = this._scorePlayer(this.plr.getOpponent(), board[this.plr.getOpponent().id]);
+        let op_score = this._scorePlayer(this.plr.getOpponent(), board);
         let risk_mode = current_winner[1] >= op_score + game.config.AIRiskThreshold // If the ai is winner by more than 'threshold' points, enable risk mode
 
         let taunts = this._tauntExists();
         if (taunts) return this._attackGeneral(board); // If there is a taunt, attack it before trading
 
-        if (amount_of_trades > 0 && !risk_mode) return this._attackTrade();
+        if (amount_of_trades > 0 && !risk_mode) return this._attackTrade() ?? [-1, -1];
         return this._attackGeneral(board);
     }
 
@@ -1097,9 +1153,12 @@ class SentimentAI {
      * 
      * @deprecated Use `AI.attack` instead.
      * 
-     * @returns {Card[] | -1} Attacker and target
+     * @returns {(Card | Player | -1)[]} Attacker, Target
      */
     legacy_attack_1() { // This gets called if you set the ai attack model to 1
+        /**
+         * @type {Card}
+         */
         let worst_minion;
         let worst_score = 100000;
         
@@ -1112,9 +1171,12 @@ class SentimentAI {
             worst_score = score;
         });
 
+        /**
+         * @type {Card | Player | -1}
+         */
+        // @ts-ignore
         let attacker = worst_minion;
         
-        let target; 
         let targets;
 
         let best_minion;
@@ -1133,7 +1195,12 @@ class SentimentAI {
             best_minion = m;
             best_score = score;
         });
-        target = best_minion;
+        
+        /**
+         * @type {Card | Player | null | -1}
+         */
+        // @ts-ignore
+        let target = best_minion;
 
         // If the AI has no minions to attack, attack the enemy hero
         if (!target) {
@@ -1145,24 +1212,24 @@ class SentimentAI {
                 this.prevent.push("attack");
             }
         }
-        if (!attacker && this.plr.attack > 0) attacker = this.plr;
+        if (!attacker && (this.plr.attack > 0 && this.plr.canAttack)) attacker = this.plr;
 
         let arr = [];
         let strbuilder = "";
 
         if (attacker instanceof game.Player) arr.push("P" + (attacker.id + 1));
-        else {
+        else if (attacker instanceof game.Card) {
             arr.push(attacker.name);
             strbuilder += worst_score + ", ";
         }
             
         if (target instanceof game.Player) arr.push("P" + (target.id + 1));
-        else {
+        else if (target instanceof game.Card) {
             arr.push(target.name);
             strbuilder += best_score;
         }
 
-        this.history.push([`attack, [${strbuilder}]`, arr]);
+        this.history.push({"type": `attack, [${strbuilder}]`, "data": arr});
 
         return [attacker, target];
     }
@@ -1171,15 +1238,17 @@ class SentimentAI {
     /**
      * Makes the ai select a target.
      * 
-     * @param {string} prompt The prompt to show the ai.
-     * @param {boolean} elusive If the ai should care about `This minion can't be targetted by spells or hero powers`.
-     * @param {"friendly" | "enemy"} [force_side] The side the ai should be constrained to.
-     * @param {"minion" | "hero"} [force_class] The type of target the ai should be constrained to.
-     * @param {string[]} [flags=[]] Some flags
+     * Gets automatically called by `Interactive.selectTarget`, so use that instead.
      * 
-     * @returns {Card | Player | number} The target selected.
+     * @param {string} prompt The prompt to show the ai.
+     * @param {Card | null} card The card that called this function
+     * @param {"friendly" | "enemy" | null} [force_side=null] The side the ai should be constrained to.
+     * @param {"minion" | "hero" | null} [force_class=null] The type of target the ai should be constrained to.
+     * @param {import("./types").SelectTargetFlags[]} [flags=[]] Some flags
+     * 
+     * @returns {Card | Player | false} The target selected.
      */
-    selectTarget(prompt, elusive, force_side = null, force_class = null, flags = []) {
+    selectTarget(prompt, card, force_side = null, force_class = null, flags = []) {
         if (flags.includes("allow_locations") && force_class != "hero") {
             let locations = game.board[this.plr.id].filter(m => m.type == "Location" && m.cooldown == 0 && !this.used_locations_this_turn.includes(m));
             this.used_locations_this_turn.push(locations[0]);
@@ -1202,44 +1271,53 @@ class SentimentAI {
         let sid = (side == "self") ? id : op.id;
 
         if (game.board[sid].length <= 0 && force_class == "minion") {
-            this.history.push(["selectTarget", "0,1"]);
+            this.history.push({"type": "selectTarget", "data": "0,1"});
 
             return false;
         }
 
         if (force_class && force_class == "hero") {
-            let ret = -1;
+            /**
+             * @type {Player | false}
+             */
+            let ret = false;
 
             if (side == "self") ret = this.plr;
             else if (side == "enemy") ret = op;
             let _ret = (ret instanceof game.Player) ? "P" + (ret.id + 1) : ret;
 
-            this.history.push(["selectTarget", _ret]);
+            this.history.push({"type": "selectTarget", "data": _ret});
 
             return ret;
         }
 
         // The player has no minions, select their face
         if (game.board[sid].length <= 0) {
+            /**
+             * @type {Player | false}
+             */
             let ret = false;
 
             if (force_class != "minion") {
                 ret = game["player" + (sid + 1)];
-                this.history.push(["selectTarget", "P" + (ret.id + 1)]);
+                if (!ret) throw new Error("Player " + (sid + 1) + " not found");
+
+                this.history.push({"type": "selectTarget", "data": "P" + (ret.id + 1)});
             }
-            else this.history.push(["selectTarget", -1]);
+            else this.history.push({"type": "selectTarget", "data": -1});
 
             return ret;
         }
-
-        let selected = null;
-
-        let best_minion = false;
+        
+        /**
+         * @type {Card | false}
+         */
+        let best_minion;
         let best_score = -100000;
 
         game.board[sid].forEach(m => {
             if (!this._canTargetMinion(m)) return;
-            if ((elusive && m.elusive) || m.type == "Location") return;
+            if ((card && card.type == "Spell" && m.keywords.includes("Elusive")) || m.type == "Location") return;
             
             let s = this.analyzePositiveCard(m);
 
@@ -1249,32 +1327,35 @@ class SentimentAI {
             best_score = s;
         });
 
-        selected = best_minion;
+        // @ts-ignore
+        if (best_minion) {
+            this.history.push({"type": "selectTarget", "data": `${best_minion.name},${best_score}`});
 
-        if (selected) {
-            this.history.push(["selectTarget", `${selected.name},${best_score}`]);
-            //this.history.push(["selectTarget", [selected.name, best_score]]);
-
-            return selected;
+            return best_minion;
         }
 
-        this.history.push(["selectTarget", -1]);
+        this.history.push({"type": "selectTarget", "data": -1});
         return false;
     }
 
     /**
-     * Choose the "best" discover minion.
+     * Choose the "best" minion to discover.
      * 
-     * @param {Card[] | import("./card").Blueprint[]} cards The cards to choose from
+     * @param {Card[] | import("./types").Blueprint[]} cards The cards to choose from
      * 
-     * @returns {Card} Result
+     * @returns {Card | null} Result
      */
     discover(cards) {
-        let best_card = null;
+        /**
+         * @type {Card | null}
+         */
+        let best_card;
         let best_score = -100000;
 
         // Look for highest score
         cards.forEach(c => {
+            if (!c.name) return; // Card-like is invalid
+
             let score = this.analyzePositiveCard(new game.Card(c.name, this.plr));
 
             if (score <= best_score) return;
@@ -1283,7 +1364,10 @@ class SentimentAI {
             best_score = score;
         });
 
-        this.history.push(["discover", [best_card.name, best_score]]);
+        // @ts-ignore
+        if (!best_card) return null;
+
+        this.history.push({"type": "discover", "data": [best_card.name, best_score]});
 
         best_card = new game.Card(best_card.name, this.plr); // `cards` can be a list of blueprints, so calling best_card.imperfectCopy is dangerous
 
@@ -1295,10 +1379,13 @@ class SentimentAI {
      * 
      * @param {Card[]} cards The cards to choose from
      * 
-     * @returns {Card} Result
+     * @returns {Card | null} Result
      */
     dredge(cards) {
-        let best_card = null;
+        /**
+         * @type {Card | null}
+         */
+        let best_card;
         let best_score = -100000;
 
         // Look for highest score
@@ -1311,10 +1398,12 @@ class SentimentAI {
             best_score = score;
         });
 
+        // @ts-ignore
+        if (!best_card) return null;
+
         let name = best_card ? best_card.name : null
 
-        this.history.push(["dredge", [name, best_score]]);
-
+        this.history.push({"type": "dredge", "data": [name, best_score]});
         return best_card;
     }
 
@@ -1323,7 +1412,7 @@ class SentimentAI {
      * 
      * @param {string[]} options The options the ai can pick from
      *
-     * @returns {number} The index of the question chosen
+     * @returns {number | null} The index of the question chosen
      */
     chooseOne(options) {
         // I know this is a bad solution
@@ -1343,7 +1432,7 @@ class SentimentAI {
             best_score = score;
         });
  
-        this.history.push(["chooseOne", [best_choice, best_score]]);
+        this.history.push({"type": "chooseOne", "data": [best_choice, best_score]});
 
         return best_choice;
     }
@@ -1354,7 +1443,7 @@ class SentimentAI {
      * @param {string} prompt The prompt to show to the ai
      * @param {string[]} options The options the ai can pick from
      *
-     * @returns {number} The index of the option chosen + 1
+     * @returns {number | null} The index of the option chosen + 1
      */
     question(prompt, options) {
         let best_choice = null;
@@ -1369,7 +1458,9 @@ class SentimentAI {
             best_score = score;
         });
 
-        this.history.push([`question: ${prompt}`, [best_choice, best_score]]);
+        this.history.push({"type": `question: ${prompt}`, "data": [best_choice, best_score]});
+
+        if (!best_choice) return null;
 
         return best_choice + 1;
     }
@@ -1388,7 +1479,7 @@ class SentimentAI {
         if (score > 0) ret = true;
         else ret = false;
 
-        this.history.push(["yesNoQuestion", [prompt, ret]]);
+        this.history.push({"type": "yesNoQuestion", "data": [prompt, ret]});
 
         return ret;
     }
@@ -1408,7 +1499,7 @@ class SentimentAI {
 
         let ret = score <= game.config.AITradeThreshold;
 
-        this.history.push(["trade", [card.name, ret, score]]);
+        this.history.push({"type": "trade", "data": [card.name, ret, score]});
 
         return ret;
     }
@@ -1435,7 +1526,7 @@ class SentimentAI {
 
         _scores = _scores.slice(0, -2) + ")";
 
-        this.history.push([`mulligan (T${game.config.AIMulliganThreshold})`, [to_mulligan, _scores]]);
+        this.history.push({"type": `mulligan (T${game.config.AIMulliganThreshold})`, "data": [to_mulligan, _scores]});
 
         return to_mulligan;
     }
@@ -1493,7 +1584,7 @@ class SentimentAI {
      * @returns {number} The score
      */
     analyzePositiveCard(c) {
-        let score = this.analyzePositive(c.desc);
+        let score = this.analyzePositive(c.desc || "");
 
         if (c.type == "Minion" || c.type == "Weapon") score += (c.getAttack() + c.getHealth()) * game.config.AIStatsBias;
         else score += game.config.AISpellValue * game.config.AIStatsBias; // If the spell value is 4 then it the same value as a 2/2 minion

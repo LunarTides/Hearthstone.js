@@ -1,8 +1,12 @@
+//@ts-check
 const rl = require("readline-sync");
 const lib = require("../lib");
 const { Game } = require("../../src/game");
+const { Player } = require("../../src/player");
 
-const game = new Game({}, {});
+const player1 = new Player("Player 1");
+const player2 = new Player("Player 2");
+const game = new Game(player1, player2);
 game.functions.importCards(__dirname + "/../../cards");
 game.functions.importConfig(__dirname + "/../../config");
 
@@ -204,8 +208,13 @@ function main() {
     if (uncollectible) card.uncollectible = uncollectible;
 
     // Actually create the card
+    console.log("Creating file...");
+
     lib.set_type("Custom");
-    return lib.create(type, card, null, null);
+    let filePath = lib.create(type, card, null, null);
+
+    game.input();
+    return filePath;
 }
 
 exports.main = main;

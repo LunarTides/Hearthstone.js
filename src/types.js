@@ -1,9 +1,13 @@
 const { Card } = require("./card");
 
+//@ts-check
+
 /**
- * AI Scoreboard
+ * A scored card
  * 
- * @typedef {[[Card, number]]} ScoreBoard
+ * @typedef {Object} ScoredCard
+ * @property {Card} card
+ * @property {number} score
  */
 
 /**
@@ -13,7 +17,8 @@ const { Card } = require("./card");
  * "Spell" |
  * "Weapon" |
  * "Hero" |
- * "Location"} CardType
+ * "Location" |
+ * "Undefined"} CardType
  */
 
 /**
@@ -41,6 +46,14 @@ const { Card } = require("./card");
  * "Rare" |
  * "Epic" |
  * "Legendary"} CardRarity
+ */
+
+/**
+ * Card Cost Type
+ * 
+ * @typedef {"mana" |
+ * "armor" |
+ * "health"} CostType
  */
 
 /**
@@ -92,13 +105,14 @@ const { Card } = require("./card");
  * "Combo" |
  * "Outcast" |
  * "Overheal" |
- * "Casts When Drawn" |
+ * "Cast On Draw" |
  * "Charge" |
  * "Mega-Windfury" |
  * "Echo" |
  * "Magnetic" |
  * "Twinspell" |
- * "Elusive"} CardKeyword
+ * "Elusive" |
+ * "Cleave"} CardKeyword
  */
 
 /**
@@ -121,6 +135,7 @@ const { Card } = require("./card");
  * "CastSpellOnMinion" |
  * "TradeCard" |
  * "FreezeCard" |
+ * "CreateCard" |
  * "AddCardToDeck" |
  * "AddCardToHand" |
  * "DrawCard" |
@@ -129,11 +144,29 @@ const { Card } = require("./card");
  * "HeroPower" |
  * "TargetSelectionStarts" |
  * "TargetSelected" |
- * "Eval"} EventKeys
+ * "Dummy" |
+ * "Eval" |
+ * "Input"} EventKeys
+ */
+
+/**
+ * Game.prototype.playCard return values
+ * 
+ * @typedef {Card | true | "mana" | "traded" | "space" | "magnetize" | "colossal" | "refund" | "counter" | "invalid"} GamePlayCardReturn
  */
 
 /**
  * @typedef {any} EventValues
+ */
+
+/**
+ * @typedef {"allow_locations" |
+ * "force_elusive"} SelectTargetFlags
+ */
+
+/**
+ * @typedef {Object} GameConstants
+ * @property {-1} REFUND
  */
 
 /**
@@ -155,6 +188,31 @@ const { Card } = require("./card");
  */
 
 /**
+ * @typedef {Object} VanillaCard
+ * @property {string} id
+ * @property {number} dbfId
+ * @property {string} name
+ * @property {string} text
+ * @property {string} flavor
+ * @property {string} artist
+ * @property {CardClass} cardClass
+ * @property {boolean} collectible
+ * @property {number} cost
+ * @property {string[]} mechanics
+ * @property {CardRarity} rarity
+ * @property {string} set
+ * @property {CardType} type
+ * @property {string} [faction]
+ * @property {boolean} [elite]
+ * @property {number} [attack]
+ * @property {number} [health]
+ * 
+ * @property {string} [howToEarn]
+ * @property {number} [battlegroundsNormalDbfId]
+ * @property {string} [mercenariesRole]
+ */
+
+/**
  * Card Blueprint
  * 
  * @typedef {Object} Blueprint
@@ -167,13 +225,24 @@ const { Card } = require("./card");
  * 
  * @property {boolean} [uncollectible=false]
  * @property {number} [id]
+ * @property {string} [displayName]
  * 
- * @property {[number]} [stats]
+ * @property {number[]} [stats]
  * @property {MinionTribe} [tribe]
  * 
  * @property {SpellSchool} [spellClass]
  * 
+ * @property {number} [cooldown]
+ * 
+ * @property {string} [hpDesc]
+ * @property {number} [hpCost]
+ * 
  * @property {CardKeyword[]} [keywords]
+ * 
+ * @property {string[]} [runes]
+ * @property {string[]} [colossal]
+ * @property {string} [corrupt]
+ * @property {Object} [settings]
  */
 
 /**
@@ -190,4 +259,37 @@ const { Card } = require("./card");
  * @param {EventValues} [val] The event's value
  * 
  * @returns {any}
+ */
+
+/**
+ * @callback EventListenerCallback
+ * 
+ * @param {import('./types').EventKeys} key The key of the event
+ * @param {import('./types').EventValues} val The value of the event
+ * 
+ * @returns {any} The return value
+ */
+
+/**
+ * @callback TargetCallback
+ * @param {Card | Player} target The target
+*/
+
+/**
+ * @callback EventListenerCheckCallback
+ * @param {any} [val] The value of the event.
+ * 
+ * @returns {boolean | undefined} If this returns true, destroy the event listener.
+ */
+
+/**
+ * @typedef {Object} AIHistory
+ * @property {string} type
+ * @property {any} data
+ */
+
+/**
+ * @typedef {Object} EnchantmentDefinition
+ * @property {string} enchantment - The enchantment string. E.g. "-1 mana"
+ * @property {Card} owner - The card that the enchantment belongs to
  */

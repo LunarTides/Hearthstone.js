@@ -1,3 +1,4 @@
+//@ts-check
 delete require.cache[require.resolve("./card")];
 delete require.cache[require.resolve("./player")];
 delete require.cache[require.resolve("./ai")];
@@ -9,17 +10,22 @@ const { Player } = require("./player");
 const { Card } = require("./card");
 const { Game } = require("./game");
 const { get } = require("./shared");
+const { stripColors } = require("colors");
 require("colors");
 
 /**
+ * The current game
+ * 
  * @type {Game}
  */
-let game = null;
+let game;
 
 /**
+ * An instance of the Functions class, to be used in `DeckcodeFunctions`, for example.
+ * 
  * @type {Functions}
  */
-let self = null;
+let self;
 
 class DeckcodeFunctions {
     constructor() {}
@@ -30,9 +36,17 @@ class DeckcodeFunctions {
      * @param {Player} plr The player to put the cards into the deck of
      * @param {string} code The deck code
      * 
-     * @returns {Card[]} The deck
+     * @returns {Card[] | "invalid"} The deck
      */
     import(plr, code) {
+        /**
+         * Cause the function to return an error
+         * 
+         * @param {string} error_code
+         * @param {string | null} [card_name]
+         *  
+         * @returns {"invalid"} 
+         */
         const ERROR = (error_code, card_name = null) => {
             game.log("This deck is not valid!\nError Code: ".red + error_code.yellow);
             if (card_name) game.log("Specific Card that caused this error: ".red + card_name.yellow);
@@ -62,11 +76,15 @@ class DeckcodeFunctions {
         let sep = " /";
 
         if (runesExists) sep = " [";
+        
         let hero = code.split(sep)[0];
 
         hero = hero.trim();
         code = sep[1] + code.split(sep)[1];
 
+        if (!self.getClasses().includes(hero)) return ERROR("INVALIDHERO");
+
+        // @ts-ignore
         plr.heroClass = hero;
 
         let rune_classes = ["Death Knight"];
@@ -74,6 +92,7 @@ class DeckcodeFunctions {
 
         const addRunes = (runes) => {
             if (rune_class) plr.runes = runes;
+            // @ts-ignore
             else game.input("WARNING: This deck has runes in it, but the class is ".yellow + hero.brightYellow + ". Supported classes: ".yellow + rune_classes.join(", ").brightYellow + "\n");
         }
 
@@ -97,6 +116,7 @@ class DeckcodeFunctions {
             addRunes(runes);
         }
         else if (rune_class) {
+            // @ts-ignore
             game.input("WARNING: This class supports runes but there are no runes in this deck. This deck's class: ".yellow + hero.brightYellow + ". Supported classes: ".yellow + rune_classes.join(", ").brightYellow + "\n");
         }
 
@@ -110,41 +130,44 @@ class DeckcodeFunctions {
         let deck = code.split(",");
         let _deck = [];
 
-        let maxDeckLength = game.config.maxDeckLength;
-        let minDeckLength = game.config.minDeckLength;
+        let localSettings = JSON.parse(JSON.stringify(game.config));
 
         let processed = 0;
 
         let retInvalid = false;
 
         copyDef.split(",").forEach(c => {
-            c = c.split(":");
+            let def = c.split(":");
 
-            let copies = c[0];
-            let times = c[1] || deck.length;
+            let copies = def[0];
+            let times = parseInt(def[1]) || deck.length;
 
             let cards = deck.slice(processed, times);
 
             cards.forEach(c => {
-                c = parseInt(c, 36);
+                let id = parseInt(c, 36);
 
-                let card = self.getCardById(c);
-                if (!card) {
-                    retInvalid = ERROR("NONEXISTANTCARD", c);
+                let bp = self.getCardById(id);
+                if (!bp) {
+                    ERROR("NONEXISTANTCARD", id.toString());
+                    retInvalid = true;
                     return;
                 }
-                card = new Card(card.name, plr);
+                let card = new Card(bp.name, plr);
 
                 for (let i = 0; i < parseInt(copies); i++) _deck.push(card.perfectCopy());
 
                 if (card.settings) {
-                    if (card.settings.maxDeckSize) maxDeckLength = card.settings.maxDeckSize;
-                    if (card.settings.minDeckSize) minDeckLength = card.settings.minDeckSize;
+                    Object.entries(card.settings).forEach(setting => {
+                        let [key, val] = setting;
+
+                        localSettings[key] = val;
+                    });
                 }
 
                 let validateTest = (self.validateCard(card, plr));
 
-                if (!game.config.validateDecks || validateTest === true) return;
+                if (!localSettings.validateDecks || validateTest === true) return;
 
                 let err;
 
@@ -171,10 +194,10 @@ class DeckcodeFunctions {
             processed += times;
         });
 
-        let max = maxDeckLength;
-        let min = minDeckLength;
+        let max = localSettings.maxDeckLength;
+        let min = localSettings.minDeckLength;
 
-        if ((_deck.length < min || _deck.length > max) && game.config.validateDecks) {
+        if ((_deck.length < min || _deck.length > max) && localSettings.validateDecks) {
             game.input("The deck needs ".red + ((min == max) ? `exactly `.red + `${max}`.yellow : `between`.red + `${min}-${max}`.yellow) + ` cards. Your deck has: `.red + `${_deck.length}`.yellow + `.\n`.red);
             return "invalid";
         }
@@ -186,28 +209,28 @@ class DeckcodeFunctions {
             cards[c.name]++;
         });
         Object.entries(cards).forEach(v => {
-            let i = v[1];
-            v = v[0];
+            let amount = v[1];
+            let cardName = v[0];
 
             let errorcode;
-            if (i > game.config.maxOfOneCard) errorcode = "normal";
-            if (self.getCardByName(v).rarity == "Legendary" && i > game.config.maxOfOneLegendary) errorcode = "legendary";
+            if (amount > localSettings.maxOfOneCard) errorcode = "normal";
+            if (self.getCardByName(cardName)?.rarity == "Legendary" && amount > localSettings.maxOfOneLegendary) errorcode = "legendary";
 
-            if (!game.config.validateDecks || !errorcode) return;
+            if (!localSettings.validateDecks || !errorcode) return;
 
             let err;
             switch (errorcode) {
                 case "normal":
-                    err = `There are more than `.red + game.config.maxOfOneCard.toString().yellow + " of a card in your deck".red;
+                    err = `There are more than `.red + localSettings.maxOfOneCard.toString().yellow + " of a card in your deck".red;
                     break
                 case "legendary":
-                    err = `There are more than `.red + game.config.maxOfOneLegendary.toString().yellow + " of a legendary card in your deck".red;
+                    err = `There are more than `.red + localSettings.maxOfOneLegendary.toString().yellow + " of a legendary card in your deck".red;
                     break
                 default:
                     err = "";
                     break;
             }
-            game.input(err + "\nSpecific card that caused this error: ".red + v.yellow + ". Amount: ".red + i.toString().yellow + ".\n".red);
+            game.input(err + "\nSpecific card that caused this error: ".red + cardName.yellow + ". Amount: ".red + amount.toString().yellow + ".\n".red);
             return "invalid";
         });
     
@@ -221,7 +244,7 @@ class DeckcodeFunctions {
     /**
      * Generates a deckcode from a list of blueprints
      *
-     * @param {import("./card").Blueprint[]} deck The deck to create a deckcode from
+     * @param {import("./types").Blueprint[]} deck The deck to create a deckcode from
      * @param {string} heroClass The class of the deck. Example: "Priest"
      * @param {string} runes The runes of the deck. Example: "BFU"
      *
@@ -310,9 +333,10 @@ class DeckcodeFunctions {
         //
         // Reference: Death Knight [3B] /1:4,2/ 3f,5f,6f...
 
-        let deck = {"cards": [], "heroes": [], "format": null};
-
-        deck.format = deckstrings.FormatType.FT_WILD; // Wild
+        /**
+         * @type {import("deckstrings").DeckDefinition}
+         */
+        let deck = {"cards": [], "heroes": [], "format": 1};
 
         let vanillaHeroes = { // List of vanilla heroes dbfIds
             "Warrior":      7,
@@ -328,40 +352,53 @@ class DeckcodeFunctions {
             "Death Knight": 78065
         };
 
-        code = code.split(/[\[/]/);
-        let heroClass = code[0].trim();
-        heroClass = vanillaHeroes[heroClass];
+        let codeSplit = code.split(/[\[/]/);
+        let heroClass = codeSplit[0].trim();
 
-        deck.heroes.push(heroClass);
+        /**
+         * @type {number}
+         */
+        let heroClassId = vanillaHeroes[heroClass];
 
-        code.splice(0, 1); // Remove the class
-        if (code[0].endsWith("] ")) code.splice(0, 1); // Remove runes
+        deck.heroes.push(heroClassId);
 
-        let amountStr = code[0].trim();
-        let cards = code[1].trim();
+        codeSplit.splice(0, 1); // Remove the class
+        if (codeSplit[0].endsWith("] ")) codeSplit.splice(0, 1); // Remove runes
+
+        let amountStr = codeSplit[0].trim();
+        let cards = codeSplit[1].trim();
 
         // Now it's just the cards left
-        let vanillaCards;
+
+        /**
+         * @type {string}
+         */
+        let vanillaCardsString;
 
         try {
-            vanillaCards = fs.readFileSync(__dirname + "/../card_creator/vanilla/.ignore.cards.json");
+            //@ts-ignore
+            vanillaCardsString = fs.readFileSync(__dirname + "/../card_creator/vanilla/.ignore.cards.json");
         } catch (err) {
             game.log("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'scripts/genvanilla.bat' (requires an internet connection), then try again.".red);
             game.input();
 
             process.exit(1);
         }
-        vanillaCards = JSON.parse(vanillaCards);
+        /**
+         * @type {import("./types").VanillaCard[]}
+         */
+        let vanillaCards = JSON.parse(vanillaCardsString);
 
-        cards = cards.split(",").map(i => parseInt(i, 36));
-        cards = cards.map(i => self.getCardById(i));
-        cards = cards.map(c => new game.Card(c.name, plr));
-        cards = cards.map(c => c.displayName);
+        let cardsSplit = cards.split(",").map(i => parseInt(i, 36));
+        let cardsSplitId = cardsSplit.map(i => self.getCardById(i));
+        // @ts-ignore
+        let cardsSplitCard = cardsSplitId.map(c => new game.Card(c.name, plr));
+        let trueCards = cardsSplitCard.map(c => c.displayName);
 
         // Cards is now a list of names
         let newCards = [];
 
-        cards.forEach((c, i) => {
+        trueCards.forEach((c, i) => {
             let amount = 1;
 
             // Find how many copies to put in the deck
@@ -384,21 +421,30 @@ class DeckcodeFunctions {
             let matches = vanillaCards.filter(a => a.name.toLowerCase() == c.toLowerCase());
             matches = self.filterVanillaCards(matches, true, extraFiltering);
 
-            if (!matches) {
+            if (matches.length == 0) {
                 // Invalid card
-                game.log("ERROR: Invalid card found!".red);
-                game.input();
+                game.input("ERROR: Invalid card found!\n".red);
                 return;
             }
+
+            /**
+             * @type {import("./types").VanillaCard}
+             */
+            let match;
 
             if (matches.length > 1) {
                 // Ask the user to pick one
                 matches.forEach((m, i) => {
-                    delete m.artist;
                     delete m.elite;
+                    // @ts-ignore
+                    delete m.artist;
+                    // @ts-ignore
                     delete m.collectible; // All cards here should already be collectible
+                    // @ts-ignore
                     delete m.referencedTags;
+                    // @ts-ignore
                     delete m.mechanics;
+                    // @ts-ignore
                     delete m.race; // Just look at `m.races`
 
                     game.log(`${i + 1}: `);
@@ -408,17 +454,17 @@ class DeckcodeFunctions {
                 game.log(`Multiple cards with the name '${c}' detected! Please choose one:`.yellow);
                 let chosen = game.input();
 
-                matches = matches[parseInt(chosen) - 1];
+                match = matches[parseInt(chosen) - 1];
             }
-            else matches = matches[0];
+            else match = matches[0];
 
-            newCards.push([matches.dbfId, amount]);
+            newCards.push([match.dbfId, amount]);
         });
 
         deck.cards = newCards;
 
-        deck = deckstrings.encode(deck);
-        return deck;
+        let encodedDeck = deckstrings.encode(deck);
+        return encodedDeck;
     }
 
     /**
@@ -430,43 +476,60 @@ class DeckcodeFunctions {
      * @returns {string} The Hearthstone.js deckcode
      */
     fromVanilla(plr, code) {
+        /**
+         * @type {import("deckstrings").DeckDefinition}
+         */
         let deck = deckstrings.decode(code); // Use the 'deckstrings' api's decode
 
         /**
-         * @type {VanillaCard[]}
+         * @type {string}
          */
-        let cards;
+        let cardsString;
 
         try {
-            cards = fs.readFileSync(__dirname + "/../card_creator/vanilla/.ignore.cards.json");
+            // @ts-ignore
+            cardsString = fs.readFileSync(__dirname + "/../card_creator/vanilla/.ignore.cards.json");
         } catch (err) {
             game.log("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'scripts/genvanilla.bat' (requires an internet connection), then try again.".red);
             game.input();
 
             process.exit(1);
         }
-        cards = JSON.parse(cards.toString());
 
+        /**
+         * @type {import("./types").VanillaCard[]}
+         */
+        let cards = JSON.parse(cardsString.toString());
+
+        // @ts-ignore
         delete deck.format; // We don't care about the format
 
-        let heroClass = cards.find(a => a.dbfId == deck.heroes[0]).cardClass;
-        heroClass = self.capitalize(heroClass);
+        let _heroClass = cards.find(a => a.dbfId == deck.heroes[0])?.cardClass;
+        let heroClass = self.capitalize(_heroClass?.toString() || game.player2.heroClass);
 
         if (heroClass == "Deathknight") heroClass = "Death Knight"; // Wtf hearthstone?
         if (heroClass == "Demonhunter") heroClass = "Demon Hunter"; // I'm not sure if this actually happens, but considering it happened with death knight, you never know
         
-        deck = deck.cards.map(c => [cards.find(a => a.dbfId == c[0]), c[1]]); // Get the full card object from the dbfId
+        /**
+         * @type {(import("./types").VanillaCard | undefined | number)[][]}
+         */
+        let deckDef = deck.cards.map(c => [cards.find(a => a.dbfId == c[0]), c[1]]); // Get the full card object from the dbfId
 
+        /**
+         * @type {import("./types").Blueprint[]}
+         */
         let createdCards = self.getCards(false);
         
         let invalidCards = [];
-        deck.forEach(c => {
-            c = c[0];
+        deckDef.forEach(c => {
+            let vanillaCard = c[0];
+            if (vanillaCard === undefined || typeof vanillaCard === "number") return;
 
-            if (createdCards.find(card => card.name == c.name || card.displayName == c.name)) return;
+            // @ts-ignore
+            if (createdCards.find(card => card.name == vanillaCard.name || card.displayName == vanillaCard.name)) return;
 
             // The card doesn't exist.
-            game.log(`ERROR: Card '${c.name}' doesn't exist!`.red);
+            game.log(`ERROR: Card '${vanillaCard.name}' doesn't exist!`.red);
             invalidCards.push(c);
         });
 
@@ -481,7 +544,7 @@ class DeckcodeFunctions {
             invalidCards.forEach(c => {
                 // Create that card
                 game.log("Creating " + c.name.yellow);
-                vcc.main("", c);
+                vcc.main(c);
             });
 
             game.input("Press enter to try this deckcode again.\n");
@@ -495,15 +558,20 @@ class DeckcodeFunctions {
 
         // All cards in the deck exists
         let amounts = {};
-        deck.forEach(c => {
-            let name = cards.find(a => a.dbfId == c[0].dbfId).name;
+        deckDef.forEach(c => {
+            let [vanillaCard, amount] = c;
+            if (vanillaCard === undefined || typeof vanillaCard === "number") return;
+
+            // @ts-ignore
+            let name = cards.find(a => a.dbfId == vanillaCard.dbfId).name;
             // The name can still not be correct
+            // @ts-ignore
             if (!createdCards.find(a => a.name == name)) name = createdCards.find(a => a.displayName == name).name;
 
-            new_deck.push([new game.Card(name, plr), c[1]]);
+            new_deck.push([new game.Card(name, plr), amount]);
 
-            if (!amounts[c[1]]) amounts[c[1]] = 0;
-            amounts[c[1]]++;
+            if (!amounts[amount]) amounts[amount] = 0;
+            amounts[amount]++;
         });
 
         // Sort the `new_deck` array, lowest amount first
@@ -571,6 +639,8 @@ class Functions {
      */
     constructor(_game) {
         /**
+         * Functions related to deckcodes.
+         * 
          * @type {DeckcodeFunctions}
          */
         this.deckcode = new DeckcodeFunctions();
@@ -589,7 +659,9 @@ class Functions {
     // QoL
     // https://dev.to/codebubb/how-to-shuffle-an-array-in-javascript-2ikj - Vladyslav
     /**
-     * Shuffle the array and return the result
+     * Shuffle the array and return the result.
+     * 
+     * Does not change the original array.
      * 
      * @param {any[]} array Array to shuffle
      * 
@@ -610,7 +682,7 @@ class Functions {
     }
 
     /**
-     * Removes `element` from `list`
+     * Removes `element` from `list`.
      *
      * @param {any[]} list The list to remove from
      * @param {any} element The element to remove from the list
@@ -623,7 +695,7 @@ class Functions {
     }
 
     /**
-     * Return a random element from "list"
+     * Return a random element from `list`
      * 
      * @param {any[]} list
      * @param {boolean} cpyCard If this is true and the element is a card, create an imperfect copy of that card.
@@ -663,7 +735,7 @@ class Functions {
     }
 
     /**
-     * Return a random number from "min" to "max"
+     * Return a random number between `min` and `max`.
      * 
      * @param {number} min The minimum number
      * @param {number} max The maximum number
@@ -698,76 +770,84 @@ class Functions {
 
     /**
      * Creates a wall.
+     * 
+     * Walls are a formatting tool for strings, which makes them easier to read.
+     * Look at the example below.
      *
+     * @param {any[]} bricks The array
      * @param {string} sep The seperator.
-     *
-     * @returns {[str[], wallCallback]} [wall, finishWall]
-     * 
-     * @callback wallCallback
-     * @returns {str[]}
-     * 
+     *  
      * @example
-     * let [wall, finishWall] = createWall("-");
-     * wall.push('Example - Example');
-     * wall.push('Test - Hello World');
-     * wall.push('This is the longest - Short');
-     * wall.push('Tiny - This is even longer then that one!');
+     * let bricks = [];
+     * bricks.push('Example - Example');
+     * bricks.push('Test - Hello World');
+     * bricks.push('This is the longest - Short');
+     * bricks.push('Tiny - This is even longer then that one!');
      * 
-     * let foo = finishWall();
+     * let wall = createWall(bricks, "-");
      * 
-     * foo.forEach(bar => {
-     *     game.log(bar);
+     * wall.forEach(foo => {
+     *     game.log(foo);
      * });
      * // Example             - Example
      * // Test                - Hello World
      * // This is the longest - Short
      * // Tiny                - This is even longer then that one!
      * 
-     * assert.equal(foo, ["Example             - Example", "Test                - Hello World", "This is the longest - Short", "Tiny                - This is even longer then that one!"]);
+     * assert.equal(wall, ["Example             - Example", "Test                - Hello World", "This is the longest - Short", "Tiny                - This is even longer then that one!"]);
+     * 
+     * @returns {string[]} The wall
      */
-    createWall(sep) {       
-        let wall = [];
+    createWall(bricks, sep) {
+        // Find the longest brick, most characters to the left of the seperator.
 
-        const finishWall = () => {
-            let longest_brick = [];
+        /**
+         * The longest brick
+         * 
+         * @type {(string | number)[]} [brick, length]
+         */
+        let longest_brick = [];
 
-            wall.forEach(b => {
-                b = b.split(sep);
+        bricks.forEach(b => {
+            b = b.split(sep);
 
-                let length = b[0].length;
+            let length = b[0].length;
 
-                if (length <= longest_brick[1]) return;
+            if (length <= longest_brick[1]) return;
 
-                longest_brick = [b, length];
-            });
+            longest_brick = [b, length];
+        });
 
-            let _wall = []
+        /**
+         * The wall to return.
+         * 
+         * @type {string[]}
+         */
+        let wall = []
 
-            wall.forEach(b => {
-                b = b.split(sep);
+        bricks.forEach(b => {
+            b = b.split(sep);
 
-                let strbuilder = "";
+            let strbuilder = "";
 
-                let diff = longest_brick[1] - b[0].length;
+            // @ts-ignore
+            let diff = longest_brick[1] - b[0].length;
 
-                strbuilder += b[0];
-                strbuilder += " ".repeat(diff);
-                strbuilder += sep;
-                strbuilder += b[1];
+            strbuilder += b[0];
+            strbuilder += " ".repeat(diff);
+            strbuilder += sep;
+            strbuilder += b[1];
 
-                _wall.push(strbuilder);
-            });
+            wall.push(strbuilder);
+        });
 
-            return _wall;
-        }
-
-        return [wall, finishWall];
+        return wall;
     }
 
     /**
      * Create a (crash)log file
      *
-     * @param {Error} err If this is set, create a crash report. If this is not set, create a normal log file.
+     * @param {Error | null} [err=null] If this is set, create a crash log. If this is not set, create a normal log file.
      *
      * @returns {boolean} Success
      */
@@ -786,21 +866,24 @@ class Functions {
         let minute = date.getMinutes().toString();
         let second = date.getSeconds().toString();
 
-        if (day < 10) day = `0${day}`;
-        if (month < 10) month = `0${month}`;
-        if (year < 10) year = `0${year}`;
+        if (parseInt(day) < 10) day = `0${day}`;
+        if (parseInt(month) < 10) month = `0${month}`;
+        if (parseInt(year) < 10) year = `0${year}`;
 
-        if (hour < 10) hour = `0${hour}`;
-        if (minute < 10) minute = `0${minute}`;
-        if (second < 10) second = `0${second}`;
+        if (parseInt(hour) < 10) hour = `0${hour}`;
+        if (parseInt(minute) < 10) minute = `0${minute}`;
+        if (parseInt(second) < 10) second = `0${second}`;
 
         // Assemble the time
         let dateString = `${day}/${month}/${year} ${hour}:${minute}:${second}`; // 01/01/23 23:59:59
         let dateStringFileFriendly = dateString.replace(/[/:]/g, ".").replaceAll(" ", "-"); // 01.01.23-23.59.59
 
         // Grab the history of the game
-        // handleCmds("history", write_to_screen, debug)
+        // handleCmds("history", echo, debug)
         let history = game.interact.handleCmds("history", false, true);
+        if (typeof history !== "string") throw new Error("createLogFile history did not return a string.");
+
+        history = stripColors(history);
 
         // AI log
         game.config.debug = true; // Do this so it can actually run '/ai'
@@ -817,21 +900,27 @@ ${err.stack}
 `
 
         let history_content = `-- History --${history}`;
-        let ai_content = `
--- AI Logs --
-${aiHistory}`;
+        let ai_content = `\n-- AI Logs --\n${aiHistory}`;
+
+        let config = JSON.stringify(game.config, null, 2);
+        let config_content = `\n-- Config --\n${config}`;
 
         let main_content = history_content;
         if (game.config.P1AI || game.config.P2AI) main_content += ai_content;
+        main_content += config_content;
         main_content += errorContent;
 
         let content = `Hearthstone.js ${name}
 Date: ${dateString}
 Version: ${game.config.version}-${game.config.branch}
 Operating System: ${process.platform}
+Log File Version: 1
 
 ${main_content}
 `
+
+        // Add a sha256 checksum to the content
+        content += require("crypto").createHash("sha256").update(content).digest("hex");
 
         let filename = "log";
         if (err) filename = "crashlog";
@@ -849,13 +938,26 @@ ${main_content}
     }
 
     /**
+     * Returns an AI Error with the provided information.
+     *
+     * @param {string} code - The function where the error occurred.
+     * @param {any} expected - The expected value.
+     * @param {any} actual - The actual value.
+     * 
+     * @returns {Error} - The AI Error with the provided information.
+     */
+    createAIError(code, expected, actual) {
+        return new Error(`AI Error: expected: ${expected}, got: ${actual}. Error Code: ${code}`);
+    }
+
+    /**
      * Filter out some useless vanilla cards
      *
-     * @param {VanillaCard[]} cards The list of vanilla cards to filter
+     * @param {import("./types").VanillaCard[]} cards The list of vanilla cards to filter
      * @param {boolean} uncollectible If it should filter away uncollectible cards
      * @param {boolean} dangerous If there are cards with a 'howToEarn' field, filter away any cards that don't have that.
      *
-     * @returns {VanillaCard[]} The filtered cards
+     * @returns {import("./types").VanillaCard[]} The filtered cards
      * 
      * @example
      * // The numbers here are not accurate, but you get the point.
@@ -911,6 +1013,7 @@ ${main_content}
         cards = __cards;
         
         if (dangerous) {
+            // If any of the cards have a 'howToEarn' field, filter away any cards that don't have that
             const _cards = cards.filter(a => a.howToEarn);
             if (_cards.length > 0) cards = _cards;
         }
@@ -986,19 +1089,21 @@ ${main_content}
     /**
      * Returns the card with the name `name`.
      * 
-     * @param {string} name The name
+     * @param {string | number} name The name
      * @param {boolean} refer If this should call `getCardById` if it doesn't find the card from the name
      * 
-     * @returns {import("./card").Blueprint} The blueprint of the card
+     * @returns {import("./types").Blueprint | null} The blueprint of the card
      */
     getCardByName(name, refer = true) {
-        let card;
+        let card = null;
 
         game.cards.forEach(c => {
+            if (typeof name == "number") return;
+
             if (c.name.toLowerCase() == name.toLowerCase()) card = c;
         });
 
-        if (!card && refer) return this.getCardById(name, false);
+        if (!card && refer) card = this.getCardById(name, false);
 
         return card;
     }
@@ -1006,10 +1111,10 @@ ${main_content}
     /**
      * Returns the card with the id of `id`.
      * 
-     * @param {number} id The id
+     * @param {number | string} id The id
      * @param {boolean} refer If this should call `getCardByName` if it doesn't find the card from the id
      * 
-     * @returns {import("./card").Blueprint} The blueprint of the card
+     * @returns {import("./types").Blueprint | null} The blueprint of the card
      */
     getCardById(id, refer = true) {
         let card = game.cards.filter(c => c.id == id)[0];
@@ -1023,9 +1128,9 @@ ${main_content}
      * Returns all cards added to Hearthstone.js
      *
      * @param {boolean} uncollectible Filter out all uncollectible cards
-     * @param {import("./card").Blueprint[]} cards This defaults to `game.cards`, which contains all cards in the game.
+     * @param {import("./types").Blueprint[]} cards This defaults to `game.cards`, which contains all cards in the game.
      *
-     * @returns {import("./card").Blueprint[]} Cards
+     * @returns {import("./types").Blueprint[]} Cards
      */
     getCards(uncollectible = true, cards = game.cards) {
         let _cards = [];
@@ -1041,7 +1146,7 @@ ${main_content}
      * Returns if the `card`'s class is the same as the `plr`'s class or 'Neutral'
      *
      * @param {Player} plr
-     * @param {Card} card
+     * @param {Card | import("./types").Blueprint} card
      *
      * @returns {boolean} Result
      * 
@@ -1076,8 +1181,8 @@ ${main_content}
     /**
      * Returns if the `card_tribe` is `tribe` or 'All'
      *
-     * @param {string} card_tribe
-     * @param {string} tribe
+     * @param {import("./types").MinionTribe} card_tribe
+     * @param {import("./types").MinionTribe} tribe
      *
      * @returns {boolean}
      * 
@@ -1153,6 +1258,10 @@ ${main_content}
             name = game.functions.capitalizeAll(name); // Capitalize all words
 
             let card = game.functions.getCardByName(name + " Starting Hero");
+            if (!card || card.class != name || card.type != "Hero" || !card["heropower"]) {
+                console.warn("Found card in the startingheroes folder that isn't a starting hero. If the game crashes, please note this in your bug report. Name: " + name + ". Error Code: StartingHeroInvalidHandler");
+                return;
+            }
 
             classes.push(card.class);
         });
@@ -1185,6 +1294,7 @@ ${main_content}
                 str = str.blue;
                 break;
             case "Epic":
+                // @ts-ignore
                 str = str.brightMagenta;
                 break;
             case "Legendary":
@@ -1194,6 +1304,7 @@ ${main_content}
                 break;
         }
 
+        // @ts-ignore
         if (bold && rarity != "Legendary") str = str.bold;
 
         return str;
@@ -1205,12 +1316,16 @@ ${main_content}
      * The color tags available are:
      * 
      * ```
+     * // RGB
      * 'r' = Red, 'g' = Green, 'b' = Blue
      * 
+     * // CMYK
      * 'c' = Cyan, 'm' = Magenta, 'y' = Yellow, 'k' = Black
      * 
+     * // Other colors
      * 'w' = White, 'a' = Gray
      * 
+     * // Special
      * 'B' = Bold, 'R' = Reset
      * ```
      *
@@ -1228,6 +1343,12 @@ ${main_content}
      * assert.equal(parsed, "&BBattlecry:&R Test");
      */
     parseTags(str) {
+        /**
+         * Appends text styling based on the current types.
+         *
+         * @param {string} c The text to be styled
+         * @return {string} The text with applied styling
+         */
         const appendTypes = (c) => {
             let ret = c;
 
@@ -1270,6 +1391,7 @@ ${main_content}
                         ret = ret.reset;
                         break;
                     case "B":
+                        // @ts-ignore
                         ret = ret.bold;
                         break;
                     case "U":
@@ -1287,6 +1409,7 @@ ${main_content}
 
         // Loop through the characters in str
         str.split("").forEach((c, i) => {
+            // If c is not a tag
             if (c != "&") {
                 if (i > 0 && str[i - 1] == "&") { // Don't add the character if a & precedes it.
                     if (i > 1 && str[i - 2] == "~") {} // But do add the character if the & has been cancelled
@@ -1329,6 +1452,7 @@ ${main_content}
 
     /**
      * Removes color tags from a string. Look in `functions.parseTags` for more information.
+     * 
      * This only removes the TAGS, not the actual colors. Use `colors.strip` for that.
      * 
      * @example
@@ -1341,8 +1465,17 @@ ${main_content}
      * @returns {string}
      */
     stripTags(str) {
-        // Regular expression created by ChatGPT, it removes the "&B"'s but keeps the "~&B"'s since the '~' here works like an escape character.
-        return str.replace(/(?<!~)&\w/g, "");
+        // Regular expressions created by AI's, it removes the "&B"'s but keeps the "~&B"'s since the '~' here works like an escape character.
+        // It does however remove the escape character itself.
+        let strippedString = str;
+
+        // Remove unescaped tags
+        strippedString = strippedString.replace(/(?<!~)&\w/g, "")
+
+        // Remove escape character
+        strippedString = strippedString.replace(/~&(\w)/g, "&$1")
+
+        return strippedString;
     }
 
     /**
@@ -1367,7 +1500,7 @@ ${main_content}
     cloneCard(card) {
         let clone = this.cloneObject(card);
 
-        clone.randomizeIds();
+        clone.randomizeUUID();
         clone.sleepy = true;
         clone.turn = game.turns;
 
@@ -1375,15 +1508,12 @@ ${main_content}
     }
 
     /**
-     * Calls `callback` on all `plr`'s targets 
+     * Calls `callback` on all `plr`'s targets, including the player itself.
      *
      * @param {Player} plr The player
-     * @param {targetCallback} callback The callback to call
+     * @param {import("./types").TargetCallback} callback The callback to call
      * 
      * @returns {boolean} Success
-     * 
-     * @callback targetCallback
-     * @param {Card | Player} target The target
      */
     doPlayerTargets(plr, callback) {
         game.board[plr.id].forEach(m => {
@@ -1398,16 +1528,12 @@ ${main_content}
     /**
      * Add an event listener.
      *
-     * @param {import("./game").EventKeys} key The event to listen for. If this is an empty string, it will listen for any event.
-     * @param {elCallback} checkCallback This will trigger when the event gets broadcast, but before the actual code in `callback`. If this returns false, the event listener will ignore the event. If you set this to `true`, it is the same as doing `() => {return true}`.
-     * @param {elCallback} callback The code that will be ran if the event listener gets triggered and gets through `checkCallback`. If this returns true, the event listener will be destroyed.
+     * @param {import("./types").EventKeys | ""} key The event to listen for. If this is an empty string, it will listen for any event.
+     * @param {import("./types").EventListenerCheckCallback | true} checkCallback This will trigger when the event gets broadcast, but before the actual code in `callback`. If this returns false, the event listener will ignore the event. If you set this to `true`, it is the same as doing `() => {return true}`.
+     * @param {import("./types").EventListenerCheckCallback} callback The code that will be ran if the event listener gets triggered and gets through `checkCallback`. If this returns true, the event listener will be destroyed.
      * @param {number} lifespan How many times the event listener will trigger and call "callback" before self-destructing. Set this to -1 to make it last forever, or until it is manually destroyed using "callback".
      *
      * @returns {function} If you call this function, it will destroy the event listener.
-     * 
-     * @callback elCallback
-     * @param {any} [val] The value of the event.
-     * @returns {bool | undefined} If this returns true, destroy the event listener.
      */
     addEventListener(key, checkCallback, callback, lifespan = 1) {
         let times = 0;
@@ -1437,44 +1563,31 @@ ${main_content}
         return remove;
     }
 
-    // Damage
-
     /**
-     * Deals damage to `target` based on your spell damage
+     * Hooks a callback function to the tick event.
+     *
+     * @param {Function} callback - The callback function to be hooked.
      * 
-     * @param {Card | Player} target The target
-     * @param {number} damage The damage to deal
-     * 
-     * @returns {boolean} Success
+     * @returns {Function} a function that, when called, will remove the hook from the tick event.
      */
-    spellDmg(target, damage) {
-        const dmg = this.accountForSpellDmg(damage);
+    hookToTick(callback) {
+        game.events.tickHooks.push(callback);
 
-        game.events.broadcast("SpellDealsDamage", [target, dmg], game.player);
-        game.attack(dmg, target);
+        const unhook = () => {
+            this.remove(game.events.tickHooks, callback);
+        }
 
-        return true;
+        return unhook;
     }
 
     // Account for certain stats
-
-    /**
-     * Returns `damage` + The current player's spell damage
-     * 
-     * @param {number} damage
-     * 
-     * @returns {number} Damage + spell damage
-     */
-    accountForSpellDmg(damage) {
-        return damage + game.player.spellDamage;
-    }
-
+    
     /**
      * Filters out all cards that are uncollectible in a list
      * 
-     * @param {Card[] | import("./card").Blueprint[]} cards The list of cards
+     * @param {(Card | import("./types").Blueprint)[]} cards The list of cards
      * 
-     * @returns {Card[] | import("./card").Blueprint[]} The cards without the uncollectible cards
+     * @returns {(Card | import("./types").Blueprint)[]} The cards without the uncollectible cards
      */
     accountForUncollectible(cards) {
         return cards.filter(c => !c.uncollectible);
@@ -1489,12 +1602,15 @@ ${main_content}
      * @param {string} prompt The prompt to ask the user
      * @param {Card[]} _values DON'T TOUCH THIS UNLESS YOU KNOW WHAT YOU'RE DOING
      * 
-     * @returns {string} The name of the adapt chosen.
+     * @returns {any[] | -1} An array with the name of the adapt(s) chosen, or -1 if the user cancelled.
      */
     adapt(minion, prompt = "Choose One:", _values = []) {
         const ADAPT = new game.Card("Adapt Helper", game.player);
 
-        return ADAPT.activate("adapt", minion, prompt, _values);
+        let ret = ADAPT.activate("adapt", minion, prompt, _values);
+        if (ret === false) throw new Error("activate couldn't find adapt for ADAPT card.");
+
+        return ret;
     }
 
     /**
@@ -1508,7 +1624,7 @@ ${main_content}
         // Find the card in player's deck/hand/hero that begins with "Galakrond, the "
         let deck_galakrond = plr.deck.find(c => c.displayName.startsWith("Galakrond, the "));
         let hand_galakrond = plr.hand.find(c => c.displayName.startsWith("Galakrond, the "));
-        if ((!deck_galakrond && !hand_galakrond) && !plr.hero.displayName.startsWith("Galakrond, the ")) return false;
+        if ((!deck_galakrond && !hand_galakrond) && !plr.hero?.displayName.startsWith("Galakrond, the ")) return false;
 
         plr.deck.filter(c => {
             c.activate("invoke");
@@ -1520,7 +1636,7 @@ ${main_content}
             c.activate("invoke");
         });
 
-        if (plr.hero.displayName.startsWith("Galakrond, the ")) plr.hero.activate("heropower");
+        if (plr.hero?.displayName.startsWith("Galakrond, the ")) plr.hero.activate("heropower");
         else if (deck_galakrond) deck_galakrond.activate("heropower");
         else if (hand_galakrond) hand_galakrond.activate("heropower");
 
@@ -1531,7 +1647,7 @@ ${main_content}
      * Chooses a minion from `list` and puts it onto the board.
      * 
      * @param {Player} plr The player
-     * @param {Card[]} list The list to recruit from. This defaults to `plr`'s deck.
+     * @param {Card[] | null} list The list to recruit from. This defaults to `plr`'s deck.
      * @param {number} amount The amount of minions to recruit
      * 
      * @returns {Card[]} Returns the cards recruited
@@ -1590,6 +1706,8 @@ ${main_content}
      * @returns {boolean} Success
      */
     importConfig(path) {
+        game.config = {};
+
         require("fs").readdirSync(path, { withFileTypes: true }).forEach(file => {
             let c = `${path}/${file.name}`;
 
@@ -1662,8 +1780,14 @@ ${main_content}
 
             this.remove(mulligan, c);
             
-            plr.drawCard(false);
-            plr.shuffleIntoDeck(c, false);
+            game.suppressedEvents.push("DrawCard");
+            plr.drawCard();
+            game.suppressedEvents.pop();
+
+            game.suppressedEvents.push("AddCardToDeck");
+            plr.shuffleIntoDeck(c);
+            game.suppressedEvents.pop();
+
             plr.removeFromHand(c);
 
             cards.push(c);
@@ -1680,13 +1804,14 @@ ${main_content}
      * @param {string} name The name of the quest
      * @param {number} value The amount to progress the quest by
      * 
-     * @returns {number} The new progress
+     * @returns {number | null} The new progress
      */
-    progressQuest(name, value = 1) {
-        let quest = game.player.secrets.find(s => s["name"] == name);
-        if (!quest) quest = game.player.sidequests.find(s => s["name"] == name);
-        if (!quest) quest = game.player.quests.find(s => s["name"] == name);
-
+    progressQuest(plr, name, value = 1) {
+        let quest = plr.secrets.find(s => s["name"] == name);
+        if (!quest) quest = plr.sidequests.find(s => s["name"] == name);
+        if (!quest) quest = plr.quests.find(s => s["name"] == name);
+        
+        if (!quest) return null;
         quest["progress"][0] += value;
 
         return quest["progress"][0];
@@ -1698,12 +1823,12 @@ ${main_content}
      * @param {"Quest" | "Sidequest" | "Secret"} type The type of the quest
      * @param {Player} plr The player to add the quest to
      * @param {Card} card The card that created the quest / secret
-     * @param {import("./game").EventKeys} key The key to listen for
+     * @param {import("./types").EventKeys} key The key to listen for
      * @param {any} val The value that the quest needs
      * @param {import("./types").QuestCallback} callback The function to call when the key is invoked.
-     * @param {string} [next=null] The name of the next quest / sidequest / secret that should be added when the quest is done
+     * @param {string | null} [next=null] The name of the next quest / sidequest / secret that should be added when the quest is done
      * 
-     * @returns {bool} Success
+     * @returns {boolean} Success
      */
     addQuest(type, plr, card, key, val, callback, next = null) {
         const t = plr[type.toLowerCase() + "s"];

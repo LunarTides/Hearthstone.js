@@ -22,26 +22,26 @@ module.exports = {
 
             // The quest is done.
             // Add the `-1 mana` enchantment constantly
-            let destroy = game.functions.addEventListener("", true, () => {
+            let unhook = game.functions.hookToTick(() => {
                 plr.hand.filter(c => c.type == "Minion").forEach(m => {
                     if (m.enchantmentExists("-1 mana", self)) return;
 
                     m.addEnchantment("-1 mana", self);
                 });
-            }, -1);
+            });
 
             // Add an event listener to check if you've played 10 cards
             let amount = 0;
 
-            game.functions.addEventListener("PlayCard", () => {
-                return game.player == plr;
+            game.functions.addEventListener("PlayCard", val => {
+                return game.player == plr && val.type == "Minion";
             }, () => {
-                // Every time you play a card, increment `amount` by 1.
+                // Every time you play a minion, increment `amount` by 1.
                 amount++;
 
                 if (amount < 10) return;
 
-                destroy(); // Destroy the other event listener
+                unhook(); // Destroy the tick hook
 
                 // Reverse the enchantent
                 plr.hand.filter(c => c.type == "Minion").forEach(m => {
@@ -51,9 +51,6 @@ module.exports = {
                 // Destroy this event listener
                 return true;
             }, -1);
-
-            // Update the events to trigger the first event listener. This does nothing otherwise.
-            game.events.broadcast("Update", self, plr);
         });
     }
 }

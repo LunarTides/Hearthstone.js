@@ -18,7 +18,7 @@ module.exports = {
      * @type {import("../../../../../src/types").KeywordMethod}
      */
     battlecry(plr, game, self) {
-        let target = game.interact.selectTarget(self.desc, false, "friendly", "minion");
+        let target = game.interact.selectTarget(self.desc, self, "friendly", "minion");
         if (!target || !game.functions.matchTribe(target.tribe, "Murloc")) return -1;
 
         target.addKeyword("Poisonous");

@@ -20,7 +20,10 @@ module.exports = {
      * @type {import("../../src/types").KeywordMethod}
      */
     heropower(plr, game, self) {
-        let target = game.interact.selectTarget("Restore 2 health.", "dontupdate");
+        game.suppressedEvents.push("CastSpellOnMinion");
+        let target = game.interact.selectTarget("Restore 2 health.", self, null, null, ["force_elusive"]);
+        game.suppressedEvents.pop();
+
         if (!target) return -1;
 
         target.addHealth(2, true);

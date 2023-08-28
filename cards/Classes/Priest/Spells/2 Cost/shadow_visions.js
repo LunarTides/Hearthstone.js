@@ -20,9 +20,10 @@ module.exports = {
     cast(plr, game, self) {
         let list = plr.deck.filter(c => c.type == "Spell");
 
-        let spell = game.interact.discover("Discover a copy of a spell in your deck.", list);
-        spell = spell.imperfectCopy();
+        let spell = game.interact.discover("Discover a copy of a spell in your deck.", list, false);
+        if (!spell) return -1;
 
+        spell = spell.imperfectCopy();
         plr.addToHand(spell);
     }
 }

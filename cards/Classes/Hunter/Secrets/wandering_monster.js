@@ -35,8 +35,14 @@ module.exports = {
 
             game.summonMinion(minion, plr);
 
-            attacker.sleepy = false;
-            attacker.resetAttackTimes();
+            if (attacker instanceof game.Card) attacker.ready();
+            else if (attacker instanceof game.Player) {
+                attacker.canAttack = true;
+
+                // Weapon durability goes down after the `Attack` event is broadcast, so just add 1 durability to the weapon to keep it alive
+                if (attacker.weapon) attacker.weapon.addStats(0, 1);
+            }
+
             game.attack(attacker, minion);
         });
     }

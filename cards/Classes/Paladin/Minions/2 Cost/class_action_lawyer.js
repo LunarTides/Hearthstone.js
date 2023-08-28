@@ -24,7 +24,7 @@ module.exports = {
         if (list.length > 0) return;
 
         // Condition cleared
-        let target = game.interact.selectTarget("Set a minion's stats to 1/1.", true, null, "minion");
+        let target = game.interact.selectTarget("Set a minion's stats to 1/1.", self, null, "minion");
         if (!target) return -1;
 
         target.setStats(1, 1);

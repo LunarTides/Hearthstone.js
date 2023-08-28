@@ -3,6 +3,7 @@ Hearthstone.js - Hearthstone but console based.
 Copyright (C) 2022  LunarTides
 */
 
+//@ts-check
 const { Game } = require("./game");
 const { Player } = require("./player");
 const { set }  = require("./shared");
@@ -24,6 +25,8 @@ let game;
 
 let decks = [];
 function runner(_decks) {
+    Object.keys(require.cache).forEach(k => delete require.cache[k]);
+
     try {
         game.cards = [];
         game.config = {};
@@ -47,6 +50,7 @@ function main() {
 
     game.interact.printName();
 
+    // If decks were exported by the deck creator, assign them to the players.
     decks.forEach((d, i) => {
         if (i >= 2) return;
 
@@ -62,9 +66,14 @@ function main() {
 
         game.input(`Player ${rng}'s Deck was automatically set to: ${d}\n`); 
     });
+
     // Ask the players for deck codes.
-    if (p1.deck.length <= 0) game.interact.deckCode(p1);
-    if (p2.deck.length <= 0) game.interact.deckCode(p2);
+    [p1, p2].forEach(plr => {
+        if (plr.deck.length > 0) return;
+        
+        // Put this in a while loop to make sure the function repeats if it fails.
+        while (!game.interact.deckCode(plr)) {};
+    });
 
     game.startGame();
 
@@ -72,6 +81,7 @@ function main() {
     game.interact.mulligan(p2);
 
     try {
+        // Game loop
         while (game.running) game.interact.doTurn();
     } catch (err) {
         game.functions.createLogFile(err); // Create error report file

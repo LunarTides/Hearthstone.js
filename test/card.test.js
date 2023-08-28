@@ -1,3 +1,4 @@
+//@ts-check
 const assert = require('assert');
 const colors = require("colors");
 const { Player } = require("../src/player");
@@ -37,13 +38,13 @@ describe("Card", () => {
         assert.equal(card.name, "Sheep");
     });
 
-    it ('should correctly randomize ids', () => {
+    it ('should correctly randomize uuid', () => {
         const card = testCard();
-        const ids = card.__ids;
+        const uuid = card.uuid;
 
-        card.randomizeIds();
+        card.randomizeUUID();
 
-        assert.notEqual(card.__ids, ids);
+        assert.notEqual(card.uuid, uuid);
     });
 
     it ('should correctly add a deathrattle', () => {
@@ -142,7 +143,7 @@ describe("Card", () => {
         const card = testCard();
 
         card.setStats(5, 5); // The card has 5 health
-        card.remHealth(3, 3); // The card has 2 health
+        card.remHealth(3); // The card has 2 health
 
         card.addHealth(5); // Restore 5 health to the minion. 5+2 = 7, which is more than the max health, so set it to 5
 
@@ -388,7 +389,7 @@ describe("Card", () => {
 
         card.addEnchantment("+1 mana", card);
 
-        assert.equal(card.enchantments[0][0], "+1 mana");
+        assert.equal(card.enchantments[0].enchantment, "+1 mana");
     });
 
     it ('should correctly apply enchantents', () => {
@@ -431,8 +432,10 @@ describe("Card", () => {
         }];
 
         card.replacePlaceholders();
+        let fullCard = game.interact.doPlaceholders(card);
 
-        assert.equal(card.desc, "This card costs: {ph:cost} 1 {/ph}.");
+        assert.equal(card.desc, "This card costs: {ph:cost} placeholder {/ph}.");
+        assert.equal(fullCard, card.desc.replace("{ph:cost} placeholder {/ph}", card.mana));
     });
 
     it ('should return a perfect copy', () => {
@@ -443,7 +446,7 @@ describe("Card", () => {
         const perfectCopy = card.perfectCopy();
 
         assert.equal(card.getAttack(), perfectCopy.getAttack());
-        assert.notEqual(card.__ids, perfectCopy.__ids);
+        assert.notEqual(card.uuid, perfectCopy.uuid);
     });
 
     it ('should return an imperfect copy', () => {
@@ -454,6 +457,6 @@ describe("Card", () => {
         const imperfectCopy = card.imperfectCopy();
 
         assert.notEqual(card.getAttack(), imperfectCopy.getAttack());
-        assert.notEqual(card.__ids, imperfectCopy.__ids);
+        assert.notEqual(card.uuid, imperfectCopy.uuid);
     });
 });

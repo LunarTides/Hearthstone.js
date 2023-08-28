@@ -3,7 +3,7 @@ node --version > /dev/null
 if [ $? -eq 0 ]
 then
     # Nodejs is installed
-    npm i
+    npm i > /dev/null
 else
     echo "nodejs is not installed"
     echo "go to http://nodejs.org/download/ and download the latest version"

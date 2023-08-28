@@ -1,3 +1,4 @@
+//@ts-check
 const { question }  = require('readline-sync');
 const { Functions } = require("./functions");
 const { Player }    = require("./player");
@@ -10,31 +11,47 @@ class EventManager {
      * @param {Game} game 
      */
     constructor(game) {
+        // An event looks like this:
+        // events[key] = {player1id: [[val1, turn], [val2, turn], [val3, turn], ...], player2id: [...]}
+
         /**
          * @type {Game}
          */
         this.game = game;
 
         /**
+         * The amount of event listeners that have been added to the game, this never decreases.
+         * 
          * @type {number}
          */
         this.eventListeners = 0;
 
         /**
+         * The hooks that will be run when the game ticks.
+         * 
+         * @type {Function[]}
+         */
+        this.tickHooks = [];
+
+        /**
+         * The history of the game.
+         * 
+         * It looks like this: `history[turn] = [[key, val, plr], ...]`
+         * 
          * @type {Object<number, Array>}
          */
         this.history = {};
     }
 
     /**
-     * Do card passives
+     * Tick the game
      *
-     * @param {import('./types').EventKeys} key The key of the event
-     * @param {import('./types').EventValues} val The value of the event
-     *
-     * @returns {boolean} Success
+     * @param {string} key - The key of the event that triggered the tick
+     * @param {any} val - The value of the event that triggered the tick
      */
-    cardUpdate(key, val) {
+    tick(key, val) {
+        // The code in here gets executed very often
+
         // Infuse
         if (key == "KillMinion") {
             val.plr.hand.forEach(p => {
@@ -50,6 +67,50 @@ class EventManager {
             });
         }
 
+        for (let i = 1; i <= 2; i++) {
+            /**
+             * @type {Player}
+             */
+            let plr = this.game["player" + i];
+
+            // Activate spells in the players hand
+            plr.hand.forEach(c => {
+                if (!(c instanceof Card)) throw new Error("Hand contains a non-card");
+                
+                // Placeholders
+                c.replacePlaceholders();
+
+                // Check for condition
+                // @ts-ignore
+                let cleared_text = " (Condition cleared!)".brightGreen;
+                // @ts-ignore
+                let cleared_text_alt = "Condition cleared!".brightGreen;
+                c.desc = c.desc?.replace(cleared_text, "");
+                c.desc = c.desc?.replace(cleared_text_alt, "");
+                if (c.activate("condition")[0] === true) {
+                    if (c.desc) c.desc += cleared_text;
+                    else c.desc += cleared_text_alt;
+                }
+
+                c.applyEnchantments(); // Just in case. Remove for small performance boost
+            });
+            plr.hand.forEach(c => {
+                if (c.mana < 0) c.mana = 0;
+            });
+        }
+
+        this.tickHooks.forEach(hook => hook(key, val));
+    }
+
+    /**
+     * Do card passives
+     *
+     * @param {import('./types').EventKeys} key The key of the event
+     * @param {import('./types').EventValues} val The value of the event
+     *
+     * @returns {boolean} Success
+     */
+    cardUpdate(key, val) {
         this.game.board.forEach(p => {
             p.forEach(m => {
                 if (m.getHealth() <= 0) return; // This function gets called directly after a minion is killed.
@@ -66,30 +127,10 @@ class EventManager {
             plr.hand.forEach(c => {
                 c.activate("handpassive", key, val);
 
-                // Placeholders
-                c.replacePlaceholders();
-
-                // Check for condition
-                let cleared_text = " (Condition cleared!)".brightGreen;
-                let cleared_text_alt = "Condition cleared!".brightGreen;
-                c.desc = c.desc.replace(cleared_text, "");
-                c.desc = c.desc.replace(cleared_text_alt, "");
-                if (c.activate("condition")[0] === true) {
-                    if (c.desc) c.desc += cleared_text;
-                    else c.desc += cleared_text_alt;
-                }
-
-                c.applyEnchantments(); // Just in case. Remove for small performance boost
-
                 if (c.type != "Spell") return;
 
                 c.activate("unpassive", true);
                 c.activate("passive", key, val);
-
-                c.replacePlaceholders();
-            });
-            plr.hand.forEach(c => {
-                if (c.mana < 0) c.mana = 0;
             });
 
             let wpn = plr.weapon;
@@ -106,12 +147,12 @@ class EventManager {
     /**
      * Update quests and secrets
      *
-     * @param {"Secret" | "Quest" | "Questline"} quests_name The type of quest to update
+     * @param {"secrets" | "sidequests" | "quests"} quests_name The type of quest to update
      * @param {import('./types').EventKeys} key The key of the event
      * @param {import('./types').EventValues} val The value of the event
      * @param {Player} plr The owner of the quest
      *
-     * @returns {bool} Success
+     * @returns {boolean} Success
      */
     questUpdate(quests_name, key, val, plr) {
         plr[quests_name].forEach(s => {
@@ -150,14 +191,19 @@ class EventManager {
      * @param {Player} plr The player who caused the event to happen
      * @param {boolean} [updateHistory=true] Whether or not to update the history
      *
-     * @returns {bool} Success
+     * @returns {boolean} Success
      */
     broadcast(key, val, plr, updateHistory = true) {
-        if (!this[key]) this[key] = [[], []];
-        if (updateHistory && !this.history[this.game.turns]) this.history[this.game.turns] = [];
+        this.tick(key, val);
 
+        if (updateHistory) this.addHistory(key, val, plr);
+
+        // Check if the event is suppressed
+        if (this.game.suppressedEvents.includes(key)) return false;
+        if (plr.classType !== "Player" || plr.id === -1) return false;
+
+        if (!this[key]) this[key] = [[], []];
         this[key][plr.id].push([val, this.game.turns]);
-        if (updateHistory) this.history[this.game.turns].push([key, val, plr]);
 
         this.cardUpdate(key, val);
 
@@ -166,6 +212,31 @@ class EventManager {
         this.questUpdate("quests",     key, val, plr);
 
         return true;
+    }
+
+    /**
+     * Write an event to history. Done automatically by `broadcast`.
+     * 
+     * @param {import('./types').EventKeys} key The key of the event
+     * @param {import('./types').EventValues} val The value of the event
+     * @param {Player} plr The player who caused the event to happen
+     */
+    addHistory(key, val, plr) {
+        if (!this.history[this.game.turns]) this.history[this.game.turns] = [];
+        this.history[this.game.turns].push([key, val, plr]);
+    }
+
+    /**
+     * Broadcast a dummy event. Use if you need to broadcast any event to kickstart an event listener, consider looking into `game.functions.hookToTick`.
+     * 
+     * Specifically, this broadcasts the `Dummy` event. DO NOT LISTEN FOR THAT EVENT.
+     * 
+     * @param {Player} plr The player who caused the event to happen
+     * 
+     * @returns {boolean} Success
+     */
+    broadcastDummy(plr) {
+        return this.broadcast("Dummy", null, plr, false);
     }
 
     /**
@@ -194,20 +265,30 @@ class Game {
     constructor(player1, player2) {
         // Choose a random player to be player 1
         /**
+         * Some general functions that can be used.
+         * 
+         * This has a lot of abstraction, so don't be afraid to use them.
+         * Look in here for more.
+         * 
          * @type {Functions}
          */
         this.functions = new Functions(this);
 
         /**
+         * The player that starts first.
+         * 
          * @type {Player}
          */
-        this.player1 = null;
+        this.player1 = player1; // Set this to player 1 temporarily, in order to never be null
 
         /**
+         * The player that starts with `The Coin`.
+         * 
          * @type {Player}
          */
-        this.player2 = null;
+        this.player2 = player2;
 
+        // Choose a random player to be player 1 and player 2
         if (this.functions.randInt(0, 1)) {
             this.player1 = player1;
             this.player2 = player2;
@@ -217,11 +298,17 @@ class Game {
         }
 
         /**
+         * The player whose turn it is.
+         * 
          * @type {Player}
          */
         this.player = this.player1;
 
         /**
+         * The opponent of the player whose turn it is.
+         * 
+         * Same as `game.player.getOpponent()`.
+         * 
          * @type {Player}
          */
         this.opponent = this.player2;
@@ -229,102 +316,188 @@ class Game {
         this.player1.id = 0;
         this.player2.id = 1;
 
-        this.player1.game = this;
-        this.player2.game = this;
-
         this.Card = Card;
         this.Player = Player;
 
         this.AI = SimulationAI;
 
         /**
+         * Events & History managment and tracker.
+         * 
          * @type {EventManager}
          */
         this.events = new EventManager(this);
 
         /**
+         * This has a lot of functions for interacting with the user.
+         * 
+         * This is generally less useful than the `functions` object, since the majority of these functions are only used once in the source code.
+         * However, some functions are still useful. For example, the `selectTarget` function.
+         * 
          * @type {Interact}
          */
         this.interact = new Interact(this);
 
         /**
+         * Some configuration for the game.
+         * 
+         * Look in the `config` folder.
+         * 
          * @type {Object}
          */
         this.config = {};
 
         /**
-         * @type {Card[]}
+         * All of the cards that have been implemented so far.
+         * 
+         * Use `functions.getCards()` instead.
+         * 
+         * @type {import('./types').Blueprint[]}
          */
         this.cards = [];
 
         /**
+         * The turn counter.
+         * 
+         * This goes up at the beginning of each player's turn.
+         * 
+         * This means that, for example, if `Player 1`'s turn is on turn 0, then when it's `Player 1`'s turn again, the turn counter is 2.
+         * 
+         * Do
+         * ```
+         * Math.ceil(game.turns / 2)
+         * ```
+         * for a more conventional turn counter.
+         * 
          * @type {number}
          */
         this.turns = 0;
 
         /**
-         * @type {[[Card], [Card]]}
+         * The board of the game.
+         * 
+         * The 0th element is `game.player1`'s side of the board,
+         * and the 1th element is `game.player2`'s side of the board.
+         * 
+         * @type {Card[][]}
          */
         this.board = [[], []];
 
         /**
-         * @type {[[Card], [Card]]}
+         * The graveyard, a list of cards that have been killed.
+         * 
+         * The 0th element is `game.player1`'s graveyard,
+         * and the 1st element is `game.player2`'s graveyard.
+         * 
+         * @type {Card[][]}
          */
         this.graveyard = [[], []];
 
+        /**
+         * The event listeners that are attached to the game currently.
+         * 
+         * @type {Object<number, import('./types').EventListenerCallback>}
+         */
         this.eventListeners = {};
 
         /**
-         * @type {boolean}
+         * A list of event keys to suppress.
+         * 
+         * If an event with a key in this list is broadcast, it will add it to the history, and tick the game, but will not activate any passives / event listeners.
+         * 
+         * @type {import('./types').EventKeys[]}
          */
-        this.no_output = false;
+        this.suppressedEvents = [];
 
         /**
+         * A list of event keys to suppress.
+         * 
+         * If an event with a key in this list is broadcast, it will add it to the history, and tick the game, but will not activate any passives / event listeners.
+         * 
+         * @type {import('./types').EventKeys[]}
+         */
+        this.suppressedEvents = [];
+
+        /**
+         * Whether or not the game is currently accepting input from the user.
+         * 
+         * If this is true, the user can't interact with the game. This will most likely cause an infinite loop, unless both players are ai's.
+         * 
          * @type {boolean}
          */
         this.no_input = false;
 
         /**
+         * Whether or not the game is currently accepting input from the user.
+         * 
+         * If this is true, the user can't interact with the game. This will most likely cause an infinite loop, unless both players are ai's.
+         * 
+         * @type {boolean}
+         */
+        this.no_output = false;
+
+        /**
+         * If the game is currently running.
+         * 
+         * If this is false, the game loop will end.
+         * 
          * @type {boolean}
          */
         this.running = true;
 
         /**
-         * @type {boolean} If the program is currently evaluating code. Should only be enabled while running a `eval` function.
+         * If the program is currently evaluating code. Should only be enabled while running a `eval` function.
+         * 
+         * This is used to throw errors in places that normally would just return null / "invalid".
+         * 
+         * @type {boolean}
          */
         this.evaling = false;
+
+        /**
+         * Some constant values.
+         * 
+         * @type {import('./types').GameConstants}
+         */
+        this.constants = {
+            REFUND: -1
+        };
     }
 
     /**
      * Ask the user a question and returns their answer
      *
-     * @param {string} q The question to ask
+     * @param {string} [q=""] The question to ask
      * @param {boolean} [care=true] If this is false, it overrides `game.no_input`. Only use this when debugging.
      * @param {boolean} [complete_override=false] If this is true, it overrides everything. This is the same as doing `rl.question`. ONLY USE THIS WHEN DEBUGGING.
      *
      * @returns {string} What the user answered
      */
-    input(q, care = true, complete_override = false) {
-        if (complete_override) return question(q);
+    input(q = "", care = true, complete_override = false) {
+        const wrapper = (a) => {
+            if (this.player instanceof Player) this.events.broadcast("Input", a, this.player);
+            return a;
+        }
 
-        if (this.no_input && care) return "";
+        if (complete_override) return wrapper(question(q));
+        if (this.no_input && care) return wrapper("");
 
         // Let the game make choices for the user
         if (this.player.inputQueue) {
             let queue = this.player.inputQueue;
 
-            if (typeof(queue) == "string") return queue;
-            else if (!queue instanceof Array) return question(q); // Invalid queue
+            if (typeof(queue) == "string") return wrapper(queue);
+            else if (!(queue instanceof Array)) return wrapper(question(q)); // Invalid queue
 
             const answer = queue[0];
             this.functions.remove(queue, answer);
 
             if (queue.length <= 0) this.player.inputQueue = null;
 
-            return answer;
+            return wrapper(answer);
         }
 
-        return question(q);
+        return wrapper(question(q));
     }
 
     /**
@@ -345,6 +518,8 @@ class Game {
 
     /**
      * Assigns an ai to the players if in the config.
+     * 
+     * Unassigns the player's ai's if not in the config.
      *
      * @returns {boolean} Success
      */
@@ -394,6 +569,10 @@ class Game {
         // Add quest cards to the players hands
         for (let i = 0; i < 2; i++) {
             // Set the player's hero to the default hero for the class
+
+            /**
+             * @type {Player}
+             */
             let plr = this["player" + (i + 1)];
             
             let success = plr.setToStartingHero();
@@ -403,14 +582,21 @@ class Game {
             }
 
             plr.deck.forEach(c => {
-                if (!c.desc.includes("Quest: ") && !c.desc.includes("Questline: ")) return;
+                if (!c.desc?.includes("Quest: ") && !c.desc?.includes("Questline: ")) return;
 
-                plr.addToHand(c, false);
+                this.suppressedEvents.push("AddCardToHand");
+                plr.addToHand(c);
+                this.suppressedEvents.pop();
+
                 plr.deck.splice(plr.deck.indexOf(c), 1);
             });
 
             let nCards = (plr.id == 0) ? 3 : 4;
-            while (plr.hand.length < nCards) plr.drawCard(false);
+            while (plr.hand.length < nCards) {
+                this.suppressedEvents.push("DrawCard");
+                plr.drawCard();
+                this.suppressedEvents.pop();
+            }
 
             plr.deck.forEach(c => c.activate("startofgame"));
             plr.hand.forEach(c => c.activate("startofgame"));
@@ -424,7 +610,11 @@ class Game {
         this.player1.maxMana = 1;
         this.player1.mana = 1;
 
-        this.player2.addToHand(new Card("The Coin", this.player2), false);
+        let the_coin = new Card("The Coin", this.player2);
+
+        this.suppressedEvents.push("AddCardToHand");
+        this.player2.addToHand(the_coin);
+        this.suppressedEvents.pop();
 
         this.turns += 1;
 
@@ -436,17 +626,14 @@ class Game {
      * 
      * @param {Player} winner The winner
      * 
-     * @returns {bool} Success
+     * @returns {boolean} Success
      */
     endGame(winner) {
         if (!winner) return false;
 
         this.interact.printName();
 
-        this.input(`Player ${winner.name} wins!\n`, false, true);
-
-        // If any of the players are ai's, show their moves when the game ends
-        if ((this.player1.ai || this.player2.ai) && this.config.debug) this.interact.doTurnLogic("/ai");
+        this.input(`Player ${winner.name} wins!\n`);
 
         this.running = false;
 
@@ -459,9 +646,10 @@ class Game {
     /**
      * Ends the players turn and starts the opponents turn
      * 
-     * @returns {bool} Success
+     * @returns {boolean} Success
      */
     endTurn() {
+        // Kill all minions with 0 or less health
         this.killMinions();
 
         // Update events
@@ -479,8 +667,7 @@ class Game {
 
         // Remove echo cards
         plr.hand = plr.hand.filter(c => !c.echo);
-
-        plr.attack = 0;
+        plr.canAttack = true;
 
         // Turn starts
         this.turns++;
@@ -553,7 +740,7 @@ class Game {
      * @param {Card} card The card to play
      * @param {Player} player The card's owner
      * 
-     * @returns {Card | boolean | "mana" | "traded" | "space" | "magnetize" | "colossal" | "refund" | "invalid"}
+     * @returns {import('./types').GamePlayCardReturn}
      */
     playCard(card, player) {
         if (!card || !player) {
@@ -606,6 +793,9 @@ class Game {
             echo_clone.echo = true;
         }
 
+        /**
+         * @type {import('./types').GamePlayCardReturn}
+         */
         let ret = true;
 
         let op = player.getOpponent();
@@ -618,7 +808,9 @@ class Game {
 
         // If the board has max capacity, and the card played is a minion or location card, prevent it.
         if (board.length >= this.config.maxBoardSpace && ["Minion", "Location"].includes(card.type)) {
-            player.addToHand(card, false);
+            this.suppressedEvents.push("AddCardToHand");
+            player.addToHand(card);
+            this.suppressedEvents.pop();
 
             if (card.costType == "mana") player.refreshMana(card.mana);
             else player[card.costType] += card.mana;
@@ -647,8 +839,9 @@ class Game {
     
                 // I'm using while loops to prevent a million indents
                 while (mechs.length > 0) {
-                    let minion = this.interact.selectTarget("Which minion do you want this to Magnetize to:", false, "friendly", "minion");
-                    if (!minion) break;
+                    let minion = this.interact.selectTarget("Which minion do you want this to Magnetize to:", null, "friendly", "minion");
+                    if (!minion || minion instanceof Player) break;
+
                     if (!minion.tribe.includes("Mech")) {
                         this.log("That minion is not a Mech.");
                         continue;
@@ -657,12 +850,25 @@ class Game {
                     minion.addStats(card.getAttack(), card.getHealth());
     
                     card.keywords.forEach(k => {
+                        // TSC for some reason, forgets that minion should be of `Card` type here, so we have to remind it. This is a workaround
+                        if (!(minion instanceof Card)) return;
+
                         minion.addKeyword(k);
                     });
 
-                    minion.maxHealth += card.maxHealth;
+                    if (minion.maxHealth && card.maxHealth) {
+                        minion.maxHealth += card.maxHealth;
+                    }
     
-                    if (card.deathrattle) card.deathrattle.forEach(d => minion.addDeathrattle(d));
+                    if (card.deathrattle) {
+                        card.deathrattle.forEach(d => {
+                            // Look at the comment above
+                            if (!(minion instanceof Card)) return;
+
+                            minion.addDeathrattle(d);
+                        });
+                    }
+
                     if (echo_clone) player.addToHand(echo_clone);
     
                     // Corrupt
@@ -671,7 +877,10 @@ class Game {
                             let t = new Card(c.corrupt, c.plr);
 
                             player.removeFromHand(c);
-                            c.plr.addToHand(t, false);
+
+                            this.suppressedEvents.push("AddCardToHand");
+                            c.plr.addToHand(t);
+                            this.suppressedEvents.pop();
                         }
                     });
 
@@ -686,7 +895,9 @@ class Game {
                 return "refund";
             }
 
-            ret = this.summonMinion(card, player, false);
+            this.suppressedEvents.push("SummonMinion");
+            ret = this.summonMinion(card, player);
+            this.suppressedEvents.pop();
         } else if (card.type === "Spell") {
             if (card.activate("cast") === -1) {
                 removeFromHistory();
@@ -696,14 +907,14 @@ class Game {
 
             if (card.keywords.includes("Twinspell")) {
                 card.removeKeyword("Twinspell");
-                card.desc = card.desc.split("Twinspell")[0].trim();
+                card.desc = card.desc?.split("Twinspell")[0].trim();
 
                 player.addToHand(card);
             }
 
             board.forEach(m => {
                 m.activate("spellburst");
-                m.spellburst = undefined;
+                m.spellburst = false;
             });
         } else if (card.type === "Weapon") {
             player.setWeapon(card);
@@ -718,13 +929,15 @@ class Game {
             card.immune = true;
             card.cooldown = 0;
 
-            ret = this.summonMinion(card, player, false);
+            this.suppressedEvents.push("SummonMinion");
+            ret = this.summonMinion(card, player);
+            this.suppressedEvents.pop();
         }
 
         if (echo_clone) player.addToHand(echo_clone);
 
         this.events.broadcast("PlayCard", card, player, false);
-        let stat = this.events.PlayCard[player.id];
+        let stat = this.events["PlayCard"][player.id];
 
         // If the previous card played was played on the same turn as this one, activate combo
         if (stat.length > 1 && stat[stat.length - 2][0].turn == this.turns) card.activate("combo");
@@ -734,7 +947,10 @@ class Game {
                 let t = new Card(c.corrupt, c.plr);
 
                 player.removeFromHand(c);
-                c.plr.addToHand(t, false);
+
+                this.suppressedEvents.push("AddCardToHand");
+                c.plr.addToHand(t);
+                this.suppressedEvents.pop();
             }
         });
 
@@ -744,16 +960,16 @@ class Game {
     }
 
     /**
-     * Summon a minion
+     * Summon a minion.
+     * Broadcasts the `SummonMinion` event
      * 
      * @param {Card} minion The minion to summon
      * @param {Player} player The player who gets the minion
-     * @param {boolean} [update=true] If the summon should broadcast an event.
      * @param {boolean} [trigger_colossal=true] If the minion has colossal, summon the other minions.
      * 
      * @returns {Card | "space" | "colossal" | "invalid"} The minion summoned
      */
-    summonMinion(minion, player, update = true, trigger_colossal = true) {
+    summonMinion(minion, player, trigger_colossal = true) {
         if (!minion || !player) {
             if (this.evaling) throw new TypeError("Evaling Error - The `minion` or `player` argument passed to `summonMinion` are invalid. Make sure you passed in both arguments.");
             return "invalid";
@@ -761,7 +977,7 @@ class Game {
 
         // If the board has max capacity, and the card played is a minion or location card, prevent it.
         if (this.board[player.id].length >= this.config.maxBoardSpace) return "space";
-        if (update) this.events.broadcast("SummonMinion", minion, player);
+        this.events.broadcast("SummonMinion", minion, player);
 
         player.spellDamage = 0;
 
@@ -778,13 +994,20 @@ class Game {
             // the "" gets replaced with the main minion
 
             minion.colossal.forEach(v => {
-                if (v == "") return this.summonMinion(minion, player, false, false);
+                if (v == "") {
+                    this.suppressedEvents.push("SummonMinion");
+                    let ret = this.summonMinion(minion, player, false);
+                    this.suppressedEvents.pop();
+
+                    return ret
+                }
 
                 let card = new Card(v, player);
                 card.dormant = minion.dormant;
 
-                this.summonMinion(card, player, false);
-
+                this.suppressedEvents.push("SummonMinion");
+                this.summonMinion(card, player);
+                this.suppressedEvents.pop();
             });
 
             return "colossal";
@@ -812,10 +1035,10 @@ class Game {
     /**
      * Makes a minion or hero attack another minion or hero
      * 
-     * @param {Card | Player | number} attacker The attacker | Amount of damage to deal
+     * @param {Card | Player | number | string} attacker The attacker | Amount of damage to deal
      * @param {Card | Player} target The target
      * 
-     * @returns {boolean | "divineshield" | "taunt" | "stealth" | "frozen" | "plrnoattack" | "noattack" | "hasattacked" | "sleepy" | "cantattackhero" | "immune" | "invalid"} Success | Errorcode
+     * @returns {true | "divineshield" | "taunt" | "stealth" | "frozen" | "plrnoattack" | "noattack" | "plrhasattacked" | "hasattacked" | "sleepy" | "cantattackhero" | "immune" | "dormant" | "invalid"} Success | Errorcode
      */
     attack(attacker, target) {
         if (!attacker || !target) {
@@ -828,6 +1051,18 @@ class Game {
         if (target.immune) return "immune";
 
         // Attacker is a number
+        let spellDmgRegex = /\$(\d+?)/;
+        if (typeof attacker === "string" && spellDmgRegex.test(attacker)) {
+            let match = attacker.match(spellDmgRegex);
+            if (!match) return "invalid";
+            
+            let dmg = parseInt(match[1]);
+            dmg += this.player.spellDamage;
+
+            this.events.broadcast("SpellDealsDamage", [target, dmg], this.player);
+            attacker = dmg;
+        }
+
         if (typeof(attacker) === "number") {
             let dmg = attacker;
 
@@ -842,10 +1077,12 @@ class Game {
             }
 
             target.remStats(0, dmg)
-            if (target.getHealth() > 0 && target.activate("frenzy") !== -1) target.frenzy = undefined;
+            if (target.getHealth() > 0 && target["frenzy"] && target.activate("frenzy") !== -1) target["frenzy"] = undefined;
 
             return true;
         }
+
+        if (typeof attacker === "string") return "invalid";
 
         // Check if there is a minion with taunt
         let taunts = this.board[this.opponent.id].filter(m => m.keywords.includes("Taunt"));
@@ -856,18 +1093,18 @@ class Game {
         }
 
         if (attacker.frozen) return "frozen";
-        if (attacker.dormant) return "dormant";
 
         // Attacker is a player
         if (attacker.classType == "Player") {
             if (attacker.attack <= 0) return "plrnoattack";
+            if (!attacker.canAttack) return "plrhasattacked";
 
             // Target is a player
             if (target.classType == "Player") {
                 this.attack(attacker.attack, target);
                 this.events.broadcast("Attack", [attacker, target], attacker);
                 
-                attacker.attack = 0;
+                attacker.canAttack = false;
                 if (!attacker.weapon) return true;
 
                 const wpn = attacker.weapon;
@@ -875,8 +1112,6 @@ class Game {
                 // If the weapon would be part of the attack, remove 1 durability
                 if (wpn.attackTimes > 0 && wpn.getAttack()) {
                     wpn.attackTimes -= 1;
-
-                    wpn.activate("onattack");
                     wpn.remStats(0, 1);
                 }
 
@@ -892,9 +1127,9 @@ class Game {
 
             this.killMinions();
 
-            attacker.attack = 0;
+            attacker.canAttack = false;
     
-            if (target.getHealth() > 0 && target.activate("frenzy") !== -1) target.frenzy = undefined;
+            if (target.getHealth() > 0 && target["frenzy"] && target.activate("frenzy") !== -1) target["frenzy"] = undefined;
 
             this.killMinions();
             if (!attacker.weapon) return true;
@@ -916,6 +1151,7 @@ class Game {
         }
 
         // Attacker is a minion
+        if (attacker.dormant) return "dormant";
         if (attacker.attackTimes <= 0) return "hasattacked";
         if (attacker.sleepy) return "sleepy";
         if (attacker.getAttack() <= 0) return "noattack";
@@ -965,13 +1201,11 @@ class Game {
         if (dmgAttacker) {
             attacker.remStats(0, target.getAttack());
             
-            if (attacker.getHealth() > 0 && attacker.activate("frenzy") !== -1) attacker.frenzy = undefined;
+            if (attacker.getHealth() > 0 && attacker["frenzy"] && attacker.activate("frenzy") !== -1) attacker["frenzy"] = undefined;
         }
 
         if (attacker.keywords.includes("Stealth")) attacker.removeKeyword("Stealth");
-    
-        attacker.activate("onattack");
-    
+        
         if (dmgAttacker && target.keywords.includes("Poisonous")) attacker.kill();
 
         if (target.keywords.includes("Divine Shield")) {
@@ -985,7 +1219,7 @@ class Game {
         if (dmgTarget) target.remStats(0, attacker.getAttack())
         this.events.broadcast("Attack", [attacker, target], attacker.plr);
 
-        if (target.getHealth() > 0 && target.activate("frenzy") !== -1) target.frenzy = undefined;
+        if (target.getHealth() > 0 && target["frenzy"] && target.activate("frenzy") !== -1) target["frenzy"] = undefined;
         if (target.getHealth() < 0) attacker.activate("overkill");
         if (target.getHealth() == 0) attacker.activate("honorablekill");
 
@@ -1007,12 +1241,13 @@ class Game {
             let n = [];
             
             this.board[p].forEach(m => {
+                if (m.type == "Location") return;
                 if (m.getHealth() <= 0) m.activate("deathrattle");
             });
 
             this.board[p].forEach(m => {
                 // Add minions with more than 0 health to n.
-                if (m.getHealth() > 0) {
+                if (m.getHealth() > 0 || m.type == "Location") {
                     n.push(m);
                     return;
                 }
@@ -1023,19 +1258,31 @@ class Game {
                 m.turnKilled = this.turns;
                 amount++;
 
-                if (!m.keywords.includes("Reborn")) {
-                    plr.corpses++;
-                    this.graveyard[p].push(m);
-                    return;
-                }
+                plr.corpses++;
+                this.graveyard[p].push(m);
+
+                if (!m.keywords.includes("Reborn")) return;
 
                 // Reborn
                 let minion = m.imperfectCopy();
 
                 minion.removeKeyword("Reborn");
+
+                // Reduce the minion's health to 1, keep the minion's attack the same
                 minion.setStats(minion.getAttack(), 1);
 
-                this.summonMinion(minion, plr, false);
+                this.suppressedEvents.push("SummonMinion");
+                this.summonMinion(minion, plr);
+                this.suppressedEvents.pop();
+
+                // Activate the minion's passive
+                // We're doing this because otherwise, the passive won't be activated this turn
+                // Normally when we summon a minion, it will be activated immediately, since the `PlayCard` event gets triggered immediately after playing the card
+                // but this is not the case here, since we are directly summoning the minion, and we told it to not broadcast the event.
+                // The `reborn` string is passed in order for the card to know why the passive was triggered. The card can explicitly look for the `reborn` string
+                // in its passive.
+                // So it looks like this:
+                // minion.activate(key, reason, minion);
                 minion.activate("passive", "reborn", m);
 
                 n.push(minion);

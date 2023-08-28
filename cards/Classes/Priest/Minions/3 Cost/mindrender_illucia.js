@@ -24,7 +24,10 @@ module.exports = {
         plr.hand = [];
         plr.getOpponent().hand.forEach(c => {
             c = game.functions.cloneCard(c);
-            plr.addToHand(c, false);
+
+            game.suppressedEvents.push("AddCardToHand");
+            plr.addToHand(c);
+            game.suppressedEvents.pop();
         });
 
         game.functions.addEventListener("EndTurn", () => {

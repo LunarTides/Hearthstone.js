@@ -25,6 +25,8 @@ module.exports = {
         if (list.length <= 0) return;
 
         let card = game.interact.discover("Discover a spell.", list);
+        if (!card) return -1;
+
         plr.addToHand(card);
     }
 }

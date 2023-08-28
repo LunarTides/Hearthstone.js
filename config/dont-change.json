@@ -1,7 +1,7 @@
 {
-    "DONT-CHANGE-ANYTHING-IN-THIS-FILE": "DONT CHANGE ANYTHING IN THIS FILE UNLESS YOU KNOW WHAT YOU'RE DOING",
+    "DONT CHANGE ANYTHING IN THIS FILE": "DONT CHANGE ANYTHING IN THIS FILE UNLESS YOU KNOW WHAT YOU'RE DOING",
 
-    "version": "1.6.0",
+    "version": "1.7.0",
     "branch": "topic",
 
     "versionText": "This topic branch adds a new ai model. This ai model is simulation based, so it plays every card in it's hand in a simulation of the game in order to find the best card.\n\nTHIS AI MODEL IS UNFINISHED. IT IS IN THE FIRST PASS AND SO EXPECT MEMORY LEAKS, CRASHES AND BUGS. THIS MODEL TAKES FOREVER, USES UP A LOT OF MEMORY, AND CURRENTLY THE ONLY IMPLEMENTED ACTIONS THE AI CAN DO IS PLAY CARDS, ATTACK, SELECT TARGETS, DISCOVER, DREDGE. EVERYTHING ELSE IS HANDLED BY THE PREVIOUS MODEL.",
@@ -27,14 +27,14 @@
         "one": ["first pass", "Description."],
         "two": ["second pass", "Another description."],
         "three": ["not done", "A third description."],
-        "four": ["done", "A fourth description."],
-        "five": ["doing", "A fifth description."],
+        "four": ["doing", "A fourth description."],
+        "five": ["done", "A fifth description."],
         "this gives us": {
             "one":   "[first pass] one",
             "two":   "[second pass] two",
             "three": "[ ] three",
-            "four":  "[x] four",
-            "five":  "[o] five"
+            "four":  "[o] four",
+            "five":  "[x] five"
         }
     },
 

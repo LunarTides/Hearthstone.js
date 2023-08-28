@@ -27,6 +27,8 @@ module.exports = {
         // The card is a minion and it costs 2 or less
         let copy = game.functions.cloneCard(val);
 
-        game.summonMinion(copy, plr, false);
+        game.suppressedEvents.push("SummonMinion");
+        game.summonMinion(copy, plr);
+        game.suppressedEvents.pop();
     }
 }
