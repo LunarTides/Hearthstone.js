@@ -368,12 +368,6 @@ class Card {
         if (this.type == "Minion" || this.type == "Weapon") this.maxHealth = this.blueprint.stats?.at(1) ?? -1;
 
         /**
-         * @typedef {Object} EnchantmentDefinition
-         * @property {string} enchantment - The enchantment string. E.g. "-1 mana"
-         * @property {Card} owner - The card that the enchantment belongs to
-         */
-
-        /**
          * The card's enchantments.
          * Formatted like this:
          * 
@@ -386,7 +380,7 @@ class Card {
          * ]
          * ```
          * 
-         * @type {EnchantmentDefinition[]}
+         * @type {import("./types").EnchantmentDefinition[]}
          */
         this.enchantments = [];
 

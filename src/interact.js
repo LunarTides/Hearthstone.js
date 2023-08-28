@@ -130,7 +130,6 @@ class Interact {
                 return false;
             }
 
-
             if (game.player.hero === null) {
                 game.input("You do not have a hero.\n".red);
                 return false;
@@ -190,7 +189,7 @@ class Interact {
             console.log("version    - Displays the version, branch, your settings preset, and some information about your current version.");
             console.log("license    - Opens a link to this project's license");
 
-            const cond_color = (str) => {return (game.config.debug) ? str : str.gray};
+            const cond_color = (/** @type {string} */ str) => {return (game.config.debug) ? str : str.gray};
 
             console.log(cond_color("\n--- Debug Commands (") + ((game.config.debug) ? "ON".green : "OFF".red) + cond_color(") ---"));
             console.log(cond_color("/give (name)        - Adds a card to your hand"));
@@ -289,7 +288,7 @@ class Interact {
                     break;
                 }
 
-                const print_todo = (todo, id, print_desc = false) => {
+                const print_todo = (/** @type {[string, string]} */ todo, /** @type {number} */ id, print_desc = false) => {
                     let [name, info] = todo;
                     let [state, desc] = info;
 
@@ -324,7 +323,7 @@ class Interact {
             let history = game.events.history;
             let finished = "";
 
-            const showCard = (val) => {
+            const showCard = (/** @type {Card} */ val) => {
                 return this.getReadableCard(val) + " which belongs to: " + val.plr.name.blue + ", and has uuid: " + val.uuid.slice(0, 8);
             }
 
@@ -379,7 +378,7 @@ class Interact {
                 let hasPrintedHeader = false;
                 let prevPlayer;
 
-                h.forEach((c, i) => {
+                h.forEach((c, /** @type {number} */ i) => {
                     let [key, val, plr] = c;
 
                     if (plr != prevPlayer) hasPrintedHeader = false;
@@ -559,8 +558,8 @@ class Interact {
 
                 finished += `AI${i} History: {\n`;
 
-                plr.ai.history.forEach((t, j) => {
-                    finished += `${j + 1} ${t[0]}: (${t[1]}),\n`;
+                plr.ai.history.forEach((/** @type {import('./types').AIHistory} */ obj, /** @type {number} */ objIndex) => {
+                    finished += `${objIndex + 1} ${obj.type}: (${obj.data}),\n`;
                 });
                 
                 finished += "}\n";
@@ -577,7 +576,7 @@ class Interact {
         }
         else if (name === "/cmd") {
             let history = Object.values(game.events.history).map(t => t.filter(
-                v => v[0] == "Input" &&
+                (/** @type {any[]} */ v) => v[0] == "Input" &&
                 v[1].startsWith("/") &&
                 v[2] == game.player &&
                 !v[1].startsWith("/cmd")
@@ -589,7 +588,7 @@ class Interact {
                 console.log(`\nTurn ${i}:`);
 
                 let index = 1;
-                obj.forEach(h => {
+                obj.forEach((/** @type {string[]} */ h) => {
                     /**
                      * The user's input
                      * 
@@ -829,7 +828,7 @@ class Interact {
         let location = this.selectTarget("Which location do you want to use?", null, "friendly", "minion", ["allow_locations"]);
         if (!location) return -1;
 
-        if (location instanceof Player) return "invalidtype";
+        if (!(location instanceof Card)) return "invalidtype";
 
         if (location.type != "Location") return "invalidtype";
         if (location.cooldown > 0) return "cooldown";
@@ -1041,7 +1040,8 @@ class Interact {
         if (plr.ai) {
             let aiChoice = plr.ai.question(prompt, answers);
             if (!aiChoice) {
-                throw game.functions.createAIError("question", "some number", "null", 1);
+                // code, expected, actual
+                throw game.functions.createAIError("ai_question_return_invalid_at_question_function", "some number", aiChoice);
             }
 
             choice = aiChoice;
@@ -1493,7 +1493,7 @@ class Interact {
         else desc = card.desc.length > 0 ? ` (${game.functions.parseTags(card.desc)}) ` : " ";
 
         // Extract placeholder value, remove the placeholder header and footer
-        if (card instanceof game.Card && card.placeholder || /\$(\d+?)/.test(card.desc || "")) {
+        if (card instanceof game.Card && (card.placeholder || /\$(\d+?)/.test(card.desc || ""))) {
             //@ts-ignore
             desc = this.doPlaceholders(card, desc, _depth);
         }

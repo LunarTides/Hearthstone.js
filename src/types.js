@@ -262,3 +262,36 @@ const { Player } = require("./player");
  * 
  * @returns {any}
  */
+
+/**
+ * @callback EventListenerCallback
+ * 
+ * @param {import('./types').EventKeys} key The key of the event
+ * @param {import('./types').EventValues} val The value of the event
+ * 
+ * @returns {any} The return value
+ */
+
+/**
+ * @callback TargetCallback
+ * @param {Card | Player} target The target
+*/
+
+/**
+ * @callback EventListenerCheckCallback
+ * @param {any} [val] The value of the event.
+ * 
+ * @returns {boolean | undefined} If this returns true, destroy the event listener.
+ */
+
+/**
+ * @typedef {Object} AIHistory
+ * @property {string} type
+ * @property {any} data
+ */
+
+/**
+ * @typedef {Object} EnchantmentDefinition
+ * @property {string} enchantment - The enchantment string. E.g. "-1 mana"
+ * @property {Card} owner - The card that the enchantment belongs to
+ */

@@ -28,16 +28,11 @@ class AI {
     constructor(plr) {
         getInternalGame();
 
-        /**
-         * @typedef {Object} AIHistory
-         * @property {string} type
-         * @property {any} data
-         */
 
         /**
          * The history of the AI. Also known as its "logs".
          * 
-         * @type {AIHistory[]}
+         * @type {import("./types").AIHistory[]}
          */
         this.history = [];
 
@@ -365,6 +360,7 @@ class AI {
 
         this.history.push({"type": "attack", "data": [returned[0].name, returned[1].name]});
 
+        // If the ai is not focusing on a minion, focus on the returned minion
         if (!this.focus && returned[1] instanceof game.Card) this.focus = returned[1];
 
         return returned;

@@ -932,15 +932,14 @@ ${main_content}
     /**
      * Returns an AI Error with the provided information.
      *
-     * @param {string} where - The function where the error occurred.
-     * @param {string} expected - The expected value.
-     * @param {string} actual - The actual value.
-     * @param {number} errorId - The id of the error. This is incase you have multiple possible errors in `where` and want to differentiate.
+     * @param {string} code - The function where the error occurred.
+     * @param {any} expected - The expected value.
+     * @param {any} actual - The actual value.
      * 
      * @returns {Error} - The AI Error with the provided information.
      */
-    createAIError(where, expected, actual, errorId) {
-        return new Error(`AI Error at ${where}, expected: ${expected}, got: ${actual}. Error ID: ${errorId}`);
+    createAIError(code, expected, actual) {
+        return new Error(`AI Error: expected: ${expected}, got: ${actual}. Error Code: ${code}`);
     }
 
     /**
@@ -1251,7 +1250,7 @@ ${main_content}
             name = game.functions.capitalizeAll(name); // Capitalize all words
 
             let card = game.functions.getCardByName(name + " Starting Hero");
-            if (!card) {
+            if (!card || card.class != name || card.type != "Hero" || !card["heropower"]) {
                 console.warn("Found card in the startingheroes folder that isn't a starting hero. If the game crashes, please note this in your bug report. Name: " + name + ". Error Code: StartingHeroInvalidHandler");
                 return;
             }
@@ -1504,12 +1503,9 @@ ${main_content}
      * Calls `callback` on all `plr`'s targets, including the player itself.
      *
      * @param {Player} plr The player
-     * @param {targetCallback} callback The callback to call
+     * @param {import("./types").TargetCallback} callback The callback to call
      * 
      * @returns {boolean} Success
-     * 
-     * @callback targetCallback
-     * @param {Card | Player} target The target
      */
     doPlayerTargets(plr, callback) {
         game.board[plr.id].forEach(m => {
@@ -1522,18 +1518,11 @@ ${main_content}
     }
 
     /**
-     * @callback elCallback
-     * @param {any} [val] The value of the event.
-     * 
-     * @returns {boolean | undefined} If this returns true, destroy the event listener.
-     */
-
-    /**
      * Add an event listener.
      *
      * @param {import("./types").EventKeys | ""} key The event to listen for. If this is an empty string, it will listen for any event.
-     * @param {elCallback | true} checkCallback This will trigger when the event gets broadcast, but before the actual code in `callback`. If this returns false, the event listener will ignore the event. If you set this to `true`, it is the same as doing `() => {return true}`.
-     * @param {elCallback} callback The code that will be ran if the event listener gets triggered and gets through `checkCallback`. If this returns true, the event listener will be destroyed.
+     * @param {import("./types").EventListenerCheckCallback | true} checkCallback This will trigger when the event gets broadcast, but before the actual code in `callback`. If this returns false, the event listener will ignore the event. If you set this to `true`, it is the same as doing `() => {return true}`.
+     * @param {import("./types").EventListenerCheckCallback} callback The code that will be ran if the event listener gets triggered and gets through `checkCallback`. If this returns true, the event listener will be destroyed.
      * @param {number} lifespan How many times the event listener will trigger and call "callback" before self-destructing. Set this to -1 to make it last forever, or until it is manually destroyed using "callback".
      *
      * @returns {function} If you call this function, it will destroy the event listener.

@@ -393,18 +393,9 @@ class Game {
         this.graveyard = [[], []];
 
         /**
-         * @callback EventListenerCallback
-         * 
-         * @param {import('./types').EventKeys} key The key of the event
-         * @param {import('./types').EventValues} val The value of the event
-         * 
-         * @returns {any} The return value
-         */
-
-        /**
          * The event listeners that are attached to the game currently.
          * 
-         * @type {Object<number, EventListenerCallback>}
+         * @type {Object<number, import('./types').EventListenerCallback>}
          */
         this.eventListeners = {};
 
