@@ -653,7 +653,10 @@ class Functions {
      * Sets the game constant of the interact module.
      */
     getInternalGame() {
-        game = get();
+        let newGame = get();
+        if (!newGame) return;
+
+        game = newGame;
     }
 
     // QoL

@@ -504,7 +504,7 @@ class Game {
      * Wrapper for console.log
      * Use instead of console.log
      * 
-     * @param {string} message The message to log
+     * @param {any} message The message to log
      * @param {boolean} [care=true] If it should care about game.no_output
      * 
      * @returns {boolean} Sucess

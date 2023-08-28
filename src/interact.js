@@ -23,7 +23,10 @@ class Interact {
      * Sets the game constant of the interact module.
      */
     getInternalGame() {
-        game = get();
+        let newGame = get();
+        if (!newGame) return;
+
+        game = newGame;
     }
 
     // Constant interaction
@@ -1399,6 +1402,24 @@ class Interact {
     }
 
     /**
+     * Shows `status`..., calls `callback`, then adds 'OK' or 'FAIL' to the end of that line depending on the result the callback
+     * 
+     * @param {string} status The status to show.
+     * @param {Function} callback The callback to call.
+     * 
+     * @returns {boolean} The return value of the callback. If the callback didn't explicitly return false then it was successful.
+     */
+    withStatus(status, callback) {
+        process.stdout.write(`${status}...`);
+        let success = callback() !== false;
+        
+        let msg = (success) ? "OK" : "FAIL";
+        process.stdout.write(`\r\x1b[K${status}...${msg}\n`);
+
+        return success;
+    }
+
+    /**
      * Returns a card in a user readble state. If you game.log the result of this, the user will get all the information they need from the card.
      *
      * @param {Card | import('./types').Blueprint} card The card
@@ -1753,6 +1774,7 @@ class Interact {
     
         // Hand
         game.log(`\n--- ${plr.name} (${_class})'s Hand ---`);
+        // @ts-ignore
         game.log("([id] " + "{Cost}".cyan + " Name".bold + " [attack / health]".brightGreen + " (type)".yellow + ")\n");
     
         plr.hand.forEach((card, i) => game.log(this.getReadableCard(card, i + 1)));
@@ -1790,6 +1812,7 @@ class Interact {
             else locCooldown = " (" + card.cooldown?.toString().cyan + ")";
         }
 
+        // @ts-ignore
         if (help) game.log("{mana} ".cyan + "Name ".bold + "(" + "[attack / health] ".brightGreen + "if it has) (description) ".white + "(type) ".yellow + "((tribe) or (spell class) or (cooldown)) [".white + "class".gray + "]");
         game.log(_card + tribe + spellClass + locCooldown + ` [${_class}]`);
 

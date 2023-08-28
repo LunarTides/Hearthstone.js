@@ -442,6 +442,15 @@ class Card {
     }
 
     /**
+     * Update the `game` variable stored in the card module.
+     * 
+     * I don't recommend calling this because it can cause major problems if done incorrectly.
+     */
+    getInternalGame() {
+        getInternalGame();
+    }
+
+    /**
      * Create random id's for this card to prevent cards from being "linked"
      * 
      * @returns {string} The uuid

@@ -29,7 +29,7 @@ class SimulationAI {
         getInternalGame();
 
         /**
-         * @type {[[string, any]]}
+         * @type {import("./types").AIHistory[]}
          */
         this.history = [];
 
@@ -66,7 +66,7 @@ class SimulationAI {
         /**
          * @type {[Card | string, number]}
          */
-        let best_move = [];
+        let best_move = ["", -Infinity];
 
         this.plr.hand.forEach(card => {
             let simulation = this._createSimulation();
@@ -80,7 +80,7 @@ class SimulationAI {
             let result = simulation.interact.doTurnLogic(index.toString());
             this.on_card = null;
 
-            if (result !== true && !result instanceof Card || typeof result === "string") return; // Invalid move
+            if (result !== true && !(result instanceof Card) || typeof result === "string") return; // Invalid move
 
             let score = this._evaluate(simulation);
 
@@ -93,39 +93,43 @@ class SimulationAI {
         this._restoreGame();
 
         let score = best_move[1];
-        best_move = best_move[0];
 
-        if (!best_move) {
+        /**
+         * @type {Card | string}
+         */
+        let bestMoveType = best_move[0];
+
+        if (!bestMoveType) {
             // Couldn't play any cards
-            if (this.canAttack) best_move = "attack";
+            if (this.canAttack) bestMoveType = "attack";
 
             // TODO: Add hero power
             // TODO: Add use locations
 
-            else best_move = "end";
+            else bestMoveType = "end";
 
-            this.history.push(["chooseMove", best_move]);
-        } else {
-            this.history.push(["chooseMove", [best_move.name, score]]);
+            this.history.push({ type: "chooseMove", data: bestMoveType });
+        } else if (bestMoveType instanceof Card) {
+            this.history.push({ type: "chooseMove", data: [bestMoveType.name, score] });
 
-            best_move = this.plr.hand.indexOf(best_move) + 1;
+            bestMoveType = (this.plr.hand.indexOf(bestMoveType) + 1).toString();
         }
 
-        if (best_move == "end") {
+        if (bestMoveType === "end") {
             this.canAttack = true;
         }
 
-        return best_move;
+        return bestMoveType;
     }
 
     /**
      * 
      * @param {Card | Player} attacker 
      * @param {Card | Player} target 
-     * @param {[Card | Player, Card | Player, number]} best_attack 
+     * @param {(Card | Player | null)[]} best_attack 
      * @param {Game} simulation
      * 
-     * @returns {[Card | Player, Card | Player, number]}
+     * @returns {(Card | Player | number | null)[]}
      */
     _attackTarget(attacker, target, best_attack, simulation) {
         let health = target.getHealth();
@@ -140,14 +144,20 @@ class SimulationAI {
         let score = this._evaluate(simulation);
 
         if (attacker.classType == "Card") {
+            if (!abck) throw game.functions.createAIError("attack_backup_undefined_at_attacker", "backup", abck)
+
             attacker.restoreBackup(attacker.backups[abck]);
             attacker.ready();
         }
 
-        if (target.classType == "Card") target.restoreBackup(target.backups[tbck]);
+        if (target.classType == "Card") {
+            if (!tbck) throw game.functions.createAIError("attack_backup_undefined_at_target", "backup", tbck);
+
+            target.restoreBackup(target.backups[tbck]);
+        }
         else target.health = health;
 
-        if (score <= best_attack[2]) return best_attack;
+        if (typeof best_attack[2] === "number" && score <= best_attack[2]) return best_attack;
 
         return [attacker, target, score];
     }
@@ -155,7 +165,7 @@ class SimulationAI {
     /**
      * Makes the ai attack
      *
-     * @returns {[Card | Player | -1 | null, Card | Player | -1 | null]} Attacker, Target
+     * @returns {(Card | Player | null)[]} Attacker, Target
      */
     attack() {
         // FIXME: The ai doesn't attack.
@@ -166,17 +176,27 @@ class SimulationAI {
         let opboard = board[this.plr.getOpponent().id];
 
         /**
-         * @type {[Card | Player, Card | Player, number]}
+         * @type {(Card | Player | null)[]}
          */
         let best_attack = [];
 
         [...thisboard, this.plr].forEach(attacker => {
-            if (attacker.attackTimes <= 0 || attacker.sleepy || attacker.dormant || attacker.attack || (attacker.getAttack && !attacker.getAttack())) return;
+            // Validate attacker.
+            // TODO: Move this into a function maybe
+            if (attacker instanceof Player && !attacker.attack) return;
+            if (attacker instanceof Card && (
+                attacker.attackTimes <= 0 || 
+                attacker.sleepy || 
+                attacker.dormant || 
+                (attacker.getAttack && !attacker.getAttack()))
+            ) return;
 
             // Attack a taunt if it exists
             let taunts = opboard.filter(c => c.keywords.includes("Taunt"));
             if (taunts.length > 0) {
                 let target = taunts[0];
+
+                // @ts-ignore
                 best_attack = this._attackTarget(attacker, target, best_attack, simulation);
                 return;
             }
@@ -185,17 +205,25 @@ class SimulationAI {
                 if (attacker.classType == "Card" && !attacker.canAttackHero && target.classType == "Player") return;
                 if (target.classType == "Card" && target.keywords.includes("Stealth")) return;
                 
+                // @ts-ignore
                 best_attack = this._attackTarget(attacker, target, best_attack, simulation);
             });
         });
 
         if (best_attack.length <= 0) {
             // No attacking
-            best_attack = [-1, -1];
+            best_attack = [null, null];
             this.canAttack = false;
         } else {
             best_attack = [best_attack[0], best_attack[1]];
-            this.history.push(["attack", best_attack.map(e => e.name || e)]);
+
+            // Show the card's names, if they exist. Otherwise show the raw object
+            let mapped = best_attack.map(e => {
+                if (e instanceof Card) return e.name;
+                else return e;
+            });
+
+            this.history.push({ type: "attack", data: mapped });
         }
 
         this._restoreGame();
@@ -215,45 +243,25 @@ class SimulationAI {
      * Makes the ai select a target.
      * 
      * @param {string} prompt The prompt to show the ai.
-     * @param {boolean} elusive If the ai should care about `This minion can't be targetted by spells or hero powers`.
+     * @param {Card | null} card If the ai should care about `This minion can't be targetted by spells or hero powers`.
      * @param {"friendly" | "enemy" | null} force_side The side the ai should be constrained to.
      * @param {"minion" | "hero" | null} force_class The type of target the ai should be constrained to.
-     * @param {string[]} flags Some flags
+     * @param {import("./types").SelectTargetFlags[]} flags Some flags
      * 
-     * @returns {Card | Player | number | null} The target selected.
+     * @returns {Card | Player | false} The target selected.
      */
-    selectTarget(prompt, elusive, force_side, force_class, flags) {
+    selectTarget(prompt, card, force_side, force_class, flags) {
         const fallback = () => {
             game.log("Falling back...");
-            return this.backup_ai.selectTarget(prompt, elusive, force_side, force_class, flags);
+            return this.backup_ai.selectTarget(prompt, card, force_side, force_class, flags);
         }
 
-        /**
-         * @type {Card}
-         */
-        let card;
-
-        if (this.on_card) {
-            this.history.push(["SelectTargetEvaluation", this.on_card.name]);
-            card = this.on_card;
-        }
-        else {
-            // Figure out the card that called select target
-            let selections = game.events.PlayCardUnsafe;
-            if (!selections) return fallback();
-
-            selections = selections[this.plr.id];
-            if (!selections) return fallback();
-
-            card = selections[selections.length - 1];
-            if (!card) return fallback();
-            card = card[0];
-        }
+        // TODO: Handle if there is no card
+        if (!card) return fallback();
 
         // If one of the cards keyword methods has the word `selectTarget` in it.
-
         /**
-         * @type {[[string, Function]]}
+         * @type {(string | Function)[][]}
          */
         let functions = Object.entries(card.blueprint)
             .filter(e => e[1] instanceof Function);
@@ -263,15 +271,23 @@ class SimulationAI {
 
         let simulation = this._createSimulation();
 
+        /**
+         * @type {Player}
+         */
         let plr = simulation["player" + (this.plr.id + 1)];
+
+        /**
+         * @type {Player}
+         */
         let op = simulation["player" + (this.plr.getOpponent().id + 1)];
+        
         let currboard = simulation.board[this.plr.id];
         let opboard = simulation.board[this.plr.getOpponent().id];
 
         /**
          * The targets that the ai can choose from
          * 
-         * @type {[Card | Player]}
+         * @type {(Card | Player)[]}
          */
         let targets = [
             plr,
@@ -282,11 +298,15 @@ class SimulationAI {
 
         if (force_side == "enemy") {
             game.functions.remove(targets, plr);
-            game.functions.remove(targets, ...currboard);
+
+            // Remove the friendly minions
+            targets = targets.filter(target => !(target instanceof Card) || !currboard.includes(target));
         }
         else if (force_side == "friendly") {
             game.functions.remove(targets, op);
-            game.functions.remove(targets, ...opboard);
+
+            // Remove the enemy minions
+            targets = targets.filter(target => !(target instanceof Card) || !opboard.includes(target));
         }
 
         if (force_class == "hero") {
@@ -296,48 +316,67 @@ class SimulationAI {
             targets = targets.filter(t => t.classType == "Card");
         }
 
-        if (elusive) targets = targets.filter(t => t.classType != "Card" || !t.keywords.includes("Elusive"));
+        if (card.type == "Spell") targets = targets.filter(t => t.classType != "Card" || !t.keywords.includes("Elusive"));
 
         /**
-         * @type {[Card | Player, number]}
+         * @type {(Card | Player | number)[]}
          */
         let best_target = [];
 
-        targets.forEach(t => {
-            if (flags.includes("allow_locations") && t.classType == "Card" && t.type != "Location") return;
+        targets.forEach(target => {
+            if (flags.includes("allow_locations") && target.classType == "Card" && target.type != "Location") return;
 
             const simulation = this._createSimulation();
             const chosen_card = card.perfectCopy();
             chosen_card.getInternalGame();
             
             // Simulate choosing that target.
-            let index;
-            if (currboard.includes(t)) index = [plr.id, currboard.indexOf(t)];
-            if (opboard.includes(t)) index = [plr.getOpponent().id, opboard.indexOf(t)];
+            /**
+             * @type {number[]}
+             */
+            let index = [];
+            if (target instanceof Card) {
+                if (currboard.includes(target)) index = [plr.id, currboard.indexOf(target)];
+                if (opboard.includes(target)) index = [plr.getOpponent().id, opboard.indexOf(target)];
+            }
 
-            simulation.player.forceTarget = t;
-            const result = chosen_card.activate(func[0]);
+            simulation.player.forceTarget = target;
 
-            if (index) simulation.board[index[0]][index[1]] = t;
+            const funcError = () => {
+                return game.functions.createAIError("selectTarget_invalid_func", "Function", func);
+            }
+            if (!func) throw funcError();
+            let fn = func[0];
+            if (!fn || typeof fn !== "string") throw funcError();
+
+            const result = chosen_card.activate(fn);
+
+            if (index.length > 1 && target instanceof Card) simulation.board[index[0]][index[1]] = target;
             simulation.player.forceTarget = null;
             
-            if (result == -1 || result.includes(-1)) return;
+            if (result === -1 || result === false || result.includes(-1)) return;
 
             const score = this._evaluate(simulation);
-            if (score <= best_target[1]) return;
+            if (typeof best_target[1] === "number" && score <= best_target[1]) return;
 
             // This is the new best target
-            best_target = [t, score];
+            best_target = [target, score];
         });
         this._restoreGame();
         new game.Card("Sheep", game.player1).getInternalGame();
 
-        this.history.push(["selectTarget", best_target.map(t => t.name || t)]);
+        let mapped = best_target.map(t => {
+            if (t instanceof Card) return t.name;
+            else return t;
+        });
+        this.history.push({ type: "selectTarget", data: mapped });
 
         if (best_target.length <= 0) {
             // No targets
-            return null;
+            return false;
         }
+
+        if (typeof best_target[0] === "number") throw game.functions.createAIError("selectTarget_invalid_return_target", "Card | Player", best_target[0]);
 
         return best_target[0];
     }
@@ -345,8 +384,7 @@ class SimulationAI {
     /**
      * Choose the best minion to discover.
      * 
-     * @param {Card[] | import("./card").Blueprint[]} cards The cards to choose from
-     * @param {boolean} [care_about_mana=true] DO NOT USE THIS. If the ai should care about the cost of cards.
+     * @param {Card[] | import("./types").Blueprint[]} cards The cards to choose from
      * 
      * @returns {Card} Result
      */
@@ -370,7 +408,7 @@ class SimulationAI {
      * 
      * @param {string[]} options The options the ai can pick from
      *
-     * @returns {string} The question chosen
+     * @returns {number | null} The question chosen
      */
     chooseOne(options) {
         // TODO: Add this
@@ -383,7 +421,7 @@ class SimulationAI {
      * @param {string} prompt The prompt to show to the ai
      * @param {string[]} options The options the ai can pick from
      *
-     * @returns {number} The index of the option chosen + 1
+     * @returns {number | null} The index of the option chosen + 1
      */
     question(prompt, options) {
         // TODO: Add this
@@ -435,7 +473,7 @@ class SimulationAI {
         if (true /* TEMP LINE */) care_about_mana = false;
 
         /**
-         * @type {[Card | string, number]}
+         * @type {(Card | string | number)[]}
          */
         let best_card = [];
 
@@ -468,13 +506,12 @@ class SimulationAI {
             this.on_card = null;
 
             // Invalid card
-            if (result !== true && !result instanceof Card || typeof result === "string") {
-
+            if (result !== true && !(result instanceof Card) || typeof result === "string") {
                 return;
             }
 
             let score = this._evaluate(simulation);
-            if (score <= best_card[1]) return;
+            if (typeof best_card[1] === "number" && score <= best_card[1]) return;
 
             // This card is now the best card
             best_card = [card, score];
@@ -484,20 +521,22 @@ class SimulationAI {
         this._restoreGame();
 
         let score = best_card[1];
-        best_card = best_card[0];
+        let card = best_card[0];
 
         // If a card wasn't chosen, choose the first card.
-        if (!best_card) {
+        if (!card) {
             // As a backup, do this process all again but this time we don't care about the cost of cards.
             // TODO: I'm not sure about this one. This looks like a nightmare on performance.
-            if (care_about_mana) return this.discover(cards, false);
+            if (care_about_mana) return this._selectFromCards(cards, history_name, false);
 
             // Choose the first discover card as the last resort.
-            this.history.push([history_name, null]);
+            this.history.push({ type: history_name, data: null });
             return cards[0];
         }
 
-        this.history.push([history_name, [best_card.name, score]]);
+        if (!(card instanceof Card)) throw game.functions.createAIError("selectFromCards_invalid_return_card", "Card", card);
+
+        this.history.push({ type: history_name, data: [card.name, score] });
 
         return best_card;
     }
@@ -574,7 +613,7 @@ class SimulationAI {
             if (c instanceof Array && c[0] instanceof Function) score += game.config.AIFunctionValue;
         });
 
-        if (sentiment) score += this.backup_ai.analyzePositive(c.desc);
+        if (sentiment) score += this.backup_ai.analyzePositive(c.desc || "");
         if (!c.desc) score -= game.config.AINoDescPenalty;
 
         return score;
@@ -600,14 +639,21 @@ class SimulationAI {
         let curr = game.player;
         let op = game.opponent;
 
+        // @ts-ignore
         delete game.cards;
+        // @ts-ignore
         delete game.events;
+        // @ts-ignore
         delete game.graveyard;
-        delete game.config;
+        // @ts-ignore
         delete game.player1;
+        // @ts-ignore
         delete game.player2;
+        // @ts-ignore
         delete game.player;
+        // @ts-ignore
         delete game.opponent;
+        delete game.config;
 
         let count = 0;
         let simulation = lodash.cloneDeepWith(game, ()=>{count++});
@@ -714,7 +760,7 @@ class SentimentAI {
      */
     chooseMove() {
         /**
-         * @type {Card | "hero power" | "attack" | "use" | "end" | null}
+         * @type {Card | "hero power" | "attack" | "use" | "end" | number | null}
          */
         let best_move;
         let best_score = -100000;
@@ -775,7 +821,7 @@ class SentimentAI {
             this.prevent = [];
         }
 
-        return best_move;
+        return best_move.toString();
     }
 
     /**
