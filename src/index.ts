@@ -3,27 +3,18 @@ Hearthstone.js - Hearthstone but console based.
 Copyright (C) 2022  LunarTides
 */
 
-const { Game } = require("./game");
-const { Player } = require("./player");
-const { set }  = require("./shared");
+import { Card } from "./card";
+import { Game } from "./game";
+import { Player } from "./player";
+import { set } from "./shared";
 
-/**
- * @type {Player}
- */
-let p1;
+let p1: Player;
+let p2: Player;
 
-/**
- * @type {Player}
- */
-let p2;
+let game: Game;
 
-/**
- * @type {Game}
- */
-let game;
-
-let decks = [];
-function runner(_decks) {
+let decks: Card[][] = [];
+function runner(_decks: Card[][]) {
     Object.keys(require.cache).forEach(k => delete require.cache[k]);
 
     try {
@@ -53,12 +44,14 @@ function main() {
     decks.forEach((d, i) => {
         if (i >= 2) return;
 
-        let rng;
-        let plr;
+        let rng: number;
+        let plr: Player;
 
         do {
             rng = game.functions.randInt(1, 2);
-            plr = game["player" + rng];
+
+            if (rng === 1) plr = p1;
+            else plr = p2;
         } while(plr.deck.length > 0);
 
         game.functions.deckcode.import(plr, d);

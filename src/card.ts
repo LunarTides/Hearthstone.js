@@ -40,22 +40,22 @@ export class Card {
     /**
      * The cost of the card.
      */
-    mana: number;
+    mana: number = 0;
 
     /**
      * This is the class that the card belongs to. E.g. "Warlock" or "Mage".
      */
-    class: CardClass;
+    class: CardClass = "Mage";
 
     /**
      * This is the type of card, e.g. "Spell" or "Minion".
      */
-    type: CardType;
+    type: CardType = "Undefined";
 
     /**
      * This is the rarity of the card. E.g. "Common" | "Rare" | etc...
      */
-    rarity: CardRarity;
+    rarity: CardRarity = "Free";
 
     /**
      * The id tied to the blueprint of the card.
@@ -71,7 +71,7 @@ export class Card {
      * assert.equal(sheep.id, another_sheep.id);
      * assert.notEqual(sheep.id, the_coin.id);
      */
-    id: number;
+    id: number = -1;
 
     /**
      * If the card is uncollectible.
@@ -80,12 +80,12 @@ export class Card {
      * 
      * [1] Unless explicitly stated otherwise
      */
-    uncollectible: boolean;
+    uncollectible: boolean = false;
 
     /**
      * The keywords that the card has. E.g. ["Taunt", "Divine Shield", etc...]
      */
-    keywords: CardKeyword[];
+    keywords: CardKeyword[] = [];
 
     /**
      * The card's blueprint.
@@ -111,14 +111,14 @@ export class Card {
      * - With Windfury: 2
      * - With Mega-Windfury: 4
      */
-    attackTimes?: number;
+    attackTimes?: number = 1;
 
     /**
      * If this is true, the card is exhausted and so can't attack this turn.
      * 
      * Automatically gets set to true when the card attacks, and gets set to false at the end of the player's turn.
      */
-    sleepy?: boolean;
+    sleepy?: boolean = true;
 
     /**
      * The maximum health of the card.
@@ -137,19 +137,19 @@ export class Card {
     /**
      * The description of the hero power.
      */
-    hpDesc?: string;
+    hpDesc?: string = "PLACEHOLDER";
 
     /**
      * The cost of the hero power.
      */
-    hpCost?: number;
+    hpCost?: number = 2;
 
     // Location
 
     /**
      * The cooldown of the location card.
      */
-    cooldown?: number;
+    cooldown?: number = 2;
 
     // Not-null
 
@@ -159,7 +159,7 @@ export class Card {
      * 
      * But for types that are just `Card`, this is the literal string "Card".
      */
-    classType: "Card";
+    classType: "Card" = "Card";
 
     /**
      * What currency this card costs.
@@ -170,36 +170,37 @@ export class Card {
      * 
      * This can be any value, as long as it is a defined _number_ in the `Player` class.
      */
-    costType: CostType;
+    costType: CostType = "mana";
 
     /**
      * If the card is dormant | The turn that the dormant runs out
      */
-    dormant: false | number; // ???
+    // TODO: Verify that dormant works. The system seems unstable
+    dormant: false | number = false;
 
     /**
      * If the card has been corrupted.
      */
-    corrupted: boolean;
+    corrupted: boolean = false;
 
     /**
      * If the card is frozen.
      * A frozen card cannot attack.
      */
-    frozen: boolean;
+    frozen: boolean = false;
 
     /**
      * If the card is immune.
      * An immune card cannot be targeted at all.
      */
-    immune: boolean;
+    immune: boolean = false;
 
     /**
      * If the card is an echo.
      * - Echo cards can be played as many times as the player wants, as long as they have the resources.
      * - Echo cards get removed from the player's hand at the end of the turn.
      */
-    echo: boolean;
+    echo: boolean = false;
 
     /**
      * Information stored in the card.
@@ -207,7 +208,7 @@ export class Card {
      * 
      * I do not recommend changing this in any other context than in a card's blueprint, unless you know what you are doing.
      */
-    storage: any[];
+    storage: any[] = [];
 
     /**
      * The turn that the card was played / created.
@@ -227,7 +228,7 @@ export class Card {
      * ]
      * ```
      */
-    enchantments: EnchantmentDefinition[];
+    enchantments: EnchantmentDefinition[] = [];
 
     /**
      * This overrides `game.config` for the card's owner while importing the card in a deck.
@@ -240,7 +241,7 @@ export class Card {
      * };
      * ```
      */
-    settings: GameConfig;
+    settings?: GameConfig;
 
     /**
      * The owner of the card.
@@ -252,7 +253,7 @@ export class Card {
      * 
      * The card backups don't include the methods so don't call any.
      */
-    backups: {[key: string]: Card};
+    backups: {[key: string]: Card} = {};
 
     /**
      * The card's uuid. Gets randomly generated when the card gets created.
@@ -292,14 +293,14 @@ export class Card {
      * 
      * Set to 0 if the card is does not have a stealth duration.
      */
-    stealthDuration?: number;
+    stealthDuration?: number = 0;
 
     /**
      * If the card can attack the hero.
      * 
      * This will be set to true if the card is a spell and other card types, so verify the type of the card before using this.
      */
-    canAttackHero?: boolean;
+    canAttackHero?: boolean = true;
 
     /**
      * Placeholder key-value pairs.
@@ -315,7 +316,7 @@ export class Card {
      * // Eventually...
      * assert.equal(this.desc, "The current turn is: 1");
      */
-    placeholder?: {[key: string]: any};
+    placeholder?: {[key: string]: any} = {};
 
     spellburst?: KeywordMethod[];
 
@@ -362,67 +363,18 @@ export class Card {
         // The display name is equal to the unique name, unless manually overriden by the blueprint when calling the `doBlueprint` function.
         this.displayName = name;
 
-        // Same story as the display name
-        this.id = -1;
-        this.mana = 0;
-        this.class = "Mage"; // The default class is Mage, might change later
-        this.rarity = "Free";
-        this.type = "Undefined";
-        this.uncollectible = false;
-        this.keywords = [];
-        // TODO: Verify that dormant works. The system seems unstable
-        this.dormant = false;
-
-        // Some constants
-        this.classType = "Card";
-
-        // This can be overriden by the blueprint, but is intended to be overriden by a kwm (keyword method)
-        this.costType = "mana";
-
-        // The card is not corrupted by default
-        this.corrupted = false;
-
-        // Some flags
-        this.frozen = false;
-        this.immune = false;
-        this.echo = false;
-
-        this.canAttackHero = true;
-        this.sleepy = true;
-
-        // Allow cards to store data for later use
-        this.storage = []; 
-
         // The turn the card was played
         this.turn = game.turns; 
-
-        // Card type specific properties
-        this.attackTimes = 1;
-
-        this.cooldown = 2;
-
-        this.hpDesc = "PLACEHOLDER";
-        this.hpCost = 2;
-
-        // How long that the card's stealth should last
-        this.stealthDuration = 0;
-
-        this.placeholder = {};
 
         // Set maxHealth if the card is a minion or weapon
         this.type = this.blueprint.type; // Redundant, makes the TypeScript compiler shut up
         if (this.type == "Minion" || this.type == "Weapon") this.maxHealth = this.blueprint.stats?.at(1) ?? -1;
-
-        this.enchantments = [];
-        this.settings = {};
 
         // Override the properties from the blueprint
         this.doBlueprint();
 
         // Properties after this point can't be overriden
         this.plr = plr;
-
-        this.backups = {};
 
         // Make a backup of "this" to be used when silencing this card
         //@ts-ignore
@@ -895,7 +847,7 @@ export class Card {
      * 
      * @returns {any[] | -1 | false} All the return values of the method keywords
      */
-    activate(name, ...args) {
+    activate(name, ...args): any[] | -1 | false {
         // This activates a function
         // Example: activate("cast")
         // Do: this.cast.forEach(cast_func => cast_func(plr, game, card))

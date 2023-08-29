@@ -2,28 +2,21 @@ delete require.cache[require.resolve("./card")];
 delete require.cache[require.resolve("./player")];
 delete require.cache[require.resolve("./ai")];
 
-const fs = require("fs");
-const child_process = require("child_process");
-const deckstrings = require("deckstrings"); // To decode vanilla deckcodes
-const { Player } = require("./player");
-const { Card } = require("./card");
-const { Game } = require("./game");
-const { stripColors } = require("colors");
+import * as fs from "fs";
+import * as child_process from "child_process";
+import * as deckstrings from "deckstrings"; // To decode vanilla deckcodes
+import { Player } from "./player";
+import { Card } from "./card";
+import { Game } from "./game";
+import { stripColors } from "colors";
 require("colors");
 
-/**
- * The current game
- * 
- * @type {Game}
- */
-let game;
+let game: Game;
 
 /**
  * An instance of the Functions class, to be used in `DeckcodeFunctions`, for example.
- * 
- * @type {Functions}
  */
-let self;
+let self: Functions;
 
 class DeckcodeFunctions {
     constructor() {}
@@ -632,14 +625,11 @@ class DeckcodeFunctions {
 }
 
 export class Functions {
-    /**
-     * @param {Game} _game 
-     */
-    constructor(_game) {
+    deckcode: DeckcodeFunctions;
+
+    constructor(_game: Game) {
         /**
          * Functions related to deckcodes.
-         * 
-         * @type {DeckcodeFunctions}
          */
         this.deckcode = new DeckcodeFunctions();
 

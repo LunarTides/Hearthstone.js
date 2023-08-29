@@ -308,14 +308,14 @@ export class Game {
      * 
      * Look in the `config` folder.
      */
-    config: GameConfig;
+    config: GameConfig = {};
 
     /**
      * All of the cards that have been implemented so far.
      * 
      * Use `functions.getCards()` instead.
      */
-    cards: Blueprint[];
+    cards: Blueprint[] = [];
 
     /**
      * The turn counter.
@@ -330,7 +330,7 @@ export class Game {
      * ```
      * for a more conventional turn counter.
      */
-    turns: number;
+    turns: number = 0;
 
     /**
      * The board of the game.
@@ -338,7 +338,7 @@ export class Game {
      * The 0th element is `game.player1`'s side of the board,
      * and the 1th element is `game.player2`'s side of the board.
      */
-    board: Card[][];
+    board: Card[][] = [[], []];
 
     /**
      * The graveyard, a list of cards that have been killed.
@@ -346,40 +346,40 @@ export class Game {
      * The 0th element is `game.player1`'s graveyard,
      * and the 1st element is `game.player2`'s graveyard.
      */
-    graveyard: Card[][];
+    graveyard: Card[][] = [[], []];
 
     /**
      * The event listeners that are attached to the game currently.
      */
-    eventListeners: {[key: number]: EventListenerCallback[]};
+    eventListeners: {[key: number]: EventListenerCallback[]} = {};
 
     /**
      * A list of event keys to suppress.
      * 
      * If an event with a key in this list is broadcast, it will add it to the history, and tick the game, but will not activate any passives / event listeners.
      */
-    suppressedEvents: EventKeys[];
+    suppressedEvents: EventKeys[] = [];
 
     /**
      * Whether or not the game is currently accepting input from the user.
      * 
      * If this is true, the user can't interact with the game. This will most likely cause an infinite loop, unless both players are ai's.
      */
-    no_input: boolean;
+    no_input: boolean = false;
 
     /**
      * If the game is currently running.
      * 
      * If this is false, the game loop will end.
      */
-    running: boolean;
+    running: boolean = true;
 
     /**
      * If the program is currently evaluating code. Should only be enabled while running a `eval` function.
      * 
      * This is used to throw errors in places that normally would just return null / "invalid".
      */
-    evaling: boolean;
+    evaling: boolean = false;
 
     /**
      * Some constant values.
@@ -415,34 +415,6 @@ export class Game {
 
         // Create the interact module
         this.interact = new Interact(this);
-
-        // The config values. Gets set by `functions.getConfig()`
-        this.config = {};
-
-        // All the cards in the game. Gets set by `functions.getCards()`
-        this.cards = [];
-
-        // Set the turn counter to 0
-        this.turns = 0;
-
-        // Set the board and graveyard
-        this.board = [[], []];
-        this.graveyard = [[], []];
-
-        // The current event listeners
-        this.eventListeners = {};
-
-        // A list of events to suppress
-        this.suppressedEvents = [];
-
-        // If the game is currently accepting input
-        this.no_input = false;
-
-        // If the game is currently running
-        this.running = true;
-
-        // If the game is currently evaluating code
-        this.evaling = false;
 
         // Some constants
         this.constants = {
