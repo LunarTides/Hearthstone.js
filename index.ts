@@ -1,12 +1,13 @@
-const rl = require("readline-sync");
-const fs = require("fs");
 const { version, branch } = require("./config/dont-change.json");
 
-const src = require("./src/index");                  // Source Code
-const dc = require("./deck_creator/index");          // Deck Creator
-const ccc = require("./card_creator/custom/index");  // Custom Card Creator
-const vcc = require("./card_creator/vanilla/index"); // Vanilla Card Creator
-const clc = require("./card_creator/class/index");   // Class Creator
+import * as rl from "readline-sync";
+import * as fs from "fs";
+
+import * as src from "./src/index";                  // Source Code
+import * as dc  from "./deck_creator/index";         // Deck Creator
+import * as ccc from "./card_creator/custom/index";  // Custom Card Creator
+import * as vcc from "./card_creator/vanilla/index"; // Vanilla Card Creator
+import * as clc from "./card_creator/class/index";   // Class Creator
 
 const cls = () => process.stdout.write("\x1bc");
 
@@ -15,9 +16,9 @@ const watermark = () => {
     console.log(`Hearthstone.js Runner V${version}-${branch} (C) 2022\n`);
 }
 
-decks = [];
+let decks: string[] = [];
 
-function store_deck(deckcode) {
+function store_deck(deckcode: string) {
     decks.push(deckcode);
 }
 function free_decks() {
@@ -27,7 +28,7 @@ function free_decks() {
 function cardCreator() {
     watermark();
 
-    let vanilla = rl.question("Create a (C)ustom Card, or import a (V)anilla Card: ");
+    let vanilla: string | boolean = rl.question("Create a (C)ustom Card, or import a (V)anilla Card: ");
     if (!vanilla) return;
 
     vanilla = vanilla[0].toLowerCase() == "v";

@@ -4,52 +4,45 @@ import { Player }    from "./player";
 import { Card }      from "./card";
 import { Interact }  from "./interact";
 import { AI }        from './ai';
-import { Blueprint, EventKeys, EventListenerCallback, GameConfig, GameConstants } from "./types";
+import { Blueprint, EventKeys, EventListenerCallback, EventValues, GameAttackReturn, GameConfig, GameConstants, GamePlayCardReturn, QuestType, Target, TickHookCallback } from "./types";
 
 export class EventManager {
     /**
-     * @param {Game} game 
+     * The game that the event manager is attached to.
      */
-    constructor(game) {
+    game: Game;
+    
+    /**
+     * The amount of event listeners that have been added to the game, this never decreases.
+     */
+    eventListeners: number = 0;
+
+    /**
+     * The hooks that will be run when the game ticks.
+     */
+    tickHooks: TickHookCallback[] = [];
+
+    /**
+     * The history of the game.
+     * 
+     * It looks like this: `history[turn] = [[key, val, plr], ...]`
+     */
+    history: {[x: number]: [[EventKeys, EventValues, Player]]} = {};
+
+    constructor(game: Game) {
         // An event looks like this:
         // events[key] = {player1id: [[val1, turn], [val2, turn], [val3, turn], ...], player2id: [...]}
 
-        /**
-         * @type {Game}
-         */
         this.game = game;
-
-        /**
-         * The amount of event listeners that have been added to the game, this never decreases.
-         * 
-         * @type {number}
-         */
-        this.eventListeners = 0;
-
-        /**
-         * The hooks that will be run when the game ticks.
-         * 
-         * @type {Function[]}
-         */
-        this.tickHooks = [];
-
-        /**
-         * The history of the game.
-         * 
-         * It looks like this: `history[turn] = [[key, val, plr], ...]`
-         * 
-         * @type {Object<number, Array>}
-         */
-        this.history = {};
     }
 
     /**
      * Tick the game
      *
-     * @param {string} key - The key of the event that triggered the tick
-     * @param {any} val - The value of the event that triggered the tick
+     * @param key The key of the event that triggered the tick
+     * @param val The value of the event that triggered the tick
      */
-    tick(key, val) {
+    tick(key: EventKeys, val: EventValues) {
         // The code in here gets executed very often
 
         // Infuse
@@ -68,10 +61,7 @@ export class EventManager {
         }
 
         for (let i = 1; i <= 2; i++) {
-            /**
-             * @type {Player}
-             */
-            let plr = this.game["player" + i];
+            let plr: Player = this.game["player" + i];
 
             // Activate spells in the players hand
             plr.hand.forEach(c => {
@@ -81,9 +71,9 @@ export class EventManager {
                 c.replacePlaceholders();
 
                 // Check for condition
-                // @ts-ignore
+                // @ts-expect-error
                 let cleared_text = " (Condition cleared!)".brightGreen;
-                // @ts-ignore
+                // @ts-expect-error
                 let cleared_text_alt = "Condition cleared!".brightGreen;
                 c.desc = c.desc?.replace(cleared_text, "");
                 c.desc = c.desc?.replace(cleared_text_alt, "");
@@ -105,12 +95,12 @@ export class EventManager {
     /**
      * Do card passives
      *
-     * @param {import('./types').EventKeys} key The key of the event
-     * @param {import('./types').EventValues} val The value of the event
+     * @param key The key of the event
+     * @param val The value of the event
      *
-     * @returns {boolean} Success
+     * @returns Success
      */
-    cardUpdate(key, val) {
+    cardUpdate(key: EventKeys, val: EventValues): boolean {
         this.game.board.forEach(p => {
             p.forEach(m => {
                 if (m.getHealth() <= 0) return; // This function gets called directly after a minion is killed.
@@ -147,19 +137,16 @@ export class EventManager {
     /**
      * Update quests and secrets
      *
-     * @param {"secrets" | "sidequests" | "quests"} quests_name The type of quest to update
-     * @param {import('./types').EventKeys} key The key of the event
-     * @param {import('./types').EventValues} val The value of the event
-     * @param {Player} plr The owner of the quest
+     * @param quests_name The type of quest to update
+     * @param key The key of the event
+     * @param val The value of the event
+     * @param plr The owner of the quest
      *
-     * @returns {boolean} Success
+     * @returns Success
      */
-    questUpdate(quests_name, key, val, plr) {
+    questUpdate(quests_name: "secrets" | "sidequests" | "quests", key: EventKeys, val: EventValues, plr: Player): boolean {
         plr[quests_name].forEach(s => {
-            /**
-             * @type {import('./types').QuestType}
-             */
-            let quest = s;
+            let quest: QuestType = s;
 
             if (quest.key != key) return;
 
@@ -186,14 +173,14 @@ export class EventManager {
     /**
      * Broadcast an event
      *
-     * @param {import('./types').EventKeys} key The key of the event
-     * @param {import('./types').EventValues} val The value of the event
-     * @param {Player} plr The player who caused the event to happen
-     * @param {boolean} [updateHistory=true] Whether or not to update the history
+     * @param key The key of the event
+     * @param val The value of the event
+     * @param plr The player who caused the event to happen
+     * @param updateHistory Whether or not to update the history
      *
-     * @returns {boolean} Success
+     * @returns Success
      */
-    broadcast(key, val, plr, updateHistory = true) {
+    broadcast(key: EventKeys, val: EventValues, plr: Player, updateHistory: boolean = true): boolean {
         this.tick(key, val);
 
         if (updateHistory) this.addHistory(key, val, plr);
@@ -217,11 +204,11 @@ export class EventManager {
     /**
      * Write an event to history. Done automatically by `broadcast`.
      * 
-     * @param {import('./types').EventKeys} key The key of the event
-     * @param {import('./types').EventValues} val The value of the event
-     * @param {Player} plr The player who caused the event to happen
+     * @param key The key of the event
+     * @param val The value of the event
+     * @param plr The player who caused the event to happen
      */
-    addHistory(key, val, plr) {
+    addHistory(key: EventKeys, val: EventValues, plr: Player) {
         if (!this.history[this.game.turns]) this.history[this.game.turns] = [];
         this.history[this.game.turns].push([key, val, plr]);
     }
@@ -231,24 +218,24 @@ export class EventManager {
      * 
      * Specifically, this broadcasts the `Dummy` event. DO NOT LISTEN FOR THAT EVENT.
      * 
-     * @param {Player} plr The player who caused the event to happen
+     * @param plr The player who caused the event to happen
      * 
-     * @returns {boolean} Success
+     * @returns Success
      */
-    broadcastDummy(plr) {
+    broadcastDummy(plr: Player): boolean {
         return this.broadcast("Dummy", null, plr, false);
     }
 
     /**
      * Increment a stat
      *
-     * @param {Player} player The player to update
-     * @param {string} key The key to increment
-     * @param {number} [amount=1] The amount to increment by
+     * @param player The player to update
+     * @param key The key to increment
+     * @param amount The amount to increment by
      *
-     * @returns {number} The new value
+     * @returns The new value
      */
-    increment(player, key, amount = 1) {
+    increment(player: Player, key: string, amount: number = 1): number {
         if (!this[key]) this[key] = [0, 0];
 
         this[key][player.id] += amount;
@@ -425,13 +412,13 @@ export class Game {
     /**
      * Ask the user a question and returns their answer
      *
-     * @param {string} [q=""] The question to ask
-     * @param {boolean} [care=true] If this is false, it overrides `game.no_input`. Only use this when debugging.
+     * @param q The question to ask
+     * @param care If this is false, it overrides `game.no_input`. Only use this when debugging.
      *
-     * @returns {string} What the user answered
+     * @returns What the user answered
      */
-    input(q = "", care = true) {
-        const wrapper = (a) => {
+    input(q: string = "", care: boolean = true): string {
+        const wrapper = (a: string) => {
             if (this.player instanceof Player) this.events.broadcast("Input", a, this.player);
             return a;
         }
@@ -461,9 +448,9 @@ export class Game {
      * 
      * Unassigns the player's ai's if not in the config.
      *
-     * @returns {boolean} Success
+     * @returns Success
      */
-    doConfigAI() {
+    doConfigAI(): boolean {
         if (this.config.P1AI) {
             if (!this.player1.ai) this.player1.ai = new AI(this.player1);
         }
@@ -480,13 +467,13 @@ export class Game {
     /**
      * Broadcast event to event listeners
      * 
-     * @param {string} key The name of the event (see events.txt)
-     * @param {any[]} val The value of the event
+     * @param key The name of the event (see events.txt)
+     * @param val The value of the event
      * 
-     * @returns {any[]} Return values of all the executed functions
+     * @returns Return values of all the executed functions
      */
-    triggerEventListeners(key, val) {
-        let ret = [];
+    triggerEventListeners(key: EventKeys, val: EventValues): any[] {
+        let ret: any[] = [];
         Object.values(this.eventListeners).forEach(i => ret.push(i(key, val)));
         return ret;
     }
@@ -496,9 +483,9 @@ export class Game {
     /**
      * Starts the game
      * 
-     * @returns {boolean} Success
+     * @returns Success
      */
-    startGame() {
+    startGame(): boolean {
         let players = [];
 
         // Add quest cards to the players hands
@@ -508,7 +495,7 @@ export class Game {
             /**
              * @type {Player}
              */
-            let plr = this["player" + (i + 1)];
+            let plr: Player = this["player" + (i + 1)];
             
             let success = plr.setToStartingHero();
             if (!success) {
@@ -559,11 +546,11 @@ export class Game {
     /**
      * Ends the game and declares `winner` as the winner
      * 
-     * @param {Player} winner The winner
+     * @param winner The winner
      * 
-     * @returns {boolean} Success
+     * @returns Success
      */
-    endGame(winner) {
+    endGame(winner: Player): boolean {
         if (!winner) return false;
 
         this.interact.printName();
@@ -581,9 +568,9 @@ export class Game {
     /**
      * Ends the players turn and starts the opponents turn
      * 
-     * @returns {boolean} Success
+     * @returns Success
      */
-    endTurn() {
+    endTurn(): boolean {
         // Kill all minions with 0 or less health
         this.killMinions();
 
@@ -672,12 +659,10 @@ export class Game {
     /**
      * Play a card
      * 
-     * @param {Card} card The card to play
-     * @param {Player} player The card's owner
-     * 
-     * @returns {import('./types').GamePlayCardReturn}
+     * @param card The card to play
+     * @param player The card's owner
      */
-    playCard(card, player) {
+    playCard(card: Card, player: Player): GamePlayCardReturn {
         if (!card || !player) {
             if (this.evaling) throw new TypeError("Evaling Error - The `card` or `player` argument passed to `playCard` are invalid. Make sure you passed in both arguments.");
             return "invalid";
@@ -731,7 +716,7 @@ export class Game {
         /**
          * @type {import('./types').GamePlayCardReturn}
          */
-        let ret = true;
+        let ret: import('./types').GamePlayCardReturn = true;
 
         let op = player.getOpponent();
         let board = this.board[player.id];
@@ -898,13 +883,13 @@ export class Game {
      * Summon a minion.
      * Broadcasts the `SummonMinion` event
      * 
-     * @param {Card} minion The minion to summon
-     * @param {Player} player The player who gets the minion
-     * @param {boolean} [trigger_colossal=true] If the minion has colossal, summon the other minions.
+     * @param minion The minion to summon
+     * @param player The player who gets the minion
+     * @param trigger_colossal If the minion has colossal, summon the other minions.
      * 
-     * @returns {Card | "space" | "colossal" | "invalid"} The minion summoned
+     * @returns The minion summoned
      */
-    summonMinion(minion, player, trigger_colossal = true) {
+    summonMinion(minion: Card, player: Player, trigger_colossal: boolean = true): Card | "space" | "colossal" | "invalid" {
         if (!minion || !player) {
             if (this.evaling) throw new TypeError("Evaling Error - The `minion` or `player` argument passed to `summonMinion` are invalid. Make sure you passed in both arguments.");
             return "invalid";
@@ -970,12 +955,12 @@ export class Game {
     /**
      * Makes a minion or hero attack another minion or hero
      * 
-     * @param {Card | Player | number | string} attacker The attacker | Amount of damage to deal
-     * @param {Card | Player} target The target
+     * @param attacker attacker | Amount of damage to deal
+     * @param target The target
      * 
-     * @returns {true | "divineshield" | "taunt" | "stealth" | "frozen" | "plrnoattack" | "noattack" | "plrhasattacked" | "hasattacked" | "sleepy" | "cantattackhero" | "immune" | "dormant" | "invalid"} Success | Errorcode
+     * @returns Success | Errorcode
      */
-    attack(attacker, target) {
+    attack(attacker: Target | number | string, target: Target): GameAttackReturn {
         if (!attacker || !target) {
             if (this.evaling) throw new TypeError("Evaling Error - The `attacker` or `target` argument passed to `attack` are invalid. Make sure you passed in both arguments.");
             return "invalid";
@@ -1166,9 +1151,9 @@ export class Game {
     /**
      * Kill all minions with 0 or less health
      * 
-     * @returns {number} The amount of minions killed
+     * @returns The amount of minions killed
      */
-    killMinions() {
+    killMinions(): number {
         let amount = 0;
 
         for (let p = 0; p < 2; p++) {

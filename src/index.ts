@@ -13,8 +13,11 @@ let p2: Player;
 
 let game: Game;
 
-let decks: Card[][] = [];
-function runner(_decks: Card[][]) {
+/**
+ * Deckcodes
+ */
+let decks: string[] = [];
+export function runner(_decks: string[]) {
     Object.keys(require.cache).forEach(k => delete require.cache[k]);
 
     try {

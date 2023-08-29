@@ -377,7 +377,7 @@ export class Card {
         this.plr = plr;
 
         // Make a backup of "this" to be used when silencing this card
-        //@ts-ignore
+        //@ts-expect-error
         if (!this.backups["init"]) this.backups["init"] = {};
         Object.entries(this).forEach(i => this.backups["init"][i[0]] = i[1]);
 
@@ -391,9 +391,9 @@ export class Card {
     /**
      * Randomizes the uuid for this card to prevent cards from being "linked"
      * 
-     * @returns {string} The uuid
+     * @returns The uuid
      */
-    randomizeUUID() {
+    randomizeUUID(): string {
         this.uuid = uuidv4();
 
         return this.uuid;
@@ -402,7 +402,7 @@ export class Card {
     /**
      * Sets fields based on the blueprint of the card.
      */
-    doBlueprint() {
+    doBlueprint(): void {
         // Reset the blueprint
         this.blueprint = game.cards.find(c => c.name == this.name) || this.blueprint;
 
@@ -441,11 +441,11 @@ export class Card {
     /**
      * Adds a deathrattle to the card
      * 
-     * @param {import("./types").KeywordMethod} _deathrattle The deathrattle to add
+     * @param _deathrattle The deathrattle to add
      * 
-     * @returns {boolean} Success
+     * @returns Success
      */
-    addDeathrattle(_deathrattle) {
+    addDeathrattle(_deathrattle: KeywordMethod): boolean {
         if (!this.deathrattle) this.deathrattle = [];
 
         this.deathrattle.push(_deathrattle);
@@ -459,11 +459,11 @@ export class Card {
     /**
      * Adds a keyword to the card
      * 
-     * @param {import("./types").CardKeyword} keyword The keyword to add
+     * @param keyword The keyword to add
      * 
-     * @returns {boolean} Success
+     * @returns Success
      */
-    addKeyword(keyword) {
+    addKeyword(keyword: CardKeyword): boolean {
         if (this.keywords.includes(keyword)) return false;
 
         this.keywords.push(keyword);
@@ -482,11 +482,11 @@ export class Card {
      * 
      * Removes a keyword from the card
      * 
-     * @param {string} keyword The keyword to remove
+     * @param keyword The keyword to remove
      * 
-     * @returns {boolean} Success
+     * @returns Success
      */
-    removeKeyword(keyword) {
+    removeKeyword(keyword: CardKeyword): boolean {
         this.keywords = this.keywords.filter(k => k != keyword);
 
         return true;
@@ -495,9 +495,9 @@ export class Card {
     /**
      * Freeze the card
      *
-     * @returns {boolean} Success
+     * @returns Success
      */
-    freeze() {
+    freeze(): boolean {
         this.frozen_turn = game.turns;
         this.frozen = true;
 
@@ -509,9 +509,9 @@ export class Card {
     /**
      * Mark a card as having attacked once, and if it runs out of attacks this turn, exhaust it.
      *
-     * @returns {boolean} Success
+     * @returns Success
      */
-    decAttack() {
+    decAttack(): boolean {
         this.attackTimes--;
 
         const shouldExhaust = (this.attackTimes <= 0);
@@ -523,9 +523,9 @@ export class Card {
     /**
      * Makes this minion ready for attack
      * 
-     * @returns {boolean} Success
+     * @returns Success
      */
-    ready() {
+    ready(): boolean {
         this.sleepy = false;
         this.resetAttackTimes();
 
@@ -538,10 +538,8 @@ export class Card {
      * Returns the card's attack
      * 
      * Returns -1 if the card does not have attack
-     * 
-     * @returns {number}
      */
-    getAttack() {
+    getAttack(): number {
         return this.stats?.at(0) ?? -1;
     }
 
@@ -549,25 +547,23 @@ export class Card {
      * Returns the card's health
      * 
      * Returns -1 if the card does not have health
-     * 
-     * @returns {number}
      */
-    getHealth() {
+    getHealth(): number {
         return this.stats?.at(1) ?? -1;
     }
 
     /**
      * Sets the card's attack and health.
      * 
-     * @param {number | null} [attack=null] The attack to set
-     * @param {number | null} [health=null] The health to set
-     * @param {boolean} [changeMaxHealth=true] If the card's max health should be reset to it's current health if the health increases from running this function.
+     * @param attack The attack to set
+     * @param health The health to set
+     * @param changeMaxHealth If the card's max health should be reset to it's current health if the health increases from running this function.
      * 
-     * @returns {boolean} Success
+     * @returns Success
      */
-    setStats(attack = null, health = null, changeMaxHealth = true) {
-        if (attack == null) attack = this.getAttack();
-        if (health == null) health = this.getHealth();
+    setStats(attack?: number, health?: number, changeMaxHealth: boolean = true): boolean {
+        if (attack == undefined) attack = this.getAttack();
+        if (health == undefined) health = this.getHealth();
 
         this.stats = [attack, health];
 
@@ -581,13 +577,13 @@ export class Card {
     /**
      * Adds `attack` and `health` to the card.
      * 
-     * @param {number} [attack=0] The attack to add
-     * @param {number} [health=0] The health to add
-     * @param {boolean} [restore=false] Should cap the amount of health added to it's max health.
+     * @param attack The attack to add
+     * @param health The health to add
+     * @param restore Should cap the amount of health added to it's max health.
      * 
-     * @returns {boolean} Success
+     * @returns Success
      */
-    addStats(attack = 0, health = 0, restore = false) {
+    addStats(attack: number = 0, health: number = 0, restore: boolean = false): boolean {
         this.addAttack(attack);
         this.addHealth(health, restore);
 
@@ -597,12 +593,12 @@ export class Card {
     /**
      * Removes `attack` and `health` from the card.
      * 
-     * @param {number} [attack=0] The attack to remove
-     * @param {number} [health=0] The health to remove
+     * @param attack The attack to remove
+     * @param health The health to remove
      * 
-     * @returns {boolean} Success
+     * @returns Success
      */
-    remStats(attack = 0, health = 0) {
+    remStats(attack: number = 0, health: number = 0): boolean {
         this.remAttack(attack);
         this.remHealth(health);
 
@@ -612,12 +608,12 @@ export class Card {
     /**
      * Adds `amount` to the card's health
      * 
-     * @param {number} amount The health to add
-     * @param {boolean} [restore=true] Should reset health to it's max health if it goes over it's max health
+     * @param amount The health to add
+     * @param restore Should reset health to it's max health if it goes over it's max health
      * 
-     * @returns {boolean} Success
+     * @returns Success
      */
-    addHealth(amount, restore = true) {
+    addHealth(amount: number, restore: boolean = true): boolean {
         if (!this.stats) return false;
 
         let before = this.getHealth();
@@ -647,11 +643,11 @@ export class Card {
     /**
      * Adds `amount` to the card's attack
      * 
-     * @param {number} amount The attack to add
+     * @param amount The attack to add
      * 
-     * @returns {boolean} Success
+     * @returns Success
      */
-    addAttack(amount) {
+    addAttack(amount: number): boolean {
         this.setStats(this.getAttack() + amount, this.getHealth());
 
         return true;
@@ -662,11 +658,11 @@ export class Card {
      * 
      * Doesn't damage the card if it is a location card, is immune, or has Stealth.
      * 
-     * @param {number} amount The health to remove
+     * @param amount The health to remove
      * 
-     * @returns {boolean} Success
+     * @returns Success
      */
-    remHealth(amount) {
+    remHealth(amount: number): boolean {
         if (this.type == "Location") return false; // Don't allow location cards to be damaged
         if (this.keywords.includes("Stealth")) return false;
 
@@ -685,11 +681,11 @@ export class Card {
     /**
      * Removes `amount` from the card's attack
      * 
-     * @param {number} amount The attack to remove
+     * @param amount The attack to remove
      * 
-     * @returns {boolean} Success
+     * @returns Success
      */
-    remAttack(amount) {
+    remAttack(amount: number): boolean {
         this.setStats(this.getAttack() - amount, this.getHealth());
 
         return true;
@@ -698,11 +694,11 @@ export class Card {
     /**
      * Sets the max health of the card to it's current health. If check is true it only sets the max health if the current health is above it.
      * 
-     * @param {boolean} [check=false] Prevent lowering it's max health
+     * @param check Prevent lowering it's max health
      * 
-     * @returns {boolean} If it reset the card's max health.
+     * @returns If it reset the card's max health.
      */
-    resetMaxHealth(check = false) {
+    resetMaxHealth(check: boolean = false): boolean {
         if (check && this.getHealth() <= this.maxHealth) return false;
 
         this.maxHealth = this.getHealth();
@@ -714,11 +710,11 @@ export class Card {
     /**
      * Sets stealth to only last `duration` amount of turns
      * 
-     * @param {number} duration The amount of turns stealth should last
+     * @param duration The amount of turns stealth should last
      * 
-     * @returns {boolean} Success.
+     * @returns Success.
      */
-    setStealthDuration(duration) {
+    setStealthDuration(duration: number): boolean {
         this.stealthDuration = game.turns + duration;
 
         return true;
@@ -730,9 +726,9 @@ export class Card {
      * 2 if it does,
      * 4 if it has mega-windfury.
      * 
-     * @returns {boolean} Success
+     * @returns Success
      */
-    resetAttackTimes() {
+    resetAttackTimes(): boolean {
         this.attackTimes = 1;
 
         if (this.keywords.includes("Windfury")) {
@@ -748,11 +744,11 @@ export class Card {
     /**
      * Create a backup of the card.
      *
-     * @returns {number} The key of the backup. You can use it by doing `card.backups[key]`
+     * @returns The key of the backup. You can use it by doing `card.backups[key]`
      */
-    createBackup() {
+    createBackup(): number {
         let key = Object.keys(this.backups).length;
-        //@ts-ignore
+        //@ts-expect-error
         this.backups[key] = {};
         Object.entries(this).forEach(i => this.backups[key][i[0]] = i[1]);
         
@@ -762,11 +758,11 @@ export class Card {
     /**
      * Restore a backup of the card.
      *
-     * @param {Object} backup The backup to restore. It is recommended to supply a backup from `card.backups`.
+     * @param backup The backup to restore. It is recommended to supply a backup from `card.backups`.
      *
-     * @returns {boolean} Success
+     * @returns Success
      */
-    restoreBackup(backup) {
+    restoreBackup(backup: Card): boolean {
         Object.keys(backup).forEach(att => {
             this[att] = backup[att];
         });
@@ -777,13 +773,14 @@ export class Card {
     /**
      * Bounces the card to the `plr`'s hand.
      * 
-     * @param {Player | null} plr 
+     * @param plr 
      */
-    bounce(plr = null) {
+    bounce(plr?: Player): boolean {
         if (!plr) plr = this.plr;
 
         plr.addToHand(this.perfectCopy());
         this.destroy();
+        return true;
     }
 
     // Doom buttons
@@ -791,9 +788,9 @@ export class Card {
     /**
      * Kills the card.
      *
-     * @returns {boolean} Success
+     * @returns Success
      */
-    kill() {
+    kill(): boolean {
         this.setStats(this.getAttack(), 0);
         game.killMinions();
 
@@ -803,9 +800,9 @@ export class Card {
     /**
      * Silences the card.
      * 
-     * @returns {boolean} Success
+     * @returns Success
      */
-    silence() {
+    silence(): boolean {
         // Tell the minion to undo it's passive.
         // The false tells the minion that this is the last time it will call unpassive
         // so it should finish whatever it is doing.
@@ -828,9 +825,9 @@ export class Card {
     /**
      * Silences, then kills the card.
      * 
-     * @returns {boolean} Success
+     * @returns Success
      */
-    destroy() {
+    destroy(): boolean {
         this.silence();
         this.kill();
 
@@ -842,12 +839,12 @@ export class Card {
     /**
      * Activates a keyword method
      * 
-     * @param {string} name The method to activate
-     * @param {any} [args] Pass these args to the method
+     * @param name The method to activate
+     * @param args Pass these args to the method
      * 
-     * @returns {any[] | -1 | false} All the return values of the method keywords
+     * @returns All the return values of the method keywords
      */
-    activate(name, ...args): any[] | -1 | false {
+    activate(name: string, ...args: any): any[] | -1 | false {
         // This activates a function
         // Example: activate("cast")
         // Do: this.cast.forEach(cast_func => cast_func(plr, game, card))
@@ -861,7 +858,7 @@ export class Card {
         /**
          * @type {any[] | -1}
          */
-        let ret = [];
+        let ret: any[] | -1 = [];
         
         this[name].forEach(func => {
             if (ret === game.constants.REFUND) return;
@@ -898,11 +895,11 @@ export class Card {
     /**
      * Activates a card's battlecry
      * 
-     * @param {any} [args] Any arguments to pass to battlecry.
+     * @param args Any arguments to pass to battlecry.
      * 
-     * @returns {any[] | -1 | false} The return values of all the battlecries triggered
+     * @returns The return values of all the battlecries triggered
      */
-    activateBattlecry(...args) {
+    activateBattlecry(...args: any): any[] | -1 | false {
         this.activate("passive", "battlecry", this, game.turns);
         return this.activate("battlecry", ...args);
     }
@@ -911,13 +908,11 @@ export class Card {
      * 
      * If `t` and `f` are not defined. This function only returns a boolean.
      *
-     * @param {number} m The mana to test
-     * @param {any} [t=""] The value to return if true
-     * @param {any} [f=""] The value to return if false
-     * 
-     * @returns {[boolean, any] | boolean}
+     * @param m The mana to test
+     * @param t The value to return if true
+     * @param f The value to return if false
      */
-    manathirst(m, t = "", f = "") {
+    manathirst<T, F>(m: number, t?: T, f?: F): [boolean, T | F] | boolean {
         if (this.plr.maxMana < m) {
             if (!f) return false;
 
@@ -931,15 +926,15 @@ export class Card {
     /**
      * Get information from an enchantment.
      *
-     * @param {string} e The enchantment string
+     * @param e The enchantment string
      * 
      * @example
      * let info = getEnchantmentInfo("mana = 1");
      * assert.equal(info, {"key": "mana", "val": "1", "op": "="});
      *
-     * @returns {{key: string, val: string, op: string}} The info
+     * @returns The info
      */
-    getEnchantmentInfo(e) {
+    getEnchantmentInfo(e: string): { key: string; val: string; op: string; } {
         let equalsRegex = /\w+ = \w+/;
         let otherRegex = /[-+*/^]\d+ \w+/;
 
@@ -964,9 +959,9 @@ export class Card {
     /**
      * Runs through this card's enchantments list and applies each enchantment in order.
      *
-     * @returns {boolean} Success
+     * @returns Success
      */
-    applyEnchantments() {
+    applyEnchantments(): boolean {
         // Apply baseline for int values.
         const whitelisted_vars = ["maxHealth", "mana"];
 
@@ -1016,12 +1011,12 @@ export class Card {
      *
      * @warning DO NOT PASS USER INPUT DIRECTLY INTO THIS FUNCTION.
      * 
-     * @param {string} e The enchantment string
-     * @param {Card} card The creator of the enchantment. This will allow removing or looking up enchantment later.
+     * @param e The enchantment string
+     * @param card The creator of the enchantment. This will allow removing or looking up enchantment later.
      *
-     * @returns {boolean} Success
+     * @returns Success
      */
-    addEnchantment(e, card) {
+    addEnchantment(e: string, card: Card): boolean {
         let info = this.getEnchantmentInfo(e);
 
         if (info.op == "=") this.enchantments.unshift({"enchantment": e, "owner": card}); // Add the enchantment to the beginning of the list, equal enchantments should apply first
@@ -1035,27 +1030,27 @@ export class Card {
     /**
      * Checks if an enchantment exists.
      *
-     * @param {string} e The enchantment to look for.
-     * @param {Card} card The owner of the enchantment. This needs to be correct to find the right enchantment.
+     * @param e The enchantment to look for.
+     * @param card The owner of the enchantment. This needs to be correct to find the right enchantment.
      * @see {@link addEnchantment} for more info about `card`.
      * 
-     * @returns {boolean} If the enchantment exists
+     * @returns If the enchantment exists
      */
-    enchantmentExists(e, card) {
+    enchantmentExists(e: string, card: Card): boolean {
         return this.enchantments.some(c => c.enchantment == e && c.owner == card);
     }
 
     /**
      * Removes an enchantment
      *
-     * @param {string} e The enchantment to remove
-     * @param {Card} card The owner of the enchantment.
+     * @param e The enchantment to remove
+     * @param card The owner of the enchantment.
      * @see {@link enchantmentExists} for more info about `card`.
-     * @param {boolean} [update=true] Keep this enabled unless you know what you're doing.
+     * @param update Keep this enabled unless you know what you're doing.
      *
-     * @returns {boolean} Success
+     * @returns Success
      */
-    removeEnchantment(e, card, update = true) {
+    removeEnchantment(e: string, card: Card, update: boolean = true): boolean {
         let enchantment = this.enchantments.find(c => c.enchantment == e && c.owner == card);
         if (!enchantment) return false;
 
@@ -1082,8 +1077,6 @@ export class Card {
     /**
      * Replaces the placeholders (`{0}`) with their values
      * 
-     * @returns {boolean} Success
-     * 
      * @example
      * card.desc = "The current turn count is {0}";
      * card.placeholders = [(plr, game, self) => {
@@ -1095,8 +1088,10 @@ export class Card {
      * 
      * // The `{ph:0}` tags are removed when displaying cards.
      * assert.equal(card.desc, "The current turn count is {ph:0} 1 {/ph}");
+     * 
+     * @returns Success
      */
-    replacePlaceholders() {
+    replacePlaceholders(): boolean {
         if (!this["placeholders"]) return false;
 
         this.placeholder = this.activate("placeholders")[0];
@@ -1114,8 +1109,6 @@ export class Card {
 
     /**
      * Return a perfect copy of this card. This will perfectly clone the card. This happens when, for example, a card gets temporarily removed from the board using card.destroy, then put back on the board.
-     *
-     * @returns {Card} A perfect copy of this card.
      * 
      * @example
      * let cloned = card.perfectCopy();
@@ -1123,15 +1116,15 @@ export class Card {
      * 
      * // This will actually fail since they're slightly different, but you get the point
      * assert.equal(cloned, cloned2);
+     * 
+     * @returns A perfect copy of this card.
      */
-    perfectCopy() {
+    perfectCopy(): Card {
         return game.functions.cloneCard(this);
     }
 
     /**
      * Return an imperfect copy of this card. This happens when, for example, a card gets shuffled into your deck in vanilla Hearthstone.
-     * 
-     * @returns {Card} An imperfect copy of this card.
      * 
      * @example
      * let cloned = card.imperfectCopy();
@@ -1139,8 +1132,10 @@ export class Card {
      * 
      * // This will actually fail since they're slightly different, but you get the point
      * assert.equal(cloned, cloned2);
+     * 
+     * @returns An imperfect copy of this card.
      */
-    imperfectCopy() {
+    imperfectCopy(): Card {
         return new Card(this.name, this.plr);
     }
 }

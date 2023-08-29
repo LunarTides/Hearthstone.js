@@ -1,12 +1,10 @@
-const { Card } = require("./card");
-const { Game } = require("./game");
-const { Player } = require("./player");
-const { get } = require("./shared");
+import { Card } from "./card";
+import { Player } from "./player";
+import { Game } from "./game";
+import { get } from "./shared";
+import { AICalcMoveOptions, AIHistory, CardLike, ScoredCard, SelectTargetFlags, Target } from "./types";
 
-/**
- * @type {Game}
- */
-let game;
+let game: Game;
 
 function getInternalGame() {
     let tempGame = get();
@@ -20,54 +18,41 @@ getInternalGame();
 // FIXME: Ai gets stuck in infinite loop when using cathedral of atonement (location) | shadowcloth needle (0 attack wpn) | that minion has no attack.
 export class AI {
     /**
-     * Sentiment-based AI
-     * 
-     * @param {Player} plr 
+     * The player that the AI is playing for
      */
-    constructor(plr) {
+    plr: Player;
+
+    /**
+     * The history of the AI. Also known as its "logs".
+     */
+    history: AIHistory[] = [];
+
+    /**
+     * Prevent the ai from doing the actions that are in this array
+     */
+    prevent: string[] = [];
+
+    /**
+     * The cards that the AI has played this turn
+     */
+    cards_played_this_turn: Card[] = [];
+
+    /**
+     * The locations that the AI has used this turn
+     */
+    used_locations_this_turn: Card[] = [];
+
+    /**
+     * The card that the AI has focused, and is trying to kill
+     */
+    focus: Card | null = null;
+
+    /**
+     * Sentiment-based AI
+     */
+    constructor(plr: Player) {
         getInternalGame();
 
-
-        /**
-         * The history of the AI. Also known as its "logs".
-         * 
-         * @type {import("./types").AIHistory[]}
-         */
-        this.history = [];
-
-        /**
-         * Prevent the ai from doing the actions that are in this array
-         * 
-         * @type {string[]}
-         */
-        this.prevent = [];
-
-        /**
-         * The cards that the AI has played this turn
-         * 
-         * @type {Card[]}
-         */
-        this.cards_played_this_turn = [];
-
-        /**
-         * The locations that the AI has used this turn
-         * 
-         * @type {Card[]}
-         */
-        this.used_locations_this_turn = [];
-
-        /**
-         * The card that the AI has focused, and is trying to kill
-         * 
-         * @type {Card | null}
-         */
-        this.focus = null;
-
-        /**
-         * The player that the AI is playing for
-         * 
-         * @type {Player}
-         */
         this.plr = plr;
     }
 
@@ -76,13 +61,10 @@ export class AI {
      * 
      * This can return: A card to play, "hero power", "attack", "use" or "end"
      * 
-     * @returns {Card | string} Result
+     * @returns Result
      */
-    calcMove() {
-        /**
-         * @type {Card | "hero power" | "attack" | "use" | "end" | null}
-         */
-        let best_move;
+    calcMove(): AICalcMoveOptions {
+        let best_move: AICalcMoveOptions;
         let best_score = -100000;
 
         // Look for highest score
@@ -107,7 +89,7 @@ export class AI {
         });
 
         // If a card wasn't chosen
-        // @ts-ignore
+        // @ts-expect-error
         if (!best_move) {
             // See if can hero power
             if (this._canHeroPower()) best_move = "hero power";
@@ -145,9 +127,9 @@ export class AI {
     /**
      * Checks if there are any minions that can attack on the ai's board
      *
-     * @returns {boolean} Can attack
+     * @returns Can attack
      */
-    _canAttack() {
+    _canAttack(): boolean {
         if (this.prevent.includes("attack")) return false;
 
         let valid_attackers = game.board[this.plr.id].filter(m => this._canMinionAttack(m));
@@ -158,9 +140,9 @@ export class AI {
     /**
      * Returns if the ai can use their hero power
      *
-     * @returns {boolean} Can use hero power
+     * @returns Can use hero power
      */
-    _canHeroPower() {
+    _canHeroPower(): boolean {
         if (this.prevent.includes("hero power")) return false;
 
         let enoughMana = this.plr.mana >= this.plr.heroPowerCost;
@@ -175,10 +157,8 @@ export class AI {
 
     /**
      * Returns if there are any location cards the ai can use.
-     *
-     * @returns {boolean}
      */
-    _canUseLocation() {
+    _canUseLocation(): boolean {
         if (this.prevent.includes("use")) return false;
 
         let valid_locations = game.board[this.plr.id].filter(m => m.type == "Location" && m.cooldown == 0 && !this.used_locations_this_turn.includes(m));
@@ -189,11 +169,11 @@ export class AI {
     /**
      * Returns if the minion specified can attack
      *
-     * @param {Card} m The minion to check
+     * @param m The minion to check
      *
-     * @returns {boolean} Can attack
+     * @returns Can attack
      */
-    _canMinionAttack(m) {
+    _canMinionAttack(m: Card): boolean {
         let booleans = !m.sleepy && !m.frozen && !m.dormant;
         let numbers = m.getAttack() && m.attackTimes;
 
@@ -203,11 +183,11 @@ export class AI {
     /**
      * Returns if the minion specified is targettable
      *
-     * @param {Card} m Minion to check
+     * @param m Minion to check
      *
-     * @returns {boolean} If it is targettable
+     * @returns If it is targettable
      */
-    _canTargetMinion(m) {
+    _canTargetMinion(m: Card): boolean {
         let booleans = !m.dormant && !m.immune && !m.keywords.includes("Stealth");
 
         return booleans;
@@ -217,11 +197,11 @@ export class AI {
     /**
      * Finds all possible trades for the ai and returns them
      *
-     * @returns {[Card[][], Card[][]]} `Perfect Trades`: [[attacker, target], ...], `Imperfect Trades`: [[attacker, target], ...]
+     * @returns `Perfect Trades`: [[attacker, target], ...], `Imperfect Trades`: [[attacker, target], ...]
      */
-    _attackFindTrades() {
-        let perfect_trades = [];
-        let imperfect_trades = [];
+    _attackFindTrades(): [Card[][], Card[][]] {
+        let perfect_trades: Card[] = [];
+        let imperfect_trades: Card[] = [];
 
         let currboard = game.board[this.plr.id].filter(m => this._canMinionAttack(m));
 
@@ -253,12 +233,12 @@ export class AI {
     /**
      * Returns a score for the player specified based on how good their position is.
      *
-     * @param {Player} player The player to score
-     * @param {import("./types").ScoredCard[][]} board The board to check
+     * @param player The player to score
+     * @param board The board to check
      *
-     * @returns {number} Score
+     * @returns Score
      */
-    _scorePlayer(player, board) {
+    _scorePlayer(player: Player, board: ScoredCard[][]): number {
         let score = 0;
 
         board[player.id].forEach(m => {
@@ -282,11 +262,11 @@ export class AI {
     /**
      * Returns the player that is winning
      *
-     * @param {import("./types").ScoredCard[][]} board The board to check
+     * @param board The board to check
      *
-     * @returns {[Player, number]} Winner, Score
+     * @returns Winner, Score
      */
-    _findWinner(board) {
+    _findWinner(board: ScoredCard[][]): [Player, number] {
         let score = this._scorePlayer(this.plr, board);
         let opScore = this._scorePlayer(this.plr.getOpponent(), board);
 
@@ -299,11 +279,10 @@ export class AI {
     /**
      * Returns if there is a taunt on the board
      *
-     * @param {boolean} [return_taunts=false] If the function should return the taunts it found, or just if there is a taunt. If this is true it will return the taunts it found.
-     *
-     * @returns {Card[] | boolean}
+     * @param return_taunts If the function should return the taunts it found, or just if there is a taunt. If this is true it will return the taunts it found.
      */
-    _tauntExists(return_taunts = false) {
+    _tauntExists(return_taunts: boolean = false): Card[] | boolean {
+        // Todo: Make it only return Card[]
         let taunts = game.board[this.plr.getOpponent().id].filter(m => m.keywords.includes("Taunt"));
 
         if (return_taunts) return taunts;
@@ -314,9 +293,9 @@ export class AI {
     /**
      * Does a trade
      *
-     * @returns {Card[] | null} Attacker, Target
+     * @returns Attacker, Target
      */
-    _attackTrade() {
+    _attackTrade(): Card[] | null {
         let [perfect_trades, imperfect_trades] = this._attackFindTrades();
 
         let ret = null;
@@ -331,11 +310,11 @@ export class AI {
     /**
      * Does a general attack
      *
-     * @param {import("./types").ScoredCard[][]} board
+     * @param board
      *
-     * @returns {(Card | Player | -1)[]} Attacker, Target
+     * @returns Attacker, Target
      */
-    _attackGeneral(board) {
+    _attackGeneral(board: ScoredCard[][]): (Target | -1)[] {
         let current_winner = this._findWinner(board);
 
         let ret = null;
@@ -351,11 +330,8 @@ export class AI {
 
         if (ret.includes(-1)) return [-1, -1];
 
-        /**
-         * @type {(Card | Player)[]}
-         */
-        // @ts-ignore - `ret` here is this type, but ts doesn't know it. So this is a workaround
-        let returned = ret;
+        // @ts-expect-error - `ret` here is this type, but ts doesn't know it. So this is a workaround
+        let returned: Target[] = ret;
 
         this.history.push({"type": "attack", "data": [returned[0].name, returned[1].name]});
 
@@ -368,9 +344,9 @@ export class AI {
     /**
      * Does a risky attack.
      *
-     * @returns {(Card | Player | -1)[]} Attacker, Target
+     * @returns Attacker, Target
      */
-    _attackGeneralRisky() {
+    _attackGeneralRisky(): (Target | -1)[] {
         // Only attack the enemy hero
         return [this._attackGeneralChooseAttacker(true), this.plr.getOpponent()];
     }
@@ -380,9 +356,9 @@ export class AI {
      * 
      * Use the return value of this function to actually attack by passing it into `game.attack`
      *
-     * @returns {(Card | Player | -1)[]} Attacker, Target
+     * @returns Attacker, Target
      */
-    _attackGeneralMinion() {
+    _attackGeneralMinion(): (Target | -1)[] {
         let target;
 
         // If the focused minion doesn't exist, select a new minion to focus
@@ -397,13 +373,10 @@ export class AI {
     /**
      * Choose a target for a general attack
      *
-     * @returns {Card | Player | -1} Target | -1 (Go back)
+     * @returns Target | -1 (Go back)
      */
-    _attackGeneralChooseTarget() {
-        /**
-         * @type {(Card | Player | number | null)[]}
-         */
-        let highest_score = [null, -9999];
+    _attackGeneralChooseTarget(): Target | -1 {
+        let highest_score: (Target | number | null)[] = [null, -9999];
 
         let board = game.board[this.plr.getOpponent().id];
 
@@ -441,15 +414,12 @@ export class AI {
     /**
      * Choose an attacker for a general attack
      *
-     * @param {boolean} [target_is_player=false] If the target is a player
+     * @param target_is_player If the target is a player
      *
-     * @returns {Card | Player | -1} Attacker | -1 (Go back)
+     * @returns Attacker | -1 (Go back)
      */
-    _attackGeneralChooseAttacker(target_is_player = false) {
-        /**
-         * @type {(Card | Player | number | null)[]}
-         */
-        let lowest_score = [null, 9999];
+    _attackGeneralChooseAttacker(target_is_player: boolean = false): Target | -1 {
+        let lowest_score: (Target | number | null)[] = [null, 9999];
 
         let board = game.board[this.plr.id];
         board = board.filter(c => this._canMinionAttack(c));
@@ -485,14 +455,14 @@ export class AI {
     /**
      * Makes the ai attack
      *
-     * @returns {(Card | Player | -1)[]} Attacker, Target
+     * @returns Attacker, Target
      */
-    attack() {
+    attack(): (Target | -1)[] {
         // Assign a score to all minions
         /**
          * @type {import("./types").ScoredCard[][]}
          */
-        let board = game.board.map(m => {
+        let board: import("./types").ScoredCard[][] = game.board.map(m => {
             return m.map(c => {
                 return {"card": c, "score": this.analyzePositiveCard(c)};
             });
@@ -517,13 +487,10 @@ export class AI {
      * 
      * @deprecated Use `AI.attack` instead.
      * 
-     * @returns {(Card | Player | -1)[]} Attacker, Target
+     * @returns Attacker, Target
      */
-    legacy_attack_1() { // This gets called if you set the ai attack model to 1
-        /**
-         * @type {Card}
-         */
-        let worst_minion;
+    legacy_attack_1(): (Target | -1)[] { // This gets called if you set the ai attack model to 1
+        let worst_minion: Card;
         let worst_score = 100000;
         
         game.board[this.plr.id].filter(m => !m.sleepy && !m.frozen && !m.dormant).forEach(m => {
@@ -535,11 +502,8 @@ export class AI {
             worst_score = score;
         });
 
-        /**
-         * @type {Card | Player | -1}
-         */
-        // @ts-ignore
-        let attacker = worst_minion;
+        // @ts-expect-error
+        let attacker: Target | -1 = worst_minion;
         
         let targets;
 
@@ -560,11 +524,8 @@ export class AI {
             best_score = score;
         });
         
-        /**
-         * @type {Card | Player | null | -1}
-         */
-        // @ts-ignore
-        let target = best_minion;
+        // @ts-expect-error
+        let target: Target | null | -1 = best_minion;
 
         // If the AI has no minions to attack, attack the enemy hero
         if (!target) {
@@ -604,15 +565,15 @@ export class AI {
      * 
      * Gets automatically called by `Interactive.selectTarget`, so use that instead.
      * 
-     * @param {string} prompt The prompt to show the ai.
-     * @param {Card | null} card The card that called this function
-     * @param {"friendly" | "enemy" | null} [force_side=null] The side the ai should be constrained to.
-     * @param {"minion" | "hero" | null} [force_class=null] The type of target the ai should be constrained to.
-     * @param {import("./types").SelectTargetFlags[]} [flags=[]] Some flags
+     * @param prompt The prompt to show the ai.
+     * @param card The card that called this function
+     * @param force_side The side the ai should be constrained to.
+     * @param force_class The type of target the ai should be constrained to.
+     * @param flags Some flags
      * 
-     * @returns {Card | Player | false} The target selected.
+     * @returns The target selected.
      */
-    selectTarget(prompt, card, force_side = null, force_class = null, flags = []) {
+    selectTarget(prompt: string, card: Card | null = null, force_side: "friendly" | "enemy" | null = null, force_class: "minion" | "hero" | null = null, flags: SelectTargetFlags[] = []): Target | false {
         if (flags.includes("allow_locations") && force_class != "hero") {
             let locations = game.board[this.plr.id].filter(m => m.type == "Location" && m.cooldown == 0 && !this.used_locations_this_turn.includes(m));
             this.used_locations_this_turn.push(locations[0]);
@@ -644,7 +605,7 @@ export class AI {
             /**
              * @type {Player | false}
              */
-            let ret = false;
+            let ret: Player | false = false;
 
             if (side == "self") ret = this.plr;
             else if (side == "enemy") ret = op;
@@ -657,10 +618,7 @@ export class AI {
 
         // The player has no minions, select their face
         if (game.board[sid].length <= 0) {
-            /**
-             * @type {Player | false}
-             */
-            let ret = false;
+            let ret: Player | false = false;
 
             if (force_class != "minion") {
                 ret = game["player" + (sid + 1)];
@@ -673,10 +631,7 @@ export class AI {
             return ret;
         }
         
-        /**
-         * @type {Card | false}
-         */
-        let best_minion;
+        let best_minion: Card | false;
         let best_score = -100000;
 
         game.board[sid].forEach(m => {
@@ -691,7 +646,7 @@ export class AI {
             best_score = s;
         });
 
-        // @ts-ignore
+        // @ts-expect-error
         if (best_minion) {
             this.history.push({"type": "selectTarget", "data": `${best_minion.name},${best_score}`});
 
@@ -705,15 +660,12 @@ export class AI {
     /**
      * Choose the "best" minion to discover.
      * 
-     * @param {Card[] | import("./types").Blueprint[]} cards The cards to choose from
+     * @param cards The cards to choose from
      * 
-     * @returns {Card | null} Result
+     * @returns Result
      */
-    discover(cards) {
-        /**
-         * @type {Card | null}
-         */
-        let best_card;
+    discover(cards: CardLike[]): Card | null {
+        let best_card: Card | null;
         let best_score = -100000;
 
         // Look for highest score
@@ -728,7 +680,7 @@ export class AI {
             best_score = score;
         });
 
-        // @ts-ignore
+        // @ts-expect-error
         if (!best_card) return null;
 
         this.history.push({"type": "discover", "data": [best_card.name, best_score]});
@@ -741,15 +693,12 @@ export class AI {
     /**
      * Choose the "best" card to dredge.
      * 
-     * @param {Card[]} cards The cards to choose from
+     * @param cards The cards to choose from
      * 
-     * @returns {Card | null} Result
+     * @returns Result
      */
-    dredge(cards) {
-        /**
-         * @type {Card | null}
-         */
-        let best_card;
+    dredge(cards: Card[]): Card | null {
+        let best_card: Card | null;
         let best_score = -100000;
 
         // Look for highest score
@@ -762,7 +711,7 @@ export class AI {
             best_score = score;
         });
 
-        // @ts-ignore
+        // @ts-expect-error
         if (!best_card) return null;
 
         let name = best_card ? best_card.name : null
@@ -774,11 +723,11 @@ export class AI {
     /**
      * Choose the "best" option from `options`
      * 
-     * @param {string[]} options The options the ai can pick from
+     * @param options The options the ai can pick from
      *
-     * @returns {number | null} The index of the question chosen
+     * @returns The index of the question chosen
      */
-    chooseOne(options) {
+    chooseOne(options: string[]): number | null {
         // I know this is a bad solution
         // "Deal 2 damage to a minion; or Restore 5 Health."
         // ^^^^^ It will always choose to restore 5 health, since it sees deal 2 damage as bad but oh well, future me problem.
@@ -804,12 +753,12 @@ export class AI {
     /**
      * Choose the "best" answer from `options`
      *
-     * @param {string} prompt The prompt to show to the ai
-     * @param {string[]} options The options the ai can pick from
+     * @param prompt The prompt to show to the ai
+     * @param options The options the ai can pick from
      *
-     * @returns {number | null} The index of the option chosen + 1
+     * @returns The index of the option chosen + 1
      */
-    question(prompt, options) {
+    question(prompt: string, options: string[]): number | null {
         let best_choice = null;
         let best_score = -100000;
 
@@ -832,11 +781,11 @@ export class AI {
     /**
      * Choose yes or no based on the prompt
      *
-     * @param {string} prompt The prompt to show to the ai
+     * @param prompt The prompt to show to the ai
      *
-     * @returns {boolean} `true` if "Yes", `false` if "No"
+     * @returns `true` if "Yes", `false` if "No"
      */
-    yesNoQuestion(prompt) {
+    yesNoQuestion(prompt: string): boolean {
         let score = this.analyzePositive(prompt);
         let ret;
 
@@ -851,11 +800,11 @@ export class AI {
     /**
      * Returns if the ai wants `card` to be traded
      *
-     * @param {Card} card The card to check
+     * @param card The card to check
      *
-     * @returns {boolean} If the card should be traded
+     * @returns If the card should be traded
      */
-    trade(card) {
+    trade(card: Card): boolean {
         if (this.plr.deck.length <= 1) return false; // If the ai doesn't have any cards to trade into, don't trade the card.
         if (this.plr.mana < 1) return false; // If the ai can't afford to trade, don't trade the card
 
@@ -871,9 +820,9 @@ export class AI {
     /**
      * Returns the list of cards the ai wants to mulligan.
      * 
-     * @returns {string} The indexes of the cards to mulligan. Look in `Interact.mulligan` for more details.
+     * @returns The indexes of the cards to mulligan. Look in `Interact.mulligan` for more details.
      */
-    mulligan() {
+    mulligan(): string {
         let to_mulligan = "";
 
         let _scores = "(";
@@ -898,12 +847,12 @@ export class AI {
     /**
      * Analyze a string and return a score based on how "positive" the ai thinks it is
      *
-     * @param {string} str The string to analyze
-     * @param {boolean} context Enable context analysis
+     * @param str The string to analyze
+     * @param context Enable context analysis
      * 
-     * @returns {number} The score the string gets
+     * @returns The score the string gets
      */
-    analyzePositive(str, context = true) {
+    analyzePositive(str: string, context: boolean = true): number {
         if (context) context = game.config.AIContextAnalysis;
         let score = 0;
 
@@ -943,11 +892,11 @@ export class AI {
      * Same as `analyzePositive` but changes the score based on a card's positive and negative values.
      * Passes the card's description into `analyzePositive`.
      *
-     * @param {Card} c The card to analyze
+     * @param c The card to analyze
      *
-     * @returns {number} The score
+     * @returns The score
      */
-    analyzePositiveCard(c) {
+    analyzePositiveCard(c: Card): number {
         let score = this.analyzePositive(c.desc || "");
 
         if (c.type == "Minion" || c.type == "Weapon") score += (c.getAttack() + c.getHealth()) * game.config.AIStatsBias;

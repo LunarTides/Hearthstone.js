@@ -1,19 +1,14 @@
-const { Card } = require('./card');
-const { Game } = require('./game');
-const { Player } = require('./player');
+import { Card } from './card';
+import { Game } from './game';
+import { Player } from './player';
+import { Blueprint, CardLike, GamePlayCardReturn, SelectTargetFlags, Target } from './types';
 
 const license_url = 'https://github.com/LunarTides/Hearthstone.js/blob/main/LICENSE';
 
-/**
- * @type {Game}
- */
-let game;
+let game: Game;
 
 export class Interact {
-    /**
-     * @param {Game} _game 
-     */
-    constructor(_game) {
+    constructor(_game: Game) {
         game = _game;
     }
 
@@ -21,9 +16,9 @@ export class Interact {
     /**
      * Asks the user to attack a minion or hero
      *
-     * @returns {-1 | null | boolean | Card} Cancel | Success
+     * @returns Cancel | Success
      */
-    doTurnAttack() {
+    doTurnAttack(): -1 | null | boolean | Card {
         let attacker, target;
 
         if (game.player.ai) {
@@ -101,13 +96,13 @@ export class Interact {
     /**
      * Checks if "q" is a command, if it is, do something, if not return -1
      * 
-     * @param {string} q The command
-     * @param {boolean} [echo=true] If this is false, it doesn't log information to the screen. Only used by "history", "/ai"
-     * @param {boolean} [debug=false] If this is true, it does some additional, debug only, things. Only used by "history"
+     * @param q The command
+     * @param echo If this is false, it doesn't log information to the screen. Only used by "history", "/ai"
+     * @param debug If this is true, it does some additional, debug only, things. Only used by "history"
      * 
-     * @returns {boolean | string | -1} a string if "echo" is false
+     * @returns A string if "echo" is false
      */
-    handleCmds(q, echo = true, debug = false) {
+    handleCmds(q: string, echo: boolean = true, debug: boolean = false): boolean | string | -1 {
         let args = q.split(" ");
         let name = args[0];
         args.shift();
@@ -188,7 +183,7 @@ export class Interact {
             console.log("version    - Displays the version, branch, your settings preset, and some information about your current version.");
             console.log("license    - Opens a link to this project's license");
 
-            const cond_color = (/** @type {string} */ str) => {return (game.config.debug) ? str : str.gray};
+            const cond_color = (/** @type {string} */ str: string) => {return (game.config.debug) ? str : str.gray};
 
             console.log(cond_color("\n--- Debug Commands (") + ((game.config.debug) ? "ON".green : "OFF".red) + cond_color(") ---"));
             console.log(cond_color("/give (name)        - Adds a card to your hand"));
@@ -287,7 +282,7 @@ export class Interact {
                     break;
                 }
 
-                const print_todo = (/** @type {[string, string]} */ todo, /** @type {number} */ id, print_desc = false) => {
+                const print_todo = (/** @type {[string, string]} */ todo: [string, string], /** @type {number} */ id: number, print_desc = false) => {
                     let [name, info] = todo;
                     let [state, desc] = info;
 
@@ -322,7 +317,7 @@ export class Interact {
             let history = game.events.history;
             let finished = "";
 
-            const showCard = (/** @type {Card} */ val) => {
+            const showCard = (/** @type {Card} */ val: Card) => {
                 return this.getReadableCard(val) + " which belongs to: " + val.plr.name.blue + ", and has uuid: " + val.uuid.slice(0, 8);
             }
 
@@ -335,7 +330,7 @@ export class Interact {
              * 
              * @returns {any}
              */
-            const doVal = (val, plr, hide) => {
+            const doVal = (val: any, plr: Player, hide: boolean): any => {
                 if (val instanceof game.Card) {
                     // If the card is not hidden, or the card belongs to the current player, show it
                     if (!hide || val.plr == plr) return showCard(val);
@@ -377,7 +372,7 @@ export class Interact {
                 let hasPrintedHeader = false;
                 let prevPlayer;
 
-                h.forEach((c, /** @type {number} */ i) => {
+                h.forEach((c, /** @type {number} */ i: number) => {
                     let [key, val, plr] = c;
 
                     if (plr != prevPlayer) hasPrintedHeader = false;
@@ -505,12 +500,12 @@ export class Interact {
             /**
              * @type {[Card, number]}
              */
-            let eventCards = game.events["PlayCard"][game.player.id];
+            let eventCards: [Card, number] = game.events["PlayCard"][game.player.id];
 
             /**
              * @type {Card}
              */
-            let card = eventCards[eventCards.length - 1][0];
+            let card: Card = eventCards[eventCards.length - 1][0];
 
             // Remove the event so you can undo more than the last played card
             game.events["PlayCard"][game.player.id].pop();
@@ -557,7 +552,7 @@ export class Interact {
 
                 finished += `AI${i} History: {\n`;
 
-                plr.ai.history.forEach((/** @type {import('./types').AIHistory} */ obj, /** @type {number} */ objIndex) => {
+                plr.ai.history.forEach((/** @type {import('./types').AIHistory} */ obj: import('./types').AIHistory, /** @type {number} */ objIndex: number) => {
                     finished += `${objIndex + 1} ${obj.type}: (${obj.data}),\n`;
                 });
                 
@@ -575,7 +570,7 @@ export class Interact {
         }
         else if (name === "/cmd") {
             let history = Object.values(game.events.history).map(t => t.filter(
-                (/** @type {any[]} */ v) => v[0] == "Input" &&
+                (/** @type {any[]} */ v: any[]) => v[0] == "Input" &&
                 v[1].startsWith("/") &&
                 v[2] == game.player &&
                 !v[1].startsWith("/cmd")
@@ -587,13 +582,13 @@ export class Interact {
                 console.log(`\nTurn ${i}:`);
 
                 let index = 1;
-                obj.forEach((/** @type {string[]} */ h) => {
+                obj.forEach((/** @type {string[]} */ h: string[]) => {
                     /**
                      * The user's input
                      * 
                      * @type {string}
                      */
-                    let input = h[1];
+                    let input: string = h[1];
 
                     console.log(`[${index++}] ${input}`);
                 });
@@ -707,7 +702,7 @@ export class Interact {
                  * 
                  * @param {Card} card 
                  */
-                const reload = (card) => {
+                const reload = (card: Card) => {
                     let clonedCard = card.imperfectCopy();
 
                     card.doBlueprint();
@@ -747,11 +742,11 @@ export class Interact {
     /**
      * Takes the input and checks if it is a command, if it is not, play the card with the id of input parsed into a number
      * 
-     * @param {string} input The user input
+     * @param input The user input
      * 
-     * @returns {true | Card | "mana" | "traded" | "space" | "magnetize" | "colossal" | "counter" | "invalid" | "refund"} true | The return value of `game.playCard`
+     * @returns true | The return value of `game.playCard`
      */
-    doTurnLogic(input) {
+    doTurnLogic(input: string): true | GamePlayCardReturn {
         if (this.handleCmds(input) !== -1) return true;
         let parsedInput = parseInt(input);
 
@@ -767,15 +762,15 @@ export class Interact {
      * 
      * This is the core of the game loop.
      * 
-     * @returns {boolean | string | Card | "mana" | "traded" | "space" | "magnetize" | "colossal" | "invalid" | "refund"} Success | The return value of doTurnLogic
+     * @returns Success | The return value of doTurnLogic
      */
-    doTurn() {
+    doTurn(): boolean | string | GamePlayCardReturn {
         game.events.tick("GameLoop", "doTurn");
 
         if (game.player.ai) {
             let input = game.player.ai.calcMove();
             if (!input) return false;
-            if (input instanceof game.Card) input = (game.player.hand.indexOf(input) + 1).toString();
+            if (input instanceof Card) input = (game.player.hand.indexOf(input) + 1).toString();
 
             let turn = this.doTurnLogic(input);
 
@@ -818,9 +813,9 @@ export class Interact {
     /**
      * Asks the user to select a location card to use, and activate it.
      * 
-     * @return {boolean | "nolocations" | "invalidtype" | "cooldown" | -1} Success
+     * @return Success
      */
-    useLocation() {
+    useLocation(): boolean | "nolocations" | "invalidtype" | "cooldown" | -1 {
         let locations = game.board[game.player.id].filter(m => m.type == "Location");
         if (locations.length <= 0) return "nolocations";
 
@@ -848,11 +843,11 @@ export class Interact {
      * - Debug mode is disabled
      * - The program is running on the stable branch
      * 
-     * @param {Player} plr The player to ask
+     * @param plr The player to ask
      * 
-     * @returns {boolean} Success
+     * @returns Success
      */
-    deckCode(plr) {
+    deckCode(plr: Player): boolean {
         this.printName();
     
         /**
@@ -860,7 +855,7 @@ export class Interact {
          * 
          * @type {boolean}
          */
-        let allowTestDeck = game.config.debug || game.config.branch !== "stable";
+        let allowTestDeck: boolean = game.config.debug || game.config.branch !== "stable";
 
         let debugStatement = allowTestDeck ? " (Leave this empty for a test deck)".gray : "";
         const deckcode = game.input(`Player ${plr.id + 1}, please type in your deckcode${debugStatement}: `);
@@ -887,11 +882,11 @@ export class Interact {
     /**
      * Asks the player to mulligan their cards
      * 
-     * @param {Player} plr The player to ask
+     * @param plr The player to ask
      * 
-     * @returns {string} A string of the indexes of the cards the player mulligan'd
+     * @returns A string of the indexes of the cards the player mulligan'd
      */
-    mulligan(plr) {
+    mulligan(plr: Player): string {
         this.printAll(plr);
 
         let sb = "\nChoose the cards to mulligan (1, 2, 3, ...):\n";
@@ -915,11 +910,11 @@ export class Interact {
     /**
      * Asks the current player a `prompt` and shows 3 cards from their deck for the player to choose, the chosen card will be added to the top of their deck
      * 
-     * @param {string} [prompt="Choose a card to Dredge:"] The prompt to ask the user
+     * @param prompt The prompt to ask the user
      * 
-     * @returns {Card | null} The card chosen
+     * @returns The card chosen
      */
-    dredge(prompt = "Choose a card to Dredge:") {
+    dredge(prompt: string = "Choose a card to Dredge:"): Card | null {
         // Look at the bottom three cards of the deck and put one on the top.
         let cards = game.player.deck.slice(0, 3);
 
@@ -964,13 +959,13 @@ export class Interact {
     /**
      * Asks the current player a `prompt` give the user `options` and do it all `times` times
      * 
-     * @param {string} prompt The prompt to ask the user
-     * @param {string[]} options The options to give the user
-     * @param {number} [times=1] The amount of times to ask
+     * @param prompt The prompt to ask the user
+     * @param options The options to give the user
+     * @param times The amount of times to ask
      * 
-     * @returns {number | null | (number | null)[]} The chosen answer(s) index(es)
+     * @returns The chosen answer(s) index(es)
      */
-    chooseOne(prompt, options, times = 1) {
+    chooseOne(prompt: string, options: string[], times: number = 1): number | null | (number | null)[] {
         this.printAll();
 
         let choices = [];
@@ -1009,13 +1004,13 @@ export class Interact {
     /**
      * Asks the `plr` a `prompt`, show them a list of `answers` and make them choose one
      *
-     * @param {Player} plr The player to ask
-     * @param {string} prompt The prompt to show
-     * @param {string[]} answers The answers to choose from
+     * @param plr The player to ask
+     * @param prompt The prompt to show
+     * @param answers The answers to choose from
      *
-     * @returns {string} Chosen
+     * @returns Chosen
      */
-    question(plr, prompt, answers) {
+    question(plr: Player, prompt: string, answers: string[]): string {
         const RETRY = () => {
             return this.question(plr, prompt, answers);
         }
@@ -1031,10 +1026,7 @@ export class Interact {
         strbuilder = strbuilder.slice(0, -2);
         strbuilder += "] ";
 
-        /**
-         * @type {number}
-         */
-        let choice;
+        let choice: number;
 
         if (plr.ai) {
             let aiChoice = plr.ai.question(prompt, answers);
@@ -1059,12 +1051,12 @@ export class Interact {
     /**
      * Asks the user a yes/no question
      *
-     * @param {Player} plr The player to ask
-     * @param {string} prompt The prompt to ask
+     * @param plr The player to ask
+     * @param prompt The prompt to ask
      *
-     * @returns {boolean} `true` if Yes / `false` if No
+     * @returns `true` if Yes / `false` if No
      */
-    yesNoQuestion(plr, prompt) {
+    yesNoQuestion(plr: Player, prompt: string): boolean {
         this.printAll(plr);
 
         let ask = `\n${prompt} [` + 'Y'.green + ' | ' +  'N'.red + `] `;
@@ -1086,15 +1078,15 @@ export class Interact {
     /**
      * Asks the user a "prompt", show them "amount" cards. The cards are chosen from "cards".
      * 
-     * @param {string} prompt The prompt to ask
-     * @param {Card[] | import('./types').Blueprint[]} [cards=[]] The cards to choose from
-     * @param {boolean} [filterClassCards=true] If it should filter away cards that do not belong to the player's class. Keep this at default if you are using `functions.getCards()`, disable this if you are using either player's deck / hand / graveyard / etc...
-     * @param {number} [amount=3] The amount of cards to show
-     * @param {import('./types').Blueprint[]} [_cards=[]] Do not use this variable, keep it at default
+     * @param prompt The prompt to ask
+     * @param cards The cards to choose from
+     * @param filterClassCards If it should filter away cards that do not belong to the player's class. Keep this at default if you are using `functions.getCards()`, disable this if you are using either player's deck / hand / graveyard / etc...
+     * @param amount The amount of cards to show
+     * @param _cards Do not use this variable, keep it at default
      * 
      * @returns {Card | null} The card chosen.
      */
-    discover(prompt, cards = [], filterClassCards = true, amount = 3, _cards = []) {
+    discover(prompt: string, cards: CardLike[] = [], filterClassCards: boolean = true, amount: number = 3, _cards: Blueprint[] = []): Card | null {
         this.printAll();
         let values = _cards;
 
@@ -1109,11 +1101,12 @@ export class Interact {
             /**
              * Literally just the same as `Array.prototype.filter()`, but probably worse.
              *
-             * @param {Array} list - The list to be filtered.
-             * @param {Function} filterFunction - The function used to filter the list.
-             * @returns {Array} - The filtered list.
+             * @param list The list to be filtered.
+             * @param filterFunction The function used to filter the list.
+             * 
+             * @returns The filtered list.
              */
-            function filterList(list, filterFunction) {
+            function filterList<T>(list: T[], filterFunction: (item: T) => boolean): T[] {
                 const filteredList = [];
               
                 for (const element of list) {
@@ -1129,10 +1122,10 @@ export class Interact {
              * This function is a wrapper for the game.functions.validateClass() method. 
              * It takes a card-like object as a parameter and passes it to the validateClass() method along with the game.player object.
              *
-             * @param {Card | import('./types').Blueprint} cardLike - a card-like object (Card or Blueprint)
-             * @returns {boolean} the return value of the validateClass() method
+             * @param cardLike a card-like object (Card or Blueprint)
+             * @returns the return value of the validateClass() method
              */
-            function customValidateClass(cardLike) {
+            function customValidateClass(cardLike: CardLike): boolean {
                 return game.functions.validateClass(game.player, cardLike);
             }
 
@@ -1162,10 +1155,7 @@ export class Interact {
             return this.discover(prompt, cards, filterClassCards, amount, values);
         }
 
-        /**
-         * @type {Card}
-         */
-        let card;
+        let card: Card;
 
         // Potential Blueprint card
         let pbcard = values[parseInt(choice) - 1];
@@ -1180,18 +1170,15 @@ export class Interact {
      * Asks the user a `prompt`, the user can then select a minion or hero.
      * Broadcasts the `TargetSelectionStarts` and the `TargetSelected` event. Can broadcast the `CastSpellOnMinion` event.
      * 
-     * @param {string} prompt The prompt to ask
-     * @param {Card | null} card The card that called this function.
-     * @param {"enemy" | "friendly" | null} [force_side=null] Force the user to only be able to select minions / the hero of a specific side: ["enemy", "friendly"]
-     * @param {"hero" | "minion" | null} [force_class=null] Force the user to only be able to select a minion or a hero: ["hero", "minion"]
-     * @param {import('./types').SelectTargetFlags[]} [flags=[]] Change small behaviours ["allow_locations" => Allow selecting location, ]
+     * @param prompt The prompt to ask
+     * @param card The card that called this function.
+     * @param force_side Force the user to only be able to select minions / the hero of a specific side: ["enemy", "friendly"]
+     * @param force_class Force the user to only be able to select a minion or a hero: ["hero", "minion"]
+     * @param flags Change small behaviours ["allow_locations" => Allow selecting location, ]
      * 
-     * @returns {Card | Player | false} The card or hero chosen
+     * @returns The card or hero chosen
      */
-    selectTarget(prompt, card, force_side = null, force_class = null, flags = []) {
-        // force_class = [null, "hero", "minion"]
-        // force_side = [null, "enemy", "friendly"]
-
+    selectTarget(prompt: string, card: Card | null = null, force_side: "enemy" | "friendly" | null = null, force_class: "hero" | "minion" | null = null, flags: SelectTargetFlags[] = []): Target | false {
         game.events.broadcast("TargetSelectionStarts", [prompt, card, force_side, force_class, flags], game.player);
         let target = this._selectTarget(prompt, card, force_side, force_class, flags);
 
@@ -1200,21 +1187,9 @@ export class Interact {
     }
 
     /**
-     * Asks the user a `prompt`, the user can then select a minion or hero.
-     * Can broadcast the `CastSpellOnMinion` event.
-     * 
-     * @param {string} prompt The prompt to ask
-     * @param {Card | null} card The card that called this function.
-     * @param {"enemy" | "friendly" | null} [force_side=null] Force the user to only be able to select minions / the hero of a specific side: ["enemy", "friendly"]
-     * @param {"hero" | "minion" | null} [force_class=null] Force the user to only be able to select a minion or a hero: ["hero", "minion"]
-     * @param {import('./types').SelectTargetFlags[]} [flags=[]] Change small behaviours ["allow_locations" => Allow selecting location, ]
-     * 
-     * @returns {Card | Player | false} The card or hero chosen
+     * @see {@link selectTarget}
      */
-    _selectTarget(prompt, card, force_side = null, force_class = null, flags = []) {
-        // force_class = [null, "hero", "minion"]
-        // force_side = [null, "enemy", "friendly"]
-
+    _selectTarget(prompt: string, card: Card | null = null, force_side: "enemy" | "friendly" | null = null, force_class: "hero" | "minion" | null = null, flags: import('./types').SelectTargetFlags[] = []): Target | false {
         // If the player is forced to select a target, select that target.
         if (game.player.forceTarget) return game.player.forceTarget;
 
@@ -1257,7 +1232,7 @@ export class Interact {
          * 
          * @type {Card}
          */
-        let minion;
+        let minion: Card;
 
         // If the player didn't choose to attack a hero, and no minions could be found at the index requested, try again.
         if (!target.startsWith("face") && !board_friendly_target && !board_opponent_target) {
@@ -1338,16 +1313,10 @@ export class Interact {
 
     /**
      * Prints the "watermark" border
-     * 
-     * @param {boolean} [name=true] If the watermark border should appear, if this is false, just clear the screen
-     * 
-     * @returns {undefined}
      */
-    printName(name = true) {
+    printName(): void {
         cls();
     
-        if (!name) return;
-
         let watermarkString = `HEARTHSTONE.JS V${game.config.version}-${game.config.branch}`;
         let border = "-".repeat(watermarkString.length + 2);
     
@@ -1361,11 +1330,9 @@ export class Interact {
     /**
      * Prints some license info
      * 
-     * @param {boolean} [disappear=true] If this is true, "This will disappear once you end your turn" will show up.
-     * 
-     * @returns {undefined}
+     * @param disappear If this is true, "This will disappear once you end your turn" will show up.
      */
-    printLicense(disappear = true) {
+    printLicense(disappear: boolean = true): void {
         if (game.config.debug) return;
     
         cls();
@@ -1382,12 +1349,12 @@ export class Interact {
     /**
      * Shows `status`..., calls `callback`, then adds 'OK' or 'FAIL' to the end of that line depending on the result the callback
      * 
-     * @param {string} status The status to show.
-     * @param {Function} callback The callback to call.
+     * @param status The status to show.
+     * @param callback The callback to call.
      * 
-     * @returns {boolean} The return value of the callback. If the callback didn't explicitly return false then it was successful.
+     * @returns The return value of the callback. If the callback didn't explicitly return false then it was successful.
      */
-    withStatus(status, callback) {
+    withStatus(status: string, callback: () => boolean): boolean {
         process.stdout.write(`${status}...`);
         let success = callback() !== false;
         
@@ -1400,13 +1367,13 @@ export class Interact {
     /**
      * Replaces placeholders in the description of a card object.
      *
-     * @param {Card} card The card.
-     * @param {string} [overrideDesc=""] The description. If empty, it uses the card's description instead.
-     * @param {number} [_depth=0] The depth of recursion.
+     * @param card The card.
+     * @param overrideDesc The description. If empty, it uses the card's description instead.
+     * @param _depth The depth of recursion.
      * 
-     * @return {string} The modified description with placeholders replaced.
+     * @return The modified description with placeholders replaced.
      */
-    doPlaceholders(card, overrideDesc = "", _depth = 0) {
+    doPlaceholders(card: Card, overrideDesc: string = "", _depth: number = 0): string {
         let reg = new RegExp(`{ph:(.*?)} .*? {/ph}`);
 
         let desc = overrideDesc;
@@ -1460,19 +1427,19 @@ export class Interact {
     /**
      * Returns a card in a user readble state. If you console.log the result of this, the user will get all the information they need from the card.
      *
-     * @param {Card | import('./types').Blueprint} card The card
-     * @param {number} [i=-1] If this is set, this function will add `[i]` to the beginning of the card. This is useful if there are many different cards to choose from.
-     * @param {number} [_depth=0] The depth of recursion. DO NOT SET THIS MANUALLY.
+     * @param card The card
+     * @param i If this is set, this function will add `[i]` to the beginning of the card. This is useful if there are many different cards to choose from.
+     * @param _depth The depth of recursion. DO NOT SET THIS MANUALLY.
      * 
-     * @returns {string} The readable card
+     * @returns The readable card
      */
-    getReadableCard(card, i = -1, _depth = 0) {
+    getReadableCard(card: CardLike, i: number = -1, _depth: number = 0): string {
         /**
          * If it should show detailed errors regarding depth.
          * 
          * @type {boolean}
          */
-        let showDetailedError = (game.config.debug || game.config.branch !== "stable" || game.player.detailedView);
+        let showDetailedError: boolean = (game.config.debug || game.config.branch !== "stable" || game.player.detailedView);
 
         if (_depth > 0 && game.config.getReadableCardNoRecursion) {
             if (showDetailedError) return "RECURSION ATTEMPT BLOCKED";
@@ -1493,7 +1460,7 @@ export class Interact {
 
         // Extract placeholder value, remove the placeholder header and footer
         if (card instanceof game.Card && (card.placeholder || /\$(\d+?)/.test(card.desc || ""))) {
-            //@ts-ignore
+            //@ts-expect-error
             desc = this.doPlaceholders(card, desc, _depth);
         }
 
@@ -1524,7 +1491,7 @@ export class Interact {
         sb += game.functions.colorByRarity(displayName, card.rarity);
         
         if (card.type === "Minion" || card.type === "Weapon") {
-            // @ts-ignore - card.stats is always non-null in this context / brightGreen does exist
+            // @ts-expect-error - card.stats is always non-null in this context / brightGreen does exist
             sb += ` [${card.stats?.join(" / ")}]`.brightGreen;
         }
 
@@ -1537,11 +1504,9 @@ export class Interact {
     /**
      * Prints all the information you need to understand the game state
      * 
-     * @param {Player | null} [plr=null] The player
-     * 
-     * @returns {undefined}
+     * @param plr The player
      */
-    printAll(plr = null) {
+    printAll(plr?: Player): void {
         // WARNING: Stinky and/or smelly code up ahead. Read at your own risk.
         // TODO: #246 Reformat this
 
@@ -1591,11 +1556,11 @@ export class Interact {
 
             let wpnStats = ` [${plr.weapon.stats?.join(' / ')}]`;
 
-            // @ts-ignore
+            // @ts-expect-error
             sb += (plr.attack > 0 && plr.canAttack) ? wpnStats.brightGreen : wpnStats.gray;
         }
         else if (plr.attack) {
-            // @ts-ignore
+            // @ts-expect-error
             sb += `Attack     : ${plr.attack.toString().brightGreen}`;
         }
     
@@ -1607,7 +1572,7 @@ export class Interact {
             sb += `Weapon     : ${op.weapon.displayName.bold}`;
             let opWpnStats = ` [${op.weapon.stats?.join(' / ')}]`;
 
-            // @ts-ignore
+            // @ts-expect-error
             sb += (op.attack > 0) ? opWpnStats.brightGreen : opWpnStats.gray;
         }
     
@@ -1642,9 +1607,9 @@ export class Interact {
             sb += "Sidequests: ";
             sb += plr.sidequests.map(sidequest => {
                 sidequest["name"].bold +
-                // @ts-ignore
+                // @ts-expect-error
                 " (" + sidequest["progress"][0].toString().brightGreen +
-                // @ts-ignore
+                // @ts-expect-error
                 " / " + sidequest["progress"][1].toString().brightGreen +
                 ")"
             }).join(', ');
@@ -1659,7 +1624,7 @@ export class Interact {
             const prog = quest["progress"];
     
             sb += `Quest(line): ${quest["name"].bold} `;
-            // @ts-ignore
+            // @ts-expect-error
             sb += `[${prog[0]} / ${prog[1]}]`.brightGreen;
         }
         // Quests End
@@ -1704,10 +1669,10 @@ export class Interact {
                 sb += op.sidequests.map(sidequest => {
                     sidequest["name"].bold +
                     " (" +
-                    // @ts-ignore
+                    // @ts-expect-error
                     sidequest["progress"][0].toString().brightGreen +
                     " / " +
-                    // @ts-ignore
+                    // @ts-expect-error
                     sidequest["progress"][1].toString().brightGreen +
                     ")"
                 }).join(', ');
@@ -1721,10 +1686,10 @@ export class Interact {
                 sb += "Opponent's Quest(line): ";
                 sb += quest["name"].bold;
                 sb += " (";
-                // @ts-ignore
+                // @ts-expect-error
                 sb += quest["progress"][0].toString().brightGreen;
                 sb += " / ";
-                // @ts-ignore
+                // @ts-expect-error
                 sb += quest["progress"][1].toString().brightGreen;
                 sb += ")";
     
@@ -1753,13 +1718,13 @@ export class Interact {
                     sb += `[${n + 1}] `;
                     sb += `${m.displayName} `.bold;
                     sb += "{";
-                    // @ts-ignore
+                    // @ts-expect-error
                     sb += "Durability: ".brightGreen;
-                    // @ts-ignore
+                    // @ts-expect-error
                     sb += `${m.getHealth()}`.brightGreen;
-                    // @ts-ignore
+                    // @ts-expect-error
                     sb += " / ".brightGreen;
-                    // @ts-ignore
+                    // @ts-expect-error
                     sb += `${m.backups.init.stats?[1]:0}`.brightGreen;
                     sb += ", ";
         
@@ -1788,7 +1753,7 @@ export class Interact {
     
                 sb += `[${n + 1}] `;
                 sb += game.functions.colorByRarity(m.displayName, m.rarity);
-                // @ts-ignore
+                // @ts-expect-error
                 sb += ` [${m.stats?.join(" / ")}]`.brightGreen;
     
                 sb += keywordsString;
@@ -1812,7 +1777,7 @@ export class Interact {
     
         // Hand
         console.log(`\n--- ${plr.name} (${_class})'s Hand ---`);
-        // @ts-ignore
+        // @ts-expect-error
         console.log("([id] " + "{Cost}".cyan + " Name".bold + " [attack / health]".brightGreen + " (type)".yellow + ")\n");
     
         plr.hand.forEach((card, i) => console.log(this.getReadableCard(card, i + 1)));
@@ -1824,12 +1789,12 @@ export class Interact {
     /**
      * Shows information from the card, console.log's it and waits for the user to press enter.
      *
-     * @param {Card | import('./types').Blueprint} card The card
+     * @param card The card
      * @param {boolean} [help=true] If it should show a help message which displays what the different fields mean.
      *
      * @returns {undefined}
      */
-    viewCard(card, help = true) {
+    viewCard(card: CardLike, help: boolean = true): undefined {
         let _card = this.getReadableCard(card);
 
         let _class = card.class.gray;
@@ -1850,7 +1815,7 @@ export class Interact {
             else locCooldown = " (" + card.cooldown?.toString().cyan + ")";
         }
 
-        // @ts-ignore
+        // @ts-expect-error
         if (help) console.log("{mana} ".cyan + "Name ".bold + "(" + "[attack / health] ".brightGreen + "if it has) (description) ".white + "(type) ".yellow + "((tribe) or (spell class) or (cooldown)) [".white + "class".gray + "]");
         console.log(_card + tribe + spellClass + locCooldown + ` [${_class}]`);
 
@@ -1865,7 +1830,7 @@ export class Interact {
      * 
      * @returns {boolean} Success
      */
-    verifyDIYSolution(condition, fileName = "") {
+    verifyDIYSolution(condition: boolean, fileName: string = ""): boolean {
         // TODO: Maybe spawn in diy cards mid-game in normal games to encourage players to solve them.
         // Allow that to be toggled in the config.
         if (condition) console.log("Success! You did it, well done!");
@@ -1880,7 +1845,7 @@ export class Interact {
      * 
      * @returns {undefined}
      */
-    cls() { // Do this so it doesn't crash because of "strict mode"
+    cls(): undefined { // Do this so it doesn't crash because of "strict mode"
         cls();
     }
 }

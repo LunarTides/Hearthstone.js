@@ -1,16 +1,11 @@
 import { Game } from "./game";
 
-/**
- * @type {Game | null}
- */
-let game: Game | null = null;
+let game: Game;
 
 /**
  * Sets the game as a shared variable
  */
-export function set(new_game: Game | null = null): void {
-    if (!new_game) return;
-
+export function set(new_game: Game): void {
     game = new_game;
 
     // Update the players' internal game
@@ -24,9 +19,7 @@ export function set(new_game: Game | null = null): void {
 
 /**
  * Gets the shared game
- * 
- * @returns {Game | null}
  */
-export function get() {
+export function get(): Game {
     return game;
 }

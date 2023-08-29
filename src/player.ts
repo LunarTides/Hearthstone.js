@@ -334,7 +334,7 @@ export class Player {
      * 
      * I don't recommend calling this because it can cause major problems if done incorrectly.
      */
-    getInternalGame() {
+    getInternalGame(): void {
         let tempGame = get();
         if (!tempGame) return;
 
@@ -351,7 +351,7 @@ export class Player {
      * assert.notEqual(player.id, opponent.id);
      * ```
      */
-    getOpponent() {
+    getOpponent(): Player {
         if (this.id === 0) return game.player2;
         else return game.player1; // We always need to return a player.
     }
@@ -393,7 +393,7 @@ export class Player {
      * 
      * @returns Success
      */
-    refreshMana(mana: number, comp?: number) {
+    refreshMana(mana: number, comp?: number): boolean {
         if (!comp) comp = this.maxMana;
 
         this.mana += mana;
@@ -428,7 +428,7 @@ export class Player {
      * 
      * @returns Success 
      */
-    gainEmptyMana(mana: number, cap = false) {
+    gainEmptyMana(mana: number, cap = false): boolean {
         this.maxMana += mana;
 
         if (cap && this.maxMana > this.maxMaxMana) this.maxMana = this.maxMaxMana;
@@ -451,7 +451,7 @@ export class Player {
      * 
      * @returns Success
      */
-    gainMana(mana: number, cap = false) {
+    gainMana(mana: number, cap = false): boolean {
         this.gainEmptyMana(mana, cap);
         this.refreshMana(mana);
 
@@ -473,7 +473,7 @@ export class Player {
      * 
      * @returns Success
      */
-    gainOverload(overload: number) {
+    gainOverload(overload: number): boolean {
         this.overload += overload;
 
         game.events.broadcast("GainOverload", overload, this);
@@ -498,7 +498,7 @@ export class Player {
      * 
      * @returns Success
      */
-    setWeapon(weapon: Card) {
+    setWeapon(weapon: Card): boolean {
         this.destroyWeapon(true);
         this.weapon = weapon;
         this.attack += weapon.getAttack();
@@ -525,7 +525,7 @@ export class Player {
      * 
      * @returns Success
      */
-    destroyWeapon(triggerDeathrattle = false) {
+    destroyWeapon(triggerDeathrattle = false): boolean {
         if (!this.weapon) return false;
 
         if (triggerDeathrattle) this.weapon.activate("deathrattle");
@@ -545,7 +545,7 @@ export class Player {
      * 
      * @returns Success
      */
-    addAttack(amount: number) {
+    addAttack(amount: number): boolean {
         this.attack += amount;
 
         game.events.broadcast("GainHeroAttack", amount, this);
@@ -560,7 +560,7 @@ export class Player {
      * 
      * @returns Success
      */
-    addHealth(amount: number) {
+    addHealth(amount: number): boolean {
         this.health += amount;
 
         if (this.health > this.maxHealth) this.health = this.maxHealth;
@@ -578,7 +578,7 @@ export class Player {
      * 
      * @returns Success
      */
-    remHealth(amount: number) {
+    remHealth(amount: number): boolean {
         if (this.immune) return true;
 
         // Armor logic
@@ -610,14 +610,14 @@ export class Player {
     /**
      * Returns this player's health.
      */
-    getHealth() {
+    getHealth(): number {
         // I have this here for compatibility with minions
         return this.health;
     }
     /**
      * Returns this player's attack.
      */
-    getAttack() {
+    getAttack(): number {
         // I have this here for compatibility with minions
         return this.attack;
     }
@@ -641,7 +641,7 @@ export class Player {
      * 
      * @returns Success
      */
-    shuffleIntoDeck(card: Card) {
+    shuffleIntoDeck(card: Card): boolean {
         // Add the card into a random position in the deck
         let pos = game.functions.randInt(0, this.deck.length);
         this.deck.splice(pos, 0, card);
@@ -661,7 +661,7 @@ export class Player {
      * 
      * @returns Success
      */
-    addToBottomOfDeck(card: Card) {
+    addToBottomOfDeck(card: Card): boolean {
         this.deck = [card, ...this.deck];
 
         game.events.broadcast("AddCardToDeck", card, this);
@@ -718,15 +718,15 @@ export class Player {
      * 
      * @returns The card drawn | Is undefined if the card wasn't found
      */
-    drawSpecific(card: Card) {
-        if (this.deck.length <= 0) return;
+    drawSpecific(card: Card): Card | null {
+        if (this.deck.length <= 0) return null;
 
         //this.deck = this.deck.filter(c => c !== card);
         game.functions.remove(this.deck, card);
 
         game.events.broadcast("DrawCard", card, this);
 
-        if (card.type == "Spell" && card.keywords.includes("Cast On Draw") && card.activate("cast")) return;
+        if (card.type == "Spell" && card.keywords.includes("Cast On Draw") && card.activate("cast")) return null;
 
         game.suppressedEvents.push("AddCardToHand");
         this.addToHand(card);
@@ -743,7 +743,7 @@ export class Player {
      * 
      * @returns Success
      */
-    addToHand(card: Card) {
+    addToHand(card: Card): boolean {
         if (this.hand.length >= 10) return false;
         this.hand.push(card);
 
@@ -760,7 +760,7 @@ export class Player {
      * 
      * @returns Success
      */
-    removeFromHand(card: Card) {
+    removeFromHand(card: Card): boolean {
         this.hand = this.hand.filter(c => c !== card);
         return true;
     }
@@ -776,7 +776,7 @@ export class Player {
      * 
      * @returns Success
      */
-    setHero(hero: Card, armor = 5, setHeroClass = true) {
+    setHero(hero: Card, armor = 5, setHeroClass = true): boolean {
         this.hero = hero;
         if (setHeroClass) this.heroClass = hero.class;
         this.heroPowerCost = hero.hpCost || 2;
@@ -792,7 +792,7 @@ export class Player {
      *
      * @returns Success
      */
-    setToStartingHero(heroClass = this.heroClass) {
+    setToStartingHero(heroClass = this.heroClass): boolean {
         let heroCardName = heroClass + " Starting Hero";
         let heroCard = game.functions.getCardByName(heroCardName);
 
@@ -807,7 +807,7 @@ export class Player {
      * 
      * @returns Success | Cancelled
      */
-    heroPower() {
+    heroPower(): boolean | -1 {
         if (this.mana < this.heroPowerCost || !this.canUseHeroPower) return false;
         if (!this.hero) return false;
 
@@ -831,7 +831,7 @@ export class Player {
      *
      * @returns Success
      */
-    tradeCorpses(amount: number, callback: () => void) {
+    tradeCorpses(amount: number, callback: () => void): boolean {
         if (this.heroClass != "Death Knight") return false;
         if (this.corpses < amount) return false;
 
@@ -848,7 +848,7 @@ export class Player {
      *
      * @return Whether or not the player has the correct runes
      */
-    testRunes(runes: string) {
+    testRunes(runes: string): boolean {
         const charCount = (str: string, letter: string) => {
             let letter_count = 0;
 

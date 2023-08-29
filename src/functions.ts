@@ -9,6 +9,7 @@ import { Player } from "./player";
 import { Card } from "./card";
 import { Game } from "./game";
 import { stripColors } from "colors";
+import { Blueprint, CardClass, CardLike, CardRarity, EventKeys, EventValues, FunctionsValidateCardReturn, MinionTribe, QuestCallback, Target, TargetCallback, TickHookCallback, VanillaCard } from "./types";
 require("colors");
 
 let game: Game;
@@ -24,12 +25,12 @@ class DeckcodeFunctions {
     /**
      * Imports a deck using a code and put the cards into the player's deck
      * 
-     * @param {Player} plr The player to put the cards into the deck of
-     * @param {string} code The deck code
+     * @param plr The player to put the cards into the deck of
+     * @param code The deck code
      * 
-     * @returns {Card[] | "invalid"} The deck
+     * @returns The deck
      */
-    import(plr, code) {
+    import(plr: Player, code: string): Card[] | null {
         /**
          * Cause the function to return an error
          * 
@@ -38,11 +39,11 @@ class DeckcodeFunctions {
          *  
          * @returns {"invalid"} 
          */
-        const ERROR = (error_code, card_name = null) => {
+        const ERROR = (error_code: string, card_name: string | null = null): null => {
             console.log("This deck is not valid!\nError Code: ".red + error_code.yellow);
             if (card_name) console.log("Specific Card that caused this error: ".red + card_name.yellow);
             game.input();
-            return "invalid";
+            return null;
         }
 
         // The code is base64 encoded, so we need to decode it
@@ -75,7 +76,7 @@ class DeckcodeFunctions {
 
         if (!self.getClasses().includes(hero)) return ERROR("INVALIDHERO");
 
-        // @ts-ignore
+        // @ts-expect-error
         plr.heroClass = hero;
 
         let rune_classes = ["Death Knight"];
@@ -83,7 +84,7 @@ class DeckcodeFunctions {
 
         const addRunes = (runes) => {
             if (rune_class) plr.runes = runes;
-            // @ts-ignore
+            // @ts-expect-error
             else game.input("WARNING: This deck has runes in it, but the class is ".yellow + hero.brightYellow + ". Supported classes: ".yellow + rune_classes.join(", ").brightYellow + "\n");
         }
 
@@ -107,7 +108,7 @@ class DeckcodeFunctions {
             addRunes(runes);
         }
         else if (rune_class) {
-            // @ts-ignore
+            // @ts-expect-error
             game.input("WARNING: This class supports runes but there are no runes in this deck. This deck's class: ".yellow + hero.brightYellow + ". Supported classes: ".yellow + rune_classes.join(", ").brightYellow + "\n");
         }
 
@@ -235,13 +236,13 @@ class DeckcodeFunctions {
     /**
      * Generates a deckcode from a list of blueprints
      *
-     * @param {import("./types").Blueprint[]} deck The deck to create a deckcode from
-     * @param {string} heroClass The class of the deck. Example: "Priest"
-     * @param {string} runes The runes of the deck. Example: "BFU"
+     * @param deck The deck to create a deckcode from
+     * @param heroClass The class of the deck. Example: "Priest"
+     * @param runes The runes of the deck. Example: "BFU"
      *
-     * @returns {{code: string, error: null | {msg: string, info: any}}} The deckcode, An error message alongside any additional information.
+     * @returns The deckcode, An error message alongside any additional information.
      */
-    export(deck, heroClass, runes) {
+    export(deck: Blueprint[], heroClass: string, runes: string): { code: string; error: null | { msg: string; info: any; }; } {
         let error = null;
 
         if (deck.length < game.config.minDeckLength) error = {"msg": "TooFewCards", "info": deck.length};
@@ -313,13 +314,13 @@ class DeckcodeFunctions {
     /**
      * Turns a Hearthstone.js deckcode into a vanilla deckcode
      *
-     * @param {Player} plr The player that will get the deckcode
-     * @param {string} code The deckcode
-     * @param {boolean} extraFiltering If it should do extra filtering when there are more than 1 possible card. This may choose the wrong card. 
+     * @param plr The player that will get the deckcode
+     * @param code The deckcode
+     * @param extraFiltering If it should do extra filtering when there are more than 1 possible card. This may choose the wrong card. 
      *
-     * @returns {string} The vanilla deckcode
+     * @returns The vanilla deckcode
      */
-    toVanilla(plr, code, extraFiltering = true) {
+    toVanilla(plr: Player, code: string, extraFiltering: boolean = true): string {
         // WARNING: Jank code ahead. Beware!
         //
         // Reference: Death Knight [3B] /1:4,2/ 3f,5f,6f...
@@ -327,7 +328,7 @@ class DeckcodeFunctions {
         /**
          * @type {import("deckstrings").DeckDefinition}
          */
-        let deck = {"cards": [], "heroes": [], "format": 1};
+        let deck: import("deckstrings").DeckDefinition = {"cards": [], "heroes": [], "format": 1};
 
         let vanillaHeroes = { // List of vanilla heroes dbfIds
             "Warrior":      7,
@@ -349,7 +350,7 @@ class DeckcodeFunctions {
         /**
          * @type {number}
          */
-        let heroClassId = vanillaHeroes[heroClass];
+        let heroClassId: number = vanillaHeroes[heroClass];
 
         deck.heroes.push(heroClassId);
 
@@ -364,10 +365,10 @@ class DeckcodeFunctions {
         /**
          * @type {string}
          */
-        let vanillaCardsString;
+        let vanillaCardsString: string;
 
         try {
-            //@ts-ignore
+            //@ts-expect-error
             vanillaCardsString = fs.readFileSync(__dirname + "/../card_creator/vanilla/.ignore.cards.json");
         } catch (err) {
             console.log("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'scripts/genvanilla.bat' (requires an internet connection), then try again.".red);
@@ -378,11 +379,11 @@ class DeckcodeFunctions {
         /**
          * @type {import("./types").VanillaCard[]}
          */
-        let vanillaCards = JSON.parse(vanillaCardsString);
+        let vanillaCards: import("./types").VanillaCard[] = JSON.parse(vanillaCardsString);
 
         let cardsSplit = cards.split(",").map(i => parseInt(i, 36));
         let cardsSplitId = cardsSplit.map(i => self.getCardById(i));
-        // @ts-ignore
+        // @ts-expect-error
         let cardsSplitCard = cardsSplitId.map(c => new game.Card(c.name, plr));
         let trueCards = cardsSplitCard.map(c => c.displayName);
 
@@ -421,21 +422,21 @@ class DeckcodeFunctions {
             /**
              * @type {import("./types").VanillaCard}
              */
-            let match;
+            let match: import("./types").VanillaCard;
 
             if (matches.length > 1) {
                 // Ask the user to pick one
                 matches.forEach((m, i) => {
                     delete m.elite;
-                    // @ts-ignore
+                    // @ts-expect-error
                     delete m.artist;
-                    // @ts-ignore
+                    // @ts-expect-error
                     delete m.collectible; // All cards here should already be collectible
-                    // @ts-ignore
+                    // @ts-expect-error
                     delete m.referencedTags;
-                    // @ts-ignore
+                    // @ts-expect-error
                     delete m.mechanics;
-                    // @ts-ignore
+                    // @ts-expect-error
                     delete m.race; // Just look at `m.races`
 
                     console.log(`${i + 1}: `);
@@ -461,24 +462,24 @@ class DeckcodeFunctions {
     /**
      * Turns a vanilla deckcode into a Hearthstone.js deckcode
      *
-     * @param {Player} plr The player that will get the deckcode
-     * @param {string} code The deckcode
+     * @param plr The player that will get the deckcode
+     * @param code The deckcode
      *
-     * @returns {string} The Hearthstone.js deckcode
+     * @returns The Hearthstone.js deckcode
      */
-    fromVanilla(plr, code) {
+    fromVanilla(plr: Player, code: string): string {
         /**
          * @type {import("deckstrings").DeckDefinition}
          */
-        let deck = deckstrings.decode(code); // Use the 'deckstrings' api's decode
+        let deck: import("deckstrings").DeckDefinition = deckstrings.decode(code); // Use the 'deckstrings' api's decode
 
         /**
          * @type {string}
          */
-        let cardsString;
+        let cardsString: string;
 
         try {
-            // @ts-ignore
+            // @ts-expect-error
             cardsString = fs.readFileSync(__dirname + "/../card_creator/vanilla/.ignore.cards.json");
         } catch (err) {
             console.log("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'scripts/genvanilla.bat' (requires an internet connection), then try again.".red);
@@ -490,9 +491,9 @@ class DeckcodeFunctions {
         /**
          * @type {import("./types").VanillaCard[]}
          */
-        let cards = JSON.parse(cardsString.toString());
+        let cards: import("./types").VanillaCard[] = JSON.parse(cardsString.toString());
 
-        // @ts-ignore
+        // @ts-expect-error
         delete deck.format; // We don't care about the format
 
         let _heroClass = cards.find(a => a.dbfId == deck.heroes[0])?.cardClass;
@@ -504,19 +505,19 @@ class DeckcodeFunctions {
         /**
          * @type {(import("./types").VanillaCard | undefined | number)[][]}
          */
-        let deckDef = deck.cards.map(c => [cards.find(a => a.dbfId == c[0]), c[1]]); // Get the full card object from the dbfId
+        let deckDef: (import("./types").VanillaCard | undefined | number)[][] = deck.cards.map(c => [cards.find(a => a.dbfId == c[0]), c[1]]); // Get the full card object from the dbfId
 
         /**
          * @type {import("./types").Blueprint[]}
          */
-        let createdCards = self.getCards(false);
+        let createdCards: import("./types").Blueprint[] = self.getCards(false);
         
         let invalidCards = [];
         deckDef.forEach(c => {
             let vanillaCard = c[0];
             if (vanillaCard === undefined || typeof vanillaCard === "number") return;
 
-            // @ts-ignore
+            // @ts-expect-error
             if (createdCards.find(card => card.name == vanillaCard.name || card.displayName == vanillaCard.name)) return;
 
             // The card doesn't exist.
@@ -553,10 +554,10 @@ class DeckcodeFunctions {
             let [vanillaCard, amount] = c;
             if (vanillaCard === undefined || typeof vanillaCard === "number") return;
 
-            // @ts-ignore
+            // @ts-expect-error
             let name = cards.find(a => a.dbfId == vanillaCard.dbfId).name;
             // The name can still not be correct
-            // @ts-ignore
+            // @ts-expect-error
             if (!createdCards.find(a => a.name == name)) name = createdCards.find(a => a.displayName == name).name;
 
             new_deck.push([new game.Card(name, plr), amount]);
@@ -644,11 +645,11 @@ export class Functions {
      * 
      * Does not change the original array.
      * 
-     * @param {any[]} array Array to shuffle
+     * @param array Array to shuffle
      * 
-     * @returns {any[]} Shuffled array
+     * @returns Shuffled array
      */
-    shuffle(array) {
+    shuffle<T>(array: T[]): T[] {
         const newArray = [...array];
         const length = newArray.length;
 
@@ -665,12 +666,12 @@ export class Functions {
     /**
      * Removes `element` from `list`.
      *
-     * @param {any[]} list The list to remove from
-     * @param {any} element The element to remove from the list
+     * @param list The list to remove from
+     * @param element The element to remove from the list
      *
-     * @returns {boolean} Success
+     * @returns Success
      */
-    remove(list, element) {
+    remove<T>(list: T[], element: T): boolean {
         list.splice(list.indexOf(element), 1);
         return true;
     }
@@ -678,15 +679,15 @@ export class Functions {
     /**
      * Return a random element from `list`
      * 
-     * @param {any[]} list
-     * @param {boolean} cpyCard If this is true and the element is a card, create an imperfect copy of that card.
+     * @param list
+     * @param cpyCard If this is true and the element is a card, create an imperfect copy of that card.
      * 
-     * @returns {any} Item
+     * @returns Item
      */
-    randList(list, cpyCard = true) {
+    randList<T>(list: T[], cpyCard: boolean = true): T | Card {
         let item = list[this.randInt(0, list.length - 1)];
         
-        if (item instanceof game.Card && cpyCard) item = item.imperfectCopy();
+        if (item instanceof Card && cpyCard) return item.imperfectCopy();
 
         return item;
     }
@@ -694,17 +695,17 @@ export class Functions {
     /**
      * Returns `amount` random items from `list`.
      *
-     * @param {any[]} list
-     * @param {number} amount
-     * @param {boolean} cpyCard If this is true and the element is a card, create an imperfect copy of that card.
+     * @param list
+     * @param amount
+     * @param cpyCard If this is true and the element is a card, create an imperfect copy of that card.
      *
-     * @returns {any[]} The items
+     * @returns The items
      */
-    chooseItemsFromList(list, amount, cpyCard = true) {
+    chooseItemsFromList<T>(list: (T | Card)[], amount: number, cpyCard: boolean = true): (T | Card)[] {
         if (amount > list.length) amount = list.length;
 
         list = list.slice(); // Make a copy of the list
-        let elements = [];
+        let elements: (T | Card)[] = [];
 
         for (let i = 0; i < amount; i++) {
             let el = this.randList(list, cpyCard);
@@ -718,34 +719,34 @@ export class Functions {
     /**
      * Return a random number between `min` and `max`.
      * 
-     * @param {number} min The minimum number
-     * @param {number} max The maximum number
+     * @param min The minimum number
+     * @param max The maximum number
      * 
-     * @returns {number} The random number
+     * @returns The random number
      */
-    randInt(min, max) {
+    randInt(min: number, max: number): number {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
     /**
      * Capitalizes a string
      * 
-     * @param {string} str String
+     * @param str String
      * 
-     * @returns {string} The string capitalized
+     * @returns The string capitalized
      */
-    capitalize(str) {
+    capitalize(str: string): string {
         return str[0].toUpperCase() + str.slice(1).toLowerCase();
     }
 
     /**
      * Capitalizes all words in string
      *
-     * @param {string} str The string
+     * @param str The string
      *
-     * @returns {string} The string capitalized
+     * @returns The string capitalized
      */
-    capitalizeAll(str) {
+    capitalizeAll(str: string): string {
         return str.split(" ").map(k => this.capitalize(k)).join(" ");
     }
 
@@ -755,8 +756,8 @@ export class Functions {
      * Walls are a formatting tool for strings, which makes them easier to read.
      * Look at the example below.
      *
-     * @param {any[]} bricks The array
-     * @param {string} sep The seperator.
+     * @param bricks The array
+     * @param sep The seperator.
      *  
      * @example
      * let bricks = [];
@@ -777,47 +778,42 @@ export class Functions {
      * 
      * assert.equal(wall, ["Example             - Example", "Test                - Hello World", "This is the longest - Short", "Tiny                - This is even longer then that one!"]);
      * 
-     * @returns {string[]} The wall
+     * @returns The wall
      */
-    createWall(bricks, sep) {
+    createWall(bricks: string[], sep: string): string[] {
         // Find the longest brick, most characters to the left of the seperator.
 
         /**
          * The longest brick
-         * 
-         * @type {(string | number)[]} [brick, length]
          */
-        let longest_brick = [];
+        let longest_brick: [string, number] = ["", -Infinity];
 
         bricks.forEach(b => {
-            b = b.split(sep);
+            let splitBrick = b.split(sep);
 
-            let length = b[0].length;
+            let length = splitBrick[0].length;
 
             if (length <= longest_brick[1]) return;
-
             longest_brick = [b, length];
         });
 
         /**
          * The wall to return.
-         * 
-         * @type {string[]}
          */
-        let wall = []
+        let wall: string[] = []
 
         bricks.forEach(b => {
-            b = b.split(sep);
+            let splitBrick = b.split(sep);
 
             let strbuilder = "";
 
-            // @ts-ignore
-            let diff = longest_brick[1] - b[0].length;
+            // @ts-expect-error
+            let diff = longest_brick[1] - splitBrick[0].length;
 
-            strbuilder += b[0];
+            strbuilder += splitBrick[0];
             strbuilder += " ".repeat(diff);
             strbuilder += sep;
-            strbuilder += b[1];
+            strbuilder += splitBrick[1];
 
             wall.push(strbuilder);
         });
@@ -828,11 +824,11 @@ export class Functions {
     /**
      * Create a (crash)log file
      *
-     * @param {Error | null} [err=null] If this is set, create a crash log. If this is not set, create a normal log file.
+     * @param err If this is set, create a crash log. If this is not set, create a normal log file.
      *
-     * @returns {boolean} Success
+     * @returns Success
      */
-    createLogFile(err = null) {
+    createLogFile(err?: Error): boolean {
         // Create a (crash-)log file
         if (!fs.existsSync(`${__dirname}/../logs/`)) fs.mkdirSync(`${__dirname}/../logs/`);
 
@@ -921,24 +917,24 @@ ${main_content}
     /**
      * Returns an AI Error with the provided information.
      *
-     * @param {string} code - The function where the error occurred.
-     * @param {any} expected - The expected value.
-     * @param {any} actual - The actual value.
+     * @param code The function where the error occurred.
+     * @param expected The expected value.
+     * @param actual The actual value.
      * 
-     * @returns {Error} - The AI Error with the provided information.
+     * @returns The AI Error with the provided information.
      */
-    createAIError(code, expected, actual) {
+    createAIError(code: string, expected: any, actual: any): Error {
         return new Error(`AI Error: expected: ${expected}, got: ${actual}. Error Code: ${code}`);
     }
 
     /**
      * Filter out some useless vanilla cards
      *
-     * @param {import("./types").VanillaCard[]} cards The list of vanilla cards to filter
-     * @param {boolean} uncollectible If it should filter away uncollectible cards
-     * @param {boolean} dangerous If there are cards with a 'howToEarn' field, filter away any cards that don't have that.
+     * @param cards The list of vanilla cards to filter
+     * @param uncollectible If it should filter away uncollectible cards
+     * @param dangerous If there are cards with a 'howToEarn' field, filter away any cards that don't have that.
      *
-     * @returns {import("./types").VanillaCard[]} The filtered cards
+     * @returns The filtered cards
      * 
      * @example
      * // The numbers here are not accurate, but you get the point.
@@ -956,7 +952,7 @@ ${main_content}
      * cards = filterVanillaCards(cards, true, true);
      * assert(cards.length, 1);
      */
-    filterVanillaCards(cards, uncollectible = true, dangerous = false, keepHeroSkins = false) {
+    filterVanillaCards(cards: VanillaCard[], uncollectible: boolean = true, dangerous: boolean = false, keepHeroSkins = false): VanillaCard[] {
         if (uncollectible) cards = cards.filter(a => a.collectible); // You're welcome
         cards = cards.filter(a => !a.id.startsWith("Prologue"));
         cards = cards.filter(a => !a.id.startsWith("PVPDR")); // Idk what 'PVPDR' means, but ok
@@ -1005,10 +1001,10 @@ ${main_content}
     /**
      * Open a program with args
      * 
-     * @param {string} command The command/program to run
-     * @param {string} args The arguments
+     * @param command The command/program to run
+     * @param args The arguments
      * 
-     * @returns {boolean} Success
+     * @returns Success
      * 
      * @example
      * // Opens notepad to "foo.txt" in the main folder.
@@ -1017,7 +1013,7 @@ ${main_content}
      * // Wait until the user presses enter. This function automatically prints a traceback to the screen but will not pause by itself.
      * if (!success) game.input();
      */
-    openWithArgs(command, args) {
+    openWithArgs(command: string, args: string): boolean {
         // Windows vs Linux. Pros and Cons:
         if (process.platform == "win32") {
             // Windows
@@ -1070,12 +1066,12 @@ ${main_content}
     /**
      * Returns the card with the name `name`.
      * 
-     * @param {string | number} name The name
-     * @param {boolean} refer If this should call `getCardById` if it doesn't find the card from the name
+     * @param name The name
+     * @param refer If this should call `getCardById` if it doesn't find the card from the name
      * 
-     * @returns {import("./types").Blueprint | null} The blueprint of the card
+     * @returns The blueprint of the card
      */
-    getCardByName(name, refer = true) {
+    getCardByName(name: string | number, refer: boolean = true): Blueprint | null {
         let card = null;
 
         game.cards.forEach(c => {
@@ -1092,12 +1088,12 @@ ${main_content}
     /**
      * Returns the card with the id of `id`.
      * 
-     * @param {number | string} id The id
-     * @param {boolean} refer If this should call `getCardByName` if it doesn't find the card from the id
+     * @param id The id
+     * @param refer If this should call `getCardByName` if it doesn't find the card from the id
      * 
-     * @returns {import("./types").Blueprint | null} The blueprint of the card
+     * @returns The blueprint of the card
      */
-    getCardById(id, refer = true) {
+    getCardById(id: number | string, refer: boolean = true): Blueprint | null {
         let card = game.cards.filter(c => c.id == id)[0];
 
         if (!card && refer) return this.getCardByName(id.toString(), false);
@@ -1108,12 +1104,12 @@ ${main_content}
     /**
      * Returns all cards added to Hearthstone.js
      *
-     * @param {boolean} uncollectible Filter out all uncollectible cards
-     * @param {import("./types").Blueprint[]} cards This defaults to `game.cards`, which contains all cards in the game.
+     * @param uncollectible Filter out all uncollectible cards
+     * @param cards This defaults to `game.cards`, which contains all cards in the game.
      *
-     * @returns {import("./types").Blueprint[]} Cards
+     * @returns Cards
      */
-    getCards(uncollectible = true, cards = game.cards) {
+    getCards(uncollectible: boolean = true, cards: Blueprint[] = game.cards): Blueprint[] {
         let _cards = [];
 
         cards.forEach(c => {
@@ -1126,10 +1122,10 @@ ${main_content}
     /**
      * Returns if the `card`'s class is the same as the `plr`'s class or 'Neutral'
      *
-     * @param {Player} plr
-     * @param {Card | import("./types").Blueprint} card
+     * @param plr
+     * @param card
      *
-     * @returns {boolean} Result
+     * @returns Result
      * 
      * @example
      * assert.equal(card.class, "Mage");
@@ -1155,17 +1151,15 @@ ${main_content}
      * let result = validateClass(plr, card);
      * assert.equal(result, true);
      */
-    validateClass(plr, card) {
+    validateClass(plr: Player, card: CardLike): boolean {
         return [plr.heroClass, "Neutral"].includes(card.class);
     }
 
     /**
      * Returns if the `card_tribe` is `tribe` or 'All'
      *
-     * @param {import("./types").MinionTribe} card_tribe
-     * @param {import("./types").MinionTribe} tribe
-     *
-     * @returns {boolean}
+     * @param card_tribe
+     * @param tribe
      * 
      * @example
      * assert.equal(card.tribe, "Beast");
@@ -1181,21 +1175,21 @@ ${main_content}
      * let result = matchTribe(card.tribe, "Beast");
      * assert.equal(result, true);
      */
-    matchTribe(card_tribe, tribe) {
-        if (/all/i.test(card_tribe)) return true; // If the card's tribe is "All".
-
-        return card_tribe.includes(tribe);
+    matchTribe(card_tribe: MinionTribe, tribe: MinionTribe): boolean {
+        // If the card's tribe is "All".
+        if (/all/i.test(card_tribe)) return true;
+        else return card_tribe.includes(tribe);
     }
 
     /**
      * Checks if a card is a valid card to put into a players deck
      * 
-     * @param {Card} card The card to check
-     * @param {Player} plr The player to check against
+     * @param card The card to check
+     * @param plr The player to check against
      * 
-     * @returns {boolean | "class" | "uncollectible" | "runes"} Success | Errorcode
+     * @returns Success | Errorcode
      */
-    validateCard(card, plr) {
+    validateCard(card: Card, plr: Player): FunctionsValidateCardReturn {
         if (!card.class.split(" / ").includes(plr.heroClass) && card.class != "Neutral") return "class";
         if (card.uncollectible) return "uncollectible";
 
@@ -1208,11 +1202,11 @@ ${main_content}
     /**
      * Returns true if the `plr`'s deck has no duplicates.
      *
-     * @param {Player} plr The player to check
+     * @param plr The player to check
      *
-     * @returns {boolean} Highlander
+     * @returns Highlander
      */
-    highlander(plr) {
+    highlander(plr: Player): boolean {
         let deck = plr.deck.map(c => c.name);
 
         return (new Set(deck)).size == deck.length;
@@ -1221,15 +1215,15 @@ ${main_content}
     /**
      * Returns all classes in the game
      *
-     * @returns {string[]} Classes
+     * @returns Classes
      * 
      * @example
      * let classes = getClasses();
      * 
      * assert.equal(classes, ["Mage", "Warrior", "Druid", ...])
      */
-    getClasses() {
-        let classes = [];
+    getClasses(): Exclude<CardClass, "Neutral">[] {
+        let classes: Exclude<CardClass, "Neutral">[] = [];
 
         fs.readdirSync(__dirname + "/../cards/StartingHeroes").forEach(file => {
             if (!file.endsWith(".js")) return; // Something is wrong with the file name.
@@ -1239,7 +1233,7 @@ ${main_content}
             name = game.functions.capitalizeAll(name); // Capitalize all words
 
             let card = game.functions.getCardByName(name + " Starting Hero");
-            if (!card || card.class != name || card.type != "Hero" || !card["heropower"]) {
+            if (!card || card.class != name || card.type != "Hero" || !card["heropower"] || card.class === "Neutral") {
                 console.warn("Found card in the startingheroes folder that isn't a starting hero. If the game crashes, please note this in your bug report. Name: " + name + ". Error Code: StartingHeroInvalidHandler");
                 return;
             }
@@ -1253,11 +1247,11 @@ ${main_content}
     /**
      * Colors `str` based on `rarity`.
      *
-     * @param {string} str The string to color
-     * @param {string} rarity The rarity
-     * @param {boolean} bold Automatically apply bold
+     * @param str The string to color
+     * @param rarity The rarity
+     * @param bold Automatically apply bold
      *
-     * @returns {string} The colored string
+     * @returns The colored string
      * 
      * @example
      * assert(card.rarity, "Legendary");
@@ -1266,7 +1260,7 @@ ${main_content}
      * let colored = colorByRarity(card.name, card.rarity);
      * assert.equal(colored, "Sheep".yellow);
      */
-    colorByRarity(str, rarity, bold = true) {
+    colorByRarity(str: string, rarity: CardRarity, bold: boolean = true): string {
         switch (rarity) {
             case "Common":
                 str = str.gray;
@@ -1275,7 +1269,7 @@ ${main_content}
                 str = str.blue;
                 break;
             case "Epic":
-                // @ts-ignore
+                // @ts-expect-error
                 str = str.brightMagenta;
                 break;
             case "Legendary":
@@ -1285,7 +1279,7 @@ ${main_content}
                 break;
         }
 
-        // @ts-ignore
+        // @ts-expect-error
         if (bold && rarity != "Legendary") str = str.bold;
 
         return str;
@@ -1310,9 +1304,9 @@ ${main_content}
      * 'B' = Bold, 'R' = Reset
      * ```
      *
-     * @param {string} str The string to parse
+     * @param str The string to parse
      *
-     * @returns {string} The resulting string
+     * @returns The resulting string
      * 
      * @example
      * let parsed = parseTags("&BBattlecry:&R Test");
@@ -1323,14 +1317,14 @@ ${main_content}
      * let parsed = parseTags("~&BBattlecry:~&R Test");
      * assert.equal(parsed, "&BBattlecry:&R Test");
      */
-    parseTags(str) {
+    parseTags(str: string): string {
         /**
          * Appends text styling based on the current types.
          *
-         * @param {string} c The text to be styled
-         * @return {string} The text with applied styling
+         * @param c The text to be styled
+         * @return The text with applied styling
          */
-        const appendTypes = (c) => {
+        const appendTypes = (c: string): string => {
             let ret = c;
 
             // This line fixes a bug that makes, for example, `&rTest&R.` make the `.` be red when it should be white. This bug is why all new battlecries were `&BBattlecry:&R Deal...` instead of `&BBattlecry: &RDeal...`. I will see which one i choose in the future.
@@ -1372,7 +1366,7 @@ ${main_content}
                         ret = ret.reset;
                         break;
                     case "B":
-                        // @ts-ignore
+                        // @ts-expect-error
                         ret = ret.bold;
                         break;
                     case "U":
@@ -1440,12 +1434,8 @@ ${main_content}
      * let str = "&BHello&R";
      * 
      * assert.equal(stripTags(str), "Hello");
-     * 
-     * @param {string} str
-     * 
-     * @returns {string}
      */
-    stripTags(str) {
+    stripTags(str: string): string {
         // Regular expressions created by AI's, it removes the "&B"'s but keeps the "~&B"'s since the '~' here works like an escape character.
         // It does however remove the escape character itself.
         let strippedString = str;
@@ -1462,11 +1452,11 @@ ${main_content}
     /**
      * Clones the `object`.
      * 
-     * @param {Object} object The object to clone
+     * @param object The object to clone
      * 
-     * @returns {Object} Clone
+     * @returns Clone
      */
-    cloneObject(object) {
+    cloneObject<T>(object: T): T {
         return Object.assign(Object.create(Object.getPrototypeOf(object)), object);
     }
 
@@ -1474,11 +1464,11 @@ ${main_content}
      * Creates a PERFECT copy of a card, and sets some essential properties.
      * This is the exact same as `card.perfectCopy`, so use that instead.
      * 
-     * @param {Card} card The card to clone
+     * @param card The card to clone
      * 
-     * @returns {Card} Clone
+     * @returns Clone
      */
-    cloneCard(card) {
+    cloneCard(card: Card): Card {
         let clone = this.cloneObject(card);
 
         clone.randomizeUUID();
@@ -1491,12 +1481,12 @@ ${main_content}
     /**
      * Calls `callback` on all `plr`'s targets, including the player itself.
      *
-     * @param {Player} plr The player
-     * @param {import("./types").TargetCallback} callback The callback to call
+     * @param plr The player
+     * @param callback The callback to call
      * 
-     * @returns {boolean} Success
+     * @returns Success
      */
-    doPlayerTargets(plr, callback) {
+    doPlayerTargets(plr: Player, callback: (target: Target) => void): boolean {
         game.board[plr.id].forEach(m => {
             callback(m);
         });
@@ -1509,14 +1499,14 @@ ${main_content}
     /**
      * Add an event listener.
      *
-     * @param {import("./types").EventKeys | ""} key The event to listen for. If this is an empty string, it will listen for any event.
-     * @param {import("./types").EventListenerCheckCallback | true} checkCallback This will trigger when the event gets broadcast, but before the actual code in `callback`. If this returns false, the event listener will ignore the event. If you set this to `true`, it is the same as doing `() => {return true}`.
-     * @param {import("./types").EventListenerCheckCallback} callback The code that will be ran if the event listener gets triggered and gets through `checkCallback`. If this returns true, the event listener will be destroyed.
-     * @param {number} lifespan How many times the event listener will trigger and call "callback" before self-destructing. Set this to -1 to make it last forever, or until it is manually destroyed using "callback".
+     * @param key The event to listen for. If this is an empty string, it will listen for any event.
+     * @param checkCallback This will trigger when the event gets broadcast, but before the actual code in `callback`. If this returns false, the event listener will ignore the event. If you set this to `true`, it is the same as doing `() => {return true}`.
+     * @param callback The code that will be ran if the event listener gets triggered and gets through `checkCallback`. If this returns true, the event listener will be destroyed.
+     * @param lifespan How many times the event listener will trigger and call "callback" before self-destructing. Set this to -1 to make it last forever, or until it is manually destroyed using "callback".
      *
-     * @returns {function} If you call this function, it will destroy the event listener.
+     * @returns If you call this function, it will destroy the event listener.
      */
-    addEventListener(key, checkCallback, callback, lifespan = 1) {
+    addEventListener(key: EventKeys | "", checkCallback: true | ((val?: EventValues) => boolean), callback: (val?: EventValues) => true | undefined, lifespan: number = 1): () => void {
         let times = 0;
 
         let id = game.events.eventListeners;
@@ -1547,11 +1537,11 @@ ${main_content}
     /**
      * Hooks a callback function to the tick event.
      *
-     * @param {Function} callback - The callback function to be hooked.
+     * @param callback The callback function to be hooked.
      * 
-     * @returns {Function} a function that, when called, will remove the hook from the tick event.
+     * @returns A function that, when called, will remove the hook from the tick event.
      */
-    hookToTick(callback) {
+    hookToTick(callback: TickHookCallback): () => void {
         game.events.tickHooks.push(callback);
 
         const unhook = () => {
@@ -1566,11 +1556,11 @@ ${main_content}
     /**
      * Filters out all cards that are uncollectible in a list
      * 
-     * @param {(Card | import("./types").Blueprint)[]} cards The list of cards
+     * @param cards The list of cards
      * 
-     * @returns {(Card | import("./types").Blueprint)[]} The cards without the uncollectible cards
+     * @returns The cards without the uncollectible cards
      */
-    accountForUncollectible(cards) {
+    accountForUncollectible(cards: CardLike[]): CardLike[] {
         return cards.filter(c => !c.uncollectible);
     }
 
@@ -1579,14 +1569,14 @@ ${main_content}
     /**
      * Asks the user a `prompt` and show 3 choices for the player to choose, and do something to the minion based on the choice.
      * 
-     * @param {Card} minion The minion to adapt
-     * @param {string} prompt The prompt to ask the user
-     * @param {Card[]} _values DON'T TOUCH THIS UNLESS YOU KNOW WHAT YOU'RE DOING
+     * @param minion The minion to adapt
+     * @param prompt The prompt to ask the user
+     * @param _values DON'T TOUCH THIS UNLESS YOU KNOW WHAT YOU'RE DOING
      * 
-     * @returns {any[] | -1} An array with the name of the adapt(s) chosen, or -1 if the user cancelled.
+     * @returns An array with the name of the adapt(s) chosen, or -1 if the user cancelled.
      */
-    adapt(minion, prompt = "Choose One:", _values = []) {
-        const ADAPT = new game.Card("Adapt Helper", game.player);
+    adapt(minion: Card, prompt: string = "Choose One:", _values: Card[] = []): any[] | -1 {
+        const ADAPT = new Card("Adapt Helper", game.player);
 
         let ret = ADAPT.activate("adapt", minion, prompt, _values);
         if (ret === false) throw new Error("activate couldn't find adapt for ADAPT card.");
@@ -1597,11 +1587,11 @@ ${main_content}
     /**
      * Invoke the `plr`'s Galakrond
      * 
-     * @param {Player} plr The player
+     * @param plr The player
      * 
-     * @returns {boolean} Success
+     * @returns Success
      */
-    invoke(plr) {
+    invoke(plr: Player): boolean {
         // Find the card in player's deck/hand/hero that begins with "Galakrond, the "
         let deck_galakrond = plr.deck.find(c => c.displayName.startsWith("Galakrond, the "));
         let hand_galakrond = plr.hand.find(c => c.displayName.startsWith("Galakrond, the "));
@@ -1627,14 +1617,14 @@ ${main_content}
     /**
      * Chooses a minion from `list` and puts it onto the board.
      * 
-     * @param {Player} plr The player
-     * @param {Card[] | null} list The list to recruit from. This defaults to `plr`'s deck.
-     * @param {number} amount The amount of minions to recruit
+     * @param plr The player
+     * @param list The list to recruit from. This defaults to `plr`'s deck.
+     * @param amount The amount of minions to recruit
      * 
-     * @returns {Card[]} Returns the cards recruited
+     * @returns Returns the cards recruited
      */
-    recruit(plr, list = null, amount = 1) {
-        if (list == null) list = plr.deck;
+    recruit(plr: Player, list?: Card[], amount: number = 1): Card[] {
+        if (!list) list = plr.deck;
         let _list = list;
 
         list = this.shuffle(list.slice());
@@ -1663,16 +1653,16 @@ ${main_content}
     /**
      * Creates and returns a jade golem with the correct stats and cost for the player
      * 
-     * @param {Player} plr The jade golem's owner
+     * @param plr The jade golem's owner
      * 
-     * @returns {Card} The jade golem
+     * @returns The jade golem
      */
-    createJade(plr) {
+    createJade(plr: Player): Card {
         if (plr.jadeCounter < 30) plr.jadeCounter += 1;
         const count = plr.jadeCounter;
         const mana = (count < 10) ? count : 10;
 
-        let jade = new game.Card("Jade Golem", plr);
+        let jade = new Card("Jade Golem", plr);
         jade.setStats(count, count);
         jade.mana = mana;
 
@@ -1682,11 +1672,11 @@ ${main_content}
     /**
      * Imports the config from the `path` specified.
      *
-     * @param {string} path The path to import from.
+     * @param path The path to import from.
      *
-     * @returns {boolean} Success
+     * @returns Success
      */
-    importConfig(path) {
+    importConfig(path: string): boolean {
         game.config = {};
 
         require("fs").readdirSync(path, { withFileTypes: true }).forEach(file => {
@@ -1708,11 +1698,11 @@ ${main_content}
     /**
      * USE @see {@link importCards} INSTEAD. Imports all cards from a folder.
      * 
-     * @param {string} path The path
+     * @param path The path
      * 
-     * @returns {boolean} Success
+     * @returns Success
      */
-    _importCards(path) {
+    _importCards(path: string): boolean {
         require("fs").readdirSync(path, { withFileTypes: true }).forEach(file => {
             let p = `${path}/${file.name}`;
 
@@ -1730,11 +1720,11 @@ ${main_content}
     /**
      * Imports all cards from a folder
      * 
-     * @param {string} path The path
+     * @param path The path
      * 
-     * @returns {boolean} Success
+     * @returns Success
      */
-    importCards(path) {
+    importCards(path: string): boolean {
         game.cards = [];
 
         return this._importCards(path);
@@ -1743,16 +1733,16 @@ ${main_content}
     /**
      * Mulligans the cards from input. Read `interact.mulligan` for more info.
      *
-     * @param {Player} plr The player who mulligans
-     * @param {String} input The ids of the cards to mulligan
+     * @param plr The player who mulligans
+     * @param input The ids of the cards to mulligan
      *
-     * @returns {Card[] | TypeError} The cards mulligan'd
+     * @returns The cards mulligan'd
      */
-    mulligan(plr, input) {
+    mulligan(plr: Player, input: string): Card[] | TypeError {
         if (!parseInt(input)) return new TypeError("Can't parse `input` to int");
 
-        let cards = [];
-        let mulligan = [];
+        let cards: Card[] = [];
+        let mulligan: Card[] = [];
 
         input.split("").forEach(c => mulligan.push(plr.hand[parseInt(c) - 1]));
 
@@ -1782,12 +1772,13 @@ ${main_content}
     /**
      * Progress a quest by a value
      * 
-     * @param {string} name The name of the quest
-     * @param {number} value The amount to progress the quest by
+     * @param plr The player
+     * @param name The name of the quest
+     * @param value The amount to progress the quest by
      * 
-     * @returns {number | null} The new progress
+     * @returns The new progress
      */
-    progressQuest(plr, name, value = 1) {
+    progressQuest(plr: Player, name: string, value: number = 1): number | null {
         let quest = plr.secrets.find(s => s["name"] == name);
         if (!quest) quest = plr.sidequests.find(s => s["name"] == name);
         if (!quest) quest = plr.quests.find(s => s["name"] == name);
@@ -1801,17 +1792,17 @@ ${main_content}
     /**
      * Adds a quest / secrets to a player
      * 
-     * @param {"Quest" | "Sidequest" | "Secret"} type The type of the quest
-     * @param {Player} plr The player to add the quest to
-     * @param {Card} card The card that created the quest / secret
-     * @param {import("./types").EventKeys} key The key to listen for
-     * @param {any} val The value that the quest needs
-     * @param {import("./types").QuestCallback} callback The function to call when the key is invoked.
-     * @param {string | null} [next=null] The name of the next quest / sidequest / secret that should be added when the quest is done
+     * @param type The type of the quest
+     * @param plr The player to add the quest to
+     * @param card The card that created the quest / secret
+     * @param key The key to listen for
+     * @param val The value that the quest needs
+     * @param callback The function to call when the key is invoked.
+     * @param next The name of the next quest / sidequest / secret that should be added when the quest is done
      * 
      * @returns {boolean} Success
      */
-    addQuest(type, plr, card, key, val, callback, next = null) {
+    addQuest(type: "Quest" | "Sidequest" | "Secret", plr: Player, card: Card, key: EventKeys, val: EventValues, callback: QuestCallback, next?: string): boolean {
         const t = plr[type.toLowerCase() + "s"];
 
         if ( (type.toLowerCase() == "quest" && t.length > 0) || ((type.toLowerCase() == "secret" || type.toLowerCase() == "sidequest") && (t.length >= 3 || t.filter(s => s.displayName == card.displayName).length > 0)) ) {
