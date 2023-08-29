@@ -631,7 +631,7 @@ class DeckcodeFunctions {
     }
 }
 
-class Functions {
+export class Functions {
     /**
      * @param {Game} _game 
      */
@@ -1835,5 +1835,3 @@ ${main_content}
         return true;
     }
 }
-
-exports.Functions = Functions;

@@ -1,11 +1,12 @@
 const { question }  = require('readline-sync');
-const { Functions } = require("./functions");
-const { Player }    = require("./player");
-const { Card }      = require("./card");
-const { Interact }  = require("./interact");
-const { AI }        = require('./ai');
+import { Functions } from "./functions";
+import { Player }    from "./player";
+import { Card }      from "./card";
+import { Interact }  from "./interact";
+import { AI }        from './ai';
+import { Blueprint, EventKeys, EventListenerCallback, GameConfig, GameConstants } from "./types";
 
-class EventManager {
+export class EventManager {
     /**
      * @param {Game} game 
      */
@@ -256,35 +257,140 @@ class EventManager {
     }
 }
 
-class Game {
+export class Game {
     /**
-     * @param {Player} player1 
-     * @param {Player} player2 
+     * Some general functions that can be used.
+     * 
+     * This has a lot of abstraction, so don't be afraid to use them.
+     * Look in here for more.
      */
-    constructor(player1, player2) {
+    functions: Functions;
+
+    /**
+     * The player that starts first.
+     */
+    player1: Player;
+
+    /**
+     * The player that starts with `The Coin`.
+     * 
+     * @type {Player}
+     */
+    player2: Player;
+
+    /**
+     * The player whose turn it is.
+     */
+    player: Player;
+    
+    /**
+     * The opponent of the player whose turn it is.
+     * 
+     * Same as `game.player.getOpponent()`.
+     */
+    opponent: Player;
+
+    /**
+     * Events & History managment and tracker.
+     */
+    events: EventManager;
+
+    /**
+     * This has a lot of functions for interacting with the user.
+     * 
+     * This is generally less useful than the `functions` object, since the majority of these functions are only used once in the source code.
+     * However, some functions are still useful. For example, the `selectTarget` function.
+     */
+    interact: Interact;
+
+    /**
+     * Some configuration for the game.
+     * 
+     * Look in the `config` folder.
+     */
+    config: GameConfig;
+
+    /**
+     * All of the cards that have been implemented so far.
+     * 
+     * Use `functions.getCards()` instead.
+     */
+    cards: Blueprint[];
+
+    /**
+     * The turn counter.
+     * 
+     * This goes up at the beginning of each player's turn.
+     * 
+     * This means that, for example, if `Player 1`'s turn is on turn 0, then when it's `Player 1`'s turn again, the turn counter is 2.
+     * 
+     * Do
+     * ```
+     * Math.ceil(game.turns / 2)
+     * ```
+     * for a more conventional turn counter.
+     */
+    turns: number;
+
+    /**
+     * The board of the game.
+     * 
+     * The 0th element is `game.player1`'s side of the board,
+     * and the 1th element is `game.player2`'s side of the board.
+     */
+    board: Card[][];
+
+    /**
+     * The graveyard, a list of cards that have been killed.
+     * 
+     * The 0th element is `game.player1`'s graveyard,
+     * and the 1st element is `game.player2`'s graveyard.
+     */
+    graveyard: Card[][];
+
+    /**
+     * The event listeners that are attached to the game currently.
+     */
+    eventListeners: {[key: number]: EventListenerCallback[]};
+
+    /**
+     * A list of event keys to suppress.
+     * 
+     * If an event with a key in this list is broadcast, it will add it to the history, and tick the game, but will not activate any passives / event listeners.
+     */
+    suppressedEvents: EventKeys[];
+
+    /**
+     * Whether or not the game is currently accepting input from the user.
+     * 
+     * If this is true, the user can't interact with the game. This will most likely cause an infinite loop, unless both players are ai's.
+     */
+    no_input: boolean;
+
+    /**
+     * If the game is currently running.
+     * 
+     * If this is false, the game loop will end.
+     */
+    running: boolean;
+
+    /**
+     * If the program is currently evaluating code. Should only be enabled while running a `eval` function.
+     * 
+     * This is used to throw errors in places that normally would just return null / "invalid".
+     */
+    evaling: boolean;
+
+    /**
+     * Some constant values.
+     */
+    constants: GameConstants;
+
+    constructor(player1: Player, player2: Player) {
         // Choose a random player to be player 1
-        /**
-         * Some general functions that can be used.
-         * 
-         * This has a lot of abstraction, so don't be afraid to use them.
-         * Look in here for more.
-         * 
-         * @type {Functions}
-         */
         this.functions = new Functions(this);
 
-        /**
-         * The player that starts first.
-         * 
-         * @type {Player}
-         */
         this.player1 = player1; // Set this to player 1 temporarily, in order to never be null
-
-        /**
-         * The player that starts with `The Coin`.
-         * 
-         * @type {Player}
-         */
         this.player2 = player2;
 
         // Choose a random player to be player 1 and player 2
@@ -296,149 +402,49 @@ class Game {
             this.player2 = player1;
         }
 
-        /**
-         * The player whose turn it is.
-         * 
-         * @type {Player}
-         */
+        // Set the starting players
         this.player = this.player1;
-
-        /**
-         * The opponent of the player whose turn it is.
-         * 
-         * Same as `game.player.getOpponent()`.
-         * 
-         * @type {Player}
-         */
         this.opponent = this.player2;
 
+        // Set the player's ids
         this.player1.id = 0;
         this.player2.id = 1;
 
-        this.Card = Card;
-        this.Player = Player;
-        this.AI = AI;
-
-        /**
-         * Events & History managment and tracker.
-         * 
-         * @type {EventManager}
-         */
+        // Create the event manager
         this.events = new EventManager(this);
 
-        /**
-         * This has a lot of functions for interacting with the user.
-         * 
-         * This is generally less useful than the `functions` object, since the majority of these functions are only used once in the source code.
-         * However, some functions are still useful. For example, the `selectTarget` function.
-         * 
-         * @type {Interact}
-         */
+        // Create the interact module
         this.interact = new Interact(this);
 
-        /**
-         * Some configuration for the game.
-         * 
-         * Look in the `config` folder.
-         * 
-         * @type {Object}
-         */
+        // The config values. Gets set by `functions.getConfig()`
         this.config = {};
 
-        /**
-         * All of the cards that have been implemented so far.
-         * 
-         * Use `functions.getCards()` instead.
-         * 
-         * @type {import('./types').Blueprint[]}
-         */
+        // All the cards in the game. Gets set by `functions.getCards()`
         this.cards = [];
 
-        /**
-         * The turn counter.
-         * 
-         * This goes up at the beginning of each player's turn.
-         * 
-         * This means that, for example, if `Player 1`'s turn is on turn 0, then when it's `Player 1`'s turn again, the turn counter is 2.
-         * 
-         * Do
-         * ```
-         * Math.ceil(game.turns / 2)
-         * ```
-         * for a more conventional turn counter.
-         * 
-         * @type {number}
-         */
+        // Set the turn counter to 0
         this.turns = 0;
 
-        /**
-         * The board of the game.
-         * 
-         * The 0th element is `game.player1`'s side of the board,
-         * and the 1th element is `game.player2`'s side of the board.
-         * 
-         * @type {Card[][]}
-         */
+        // Set the board and graveyard
         this.board = [[], []];
-
-        /**
-         * The graveyard, a list of cards that have been killed.
-         * 
-         * The 0th element is `game.player1`'s graveyard,
-         * and the 1st element is `game.player2`'s graveyard.
-         * 
-         * @type {Card[][]}
-         */
         this.graveyard = [[], []];
 
-        /**
-         * The event listeners that are attached to the game currently.
-         * 
-         * @type {Object<number, import('./types').EventListenerCallback>}
-         */
+        // The current event listeners
         this.eventListeners = {};
 
-        /**
-         * A list of event keys to suppress.
-         * 
-         * If an event with a key in this list is broadcast, it will add it to the history, and tick the game, but will not activate any passives / event listeners.
-         * 
-         * @type {import('./types').EventKeys[]}
-         */
+        // A list of events to suppress
         this.suppressedEvents = [];
 
-        /**
-         * Whether or not the game is currently accepting input from the user.
-         * 
-         * If this is true, the user can't interact with the game. This will most likely cause an infinite loop, unless both players are ai's.
-         * 
-         * @type {boolean}
-         */
+        // If the game is currently accepting input
         this.no_input = false;
 
-        /**
-         * If the game is currently running.
-         * 
-         * If this is false, the game loop will end.
-         * 
-         * @type {boolean}
-         */
+        // If the game is currently running
         this.running = true;
 
-        /**
-         * If the program is currently evaluating code. Should only be enabled while running a `eval` function.
-         * 
-         * This is used to throw errors in places that normally would just return null / "invalid".
-         * 
-         * @type {boolean}
-         */
+        // If the game is currently evaluating code
         this.evaling = false;
 
-        /**
-         * Some constant values.
-         * 
-         * @type {import('./types').GameConstants}
-         */
+        // Some constants
         this.constants = {
             REFUND: -1
         };
@@ -1251,6 +1257,3 @@ class Game {
         return amount;
     }
 }
-
-exports.Game = Game;
-exports.EventManager = EventManager;

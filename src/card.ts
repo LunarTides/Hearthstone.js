@@ -1,12 +1,10 @@
-const { Game } = require("./game");
-const { Player } = require("./player");
-const { get } = require("./shared");
+import { Game } from "./game";
+import { Player } from "./player";
+import { get } from "./shared";
+import { Blueprint, CardClass, CardKeyword, CardRarity, CardType, CostType, EnchantmentDefinition, GameConfig, KeywordMethod, MinionTribe, SpellSchool } from "./types";
 const { v4: uuidv4 } = require("uuid");
 
-/**
- * @type {Game}
- */
-let game;
+let game: Game;
 
 function getInternalGame() {
    let tempGame = get();
@@ -17,405 +15,413 @@ function getInternalGame() {
 
 getInternalGame();
 
-class Card {
+export class Card {
+    // All
+
+    /**
+     * This is the name of the card, it must be unique.
+     * Please do not change this
+     */
+    name: string;
+
+    /**
+     * This is used instead of the name when displaying the card, this does not have to be unique.
+     */
+    displayName: string;
+
+    /**
+     * The card's description / text.
+     * 
+     * Might include color tags like `Example [033Example 2[142`.
+     * Use `colors.strip()` to remove these.
+     */
+    desc: string;
+
+    /**
+     * The cost of the card.
+     */
+    mana: number;
+
+    /**
+     * This is the class that the card belongs to. E.g. "Warlock" or "Mage".
+     */
+    class: CardClass;
+
+    /**
+     * This is the type of card, e.g. "Spell" or "Minion".
+     */
+    type: CardType;
+
+    /**
+     * This is the rarity of the card. E.g. "Common" | "Rare" | etc...
+     */
+    rarity: CardRarity;
+
+    /**
+     * The id tied to the blueprint of the card.
+     * This differentiates cards from each other, but not cards with the same blueprint.
+     * Use uuid for that.
+     * 
+     * @example
+     * let sheep = new Card("Sheep", plr);
+     * let another_sheep = new Card("Sheep", plr);
+     * 
+     * let the_coin = new Card("The Coin", plr);
+     * 
+     * assert.equal(sheep.id, another_sheep.id);
+     * assert.notEqual(sheep.id, the_coin.id);
+     */
+    id: number;
+
+    /**
+     * If the card is uncollectible.
+     * - Uncollectible cards cannot be added to a deck, and cannot be found in card pools[1].
+     * - Uncollectible cards can mostly only be explicitly created by other collectible cards.
+     * 
+     * [1] Unless explicitly stated otherwise
+     */
+    uncollectible: boolean;
+
+    /**
+     * The keywords that the card has. E.g. ["Taunt", "Divine Shield", etc...]
+     */
+    keywords: CardKeyword[];
+
+    /**
+     * The card's blueprint.
+     * This is the baseline of the card
+     * 
+     * Properties of this blueprint are set in this class.
+     * For example, if the blueprint has a property called "foo", and it is set to 1, then the card will get a property called "foo", with value 1
+     */
+    blueprint: Blueprint;
+
+    // Minion / Weapon
+    
+    stats?: [number, number];
+
+    /**
+     * The tribe the card belongs to.
+     */
+    tribe?: MinionTribe;
+
+    /**
+     * The number of times a minion can attack in a turn;
+     * - Default: 1
+     * - With Windfury: 2
+     * - With Mega-Windfury: 4
+     */
+    attackTimes?: number;
+
+    /**
+     * If this is true, the card is exhausted and so can't attack this turn.
+     * 
+     * Automatically gets set to true when the card attacks, and gets set to false at the end of the player's turn.
+     */
+    sleepy?: boolean;
+
+    /**
+     * The maximum health of the card.
+     */
+    maxHealth?: number;
+
+    // Spell
+
+    /**
+     * If the card is a spell, this is the school of the spell. E.g. "Fire" or "Frost" or "Fel".
+     */
+    spellClass?: SpellSchool;
+
+    // Hero
+
+    /**
+     * The description of the hero power.
+     */
+    hpDesc?: string;
+
+    /**
+     * The cost of the hero power.
+     */
+    hpCost?: number;
+
+    // Location
+
+    /**
+     * The cooldown of the location card.
+     */
+    cooldown?: number;
+
+    // Not-null
+
+    /**
+     * The name of this class. This is if you are working with a type that is `Card | Player`.
+     * In that case, this is `Card` if that type is `Card`, or `Player` if that type is `Player`.
+     * 
+     * But for types that are just `Card`, this is the literal string "Card".
+     */
+    classType: "Card";
+
+    /**
+     * What currency this card costs.
+     * If this is "mana", the card costs `Player.mana`.
+     * If this is "armor", the card costs `Player.armor`.
+     * If this is "health", the card costs `Player.health`.
+     * etc...
+     * 
+     * This can be any value, as long as it is a defined _number_ in the `Player` class.
+     */
+    costType: CostType;
+
+    /**
+     * If the card is dormant | The turn that the dormant runs out
+     */
+    dormant: false | number; // ???
+
+    /**
+     * If the card has been corrupted.
+     */
+    corrupted: boolean;
+
+    /**
+     * If the card is frozen.
+     * A frozen card cannot attack.
+     */
+    frozen: boolean;
+
+    /**
+     * If the card is immune.
+     * An immune card cannot be targeted at all.
+     */
+    immune: boolean;
+
+    /**
+     * If the card is an echo.
+     * - Echo cards can be played as many times as the player wants, as long as they have the resources.
+     * - Echo cards get removed from the player's hand at the end of the turn.
+     */
+    echo: boolean;
+
+    /**
+     * Information stored in the card.
+     * This information can be anything, and the card can access it at any point.
+     * 
+     * I do not recommend changing this in any other context than in a card's blueprint, unless you know what you are doing.
+     */
+    storage: any[];
+
+    /**
+     * The turn that the card was played / created.
+     */
+    turn: number;
+
+    /**
+     * The card's enchantments.
+     * Formatted like this:
+     * 
+     * ```json
+     * [
+     *     {
+     *         "enchantment": "-1 mana",
+     *         "owner": //some_card
+     *     }
+     * ]
+     * ```
+     */
+    enchantments: EnchantmentDefinition[];
+
+    /**
+     * This overrides `game.config` for the card's owner while importing the card in a deck.
+     * 
+     * # Examples
+     * ```js
+     * card.settings = {
+     *     "maxDeckLength": 40,
+     *     "minDeckLength": 40
+     * };
+     * ```
+     */
+    settings: GameConfig;
+
+    /**
+     * The owner of the card.
+     */
+    plr: Player;
+
+    /**
+     * A list of backups of this card.
+     * 
+     * The card backups don't include the methods so don't call any.
+     */
+    backups: {[key: string]: Card};
+
+    /**
+     * The card's uuid. Gets randomly generated when the card gets created.
+     */
+    uuid: string;
+
+    // Could be null
+
+    /**
+     * The turn that the card was killed.
+     * 
+     * Set to -1 if the card is not dead.
+     */
+    turnKilled?: number;
+
+    /**
+     * The amount of infuse a card has.
+     * 
+     * Set to -1 if the card does not have infuse.
+     */
+    infuse_num?: number; // TODO: Rename this
+    
+    /**
+     * The turn that the card was frozen.
+     * 
+     * Set to -1 if the card is not frozen.
+     */
+    frozen_turn?: number; // TODO: Rename this
+
+    /**
+     * The runes of the card.
+     */
+    runes?: string;
+
+    /**
+     * The amount of turns stealth should last.
+     * 
+     * Set to 0 if the card is does not have a stealth duration.
+     */
+    stealthDuration?: number;
+
+    /**
+     * If the card can attack the hero.
+     * 
+     * This will be set to true if the card is a spell and other card types, so verify the type of the card before using this.
+     */
+    canAttackHero?: boolean;
+
+    /**
+     * Placeholder key-value pairs.
+     * 
+     * This should not be used directly, unless you know what you are doing.
+     * 
+     * @example
+     * this.placeholder = {
+     *     "turn": game.turns,
+     * }
+     * 
+     * assert.equal(this.desc, "The current turn is: {turn}");
+     * // Eventually...
+     * assert.equal(this.desc, "The current turn is: 1");
+     */
+    placeholder?: {[key: string]: any};
+
+    spellburst?: KeywordMethod[];
+
+    /**
+     * The _name_ of the corrupted counterpart of this card.
+     */
+    corrupt?: string;
+
+    /**
+     * ["Name of the card above the minion", "", "Name of the card below the minion"]
+     * 
+     * The "" gets replaced by this minion.
+     * This is flexible, you can add as many as you want, in any order. You can even add another "".
+     * 
+     * @example
+     * card = new Card("Sheep", plr);
+     * card.colossal = ["Left Arm", "", "Right Arm"];
+     * 
+     * // Left Arm
+     * // Sheep
+     * // Right Arm
+     */
+    colossal?: string[];
+
     /**
      * Create a card.
      * 
-     * @param {string} name The name of the card
-     * @param {Player} plr The card's owner.
+     * @param name The name of the card
+     * @param plr The card's owner.
      */
-    constructor(name, plr) {
+    constructor(name: string, plr: Player) {
         getInternalGame();
 
+        // Get the blueprint from the cards list
         let blueprint = game.cards.find(c => c.name == name);
         if (!blueprint) {
             throw new Error(`Could not find card with name ${name}`);
         }
 
-        /**
-         * The card's blueprint.
-         * This is the baseline of the card
-         * 
-         * Properties of this blueprint are set in this class.
-         * For example, if the blueprint has a property called "foo", and it is set to 1, then the card will get a property called "foo", with value 1
-         * 
-         * @type {import("./types").Blueprint}
-         */
+        // Set the blueprint (every thing that gets set before the `doBlueprint` call can be overriden by the blueprint)
         this.blueprint = blueprint;
-
-        /**
-         * This is the name of the card, it must be unique.
-         * Please do not change this
-         * 
-         * @type {string}
-         */
         this.name = name;
 
-        /**
-         * This is used instead of the name when displaying the card, this does not have to be unique.
-         * 
-         * @type {string}
-         */
+        // The display name is equal to the unique name, unless manually overriden by the blueprint when calling the `doBlueprint` function.
         this.displayName = name;
 
-        /**
-         * The id tied to the blueprint of the card.
-         * This differentiates cards from each other, but not cards with the same blueprint.
-         * Use uuid for that.
-         * 
-         * @example
-         * let sheep = new Card("Sheep", plr);
-         * let another_sheep = new Card("Sheep", plr);
-         * 
-         * let the_coin = new Card("The Coin", plr);
-         * 
-         * assert.equal(sheep.id, another_sheep.id);
-         * assert.notEqual(sheep.id, the_coin.id);
-         * 
-         * @type {number | null}
-         */
-        this.id = null;
-
-        /**
-         * The cost of the card.
-         * 
-         * @type {number}
-         */
+        // Same story as the display name
+        this.id = -1;
         this.mana = 0;
-
-        /**
-         * The name of this class. This is if you are working with a type that is `Card | Player`.
-         * In that case, this is `Card` if that type is `Card`, or `Player` if that type is `Player`.
-         * 
-         * But for types that are just `Card`, this is the literal string "Card".
-         * 
-         * @type {"Card"}
-         */
-        this.classType = "Card";
-
-        /**
-         * What currency this card costs.
-         * If this is "mana", the card costs `Player.mana`.
-         * If this is "armor", the card costs `Player.armor`.
-         * If this is "health", the card costs `Player.health`.
-         * etc...
-         * 
-         * This can be any value, as long as it is a defined _number_ in the `Player` class.
-         * 
-         * @type {import("./types").CostType}
-         */
-        this.costType = "mana";
-
-        /**
-         * This is the type of card, e.g. "Spell" or "Minion".
-         * 
-         * @type {import("./types").CardType}
-         */
-        this.type = "Undefined";
-
-        /**
-         * This is the class that the card belongs to. E.g. "Warlock" or "Mage".
-         * 
-         * @type {import("./types").CardClass}
-         */
-        this.class = "Mage";
-
-        /**
-         * This is the rarity of the card. E.g. "Free" | "Common" | "Rare" | "Epic" | "Legendary"
-         * 
-         * @type {import("./types").CardRarity}
-         */
+        this.class = "Mage"; // The default class is Mage, might change later
         this.rarity = "Free";
-
-        /**
-         * If the card is dormant | The turn that the dormant runs out
-         * 
-         * @type {false | number}
-         */
+        this.type = "Undefined";
+        this.uncollectible = false;
+        this.keywords = [];
+        // TODO: Verify that dormant works. The system seems unstable
         this.dormant = false;
 
-        /**
-         * If the card has been corrupted.
-         * 
-         * @type {boolean}
-         */
+        // Some constants
+        this.classType = "Card";
+
+        // This can be overriden by the blueprint, but is intended to be overriden by a kwm (keyword method)
+        this.costType = "mana";
+
+        // The card is not corrupted by default
         this.corrupted = false;
 
-        /**
-         * The _name_ of the corrupted counterpart of this card.
-         * 
-         * @type {null | string}
-         */
-        this.corrupt = null;
-
-        /**
-         * ["Name of the card above the minion", "", "Name of the card below the minion"]
-         * 
-         * The "" gets replaced by this minion.
-         * This is flexible, you can add as many as you want, in any order. You can even add another "".
-         * 
-         * @example
-         * card = new Card("Sheep", plr);
-         * card.colossal = ["Left Arm", "", "Right Arm"];
-         * 
-         * // Left Arm
-         * // Sheep
-         * // Right Arm
-         * 
-         * @type {null | [string]}
-         */
-        this.colossal = null;
-
-        /**
-         * If the card is uncollectible.
-         * - Uncollectible cards cannot be added to a deck, and cannot be found in card pools[1].
-         * - Uncollectible cards can mostly only be explicitly created by other collectible cards.
-         * 
-         * [1] Unless explicitly stated otherwise
-         * 
-         * @type {boolean}
-         */
-        this.uncollectible = false;
-
-        /**
-         * If the card is frozen.
-         * A frozen card cannot attack.
-         * 
-         * @type {boolean}
-         */
+        // Some flags
         this.frozen = false;
-
-        /**
-         * If the card is immune.
-         * An immune card cannot be targeted at all.
-         * 
-         * @type {boolean}
-         */
         this.immune = false;
-
-        /**
-         * If the card is an echo.
-         * - Echo cards can be played as many times as the player wants, as long as they have the resources.
-         * - Echo cards get removed from the player's hand at the end of the turn.
-         * 
-         * @type {boolean}
-         */
         this.echo = false;
 
-        /**
-         * The keywords that the card has. E.g. ["Taunt", "Divine Shield", etc...]
-         * 
-         * @type {import("./types").CardKeyword[]}
-         */
-        this.keywords = [];
-
-        /**
-         * Information stored in the card.
-         * This information can be anything, and the card can access it at any point.
-         * 
-         * I do not recommend changing this in any other context than in a card's blueprint, unless you know what you are doing.
-         * 
-         * @type {any[]}
-         */
-        this.storage = []; // Allow cards to store data for later use
-
-        /**
-         * The turn that the card was played / created.
-         * 
-         * @type {number}
-         */
-        this.turn = game.turns; // The turn the card was played
-
-        /**
-         * The turn that the card was killed.
-         * 
-         * Set to -1 if the card is not dead.
-         * 
-         * @type {number}
-         */
-        this.turnKilled = -1;
-
-        /**
-         * The amount of infuse a card has.
-         * 
-         * Set to -1 if the card does not have infuse.
-         * 
-         * @type {number}
-         */
-        this.infuse_num = -1; // The amount of infuse a card has. Set to -1 for no infuse.
-
-        /**
-         * The turn that the card was frozen.
-         * 
-         * Set to -1 if the card is not frozen.
-         * 
-         * @type {number}
-         */
-        this.frozen_turn = -1;
-
-        /**
-         * The runes of the card.
-         * 
-         * @type {string}
-         */
-        this.runes = "";
-
-        /**
-         * If the card is a spell, this is the school of the spell. E.g. "Fire" or "Frost" or "Fel".
-         * 
-         * @type {import("./types").SpellSchool}
-         */
-        this.spellClass = "General";
-
-        /**
-         * The tribe the card belongs to.
-         * 
-         * @type {import("./types").MinionTribe}
-         */
-        this.tribe = "None";
-
-        /**
-         * The cooldown of the location card.
-         * 
-         * @type {number}
-         */
-        this.cooldown = 0;
-
-        /**
-         * The description of the hero power.
-         * 
-         * @type {string}
-         */
-        this.hpDesc = "[PLACEHOLDER]";
-
-        /**
-         * The cost of the hero power.
-         * 
-         * @type {number}
-         */
-        this.hpCost = 2;
-
-        /**
-         * The number of times a minion can attack in a turn;
-         * - Default: 1
-         * - With Windfury: 2
-         * - With Mega-Windfury: 4
-         * 
-         * @type {number}
-         */
-        this.attackTimes = 1;
-
-        /**
-         * The amount of turns stealth should last.
-         * 
-         * Set to 0 if the card is does not have a stealth duration.
-         * 
-         * @type {number}
-         */
-        this.stealthDuration = 0;
-
-        /**
-         * If the card can attack the hero.
-         * 
-         * This will be set to true if the card is a spell and other card types, so verify the type of the card before using this.
-         * 
-         * @type {boolean}
-         */
         this.canAttackHero = true;
-
-        /**
-         * If this is true, the card is exhausted and so can't attack this turn.
-         * 
-         * Automatically gets set to true when the card attacks, and gets set to false at the end of the player's turn.
-         * 
-         * @type {boolean}
-         */
         this.sleepy = true;
 
-        /**
-         * Placeholder key-value pairs.
-         * 
-         * This should not be used directly, unless you know what you are doing.
-         * 
-         * @example
-         * this.placeholder = {
-         *     "turn": game.turns,
-         * }
-         * 
-         * assert.equal(this.desc, "The current turn is: {turn}");
-         * // Eventually...
-         * assert.equal(this.desc, "The current turn is: 1");
-         */
+        // Allow cards to store data for later use
+        this.storage = []; 
+
+        // The turn the card was played
+        this.turn = game.turns; 
+
+        // Card type specific properties
+        this.attackTimes = 1;
+
+        this.cooldown = 2;
+
+        this.hpDesc = "PLACEHOLDER";
+        this.hpCost = 2;
+
+        // How long that the card's stealth should last
+        this.stealthDuration = 0;
+
         this.placeholder = {};
-
-        /**
-         * @type {import("./types").KeywordMethod | false}
-         */
-        this.spellburst = false;
-
-        /**
-         * The maximum health of the card.
-         * 
-         * Default: -1
-         * 
-         * @type {number}
-         */
-        this.maxHealth = -1;
 
         // Set maxHealth if the card is a minion or weapon
         this.type = this.blueprint.type; // Redundant, makes the TypeScript compiler shut up
         if (this.type == "Minion" || this.type == "Weapon") this.maxHealth = this.blueprint.stats?.at(1) ?? -1;
 
-        /**
-         * The card's enchantments.
-         * Formatted like this:
-         * 
-         * ```json
-         * [
-         *     {
-         *         "enchantment": "-1 mana",
-         *         "owner": //some_card
-         *     }
-         * ]
-         * ```
-         * 
-         * @type {import("./types").EnchantmentDefinition[]}
-         */
         this.enchantments = [];
-
-        /**
-         * This overrides `game.config` for the card's owner while importing the card in a deck.
-         * 
-         * # Examples
-         * ```js
-         * card.settings = {
-         *     "maxDeckLength": 40,
-         *     "minDeckLength": 40
-         * };
-         * ```
-         */
         this.settings = {};
 
+        // Override the properties from the blueprint
         this.doBlueprint();
 
-        /**
-         * The owner of the card.
-         * 
-         * @type {Player}
-         */
+        // Properties after this point can't be overriden
         this.plr = plr;
 
-        // Make a backup of "this" to be used when silencing this card
-        let backups = {"init": {}};
-        Object.entries(this).forEach(i => backups["init"][i[0]] = i[1]);
-
-        /**
-         * A list of backups of this card.
-         * 
-         * The card backups don't include the methods so don't call any.
-         * 
-         * @type {Object<string, Card>}
-         */
         this.backups = {};
 
         // Make a backup of "this" to be used when silencing this card
@@ -423,18 +429,8 @@ class Card {
         if (!this.backups["init"]) this.backups["init"] = {};
         Object.entries(this).forEach(i => this.backups["init"][i[0]] = i[1]);
 
-        /**
-         * The card's uuid. Gets randomly generated when the card gets created.
-         * 
-         * @type {string}
-         */
         this.uuid = this.randomizeUUID();
 
-        /**
-         * The list of placeholder ids / replacement strings pairs.
-         * 
-         * @type {Object.<any, string>}
-         */
         this.placeholder = this.activate("placeholders")[0]; // This is a list of replacements.
 
         game.events.broadcast("CreateCard", this, this.plr);
@@ -487,14 +483,6 @@ class Card {
         // Set maxHealth if the card is a minion or weapon
         if (this.type == "Minion" || this.type == "Weapon") this.maxHealth = this.blueprint.stats?.at(1) || 1;
 
-        /**
-         * The card's description / text.
-         * 
-         * Might include color tags like `Example [033Example 2[142`.
-         * Use `colors.strip()` to remove these.
-         * 
-         * @type {string}
-         */
         this.desc = game.functions.parseTags(this.desc || "");
     }
 
@@ -1204,5 +1192,3 @@ class Card {
         return new Card(this.name, this.plr);
     }
 }
-
-exports.Card = Card;

@@ -8,7 +8,7 @@ const { get } = require("./shared");
  */
 let game;
 
-class Player {
+export class Player {
     /**
      * @param {string} name 
      */
@@ -426,9 +426,8 @@ class Player {
      * @returns {Player} Opponent
      */
     getOpponent() {
-        const id = (this.id == 0) ? 2 : 1;
-
-        return game["player" + id];
+        if (this.id === 0) return game.player2;
+        else return game.player1; // We always need to return a player.
     }
 
     // Mana
@@ -930,7 +929,7 @@ class Player {
      * @return {boolean} Whether or not the player has the correct runes
      */
     testRunes(runes) {
-        const charCount = (str, letter) => {
+        const charCount = (/** @type {string} */ str, /** @type {string} */ letter) => {
             let letter_count = 0;
 
             for (let i = 0; i < str.length; i++) {
@@ -952,5 +951,3 @@ class Player {
         return true;
     }
 }
-
-exports.Player = Player;

@@ -18,7 +18,7 @@ function getInternalGame() {
 getInternalGame();
 
 // FIXME: Ai gets stuck in infinite loop when using cathedral of atonement (location) | shadowcloth needle (0 attack wpn) | that minion has no attack.
-class AI {
+export class AI {
     /**
      * Sentiment-based AI
      * 
@@ -962,5 +962,3 @@ class AI {
         return score;
     }
 }
-
-exports.AI = AI;

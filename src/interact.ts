@@ -9,7 +9,7 @@ const license_url = 'https://github.com/LunarTides/Hearthstone.js/blob/main/LICE
  */
 let game;
 
-class Interact {
+export class Interact {
     /**
      * @param {Game} _game 
      */
@@ -1886,5 +1886,3 @@ class Interact {
 }
 
 const cls = () => process.stdout.write('\x1bc');
-
-exports.Interact = Interact;
