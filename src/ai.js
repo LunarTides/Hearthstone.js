@@ -75,6 +75,10 @@ class SimulationAI {
         let simulation = this._createSimulation();
         let lastScore = 0;
 
+        game.log(`AI: Calculating baseline...`, !this.logAction);
+        let baseline = this._evaluate(simulation);
+        baseline = parseFloat(baseline.toFixed(3));
+
         let alreadyScored = [];
 
         simulation.player.hand.forEach(card => {
@@ -113,15 +117,15 @@ class SimulationAI {
             simulation.player[card.costType] = this.plr[card.costType];
             let result = simulation.interact.doTurnLogic(index.toString());
 
+            alreadyScored.push(card);
+
             if (result !== true && !(result instanceof Card) || typeof result === "string") {
                 game.log(`AI: Invalid move: ${result}`, !this.logAction);
                 return; // Invalid move
             }
 
-            let score = this._evaluate(simulation) - lastScore;
+            let score = this._evaluate(simulation) - baseline - lastScore;
             lastScore = score;
-
-            alreadyScored.push(card);
 
             if (score <= best_move[1]) {
                 game.log(`AI: Worse score (${score.toPrecision(2)}) than previous (${best_move[1].toPrecision(2)})`, !this.logAction);
@@ -166,6 +170,7 @@ class SimulationAI {
 
             let simulation = this._createSimulation();
 
+            alreadyScored.push(card);
             game.log(`AI: Playing ${card.name} [${index}] in the simulation`, !this.logAction);
 
             // Play card
@@ -177,8 +182,6 @@ class SimulationAI {
             }
 
             let score = this._evaluate(simulation);
-
-            alreadyScored.push(card);
 
             if (score <= best_move[1]) {
                 game.log(`AI: Worse score (${score.toPrecision(2)}) than previous (${best_move[1].toPrecision(2)})`, !this.logAction);
@@ -679,6 +682,8 @@ class SimulationAI {
         // TODO: Make this better
         game.log("AI: Evaluating game state...", !this.logAction);
 
+        let simplayer = simulation["player" + (this.plr.id + 1)];
+
         let score = 0;
         const VALUE_BIAS = 0.1;
 
@@ -698,7 +703,7 @@ class SimulationAI {
                 let [key, val] = e;
                 if (typeof val !== "number") return;
                 if (val == 0) return;
-                if (["id"].includes(key)) return;
+                if (["id", "mana"].includes(key)) return;
 
                 if (["fatigue", "heroPowerCost", "overload"].includes(key)) val = -val;
 
@@ -709,6 +714,9 @@ class SimulationAI {
             });
         });
 
+        score += simplayer.mana;
+        score -= simplayer.getOpponent().mana;
+
         [simulation.player1, simulation.player2].forEach(p => {
             [p.deck.length, p.hand.length, p.quests.length, p.sidequests.length, p.secrets.length].forEach(val => {
                 let bias = 1;
@@ -718,7 +726,7 @@ class SimulationAI {
             });
         });
 
-        game.log(`AI: Evaluation completed with a score of ${score.toPrecision(2)}`, !this.logAction);
+        game.log(`AI: Evaluation completed with a score of ${score}`, !this.logAction);
 
         return score;
     }
