@@ -123,7 +123,7 @@ module.exports = {
             target &&
             target.getHealth() <= 0 &&
             correctParameters &&
-            game.graveyard[plr.id].includes(target)
+            game.graveyard[plr.id].includes(target) || game.graveyard[plr.getOpponent().id].includes(target)
         , "3.js");
     }
 }
