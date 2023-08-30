@@ -1,6 +1,6 @@
-import { Card } from "./card";
-import { Game } from "./game";
-import { Player } from "./player";
+import { Card } from "./card.js";
+import { Game } from "./game.js";
+import { Player } from "./player.js";
 
 /**
  * Ai scored card
@@ -363,7 +363,7 @@ export type QuestType = {
     name: string,
     progress: [number, number],
     key: EventKey,
-    value: EventValue<EventKey>,
+    value: number,
     turn: number,
     callback: QuestCallback,
     next?: string

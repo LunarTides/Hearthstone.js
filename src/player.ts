@@ -1,8 +1,8 @@
-import { AI } from "./ai";
-import { Card } from "./card";
-import { Game } from "./game";
-import { get } from "./shared";
-import { CardClass, CardType, QuestType, Target } from "./types";
+import { AI } from "./ai.js";
+import { Card } from "./card.js";
+import { Game } from "./game.js";
+import { get } from "./shared.js";
+import { CardClass, CardType, QuestType, Target } from "./types.js";
 
 let game: Game;
 

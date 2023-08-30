@@ -1,7 +1,7 @@
-import { Game } from "./game";
-import { Player } from "./player";
-import { get } from "./shared";
-import { Blueprint, CardAbility, CardClass, CardKeyword, CardRarity, CardType, CostType, EnchantmentDefinition, GameConfig, KeywordMethod, MinionTribe, SpellSchool } from "./types";
+import { Game } from "./game.js";
+import { Player } from "./player.js";
+import { get } from "./shared.js";
+import { Blueprint, CardAbility, CardClass, CardKeyword, CardRarity, CardType, CostType, EnchantmentDefinition, GameConfig, KeywordMethod, MinionTribe, SpellSchool } from "./types.js";
 import { v4 as uuidv4 } from "uuid";
 
 let game: Game;
@@ -234,7 +234,7 @@ export class Card {
      * This overrides `game.config` for the card's owner while importing the card in a deck.
      * 
      * # Examples
-     * ```js
+     * ```ts
      * card.settings = {
      *     "maxDeckLength": 40,
      *     "minDeckLength": 40
@@ -342,7 +342,7 @@ export class Card {
     colossal?: string[];
 
     /**
-     * A list of abilities that can only 
+     * A list of abilities that can only be used if the `condition` ability returns true.
      */
     conditioned?: CardAbility[];
     
@@ -888,7 +888,7 @@ export class Card {
             }
 
             let r = func(this.plr, game, this, ...args);
-            ret.push(r);
+            if (ret instanceof Array) ret.push(r);
 
             if (r != game.constants.REFUND || name == "deathrattle") return; // Deathrattle isn't cancellable
 

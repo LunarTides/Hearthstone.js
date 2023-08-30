@@ -1,13 +1,13 @@
-const { version, branch } = require("./config/dont-change.json");
+import { version, branch } from "./config/dont-change.json" assert { type: "json" };
 
 import * as rl from "readline-sync";
 import * as fs from "fs";
 
-import * as src from "./src/index";                  // Source Code
-import * as dc  from "./deck_creator/index";         // Deck Creator
-import * as ccc from "./card_creator/custom/index";  // Custom Card Creator
-import * as vcc from "./card_creator/vanilla/index"; // Vanilla Card Creator
-import * as clc from "./card_creator/class/index";   // Class Creator
+import * as src from "./src/index.js";                  // Source Code
+import * as dc  from "./deck_creator/index.js";         // Deck Creator
+import * as ccc from "./card_creator/custom/index.js";  // Custom Card Creator
+import * as vcc from "./card_creator/vanilla/index.js"; // Vanilla Card Creator
+import * as clc from "./card_creator/class/index.js";   // Class Creator
 
 const cls = () => process.stdout.write("\x1bc");
 

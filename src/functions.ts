@@ -2,15 +2,18 @@ delete require.cache[require.resolve("./card")];
 delete require.cache[require.resolve("./player")];
 delete require.cache[require.resolve("./ai")];
 
+import "colors";
 import * as fs from "fs";
 import * as child_process from "child_process";
 import * as deckstrings from "deckstrings"; // To decode vanilla deckcodes
-import { Player } from "./player";
-import { Card } from "./card";
-import { Game } from "./game";
 import { stripColors } from "colors";
-import { Blueprint, CardClass, CardClassNoNeutral, CardLike, CardRarity, EventKey, EventListenerCallback, EventListenerCheckCallback, FunctionsExportDeckError, FunctionsValidateCardReturn, MinionTribe, QuestCallback, Target, TickHookCallback, VanillaCard } from "./types";
-require("colors");
+import { createHash } from "crypto";
+import { Player } from "./player.js";
+import { Card } from "./card.js";
+import { Game } from "./game.js";
+import { Blueprint, CardClass, CardClassNoNeutral, CardLike, CardRarity, EventKey, EventListenerCallback, EventListenerCheckCallback, FunctionsExportDeckError, FunctionsValidateCardReturn, MinionTribe, QuestCallback, Target, TickHookCallback, VanillaCard } from "./types.js";
+import * as vcc from "../card_creator/vanilla/index.js";
+
 
 let game: Game;
 
@@ -507,8 +510,6 @@ class DeckcodeFunctions {
 
             if (createCard.toLowerCase()[0] != "y") process.exit(1);
 
-            let vcc = require("../card_creator/vanilla/index");
-
             invalidCards.forEach(c => {
                 // Create that card
                 console.log("Creating " + c.name.yellow);
@@ -871,7 +872,7 @@ ${main_content}
 `
 
         // Add a sha256 checksum to the content
-        content += require("crypto").createHash("sha256").update(content).digest("hex");
+        content += createHash("sha256").update(content).digest("hex");
 
         let filename = "log";
         if (err) filename = "crashlog";

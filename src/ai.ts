@@ -1,8 +1,8 @@
-import { Card } from "./card";
-import { Player } from "./player";
-import { Game } from "./game";
-import { get } from "./shared";
-import { AICalcMoveOption, AIHistory, CardLike, ScoredCard, SelectTargetAlignment, SelectTargetClass, SelectTargetFlag, Target } from "./types";
+import { Card } from "./card.js";
+import { Player } from "./player.js";
+import { Game } from "./game.js";
+import { get } from "./shared.js";
+import { AICalcMoveOption, AIHistory, CardLike, ScoredCard, SelectTargetAlignment, SelectTargetClass, SelectTargetFlag, Target } from "./types.js";
 
 let game: Game;
 
@@ -460,7 +460,7 @@ export class AI {
      */
     attack(): (Target | -1)[] {
         // Assign a score to all minions
-        let board: import("./types").ScoredCard[][] = game.board.map(m => {
+        let board: ScoredCard[][] = game.board.map(m => {
             return m.map(c => {
                 return {"card": c, "score": this.analyzePositiveCard(c)};
             });
