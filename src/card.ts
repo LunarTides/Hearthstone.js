@@ -512,6 +512,7 @@ export class Card {
      * @returns Success
      */
     decAttack(): boolean {
+        if (!this.attackTimes) return false;
         this.attackTimes--;
 
         const shouldExhaust = (this.attackTimes <= 0);
@@ -567,7 +568,7 @@ export class Card {
 
         this.stats = [attack, health];
 
-        if (changeMaxHealth && health > this.maxHealth) {
+        if (changeMaxHealth && health > (this.maxHealth ?? -1)) {
             this.maxHealth = health;
         }
 
@@ -626,7 +627,7 @@ export class Card {
 
         // Restore health
 
-        if (this.getHealth() > this.maxHealth) {
+        if (this.getHealth() > (this.maxHealth ?? -1)) {
             // Too much health
             this.activate("overheal"); // Overheal keyword
 
@@ -699,6 +700,8 @@ export class Card {
      * @returns If it reset the card's max health.
      */
     resetMaxHealth(check: boolean = false): boolean {
+        if (!this.maxHealth) return false;
+
         if (check && this.getHealth() <= this.maxHealth) return false;
 
         this.maxHealth = this.getHealth();

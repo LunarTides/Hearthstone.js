@@ -55,62 +55,94 @@ export type MinionTribe = "Beast" |
                           "Undead" |
                           "All";
 
-export type CardKeyword = "Battlecry" |
-                          "Deathrattle" |
-                          "Divine Shield" |
-                          "Dormant" |
-                          "Lifesteal" |
-                          "Poisonous" |
-                          "Reborn" |
-                          "Rush" |
-                          "Stealth" |
-                          "Taunt" |
-                          "Tradeable" |
-                          "Windfury" |
-                          "Combo" |
-                          "Outcast" |
-                          "Overheal" |
-                          "Cast On Draw" |
-                          "Charge" |
-                          "Mega-Windfury" |
-                          "Echo" |
-                          "Magnetic" |
-                          "Twinspell" |
-                          "Elusive" |
-                          "Cleave";
+export type CardKeyword = CardTrueKeyword | CardAbility;
 
-export type EventKeys = "FatalDamage" |
-                        "EndTurn" |
-                        "StartTurn" |
-                        "HealthRestored" |
-                        "UnspentMana" |
-                        "GainOverload" |
-                        "GainHeroAttack" |
-                        "TakeDamage" |
-                        "PlayCard" |
-                        "PlayCardUnsafe" |
-                        "SummonMinion" |
-                        "KillMinion" |
-                        "DamageMinion" |
-                        "CancelCard" |
-                        "CastSpellOnMinion" |
-                        "TradeCard" |
-                        "FreezeCard" |
-                        "CreateCard" |
-                        "AddCardToDeck" |
-                        "AddCardToHand" |
-                        "DrawCard" |
-                        "SpellDealsDamage" |
-                        "Attack" |
-                        "HeroPower" |
-                        "TargetSelectionStarts" |
-                        "TargetSelected" |
-                        "Dummy" |
-                        "Eval" |
-                        "Input" |
-                        "GameLoop";
+export type CardTrueKeyword = "Divine Shield" |
+                              "Dormant" |
+                              "Lifesteal" |
+                              "Poisonous" |
+                              "Reborn" |
+                              "Rush" |
+                              "Stealth" |
+                              "Taunt" |
+                              "Tradeable" |
+                              "Windfury" |
+                              "Outcast" |
+                              "Cast On Draw" |
+                              "Charge" |
+                              "Mega-Windfury" |
+                              "Echo" |
+                              "Magnetic" |
+                              "Twinspell" |
+                              "Elusive" |
+                              "Cleave";
 
-export type EventValues = any;
+export type CardAbility = "Battlecry" |
+                            "Deathrattle" |
+                            "Combo" |
+                            "Outcast" |
+                            "Overheal";
+
+export type EventKey = "FatalDamage" |
+                       "EndTurn" |
+                       "StartTurn" |
+                       "HealthRestored" |
+                       "UnspentMana" |
+                       "GainOverload" |
+                       "GainHeroAttack" |
+                       "TakeDamage" |
+                       "PlayCard" |
+                       "PlayCardUnsafe" |
+                       "SummonMinion" |
+                       "KillMinion" |
+                       "DamageMinion" |
+                       "CancelCard" |
+                       "CastSpellOnMinion" |
+                       "TradeCard" |
+                       "FreezeCard" |
+                       "CreateCard" |
+                       "AddCardToDeck" |
+                       "AddCardToHand" |
+                       "DrawCard" |
+                       "SpellDealsDamage" |
+                       "Attack" |
+                       "HeroPower" |
+                       "TargetSelectionStarts" |
+                       "TargetSelected" |
+                       "Dummy" |
+                       "Eval" |
+                       "Input" |
+                       "GameLoop";
+
+export type EventValue<Key extends EventKey> = Key extends "FatalDamage" ? null :
+                                               Key extends "EndTurn" ? number :
+                                               Key extends "StartTurn" ? number :
+                                               Key extends "HealthRestored" ? number :
+                                               Key extends "UnspentMana" ? number :
+                                               Key extends "GainOverload" ? number :
+                                               Key extends "GainHeroAttack" ? number :
+                                               Key extends "TakeDamage" ? number :
+                                               Key extends "PlayCard" ? Card :
+                                               Key extends "PlayCardUnsafe" ? Card :
+                                               Key extends "SummonMinion" ? Card :
+                                               Key extends "KillMinion" ? Card :
+                                               Key extends "DamageMinion" ? [Card, number] :
+                                               Key extends "CancelCard" ? [Card, CardAbility] :
+                                               Key extends "CastSpellOnMinion" ? [Card, Card] :
+                                               Key extends "TradeCard" ? Card :
+                                               Key extends "FreezeCard" ? Card :
+                                               Key extends "CreateCard" ? Card :
+                                               Key extends "AddCardToDeck" ? Card :
+                                               Key extends "AddCardToHand" ? Card :
+                                               Key extends "DrawCard" ? Card :
+                                               Key extends "SpellDealsDamage" ? [Target, number] :
+                                               Key extends "Attack" ? [Target, Target] :
+                                               Key extends "HeroPower" ? string :
+                                               Key extends "Eval" ? string :
+                                               Key extends "Input" ? string :
+                                               Key extends "TargetSelectionStarts" ? [string, Card, "enemy" | "friendly", "hero" | "minion", SelectTargetFlag[]] :
+                                               Key extends "TargetSelected" ? [Card, Target] :
+                                               never;
 
 export type GamePlayCardReturn = Card |
                                  true |
@@ -143,25 +175,25 @@ export type FunctionsValidateCardReturn = boolean |
                                           "uncollectible" |
                                           "runes";
 
-export type AICalcMoveOptions = Card |
-                                "hero power" |
-                                "attack" |
-                                "use" |
-                                "end";
+export type AICalcMoveOption = Card |
+                               "hero power" |
+                               "attack" |
+                               "use" |
+                               "end";
 
-export type SelectTargetFlags = "allow_locations" | "force_elusive";
+export type SelectTargetFlag = "allow_locations" | "force_elusive";
 
 export type GameConstants = {
     REFUND: -1
 }
 
-export type QuestCallback = (val: EventValues, turn: number, done: boolean) => void;
+export type QuestCallback = (val: EventValue<EventKey>, turn: number, done: boolean) => void;
 
 export type QuestType = {
     name: string,
     progress: [number, number],
-    key: EventKeys,
-    value: EventValues,
+    key: EventKey,
+    value: EventValue<EventKey>,
     turn: number,
     callback: QuestCallback,
     next?: string
@@ -218,18 +250,20 @@ export type Blueprint = {
     runes?: string[],
     colossal?: string[],
     corrupt?: string,
-    settings?: any
+    settings?: any,
+
+    passive: KeywordMethod
 };
 
-export type KeywordMethod = (plr: Player, game: Game, self: Card, key?: EventKeys, val?: EventValues) => any;
+export type KeywordMethod = (plr: Player, game: Game, self: Card, key?: EventKey, val?: EventValue<EventKey>) => any;
 
-export type EventListenerCallback = (key: EventKeys, val: EventValues) => any;
+export type EventListenerCallback = (key: EventKey, val: EventValue<EventKey>) => any;
 
 export type CardLike = Card | Blueprint;
 export type Target = Card | Player;
 
-export type EventListenerCheckCallback = (val?: EventValues) => boolean | undefined;
-export type TickHookCallback = (key?: EventKeys, val?: EventValues) => void;
+export type EventListenerCheckCallback = (val?: EventValue<EventKey>) => boolean | undefined;
+export type TickHookCallback = (key?: EventKey, val?: EventValue<EventKey>) => void;
 
 export type AIHistory = {
     type: string,

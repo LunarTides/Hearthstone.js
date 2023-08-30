@@ -1,9 +1,7 @@
 // Created by the Custom Card Creator
+import { Blueprint, EventValue } from "../../../../../src/types";
 
-/**
- * @type {import("../../../../../src/types").Blueprint}
- */
-module.exports = {
+const blueprint: Blueprint = {
     name: "The Leviathan Claw",
     displayName: "The Leviathan's Claw",
     stats: [4, 2],
@@ -13,15 +11,12 @@ module.exports = {
     tribe: "Mech",
     class: "Paladin",
     rarity: "Free",
-    set: "Voyage to the Sunken City",
     keywords: ["Rush", "Divine Shield"],
     uncollectible: true,
 
-    /**
-     * @type {import("../../../../../src/types").KeywordMethod}
-     */
     passive(plr, game, self, key, val) {
         if (key != "Attack") return;
+        val = val as EventValue<typeof key>;
 
         const [attacker, target] = val;
         if (attacker != self) return;
@@ -29,3 +24,5 @@ module.exports = {
         plr.drawCard();
     }
 }
+
+export default blueprint
