@@ -70,7 +70,9 @@ export class EventManager {
         }
 
         for (let i = 1; i <= 2; i++) {
-            let plr: Player = this.game["player" + i];
+            let plr;
+            if (i === 1) plr = this.game.player1;
+            else plr = this.game.player2;
 
             // Activate spells in the players hand
             plr.hand.forEach(c => {
@@ -86,7 +88,9 @@ export class EventManager {
                 let cleared_text_alt = "Condition cleared!".brightGreen;
                 c.desc = c.desc?.replace(cleared_text, "");
                 c.desc = c.desc?.replace(cleared_text_alt, "");
-                if (c.activate("condition")[0] === true) {
+
+                let condition = c.activate("condition");
+                if (condition instanceof Array && condition[0] === true) {
                     if (c.desc) c.desc += cleared_text;
                     else c.desc += cleared_text_alt;
                 }
@@ -120,7 +124,9 @@ export class EventManager {
         });
 
         for (let i = 1; i <= 2; i++) {
-            let plr: Player = this.game["player" + i];
+            let plr;
+            if (i === 1) plr = this.game.player1;
+            else plr = this.game.player2;
 
             // Activate spells in the players hand
             plr.hand.forEach(c => {
@@ -345,7 +351,7 @@ export class Game {
     /**
      * The event listeners that are attached to the game currently.
      */
-    eventListeners: {[key: number]: EventListenerCallback} = {};
+    eventListeners: {[key: number]: (key: EventKey, val: EventValue<EventKey>) => void} = {};
 
     /**
      * A list of event keys to suppress.
@@ -498,7 +504,9 @@ export class Game {
         // Add quest cards to the players hands
         for (let i = 0; i < 2; i++) {
             // Set the player's hero to the default hero for the class
-            let plr: Player = this["player" + (i + 1)];
+            let plr: Player;
+            if (i === 0) plr = this.player1;
+            else plr = this.player2;
             
             let success = plr.setToStartingHero();
             if (!success) {
@@ -697,7 +705,8 @@ export class Game {
         if (player[card.costType] < card.mana) return "mana";
 
         // Condition
-        if (card.activate("condition")[0] === false) {
+        let condition = card.activate("condition");
+        if (condition instanceof Array && condition[0] === false) {
             let warn = this.interact.yesNoQuestion(player, "WARNING: This card's condition is not fulfilled. Are you sure you want to play this card?".yellow);
 
             if (!warn) return "refund";
@@ -856,10 +865,13 @@ export class Game {
         if (echo_clone) player.addToHand(echo_clone);
 
         this.events.broadcast("PlayCard", card, player, false);
-        let stat = this.events["PlayCard"][player.id];
+
+        let stat;
+        let playCardEvent = this.events.events.PlayCard;
+        if (playCardEvent) stat = playCardEvent[player.id];
 
         // If the previous card played was played on the same turn as this one, activate combo
-        if (stat.length > 1 && stat[stat.length - 2][0].turn == this.turns) card.activate("combo");
+        if (stat && stat.length > 1 && stat[stat.length - 2][0].turn == this.turns) card.activate("combo");
 
         player.hand.forEach(c => {
             if (c.corrupt && card.mana > c.mana) {
@@ -1160,7 +1172,10 @@ export class Game {
         let amount = 0;
 
         for (let p = 0; p < 2; p++) {
-            let plr = this["player" + (p + 1)];
+            let plr: Player;
+            if (p === 0) plr = this.player1;
+            else plr = this.player2;
+
             let sparedMinions: Card[] = [];
             
             this.board[p].forEach(m => {

@@ -74,7 +74,7 @@ class DeckcodeFunctions {
         hero = hero.trim();
         code = sep[1] + code.split(sep)[1];
 
-        if (!self.getClasses().includes(hero)) return ERROR("INVALIDHERO");
+        if (!self.getClasses().includes(hero as Exclude<CardClass, "Neutral">)) return ERROR("INVALIDHERO");
 
         // @ts-expect-error
         plr.heroClass = hero;
@@ -120,7 +120,7 @@ class DeckcodeFunctions {
         code = code.replace(copyDefFormat, "");
 
         let deck = code.split(",");
-        let _deck = [];
+        let _deck: Card[] = [];
 
         let localSettings = JSON.parse(JSON.stringify(game.config));
 
@@ -181,21 +181,23 @@ class DeckcodeFunctions {
                 retInvalid = true;
             });
 
-            if (retInvalid) return "invalid";
+            if (retInvalid) return;
 
             processed += times;
         });
+
+        if (retInvalid) return null;
 
         let max = localSettings.maxDeckLength;
         let min = localSettings.minDeckLength;
 
         if ((_deck.length < min || _deck.length > max) && localSettings.validateDecks) {
             game.input("The deck needs ".red + ((min == max) ? `exactly `.red + `${max}`.yellow : `between`.red + `${min}-${max}`.yellow) + ` cards. Your deck has: `.red + `${_deck.length}`.yellow + `.\n`.red);
-            return "invalid";
+            return null;
         }
 
         // Check if you have more than 2 cards or more than 1 legendary in your deck. (The numbers can be changed in the config)
-        let cards = {};
+        let cards: { [key: string]: number } = {};
         _deck.forEach(c => {
             if (!cards[c.name]) cards[c.name] = 0;
             cards[c.name]++;
@@ -265,7 +267,7 @@ class DeckcodeFunctions {
 
         deckcode += "/";
 
-        let cards = [];
+        let cards: [Blueprint, number][] = [];
 
         deck.forEach(c => {
             let found = cards.find(a => a[0].name == c.name);
@@ -279,7 +281,7 @@ class DeckcodeFunctions {
             return a[1] - b[1];
         });
 
-        let lastCopy = null;
+        let lastCopy = 0;
         cards.forEach(c => {
             let [card, copies] = c;
 
@@ -306,7 +308,7 @@ class DeckcodeFunctions {
 
         deckcode += "/ ";
 
-        deckcode += cards.map(c => c[0].id.toString(36)).join(",");
+        deckcode += cards.map(c => c[0].id?.toString(36)).join(",");
 
         return {"code": deckcode, "error": error};
     }
@@ -327,7 +329,7 @@ class DeckcodeFunctions {
 
         let deck: deckstrings.DeckDefinition = {"cards": [], "heroes": [], "format": 1};
 
-        let vanillaHeroes = { // List of vanilla heroes dbfIds
+        const vanillaHeroes: {[key in CardClass]?: number} = { // List of vanilla heroes dbfIds
             "Warrior":      7,
             "Hunter":       31,
             "Druid":        274,
@@ -344,7 +346,13 @@ class DeckcodeFunctions {
         let codeSplit = code.split(/[\[/]/);
         let heroClass = codeSplit[0].trim();
 
-        let heroClassId: number = vanillaHeroes[heroClass];
+        let heroClassId = vanillaHeroes[heroClass as CardClass];
+        if (!heroClassId) {
+            console.log("ERROR: Invalid hero class: ".red + heroClass.yellow);
+            game.input();
+
+            process.exit(1);
+        }
 
         deck.heroes.push(heroClassId);
 
@@ -375,7 +383,7 @@ class DeckcodeFunctions {
         let trueCards = cardsSplitCard.map(c => c.displayName);
 
         // Cards is now a list of names
-        let newCards = [];
+        let newCards: [number, number][] = [];
 
         trueCards.forEach((c, i) => {
             let amount = 1;
@@ -477,7 +485,7 @@ class DeckcodeFunctions {
         if (heroClass == "Deathknight") heroClass = "Death Knight"; // Wtf hearthstone?
         if (heroClass == "Demonhunter") heroClass = "Demon Hunter"; // I'm not sure if this actually happens, but considering it happened with death knight, you never know
         
-        let deckDef: (VanillaCard | undefined | number)[][] = deck.cards.map(c => [cards.find(a => a.dbfId == c[0]), c[1]]); // Get the full card object from the dbfId
+        let deckDef: [VanillaCard | undefined, number][] = deck.cards.map(c => [cards.find(a => a.dbfId == c[0]), c[1]]); // Get the full card object from the dbfId
         let createdCards: Blueprint[] = self.getCards(false);
         
         let invalidCards: VanillaCard[] = [];
@@ -490,7 +498,7 @@ class DeckcodeFunctions {
 
             // The card doesn't exist.
             console.log(`ERROR: Card '${vanillaCard.name}' doesn't exist!`.red);
-            invalidCards.push(c);
+            invalidCards.push(vanillaCard);
         });
 
         if (invalidCards.length > 0) {
@@ -514,10 +522,10 @@ class DeckcodeFunctions {
             return this.fromVanilla(plr, code); // Try again
         }
 
-        let new_deck = [];
+        let new_deck: [Card, number][] = [];
 
         // All cards in the deck exists
-        let amounts = {};
+        let amounts: { [amount: number]: number } = {};
         deckDef.forEach(c => {
             let [vanillaCard, amount] = c;
             if (vanillaCard === undefined || typeof vanillaCard === "number") return;
@@ -528,7 +536,7 @@ class DeckcodeFunctions {
             // @ts-expect-error
             if (!createdCards.find(a => a.name == name)) name = createdCards.find(a => a.displayName == name).name;
 
-            new_deck.push([new game.Card(name, plr), amount]);
+            new_deck.push([new Card(name, plr), amount]);
 
             if (!amounts[amount]) amounts[amount] = 0;
             amounts[amount]++;
@@ -547,11 +555,11 @@ class DeckcodeFunctions {
 
         if (heroClass == "Death Knight") {
             new_deck.forEach(c => {
-                c = c[0];
+                let card = c[0];
 
-                if (!c.runes) return;
+                if (!card.runes) return;
 
-                runes += c.runes;
+                runes += card.runes;
             });
 
             let sorted_runes = "";
@@ -941,7 +949,7 @@ ${main_content}
         cards = cards.filter(a => a.set && !a.set.includes("PLACEHOLDER_"));
         cards = cards.filter(a => !a.mercenariesRole);
 
-        let __cards = [];
+        let __cards: VanillaCard[] = [];
 
         cards.forEach(a => {
             // If the set is `HERO_SKINS`, only include it if it's id is `HERO_xx`, where the x's are a number.
@@ -1597,7 +1605,7 @@ ${main_content}
 
         let times = 0;
 
-        let cards = [];
+        let cards: Card[] = [];
 
         list = list.filter(c => c.type == "Minion");
         list.forEach(c => {
@@ -1643,9 +1651,10 @@ ${main_content}
      * @returns Success
      */
     importConfig(path: string): boolean {
+        // @ts-expect-error - Typescript doesn't expect the config to be empty, but it gets repopulated immediately anyway.
         game.config = {};
 
-        require("fs").readdirSync(path, { withFileTypes: true }).forEach(file => {
+        fs.readdirSync(path, { withFileTypes: true }).forEach(file => {
             let c = `${path}/${file.name}`;
 
             if (file.name.endsWith(".json")) {
@@ -1669,7 +1678,7 @@ ${main_content}
      * @returns Success
      */
     _importCards(path: string): boolean {
-        require("fs").readdirSync(path, { withFileTypes: true }).forEach(file => {
+        fs.readdirSync(path, { withFileTypes: true }).forEach(file => {
             let p = `${path}/${file.name}`;
 
             if (file.name.endsWith(".ts")) {
@@ -1762,23 +1771,27 @@ ${main_content}
      * @param plr The player to add the quest to
      * @param card The card that created the quest / secret
      * @param key The key to listen for
-     * @param val The value that the quest needs
+     * @param amount The amount of times that the quest is triggered before being considered complete
      * @param callback The function to call when the key is invoked.
      * @param next The name of the next quest / sidequest / secret that should be added when the quest is done
      * 
      * @returns {boolean} Success
      */
-    addQuest(type: "Quest" | "Sidequest" | "Secret", plr: Player, card: Card, key: EventKeys, val: EventValues, callback: QuestCallback, next?: string): boolean {
-        const t = plr[type.toLowerCase() + "s"];
+    addQuest(type: "Quest" | "Sidequest" | "Secret", plr: Player, card: Card, key: EventKey, amount: number, callback: QuestCallback, next?: string): boolean {
+        let t;
+        if (type == "Quest") t = plr.quests;
+        else if (type == "Sidequest") t = plr.sidequests;
+        else if (type == "Secret") t = plr.secrets;
+        else return false;
 
-        if ( (type.toLowerCase() == "quest" && t.length > 0) || ((type.toLowerCase() == "secret" || type.toLowerCase() == "sidequest") && (t.length >= 3 || t.filter(s => s.displayName == card.displayName).length > 0)) ) {
+        if ( (type.toLowerCase() == "quest" && t.length > 0) || ((type.toLowerCase() == "secret" || type.toLowerCase() == "sidequest") && (t.length >= 3 || t.filter(s => s.name == card.displayName).length > 0)) ) {
             plr.addToHand(card);
             //plr.mana += card.mana;
             
             return false;
         }
 
-        plr[type.toLowerCase() + "s"].push({"name": card.displayName, "progress": [0, val], "key": key, "value": val, "turn": game.turns, "callback": callback, "next": next});
+        t.push({"name": card.displayName, "progress": [0, amount], "key": key, "value": amount, "turn": game.turns, "callback": callback, "next": next});
         return true;
     }
 }

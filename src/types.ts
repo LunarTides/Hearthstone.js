@@ -99,7 +99,8 @@ export type CardKeyword = "Divine Shield" |
                           "Elusive" |
                           "Cleave";
 
-export type CardAbilityReal = "battlecry" |
+export type CardAbilityReal = "adapt" |
+                              "battlecry" |
                               "cast" |
                               "combo" |
                               "deathrattle" |
@@ -442,7 +443,7 @@ export type KeywordMethod = (plr: Player, game: Game, self: Card, key?: EventKey
 /**
  * The event listener callback. The second callback of the `Functions.addEventListener` function.
  */
-export type EventListenerCallback = (key: EventKey, val: EventValue<EventKey>) => any;
+export type EventListenerCallback = (val: EventValue<EventKey>) => any;
 /**
  * The event listener check callback. The first callback of the `Functions.addEventListener` function.
  */
