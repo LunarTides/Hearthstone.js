@@ -4,10 +4,10 @@
  * @type {import("../../../../src/types").Blueprint}
  */
 module.exports = {
-    // Look in `main.js` first.
+    // Look in `main.ts` first.
     // This will be summoned below the main minion
     name: "Colossal Example Right Arm",
-    displayName: "Right Arm", // Look in `left.js` for an explanation
+    displayName: "Right Arm", // Look in `left.ts` for an explanation
     stats: [1, 2],
     desc: "",
     mana: 1,

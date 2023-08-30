@@ -1824,7 +1824,7 @@ export class Interact {
      * Verifies that the diy card has been solved.
      * 
      * @param {boolean} condition The condition where, if true, congratulates the user
-     * @param {string} fileName The file's name in the `DIY` folder. E.g. `1.js`
+     * @param {string} fileName The file's name in the `DIY` folder. E.g. `1.ts`
      * 
      * @returns {boolean} Success
      */

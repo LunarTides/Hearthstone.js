@@ -37,6 +37,6 @@ module.exports = {
         // DON'T CHANGE ANYTHING BELOW THIS LINE
 
         // Testing your solution.
-        game.interact.verifyDIYSolution(self.getAttack() == 2 && self.getHealth() == 2, "1.js");
+        game.interact.verifyDIYSolution(self.getAttack() == 2 && self.getHealth() == 2, "1.ts");
     }
 }

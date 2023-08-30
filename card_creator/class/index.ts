@@ -45,7 +45,7 @@ function main() {
     let [name, displayName, hpDesc, hpCost] = answers;
     hpCost = parseInt(hpCost);
 
-    let filename = name.toLowerCase().replaceAll(" ", "_") + ".js";
+    let filename = name.toLowerCase().replaceAll(" ", "_") + ".ts";
 
     let card = {
         name: name + " Starting Hero",

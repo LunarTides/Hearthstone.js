@@ -13,7 +13,6 @@ module.exports = {
     uncollectible: true,
 
     /**
-     * @see functions.js:adapt
      * @type {import("../src/types").KeywordMethod}
      * 
      * @param {Card} minion

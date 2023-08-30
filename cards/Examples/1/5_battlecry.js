@@ -20,9 +20,9 @@ module.exports = {
      * @type {import("../../../src/types").KeywordMethod}
      */
     battlecry(plr, game, self) { // Instead of `battlecry`, you could put `deathrattle`, or `inspire`, for example.
-        // The `plr` variable is the card's owner. This is an instance of the Player class as defined in `src/player.js`.
-        // The `game` variable is the current game. This is an instance of the Game class as defined in `src/game.js`.
-        // The `self` variable is the card itself. This is an instance of the Card class as defined in `src/card.js`.
+        // The `plr` variable is the card's owner. This is an instance of the Player class as defined in `src/player.ts`.
+        // The `game` variable is the current game. This is an instance of the Game class as defined in `src/game.ts`.
+        // The `self` variable is the card itself. This is an instance of the Card class as defined in `src/card.ts`.
 
         // The card class has the `addStats` function that takes in an attack and health, then adds that to the current stats.
         self.addStats(1, 1);

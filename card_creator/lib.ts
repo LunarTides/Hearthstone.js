@@ -102,8 +102,8 @@ function create(override_type, override_card, override_path = "", override_filen
     let path = generateCardPath(classes, file_friendly_type);
     if (override_path) path = override_path; // If this function was passed in a path, use that instead.
 
-    // Create a filename. Example: "Test Card" -> "test_card.js"
-    let filename = card.name.toLowerCase().replaceAll(" ", "_") + ".js";
+    // Create a filename. Example: "Test Card" -> "test_card.ts"
+    let filename = card.name.toLowerCase().replaceAll(" ", "_") + ".ts";
     if (override_filename) filename = override_filename; // If this function was passed in a filename, use that instead.
 
     // Get the latest card-id

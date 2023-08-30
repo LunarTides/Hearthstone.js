@@ -1018,7 +1018,7 @@ ${main_content}
 
                 console.log("Please install any of these using your package manager.");
                 console.log("If you're not using linux, open up an issue on the github page.");
-                // rl.question(); <- It is your job to pause the program when you run this, since function.js functions should generally not pause the game.
+                // rl.question(); <- It is your job to pause the program when you run this, since function.ts functions should generally not pause the game.
 
                 return false;
             }
@@ -1192,9 +1192,9 @@ ${main_content}
         let classes: Exclude<CardClass, "Neutral">[] = [];
 
         fs.readdirSync(__dirname + "/../cards/StartingHeroes").forEach(file => {
-            if (!file.endsWith(".js")) return; // Something is wrong with the file name.
+            if (!file.endsWith(".ts")) return; // Something is wrong with the file name.
 
-            let name = file.slice(0, -3); // Remove ".js"
+            let name = file.slice(0, -3); // Remove ".ts"
             name = name.replaceAll("_", " "); // Remove underscores
             name = game.functions.capitalizeAll(name); // Capitalize all words
 
@@ -1672,7 +1672,7 @@ ${main_content}
         require("fs").readdirSync(path, { withFileTypes: true }).forEach(file => {
             let p = `${path}/${file.name}`;
 
-            if (file.name.endsWith(".js")) {
+            if (file.name.endsWith(".ts")) {
                 let f = require(p);
                 
                 game.cards.push(f);

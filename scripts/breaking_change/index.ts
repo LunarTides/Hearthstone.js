@@ -33,7 +33,7 @@ function searchCards(query, path = null) {
     fs.readdirSync(path, { withFileTypes: true }).forEach(file => {
         let p = `${path}/${file.name}`;
 
-        if (file.name.endsWith(".js")) {
+        if (file.name.endsWith(".ts")) {
             // It is already finished
             if (finishedCards.includes(p)) return;
 

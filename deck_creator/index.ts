@@ -3,7 +3,7 @@ require("colors");
 try {
     require(__dirname + "/../src/game");
 } catch (err) {
-    require("readline-sync").question("ERROR: This program is dependant on the modules in Hearthstone.js, so the file 'index.js' needs to be in the directory 'Hearthstone.js/deck_creator'.\n".red);
+    require("readline-sync").question("ERROR: This program is dependant on the modules in Hearthstone.js, so the file 'index.ts' needs to be in the directory 'Hearthstone.js/deck_creator'.\n".red);
     require("process").exit(1);
 }
 
@@ -60,7 +60,7 @@ let settings = {
     },
     deckcode: {
         cardId: "id",
-        format: "js" // "js" | "vanilla"
+        format: "ts" // "ts" | "vanilla"
     },
     commands: {
         default: "add",
@@ -752,7 +752,7 @@ function handleCmds(cmd) {
         let setting = settings.deckcode.format;
 
         // Export it as a Hearthstone.js formatted deckcode, since it is faster
-        settings.deckcode.format = "js";
+        settings.deckcode.format = "ts";
         let _deckcode = deckcode();
         settings.deckcode.format = setting;
 
@@ -854,12 +854,12 @@ function handleCmds(cmd) {
         switch (setting) {
             case "format":
                 if (args.length == 0) {
-                    settings.deckcode.format = "js";
-                    console.log("Reset deckcode format to: " + "js".yellow);
+                    settings.deckcode.format = "ts";
+                    console.log("Reset deckcode format to: " + "ts".yellow);
                     break;
                 }
 
-                if (!["vanilla", "js"].includes(args[0])) {
+                if (!["vanilla", "ts"].includes(args[0])) {
                     console.log("Invalid format!".red);
                     game.input();
                     return;

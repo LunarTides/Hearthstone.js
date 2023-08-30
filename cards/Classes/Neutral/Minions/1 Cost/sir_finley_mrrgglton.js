@@ -25,7 +25,7 @@ module.exports = {
 
         // ~/cards/StartingHeroes
         fs.readdirSync(__dirname + "/../../../../StartingHeroes").forEach(file => {
-            let name = file.slice(0, -3); // Remove ".js"
+            let name = file.slice(0, -3); // Remove ".ts"
             name = name.replaceAll("_", " "); // Remove underscores
             name = game.functions.capitalizeAll(name); // Capitalize all words
 

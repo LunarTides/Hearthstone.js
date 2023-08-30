@@ -4,7 +4,7 @@
  * @type {import("../../../src/types").Blueprint}
  */
 module.exports = {
-    // Look in `corrupt.js` first.
+    // Look in `corrupt.ts` first.
     name: "Corrupted Example",
     stats: [2, 2],
     desc: "Corrupted.",

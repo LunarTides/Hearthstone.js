@@ -4,7 +4,7 @@
  * @type {import("../../../../src/types").Blueprint}
  */
 module.exports = {
-    // Look in `main.js` first.
+    // Look in `main.ts` first.
     // This will be summoned above the main minion
     name: "Colossal Example Left Arm",
     displayName: "Left Arm", // The game will use this instead of the name when displaying the card. This doesn't need to be unique.
