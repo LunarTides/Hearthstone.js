@@ -1,7 +1,7 @@
 import { Card } from './card';
 import { Game } from './game';
 import { Player } from './player';
-import { AIHistory, Blueprint, CardLike, GameConfig, GamePlayCardReturn, SelectTargetAlignment, SelectTargetClass, SelectTargetFlag, Target } from './types';
+import { AIHistory, Blueprint, CardLike, EventValue, GameConfig, GamePlayCardReturn, SelectTargetAlignment, SelectTargetClass, SelectTargetFlag, Target } from './types';
 
 const license_url = 'https://github.com/LunarTides/Hearthstone.js/blob/main/LICENSE';
 
@@ -26,7 +26,10 @@ export class Interact {
 
             let alt_model = `legacy_attack_${game.config.AIAttackModel}`;
 
-            if (Object.keys(game.player.ai).includes(alt_model)) ai = game.player.ai[alt_model]();
+            if (Object.keys(game.player.ai).includes(alt_model)) {
+                // @ts-expect-error - We know this exists, because of the if, but strict mode doesn't like it
+                ai = game.player.ai[alt_model]();
+            }
             else ai = game.player.ai.attack();
 
             attacker = ai[0];
@@ -388,8 +391,8 @@ export class Interact {
                     if (key == "AddCardToHand" && i > 0) {
                         let last_entry = history[t][i - 1];
 
-                        if (last_entry[0] == "DrawCard" && last_entry[1].uuid == val.uuid) {
-                            return;
+                        if (last_entry[0] == "DrawCard") {
+                            if ((last_entry[1] as Card).uuid == (val as Card).uuid) return;
                         }
                     }
 
@@ -412,9 +415,9 @@ export class Interact {
                         val = strbuilder;
                     }
 
-                    key = key[0].toUpperCase() + key.slice(1);
+                    let finishedKey = key[0].toUpperCase() + key.slice(1);
 
-                    finished += `${key}: ${val}\n`;
+                    finished += `${finishedKey}: ${val}\n`;
                 });
             });
 
@@ -499,11 +502,16 @@ export class Interact {
                 return false;
             }
 
-            let eventCards: [Card, number] = game.events.events.PlayCard[game.player.id];
-            let card: Card = eventCards[eventCards.length - 1][0];
+            let eventCards: [Card, number][] = game.events.events.PlayCard[game.player.id];
+            if (eventCards.length <= 0) {
+                game.input("No cards to undo.\n".red);
+                return false;
+            }
+
+            let card = eventCards[eventCards.length - 1][0];
 
             // Remove the event so you can undo more than the last played card
-            game.events["PlayCard"][game.player.id].pop();
+            game.events.events.PlayCard[game.player.id].pop();
 
             // If the card can appear on the board, remove it.
             if (card.type === "Minion" || card.type === "Location") {
@@ -542,7 +550,9 @@ export class Interact {
             if (echo) finished += "AI Info:\n\n";
 
             for (let i = 1; i <= 2; i++) {
-                const plr = game["player" + i];
+                let plr;
+                if (i == 1) plr = game.player1;
+                else plr = game.player2;
                 if (!plr.ai) continue;
 
                 finished += `AI${i} History: {\n`;
@@ -565,10 +575,10 @@ export class Interact {
         }
         else if (name === "/cmd") {
             let history = Object.values(game.events.history).map(t => t.filter(
-                (v: any[]) => v[0] == "Input" &&
-                v[1].startsWith("/") &&
+                (v) => v[0] == "Input" &&
+                (v[1] as EventValue<"Input">).startsWith("/") &&
                 v[2] == game.player &&
-                !v[1].startsWith("/cmd")
+                !(v[1] as EventValue<"Input">).startsWith("/cmd")
             ));
             
             history.forEach((obj, i) => {
@@ -577,11 +587,11 @@ export class Interact {
                 console.log(`\nTurn ${i}:`);
 
                 let index = 1;
-                obj.forEach((h: string[]) => {
+                obj.forEach(h => {
                     /**
                      * The user's input
                      */
-                    let input: string = h[1];
+                    let input = h[1];
 
                     console.log(`[${index++}] ${input}`);
                 });
@@ -605,6 +615,8 @@ export class Interact {
                 return false;
             }
 
+            command = command as EventValue<"Input">;
+
             this.printAll();
             let options = parseInt(game.input(`\nWhat would you like to do with this command?\n${command}\n\n(1. Run it, 2. Cancel): `));
             if (!options || options === 2) {
@@ -624,7 +636,14 @@ export class Interact {
 
             let [key, value] = args;
 
-            let setting: GameConfig = game.config[key];
+            let name = Object.keys(game.config).find(k => k === value);
+            if (!name) {
+                game.input("Invalid setting name!\n".red);
+                return false;
+            }
+
+            // @ts-expect-error - Strict mode can't index object by string, even though we null check it immediately, so we have to do this
+            let setting: GameConfig = game.config[name];
 
             if (setting === undefined) {
                 game.input("Invalid setting name!\n".red);
@@ -670,6 +689,7 @@ export class Interact {
                 return false;
             }
 
+            // @ts-expect-error - We already know that the key is a valid config setting.
             game.config[key] = newValue;
             game.doConfigAI();
             
@@ -1085,53 +1105,23 @@ export class Interact {
      * 
      * @returns {Card | null} The card chosen.
      */
-    discover(prompt: string, cards: CardLike[] = [], filterClassCards: boolean = true, amount: number = 3, _cards: Blueprint[] = []): Card | null {
+    discover(prompt: string, cards: CardLike[] = [], filterClassCards: boolean = true, amount: number = 3, _cards: CardLike[] = []): Card | null {
         this.printAll();
-        let values = _cards;
+        let values: CardLike[] = _cards;
 
         if (cards.length <= 0) cards = game.functions.getCards();
         if (cards.length <= 0 || !cards) return null;
 
         if (filterClassCards) {
             // We need to filter the cards
-            // We can't directly filter cards that are of `Type1[] | Type2[]` using `Array.prototype.filter()`, so we have to create a custom implementation
             // of the filter function
-            
-            /**
-             * Literally just the same as `Array.prototype.filter()`, but probably worse.
-             *
-             * @param list The list to be filtered.
-             * @param filterFunction The function used to filter the list.
-             * 
-             * @returns The filtered list.
-             */
-            function filterList<T>(list: T[], filterFunction: (item: T) => boolean): T[] {
-                const filteredList = [];
-              
-                for (const element of list) {
-                    if (filterFunction(element)) {
-                        filteredList.push(element);
-                    }
-                }
-
-                return filteredList;
-            }
-
-            /**
-             * This function is a wrapper for the game.functions.validateClass() method. 
-             * It takes a card-like object as a parameter and passes it to the validateClass() method along with the game.player object.
-             *
-             * @param cardLike a card-like object (Card or Blueprint)
-             * @returns the return value of the validateClass() method
-             */
-            function customValidateClass(cardLike: CardLike): boolean {
-                return game.functions.validateClass(game.player, cardLike);
-            }
-
-            cards = filterList(cards, customValidateClass);
+            cards = cards.filter(card => game.functions.validateClass(game.player, card));
         }
 
-        if (_cards.length == 0) values = game.functions.chooseItemsFromList(cards, amount, false);
+        // No cards from previous discover loop, we need to generate new ones.
+        if (_cards.length == 0) {
+            values = game.functions.chooseItemsFromList(cards, amount, false);
+        }
 
         if (values.length <= 0) return null;
 

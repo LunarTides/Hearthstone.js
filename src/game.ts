@@ -204,7 +204,7 @@ export class EventManager {
         if (this.game.suppressedEvents.includes(key)) return false;
         if (plr.classType !== "Player" || plr.id === -1) return false;
 
-        if (!this.events[key]) this.events[key] = [["GameLoop", this.game.turns], ["GameLoop", this.game.turns]];
+        if (!this.events[key]) this.events[key] = [[["GameLoop", this.game.turns], ["GameLoop", this.game.turns]]];
         this.events[key]![plr.id].push([val, this.game.turns]);
 
         this.cardUpdate(key, val);
