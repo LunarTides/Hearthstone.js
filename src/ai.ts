@@ -2,7 +2,7 @@ import { Card } from "./card";
 import { Player } from "./player";
 import { Game } from "./game";
 import { get } from "./shared";
-import { AICalcMoveOptions, AIHistory, CardLike, ScoredCard, SelectTargetAlignment, SelectTargetClass, SelectTargetFlag, Target } from "./types";
+import { AICalcMoveOption, AIHistory, CardLike, ScoredCard, SelectTargetAlignment, SelectTargetClass, SelectTargetFlag, Target } from "./types";
 
 let game: Game;
 
@@ -63,8 +63,8 @@ export class AI {
      * 
      * @returns Result
      */
-    calcMove(): AICalcMoveOptions {
-        let best_move: AICalcMoveOptions;
+    calcMove(): AICalcMoveOption {
+        let best_move: AICalcMoveOption;
         let best_score = -100000;
 
         // Look for highest score
@@ -200,8 +200,8 @@ export class AI {
      * @returns `Perfect Trades`: [[attacker, target], ...], `Imperfect Trades`: [[attacker, target], ...]
      */
     _attackFindTrades(): [Card[][], Card[][]] {
-        let perfect_trades: Card[] = [];
-        let imperfect_trades: Card[] = [];
+        let perfect_trades: Card[][] = [];
+        let imperfect_trades: Card[][] = [];
 
         let currboard = game.board[this.plr.id].filter(m => this._canMinionAttack(m));
 
@@ -211,7 +211,8 @@ export class AI {
             let score = this.analyzePositiveCard(a);
             if (score > game.config.AIProtectThreshold || trades.map(c => c[0]).includes(a)) return; // Don't attack with high-value minions.
 
-            if (a.sleepy || a.attackTimes <= 0) return;
+            // If the card has the `sleepy` prop, it has the attackTimes prop too. TODO: Maybe have a different class for each card type.
+            if (a.sleepy || a.attackTimes! <= 0) return;
 
             let opboard = game.board[this.plr.getOpponent().id].filter(m => this._canTargetMinion(m));
 
@@ -336,7 +337,7 @@ export class AI {
         this.history.push({"type": "attack", "data": [returned[0].name, returned[1].name]});
 
         // If the ai is not focusing on a minion, focus on the returned minion
-        if (!this.focus && returned[1] instanceof game.Card) this.focus = returned[1];
+        if (!this.focus && returned[1] instanceof Card) this.focus = returned[1];
 
         return returned;
     }
@@ -367,7 +368,7 @@ export class AI {
         if (!this.focus || (this._tauntExists() && !this.focus.keywords.includes("Taunt"))) target = this._attackGeneralChooseTarget();
         else target = this.focus
 
-        return [this._attackGeneralChooseAttacker(target instanceof game.Player), target];
+        return [this._attackGeneralChooseAttacker(target instanceof Player), target];
     }
 
     /**
@@ -430,7 +431,7 @@ export class AI {
 
             if (score > lowest_score[1] || (score > game.config.AIProtectThreshold && !target_is_player)) return;
 
-            if (m.sleepy || m.attackTimes <= 0) return;
+            if (m.sleepy || m.attackTimes! <= 0) return;
             if (target_is_player && !m.canAttackHero) return;
 
             lowest_score = [m, score];
@@ -539,14 +540,14 @@ export class AI {
         let arr = [];
         let strbuilder = "";
 
-        if (attacker instanceof game.Player) arr.push("P" + (attacker.id + 1));
-        else if (attacker instanceof game.Card) {
+        if (attacker instanceof Player) arr.push("P" + (attacker.id + 1));
+        else if (attacker instanceof Card) {
             arr.push(attacker.name);
             strbuilder += worst_score + ", ";
         }
             
-        if (target instanceof game.Player) arr.push("P" + (target.id + 1));
-        else if (target instanceof game.Card) {
+        if (target instanceof Player) arr.push("P" + (target.id + 1));
+        else if (target instanceof Card) {
             arr.push(target.name);
             strbuilder += best_score;
         }
@@ -603,7 +604,7 @@ export class AI {
 
             if (side == "self") ret = this.plr;
             else if (side == "enemy") ret = op;
-            let _ret = (ret instanceof game.Player) ? "P" + (ret.id + 1) : ret;
+            let _ret = (ret instanceof Player) ? "P" + (ret.id + 1) : ret;
 
             this.history.push({"type": "selectTarget", "data": _ret});
 
@@ -615,7 +616,9 @@ export class AI {
             let ret: Player | false = false;
 
             if (force_class != "minion") {
-                ret = game["player" + (sid + 1)];
+                let ret;
+                if (sid === 0) ret = game.player1;
+                else if (sid === 1) ret = game.player2;
                 if (!ret) throw new Error("Player " + (sid + 1) + " not found");
 
                 this.history.push({"type": "selectTarget", "data": "P" + (ret.id + 1)});
@@ -659,14 +662,14 @@ export class AI {
      * @returns Result
      */
     discover(cards: CardLike[]): Card | null {
-        let best_card: Card | null;
+        let best_card: CardLike | null;
         let best_score = -100000;
 
         // Look for highest score
         cards.forEach(c => {
             if (!c.name) return; // Card-like is invalid
 
-            let score = this.analyzePositiveCard(new game.Card(c.name, this.plr));
+            let score = this.analyzePositiveCard(new Card(c.name, this.plr));
 
             if (score <= best_score) return;
 
@@ -679,7 +682,8 @@ export class AI {
 
         this.history.push({"type": "discover", "data": [best_card.name, best_score]});
 
-        best_card = new game.Card(best_card.name, this.plr); // `cards` can be a list of blueprints, so calling best_card.imperfectCopy is dangerous
+        // `cards` can be a list of blueprints, so calling best_card.imperfectCopy is dangerous
+        best_card = new Card(best_card.name, this.plr);
 
         return best_card;
     }

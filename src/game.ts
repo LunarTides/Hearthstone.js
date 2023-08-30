@@ -4,7 +4,7 @@ import { Player }    from "./player";
 import { Card }      from "./card";
 import { Interact }  from "./interact";
 import { AI }        from './ai';
-import { Blueprint, EventKeys, EventListenerCallback, EventValues, GameAttackReturn, GameConfig, GameConstants, GamePlayCardReturn, QuestType, Target, TickHookCallback } from "./types";
+import { Blueprint, EventKey, EventListenerCallback, EventValue, GameAttackReturn, GameConfig, GameConstants, GamePlayCardReturn, QuestType, Target, TickHookCallback } from "./types";
 
 export class EventManager {
     /**
@@ -293,7 +293,7 @@ export class Game {
      * 
      * Look in the `config` folder.
      */
-    config: GameConfig = {};
+    config: GameConfig;
 
     /**
      * All of the cards that have been implemented so far.

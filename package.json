@@ -23,6 +23,7 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
+    "@types/mocha": "^10.0.1",
     "@types/node": "^20.5.7",
     "@types/readline-sync": "^1.4.4",
     "mocha": "^10.2.0",

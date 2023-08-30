@@ -9,7 +9,7 @@ import { Player } from "./player";
 import { Card } from "./card";
 import { Game } from "./game";
 import { stripColors } from "colors";
-import { Blueprint, CardClass, CardLike, CardRarity, EventKeys, EventValues, FunctionsValidateCardReturn, MinionTribe, QuestCallback, Target, TargetCallback, TickHookCallback, VanillaCard } from "./types";
+import { Blueprint, CardClass, CardLike, CardRarity, EventKey, EventValue, FunctionsValidateCardReturn, MinionTribe, QuestCallback, Target, TickHookCallback, VanillaCard } from "./types";
 require("colors");
 
 let game: Game;

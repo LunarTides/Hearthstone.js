@@ -22,7 +22,7 @@ export function runner(_decks: string[]) {
 
     try {
         game.cards = [];
-        game.config = {};
+        game.config = undefined;
     } catch {};
 
     decks = _decks;
