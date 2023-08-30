@@ -6,11 +6,9 @@
         "strictNullChecks": true,
         "strictFunctionTypes": true,
         "alwaysStrict": true,
-        "checkJs": true,
         "noImplicitAny": true,
         "noImplicitReturns": true,
         "resolveJsonModule": true,
-        "allowJs": true,
         "outDir": "dist"
     },
     "exclude": [

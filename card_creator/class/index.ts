@@ -1,5 +1,5 @@
-const rl = require("readline-sync");
-const lib = require("../lib");
+import * as rl from "readline-sync";
+import * as lib from "../lib";
 
 const { Game } = require("../../src/game");
 const { Player } = require("../../src/player");
@@ -10,7 +10,7 @@ const game = new Game(player1, player2);
 game.functions.importCards(__dirname + "/../../cards");
 game.functions.importConfig(__dirname + "/../../config");
 
-function main() {
+export function main() {
     let watermark = () => {
         game.interact.cls();
         console.log("Hearthstone.js Class Creator (C) 2022\n");
@@ -66,7 +66,5 @@ function main() {
     console.log("\nClass Created!");
     rl.question(`Next steps:\n1. Open 'cards/StartingHeroes/${filename}' and add logic to the 'heropower' function.\n2. Now when using the Card Creator, type '${name}' into the 'Class' field to use that class\n3. When using the Deck Creator, type '${name}' to create a deck with cards from your new class.\nEnjoy!\n`);
 }
-
-exports.main = main;
 
 if (require.main == module) main();

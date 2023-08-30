@@ -55,7 +55,7 @@ function generateCardPath(...args) {
     return static_path + dynamic_path;
 }
 
-function create(override_type, override_card, override_path = "", override_filename = "") {
+export function create(override_type, override_card, override_path = "", override_filename = "") {
     card = override_card;
     type = override_type;
 
@@ -126,6 +126,7 @@ function create(override_type, override_card, override_path = "", override_filen
 
     let content = Object.entries(card).map(c => `${c[0]}: ${getTypeValue(c[1])}`); // name: "Test"
     content = `// Created by the ${cctype} Card Creator
+
 import { Blueprint, EventValue } from "${type_path_rel}";
 
 const blueprint: Blueprint = {
@@ -172,17 +173,13 @@ export default blueprint;
     return file_path;
 }
 
-function set_debug(state) {
+export function set_debug(state) {
     debug = state;
 }
 
-function set_type(state) {
+export function set_type(state) {
     cctype = state;
 }
-
-exports.create = create;
-exports.set_debug = set_debug;
-exports.set_type = set_type;
 
 // If the program was run directly, run 'main'. This is the same as "if __name__ == '__main__'" in python.
 if (require.main == module) {

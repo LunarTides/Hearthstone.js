@@ -2,12 +2,13 @@
   "name": "hearthstone.js",
   "version": "1.7.0-dev",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "type": "module",
   "scripts": {
     "test": "npm run test:custom",
     "test:custom": "node run-tests.ts",
-    "generate": "node card_creator/vanilla/generator"
+    "generate": "node card_creator/vanilla/generator",
+    "start": "tsc && node dist/index.js"
   },
   "repository": {
     "type": "git",

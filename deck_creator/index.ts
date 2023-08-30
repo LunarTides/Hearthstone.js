@@ -954,7 +954,7 @@ function handleCmds(cmd: string) {
 let opened_from_runner = false;
 let running = true;
 
-function runner() {
+export function runner() {
     require(__dirname + "/../index").free_decks(); // Remove all decks
     opened_from_runner = true;
     running = true;
@@ -973,7 +973,5 @@ function main() {
         handleCmds(game.input("\n> "));
     }
 }
-
-exports.runner = runner;
 
 if (require.main == module) main();

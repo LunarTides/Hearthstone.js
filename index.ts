@@ -18,10 +18,10 @@ const watermark = () => {
 
 let decks: string[] = [];
 
-function store_deck(deckcode: string) {
+export function store_deck(deckcode: string) {
     decks.push(deckcode);
 }
-function free_decks() {
+export function free_decks() {
     decks = [];
 }
 
@@ -63,9 +63,6 @@ function devmode() {
         else if (user == "b") break;
     }
 }
-
-exports.store_deck = store_deck;
-exports.free_decks = free_decks;
 
 while (true) {
     watermark();

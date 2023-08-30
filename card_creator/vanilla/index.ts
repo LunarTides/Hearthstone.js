@@ -131,7 +131,7 @@ function createCard(card, main) {
     lib.create(type, card, null, null);
 }
 
-function main(card = null) {
+export function main(card = null) {
     console.log("Hearthstone.js Vanilla Card Creator (C) 2022\n");
 
     if (card) return createCard(card, false);
@@ -185,7 +185,5 @@ function main(card = null) {
         createCard(card, true);
     }
 }
-
-exports.main = main;
 
 if (require.main == module) main();

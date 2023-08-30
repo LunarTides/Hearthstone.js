@@ -388,13 +388,14 @@ export class Card {
         this.plr = plr;
 
         // Make a backup of "this" to be used when silencing this card
-        //@ts-expect-error
-        if (!this.backups["init"]) this.backups["init"] = {};
+        if (!this.backups["init"]) this.backups["init"] = this;
+        // @ts-expect-error
         Object.entries(this).forEach(i => this.backups["init"][i[0]] = i[1]);
 
         this.uuid = this.randomizeUUID();
 
-        this.placeholder = this.activate("placeholders")[0]; // This is a list of replacements.
+        let placeholder = this.activate("placeholders");
+        if (placeholder instanceof Array) this.placeholder = placeholder[0]; // This is a list of replacements.
 
         game.events.broadcast("CreateCard", this, this.plr);
     }
@@ -420,6 +421,7 @@ export class Card {
         // Set these variables to true or false.
         const exists = ["corrupted", "colossal", "dormant", "uncollectible", "frozen", "immune", "echo"];
         exists.forEach(i => {
+            // @ts-expect-error
             this[i] = this.blueprint[i] || false;
         });
 
@@ -442,6 +444,7 @@ export class Card {
             let [key, val] = i;
 
             if (typeof val == "function") this.abilities[key as CardAbility] = [val];
+            // @ts-expect-error
             else this[key] = JSON.parse(JSON.stringify(i[1]));
         });
 
@@ -640,7 +643,7 @@ export class Card {
 
         // Restore health
 
-        if (this.getHealth() > (this.maxHealth ?? -1)) {
+        if (this.maxHealth && this.getHealth() > this.maxHealth) {
             // Too much health
             this.activate("overheal"); // Overheal keyword
 
@@ -764,8 +767,8 @@ export class Card {
      */
     createBackup(): number {
         let key = Object.keys(this.backups).length;
-        //@ts-expect-error
-        this.backups[key] = {};
+        this.backups[key] = this;
+        // @ts-expect-error
         Object.entries(this).forEach(i => this.backups[key][i[0]] = i[1]);
         
         return key;
@@ -780,6 +783,7 @@ export class Card {
      */
     restoreBackup(backup: Card): boolean {
         Object.keys(backup).forEach(att => {
+            // @ts-expect-error
             this[att] = backup[att];
         });
 
@@ -826,9 +830,11 @@ export class Card {
 
         Object.keys(this).forEach(att => {
             // Check if a backup exists for the attribute. If it does; restore it.
+            // @ts-expect-error
             if (this.backups["init"][att]) this[att] = this.backups["init"][att];
 
             // Check if the attribute if defined in the blueprint. If it is; restore it.
+            // @ts-expect-error
             else if (this.blueprint[att]) this[att] = this.blueprint[att];
         });
         this.desc = "";
@@ -1000,6 +1006,7 @@ export class Card {
             let [key, val] = ent;
 
             // Apply backup if it exists, otherwise keep it the same.
+            // @ts-expect-error
             if (this.backups["init"][key] || this.backups["init"][key] === 0) this[key] = this.backups["init"][key];
         });
 
@@ -1016,21 +1023,27 @@ export class Card {
 
             switch (op) {
                 case '=':
+                    // @ts-expect-error
                     this[key] = numberVal;
                     break;
                 case '+':
+                    // @ts-expect-error
                     this[key] += numberVal;
                     break;
                 case '-':
+                    // @ts-expect-error
                     this[key] -= numberVal;
                     break;
                 case '*':
+                    // @ts-expect-error
                     this[key] *= numberVal;
                     break;
                 case '/':
+                    // @ts-expect-error
                     this[key] /= numberVal;
                     break;
                 case '^':
+                    // @ts-expect-error
                     this[key] = Math.pow(this[key], numberVal);
                     break;
                 default:

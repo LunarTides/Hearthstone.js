@@ -174,7 +174,7 @@ function location() {
     });
 }
 
-function main() {
+export function main() {
     // Reset the card
     card = {};
 
@@ -215,8 +215,6 @@ function main() {
     game.input();
     return filePath;
 }
-
-exports.main = main;
 
 // If the program was run directly, run 'main'. This is the same as "if __name__ == '__main__'" in python.
 if (require.main == module) main();

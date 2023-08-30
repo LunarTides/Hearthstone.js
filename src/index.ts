@@ -79,5 +79,4 @@ function main() {
     }
 }
 
-exports.runner = runner;
 if (require.main == module) main();

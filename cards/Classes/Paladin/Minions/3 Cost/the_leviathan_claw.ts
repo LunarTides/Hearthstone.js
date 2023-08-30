@@ -1,4 +1,5 @@
 // Created by the Custom Card Creator
+
 import { Blueprint, EventValue } from "../../../../../src/types";
 
 const blueprint: Blueprint = {
