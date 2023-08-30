@@ -1,8 +1,8 @@
 node_modules/
 logs/
 dist/
+.vscode/
 .*\.swp
 *~
 \.ignore.*
 *-output\.txt
-\.vs

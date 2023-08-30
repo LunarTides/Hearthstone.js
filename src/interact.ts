@@ -1,7 +1,7 @@
 import { Card } from './card';
 import { Game } from './game';
 import { Player } from './player';
-import { AIHistory, Blueprint, CardLike, GamePlayCardReturn, SelectTargetAlignment, SelectTargetClass, SelectTargetFlag, Target } from './types';
+import { AIHistory, Blueprint, CardLike, GameConfig, GamePlayCardReturn, SelectTargetAlignment, SelectTargetClass, SelectTargetFlag, Target } from './types';
 
 const license_url = 'https://github.com/LunarTides/Hearthstone.js/blob/main/LICENSE';
 
@@ -26,7 +26,7 @@ export class Interact {
 
             let alt_model = `legacy_attack_${game.config.AIAttackModel}`;
 
-            if (game.player.ai[alt_model]) ai = game.player.ai[alt_model]();
+            if (Object.keys(game.player.ai).includes(alt_model)) ai = game.player.ai[alt_model]();
             else ai = game.player.ai.attack();
 
             attacker = ai[0];
@@ -129,7 +129,7 @@ export class Interact {
                 return false;
             }
 
-            let ask = this.yesNoQuestion(game.player, game.player.hero.hpDesc.yellow + " Are you sure you want to use this hero power?");
+            let ask = this.yesNoQuestion(game.player, game.player.hero?.hpDesc.yellow + " Are you sure you want to use this hero power?");
             if (!ask) return false;
 
             this.printAll();
@@ -248,12 +248,8 @@ export class Interact {
                     else if (game.config.branch == "dev") strbuilder += "the develop (beta) branch";
                     else if (game.config.branch == "stable") strbuilder += "the stable (release) branch";
     
-                    let _config = {};
-                    _config.debug = game.config.debug;
-                    _config.P2AI = game.config.P2AI;
-    
-                    if (JSON.stringify(_config) == '{"debug":true,"P2AI":true}') strbuilder += " using the debug settings preset";
-                    else if (JSON.stringify(_config) == '{"debug":false,"P2AI":false}') strbuilder += " using the recommended settings preset";
+                    if (game.config.debug === true && game.config.P2AI === true) strbuilder += " using the debug settings preset";
+                    else if (game.config.debug === false && game.config.P2AI === false) strbuilder += " using the recommended settings preset";
                     else strbuilder += " using custom settings";
     
                     console.log(strbuilder + ".\n");
@@ -282,7 +278,7 @@ export class Interact {
                     break;
                 }
 
-                const print_todo = (todo: [string, string], id: number, print_desc = false) => {
+                const print_todo = (todo: [string, string[]], id: number, print_desc = false) => {
                     let [name, info] = todo;
                     let [state, desc] = info;
 
@@ -331,7 +327,7 @@ export class Interact {
              * @returns {any}
              */
             const doVal = (val: any, plr: Player, hide: boolean): any => {
-                if (val instanceof game.Card) {
+                if (val instanceof Card) {
                     // If the card is not hidden, or the card belongs to the current player, show it
                     if (!hide || val.plr == plr) return showCard(val);
 
@@ -362,7 +358,7 @@ export class Interact {
                     if (revealed) return "Hidden > Revealed as: " + showCard(val);
                     else return "Hidden";
                 }
-                else if (val instanceof game.Player) return `Player ${val.id + 1}`;
+                else if (val instanceof Player) return `Player ${val.id + 1}`;
 
                 // Return val as-is if it is not a card / player
                 return val;
@@ -370,7 +366,7 @@ export class Interact {
 
             Object.values(history).forEach((h, t) => {
                 let hasPrintedHeader = false;
-                let prevPlayer;
+                let prevPlayer: Player;
 
                 h.forEach((c, i: number) => {
                     let [key, val, plr] = c;
@@ -446,7 +442,7 @@ export class Interact {
                 return false;
             }
     
-            game.player.addToHand(new game.Card(card.name, game.player));
+            game.player.addToHand(new Card(card.name, game.player));
         }
         else if (name === "/eval") {
             if (args.length <= 0) {

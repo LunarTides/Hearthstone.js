@@ -4,7 +4,7 @@ import { Player }    from "./player";
 import { Card }      from "./card";
 import { Interact }  from "./interact";
 import { AI }        from './ai';
-import { Blueprint, EventKey, EventListenerCallback, EventValue, GameAttackReturn, GameConfig, GameConstants, GamePlayCardReturn, QuestType, Target, TickHookCallback } from "./types";
+import { Blueprint, EventKey, EventListenerCallback, EventManagerEvents, EventValue, GameAttackReturn, GameConfig, GameConstants, GamePlayCardReturn, QuestType, Target, TickHookCallback } from "./types";
 
 export class EventManager {
     /**
@@ -27,7 +27,11 @@ export class EventManager {
      * 
      * It looks like this: `history[turn] = [[key, val, plr], ...]`
      */
-    history: {[x: number]: [[EventKeys, EventValues, Player]]} = {};
+    history: {[x: number]: [[EventKey, EventValue<EventKey>, Player]]} = {};
+
+    events: EventManagerEvents;
+
+    stats: {[key: string]: [number, number]};
 
     constructor(game: Game) {
         // An event looks like this:
@@ -42,12 +46,14 @@ export class EventManager {
      * @param key The key of the event that triggered the tick
      * @param val The value of the event that triggered the tick
      */
-    tick(key: EventKeys, val: EventValues) {
+    tick(key: EventKey, val: EventValue<EventKey>): void {
         // The code in here gets executed very often
 
         // Infuse
         if (key == "KillMinion") {
+            val = val as EventValue<typeof key>;
             val.plr.hand.forEach(p => {
+                if (!p.infuse_num) return;
                 if (p.infuse_num < 0) return;
 
                 p.desc = p.desc.replace(`Infuse (${p.infuse_num})`, `Infuse (${p.infuse_num - 1})`);
@@ -100,7 +106,7 @@ export class EventManager {
      *
      * @returns Success
      */
-    cardUpdate(key: EventKeys, val: EventValues): boolean {
+    cardUpdate(key: EventKey, val: EventValue<EventKey>): boolean {
         this.game.board.forEach(p => {
             p.forEach(m => {
                 if (m.getHealth() <= 0) return; // This function gets called directly after a minion is killed.
@@ -111,7 +117,7 @@ export class EventManager {
         });
 
         for (let i = 1; i <= 2; i++) {
-            let plr = this.game["player" + i];
+            let plr: Player = this.game["player" + i];
 
             // Activate spells in the players hand
             plr.hand.forEach(c => {
@@ -144,7 +150,7 @@ export class EventManager {
      *
      * @returns Success
      */
-    questUpdate(quests_name: "secrets" | "sidequests" | "quests", key: EventKeys, val: EventValues, plr: Player): boolean {
+    questUpdate(quests_name: "secrets" | "sidequests" | "quests", key: EventKey, val: EventValue<EventKey>, plr: Player): boolean {
         plr[quests_name].forEach(s => {
             let quest: QuestType = s;
 
@@ -180,7 +186,7 @@ export class EventManager {
      *
      * @returns Success
      */
-    broadcast(key: EventKeys, val: EventValues, plr: Player, updateHistory: boolean = true): boolean {
+    broadcast(key: EventKey, val: EventValue<EventKey>, plr: Player, updateHistory: boolean = true): boolean {
         this.tick(key, val);
 
         if (updateHistory) this.addHistory(key, val, plr);
@@ -189,8 +195,8 @@ export class EventManager {
         if (this.game.suppressedEvents.includes(key)) return false;
         if (plr.classType !== "Player" || plr.id === -1) return false;
 
-        if (!this[key]) this[key] = [[], []];
-        this[key][plr.id].push([val, this.game.turns]);
+        if (!this.events[key]) this.events[key] = [[], []];
+        this.events[key][plr.id].push([val, this.game.turns]);
 
         this.cardUpdate(key, val);
 
@@ -208,7 +214,7 @@ export class EventManager {
      * @param val The value of the event
      * @param plr The player who caused the event to happen
      */
-    addHistory(key: EventKeys, val: EventValues, plr: Player) {
+    addHistory(key: EventKey, val: EventValue, plr: Player) {
         if (!this.history[this.game.turns]) this.history[this.game.turns] = [];
         this.history[this.game.turns].push([key, val, plr]);
     }
@@ -236,11 +242,11 @@ export class EventManager {
      * @returns The new value
      */
     increment(player: Player, key: string, amount: number = 1): number {
-        if (!this[key]) this[key] = [0, 0];
+        if (!this.stats[key]) this[key] = [0, 0];
 
-        this[key][player.id] += amount;
+        this.stats[key][player.id] += amount;
 
-        return this[key][player.id];
+        return this.stats[key][player.id];
     }
 }
 
@@ -343,7 +349,7 @@ export class Game {
      * 
      * If an event with a key in this list is broadcast, it will add it to the history, and tick the game, but will not activate any passives / event listeners.
      */
-    suppressedEvents: EventKeys[] = [];
+    suppressedEvents: EventKey[] = [];
 
     /**
      * Whether or not the game is currently accepting input from the user.
@@ -433,7 +439,7 @@ export class Game {
             const answer = queue[0];
             this.functions.remove(queue, answer);
 
-            if (queue.length <= 0) this.player.inputQueue = null;
+            if (queue.length <= 0) this.player.inputQueue = undefined;
 
             return wrapper(answer);
         }

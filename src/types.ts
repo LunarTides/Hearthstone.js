@@ -99,22 +99,30 @@ export type CardKeyword = "Divine Shield" |
                           "Elusive" |
                           "Cleave";
 
+export type CardAbilityReal = "battlecry" |
+                              "cast" |
+                              "combo" |
+                              "deathrattle" |
+                              "finale" |
+                              "frenzy" |
+                              "honorablekill" |
+                              "infuse" |
+                              "inspire" |
+                              "invoke" |
+                              "outcast" |
+                              "overheal" |
+                              "overkill" |
+                              "passive" |
+                              "spellburst";
+
 /**
  * Card abilities
  */
-export type CardAbility = "battlecry" |
-                          "combo" |
-                          "deathrattle" |
-                          "finale" |
-                          "frenzy" |
-                          "honorablekill" |
-                          "inspire" |
-                          "invoke" |
-                          "outcast" |
-                          "overheal" |
-                          "overkill" |
-                          "passive";
-                          "spellburst";
+export type CardAbility = CardAbilityReal |
+                          "placeholders" |
+                          "condition" |
+                          "unpassive" |
+                          "handpassive";
 
 /**
  * Event keys
@@ -339,7 +347,7 @@ export type GameConstants = {
 /**
  * The quest callback used in card blueprints.
  */
-export type QuestCallback = (val: EventValue<EventKey>, turn: number, done: boolean) => void;
+export type QuestCallback = (val: EventValue<EventKey>, turn: number, done: boolean) => boolean;
 
 /**
  * The backend of a quest.
@@ -415,13 +423,12 @@ export type Blueprint = {
 
     keywords?: CardKeyword[],
 
-    runes?: string[],
+    runes?: string,
     colossal?: string[],
     corrupt?: string,
     settings?: any,
 
-    placeholder?: KeywordMethod,
-    condition?: KeywordMethod
+    conditioned?: boolean
 } & BlueprintAbilities;
 
 /**
@@ -465,7 +472,7 @@ export type AIHistory = {
  */
 export type EnchantmentDefinition = {
     enchantment: string,
-    owner: Player
+    owner: Card
 }
 
 /**
@@ -528,3 +535,5 @@ export type GameConfig = {
         negative: {[key: string]: number}
     }
 }
+
+export type EventManagerEvents = {[key in EventKey]?: [[key, EventValue<key>, Player], [key, EventValue<key>, Player]]};

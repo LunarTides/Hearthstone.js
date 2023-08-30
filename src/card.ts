@@ -1,7 +1,7 @@
 import { Game } from "./game";
 import { Player } from "./player";
 import { get } from "./shared";
-import { Blueprint, CardClass, CardKeyword, CardRarity, CardType, CostType, EnchantmentDefinition, GameConfig, KeywordMethod, MinionTribe, SpellSchool } from "./types";
+import { Blueprint, CardAbility, CardClass, CardKeyword, CardRarity, CardType, CostType, EnchantmentDefinition, GameConfig, KeywordMethod, MinionTribe, SpellSchool } from "./types";
 const { v4: uuidv4 } = require("uuid");
 
 let game: Game;
@@ -137,7 +137,7 @@ export class Card {
     /**
      * The description of the hero power.
      */
-    hpDesc?: string = "PLACEHOLDER";
+    hpDesc: string = "PLACEHOLDER";
 
     /**
      * The cost of the hero power.
@@ -342,6 +342,17 @@ export class Card {
     colossal?: string[];
 
     /**
+     * A list of abilities that can only 
+     */
+    conditioned?: CardAbility[];
+    
+    /**
+     * The abilities of the card (battlecry, deathrattle, etc...)
+     */
+    abilities: {[key in CardAbility]?: KeywordMethod[]} = {};
+    
+
+    /**
      * Create a card.
      * 
      * @param name The name of the card
@@ -428,8 +439,10 @@ export class Card {
                             This is in an array so we can add multiple events on casts
         */
         Object.entries(this.blueprint).forEach(i => {
-            if (typeof i[1] == "function") this[i[0]] = [i[1]];
-            else this[i[0]] = JSON.parse(JSON.stringify(i[1]));
+            let [key, val] = i;
+
+            if (typeof val == "function") this.abilities[key as CardAbility] = [val];
+            else this[key] = JSON.parse(JSON.stringify(i[1]));
         });
 
         // Set maxHealth if the card is a minion or weapon
@@ -446,9 +459,9 @@ export class Card {
      * @returns Success
      */
     addDeathrattle(_deathrattle: KeywordMethod): boolean {
-        if (!this.deathrattle) this.deathrattle = [];
+        if (!this.abilities.deathrattle) this.abilities.deathrattle = [];
 
-        this.deathrattle.push(_deathrattle);
+        this.abilities.deathrattle.push(_deathrattle);
 
         // Just in case we want this function to ever fail, we make it return success.
         return true;
@@ -633,7 +646,7 @@ export class Card {
 
             if (this.getHealth() > before) game.events.broadcast("HealthRestored", this.maxHealth, this.plr);
 
-            this.stats[1] = this.maxHealth;
+            this.stats[1] = this.maxHealth ?? -1;
         } else if (this.getHealth() > before) {
             game.events.broadcast("HealthRestored", this.getHealth(), this.plr);
         }
@@ -847,24 +860,26 @@ export class Card {
      * 
      * @returns All the return values of the method keywords
      */
-    activate(name: string, ...args: any): any[] | -1 | false {
+    activate(name: CardAbility, ...args: any): any[] | -1 | false {
         // This activates a function
         // Example: activate("cast")
         // Do: this.cast.forEach(cast_func => cast_func(plr, game, card))
         // Returns a list of the return values from all the function calls
-
-        name = name.toLowerCase();
+        let ability: KeywordMethod[] | undefined = this.abilities[name];
 
         // If the card has the function
-        if (!this[name]) return false;
+        if (!ability) return false;
 
         let ret: any[] | -1 = [];
         
-        this[name].forEach(func => {
+        ability.forEach(func => {
             if (ret === game.constants.REFUND) return;
 
             // Check if the method is conditioned
-            if (this["conditioned"] && this["conditioned"].includes(name) && this.activate("condition")[0] === false) return;
+            if (this.conditioned && this.conditioned.includes(name)) {
+                let r = this.activate("condition");
+                if (!(r instanceof Array) || r[0] === false) return;
+            }
 
             let r = func(this.plr, game, this, ...args);
             ret.push(r);
@@ -970,7 +985,7 @@ export class Card {
         vars = vars.filter(c => whitelisted_vars.includes(c[0])); // Filter for vars in the whitelist
 
         // Get keys
-        let keys = [];
+        let keys: string[] = [];
 
         let enchantments = this.enchantments.map(e => e.enchantment); // Get a list of enchantments
         enchantments.forEach(e => {
@@ -999,8 +1014,28 @@ export class Card {
 
             let numberVal = parseInt(val);
 
-            // Totally safe piece of code :)
-            eval(`this[key] ${op}= numberVal`);
+            switch (op) {
+                case '=':
+                    this[key] = numberVal;
+                    break;
+                case '+':
+                    this[key] += numberVal;
+                    break;
+                case '-':
+                    this[key] -= numberVal;
+                    break;
+                case '*':
+                    this[key] *= numberVal;
+                    break;
+                case '/':
+                    this[key] /= numberVal;
+                    break;
+                case '^':
+                    this[key] = Math.pow(this[key], numberVal);
+                    break;
+                default:
+                    break;
+            }
         });
 
         return true;
@@ -1009,8 +1044,6 @@ export class Card {
     /**
      * Add an enchantment to the card. The enchantments look something like this: `mana = 1`, `+1 mana`, `-1 mana`.
      *
-     * @warning DO NOT PASS USER INPUT DIRECTLY INTO THIS FUNCTION.
-     * 
      * @param e The enchantment string
      * @param card The creator of the enchantment. This will allow removing or looking up enchantment later.
      *
@@ -1092,11 +1125,17 @@ export class Card {
      * @returns Success
      */
     replacePlaceholders(): boolean {
-        if (!this["placeholders"]) return false;
+        if (!this.abilities.placeholders) return false;
 
-        this.placeholder = this.activate("placeholders")[0];
+        let tempPlaceholder = this.activate("placeholders");
+        if (!(tempPlaceholder instanceof Array)) return false; // Maybe throw an error?
 
-        Object.entries(this.placeholder).forEach(p => {
+        let placeholder = tempPlaceholder[0];
+        if (!(placeholder instanceof Object)) return false;
+
+        this.placeholder = placeholder;
+
+        Object.entries(placeholder).forEach(p => {
             let [key, _] = p;
             let replacement = `{ph:${key}} placeholder {/ph}`;
 
