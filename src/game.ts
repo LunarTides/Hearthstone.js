@@ -260,8 +260,6 @@ export class Game {
 
     /**
      * The player that starts with `The Coin`.
-     * 
-     * @type {Player}
      */
     player2: Player;
 
@@ -491,10 +489,6 @@ export class Game {
         // Add quest cards to the players hands
         for (let i = 0; i < 2; i++) {
             // Set the player's hero to the default hero for the class
-
-            /**
-             * @type {Player}
-             */
             let plr: Player = this["player" + (i + 1)];
             
             let success = plr.setToStartingHero();
@@ -713,10 +707,7 @@ export class Game {
             echo_clone.echo = true;
         }
 
-        /**
-         * @type {import('./types').GamePlayCardReturn}
-         */
-        let ret: import('./types').GamePlayCardReturn = true;
+        let ret: GamePlayCardReturn = true;
 
         let op = player.getOpponent();
         let board = this.board[player.id];

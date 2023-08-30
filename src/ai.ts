@@ -2,7 +2,7 @@ import { Card } from "./card";
 import { Player } from "./player";
 import { Game } from "./game";
 import { get } from "./shared";
-import { AICalcMoveOptions, AIHistory, CardLike, ScoredCard, SelectTargetFlags, Target } from "./types";
+import { AICalcMoveOptions, AIHistory, CardLike, ScoredCard, SelectTargetAlignment, SelectTargetClass, SelectTargetFlag, Target } from "./types";
 
 let game: Game;
 
@@ -459,9 +459,6 @@ export class AI {
      */
     attack(): (Target | -1)[] {
         // Assign a score to all minions
-        /**
-         * @type {import("./types").ScoredCard[][]}
-         */
         let board: import("./types").ScoredCard[][] = game.board.map(m => {
             return m.map(c => {
                 return {"card": c, "score": this.analyzePositiveCard(c)};
@@ -573,7 +570,7 @@ export class AI {
      * 
      * @returns The target selected.
      */
-    selectTarget(prompt: string, card: Card | null = null, force_side: "friendly" | "enemy" | null = null, force_class: "minion" | "hero" | null = null, flags: SelectTargetFlags[] = []): Target | false {
+    selectTarget(prompt: string, card: Card | null = null, force_side: SelectTargetAlignment | null = null, force_class: SelectTargetClass | null = null, flags: SelectTargetFlag[] = []): Target | false {
         if (flags.includes("allow_locations") && force_class != "hero") {
             let locations = game.board[this.plr.id].filter(m => m.type == "Location" && m.cooldown == 0 && !this.used_locations_this_turn.includes(m));
             this.used_locations_this_turn.push(locations[0]);
@@ -602,9 +599,6 @@ export class AI {
         }
 
         if (force_class && force_class == "hero") {
-            /**
-             * @type {Player | false}
-             */
             let ret: Player | false = false;
 
             if (side == "self") ret = this.plr;

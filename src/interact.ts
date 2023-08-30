@@ -1,7 +1,7 @@
 import { Card } from './card';
 import { Game } from './game';
 import { Player } from './player';
-import { Blueprint, CardLike, GamePlayCardReturn, SelectTargetFlags, Target } from './types';
+import { AIHistory, Blueprint, CardLike, GamePlayCardReturn, SelectTargetAlignment, SelectTargetClass, SelectTargetFlag, Target } from './types';
 
 const license_url = 'https://github.com/LunarTides/Hearthstone.js/blob/main/LICENSE';
 
@@ -183,7 +183,7 @@ export class Interact {
             console.log("version    - Displays the version, branch, your settings preset, and some information about your current version.");
             console.log("license    - Opens a link to this project's license");
 
-            const cond_color = (/** @type {string} */ str: string) => {return (game.config.debug) ? str : str.gray};
+            const cond_color = (str: string) => {return (game.config.debug) ? str : str.gray};
 
             console.log(cond_color("\n--- Debug Commands (") + ((game.config.debug) ? "ON".green : "OFF".red) + cond_color(") ---"));
             console.log(cond_color("/give (name)        - Adds a card to your hand"));
@@ -282,7 +282,7 @@ export class Interact {
                     break;
                 }
 
-                const print_todo = (/** @type {[string, string]} */ todo: [string, string], /** @type {number} */ id: number, print_desc = false) => {
+                const print_todo = (todo: [string, string], id: number, print_desc = false) => {
                     let [name, info] = todo;
                     let [state, desc] = info;
 
@@ -317,7 +317,7 @@ export class Interact {
             let history = game.events.history;
             let finished = "";
 
-            const showCard = (/** @type {Card} */ val: Card) => {
+            const showCard = (val: Card) => {
                 return this.getReadableCard(val) + " which belongs to: " + val.plr.name.blue + ", and has uuid: " + val.uuid.slice(0, 8);
             }
 
@@ -372,7 +372,7 @@ export class Interact {
                 let hasPrintedHeader = false;
                 let prevPlayer;
 
-                h.forEach((c, /** @type {number} */ i: number) => {
+                h.forEach((c, i: number) => {
                     let [key, val, plr] = c;
 
                     if (plr != prevPlayer) hasPrintedHeader = false;
@@ -497,14 +497,7 @@ export class Interact {
                 return false;
             }
 
-            /**
-             * @type {[Card, number]}
-             */
             let eventCards: [Card, number] = game.events["PlayCard"][game.player.id];
-
-            /**
-             * @type {Card}
-             */
             let card: Card = eventCards[eventCards.length - 1][0];
 
             // Remove the event so you can undo more than the last played card
@@ -552,7 +545,7 @@ export class Interact {
 
                 finished += `AI${i} History: {\n`;
 
-                plr.ai.history.forEach((/** @type {import('./types').AIHistory} */ obj: import('./types').AIHistory, /** @type {number} */ objIndex: number) => {
+                plr.ai.history.forEach((obj: AIHistory, objIndex: number) => {
                     finished += `${objIndex + 1} ${obj.type}: (${obj.data}),\n`;
                 });
                 
@@ -570,7 +563,7 @@ export class Interact {
         }
         else if (name === "/cmd") {
             let history = Object.values(game.events.history).map(t => t.filter(
-                (/** @type {any[]} */ v: any[]) => v[0] == "Input" &&
+                (v: any[]) => v[0] == "Input" &&
                 v[1].startsWith("/") &&
                 v[2] == game.player &&
                 !v[1].startsWith("/cmd")
@@ -582,11 +575,9 @@ export class Interact {
                 console.log(`\nTurn ${i}:`);
 
                 let index = 1;
-                obj.forEach((/** @type {string[]} */ h: string[]) => {
+                obj.forEach((h: string[]) => {
                     /**
                      * The user's input
-                     * 
-                     * @type {string}
                      */
                     let input: string = h[1];
 
@@ -852,8 +843,6 @@ export class Interact {
     
         /**
          * If the test deck (30 Sheep) should be allowed
-         * 
-         * @type {boolean}
          */
         let allowTestDeck: boolean = game.config.debug || game.config.branch !== "stable";
 
@@ -1178,7 +1167,7 @@ export class Interact {
      * 
      * @returns The card or hero chosen
      */
-    selectTarget(prompt: string, card: Card | null = null, force_side: "enemy" | "friendly" | null = null, force_class: "hero" | "minion" | null = null, flags: SelectTargetFlags[] = []): Target | false {
+    selectTarget(prompt: string, card: Card | null = null, force_side: SelectTargetAlignment | null = null, force_class: SelectTargetClass | null = null, flags: SelectTargetFlag[] = []): Target | false {
         game.events.broadcast("TargetSelectionStarts", [prompt, card, force_side, force_class, flags], game.player);
         let target = this._selectTarget(prompt, card, force_side, force_class, flags);
 
@@ -1189,7 +1178,7 @@ export class Interact {
     /**
      * @see {@link selectTarget}
      */
-    _selectTarget(prompt: string, card: Card | null = null, force_side: "enemy" | "friendly" | null = null, force_class: "hero" | "minion" | null = null, flags: import('./types').SelectTargetFlags[] = []): Target | false {
+    _selectTarget(prompt: string, card: Card | null = null, force_side: SelectTargetAlignment | null = null, force_class: SelectTargetClass | null = null, flags: SelectTargetFlag[] = []): Target | false {
         // If the player is forced to select a target, select that target.
         if (game.player.forceTarget) return game.player.forceTarget;
 
@@ -1229,8 +1218,6 @@ export class Interact {
 
         /**
          * This is the resulting minion that the player chose, if any.
-         * 
-         * @type {Card}
          */
         let minion: Card;
 
@@ -1436,8 +1423,6 @@ export class Interact {
     getReadableCard(card: CardLike, i: number = -1, _depth: number = 0): string {
         /**
          * If it should show detailed errors regarding depth.
-         * 
-         * @type {boolean}
          */
         let showDetailedError: boolean = (game.config.debug || game.config.branch !== "stable" || game.player.detailedView);
 

@@ -14,9 +14,15 @@ const blueprint: Blueprint = {
     keywords: ["Rush", "Divine Shield"],
     uncollectible: true,
 
-    passive(plr, game, self, key, val) {
+    passive(plr, game, self, key, _unknownValue) {
+        // Rush, Divine Shield. After this attacks, draw a card.
+
+        // If the key is for a different event, stop the function.
         if (key != "Attack") return;
-        val = val as EventValue<typeof key>;
+
+        // Here we cast the value to the correct type.
+        // Do not use the '_unknownValue' variable after this.
+        const val = _unknownValue as EventValue<typeof key>;
 
         const [attacker, target] = val;
         if (attacker != self) return;
@@ -25,4 +31,4 @@ const blueprint: Blueprint = {
     }
 }
 
-export default blueprint
+export default blueprint;

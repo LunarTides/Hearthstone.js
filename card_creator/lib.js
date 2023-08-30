@@ -73,13 +73,27 @@ function create(override_type, override_card, override_path = "", override_filen
     if (card.desc.includes("Secret:")) file_friendly_type = "Secret";
 
     // Here it creates a default function signature
+    let isPassive = func.toLowerCase() == "passive";
     let triggerText = ")";
-    if (func.toLowerCase() == "passive") triggerText = ", key, val)";
+    if (isPassive) triggerText = ", key, _unknownValue)";
+    
+    let extraPassiveCode = "";
+    if (isPassive) extraPassiveCode = `
+        // If the key for a different event, stop the function.
+        if (key != "") return;
+
+        // Here we cast the value to the correct type.
+        // Do not use the '_unknownValue' variable after this.
+        const val = _unknownValue as EventValue<typeof key>;
+        `;
     
     let desc_to_clean = type == "Hero" ? card.hpDesc : card.desc;
     let cleaned_desc = game.functions.stripTags(desc_to_clean);
 
-    if (func) func = `${func.toLowerCase()}(plr, game, self${triggerText} {\n        // ${cleaned_desc}\n        \n    }`; // Examples: '\n\n    passive(plr, game, self, key, val) {\n        // Your battlecries trigger twice\n        }', '\n\n    battlecry(plr, game, self) {\n\n    }'
+    if (func) func = `${func.toLowerCase()}(plr, game, self${triggerText} {
+        // ${cleaned_desc}
+        ${extraPassiveCode}
+    }`; // Examples: '\n\n    passive(plr, game, self, key, val) {\n        // Your battlecries trigger twice\n        }', '\n\n    battlecry(plr, game, self) {\n\n    }'
 
     // If there are multiple classes in a card, put the card in a directory something like this '.../Class1/Class2/...'
     let classes = card.class.replaceAll(" / ", "/");
@@ -110,30 +124,18 @@ function create(override_type, override_card, override_path = "", override_filen
     let num = split_path.length - split_path.indexOf("cards");
     let type_path_rel = "../".repeat(num - 1) + "src/types";
 
-    let bpDocstring = `/**
-* @type {import("${type_path_rel}").Blueprint}
-*/`;
-
-    let methodDocstring = `/**
-     * @type {import("${type_path_rel}").KeywordMethod}
-     */`;
-
-    // If the card has a function, add the docstring to it.
-    let funcString = "";
-    if (func) {
-        funcString = `
-
-    ${methodDocstring}
-    ${func}`;
-    }
-
     let content = Object.entries(card).map(c => `${c[0]}: ${getTypeValue(c[1])}`); // name: "Test"
     content = `// Created by the ${cctype} Card Creator
+import { Blueprint, EventValue } from "${type_path_rel}";
 
-${bpDocstring}
-module.exports = {
-    ${content.join(',\n    ')},${file_id}${funcString}
-}`;
+const blueprint: Blueprint = {
+    ${content.join(',\n    ')},${file_id}
+    
+    ${func}
+}
+
+export default blueprint;
+`;
 
     // Reset the type back to default.
     set_type("Undefined");

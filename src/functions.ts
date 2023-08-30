@@ -325,10 +325,7 @@ class DeckcodeFunctions {
         //
         // Reference: Death Knight [3B] /1:4,2/ 3f,5f,6f...
 
-        /**
-         * @type {import("deckstrings").DeckDefinition}
-         */
-        let deck: import("deckstrings").DeckDefinition = {"cards": [], "heroes": [], "format": 1};
+        let deck: deckstrings.DeckDefinition = {"cards": [], "heroes": [], "format": 1};
 
         let vanillaHeroes = { // List of vanilla heroes dbfIds
             "Warrior":      7,
@@ -347,9 +344,6 @@ class DeckcodeFunctions {
         let codeSplit = code.split(/[\[/]/);
         let heroClass = codeSplit[0].trim();
 
-        /**
-         * @type {number}
-         */
         let heroClassId: number = vanillaHeroes[heroClass];
 
         deck.heroes.push(heroClassId);
@@ -361,10 +355,6 @@ class DeckcodeFunctions {
         let cards = codeSplit[1].trim();
 
         // Now it's just the cards left
-
-        /**
-         * @type {string}
-         */
         let vanillaCardsString: string;
 
         try {
@@ -376,10 +366,7 @@ class DeckcodeFunctions {
 
             process.exit(1);
         }
-        /**
-         * @type {import("./types").VanillaCard[]}
-         */
-        let vanillaCards: import("./types").VanillaCard[] = JSON.parse(vanillaCardsString);
+        let vanillaCards: VanillaCard[] = JSON.parse(vanillaCardsString);
 
         let cardsSplit = cards.split(",").map(i => parseInt(i, 36));
         let cardsSplitId = cardsSplit.map(i => self.getCardById(i));
@@ -419,10 +406,7 @@ class DeckcodeFunctions {
                 return;
             }
 
-            /**
-             * @type {import("./types").VanillaCard}
-             */
-            let match: import("./types").VanillaCard;
+            let match: VanillaCard;
 
             if (matches.length > 1) {
                 // Ask the user to pick one
@@ -468,14 +452,8 @@ class DeckcodeFunctions {
      * @returns The Hearthstone.js deckcode
      */
     fromVanilla(plr: Player, code: string): string {
-        /**
-         * @type {import("deckstrings").DeckDefinition}
-         */
-        let deck: import("deckstrings").DeckDefinition = deckstrings.decode(code); // Use the 'deckstrings' api's decode
+        let deck: deckstrings.DeckDefinition = deckstrings.decode(code); // Use the 'deckstrings' api's decode
 
-        /**
-         * @type {string}
-         */
         let cardsString: string;
 
         try {
@@ -488,10 +466,7 @@ class DeckcodeFunctions {
             process.exit(1);
         }
 
-        /**
-         * @type {import("./types").VanillaCard[]}
-         */
-        let cards: import("./types").VanillaCard[] = JSON.parse(cardsString.toString());
+        let cards: VanillaCard[] = JSON.parse(cardsString.toString());
 
         // @ts-expect-error
         delete deck.format; // We don't care about the format
@@ -502,15 +477,8 @@ class DeckcodeFunctions {
         if (heroClass == "Deathknight") heroClass = "Death Knight"; // Wtf hearthstone?
         if (heroClass == "Demonhunter") heroClass = "Demon Hunter"; // I'm not sure if this actually happens, but considering it happened with death knight, you never know
         
-        /**
-         * @type {(import("./types").VanillaCard | undefined | number)[][]}
-         */
-        let deckDef: (import("./types").VanillaCard | undefined | number)[][] = deck.cards.map(c => [cards.find(a => a.dbfId == c[0]), c[1]]); // Get the full card object from the dbfId
-
-        /**
-         * @type {import("./types").Blueprint[]}
-         */
-        let createdCards: import("./types").Blueprint[] = self.getCards(false);
+        let deckDef: (VanillaCard | undefined | number)[][] = deck.cards.map(c => [cards.find(a => a.dbfId == c[0]), c[1]]); // Get the full card object from the dbfId
+        let createdCards: Blueprint[] = self.getCards(false);
         
         let invalidCards = [];
         deckDef.forEach(c => {

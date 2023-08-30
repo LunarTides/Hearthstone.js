@@ -858,9 +858,6 @@ export class Card {
         // If the card has the function
         if (!this[name]) return false;
 
-        /**
-         * @type {any[] | -1}
-         */
         let ret: any[] | -1 = [];
         
         this[name].forEach(func => {
