@@ -2,7 +2,7 @@ import { Game } from "./game";
 import { Player } from "./player";
 import { get } from "./shared";
 import { Blueprint, CardAbility, CardClass, CardKeyword, CardRarity, CardType, CostType, EnchantmentDefinition, GameConfig, KeywordMethod, MinionTribe, SpellSchool } from "./types";
-const { v4: uuidv4 } = require("uuid");
+import { v4 as uuidv4 } from "uuid";
 
 let game: Game;
 

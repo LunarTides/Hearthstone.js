@@ -23,18 +23,19 @@ export type CardType = "Minion" |
 /**
  * The class that the card belongs to
  */
-export type CardClass = "Neutral" |
-                        "Death Knight" |
-                        "Demon Hunter" |
-                        "Druid" |
-                        "Hunter" |
-                        "Mage" |
-                        "Paladin" |
-                        "Priest" |
-                        "Rogue" |
-                        "Shaman" |
-                        "Warlock" |
-                        "Warrior";
+export type CardClassNoNeutral = "Death Knight" |
+                                 "Demon Hunter" |
+                                 "Druid" |
+                                 "Hunter" |
+                                 "Mage" |
+                                 "Paladin" |
+                                 "Priest" |
+                                 "Rogue" |
+                                 "Shaman" |
+                                 "Warlock" |
+                                 "Warrior";
+
+export type CardClass = CardClassNoNeutral | "Neutral";
 
 /**
  * The rarity of the card
@@ -318,6 +319,8 @@ export type FunctionsValidateCardReturn = boolean |
                                           "class" |
                                           "uncollectible" |
                                           "runes";
+
+export type FunctionsExportDeckError = null | { msg: string; info: null | { card?: CardLike, amount?: number }; recoverable: boolean; }; 
 
 /**
  * `AI.calcMove` return value

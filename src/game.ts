@@ -4,7 +4,7 @@ import { Player }    from "./player";
 import { Card }      from "./card";
 import { Interact }  from "./interact";
 import { AI }        from './ai';
-import { Blueprint, EventKey, EventListenerCallback, EventManagerEvents, EventValue, GameAttackReturn, GameConfig, GameConstants, GamePlayCardReturn, QuestType, Target, TickHookCallback } from "./types";
+import { Blueprint, EventKey, EventManagerEvents, EventValue, GameAttackReturn, GameConfig, GameConstants, GamePlayCardReturn, QuestType, Target, TickHookCallback } from "./types";
 
 export class EventManager {
     /**

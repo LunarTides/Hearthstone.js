@@ -1,16 +1,10 @@
-require("colors");
+import "colors";
 
-try {
-    require(__dirname + "/../src/game");
-} catch (err) {
-    require("readline-sync").question("ERROR: This program is dependant on the modules in Hearthstone.js, so the file 'index.ts' needs to be in the directory 'Hearthstone.js/deck_creator'.\n".red);
-    require("process").exit(1);
-}
-
-const { Functions } = require("../src/functions");
-const { Game } = require("../src/game");
-const { Player } = require("../src/player");
-const { set } = require("../src/shared");
+import { Functions } from "../src/functions";
+import { Game } from "../src/game";
+import { Player } from "../src/player";
+import { set } from "../src/shared";
+import { Blueprint, CardClass, CardClassNoNeutral, CardLike } from "../src/types";
 
 const player1 = new Player("Player 1");
 const player2 = new Player("Player 2");
@@ -27,28 +21,57 @@ const config = game.config;
 const cards = functions.getCards();
 const classes = functions.getClasses();
 
-let chosen_class;
-let filtered_cards = {};
+let chosen_class: CardClassNoNeutral;
+let filtered_cards: Blueprint[] = [];
 
-let deck = [];
+let deck: Blueprint[] = [];
 let runes = "";
 
-let plr = new game.Player("");
+let plr = new Player("");
 
 let warnings = {
     latestCard: true
 }
 
-let settings = {
+type Settings = {
     card: {
-        latest: null,
+        latest?: Blueprint
     },
+    view: {
+        type: "cards" | "deck",
+        page: number,
+        maxPage?: number,
+        cpp: number,
+        class?: CardClass 
+    },
+    sort: {
+        type: keyof Blueprint,
+        order: "asc" | "desc"
+    },
+    search: {
+        query: string[],
+        prevQuery: string[]
+    },
+    deckcode: {
+        cardId: "id" | "name",
+        format: "ts" | "vanilla"
+    },
+    commands: {
+        default: string,
+        latest?: string,
+        latestUndoable?: string
+    },
+    other: {
+        firstScreen: boolean
+    }
+}
+
+let settings: Settings = {
+    card: {},
     view: {
         type: "cards",
         page: 1,
-        maxPage: null,
         cpp: 15, // Cards per page
-        class: null
     },
     sort: {
         type: "rarity",
@@ -60,12 +83,10 @@ let settings = {
     },
     deckcode: {
         cardId: "id",
-        format: "ts" // "ts" | "vanilla"
+        format: "ts"
     },
     commands: {
         default: "add",
-        latest: null,
-        latestUndoable: null
     },
     other: {
         firstScreen: true
@@ -77,13 +98,13 @@ function printName() {
     console.log("Hearthstone.js Deck Creator (C) 2022\n");
 }
 
-function askClass() {
+function askClass(): CardClassNoNeutral {
     printName();
 
     let _class = game.input("What class to you want to choose?\n" + classes.join(", ") + "\n");
     if (_class) _class = functions.capitalizeAll(_class);
 
-    if (!classes.includes(_class)) return askClass();
+    if (!classes.includes(_class as CardClassNoNeutral)) return askClass();
 
     if (_class == "Death Knight") {
         runes = "";
@@ -100,22 +121,20 @@ function askClass() {
         plr.runes = runes;
     }
 
-    return _class;
+    return _class as CardClassNoNeutral;
 }
 
-function getDisplayName(card) {
-    return card.displayName || card.name;
+function getDisplayName(card: CardLike) {
+    return card.displayName ?? card.name;
 }
 
-function sortCards(_cards) {
+function sortCards(_cards: Blueprint[]) {
     if (!["asc", "desc"].includes(settings.sort.order)) settings.sort.order = "asc"; // If the order is invalid, fall back to ascending
-    settings.sort.type = settings.sort.type.toLowerCase();
-    settings.sort.type = settings.sort.type.toLowerCase();
 
     let type = settings.sort.type;
     let order = settings.sort.order;
 
-    const calcOrder = (a, b) => {
+    const calcOrder = (a: number, b: number) => {
         if (order == "asc") return a - b;
         else return b - a;
     }
@@ -163,16 +182,16 @@ function sortCards(_cards) {
     return sortCards(_cards);
 }
 
-function searchCards(_cards, sQuery) {
-    if (sQuery == []) return _cards;
+function searchCards(_cards: Blueprint[], sQuery: string) {
+    if (sQuery.length <= 0) return _cards;
 
-    let ret_cards = [];
+    let ret_cards: Blueprint[] = [];
 
-    let query = sQuery.split(":");
+    let splitQuery = sQuery.split(":");
 
-    if (query.length <= 1) {
+    if (splitQuery.length <= 1) {
         // The user didn't specify a key. Do a general search
-        query = query[0].toLowerCase();
+        let query = splitQuery[0].toLowerCase();
 
         _cards.forEach(c => {
             let name = getDisplayName(c).toLowerCase();
@@ -186,12 +205,12 @@ function searchCards(_cards, sQuery) {
         return ret_cards;
     }
 
-    let [key, val] = query;
+    let [key, val] = splitQuery;
 
     val = val.toLowerCase();
 
-    const doReturn = (c) => {
-        let ret = c[key];
+    const doReturn = (c: Blueprint) => {
+        let ret = c[key as keyof Blueprint];
 
         if (!ret && ret !== 0) { // Javascript
             console.log(`\nKey '${key}' not valid!`.red);
@@ -221,7 +240,8 @@ function searchCards(_cards, sQuery) {
         }
 
         if (typeof(ret) === "string") return ret.toLowerCase().includes(val);
-        else if (typeof(ret) === "number") return ret == val;
+        else if (typeof(ret) === "number") return ret == parseFloat(val);
+        return -1;
     }
 
     let error = false;
@@ -245,7 +265,7 @@ function searchCards(_cards, sQuery) {
 }
 
 function showCards() {
-    filtered_cards = {};
+    filtered_cards = [];
     printName();
 
     if (!settings.view.class || !["Neutral", chosen_class].includes(settings.view.class)) settings.view.class = chosen_class;
@@ -258,7 +278,7 @@ function showCards() {
         c.class.split(" / ").forEach(cl => {
             if (!reg.test(cl)) return;
 
-            filtered_cards[c.name] = c;
+            filtered_cards.push(c);
         });
     });
 
@@ -278,12 +298,15 @@ function showCards() {
     settings.search.query.forEach(q => {
         if (searchFailed) return;
 
-        _filtered_cards = searchCards(_filtered_cards, q);
+        let __filtered_cards = searchCards(_filtered_cards, q);
 
-        if (_filtered_cards === false) {
+        if (__filtered_cards === false) {
             game.input(`Search failed at '${q}'! Reverting back to last successfull query.\n`.red);
             searchFailed = true;
+            return;
         }
+
+        _filtered_cards = __filtered_cards;
     });
 
     if (_filtered_cards.length <= 0) {
@@ -326,19 +349,22 @@ function showCards() {
 
     console.log(settings.view.class.rainbow);
 
-    let bricks = [];
+    let bricks: string[] = [];
     _filtered_cards.forEach(c => {
         bricks.push(getDisplayName(c) + " - " + c.id);
     });
 
     let wall = functions.createWall(bricks, "-");
 
-    wall.forEach(b => {
-        b = b.split("-");
+    wall.forEach(brick => {
+        let brickSplit = brick.split("-");
 
-        b = functions.colorByRarity(b[0], findCard(b[0].trim()).rarity) + "-" + b[1];
+        let card = findCard(brickSplit[0].trim());
+        if (!card) return;
 
-        console.log(b);
+        let toDisplay = functions.colorByRarity(brickSplit[0], card.rarity) + "-" + brickSplit[1];
+
+        console.log(toDisplay);
     });
 
     console.log("\nCurrent deckcode output:");
@@ -385,42 +411,42 @@ function showRules() {
     console.log("#".repeat(config_text.length));
 }
 
-function findCard(card) {
-    let _card;
+function findCard(card: string | number): Blueprint | null {
+    let _card: Blueprint | null = null;
 
     Object.values(filtered_cards).forEach(c => {
-        if (getDisplayName(c).toLowerCase() == card.toLowerCase() || c.id == card) _card = c;
+        if (c.id == card || (typeof card === "string" && getDisplayName(c).toLowerCase() == card.toLowerCase())) _card = c;
     });
 
-    return _card;
+    return _card!;
 }
 
-function chooseCard(prompt) {
-    let card = game.input(prompt);
-    card = findCard(card);
+function chooseCard(prompt: string) {
+    let input = game.input(prompt);
+    let card = findCard(input);
 
-    if (!card) return chooseCard();
+    // Ask again.
+    if (!card) return chooseCard(prompt);
 
     return card;
 }
 
-function add(c) {
-    deck.push(c);
+function add(card: Blueprint) {
+    deck.push(card);
 
-    if (!c.settings) return;
+    if (!card.settings) return;
 
-    if (c.settings) {
-        Object.entries(c.settings).forEach(setting => {
-            let [key, val] = setting;
+    Object.entries(card.settings).forEach(setting => {
+        let [key, val] = setting;
 
-            config[key] = val;
-        });
-    }
+        // @ts-expect-error
+        config[key] = val;
+    });
 
     functions = new Functions(game);
 }
-function remove(c) {
-    deck.splice(deck.indexOf(c), 1);
+function remove(card: Blueprint) {
+    game.functions.remove(deck, card);
 }
 
 function showDeck() {
@@ -428,14 +454,15 @@ function showDeck() {
 
     console.log("Deck Size: " + deck.length.toString().yellow + "\n");
 
-    let _cards = {};
+    // Why are we doing this? Can't this be done better?
+    let _cards: { [key: string]: [Blueprint, number] } = {};
 
     deck.forEach(c => {
         if (!_cards[c.name]) _cards[c.name] = [c, 0];
         _cards[c.name][1]++;
     });
 
-    let bricks = [];
+    let bricks: string[] = [];
 
     Object.values(_cards).forEach(c => {
         let card = c[0];
@@ -451,27 +478,34 @@ function showDeck() {
 
     let wall = functions.createWall(bricks, "-");
 
-    wall.forEach(b => {
-        b = b.split("-");
-        b = [b[0].replaceAll("`", "-"), b[1]]; // Replace '`' with '-'
+    wall.forEach(brick => {
+        let brickSplit = brick.split("-");
+        brickSplit[0] = brickSplit[0].replaceAll("`", "-"); // Replace '`' with '-'
 
-        // Color b[0] by rarity
+        let [nameAndAmount, id] = brickSplit;
+
+        // Color name by rarity
         let r = /^x\d+ /;
 
-        if (r.test(b[0])) {
+        // Extract amount from name
+        if (r.test(nameAndAmount)) {
             // Amount specified
-            let amount = b[0].split(r);
-            let card = findCard(b[0].replace(r, "").trim());
+            let amount = nameAndAmount.split(r);
+            let card = findCard(nameAndAmount.replace(r, "").trim());
+            if (!card) return; // Todo: Maybe throw an error?
+
             let name = functions.colorByRarity(amount[1], card.rarity);
 
-            console.log(`${r.exec(b[0])}${name}-${b[1]}`);
+            console.log(`${r.exec(nameAndAmount)}${name}-${id}`);
             return;
         }
 
-        let card = findCard(b[0].trim());
-        let name = functions.colorByRarity(b[0], card.rarity);
+        let card = findCard(nameAndAmount.trim());
+        if (!card) return;
 
-        console.log(`${name}-${b[1]}`);
+        let name = functions.colorByRarity(nameAndAmount, card.rarity);
+
+        console.log(`${name}-${id}`);
     });
 
     console.log("\nCurrent deckcode output:");
@@ -489,9 +523,6 @@ function deckcode(parseVanillaOnPseudo = false) {
         let error = _deckcode.error;
 
         let log = "WARNING: ".yellow;
-
-        let recoverable = true;
-
         switch (error.msg) {
             case "TooFewCards":
                 log += "Too few cards.".yellow;
@@ -501,20 +532,16 @@ function deckcode(parseVanillaOnPseudo = false) {
                 break;
             case "EmptyDeck":
                 log = "ERROR: Could not generate deckcode as your deck is empty. The resulting deckcode would be invalid.".red;
-                recoverable = false;
-
                 break;
             case "TooManyCopies":
-                log += "Too many copies of a card. Maximum is: ".yellow + game.config.maxOfOneCard.toString() + ". Offender: ".yellow + `{ Name: "${error.info.card.name}", Copies: "${error.info.copies}" }`;
+                log += "Too many copies of a card. Maximum is: ".yellow + game.config.maxOfOneCard.toString() + ". Offender: ".yellow + `{ Name: "${error.info?.card?.name}", Copies: "${error.info?.amount}" }`;
                 break;
             case "TooManyLegendaryCopies":
-                log += "Too many copies of a Legendary card. Maximum is: ".yellow + game.config.maxOfOneLegendary.toString() + ". Offender: ".yellow + `{ Name: "${error.info.card.name}", Copies: "${error.info.copies}" }`;
+                log += "Too many copies of a Legendary card. Maximum is: ".yellow + game.config.maxOfOneLegendary.toString() + ". Offender: ".yellow + `{ Name: "${error.info?.card?.name}", Copies: "${error.info?.amount}" }`;
                 break;
         }
 
         console.log(log);
-
-        _deckcode.error.recoverable = recoverable;
     }
 
     if (settings.deckcode.format == "vanilla" && (parseVanillaOnPseudo || !_deckcode.error)) _deckcode.code = functions.deckcode.toVanilla(plr, _deckcode.code);
@@ -581,28 +608,29 @@ function help() {
     game.input("\nPress enter to continue...\n");
 }
 
-function getCardArg(cmd, callback) {
+function getCardArg(cmd: string, callback: (card: Blueprint) => void) {
     let times = 1;
 
-    let card = cmd.split(" ");
-    card.shift();
+    let cmdSplit = cmd.split(" ");
+    cmdSplit.shift();
 
-    if (card.length > 1 && parseInt(card[0])) {
-        times = parseInt(card[0])
-        card.shift();
+    // Get x2 from the cmd
+    if (cmdSplit.length > 1 && parseInt(cmdSplit[0])) {
+        times = parseInt(cmdSplit[0])
+        cmdSplit.shift();
     }
 
-    card = card.join(" ");
+    cmd = cmdSplit.join(" ");
 
     let eligibleForLatest = false;
-    if (card.startsWith("l")) eligibleForLatest = true;
+    if (cmd.startsWith("l")) eligibleForLatest = true;
 
-    card = findCard(card);
+    let card = findCard(cmd);
 
     if (!card && eligibleForLatest) {
         console.log(`Card not found. Using latest valid card instead.`.yellow);
         if (warnings.latestCard) game.input();
-        card = settings.card.latest;
+        card = settings.card.latest ?? null;
     }
 
     if (!card) {
@@ -617,7 +645,7 @@ function getCardArg(cmd, callback) {
     return card;
 }
 
-function handleCmds(cmd) {
+function handleCmds(cmd: string) {
     if (findCard(cmd)) {
         // You just typed the name of a card.
         return handleCmds(`${settings.commands.default} ${cmd}`);
@@ -655,26 +683,25 @@ function handleCmds(cmd) {
         getCardArg(cmd, remove);
     }
     else if (cmd.startsWith("p")) {
-        let page = cmd.split(" ");
-        page.shift();
-        page = page.join(" ");
+        let pageSplit = cmd.split(" ");
+        pageSplit.shift();
 
-        page = parseInt(page)
+        let page = parseInt(pageSplit.join(" "));
         if (!page) return;
 
         if (page < 1) page = 1;
-        settings.view.page = parseInt(page);
+        settings.view.page = page;
     }
     else if (cmd.startsWith("cards")) {
-        let _class = cmd.split(" ");
-        _class.shift();
+        let cmdSplit = cmd.split(" ");
+        cmdSplit.shift();
 
-        if (_class.length <= 0) return;
+        if (cmdSplit.length <= 0) return;
 
-        _class = _class.join(" ");
+        let _class = cmdSplit.join(" ");
         _class = functions.capitalizeAll(_class);
 
-        if (!classes.includes(_class) && _class != "Neutral") {
+        if (!classes.includes(_class as CardClassNoNeutral) && _class != "Neutral") {
             game.input("Invalid class!\n".red);
             return;
         }
@@ -684,7 +711,7 @@ function handleCmds(cmd) {
             return;
         }
 
-        settings.view.class = _class;
+        settings.view.class = _class as CardClass;
     }
     else if (cmd.startsWith("deckcode")) {
         let _deckcode = deckcode(true);
@@ -700,8 +727,8 @@ function handleCmds(cmd) {
 
         if (args.length <= 0) return;
 
-        settings.sort.type = args[0];
-        if (args.length > 1) settings.sort.order = args[1];
+        settings.sort.type = args[0] as keyof Blueprint;
+        if (args.length > 1) settings.sort.order = args[1] as "asc" | "desc";
     }
     else if (cmd.startsWith("search")) {
         let args = cmd.split(" ");
@@ -712,8 +739,6 @@ function handleCmds(cmd) {
             return;
         }
 
-        //args = args.join(" ");
-
         settings.search.query = args;
     }
     else if (cmd.startsWith("deck")) {
@@ -723,7 +748,7 @@ function handleCmds(cmd) {
         let _deckcode = game.input("Please input a deckcode: ");
 
         let _deck = functions.deckcode.import(plr, _deckcode);
-        if (_deck == "invalid") return;
+        if (!_deck) return;
 
         game.config.validateDecks = false;
         _deck = _deck.sort((a, b) => {
@@ -734,7 +759,7 @@ function handleCmds(cmd) {
         deck = [];
 
         // Update the filtered cards
-        chosen_class = plr.heroClass;
+        chosen_class = plr.heroClass as CardClassNoNeutral;
         runes = plr.runes;
         showCards();
 
@@ -775,13 +800,18 @@ function handleCmds(cmd) {
         }
 
         deck = [];
-        chosen_class = new_class;
+        chosen_class = new_class as CardClassNoNeutral;
         if (settings.view.class != "Neutral") settings.view.class = chosen_class;
     }
     else if (cmd.startsWith("undo")) {
-        let command = settings.commands.latestUndoable.split(" ");
-        let args = command.slice(1);
-        command = command[0];
+        let commandSplit = settings.commands.latestUndoable?.split(" ");
+        if (!commandSplit) {
+            game.input("Nothing to undo.\n".red);
+            return;
+        }
+
+        let args = commandSplit.slice(1);
+        let command = commandSplit[0];
 
         let reverse;
 
@@ -809,7 +839,10 @@ function handleCmds(cmd) {
 
         let new_state;
 
-        if (args.length <= 1) new_state = !warnings[key]; // Toggle
+        if (args.length <= 1) {
+            // @ts-expect-error
+            new_state = !warnings[key]; // Toggle
+        }
         else {
             let val = args[1];
 
@@ -821,10 +854,12 @@ function handleCmds(cmd) {
             }
         }
 
+        // @ts-expect-error
         if (warnings[key] == new_state) {
             let strbuilder = "";
 
             strbuilder += "Warning '".yellow;
+            // @ts-expect-error
             strbuilder += key.brightYellow;
             strbuilder += "' is already ".yellow;
             strbuilder += (new_state) ? "enabled".yellow : "disabled".yellow;
@@ -834,6 +869,7 @@ function handleCmds(cmd) {
             return;
         }
 
+        // @ts-expect-error
         warnings[key] = new_state;
 
         let strbuilder = "";
@@ -846,10 +882,10 @@ function handleCmds(cmd) {
         game.input(strbuilder);
     }
     else if (cmd.startsWith("set")) {
-        let setting = cmd.split(" ");
-        setting.shift();
-        let args = setting.slice(1);
-        setting = setting[0];
+        let settingSplit = cmd.split(" ");
+        settingSplit.shift();
+        let args = settingSplit.slice(1);
+        let setting = settingSplit[0];
 
         switch (setting) {
             case "format":
@@ -865,12 +901,18 @@ function handleCmds(cmd) {
                     return;
                 }
 
-                settings.deckcode.format = args[0];
+                settings.deckcode.format = args[0] as "vanilla" | "ts";
                 console.log("Set deckcode format to: " + args[0].yellow);
                 break;
             case "cpp":
             case "cardsPerPage":
-                settings.view.cpp = parseInt(args);
+                if (args.length == 0) {
+                    settings.view.cpp = 15;
+                    console.log("Reset cards per page to: " + "15".yellow);
+                    break;
+                }
+
+                settings.view.cpp = parseInt(args[0]);
                 break;
             case "dcmd":
             case "defaultCommand":

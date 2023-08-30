@@ -9,7 +9,7 @@ import { Player } from "./player";
 import { Card } from "./card";
 import { Game } from "./game";
 import { stripColors } from "colors";
-import { Blueprint, CardClass, CardLike, CardRarity, EventKey, EventListenerCallback, EventListenerCheckCallback, EventValue, FunctionsValidateCardReturn, MinionTribe, QuestCallback, Target, TickHookCallback, VanillaCard } from "./types";
+import { Blueprint, CardClass, CardClassNoNeutral, CardLike, CardRarity, EventKey, EventListenerCallback, EventListenerCheckCallback, FunctionsExportDeckError, FunctionsValidateCardReturn, MinionTribe, QuestCallback, Target, TickHookCallback, VanillaCard } from "./types";
 require("colors");
 
 let game: Game;
@@ -74,7 +74,7 @@ class DeckcodeFunctions {
         hero = hero.trim();
         code = sep[1] + code.split(sep)[1];
 
-        if (!self.getClasses().includes(hero as Exclude<CardClass, "Neutral">)) return ERROR("INVALIDHERO");
+        if (!self.getClasses().includes(hero as CardClassNoNeutral)) return ERROR("INVALIDHERO");
 
         // @ts-expect-error
         plr.heroClass = hero;
@@ -244,15 +244,15 @@ class DeckcodeFunctions {
      *
      * @returns The deckcode, An error message alongside any additional information.
      */
-    export(deck: Blueprint[], heroClass: string, runes: string): { code: string; error: null | { msg: string; info: any; }; } {
-        let error = null;
+    export(deck: Blueprint[], heroClass: string, runes: string): { code: string; error: FunctionsExportDeckError } {
+        let error: FunctionsExportDeckError = null;
 
-        if (deck.length < game.config.minDeckLength) error = {"msg": "TooFewCards", "info": deck.length};
-        if (deck.length > game.config.maxDeckLength) error = {"msg": "TooManyCards", "info": deck.length};
+        if (deck.length < game.config.minDeckLength) error = {msg: "TooFewCards", info: { amount: deck.length }, recoverable: true};
+        if (deck.length > game.config.maxDeckLength) error = {msg: "TooManyCards", info: { amount: deck.length }, recoverable: true};
 
         if (deck.length <= 0) {
             // Unrecoverable error
-            error = {"msg": "EmptyDeck", "info": null};
+            error = {"msg": "EmptyDeck", "info": null, "recoverable": false};
 
             return {"code": "", "error": error};
         }
@@ -302,8 +302,8 @@ class DeckcodeFunctions {
             if (last) deckcode += copies;
             else deckcode += `${copies}:${amount},`;
 
-            if (copies > game.config.maxOfOneLegendary && card.rarity == "Legendary") error = {"msg": "TooManyLegendaryCopies", "info": {"card": card, "copies": copies}};
-            else if (copies > game.config.maxOfOneCard) error = {"msg": "TooManyCopies", "info": {"card": card, "copies": copies}};
+            if (copies > game.config.maxOfOneLegendary && card.rarity == "Legendary") error = {"msg": "TooManyLegendaryCopies", "info": {"card": card, "amount": copies}, "recoverable": true};
+            else if (copies > game.config.maxOfOneCard) error = {"msg": "TooManyCopies", "info": {"card": card, "amount": copies}, "recoverable": true};
         });
 
         deckcode += "/ ";
@@ -1196,8 +1196,8 @@ ${main_content}
      * 
      * assert.equal(classes, ["Mage", "Warrior", "Druid", ...])
      */
-    getClasses(): Exclude<CardClass, "Neutral">[] {
-        let classes: Exclude<CardClass, "Neutral">[] = [];
+    getClasses(): CardClassNoNeutral[] {
+        let classes: CardClassNoNeutral[] = [];
 
         fs.readdirSync(__dirname + "/../cards/StartingHeroes").forEach(file => {
             if (!file.endsWith(".ts")) return; // Something is wrong with the file name.
