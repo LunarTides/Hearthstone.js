@@ -1,8 +1,7 @@
 import rl from "readline-sync";
 import { readFileSync, writeFileSync, existsSync, unlinkSync } from "fs";
 import config from "../../config/general.json" assert { "type": "json" };
-import { Game } from "../../src/game.js";
-import { Player } from "../../src/player.js";
+import { Game, Player } from "../../src/internal.js";
 
 const player1 = new Player("Player 1");
 const player2 = new Player("Player 2");

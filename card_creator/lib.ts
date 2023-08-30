@@ -3,8 +3,7 @@
 import rl from "readline-sync";
 import fs from "fs";
 import config from "../config/general.json" assert { "type": "json" };
-import { Game } from "../src/game.js";
-import { Player } from "../src/player.js";
+import { Game, Player } from "../src/internal.js";
 
 const player1 = new Player("Player 1");
 const player2 = new Player("Player 2");
@@ -122,7 +121,7 @@ export function create(override_type, override_card, override_path = "", overrid
 
     let split_path = path.split(/[\\/]/);
     let num = split_path.length - split_path.indexOf("cards");
-    let type_path_rel = "../".repeat(num - 1) + "src/types";
+    let type_path_rel = "../".repeat(num - 1) + "src/types.js";
 
     let content = Object.entries(card).map(c => `${c[0]}: ${getTypeValue(c[1])}`); // name: "Test"
     content = `// Created by the ${cctype} Card Creator

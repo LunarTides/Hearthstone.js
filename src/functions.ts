@@ -1,16 +1,10 @@
-delete require.cache[require.resolve("./card")];
-delete require.cache[require.resolve("./player")];
-delete require.cache[require.resolve("./ai")];
-
 import "colors";
 import * as fs from "fs";
 import * as child_process from "child_process";
 import * as deckstrings from "deckstrings"; // To decode vanilla deckcodes
 import colors from "colors";
 import { createHash } from "crypto";
-import { Player } from "./player.js";
-import { Card } from "./card.js";
-import { Game } from "./game.js";
+import { Player, Card, Game } from "./internal.js";
 import { Blueprint, CardClass, CardClassNoNeutral, CardLike, CardRarity, EventKey, EventListenerCallback, EventListenerCheckCallback, FunctionsExportDeckError, FunctionsValidateCardReturn, MinionTribe, QuestCallback, Target, TickHookCallback, VanillaCard } from "./types.js";
 import * as vcc from "../card_creator/vanilla/index.js";
 

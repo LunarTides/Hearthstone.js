@@ -1,7 +1,5 @@
 import { exec } from 'child_process';
-import { Card } from './card.js';
-import { Game } from './game.js';
-import { Player } from './player.js';
+import { Card, Game, Player } from './internal.js';
 import { AIHistory, CardLike, EventValue, GameConfig, GamePlayCardReturn, SelectTargetAlignment, SelectTargetClass, SelectTargetFlag, Target } from './types.js';
 
 const license_url = 'https://github.com/LunarTides/Hearthstone.js/blob/main/LICENSE';

@@ -1,9 +1,6 @@
 import "colors";
 
-import { Functions } from "../src/functions.js";
-import { Game } from "../src/game.js";
-import { Player } from "../src/player.js";
-import { set } from "../src/shared.js";
+import { Functions, Game, Player, set } from "../src/internal.js";
 import { Blueprint, CardClass, CardClassNoNeutral, CardLike } from "../src/types.js";
 
 const player1 = new Player("Player 1");

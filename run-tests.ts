@@ -1,6 +1,6 @@
 // Partially copy-pasted from ChatGPT
-const { execSync } = require('child_process');
-const fs = require('fs');
+import { execSync } from 'child_process';
+import fs from 'fs';
 
 // List of test files to execute individually
 const testFiles = fs.readdirSync(__dirname + '/test/');

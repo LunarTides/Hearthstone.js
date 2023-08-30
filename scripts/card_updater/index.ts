@@ -1,6 +1,5 @@
 import vanillaCards from "../../card_creator/vanilla/.ignore.cards.json" assert { "type": "json" };
-const { Game } = require("../../src/game");
-const { Player } = require("../../src/player");
+import { Game, Player } from "../../src/internal.js";
 
 const player1 = new Player("Player 1");
 const player2 = new Player("Player 2");

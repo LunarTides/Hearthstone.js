@@ -1,11 +1,7 @@
 // Part of this code was copied from an example given by ChatGPT
-const assert = require('assert');
-const colors = require("colors");
-const { Player } = require("../src/player");
-const { Game } = require("../src/game");
-const { set } = require("../src/shared");
-const { Card } = require('../src/card');
-const { AI } = require('../src/ai');
+import "colors";
+import assert from 'assert';
+import { Player, Game, Card, set } from "../src/internal.js";
 
 // Setup the game / copied from the card updater
 const test_player1 = new Player("Test Player 1"); // Use this if a temp player crashes the game

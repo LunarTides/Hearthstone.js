@@ -1,6 +1,4 @@
-import { Card } from "./card.js";
-import { Game } from "./game.js";
-import { Player } from "./player.js";
+import { Card, Game, Player } from "./internal.js";
 
 /**
  * Ai scored card

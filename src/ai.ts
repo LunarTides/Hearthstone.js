@@ -1,7 +1,4 @@
-import { Card } from "./card.js";
-import { Player } from "./player.js";
-import { Game } from "./game.js";
-import { get } from "./shared.js";
+import { Card, Player, Game, get } from "./internal.js";
 import { AICalcMoveOption, AIHistory, CardLike, ScoredCard, SelectTargetAlignment, SelectTargetClass, SelectTargetFlag, Target } from "./types.js";
 
 let game: Game;

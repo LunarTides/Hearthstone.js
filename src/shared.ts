@@ -1,6 +1,6 @@
-import { Game } from "./game.js";
+import { Game } from "./internal.js";
 
-let game: Game;
+let game: Game | null = null;
 
 /**
  * Sets the game as a shared variable
@@ -20,6 +20,6 @@ export function set(new_game: Game): void {
 /**
  * Gets the shared game
  */
-export function get(): Game {
+export function get(): Game | null {
     return game;
 }

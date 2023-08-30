@@ -3,9 +3,7 @@ Hearthstone.js - Hearthstone but console based.
 Copyright (C) 2022  LunarTides
 */
 
-import { Game } from "./game.js";
-import { Player } from "./player.js";
-import { set } from "./shared.js";
+import { Player, Game, set } from "./internal.js";
 
 let p1: Player;
 let p2: Player;

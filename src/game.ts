@@ -1,9 +1,5 @@
-import { question } from 'readline-sync';
-import { Functions } from "./functions.js";
-import { Player }    from "./player.js";
-import { Card }      from "./card.js";
-import { Interact }  from "./interact.js";
-import { AI }        from './ai.js';
+import { question }  from 'readline-sync';
+import { Functions, Player, Card, Interact, AI } from "./internal.js";
 import { Blueprint, EventKey, EventManagerEvents, EventValue, GameAttackReturn, GameConfig, GameConstants, GamePlayCardReturn, QuestType, Target, TickHookCallback } from "./types.js";
 
 export class EventManager {

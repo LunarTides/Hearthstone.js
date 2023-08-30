@@ -1,6 +1,6 @@
 // Created by Hand (before the Card Creator Existed)
 
-import { Blueprint } from "../src/types";
+import { Blueprint } from "../src/types.js";
 
 const blueprint: Blueprint = {
     name: "Sheep",

@@ -1,8 +1,6 @@
 import rl from "readline-sync";
 import fs from "fs";
-import { Game } from "../src/game.js";
-import { Player } from "../src/player.js";
-import { set } from "../src/shared.js";
+import { Game, Player, set } from "../src/internal.js";
 
 let decks = Object.values(JSON.parse(fs.readFileSync("../decks.json")).versus);
 
