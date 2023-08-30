@@ -1,4 +1,4 @@
-import { version, branch } from "./config/dont-change.json" assert { type: "json" };
+import config from "./config/dont-change.json" assert { type: "json" };
 
 import * as rl from "readline-sync";
 import * as fs from "fs";
@@ -13,7 +13,7 @@ const cls = () => process.stdout.write("\x1bc");
 
 const watermark = () => {
     cls();
-    console.log(`Hearthstone.js Runner V${version}-${branch} (C) 2022\n`);
+    console.log(`Hearthstone.js Runner V${config.version}-${config.branch} (C) 2022\n`);
 }
 
 let decks: string[] = [];

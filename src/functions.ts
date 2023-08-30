@@ -6,14 +6,13 @@ import "colors";
 import * as fs from "fs";
 import * as child_process from "child_process";
 import * as deckstrings from "deckstrings"; // To decode vanilla deckcodes
-import { stripColors } from "colors";
+import colors from "colors";
 import { createHash } from "crypto";
 import { Player } from "./player.js";
 import { Card } from "./card.js";
 import { Game } from "./game.js";
 import { Blueprint, CardClass, CardClassNoNeutral, CardLike, CardRarity, EventKey, EventListenerCallback, EventListenerCheckCallback, FunctionsExportDeckError, FunctionsValidateCardReturn, MinionTribe, QuestCallback, Target, TickHookCallback, VanillaCard } from "./types.js";
 import * as vcc from "../card_creator/vanilla/index.js";
-
 
 let game: Game;
 
@@ -835,7 +834,7 @@ export class Functions {
         let history = game.interact.handleCmds("history", false, true);
         if (typeof history !== "string") throw new Error("createLogFile history did not return a string.");
 
-        history = stripColors(history);
+        history = colors.stripColors(history);
 
         // AI log
         game.config.debug = true; // Do this so it can actually run '/ai'

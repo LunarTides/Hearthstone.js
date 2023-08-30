@@ -1,8 +1,8 @@
-const rl = require("readline-sync");
-const fs = require("fs");
-const { Game } = require("../src/game");
-const { Player } = require("../src/player");
-const { set } = require("../src/shared");
+import rl from "readline-sync";
+import fs from "fs";
+import { Game } from "../src/game.js";
+import { Player } from "../src/player.js";
+import { set } from "../src/shared.js";
 
 let decks = Object.values(JSON.parse(fs.readFileSync("../decks.json")).versus);
 

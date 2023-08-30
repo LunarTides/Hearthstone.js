@@ -1,8 +1,8 @@
 import * as rl from "readline-sync";
-import * as lib from "../lib";
+import * as lib from "../lib.js";
 
-const { Game } = require("../../src/game");
-const { Player } = require("../../src/player");
+import { Game } from "../../src/game.js";
+import { Player } from "../../src/player.js";
 
 const player1 = new Player("Player 1");
 const player2 = new Player("Player 2");
@@ -24,7 +24,7 @@ export function main() {
         "How much should the hero power cost? (Default is 2):"
     ]
 
-    let answers = [];
+    let answers: string[] = [];
     let exited = false;
 
     // Ask the questions as defined above and push the answer to answers
@@ -43,7 +43,6 @@ export function main() {
     if (exited) return;
 
     let [name, displayName, hpDesc, hpCost] = answers;
-    hpCost = parseInt(hpCost);
 
     let filename = name.toLowerCase().replaceAll(" ", "_") + ".ts";
 
@@ -56,7 +55,7 @@ export function main() {
         class: name,
         rarity: "Free",
         hpDesc: hpDesc,
-        hpCost: hpCost,
+        hpCost: parseInt(hpCost),
         uncollectible: true
     };
 

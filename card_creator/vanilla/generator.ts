@@ -1,7 +1,7 @@
-const { Axios } = require("axios");
-let fs = require("fs");
-const { Game } = require("../../src/game");
-const { Player } = require("../../src/player");
+import { Axios } from "axios";
+import { writeFile } from "fs";
+import { Game } from "../../src/game.js";
+import { Player } from "../../src/player.js";
 
 const player1 = new Player("Player 1");
 const player2 = new Player("Player 2");
@@ -15,7 +15,7 @@ new Axios({}).get("https://api.hearthstonejson.com/v1/latest/enUS/cards.json")
         let oldLength = data.length;
         data = game.functions.filterVanillaCards(data, false, false, true);
 
-        fs.writeFile(__dirname + "/.ignore.cards.json", JSON.stringify(data), err => {
+        writeFile(__dirname + "/.ignore.cards.json", JSON.stringify(data), err => {
             if (err) throw err;
         });
         console.log(`Found ${oldLength} cards!\nFiltered away ${oldLength - data.length} cards!\nSuccessfully imported ${data.length} cards!`);

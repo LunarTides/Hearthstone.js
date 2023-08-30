@@ -1,4 +1,4 @@
-let vanillaCards = require("../../card_creator/vanilla/.ignore.cards.json");
+import vanillaCards from "../../card_creator/vanilla/.ignore.cards.json" assert { "type": "json" };
 const { Game } = require("../../src/game");
 const { Player } = require("../../src/player");
 
@@ -9,12 +9,12 @@ game.functions.importCards(__dirname + "/../../cards");
 game.functions.importConfig(__dirname + "/../../config");
 
 let customCards = game.functions.getCards(false);
-vanillaCards = game.functions.filterVanillaCards(vanillaCards, false, true);
+let filteredVanillaCards = game.functions.filterVanillaCards(vanillaCards, false, true);
 
 console.log("WARNING: Make sure to run `genvanilla.bat` (requires an internet connection). Also this program might find the incorrect card, so if it says that a card has 10 health instead of 2 sometimes, just ignore it.\n");
 
 customCards.forEach(c => {
-    let vanilla = vanillaCards.find(a => a.name.toLowerCase() == (c.displayName || c.name).toLowerCase() && a.type.toLowerCase() == c.type.toLowerCase());
+    let vanilla = filteredVanillaCards.find(a => a.name.toLowerCase() == (c.displayName || c.name).toLowerCase() && a.type.toLowerCase() == c.type.toLowerCase());
     if (!vanilla) return; // There is no vanilla version of that card.
 
     Object.entries(c).forEach(ent => {

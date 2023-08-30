@@ -1,8 +1,8 @@
-const fs = require("fs");
-const rl = require("readline-sync");
-const { Game } = require("../../src/game");
-const { editor } = require("../../config/general.json");
-const { Player } = require("../../src/player");
+import rl from "readline-sync";
+import { readFileSync, writeFileSync, existsSync, unlinkSync } from "fs";
+import config from "../../config/general.json" assert { "type": "json" };
+import { Game } from "../../src/game.js";
+import { Player } from "../../src/player.js";
 
 const player1 = new Player("Player 1");
 const player2 = new Player("Player 2");
@@ -16,9 +16,9 @@ let finishedCards = [];
 let finishedCardsPath = "patched_cards.txt";
 
 function getFinishedCards(path) {
-    if (!fs.existsSync(path)) return; // If the file doesn't exist, return.
+    if (!existsSync(path)) return; // If the file doesn't exist, return.
 
-    let cards = fs.readFileSync(path, { encoding: 'utf8', flag: 'r' });
+    let cards = readFileSync(path, { encoding: 'utf8', flag: 'r' });
     finishedCards = cards.split("\n");
 }
 
@@ -30,7 +30,7 @@ function searchCards(query, path = null) {
     if (!path) path = __dirname + "/../../cards";
     if (path == __dirname + "/../../cards/Tests") return; // We don't care about test cards
 
-    fs.readdirSync(path, { withFileTypes: true }).forEach(file => {
+    readdirSync(path, { withFileTypes: true }).forEach(file => {
         let p = `${path}/${file.name}`;
 
         if (file.name.endsWith(".ts")) {
@@ -38,7 +38,7 @@ function searchCards(query, path = null) {
             if (finishedCards.includes(p)) return;
 
             // It is an actual card.
-            let data = fs.readFileSync(p, { encoding: 'utf8', flag: 'r' });
+            let data = readFileSync(p, { encoding: 'utf8', flag: 'r' });
 
             // The query is not a regular expression
             if (typeof query === 'string') {
@@ -80,8 +80,8 @@ while (true) {
     if (index.toLowerCase().startsWith("delete")) {
         console.log("Deleting file...");
 
-        if (fs.existsSync(finishedCardsPath)) {
-            fs.unlinkSync(finishedCardsPath);
+        if (existsSync(finishedCardsPath)) {
+            unlinkSync(finishedCardsPath);
             console.log("File deleted!");
         }
         else console.log("File not found!");
@@ -96,7 +96,7 @@ while (true) {
     path = matchingCards[index];
 
     // `card` is the path to that card.
-    let success = game.functions.openWithArgs(editor, `"${path}"`);
+    let success = game.functions.openWithArgs(config.editor, `"${path}"`);
     if (!success) rl.question(); // The `openWithArgs` shows an error message for us, but we need to pause.
 
     finishedCards.push(path);
@@ -105,11 +105,11 @@ while (true) {
     if (matchingCards.length <= 0) {
         // All cards have been patched
         rl.question("All cards patched!\n");
-        if (fs.existsSync(finishedCardsPath)) fs.unlinkSync(finishedCardsPath);
+        if (existsSync(finishedCardsPath)) unlinkSync(finishedCardsPath);
 
         process.exit(0); // Exit so it doesn't save
     }
 }
 
 // Save progress
-fs.writeFileSync(finishedCardsPath, finishedCards.join('\n'));
+writeFileSync(finishedCardsPath, finishedCards.join('\n'));

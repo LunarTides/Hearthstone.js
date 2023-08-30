@@ -1,11 +1,11 @@
 import { VanillaCard } from "../../src/types.js";
 
-const rl = require("readline-sync");
-const fs = require("fs");
-const lib = require("../lib");
+import { readFileSync } from "fs";
+import rl from "readline-sync";
+import * as lib from "../lib.js";
 
-const { Game } = require("../../src/game");
-const { Player } = require("../../src/player");
+import { Game } from "../../src/game.js";
+import { Player } from "../../src/player.js";
 
 const player1 = new Player("Player 1");
 const player2 = new Player("Player 2");
@@ -138,7 +138,7 @@ export function main(card?: VanillaCard) {
 
     if (card) return createCard(card, false);
 
-    let data = fs.readFileSync(__dirname + "/.ignore.cards.json", { encoding: 'utf8', flag: 'r' });
+    let data = readFileSync(__dirname + "/.ignore.cards.json", { encoding: 'utf8', flag: 'r' });
 
     data = JSON.parse(data);
 

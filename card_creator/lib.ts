@@ -1,10 +1,10 @@
 // This is a library
 
-const rl = require("readline-sync");
-const fs = require("fs");
-const { Game } = require("../src/game");
-const { editor } = require("../config/general.json");
-const { Player } = require("../src/player");
+import rl from "readline-sync";
+import fs from "fs";
+import config from "../config/general.json" assert { "type": "json" };
+import { Game } from "../src/game.js";
+import { Player } from "../src/player.js";
 
 const player1 = new Player("Player 1");
 const player2 = new Player("Player 2");
@@ -166,7 +166,7 @@ export default blueprint;
 
     // Open the defined editor on that card if it has a function to edit, and debug mode is disabled
     if (func && !debug) {
-        let success = game.functions.openWithArgs(editor, `"${file_path}"`);
+        let success = game.functions.openWithArgs(config.editor, `"${file_path}"`);
         if (!success) rl.question();
     }
 

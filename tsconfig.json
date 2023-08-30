@@ -1,8 +1,10 @@
 {
     "compilerOptions": {
+        "target": "ESNext",
         "module": "NodeNext",
         "moduleResolution": "NodeNext",
-        "target": "ESNext",
+        "sourceMap": true,
+        "removeComments": true,
         "strictNullChecks": true,
         "strictFunctionTypes": true,
         "alwaysStrict": true,
