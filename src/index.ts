@@ -3,7 +3,6 @@ Hearthstone.js - Hearthstone but console based.
 Copyright (C) 2022  LunarTides
 */
 
-import { Card } from "./card";
 import { Game } from "./game";
 import { Player } from "./player";
 import { set } from "./shared";
@@ -19,11 +18,6 @@ let game: Game;
 let decks: string[] = [];
 export function runner(_decks: string[]) {
     Object.keys(require.cache).forEach(k => delete require.cache[k]);
-
-    try {
-        game.cards = [];
-        game.config = undefined;
-    } catch {};
 
     decks = _decks;
     main();

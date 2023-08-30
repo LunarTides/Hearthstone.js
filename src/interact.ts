@@ -343,10 +343,16 @@ export class Interact {
 
                             let [key, newVal, _] = c;
 
+                            // This shouldn't happen?
+                            if (!newVal) return;
+
                             if (game.config.whitelistedHistoryKeys.includes(key)) {}
                             else return;
 
                             if (game.config.hideValueHistoryKeys.includes(key)) return;
+
+                            // If it is not a card
+                            if (!(newVal instanceof Card)) return;
 
                             if (val.uuid != newVal.uuid) return;
 
@@ -488,12 +494,12 @@ export class Interact {
         }
         else if (name === "/undo") {
             // Get the last played card
-            if (!game.events["PlayCard"] || game.events["PlayCard"][game.player.id].length <= 0) {
+            if (!game.events.events.PlayCard || game.events.events.PlayCard[game.player.id].length <= 0) {
                 game.input("No cards to undo.\n".red);
                 return false;
             }
 
-            let eventCards: [Card, number] = game.events["PlayCard"][game.player.id];
+            let eventCards: [Card, number] = game.events.events.PlayCard[game.player.id];
             let card: Card = eventCards[eventCards.length - 1][0];
 
             // Remove the event so you can undo more than the last played card
@@ -618,7 +624,7 @@ export class Interact {
 
             let [key, value] = args;
 
-            let setting = game.config[key];
+            let setting: GameConfig = game.config[key];
 
             if (setting === undefined) {
                 game.input("Invalid setting name!\n".red);
@@ -677,7 +683,10 @@ export class Interact {
 
             let success = true;
 
-            success &&= this.withStatus("Deleting cache", () => Object.keys(require.cache).forEach(k => delete require.cache[k]));
+            success &&= this.withStatus("Deleting cache", () => {
+                Object.keys(require.cache).forEach(k => delete require.cache[k]);
+                return true;
+            });
 
             success &&= this.withStatus("Importing cards", () => game.functions.importCards(__dirname + "/../cards"));
             success &&= this.withStatus("Importing config", () => game.functions.importConfig(__dirname + "/../config"));
@@ -708,6 +717,8 @@ export class Interact {
                 game.graveyard.forEach(p => {
                     p.forEach(c => reload(c));
                 });
+
+                return true;
             });
 
             if (!debug && success) game.input("\nThe cards have been reloaded.\nPress enter to continue...");
@@ -755,9 +766,12 @@ export class Interact {
         game.events.tick("GameLoop", "doTurn");
 
         if (game.player.ai) {
-            let input = game.player.ai.calcMove();
-            if (!input) return false;
-            if (input instanceof Card) input = (game.player.hand.indexOf(input) + 1).toString();
+            let input;
+
+            const rawInput = game.player.ai.calcMove();
+            if (!rawInput) return false;
+            if (rawInput instanceof Card) input = (game.player.hand.indexOf(rawInput) + 1).toString();
+            else input = rawInput;
 
             let turn = this.doTurnLogic(input);
 
@@ -775,7 +789,7 @@ export class Interact {
         const ret = this.doTurnLogic(user);
         game.killMinions();
 
-        if (ret === true || ret instanceof game.Card) return ret; // If there were no errors, return true.
+        if (ret === true || ret instanceof Card) return ret; // If there were no errors, return true.
         if (["refund", "magnetize", "traded", "colossal"].includes(ret)) return ret; // Ignore these error codes
         let err;
 
@@ -812,7 +826,7 @@ export class Interact {
         if (!(location instanceof Card)) return "invalidtype";
 
         if (location.type != "Location") return "invalidtype";
-        if (location.cooldown > 0) return "cooldown";
+        if (location.cooldown && location.cooldown > 0) return "cooldown";
         
         if (location.activate("use") === game.constants.REFUND) return -1;
         
@@ -845,9 +859,9 @@ export class Interact {
         let debugStatement = allowTestDeck ? " (Leave this empty for a test deck)".gray : "";
         const deckcode = game.input(`Player ${plr.id + 1}, please type in your deckcode${debugStatement}: `);
 
-        let error;
+        let result: boolean | Card[] | null = true;
 
-        if (deckcode.length > 0) error = game.functions.deckcode.import(plr, deckcode);
+        if (deckcode.length > 0) result = game.functions.deckcode.import(plr, deckcode);
         else {
             if (!allowTestDeck) { // I want to be able to test without debug mode on in a non-stable branch
                 // Give error message
@@ -856,10 +870,10 @@ export class Interact {
             }
 
             // Debug mode is enabled, use the 30 Sheep debug deck.
-            while (plr.deck.length < 30) plr.deck.push(new game.Card("Sheep", plr)); // Debug deck
+            while (plr.deck.length < 30) plr.deck.push(new Card("Sheep", plr)); // Debug deck
         }
 
-        if (error == "invalid") return false;
+        if (result === null) return false;
 
         return true;
     }
@@ -1145,7 +1159,7 @@ export class Interact {
         // Potential Blueprint card
         let pbcard = values[parseInt(choice) - 1];
 
-        if (!(pbcard instanceof game.Card)) card = new game.Card(pbcard.name, game.player);
+        if (!(pbcard instanceof Card)) card = new Card(pbcard.name, game.player);
         else card = pbcard;
 
         return card;
@@ -1369,9 +1383,13 @@ export class Interact {
             if (!regedDesc) break;
 
             let key = regedDesc[1]; // Gets the capturing group result
-            let replacement = card.placeholder[key];
 
-            if (replacement instanceof game.Card) {
+            let _replacement = card.placeholder;
+            if (!_replacement) throw new Error("Card placeholder not found.");
+
+            let replacement = _replacement[key];
+
+            if (replacement instanceof Card) {
                 // The replacement is a card
                 let onlyShowName = (
                     game.config.getReadableCardNoRecursion ||
@@ -1436,19 +1454,18 @@ export class Interact {
 
         let desc;
 
-        if (card instanceof game.Card) desc = (card.desc || "").length > 0 ? ` (${card.desc}) ` : " ";
+        if (card instanceof Card) desc = (card.desc || "").length > 0 ? ` (${card.desc}) ` : " ";
         else desc = card.desc.length > 0 ? ` (${game.functions.parseTags(card.desc)}) ` : " ";
 
         // Extract placeholder value, remove the placeholder header and footer
-        if (card instanceof game.Card && (card.placeholder || /\$(\d+?)/.test(card.desc || ""))) {
-            //@ts-expect-error
+        if (card instanceof Card && (card.placeholder || /\$(\d+?)/.test(card.desc || ""))) {
             desc = this.doPlaceholders(card, desc, _depth);
         }
 
         let mana = `{${card.mana}} `;
 
         let costType = "mana";
-        if (card instanceof game.Card && card.costType) costType = card.costType;
+        if (card instanceof Card && card.costType) costType = card.costType;
 
         switch (costType) {
             case "mana":
@@ -1465,7 +1482,7 @@ export class Interact {
         }
 
         let displayName = card.name;
-        if (card instanceof game.Card) displayName = card.displayName;
+        if (card instanceof Card) displayName = card.displayName;
 
         if (i !== -1) sb += `[${i}] `;
         sb += mana;
@@ -1730,7 +1747,7 @@ export class Interact {
                 let frozen = m.frozen ? " (Frozen)".gray : "";
                 let dormant = m.dormant ? " (Dormant)".gray : "";
                 let immune = m.immune ? " (Immune)".gray : "";
-                let sleepy = (m.sleepy) || (m.attackTimes <= 0) ? " (Sleepy)".gray : "";
+                let sleepy = (m.sleepy) || (m.attackTimes && m.attackTimes <= 0) ? " (Sleepy)".gray : "";
     
                 sb += `[${n + 1}] `;
                 sb += game.functions.colorByRarity(m.displayName, m.rarity);
@@ -1792,7 +1809,7 @@ export class Interact {
             else spellClass = " (None)";
         }
         else if (type == "Location") {
-            if (card instanceof game.Card) locCooldown = " (" + card.blueprint.cooldown?.toString().cyan + ")";
+            if (card instanceof Card) locCooldown = " (" + card.blueprint.cooldown?.toString().cyan + ")";
             else locCooldown = " (" + card.cooldown?.toString().cyan + ")";
         }
 

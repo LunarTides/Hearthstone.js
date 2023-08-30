@@ -9,7 +9,7 @@ import { Player } from "./player";
 import { Card } from "./card";
 import { Game } from "./game";
 import { stripColors } from "colors";
-import { Blueprint, CardClass, CardLike, CardRarity, EventKey, EventValue, FunctionsValidateCardReturn, MinionTribe, QuestCallback, Target, TickHookCallback, VanillaCard } from "./types";
+import { Blueprint, CardClass, CardLike, CardRarity, EventKey, EventListenerCallback, EventListenerCheckCallback, EventValue, FunctionsValidateCardReturn, MinionTribe, QuestCallback, Target, TickHookCallback, VanillaCard } from "./types";
 require("colors");
 
 let game: Game;
@@ -82,7 +82,7 @@ class DeckcodeFunctions {
         let rune_classes = ["Death Knight"];
         let rune_class = rune_classes.includes(hero);
 
-        const addRunes = (runes) => {
+        const addRunes = (runes: string) => {
             if (rune_class) plr.runes = runes;
             // @ts-expect-error
             else game.input("WARNING: This deck has runes in it, but the class is ".yellow + hero.brightYellow + ". Supported classes: ".yellow + rune_classes.join(", ").brightYellow + "\n");
@@ -480,7 +480,7 @@ class DeckcodeFunctions {
         let deckDef: (VanillaCard | undefined | number)[][] = deck.cards.map(c => [cards.find(a => a.dbfId == c[0]), c[1]]); // Get the full card object from the dbfId
         let createdCards: Blueprint[] = self.getCards(false);
         
-        let invalidCards = [];
+        let invalidCards: VanillaCard[] = [];
         deckDef.forEach(c => {
             let vanillaCard = c[0];
             if (vanillaCard === undefined || typeof vanillaCard === "number") return;
@@ -774,8 +774,6 @@ export class Functions {
             let splitBrick = b.split(sep);
 
             let strbuilder = "";
-
-            // @ts-expect-error
             let diff = longest_brick[1] - splitBrick[0].length;
 
             strbuilder += splitBrick[0];
@@ -990,9 +988,9 @@ ${main_content}
             // Linux (/ Mac)
             args = args.replaceAll("\\", "/");
 
-            let attempts = [];
+            let attempts: string[] = [];
 
-            const isCommandAvailable = (test_command, args_specifier) => {
+            const isCommandAvailable = (test_command: string, args_specifier: string) => {
                 try {
                     console.log(`${test_command} ${args_specifier}${command} ${args}`)
                     attempts.push(test_command);
@@ -1078,7 +1076,7 @@ ${main_content}
      * @returns Cards
      */
     getCards(uncollectible: boolean = true, cards: Blueprint[] = game.cards): Blueprint[] {
-        let _cards = [];
+        let _cards: Blueprint[] = [];
 
         cards.forEach(c => {
             if (!c.uncollectible || !uncollectible) _cards.push(c);
@@ -1348,7 +1346,7 @@ ${main_content}
 
         let strbuilder = "";
         let word_strbuilder = "";
-        let current_types = [];
+        let current_types: string[] = [];
 
         // Loop through the characters in str
         str.split("").forEach((c, i) => {
@@ -1474,7 +1472,7 @@ ${main_content}
      *
      * @returns If you call this function, it will destroy the event listener.
      */
-    addEventListener(key: EventKeys | "", checkCallback: true | ((val?: EventValues) => boolean), callback: (val?: EventValues) => true | undefined, lifespan: number = 1): () => void {
+    addEventListener(key: EventKey | "", checkCallback: true | EventListenerCheckCallback, callback: EventListenerCallback, lifespan: number = 1): () => void {
         let times = 0;
 
         let id = game.events.eventListeners;

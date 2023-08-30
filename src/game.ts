@@ -29,14 +29,17 @@ export class EventManager {
      */
     history: {[x: number]: [[EventKey, EventValue<EventKey>, Player]]} = {};
 
+    /**
+     * Used like this:
+     * ```ts
+     * events[key] = {player1id: [[val1, turn], [val2, turn], [val3, turn], ...], player2id: [...]};
+     * ```
+     */
     events: EventManagerEvents;
 
     stats: {[key: string]: [number, number]};
 
     constructor(game: Game) {
-        // An event looks like this:
-        // events[key] = {player1id: [[val1, turn], [val2, turn], [val3, turn], ...], player2id: [...]}
-
         this.game = game;
     }
 
@@ -195,8 +198,8 @@ export class EventManager {
         if (this.game.suppressedEvents.includes(key)) return false;
         if (plr.classType !== "Player" || plr.id === -1) return false;
 
-        if (!this.events[key]) this.events[key] = [[], []];
-        this.events[key][plr.id].push([val, this.game.turns]);
+        if (!this.events[key]) this.events[key] = [["GameLoop", this.game.turns], ["GameLoop", this.game.turns]];
+        this.events[key]![plr.id].push([val, this.game.turns]);
 
         this.cardUpdate(key, val);
 
@@ -214,8 +217,8 @@ export class EventManager {
      * @param val The value of the event
      * @param plr The player who caused the event to happen
      */
-    addHistory(key: EventKey, val: EventValue, plr: Player) {
-        if (!this.history[this.game.turns]) this.history[this.game.turns] = [];
+    addHistory(key: EventKey, val: EventValue<EventKey>, plr: Player) {
+        if (!this.history[this.game.turns]) this.history[this.game.turns] = [["GameLoop", "Init", plr]];
         this.history[this.game.turns].push([key, val, plr]);
     }
 
@@ -242,7 +245,7 @@ export class EventManager {
      * @returns The new value
      */
     increment(player: Player, key: string, amount: number = 1): number {
-        if (!this.stats[key]) this[key] = [0, 0];
+        if (!this.stats[key]) this.stats[key] = [0, 0];
 
         this.stats[key][player.id] += amount;
 
@@ -342,7 +345,7 @@ export class Game {
     /**
      * The event listeners that are attached to the game currently.
      */
-    eventListeners: {[key: number]: EventListenerCallback[]} = {};
+    eventListeners: {[key: number]: EventListenerCallback} = {};
 
     /**
      * A list of event keys to suppress.
@@ -458,12 +461,12 @@ export class Game {
         if (this.config.P1AI) {
             if (!this.player1.ai) this.player1.ai = new AI(this.player1);
         }
-        else this.player1.ai = null;
+        else this.player1.ai = undefined;
 
         if (this.config.P2AI) {
             if (!this.player2.ai) this.player2.ai = new AI(this.player2);
         }
-        else this.player2.ai = null;
+        else this.player2.ai = undefined;
 
         return true;
     }
@@ -476,7 +479,7 @@ export class Game {
      * 
      * @returns Return values of all the executed functions
      */
-    triggerEventListeners(key: EventKeys, val: EventValues): any[] {
+    triggerEventListeners(key: EventKey, val: EventValue<EventKey>): any[] {
         let ret: any[] = [];
         Object.values(this.eventListeners).forEach(i => ret.push(i(key, val)));
         return ret;
@@ -500,7 +503,7 @@ export class Game {
             let success = plr.setToStartingHero();
             if (!success) {
                 console.log("File 'cards/StartingHeroes/" + plr.heroClass.toLowerCase().replaceAll(" ", "_") + ".js' is either; Missing or Incorrect. Please copy the working 'cards/StartingHeroes/' folder from the github repo to restore a working copy. Error Code: 12");
-                require("process").exit(1);
+                process.exit(1);
             }
 
             plr.deck.forEach(c => {
@@ -628,17 +631,17 @@ export class Game {
             }
 
             m.canAttackHero = true;
-            if (this.turns > m.frozen_turn + 1) m.frozen = false;
+            if (this.turns > (m.frozen_turn ?? -1) + 1) m.frozen = false;
             m.ready();
 
             // Stealth duration
-            if (m.stealthDuration > 0 && this.turns > m.stealthDuration) {
+            if (m.stealthDuration && m.stealthDuration > 0 && this.turns > m.stealthDuration) {
                 m.stealthDuration = 0;
                 m.removeKeyword("Stealth");
             }
 
             // Location cooldown
-            if (m.type == "Location" && m.cooldown > 0) m.cooldown--;
+            if (m.type == "Location" && m.cooldown && m.cooldown > 0) m.cooldown--;
         });
 
         // Draw card
@@ -736,8 +739,7 @@ export class Game {
         }
 
         // Add cardsplayed to history
-        let historyIndex;
-        if (!this.events.history[this.turns]) this.events.history[this.turns] = [];
+        let historyIndex: number;
         historyIndex = this.events.history[this.turns].push(["PlayCard", card, this.player]);
 
         const removeFromHistory = () => {
@@ -752,14 +754,14 @@ export class Game {
         if (card.type === "Minion") {
             // Magnetize
             if (card.keywords.includes("Magnetic") && board.length > 0) {
-                let mechs = board.filter(m => m.tribe.includes("Mech"));
+                let mechs = board.filter(m => m.tribe?.includes("Mech"));
     
                 // I'm using while loops to prevent a million indents
                 while (mechs.length > 0) {
                     let minion = this.interact.selectTarget("Which minion do you want this to Magnetize to:", null, "friendly", "minion");
                     if (!minion || minion instanceof Player) break;
 
-                    if (!minion.tribe.includes("Mech")) {
+                    if (!minion.tribe?.includes("Mech")) {
                         console.log("That minion is not a Mech.");
                         continue;
                     }
@@ -777,8 +779,8 @@ export class Game {
                         minion.maxHealth += card.maxHealth;
                     }
     
-                    if (card.deathrattle) {
-                        card.deathrattle.forEach(d => {
+                    if (card.abilities.deathrattle) {
+                        card.abilities.deathrattle.forEach(d => {
                             // Look at the comment above
                             if (!(minion instanceof Card)) return;
 
@@ -831,7 +833,7 @@ export class Game {
 
             board.forEach(m => {
                 m.activate("spellburst");
-                m.spellburst = false;
+                m.abilities.spellburst = undefined;
             });
         } else if (card.type === "Weapon") {
             player.setWeapon(card);
@@ -911,18 +913,17 @@ export class Game {
             // the "" gets replaced with the main minion
 
             minion.colossal.forEach(v => {
-                if (v == "") {
-                    this.suppressedEvents.push("SummonMinion");
-                    let ret = this.summonMinion(minion, player, false);
-                    this.suppressedEvents.pop();
+                this.suppressedEvents.push("SummonMinion");
 
-                    return ret
+                if (v == "") {
+                    this.summonMinion(minion, player, false);
+                    this.suppressedEvents.pop();
+                    return;
                 }
 
                 let card = new Card(v, player);
                 card.dormant = minion.dormant;
 
-                this.suppressedEvents.push("SummonMinion");
                 this.summonMinion(card, player);
                 this.suppressedEvents.pop();
             });
@@ -994,7 +995,9 @@ export class Game {
             }
 
             target.remStats(0, dmg)
-            if (target.getHealth() > 0 && target["frenzy"] && target.activate("frenzy") !== -1) target["frenzy"] = undefined;
+
+            // Remove frenzy
+            if (target.getHealth() > 0 && target.abilities.frenzy && target.activate("frenzy") !== -1) target.abilities.frenzy = undefined;
 
             return true;
         }
@@ -1027,7 +1030,7 @@ export class Game {
                 const wpn = attacker.weapon;
 
                 // If the weapon would be part of the attack, remove 1 durability
-                if (wpn.attackTimes > 0 && wpn.getAttack()) {
+                if (wpn.attackTimes && wpn.attackTimes > 0 && wpn.getAttack()) {
                     wpn.attackTimes -= 1;
                     wpn.remStats(0, 1);
                 }
@@ -1046,14 +1049,15 @@ export class Game {
 
             attacker.canAttack = false;
     
-            if (target.getHealth() > 0 && target["frenzy"] && target.activate("frenzy") !== -1) target["frenzy"] = undefined;
+            // Remove frenzy
+            if (target.getHealth() > 0 && target.abilities.frenzy && target.activate("frenzy") !== -1) target.abilities.frenzy = undefined;
 
             this.killMinions();
             if (!attacker.weapon) return true;
     
             const wpn = attacker.weapon;
 
-            if (wpn.attackTimes > 0 && wpn.getAttack()) {
+            if (wpn.attackTimes && wpn.attackTimes > 0 && wpn.getAttack()) {
                 wpn.attackTimes -= 1;
 
                 wpn.remStats(0, 1);
@@ -1069,7 +1073,7 @@ export class Game {
 
         // Attacker is a minion
         if (attacker.dormant) return "dormant";
-        if (attacker.attackTimes <= 0) return "hasattacked";
+        if (attacker.attackTimes && attacker.attackTimes <= 0) return "hasattacked";
         if (attacker.sleepy) return "sleepy";
         if (attacker.getAttack() <= 0) return "noattack";
 
@@ -1118,7 +1122,8 @@ export class Game {
         if (dmgAttacker) {
             attacker.remStats(0, target.getAttack());
             
-            if (attacker.getHealth() > 0 && attacker["frenzy"] && attacker.activate("frenzy") !== -1) attacker["frenzy"] = undefined;
+            // Remove frenzy
+            if (attacker.getHealth() > 0 && attacker.abilities.frenzy && attacker.activate("frenzy") !== -1) attacker.abilities.frenzy = undefined;
         }
 
         if (attacker.keywords.includes("Stealth")) attacker.removeKeyword("Stealth");
@@ -1136,7 +1141,8 @@ export class Game {
         if (dmgTarget) target.remStats(0, attacker.getAttack())
         this.events.broadcast("Attack", [attacker, target], attacker.plr);
 
-        if (target.getHealth() > 0 && target["frenzy"] && target.activate("frenzy") !== -1) target["frenzy"] = undefined;
+        // Remove frenzy
+        if (target.getHealth() > 0 && target.abilities.frenzy && target.activate("frenzy") !== -1) target.abilities.frenzy = undefined;
         if (target.getHealth() < 0) attacker.activate("overkill");
         if (target.getHealth() == 0) attacker.activate("honorablekill");
 
@@ -1155,7 +1161,7 @@ export class Game {
 
         for (let p = 0; p < 2; p++) {
             let plr = this["player" + (p + 1)];
-            let n = [];
+            let sparedMinions: Card[] = [];
             
             this.board[p].forEach(m => {
                 if (m.type == "Location") return;
@@ -1165,7 +1171,7 @@ export class Game {
             this.board[p].forEach(m => {
                 // Add minions with more than 0 health to n.
                 if (m.getHealth() > 0 || m.type == "Location") {
-                    n.push(m);
+                    sparedMinions.push(m);
                     return;
                 }
 
@@ -1202,10 +1208,10 @@ export class Game {
                 // minion.activate(key, reason, minion);
                 minion.activate("passive", "reborn", m);
 
-                n.push(minion);
+                sparedMinions.push(minion);
             });
 
-            this.board[p] = n;
+            this.board[p] = sparedMinions;
         }
 
         return amount;

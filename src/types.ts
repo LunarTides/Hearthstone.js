@@ -105,6 +105,7 @@ export type CardAbilityReal = "battlecry" |
                               "deathrattle" |
                               "finale" |
                               "frenzy" |
+                              "heropower" |
                               "honorablekill" |
                               "infuse" |
                               "inspire" |
@@ -113,7 +114,9 @@ export type CardAbilityReal = "battlecry" |
                               "overheal" |
                               "overkill" |
                               "passive" |
-                              "spellburst";
+                              "spellburst" |
+                              "startofgame" |
+                              "use";
 
 /**
  * Card abilities
@@ -268,11 +271,11 @@ export type EventValue<Key extends EventKey> = /**
                                                /**
                                                 * The prompt, the card that requested target selection, the alignment that the target should be, the class of the target (hero | minion), and the flags (if any).
                                                 */
-                                               Key extends "TargetSelectionStarts" ? [string, Card, SelectTargetAlignment, SelectTargetClass, SelectTargetFlag[]] : 
+                                               Key extends "TargetSelectionStarts" ? [string, Card | null, SelectTargetAlignment | null, SelectTargetClass | null, SelectTargetFlag[]] : 
                                                /**
                                                 * The card that requested target selection, and the target
                                                 */
-                                               Key extends "TargetSelected" ? [Card, Target] : 
+                                               Key extends "TargetSelected" ? [Card | null, Target] : 
                                                never;
 
 /**
@@ -536,4 +539,4 @@ export type GameConfig = {
     }
 }
 
-export type EventManagerEvents = {[key in EventKey]?: [[key, EventValue<key>, Player], [key, EventValue<key>, Player]]};
+export type EventManagerEvents = {[key in EventKey]?: [[any, number], [any, number]]};
