@@ -1,10 +1,12 @@
 import rl from "readline-sync";
-import fs from "fs";
+import { readFileSync } from "fs";
 import { Game, Player, set } from "../src/internal.js";
 
-let decks = Object.values(JSON.parse(fs.readFileSync("../decks.json")).versus);
+let decksString = readFileSync("../decks.json", { encoding: 'utf8', flag: 'r' });
+let decks: string[] = Object.values(JSON.parse(decksString).versus);
 
-let games = process.env.games || 100;
+let gamesEnv = process.env.games ?? "";
+let games = parseInt(gamesEnv) ?? 100;
 
 console.warn(`Press enter to play ${games} games`);
 if (!process.env.games) console.log("Set the GAMES env variable to change how many games to play.");
@@ -36,8 +38,12 @@ for (let index = 0; index < games; index++) {
 
     // Choose random decks for the players
     for (let i = 0; i < 2; i++) {
+        let plr;
+        if (i === 0) plr = game.player1;
+        else plr = game.player2;
+
         let deck = game.functions.randList(decks);
-        game.functions.deckcode.import(game["player" + (i + 1)], deck);
+        if (typeof deck === "string") game.functions.deckcode.import(plr, deck);
     }
 
     game.startGame();
