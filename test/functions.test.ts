@@ -12,8 +12,8 @@ const test_player2 = new Player("Test Player 2");
 const game = new Game(test_player1, test_player2);
 set(game);
 
-game.functions.importCards(__dirname + "/../cards");
-game.functions.importConfig(__dirname + "/../config");
+game.functions.importCards("../cards");
+game.functions.importConfig("../config");
 
 game.config.P1AI = false;
 game.config.P2AI = false;

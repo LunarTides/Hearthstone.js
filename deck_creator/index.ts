@@ -10,8 +10,8 @@ let functions = game.functions;
 
 set(game);
 
-functions.importCards(__dirname + "/../cards");
-functions.importConfig(__dirname + "/../config");
+functions.importCards("../cards");
+functions.importConfig("../config");
 // ===========================================================
 
 const config = game.config;
@@ -783,7 +783,7 @@ function handleCmds(cmd: string) {
             return;
         }
 
-        require(__dirname + "/../index").store_deck(_deckcode.code);
+        import("../index.js").then(imported => imported.store_deck(_deckcode.code));
 
         game.input("Deck successfully exported.\n".green);
     }
@@ -952,15 +952,15 @@ let opened_from_runner = false;
 let running = true;
 
 export function runner() {
-    require(__dirname + "/../index").free_decks(); // Remove all decks
+    import("../index.js").then(imported => imported.free_decks()); // Remove all decks
     opened_from_runner = true;
     running = true;
     main();
 }
 
 function main() {
-    functions.importCards(__dirname + "/../cards");
-    functions.importConfig(__dirname + "/../config");
+    functions.importCards("../cards");
+    functions.importConfig("../config");
 
     chosen_class = askClass();
 
@@ -970,5 +970,3 @@ function main() {
         handleCmds(game.input("\n> "));
     }
 }
-
-if (require.main == module) main();

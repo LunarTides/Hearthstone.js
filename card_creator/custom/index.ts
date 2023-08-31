@@ -6,8 +6,8 @@ import { Blueprint, CardClass, CardKeyword, CardRarity, CardType, MinionTribe, S
 const player1 = new Player("Player 1");
 const player2 = new Player("Player 2");
 const game = new Game(player1, player2);
-game.functions.importCards(__dirname + "/../../cards");
-game.functions.importConfig(__dirname + "/../../config");
+game.functions.importCards("../../cards");
+game.functions.importConfig("../../config");
 
 let card: Blueprint | null;
 
@@ -224,6 +224,3 @@ export function main() {
     game.input();
     return filePath;
 }
-
-// If the program was run directly, run 'main'. This is the same as "if __name__ == '__main__'" in python.
-if (require.main == module) main();

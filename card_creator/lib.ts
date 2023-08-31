@@ -9,8 +9,8 @@ import { Blueprint, CardClass, CardType } from "../src/types.js";
 const player1 = new Player("Player 1");
 const player2 = new Player("Player 2");
 const game = new Game(player1, player2);
-game.functions.importCards(__dirname + "/../cards");
-game.functions.importConfig(__dirname + "/../config");
+game.functions.importCards("../cards");
+game.functions.importConfig("../config");
 
 let card: Blueprint;
 let type: CardType;
@@ -49,7 +49,7 @@ function generateCardPath(...args: [CardClass[], CardType]) {
     let [classes, type] = args;
 
     // DO NOT CHANGE THIS
-    let static_path = `${__dirname}/../cards/`;
+    let static_path = `../cards/`;
 
     // You can change this
     let classesString = classes.join("/");
@@ -112,7 +112,7 @@ export function create(override_type: CardType, override_card: Blueprint, overri
     if (override_filename) filename = override_filename; // If this function was passed in a filename, use that instead.
 
     // Get the latest card-id
-    let id = parseInt(fs.readFileSync(__dirname + "/../cards/.latest_id", "utf8"));
+    let id = parseInt(fs.readFileSync("../cards/.latest_id", "utf8"));
     let file_id = `\n    id: ${id},`;
 
     // Generate the content of the card
@@ -154,7 +154,7 @@ export default blueprint;
         // If debug mode is disabled, write the card to disk.
         
         // Increment the id in '.latest_id' by 1
-        fs.writeFileSync(__dirname + "/../cards/.latest_id", (id + 1).toString()); 
+        fs.writeFileSync("../cards/.latest_id", (id + 1).toString()); 
 
         // If the path the card would be written to doesn't exist, create it.
         if (!fs.existsSync(path)) fs.mkdirSync(path, { recursive: true });
@@ -165,7 +165,7 @@ export default blueprint;
     } else {
         // If debug mode is enabled, just show some information about the card.
         console.log(`\nNew ID: ${id + 1}`); // This is the id that would be written to '.latest_id'
-        console.log(`Would be path: "${file_path.replaceAll("\\", "/").replace(__dirname + "/.", "")}"`);
+        console.log(`Would be path: "${file_path.replaceAll("\\", "/").replace(".", "")}"`);
         console.log(`Content: ${content}`);
         rl.question();
     }
@@ -185,9 +185,4 @@ export function set_debug(state: boolean) {
 
 export function set_type(state: CCType) {
     cctype = state;
-}
-
-// If the program was run directly, run 'main'. This is the same as "if __name__ == '__main__'" in python.
-if (require.main == module) {
-    console.error("This is meant to be imported as a module, not ran.")
 }

@@ -3,7 +3,7 @@ import { execSync } from 'child_process';
 import fs from 'fs';
 
 // List of test files to execute individually
-const testFiles = fs.readdirSync(__dirname + '/test/');
+const testFiles = fs.readdirSync('test/');
 
 // Execute each test file individually
 testFiles.forEach(testFile => {

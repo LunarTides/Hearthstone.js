@@ -12,8 +12,8 @@ set(game);
 
 const functions = game.functions;
 
-functions.importCards(__dirname + "/../cards");
-functions.importConfig(__dirname + "/../config");
+functions.importCards("../cards");
+functions.importConfig("../config");
 
 game.config.P1AI = false;
 game.config.P2AI = false;

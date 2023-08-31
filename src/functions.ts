@@ -6,7 +6,6 @@ import colors from "colors";
 import { createHash } from "crypto";
 import { Player, Card, Game } from "./internal.js";
 import { Blueprint, CardClass, CardClassNoNeutral, CardLike, CardRarity, EventKey, EventListenerCallback, EventListenerCheckCallback, FunctionsExportDeckError, FunctionsValidateCardReturn, MinionTribe, QuestCallback, Target, TickHookCallback, VanillaCard } from "./types.js";
-import * as vcc from "../card_creator/vanilla/index.js";
 
 let game: Game;
 
@@ -363,7 +362,7 @@ class DeckcodeFunctions {
 
         try {
             //@ts-expect-error
-            vanillaCardsString = fs.readFileSync(__dirname + "/../card_creator/vanilla/.ignore.cards.json");
+            vanillaCardsString = fs.readFileSync("/../card_creator/vanilla/.ignore.cards.json");
         } catch (err) {
             console.log("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'scripts/genvanilla.bat' (requires an internet connection), then try again.".red);
             game.input();
@@ -462,7 +461,7 @@ class DeckcodeFunctions {
 
         try {
             // @ts-expect-error
-            cardsString = fs.readFileSync(__dirname + "/../card_creator/vanilla/.ignore.cards.json");
+            cardsString = fs.readFileSync("/../card_creator/vanilla/.ignore.cards.json");
         } catch (err) {
             console.log("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'scripts/genvanilla.bat' (requires an internet connection), then try again.".red);
             game.input();
@@ -499,21 +498,9 @@ class DeckcodeFunctions {
 
         if (invalidCards.length > 0) {
             // There was a card in the deck that isn't implemented in Hearthstone.js
-            let createCard = game.input(`Some cards do not currently exist. You cannot play on this deck without them. Do you want to create these cards? (you will need to give the card logic yourself) [Y/N] `.yellow);
+            game.input(`Some cards do not currently exist. You cannot play on this deck without them.`.yellow);
 
-            if (createCard.toLowerCase()[0] != "y") process.exit(1);
-
-            invalidCards.forEach(c => {
-                // Create that card
-                console.log("Creating " + c.name.yellow);
-                vcc.main(c);
-            });
-
-            game.input("Press enter to try this deckcode again.\n");
-
-            self.importCards(__dirname + "/../cards");
-
-            return this.fromVanilla(plr, code); // Try again
+            process.exit(1);
         }
 
         let new_deck: [Card, number][] = [];
@@ -798,7 +785,7 @@ export class Functions {
      */
     createLogFile(err?: Error): boolean {
         // Create a (crash-)log file
-        if (!fs.existsSync(`${__dirname}/../logs/`)) fs.mkdirSync(`${__dirname}/../logs/`);
+        if (!fs.existsSync(`../logs/`)) fs.mkdirSync(`../logs/`);
 
         // Get the day, month, year, hour, minute, and second, as 2 digit numbers.
         let date = new Date();
@@ -872,7 +859,7 @@ ${main_content}
 
         filename = `${filename}-${dateStringFileFriendly}`;
 
-        fs.writeFileSync(`${__dirname}/../logs/${filename}.txt`, content);
+        fs.writeFileSync(`../logs/${filename}.txt`, content);
 
         if (!err) return true;
 
@@ -1193,7 +1180,7 @@ ${main_content}
     getClasses(): CardClassNoNeutral[] {
         let classes: CardClassNoNeutral[] = [];
 
-        fs.readdirSync(__dirname + "/../cards/StartingHeroes").forEach(file => {
+        fs.readdirSync("../cards/StartingHeroes").forEach(file => {
             if (!file.endsWith(".ts")) return; // Something is wrong with the file name.
 
             let name = file.slice(0, -3); // Remove ".ts"
@@ -1652,7 +1639,7 @@ ${main_content}
             let c = `${path}/${file.name}`;
 
             if (file.name.endsWith(".json")) {
-                let f = require(c);
+                let f = import(c);
 
                 game.config = Object.assign({}, game.config, f);
             }
@@ -1676,9 +1663,9 @@ ${main_content}
             let p = `${path}/${file.name}`;
 
             if (file.name.endsWith(".ts")) {
-                let f = require(p);
-                
-                game.cards.push(f);
+                import(p).then(
+                    c => game.cards.push(c)
+                );
             }
             else if (file.isDirectory()) this._importCards(p);
         });

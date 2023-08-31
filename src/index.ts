@@ -15,8 +15,6 @@ let game: Game;
  */
 let decks: string[] = [];
 export function runner(_decks: string[]) {
-    Object.keys(require.cache).forEach(k => delete require.cache[k]);
-
     decks = _decks;
     main();
 }
@@ -30,8 +28,8 @@ function main() {
 
     game.running = true;
 
-    game.functions.importCards(__dirname + '/../cards');
-    game.functions.importConfig(__dirname + '/../config');
+    game.functions.importCards('../cards');
+    game.functions.importConfig('../config');
 
     game.interact.printName();
 
@@ -76,5 +74,3 @@ function main() {
         throw err;
     }
 }
-
-if (require.main == module) main();

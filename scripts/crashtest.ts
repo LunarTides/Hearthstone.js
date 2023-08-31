@@ -26,8 +26,8 @@ for (let index = 0; index < games; index++) {
 
     game.running = true;
 
-    game.functions.importCards(__dirname + '/../cards');
-    game.functions.importConfig(__dirname + '/../config');
+    game.functions.importCards('../cards');
+    game.functions.importConfig('../config');
 
     // Setup the ais
     game.config.P1AI = true;

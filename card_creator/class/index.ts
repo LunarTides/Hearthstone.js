@@ -7,8 +7,8 @@ import { CardClass, CardRarity, CardType } from "../../src/types.js";
 const player1 = new Player("Player 1");
 const player2 = new Player("Player 2");
 const game = new Game(player1, player2);
-game.functions.importCards(__dirname + "/../../cards");
-game.functions.importConfig(__dirname + "/../../config");
+game.functions.importCards("../../cards");
+game.functions.importConfig("../../config");
 
 export function main() {
     let watermark = () => {
@@ -60,10 +60,9 @@ export function main() {
     };
 
     lib.set_type("Class");
-    lib.create("Hero", card, __dirname + "/../../cards/StartingHeroes/", filename);
+    lib.create("Hero", card, "../../cards/StartingHeroes/", filename);
 
     console.log("\nClass Created!");
     rl.question(`Next steps:\n1. Open 'cards/StartingHeroes/${filename}' and add logic to the 'heropower' function.\n2. Now when using the Card Creator, type '${name}' into the 'Class' field to use that class\n3. When using the Deck Creator, type '${name}' to create a deck with cards from your new class.\nEnjoy!\n`);
 }
 
-if (require.main == module) main();

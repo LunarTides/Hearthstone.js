@@ -9,8 +9,8 @@ import { Game, Player } from "../../src/internal.js";
 const player1 = new Player("Player 1");
 const player2 = new Player("Player 2");
 const game = new Game(player1, player2);
-game.functions.importCards(__dirname + "/../../cards");
-game.functions.importConfig(__dirname + "/../../config");
+game.functions.importCards("../../cards");
+game.functions.importConfig("../../config");
 
 function createCard(card: VanillaCard, main: boolean) {
     // Harvest info
@@ -133,7 +133,7 @@ export function main(card?: VanillaCard) {
 
     if (card) return createCard(card, false);
 
-    let data = readFileSync(__dirname + "/.ignore.cards.json", { encoding: 'utf8', flag: 'r' });
+    let data = readFileSync(".ignore.cards.json", { encoding: 'utf8', flag: 'r' });
 
     let parsedData: VanillaCard[] = JSON.parse(data);
 
@@ -191,5 +191,3 @@ export function main(card?: VanillaCard) {
         createCard(card, true);
     }
 }
-
-if (require.main == module) main();

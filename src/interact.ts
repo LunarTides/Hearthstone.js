@@ -703,12 +703,12 @@ export class Interact {
             let success = true;
 
             success &&= this.withStatus("Deleting cache", () => {
-                Object.keys(require.cache).forEach(k => delete require.cache[k]);
+                //Object.keys(require.cache).forEach(k => delete require.cache[k]);
                 return true;
             });
 
-            success &&= this.withStatus("Importing cards", () => game.functions.importCards(__dirname + "/../cards"));
-            success &&= this.withStatus("Importing config", () => game.functions.importConfig(__dirname + "/../config"));
+            success &&= this.withStatus("Importing cards", () => game.functions.importCards("../cards"));
+            success &&= this.withStatus("Importing config", () => game.functions.importConfig("../config"));
 
             // Go through all the cards and reload them
             success &&= this.withStatus("Reloading cards", () => {

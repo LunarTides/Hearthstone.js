@@ -1,12 +1,13 @@
-const vanillaCards = require("../../card_creator/vanilla/.ignore.cards.json");
+// @ts-expect-error
+const vanillaCards = await import("../../card_creator/vanilla/.ignore.cards.json");
 import { Game, Player } from "../../src/internal.js";
 import { Blueprint, VanillaCard } from "../../src/types.js";
 
 const player1 = new Player("Player 1");
 const player2 = new Player("Player 2");
 const game = new Game(player1, player2);
-game.functions.importCards(__dirname + "/../../cards");
-game.functions.importConfig(__dirname + "/../../config");
+game.functions.importCards("../../cards");
+game.functions.importConfig("../../config");
 
 let customCards = game.functions.getCards(false);
 let filteredVanillaCards = game.functions.filterVanillaCards(vanillaCards, false, true);

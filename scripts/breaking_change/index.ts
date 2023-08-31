@@ -6,8 +6,8 @@ import { Game, Player } from "../../src/internal.js";
 const player1 = new Player("Player 1");
 const player2 = new Player("Player 2");
 const game = new Game(player1, player2);
-game.functions.importCards(__dirname + "/../../cards");
-game.functions.importConfig(__dirname + "/../../config");
+game.functions.importCards("../../cards");
+game.functions.importConfig("../../config");
 
 let matchingCards: string[] = [];
 let finishedCards: string[] = [];
@@ -26,8 +26,8 @@ function getFinishedCards(path: string) {
  * @param {string} [path=null] 
  */
 function searchCards(query: RegExp | string, path?: string) {
-    if (!path) path = __dirname + "/../../cards";
-    if (path == __dirname + "/../../cards/Tests") return; // We don't care about test cards
+    if (!path) path = "../../cards";
+    if (path == "../../cards/Tests") return; // We don't care about test cards
 
     fs.readdirSync(path, { withFileTypes: true }).forEach(file => {
         let p = `${path}/${file.name}`;
@@ -70,7 +70,7 @@ while (true) {
 
     matchingCards.forEach((c, i) => {
         // `c` is the path to the card.
-        let _c = c.replace(__dirname + "/../../cards/", "");
+        let _c = c.replace("../../cards/", "");
         console.log(`${i + 1}: ${_c}`);
     });
 
