@@ -1201,7 +1201,7 @@ ${main_content}
             name = game.functions.capitalizeAll(name); // Capitalize all words
 
             let card = game.functions.getCardByName(name + " Starting Hero");
-            if (!card || card.class != name || card.type != "Hero" || !card["heropower"] || card.class === "Neutral") {
+            if (!card || card.class != name || card.type != "Hero" || !card.heropower || card.class === "Neutral") {
                 console.warn("Found card in the startingheroes folder that isn't a starting hero. If the game crashes, please note this in your bug report. Name: " + name + ". Error Code: StartingHeroInvalidHandler");
                 return;
             }
