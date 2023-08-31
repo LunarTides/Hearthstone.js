@@ -1,7 +1,7 @@
 // Part of this code was copied from an example given by ChatGPT
 import "colors";
 import assert from 'assert';
-import { Player, Game, set } from "../src/internal.js";
+import { Player, Game, set, Card } from "../src/internal.js";
 
 // Setup the game / copied from the card updater
 const test_player1 = new Player("Test Player 1"); // Use this if a temp player crashes the game
@@ -31,7 +31,7 @@ interact.printLicense = () => {};
 interact.cls = () => {};
 
 const summonMinion = (name = "Sheep", plr = test_player1) => {
-    return game.summonMinion(new game.Card(name, plr), plr);
+    return game.summonMinion(new Card(name, plr), plr);
 }
 
 // Begin testing
@@ -48,6 +48,8 @@ describe("Interact", () => {
     it ('should attack', () => {
         let curm = summonMinion("Sheep", test_player1);
         let opm = summonMinion("Sheep", test_player2);
+        if (!(curm instanceof Card)) assert.fail("curm is not card");
+        if (!(opm instanceof Card)) assert.fail("opm is not card");
 
         curm.ready();
         opm.ready();
@@ -82,6 +84,8 @@ describe("Interact", () => {
     it ('should handle `attack` command', () => {
         let curm = summonMinion("Sheep", test_player1);
         let opm = summonMinion("Sheep", test_player2);
+        if (!(curm instanceof Card)) assert.fail("curm is not card");
+        if (!(opm instanceof Card)) assert.fail("opm is not card");
 
         curm.ready();
         opm.ready();
@@ -94,6 +98,8 @@ describe("Interact", () => {
     });
     it ('should handle `use` command', () => {
         let minion = summonMinion("Sheep", test_player1);
+        if (!(minion instanceof Card)) assert.fail("minion is not card");
+
         minion.type = "Location";
         minion.cooldown = 0;
 
@@ -117,12 +123,12 @@ describe("Interact", () => {
     });
     it ('should handle `eval` debug command', () => {
         game.config.debug = true;
+        game.evaling = false;
 
-        let old = game.foo;
-        game.interact.handleCmds("/eval game.foo = \"bar\"");
+        game.interact.handleCmds("/eval game.evaling = \"true\"");
 
-        assert.notEqual(game.foo, old);
-        assert.equal(game.foo, "bar");
+        assert.ok(game.evaling);
+        game.evaling = false;
     });
     it ('should handle `debug` debug command', () => {
         game.config.debug = true;
@@ -154,24 +160,26 @@ describe("Interact", () => {
     });
 
     it ('should do turn logic', () => {
-        test_player1.addToHand(new game.Card("Sheep", test_player1));
+        test_player1.addToHand(new Card("Sheep", test_player1));
         let res = interact.doTurnLogic("1");
 
-        assert.ok(res instanceof game.Card);
+        assert.ok(res instanceof Card);
         assert.equal(res.name, "Sheep");
     });
 
     it ('should do a move', () => {
-        test_player1.addToHand(new game.Card("Sheep", test_player1));
+        test_player1.addToHand(new Card("Sheep", test_player1));
         test_player1.inputQueue = ["1"];
         let res = interact.doTurn();
 
-        assert.ok(res instanceof game.Card);
+        assert.ok(res instanceof Card);
         assert.equal(res.name, "Sheep");
     });
 
     it ('should use a location', () => {
         let minion = summonMinion("Sheep", test_player1);
+        if (!(minion instanceof Card)) assert.fail("minion is not card");
+
         minion.type = "Location";
         minion.cooldown = 0;
 
@@ -184,7 +192,7 @@ describe("Interact", () => {
     });
 
     it ('should mulligan', () => {
-        let minion = new game.Card("Sheep", test_player1);
+        let minion = new Card("Sheep", test_player1);
         test_player1.shuffleIntoDeck(minion.imperfectCopy());
         minion.name = "Foo";
         test_player1.addToHand(minion);
@@ -231,7 +239,7 @@ describe("Interact", () => {
         console.log = log;
 
         assert.ok(card);
-        assert.ok(card instanceof game.Card);
+        assert.ok(card instanceof Card);
         assert.equal(card.type, "Minion");
         assert.ok(pool.map(c => c.name).includes(card.name));
     });
@@ -244,7 +252,7 @@ describe("Interact", () => {
 
         let card = interact.selectTarget("Select a minion.", null, null, "minion");
 
-        assert.ok(card instanceof game.Card);
+        assert.ok(card instanceof Card);
         assert.equal(card.type, "Minion");
         assert.equal(card, target);
     });
@@ -257,10 +265,11 @@ describe("Interact", () => {
     });
 
     it ('should get a readable card', () => {
-        let target = new game.Card("Sheep", test_player1);
+        let target = new Card("Sheep", test_player1);
 
         let card = interact.getReadableCard(target, 1);
 
+        // @ts-expect-error brightGreen does not exist
         const expected = "[1] " + "{1} ".cyan + "Sheep".bold + " [1 / 1]".brightGreen + " " + "(Minion)".yellow;
 
         assert.equal(card, expected);

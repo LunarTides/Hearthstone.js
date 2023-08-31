@@ -206,7 +206,7 @@ export class Card {
      * 
      * I do not recommend changing this in any other context than in a card's blueprint, unless you know what you are doing.
      */
-    storage: any[] = [];
+    storage: { [key: string]: any } = {};
 
     /**
      * The turn that the card was played / created.
@@ -923,23 +923,12 @@ export class Card {
         return this.activate("battlecry", ...args);
     }
     /**
-     * Returns `[true, t]` if `m` is more than or equal to the player's max mana, otherwise return `[false, f]`.
+     * Returns `m` is more than or equal to the player's max mana
      * 
-     * If `t` and `f` are not defined. This function only returns a boolean.
-     *
      * @param m The mana to test
-     * @param t The value to return if true
-     * @param f The value to return if false
      */
-    manathirst<T, F>(m: number, t?: T, f?: F): [boolean, T | F] | boolean {
-        if (this.plr.maxMana < m) {
-            if (!f) return false;
-
-            return [false, f];
-        }
-
-        if (!t) return true;
-        return [true, t];
+    manathirst(m: number): boolean {
+        return this.plr.maxMana >= m;
     }
 
     /**

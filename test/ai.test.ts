@@ -1,7 +1,7 @@
 // Part of this code was copied from an example given by ChatGPT
 import "colors";
-import assert from 'assert';
-import { Player, Game, Card, set } from "../src/internal.js";
+import assert, { AssertionError } from 'assert';
+import { Player, Game, Card, set, AI } from "../src/internal.js";
 
 // Setup the game / copied from the card updater
 const test_player1 = new Player("Test Player 1"); // Use this if a temp player crashes the game
@@ -33,7 +33,7 @@ interact.printAll = () => {};
 interact.printLicense = () => {};
 interact.cls = () => {};
 
-const ai = new game.AI(test_player1);
+const ai = new AI(test_player1);
 
 // Begin testing
 describe("AI", () => {
@@ -137,6 +137,7 @@ describe("AI", () => {
     it ('should find out if a taunt exists', () => {
         let taunts = ai._tauntExists(true);
 
+        if (typeof taunts === "boolean") assert.fail();
         assert.equal(taunts.length, 0);
     });
 
@@ -207,6 +208,7 @@ describe("AI", () => {
         
         let result = ai.discover(cards);
 
+        if (result === null) assert.fail();
         assert.equal(result.id, cards[0].id);
     });
 
@@ -219,6 +221,7 @@ describe("AI", () => {
         
         let result = ai.dredge(cards);
 
+        if (result === null) assert.fail();
         assert.equal(result.id, cards[0].id);
     });
 
@@ -274,8 +277,8 @@ describe("AI", () => {
     });
     it ('should trade cards', () => {
         let card = new Card("Sheep", test_player1);
-        test_player1.shuffleIntoDeck(card.imperfectCopy(card));
-        test_player1.shuffleIntoDeck(card.imperfectCopy(card));
+        test_player1.shuffleIntoDeck(card.imperfectCopy());
+        test_player1.shuffleIntoDeck(card.imperfectCopy());
         test_player1.mana = 1;
         
         let result = ai.trade(card);
@@ -286,8 +289,8 @@ describe("AI", () => {
     it ('should mulligan', () => {
         let card = new Card("Sheep", test_player1);
 
-        for (let i = 0; i < 3; i++) test_player1.addToHand(card.imperfectCopy(card));        
-        let result = ai.mulligan(card);
+        for (let i = 0; i < 3; i++) test_player1.addToHand(card.imperfectCopy());        
+        let result = ai.mulligan();
 
         // Mulligan all their cards
         assert.equal(result, "123");

@@ -1,6 +1,6 @@
 // Part of this code was copied from an example given by ChatGPT
 import "colors";
-import assert from 'assert';
+import assert, { AssertionError } from 'assert';
 import { Player, Game, Card, set } from "../src/internal.js";
 
 // Setup the game / copied from the card updater
@@ -94,7 +94,7 @@ describe("Player", () => {
     });
 
     it ('should set weapon', () => {
-        let weapon = new game.Card("Sheep", test_player1);
+        let weapon = new Card("Sheep", test_player1);
         weapon.type = "Weapon";
 
         let success = test_player1.setWeapon(weapon);
@@ -103,7 +103,7 @@ describe("Player", () => {
     });
 
     it ('should destroy weapon', () => {
-        let weapon = new game.Card("Sheep", test_player1);
+        let weapon = new Card("Sheep", test_player1);
         weapon.type = "Weapon";
 
         test_player1.setWeapon(weapon);
@@ -184,6 +184,7 @@ describe("Player", () => {
 
         let card = test_player1.drawCard();
 
+        if (typeof card === "number") assert.fail();
         assert.equal(card.name, "Sheep");
     });
 
@@ -232,7 +233,7 @@ describe("Player", () => {
         let success = test_player1.setToStartingHero("Mage");
 
         assert.equal(success, true);
-        assert.equal(test_player1.hero.name, "Mage Starting Hero");
+        assert.equal(test_player1.hero?.name, "Mage Starting Hero");
     });
 
     it ('should hero power', () => {

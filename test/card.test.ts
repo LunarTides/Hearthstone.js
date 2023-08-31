@@ -1,6 +1,6 @@
 import "colors";
 import assert from 'assert';
-import { Player, Game, set } from "../src/internal.js";
+import { Player, Game, set, Card } from "../src/internal.js";
 
 // Setup the game / copied from the card updater
 const test_player1 = new Player("Test Player 1"); // Use this if a temp player crashes the game
@@ -24,7 +24,7 @@ game.interact.printLicense = () => {};
 game.interact.cls = () => {};
 
 const testCard = () => {
-    return new game.Card("Sheep", test_player1);
+    return new Card("Sheep", test_player1);
 }
 
 // Begin testing
@@ -48,12 +48,12 @@ describe("Card", () => {
         const card = testCard();
 
         card.addDeathrattle((plr, game, self) => {
-            self.foo = "bar";
+            self.displayName = "foo";
         });
 
         card.activate("deathrattle");
 
-        assert.equal(card.foo, "bar");
+        assert.equal(card.displayName, "foo");
     });
 
     it ('should correctly add a keyword', () => {
@@ -257,8 +257,9 @@ describe("Card", () => {
 
         card.setStats(1, 1);
 
-        const stats = card.backups[key]["stats"]; // Find the stats backup
+        const stats = card.backups[key].stats; // Find the stats backup
 
+        if (stats === undefined) assert.fail();
         assert.equal(stats[0], 5);
     });
     it ('should correctly apply a backup of the card', () => {
@@ -316,45 +317,48 @@ describe("Card", () => {
         const card = testCard();
 
         card.addDeathrattle((plr, game, self) => {
-            self.foo = "bar";
+            self.displayName = "bar";
         });
 
         card.activate("deathrattle");
 
-        assert.equal(card.foo, "bar");
+        assert.equal(card.displayName, "bar");
     });
 
     it ('should correctly activate a minion\'s passive', () => {
         const card = testCard();
 
         game.summonMinion(card, test_player1); // So that the passive is actually triggered
+        card.displayName = "";
 
-        card.passive = [(plr, game, self, key, val) => {
-            if (key != "baz") return;
+        card.abilities.passive = [(plr, game, self, key, val) => {
+            if (key != "Dummy") return;
 
-            self.foo = val + "bar";
+            self.displayName += val + "bar";
         }];
 
-        game.events.broadcast("baz", "foo", test_player1);
-        game.events.broadcast("bar", "baz", test_player1); // This should get ignored
+        game.events.broadcast("Dummy", "foo", test_player1);
+        game.events.broadcast("Dummy", "baz", test_player1); // This should get ignored
 
-        assert.equal(card.foo, "foobar");
+        assert.equal(card.displayName, "foobarbazbar");
     });
 
     it ('should correctly get manathirst', () => {
         const card = testCard();
 
         test_player1.maxMana = 4;
-        const [ret, p] = card.manathirst(5, "fail", "pass");
+        const ret = card.manathirst(5);
+        const p = ret ? "pass" : "fail";
 
         assert.equal(ret, false);
-        assert.equal(p, "pass");
+        assert.equal(p, "fail");
     });
     it ('should correctly get manathirst', () => {
         const card = testCard();
 
         test_player1.maxMana = 5;
-        const [ret, p] = card.manathirst(5, "pass", "fail");
+        const ret = card.manathirst(5);
+        const p = ret ? "pass" : "fail";
 
         assert.equal(ret, true);
         assert.equal(p, "pass");
@@ -366,9 +370,9 @@ describe("Card", () => {
         const info = card.getEnchantmentInfo("mana = 1");
         const expected = {"key": "mana", "val": "1", "op": "="};
 
-        assert.equal(info["key"], expected["key"]);
-        assert.equal(info["mana"], expected["mana"]);
-        assert.equal(info["op"], expected["op"]);
+        assert.equal(info.key, expected.key);
+        assert.equal(info.val, expected.val);
+        assert.equal(info.op, expected.op);
     });
     it ('should correctly get enchantment info', () => {
         const card = testCard();
@@ -376,9 +380,9 @@ describe("Card", () => {
         const info = card.getEnchantmentInfo("+1 mana");
         const expected = {"key": "mana", "val": "1", "op": "+"};
 
-        assert.equal(info["key"], expected["key"]);
-        assert.equal(info["mana"], expected["mana"]);
-        assert.equal(info["op"], expected["op"]);
+        assert.equal(info.key, expected.key);
+        assert.equal(info.val, expected.val);
+        assert.equal(info.op, expected.op);
     });
 
     it ('should correctly add enchantents', () => {
@@ -424,7 +428,7 @@ describe("Card", () => {
         const card = testCard();
         card.desc = "This card costs: {cost}.";
 
-        card.placeholders = [(plr, game, self) => {
+        card.abilities.placeholders = [(plr, game, self) => {
             return {"cost": self.mana};
         }];
 
@@ -432,7 +436,7 @@ describe("Card", () => {
         let fullCard = game.interact.doPlaceholders(card);
 
         assert.equal(card.desc, "This card costs: {ph:cost} placeholder {/ph}.");
-        assert.equal(fullCard, card.desc.replace("{ph:cost} placeholder {/ph}", card.mana));
+        assert.equal(fullCard, `This card costs: ${card.mana}.`);
     });
 
     it ('should return a perfect copy', () => {

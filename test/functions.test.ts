@@ -3,6 +3,7 @@ import "colors";
 import assert from 'assert';
 import fs from 'fs';
 import { Player, Game, Card, set } from "../src/internal.js";
+import { Blueprint, CardClassNoNeutral, EventValue } from "../src/types.js";
 
 // Setup the game / copied from the card updater
 const test_player1 = new Player("Test Player 1"); // Use this if a temp player crashes the game
@@ -23,7 +24,7 @@ game.interact.printAll = () => {};
 game.interact.printLicense = () => {};
 game.interact.cls = () => {};
 
-const createCard = (name, plr = null) => new Card(name, plr || test_player1);
+const createCard = (name: string, plr?: Player) => new Card(name, plr || test_player1);
 
 // Begin testing
 describe("Functions", () => {
@@ -38,7 +39,7 @@ describe("Functions", () => {
         const clonedArray = array.slice();
         game.functions.shuffle(array);
 
-        const equals = true;
+        let equals = true;
 
         clonedArray.forEach((c, i) => {
             if (array[i] != c) equals = false;
@@ -58,6 +59,7 @@ describe("Functions", () => {
         const array = [1, 3, 5, 2, 4, 6];
         const el = game.functions.randList(array);
 
+        if (el instanceof Card) assert.fail("shouldn't be a card");
         assert.ok(array.includes(el));
     });
 
@@ -65,7 +67,11 @@ describe("Functions", () => {
         const array = [1, 3, 5, 2, 4, 6];
         const els = game.functions.chooseItemsFromList(array, 3);
 
-        const cards_matched = els.filter(el => array.includes(el));
+        const cards_matched = els.filter(el => {
+            if (el instanceof Card) assert.fail("shouldn't be a card");
+
+            return array.includes(el);
+        });
 
         assert.ok(els.length === 3);
         assert.ok(cards_matched.length === 3);
@@ -73,8 +79,8 @@ describe("Functions", () => {
 
     it ('should clone a card when getting a random element from an array', () => {
         // Grab 3 cards
-        let cards = game.functions.getCards();
-        cards = game.functions.chooseItemsFromList(cards, 3);
+        let allCards = game.functions.getCards();
+        let cards = game.functions.chooseItemsFromList(allCards, 3);
         cards = cards.map(c => createCard(c.name));
 
         // Choose a random one
@@ -157,19 +163,19 @@ describe("Functions", () => {
         const name = "The Coin"; // Kinda dangerous since the coin might not always exist but oh well. Replace with 'Priest Starting Hero' for extra safety, since that card shouldn't be deleted anyways
         const card = game.functions.getCardByName(name);
 
-        assert.ok(card.name == name);
+        assert.ok(card?.name == name);
     });
 
     it ('should get a card by its id', () => {
         const id = createCard("The Coin").id; // Get "The Coin"'s id
         const card = game.functions.getCardById(id);
 
-        assert.ok(card.id == id);
+        assert.ok(card?.id == id);
     });
 
     it ('should get a list of collectible cards', () => {
-        let cards = game.functions.getCards();
-        cards = cards.map(c => createCard(c.name));
+        let allCards = game.functions.getCards();
+        let cards = allCards.map(c => createCard(c.name));
 
         let uncollectible_cards = cards.filter(c => c.uncollectible);
 
@@ -178,10 +184,10 @@ describe("Functions", () => {
     it ('should get a list of all cards', () => {
         let all_cards = game.functions.getCards(false);
         let collectible_cards = game.functions.getCards();
-        all_cards = all_cards.map(c => createCard(c.name));
-        collectible_cards = collectible_cards.map(c => createCard(c.name));
+        let newAllCards = all_cards.map(c => createCard(c.name));
+        let newCollectibleCards = collectible_cards.map(c => createCard(c.name));
 
-        assert.notEqual(collectible_cards.length, all_cards.length);
+        assert.notEqual(newCollectibleCards.length, newAllCards.length);
     });
 
     it ('should validate the class of a card', () => {
@@ -205,6 +211,7 @@ describe("Functions", () => {
             throw new ReferenceError(`No cards have the '${test_tribe}' tribe. Ignore this test.`);
         }
 
+        if (!card.tribe) assert.fail("card doesn't have a tribe");
         assert.ok(game.functions.matchTribe(card.tribe, test_tribe));
     });
     it ('should check if the "All" tribe is valid', () => {
@@ -215,11 +222,14 @@ describe("Functions", () => {
             throw new ReferenceError(`No cards have tribes. Ignore this test.`);
         }
 
+        if (!card.tribe) assert.fail("card doesn't have a tribe");
         assert.ok(game.functions.matchTribe(card.tribe, "Beast"));
     });
 
     it ('should validate a card success', () => {
         let minion = game.summonMinion(createCard("Sheep"), test_player1);
+        if (!(minion instanceof Card)) assert.fail("minion is not a minion");
+
         minion.uncollectible = false;
 
         let ret = game.functions.validateCard(minion, test_player1);
@@ -228,15 +238,24 @@ describe("Functions", () => {
     });
     it ('should validate a card class', () => {
         let minion = game.summonMinion(createCard("Sheep"), test_player1);
+        if (!(minion instanceof Card)) assert.fail("minion is not a minion");
+        
+        let oldClass = test_player1.heroClass;
+        test_player1.heroClass = "Mage";
+
         minion.uncollectible = false;
-        minion.class = "Foo";
+        minion.class = "Death Knight";
 
         let ret = game.functions.validateCard(minion, test_player1);
+
+        test_player1.heroClass = oldClass;
 
         assert.equal(ret, "class");
     });
     it ('should validate a card uncollectible', () => {
         let minion = game.summonMinion(createCard("Sheep"), test_player1);
+        if (!(minion instanceof Card)) assert.fail("minion is not a minion");
+
         minion.uncollectible = true;
 
         let ret = game.functions.validateCard(minion, test_player1);
@@ -245,6 +264,8 @@ describe("Functions", () => {
     });
     it ('should validate a card runes', () => {
         let minion = game.summonMinion(createCard("Sheep"), test_player1);
+        if (!(minion instanceof Card)) assert.fail("minion is not a minion");
+
         minion.uncollectible = false;
         minion.runes = "BBB";
 
@@ -256,18 +277,25 @@ describe("Functions", () => {
     it ('should check if the highlander function works', () => {
         // Deck does not have duplicates
         const player = new Player("Temp Player");
+        let deck = game.functions.chooseItemsFromList(game.functions.getCards(), 10);
 
-        player.deck = game.functions.chooseItemsFromList(game.functions.getCards(), 10);
+        // Turn all blueprints into real cards
+        let trueDeck: Card[] = deck.map(c => {
+            if (!(c instanceof Card)) return new Card(c.name, player);
+            else return c;
+        });
+
+        player.deck = trueDeck;
 
         assert.ok(game.functions.highlander(player));
     });
     it ('should check if the highlander function works', () => {
         // Deck has duplicates
-        let cards = game.functions.getCards();
-        cards = game.functions.chooseItemsFromList(cards, 10);
-        cards = cards.map(c => createCard(c.name, test_player2));
+        let allCards = game.functions.getCards();
+        let cards = game.functions.chooseItemsFromList(allCards, 10);
+        let trueCards = cards.map(c => createCard(c.name, test_player2));
 
-        test_player2.deck = cards;
+        test_player2.deck = trueCards;
         test_player2.deck.push(test_player2.deck[0].imperfectCopy()); // Put a copy of the first card in the player's deck
 
         assert.ok(!game.functions.highlander(test_player2));
@@ -275,7 +303,7 @@ describe("Functions", () => {
 
     it ('should return the class names', () => {
         // This test will only fail if one of the elements in `expected` is NOT in the returned list `getClasses`
-        let expected = [
+        let expected: CardClassNoNeutral[] = [
             "Death Knight",
             "Demon Hunter",
             "Druid",
@@ -335,8 +363,8 @@ describe("Functions", () => {
     });
 
     it ('should correctly clone an object', () => {
-        let card = game.functions.getCards()[0];
-        card = createCard(card.name);
+        let blueprint = game.functions.getCards()[0];
+        let card = createCard(blueprint.name);
 
         let cloned_card = game.functions.cloneObject(card);
 
@@ -344,16 +372,16 @@ describe("Functions", () => {
     });
 
     it ('should correctly clone a card', () => {
-        let card = game.functions.getCards()[0];
-        card = createCard(card.name);
+        let blueprint = game.functions.getCards()[0];
+        let card = createCard(blueprint.name);
 
         let cloned_card = game.functions.cloneCard(card);
 
         assert.equal(card.name, cloned_card.name);
     });
     it ('should correctly randomize the ids when cloning a card', () => {
-        let card = game.functions.getCards()[0];
-        card = createCard(card.name);
+        let blueprint = game.functions.getCards()[0];
+        let card = createCard(blueprint.name);
 
         let cloned_card = game.functions.cloneCard(card);
 
@@ -362,12 +390,13 @@ describe("Functions", () => {
 
     it ('should correctly create an event listener', () => {
         const amount = Object.values(game.eventListeners).length;
-        game.functions.addEventListener("Test", () => {return true}, () => {});
+        // DON'T ACTUALLY USE DUMMY EVENT LISTENERS IN REAL CODE
+        game.functions.addEventListener("Dummy", () => {return true}, () => {});
 
         assert.ok(Object.values(game.eventListeners).length > amount);
     });
     it ('should correctly manually destroy an event listener', () => {
-        const destroy = game.functions.addEventListener("Test", () => {return true}, () => {});
+        const destroy = game.functions.addEventListener("Dummy", () => {return true}, () => {});
         const amount = Object.values(game.eventListeners).length;
 
         destroy();
@@ -375,39 +404,43 @@ describe("Functions", () => {
         assert.ok(Object.values(game.eventListeners).length < amount);
     });
     it ('should correctly semi-manually destroy an event listener', () => {
-        game.functions.addEventListener("Test", () => {return true}, (val) => {
-            return val % 2 == 0; // If this returns true, the event listener will be destroyed
+        game.functions.addEventListener("Eval", () => {return true}, (_unknownVal) => {
+            const val = _unknownVal as EventValue<"Eval">;
+            
+            return parseInt(val) % 2 == 0; // If this returns true, the event listener will be destroyed
         }, -1);
         const amount = Object.values(game.eventListeners).length;
 
-        game.events.broadcast("Test", 2, test_player1);
+        game.events.broadcast("Eval", "2", test_player1);
 
         assert.ok(Object.values(game.eventListeners).length < amount);
     });
     it ('should not semi-manually destroy an event listener', () => {
-        game.functions.addEventListener("Test", () => {return true}, (val) => {
-            return val % 2 == 0; // If this returns true, the event listener will be destroyed
+        game.functions.addEventListener("Eval", () => {return true}, (_unknownVal) => {
+            const val = _unknownVal as EventValue<"Eval">;
+
+            return parseInt(val) % 2 == 0; // If this returns true, the event listener will be destroyed
         }, -1);
         const amount = Object.values(game.eventListeners).length;
 
-        game.events.broadcast("Test", 1, test_player1);
+        game.events.broadcast("Eval", "1", test_player1);
 
         assert.ok(Object.values(game.eventListeners).length == amount);
     });
     it ('should correctly automatically destroy an event listener', () => {
-        game.functions.addEventListener("Test", () => {return true}, () => {});
+        game.functions.addEventListener("Dummy", () => {return true}, () => {}, 1);
         const amount = Object.values(game.eventListeners).length;
 
-        game.events.broadcast("Test", null, test_player1);
+        game.events.broadcast("Dummy", null, test_player1);
 
         assert.ok(Object.values(game.eventListeners).length < amount);
     });
 
     it ('should correctly account for uncollectible cards', () => {
-        let cards = game.functions.getCards(false);
-        cards = game.functions.accountForUncollectible(cards);
+        let blueprints = game.functions.getCards(false);
+        let cardlikes = game.functions.accountForUncollectible(blueprints);
 
-        const uncollectible_exists = cards.find(c => c.uncollectible);
+        const uncollectible_exists = cardlikes.find(c => c.uncollectible);
 
         assert.ok(!uncollectible_exists);
     });
@@ -461,21 +494,23 @@ describe("Functions", () => {
 
         let done = false;
 
-        game.functions.addQuest("Quest", player, createCard("The Coin", player), "QuestTest", 3, (key, val, _done) => {
-            if (!_done) return;
+        // DON'T ACTUALLY USE DUMMY QUESTS IN REAL CODE
+        game.functions.addQuest("Quest", player, createCard("The Coin", player), "Dummy", 3, (val, turn, _done) => {
+            if (!_done) return true;
 
             done = true;
+            return true;
         });
 
         assert.ok(!done);
 
-        game.events.broadcast("QuestTest", 1, player);
+        game.events.broadcast("Dummy", 1, player);
         assert.ok(!done);
 
-        game.events.broadcast("QuestTest", 1, player);
+        game.events.broadcast("Dummy", 1, player);
         assert.ok(!done);
 
-        game.events.broadcast("QuestTest", 1, player);
+        game.events.broadcast("Dummy", 1, player);
         assert.ok(done);
     });
 
@@ -483,7 +518,7 @@ describe("Functions", () => {
         const player = test_player1;
 
         let card = createCard("The Coin", player);
-        let success = game.functions.addQuest("Quest", player, card, "QuestTest", 3, (key, val, _done) => {});
+        let success = game.functions.addQuest("Quest", player, card, "Dummy", 3, (key, val, _done) => {return true});
 
         assert.ok(success);
         assert.equal(player.quests[0].progress[0], 0);
@@ -501,25 +536,27 @@ describe("Functions", () => {
     it ('should correctly import a deckcode', () => {
         let deck = game.functions.deckcode.import(test_player1, "Death Knight [3B] /1:8,2/ 5o,66,5f,3b,3c,3e,5x,70,52,55,56,6y,6z,59,5a,2,5v,5g,3o");
 
-        assert.notEqual(deck, "invalid");
-
+        if (deck === null) assert.fail("Invalid deckcode");
         assert.equal(test_player1.runes, "BBB");
         assert.equal(deck.length, 30);
     });
 
     it ('should correctly export a deckcode', () => {
         let deck = game.functions.deckcode.import(test_player1, "Death Knight [3B] /1:8,2/ 5o,66,5f,3b,3c,3e,5x,70,52,55,56,6y,6z,59,5a,2,5v,5g,3o");
+        if (deck === null) assert.fail("Invalid deckcode");
 
-        let deckcode = game.functions.deckcode.export(deck, "Death Knight", "BBB");
+        let deckcode = game.functions.deckcode.export(deck as Blueprint[], "Death Knight", "BBB");
 
         assert.equal(deckcode.error, null);
     });
     it ('should correctly import an exported deckcode', () => {
         let deck = game.functions.deckcode.import(test_player1, "Death Knight [3B] /1:8,2/ 5o,66,5f,3b,3c,3e,5x,70,52,55,56,6y,6z,59,5a,2,5v,5g,3o");
+        if (deck === null) assert.fail("Invalid deckcode");
 
-        let deckcode = game.functions.deckcode.export(deck, "Death Knight", "BBB");
+        let deckcode = game.functions.deckcode.export(deck as Blueprint[], "Death Knight", "BBB");
 
         deck = game.functions.deckcode.import(test_player1, deckcode.code);
+        if (deck === null) assert.fail("Invalid deckcode");
 
         assert.notEqual(deck, "invalid");
 
