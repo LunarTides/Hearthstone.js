@@ -4,6 +4,7 @@ import rl from "readline-sync";
 import fs from "fs";
 import config from "../config/general.json" assert { "type": "json" };
 import { Game, Player } from "../src/internal.js";
+import { Blueprint, CardClass, CardType } from "../src/types.js";
 
 const player1 = new Player("Player 1");
 const player2 = new Player("Player 2");
@@ -11,19 +12,21 @@ const game = new Game(player1, player2);
 game.functions.importCards(__dirname + "/../cards");
 game.functions.importConfig(__dirname + "/../config");
 
-let card = {};
-let type;
+let card: Blueprint;
+let type: CardType;
+
+type CCType = "Undefined" | "Class" | "Custom" | "Vanilla";
 
 let debug = false;
-let cctype = "Undefined";
+let cctype: CCType = "Undefined";
 
-function getCardFunction(card_type) {
+function getCardFunction(card_type: CardType) {
     // Get the card's 'function' (battlecry, cast, deathrattle, etc...)
     let func;
 
-    if (card_type == "spell") func = "Cast"; // If the card is a spell, the function is 'cast'
-    else if (card_type == "hero") func = "HeroPower"; // If the card is a hero card, the function is 'heropower'
-    else if (card_type == "location") func = "Use"; // If the card is a location, the function is 'use'
+    if (card_type == "Spell") func = "Cast"; // If the card is a spell, the function is 'cast'
+    else if (card_type == "Hero") func = "HeroPower"; // If the card is a hero card, the function is 'heropower'
+    else if (card_type == "Location") func = "Use"; // If the card is a location, the function is 'use'
     else { // If the card is a Minion or Weapon
         //func = input("Function: ");
 
@@ -31,8 +34,8 @@ function getCardFunction(card_type) {
         let reg = /[A-Z][a-z].*?:/;
         func = card.desc.match(reg);
 
-        if (!func && card.desc) func = "Passive:"; // If it didn't find a function, but the card has text in its' description, the function is 'passive'
-        else if (!card.desc) func = ":"; // If the card doesn't have a description, it doesn't get a default function.
+        if (card.desc === "") func = ":"; // If the card doesn't have a description, it doesn't get a default function.
+        else if (!func) func = "Passive:"; // If it didn't find a function, but the card has text in its' description, the function is 'passive'
         else func = func[0]; // If it found a function, and the card has a description, the function is the function it found in the description.
 
         func = func.slice(0, -1); // Remove the last ':'
@@ -41,7 +44,7 @@ function getCardFunction(card_type) {
     return func;
 }
 
-function generateCardPath(...args) {
+function generateCardPath(...args: [CardClass[], CardType]) {
     // Create a path to put the card in.
     let [classes, type] = args;
 
@@ -49,24 +52,24 @@ function generateCardPath(...args) {
     let static_path = `${__dirname}/../cards/`;
 
     // You can change this
-    let dynamic_path = `Classes/${classes}/${type}s/${card.mana} Cost/`;
+    let classesString = classes.join("/");
+    // If the type is Hero, we want the card to go to '.../Heroes/...' and not to '.../Heros/...'
+    let typeString = (type == "Hero") ? "Heroe" : type;
+    let dynamic_path = `Classes/${classesString}/${typeString}s/${card.mana} Cost/`;
 
     return static_path + dynamic_path;
 }
 
-export function create(override_type, override_card, override_path = "", override_filename = "") {
+export function create(override_type: CardType, override_card: Blueprint, override_path = "", override_filename = "") {
     card = override_card;
     type = override_type;
 
     // If the user didn't specify a tribe, but the tribe exists, set the tribe to "None".
-    if (card.tribe == "") card.tribe = "None";
+    //if (card.tribe && card.tribe === "") card.tribe = "None";
 
     let file_friendly_type = type.toLowerCase();
 
-    let func = getCardFunction(file_friendly_type);
-
-    // If the type is Hero, we want the card to go to '.../Heroes/...' and not to '.../Heros/...'
-    file_friendly_type = (type == "Hero") ? "Heroe" : type;
+    let func = getCardFunction(file_friendly_type as CardType);
 
     // If the card has the word "Secret" in its description, put it in the ".../Secrets/..." folder.
     if (card.desc.includes("Secret:")) file_friendly_type = "Secret";
@@ -87,6 +90,9 @@ export function create(override_type, override_card, override_path = "", overrid
         `;
     
     let desc_to_clean = type == "Hero" ? card.hpDesc : card.desc;
+    // card.hpDesc can be undefined, but shouldn't be if the type is Hero.
+    if (desc_to_clean === undefined) throw new Error("Card has no hero power description.");
+
     let cleaned_desc = game.functions.stripTags(desc_to_clean);
 
     if (func) func = `${func.toLowerCase()}(plr, game, self${triggerText} {
@@ -95,10 +101,10 @@ export function create(override_type, override_card, override_path = "", overrid
     }`; // Examples: '\n\n    passive(plr, game, self, key, val) {\n        // Your battlecries trigger twice\n        }', '\n\n    battlecry(plr, game, self) {\n\n    }'
 
     // If there are multiple classes in a card, put the card in a directory something like this '.../Class1/Class2/...'
-    let classes = card.class.replaceAll(" / ", "/");
+    let classes = card.class.split(" / ") as CardClass[];
 
     // Create a path to put the card in.
-    let path = generateCardPath(classes, file_friendly_type);
+    let path = generateCardPath(classes, file_friendly_type as CardType);
     if (override_path) path = override_path; // If this function was passed in a path, use that instead.
 
     // Create a filename. Example: "Test Card" -> "test_card.ts"
@@ -111,10 +117,11 @@ export function create(override_type, override_card, override_path = "", overrid
 
     // Generate the content of the card
     // If the value is a string, put '"value"'. If it is not a string, put 'value'.
-    const getTypeValue = val => {
+    const getTypeValue = (val: any) => {
         let ret = val;
 
-        if (typeof(val) === 'string' && val[0] != "[") ret = `"${val}"`; // If the value is a string, but not an array (arrays are parsed as strings, don't ask), set the value to '"value"'.
+        // If the value is a string, but not an array (arrays are parsed as strings, don't ask), set the value to '"value"'.
+        if (typeof(val) === 'string' && val[0] != "[") ret = `"${val}"`; 
 
         return ret;
     }
@@ -123,13 +130,13 @@ export function create(override_type, override_card, override_path = "", overrid
     let num = split_path.length - split_path.indexOf("cards");
     let type_path_rel = "../".repeat(num - 1) + "src/types.js";
 
-    let content = Object.entries(card).map(c => `${c[0]}: ${getTypeValue(c[1])}`); // name: "Test"
-    content = `// Created by the ${cctype} Card Creator
+    let contentArray = Object.entries(card).map(c => `${c[0]}: ${getTypeValue(c[1])}`); // name: "Test"
+    let content = `// Created by the ${cctype} Card Creator
 
 import { Blueprint, EventValue } from "${type_path_rel}";
 
 const blueprint: Blueprint = {
-    ${content.join(',\n    ')},${file_id}
+    ${contentArray.join(',\n    ')},${file_id}
     
     ${func}
 }
@@ -172,11 +179,11 @@ export default blueprint;
     return file_path;
 }
 
-export function set_debug(state) {
+export function set_debug(state: boolean) {
     debug = state;
 }
 
-export function set_type(state) {
+export function set_type(state: CCType) {
     cctype = state;
 }
 

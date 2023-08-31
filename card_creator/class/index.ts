@@ -2,6 +2,7 @@ import * as rl from "readline-sync";
 import * as lib from "../lib.js";
 
 import { Game, Player } from "../../src/internal.js";
+import { CardClass, CardRarity, CardType } from "../../src/types.js";
 
 const player1 = new Player("Player 1");
 const player2 = new Player("Player 2");
@@ -50,9 +51,9 @@ export function main() {
         displayName: displayName,
         desc: name[0].toUpperCase() + name.slice(1).toLowerCase() + " starting hero",
         mana: 0,
-        type: "Hero",
-        class: name,
-        rarity: "Free",
+        type: "Hero" as CardType,
+        class: name as CardClass,
+        rarity: "Free" as CardRarity,
         hpDesc: hpDesc,
         hpCost: parseInt(hpCost),
         uncollectible: true

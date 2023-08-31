@@ -1,4 +1,4 @@
-import { VanillaCard } from "../../src/types.js";
+import { Blueprint, CardClass, CardRarity, CardType, MinionTribe, SpellSchool, VanillaCard } from "../../src/types.js";
 
 import { readFileSync } from "fs";
 import rl from "readline-sync";
@@ -12,32 +12,28 @@ const game = new Game(player1, player2);
 game.functions.importCards(__dirname + "/../../cards");
 game.functions.importConfig(__dirname + "/../../config");
 
-function capitalize(str) {
-    return str[0].toUpperCase() + str.slice(1).toLowerCase();
-}
-
-function createCard(card, main) {
+function createCard(card: VanillaCard, main: boolean) {
     // Harvest info
-    let cardClass = capitalize(card.cardClass || "Neutral");
+    let cardClass = game.functions.capitalize(card.cardClass ?? "Neutral") as CardClass;
     let collectible = card.collectible || false;
     let mana = card.cost;
     let name = card.name;
-    let rarity = "Free";
-    if (card.rarity) rarity = capitalize(card.rarity);
+    let rarity = "Free" as CardRarity;
+    if (card.rarity) rarity = game.functions.capitalize(card.rarity) as CardRarity;
     let desc = card.text || "";
-    let type = capitalize(card.type);
+    let type = game.functions.capitalize(card.type);
 
     // Minion info
     let attack = card.attack || -1;
     let health = card.health || -1;
-    let races = [];
-    if (card.races) races = card.races.map(r => capitalize(r));
+    let races: MinionTribe[] = [];
+    if (card.races) races = card.races.map(r => game.functions.capitalize(r) as MinionTribe);
 
     // Spell info
-    let spellClass = card.spellSchool ? capitalize(card.spellSchool) : null;
+    let spellClass: SpellSchool | undefined = card.spellSchool ? game.functions.capitalize(card.spellSchool) as SpellSchool : undefined;
 
     // Weapon Info
-    let durability = card.durability || -1;
+    let durability = card.durability ?? -1;
 
     // Modify the desc
     desc = desc.replaceAll("\n", " ");
@@ -45,38 +41,33 @@ function createCard(card, main) {
     desc = desc.replaceAll("</b>", "&R");
     desc = desc.replaceAll("[x]", "");
 
-    const classes = game.functions.getClasses();
+    const classes = game.functions.getClasses() as CardClass[];
     classes.push("Neutral");
 
     while (!classes.includes(cardClass)) {
-        cardClass = game.functions.capitalizeAll(game.input("Was not able to find the class of this card.\nWhat is the class of this card? ".red));
+        cardClass = game.functions.capitalizeAll(game.input("Was not able to find the class of this card.\nWhat is the class of this card? ".red)) as CardClass;
     }
 
     let realName = rl.question("Override name (this will set 'name' to be the displayname instead) (leave empty to not use display name): ") || name;
 
-    let _card = {
-        name: realName
-    };
 
-    if (realName != name) {
-        _card.displayName = name;
-    }
-
-    let struct;
+    let blueprint: Blueprint;
 
     if (type == "Minion") {
-        struct = {
-            stats: `[${attack}, ${health}]`,
+        blueprint = {
+            name: realName,
+            stats: [attack, health],
             desc: desc,
             mana: mana,
             type: type,
-            tribe: races.join(" / "),
+            tribe: races[0], // TODO: Add support for more than 1 tribe
             class: cardClass,
             rarity: rarity
         }
     }
     else if (type == "Spell") {
-        struct = {
+        blueprint = {
+            name: realName,
             desc: desc,
             mana: mana,
             type: type,
@@ -86,8 +77,9 @@ function createCard(card, main) {
         }
     }
     else if (type == "Weapon") {
-        struct = {
-            stats: `[${attack}, ${durability}]`,
+        blueprint = {
+            name: realName,
+            stats: [attack, durability],
             desc: desc,
             mana: mana,
             type: type,
@@ -96,7 +88,8 @@ function createCard(card, main) {
         }
     }
     else if (type == "Hero") {
-        struct = {
+        blueprint = {
+            name: realName,
             desc: desc,
             mana: mana,
             type: type,
@@ -107,8 +100,9 @@ function createCard(card, main) {
         }
     }
     else if (type == "Location") {
-        struct = {
-            stats: `[0, ${health}]`,
+        blueprint = {
+            name: realName,
+            stats: [0, health],
             desc: desc,
             mana: mana,
             type: type,
@@ -122,14 +116,16 @@ function createCard(card, main) {
         process.exit(1);
     }
 
-    if (!collectible) struct.uncollectible = true;
+    if (!collectible) blueprint.uncollectible = true;
 
-    card = Object.assign({}, _card, struct);
+    if (realName != name) {
+        blueprint.displayName = name;
+    }
 
-    if (main) console.log(card);
+    if (main) console.log(blueprint);
 
     lib.set_type("Vanilla"); // Vanilla Card Creator
-    lib.create(type, card, null, null);
+    lib.create(type, blueprint);
 }
 
 export function main(card?: VanillaCard) {
@@ -139,7 +135,7 @@ export function main(card?: VanillaCard) {
 
     let data = readFileSync(__dirname + "/.ignore.cards.json", { encoding: 'utf8', flag: 'r' });
 
-    data = JSON.parse(data);
+    let parsedData: VanillaCard[] = JSON.parse(data);
 
     if (game.config.debug) {
         let debug = !rl.keyInYN("Do you want the card to actually be created?");
@@ -150,7 +146,7 @@ export function main(card?: VanillaCard) {
         let cardName = rl.question("Name / dbfId (Type 'back' to cancel): ");
         if (["exit", "quit", "close", "back"].includes(cardName.toLowerCase())) break;
 
-        let filtered_cards = data.filter(c => c.name.toLowerCase() == cardName.toLowerCase() || c.dbfId == cardName);
+        let filtered_cards = parsedData.filter(c => c.name.toLowerCase() == cardName.toLowerCase() || c.dbfId == parseInt(cardName));
         filtered_cards = game.functions.filterVanillaCards(filtered_cards, false, true);
 
         if (filtered_cards.length <= 0) {
@@ -164,18 +160,27 @@ export function main(card?: VanillaCard) {
             // Prompt the user to pick one
             filtered_cards.forEach((c, i) => {
                 // Get rid of useless information
-                delete c["id"];
-                delete c["artist"];
-                delete c["heroPowerDbfId"];
-                delete c["flavor"];
-                delete c["mechanics"];
                 delete c["elite"];
+                // @ts-expect-error
+                delete c["id"];
+                // @ts-expect-error
+                delete c["artist"];
+                // @ts-expect-error
+                delete c["heroPowerDbfId"];
+                // @ts-expect-error
+                delete c["flavor"];
+                // @ts-expect-error
+                delete c["mechanics"];
 
                 console.log(`\n${i + 1}:`);
                 console.log(c);
             });
 
-            let picked = rl.question(`Pick one (1-${filtered_cards.length}): `);
+            let picked = parseInt(rl.question(`Pick one (1-${filtered_cards.length}): `));
+            if (!picked || !filtered_cards[picked - 1]) {
+                console.log("Invalid number.\n");
+                continue;
+            }
 
             card = filtered_cards[picked - 1];
         }
