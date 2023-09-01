@@ -26,8 +26,6 @@ function main() {
 
     set(game);
 
-    game.running = true;
-
     game.functions.importCards('../cards');
     game.functions.importConfig('../config');
 

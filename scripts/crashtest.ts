@@ -24,8 +24,6 @@ for (let index = 0; index < games; index++) {
 
     set(game);
 
-    game.running = true;
-
     game.functions.importCards('../cards');
     game.functions.importConfig('../config');
 
