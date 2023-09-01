@@ -10,8 +10,8 @@ const game = new Game();
 const player1 = new Player("Player 1");
 const player2 = new Player("Player 2");
 game.setup(player1, player2);
-game.functions.importCards("../../cards");
-game.functions.importConfig("../../config");
+game.functions.importCards(game.functions.dirname() + "cards");
+game.functions.importConfig(game.functions.dirname() + "config");
 
 function createCard(card: VanillaCard, main: boolean) {
     // Harvest info

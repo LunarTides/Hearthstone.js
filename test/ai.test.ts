@@ -18,8 +18,8 @@ game.player2.id = 1;
 const functions = game.functions;
 const interact = game.interact;
 
-functions.importCards("../cards");
-functions.importConfig("../config");
+functions.importCards(game.functions.dirname() + "cards");
+functions.importConfig(game.functions.dirname() + "config");
 
 game.config.P1AI = false;
 game.config.P2AI = false;

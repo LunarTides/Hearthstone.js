@@ -23,8 +23,8 @@ for (let index = 0; index < games; index++) {
     const p2 = new Player("Player 2");
     game.setup(p1, p2);
 
-    game.functions.importCards('../cards');
-    game.functions.importConfig('../config');
+    game.functions.importCards(game.functions.dirname() + "cards");
+    game.functions.importConfig(game.functions.dirname() + "config");
 
     // Setup the ais
     game.config.P1AI = true;

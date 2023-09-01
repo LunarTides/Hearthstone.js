@@ -1,9 +1,11 @@
-import "colors";
 import * as fs from "fs";
 import * as child_process from "child_process";
 import * as deckstrings from "deckstrings"; // To decode vanilla deckcodes
 import colors from "colors";
+import path from "path";
 import { createHash } from "crypto";
+import { fileURLToPath } from "url";
+
 import { Player, Card } from "./internal.js";
 import { Blueprint, CardClass, CardClassNoNeutral, CardLike, CardRarity, EventKey, EventListenerCallback, EventListenerCheckCallback, FunctionsExportDeckError, FunctionsValidateCardReturn, MinionTribe, QuestCallback, Target, TickHookCallback, VanillaCard } from "./types.js";
 
@@ -1617,6 +1619,7 @@ ${main_content}
     importConfig(path: string): boolean {
         // @ts-expect-error - Typescript doesn't expect the config to be empty, but it gets repopulated immediately anyway.
         game.config = {};
+        path = path.replace("/dist", "");
 
         fs.readdirSync(path, { withFileTypes: true }).forEach(file => {
             let c = `${path}/${file.name}`;
@@ -1646,9 +1649,9 @@ ${main_content}
             let p = `${path}/${file.name}`;
 
             if (file.name.endsWith(".ts")) {
-                import(p).then(
-                    c => game.cards.push(c)
-                );
+                let c = require(p);
+
+                game.cards.push(c);
             }
             else if (file.isDirectory()) functions._importCards(p);
         });
@@ -1668,6 +1671,15 @@ ${main_content}
         game.cards = [];
 
         return functions._importCards(path);
+    },
+
+    /**
+     * Returns the directory name of the program
+     *
+     * @return {string} The directory name.
+     */
+    dirname(): string {
+        return path.dirname(fileURLToPath(import.meta.url)).replace("/src", "/");
     },
 
     /**

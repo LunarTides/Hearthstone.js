@@ -11,8 +11,8 @@ const test_player1 = new Player("Test Player 1"); // Use this if a temp player c
 const test_player2 = new Player("Test Player 2");
 game.setup(test_player1, test_player2);
 
-game.functions.importCards("../cards");
-game.functions.importConfig("../config");
+game.functions.importCards(game.functions.dirname() + "cards");
+game.functions.importConfig(game.functions.dirname() + "config");
 
 game.config.P1AI = false;
 game.config.P2AI = false;

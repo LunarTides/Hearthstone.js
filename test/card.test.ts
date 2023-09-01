@@ -10,8 +10,8 @@ game.setup(test_player1, test_player2);
 
 const functions = game.functions;
 
-functions.importCards("../cards");
-functions.importConfig("../config");
+functions.importCards(functions.dirname() + "cards");
+functions.importConfig(functions.dirname() + "config");
 
 game.config.P1AI = false;
 game.config.P2AI = false;

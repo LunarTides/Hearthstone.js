@@ -702,9 +702,9 @@ export const interact = {
                 return true;
             });
 
-            success &&= interact.withStatus("Importing cards", () => game.functions.importCards("../cards"));
-            success &&= interact.withStatus("Importing config", () => game.functions.importConfig("../config"));
-
+            success &&= interact.withStatus("Importing cards", () => game.functions.importCards(game.functions.dirname() + "cards"));
+            success &&= interact.withStatus("Importing config", () => game.functions.importConfig(game.functions.dirname() + "config"));
+                
             // Go through all the cards and reload them
             success &&= interact.withStatus("Reloading cards", () => {
                 /**
