@@ -108,8 +108,8 @@ export function create(override_type: CardType, override_card: Blueprint, overri
     let path = generateCardPath(classes, file_friendly_type as CardType);
     if (override_path) path = override_path; // If this function was passed in a path, use that instead.
 
-    // Create a filename. Example: "Test Card" -> "test_card.ts"
-    let filename = card.name.toLowerCase().replaceAll(" ", "_") + ".ts";
+    // Create a filename. Example: "Test Card" -> "test_card.mts"
+    let filename = card.name.toLowerCase().replaceAll(" ", "_") + ".mts";
     if (override_filename) filename = override_filename; // If this function was passed in a filename, use that instead.
 
     // Get the latest card-id

@@ -1,5 +1,5 @@
 // @ts-expect-error
-const vanillaCards = await import("../../card_creator/vanilla/.ignore.cards.json");
+const vanillaCards = import("../../card_creator/vanilla/.ignore.cards.json");
 import { Game, Player } from "../../src/internal.js";
 import { Blueprint, VanillaCard } from "../../src/types.js";
 
@@ -48,14 +48,11 @@ function check(key: string, val: string, vanilla: VanillaCard, card: Blueprint) 
         "desc": "text"
     }
 
-    // @ts-expect-error
     if (!vanilla[table[key]] || ignore.includes(key)) return;
-    // @ts-expect-error
     if (val.toLowerCase() == vanilla[table[key]].toString().toLowerCase()) return;
 
     console.log("Card outdated!");
     console.log(`Name: ${card.name}`);
     console.log(`Local: "${key}: ${val}"`);
-    // @ts-expect-error
     console.log(`New:   "${key}: ${vanilla[table[key]]}"\n`);
 }

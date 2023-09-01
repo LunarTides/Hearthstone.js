@@ -321,6 +321,7 @@ export class Player {
     detailedView: boolean = false;
 
     constructor(name: string) {
+        game = globalThis.game;
         this.name = name;
     }
 

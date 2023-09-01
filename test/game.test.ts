@@ -156,13 +156,15 @@ describe("Game", () => {
     });
 
     it ('should correctly trigger event listeners', () => {
-        let ret = null;
+        let ret: string | null = null;
 
         game.functions.addEventListener("Eval", (_unknownVal) => {
             const val = _unknownVal as EventValue<"Eval">;
 
             return val == "foo";
-        }, (val) => {
+        }, (_unknownVal) => {
+            const val = _unknownVal as EventValue<"Eval">;
+
             ret = val;
         });
 

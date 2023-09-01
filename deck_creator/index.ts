@@ -9,8 +9,8 @@ const player2 = new Player("Player 2");
 game.setup(player1, player2);
 let functions = game.functions;
 
-functions.importCards(functions.dirname() + "cards");
-functions.importConfig(functions.dirname() + "config");
+functions.importCards(game.functions.dirname() + "cards");
+functions.importConfig(game.functions.dirname() + "config");
 // ===========================================================
 
 const config = game.config;

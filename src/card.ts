@@ -348,6 +348,8 @@ export class Card {
      * @param plr The card's owner.
      */
     constructor(name: string, plr: Player) {
+        game = globalThis.game;
+
         // Get the blueprint from the cards list
         let blueprint = game.cards.find(c => c.name == name);
         if (!blueprint) {

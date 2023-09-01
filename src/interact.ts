@@ -702,7 +702,10 @@ export const interact = {
                 return true;
             });
 
-            success &&= interact.withStatus("Importing cards", () => game.functions.importCards(game.functions.dirname() + "cards"));
+            success &&= interact.withStatus("Importing cards", () => {
+                game.functions.importCards(game.functions.dirname() + "cards")
+                return true;
+            });
             success &&= interact.withStatus("Importing config", () => game.functions.importConfig(game.functions.dirname() + "config"));
                 
             // Go through all the cards and reload them
@@ -758,7 +761,7 @@ export const interact = {
      * 
      * @returns true | The return value of `game.playCard`
      */
-    doTurnLogic(input: string): true | GamePlayCardReturn {
+    doTurnLogic(input: string): GamePlayCardReturn {
         if (interact.handleCmds(input) !== -1) return true;
         let parsedInput = parseInt(input);
 
@@ -1297,6 +1300,7 @@ export const interact = {
      */
     printName(): void {
         cls();
+        game = globalThis.game;
     
         let watermarkString = `HEARTHSTONE.JS V${game.config.version}-${game.config.branch}`;
         let border = "-".repeat(watermarkString.length + 2);

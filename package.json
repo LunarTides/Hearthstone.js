@@ -28,6 +28,7 @@
     "@types/node": "^20.5.7",
     "@types/readline-sync": "^1.4.4",
     "@types/uuid": "^9.0.2",
+    "esm": "^3.2.25",
     "mocha": "^10.2.0",
     "typescript": "^5.2.2"
   },

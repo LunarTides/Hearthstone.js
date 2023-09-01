@@ -5,6 +5,7 @@ import colors from "colors";
 import path from "path";
 import { createHash } from "crypto";
 import { fileURLToPath } from "url";
+import { doImportCards } from "./importcards.cjs";
 
 import { Player, Card } from "./internal.js";
 import { Blueprint, CardClass, CardClassNoNeutral, CardLike, CardRarity, EventKey, EventListenerCallback, EventListenerCheckCallback, FunctionsExportDeckError, FunctionsValidateCardReturn, MinionTribe, QuestCallback, Target, TickHookCallback, VanillaCard } from "./types.js";
@@ -1625,7 +1626,7 @@ ${main_content}
             let c = `${path}/${file.name}`;
 
             if (file.name.endsWith(".json")) {
-                let f = import(c);
+                let f = import(c, { assert: { type: "json" } });
 
                 game.config = Object.assign({}, game.config, f);
             }
@@ -1638,39 +1639,16 @@ ${main_content}
     },
 
     /**
-     * USE @see {@link importCards} INSTEAD. Imports all cards from a folder.
-     * 
-     * @param path The path
-     * 
-     * @returns Success
-     */
-    _importCards(path: string): boolean {
-        fs.readdirSync(path, { withFileTypes: true }).forEach(file => {
-            let p = `${path}/${file.name}`;
-
-            if (file.name.endsWith(".ts")) {
-                let c = require(p);
-
-                game.cards.push(c);
-            }
-            else if (file.isDirectory()) functions._importCards(p);
-        });
-
-        return true;
-    },
-
-    /**
      * Imports all cards from a folder
      * 
      * @param path The path
      * 
      * @returns Success
      */
-    importCards(path: string): boolean {
+    importCards(path: string) {
         game = globalThis.game;
-        game.cards = [];
-
-        return functions._importCards(path);
+        game.cards = doImportCards(path);
+        return true;
     },
 
     /**
