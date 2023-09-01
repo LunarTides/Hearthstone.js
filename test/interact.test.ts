@@ -1,14 +1,13 @@
 // Part of this code was copied from an example given by ChatGPT
 import "colors";
 import assert from 'assert';
-import { Player, Game, set, Card } from "../src/internal.js";
+import { Player, Game, Card } from "../src/internal.js";
 
 // Setup the game / copied from the card updater
+const game = new Game();
 const test_player1 = new Player("Test Player 1"); // Use this if a temp player crashes the game
 const test_player2 = new Player("Test Player 2");
-
-const game = new Game(test_player1, test_player2);
-set(game);
+game.setup(test_player1, test_player2);
 
 game.player1 = test_player1;
 game.player2 = test_player2;

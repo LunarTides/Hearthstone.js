@@ -4,19 +4,12 @@ import * as child_process from "child_process";
 import * as deckstrings from "deckstrings"; // To decode vanilla deckcodes
 import colors from "colors";
 import { createHash } from "crypto";
-import { Player, Card, Game } from "./internal.js";
+import { Player, Card } from "./internal.js";
 import { Blueprint, CardClass, CardClassNoNeutral, CardLike, CardRarity, EventKey, EventListenerCallback, EventListenerCheckCallback, FunctionsExportDeckError, FunctionsValidateCardReturn, MinionTribe, QuestCallback, Target, TickHookCallback, VanillaCard } from "./types.js";
 
-let game: Game;
+let game = globalThis.game;
 
-/**
- * An instance of the Functions class, to be used in `DeckcodeFunctions`, for example.
- */
-let self: Functions;
-
-class DeckcodeFunctions {
-    constructor() {}
-
+const deckcode = {
     /**
      * Imports a deck using a code and put the cards into the player's deck
      * 
@@ -53,7 +46,7 @@ class DeckcodeFunctions {
             vanilla = true;
         } catch (err) {}; // This isn't a vanilla code, no worries, just parse it as a hearthstone.js deckcode.
 
-        if (vanilla) code = this.fromVanilla(plr, code);
+        if (vanilla) code = deckcode.fromVanilla(plr, code);
 
         let runeRegex = /\[[BFU]{3}\]/; // BFU
         let altRuneRegex = /\[3[BFU]\]/; // BBB -> 3B
@@ -69,7 +62,7 @@ class DeckcodeFunctions {
         hero = hero.trim();
         code = sep[1] + code.split(sep)[1];
 
-        if (!self.getClasses().includes(hero as CardClassNoNeutral)) return ERROR("INVALIDHERO");
+        if (!functions.getClasses().includes(hero as CardClassNoNeutral)) return ERROR("INVALIDHERO");
 
         // @ts-expect-error
         plr.heroClass = hero;
@@ -134,7 +127,7 @@ class DeckcodeFunctions {
             cards.forEach(c => {
                 let id = parseInt(c, 36);
 
-                let bp = self.getCardById(id);
+                let bp = functions.getCardById(id);
                 if (!bp) {
                     ERROR("NONEXISTANTCARD", id.toString());
                     retInvalid = true;
@@ -152,7 +145,7 @@ class DeckcodeFunctions {
                     });
                 }
 
-                let validateTest = (self.validateCard(card, plr));
+                let validateTest = (functions.validateCard(card, plr));
 
                 if (!localSettings.validateDecks || validateTest === true) return;
 
@@ -203,7 +196,7 @@ class DeckcodeFunctions {
 
             let errorcode;
             if (amount > localSettings.maxOfOneCard) errorcode = "normal";
-            if (self.getCardByName(cardName)?.rarity == "Legendary" && amount > localSettings.maxOfOneLegendary) errorcode = "legendary";
+            if (functions.getCardByName(cardName)?.rarity == "Legendary" && amount > localSettings.maxOfOneLegendary) errorcode = "legendary";
 
             if (!localSettings.validateDecks || !errorcode) return;
 
@@ -223,12 +216,12 @@ class DeckcodeFunctions {
             return "invalid";
         });
     
-        _deck = self.shuffle(_deck);
+        _deck = functions.shuffle(_deck);
 
         plr.deck = _deck;
 
         return _deck;
-    }
+    },
 
     /**
      * Generates a deckcode from a list of blueprints
@@ -306,7 +299,7 @@ class DeckcodeFunctions {
         deckcode += cards.map(c => c[0].id?.toString(36)).join(",");
 
         return {"code": deckcode, "error": error};
-    }
+    },
 
     /**
      * Turns a Hearthstone.js deckcode into a vanilla deckcode
@@ -372,7 +365,7 @@ class DeckcodeFunctions {
         let vanillaCards: VanillaCard[] = JSON.parse(vanillaCardsString);
 
         let cardsSplit = cards.split(",").map(i => parseInt(i, 36));
-        let cardsSplitId = cardsSplit.map(i => self.getCardById(i));
+        let cardsSplitId = cardsSplit.map(i => functions.getCardById(i));
         // @ts-expect-error
         let cardsSplitCard = cardsSplitId.map(c => new game.Card(c.name, plr));
         let trueCards = cardsSplitCard.map(c => c.displayName);
@@ -401,7 +394,7 @@ class DeckcodeFunctions {
             if (!found) amount = parseInt(amountStr[amountStr.length - 1]);
 
             let matches = vanillaCards.filter(a => a.name.toLowerCase() == c.toLowerCase());
-            matches = self.filterVanillaCards(matches, true, extraFiltering);
+            matches = functions.filterVanillaCards(matches, true, extraFiltering);
 
             if (matches.length == 0) {
                 // Invalid card
@@ -444,7 +437,7 @@ class DeckcodeFunctions {
 
         let encodedDeck = deckstrings.encode(deck);
         return encodedDeck;
-    }
+    },
 
     /**
      * Turns a vanilla deckcode into a Hearthstone.js deckcode
@@ -475,13 +468,13 @@ class DeckcodeFunctions {
         delete deck.format; // We don't care about the format
 
         let _heroClass = cards.find(a => a.dbfId == deck.heroes[0])?.cardClass;
-        let heroClass = self.capitalize(_heroClass?.toString() || game.player2.heroClass);
+        let heroClass = functions.capitalize(_heroClass?.toString() || game.player2.heroClass);
 
         if (heroClass == "Deathknight") heroClass = "Death Knight"; // Wtf hearthstone?
         if (heroClass == "Demonhunter") heroClass = "Demon Hunter"; // I'm not sure if this actually happens, but considering it happened with death knight, you never know
         
         let deckDef: [VanillaCard | undefined, number][] = deck.cards.map(c => [cards.find(a => a.dbfId == c[0]), c[1]]); // Get the full card object from the dbfId
-        let createdCards: Blueprint[] = self.getCards(false);
+        let createdCards: Blueprint[] = functions.getCards(false);
         
         let invalidCards: VanillaCard[] = [];
         deckDef.forEach(c => {
@@ -582,18 +575,8 @@ class DeckcodeFunctions {
     }
 }
 
-export class Functions {
-    deckcode: DeckcodeFunctions;
-
-    constructor(_game: Game) {
-        /**
-         * Functions related to deckcodes.
-         */
-        this.deckcode = new DeckcodeFunctions();
-
-        game = _game;
-        self = this; // Allow the other classes to access this class
-    }
+export const functions = {
+    deckcode: deckcode,
 
     // QoL
     // https://dev.to/codebubb/how-to-shuffle-an-array-in-javascript-2ikj - Vladyslav
@@ -611,14 +594,14 @@ export class Functions {
         const length = newArray.length;
 
         for (let start = 0; start < length; start++) {
-            const randomPosition = this.randInt(0, (newArray.length - start) - 1);
+            const randomPosition = functions.randInt(0, (newArray.length - start) - 1);
             const randomItem = newArray.splice(randomPosition, 1);
 
             newArray.push(...randomItem);
         }
 
         return newArray;
-    }
+    },
 
     /**
      * Removes `element` from `list`.
@@ -631,7 +614,7 @@ export class Functions {
     remove<T>(list: T[], element: T): boolean {
         list.splice(list.indexOf(element), 1);
         return true;
-    }
+    },
 
     /**
      * Return a random element from `list`
@@ -642,12 +625,12 @@ export class Functions {
      * @returns Item
      */
     randList<T>(list: T[], cpyCard: boolean = true): T | Card {
-        let item = list[this.randInt(0, list.length - 1)];
+        let item = list[functions.randInt(0, list.length - 1)];
         
         if (item instanceof Card && cpyCard) return item.imperfectCopy();
 
         return item;
-    }
+    },
 
     /**
      * Returns `amount` random items from `list`.
@@ -665,13 +648,13 @@ export class Functions {
         let elements: (T | Card)[] = [];
 
         for (let i = 0; i < amount; i++) {
-            let el = this.randList(list, cpyCard);
+            let el = functions.randList(list, cpyCard);
             elements.push(el);
             list.splice(list.indexOf(el), 1);
         }
 
         return elements;
-    }
+    },
 
     /**
      * Return a random number between `min` and `max`.
@@ -683,7 +666,7 @@ export class Functions {
      */
     randInt(min: number, max: number): number {
         return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
+    },
 
     /**
      * Capitalizes a string
@@ -694,7 +677,7 @@ export class Functions {
      */
     capitalize(str: string): string {
         return str[0].toUpperCase() + str.slice(1).toLowerCase();
-    }
+    },
 
     /**
      * Capitalizes all words in string
@@ -704,8 +687,8 @@ export class Functions {
      * @returns The string capitalized
      */
     capitalizeAll(str: string): string {
-        return str.split(" ").map(k => this.capitalize(k)).join(" ");
-    }
+        return str.split(" ").map(k => functions.capitalize(k)).join(" ");
+    },
 
     /**
      * Creates a wall.
@@ -774,7 +757,7 @@ export class Functions {
         });
 
         return wall;
-    }
+    },
 
     /**
      * Create a (crash)log file
@@ -867,7 +850,7 @@ ${main_content}
         game.input();
 
         return true;
-    }
+    },
 
     /**
      * Returns an AI Error with the provided information.
@@ -880,7 +863,7 @@ ${main_content}
      */
     createAIError(code: string, expected: any, actual: any): Error {
         return new Error(`AI Error: expected: ${expected}, got: ${actual}. Error Code: ${code}`);
-    }
+    },
 
     /**
      * Filter out some useless vanilla cards
@@ -951,7 +934,7 @@ ${main_content}
         }
 
         return cards;
-    }
+    },
 
     /**
      * Open a program with args
@@ -1014,7 +997,7 @@ ${main_content}
         }
 
         return true;
-    }
+    },
 
     // Getting card info
 
@@ -1035,10 +1018,10 @@ ${main_content}
             if (c.name.toLowerCase() == name.toLowerCase()) card = c;
         });
 
-        if (!card && refer) card = this.getCardById(name, false);
+        if (!card && refer) card = functions.getCardById(name, false);
 
         return card;
-    }
+    },
 
     /**
      * Returns the card with the id of `id`.
@@ -1051,10 +1034,10 @@ ${main_content}
     getCardById(id: number | string, refer: boolean = true): Blueprint | null {
         let card = game.cards.filter(c => c.id == id)[0];
 
-        if (!card && refer) return this.getCardByName(id.toString(), false);
+        if (!card && refer) return functions.getCardByName(id.toString(), false);
 
         return card;
-    }
+    },
 
     /**
      * Returns all cards added to Hearthstone.js
@@ -1072,7 +1055,7 @@ ${main_content}
         });
 
         return _cards;
-    }
+    },
 
     /**
      * Returns if the `card`'s class is the same as the `plr`'s class or 'Neutral'
@@ -1108,7 +1091,7 @@ ${main_content}
      */
     validateClass(plr: Player, card: CardLike): boolean {
         return [plr.heroClass, "Neutral"].includes(card.class);
-    }
+    },
 
     /**
      * Returns if the `card_tribe` is `tribe` or 'All'
@@ -1134,7 +1117,7 @@ ${main_content}
         // If the card's tribe is "All".
         if (/all/i.test(card_tribe)) return true;
         else return card_tribe.includes(tribe);
-    }
+    },
 
     /**
      * Checks if a card is a valid card to put into a players deck
@@ -1152,7 +1135,7 @@ ${main_content}
         if (card.runes && !plr.testRunes(card.runes)) return "runes";
 
         return true;
-    }
+    },
 
     /**
      * Returns true if the `plr`'s deck has no duplicates.
@@ -1165,7 +1148,7 @@ ${main_content}
         let deck = plr.deck.map(c => c.name);
 
         return (new Set(deck)).size == deck.length;
-    }
+    },
 
     /**
      * Returns all classes in the game
@@ -1197,7 +1180,7 @@ ${main_content}
         });
 
         return classes;
-    }
+    },
 
     /**
      * Colors `str` based on `rarity`.
@@ -1238,7 +1221,7 @@ ${main_content}
         if (bold && rarity != "Legendary") str = str.bold;
 
         return str;
-    }
+    },
 
     /**
      * Parses color tags in `str`.
@@ -1378,7 +1361,7 @@ ${main_content}
         strbuilder += appendTypes(word_strbuilder);
 
         return strbuilder;
-    }
+    },
 
     /**
      * Removes color tags from a string. Look in `functions.parseTags` for more information.
@@ -1402,7 +1385,7 @@ ${main_content}
         strippedString = strippedString.replace(/~&(\w)/g, "&$1")
 
         return strippedString;
-    }
+    },
 
     /**
      * Clones the `object`.
@@ -1413,7 +1396,7 @@ ${main_content}
      */
     cloneObject<T>(object: T): T {
         return Object.assign(Object.create(Object.getPrototypeOf(object)), object);
-    }
+    },
 
     /**
      * Creates a PERFECT copy of a card, and sets some essential properties.
@@ -1424,14 +1407,14 @@ ${main_content}
      * @returns Clone
      */
     cloneCard(card: Card): Card {
-        let clone = this.cloneObject(card);
+        let clone = functions.cloneObject(card);
 
         clone.randomizeUUID();
         clone.sleepy = true;
         clone.turn = game.turns;
 
         return clone;
-    }
+    },
 
     /**
      * Calls `callback` on all `plr`'s targets, including the player itself.
@@ -1449,7 +1432,7 @@ ${main_content}
         callback(plr);
 
         return true;
-    }
+    },
 
     /**
      * Add an event listener.
@@ -1487,7 +1470,7 @@ ${main_content}
         game.events.eventListeners++;
 
         return remove;
-    }
+    },
 
     /**
      * Hooks a callback function to the tick event.
@@ -1500,11 +1483,11 @@ ${main_content}
         game.events.tickHooks.push(callback);
 
         const unhook = () => {
-            this.remove(game.events.tickHooks, callback);
+            functions.remove(game.events.tickHooks, callback);
         }
 
         return unhook;
-    }
+    },
 
     // Account for certain stats
     
@@ -1517,7 +1500,7 @@ ${main_content}
      */
     accountForUncollectible(cards: CardLike[]): CardLike[] {
         return cards.filter(c => !c.uncollectible);
-    }
+    },
 
     // Keyword stuff
 
@@ -1537,7 +1520,7 @@ ${main_content}
         if (ret === false) throw new Error("activate couldn't find adapt for ADAPT card.");
 
         return ret;
-    }
+    },
 
     /**
      * Invoke the `plr`'s Galakrond
@@ -1567,7 +1550,7 @@ ${main_content}
         else if (hand_galakrond) hand_galakrond.activate("heropower");
 
         return true;
-    }
+    },
 
     /**
      * Chooses a minion from `list` and puts it onto the board.
@@ -1582,7 +1565,7 @@ ${main_content}
         if (!list) list = plr.deck;
         let _list = list;
 
-        list = this.shuffle(list.slice());
+        list = functions.shuffle(list.slice());
 
         let times = 0;
 
@@ -1599,11 +1582,11 @@ ${main_content}
         });
 
         cards.forEach(c => {
-            this.remove(_list, c);
+            functions.remove(_list, c);
         });
 
         return cards;
-    }
+    },
 
     /**
      * Creates and returns a jade golem with the correct stats and cost for the player
@@ -1622,7 +1605,7 @@ ${main_content}
         jade.mana = mana;
 
         return jade;
-    }
+    },
 
     /**
      * Imports the config from the `path` specified.
@@ -1643,13 +1626,13 @@ ${main_content}
 
                 game.config = Object.assign({}, game.config, f);
             }
-            else if (file.isDirectory()) this.importConfig(c);
+            else if (file.isDirectory()) functions.importConfig(c);
         });
 
         game.doConfigAI();
 
         return true;
-    }
+    },
 
     /**
      * USE @see {@link importCards} INSTEAD. Imports all cards from a folder.
@@ -1667,11 +1650,11 @@ ${main_content}
                     c => game.cards.push(c)
                 );
             }
-            else if (file.isDirectory()) this._importCards(p);
+            else if (file.isDirectory()) functions._importCards(p);
         });
 
         return true;
-    }
+    },
 
     /**
      * Imports all cards from a folder
@@ -1681,10 +1664,11 @@ ${main_content}
      * @returns Success
      */
     importCards(path: string): boolean {
+        game = globalThis.game;
         game.cards = [];
 
-        return this._importCards(path);
-    }
+        return functions._importCards(path);
+    },
 
     /**
      * Mulligans the cards from input. Read `interact.mulligan` for more info.
@@ -1705,7 +1689,7 @@ ${main_content}
         plr.hand.forEach(c => {
             if (!mulligan.includes(c) || c.name == "The Coin") return;
 
-            this.remove(mulligan, c);
+            functions.remove(mulligan, c);
             
             game.suppressedEvents.push("DrawCard");
             plr.drawCard();
@@ -1721,7 +1705,7 @@ ${main_content}
         });
 
         return cards;
-    }
+    },
 
     // Quest
 
@@ -1743,7 +1727,7 @@ ${main_content}
         quest["progress"][0] += value;
 
         return quest["progress"][0];
-    }
+    },
 
     /**
      * Adds a quest / secrets to a player

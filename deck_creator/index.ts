@@ -1,14 +1,13 @@
 import "colors";
 
-import { Functions, Game, Player, set } from "../src/internal.js";
+import { Game, Player } from "../src/internal.js";
 import { Blueprint, CardClass, CardClassNoNeutral, CardLike } from "../src/types.js";
 
+const game = new Game();
 const player1 = new Player("Player 1");
 const player2 = new Player("Player 2");
-const game = new Game(player1, player2);
+game.setup(player1, player2);
 let functions = game.functions;
-
-set(game);
 
 functions.importCards("../cards");
 functions.importConfig("../config");
@@ -439,8 +438,6 @@ function add(card: Blueprint) {
         // @ts-expect-error
         config[key] = val;
     });
-
-    functions = new Functions(game);
 }
 function remove(card: Blueprint) {
     game.functions.remove(deck, card);

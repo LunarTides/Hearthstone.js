@@ -1,7 +1,7 @@
-import { AI, Card, Game, get } from "./internal.js";
+import { AI, Card } from "./internal.js";
 import { CardClass, CardType, QuestType, Target } from "./types.js";
 
-let game: Game;
+let game = globalThis.game;
 
 export class Player {
     /**
@@ -321,21 +321,7 @@ export class Player {
     detailedView: boolean = false;
 
     constructor(name: string) {
-        this.getInternalGame();
-
         this.name = name;
-    }
-
-    /**
-     * Update the `game` variable stored in the player module.
-     * 
-     * I don't recommend calling this because it can cause major problems if done incorrectly.
-     */
-    getInternalGame(): void {
-        let tempGame = get();
-        if (!tempGame) return;
-
-        game = tempGame;
     }
 
     /**

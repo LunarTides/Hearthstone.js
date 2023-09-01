@@ -1,29 +1,40 @@
 import { question }  from 'readline-sync';
-import { Functions, Player, Card, Interact, AI } from "./internal.js";
+import { functions, interact, Player, Card, AI } from "./internal.js";
 import { Blueprint, EventKey, EventManagerEvents, EventValue, GameAttackReturn, GameConfig, GameConstants, GamePlayCardReturn, QuestType, Target, TickHookCallback } from "./types.js";
 
-export class EventManager {
-    /**
-     * The game that the event manager is attached to.
-     */
-    game: Game;
-    
+interface IEventManager {
+    eventListeners: number;
+    tickHooks: TickHookCallback[];
+    history: {[x: number]: [[EventKey, EventValue<EventKey>, Player]]};
+    events: EventManagerEvents;
+    stats: {[key: string]: [number, number]};
+
+    tick(key: EventKey, val: EventValue<EventKey>): boolean;
+    cardUpdate(key: EventKey, val: EventValue<EventKey>): boolean;
+    questUpdate(quests_name: "secrets" | "sidequests" | "quests", key: EventKey, val: EventValue<EventKey>, plr: Player): boolean;
+    broadcast(key: EventKey, val: EventValue<EventKey>, plr: Player, updateHistory?: boolean): boolean;
+    addHistory(key: EventKey, val: EventValue<EventKey>, plr: Player): void;
+    broadcastDummy(plr: Player): boolean;
+    increment(player: Player, key: string, amount?: number): number;
+}
+
+const eventManager: IEventManager = {
     /**
      * The amount of event listeners that have been added to the game, this never decreases.
      */
-    eventListeners: number = 0;
+    eventListeners: 0,
 
     /**
      * The hooks that will be run when the game ticks.
      */
-    tickHooks: TickHookCallback[] = [];
+    tickHooks: [],
 
     /**
      * The history of the game.
      * 
      * It looks like this: `history[turn] = [[key, val, plr], ...]`
      */
-    history: {[x: number]: [[EventKey, EventValue<EventKey>, Player]]} = {};
+    history: {},
 
     /**
      * Used like this:
@@ -31,13 +42,9 @@ export class EventManager {
      * events[key] = {player1id: [[val1, turn], [val2, turn], [val3, turn], ...], player2id: [...]};
      * ```
      */
-    events: EventManagerEvents;
+    events: {},
 
-    stats: {[key: string]: [number, number]};
-
-    constructor(game: Game) {
-        this.game = game;
-    }
+    stats: {},
 
     /**
      * Tick the game
@@ -45,11 +52,14 @@ export class EventManager {
      * @param key The key of the event that triggered the tick
      * @param val The value of the event that triggered the tick
      */
-    tick(key: EventKey, val: EventValue<EventKey>): void {
+    tick(key, val) {
         // The code in here gets executed very often
+        let game = globalThis.game;
+        if (!game) return false;
 
         // Infuse
         if (key == "KillMinion") {
+            // Get the game from the properties
             val = val as EventValue<typeof key>;
             val.plr.hand.forEach(p => {
                 if (!p.infuse_num) return;
@@ -67,8 +77,8 @@ export class EventManager {
 
         for (let i = 1; i <= 2; i++) {
             let plr;
-            if (i === 1) plr = this.game.player1;
-            else plr = this.game.player2;
+            if (i === 1) plr = game.player1;
+            else plr = game.player2;
 
             // Activate spells in the players hand
             plr.hand.forEach(c => {
@@ -98,8 +108,9 @@ export class EventManager {
             });
         }
 
-        this.tickHooks.forEach(hook => hook(key, val));
-    }
+        eventManager.tickHooks.forEach(hook => hook(key, val));
+        return true;
+    },
 
     /**
      * Do card passives
@@ -109,8 +120,11 @@ export class EventManager {
      *
      * @returns Success
      */
-    cardUpdate(key: EventKey, val: EventValue<EventKey>): boolean {
-        this.game.board.forEach(p => {
+    cardUpdate(key, val) {
+        let game = globalThis.game;
+        if (!game) return false;
+
+        game.board.forEach(p => {
             p.forEach(m => {
                 if (m.getHealth() <= 0) return; // This function gets called directly after a minion is killed.
 
@@ -121,8 +135,8 @@ export class EventManager {
 
         for (let i = 1; i <= 2; i++) {
             let plr;
-            if (i === 1) plr = this.game.player1;
-            else plr = this.game.player2;
+            if (i === 1) plr = game.player1;
+            else plr = game.player2;
 
             // Activate spells in the players hand
             plr.hand.forEach(c => {
@@ -141,9 +155,9 @@ export class EventManager {
             wpn.activate("passive", key, val);
         }
 
-        this.game.triggerEventListeners(key, val);
+        game.triggerEventListeners(key, val);
         return true;
-    }
+    },
 
     /**
      * Update quests and secrets
@@ -155,7 +169,10 @@ export class EventManager {
      *
      * @returns Success
      */
-    questUpdate(quests_name: "secrets" | "sidequests" | "quests", key: EventKey, val: EventValue<EventKey>, plr: Player): boolean {
+    questUpdate(quests_name, key, val, plr) {
+        let game = globalThis.game;
+        if (!game) return false;
+
         plr[quests_name].forEach(s => {
             let quest: QuestType = s;
 
@@ -173,13 +190,13 @@ export class EventManager {
             // The quest/secret is done
             plr[quests_name].splice(plr[quests_name].indexOf(quest), 1);
 
-            if (quests_name == "secrets") this.game.input("\nYou triggered the opponents's '" + quest.name + "'.\n");
+            if (quests_name == "secrets") game!.input("\nYou triggered the opponents's '" + quest.name + "'.\n");
 
             if (quest.next) new Card(quest.next, plr).activate("cast");
         });
 
         return true;
-    }
+    },
 
     /**
      * Broadcast an event
@@ -191,26 +208,29 @@ export class EventManager {
      *
      * @returns Success
      */
-    broadcast(key: EventKey, val: EventValue<EventKey>, plr: Player, updateHistory: boolean = true): boolean {
-        this.tick(key, val);
+    broadcast(key, val, plr, updateHistory = true) {
+        let game = globalThis.game;
+        if (!game) return false;
 
-        if (updateHistory) this.addHistory(key, val, plr);
+        eventManager.tick(key, val);
+
+        if (updateHistory) eventManager.addHistory(key, val, plr);
 
         // Check if the event is suppressed
-        if (this.game.suppressedEvents.includes(key)) return false;
+        if (game.suppressedEvents.includes(key)) return false;
         if (plr.classType !== "Player" || plr.id === -1) return false;
 
-        if (!this.events[key]) this.events[key] = [[["GameLoop", this.game.turns], ["GameLoop", this.game.turns]]];
-        this.events[key]![plr.id].push([val, this.game.turns]);
+        if (!eventManager.events[key]) eventManager.events[key] = [[["GameLoop", game.turns], ["GameLoop", game.turns]]];
+        eventManager.events[key]![plr.id].push([val, game.turns]);
 
-        this.cardUpdate(key, val);
+        eventManager.cardUpdate(key, val);
 
-        this.questUpdate("secrets",    key, val, plr.getOpponent());
-        this.questUpdate("sidequests", key, val, plr);
-        this.questUpdate("quests",     key, val, plr);
+        eventManager.questUpdate("secrets",    key, val, plr.getOpponent());
+        eventManager.questUpdate("sidequests", key, val, plr);
+        eventManager.questUpdate("quests",     key, val, plr);
 
         return true;
-    }
+    },
 
     /**
      * Write an event to history. Done automatically by `broadcast`.
@@ -219,10 +239,13 @@ export class EventManager {
      * @param val The value of the event
      * @param plr The player who caused the event to happen
      */
-    addHistory(key: EventKey, val: EventValue<EventKey>, plr: Player) {
-        if (!this.history[this.game.turns]) this.history[this.game.turns] = [["GameLoop", "Init", plr]];
-        this.history[this.game.turns].push([key, val, plr]);
-    }
+    addHistory(key, val, plr) {
+        let game = globalThis.game;
+        if (!game) return;
+
+        if (!eventManager.history[game.turns]) eventManager.history[game.turns] = [["GameLoop", "Init", plr]];
+        eventManager.history[game.turns].push([key, val, plr]);
+    },
 
     /**
      * Broadcast a dummy event. Use if you need to broadcast any event to kickstart an event listener, consider looking into `game.functions.hookToTick`.
@@ -233,9 +256,9 @@ export class EventManager {
      * 
      * @returns Success
      */
-    broadcastDummy(plr: Player): boolean {
-        return this.broadcast("Dummy", null, plr, false);
-    }
+    broadcastDummy(plr) {
+        return eventManager.broadcast("Dummy", null, plr, false);
+    },
 
     /**
      * Increment a stat
@@ -246,13 +269,13 @@ export class EventManager {
      *
      * @returns The new value
      */
-    increment(player: Player, key: string, amount: number = 1): number {
-        if (!this.stats[key]) this.stats[key] = [0, 0];
+    increment(player, key, amount = 1) {
+        if (!eventManager.stats[key]) eventManager.stats[key] = [0, 0];
 
-        this.stats[key][player.id] += amount;
+        eventManager.stats[key][player.id] += amount;
 
-        return this.stats[key][player.id];
-    }
+        return eventManager.stats[key][player.id];
+    },
 }
 
 export class Game {
@@ -262,7 +285,7 @@ export class Game {
      * This has a lot of abstraction, so don't be afraid to use them.
      * Look in here for more.
      */
-    functions: Functions;
+    functions = functions;
 
     /**
      * The player that starts first.
@@ -289,7 +312,7 @@ export class Game {
     /**
      * Events & History managment and tracker.
      */
-    events: EventManager;
+    events = eventManager;
 
     /**
      * This has a lot of functions for interacting with the user.
@@ -297,7 +320,7 @@ export class Game {
      * This is generally less useful than the `functions` object, since the majority of these functions are only used once in the source code.
      * However, some functions are still useful. For example, the `selectTarget` function.
      */
-    interact: Interact;
+    interact = interact;
 
     /**
      * Some configuration for the game.
@@ -382,10 +405,18 @@ export class Game {
      */
     constants: GameConstants;
 
-    constructor(player1: Player, player2: Player) {
+    constructor() {
+        globalThis.game = this;
+    }
+    
+    /**
+     * Sets up the game by assigning players and initializing game state.
+     *
+     * @param player1 The first player.
+     * @param player2 The second player.
+     */
+    setup(player1: Player, player2: Player) {
         // Choose a random player to be player 1
-        this.functions = new Functions(this);
-
         this.player1 = player1; // Set this to player 1 temporarily, in order to never be null
         this.player2 = player2;
 
@@ -406,16 +437,12 @@ export class Game {
         this.player1.id = 0;
         this.player2.id = 1;
 
-        // Create the event manager
-        this.events = new EventManager(this);
-
-        // Create the interact module
-        this.interact = new Interact(this);
-
         // Some constants
         this.constants = {
             REFUND: -1
         };
+
+        globalThis.game = this;
     }
 
     /**

@@ -1,14 +1,13 @@
 import "colors";
 import assert from 'assert';
-import { Player, Game, set, Card } from "../src/internal.js";
+import { Player, Game, Card } from "../src/internal.js";
 import { EventValue, GameAttackReturn, Target } from "../src/types.js";
 
 // Setup the game / copied from the card updater
+const game = new Game();
 const test_player1 = new Player("Test Player 1"); // Use this if a temp player crashes the game
 const test_player2 = new Player("Test Player 2");
-
-const game = new Game(test_player1, test_player2);
-set(game);
+game.setup(test_player1, test_player2);
 
 const functions = game.functions;
 
@@ -30,10 +29,6 @@ const testCard = () => {
 
 // Begin testing
 describe("Game", () => {
-    beforeEach(() => {
-        set(game);
-    });
-
     it ('should update cards', () => {
         const card = testCard();
 

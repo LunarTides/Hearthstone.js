@@ -1,16 +1,7 @@
-import { Card, Player, Game, get } from "./internal.js";
+import { Card, Player } from "./internal.js";
 import { AICalcMoveOption, AIHistory, CardLike, ScoredCard, SelectTargetAlignment, SelectTargetClass, SelectTargetFlag, Target } from "./types.js";
 
-let game: Game;
-
-function getInternalGame() {
-    let tempGame = get();
-    if (!tempGame) return;
-
-    game = tempGame;
-}
-
-getInternalGame();
+let game = globalThis.game;
 
 // FIXME: Ai gets stuck in infinite loop when using cathedral of atonement (location) | shadowcloth needle (0 attack wpn) | that minion has no attack.
 export class AI {
@@ -48,8 +39,6 @@ export class AI {
      * Sentiment-based AI
      */
     constructor(plr: Player) {
-        getInternalGame();
-
         this.plr = plr;
     }
 

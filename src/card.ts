@@ -1,17 +1,8 @@
-import { Game, Player, get } from "./internal.js";
+import { Player } from "./internal.js";
 import { Blueprint, CardAbility, CardClass, CardKeyword, CardRarity, CardType, CostType, EnchantmentDefinition, GameConfig, KeywordMethod, MinionTribe, SpellSchool } from "./types.js";
 import { v4 as uuidv4 } from "uuid";
 
-let game: Game;
-
-function getInternalGame() {
-   let tempGame = get();
-   if (!tempGame) return;
-
-   game = tempGame;
-}
-
-getInternalGame();
+let game = globalThis.game;
 
 export class Card {
     // All
@@ -357,8 +348,6 @@ export class Card {
      * @param plr The card's owner.
      */
     constructor(name: string, plr: Player) {
-        getInternalGame();
-
         // Get the blueprint from the cards list
         let blueprint = game.cards.find(c => c.name == name);
         if (!blueprint) {

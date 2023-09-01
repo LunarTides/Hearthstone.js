@@ -18,7 +18,7 @@ module.exports = {
      * @type {import("../../../src/types").KeywordMethod}
      */
     battlecry(plr, game, self) {
-        // `game.interact` is an instance of the Interact class as defined in `src/interact.ts`.
+        // `game.interact` is an instance of the Interact object as defined in `src/interact.ts`.
         game.interact.dredge();
     }
 }

@@ -1,5 +1,4 @@
 export * from "./game.js";
-export * from "./shared.js";
 export * from "./functions.js";
 export * from "./player.js";
 export * from "./interact.js";

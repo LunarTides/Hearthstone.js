@@ -3,12 +3,10 @@ Hearthstone.js - Hearthstone but console based.
 Copyright (C) 2022  LunarTides
 */
 
-import { Player, Game, set } from "./internal.js";
+import { Player, Game } from "./internal.js";
 
 let p1: Player;
 let p2: Player;
-
-let game: Game;
 
 /**
  * Deckcodes
@@ -20,11 +18,10 @@ export function runner(_decks: string[]) {
 }
 
 function main() {
+    let game = new Game();
     p1 = new Player("Player 1");
     p2 = new Player("Player 2");
-    game = new Game(p1, p2);
-
-    set(game);
+    game.setup(p1, p2);
 
     game.functions.importCards('../cards');
     game.functions.importConfig('../config');

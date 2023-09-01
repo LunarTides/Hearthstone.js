@@ -3,9 +3,10 @@ import * as lib from "../lib.js";
 import { Game, Player } from "../../src/internal.js";
 import { Blueprint, CardClass, CardKeyword, CardRarity, CardType, MinionTribe, SpellSchool } from "../../src/types.js";
 
+const game = new Game();
 const player1 = new Player("Player 1");
 const player2 = new Player("Player 2");
-const game = new Game(player1, player2);
+game.setup(player1, player2);
 game.functions.importCards("../../cards");
 game.functions.importConfig("../../config");
 
