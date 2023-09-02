@@ -248,7 +248,7 @@ const eventManager: IEventManager = {
         let game = globalThis.game;
         if (!game) return;
 
-        if (!eventManager.history[game.turns]) eventManager.history[game.turns] = [["GameLoop", "Init", plr]];
+        if (!eventManager.history[game.turns]) eventManager.history[game.turns] = [["GameLoop", `Init ${key}`, plr]];
         eventManager.history[game.turns].push([key, val, plr]);
     },
 

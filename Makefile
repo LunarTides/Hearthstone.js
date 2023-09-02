@@ -11,7 +11,7 @@ help:
 install:
 	@echo "Trying to install using npm..."
 	@chmod +x setup.sh
-	@chmod +x run.sh
+	@chmod +x build.sh
 	@./setup.sh
 
 vanilla:

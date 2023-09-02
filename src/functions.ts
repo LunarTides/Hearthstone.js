@@ -2,7 +2,8 @@ import * as fs from "fs";
 import * as child_process from "child_process";
 import * as deckstrings from "deckstrings"; // To decode vanilla deckcodes
 import chalk from "chalk";
-import path from "path";
+import stripAnsi from "strip-ansi";
+import { dirname as pathDirname } from "path";
 import { createHash } from "crypto";
 import { fileURLToPath } from "url";
 import { doImportCards, doImportConfig } from "./importcards.cjs";
@@ -351,7 +352,7 @@ const deckcode = {
 
         try {
             //@ts-expect-error
-            vanillaCardsString = fs.readFileSync("/../card_creator/vanilla/.ignore.cards.json");
+            vanillaCardsString = fs.readFileSync(game.functions.dirname() + "../card_creator/vanilla/.ignore.cards.json");
         } catch (err) {
             console.log(chalk.red("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'scripts/genvanilla.bat' (requires an internet connection), then try again."));
             game.input();
@@ -450,7 +451,7 @@ const deckcode = {
 
         try {
             // @ts-expect-error
-            cardsString = fs.readFileSync("/../card_creator/vanilla/.ignore.cards.json");
+            cardsString = fs.readFileSync(game.functions.dirname() + "../card_creator/vanilla/.ignore.cards.json");
         } catch (err) {
             console.log(chalk.red("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'scripts/genvanilla.bat' (requires an internet connection), then try again."));
             game.input();
@@ -763,7 +764,7 @@ export const functions = {
      */
     createLogFile(err?: Error): boolean {
         // Create a (crash-)log file
-        if (!fs.existsSync(`../logs/`)) fs.mkdirSync(`../logs/`);
+        if (!fs.existsSync(functions.dirname() + `../logs`)) fs.mkdirSync(functions.dirname() + `../logs`);
 
         // Get the day, month, year, hour, minute, and second, as 2 digit numbers.
         let date = new Date();
@@ -793,7 +794,8 @@ export const functions = {
         let history = game.interact.handleCmds("history", false, true);
         if (typeof history !== "string") throw new Error("createLogFile history did not return a string.");
 
-        history = chalk.reset(history);
+        // Strip the color codes from the history
+        history = stripAnsi(history);
 
         // AI log
         game.config.debug = true; // Do this so it can actually run '/ai'
@@ -829,19 +831,20 @@ Log File Version: 1
 ${main_content}
 `
 
-        // Add a sha256 checksum to the content
-        content += createHash("sha256").update(content).digest("hex");
-
         let filename = "log";
         if (err) filename = "crashlog";
 
-        filename = `${filename}-${dateStringFileFriendly}`;
+        filename = `${filename}-${dateStringFileFriendly}.txt`;
 
-        fs.writeFileSync(`../logs/${filename}.txt`, content);
+        // Add a sha256 checksum to the content
+        let checksum = createHash("sha256").update(content).digest("hex");
+        content += `\n${checksum}  ${filename}`;
+
+        fs.writeFileSync(game.functions.dirname() + `../logs/${filename}`, content);
 
         if (!err) return true;
 
-        console.log(chalk.red(`\nThe game crashed!\nCrash report created in 'logs/${filename}.txt'\nPlease create a bug report at:\nhttps://github.com/LunarTides/Hearthstone.js/issues`));
+        console.log(chalk.red(`\nThe game crashed!\nCrash report created in 'logs/${filename}'\nPlease create a bug report at:\nhttps://github.com/LunarTides/Hearthstone.js/issues`));
         game.input();
 
         return true;
@@ -1157,9 +1160,9 @@ ${main_content}
         let classes: CardClassNoNeutral[] = [];
 
         fs.readdirSync(functions.dirname() + "cards/StartingHeroes").forEach(file => {
-            if (!file.endsWith(".ts")) return; // Something is wrong with the file name.
+            if (!file.endsWith(".mjs")) return; // Something is wrong with the file name.
 
-            let name = file.slice(0, -3); // Remove ".ts"
+            let name = file.slice(0, -4); // Remove ".mjs"
             name = name.replaceAll("_", " "); // Remove underscores
             name = game.functions.capitalizeAll(name); // Capitalize all words
 
@@ -1752,7 +1755,7 @@ ${main_content}
      * @return The directory name.
      */
     dirname(): string {
-        return path.dirname(fileURLToPath(import.meta.url)).replace("/src", "/");
+        return pathDirname(fileURLToPath(import.meta.url)).replace("/src", "/");
     },
 
     /**
