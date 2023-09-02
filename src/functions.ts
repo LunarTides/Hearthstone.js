@@ -5,7 +5,7 @@ import colors from "colors";
 import path from "path";
 import { createHash } from "crypto";
 import { fileURLToPath } from "url";
-import { doImportCards } from "./importcards.cjs";
+import { doImportCards, doImportConfig } from "./importcards.cjs";
 
 import { Player, Card } from "./internal.js";
 import { Blueprint, CardClass, CardClassNoNeutral, CardLike, CardRarity, EventKey, EventListenerCallback, EventListenerCheckCallback, FunctionsExportDeckError, FunctionsValidateCardReturn, MinionTribe, QuestCallback, Target, TickHookCallback, VanillaCard } from "./types.js";
@@ -1617,24 +1617,10 @@ ${main_content}
      *
      * @returns Success
      */
-    importConfig(path: string): boolean {
+    importConfig(path: string) {
         // @ts-expect-error - Typescript doesn't expect the config to be empty, but it gets repopulated immediately anyway.
-        game.config = {};
-        path = path.replace("/dist", "");
-
-        fs.readdirSync(path, { withFileTypes: true }).forEach(file => {
-            let c = `${path}/${file.name}`;
-
-            if (file.name.endsWith(".json")) {
-                let f = import(c, { assert: { type: "json" } });
-
-                game.config = Object.assign({}, game.config, f);
-            }
-            else if (file.isDirectory()) functions.importConfig(c);
-        });
-
+        game.config = doImportConfig(path);
         game.doConfigAI();
-
         return true;
     },
 

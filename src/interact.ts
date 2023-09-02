@@ -1,6 +1,7 @@
 import { exec } from 'child_process';
 import { Card, Player } from './internal.js';
 import { AIHistory, CardLike, EventValue, GameConfig, GamePlayCardReturn, SelectTargetAlignment, SelectTargetClass, SelectTargetFlag, Target } from './types.js';
+import { reloadCards } from './importcards.cjs';
 
 const license_url = 'https://github.com/LunarTides/Hearthstone.js/blob/main/LICENSE';
 let game = globalThis.game;
@@ -697,15 +698,11 @@ export const interact = {
 
             let success = true;
 
-            success &&= interact.withStatus("Deleting cache", () => {
-                //Object.keys(require.cache).forEach(k => delete require.cache[k]);
+            success &&= interact.withStatus("Reloading cards", () => {
+                game.cards = reloadCards(game.functions.dirname() + "cards");
                 return true;
             });
 
-            success &&= interact.withStatus("Importing cards", () => {
-                game.functions.importCards(game.functions.dirname() + "cards")
-                return true;
-            });
             success &&= interact.withStatus("Importing config", () => game.functions.importConfig(game.functions.dirname() + "config"));
                 
             // Go through all the cards and reload them

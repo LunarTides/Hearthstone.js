@@ -50,6 +50,8 @@ export class AI {
      * @returns Result
      */
     calcMove(): AICalcMoveOption {
+        game = globalThis.game;
+
         let best_move: AICalcMoveOption;
         let best_score = -100000;
 
@@ -837,6 +839,7 @@ export class AI {
      * @returns The score the string gets
      */
     analyzePositive(str: string, context: boolean = true): number {
+        game = globalThis.game;
         if (context) context = game.config.AIContextAnalysis;
         let score = 0;
 

@@ -220,7 +220,7 @@ const eventManager: IEventManager = {
         if (game.suppressedEvents.includes(key)) return false;
         if (plr.classType !== "Player" || plr.id === -1) return false;
 
-        if (!eventManager.events[key]) eventManager.events[key] = [[["GameLoop", game.turns], ["GameLoop", game.turns]]];
+        if (!eventManager.events[key]) eventManager.events[key] = [[["GameLoop", game.turns]], [["GameLoop", game.turns]]];
         eventManager.events[key]![plr.id].push([val, game.turns]);
 
         eventManager.cardUpdate(key, val);

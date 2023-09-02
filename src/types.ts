@@ -545,4 +545,4 @@ export type GameConfig = {
     }
 }
 
-export type EventManagerEvents = {[key in EventKey]?: [[[any, number], [any, number]]]};
+export type EventManagerEvents = {[key in EventKey]?: [[[any, number]], [[any, number]]]};
