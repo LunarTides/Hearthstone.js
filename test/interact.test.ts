@@ -249,7 +249,7 @@ describe("Interact", () => {
 
         test_player1.inputQueue = ["1", "n"];
 
-        let card = interact.selectTarget("Select a minion.", null, null, "minion");
+        let card = interact.selectCardTarget("Select a minion.", null, "any");
 
         assert.ok(card instanceof Card);
         assert.equal(card.type, "Minion");
@@ -258,7 +258,7 @@ describe("Interact", () => {
     it ('should select a hero', () => {
         test_player1.inputQueue = ["face"];
 
-        let hero = interact.selectTarget("Select a minion.", null, "enemy", null);
+        let hero = interact.selectPlayerTarget("Select a minion.", null);
 
         assert.equal(hero, test_player2);
     });

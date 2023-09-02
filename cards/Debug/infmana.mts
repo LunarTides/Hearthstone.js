@@ -4,7 +4,7 @@ import { Blueprint } from "../../src/types.js";
 
 const blueprint: Blueprint = {
     name: "Inf Mana",
-    desc: "Set your mana to 10. For the rest of the game, your mana never decreases.",
+    desc: "Fill up your mana. For the rest of the game, your mana never decreases.",
     mana: 0,
     type: "Spell",
     classes: ["Neutral"],
@@ -13,9 +13,13 @@ const blueprint: Blueprint = {
     id: 66,
 
     cast(plr, game, self) {
-        game.functions.addEventListener("", true, () => {
-            plr.gainMana(1000, true);
-        }, -1);
+        // Fill up your mana. For the rest of the game, your mana never decreases.
+
+        // Gain max mana every tick.
+        // This lasts for the rest of the game, since we don't unhook it.
+        game.functions.hookToTick(() => {
+            plr.gainMana(plr.maxMaxMana);
+        });
     }
 }
 

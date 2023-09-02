@@ -1,5 +1,6 @@
 // Created by Hand (before the Card Creator Existed)
 
+import { Card } from "../../src/card.js";
 import { Blueprint } from "../../src/types.js";
 
 const blueprint: Blueprint = {
@@ -15,10 +16,18 @@ const blueprint: Blueprint = {
     id: 26,
 
     battlecry(plr, game, self) {
-        let target = game.interact.selectTarget("Give a friendly minion +1 Attack and Rush", self, "friendly", "minion");
-        if (!target || !(target instanceof game.Card)) return -1;
+        // Give a friendly minion +1 Attack and Rush.
 
+        // Prompt the user to select a friendly minion
+        let target = game.interact.selectCardTarget("Give a friendly minion +1 Attack and Rush", self, "friendly");
+
+        // If no target was selected, refund
+        if (!target) return game.constants.REFUND;
+
+        // Add +1 Attack
         target.addStats(1, 0);
+
+        // Add Rush
         target.addKeyword("Rush");
         return true;
     }

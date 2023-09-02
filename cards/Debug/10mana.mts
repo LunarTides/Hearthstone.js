@@ -4,7 +4,7 @@ import { Blueprint } from "../../src/types.js";
 
 const blueprint: Blueprint = {
     name: "10 Mana",
-    desc: "Set your mana to 10.",
+    desc: "Gain 10 Mana.",
     mana: 0,
     type: "Spell",
     classes: ["Neutral"],
@@ -13,7 +13,8 @@ const blueprint: Blueprint = {
     id: 65,
 
     cast(plr, game, self) {
-        plr.gainMana(10, true);
+        // Gain 10 Mana.
+        plr.gainMana(10);
     }
 }
 

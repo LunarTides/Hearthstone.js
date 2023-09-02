@@ -12,7 +12,7 @@ const blueprint: Blueprint = {
     classes: ["Neutral"],
     rarity: "Free",
     uncollectible: true,
-    id: 1,
+    id: 1
 }
 
 export default blueprint;

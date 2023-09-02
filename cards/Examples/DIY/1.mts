@@ -15,10 +15,10 @@ const blueprint: Blueprint = {
     id: 62,
 
     battlecry(plr, game, self) {
-        // Battlecry: Give this minion +1/+1.
+        // Give this minion +1/+1.
         
         // Try to give this minion +1/+1 yourself.
-        
+
 
 
 

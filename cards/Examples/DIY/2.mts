@@ -57,13 +57,13 @@ const blueprint: Blueprint = {
         // DON'T CHANGE ANYTHING BELOW THIS LINE
 
         // Testing your solution.
+        let solved = true;
+
         let trueOgHealth = plr.health;
 
         // Restore 3 health when the player has 5 less than max health
         plr.health = plr.maxHealth - 5;
         let ogHealth = plr.health;
-
-        let solved = true;
 
         solution();
 
@@ -80,6 +80,9 @@ const blueprint: Blueprint = {
         plr.health = trueOgHealth;
 
         game.interact.verifyDIYSolution(solved, "2.ts");
+
+        if (!solved) return game.constants.REFUND;
+        return true;
     }
 }
 

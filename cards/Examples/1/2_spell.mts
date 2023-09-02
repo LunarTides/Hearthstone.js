@@ -7,7 +7,11 @@ const blueprint: Blueprint = {
     desc: "Just an example card (Does nothing)",
     mana: 1,
     type: "Spell",
-    spellClass: "Shadow", // The spell school of the spell. If you don't include this line, it will not have a spell school. You can delete this line, but not the `tribe` line in `minion.ts`.
+
+    // The spell school of the spell. If you don't include this line, it will not have a spell school.
+    // You can delete this line, but not the `tribe` line in `minion.ts`.
+    spellClass: "Shadow",
+
     classes: ["Neutral"],
     rarity: "Free",
     uncollectible: true,

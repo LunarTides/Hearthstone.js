@@ -166,6 +166,7 @@ describe("Game", () => {
             const val = _unknownVal as EventValue<"Eval">;
 
             ret = val;
+            return true;
         });
 
         assert.equal(ret, null);

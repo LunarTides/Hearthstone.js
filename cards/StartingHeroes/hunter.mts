@@ -15,6 +15,7 @@ const blueprint: Blueprint = {
     id: 6,
 
     heropower(plr, game, self) {
+        // Deal 2 damage to the enemy hero.
         game.attack(2, plr.getOpponent());
     }
 }

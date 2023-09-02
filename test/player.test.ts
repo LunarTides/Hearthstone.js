@@ -59,12 +59,6 @@ describe("Player", () => {
         test_player1.maxMana = 0;
         test_player1.gainEmptyMana(100);
 
-        assert.equal(test_player1.maxMana, 100);
-    });
-    it ('should gain empty mana capped', () => {
-        test_player1.maxMana = 0;
-        test_player1.gainEmptyMana(100, true);
-
         assert.equal(test_player1.maxMana, 10);
     });
     
@@ -72,14 +66,6 @@ describe("Player", () => {
         test_player1.mana = 0;
         test_player1.maxMana = 0;
         test_player1.gainMana(100);
-
-        assert.equal(test_player1.mana, 100);
-        assert.equal(test_player1.maxMana, 100);
-    });
-    it ('should gain mana capped', () => {
-        test_player1.mana = 0;
-        test_player1.maxMana = 0;
-        test_player1.gainMana(100, true);
 
         assert.equal(test_player1.mana, 10);
         assert.equal(test_player1.maxMana, 10);

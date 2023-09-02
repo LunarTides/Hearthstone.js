@@ -15,9 +15,15 @@ const blueprint: Blueprint = {
     id: 14,
 
     heropower(plr, game, self) {
+        // Summon a 1/1 Ghoul with Charge. It dies at end of turn.
+
+        // Create the Ghoul
         let minion = new game.Card("Death Knight Frail Ghoul", plr);
 
+        // Summon the Ghoul
         game.summonMinion(minion, plr);
+
+        // The `It dies at end of turn.` part is handled by the ghoul itself, so we don't need to do anything extra here
     }
 }
 

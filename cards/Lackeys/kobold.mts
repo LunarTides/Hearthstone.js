@@ -15,9 +15,15 @@ const blueprint: Blueprint = {
     id: 27,
 
     battlecry(plr, game, self) {
-        let target = game.interact.selectTarget(self.desc, self);
-        if (!target) return -1;
+        // Deal $2 damage.
 
+        // Select a target
+        let target = game.interact.selectTarget("Deal $2 damage.", self, "any", "any");
+
+        // If no target was selected, refund
+        if (!target) return game.constants.REFUND;
+
+        // Deal 2 damage to the target (spell damage included)
         game.attack("$2", target);
         return true;
     }

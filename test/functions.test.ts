@@ -56,9 +56,8 @@ describe("Functions", () => {
 
     it ('should get a random element from an array', () => {
         const array = [1, 3, 5, 2, 4, 6];
-        const el = game.functions.randList(array);
+        const el = game.functions.randList(array).actual;
 
-        if (el instanceof Card) assert.fail("shouldn't be a card");
         assert.ok(array.includes(el));
     });
 
@@ -67,9 +66,7 @@ describe("Functions", () => {
         const els = game.functions.chooseItemsFromList(array, 3);
 
         const cards_matched = els.filter(el => {
-            if (el instanceof Card) assert.fail("shouldn't be a card");
-
-            return array.includes(el);
+            return array.includes(el.actual);
         });
 
         assert.ok(els.length === 3);
@@ -79,11 +76,11 @@ describe("Functions", () => {
     it ('should clone a card when getting a random element from an array', () => {
         // Grab 3 cards
         let allCards = game.functions.getCards();
-        let cards = game.functions.chooseItemsFromList(allCards, 3);
-        cards = cards.map(c => createCard(c.name));
+        let blueprints = game.functions.chooseItemsFromList(allCards, 3);
+        let cards = blueprints.map(c => createCard(c.actual.name));
 
         // Choose a random one
-        const el = game.functions.randList(cards);
+        const el = game.functions.randList(cards).copy;
 
         // The card shouldn't match exactly since it should have been cloned, but they should have the same name
         assert.ok(!cards.includes(el));
@@ -196,7 +193,7 @@ describe("Functions", () => {
         player.heroClass = test_class;
 
         const cards = game.functions.getCards(false);
-        const card = game.functions.randList(cards.filter(c => c.classes.includes(test_class) || c.classes.includes("Neutral")));
+        const card = game.functions.randList(cards.filter(c => c.classes.includes(test_class) || c.classes.includes("Neutral"))).actual;
 
         assert.ok(game.functions.validateClass(player, card));
     });
@@ -204,7 +201,7 @@ describe("Functions", () => {
     it ('should check if the tribe of a card is valid', () => {
         const test_tribe = "Beast";
         const cards = game.functions.getCards(false);
-        const card = game.functions.randList(cards.filter(c => c.tribe == test_tribe));
+        const card = game.functions.randList(cards.filter(c => c.tribe == test_tribe)).actual;
         if (!card) {
             console.error(`WARNING: No cards have the '${test_tribe}' tribe. This test WILL fail.`);
             throw new ReferenceError(`No cards have the '${test_tribe}' tribe. Ignore this test.`);
@@ -215,7 +212,7 @@ describe("Functions", () => {
     });
     it ('should check if the "All" tribe is valid', () => {
         const cards = game.functions.getCards(false);
-        const card = game.functions.randList(cards.filter(c => c.tribe == "All"));
+        const card = game.functions.randList(cards.filter(c => c.tribe == "All")).actual;
         if (!card) {
             console.error(`WARNING: No cards with tribes found. This test WILL fail.`);
             throw new ReferenceError(`No cards have tribes. Ignore this test.`);
@@ -276,7 +273,7 @@ describe("Functions", () => {
     it ('should check if the highlander function works', () => {
         // Deck does not have duplicates
         const player = new Player("Temp Player");
-        let deck = game.functions.chooseItemsFromList(game.functions.getCards(), 10);
+        let deck = game.functions.chooseItemsFromList(game.functions.getCards(), 10).map(c => c.actual);
 
         // Turn all blueprints into real cards
         let trueDeck: Card[] = deck.map(c => {
@@ -292,7 +289,7 @@ describe("Functions", () => {
         // Deck has duplicates
         let allCards = game.functions.getCards();
         let cards = game.functions.chooseItemsFromList(allCards, 10);
-        let trueCards = cards.map(c => createCard(c.name, test_player2));
+        let trueCards = cards.map(c => createCard(c.actual.name, test_player2));
 
         test_player2.deck = trueCards;
         test_player2.deck.push(test_player2.deck[0].imperfectCopy()); // Put a copy of the first card in the player's deck
@@ -390,12 +387,12 @@ describe("Functions", () => {
     it ('should correctly create an event listener', () => {
         const amount = Object.values(game.eventListeners).length;
         // DON'T ACTUALLY USE DUMMY EVENT LISTENERS IN REAL CODE
-        game.functions.addEventListener("Dummy", () => {return true}, () => {});
+        game.functions.addEventListener("Dummy", () => {return true}, () => {return true});
 
         assert.ok(Object.values(game.eventListeners).length > amount);
     });
     it ('should correctly manually destroy an event listener', () => {
-        const destroy = game.functions.addEventListener("Dummy", () => {return true}, () => {});
+        const destroy = game.functions.addEventListener("Dummy", () => {return true}, () => {return true});
         const amount = Object.values(game.eventListeners).length;
 
         destroy();
@@ -405,8 +402,10 @@ describe("Functions", () => {
     it ('should correctly semi-manually destroy an event listener', () => {
         game.functions.addEventListener("Eval", () => {return true}, (_unknownVal) => {
             const val = _unknownVal as EventValue<"Eval">;
-            
-            return parseInt(val) % 2 == 0; // If this returns true, the event listener will be destroyed
+
+            // If the val is an even number, the event listener will be destroyed
+            if (parseInt(val) % 2 == 0) return "destroy"
+            else return true;
         }, -1);
         const amount = Object.values(game.eventListeners).length;
 
@@ -418,7 +417,9 @@ describe("Functions", () => {
         game.functions.addEventListener("Eval", () => {return true}, (_unknownVal) => {
             const val = _unknownVal as EventValue<"Eval">;
 
-            return parseInt(val) % 2 == 0; // If this returns true, the event listener will be destroyed
+            // If the val is an even number, the event listener will be destroyed
+            if (parseInt(val) % 2 == 0) return "destroy"
+            else return true;
         }, -1);
         const amount = Object.values(game.eventListeners).length;
 
@@ -427,7 +428,7 @@ describe("Functions", () => {
         assert.ok(Object.values(game.eventListeners).length == amount);
     });
     it ('should correctly automatically destroy an event listener', () => {
-        game.functions.addEventListener("Dummy", () => {return true}, () => {}, 1);
+        game.functions.addEventListener("Dummy", () => {return true}, () => {return true}, 1);
         const amount = Object.values(game.eventListeners).length;
 
         game.events.broadcast("Dummy", null, test_player1);
@@ -445,7 +446,7 @@ describe("Functions", () => {
     });
 
     it ('should correctly recruit', () => {
-        const deck = game.functions.chooseItemsFromList(game.functions.getCards(), 30);
+        const deck = game.functions.chooseItemsFromList(game.functions.getCards(), 30).map(c => c.actual);
         test_player1.deck = deck.map(c => createCard(c.name, test_player1));
 
         game.functions.recruit(test_player1);
@@ -472,8 +473,8 @@ describe("Functions", () => {
     });
 
     it ('should correctly mulligan', () => {
-        const deck = game.functions.chooseItemsFromList(game.functions.getCards(), 27);
-        const hand = game.functions.chooseItemsFromList(game.functions.getCards(), 3);
+        const deck = game.functions.chooseItemsFromList(game.functions.getCards(), 27).map(c => c.actual);
+        const hand = game.functions.chooseItemsFromList(game.functions.getCards(), 3).map(c => c.actual);
 
         test_player1.deck = deck.map(c => createCard(c.name, test_player1));
         test_player1.hand = hand.map(c => createCard(c.name, test_player1));

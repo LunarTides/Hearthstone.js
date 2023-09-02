@@ -16,9 +16,7 @@ module.exports = {
         });
     },
 
-    unpassive(plr, game, self, ignore) {
-        if (ignore) return;
-
+    remove(plr, game, self) {
         plr.hand.forEach(c => {
             c.removeEnchantment("-1 mana", self);
         });

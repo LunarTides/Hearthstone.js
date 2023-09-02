@@ -4,7 +4,10 @@ import { Blueprint } from "../../../src/types.js";
 
 const blueprint: Blueprint = {
     name: "Placeholder Example",
-    desc: "Battlecry: Gain mana equal to the turn counter. (Currently {0}, {1}, {0}, {next thing is} {10}, {placeholder without replacement})", // The things with `{...}` will be replaced in the `placeholder` function.
+
+    // The things with `{...}` will be replaced in the `placeholder` function.
+    desc: "Battlecry: Gain mana equal to the turn counter. (Currently {0}, {1}, {0}, {next thing is} {10}, {placeholder without replacement})",
+
     mana: 0,
     type: "Spell",
     classes: ["Neutral"],
@@ -13,20 +16,23 @@ const blueprint: Blueprint = {
     id: 54,
 
     cast(plr, game, self) {
-        // The turn counter goes up at the beginning of each player's turn, so on player 1's turn, the turn counter will almost[*1] always be an odd number. So we devide the number by 2 and round the result up.
-        // 1; Unless the player somehow gets 2 turns in a row.
+        // The turn counter goes up at the beginning of each player's turn.
+        // So we devide the number by 2 and round the result up in order to get a more traditional turn count.
         let turns = Math.ceil(game.turns / 2);
 
-        plr.gainMana(turns, true);
+        plr.gainMana(turns);
     },
 
     placeholders(plr, game, self) {
+        // This function will be run every tick, and will replace the placeholders in the description with this function's return value.
+
         // all occurances of `{0}` will be replaced by the value in `game.turns`
         // all `{1}` will be replaced by 'haha lol'
         // all `{next thing is}` will be replaced by 'The next thing is:'
         // the `{placeholder without replacement}` doesn't have a replacement, so it will remain '{placeholder without replacement}'
         let turns = Math.ceil(game.turns / 2);
 
+        // The use of static placeholders is discouraged, but we'll use them for demonstration purposes.
         return {0: turns, 1: "haha lol", 10: "test", "next thing is": "The next thing is:"};
     }
 }

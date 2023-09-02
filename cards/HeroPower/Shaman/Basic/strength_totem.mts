@@ -15,13 +15,22 @@ const blueprint: Blueprint = {
     id: 18,
 
     passive(plr, game, self, key, val) {
+        // At the end of your turn, give another friendly minion +1 Attack.
+        
+        // Only continue if the event that triggered this is the EndTurn event, and the player that triggered the event is this card's owner.
         if (key != "EndTurn" || game.player != plr) return;
 
-        var t = game.board[plr.id];
+        // The list that to choose from. Remove this minion from the list
+        let board = game.board[plr.id].filter(minion => minion !== self && minion.type === "Minion");
 
-        if (t.length > 0) {
-            t[game.functions.randInt(0, t.length - 1)].addStats(1, 0);
-        }
+        // If there is no other minions on the board, return
+        if (board.length <= 0) return;
+
+        // Choose the random minion
+        let minion = game.functions.randList(board).actual;
+
+        // Give that minion +1 Attack
+        minion.addStats(1, 0);
     }
 }
 

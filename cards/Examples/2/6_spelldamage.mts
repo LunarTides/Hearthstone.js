@@ -4,7 +4,11 @@ import { Blueprint } from "../../../src/types.js";
 
 const blueprint: Blueprint = {
     name: "Spell Damage Example",
-    desc: "Deal $3 damage to the enemy hero. As long as this is in your hand, your spell damage increases by 1 every time you play a card.", // Put a $ sign before the number to add spell damage
+
+    // Put a $ sign before the number to show spell damage in the description.
+    // It's like a mini-placeholder, which is something you will learn about in the next chapter.
+    desc: "Deal $3 damage to the enemy hero. As long as this is in your hand, your spell damage increases by 1 every time you play a card.",
+
     mana: 0,
     type: "Spell",
     spellClass: "General",
@@ -15,6 +19,7 @@ const blueprint: Blueprint = {
 
     cast(plr, game, self) {
         // Put the $ sign here to make the game apply spell damage correctly.
+        // Ideally you wouldn't need to do that and the game would figure it out, but i wasn't able to get it to work.
         game.attack("$3", plr.getOpponent());
     },
 

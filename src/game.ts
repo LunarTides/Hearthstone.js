@@ -7,6 +7,7 @@ interface IEventManager {
     tickHooks: TickHookCallback[];
     history: {[x: number]: [[EventKey, EventValue<EventKey>, Player]]};
     events: EventManagerEvents;
+    suppressed: EventKey[];
     stats: {[key: string]: [number, number]};
 
     tick(key: EventKey, val: EventValue<EventKey>): boolean;
@@ -44,6 +45,17 @@ const eventManager: IEventManager = {
      */
     events: {},
 
+
+    /**
+     * A list of event keys to suppress.
+     * 
+     * If an event with a key in this list is broadcast, it will add it to the history, and tick the game, but will not activate any passives / event listeners.
+     */
+    suppressed: [],
+
+    /**
+     * Some general stats for each player.
+     */
     stats: {},
 
     /**
@@ -127,8 +139,6 @@ const eventManager: IEventManager = {
         game.board.forEach(p => {
             p.forEach(m => {
                 if (m.getHealth() <= 0) return; // This function gets called directly after a minion is killed.
-
-                m.activate("unpassive", true);
                 m.activate("passive", key, val);
             });
         });
@@ -143,15 +153,11 @@ const eventManager: IEventManager = {
                 c.activate("handpassive", key, val);
 
                 if (c.type != "Spell") return;
-
-                c.activate("unpassive", true);
                 c.activate("passive", key, val);
             });
 
             let wpn = plr.weapon;
             if (!wpn) continue;
-
-            wpn.activate("unpassive", true);
             wpn.activate("passive", key, val);
         }
 
@@ -217,7 +223,7 @@ const eventManager: IEventManager = {
         if (updateHistory) eventManager.addHistory(key, val, plr);
 
         // Check if the event is suppressed
-        if (game.suppressedEvents.includes(key)) return false;
+        if (eventManager.suppressed.includes(key)) return false;
         if (plr.classType !== "Player" || plr.id === -1) return false;
 
         if (!eventManager.events[key]) eventManager.events[key] = [[["GameLoop", game.turns]], [["GameLoop", game.turns]]];
@@ -373,13 +379,6 @@ export class Game {
      * The event listeners that are attached to the game currently.
      */
     eventListeners: {[key: number]: (key: EventKey, val: EventValue<EventKey>) => void} = {};
-
-    /**
-     * A list of event keys to suppress.
-     * 
-     * If an event with a key in this list is broadcast, it will add it to the history, and tick the game, but will not activate any passives / event listeners.
-     */
-    suppressedEvents: EventKey[] = [];
 
     /**
      * Whether or not the game is currently accepting input from the user.
@@ -542,18 +541,18 @@ export class Game {
             plr.deck.forEach(c => {
                 if (!c.desc?.includes("Quest: ") && !c.desc?.includes("Questline: ")) return;
 
-                this.suppressedEvents.push("AddCardToHand");
+                let unsuppress = this.functions.suppressEvent("AddCardToHand");
                 plr.addToHand(c);
-                this.suppressedEvents.pop();
+                unsuppress();
 
                 plr.deck.splice(plr.deck.indexOf(c), 1);
             });
 
             let nCards = (plr.id == 0) ? 3 : 4;
             while (plr.hand.length < nCards) {
-                this.suppressedEvents.push("DrawCard");
+                let unsuppress = this.functions.suppressEvent("DrawCard");
                 plr.drawCard();
-                this.suppressedEvents.pop();
+                unsuppress();
             }
 
             plr.deck.forEach(c => c.activate("startofgame"));
@@ -570,9 +569,9 @@ export class Game {
 
         let the_coin = new Card("The Coin", this.player2);
 
-        this.suppressedEvents.push("AddCardToHand");
+        let unsuppress = this.functions.suppressEvent("AddCardToHand");
         this.player2.addToHand(the_coin);
-        this.suppressedEvents.pop();
+        unsuppress();
 
         this.turns += 1;
 
@@ -631,7 +630,7 @@ export class Game {
         this.turns++;
         
         // Mana stuff
-        op.gainEmptyMana(1, true);
+        op.gainEmptyMana(1);
         op.mana = op.maxMana - op.overload;
         op.overload = 0;
 
@@ -762,9 +761,9 @@ export class Game {
 
         // If the board has max capacity, and the card played is a minion or location card, prevent it.
         if (board.length >= this.config.maxBoardSpace && ["Minion", "Location"].includes(card.type)) {
-            this.suppressedEvents.push("AddCardToHand");
+            let unsuppress = this.functions.suppressEvent("AddCardToHand");
             player.addToHand(card);
-            this.suppressedEvents.pop();
+            unsuppress();
 
             if (card.costType == "mana") player.refreshMana(card.mana);
             else player[card.costType] += card.mana;
@@ -792,8 +791,8 @@ export class Game {
     
                 // I'm using while loops to prevent a million indents
                 while (mechs.length > 0) {
-                    let minion = this.interact.selectTarget("Which minion do you want this to Magnetize to:", null, "friendly", "minion");
-                    if (!minion || minion instanceof Player) break;
+                    let minion = this.interact.selectCardTarget("Which minion do you want this to Magnetize to:", null, "friendly");
+                    if (!minion) break;
 
                     if (!minion.tribe?.includes("Mech")) {
                         console.log("That minion is not a Mech.");
@@ -816,7 +815,7 @@ export class Game {
                     if (card.abilities.deathrattle) {
                         card.abilities.deathrattle.forEach(d => {
                             // Look at the comment above
-                            if (!(minion instanceof Card)) return;
+                            if (!minion) throw new Error("Target wasn't found.");
 
                             minion.addDeathrattle(d);
                         });
@@ -831,9 +830,9 @@ export class Game {
 
                             player.removeFromHand(c);
 
-                            this.suppressedEvents.push("AddCardToHand");
+                            let unsuppress = this.functions.suppressEvent("AddCardToHand");
                             c.plr.addToHand(t);
-                            this.suppressedEvents.pop();
+                            unsuppress();
                         }
                     });
 
@@ -848,9 +847,9 @@ export class Game {
                 return "refund";
             }
 
-            this.suppressedEvents.push("SummonMinion");
+            let unsuppress = this.functions.suppressEvent("SummonMinion");
             ret = this.summonMinion(card, player);
-            this.suppressedEvents.pop();
+            unsuppress();
         } else if (card.type === "Spell") {
             if (card.activate("cast") === -1) {
                 removeFromHistory();
@@ -882,9 +881,9 @@ export class Game {
             card.immune = true;
             card.cooldown = 0;
 
-            this.suppressedEvents.push("SummonMinion");
+            let unsuppress = this.functions.suppressEvent("SummonMinion");
             ret = this.summonMinion(card, player);
-            this.suppressedEvents.pop();
+            unsuppress();
         }
 
         if (echo_clone) player.addToHand(echo_clone);
@@ -904,9 +903,9 @@ export class Game {
 
                 player.removeFromHand(c);
 
-                this.suppressedEvents.push("AddCardToHand");
+                let unsuppress = this.functions.suppressEvent("AddCardToHand");
                 c.plr.addToHand(t);
-                this.suppressedEvents.pop();
+                unsuppress();
             }
         });
 
@@ -950,11 +949,11 @@ export class Game {
             // the "" gets replaced with the main minion
 
             minion.colossal.forEach(v => {
-                this.suppressedEvents.push("SummonMinion");
+                let unsuppress = this.functions.suppressEvent("SummonMinion");
 
                 if (v == "") {
                     this.summonMinion(minion, player, false);
-                    this.suppressedEvents.pop();
+                    unsuppress();
                     return;
                 }
 
@@ -962,7 +961,7 @@ export class Game {
                 card.dormant = minion.dormant;
 
                 this.summonMinion(card, player);
-                this.suppressedEvents.pop();
+                unsuppress();
             });
 
             return "colossal";
@@ -1215,7 +1214,8 @@ export class Game {
                     return;
                 }
 
-                m.activate("unpassive", false); // Tell the minion that it is going to die
+                // Calmly tell the minion that it is going to die
+                m.activate("remove");
                 this.events.broadcast("KillMinion", m, this.player);
 
                 m.turnKilled = this.turns;
@@ -1234,9 +1234,9 @@ export class Game {
                 // Reduce the minion's health to 1, keep the minion's attack the same
                 minion.setStats(minion.getAttack(), 1);
 
-                this.suppressedEvents.push("SummonMinion");
+                let unsuppress = this.functions.suppressEvent("SummonMinion");
                 this.summonMinion(minion, plr);
-                this.suppressedEvents.pop();
+                unsuppress();
 
                 // Activate the minion's passive
                 // We're doing this because otherwise, the passive won't be activated this turn

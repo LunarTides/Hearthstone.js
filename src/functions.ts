@@ -8,7 +8,7 @@ import { fileURLToPath } from "url";
 import { doImportCards, doImportConfig } from "./importcards.cjs";
 
 import { Player, Card } from "./internal.js";
-import { Blueprint, CardClass, CardClassNoNeutral, CardLike, CardRarity, EventKey, EventListenerCallback, EventListenerCheckCallback, FunctionsExportDeckError, FunctionsValidateCardReturn, MinionTribe, QuestCallback, Target, TickHookCallback, VanillaCard } from "./types.js";
+import { Blueprint, CardClass, CardClassNoNeutral, CardLike, CardRarity, EventKey, EventListenerCallback, EventListenerCheckCallback, FunctionsExportDeckError, FunctionsValidateCardReturn, MinionTribe, QuestCallback, RandListReturn, Target, TickHookCallback, VanillaCard } from "./types.js";
 
 let game = globalThis.game;
 
@@ -615,19 +615,17 @@ export const functions = {
     },
 
     /**
-     * Return a random element from `list`
+     * Return a random element from `list`.
+     * The return value might seem weird, but it's to remind you to use imperfect copies when needed.
      * 
-     * @param list
-     * @param cpyCard If this is true and the element is a card, create an imperfect copy of that card.
-     * 
-     * @returns Item
+     * @returns actual: The element, copy: If the element is a card, an imperfect copy of that card
      */
-    randList<T>(list: T[], cpyCard: boolean = true): T | Card {
+    randList<T>(list: T[]): RandListReturn<T> {
         let item = list[functions.randInt(0, list.length - 1)];
         
-        if (item instanceof Card && cpyCard) return item.imperfectCopy();
+        if (item instanceof Card) return { actual: item, copy: item.imperfectCopy() as T };
 
-        return item;
+        return { actual: item, copy: functions.cloneObject(item) };
     },
 
     /**
@@ -639,16 +637,17 @@ export const functions = {
      *
      * @returns The items
      */
-    chooseItemsFromList<T>(list: (T | Card)[], amount: number, cpyCard: boolean = true): (T | Card)[] {
+    chooseItemsFromList<T>(list: T[], amount: number): (RandListReturn<T>)[] {
         if (amount > list.length) amount = list.length;
 
         list = list.slice(); // Make a copy of the list
-        let elements: (T | Card)[] = [];
+        let elements: RandListReturn<T>[] = [];
 
         for (let i = 0; i < amount; i++) {
-            let el = functions.randList(list, cpyCard);
+            let el = functions.randList(list);
+
             elements.push(el);
-            list.splice(list.indexOf(el), 1);
+            functions.remove(list, el.actual);
         }
 
         return elements;
@@ -1460,10 +1459,15 @@ ${main_content}
             if (checkCallback === true || checkCallback(_val)) {}
             else return;
 
-            let override = callback(_val);
+            let msg = callback(_val);
             times++;
 
-            if (times == lifespan || override) remove();
+            if (msg === "destroy") remove();
+            else if (msg === "cancel") times--;
+            else if (msg === "reset") times = 0;
+            else if (msg === true) {}
+
+            if (times == lifespan && msg !== "destroy") remove();
         }
 
         game.events.eventListeners++;
@@ -1486,6 +1490,25 @@ ${main_content}
         }
 
         return unhook;
+    },
+
+    /**
+     * Suppresses the specified event key by adding it to the list of suppressed events.
+     *
+     * @param key The event key to be suppressed.
+     * @return A function that undoes the suppression.
+     */
+    suppressEvent(key: EventKey) {
+        game.events.suppressed.push(key);
+
+        /**
+         * Unsuppresses the event key.
+         */
+        const unsuppress = () => {
+            return functions.remove(game.events.suppressed, key);
+        }
+
+        return unsuppress;
     },
 
     // Account for certain stats
@@ -1533,7 +1556,7 @@ ${main_content}
 
         if (values.length == 0) {
             for (let i = 0; i < 3; i++) {
-                let c = game.functions.randList(possible_cards);
+                let c = game.functions.randList(possible_cards).actual;
                 if (c instanceof Card) throw new TypeError();
 
                 values.push(c);
@@ -1757,13 +1780,13 @@ ${main_content}
 
             functions.remove(mulligan, c);
             
-            game.suppressedEvents.push("DrawCard");
+            let unsuppress = functions.suppressEvent("DrawCard");
             plr.drawCard();
-            game.suppressedEvents.pop();
+            unsuppress();
 
-            game.suppressedEvents.push("AddCardToDeck");
+            unsuppress = functions.suppressEvent("AddCardToDeck");
             plr.shuffleIntoDeck(c);
-            game.suppressedEvents.pop();
+            unsuppress();
 
             plr.removeFromHand(c);
 

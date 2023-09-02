@@ -11,7 +11,10 @@ const blueprint: Blueprint = {
     tribe: "None",
     classes: ["Neutral"],
     rarity: "Free",
-    runes: "FF", // You need 2 frost runes to use this card.
+
+    // You need 2 frost runes and 1 blood rune to use this card.
+    runes: "FFB",
+
     uncollectible: true,
     id: 40,
 }

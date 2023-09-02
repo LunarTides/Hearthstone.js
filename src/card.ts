@@ -423,11 +423,11 @@ export class Card {
         Do: this.test = true
         
         Function Example:
-        Blueprint: { name: "The Coin", mana: 0, cast(plr, game): { plr.gainMana(1) } }
-                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        Do: this.cast = [{ plr.gainMana(1) }]
-                        ^                   ^
-                            This is in an array so we can add multiple events on casts
+        Blueprint: { name: "The Coin", mana: 0, cast(plr, game, self): { plr.refreshMana(1, plr.maxMaxMana) } }
+                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        Do: this.abilities.cast = [{ plr.gainMana(1) }]
+                                  ^                   ^
+                                  This is in an array so we can add multiple events on casts
         */
         Object.entries(this.blueprint).forEach(i => {
             let [key, val] = i;
@@ -585,13 +585,12 @@ export class Card {
      * 
      * @param attack The attack to add
      * @param health The health to add
-     * @param restore Should cap the amount of health added to it's max health.
      * 
      * @returns Success
      */
-    addStats(attack: number = 0, health: number = 0, restore: boolean = false): boolean {
+    addStats(attack: number = 0, health: number = 0): boolean {
         this.addAttack(attack);
-        this.addHealth(health, restore);
+        this.addHealth(health, false);
 
         return true;
     }
@@ -813,9 +812,9 @@ export class Card {
      */
     silence(): boolean {
         // Tell the minion to undo it's passive.
-        // The false tells the minion that this is the last time it will call unpassive
+        // The false tells the minion that this is the last time it will call remove
         // so it should finish whatever it is doing.
-        this.activate("unpassive", false);
+        this.activate("remove");
 
         Object.keys(this).forEach(att => {
             // Check if a backup exists for the attribute. If it does; restore it.
@@ -889,9 +888,9 @@ export class Card {
             // These keyword methods shouldn't "refund" the card, just stop execution.
             if (["use", "heropower"].includes(name)) return;
 
-            game.suppressedEvents.push("AddCardToHand");
+            let unsuppress = game.functions.suppressEvent("AddCardToHand");
             this.plr.addToHand(this);
-            game.suppressedEvents.pop();
+            unsuppress();
 
             this.plr[this.costType] += this.mana;
 
@@ -910,7 +909,10 @@ export class Card {
      * @returns The return values of all the battlecries triggered
      */
     activateBattlecry(...args: any): any[] | -1 | false {
+        // Trigger the card's passive first, so cards that get played immediately gets their passive triggered before their battlecry
         this.activate("passive", "battlecry", this, game.turns);
+
+        // Trigger the battlecry
         return this.activate("battlecry", ...args);
     }
     /**

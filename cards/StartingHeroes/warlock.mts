@@ -15,6 +15,10 @@ const blueprint: Blueprint = {
     id: 11,
 
     heropower(plr, game, self) {
+        // Draw a card and take 2 damage.
+
+        // Deal 2 damage to the player.
+        // CARDTODO: Should this use `game.attack(2, plr)` instead? Is the order correct?
         plr.remHealth(2);
         plr.drawCard();
     }

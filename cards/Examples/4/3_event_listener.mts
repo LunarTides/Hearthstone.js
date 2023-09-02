@@ -25,17 +25,35 @@ const blueprint: Blueprint = {
             // It will only continue if this function returns true
             // You can also just put `true` instead of this function. That is the same as doing `() => {return true}`
 
+            // This is here to only continue under certain conditions.
+            // Think of this like the passive's if statement.
+            // Where in passive you would do something like:
+            // `if (key !== "PlayCard" || val.type !== "Minion" | val === self) return;
+            // Which is a bit confusing, so here you do the opposite (the `key === "PlayCard"` is not needed, as this function only runs if the correct event was broadcast).:
+            // `return val.type === "Minion" && val !== self`
+
             // addEventListener can't figure out the type of `val` by itself, so we have to do the same thing as with passives
             const val = _unknownVal as EventValue<"PlayCard">;
 
             return val.type == "Minion" && val != self;
         }, (_unknownVal) => {
+            // This is the main callback function.
+
+            // The code in here behaves the same as the code after the if statement in passives.
+
             // This will happen if the correct key was broadcast AND the above function returned true.
-            // If THIS function returns true, the event listener self-destructs.
             const val = _unknownVal as EventValue<"PlayCard">;
 
             val.activateBattlecry();
-        }, -1); // This number is how many times the `val.activateBattlecry()` function can run before the event listener self-destructs. If this is set to `-1`, it lasts forever.
+
+            // You have to return a message to the event listener handler to tell it what to do next.
+            // If you return "destroy", the event listener gets destroyed (this is the same as running the `destroy` function).
+            // If you return "cancel", this event does not count towards the event listener's lifetime.
+            // If you return "reset", the event listener's lifetime is reset to 1, resetting the event listener's age. This is rarely useful, but is an option.
+            // If you return true, nothing happens. Do this if nothing special needs to happen.
+
+            return true;
+        }, -1); // This number is how many times the main callback function can run before the event listener self-destructs. If this is set to `-1`, it lasts forever.
 
         // destroy(); // Run this function to destroy the event listener
     }

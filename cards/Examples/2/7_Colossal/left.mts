@@ -6,7 +6,11 @@ const blueprint: Blueprint = {
     // Look in `main.ts` first.
     // This will be summoned above the main minion
     name: "Colossal Example Left Arm",
-    displayName: "Left Arm", // The game will use this instead of the name when displaying the card. This doesn't need to be unique.
+
+    // The game will use this instead of the name when displaying the card. This doesn't need to be unique.
+    // We use this here since `Left Arm` might be a common name, and the `name` field needs to be unique.
+    displayName: "Left Arm", 
+
     stats: [2, 1],
     desc: "",
     mana: 1,

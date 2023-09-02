@@ -6,7 +6,10 @@ const blueprint: Blueprint = {
     // Look in `main.ts` first.
     // This will be summoned below the main minion
     name: "Colossal Example Right Arm",
-    displayName: "Right Arm", // Look in `left.ts` for an explanation
+
+    // Look in `left.ts` for an explanation
+    displayName: "Right Arm",
+
     stats: [1, 2],
     desc: "",
     mana: 1,

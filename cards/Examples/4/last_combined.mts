@@ -2,6 +2,7 @@
 
 import { Blueprint, EventValue } from "../../../src/types.js";
 
+// This is the big one
 const blueprint: Blueprint = {
     name: "Combined Example 4",
     desc: "Quest: Play 3 cards. Reward: Reduce the cost of the next 10 Minions you play by 1.",
@@ -22,10 +23,11 @@ const blueprint: Blueprint = {
             // The quest is done.
             // Add the `-1 mana` enchantment constantly
             let unhook = game.functions.hookToTick(() => {
-                plr.hand.filter(c => c.type == "Minion").forEach(m => {
-                    if (m.enchantmentExists("-1 mana", self)) return;
+                // Only add the enchantment to minions
+                plr.hand.filter(card => card.type == "Minion").forEach(minion => {
+                    if (minion.enchantmentExists("-1 mana", self)) return;
 
-                    m.addEnchantment("-1 mana", self);
+                    minion.addEnchantment("-1 mana", self);
                 });
             });
 
@@ -35,24 +37,29 @@ const blueprint: Blueprint = {
             game.functions.addEventListener("PlayCard", _unknownVal => {
                 const val = _unknownVal as EventValue<"PlayCard">
 
+                // Only continue if the player that triggered the event is this card's owner and the played card is a minion.
                 return game.player == plr && val.type == "Minion";
             }, () => {
-                // Every time you play a minion, increment `amount` by 1.
+                // Every time YOU play a MINION, increment `amount` by 1.
                 amount++;
 
-                if (amount < 10) return;
+                // If `amount` is less than 10, don't do anything. Return true since it was a success
+                if (amount < 10) return true;
 
+                // You have now played 10 minions
                 unhook(); // Destroy the tick hook
 
                 // Reverse the enchantent
+                // You might be able to just do `plr.hand.forEach(m => ...)` instead, since `removeEnchantment` only removes enchantments if it's there.
                 plr.hand.filter(c => c.type == "Minion").forEach(m => {
                     m.removeEnchantment("-1 mana", self);
                 });
 
-                // Destroy this event listener
-                return true;
-            }, -1);
+                // Destroy this event listener so it doesn't run again
+                return "destroy";
+            }, -1); // The event listener shouldn't destruct on its own, and should only be manually destroyed.
 
+            // The quest event was a success. The game will remove this quest from the player.
             return true;
         });
     }

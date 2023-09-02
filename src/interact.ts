@@ -33,10 +33,10 @@ export const interact = {
             if (attacker === -1 || target === -1) return -1;
             if (attacker === null || target === null) return null;
         } else {
-            attacker = interact.selectTarget("Which minion do you want to attack with?", null, "friendly");
+            attacker = interact.selectTarget("Which minion do you want to attack with?", null, "friendly", "any");
             if (!attacker) return false;
 
-            target = interact.selectTarget("Which minion do you want to attack?", null, "enemy");
+            target = interact.selectTarget("Which minion do you want to attack?", null, "enemy", "any");
             if (!target) return false;
         }
     
@@ -204,8 +204,8 @@ export const interact = {
 
             if (!isHand) {
                 // allow_locations Makes selecting location cards allowed. This is disabled by default to prevent, for example, spells from killing the card.
-                let minion = interact.selectTarget("Which minion do you want to view?", null, null, "minion", ["allow_locations"]);
-                if (!minion || minion instanceof Player) return false;
+                let minion = interact.selectCardTarget("Which minion do you want to view?", null, "any", ["allow_locations"]);
+                if (!minion) return false;
         
                 interact.viewCard(minion);
 
@@ -828,10 +828,8 @@ export const interact = {
         let locations = game.board[game.player.id].filter(m => m.type == "Location");
         if (locations.length <= 0) return "nolocations";
 
-        let location = interact.selectTarget("Which location do you want to use?", null, "friendly", "minion", ["allow_locations"]);
+        let location = interact.selectCardTarget("Which location do you want to use?", null, "friendly", ["allow_locations"]);
         if (!location) return -1;
-
-        if (!(location instanceof Card)) return "invalidtype";
 
         if (location.type != "Location") return "invalidtype";
         if (location.cooldown && location.cooldown > 0) return "cooldown";
@@ -1094,6 +1092,7 @@ export const interact = {
      * @returns The card chosen.
      */
     discover(prompt: string, cards: CardLike[] = [], filterClassCards: boolean = true, amount: number = 3, _cards: CardLike[] = []): Card | null {
+        // Discover doesn't work
         interact.printAll();
         let values: CardLike[] = _cards;
 
@@ -1108,7 +1107,7 @@ export const interact = {
 
         // No cards from previous discover loop, we need to generate new ones.
         if (_cards.length == 0) {
-            values = game.functions.chooseItemsFromList(cards, amount, false);
+            values = game.functions.chooseItemsFromList(cards, amount).map(c => c.copy);
         }
 
         if (values.length <= 0) return null;
@@ -1144,18 +1143,38 @@ export const interact = {
     },
 
     /**
+     * Like `selectTarget` but restricts the user to selecting heroes.
+     * 
+     * The advantage of this function is that it returns `Player | false` instead of `Target | false`.
+     */
+    selectPlayerTarget(prompt: string, card: Card | null, flags: SelectTargetFlag[] = []): Player | false {
+        return interact.selectTarget(prompt, card, "any", "hero", flags) as Player | false;
+    },
+
+    /**
+     * Like `selectTarget` but restricts the user to selecting minions.
+     * 
+     * The advantage of this function is that it returns `Card | false` instead of `Target | false`.
+     */
+    selectCardTarget(prompt: string, card: Card | null, side: SelectTargetAlignment, flags: SelectTargetFlag[] = []): Card | false {
+        return interact.selectTarget(prompt, card, side, "minion", flags) as Card | false;
+    },
+
+    /**
+     * #### You might want to use `interact.selectPlayerTarget` or `interact.selectCardTarget` instead.
+     * 
      * Asks the user a `prompt`, the user can then select a minion or hero.
      * Broadcasts the `TargetSelectionStarts` and the `TargetSelected` event. Can broadcast the `CastSpellOnMinion` event.
      * 
      * @param prompt The prompt to ask
      * @param card The card that called this function.
-     * @param force_side Force the user to only be able to select minions / the hero of a specific side: ["enemy", "friendly"]
-     * @param force_class Force the user to only be able to select a minion or a hero: ["hero", "minion"]
+     * @param force_side Force the user to only be able to select minions / the hero of a specific side
+     * @param force_class Force the user to only be able to select a minion or a hero
      * @param flags Change small behaviours ["allow_locations" => Allow selecting location, ]
      * 
      * @returns The card or hero chosen
      */
-    selectTarget(prompt: string, card: Card | null = null, force_side: SelectTargetAlignment | null = null, force_class: SelectTargetClass | null = null, flags: SelectTargetFlag[] = []): Target | false {
+    selectTarget(prompt: string, card: Card | null, force_side: SelectTargetAlignment, force_class: SelectTargetClass, flags: SelectTargetFlag[] = []): Target | false {
         game.events.broadcast("TargetSelectionStarts", [prompt, card, force_side, force_class, flags], game.player);
         let target = interact._selectTarget(prompt, card, force_side, force_class, flags);
 
@@ -1163,10 +1182,7 @@ export const interact = {
         return target;
     },
 
-    /**
-     * @see {@link selectTarget}
-     */
-    _selectTarget(prompt: string, card: Card | null = null, force_side: SelectTargetAlignment | null = null, force_class: SelectTargetClass | null = null, flags: SelectTargetFlag[] = []): Target | false {
+    _selectTarget(prompt: string, card: Card | null, force_side: SelectTargetAlignment, force_class: SelectTargetClass, flags: SelectTargetFlag[] = []): Target | false {
         // If the player is forced to select a target, select that target.
         if (game.player.forceTarget) return game.player.forceTarget;
 
@@ -1181,12 +1197,12 @@ export const interact = {
         }
 
         // From this point, force_class is either
-        // 1. null
+        // 1. any 
         // 2. minion
 
         // Ask the player to choose a target.
         let p = `\n${prompt} (`;
-        if (force_class == null) p += "type 'face' to select a hero | ";
+        if (force_class === "any") p += "type 'face' to select a hero | ";
         p += "type 'back' to go back) ";
 
         const target = game.input(p);
@@ -1213,12 +1229,35 @@ export const interact = {
         if (!target.startsWith("face") && !board_friendly_target && !board_opponent_target) {
             // target != "face" and target is not a minion.
             // The input is invalid
+            game.input("Invalid input / minion!\n".red);
 
-            return interact.selectTarget(prompt, card, force_side, force_class, flags);
+            return interact._selectTarget(prompt, card, force_side, force_class, flags);
         }
 
         // If the player is forced to one side.
-        if (force_side) {
+        if (force_side === "any") {
+            // If the player chose to target a hero, it will ask which hero.
+            if (target.startsWith("face") && force_class != "minion") return interact._selectTarget(prompt, card, force_side, "hero", flags);
+            
+            // If both players have a minion with the same index,
+            // ask them which minion to select
+            if (board_opponent.length >= parseInt(target) && board_friendly.length >= parseInt(target)) {
+                const oName = game.functions.colorByRarity(board_opponent_target.displayName, board_opponent_target.rarity);
+                const fName = game.functions.colorByRarity(board_friendly_target.displayName, board_friendly_target.rarity);
+
+                let alignment = game.input(`Do you want to select your opponent's (${oName}) or your own (${fName})? (y: opponent, n: friendly | type 'back' to go back) `);
+            
+                if (alignment.startsWith("b")) {
+                    // Go back.
+                    return interact._selectTarget(prompt, card, force_side, force_class, flags);
+                }
+
+                minion = (alignment.startsWith("y")) ? board_opponent_target : board_friendly_target;
+            } else {
+                minion = board_opponent.length >= parseInt(target) ? board_opponent_target : board_friendly_target;
+            }
+        }
+        else {
             // If the player chose a hero, and they are allowed to
             if (target.startsWith("face") && force_class != "minion") {
                 if (force_side == "enemy") return game.opponent;
@@ -1228,26 +1267,6 @@ export const interact = {
 
             // Select the minion on the correct side of the board.
             minion = (force_side == "enemy") ? board_opponent_target : board_friendly_target;
-        } else {
-            // `force_side` == null, allow the user to select any side.
-
-            // If the player chose to target a hero, it will ask which hero.
-            if (target.startsWith("face") && force_class != "minion") return interact.selectTarget(prompt, card, null, "hero", flags);
-            
-            // Both players have a minion with the same index.
-            // Ask them which minion to select
-            if (board_opponent.length >= parseInt(target) && board_friendly.length >= parseInt(target)) {
-                let target2 = game.input(`Do you want to select your opponent's (${game.functions.colorByRarity(board_opponent_target.displayName, board_opponent_target.rarity)}) or your own (${game.functions.colorByRarity(board_friendly_target.displayName, board_friendly_target.rarity)})? (y: opponent, n: friendly | type 'back' to go back) `);
-            
-                if (target2.startsWith("b")) {
-                    // Go back.
-                    return interact.selectTarget(prompt, card, force_side, force_class, flags);
-                }
-
-                minion = (target2.startsWith("y")) ? board_opponent_target : board_friendly_target;
-            } else {
-                minion = board_opponent.length >= parseInt(target) ? board_opponent_target : board_friendly_target;
-            }
         }
 
         // If you didn't select a valid minion, return.

@@ -9,18 +9,26 @@ const blueprint: Blueprint = {
     type: "Hero",
     classes: ["Neutral"],
     rarity: "Free",
-    hpDesc: "Restore 2 Health to your hero.", // The hero power's description
-    hpCost: 2, // How much mana the hero power costs to use.
+
+    // The hero power's description
+    hpDesc: "Restore 2 Health to your hero.",
+
+    // How much mana the hero power costs to use.
+    hpCost: 2,
+
     uncollectible: true,
     id: 38,
 
     battlecry(plr, game, self) {
-        plr.addHealth(9999); // Heal this card's owner by 9999.
+        // Heal this card's owner to full health.
+        // The `addHealth` method automatically caps the health of the player, so you don't need to worry.
+        plr.addHealth(plr.maxHealth);
     },
 
+    // This gets triggered when the player uses their hero power.
+    // This only gets triggered if the player uses the hero power of this card, not any other hero power.
+    // If you want something to happen every time any hero power is used, you'll have to use `passive`, which is explained in `4-1`.
     heropower(plr, game, self) {
-        // This gets triggered when the player uses their hero power.
-
         plr.addHealth(2);
     }
 }

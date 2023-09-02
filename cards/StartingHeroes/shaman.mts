@@ -16,19 +16,28 @@ const blueprint: Blueprint = {
     id: 9,
 
     heropower(plr, game, self) {
-        const totem_cards = ["Healing Totem", "Searing Totem", "Stoneclaw Totem", "Strength Totem"];
-        let _totem_cards: Card[] = [];
+        // The names of the cards that can be summoned
+        const totemCardNames = ["Healing Totem", "Searing Totem", "Stoneclaw Totem", "Strength Totem"];
+        const filteredTotemCardNames: string[] = [];
 
-        totem_cards.forEach(c => {
-            if (game.board[plr.id].map(m => m.name).includes(c)) return
+        // Filter away totem cards that is already on the player's side of the board.
+        totemCardNames.forEach(name => {
+            // If the board already has a totem with this name, return
+            if (game.board[plr.id].some(m => m.name === name)) return
 
-            _totem_cards.push(new game.Card(c, plr));
+            filteredTotemCardNames.push(name);
         });
 
-        if (_totem_cards.length == 0) return -1;
+        // If there are no totem cards to summon, refund the hero power, which gives the player back their mana
+        if (filteredTotemCardNames.length == 0) return game.constants.REFUND;
 
-        const card = game.functions.randList(_totem_cards, false);
+        // Randomly choose one of the totem cards. Get the actual card and not a copy.
+        const cardName = game.functions.randList(filteredTotemCardNames).actual;
 
+        // Create a card from the name.
+        const card = new game.Card(cardName, plr);
+
+        // Summon the card on the player's side of the board
         game.summonMinion(card, plr);
         return true;
     }

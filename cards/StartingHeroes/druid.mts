@@ -15,7 +15,13 @@ const blueprint: Blueprint = {
     id: 5,
 
     heropower(plr, game, self) {
+        // +1 Attack this turn. +1 Armor.
+
+        // Give the player +1 attack.
         plr.addAttack(1);
+
+        // Give the player +1 armor.
+        // CARDTODO: Maybe there should be an `addArmor` function?
         plr.armor += 1;
     }
 }

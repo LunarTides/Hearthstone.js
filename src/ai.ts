@@ -559,7 +559,7 @@ export class AI {
      * 
      * @returns The target selected.
      */
-    selectTarget(prompt: string, card: Card | null = null, force_side: SelectTargetAlignment | null = null, force_class: SelectTargetClass | null = null, flags: SelectTargetFlag[] = []): Target | false {
+    selectTarget(prompt: string, card: Card | null = null, force_side: SelectTargetAlignment, force_class: SelectTargetClass, flags: SelectTargetFlag[] = []): Target | false {
         if (flags.includes("allow_locations") && force_class != "hero") {
             let locations = game.board[this.plr.id].filter(m => m.type == "Location" && m.cooldown == 0 && !this.used_locations_this_turn.includes(m));
             this.used_locations_this_turn.push(locations[0]);
@@ -577,7 +577,7 @@ export class AI {
         if (score > 0) side = "self";
         else if (score < 0) side = "enemy";
 
-        if (force_side) side = force_side;
+        if (force_side !== "any") side = force_side;
 
         let sid = (side == "self") ? id : op.id;
 
@@ -587,7 +587,7 @@ export class AI {
             return false;
         }
 
-        if (force_class && force_class == "hero") {
+        if (force_class == "hero") {
             let ret: Player | false = false;
 
             if (side == "self") ret = this.plr;
@@ -603,7 +603,8 @@ export class AI {
         if (game.board[sid].length <= 0) {
             let ret: Player | false = false;
 
-            if (force_class != "minion") {
+            if (force_class === "minion") this.history.push({"type": "selectTarget", "data": -1});
+            else {
                 let ret;
                 if (sid === 0) ret = game.player1;
                 else if (sid === 1) ret = game.player2;
@@ -611,7 +612,6 @@ export class AI {
 
                 this.history.push({"type": "selectTarget", "data": "P" + (ret.id + 1)});
             }
-            else this.history.push({"type": "selectTarget", "data": -1});
 
             return ret;
         }

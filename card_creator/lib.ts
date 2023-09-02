@@ -45,7 +45,7 @@ function getCardFunction(card_type: CardType) {
     return func;
 }
 
-function generateCardPath(...args: [CardClass | CardClass[], CardType]) {
+function generateCardPath(...args: [CardClass[], CardType]) {
     // Create a path to put the card in.
     let [classes, type] = args;
 
@@ -53,9 +53,7 @@ function generateCardPath(...args: [CardClass | CardClass[], CardType]) {
     let static_path = game.functions.dirname() + `../cards/`;
 
     // You can change this
-    let classesString = "";
-    if (classes instanceof Array) classesString = classes.join("/");
-    else classesString = classes;
+    let classesString = classes.join("/");
 
     // If the type is Hero, we want the card to go to '.../Heroes/...' and not to '.../Heros/...'
     let typeString = (type == "Hero") ? "Heroe" : type;
@@ -95,7 +93,7 @@ export function create(override_type: CardType, override_card: Blueprint, overri
     // card.hpDesc can be undefined, but shouldn't be if the type is Hero.
     if (desc_to_clean === undefined) throw new Error("Card has no hero power description.");
 
-    let cleaned_desc = game.functions.stripTags(desc_to_clean);
+    let cleaned_desc = game.functions.stripTags(desc_to_clean).replace(`${func}: `, "");
 
     if (func) func = `${func.toLowerCase()}(plr, game, self${triggerText} {
         // ${cleaned_desc}

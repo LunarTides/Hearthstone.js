@@ -125,7 +125,7 @@ export type CardAbilityReal = "adapt" |
 export type CardAbility = CardAbilityReal |
                           "placeholders" |
                           "condition" |
-                          "unpassive" |
+                          "remove" |
                           "handpassive";
 
 /**
@@ -272,7 +272,7 @@ export type EventValue<Key extends EventKey> = /**
                                                /**
                                                 * The prompt, the card that requested target selection, the alignment that the target should be, the class of the target (hero | minion), and the flags (if any).
                                                 */
-                                               Key extends "TargetSelectionStarts" ? [string, Card | null, SelectTargetAlignment | null, SelectTargetClass | null, SelectTargetFlag[]] : 
+                                               Key extends "TargetSelectionStarts" ? [string, Card | null, SelectTargetAlignment, SelectTargetClass, SelectTargetFlag[]] : 
                                                /**
                                                 * The card that requested target selection, and the target
                                                 */
@@ -333,11 +333,11 @@ export type AICalcMoveOption = Card |
 /**
  * `Interact.selectTarget` alignment
  */
-export type SelectTargetAlignment = "friendly" | "enemy";
+export type SelectTargetAlignment = "friendly" | "enemy" | "any";
 /**
  * `Interact.selectTarget` class
  */
-export type SelectTargetClass = "hero" | "minion";
+export type SelectTargetClass = "hero" | "minion" | "any";
 /**
  * `Interact.selectTarget` flags
  */
@@ -444,14 +444,20 @@ export type Blueprint = {
  */
 export type KeywordMethod = (plr: Player, game: Game, self: Card, key?: EventKey, val?: EventValue<EventKey>) => any;
 
+export type EventListenerMsg = true | "destroy" | "cancel" | "reset";
 /**
  * The event listener callback. The second callback of the `Functions.addEventListener` function.
  */
-export type EventListenerCallback = (val: EventValue<EventKey>) => any;
+export type EventListenerCallback = (val: EventValue<EventKey>) => EventListenerMsg;
 /**
  * The event listener check callback. The first callback of the `Functions.addEventListener` function.
  */
-export type EventListenerCheckCallback = (val?: EventValue<EventKey>) => boolean | undefined;
+export type EventListenerCheckCallback = (val?: EventValue<EventKey>) => boolean;
+
+export type RandListReturn<T> = {
+    actual: T,
+    copy: T 
+}
 
 /**
  * A card-like object.

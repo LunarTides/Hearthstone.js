@@ -57,7 +57,7 @@ export class Player {
      * 
      * # Examples
      * @example
-     * let target = game.functions.selectTarget("Example", null, null, null);
+     * let target = game.functions.selectTarget("Example", null, "any", "any");
      * 
      * if (target.classType == "Player") {
      *     console.log(target.health);
@@ -281,7 +281,7 @@ export class Player {
      * # Example
      * ```
      * player.forceTarget = target;
-     * let chosen = game.interact.selectTarget("Example", null, null, null);
+     * let chosen = game.interact.selectTarget("Example", null, "any", "any");
      * player.forceTarget = null;
      * 
      * assert.equal(chosen, target);
@@ -388,34 +388,26 @@ export class Player {
     }
 
     /**
-     * Increases max mana by `mana`, then if `cap` is true; avoid going over `player.maxMaxMana` (10) mana.
+     * Increases max mana by `mana`, avoids going over `player.maxMaxMana` (10 by default) mana.
      * 
      * # Examples
+     * If you set `cap` to true
      * ```
      * assert.equal(player.maxMana, 5);
      * 
      * player.gainEmptyMana(10);
      * 
-     * assert.equal(player.maxMana, 15);
-     * ```
-     * If you set `cap` to true
-     * ```
-     * assert.equal(player.maxMana, 5);
-     * 
-     * player.gainEmptyMana(10, true);
-     * 
      * assert.equal(player.maxMana, 10);
      * ```
      * 
      * @param mana The empty mana to add.
-     * @param cap Should prevent going over max max mana
      * 
      * @returns Success 
      */
-    gainEmptyMana(mana: number, cap = false): boolean {
+    gainEmptyMana(mana: number): boolean {
         this.maxMana += mana;
 
-        if (cap && this.maxMana > this.maxMaxMana) this.maxMana = this.maxMaxMana;
+        if (this.maxMana > this.maxMaxMana) this.maxMana = this.maxMaxMana;
 
         return true;
     }
@@ -425,18 +417,17 @@ export class Player {
      * 
      * This function runs
      * ```
-     * player.gainEmptyMana(mana, cap);
+     * player.gainEmptyMana(mana);
      * player.refreshMana(mana);
      * ```
      * so look at these functions for more info.
      * 
      * @param mana The number to increase mana and max mana by
-     * @param cap Should prevent max mana going over max max mana (10)
      * 
      * @returns Success
      */
-    gainMana(mana: number, cap = false): boolean {
-        this.gainEmptyMana(mana, cap);
+    gainMana(mana: number): boolean {
+        this.gainEmptyMana(mana);
         this.refreshMana(mana);
 
         return true;
@@ -679,9 +670,9 @@ export class Player {
         // Cast on draw
         if (card.type == "Spell" && card.keywords.includes("Cast On Draw") && card.activate("cast")) return this.drawCard();
 
-        game.suppressedEvents.push("AddCardToHand");
+        let unsuppress = game.functions.suppressEvent("AddCardToHand");
         this.addToHand(card);
-        game.suppressedEvents.pop();
+        unsuppress();
 
         return card;
     }
@@ -691,30 +682,36 @@ export class Player {
      * Broadcasts the `DrawCard` event
      * 
      * # Examples
+     * This works
      * ```
-     * // Get a random card from the player's deck, but do not run `card.perfectCopy` on it.
-     * let card = game.functions.randList(player.deck, false);
+     * // Get a random card from the player's deck
+     * let card = game.functions.randList(player.deck).actual;
+     * 
+     * player.drawSpecific(card);
+     * ```
+     * 
+     * This doesn't work
+     * ```
+     * let card = game.functions.randList(player.deck).copy;
      * 
      * player.drawSpecific(card);
      * ```
      * 
      * @param card The card to draw
      * 
-     * @returns The card drawn | Is undefined if the card wasn't found
+     * @returns The card drawn
      */
     drawSpecific(card: Card): Card | null {
         if (this.deck.length <= 0) return null;
 
-        //this.deck = this.deck.filter(c => c !== card);
         game.functions.remove(this.deck, card);
-
         game.events.broadcast("DrawCard", card, this);
 
         if (card.type == "Spell" && card.keywords.includes("Cast On Draw") && card.activate("cast")) return null;
 
-        game.suppressedEvents.push("AddCardToHand");
+        let unsuppress = game.functions.suppressEvent("AddCardToHand");
         this.addToHand(card);
-        game.suppressedEvents.pop();
+        unsuppress();
 
         return card;
     }

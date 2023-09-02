@@ -15,11 +15,15 @@ const blueprint: Blueprint = {
     id: 25,
 
     battlecry(plr, game, self) {
+        // Summon a random 2-Cost minion.
+
         // filter out all cards that aren't 2-cost minions
         let minions = game.functions.getCards().filter(card => card.type === "Minion" && card.mana === 2);
-        let rand = game.functions.randList(minions);
-        if (!rand) return;
 
+        // Choose a random minion
+        let rand = game.functions.randList(minions).actual;
+
+        // Summon the minion
         game.summonMinion(new game.Card(rand.name, plr), plr);
     }
 }

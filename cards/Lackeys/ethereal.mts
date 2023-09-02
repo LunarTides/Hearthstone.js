@@ -15,13 +15,17 @@ const blueprint: Blueprint = {
     id: 24,
 
     battlecry(plr, game) {
-        let list = game.functions.getCards();
-        list = list.filter(c => c.type == "Spell");
+        // Discover a spell.
+
+        // Filter out all cards that aren't spells
+        let list = game.functions.getCards().filter(c => c.type == "Spell");
         if (list.length <= 0) return;
 
+        // Prompt a discover
         let card = game.interact.discover("Discover a spell.", list);
-        if (!card) return -1;
+        if (!card) return game.constants.REFUND;
 
+        // Add the card to the player's hand
         plr.addToHand(card);
         return true;
     }

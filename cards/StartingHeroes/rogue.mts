@@ -15,8 +15,12 @@ const blueprint: Blueprint = {
     id: 12,
 
     heropower(plr, game, self) {
+        // Equip a 1/2 Dagger.
+
+        // Create the weapon card
         const wpn = new game.Card("Wicked Knife", plr);
 
+        // Equip the weapon
         plr.setWeapon(wpn);
     }
 }

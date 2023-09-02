@@ -9,24 +9,29 @@ const blueprint: Blueprint = {
     type: "Spell",
     classes: ["Neutral"],
     rarity: "Legendary",
+    // The cast ability is conditioned
     conditioned: ["cast"],
     uncollectible: true,
     id: 55,
 
     cast(plr, game, self) {
         let turns = Math.ceil(game.turns / 2);
+
+        // Cap the turn counter at 10
         if (turns > 10) turns = 10;
 
-        plr.gainMana(turns, true);
+        plr.gainMana(turns);
     },
 
     condition(plr, game, self) {
         let turns = Math.ceil(game.turns / 2);
         if (turns > 10) turns = 10;
 
-        let even = (turns % 2 == 0); // `turns` % 2 will always return 0 if it is an even number, and always return 1 if it is an odd number.
+        // `turns` % 2 will always return 0 if it is an even number, and always return 1 if it is an odd number.
+        let even = (turns % 2 == 0);
         let manathirst = self.manathirst(7);
 
+        // If the turn counter is an even number or the manathirst is fullfilled, clear the condition.
         return even || manathirst;
     },
 

@@ -16,6 +16,9 @@ const blueprint: Blueprint = {
     id: 13,
 
     heropower(plr, game, self) {
+        // +1 Attack this turn.
+
+        // Give the player +1 attack.
         plr.addAttack(1);
     }
 }

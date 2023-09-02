@@ -21,10 +21,6 @@ const blueprint: Blueprint = {
         // 1. Ask the user which minion to kill.
         // 2. Kill that minion
 
-        // I set the target to self, so that it is never null for the verification process. Pretend that it is null.
-        let target = self;
-
-        // The `target` variable needs to be set to the target, otherwise it will fail to verify the solution.
         function solution() {
             // Put all your code inside this function please.
             
@@ -101,30 +97,65 @@ const blueprint: Blueprint = {
 
 
         // Testing your solution.
+        let target = self;
         let correctParameters = false;
+        let potentiallyCancelled = false;
 
+        // Make sure the parameters are correct
         game.functions.addEventListener("TargetSelectionStarts", true, (_unknownVal) => {
             const val = _unknownVal as EventValue<"TargetSelectionStarts">;
 
+            // Don't check for `prompt` since there is no correct prompt
             let [prompt, card, force_side, force_class, flags] = val;
 
             correctParameters = (
                 card == self &&
-                force_side == null &&
+                force_side == "any" &&
                 force_class == "minion" &&
                 flags.length == 0
             );
 
-            return true;
+            // The `TargetSelectionStarts` event fired. This means that the card has a chance of being cancelled.
+            potentiallyCancelled = true;
+
+            return "destroy";
+        }, 1);
+
+        // Find the target
+        game.functions.addEventListener("TargetSelected", (_unknownVal) => {
+            const val = _unknownVal as EventValue<"TargetSelected">;
+
+            return val[0] === self;
+        }, (_unknownVal) => {
+            const val = _unknownVal as EventValue<"TargetSelected">;
+
+            // At this point we know that the card wasn't cancelled, since the `TargetSelected` event doesn't fire if the card is cancelled
+            target = val[1] as Card;
+            potentiallyCancelled = false;
+
+            return "destroy";
         }, 1);
 
         solution();
 
-        game.interact.verifyDIYSolution(
+        // This only happens if the `TargetSelectionStarts` event fired, but not `TargetSelected`.
+        // That only happens if the card was cancelled after the `TargetSelectionStarts` event fired
+        if (potentiallyCancelled) {
+            game.input("You cancelled the card. The verification process depends on a minion actually being killed. Try again.\n");
+            return game.constants.REFUND;
+        }
+
+        let solved = (
+            target !== self &&
             target.getHealth() <= 0 &&
             correctParameters &&
-            game.graveyard[plr.id].includes(target) || game.graveyard[plr.getOpponent().id].includes(target)
-        , "3.ts");
+            game.graveyard.some(p => p.includes(target))
+        );
+
+        game.interact.verifyDIYSolution(solved, "3.ts");
+
+        if (!solved) return game.constants.REFUND;
+        return true;
     }
 }
 

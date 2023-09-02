@@ -1,5 +1,6 @@
 // Created by Hand
 
+import { Card } from "../../../src/card.js";
 import { Blueprint } from "../../../src/types.js";
 
 const blueprint: Blueprint = {
@@ -26,21 +27,21 @@ const blueprint: Blueprint = {
         // Select a target to freeze (and silence)
         // The first argument is the prompt to ask the user.
         // The second argument is this card (aka `self`).
-        // The third argument is the alignment of the target the user is restrictted to. If this is "enemy", the user can only select enemy targets, if this is "friendly", the user can only select friendly targets, if this is null, the user can select any target.
-        // The fourth argument is the type of target. If this is "minion", the user can only select minions, if this is "hero", the user can only select heroes, if this is null, the user can select minions AND heroes.
+        // The third argument is the alignment of the target the user is restricted to. If this is "enemy", the user can only select enemy targets, if this is "friendly", the user can only select friendly targets, if this is "any", the user can select any target.
+        // The fourth argument is the type of target. If this is "minion", the user can only select minions, if this is "hero", the user can only select heroes, if this is "any", the user can select any type of target.
         // The third and fourth argument works together.
         //
         // Ask the user to select a target based on the `prompt`, the user can only select enemy minions
-        let target = game.interact.selectTarget(prompt, self, "enemy", "minion");
+        let target = game.interact.selectCardTarget(prompt, self, "enemy");
 
         // If the user cancelled their selection, if you return this, the game refunds the card.
         if (!target) return game.constants.REFUND;
 
-        // Typescript doesn't know that the target is always a card in this situation, which is why this is necessary
-        if (!(target instanceof game.Card)) return game.constants.REFUND;
+        // If the manathirst was successful, silence the target first
+        if (ret) target.silence();
 
-        if (ret) target.silence(); // If the manathirst was successful, silence the target first
-        target.freeze(); // Freeze the target
+        // Freeze the target
+        target.freeze();
 
         // Return true since otherwise, typescript will complain about the function not returning a value in all branches
         return true;

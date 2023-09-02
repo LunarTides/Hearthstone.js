@@ -15,6 +15,10 @@ const blueprint: Blueprint = {
     id: 7,
 
     heropower(plr, game, self) {
+        // Gain 2 Armor.
+
+        // Give the player +2 armor.
+        // CARDTODO: Maybe there should be an `addArmor` function?
         plr.armor += 2;
     }
 }

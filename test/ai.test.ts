@@ -192,7 +192,7 @@ describe("AI", () => {
     });
 
     it ('should select a target', () => {
-        let result = ai.selectTarget("Deal 1 damage.", null, null, null, []);
+        let result = ai.selectTarget("Deal 1 damage.", null, "any", "any", []);
 
         // There are no minions and the prompt is bad, so the ai should select the enemy hero
         assert.equal(result, ai.plr.getOpponent());

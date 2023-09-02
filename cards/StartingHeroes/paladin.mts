@@ -15,8 +15,12 @@ const blueprint: Blueprint = {
     id: 10,
 
     heropower(plr, game, self) {
+        // Summon a 1/1 Silver Hand Recruit.
+
+        // Create the Silver Hand Recruit card.
         const card = new game.Card("Silver Hand Recruit", plr);
 
+        // Summon the card
         game.summonMinion(card, plr);
     }
 }

@@ -9,7 +9,10 @@ const blueprint: Blueprint = {
     mana: 1,
     type: "Minion",
     tribe: "None",
-    classes: ["Shaman", "Warrior"], // You seperate the classes with ` / `. You should be able to just keep adding more and more classes.
+
+    // You seperate the classes like this. You should be able to just keep adding more and more classes.
+    classes: ["Shaman", "Warrior"],
+
     rarity: "Free",
     uncollectible: true,
     id: 35,
