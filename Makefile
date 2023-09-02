@@ -19,4 +19,8 @@ vanilla:
 	@npm run generate
 
 run:
-	@./run.sh
+	@ls dist/index.js 2> /dev/null || (echo "The game hasn't been built." && ./build.sh)
+	@node .
+
+build:
+	@./build.sh

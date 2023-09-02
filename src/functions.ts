@@ -1043,10 +1043,7 @@ ${main_content}
      * @returns Cards
      */
     getCards(uncollectible: boolean = true, cards: Blueprint[] = game.cards): Blueprint[] {
-        return cards.filter(c => {
-            console.log(c)
-            return !c.uncollectible && uncollectible;
-        });
+        return cards.filter(c => !c.uncollectible && uncollectible);
     },
 
     /**
