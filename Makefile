@@ -19,5 +19,4 @@ vanilla:
 	@npm run generate
 
 run:
-	@echo "Running the game..."
 	@./run.sh

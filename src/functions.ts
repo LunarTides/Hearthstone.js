@@ -1159,7 +1159,7 @@ ${main_content}
     getClasses(): CardClassNoNeutral[] {
         let classes: CardClassNoNeutral[] = [];
 
-        fs.readdirSync("../cards/StartingHeroes").forEach(file => {
+        fs.readdirSync(functions.dirname() + "cards/StartingHeroes").forEach(file => {
             if (!file.endsWith(".ts")) return; // Something is wrong with the file name.
 
             let name = file.slice(0, -3); // Remove ".ts"

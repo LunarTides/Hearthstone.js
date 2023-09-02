@@ -8,7 +8,7 @@
     "test": "npm run test:custom",
     "test:custom": "node run-tests.ts",
     "generate": "node card_creator/vanilla/generator",
-    "start": "tsc && node dist/index.js"
+    "start": "tsc && node ."
   },
   "repository": {
     "type": "git",
