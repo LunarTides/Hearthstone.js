@@ -34,7 +34,7 @@ export class Card {
     /**
      * This is the class that the card belongs to. E.g. "Warlock" or "Mage".
      */
-    class: CardClass = "Mage";
+    classes: CardClass[] = ["Neutral"];
 
     /**
      * This is the type of card, e.g. "Spell" or "Minion".

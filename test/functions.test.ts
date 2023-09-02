@@ -196,7 +196,7 @@ describe("Functions", () => {
         player.heroClass = test_class;
 
         const cards = game.functions.getCards(false);
-        const card = game.functions.randList(cards.filter(c => c.class == test_class || c.class == "Neutral"));
+        const card = game.functions.randList(cards.filter(c => c.classes.includes(test_class) || c.classes.includes("Neutral")));
 
         assert.ok(game.functions.validateClass(player, card));
     });
@@ -243,7 +243,7 @@ describe("Functions", () => {
         test_player1.heroClass = "Mage";
 
         minion.uncollectible = false;
-        minion.class = "Death Knight";
+        minion.classes = ["Death Knight"];
 
         let ret = game.functions.validateCard(minion, test_player1);
 
@@ -494,7 +494,7 @@ describe("Functions", () => {
         let done = false;
 
         // DON'T ACTUALLY USE DUMMY QUESTS IN REAL CODE
-        game.functions.addQuest("Quest", player, createCard("The Coin", player), "Dummy", 3, (val, turn, _done) => {
+        game.functions.addQuest("Quest", player, createCard("The Coin", player), "Dummy", 3, (val, _done) => {
             if (!_done) return true;
 
             done = true;
@@ -517,7 +517,7 @@ describe("Functions", () => {
         const player = test_player1;
 
         let card = createCard("The Coin", player);
-        let success = game.functions.addQuest("Quest", player, card, "Dummy", 3, (key, val, _done) => {return true});
+        let success = game.functions.addQuest("Quest", player, card, "Dummy", 3, (val, _done) => {return true});
 
         assert.ok(success);
         assert.equal(player.quests[0].progress[0], 0);

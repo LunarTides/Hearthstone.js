@@ -2,7 +2,7 @@ import * as rl from "readline-sync";
 import * as lib from "../lib.js";
 
 import { Game, Player } from "../../src/internal.js";
-import { CardClass, CardRarity, CardType } from "../../src/types.js";
+import { Blueprint, CardClass, CardRarity, CardType } from "../../src/types.js";
 
 const game = new Game();
 const player1 = new Player("Player 1");
@@ -47,17 +47,18 @@ export function main() {
 
     let filename = name.toLowerCase().replaceAll(" ", "_") + ".ts";
 
-    let card = {
+    let card: Blueprint = {
         name: name + " Starting Hero",
         displayName: displayName,
         desc: name[0].toUpperCase() + name.slice(1).toLowerCase() + " starting hero",
         mana: 0,
         type: "Hero" as CardType,
-        class: name as CardClass,
+        classes: [name] as CardClass[],
         rarity: "Free" as CardRarity,
         hpDesc: hpDesc,
         hpCost: parseInt(hpCost),
-        uncollectible: true
+        uncollectible: true,
+        id: 0, // This will be overwritten by the library
     };
 
     lib.set_type("Class");

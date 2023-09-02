@@ -7,9 +7,10 @@ const blueprint: Blueprint = {
     desc: "Set your mana to 10.",
     mana: 0,
     type: "Spell",
-    class: "Neutral",
+    classes: ["Neutral"],
     rarity: "Free",
     uncollectible: true,
+    id: 65,
 
     cast(plr, game, self) {
         plr.gainMana(10, true);

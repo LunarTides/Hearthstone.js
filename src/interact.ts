@@ -318,11 +318,7 @@ export const interact = {
             /**
              * Transform the `value` into a readable string
              * 
-             * @param {any} val 
-             * @param {Player} plr 
-             * @param {boolean} hide If it should hide the card
-             * 
-             * @returns {any}
+             * @param hide If it should hide the card
              */
             const doVal = (val: any, plr: Player, hide: boolean): any => {
                 if (val instanceof Card) {
@@ -698,19 +694,17 @@ export const interact = {
 
             let success = true;
 
-            success &&= interact.withStatus("Reloading cards", () => {
+            success = success && interact.withStatus("Reloading cards", () => {
                 game.cards = reloadCards(game.functions.dirname() + "cards");
                 return true;
             });
 
-            success &&= interact.withStatus("Importing config", () => game.functions.importConfig(game.functions.dirname() + "config"));
+            success = success && interact.withStatus("Importing config", () => game.functions.importConfig(game.functions.dirname() + "config"));
                 
             // Go through all the cards and reload them
-            success &&= interact.withStatus("Reloading cards", () => {
+            success = success && interact.withStatus("Reloading cards", () => {
                 /**
                  * Reloads a card
-                 * 
-                 * @param {Card} card 
                  */
                 const reload = (card: Card) => {
                     let clonedCard = card.imperfectCopy();
@@ -1097,7 +1091,7 @@ export const interact = {
      * @param amount The amount of cards to show
      * @param _cards Do not use this variable, keep it at default
      * 
-     * @returns {Card | null} The card chosen.
+     * @returns The card chosen.
      */
     discover(prompt: string, cards: CardLike[] = [], filterClassCards: boolean = true, amount: number = 3, _cards: CardLike[] = []): Card | null {
         interact.printAll();
@@ -1773,13 +1767,12 @@ export const interact = {
      * Shows information from the card, console.log's it and waits for the user to press enter.
      *
      * @param card The card
-     * @param {boolean} [help=true] If it should show a help message which displays what the different fields mean.
-     *
-     * @returns {undefined}
+     * @param help If it should show a help message which displays what the different fields mean.
      */
-    viewCard(card: CardLike, help: boolean = true): undefined {
+    viewCard(card: CardLike, help: boolean = true) {
         let _card = interact.getReadableCard(card);
 
+        // @ts-expect-error
         let _class = card.class.gray;
 
         let tribe = "";
@@ -1808,10 +1801,10 @@ export const interact = {
     /**
      * Verifies that the diy card has been solved.
      * 
-     * @param {boolean} condition The condition where, if true, congratulates the user
-     * @param {string} fileName The file's name in the `DIY` folder. E.g. `1.ts`
+     * @param condition The condition where, if true, congratulates the user
+     * @param fileName The file's name in the `DIY` folder. E.g. `1.ts`
      * 
-     * @returns {boolean} Success
+     * @returns Success
      */
     verifyDIYSolution(condition: boolean, fileName: string = ""): boolean {
         // TODO: Maybe spawn in diy cards mid-game in normal games to encourage players to solve them.
@@ -1825,10 +1818,8 @@ export const interact = {
 
     /**
      * Clears the screen.
-     * 
-     * @returns {undefined}
      */
-    cls(): undefined { // Do this so it doesn't crash because of "strict mode"
+    cls() { // Do this so it doesn't crash because of "strict mode"
         cls();
     },
 }

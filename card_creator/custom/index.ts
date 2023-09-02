@@ -10,7 +10,8 @@ game.setup(player1, player2);
 game.functions.importCards(game.functions.dirname() + "cards");
 game.functions.importConfig(game.functions.dirname() + "config");
 
-let card: Blueprint | null;
+// @ts-expect-error
+let card: Blueprint = {};
 
 let shouldExit = false;
 let type: CardType;
@@ -23,6 +24,9 @@ function input(prompt: string) {
 }
 
 function applyCard(_card: Blueprint) {
+    // @ts-expect-error
+    let newCard: Blueprint = {};
+
     Object.entries(_card).forEach(c => {
         let [key, val] = c;
 
@@ -30,8 +34,10 @@ function applyCard(_card: Blueprint) {
         if (!val && val !== 0 && !required_keys.includes(key)) return;
 
         // @ts-expect-error
-        card[key] = val;
+        newCard[key] = val;
     });
+
+    return newCard;
 }
 
 function common(): false | Blueprint {
@@ -47,7 +53,7 @@ function common(): false | Blueprint {
     const cost = input("Mana Cost: ");
     if (shouldExit) return false;
 
-    const _class = input("Class: ") as CardClass;
+    const classes = input("Classes: ") as CardClass;
     if (shouldExit) return false;
 
     const rarity = input("Rarity: ") as CardRarity;
@@ -57,13 +63,24 @@ function common(): false | Blueprint {
     if (shouldExit) return false;
     
     let runes;
-    if (_class == "Death Knight") runes = input("Runes: ");
+    if (classes == "Death Knight") runes = input("Runes: ");
     if (shouldExit) return false;
 
     //if (keywords) keywords = '["' + keywords.split(', ').join('", "') + '"]';
     let realKeywords: CardKeyword[] = keywords.split(', ') as CardKeyword[];
 
-    return {"name": name, "displayName": displayName, "desc": description, "mana": parseInt(cost), "type": type, "class": _class, "rarity": rarity, "runes": runes, "keywords": realKeywords};
+    return {
+        name: name,
+        displayName: displayName,
+        desc: description,
+        mana: parseInt(cost),
+        type: type,
+        classes: [classes],
+        rarity: rarity,
+        runes: runes,
+        keywords: realKeywords,
+        id: 0,
+    };
 }
 
 function minion() {
@@ -76,23 +93,20 @@ function minion() {
     const tribe = input("Tribe: ");
     if (shouldExit) return false;
 
-    //stats = "[" + stats.split("/").join(", ") + "]";
-
-    applyCard({
-        "name": _card.name,
-        "displayName": _card.displayName,
-        "stats": stats.split("/").map(s => parseInt(s)),
-        "desc": _card.desc,
-        "mana": _card.mana,
-        "type": _card.type,
-        "tribe": tribe as MinionTribe,
-        "class": _card.class,
-        "rarity": _card.rarity,
-        "runes": _card.runes,
-        "keywords": _card.keywords
+    return applyCard({
+        name: _card.name,
+        displayName: _card.displayName,
+        stats: stats.split("/").map(s => parseInt(s)),
+        desc: _card.desc,
+        mana: _card.mana,
+        type: _card.type,
+        tribe: tribe as MinionTribe,
+        classes: _card.classes,
+        rarity: _card.rarity,
+        runes: _card.runes,
+        keywords: _card.keywords,
+        id: 0,
     });
-    
-    return true;
 }
 
 function spell() {
@@ -104,8 +118,7 @@ function spell() {
 
     let combined = Object.assign(_card, { "spellClass": spellClass });
 
-    applyCard(combined);
-    return true;
+    return applyCard(combined);
 }
 
 function weapon() {
@@ -115,21 +128,19 @@ function weapon() {
     let stats = input("Stats: ");
     if (shouldExit) return false;
 
-    //stats = "[" + stats.split("/").join(", ") + "]";
-
-    applyCard({
-        "name": _card.name,
-        "displayName": _card.displayName,
-        "stats": stats.split("/").map(s => parseInt(s)),
-        "desc": _card.desc,
-        "mana": _card.mana,
-        "type": _card.type,
-        "class": _card.class,
-        "rarity": _card.rarity,
-        "runes": _card.runes,
-        "keywords": _card.keywords
+    return applyCard({
+        name: _card.name,
+        displayName: _card.displayName,
+        stats: stats.split("/").map(s => parseInt(s)),
+        desc: _card.desc,
+        mana: _card.mana,
+        type: _card.type,
+        classes: _card.classes,
+        rarity: _card.rarity,
+        runes: _card.runes,
+        keywords: _card.keywords,
+        id: 0,
     });
-    return true;
 }
 
 function hero() {
@@ -145,12 +156,11 @@ function hero() {
     if (!hpCost) hpCost = 2;
 
     let combined = Object.assign(_card, {
-        "hpDesc": hpDesc,
-        "hpCost": hpCost
+        hpDesc,
+        hpCost
     });
 
-    applyCard(combined);
-    return true;
+    return applyCard(combined);
 }
 
 function location() {
@@ -166,25 +176,26 @@ function location() {
     if (!cooldown) cooldown = 2;
     let stats = [0, durability];
 
-    applyCard({
-        "name": _card.name,
-        "displayName": _card.displayName,
-        "stats": stats,
-        "desc": _card.desc,
-        "mana": _card.mana,
-        "type": _card.type,
-        "class": _card.class,
-        "rarity": _card.rarity,
-        "runes": _card.runes,
-        "keywords": _card.keywords,
-        "cooldown": cooldown
+    return applyCard({
+        name: _card.name,
+        displayName: _card.displayName,
+        stats: stats,
+        desc: _card.desc,
+        mana: _card.mana,
+        type: _card.type,
+        classes: _card.classes,
+        rarity: _card.rarity,
+        runes: _card.runes,
+        keywords: _card.keywords,
+        cooldown: cooldown,
+        id: 0,
     });
-    return true;
 }
 
 export function main() {
     // Reset the card
-    card = null;
+    // @ts-expect-error
+    card = {};
 
     // Reset the shouldExit switch
     shouldExit = false;
@@ -195,11 +206,31 @@ export function main() {
     type = input("Type: ") as CardType;
     if (shouldExit) return false;
 
-    if (type.toLowerCase() == "minion") minion();
-    else if (type.toLowerCase() == "weapon") weapon();
-    else if (type.toLowerCase() == "spell") spell();
-    else if (type.toLowerCase() == "location") location();
-    else if (type.toLowerCase() == "hero") hero();
+    if (type.toLowerCase() == "minion") {
+        let tmpCard = minion();
+        if (!tmpCard) return false;
+        card = tmpCard;
+    }
+    else if (type.toLowerCase() == "weapon") {
+        let tmpCard = weapon();
+        if (!tmpCard) return false;
+        card = tmpCard;
+    }
+    else if (type.toLowerCase() == "spell") {
+        let tmpCard = spell();
+        if (!tmpCard) return false;
+        card = tmpCard;
+    }
+    else if (type.toLowerCase() == "location") {
+        let tmpCard = location();
+        if (!tmpCard) return false;
+        card = tmpCard;
+    }
+    else if (type.toLowerCase() == "hero") {
+        let tmpCard = hero();
+        if (!tmpCard) return false;
+        card = tmpCard;
+    }
     else {
         // Invalid type
         console.log("That is not a valid type!");
@@ -209,8 +240,6 @@ export function main() {
     }
 
     if (shouldExit) return false;
-
-    card = card!;
 
     // Ask the user if the card should be uncollectible
     let uncollectible = rl.keyInYN("Uncollectible?");

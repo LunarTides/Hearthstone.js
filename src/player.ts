@@ -762,7 +762,7 @@ export class Player {
      */
     setHero(hero: Card, armor = 5, setHeroClass = true): boolean {
         this.hero = hero;
-        if (setHeroClass) this.heroClass = hero.class;
+        if (setHeroClass) this.heroClass = hero.classes[0];
         this.heroPowerCost = hero.hpCost || 2;
 
         this.armor += armor;

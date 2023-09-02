@@ -7,9 +7,10 @@ const blueprint: Blueprint = {
     desc: "Set your mana to 10. For the rest of the game, your mana never decreases.",
     mana: 0,
     type: "Spell",
-    class: "Neutral",
+    classes: ["Neutral"],
     rarity: "Free",
     uncollectible: true,
+    id: 66,
 
     cast(plr, game, self) {
         game.functions.addEventListener("", true, () => {

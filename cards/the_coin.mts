@@ -7,10 +7,10 @@ const blueprint: Blueprint = {
     desc: "Gain 1 Mana Crystal this turn only.",
     mana: 0,
     type: "Spell",
-    class: "Neutral",
+    classes: ["Neutral"],
     rarity: "Free",
     uncollectible: true,
-    id: 107,
+    id: 2,
 
     cast(plr, game, self) {
         plr.refreshMana(1, plr.maxMaxMana);

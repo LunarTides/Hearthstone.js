@@ -22,10 +22,6 @@ function getFinishedCards(path: string) {
     finishedCards = cards.split("\n");
 }
 
-/**
- * @param {RegExp | string} query 
- * @param {string} [path=null] 
- */
 function searchCards(query: RegExp | string, path?: string) {
     if (!path) path = "../../cards";
     if (path == "../../cards/Tests") return; // We don't care about test cards

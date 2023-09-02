@@ -181,7 +181,7 @@ const eventManager: IEventManager = {
             let [current, max] = quest.progress;
 
             let done = current + 1 >= max;
-            if (quest.callback(val, quest.turn, done) === false) return;
+            if (quest.callback(val, done) === false) return;
 
             quest.progress[0]++;
 
@@ -335,6 +335,8 @@ export class Game {
      * Use `functions.getCards()` instead.
      */
     cards: Blueprint[] = [];
+
+    Card = Card;
 
     /**
      * The turn counter.

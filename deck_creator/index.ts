@@ -271,7 +271,7 @@ function showCards() {
 
         let reg = new RegExp(`^${chosen_class}|Neutral`);
 
-        c.class.split(" / ").forEach(cl => {
+        c.classes.forEach(cl => {
             if (!reg.test(cl)) return;
 
             filtered_cards.push(c);
@@ -287,7 +287,7 @@ function showCards() {
 
     if (settings.search.query.length > 0) console.log(`Searching for '${settings.search.query.join(' ')}'.`);
 
-    let _filtered_cards = Object.values(filtered_cards).filter(c => c.class == settings.view.class);
+    let _filtered_cards = Object.values(filtered_cards).filter(c => c.classes.includes(settings.view.class ?? chosen_class));
 
     let searchFailed = false;
 

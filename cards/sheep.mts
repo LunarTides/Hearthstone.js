@@ -9,10 +9,10 @@ const blueprint: Blueprint = {
     mana: 1,
     type: "Minion",
     tribe: "Beast",
-    class: "Neutral",
+    classes: ["Neutral"],
     rarity: "Free",
     uncollectible: true,
-    id: 106,
+    id: 1,
 }
 
 export default blueprint;

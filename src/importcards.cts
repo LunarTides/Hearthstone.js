@@ -17,6 +17,8 @@ function _doImportCards(path: string) {
         if (file.name.endsWith(".mjs")) {
             // Synchronously import the card without using require
             let f = require(p).default;
+
+            if (!f) throw new Error("Card doesn't have a default export: " + p);
             cards.push(f);
         }
         else if (file.isDirectory()) _doImportCards(p);

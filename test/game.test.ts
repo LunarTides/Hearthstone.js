@@ -50,7 +50,7 @@ describe("Game", () => {
     it ('should update quests', () => {
         const card = testCard();
 
-        functions.addQuest("Quest", test_player1, card, "Dummy", 3, (val, turn, done) => {
+        functions.addQuest("Quest", test_player1, card, "Dummy", 3, (val, done) => {
             if (!card.storage.quest_progress) card.storage.quest_progress = 0;
             card.storage.quest_progress++;
 
@@ -87,7 +87,7 @@ describe("Game", () => {
             if (key != "Eval" || quest_added) return; // Only add the quest if the key is 'pass' and the quest does not already exist
             quest_added = true;
 
-            functions.addQuest("Quest", test_player1, card, "Dummy", 3, (val, turn, done) => {
+            functions.addQuest("Quest", test_player1, card, "Dummy", 3, (val, done) => {
                 if (!card.storage.quest_progress) card.storage.quest_progress = 0;
                 card.storage.quest_progress++;
 

@@ -8,11 +8,11 @@ const blueprint: Blueprint = {
     desc: "Mage starting hero",
     mana: 0,
     type: "Hero",
-    class: "Mage",
+    classes: ["Mage"],
     rarity: "Free",
     hpDesc: "Deal 1 damage.",
     uncollectible: true,
-    id: 97,
+    id: 4,
 
     heropower(plr, game, self) {
         game.suppressedEvents.push("CastSpellOnMinion");

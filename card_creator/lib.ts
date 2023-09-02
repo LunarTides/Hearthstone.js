@@ -45,15 +45,18 @@ function getCardFunction(card_type: CardType) {
     return func;
 }
 
-function generateCardPath(...args: [CardClass[], CardType]) {
+function generateCardPath(...args: [CardClass | CardClass[], CardType]) {
     // Create a path to put the card in.
     let [classes, type] = args;
 
     // DO NOT CHANGE THIS
-    let static_path = `../cards/`;
+    let static_path = game.functions.dirname() + `../cards/`;
 
     // You can change this
-    let classesString = classes.join("/");
+    let classesString = "";
+    if (classes instanceof Array) classesString = classes.join("/");
+    else classesString = classes;
+
     // If the type is Hero, we want the card to go to '.../Heroes/...' and not to '.../Heros/...'
     let typeString = (type == "Hero") ? "Heroe" : type;
     let dynamic_path = `Classes/${classesString}/${typeString}s/${card.mana} Cost/`;
@@ -68,12 +71,10 @@ export function create(override_type: CardType, override_card: Blueprint, overri
     // If the user didn't specify a tribe, but the tribe exists, set the tribe to "None".
     //if (card.tribe && card.tribe === "") card.tribe = "None";
 
-    let file_friendly_type = type.toLowerCase();
-
-    let func = getCardFunction(file_friendly_type as CardType);
+    let func = getCardFunction(type);
 
     // If the card has the word "Secret" in its description, put it in the ".../Secrets/..." folder.
-    if (card.desc.includes("Secret:")) file_friendly_type = "Secret";
+    if (card.desc.includes("Secret:")) type = "Secret" as CardType;
 
     // Here it creates a default function signature
     let isPassive = func.toLowerCase() == "passive";
@@ -101,11 +102,8 @@ export function create(override_type: CardType, override_card: Blueprint, overri
         ${extraPassiveCode}
     }`; // Examples: '\n\n    passive(plr, game, self, key, val) {\n        // Your battlecries trigger twice\n        }', '\n\n    battlecry(plr, game, self) {\n\n    }'
 
-    // If there are multiple classes in a card, put the card in a directory something like this '.../Class1/Class2/...'
-    let classes = card.class.split(" / ") as CardClass[];
-
     // Create a path to put the card in.
-    let path = generateCardPath(classes, file_friendly_type as CardType);
+    let path = generateCardPath(card.classes, type);
     if (override_path) path = override_path; // If this function was passed in a path, use that instead.
 
     // Create a filename. Example: "Test Card" -> "test_card.mts"
@@ -113,7 +111,7 @@ export function create(override_type: CardType, override_card: Blueprint, overri
     if (override_filename) filename = override_filename; // If this function was passed in a filename, use that instead.
 
     // Get the latest card-id
-    let id = parseInt(fs.readFileSync("../cards/.latest_id", "utf8"));
+    let id = parseInt(fs.readFileSync(game.functions.dirname() + "../cards/.latest_id", "utf8")) + 1;
     let file_id = `\n    id: ${id},`;
 
     // Generate the content of the card
@@ -121,17 +119,19 @@ export function create(override_type: CardType, override_card: Blueprint, overri
     const getTypeValue = (val: any) => {
         let ret = val;
 
-        // If the value is a string, but not an array (arrays are parsed as strings, don't ask), set the value to '"value"'.
-        if (typeof(val) === 'string' && val[0] != "[") ret = `"${val}"`; 
+        if (val instanceof Array) ret = "[" + val.map((v: any) => {
+            if (typeof v === "string") return `"${v}"`;
+            else return v;
+        }).join(", ") + "]";
 
-        return ret;
+        return ret.toString();
     }
 
     let split_path = path.split(/[\\/]/);
     let num = split_path.length - split_path.indexOf("cards");
     let type_path_rel = "../".repeat(num - 1) + "src/types.js";
 
-    let contentArray = Object.entries(card).map(c => `${c[0]}: ${getTypeValue(c[1])}`); // name: "Test"
+    let contentArray = Object.entries(card).filter(c => c[0] != "id").map(c => `${c[0]}: ${getTypeValue(c[0])}`); // name: "Test"
     let content = `// Created by the ${cctype} Card Creator
 
 import { Blueprint, EventValue } from "${type_path_rel}";
@@ -155,7 +155,7 @@ export default blueprint;
         // If debug mode is disabled, write the card to disk.
         
         // Increment the id in '.latest_id' by 1
-        fs.writeFileSync("../cards/.latest_id", (id + 1).toString()); 
+        fs.writeFileSync(game.functions.dirname() + "../cards/.latest_id", id.toString()); 
 
         // If the path the card would be written to doesn't exist, create it.
         if (!fs.existsSync(path)) fs.mkdirSync(path, { recursive: true });
@@ -165,7 +165,7 @@ export default blueprint;
         console.log('File created at: "' + file_path + '"');
     } else {
         // If debug mode is enabled, just show some information about the card.
-        console.log(`\nNew ID: ${id + 1}`); // This is the id that would be written to '.latest_id'
+        console.log(`\nNew ID: ${id}`); // This is the id that would be written to '.latest_id'
         console.log(`Would be path: "${file_path.replaceAll("\\", "/").replace(".", "")}"`);
         console.log(`Content: ${content}`);
         rl.question();

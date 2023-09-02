@@ -73,7 +73,8 @@ export type MinionTribe = "Beast" |
                           "Quilboar" |
                           "Totem" |
                           "Undead" |
-                          "All";
+                          "All" |
+                          "None";
 
 /**
  * Card keywords
@@ -352,7 +353,7 @@ export type GameConstants = {
 /**
  * The quest callback used in card blueprints.
  */
-export type QuestCallback = (val: EventValue<EventKey>, turn: number, done: boolean) => boolean;
+export type QuestCallback = (val: EventValue<EventKey>, done: boolean) => boolean;
 
 /**
  * The backend of a quest.
@@ -362,7 +363,6 @@ export type QuestType = {
     progress: [number, number],
     key: EventKey,
     value: number,
-    turn: number,
     callback: QuestCallback,
     next?: string
 };
@@ -410,34 +410,33 @@ type BlueprintAbilities = {
  */
 export type Blueprint = {
     name: string,
+    displayName?: string,
+    stats?: number[],
     desc: string,
     mana: number,
     type: CardType,
-    class: CardClass,
-    rarity: CardRarity,
 
-    uncollectible?: boolean,
-    id?: number,
-    displayName?: string,
-
-    stats?: number[],
     tribe?: MinionTribe,
-
     spellClass?: SpellSchool,
-
     cooldown?: number,
-
     hpDesc?: string,
     hpCost?: number,
 
+    classes: CardClass[],
+    rarity: CardRarity,
     keywords?: CardKeyword[],
 
     runes?: string,
+    dormant?: number,
     colossal?: string[],
     corrupt?: string,
     settings?: any,
 
-    conditioned?: boolean
+    conditioned?: CardAbility[],
+    storage?: { [key: string]: any },
+
+    uncollectible?: boolean,
+    id: number,
 } & BlueprintAbilities;
 
 /**

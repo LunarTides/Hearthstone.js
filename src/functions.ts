@@ -24,11 +24,6 @@ const deckcode = {
     import(plr: Player, code: string): Card[] | null {
         /**
          * Cause the function to return an error
-         * 
-         * @param {string} error_code
-         * @param {string | null} [card_name]
-         *  
-         * @returns {"invalid"} 
          */
         const ERROR = (error_code: string, card_name: string | null = null): null => {
             console.log("This deck is not valid!\nError Code: ".red + error_code.yellow);
@@ -1051,13 +1046,10 @@ ${main_content}
      * @returns Cards
      */
     getCards(uncollectible: boolean = true, cards: Blueprint[] = game.cards): Blueprint[] {
-        let _cards: Blueprint[] = [];
-
-        cards.forEach(c => {
-            if (!c.uncollectible || !uncollectible) _cards.push(c);
+        return cards.filter(c => {
+            console.log(c)
+            return !c.uncollectible && uncollectible;
         });
-
-        return _cards;
     },
 
     /**
@@ -1093,7 +1085,7 @@ ${main_content}
      * assert.equal(result, true);
      */
     validateClass(plr: Player, card: CardLike): boolean {
-        return [plr.heroClass, "Neutral"].includes(card.class);
+        return card.classes.includes(plr.heroClass);
     },
 
     /**
@@ -1131,7 +1123,11 @@ ${main_content}
      * @returns Success | Errorcode
      */
     validateCard(card: Card, plr: Player): FunctionsValidateCardReturn {
-        if (!card.class.split(" / ").includes(plr.heroClass) && card.class != "Neutral") return "class";
+        if (!card.classes.includes(plr.heroClass)) {
+            // If it is a neutral card, it is valid
+            if (card.classes.includes("Neutral")) {}
+            else return "class";
+        }
         if (card.uncollectible) return "uncollectible";
 
         // Runes
@@ -1174,12 +1170,12 @@ ${main_content}
             name = game.functions.capitalizeAll(name); // Capitalize all words
 
             let card = game.functions.getCardByName(name + " Starting Hero");
-            if (!card || card.class != name || card.type != "Hero" || !card.heropower || card.class === "Neutral") {
+            if (!card || card.classes[0] != name as CardClassNoNeutral || card.type != "Hero" || !card.heropower || card.classes.includes("Neutral")) {
                 console.warn("Found card in the startingheroes folder that isn't a starting hero. If the game crashes, please note this in your bug report. Name: " + name + ". Error Code: StartingHeroInvalidHandler");
                 return;
             }
 
-            classes.push(card.class);
+            classes.push(card.classes[0] as CardClassNoNeutral);
         });
 
         return classes;
@@ -1516,13 +1512,107 @@ ${main_content}
      * 
      * @returns An array with the name of the adapt(s) chosen, or -1 if the user cancelled.
      */
-    adapt(minion: Card, prompt: string = "Choose One:", _values: Card[] = []): any[] | -1 {
-        const ADAPT = new Card("Adapt Helper", game.player);
+    adapt(minion: Card, prompt: string = "Choose One:", _values: string[][] = []): string | -1 {
+        if (!minion) return -1;
 
-        let ret = ADAPT.activate("adapt", minion, prompt, _values);
-        if (ret === false) throw new Error("activate couldn't find adapt for ADAPT card.");
+        game.interact.printAll(game.player);
 
-        return ret;
+        let possible_cards = [
+            ["Crackling Shield", "Divine Shield"],
+            ["Flaming Claws", "+3 Attack"],
+            ["Living Spores", "Deathrattle: Summon two 1/1 Plants."],
+            ["Lightning Speed", "Windfury"],
+            ["Liquid Membrane", "Can't be targeted by spells or Hero Powers."],
+            ["Massive", "Taunt"],
+            ["Volcanic Might", "+1/+1"],
+            ["Rocky Carapace", "+3 Health"],
+            ["Shrouding Mist", "Stealth until your next turn."],
+            ["Poison Spit", "Poisonous"]
+        ];
+        let values = _values;
+
+        if (values.length == 0) {
+            for (let i = 0; i < 3; i++) {
+                let c = game.functions.randList(possible_cards);
+                if (c instanceof Card) throw new TypeError();
+
+                values.push(c);
+                game.functions.remove(possible_cards, c);
+            }
+        }
+
+        let p = `\n${prompt}\n[\n`;
+
+        values.forEach((v, i) => {
+            // Check for a TypeError and ignore it
+            try {
+                p += `${i + 1}: ${v[0]}; ${v[1]},\n`;
+            } catch (e) {}
+        });
+
+        p = p.slice(0, -2);
+        p += "\n] ";
+
+        let choice = game.input(p);
+        if (!parseInt(choice)) {
+            game.input("Invalid choice!\n".red);
+            return functions.adapt(minion, prompt, values);
+        }
+
+        if (parseInt(choice) > 3) return functions.adapt(minion, prompt, values);
+
+        choice = values[parseInt(choice) - 1][0];
+
+        switch (choice) {
+            case "Crackling Shield":
+                minion.addKeyword("Divine Shield");
+
+                break;
+            case "Flaming Claws":
+                minion.addStats(3, 0);
+
+                break;
+            case "Living Spores":
+                minion.addDeathrattle((plr, game) => {
+                    game.summonMinion(new Card("Plant", plr), plr);
+                    game.summonMinion(new Card("Plant", plr), plr);
+                });
+
+                break;
+            case "Lightning Speed":
+                minion.addKeyword("Windfury");
+
+                break;
+            case "Liquid Membrane":
+                minion.addKeyword("Elusive");
+
+                break;
+            case "Massive":
+                minion.addKeyword("Taunt");
+
+                break;
+            case "Volcanic Might":
+                minion.addStats(1, 1);
+
+                break;
+            case "Rocky Carapace":
+                minion.addStats(0, 3);
+
+                break;
+            case "Shrouding Mist":
+                minion.addKeyword("Stealth");
+                minion.setStealthDuration(1);
+
+                break;
+            case "Poison Spit":
+                minion.addKeyword("Poisonous");
+
+                break;
+            default:
+                break;
+        }
+
+        return choice;
     },
 
     /**
@@ -1640,7 +1730,7 @@ ${main_content}
     /**
      * Returns the directory name of the program
      *
-     * @return {string} The directory name.
+     * @return The directory name.
      */
     dirname(): string {
         return path.dirname(fileURLToPath(import.meta.url)).replace("/src", "/");
@@ -1716,7 +1806,7 @@ ${main_content}
      * @param callback The function to call when the key is invoked.
      * @param next The name of the next quest / sidequest / secret that should be added when the quest is done
      * 
-     * @returns {boolean} Success
+     * @returns Success
      */
     addQuest(type: "Quest" | "Sidequest" | "Secret", plr: Player, card: Card, key: EventKey, amount: number, callback: QuestCallback, next?: string): boolean {
         let t;
@@ -1732,7 +1822,7 @@ ${main_content}
             return false;
         }
 
-        t.push({"name": card.displayName, "progress": [0, amount], "key": key, "value": amount, "turn": game.turns, "callback": callback, "next": next});
+        t.push({"name": card.displayName, "progress": [0, amount], "key": key, "value": amount, "callback": callback, "next": next});
         return true;
     }
 }

@@ -62,8 +62,9 @@ function createCard(card: VanillaCard, main: boolean) {
             mana: mana,
             type: type,
             tribe: races[0], // TODO: Add support for more than 1 tribe
-            class: cardClass,
-            rarity: rarity
+            classes: [cardClass],
+            rarity: rarity,
+            id: 0,
         }
     }
     else if (type == "Spell") {
@@ -73,8 +74,9 @@ function createCard(card: VanillaCard, main: boolean) {
             mana: mana,
             type: type,
             spellClass: spellClass,
-            class: cardClass,
-            rarity: rarity
+            classes: [cardClass],
+            rarity: rarity,
+            id: 0,
         }
     }
     else if (type == "Weapon") {
@@ -84,8 +86,9 @@ function createCard(card: VanillaCard, main: boolean) {
             desc: desc,
             mana: mana,
             type: type,
-            class: cardClass,
-            rarity: rarity
+            classes: [cardClass],
+            rarity: rarity,
+            id: 0,
         }
     }
     else if (type == "Hero") {
@@ -94,10 +97,11 @@ function createCard(card: VanillaCard, main: boolean) {
             desc: desc,
             mana: mana,
             type: type,
-            class: cardClass,
+            classes: [cardClass],
             rarity: rarity,
             hpDesc: "",
-            hpCost: 2
+            hpCost: 2,
+            id: 0,
         }
     }
     else if (type == "Location") {
@@ -107,9 +111,10 @@ function createCard(card: VanillaCard, main: boolean) {
             desc: desc,
             mana: mana,
             type: type,
-            class: cardClass,
+            classes: [cardClass],
             rarity: rarity,
-            cooldown: 2
+            cooldown: 2,
+            id: 0,
         }
     }
     else {
