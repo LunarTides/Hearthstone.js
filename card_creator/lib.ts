@@ -18,7 +18,7 @@ let type: CardType;
 
 type CCType = "Undefined" | "Class" | "Custom" | "Vanilla";
 
-let debug = false;
+let debug = true;
 let cctype: CCType = "Undefined";
 
 function getCardFunction(card_type: CardType) {
@@ -125,6 +125,8 @@ export function create(override_type: CardType, override_card: Blueprint, overri
         return ret.toString();
     }
 
+    let passiveImport = isPassive ? ", EventValue" : "";
+
     let split_path = path.split(/[\\/]/);
     let num = split_path.length - split_path.indexOf("cards");
     let type_path_rel = "../".repeat(num - 1) + "src/types.js";
@@ -132,7 +134,7 @@ export function create(override_type: CardType, override_card: Blueprint, overri
     let contentArray = Object.entries(card).filter(c => c[0] != "id").map(c => `${c[0]}: ${getTypeValue(c[0])}`); // name: "Test"
     let content = `// Created by the ${cctype} Card Creator
 
-import { Blueprint, EventValue } from "${type_path_rel}";
+import { Blueprint${passiveImport} } from "${type_path_rel}";
 
 const blueprint: Blueprint = {
     ${contentArray.join(',\n    ')},${file_id}

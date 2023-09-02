@@ -1,6 +1,5 @@
 // Created by Hand (before the Card Creator Existed)
 
-import { Card } from "../../src/card.js";
 import { Blueprint } from "../../src/types.js";
 
 const blueprint: Blueprint = {

@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import { question }  from 'readline-sync';
 import { functions, interact, Player, Card, AI } from "./internal.js";
 import { Blueprint, EventKey, EventManagerEvents, EventValue, GameAttackReturn, GameConfig, GameConstants, GamePlayCardReturn, QuestType, Target, TickHookCallback } from "./types.js";
@@ -100,10 +101,8 @@ const eventManager: IEventManager = {
                 c.replacePlaceholders();
 
                 // Check for condition
-                // @ts-expect-error
-                let cleared_text = " (Condition cleared!)".brightGreen;
-                // @ts-expect-error
-                let cleared_text_alt = "Condition cleared!".brightGreen;
+                let cleared_text = chalk.greenBright(" (Condition cleared!)");
+                let cleared_text_alt = chalk.greenBright("Condition cleared!");
                 c.desc = c.desc?.replace(cleared_text, "");
                 c.desc = c.desc?.replace(cleared_text_alt, "");
 
@@ -504,7 +503,7 @@ export class Game {
     /**
      * Broadcast event to event listeners
      * 
-     * @param key The name of the event (see events.txt)
+     * @param key The name of the event (see `EventKey`)
      * @param val The value of the event
      * 
      * @returns Return values of all the executed functions
@@ -731,7 +730,7 @@ export class Game {
         // Condition
         let condition = card.activate("condition");
         if (condition instanceof Array && condition[0] === false) {
-            let warn = this.interact.yesNoQuestion(player, "WARNING: This card's condition is not fulfilled. Are you sure you want to play this card?".yellow);
+            let warn = this.interact.yesNoQuestion(player, chalk.yellow("WARNING: This card's condition is not fulfilled. Are you sure you want to play this card?"));
 
             if (!warn) return "refund";
         }

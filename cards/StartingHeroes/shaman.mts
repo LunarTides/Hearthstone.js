@@ -1,6 +1,5 @@
 // Created by the Custom Card Creator
 
-import { Card } from "../../src/internal.js";
 import { Blueprint } from "../../src/types.js";
 
 const blueprint: Blueprint = {

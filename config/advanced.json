@@ -11,7 +11,7 @@
     "_If this is true, `getReadableCard` will always show the full card in another card's description.": "Instead of it only being in detail mode.",
     "getReadableCardAlwaysShowFullCard": false,
 
-    "_These are the keys that will show up when running the history command.": "Look in `events.txt` for a list of valid keys. Also, the log files override this list and instead shows every valid key.",
+    "_These are the keys that will show up when running the history command.": "Look in `src/types` at `EventKey` for a list of valid keys. Also, the log files override this list and instead shows every valid key.",
     "whitelistedHistoryKeys": [
         "HealthRestored",
         "UnspentMana",

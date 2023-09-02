@@ -1,10 +1,10 @@
-import { Blueprint, CardClass, CardRarity, CardType, MinionTribe, SpellSchool, VanillaCard } from "../../src/types.js";
+import { Blueprint, CardClass, CardRarity, MinionTribe, SpellSchool, VanillaCard } from "../../src/types.js";
+import { Game, Player } from "../../src/internal.js";
 
+import chalk from "chalk";
 import { readFileSync } from "fs";
 import rl from "readline-sync";
 import * as lib from "../lib.js";
-
-import { Game, Player } from "../../src/internal.js";
 
 const game = new Game();
 const player1 = new Player("Player 1");
@@ -46,7 +46,7 @@ function createCard(card: VanillaCard, main: boolean) {
     classes.push("Neutral");
 
     while (!classes.includes(cardClass)) {
-        cardClass = game.functions.capitalizeAll(game.input("Was not able to find the class of this card.\nWhat is the class of this card? ".red)) as CardClass;
+        cardClass = game.functions.capitalizeAll(game.input(chalk.red("Was not able to find the class of this card.\nWhat is the class of this card? "))) as CardClass;
     }
 
     let realName = rl.question("Override name (this will set 'name' to be the displayname instead) (leave empty to not use display name): ") || name;

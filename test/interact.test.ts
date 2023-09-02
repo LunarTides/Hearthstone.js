@@ -2,6 +2,7 @@
 import "colors";
 import assert from 'assert';
 import { Player, Game, Card } from "../src/internal.js";
+import chalk from "chalk";
 
 // Setup the game / copied from the card updater
 const game = new Game();
@@ -268,8 +269,7 @@ describe("Interact", () => {
 
         let card = interact.getReadableCard(target, 1);
 
-        // @ts-expect-error brightGreen does not exist
-        const expected = "[1] " + "{1} ".cyan + "Sheep".bold + " [1 / 1]".brightGreen + " " + "(Minion)".yellow;
+        const expected = "[1] " + chalk.cyan("{1} ") + chalk.bold("Sheep") + chalk.greenBright(" [1 / 1]") + " " + chalk.yellow("(Minion)");
 
         assert.equal(card, expected);
     });

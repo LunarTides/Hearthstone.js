@@ -29,7 +29,7 @@ const blueprint: Blueprint = {
         // Whenever an event gets broadcast, this passive will be triggered with the key and value of that event.
         // The card can then choose to only do something if the correct event was broadcast. (By looking at the `key` of the event.)
 
-        // `key` is the key of the event. A list of keys is in `events.txt` in the main folder.
+        // `key` is the key of the event. Look in `src/types.ts` `EventKey` type for all keys.
         // `_unknownVal` is some additional information about the event. This is different for each `key`, which is why it's unknown.
         // We will narrow what `_unknownVal` once we know what `key` is.
         //

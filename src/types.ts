@@ -57,7 +57,11 @@ export type CostType = "mana" |
 export type SpellSchool = "Arcane" |
                           "Fel" |
                           "Fire" |
-                          "Frost" | "Holy" | "Nature" | "Shadow" | "General";
+                          "Frost" |
+                          "Holy" |
+                          "Nature" |
+                          "Shadow" |
+                          "General";
 
 /**
  * The tribe of the minion
