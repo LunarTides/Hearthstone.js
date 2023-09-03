@@ -2,7 +2,6 @@
 
 import { Blueprint } from "../../../src/types.js";
 
-// TODO: Location cards are currently broken.
 const blueprint: Blueprint = {
     name: "Location Example",
 

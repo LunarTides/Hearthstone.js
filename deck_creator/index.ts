@@ -486,7 +486,7 @@ function showDeck() {
             // Amount specified
             let amount = nameAndAmount.split(r);
             let card = findCard(nameAndAmount.replace(r, "").trim());
-            if (!card) return; // Todo: Maybe throw an error?
+            if (!card) return; // TODO: Maybe throw an error?
 
             let name = functions.colorByRarity(amount[1], card.rarity);
 

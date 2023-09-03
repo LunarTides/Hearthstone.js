@@ -1202,13 +1202,12 @@ export class Game {
             let sparedMinions: Card[] = [];
             
             this.board[p].forEach(m => {
-                if (m.type == "Location") return;
                 if (m.getHealth() <= 0) m.activate("deathrattle");
             });
 
             this.board[p].forEach(m => {
                 // Add minions with more than 0 health to n.
-                if (m.getHealth() > 0 || m.type == "Location") {
+                if (m.getHealth() > 0) {
                     sparedMinions.push(m);
                     return;
                 }

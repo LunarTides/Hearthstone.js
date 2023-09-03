@@ -3,7 +3,7 @@ import { AICalcMoveOption, AIHistory, CardLike, ScoredCard, SelectTargetAlignmen
 
 let game = globalThis.game;
 
-// FIXME: Ai gets stuck in infinite loop when using cathedral of atonement (location) | shadowcloth needle (0 attack wpn) | that minion has no attack.
+// TODO: Ai gets stuck in infinite loop when using cathedral of atonement (location) | shadowcloth needle (0 attack wpn) | that minion has no attack.
 export class AI {
     /**
      * The player that the AI is playing for
@@ -199,7 +199,7 @@ export class AI {
             let score = this.analyzePositiveCard(a);
             if (score > game.config.AIProtectThreshold || trades.map(c => c[0]).includes(a)) return; // Don't attack with high-value minions.
 
-            // If the card has the `sleepy` prop, it has the attackTimes prop too. TODO: Maybe have a different class for each card type.
+            // If the card has the `sleepy` prop, it has the attackTimes prop too.
             if (a.sleepy || a.attackTimes! <= 0) return;
 
             let opboard = game.board[this.plr.getOpponent().id].filter(m => this._canTargetMinion(m));
@@ -271,7 +271,7 @@ export class AI {
      * @param return_taunts If the function should return the taunts it found, or just if there is a taunt. If this is true it will return the taunts it found.
      */
     _tauntExists(return_taunts: boolean = false): Card[] | boolean {
-        // Todo: Make it only return Card[]
+        // TODO: Make it only return Card[]
         let taunts = game.board[this.plr.getOpponent().id].filter(m => m.keywords.includes("Taunt"));
 
         if (return_taunts) return taunts;

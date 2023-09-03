@@ -35,7 +35,6 @@ const blueprint: Blueprint = {
 
         plr.hand.forEach(c => {
             // Only remove the "-1 mana" enchantment given by this card.
-            // TODO: This doesn't work correctly
             c.removeEnchantment("-1 mana", self);
         });
     }

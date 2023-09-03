@@ -164,7 +164,7 @@ export class Card {
     /**
      * If the card is dormant | The turn that the dormant runs out
      */
-    // TODO: Verify that dormant works. The system seems unstable
+    // TODO: Rewrite dormant
     dormant: false | number = false;
 
     /**
@@ -377,7 +377,9 @@ export class Card {
         this.plr = plr;
 
         // Make a backup of "this" to be used when silencing this card
-        if (!this.backups["init"]) this.backups["init"] = this;
+        // TODO: Make the backups work without causing errors
+        // @ts-expect-error
+        if (!this.backups["init"]) this.backups["init"] = {};
         // @ts-expect-error
         Object.entries(this).forEach(i => this.backups["init"][i[0]] = i[1]);
 
@@ -986,8 +988,10 @@ export class Card {
             let [key, val] = ent;
 
             // Apply backup if it exists, otherwise keep it the same.
-            // @ts-expect-error
-            if (this.backups["init"][key] || this.backups["init"][key] === 0) this[key] = this.backups["init"][key];
+            if (this.backups["init"]?[key] : false) {
+                // @ts-expect-error
+                this[key] = this.backups["init"][key];
+            }
         });
 
         this.enchantments.forEach(e => {
@@ -997,8 +1001,6 @@ export class Card {
             let info = this.getEnchantmentInfo(enchantment);
             let [key, val, op] = Object.values(info);
             
-            if (op == "=") op = ""; // Otherwise `this[key] == val` happens
-
             let numberVal = parseInt(val);
 
             switch (op) {

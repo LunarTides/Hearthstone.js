@@ -1701,10 +1701,11 @@ export const interact = {
             game.board[i].forEach((m, n) => {
                 if (m.type == "Location") {            
                     sb += `[${n + 1}] `;
-                    sb += chalk.bold(`${m.displayName} `);
-                    sb += "{";
+                    sb += game.functions.colorByRarity(m.displayName, m.rarity);
+                    sb += " {";
                     sb += chalk.greenBright(`Durability: ${m.getHealth()} / `);
-                    sb += chalk.greenBright(m.backups.init.stats?[1] : 0);
+                    // @ts-expect-error
+                    sb += chalk.greenBright(m.backups.init.stats[1]);
                     sb += ", ";
         
                     sb += chalk.cyan(`Cooldown: ${m.cooldown} / ${m.backups.init.cooldown}`);
