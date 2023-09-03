@@ -15,6 +15,8 @@ export const interact = {
      * @returns Cancel | Success
      */
     doTurnAttack(): -1 | null | boolean | Card {
+        game = globalThis.game;
+
         let attacker, target;
 
         if (game.player.ai) {
@@ -102,6 +104,8 @@ export const interact = {
      * @returns A string if "echo" is false
      */
     handleCmds(q: string, echo: boolean = true, debug: boolean = false): boolean | string | -1 {
+        game = globalThis.game;
+
         let args = q.split(" ");
         let name = args[0];
         args.shift();
@@ -128,6 +132,7 @@ export const interact = {
                 return false;
             }
 
+            interact.printAll(game.player);
             let ask = interact.yesNoQuestion(game.player, chalk.yellow(game.player.hero?.hpDesc) + " Are you sure you want to use this hero power?");
             if (!ask) return false;
 
@@ -225,6 +230,7 @@ export const interact = {
             game.player.detailedView = !game.player.detailedView;
         }
         else if (name === "concede") {
+            interact.printAll(game.player);
             let confirmation = interact.yesNoQuestion(game.player, "Are you sure you want to concede?");
             if (!confirmation) return false;
 
@@ -689,6 +695,7 @@ export const interact = {
         }
         else if (name === "/reload" || name === "/rl") {
             if (game.config.reloadCommandConfirmation && !debug) {
+                interact.printAll(game.player);
                 let sure = interact.yesNoQuestion(game.player, chalk.yellow("Are you sure you want to reload? This will reset all cards to their base state."));
                 if (!sure) return false;
             }
@@ -754,6 +761,8 @@ export const interact = {
      * @returns true | The return value of `game.playCard`
      */
     doTurnLogic(input: string): GamePlayCardReturn {
+        game = globalThis.game;
+
         if (interact.handleCmds(input) !== -1) return true;
         let parsedInput = parseInt(input);
 
@@ -772,6 +781,7 @@ export const interact = {
      * @returns Success | The return value of doTurnLogic
      */
     doTurn(): boolean | string | GamePlayCardReturn {
+        game = globalThis.game;
         game.events.tick("GameLoop", "doTurn");
 
         if (game.player.ai) {
@@ -826,6 +836,8 @@ export const interact = {
      * @return Success
      */
     useLocation(): boolean | "nolocations" | "invalidtype" | "cooldown" | -1 {
+        game = globalThis.game;
+
         let locations = game.board[game.player.id].filter(m => m.type == "Location");
         if (locations.length <= 0) return "nolocations";
 
@@ -856,6 +868,7 @@ export const interact = {
      * @returns Success
      */
     deckCode(plr: Player): boolean {
+        game = globalThis.game;
         interact.printName();
     
         /**
@@ -893,6 +906,8 @@ export const interact = {
      * @returns A string of the indexes of the cards the player mulligan'd
      */
     mulligan(plr: Player): string {
+        game = globalThis.game;
+
         interact.printAll(plr);
 
         let sb = "\nChoose the cards to mulligan (1, 2, 3, ...):\n";
@@ -921,6 +936,8 @@ export const interact = {
      * @returns The card chosen
      */
     dredge(prompt: string = "Choose a card to Dredge:"): Card | null {
+        game = globalThis.game;
+
         // Look at the bottom three cards of the deck and put one on the top.
         let cards = game.player.deck.slice(0, 3);
 
@@ -972,6 +989,8 @@ export const interact = {
      * @returns The chosen answer(s) index(es)
      */
     chooseOne(prompt: string, options: string[], times: number = 1): number | null | (number | null)[] {
+        game = globalThis.game;
+
         interact.printAll();
 
         let choices = [];
@@ -1017,6 +1036,8 @@ export const interact = {
      * @returns Chosen
      */
     question(plr: Player, prompt: string, answers: string[]): string {
+        game = globalThis.game;
+
         const RETRY = () => {
             return interact.question(plr, prompt, answers);
         }
@@ -1063,7 +1084,7 @@ export const interact = {
      * @returns `true` if Yes / `false` if No
      */
     yesNoQuestion(plr: Player, prompt: string): boolean {
-        interact.printAll(plr);
+        game = globalThis.game;
 
         let ask = `\n${prompt} [` + chalk.greenBright('Y') + ' | ' + chalk.red('N') + `] `;
 
@@ -1093,6 +1114,8 @@ export const interact = {
      * @returns The card chosen.
      */
     discover(prompt: string, cards: CardLike[] = [], filterClassCards: boolean = true, amount: number = 3, _cards: CardLike[] = []): Card | null {
+        game = globalThis.game;
+
         // Discover doesn't work
         interact.printAll();
         let values: CardLike[] = _cards;
@@ -1176,6 +1199,8 @@ export const interact = {
      * @returns The card or hero chosen
      */
     selectTarget(prompt: string, card: Card | null, force_side: SelectTargetAlignment, force_class: SelectTargetClass, flags: SelectTargetFlag[] = []): Target | false {
+        game = globalThis.game;
+
         game.events.broadcast("TargetSelectionStarts", [prompt, card, force_side, force_class, flags], game.player);
         let target = interact._selectTarget(prompt, card, force_side, force_class, flags);
 
@@ -1329,6 +1354,7 @@ export const interact = {
      * @param disappear If this is true, "This will disappear once you end your turn" will show up.
      */
     printLicense(disappear: boolean = true): void {
+        game = globalThis.game;
         if (game.config.debug) return;
     
         cls();
@@ -1351,6 +1377,8 @@ export const interact = {
      * @returns The return value of the callback. If the callback didn't explicitly return false then it was successful.
      */
     withStatus(status: string, callback: () => boolean): boolean {
+        game = globalThis.game;
+
         process.stdout.write(`${status}...`);
         let success = callback() !== false;
         
@@ -1370,6 +1398,7 @@ export const interact = {
      * @return The modified description with placeholders replaced.
      */
     doPlaceholders(card: Card, overrideDesc: string = "", _depth: number = 0): string {
+        game = globalThis.game;
         let reg = new RegExp(`{ph:(.*?)} .*? {/ph}`);
 
         let desc = overrideDesc;
@@ -1434,6 +1463,8 @@ export const interact = {
      * @returns The readable card
      */
     getReadableCard(card: CardLike, i: number = -1, _depth: number = 0): string {
+        game = globalThis.game;
+
         /**
          * If it should show detailed errors regarding depth.
          */
@@ -1505,6 +1536,7 @@ export const interact = {
     printAll(plr?: Player): void {
         // WARNING: Stinky and/or smelly code up ahead. Read at your own risk.
         // TODO: #246 Reformat this
+        game = globalThis.game;
 
         if (!plr) plr = game.player;
 

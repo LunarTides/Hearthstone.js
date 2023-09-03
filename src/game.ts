@@ -341,6 +341,11 @@ export class Game {
      */
     cards: Blueprint[] = [];
 
+    playCard = cards.play.play;
+    summonMinion = cards.summon;
+
+    attack = attack.attack;
+
     Card = Card;
 
     /**
@@ -688,303 +693,79 @@ export class Game {
         return true;
     }
 
-    // Playing cards
+    // Interacting with minions
 
     /**
-     * Play a card
+     * Kill all minions with 0 or less health
      * 
-     * @param card The card to play
-     * @param player The card's owner
+     * @returns The amount of minions killed
      */
-    playCard(card: Card, player: Player): GamePlayCardReturn {
-        if (!card || !player) {
-            if (this.evaling) throw new TypeError("Evaling Error - The `card` or `player` argument passed to `playCard` are invalid. Make sure you passed in both arguments.");
-            return "invalid";
-        }
+    killMinions(): number {
+        let amount = 0;
 
-        this.killMinions();
+        for (let p = 0; p < 2; p++) {
+            let plr: Player;
+            if (p === 0) plr = this.player1;
+            else plr = this.player2;
 
-        while (card.keywords.includes("Tradeable")) {
-            let q;
-
-            if (player.ai) q = player.ai.trade(card);
-            else q = this.interact.yesNoQuestion(player, "Would you like to trade " + this.functions.colorByRarity(card.displayName, card.rarity) + " for a random card in your deck?");
-
-            if (!q) break;
+            let sparedMinions: Card[] = [];
             
-            if (player.mana < 1) return "mana";
-
-            player.mana -= 1;
-
-            player.removeFromHand(card);
-            player.drawCard();
-            player.shuffleIntoDeck(card);
-
-            this.events.broadcast("TradeCard", card, player);
-    
-            return "traded";
-        }
-
-        if (player[card.costType] < card.mana) return "mana";
-
-        // Condition
-        let condition = card.activate("condition");
-        if (condition instanceof Array && condition[0] === false) {
-            let warn = this.interact.yesNoQuestion(player, chalk.yellow("WARNING: This card's condition is not fulfilled. Are you sure you want to play this card?"));
-
-            if (!warn) return "refund";
-        }
-
-        player[card.costType] -= card.mana;
-        //card.mana = card.backups.mana;
-
-        player.removeFromHand(card);
-
-        // Echo
-        let echo_clone = null;
-
-        if (card.keywords.includes("Echo")) {
-            echo_clone = card.perfectCopy(); // Create an exact copy of the card played
-            echo_clone.echo = true;
-        }
-
-        let ret: GamePlayCardReturn = true;
-
-        let op = player.getOpponent();
-        let board = this.board[player.id];
-
-        if (op.counter && op.counter.includes(card.type)) {
-            op.counter.splice(op.counter.indexOf(card.type), 1);    
-            return "counter";
-        }
-
-        // If the board has max capacity, and the card played is a minion or location card, prevent it.
-        if (board.length >= this.config.maxBoardSpace && ["Minion", "Location"].includes(card.type)) {
-            let unsuppress = this.functions.suppressEvent("AddCardToHand");
-            player.addToHand(card);
-            unsuppress();
-
-            if (card.costType == "mana") player.refreshMana(card.mana);
-            else player[card.costType] += card.mana;
-
-            return "space";
-        }
-
-        // Add cardsplayed to history
-        let historyIndex: number;
-        historyIndex = this.events.history[this.turns].push(["PlayCard", card, this.player]);
-
-        const removeFromHistory = () => {
-            this.events.history[this.turns].splice(historyIndex - 1, 1);
-        }
-
-        this.events.broadcast("PlayCardUnsafe", card, player, false);
-
-        // Finale
-        if (player[card.costType] == 0) card.activate("finale");
-
-        if (card.type === "Minion") {
-            // Magnetize
-            if (card.keywords.includes("Magnetic") && board.length > 0) {
-                let mechs = board.filter(m => m.tribe?.includes("Mech"));
-    
-                // I'm using while loops to prevent a million indents
-                while (mechs.length > 0) {
-                    let minion = this.interact.selectCardTarget("Which minion do you want this to Magnetize to:", null, "friendly");
-                    if (!minion) break;
-
-                    if (!minion.tribe?.includes("Mech")) {
-                        console.log("That minion is not a Mech.");
-                        continue;
-                    }
-    
-                    minion.addStats(card.getAttack(), card.getHealth());
-    
-                    card.keywords.forEach(k => {
-                        // TSC for some reason, forgets that minion should be of `Card` type here, so we have to remind it. This is a workaround
-                        if (!(minion instanceof Card)) return;
-
-                        minion.addKeyword(k);
-                    });
-
-                    if (minion.maxHealth && card.maxHealth) {
-                        minion.maxHealth += card.maxHealth;
-                    }
-    
-                    if (card.abilities.deathrattle) {
-                        card.abilities.deathrattle.forEach(d => {
-                            // Look at the comment above
-                            if (!minion) throw new Error("Target wasn't found.");
-
-                            minion.addDeathrattle(d);
-                        });
-                    }
-
-                    if (echo_clone) player.addToHand(echo_clone);
-    
-                    // Corrupt
-                    player.hand.forEach(c => {
-                        if (c.corrupt && card.mana <= c.mana) {
-                            let t = new Card(c.corrupt, c.plr);
-
-                            player.removeFromHand(c);
-
-                            let unsuppress = this.functions.suppressEvent("AddCardToHand");
-                            c.plr.addToHand(t);
-                            unsuppress();
-                        }
-                    });
-
-                    return "magnetize";
-                }
-    
-            }
-
-            if (!card.dormant && card.activateBattlecry() === -1) {
-                removeFromHistory();
-
-                return "refund";
-            }
-
-            let unsuppress = this.functions.suppressEvent("SummonMinion");
-            ret = this.summonMinion(card, player);
-            unsuppress();
-        } else if (card.type === "Spell") {
-            if (card.activate("cast") === -1) {
-                removeFromHistory();
-
-                return "refund";
-            }
-
-            if (card.keywords.includes("Twinspell")) {
-                card.removeKeyword("Twinspell");
-                card.desc = card.desc?.split("Twinspell")[0].trim();
-
-                player.addToHand(card);
-            }
-
-            board.forEach(m => {
-                m.activate("spellburst");
-                m.abilities.spellburst = undefined;
+            this.board[p].forEach(m => {
+                if (m.getHealth() <= 0) m.activate("deathrattle");
             });
-        } else if (card.type === "Weapon") {
-            player.setWeapon(card);
 
-            card.activateBattlecry();
-        } else if (card.type === "Hero") {
-            player.setHero(card, 5);
-
-            card.activateBattlecry();
-        } else if (card.type === "Location") {
-            card.setStats(0, card.getHealth());
-            card.immune = true;
-            card.cooldown = 0;
-
-            let unsuppress = this.functions.suppressEvent("SummonMinion");
-            ret = this.summonMinion(card, player);
-            unsuppress();
-        }
-
-        if (echo_clone) player.addToHand(echo_clone);
-
-        this.events.broadcast("PlayCard", card, player, false);
-
-        let stat;
-        let playCardEvent = this.events.events.PlayCard;
-        if (playCardEvent) stat = playCardEvent[player.id];
-
-        // If the previous card played was played on the same turn as this one, activate combo
-        if (stat && stat.length > 1 && stat[stat.length - 2][0].turn == this.turns) card.activate("combo");
-
-        player.hand.forEach(c => {
-            if (c.corrupt && card.mana > c.mana) {
-                let t = new Card(c.corrupt, c.plr);
-
-                player.removeFromHand(c);
-
-                let unsuppress = this.functions.suppressEvent("AddCardToHand");
-                c.plr.addToHand(t);
-                unsuppress();
-            }
-        });
-
-        this.killMinions();
-
-        return ret;
-    }
-
-    /**
-     * Summon a minion.
-     * Broadcasts the `SummonMinion` event
-     * 
-     * @param minion The minion to summon
-     * @param player The player who gets the minion
-     * @param trigger_colossal If the minion has colossal, summon the other minions.
-     * 
-     * @returns The minion summoned
-     */
-    summonMinion(minion: Card, player: Player, trigger_colossal: boolean = true): Card | "space" | "colossal" | "invalid" {
-        if (!minion || !player) {
-            if (this.evaling) throw new TypeError("Evaling Error - The `minion` or `player` argument passed to `summonMinion` are invalid. Make sure you passed in both arguments.");
-            return "invalid";
-        };
-
-        // If the board has max capacity, and the card played is a minion or location card, prevent it.
-        if (this.board[player.id].length >= this.config.maxBoardSpace) return "space";
-        this.events.broadcast("SummonMinion", minion, player);
-
-        player.spellDamage = 0;
-
-        if (minion.keywords.includes("Charge")) minion.sleepy = false;
-
-        if (minion.keywords.includes("Rush")) {
-            minion.sleepy = false;
-            minion.canAttackHero = false;
-        }
-
-        if (minion.colossal && trigger_colossal) {
-            // minion.colossal is a string array.
-            // example: ["Left Arm", "", "Right Arm"]
-            // the "" gets replaced with the main minion
-
-            minion.colossal.forEach(v => {
-                let unsuppress = this.functions.suppressEvent("SummonMinion");
-
-                if (v == "") {
-                    this.summonMinion(minion, player, false);
-                    unsuppress();
+            this.board[p].forEach(m => {
+                // Add minions with more than 0 health to n.
+                if (m.getHealth() > 0) {
+                    sparedMinions.push(m);
                     return;
                 }
 
-                let card = new Card(v, player);
-                card.dormant = minion.dormant;
+                // Calmly tell the minion that it is going to die
+                m.activate("remove");
+                this.events.broadcast("KillMinion", m, this.player);
 
-                this.summonMinion(card, player);
+                m.turnKilled = this.turns;
+                amount++;
+
+                plr.corpses++;
+                this.graveyard[p].push(m);
+
+                if (!m.keywords.includes("Reborn")) return;
+
+                // Reborn
+                let minion = m.imperfectCopy();
+
+                minion.removeKeyword("Reborn");
+
+                // Reduce the minion's health to 1, keep the minion's attack the same
+                minion.setStats(minion.getAttack(), 1);
+
+                let unsuppress = this.functions.suppressEvent("SummonMinion");
+                this.summonMinion(minion, plr);
                 unsuppress();
+
+                // Activate the minion's passive
+                // We're doing this because otherwise, the passive won't be activated this turn
+                // Normally when we summon a minion, it will be activated immediately, since the `PlayCard` event gets triggered immediately after playing the card
+                // but this is not the case here, since we are directly summoning the minion, and we told it to not broadcast the event.
+                // The `reborn` string is passed in order for the card to know why the passive was triggered. The card can explicitly look for the `reborn` string
+                // in its passive.
+                // So it looks like this:
+                // minion.activate(key, reason, minion);
+                minion.activate("passive", "reborn", m);
+
+                sparedMinions.push(minion);
             });
 
-            return "colossal";
+            this.board[p] = sparedMinions;
         }
 
-        if (minion.dormant) {
-            minion.dormant += this.turns;
-            minion.immune = true;
-            minion.sleepy = false;
-        }
-
-        this.board[player.id].push(minion);
-
-        this.board[player.id].forEach(m => {
-            m.keywords.forEach(k => {
-                if (k.startsWith("Spell Damage +")) player.spellDamage += parseInt(k.split("+")[1]);
-            });
-        });
-
-        return minion;
+        return amount;
     }
+}
 
-    // Interacting with minions
-
+const attack = {
     /**
      * Makes a minion or hero attack another minion or hero
      * 
@@ -1040,7 +821,7 @@ export class Game {
         if (typeof attacker === "string") return "invalid";
 
         // Check if there is a minion with taunt
-        let taunts = this.board[this.opponent.id].filter(m => m.keywords.includes("Taunt"));
+        let taunts = game.board[this.opponent.id].filter(m => m.keywords.includes("Taunt"));
         if (taunts.length > 0) {
             // If the target is a card and has taunt, you are allowed to attack it
             if (target instanceof Card && target.keywords.includes("Taunt")) {}
@@ -1186,72 +967,433 @@ export class Game {
         return true;
     }
 
+    _attackerIsNum(attacker: number | string, target: Target): GameAttackReturn {
+        // Attacker is a number
+
+        // Spell damage
+        let dmg = attacker;
+
+        // Spell damage
+        this._spellDamage(attacker, target);
+
+        if (target.classType == "Player") {
+            target.remHealth(dmg);
+            return true;
+        }
+
+        if (target.keywords.includes("Divine Shield")) {
+            target.removeKeyword("Divine Shield");
+            return "divineshield";
+        }
+
+        target.remStats(0, dmg)
+
+        // Remove frenzy
+        if (target.getHealth() > 0 && target.abilities.frenzy && target.activate("frenzy") !== -1) target.abilities.frenzy = undefined;
+
+        return true;
+    },
+
+    _spellDamage(attacker: number | string, target: Target): number {
+        if (typeof attacker !== "string") return attacker;
+
+        // The attacker is a string but not spelldamage syntax
+        let spellDmgRegex = /\$(\d+?)/;
+        let match = attacker.match(spellDmgRegex);
+        
+        if (!match) throw new TypeError("Non-spelldamage string passed into attack.");
+
+        let dmg = parseInt(match[1]);
+        dmg += this.player.spellDamage;
+
+        this.events.broadcast("SpellDealsDamage", [target, dmg], this.player);
+        return dmg;
+    }
+}
+
+const playCard = {
     /**
-     * Kill all minions with 0 or less health
+     * Play a card
      * 
-     * @returns The amount of minions killed
+     * @param card The card to play
+     * @param player The card's owner
      */
-    killMinions(): number {
-        let amount = 0;
+    play(card: Card, player: Player): GamePlayCardReturn {
+        // Make sure the parameters are valid
+        if (!card || !player) {
+            if (game.evaling) throw new TypeError("Evaling Error - The `card` or `player` argument passed to `playCard` are invalid. Make sure you passed in both arguments.");
+            return "invalid";
+        }
 
-        for (let p = 0; p < 2; p++) {
-            let plr: Player;
-            if (p === 0) plr = this.player1;
-            else plr = this.player2;
+        game.killMinions();
 
-            let sparedMinions: Card[] = [];
-            
-            this.board[p].forEach(m => {
-                if (m.getHealth() <= 0) m.activate("deathrattle");
+        // Trade
+        if (playCard._trade(card, player)) return "traded";
+
+        // Cost
+        if (player[card.costType] < card.mana) return "mana";
+
+        // Condition
+        if (!playCard._condition(card, player)) return "refund";
+
+        // Charge you for the card
+        player[card.costType] -= card.mana;
+        player.removeFromHand(card);
+
+        // Counter
+        if (playCard._countered(card, player)) return "counter";
+
+        // If the board has max capacity, and the card played is a minion or location card, prevent it.
+        if (!playCard._hasCapacity(card, player)) return "space";
+
+        // Broadcast `PlayCardUnsafe` event without adding it to the history
+        game.events.broadcast("PlayCardUnsafe", card, player, false);
+
+        // Finale
+        if (player[card.costType] == 0) card.activate("finale");
+
+        // Store the result of the type-specific code
+        let result: GamePlayCardReturn = true;
+
+        // Type specific code
+        switch (card.type) {
+            case "Minion":
+                result = playCard._playMinion(card, player);
+                break;
+            case "Spell":
+                result = playCard._playSpell(card, player);
+                break;
+            case "Weapon":
+                result = playCard._playWeapon(card, player);
+                break;
+            case "Hero":
+                result = playCard._playHero(card, player);
+                break;
+            case "Location":
+                result = playCard._playLocation(card, player);
+                break;
+            default:
+                throw new TypeError("Cannot handle playing card of type: " + card.type);
+        }
+
+        // Refund
+        if (result === "refund") return result;
+
+        // Add the `PlayCardUnsafe` event to the history, now that it's safe to do so
+        game.events.addHistory("PlayCardUnsafe", card, player);
+
+        // Echo
+        playCard._echo(card, player);
+
+        // Combo
+        playCard._combo(card, player);
+
+        // Broadcast `PlayCard` event
+        game.events.broadcast("PlayCard", card, player);
+
+        playCard._corrupt(card, player);
+        game.killMinions();
+
+        return result;
+    },
+
+    _playMinion(card: Card, player: Player): GamePlayCardReturn {
+        // Magnetize
+        if (playCard._magnetize(card, player)) return "magnetize";
+
+        if (!card.dormant) {
+            if (card.activateBattlecry() === -1) return "refund";
+        }
+
+        let unsuppress = game.functions.suppressEvent("SummonMinion");
+        let ret = cards.summon(card, player);
+        unsuppress();
+
+        return ret;
+    },
+
+    _playSpell(card: Card, player: Player): GamePlayCardReturn {
+        if (card.activate("cast") === -1) return "refund";
+
+        // Twinspell functionality
+        if (card.keywords.includes("Twinspell")) {
+            card.removeKeyword("Twinspell");
+            card.desc = card.desc?.split("Twinspell")[0].trim();
+
+            player.addToHand(card);
+        }
+
+        // Spellburst functionality
+        game.board[player.id].forEach(m => {
+            m.activate("spellburst");
+            m.abilities.spellburst = undefined;
+        });
+
+        return true;
+    },
+
+    _playWeapon(card: Card, player: Player): GamePlayCardReturn {
+        if (card.activateBattlecry() === -1) return "refund";
+
+        player.setWeapon(card);
+        return true;
+    },
+
+    _playHero(card: Card, player: Player): GamePlayCardReturn {
+        if (card.activateBattlecry() === -1) return "refund";
+
+        player.setHero(card, 5);
+        return true;
+    },
+
+    _playLocation(card: Card, player: Player): GamePlayCardReturn {
+        card.setStats(0, card.getHealth());
+        card.immune = true;
+        card.cooldown = 0;
+
+        let unsuppress = game.functions.suppressEvent("SummonMinion");
+        let ret = cards.summon(card, player);
+        unsuppress();
+
+        return ret;
+    },
+
+    _trade(card: Card, player: Player): boolean {
+        if (!card.keywords.includes("Tradeable")) return false;
+
+        let q;
+
+        if (player.ai) q = player.ai.trade(card);
+        else {
+            game.interact.printAll(player);
+            q = game.interact.yesNoQuestion(player, "Would you like to trade " + game.functions.colorByRarity(card.displayName, card.rarity) + " for a random card in your deck?");
+        }
+
+        if (!q) return false;
+        
+        if (player.mana < 1) return false;
+
+        player.mana -= 1;
+
+        player.removeFromHand(card);
+        player.drawCard();
+        player.shuffleIntoDeck(card);
+
+        game.events.broadcast("TradeCard", card, player);
+
+        return true;
+    },
+
+    _hasCapacity(card: Card, player: Player): boolean {
+        // If the board has max capacity, and the card played is a minion or location card, prevent it.
+        if (game.board[player.id].length < game.config.maxBoardSpace || !["Minion", "Location"].includes(card.type)) return true;
+
+        // Refund
+        let unsuppress = game.functions.suppressEvent("AddCardToHand");
+        player.addToHand(card);
+        unsuppress();
+
+        if (card.costType == "mana") player.refreshMana(card.mana);
+        else player[card.costType] += card.mana;
+
+        return false;
+    },
+
+    _condition(card: Card, player: Player): boolean {
+        let condition = card.activate("condition");
+        if (!(condition instanceof Array)) return true;
+
+        // This is if the condition is cleared
+        let cleared = condition[0];
+
+        if (cleared === false) {
+            // Warn the user that the condition is not fulfilled
+            const warnMessage = chalk.yellow("WARNING: This card's condition is not fulfilled. Are you sure you want to play this card?");
+
+            game.interact.printAll(player);
+            let warn = game.interact.yesNoQuestion(player, warnMessage);
+
+            if (!warn) return false;
+        }
+
+        return true;
+    },
+
+    _countered(card: Card, player: Player): boolean {
+        let op = player.getOpponent();
+
+        // Check if the card is countered
+        if (op.counter && op.counter.includes(card.type)) {
+            game.functions.remove(op.counter, card.type);
+            return true;
+        }
+
+        return false;
+    },
+
+    _echo(card: Card, player: Player): boolean {
+        if (!card.keywords.includes("Echo")) return false;
+
+        let echo = card.perfectCopy(); // Create an exact copy of the card played
+        echo.echo = true;
+
+        player.addToHand(echo);
+        return true;
+    },
+
+    _combo(card: Card, player: Player): boolean {
+        if (!game.events.events.PlayCard) return false
+
+        // Get the player's PlayCard event history
+        let stat = game.events.events.PlayCard[player.id];
+        if (stat.length <= 0) return false;
+
+        // Get the latest event
+        let latest = stat[stat.length - 1];
+        let latestCard: Card = latest[0];
+
+        // If the previous card played was played on the same turn as this one, activate combo
+        if (latestCard.turn == game.turns) card.activate("combo");
+        return true;
+    },
+
+    _corrupt(card: Card, player: Player): boolean {
+        player.hand.forEach(toCorrupt => {
+            if (toCorrupt.corrupt === undefined || card.mana <= toCorrupt.mana) return;
+
+            // Corrupt that card
+            let corrupted = new Card(toCorrupt.corrupt, player);
+
+            player.removeFromHand(toCorrupt);
+
+            let unsuppress = game.functions.suppressEvent("AddCardToHand");
+            player.addToHand(corrupted);
+            unsuppress();
+        });
+
+        return true;
+    },
+
+    _magnetize(card: Card, player: Player): boolean {
+        const board = game.board[player.id];
+
+        if (!card.keywords.includes("Magnetic") || board.length <= 0) return false;
+
+        // Find the mechs on the board
+        const mechs = board.filter(m => m.tribe?.includes("Mech"));
+        if (mechs.length <= 0) return false;
+
+        // I'm using while loops to prevent a million indents
+        let minion = game.interact.selectCardTarget("Which minion do you want game to Magnetize to:", null, "friendly");
+        if (!minion) return false;
+
+        if (!minion.tribe?.includes("Mech")) {
+            console.log("That minion is not a Mech.");
+            return playCard._magnetize(card, player);
+        }
+
+        minion.addStats(card.getAttack(), card.getHealth());
+
+        card.keywords.forEach(k => {
+            // TSC for some reason, forgets that minion should be of `Card` type here, so we have to remind it. This is a workaround
+            if (!(minion instanceof Card)) return;
+
+            minion.addKeyword(k);
+        });
+
+        if (minion.maxHealth && card.maxHealth) {
+            minion.maxHealth += card.maxHealth;
+        }
+
+        if (card.abilities.deathrattle) {
+            card.abilities.deathrattle.forEach(d => {
+                // Look at the comment above
+                if (!minion) throw new Error("Target wasn't found.");
+
+                minion.addDeathrattle(d);
             });
+        }
 
-            this.board[p].forEach(m => {
-                // Add minions with more than 0 health to n.
-                if (m.getHealth() > 0) {
-                    sparedMinions.push(m);
+        // Echo
+        playCard._echo(card, player);
+
+        // Corrupt
+        playCard._corrupt(card, player);
+
+        return true;
+    }
+}
+
+const cards = {
+    play: playCard,
+
+    /**
+     * Summon a minion.
+     * Broadcasts the `SummonMinion` event
+     * 
+     * @param minion The minion to summon
+     * @param player The player who gets the minion
+     * @param trigger_colossal If the minion has colossal, summon the other minions.
+     * 
+     * @returns The minion summoned
+     */
+    summon(minion: Card, player: Player, trigger_colossal: boolean = true): Card | "space" | "colossal" | "invalid" {
+        if (!minion || !player) {
+            if (game.evaling) throw new TypeError("Evaling Error - The `minion` or `player` argument passed to `summonMinion` are invalid. Make sure you passed in both arguments.");
+            return "invalid";
+        };
+
+        // If the board has max capacity, and the card played is a minion or location card, prevent it.
+        if (game.board[player.id].length >= game.config.maxBoardSpace) return "space";
+        game.events.broadcast("SummonMinion", minion, player);
+
+        player.spellDamage = 0;
+
+        if (minion.keywords.includes("Charge")) minion.sleepy = false;
+
+        if (minion.keywords.includes("Rush")) {
+            minion.sleepy = false;
+            minion.canAttackHero = false;
+        }
+
+        if (minion.colossal && trigger_colossal) {
+            // minion.colossal is a string array.
+            // example: ["Left Arm", "", "Right Arm"]
+            // the "" gets replaced with the main minion
+
+            minion.colossal.forEach(v => {
+                let unsuppress = game.functions.suppressEvent("SummonMinion");
+
+                if (v == "") {
+                    game.summonMinion(minion, player, false);
+                    unsuppress();
                     return;
                 }
 
-                // Calmly tell the minion that it is going to die
-                m.activate("remove");
-                this.events.broadcast("KillMinion", m, this.player);
+                let card = new Card(v, player);
+                card.dormant = minion.dormant;
 
-                m.turnKilled = this.turns;
-                amount++;
-
-                plr.corpses++;
-                this.graveyard[p].push(m);
-
-                if (!m.keywords.includes("Reborn")) return;
-
-                // Reborn
-                let minion = m.imperfectCopy();
-
-                minion.removeKeyword("Reborn");
-
-                // Reduce the minion's health to 1, keep the minion's attack the same
-                minion.setStats(minion.getAttack(), 1);
-
-                let unsuppress = this.functions.suppressEvent("SummonMinion");
-                this.summonMinion(minion, plr);
+                game.summonMinion(card, player);
                 unsuppress();
-
-                // Activate the minion's passive
-                // We're doing this because otherwise, the passive won't be activated this turn
-                // Normally when we summon a minion, it will be activated immediately, since the `PlayCard` event gets triggered immediately after playing the card
-                // but this is not the case here, since we are directly summoning the minion, and we told it to not broadcast the event.
-                // The `reborn` string is passed in order for the card to know why the passive was triggered. The card can explicitly look for the `reborn` string
-                // in its passive.
-                // So it looks like this:
-                // minion.activate(key, reason, minion);
-                minion.activate("passive", "reborn", m);
-
-                sparedMinions.push(minion);
             });
 
-            this.board[p] = sparedMinions;
+            return "colossal";
         }
 
-        return amount;
-    }
-}
+        if (minion.dormant) {
+            minion.dormant += game.turns;
+            minion.immune = true;
+            minion.sleepy = false;
+        }
+
+        game.board[player.id].push(minion);
+
+        game.board[player.id].forEach(m => {
+            m.keywords.forEach(k => {
+                if (k.startsWith("Spell Damage +")) player.spellDamage += parseInt(k.split("+")[1]);
+            });
+        });
+
+        return minion;
+    },
+};

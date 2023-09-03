@@ -14,8 +14,8 @@ functions.importConfig(functions.dirname() + "config");
 // ===========================================================
 
 const config = game.config;
-const cards = functions.getCards();
 const classes = functions.getClasses();
+let cards = functions.getCards();
 
 let chosen_class: CardClassNoNeutral;
 let filtered_cards: Blueprint[] = [];
@@ -264,8 +264,26 @@ function showCards() {
     filtered_cards = [];
     printName();
 
+    // If there are no cards, ask the user if they want to search for uncollectible cards
+    if (cards.length <= 0) {
+        console.log(chalk.yellow("No cards found. This means that the game doesn't have any (collectible) cards."));
+
+        // Only ask once
+        if (settings.other.firstScreen) {
+            let uncollectible = game.interact.yesNoQuestion(plr, "Would you like the program to search for uncollectible cards? Decks with uncollectible cards aren't valid. (You will only be asked once)");
+            settings.other.firstScreen = false;
+
+            if (uncollectible) {
+                cards = functions.getCards(false);
+                return showCards();
+            }
+        }
+    }
+
+    // If the user chose to view an invalid class, reset the viewed class to default.
     if (!settings.view.class || !["Neutral", chosen_class].includes(settings.view.class)) settings.view.class = chosen_class;
 
+    // Filter away cards that aren't in the chosen class
     Object.values(cards).forEach(c => {
         if (c.runes && !plr.testRunes(c.runes)) return;
 
@@ -278,6 +296,10 @@ function showCards() {
         });
     });
 
+    if (filtered_cards.length <= 0) {
+        console.log(chalk.yellow(`No cards found for the selected classes '${chosen_class} and Neutral'.`));
+    }
+
     //if (settings.other.firstScreen) showRules();
 
     let cpp = settings.view.cpp;
@@ -287,10 +309,17 @@ function showCards() {
 
     if (settings.search.query.length > 0) console.log(`Searching for '${settings.search.query.join(' ')}'.`);
 
+    // Filter to show only cards in the viewed class
     let _filtered_cards = Object.values(filtered_cards).filter(c => c.classes.includes(settings.view.class ?? chosen_class));
+
+    if (_filtered_cards.length <= 0) {
+        console.log(chalk.yellow(`No cards found for the viewed class '${settings.view.class}'.`));
+        return;
+    }
 
     let searchFailed = false;
 
+    // Search functionality
     settings.search.query.forEach(q => {
         if (searchFailed) return;
 
@@ -306,7 +335,7 @@ function showCards() {
     });
 
     if (_filtered_cards.length <= 0) {
-        game.input(`\nNo cards match search.\n`);
+        game.input(chalk.yellow(`\nNo cards match search.\n`));
         searchFailed = true;
     }
 
