@@ -1046,7 +1046,7 @@ ${main_content}
      * @returns Cards
      */
     getCards(uncollectible: boolean = true, cards: Blueprint[] = game.cards): Blueprint[] {
-        return cards.filter(c => !c.uncollectible && uncollectible);
+        return cards.filter(c => !c.uncollectible || !uncollectible);
     },
 
     /**
@@ -1240,7 +1240,7 @@ ${main_content}
      * 
      * @example
      * let parsed = parseTags("&BBattlecry:&R Test");
-     * assert.equal(parsed, "Battlecry:".bold + " Test");
+     * assert.equal(parsed, chalk.bold("Battlecry:") + " Test");
      * 
      * @example
      * // Add the `~` character to escape the tag
@@ -1441,37 +1441,58 @@ ${main_content}
      *
      * @returns If you call this function, it will destroy the event listener.
      */
-    addEventListener(key: EventKey | "", checkCallback: true | EventListenerCheckCallback, callback: EventListenerCallback, lifespan: number = 1): () => void {
+    addEventListener(key: EventKey | "", checkCallback: true | EventListenerCheckCallback, callback: EventListenerCallback, lifespan: number = 1): () => boolean {
         let times = 0;
 
         let id = game.events.eventListeners;
+        let alive = false;
 
-        const remove = () => {
+        /**
+         * Destroys the eventlistener and removes it from the game event listeners.
+         *
+         * @return Returns true if the object was successfully destroyed, false otherwise.
+         */
+        const destroy = () => {
+            if (!alive) return false;
+
             delete game.eventListeners[id];
+            alive = false;
+            return true;
         }
 
-        game.eventListeners[id] = (_key, _val) => {
+        game.eventListeners[id] = (_key, _unknownVal) => {
             // Im writing it like this to make it more readable
-            if (_key == key || key == "") {} // Validate key. If key is empty, match any key.
+            if (key === "" || _key as EventKey === key) {} // Validate key. If key is empty, match any key.
             else return;
 
-            if (checkCallback === true || checkCallback(_val)) {}
+            if (checkCallback === true || checkCallback(_unknownVal)) {}
             else return;
 
-            let msg = callback(_val);
+            let msg = callback(_unknownVal);
             times++;
 
-            if (msg === "destroy") remove();
-            else if (msg === "cancel") times--;
-            else if (msg === "reset") times = 0;
-            else if (msg === true) {}
+            switch (msg) {
+                case "destroy":
+                    destroy();
+                    break;
+                case "cancel":
+                    times--;
+                    break;
+                case "reset":
+                    times = 0;
+                    break;
+                case true:
+                    break;
+                default:
+                    break;
+            }
 
-            if (times == lifespan && msg !== "destroy") remove();
+            if (times == lifespan) destroy();
         }
 
         game.events.eventListeners++;
 
-        return remove;
+        return destroy;
     },
 
     /**

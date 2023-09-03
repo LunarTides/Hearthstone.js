@@ -9,8 +9,8 @@ const player2 = new Player("Player 2");
 game.setup(player1, player2);
 let functions = game.functions;
 
-functions.importCards(game.functions.dirname() + "cards");
-functions.importConfig(game.functions.dirname() + "config");
+functions.importCards(functions.dirname() + "cards");
+functions.importConfig(functions.dirname() + "config");
 // ===========================================================
 
 const config = game.config;
@@ -228,7 +228,7 @@ function searchCards(_cards: Blueprint[], sQuery: string) {
 
             if (val == "even") return ret % 2 == 0;
             else if (val == "odd") return ret % 2 == 1;
-            else if (parseInt(val)) return ret == val;
+            else if (!Number.isNaN(parseInt(val))) return ret == val;
             else {
                 console.log(chalk.red(`\nValue '${val}' not valid!`));
                 return -1;
@@ -547,7 +547,7 @@ function help() {
     printName();
 
     // Commands
-    console.log("Available commands:".bold);
+    console.log(chalk.bold("Available commands:"));
     console.log("(In order to run a command; input the name of the command and follow further instruction.)\n");
     console.log("(name) [optional] (required) - (description)\n");
 
@@ -570,7 +570,7 @@ function help() {
     console.log("exit                  - Quits the program");
 
     // Set
-    console.log("\nSet Subcommands:".bold);
+    console.log(chalk.bold("\nSet Subcommands:"));
     console.log("(In order to use these; input 'set ', then one of the subcommands. Example: 'set cpp 20')\n");
     console.log("(name) [optional] (required) - (description)\n");
 
@@ -582,7 +582,7 @@ function help() {
     console.log(chalk.gray("\nNote the 'cardsPerPage' commands has 2 different subcommands; cpp & cardsPerPage. Both do the same thing."));
 
     // Set Warning
-    console.log("\nWarnings:".bold);
+    console.log(chalk.bold("\nWarnings:"));
     console.log("(In order to use these; input 'set warning (name) [off | on]'. Example: 'set warning latestCard off')\n");
     console.log("(name) - (description)\n");
 
@@ -593,7 +593,7 @@ function help() {
     console.log("Note: The word 'on' can be exchanged with 'enable', 'true', or '1'.");
 
     // Notes
-    console.log("\nNotes:".bold);
+    console.log(chalk.bold("\nNotes:"));
 
     console.log("Type 'cards Neutral' to see Neutral cards.");
     // TODO: #245 Fix this

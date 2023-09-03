@@ -307,8 +307,6 @@ export class Card {
      */
     placeholder?: {[key: string]: any} = {};
 
-    spellburst?: KeywordMethod[];
-
     /**
      * The _name_ of the corrupted counterpart of this card.
      */

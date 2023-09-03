@@ -1,21 +1,21 @@
 import chalk from 'chalk';
 import { question }  from 'readline-sync';
 import { functions, interact, Player, Card, AI } from "./internal.js";
-import { Blueprint, EventKey, EventManagerEvents, EventValue, GameAttackReturn, GameConfig, GameConstants, GamePlayCardReturn, QuestType, Target, TickHookCallback } from "./types.js";
+import { Blueprint, EventKey, EventManagerEvents, EventValue, GameAttackReturn, GameConfig, GameConstants, GamePlayCardReturn, QuestType, Target, TickHookCallback, UnknownEventValue } from "./types.js";
 
 interface IEventManager {
     eventListeners: number;
     tickHooks: TickHookCallback[];
-    history: {[x: number]: [[EventKey, EventValue<EventKey>, Player]]};
+    history: {[x: number]: [[EventKey, UnknownEventValue, Player]]};
     events: EventManagerEvents;
     suppressed: EventKey[];
     stats: {[key: string]: [number, number]};
 
-    tick(key: EventKey, val: EventValue<EventKey>): boolean;
-    cardUpdate(key: EventKey, val: EventValue<EventKey>): boolean;
-    questUpdate(quests_name: "secrets" | "sidequests" | "quests", key: EventKey, val: EventValue<EventKey>, plr: Player): boolean;
-    broadcast(key: EventKey, val: EventValue<EventKey>, plr: Player, updateHistory?: boolean): boolean;
-    addHistory(key: EventKey, val: EventValue<EventKey>, plr: Player): void;
+    tick(key: EventKey, val: UnknownEventValue): boolean;
+    cardUpdate(key: EventKey, val: UnknownEventValue): boolean;
+    questUpdate(quests_name: "secrets" | "sidequests" | "quests", key: EventKey, val: UnknownEventValue, plr: Player): boolean;
+    broadcast(key: EventKey, val: UnknownEventValue, plr: Player, updateHistory?: boolean): boolean;
+    addHistory(key: EventKey, val: UnknownEventValue, plr: Player): void;
     broadcastDummy(plr: Player): boolean;
     increment(player: Player, key: string, amount?: number): number;
 }
@@ -377,7 +377,7 @@ export class Game {
     /**
      * The event listeners that are attached to the game currently.
      */
-    eventListeners: {[key: number]: (key: EventKey, val: EventValue<EventKey>) => void} = {};
+    eventListeners: {[key: number]: (key: EventKey, val: UnknownEventValue) => void} = {};
 
     /**
      * Whether or not the game is currently accepting input from the user.
@@ -508,7 +508,7 @@ export class Game {
      * 
      * @returns Return values of all the executed functions
      */
-    triggerEventListeners(key: EventKey, val: EventValue<EventKey>): any[] {
+    triggerEventListeners(key: EventKey, val: UnknownEventValue): any[] {
         let ret: any[] = [];
         Object.values(this.eventListeners).forEach(i => ret.push(i(key, val)));
         return ret;

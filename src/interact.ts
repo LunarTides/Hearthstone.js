@@ -1768,6 +1768,8 @@ export const interact = {
      * @param help If it should show a help message which displays what the different fields mean.
      */
     viewCard(card: CardLike, help: boolean = true) {
+        game = globalThis.game;
+
         let _card = interact.getReadableCard(card);
         let _class = chalk.gray(card.classes.join(" / "));
 

@@ -283,6 +283,9 @@ export type EventValue<Key extends EventKey> = /**
                                                Key extends "TargetSelected" ? [Card | null, Target] : 
                                                never;
 
+
+export type UnknownEventValue = EventValue<EventKey>;
+
 /**
  * `Game.playCard` return value
  */
@@ -357,7 +360,7 @@ export type GameConstants = {
 /**
  * The quest callback used in card blueprints.
  */
-export type QuestCallback = (val: EventValue<EventKey>, done: boolean) => boolean;
+export type QuestCallback = (val: UnknownEventValue, done: boolean) => boolean;
 
 /**
  * The backend of a quest.
@@ -446,17 +449,17 @@ export type Blueprint = {
 /**
  * The keyword method (kvm / ability) of a card.
  */
-export type KeywordMethod = (plr: Player, game: Game, self: Card, key?: EventKey, val?: EventValue<EventKey>) => any;
+export type KeywordMethod = (plr: Player, game: Game, self: Card, key?: EventKey, val?: UnknownEventValue) => any;
 
 export type EventListenerMsg = true | "destroy" | "cancel" | "reset";
 /**
  * The event listener callback. The second callback of the `Functions.addEventListener` function.
  */
-export type EventListenerCallback = (val: EventValue<EventKey>) => EventListenerMsg;
+export type EventListenerCallback = (val: UnknownEventValue) => EventListenerMsg;
 /**
  * The event listener check callback. The first callback of the `Functions.addEventListener` function.
  */
-export type EventListenerCheckCallback = (val?: EventValue<EventKey>) => boolean;
+export type EventListenerCheckCallback = (val: UnknownEventValue) => boolean;
 
 export type RandListReturn<T> = {
     actual: T,
@@ -475,7 +478,7 @@ export type Target = Card | Player;
 /**
  * Callback for tick hooks. Used in `Functions.hookToTick`.
  */
-export type TickHookCallback = (key?: EventKey, val?: EventValue<EventKey>) => void;
+export type TickHookCallback = (key?: EventKey, val?: UnknownEventValue) => void;
 
 /**
  * AI history object.
