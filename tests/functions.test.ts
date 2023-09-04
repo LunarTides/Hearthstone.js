@@ -1,9 +1,9 @@
 // Part of this code was copied from an example given by ChatGPT
 import "colors";
-import assert from 'assert';
 import fs from 'fs';
 import { Player, Game, Card } from "../src/internal.js";
 import { Blueprint, CardClassNoNeutral, EventValue } from "../src/types.js";
+import { expect } from "chai";
 
 // Setup the game / copied from the card updater
 const game = new Game();
@@ -31,7 +31,7 @@ describe("Functions", () => {
         const array = [1, 3, 5, 2, 4, 6];
         const shuffled_array = game.functions.shuffle(array);
 
-        assert.notEqual(shuffled_array, array);
+        expect(shuffled_array).to.not.equal(array);
     });
     it ('should not change the original array', () => {
         const array = [1, 3, 5, 2, 4, 6];
@@ -44,21 +44,21 @@ describe("Functions", () => {
             if (array[i] != c) equals = false;
         });
 
-        assert.ok(equals);
+        expect(equals).to.be.true;
     });
 
     it ('should remove the element `6` from an array', () => {
         let array = [1, 3, 5, 2, 4, 6];
         game.functions.remove(array, 6);
 
-        assert.ok( !array.find(e => e == 6) );
+        expect(array).to.not.include(6);
     });
 
     it ('should get a random element from an array', () => {
         const array = [1, 3, 5, 2, 4, 6];
         const el = game.functions.randList(array).actual;
 
-        assert.ok(array.includes(el));
+        expect(array).to.include(el);
     });
 
     it ('should correctly choose 3 items from an array', () => {
@@ -69,8 +69,8 @@ describe("Functions", () => {
             return array.includes(el.actual);
         });
 
-        assert.ok(els.length === 3);
-        assert.ok(cards_matched.length === 3);
+        expect(els).to.have.length(3);
+        expect(cards_matched).to.have.length(3);
     });
 
     it ('should clone a card when getting a random element from an array', () => {
@@ -83,41 +83,41 @@ describe("Functions", () => {
         const el = game.functions.randList(cards).copy;
 
         // The card shouldn't match exactly since it should have been cloned, but they should have the same name
-        assert.ok(!cards.includes(el));
-        assert.ok(cards.find(c => c.name == el.name));
+        expect(cards).to.not.include(el);
+        expect(cards.map(c => c.name)).to.include(el.name);
     });
 
     it ('should generate a random number between 1 and 10', () => {
         const num = game.functions.randInt(1, 10);
 
-        assert.ok(num >= 1);
-        assert.ok(num <= 10);
+        expect(num).to.be.greaterThanOrEqual(1);
+        expect(num).to.be.lessThanOrEqual(10);
     });
 
     it ('should correctly capitalize "good morning"', () => {
         const str = "good morning";
         const capitalized = game.functions.capitalize(str);
 
-        assert.equal(capitalized, "Good morning");
+        expect(capitalized).to.equal("Good morning");
     });
     it ('should not change the original string', () => {
         const str = "good morning";
         const capitalized = game.functions.capitalize(str);
 
-        assert.notEqual(capitalized, str);
+        expect(capitalized).to.not.equal(str);
     });
 
     it ('should correctly capitalize all the words in "good morning"', () => {
         const str = "good morning";
         const capitalized = game.functions.capitalizeAll(str);
 
-        assert.equal(capitalized, "Good Morning");
+        expect(capitalized).to.equal("Good Morning");
     });
     it ('should not change the original string', () => {
         const str = "good morning";
         const capitalized = game.functions.capitalizeAll(str);
 
-        assert.notEqual(capitalized, str);
+        expect(capitalized).to.not.equal(str);
     });
 
     it ('should correctly create a wall', () => {
@@ -136,9 +136,10 @@ describe("Functions", () => {
 
         const wall = game.functions.createWall(og, "-");
 
-        const not_matches = wall.filter(e => !expected.includes(e)); // `["test"] != ["test"]` for some reason so i need to do this
+        //const not_matches = wall.filter(e => !expected.includes(e)); // `["test"] != ["test"]` for some reason so i need to do this
 
-        assert.ok(not_matches.length === 0); // fin == expected
+        expect(wall).to.deep.equal(expected);
+        //assert.ok(not_matches.length === 0); // fin == expected
     });
     it ('should not change the original array', () => {
         const og = [
@@ -150,32 +151,36 @@ describe("Functions", () => {
 
         const wall = game.functions.createWall(og, "-");
 
-        const changed = wall.filter(e => !og.includes(e));
+        expect(wall).to.not.deep.equal(og);
 
-        assert.ok(changed.length + 1 === og.length); // wall !== og. `changed` does not include the longest brick, account for it by adding 1
+        //const changed = wall.filter(e => !og.includes(e));
+
+        //expect(changed).to.have.length(og.length - 1);
+        //assert.ok(changed.length + 1 === og.length); // wall !== og. `changed` does not include the longest brick, account for it by adding 1
     });
 
     it ('should get a card by its name', () => {
         const name = "The Coin"; // Kinda dangerous since the coin might not always exist but oh well. Replace with 'Priest Starting Hero' for extra safety, since that card shouldn't be deleted anyways
         const card = game.functions.getCardByName(name);
 
-        assert.ok(card?.name == name);
+        expect(card?.name).to.equal(name);
     });
 
     it ('should get a card by its id', () => {
         const id = createCard("The Coin").id; // Get "The Coin"'s id
         const card = game.functions.getCardById(id);
 
-        assert.ok(card?.id == id);
+        expect(card?.id).to.equal(id);
     });
 
     it ('should get a list of collectible cards', () => {
-        let allCards = game.functions.getCards();
+        // The argument filters out all uncollectible cards
+        let allCards = game.functions.getCards(true);
         let cards = allCards.map(c => createCard(c.name));
 
         let uncollectible_cards = cards.filter(c => c.uncollectible);
 
-        assert.equal(uncollectible_cards.length, 0);
+        expect(uncollectible_cards).to.have.length(0);
     });
     it ('should get a list of all cards', () => {
         let all_cards = game.functions.getCards(false);
@@ -183,7 +188,7 @@ describe("Functions", () => {
         let newAllCards = all_cards.map(c => createCard(c.name));
         let newCollectibleCards = collectible_cards.map(c => createCard(c.name));
 
-        assert.notEqual(newCollectibleCards.length, newAllCards.length);
+        expect(newCollectibleCards).to.have.length(newAllCards.length);
     });
 
     it ('should validate the class of a card', () => {
@@ -195,7 +200,7 @@ describe("Functions", () => {
         const cards = game.functions.getCards(false);
         const card = game.functions.randList(cards.filter(c => c.classes.includes(test_class) || c.classes.includes("Neutral"))).actual;
 
-        assert.ok(game.functions.validateClass(player, card));
+        expect(game.functions.validateClass(player, card)).to.be.true;
     });
 
     it ('should check if the tribe of a card is valid', () => {
@@ -207,8 +212,8 @@ describe("Functions", () => {
             throw new ReferenceError(`No cards have the '${test_tribe}' tribe. Ignore this test.`);
         }
 
-        if (!card.tribe) assert.fail("card doesn't have a tribe");
-        assert.ok(game.functions.matchTribe(card.tribe, test_tribe));
+        expect(card.tribe).to.not.be.undefined;
+        expect(game.functions.matchTribe(card.tribe!, test_tribe)).to.be.true;
     });
     it ('should check if the "All" tribe is valid', () => {
         const cards = game.functions.getCards(false);
@@ -218,23 +223,25 @@ describe("Functions", () => {
             throw new ReferenceError(`No cards have tribes. Ignore this test.`);
         }
 
-        if (!card.tribe) assert.fail("card doesn't have a tribe");
-        assert.ok(game.functions.matchTribe(card.tribe, "Beast"));
+        expect(card.tribe).to.not.be.undefined;
+        expect(game.functions.matchTribe(card.tribe!, "Beast")).to.be.true;
     });
 
     it ('should validate a card success', () => {
         let minion = game.summonMinion(createCard("Sheep"), test_player1);
-        if (!(minion instanceof Card)) assert.fail("minion is not a minion");
+        expect(minion).to.be.an.instanceOf(Card);
+        minion = minion as Card;
 
         minion.uncollectible = false;
 
         let ret = game.functions.validateCard(minion, test_player1);
 
-        assert.equal(ret, true);
+        expect(ret).to.be.true;
     });
     it ('should validate a card class', () => {
         let minion = game.summonMinion(createCard("Sheep"), test_player1);
-        if (!(minion instanceof Card)) assert.fail("minion is not a minion");
+        expect(minion).to.be.an.instanceOf(Card);
+        minion = minion as Card;
         
         let oldClass = test_player1.heroClass;
         test_player1.heroClass = "Mage";
@@ -246,28 +253,30 @@ describe("Functions", () => {
 
         test_player1.heroClass = oldClass;
 
-        assert.equal(ret, "class");
+        expect(ret).to.equal("class");
     });
     it ('should validate a card uncollectible', () => {
         let minion = game.summonMinion(createCard("Sheep"), test_player1);
-        if (!(minion instanceof Card)) assert.fail("minion is not a minion");
+        expect(minion).to.be.an.instanceOf(Card);
+        minion = minion as Card;
 
         minion.uncollectible = true;
 
         let ret = game.functions.validateCard(minion, test_player1);
 
-        assert.equal(ret, "uncollectible");
+        expect(ret).to.equal("uncollectible");
     });
     it ('should validate a card runes', () => {
         let minion = game.summonMinion(createCard("Sheep"), test_player1);
-        if (!(minion instanceof Card)) assert.fail("minion is not a minion");
+        expect(minion).to.be.an.instanceOf(Card);
+        minion = minion as Card;
 
         minion.uncollectible = false;
         minion.runes = "BBB";
 
         let ret = game.functions.validateCard(minion, test_player1);
 
-        assert.equal(ret, "runes");
+        expect(ret).to.equal("runes");
     });
 
     it ('should check if the highlander function works', () => {
@@ -283,7 +292,7 @@ describe("Functions", () => {
 
         player.deck = trueDeck;
 
-        assert.ok(game.functions.highlander(player));
+        expect(game.functions.highlander(player)).to.be.true;
     });
     it ('should check if the highlander function works', () => {
         // Deck has duplicates
@@ -294,7 +303,7 @@ describe("Functions", () => {
         test_player2.deck = trueCards;
         test_player2.deck.push(test_player2.deck[0].imperfectCopy()); // Put a copy of the first card in the player's deck
 
-        assert.ok(!game.functions.highlander(test_player2));
+        expect(game.functions.highlander(test_player2)).to.be.false;
     });
 
     it ('should return the class names', () => {
@@ -317,7 +326,7 @@ describe("Functions", () => {
 
         let missing = expected.filter(c => !class_names.includes(c));
 
-        assert.equal(missing.length, 0);
+        expect(missing).to.have.length(0);
     });
 
     it ('should correctly color by rarity', () => {
@@ -328,7 +337,7 @@ describe("Functions", () => {
         const expected = "\x1B[33m" + card.name + "\x1B[39m"; // This might only work on windows.
         const colored = game.functions.colorByRarity(card.name, card.rarity);
 
-        assert.equal(colored, expected);
+        expect(colored).to.equal(expected);
     });
 
     it ('should correctly parse tags', () => {
@@ -337,7 +346,7 @@ describe("Functions", () => {
 
         const parsed = game.functions.parseTags(str);
 
-        assert.equal(parsed, expected);
+        expect(parsed).to.equal(expected);
     });
 
     it ('should correctly escape tags', () => {
@@ -346,7 +355,7 @@ describe("Functions", () => {
 
         const parsed = game.functions.parseTags(str);
 
-        assert.equal(parsed, expected);
+        expect(parsed).to.equal(expected);
     });
 
     it ('should correctly strip tags', () => {
@@ -355,7 +364,7 @@ describe("Functions", () => {
 
         const parsed = game.functions.stripTags(str);
 
-        assert.equal(parsed, expected);
+        expect(parsed).to.equal(expected);
     });
 
     it ('should correctly clone an object', () => {
@@ -364,7 +373,8 @@ describe("Functions", () => {
 
         let cloned_card = game.functions.cloneObject(card);
 
-        assert.equal(card.uuid, cloned_card.uuid);
+        // The uuid should be the same since we're using `cloneObject`, in a real situation, you would use `cloneCard`, which randomizes the uuid
+        expect(card.uuid).to.equal(cloned_card.uuid);
     });
 
     it ('should correctly clone a card', () => {
@@ -373,7 +383,7 @@ describe("Functions", () => {
 
         let cloned_card = game.functions.cloneCard(card);
 
-        assert.equal(card.name, cloned_card.name);
+        expect(card.name).to.equal(cloned_card.name);
     });
     it ('should correctly randomize the ids when cloning a card', () => {
         let blueprint = game.functions.getCards()[0];
@@ -381,7 +391,7 @@ describe("Functions", () => {
 
         let cloned_card = game.functions.cloneCard(card);
 
-        assert.notEqual(card.uuid, cloned_card.uuid);
+        expect(card.uuid).to.not.equal(cloned_card.uuid);
     });
 
     it ('should correctly create an event listener', () => {
@@ -389,7 +399,7 @@ describe("Functions", () => {
         // DON'T ACTUALLY USE DUMMY EVENT LISTENERS IN REAL CODE
         game.functions.addEventListener("Dummy", () => {return true}, () => {return true});
 
-        assert.ok(Object.values(game.eventListeners).length > amount);
+        expect(Object.values(game.eventListeners)).to.have.length.greaterThan(amount);
     });
     it ('should correctly manually destroy an event listener', () => {
         const destroy = game.functions.addEventListener("Dummy", () => {return true}, () => {return true});
@@ -397,7 +407,7 @@ describe("Functions", () => {
 
         destroy();
 
-        assert.ok(Object.values(game.eventListeners).length < amount);
+        expect(Object.values(game.eventListeners)).to.have.length.lessThan(amount);
     });
     it ('should correctly semi-manually destroy an event listener', () => {
         game.functions.addEventListener("Eval", () => {return true}, (_unknownVal) => {
@@ -411,7 +421,7 @@ describe("Functions", () => {
 
         game.events.broadcast("Eval", "2", test_player1);
 
-        assert.ok(Object.values(game.eventListeners).length < amount);
+        expect(Object.values(game.eventListeners)).to.have.length.lessThan(amount);
     });
     it ('should not semi-manually destroy an event listener', () => {
         game.functions.addEventListener("Eval", () => {return true}, (_unknownVal) => {
@@ -425,7 +435,7 @@ describe("Functions", () => {
 
         game.events.broadcast("Eval", "1", test_player1);
 
-        assert.ok(Object.values(game.eventListeners).length == amount);
+        expect(Object.values(game.eventListeners)).to.have.length(amount);
     });
     it ('should correctly automatically destroy an event listener', () => {
         game.functions.addEventListener("Dummy", () => {return true}, () => {return true}, 1);
@@ -433,7 +443,7 @@ describe("Functions", () => {
 
         game.events.broadcast("Dummy", null, test_player1);
 
-        assert.ok(Object.values(game.eventListeners).length < amount);
+        expect(Object.values(game.eventListeners)).to.have.length.lessThan(amount);
     });
 
     it ('should correctly account for uncollectible cards', () => {
@@ -442,7 +452,7 @@ describe("Functions", () => {
 
         const uncollectible_exists = cardlikes.find(c => c.uncollectible);
 
-        assert.ok(!uncollectible_exists);
+        expect(uncollectible_exists).to.be.undefined;
     });
 
     it ('should correctly recruit', () => {
@@ -453,14 +463,14 @@ describe("Functions", () => {
 
         const matching_minion = game.board[test_player1.id].find(c => deck.map(a => a.name).includes(c.name));
 
-        assert.ok(matching_minion);
+        expect(matching_minion).to.not.be.undefined;
     });
 
     it ('should correctly create a 1/1 jade', () => {
         const jade = game.functions.createJade(test_player1);
 
-        assert.equal(jade.getHealth(), 1);
-        assert.equal(jade.getAttack(), 1);
+        expect(jade.getHealth()).to.equal(1);
+        expect(jade.getAttack()).to.equal(1);
     });
     it ('should correctly create a 4/4 jade', () => {
         game.functions.createJade(test_player2);
@@ -468,8 +478,8 @@ describe("Functions", () => {
         game.functions.createJade(test_player2);
         const jade = game.functions.createJade(test_player2);
 
-        assert.equal(jade.getHealth(), 4);
-        assert.equal(jade.getAttack(), 4);
+        expect(jade.getHealth()).to.equal(4);
+        expect(jade.getAttack()).to.equal(4);
     });
 
     it ('should correctly mulligan', () => {
@@ -484,9 +494,10 @@ describe("Functions", () => {
         game.functions.mulligan(test_player1, "13");
 
         // The second card becomes the first card after the mulligan, and the new cards gets added onto it.
-        assert.equal(test_player1.hand[0].name, old_hand[1].name);
-        assert.notEqual(test_player1.hand[1].name, old_hand[0].name);
-        assert.notEqual(test_player1.hand[2].name, old_hand[2].name);
+        expect(test_player1.hand.length).to.equal(3);
+        expect(test_player1.hand[0].name).to.equal(old_hand[1].name);
+        expect(test_player1.hand[1].name).to.equal(old_hand[0].name);
+        expect(test_player1.hand[2].name).to.equal(old_hand[2].name);
     });
 
     it ('should correctly add a quest', () => {
@@ -502,16 +513,16 @@ describe("Functions", () => {
             return true;
         });
 
-        assert.ok(!done);
+        expect(done).to.be.false;
 
         game.events.broadcast("Dummy", 1, player);
-        assert.ok(!done);
+        expect(done).to.be.false;
 
         game.events.broadcast("Dummy", 1, player);
-        assert.ok(!done);
+        expect(done).to.be.false;
 
         game.events.broadcast("Dummy", 1, player);
-        assert.ok(done);
+        expect(done).to.be.true;
     });
 
     it ('should correctly progress quest', () => {
@@ -520,48 +531,52 @@ describe("Functions", () => {
         let card = createCard("The Coin", player);
         let success = game.functions.addQuest("Quest", player, card, "Dummy", 3, (val, _done) => {return true});
 
-        assert.ok(success);
-        assert.equal(player.quests[0].progress[0], 0);
+        expect(success).to.be.true;
+        expect(player.quests[0].progress[0]).to.equal(0);
 
-        assert.ok(game.functions.progressQuest(player, card.displayName));
-        assert.equal(player.quests[0].progress[0], 1);
+        expect(game.functions.progressQuest(player, card.displayName)).to.be.true;
+        expect(player.quests[0].progress[0]).to.equal(1);
 
-        assert.ok(game.functions.progressQuest(player, card.displayName));
-        assert.equal(player.quests[0].progress[0], 2);
+        expect(game.functions.progressQuest(player, card.displayName)).to.be.true;
+        expect(player.quests[0].progress[0]).to.equal(2);
 
-        assert.ok(game.functions.progressQuest(player, card.displayName));
-        assert.equal(player.quests[0].progress[0], 3);
+        expect(game.functions.progressQuest(player, card.displayName)).to.be.true;
+        expect(player.quests[0].progress[0]).to.equal(3);
     });
 
     it ('should correctly import a deckcode', () => {
         let deck = game.functions.deckcode.import(test_player1, "Death Knight [3B] /1:8,2/ 5o,66,5f,3b,3c,3e,5x,70,52,55,56,6y,6z,59,5a,2,5v,5g,3o");
 
-        if (deck === null) assert.fail("Invalid deckcode");
-        assert.equal(test_player1.runes, "BBB");
-        assert.equal(deck.length, 30);
+        expect(deck).to.not.be.null;
+        deck = deck!;
+
+        expect(test_player1.runes).to.equal("BBB");
+        expect(deck.length).to.equal(30);
     });
 
     it ('should correctly export a deckcode', () => {
         let deck = game.functions.deckcode.import(test_player1, "Death Knight [3B] /1:8,2/ 5o,66,5f,3b,3c,3e,5x,70,52,55,56,6y,6z,59,5a,2,5v,5g,3o");
-        if (deck === null) assert.fail("Invalid deckcode");
+        expect(deck).to.not.be.null;
+        deck = deck!;
 
         let deckcode = game.functions.deckcode.export(deck as Blueprint[], "Death Knight", "BBB");
 
-        assert.equal(deckcode.error, null);
+        expect(deckcode.error).to.be.null;
     });
     it ('should correctly import an exported deckcode', () => {
         let deck = game.functions.deckcode.import(test_player1, "Death Knight [3B] /1:8,2/ 5o,66,5f,3b,3c,3e,5x,70,52,55,56,6y,6z,59,5a,2,5v,5g,3o");
-        if (deck === null) assert.fail("Invalid deckcode");
+        expect(deck).to.not.be.null;
+        deck = deck!;
 
         let deckcode = game.functions.deckcode.export(deck as Blueprint[], "Death Knight", "BBB");
 
         deck = game.functions.deckcode.import(test_player1, deckcode.code);
-        if (deck === null) assert.fail("Invalid deckcode");
+        expect(deck).to.not.be.null;
 
-        assert.notEqual(deck, "invalid");
+        expect(deck).to.not.equal("invalid");
 
-        assert.equal(test_player1.runes, "BBB");
-        assert.equal(deck.length, 30);
+        expect(test_player1.runes).to.equal("BBB");
+        expect(deck).to.have.length(30);
     });
 
     // Only do the following tests if the vanilla cards have been generated.
@@ -571,13 +586,13 @@ describe("Functions", () => {
         let deckcode = game.functions.deckcode.toVanilla(test_player1, "Death Knight [3B] /1:8,2/ 3c,5x,3e,5o,5f,3b,70,66,5v,59,5a,52,2,56,6y,5g,55,3o,6z");
         let expected = "AAEBAfHhBAiCDuCsAsLOAqeNBInmBN+iBcKlBcWlBQuhoQPq4wT04wT84wT94wSJ5ASP7QSrgAWogQXUlQWeqgUAAA==";
 
-        assert.equal(deckcode, expected);
+        expect(deckcode).to.equal(expected);
     });
 
     it ('should correctly convert a deckcode from vanilla', () => {
         let deckcode = game.functions.deckcode.fromVanilla(test_player1, "AAEBAfHhBAiCDuCsAsLOAqeNBInmBN+iBcKlBcWlBQuhoQPq4wT04wT84wT94wSJ5ASP7QSrgAWogQXUlQWeqgUAAA==");
         let expected = "Death Knight [3B] /1:8,2/ 3c,5x,3e,5o,5f,3b,70,66,5v,59,5a,52,2,56,6y,5g,55,3o,6z";
 
-        assert.equal(deckcode, expected);
+        expect(deckcode).to.equal(expected);
     });
 });

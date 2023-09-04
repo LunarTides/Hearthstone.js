@@ -1,7 +1,7 @@
 // Part of this code was copied from an example given by ChatGPT
 import "colors";
-import assert from 'assert';
 import { Player, Game, Card, AI } from "../src/internal.js";
+import { expect } from "chai";
 
 // Setup the game / copied from the card updater
 const game = new Game();
@@ -49,25 +49,25 @@ describe("AI", () => {
         let move = ai.calcMove();
 
         // The ai can't do anything
-        assert.equal(move, "end");
+        expect(move).to.be("end");
     });
 
     it ('should find out if it can attack', () => {
         let canAttack = ai._canAttack();
 
-        assert.equal(canAttack, false);
+        expect(canAttack).to.be.false;
     });
 
     it ('should find out if it can hero power', () => {
         let canHeroPower = ai._canHeroPower();
 
-        assert.equal(canHeroPower, false);
+        expect(canHeroPower).to.be.false;
     });
 
     it ('should find out if it can use a location', () => {
         let canUseLocation = ai._canUseLocation();
 
-        assert.equal(canUseLocation, false);
+        expect(canUseLocation).to.be.false;
     });
 
     it ('should find out if a specific card can attack', () => {
@@ -77,7 +77,7 @@ describe("AI", () => {
         
         let canAttack = ai._canMinionAttack(minion);
 
-        assert.equal(canAttack, false);
+        expect(canAttack).to.be.false;
     });
     it ('should find out if a specific card can attack', () => {
         let minion = new Card("Sheep", test_player1);
@@ -85,7 +85,7 @@ describe("AI", () => {
         
         let canAttack = ai._canMinionAttack(minion);
 
-        assert.equal(canAttack, true);
+        expect(canAttack).to.be.true;
     });
 
     it ('should find out if a specific card can be targetted', () => {
@@ -93,7 +93,7 @@ describe("AI", () => {
         
         let canTarget = ai._canTargetMinion(minion);
 
-        assert.equal(canTarget, true);
+        expect(canTarget).to.be.true;
     });
     it ('should find out if a specific card can be targetted', () => {
         let minion = new Card("Sheep", test_player1);
@@ -101,14 +101,14 @@ describe("AI", () => {
         
         let canTarget = ai._canTargetMinion(minion);
 
-        assert.equal(canTarget, false);
+        expect(canTarget).to.be.false;
     });
 
     it ('should find trades', () => {
         let trades = ai._attackFindTrades();
 
-        assert.equal(trades[0].length, 0);
-        assert.equal(trades[1].length, 0);
+        expect(trades[0]).to.have.length(0);
+        expect(trades[1]).to.have.length(0);
     });
 
     it ('should correctly score players', () => {
@@ -118,84 +118,88 @@ describe("AI", () => {
             });
         }));
 
-        assert.ok(score > 0);
+        expect(score).to.be.above(0);
     });
 
     it ('should find the current winner', () => {
         let score = ai._findWinner([[], []]);
 
-        assert.equal(score[0].id, ai.plr.getOpponent().id);
-        assert.ok(score[1] > 0);
+        expect(score[0].id).to.equal(ai.plr.getOpponent().id);
+        expect(score[1]).to.be.above(0);
     });
     
     it ('should find out if a taunt exists', () => {
         let taunt = ai._tauntExists(false);
 
-        assert.ok(!taunt);
+        expect(taunt).to.be.false;
     });
     it ('should find out if a taunt exists', () => {
         let taunts = ai._tauntExists(true);
 
-        if (typeof taunts === "boolean") assert.fail();
-        assert.equal(taunts.length, 0);
+        expect(taunts).to.be.an("array");
+        expect(taunts).to.have.length(0);
     });
 
     it ('should do a trade', () => {
         let result = ai._attackTrade();
 
-        assert.equal(result, null);
+        expect(result).to.be.null;
     });
 
     it ('should do a general attack', () => {
         let result = ai._attackGeneral([[], []]);
 
-        assert.equal(result[0], -1);
+        expect(result[0]).to.equal(-1);
     });
 
     it ('should do a risky attack', () => {
         let result = ai._attackGeneralRisky();
 
-        assert.equal(result[1], ai.plr.getOpponent());
+        expect(result).to.be.an("array");
+        expect(result[1]).to.equal(ai.plr.getOpponent());
     });
 
     it ('should choose attacker and target', () => {
         let result = ai._attackGeneralMinion();
 
-        assert.equal(result[0], -1);
-        assert.equal(result[1], ai.plr.getOpponent());
+        expect(result).to.be.an("array");
+        
+        expect(result[0]).to.equal(-1);
+        expect(result[1]).to.equal(ai.plr.getOpponent());
     });
 
     it ('should choose target', () => {
         let result = ai._attackGeneralChooseTarget();
 
-        assert.equal(result, ai.plr.getOpponent());
+        expect(result).to.be.an("array");
+        expect(result).to.equal(ai.plr.getOpponent());
     });
 
     it ('should choose attacker', () => {
         let result = ai._attackGeneralChooseAttacker(true);
 
-        assert.equal(result, -1);
+        expect(result).to.equal(-1);
     });
 
     it ('should attack', () => {
         let result = ai.attack();
 
-        assert.equal(result[0], -1);
-        assert.equal(result[1], -1);
+        expect(result[0]).to.equal(-1);
+        expect(result[1]).to.equal(-1);
     });
 
     it ('should attack using legacy 1', () => {
         let result = ai.legacy_attack_1();
 
-        assert.equal(result[0], -1);
-        assert.equal(result[1], -1);
+        expect(result[0]).to.equal(-1);
+        expect(result[1]).to.equal(-1);
     });
 
     it ('should select a target', () => {
         let result = ai.selectTarget("Deal 1 damage.", null, "any", "any", []);
 
         // There are no minions and the prompt is bad, so the ai should select the enemy hero
-        assert.equal(result, ai.plr.getOpponent());
+        expect(result).to.equal(ai.plr.getOpponent());
     });
 
     it ('should discover', () => {
@@ -207,8 +211,8 @@ describe("AI", () => {
         
         let result = ai.discover(cards);
 
-        if (result === null) assert.fail();
-        assert.equal(result.id, cards[0].id);
+        expect(result).to.not.be.null;
+        expect(result!.id).to.equal(cards[0].id);
     });
 
     it ('should dredge', () => {
@@ -220,8 +224,8 @@ describe("AI", () => {
         
         let result = ai.dredge(cards);
 
-        if (result === null) assert.fail();
-        assert.equal(result.id, cards[0].id);
+        expect(result).to.not.be.null;
+        expect(result!.id).to.equal(cards[0].id);
     });
 
     it ('should choose one', () => {
@@ -234,7 +238,7 @@ describe("AI", () => {
         let result = ai.chooseOne(options);
 
         // "Destroy the enemy hero" is the best
-        assert.equal(result, 2);
+        expect(result).to.equal(2);
     });
 
     it ('should answer a question', () => {
@@ -248,7 +252,7 @@ describe("AI", () => {
         let result = ai.question(prompt, options);
 
         // "Destroy the enemy hero" is the best
-        assert.equal(result, 2 + 1);
+        expect(result).to.equal(2);
     });
 
     it ('should answer a yes/no question', () => {
@@ -256,14 +260,14 @@ describe("AI", () => {
         
         let result = ai.yesNoQuestion(question);
 
-        assert.equal(result, true);
+        expect(result).to.be.true;
     });
     it ('should answer a yes/no question', () => {
         let question = "Do you want to destroy your hero?";
         
         let result = ai.yesNoQuestion(question);
 
-        assert.equal(result, false);
+        expect(result).to.be.false;
     });
 
     it ('should trade cards', () => {
@@ -272,7 +276,7 @@ describe("AI", () => {
         let result = ai.trade(card);
 
         // No cards to trade into
-        assert.equal(result, false);
+        expect(result).to.be.false;
     });
     it ('should trade cards', () => {
         let card = new Card("Sheep", test_player1);
@@ -282,7 +286,7 @@ describe("AI", () => {
         
         let result = ai.trade(card);
 
-        assert.equal(result, true);
+        expect(result).to.be.true;
     });
 
     it ('should mulligan', () => {
@@ -292,7 +296,7 @@ describe("AI", () => {
         let result = ai.mulligan();
 
         // Mulligan all their cards
-        assert.equal(result, "123");
+        expect(result).to.equal("123");
     });
 
     it ('should evaluate text', () => {
@@ -301,7 +305,7 @@ describe("AI", () => {
         let result = ai.analyzePositive(text);
 
         // REALLY good
-        assert.equal(result, 9);
+        expect(result).to.equal(9);
     });
     it ('should evaluate text', () => {
         let text = "Destroy your hero";
@@ -310,7 +314,7 @@ describe("AI", () => {
 
         // REALLY bad
         // Destroy = -9, Your = +1
-        assert.equal(result, -9 + 1);
+        expect(result).to.equal(-9 + 1);
     });
 
     it ('should evaluate cards', () => {
@@ -319,7 +323,7 @@ describe("AI", () => {
         let result = ai.analyzePositiveCard(card);
 
         // Not very good
-        assert.equal(result, -0.35);
+        expect(result).to.equal(-0.35);
     });
     it ('should evaluate cards', () => {
         let card = new Card("Sheep", test_player1);
@@ -328,6 +332,6 @@ describe("AI", () => {
         let result = ai.analyzePositiveCard(card);
 
         // Pretty good
-        assert.equal(result, 2.85);
+        expect(result).to.equal(2.85);
     });
 });

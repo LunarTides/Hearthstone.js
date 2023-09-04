@@ -1,8 +1,8 @@
 // Part of this code was copied from an example given by ChatGPT
 import "colors";
-import assert from 'assert';
 import { Player, Game, Card } from "../src/internal.js";
 import chalk from "chalk";
+import { expect } from "chai";
 
 // Setup the game / copied from the card updater
 const game = new Game();
@@ -48,8 +48,12 @@ describe("Interact", () => {
     it ('should attack', () => {
         let curm = summonMinion("Sheep", test_player1);
         let opm = summonMinion("Sheep", test_player2);
-        if (!(curm instanceof Card)) assert.fail("curm is not card");
-        if (!(opm instanceof Card)) assert.fail("opm is not card");
+
+        expect(curm).to.be.instanceOf(Card);
+        expect(opm).to.be.instanceOf(Card);
+
+        curm = curm as Card;
+        opm = opm as Card;
 
         curm.ready();
         opm.ready();
@@ -57,15 +61,15 @@ describe("Interact", () => {
         test_player1.inputQueue = ["1", "1"];
         interact.doTurnAttack();
 
-        assert.equal(curm.getHealth(), 0);
-        assert.equal(opm.getHealth(), 0);
+        expect(curm.getHealth()).to.equal(0);
+        expect(opm.getHealth()).to.equal(0);
     });
 
     it ('should handle `end` command', () => {
         interact.handleCmds("end");
 
-        assert.equal(game.player, test_player2);
-        assert.equal(game.opponent, test_player1);
+        expect(game.player).to.equal(test_player2);
+        expect(game.opponent).to.equal(test_player1);
     });
     it ('should handle `hero power` command', () => {
         test_player1.heroClass = "Mage";
@@ -79,13 +83,17 @@ describe("Interact", () => {
 
         interact.handleCmds("hero power");
 
-        assert.equal(test_player2.health, 29); // Test_player2 should now have 2 less health
+        expect(test_player2.health).to.equal(29); // Test_player2 should have 1 less health
     });
     it ('should handle `attack` command', () => {
         let curm = summonMinion("Sheep", test_player1);
         let opm = summonMinion("Sheep", test_player2);
-        if (!(curm instanceof Card)) assert.fail("curm is not card");
-        if (!(opm instanceof Card)) assert.fail("opm is not card");
+
+        expect(curm).to.be.instanceOf(Card);
+        expect(opm).to.be.instanceOf(Card);
+
+        curm = curm as Card;
+        opm = opm as Card;
 
         curm.ready();
         opm.ready();
@@ -93,12 +101,14 @@ describe("Interact", () => {
         test_player1.inputQueue = ["1", "1"];
         interact.handleCmds("attack");
 
-        assert.equal(curm.getHealth(), 0);
-        assert.equal(opm.getHealth(), 0);
+        expect(curm.getHealth()).to.equal(0);
+        expect(opm.getHealth()).to.equal(0);
     });
     it ('should handle `use` command', () => {
         let minion = summonMinion("Sheep", test_player1);
-        if (!(minion instanceof Card)) assert.fail("minion is not card");
+
+        expect(minion).to.be.instanceOf(Card);
+        minion = minion as Card;
 
         minion.type = "Location";
         minion.cooldown = 0;
@@ -106,8 +116,8 @@ describe("Interact", () => {
         test_player1.inputQueue = ["1"];
         interact.handleCmds("use");
 
-        assert.equal(minion.cooldown, minion.backups.init.cooldown);
-        assert.equal(minion.getHealth(), 0);
+        expect(minion.cooldown).to.equal(minion.backups.init.cooldown);
+        expect(minion.getHealth()).to.equal(0);
     });
     it ('should handle `give` debug command', () => {
         game.config.debug = true;
@@ -118,8 +128,8 @@ describe("Interact", () => {
         let card = test_player1.hand[test_player1.hand.length - 1];
         card.name = "Foo";
 
-        assert.equal(test_player1.hand.length, old_length + 1);
-        assert.equal(card.name, "Foo");
+        expect(test_player1.hand.length).to.equal(old_length + 1);
+        expect(card.name).to.equal("Foo");
     });
     it ('should handle `eval` debug command', () => {
         game.config.debug = true;
@@ -127,7 +137,7 @@ describe("Interact", () => {
 
         game.interact.handleCmds("/eval game.evaling = \"true\"");
 
-        assert.ok(game.evaling);
+        expect(game.evaling).to.be.true;
         game.evaling = false;
     });
     it ('should handle `debug` debug command', () => {
@@ -135,20 +145,20 @@ describe("Interact", () => {
 
         game.interact.handleCmds("/debug");
 
-        assert.equal(test_player1.maxMaxMana, 1000);
-        assert.equal(test_player1.maxMana, 1000);
-        assert.equal(test_player1.mana, 1000);
+        expect(test_player1.maxMaxMana).to.equal(1000);
+        expect(test_player1.maxMana).to.equal(1000);
+        expect(test_player1.mana).to.equal(1000);
 
-        assert.equal(test_player1.health, 10000 + test_player1.maxHealth);
-        assert.equal(test_player1.armor, 100000);
-        assert.equal(test_player1.fatigue, 0);
+        expect(test_player1.health).to.equal(10000 + test_player1.maxHealth);
+        expect(test_player1.armor).to.equal(100000);
+        expect(test_player1.fatigue).to.equal(0);
     });
     it ('should handle `exit` debug command', () => {
         game.config.debug = true;
 
         game.interact.handleCmds("/exit");
 
-        assert.equal(game.running, false);
+        expect(game.running).to.be.false;
         game.running = true;
     });
     it ('should handle invalid command', () => {
@@ -156,15 +166,15 @@ describe("Interact", () => {
 
         let res = game.interact.handleCmds("dsadhusadhasuhudsahuda");
 
-        assert.equal(res, -1);
+        expect(res).to.equal(-1);
     });
 
     it ('should do turn logic', () => {
         test_player1.addToHand(new Card("Sheep", test_player1));
         let res = interact.doTurnLogic("1");
 
-        assert.ok(res instanceof Card);
-        assert.equal(res.name, "Sheep");
+        expect(res).to.be.instanceOf(Card);
+        expect((res as Card).name).to.equal("Sheep");
     });
 
     it ('should do a move', () => {
@@ -172,23 +182,24 @@ describe("Interact", () => {
         test_player1.inputQueue = ["1"];
         let res = interact.doTurn();
 
-        assert.ok(res instanceof Card);
-        assert.equal(res.name, "Sheep");
+        expect(res).to.be.instanceOf(Card);
+        expect((res as Card).name).to.equal("Sheep");
     });
 
     it ('should use a location', () => {
         let minion = summonMinion("Sheep", test_player1);
-        if (!(minion instanceof Card)) assert.fail("minion is not card");
+        expect(minion).to.be.instanceOf(Card);
 
+        minion = minion as Card;
         minion.type = "Location";
         minion.cooldown = 0;
 
         test_player1.inputQueue = ["1"];
         let ret = interact.useLocation();
 
-        assert.equal(minion.cooldown, minion.backups.init.cooldown);
-        assert.equal(minion.getHealth(), 0);
-        assert.equal(ret, true);
+        expect(ret).to.be.true;
+        expect(minion.cooldown).to.equal(minion.backups.init.cooldown);
+        expect(minion.getHealth()).to.equal(0);
     });
 
     it ('should mulligan', () => {
@@ -200,7 +211,7 @@ describe("Interact", () => {
         test_player1.inputQueue = ["1"];
         interact.mulligan(test_player1);
 
-        assert.notEqual(test_player1.hand[0].name, "Foo");
+        expect(test_player1.hand[0].name).to.not.equal("Foo");
     });
 
     it ('should choose one', () => {
@@ -208,7 +219,7 @@ describe("Interact", () => {
 
         let input = interact.chooseOne("Choose one.", ["One", "Two", "Three"]);
 
-        assert.equal(input, 1);
+        expect(input).to.equal(1);
     });
 
     it ('should answer a question', () => {
@@ -216,7 +227,7 @@ describe("Interact", () => {
 
         let input = interact.question(test_player1, "What is your favorite color?", ["Red", "Green", "Blue"]);
 
-        assert.equal(input, "Green");
+        expect(input).to.equal("Green");
     });
 
     it ('should answer a yes/no question', () => {
@@ -224,7 +235,7 @@ describe("Interact", () => {
 
         let input = interact.yesNoQuestion(test_player1, "Foo?");
 
-        assert.equal(input, true);
+        expect(input).to.be.true;
     });
 
     it ('should discover a minion', () => {
@@ -238,10 +249,12 @@ describe("Interact", () => {
 
         console.log = log;
 
-        assert.ok(card);
-        assert.ok(card instanceof Card);
-        assert.equal(card.type, "Minion");
-        assert.ok(pool.map(c => c.name).includes(card.name));
+        expect(card).to.be.instanceOf(Card);
+
+        card = card as Card;
+
+        expect(card.type).to.equal("Minion");
+        expect(pool.map(c => c.name).includes(card.name));
     });
 
     it ('should select a minion', () => {
@@ -252,16 +265,19 @@ describe("Interact", () => {
 
         let card = interact.selectCardTarget("Select a minion.", null, "any");
 
-        assert.ok(card instanceof Card);
-        assert.equal(card.type, "Minion");
-        assert.equal(card, target);
+        expect(card).to.be.instanceOf(Card);
+
+        card = card as Card;
+
+        expect(card.type).to.equal("Minion");
+        expect(card).to.equal(target);
     });
     it ('should select a hero', () => {
         test_player1.inputQueue = ["face"];
 
         let hero = interact.selectPlayerTarget("Select a minion.", null);
 
-        assert.equal(hero, test_player2);
+        expect(hero).to.equal(test_player2);
     });
 
     it ('should get a readable card', () => {
@@ -271,6 +287,6 @@ describe("Interact", () => {
 
         const expected = "[1] " + chalk.cyan("{1} ") + chalk.bold("Sheep") + chalk.greenBright(" [1 / 1]") + " " + chalk.yellow("(Minion)");
 
-        assert.equal(card, expected);
+        expect(card).to.equal(expected);
     });
 });
