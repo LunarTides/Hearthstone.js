@@ -10,17 +10,21 @@ help:
 
 install:
 	@echo "Trying to install using npm..."
-	@chmod +x setup.sh
-	@chmod +x build.sh
-	@./setup.sh
+	@node --version 2> /dev/null || (echo "Nodejs is not installed" && exit 1)
+	@npm i
 
 vanilla:
 	@echo "Trying to generate vanilla cards..."
 	@npm run generate
 
 run:
-	@ls dist/index.js 2> /dev/null || (echo "The game hasn't been built." && ./build.sh)
+	@ls dist/index.js 2> /dev/null || (echo "The game hasn't been built." && exit 1)
+	@echo "Running..."
 	@node .
+	@echo "Running...Done"
 
 build:
-	@./build.sh
+	@echo -e "Building...\c"
+	@npm run build
+	@echo -e "\r\x1b[KBuilding...Done"
+	@node .

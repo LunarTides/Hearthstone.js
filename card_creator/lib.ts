@@ -173,7 +173,7 @@ export default blueprint;
     } else {
         // If debug mode is enabled, just show some information about the card.
         console.log(`\nNew ID: ${id}`); // This is the id that would be written to '.latest_id'
-        console.log(`Would be path: "${file_path.replaceAll("\\", "/").replace(".", "")}"`);
+        console.log(`Would be path: "${file_path.replaceAll("\\", "/")}"`);
         console.log(`Content: ${content}`);
         rl.question();
     }

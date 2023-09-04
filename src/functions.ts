@@ -970,6 +970,7 @@ ${main_content}
             if (isCommandAvailable("x-terminal-emulator", "-e ")) {}
             else if (isCommandAvailable("gnome-terminal", "-- ")) {}
             else if (isCommandAvailable("xterm", "-e ")) {}
+            else if (isCommandAvailable("konsole", "-e ")) {}
             else if (isCommandAvailable("xfce4-terminal", "--command=")) {}
             else {
                 console.log("Error: Failed to open program. Traceback:");

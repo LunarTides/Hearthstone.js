@@ -1,3 +1,3 @@
 @echo off
 echo Building...
-tsc && echo Done
+tsc && echo Done && node .

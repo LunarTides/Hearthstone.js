@@ -1,9 +1,17 @@
 # Hearthstone.js
 
-Hearthstone.js is a console-based clone of Hearthstone. It is a work in progress and is not yet complete.
+Hearthstone.js is a console-based clone of Hearthstone.
 
-This is a passion project that I am working on in my spare time.
+### Prerequisites
+You need to have Node.js installed.
 
-To run, open setup.bat, then run.bat.
+### Running
+#### Simple
+If you are on Windows, open `setup.bat`, `run.bat`.
 
-~~[Trello Board](https://trello.com/b/yvBMr5Xq/hearthstonejs)~~ (Deprecated)
+If you are on Linux, run `make install`, then `make build`.
+
+#### Advanced
+This works on all platforms.
+
+In a console / terminal, at the top folder, run `npm i`, then `npx tsc`, then `node .`
