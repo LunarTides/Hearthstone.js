@@ -67,7 +67,8 @@ function common(): false | Blueprint {
     if (shouldExit) return false;
 
     //if (keywords) keywords = '["' + keywords.split(', ').join('", "') + '"]';
-    let realKeywords: CardKeyword[] = keywords.split(', ') as CardKeyword[];
+    let realKeywords: CardKeyword[] | undefined;
+    if (keywords) realKeywords = keywords.split(', ') as CardKeyword[];
 
     return {
         name: name,

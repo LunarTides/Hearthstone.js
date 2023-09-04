@@ -95,7 +95,9 @@ export function create(override_type: CardType, override_card: Blueprint, overri
 
     let cleaned_desc = game.functions.stripTags(desc_to_clean).replace(`${func}: `, "");
 
-    if (func) func = `${func.toLowerCase()}(plr, game, self${triggerText} {
+    if (func) func = `
+    
+    ${func.toLowerCase()}(plr, game, self${triggerText} {
         // ${cleaned_desc}
         ${extraPassiveCode}
     }`; // Examples: '\n\n    passive(plr, game, self, key, val) {\n        // Your battlecries trigger twice\n        }', '\n\n    battlecry(plr, game, self) {\n\n    }'
@@ -143,9 +145,7 @@ export function create(override_type: CardType, override_card: Blueprint, overri
 import { Blueprint${passiveImport} } from "${type_path_rel}";
 
 const blueprint: Blueprint = {
-    ${contentArray.join(',\n    ')},${file_id}
-    
-    ${func}
+    ${contentArray.join(',\n    ')},${file_id}${func}
 }
 
 export default blueprint;

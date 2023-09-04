@@ -24,7 +24,6 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "@types/chai": "^4.3.5",
     "@types/jest": "^29.5.4",
     "@types/node": "^20.5.9",
     "@types/readline-sync": "^1.4.4",

@@ -10,7 +10,7 @@ help:
 
 install:
 	@echo "Trying to install using npm..."
-	@node --version 2> /dev/null || (echo "Nodejs is not installed" && exit 1)
+	@node --version > /dev/null 2>&1 || (echo "Nodejs is not installed" && exit 1)
 	@npm i
 
 vanilla:
@@ -25,6 +25,11 @@ run:
 
 build:
 	@echo -e "Building...\c"
-	@npm run build
+	@tsc
+	@echo -e "\r\x1b[KBuilding...Done"
+
+start:
+	@echo -e "Building...\c"
+	@tsc
 	@echo -e "\r\x1b[KBuilding...Done"
 	@node .
