@@ -955,11 +955,13 @@ ${main_content}
 
             const isCommandAvailable = (test_command: string, args_specifier: string) => {
                 try {
-                    console.log(`${test_command} ${args_specifier}${command} ${args}`)
+                    console.log(`Trying '${test_command} ${args_specifier}${command} ${args}'...`)
                     attempts.push(test_command);
 
-                    child_process.execSync(`which ${test_command}`);
-                    child_process.spawn(`${test_command} ${args_specifier}${command} ${args}`);
+                    child_process.execSync(`which ${test_command} 2> /dev/null`);
+                    child_process.exec(`${test_command} ${args_specifier}${command} ${args}`);
+
+                    console.log(`Success!`);
 
                     return true;
                 } catch (error) {
