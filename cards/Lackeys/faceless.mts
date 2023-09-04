@@ -5,7 +5,7 @@ import { Blueprint } from "../../src/types.js";
 const blueprint: Blueprint = {
     name: "Faceless Lackey",
     stats: [1, 1],
-    desc: "Battlecry: Summon a random 2-Cost minion.",
+    desc: "&BBattlecry:&R Summon a random 2-Cost minion.",
     mana: 1,
     type: "Minion",
     tribe: "None",

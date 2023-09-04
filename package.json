@@ -6,8 +6,8 @@
   "type": "module",
   "scripts": {
     "test": "npm run test:custom",
-    "test:custom": "node run-tests.ts",
-    "generate": "node card_creator/vanilla/generator",
+    "test:custom": "node dist/run-tests.js",
+    "generate": "node dist/card_creator/vanilla/generator",
     "start": "tsc && node ."
   },
   "repository": {

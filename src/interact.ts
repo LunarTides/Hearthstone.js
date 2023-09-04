@@ -1831,7 +1831,7 @@ export const interact = {
      * Verifies that the diy card has been solved.
      * 
      * @param condition The condition where, if true, congratulates the user
-     * @param fileName The file's name in the `DIY` folder. E.g. `1.ts`
+     * @param fileName The file's name in the `DIY` folder. E.g. `1.mts`
      * 
      * @returns Success
      */

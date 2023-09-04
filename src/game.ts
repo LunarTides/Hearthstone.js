@@ -538,7 +538,7 @@ export class Game {
             
             let success = plr.setToStartingHero();
             if (!success) {
-                console.log("File 'cards/StartingHeroes/" + plr.heroClass.toLowerCase().replaceAll(" ", "_") + ".ts' is either; Missing or Incorrect. Please copy the working 'cards/StartingHeroes/' folder from the github repo to restore a working copy. Error Code: 12");
+                console.log("File 'cards/StartingHeroes/" + plr.heroClass.toLowerCase().replaceAll(" ", "_") + ".mts' is either; Missing or Incorrect. Please copy the working 'cards/StartingHeroes/' folder from the github repo to restore a working copy. Error Code: 12");
                 process.exit(1);
             }
 
@@ -788,6 +788,8 @@ const attack = {
         if (typeof attacker === "string" || typeof attacker === "number") return attack._attackerIsNum(attacker, target);
 
         // The attacker is a card or player
+        if (attacker.frozen) return "frozen";
+
         // Check if there is a minion with taunt
         let taunts = game.board[game.opponent.id].filter(m => m.keywords.includes("Taunt"));
         if (taunts.length > 0) {
@@ -795,8 +797,6 @@ const attack = {
             if (target instanceof Card && target.keywords.includes("Taunt")) {}
             else return "taunt";
         }
-
-        if (attacker.frozen) return "frozen";
 
         // Attacker is a player
         if (attacker.classType === "Player") return attack._attackerIsPlayer(attacker, target);

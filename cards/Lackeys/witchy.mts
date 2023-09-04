@@ -5,7 +5,7 @@ import { Blueprint } from "../../src/types.js";
 const blueprint: Blueprint = {
     name: "Witchy Lackey",
     stats: [1, 1],
-    desc: "Battlecry: Transform a friendly minion into one that costs (1) more.",
+    desc: "&BBattlecry:&R Transform a friendly minion into one that costs (1) more.",
     mana: 1,
     type: "Minion",
     tribe: "None",

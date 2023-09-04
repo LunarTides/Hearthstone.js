@@ -381,7 +381,7 @@ export type VanillaCard = {
     id: string,
     dbfId: number,
     name: string,
-    text: string,
+    text?: string,
     flavor: string,
     artist: string,
     cardClass: CardClass,

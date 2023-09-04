@@ -5,7 +5,8 @@ import { Blueprint } from "../../../../src/types.js";
 const blueprint: Blueprint = {
     name: "Healing Totem",
     stats: [0, 2],
-    desc: "At the end of your turn, restore 1 Health to all friendly minions.",
+    // TODO: What does this hashtag mean? This was pulled from the vanilla card
+    desc: "At the end of your turn, restore #1 Health to all friendly minions.",
     mana: 1,
     type: "Minion",
     tribe: "Totem",

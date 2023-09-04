@@ -45,7 +45,7 @@ export function main() {
 
     let [name, displayName, hpDesc, hpCost] = answers;
 
-    let filename = name.toLowerCase().replaceAll(" ", "_") + ".ts";
+    let filename = name.toLowerCase().replaceAll(" ", "_") + ".mts";
 
     let card: Blueprint = {
         name: name + " Starting Hero",

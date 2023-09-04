@@ -9,7 +9,7 @@ const blueprint: Blueprint = {
     type: "Spell",
 
     // The spell school of the spell. If you don't include this line, it will not have a spell school.
-    // You can delete this line, but not the `tribe` line in `minion.ts`.
+    // You can delete this line, but not the `tribe` line in `minion.mts`.
     spellClass: "Shadow",
 
     classes: ["Neutral"],

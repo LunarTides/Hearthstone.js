@@ -1,7 +1,7 @@
 import rl from "readline-sync";
 import fs from "fs";
-import config from "../../config/general.json" assert { "type": "json" };
-import { Game, Player } from "../../src/internal.js";
+import config from "../config/general.json" assert { "type": "json" };
+import { Game, Player } from "../src/internal.js";
 
 const game = new Game();
 const player1 = new Player("Player 1");
@@ -23,13 +23,15 @@ function getFinishedCards(path: string) {
 }
 
 function searchCards(query: RegExp | string, path?: string) {
-    if (!path) path = "../../cards";
-    if (path == "../../cards/Tests") return; // We don't care about test cards
+    if (!path) path = game.functions.dirname() + "../cards";
+    if (path.includes("cards/Tests")) return; // We don't care about test cards
+
+    path = path.replaceAll("\\", "/").replace(/\/dist\/\.\./, "");
 
     fs.readdirSync(path, { withFileTypes: true }).forEach(file => {
         let p = `${path}/${file.name}`;
 
-        if (file.name.endsWith(".ts")) {
+        if (file.name.endsWith(".mts")) {
             // It is already finished
             if (finishedCards.includes(p)) return;
 
@@ -49,6 +51,7 @@ function searchCards(query: RegExp | string, path?: string) {
     });
 }
 
+game.interact.cls();
 let use_regex = rl.keyInYN("Do you want to use regular expressions? (Don't do this unless you know what regex is, and how to use it)");
 let search: string | RegExp = rl.question("Search: ");
 
@@ -67,8 +70,7 @@ while (true) {
 
     matchingCards.forEach((c, i) => {
         // `c` is the path to the card.
-        let _c = c.replace("../../cards/", "");
-        console.log(`${i + 1}: ${_c}`);
+        console.log(`${i + 1}: ${c}`);
     });
 
     let index = rl.question("\nWhich card do you want to fix (type 'done' to finish | type 'delete' to delete the save file): ");
@@ -92,6 +94,7 @@ while (true) {
     let path = matchingCards[indexNum];
 
     // `card` is the path to that card.
+    // TODO: This is broken
     let success = game.functions.openWithArgs(config.editor, `"${path}"`);
     if (!success) rl.question(); // The `openWithArgs` shows an error message for us, but we need to pause.
 

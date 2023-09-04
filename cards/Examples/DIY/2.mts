@@ -79,7 +79,7 @@ const blueprint: Blueprint = {
 
         plr.health = trueOgHealth;
 
-        game.interact.verifyDIYSolution(solved, "2.ts");
+        game.interact.verifyDIYSolution(solved, "2.mts");
 
         if (!solved) return game.constants.REFUND;
         return true;

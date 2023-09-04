@@ -3,7 +3,7 @@
 import { Blueprint } from "../../../src/types.js";
 
 const blueprint: Blueprint = {
-    // Look in `corrupt.ts` first.
+    // Look in `corrupt.mts` first.
     // This is just an ordinary card.
     name: "Corrupted Example",
     stats: [2, 2],

@@ -3,11 +3,11 @@
 import { Blueprint } from "../../../../src/types.js";
 
 const blueprint: Blueprint = {
-    // Look in `main.ts` first.
+    // Look in `main.mts` first.
     // This will be summoned below the main minion
     name: "Colossal Example Right Arm",
 
-    // Look in `left.ts` for an explanation
+    // Look in `left.mts` for an explanation
     displayName: "Right Arm",
 
     stats: [1, 2],

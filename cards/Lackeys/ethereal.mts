@@ -5,7 +5,7 @@ import { Blueprint } from "../../src/types.js";
 const blueprint: Blueprint = {
     name: "Ethereal Lackey",
     stats: [1, 1],
-    desc: "Battlecry: Discover a spell.",
+    desc: "&BBattlecry:&R &BDiscover&R a spell.",
     mana: 1,
     type: "Minion",
     tribe: "None",

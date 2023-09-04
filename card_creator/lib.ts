@@ -18,7 +18,7 @@ let type: CardType;
 
 type CCType = "Undefined" | "Class" | "Custom" | "Vanilla";
 
-let debug = true;
+let debug = false;
 let cctype: CCType = "Undefined";
 
 function getCardFunction(card_type: CardType) {
@@ -81,7 +81,7 @@ export function create(override_type: CardType, override_card: Blueprint, overri
     
     let extraPassiveCode = "";
     if (isPassive) extraPassiveCode = `
-        // If the key for a different event, stop the function.
+        // If the key is for a different event, stop the function.
         if (key != "") return;
 
         // Here we cast the value to the correct type.
@@ -117,10 +117,16 @@ export function create(override_type: CardType, override_card: Blueprint, overri
     const getTypeValue = (val: any) => {
         let ret = val;
 
+        const stringify = (val: string) => {
+            return `"${val}"`;
+        }
+
         if (val instanceof Array) ret = "[" + val.map((v: any) => {
-            if (typeof v === "string") return `"${v}"`;
+            if (typeof v === "string") return stringify(v);
             else return v;
         }).join(", ") + "]";
+
+        if (typeof val === "string") ret = stringify(val);
 
         return ret.toString();
     }
@@ -131,7 +137,7 @@ export function create(override_type: CardType, override_card: Blueprint, overri
     let num = split_path.length - split_path.indexOf("cards");
     let type_path_rel = "../".repeat(num - 1) + "src/types.js";
 
-    let contentArray = Object.entries(card).filter(c => c[0] != "id").map(c => `${c[0]}: ${getTypeValue(c[0])}`); // name: "Test"
+    let contentArray = Object.entries(card).filter(c => c[0] != "id").map(c => `${c[0]}: ${getTypeValue(c[1])}`); // name: "Test"
     let content = `// Created by the ${cctype} Card Creator
 
 import { Blueprint${passiveImport} } from "${type_path_rel}";
@@ -149,6 +155,7 @@ export default blueprint;
     set_type("Undefined");
 
     // The path is now "./card_creator/../cards/...", replace this with "./cards/..."
+    path = path.replace(/[\/\\]dist[\/\\]\.\./, "");
     let file_path = path.replaceAll("/", "\\") + filename; // Replace '/' with '\' because windows
 
     if (!debug) {

@@ -11,7 +11,7 @@ Shows you that you sometimes have to add your own variables to cards, like dorma
 Shows you how to make cards with runes, which is like adding cards with Dormant.
 
 ### Corrupt
-Shows you how to make Corrupt cards. Its corrupted counterpart is `corrupted.ts`.
+Shows you how to make Corrupt cards. Its corrupted counterpart is `corrupted.mts`.
 
 ### Spelldamage
 Shows you how to make cards with spelldamage.

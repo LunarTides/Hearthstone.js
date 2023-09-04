@@ -152,7 +152,7 @@ const blueprint: Blueprint = {
             game.graveyard.some(p => p.includes(target))
         );
 
-        game.interact.verifyDIYSolution(solved, "3.ts");
+        game.interact.verifyDIYSolution(solved, "3.mts");
 
         if (!solved) return game.constants.REFUND;
         return true;

@@ -1,8 +1,8 @@
 import { Blueprint, CardClass, CardRarity, MinionTribe, SpellSchool, VanillaCard } from "../../src/types.js";
 import { Game, Player } from "../../src/internal.js";
 
+import fs from "fs";
 import chalk from "chalk";
-import { readFileSync } from "fs";
 import rl from "readline-sync";
 import * as lib from "../lib.js";
 
@@ -51,7 +51,6 @@ function createCard(card: VanillaCard, main: boolean) {
 
     let realName = rl.question("Override name (this will set 'name' to be the displayname instead) (leave empty to not use display name): ") || name;
 
-
     let blueprint: Blueprint;
 
     if (type == "Minion") {
@@ -61,7 +60,7 @@ function createCard(card: VanillaCard, main: boolean) {
             desc: desc,
             mana: mana,
             type: type,
-            tribe: races[0], // TODO: Add support for more than 1 tribe
+            tribe: races[0] || "None", // TODO: Add support for more than 1 tribe
             classes: [cardClass],
             rarity: rarity,
             id: 0,
@@ -128,7 +127,7 @@ function createCard(card: VanillaCard, main: boolean) {
         blueprint.displayName = name;
     }
 
-    if (main) console.log(blueprint);
+    //if (main) console.log(blueprint);
 
     lib.set_type("Vanilla"); // Vanilla Card Creator
     lib.create(type, blueprint);
@@ -139,7 +138,14 @@ export function main(card?: VanillaCard) {
 
     if (card) return createCard(card, false);
 
-    let data = readFileSync(".ignore.cards.json", { encoding: 'utf8', flag: 'r' });
+    const fileLocation = game.functions.dirname() + "../card_creator/vanilla/.ignore.cards.json";
+
+    if (!fs.existsSync(fileLocation)) {
+        console.log("No cards file found! Run 'scripts/genvanilla.bat' (requires an internet connection), then try again.\n");
+        return false;
+    }
+
+    let data = fs.readFileSync(fileLocation, "utf8");
 
     let parsedData: VanillaCard[] = JSON.parse(data);
 
@@ -149,7 +155,7 @@ export function main(card?: VanillaCard) {
     }
 
     while (true) {
-        let cardName = rl.question("Name / dbfId (Type 'back' to cancel): ");
+        let cardName = rl.question("\nName / dbfId (Type 'back' to cancel): ");
         if (["exit", "quit", "close", "back"].includes(cardName.toLowerCase())) break;
 
         let filtered_cards = parsedData.filter(c => c.name.toLowerCase() == cardName.toLowerCase() || c.dbfId == parseInt(cardName));
@@ -196,4 +202,6 @@ export function main(card?: VanillaCard) {
 
         createCard(card, true);
     }
+
+    return true;
 }

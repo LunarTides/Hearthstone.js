@@ -6,7 +6,7 @@ const blueprint: Blueprint = {
     name: "Death Knight Frail Ghoul",
     displayName: "Frail Ghoul",
     stats: [1, 1],
-    desc: "Charge. At the end of your turn, this minion dies.",
+    desc: "&BCharge&R At the end of your turn, this minion dies.",
     mana: 1,
     type: "Minion",
     tribe: "Undead",

@@ -348,17 +348,14 @@ const deckcode = {
         let cards = codeSplit[1].trim();
 
         // Now it's just the cards left
-        let vanillaCardsString: string;
+        const fileLocation = game.functions.dirname() + "../card_creator/vanilla/.ignore.cards.json";
 
-        try {
-            //@ts-expect-error
-            vanillaCardsString = fs.readFileSync(game.functions.dirname() + "../card_creator/vanilla/.ignore.cards.json");
-        } catch (err) {
-            console.log(chalk.red("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'scripts/genvanilla.bat' (requires an internet connection), then try again."));
-            game.input();
-
+        if (!fs.existsSync(fileLocation)) {
+            game.input(chalk.red("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'scripts/genvanilla.bat' (requires an internet connection), then try again."));
             process.exit(1);
         }
+
+        const vanillaCardsString = fs.readFileSync(fileLocation, "utf8");
         let vanillaCards: VanillaCard[] = JSON.parse(vanillaCardsString);
 
         let cardsSplit = cards.split(",").map(i => parseInt(i, 36));
@@ -447,18 +444,14 @@ const deckcode = {
     fromVanilla(plr: Player, code: string): string {
         let deck: deckstrings.DeckDefinition = deckstrings.decode(code); // Use the 'deckstrings' api's decode
 
-        let cardsString: string;
+        const fileLocation = game.functions.dirname() + "../card_creator/vanilla/.ignore.cards.json";
 
-        try {
-            // @ts-expect-error
-            cardsString = fs.readFileSync(game.functions.dirname() + "../card_creator/vanilla/.ignore.cards.json");
-        } catch (err) {
-            console.log(chalk.red("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'scripts/genvanilla.bat' (requires an internet connection), then try again."));
-            game.input();
-
+        if (!fs.existsSync(fileLocation)) {
+            game.input(chalk.red("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'scripts/genvanilla.bat' (requires an internet connection), then try again."));
             process.exit(1);
         }
 
+        const cardsString = fs.readFileSync(fileLocation, "utf8");
         let cards: VanillaCard[] = JSON.parse(cardsString.toString());
 
         // @ts-expect-error
@@ -953,7 +946,7 @@ ${main_content}
         // Windows vs Linux. Pros and Cons:
         if (process.platform == "win32") {
             // Windows
-            child_process.exec(`start ${command} ${args}`);
+            child_process.spawn(`start ${command} ${args}`);
         } else {
             // Linux (/ Mac)
             args = args.replaceAll("\\", "/");
@@ -966,7 +959,7 @@ ${main_content}
                     attempts.push(test_command);
 
                     child_process.execSync(`which ${test_command}`);
-                    child_process.exec(`${test_command} ${args_specifier}${command} ${args}`);
+                    child_process.spawn(`${test_command} ${args_specifier}${command} ${args}`);
 
                     return true;
                 } catch (error) {
@@ -1776,13 +1769,8 @@ ${main_content}
      * @return The directory name.
      */
     dirname(): string {
-        let dirname = pathDirname(fileURLToPath(import.meta.url))
-
-        // Linux / Mac
+        let dirname = pathDirname(fileURLToPath(import.meta.url)).replaceAll("\\", "/");
         dirname = dirname.replace("/src", "/")
-
-        // Windows
-        dirname = dirname.replace("\\src", "\\");
 
         return dirname;
     },

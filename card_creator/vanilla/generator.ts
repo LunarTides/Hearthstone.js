@@ -15,7 +15,7 @@ new Axios({}).get("https://api.hearthstonejson.com/v1/latest/enUS/cards.json")
         let oldLength = data.length;
         data = game.functions.filterVanillaCards(data, false, false, true);
 
-        writeFile(".ignore.cards.json", JSON.stringify(data), err => {
+        writeFile(game.functions.dirname() + "../card_creator/vanilla/.ignore.cards.json", JSON.stringify(data), err => {
             if (err) throw err;
         });
         console.log(`Found ${oldLength} cards!\nFiltered away ${oldLength - data.length} cards!\nSuccessfully imported ${data.length} cards!`);
