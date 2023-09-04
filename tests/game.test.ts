@@ -1,6 +1,5 @@
 import { Player, Game, Card } from "../src/internal";
 import { EventValue, GameAttackReturn, Target } from "../src/types";
-import { expect } from "chai";
 
 // Setup the game / copied from the card updater
 const game = new Game();
@@ -40,10 +39,10 @@ describe("Game", () => {
         }];
 
         game.events.cardUpdate("Eval", "baz"); // This should fail
-        expect(card.displayName).to.not.equal("baz");
+        expect(card.displayName).not.toBe("baz");
 
         game.events.cardUpdate("Dummy", "bar"); // This should pass
-        expect(card.displayName).to.equal("bar");
+        expect(card.displayName).toBe("bar");
     });
 
     it ('should update quests', () => {
@@ -59,23 +58,23 @@ describe("Game", () => {
             return true;
         });
 
-        expect(card.storage.quest_progress).to.be.undefined;
+        expect(card.storage.quest_progress).toBeUndefined();
 
         game.events.questUpdate("quests", "Eval", "bar", test_player1); // This should fail
-        expect(card.storage.quest_progress).to.be.undefined;
-        expect(card.storage.quest_done).to.be.undefined;
+        expect(card.storage.quest_progress).toBeUndefined();
+        expect(card.storage.quest_done).toBeUndefined();
 
         game.events.questUpdate("quests", "Dummy", "bar", test_player1); // This should pass
-        expect(card.storage.quest_progress).to.equal(1);
-        expect(card.storage.quest_done).to.be.undefined;
+        expect(card.storage.quest_progress).toBe(1);
+        expect(card.storage.quest_done).toBeUndefined();
 
         game.events.questUpdate("quests", "Dummy", "bar", test_player1); // This should pass
-        expect(card.storage.quest_progress).to.equal(2);
-        expect(card.storage.quest_done).to.be.undefined;
+        expect(card.storage.quest_progress).toBe(2);
+        expect(card.storage.quest_done).toBeUndefined();
 
         game.events.questUpdate("quests", "Dummy", "bar", test_player1); // This should pass
-        expect(card.storage.quest_progress).to.equal(3);
-        expect(card.storage.quest_done).to.be.undefined;
+        expect(card.storage.quest_progress).toBe(3);
+        expect(card.storage.quest_done).toBeUndefined();
     });
 
     it ('should broadcast events', () => {
@@ -98,41 +97,41 @@ describe("Game", () => {
         }];
         game.summonMinion(card, test_player1);
 
-        expect(card.storage.quest_progress).to.be.undefined;
+        expect(card.storage.quest_progress).toBeUndefined();
 
         game.events.broadcast("GameLoop", "bar", test_player1); // This should fail
-        expect(card.storage.quest_progress).to.be.undefined;
-        expect(card.storage.quest_done).to.be.undefined;
+        expect(card.storage.quest_progress).toBeUndefined();
+        expect(card.storage.quest_done).toBeUndefined();
 
         game.events.broadcast("Dummy", "bar", test_player1); // This should not do anything since the quest isn't added yet
-        expect(card.storage.quest_progress).to.be.undefined;
-        expect(card.storage.quest_done).to.be.undefined;
+        expect(card.storage.quest_progress).toBeUndefined();
+        expect(card.storage.quest_done).toBeUndefined();
 
         game.events.broadcast("Eval", "bar", test_player1); // This should pass and add the test
-        expect(card.storage.quest_progress).to.be.undefined;
-        expect(card.storage.quest_done).to.be.undefined;
+        expect(card.storage.quest_progress).toBeUndefined();
+        expect(card.storage.quest_done).toBeUndefined();
 
         game.events.broadcast("Dummy", "bar", test_player1); // This should pass
-        expect(card.storage.quest_progress).to.equal(1);
-        expect(card.storage.quest_done).to.be.undefined;
+        expect(card.storage.quest_progress).toBe(1);
+        expect(card.storage.quest_done).toBeUndefined();
 
         game.events.broadcast("Dummy", "bar", test_player1); // This should pass
-        expect(card.storage.quest_progress).to.equal(2);
-        expect(card.storage.quest_done).to.be.undefined;
+        expect(card.storage.quest_progress).toBe(2);
+        expect(card.storage.quest_done).toBeUndefined();
 
         game.events.broadcast("Dummy", "bar", test_player1); // This should pass
-        expect(card.storage.quest_progress).to.equal(3);
-        expect(card.storage.quest_done).to.be.true;
+        expect(card.storage.quest_progress).toBe(3);
+        expect(card.storage.quest_done).toBe(true);
     });
 
     it ('should increment a stat', () => {
-        expect(game.events.stats.TestStat).to.be.undefined;
+        expect(game.events.stats.TestStat).toBeUndefined();
 
         game.events.increment(test_player1, "TestStat");
-        expect(game.events.stats.TestStat[test_player1.id]).to.equal(1);
+        expect(game.events.stats.TestStat[test_player1.id]).toBe(1);
 
         game.events.increment(test_player1, "TestStat", 2);
-        expect(game.events.stats.TestStat[test_player1.id]).to.equal(3);
+        expect(game.events.stats.TestStat[test_player1.id]).toBe(3);
     });
 
     // We don't test game.input
@@ -142,15 +141,15 @@ describe("Game", () => {
         game.config.P2AI = true;
         game.doConfigAI();
 
-        expect(test_player1.ai).to.not.be.null;
-        expect(test_player2.ai).to.not.be.null;
+        expect(test_player1.ai).not.toBeNull();
+        expect(test_player2.ai).not.toBeNull();
 
         game.config.P1AI = false;
         game.config.P2AI = false;
         game.doConfigAI();
 
-        expect(test_player1.ai).to.be.null;
-        expect(test_player2.ai).to.be.null;
+        expect(test_player1.ai).toBeNull();
+        expect(test_player2.ai).toBeNull();
     });
 
     it ('should correctly trigger event listeners', () => {
@@ -167,16 +166,16 @@ describe("Game", () => {
             return true;
         });
 
-        expect(ret).to.be.null;
+        expect(ret).toBeNull();
 
         game.events.broadcast("Dummy", "foo", test_player1); // This will fail
-        expect(ret).to.be.null;
+        expect(ret).toBeNull();
 
         game.events.broadcast("Eval", "bar", test_player1); // This will fail since the value is 'bar' instead of 'foo'
-        expect(ret).to.be.null;
+        expect(ret).toBeNull();
 
         game.events.broadcast("Eval", "foo", test_player1); // This will pass
-        expect(ret).to.equal("foo");
+        expect(ret).toBe("foo");
     });
 
     it ('should correctly play a minion', () => {
@@ -190,7 +189,7 @@ describe("Game", () => {
         card.mana = 100;
 
         result = game.playCard(card, test_player1);
-        expect(result).to.equal("mana");
+        expect(result).toBe("mana");
 
         // Traded
         card.addKeyword("Tradeable");
@@ -198,14 +197,14 @@ describe("Game", () => {
         test_player1.inputQueue = "y"; // Force the player to trade the card
         result = game.playCard(card, test_player1);
 
-        expect(result).to.equal("traded");
+        expect(result).toBe("traded");
 
         // Undo the trade
         test_player1.drawSpecific(card);
         test_player1.inputQueue = "n"; // Force the player to NOT trade the card
         result = game.playCard(card, test_player1); // The card still costs 100 mana
 
-        expect(result).to.equal("mana");
+        expect(result).toBe("mana");
 
         // Undo all
         card.mana = 0;
@@ -217,7 +216,7 @@ describe("Game", () => {
         game.config.maxBoardSpace = 0;
 
         result = game.playCard(card, test_player1);
-        expect(result).to.equal("space");
+        expect(result).toBe("space");
 
         game.config.maxBoardSpace = 7;
 
@@ -228,26 +227,26 @@ describe("Game", () => {
         mech.tribe = "Mech";
 
         result = game.summonMinion(mech, test_player1);
-        expect(result).to.equal(mech); // This should succeed
+        expect(result).toBe(mech); // This should succeed
 
         test_player1.forceTarget = mech;
         result = game.playCard(card, test_player1);
         test_player1.forceTarget = undefined;
-        expect(result).to.equal("magnetize");
+        expect(result).toBe("magnetize");
 
         card.removeKeyword("Magnetic");
 
         // Success
-        expect(card.storage.foo).to.be.undefined;
+        expect(card.storage.foo).toBeUndefined();
 
         card.abilities.battlecry = [(plr, game, self) => {
             self.storage.foo = "bar";
         }];
 
         result = game.playCard(card, test_player1);
-        expect(result).to.equal(card);
+        expect(result).toBe(card);
 
-        expect(card.storage.foo).to.equal("bar");
+        expect(card.storage.foo).toBe("bar");
     });
     it ('should correctly play a spell', () => {
         const card = testCard();
@@ -261,9 +260,9 @@ describe("Game", () => {
 
         // Success
         let result = game.playCard(card, test_player1);
-        expect(result).to.be.true;
+        expect(result).toBe(true);
 
-        expect(card.storage.foo).to.equal("bar");
+        expect(card.storage.foo).toBe("bar");
     });
     it ('should correctly play a weapon', () => {
         const card = testCard();
@@ -277,9 +276,9 @@ describe("Game", () => {
 
         // Success
         let result = game.playCard(card, test_player1);
-        expect(result).to.be.true;
+        expect(result).toBe(true);
 
-        expect(card.storage.foo).to.equal("bar");
+        expect(card.storage.foo).toBe("bar");
     });
     it ('should correctly play a hero card', () => {
         const card = testCard();
@@ -293,10 +292,10 @@ describe("Game", () => {
 
         // Success
         let result = game.playCard(card, test_player1);
-        expect(result).to.be.true;
+        expect(result).toBe(true);
 
-        expect(card.storage.foo).to.equal("bar");
-        expect(test_player1.hero).to.equal(card);
+        expect(card.storage.foo).toBe("bar");
+        expect(test_player1.hero).toBe(card);
     });
     it ('should correctly play a location card', () => {
         const card = testCard();
@@ -310,13 +309,13 @@ describe("Game", () => {
 
         // Success
         let result = game.playCard(card, test_player1);
-        expect(result).to.be.true;
+        expect(result).toBe(true);
 
-        expect(card.storage.foo).to.be.undefined;
-        expect(card.cooldown).to.equal(0); // It's cooldown should be 0
+        expect(card.storage.foo).toBeUndefined();
+        expect(card.cooldown).toBe(0); // It's cooldown should be 0
 
         let stats = card.stats;
-        expect(stats).to.not.be.undefined;
+        expect(stats).toBeDefined();
 
         stats = stats!;
 
@@ -324,9 +323,9 @@ describe("Game", () => {
         game.interact.useLocation();
         game.player.forceTarget = undefined;
 
-        expect(card.storage.foo).to.equal("bar");
-        expect(card.getHealth()).to.equal(stats[1] - 1); // It's durability should have decreased by 1
-        expect(card.cooldown).to.equal(card.backups.init.cooldown); // It's cooldown should have reset
+        expect(card.storage.foo).toBe("bar");
+        expect(card.getHealth()).toBe(stats[1] - 1); // It's durability should have decreased by 1
+        expect(card.cooldown).toBe(card.backups.init.cooldown); // It's cooldown should have reset
     });
 
     it ('should correctly summon a minion', () => {
@@ -337,19 +336,19 @@ describe("Game", () => {
 
         card.mana = 0;
 
-        expect(card.storage.foo).to.be.undefined;
+        expect(card.storage.foo).toBeUndefined();
 
         card.abilities.battlecry = [(plr, game, self) => {
             self.storage.foo = "bar";
         }];
 
-        expect(game.board[test_player1.id]).to.not.include(card); // The minion shouldn't be on the board
+        expect(game.board[test_player1.id]).toEqual(expect.not.arrayContaining([card])); // The minion shouldn't be on the board
 
         result = game.summonMinion(card, test_player1);
-        expect(result).to.equal(card);
+        expect(result).toBe(card);
 
-        expect(card.storage.foo).to.be.undefined;
-        expect(game.board[test_player1.id]).to.include(card); // The minion should be on the board
+        expect(card.storage.foo).toBeUndefined();
+        expect(game.board[test_player1.id]).toEqual(expect.arrayContaining([card])); // The minion should be on the board
     });
 
     it ('should correctly attack', () => {
@@ -377,7 +376,7 @@ describe("Game", () => {
 
             let res = game.attack(attacker, target);
 
-            expect(res).to.equal(result);
+            expect(res).toBe(result);
         }
 
         // -- THE ATTACKER IS A CARD --
@@ -609,10 +608,10 @@ describe("Game", () => {
         game.summonMinion(card, test_player1);
         card.remHealth(1000);
 
-        expect(game.board[test_player1.id]).to.include(card); // The minion should be on the board
+        expect(game.board[test_player1.id]).toEqual(expect.arrayContaining([card])); // The minion should be on the board
 
         game.killMinions();
-        expect(game.board[test_player1.id]).to.not.include(card); // The minion shouldn't be on the board
+        expect(game.board[test_player1.id]).toEqual(expect.not.arrayContaining([card])); // The minion shouldn't be on the board
 
         // Reborn
         card.setStats(1, 1);
@@ -624,12 +623,12 @@ describe("Game", () => {
         game.killMinions();
 
         let c = game.board[test_player1.id].find(c => c.name == card.name);
-        expect(c).to.not.be.undefined;
+        expect(c).toBeDefined();
 
         c = c!;
 
-        expect(c.name).to.equal(card.name); // The minion should still be on the board
-        expect(c.keywords).to.not.include("Reborn");
-        expect(c.getHealth()).to.equal(1);
+        expect(c.name).toBe(card.name); // The minion should still be on the board
+        expect(c.keywords).toEqual(expect.not.arrayContaining(["Reborn"]));
+        expect(c.getHealth()).toBe(1);
     });
 });

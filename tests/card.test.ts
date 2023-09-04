@@ -1,5 +1,4 @@
 import { Player, Game, Card } from "../src/internal";
-import { expect } from "chai";
 
 // Setup the game / copied from the card updater
 const game = new Game();
@@ -30,7 +29,7 @@ describe("Card", () => {
     it ('should correctly create a card', () => {
         const card = testCard();
 
-        expect(card.name).to.equal("Sheep");
+        expect(card.name).toBe("Sheep");
     });
 
     it ('should correctly randomize uuid', () => {
@@ -39,7 +38,7 @@ describe("Card", () => {
 
         card.randomizeUUID();
 
-        expect(card.uuid).to.not.equal(uuid);
+        expect(card.uuid).not.toBe(uuid);
     });
 
     it ('should correctly add a deathrattle', () => {
@@ -51,7 +50,7 @@ describe("Card", () => {
 
         card.activate("deathrattle");
 
-        expect(card.displayName).to.equal("foo");
+        expect(card.displayName).toBe("foo");
     });
 
     it ('should correctly add a keyword', () => {
@@ -59,7 +58,7 @@ describe("Card", () => {
 
         card.addKeyword("Taunt");
 
-        expect(card.keywords[0]).to.equal("Taunt");
+        expect(card.keywords[0]).toBe("Taunt");
     });
 
     it ('should correctly remove a keyword', () => {
@@ -68,7 +67,7 @@ describe("Card", () => {
         card.addKeyword("Taunt");
         card.removeKeyword("Taunt");
 
-        expect(card.keywords.length).to.equal(0);
+        expect(card.keywords.length).toBe(0);
     });
 
     it ('should correctly freeze a minion', () => {
@@ -76,7 +75,7 @@ describe("Card", () => {
 
         card.freeze();
 
-        expect(card.frozen).to.equal(true);
+        expect(card.frozen).toBe(true);
     });
 
     it ('should correctly decrease a minion\'s attack', () => {
@@ -85,8 +84,8 @@ describe("Card", () => {
         card.ready();
         card.decAttack();
 
-        expect(card.attackTimes).to.equal(0);
-        expect(card.sleepy).to.be.false;
+        expect(card.attackTimes).toBe(0);
+        expect(card.sleepy).toBe(false);
     });
 
     it ('should ready a minion', () => {
@@ -94,8 +93,8 @@ describe("Card", () => {
 
         card.ready();
 
-        expect(card.attackTimes).to.equal(1);
-        expect(card.sleepy).to.be.false;
+        expect(card.attackTimes).toBe(1);
+        expect(card.sleepy).toBe(false);
     });
 
     it ('should correctly get/set the attack of a minion', () => {
@@ -103,7 +102,7 @@ describe("Card", () => {
 
         card.setStats(2, 3);
 
-        expect(card.getAttack()).to.equal(2);
+        expect(card.getAttack()).toBe(2);
     });
 
     it ('should correctly get/set the health of a minion', () => {
@@ -111,7 +110,7 @@ describe("Card", () => {
 
         card.setStats(2, 3);
 
-        expect(card.getHealth()).to.equal(3);
+        expect(card.getHealth()).toBe(3);
     });
 
     it ('should correctly add stats to a minion', () => {
@@ -120,8 +119,8 @@ describe("Card", () => {
         card.setStats(1, 1);
         card.addStats(1, 2);
 
-        expect(card.getAttack()).to.equal(2);
-        expect(card.getHealth()).to.equal(3);
+        expect(card.getAttack()).toBe(2);
+        expect(card.getHealth()).toBe(3);
     });
 
     it ('should correctly remove stats from a minion', () => {
@@ -130,8 +129,8 @@ describe("Card", () => {
         card.setStats(3, 5);
         card.remStats(1, 2);
 
-        expect(card.getAttack()).to.equal(2);
-        expect(card.getHealth()).to.equal(3);
+        expect(card.getAttack()).toBe(2);
+        expect(card.getHealth()).toBe(3);
     });
 
     it ('should correctly restore health to a minion', () => {
@@ -142,7 +141,7 @@ describe("Card", () => {
 
         card.addHealth(5); // Restore 5 health to the minion. 5+2 = 7, which is more than the max health, so set it to 5
 
-        expect(card.getHealth()).to.equal(5);
+        expect(card.getHealth()).toBe(5);
     });
 
     it ('should correctly add attack to a minion', () => {
@@ -151,7 +150,7 @@ describe("Card", () => {
         card.setStats(1, 1);
         card.addAttack(5);
 
-        expect(card.getAttack()).to.equal(6);
+        expect(card.getAttack()).toBe(6);
     });
 
     it ('should correctly remove health from a minion', () => {
@@ -160,7 +159,7 @@ describe("Card", () => {
         card.setStats(2, 6);
         card.remHealth(5);
 
-        expect(card.getHealth()).to.equal(1);
+        expect(card.getHealth()).toBe(1);
     });
     it ('should correctly fail to remove health from a location card', () => {
         const card = testCard();
@@ -169,7 +168,7 @@ describe("Card", () => {
         card.setStats(2, 6);
         card.remHealth(5); // This should fail since the card is a location card
 
-        expect(card.getHealth()).to.equal(6);
+        expect(card.getHealth()).toBe(6);
     });
 
     it ('should correctly remove attack from a minion', () => {
@@ -178,7 +177,7 @@ describe("Card", () => {
         card.setStats(6, 1);
         card.remAttack(5);
 
-        expect(card.getAttack()).to.equal(1);
+        expect(card.getAttack()).toBe(1);
     });
 
     it ('should correctly reset a minion\'s max health', () => {
@@ -189,7 +188,7 @@ describe("Card", () => {
         card.resetMaxHealth();     // The max health is now 2
         card.addHealth(4);         // Restore 4 health, but it will fail since it is above the minion's max health
 
-        expect(card.getHealth()).to.equal(2);
+        expect(card.getHealth()).toBe(2);
     });
     it ('should correctly reset a minion\'s max health', () => {
         const card = testCard();
@@ -200,7 +199,7 @@ describe("Card", () => {
         card.setStats(6, 6, false);  // The health is now 6
         card.addHealth(100);         // Restore to max health, which is 10
 
-        expect(card.getHealth()).to.equal(10);
+        expect(card.getHealth()).toBe(10);
     });
     it ('should not reset a minion\'s max health', () => {
         const card = testCard();
@@ -210,14 +209,14 @@ describe("Card", () => {
         card.resetMaxHealth(true);   // The health is less than max health, and we pass true, so this does nothing.
         card.addHealth(100);         // Restore to max health, which is 10
 
-        expect(card.getHealth()).to.equal(10);
+        expect(card.getHealth()).toBe(10);
     });
 
     it ('should correct set stealth duration of a minion', () => {
         const card = testCard();
         card.setStealthDuration(5);
 
-        expect(card.stealthDuration).to.equal(game.turns + 5);
+        expect(card.stealthDuration).toBe(game.turns + 5);
     });
 
     it ('should correctly reset attack times', () => {
@@ -226,7 +225,7 @@ describe("Card", () => {
 
         card.resetAttackTimes();
 
-        expect(card.attackTimes).to.equal(1);
+        expect(card.attackTimes).toBe(1);
     });
     it ('should correctly reset attack times if it has windfury', () => {
         const card = testCard();
@@ -235,7 +234,7 @@ describe("Card", () => {
 
         card.resetAttackTimes();
 
-        expect(card.attackTimes).to.equal(2);
+        expect(card.attackTimes).toBe(2);
     });
     it ('should correctly reset attack times if it has mega-windfury', () => {
         const card = testCard();
@@ -244,7 +243,7 @@ describe("Card", () => {
 
         card.resetAttackTimes();
 
-        expect(card.attackTimes).to.equal(4);
+        expect(card.attackTimes).toBe(4);
     });
 
     it ('should correctly create a backup of the card', () => {
@@ -257,8 +256,8 @@ describe("Card", () => {
 
         const stats = card.backups[key].stats; // Find the stats backup
 
-        expect(stats).to.not.be.undefined;
-        expect(stats![0]).to.equal(5);
+        expect(stats).toBeDefined();
+        expect(stats![0]).toBe(5);
     });
     it ('should correctly apply a backup of the card', () => {
         const card = testCard();
@@ -268,7 +267,7 @@ describe("Card", () => {
         card.setStats(1, 1);
 
         card.restoreBackup(card.backups[key]); // Restore the backup
-        expect(card.getAttack()).to.equal(5);
+        expect(card.getAttack()).toBe(5);
     });
 
     it ('should correctly kill a minion', () => {
@@ -277,7 +276,7 @@ describe("Card", () => {
         card.setStats(5, 5);
         card.kill();
 
-        expect(card.getHealth()).to.equal(0);
+        expect(card.getHealth()).toBe(0);
     });
 
     it ('should correctly silence a minion', () => {
@@ -289,10 +288,10 @@ describe("Card", () => {
 
         card.silence();
 
-        expect(card.keywords).to.have.length(0); // Keywords have been removed
-        expect(card.getAttack()).to.equal(1);    // Stats have been reset to 1/1
-        expect(card.getHealth()).to.equal(1);    // Stats have been reset to 1/1
-        expect(card.desc).to.be.empty;           // Desc has been removed
+        expect(card.keywords).toHaveLength(0); // Keywords have been removed
+        expect(card.getAttack()).toBe(1);    // Stats have been reset to 1/1
+        expect(card.getHealth()).toBe(1);    // Stats have been reset to 1/1
+        expect(card.desc).toHaveLength(0);           // Desc has been removed
     });
 
     it ('should correctly destroy a minion', () => {
@@ -305,11 +304,11 @@ describe("Card", () => {
 
         card.destroy();
 
-        expect(card.keywords).to.have.length(0); // Keywords have been removed
-        expect(card.getAttack()).to.equal(1);    // Stats have been reset to 1/1
-        expect(card.desc).to.be.empty;           // Desc has been removed
+        expect(card.keywords).toHaveLength(0); // Keywords have been removed
+        expect(card.getAttack()).toBe(1);    // Stats have been reset to 1/1
+        expect(card.desc).toHaveLength(0);           // Desc has been removed
 
-        expect(card.getHealth()).to.equal(0);    // The minion has been killed
+        expect(card.getHealth()).toBe(0);    // The minion has been killed
     });
 
     it ('should correctly activate a minion', () => {
@@ -321,7 +320,7 @@ describe("Card", () => {
 
         card.activate("deathrattle");
 
-        expect(card.displayName).to.equal("bar");
+        expect(card.displayName).toBe("bar");
     });
 
     it ('should correctly activate a minion\'s passive', () => {
@@ -339,7 +338,7 @@ describe("Card", () => {
         game.events.broadcast("Dummy", "foo", test_player1);
         game.events.broadcast("Dummy", "baz", test_player1); // This should get ignored
 
-        expect(card.displayName).to.equal("foobarbazbar");
+        expect(card.displayName).toBe("foobarbazbar");
     });
 
     it ('should correctly get manathirst', () => {
@@ -349,8 +348,8 @@ describe("Card", () => {
         const ret = card.manathirst(5);
         const p = ret ? "pass" : "fail";
 
-        expect(ret).to.be.false;
-        expect(p).to.be.equal("fail");
+        expect(ret).toBe(false);
+        expect(p).toBe("fail");
     });
     it ('should correctly get manathirst', () => {
         const card = testCard();
@@ -359,8 +358,8 @@ describe("Card", () => {
         const ret = card.manathirst(5);
         const p = ret ? "pass" : "fail";
 
-        expect(ret).to.be.true;
-        expect(p).to.be.equal("pass");
+        expect(ret).toBe(true);
+        expect(p).toBe("pass");
     });
 
     it ('should correctly get enchantment info', () => {
@@ -369,9 +368,9 @@ describe("Card", () => {
         const info = card.getEnchantmentInfo("mana = 1");
         const expected = {"key": "mana", "val": "1", "op": "="};
 
-        expect(info.key).to.equal(expected.key);
-        expect(info.val).to.equal(expected.val);
-        expect(info.op).to.equal(expected.op);
+        expect(info.key).toBe(expected.key);
+        expect(info.val).toBe(expected.val);
+        expect(info.op).toBe(expected.op);
     });
     it ('should correctly get enchantment info', () => {
         const card = testCard();
@@ -379,9 +378,9 @@ describe("Card", () => {
         const info = card.getEnchantmentInfo("+1 mana");
         const expected = {"key": "mana", "val": "1", "op": "+"};
 
-        expect(info.key).to.equal(expected.key);
-        expect(info.val).to.equal(expected.val);
-        expect(info.op).to.equal(expected.op);
+        expect(info.key).toBe(expected.key);
+        expect(info.val).toBe(expected.val);
+        expect(info.op).toBe(expected.op);
     });
 
     it ('should correctly add enchantents', () => {
@@ -389,8 +388,8 @@ describe("Card", () => {
 
         card.addEnchantment("+1 mana", card);
 
-        expect(card.enchantments).to.have.length(1);
-        expect(card.enchantments[0].enchantment).to.equal("+1 mana");
+        expect(card.enchantments).toHaveLength(1);
+        expect(card.enchantments[0].enchantment).toBe("+1 mana");
     });
 
     it ('should correctly apply enchantents', () => {
@@ -399,7 +398,7 @@ describe("Card", () => {
         card.addEnchantment("+1 mana", card);
         card.applyEnchantments();
 
-        expect(card.mana).to.equal(card.backups.init.mana + 1);
+        expect(card.mana).toBe(card.backups.init.mana + 1);
     });
 
     it ('should correctly check if an enchantent exists', () => {
@@ -409,8 +408,8 @@ describe("Card", () => {
         const fail = card.enchantmentExists("mana = 1", card);
         const pass = card.enchantmentExists("+1 mana", card);
 
-        expect(pass).to.be.true;
-        expect(fail).to.be.false;
+        expect(pass).toBe(true);
+        expect(fail).toBe(false);
     });
 
     it ('should correctly remove an enchantent', () => {
@@ -421,7 +420,7 @@ describe("Card", () => {
 
         const fail = card.enchantmentExists("+1 mana", card);
 
-        expect(fail).to.be.false;
+        expect(fail).toBe(false);
     });
 
     it ('should correctly replace placeholders', () => {
@@ -435,8 +434,8 @@ describe("Card", () => {
         card.replacePlaceholders();
         let fullCard = game.interact.doPlaceholders(card);
 
-        expect(card.desc).to.be.equal("This card costs: {ph:cost} placeholder {/ph}.");
-        expect(fullCard).to.be.equal(`This card costs: ${card.mana}.`);
+        expect(card.desc).toBe("This card costs: {ph:cost} placeholder {/ph}.");
+        expect(fullCard).toBe(`This card costs: ${card.mana}.`);
     });
 
     it ('should return a perfect copy', () => {
@@ -446,8 +445,8 @@ describe("Card", () => {
 
         const perfectCopy = card.perfectCopy();
 
-        expect(card.getAttack()).to.equal(perfectCopy.getAttack());
-        expect(card.uuid).to.not.equal(perfectCopy.uuid);
+        expect(card.getAttack()).toBe(perfectCopy.getAttack());
+        expect(card.uuid).not.toBe(perfectCopy.uuid);
     });
 
     it ('should return an imperfect copy', () => {
@@ -457,7 +456,7 @@ describe("Card", () => {
 
         const imperfectCopy = card.imperfectCopy();
 
-        expect(card.getAttack()).to.not.equal(imperfectCopy.getAttack());
-        expect(card.uuid).to.not.equal(imperfectCopy.uuid);
+        expect(card.getAttack()).not.toBe(imperfectCopy.getAttack());
+        expect(card.uuid).not.toBe(imperfectCopy.uuid);
     });
 });

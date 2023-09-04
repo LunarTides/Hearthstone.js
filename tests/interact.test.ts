@@ -1,7 +1,6 @@
 // Part of this code was copied from an example given by ChatGPT
 import { Player, Game, Card } from "../src/internal";
 import chalk from "chalk";
-import { expect } from "chai";
 
 // Setup the game / copied from the card updater
 const game = new Game();
@@ -48,8 +47,8 @@ describe("Interact", () => {
         let curm = summonMinion("Sheep", test_player1);
         let opm = summonMinion("Sheep", test_player2);
 
-        expect(curm).to.be.instanceOf(Card);
-        expect(opm).to.be.instanceOf(Card);
+        expect(curm).toBeInstanceOf(Card);
+        expect(opm).toBeInstanceOf(Card);
 
         curm = curm as Card;
         opm = opm as Card;
@@ -60,15 +59,15 @@ describe("Interact", () => {
         test_player1.inputQueue = ["1", "1"];
         interact.doTurnAttack();
 
-        expect(curm.getHealth()).to.equal(0);
-        expect(opm.getHealth()).to.equal(0);
+        expect(curm.getHealth()).toBe(0);
+        expect(opm.getHealth()).toBe(0);
     });
 
     it ('should handle `end` command', () => {
         interact.handleCmds("end");
 
-        expect(game.player).to.equal(test_player2);
-        expect(game.opponent).to.equal(test_player1);
+        expect(game.player).toBe(test_player2);
+        expect(game.opponent).toBe(test_player1);
     });
     it ('should handle `hero power` command', () => {
         test_player1.heroClass = "Mage";
@@ -82,14 +81,14 @@ describe("Interact", () => {
 
         interact.handleCmds("hero power");
 
-        expect(test_player2.health).to.equal(29); // Test_player2 should have 1 less health
+        expect(test_player2.health).toBe(29); // Test_player2 should have 1 less health
     });
     it ('should handle `attack` command', () => {
         let curm = summonMinion("Sheep", test_player1);
         let opm = summonMinion("Sheep", test_player2);
 
-        expect(curm).to.be.instanceOf(Card);
-        expect(opm).to.be.instanceOf(Card);
+        expect(curm).toBeInstanceOf(Card);
+        expect(opm).toBeInstanceOf(Card);
 
         curm = curm as Card;
         opm = opm as Card;
@@ -100,13 +99,13 @@ describe("Interact", () => {
         test_player1.inputQueue = ["1", "1"];
         interact.handleCmds("attack");
 
-        expect(curm.getHealth()).to.equal(0);
-        expect(opm.getHealth()).to.equal(0);
+        expect(curm.getHealth()).toBe(0);
+        expect(opm.getHealth()).toBe(0);
     });
     it ('should handle `use` command', () => {
         let minion = summonMinion("Sheep", test_player1);
 
-        expect(minion).to.be.instanceOf(Card);
+        expect(minion).toBeInstanceOf(Card);
         minion = minion as Card;
 
         minion.type = "Location";
@@ -115,8 +114,8 @@ describe("Interact", () => {
         test_player1.inputQueue = ["1"];
         interact.handleCmds("use");
 
-        expect(minion.cooldown).to.equal(minion.backups.init.cooldown);
-        expect(minion.getHealth()).to.equal(0);
+        expect(minion.cooldown).toBe(minion.backups.init.cooldown);
+        expect(minion.getHealth()).toBe(0);
     });
     it ('should handle `give` debug command', () => {
         game.config.debug = true;
@@ -127,8 +126,8 @@ describe("Interact", () => {
         let card = test_player1.hand[test_player1.hand.length - 1];
         card.name = "Foo";
 
-        expect(test_player1.hand.length).to.equal(old_length + 1);
-        expect(card.name).to.equal("Foo");
+        expect(test_player1.hand.length).toBe(old_length + 1);
+        expect(card.name).toBe("Foo");
     });
     it ('should handle `eval` debug command', () => {
         game.config.debug = true;
@@ -136,7 +135,7 @@ describe("Interact", () => {
 
         game.interact.handleCmds("/eval game.evaling = \"true\"");
 
-        expect(game.evaling).to.be.true;
+        expect(game.evaling).toBe(true);
         game.evaling = false;
     });
     it ('should handle `debug` debug command', () => {
@@ -144,20 +143,20 @@ describe("Interact", () => {
 
         game.interact.handleCmds("/debug");
 
-        expect(test_player1.maxMaxMana).to.equal(1000);
-        expect(test_player1.maxMana).to.equal(1000);
-        expect(test_player1.mana).to.equal(1000);
+        expect(test_player1.maxMaxMana).toBe(1000);
+        expect(test_player1.maxMana).toBe(1000);
+        expect(test_player1.mana).toBe(1000);
 
-        expect(test_player1.health).to.equal(10000 + test_player1.maxHealth);
-        expect(test_player1.armor).to.equal(100000);
-        expect(test_player1.fatigue).to.equal(0);
+        expect(test_player1.health).toBe(10000 + test_player1.maxHealth);
+        expect(test_player1.armor).toBe(100000);
+        expect(test_player1.fatigue).toBe(0);
     });
     it ('should handle `exit` debug command', () => {
         game.config.debug = true;
 
         game.interact.handleCmds("/exit");
 
-        expect(game.running).to.be.false;
+        expect(game.running).toBe(false);
         game.running = true;
     });
     it ('should handle invalid command', () => {
@@ -165,15 +164,15 @@ describe("Interact", () => {
 
         let res = game.interact.handleCmds("dsadhusadhasuhudsahuda");
 
-        expect(res).to.equal(-1);
+        expect(res).toBe(-1);
     });
 
     it ('should do turn logic', () => {
         test_player1.addToHand(new Card("Sheep", test_player1));
         let res = interact.doTurnLogic("1");
 
-        expect(res).to.be.instanceOf(Card);
-        expect((res as Card).name).to.equal("Sheep");
+        expect(res).toBeInstanceOf(Card);
+        expect((res as Card).name).toBe("Sheep");
     });
 
     it ('should do a move', () => {
@@ -181,13 +180,13 @@ describe("Interact", () => {
         test_player1.inputQueue = ["1"];
         let res = interact.doTurn();
 
-        expect(res).to.be.instanceOf(Card);
-        expect((res as Card).name).to.equal("Sheep");
+        expect(res).toBeInstanceOf(Card);
+        expect((res as Card).name).toBe("Sheep");
     });
 
     it ('should use a location', () => {
         let minion = summonMinion("Sheep", test_player1);
-        expect(minion).to.be.instanceOf(Card);
+        expect(minion).toBeInstanceOf(Card);
 
         minion = minion as Card;
         minion.type = "Location";
@@ -196,9 +195,9 @@ describe("Interact", () => {
         test_player1.inputQueue = ["1"];
         let ret = interact.useLocation();
 
-        expect(ret).to.be.true;
-        expect(minion.cooldown).to.equal(minion.backups.init.cooldown);
-        expect(minion.getHealth()).to.equal(0);
+        expect(ret).toBe(true);
+        expect(minion.cooldown).toBe(minion.backups.init.cooldown);
+        expect(minion.getHealth()).toBe(0);
     });
 
     it ('should mulligan', () => {
@@ -210,7 +209,7 @@ describe("Interact", () => {
         test_player1.inputQueue = ["1"];
         interact.mulligan(test_player1);
 
-        expect(test_player1.hand[0].name).to.not.equal("Foo");
+        expect(test_player1.hand[0].name).not.toBe("Foo");
     });
 
     it ('should choose one', () => {
@@ -218,7 +217,7 @@ describe("Interact", () => {
 
         let input = interact.chooseOne("Choose one.", ["One", "Two", "Three"]);
 
-        expect(input).to.equal(1);
+        expect(input).toBe(1);
     });
 
     it ('should answer a question', () => {
@@ -226,7 +225,7 @@ describe("Interact", () => {
 
         let input = interact.question(test_player1, "What is your favorite color?", ["Red", "Green", "Blue"]);
 
-        expect(input).to.equal("Green");
+        expect(input).toBe("Green");
     });
 
     it ('should answer a yes/no question', () => {
@@ -234,7 +233,7 @@ describe("Interact", () => {
 
         let input = interact.yesNoQuestion(test_player1, "Foo?");
 
-        expect(input).to.be.true;
+        expect(input).toBe(true);
     });
 
     it ('should discover a minion', () => {
@@ -248,11 +247,11 @@ describe("Interact", () => {
 
         console.log = log;
 
-        expect(card).to.be.instanceOf(Card);
+        expect(card).toBeInstanceOf(Card);
 
         card = card as Card;
 
-        expect(card.type).to.equal("Minion");
+        expect(card.type).toBe("Minion");
         expect(pool.map(c => c.name).includes(card.name));
     });
 
@@ -264,19 +263,19 @@ describe("Interact", () => {
 
         let card = interact.selectCardTarget("Select a minion.", null, "any");
 
-        expect(card).to.be.instanceOf(Card);
+        expect(card).toBeInstanceOf(Card);
 
         card = card as Card;
 
-        expect(card.type).to.equal("Minion");
-        expect(card).to.equal(target);
+        expect(card.type).toBe("Minion");
+        expect(card).toBe(target);
     });
     it ('should select a hero', () => {
         test_player1.inputQueue = ["face"];
 
         let hero = interact.selectPlayerTarget("Select a minion.", null);
 
-        expect(hero).to.equal(test_player2);
+        expect(hero).toBe(test_player2);
     });
 
     it ('should get a readable card', () => {
@@ -286,6 +285,6 @@ describe("Interact", () => {
 
         const expected = "[1] " + chalk.cyan("{1} ") + chalk.bold("Sheep") + chalk.greenBright(" [1 / 1]") + " " + chalk.yellow("(Minion)");
 
-        expect(card).to.equal(expected);
+        expect(card).toBe(expected);
     });
 });

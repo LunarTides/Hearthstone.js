@@ -1,6 +1,5 @@
 // Part of this code was copied from an example given by ChatGPT
 import { Player, Game, Card, AI } from "../src/internal";
-import { expect } from "chai";
 
 // Setup the game / copied from the card updater
 const game = new Game();
@@ -48,25 +47,25 @@ describe("AI", () => {
         let move = ai.calcMove();
 
         // The ai can't do anything
-        expect(move).to.be("end");
+        expect(move).toBe("end");
     });
 
     it ('should find out if it can attack', () => {
         let canAttack = ai._canAttack();
 
-        expect(canAttack).to.be.false;
+        expect(canAttack).toBe(false);
     });
 
     it ('should find out if it can hero power', () => {
         let canHeroPower = ai._canHeroPower();
 
-        expect(canHeroPower).to.be.false;
+        expect(canHeroPower).toBe(false);
     });
 
     it ('should find out if it can use a location', () => {
         let canUseLocation = ai._canUseLocation();
 
-        expect(canUseLocation).to.be.false;
+        expect(canUseLocation).toBe(false);
     });
 
     it ('should find out if a specific card can attack', () => {
@@ -76,7 +75,7 @@ describe("AI", () => {
         
         let canAttack = ai._canMinionAttack(minion);
 
-        expect(canAttack).to.be.false;
+        expect(canAttack).toBe(false);
     });
     it ('should find out if a specific card can attack', () => {
         let minion = new Card("Sheep", test_player1);
@@ -84,7 +83,7 @@ describe("AI", () => {
         
         let canAttack = ai._canMinionAttack(minion);
 
-        expect(canAttack).to.be.true;
+        expect(canAttack).toBe(true);
     });
 
     it ('should find out if a specific card can be targetted', () => {
@@ -92,7 +91,7 @@ describe("AI", () => {
         
         let canTarget = ai._canTargetMinion(minion);
 
-        expect(canTarget).to.be.true;
+        expect(canTarget).toBe(true);
     });
     it ('should find out if a specific card can be targetted', () => {
         let minion = new Card("Sheep", test_player1);
@@ -100,14 +99,14 @@ describe("AI", () => {
         
         let canTarget = ai._canTargetMinion(minion);
 
-        expect(canTarget).to.be.false;
+        expect(canTarget).toBe(false);
     });
 
     it ('should find trades', () => {
         let trades = ai._attackFindTrades();
 
-        expect(trades[0]).to.have.length(0);
-        expect(trades[1]).to.have.length(0);
+        expect(trades[0]).toHaveLength(0);
+        expect(trades[1]).toHaveLength(0);
     });
 
     it ('should correctly score players', () => {
@@ -117,88 +116,88 @@ describe("AI", () => {
             });
         }));
 
-        expect(score).to.be.above(0);
+        expect(score).toBeGreaterThan(0);
     });
 
     it ('should find the current winner', () => {
         let score = ai._findWinner([[], []]);
 
-        expect(score[0].id).to.equal(ai.plr.getOpponent().id);
-        expect(score[1]).to.be.above(0);
+        expect(score[0].id).toBe(ai.plr.getOpponent().id);
+        expect(score[1]).toBeGreaterThan(0);
     });
     
     it ('should find out if a taunt exists', () => {
         let taunt = ai._tauntExists(false);
 
-        expect(taunt).to.be.false;
+        expect(taunt).toBe(false);
     });
     it ('should find out if a taunt exists', () => {
         let taunts = ai._tauntExists(true);
 
-        expect(taunts).to.be.an("array");
-        expect(taunts).to.have.length(0);
+        expect(Array.isArray(taunts)).toBe(true);
+        expect(taunts).toHaveLength(0);
     });
 
     it ('should do a trade', () => {
         let result = ai._attackTrade();
 
-        expect(result).to.be.null;
+        expect(result).toBeNull();
     });
 
     it ('should do a general attack', () => {
         let result = ai._attackGeneral([[], []]);
 
-        expect(result[0]).to.equal(-1);
+        expect(result[0]).toBe(-1);
     });
 
     it ('should do a risky attack', () => {
         let result = ai._attackGeneralRisky();
 
-        expect(result).to.be.an("array");
-        expect(result[1]).to.equal(ai.plr.getOpponent());
+        expect(Array.isArray(result)).toBe(true);
+        expect(result[1]).toBe(ai.plr.getOpponent());
     });
 
     it ('should choose attacker and target', () => {
         let result = ai._attackGeneralMinion();
 
-        expect(result).to.be.an("array");
+        expect(Array.isArray(result)).toBe(true);
         
-        expect(result[0]).to.equal(-1);
-        expect(result[1]).to.equal(ai.plr.getOpponent());
+        expect(result[0]).toBe(-1);
+        expect(result[1]).toBe(ai.plr.getOpponent());
     });
 
     it ('should choose target', () => {
         let result = ai._attackGeneralChooseTarget();
 
-        expect(result).to.be.an("array");
-        expect(result).to.equal(ai.plr.getOpponent());
+        expect(Array.isArray(result)).toBe(true);
+        expect(result).toBe(ai.plr.getOpponent());
     });
 
     it ('should choose attacker', () => {
         let result = ai._attackGeneralChooseAttacker(true);
 
-        expect(result).to.equal(-1);
+        expect(result).toBe(-1);
     });
 
     it ('should attack', () => {
         let result = ai.attack();
 
-        expect(result[0]).to.equal(-1);
-        expect(result[1]).to.equal(-1);
+        expect(result[0]).toBe(-1);
+        expect(result[1]).toBe(-1);
     });
 
     it ('should attack using legacy 1', () => {
         let result = ai.legacy_attack_1();
 
-        expect(result[0]).to.equal(-1);
-        expect(result[1]).to.equal(-1);
+        expect(result[0]).toBe(-1);
+        expect(result[1]).toBe(-1);
     });
 
     it ('should select a target', () => {
         let result = ai.selectTarget("Deal 1 damage.", null, "any", "any", []);
 
         // There are no minions and the prompt is bad, so the ai should select the enemy hero
-        expect(result).to.equal(ai.plr.getOpponent());
+        expect(result).toBe(ai.plr.getOpponent());
     });
 
     it ('should discover', () => {
@@ -210,8 +209,8 @@ describe("AI", () => {
         
         let result = ai.discover(cards);
 
-        expect(result).to.not.be.null;
-        expect(result!.id).to.equal(cards[0].id);
+        expect(result).not.toBeNull();
+        expect(result!.id).toBe(cards[0].id);
     });
 
     it ('should dredge', () => {
@@ -223,8 +222,8 @@ describe("AI", () => {
         
         let result = ai.dredge(cards);
 
-        expect(result).to.not.be.null;
-        expect(result!.id).to.equal(cards[0].id);
+        expect(result).not.toBeNull();
+        expect(result!.id).toBe(cards[0].id);
     });
 
     it ('should choose one', () => {
@@ -237,7 +236,7 @@ describe("AI", () => {
         let result = ai.chooseOne(options);
 
         // "Destroy the enemy hero" is the best
-        expect(result).to.equal(2);
+        expect(result).toBe(2);
     });
 
     it ('should answer a question', () => {
@@ -251,7 +250,7 @@ describe("AI", () => {
         let result = ai.question(prompt, options);
 
         // "Destroy the enemy hero" is the best
-        expect(result).to.equal(2);
+        expect(result).toBe(2);
     });
 
     it ('should answer a yes/no question', () => {
@@ -259,14 +258,14 @@ describe("AI", () => {
         
         let result = ai.yesNoQuestion(question);
 
-        expect(result).to.be.true;
+        expect(result).toBe(true);
     });
     it ('should answer a yes/no question', () => {
         let question = "Do you want to destroy your hero?";
         
         let result = ai.yesNoQuestion(question);
 
-        expect(result).to.be.false;
+        expect(result).toBe(false);
     });
 
     it ('should trade cards', () => {
@@ -275,7 +274,7 @@ describe("AI", () => {
         let result = ai.trade(card);
 
         // No cards to trade into
-        expect(result).to.be.false;
+        expect(result).toBe(false);
     });
     it ('should trade cards', () => {
         let card = new Card("Sheep", test_player1);
@@ -285,7 +284,7 @@ describe("AI", () => {
         
         let result = ai.trade(card);
 
-        expect(result).to.be.true;
+        expect(result).toBe(true);
     });
 
     it ('should mulligan', () => {
@@ -295,7 +294,7 @@ describe("AI", () => {
         let result = ai.mulligan();
 
         // Mulligan all their cards
-        expect(result).to.equal("123");
+        expect(result).toBe("123");
     });
 
     it ('should evaluate text', () => {
@@ -304,7 +303,7 @@ describe("AI", () => {
         let result = ai.analyzePositive(text);
 
         // REALLY good
-        expect(result).to.equal(9);
+        expect(result).toBe(9);
     });
     it ('should evaluate text', () => {
         let text = "Destroy your hero";
@@ -313,7 +312,7 @@ describe("AI", () => {
 
         // REALLY bad
         // Destroy = -9, Your = +1
-        expect(result).to.equal(-9 + 1);
+        expect(result).toBe(-9 + 1);
     });
 
     it ('should evaluate cards', () => {
@@ -322,7 +321,7 @@ describe("AI", () => {
         let result = ai.analyzePositiveCard(card);
 
         // Not very good
-        expect(result).to.equal(-0.35);
+        expect(result).toBe(-0.35);
     });
     it ('should evaluate cards', () => {
         let card = new Card("Sheep", test_player1);
@@ -331,6 +330,6 @@ describe("AI", () => {
         let result = ai.analyzePositiveCard(card);
 
         // Pretty good
-        expect(result).to.equal(2.85);
+        expect(result).toBe(2.85);
     });
 });
