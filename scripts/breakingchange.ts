@@ -1,6 +1,6 @@
 import rl from "readline-sync";
 import fs from "fs";
-import config from "../config/general.json" assert { "type": "json" };
+import config from "../config/general.json" assert { type: "json" };
 import { Game, Player } from "../src/internal.js";
 
 const game = new Game();

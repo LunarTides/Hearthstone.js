@@ -1,6 +1,5 @@
 // Part of this code was copied from an example given by ChatGPT
-import "colors";
-import { Player, Game, Card } from "../src/internal.js";
+import { Player, Game, Card } from "../src/internal";
 import chalk from "chalk";
 import { expect } from "chai";
 

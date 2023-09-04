@@ -1,6 +1,5 @@
-import "colors";
-import { Player, Game, Card } from "../src/internal.js";
-import { EventValue, GameAttackReturn, Target } from "../src/types.js";
+import { Player, Game, Card } from "../src/internal";
+import { EventValue, GameAttackReturn, Target } from "../src/types";
 import { expect } from "chai";
 
 // Setup the game / copied from the card updater

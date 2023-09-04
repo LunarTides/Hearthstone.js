@@ -1,5 +1,4 @@
-import "colors";
-import { Player, Game, Card } from "../src/internal.js";
+import { Player, Game, Card } from "../src/internal";
 import { expect } from "chai";
 
 // Setup the game / copied from the card updater
