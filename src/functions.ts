@@ -1776,7 +1776,15 @@ ${main_content}
      * @return The directory name.
      */
     dirname(): string {
-        return pathDirname(fileURLToPath(import.meta.url)).replace("/src", "/");
+        let dirname = pathDirname(fileURLToPath(import.meta.url))
+
+        // Linux / Mac
+        dirname = dirname.replace("/src", "/")
+
+        // Windows
+        dirname = dirname.replace("\\src", "\\");
+
+        return dirname;
     },
 
     /**

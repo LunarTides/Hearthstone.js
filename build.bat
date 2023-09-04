@@ -1,4 +1,3 @@
 @echo off
-echo "Building..."
-tsc
-echo "Running...Done"
+echo Building...
+tsc && echo Done

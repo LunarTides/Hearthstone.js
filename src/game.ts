@@ -776,52 +776,20 @@ const attack = {
      */
     attack(attacker: Target | number | string, target: Target): GameAttackReturn {
         if (!attacker || !target) {
-            if (this.evaling) throw new TypeError("Evaling Error - The `attacker` or `target` argument passed to `attack` are invalid. Make sure you passed in both arguments.");
+            if (game.evaling) throw new TypeError("Evaling Error - The `attacker` or `target` argument passed to `attack` are invalid. Make sure you passed in both arguments.");
             return "invalid";
         }
 
-        this.killMinions();
+        game.killMinions();
 
         if (target.immune) return "immune";
 
         // Attacker is a number
-        let spellDmgRegex = /\$(\d+?)/;
-        if (typeof attacker === "string" && spellDmgRegex.test(attacker)) {
-            let match = attacker.match(spellDmgRegex);
-            if (!match) return "invalid";
-            
-            let dmg = parseInt(match[1]);
-            dmg += this.player.spellDamage;
+        if (typeof attacker === "string" || typeof attacker === "number") return attack._attackerIsNum(attacker, target);
 
-            this.events.broadcast("SpellDealsDamage", [target, dmg], this.player);
-            attacker = dmg;
-        }
-
-        if (typeof(attacker) === "number") {
-            let dmg = attacker;
-
-            if (target.classType == "Player") {
-                target.remHealth(dmg);
-                return true;
-            }
-
-            if (target.keywords.includes("Divine Shield")) {
-                target.removeKeyword("Divine Shield");
-                return "divineshield";
-            }
-
-            target.remStats(0, dmg)
-
-            // Remove frenzy
-            if (target.getHealth() > 0 && target.abilities.frenzy && target.activate("frenzy") !== -1) target.abilities.frenzy = undefined;
-
-            return true;
-        }
-
-        if (typeof attacker === "string") return "invalid";
-
+        // The attacker is a card or player
         // Check if there is a minion with taunt
-        let taunts = game.board[this.opponent.id].filter(m => m.keywords.includes("Taunt"));
+        let taunts = game.board[game.opponent.id].filter(m => m.keywords.includes("Taunt"));
         if (taunts.length > 0) {
             // If the target is a card and has taunt, you are allowed to attack it
             if (target instanceof Card && target.keywords.includes("Taunt")) {}
@@ -831,150 +799,23 @@ const attack = {
         if (attacker.frozen) return "frozen";
 
         // Attacker is a player
-        if (attacker.classType == "Player") {
-            if (attacker.attack <= 0) return "plrnoattack";
-            if (!attacker.canAttack) return "plrhasattacked";
-
-            // Target is a player
-            if (target.classType == "Player") {
-                this.attack(attacker.attack, target);
-                this.events.broadcast("Attack", [attacker, target], attacker);
-                
-                attacker.canAttack = false;
-                if (!attacker.weapon) return true;
-
-                const wpn = attacker.weapon;
-
-                // If the weapon would be part of the attack, remove 1 durability
-                if (wpn.attackTimes && wpn.attackTimes > 0 && wpn.getAttack()) {
-                    wpn.attackTimes -= 1;
-                    wpn.remStats(0, 1);
-                }
-
-                return true;
-            }
-
-            // Target is a minion
-            if (target.keywords.includes("Stealth")) return "stealth";
-    
-            this.attack(attacker.attack, target);
-            this.attack(target.getAttack(), attacker);
-            this.events.broadcast("Attack", [attacker, target], attacker);
-
-            this.killMinions();
-
-            attacker.canAttack = false;
-    
-            // Remove frenzy
-            if (target.getHealth() > 0 && target.abilities.frenzy && target.activate("frenzy") !== -1) target.abilities.frenzy = undefined;
-
-            this.killMinions();
-            if (!attacker.weapon) return true;
-    
-            const wpn = attacker.weapon;
-
-            if (wpn.attackTimes && wpn.attackTimes > 0 && wpn.getAttack()) {
-                wpn.attackTimes -= 1;
-
-                wpn.remStats(0, 1);
-
-                if (wpn.keywords.includes("Poisonous")) target.kill();
-            }
-
-            if (wpn.getHealth() > 0) attacker.weapon = wpn;
-            this.killMinions();
-    
-            return true;
-        }
+        if (attacker.classType === "Player") return attack._attackerIsPlayer(attacker, target);
 
         // Attacker is a minion
-        if (attacker.dormant) return "dormant";
-        if (attacker.attackTimes && attacker.attackTimes <= 0) return "hasattacked";
-        if (attacker.sleepy) return "sleepy";
-        if (attacker.getAttack() <= 0) return "noattack";
+        else if (attacker.classType === "Card") return attack._attackerIsCard(attacker, target);
 
-        // Target is a player
-        if (target.classType == "Player") {
-            if (!attacker.canAttackHero) return "cantattackhero";
+        // Otherwise
+        else return "invalid";
+    },
 
-            if (attacker.keywords.includes("Stealth")) attacker.removeKeyword("Stealth");
-            if (attacker.keywords.includes("Lifesteal")) attacker.plr.addHealth(attacker.getAttack());
-
-            target.remHealth(attacker.getAttack());
-            attacker.decAttack();
-            this.events.broadcast("Attack", [attacker, target], attacker.plr);
-
-            return true;
-        }
-
-        // Target is a minion
-        if (target.keywords.includes("Stealth")) return "stealth";
-
-        // Cleave
-        while (attacker.keywords.includes("Cleave")) {
-            let b = this.board[target.plr.id];
-
-            let index = b.indexOf(target);
-            if (index == -1) break;
-
-            if (index > 0) this.attack(attacker.getAttack(), b[index - 1]);
-            if (index < b.length - 1) this.attack(attacker.getAttack(), b[index + 1]);
-
-            break;
-        }
-
-        attacker.decAttack();
-
-        let dmgTarget = true;
-        let dmgAttacker = true;
-
-        if (attacker.immune) dmgAttacker = false;
-
-        if (dmgAttacker && attacker.keywords.includes("Divine Shield")) {
-            attacker.removeKeyword("Divine Shield");
-            dmgAttacker = false;
-        }
-
-        if (dmgAttacker) {
-            attacker.remStats(0, target.getAttack());
-            
-            // Remove frenzy
-            if (attacker.getHealth() > 0 && attacker.abilities.frenzy && attacker.activate("frenzy") !== -1) attacker.abilities.frenzy = undefined;
-        }
-
-        if (attacker.keywords.includes("Stealth")) attacker.removeKeyword("Stealth");
-        
-        if (dmgAttacker && target.keywords.includes("Poisonous")) attacker.kill();
-
-        if (target.keywords.includes("Divine Shield")) {
-            target.removeKeyword("Divine Shield");
-            dmgTarget = false;
-        }
-
-        if (dmgTarget && attacker.keywords.includes("Lifesteal")) attacker.plr.addHealth(attacker.getAttack());
-        if (dmgTarget && attacker.keywords.includes("Poisonous")) target.kill();
-
-        if (dmgTarget) target.remStats(0, attacker.getAttack())
-        this.events.broadcast("Attack", [attacker, target], attacker.plr);
-
-        // Remove frenzy
-        if (target.getHealth() > 0 && target.abilities.frenzy && target.activate("frenzy") !== -1) target.abilities.frenzy = undefined;
-        if (target.getHealth() < 0) attacker.activate("overkill");
-        if (target.getHealth() == 0) attacker.activate("honorablekill");
-
-        this.killMinions();
-
-        return true;
-    }
-
+    // Attacker is a number
     _attackerIsNum(attacker: number | string, target: Target): GameAttackReturn {
         // Attacker is a number
+        // Spell damage
+        let dmg = attack._spellDamage(attacker, target);
 
         // Spell damage
-        let dmg = attacker;
-
-        // Spell damage
-        this._spellDamage(attacker, target);
+        attack._spellDamage(attacker, target);
 
         if (target.classType == "Player") {
             target.remHealth(dmg);
@@ -989,9 +830,198 @@ const attack = {
         target.remStats(0, dmg)
 
         // Remove frenzy
-        if (target.getHealth() > 0 && target.abilities.frenzy && target.activate("frenzy") !== -1) target.abilities.frenzy = undefined;
+        attack._doFrenzy(target);
 
         return true;
+    },
+
+    // Attacker is a player
+    _attackerIsPlayer(attacker: Player, target: Target): GameAttackReturn {
+        if (attacker.attack <= 0) return "plrnoattack";
+        if (!attacker.canAttack) return "plrhasattacked";
+
+        // Target is a player
+        if (target.classType == "Player") return attack._attackerIsPlayerAndTargetIsPlayer(attacker, target);
+
+        // Target is a card
+        else if (target.classType == "Card") return attack._attackerIsPlayerAndTargetIsCard(attacker, target);
+
+        // Otherwise
+        else return "invalid";
+    },
+
+    // Attacker is a player and target is a player
+    _attackerIsPlayerAndTargetIsPlayer(attacker: Player, target: Player): GameAttackReturn {
+        // Get the attacker's attack damage, and attack the target with it
+        attack.attack(attacker.attack, target);
+        game.events.broadcast("Attack", [attacker, target], attacker);
+        
+        // The attacker can't attack anymore this turn.
+        attacker.canAttack = false;
+        attack._removeDurabilityFromWeapon(attacker, target);
+
+        return true;
+    },
+
+    // Attacker is a player and target is a card
+    _attackerIsPlayerAndTargetIsCard(attacker: Player, target: Card): GameAttackReturn {
+        // If the target has stealth, the attacker can't attack it
+        if (target.keywords.includes("Stealth")) return "stealth";
+
+        // The attacker should damage the target
+        game.attack(attacker.attack, target);
+        //game.attack(target.getAttack(), attacker);
+
+        game.events.broadcast("Attack", [attacker, target], attacker);
+
+        game.killMinions();
+
+        // The attacker can't attack anymore this turn.
+        attacker.canAttack = false;
+
+        // Remove frenzy
+        attack._doFrenzy(target);
+
+        game.killMinions();
+        attack._removeDurabilityFromWeapon(attacker, target);
+
+        return true;
+    },
+
+    // Attacker is a card
+    _attackerIsCard(attacker: Card, target: Target): GameAttackReturn {
+        if (attacker.dormant) return "dormant";
+        if (attacker.attackTimes && attacker.attackTimes <= 0) return "hasattacked";
+        if (attacker.sleepy) return "sleepy";
+        if (attacker.getAttack() <= 0) return "noattack";
+
+        // Target is a player
+        if (target.classType == "Player") return attack._attackerIsCardAndTargetIsPlayer(attacker, target);
+
+        // Target is a minion
+        else if (target.classType == "Card") return attack._attackerIsCardAndTargetIsCard(attacker, target);
+
+        // Otherwise
+        else return "invalid";
+    },
+
+    // Attacker is a card and target is a player
+    _attackerIsCardAndTargetIsPlayer(attacker: Card, target: Player): GameAttackReturn {
+        if (!attacker.canAttackHero) return "cantattackhero";
+
+        // If attacker has stealth, remove it
+        if (attacker.keywords.includes("Stealth")) {
+            attacker.removeKeyword("Stealth");
+        }
+
+        // If attacker has lifesteal, heal it's owner
+        attack._doLifesteal(attacker);
+
+        // Deal damage
+        attack.attack(attacker.getAttack(), target);
+
+        // Remember this attack
+        attacker.decAttack();
+        game.events.broadcast("Attack", [attacker, target], attacker.plr);
+
+        return true;
+    },
+
+    // Attacker is a card and target is a card
+    _attackerIsCardAndTargetIsCard(attacker: Card, target: Card): GameAttackReturn {
+        if (target.keywords.includes("Stealth")) return "stealth";
+
+        attack._attackerIsCardAndTargetIsCardDoAttacker(attacker, target);
+        attack._attackerIsCardAndTargetIsCardDoTarget(attacker, target);
+
+        game.events.broadcast("Attack", [attacker, target], attacker.plr);
+
+        return true;
+    },
+    _attackerIsCardAndTargetIsCardDoAttacker(attacker: Card, target: Card): GameAttackReturn {
+        // Cleave
+        attack._cleave(attacker, target);
+
+        attacker.decAttack();
+        attacker.removeKeyword("Stealth");
+
+        const shouldDamage = attack._cardAttackHelper(attacker);
+        if (!shouldDamage) return true;
+
+        attack.attack(target.getAttack(), attacker);
+        
+        // Remove frenzy
+        attack._doFrenzy(attacker);
+
+        // If the target has poison, kill the attacker
+        attack._doPoison(target, attacker);
+
+        return true;
+    },
+    _attackerIsCardAndTargetIsCardDoTarget(attacker: Card, target: Card): GameAttackReturn {
+        const shouldDamage = attack._cardAttackHelper(target);
+        if (!shouldDamage) return true;
+
+        attack.attack(attacker.getAttack(), target);
+
+        attack._doLifesteal(attacker);
+        attack._doPoison(attacker, target);
+
+        // Remove frenzy
+        attack._doFrenzy(target);
+        if (target.getHealth() < 0) attacker.activate("overkill");
+        if (target.getHealth() == 0) attacker.activate("honorablekill");
+
+        return true;
+    },
+
+    // Helper functions
+    _cardAttackHelper(card: Card): boolean {
+        if (card.immune) return false;
+
+        if (card.keywords.includes("Divine Shield")) {
+            card.removeKeyword("Divine Shield");
+            return false;
+        }
+
+        return true;
+    },
+
+    _cleave(attacker: Card, target: Card): void {
+        if (!attacker.keywords.includes("Cleave")) return;
+
+        let board = game.board[target.plr.id];
+        let index = board.indexOf(target);
+
+        let below = board[index - 1];
+        let above = board[index + 1];
+
+        // If there is a card below the target, also deal damage to it.
+        if (below) game.attack(attacker.getAttack(), below);
+
+        // If there is a card above the target, also deal damage to it.
+        if (above) game.attack(attacker.getAttack(), above);
+    },
+
+    _doFrenzy(card: Card): void {
+        if (card.getHealth() <= 0) return;
+
+        // The card has more than 0 health
+        if (card.activate("frenzy") !== -1) card.abilities.frenzy = undefined;
+    },
+
+    _doPoison(poisonCard: Card, other: Card): void {
+        if (!poisonCard.keywords.includes("Poisonous")) return;
+
+        // The attacker has poison
+        other.kill();
+    },
+
+    _doLifesteal(attacker: Card): void {
+        if (!attacker.keywords.includes("Lifesteal")) return;
+
+        // The attacker has lifesteal
+        attacker.plr.addHealth(attacker.getAttack());
     },
 
     _spellDamage(attacker: number | string, target: Target): number {
@@ -1004,10 +1034,25 @@ const attack = {
         if (!match) throw new TypeError("Non-spelldamage string passed into attack.");
 
         let dmg = parseInt(match[1]);
-        dmg += this.player.spellDamage;
+        dmg += game.player.spellDamage;
 
-        this.events.broadcast("SpellDealsDamage", [target, dmg], this.player);
+        game.events.broadcast("SpellDealsDamage", [target, dmg], game.player);
         return dmg;
+    },
+
+    _removeDurabilityFromWeapon(attacker: Player, target: Target): void {
+        const wpn = attacker.weapon;
+        if (!wpn) return;
+
+        // If the weapon would be part of the attack, remove 1 durability
+        if (wpn.attackTimes && wpn.attackTimes > 0 && wpn.getAttack()) {
+            wpn.attackTimes -= 1;
+            wpn.remStats(0, 1);
+
+            if (target instanceof Card) attack._doPoison(wpn, target);
+        }
+
+        game.killMinions();
     }
 }
 
@@ -1205,17 +1250,15 @@ const playCard = {
 
         // This is if the condition is cleared
         let cleared = condition[0];
+        if (cleared === true) return true;
 
-        if (cleared === false) {
-            // Warn the user that the condition is not fulfilled
-            const warnMessage = chalk.yellow("WARNING: This card's condition is not fulfilled. Are you sure you want to play this card?");
+        // Warn the user that the condition is not fulfilled
+        const warnMessage = chalk.yellow("WARNING: This card's condition is not fulfilled. Are you sure you want to play this card?");
 
-            game.interact.printAll(player);
-            let warn = game.interact.yesNoQuestion(player, warnMessage);
+        game.interact.printAll(player);
+        let warn = game.interact.yesNoQuestion(player, warnMessage);
 
-            if (!warn) return false;
-        }
-
+        if (!warn) return false;
         return true;
     },
 
