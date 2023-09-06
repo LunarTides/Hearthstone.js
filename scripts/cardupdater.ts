@@ -10,7 +10,7 @@ import { Blueprint, VanillaCard } from "../src/types.js";
 
 const { game, player1, player2 } = createGame();
 
-const fileLocation = game.functions.dirname() + "../card_creator/vanilla/.ignore.cards.json";
+const fileLocation = game.functions.dirname() + "../cardcreator/vanilla/.ignore.cards.json";
 if (!fs.existsSync(fileLocation)) {
     game.input(chalk.red("Cards file not found! Run 'scripts/genvanilla.bat' (requires an internet connection), then try again.\n"));
     process.exit(1);

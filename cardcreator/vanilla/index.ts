@@ -144,7 +144,7 @@ export function create(card: VanillaCard, debug: boolean) {
 export function main() {
     console.log("Hearthstone.js Vanilla Card Creator (C) 2022\n");
 
-    const fileLocation = game.functions.dirname() + "../card_creator/vanilla/.ignore.cards.json";
+    const fileLocation = game.functions.dirname() + "../cardcreator/vanilla/.ignore.cards.json";
 
     if (!fs.existsSync(fileLocation)) {
         console.log("No cards file found! Run 'scripts/genvanilla.bat' (requires an internet connection), then try again.\n");

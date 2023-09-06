@@ -157,7 +157,7 @@ export const blueprint: Blueprint = {
 }
 `;
 
-    // The path is now "./card_creator/../cards/...", replace this with "./cards/..."
+    // The path is now "./cardcreator/../cards/...", replace this with "./cards/..."
     path = path.replace(/[\/\\]dist[\/\\]\.\./, "");
     let file_path = path.replaceAll("/", "\\") + filename; // Replace '/' with '\' because windows
 

@@ -348,7 +348,7 @@ const deckcode = {
         let cards = codeSplit[1].trim();
 
         // Now it's just the cards left
-        const fileLocation = game.functions.dirname() + "../card_creator/vanilla/.ignore.cards.json";
+        const fileLocation = game.functions.dirname() + "../cardcreator/vanilla/.ignore.cards.json";
 
         if (!fs.existsSync(fileLocation)) {
             game.input(chalk.red("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'scripts/genvanilla.bat' (requires an internet connection), then try again."));
@@ -444,7 +444,7 @@ const deckcode = {
     fromVanilla(plr: Player, code: string): string {
         let deck: deckstrings.DeckDefinition = deckstrings.decode(code); // Use the 'deckstrings' api's decode
 
-        const fileLocation = game.functions.dirname() + "../card_creator/vanilla/.ignore.cards.json";
+        const fileLocation = game.functions.dirname() + "../cardcreator/vanilla/.ignore.cards.json";
 
         if (!fs.existsSync(fileLocation)) {
             game.input(chalk.red("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'scripts/genvanilla.bat' (requires an internet connection), then try again."));

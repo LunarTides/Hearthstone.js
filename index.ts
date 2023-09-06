@@ -8,10 +8,10 @@ import rl from "readline-sync";
 import fs from "fs";
 
 import * as src from "./src/index.js";                  // Source Code
-import * as dc  from "./deck_creator/index.js";         // Deck Creator
-import * as ccc from "./card_creator/custom/index.js";  // Custom Card Creator
-import * as vcc from "./card_creator/vanilla/index.js"; // Vanilla Card Creator
-import * as clc from "./card_creator/class/index.js";   // Class Creator
+import * as dc  from "./deckcreator/index.js";         // Deck Creator
+import * as ccc from "./cardcreator/custom/index.js";  // Custom Card Creator
+import * as vcc from "./cardcreator/vanilla/index.js"; // Vanilla Card Creator
+import * as clc from "./cardcreator/class/index.js";   // Class Creator
 
 const cls = () => process.stdout.write("\x1bc");
 
@@ -48,7 +48,7 @@ function cardCreator() {
     cls();
 
     if (vanilla) {
-        if (!fs.existsSync(game.functions.dirname() + "../card_creator/vanilla/.ignore.cards.json")) {
+        if (!fs.existsSync(game.functions.dirname() + "../cardcreator/vanilla/.ignore.cards.json")) {
             watermark();
 
             rl.question("Cards file not found! Run 'scripts/genvanilla.bat' (requires an internet connection), then try again.\n");
