@@ -21,7 +21,7 @@ function searchCards(query: RegExp | string, path?: string) {
     if (!path) path = game.functions.dirname() + "../cards";
     if (path.includes("cards/Tests")) return; // We don't care about test cards
 
-    path = path.replaceAll("\\", "/").replace(/\/dist\/\.\./, "");
+    path = path.replaceAll("\\", "/").replace("/dist/..", "");
 
     fs.readdirSync(path, { withFileTypes: true }).forEach(file => {
         let p = `${path}/${file.name}`;

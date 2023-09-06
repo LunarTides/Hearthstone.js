@@ -11,17 +11,17 @@ const { game, player1, player2 } = createGame();
 function createCard(card: VanillaCard, main: boolean) {
     // Harvest info
     let cardClass = game.functions.capitalize(card.cardClass ?? "Neutral") as CardClass;
-    let collectible = card.collectible || false;
+    let collectible = card.collectible ?? false;
     let mana = card.cost;
     let name = card.name;
     let rarity = "Free" as CardRarity;
     if (card.rarity) rarity = game.functions.capitalize(card.rarity) as CardRarity;
-    let desc = card.text || "";
+    let desc = card.text ?? "";
     let type = game.functions.capitalize(card.type);
 
     // Minion info
-    let attack = card.attack || -1;
-    let health = card.health || -1;
+    let attack = card.attack ?? -1;
+    let health = card.health ?? -1;
     let races: MinionTribe[] = [];
     if (card.races) races = card.races.map(r => game.functions.capitalize(r) as MinionTribe);
 

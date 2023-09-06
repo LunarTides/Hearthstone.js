@@ -47,9 +47,11 @@ const blueprint: Blueprint = {
                 if (amount < 10) return true;
 
                 // You have now played 10 minions
-                unhook(); // Destroy the tick hook
 
-                // Reverse the enchantent
+                // Destroy the tick hook
+                unhook();
+
+                // Reverse the enchantment
                 // You might be able to just do `plr.hand.forEach(m => ...)` instead, since `removeEnchantment` only removes enchantments if it's there.
                 plr.hand.filter(c => c.type == "Minion").forEach(m => {
                     m.removeEnchantment("-1 mana", self);

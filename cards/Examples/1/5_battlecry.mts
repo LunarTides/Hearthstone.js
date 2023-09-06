@@ -15,8 +15,8 @@ const blueprint: Blueprint = {
     id: 33,
 
     // Here we put the name of the ability we want to add.
-    // The card creator should be able to automatically add the correct ability.
-    // But so far, it can only add a single ability per card, so if you want to add multiple abilities, you'll have to do it manually.
+    // The card creator should be able to automatically add the correct ability
+    // but so far, it can only add a single ability per card, so if you want to add multiple abilities, you'll have to do it manually.
     // 
     // Instead of `battlecry`, you could put `deathrattle`, or `inspire`, for example.
     battlecry(plr, game, self) {

@@ -11,11 +11,10 @@ if (!fs.existsSync(fileLocation)) {
     process.exit(1);
 }
 
-const readVanillaCards = fs.readFileSync(fileLocation, "utf-8");
-const vanillaCards: VanillaCard[] = JSON.parse(readVanillaCards);
+const vanillaCards: VanillaCard[] = JSON.parse(fs.readFileSync(fileLocation, "utf-8"));
+let filteredVanillaCards = game.functions.filterVanillaCards(vanillaCards, false, false);
 
 let customCards = game.functions.getCards(false);
-let filteredVanillaCards = game.functions.filterVanillaCards(vanillaCards, false, false);
 
 console.log(chalk.yellow("WARNING: This program might find the incorrect card, so if it says that a card has 10 health instead of 2 sometimes, just ignore it.\n"));
 
@@ -37,7 +36,6 @@ customCards.forEach(custom => {
 
         vanilla.text = vanilla.text?.replaceAll("<b>", "&B");
         vanilla.text = vanilla.text?.replaceAll("</b>", "&R");
-        vanilla.text = vanilla.text?.replace(/\$(\d*?) /g, "$1 ");
         vanilla.text = vanilla.text?.replaceAll("\n", " ");
         vanilla.text = vanilla.text?.replaceAll("[x]", "");
 

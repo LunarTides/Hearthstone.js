@@ -5,7 +5,7 @@ import { Blueprint } from "../../../../src/types.js";
 const blueprint: Blueprint = {
     name: "Colossal Example",
     stats: [5, 3],
-    desc: "Colossal +2. Dredge.",
+    desc: "Colossal +2. &BBattlecry:&R Dredge.",
     mana: 2,
     type: "Minion",
     tribe: "Beast",

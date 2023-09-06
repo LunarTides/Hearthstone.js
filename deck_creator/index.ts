@@ -1,9 +1,9 @@
 import chalk from "chalk";
 
-import { Player, createGame } from "../src/internal.js";
+import { createGame } from "../src/internal.js";
 import { Blueprint, CardClass, CardClassNoNeutral, CardLike } from "../src/types.js";
 
-const { game, player1, player2 } = createGame();
+const { game, player1: plr, player2 } = createGame();
 
 const config = game.config;
 const classes = game.functions.getClasses();
@@ -14,8 +14,6 @@ let filtered_cards: Blueprint[] = [];
 
 let deck: Blueprint[] = [];
 let runes = "";
-
-let plr = new Player("");
 
 let warnings = {
     latestCard: true
@@ -643,8 +641,7 @@ function getCardArg(cmd: string, callback: (card: Blueprint) => void) {
     let card = findCard(cmd);
 
     if (!card && eligibleForLatest) {
-        console.log(chalk.yellow(`Card not found. Using latest valid card instead.`));
-        if (warnings.latestCard) game.input();
+        if (warnings.latestCard) game.input(chalk.yellow(`Card not found. Using latest valid card instead.`));
         card = settings.card.latest ?? null;
     }
 

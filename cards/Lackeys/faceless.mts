@@ -24,7 +24,8 @@ const blueprint: Blueprint = {
         let rand = game.functions.randList(minions).actual;
 
         // Summon the minion
-        game.summonMinion(new game.Card(rand.name, plr), plr);
+        let minion = new game.Card(rand.name, plr);
+        game.summonMinion(minion, plr);
     }
 }
 

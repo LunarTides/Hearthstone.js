@@ -6,7 +6,10 @@ import { Blueprint, EventValue } from "../../../src/types.js";
 
 const blueprint: Blueprint = {
     name: "Quest Example",
+
+    // The description doesn't need to look like this, it is just what Hearthstone does, so we copy it here.
     desc: "Quest: Play 3 cards. Reward: Return those cards back to your hand.",
+
     mana: 1,
     type: "Spell",
     classes: ["Neutral"],

@@ -30,7 +30,7 @@ const blueprint: Blueprint = {
         let minions = game.functions.getCards().filter(card => {
             if (!target) throw new Error("Target is undefined!");
 
-            return card.type === "Minion" && card.mana === target.mana + 1
+            return card.type === "Minion" && card.mana === target.mana + 1;
         });
 
         // Choose a random minion from the filtered list. Use the actual and not a copy, since a copied blueprint is useless.

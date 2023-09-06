@@ -25,7 +25,7 @@ const blueprint: Blueprint = {
         unsuppress();
 
         // If no target was selected, refund the hero power
-        if (!target) return -1;
+        if (!target) return game.constants.REFUND;
 
         // Deal 1 damage to the target
         game.attack(1, target);

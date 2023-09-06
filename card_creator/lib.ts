@@ -11,10 +11,10 @@ const { game, player1, player2 } = createGame();
 let card: Blueprint;
 let type: CardType;
 
-type CCType = "Undefined" | "Class" | "Custom" | "Vanilla";
+type CCType = "Unknown" | "Class" | "Custom" | "Vanilla";
 
 let debug = false;
-let cctype: CCType = "Undefined";
+let cctype: CCType = "Unknown";
 
 function getCardFunction(card_type: CardType) {
     // Get the card's 'function' (battlecry, cast, deathrattle, etc...)
@@ -47,12 +47,22 @@ function generateCardPath(...args: [CardClass[], CardType]) {
     // DO NOT CHANGE THIS
     let static_path = game.functions.dirname() + `../cards/`;
 
-    // You can change this
+    // You can change everything below this comment
     let classesString = classes.join("/");
+
+    // If the card has the word "Secret" in its description, put it in the ".../Secrets/..." folder.
+    if (card.desc.includes("Secret:")) type = "Secret" as CardType;
 
     // If the type is Hero, we want the card to go to '.../Heroes/...' and not to '.../Heros/...'
     let typeString = (type == "Hero") ? "Heroe" : type;
-    let dynamic_path = `Classes/${classesString}/${typeString}s/${card.mana} Cost/`;
+
+    let collectibleString = card.uncollectible ? "Uncollectible" : "Collectible";
+
+    // This can be anything since the card register process ignores folders.
+    // Change this if you want the cards to be in different folders.
+    // By default, this is `cards/Classes/{class name}/{Uncollectible | Collectible}/{type}s/{mana cost} Cost/{card name}.mts`;
+    // This path can be overridden by passing `override_path` in the create function.
+    let dynamic_path = `Classes/${classesString}/${collectibleString}/${typeString}s/${card.mana} Cost/`;
 
     return static_path + dynamic_path;
 }
@@ -65,9 +75,6 @@ export function create(override_type: CardType, override_card: Blueprint, overri
     //if (card.tribe && card.tribe === "") card.tribe = "None";
 
     let func = getCardFunction(type);
-
-    // If the card has the word "Secret" in its description, put it in the ".../Secrets/..." folder.
-    if (card.desc.includes("Secret:")) type = "Secret" as CardType;
 
     // Here it creates a default function signature
     let isPassive = func.toLowerCase() == "passive";
@@ -90,12 +97,14 @@ export function create(override_type: CardType, override_card: Blueprint, overri
 
     let cleaned_desc = game.functions.stripTags(desc_to_clean).replace(`${func}: `, "");
 
+    // Example 1: '\n\n    passive(plr, game, self, key, _unknownValue) {\n        // Your battlecries trigger twice.\n        ...\n    }',
+    // Example 2: '\n\n    battlecry(plr, game, self) {\n        // Deal 2 damage to the opponent.\n        \n    }'
     if (func) func = `
     
     ${func.toLowerCase()}(plr, game, self${triggerText} {
         // ${cleaned_desc}
         ${extraPassiveCode}
-    }`; // Examples: '\n\n    passive(plr, game, self, key, val) {\n        // Your battlecries trigger twice\n        }', '\n\n    battlecry(plr, game, self) {\n\n    }'
+    }`;
 
     // Create a path to put the card in.
     let path = generateCardPath(card.classes, type);
@@ -147,7 +156,7 @@ export default blueprint;
 `;
 
     // Reset the type back to default.
-    set_type("Undefined");
+    set_type("Unknown");
 
     // The path is now "./card_creator/../cards/...", replace this with "./cards/..."
     path = path.replace(/[\/\\]dist[\/\\]\.\./, "");

@@ -1,6 +1,5 @@
 // Created by Hand
 
-import { Card } from "../../../src/card.js";
 import { Blueprint } from "../../../src/types.js";
 
 const blueprint: Blueprint = {
@@ -28,13 +27,11 @@ const blueprint: Blueprint = {
         // The first argument is the prompt to ask the user.
         // The second argument is this card (aka `self`).
         // The third argument is the alignment of the target the user is restricted to. If this is "enemy", the user can only select enemy targets, if this is "friendly", the user can only select friendly targets, if this is "any", the user can select any target.
-        // The fourth argument is the type of target. If this is "minion", the user can only select minions, if this is "hero", the user can only select heroes, if this is "any", the user can select any type of target.
-        // The third and fourth argument works together.
         //
         // Ask the user to select a target based on the `prompt`, the user can only select enemy minions
         let target = game.interact.selectCardTarget(prompt, self, "enemy");
 
-        // If the user cancelled their selection, if you return this, the game refunds the card.
+        // If target is false, user cancelled their selection. Return `game.constants.REFUND` to refund the card.
         if (!target) return game.constants.REFUND;
 
         // If the manathirst was successful, silence the target first
@@ -47,7 +44,9 @@ const blueprint: Blueprint = {
         return true;
     },
 
-    condition(plr, game, self) { // This is optional, you will learn more about it in the `condition` example.
+    // This is optional, you will learn more about it in the `condition` example in `3-3`.
+    condition(plr, game, self) {
+        // The next comment will only make sense after reading the `condition` example. Come back here after reading that.
         // Since we didn't put the `conditioned: ["battlecry"]` at the top, it won't cancel the battlecry if this returns false, this is just to warn the user that the manathirst isn't triggered.
         return self.manathirst(6);
     }

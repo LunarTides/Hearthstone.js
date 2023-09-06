@@ -1,7 +1,7 @@
 import config from "./config/dont-change.json" assert { type: "json" };
 
-import * as rl from "readline-sync";
-import * as fs from "fs";
+import rl from "readline-sync";
+import fs from "fs";
 
 import * as src from "./src/index.js";                  // Source Code
 import * as dc  from "./deck_creator/index.js";         // Deck Creator

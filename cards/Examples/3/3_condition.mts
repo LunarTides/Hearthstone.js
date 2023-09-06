@@ -23,6 +23,8 @@ const blueprint: Blueprint = {
 
     // This will only trigger if the `condition` function below returns true.
     battlecry(plr, game, self) {
+        // If your deck has no duplicates, draw a card.
+
         // Makes the card's owner draw a card.
         //
         // If you don't put the `conditioned: ["battlecry"]` at the top, you can use this code to achieve the same thing.
@@ -34,6 +36,7 @@ const blueprint: Blueprint = {
     },
 
     // This function will be run when the card is played.
+    // This function will also be run every tick in order to add / remove the ` (Condition cleared!)` text.
     // If this function returns true at that point, the battlecry will be triggered.
     condition(plr, game, self) {
         // `game.functions.highlander` will return true if the player has no duplicates in their deck.

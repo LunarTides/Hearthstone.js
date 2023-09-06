@@ -21,7 +21,8 @@ const blueprint: Blueprint = {
         if (key != "EndTurn" || game.player != plr) return;
 
         // The list that to choose from. Remove this minion from the list
-        let board = game.board[plr.id].filter(minion => minion !== self && minion.type === "Minion");
+        let board = game.board[plr.id].filter(card => card.type === "Minion");
+        game.functions.remove(board, self);
 
         // If there is no other minions on the board, return
         if (board.length <= 0) return;
