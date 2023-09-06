@@ -1,6 +1,6 @@
 // Created by Hand
 
-import { Blueprint } from "../../../../src/types.js";
+import { Blueprint } from "@game/types.js";
 
 export const blueprint: Blueprint = {
     name: "Combined Example 2 Right Arm",

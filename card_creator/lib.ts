@@ -144,14 +144,10 @@ export function create({ creatorType, cardType, blueprint, overridePath, overrid
 
     let passiveImport = isPassive ? ", EventValue" : "";
 
-    let split_path = path.split(/[\\/]/);
-    let num = split_path.length - split_path.indexOf("cards");
-    let type_path_rel = "../".repeat(num - 1) + "src/types.js";
-
     let contentArray = Object.entries(card).filter(c => c[0] != "id").map(c => `${c[0]}: ${getTypeValue(c[1])}`); // name: "Test"
     let content = `// Created by the ${creatorType} Card Creator
 
-import { Blueprint${passiveImport} } from "${type_path_rel}";
+import { Blueprint${passiveImport} } from "@game/types.js";
 
 export const blueprint: Blueprint = {
     ${contentArray.join(',\n    ')},${file_id}${func}

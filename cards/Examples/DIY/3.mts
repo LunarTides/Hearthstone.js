@@ -1,7 +1,7 @@
 // Created by Hand
 
-import { Card } from "../../../src/internal.js";
-import { Blueprint, EventValue } from "../../../src/types.js";
+import { Card } from "@game/internal.js";
+import { Blueprint, EventValue } from "@game/types.js";
 
 export const blueprint: Blueprint = {
     name: "DIY 3",

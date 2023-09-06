@@ -1,7 +1,7 @@
 // Created by Hand
 
 // You shouldn't touch anything outside of the blueprint object.
-import { Blueprint } from "../../../src/types.js";
+import { Blueprint } from "@game/types.js";
 
 export const blueprint: Blueprint = {
     // The name of the card. It MUST be unique.

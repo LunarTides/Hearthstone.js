@@ -1,6 +1,6 @@
 // Created by the Custom Card Creator
 
-import { Blueprint } from "../../src/types.js";
+import { Blueprint } from "@game/types.js";
 
 export const blueprint: Blueprint = {
     name: "Paladin Starting Hero",

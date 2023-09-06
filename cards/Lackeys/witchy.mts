@@ -1,6 +1,6 @@
 // Created by Hand (before the Card Creator Existed)
 
-import { Blueprint } from "../../src/types.js";
+import { Blueprint } from "@game/types.js";
 
 export const blueprint: Blueprint = {
     name: "Witchy Lackey",
