@@ -8,7 +8,7 @@ import * as lib from "../lib.js";
 
 const { game, player1, player2 } = createGame();
 
-function createCard(card: VanillaCard, main: boolean) {
+function createCard(card: VanillaCard, main: boolean, debug: boolean) {
     // Harvest info
     let cardClass = game.functions.capitalize(card.cardClass ?? "Neutral") as CardClass;
     let collectible = card.collectible ?? false;
@@ -122,16 +122,13 @@ function createCard(card: VanillaCard, main: boolean) {
         blueprint.displayName = name;
     }
 
-    //if (main) console.log(blueprint);
-
-    lib.set_type("Vanilla"); // Vanilla Card Creator
-    lib.create(type, blueprint);
+    lib.create({ creatorType: "Vanilla", cardType: type, blueprint, debug });
 }
 
 export function main(card?: VanillaCard) {
     console.log("Hearthstone.js Vanilla Card Creator (C) 2022\n");
 
-    if (card) return createCard(card, false);
+    if (card) return createCard(card, false, false);
 
     const fileLocation = game.functions.dirname() + "../card_creator/vanilla/.ignore.cards.json";
 
@@ -144,9 +141,9 @@ export function main(card?: VanillaCard) {
 
     let parsedData: VanillaCard[] = JSON.parse(data);
 
+    let debug = false;
     if (game.config.debug) {
-        let debug = !rl.keyInYN("Do you want the card to actually be created?");
-        lib.set_debug(debug);
+        debug = !rl.keyInYN("Do you want the card to actually be created?");
     }
 
     while (true) {
@@ -195,7 +192,7 @@ export function main(card?: VanillaCard) {
 
         console.log(`Found '${card.name}'\n`);
 
-        createCard(card, true);
+        createCard(card, true, debug);
     }
 
     return true;

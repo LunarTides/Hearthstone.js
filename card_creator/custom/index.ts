@@ -4,8 +4,7 @@ import { createGame } from "../../src/internal.js";
 import { Blueprint, CardClass, CardKeyword, CardRarity, CardType, MinionTribe, SpellSchool } from "../../src/types.js";
 
 const { game, player1, player2 } = createGame();
-// @ts-expect-error
-let card: Blueprint = {};
+let card: Blueprint;
 
 let shouldExit = false;
 let type: CardType;
@@ -201,38 +200,32 @@ export function main() {
     type = input("Type: ") as CardType;
     if (shouldExit) return false;
 
-    if (type.toLowerCase() == "minion") {
-        let tmpCard = minion();
-        if (!tmpCard) return false;
-        card = tmpCard;
-    }
-    else if (type.toLowerCase() == "weapon") {
-        let tmpCard = weapon();
-        if (!tmpCard) return false;
-        card = tmpCard;
-    }
-    else if (type.toLowerCase() == "spell") {
-        let tmpCard = spell();
-        if (!tmpCard) return false;
-        card = tmpCard;
-    }
-    else if (type.toLowerCase() == "location") {
-        let tmpCard = location();
-        if (!tmpCard) return false;
-        card = tmpCard;
-    }
-    else if (type.toLowerCase() == "hero") {
-        let tmpCard = hero();
-        if (!tmpCard) return false;
-        card = tmpCard;
-    }
-    else {
-        // Invalid type
-        console.log("That is not a valid type!");
-        rl.question();
+    let tmpCard;
 
-        shouldExit = true;
+    switch (type) {
+        case "Minion":
+            tmpCard = minion();
+            break;
+        case "Weapon":
+            tmpCard = weapon();
+            break;
+        case "Spell":
+            tmpCard = spell();
+            break;
+        case "Location":
+            tmpCard = location();
+            break;
+        case "Hero":
+            tmpCard = hero();
+            break
+        default:
+            console.log("That is not a valid type!");
+            rl.question();
+            return false;
     }
+    
+    if (typeof tmpCard === "boolean") return false;
+    card = tmpCard;
 
     if (shouldExit) return false;
 
@@ -243,8 +236,7 @@ export function main() {
     // Actually create the card
     console.log("Creating file...");
 
-    lib.set_type("Custom");
-    let filePath = lib.create(type, card);
+    let filePath = lib.create({ creatorType: "Custom", cardType: type, blueprint: card });
 
     game.input();
     return filePath;

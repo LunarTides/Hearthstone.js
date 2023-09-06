@@ -13,9 +13,6 @@ let type: CardType;
 
 type CCType = "Unknown" | "Class" | "Custom" | "Vanilla";
 
-let debug = false;
-let cctype: CCType = "Unknown";
-
 function getCardFunction(card_type: CardType) {
     // Get the card's 'function' (battlecry, cast, deathrattle, etc...)
     let func;
@@ -61,18 +58,26 @@ function generateCardPath(...args: [CardClass[], CardType]) {
     // This can be anything since the card register process ignores folders.
     // Change this if you want the cards to be in different folders.
     // By default, this is `cards/Classes/{class name}/{Uncollectible | Collectible}/{type}s/{mana cost} Cost/{card name}.mts`;
-    // This path can be overridden by passing `override_path` in the create function.
+    // This path can be overridden by passing `overridePath` in the create function.
     let dynamic_path = `Classes/${classesString}/${collectibleString}/${typeString}s/${card.mana} Cost/`;
 
     return static_path + dynamic_path;
 }
 
-export function create(override_type: CardType, override_card: Blueprint, override_path = "", override_filename = "") {
-    card = override_card;
-    type = override_type;
+type CreateArgs = {
+    creatorType: CCType,
+    cardType: CardType,
+    blueprint: Blueprint,
+    overridePath?: string,
+    overrideFilename?: string,
+    debug?: boolean
+}
 
+export function create({ creatorType, cardType, blueprint, overridePath, overrideFilename, debug }: CreateArgs) {
     // If the user didn't specify a tribe, but the tribe exists, set the tribe to "None".
     //if (card.tribe && card.tribe === "") card.tribe = "None";
+    type = cardType;
+    card = blueprint;
 
     let func = getCardFunction(type);
 
@@ -108,11 +113,11 @@ export function create(override_type: CardType, override_card: Blueprint, overri
 
     // Create a path to put the card in.
     let path = generateCardPath(card.classes, type);
-    if (override_path) path = override_path; // If this function was passed in a path, use that instead.
+    if (overridePath) path = overridePath; // If this function was passed in a path, use that instead.
 
     // Create a filename. Example: "Test Card" -> "test_card.mts"
     let filename = card.name.toLowerCase().replaceAll(" ", "_") + ".mts";
-    if (override_filename) filename = override_filename; // If this function was passed in a filename, use that instead.
+    if (overrideFilename) filename = overrideFilename; // If this function was passed in a filename, use that instead.
 
     // Get the latest card-id
     let id = parseInt(fs.readFileSync(game.functions.dirname() + "../cards/.latest_id", "utf8")) + 1;
@@ -144,7 +149,7 @@ export function create(override_type: CardType, override_card: Blueprint, overri
     let type_path_rel = "../".repeat(num - 1) + "src/types.js";
 
     let contentArray = Object.entries(card).filter(c => c[0] != "id").map(c => `${c[0]}: ${getTypeValue(c[1])}`); // name: "Test"
-    let content = `// Created by the ${cctype} Card Creator
+    let content = `// Created by the ${creatorType} Card Creator
 
 import { Blueprint${passiveImport} } from "${type_path_rel}";
 
@@ -154,9 +159,6 @@ const blueprint: Blueprint = {
 
 export default blueprint;
 `;
-
-    // Reset the type back to default.
-    set_type("Unknown");
 
     // The path is now "./card_creator/../cards/...", replace this with "./cards/..."
     path = path.replace(/[\/\\]dist[\/\\]\.\./, "");
@@ -178,8 +180,8 @@ export default blueprint;
         // If debug mode is enabled, just show some information about the card.
         console.log(`\nNew ID: ${id}`); // This is the id that would be written to '.latest_id'
         console.log(`Would be path: "${file_path.replaceAll("\\", "/")}"`);
-        console.log(`Content: ${content}`);
-        rl.question();
+        console.log(`Content:\n${content}`);
+        game.input();
     }
 
     // Open the defined editor on that card if it has a function to edit, and debug mode is disabled
@@ -189,12 +191,4 @@ export default blueprint;
     }
 
     return file_path;
-}
-
-export function set_debug(state: boolean) {
-    debug = state;
-}
-
-export function set_type(state: CCType) {
-    cctype = state;
 }
