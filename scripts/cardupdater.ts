@@ -1,14 +1,9 @@
 import fs from "fs";
 import chalk from "chalk";
-import { Game, Player } from "../src/internal.js";
+import { createGame } from "../src/internal.js";
 import { Blueprint, VanillaCard } from "../src/types.js";
 
-const game = new Game();
-const player1 = new Player("Player 1");
-const player2 = new Player("Player 2");
-game.setup(player1, player2);
-game.functions.importCards(game.functions.dirname() + "cards");
-game.functions.importConfig(game.functions.dirname() + "config");
+const { game, player1, player2 } = createGame();
 
 const fileLocation = game.functions.dirname() + "../card_creator/vanilla/.ignore.cards.json";
 if (!fs.existsSync(fileLocation)) {

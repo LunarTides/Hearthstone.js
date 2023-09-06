@@ -3,10 +3,7 @@ Hearthstone.js - Hearthstone but console based.
 Copyright (C) 2022  LunarTides
 */
 
-import { Player, Game } from "./internal.js";
-
-let p1: Player;
-let p2: Player;
+import { Player, createGame } from "./internal.js";
 
 /**
  * Deckcodes
@@ -18,13 +15,7 @@ export function runner(_decks: string[]) {
 }
 
 function main() {
-    let game = new Game();
-    p1 = new Player("Player 1");
-    p2 = new Player("Player 2");
-    game.setup(p1, p2);
-
-    game.functions.importCards(game.functions.dirname() + "cards");
-    game.functions.importConfig(game.functions.dirname() + "config");
+    const { game, player1, player2 } = createGame();
 
     game.interact.printName();
 
@@ -38,8 +29,8 @@ function main() {
         do {
             rng = game.functions.randInt(1, 2);
 
-            if (rng === 1) plr = p1;
-            else plr = p2;
+            if (rng === 1) plr = player1;
+            else plr = player2;
         } while(plr.deck.length > 0);
 
         game.functions.deckcode.import(plr, d);
@@ -48,7 +39,7 @@ function main() {
     });
 
     // Ask the players for deck codes.
-    [p1, p2].forEach(plr => {
+    [player1, player2].forEach(plr => {
         if (plr.deck.length > 0) return;
         
         // Put this in a while loop to make sure the function repeats if it fails.
@@ -57,8 +48,8 @@ function main() {
 
     game.startGame();
 
-    game.interact.mulligan(p1);
-    game.interact.mulligan(p2);
+    game.interact.mulligan(player1);
+    game.interact.mulligan(player2);
 
     try {
         // Game loop

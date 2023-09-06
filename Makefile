@@ -18,7 +18,7 @@ vanilla:
 	@npm run generate
 
 run:
-	@ls dist/index.js 2> /dev/null || (echo "The game hasn't been built." && exit 1)
+	@ls dist/index.js > /dev/null 2>&1 || (echo "The game hasn't been built." && exit 1)
 	@echo "Running..."
 	@node .
 	@echo "Running...Done"

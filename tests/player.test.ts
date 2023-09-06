@@ -1,28 +1,15 @@
 // Part of this code was copied from an example given by ChatGPT
-import { Player, Game, Card } from "../src/internal";
+import { Card, createGame } from "../src/internal";
 
 // Setup the game / copied from the card updater
-const game = new Game();
-const test_player1 = new Player("Test Player 1"); // Use this if a temp player crashes the game
-const test_player2 = new Player("Test Player 2");
-game.setup(test_player1, test_player2);
-
-game.player1 = test_player1;
-game.player2 = test_player2;
-
-game.player1.id = 0;
-game.player2.id = 1;
-
-const functions = game.functions;
-const interact = game.interact;
-
-functions.importCards(functions.dirname() + "cards");
-functions.importConfig(functions.dirname() + "config");
+const { game, player1: test_player1, player2: test_player2 } = createGame();
 
 game.config.P1AI = false;
 game.config.P2AI = false;
 
 game.doConfigAI();
+
+const interact = game.interact;
 
 // Remove functions that clear the screen
 interact.printName = () => {};

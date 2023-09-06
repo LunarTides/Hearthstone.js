@@ -1,21 +1,13 @@
 import chalk from "chalk";
 
-import { Game, Player } from "../src/internal.js";
+import { Player, createGame } from "../src/internal.js";
 import { Blueprint, CardClass, CardClassNoNeutral, CardLike } from "../src/types.js";
 
-const game = new Game();
-const player1 = new Player("Player 1");
-const player2 = new Player("Player 2");
-game.setup(player1, player2);
-let functions = game.functions;
-
-functions.importCards(functions.dirname() + "cards");
-functions.importConfig(functions.dirname() + "config");
-// ===========================================================
+const { game, player1, player2 } = createGame();
 
 const config = game.config;
-const classes = functions.getClasses();
-let cards = functions.getCards();
+const classes = game.functions.getClasses();
+let cards = game.functions.getCards();
 
 let chosen_class: CardClassNoNeutral;
 let filtered_cards: Blueprint[] = [];
@@ -98,7 +90,7 @@ function askClass(): CardClassNoNeutral {
     printName();
 
     let _class = game.input("What class to you want to choose?\n" + classes.join(", ") + "\n");
-    if (_class) _class = functions.capitalizeAll(_class);
+    if (_class) _class = game.functions.capitalizeAll(_class);
 
     if (!classes.includes(_class as CardClassNoNeutral)) return askClass();
 
@@ -274,7 +266,7 @@ function showCards() {
             settings.other.firstScreen = false;
 
             if (uncollectible) {
-                cards = functions.getCards(false);
+                cards = game.functions.getCards(false);
                 return showCards();
             }
         }
@@ -379,7 +371,7 @@ function showCards() {
         bricks.push(getDisplayName(c) + " - " + c.id);
     });
 
-    let wall = functions.createWall(bricks, "-");
+    let wall = game.functions.createWall(bricks, "-");
 
     wall.forEach(brick => {
         let brickSplit = brick.split("-");
@@ -387,7 +379,7 @@ function showCards() {
         let card = findCard(brickSplit[0].trim());
         if (!card) return;
 
-        let toDisplay = functions.colorByRarity(brickSplit[0], card.rarity) + "-" + brickSplit[1];
+        let toDisplay = game.functions.colorByRarity(brickSplit[0], card.rarity) + "-" + brickSplit[1];
 
         console.log(toDisplay);
     });
@@ -499,7 +491,7 @@ function showDeck() {
         bricks.push(viewed);
     });
 
-    let wall = functions.createWall(bricks, "-");
+    let wall = game.functions.createWall(bricks, "-");
 
     wall.forEach(brick => {
         let brickSplit = brick.split("-");
@@ -517,7 +509,7 @@ function showDeck() {
             let card = findCard(nameAndAmount.replace(r, "").trim());
             if (!card) return; // TODO: Maybe throw an error?
 
-            let name = functions.colorByRarity(amount[1], card.rarity);
+            let name = game.functions.colorByRarity(amount[1], card.rarity);
 
             console.log(`${r.exec(nameAndAmount)}${name}-${id}`);
             return;
@@ -526,7 +518,7 @@ function showDeck() {
         let card = findCard(nameAndAmount.trim());
         if (!card) return;
 
-        let name = functions.colorByRarity(nameAndAmount, card.rarity);
+        let name = game.functions.colorByRarity(nameAndAmount, card.rarity);
 
         console.log(`${name}-${id}`);
     });
@@ -540,7 +532,7 @@ function showDeck() {
 }
 
 function deckcode(parseVanillaOnPseudo = false) {
-    let _deckcode = functions.deckcode.export(deck, chosen_class, runes);
+    let _deckcode = game.functions.deckcode.export(deck, chosen_class, runes);
 
     if (_deckcode.error) {
         let error = _deckcode.error;
@@ -567,7 +559,7 @@ function deckcode(parseVanillaOnPseudo = false) {
         console.log(log);
     }
 
-    if (settings.deckcode.format == "vanilla" && (parseVanillaOnPseudo || !_deckcode.error)) _deckcode.code = functions.deckcode.toVanilla(plr, _deckcode.code);
+    if (settings.deckcode.format == "vanilla" && (parseVanillaOnPseudo || !_deckcode.error)) _deckcode.code = game.functions.deckcode.toVanilla(plr, _deckcode.code);
 
     return _deckcode;
 }
@@ -722,7 +714,7 @@ function handleCmds(cmd: string) {
         if (cmdSplit.length <= 0) return;
 
         let _class = cmdSplit.join(" ");
-        _class = functions.capitalizeAll(_class);
+        _class = game.functions.capitalizeAll(_class);
 
         if (!classes.includes(_class as CardClassNoNeutral) && _class != "Neutral") {
             game.input(chalk.red("Invalid class!\n"));
@@ -770,7 +762,7 @@ function handleCmds(cmd: string) {
     else if (cmd.startsWith("import")) {
         let _deckcode = game.input("Please input a deckcode: ");
 
-        let _deck = functions.deckcode.import(plr, _deckcode);
+        let _deck = game.functions.deckcode.import(plr, _deckcode);
         if (!_deck) return;
 
         game.config.validateDecks = false;
@@ -984,8 +976,8 @@ export function runner() {
 }
 
 function main() {
-    functions.importCards(game.functions.dirname() + "cards");
-    functions.importConfig(game.functions.dirname() + "config");
+    game.functions.importCards(game.functions.dirname() + "cards");
+    game.functions.importConfig(game.functions.dirname() + "config");
 
     chosen_class = askClass();
 

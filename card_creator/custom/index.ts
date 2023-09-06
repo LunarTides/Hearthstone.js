@@ -1,15 +1,9 @@
 import rl from "readline-sync";
 import * as lib from "../lib.js";
-import { Game, Player } from "../../src/internal.js";
+import { createGame } from "../../src/internal.js";
 import { Blueprint, CardClass, CardKeyword, CardRarity, CardType, MinionTribe, SpellSchool } from "../../src/types.js";
 
-const game = new Game();
-const player1 = new Player("Player 1");
-const player2 = new Player("Player 2");
-game.setup(player1, player2);
-game.functions.importCards(game.functions.dirname() + "cards");
-game.functions.importConfig(game.functions.dirname() + "config");
-
+const { game, player1, player2 } = createGame();
 // @ts-expect-error
 let card: Blueprint = {};
 
@@ -198,7 +192,7 @@ export function main() {
     // @ts-expect-error
     card = {};
 
-    // Reset the shouldExit switch
+    // Reset the shouldExit switch so that the program doesn't immediately exit when the user enters the ccc, exits, then enters ccc again
     shouldExit = false;
     console.log("Hearthstone.js Custom Card Creator (C) 2022\n");
     console.log("type 'back' at any step to cancel.\n");

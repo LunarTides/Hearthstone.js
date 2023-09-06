@@ -1,6 +1,6 @@
 import rl from "readline-sync";
 import { readFileSync } from "fs";
-import { Game, Player } from "../src/internal.js";
+import { createGame } from "../src/internal.js";
 
 let decksString = readFileSync("../decks.json", { encoding: 'utf8', flag: 'r' });
 let decks: string[] = Object.values(JSON.parse(decksString).versus);
@@ -18,13 +18,7 @@ for (let index = 0; index < games; index++) {
     if (!process.stdout.isTTY) process.stderr.write(`\r\x1b[KPlaying game #${index + 1} / ${games}...`);
 
     // Test the main game
-    const game = new Game();
-    const p1 = new Player("Player 1");
-    const p2 = new Player("Player 2");
-    game.setup(p1, p2);
-
-    game.functions.importCards(game.functions.dirname() + "cards");
-    game.functions.importConfig(game.functions.dirname() + "config");
+    const { game, player1, player2 } = createGame();
 
     // Setup the ais
     game.config.P1AI = true;
@@ -44,8 +38,8 @@ for (let index = 0; index < games; index++) {
     }
 
     game.startGame();
-    game.interact.mulligan(p1);
-    game.interact.mulligan(p2);
+    game.interact.mulligan(player1);
+    game.interact.mulligan(player2);
 
     try {
         while (game.running) game.interact.doTurn();

@@ -765,6 +765,17 @@ export class Game {
     }
 }
 
+export function createGame() {
+    const game = new Game();
+    const player1 = new Player("Player 1");
+    const player2 = new Player("Player 2");
+    game.setup(player1, player2);
+    game.functions.importCards(game.functions.dirname() + "cards");
+    game.functions.importConfig(game.functions.dirname() + "config");
+
+    return { game, player1, player2 };
+}
+
 const attack = {
     /**
      * Makes a minion or hero attack another minion or hero
