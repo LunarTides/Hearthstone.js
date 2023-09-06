@@ -410,6 +410,15 @@ export type VanillaCard = {
 };
 
 /**
+ * The backups of a card.
+ */
+export type CardBackups = {
+    [x: string | number]: {
+        [key in keyof Card]: Card[key];
+    }
+}
+
+/**
  * The abilities that a blueprint can have. (From CardAbility)
  */
 type BlueprintAbilities = {

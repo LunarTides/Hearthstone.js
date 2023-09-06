@@ -3,7 +3,7 @@
  * @module Card
  */
 import { Player } from "./internal.js";
-import { Blueprint, CardAbility, CardClass, CardKeyword, CardRarity, CardType, CostType, EnchantmentDefinition, GameConfig, KeywordMethod, MinionTribe, SpellSchool } from "./types.js";
+import { Blueprint, CardAbility, CardBackups, CardClass, CardKeyword, CardRarity, CardType, CostType, EnchantmentDefinition, GameConfig, KeywordMethod, MinionTribe, SpellSchool } from "./types.js";
 import { v4 as uuidv4 } from "uuid";
 
 let game = globalThis.game;
@@ -246,7 +246,7 @@ export class Card {
      * 
      * The card backups don't include the methods so don't call any.
      */
-    backups: {[key: string]: Card} = {};
+    backups: CardBackups = {};
 
     /**
      * The card's uuid. Gets randomly generated when the card gets created.
@@ -759,9 +759,11 @@ export class Card {
      */
     createBackup(): number {
         let key = Object.keys(this.backups).length;
-        this.backups[key] = this;
-        // @ts-expect-error
-        Object.entries(this).forEach(i => this.backups[key][i[0]] = i[1]);
+
+        Object.entries(this).forEach(i => {
+            // @ts-expect-error
+            this.backups[key][k[0]] = k[1];
+        });
         
         return key;
     }
