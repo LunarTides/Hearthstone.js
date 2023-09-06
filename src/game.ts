@@ -881,8 +881,6 @@ const attack = {
 
         // The attacker should damage the target
         game.attack(attacker.attack, target);
-        //game.attack(target.getAttack(), attacker);
-
         game.events.broadcast("Attack", [attacker, target], attacker);
 
         game.killMinions();

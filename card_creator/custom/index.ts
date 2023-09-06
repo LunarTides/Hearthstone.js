@@ -59,7 +59,6 @@ function common(): false | Blueprint {
     if (classes == "Death Knight") runes = input("Runes: ");
     if (shouldExit) return false;
 
-    //if (keywords) keywords = '["' + keywords.split(', ').join('", "') + '"]';
     let realKeywords: CardKeyword[] | undefined;
     if (keywords) realKeywords = keywords.split(', ') as CardKeyword[];
 

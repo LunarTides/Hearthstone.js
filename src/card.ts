@@ -212,7 +212,7 @@ export class Card {
      * [
      *     {
      *         "enchantment": "-1 mana",
-     *         "owner": //some_card
+     *         "owner": // some_card
      *     }
      * ]
      * ```

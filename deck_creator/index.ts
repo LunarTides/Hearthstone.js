@@ -290,8 +290,6 @@ function showCards() {
         console.log(chalk.yellow(`No cards found for the selected classes '${chosen_class} and Neutral'.`));
     }
 
-    //if (settings.other.firstScreen) showRules();
-
     let cpp = settings.view.cpp;
     let page = settings.view.page;
 
@@ -338,8 +336,6 @@ function showCards() {
 
     settings.view.maxPage = Math.ceil(_filtered_cards.length / cpp);
     if (page > settings.view.maxPage) page = settings.view.maxPage;
-
-    //if (settings.other.firstScreen) console.log(); // Add newline
 
     let oldSortType = settings.sort.type;
     let oldSortOrder = settings.sort.order;

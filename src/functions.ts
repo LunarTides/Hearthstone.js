@@ -33,10 +33,6 @@ const deckcode = {
             return null;
         }
 
-        // The code is base64 encoded, so we need to decode it
-        //code = Buffer.from(code, 'base64').toString('ascii');
-        //if (!code) ERROR("INVALIDB64");
-        //
         let vanilla = false;
 
         try {
@@ -984,7 +980,7 @@ ${main_content}
 
                 console.log("Please install any of these using your package manager.");
                 console.log("If you're not using linux, open up an issue on the github page.");
-                // rl.question(); <- It is your job to pause the program when you run this, since function.ts functions should generally not pause the game.
+                // game.input(); <- It is your job to pause the program when you run this, since function.ts functions should generally not pause the game.
 
                 return false;
             }
@@ -1859,8 +1855,6 @@ ${main_content}
 
         if ( (type.toLowerCase() == "quest" && t.length > 0) || ((type.toLowerCase() == "secret" || type.toLowerCase() == "sidequest") && (t.length >= 3 || t.filter(s => s.name == card.displayName).length > 0)) ) {
             plr.addToHand(card);
-            //plr.mana += card.mana;
-            
             return false;
         }
 

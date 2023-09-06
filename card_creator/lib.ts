@@ -21,8 +21,6 @@ function getCardFunction(card_type: CardType) {
     else if (card_type == "Hero") func = "HeroPower"; // If the card is a hero card, the function is 'heropower'
     else if (card_type == "Location") func = "Use"; // If the card is a location, the function is 'use'
     else { // If the card is a Minion or Weapon
-        //func = input("Function: ");
-
         // Try to extract a function from the card's description
         let reg = /[A-Z][a-z].*?:/;
         func = card.desc.match(reg);
@@ -75,7 +73,6 @@ type CreateArgs = {
 
 export function create({ creatorType, cardType, blueprint, overridePath, overrideFilename, debug }: CreateArgs) {
     // If the user didn't specify a tribe, but the tribe exists, set the tribe to "None".
-    //if (card.tribe && card.tribe === "") card.tribe = "None";
     type = cardType;
     card = blueprint;
 
