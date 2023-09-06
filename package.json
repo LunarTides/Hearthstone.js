@@ -1,6 +1,6 @@
 {
   "name": "hearthstone.js",
-  "version": "2.0.0-alpha.55",
+  "version": "2.0.0-alpha.56",
   "description": "",
   "main": "index.ts",
   "type": "module",
