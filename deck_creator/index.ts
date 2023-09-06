@@ -1,3 +1,7 @@
+/**
+ * This is the deck creator.
+ * @module Deck Creator
+ */
 import chalk from "chalk";
 
 import { createGame } from "../src/internal.js";
@@ -961,6 +965,9 @@ function handleCmds(cmd: string) {
 let opened_from_runner = false;
 let running = true;
 
+/**
+ * Runs the deck creator.
+ */
 export function runner() {
     import("../index.js").then(imported => imported.free_decks()); // Remove all decks
     opened_from_runner = true;

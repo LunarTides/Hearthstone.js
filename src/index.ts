@@ -1,7 +1,11 @@
-/*
-Hearthstone.js - Hearthstone but console based.
-Copyright (C) 2022  LunarTides
-*/
+/**
+ * The entry point of the game.
+ * 
+ * Hearthstone.js - Hearthstone but console based.
+ * Copyright (C) 2022  LunarTides
+ * 
+ * @module Index
+ */
 
 import { Player, createGame } from "./internal.js";
 
@@ -9,6 +13,12 @@ import { Player, createGame } from "./internal.js";
  * Deckcodes
  */
 let decks: string[] = [];
+
+/**
+ * Runs the game.
+ * 
+ * @param _decks The decks to import
+ */
 export function runner(_decks: string[]) {
     decks = _decks;
     main();

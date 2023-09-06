@@ -1,9 +1,17 @@
+/**
+ * The AI
+ * @module AI
+ */
 import { Card, Player } from "./internal.js";
 import { AICalcMoveOption, AIHistory, CardLike, ScoredCard, SelectTargetAlignment, SelectTargetClass, SelectTargetFlag, Target } from "./types.js";
 
 let game = globalThis.game;
 
 // TODO: Ai gets stuck in infinite loop when using cathedral of atonement (location) | shadowcloth needle (0 attack wpn) | that minion has no attack.
+
+/**
+ * The AI class.
+ */
 export class AI {
     /**
      * The player that the AI is playing for
@@ -117,7 +125,7 @@ export class AI {
      *
      * @returns Can attack
      */
-    _canAttack(): boolean {
+    private _canAttack(): boolean {
         if (this.prevent.includes("attack")) return false;
 
         let valid_attackers = game.board[this.plr.id].filter(m => this._canMinionAttack(m));
@@ -130,7 +138,7 @@ export class AI {
      *
      * @returns Can use hero power
      */
-    _canHeroPower(): boolean {
+    private _canHeroPower(): boolean {
         if (this.prevent.includes("hero power")) return false;
 
         let enoughMana = this.plr.mana >= this.plr.heroPowerCost;
@@ -146,7 +154,7 @@ export class AI {
     /**
      * Returns if there are any location cards the ai can use.
      */
-    _canUseLocation(): boolean {
+    private _canUseLocation(): boolean {
         if (this.prevent.includes("use")) return false;
 
         let valid_locations = game.board[this.plr.id].filter(m => m.type == "Location" && m.cooldown == 0 && !this.used_locations_this_turn.includes(m));
@@ -161,7 +169,7 @@ export class AI {
      *
      * @returns Can attack
      */
-    _canMinionAttack(m: Card): boolean {
+    private _canMinionAttack(m: Card): boolean {
         let booleans = !m.sleepy && !m.frozen && !m.dormant;
         let numbers = m.getAttack() && m.attackTimes;
 
@@ -175,7 +183,7 @@ export class AI {
      *
      * @returns If it is targettable
      */
-    _canTargetMinion(m: Card): boolean {
+    private _canTargetMinion(m: Card): boolean {
         let booleans = !m.dormant && !m.immune && !m.keywords.includes("Stealth");
 
         return booleans;
@@ -187,7 +195,7 @@ export class AI {
      *
      * @returns `Perfect Trades`: [[attacker, target], ...], `Imperfect Trades`: [[attacker, target], ...]
      */
-    _attackFindTrades(): [Card[][], Card[][]] {
+    private _attackFindTrades(): [Card[][], Card[][]] {
         let perfect_trades: Card[][] = [];
         let imperfect_trades: Card[][] = [];
 
@@ -227,7 +235,7 @@ export class AI {
      *
      * @returns Score
      */
-    _scorePlayer(player: Player, board: ScoredCard[][]): number {
+    private _scorePlayer(player: Player, board: ScoredCard[][]): number {
         let score = 0;
 
         board[player.id].forEach(m => {
@@ -255,7 +263,7 @@ export class AI {
      *
      * @returns Winner, Score
      */
-    _findWinner(board: ScoredCard[][]): [Player, number] {
+    private _findWinner(board: ScoredCard[][]): [Player, number] {
         let score = this._scorePlayer(this.plr, board);
         let opScore = this._scorePlayer(this.plr.getOpponent(), board);
 
@@ -270,7 +278,7 @@ export class AI {
      *
      * @param return_taunts If the function should return the taunts it found, or just if there is a taunt. If this is true it will return the taunts it found.
      */
-    _tauntExists(return_taunts: boolean = false): Card[] | boolean {
+    private _tauntExists(return_taunts: boolean = false): Card[] | boolean {
         // TODO: Make it only return Card[]
         let taunts = game.board[this.plr.getOpponent().id].filter(m => m.keywords.includes("Taunt"));
 
@@ -284,7 +292,7 @@ export class AI {
      *
      * @returns Attacker, Target
      */
-    _attackTrade(): Card[] | null {
+    private _attackTrade(): Card[] | null {
         let [perfect_trades, imperfect_trades] = this._attackFindTrades();
 
         let ret = null;
@@ -303,7 +311,7 @@ export class AI {
      *
      * @returns Attacker, Target
      */
-    _attackGeneral(board: ScoredCard[][]): (Target | -1)[] {
+    private _attackGeneral(board: ScoredCard[][]): (Target | -1)[] {
         let current_winner = this._findWinner(board);
 
         let ret = null;
@@ -335,7 +343,7 @@ export class AI {
      *
      * @returns Attacker, Target
      */
-    _attackGeneralRisky(): (Target | -1)[] {
+    private _attackGeneralRisky(): (Target | -1)[] {
         // Only attack the enemy hero
         return [this._attackGeneralChooseAttacker(true), this.plr.getOpponent()];
     }
@@ -347,7 +355,7 @@ export class AI {
      *
      * @returns Attacker, Target
      */
-    _attackGeneralMinion(): (Target | -1)[] {
+    private _attackGeneralMinion(): (Target | -1)[] {
         let target;
 
         // If the focused minion doesn't exist, select a new minion to focus
@@ -364,7 +372,7 @@ export class AI {
      *
      * @returns Target | -1 (Go back)
      */
-    _attackGeneralChooseTarget(): Target | -1 {
+    private _attackGeneralChooseTarget(): Target | -1 {
         let highest_score: (Target | number | null)[] = [null, -9999];
 
         let board = game.board[this.plr.getOpponent().id];
@@ -407,7 +415,7 @@ export class AI {
      *
      * @returns Attacker | -1 (Go back)
      */
-    _attackGeneralChooseAttacker(target_is_player: boolean = false): Target | -1 {
+    private _attackGeneralChooseAttacker(target_is_player: boolean = false): Target | -1 {
         let lowest_score: (Target | number | null)[] = [null, 9999];
 
         let board = game.board[this.plr.id];

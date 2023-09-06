@@ -1,3 +1,7 @@
+/**
+ * Game
+ * @module Game
+ */
 import chalk from 'chalk';
 import { question }  from 'readline-sync';
 import { functions, interact, Player, Card, AI } from "./internal.js";

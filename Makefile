@@ -20,16 +20,18 @@ vanilla:
 run:
 	@ls dist/index.js > /dev/null 2>&1 || (echo "The game hasn't been built." && exit 1)
 	@echo "Running..."
-	@node .
+	@npm start
 	@echo "Running...Done"
 
 build:
 	@echo -e "Building...\c"
+	@rm -rf ./dist/
 	@tsc
 	@echo -e "\r\x1b[KBuilding...Done"
 
 start:
 	@echo -e "Building...\c"
+	@rm -rf ./dist/
 	@tsc
 	@echo -e "\r\x1b[KBuilding...Done"
-	@node .
+	@npm start

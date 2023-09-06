@@ -1,3 +1,7 @@
+/**
+ * The crash test script.
+ * @module Crash Test
+ */
 import rl from "readline-sync";
 import { readFileSync } from "fs";
 import { createGame } from "../src/internal.js";

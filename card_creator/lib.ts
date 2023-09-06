@@ -1,4 +1,7 @@
-// This is a library
+/**
+ * This is a library
+ * @module Card Creator Library
+ */
 
 import rl from "readline-sync";
 import fs from "fs";
@@ -11,7 +14,7 @@ const { game, player1, player2 } = createGame();
 let card: Blueprint;
 let type: CardType;
 
-type CCType = "Unknown" | "Class" | "Custom" | "Vanilla";
+export type CCType = "Unknown" | "Class" | "Custom" | "Vanilla";
 
 function getCardFunction(card_type: CardType) {
     // Get the card's 'function' (battlecry, cast, deathrattle, etc...)
@@ -62,16 +65,19 @@ function generateCardPath(...args: [CardClass[], CardType]) {
     return static_path + dynamic_path;
 }
 
-type CreateArgs = {
-    creatorType: CCType,
-    cardType: CardType,
-    blueprint: Blueprint,
-    overridePath?: string,
-    overrideFilename?: string,
-    debug?: boolean
-}
-
-export function create({ creatorType, cardType, blueprint, overridePath, overrideFilename, debug }: CreateArgs) {
+/**
+ * Generates a new card based on the provided arguments and saves it to a file.
+ *
+ * @param creatorType The type of card creator.
+ * @param cardType The type of card.
+ * @param blueprint The blueprint for the card.
+ * @param overridePath The override path for the card.
+ * @param overrideFilename The override filename for the card.
+ * @param debug If true, doesn't save the card, just prints out details about it.
+ * 
+ * @return The path of the created file.
+ */
+export function create(creatorType: CCType, cardType: CardType, blueprint: Blueprint, overridePath?: string, overrideFilename?: string, debug?: boolean) {
     // If the user didn't specify a tribe, but the tribe exists, set the tribe to "None".
     type = cardType;
     card = blueprint;

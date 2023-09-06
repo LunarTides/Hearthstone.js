@@ -1,3 +1,8 @@
+/**
+ * The breaking change script.
+ * @module Breaking Change
+ */
+
 import rl from "readline-sync";
 import fs from "fs";
 import config from "../config/general.json" assert { type: "json" };

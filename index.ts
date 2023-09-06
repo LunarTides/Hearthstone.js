@@ -1,3 +1,7 @@
+/**
+ * The entry point of the program. Acts like a hub between the tools / scripts and the game.
+ * @module Runner
+ */
 import config from "./config/dont-change.json" assert { type: "json" };
 
 import rl from "readline-sync";
@@ -18,9 +22,17 @@ const watermark = () => {
 
 let decks: string[] = [];
 
+/**
+ * Stores a deck code in the decks array. This gets used for importing decks.
+ * This is what the deck creator's `export` command uses.
+ */
 export function store_deck(deckcode: string) {
     decks.push(deckcode);
 }
+
+/**
+ * Clears the decks array.
+ */
 export function free_decks() {
     decks = [];
 }

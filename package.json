@@ -1,12 +1,13 @@
 {
   "name": "hearthstone.js",
-  "version": "1.7.0-dev",
+  "version": "2.0.0-alpha.52",
   "description": "",
   "main": "index.ts",
   "type": "module",
   "scripts": {
     "generate": "node dist/card_creator/vanilla/generator",
-    "start": "node ./dist/index.js"
+    "start": "node ./dist/index.js",
+    "docs": "typedoc ./"
   },
   "repository": {
     "type": "git",
@@ -27,6 +28,7 @@
     "@types/readline-sync": "^1.4.4",
     "@types/uuid": "^9.0.2",
     "esm": "^3.2.25",
+    "typedoc": "^0.25.1",
     "typescript": "^5.2.2"
   },
   "engines": {

@@ -1,3 +1,7 @@
+/**
+ * Functions
+ * @module Functions
+ */
 import * as fs from "fs";
 import * as child_process from "child_process";
 import * as deckstrings from "deckstrings"; // To decode vanilla deckcodes

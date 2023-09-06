@@ -1,3 +1,7 @@
+/**
+ * Card
+ * @module Card
+ */
 import { Player } from "./internal.js";
 import { Blueprint, CardAbility, CardClass, CardKeyword, CardRarity, CardType, CostType, EnchantmentDefinition, GameConfig, KeywordMethod, MinionTribe, SpellSchool } from "./types.js";
 import { v4 as uuidv4 } from "uuid";

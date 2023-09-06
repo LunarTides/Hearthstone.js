@@ -1,0 +1,11 @@
+{
+    "name": "Hearthstone.js",
+    "entryPointStrategy": "expand",
+    "exclude": [
+        "**/node_modules/**",
+        "**/cards/**",
+        "**/src/importcards.cts",
+        "**/src/interfaces.d.ts",
+        "**/src/internal.ts"
+    ],
+}

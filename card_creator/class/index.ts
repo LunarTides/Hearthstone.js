@@ -1,3 +1,8 @@
+/**
+ * This is the class creator.
+ * @module Class Creator
+ */
+
 import * as rl from "readline-sync";
 import * as lib from "../lib.js";
 
@@ -6,6 +11,10 @@ import { Blueprint, CardClass, CardRarity, CardType } from "../../src/types.js";
 
 const { game, player1, player2 } = createGame();
 
+/**
+ * Asks the user a series of questions, and creates a class card using it.
+ * This is not meant to be a library. Running this function will temporarily give control to this function.
+ */
 export function main() {
     let watermark = () => {
         game.interact.cls();
@@ -56,7 +65,7 @@ export function main() {
         id: 0, // This will be overwritten by the library
     };
 
-    lib.create({ creatorType: "Class", cardType: "Hero", blueprint: card, overridePath: game.functions.dirname() + "../cards/StartingHeroes/", overrideFilename: filename });
+    lib.create("Class", "Hero", card, game.functions.dirname() + "../cards/StartingHeroes/", filename);
 
     console.log("\nClass Created!");
     rl.question(`Next steps:\n1. Open 'cards/StartingHeroes/${filename}' and add logic to the 'heropower' function.\n2. Now when using the Card Creator, type '${name}' into the 'Class' field to use that class\n3. When using the Deck Creator, type '${name}' to create a deck with cards from your new class.\nEnjoy!\n`);

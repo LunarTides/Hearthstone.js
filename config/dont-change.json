@@ -1,7 +1,7 @@
 {
     "_DONT CHANGE ANYTHING IN THIS FILE": "DONT CHANGE ANYTHING IN THIS FILE UNLESS YOU KNOW WHAT YOU'RE DOING",
 
-    "version": "1.7.0",
+    "version": "2.0.0",
     "branch": "topic",
 
     "versionText": "Make the project use typescript instead of javascript. THIS VERSION IS HIGHLY UNSTABLE AND WILL CRASH.",

@@ -1,3 +1,3 @@
 @echo off
 echo Building...
-tsc && echo Done && node .
+tsc && echo Done && npm start

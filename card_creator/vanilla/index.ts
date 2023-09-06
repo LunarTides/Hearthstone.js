@@ -1,3 +1,8 @@
+/**
+ * This is the vanilla card creator.
+ * @module Vanilla Card Creator
+ */
+
 import { Blueprint, CardClass, CardRarity, MinionTribe, SpellSchool, VanillaCard } from "../../src/types.js";
 import { createGame } from "../../src/internal.js";
 
@@ -8,7 +13,13 @@ import * as lib from "../lib.js";
 
 const { game, player1, player2 } = createGame();
 
-function createCard(card: VanillaCard, main: boolean, debug: boolean) {
+/**
+ * Create a card from a vanilla card.
+ * 
+ * @param card The vanilla card
+ * @param debug If it should use debug mode
+ */
+export function create(card: VanillaCard, debug: boolean) {
     // Harvest info
     let cardClass = game.functions.capitalize(card.cardClass ?? "Neutral") as CardClass;
     let collectible = card.collectible ?? false;
@@ -122,13 +133,16 @@ function createCard(card: VanillaCard, main: boolean, debug: boolean) {
         blueprint.displayName = name;
     }
 
-    lib.create({ creatorType: "Vanilla", cardType: type, blueprint, debug });
+    lib.create("Vanilla", type, blueprint, undefined, undefined, debug);
 }
 
-export function main(card?: VanillaCard) {
+/**
+ * Prompt the user to pick a card, then create it.
+ * 
+ * @returns If a card was created
+ */
+export function main() {
     console.log("Hearthstone.js Vanilla Card Creator (C) 2022\n");
-
-    if (card) return createCard(card, false, false);
 
     const fileLocation = game.functions.dirname() + "../card_creator/vanilla/.ignore.cards.json";
 
@@ -192,7 +206,7 @@ export function main(card?: VanillaCard) {
 
         console.log(`Found '${card.name}'\n`);
 
-        createCard(card, true, debug);
+        create(card, debug);
     }
 
     return true;

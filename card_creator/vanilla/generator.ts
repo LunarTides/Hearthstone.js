@@ -1,3 +1,8 @@
+/**
+ * Importing this module will reach out to an api and save the result to a file.
+ * @module Vanilla Card Generator
+ */
+
 import { Axios } from "axios";
 import { writeFile } from "fs";
 import { createGame } from "../../src/internal.js";

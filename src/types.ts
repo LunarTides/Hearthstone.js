@@ -1,3 +1,7 @@
+/**
+ * Types
+ * @module Types
+ */
 import { Card, Game, Player } from "./internal.js";
 
 /**

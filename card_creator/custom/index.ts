@@ -1,3 +1,8 @@
+/**
+ * This is the custom card creator.
+ * @module Custom Card Creator
+ */
+
 import rl from "readline-sync";
 import * as lib from "../lib.js";
 import { createGame } from "../../src/internal.js";
@@ -185,6 +190,12 @@ function location() {
     });
 }
 
+/**
+ * Asks the user a series of questions, and creates a custom card using it.
+ * This is not meant to be a library. Running this function will temporarily give control to this function.
+ * 
+ * @returns The path to the file
+ */
 export function main() {
     // Reset the card
     // @ts-expect-error
@@ -235,7 +246,7 @@ export function main() {
     // Actually create the card
     console.log("Creating file...");
 
-    let filePath = lib.create({ creatorType: "Custom", cardType: type, blueprint: card });
+    let filePath = lib.create("Custom", type, card);
 
     game.input();
     return filePath;

@@ -1,3 +1,8 @@
+/**
+ * The card updater script.
+ * @module Card Updater
+ */
+
 import fs from "fs";
 import chalk from "chalk";
 import { createGame } from "../src/internal.js";
