@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "10 Mana",
     desc: "Gain 10 Mana.",
     mana: 0,
@@ -17,5 +17,3 @@ const blueprint: Blueprint = {
         plr.gainMana(10);
     }
 }
-
-export default blueprint;

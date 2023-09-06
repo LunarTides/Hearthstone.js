@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     // Look in `main.mts` first.
     // This will be summoned below the main minion
     name: "Colossal Example Right Arm",
@@ -20,5 +20,3 @@ const blueprint: Blueprint = {
     uncollectible: true,
     id: 45,
 }
-
-export default blueprint;

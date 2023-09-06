@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     // Look in `corrupt.mts` first.
     // This is just an ordinary card.
     name: "Corrupted Example",
@@ -16,5 +16,3 @@ const blueprint: Blueprint = {
     uncollectible: true,
     id: 42,
 }
-
-export default blueprint;

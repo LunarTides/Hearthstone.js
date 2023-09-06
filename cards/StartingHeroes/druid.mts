@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "Druid Starting Hero",
     displayName: "Malfurion Stormrage",
     desc: "Druid starting hero",
@@ -25,5 +25,3 @@ const blueprint: Blueprint = {
         plr.armor += 1;
     }
 }
-
-export default blueprint;

@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "Warrior Starting Hero",
     displayName: "Garrosh Hellscream",
     desc: "Warrior starting hero",
@@ -22,5 +22,3 @@ const blueprint: Blueprint = {
         plr.armor += 2;
     }
 }
-
-export default blueprint;

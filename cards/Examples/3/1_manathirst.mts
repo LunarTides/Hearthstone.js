@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "Manathirst Example",
     stats: [1, 2],
     desc: "Battlecry: Freeze an enemy minion. Manathirst (6): Silence it first.",
@@ -51,5 +51,3 @@ const blueprint: Blueprint = {
         return self.manathirst(6);
     }
 }
-
-export default blueprint;

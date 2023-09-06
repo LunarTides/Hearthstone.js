@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "Windswept Elemental",
     stats: [2, 1],
     desc: "&BRush&R",
@@ -15,5 +15,3 @@ const blueprint: Blueprint = {
     uncollectible: true,
     id: 19,
 }
-
-export default blueprint;

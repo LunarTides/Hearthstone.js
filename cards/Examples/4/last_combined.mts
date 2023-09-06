@@ -3,7 +3,7 @@
 import { Blueprint, EventValue } from "../../../src/types.js";
 
 // This is the big one
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "Combined Example 4",
     desc: "Quest: Play 3 cards. Reward: Reduce the cost of the next 10 Minions you play by 1.",
     mana: 1,
@@ -66,5 +66,3 @@ const blueprint: Blueprint = {
         });
     }
 }
-
-export default blueprint;

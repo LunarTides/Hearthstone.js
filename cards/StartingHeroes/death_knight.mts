@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "Death Knight Starting Hero",
     displayName: "The Lich King",
     desc: "Death knight starting hero",
@@ -26,5 +26,3 @@ const blueprint: Blueprint = {
         // The `It dies at end of turn.` part is handled by the ghoul itself, so we don't need to do anything extra here
     }
 }
-
-export default blueprint;

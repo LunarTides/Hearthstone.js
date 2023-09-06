@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "Kobold Lackey",
     stats: [1, 1],
     desc: "&BBattlecry:&R Deal 2 damage.",
@@ -28,5 +28,3 @@ const blueprint: Blueprint = {
         return true;
     }
 }
-
-export default blueprint;

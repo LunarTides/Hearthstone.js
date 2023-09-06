@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "Location Example",
 
     // The attack is set to 0 when you play the card.
@@ -27,5 +27,3 @@ const blueprint: Blueprint = {
         plr.addHealth(2);
     }
 }
-
-export default blueprint;

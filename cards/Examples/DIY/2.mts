@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "DIY 2",
     desc: "&BThis is a DIY card, it does not work by default.&R Restore 3 health to your hero.",
     mana: 0,
@@ -85,5 +85,3 @@ const blueprint: Blueprint = {
         return true;
     }
 }
-
-export default blueprint;

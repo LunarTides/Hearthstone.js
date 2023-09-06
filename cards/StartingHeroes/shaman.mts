@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "Shaman Starting Hero",
     displayName: "Thrall",
     desc: "Shaman starting hero",
@@ -41,5 +41,3 @@ const blueprint: Blueprint = {
         return true;
     }
 }
-
-export default blueprint;

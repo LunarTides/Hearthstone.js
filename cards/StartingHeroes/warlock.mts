@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "Warlock Starting Hero",
     displayName: "Gul'dan",
     desc: "Warlock starting hero",
@@ -23,5 +23,3 @@ const blueprint: Blueprint = {
         plr.drawCard();
     }
 }
-
-export default blueprint;

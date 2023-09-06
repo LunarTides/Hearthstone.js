@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "Hunter Starting Hero",
     displayName: "Rexxar",
     desc: "Hunter starting hero",
@@ -19,5 +19,3 @@ const blueprint: Blueprint = {
         game.attack(2, plr.getOpponent());
     }
 }
-
-export default blueprint;

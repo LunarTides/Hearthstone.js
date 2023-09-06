@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "Demon Hunter Starting Hero",
     displayName: "Illidan Stormrage",
     desc: "Demon hunter starting hero",
@@ -22,5 +22,3 @@ const blueprint: Blueprint = {
         plr.addAttack(1);
     }
 }
-
-export default blueprint;

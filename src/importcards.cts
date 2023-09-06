@@ -16,9 +16,9 @@ function _doImportCards(path: string) {
 
         if (file.name.endsWith(".mjs")) {
             // Synchronously import the card without using require
-            let f = require(p).default;
+            let f = require(p).blueprint;
 
-            if (!f) throw new Error("Card doesn't have a default export: " + p);
+            if (!f) throw new Error("Card doesn't export a blueprint: " + p);
             cards.push(f);
         }
         else if (file.isDirectory()) _doImportCards(p);

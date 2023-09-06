@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "Placeholder Example",
 
     // The things with `{...}` will be replaced in the `placeholder` function.
@@ -37,5 +37,3 @@ const blueprint: Blueprint = {
         return {0: turns, 1: "haha lol", 10: "test", "next thing is": "The next thing is:"};
     }
 }
-
-export default blueprint;

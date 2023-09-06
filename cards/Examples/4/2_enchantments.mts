@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "Enchantment Example",
     stats: [1, 1],
     desc: "Your cards cost 1 less.",
@@ -39,5 +39,3 @@ const blueprint: Blueprint = {
         });
     }
 }
-
-export default blueprint;

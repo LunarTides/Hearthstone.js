@@ -3,7 +3,7 @@
 import { Card } from "../../../src/internal.js";
 import { Blueprint, EventValue } from "../../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "DIY 3",
     desc: "&BThis is a DIY card, it does not work by default.&R Choose a minion to kill.",
     mana: 0,
@@ -158,5 +158,3 @@ const blueprint: Blueprint = {
         return true;
     }
 }
-
-export default blueprint;

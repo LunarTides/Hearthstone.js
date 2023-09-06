@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "Hero Example",
     desc: "Battlecry: Restore your hero to full health.",
     mana: 1,
@@ -32,5 +32,3 @@ const blueprint: Blueprint = {
         plr.addHealth(2);
     }
 }
-
-export default blueprint;

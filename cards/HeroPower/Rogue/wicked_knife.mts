@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "Wicked Knife",
     stats: [1, 2],
     desc: "",
@@ -13,5 +13,3 @@ const blueprint: Blueprint = {
     uncollectible: true,
     id: 22,
 }
-
-export default blueprint;

@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "Combined Example 3",
     desc: "If the turn counter is an even number, gain mana equal to the turn counter (up to 10). Manathirst (7): Remove the condition. (Currently: {0})",
     mana: 0,
@@ -42,5 +42,3 @@ const blueprint: Blueprint = {
         return {0: turns};
     }
 }
-
-export default blueprint;

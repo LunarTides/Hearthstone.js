@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "Stoneclaw Totem",
     stats: [0, 2],
     desc: "&BTaunt&R",
@@ -15,5 +15,3 @@ const blueprint: Blueprint = {
     uncollectible: true,
     id: 17,
 }
-
-export default blueprint;

@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "Dredge Example",
     stats: [1, 1],
     desc: "&BDredge.&R This example card shows you how to use `Keyword Functions` like dredge.",
@@ -19,5 +19,3 @@ const blueprint: Blueprint = {
         game.interact.dredge();
     }
 }
-
-export default blueprint;

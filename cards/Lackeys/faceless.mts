@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "Faceless Lackey",
     stats: [1, 1],
     desc: "&BBattlecry:&R Summon a random 2-Cost minion.",
@@ -28,5 +28,3 @@ const blueprint: Blueprint = {
         game.summonMinion(minion, plr);
     }
 }
-
-export default blueprint;

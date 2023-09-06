@@ -153,11 +153,9 @@ export function create({ creatorType, cardType, blueprint, overridePath, overrid
 
 import { Blueprint${passiveImport} } from "${type_path_rel}";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     ${contentArray.join(',\n    ')},${file_id}${func}
 }
-
-export default blueprint;
 `;
 
     // The path is now "./card_creator/../cards/...", replace this with "./cards/..."

@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "Combined Example 2 Right Arm",
     displayName: "Right Arm",
     stats: [1, 2],
@@ -15,5 +15,3 @@ const blueprint: Blueprint = {
     uncollectible: true,
     id: 48,
 }
-
-export default blueprint;

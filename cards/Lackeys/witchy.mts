@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "Witchy Lackey",
     stats: [1, 1],
     desc: "&BBattlecry:&R Transform a friendly minion into one that costs (1) more.",
@@ -47,5 +47,3 @@ const blueprint: Blueprint = {
         return true;
     }
 }
-
-export default blueprint;

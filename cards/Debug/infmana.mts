@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "Inf Mana",
     desc: "Fill up your mana. For the rest of the game, your mana never decreases.",
     mana: 0,
@@ -22,5 +22,3 @@ const blueprint: Blueprint = {
         });
     }
 }
-
-export default blueprint;

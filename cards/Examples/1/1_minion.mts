@@ -3,7 +3,7 @@
 // You shouldn't touch anything outside of the blueprint object.
 import { Blueprint } from "../../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     // The name of the card. It MUST be unique.
     // If the card has a common name like `Plant`, then use a display name.
     // More on this in `2-7`.
@@ -38,5 +38,3 @@ const blueprint: Blueprint = {
     // If you have debug mode enabled, you can type `/give (id)` to give yourself the card with that id.
     id: 29,
 }
-
-export default blueprint;

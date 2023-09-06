@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "Dual-Class Example",
     stats: [1, 1],
     desc: "This is an example card showing how to make a card with multiple classes.",
@@ -17,5 +17,3 @@ const blueprint: Blueprint = {
     uncollectible: true,
     id: 35,
 }
-
-export default blueprint;

@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "Corrupt Example",
     stats: [1, 1],
     desc: "&BCorrupt.&R",
@@ -19,5 +19,3 @@ const blueprint: Blueprint = {
     uncollectible: true,
     id: 41,
 }
-
-export default blueprint;

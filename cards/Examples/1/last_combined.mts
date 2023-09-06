@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "Combined Example 1",
     stats: [4, 4],
     desc: "&BTaunt, Divine Shield. Battlecry: Dredge.&R Gain +1/+1. (This example card combines everything you've learned in stage 1 into this card.)",
@@ -22,5 +22,3 @@ const blueprint: Blueprint = {
         self.addStats(1, 1);
     }
 }
-
-export default blueprint;

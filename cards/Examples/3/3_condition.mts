@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "Condition Example",
     stats: [5, 2],
 
@@ -45,5 +45,3 @@ const blueprint: Blueprint = {
         return game.functions.highlander(plr);
     }
 }
-
-export default blueprint;

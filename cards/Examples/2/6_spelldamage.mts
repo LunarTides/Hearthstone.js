@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "Spell Damage Example",
 
     // Put a $ sign before the number to show spell damage in the description.
@@ -25,5 +25,3 @@ const blueprint: Blueprint = {
     }
 
 }
-
-export default blueprint;

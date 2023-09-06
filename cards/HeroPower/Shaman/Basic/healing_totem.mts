@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "Healing Totem",
     stats: [0, 2],
     // TODO: What does this hashtag mean? This was pulled from the vanilla card
@@ -27,5 +27,3 @@ const blueprint: Blueprint = {
         });
     }
 }
-
-export default blueprint;

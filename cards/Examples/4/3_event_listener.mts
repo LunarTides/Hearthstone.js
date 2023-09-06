@@ -2,7 +2,7 @@
 
 import { Blueprint, EventValue } from "../../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "Event Listener Example",
     stats: [1, 1],
     desc: "Battlecry: For the rest of the game, your battlecries trigger twice.",
@@ -58,5 +58,3 @@ const blueprint: Blueprint = {
         // destroy(); // Run this function to destroy the event listener
     }
 }
-
-export default blueprint;

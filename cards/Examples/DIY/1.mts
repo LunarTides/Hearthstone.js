@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "DIY 1",
     stats: [1, 1],
     desc: "&BThis is a DIY card, it does not work by default. Battlecry:&R Give this minion +1/+1.",
@@ -37,5 +37,3 @@ const blueprint: Blueprint = {
         game.interact.verifyDIYSolution(self.getAttack() == 2 && self.getHealth() == 2, "1.mts");
     }
 }
-
-export default blueprint;

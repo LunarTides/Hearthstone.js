@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "Ethereal Lackey",
     stats: [1, 1],
     desc: "&BBattlecry:&R &BDiscover&R a spell.",
@@ -30,5 +30,3 @@ const blueprint: Blueprint = {
         return true;
     }
 }
-
-export default blueprint;

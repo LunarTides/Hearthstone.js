@@ -3,7 +3,7 @@
 import { Blueprint, EventValue } from "../../../src/types.js";
 
 // Im sorry, things are about to become a lot more complicated from this point on.
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "Passive Example",
     stats: [1, 1],
 
@@ -59,5 +59,3 @@ const blueprint: Blueprint = {
         val.activateBattlecry();
     }
 }
-
-export default blueprint;

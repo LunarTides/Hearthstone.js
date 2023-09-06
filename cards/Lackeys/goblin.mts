@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "Goblin Lackey",
     stats: [1, 1],
     desc: "&BBattlecry:&R Give a friendly minion +1 Attack and &BRush&R.",
@@ -31,5 +31,3 @@ const blueprint: Blueprint = {
         return true;
     }
 }
-
-export default blueprint;

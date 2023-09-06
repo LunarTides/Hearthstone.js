@@ -4,7 +4,7 @@
 import { Card } from "../../../src/internal.js";
 import { Blueprint, EventValue } from "../../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "Quest Example",
 
     // The description doesn't need to look like this, it is just what Hearthstone does, so we copy it here.
@@ -76,5 +76,3 @@ const blueprint: Blueprint = {
         }); // Put `}, "name of the next spell");`, to make a questline. When the quest gets completed, a card with that name gets created and the game immediately activates its cast ability.
     }
 }
-
-export default blueprint;

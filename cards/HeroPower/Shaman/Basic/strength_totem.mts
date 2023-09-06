@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "Strength Totem",
     stats: [0, 2],
     desc: "At the end of your turn, give another friendly minion +1 Attack.",
@@ -34,5 +34,3 @@ const blueprint: Blueprint = {
         minion.addStats(1, 0);
     }
 }
-
-export default blueprint;

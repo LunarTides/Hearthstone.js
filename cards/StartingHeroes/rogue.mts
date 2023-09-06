@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "Rogue Starting Hero",
     displayName: "Valeera Sanguinar",
     desc: "Rogue starting hero",
@@ -24,5 +24,3 @@ const blueprint: Blueprint = {
         plr.setWeapon(wpn);
     }
 }
-
-export default blueprint;

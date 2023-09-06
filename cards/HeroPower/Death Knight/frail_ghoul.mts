@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "Death Knight Frail Ghoul",
     displayName: "Frail Ghoul",
     stats: [1, 1],
@@ -26,5 +26,3 @@ const blueprint: Blueprint = {
         self.kill();
     }
 }
-
-export default blueprint;

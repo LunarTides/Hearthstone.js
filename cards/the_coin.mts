@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "The Coin",
     desc: "Gain 1 Mana Crystal this turn only.",
     mana: 0,
@@ -21,5 +21,3 @@ const blueprint: Blueprint = {
         plr.refreshMana(1, plr.maxMaxMana);
     }
 }
-
-export default blueprint;

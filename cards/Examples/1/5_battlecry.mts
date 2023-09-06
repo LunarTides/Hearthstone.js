@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "Battlecry Example",
     stats: [1, 2],
     desc: "&BBattlecry:&R Give this minion +1/+1.",
@@ -28,5 +28,3 @@ const blueprint: Blueprint = {
         self.addStats(1, 1);
     }
 }
-
-export default blueprint;

@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "Silver Hand Recruit",
     stats: [1, 1],
     desc: "",
@@ -14,5 +14,3 @@ const blueprint: Blueprint = {
     uncollectible: true,
     id: 20,
 }
-
-export default blueprint;

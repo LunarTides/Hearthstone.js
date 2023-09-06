@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "Combined Example 2 Corrupted",
     stats: [9, 9],
     desc: "Colossal +2. Dormant. Corrupted. Battlecry: Dredge.",
@@ -20,5 +20,3 @@ const blueprint: Blueprint = {
         game.interact.dredge();
     }
 }
-
-export default blueprint;

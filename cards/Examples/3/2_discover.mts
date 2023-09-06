@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "Discover Example",
     desc: "Discover a spell.",
     mana: 1,
@@ -35,5 +35,3 @@ const blueprint: Blueprint = {
         return true;
     }
 }
-
-export default blueprint;

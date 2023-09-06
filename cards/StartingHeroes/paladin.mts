@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "Paladin Starting Hero",
     displayName: "Uther Lightbringer",
     desc: "Paladin starting hero",
@@ -24,5 +24,3 @@ const blueprint: Blueprint = {
         game.summonMinion(card, plr);
     }
 }
-
-export default blueprint;

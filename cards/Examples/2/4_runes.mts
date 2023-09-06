@@ -2,7 +2,7 @@
 
 import { Blueprint } from "../../../src/types.js";
 
-const blueprint: Blueprint = {
+export const blueprint: Blueprint = {
     name: "Rune Example",
     stats: [1, 2],
     desc: "This is an example card to show how runes work.",
@@ -18,5 +18,3 @@ const blueprint: Blueprint = {
     uncollectible: true,
     id: 40,
 }
-
-export default blueprint;
