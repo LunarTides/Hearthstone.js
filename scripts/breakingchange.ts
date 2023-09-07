@@ -51,64 +51,68 @@ function searchCards(query: RegExp | string, path?: string) {
     });
 }
 
-game.interact.cls();
-let use_regex = rl.keyInYN("Do you want to use regular expressions? (Don't do this unless you know what regex is, and how to use it)");
-let search: string | RegExp = rl.question("Search: ");
-
-if (use_regex) search = new RegExp(search, "i");
-
-finishedCardsPath = `./${search}_${finishedCardsPath}`;
-finishedCardsPath = finishedCardsPath.replace(/[^\w ]/g, "_"); // Remove any character that is not in /A-Za-z0-9_ /
-
-getFinishedCards(finishedCardsPath);
-searchCards(search); // Ignore case
-
-console.log(); // New line
-
-while (true) {
+function main() {
     game.interact.cls();
+    let use_regex = rl.keyInYN("Do you want to use regular expressions? (Don't do this unless you know what regex is, and how to use it)");
+    let search: string | RegExp = rl.question("Search: ");
 
-    matchingCards.forEach((c, i) => {
-        // `c` is the path to the card.
-        console.log(`${i + 1}: ${c}`);
-    });
+    if (use_regex) search = new RegExp(search, "i");
 
-    let index = rl.question("\nWhich card do you want to fix (type 'done' to finish | type 'delete' to delete the save file): ");
-    if (index.toLowerCase().startsWith("done")) break;
-    if (index.toLowerCase().startsWith("delete")) {
-        console.log("Deleting file...");
+    finishedCardsPath = `./${search}_${finishedCardsPath}`;
+    finishedCardsPath = finishedCardsPath.replace(/[^\w ]/g, "_"); // Remove any character that is not in /A-Za-z0-9_ /
 
-        if (fs.existsSync(finishedCardsPath)) {
-            fs.unlinkSync(finishedCardsPath);
-            console.log("File deleted!");
+    getFinishedCards(finishedCardsPath);
+    searchCards(search); // Ignore case
+
+    console.log(); // New line
+
+    while (true) {
+        game.interact.cls();
+
+        matchingCards.forEach((c, i) => {
+            // `c` is the path to the card.
+            console.log(`${i + 1}: ${c}`);
+        });
+
+        let index = rl.question("\nWhich card do you want to fix (type 'done' to finish | type 'delete' to delete the save file): ");
+        if (index.toLowerCase().startsWith("done")) break;
+        if (index.toLowerCase().startsWith("delete")) {
+            console.log("Deleting file...");
+
+            if (fs.existsSync(finishedCardsPath)) {
+                fs.unlinkSync(finishedCardsPath);
+                console.log("File deleted!");
+            }
+            else console.log("File not found!");
+
+            rl.question();
+            process.exit(0);
         }
-        else console.log("File not found!");
 
-        rl.question();
-        process.exit(0);
+        if (!index || !parseInt(index)) continue;
+
+        let indexNum = parseInt(index) - 1;
+        let path = matchingCards[indexNum];
+
+        // `card` is the path to that card.
+        // TODO: This is broken
+        let success = game.functions.openWithArgs(config.editor, `"${path}"`);
+        if (!success) rl.question(); // The `openWithArgs` shows an error message for us, but we need to pause.
+
+        finishedCards.push(path);
+        matchingCards.splice(indexNum, 1);
+
+        if (matchingCards.length <= 0) {
+            // All cards have been patched
+            rl.question("All cards patched!\n");
+            if (fs.existsSync(finishedCardsPath)) fs.unlinkSync(finishedCardsPath);
+
+            process.exit(0); // Exit so it doesn't save
+        }
     }
 
-    if (!index || !parseInt(index)) continue;
-
-    let indexNum = parseInt(index) - 1;
-    let path = matchingCards[indexNum];
-
-    // `card` is the path to that card.
-    // TODO: This is broken
-    let success = game.functions.openWithArgs(config.editor, `"${path}"`);
-    if (!success) rl.question(); // The `openWithArgs` shows an error message for us, but we need to pause.
-
-    finishedCards.push(path);
-    matchingCards.splice(indexNum, 1);
-
-    if (matchingCards.length <= 0) {
-        // All cards have been patched
-        rl.question("All cards patched!\n");
-        if (fs.existsSync(finishedCardsPath)) fs.unlinkSync(finishedCardsPath);
-
-        process.exit(0); // Exit so it doesn't save
-    }
+    // Save progress
+    fs.writeFileSync(finishedCardsPath, finishedCards.join('\n'));
 }
 
-// Save progress
-fs.writeFileSync(finishedCardsPath, finishedCards.join('\n'));
+main();

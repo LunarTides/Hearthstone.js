@@ -1,6 +1,7 @@
 {
     "name": "Hearthstone.js",
     "entryPointStrategy": "expand",
+    "skipErrorChecking": true,
     "exclude": [
         "**/node_modules/**",
         "**/cards/**",
