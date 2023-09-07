@@ -466,16 +466,18 @@ export type Blueprint = {
  */
 export type Ability = (plr: Player, game: Game, self: Card, key?: EventKey, val?: UnknownEventValue) => any;
 
-export type EventListenerMsg = true | "destroy" | "cancel" | "reset";
 /**
- * The event listener callback. The second callback of the `Functions.addEventListener` function.
+ * The event listener callback return value.
+ */
+export type EventListenerMsg = boolean | "destroy" | "reset";
+/**
+ * The event listener callback of the `Functions.addEventListener` function.
  */
 export type EventListenerCallback = (val: UnknownEventValue) => EventListenerMsg;
-/**
- * The event listener check callback. The first callback of the `Functions.addEventListener` function.
- */
-export type EventListenerCheckCallback = (val: UnknownEventValue) => boolean;
 
+/**
+ * The return value of `Functions.randList`.
+ */
 export type RandListReturn<T> = {
     actual: T,
     copy: T 

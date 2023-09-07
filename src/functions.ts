@@ -13,7 +13,7 @@ import { fileURLToPath } from "url";
 import { doImportCards, doImportConfig } from "./importcards.cjs";
 
 import { Player, Card } from "./internal.js";
-import { Blueprint, CardClass, CardClassNoNeutral, CardLike, CardRarity, EventKey, EventListenerCallback, EventListenerCheckCallback, FunctionsExportDeckError, FunctionsValidateCardReturn, MinionTribe, QuestCallback, RandListReturn, Target, TickHookCallback, VanillaCard } from "./types.js";
+import { Blueprint, CardClass, CardClassNoNeutral, CardLike, CardRarity, EventKey, EventListenerCallback, FunctionsExportDeckError, FunctionsValidateCardReturn, MinionTribe, QuestCallback, RandListReturn, Target, TickHookCallback, VanillaCard } from "./types.js";
 
 let game = globalThis.game;
 
@@ -1431,13 +1431,12 @@ ${main_content}
      * Add an event listener.
      *
      * @param key The event to listen for. If this is an empty string, it will listen for any event.
-     * @param checkCallback This will trigger when the event gets broadcast, but before the actual code in `callback`. If this returns false, the event listener will ignore the event. If you set this to `true`, it is the same as doing `() => {return true}`.
      * @param callback The code that will be ran if the event listener gets triggered and gets through `checkCallback`. If this returns true, the event listener will be destroyed.
      * @param lifespan How many times the event listener will trigger and call "callback" before self-destructing. Set this to -1 to make it last forever, or until it is manually destroyed using "callback".
      *
      * @returns If you call this function, it will destroy the event listener.
      */
-    addEventListener(key: EventKey | "", checkCallback: true | EventListenerCheckCallback, callback: EventListenerCallback, lifespan: number = 1): () => boolean {
+    addEventListener(key: EventKey | "", callback: EventListenerCallback, lifespan: number = 1): () => boolean {
         let times = 0;
 
         let id = game.events.eventListeners;
@@ -1461,9 +1460,6 @@ ${main_content}
             if (key === "" || _key as EventKey === key) {} // Validate key. If key is empty, match any key.
             else return;
 
-            if (checkCallback === true || checkCallback(_unknownVal)) {}
-            else return;
-
             let msg = callback(_unknownVal);
             times++;
 
@@ -1471,11 +1467,11 @@ ${main_content}
                 case "destroy":
                     destroy();
                     break;
-                case "cancel":
-                    times--;
-                    break;
                 case "reset":
                     times = 0;
+                    break;
+                case false:
+                    times--;
                     break;
                 case true:
                     break;

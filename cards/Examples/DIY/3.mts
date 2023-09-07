@@ -102,7 +102,7 @@ export const blueprint: Blueprint = {
         let potentiallyCancelled = false;
 
         // Make sure the parameters are correct
-        game.functions.addEventListener("TargetSelectionStarts", true, (_unknownVal) => {
+        game.functions.addEventListener("TargetSelectionStarts", (_unknownVal) => {
             const val = _unknownVal as EventValue<"TargetSelectionStarts">;
 
             // Don't check for `prompt` since there is no correct prompt
@@ -125,9 +125,7 @@ export const blueprint: Blueprint = {
         game.functions.addEventListener("TargetSelected", (_unknownVal) => {
             const val = _unknownVal as EventValue<"TargetSelected">;
 
-            return val[0] === self;
-        }, (_unknownVal) => {
-            const val = _unknownVal as EventValue<"TargetSelected">;
+            if (!(val[0] === self)) return false;
 
             // At this point we know that the card wasn't cancelled, since the `TargetSelected` event doesn't fire if the card is cancelled
             target = val[1] as Card;
