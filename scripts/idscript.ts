@@ -1,4 +1,3 @@
-
 /**
  * A collection of functions relating to reading and writing ids of blueprints.
  * 
