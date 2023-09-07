@@ -12,7 +12,7 @@ export const blueprint: Blueprint = {
     classes: ["Neutral"],
     rarity: "Free",
     uncollectible: true,
-    id: 58,
+    id: 57,
 
     battlecry(plr, game, self) {
         // Add an event listener.

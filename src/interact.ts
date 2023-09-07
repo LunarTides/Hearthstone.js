@@ -1810,15 +1810,15 @@ export const interact = {
         let _class = chalk.gray(card.classes.join(" / "));
 
         let tribe = "";
-        let spellClass = "";
+        let spellSchool = "";
         let locCooldown = "";
 
         let type = card.type;
 
         if (type == "Minion") tribe = " (" + chalk.gray(card.tribe ?? "None") + ")";
         else if (type == "Spell") {
-            if (card.spellClass) spellClass = " (" + chalk.cyan(card.spellClass) + ")";
-            else spellClass = " (None)";
+            if (card.spellSchool) spellSchool = " (" + chalk.cyan(card.spellSchool) + ")";
+            else spellSchool = " (None)";
         }
         else if (type == "Location") {
             if (card instanceof Card) locCooldown = " (" + chalk.cyan(card.blueprint.cooldown ?? 0) + ")";
@@ -1826,7 +1826,7 @@ export const interact = {
         }
 
         if (help) console.log(chalk.cyan("{mana} ") + chalk.bold("Name ") + "(" + chalk.greenBright("[attack / health] ") + "if it has) (description) " + chalk.yellow("(type) ") + "((tribe) or (spell class) or (cooldown)) [" + chalk.gray("class") + "]");
-        console.log(_card + tribe + spellClass + locCooldown + ` [${_class}]`);
+        console.log(_card + (tribe || spellSchool || locCooldown) + ` [${_class}]`);
 
         game.input("\nPress enter to continue...\n");
     },

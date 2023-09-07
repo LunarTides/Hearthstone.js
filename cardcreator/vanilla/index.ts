@@ -37,7 +37,7 @@ export function create(card: VanillaCard, debug: boolean) {
     if (card.races) races = card.races.map(r => game.functions.capitalize(r) as MinionTribe);
 
     // Spell info
-    let spellClass: SpellSchool | undefined = card.spellSchool ? game.functions.capitalize(card.spellSchool) as SpellSchool : undefined;
+    let spellSchool: SpellSchool | undefined = card.spellSchool ? game.functions.capitalize(card.spellSchool) as SpellSchool : undefined;
 
     // Weapon Info
     let durability = card.durability ?? -1;
@@ -63,24 +63,24 @@ export function create(card: VanillaCard, debug: boolean) {
         blueprint = {
             name: realName,
             stats: [attack, health],
-            desc: desc,
-            mana: mana,
-            type: type,
+            desc,
+            mana,
+            type,
             tribe: races[0] || "None", // TODO: Add support for more than 1 tribe
             classes: [cardClass],
-            rarity: rarity,
+            rarity,
             id: 0,
         }
     }
     else if (type == "Spell") {
         blueprint = {
             name: realName,
-            desc: desc,
-            mana: mana,
-            type: type,
-            spellClass: spellClass,
+            desc,
+            mana,
+            type,
+            spellSchool,
             classes: [cardClass],
-            rarity: rarity,
+            rarity,
             id: 0,
         }
     }
@@ -88,22 +88,22 @@ export function create(card: VanillaCard, debug: boolean) {
         blueprint = {
             name: realName,
             stats: [attack, durability],
-            desc: desc,
-            mana: mana,
-            type: type,
+            desc,
+            mana,
+            type,
             classes: [cardClass],
-            rarity: rarity,
+            rarity,
             id: 0,
         }
     }
     else if (type == "Hero") {
         blueprint = {
             name: realName,
-            desc: desc,
-            mana: mana,
-            type: type,
+            desc,
+            mana,
+            type,
             classes: [cardClass],
-            rarity: rarity,
+            rarity,
             hpDesc: "",
             hpCost: 2,
             id: 0,
@@ -113,11 +113,11 @@ export function create(card: VanillaCard, debug: boolean) {
         blueprint = {
             name: realName,
             stats: [0, health],
-            desc: desc,
-            mana: mana,
-            type: type,
+            desc,
+            mana,
+            type,
             classes: [cardClass],
-            rarity: rarity,
+            rarity,
             cooldown: 2,
             id: 0,
         }

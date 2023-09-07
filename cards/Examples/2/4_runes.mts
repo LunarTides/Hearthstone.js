@@ -16,5 +16,5 @@ export const blueprint: Blueprint = {
     runes: "FFB",
 
     uncollectible: true,
-    id: 40,
+    id: 39,
 }

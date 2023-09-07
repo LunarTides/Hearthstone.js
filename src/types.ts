@@ -65,7 +65,7 @@ export type SpellSchool = "Arcane" |
                           "Holy" |
                           "Nature" |
                           "Shadow" |
-                          "General";
+                          "None";
 
 /**
  * The tribe of the minion
@@ -437,7 +437,7 @@ export type Blueprint = {
     type: CardType,
 
     tribe?: MinionTribe,
-    spellClass?: SpellSchool,
+    spellSchool?: SpellSchool,
     cooldown?: number,
     hpDesc?: string,
     hpCost?: number,

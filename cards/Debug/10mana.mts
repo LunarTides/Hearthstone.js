@@ -10,7 +10,7 @@ export const blueprint: Blueprint = {
     classes: ["Neutral"],
     rarity: "Free",
     uncollectible: true,
-    id: 65,
+    id: 64,
 
     cast(plr, game, self) {
         // Gain 10 Mana.

@@ -111,10 +111,10 @@ function spell() {
     let _card = common();
     if (!_card) return false;
 
-    const spellClass = input("Spell Class: ") as SpellSchool;
+    const spellSchool = input("Spell School: ") as SpellSchool;
     if (shouldExit) return false;
 
-    let combined = Object.assign(_card, { "spellClass": spellClass });
+    let combined: Blueprint = Object.assign(_card, { "spellSchool": spellSchool });
 
     return applyCard(combined);
 }

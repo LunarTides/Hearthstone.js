@@ -11,7 +11,7 @@ export const blueprint: Blueprint = {
     classes: ["Neutral"],
     rarity: "Legendary",
     uncollectible: true,
-    id: 61,
+    id: 60,
 
     cast(plr, game, self) {
         game.functions.addQuest("Quest", plr, self, "PlayCard", 3, (_unknownVal, done) => {

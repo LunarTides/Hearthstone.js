@@ -15,6 +15,3 @@ Shows you how to use `Battlecry`-esque keywords.
 
 ### Dredge
 Some keywords use functions inside of a `Battlecry`-esque keyword. Example: `Battlecry: Dredge`
-
-### Dual-Class
-Some cards have multiple classes. Here's how it works.

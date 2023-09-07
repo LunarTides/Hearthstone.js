@@ -12,7 +12,7 @@ export const blueprint: Blueprint = {
     // The cast ability is conditioned
     conditioned: ["cast"],
     uncollectible: true,
-    id: 55,
+    id: 54,
 
     cast(plr, game, self) {
         let turns = Math.ceil(game.turns / 2);

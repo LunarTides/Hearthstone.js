@@ -12,7 +12,7 @@ export const blueprint: Blueprint = {
     classes: ["Neutral"],
     rarity: "Free",
     uncollectible: true,
-    id: 57,
+    id: 56,
 
     // TODO: Add a `tick` ability for this purpose.
     passive(plr, game, self, key, val) {

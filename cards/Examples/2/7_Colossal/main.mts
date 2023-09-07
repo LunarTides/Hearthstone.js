@@ -21,7 +21,7 @@ export const blueprint: Blueprint = {
     colossal: ["Colossal Example Left Arm", "", "Colossal Example Right Arm"],
 
     uncollectible: true,
-    id: 46,
+    id: 45,
 
     battlecry(plr, game) {
         game.interact.dredge();

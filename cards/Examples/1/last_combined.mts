@@ -13,7 +13,7 @@ export const blueprint: Blueprint = {
     rarity: "Legendary",
     keywords: ["Taunt", "Divine Shield"],
     uncollectible: true,
-    id: 36,
+    id: 35,
 
     battlecry(plr, game, self) {
         // Ordering is important. In the description it says that it dredges first, then adds +1/+1.

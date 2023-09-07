@@ -7,11 +7,11 @@ export const blueprint: Blueprint = {
     desc: "&BThis is a DIY card, it does not work by default.&R Restore 3 health to your hero.",
     mana: 0,
     type: "Spell",
-    spellClass: "General",
+    spellSchool: "None",
     classes: ["Neutral"],
     rarity: "Free",
     uncollectible: true,
-    id: 63,
+    id: 62,
 
     cast(plr, game, self) {
         // Restore 3 health to the hero.

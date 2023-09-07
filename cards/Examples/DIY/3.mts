@@ -8,11 +8,11 @@ export const blueprint: Blueprint = {
     desc: "&BThis is a DIY card, it does not work by default.&R Choose a minion to kill.",
     mana: 0,
     type: "Spell",
-    spellClass: "General",
+    spellSchool: "None",
     classes: ["Neutral"],
     rarity: "Free",
     uncollectible: true,
-    id: 64,
+    id: 63,
 
     cast(plr, game, self) {
         // Choose a minion to kill.

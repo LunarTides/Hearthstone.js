@@ -12,11 +12,11 @@ export const blueprint: Blueprint = {
 
     mana: 0,
     type: "Spell",
-    spellClass: "General",
+    spellSchool: "None",
     classes: ["Neutral"],
     rarity: "Free",
     uncollectible: true,
-    id: 43,
+    id: 42,
 
     cast(plr, game, self) {
         // Put the $ sign here to make the game apply spell damage correctly.

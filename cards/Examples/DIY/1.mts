@@ -12,7 +12,7 @@ export const blueprint: Blueprint = {
     classes: ["Neutral"],
     rarity: "Free",
     uncollectible: true,
-    id: 62,
+    id: 61,
 
     battlecry(plr, game, self) {
         // Give this minion +1/+1.

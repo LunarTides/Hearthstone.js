@@ -12,7 +12,7 @@ export const blueprint: Blueprint = {
     classes: ["Neutral"],
     rarity: "Free",
     uncollectible: true,
-    id: 51,
+    id: 50,
 
     battlecry(plr, game, self) {
         // `ret` is a boolean.

@@ -10,7 +10,7 @@ export const blueprint: Blueprint = {
     classes: ["Neutral"],
     rarity: "Free",
     uncollectible: true,
-    id: 52,
+    id: 51,
 
     cast(plr, game, self) {
         // The discover function needs a list of cards to choose from.

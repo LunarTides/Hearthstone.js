@@ -12,7 +12,7 @@ export const blueprint: Blueprint = {
     classes: ["Neutral"],
     rarity: "Free",
     uncollectible: true,
-    id: 60,
+    id: 59,
 
     battlecry(plr, game, self) {
         // Ticks are called more often than passives

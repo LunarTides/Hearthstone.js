@@ -123,7 +123,7 @@ export class Card {
     /**
      * If the card is a spell, this is the school of the spell. E.g. "Fire" or "Frost" or "Fel".
      */
-    spellClass?: SpellSchool;
+    spellSchool?: SpellSchool;
 
     // Hero
 

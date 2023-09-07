@@ -15,7 +15,7 @@ export const blueprint: Blueprint = {
     classes: ["Neutral"],
     rarity: "Free",
     uncollectible: true,
-    id: 59,
+    id: 58,
 
     cast(plr, game, self) {
         // Create a list of cards to put the 3 cards into

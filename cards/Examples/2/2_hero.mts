@@ -17,7 +17,7 @@ export const blueprint: Blueprint = {
     hpCost: 2,
 
     uncollectible: true,
-    id: 38,
+    id: 37,
 
     battlecry(plr, game, self) {
         // Heal this card's owner to full health.

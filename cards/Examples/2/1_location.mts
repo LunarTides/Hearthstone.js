@@ -20,7 +20,7 @@ export const blueprint: Blueprint = {
     cooldown: 2,
 
     uncollectible: true,
-    id: 37,
+    id: 36,
 
     use(plr, game, self) {
         // Heal this card's owner by 2.

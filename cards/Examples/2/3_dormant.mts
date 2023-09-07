@@ -17,7 +17,7 @@ export const blueprint: Blueprint = {
     dormant: 2,
 
     uncollectible: true,
-    id: 39,
+    id: 38,
 
     // The battlecry only triggers when the minion is no longer dormant.
     battlecry(plr, game, self) {

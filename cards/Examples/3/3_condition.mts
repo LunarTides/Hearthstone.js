@@ -19,7 +19,7 @@ export const blueprint: Blueprint = {
     conditioned: ["battlecry"], 
 
     uncollectible: true,
-    id: 53,
+    id: 52,
 
     // This will only trigger if the `condition` function below returns true.
     battlecry(plr, game, self) {

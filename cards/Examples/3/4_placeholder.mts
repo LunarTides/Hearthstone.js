@@ -13,7 +13,7 @@ export const blueprint: Blueprint = {
     classes: ["Neutral"],
     rarity: "Free",
     uncollectible: true,
-    id: 54,
+    id: 53,
 
     cast(plr, game, self) {
         // The turn counter goes up at the beginning of each player's turn.

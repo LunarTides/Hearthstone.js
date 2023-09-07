@@ -16,7 +16,7 @@ export const blueprint: Blueprint = {
     classes: ["Neutral"],
     rarity: "Free",
     uncollectible: true,
-    id: 56,
+    id: 55,
 
     // Note the new `key` and `_unknownVal` arguments.
     // These are only used in the `passive` and `handpassive` abilities.
