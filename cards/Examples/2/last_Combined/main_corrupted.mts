@@ -12,7 +12,7 @@ export const blueprint: Blueprint = {
     classes: ["Neutral"],
     rarity: "Legendary",
     colossal: ["Combined Example 2 Left Arm", "", "Combined Example 2 Right Arm"],
-    keywords: ["Dormant"],
+    dormant: 2,
     uncollectible: true,
     id: 49,
 

@@ -11,7 +11,10 @@ Shows you how a weapon card looks.
 Shows you how to use normal keywords.
 
 ### Battlecry
-Shows you how to use `Battlecry`-esque keywords.
+Shows you how to use abilities.
 
 ### Dredge
-Some keywords use functions inside of a `Battlecry`-esque keyword. Example: `Battlecry: Dredge`
+Some keywords use functions inside of an ability. Example: `Battlecry: Dredge`
+
+### Combined
+This is a minion, with taunt, with a battlecry ability, that dredges.
