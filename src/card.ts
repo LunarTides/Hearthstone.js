@@ -3,7 +3,7 @@
  * @module Card
  */
 import { Player } from "./internal.js";
-import { Blueprint, CardAbility, CardBackups, CardClass, CardKeyword, CardRarity, CardType, CostType, EnchantmentDefinition, GameConfig, Ability, MinionTribe, SpellSchool } from "./types.js";
+import { Blueprint, CardAbility, CardClass, CardKeyword, CardRarity, CardType, CostType, EnchantmentDefinition, GameConfig, Ability, MinionTribe, SpellSchool, CardBackup } from "./types.js";
 import { v4 as uuidv4 } from "uuid";
 
 let game = globalThis.game;
@@ -246,7 +246,7 @@ export class Card {
      * 
      * The card backups don't include the methods so don't call any.
      */
-    backups: CardBackups = {};
+    backups: {[key: string | number]: CardBackup} = {};
 
     /**
      * The card's uuid. Gets randomly generated when the card gets created.
@@ -381,9 +381,11 @@ export class Card {
         // Make a backup of "this" to be used when silencing this card
         // TODO: Make the backups work without causing errors
         // @ts-expect-error
-        if (!this.backups["init"]) this.backups["init"] = {};
-        // @ts-expect-error
-        Object.entries(this).forEach(i => this.backups["init"][i[0]] = i[1]);
+        if (!this.backups.init) this.backups.init = {};
+        Object.entries(this).forEach(i => {
+            // @ts-expect-error
+            this.backups.init[i[0]] = i[1];
+        });
 
         this.uuid = this.randomizeUUID();
 
@@ -762,7 +764,7 @@ export class Card {
 
         Object.entries(this).forEach(i => {
             // @ts-expect-error
-            this.backups[key][k[0]] = k[1];
+            this.backups[key][i[0]] = i[1];
         });
         
         return key;
@@ -775,7 +777,7 @@ export class Card {
      *
      * @returns Success
      */
-    restoreBackup(backup: Card): boolean {
+    restoreBackup(backup: CardBackup): boolean {
         Object.keys(backup).forEach(att => {
             // @ts-expect-error
             this[att] = backup[att];
@@ -825,7 +827,7 @@ export class Card {
         Object.keys(this).forEach(att => {
             // Check if a backup exists for the attribute. If it does; restore it.
             // @ts-expect-error
-            if (this.backups["init"][att]) this[att] = this.backups["init"][att];
+            if (this.backups.init[att]) this[att] = this.backups.init[att];
 
             // Check if the attribute if defined in the blueprint. If it is; restore it.
             // @ts-expect-error
@@ -992,9 +994,9 @@ export class Card {
             let [key, val] = ent;
 
             // Apply backup if it exists, otherwise keep it the same.
-            if (this.backups["init"]?[key] : false) {
+            if (this.backups.init?[key] : false) {
                 // @ts-expect-error
-                this[key] = this.backups["init"][key];
+                this[key] = this.backups.init[key];
             }
         });
 

@@ -412,12 +412,10 @@ export type VanillaCard = {
 };
 
 /**
- * The backups of a card.
+ * A backup of a card.
  */
-export type CardBackups = {
-    [x: string | number]: {
-        [key in keyof Card]: Card[key];
-    }
+export type CardBackup = {
+    [key in keyof Card]: Card[key];
 }
 
 /**

@@ -1,13 +1,18 @@
 {
   "name": "hearthstone.js",
-  "version": "2.0.0-alpha.62",
+  "version": "2.0.0-alpha.63",
   "description": "",
   "main": "index.ts",
   "type": "module",
   "scripts": {
     "generate": "node dist/cardcreator/vanilla/generator",
     "start": "node ./dist/index.js",
-    "docs": "typedoc ./"
+    "docs": "typedoc ./",
+
+    "script:breakingchange": "node ./dist/scripts/breakingchange.js",
+    "script:cardupdater": "node ./dist/scripts/cardupdater.js",
+    "script:crashtest": "node ./dist/scripts/crashtest.js",
+    "script:idscript": "node ./dist/scripts/idscript.js"
   },
   "repository": {
     "type": "git",

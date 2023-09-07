@@ -3,11 +3,8 @@
  * @module Crash Test
  */
 import rl from "readline-sync";
-import { readFileSync } from "fs";
 import { createGame } from "../src/internal.js";
-
-let decksString = readFileSync("../decks.json", { encoding: 'utf8', flag: 'r' });
-let decks: string[] = Object.values(JSON.parse(decksString).versus);
+import decks from "../decks.json" assert { type: "json" };
 
 let gamesEnv = process.env.games ?? "";
 let games = parseInt(gamesEnv) ?? 100;

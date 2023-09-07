@@ -722,7 +722,7 @@ export const interact = {
                     let clonedCard = card.imperfectCopy();
 
                     card.doBlueprint();
-                    card.backups["init"] = clonedCard.backups["init"];
+                    card.backups.init = clonedCard.backups.init;
                 }
 
                 [game.player1, game.player2].forEach(p => {
