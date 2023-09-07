@@ -1440,7 +1440,7 @@ ${main_content}
         let times = 0;
 
         let id = game.events.eventListeners;
-        let alive = false;
+        let alive = true;
 
         /**
          * Destroys the eventlistener and removes it from the game event listeners.

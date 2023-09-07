@@ -124,7 +124,7 @@ const eventManager: IEventManager = {
             });
 
             game.board[i].forEach(card => {
-                if (card.getHealth() <= 0) return;
+                if (card.type === "Minion" && card.getHealth() <= 0) return;
 
                 card.activate("tick", key, val);
             });
@@ -648,6 +648,7 @@ export class Game {
         op.gainEmptyMana(1);
         op.mana = op.maxMana - op.overload;
         op.overload = 0;
+        op.attack = 0;
 
         // Weapon stuff
         if (op.weapon) {
@@ -836,9 +837,6 @@ const attack = {
         // Spell damage
         let dmg = attack._spellDamage(attacker, target);
 
-        // Spell damage
-        attack._spellDamage(attacker, target);
-
         if (target.classType == "Player") {
             target.remHealth(dmg);
             return true;
@@ -892,6 +890,7 @@ const attack = {
 
         // The attacker should damage the target
         game.attack(attacker.attack, target);
+        game.attack(target.getAttack(), attacker);
         game.events.broadcast("Attack", [attacker, target], attacker);
 
         game.killMinions();

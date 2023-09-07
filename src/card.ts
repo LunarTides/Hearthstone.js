@@ -552,7 +552,7 @@ export class Card {
      * Returns -1 if the card does not have attack
      */
     getAttack(): number {
-        return this.stats?.at(0) ?? -1;
+        return this.stats?.at(0) ?? 1001;
     }
 
     /**
@@ -561,7 +561,7 @@ export class Card {
      * Returns -1 if the card does not have health
      */
     getHealth(): number {
-        return this.stats?.at(1) ?? -1;
+        return this.stats?.at(1) ?? 1001;
     }
 
     /**

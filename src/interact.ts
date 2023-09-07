@@ -131,11 +131,6 @@ export const interact = {
                 return false;
             }
 
-            if (game.player.hero === null) {
-                game.input(chalk.red("You do not have a hero.\n"));
-                return false;
-            }
-
             interact.printAll(game.player);
             let ask = interact.yesNoQuestion(game.player, chalk.yellow(game.player.hero?.hpDesc) + " Are you sure you want to use this hero power?");
             if (!ask) return false;
@@ -620,14 +615,19 @@ export const interact = {
             command = command as EventValue<"Input">;
 
             interact.printAll();
-            let options = parseInt(game.input(`\nWhat would you like to do with this command?\n${command}\n\n(1. Run it, 2. Cancel): `));
-            if (!options || options === 2) {
+            let options = parseInt(game.input(`\nWhat would you like to do with this command?\n${command}\n\n(1. Run it, 2. Edit it, 0. Cancel): `));
+            if (!options) {
                 game.input(chalk.red("Invalid option.\n"));
                 return false;
             }
 
+            if (options === 0) return false;
             if (options === 1) {
                 interact.doTurnLogic(command);
+            }
+            if (options === 2) {
+                let addition = game.input("Which card do you want to play? " + command);
+                interact.doTurnLogic(command + addition);
             }
         }
         else if (name === "/set") {
@@ -1416,6 +1416,7 @@ export const interact = {
 
             let key = regedDesc[1]; // Gets the capturing group result
 
+            card.replacePlaceholders();
             let _replacement = card.placeholder;
             if (!_replacement) throw new Error("Card placeholder not found.");
 
@@ -1584,7 +1585,8 @@ export const interact = {
         if (plr.weapon) {
             // Current player has a weapon
             // Attack: 1 | Weapon: Wicked Knife (1 / 1)
-            sb += `Weapon     : ${game.functions.colorByRarity(plr.weapon.displayName, plr.weapon.rarity)}`;
+            if (plr.detailedView) sb += `Weapon     : ${interact.getReadableCard(plr.weapon)}`;
+            else sb += `Weapon     : ${game.functions.colorByRarity(plr.weapon.displayName, plr.weapon.rarity)}`;
 
             let wpnStats = ` [${plr.weapon.stats?.join(' / ')}]`;
 
@@ -1599,7 +1601,10 @@ export const interact = {
             if (!plr.weapon) sb += "                                 "; // Show that this is the opponent's weapon, not yours
             
             sb += "         | "; 
-            sb += `Weapon     : ${chalk.bold(op.weapon.displayName)}`;
+
+            if (plr.detailedView) sb += `Weapon     : ${interact.getReadableCard(op.weapon)}`;
+            else sb += `Weapon     : ${game.functions.colorByRarity(op.weapon.displayName, op.weapon.rarity)}`;
+
             let opWpnStats = ` [${op.weapon.stats?.join(' / ')}]`;
 
             sb += (op.attack > 0) ? chalk.greenBright(opWpnStats) : chalk.gray(opWpnStats);
