@@ -3,7 +3,7 @@
  * @module Card
  */
 import { Player } from "./internal.js";
-import { Blueprint, CardAbility, CardBackups, CardClass, CardKeyword, CardRarity, CardType, CostType, EnchantmentDefinition, GameConfig, KeywordMethod, MinionTribe, SpellSchool } from "./types.js";
+import { Blueprint, CardAbility, CardBackups, CardClass, CardKeyword, CardRarity, CardType, CostType, EnchantmentDefinition, GameConfig, Ability, MinionTribe, SpellSchool } from "./types.js";
 import { v4 as uuidv4 } from "uuid";
 
 let game = globalThis.game;
@@ -340,7 +340,7 @@ export class Card {
     /**
      * The abilities of the card (battlecry, deathrattle, etc...)
      */
-    abilities: {[key in CardAbility]?: KeywordMethod[]} = {};
+    abilities: {[key in CardAbility]?: Ability[]} = {};
     
 
     /**
@@ -454,7 +454,7 @@ export class Card {
      * 
      * @returns Success
      */
-    addDeathrattle(_deathrattle: KeywordMethod): boolean {
+    addDeathrattle(_deathrattle: Ability): boolean {
         if (!this.abilities.deathrattle) this.abilities.deathrattle = [];
 
         this.abilities.deathrattle.push(_deathrattle);
@@ -853,7 +853,7 @@ export class Card {
     // Handling functions
 
     /**
-     * Activates a keyword method
+     * Activates an ability
      * 
      * @param name The method to activate
      * @param args Pass these args to the method
@@ -865,7 +865,7 @@ export class Card {
         // Example: activate("cast")
         // Do: this.cast.forEach(cast_func => cast_func(plr, game, card))
         // Returns a list of the return values from all the function calls
-        let ability: KeywordMethod[] | undefined = this.abilities[name];
+        let ability: Ability[] | undefined = this.abilities[name];
 
         // If the card has the function
         if (!ability) return false;
@@ -891,7 +891,7 @@ export class Card {
 
             ret = game.constants.REFUND;
 
-            // These keyword methods shouldn't "refund" the card, just stop execution.
+            // These abilities shouldn't "refund" the card, just stop execution.
             if (["use", "heropower"].includes(name)) return;
 
             let unsuppress = game.functions.suppressEvent("AddCardToHand");

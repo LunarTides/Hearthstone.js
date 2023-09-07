@@ -14,8 +14,9 @@ export const blueprint: Blueprint = {
     uncollectible: true,
     id: 56,
 
-    // TODO: Add a `tick` ability for this purpose.
-    passive(plr, game, self, key, val) {
+    // `tick` works the same as passive, except it's called more often, and isn't dependent on events.
+    // More on ticks in '4-5'
+    tick(plr, game, self, key, val) {
         // When changing cost of a card USE THE ENCHANTMENT SYSTEM.
         // We don't care about the event, we just want to run this code every now and then.
 

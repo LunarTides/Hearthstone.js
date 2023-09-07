@@ -92,34 +92,41 @@ const eventManager: IEventManager = {
             });
         }
 
-        for (let i = 1; i <= 2; i++) {
+        for (let i = 0; i < 2; i++) {
             let plr;
-            if (i === 1) plr = game.player1;
+            if (i === 0) plr = game.player1;
             else plr = game.player2;
 
             // Activate spells in the players hand
-            plr.hand.forEach(c => {
-                if (!(c instanceof Card)) throw new Error("Hand contains a non-card");
+            plr.hand.forEach(card => {
+                if (!(card instanceof Card)) throw new Error("Hand contains a non-card");
+                if (card.getHealth() <= 0) return;
                 
                 // Placeholders
-                c.replacePlaceholders();
+                card.replacePlaceholders();
 
                 // Check for condition
                 let cleared_text = chalk.greenBright(" (Condition cleared!)");
                 let cleared_text_alt = chalk.greenBright("Condition cleared!");
-                c.desc = c.desc?.replace(cleared_text, "");
-                c.desc = c.desc?.replace(cleared_text_alt, "");
+                card.desc = card.desc?.replace(cleared_text, "");
+                card.desc = card.desc?.replace(cleared_text_alt, "");
 
-                let condition = c.activate("condition");
+                let condition = card.activate("condition");
                 if (condition instanceof Array && condition[0] === true) {
-                    if (c.desc) c.desc += cleared_text;
-                    else c.desc += cleared_text_alt;
+                    if (card.desc) card.desc += cleared_text;
+                    else card.desc += cleared_text_alt;
                 }
 
-                c.applyEnchantments(); // Just in case. Remove for small performance boost
+                card.applyEnchantments(); // Just in case. Remove for small performance boost
+
+                card.activate("handtick", key, val);
+                if (card.mana < 0) card.mana = 0;
             });
-            plr.hand.forEach(c => {
-                if (c.mana < 0) c.mana = 0;
+
+            game.board[i].forEach(card => {
+                if (card.getHealth() <= 0) return;
+
+                card.activate("tick", key, val);
             });
         }
 

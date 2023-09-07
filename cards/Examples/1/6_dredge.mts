@@ -5,7 +5,7 @@ import { Blueprint } from "@game/types.js";
 export const blueprint: Blueprint = {
     name: "Dredge Example",
     stats: [1, 1],
-    desc: "&BDredge.&R This example card shows you how to use `Keyword Functions` like dredge.",
+    desc: "&BDredge.&R This example card shows you how to use keywords like dredge.",
     mana: 1,
     type: "Minion",
     tribe: "None",

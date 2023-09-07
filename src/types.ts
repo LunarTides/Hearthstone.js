@@ -134,7 +134,9 @@ export type CardAbility = CardAbilityReal |
                           "placeholders" |
                           "condition" |
                           "remove" |
-                          "handpassive";
+                          "handpassive" |
+                          "tick" |
+                          "handtick";
 
 /**
  * Event keys
@@ -422,7 +424,7 @@ export type CardBackups = {
  * The abilities that a blueprint can have. (From CardAbility)
  */
 type BlueprintAbilities = {
-    [Property in CardAbility]?: KeywordMethod;
+    [Property in CardAbility]?: Ability;
 }
 
 /**
@@ -460,9 +462,9 @@ export type Blueprint = {
 } & BlueprintAbilities;
 
 /**
- * The keyword method (kvm / ability) of a card.
+ * The ability of a card.
  */
-export type KeywordMethod = (plr: Player, game: Game, self: Card, key?: EventKey, val?: UnknownEventValue) => any;
+export type Ability = (plr: Player, game: Game, self: Card, key?: EventKey, val?: UnknownEventValue) => any;
 
 export type EventListenerMsg = true | "destroy" | "cancel" | "reset";
 /**
