@@ -1,6 +1,6 @@
 // Created by Hand
 
-import { Blueprint } from "@game/types.js";
+import { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
     // This looks like a minion card except for the type.

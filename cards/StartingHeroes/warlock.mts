@@ -1,6 +1,6 @@
 // Created by the Custom Card Creator
 
-import { Blueprint } from "@game/types.js";
+import { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
     name: "Warlock Starting Hero",

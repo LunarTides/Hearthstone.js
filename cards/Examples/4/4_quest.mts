@@ -1,8 +1,8 @@
 // Created by Hand
 
 // Import the card type
-import { Card } from "@game/internal.js";
-import { Blueprint, EventValue } from "@game/types.js";
+import { Card } from "@Game/internal.js";
+import { Blueprint, EventValue } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
     name: "Quest Example",

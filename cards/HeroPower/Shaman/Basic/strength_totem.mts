@@ -1,6 +1,6 @@
 // Created by Hand (before the Card Creator Existed)
 
-import { Blueprint } from "@game/types.js";
+import { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
     name: "Strength Totem",

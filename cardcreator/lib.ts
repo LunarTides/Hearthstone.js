@@ -150,7 +150,7 @@ export function create(creatorType: CCType, cardType: CardType, blueprint: Bluep
     let contentArray = Object.entries(card).filter(c => c[0] != "id").map(c => `${c[0]}: ${getTypeValue(c[1])}`); // name: "Test"
     let content = `// Created by the ${creatorType} Card Creator
 
-import { Blueprint${passiveImport} } from "@game/types.js";
+import { Blueprint${passiveImport} } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
     ${contentArray.join(',\n    ')},${file_id}${func}
