@@ -466,7 +466,7 @@ export const interact = {
             let code = args.join(" ");
 
             if (log) {
-                if (code[code.length - 1] == ";") code = code.slice(0, -1);
+                if (game.functions.lastChar(code) == ";") code = code.slice(0, -1);
 
                 code = `console.log(${code});game.input();`;
             }
@@ -505,7 +505,7 @@ export const interact = {
                 return false;
             }
 
-            let card = eventCards[eventCards.length - 1][0];
+            let card = game.functions.last(eventCards)[0];
 
             // Remove the event so you can undo more than the last played card
             game.events.events.PlayCard[game.player.id].pop();

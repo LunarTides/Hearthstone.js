@@ -7,14 +7,14 @@ You need to have Node.js installed.
 
 ### Running
 #### Simple
-If you are on Windows, open `setup.bat`, `run.bat`.
+If you are on Windows, open `setup.bat`, then `run.bat`.
 
-If you are on Linux, run `make install`, then `make build`.
+If you are on Linux, run `make install`, then `make start` (Which is the same as running `make build`, then `make run`).
 
 #### Advanced
 This works on all platforms.
 
-In a console / terminal, at the top folder, run `npm i`, then `npx tsc`, then `node .`
+In a console / terminal, run `npm i`, then `npx tsc`, then `node .`
 
 ### Images
 #### Generic game

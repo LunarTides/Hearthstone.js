@@ -25,7 +25,7 @@ let warnings = {
 
 type Settings = {
     card: {
-        latest?: Blueprint
+        history: Blueprint[]
     },
     view: {
         type: "cards" | "deck",
@@ -48,8 +48,8 @@ type Settings = {
     },
     commands: {
         default: string,
-        latest?: string,
-        latestUndoable?: string
+        history: string[],
+        undoableHistory: string[]
     },
     other: {
         firstScreen: boolean
@@ -57,11 +57,13 @@ type Settings = {
 }
 
 let settings: Settings = {
-    card: {},
+    card: {
+        history: []
+    },
     view: {
         type: "cards",
         page: 1,
-        cpp: 15, // Cards per page
+        cpp: 15 // Cards per page
     },
     sort: {
         type: "rarity",
@@ -77,6 +79,8 @@ let settings: Settings = {
     },
     commands: {
         default: "add",
+        history: [],
+        undoableHistory: []
     },
     other: {
         firstScreen: true
@@ -459,7 +463,10 @@ function add(card: Blueprint) {
     });
 }
 function remove(card: Blueprint) {
+    if (!deck.includes(card)) return false;
+    
     game.functions.remove(deck, card);
+    return true;
 }
 
 function showDeck() {
@@ -577,11 +584,10 @@ function help() {
     console.log("cards (class)         - Show cards from 'class'");
     console.log("sort (type) [order]   - Sorts by 'type' in 'order'ending order. (Type can be: ('rarity', 'name', 'mana', 'id', 'type'), Order can be: ('asc', 'desc')) (Example: sort mana asc - Will show cards ordered by mana cost, ascending.)");
     console.log("search [query]        - Searches by query. Keys: ('name', 'desc', 'mana', 'rarity', 'id'), Examples: (search the - Search for all cards with the word 'the' in the name or description, case insensitive.), (search mana:2 - Search for all cards that costs 2 mana, search mana:even name:r - Search for all even cost cards with 'r' in its name)");
-    console.log("undo                  - Undo the last action. (If you run this over and over, it will keep undo-ing and redo-ing the same action.)");
+    console.log("undo                  - Undo the last action.");
     console.log("deck                  - Toggle deck-view");
     console.log("deckcode              - View the current deckcode");
     console.log("import                - Imports a deckcode (Overrides your deck)");
-    console.log("export                - Temporarily saves your deck to the runner so that when you choose to play, the decks get filled in automatically. (Only works when running the deck creator from the Hearthstone.js Runner)");
     console.log("set (setting) (value) - Change some settings. Look down to 'Set Subcommands' to see available settings");
     console.log("class                 - Change the class");
     console.log("config | rules        - Shows the rules for valid decks and invalid decks");
@@ -642,7 +648,7 @@ function getCardArg(cmd: string, callback: (card: Blueprint) => void) {
 
     if (!card && eligibleForLatest) {
         if (warnings.latestCard) game.input(chalk.yellow(`Card not found. Using latest valid card instead.`));
-        card = settings.card.latest ?? null;
+        card = game.functions.last(settings.card.history) ?? null;
     }
 
     if (!card) {
@@ -652,12 +658,12 @@ function getCardArg(cmd: string, callback: (card: Blueprint) => void) {
 
     for (let i = 0; i < times; i++) callback(card);
 
-    settings.card.latest = card;
+    settings.card.history.push(card);
 
     return card;
 }
 
-function handleCmds(cmd: string) {
+function handleCmds(cmd: string, addToHistory = true): boolean {
     if (findCard(cmd)) {
         // You just typed the name of a card.
         return handleCmds(`${settings.commands.default} ${cmd}`);
@@ -699,7 +705,7 @@ function handleCmds(cmd: string) {
         pageSplit.shift();
 
         let page = parseInt(pageSplit.join(" "));
-        if (!page) return;
+        if (!page) return false;
 
         if (page < 1) page = 1;
         settings.view.page = page;
@@ -708,19 +714,19 @@ function handleCmds(cmd: string) {
         let cmdSplit = cmd.split(" ");
         cmdSplit.shift();
 
-        if (cmdSplit.length <= 0) return;
+        if (cmdSplit.length <= 0) return false;
 
         let _class = cmdSplit.join(" ");
         _class = game.functions.capitalizeAll(_class);
 
         if (!classes.includes(_class as CardClassNoNeutral) && _class != "Neutral") {
             game.input(chalk.red("Invalid class!\n"));
-            return;
+            return false;
         }
 
         if (![chosen_class, "Neutral"].includes(_class)) {
             game.input(chalk.yellow(`Class '${_class}' is a different class. To see these cards, please switch class from '${chosen_class}' to '${_class}' to avoid confusion.\n`));
-            return;
+            return false;
         }
 
         settings.view.class = _class as CardClass;
@@ -737,7 +743,7 @@ function handleCmds(cmd: string) {
         let args = cmd.split(" ");
         args.shift();
 
-        if (args.length <= 0) return;
+        if (args.length <= 0) return false;
 
         settings.sort.type = args[0] as keyof Blueprint;
         if (args.length > 1) settings.sort.order = args[1] as "asc" | "desc";
@@ -748,7 +754,7 @@ function handleCmds(cmd: string) {
 
         if (args.length <= 0) {
             settings.search.query = [];
-            return;
+            return false;
         }
 
         settings.search.query = args;
@@ -760,7 +766,7 @@ function handleCmds(cmd: string) {
         let _deckcode = game.input("Please input a deckcode: ");
 
         let _deck = game.functions.deckcode.import(plr, _deckcode);
-        if (!_deck) return;
+        if (!_deck) return false;
 
         game.config.validateDecks = false;
         _deck = _deck.sort((a, b) => {
@@ -780,35 +786,13 @@ function handleCmds(cmd: string) {
         // removes a completly unrelated card because javascript.
         _deck.forEach(c => handleCmds(`add ${getDisplayName(c)}`)); // You can just set deck = functions.importDeck(), but doing it that way doesn't account for renathal or any other card that changes the config in any way since that is done using the add function.
     }
-    else if (cmd.startsWith("export")) {
-        if (!opened_from_runner) {
-            game.input(chalk.red("ERROR: This command can only be used when the deck creator was opened using the Hearthstone.js Runner.\n"));
-            return;
-        }
-
-        let setting = settings.deckcode.format;
-
-        // Export it as a Hearthstone.js formatted deckcode, since it is faster
-        settings.deckcode.format = "ts";
-        let _deckcode = deckcode();
-        settings.deckcode.format = setting;
-
-        if (_deckcode.error && game.config.validateDecks) {
-            game.input(chalk.red("ERROR: Cannot export invalid / pseudo-valid deckcodes.\n"));
-            return;
-        }
-
-        import("../index.js").then(imported => imported.store_deck(_deckcode.code));
-
-        game.input(chalk.greenBright("Deck successfully exported.\n"));
-    }
     else if (cmd.startsWith("class")) {
         let _runes = runes;
         let new_class = askClass();
 
         if (new_class == chosen_class && runes == _runes) {
             game.input(chalk.yellow("Your class was not changed\n"));
-            return;
+            return false;
         }
 
         deck = [];
@@ -816,12 +800,12 @@ function handleCmds(cmd: string) {
         if (settings.view.class != "Neutral") settings.view.class = chosen_class;
     }
     else if (cmd.startsWith("undo")) {
-        let commandSplit = settings.commands.latestUndoable?.split(" ");
-        if (!commandSplit) {
+        if (settings.commands.undoableHistory.length <= 0) {
             game.input(chalk.red("Nothing to undo.\n"));
-            return;
+            return false;
         }
 
+        let commandSplit = game.functions.last(settings.commands.undoableHistory).split(" ");
         let args = commandSplit.slice(1);
         let command = commandSplit[0];
 
@@ -832,10 +816,13 @@ function handleCmds(cmd: string) {
         else {
             // This shouldn't ever happen, but oh well
             console.log(chalk.red(`Command '${command}' cannot be undoed.`));
-            return;
+            return false;
         }
 
-        handleCmds(`${reverse} ` + args.join(" "));
+        handleCmds(`${reverse} ` + args.join(" "), false);
+
+        settings.commands.undoableHistory.pop();
+        settings.commands.history.pop();
     }
     else if (cmd.startsWith("set warning")) {
         let _cmd = cmd.split(" ");
@@ -846,7 +833,7 @@ function handleCmds(cmd: string) {
 
         if (!Object.keys(warnings).includes(key)) {
             game.input(chalk.red(`'${key}' is not a valid warning!\n`));
-            return;
+            return false;
         }
 
         let new_state;
@@ -862,7 +849,7 @@ function handleCmds(cmd: string) {
             else if (["on", "enable", "true", "yes", "1"].includes(val)) new_state = true;
             else {
                 game.input(chalk.red(`${val} is not a valid state. View 'help' for more information.\n`));
-                return;
+                return false;
             }
         }
 
@@ -877,7 +864,7 @@ function handleCmds(cmd: string) {
             strbuilder += chalk.yellow(".\n");
 
             game.input(strbuilder);
-            return;
+            return false;
         }
 
         // @ts-expect-error
@@ -909,7 +896,7 @@ function handleCmds(cmd: string) {
                 if (!["vanilla", "ts"].includes(args[0])) {
                     console.log(chalk.red("Invalid format!"));
                     game.input();
-                    return;
+                    return false;
                 }
 
                 settings.deckcode.format = args[0] as "vanilla" | "ts";
@@ -933,7 +920,7 @@ function handleCmds(cmd: string) {
                     break;
                 }
 
-                if (!["add", "remove", "view"].includes(args[0])) return;
+                if (!["add", "remove", "view"].includes(args[0])) return false;
                 let cmd = args[0];
 
                 settings.commands.default = cmd;
@@ -941,7 +928,7 @@ function handleCmds(cmd: string) {
                 break;
             default:
                 game.input(chalk.red(`'${setting}' is not a valid setting.\n`));
-                return;
+                return false;
         }
 
         game.input(chalk.greenBright("Setting successfully changed!\n"));
@@ -958,24 +945,20 @@ function handleCmds(cmd: string) {
         return handleCmds(`${settings.commands.default} ${cmd}`);
     }
 
-    settings.commands.latest = cmd;
-    if (["a", "r"].includes(cmd[0])) settings.commands.latestUndoable = cmd;
+    if (!addToHistory) return true;
+
+    settings.commands.history.push(cmd);
+    if (["a", "r"].includes(cmd[0])) settings.commands.undoableHistory.push(cmd);
+    return true;
 }
 
-let opened_from_runner = false;
 let running = true;
 
 /**
  * Runs the deck creator.
  */
-export function runner() {
-    import("../index.js").then(imported => imported.free_decks()); // Remove all decks
-    opened_from_runner = true;
+export function main() {
     running = true;
-    main();
-}
-
-function main() {
     game.functions.importCards(game.functions.dirname() + "cards");
     game.functions.importConfig(game.functions.dirname() + "config");
 

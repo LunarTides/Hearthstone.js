@@ -7,7 +7,7 @@ import config from "./config/dont-change.json" assert { type: "json" };
 import rl from "readline-sync";
 import fs from "fs";
 
-import * as src from "./src/index.js";                  // Source Code
+import * as src from "./src/index.js";                 // Source Code
 import * as dc  from "./deckcreator/index.js";         // Deck Creator
 import * as ccc from "./cardcreator/custom/index.js";  // Custom Card Creator
 import * as vcc from "./cardcreator/vanilla/index.js"; // Vanilla Card Creator
@@ -18,23 +18,6 @@ const cls = () => process.stdout.write("\x1bc");
 const watermark = () => {
     cls();
     console.log(`Hearthstone.js Runner V${config.version}-${config.branch} (C) 2022\n`);
-}
-
-let decks: string[] = [];
-
-/**
- * Stores a deck code in the decks array. This gets used for importing decks.
- * This is what the deck creator's `export` command uses.
- */
-export function store_deck(deckcode: string) {
-    decks.push(deckcode);
-}
-
-/**
- * Clears the decks array.
- */
-export function free_decks() {
-    decks = [];
 }
 
 function cardCreator() {
@@ -84,8 +67,8 @@ while (true) {
 
     user = user[0].toLowerCase();
 
-    if (user == "p") src.runner(decks);
-    else if (user == "d") dc.runner();
+    if (user == "p") src.main();
+    else if (user == "d") dc.main();
     else if (user == "m") devmode();
     else if (user == "e") process.exit(0);
 }

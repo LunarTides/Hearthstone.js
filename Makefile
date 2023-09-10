@@ -26,12 +26,12 @@ run:
 build:
 	@echo -e "Building...\c"
 	@rm -rf ./dist/
-	@tsc
+	@npx tsc
 	@echo -e "\r\x1b[KBuilding...Done"
 
 start:
 	@echo -e "Building...\c"
 	@rm -rf ./dist/
-	@tsc
+	@npx tsc
 	@echo -e "\r\x1b[KBuilding...Done"
 	@npm start

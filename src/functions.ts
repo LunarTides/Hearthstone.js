@@ -385,7 +385,7 @@ const deckcode = {
 
                 amount = parseInt(amountStrSplit[amountStrSplit.indexOf(a) - 1]);
             });
-            if (!found) amount = parseInt(amountStr[amountStr.length - 1]);
+            if (!found) amount = parseInt(functions.lastChar(amountStr));
 
             let matches = vanillaCards.filter(a => a.name.toLowerCase() == c.toLowerCase());
             matches = functions.filterVanillaCards(matches, true, extraFiltering);
@@ -604,6 +604,20 @@ export const functions = {
     remove<T>(list: T[], element: T): boolean {
         list.splice(list.indexOf(element), 1);
         return true;
+    },
+
+    /**
+     * Returns the last element from a list.
+     */
+    last<T>(list: T[]): T {
+        return list[list.length - 1];
+    },
+
+    /**
+     * Returns the last character from a string.
+     */
+    lastChar(string: string): string {
+        return string[string.length - 1];
     },
 
     /**
