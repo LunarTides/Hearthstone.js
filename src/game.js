@@ -193,6 +193,7 @@ class EventManager {
      * @returns {boolean} Success
      */
     broadcast(key, val, plr, updateHistory = true) {
+        if (plr.classType !== "Player" || plr.id === -1) return false;
         this.tick(key, val);
 
         if (updateHistory) this.addHistory(key, val, plr);
