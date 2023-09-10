@@ -23,8 +23,8 @@ function main() {
         const { game, player1, player2 } = createGame();
 
         // Setup the ais
-        game.config.P1AI = true;
-        game.config.P2AI = true;
+        game.config.ai.player1 = true;
+        game.config.ai.player2 = true;
         game.doConfigAI();
 
         game.no_input = true;
@@ -47,7 +47,7 @@ function main() {
             while (game.running) game.interact.doTurn();
         } catch(err) {
             // If it crashes, show the ai's actions, and the history of the game before actually crashing
-            game.config.debug = true;
+            game.config.general.debug = true;
             game.functions.createLogFile(err);
 
             game.interact.handleCmds("/ai");

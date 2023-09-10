@@ -5,12 +5,15 @@
 import * as fs from "fs";
 import * as child_process from "child_process";
 import * as deckstrings from "deckstrings"; // To decode vanilla deckcodes
+
 import chalk from "chalk";
 import stripAnsi from "strip-ansi";
+import toml from "toml";
+
 import { dirname as pathDirname } from "path";
 import { createHash } from "crypto";
 import { fileURLToPath } from "url";
-import { doImportCards, doImportConfig } from "./importcards.cjs";
+import { doImportCards } from "./importcards.cjs";
 
 import { Player, Card } from "./internal.js";
 import { Blueprint, CardClass, CardClassNoNeutral, CardLike, CardRarity, EventKey, EventListenerCallback, FunctionsExportDeckError, FunctionsValidateCardReturn, MinionTribe, QuestCallback, RandListReturn, Target, TickHookCallback, VanillaCard } from "./types.js";
@@ -232,8 +235,8 @@ const deckcode = {
     export(deck: Blueprint[], heroClass: string, runes: string): { code: string; error: FunctionsExportDeckError } {
         let error: FunctionsExportDeckError = null;
 
-        if (deck.length < game.config.minDeckLength) error = {msg: "TooFewCards", info: { amount: deck.length }, recoverable: true};
-        if (deck.length > game.config.maxDeckLength) error = {msg: "TooManyCards", info: { amount: deck.length }, recoverable: true};
+        if (deck.length < game.config.decks.minLength) error = {msg: "TooFewCards", info: { amount: deck.length }, recoverable: true};
+        if (deck.length > game.config.decks.maxLength) error = {msg: "TooManyCards", info: { amount: deck.length }, recoverable: true};
 
         if (deck.length <= 0) {
             // Unrecoverable error
@@ -287,8 +290,8 @@ const deckcode = {
             if (last) deckcode += copies;
             else deckcode += `${copies}:${amount},`;
 
-            if (copies > game.config.maxOfOneLegendary && card.rarity == "Legendary") error = {"msg": "TooManyLegendaryCopies", "info": {"card": card, "amount": copies}, "recoverable": true};
-            else if (copies > game.config.maxOfOneCard) error = {"msg": "TooManyCopies", "info": {"card": card, "amount": copies}, "recoverable": true};
+            if (copies > game.config.decks.maxOfOneLegendary && card.rarity == "Legendary") error = {"msg": "TooManyLegendaryCopies", "info": {"card": card, "amount": copies}, "recoverable": true};
+            else if (copies > game.config.decks.maxOfOneCard) error = {"msg": "TooManyCopies", "info": {"card": card, "amount": copies}, "recoverable": true};
         });
 
         deckcode += "/ ";
@@ -807,7 +810,7 @@ export const functions = {
         history = stripAnsi(history);
 
         // AI log
-        game.config.debug = true; // Do this so it can actually run '/ai'
+        game.config.general.debug = true; // Do this so it can actually run '/ai'
         let aiHistory = game.interact.handleCmds("/ai", false);
 
         let name = "Log";
@@ -827,13 +830,13 @@ ${err.stack}
         let config_content = `\n-- Config --\n${config}`;
 
         let main_content = history_content;
-        if (game.config.P1AI || game.config.P2AI) main_content += ai_content;
+        if (game.config.ai.player1 || game.config.ai.player2) main_content += ai_content;
         main_content += config_content;
         main_content += errorContent;
 
         let content = `Hearthstone.js ${name}
 Date: ${dateString}
-Version: ${game.config.version}-${game.config.branch}
+Version: ${game.config.info.version}-${game.config.info.branch}
 Operating System: ${process.platform}
 Log File Version: 1
 
@@ -1752,15 +1755,12 @@ ${main_content}
     },
 
     /**
-     * Imports the config from the `path` specified.
-     *
-     * @param path The path to import from.
+     * Imports the config file.
      *
      * @returns Success
      */
-    importConfig(path: string) {
-        // @ts-expect-error - Typescript doesn't expect the config to be empty, but it gets repopulated immediately anyway.
-        game.config = doImportConfig(path);
+    importConfig() {
+        game.config = toml.parse(fs.readFileSync(functions.dirname() + "../config.toml", { encoding: "utf8" }));
         game.doConfigAI();
         return true;
     },

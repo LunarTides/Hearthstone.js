@@ -8,7 +8,6 @@
     "generate": "node dist/cardcreator/vanilla/generator",
     "start": "node ./dist/index.js",
     "docs": "typedoc ./",
-
     "script:breakingchange": "node ./dist/scripts/breakingchange.js",
     "script:cardupdater": "node ./dist/scripts/cardupdater.js",
     "script:crashtest": "node ./dist/scripts/crashtest.js",
@@ -26,6 +25,7 @@
     "deckstrings": "^3.1.1",
     "readline-sync": "^1.4.10",
     "strip-ansi": "^7.1.0",
+    "toml": "^3.0.0",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

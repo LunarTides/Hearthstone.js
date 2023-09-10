@@ -503,12 +503,12 @@ export class Game {
      * @returns Success
      */
     doConfigAI(): boolean {
-        if (this.config.P1AI) {
+        if (this.config.ai.player1) {
             if (!this.player1.ai) this.player1.ai = new AI(this.player1);
         }
         else this.player1.ai = undefined;
 
-        if (this.config.P2AI) {
+        if (this.config.ai.player2) {
             if (!this.player2.ai) this.player2.ai = new AI(this.player2);
         }
         else this.player2.ai = undefined;
@@ -783,7 +783,7 @@ export function createGame() {
     const player2 = new Player("Player 2");
     game.setup(player1, player2);
     game.functions.importCards(game.functions.dirname() + "cards");
-    game.functions.importConfig(game.functions.dirname() + "config");
+    game.functions.importConfig();
 
     return { game, player1, player2 };
 }
@@ -1250,7 +1250,7 @@ const playCard = {
 
     _hasCapacity(card: Card, player: Player): boolean {
         // If the board has max capacity, and the card played is a minion or location card, prevent it.
-        if (game.board[player.id].length < game.config.maxBoardSpace || !["Minion", "Location"].includes(card.type)) return true;
+        if (game.board[player.id].length < game.config.general.maxBoardSpace || !["Minion", "Location"].includes(card.type)) return true;
 
         // Refund
         let unsuppress = game.functions.suppressEvent("AddCardToHand");
@@ -1406,7 +1406,7 @@ const cards = {
         };
 
         // If the board has max capacity, and the card played is a minion or location card, prevent it.
-        if (game.board[player.id].length >= game.config.maxBoardSpace) return "space";
+        if (game.board[player.id].length >= game.config.general.maxBoardSpace) return "space";
         game.events.broadcast("SummonMinion", minion, player);
 
         player.spellDamage = 0;

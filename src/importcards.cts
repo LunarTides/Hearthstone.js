@@ -4,7 +4,6 @@ import { Dirent } from "fs";
 import fs from "fs";
 
 let cards: any[] = [];
-let config: object = {};
 
 export function doImportCards(path: string) {
     cards = [];
@@ -25,25 +24,6 @@ function _doImportCards(path: string) {
     });
 
     return cards;
-}
-
-export function doImportConfig(path: string) {
-    config = {};
-    return _doImportConfig(path);
-}
-function _doImportConfig(path: string) {
-    fs.readdirSync(path, { withFileTypes: true }).forEach(file => {
-        let c = `${path}/${file.name}`;
-
-        if (file.name.endsWith(".json")) {
-            let f = require(c);
-
-            config = Object.assign({}, config, f);
-        }
-        else if (file.isDirectory()) _doImportConfig(c);
-    });
-
-    return config;
 }
 
 export function reloadCards(path: string) {

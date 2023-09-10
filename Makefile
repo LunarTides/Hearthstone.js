@@ -11,7 +11,7 @@ help:
 install:
 	@echo "Trying to install using npm..."
 	@node --version > /dev/null 2>&1 || (echo "Nodejs is not installed" && exit 1)
-	@npm i
+	@npm i > /dev/null
 
 vanilla:
 	@echo "Trying to generate vanilla cards..."

@@ -525,61 +525,71 @@ export type EnchantmentDefinition = {
  * {@link game.config | Game configuration}.
  */
 export type GameConfig = {
-    // general.json
-    debug: boolean,
-    validateDecks: boolean,
-    minDeckLength: number,
-    maxDeckLength: number,
-    maxBoardSpace: number,
-    maxOfOneCard: number,
-    maxOfOneLegendary: number,
-
-    P1AI: boolean,
-    P2AI: boolean,
-
-    editor: string,
-
-    topicBranchWarning: boolean
-
-    // advanced.json
-    reloadCommandConfirmation: boolean,
-    getReadableCardMaxDepth: number,
-    getReadableCardNoRecursion: boolean,
-    getReadableCardAlwaysShowFullCard: boolean,
-
-    whitelistedHistoryKeys: EventKey[],
-    hideValueHistoryKeys: EventKey[],
-
-    // dont-change.json
-    version: string,
-    branch: "stable" | "dev" | "topic",
-
-    versionText: string,
-    todo: {[key: string]: string[]},
-
-    stableIntroText: string,
-    developIntroText: string,
-    topicIntroText: string,
-
-    // ai.json
-    AIContextAnalysis: boolean,
-    AIAttackModel: number,
-    AIMulliganThreshold: number
-    AITradeThreshold: number,
-    AIStatsBias: number
-    AIManaBias: number
-    AISpellValue: number,
-    AIKeywordValue: number
-    AIFunctionValue: number,
-
-    AIProtectThreshold: number,
-    AIIgnoreThreshold: number,
-    AIRiskThreshold: number,
-
-    AISentiments: {
-        positive: {[key: string]: number},
-        negative: {[key: string]: number}
+    general: {
+        debug: boolean,
+        editor: string,
+        topicBranchWarning: boolean,
+        maxBoardSpace: number
     }
+
+    decks: {
+        validate: boolean,
+        minLength: number,
+        maxLength: number,
+        maxOfOneCard: number,
+        maxOfOneLegendary: number,
+    }
+
+    ai: {
+        player1: boolean,
+        player2: boolean,
+
+        contextAnalysis: boolean,
+        attackModel: number,
+        mulliganThreshold: number
+        tradeThreshold: number,
+        statsBias: number
+        manaBias: number
+        spellValue: number,
+        keywordValue: number
+        abilityValue: number,
+
+        protectThreshold: number,
+        ignoreThreshold: number,
+        riskThreshold: number,
+
+        sentiments: {
+            positive: {[key: string]: number},
+            negative: {[key: string]: number}
+        }
+    }
+
+    advanced: {
+        reloadCommandConfirmation: boolean,
+        getReadableCardMaxDepth: number,
+        getReadableCardNoRecursion: boolean,
+        getReadableCardAlwaysShowFullCard: boolean,
+
+        whitelistedHistoryKeys: EventKey[],
+        hideValueHistoryKeys: EventKey[],
+    }
+
+    info: {
+        version: string,
+        branch: "stable" | "dev" | "topic",
+
+        versionText: string,
+        todo: {[key: string]: string[]},
+
+        stableIntroText: string,
+        developIntroText: string,
+        topicIntroText: string,
+    }
+
+    todo: {[name: string]: [
+        state: "not done" | "doing" | "done" | "first pass" | "second pass" | "third pass",
+        description: string
+    ]}
 }
 
 /**

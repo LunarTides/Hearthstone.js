@@ -156,7 +156,7 @@ export function main() {
     let parsedData: VanillaCard[] = JSON.parse(data);
 
     let debug = false;
-    if (game.config.debug) {
+    if (game.config.general.debug) {
         debug = !rl.keyInYN("Do you want the card to actually be created?");
     }
 

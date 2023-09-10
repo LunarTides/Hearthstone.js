@@ -5,7 +5,6 @@
 
 import rl from "readline-sync";
 import fs from "fs";
-import config from "../config/general.json" assert { type: "json" };
 import { createGame } from "../src/internal.js";
 
 const { game, player1, player2 } = createGame();
@@ -96,7 +95,7 @@ function main() {
 
         // `card` is the path to that card.
         // TODO: This is broken
-        let success = game.functions.openWithArgs(config.editor, `"${path}"`);
+        let success = game.functions.openWithArgs(game.config.general.editor, `"${path}"`);
         if (!success) rl.question(); // The `openWithArgs` shows an error message for us, but we need to pause.
 
         finishedCards.push(path);

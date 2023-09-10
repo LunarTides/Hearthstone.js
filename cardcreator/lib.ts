@@ -5,7 +5,6 @@
 
 import rl from "readline-sync";
 import fs from "fs";
-import config from "../config/general.json" assert { type: "json" };
 import { createGame } from "../src/internal.js";
 import { Blueprint, CardClass, CardType } from "../src/types.js";
 
@@ -183,7 +182,7 @@ export const blueprint: Blueprint = {
 
     // Open the defined editor on that card if it has a function to edit, and debug mode is disabled
     if (func && !debug) {
-        let success = game.functions.openWithArgs(config.editor, `"${file_path}"`);
+        let success = game.functions.openWithArgs(game.config.general.editor, `"${file_path}"`);
         if (!success) rl.question();
     }
 

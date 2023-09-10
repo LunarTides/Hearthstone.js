@@ -409,13 +409,13 @@ function showRules() {
 
     console.log("#");
 
-    console.log("# Validation: " + (config.validateDecks ? chalk.greenBright("ON") : chalk.red("OFF")));
+    console.log("# Validation: " + (config.decks.validate ? chalk.greenBright("ON") : chalk.red("OFF")));
 
-    console.log("#\n# Rule 1. Minimum Deck Length: " + chalk.yellow(config.minDeckLength.toString()));
-    console.log("# Rule 2. Maximum Deck Length: " + chalk.yellow(config.maxDeckLength.toString()));
+    console.log("#\n# Rule 1. Minimum Deck Length: " + chalk.yellow(config.decks.minLength.toString()));
+    console.log("# Rule 2. Maximum Deck Length: " + chalk.yellow(config.decks.maxLength.toString()));
 
-    console.log("#\n# Rule 3. Maximum amount of cards for each card (eg. You can only have: " + chalk.yellow("x") + " Seances in a deck): " + chalk.yellow(config.maxOfOneCard.toString()));
-    console.log("# Rule 4. Maximum amount of cards for each legendary card (Same as Rule 3 but for legendaries): " + chalk.yellow(config.maxOfOneLegendary.toString()));
+    console.log("#\n# Rule 3. Maximum amount of cards for each card (eg. You can only have: " + chalk.yellow("x") + " Seances in a deck): " + chalk.yellow(config.decks.maxOfOneCard.toString()));
+    console.log("# Rule 4. Maximum amount of cards for each legendary card (Same as Rule 3 but for legendaries): " + chalk.yellow(config.decks.maxOfOneLegendary.toString()));
 
     console.log("#");
 
@@ -543,10 +543,10 @@ function deckcode(parseVanillaOnPseudo = false) {
                 log = chalk.red("ERROR: Could not generate deckcode as your deck is empty. The resulting deckcode would be invalid.");
                 break;
             case "TooManyCopies":
-                log += chalk.yellow("Too many copies of a card. Maximum is: ") + game.config.maxOfOneCard.toString() + chalk.yellow(". Offender: ") + `{ Name: "${error.info?.card?.name}", Copies: "${error.info?.amount}" }`;
+                log += chalk.yellow("Too many copies of a card. Maximum is: ") + config.decks.maxOfOneCard.toString() + chalk.yellow(". Offender: ") + `{ Name: "${error.info?.card?.name}", Copies: "${error.info?.amount}" }`;
                 break;
             case "TooManyLegendaryCopies":
-                log += chalk.yellow("Too many copies of a Legendary card. Maximum is: ") + game.config.maxOfOneLegendary.toString() + chalk.yellow(". Offender: ") + `{ Name: "${error.info?.card?.name}", Copies: "${error.info?.amount}" }`;
+                log += chalk.yellow("Too many copies of a Legendary card. Maximum is: ") + config.decks.maxOfOneLegendary.toString() + chalk.yellow(". Offender: ") + `{ Name: "${error.info?.card?.name}", Copies: "${error.info?.amount}" }`;
                 break;
         }
 
@@ -765,11 +765,11 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         let _deck = game.functions.deckcode.import(plr, _deckcode);
         if (!_deck) return false;
 
-        game.config.validateDecks = false;
+        config.decks.validate = false;
         _deck = _deck.sort((a, b) => {
             return a.name.localeCompare(b.name);
         });
-        game.config.validateDecks = true;
+        config.decks.validate = true;
 
         deck = [];
 
@@ -957,7 +957,7 @@ let running = true;
 export function main() {
     running = true;
     game.functions.importCards(game.functions.dirname() + "cards");
-    game.functions.importConfig(game.functions.dirname() + "config");
+    game.functions.importConfig();
 
     chosen_class = askClass();
 

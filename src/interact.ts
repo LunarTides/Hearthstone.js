@@ -26,7 +26,7 @@ export const interact = {
         if (game.player.ai) {
             let ai;
 
-            let alt_model = `legacy_attack_${game.config.AIAttackModel}`;
+            let alt_model = `legacy_attack_${game.config.ai.attackModel}`;
 
             if (Object.keys(game.player.ai).includes(alt_model)) {
                 // @ts-expect-error - We know this exists, because of the if, but strict mode doesn't like it
@@ -186,9 +186,9 @@ export const interact = {
             console.log("version    - Displays the version, branch, your settings preset, and some information about your current version.");
             console.log("license    - Opens a link to this project's license");
 
-            const cond_color = (str: string) => {return (game.config.debug) ? str : chalk.gray(str)};
+            const cond_color = (str: string) => {return (game.config.general.debug) ? str : chalk.gray(str)};
 
-            console.log(cond_color("\n--- Debug Commands (") + ((game.config.debug) ? chalk.greenBright("ON") : chalk.red("OFF")) + cond_color(") ---"));
+            console.log(cond_color("\n--- Debug Commands (") + ((game.config.general.debug) ? chalk.greenBright("ON") : chalk.red("OFF")) + cond_color(") ---"));
             console.log(cond_color("/give (name)        - Adds a card to your hand"));
             console.log(cond_color("/eval [log] (code)  - Runs the code specified. If the word 'log' is before the code, instead console.log the code and wait for user input to continue."));
             console.log(cond_color("/set (name) (value) - Changes a setting to (value). Look in the config files for a list of settings."));
@@ -199,7 +199,7 @@ export const interact = {
             console.log(cond_color("/undo               - Undoes the last card played. It gives the card back to your hand, and removes it from where it was. (This does not undo the actions of the card)"));
             console.log(cond_color("/cmd                - Shows you a list of debug commands you have run, and allows you to rerun them."));
             console.log(cond_color("/ai                 - Gives you a list of the actions the ai(s) have taken in the order they took it"));
-            console.log(cond_color("---------------------------" + ((game.config.debug) ? "" : "-")));
+            console.log(cond_color("---------------------------" + ((game.config.general.debug) ? "" : "-")));
             
             game.input("\nPress enter to continue...\n");
         }
@@ -240,20 +240,23 @@ export const interact = {
             exec(start + ' ' + license_url);
         }
         else if (name === "version") {
+            let version = game.config.info.version;
+            let branch = game.config.info.branch;
+
             while (true) {
                 let todos = Object.entries(game.config.todo);
 
                 const print_info = () => {
                     interact.printAll(game.player);
 
-                    let strbuilder = `\nYou are on version: ${game.config.version} on `;
+                    let strbuilder = `\nYou are on version: ${version} on `;
     
-                    if (game.config.branch == "topic") strbuilder += "a topic branch";
-                    else if (game.config.branch == "dev") strbuilder += "the develop (beta) branch";
-                    else if (game.config.branch == "stable") strbuilder += "the stable (release) branch";
+                    if (branch == "topic") strbuilder += "a topic branch";
+                    else if (branch == "dev") strbuilder += "the develop (beta) branch";
+                    else if (branch == "stable") strbuilder += "the stable (release) branch";
     
-                    if (game.config.debug === true && game.config.P2AI === true) strbuilder += " using the debug settings preset";
-                    else if (game.config.debug === false && game.config.P2AI === false) strbuilder += " using the recommended settings preset";
+                    if (game.config.general.debug === true && game.config.ai.player2 === true) strbuilder += " using the debug settings preset";
+                    else if (game.config.general.debug === false && game.config.ai.player2 === false) strbuilder += " using the recommended settings preset";
                     else strbuilder += " using custom settings";
     
                     console.log(strbuilder + ".\n");
@@ -262,12 +265,12 @@ export const interact = {
 
                     let introText;
 
-                    if (game.config.branch == "topic") introText = game.config.topicIntroText;
-                    else if (game.config.branch == "dev") introText = game.config.developIntroText;
-                    else if (game.config.branch == "stable") introText = game.config.stableIntroText;
+                    if (branch == "topic") introText = game.config.info.topicIntroText;
+                    else if (branch == "dev") introText = game.config.info.developIntroText;
+                    else if (branch == "stable") introText = game.config.info.stableIntroText;
 
                     console.log(introText);
-                    if (game.config.versionText) console.log(game.config.versionText);
+                    if (game.config.info.versionText) console.log(game.config.info.versionText);
                     console.log();
 
                     console.log("Todo List:");
@@ -346,10 +349,10 @@ export const interact = {
                             // This shouldn't happen?
                             if (!newVal) return;
 
-                            if (game.config.whitelistedHistoryKeys.includes(key)) {}
+                            if (game.config.advanced.whitelistedHistoryKeys.includes(key)) {}
                             else return;
 
-                            if (game.config.hideValueHistoryKeys.includes(key)) return;
+                            if (game.config.advanced.hideValueHistoryKeys.includes(key)) return;
 
                             // If it is not a card
                             if (!(newVal instanceof Card)) return;
@@ -380,7 +383,7 @@ export const interact = {
                     if (plr != prevPlayer) hasPrintedHeader = false;
                     prevPlayer = plr;
 
-                    if (game.config.whitelistedHistoryKeys.includes(key) || debug) {}
+                    if (game.config.advanced.whitelistedHistoryKeys.includes(key) || debug) {}
                     else return;
 
                     // If the `key` is "AddCardToHand", check if the previous history entry was `DrawCard`, and they both contained the exact same `val`.
@@ -393,7 +396,7 @@ export const interact = {
                         }
                     }
 
-                    let shouldHide = game.config.hideValueHistoryKeys.includes(key) && !debug;
+                    let shouldHide = game.config.advanced.hideValueHistoryKeys.includes(key) && !debug;
 
                     if (!hasPrintedHeader) finished += `\nTurn ${t} - Player [${plr.name}]\n`; 
                     hasPrintedHeader = true;
@@ -429,7 +432,7 @@ export const interact = {
             return finished;
         }
 
-        else if (name.startsWith("/") && !game.config.debug) {
+        else if (name.startsWith("/") && !game.config.general.debug) {
             game.input(chalk.red("You are not allowed to use this command."));
             return false;
         }
@@ -698,7 +701,7 @@ export const interact = {
             game.input();
         }
         else if (name === "/reload" || name === "/rl") {
-            if (game.config.reloadCommandConfirmation && !debug) {
+            if (game.config.advanced.reloadCommandConfirmation && !debug) {
                 interact.printAll(game.player);
                 let sure = interact.yesNoQuestion(game.player, chalk.yellow("Are you sure you want to reload? This will reset all cards to their base state."));
                 if (!sure) return false;
@@ -711,7 +714,7 @@ export const interact = {
                 return true;
             });
 
-            success = success && interact.withStatus("Importing config", () => game.functions.importConfig(game.functions.dirname() + "config"));
+            success = success && interact.withStatus("Importing config", () => game.functions.importConfig());
                 
             // Go through all the cards and reload them
             success = success && interact.withStatus("Reloading cards", () => {
@@ -806,7 +809,7 @@ export const interact = {
         interact.printAll();
     
         let input = "\nWhich card do you want to play? ";
-        if (game.turns <= 2 && !game.config.debug) input += "(type 'help' for further information <- This will disappear once you end your turn) ";
+        if (game.turns <= 2 && !game.config.general.debug) input += "(type 'help' for further information <- This will disappear once you end your turn) ";
     
         let user = game.input(input);
         const ret = interact.doTurnLogic(user);
@@ -824,7 +827,7 @@ export const interact = {
         // Error Codes
         if (ret == "mana") err = `Not enough ${cost}`;
         else if (ret == "counter") err = "Your card has been countered";
-        else if (ret == "space") err = `You can only have ${game.config.maxBoardSpace} minions on the board`;
+        else if (ret == "space") err = `You can only have ${game.config.general.maxBoardSpace} minions on the board`;
         else if (ret == "invalid") err = "Invalid card";
         else err = `An unknown error occurred. Error code: UnexpectedDoTurnResult@${ret}`;
 
@@ -878,7 +881,7 @@ export const interact = {
         /**
          * If the test deck (30 Sheep) should be allowed
          */
-        let allowTestDeck: boolean = game.config.debug || game.config.branch !== "stable";
+        let allowTestDeck: boolean = game.config.general.debug || game.config.info.branch !== "stable";
 
         let debugStatement = allowTestDeck ? chalk.gray(" (Leave this empty for a test deck)") : "";
         const deckcode = game.input(`Player ${plr.id + 1}, please type in your deckcode${debugStatement}: `);
@@ -915,7 +918,7 @@ export const interact = {
         interact.printAll(plr);
 
         let sb = "\nChoose the cards to mulligan (1, 2, 3, ...):\n";
-        if (!game.config.debug) sb += chalk.gray("(Example: 13 will mulligan the cards with the ids 1 and 3, 123 will mulligan the cards with the ids 1, 2 and 3, just pressing enter will not mulligan any cards):\n");
+        if (!game.config.general.debug) sb += chalk.gray("(Example: 13 will mulligan the cards with the ids 1 and 3, 123 will mulligan the cards with the ids 1, 2 and 3, just pressing enter will not mulligan any cards):\n");
 
         let input;
 
@@ -1341,15 +1344,17 @@ export const interact = {
     printName(): void {
         cls();
         game = globalThis.game;
+
+        let info = game.config.info;
     
-        let watermarkString = `HEARTHSTONE.JS V${game.config.version}-${game.config.branch}`;
+        let watermarkString = `HEARTHSTONE.JS V${info.version}-${info.branch}`;
         let border = "-".repeat(watermarkString.length + 2);
     
         console.log(`|${border}|`);
         console.log(`| ${watermarkString} |`);
         console.log(`|${border}|\n`);
 
-        if (game.config.branch == "topic" && game.config.topicBranchWarning) {
+        if (info.branch == "topic" && game.config.general.topicBranchWarning) {
             console.log(chalk.yellow("WARNING: YOU ARE ON A TOPIC BRANCH. THIS VERSION IS NOT READY.\n"));
         }
     },
@@ -1361,16 +1366,17 @@ export const interact = {
      */
     printLicense(disappear: boolean = true): void {
         game = globalThis.game;
-        if (game.config.debug) return;
+        if (game.config.general.debug) return;
+        let info = game.config.info;
     
         cls();
     
-        let version = `Hearthstone.js V${game.config.version}-${game.config.branch} | Copyright (C) 2022 | LunarTides`;
+        let version = `Hearthstone.js V${info.version}-${info.branch} | Copyright (C) 2022 | LunarTides`;
         console.log('|'.repeat(version.length + 8));
         console.log(`||| ${version} |||`)
-        console.log(`|||     This program is licensed under the GPL-3.0 license.   ` + ' '.repeat(game.config.branch.length) + "|||")
+        console.log(`|||     This program is licensed under the GPL-3.0 license.   ` + ' '.repeat(info.branch.length) + "|||")
         if (disappear)
-        console.log(`|||         This will disappear once you end your turn.       ` + ' '.repeat(game.config.branch.length) + `|||`)
+        console.log(`|||         This will disappear once you end your turn.       ` + ' '.repeat(info.branch.length) + `|||`)
         console.log('|'.repeat(version.length + 8));
     },
 
@@ -1427,11 +1433,11 @@ export const interact = {
             if (replacement instanceof Card) {
                 // The replacement is a card
                 let onlyShowName = (
-                    game.config.getReadableCardNoRecursion ||
+                    game.config.advanced.getReadableCardNoRecursion ||
                     !game.player.detailedView
                 );
                 
-                if (onlyShowName && !game.config.getReadableCardAlwaysShowFullCard) {
+                if (onlyShowName && !game.config.advanced.getReadableCardAlwaysShowFullCard) {
                     // Only show the name of the card
                     replacement = game.functions.colorByRarity(replacement.displayName, replacement.rarity);
                 }
@@ -1475,14 +1481,14 @@ export const interact = {
         /**
          * If it should show detailed errors regarding depth.
          */
-        let showDetailedError: boolean = (game.config.debug || game.config.branch !== "stable" || game.player.detailedView);
+        let showDetailedError: boolean = (game.config.general.debug || game.config.info.branch !== "stable" || game.player.detailedView);
 
-        if (_depth > 0 && game.config.getReadableCardNoRecursion) {
+        if (_depth > 0 && game.config.advanced.getReadableCardNoRecursion) {
             if (showDetailedError) return "RECURSION ATTEMPT BLOCKED";
             else return "...";
         }
 
-        if (_depth > game.config.getReadableCardMaxDepth) {
+        if (_depth > game.config.advanced.getReadableCardMaxDepth) {
             if (showDetailedError) return "MAX DEPTH REACHED";
             else return "...";
         }
@@ -1547,7 +1553,7 @@ export const interact = {
 
         if (!plr) plr = game.player;
 
-        if (game.turns <= 2 && !game.config.debug) interact.printLicense();
+        if (game.turns <= 2 && !game.config.general.debug) interact.printLicense();
         else interact.printName();
     
         let op = plr.getOpponent();

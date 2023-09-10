@@ -2,22 +2,24 @@
  * The entry point of the program. Acts like a hub between the tools / scripts and the game.
  * @module Runner
  */
-import config from "./config/dont-change.json" assert { type: "json" };
-
 import rl from "readline-sync";
 import fs from "fs";
+import toml from "toml";
 
 import * as src from "./src/index.js";                 // Source Code
 import * as dc  from "./deckcreator/index.js";         // Deck Creator
 import * as ccc from "./cardcreator/custom/index.js";  // Custom Card Creator
 import * as vcc from "./cardcreator/vanilla/index.js"; // Vanilla Card Creator
 import * as clc from "./cardcreator/class/index.js";   // Class Creator
+import { GameConfig } from "@Game/types.js";
+
+let config: GameConfig = toml.parse(fs.readFileSync("./config.toml", { encoding: "utf8" }));
 
 const cls = () => process.stdout.write("\x1bc");
 
 const watermark = () => {
     cls();
-    console.log(`Hearthstone.js Runner V${config.version}-${config.branch} (C) 2022\n`);
+    console.log(`Hearthstone.js Runner V${config.info.version}-${config.info.branch} (C) 2022\n`);
 }
 
 function cardCreator() {

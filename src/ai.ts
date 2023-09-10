@@ -70,7 +70,7 @@ export class AI {
             if (score <= best_score || c.mana > this.plr.mana || this.cards_played_this_turn.includes(c)) return;
 
             // If the card is a minion and the player doesn't have the board space to play it, ignore the card
-            if (["Minion", "Location"].includes(c.type) && game.board[this.plr.id].length >= game.config.maxBoardSpace) return;
+            if (["Minion", "Location"].includes(c.type) && game.board[this.plr.id].length >= game.config.general.maxBoardSpace) return;
 
             // Prevent the ai from playing the same card they returned from when selecting a target
             let r = false;
@@ -205,7 +205,7 @@ export class AI {
             let trades = [...perfect_trades, ...imperfect_trades];
 
             let score = this.analyzePositiveCard(a);
-            if (score > game.config.AIProtectThreshold || trades.map(c => c[0]).includes(a)) return; // Don't attack with high-value minions.
+            if (score > game.config.ai.protectThreshold || trades.map(c => c[0]).includes(a)) return; // Don't attack with high-value minions.
 
             // If the card has the `sleepy` prop, it has the attackTimes prop too.
             if (a.sleepy || a.attackTimes! <= 0) return;
@@ -217,7 +217,7 @@ export class AI {
                 if (trades.map(c => c[1]).includes(t)) return;
 
                 let score = this.analyzePositiveCard(t);
-                if (score < game.config.AIIgnoreThreshold) return; // Don't waste resources attacking useless targets.
+                if (score < game.config.ai.ignoreThreshold) return; // Don't waste resources attacking useless targets.
 
                 if (a.getAttack() == t.getHealth()) perfect_trades.push([a, t]);
                 else if (a.getAttack() > t.getHealth()) imperfect_trades.push([a, t]);
@@ -318,7 +318,7 @@ export class AI {
 
         // Risky
         let op_score = this._scorePlayer(this.plr.getOpponent(), board);
-        let risk_mode = current_winner[1] >= op_score + game.config.AIRiskThreshold // If the ai is winner by more than 'threshold' points, enable risk mode
+        let risk_mode = current_winner[1] >= op_score + game.config.ai.riskThreshold // If the ai is winner by more than 'threshold' points, enable risk mode
 
         let taunts = this._tauntExists(); // If there are taunts, override risk mode
 
@@ -425,7 +425,7 @@ export class AI {
             if (typeof lowest_score[1] !== "number") lowest_score[1] = 9999;
             let score = this.analyzePositiveCard(m);
 
-            if (score > lowest_score[1] || (score > game.config.AIProtectThreshold && !target_is_player)) return;
+            if (score > lowest_score[1] || (score > game.config.ai.protectThreshold && !target_is_player)) return;
 
             if (m.sleepy || m.attackTimes! <= 0) return;
             if (target_is_player && !m.canAttackHero) return;
@@ -467,7 +467,7 @@ export class AI {
         // The ai should skip the trade stage if in risk mode
         let current_winner = this._findWinner(board);
         let op_score = this._scorePlayer(this.plr.getOpponent(), board);
-        let risk_mode = current_winner[1] >= op_score + game.config.AIRiskThreshold // If the ai is winner by more than 'threshold' points, enable risk mode
+        let risk_mode = current_winner[1] >= op_score + game.config.ai.riskThreshold // If the ai is winner by more than 'threshold' points, enable risk mode
 
         let taunts = this._tauntExists();
         if (taunts) return this._attackGeneral(board); // If there is a taunt, attack it before trading
@@ -804,7 +804,7 @@ export class AI {
 
         let score = this.analyzePositiveCard(card);
 
-        let ret = score <= game.config.AITradeThreshold;
+        let ret = score <= game.config.ai.tradeThreshold;
 
         this.history.push({"type": "trade", "data": [card.name, ret, score]});
 
@@ -826,14 +826,14 @@ export class AI {
 
             let score = this.analyzePositiveCard(c);
 
-            if (score < game.config.AIMulliganThreshold) to_mulligan += (this.plr.hand.indexOf(c) + 1).toString();
+            if (score < game.config.ai.mulliganThreshold) to_mulligan += (this.plr.hand.indexOf(c) + 1).toString();
 
             _scores += `${c.name}:${score}, `;
         });
 
         _scores = _scores.slice(0, -2) + ")";
 
-        this.history.push({"type": `mulligan (T${game.config.AIMulliganThreshold})`, "data": [to_mulligan, _scores]});
+        this.history.push({"type": `mulligan (T${game.config.ai.mulliganThreshold})`, "data": [to_mulligan, _scores]});
 
         return to_mulligan;
     }
@@ -848,7 +848,7 @@ export class AI {
      */
     analyzePositive(str: string, context: boolean = true): number {
         game = globalThis.game;
-        if (context) context = game.config.AIContextAnalysis;
+        if (context) context = game.config.ai.contextAnalysis;
         let score = 0;
 
         str.toLowerCase().split(/[^a-z0-9 ]/).forEach(i => {
@@ -859,7 +859,7 @@ export class AI {
                 s = s.replace(/[^a-z]/g, "");
                 let ret = false;
 
-                Object.entries(game.config.AISentiments).forEach(v => {
+                Object.entries(game.config.ai.sentiments).forEach(v => {
                     if (ret) return;
 
                     Object.entries(v[1]).forEach(k => {
@@ -894,13 +894,13 @@ export class AI {
     analyzePositiveCard(c: Card): number {
         let score = this.analyzePositive(c.desc || "");
 
-        if (c.type == "Minion" || c.type == "Weapon") score += (c.getAttack() + c.getHealth()) * game.config.AIStatsBias;
-        else score += game.config.AISpellValue * game.config.AIStatsBias; // If the spell value is 4 then it the same value as a 2/2 minion
-        score -= c.mana * game.config.AIManaBias;
+        if (c.type == "Minion" || c.type == "Weapon") score += (c.getAttack() + c.getHealth()) * game.config.ai.statsBias;
+        else score += game.config.ai.spellValue * game.config.ai.statsBias; // If the spell value is 4 then it the same value as a 2/2 minion
+        score -= c.mana * game.config.ai.manaBias;
 
-        c.keywords.forEach(() => score += game.config.AIKeywordValue);
+        c.keywords.forEach(() => score += game.config.ai.keywordValue);
         Object.values(c).forEach(c => {
-            if (c instanceof Array && c[0] instanceof Function) score += game.config.AIFunctionValue;
+            if (c instanceof Array && c[0] instanceof Function) score += game.config.ai.abilityValue;
         });
 
         return score;
