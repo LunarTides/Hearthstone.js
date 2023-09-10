@@ -1349,7 +1349,9 @@ export const interact = {
         console.log(`| ${watermarkString} |`);
         console.log(`|${border}|\n`);
 
-        if (game.config.branch == "topic" && game.config.topicBranchWarning) console.log("WARNING: YOU ARE ON A TOPIC BRANCH. THIS VERSION IS NOT READY.\n");
+        if (game.config.branch == "topic" && game.config.topicBranchWarning) {
+            console.log(chalk.yellow("WARNING: YOU ARE ON A TOPIC BRANCH. THIS VERSION IS NOT READY.\n"));
+        }
     },
 
     /**

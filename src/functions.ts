@@ -348,7 +348,7 @@ const deckcode = {
         let cards = codeSplit[1].trim();
 
         // Now it's just the cards left
-        const fileLocation = game.functions.dirname() + "../cardcreator/vanilla/.ignore.cards.json";
+        const fileLocation = functions.dirname() + "../cardcreator/vanilla/.ignore.cards.json";
 
         if (!fs.existsSync(fileLocation)) {
             game.input(chalk.red("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'scripts/genvanilla.bat' (requires an internet connection), then try again."));
@@ -444,7 +444,7 @@ const deckcode = {
     fromVanilla(plr: Player, code: string): string {
         let deck: deckstrings.DeckDefinition = deckstrings.decode(code); // Use the 'deckstrings' api's decode
 
-        const fileLocation = game.functions.dirname() + "../cardcreator/vanilla/.ignore.cards.json";
+        const fileLocation = functions.dirname() + "../cardcreator/vanilla/.ignore.cards.json";
 
         if (!fs.existsSync(fileLocation)) {
             game.input(chalk.red("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'scripts/genvanilla.bat' (requires an internet connection), then try again."));
@@ -602,6 +602,8 @@ export const functions = {
      * @returns Success
      */
     remove<T>(list: T[], element: T): boolean {
+        if (!list.includes(element)) return false;
+
         list.splice(list.indexOf(element), 1);
         return true;
     },
@@ -847,7 +849,7 @@ ${main_content}
         let checksum = createHash("sha256").update(content).digest("hex");
         content += `\n${checksum}  ${filename}`;
 
-        fs.writeFileSync(game.functions.dirname() + `../logs/${filename}`, content);
+        fs.writeFileSync(functions.dirname() + `../logs/${filename}`, content);
 
         if (!err) return true;
 
@@ -1174,9 +1176,9 @@ ${main_content}
 
             let name = file.slice(0, -4); // Remove ".mjs"
             name = name.replaceAll("_", " "); // Remove underscores
-            name = game.functions.capitalizeAll(name); // Capitalize all words
+            name = functions.capitalizeAll(name); // Capitalize all words
 
-            let card = game.functions.getCardByName(name + " Starting Hero");
+            let card = functions.getCardByName(name + " Starting Hero");
             if (!card || card.classes[0] != name as CardClassNoNeutral || card.type != "Hero" || !card.heropower || card.classes.includes("Neutral")) {
                 console.warn("Found card in the startingheroes folder that isn't a starting hero. If the game crashes, please note this in your bug report. Name: " + name + ". Error Code: StartingHeroInvalidHandler");
                 return;
@@ -1582,11 +1584,11 @@ ${main_content}
 
         if (values.length == 0) {
             for (let i = 0; i < 3; i++) {
-                let c = game.functions.randList(possible_cards).actual;
+                let c = functions.randList(possible_cards).actual;
                 if (c instanceof Card) throw new TypeError();
 
                 values.push(c);
-                game.functions.remove(possible_cards, c);
+                functions.remove(possible_cards, c);
             }
         }
 

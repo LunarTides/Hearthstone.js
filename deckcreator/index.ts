@@ -440,20 +440,10 @@ function findCard(card: string | number): Blueprint | null {
     return _card!;
 }
 
-function chooseCard(prompt: string) {
-    let input = game.input(prompt);
-    let card = findCard(input);
-
-    // Ask again.
-    if (!card) return chooseCard(prompt);
-
-    return card;
-}
-
-function add(card: Blueprint) {
+function add(card: Blueprint): boolean {
     deck.push(card);
 
-    if (!card.settings) return;
+    if (!card.settings) return true;
 
     Object.entries(card.settings).forEach(setting => {
         let [key, val] = setting;
@@ -461,12 +451,11 @@ function add(card: Blueprint) {
         // @ts-expect-error
         config[key] = val;
     });
+
+    return true;
 }
 function remove(card: Blueprint) {
-    if (!deck.includes(card)) return false;
-    
-    game.functions.remove(deck, card);
-    return true;
+    return game.functions.remove(deck, card);
 }
 
 function showDeck() {
@@ -577,9 +566,9 @@ function help() {
     console.log("(In order to run a command; input the name of the command and follow further instruction.)\n");
     console.log("(name) [optional] (required) - (description)\n");
 
-    console.log("add [name | id]       - Add a card to the deck");
-    console.log("remove [card | id]    - Remove a card from the deck");
-    console.log("view [card | id]      - View a card");
+    console.log("add (name | id)       - Add a card to the deck");
+    console.log("remove (card | id)    - Remove a card from the deck");
+    console.log("view (card | id)      - View a card");
     console.log("page (num)            - View a different page");
     console.log("cards (class)         - Show cards from 'class'");
     console.log("sort (type) [order]   - Sorts by 'type' in 'order'ending order. (Type can be: ('rarity', 'name', 'mana', 'id', 'type'), Order can be: ('asc', 'desc')) (Example: sort mana asc - Will show cards ordered by mana cost, ascending.)");
@@ -627,7 +616,7 @@ function help() {
     game.input("\nPress enter to continue...\n");
 }
 
-function getCardArg(cmd: string, callback: (card: Blueprint) => void) {
+function getCardArg(cmd: string, callback: (card: Blueprint) => boolean, errorCallback: () => void): boolean {
     let times = 1;
 
     let cmdSplit = cmd.split(" ");
@@ -656,11 +645,12 @@ function getCardArg(cmd: string, callback: (card: Blueprint) => void) {
         return false;
     }
 
-    for (let i = 0; i < times; i++) callback(card);
+    for (let i = 0; i < times; i++) {
+        if (!callback(card)) errorCallback();
+    }
 
     settings.card.history.push(card);
-
-    return card;
+    return true;
 }
 
 function handleCmds(cmd: string, addToHistory = true): boolean {
@@ -674,31 +664,38 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         showRules();
         game.input("\nPress enter to continue...\n");
     }
-    else if (cmd == "view") {
-        let card = chooseCard("View a card: ");
-
-        game.interact.viewCard(card);
-    }
     else if (cmd.startsWith("view")) {
+        // The callback function doesn't return anything, so we don't do anything with the return value of `getCardArg`.
         getCardArg(cmd, (card) => {
             game.interact.viewCard(card);
-        });
-    }
-    else if (cmd == "add") {
-        let card = chooseCard("Add a card to the deck: ");
-
-        add(card);
+            return true;
+        }, () => {});
     }
     else if (cmd.startsWith("a")) {
-        getCardArg(cmd, add);
-    }
-    else if (cmd == "remove") {
-        let card = chooseCard("Remove a card from the deck: ");
+        let success = true;
 
-        remove(card);
+        getCardArg(cmd, add, () => {
+            // Internal error since add shouldn't return false
+            console.log(chalk.red("Internal Error: Something went wrong while adding a card. Please report this. Error code: DcAddInternal"))
+            game.input();
+
+            success = false;
+        });
+
+        if (!success) return false;
     }
     else if (cmd.startsWith("r")) {
-        getCardArg(cmd, remove);
+        let success = true;
+
+        getCardArg(cmd, remove, () => {
+            // User error
+            console.log(chalk.red("Invalid card."));
+            game.input();
+
+            success = false;
+        });
+
+        if (!success) return false;
     }
     else if (cmd.startsWith("p")) {
         let pageSplit = cmd.split(" ");
