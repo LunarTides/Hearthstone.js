@@ -351,15 +351,12 @@ const deckcode = {
         let cards = codeSplit[1].trim();
 
         // Now it's just the cards left
-        const fileLocation = functions.dirname() + "../cardcreator/vanilla/.ignore.cards.json";
+        const [vanillaCards, error] = functions.getVanillaCards("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'scripts/genvanilla.bat' (requires an internet connection), then try again.");
 
-        if (!fs.existsSync(fileLocation)) {
-            game.input(chalk.red("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'scripts/genvanilla.bat' (requires an internet connection), then try again."));
-            process.exit(1);
+        if (error) {
+            game.input(error);
+            return "";
         }
-
-        const vanillaCardsString = fs.readFileSync(fileLocation, "utf8");
-        let vanillaCards: VanillaCard[] = JSON.parse(vanillaCardsString);
 
         let cardsSplit = cards.split(",").map(i => parseInt(i, 36));
         let cardsSplitId = cardsSplit.map(i => functions.getCardById(i));
@@ -447,26 +444,23 @@ const deckcode = {
     fromVanilla(plr: Player, code: string): string {
         let deck: deckstrings.DeckDefinition = deckstrings.decode(code); // Use the 'deckstrings' api's decode
 
-        const fileLocation = functions.dirname() + "../cardcreator/vanilla/.ignore.cards.json";
+        const [vanillaCards, error] = functions.getVanillaCards("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'scripts/genvanilla.bat' (requires an internet connection), then try again.");
 
-        if (!fs.existsSync(fileLocation)) {
-            game.input(chalk.red("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'scripts/genvanilla.bat' (requires an internet connection), then try again."));
-            process.exit(1);
+        if (error) {
+            game.input(error);
+            return "";
         }
-
-        const cardsString = fs.readFileSync(fileLocation, "utf8");
-        let cards: VanillaCard[] = JSON.parse(cardsString.toString());
 
         // @ts-expect-error
         delete deck.format; // We don't care about the format
 
-        let _heroClass = cards.find(a => a.dbfId == deck.heroes[0])?.cardClass;
+        let _heroClass = vanillaCards.find(a => a.dbfId == deck.heroes[0])?.cardClass;
         let heroClass = functions.capitalize(_heroClass?.toString() || game.player2.heroClass);
 
         if (heroClass == "Deathknight") heroClass = "Death Knight"; // Wtf hearthstone?
         if (heroClass == "Demonhunter") heroClass = "Demon Hunter"; // I'm not sure if this actually happens, but considering it happened with death knight, you never know
         
-        let deckDef: [VanillaCard | undefined, number][] = deck.cards.map(c => [cards.find(a => a.dbfId == c[0]), c[1]]); // Get the full card object from the dbfId
+        let deckDef: [VanillaCard | undefined, number][] = deck.cards.map(c => [vanillaCards.find(a => a.dbfId == c[0]), c[1]]); // Get the full card object from the dbfId
         let createdCards: Blueprint[] = functions.getCards(false);
         
         let invalidCards: VanillaCard[] = [];
@@ -1062,6 +1056,37 @@ ${main_content}
      */
     getCards(uncollectible: boolean = true, cards: Blueprint[] = game.cards): Blueprint[] {
         return cards.filter(c => !c.uncollectible || !uncollectible);
+    },
+
+    /**
+     * Returns all cards added to Vanilla Hearthstone.
+     * 
+     * This will return an error message if the user has not run the vanilla card generator,
+     * 
+     * @param error The error message to return if the file doesn't exist. If this is not set, it will use a default error message.
+     * 
+     * @returns The vanilla cards, and an error message (if any)
+     */
+    getVanillaCards(error?: string): [VanillaCard[], string | null] {
+        const fileLocation = this.dirname() + "../cardcreator/vanilla/.ignore.cards.json";
+        if (fs.existsSync(fileLocation)) {
+            return [JSON.parse(fs.readFileSync(fileLocation, "utf8")) as VanillaCard[], null];
+        }
+
+        return [[], error ?? chalk.red("Cards file not found! Run 'scripts/genvanilla.bat' (requires an internet connection), then try again." + "\n")];
+    },
+
+    /**
+     * Retrieves the player corresponding to the given id.
+     * 0 is Player 1.
+     * 1 is Player 2.
+     *
+     * @param id The id of the player - 1.
+     * @return The player
+     */
+    getPlayerFromId(id: number): Player {
+        if (id === 0) return game.player1;
+        else return game.player2;
     },
 
     /**

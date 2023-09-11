@@ -33,10 +33,12 @@ function cardCreator() {
     cls();
 
     if (isVanilla) {
-        if (!fs.existsSync(game.functions.dirname() + "../cardcreator/vanilla/.ignore.cards.json")) {
+        let [_, error] = game.functions.getVanillaCards();
+
+        if (error) {
             watermark();
 
-            rl.question("Cards file not found! Run 'scripts/genvanilla.bat' (requires an internet connection), then try again.\n");
+            game.input(error);
             return;
         }
 

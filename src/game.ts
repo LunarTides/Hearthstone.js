@@ -93,9 +93,7 @@ const eventManager: IEventManager = {
         }
 
         for (let i = 0; i < 2; i++) {
-            let plr;
-            if (i === 0) plr = game.player1;
-            else plr = game.player2;
+            let plr = functions.getPlayerFromId(i);
 
             // Activate spells in the players hand
             plr.hand.forEach(card => {
@@ -104,20 +102,10 @@ const eventManager: IEventManager = {
                 
                 // Placeholders
                 card.replacePlaceholders();
+                card.condition();
 
-                // Check for condition
-                let cleared_text = chalk.greenBright(" (Condition cleared!)");
-                let cleared_text_alt = chalk.greenBright("Condition cleared!");
-                card.desc = card.desc?.replace(cleared_text, "");
-                card.desc = card.desc?.replace(cleared_text_alt, "");
-
-                let condition = card.activate("condition");
-                if (condition instanceof Array && condition[0] === true) {
-                    if (card.desc) card.desc += cleared_text;
-                    else card.desc += cleared_text_alt;
-                }
-
-                card.applyEnchantments(); // Just in case. Remove for small performance boost
+                // Just in case. Remove for small performance boost
+                card.applyEnchantments();
 
                 card.activate("handtick", key, val);
                 if (card.mana < 0) card.mana = 0;
@@ -153,10 +141,8 @@ const eventManager: IEventManager = {
             });
         });
 
-        for (let i = 1; i <= 2; i++) {
-            let plr;
-            if (i === 1) plr = game.player1;
-            else plr = game.player2;
+        for (let i = 0; i < 2; i++) {
+            let plr = functions.getPlayerFromId(i);
 
             // Activate spells in the players hand
             plr.hand.forEach(c => {
@@ -437,7 +423,7 @@ export class Game {
         this.player2 = player2;
 
         // Choose a random player to be player 1 and player 2
-        if (this.functions.randInt(0, 1)) {
+        if (functions.randInt(0, 1)) {
             this.player1 = player1;
             this.player2 = player2;
         } else {
@@ -485,7 +471,7 @@ export class Game {
             else if (!(queue instanceof Array)) return wrapper(question(q)); // Invalid queue
 
             const answer = queue[0];
-            this.functions.remove(queue, answer);
+            functions.remove(queue, answer);
 
             if (queue.length <= 0) this.player.inputQueue = undefined;
 
@@ -543,9 +529,7 @@ export class Game {
         // Add quest cards to the players hands
         for (let i = 0; i < 2; i++) {
             // Set the player's hero to the default hero for the class
-            let plr: Player;
-            if (i === 0) plr = this.player1;
-            else plr = this.player2;
+            let plr = functions.getPlayerFromId(i);
             
             let success = plr.setToStartingHero();
             if (!success) {
@@ -556,7 +540,7 @@ export class Game {
             plr.deck.forEach(c => {
                 if (!c.desc?.includes("Quest: ") && !c.desc?.includes("Questline: ")) return;
 
-                let unsuppress = this.functions.suppressEvent("AddCardToHand");
+                let unsuppress = functions.suppressEvent("AddCardToHand");
                 plr.addToHand(c);
                 unsuppress();
 
@@ -565,7 +549,7 @@ export class Game {
 
             let nCards = (plr.id == 0) ? 3 : 4;
             while (plr.hand.length < nCards) {
-                let unsuppress = this.functions.suppressEvent("DrawCard");
+                let unsuppress = functions.suppressEvent("DrawCard");
                 plr.drawCard();
                 unsuppress();
             }
@@ -584,7 +568,7 @@ export class Game {
 
         let the_coin = new Card("The Coin", this.player2);
 
-        let unsuppress = this.functions.suppressEvent("AddCardToHand");
+        let unsuppress = functions.suppressEvent("AddCardToHand");
         this.player2.addToHand(the_coin);
         unsuppress();
 
@@ -610,7 +594,7 @@ export class Game {
         this.running = false;
 
         // Create log file
-        this.functions.createLogFile();
+        functions.createLogFile();
 
         return true;
     }
@@ -716,9 +700,7 @@ export class Game {
         let amount = 0;
 
         for (let p = 0; p < 2; p++) {
-            let plr: Player;
-            if (p === 0) plr = this.player1;
-            else plr = this.player2;
+            let plr = functions.getPlayerFromId(p);
 
             let sparedMinions: Card[] = [];
             
@@ -753,7 +735,7 @@ export class Game {
                 // Reduce the minion's health to 1, keep the minion's attack the same
                 minion.setStats(minion.getAttack(), 1);
 
-                let unsuppress = this.functions.suppressEvent("SummonMinion");
+                let unsuppress = functions.suppressEvent("SummonMinion");
                 this.summonMinion(minion, plr);
                 unsuppress();
 
@@ -782,8 +764,8 @@ export function createGame() {
     const player1 = new Player("Player 1");
     const player2 = new Player("Player 2");
     game.setup(player1, player2);
-    game.functions.importCards(game.functions.dirname() + "cards");
-    game.functions.importConfig();
+    functions.importCards(functions.dirname() + "cards");
+    functions.importConfig();
 
     return { game, player1, player2 };
 }
@@ -1169,7 +1151,7 @@ const playCard = {
             if (card.activateBattlecry() === -1) return "refund";
         }
 
-        let unsuppress = game.functions.suppressEvent("SummonMinion");
+        let unsuppress = functions.suppressEvent("SummonMinion");
         let ret = cards.summon(card, player);
         unsuppress();
 
@@ -1215,7 +1197,7 @@ const playCard = {
         card.immune = true;
         card.cooldown = 0;
 
-        let unsuppress = game.functions.suppressEvent("SummonMinion");
+        let unsuppress = functions.suppressEvent("SummonMinion");
         let ret = cards.summon(card, player);
         unsuppress();
 
@@ -1230,7 +1212,7 @@ const playCard = {
         if (player.ai) q = player.ai.trade(card);
         else {
             game.interact.printAll(player);
-            q = game.interact.yesNoQuestion(player, "Would you like to trade " + game.functions.colorByRarity(card.displayName, card.rarity) + " for a random card in your deck?");
+            q = game.interact.yesNoQuestion(player, "Would you like to trade " + functions.colorByRarity(card.displayName, card.rarity) + " for a random card in your deck?");
         }
 
         if (!q) return false;
@@ -1253,7 +1235,7 @@ const playCard = {
         if (game.board[player.id].length < game.config.general.maxBoardSpace || !["Minion", "Location"].includes(card.type)) return true;
 
         // Refund
-        let unsuppress = game.functions.suppressEvent("AddCardToHand");
+        let unsuppress = functions.suppressEvent("AddCardToHand");
         player.addToHand(card);
         unsuppress();
 
@@ -1286,7 +1268,7 @@ const playCard = {
 
         // Check if the card is countered
         if (op.counter && op.counter.includes(card.type)) {
-            game.functions.remove(op.counter, card.type);
+            functions.remove(op.counter, card.type);
             return true;
         }
 
@@ -1311,7 +1293,7 @@ const playCard = {
         if (stat.length <= 0) return false;
 
         // Get the latest event
-        let latest = game.functions.last(stat);
+        let latest = functions.last(stat);
         let latestCard: Card = latest[0];
 
         // If the previous card played was played on the same turn as this one, activate combo
@@ -1328,7 +1310,7 @@ const playCard = {
 
             player.removeFromHand(toCorrupt);
 
-            let unsuppress = game.functions.suppressEvent("AddCardToHand");
+            let unsuppress = functions.suppressEvent("AddCardToHand");
             player.addToHand(corrupted);
             unsuppress();
         });
@@ -1424,7 +1406,7 @@ const cards = {
             // the "" gets replaced with the main minion
 
             minion.colossal.forEach(v => {
-                let unsuppress = game.functions.suppressEvent("SummonMinion");
+                let unsuppress = functions.suppressEvent("SummonMinion");
 
                 if (v == "") {
                     game.summonMinion(minion, player, false);

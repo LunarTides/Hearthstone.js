@@ -28,8 +28,7 @@ export const blueprint: Blueprint = {
         // Makes the card's owner draw a card.
         //
         // If you don't put the `conditioned: ["battlecry"]` at the top, you can use this code to achieve the same thing.
-        // However it is not supported and so can change at any time.
-        //if (!self.activate("condition")[0]) return; 
+        //if (!self.condition()) return; 
 
         // Draw a card
         plr.drawCard();

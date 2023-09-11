@@ -31,9 +31,7 @@ function main() {
 
         // Choose random decks for the players
         for (let i = 0; i < 2; i++) {
-            let plr;
-            if (i === 0) plr = game.player1;
-            else plr = game.player2;
+            let plr = game.functions.getPlayerFromId(i);
 
             let deck = game.functions.randList(decks).actual;
             if (typeof deck === "string") game.functions.deckcode.import(plr, deck);

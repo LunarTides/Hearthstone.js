@@ -73,9 +73,9 @@ function main() {
             console.log(`${i + 1}: ${c}`);
         });
 
-        let index = rl.question("\nWhich card do you want to fix (type 'done' to finish | type 'delete' to delete the save file): ");
-        if (index.toLowerCase().startsWith("done")) break;
-        if (index.toLowerCase().startsWith("delete")) {
+        let cmd = rl.question("\nWhich card do you want to fix (type 'done' to finish | type 'delete' to delete the save file): ");
+        if (cmd.toLowerCase().startsWith("done")) break;
+        if (cmd.toLowerCase().startsWith("delete")) {
             console.log("Deleting file...");
 
             if (fs.existsSync(finishedCardsPath)) {
@@ -88,10 +88,10 @@ function main() {
             process.exit(0);
         }
 
-        if (!index || !parseInt(index)) continue;
+        let index = parseInt(cmd) - 1;
+        if (!index) continue;
 
-        let indexNum = parseInt(index) - 1;
-        let path = matchingCards[indexNum];
+        let path = matchingCards[index];
 
         // `card` is the path to that card.
         // TODO: This is broken
@@ -99,7 +99,7 @@ function main() {
         if (!success) rl.question(); // The `openWithArgs` shows an error message for us, but we need to pause.
 
         finishedCards.push(path);
-        matchingCards.splice(indexNum, 1);
+        matchingCards.splice(index, 1);
 
         if (matchingCards.length <= 0) {
             // All cards have been patched

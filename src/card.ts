@@ -2,6 +2,7 @@
  * Card
  * @module Card
  */
+import chalk from "chalk";
 import { Player } from "./internal.js";
 import { Blueprint, CardAbility, CardClass, CardKeyword, CardRarity, CardType, CostType, EnchantmentDefinition, GameConfig, Ability, MinionTribe, SpellSchool, CardBackup } from "./types.js";
 import { v4 as uuidv4 } from "uuid";
@@ -930,6 +931,30 @@ export class Card {
      */
     manathirst(m: number): boolean {
         return this.plr.maxMana >= m;
+    }
+
+    /**
+     * Checks if the condition is met, and if it is, adds `(Condition cleared!)` to the description
+     * 
+     * @returns If the condition is met
+     */
+    condition(): boolean {
+        const cleared_text = chalk.greenBright(" (Condition cleared!)");
+        const cleared_text_alt = chalk.greenBright("Condition cleared!");
+
+        // Remove the (Condition cleared!) from the description
+        this.desc = this.desc?.replace(cleared_text, "");
+        this.desc = this.desc?.replace(cleared_text_alt, "");
+
+        // Check if the condition is met
+        let condition = this.activate("condition");
+        if (!(condition instanceof Array) || condition[0] === false) return false;
+
+        // Add the (Condition cleared!) to the description
+        if (this.desc) this.desc += cleared_text;
+        else this.desc += cleared_text_alt;
+
+        return true;
     }
 
     /**

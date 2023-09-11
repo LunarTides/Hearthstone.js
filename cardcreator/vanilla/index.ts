@@ -144,16 +144,12 @@ export function create(card: VanillaCard, debug: boolean) {
 export function main() {
     console.log("Hearthstone.js Vanilla Card Creator (C) 2022\n");
 
-    const fileLocation = game.functions.dirname() + "../cardcreator/vanilla/.ignore.cards.json";
+    const [vanillaCards, error] = game.functions.getVanillaCards();
 
-    if (!fs.existsSync(fileLocation)) {
-        console.log("No cards file found! Run 'scripts/genvanilla.bat' (requires an internet connection), then try again.\n");
+    if (error) {
+        game.input(error);
         return false;
-    }
-
-    let data = fs.readFileSync(fileLocation, "utf8");
-
-    let parsedData: VanillaCard[] = JSON.parse(data);
+    };
 
     let debug = false;
     if (game.config.general.debug) {
@@ -164,7 +160,7 @@ export function main() {
         let cardName = rl.question("\nName / dbfId (Type 'back' to cancel): ");
         if (["exit", "quit", "close", "back"].includes(cardName.toLowerCase())) break;
 
-        let filtered_cards = parsedData.filter(c => c.name.toLowerCase() == cardName.toLowerCase() || c.dbfId == parseInt(cardName));
+        let filtered_cards = vanillaCards.filter(c => c.name.toLowerCase() == cardName.toLowerCase() || c.dbfId == parseInt(cardName));
         filtered_cards = game.functions.filterVanillaCards(filtered_cards, false, true);
 
         if (filtered_cards.length <= 0) {

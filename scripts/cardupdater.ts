@@ -3,35 +3,37 @@
  * @module Card Updater
  */
 
-import fs from "fs";
-import chalk from "chalk";
 import { createGame } from "../src/internal.js";
 import { Blueprint, VanillaCard } from "../src/types.js";
 
 const { game, player1, player2 } = createGame();
 
 function main() {
-    const fileLocation = game.functions.dirname() + "../cardcreator/vanilla/.ignore.cards.json";
-    if (!fs.existsSync(fileLocation)) {
-        game.input(chalk.red("Cards file not found! Run 'scripts/genvanilla.bat' (requires an internet connection), then try again.\n"));
+    const [vanillaCards, error] = game.functions.getVanillaCards();
+
+    if (error) {
+        game.input(error);
         process.exit(1);
     }
 
-    const vanillaCards: VanillaCard[] = JSON.parse(fs.readFileSync(fileLocation, "utf-8"));
     let filteredVanillaCards = game.functions.filterVanillaCards(vanillaCards, false, false);
-
     let customCards = game.functions.getCards(false);
 
-    console.log(chalk.yellow("WARNING: This program might find the incorrect card, so if it says that a card has 10 health instead of 2 sometimes, just ignore it.\n"));
-
     customCards.forEach(custom => {
-        let vanilla = filteredVanillaCards.find(vanilla => vanilla.name.toLowerCase() == (custom.displayName ?? custom.name).toLowerCase() && vanilla.type.toLowerCase() == custom.type.toLowerCase());
+        // Find the equivalent vanilla card 
+        let vanilla = filteredVanillaCards.find(vanilla => {
+            return (
+                vanilla.name.toLowerCase() == (custom.displayName ?? custom.name).toLowerCase() &&
+                vanilla.type.toLowerCase() == custom.type.toLowerCase()
+            );
+        });
+
         if (!vanilla) return; // There is no vanilla version of that card.
 
         Object.entries(custom).forEach(ent => {
             let [key, val] = ent;
 
-            // For some reason, typescript thinks that vanilla can be undefined
+            // HACK: For some reason, typescript thinks that vanilla can be undefined
             vanilla = vanilla!;
 
             if (key == "stats") {

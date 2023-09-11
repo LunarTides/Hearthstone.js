@@ -97,6 +97,7 @@ export const blueprint: Blueprint = {
 
 
         // Testing your solution.
+        // TODO: All this code is bad. Please fix it.
         let target = self;
         let correctParameters = false;
         let potentiallyCancelled = false;

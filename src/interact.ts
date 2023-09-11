@@ -549,13 +549,11 @@ export const interact = {
 
             if (echo) finished += "AI Info:\n\n";
 
-            for (let i = 1; i <= 2; i++) {
-                let plr;
-                if (i == 1) plr = game.player1;
-                else plr = game.player2;
+            for (let i = 0; i < 2; i++) {
+                let plr = game.functions.getPlayerFromId(i);
                 if (!plr.ai) continue;
 
-                finished += `AI${i} History: {\n`;
+                finished += `AI${i + 1} History: {\n`;
 
                 plr.ai.history.forEach((obj: AIHistory, objIndex: number) => {
                     finished += `${objIndex + 1} ${obj.type}: (${obj.data}),\n`;
@@ -1002,7 +1000,7 @@ export const interact = {
 
         let choices = [];
 
-        for (let i = 0; i < times; i++) {
+        for (let _ = 0; _ < times; _++) {
             if (game.player.ai) {
                 choices.push(game.player.ai.chooseOne(options));
                 continue;
