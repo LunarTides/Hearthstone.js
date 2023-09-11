@@ -37,7 +37,8 @@ export function create(card: VanillaCard, debug: boolean) {
     if (card.races) races = card.races.map(r => game.functions.capitalize(r) as MinionTribe);
 
     // Spell info
-    let spellSchool: SpellSchool | undefined = card.spellSchool ? game.functions.capitalize(card.spellSchool) as SpellSchool : undefined;
+    let spellSchool: SpellSchool | undefined;
+    if (card.spellSchool) spellSchool = game.functions.capitalize(card.spellSchool) as SpellSchool;
 
     // Weapon Info
     let durability = card.durability ?? -1;
@@ -158,7 +159,7 @@ export function main() {
 
     while (true) {
         let cardName = rl.question("\nName / dbfId (Type 'back' to cancel): ");
-        if (["exit", "quit", "close", "back"].includes(cardName.toLowerCase())) break;
+        if (game.interact.shouldExit(cardName)) break;
 
         let filtered_cards = vanillaCards.filter(c => c.name.toLowerCase() == cardName.toLowerCase() || c.dbfId == parseInt(cardName));
         filtered_cards = game.functions.filterVanillaCards(filtered_cards, false, true);

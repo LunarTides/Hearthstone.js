@@ -1239,7 +1239,7 @@ export const interact = {
         const target = game.input(p);
 
         // Player chose to go back
-        if (target.startsWith("b")) {
+        if (target.startsWith("b") || this.shouldExit(target)) {
             return false; // This should always be safe.
         }
 
@@ -1278,7 +1278,7 @@ export const interact = {
 
                 let alignment = game.input(`Do you want to select your opponent's (${oName}) or your own (${fName})? (y: opponent, n: friendly | type 'back' to go back) `);
             
-                if (alignment.startsWith("b")) {
+                if (alignment.startsWith("b") || this.shouldExit(alignment)) {
                     // Go back.
                     return interact._selectTarget(prompt, card, force_side, force_class, flags);
                 }
@@ -1462,6 +1462,13 @@ export const interact = {
         }
 
         return desc;
+    },
+
+    /**
+     * Returns if the input is a command to exit / go back.
+     */
+    shouldExit(input: string): boolean {
+        return ["exit", "stop", "quit", "back", "close"].includes(input.toLowerCase());
     },
 
     /**

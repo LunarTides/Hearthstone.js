@@ -40,7 +40,7 @@ export function main() {
 
         watermark();
         let val = rl.question(question + " ");
-        if (!val || val.toLowerCase() == "back") exited = true;
+        if (!val || game.interact.shouldExit(val)) exited = true;
 
         answers.push(val);
     });

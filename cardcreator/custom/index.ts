@@ -17,7 +17,7 @@ let type: CardType;
 function input(prompt: string) {
     const ret = rl.question(prompt);
 
-    if (["exit", "stop", "quit", "back"].includes(ret.toLowerCase())) shouldExit = true;
+    if (game.interact.shouldExit(ret)) shouldExit = true;
     return ret;
 }
 

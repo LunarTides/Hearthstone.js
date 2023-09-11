@@ -130,23 +130,33 @@ export function create(creatorType: CCType, cardType: CardType, blueprint: Bluep
     const getTypeValue = (val: any) => {
         let ret = val;
 
+        /**
+         * Adds double quotes around the string
+         */
         const stringify = (val: string) => {
             return `"${val}"`;
         }
 
+        // If the value is an array, put "["value1", "value2"]", or "[1, 2]", or any combination of those two.
         if (val instanceof Array) ret = "[" + val.map((v: any) => {
             if (typeof v === "string") return stringify(v);
             else return v;
         }).join(", ") + "]";
 
+        // If the value is a string, put "value"
         if (typeof val === "string") ret = stringify(val);
 
+        // Turn the value into a string.
         return ret.toString();
     }
 
+    // If the function is passive, add `EventValue` to the list of imports
     let passiveImport = isPassive ? ", EventValue" : "";
 
-    let contentArray = Object.entries(card).filter(c => c[0] != "id").map(c => `${c[0]}: ${getTypeValue(c[1])}`); // name: "Test"
+    // Add the key/value pairs to the content
+    let contentArray = Object.entries(card).filter(c => c[0] != "id").map(c => `${c[0]}: ${getTypeValue(c[1])}`);
+
+    // Add the content
     let content = `// Created by the ${creatorType} Card Creator
 
 import { Blueprint${passiveImport} } from "@Game/types.js";
