@@ -1097,7 +1097,11 @@ ${main_content}
      * assert.equal(result, true);
      */
     validateClass(plr: Player, card: CardLike): boolean {
-        return card.classes.includes(plr.heroClass);
+        return [...card.classes, "Neutral"].includes(plr.heroClass);
+    },
+
+    validateClasses(classes: CardClass[], cardClass: CardClass): boolean {
+        return [...classes, "Neutral"].includes(cardClass);
     },
 
     /**

@@ -75,7 +75,7 @@ const eventManager: IEventManager = {
         if (!game) return false;
 
         // Infuse
-        if (key == "KillMinion") {
+        if (key === "KillMinion") {
             // Get the game from the properties
             val = val as EventValue<typeof key>;
             val.plr.hand.forEach(p => {

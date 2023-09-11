@@ -44,7 +44,7 @@ type Settings = {
     },
     deckcode: {
         cardId: "id" | "name",
-        format: "ts" | "vanilla"
+        format: "js" | "vanilla"
     },
     commands: {
         default: string,
@@ -75,7 +75,7 @@ let settings: Settings = {
     },
     deckcode: {
         cardId: "id",
-        format: "ts"
+        format: "js"
     },
     commands: {
         default: "add",
@@ -95,12 +95,12 @@ function printName() {
 function askClass(): CardClassNoNeutral {
     printName();
 
-    let _class = game.input("What class to you want to choose?\n" + classes.join(", ") + "\n");
-    if (_class) _class = game.functions.capitalizeAll(_class);
+    let heroClass = game.input("What class to you want to choose?\n" + classes.join(", ") + "\n");
+    if (heroClass) heroClass = game.functions.capitalizeAll(heroClass);
 
-    if (!classes.includes(_class as CardClassNoNeutral)) return askClass();
+    if (!classes.includes(heroClass as CardClassNoNeutral)) return askClass();
 
-    if (_class == "Death Knight") {
+    if (heroClass === "Death Knight") {
         runes = "";
 
         while (runes.length < 3) {
@@ -115,7 +115,7 @@ function askClass(): CardClassNoNeutral {
         plr.runes = runes;
     }
 
-    return _class as CardClassNoNeutral;
+    return heroClass as CardClassNoNeutral;
 }
 
 function getDisplayName(card: CardLike) {
@@ -258,40 +258,41 @@ function searchCards(_cards: Blueprint[], sQuery: string) {
     return ret_cards;
 }
 
+function noCards() {
+    // If there are no cards, ask the user if they want to search for uncollectible cards
+    if (cards.length > 0) return;
+
+    printName();
+    console.log(chalk.yellow("No cards found. This means that the game doesn't have any (collectible) cards."));
+
+    // Only ask once
+    if (!settings.other.firstScreen) return;
+
+    let uncollectible = game.interact.yesNoQuestion(plr, "Would you like the program to search for uncollectible cards? Decks with uncollectible cards aren't valid. (You will only be asked once)");
+    settings.other.firstScreen = false;
+
+    if (!uncollectible) return;
+
+    cards = game.functions.getCards(false);
+}
+
 function showCards() {
+    // If there are no cards, ask the user if they want to search for uncollectible cards
+    if (cards.length <= 0) noCards();
+
     filtered_cards = [];
     printName();
 
-    // If there are no cards, ask the user if they want to search for uncollectible cards
-    if (cards.length <= 0) {
-        console.log(chalk.yellow("No cards found. This means that the game doesn't have any (collectible) cards."));
-
-        // Only ask once
-        if (settings.other.firstScreen) {
-            let uncollectible = game.interact.yesNoQuestion(plr, "Would you like the program to search for uncollectible cards? Decks with uncollectible cards aren't valid. (You will only be asked once)");
-            settings.other.firstScreen = false;
-
-            if (uncollectible) {
-                cards = game.functions.getCards(false);
-                return showCards();
-            }
-        }
-    }
-
     // If the user chose to view an invalid class, reset the viewed class to default.
-    if (!settings.view.class || !["Neutral", chosen_class].includes(settings.view.class)) settings.view.class = chosen_class;
+    let correctClass = game.functions.validateClasses([chosen_class], settings.view.class ?? chosen_class);
+    if (!settings.view.class || !correctClass) settings.view.class = chosen_class;
 
     // Filter away cards that aren't in the chosen class
     Object.values(cards).forEach(c => {
         if (c.runes && !plr.testRunes(c.runes)) return;
 
-        let reg = new RegExp(`^${chosen_class}|Neutral`);
-
-        c.classes.forEach(cl => {
-            if (!reg.test(cl)) return;
-
-            filtered_cards.push(c);
-        });
+        let correctClass = game.functions.validateClasses(c.classes, settings.view.class ?? chosen_class);
+        if (correctClass) filtered_cards.push(c);
     });
 
     if (filtered_cards.length <= 0) {
@@ -306,9 +307,9 @@ function showCards() {
     if (settings.search.query.length > 0) console.log(`Searching for '${settings.search.query.join(' ')}'.`);
 
     // Filter to show only cards in the viewed class
-    let _filtered_cards = Object.values(filtered_cards).filter(c => c.classes.includes(settings.view.class ?? chosen_class));
+    let classCards = Object.values(filtered_cards).filter(c => c.classes.includes(settings.view.class ?? chosen_class));
 
-    if (_filtered_cards.length <= 0) {
+    if (classCards.length <= 0) {
         console.log(chalk.yellow(`No cards found for the viewed class '${settings.view.class}'.`));
         return;
     }
@@ -319,18 +320,18 @@ function showCards() {
     settings.search.query.forEach(q => {
         if (searchFailed) return;
 
-        let __filtered_cards = searchCards(_filtered_cards, q);
+        let searchedCards = searchCards(classCards, q);
 
-        if (__filtered_cards === false) {
-            game.input(chalk.red(`Search failed at '${q}'! Reverting back to last successfull query.\n`));
+        if (searchedCards === false) {
+            game.input(chalk.red(`Search failed at '${q}'! Reverting back to last successful query.\n`));
             searchFailed = true;
             return;
         }
 
-        _filtered_cards = __filtered_cards;
+        classCards = searchedCards;
     });
 
-    if (_filtered_cards.length <= 0) {
+    if (classCards.length <= 0) {
         game.input(chalk.yellow(`\nNo cards match search.\n`));
         searchFailed = true;
     }
@@ -342,7 +343,7 @@ function showCards() {
 
     settings.search.prevQuery = settings.search.query;
 
-    settings.view.maxPage = Math.ceil(_filtered_cards.length / cpp);
+    settings.view.maxPage = Math.ceil(classCards.length / cpp);
     if (page > settings.view.maxPage) page = settings.view.maxPage;
 
     let oldSortType = settings.sort.type;
@@ -350,7 +351,7 @@ function showCards() {
     console.log(`Sorting by ${settings.sort.type.toUpperCase()}, ${settings.sort.order}ending.`);
 
     // Sort
-    _filtered_cards = sortCards(_filtered_cards);
+    classCards = sortCards(classCards);
 
     let sortTypeInvalid = oldSortType != settings.sort.type;
     let sortOrderInvalid = oldSortOrder != settings.sort.order;
@@ -361,7 +362,7 @@ function showCards() {
     if (sortTypeInvalid || sortOrderInvalid) console.log(`\nSorting by ${settings.sort.type.toUpperCase()}, ${settings.sort.order}ending.`);
 
     // Page logic
-    _filtered_cards = _filtered_cards.slice(cpp * (page - 1), cpp * page);
+    classCards = classCards.slice(cpp * (page - 1), cpp * page);
 
     // Loop
     console.log(`\nPage ${page} / ${settings.view.maxPage}\n`);
@@ -369,7 +370,7 @@ function showCards() {
     console.log(chalk.underline(settings.view.class));
 
     let bricks: string[] = [];
-    _filtered_cards.forEach(c => {
+    classCards.forEach(c => {
         bricks.push(getDisplayName(c) + " - " + c.id);
     });
 
@@ -885,18 +886,18 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         switch (setting) {
             case "format":
                 if (args.length == 0) {
-                    settings.deckcode.format = "ts";
-                    console.log("Reset deckcode format to: " + chalk.yellow("ts"));
+                    settings.deckcode.format = "js";
+                    console.log("Reset deckcode format to: " + chalk.yellow("js"));
                     break;
                 }
 
-                if (!["vanilla", "ts"].includes(args[0])) {
+                if (!["vanilla", "js"].includes(args[0])) {
                     console.log(chalk.red("Invalid format!"));
                     game.input();
                     return false;
                 }
 
-                settings.deckcode.format = args[0] as "vanilla" | "ts";
+                settings.deckcode.format = args[0] as "vanilla" | "js";
                 console.log("Set deckcode format to: " + chalk.yellow(args[0]));
                 break;
             case "cpp":

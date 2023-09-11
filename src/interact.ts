@@ -388,7 +388,7 @@ export const interact = {
 
                     // If the `key` is "AddCardToHand", check if the previous history entry was `DrawCard`, and they both contained the exact same `val`.
                     // If so, ignore it.
-                    if (key == "AddCardToHand" && i > 0) {
+                    if (key === "AddCardToHand" && i > 0) {
                         let last_entry = history[t][i - 1];
 
                         if (last_entry[0] == "DrawCard") {
@@ -660,7 +660,7 @@ export const interact = {
                 return false;
             }
 
-            if (key == "debug") {
+            if (key === "debug") {
                 game.input(chalk.red("You can't change the debug setting, as that could lock you out of the set command.\n"));
                 return false;
             }

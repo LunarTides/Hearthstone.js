@@ -25,14 +25,14 @@ const watermark = () => {
 function cardCreator() {
     watermark();
 
-    let vanilla: string | boolean = rl.question("Create a (C)ustom Card, or import a (V)anilla Card: ");
-    if (!vanilla) return;
+    let choice: string = rl.question("Create a (C)ustom Card, Import a (V)anilla Card, Go (B)ack: ");
+    if (!choice || choice[0].toLowerCase() === "b") return;
 
-    vanilla = vanilla[0].toLowerCase() == "v";
+    let isVanilla = choice[0].toLowerCase() === "v";
 
     cls();
 
-    if (vanilla) {
+    if (isVanilla) {
         if (!fs.existsSync(game.functions.dirname() + "../cardcreator/vanilla/.ignore.cards.json")) {
             watermark();
 

@@ -90,8 +90,8 @@ export function create(creatorType: CCType, cardType: CardType, blueprint: Bluep
     
     let extraPassiveCode = "";
     if (isPassive) extraPassiveCode = `
-        // If the key is for a different event, stop the function.
-        if (key !== "") return;
+        // Only proceed if the correct event key was broadcast
+        if (!(key === "")) return;
 
         // Here we cast the value to the correct type.
         // Do not use the '_unknownValue' variable after this.

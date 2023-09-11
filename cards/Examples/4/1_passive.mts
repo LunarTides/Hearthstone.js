@@ -40,7 +40,7 @@ export const blueprint: Blueprint = {
         // in order for refunding to not trigger the event, so we can trigger the minion's battlecry again.
         // We don't refund here, since refunding from passives is not supported, and currently doesn't do anything.
         // But if i add refunding from passives, it would probably break the card in some way, so just wait until it is supported, and you know what it does before using it.
-        if (key !== "PlayCard") return;
+        if (!(key === "PlayCard")) return;
 
         // Since we now know that the key is `PlayCard`, we can retrieve the correct value by doing this.
         const val = _unknownVal as EventValue<typeof key>;

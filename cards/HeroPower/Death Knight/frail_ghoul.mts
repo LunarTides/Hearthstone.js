@@ -20,7 +20,7 @@ export const blueprint: Blueprint = {
         // At the end of your turn, this minion dies.
 
         // Only continue if the event that triggered this is the EndTurn event, and the player that triggered the event is this card's owner.
-        if (key != "EndTurn" || game.player != plr) return;
+        if (!(key === "EndTurn" || game.player === plr)) return;
 
         // Kill this minion
         self.kill();
