@@ -40,6 +40,39 @@ function searchCards(callback: (path: string, content: string, id: number) => vo
     });
 }
 
+function change(startId: number, callback: (id: number) => number, log: boolean) {
+    let updated = 0;
+
+    searchCards((path, content, id) => {
+        if (id < startId) {
+            if (log) console.log(chalk.yellowBright(`Skipping ${path}`));
+            return;
+        }
+
+        let newId = callback(id);
+
+        // Set the new id
+        fs.writeFileSync(path, content.replace(idRegex, `    id: ${newId}`));
+
+        if (log) console.log(chalk.greenBright(`Updated ${path}`));
+        updated++;
+    });
+
+    if (updated > 0) {
+        let latestId = Number(fs.readFileSync(game.functions.dirname() + "../cards/.latest_id", { encoding: "utf8" }));
+        let newLatestId = callback(latestId);
+
+        fs.writeFileSync(game.functions.dirname() + "../cards/.latest_id", newLatestId.toString());
+    }
+
+    if (log) {
+        if (updated > 0) console.log(chalk.greenBright("Updated %s cards."), updated);
+        else console.log(chalk.yellow("No cards were updated."));
+    }
+
+    return updated;
+}
+
 /**
  * Decrement the ids of all cards from a starting id.
  * If the starting id is 50, it will decrement the ids of all cards with an id of 50 or more.
@@ -51,27 +84,21 @@ function searchCards(callback: (path: string, content: string, id: number) => vo
  * @returns The number of cards that were updated
  */
 export function decrement(startId: number, log: boolean) {
-    let updated = 0;
+    return change(startId, id => id - 1, log);
+}
 
-    searchCards((path, content, id) => {
-        if (id < startId) {
-            if (log) console.log(chalk.yellowBright(`Skipping ${path}`));
-            return;
-        }
-
-        // Decrement the id
-        fs.writeFileSync(path, content.replace(idRegex, `    id: ${id - 1}`));
-
-        if (log) console.log(chalk.greenBright(`Updated ${path}`));
-        updated++;
-    });
-
-    if (log) {
-        if (updated > 0) console.log(chalk.greenBright("Updated %s cards."), updated);
-        else console.log(chalk.yellow("No cards were updated."));
-    }
-
-    return updated;
+/**
+ * Increment the ids of all cards from a starting id.
+ * If the starting id is 50, it will increment the ids of all cards with an id of 50 or more.
+ * This is useful if you add a card between two ids, and want to increment the ids of the remaining cards to match.
+ * 
+ * @param startId The starting id
+ * @param log If it should log what it's doing. This should probably be false when using this as a library.
+ * 
+ * @returns The number of cards that were updated
+ */
+export function increment(startId: number, log: boolean) {
+    return change(startId, id => id + 1, log);
 }
 
 /**
@@ -80,9 +107,9 @@ export function decrement(startId: number, log: boolean) {
  * 
  * @param log If it should log what it's doing. This should probably be false when using this as a library.
  * 
- * @returns The number of holes that were found
+ * @returns Amount of holes, and amount of duplicates
  */
-export function validate(log: boolean) {
+export function validate(log: boolean): [number, number] {
     let ids: [[number, string]] = [[-1, ""]];
 
     searchCards((path, content, id) => {
@@ -94,11 +121,16 @@ export function validate(log: boolean) {
     // Check if there are any holes
     let currentId = 0;
     let holes = 0;
+    let duplicates = 0;
 
     ids.forEach(([id, path]) => {
         if (id === -1) return;
 
-        if (id != currentId + 1) {
+        if (id === currentId) {
+            if (log) console.error(chalk.yellowBright(`Duplicate id in ${path}. Previous id: ${currentId}. Got id: ${id}`));
+            duplicates++;
+        }
+        else if (id != currentId + 1) {
             if (log) console.error(chalk.yellowBright(`Hole in ${path}. Previous id: ${currentId}. Got id: ${id}`));
             holes++;
         }
@@ -109,9 +141,12 @@ export function validate(log: boolean) {
     if (log) {
         if (holes > 0) console.log(chalk.yellow("Found %s holes."), holes);
         else console.log(chalk.greenBright("No holes found."));
+
+        if (duplicates > 0) console.log(chalk.yellow("Found %s duplicates."), duplicates);
+        else console.log(chalk.greenBright("No duplicates found."));
     }
 
-    return holes;
+    return [holes, duplicates];
 }
 
 function main() {
@@ -125,21 +160,29 @@ function main() {
     console.error(chalk.yellow("WARNING: Be careful with this script. This might break things that are dependent on ids remaining the same, like deckcodes."));
     console.log(chalk.green("The validate and quit commands are safe to use without issue."));
 
-    type Commands = "d" | "v" | "q";
+    type Commands = "i" | "d" | "v" | "q";
 
-    let func = game.input("\nWhat do you want to do? ([d]ecrement, [v]alidate, [q]uit): ")[0] as Commands;
+    let func = game.input("\nWhat do you want to do? ([i]ncrement, [d]ecrement, [v]alidate, [q]uit): ")[0] as Commands;
     if (!func) throw new Error("Invalid command");
 
     func = func.toLowerCase() as Commands;
-    const destructive = ["d"] as Commands[];
+    const destructive = ["i", "d"] as Commands[];
 
     if (destructive.includes(func)) {
         console.error(chalk.yellow("WARNING: This is a destructive action. Be careful.\n"));
     }
 
+    let startId: number;
+
     switch (func) {
+        case "i":
+            startId = Number(game.input("What id to start at: "));
+            if (!startId) throw new Error("Invalid start id");
+
+            increment(startId, true);
+            break;
         case "d":
-            let startId = Number(game.input("What id to start at: "));
+            startId = Number(game.input("What id to start at: "));
             if (!startId) throw new Error("Invalid start id");
 
             decrement(startId, true);

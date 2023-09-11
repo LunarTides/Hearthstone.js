@@ -10,7 +10,7 @@ export const blueprint: Blueprint = {
     classes: ["Neutral"],
     rarity: "Free",
     uncollectible: true,
-    id: 65,
+    id: 66,
 
     cast(plr, game, self) {
         // Fill up your mana. For the rest of the game, your mana never decreases.
