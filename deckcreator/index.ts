@@ -3,6 +3,7 @@
  * @module Deck Creator
  */
 import chalk from "chalk";
+import util from "util";
 
 import { createGame } from "../src/internal.js";
 import { Blueprint, CardClass, CardClassNoNeutral, CardLike } from "../src/types.js";
@@ -118,10 +119,6 @@ function askClass(): CardClassNoNeutral {
     return heroClass as CardClassNoNeutral;
 }
 
-function getDisplayName(card: CardLike) {
-    return card.displayName ?? card.name;
-}
-
 function sortCards(_cards: Blueprint[]) {
     if (!["asc", "desc"].includes(settings.sort.order)) settings.sort.order = "asc"; // If the order is invalid, fall back to ascending
 
@@ -150,8 +147,8 @@ function sortCards(_cards: Blueprint[]) {
             let typeB;
 
             if (type == "name") {
-                typeA = getDisplayName(a);
-                typeB = getDisplayName(b);
+                typeA = game.interact.getDisplayName(a);
+                typeB = game.interact.getDisplayName(b);
             }
             else {
                 typeA = a.type;
@@ -188,7 +185,7 @@ function searchCards(_cards: Blueprint[], sQuery: string) {
         let query = splitQuery[0].toLowerCase();
 
         _cards.forEach(c => {
-            let name = getDisplayName(c).toLowerCase();
+            let name = game.interact.getDisplayName(c).toLowerCase();
             let desc = c.desc.toLowerCase();
 
             if (!name.includes(query) && !desc.includes(query)) return;
@@ -356,8 +353,12 @@ function showCards() {
     let sortTypeInvalid = oldSortType != settings.sort.type;
     let sortOrderInvalid = oldSortOrder != settings.sort.order;
 
-    if (sortTypeInvalid) console.log(chalk.yellow(`Sorting by '${oldSortType.toUpperCase()}' failed! Falling back to ${settings.sort.type.toUpperCase()}.`));
-    if (sortOrderInvalid) console.log(chalk.yellow(`Ordering by '${oldSortOrder}ending' failed! Falling back to ${settings.sort.order}ending.`));
+    if (sortTypeInvalid) {
+        console.log(chalk.yellow(`Sorting by '%s' failed! Falling back to %s.`), oldSortType.toUpperCase(), settings.sort.type.toUpperCase());
+    }
+    if (sortOrderInvalid) {
+        console.log(chalk.yellow(`Ordering by '%sending' failed! Falling back to %sending.`), oldSortOrder, settings.sort.order);
+    }
 
     if (sortTypeInvalid || sortOrderInvalid) console.log(`\nSorting by ${settings.sort.type.toUpperCase()}, ${settings.sort.order}ending.`);
 
@@ -371,7 +372,7 @@ function showCards() {
 
     let bricks: string[] = [];
     classCards.forEach(c => {
-        bricks.push(getDisplayName(c) + " - " + c.id);
+        bricks.push(game.interact.getDisplayName(c) + " - " + c.id);
     });
 
     let wall = game.functions.createWall(bricks, "-");
@@ -410,13 +411,13 @@ function showRules() {
 
     console.log("#");
 
-    console.log("# Validation: " + (config.decks.validate ? chalk.greenBright("ON") : chalk.red("OFF")));
+    console.log("# Validation: %s", (config.decks.validate ? chalk.greenBright("ON") : chalk.red("OFF")));
 
-    console.log("#\n# Rule 1. Minimum Deck Length: " + chalk.yellow(config.decks.minLength.toString()));
-    console.log("# Rule 2. Maximum Deck Length: " + chalk.yellow(config.decks.maxLength.toString()));
+    console.log("#\n# Rule 1. Minimum Deck Length: %s", chalk.yellow(config.decks.minLength.toString()));
+    console.log("# Rule 2. Maximum Deck Length: %s", chalk.yellow(config.decks.maxLength.toString()));
 
-    console.log("#\n# Rule 3. Maximum amount of cards for each card (eg. You can only have: " + chalk.yellow("x") + " Seances in a deck): " + chalk.yellow(config.decks.maxOfOneCard.toString()));
-    console.log("# Rule 4. Maximum amount of cards for each legendary card (Same as Rule 3 but for legendaries): " + chalk.yellow(config.decks.maxOfOneLegendary.toString()));
+    console.log("#\n# Rule 3. Maximum amount of cards for each card (eg. You can only have: %s Seances in a deck): %s", chalk.yellow("x"), chalk.yellow(config.decks.maxOfOneCard.toString()));
+    console.log("# Rule 4. Maximum amount of cards for each legendary card (Same as Rule 3 but for legendaries): %s", chalk.yellow(config.decks.maxOfOneLegendary.toString()));
 
     console.log("#");
 
@@ -435,7 +436,7 @@ function findCard(card: string | number): Blueprint | null {
     let _card: Blueprint | null = null;
 
     Object.values(filtered_cards).forEach(c => {
-        if (c.id == card || (typeof card === "string" && getDisplayName(c).toLowerCase() == card.toLowerCase())) _card = c;
+        if (c.id == card || (typeof card === "string" && game.interact.getDisplayName(c).toLowerCase() == card.toLowerCase())) _card = c;
     });
 
     return _card!;
@@ -481,7 +482,7 @@ function showDeck() {
         let viewed = "";
 
         if (amount > 1) viewed += `x${amount} `;
-        viewed += getDisplayName(card).replaceAll("-", "`") + ` - ${card.id}`;
+        viewed += game.interact.getDisplayName(card).replaceAll("-", "`") + ` - ${card.id}`;
 
         bricks.push(viewed);
     });
@@ -544,10 +545,10 @@ function deckcode(parseVanillaOnPseudo = false) {
                 log = chalk.red("ERROR: Could not generate deckcode as your deck is empty. The resulting deckcode would be invalid.");
                 break;
             case "TooManyCopies":
-                log += chalk.yellow("Too many copies of a card. Maximum is: ") + config.decks.maxOfOneCard.toString() + chalk.yellow(". Offender: ") + `{ Name: "${error.info?.card?.name}", Copies: "${error.info?.amount}" }`;
+                log += util.format(chalk.yellow("Too many copies of a card. Maximum: '%s'. Offender: '%s'"), config.decks.maxOfOneCard, `{ Name: "${error.info?.card?.name}", Copies: "${error.info?.amount}" }`);
                 break;
             case "TooManyLegendaryCopies":
-                log += chalk.yellow("Too many copies of a Legendary card. Maximum is: ") + config.decks.maxOfOneLegendary.toString() + chalk.yellow(". Offender: ") + `{ Name: "${error.info?.card?.name}", Copies: "${error.info?.amount}" }`;
+                log += util.format(chalk.yellow("Too many copies of a Legendary card. Maximum: '%s'. Offender: '%s'"), config.decks.maxOfOneLegendary, `{ Name: "${error.info?.card?.name}", Copies: "${error.info?.amount}" }`);
                 break;
         }
 
@@ -714,20 +715,21 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
 
         if (cmdSplit.length <= 0) return false;
 
-        let _class = cmdSplit.join(" ");
-        _class = game.functions.capitalizeAll(_class);
+        let heroClass = cmdSplit.join(" ") as CardClass;
+        heroClass = game.functions.capitalizeAll(heroClass) as CardClass;
 
-        if (!classes.includes(_class as CardClassNoNeutral) && _class != "Neutral") {
+        if (!classes.includes(heroClass as CardClassNoNeutral) && heroClass != "Neutral") {
             game.input(chalk.red("Invalid class!\n"));
             return false;
         }
 
-        if (![chosen_class, "Neutral"].includes(_class)) {
-            game.input(chalk.yellow(`Class '${_class}' is a different class. To see these cards, please switch class from '${chosen_class}' to '${_class}' to avoid confusion.\n`));
+        let correctClass = game.functions.validateClasses([chosen_class], heroClass);
+        if (!correctClass) {
+            game.input(chalk.yellow(`Class '${heroClass}' is a different class. To see these cards, please switch class from '${chosen_class}' to '${heroClass}' to avoid confusion.\n`));
             return false;
         }
 
-        settings.view.class = _class as CardClass;
+        settings.view.class = heroClass as CardClass;
     }
     else if (cmd.startsWith("deckcode")) {
         let _deckcode = deckcode(true);
@@ -782,7 +784,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         // Add the cards using handleCmds instead of add because for some reason, adding them with add
         // causes a weird bug that makes modifying the deck impossible because removing a card
         // removes a completly unrelated card because javascript.
-        _deck.forEach(c => handleCmds(`add ${getDisplayName(c)}`)); // You can just set deck = functions.importDeck(), but doing it that way doesn't account for renathal or any other card that changes the config in any way since that is done using the add function.
+        _deck.forEach(c => handleCmds(`add ${game.interact.getDisplayName(c)}`)); // You can just set deck = functions.importDeck(), but doing it that way doesn't account for renathal or any other card that changes the config in any way since that is done using the add function.
     }
     else if (cmd.startsWith("class")) {
         let _runes = runes;
@@ -939,8 +941,9 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
     }
     else {
         // Infer add
-        console.log(chalk.yellow(`Unable to find command. Trying '${settings.commands.default} ${cmd}'`));
-        return handleCmds(`${settings.commands.default} ${cmd}`);
+        const tryCommand = `${settings.commands.default} ${cmd}`;
+        console.log(chalk.yellow(`Unable to find command. Trying '${tryCommand}'`));
+        return handleCmds(tryCommand);
     }
 
     if (!addToHistory) return true;

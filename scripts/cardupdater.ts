@@ -23,7 +23,7 @@ function main() {
         // Find the equivalent vanilla card 
         let vanilla = filteredVanillaCards.find(vanilla => {
             return (
-                vanilla.name.toLowerCase() == (custom.displayName ?? custom.name).toLowerCase() &&
+                vanilla.name.toLowerCase() == game.interact.getDisplayName(custom).toLowerCase() &&
                 vanilla.type.toLowerCase() == custom.type.toLowerCase()
             );
         });

@@ -92,6 +92,12 @@ function main() {
         if (!index) continue;
 
         let path = matchingCards[index];
+        if (!path) {
+            console.log("Invalid index!");
+            rl.question();
+
+            continue;
+        }
 
         // `card` is the path to that card.
         // TODO: This is broken

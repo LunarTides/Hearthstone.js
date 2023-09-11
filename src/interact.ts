@@ -1465,6 +1465,15 @@ export const interact = {
     },
 
     /**
+     * Returns the display name of a card.
+     * 
+     * If the card doesn't have a display name, it returns the name.
+     */
+    getDisplayName(card: CardLike) {
+        return card.displayName ?? card.name;
+    },
+
+    /**
      * Returns a card in a user readble state. If you console.log the result of this, the user will get all the information they need from the card.
      *
      * @param card The card
@@ -1522,8 +1531,7 @@ export const interact = {
                 break;
         }
 
-        let displayName = card.name;
-        if (card instanceof Card) displayName = card.displayName;
+        let displayName = interact.getDisplayName(card);
 
         if (i !== -1) sb += `[${i}] `;
         sb += mana;

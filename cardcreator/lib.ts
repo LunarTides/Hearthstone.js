@@ -158,7 +158,7 @@ export const blueprint: Blueprint = {
 
     // The path is now "./cardcreator/../cards/...", replace this with "./cards/..."
     path = path.replace(/[\/\\]dist[\/\\]\.\./, "");
-    let file_path = path.replaceAll("/", "\\") + filename; // Replace '/' with '\' because windows
+    let file_path = path + filename;
 
     if (!debug) {
         // If debug mode is disabled, write the card to disk.
@@ -169,7 +169,7 @@ export const blueprint: Blueprint = {
         // If the path the card would be written to doesn't exist, create it.
         if (!fs.existsSync(path)) fs.mkdirSync(path, { recursive: true });
         // Write the file to the path
-        fs.writeFileSync(path + filename, content);
+        fs.writeFileSync(file_path, content);
 
         console.log('File created at: "' + file_path + '"');
     } else {
