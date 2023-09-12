@@ -1340,17 +1340,22 @@ ${main_content}
                     t = t.replace("fg:", "");
                 }
 
+                // Remove the `bg:` prefix
+                let bg = false;
+                if (t.startsWith("bg:")) {
+                    t = t.replace("bg:", "");
+                    bg = true;
+                }
+
                 // Hex
                 if (t.startsWith("#")) {
                     t = t.slice(1);
-                    ret = chalk.hex(t)(ret);
-                    return;
-                }
 
-                // Background hex
-                if (t.startsWith("bg:#")) {
-                    t = t.slice(4);
-                    ret = chalk.bgHex(t)(ret);
+                    if (bg) {
+                        ret = chalk.bgHex(t)(ret);
+                        return;
+                    }
+                    ret = chalk.hex(t)(ret);
                     return;
                 }
 
@@ -1359,127 +1364,86 @@ ${main_content}
                     t = t.slice(4);
                     let [r, g, b] = t.split(",").map(s => parseInt(s));
 
+                    if (bg) {
+                        ret = chalk.bgRgb(r, g, b)(ret);
+                        return;
+                    }
                     ret = chalk.rgb(r, g, b)(ret);
-                    return;
-                }
-
-                // Background RGB
-                if (t.startsWith("bg:rgb:")) {
-                    t = t.slice(7);
-                    let [r, g, b] = t.split(",").map(s => parseInt(s));
-
-                    ret = chalk.bgRgb(r, g, b)(ret);
                     return;
                 }
 
                 // Here are ALL of the color tags
                 switch (t) {
                     case "red":
-                        ret = chalk.red(ret);
+                        if (bg) ret = chalk.bgRed(ret);
+                        else ret = chalk.red(ret);
                         break;
                     case "green":
-                        ret = chalk.green(ret);
+                        if (bg) ret = chalk.bgGreen(ret);
+                        else ret = chalk.green(ret);
                         break;
                     case "blue":
-                        ret = chalk.blue(ret);
+                        if (bg) ret = chalk.bgBlue(ret);
+                        else ret = chalk.blue(ret);
                         break;
                     case "cyan":
-                        ret = chalk.cyan(ret);
+                        if (bg) ret = chalk.bgCyan(ret);
+                        else ret = chalk.cyan(ret);
                         break;
                     case "magenta":
-                        ret = chalk.magenta(ret);
+                        if (bg) ret = chalk.bgMagenta(ret);
+                        else ret = chalk.magenta(ret);
                         break;
                     case "yellow":
-                        ret = chalk.yellow(ret);
+                        if (bg) ret = chalk.bgYellow(ret);
+                        else ret = chalk.yellow(ret);
                         break;
                     case "black":
-                        ret = chalk.black(ret);
+                        if (bg) ret = chalk.bgBlack(ret);
+                        else ret = chalk.black(ret);
                         break;
                     case "white":
-                        ret = chalk.white(ret);
+                        if (bg) ret = chalk.bgWhite(ret);
+                        else ret = chalk.white(ret);
                         break;
                     case "gray":
-                        ret = chalk.gray(ret);
+                        if (bg) ret = chalk.bgGray(ret);
+                        else ret = chalk.gray(ret);
                         break;
 
                     case "bright:red":
-                        ret = chalk.redBright(ret);
+                        if (bg) ret = chalk.bgRedBright(ret);
+                        else ret = chalk.redBright(ret);
                         break;
                     case "bright:green":
-                        ret = chalk.greenBright(ret);
+                        if (bg) ret = chalk.bgGreenBright(ret);
+                        else ret = chalk.greenBright(ret);
                         break;
                     case "bright:blue":
-                        ret = chalk.blueBright(ret);
+                        if (bg) ret = chalk.bgBlueBright(ret);
+                        else ret = chalk.blueBright(ret);
                         break;
                     case "bright:cyan":
-                        ret = chalk.cyanBright(ret);
+                        if (bg) ret = chalk.bgCyanBright(ret);
+                        else ret = chalk.cyanBright(ret);
                         break;
                     case "bright:magenta":
-                        ret = chalk.magentaBright(ret);
+                        if (bg) ret = chalk.bgMagentaBright(ret);
+                        else ret = chalk.magentaBright(ret);
                         break;
                     case "bright:yellow":
-                        ret = chalk.yellowBright(ret);
+                        if (bg) ret = chalk.bgYellowBright(ret);
+                        else ret = chalk.yellowBright(ret);
                         break;
                     case "bright:black":
-                        ret = chalk.blackBright(ret);
+                        if (bg) ret = chalk.bgBlackBright(ret);
+                        else ret = chalk.blackBright(ret);
                         break;
                     case "bright:white":
-                        ret = chalk.whiteBright(ret);
+                        if (bg) ret = chalk.bgWhiteBright(ret);
+                        else ret = chalk.whiteBright(ret);
                         break;
                     
-                    case "bg:red":
-                        ret = chalk.bgRed(ret);
-                        break;
-                    case "bg:green":
-                        ret = chalk.bgGreen(ret);
-                        break;
-                    case "bg:blue":
-                        ret = chalk.bgBlue(ret);
-                        break;
-                    case "bg:cyan":
-                        ret = chalk.bgCyan(ret);
-                        break;
-                    case "bg:magenta":
-                        ret = chalk.bgMagenta(ret);
-                        break;
-                    case "bg:yellow":
-                        ret = chalk.bgYellow(ret);
-                        break;
-                    case "bg:black":
-                        ret = chalk.bgBlack(ret);
-                        break;
-                    case "bg:white":
-                        ret = chalk.bgWhite(ret);
-                        break;
-                    case "bg:gray":
-                        ret = chalk.bgGray(ret);
-                        break;
-
-                    case "bg:bright:red":
-                        ret = chalk.bgRedBright(ret);
-                        break;
-                    case "bg:bright:green":
-                        ret = chalk.bgGreenBright(ret);
-                        break;
-                    case "bg:bright:blue":
-                        ret = chalk.bgBlueBright(ret);
-                        break;
-                    case "bg:bright:cyan":
-                        ret = chalk.bgCyanBright(ret);
-                        break;
-                    case "bg:bright:magenta":
-                        ret = chalk.bgMagentaBright(ret);
-                        break;
-                    case "bg:bright:yellow":
-                        ret = chalk.bgYellowBright(ret);
-                        break;
-                    case "bg:bright:black":
-                        ret = chalk.bgBlackBright(ret);
-                        break;
-                    case "bg:bright:white":
-                        ret = chalk.bgWhiteBright(ret);
-                        break;
-
                     case "reset":
                         current_types = [];
 
