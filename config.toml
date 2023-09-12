@@ -186,8 +186,8 @@ hideValueHistoryKeys = [
 version = "2.0.0"
 
 # The branch that the version is on.
-# This can be "stable", "develop" or "topic"
-branch = "topic"
+# This can be "stable", "dev" or "topic"
+branch = "dev"
 
 # The text that is displayed along this specific version/branch combination.
 versionText = "Make the project use typescript instead of javascript. THIS VERSION IS HIGHLY UNSTABLE AND WILL CRASH."
