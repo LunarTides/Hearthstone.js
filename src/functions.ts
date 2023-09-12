@@ -1483,6 +1483,7 @@ ${main_content}
         }
 
         let strbuilder = "";
+        let wordStringbuilder = "";
         let current_types: string[] = [];
 
         let tagbuilder = "";
@@ -1512,14 +1513,16 @@ ${main_content}
         // Loop through the characters in str
         str.split("").forEach((c, i) => {
             if (cancelled(i)) {
-                strbuilder += appendTypes(c);
+                wordStringbuilder += c;
                 return;
             }
-
 
             if (c === "~") return;
             if (c === "<" && !readingTag) {
                 // Start a new tag
+                strbuilder += appendTypes(wordStringbuilder);
+                wordStringbuilder = "";
+
                 readingTag = true;
                 return;
             }
@@ -1561,8 +1564,10 @@ ${main_content}
                 return;
             }
 
-            strbuilder += appendTypes(c);
+            wordStringbuilder += c;
         });
+
+        strbuilder += appendTypes(wordStringbuilder);
 
         return strbuilder;
     },
