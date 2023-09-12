@@ -1262,20 +1262,38 @@ ${main_content}
     /**
      * Parses color tags in `str`.
      * 
-     * The color tags available are:
+     * Look at the examples for some of the things you can do.
+     * 
+     * Here are _some_ of the available tags:
      * 
      * ```
-     * // RGB
-     * 'r' = Red, 'g' = Green, 'b' = Blue
+     * // You can combined these with each other
+     * // Many of these tags may not be supported by all terminal emulators / consoles.
+     * // The following terminals are tested:
+     * // Windows Terminal
+     * // Windows Command Prompt (doesn't support overline)
+     * // Windows Powershell (doesn't support overline)
      * 
-     * // CMYK
-     * 'c' = Cyan, 'm' = Magenta, 'y' = Yellow, 'k' = Black
+     * // Foreground
+     * '[fg:]red', '[fg:]green', '[fg:]blue' // (The `fg` is optional. For example: `fg:blue`)
      * 
-     * // Other colors
-     * 'w' = White, 'a' = Gray
+     * // Background
+     * 'bg:red', 'bg:green', 'bg:blue'
+     * 
+     * // Bright
+     * 'bright:red', 'bright:green', 'bright:blue'
+     * 
+     * // Background Bright
+     * 'bg:bright:red', 'bg:bright:green', 'bg:bright:blue'
      * 
      * // Special
-     * 'B' = Bold, 'R' = Reset
+     * 'bold', 'italic', 'underline'
+     * 
+     * // Hex
+     * '[fg:]#FF0000', 'bg:#FF0000'
+     * 
+     * // RGB
+     * '[fg:]rgb:255,0,0', 'bg:rgb:255,0,0'
      * ```
      *
      * @param str The string to parse
@@ -1283,13 +1301,22 @@ ${main_content}
      * @returns The resulting string
      * 
      * @example
-     * let parsed = parseTags("&BBattlecry:&R Test");
+     * let parsed = parseTags("<bold>Battlecry:</bold> Test");
      * assert.equal(parsed, chalk.bold("Battlecry:") + " Test");
      * 
      * @example
      * // Add the `~` character to escape the tag
-     * let parsed = parseTags("~&BBattlecry:~&R Test");
-     * assert.equal(parsed, "&BBattlecry:&R Test");
+     * let parsed = parseTags("~<bold>Battlecry:~</bold> Test ~~<bold>Test~~</bold> Test");
+     * assert.equal(parsed, "<bold>Battlecry:</bold> Test ~" + chalk.bold("Test~") + " Test");
+     * 
+     * @example
+     * // You can mix and match tags as much as you want. You can remove categories of tags as well, for example, removing `bg:bright:blue` by doing `</bg>`
+     * let parsed = parseTags("<red bg:bright:blue bold>Test</bg> Hi</bold> there</red> again");
+     * assert.equal(parsed, chalk.red.bgBlueBright.bold("Test") + chalk.red.bold(" Hi") + chalk.red(" there") + " again");
+     * 
+     * @example
+     * let parsed = parseTags("<fg:red italic bg:#0000FF>Test</> Another test");
+     * assert.equal(parsed, chalk.red.italic("Test") + " Another test");
      */
     parseTags(str: string): string {
         /**
@@ -1302,55 +1329,189 @@ ${main_content}
             let ret = c;
 
             // This line fixes a bug that makes, for example, `&rTest&R.` make the `.` be red when it should be white. This bug is why all new battlecries were `&BBattlecry:&R Deal...` instead of `&BBattlecry: &RDeal...`. I will see which one i choose in the future.
-            if (current_types.includes("R")) current_types = ["R"]; 
+            // Update: I discourge the use of `reset` now that you cancel tags manually. Use `</>` instead.
+            if (current_types.includes("reset")) current_types = ["reset"]; 
 
             current_types.forEach(t => {
+                t = t.toLowerCase();
+
+                // Remove `fg:` prefix
+                if (t.startsWith("fg:")) {
+                    t = t.replace("fg:", "");
+                }
+
+                // Hex
+                if (t.startsWith("#")) {
+                    t = t.slice(1);
+                    ret = chalk.hex(t)(ret);
+                    return;
+                }
+
+                // Background hex
+                if (t.startsWith("bg:#")) {
+                    t = t.slice(4);
+                    ret = chalk.bgHex(t)(ret);
+                    return;
+                }
+
+                // RGB
+                if (t.startsWith("rgb:")) {
+                    t = t.slice(4);
+                    let [r, g, b] = t.split(",").map(s => parseInt(s));
+
+                    ret = chalk.rgb(r, g, b)(ret);
+                    return;
+                }
+
+                // Background RGB
+                if (t.startsWith("bg:rgb:")) {
+                    t = t.slice(7);
+                    let [r, g, b] = t.split(",").map(s => parseInt(s));
+
+                    ret = chalk.bgRgb(r, g, b)(ret);
+                    return;
+                }
+
+                // Here are ALL of the color tags
                 switch (t) {
-                    case "r":
+                    case "red":
                         ret = chalk.red(ret);
                         break;
-                    case "g":
+                    case "green":
                         ret = chalk.green(ret);
                         break;
-                    case "b":
+                    case "blue":
                         ret = chalk.blue(ret);
                         break;
-                    case "c":
+                    case "cyan":
                         ret = chalk.cyan(ret);
                         break;
-                    case "m":
+                    case "magenta":
                         ret = chalk.magenta(ret);
                         break;
-                    case "y":
+                    case "yellow":
                         ret = chalk.yellow(ret);
                         break;
-                    case "k":
+                    case "black":
                         ret = chalk.black(ret);
                         break;
-                    case "w":
+                    case "white":
                         ret = chalk.white(ret);
                         break;
-                    case "a":
+                    case "gray":
                         ret = chalk.gray(ret);
                         break;
 
-                    case "R":
+                    case "bright:red":
+                        ret = chalk.redBright(ret);
+                        break;
+                    case "bright:green":
+                        ret = chalk.greenBright(ret);
+                        break;
+                    case "bright:blue":
+                        ret = chalk.blueBright(ret);
+                        break;
+                    case "bright:cyan":
+                        ret = chalk.cyanBright(ret);
+                        break;
+                    case "bright:magenta":
+                        ret = chalk.magentaBright(ret);
+                        break;
+                    case "bright:yellow":
+                        ret = chalk.yellowBright(ret);
+                        break;
+                    case "bright:black":
+                        ret = chalk.blackBright(ret);
+                        break;
+                    case "bright:white":
+                        ret = chalk.whiteBright(ret);
+                        break;
+                    
+                    case "bg:red":
+                        ret = chalk.bgRed(ret);
+                        break;
+                    case "bg:green":
+                        ret = chalk.bgGreen(ret);
+                        break;
+                    case "bg:blue":
+                        ret = chalk.bgBlue(ret);
+                        break;
+                    case "bg:cyan":
+                        ret = chalk.bgCyan(ret);
+                        break;
+                    case "bg:magenta":
+                        ret = chalk.bgMagenta(ret);
+                        break;
+                    case "bg:yellow":
+                        ret = chalk.bgYellow(ret);
+                        break;
+                    case "bg:black":
+                        ret = chalk.bgBlack(ret);
+                        break;
+                    case "bg:white":
+                        ret = chalk.bgWhite(ret);
+                        break;
+                    case "bg:gray":
+                        ret = chalk.bgGray(ret);
+                        break;
+
+                    case "bg:bright:red":
+                        ret = chalk.bgRedBright(ret);
+                        break;
+                    case "bg:bright:green":
+                        ret = chalk.bgGreenBright(ret);
+                        break;
+                    case "bg:bright:blue":
+                        ret = chalk.bgBlueBright(ret);
+                        break;
+                    case "bg:bright:cyan":
+                        ret = chalk.bgCyanBright(ret);
+                        break;
+                    case "bg:bright:magenta":
+                        ret = chalk.bgMagentaBright(ret);
+                        break;
+                    case "bg:bright:yellow":
+                        ret = chalk.bgYellowBright(ret);
+                        break;
+                    case "bg:bright:black":
+                        ret = chalk.bgBlackBright(ret);
+                        break;
+                    case "bg:bright:white":
+                        ret = chalk.bgWhiteBright(ret);
+                        break;
+
+                    case "reset":
                         current_types = [];
 
                         ret = chalk.reset(ret);
                         break;
-                    case "B":
+                    case "bold":
                         ret = chalk.bold(ret);
                         break;
-                    case "I":
+                    case "italic":
                         ret = chalk.italic(ret);
                         break;
-                    case "U":
+                    case "underline":
                         ret = chalk.underline(ret);
                         break;
-                    case "O":
+                    case "overline":
                         ret = chalk.overline(ret);
                         break
+                    case "strikethrough":
+                        ret = chalk.strikethrough(ret);
+                        break;
+                    case "dim":
+                        ret = chalk.dim(ret);
+                        break;
+                    case "inverse":
+                        ret = chalk.inverse(ret);
+                        break;
+                    case "hidden":
+                        ret = chalk.hidden(ret);
+                        break;
+                    case "visible":
+                        ret = chalk.visible(ret);
+                        break;
                 }
             });
 
@@ -1358,48 +1519,86 @@ ${main_content}
         }
 
         let strbuilder = "";
-        let word_strbuilder = "";
         let current_types: string[] = [];
+
+        let tagbuilder = "";
+        let readingTag = false;
+        let removeTag = false;
+
+        const readPrevious = (i: number) => {
+            if (i <= 0) return "";
+
+            return str[i - 1];
+        }
+
+        const readNext = (i: number) => {
+            if (i >= str.length - 1) return "";
+
+            return str[i + 1];
+        }
+
+        const cancelled = (i: number): boolean => {
+            let one = readPrevious(i);
+            let two = readPrevious(i - 1);
+
+            if (two === "~") return false;
+            return one === "~";
+        }
 
         // Loop through the characters in str
         str.split("").forEach((c, i) => {
-            // If c is not a tag
-            if (c != "&") {
-                if (i > 0 && str[i - 1] == "&") { // Don't add the character if a & precedes it.
-                    if (i > 1 && str[i - 2] == "~") {} // But do add the character if the & has been cancelled
-                    else return;
+            if (cancelled(i)) {
+                strbuilder += appendTypes(c);
+                return;
+            }
+
+
+            if (c === "~") return;
+            if (c === "<" && !readingTag) {
+                // Start a new tag
+                readingTag = true;
+                return;
+            }
+            if (c === ">" && readingTag) {
+                // End tag reading
+                readingTag = false;
+
+                let currentTags = tagbuilder.split(" ");
+
+                if (!removeTag) {
+                    current_types = [...current_types, ...currentTags];
                 }
-                if (c == "~" && i < str.length && str[i + 1] == "&") return; // Don't add the "~" character if it is used to cancel the "&" character
+                else {
+                    // If the tag is </>, remove all tags
+                    if (!currentTags.some(t => t.length > 0)) {
+                        current_types = [];
+                        return;
+                    };
 
-                // Add the character to the current word
-                word_strbuilder += c;
+                    currentTags.forEach(tag => {
+                        current_types = current_types.filter(type => !type.startsWith(tag));
+                    });
+                }
+
+                tagbuilder = "";
+
+                return;
+            }
+            if (c === "/" && readingTag) {
+                if (readPrevious(i) === "<") {
+                    removeTag = true;
+                    return;
+                }
+                if (readNext(i) === ">") return;
+            }
+
+            if (readingTag) {
+                tagbuilder += c;
                 return;
             }
 
-            // c == "&"
-            if (i > 0 && str[i - 1] == "~") { // If there is a `~` before the &, add the & to the string.
-                word_strbuilder += c;
-                return;
-            }
-
-            // New tag
-            let type = str[i + 1];
-
-            if (word_strbuilder) {
-                // There is a new tag, so the word is done. Add the word to the strbuilder
-                strbuilder += appendTypes(word_strbuilder);
-                word_strbuilder = "";
-            }
-
-            current_types.push(type);
-
-            if (type == "R") {
-                // The type is "Reset"
-                current_types = [];
-            }
+            strbuilder += appendTypes(c);
         });
-
-        strbuilder += appendTypes(word_strbuilder);
 
         return strbuilder;
     },
