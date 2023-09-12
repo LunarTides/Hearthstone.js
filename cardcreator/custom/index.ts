@@ -91,10 +91,13 @@ function minion() {
     const tribe = input("Tribe: ");
     if (shouldExit) return false;
 
+    // Turn 1/1 to [1, 1]
+    let statsArray = stats.split("/").map(s => parseInt(s));
+
     return applyCard({
         name: _card.name,
         displayName: _card.displayName,
-        stats: stats.split("/").map(s => parseInt(s)),
+        stats: statsArray,
         desc: _card.desc,
         mana: _card.mana,
         type: _card.type,
@@ -126,10 +129,13 @@ function weapon() {
     let stats = input("Stats: ");
     if (shouldExit) return false;
 
+    // Turn 1/1 to [1, 1]
+    let statsArray = stats.split("/").map(s => parseInt(s));
+
     return applyCard({
         name: _card.name,
         displayName: _card.displayName,
-        stats: stats.split("/").map(s => parseInt(s)),
+        stats: statsArray,
         desc: _card.desc,
         mana: _card.mana,
         type: _card.type,
