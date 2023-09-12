@@ -1328,7 +1328,7 @@ ${main_content}
         const appendTypes = (c: string): string => {
             let ret = c;
 
-            // This line fixes a bug that makes, for example, `&rTest&R.` make the `.` be red when it should be white. This bug is why all new battlecries were `&BBattlecry:&R Deal...` instead of `&BBattlecry: &RDeal...`. I will see which one i choose in the future.
+            // This line fixes a bug that makes, for example, `</bold>Test</bold>.` make the `.` be red when it should be white. This bug is why all new battlecries were `<bold>Battlecry:</bold> Deal...` instead of `<bold>Battlecry: </bold>Deal...`. I will see which one i choose in the future.
             // Update: I discourge the use of `reset` now that you cancel tags manually. Use `</>` instead.
             if (current_types.includes("reset")) current_types = ["reset"]; 
 
@@ -1609,12 +1609,12 @@ ${main_content}
      * This only removes the TAGS, not the actual colors. Use `colors.strip` for that.
      * 
      * @example
-     * let str = "&BHello&R";
+     * let str = "<bold>Hello</bold>";
      * 
      * assert.equal(stripTags(str), "Hello");
      */
     stripTags(str: string): string {
-        // Regular expressions created by AI's, it removes the "&B"'s but keeps the "~&B"'s since the '~' here works like an escape character.
+        // Regular expressions created by AI's, it removes the "<bold>"'s but keeps the "~<bold>"'s since the '~' here works like an escape character.
         // It does however remove the escape character itself.
         let strippedString = str;
 

@@ -7,9 +7,9 @@ export const blueprint: Blueprint = {
     stats: [2, 3],
 
     // The description doesn't really matter, but it's nice to explain what the card does.
-    // The `&B` means Bold, and the `&R` means Reset. This just makes the word `Taunt.` bold, but nothing after it.
+    // The `<bold>` will bold all characters after it, and the `</bold>` stops the bolding. This just makes the word `Taunt.` bold, but nothing after it.
     // Look in `functions.parseTags` for a list of these tags.
-    desc: "&BTaunt.&R This is an example card to show how to add keywords to cards.",
+    desc: "<bold>Taunt.</bold> This is an example card to show how to add keywords to cards.",
 
     mana: 1,
     type: "Minion",

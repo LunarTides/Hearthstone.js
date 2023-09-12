@@ -5,7 +5,7 @@ import { Blueprint } from "@Game/types.js";
 export const blueprint: Blueprint = {
     name: "Kobold Lackey",
     stats: [1, 1],
-    desc: "&BBattlecry:&R Deal 2 damage.",
+    desc: "<bold>Battlecry:</bold> Deal 2 damage.",
     mana: 1,
     type: "Minion",
     tribe: "None",

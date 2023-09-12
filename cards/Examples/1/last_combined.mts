@@ -5,7 +5,7 @@ import { Blueprint } from "@Game/types.js";
 export const blueprint: Blueprint = {
     name: "Combined Example 1",
     stats: [4, 4],
-    desc: "&BTaunt, Divine Shield. Battlecry: Dredge.&R Gain +1/+1. (This example card combines everything you've learned in stage 1 into this card.)",
+    desc: "<bold>Taunt, Divine Shield. Battlecry: Dredge.</bold> Gain +1/+1. (This example card combines everything you've learned in stage 1 into this card.)",
     mana: 1,
     type: "Minion",
     tribe: "All",

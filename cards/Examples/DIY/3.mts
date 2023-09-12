@@ -5,7 +5,7 @@ import { Blueprint, EventValue } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
     name: "DIY 3",
-    desc: "&BThis is a DIY card, it does not work by default.&R Choose a minion to kill.",
+    desc: "<bold>This is a DIY card, it does not work by default.</bold> Choose a minion to kill.",
     mana: 0,
     type: "Spell",
     spellSchool: "None",

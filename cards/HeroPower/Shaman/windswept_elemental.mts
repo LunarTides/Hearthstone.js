@@ -5,7 +5,7 @@ import { Blueprint } from "@Game/types.js";
 export const blueprint: Blueprint = {
     name: "Windswept Elemental",
     stats: [2, 1],
-    desc: "&BRush&R",
+    desc: "<bold>Rush</bold>",
     mana: 2,
     type: "Minion",
     tribe: "Totem",

@@ -42,8 +42,8 @@ function main() {
                 return;
             }
 
-            vanilla.text = vanilla.text?.replaceAll("<b>", "&B");
-            vanilla.text = vanilla.text?.replaceAll("</b>", "&R");
+            vanilla.text = vanilla.text?.replaceAll("<b>", "<bold>");
+            vanilla.text = vanilla.text?.replaceAll("</b>", "</bold>");
             vanilla.text = vanilla.text?.replaceAll("\n", " ");
             vanilla.text = vanilla.text?.replaceAll("[x]", "");
 
