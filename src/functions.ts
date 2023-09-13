@@ -1548,7 +1548,7 @@ ${main_content}
                 }
 
                 tagbuilder = "";
-
+                removeTag = false;
                 return;
             }
             if (c === "/" && readingTag) {
