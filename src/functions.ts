@@ -1531,13 +1531,14 @@ ${main_content}
                 readingTag = false;
 
                 let currentTags = tagbuilder.split(" ");
+                tagbuilder = "";
 
-                if (!removeTag) {
-                    current_types = [...current_types, ...currentTags];
-                }
+                if (!removeTag) current_types.push(...currentTags);
                 else {
+                    removeTag = false;
+
                     // If the tag is </>, remove all tags
-                    if (!currentTags.some(t => t.length > 0)) {
+                    if (readPrevious(i) === "/") {
                         current_types = [];
                         return;
                     };
@@ -1547,8 +1548,6 @@ ${main_content}
                     });
                 }
 
-                tagbuilder = "";
-                removeTag = false;
                 return;
             }
             if (c === "/" && readingTag) {
