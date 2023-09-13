@@ -5,7 +5,7 @@ import { Blueprint } from "@Game/types.js";
 export const blueprint: Blueprint = {
     name: "Colossal Example",
     stats: [5, 3],
-    desc: "Colossal +2. <bold>Battlecry:</bold> Dredge.",
+    desc: "Colossal +2. <b>Battlecry:</b> Dredge.",
     mana: 2,
     type: "Minion",
     tribe: "Beast",

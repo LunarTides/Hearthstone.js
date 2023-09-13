@@ -1287,7 +1287,7 @@ ${main_content}
      * 'bg:bright:red', 'bg:bright:green', 'bg:bright:blue'
      * 
      * // Special
-     * 'bold', 'italic', 'underline'
+     * 'b[old]', 'italic', 'underline' // The `old` in bold is optional
      * 
      * // Hex
      * '[fg:]#FF0000', 'bg:#FF0000'
@@ -1301,17 +1301,17 @@ ${main_content}
      * @returns The resulting string
      * 
      * @example
-     * let parsed = parseTags("<bold>Battlecry:</bold> Test");
+     * let parsed = parseTags("<b>Battlecry:</b> Test");
      * assert.equal(parsed, chalk.bold("Battlecry:") + " Test");
      * 
      * @example
      * // Add the `~` character to escape the tag
-     * let parsed = parseTags("~<bold>Battlecry:~</bold> Test ~~<bold>Test~~</bold> Test");
-     * assert.equal(parsed, "<bold>Battlecry:</bold> Test ~" + chalk.bold("Test~") + " Test");
+     * let parsed = parseTags("~<b>Battlecry:~</b> Test ~~<b>Test~~</b> Test");
+     * assert.equal(parsed, "<b>Battlecry:</b> Test ~" + chalk.bold("Test~") + " Test");
      * 
      * @example
      * // You can mix and match tags as much as you want. You can remove categories of tags as well, for example, removing `bg:bright:blue` by doing `</bg>`
-     * let parsed = parseTags("<red bg:bright:blue bold>Test</bg> Hi</bold> there</red> again");
+     * let parsed = parseTags("<red bg:bright:blue bold>Test</bg> Hi</b> there</red> again");
      * assert.equal(parsed, chalk.red.bgBlueBright.bold("Test") + chalk.red.bold(" Hi") + chalk.red(" there") + " again");
      * 
      * @example
@@ -1328,7 +1328,7 @@ ${main_content}
         const appendTypes = (c: string): string => {
             let ret = c;
 
-            // This line fixes a bug that makes, for example, `</bold>Test</bold>.` make the `.` be red when it should be white. This bug is why all new battlecries were `<bold>Battlecry:</bold> Deal...` instead of `<bold>Battlecry: </bold>Deal...`. I will see which one i choose in the future.
+            // This line fixes a bug that makes, for example, `</b>Test</b>.` make the `.` be red when it should be white. This bug is why all new battlecries were `<b>Battlecry:</b> Deal...` instead of `<b>Battlecry: </b>Deal...`. I will see which one i choose in the future.
             // Update: I discourge the use of `reset` now that you cancel tags manually. Use `</>` instead.
             if (current_types.includes("reset")) current_types = ["reset"]; 
 
@@ -1449,6 +1449,7 @@ ${main_content}
 
                         ret = chalk.reset(ret);
                         break;
+                    case "b": // You can use `b` instead of `bold`
                     case "bold":
                         ret = chalk.bold(ret);
                         break;
@@ -1577,12 +1578,12 @@ ${main_content}
      * This only removes the TAGS, not the actual colors. Use `colors.strip` for that.
      * 
      * @example
-     * let str = "<bold>Hello</bold>";
+     * let str = "<b>Hello</b>";
      * 
      * assert.equal(stripTags(str), "Hello");
      */
     stripTags(str: string): string {
-        // Regular expressions created by AI's, it removes the "<bold>"'s but keeps the "~<bold>"'s since the '~' here works like an escape character.
+        // Regular expressions created by AI's, it removes the "<b>"'s but keeps the "~<b>"'s since the '~' here works like an escape character.
         // It does however remove the escape character itself.
         let strippedString = str;
 

@@ -6,7 +6,7 @@ export const blueprint: Blueprint = {
     name: "Death Knight Frail Ghoul",
     displayName: "Frail Ghoul",
     stats: [1, 1],
-    desc: "<bold>Charge</bold> At the end of your turn, this minion dies.",
+    desc: "<b>Charge</b> At the end of your turn, this minion dies.",
     mana: 1,
     type: "Minion",
     tribe: "Undead",

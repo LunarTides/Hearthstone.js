@@ -45,8 +45,6 @@ export function create(card: VanillaCard, debug: boolean) {
 
     // Modify the desc
     desc = desc.replaceAll("\n", " ");
-    desc = desc.replaceAll("<b>", "<bold>");
-    desc = desc.replaceAll("</b>", "</bold>");
     desc = desc.replaceAll("[x]", "");
 
     const classes = game.functions.getClasses() as CardClass[];

@@ -41,6 +41,12 @@ function upgradeCard(path: string, filename: string, data: string) {
     }
 
     oldData = data;
+    data = data.replace(/&B(.+?)&R/g, `<b>$1</b>`);
+    if (data !== oldData) {
+        console.log(`Updated tags in description.`);
+    }
+
+    oldData = data;
     data = data.replace(/\n {4}set: (.*),/, ``);
     if (data !== oldData) {
         console.log(`Removed the set field.`);

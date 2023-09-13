@@ -5,7 +5,7 @@ import { Blueprint } from "@Game/types.js";
 export const blueprint: Blueprint = {
     name: "Corrupt Example",
     stats: [1, 1],
-    desc: "<bold>Corrupt.</bold>",
+    desc: "<b>Corrupt.</b>",
     mana: 0,
     type: "Minion",
     tribe: "None",

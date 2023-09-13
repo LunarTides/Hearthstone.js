@@ -5,7 +5,7 @@ import { Blueprint } from "@Game/types.js";
 export const blueprint: Blueprint = {
     name: "Stoneclaw Totem",
     stats: [0, 2],
-    desc: "<bold>Taunt</bold>",
+    desc: "<b>Taunt</b>",
     mana: 1,
     type: "Minion",
     tribe: "Totem",

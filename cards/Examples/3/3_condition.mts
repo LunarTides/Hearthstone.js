@@ -7,7 +7,7 @@ export const blueprint: Blueprint = {
     stats: [5, 2],
 
     // This is a common condition
-    desc: "<bold>Battlecry:</bold> If your deck has no duplicates, draw a card.", 
+    desc: "<b>Battlecry:</b> If your deck has no duplicates, draw a card.", 
 
     mana: 1,
     type: "Minion",

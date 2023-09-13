@@ -5,7 +5,7 @@ import { Blueprint } from "@Game/types.js";
 export const blueprint: Blueprint = {
     name: "Dormant Example",
     stats: [8, 8],
-    desc: "<bold>Dormant</bold> for 2 turns. <bold>Battlecry:</bold> Dredge.",
+    desc: "<b>Dormant</b> for 2 turns. <b>Battlecry:</b> Dredge.",
     mana: 1,
     type: "Minion",
     tribe: "None",

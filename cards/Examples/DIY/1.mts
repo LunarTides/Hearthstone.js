@@ -5,7 +5,7 @@ import { Blueprint } from "@Game/types.js";
 export const blueprint: Blueprint = {
     name: "DIY 1",
     stats: [1, 1],
-    desc: "<bold>This is a DIY card, it does not work by default. Battlecry:</bold> Give this minion +1/+1.",
+    desc: "<b>This is a DIY card, it does not work by default. Battlecry:</b> Give this minion +1/+1.",
     mana: 0,
     type: "Minion",
     tribe: "None",
