@@ -645,7 +645,7 @@ export class Game {
             // Dormant
             if (m.dormant) {
                 if (this.turns > m.dormant) {
-                    m.dormant = false;
+                    m.dormant = undefined;
                     m.sleepy = true;
 
                     m.immune = m.backups.init.immune;

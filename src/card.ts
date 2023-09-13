@@ -170,7 +170,7 @@ export class Card {
      * If the card is dormant | The turn that the dormant runs out
      */
     // TODO: Rewrite dormant
-    dormant: false | number = false;
+    dormant?: number;
 
     /**
      * If the card is frozen.
@@ -406,13 +406,6 @@ export class Card {
     doBlueprint(): void {
         // Reset the blueprint
         this.blueprint = game.cards.find(c => c.name == this.name) || this.blueprint;
-
-        // Set these variables to true or false.
-        const exists = ["dormant", "uncollectible", "frozen", "immune", "echo"];
-        exists.forEach(i => {
-            // @ts-expect-error
-            this[i] = this.blueprint[i] || false;
-        });
 
         /*
         Go through all blueprint variables and
