@@ -1445,7 +1445,7 @@ export const interact = {
                 }
             }
 
-            desc = desc.replace(reg, replacement);
+            desc = game.functions.parseTags(desc.replace(reg, replacement));
         }
 
         // Replace spell damage placeholders

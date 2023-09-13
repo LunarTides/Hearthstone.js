@@ -1483,6 +1483,9 @@ ${main_content}
             return ret;
         }
 
+        // Don't waste resources if the string doesn't contain tags
+        if (!str.includes("<") || !str.includes(">")) return str;
+
         let strbuilder = "";
         let wordStringbuilder = "";
         let current_types: string[] = [];

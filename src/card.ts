@@ -27,7 +27,7 @@ export class Card {
      * The card's description / text.
      * 
      * Might include color tags like `Example [033Example 2[142`.
-     * Use `colors.strip()` to remove these.
+     * Use `stripAnsi()` to remove these.
      */
     desc: string;
 

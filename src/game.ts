@@ -101,6 +101,7 @@ const eventManager: IEventManager = {
                 if (card.getHealth() <= 0) return;
                 
                 // Placeholders
+                // TODO: Why do we replace placeholders every tick here?
                 card.replacePlaceholders();
                 card.condition();
 
