@@ -8,10 +8,14 @@
 import fs from "fs";
 import { createGame } from "../src/internal.js";
 import chalk from "chalk";
+import child_process from "child_process";
 
 const { game, player1, player2 } = createGame();
 
 function upgradeCard(path: string, filename: string, data: string) {
+    // Yes, this code is ugly. This script is temporary.
+    // This will also not work for ALL cards, they are just too flexible.
+    // But it should work for all cards that was created using the card creator.
     console.log(`--- Found ${filename} ---`);
 
     let hasPassive = data.includes("passive(plr, game, self, key, ");
@@ -122,6 +126,19 @@ function main() {
     if (!proceed) process.exit(0);
 
     upgradeCards(game.functions.dirname() + "../cards");
+
+    console.log("Trying to compile...");
+    try {
+        child_process.execSync("npx tsc");
+        console.log(chalk.greenBright("Success!"));
+    } catch (err) {
+        // If the error code is 2, warn the user.
+        if (err.status === 2) {
+            console.error(chalk.yellow("WARNING: Compiler error occurred. Please fix the errors in the card."));
+        } else {
+            throw err;
+        }
+    }
 
     console.log("Done");
 }

@@ -8,11 +8,14 @@
  */
 
 import { createGame } from "./internal.js";
+import fs from "fs";
+import chalk from "chalk";
 
 export function main() {
     const { game, player1, player2 } = createGame();
 
     game.interact.printName();
+    warnAboutOutdatedCards();
 
     // Ask the players for deck codes.
     [player1, player2].forEach(plr => {
@@ -35,4 +38,33 @@ export function main() {
 
         throw err;
     }
+}
+
+let outdatedCards: string[] = [];
+function warnAboutOutdatedCards() {
+    findOutdatedCards(game.functions.dirname() + "../cards");
+    if (outdatedCards.length <= 0) return;
+
+    outdatedCards.forEach(p => {
+        console.warn(chalk.yellow(`WARNING: Outdated card found: ${p}`));
+    });
+
+    console.warn("Run the `upgradecards` script to automatically update outdated cards from pre 2.0.");
+    console.warn("This will only upgrade pre 2.0 cards to 2.0 cards.");
+    console.warn("You can play the game without upgrading the cards, but the cards won't be registered.");
+    console.warn("Run the script by running `npm run script:upgradecards`.");
+
+    let proceed = game.input("\nDo you want to proceed? ([y]es, [n]o): ").toLowerCase()[0] === "y";
+    if (!proceed) process.exit(0);
+}
+
+function findOutdatedCards(path: string) {
+    fs.readdirSync(path, { withFileTypes: true }).forEach(file => {
+        let p = `${path}/${file.name}`;
+
+        if (file.name.endsWith(".js")) {
+            outdatedCards.push(p.replace("/dist/..", ""));
+        }
+        else if (file.isDirectory()) findOutdatedCards(p);
+    })
 }
