@@ -1591,10 +1591,10 @@ ${main_content}
         let strippedString = str;
 
         // Remove unescaped tags
-        strippedString = strippedString.replace(/(?<!~)&\w/g, "")
+        strippedString = strippedString.replace(/(?<!~)<.+?>/g, "")
 
         // Remove escape character
-        strippedString = strippedString.replace(/~&(\w)/g, "&$1")
+        strippedString = strippedString.replace(/~(<.+?>)/g, "$1")
 
         return strippedString;
     },

@@ -33,14 +33,16 @@ export const blueprint: Blueprint = {
         // `_unknownVal` is some additional information about the event. The type of this variable is different for each `key`, which is why it's unknown.
         // We will narrow the type of `_unknownVal` once we know what `key` is.
         //
-        // We want to execute code when a card gets played. There exists a event with the key `PlayCard`.
+        // We want to execute code when a card gets played. There exists an event with the key `PlayCard`.
         // That event's value is the card played (type `Card`).
 
         // When you play a minion, the `PlayCard` event is triggered after the minion's battlecry,
         // in order for refunding to not trigger the event, so we can trigger the minion's battlecry again.
         // We don't refund here, since refunding from passives is not supported, and currently doesn't do anything.
-        // But if i add refunding from passives, it would probably break the card in some way, so just wait until it is supported, and you know what it does before using it.
-        if (!(key === "PlayCard")) return;
+        // But if i add refunding from passives, it would probably break the card in some way, so just wait until it is supported and you know what it does before using it.
+        // We do `!(key === "PlayCard" && game.player === plr)` instead of `key !== "PlayCard" || game.player !== plr`` for clarity.
+        // We only want YOUR battlecries to trigger twice. (`game.player` is the current player, so the player that triggered the event)
+        if (!(key === "PlayCard" && game.player === plr)) return;
 
         // Since we now know that the key is `PlayCard`, we can retrieve the correct value by doing this.
         const val = _unknownVal as EventValue<typeof key>;

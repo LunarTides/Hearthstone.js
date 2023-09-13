@@ -12,5 +12,5 @@ export const blueprint: Blueprint = {
     classes: ["Warlock"],
     rarity: "Free",
     uncollectible: true,
-    id: 21,
+    id: 21
 }

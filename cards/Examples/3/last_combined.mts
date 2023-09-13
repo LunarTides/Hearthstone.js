@@ -15,6 +15,8 @@ export const blueprint: Blueprint = {
     id: 54,
 
     cast(plr, game, self) {
+        // If the turn counter is an even number, gain mana equal to the turn counter (up to 10).
+
         let turns = Math.ceil(game.turns / 2);
 
         // Cap the turn counter at 10

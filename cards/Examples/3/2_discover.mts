@@ -13,6 +13,8 @@ export const blueprint: Blueprint = {
     id: 51,
 
     cast(plr, game, self) {
+        // Discover a spell.
+
         // The discover function needs a list of cards to choose from.
         // This list will act like a pool of cards.
 
@@ -25,7 +27,7 @@ export const blueprint: Blueprint = {
         cards = cards.filter(c => c.type == "Spell"); 
 
         // interact.discover(prompt, pool, if_it_should_filter_away_cards_that_are_not_the_players_class = true, amount_of_cards_to_choose_from = 3)
-        let spell = game.interact.discover("Discover a spell", cards);
+        let spell = game.interact.discover("Discover a spell.", cards);
 
         // If no card was chosen, refund
         if (!spell) return game.constants.REFUND;

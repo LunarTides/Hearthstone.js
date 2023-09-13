@@ -15,9 +15,15 @@ export const blueprint: Blueprint = {
     id: 57,
 
     battlecry(plr, game, self) {
+        // For the rest of the game, your battlecries trigger twice.
+
         // Add an event listener.
+        // Event listeners behave exactly like passives, except they aren't tied to a card's location.
+        // It is important to destroy the event listener when you're done with it, which is why there are 3 ways for an event listener to be destroyed.
+        // For this example, the event listener lasts forever, so we won't destroy it.
+
         // The first argument is the key to listen for.
-        // The second argument is a function.
+        // The second argument is a callback function.
         // The third argument is the event listeners' lifespan.
         let destroy = game.functions.addEventListener("PlayCard", (_unknownVal) => {
             // This function will be run if the correct event was broadcast
@@ -25,9 +31,10 @@ export const blueprint: Blueprint = {
             // addEventListener can't figure out the type of `val` by itself, so we have to do the same thing as with passives
             const val = _unknownVal as EventValue<"PlayCard">;
 
-            // Only continue if the player that triggered the event is this card's owner and the played card is a minion
+            // Only continue if the player that triggered the event is this card's owner and the played card is a minion and it is not this card
+            // The `PlayCard` event gets triggered after this battlecry, remember? So we need to prevent it from calling this card's battlecry again.
             // The return value will be explained below
-            if (!(val.type == "Minion" && val != self)) return false;
+            if (!(val.type === "Minion" && game.player === plr && val !== self)) return false;
 
             // Activate the battlecry
             val.activateBattlecry();

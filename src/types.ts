@@ -9,7 +9,7 @@ import { Card, Game, Player, AI, functions, interact } from "./internal.js";
  */
 export type ScoredCard = {
     card: Card,
-    score: number,
+    score: number
 }
 
 /**
@@ -466,7 +466,7 @@ export type Blueprint = {
     storage?: { [key: string]: any },
 
     uncollectible?: boolean,
-    id: number,
+    id: number
 } & BlueprintAbilities;
 
 /**

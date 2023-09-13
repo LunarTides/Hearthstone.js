@@ -13,5 +13,5 @@ export const blueprint: Blueprint = {
     rarity: "Free",
     keywords: ["Taunt"],
     uncollectible: true,
-    id: 17,
+    id: 17
 }

@@ -15,6 +15,8 @@ export const blueprint: Blueprint = {
     id: 59,
 
     battlecry(plr, game, self) {
+        // Your cards cost (1) less.
+
         // Ticks are called more often than passives
         // Passives get called when an event gets broadcast
         // Ticks get called when an event gets broadcast AND every game loop
@@ -32,7 +34,7 @@ export const blueprint: Blueprint = {
             });
         });
 
-        // Store the unhook to be used later
+        // Store the unhook to be used later in the `remove` ability. This is the only supported way to transfer information between abilities.
         // You can store anything in a card, and it shouldn't be messed with by other cards / the game.
         // Speaking of, you should never mess with another card's storage since it can cause unexpected behavior.
         if (!self.storage.unhooks) self.storage.unhooks = [];
@@ -42,6 +44,7 @@ export const blueprint: Blueprint = {
     // Unhook from the tick when the card is removed
     remove(plr, game, self) {
         // Unhook from all ticks that the card is hooked to.
+        // It is important to unhook before removing the enchantments, since removing the enchantments can cause a tick, which would add the enchantments back.
         if (self.storage.unhooks) self.storage.unhooks.forEach((unhook: Function) => unhook());
 
         // Undo the enchantments

@@ -102,6 +102,7 @@ export function create(creatorType: CCType, cardType: CardType, blueprint: Bluep
     // card.hpDesc can be undefined, but shouldn't be if the type is Hero.
     if (desc_to_clean === undefined) throw new Error("Card has no hero power description.");
 
+    // If the desc has `<b>Battlecry:</b> Dredge.`, add `// Dredge.` to the battlecry function
     let cleaned_desc = game.functions.stripTags(desc_to_clean).replace(`${func}: `, "");
 
     // Example 1: '\n\n    passive(plr, game, self, key, _unknownValue) {\n        // Your battlecries trigger twice.\n        ...\n    }',

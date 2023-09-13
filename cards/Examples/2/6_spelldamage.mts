@@ -8,7 +8,7 @@ export const blueprint: Blueprint = {
     // Put a $ sign before the number to show spell damage in the description.
     // It's like a mini-placeholder, which is something you will learn about in the next chapter.
     // If you have debug mode enabled, do `/eval game.player.spellDamage += 5` in order to see it working.
-    desc: "Deal $3 damage to the enemy hero. As long as this is in your hand, your spell damage increases by 1 every time you play a card.",
+    desc: "Deal $3 damage to the enemy hero.",
 
     mana: 0,
     type: "Spell",
@@ -19,6 +19,8 @@ export const blueprint: Blueprint = {
     id: 42,
 
     cast(plr, game, self) {
+        // Deal $3 damage to the enemy hero.
+
         // Put the $ sign here to make the game apply spell damage correctly.
         // Ideally you wouldn't need to do that and the game would figure it out, but i wasn't able to get it to work.
         game.attack("$3", plr.getOpponent());

@@ -6,7 +6,7 @@ import { Blueprint, EventValue } from "@Game/types.js";
 export const blueprint: Blueprint = {
     name: "DIY 4",
     stats: [1, 10],
-    desc: "<b>This is a DIY card, it does not work by default.</b> Whenever a minion dies, Resurrect it with 1/1 stats.",
+    desc: "<b>This is a DIY card, it does not work by default.</b> Whenever a friendly minion dies, Resurrect it with 1/1 stats.",
     mana: 0,
     type: "Minion",
     classes: ["Neutral"],
@@ -28,8 +28,7 @@ export const blueprint: Blueprint = {
         if (val.plr !== plr) return;
 
         // Try to:
-        // 1. Only do this if a minion dies.
-        // 2. Resurrect the minion with 1/1 stats.
+        // 1. Resurrect the minion (val) with 1/1 stats.
 
         // THIS ONLY GETS VALIDATED ONCE A MINION DIES. PLEASE TRY TO CAUSE A MINION TO DIE IN ORDER TO VALIDATE YOUR SOLUTION
 

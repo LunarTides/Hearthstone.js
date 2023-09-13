@@ -16,5 +16,5 @@ export const blueprint: Blueprint = {
     corrupt: "Combined Example 2 Corrupted",
     dormant: 2,
     uncollectible: true,
-    id: 48,
+    id: 48
 }

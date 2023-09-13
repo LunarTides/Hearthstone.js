@@ -278,7 +278,7 @@ const eventManager: IEventManager = {
         eventManager.stats[key][player.id] += amount;
 
         return eventManager.stats[key][player.id];
-    },
+    }
 }
 
 export class Game {
@@ -1440,5 +1440,5 @@ const cards = {
         });
 
         return minion;
-    },
+    }
 };

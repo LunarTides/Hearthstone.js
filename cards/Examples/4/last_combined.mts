@@ -17,7 +17,7 @@ export const blueprint: Blueprint = {
         game.functions.addQuest("Quest", plr, self, "PlayCard", 3, (_unknownVal, done) => {
             const val = _unknownVal as EventValue<"PlayCard">;
 
-            if (val == self) return false;
+            if (!(val !== self)) return false;
             if (!done) return true;
 
             // The quest is done.
@@ -38,7 +38,7 @@ export const blueprint: Blueprint = {
                 const val = _unknownVal as EventValue<"PlayCard">
 
                 // Only continue if the player that triggered the event is this card's owner and the played card is a minion.
-                if (!(game.player == plr && val.type == "Minion")) return false;
+                if (!(game.player === plr && val.type === "Minion")) return false;
 
                 // Every time YOU play a MINION, increment `amount` by 1.
                 amount++;

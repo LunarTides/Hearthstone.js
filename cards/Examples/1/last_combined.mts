@@ -16,6 +16,8 @@ export const blueprint: Blueprint = {
     id: 35,
 
     battlecry(plr, game, self) {
+        // Dredge. Gain +1/+1.
+
         // Ordering is important. In the description it says that it dredges first, then adds +1/+1.
         game.interact.dredge();
 

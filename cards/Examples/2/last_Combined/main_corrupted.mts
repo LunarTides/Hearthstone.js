@@ -5,7 +5,7 @@ import { Blueprint } from "@Game/types.js";
 export const blueprint: Blueprint = {
     name: "Combined Example 2 Corrupted",
     stats: [9, 9],
-    desc: "Colossal +2. Dormant. Corrupted. Battlecry: Dredge.",
+    desc: "Colossal +2. Dormant. Corrupted. <b>Battlecry: Dredge.</b>",
     mana: 0,
     type: "Minion",
     tribe: "None",
@@ -17,6 +17,8 @@ export const blueprint: Blueprint = {
     id: 49,
 
     battlecry(plr, game, self) {
+        // Dredge.
+
         game.interact.dredge();
     }
 }

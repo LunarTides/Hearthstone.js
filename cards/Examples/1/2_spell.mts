@@ -10,10 +10,11 @@ export const blueprint: Blueprint = {
 
     // The spell school of the spell. If you don't include this line, it will not have a spell school.
     // You can delete this line, but not the `tribe` line in `minion.mts`.
+    // TODO: Verify the claim above
     spellSchool: "Shadow",
 
     classes: ["Neutral"],
     rarity: "Free",
     uncollectible: true,
-    id: 30,
+    id: 30
 }

@@ -5,7 +5,7 @@ import { Blueprint } from "@Game/types.js";
 export const blueprint: Blueprint = {
     name: "Manathirst Example",
     stats: [1, 2],
-    desc: "Battlecry: Freeze an enemy minion. Manathirst (6): Silence it first.",
+    desc: "<b>Battlecry:</b> Freeze an enemy minion. Manathirst (6): Silence it first.",
     mana: 1,
     type: "Minion",
     tribe: "None",
@@ -18,7 +18,7 @@ export const blueprint: Blueprint = {
         // `ret` is a boolean.
         let ret = self.manathirst(6);
 
-        // Builld the prompt.
+        // Build the prompt.
         let prompt: string;
         if (ret) prompt = "Silence then freeze an enemy minion.";
         else prompt = "Freeze an enemy minion.";
@@ -31,7 +31,7 @@ export const blueprint: Blueprint = {
         // Ask the user to select a target based on the `prompt`, the user can only select enemy minions
         let target = game.interact.selectCardTarget(prompt, self, "enemy");
 
-        // If target is false, user cancelled their selection. Return `game.constants.REFUND` to refund the card.
+        // If target is false it means that the user cancelled their selection. Return `game.constants.REFUND` to refund the card.
         if (!target) return game.constants.REFUND;
 
         // If the manathirst was successful, silence the target first

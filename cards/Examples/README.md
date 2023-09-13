@@ -1,7 +1,7 @@
 # Examples
 These are some example cards to (hopefully) teach you how to create your own cards in Hearthstone.js
 
-You can give yourself any of these cards by having debug mode enabled (`config/general.json`), and typing `/give The Card's Name` or `/give The Card's Id`.
+You can give yourself any of these cards by having debug mode enabled (`config.toml`), and typing `/give The Card's Name` or `/give The Card's Id`.
 
 Every stage has a big example card at the end, called `combined.mts`. This will show you every concept you learned in that stage, so look at that last.
 

@@ -18,23 +18,24 @@ export const blueprint: Blueprint = {
     // How much the card costs.
     mana: 1,
 
-    // What type the card is: "Minion", "Spell", "Weapon", etc...
+    // The type of the card. E.g. "Minion", "Spell", "Weapon", etc...
     type: "Minion",
 
-    // What tribe the minion is: "Undead", "Naga", "Beast", etc...
+    // The tribe of the minion. E.g. "Undead", "Naga", "Beast", etc...
     tribe: "None",
 
-    // What classes that the card belongs to: "Neutral", "Warrior", "Hunter", etc...
+    // The classes of the card. E.g. "Neutral", "Warrior", "Hunter", etc...
     classes: ["Neutral"],
 
-    // The rarity of the card: "Free", "Common", "Rare", etc...
+    // The rarity of the card. E.g. "Free", "Common", "Rare", etc...
     rarity: "Free",
 
     // If the card should not be allowed in decks, or in card pools.
     // These example cards should not be randomly generated in `discover`, or added in a deck, so all of them are uncollectible.
+    // If the card isn't uncollectible, you don't need to set the uncollectible property at all.
     uncollectible: true,
 
     // The ID of the card. This is used in deckcodes, and should be unique per blueprint. This gets generated automatically by the card creator.
     // If you have debug mode enabled, you can type `/give (id)` to give yourself the card with that id.
-    id: 29,
+    id: 29
 }

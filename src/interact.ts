@@ -1880,7 +1880,7 @@ export const interact = {
      */
     cls() { // Do this so it doesn't crash because of "strict mode"
         cls();
-    },
+    }
 }
 
 const cls = () => process.stdout.write('\x1bc');

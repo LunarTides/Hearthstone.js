@@ -36,7 +36,7 @@ export const blueprint: Blueprint = {
 
     // This function will be run when the card is played.
     // This function will also be run every tick in order to add / remove the ` (Condition cleared!)` text.
-    // If this function returns true at that point, the battlecry will be triggered.
+    // If this function returns true when this card is played, the battlecry will be triggered.
     condition(plr, game, self) {
         // `game.functions.highlander` will return true if the player has no duplicates in their deck.
         //

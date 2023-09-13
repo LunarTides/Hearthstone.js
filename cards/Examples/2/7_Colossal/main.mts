@@ -5,7 +5,7 @@ import { Blueprint } from "@Game/types.js";
 export const blueprint: Blueprint = {
     name: "Colossal Example",
     stats: [5, 3],
-    desc: "Colossal +2. <b>Battlecry:</b> Dredge.",
+    desc: "Colossal +2.",
     mana: 2,
     type: "Minion",
     tribe: "Beast",
@@ -21,9 +21,5 @@ export const blueprint: Blueprint = {
     colossal: ["Colossal Example Left Arm", "", "Colossal Example Right Arm"],
 
     uncollectible: true,
-    id: 45,
-
-    battlecry(plr, game) {
-        game.interact.dredge();
-    }
+    id: 45
 }

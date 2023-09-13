@@ -20,6 +20,8 @@ export const blueprint: Blueprint = {
     // 
     // Instead of `battlecry`, you could put `deathrattle`, or `inspire`, for example.
     battlecry(plr, game, self) {
+        // Give this minion +1/+1.
+
         // The `plr` variable is the card's owner. This is an instance of the Player class as defined in `src/player.ts`.
         // The `game` variable is the current game. This is an instance of the Game class as defined in `src/game.ts`.
         // The `self` variable is the actual card itself in-game. This is an instance of the Card class as defined in `src/card.ts`.
