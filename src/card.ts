@@ -265,10 +265,8 @@ export class Card {
 
     /**
      * The amount of infuse a card has.
-     * 
-     * Set to -1 if the card does not have infuse.
      */
-    infuse_num?: number; // TODO: Rename this
+    infuse?: number;
     
     /**
      * The turn that the card was frozen.

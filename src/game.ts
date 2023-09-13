@@ -71,24 +71,21 @@ const eventManager: IEventManager = {
      */
     tick(key, val) {
         // The code in here gets executed very often
+        // So don't do any expensive stuff here
         let game = globalThis.game;
         if (!game) return false;
 
         // Infuse
         if (key === "KillMinion") {
-            // Get the game from the properties
+            // TODO: Rewrite and move this code
             val = val as EventValue<typeof key>;
             val.plr.hand.forEach(p => {
-                if (!p.infuse_num) return;
-                if (p.infuse_num < 0) return;
+                if (!p.infuse || p.infuse <= 0) return;
 
-                p.desc = p.desc.replace(`Infuse (${p.infuse_num})`, `Infuse (${p.infuse_num - 1})`);
-                p.infuse_num -= 1;
-
-                if (p.infuse_num != 0) return;
+                p.infuse -= 1;
+                if (p.infuse > 0) return;
 
                 p.activate("infuse");
-                p.desc = p.desc.replace(`Infuse (${p.infuse_num})`, "Infused");
             });
         }
 
