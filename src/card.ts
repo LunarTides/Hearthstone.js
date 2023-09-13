@@ -173,11 +173,6 @@ export class Card {
     dormant: false | number = false;
 
     /**
-     * If the card has been corrupted.
-     */
-    corrupted: boolean = false;
-
-    /**
      * If the card is frozen.
      * A frozen card cannot attack.
      */
@@ -273,7 +268,7 @@ export class Card {
      * 
      * Set to -1 if the card is not frozen.
      */
-    frozen_turn?: number; // TODO: Rename this
+    turnFrozen?: number; // TODO: Rename this
 
     /**
      * The runes of the card.
@@ -413,7 +408,7 @@ export class Card {
         this.blueprint = game.cards.find(c => c.name == this.name) || this.blueprint;
 
         // Set these variables to true or false.
-        const exists = ["corrupted", "colossal", "dormant", "uncollectible", "frozen", "immune", "echo"];
+        const exists = ["dormant", "uncollectible", "frozen", "immune", "echo"];
         exists.forEach(i => {
             // @ts-expect-error
             this[i] = this.blueprint[i] || false;
@@ -508,7 +503,7 @@ export class Card {
      * @returns Success
      */
     freeze(): boolean {
-        this.frozen_turn = game.turns;
+        this.turnFrozen = game.turns;
         this.frozen = true;
 
         game.events.broadcast("FreezeCard", this, this.plr);

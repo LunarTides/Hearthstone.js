@@ -1781,7 +1781,7 @@ export const interact = {
                     return;
                 }
 
-                const excludedKeywords = ["Magnetic", "Corrupt", "Corrupted"];
+                const excludedKeywords = ["Magnetic", "Corrupt"];
                 let keywords = m.keywords.filter(k => !excludedKeywords.includes(k));
                 let keywordsString = keywords.length > 0 ? chalk.gray(` {${keywords.join(", ")}}`) : "";
 

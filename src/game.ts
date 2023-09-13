@@ -661,7 +661,7 @@ export class Game {
             }
 
             m.canAttackHero = true;
-            if (this.turns > (m.frozen_turn ?? -1) + 1) m.frozen = false;
+            if (this.turns > (m.turnFrozen ?? -1) + 1) m.frozen = false;
             m.ready();
 
             // Stealth duration
