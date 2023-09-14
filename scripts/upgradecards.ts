@@ -16,12 +16,12 @@ function upgradeCard(path: string, filename: string, data: string) {
     // Yes, this code is ugly. This script is temporary.
     // This will also not work for ALL cards, they are just too flexible.
     // But it should work for all cards that was created using the card creator.
-    console.log(`--- Found ${filename} ---`);
+    game.log(`--- Found ${filename} ---`);
 
     let hasPassive = data.includes("passive(plr, game, self, key, ");
     let eventValue = hasPassive ? ", EventValue" : "";
 
-    console.log(`Passive: ${hasPassive}`);
+    game.log(`Passive: ${hasPassive}`);
     
     let bpDefRegex = /\/\*\*\n \* @type {import\("(?:\.\.\/)+src\/types"\)\.Blueprint}\n \*\//g;
     let kwmRegex = /\n    \/\*\*\n     \* @type {import\("(?:\.\.\/)+src\/types"\)\.KeywordMethod}\n     \*\//g;
@@ -29,37 +29,37 @@ function upgradeCard(path: string, filename: string, data: string) {
     let oldData = data;
     data = data.replaceAll(bpDefRegex, `import { Blueprint${eventValue} } from "@Game/types.js";\n`);
     if (data !== oldData) {
-        console.log(`Replaced blueprint type from jsdoc to import.`);
+        game.log(`Replaced blueprint type from jsdoc to import.`);
     }
 
     oldData = data;
     data = data.replaceAll(kwmRegex, ``);
     if (data !== oldData) {
-        console.log(`Removed KeywordMethod jsdoc type.`);
+        game.log(`Removed KeywordMethod jsdoc type.`);
     }
 
     oldData = data;
     data = data.replace(`module.exports = {`, `export const blueprint: Blueprint = {`);
     if (data !== oldData) {
-        console.log(`Replaced blueprint definition from module.exports to object.`);
+        game.log(`Replaced blueprint definition from module.exports to object.`);
     }
 
     oldData = data;
     data = data.replace(/&B(.+?)&R/g, `<b>$1</b>`);
     if (data !== oldData) {
-        console.log(`Updated tags in description.`);
+        game.log(`Updated tags in description.`);
     }
 
     oldData = data;
     data = data.replace(/\n {4}set: (.*),/, ``);
     if (data !== oldData) {
-        console.log(`Removed the set field.`);
+        game.log(`Removed the set field.`);
     }
 
     oldData = data;
     data = data.replace(/ {4}class: (.*),/, `    classes: [$1],`);
     if (data !== oldData) {
-        console.log(`Updated the class field.`);
+        game.log(`Updated the class field.`);
     }
 
     // Replace the card's id with a new one
@@ -67,7 +67,7 @@ function upgradeCard(path: string, filename: string, data: string) {
     let currentId = Number(fs.readFileSync(game.functions.dirname() + "../cards/.latest_id", { encoding: "utf8" })) + 1;
 
     data = data.replace(/( {4}.+: .+,)(\n\n {4}.*\(plr, game, self)/, `$1\n    id: ${currentId},$2`);
-    console.log(`Card was assigned id ${currentId}.`);
+    game.log(`Card was assigned id ${currentId}.`);
 
     fs.writeFileSync(game.functions.dirname() + "../cards/.latest_id", `${currentId}`);
 
@@ -78,7 +78,7 @@ function upgradeCard(path: string, filename: string, data: string) {
         let key = "";
         if (match) {
             key = match[1];
-            console.log(`Found key: ${key}.`);
+            game.log(`Found key: ${key}.`);
         } else {
             console.error(chalk.yellow("WARNING: Could not find event key in passive."));
         }
@@ -93,12 +93,12 @@ const val = _unknownVal as EventValue<typeof key>;
 `);
 
         data = data.replace(keyRegex, "");
-        console.log("Updated passive.")
+        game.log("Updated passive.")
     }
 
     fs.writeFileSync(path.replace(filename, filename.replace(".js", ".mts")), data);
     
-    console.log(`--- Finished ${filename} ---`);
+    game.log(`--- Finished ${filename} ---`);
 }
 
 function upgradeCards(path: string) {
@@ -127,10 +127,10 @@ function main() {
 
     upgradeCards(game.functions.dirname() + "../cards");
 
-    console.log("Trying to compile...");
+    game.log("Trying to compile...");
     try {
         child_process.execSync("npx tsc");
-        console.log(chalk.greenBright("Success!"));
+        game.log(chalk.greenBright("Success!"));
     } catch (err) {
         // If the error code is 2, warn the user.
         if (err.status === 2) {
@@ -140,7 +140,7 @@ function main() {
         }
     }
 
-    console.log("Done");
+    game.log("Done");
 }
 
 main();

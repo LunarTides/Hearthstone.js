@@ -61,11 +61,11 @@ function main() {
         // @ts-expect-error
         if (val.toLowerCase() == vanilla[table[key]]?.toString().toLowerCase()) return;
 
-        console.log("Card outdated!");
-        console.log(`Name: ${card.name}`);
-        console.log(`Local: "${key}: ${val}"`);
+        game.log("Card outdated!");
+        game.log(`Name: ${card.name}`);
+        game.log(`Local: "${key}: ${val}"`);
         // @ts-expect-error
-        console.log(`New:   "${key}: ${vanilla[table[key]]}"\n`);
+        game.log(`New:   "${key}: ${vanilla[table[key]]}"\n`);
     }
 }
 

@@ -19,7 +19,7 @@ function main() {
             writeFile(game.functions.dirname() + "../cardcreator/vanilla/.ignore.cards.json", JSON.stringify(data), err => {
                 if (err) throw err;
             });
-            console.log(`Found ${oldLength} cards!\nFiltered away ${oldLength - data.length} cards!\nSuccessfully imported ${data.length} cards!`);
+            game.log(`Found ${oldLength} cards!\nFiltered away ${oldLength - data.length} cards!\nSuccessfully imported ${data.length} cards!`);
         });
 }
 

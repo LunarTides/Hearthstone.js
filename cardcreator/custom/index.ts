@@ -209,8 +209,8 @@ export function main() {
 
     // Reset the shouldExit switch so that the program doesn't immediately exit when the user enters the ccc, exits, then enters ccc again
     shouldExit = false;
-    console.log("Hearthstone.js Custom Card Creator (C) 2022\n");
-    console.log("type 'back' at any step to cancel.\n");
+    game.log("Hearthstone.js Custom Card Creator (C) 2022\n");
+    game.log("type 'back' at any step to cancel.\n");
 
     // Ask the user for the type of card they want to make
     type = input("Type: ") as CardType;
@@ -235,7 +235,7 @@ export function main() {
             tmpCard = hero();
             break
         default:
-            console.log("That is not a valid type!");
+            game.log("That is not a valid type!");
             rl.question();
             return false;
     }
@@ -250,7 +250,7 @@ export function main() {
     if (uncollectible) card.uncollectible = uncollectible as boolean;
 
     // Actually create the card
-    console.log("Creating file...");
+    game.log("Creating file...");
 
     let filePath = lib.create("Custom", type, card);
 

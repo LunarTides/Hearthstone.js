@@ -45,7 +45,7 @@ function change(startId: number, callback: (id: number) => number, log: boolean)
 
     searchCards((path, content, id) => {
         if (id < startId) {
-            if (log) console.log(chalk.yellowBright(`Skipping ${path}`));
+            if (log) game.log(`<bright:yellow>Skipping ${path}</bright:yellow>`);
             return;
         }
 
@@ -54,7 +54,7 @@ function change(startId: number, callback: (id: number) => number, log: boolean)
         // Set the new id
         fs.writeFileSync(path, content.replace(idRegex, `    id: ${newId}`));
 
-        if (log) console.log(chalk.greenBright(`Updated ${path}`));
+        if (log) game.log(`<bright:green>Updated ${path}</bright:green>`);
         updated++;
     });
 
@@ -66,8 +66,8 @@ function change(startId: number, callback: (id: number) => number, log: boolean)
     }
 
     if (log) {
-        if (updated > 0) console.log(chalk.greenBright("Updated %s cards."), updated);
-        else console.log(chalk.yellow("No cards were updated."));
+        if (updated > 0) game.log("<bright:green>Updated %s cards.</bright:green>", updated);
+        else game.log("<yellow>No cards were updated.</yellow>");
     }
 
     return updated;
@@ -139,11 +139,11 @@ export function validate(log: boolean): [number, number] {
     });
 
     if (log) {
-        if (holes > 0) console.log(chalk.yellow("Found %s holes."), holes);
-        else console.log(chalk.greenBright("No holes found."));
+        if (holes > 0) game.log(chalk.yellow("Found %s holes."), holes);
+        else game.log(chalk.greenBright("No holes found."));
 
-        if (duplicates > 0) console.log(chalk.yellow("Found %s duplicates."), duplicates);
-        else console.log(chalk.greenBright("No duplicates found."));
+        if (duplicates > 0) game.log(chalk.yellow("Found %s duplicates."), duplicates);
+        else game.log(chalk.greenBright("No duplicates found."));
     }
 
     return [holes, duplicates];
@@ -158,7 +158,7 @@ function main() {
     }
 
     console.error(chalk.yellow("WARNING: Be careful with this script. This might break things that are dependent on ids remaining the same, like deckcodes."));
-    console.log(chalk.green("The validate and quit commands are safe to use without issue."));
+    game.log(chalk.green("The validate and quit commands are safe to use without issue."));
 
     type Commands = "i" | "d" | "v" | "q";
 
@@ -197,7 +197,7 @@ function main() {
             throw new Error("Invalid command");
     }
 
-    console.log("Done");
+    game.log("Done");
 }
 
 main();

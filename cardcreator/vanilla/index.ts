@@ -51,7 +51,7 @@ export function create(card: VanillaCard, debug: boolean) {
     classes.push("Neutral");
 
     while (!classes.includes(cardClass)) {
-        cardClass = game.functions.capitalizeAll(game.input(chalk.red("Was not able to find the class of this card.\nWhat is the class of this card? "))) as CardClass;
+        cardClass = game.functions.capitalizeAll(game.input("<red>Was not able to find the class of this card.\nWhat is the class of this card? </red>")) as CardClass;
     }
 
     let realName = rl.question("Override name (this will set 'name' to be the displayname instead) (leave empty to not use display name): ") || name;
@@ -122,7 +122,7 @@ export function create(card: VanillaCard, debug: boolean) {
         }
     }
     else {
-        console.log(`${type} is not a valid type!`);
+        game.log(`${type} is not a valid type!`);
         process.exit(1);
     }
 
@@ -141,7 +141,7 @@ export function create(card: VanillaCard, debug: boolean) {
  * @returns If a card was created
  */
 export function main() {
-    console.log("Hearthstone.js Vanilla Card Creator (C) 2022\n");
+    game.log("Hearthstone.js Vanilla Card Creator (C) 2022\n");
 
     const [vanillaCards, error] = game.functions.getVanillaCards();
 
@@ -163,7 +163,7 @@ export function main() {
         filtered_cards = game.functions.filterVanillaCards(filtered_cards, false, true);
 
         if (filtered_cards.length <= 0) {
-            console.log("Invalid card.\n");
+            game.log("Invalid card.\n");
             continue;
         }
 
@@ -185,13 +185,13 @@ export function main() {
                 // @ts-expect-error
                 delete c["mechanics"];
 
-                console.log(`\n${i + 1}:`);
-                console.log(c);
+                game.log(`\n${i + 1}:`);
+                game.log(c);
             });
 
             let picked = parseInt(rl.question(`Pick one (1-${filtered_cards.length}): `));
             if (!picked || !filtered_cards[picked - 1]) {
-                console.log("Invalid number.\n");
+                game.log("Invalid number.\n");
                 continue;
             }
 
@@ -199,7 +199,7 @@ export function main() {
         }
         else card = filtered_cards[0];
 
-        console.log(`Found '${card.name}'\n`);
+        game.log(`Found '${card.name}'\n`);
 
         create(card, debug);
     }

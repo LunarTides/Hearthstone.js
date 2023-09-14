@@ -63,26 +63,26 @@ function main() {
     getFinishedCards(finishedCardsPath);
     searchCards(search); // Ignore case
 
-    console.log(); // New line
+    game.log(); // New line
 
     while (true) {
         game.interact.cls();
 
         matchingCards.forEach((c, i) => {
             // `c` is the path to the card.
-            console.log(`${i + 1}: ${c}`);
+            game.log(`${i + 1}: ${c}`);
         });
 
         let cmd = rl.question("\nWhich card do you want to fix (type 'done' to finish | type 'delete' to delete the save file): ");
         if (cmd.toLowerCase().startsWith("done")) break;
         if (cmd.toLowerCase().startsWith("delete")) {
-            console.log("Deleting file...");
+            game.log("Deleting file...");
 
             if (fs.existsSync(finishedCardsPath)) {
                 fs.unlinkSync(finishedCardsPath);
-                console.log("File deleted!");
+                game.log("File deleted!");
             }
-            else console.log("File not found!");
+            else game.log("File not found!");
 
             rl.question();
             process.exit(0);
@@ -93,7 +93,7 @@ function main() {
 
         let path = matchingCards[index];
         if (!path) {
-            console.log("Invalid index!");
+            game.log("Invalid index!");
             rl.question();
 
             continue;

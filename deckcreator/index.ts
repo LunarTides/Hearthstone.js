@@ -90,7 +90,7 @@ let settings: Settings = {
 
 function printName() {
     game.interact.cls();
-    console.log("Hearthstone.js Deck Creator (C) 2022\n");
+    game.log("Hearthstone.js Deck Creator (C) 2022\n");
 }
 
 function askClass(): CardClassNoNeutral {
@@ -204,7 +204,7 @@ function searchCards(_cards: Blueprint[], sQuery: string) {
         let ret = c[key as keyof Blueprint];
 
         if (!ret && ret !== 0) { // Javascript
-            console.log(chalk.red(`\nKey '${key}' not valid!`));
+            game.log(`<red>\nKey '${key}' not valid!</red>`);
             return -1;
         }
 
@@ -225,7 +225,7 @@ function searchCards(_cards: Blueprint[], sQuery: string) {
             else if (val == "odd") return ret % 2 == 1;
             else if (!Number.isNaN(parseInt(val))) return ret == val;
             else {
-                console.log(chalk.red(`\nValue '${val}' not valid!`));
+                game.log(`<red>\nValue '${val}' not valid!</red>`);
                 return -1;
             }
         }
@@ -260,7 +260,7 @@ function noCards() {
     if (cards.length > 0) return;
 
     printName();
-    console.log(chalk.yellow("No cards found. This means that the game doesn't have any (collectible) cards."));
+    game.log("<yellow>No cards found. This means that the game doesn't have any (collectible) cards.</yellow>");
 
     // Only ask once
     if (!settings.other.firstScreen) return;
@@ -293,7 +293,7 @@ function showCards() {
     });
 
     if (filtered_cards.length <= 0) {
-        console.log(chalk.yellow(`No cards found for the selected classes '${chosen_class} and Neutral'.`));
+        game.log(`<yellow>No cards found for the selected classes '${chosen_class} and Neutral'.</yellow>`);
     }
 
     let cpp = settings.view.cpp;
@@ -301,13 +301,13 @@ function showCards() {
 
     // Search
 
-    if (settings.search.query.length > 0) console.log(`Searching for '${settings.search.query.join(' ')}'.`);
+    if (settings.search.query.length > 0) game.log(`Searching for '${settings.search.query.join(' ')}'.`);
 
     // Filter to show only cards in the viewed class
     let classCards = Object.values(filtered_cards).filter(c => c.classes.includes(settings.view.class ?? chosen_class));
 
     if (classCards.length <= 0) {
-        console.log(chalk.yellow(`No cards found for the viewed class '${settings.view.class}'.`));
+        game.log(`<yellow>No cards found for the viewed class '${settings.view.class}'.</yellow>`);
         return;
     }
 
@@ -320,7 +320,7 @@ function showCards() {
         let searchedCards = searchCards(classCards, q);
 
         if (searchedCards === false) {
-            game.input(chalk.red(`Search failed at '${q}'! Reverting back to last successful query.\n`));
+            game.input(`<red>Search failed at '${q}'! Reverting back to last successful query.\n</red>`);
             searchFailed = true;
             return;
         }
@@ -329,7 +329,7 @@ function showCards() {
     });
 
     if (classCards.length <= 0) {
-        game.input(chalk.yellow(`\nNo cards match search.\n`));
+        game.input(`<yellow>\nNo cards match search.\n</yellow>`);
         searchFailed = true;
     }
 
@@ -345,7 +345,7 @@ function showCards() {
 
     let oldSortType = settings.sort.type;
     let oldSortOrder = settings.sort.order;
-    console.log(`Sorting by ${settings.sort.type.toUpperCase()}, ${settings.sort.order}ending.`);
+    game.log(`Sorting by ${settings.sort.type.toUpperCase()}, ${settings.sort.order}ending.`);
 
     // Sort
     classCards = sortCards(classCards);
@@ -354,21 +354,21 @@ function showCards() {
     let sortOrderInvalid = oldSortOrder != settings.sort.order;
 
     if (sortTypeInvalid) {
-        console.log(chalk.yellow(`Sorting by '%s' failed! Falling back to %s.`), oldSortType.toUpperCase(), settings.sort.type.toUpperCase());
+        game.log(`<yellow>Sorting by </yellow>'%s'<yellow> failed! Falling back to </yellow>%s.`, oldSortType.toUpperCase(), settings.sort.type.toUpperCase());
     }
     if (sortOrderInvalid) {
-        console.log(chalk.yellow(`Ordering by '%sending' failed! Falling back to %sending.`), oldSortOrder, settings.sort.order);
+        game.log(`<yellow>Ordering by </yellow>'%sending'<yellow> failed! Falling back to </yellow>%sending.`, oldSortOrder, settings.sort.order);
     }
 
-    if (sortTypeInvalid || sortOrderInvalid) console.log(`\nSorting by ${settings.sort.type.toUpperCase()}, ${settings.sort.order}ending.`);
+    if (sortTypeInvalid || sortOrderInvalid) game.log(`\nSorting by ${settings.sort.type.toUpperCase()}, ${settings.sort.order}ending.`);
 
     // Page logic
     classCards = classCards.slice(cpp * (page - 1), cpp * page);
 
     // Loop
-    console.log(`\nPage ${page} / ${settings.view.maxPage}\n`);
+    game.log(`\nPage ${page} / ${settings.view.maxPage}\n`);
 
-    console.log(chalk.underline(settings.view.class));
+    game.log(`<underline>${settings.view.class}</underline>`);
 
     let bricks: string[] = [];
     classCards.forEach(c => {
@@ -385,19 +385,19 @@ function showCards() {
 
         let toDisplay = game.functions.colorByRarity(brickSplit[0], card.rarity) + "-" + brickSplit[1];
 
-        console.log(toDisplay);
+        game.log(toDisplay);
     });
 
-    console.log("\nCurrent deckcode output:");
+    game.log("\nCurrent deckcode output:");
     let _deckcode = deckcode();
 
     if (!_deckcode.error) {
-        console.log(chalk.greenBright("Valid deck!"));
-        console.log(_deckcode.code);
+        game.log("<bright:green>Valid deck!</>");
+        game.log(_deckcode.code);
     }
 
     if (settings.other.firstScreen) {
-        console.log("\nType 'rules' to see a list of rules.");
+        game.log("\nType 'rules' to see a list of rules.");
 
         settings.other.firstScreen = false;
     }
@@ -405,31 +405,31 @@ function showCards() {
 
 function showRules() {
     let config_text = "### RULES ###";
-    console.log("#".repeat(config_text.length));
-    console.log(config_text);
-    console.log("#".repeat(config_text.length));
+    game.log("#".repeat(config_text.length));
+    game.log(config_text);
+    game.log("#".repeat(config_text.length));
 
-    console.log("#");
+    game.log("#");
 
-    console.log("# Validation: %s", (config.decks.validate ? chalk.greenBright("ON") : chalk.red("OFF")));
+    game.log("# Validation: %s", (config.decks.validate ? "<bright:green>ON</>" : "<red>OFF</red>"));
 
-    console.log("#\n# Rule 1. Minimum Deck Length: %s", chalk.yellow(config.decks.minLength.toString()));
-    console.log("# Rule 2. Maximum Deck Length: %s", chalk.yellow(config.decks.maxLength.toString()));
+    game.log(`#\n# Rule 1. Minimum Deck Length: <yellow>${config.decks.minLength}</yellow>`);
+    game.log(`# Rule 2. Maximum Deck Length: %s <yellow>${config.decks.maxLength}</yellow>`);
 
-    console.log("#\n# Rule 3. Maximum amount of cards for each card (eg. You can only have: %s Seances in a deck): %s", chalk.yellow("x"), chalk.yellow(config.decks.maxOfOneCard.toString()));
-    console.log("# Rule 4. Maximum amount of cards for each legendary card (Same as Rule 3 but for legendaries): %s", chalk.yellow(config.decks.maxOfOneLegendary.toString()));
+    game.log(`#\n# Rule 3. Maximum amount of cards for each card (eg. You can only have: <yellow>x</yellow> Seances in a deck): <yellow>${config.decks.maxOfOneCard}</yellow>`);
+    game.log(`# Rule 4. Maximum amount of cards for each legendary card (Same as Rule 3 but for legendaries): <yellow>${config.decks.maxOfOneLegendary}</yellow>`);
 
-    console.log("#");
+    game.log("#");
 
-    console.log("# There are 3 types of deck states: Valid, Pseudo-Valid, Invalid");
-    console.log("# Valid decks will work properly");
-    console.log("# Pseudo-valid decks will be rejected by the deck importer for violating a rule");
-    console.log("# Invalid decks are decks with a fundemental problem that the deck importer cannot resolve. Eg. An invalid card in the deck.");
-    console.log("# Violating any of these rules while validation is enabled will result in a pseudo-valid deck.");
+    game.log("# There are 3 types of deck states: Valid, Pseudo-Valid, Invalid");
+    game.log("# Valid decks will work properly");
+    game.log("# Pseudo-valid decks will be rejected by the deck importer for violating a rule");
+    game.log("# Invalid decks are decks with a fundemental problem that the deck importer cannot resolve. Eg. An invalid card in the deck.");
+    game.log("# Violating any of these rules while validation is enabled will result in a pseudo-valid deck.");
 
-    console.log("#");
+    game.log("#");
 
-    console.log("#".repeat(config_text.length));
+    game.log("#".repeat(config_text.length));
 }
 
 function findCard(card: string | number): Blueprint | null {
@@ -463,7 +463,7 @@ function remove(card: Blueprint) {
 function showDeck() {
     printName();
 
-    console.log("Deck Size: " + chalk.yellow(deck.length.toString()) + "\n");
+    game.log(`Deck Size: <yellow>${deck.length}</yellow>\n`);
 
     // Why are we doing this? Can't this be done better?
     let _cards: { [key: string]: [Blueprint, number] } = {};
@@ -507,7 +507,7 @@ function showDeck() {
 
             let name = game.functions.colorByRarity(amount[1], card.rarity);
 
-            console.log(`${r.exec(nameAndAmount)}${name}-${id}`);
+            game.log(`${r.exec(nameAndAmount)}${name}-${id}`);
             return;
         }
 
@@ -516,14 +516,14 @@ function showDeck() {
 
         let name = game.functions.colorByRarity(nameAndAmount, card.rarity);
 
-        console.log(`${name}-${id}`);
+        game.log(`${name}-${id}`);
     });
 
-    console.log("\nCurrent deckcode output:");
+    game.log("\nCurrent deckcode output:");
     let _deckcode = deckcode();
     if (!_deckcode.error) {
-        console.log(chalk.greenBright("Valid deck!"));
-        console.log(_deckcode.code);
+        game.log("<bright:green>Valid deck!</>");
+        game.log(_deckcode.code);
     }
 }
 
@@ -533,26 +533,26 @@ function deckcode(parseVanillaOnPseudo = false) {
     if (_deckcode.error) {
         let error = _deckcode.error;
 
-        let log = chalk.yellow("WARNING: ");
+        let log = "<yellow>WARNING: ";
         switch (error.msg) {
             case "TooFewCards":
-                log += chalk.yellow("Too few cards.");
+                log += "Too few cards.";
                 break;
             case "TooManyCards":
-                log += chalk.yellow("Too many cards.");
+                log += "Too many cards.";
                 break;
             case "EmptyDeck":
-                log = chalk.red("ERROR: Could not generate deckcode as your deck is empty. The resulting deckcode would be invalid.");
+                log = "</yellow><red>ERROR: Could not generate deckcode as your deck is empty. The resulting deckcode would be invalid.";
                 break;
             case "TooManyCopies":
-                log += util.format(chalk.yellow("Too many copies of a card. Maximum: '%s'. Offender: '%s'"), config.decks.maxOfOneCard, `{ Name: "${error.info?.card?.name}", Copies: "${error.info?.amount}" }`);
+                log += util.format("Too many copies of a card. Maximum: </>'%s'<yellow>. Offender: </>'%s'<yellow>"), config.decks.maxOfOneCard, `{ Name: "${error.info?.card?.name}", Copies: "${error.info?.amount}" }`;
                 break;
             case "TooManyLegendaryCopies":
-                log += util.format(chalk.yellow("Too many copies of a Legendary card. Maximum: '%s'. Offender: '%s'"), config.decks.maxOfOneLegendary, `{ Name: "${error.info?.card?.name}", Copies: "${error.info?.amount}" }`);
+                log += util.format("Too many copies of a Legendary card. Maximum: </>'%s'<yellow>. Offender: </>'%s'<yellow>"), config.decks.maxOfOneLegendary, `{ Name: "${error.info?.card?.name}", Copies: "${error.info?.amount}" }`;
                 break;
         }
 
-        console.log(log);
+        game.log(log);
     }
 
     if (settings.deckcode.format == "vanilla" && (parseVanillaOnPseudo || !_deckcode.error)) _deckcode.code = game.functions.deckcode.toVanilla(plr, _deckcode.code);
@@ -564,56 +564,56 @@ function help() {
     printName();
 
     // Commands
-    console.log(chalk.bold("Available commands:"));
-    console.log("(In order to run a command; input the name of the command and follow further instruction.)\n");
-    console.log("(name) [optional] (required) - (description)\n");
+    game.log("<b>Available commands:</b>");
+    game.log("(In order to run a command; input the name of the command and follow further instruction.)\n");
+    game.log("(name) [optional] (required) - (description)\n");
 
-    console.log("add (name | id)       - Add a card to the deck");
-    console.log("remove (card | id)    - Remove a card from the deck");
-    console.log("view (card | id)      - View a card");
-    console.log("page (num)            - View a different page");
-    console.log("cards (class)         - Show cards from 'class'");
-    console.log("sort (type) [order]   - Sorts by 'type' in 'order'ending order. (Type can be: ('rarity', 'name', 'mana', 'id', 'type'), Order can be: ('asc', 'desc')) (Example: sort mana asc - Will show cards ordered by mana cost, ascending.)");
-    console.log("search [query]        - Searches by query. Keys: ('name', 'desc', 'mana', 'rarity', 'id'), Examples: (search the - Search for all cards with the word 'the' in the name or description, case insensitive.), (search mana:2 - Search for all cards that costs 2 mana, search mana:even name:r - Search for all even cost cards with 'r' in its name)");
-    console.log("undo                  - Undo the last action.");
-    console.log("deck                  - Toggle deck-view");
-    console.log("deckcode              - View the current deckcode");
-    console.log("import                - Imports a deckcode (Overrides your deck)");
-    console.log("set (setting) (value) - Change some settings. Look down to 'Set Subcommands' to see available settings");
-    console.log("class                 - Change the class");
-    console.log("config | rules        - Shows the rules for valid decks and invalid decks");
-    console.log("help                  - Displays this message");
-    console.log("exit                  - Quits the program");
+    game.log("add (name | id)       - Add a card to the deck");
+    game.log("remove (card | id)    - Remove a card from the deck");
+    game.log("view (card | id)      - View a card");
+    game.log("page (num)            - View a different page");
+    game.log("cards (class)         - Show cards from 'class'");
+    game.log("sort (type) [order]   - Sorts by 'type' in 'order'ending order. (Type can be: ('rarity', 'name', 'mana', 'id', 'type'), Order can be: ('asc', 'desc')) (Example: sort mana asc - Will show cards ordered by mana cost, ascending.)");
+    game.log("search [query]        - Searches by query. Keys: ('name', 'desc', 'mana', 'rarity', 'id'), Examples: (search the - Search for all cards with the word 'the' in the name or description, case insensitive.), (search mana:2 - Search for all cards that costs 2 mana, search mana:even name:r - Search for all even cost cards with 'r' in its name)");
+    game.log("undo                  - Undo the last action.");
+    game.log("deck                  - Toggle deck-view");
+    game.log("deckcode              - View the current deckcode");
+    game.log("import                - Imports a deckcode (Overrides your deck)");
+    game.log("set (setting) (value) - Change some settings. Look down to 'Set Subcommands' to see available settings");
+    game.log("class                 - Change the class");
+    game.log("config | rules        - Shows the rules for valid decks and invalid decks");
+    game.log("help                  - Displays this message");
+    game.log("exit                  - Quits the program");
 
     // Set
-    console.log(chalk.bold("\nSet Subcommands:"));
-    console.log("(In order to use these; input 'set ', then one of the subcommands. Example: 'set cpp 20')\n");
-    console.log("(name) [optional] (required) - (description)\n");
+    game.log("\n<b>Set Subcommands:</>");
+    game.log("(In order to use these; input 'set ', then one of the subcommands. Example: 'set cpp 20')\n");
+    game.log("(name) [optional] (required) - (description)\n");
 
-    console.log("format (format)             - Makes the deckcode generator output the deckcode as a different format. If you set this to 'vanilla', it is only going to show the deckcode as vanilla. If you set it to 'vanilla', you will be asked to choose a card if there are multiple vanilla cards with the same name. This should be rare, but just know that it might happen. ('js', 'vanilla') [default = 'js']");
-    console.log("cardsPerPage | cpp (num)    - How many cards to show per page [default = 15]");
-    console.log("defaultCommand | dcmd (cmd) - The command that should run when the command is unspecified. ('add', 'remove', 'view') [default = 'add']");
-    console.log("warning                     - Disables/enables certain warnings. Look down to 'Warnings' to see changeable warnings.");
+    game.log("format (format)             - Makes the deckcode generator output the deckcode as a different format. If you set this to 'vanilla', it is only going to show the deckcode as vanilla. If you set it to 'vanilla', you will be asked to choose a card if there are multiple vanilla cards with the same name. This should be rare, but just know that it might happen. ('js', 'vanilla') [default = 'js']");
+    game.log("cardsPerPage | cpp (num)    - How many cards to show per page [default = 15]");
+    game.log("defaultCommand | dcmd (cmd) - The command that should run when the command is unspecified. ('add', 'remove', 'view') [default = 'add']");
+    game.log("warning                     - Disables/enables certain warnings. Look down to 'Warnings' to see changeable warnings.");
 
-    console.log(chalk.gray("\nNote the 'cardsPerPage' commands has 2 different subcommands; cpp & cardsPerPage. Both do the same thing."));
+    game.log("\n<gray>Note the 'cardsPerPage' commands has 2 different subcommands; cpp & cardsPerPage. Both do the same thing.</>");
 
     // Set Warning
-    console.log(chalk.bold("\nWarnings:"));
-    console.log("(In order to use these; input 'set warning (name) [off | on]'. Example: 'set warning latestCard off')\n");
-    console.log("(name) - (description)\n");
+    game.log("\n<b>Warnings:</>");
+    game.log("(In order to use these; input 'set warning (name) [off | on]'. Example: 'set warning latestCard off')\n");
+    game.log("(name) - (description)\n");
 
-    console.log("latestCard - Warning that shows up when attemping to use the latest card. The latest card is used if the card chosen in a command is invalid and the name specified begins with 'l'. Example: 'add latest' - Adds a copy of the latest card to the deck.");
+    game.log("latestCard - Warning that shows up when attemping to use the latest card. The latest card is used if the card chosen in a command is invalid and the name specified begins with 'l'. Example: 'add latest' - Adds a copy of the latest card to the deck.");
 
-    console.log("\nNote: If you don't specify a state (off / on) it will toggle the state of the warning.");
-    console.log("Note: The word 'off' can be exchanged with 'disable', 'false', or '0'.");
-    console.log("Note: The word 'on' can be exchanged with 'enable', 'true', or '1'.");
+    game.log("\nNote: If you don't specify a state (off / on) it will toggle the state of the warning.");
+    game.log("Note: The word 'off' can be exchanged with 'disable', 'false', or '0'.");
+    game.log("Note: The word 'on' can be exchanged with 'enable', 'true', or '1'.");
 
     // Notes
-    console.log(chalk.bold("\nNotes:"));
+    game.log("\n<b>Notes:</>");
 
-    console.log("Type 'cards Neutral' to see Neutral cards.");
+    game.log("Type 'cards Neutral' to see Neutral cards.");
     // TODO: #245 Fix this
-    console.log("There is a known bug where if you add 'Prince Renathal', and then remove him, the deck will still require 40 cards. The only way around this is to restart the deck creator.");
+    game.log("There is a known bug where if you add 'Prince Renathal', and then remove him, the deck will still require 40 cards. The only way around this is to restart the deck creator.");
 
     game.input("\nPress enter to continue...\n");
 }
@@ -638,12 +638,12 @@ function getCardArg(cmd: string, callback: (card: Blueprint) => boolean, errorCa
     let card = findCard(cmd);
 
     if (!card && eligibleForLatest) {
-        if (warnings.latestCard) game.input(chalk.yellow(`Card not found. Using latest valid card instead.`));
+        if (warnings.latestCard) game.input(`<yellow>Card not found. Using latest valid card instead.</>`);
         card = game.functions.last(settings.card.history) ?? null;
     }
 
     if (!card) {
-        game.input(chalk.red("Invalid card.\n"));
+        game.input("<red>Invalid card.</>\n");
         return false;
     }
 
@@ -678,7 +678,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
 
         getCardArg(cmd, add, () => {
             // Internal error since add shouldn't return false
-            console.log(chalk.red("Internal Error: Something went wrong while adding a card. Please report this. Error code: DcAddInternal"))
+            game.log("<red>Internal Error: Something went wrong while adding a card. Please report this. Error code: DcAddInternal</>");
             game.input();
 
             success = false;
@@ -691,7 +691,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
 
         getCardArg(cmd, remove, () => {
             // User error
-            console.log(chalk.red("Invalid card."));
+            game.log("<red>Invalid card.</red>");
             game.input();
 
             success = false;
@@ -719,13 +719,13 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         heroClass = game.functions.capitalizeAll(heroClass) as CardClass;
 
         if (!classes.includes(heroClass as CardClassNoNeutral) && heroClass != "Neutral") {
-            game.input(chalk.red("Invalid class!\n"));
+            game.input("<red>Invalid class!</>\n");
             return false;
         }
 
         let correctClass = game.functions.validateClasses([chosen_class], heroClass);
         if (!correctClass) {
-            game.input(chalk.yellow(`Class '${heroClass}' is a different class. To see these cards, please switch class from '${chosen_class}' to '${heroClass}' to avoid confusion.\n`));
+            game.input(`<yellow>Class '${heroClass}' is a different class. To see these cards, please switch class from '${chosen_class}' to '${heroClass}' to avoid confusion.</>\n`);
             return false;
         }
 
@@ -791,7 +791,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         let new_class = askClass();
 
         if (new_class == chosen_class && runes == _runes) {
-            game.input(chalk.yellow("Your class was not changed\n"));
+            game.input("<yellow>Your class was not changed</>\n");
             return false;
         }
 
@@ -801,7 +801,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
     }
     else if (cmd.startsWith("undo")) {
         if (settings.commands.undoableHistory.length <= 0) {
-            game.input(chalk.red("Nothing to undo.\n"));
+            game.input("<red>Nothing to undo.</>\n");
             return false;
         }
 
@@ -815,7 +815,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         else if (command.startsWith("r")) reverse = "add";
         else {
             // This shouldn't ever happen, but oh well
-            console.log(chalk.red(`Command '${command}' cannot be undoed.`));
+            game.log(`<red>Command '${command}' cannot be undoed.</>`);
             return false;
         }
 
@@ -832,7 +832,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         let key = args[0];
 
         if (!Object.keys(warnings).includes(key)) {
-            game.input(chalk.red(`'${key}' is not a valid warning!\n`));
+            game.input(`<red>'${key}' is not a valid warning!</>\n`);
             return false;
         }
 
@@ -848,7 +848,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
             if (["off", "disable", "false", "no", "0"].includes(val)) new_state = false;
             else if (["on", "enable", "true", "yes", "1"].includes(val)) new_state = true;
             else {
-                game.input(chalk.red(`${val} is not a valid state. View 'help' for more information.\n`));
+                game.input(`<red>${val} is not a valid state. View 'help' for more information.</>\n`);
                 return false;
             }
         }
@@ -857,11 +857,11 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         if (warnings[key] == new_state) {
             let strbuilder = "";
 
-            strbuilder += chalk.yellow("Warning '");
-            strbuilder += chalk.yellowBright(key);
-            strbuilder += chalk.yellow("' is already ");
-            strbuilder += (new_state) ? chalk.yellow("enabled") : chalk.yellow("disabled");
-            strbuilder += chalk.yellow(".\n");
+            strbuilder += "<yellow>Warning '</>";
+            strbuilder += `<bright:yellow>${key}</>`;
+            strbuilder += "<yellow>' is already ";
+            strbuilder += (new_state) ? "enabled" : "disabled";
+            strbuilder += ".</>\n";
 
             game.input(strbuilder);
             return false;
@@ -872,10 +872,10 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
 
         let strbuilder = "";
 
-        strbuilder += (new_state) ? chalk.greenBright("Enabled warning") : chalk.red("Disabled warning");
-        strbuilder += chalk.yellow(" '");
-        strbuilder += chalk.yellow(key);
-        strbuilder += chalk.yellow("'.\n");
+        strbuilder += (new_state) ? "<bright:green>Enabled warning</>" : "<red>Disabled warning</>";
+        strbuilder += "<yellow> '";
+        strbuilder += key;
+        strbuilder += "'.</>\n";
 
         game.input(strbuilder);
     }
@@ -889,24 +889,24 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
             case "format":
                 if (args.length == 0) {
                     settings.deckcode.format = "js";
-                    console.log("Reset deckcode format to: " + chalk.yellow("js"));
+                    game.log("Reset deckcode format to: <yellow>js</>");
                     break;
                 }
 
                 if (!["vanilla", "js"].includes(args[0])) {
-                    console.log(chalk.red("Invalid format!"));
+                    game.log("<red>Invalid format!</red>");
                     game.input();
                     return false;
                 }
 
                 settings.deckcode.format = args[0] as "vanilla" | "js";
-                console.log("Set deckcode format to: " + chalk.yellow(args[0]));
+                game.log(`Set deckcode format to: <yellow>${args[0]}</yellow>`);
                 break;
             case "cpp":
             case "cardsPerPage":
                 if (args.length == 0) {
                     settings.view.cpp = 15;
-                    console.log("Reset cards per page to: " + chalk.yellow("15"));
+                    game.log("Reset cards per page to: <yellow>15</yellow>");
                     break;
                 }
 
@@ -916,7 +916,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
             case "defaultCommand":
                 if (args.length == 0) {
                     settings.commands.default = "add";
-                    console.log("Set default command to: " + chalk.yellow("add"));
+                    game.log("Set default command to: <yellow>add</yellow>");
                     break;
                 }
 
@@ -924,14 +924,14 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
                 let cmd = args[0];
 
                 settings.commands.default = cmd;
-                console.log("Set default command to: " + chalk.yellow(cmd));
+                game.log(`Set default command to: <yellow>${cmd}</yellow>`);
                 break;
             default:
-                game.input(chalk.red(`'${setting}' is not a valid setting.\n`));
+                game.input(`<red>'${setting}' is not a valid setting.</red>\n`);
                 return false;
         }
 
-        game.input(chalk.greenBright("Setting successfully changed!\n"));
+        game.input("<bright:green>Setting successfully changed!<bright:green>\n");
     }
     else if (cmd.startsWith("help")) {
         help();
@@ -942,7 +942,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
     else {
         // Infer add
         const tryCommand = `${settings.commands.default} ${cmd}`;
-        console.log(chalk.yellow(`Unable to find command. Trying '${tryCommand}'`));
+        game.log(`<yellow>Unable to find command. Trying '${tryCommand}'</yellow>`);
         return handleCmds(tryCommand);
     }
 

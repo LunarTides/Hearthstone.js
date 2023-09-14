@@ -11,8 +11,8 @@ let games = parseInt(gamesEnv) ?? 100;
 
 function main() {
     console.warn(`Press enter to play ${games} games`);
-    if (!process.env.games) console.log("Set the GAMES env variable to change how many games to play.");
-    console.log("NOTE: If you see no progress being made for an extended period of time, chances are the game got stuck in an infinite loop.");
+    if (!process.env.games) game.log("Set the GAMES env variable to change how many games to play.");
+    game.log("NOTE: If you see no progress being made for an extended period of time, chances are the game got stuck in an infinite loop.");
     rl.question();
 
     for (let index = 0; index < games; index++) {
@@ -51,7 +51,7 @@ function main() {
             game.interact.handleCmds("/ai");
             game.interact.handleCmds("history", true, true);
 
-            console.log("THE GAME CRASHED: LOOK ABOVE FOR THE HISTORY, AND THE AI'S LOGS.");
+            game.log("THE GAME CRASHED: LOOK ABOVE FOR THE HISTORY, AND THE AI'S LOGS.");
 
             throw err;
         }

@@ -93,7 +93,7 @@ export const interact = {
                 break;
         }
 
-        console.log(chalk.red(`${err}.`));
+        game.log(chalk.red(`${err}.`));
         game.input();
         return false;
     },
@@ -165,41 +165,41 @@ export const interact = {
                     break;
             }
 
-            console.log(chalk.red(`${err}.`));
+            game.log(chalk.red(`${err}.`));
             game.input();
         }
         else if (name === "help") {
             interact.printName();
-            console.log("(In order to run a command; input the name of the command and follow further instruction.)\n");
-            console.log("Available commands:");
-            console.log("(name)     - (description)\n");
+            game.log("(In order to run a command; input the name of the command and follow further instruction.)\n");
+            game.log("Available commands:");
+            game.log("(name)     - (description)\n");
 
-            console.log("end        - Ends your turn");
-            console.log("attack     - Attack");
-            console.log("hero power - Use your hero power");
-            console.log("history    - Displays a history of actions");
-            console.log("concede    - Forfeits the game");
-            console.log("view       - View a minion");
-            console.log("use        - Use a location card");
-            console.log("detail     - Get more details about opponent");
-            console.log("help       - Displays this message");
-            console.log("version    - Displays the version, branch, your settings preset, and some information about your current version.");
-            console.log("license    - Opens a link to this project's license");
+            game.log("end        - Ends your turn");
+            game.log("attack     - Attack");
+            game.log("hero power - Use your hero power");
+            game.log("history    - Displays a history of actions");
+            game.log("concede    - Forfeits the game");
+            game.log("view       - View a minion");
+            game.log("use        - Use a location card");
+            game.log("detail     - Get more details about opponent");
+            game.log("help       - Displays this message");
+            game.log("version    - Displays the version, branch, your settings preset, and some information about your current version.");
+            game.log("license    - Opens a link to this project's license");
 
             const cond_color = (str: string) => {return (game.config.general.debug) ? str : chalk.gray(str)};
 
-            console.log(cond_color("\n--- Debug Commands (") + ((game.config.general.debug) ? chalk.greenBright("ON") : chalk.red("OFF")) + cond_color(") ---"));
-            console.log(cond_color("/give (name)        - Adds a card to your hand"));
-            console.log(cond_color("/eval [log] (code)  - Runs the code specified. If the word 'log' is before the code, instead console.log the code and wait for user input to continue."));
-            console.log(cond_color("/set (name) (value) - Changes a setting to (value). Look in the config files for a list of settings."));
-            console.log(cond_color("/debug              - Gives you infinite mana, health and armor"));
-            console.log(cond_color("/exit               - Force exits the game. There will be no winner, and it will take you straight back to the runner."));
-            console.log(cond_color("/history            - Displays a history of actions. This doesn't hide any information, and is the same thing the log files uses."));
-            console.log(cond_color("/reload | /rl       - Reloads the cards and config in the game (Use '/freload' or '/frl' to ignore the confirmation prompt (or disable the prompt in the advanced config))"));
-            console.log(cond_color("/undo               - Undoes the last card played. It gives the card back to your hand, and removes it from where it was. (This does not undo the actions of the card)"));
-            console.log(cond_color("/cmd                - Shows you a list of debug commands you have run, and allows you to rerun them."));
-            console.log(cond_color("/ai                 - Gives you a list of the actions the ai(s) have taken in the order they took it"));
-            console.log(cond_color("---------------------------" + ((game.config.general.debug) ? "" : "-")));
+            game.log(cond_color("\n--- Debug Commands (") + ((game.config.general.debug) ? chalk.greenBright("ON") : chalk.red("OFF")) + cond_color(") ---"));
+            game.log(cond_color("/give (name)        - Adds a card to your hand"));
+            game.log(cond_color("/eval [log] (code)  - Runs the code specified. If the word 'log' is before the code, instead game.log the code and wait for user input to continue."));
+            game.log(cond_color("/set (name) (value) - Changes a setting to (value). Look in the config files for a list of settings."));
+            game.log(cond_color("/debug              - Gives you infinite mana, health and armor"));
+            game.log(cond_color("/exit               - Force exits the game. There will be no winner, and it will take you straight back to the runner."));
+            game.log(cond_color("/history            - Displays a history of actions. This doesn't hide any information, and is the same thing the log files uses."));
+            game.log(cond_color("/reload | /rl       - Reloads the cards and config in the game (Use '/freload' or '/frl' to ignore the confirmation prompt (or disable the prompt in the advanced config))"));
+            game.log(cond_color("/undo               - Undoes the last card played. It gives the card back to your hand, and removes it from where it was. (This does not undo the actions of the card)"));
+            game.log(cond_color("/cmd                - Shows you a list of debug commands you have run, and allows you to rerun them."));
+            game.log(cond_color("/ai                 - Gives you a list of the actions the ai(s) have taken in the order they took it"));
+            game.log(cond_color("---------------------------" + ((game.config.general.debug) ? "" : "-")));
             
             game.input("\nPress enter to continue...\n");
         }
@@ -259,9 +259,9 @@ export const interact = {
                     else if (game.config.general.debug === false && game.config.ai.player2 === false) strbuilder += " using the recommended settings preset";
                     else strbuilder += " using custom settings";
     
-                    console.log(strbuilder + ".\n");
+                    game.log(strbuilder + ".\n");
     
-                    console.log(`Version Description:`);
+                    game.log(`Version Description:`);
 
                     let introText;
 
@@ -269,12 +269,12 @@ export const interact = {
                     else if (branch == "dev") introText = game.config.info.developIntroText;
                     else if (branch == "stable") introText = game.config.info.stableIntroText;
 
-                    console.log(introText);
-                    if (game.config.info.versionText) console.log(game.config.info.versionText);
-                    console.log();
+                    game.log(introText);
+                    if (game.config.info.versionText) game.log(game.config.info.versionText);
+                    game.log();
 
-                    console.log("Todo List:");
-                    if (todos.length <= 0) console.log("None.");
+                    game.log("Todo List:");
+                    if (todos.length <= 0) game.log("None.");
                 }
                 
                 print_info();
@@ -293,8 +293,8 @@ export const interact = {
                     else if (state == "doing") state = "o";
                     else if (state == "not done") state = " ";
 
-                    if (print_desc) console.log(`{${id}} [${state}] ${name}\n${desc}`);
-                    else console.log(`{${id}} [${state}] ${name}`);
+                    if (print_desc) game.log(`{${id}} [${state}] ${name}\n${desc}`);
+                    else game.log(`{${id}} [${state}] ${name}`);
                 }
 
                 todos.forEach((e, i) => print_todo(e, i + 1));
@@ -314,7 +314,7 @@ export const interact = {
         }
         else if (name === "history") {
             if (echo === false) {}
-            else console.log(chalk.yellow("Cards that are shown are collected while this screen is rendering. This means that it gets the information about the card from where it is when you ran this command, for example; the graveyard. This is why most cards have <1 health."));
+            else game.log(chalk.yellow("Cards that are shown are collected while this screen is rendering. This means that it gets the information about the card from where it is when you ran this command, for example; the graveyard. This is why most cards have <1 health."));
 
             // History
             let history = game.events.history;
@@ -424,7 +424,7 @@ export const interact = {
 
             if (echo === false) {}
             else {
-                console.log(finished);
+                game.log(finished);
 
                 game.input("\nPress enter to continue...");
             }
@@ -471,7 +471,7 @@ export const interact = {
             if (log) {
                 if (game.functions.lastChar(code) == ";") code = code.slice(0, -1);
 
-                code = `console.log(${code});game.input();`;
+                code = `game.log(${code});game.input();`;
             }
     
             game.evaling = true;
@@ -480,8 +480,8 @@ export const interact = {
 
                 game.events.broadcast("Eval", code, game.player);
             } catch (err) {
-                console.log(chalk.red("\nAn error happened while running this code! Here is the error:"));
-                console.log(err.stack);
+                game.log(chalk.red("\nAn error happened while running this code! Here is the error:"));
+                game.log(err.stack);
                 game.input("Press enter to continue...");
             }
             game.evaling = false;
@@ -564,7 +564,7 @@ export const interact = {
 
             if (echo === false) {}
             else {
-                console.log(finished);
+                game.log(finished);
 
                 game.input("\nPress enter to continue...");
             }
@@ -582,7 +582,7 @@ export const interact = {
             history.forEach((obj, i) => {
                 if (obj.length <= 0) return;
 
-                console.log(`\nTurn ${i}:`);
+                game.log(`\nTurn ${i}:`);
 
                 let index = 1;
                 obj.forEach(h => {
@@ -591,7 +591,7 @@ export const interact = {
                      */
                     let input = h[1];
 
-                    console.log(`[${index++}] ${input}`);
+                    game.log(`[${index++}] ${input}`);
                 });
             });
 
@@ -666,23 +666,23 @@ export const interact = {
             let newValue;
 
             if (["off", "disable", "false", "no", "0"].includes(value)) {
-                console.log(chalk.greenBright(`Setting '${key}' has been disabled.`));
+                game.log(chalk.greenBright(`Setting '${key}' has been disabled.`));
                 newValue = false;
             }
             else if (["on", "enable", "true", "yes", "1"].includes(value)) {
-                console.log(chalk.greenBright(`Setting '${key}' has been disabled.`));
+                game.log(chalk.greenBright(`Setting '${key}' has been disabled.`));
                 newValue = true;
             }
             else if (parseFloat(value)) {
-                console.log(chalk.greenBright(`Setting '${key}' has been set to the float: ${value}.`));
+                game.log(chalk.greenBright(`Setting '${key}' has been set to the float: ${value}.`));
                 newValue = parseFloat(value);
             }
             else if (parseInt(value)) {
-                console.log(chalk.greenBright(`Setting '${key}' has been set to the integer: ${value}.`));
+                game.log(chalk.greenBright(`Setting '${key}' has been set to the integer: ${value}.`));
                 newValue = parseInt(value);
             }
             else {
-                console.log(chalk.greenBright(`Setting '${key}' has been set to the string literal: ${value}.`));
+                game.log(chalk.greenBright(`Setting '${key}' has been set to the string literal: ${value}.`));
                 newValue = value;
             }
 
@@ -829,7 +829,7 @@ export const interact = {
         else if (ret == "invalid") err = "Invalid card";
         else err = `An unknown error occurred. Error code: UnexpectedDoTurnResult@${ret}`;
 
-        console.log(chalk.red(`${err}.`));
+        game.log(chalk.red(`${err}.`));
         game.input();
 
         return false;
@@ -959,12 +959,12 @@ export const interact = {
 
         interact.printAll(game.player);
 
-        console.log(`\n${prompt}`);
+        game.log(`\n${prompt}`);
 
         if (cards.length <= 0) return null;
 
         cards.forEach((c, i) => {
-            console.log(interact.getReadableCard(c, i + 1));
+            game.log(interact.getReadableCard(c, i + 1));
         });
 
         let choice = game.input("> ");
@@ -1101,7 +1101,7 @@ export const interact = {
         if (["Y", "N"].includes(choice)) return choice === "Y";
 
         // Invalid input
-        console.log(chalk.red("Unexpected input: '") + chalk.yellow(_choice) + chalk.red("'. Valid inputs: ") + "[" + chalk.greenBright("Y") + " | " + chalk.red("N") + "]");
+        game.log(chalk.red("Unexpected input: '") + chalk.yellow(_choice) + chalk.red("'. Valid inputs: ") + "[" + chalk.greenBright("Y") + " | " + chalk.red("N") + "]");
         game.input();
 
         return interact.yesNoQuestion(plr, prompt);
@@ -1143,13 +1143,13 @@ export const interact = {
 
         if (game.player.ai) return game.player.ai.discover(values);
 
-        console.log(`\n${prompt}:`);
+        game.log(`\n${prompt}:`);
 
         values.forEach((v, i) => {
             let card = game.functions.getCardByName(v.name);
             if (!card) return;
 
-            console.log(interact.getReadableCard(v, i + 1));
+            game.log(interact.getReadableCard(v, i + 1));
         });
 
         let choice = game.input();
@@ -1348,12 +1348,12 @@ export const interact = {
         let watermarkString = `HEARTHSTONE.JS V${info.version}-${info.branch}`;
         let border = "-".repeat(watermarkString.length + 2);
     
-        console.log(`|${border}|`);
-        console.log(`| ${watermarkString} |`);
-        console.log(`|${border}|\n`);
+        game.log(`|${border}|`);
+        game.log(`| ${watermarkString} |`);
+        game.log(`|${border}|\n`);
 
         if (info.branch == "topic" && game.config.general.topicBranchWarning) {
-            console.log(chalk.yellow("WARNING: YOU ARE ON A TOPIC BRANCH. THIS VERSION IS NOT READY.\n"));
+            game.log(chalk.yellow("WARNING: YOU ARE ON A TOPIC BRANCH. THIS VERSION IS NOT READY.\n"));
         }
     },
 
@@ -1370,12 +1370,12 @@ export const interact = {
         cls();
     
         let version = `Hearthstone.js V${info.version}-${info.branch} | Copyright (C) 2022 | LunarTides`;
-        console.log('|'.repeat(version.length + 8));
-        console.log(`||| ${version} |||`)
-        console.log(`|||     This program is licensed under the GPL-3.0 license.   ` + ' '.repeat(info.branch.length) + "|||")
+        game.log('|'.repeat(version.length + 8));
+        game.log(`||| ${version} |||`)
+        game.log(`|||     This program is licensed under the GPL-3.0 license.   ` + ' '.repeat(info.branch.length) + "|||")
         if (disappear)
-        console.log(`|||         This will disappear once you end your turn.       ` + ' '.repeat(info.branch.length) + `|||`)
-        console.log('|'.repeat(version.length + 8));
+        game.log(`|||         This will disappear once you end your turn.       ` + ' '.repeat(info.branch.length) + `|||`)
+        game.log('|'.repeat(version.length + 8));
     },
 
     /**
@@ -1481,7 +1481,7 @@ export const interact = {
     },
 
     /**
-     * Returns a card in a user readble state. If you console.log the result of this, the user will get all the information they need from the card.
+     * Returns a card in a user readble state. If you game.log the result of this, the user will get all the information they need from the card.
      *
      * @param card The card
      * @param i If this is set, this function will add `[i]` to the beginning of the card. This is useful if there are many different cards to choose from.
@@ -1602,9 +1602,9 @@ export const interact = {
         if (game.turns <= 2) this.printLicense();
 
         this.printPlayerStats(plr);
-        console.log();
+        game.log();
         this.printBoard(plr);
-        console.log();
+        game.log();
         this.printHand(plr);
     },
 
@@ -1690,40 +1690,40 @@ export const interact = {
             return [`Corpses: <gray>${player.corpses}</gray>`, 0];
         });
 
-        console.log(finished);
+        game.log(finished);
     },
 
     printBoard(plr: Player): void {
         game.board.forEach((side, plrId) => {
             let player = game.functions.getPlayerFromId(plrId);
             let sideMessage = plr === player ? "----- Board (You) ------" : "--- Board (Opponent) ---";
-            console.log(sideMessage);
+            game.log(sideMessage);
 
             if (side.length === 0) {
-                console.log(chalk.gray("Empty"));
+                game.log(chalk.gray("Empty"));
                 return;
             };
 
             side.forEach((card, index) => {
-                console.log(this.getReadableCard(card, index + 1));
+                game.log(this.getReadableCard(card, index + 1));
             });
         });
 
-        console.log("------------------------");
+        game.log("------------------------");
     },
 
     printHand(plr: Player): void {
-        console.log(`--- ${plr.name} (${plr.heroClass})'s Hand ---`);
+        game.log(`--- ${plr.name} (${plr.heroClass})'s Hand ---`);
         // Add the help message
-        console.log(game.functions.parseTags(`([id] <cyan>{Cost}</> <b>Name</b> <bright:green>[attack / health]</> <yellow>(type)</>)\n`));
+        game.log(game.functions.parseTags(`([id] <cyan>{Cost}</> <b>Name</b> <bright:green>[attack / health]</> <yellow>(type)</>)\n`));
 
         plr.hand.forEach((card, index) => {
-            console.log(this.getReadableCard(card, index + 1));
+            game.log(this.getReadableCard(card, index + 1));
         });
     },
 
     /**
-     * Shows information from the card, console.log's it and waits for the user to press enter.
+     * Shows information from the card, game.log's it and waits for the user to press enter.
      *
      * @param card The card
      * @param help If it should show a help message which displays what the different fields mean.
@@ -1750,8 +1750,8 @@ export const interact = {
             else locCooldown = " (" + chalk.cyan(card.cooldown?.toString()) + ")";
         }
 
-        if (help) console.log(chalk.cyan("{mana} ") + chalk.bold("Name ") + "(" + chalk.greenBright("[attack / health] ") + "if it has) (description) " + chalk.yellow("(type) ") + "((tribe) or (spell class) or (cooldown)) [" + chalk.gray("class") + "]");
-        console.log(_card + (tribe || spellSchool || locCooldown) + ` [${_class}]`);
+        if (help) game.log(chalk.cyan("{mana} ") + chalk.bold("Name ") + "(" + chalk.greenBright("[attack / health] ") + "if it has) (description) " + chalk.yellow("(type) ") + "((tribe) or (spell class) or (cooldown)) [" + chalk.gray("class") + "]");
+        game.log(_card + (tribe || spellSchool || locCooldown) + ` [${_class}]`);
 
         game.input("\nPress enter to continue...\n");
     },
@@ -1767,8 +1767,8 @@ export const interact = {
     verifyDIYSolution(condition: boolean, fileName: string = ""): boolean {
         // TODO: Maybe spawn in diy cards mid-game in normal games to encourage players to solve them.
         // Allow that to be toggled in the config.
-        if (condition) console.log("Success! You did it, well done!");
-        else console.log(`Hm. This card doesn't seem to do what it's supposed to do... Maybe you should try to fix it? The card is in: './cards/Examples/DIY/${fileName}'.`);
+        if (condition) game.log("Success! You did it, well done!");
+        else game.log(`Hm. This card doesn't seem to do what it's supposed to do... Maybe you should try to fix it? The card is in: './cards/Examples/DIY/${fileName}'.`);
         
         game.input();
         return true;

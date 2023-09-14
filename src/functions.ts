@@ -34,8 +34,8 @@ const deckcode = {
          * Cause the function to return an error
          */
         const ERROR = (error_code: string, card_name: string | null = null): null => {
-            console.log(chalk.red("This deck is not valid!\nError Code: ") + chalk.yellow(error_code));
-            if (card_name) console.log(chalk.red("Specific Card that caused this error: ") + chalk.yellow(card_name));
+            game.log(chalk.red("This deck is not valid!\nError Code: ") + chalk.yellow(error_code));
+            if (card_name) game.log(chalk.red("Specific Card that caused this error: ") + chalk.yellow(card_name));
             game.input();
             return null;
         }
@@ -336,7 +336,7 @@ const deckcode = {
 
         let heroClassId = vanillaHeroes[heroClass as CardClass];
         if (!heroClassId) {
-            console.log(chalk.red("ERROR: Invalid hero class: ") + chalk.yellow(heroClass));
+            game.log(chalk.red("ERROR: Invalid hero class: ") + chalk.yellow(heroClass));
             game.input();
 
             process.exit(1);
@@ -413,11 +413,11 @@ const deckcode = {
                     // @ts-expect-error
                     delete m.race; // Just look at `m.races`
 
-                    console.log(`${i + 1}: `);
-                    console.log(m);
+                    game.log(`${i + 1}: `);
+                    game.log(m);
                 });
 
-                console.log(chalk.yellow(`Multiple cards with the name '${c}' detected! Please choose one:`));
+                game.log(chalk.yellow(`Multiple cards with the name '${c}' detected! Please choose one:`));
                 let chosen = game.input();
 
                 match = matches[parseInt(chosen) - 1];
@@ -472,7 +472,7 @@ const deckcode = {
             if (createdCards.find(card => card.name == vanillaCard.name || card.displayName == vanillaCard.name)) return;
 
             // The card doesn't exist.
-            console.log(chalk.red(`ERROR: Card '${vanillaCard.name}' doesn't exist!`));
+            game.log(chalk.red(`ERROR: Card '${vanillaCard.name}' doesn't exist!`));
             invalidCards.push(vanillaCard);
         });
 
@@ -711,7 +711,7 @@ export const functions = {
      * let wall = createWall(bricks, "-");
      * 
      * wall.forEach(foo => {
-     *     console.log(foo);
+     *     game.log(foo);
      * });
      * // Example             - Example
      * // Test                - Hello World
@@ -850,7 +850,7 @@ ${main_content}
 
         if (!err) return true;
 
-        console.log(chalk.red(`\nThe game crashed!\nCrash report created in 'logs/${filename}'\nPlease create a bug report at:\nhttps://github.com/LunarTides/Hearthstone.js/issues`));
+        game.log(chalk.red(`\nThe game crashed!\nCrash report created in 'logs/${filename}'\nPlease create a bug report at:\nhttps://github.com/LunarTides/Hearthstone.js/issues`));
         game.input();
 
         return true;
@@ -968,13 +968,13 @@ ${main_content}
 
             const isCommandAvailable = (test_command: string, args_specifier: string) => {
                 try {
-                    console.log(`Trying '${test_command} ${args_specifier}${command} ${args}'...`)
+                    game.log(`Trying '${test_command} ${args_specifier}${command} ${args}'...`)
                     attempts.push(test_command);
 
                     child_process.execSync(`which ${test_command} 2> /dev/null`);
                     child_process.exec(`${test_command} ${args_specifier}${command} ${args}`);
 
-                    console.log(`Success!`);
+                    game.log(`Success!`);
 
                     return true;
                 } catch (error) {
@@ -988,15 +988,15 @@ ${main_content}
             else if (isCommandAvailable("konsole", "-e ")) {}
             else if (isCommandAvailable("xfce4-terminal", "--command=")) {}
             else {
-                console.log("Error: Failed to open program. Traceback:");
-                console.log("Operating system: Linux");
+                game.log("Error: Failed to open program. Traceback:");
+                game.log("Operating system: Linux");
                 
                 attempts.forEach(a => {
-                    console.log(`Tried '${a}'... failed!`);
+                    game.log(`Tried '${a}'... failed!`);
                 });
 
-                console.log("Please install any of these using your package manager.");
-                console.log("If you're not using linux, open up an issue on the github page.");
+                game.log("Please install any of these using your package manager.");
+                game.log("If you're not using linux, open up an issue on the github page.");
                 // game.input(); <- It is your job to pause the program when you run this, since function.ts functions should generally not pause the game.
 
                 return false;

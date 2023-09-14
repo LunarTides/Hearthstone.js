@@ -190,7 +190,7 @@ const eventManager: IEventManager = {
             // The quest/secret is done
             plr[quests_name].splice(plr[quests_name].indexOf(quest), 1);
 
-            if (quests_name == "secrets") game!.input("\nYou triggered the opponents's '" + quest.name + "'.\n");
+            if (quests_name == "secrets") game.input("\nYou triggered the opponents's '" + quest.name + "'.\n");
 
             if (quest.next) new Card(quest.next, plr).activate("cast");
         });
@@ -461,6 +461,8 @@ export class Game {
 
         if (this.no_input && care) return wrapper("");
 
+        q = functions.parseTags(q);
+
         // Let the game make choices for the user
         if (this.player.inputQueue) {
             let queue = this.player.inputQueue;
@@ -477,6 +479,15 @@ export class Game {
         }
 
         return wrapper(question(q));
+    }
+
+    /**
+     * Wrapper for game.log 
+     */
+    log(...data: any) {
+        //if (typeof data === "string") data = functions.parseTags(data);
+        data = data.map((i: any) => typeof i === "string" ? functions.parseTags(i) : i);
+        console.log(...data);
     }
 
     /**
@@ -531,7 +542,7 @@ export class Game {
             
             let success = plr.setToStartingHero();
             if (!success) {
-                console.log("File 'cards/StartingHeroes/" + plr.heroClass.toLowerCase().replaceAll(" ", "_") + ".mts' is either; Missing or Incorrect. Please copy the working 'cards/StartingHeroes/' folder from the github repo to restore a working copy. Error Code: 12");
+                game.log("File 'cards/StartingHeroes/" + plr.heroClass.toLowerCase().replaceAll(" ", "_") + ".mts' is either; Missing or Incorrect. Please copy the working 'cards/StartingHeroes/' folder from the github repo to restore a working copy. Error Code: 12");
                 process.exit(1);
             }
 
@@ -1330,7 +1341,7 @@ const playCard = {
         if (!minion) return false;
 
         if (!minion.tribe?.includes("Mech")) {
-            console.log("That minion is not a Mech.");
+            game.log("That minion is not a Mech.");
             return playCard._magnetize(card, player);
         }
 

@@ -31,7 +31,7 @@ export class Player {
      * let board = game.board[player.id];
      * 
      * board.forEach(card => {
-     *     console.log(card.name);
+     *     game.log(card.name);
      * });
      */
     id: number = -1;
@@ -43,7 +43,7 @@ export class Player {
      * @example
      * let discover = player.ai.discover();
      * 
-     * console.log(discover);
+     * game.log(discover);
      */
     ai?: AI;
 
@@ -64,9 +64,9 @@ export class Player {
      * let target = game.functions.selectTarget("Example", null, "any", "any");
      * 
      * if (target.classType == "Player") {
-     *     console.log(target.health);
+     *     game.log(target.health);
      * } else if (target.classType == "Card") {
-     *     console.log(target.stats[1]);
+     *     game.log(target.stats[1]);
      * }
      * 
      * // ^^^ You can just use `target.getHealth()` in this situation since both classes have it.
@@ -81,7 +81,7 @@ export class Player {
      * # Examples
      * @example
      * player.deck.forEach(card => {
-     *     console.log(card.name);
+     *     game.log(card.name);
      * });
      */
     deck: Card[] = [];
@@ -92,7 +92,7 @@ export class Player {
      * # Examples
      * @example
      * player.hand.forEach(card => {
-     *     console.log(card.name);
+     *     game.log(card.name);
      * });
      */
     hand: Card[] = [];
