@@ -481,13 +481,30 @@ export class Game {
         return wrapper(question(q));
     }
 
+    private logWrapper(callback: Function, ...data: any) {
+        data = data.map((i: any) => typeof i === "string" ? functions.parseTags(i) : i);
+        callback(...data);
+    }
+
     /**
-     * Wrapper for game.log 
+     * Wrapper for console.log 
      */
     log(...data: any) {
-        //if (typeof data === "string") data = functions.parseTags(data);
-        data = data.map((i: any) => typeof i === "string" ? functions.parseTags(i) : i);
-        console.log(...data);
+        this.logWrapper(console.log, ...data);
+    }
+
+    /**
+     * Wrapper for console.error
+     */
+    logError(...data: any) {
+        this.logWrapper(console.error, ...data);
+    }
+
+    /**
+     * Wrapper for console.warn
+     */
+    logWarn(...data: any) {
+        this.logWrapper(console.warn, ...data);
     }
 
     /**
@@ -1263,7 +1280,7 @@ const playCard = {
         if (cleared === true) return true;
 
         // Warn the user that the condition is not fulfilled
-        const warnMessage = chalk.yellow("WARNING: This card's condition is not fulfilled. Are you sure you want to play this card?");
+        const warnMessage = "<yellow>WARNING: This card's condition is not fulfilled. Are you sure you want to play this card?</yellow>";
 
         game.interact.printAll(player);
         let warn = game.interact.yesNoQuestion(player, warnMessage);

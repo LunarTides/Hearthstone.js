@@ -93,7 +93,7 @@ export const interact = {
                 break;
         }
 
-        game.log(chalk.red(`${err}.`));
+        game.log(`<red>${err}.</red>`);
         game.input();
         return false;
     },
@@ -122,17 +122,17 @@ export const interact = {
             }
 
             if (game.player.mana < game.player.heroPowerCost) {
-                game.input(chalk.red("You do not have enough mana.\n"));
+                game.input("<red>You do not have enough mana.</red>\n");
                 return false;
             }
 
             if (!game.player.canUseHeroPower) {
-                game.input(chalk.red("You have already used your hero power this turn.\n"));
+                game.input("<red>You have already used your hero power this turn.</red>\n");
                 return false;
             }
 
             interact.printAll(game.player);
-            let ask = interact.yesNoQuestion(game.player, chalk.yellow(game.player.hero?.hpDesc) + " Are you sure you want to use this hero power?");
+            let ask = interact.yesNoQuestion(game.player, `<yellow>${game.player.hero?.hpDesc}</yellow> Are you sure you want to use this hero power?`);
             if (!ask) return false;
 
             interact.printAll(game.player);
@@ -165,7 +165,7 @@ export const interact = {
                     break;
             }
 
-            game.log(chalk.red(`${err}.`));
+            game.log(`<red>${err}.</red>`);
             game.input();
         }
         else if (name === "help") {
@@ -186,9 +186,9 @@ export const interact = {
             game.log("version    - Displays the version, branch, your settings preset, and some information about your current version.");
             game.log("license    - Opens a link to this project's license");
 
-            const cond_color = (str: string) => {return (game.config.general.debug) ? str : chalk.gray(str)};
+            const cond_color = (str: string) => {return (game.config.general.debug) ? str : `<gray>${str}</gray>`};
 
-            game.log(cond_color("\n--- Debug Commands (") + ((game.config.general.debug) ? chalk.greenBright("ON") : chalk.red("OFF")) + cond_color(") ---"));
+            game.log(cond_color("\n--- Debug Commands (") + ((game.config.general.debug) ? "<bright:green>ON</bright:green>" : "<red>OFF</red>") + cond_color(") ---"));
             game.log(cond_color("/give (name)        - Adds a card to your hand"));
             game.log(cond_color("/eval [log] (code)  - Runs the code specified. If the word 'log' is before the code, instead game.log the code and wait for user input to continue."));
             game.log(cond_color("/set (name) (value) - Changes a setting to (value). Look in the config files for a list of settings."));
@@ -314,14 +314,14 @@ export const interact = {
         }
         else if (name === "history") {
             if (echo === false) {}
-            else game.log(chalk.yellow("Cards that are shown are collected while this screen is rendering. This means that it gets the information about the card from where it is when you ran this command, for example; the graveyard. This is why most cards have <1 health."));
+            else game.log("<yellow>Cards that are shown are collected while this screen is rendering. This means that it gets the information about the card from where it is when you ran this command, for example; the graveyard. This is why most cards have <1 health.</yellow>");
 
             // History
             let history = game.events.history;
             let finished = "";
 
             const showCard = (val: Card) => {
-                return interact.getReadableCard(val) + " which belongs to: " + chalk.blue(val.plr.name) + ", and has uuid: " + val.uuid.slice(0, 8);
+                return `${interact.getReadableCard(val)} which belongs to: <blue>${val.plr.name}</blue>, and has uuid: ${val.uuid.slice(0, 8)}`;
             }
 
             /**
@@ -433,13 +433,13 @@ export const interact = {
         }
 
         else if (name.startsWith("/") && !game.config.general.debug) {
-            game.input(chalk.red("You are not allowed to use this command."));
+            game.input("<red>You are not allowed to use this command.</red>");
             return false;
         }
 
         else if (name === "/give") {    
             if (args.length <= 0) {
-                game.input(chalk.red("Too few arguments.\n"));
+                game.input("<red>Too few arguments.</red>\n");
                 return false;
             }
 
@@ -447,7 +447,7 @@ export const interact = {
 
             let card = game.functions.getCardByName(cardName);
             if (!card) {
-                game.input(chalk.red("Invalid card: ") + chalk.yellow(cardName) + chalk.red(".\n"));
+                game.input(`<red>Invalid card: <yellow>${cardName}</yellow>.\n`);
                 return false;
             }
     
@@ -455,7 +455,7 @@ export const interact = {
         }
         else if (name === "/eval") {
             if (args.length <= 0) {
-                game.input(chalk.red("Too few arguments.\n"));
+                game.input("<red>Too few arguments.</red>\n");
                 return -1;
             }
 
@@ -480,7 +480,7 @@ export const interact = {
 
                 game.events.broadcast("Eval", code, game.player);
             } catch (err) {
-                game.log(chalk.red("\nAn error happened while running this code! Here is the error:"));
+                game.log("\n<red>An error happened while running this code! Here is the error:</red>");
                 game.log(err.stack);
                 game.input("Press enter to continue...");
             }
@@ -498,13 +498,13 @@ export const interact = {
         else if (name === "/undo") {
             // Get the last played card
             if (!game.events.events.PlayCard || game.events.events.PlayCard[game.player.id].length <= 0) {
-                game.input(chalk.red("No cards to undo.\n"));
+                game.input("<red>No cards to undo.</red>\n");
                 return false;
             }
 
             let eventCards: [Card, number][] = game.events.events.PlayCard[game.player.id];
             if (eventCards.length <= 0) {
-                game.input(chalk.red("No cards to undo.\n"));
+                game.input("<red>No cards to undo.</red>\n");
                 return false;
             }
 
@@ -597,19 +597,19 @@ export const interact = {
 
             let turnIndex = parseInt(game.input("\nWhich turn does the command belong to? (eg. 1): "));
             if (!turnIndex || turnIndex < 0 || !history[turnIndex]) {
-                game.input(chalk.red("Invalid turn.\n"));
+                game.input("<red>Invalid turn.</red>\n");
                 return false;
             }
 
             let commandIndex = parseInt(game.input("\nWhat is the index of the command in that turn? (eg. 1): "));
             if (!commandIndex || commandIndex < 1 || !history[turnIndex][commandIndex - 1]) {
-                game.input(chalk.red("Invalid command index.\n"));
+                game.input("<red>Invalid command index.</red>\n");
                 return false;
             }
 
             let command = history[turnIndex][commandIndex - 1][1];
             if (!command) {
-                game.input(chalk.red("Invalid command.\n"));
+                game.input("<red>Invalid command.</red>\n");
                 return false;
             }
 
@@ -618,7 +618,7 @@ export const interact = {
             interact.printAll(game.player);
             let options = parseInt(game.input(`\nWhat would you like to do with this command?\n${command}\n\n(1. Run it, 2. Edit it, 0. Cancel): `));
             if (!options) {
-                game.input(chalk.red("Invalid option.\n"));
+                game.input("<red>Invalid option.</red>\n");
                 return false;
             }
 
@@ -633,7 +633,7 @@ export const interact = {
         }
         else if (name === "/set") {
             if (args.length != 2) {
-                game.input(chalk.red("Invalid amount of arguments!\n"));
+                game.input("<red>Invalid amount of arguments!</red>\n");
                 return false;
             }
 
@@ -641,7 +641,7 @@ export const interact = {
 
             let name = Object.keys(game.config).find(k => k === value);
             if (!name) {
-                game.input(chalk.red("Invalid setting name!\n"));
+                game.input("<red>Invalid setting name!</red>\n");
                 return false;
             }
 
@@ -649,46 +649,46 @@ export const interact = {
             let setting: GameConfig = game.config[name];
 
             if (setting === undefined) {
-                game.input(chalk.red("Invalid setting name!\n"));
+                game.input("<red>Invalid setting name!</red>\n");
                 return false;
             }
 
             if (!(/number|boolean|string/.test(typeof setting))) {
-                game.input(chalk.red(`You cannot change this setting, as it is a '${typeof setting}', and you can only change: number, boolean, string.\n`));
+                game.input(`<red>You cannot change this setting, as it is a '${typeof setting}', and you can only change: number, boolean, string.</red>\n`);
                 return false;
             }
 
             if (key === "debug") {
-                game.input(chalk.red("You can't change the debug setting, as that could lock you out of the set command.\n"));
+                game.input("<red>You can't change the debug setting, as that could lock you out of the set command.</red>\n");
                 return false;
             }
 
             let newValue;
 
             if (["off", "disable", "false", "no", "0"].includes(value)) {
-                game.log(chalk.greenBright(`Setting '${key}' has been disabled.`));
+                game.log(`<bright:green>Setting '${key}' has been disabled.</bright:green>`);
                 newValue = false;
             }
             else if (["on", "enable", "true", "yes", "1"].includes(value)) {
-                game.log(chalk.greenBright(`Setting '${key}' has been disabled.`));
+                game.log(`<bright:green>Setting '${key}' has been disabled.</bright:green>`);
                 newValue = true;
             }
             else if (parseFloat(value)) {
-                game.log(chalk.greenBright(`Setting '${key}' has been set to the float: ${value}.`));
+                game.log(`<bright:green>Setting '${key}' has been set to the float: ${value}.</bright:green>`);
                 newValue = parseFloat(value);
             }
             else if (parseInt(value)) {
-                game.log(chalk.greenBright(`Setting '${key}' has been set to the integer: ${value}.`));
+                game.log(`<bright:green>Setting '${key}' has been set to the integer: ${value}.</bright:green>`);
                 newValue = parseInt(value);
             }
             else {
-                game.log(chalk.greenBright(`Setting '${key}' has been set to the string literal: ${value}.`));
+                game.log(`<bright:green>Setting '${key}' has been set to the string literal: ${value}.</bright:green>`);
                 newValue = value;
             }
 
             if (newValue === undefined) {
                 // This should never really happen
-                game.input(chalk.red("Invalid value!\n"));
+                game.input("<red>Invalid value!</red>\n");
                 return false;
             }
 
@@ -701,7 +701,7 @@ export const interact = {
         else if (name === "/reload" || name === "/rl") {
             if (game.config.advanced.reloadCommandConfirmation && !debug) {
                 interact.printAll(game.player);
-                let sure = interact.yesNoQuestion(game.player, chalk.yellow("Are you sure you want to reload? This will reset all cards to their base state."));
+                let sure = interact.yesNoQuestion(game.player, "<yellow>Are you sure you want to reload? This will reset all cards to their base state.</yellow>");
                 if (!sure) return false;
             }
 
@@ -829,7 +829,7 @@ export const interact = {
         else if (ret == "invalid") err = "Invalid card";
         else err = `An unknown error occurred. Error code: UnexpectedDoTurnResult@${ret}`;
 
-        game.log(chalk.red(`${err}.`));
+        game.log(`<red>${err}.</red>`);
         game.input();
 
         return false;
@@ -881,7 +881,7 @@ export const interact = {
          */
         let allowTestDeck: boolean = game.config.general.debug || game.config.info.branch !== "stable";
 
-        let debugStatement = allowTestDeck ? chalk.gray(" (Leave this empty for a test deck)") : "";
+        let debugStatement = allowTestDeck ? " <gray>(Leave this empty for a test deck)</gray>" : "";
         const deckcode = game.input(`Player ${plr.id + 1}, please type in your deckcode${debugStatement}: `);
 
         let result: boolean | Card[] | null = true;
@@ -890,7 +890,7 @@ export const interact = {
         else {
             if (!allowTestDeck) { // I want to be able to test without debug mode on in a non-stable branch
                 // Give error message
-                game.input(chalk.red("Please enter a deckcode!\n"));
+                game.input("<red>Please enter a deckcode!</red>\n");
                 return false;
             }
 
@@ -916,7 +916,7 @@ export const interact = {
         interact.printAll(plr);
 
         let sb = "\nChoose the cards to mulligan (1, 2, 3, ...):\n";
-        if (!game.config.general.debug) sb += chalk.gray("(Example: 13 will mulligan the cards with the ids 1 and 3, 123 will mulligan the cards with the ids 1, 2 and 3, just pressing enter will not mulligan any cards):\n");
+        if (!game.config.general.debug) sb += "<gray>(Example: 13 will mulligan the cards with the ids 1 and 3, 123 will mulligan the cards with the ids 1, 2 and 3, just pressing enter will not mulligan any cards):</gray>\n";
 
         let input;
 
@@ -926,7 +926,7 @@ export const interact = {
         let is_int = game.functions.mulligan(plr, input);
 
         if (!is_int && input != "") {
-            game.input(chalk.red("Invalid input!\n"));
+            game.input("<red>Invalid input!</red>\n");
             return interact.mulligan(plr);
         }
 
@@ -1017,7 +1017,7 @@ export const interact = {
 
             let choice = game.input(p);
             if (!parseInt(choice)) {
-                game.input(chalk.red("Invalid input!\n"));
+                game.input("<red>Invalid input!</red>\n");
                 return interact.chooseOne(prompt, options, times);
             }
 
@@ -1073,7 +1073,7 @@ export const interact = {
 
         let answer = answers[choice - 1];
         if (!answer) {
-            game.input(chalk.red("Invalid input!\n"));
+            game.input("<red>Invalid input!</red>\n");
             RETRY();
         }
 
@@ -1091,7 +1091,7 @@ export const interact = {
     yesNoQuestion(plr: Player, prompt: string): boolean {
         game = globalThis.game;
 
-        let ask = `\n${prompt} [` + chalk.greenBright('Y') + ' | ' + chalk.red('N') + `] `;
+        let ask = `\n${prompt} [<bright:green>Y</bright:green> | <red>N</red>] `;
 
         if (plr.ai) return plr.ai.yesNoQuestion(prompt);
 
@@ -1101,7 +1101,7 @@ export const interact = {
         if (["Y", "N"].includes(choice)) return choice === "Y";
 
         // Invalid input
-        game.log(chalk.red("Unexpected input: '") + chalk.yellow(_choice) + chalk.red("'. Valid inputs: ") + "[" + chalk.greenBright("Y") + " | " + chalk.red("N") + "]");
+        game.log(`<red>Unexpected input: '<yellow>${_choice}</yellow>'. Valid inputs: </red>[<bright:green>Y</bright:green> | <red>N</red>]`);
         game.input();
 
         return interact.yesNoQuestion(plr, prompt);
@@ -1260,7 +1260,7 @@ export const interact = {
         if (!target.startsWith("face") && !board_friendly_target && !board_opponent_target) {
             // target != "face" and target is not a minion.
             // The input is invalid
-            game.input(chalk.red("Invalid input / minion!\n"));
+            game.input("<red>Invalid input / minion!</red>\n");
 
             return interact._selectTarget(prompt, card, force_side, force_class, flags);
         }
@@ -1302,14 +1302,14 @@ export const interact = {
 
         // If you didn't select a valid minion, return.
         if (minion === undefined) {
-            game.input(chalk.red("Invalid minion.\n"));
+            game.input("<red>Invalid minion.</red>\n");
             return false;
         }
 
         // If the minion has elusive, and the card that called this function is a spell
         if ((card && card.type === "Spell") || flags.includes("force_elusive")) {
             if (minion.keywords.includes("Elusive")) {
-                game.input(chalk.red("Can't be targeted by Spells or Hero Powers.\n"));
+                game.input("<red>Can't be targeted by Spells or Hero Powers.</red>\n");
             
                 return false;
             }
@@ -1319,14 +1319,14 @@ export const interact = {
 
         // If the minion has stealth, don't allow the opponent to target it.
         if (minion.keywords.includes("Stealth") && game.player != minion.plr) {
-            game.input(chalk.red("This minion has stealth.\n"));
+            game.input("<red>This minion has stealth.</red>\n");
 
             return false;
         }
 
         // If the minion is a location, don't allow it to be selectted unless the `allow_locations` flag was set.
         if (minion.type == "Location" && !flags.includes("allow_locations")) {
-            game.input(chalk.red("You cannot target location cards.\n"));
+            game.input("<red>You cannot target location cards.</red>\n");
 
             return false;
         }
@@ -1353,7 +1353,7 @@ export const interact = {
         game.log(`|${border}|\n`);
 
         if (info.branch == "topic" && game.config.general.topicBranchWarning) {
-            game.log(chalk.yellow("WARNING: YOU ARE ON A TOPIC BRANCH. THIS VERSION IS NOT READY.\n"));
+            game.log("<yellow>WARNING: YOU ARE ON A TOPIC BRANCH. THIS VERSION IS NOT READY.</yellow>\n");
         }
     },
 
@@ -1526,13 +1526,13 @@ export const interact = {
 
         switch (costType) {
             case "mana":
-                mana = chalk.cyan(mana);
+                mana = `<cyan>${mana}</cyan>`;
                 break;
             case "armor":
-                mana = chalk.gray(mana);
+                mana = `<gray>${mana}</gray>`;
                 break;
             case "health":
-                mana = chalk.red(mana);
+                mana = `<red>${mana}</red>`;
                 break;
             default:
                 break;
@@ -1545,7 +1545,7 @@ export const interact = {
         sb += game.functions.colorByRarity(displayName, card.rarity);
         
         if (card.type === "Minion" || card.type === "Weapon") {
-            sb += chalk.greenBright(` [${card.stats?.join(" / ")}]`);
+            sb += `<bright:green> [${card.stats?.join(" / ")}]</bright:green>`;
         }
 
         else if (card.type == "Location") {
@@ -1560,31 +1560,31 @@ export const interact = {
             }
 
             sb += " {";
-            sb += chalk.greenBright(`Durability: ${durability} / `);
-            sb += chalk.greenBright(maxDurability);
-            sb += ", ";
+            sb += `<bright:green>Durability: ${durability} / `;
+            sb += maxDurability;
+            sb += "</bright:green>, ";
 
-            sb += chalk.cyan(`Cooldown: ${card.cooldown} / ${maxCooldown}`);
+            sb += `<cyan>Cooldown: ${card.cooldown} / ${maxCooldown}</cyan>`;
             sb += "}";
         }
 
         sb += desc;
-        sb += chalk.yellow(`(${card.type})`);
+        sb += `<yellow>(${card.type})</yellow>`;
 
         if (!(card instanceof Card)) return sb;
 
         const excludedKeywords = ["Magnetic", "Corrupt"];
         let keywords = card.keywords.filter(k => !excludedKeywords.includes(k));
-        let keywordsString = keywords.length > 0 ? chalk.gray(` {${keywords.join(", ")}}`) : "";
+        let keywordsString = keywords.length > 0 ? ` <gray>{${keywords.join(", ")}}</gray>` : "";
         sb += keywordsString;
 
         ["Frozen", "Dormant", "Immune"].forEach(k => {
             if (!card[k.toLowerCase() as keyof Card]) return;
 
-            sb += chalk.gray(` (${k})`);
+            sb += ` <gray>(${k})</gray>`;
         });
 
-        let sleepy = (card.sleepy) || (card.attackTimes && card.attackTimes <= 0) ? chalk.gray(" (Sleepy)") : "";
+        let sleepy = (card.sleepy) || (card.attackTimes && card.attackTimes <= 0) ? " <gray>(Sleepy)</gray>" : "";
         sb += sleepy;
 
         return sb;
@@ -1700,7 +1700,7 @@ export const interact = {
             game.log(sideMessage);
 
             if (side.length === 0) {
-                game.log(chalk.gray("Empty"));
+                game.log("<gray>Empty</gray>");
                 return;
             };
 
@@ -1715,7 +1715,7 @@ export const interact = {
     printHand(plr: Player): void {
         game.log(`--- ${plr.name} (${plr.heroClass})'s Hand ---`);
         // Add the help message
-        game.log(game.functions.parseTags(`([id] <cyan>{Cost}</> <b>Name</b> <bright:green>[attack / health]</> <yellow>(type)</>)\n`));
+        game.log(game.functions.parseTags(`([id] <cyan>{Cost}</cyan> <b>Name</b> <bright:green>[attack / health]</bright:green> <yellow>(type)</yellow>)\n`));
 
         plr.hand.forEach((card, index) => {
             game.log(this.getReadableCard(card, index + 1));
@@ -1732,7 +1732,7 @@ export const interact = {
         game = globalThis.game;
 
         let _card = interact.getReadableCard(card);
-        let _class = chalk.gray(card.classes.join(" / "));
+        let _class = `<gray>${card.classes.join(" / ")}</gray>`;
 
         let tribe = "";
         let spellSchool = "";
@@ -1740,17 +1740,17 @@ export const interact = {
 
         let type = card.type;
 
-        if (type == "Minion") tribe = " (" + chalk.gray(card.tribe ?? "None") + ")";
+        if (type == "Minion") tribe = ` (<gray>${card.tribe ?? "None"}</gray>)`;
         else if (type == "Spell") {
-            if (card.spellSchool) spellSchool = " (" + chalk.cyan(card.spellSchool) + ")";
+            if (card.spellSchool) spellSchool = ` (<cyan>${card.spellSchool}</cyan>)`;
             else spellSchool = " (None)";
         }
         else if (type == "Location") {
-            if (card instanceof Card) locCooldown = " (" + chalk.cyan(card.blueprint.cooldown ?? 0) + ")";
-            else locCooldown = " (" + chalk.cyan(card.cooldown?.toString()) + ")";
+            if (card instanceof Card) locCooldown = ` (<cyan>${card.blueprint.cooldown ?? 0}</cyan>)`;
+            else locCooldown = ` (<cyan>${card.cooldown?.toString()}</cyan>)`;
         }
 
-        if (help) game.log(chalk.cyan("{mana} ") + chalk.bold("Name ") + "(" + chalk.greenBright("[attack / health] ") + "if it has) (description) " + chalk.yellow("(type) ") + "((tribe) or (spell class) or (cooldown)) [" + chalk.gray("class") + "]");
+        if (help) game.log("<cyan>{mana}</cyan> <b>Name</b> (<bright:green>[attack / health]</bright:green> if is has) (description) <yellow>(type)</yellow> ((tribe) or (spell class) or (cooldown)) <gray>[class]</gray>");
         game.log(_card + (tribe || spellSchool || locCooldown) + ` [${_class}]`);
 
         game.input("\nPress enter to continue...\n");

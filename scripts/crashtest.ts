@@ -10,7 +10,7 @@ let gamesEnv = process.env.games ?? "";
 let games = parseInt(gamesEnv) ?? 100;
 
 function main() {
-    console.warn(`Press enter to play ${games} games`);
+    game.logWarn(`Press enter to play ${games} games`);
     if (!process.env.games) game.log("Set the GAMES env variable to change how many games to play.");
     game.log("NOTE: If you see no progress being made for an extended period of time, chances are the game got stuck in an infinite loop.");
     rl.question();
@@ -57,7 +57,7 @@ function main() {
         }
     }
 
-    console.warn("Test passed!");
+    game.logWarn("Test passed!");
     rl.question();
 }
 

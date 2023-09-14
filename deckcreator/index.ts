@@ -542,7 +542,7 @@ function deckcode(parseVanillaOnPseudo = false) {
                 log += "Too many cards.";
                 break;
             case "EmptyDeck":
-                log = "</yellow><red>ERROR: Could not generate deckcode as your deck is empty. The resulting deckcode would be invalid.";
+                log = "<red>ERROR: Could not generate deckcode as your deck is empty. The resulting deckcode would be invalid.</red>";
                 break;
             case "TooManyCopies":
                 log += util.format("Too many copies of a card. Maximum: </>'%s'<yellow>. Offender: </>'%s'<yellow>"), config.decks.maxOfOneCard, `{ Name: "${error.info?.card?.name}", Copies: "${error.info?.amount}" }`;

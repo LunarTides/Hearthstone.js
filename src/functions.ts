@@ -34,8 +34,8 @@ const deckcode = {
          * Cause the function to return an error
          */
         const ERROR = (error_code: string, card_name: string | null = null): null => {
-            game.log(chalk.red("This deck is not valid!\nError Code: ") + chalk.yellow(error_code));
-            if (card_name) game.log(chalk.red("Specific Card that caused this error: ") + chalk.yellow(card_name));
+            game.log(`<red>This deck is not valid!\nError Code: <yellow>${error_code}</yellow red>`);
+            if (card_name) game.log(`<red>Specific Card that caused this error: <yellow>${card_name}</yellow red>`);
             game.input();
             return null;
         }
@@ -74,7 +74,7 @@ const deckcode = {
 
         const addRunes = (runes: string) => {
             if (rune_class) plr.runes = runes;
-            else game.input(chalk.yellow("WARNING: This deck has runes in it, but the class is ") + chalk.yellowBright(hero) + chalk.yellow(". Supported classes: ") + chalk.yellowBright(rune_classes.join(", ")) + "\n");
+            else game.input(`<yellow>WARNING: This deck has runes in it, but the class is <bright:yellow>${hero}</bright:yellow>. Supported classes: <bright:yellow>${rune_classes.join(", ")}</bright:yellow yellow>\n`);
         }
 
         // Runes
@@ -97,7 +97,7 @@ const deckcode = {
             addRunes(runes);
         }
         else if (rune_class) {
-            game.input(chalk.yellow("WARNING: This class supports runes but there are no runes in this deck. This deck's class: ") + chalk.yellowBright(hero) + chalk.yellow(". Supported classes: ") + chalk.yellowBright(rune_classes.join(", ")) + "\n");
+            game.input(`<yellow>WARNING: This class supports runes but there are no runes in this deck. This deck's class: <bright:yellow>${hero}</bright:yellow>. Supported classes: <bright:yellow>${rune_classes.join(", ")}</bright:yellow yellow>\n`);
         }
 
         let copyDefFormat = /\/(\d+:\d+,)*\d+\/ /;
@@ -165,7 +165,7 @@ const deckcode = {
                         err = "";
                         break;
                 }
-                game.input(chalk.red(`${err}.\nSpecific Card that caused the error: `) + chalk.yellow(`${card.name}\n`));
+                game.input(`<red>${err}.\nSpecific Card that caused the error: <yellow>${card.name}</yellow red>\n`);
                 retInvalid = true;
             });
 
@@ -180,7 +180,8 @@ const deckcode = {
         let min = localSettings.minDeckLength;
 
         if ((_deck.length < min || _deck.length > max) && localSettings.validateDecks) {
-            game.input(chalk.red("The deck needs ") + ((min == max) ? chalk.red(`exactly `) + chalk.yellow(max) : chalk.red(`between`) + chalk.yellow(`${min}-${max}`)) + chalk.red(` cards. Your deck has: `) + chalk.yellow(_deck.length) + chalk.red(`.\n`));
+            const grammar = (min == max) ? `exactly <yellow>${max}</yellow>` : `between <yellow>${min}-${max}</yellow>`;
+            game.input(`<red>The deck needs ${grammar} cards. Your deck has: <yellow>${_deck.length}</yellow>.\n`);
             return null;
         }
 
@@ -203,16 +204,16 @@ const deckcode = {
             let err;
             switch (errorcode) {
                 case "normal":
-                    err = chalk.red(`There are more than `) + chalk.yellow(localSettings.maxOfOneCard.toString()) + chalk.red(" of a card in your deck");
+                    err = `<red>There are more than <yellow>${localSettings.maxOfOneCard}</yellow> of a card in your deck.</red>`;
                     break
                 case "legendary":
-                    err = chalk.red(`There are more than `) + chalk.yellow(localSettings.maxOfOneLegendary.toString()) + chalk.red(" of a legendary card in your deck");
+                    err = `<red>There are more than <yellow>${localSettings.maxOfOneLegendary}</yellow> of a legendary card in your deck.</red>`;
                     break
                 default:
                     err = "";
                     break;
             }
-            game.input(err + chalk.red("\nSpecific card that caused this error: ") + chalk.yellow(cardName) + chalk.red(". Amount: ") + chalk.yellow(amount.toString()) + chalk.red(".\n"));
+            game.input(err + `\n<red>Specific card that caused this error: <yellow>${cardName}</yellow>. Amount: <yellow>${amount}</yellow>.\n`);
             return "invalid";
         });
     
@@ -336,7 +337,7 @@ const deckcode = {
 
         let heroClassId = vanillaHeroes[heroClass as CardClass];
         if (!heroClassId) {
-            game.log(chalk.red("ERROR: Invalid hero class: ") + chalk.yellow(heroClass));
+            game.log(`<red>ERROR: Invalid hero class: <yellow>${heroClass}</yellow red>`);
             game.input();
 
             process.exit(1);
@@ -392,7 +393,7 @@ const deckcode = {
 
             if (matches.length == 0) {
                 // Invalid card
-                game.input(chalk.red("ERROR: Invalid card found!"));
+                game.input("<red>ERROR: Invalid card found!</red>\n");
                 return;
             }
 
@@ -417,7 +418,7 @@ const deckcode = {
                     game.log(m);
                 });
 
-                game.log(chalk.yellow(`Multiple cards with the name '${c}' detected! Please choose one:`));
+                game.log(`<yellow>Multiple cards with the name '</yellow>${c}<yellow>' detected! Please choose one:</yellow>`);
                 let chosen = game.input();
 
                 match = matches[parseInt(chosen) - 1];
@@ -472,13 +473,13 @@ const deckcode = {
             if (createdCards.find(card => card.name == vanillaCard.name || card.displayName == vanillaCard.name)) return;
 
             // The card doesn't exist.
-            game.log(chalk.red(`ERROR: Card '${vanillaCard.name}' doesn't exist!`));
+            game.log(`<red>ERROR: Card '</red>${vanillaCard.name}<red>' doesn't exist!</red>`);
             invalidCards.push(vanillaCard);
         });
 
         if (invalidCards.length > 0) {
             // There was a card in the deck that isn't implemented in Hearthstone.js
-            game.input(chalk.yellow(`Some cards do not currently exist. You cannot play on this deck without them.`));
+            game.input(`<yellow>Some cards do not currently exist. You cannot play on this deck without them.</yellow>`);
 
             process.exit(1);
         }
@@ -850,7 +851,7 @@ ${main_content}
 
         if (!err) return true;
 
-        game.log(chalk.red(`\nThe game crashed!\nCrash report created in 'logs/${filename}'\nPlease create a bug report at:\nhttps://github.com/LunarTides/Hearthstone.js/issues`));
+        game.log(`\n<red>The game crashed!\nCrash report created in 'logs/${filename}'\nPlease create a bug report at:\nhttps://github.com/LunarTides/Hearthstone.js/issues</red>`);
         game.input();
 
         return true;
@@ -1073,7 +1074,7 @@ ${main_content}
             return [JSON.parse(fs.readFileSync(fileLocation, "utf8")) as VanillaCard[], null];
         }
 
-        return [[], error ?? chalk.red("Cards file not found! Run 'scripts/genvanilla.bat' (requires an internet connection), then try again." + "\n")];
+        return [[], error ?? "<red>Cards file not found! Run 'scripts/genvanilla.bat' (requires an internet connection), then try again.</red>\n"];
     },
 
     /**
@@ -1212,7 +1213,7 @@ ${main_content}
 
             let card = functions.getCardByName(name + " Starting Hero");
             if (!card || card.classes[0] != name as CardClassNoNeutral || card.type != "Hero" || !card.heropower || card.classes.includes("Neutral")) {
-                console.warn("Found card in the startingheroes folder that isn't a starting hero. If the game crashes, please note this in your bug report. Name: " + name + ". Error Code: StartingHeroInvalidHandler");
+                game.logWarn("Found card in the startingheroes folder that isn't a starting hero. If the game crashes, please note this in your bug report. Name: " + name + ". Error Code: StartingHeroInvalidHandler");
                 return;
             }
 
@@ -1227,7 +1228,6 @@ ${main_content}
      *
      * @param str The string to color
      * @param rarity The rarity
-     * @param bold Automatically apply bold
      *
      * @returns The colored string
      * 
@@ -1236,27 +1236,27 @@ ${main_content}
      * assert(card.name, "Sheep");
      * 
      * let colored = colorByRarity(card.name, card.rarity);
-     * assert.equal(colored, "Sheep".yellow);
+     * assert.equal(colored, chalk.yellow("Sheep"));
      */
-    colorByRarity(str: string, rarity: CardRarity, bold: boolean = true): string {
+    colorByRarity(str: string, rarity: CardRarity): string {
         switch (rarity) {
             case "Common":
-                str = chalk.gray(str);
+                str = `<gray>${str}</gray>`;
                 break;
             case "Rare":
-                str = chalk.blue(str);
+                str = `<blue>${str}</blue>`;
                 break;
             case "Epic":
-                str = chalk.magentaBright(str);
+                str = `<bright:magenta>${str}</bright:magenta>`;
                 break;
             case "Legendary":
-                str = chalk.yellow(str);
+                str = `<yellow>${str}</yellow>`;
                 break;
             default:
                 break;
         }
 
-        return str;
+        return functions.parseTags(str);
     },
 
     /**
@@ -1332,7 +1332,7 @@ ${main_content}
             // Update: I discourge the use of `reset` now that you cancel tags manually. Use `</>` instead.
             if (current_types.includes("reset")) current_types = ["reset"]; 
 
-            current_types.forEach(t => {
+            current_types.reverse().forEach(t => {
                 t = t.toLowerCase();
 
                 // Remove `fg:` prefix
@@ -1809,7 +1809,7 @@ ${main_content}
 
         let choice = game.input(p);
         if (!parseInt(choice)) {
-            game.input(chalk.red("Invalid choice!\n"));
+            game.input("<red>Invalid choice!</red>\n");
             return functions.adapt(minion, prompt, values);
         }
 

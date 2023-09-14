@@ -925,8 +925,8 @@ export class Card {
      * @returns If the condition is met
      */
     condition(): boolean {
-        const cleared_text = chalk.greenBright(" (Condition cleared!)");
-        const cleared_text_alt = chalk.greenBright("Condition cleared!");
+        const cleared_text = " <bright:green>(Condition cleared!)</bright:green>";
+        const cleared_text_alt = "<bright:green>Condition cleared!</bright:green>";
 
         // Remove the (Condition cleared!) from the description
         this.desc = this.desc?.replace(cleared_text, "");

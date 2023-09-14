@@ -80,7 +80,7 @@ function upgradeCard(path: string, filename: string, data: string) {
             key = match[1];
             game.log(`Found key: ${key}.`);
         } else {
-            console.error(chalk.yellow("WARNING: Could not find event key in passive."));
+            game.logError("<yellow>WARNING: Could not find event key in passive.</yellow>");
         }
 
         data = data.replace(/(\n {4}passive\(plr, game, self, key), val\) {/g, `$1, _unknownVal) {
@@ -120,7 +120,7 @@ function upgradeCards(path: string) {
 }
 
 function main() {
-    console.error(chalk.yellow("WARNING: This will create new cards with the `.mts` extension, but will leave your old card alone. Please verify that the new cards work before deleting the old ones."));
+    game.logError("<yellow>WARNING: This will create new cards with the `.mts` extension, but will leave your old card alone. Please verify that the new cards work before deleting the old ones.</yellow>");
 
     let proceed = game.input("Do you want to proceed? ([y]es, [n]o): ").toLowerCase()[0] === "y";
     if (!proceed) process.exit(0);
@@ -130,11 +130,11 @@ function main() {
     game.log("Trying to compile...");
     try {
         child_process.execSync("npx tsc");
-        game.log(chalk.greenBright("Success!"));
+        game.log("<bright:green>Success!</bright:green>");
     } catch (err) {
         // If the error code is 2, warn the user.
         if (err.status === 2) {
-            console.error(chalk.yellow("WARNING: Compiler error occurred. Please fix the errors in the card."));
+            game.logError("<yellow>WARNING: Compiler error occurred. Please fix the errors in the card.</yellow>");
         } else {
             throw err;
         }

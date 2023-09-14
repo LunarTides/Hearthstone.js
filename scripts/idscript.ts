@@ -29,7 +29,7 @@ function searchCards(callback: (path: string, content: string, id: number) => vo
             // The query is a regex
             let idMatch = data.match(idRegex);
             if (!idMatch) {
-                console.error(`No id found in ${fullPath}`);
+                game.logError(`No id found in ${fullPath}`);
                 return;
             }
 
@@ -127,11 +127,11 @@ export function validate(log: boolean): [number, number] {
         if (id === -1) return;
 
         if (id === currentId) {
-            if (log) console.error(chalk.yellowBright(`Duplicate id in ${path}. Previous id: ${currentId}. Got id: ${id}`));
+            if (log) game.logError(`<bright:yellow>Duplicate id in ${path}. Previous id: ${currentId}. Got id: ${id}</bright:yellow>`);
             duplicates++;
         }
         else if (id != currentId + 1) {
-            if (log) console.error(chalk.yellowBright(`Hole in ${path}. Previous id: ${currentId}. Got id: ${id}`));
+            if (log) game.logError(`<bright:yellow>Hole in ${path}. Previous id: ${currentId}. Got id: ${id}</bright:yellow>`);
             holes++;
         }
 
@@ -139,11 +139,11 @@ export function validate(log: boolean): [number, number] {
     });
 
     if (log) {
-        if (holes > 0) game.log(chalk.yellow("Found %s holes."), holes);
-        else game.log(chalk.greenBright("No holes found."));
+        if (holes > 0) game.log("<yellow>Found %s holes.</yellow>", holes);
+        else game.log("<bright:green>No holes found.</bright:green>");
 
-        if (duplicates > 0) game.log(chalk.yellow("Found %s duplicates."), duplicates);
-        else game.log(chalk.greenBright("No duplicates found."));
+        if (duplicates > 0) game.log("<yellow>Found %s duplicates.</yellow>", duplicates);
+        else game.log("<green:bright>No duplicates found.</green:bright>");
     }
 
     return [holes, duplicates];
@@ -153,12 +153,12 @@ function main() {
     // Check if your git is clean
     const gitStatus = run("git status --porcelain").toString();
     if (gitStatus) {
-        console.error(chalk.yellow("WARNING: You have uncommitted changes. Please commit them before running a non-safe command."));
+        game.logError("<yellow>WARNING: You have uncommitted changes. Please commit them before running a non-safe command.</yellow>");
         //process.exit(1);
     }
 
-    console.error(chalk.yellow("WARNING: Be careful with this script. This might break things that are dependent on ids remaining the same, like deckcodes."));
-    game.log(chalk.green("The validate and quit commands are safe to use without issue."));
+    game.logError("<yellow>WARNING: Be careful with this script. This might break things that are dependent on ids remaining the same, like deckcodes.</yellow>");
+    game.log("<green>The validate and quit commands are safe to use without issue.</green>");
 
     type Commands = "i" | "d" | "v" | "q";
 
@@ -169,7 +169,7 @@ function main() {
     const destructive = ["i", "d"] as Commands[];
 
     if (destructive.includes(func)) {
-        console.error(chalk.yellow("WARNING: This is a destructive action. Be careful.\n"));
+        game.logError("<yellow>WARNING: This is a destructive action. Be careful.</yellow>\n");
     }
 
     let startId: number;
