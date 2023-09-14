@@ -135,7 +135,7 @@ export const interact = {
             let ask = interact.yesNoQuestion(game.player, chalk.yellow(game.player.hero?.hpDesc) + " Are you sure you want to use this hero power?");
             if (!ask) return false;
 
-            interact.printAll();
+            interact.printAll(game.player);
             game.player.heroPower();
         }
         else if (name === "attack") {
@@ -615,7 +615,7 @@ export const interact = {
 
             command = command as EventValue<"Input">;
 
-            interact.printAll();
+            interact.printAll(game.player);
             let options = parseInt(game.input(`\nWhat would you like to do with this command?\n${command}\n\n(1. Run it, 2. Edit it, 0. Cancel): `));
             if (!options) {
                 game.input(chalk.red("Invalid option.\n"));
@@ -804,7 +804,7 @@ export const interact = {
             return turn;
         }
 
-        interact.printAll();
+        interact.printAll(game.player);
     
         let input = "\nWhich card do you want to play? ";
         if (game.turns <= 2 && !game.config.general.debug) input += "(type 'help' for further information <- This will disappear once you end your turn) ";
@@ -957,7 +957,7 @@ export const interact = {
             return card;
         }
 
-        interact.printAll();
+        interact.printAll(game.player);
 
         console.log(`\n${prompt}`);
 
@@ -996,7 +996,7 @@ export const interact = {
     chooseOne(prompt: string, options: string[], times: number = 1): number | null | (number | null)[] {
         game = globalThis.game;
 
-        interact.printAll();
+        interact.printAll(game.player);
 
         let choices = [];
 
@@ -1121,8 +1121,8 @@ export const interact = {
     discover(prompt: string, cards: CardLike[] = [], filterClassCards: boolean = true, amount: number = 3, _cards: CardLike[] = []): Card | null {
         game = globalThis.game;
 
-        // Discover doesn't work
-        interact.printAll();
+        // TODO: Discover doesn't work
+        interact.printAll(game.player);
         let values: CardLike[] = _cards;
 
         if (cards.length <= 0) cards = game.functions.getCards();
@@ -1548,8 +1548,44 @@ export const interact = {
             sb += chalk.greenBright(` [${card.stats?.join(" / ")}]`);
         }
 
+        else if (card.type == "Location") {
+            let durability = card.stats ? card.stats[1] : 0;
+            let maxDurability = durability;
+            let maxCooldown = card.cooldown;
+            
+            if (card instanceof Card) {
+                durability = card.getHealth();
+                maxDurability = card.backups.init.stats ? card.backups.init.stats[1] : 0;
+                maxCooldown = card.backups.init.cooldown ?? 0;
+            }
+
+            sb += " {";
+            sb += chalk.greenBright(`Durability: ${durability} / `);
+            sb += chalk.greenBright(maxDurability);
+            sb += ", ";
+
+            sb += chalk.cyan(`Cooldown: ${card.cooldown} / ${maxCooldown}`);
+            sb += "}";
+        }
+
         sb += desc;
         sb += chalk.yellow(`(${card.type})`);
+
+        if (!(card instanceof Card)) return sb;
+
+        const excludedKeywords = ["Magnetic", "Corrupt"];
+        let keywords = card.keywords.filter(k => !excludedKeywords.includes(k));
+        let keywordsString = keywords.length > 0 ? chalk.gray(` {${keywords.join(", ")}}`) : "";
+        sb += keywordsString;
+
+        ["Frozen", "Dormant", "Immune"].forEach(k => {
+            if (!card[k.toLowerCase() as keyof Card]) return;
+
+            sb += chalk.gray(` (${k})`);
+        });
+
+        let sleepy = (card.sleepy) || (card.attackTimes && card.attackTimes <= 0) ? chalk.gray(" (Sleepy)") : "";
+        sb += sleepy;
 
         return sb;
     },
@@ -1559,268 +1595,131 @@ export const interact = {
      * 
      * @param plr The player
      */
-    printAll(plr?: Player): void {
-        // WARNING: Stinky and/or smelly code up ahead. Read at your own risk.
-        // TODO: #246 Reformat this
+    printAll(plr: Player): void {
         game = globalThis.game;
 
-        if (!plr) plr = game.player;
+        this.printName();
+        if (game.turns <= 2) this.printLicense();
 
-        if (game.turns <= 2 && !game.config.general.debug) interact.printLicense();
-        else interact.printName();
-    
-        let op = plr.getOpponent();
-    
-        let sb = "";
-    
-        console.log(chalk.gray("Your side  :                              | Your opponent's side"));
-        /// Mana
-        // Current Player's Mana
-        sb += `Mana       : ${chalk.cyan(plr.mana)} / ${chalk.cyan(plr.maxMana)}`;
-        sb += "                        | ";
+        this.printPlayerStats(plr);
+        console.log();
+        this.printBoard(plr);
+        console.log();
+        this.printHand(plr);
+    },
 
-        // TODO: Yeah no. Replace all of these.
-        let to_remove = (plr.mana.toString().length + plr.maxMana.toString().length) - 2;
-        if (to_remove > 0) sb = sb.replace(" ".repeat(to_remove) + "|", "|");
+    printPlayerStats(plr: Player): void {
+        const opponent = plr.getOpponent();
 
-        // Opponent's Mana
-        sb += `Mana       : ${chalk.cyan(op.mana)} / ${chalk.cyan(op.maxMana)}`;
-        // Mana End
-        console.log(sb);
-        sb = "";
-        
+        let finished = "";
+        let finishedPlayers: string[] = [];
+        let totalTweak = 0;
+
+        const doStatPT1 = (player: Player, callback: (player: Player) => [string, number]): [string[], number] => {
+            let [stat, tweak] = callback(player);
+            stat = game.functions.parseTags(stat);
+
+            if (!stat) return [[""], 0];
+
+            if (!finishedPlayers[player.id]) finishedPlayers[player.id] = "";
+            finishedPlayers[player.id] += `${stat}\n`;
+
+            let split = finishedPlayers[player.id].split("\n");
+            game.functions.remove(split, "");
+
+            return [game.functions.createWall(split, ":"), tweak];
+        }
+
+        const doStat = (callback: (player: Player) => [string, number]) => {
+            let [playerWall, playerTweak] = doStatPT1(plr, callback);
+            let [opponentWall, opponentTweak] = doStatPT1(opponent, callback);
+
+            if (playerWall[0] === "") return;
+
+            finished = "";
+            playerWall.forEach((line, index) => {
+                finished += `${line} | ${opponentWall[index]}\n`;
+            });
+
+            let finishedSplit = finished.split("\n");
+            game.functions.remove(finishedSplit, "");
+
+            let finishedWall = game.functions.createWall(finishedSplit, "|");
+            finishedWall.forEach((line, index) => {
+                let p = line.split("|")[0];
+                let o = line.split("|")[1];
+
+                // Remove `playerTweak` amount of spaces from the left side of `|`, and remove `opponentTweak` amount of spaces from the right side of `|`
+                p = p.replace(new RegExp(` {${playerTweak + totalTweak}}`), "");
+                o = o.replace(new RegExp(` {${opponentTweak + totalTweak}}`), "");
+
+                finishedWall[index] = `${p} | ${o}`;
+            });
+
+            totalTweak += playerTweak;
+
+            finished = `${finishedWall.join("\n")}`;
+        }
+
+        // Mana
+        doStat((player: Player) => {
+            return [`Mana: <cyan>${player.mana}</cyan> / <cyan>${player.maxMana}</cyan>`, 0];
+        });
+
         // Health
-        sb += `Health     : ${chalk.red(plr.health)} (${chalk.gray(plr.armor)}) / ${chalk.red(plr.maxHealth)}`;
+        doStat((player: Player) => {
+            return [`Health: <red>${player.health}</red> / <red>${player.maxHealth}</red>`, 0];
+        });
 
-        sb += "                       | ";
-        to_remove = (plr.health.toString().length + plr.armor.toString().length + plr.maxHealth.toString().length);
-        if (to_remove > 0) sb = sb.replace(" ".repeat(to_remove) + "|", "|");
-    
-        // Opponent's Health
-        sb += `Health     : ${chalk.red(op.health)} (${chalk.gray(op.armor)}) / ${chalk.red(op.maxHealth)}`;
-        // Health End
-        console.log(sb);
-        sb = "";
+        // Deck Size
+        doStat((player: Player) => {
+            return [`Deck Size: <yellow>${player.deck.length}</yellow>`, 10];
+        });
 
-        // Weapon
-        if (plr.weapon) {
-            // Current player has a weapon
-            // Attack: 1 | Weapon: Wicked Knife (1 / 1)
-            if (plr.detailedView) sb += `Weapon     : ${interact.getReadableCard(plr.weapon)}`;
-            else sb += `Weapon     : ${game.functions.colorByRarity(plr.weapon.displayName, plr.weapon.rarity)}`;
+        // TODO: Add weapon
+        // TODO: Add quests, secrets, etc...
 
-            let wpnStats = ` [${plr.weapon.stats?.join(' / ')}]`;
+        // Attack
+        doStat((player: Player) => {
+            return [`Attack: <bright:green>${player.attack}</bright:green>`, 0];
+        });
 
-            sb += (plr.attack > 0 && plr.canAttack) ? chalk.greenBright(wpnStats) : chalk.gray(wpnStats);
-        }
-        else if (plr.attack) {
-            sb += `Attack     : ${chalk.greenBright(plr.attack)}`;
-        }
-    
-        if (op.weapon) {
-            // Opponent has a weapon
-            if (!plr.weapon) sb += "                                 "; // Show that this is the opponent's weapon, not yours
-            
-            sb += "         | "; 
+        // Corpses
+        doStat((player: Player) => {
+            if (!plr.detailedView || plr.heroClass !== "Death Knight") return ["", 0];
+            return [`Corpses: <gray>${player.corpses}</gray>`, 0];
+        });
 
-            if (plr.detailedView) sb += `Weapon     : ${interact.getReadableCard(op.weapon)}`;
-            else sb += `Weapon     : ${game.functions.colorByRarity(op.weapon.displayName, op.weapon.rarity)}`;
+        console.log(finished);
+    },
 
-            let opWpnStats = ` [${op.weapon.stats?.join(' / ')}]`;
+    printBoard(plr: Player): void {
+        game.board.forEach((side, plrId) => {
+            let player = game.functions.getPlayerFromId(plrId);
+            let sideMessage = plr === player ? "----- Board (You) ------" : "--- Board (Opponent) ---";
+            console.log(sideMessage);
 
-            sb += (op.attack > 0) ? chalk.greenBright(opWpnStats) : chalk.gray(opWpnStats);
-        }
-    
-        // Weapon End
-        if (sb) console.log(sb);
-        sb = "";
-    
-        // Deck
-        sb += `Deck Size  : ${chalk.yellow(plr.deck.length)}`;
-
-        sb += "                            | ";
-        to_remove = (plr.deck.length.toString().length + op.deck.length.toString().length) - 3;
-        if (to_remove > 0) sb = sb.replace(" ".repeat(to_remove) + "|", "|");
-    
-        // Opponent's Deck
-        sb += `Deck Size  : ${chalk.yellow(op.deck.length)}`;
-        // Deck End
-        console.log(sb);
-        sb = "";
-
-        // Secrets
-        if (plr.secrets.length > 0) {
-            sb += "Secrets: ";
-            sb += plr.secrets.map(x => chalk.bold(x.name)).join(', '); // Get all your secret's names
-        }
-        // Secrets End
-        if (sb) console.log(sb);
-        sb = "";
-    
-        // Sidequests
-        if (plr.sidequests.length > 0) {
-            sb += "Sidequests: ";
-            sb += plr.sidequests.map(sidequest => {
-                chalk.bold(sidequest.name) +
-                " (" + chalk.greenBright(sidequest.progress[0]) +
-                " / " + chalk.greenBright(sidequest.progress[1]) +
-                ")"
-            }).join(', ');
-        }
-        // Sidequests End
-        if (sb) console.log(sb);
-        sb = "";
-    
-        // Quests
-        if (plr.quests.length > 0) {
-            const quest = plr.quests[0];
-    
-            sb += `Quest(line): ${chalk.bold(quest.name)} `;
-            sb += chalk.greenBright(`[${quest.progress[0]} / ${quest.progress[1]}]`);
-        }
-        // Quests End
-        if (sb) console.log(sb);
-        sb = "";
-    
-        // Detailed Info
-        if (plr.detailedView) {
-            // Hand Size
-            sb += `Hand Size  : ${chalk.yellow(plr.hand.length)}`;
-
-            sb += "                             | ";
-            to_remove = plr.hand.length.toString().length;
-            if (to_remove > 0) sb = sb.replace(" ".repeat(to_remove) + "|", "|");
-
-            // Opponents Hand Size
-            sb += `Hand Size  : ${chalk.yellow(op.hand.length)}`;
-
-            console.log(sb);
-            sb = "";
-
-            // Corpses
-            sb += chalk.gray("Corpses    : ");
-            sb += chalk.yellow(plr.corpses);
-            
-            sb += "                             | ";
-            to_remove = plr.corpses.toString().length;
-            if (to_remove > 0) sb = sb.replace(" ".repeat(to_remove) + "|", "|");
-
-            // Opponents Corpses
-            sb += chalk.gray("Corpses    : ");
-            sb += chalk.yellow(op.corpses.toString());
-
-            sb += "\n-------------------------------\n";
-    
-            if (op.secrets.length > 0) {
-                sb += `Opponent's Secrets: ${chalk.yellow(op.secrets.length)}\n`;
-            }
-    
-            if (op.sidequests.length > 0) {
-                sb += "Opponent's Sidequests: ";
-                sb += op.sidequests.map(sidequest => {
-                    chalk.bold(sidequest.name) +
-                    " (" +
-                    chalk.greenBright(sidequest.progress[0]) +
-                    " / " +
-                    chalk.greenBright(sidequest.progress[1]) +
-                    ")"
-                }).join(', ');
-    
-                sb += "\n";
-            }
-            
-            if (op.quests.length > 0) {
-                const quest = op.quests[0];
-    
-                sb += "Opponent's Quest(line): ";
-                sb += chalk.bold(quest["name"]);
-                sb += " (";
-                sb += chalk.greenBright(quest.progress[0]);
-                sb += " / ";
-                sb += chalk.greenBright(quest.progress[1]);
-                sb += ")";
-    
-                sb += "\n";
-            }
-        }
-        // Detailed Info End
-        if (sb) console.log(sb);
-        sb = "";
-    
-        // Board
-        console.log("\n--- Board ---");
-
-        game.board.forEach((_, i) => {
-            const t = (i == plr?.id) ? "--- You ---" : "--- Opponent ---";
-    
-            console.log(t) // This is not for debugging, do not comment out
-    
-            if (game.board[i].length == 0) {
-                console.log(chalk.gray("(None)"));
+            if (side.length === 0) {
+                console.log(chalk.gray("Empty"));
                 return;
-            }
-    
-            game.board[i].forEach((m, n) => {
-                if (m.type == "Location") {            
-                    sb += `[${n + 1}] `;
-                    sb += game.functions.colorByRarity(m.displayName, m.rarity);
-                    sb += " {";
-                    sb += chalk.greenBright(`Durability: ${m.getHealth()} / `);
-                    // @ts-expect-error
-                    sb += chalk.greenBright(m.backups.init.stats[1]);
-                    sb += ", ";
-        
-                    sb += chalk.cyan(`Cooldown: ${m.cooldown} / ${m.backups.init.cooldown}`);
-                    sb += "}";
+            };
 
-                    sb += chalk.yellow(" [Location]");
-        
-                    console.log(sb);
-                    sb = "";
-
-                    return;
-                }
-
-                const excludedKeywords = ["Magnetic", "Corrupt"];
-                let keywords = m.keywords.filter(k => !excludedKeywords.includes(k));
-                let keywordsString = keywords.length > 0 ? chalk.gray(` {${keywords.join(", ")}}`) : "";
-
-                let frozen = m.frozen ? chalk.gray(" (Frozen)") : "";
-                let dormant = m.dormant ? chalk.gray(" (Dormant)") : "";
-                let immune = m.immune ? chalk.gray(" (Immune)") : "";
-                let sleepy = (m.sleepy) || (m.attackTimes && m.attackTimes <= 0) ? chalk.gray(" (Sleepy)") : "";
-    
-                sb += `[${n + 1}] `;
-                sb += game.functions.colorByRarity(m.displayName, m.rarity);
-                sb += chalk.greenBright(` [${m.stats?.join(" / ")}]`);
-    
-                sb += keywordsString;
-                sb += frozen
-                sb += dormant;
-                if (!m.dormant) sb += immune
-                sb += sleepy;
-    
-                console.log(sb);
-                sb = "";
+            side.forEach((card, index) => {
+                console.log(this.getReadableCard(card, index + 1));
             });
         });
-        console.log("-------------")
-    
-        let _class = plr.hero?.name.includes("Starting Hero") ? plr.heroClass : plr.hero?.name;
-        if (plr.detailedView && plr.hero?.name.includes("Starting Hero")) {
-            _class += " | ";
-            _class += "HP: ";
-            _class += plr.hero.name;
-        }
-    
-        // Hand
-        console.log(`\n--- ${plr.name} (${_class})'s Hand ---`);
-        console.log("([id] " + chalk.cyan("{Cost}") + chalk.bold(" Name") + chalk.greenBright(" [attack / health]") + chalk.yellow(" (type)") + ")\n");
-    
-        plr.hand.forEach((card, i) => console.log(interact.getReadableCard(card, i + 1)));
-        // Hand End
-    
-        console.log("------------");
+
+        console.log("------------------------");
+    },
+
+    printHand(plr: Player): void {
+        console.log(`--- ${plr.name} (${plr.heroClass})'s Hand ---`);
+        // Add the help message
+        console.log(game.functions.parseTags(`([id] <cyan>{Cost}</> <b>Name</b> <bright:green>[attack / health]</> <yellow>(type)</>)\n`));
+
+        plr.hand.forEach((card, index) => {
+            console.log(this.getReadableCard(card, index + 1));
+        });
     },
 
     /**
