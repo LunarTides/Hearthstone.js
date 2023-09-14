@@ -6,8 +6,6 @@
 import { Blueprint, CardClass, CardRarity, MinionTribe, SpellSchool, VanillaCard } from "../../src/types.js";
 import { createGame } from "../../src/internal.js";
 
-import fs from "fs";
-import chalk from "chalk";
 import rl from "readline-sync";
 import * as lib from "../lib.js";
 
@@ -54,7 +52,7 @@ export function create(card: VanillaCard, debug: boolean) {
         cardClass = game.functions.capitalizeAll(game.input("<red>Was not able to find the class of this card.\nWhat is the class of this card? </red>")) as CardClass;
     }
 
-    let realName = rl.question("Override name (this will set 'name' to be the displayname instead) (leave empty to not use display name): ") || name;
+    let realName = game.input("Override name (this will set 'name' to be the displayname instead) (leave empty to not use display name): ") || name;
 
     let blueprint: Blueprint;
 
@@ -156,7 +154,7 @@ export function main() {
     }
 
     while (true) {
-        let cardName = rl.question("\nName / dbfId (Type 'back' to cancel): ");
+        let cardName = game.input("\nName / dbfId (Type 'back' to cancel): ");
         if (game.interact.shouldExit(cardName)) break;
 
         let filtered_cards = vanillaCards.filter(c => c.name.toLowerCase() == cardName.toLowerCase() || c.dbfId == parseInt(cardName));
@@ -189,7 +187,7 @@ export function main() {
                 game.log(c);
             });
 
-            let picked = parseInt(rl.question(`Pick one (1-${filtered_cards.length}): `));
+            let picked = parseInt(game.input(`Pick one (1-${filtered_cards.length}): `));
             if (!picked || !filtered_cards[picked - 1]) {
                 game.log("Invalid number.\n");
                 continue;

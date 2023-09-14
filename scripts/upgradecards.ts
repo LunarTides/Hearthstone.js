@@ -7,7 +7,6 @@
 
 import fs from "fs";
 import { createGame } from "../src/internal.js";
-import chalk from "chalk";
 import child_process from "child_process";
 
 const { game, player1, player2 } = createGame();

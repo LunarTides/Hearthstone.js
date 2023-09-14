@@ -2,11 +2,10 @@
  * This is the deck creator.
  * @module Deck Creator
  */
-import chalk from "chalk";
 import util from "util";
 
 import { createGame } from "../src/internal.js";
-import { Blueprint, CardClass, CardClassNoNeutral, CardLike } from "../src/types.js";
+import { Blueprint, CardClass, CardClassNoNeutral } from "../src/types.js";
 
 const { game, player1: plr, player2 } = createGame();
 

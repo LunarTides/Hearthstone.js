@@ -2,7 +2,6 @@
  * The crash test script.
  * @module Crash Test
  */
-import rl from "readline-sync";
 import { createGame } from "../src/internal.js";
 import decks from "../decks.json" assert { type: "json" };
 
@@ -13,7 +12,7 @@ function main() {
     game.logWarn(`Press enter to play ${games} games`);
     if (!process.env.games) game.log("Set the GAMES env variable to change how many games to play.");
     game.log("NOTE: If you see no progress being made for an extended period of time, chances are the game got stuck in an infinite loop.");
-    rl.question();
+    game.input();
 
     for (let index = 0; index < games; index++) {
         // If you're redirecting output to a file, show a progress bar
@@ -58,7 +57,7 @@ function main() {
     }
 
     game.logWarn("Test passed!");
-    rl.question();
+    game.input();
 }
 
 main();

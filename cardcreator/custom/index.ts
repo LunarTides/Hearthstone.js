@@ -15,7 +15,7 @@ let shouldExit = false;
 let type: CardType;
 
 function input(prompt: string) {
-    const ret = rl.question(prompt);
+    const ret = game.input(prompt);
 
     if (game.interact.shouldExit(ret)) shouldExit = true;
     return ret;
@@ -236,7 +236,7 @@ export function main() {
             break
         default:
             game.log("That is not a valid type!");
-            rl.question();
+            game.input();
             return false;
     }
     

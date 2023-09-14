@@ -53,7 +53,7 @@ function searchCards(query: RegExp | string, path?: string) {
 function main() {
     game.interact.cls();
     let use_regex = rl.keyInYN("Do you want to use regular expressions? (Don't do this unless you know what regex is, and how to use it)");
-    let search: string | RegExp = rl.question("Search: ");
+    let search: string | RegExp = game.input("Search: ");
 
     if (use_regex) search = new RegExp(search, "i");
 
@@ -73,7 +73,7 @@ function main() {
             game.log(`${i + 1}: ${c}`);
         });
 
-        let cmd = rl.question("\nWhich card do you want to fix (type 'done' to finish | type 'delete' to delete the save file): ");
+        let cmd = game.input("\nWhich card do you want to fix (type 'done' to finish | type 'delete' to delete the save file): ");
         if (cmd.toLowerCase().startsWith("done")) break;
         if (cmd.toLowerCase().startsWith("delete")) {
             game.log("Deleting file...");
@@ -84,7 +84,7 @@ function main() {
             }
             else game.log("File not found!");
 
-            rl.question();
+            game.input();
             process.exit(0);
         }
 
@@ -94,7 +94,7 @@ function main() {
         let path = matchingCards[index];
         if (!path) {
             game.log("Invalid index!");
-            rl.question();
+            game.input();
 
             continue;
         }
@@ -102,14 +102,14 @@ function main() {
         // `card` is the path to that card.
         // TODO: This is broken
         let success = game.functions.openWithArgs(game.config.general.editor, `"${path}"`);
-        if (!success) rl.question(); // The `openWithArgs` shows an error message for us, but we need to pause.
+        if (!success) game.input(); // The `openWithArgs` shows an error message for us, but we need to pause.
 
         finishedCards.push(path);
         matchingCards.splice(index, 1);
 
         if (matchingCards.length <= 0) {
             // All cards have been patched
-            rl.question("All cards patched!\n");
+            game.input("All cards patched!\n");
             if (fs.existsSync(finishedCardsPath)) fs.unlinkSync(finishedCardsPath);
 
             process.exit(0); // Exit so it doesn't save

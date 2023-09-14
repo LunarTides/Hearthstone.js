@@ -2,7 +2,6 @@
  * Interact stuff.
  * @module Interact
  */
-import chalk from 'chalk';
 import { exec } from 'child_process';
 import { Card, Player } from './internal.js';
 import { AIHistory, CardLike, EventValue, GameConfig, GamePlayCardReturn, SelectTargetAlignment, SelectTargetClass, SelectTargetFlag, Target } from './types.js';

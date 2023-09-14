@@ -3,7 +3,6 @@
  * @module Class Creator
  */
 
-import * as rl from "readline-sync";
 import * as lib from "../lib.js";
 
 import { createGame } from "../../src/internal.js";
@@ -39,7 +38,7 @@ export function main() {
         const question = c;
 
         watermark();
-        let val = rl.question(question + " ");
+        let val = game.input(question + " ");
         if (!val || game.interact.shouldExit(val)) exited = true;
 
         answers.push(val);
@@ -68,5 +67,5 @@ export function main() {
     lib.create("Class", "Hero", card, game.functions.dirname() + "../cards/StartingHeroes/", filename);
 
     game.log("\nClass Created!");
-    rl.question(`Next steps:\n1. Open 'cards/StartingHeroes/${filename}' and add logic to the 'heropower' function.\n2. Now when using the Card Creator, type '${name}' into the 'Class' field to use that class\n3. When using the Deck Creator, type '${name}' to create a deck with cards from your new class.\nEnjoy!\n`);
+    game.input(`Next steps:\n1. Open 'cards/StartingHeroes/${filename}' and add logic to the 'heropower' function.\n2. Now when using the Card Creator, type '${name}' into the 'Class' field to use that class\n3. When using the Deck Creator, type '${name}' to create a deck with cards from your new class.\nEnjoy!\n`);
 }

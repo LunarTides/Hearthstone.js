@@ -2,10 +2,25 @@
  * Game
  * @module Game
  */
-import chalk from 'chalk';
 import { question }  from 'readline-sync';
 import { functions, interact, Player, Card, AI } from "./internal.js";
 import { Blueprint, EventKey, EventManagerEvents, EventValue, GameAttackReturn, GameConfig, GameConstants, GamePlayCardReturn, QuestType, Target, TickHookCallback, UnknownEventValue } from "./types.js";
+
+// Override the console methods to force using the wrapper functions
+let overrideConsole = {log: () => {}, warn: () => {}, error: () => {}};
+overrideConsole.log = console.log;
+overrideConsole.warn = console.warn;
+overrideConsole.error = console.error;
+
+console.log = (..._) => {
+    throw new Error("Use `game.log` instead.")
+};
+console.warn = (..._) => {
+    throw new Error("Use `game.logWarn` instead.")
+};
+console.error = (..._) => {
+    throw new Error("Use `game.error` instead.")
+};
 
 interface IEventManager {
     eventListeners: number;
@@ -490,21 +505,21 @@ export class Game {
      * Wrapper for console.log 
      */
     log(...data: any) {
-        this.logWrapper(console.log, ...data);
+        this.logWrapper(overrideConsole.log, ...data);
     }
 
     /**
      * Wrapper for console.error
      */
     logError(...data: any) {
-        this.logWrapper(console.error, ...data);
+        this.logWrapper(overrideConsole.error, ...data);
     }
 
     /**
      * Wrapper for console.warn
      */
     logWarn(...data: any) {
-        this.logWrapper(console.warn, ...data);
+        this.logWrapper(overrideConsole.warn, ...data);
     }
 
     /**

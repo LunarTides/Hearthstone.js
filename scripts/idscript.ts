@@ -7,7 +7,6 @@
 import fs from "fs";
 import { execSync as run } from "child_process";
 import { createGame } from "../src/internal.js";
-import chalk from "chalk";
 
 const { game, player1, player2 } = createGame();
 

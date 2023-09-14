@@ -25,7 +25,7 @@ const watermark = () => {
 function cardCreator() {
     watermark();
 
-    let choice: string = rl.question("Create a (C)ustom Card, Import a (V)anilla Card, Go (B)ack: ");
+    let choice: string = game.input("Create a (C)ustom Card, Import a (V)anilla Card, Go (B)ack: ");
     if (!choice || choice[0].toLowerCase() === "b") return;
 
     let isVanilla = choice[0].toLowerCase() === "v";
@@ -52,7 +52,7 @@ function devmode() {
     while (true) {
         watermark();
 
-        let user = rl.question("Create a (C)ard, Create a Clas(s), Go (B)ack to Normal Mode: ");
+        let user = game.input("Create a (C)ard, Create a Clas(s), Go (B)ack to Normal Mode: ");
         if (!user) continue;
         
         user = user[0].toLowerCase();
@@ -66,7 +66,7 @@ function devmode() {
 while (true) {
     watermark();
 
-    let user = rl.question("(P)lay, Create a (D)eck, Developer (M)ode, (E)xit: ");
+    let user = game.input("(P)lay, Create a (D)eck, Developer (M)ode, (E)xit: ");
     if (!user) continue;
 
     user = user[0].toLowerCase();

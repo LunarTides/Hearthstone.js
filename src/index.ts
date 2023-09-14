@@ -9,7 +9,6 @@
 
 import { createGame } from "./internal.js";
 import fs from "fs";
-import chalk from "chalk";
 
 export function main() {
     const { game, player1, player2 } = createGame();
