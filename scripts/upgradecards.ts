@@ -1,4 +1,3 @@
-
 /**
  * Upgrade pre 2.0 cards into 2.0 cards.
  * 
@@ -56,16 +55,23 @@ function upgradeCard(path: string, filename: string, data: string) {
     }
 
     oldData = data;
-    data = data.replace(/ {4}class: (.*),/, `    classes: [$1],`);
+    data = data.replace(/ {4}class: (.*),/, `    classes: [$1],`).replace(/classes: \["(.*?) \/ (.*?)"\]/g, 'classes: ["$1", "$2"]');
     if (data !== oldData) {
         game.log(`Updated the class field.`);
+    }
+
+    oldData = data;
+    data = data.replace(/ {4}spellClass: (.*),/, `    spellSchool: $1,`);
+    if (data !== oldData) {
+        game.log(`Updated the spellClass field.`);
     }
 
     // Replace the card's id with a new one
     data = data.replace(/\n {4}id: (\d+),?/, "");
     let currentId = Number(fs.readFileSync(game.functions.dirname() + "../cards/.latest_id", { encoding: "utf8" })) + 1;
 
-    data = data.replace(/( {4}.+: .+,)(\n\n {4}.*\(plr, game, self)/, `$1\n    id: ${currentId},$2`);
+    data = data.replace(/( {4}.+: .+,)(\n\n {4}.*\(plr, game, (self|card))/, `$1\n    id: ${currentId},$2`);
+    data = data.replace(/( {4}uncollectible: .*?),?\n\}/, `$1,\n    id: ${currentId},\n}`);
     game.log(`Card was assigned id ${currentId}.`);
 
     fs.writeFileSync(game.functions.dirname() + "../cards/.latest_id", `${currentId}`);

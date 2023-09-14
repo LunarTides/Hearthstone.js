@@ -40,12 +40,15 @@ export function main() {
 }
 
 let outdatedCards: string[] = [];
+let updatedCards: string[] = [];
 function warnAboutOutdatedCards() {
     findOutdatedCards(game.functions.dirname() + "../cards");
+    outdatedCards = outdatedCards.filter(card => !updatedCards.includes(card));
+
     if (outdatedCards.length <= 0) return;
 
     outdatedCards.forEach(p => {
-        game.logWarn(`<yellow>WARNING: Outdated card found: ${p}</yellow>`);
+        game.logWarn(`<yellow>WARNING: Outdated card found: ${p}.js</yellow>`);
     });
 
     game.logWarn("Run the `upgradecards` script to automatically update outdated cards from pre 2.0.");
@@ -62,7 +65,10 @@ function findOutdatedCards(path: string) {
         let p = `${path}/${file.name}`;
 
         if (file.name.endsWith(".js")) {
-            outdatedCards.push(p.replace("/dist/..", ""));
+            outdatedCards.push(p.replace("/dist/..", "").slice(0, -3));
+        }
+        if (file.name.endsWith(".mts")) {
+            updatedCards.push(p.replace("/dist/..", "").slice(0, -4));
         }
         else if (file.isDirectory()) findOutdatedCards(p);
     })

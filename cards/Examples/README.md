@@ -5,9 +5,9 @@ You can give yourself any of these cards by having debug mode enabled (`config.t
 
 Every stage has a big example card at the end, called `combined.mts`. This will show you every concept you learned in that stage, so look at that last.
 
-In all stages, there is a README.md file. This shows you the order to look at the cards in. This is important since the card files won't explain a concept if it has already been explained in a card before it.
-You can also look at the name of the file to see the order you should look at it. Look at the files in this order:
+Look at the name of the file to see the order you should look at it. Look at the files in this order:
 `1 -> 2 -> 3 -> ... -> last`
+This is important since the card files won't explain a concept if it has already been explained in a card before it.
 
 1. Look at the cards in `1`. These are the essentials, showing you the structure of cards and a little bit of code.
 2. Look at the cards in `2`. These are a bit more advanced, where you will be modifying some values.
