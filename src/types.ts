@@ -143,7 +143,8 @@ export type CardAbility = CardAbilityReal |
                           "remove" |
                           "handpassive" |
                           "tick" |
-                          "handtick";
+                          "handtick" |
+                          "create";
 
 /**
  * Event keys
@@ -460,7 +461,7 @@ export type Blueprint = {
     dormant?: number,
     colossal?: string[],
     corrupt?: string,
-    settings?: any,
+    deckSettings?: any,
 
     conditioned?: CardAbility[],
     storage?: { [key: string]: any },

@@ -444,9 +444,9 @@ function findCard(card: string | number): Blueprint | null {
 function add(card: Blueprint): boolean {
     deck.push(card);
 
-    if (!card.settings) return true;
+    if (!card.deckSettings) return true;
 
-    Object.entries(card.settings).forEach(setting => {
+    Object.entries(card.deckSettings).forEach(setting => {
         let [key, val] = setting;
 
         // @ts-expect-error

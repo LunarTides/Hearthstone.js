@@ -137,8 +137,8 @@ const deckcode = {
 
                 for (let i = 0; i < parseInt(copies); i++) _deck.push(card.perfectCopy());
 
-                if (card.settings) {
-                    Object.entries(card.settings).forEach(setting => {
+                if (card.deckSettings) {
+                    Object.entries(card.deckSettings).forEach(setting => {
                         let [key, val] = setting;
 
                         localSettings[key] = val;

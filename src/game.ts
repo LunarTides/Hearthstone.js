@@ -7,20 +7,25 @@ import { functions, interact, Player, Card, AI } from "./internal.js";
 import { Blueprint, EventKey, EventManagerEvents, EventValue, GameAttackReturn, GameConfig, GameConstants, GamePlayCardReturn, QuestType, Target, TickHookCallback, UnknownEventValue } from "./types.js";
 
 // Override the console methods to force using the wrapper functions
+// Set this variable to false to prevent disabling the console. (Not recommended)
+let disableConsole = true;
+
 let overrideConsole = {log: () => {}, warn: () => {}, error: () => {}};
 overrideConsole.log = console.log;
 overrideConsole.warn = console.warn;
 overrideConsole.error = console.error;
 
-console.log = (..._) => {
-    throw new Error("Use `game.log` instead.")
-};
-console.warn = (..._) => {
-    throw new Error("Use `game.logWarn` instead.")
-};
-console.error = (..._) => {
-    throw new Error("Use `game.error` instead.")
-};
+if (disableConsole) {
+    console.log = (..._) => {
+        throw new Error("Use `game.log` instead.")
+    };
+    console.warn = (..._) => {
+        throw new Error("Use `game.logWarn` instead.")
+    };
+    console.error = (..._) => {
+        throw new Error("Use `game.logError` instead.")
+    };
+}
 
 interface IEventManager {
     eventListeners: number;

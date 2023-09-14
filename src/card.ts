@@ -223,13 +223,15 @@ export class Card {
      * 
      * # Examples
      * ```ts
-     * card.settings = {
-     *     "maxDeckLength": 40,
-     *     "minDeckLength": 40
+     * card.deckSettings = {
+     *     deck: {
+     *         maxDeckLength: 40,
+     *         minDeckLength: 40
+     *     }
      * };
      * ```
      */
-    settings?: GameConfig;
+    deckSettings?: GameConfig;
 
     /**
      * The owner of the card.
@@ -386,6 +388,7 @@ export class Card {
         if (placeholder instanceof Array) this.placeholder = placeholder[0]; // This is a list of replacements.
 
         game.events.broadcast("CreateCard", this, this.plr);
+        this.activate("create");
     }
 
     /**
