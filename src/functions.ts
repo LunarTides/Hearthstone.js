@@ -1293,7 +1293,7 @@ ${main_content}
      * '[fg:]#FF0000', 'bg:#FF0000'
      * 
      * // RGB
-     * '[fg:]rgb:255,0,0', 'bg:rgb:255,0,0'
+     * '[fg:]rgb[:][(]255[ ],0[ ],0[)]', 'bg:rgb:255,0,0' // E.g. rgb:(0, 0, 255). rgb:0,0,255). rgb:(0,0,255). rgb(0, 0, 255). bg:rgb(0, 0, 255)
      * ```
      *
      * @param str The string to parse
@@ -1332,8 +1332,24 @@ ${main_content}
             // Update: I discourge the use of `reset` now that you cancel tags manually. Use `</>` instead.
             if (current_types.includes("reset")) current_types = ["reset"]; 
 
-            current_types.reverse().forEach(t => {
+            const readNextType = (index: number): string => {
+                if (index >= current_types.length - 1) return "";
+
+                return current_types[index + 1];
+            };
+
+            let partOfRGB: number[] = [];
+            current_types.reverse().forEach((t, index) => {
+                // The type is part of an rgb value. Ignore it
+                if (partOfRGB.includes(index)) return;
+
                 t = t.toLowerCase();
+
+                // Support for rgb values with spaces after the commas
+                if (t.endsWith(")") && /rgb:?\(/.test(readNextType(index + 1))) {
+                    t = readNextType(index + 1) + readNextType(index) + t;
+                    partOfRGB.push(index + 1, index + 2);
+                }
 
                 // Remove `fg:` prefix
                 if (t.startsWith("fg:")) {
@@ -1360,9 +1376,9 @@ ${main_content}
                 }
 
                 // RGB
-                if (t.startsWith("rgb:")) {
-                    t = t.slice(4);
-                    let [r, g, b] = t.split(",").map(s => parseInt(s));
+                if (t.startsWith("rgb")) {
+                    t = t.replace(/rgb:?/, "");
+                    let [r, g, b] = t.split(",").map(s => parseInt(s.replace(/[()]/, "")));
 
                     if (bg) {
                         ret = chalk.bgRgb(r, g, b)(ret);
