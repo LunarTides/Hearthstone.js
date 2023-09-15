@@ -1962,13 +1962,6 @@ ${main_content}
     },
 
     /**
-     * Returns if the card has stats, and can attack.
-     */
-    hasStats(card: CardLike): boolean {
-        return card.type === "Minion" || card.type === "Weapon";
-    },
-
-    /**
      * Imports the config file.
      *
      * @returns Success

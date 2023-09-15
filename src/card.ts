@@ -367,7 +367,7 @@ export class Card {
 
         // Set maxHealth if the card is a minion or weapon
         this.type = this.blueprint.type; // Redundant, makes the TypeScript compiler shut up
-        if (game.functions.hasStats(this)) this.maxHealth = this.blueprint.stats?.at(1) ?? -1;
+        this.maxHealth = this.blueprint.stats?.at(1);
 
         // Override the properties from the blueprint
         this.doBlueprint();
@@ -435,7 +435,7 @@ export class Card {
         });
 
         // Set maxHealth if the card is a minion or weapon
-        if (game.functions.hasStats(this)) this.maxHealth = this.blueprint.stats?.at(1) || 1;
+        this.maxHealth = this.blueprint.stats?.at(1);
 
         this.desc = game.functions.parseTags(this.desc || "");
     }

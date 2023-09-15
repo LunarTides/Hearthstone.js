@@ -894,7 +894,7 @@ export class AI {
     analyzePositiveCard(c: Card): number {
         let score = this.analyzePositive(c.desc || "");
 
-        if (game.functions.hasStats(c)) score += (c.getAttack() + c.getHealth()) * game.config.ai.statsBias;
+        if (c.stats) score += (c.getAttack() + c.getHealth()) * game.config.ai.statsBias;
         else score += game.config.ai.spellValue * game.config.ai.statsBias; // If the spell value is 4 then it the same value as a 2/2 minion
         score -= c.mana * game.config.ai.manaBias;
 

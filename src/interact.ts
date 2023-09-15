@@ -1548,7 +1548,7 @@ export const interact = {
         sb += mana;
         sb += game.functions.colorByRarity(displayName, card.rarity);
         
-        if (game.functions.hasStats(card)) {
+        if (card.stats) {
             sb += `<bright:green> [${card.stats?.join(" / ")}]</bright:green>`;
         }
 
