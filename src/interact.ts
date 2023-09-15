@@ -513,7 +513,7 @@ export const interact = {
             game.events.events.PlayCard[game.player.id].pop();
 
             // If the card can appear on the board, remove it.
-            if (card.type === "Minion" || card.type === "Location") {
+            if (game.functions.canBeOnBoard(card)) {
                 game.functions.remove(game.board[game.player.id], card);
 
                 // If the card has 0 or less health, restore it to its original health (according to the blueprint)
@@ -1548,7 +1548,7 @@ export const interact = {
         sb += mana;
         sb += game.functions.colorByRarity(displayName, card.rarity);
         
-        if (card.type === "Minion" || card.type === "Weapon") {
+        if (game.functions.hasStats(card)) {
             sb += `<bright:green> [${card.stats?.join(" / ")}]</bright:green>`;
         }
 
@@ -1572,6 +1572,11 @@ export const interact = {
         }
 
         sb += desc;
+
+        if (card.type === "Test") {
+            sb += `<bright:blue>!${card.test}!</bright:blue> `;
+        }
+
         sb += `<yellow>(${card.type})</yellow>`;
 
         if (!(card instanceof Card)) return sb;

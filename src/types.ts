@@ -20,6 +20,7 @@ export type CardType = "Minion" |
                        "Weapon" |
                        "Hero" |
                        "Location" |
+                       "Test" |
                        "Undefined";
 
 /**
@@ -132,7 +133,8 @@ export type CardAbilityReal = "adapt" |
                               "passive" |
                               "spellburst" |
                               "startofgame" |
-                              "use";
+                              "use" |
+                              "hi";
 
 /**
  * All {@link Card.abilities | Card abilities}.
@@ -453,6 +455,7 @@ export type Blueprint = {
     cooldown?: number,
     hpDesc?: string,
     hpCost?: number,
+    test?: number,
 
     classes: CardClass[],
     rarity: CardRarity,

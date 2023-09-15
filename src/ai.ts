@@ -70,7 +70,7 @@ export class AI {
             if (score <= best_score || c.mana > this.plr.mana || this.cards_played_this_turn.includes(c)) return;
 
             // If the card is a minion and the player doesn't have the board space to play it, ignore the card
-            if (["Minion", "Location"].includes(c.type) && game.board[this.plr.id].length >= game.config.general.maxBoardSpace) return;
+            if (game.functions.canBeOnBoard(c) && game.board[this.plr.id].length >= game.config.general.maxBoardSpace) return;
 
             // Prevent the ai from playing the same card they returned from when selecting a target
             let r = false;
@@ -894,7 +894,7 @@ export class AI {
     analyzePositiveCard(c: Card): number {
         let score = this.analyzePositive(c.desc || "");
 
-        if (c.type == "Minion" || c.type == "Weapon") score += (c.getAttack() + c.getHealth()) * game.config.ai.statsBias;
+        if (game.functions.hasStats(c)) score += (c.getAttack() + c.getHealth()) * game.config.ai.statsBias;
         else score += game.config.ai.spellValue * game.config.ai.statsBias; // If the spell value is 4 then it the same value as a 2/2 minion
         score -= c.mana * game.config.ai.manaBias;
 

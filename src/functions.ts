@@ -1954,6 +1954,14 @@ ${main_content}
         return jade;
     },
 
+    canBeOnBoard(card: CardLike): boolean {
+        return card.type === "Minion" || card.type === "Location" || card.type === "Test";
+    },
+
+    hasStats(card: CardLike): boolean {
+        return card.type === "Minion" || card.type === "Weapon" || card.type === "Test";
+    },
+
     /**
      * Imports the config file.
      *

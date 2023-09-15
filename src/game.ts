@@ -1169,6 +1169,9 @@ const playCard = {
             case "Location":
                 result = playCard._playLocation(card, player);
                 break;
+            case "Test":
+                result = playCard._playTest(card, player);
+                break;
             default:
                 throw new TypeError("Cannot handle playing card of type: " + card.type);
         }
@@ -1255,6 +1258,16 @@ const playCard = {
         return ret;
     },
 
+    _playTest(card: Card, player: Player): GamePlayCardReturn {
+        if (card.activate("hi") === -1) return "refund";
+
+        let unsuppress = functions.suppressEvent("SummonMinion");
+        let ret = cards.summon(card, player);
+        unsuppress();
+
+        return ret;
+    },
+
     _trade(card: Card, player: Player): boolean {
         if (!card.keywords.includes("Tradeable")) return false;
 
@@ -1283,7 +1296,7 @@ const playCard = {
 
     _hasCapacity(card: Card, player: Player): boolean {
         // If the board has max capacity, and the card played is a minion or location card, prevent it.
-        if (game.board[player.id].length < game.config.general.maxBoardSpace || !["Minion", "Location"].includes(card.type)) return true;
+        if (game.board[player.id].length < game.config.general.maxBoardSpace || !game.functions.canBeOnBoard(card)) return true;
 
         // Refund
         let unsuppress = functions.suppressEvent("AddCardToHand");

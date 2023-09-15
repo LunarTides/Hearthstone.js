@@ -146,6 +146,9 @@ export class Card {
      */
     cooldown?: number = 2;
 
+    // Test
+    test?: number;
+
     // Not-null
 
     /**
@@ -367,7 +370,7 @@ export class Card {
 
         // Set maxHealth if the card is a minion or weapon
         this.type = this.blueprint.type; // Redundant, makes the TypeScript compiler shut up
-        if (this.type == "Minion" || this.type == "Weapon") this.maxHealth = this.blueprint.stats?.at(1) ?? -1;
+        if (game.functions.hasStats(this)) this.maxHealth = this.blueprint.stats?.at(1) ?? -1;
 
         // Override the properties from the blueprint
         this.doBlueprint();
@@ -435,7 +438,7 @@ export class Card {
         });
 
         // Set maxHealth if the card is a minion or weapon
-        if (this.type == "Minion" || this.type == "Weapon") this.maxHealth = this.blueprint.stats?.at(1) || 1;
+        if (game.functions.hasStats(this)) this.maxHealth = this.blueprint.stats?.at(1) || 1;
 
         this.desc = game.functions.parseTags(this.desc || "");
     }
