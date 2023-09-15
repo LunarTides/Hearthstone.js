@@ -6,6 +6,9 @@ help:
 	@echo "  help: Shows this help"
 	@echo "  vanilla: Generates vanilla cards"
 	@echo "  run: Runs the game"
+	@echo "  build: Builds the game"
+	@echo "  start: Builds & Runs the game"
+	@echo "  clean: Remove all automatically generated files"
 	@echo ""
 
 install:
@@ -35,3 +38,10 @@ start:
 	@npx tsc
 	@echo -e "\r\x1b[KBuilding...Done"
 	@npm start
+
+clean:
+	@rm -rf ./dist/
+	@rm -rf ./node_modules/
+	@rm -rf ./docs/
+	@rm -rf ./cardcreator/vanilla/.ignore.cards.json
+

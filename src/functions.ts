@@ -1954,10 +1954,16 @@ ${main_content}
         return jade;
     },
 
+    /**
+     * Returns if the card specified has the ability to appear on the board.
+     */
     canBeOnBoard(card: CardLike): boolean {
         return card.type === "Minion" || card.type === "Location";
     },
 
+    /**
+     * Returns if the card has stats, and can attack.
+     */
     hasStats(card: CardLike): boolean {
         return card.type === "Minion" || card.type === "Weapon";
     },
