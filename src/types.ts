@@ -449,6 +449,7 @@ export type Blueprint = {
 
     tribe?: MinionTribe,
     spellSchool?: SpellSchool,
+    durability?: number,
     cooldown?: number,
     hpDesc?: string,
     hpCost?: number,

@@ -749,14 +749,19 @@ export class Game {
             let plr = functions.getPlayerFromId(p);
 
             let sparedMinions: Card[] = [];
+            let shouldSpare = (card: Card) => {
+                return card.getHealth() > 0 || ((card.durability ?? 0) > 0);
+            }
             
             this.board[p].forEach(m => {
-                if (m.getHealth() <= 0) m.activate("deathrattle");
+                if (shouldSpare(m)) return;
+
+                m.activate("deathrattle");
             });
 
             this.board[p].forEach(m => {
                 // Add minions with more than 0 health to n.
-                if (m.getHealth() > 0) {
+                if (shouldSpare(m)) {
                     sparedMinions.push(m);
                     return;
                 }

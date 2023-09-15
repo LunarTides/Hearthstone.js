@@ -66,7 +66,7 @@ export class Player {
      * if (target.classType == "Player") {
      *     game.log(target.health);
      * } else if (target.classType == "Card") {
-     *     game.log(target.stats[1]);
+     *     game.log(target.getHealth());
      * }
      * 
      * // ^^^ You can just use `target.getHealth()` in this situation since both classes have it.
