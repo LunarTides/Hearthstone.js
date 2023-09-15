@@ -114,7 +114,7 @@ export function create(card: VanillaCard, debug: boolean) {
             type,
             classes: [cardClass],
             rarity,
-            durability: health,
+            durability,
             cooldown: 2,
             id: 0,
         }
