@@ -453,7 +453,6 @@ export type Blueprint = {
     cooldown?: number,
     hpDesc?: string,
     hpCost?: number,
-    test?: number,
 
     classes: CardClass[],
     rarity: CardRarity,
