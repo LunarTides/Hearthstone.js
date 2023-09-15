@@ -18,34 +18,34 @@ In a console / terminal, run `npm i`, then `npx tsc`, then `node .`
 
 ### Images
 #### Generic game
-![generic_game](https://github.com/LunarTides/Hearthstone.js/assets/31688109/f71f1e12-baf0-44d6-bcc9-019145e148bd)
+![generic_game](https://github.com/LunarTides/Hearthstone.js/assets/31688109/f7661c64-0fcc-49e7-bbb3-1934c5675184)
 
 #### Help message in-game
-![src_help_msg](https://github.com/LunarTides/Hearthstone.js/assets/31688109/7b233fa6-dfee-4c69-baef-a0427a912e55)
+![help_msg](https://github.com/LunarTides/Hearthstone.js/assets/31688109/60bd4814-80e1-4a9d-92c7-0254a2a1c02f)
 
 #### Deck creator (dc)
-![deckcreator](https://github.com/LunarTides/Hearthstone.js/assets/31688109/e19ca084-653c-4889-a433-4ceec7544dd9)
+![dc](https://github.com/LunarTides/Hearthstone.js/assets/31688109/07b5f1ac-2e40-4264-a14f-1a4ea142a16c)
 
 #### Deck creator help message
-![deckcreator_help](https://github.com/LunarTides/Hearthstone.js/assets/31688109/8d75ca9f-be49-4980-9d5f-debfc0427825)
+![dc_help](https://github.com/LunarTides/Hearthstone.js/assets/31688109/c03bc24c-d19d-4797-86a7-708406d6c149)
 
 #### Custom card creator (ccc)
-![ccc](https://github.com/LunarTides/Hearthstone.js/assets/31688109/372b02b4-3217-4807-a415-b7c2bc537e16)
+![ccc](https://github.com/LunarTides/Hearthstone.js/assets/31688109/0b19d4fe-eb66-474b-b3d8-cfcd45533577)
 
 #### Vanilla card creator (vcc)
-![vcc_debug](https://github.com/LunarTides/Hearthstone.js/assets/31688109/04ce4d50-87d8-4d51-a9a7-40f287c4abb7)
+![vcc](https://github.com/LunarTides/Hearthstone.js/assets/31688109/35fca25f-0569-4e8f-beb7-26650dd9a6c0)
 
 #### Class creator (clc)
-![clc](https://github.com/LunarTides/Hearthstone.js/assets/31688109/a8eba01a-03f8-4ea1-9764-30960b9062ab)
+![clc](https://github.com/LunarTides/Hearthstone.js/assets/31688109/9ccc8f20-7286-4738-9ebe-aa53d8c01a99)
 
-#### Custom card creator generated code (no manual lines of code written)
-![ccc_generated_code](https://github.com/LunarTides/Hearthstone.js/assets/31688109/58b83ae0-10e7-44ff-9691-d7c6487e43db)
+#### Vanilla card creator generated code (no manual lines of code written)
+![vcc_code](https://github.com/LunarTides/Hearthstone.js/assets/31688109/65105f16-b8f9-4644-9180-de3c3bf231cd)
 
-#### Functional code (written by me)
-![functional_code](https://github.com/LunarTides/Hearthstone.js/assets/31688109/5354b936-bb7a-41ce-a5c3-e31dc554ee18)
+#### Functional code
+![vcc_code_working](https://github.com/LunarTides/Hearthstone.js/assets/31688109/1eccc92e-ab52-4236-b163-918242c691c6)
 
 #### Debug history (the normal history command shows less info)
-![debug_history](https://github.com/LunarTides/Hearthstone.js/assets/31688109/ba1b0490-8e2c-46cc-90b2-52a48917d6bb)
+![history](https://github.com/LunarTides/Hearthstone.js/assets/31688109/37de5c8c-bb66-4d77-aeef-170e7b0e599f)
 
 #### Ai logs
-![ai_logs](https://github.com/LunarTides/Hearthstone.js/assets/31688109/404e0ac4-a041-4ffe-8466-0a1829570a46)
+![ai_logs](https://github.com/LunarTides/Hearthstone.js/assets/31688109/66815f5b-b938-479b-b741-c61cf9a3c43b)
