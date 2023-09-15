@@ -1572,11 +1572,6 @@ export const interact = {
         }
 
         sb += desc;
-
-        if (card.type === "Test") {
-            sb += `<bright:blue>!${card.test}!</bright:blue> `;
-        }
-
         sb += `<yellow>(${card.type})</yellow>`;
 
         if (!(card instanceof Card)) return sb;

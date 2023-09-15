@@ -1955,11 +1955,11 @@ ${main_content}
     },
 
     canBeOnBoard(card: CardLike): boolean {
-        return card.type === "Minion" || card.type === "Location" || card.type === "Test";
+        return card.type === "Minion" || card.type === "Location";
     },
 
     hasStats(card: CardLike): boolean {
-        return card.type === "Minion" || card.type === "Weapon" || card.type === "Test";
+        return card.type === "Minion" || card.type === "Weapon";
     },
 
     /**

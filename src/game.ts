@@ -1169,9 +1169,6 @@ const playCard = {
             case "Location":
                 result = playCard._playLocation(card, player);
                 break;
-            case "Test":
-                result = playCard._playTest(card, player);
-                break;
             default:
                 throw new TypeError("Cannot handle playing card of type: " + card.type);
         }
@@ -1250,16 +1247,6 @@ const playCard = {
         card.setStats(0, card.getHealth());
         card.immune = true;
         card.cooldown = 0;
-
-        let unsuppress = functions.suppressEvent("SummonMinion");
-        let ret = cards.summon(card, player);
-        unsuppress();
-
-        return ret;
-    },
-
-    _playTest(card: Card, player: Player): GamePlayCardReturn {
-        if (card.activate("hi") === -1) return "refund";
 
         let unsuppress = functions.suppressEvent("SummonMinion");
         let ret = cards.summon(card, player);

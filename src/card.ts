@@ -146,9 +146,6 @@ export class Card {
      */
     cooldown?: number = 2;
 
-    // Test
-    test?: number;
-
     // Not-null
 
     /**

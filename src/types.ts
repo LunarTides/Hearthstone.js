@@ -20,7 +20,6 @@ export type CardType = "Minion" |
                        "Weapon" |
                        "Hero" |
                        "Location" |
-                       "Test" |
                        "Undefined";
 
 /**
@@ -133,8 +132,7 @@ export type CardAbilityReal = "adapt" |
                               "passive" |
                               "spellburst" |
                               "startofgame" |
-                              "use" |
-                              "hi";
+                              "use";
 
 /**
  * All {@link Card.abilities | Card abilities}.

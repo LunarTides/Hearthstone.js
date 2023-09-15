@@ -21,7 +21,6 @@ function getCardFunction(card_type: CardType) {
     if (card_type == "Spell") func = "Cast"; // If the card is a spell, the function is 'cast'
     else if (card_type == "Hero") func = "HeroPower"; // If the card is a hero card, the function is 'heropower'
     else if (card_type == "Location") func = "Use"; // If the card is a location, the function is 'use'
-    else if (card_type == "Test") func = "Hi"; // If the card is a test, the function is 'Hi'
     else { // If the card is a Minion or Weapon
         // Try to extract a function from the card's description
         let reg = /[A-Z][a-z].*?:/;

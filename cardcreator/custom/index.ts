@@ -195,28 +195,6 @@ function location() {
     });
 }
 
-function test() {
-    let _card = common();
-    if (!_card) return false;
-    
-    let test = parseInt(input("Testing: "));
-    if (shouldExit) return false;
-
-    return applyCard({
-        name: _card.name,
-        displayName: _card.displayName,
-        desc: _card.desc,
-        mana: _card.mana,
-        type: _card.type,
-        classes: _card.classes,
-        rarity: _card.rarity,
-        runes: _card.runes,
-        keywords: _card.keywords,
-        test,
-        id: 0,
-    });
-}
-
 /**
  * Asks the user a series of questions, and creates a custom card using it.
  * This is not meant to be a library. Running this function will temporarily give control to this function.
@@ -251,9 +229,6 @@ export function main() {
             break;
         case "Location":
             tmpCard = location();
-            break;
-        case "Test":
-            tmpCard = test();
             break;
         case "Hero":
             tmpCard = hero();
