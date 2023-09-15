@@ -139,6 +139,8 @@ export class Card {
 
     // Location
 
+    durability?: number;
+
     /**
      * The cooldown of the location card.
      */

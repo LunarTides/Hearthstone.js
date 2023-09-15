@@ -84,7 +84,7 @@ export function create(card: VanillaCard, debug: boolean) {
     else if (type == "Weapon") {
         blueprint = {
             name: realName,
-            stats: [attack, durability],
+            stats: [attack, health],
             desc,
             mana,
             type,
@@ -109,12 +109,12 @@ export function create(card: VanillaCard, debug: boolean) {
     else if (type == "Location") {
         blueprint = {
             name: realName,
-            stats: [0, health],
             desc,
             mana,
             type,
             classes: [cardClass],
             rarity,
+            durability: health,
             cooldown: 2,
             id: 0,
         }

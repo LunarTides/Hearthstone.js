@@ -28,7 +28,7 @@ function applyCard(_card: Blueprint) {
     Object.entries(_card).forEach(c => {
         let [key, val] = c;
 
-        let required_keys = ["name", "desc", "mana", "class", "rarity", "stats", "hpDesc", "hpCost", "cooldown"];
+        let required_keys = ["name", "desc", "mana", "class", "rarity", "stats", "durability", "hpDesc", "hpCost", "cooldown"];
         if (!val && val !== 0 && !required_keys.includes(key)) return;
 
         // @ts-expect-error
@@ -178,12 +178,10 @@ function location() {
     if (shouldExit) return false;
 
     if (!cooldown) cooldown = 2;
-    let stats = [0, durability];
 
     return applyCard({
         name: _card.name,
         displayName: _card.displayName,
-        stats: stats,
         desc: _card.desc,
         mana: _card.mana,
         type: _card.type,
@@ -191,6 +189,7 @@ function location() {
         rarity: _card.rarity,
         runes: _card.runes,
         keywords: _card.keywords,
+        durability: durability,
         cooldown: cooldown,
         id: 0,
     });

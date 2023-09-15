@@ -517,11 +517,15 @@ export const interact = {
                 game.functions.remove(game.board[game.player.id], card);
 
                 // If the card has 0 or less health, restore it to its original health (according to the blueprint)
-                if (card.getHealth() <= 0) {
-                    if (!card.stats) throw new Error("Card has no stats!");
-                    if (!card.blueprint.stats) throw new Error("Card has no blueprint stats!");
+                if (card.type === "Minion" && card.getHealth() <= 0) {
+                    if (!card.stats) throw new Error("Minion has no stats!");
+                    if (!card.blueprint.stats) throw new Error("Minion has no blueprint stats!");
 
                     card.stats[1] = card.blueprint.stats[1];
+                }
+                else if (card.type === "Location" && (card.durability ?? 0 <= 0)) {
+                    if (!card.durability) throw new Error("Location has undefined durability!");
+                    card.durability = card.blueprint.durability;
                 }
             }
 
@@ -853,7 +857,8 @@ export const interact = {
         
         if (location.activate("use") === game.constants.REFUND) return -1;
         
-        location.setStats(0, location.getHealth() - 1);
+        // TODO: Maybe throw an error if the durability is undefined
+        if (location.durability) location.durability -= 1;
         location.cooldown = location.backups.init.cooldown;
         return true;
     },
@@ -1548,13 +1553,12 @@ export const interact = {
         }
 
         else if (card.type == "Location") {
-            let durability = card.stats ? card.stats[1] : 0;
+            let durability = card.durability;
             let maxDurability = durability;
             let maxCooldown = card.cooldown;
             
             if (card instanceof Card) {
-                durability = card.getHealth();
-                maxDurability = card.backups.init.stats ? card.backups.init.stats[1] : 0;
+                maxDurability = card.backups.init.durability;
                 maxCooldown = card.backups.init.cooldown ?? 0;
             }
 
