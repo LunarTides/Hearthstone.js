@@ -11,6 +11,7 @@ export const blueprint: Blueprint = {
     classes: ["Rogue"],
     rarity: "Free",
     hpDesc: "Equip a 1/2 Dagger.",
+    hpCost: 2,
     uncollectible: true,
     id: 12,
 

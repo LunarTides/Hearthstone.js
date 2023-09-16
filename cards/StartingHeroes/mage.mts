@@ -11,6 +11,7 @@ export const blueprint: Blueprint = {
     classes: ["Mage"],
     rarity: "Free",
     hpDesc: "Deal 1 damage.",
+    hpCost: 2,
     uncollectible: true,
     id: 4,
 

@@ -8,6 +8,7 @@ export const blueprint: Blueprint = {
     desc: "Quest: Play 3 cards. Reward: Reduce the cost of the next 10 Minions you play by 1.",
     mana: 1,
     type: "Spell",
+    spellSchool: "None",
     classes: ["Neutral"],
     rarity: "Legendary",
     uncollectible: true,

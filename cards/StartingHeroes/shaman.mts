@@ -11,6 +11,7 @@ export const blueprint: Blueprint = {
     classes: ["Shaman"],
     rarity: "Free",
     hpDesc: "Summon a random Totem.",
+    hpCost: 2,
     uncollectible: true,
     id: 9,
 

@@ -11,6 +11,7 @@ export const blueprint: Blueprint = {
     classes: ["Paladin"],
     rarity: "Free",
     hpDesc: "Summon a 1/1 Silver Hand Recruit.",
+    hpCost: 2,
     uncollectible: true,
     id: 10,
 

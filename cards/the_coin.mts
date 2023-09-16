@@ -7,6 +7,7 @@ export const blueprint: Blueprint = {
     desc: "Gain 1 Mana Crystal this turn only.",
     mana: 0,
     type: "Spell",
+    spellSchool: "None",
     classes: ["Neutral"],
     rarity: "Free",
     uncollectible: true,

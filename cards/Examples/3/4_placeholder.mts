@@ -10,6 +10,7 @@ export const blueprint: Blueprint = {
 
     mana: 0,
     type: "Spell",
+    spellSchool: "None",
     classes: ["Neutral"],
     rarity: "Free",
     uncollectible: true,

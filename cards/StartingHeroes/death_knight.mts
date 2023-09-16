@@ -11,6 +11,7 @@ export const blueprint: Blueprint = {
     classes: ["Death Knight"],
     rarity: "Free",
     hpDesc: "Summon a 1/1 Ghoul with Charge. It dies at end of turn.",
+    hpCost: 2,
     uncollectible: true,
     id: 14,
 

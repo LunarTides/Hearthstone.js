@@ -11,6 +11,7 @@ export const blueprint: Blueprint = {
     classes: ["Warlock"],
     rarity: "Free",
     hpDesc: "Draw a card and take 2 damage.",
+    hpCost: 2,
     uncollectible: true,
     id: 11,
 

@@ -2,8 +2,8 @@
  * Card
  * @module Card
  */
-import { Player } from "./internal.js";
-import { Blueprint, CardAbility, CardClass, CardKeyword, CardRarity, CardType, CostType, EnchantmentDefinition, GameConfig, Ability, MinionTribe, SpellSchool, CardBackup } from "./types.js";
+import { Player } from "../internal.js";
+import { Blueprint, CardAbility, CardClass, CardKeyword, CardRarity, CardType, CostType, EnchantmentDefinition, GameConfig, Ability, MinionTribe, SpellSchool, CardBackup } from "../types.js";
 import { v4 as uuidv4 } from "uuid";
 
 let game = globalThis.game;

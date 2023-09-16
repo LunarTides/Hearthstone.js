@@ -2,8 +2,8 @@
  * The AI
  * @module AI
  */
-import { Card, Player } from "./internal.js";
-import { AICalcMoveOption, AIHistory, CardLike, ScoredCard, SelectTargetAlignment, SelectTargetClass, SelectTargetFlag, Target } from "./types.js";
+import { Card, Player } from "../internal.js";
+import { AICalcMoveOption, AIHistory, CardLike, ScoredCard, SelectTargetAlignment, SelectTargetClass, SelectTargetFlag, Target } from "../types.js";
 
 let game = globalThis.game;
 
@@ -85,7 +85,7 @@ export class AI {
         });
 
         // If a card wasn't chosen
-        // @ts-expect-error
+        //@ts-expect-error
         if (!best_move) {
             // See if can hero power
             if (this._canHeroPower()) best_move = "hero power";

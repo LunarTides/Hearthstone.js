@@ -13,10 +13,12 @@ import toml from "toml";
 import { dirname as pathDirname } from "path";
 import { createHash } from "crypto";
 import { fileURLToPath } from "url";
-import { doImportCards } from "./importcards.cjs";
+import { doImportCards } from "../helper/importcards.cjs";
 
-import { Player, Card } from "./internal.js";
-import { Blueprint, CardClass, CardClassNoNeutral, CardLike, CardRarity, EventKey, EventListenerCallback, FunctionsExportDeckError, FunctionsValidateCardReturn, MinionTribe, QuestCallback, RandListReturn, Target, TickHookCallback, VanillaCard } from "./types.js";
+import { Player, Card } from "../internal.js";
+import { Blueprint, CardClass, CardClassNoNeutral, CardLike, CardRarity, EventKey, EventListenerCallback, FunctionsExportDeckError, FunctionsValidateCardReturn, MinionTribe, QuestCallback, RandListReturn, Target, TickHookCallback, VanillaCard } from "../types.js";
+import { validateBlueprint } from "../helper/validator.js";
+import { AssertionError } from "assert";
 
 let game = globalThis.game;
 
@@ -1998,6 +2000,25 @@ ${main_content}
     importCards(path: string) {
         game = globalThis.game;
         game.cards = doImportCards(path);
+
+        // Validate the cards
+        let exit = false;
+        game.cards.forEach(card => {
+            let errorMessage = validateBlueprint(card);
+
+            // Success
+            if (errorMessage === true) return;
+
+            // Validation error
+            game.log(`<red>Card <bold>'${card.name}'</bold> is invalid since ${errorMessage}</red>`);
+            exit = true;
+        });
+
+        if (exit) {
+            game.log(`<red>Some cards are invalid in some way. Please check if the cards has / doesn't have any fields that it is not supposed to have.</red>`);
+            process.exit(1);
+        }
+
         return true;
     },
 
@@ -2008,7 +2029,7 @@ ${main_content}
      */
     dirname(): string {
         let dirname = pathDirname(fileURLToPath(import.meta.url)).replaceAll("\\", "/");
-        dirname = dirname.replace("/src", "/")
+        dirname = dirname.replace("/src/core", "/")
 
         return dirname;
     },

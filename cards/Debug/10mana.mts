@@ -7,6 +7,7 @@ export const blueprint: Blueprint = {
     desc: "Gain 10 Mana.",
     mana: 0,
     type: "Spell",
+    spellSchool: "None",
     classes: ["Neutral"],
     rarity: "Free",
     uncollectible: true,

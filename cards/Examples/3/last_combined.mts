@@ -7,6 +7,7 @@ export const blueprint: Blueprint = {
     desc: "If the turn counter is an even number, gain mana equal to the turn counter (up to 10). Manathirst (7): Remove the condition. (Currently: {0})",
     mana: 0,
     type: "Spell",
+    spellSchool: "None",
     classes: ["Neutral"],
     rarity: "Legendary",
     // The cast ability is conditioned

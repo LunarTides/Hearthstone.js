@@ -1,6 +1,5 @@
 require = require('esm')(module);
 
-import { Dirent } from "fs";
 import fs from "fs";
 
 let cards: any[] = [];
@@ -10,7 +9,7 @@ export function doImportCards(path: string) {
     return _doImportCards(path);
 }
 function _doImportCards(path: string) {
-    fs.readdirSync(path, { withFileTypes: true }).forEach((file: Dirent) => {
+    fs.readdirSync(path, { withFileTypes: true }).forEach((file: fs.Dirent) => {
         let p = `${path}/${file.name}`;
 
         if (file.name.endsWith(".mjs")) {

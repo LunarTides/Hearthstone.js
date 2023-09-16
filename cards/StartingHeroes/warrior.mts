@@ -11,6 +11,7 @@ export const blueprint: Blueprint = {
     classes: ["Warrior"],
     rarity: "Free",
     hpDesc: "Gain 2 Armor.",
+    hpCost: 2,
     uncollectible: true,
     id: 7,
 

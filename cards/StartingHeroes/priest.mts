@@ -11,6 +11,7 @@ export const blueprint: Blueprint = {
     classes: ["Priest"],
     rarity: "Free",
     hpDesc: "Restore 2 Health.",
+    hpCost: 2,
     uncollectible: true,
     id: 8,
 

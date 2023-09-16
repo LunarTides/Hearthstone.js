@@ -2,7 +2,6 @@
  * The entry point of the program. Acts like a hub between the tools / scripts and the game.
  * @module Runner
  */
-import rl from "readline-sync";
 import fs from "fs";
 import toml from "toml";
 

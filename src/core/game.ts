@@ -3,8 +3,8 @@
  * @module Game
  */
 import { question }  from 'readline-sync';
-import { functions, interact, Player, Card, AI } from "./internal.js";
-import { Blueprint, EventKey, EventManagerEvents, EventValue, GameAttackReturn, GameConfig, GameConstants, GamePlayCardReturn, QuestType, Target, TickHookCallback, UnknownEventValue } from "./types.js";
+import { functions, interact, Player, Card, AI } from "../internal.js";
+import { Blueprint, EventKey, EventManagerEvents, EventValue, GameAttackReturn, GameConfig, GameConstants, GamePlayCardReturn, QuestType, Target, TickHookCallback, UnknownEventValue } from "../types.js";
 
 // Override the console methods to force using the wrapper functions
 // Set this variable to false to prevent disabling the console. (Not recommended)

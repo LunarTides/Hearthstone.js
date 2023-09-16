@@ -3,9 +3,9 @@
  * @module Interact
  */
 import { exec } from 'child_process';
-import { Card, Player } from './internal.js';
-import { AIHistory, CardLike, EventValue, GameConfig, GamePlayCardReturn, SelectTargetAlignment, SelectTargetClass, SelectTargetFlag, Target } from './types.js';
-import { reloadCards } from './importcards.cjs';
+import { Card, Player } from '../internal.js';
+import { AIHistory, CardLike, EventValue, GameConfig, GamePlayCardReturn, SelectTargetAlignment, SelectTargetClass, SelectTargetFlag, Target } from '../types.js';
+import { reloadCards } from '../helper/importcards.cjs';
 
 const license_url = 'https://github.com/LunarTides/Hearthstone.js/blob/main/LICENSE';
 let game = globalThis.game;

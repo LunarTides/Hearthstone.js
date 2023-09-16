@@ -11,6 +11,7 @@ export const blueprint: Blueprint = {
     classes: ["Hunter"],
     rarity: "Free",
     hpDesc: "Deal 2 damage to the enemy hero.",
+    hpCost: 2,
     uncollectible: true,
     id: 6,
 

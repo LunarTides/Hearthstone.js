@@ -1,4 +1,4 @@
-import { Game } from "./game.js";
+import { Game } from "../internal.js";
 
 declare global {
     var game: Game;

@@ -2,8 +2,8 @@
  * Player
  * @module Player
  */
-import { AI, Card } from "./internal.js";
-import { CardClass, CardType, QuestType, Target } from "./types.js";
+import { AI, Card } from "../internal.js";
+import { CardClass, CardType, QuestType, Target } from "../types.js";
 
 let game = globalThis.game;
 

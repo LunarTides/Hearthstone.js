@@ -11,6 +11,7 @@ export const blueprint: Blueprint = {
     classes: ["Druid"],
     rarity: "Free",
     hpDesc: "+1 Attack this turn. +1 Armor.",
+    hpCost: 2,
     uncollectible: true,
     id: 5,
 

@@ -9,6 +9,7 @@ export const blueprint: Blueprint = {
     desc: "<b>This is a DIY card, it does not work by default.</b> Whenever a friendly minion dies, Resurrect it with 1/1 stats.",
     mana: 0,
     type: "Minion",
+    tribe: "None",
     classes: ["Neutral"],
     rarity: "Free",
     uncollectible: true,

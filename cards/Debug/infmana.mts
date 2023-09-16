@@ -7,6 +7,7 @@ export const blueprint: Blueprint = {
     desc: "Fill up your mana. For the rest of the game, your mana never decreases.",
     mana: 0,
     type: "Spell",
+    spellSchool: "None",
     classes: ["Neutral"],
     rarity: "Free",
     uncollectible: true,
