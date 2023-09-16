@@ -95,7 +95,7 @@ function printName() {
 function askClass(): CardClassNoNeutral {
     printName();
 
-    let heroClass = game.input("What class to you want to choose?\n" + classes.join(", ") + "\n");
+    let heroClass = game.input("What class do you want to choose?\n" + classes.join(", ") + "\n");
     if (heroClass) heroClass = game.functions.capitalizeAll(heroClass);
 
     if (!classes.includes(heroClass as CardClassNoNeutral)) return askClass();
