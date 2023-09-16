@@ -11,6 +11,9 @@ import child_process from "child_process";
 const { game, player1, player2 } = createGame();
 
 function upgradeCard(path: string, filename: string, data: string) {
+    // TODO: Always add `spellSchool`.
+    // TODO: Always add `hpCost`.
+
     // Yes, this code is ugly. This script is temporary.
     // This will also not work for ALL cards, they are just too flexible.
     // But it should work for all cards that was created using the card creator.

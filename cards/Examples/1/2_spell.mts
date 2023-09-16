@@ -8,9 +8,7 @@ export const blueprint: Blueprint = {
     mana: 1,
     type: "Spell",
 
-    // The spell school of the spell. If you don't include this line, it will not have a spell school.
-    // You can delete this line, but not the `tribe` line in `minion.mts`.
-    // TODO: Verify the claim above
+    // The spell school of the spell.
     spellSchool: "Shadow",
 
     classes: ["Neutral"],
