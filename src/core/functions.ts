@@ -18,7 +18,6 @@ import { doImportCards } from "../helper/importcards.cjs";
 import { Player, Card } from "../internal.js";
 import { Blueprint, CardClass, CardClassNoNeutral, CardLike, CardRarity, EventKey, EventListenerCallback, FunctionsExportDeckError, FunctionsValidateCardReturn, MinionTribe, QuestCallback, RandListReturn, Target, TickHookCallback, VanillaCard } from "../types.js";
 import { validateBlueprint } from "../helper/validator.js";
-import { AssertionError } from "assert";
 
 let game = globalThis.game;
 

@@ -67,5 +67,10 @@ export function main() {
     lib.create("Class", "Hero", card, game.functions.dirname() + "../cards/StartingHeroes/", filename);
 
     game.log("\nClass Created!");
-    game.input(`Next steps:\n1. Open 'cards/StartingHeroes/${filename}' and add logic to the 'heropower' function.\n2. Now when using the Card Creator, type '${name}' into the 'Class' field to use that class\n3. When using the Deck Creator, type '${name}' to create a deck with cards from your new class.\nEnjoy!\n`);
+    game.log(`Next steps:`);
+    game.log(`1. Open 'src/types.ts', navigate to 'CardClass', and add the name of the class to that. There is unfortunately no way to automate that.`);
+    game.log(`2. Open 'cards/StartingHeroes/${filename}' and add logic to the 'heropower' function.`);
+    game.log(`3. Now when using the Custom Card Creator, type '${name}' into the 'Class' field to use that class.`);
+    game.log(`4. When using the Deck Creator, type '${name}' to create a deck with cards from your new class.`);
+    game.log(`Enjoy!`);
 }

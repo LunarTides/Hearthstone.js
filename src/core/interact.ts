@@ -1485,7 +1485,7 @@ export const interact = {
     },
 
     /**
-     * Returns a card in a user readble state. If you game.log the result of this, the user will get all the information they need from the card.
+     * Returns a card in a user readable state. If you game.log the result of this, the user will get all the information they need from the card.
      *
      * @param card The card
      * @param i If this is set, this function will add `[i]` to the beginning of the card. This is useful if there are many different cards to choose from.
