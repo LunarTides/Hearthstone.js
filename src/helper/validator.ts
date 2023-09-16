@@ -1,6 +1,7 @@
 import { Blueprint, CardType } from "@Game/types.js";
 
-let table: {[x in CardType]: string[]} = {
+// These are the required fields for all card types.
+let requiredFieldsTable: {[x in CardType]: string[]} = {
     "Minion": ["stats", "tribe"],
     "Spell": ["spellSchool"],
     "Weapon": ["stats"],
@@ -16,9 +17,9 @@ let table: {[x in CardType]: string[]} = {
  */
 export function validateBlueprint(blueprint: Blueprint): string | boolean {
     // We trust the typescript compiler to do most of the work for us, but the type specific code is handled here.
-    let required = table[blueprint.type];
+    let required = requiredFieldsTable[blueprint.type];
 
-    let unwanted = Object.keys(table);
+    let unwanted = Object.keys(requiredFieldsTable);
     game.functions.remove(unwanted, blueprint.type);
     game.functions.remove(unwanted, "Undefined");
 
@@ -29,7 +30,7 @@ export function validateBlueprint(blueprint: Blueprint): string | boolean {
     });
 
     unwanted.forEach(key => {
-        let fields = table[key as CardType];
+        let fields = requiredFieldsTable[key as CardType];
 
         fields.forEach(field => {
             // We already require that field. For example, both minions and weapons require stats

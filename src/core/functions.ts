@@ -2015,7 +2015,8 @@ ${main_content}
         });
 
         if (exit) {
-            game.log(`<red>Some cards are invalid in some way. Please check if the cards has / doesn't have any fields that it is not supposed to have.</red>`);
+            game.log(`<red>Some cards are invalid. Please fix these issues before playing.</red>`);
+            game.input();
             process.exit(1);
         }
 
