@@ -73,5 +73,5 @@ while (true) {
     if (user == "p") src.main();
     else if (user == "d") dc.main();
     else if (user == "m") devmode();
-    else if (user == "e") process.exit(0);
+    else if (user == "e") break;
 }
