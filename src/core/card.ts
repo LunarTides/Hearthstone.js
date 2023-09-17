@@ -384,7 +384,7 @@ export class Card {
             this.backups.init[i[0]] = i[1];
         });
 
-        this.uuid = this.randomizeUUID();
+        this.randomizeUUID();
 
         let placeholder = this.activate("placeholders");
         if (placeholder instanceof Array) this.placeholder = placeholder[0]; // This is a list of replacements.
@@ -395,13 +395,9 @@ export class Card {
 
     /**
      * Randomizes the uuid for this card to prevent cards from being "linked"
-     * 
-     * @returns The uuid
      */
-    randomizeUUID(): string {
+    randomizeUUID() {
         this.uuid = uuidv4();
-
-        return this.uuid;
     }
 
     /**
