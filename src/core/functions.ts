@@ -1592,9 +1592,9 @@ ${main_content}
     },
 
     /**
-     * Removes color tags from a string. Look in `this.parseTags` for more information.
+     * Removes color tags from a string. Look in `parseTags` for more information.
      * 
-     * This only removes the TAGS, not the actual colors. Use `colors.strip` for that.
+     * This only removes the TAGS, not the actual colors.
      * 
      * @example
      * let str = "<b>Hello</b>";

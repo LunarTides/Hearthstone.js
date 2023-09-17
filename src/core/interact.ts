@@ -1195,7 +1195,7 @@ export const interact = {
     },
 
     /**
-     * #### You might want to use `this.selectPlayerTarget` or `this.selectCardTarget` instead.
+     * #### You might want to use `selectPlayerTarget` or `selectCardTarget` instead.
      * 
      * Asks the user a `prompt`, the user can then select a minion or hero.
      * Broadcasts the `TargetSelectionStarts` and the `TargetSelected` event. Can broadcast the `CastSpellOnMinion` event.
