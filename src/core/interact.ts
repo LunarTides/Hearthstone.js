@@ -546,6 +546,7 @@ export const interact = {
         }
         else if (name === "/exit") {
             game.running = false;
+            game.functions.createLogFile();
         }
         else if (name === "/ai") {
             let finished = "";

@@ -7,7 +7,6 @@ import * as child_process from "child_process";
 import * as deckstrings from "deckstrings"; // To decode vanilla deckcodes
 
 import chalk from "chalk";
-import stripAnsi from "strip-ansi";
 import toml from "toml";
 
 import { dirname as pathDirname } from "path";
@@ -803,7 +802,7 @@ export const functions = {
         if (typeof history !== "string") throw new Error("createLogFile history did not return a string.");
 
         // Strip the color codes from the history
-        history = stripAnsi(history);
+        history = functions.stripTags(history);
 
         // AI log
         game.config.general.debug = true; // Do this so it can actually run '/ai'
