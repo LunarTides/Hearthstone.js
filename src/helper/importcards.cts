@@ -1,6 +1,7 @@
 require = require('esm')(module);
 
 import fs from "fs";
+import child_process from "child_process";
 
 let cards: any[] = [];
 let c = 1;
@@ -42,5 +43,6 @@ function _doImportCards(path: string, hot = false) {
  * This can cause memory leaks with excessive usage.
  */
 export function reloadCards(path: string) {
+    if (game.config.advanced.reloadCommandRecompile) child_process.execSync(`npx tsc -p "${path}/../.."`);
     return doImportCards(path, true);
 }

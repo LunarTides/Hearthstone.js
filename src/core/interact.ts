@@ -704,7 +704,7 @@ export const interact = {
         else if (name === "/reload" || name === "/rl") {
             if (game.config.advanced.reloadCommandConfirmation && !debug) {
                 interact.printAll(game.player);
-                let sure = interact.yesNoQuestion(game.player, "<yellow>Are you sure you want to reload? This will reset all cards to their base state.\nThis can also cause memory leaks with excessive usage.\nTHIS ONLY WORKS IF THE CARDS HAVE BEEN RECOMPILED. I SUGGEST USING `tsc --watch`.</yellow>");
+                let sure = interact.yesNoQuestion(game.player, "<yellow>Are you sure you want to reload? This will reset all cards to their base state. This can also cause memory leaks with excessive usage.\nThis requires the game to be recompiled. I recommend using `tsc --watch` in another window before running this command.</yellow>");
                 if (!sure) return false;
             }
 

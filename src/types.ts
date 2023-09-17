@@ -568,6 +568,7 @@ export type GameConfig = {
 
     advanced: {
         reloadCommandConfirmation: boolean,
+        reloadCommandRecompile: boolean,
         getReadableCardMaxDepth: number,
         getReadableCardNoRecursion: boolean,
         getReadableCardAlwaysShowFullCard: boolean,

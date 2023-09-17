@@ -130,6 +130,11 @@ kill = 3
 # This is because reloading the cards will reset them all to their base state.
 reloadCommandConfirmation = true
 
+# If this is true, running the reload command will recompile the game.
+# If you disable this, you have to manually recompile the game before running the reload command.
+# I recommend disabling this and using `tsc --watch`.
+reloadCommandRecompile = false
+
 # This is how many cards `getReadableCard` can display at once.
 # This is to prevent a card from referencing itself, which would cause a infinite loop.
 # I highly recommend keeping this value below 20.
