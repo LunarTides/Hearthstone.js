@@ -64,7 +64,7 @@ const deckcode = {
         hero = hero.trim();
         code = sep[1] + code.split(sep)[1];
 
-        if (!functions.getClasses().includes(hero as CardClassNoNeutral)) return ERROR("INVALIDHERO");
+        if (!game.functions.getClasses().includes(hero as CardClassNoNeutral)) return ERROR("INVALIDHERO");
 
         // @ts-expect-error
         plr.heroClass = hero;
@@ -127,7 +127,7 @@ const deckcode = {
             cards.forEach(c => {
                 let id = parseInt(c, 36);
 
-                let bp = functions.getCardById(id);
+                let bp = game.functions.getCardById(id);
                 if (!bp) {
                     ERROR("NONEXISTANTCARD", id.toString());
                     retInvalid = true;
@@ -145,7 +145,7 @@ const deckcode = {
                     });
                 }
 
-                let validateTest = (functions.validateCard(card, plr));
+                let validateTest = (game.functions.validateCard(card, plr));
 
                 if (!localSettings.validateDecks || validateTest === true) return;
 
@@ -197,7 +197,7 @@ const deckcode = {
 
             let errorcode;
             if (amount > localSettings.maxOfOneCard) errorcode = "normal";
-            if (functions.getCardByName(cardName)?.rarity == "Legendary" && amount > localSettings.maxOfOneLegendary) errorcode = "legendary";
+            if (game.functions.getCardByName(cardName)?.rarity == "Legendary" && amount > localSettings.maxOfOneLegendary) errorcode = "legendary";
 
             if (!localSettings.validateDecks || !errorcode) return;
 
@@ -217,7 +217,7 @@ const deckcode = {
             return "invalid";
         });
     
-        _deck = functions.shuffle(_deck);
+        _deck = game.functions.shuffle(_deck);
 
         plr.deck = _deck;
 
@@ -352,7 +352,7 @@ const deckcode = {
         let cards = codeSplit[1].trim();
 
         // Now it's just the cards left
-        const [vanillaCards, error] = functions.getVanillaCards("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'scripts/genvanilla.bat' (requires an internet connection), then try again.");
+        const [vanillaCards, error] = game.functions.getVanillaCards("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'scripts/genvanilla.bat' (requires an internet connection), then try again.");
 
         if (error) {
             game.input(error);
@@ -360,7 +360,7 @@ const deckcode = {
         }
 
         let cardsSplit = cards.split(",").map(i => parseInt(i, 36));
-        let cardsSplitId = cardsSplit.map(i => functions.getCardById(i));
+        let cardsSplitId = cardsSplit.map(i => game.functions.getCardById(i));
         // @ts-expect-error
         let cardsSplitCard = cardsSplitId.map(c => new game.Card(c.name, plr));
         let trueCards = cardsSplitCard.map(c => c.displayName);
@@ -386,10 +386,10 @@ const deckcode = {
 
                 amount = parseInt(amountStrSplit[amountStrSplit.indexOf(a) - 1]);
             });
-            if (!found) amount = parseInt(functions.lastChar(amountStr));
+            if (!found) amount = parseInt(game.functions.lastChar(amountStr));
 
             let matches = vanillaCards.filter(a => a.name.toLowerCase() == c.toLowerCase());
-            matches = functions.filterVanillaCards(matches, true, extraFiltering);
+            matches = game.functions.filterVanillaCards(matches, true, extraFiltering);
 
             if (matches.length == 0) {
                 // Invalid card
@@ -445,7 +445,7 @@ const deckcode = {
     fromVanilla(plr: Player, code: string): string {
         let deck: deckstrings.DeckDefinition = deckstrings.decode(code); // Use the 'deckstrings' api's decode
 
-        const [vanillaCards, error] = functions.getVanillaCards("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'scripts/genvanilla.bat' (requires an internet connection), then try again.");
+        const [vanillaCards, error] = game.functions.getVanillaCards("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'scripts/genvanilla.bat' (requires an internet connection), then try again.");
 
         if (error) {
             game.input(error);
@@ -456,13 +456,13 @@ const deckcode = {
         delete deck.format; // We don't care about the format
 
         let _heroClass = vanillaCards.find(a => a.dbfId == deck.heroes[0])?.cardClass;
-        let heroClass = functions.capitalize(_heroClass?.toString() || game.player2.heroClass);
+        let heroClass = game.functions.capitalize(_heroClass?.toString() || game.player2.heroClass);
 
         if (heroClass == "Deathknight") heroClass = "Death Knight"; // Wtf hearthstone?
         if (heroClass == "Demonhunter") heroClass = "Demon Hunter"; // I'm not sure if this actually happens, but considering it happened with death knight, you never know
         
         let deckDef: [VanillaCard | undefined, number][] = deck.cards.map(c => [vanillaCards.find(a => a.dbfId == c[0]), c[1]]); // Get the full card object from the dbfId
-        let createdCards: Blueprint[] = functions.getCards(false);
+        let createdCards: Blueprint[] = game.functions.getCards(false);
         
         let invalidCards: VanillaCard[] = [];
         deckDef.forEach(c => {
@@ -582,7 +582,7 @@ export const functions = {
         const length = newArray.length;
 
         for (let start = 0; start < length; start++) {
-            const randomPosition = functions.randInt(0, (newArray.length - start) - 1);
+            const randomPosition = this.randInt(0, (newArray.length - start) - 1);
             const randomItem = newArray.splice(randomPosition, 1);
 
             newArray.push(...randomItem);
@@ -627,11 +627,11 @@ export const functions = {
      * @returns actual: The element, copy: If the element is a card, an imperfect copy of that card
      */
     randList<T>(list: T[]): RandListReturn<T> {
-        let item = list[functions.randInt(0, list.length - 1)];
+        let item = list[this.randInt(0, list.length - 1)];
         
         if (item instanceof Card) return { actual: item, copy: item.imperfectCopy() as T };
 
-        return { actual: item, copy: functions.cloneObject(item) };
+        return { actual: item, copy: this.cloneObject(item) };
     },
 
     /**
@@ -650,10 +650,10 @@ export const functions = {
         let elements: RandListReturn<T>[] = [];
 
         for (let i = 0; i < amount; i++) {
-            let el = functions.randList(list);
+            let el = this.randList(list);
 
             elements.push(el);
-            functions.remove(list, el.actual);
+            this.remove(list, el.actual);
         }
 
         return elements;
@@ -690,7 +690,7 @@ export const functions = {
      * @returns The string capitalized
      */
     capitalizeAll(str: string): string {
-        return str.split(" ").map(k => functions.capitalize(k)).join(" ");
+        return str.split(" ").map(k => this.capitalize(k)).join(" ");
     },
 
     /**
@@ -771,7 +771,7 @@ export const functions = {
      */
     createLogFile(err?: Error): boolean {
         // Create a (crash-)log file
-        if (!fs.existsSync(functions.dirname() + `../logs`)) fs.mkdirSync(functions.dirname() + `../logs`);
+        if (!fs.existsSync(this.dirname() + `../logs`)) fs.mkdirSync(this.dirname() + `../logs`);
 
         // Get the day, month, year, hour, minute, and second, as 2 digit numbers.
         let date = new Date();
@@ -802,7 +802,7 @@ export const functions = {
         if (typeof history !== "string") throw new Error("createLogFile history did not return a string.");
 
         // Strip the color codes from the history
-        history = functions.stripTags(history);
+        history = this.stripTags(history);
 
         // AI log
         game.config.general.debug = true; // Do this so it can actually run '/ai'
@@ -847,7 +847,7 @@ ${main_content}
         let checksum = createHash("sha256").update(content).digest("hex");
         content += `\n${checksum}  ${filename}`;
 
-        fs.writeFileSync(functions.dirname() + `../logs/${filename}`, content);
+        fs.writeFileSync(this.dirname() + `../logs/${filename}`, content);
 
         if (!err) return true;
 
@@ -1026,7 +1026,7 @@ ${main_content}
             if (c.name.toLowerCase() == name.toLowerCase()) card = c;
         });
 
-        if (!card && refer) card = functions.getCardById(name, false);
+        if (!card && refer) card = this.getCardById(name, false);
 
         return card;
     },
@@ -1042,7 +1042,7 @@ ${main_content}
     getCardById(id: number | string, refer: boolean = true): Blueprint | null {
         let card = game.cards.filter(c => c.id == id)[0];
 
-        if (!card && refer) return functions.getCardByName(id.toString(), false);
+        if (!card && refer) return this.getCardByName(id.toString(), false);
 
         return card;
     },
@@ -1123,7 +1123,7 @@ ${main_content}
      * assert.equal(result, true);
      */
     validateClass(plr: Player, card: CardLike): boolean {
-        return functions.validateClasses(card.classes, plr.heroClass);
+        return this.validateClasses(card.classes, plr.heroClass);
     },
 
     validateClasses(classes: CardClass[], cardClass: CardClass): boolean {
@@ -1204,14 +1204,14 @@ ${main_content}
     getClasses(): CardClassNoNeutral[] {
         let classes: CardClassNoNeutral[] = [];
 
-        fs.readdirSync(functions.dirname() + "cards/StartingHeroes").forEach(file => {
+        fs.readdirSync(this.dirname() + "cards/StartingHeroes").forEach(file => {
             if (!file.endsWith(".mjs")) return; // Something is wrong with the file name.
 
             let name = file.slice(0, -4); // Remove ".mjs"
             name = name.replaceAll("_", " "); // Remove underscores
-            name = functions.capitalizeAll(name); // Capitalize all words
+            name = this.capitalizeAll(name); // Capitalize all words
 
-            let card = functions.getCardByName(name + " Starting Hero");
+            let card = this.getCardByName(name + " Starting Hero");
             if (!card || card.classes[0] != name as CardClassNoNeutral || card.type != "Hero" || !card.heropower || card.classes.includes("Neutral")) {
                 game.logWarn("Found card in the startingheroes folder that isn't a starting hero. If the game crashes, please note this in your bug report. Name: " + name + ". Error Code: StartingHeroInvalidHandler");
                 return;
@@ -1256,7 +1256,7 @@ ${main_content}
                 break;
         }
 
-        return functions.parseTags(str);
+        return this.parseTags(str);
     },
 
     /**
@@ -1592,7 +1592,7 @@ ${main_content}
     },
 
     /**
-     * Removes color tags from a string. Look in `functions.parseTags` for more information.
+     * Removes color tags from a string. Look in `this.parseTags` for more information.
      * 
      * This only removes the TAGS, not the actual colors. Use `colors.strip` for that.
      * 
@@ -1635,7 +1635,7 @@ ${main_content}
      * @returns Clone
      */
     cloneCard(card: Card): Card {
-        let clone = functions.cloneObject(card);
+        let clone = this.cloneObject(card);
 
         clone.randomizeUUID();
         clone.sleepy = true;
@@ -1733,7 +1733,7 @@ ${main_content}
         game.events.tickHooks.push(callback);
 
         const unhook = () => {
-            functions.remove(game.events.tickHooks, callback);
+            this.remove(game.events.tickHooks, callback);
         }
 
         return unhook;
@@ -1752,7 +1752,7 @@ ${main_content}
          * Unsuppresses the event key.
          */
         const unsuppress = () => {
-            return functions.remove(game.events.suppressed, key);
+            return this.remove(game.events.suppressed, key);
         }
 
         return unsuppress;
@@ -1803,11 +1803,11 @@ ${main_content}
 
         if (values.length == 0) {
             for (let i = 0; i < 3; i++) {
-                let c = functions.randList(possible_cards).actual;
+                let c = this.randList(possible_cards).actual;
                 if (c instanceof Card) throw new TypeError();
 
                 values.push(c);
-                functions.remove(possible_cards, c);
+                this.remove(possible_cards, c);
             }
         }
 
@@ -1826,10 +1826,10 @@ ${main_content}
         let choice = game.input(p);
         if (!parseInt(choice)) {
             game.input("<red>Invalid choice!</red>\n");
-            return functions.adapt(minion, prompt, values);
+            return this.adapt(minion, prompt, values);
         }
 
-        if (parseInt(choice) > 3) return functions.adapt(minion, prompt, values);
+        if (parseInt(choice) > 3) return this.adapt(minion, prompt, values);
 
         choice = values[parseInt(choice) - 1][0];
 
@@ -1928,7 +1928,7 @@ ${main_content}
         if (!list) list = plr.deck;
         let _list = list;
 
-        list = functions.shuffle(list.slice());
+        list = this.shuffle(list.slice());
 
         let times = 0;
 
@@ -1945,7 +1945,7 @@ ${main_content}
         });
 
         cards.forEach(c => {
-            functions.remove(_list, c);
+            this.remove(_list, c);
         });
 
         return cards;
@@ -1983,7 +1983,7 @@ ${main_content}
      * @returns Success
      */
     importConfig() {
-        game.config = toml.parse(fs.readFileSync(functions.dirname() + "../config.toml", { encoding: "utf8" }));
+        game.config = toml.parse(fs.readFileSync(this.dirname() + "../config.toml", { encoding: "utf8" }));
         game.doConfigAI();
         return true;
     },
@@ -1999,7 +1999,7 @@ ${main_content}
         game = globalThis.game;
         game.cards = doImportCards(path);
 
-        if (!functions.runBlueprintValidator()) {
+        if (!this.runBlueprintValidator()) {
             game.log(`<red>Some cards are invalid. Please fix these issues before playing.</red>`);
             game.input();
             process.exit(1);
@@ -2061,13 +2061,13 @@ ${main_content}
         plr.hand.forEach(c => {
             if (!mulligan.includes(c) || c.name == "The Coin") return;
 
-            functions.remove(mulligan, c);
+            this.remove(mulligan, c);
             
-            let unsuppress = functions.suppressEvent("DrawCard");
+            let unsuppress = this.suppressEvent("DrawCard");
             plr.drawCard();
             unsuppress();
 
-            unsuppress = functions.suppressEvent("AddCardToDeck");
+            unsuppress = this.suppressEvent("AddCardToDeck");
             plr.shuffleIntoDeck(c);
             unsuppress();
 

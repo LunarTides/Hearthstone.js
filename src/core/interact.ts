@@ -39,10 +39,10 @@ export const interact = {
             if (attacker === -1 || target === -1) return -1;
             if (attacker === null || target === null) return null;
         } else {
-            attacker = interact.selectTarget("Which minion do you want to attack with?", null, "friendly", "any");
+            attacker = this.selectTarget("Which minion do you want to attack with?", null, "friendly", "any");
             if (!attacker) return false;
 
-            target = interact.selectTarget("Which minion do you want to attack?", null, "enemy", "any");
+            target = this.selectTarget("Which minion do you want to attack?", null, "enemy", "any");
             if (!target) return false;
         }
     
@@ -130,20 +130,20 @@ export const interact = {
                 return false;
             }
 
-            interact.printAll(game.player);
-            let ask = interact.yesNoQuestion(game.player, `<yellow>${game.player.hero?.hpDesc}</yellow> Are you sure you want to use this hero power?`);
+            this.printAll(game.player);
+            let ask = this.yesNoQuestion(game.player, `<yellow>${game.player.hero?.hpDesc}</yellow> Are you sure you want to use this hero power?`);
             if (!ask) return false;
 
-            interact.printAll(game.player);
+            this.printAll(game.player);
             game.player.heroPower();
         }
         else if (name === "attack") {
-            interact.doTurnAttack();
+            this.doTurnAttack();
             game.killMinions();
         }
         else if (name === "use") {
             // Use location
-            let errorcode = interact.useLocation();
+            let errorcode = this.useLocation();
             game.killMinions();
 
             if (errorcode === true || errorcode === -1 || game.player.ai) return true;
@@ -168,7 +168,7 @@ export const interact = {
             game.input();
         }
         else if (name === "help") {
-            interact.printName();
+            this.printName();
             game.log("(In order to run a command; input the name of the command and follow further instruction.)\n");
             game.log("Available commands:");
             game.log("(name)     - (description)\n");
@@ -203,15 +203,15 @@ export const interact = {
             game.input("\nPress enter to continue...\n");
         }
         else if (name === "view") {
-            let isHandAnswer = interact.question(game.player, "Do you want to view a minion on the board, or in your hand?", ["Board", "Hand"]);
+            let isHandAnswer = this.question(game.player, "Do you want to view a minion on the board, or in your hand?", ["Board", "Hand"]);
             let isHand = isHandAnswer == "Hand";
 
             if (!isHand) {
                 // allow_locations Makes selecting location cards allowed. This is disabled by default to prevent, for example, spells from killing the card.
-                let minion = interact.selectCardTarget("Which minion do you want to view?", null, "any", ["allow_locations"]);
+                let minion = this.selectCardTarget("Which minion do you want to view?", null, "any", ["allow_locations"]);
                 if (!minion) return false;
         
-                interact.viewCard(minion);
+                this.viewCard(minion);
 
                 return true;
             }
@@ -222,14 +222,14 @@ export const interact = {
 
             const card = game.player.hand[parseInt(cardId) - 1];
 
-            interact.viewCard(card);
+            this.viewCard(card);
         }
         else if (name === "detail") {
             game.player.detailedView = !game.player.detailedView;
         }
         else if (name === "concede") {
-            interact.printAll(game.player);
-            let confirmation = interact.yesNoQuestion(game.player, "Are you sure you want to concede?");
+            this.printAll(game.player);
+            let confirmation = this.yesNoQuestion(game.player, "Are you sure you want to concede?");
             if (!confirmation) return false;
 
             game.endGame(game.player.getOpponent());
@@ -246,7 +246,7 @@ export const interact = {
                 let todos = Object.entries(game.config.todo);
 
                 const print_info = () => {
-                    interact.printAll(game.player);
+                    this.printAll(game.player);
 
                     let strbuilder = `\nYou are on version: ${version} on `;
     
@@ -320,7 +320,7 @@ export const interact = {
             let finished = "";
 
             const showCard = (val: Card) => {
-                return `${interact.getReadableCard(val)} which belongs to: <blue>${val.plr.name}</blue>, and has uuid: ${val.uuid.slice(0, 8)}`;
+                return `${this.getReadableCard(val)} which belongs to: <blue>${val.plr.name}</blue>, and has uuid: ${val.uuid.slice(0, 8)}`;
             }
 
             /**
@@ -619,7 +619,7 @@ export const interact = {
 
             command = command as EventValue<"Input">;
 
-            interact.printAll(game.player);
+            this.printAll(game.player);
             let options = parseInt(game.input(`\nWhat would you like to do with this command?\n${command}\n\n(1. Run it, 2. Edit it, 0. Cancel): `));
             if (!options) {
                 game.input("<red>Invalid option.</red>\n");
@@ -628,11 +628,11 @@ export const interact = {
 
             if (options === 0) return false;
             if (options === 1) {
-                interact.doTurnLogic(command);
+                this.doTurnLogic(command);
             }
             if (options === 2) {
                 let addition = game.input("Which card do you want to play? " + command);
-                interact.doTurnLogic(command + addition);
+                this.doTurnLogic(command + addition);
             }
         }
         else if (name === "/set") {
@@ -704,22 +704,22 @@ export const interact = {
         }
         else if (name === "/reload" || name === "/rl") {
             if (game.config.advanced.reloadCommandConfirmation && !debug) {
-                interact.printAll(game.player);
-                let sure = interact.yesNoQuestion(game.player, "<yellow>Are you sure you want to reload? This will reset all cards to their base state. This can also cause memory leaks with excessive usage.\nThis requires the game to be recompiled. I recommend using `tsc --watch` in another window before running this command.</yellow>");
+                this.printAll(game.player);
+                let sure = this.yesNoQuestion(game.player, "<yellow>Are you sure you want to reload? This will reset all cards to their base state. This can also cause memory leaks with excessive usage.\nThis requires the game to be recompiled. I recommend using `tsc --watch` in another window before running this command.</yellow>");
                 if (!sure) return false;
             }
 
             let success = true;
 
-            success = success && interact.withStatus("Reloading cards", () => {
+            success = success && this.withStatus("Reloading cards", () => {
                 game.cards = reloadCards(game.functions.dirname() + "cards");
                 return true;
             });
 
-            success = success && interact.withStatus("Importing config", () => game.functions.importConfig());
+            success = success && this.withStatus("Importing config", () => game.functions.importConfig());
                 
             // Go through all the cards and reload them
-            success = success && interact.withStatus("Reloading cards", () => {
+            success = success && this.withStatus("Reloading cards", () => {
                 /**
                  * Reloads a card
                  */
@@ -747,13 +747,13 @@ export const interact = {
             });
 
             if (!debug && success) game.input("\nThe cards have been reloaded.\nPress enter to continue...");
-            if (!success) game.input("\nSome steps failed. The game could not be fully reloaded. Please report interact.\nPress enter to continue...");
+            if (!success) game.input("\nSome steps failed. The game could not be fully reloaded. Please report this.\nPress enter to continue...");
         }
         else if (name === "/freload" || name === "/frl") {
-            return interact.handleCmds("/reload", true, true);
+            return this.handleCmds("/reload", true, true);
         }
         else if (name === "/history") {
-            return interact.handleCmds("history", true, true);
+            return this.handleCmds("history", true, true);
         }
         // -1 if the command is not found
         else return -1;
@@ -772,7 +772,7 @@ export const interact = {
     doTurnLogic(input: string): GamePlayCardReturn {
         game = globalThis.game;
 
-        if (interact.handleCmds(input) !== -1) return true;
+        if (this.handleCmds(input) !== -1) return true;
         let parsedInput = parseInt(input);
 
         let card = game.player.hand[parsedInput - 1];
@@ -801,20 +801,20 @@ export const interact = {
             if (rawInput instanceof Card) input = (game.player.hand.indexOf(rawInput) + 1).toString();
             else input = rawInput;
 
-            let turn = interact.doTurnLogic(input);
+            let turn = this.doTurnLogic(input);
 
             game.killMinions();
 
             return turn;
         }
 
-        interact.printAll(game.player);
+        this.printAll(game.player);
     
         let input = "\nWhich card do you want to play? ";
         if (game.turns <= 2 && !game.config.general.debug) input += "(type 'help' for further information <- This will disappear once you end your turn) ";
     
         let user = game.input(input);
-        const ret = interact.doTurnLogic(user);
+        const ret = this.doTurnLogic(user);
         game.killMinions();
 
         if (ret === true || ret instanceof Card) return ret; // If there were no errors, return true.
@@ -850,7 +850,7 @@ export const interact = {
         let locations = game.board[game.player.id].filter(m => m.type == "Location");
         if (locations.length <= 0) return "nolocations";
 
-        let location = interact.selectCardTarget("Which location do you want to use?", null, "friendly", ["allow_locations"]);
+        let location = this.selectCardTarget("Which location do you want to use?", null, "friendly", ["allow_locations"]);
         if (!location) return -1;
 
         if (location.type != "Location") return "invalidtype";
@@ -879,7 +879,7 @@ export const interact = {
      */
     deckCode(plr: Player): boolean {
         game = globalThis.game;
-        interact.printName();
+        this.printName();
     
         /**
          * If the test deck (30 Sheep) should be allowed
@@ -918,7 +918,7 @@ export const interact = {
     mulligan(plr: Player): string {
         game = globalThis.game;
 
-        interact.printAll(plr);
+        this.printAll(plr);
 
         let sb = "\nChoose the cards to mulligan (1, 2, 3, ...):\n";
         if (!game.config.general.debug) sb += "<gray>(Example: 13 will mulligan the cards with the ids 1 and 3, 123 will mulligan the cards with the ids 1, 2 and 3, just pressing enter will not mulligan any cards):</gray>\n";
@@ -932,7 +932,7 @@ export const interact = {
 
         if (!is_int && input != "") {
             game.input("<red>Invalid input!</red>\n");
-            return interact.mulligan(plr);
+            return this.mulligan(plr);
         }
 
         return input;
@@ -962,14 +962,14 @@ export const interact = {
             return card;
         }
 
-        interact.printAll(game.player);
+        this.printAll(game.player);
 
         game.log(`\n${prompt}`);
 
         if (cards.length <= 0) return null;
 
         cards.forEach((c, i) => {
-            game.log(interact.getReadableCard(c, i + 1));
+            game.log(this.getReadableCard(c, i + 1));
         });
 
         let choice = game.input("> ");
@@ -978,7 +978,7 @@ export const interact = {
         let card = cards[cardId];
 
         if (!card) {
-            return interact.dredge(prompt);
+            return this.dredge(prompt);
         }
 
         game.functions.remove(game.player.deck, card); // Removes the selected card from the players deck.
@@ -1001,7 +1001,7 @@ export const interact = {
     chooseOne(prompt: string, options: string[], times: number = 1): number | null | (number | null)[] {
         game = globalThis.game;
 
-        interact.printAll(game.player);
+        this.printAll(game.player);
 
         let choices = [];
 
@@ -1023,7 +1023,7 @@ export const interact = {
             let choice = game.input(p);
             if (!parseInt(choice)) {
                 game.input("<red>Invalid input!</red>\n");
-                return interact.chooseOne(prompt, options, times);
+                return this.chooseOne(prompt, options, times);
             }
 
             choices.push(parseInt(choice) - 1);
@@ -1049,10 +1049,10 @@ export const interact = {
         game = globalThis.game;
 
         const RETRY = () => {
-            return interact.question(plr, prompt, answers);
+            return this.question(plr, prompt, answers);
         }
 
-        interact.printAll(plr);
+        this.printAll(plr);
 
         let strbuilder = `\n${prompt} [`;
 
@@ -1109,7 +1109,7 @@ export const interact = {
         game.log(`<red>Unexpected input: '<yellow>${_choice}</yellow>'. Valid inputs: </red>[<bright:green>Y</bright:green> | <red>N</red>]`);
         game.input();
 
-        return interact.yesNoQuestion(plr, prompt);
+        return this.yesNoQuestion(plr, prompt);
     },
 
     /**
@@ -1127,7 +1127,7 @@ export const interact = {
         game = globalThis.game;
 
         // TODO: Discover doesn't work
-        interact.printAll(game.player);
+        this.printAll(game.player);
         let values: CardLike[] = _cards;
 
         if (cards.length <= 0) cards = game.functions.getCards();
@@ -1154,7 +1154,7 @@ export const interact = {
             let card = game.functions.getCardByName(v.name);
             if (!card) return;
 
-            game.log(interact.getReadableCard(v, i + 1));
+            game.log(this.getReadableCard(v, i + 1));
         });
 
         let choice = game.input();
@@ -1162,7 +1162,7 @@ export const interact = {
         if (!values[parseInt(choice) - 1]) {
             // Invalid input
             // We still want the user to be able to select a card, so we force it to be valid
-            return interact.discover(prompt, cards, filterClassCards, amount, values);
+            return this.discover(prompt, cards, filterClassCards, amount, values);
         }
 
         let card: Card;
@@ -1182,7 +1182,7 @@ export const interact = {
      * The advantage of this function is that it returns `Player | false` instead of `Target | false`.
      */
     selectPlayerTarget(prompt: string, card: Card | null, flags: SelectTargetFlag[] = []): Player | false {
-        return interact.selectTarget(prompt, card, "any", "hero", flags) as Player | false;
+        return this.selectTarget(prompt, card, "any", "hero", flags) as Player | false;
     },
 
     /**
@@ -1191,11 +1191,11 @@ export const interact = {
      * The advantage of this function is that it returns `Card | false` instead of `Target | false`.
      */
     selectCardTarget(prompt: string, card: Card | null, side: SelectTargetAlignment, flags: SelectTargetFlag[] = []): Card | false {
-        return interact.selectTarget(prompt, card, side, "minion", flags) as Card | false;
+        return this.selectTarget(prompt, card, side, "minion", flags) as Card | false;
     },
 
     /**
-     * #### You might want to use `interact.selectPlayerTarget` or `interact.selectCardTarget` instead.
+     * #### You might want to use `this.selectPlayerTarget` or `this.selectCardTarget` instead.
      * 
      * Asks the user a `prompt`, the user can then select a minion or hero.
      * Broadcasts the `TargetSelectionStarts` and the `TargetSelected` event. Can broadcast the `CastSpellOnMinion` event.
@@ -1212,7 +1212,7 @@ export const interact = {
         game = globalThis.game;
 
         game.events.broadcast("TargetSelectionStarts", [prompt, card, force_side, force_class, flags], game.player);
-        let target = interact._selectTarget(prompt, card, force_side, force_class, flags);
+        let target = this._selectTarget(prompt, card, force_side, force_class, flags);
 
         if (target) game.events.broadcast("TargetSelected", [card, target], game.player);
         return target;
@@ -1267,13 +1267,13 @@ export const interact = {
             // The input is invalid
             game.input("<red>Invalid input / minion!</red>\n");
 
-            return interact._selectTarget(prompt, card, force_side, force_class, flags);
+            return this._selectTarget(prompt, card, force_side, force_class, flags);
         }
 
         // If the player is forced to one side.
         if (force_side === "any") {
             // If the player chose to target a hero, it will ask which hero.
-            if (target.startsWith("face") && force_class != "minion") return interact._selectTarget(prompt, card, force_side, "hero", flags);
+            if (target.startsWith("face") && force_class != "minion") return this._selectTarget(prompt, card, force_side, "hero", flags);
             
             // If both players have a minion with the same index,
             // ask them which minion to select
@@ -1285,7 +1285,7 @@ export const interact = {
             
                 if (alignment.startsWith("b") || this.shouldExit(alignment)) {
                     // Go back.
-                    return interact._selectTarget(prompt, card, force_side, force_class, flags);
+                    return this._selectTarget(prompt, card, force_side, force_class, flags);
                 }
 
                 minion = (alignment.startsWith("y")) ? board_opponent_target : board_friendly_target;
@@ -1446,7 +1446,7 @@ export const interact = {
                 }
                 else {
                     // Show the full card using recursion
-                    replacement = interact.getReadableCard(replacement, -1, _depth + 1);
+                    replacement = this.getReadableCard(replacement, -1, _depth + 1);
                 }
             }
 
@@ -1521,7 +1521,7 @@ export const interact = {
 
         // Extract placeholder value, remove the placeholder header and footer
         if (card instanceof Card && (card.placeholder || /\$(\d+?)/.test(card.desc || ""))) {
-            desc = interact.doPlaceholders(card, desc, _depth);
+            desc = this.doPlaceholders(card, desc, _depth);
         }
 
         let mana = `{${card.mana}} `;
@@ -1543,7 +1543,7 @@ export const interact = {
                 break;
         }
 
-        let displayName = interact.getDisplayName(card);
+        let displayName = this.getDisplayName(card);
 
         if (i !== -1) sb += `[${i}] `;
         sb += mana;
@@ -1735,7 +1735,7 @@ export const interact = {
     viewCard(card: CardLike, help: boolean = true) {
         game = globalThis.game;
 
-        let _card = interact.getReadableCard(card);
+        let _card = this.getReadableCard(card);
         let _class = `<gray>${card.classes.join(" / ")}</gray>`;
 
         let tribe = "";
