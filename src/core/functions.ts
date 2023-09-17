@@ -2000,8 +2000,23 @@ ${main_content}
         game = globalThis.game;
         game.cards = doImportCards(path);
 
+        if (!functions.runBlueprintValidator()) {
+            game.log(`<red>Some cards are invalid. Please fix these issues before playing.</red>`);
+            game.input();
+            process.exit(1);
+        }
+
+        return true;
+    },
+
+    /**
+     * Validates the blueprints.
+     *
+     * @returns If one or more blueprints were found invalid.
+     */
+    runBlueprintValidator() {
         // Validate the cards
-        let exit = false;
+        let valid = true;
         game.cards.forEach(card => {
             let errorMessage = validateBlueprint(card);
 
@@ -2010,16 +2025,10 @@ ${main_content}
 
             // Validation error
             game.log(`<red>Card <bold>'${card.name}'</bold> is invalid since ${errorMessage}</red>`);
-            exit = true;
+            valid = false;
         });
 
-        if (exit) {
-            game.log(`<red>Some cards are invalid. Please fix these issues before playing.</red>`);
-            game.input();
-            process.exit(1);
-        }
-
-        return true;
+        return valid;
     },
 
     /**

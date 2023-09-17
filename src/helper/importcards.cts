@@ -14,6 +14,8 @@ function requireFresh(mod: string) {
  * Import cards.
  *
  * If hot is true, fresh import the cards. This can cause memory leaks over time.
+ *
+ * @returns The cards
  */
 export function doImportCards(path: string, hot = false) {
     cards = [];
@@ -41,8 +43,17 @@ function _doImportCards(path: string, hot = false) {
 
 /**
  * This can cause memory leaks with excessive usage.
+ *
+ * @returns The cards
  */
 export function reloadCards(path: string) {
     if (game.config.advanced.reloadCommandRecompile) child_process.execSync(`npx tsc -p "${path}/../.."`);
-    return doImportCards(path, true);
+    
+    let result = doImportCards(path, true);
+    if (!game.functions.runBlueprintValidator()) {
+        game.log("<yellow>Some cards were found invalid. Please fix and reload these cards to prevent unwanted behaviour.</yellow>");
+        game.input();
+    };
+
+    return result;
 }
