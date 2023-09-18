@@ -412,10 +412,14 @@ function showRules() {
 
     game.log("# Validation: %s", (config.decks.validate ? "<bright:green>ON</>" : "<red>OFF</red>"));
 
-    game.log(`#\n# Rule 1. Minimum Deck Length: <yellow>${config.decks.minLength}</yellow>`);
-    game.log(`# Rule 2. Maximum Deck Length: %s <yellow>${config.decks.maxLength}</yellow>`);
+    game.log("#");
 
-    game.log(`#\n# Rule 3. Maximum amount of cards for each card (eg. You can only have: <yellow>x</yellow> Seances in a deck): <yellow>${config.decks.maxOfOneCard}</yellow>`);
+    game.log(`# Rule 1. Minimum Deck Length: <yellow>${config.decks.minLength}</yellow>`);
+    game.log(`# Rule 2. Maximum Deck Length: <yellow>${config.decks.maxLength}</yellow>`);
+
+    game.log("#");
+
+    game.log(`# Rule 3. Maximum amount of cards for each card (eg. You can only have: <yellow>x</yellow> Seances in a deck): <yellow>${config.decks.maxOfOneCard}</yellow>`);
     game.log(`# Rule 4. Maximum amount of cards for each legendary card (Same as Rule 3 but for legendaries): <yellow>${config.decks.maxOfOneLegendary}</yellow>`);
 
     game.log("#");

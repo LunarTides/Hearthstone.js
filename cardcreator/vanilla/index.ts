@@ -120,7 +120,7 @@ export function create(card: VanillaCard, debug: boolean) {
         }
     }
     else {
-        game.log(`${type} is not a valid type!`);
+        game.log("ccvanila.error.invalidType", type);
         process.exit(1);
     }
 
@@ -139,7 +139,7 @@ export function create(card: VanillaCard, debug: boolean) {
  * @returns If a card was created
  */
 export function main() {
-    game.log("Hearthstone.js Vanilla Card Creator (C) 2022\n");
+    game.log("ccvanilla.watermark");
 
     const [vanillaCards, error] = game.functions.getVanillaCards();
 
@@ -161,7 +161,7 @@ export function main() {
         filtered_cards = game.functions.filterVanillaCards(filtered_cards, false, true);
 
         if (filtered_cards.length <= 0) {
-            game.log("Invalid card.\n");
+            game.log("ccvanilla.error.invalidCard");
             continue;
         }
 
@@ -189,7 +189,7 @@ export function main() {
 
             let picked = parseInt(game.input(`Pick one (1-${filtered_cards.length}): `));
             if (!picked || !filtered_cards[picked - 1]) {
-                game.log("Invalid number.\n");
+                game.log("ccvanilla.error.invalidNumber");
                 continue;
             }
 
@@ -197,7 +197,7 @@ export function main() {
         }
         else card = filtered_cards[0];
 
-        game.log(`Found '${card.name}'\n`);
+        game.log("ccvanilla.foundMessage", card.name);
 
         create(card, debug);
     }

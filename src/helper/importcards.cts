@@ -49,6 +49,10 @@ function _doImportCards(path: string, hot = false) {
     return cards;
 }
 
+function importLocale(path: string) {
+    game.locale = JSON.parse(fs.readFileSync(path + game.config.general.locale, { encoding: "utf8" }));
+}
+
 /**
  * This can cause memory leaks with excessive usage.
  *

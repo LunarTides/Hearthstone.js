@@ -1,4 +1,7 @@
 [general]
+# The language to use in-game.
+locale = "en_US"
+
 # Debug mode enables debug commands, and hides redundant information.
 debug = true
 

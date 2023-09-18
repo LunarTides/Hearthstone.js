@@ -1988,6 +1988,10 @@ ${main_content}
         return true;
     },
 
+    importLocale() {
+        game.locale = JSON.parse(fs.readFileSync(`${this.dirname()}../locale/${game.config.general.locale}.json`, { encoding: "utf8" }));
+    },
+
     /**
      * Imports all cards from a folder
      * 

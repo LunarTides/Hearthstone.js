@@ -716,7 +716,12 @@ export const interact = {
                 return true;
             });
 
-            success = success && this.withStatus("Importing config", () => game.functions.importConfig());
+            success = success && this.withStatus("Reloading config", () => game.functions.importConfig());
+
+            success = success && this.withStatus("Reloading locale", () => {
+                game.functions.importLocale();
+                return true;
+            });
                 
             // Go through all the cards and reload them
             success = success && this.withStatus("Reloading cards", () => {

@@ -17,8 +17,8 @@ const { game, player1, player2 } = createGame();
 export function main() {
     let watermark = () => {
         game.interact.cls();
-        game.log("Hearthstone.js Class Creator (C) 2022\n");
-        game.log("type 'back' at any step to cancel.\n");
+        game.log("ccclass.watermark");
+        game.log("ccclass.backInfo");
     }
 
     const questions = [
@@ -66,11 +66,11 @@ export function main() {
 
     lib.create("Class", "Hero", card, game.functions.dirname() + "../cards/StartingHeroes/", filename);
 
-    game.log("\nClass Created!");
-    game.log(`Next steps:`);
-    game.log(`1. Open 'src/types.ts', navigate to 'CardClass', and add the name of the class to that. There is unfortunately no way to automate that.`);
-    game.log(`2. Open 'cards/StartingHeroes/${filename}' and add logic to the 'heropower' function.`);
-    game.log(`3. Now when using the Custom Card Creator, type '${name}' into the 'Class' field to use that class.`);
-    game.log(`4. When using the Deck Creator, type '${name}' to create a deck with cards from your new class.`);
-    game.log(`Enjoy!`);
+    game.log("ccclass.done.classCreated");
+    game.log("ccclass.done.nextSteps.message");
+    game.log("ccclass.done.nextSteps.1");
+    game.log("ccclass.done.nextSteps.2", filename);
+    game.log("ccclass.done.nextSteps.3", name);
+    game.log("ccclass.done.nextSteps.4", name);
+    game.log("ccclass.done.enjoy");
 }

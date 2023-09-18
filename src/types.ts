@@ -528,6 +528,7 @@ export type EnchantmentDefinition = {
  */
 export type GameConfig = {
     general: {
+        locale: string,
         debug: boolean,
         editor: string,
         topicBranchWarning: boolean,

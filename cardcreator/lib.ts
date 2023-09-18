@@ -181,12 +181,12 @@ export const blueprint: Blueprint = {
         // Write the file to the path
         fs.writeFileSync(file_path, content);
 
-        game.log('File created at: "' + file_path + '"');
+        game.log("cclib.fileCreatedAt", file_path);
     } else {
         // If debug mode is enabled, just show some information about the card.
-        game.log(`\nNew ID: ${id}`); // This is the id that would be written to '.latest_id'
-        game.log(`Would be path: "${file_path.replaceAll("\\", "/")}"`);
-        game.log(`Content:\n${content}`);
+        game.log("cclib.debug.newId", id); // This is the id that would be written to '.latest_id'
+        game.log("cclib.debug.wouldBePath", file_path.replaceAll("\\", "/"));
+        game.log("cclib.debug.content", content);
         game.input();
     }
 

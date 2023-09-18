@@ -10,7 +10,7 @@ import { Blueprint, EventKey, EventManagerEvents, EventValue, GameAttackReturn, 
 // Set this variable to false to prevent disabling the console. (Not recommended)
 let disableConsole = true;
 
-let overrideConsole = {log: () => {}, warn: () => {}, error: () => {}};
+let overrideConsole = {log: (...data: any) => {}, warn: (...data: any) => {}, error: (...data: any) => {}};
 overrideConsole.log = console.log;
 overrideConsole.warn = console.warn;
 overrideConsole.error = console.error;
@@ -425,6 +425,8 @@ export class Game {
      */
     constants: GameConstants;
 
+    locale: {[key: string]: string};
+
     constructor() {
         globalThis.game = this;
     }
@@ -502,8 +504,18 @@ export class Game {
     }
 
     private logWrapper(callback: Function, ...data: any) {
+        let locale: string[] = data[0].split(".");
+        data.shift();
         data = data.map((i: any) => typeof i === "string" ? functions.parseTags(i) : i);
-        callback(...data);
+
+        let msg: {[key: string]: any} = this.locale;
+        locale.forEach(l => {
+            msg = msg[l];
+        });
+
+        if (!msg) throw new Error("That locale was not found!");
+        
+        callback(msg, ...data);
     }
 
     /**
@@ -817,6 +829,7 @@ export function createGame() {
     game.setup(player1, player2);
     functions.importCards(functions.dirname() + "cards");
     functions.importConfig();
+    functions.importLocale();
 
     return { game, player1, player2 };
 }

@@ -1,0 +1,120 @@
+{
+    "runner": {
+        "infoMessage": "Hearthstone.js Runner V%s-%s (C) 2022\n"
+    },
+    "cclib": {
+        "fileCreatedAt": "File created at: \"%s\"",
+        
+        "debug": {
+            "newId": "\nNew ID: %s",
+            "wouldBePath": "Would be path: \"%s\"",
+            "content": "Content:\n%s"
+        }
+    },
+    "ccclass": {
+        "watermark": "Hearthstone.js Class Creator (C) 2022\n",
+        "backInfo": "type 'back' at any step to cancel.",
+
+        "done": {
+            "classCreated": "\nClass Created!",
+            
+            "nextSteps": {
+                "message": "Next steps:",
+                "1": "1. Open 'src/types.ts', navigate to 'CardClass', and add the name of the class to that. There is unfortunately no way to automate that.",
+                "2": "2. Open 'cards/StartingHeroes/%s' and add logic to the 'heropower' ability",
+                "3": "3. Now when using the Custom Card Creator, type '%s' into the 'Class' field to use that class.",
+                "4": "4. When using the Deck Creator, type '%s' to create a deck with cards from your new class."
+            },
+
+            "enjoy": "Enjoy!"
+        }
+    },
+    "cccustom": {
+        "watermark": "Hearthstone.js Custom Card Creator (C) 2022\n",
+        "backInfo": "type 'back' at any step to cancel.\n",
+        "creatingFile": "Creating file...",
+
+        "error": {
+            "invalidType": "That is not a valid type!"
+        }
+    },
+    "ccvanilla": {
+        "generator": {
+            "foundMessage": "Found %s cards!\nFiltered away %s cards!\nSuccessfully imported %s cards!"
+        },
+
+        "watermark":"Hearthstone.js Vanilla Card Creator (C) 2022\n",
+
+        "error": {
+            "invalidType": "'%s' is not a valid type!",
+            "invalidCard": "Invalid card.\n",
+            "invalidNumber": "Invalid number.\n"
+        },
+
+        "foundMessage": "Found '%s'\n"
+    },
+    "deckcreator": {
+        "watermark":"Hearthstone.js Deck Creator (C) 2022\n",
+
+        "error": {
+            "invalidKey": "\n<red>Key '%s' not valid!</red>",
+            "invalidValue": "\n<red>Value '%s' not valid!</red>",
+            "noCardsTotal": "<yellow>No cards found. This means that the game doesn't have any (collectible) cards.</yellow>",
+            "noCardsForSelectedClass": "<yellow>No cards found for the selected classes '%s and Neutral'.</yellow>",
+            "noCardsForViewedClass": "<yellow>No cards found for the viewed class '%s'.</yellow>",
+
+            "failedSortingByType": "<yellow>Sorting by </yellow>'%s'<yellow> failed! Falling back to </yellow>%s.",
+            "failedSortingByOrder": "<yellow>Ordering by </yellow>'%sending'<yellow> failed! Falling back to </yellow>%sending.",
+
+            "deckcode": {
+                "tooFewCards": "<yellow>Too few cards.</yellow>",
+                "tooManyCards": "<yellow>Too many cards.</yellow>",
+                "emptyDeck": "<red>ERROR: Could not generate deckcode as your deck is empty. The resulting deckcode would be invalid.</red>",
+                "tooManyCopies": "<yellow>Too many copies of a card. Maximum: </yellow>'%s'<yellow>. Offender: </yellow>'%s'<yellow>",
+                "tooManyLegendaryCopies": "<yellow>Too many copies of a Legendary card. Maximum: </yellow>'%s'<yellow>. Offender: </yellow>'%s'<yellow>"
+            }
+        },
+
+        "searchingFor": "Searching for '%s'.",
+        "sortingBy": "Sorting by %s, %sending.",
+
+        "pageInfo": "\nPage %s / %s\n",
+        "classInfo": "<underline>%s</underline>",
+
+        "deckSize": "Deck Size: <yellow>%s</yellow>\n",
+
+        "deckcodeOutput": {
+            "currentMessage": "\nCurrent deckcode output:",
+
+            "valid": "<bright:green>Valid deck!</bright:green>"
+        },
+
+        "rules": {
+            "callToAction": "\nType 'rules' to see a list of rules.",
+
+            "validation": "# Validation: %s",
+
+            "minimumDeckLength": "# Rule 1. Minimum Deck Length: <yellow>%s</yellow>",
+            "maximumDeckLength": "# Rule 2. Maximum Deck Length: <yellow>%s</yellow>",
+
+            "maxOfOneCard": "# Rule 3: Maximum amount of cards for each card (e.g. You can only have <yellow>x</yellow> Seances in a deck): <yellow>%s</yellow>",
+            "maxOfOneLegendary": "# Rule 4: Maximum amount of cards for each legendary card (Same as Rule 3, but for legendaries): <yellow>%s</yellow>",
+
+            "explenation": {
+                "deckStates": "# There are 3 types of deck states: Valid, Pseudo-Valid, Invalid.",
+                "validState": "# Valid decks will work properly.",
+                "pseudoValidState": "# Pseudo-valid decks will be rejected by the deck imported for violating a rule.",
+                "invalidState": "# Invalid decks are decks with a fundemental problem that the deck importer cannot resolve. E.g. An invalid card in the deck.",
+                "consequences": "# Violating any of these rules while validation is enabled will will result in a pseudo-valid deck."
+            }
+        },
+
+        "commands": {
+            "add": "add (name | id) - Add a card to the deck."
+        }
+    },
+    "other": {
+        "on": "<bright:green>On</bright:green>",
+        "off": "<red>Off</red>"
+    }
+}
