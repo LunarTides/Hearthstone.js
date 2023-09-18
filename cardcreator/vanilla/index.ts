@@ -120,7 +120,7 @@ export function create(card: VanillaCard, debug: boolean) {
         }
     }
     else {
-        game.log("ccvanila.error.invalidType", type);
+        game.logLocale("CCVanila.Error.InvalidType", type);
         process.exit(1);
     }
 
@@ -139,7 +139,7 @@ export function create(card: VanillaCard, debug: boolean) {
  * @returns If a card was created
  */
 export function main() {
-    game.log("ccvanilla.watermark");
+    game.logLocale("CCVanilla.Watermark");
 
     const [vanillaCards, error] = game.functions.getVanillaCards();
 
@@ -161,7 +161,7 @@ export function main() {
         filtered_cards = game.functions.filterVanillaCards(filtered_cards, false, true);
 
         if (filtered_cards.length <= 0) {
-            game.log("ccvanilla.error.invalidCard");
+            game.logLocale("CCVanilla.Error.InvalidCard");
             continue;
         }
 
@@ -183,13 +183,14 @@ export function main() {
                 // @ts-expect-error
                 delete c["mechanics"];
 
+                // TODO: Make this work
                 game.log(`\n${i + 1}:`);
                 game.log(c);
             });
 
             let picked = parseInt(game.input(`Pick one (1-${filtered_cards.length}): `));
             if (!picked || !filtered_cards[picked - 1]) {
-                game.log("ccvanilla.error.invalidNumber");
+                game.logLocale("CCVanilla.Error.InvalidNumber");
                 continue;
             }
 
@@ -197,7 +198,7 @@ export function main() {
         }
         else card = filtered_cards[0];
 
-        game.log("ccvanilla.foundMessage", card.name);
+        game.logLocale("CCVanilla.FoundMessage", card.name);
 
         create(card, debug);
     }

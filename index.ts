@@ -18,7 +18,7 @@ const cls = () => process.stdout.write("\x1bc");
 
 const watermark = () => {
     cls();
-    game.log("runner.infoMessage", config.info.version, config.info.branch);
+    game.logLocale("Runner.InfoMessage", config.info.version, config.info.branch);
 }
 
 function cardCreator() {

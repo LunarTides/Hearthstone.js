@@ -19,7 +19,7 @@ function main() {
             writeFile(game.functions.dirname() + "../cardcreator/vanilla/.ignore.cards.json", JSON.stringify(data), err => {
                 if (err) throw err;
             });
-            game.log("ccvanilla.generator.foundMessage", oldLength, oldLength - data.length, data.length);
+            game.logLocale("CCVanilla.Generator.FoundMessage", oldLength, oldLength - data.length, data.length);
         });
 }
 

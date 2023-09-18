@@ -8,6 +8,7 @@ import * as deckstrings from "deckstrings"; // To decode vanilla deckcodes
 
 import chalk from "chalk";
 import toml from "toml";
+import hjson from "hjson";
 
 import { dirname as pathDirname } from "path";
 import { createHash } from "crypto";
@@ -1989,7 +1990,7 @@ ${main_content}
     },
 
     importLocale() {
-        game.locale = JSON.parse(fs.readFileSync(`${this.dirname()}../locale/${game.config.general.locale}.hjson`, { encoding: "utf8" }));
+        game.locale = hjson.parse(fs.readFileSync(`${this.dirname()}../locale/${game.config.general.locale}.hjson`, { encoding: "utf8" }));
     },
 
     /**

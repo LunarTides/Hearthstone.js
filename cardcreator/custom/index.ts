@@ -208,8 +208,8 @@ export function main() {
 
     // Reset the shouldExit switch so that the program doesn't immediately exit when the user enters the ccc, exits, then enters ccc again
     shouldExit = false;
-    game.log("cccustom.watermark");
-    game.log("cccustom.backInfo");
+    game.logLocale("CCCustom.Watermark");
+    game.logLocale("CCCustom.BackInfo");
 
     // Ask the user for the type of card they want to make
     type = input("Type: ") as CardType;
@@ -234,7 +234,7 @@ export function main() {
             tmpCard = hero();
             break
         default:
-            game.log("cccustom.error.invalidType");
+            game.logLocale("CCCustom.Error.InvalidType");
             game.input();
             return false;
     }
@@ -249,7 +249,7 @@ export function main() {
     if (uncollectible) card.uncollectible = uncollectible as boolean;
 
     // Actually create the card
-    game.log("cccustom.creatingFile");
+    game.logLocale("CCCustom.CreatingFile");
 
     let filePath = lib.create("Custom", type, card);
 

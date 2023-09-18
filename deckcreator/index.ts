@@ -89,7 +89,7 @@ let settings: Settings = {
 
 function printName() {
     game.interact.cls();
-    game.log("Hearthstone.js Deck Creator (C) 2022\n");
+    game.logLocale("DeckCreator.Watermark");
 }
 
 function askClass(): CardClassNoNeutral {
@@ -203,7 +203,7 @@ function searchCards(_cards: Blueprint[], sQuery: string) {
         let ret = c[key as keyof Blueprint];
 
         if (!ret && ret !== 0) { // Javascript
-            game.log(`<red>\nKey '${key}' not valid!</red>`);
+            game.logLocale("DeckCreator.Error.InvalidKey", key);
             return -1;
         }
 
@@ -224,7 +224,7 @@ function searchCards(_cards: Blueprint[], sQuery: string) {
             else if (val == "odd") return ret % 2 == 1;
             else if (!Number.isNaN(parseInt(val))) return ret == val;
             else {
-                game.log(`<red>\nValue '${val}' not valid!</red>`);
+                game.logLocale("DeckCreator.Error.InvalidValue", val);
                 return -1;
             }
         }
@@ -259,7 +259,7 @@ function noCards() {
     if (cards.length > 0) return;
 
     printName();
-    game.log("<yellow>No cards found. This means that the game doesn't have any (collectible) cards.</yellow>");
+    game.logLocale("DeckCreator.Error.NoCardsTotal");
 
     // Only ask once
     if (!settings.other.firstScreen) return;
@@ -292,7 +292,7 @@ function showCards() {
     });
 
     if (filtered_cards.length <= 0) {
-        game.log(`<yellow>No cards found for the selected classes '${chosen_class} and Neutral'.</yellow>`);
+        game.logLocale("DeckCreator.Error.NoCardsForSelectedClass", chosen_class);
     }
 
     let cpp = settings.view.cpp;
@@ -300,13 +300,13 @@ function showCards() {
 
     // Search
 
-    if (settings.search.query.length > 0) game.log(`Searching for '${settings.search.query.join(' ')}'.`);
+    if (settings.search.query.length > 0) game.logLocale("DeckCreator.SearchingFor", settings.search.query.join(' '));
 
     // Filter to show only cards in the viewed class
     let classCards = Object.values(filtered_cards).filter(c => c.classes.includes(settings.view.class ?? chosen_class));
 
     if (classCards.length <= 0) {
-        game.log(`<yellow>No cards found for the viewed class '${settings.view.class}'.</yellow>`);
+        game.logLocale("DeckCreator.Error.NoCardsForViewedClass", settings.view.class);
         return;
     }
 
@@ -344,7 +344,7 @@ function showCards() {
 
     let oldSortType = settings.sort.type;
     let oldSortOrder = settings.sort.order;
-    game.log(`Sorting by ${settings.sort.type.toUpperCase()}, ${settings.sort.order}ending.`);
+    game.logLocale("DeckCreator.SortingBy", settings.sort.type.toUpperCase(), settings.sort.order);
 
     // Sort
     classCards = sortCards(classCards);
@@ -353,21 +353,20 @@ function showCards() {
     let sortOrderInvalid = oldSortOrder != settings.sort.order;
 
     if (sortTypeInvalid) {
-        game.log(`<yellow>Sorting by </yellow>'%s'<yellow> failed! Falling back to </yellow>%s.`, oldSortType.toUpperCase(), settings.sort.type.toUpperCase());
+        game.logLocale("DeckCreator.Error.FailedSortingByType", oldSortType.toUpperCase(), settings.sort.type.toUpperCase());
     }
     if (sortOrderInvalid) {
-        game.log(`<yellow>Ordering by </yellow>'%sending'<yellow> failed! Falling back to </yellow>%sending.`, oldSortOrder, settings.sort.order);
+        game.logLocale("DeckCreator.Error.FailedSortingByOrder", oldSortOrder, settings.sort.order);
     }
 
-    if (sortTypeInvalid || sortOrderInvalid) game.log(`\nSorting by ${settings.sort.type.toUpperCase()}, ${settings.sort.order}ending.`);
+    if (sortTypeInvalid || sortOrderInvalid) game.logLocale("DeckCreator.SortingBy", settings.sort.type.toUpperCase(), settings.sort.order);
 
     // Page logic
     classCards = classCards.slice(cpp * (page - 1), cpp * page);
 
     // Loop
-    game.log(`\nPage ${page} / ${settings.view.maxPage}\n`);
-
-    game.log(`<underline>${settings.view.class}</underline>`);
+    game.logLocale("DeckCreator.PageInfo", page, settings.view.maxPage);
+    game.logLocale("DeckCreator.ClassInfo", settings.view.class);
 
     let bricks: string[] = [];
     classCards.forEach(c => {
@@ -387,48 +386,44 @@ function showCards() {
         game.log(toDisplay);
     });
 
-    game.log("\nCurrent deckcode output:");
+    game.logLocale("DeckCreator.DeckcodeOutput.CurrentMessage");
     let _deckcode = deckcode();
 
     if (!_deckcode.error) {
-        game.log("<bright:green>Valid deck!</>");
+        game.logLocale("DeckCreator.DeckcodeOutput.Valid");
         game.log(_deckcode.code);
     }
 
     if (settings.other.firstScreen) {
-        game.log("\nType 'rules' to see a list of rules.");
+        game.logLocale("DeckCreator.Rules.CallToAction");
 
         settings.other.firstScreen = false;
     }
 }
 
 function showRules() {
-    let config_text = "### RULES ###";
+    let config_text = game.locale.DeckCreator.Rules.Text;
     game.log("#".repeat(config_text.length));
-    game.log(config_text);
+    game.logLocale("DeckCreator.Rules.Text");
     game.log("#".repeat(config_text.length));
 
     game.log("#");
 
-    game.log("# Validation: %s", (config.decks.validate ? "<bright:green>ON</>" : "<red>OFF</red>"));
+    game.logLocale("DeckCreator.Rules.Validation", (config.decks.validate ? game.locale.Other.On : game.locale.Other.Off));
 
     game.log("#");
 
-    game.log(`# Rule 1. Minimum Deck Length: <yellow>${config.decks.minLength}</yellow>`);
-    game.log(`# Rule 2. Maximum Deck Length: <yellow>${config.decks.maxLength}</yellow>`);
+    game.logLocale("DeckCreator.Rules.MinimumDeckLength", config.decks.minLength);
+    game.logLocale("DeckCreator.Rules.MaximumDeckLength", config.decks.maxLength);
 
     game.log("#");
 
-    game.log(`# Rule 3. Maximum amount of cards for each card (eg. You can only have: <yellow>x</yellow> Seances in a deck): <yellow>${config.decks.maxOfOneCard}</yellow>`);
-    game.log(`# Rule 4. Maximum amount of cards for each legendary card (Same as Rule 3 but for legendaries): <yellow>${config.decks.maxOfOneLegendary}</yellow>`);
+    game.logLocale("DeckCreator.Rules.MaxOfOneCard", config.decks.maxOfOneCard);
+    game.logLocale("DeckCreator.Rules.MaxOfOneLegendary", config.decks.maxOfOneLegendary);
 
     game.log("#");
 
-    game.log("# There are 3 types of deck states: Valid, Pseudo-Valid, Invalid");
-    game.log("# Valid decks will work properly");
-    game.log("# Pseudo-valid decks will be rejected by the deck importer for violating a rule");
-    game.log("# Invalid decks are decks with a fundemental problem that the deck importer cannot resolve. Eg. An invalid card in the deck.");
-    game.log("# Violating any of these rules while validation is enabled will result in a pseudo-valid deck.");
+    game.logLocale("DeckCreator.Rules.Explanation");
 
     game.log("#");
 
@@ -466,7 +461,7 @@ function remove(card: Blueprint) {
 function showDeck() {
     printName();
 
-    game.log(`Deck Size: <yellow>${deck.length}</yellow>\n`);
+    game.logLocale("DeckCreator.DeckSize", deck.length);
 
     // Why are we doing this? Can't this be done better?
     let _cards: { [key: string]: [Blueprint, number] } = {};
@@ -522,10 +517,10 @@ function showDeck() {
         game.log(`${name}-${id}`);
     });
 
-    game.log("\nCurrent deckcode output:");
+    game.logLocale("DeckCreator.DeckcodeOutput.CurrentMessage");
     let _deckcode = deckcode();
     if (!_deckcode.error) {
-        game.log("<bright:green>Valid deck!</>");
+        game.logLocale("DeckCreator.DeckcodeOutput.Valid");
         game.log(_deckcode.code);
     }
 }
@@ -536,22 +531,22 @@ function deckcode(parseVanillaOnPseudo = false) {
     if (_deckcode.error) {
         let error = _deckcode.error;
 
-        let log = "<yellow>WARNING: ";
+        let log = game.locale.DeckCreator.Error.Deckcode.Intro;
         switch (error.msg) {
             case "TooFewCards":
-                log += "Too few cards.";
+                log += game.locale.DeckCreator.Error.Deckcode.TooFewCards;
                 break;
             case "TooManyCards":
-                log += "Too many cards.";
+                log += game.locale.DeckCreator.Error.Deckcode.TooManyCards;
                 break;
             case "EmptyDeck":
-                log = "<red>ERROR: Could not generate deckcode as your deck is empty. The resulting deckcode would be invalid.</red>";
+                log = game.locale.DeckCreator.Error.Deckcode.EmptyDeck;
                 break;
             case "TooManyCopies":
-                log += util.format("Too many copies of a card. Maximum: </>'%s'<yellow>. Offender: </>'%s'<yellow>", config.decks.maxOfOneCard, `{ Name: "${error.info?.card?.name}", Copies: "${error.info?.amount}" }`);
+                log += util.format(game.locale.DeckCreator.Error.Deckcode.TooManyCopies, config.decks.maxOfOneCard, `{ Name: "${error.info?.card?.name}", Copies: "${error.info?.amount}" }`);
                 break;
             case "TooManyLegendaryCopies":
-                log += util.format("Too many copies of a Legendary card. Maximum: </>'%s'<yellow>. Offender: </>'%s'<yellow>", config.decks.maxOfOneLegendary, `{ Name: "${error.info?.card?.name}", Copies: "${error.info?.amount}" }`);
+                log += util.format(game.locale.DeckCreator.Error.Deckcode.TooManyLegendaryCopies, config.decks.maxOfOneLegendary, `{ Name: "${error.info?.card?.name}", Copies: "${error.info?.amount}" }`);
                 break;
         }
 
@@ -567,56 +562,59 @@ function help() {
     printName();
 
     // Commands
-    game.log("<b>Available commands:</b>");
-    game.log("(In order to run a command; input the name of the command and follow further instruction.)\n");
-    game.log("(name) [optional] (required) - (description)\n");
+    game.logLocale("DeckCreator.Commands.Intro.Text");
+    game.logLocale("Generic.Commands.HowToRun");
+    game.logLocale("Generic.Commands.Format");
 
-    game.log("add (name | id)       - Add a card to the deck");
-    game.log("remove (card | id)    - Remove a card from the deck");
-    game.log("view (card | id)      - View a card");
-    game.log("page (num)            - View a different page");
-    game.log("cards (class)         - Show cards from 'class'");
-    game.log("sort (type) [order]   - Sorts by 'type' in 'order'ending order. (Type can be: ('rarity', 'name', 'cost', 'id', 'type'), Order can be: ('asc', 'desc')) (Example: sort cost asc - Will show cards ordered by cost cost, ascending.)");
-    game.log("search [query]        - Searches by query. Keys: ('name', 'desc', 'cost', 'rarity', 'id'), Examples: (search the - Search for all cards with the word 'the' in the name or description, case insensitive.), (search cost:2 - Search for all cards that costs 2 cost, search cost:even name:r - Search for all even cost cards with 'r' in its name)");
-    game.log("undo                  - Undo the last action.");
-    game.log("deck                  - Toggle deck-view");
-    game.log("deckcode              - View the current deckcode");
-    game.log("import                - Imports a deckcode (Overrides your deck)");
-    game.log("set (setting) (value) - Change some settings. Look down to 'Set Subcommands' to see available settings");
-    game.log("class                 - Change the class");
-    game.log("config | rules        - Shows the rules for valid decks and invalid decks");
-    game.log("help                  - Displays this message");
-    game.log("exit                  - Quits the program");
+    game.logLocale("DeckCreator.Commands.Add");
+    game.logLocale("DeckCreator.Commands.Remove");
+    game.logLocale("DeckCreator.Commands.View");
+    game.logLocale("DeckCreator.Commands.Page");
+    game.logLocale("DeckCreator.Commands.Cards");
+    game.logLocale("DeckCreator.Commands.Sort");
+    game.logLocale("DeckCreator.Commands.Search");
+    game.logLocale("DeckCreator.Commands.Undo");
+    game.logLocale("DeckCreator.Commands.Deck");
+    game.logLocale("DeckCreator.Commands.Deckcode");
+    game.logLocale("DeckCreator.Commands.Import");
+    game.logLocale("DeckCreator.Commands.Set");
+    game.logLocale("DeckCreator.Commands.Class");
+    game.logLocale("DeckCreator.Commands.Config");
+    game.logLocale("DeckCreator.Commands.Help");
+    game.logLocale("DeckCreator.Commands.Exit");
 
     // Set
-    game.log("\n<b>Set Subcommands:</>");
-    game.log("(In order to use these; input 'set ', then one of the subcommands. Example: 'set cpp 20')\n");
-    game.log("(name) [optional] (required) - (description)\n");
+    game.logLocale("DeckCreator.Commands.SetSubcommands.Intro.Text");
+    game.logLocale("DeckCreator.Commands.SetSubcommands.Intro.HowToRun");
+    game.logLocale("Generic.Commands.Format");
 
-    game.log("format (format)             - Makes the deckcode generator output the deckcode as a different format. If you set this to 'vanilla', it is only going to show the deckcode as vanilla. If you set it to 'vanilla', you will be asked to choose a card if there are multiple vanilla cards with the same name. This should be rare, but just know that it might happen. ('js', 'vanilla') [default = 'js']");
-    game.log("cardsPerPage | cpp (num)    - How many cards to show per page [default = 15]");
-    game.log("defaultCommand | dcmd (cmd) - The command that should run when the command is unspecified. ('add', 'remove', 'view') [default = 'add']");
-    game.log("warning                     - Disables/enables certain warnings. Look down to 'Warnings' to see changeable warnings.");
+    game.logLocale("DeckCreator.Commands.SetSubcommands.Format");
+    game.logLocale("DeckCreator.Commands.SetSubcommands.CardsPerPage");
+    game.logLocale("DeckCreator.Commands.SetSubcommands.DefaultCommand");
+    game.logLocale("DeckCreator.Commands.SetSubcommands.Warning.LessInfo");
 
-    game.log("\n<gray>Note the 'cardsPerPage' commands has 2 different subcommands; cpp & cardsPerPage. Both do the same thing.</>");
+    game.log()
+    game.logLocale("DeckCreator.Commands.Notes.Scattered.DifferentSubcommands");
 
     // Set Warning
-    game.log("\n<b>Warnings:</>");
-    game.log("(In order to use these; input 'set warning (name) [off | on]'. Example: 'set warning latestCard off')\n");
-    game.log("(name) - (description)\n");
+    game.logLocale("DeckCreator.Commands.SetSubcommands.Warning.Intro.Text");
+    game.logLocale("DeckCreator.Commands.SetSubcommands.Warning.Intro.HowToRun");
+    game.logLocale("Generic.Commands.Format");
 
-    game.log("latestCard - Warning that shows up when attemping to use the latest card. The latest card is used if the card chosen in a command is invalid and the name specified begins with 'l'. Example: 'add latest' - Adds a copy of the latest card to the deck.");
+    game.logLocale("DeckCreator.Commands.SetSubcommands.Warning.LatestCard");
 
-    game.log("\nNote: If you don't specify a state (off / on) it will toggle the state of the warning.");
-    game.log("Note: The word 'off' can be exchanged with 'disable', 'false', or '0'.");
-    game.log("Note: The word 'on' can be exchanged with 'enable', 'true', or '1'.");
+    game.log();
+    game.logLocale("DeckCreator.Commands.Notes.Scattered.WarningState");
+    game.logLocale("DeckCreator.Commands.Notes.Scattered.WarningStateOff");
+    game.logLocale("DeckCreator.Commands.Notes.Scattered.WarningStateOn");
 
     // Notes
-    game.log("\n<b>Notes:</>");
+    game.log();
+    game.logLocale("DeckCreator.Commands.Notes.Section.Intro.Text");
 
-    game.log("Type 'cards Neutral' to see Neutral cards.");
+    game.logLocale("DeckCreator.Commands.Notes.Section.NeutralCards");
     // TODO: #245 Fix this
-    game.log("There is a known bug where if you add 'Prince Renathal', and then remove him, the deck will still require 40 cards. The only way around this is to restart the deck creator.");
+    game.logLocale("DeckCreator.Commands.Notes.Section.PrinceRenathalBug");
 
     game.input("\nPress enter to continue...\n");
 }
@@ -778,7 +776,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         else if (command.startsWith("r")) reverse = "add";
         else {
             // This shouldn't ever happen, but oh well
-            game.log(`<red>Command '${command}' cannot be undoed.</>`);
+            game.logLocale("DeckCreator.Error.Commands.UndoInvalidCommand", command);
             return false;
         }
 
@@ -842,7 +840,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
     }
     else if (name === "set") {
         if (args.length <= 0) {
-            game.log("<yellow>Too few arguments</yellow>");
+            game.logLocale("Generic.Error.Commands.TooFewArgumentsWarning");
             game.input();
             return false;
         }
@@ -853,24 +851,24 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
             case "format":
                 if (args.length == 0) {
                     settings.deckcode.format = "js";
-                    game.log("Reset deckcode format to: <yellow>js</>");
+                    game.logLocale("DeckCreator.Info.Commands.Set.ResetFormat", settings.deckcode.format);
                     break;
                 }
 
                 if (!["vanilla", "js"].includes(args[0])) {
-                    game.log("<red>Invalid format!</red>");
+                    game.logLocale("DeckCreator.Error.Commands.Set.InvalidFormat");
                     game.input();
                     return false;
                 }
 
                 settings.deckcode.format = args[0] as "vanilla" | "js";
-                game.log(`Set deckcode format to: <yellow>${args[0]}</yellow>`);
+                game.logLocale("DeckCreator.Info.Commands.Set.SetFormat", settings.deckcode.format);
                 break;
             case "cpp":
             case "cardsPerPage":
                 if (args.length == 0) {
                     settings.view.cpp = 15;
-                    game.log("Reset cards per page to: <yellow>15</yellow>");
+                    game.logLocale("DeckCreator.Info.Commands.Set.ResetCardsPerPage", settings.view.cpp);
                     break;
                 }
 
@@ -880,7 +878,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
             case "defaultCommand":
                 if (args.length == 0) {
                     settings.commands.default = "add";
-                    game.log("Set default command to: <yellow>add</yellow>");
+                    game.logLocale("DeckCreator.Info.Commands.Set.ResetDefaultCommand", settings.commands.default);
                     break;
                 }
 
@@ -888,7 +886,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
                 let cmd = args[0];
 
                 settings.commands.default = cmd;
-                game.log(`Set default command to: <yellow>${cmd}</yellow>`);
+                game.logLocale("DeckCreator.Info.Commands.Set.SetDefaultCommand", settings.commands.default);
                 break;
             default:
                 game.input(`<red>'${setting}' is not a valid setting.</red>\n`);
@@ -908,7 +906,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
 
         getCardArg(cmd, add, () => {
             // Internal error since add shouldn't return false
-            game.log("<red>Internal Error: Something went wrong while adding a card. Please report this. Error code: DcAddInternal</>");
+            game.logLocale("Generic.Error.Internal", "DcAddInternal");
             game.input();
 
             success = false;
@@ -921,7 +919,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
 
         getCardArg(cmd, remove, () => {
             // User error
-            game.log("<red>Invalid card.</red>");
+            game.logLocale("Generic.Error.Card.Invalid");
             game.input();
 
             success = false;
@@ -939,7 +937,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
     else {
         // Infer add
         const tryCommand = `${settings.commands.default} ${cmd}`;
-        game.log(`<yellow>Unable to find command. Trying '${tryCommand}'</yellow>`);
+        game.logLocale("DeckCreator.Error.Commands.InvalidCommand", tryCommand);
         return handleCmds(tryCommand);
     }
 

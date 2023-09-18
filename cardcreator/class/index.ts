@@ -17,10 +17,11 @@ const { game, player1, player2 } = createGame();
 export function main() {
     let watermark = () => {
         game.interact.cls();
-        game.log("ccclass.watermark");
-        game.log("ccclass.backInfo");
+        game.logLocale("CCClass.Watermark");
+        game.logLocale("CCClass.BackInfo");
     }
 
+    // TODO: Add this to the locale
     const questions = [
         "What should the name of the class be?",
         "What should the default hero's name be?",
@@ -64,13 +65,8 @@ export function main() {
         id: 0, // This will be overwritten by the library
     };
 
-    lib.create("Class", "Hero", card, game.functions.dirname() + "../cards/StartingHeroes/", filename);
+    lib.create("Class", "Hero", card, game.functions.dirname() + "../cards/StartingHeroes/", filename, true);
 
-    game.log("ccclass.done.classCreated");
-    game.log("ccclass.done.nextSteps.message");
-    game.log("ccclass.done.nextSteps.1");
-    game.log("ccclass.done.nextSteps.2", filename);
-    game.log("ccclass.done.nextSteps.3", name);
-    game.log("ccclass.done.nextSteps.4", name);
-    game.log("ccclass.done.enjoy");
+    game.logLocale("CCClass.Done", null, [null, filename, name, name, name]);
+    game.input();
 }

@@ -1,133 +1,212 @@
 {
-    "runner": {
-        "infoMessage": "Hearthstone.js Runner V%s-%s (C) 2022\n"
+    "Runner": {
+        "InfoMessage": "Hearthstone.js Runner V%s-%s (C) 2022\n"
     },
-    "cclib": {
-        "fileCreatedAt": "File created at: \"%s\"",
+    "CCLib": {
+        "FileCreatedAt": "File created at: `%s`",
         
-        "debug": {
-            "newId": "\nNew ID: %s",
-            "wouldBePath": "Would be path: \"%s\"",
-            "content": "Content:\n%s"
+        "Debug": {
+            "NewId": "\nNew ID: %s",
+            "WouldBePath": "Would be path: `%s`",
+            "Content": "Content:\n%s"
         }
     },
-    "ccclass": {
-        "watermark": "Hearthstone.js Class Creator (C) 2022\n",
-        "backInfo": "type 'back' at any step to cancel.",
+    "CCClass": {
+        "Watermark": "Hearthstone.js Class Creator (C) 2022\n",
+        "BackInfo": "type `back` at any step to cancel.",
 
-        "done": {
-            "classCreated": "\nClass Created!",
+        "Done": {
+            "ClassCreated": "\nClass Created!",
             
-            "nextSteps": {
-                "message": "Next steps:",
-                "1": "1. Open 'src/types.ts', navigate to 'CardClass', and add the name of the class to that. There is unfortunately no way to automate that.",
-                "2": "2. Open 'cards/StartingHeroes/%s' and add logic to the 'heropower' ability",
-                "3": "3. Now when using the Custom Card Creator, type '%s' into the 'Class' field to use that class.",
-                "4": "4. When using the Deck Creator, type '%s' to create a deck with cards from your new class."
+            "NextSteps": {
+                "Message": "Next steps:",
+                "1": "1. Open `src/types.ts`, navigate to `CardClass`, and add the name of the class to that. There is unfortunately no way to automate that.",
+                "2": "2. Open `cards/StartingHeroes/%s` and add logic to the `heropower` ability",
+                "3": "3. Now when using the Custom Card Creator, type `%s` into the `Class` field to use that class.",
+                "4": "4. When using the Deck Creator, type `%s` to create a deck with cards from your new class."
             },
 
-            "enjoy": "Enjoy!"
+            "Enjoy": "Enjoy!"
         }
     },
-    "cccustom": {
-        "watermark": "Hearthstone.js Custom Card Creator (C) 2022\n",
-        "backInfo": "type 'back' at any step to cancel.\n",
-        "creatingFile": "Creating file...",
-
-        "error": {
-            "invalidType": "That is not a valid type!"
-        }
+    "CCCustom": {
+        "Watermark": "Hearthstone.js Custom Card Creator (C) 2022\n",
+        "BackInfo": "type `back` at any step to cancel.\n",
+        "CreatingFile": "Creating file...",
     },
-    "ccvanilla": {
-        "generator": {
-            "foundMessage": "Found %s cards!\nFiltered away %s cards!\nSuccessfully imported %s cards!"
+    "CCVanilla": {
+        "Generator": {
+            "FoundMessage": "Found %s cards!\nFiltered away %s cards!\nSuccessfully imported %s cards!"
         },
 
-        "watermark":"Hearthstone.js Vanilla Card Creator (C) 2022\n",
-
-        "error": {
-            "invalidType": "'%s' is not a valid type!",
-            "invalidCard": "Invalid card.\n",
-            "invalidNumber": "Invalid number.\n"
-        },
-
-        "foundMessage": "Found '%s'\n"
+        "Watermark":"Hearthstone.js Vanilla Card Creator (C) 2022\n",
+        "FoundMessage": "Found `%s`\n"
     },
-    "deckcreator": {
-        "watermark":"Hearthstone.js Deck Creator (C) 2022\n",
+    "DeckCreator": {
+        "Watermark":"Hearthstone.js Deck Creator (C) 2022\n",
 
-        "error": {
-            "invalidKey": "\n<red>Key '%s' not valid!</red>",
-            "invalidValue": "\n<red>Value '%s' not valid!</red>",
-            "noCardsTotal": "<yellow>No cards found. This means that the game doesn't have any (collectible) cards.</yellow>",
-            "noCardsForSelectedClass": "<yellow>No cards found for the selected classes '%s and Neutral'.</yellow>",
-            "noCardsForViewedClass": "<yellow>No cards found for the viewed class '%s'.</yellow>",
+        "Error": {
+            "InvalidKey": "\n<red>Key `%s` not valid!</red>",
+            "InvalidValue": "\n<red>Value `%s` not valid!</red>",
+            "NoCardsTotal": "<yellow>No cards found. This means that the game doesn`t have any (collectible) cards.</yellow>",
+            "NoCardsForSelectedClass": "<yellow>No cards found for the selected classes `%s and Neutral`.</yellow>",
+            "NoCardsForViewedClass": "<yellow>No cards found for the viewed class `%s`.</yellow>",
 
-            "failedSortingByType": "<yellow>Sorting by </yellow>'%s'<yellow> failed! Falling back to </yellow>%s.",
-            "failedSortingByOrder": "<yellow>Ordering by </yellow>'%sending'<yellow> failed! Falling back to </yellow>%sending.",
+            "FailedSortingByType": "<yellow>Sorting by </yellow>`%s`<yellow> failed! Falling back to </yellow>%s.",
+            "FailedSortingByOrder": "<yellow>Ordering by </yellow>`%sending`<yellow> failed! Falling back to </yellow>%sending.",
 
-            "deckcode": {
-                "tooFewCards": "<yellow>Too few cards.</yellow>",
-                "tooManyCards": "<yellow>Too many cards.</yellow>",
-                "emptyDeck": "<red>ERROR: Could not generate deckcode as your deck is empty. The resulting deckcode would be invalid.</red>",
-                "tooManyCopies": "<yellow>Too many copies of a card. Maximum: </yellow>'%s'<yellow>. Offender: </yellow>'%s'<yellow>",
-                "tooManyLegendaryCopies": "<yellow>Too many copies of a Legendary card. Maximum: </yellow>'%s'<yellow>. Offender: </yellow>'%s'<yellow>"
+            "Deckcode": {
+                "Intro": "<yellow>WARNING: </yellow>",
+                "TooFewCards": "<yellow>Too few cards.</yellow>",
+                "TooManyCards": "<yellow>Too many cards.</yellow>",
+                "EmptyDeck": "<red>ERROR: Could not generate deckcode as your deck is empty. The resulting deckcode would be invalid.</red>",
+                "TooManyCopies": "<yellow>Too many copies of a card. Maximum: </yellow>`%s`<yellow>. Offender: </yellow>`%s`<yellow>",
+                "TooManyLegendaryCopies": "<yellow>Too many copies of a Legendary card. Maximum: </yellow>`%s`<yellow>. Offender: </yellow>`%s`<yellow>"
+            },
+
+            "Commands": {
+                "UndoInvalidCommand": "<red>Command `%s` cannot be undoed.</red>",
+                "InvalidCommand": "<yellow>Unable to find command. Trying `%s`</yellow>",
+
+                "Set": {
+                    "InvalidFormat": "<red>Invalid format!</red>"
+                }
             }
         },
 
-        "searchingFor": "Searching for '%s'.",
-        "sortingBy": "Sorting by %s, %sending.",
+        "Info": {
+            "Commands": {
+                "Set": {
+                    "ResetFormat": "Reset deckcode format to: <yellow>%s</yellow>"
+                    "SetFormat": "Set deckcode format to: <yellow>%s</yellow>",
 
-        "pageInfo": "\nPage %s / %s\n",
-        "classInfo": "<underline>%s</underline>",
+                    "ResetCardsPerPage": "Reset cards per page to: <yellow>%s</yellow>",
 
-        "deckSize": "Deck Size: <yellow>%s</yellow>\n",
-
-        "deckcodeOutput": {
-            "currentMessage": "\nCurrent deckcode output:",
-
-            "valid": "<bright:green>Valid deck!</bright:green>"
-        },
-
-        "rules": {
-            "callToAction": "\nType 'rules' to see a list of rules.",
-
-            "validation": "# Validation: %s",
-
-            "minimumDeckLength": "# Rule 1. Minimum Deck Length: <yellow>%s</yellow>",
-            "maximumDeckLength": "# Rule 2. Maximum Deck Length: <yellow>%s</yellow>",
-
-            "maxOfOneCard": "# Rule 3: Maximum amount of cards for each card (e.g. You can only have <yellow>x</yellow> Seances in a deck): <yellow>%s</yellow>",
-            "maxOfOneLegendary": "# Rule 4: Maximum amount of cards for each legendary card (Same as Rule 3, but for legendaries): <yellow>%s</yellow>",
-
-            "explenation": {
-                "deckStates": "# There are 3 types of deck states: Valid, Pseudo-Valid, Invalid.",
-                "validState": "# Valid decks will work properly.",
-                "pseudoValidState": "# Pseudo-valid decks will be rejected by the deck imported for violating a rule.",
-                "invalidState": "# Invalid decks are decks with a fundemental problem that the deck importer cannot resolve. E.g. An invalid card in the deck.",
-                "consequences": "# Violating any of these rules while validation is enabled will will result in a pseudo-valid deck."
+                    "ResetDefaultCommand": "Reset default command to: <yellow>%s</yellow>"
+                    "SetDefaultCommand": "Set default command to: <yellow>%s</yellow>"
+                }
             }
         },
 
-        "commands": {
-            "intro": {
-                "availableCommands": "<b>Available commands:</b>",
-                "howToRun": "(In order to run a command; input the name of the command and follow further instruction.)\n",
-                "format": "(name) [optional] (required) - (descripion)\n"
+        "SearchingFor": "Searching for `%s`.",
+        "SortingBy": "Sorting by %s, %sending.",
+
+        "PageInfo": "\nPage %s / %s\n",
+        "ClassInfo": "<underline>%s</underline>",
+
+        "DeckSize": "Deck Size: <yellow>%s</yellow>\n",
+
+        "DeckcodeOutput": {
+            "CurrentMessage": "\nCurrent deckcode output:",
+
+            "Valid": "<bright:green>Valid deck!</bright:green>"
+        },
+
+        "Rules": {
+            "Text": "### RULES ###",
+            "CallToAction": "\nType `rules` to see a list of rules.",
+
+            "Validation": "# Validation: %s",
+
+            "MinimumDeckLength": "# Rule 1. Minimum Deck Length: <yellow>%s</yellow>",
+            "MaximumDeckLength": "# Rule 2. Maximum Deck Length: <yellow>%s</yellow>",
+
+            "MaxOfOneCard": "# Rule 3: Maximum amount of cards for each card (e.g. You can only have <yellow>x</yellow> Seances in a deck): <yellow>%s</yellow>",
+            "MaxOfOneLegendary": "# Rule 4: Maximum amount of cards for each legendary card (Same as Rule 3, but for legendaries): <yellow>%s</yellow>",
+
+            "Explanation": {
+                "DeckStates": "# There are 3 types of deck states: Valid, Pseudo-Valid, Invalid.",
+                "ValidState": "# Valid decks will work properly.",
+                "PseudoValidState": "# Pseudo-valid decks will be rejected by the deck imported for violating a rule.",
+                "InvalidState": "# Invalid decks are decks with a fundemental problem that the deck importer cannot resolve. E.g. An invalid card in the deck.",
+                "Consequences": "# Violating any of these rules while validation is enabled will will result in a pseudo-valid deck."
+            }
+        },
+
+        "Commands": {
+            "Intro": {
+                "Text": "<b>Available commands:</b>",
             },
 
-            "add": ["add", "(name | id)", "Add a card to the deck."],
-            "remove": ["remove", "(name | id)", "Remove a card from the deck."],
-            "view": ["view", "(name | id)", "View a card."],
-            "page": ["page", "(num)", "View a different page."],
-            "cards": ["cards", "(class)", "Show cards from 'class'."],
-            "sort": ["sort", "(type) [order]", "Sorts by 'type' in 'order'ending order. (Type can be: ('rarity', 'name', 'cost', 'id', 'type'), Order can be: ('asc', 'desc')) (Example: sort cost asc - Will show cards ordered by cost cost, ascending.)"],
-            "search": ["search", "[query]", "Searches by query. Keys: ('name', 'desc', 'cost', 'rarity', 'id'), Examples: (search the - Search for all cards with the word 'the' in the name or description, case insensitive.), (search cost:2 - Search for all cards that costs 2 cost, search cost:even name:r - Search for all even cost cards with 'r' in its name)"],
-            "undo": ["undo", "", "Undo the last action."]
+            "Add": "add (name | id) - Add a card to the deck.",
+            "Remove": "remove (name | id) - Remove a card from the deck.",
+            "View": "view (name | id) - View a card.",
+            "Page": "page (num) - View a different page.",
+            "Cards": "cards (class) - Show cards from `class`.",
+            "Sort": "sort (type) [order] - Sorts by `type` in `order`ending order. (Type can be: (`rarity`, `name`, `cost`, `id`, `type`), Order can be: (`asc`, `desc`)) (Example: sort cost asc - Will show cards ordered by cost cost, ascending.)",
+            "Search": "search [query] - Searches by query. Keys: (`name`, `desc`, `cost`, `rarity`, `id`), Examples: (search the - Search for all cards with the word `the` in the name or description, case insensitive.), (search cost:2 - Search for all cards that costs 2 cost, search cost:even name:r - Search for all even cost cards with `r` in its name)",
+            "Undo": "undo - Undo the last action.",
+            "Deck": "deck - Toggle deck-view.",
+            "Deckcode": "deckcode - View the current deckcode.",
+            "Import": "import - Imports a deckcode. (Overrides your deck)",
+            "Set": "import (setting) (value) - Change some settings. Look down to `Set Subcommands` to see available setting.",
+            "Class": "class - Change the class.",
+            "Config": "config | rules - Shows the rules for valid decks and invalid decks.",
+            "Help": "help - Displays this message.",
+            "Exit": "exit - Quits the program.",
+
+            "Notes": {
+                "Scattered": {
+                    "WarningState": "Note: If you don't specify a state (off / on) it will toggle the state of the warning.",
+                    "WarningStateOff": "Note: The word `off` can be exchanged with `disable`, `false`, or `0`.",
+                    "WarningStateOn": "Note: The word `on` can be exchanged with `enable`, `true`, or `1`.",
+                    "DifferentSubcommands": "<gray>Note the 'cardsPerPage' commands has 2 different subcommands; cpp & cardsPerPage. Both do the same thing.</gray>"
+                },
+                "Section": {
+                    "Intro": {
+                        "Text": "<b>Notes:</b>"
+                    },
+
+                    "NeutralCards": "Type `cards Neutral` to see Neutral cards.",
+                    "PrinceRenathalBug": "There is a known bug where if you add `Prince Renathal`, and then remove him, the deck will still require 40 cards. The only way around this is to restart the deck creator."
+                }
+            },
+
+            "SetSubcommands": {
+                "Intro": {
+                    "Text": "\n<b>Set Subcommands:</b>",
+                    "HowToRun": "(In order to use these; input `set `, then one of the subcommands. Example: `set cpp 20`)\n",
+                },
+
+                "Format": "format (format) - Makes the deckcode generator output the deckcode as a different format. If you set this to `vanilla`, it is only going to show the deckcode as vanilla. If you set it to `vanilla`, you will be asked to choose a card if there are multiple vanilla cards with the same name. This should be rare, but just know that it might happen. (`js`, `vanilla`) [default = `js`]",
+                "CardsPerPage": "cardsPerPage | cpp (num) - How many cards to show per page [default = 15]",
+                "DefaultCommand": "defaultCommand | dcmd (cmd) - The command that should run when the command is unspecified. (`add`, `remove`, `view`) [default = `add`]",
+                "Warning": {
+                    "LessInfo": "warning (warning) (state) - Disables/enables certain warnings. Look down to `Warnings` to see changeable warnings.",
+                    
+                    "Intro": {
+                        "Text": "\n<b>Warnings:<\b>",
+                        "HowToRun": "(In order to use these; input `set warning (name) [off | on]`. Example: `set warning latestCard off`)\n"
+                    }
+
+                    "LatestCard": "latestCard - Warning that shows up when attemping to use the latest card. The latest card is used if the card chosen in a command is invalid and the name specified begins with `l`. Example: `add latest` - Adds a copy of the latest card to the deck."
+                }
+            }
         }
     },
-    "other": {
-        "on": "<bright:green>On</bright:green>",
-        "off": "<red>Off</red>"
+    "Other": {
+        "On": "<bright:green>On</bright:green>",
+        "Off": "<red>Off</red>"
+    },
+    "Generic": {
+        "Commands": {
+            "HowToRun": "(In order to run a command; input the name of the command and follow further instruction.)\n",
+            "Format": "(name) [optional] (required) - (description)\n"
+        }
+        "Error": {
+            "Internal": "<red>An internal error happened. Please report this. Error code: `%s`</red>"
+
+            "Card": {
+                "InvalidType": "`%s` is not a valid type!"
+                "Invalid": "Invalid card.",
+            },
+            "Literals": {
+                "InvalidNumber": "Invalid number.\n"
+            },
+            "Commands": {
+                "TooFewArgumentsWarning": "<yellow>Too few arguments.</yellow>",
+                "TooFewArguments": "<red>Too few arguments.</red>",
+            },
+        },
     }
 }

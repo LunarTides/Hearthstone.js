@@ -425,7 +425,7 @@ export class Game {
      */
     constants: GameConstants;
 
-    locale: {[key: string]: string};
+    locale: {[key: string]: any};
 
     constructor() {
         globalThis.game = this;
@@ -504,18 +504,34 @@ export class Game {
     }
 
     private logWrapper(callback: Function, ...data: any) {
+        data = data.map((i: any) => typeof i === "string" ? functions.parseTags(i) : i);
+        callback(...data);
+    }
+
+    private localeLogWrapper(callback: Function, ...data: any) {
         let locale: string[] = data[0].split(".");
         data.shift();
+        if (data[0] instanceof Array) data = data[0];
         data = data.map((i: any) => typeof i === "string" ? functions.parseTags(i) : i);
 
-        let msg: {[key: string]: any} = this.locale;
+        let msg: any = this.locale;
         locale.forEach(l => {
             msg = msg[l];
         });
 
+        if (msg instanceof Object) {
+            Object.keys(msg).forEach((key, i) => {
+                this.localeLogWrapper(callback, `${locale.join(".")}.${key}`, data[i]);
+            });
+
+            return;
+        }
+
         if (!msg) throw new Error("That locale was not found!");
-        
-        callback(msg, ...data);
+        if (typeof msg === "string") msg = functions.parseTags(msg);
+
+        if (!data[0] && data[0] !== true) callback(msg);
+        else callback(msg, ...data);
     }
 
     /**
@@ -537,6 +553,27 @@ export class Game {
      */
     logWarn(...data: any) {
         this.logWrapper(overrideConsole.warn, ...data);
+    }
+
+    /**
+     * Wrapper for console.log using locale 
+     */
+    logLocale(key: string, ...data: any) {
+        this.localeLogWrapper(overrideConsole.log, key, ...data);
+    }
+
+    /**
+     * Wrapper for console.log using locale 
+     */
+    logErrorLocale(key: string, ...data: any) {
+        this.localeLogWrapper(overrideConsole.error, key, ...data);
+    }
+
+    /**
+     * Wrapper for console.log using locale 
+     */
+    logWarnLocale(key: string, ...data: any) {
+        this.localeLogWrapper(overrideConsole.warn, key, ...data);
     }
 
     /**
