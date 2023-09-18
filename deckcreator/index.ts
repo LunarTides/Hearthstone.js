@@ -544,10 +544,10 @@ function deckcode(parseVanillaOnPseudo = false) {
                 log = "<red>ERROR: Could not generate deckcode as your deck is empty. The resulting deckcode would be invalid.</red>";
                 break;
             case "TooManyCopies":
-                log += util.format("Too many copies of a card. Maximum: </>'%s'<yellow>. Offender: </>'%s'<yellow>"), config.decks.maxOfOneCard, `{ Name: "${error.info?.card?.name}", Copies: "${error.info?.amount}" }`;
+                log += util.format("Too many copies of a card. Maximum: </>'%s'<yellow>. Offender: </>'%s'<yellow>", config.decks.maxOfOneCard, `{ Name: "${error.info?.card?.name}", Copies: "${error.info?.amount}" }`);
                 break;
             case "TooManyLegendaryCopies":
-                log += util.format("Too many copies of a Legendary card. Maximum: </>'%s'<yellow>. Offender: </>'%s'<yellow>"), config.decks.maxOfOneLegendary, `{ Name: "${error.info?.card?.name}", Copies: "${error.info?.amount}" }`;
+                log += util.format("Too many copies of a Legendary card. Maximum: </>'%s'<yellow>. Offender: </>'%s'<yellow>", config.decks.maxOfOneLegendary, `{ Name: "${error.info?.card?.name}", Copies: "${error.info?.amount}" }`);
                 break;
         }
 
@@ -660,61 +660,26 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         return handleCmds(`${settings.commands.default} ${cmd}`);
     }
 
-    if (cmd.startsWith("config") || cmd.startsWith("rules")) {
+    let args = cmd.split(" ");
+    let name = args[0].toLowerCase();
+    args.shift();
+
+    if (name === "config" || name === "rules") {
         printName();
         showRules();
         game.input("\nPress enter to continue...\n");
     }
-    else if (cmd.startsWith("view")) {
+    else if (name === "view") {
         // The callback function doesn't return anything, so we don't do anything with the return value of `getCardArg`.
         getCardArg(cmd, (card) => {
             game.interact.viewCard(card);
             return true;
         }, () => {});
     }
-    else if (cmd.startsWith("a")) {
-        let success = true;
+    else if (name === "cards") {
+        if (args.length <= 0) return false;
 
-        getCardArg(cmd, add, () => {
-            // Internal error since add shouldn't return false
-            game.log("<red>Internal Error: Something went wrong while adding a card. Please report this. Error code: DcAddInternal</>");
-            game.input();
-
-            success = false;
-        });
-
-        if (!success) return false;
-    }
-    else if (cmd.startsWith("r")) {
-        let success = true;
-
-        getCardArg(cmd, remove, () => {
-            // User error
-            game.log("<red>Invalid card.</red>");
-            game.input();
-
-            success = false;
-        });
-
-        if (!success) return false;
-    }
-    else if (cmd.startsWith("p")) {
-        let pageSplit = cmd.split(" ");
-        pageSplit.shift();
-
-        let page = parseInt(pageSplit.join(" "));
-        if (!page) return false;
-
-        if (page < 1) page = 1;
-        settings.view.page = page;
-    }
-    else if (cmd.startsWith("cards")) {
-        let cmdSplit = cmd.split(" ");
-        cmdSplit.shift();
-
-        if (cmdSplit.length <= 0) return false;
-
-        let heroClass = cmdSplit.join(" ") as CardClass;
+        let heroClass = args.join(" ") as CardClass;
         heroClass = game.functions.capitalizeAll(heroClass) as CardClass;
 
         if (!classes.includes(heroClass as CardClassNoNeutral) && heroClass != "Neutral") {
@@ -730,7 +695,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
 
         settings.view.class = heroClass as CardClass;
     }
-    else if (cmd.startsWith("deckcode")) {
+    else if (name === "deckcode") {
         let _deckcode = deckcode(true);
 
         let toPrint = _deckcode.code + "\n";
@@ -738,19 +703,13 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
 
         game.input(toPrint);
     }
-    else if (cmd.startsWith("sort")) {
-        let args = cmd.split(" ");
-        args.shift();
-
+    else if (name === "sort") {
         if (args.length <= 0) return false;
 
         settings.sort.type = args[0] as keyof Blueprint;
         if (args.length > 1) settings.sort.order = args[1] as "asc" | "desc";
     }
-    else if (cmd.startsWith("search")) {
-        let args = cmd.split(" ");
-        args.shift();
-
+    else if (name === "search") {
         if (args.length <= 0) {
             settings.search.query = [];
             return false;
@@ -758,10 +717,11 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
 
         settings.search.query = args;
     }
-    else if (cmd.startsWith("deck")) {
+    else if (name === "deck") {
         settings.view.type = settings.view.type == "cards" ? "deck" : "cards";
     }
-    else if (cmd.startsWith("import")) {
+    else if (name === "import") {
+        // TODO: Make sure it works
         let _deckcode = game.input("Please input a deckcode: ");
 
         let _deck = game.functions.deckcode.import(plr, _deckcode);
@@ -785,7 +745,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         // removes a completly unrelated card because javascript.
         _deck.forEach(c => handleCmds(`add ${game.interact.getDisplayName(c)}`)); // You can just set deck = functions.importDeck(), but doing it that way doesn't account for renathal or any other card that changes the config in any way since that is done using the add function.
     }
-    else if (cmd.startsWith("class")) {
+    else if (name === "class") {
         let _runes = runes;
         let new_class = askClass();
 
@@ -798,7 +758,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         chosen_class = new_class as CardClassNoNeutral;
         if (settings.view.class != "Neutral") settings.view.class = chosen_class;
     }
-    else if (cmd.startsWith("undo")) {
+    else if (name === "undo") {
         if (settings.commands.undoableHistory.length <= 0) {
             game.input("<red>Nothing to undo.</>\n");
             return false;
@@ -823,11 +783,9 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         settings.commands.undoableHistory.pop();
         settings.commands.history.pop();
     }
-    else if (cmd.startsWith("set warning")) {
-        let _cmd = cmd.split(" ");
-        _cmd.shift();
-        let args = _cmd.slice(1);
-
+    else if (name === "set" && args[0] === "warning") {
+        // Shift since the first element is "warning"
+        args.shift();
         let key = args[0];
 
         if (!Object.keys(warnings).includes(key)) {
@@ -878,11 +836,14 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
 
         game.input(strbuilder);
     }
-    else if (cmd.startsWith("set")) {
-        let settingSplit = cmd.split(" ");
-        settingSplit.shift();
-        let args = settingSplit.slice(1);
-        let setting = settingSplit[0];
+    else if (name === "set") {
+        if (args.length <= 0) {
+            game.log("<yellow>Too few arguments</yellow>");
+            game.input();
+            return false;
+        }
+
+        let setting = args[0];
 
         switch (setting) {
             case "format":
@@ -932,11 +893,44 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
 
         game.input("<bright:green>Setting successfully changed!<bright:green>\n");
     }
-    else if (cmd.startsWith("help")) {
+    else if (name === "help") {
         help();
     }
-    else if (cmd.startsWith("exit")) {
+    else if (name === "exit") {
         running = false;
+    }
+    else if (name.startsWith("a")) {
+        let success = true;
+
+        getCardArg(cmd, add, () => {
+            // Internal error since add shouldn't return false
+            game.log("<red>Internal Error: Something went wrong while adding a card. Please report this. Error code: DcAddInternal</>");
+            game.input();
+
+            success = false;
+        });
+
+        if (!success) return false;
+    }
+    else if (name.startsWith("r")) {
+        let success = true;
+
+        getCardArg(cmd, remove, () => {
+            // User error
+            game.log("<red>Invalid card.</red>");
+            game.input();
+
+            success = false;
+        });
+
+        if (!success) return false;
+    }
+    else if (cmd.startsWith("p")) {
+        let page = parseInt(args.join(" "));
+        if (!page) return false;
+
+        if (page < 1) page = 1;
+        settings.view.page = page;
     }
     else {
         // Infer add
