@@ -1989,7 +1989,7 @@ ${main_content}
     },
 
     importLocale() {
-        game.locale = JSON.parse(fs.readFileSync(`${this.dirname()}../locale/${game.config.general.locale}.json`, { encoding: "utf8" }));
+        game.locale = JSON.parse(fs.readFileSync(`${this.dirname()}../locale/${game.config.general.locale}.hjson`, { encoding: "utf8" }));
     },
 
     /**

@@ -110,7 +110,20 @@
         },
 
         "commands": {
-            "add": "add (name | id) - Add a card to the deck."
+            "intro": {
+                "availableCommands": "<b>Available commands:</b>",
+                "howToRun": "(In order to run a command; input the name of the command and follow further instruction.)\n",
+                "format": "(name) [optional] (required) - (descripion)\n"
+            },
+
+            "add": ["add", "(name | id)", "Add a card to the deck."],
+            "remove": ["remove", "(name | id)", "Remove a card from the deck."],
+            "view": ["view", "(name | id)", "View a card."],
+            "page": ["page", "(num)", "View a different page."],
+            "cards": ["cards", "(class)", "Show cards from 'class'."],
+            "sort": ["sort", "(type) [order]", "Sorts by 'type' in 'order'ending order. (Type can be: ('rarity', 'name', 'cost', 'id', 'type'), Order can be: ('asc', 'desc')) (Example: sort cost asc - Will show cards ordered by cost cost, ascending.)"],
+            "search": ["search", "[query]", "Searches by query. Keys: ('name', 'desc', 'cost', 'rarity', 'id'), Examples: (search the - Search for all cards with the word 'the' in the name or description, case insensitive.), (search cost:2 - Search for all cards that costs 2 cost, search cost:even name:r - Search for all even cost cards with 'r' in its name)"],
+            "undo": ["undo", "", "Undo the last action."]
         }
     },
     "other": {
