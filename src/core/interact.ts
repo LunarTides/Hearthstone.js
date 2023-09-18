@@ -724,10 +724,7 @@ export const interact = {
                  * Reloads a card
                  */
                 const reload = (card: Card) => {
-                    let clonedCard = card.imperfectCopy();
-
                     card.doBlueprint();
-                    card.backups.init = clonedCard.backups.init;
                 }
 
                 [game.player1, game.player2].forEach(p => {

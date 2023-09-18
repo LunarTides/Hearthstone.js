@@ -370,7 +370,7 @@ export class Card {
         this.maxHealth = this.blueprint.stats?.at(1);
 
         // Override the properties from the blueprint
-        this.doBlueprint();
+        this.doBlueprint(false);
 
         // Properties after this point can't be overriden
         this.plr = plr;
@@ -402,8 +402,10 @@ export class Card {
 
     /**
      * Sets fields based on the blueprint of the card.
+     * 
+     * @param activate If it should trigger the card's `create` ability.
      */
-    doBlueprint(): void {
+    doBlueprint(activate = true): void {
         // Reset the blueprint
         this.blueprint = game.cards.find(c => c.name == this.name) || this.blueprint;
 
@@ -434,6 +436,7 @@ export class Card {
         this.maxHealth = this.blueprint.stats?.at(1);
 
         this.desc = game.functions.parseTags(this.desc || "");
+        this.activate("create");
     }
 
     /**
