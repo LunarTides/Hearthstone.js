@@ -15,8 +15,8 @@ export const blueprint: Blueprint = {
     // The description of the card. This can be anything.
     desc: "Just an example card (Does nothing)",
 
-    // How much the card costs.
-    mana: 1,
+    // How much mana the card costs.
+    cost: 1,
 
     // The type of the card. E.g. "Minion", "Spell", "Weapon", etc...
     type: "Minion",

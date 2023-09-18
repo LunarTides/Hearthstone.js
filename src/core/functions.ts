@@ -1961,11 +1961,11 @@ ${main_content}
     createJade(plr: Player): Card {
         if (plr.jadeCounter < 30) plr.jadeCounter += 1;
         const count = plr.jadeCounter;
-        const mana = (count < 10) ? count : 10;
+        const cost = (count < 10) ? count : 10;
 
         let jade = new Card("Jade Golem", plr);
         jade.setStats(count, count);
-        jade.mana = mana;
+        jade.cost = cost;
 
         return jade;
     },

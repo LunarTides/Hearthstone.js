@@ -126,7 +126,7 @@ const eventManager: IEventManager = {
                 card.applyEnchantments();
 
                 card.activate("handtick", key, val);
-                if (card.mana < 0) card.mana = 0;
+                if (card.cost < 0) card.cost = 0;
             });
 
             game.board[i].forEach(card => {
@@ -1128,13 +1128,13 @@ const playCard = {
         if (playCard._trade(card, player)) return "traded";
 
         // Cost
-        if (player[card.costType] < card.mana) return "mana";
+        if (player[card.costType] < card.cost) return "cost";
 
         // Condition
         if (!playCard._condition(card, player)) return "refund";
 
         // Charge you for the card
-        player[card.costType] -= card.mana;
+        player[card.costType] -= card.cost;
         player.removeFromHand(card);
 
         // Counter
@@ -1290,8 +1290,8 @@ const playCard = {
         player.addToHand(card);
         unsuppress();
 
-        if (card.costType == "mana") player.refreshMana(card.mana);
-        else player[card.costType] += card.mana;
+        if (card.costType == "mana") player.refreshMana(card.cost);
+        else player[card.costType] += card.cost;
 
         return false;
     },
@@ -1354,7 +1354,7 @@ const playCard = {
 
     _corrupt(card: Card, player: Player): boolean {
         player.hand.forEach(toCorrupt => {
-            if (toCorrupt.corrupt === undefined || card.mana <= toCorrupt.mana) return;
+            if (toCorrupt.corrupt === undefined || card.cost <= toCorrupt.cost) return;
 
             // Corrupt that card
             let corrupted = new Card(toCorrupt.corrupt, player);

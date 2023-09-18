@@ -6,7 +6,7 @@ export const blueprint: Blueprint = {
     name: "Searing Totem",
     stats: [1, 1],
     desc: "",
-    mana: 1,
+    cost: 1,
     type: "Minion",
     tribe: "Totem",
     classes: ["Shaman"],

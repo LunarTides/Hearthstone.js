@@ -6,7 +6,7 @@ export const blueprint: Blueprint = {
     name: "Draconic Imp",
     stats: [1, 1],
     desc: "",
-    mana: 1,
+    cost: 1,
     type: "Minion",
     tribe: "Demon",
     classes: ["Warlock"],

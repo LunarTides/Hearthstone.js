@@ -58,7 +58,7 @@ function generateCardPath(...args: [CardClass[], CardType]) {
     // Change this if you want the cards to be in different folders.
     // By default, this is `cards/Classes/{class name}/{Uncollectible | Collectible}/{type}s/{mana cost} Cost/{card name}.mts`;
     // This path can be overridden by passing `overridePath` in the create function.
-    let dynamic_path = `Classes/${classesString}/${collectibleString}/${typeString}s/${card.mana} Cost/`;
+    let dynamic_path = `Classes/${classesString}/${collectibleString}/${typeString}s/${card.cost} Cost/`;
 
     return static_path + dynamic_path;
 }

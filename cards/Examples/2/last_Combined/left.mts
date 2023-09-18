@@ -7,7 +7,7 @@ export const blueprint: Blueprint = {
     displayName: "Left Arm",
     stats: [3, 3],
     desc: "",
-    mana: 1,
+    cost: 1,
     type: "Minion",
     tribe: "None",
     classes: ["Neutral"],

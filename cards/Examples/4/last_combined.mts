@@ -6,7 +6,7 @@ import { Blueprint, EventValue } from "@Game/types.js";
 export const blueprint: Blueprint = {
     name: "Combined Example 4",
     desc: "Quest: Play 3 cards. Reward: Reduce the cost of the next 10 Minions you play by 1.",
-    mana: 1,
+    cost: 1,
     type: "Spell",
     spellSchool: "None",
     classes: ["Neutral"],
@@ -22,13 +22,13 @@ export const blueprint: Blueprint = {
             if (!done) return true;
 
             // The quest is done.
-            // Add the `-1 mana` enchantment constantly
+            // Add the `-1 cost` enchantment constantly
             let unhook = game.functions.hookToTick(() => {
                 // Only add the enchantment to minions
                 plr.hand.filter(card => card.type == "Minion").forEach(minion => {
-                    if (minion.enchantmentExists("-1 mana", self)) return;
+                    if (minion.enchantmentExists("-1 cost", self)) return;
 
-                    minion.addEnchantment("-1 mana", self);
+                    minion.addEnchantment("-1 cost", self);
                 });
             });
 
@@ -55,7 +55,7 @@ export const blueprint: Blueprint = {
                 // Reverse the enchantment
                 // You might be able to just do `plr.hand.forEach(m => ...)` instead, since `removeEnchantment` only removes enchantments if it's there.
                 plr.hand.filter(c => c.type == "Minion").forEach(m => {
-                    m.removeEnchantment("-1 mana", self);
+                    m.removeEnchantment("-1 cost", self);
                 });
 
                 // Destroy this event listener so it doesn't run again

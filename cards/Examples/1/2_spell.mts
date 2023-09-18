@@ -5,7 +5,7 @@ import { Blueprint } from "@Game/types.js";
 export const blueprint: Blueprint = {
     name: "Spell Example",
     desc: "Just an example card (Does nothing)",
-    mana: 1,
+    cost: 1,
     type: "Spell",
 
     // The spell school of the spell.

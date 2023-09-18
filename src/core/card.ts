@@ -33,7 +33,7 @@ export class Card {
     /**
      * The cost of the card.
      */
-    mana: number = 0;
+    cost: number = 0;
 
     /**
      * This is the class that the card belongs to. E.g. "Warlock" or "Mage".
@@ -212,7 +212,7 @@ export class Card {
      * ```json
      * [
      *     {
-     *         "enchantment": "-1 mana",
+     *         "enchantment": "-1 cost",
      *         "owner": // some_card
      *     }
      * ]
@@ -416,7 +416,7 @@ export class Card {
         Do: this.test = true
         
         Function Example:
-        Blueprint: { name: "The Coin", mana: 0, cast(plr, game, self): { plr.refreshMana(1, plr.maxMaxMana) } }
+        Blueprint: { name: "The Coin", cost: 0, cast(plr, game, self): { plr.refreshMana(1, plr.maxMaxMana) } }
                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
         Do: this.abilities.cast = [{ plr.gainMana(1) }]
                                   ^                   ^
@@ -887,7 +887,7 @@ export class Card {
             this.plr.addToHand(this);
             unsuppress();
 
-            this.plr[this.costType] += this.mana;
+            this.plr[this.costType] += this.cost;
 
             // Return from the for loop
             return;
@@ -949,8 +949,8 @@ export class Card {
      * @param e The enchantment string
      * 
      * @example
-     * let info = getEnchantmentInfo("mana = 1");
-     * assert.equal(info, {"key": "mana", "val": "1", "op": "="});
+     * let info = getEnchantmentInfo("cost = 1");
+     * assert.equal(info, {"key": "cost", "val": "1", "op": "="});
      *
      * @returns The info
      */
@@ -983,7 +983,7 @@ export class Card {
      */
     applyEnchantments(): boolean {
         // Apply baseline for int values.
-        const whitelisted_vars = ["maxHealth", "mana"];
+        const whitelisted_vars = ["maxHealth", "cost"];
 
         let vars = Object.entries(this);
         vars = vars.filter(c => typeof(c[1]) == "number"); // Filter for only numbers
@@ -1054,7 +1054,7 @@ export class Card {
     }
 
     /**
-     * Add an enchantment to the card. The enchantments look something like this: `mana = 1`, `+1 mana`, `-1 mana`.
+     * Add an enchantment to the card. The enchantments look something like this: `cost = 1`, `+1 cost`, `-1 cost`.
      *
      * @param e The enchantment string
      * @param card The creator of the enchantment. This will allow removing or looking up enchantment later.

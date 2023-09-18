@@ -6,7 +6,7 @@ export const blueprint: Blueprint = {
     name: "Tick Hook Example",
     stats: [1, 1],
     desc: "Your cards cost (1) less.",
-    mana: 1,
+    cost: 1,
     type: "Minion",
     tribe: "None",
     classes: ["Neutral"],
@@ -28,9 +28,9 @@ export const blueprint: Blueprint = {
         // since they are supposed to not be (dependent on / specific to certain) events, but you are free to use them if you want.
         let unhook = game.functions.hookToTick((key, _unknownVal) => {
             plr.hand.forEach(c => {
-                if (c.enchantmentExists("-1 mana", self)) return;
+                if (c.enchantmentExists("-1 cost", self)) return;
 
-                c.addEnchantment("-1 mana", self);
+                c.addEnchantment("-1 cost", self);
             });
         });
 
@@ -49,7 +49,7 @@ export const blueprint: Blueprint = {
 
         // Undo the enchantments
         plr.hand.forEach(c => {
-            c.removeEnchantment("-1 mana", self);
+            c.removeEnchantment("-1 cost", self);
         });
     }
 }

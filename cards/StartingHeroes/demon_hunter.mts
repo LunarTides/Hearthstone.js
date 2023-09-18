@@ -6,7 +6,7 @@ export const blueprint: Blueprint = {
     name: "Demon Hunter Starting Hero",
     displayName: "Illidan Stormrage",
     desc: "Demon hunter starting hero",
-    mana: 0,
+    cost: 0,
     type: "Hero",
     classes: ["Demon Hunter"],
     rarity: "Free",

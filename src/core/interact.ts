@@ -542,7 +542,7 @@ export const interact = {
             }
 
             game.player.addToHand(card);
-            game.player.refreshMana(card.mana);
+            game.player.refreshMana(card.cost);
         }
         else if (name === "/exit") {
             game.running = false;
@@ -827,7 +827,7 @@ export const interact = {
         if (card) cost = card.costType;
 
         // Error Codes
-        if (ret == "mana") err = `Not enough ${cost}`;
+        if (ret == "cost") err = `Not enough ${cost}`;
         else if (ret == "counter") err = "Your card has been countered";
         else if (ret == "space") err = `You can only have ${game.config.general.maxBoardSpace} minions on the board`;
         else if (ret == "invalid") err = "Invalid card";
@@ -1524,20 +1524,20 @@ export const interact = {
             desc = this.doPlaceholders(card, desc, _depth);
         }
 
-        let mana = `{${card.mana}} `;
+        let cost = `{${card.cost}} `;
 
         let costType = "mana";
         if (card instanceof Card && card.costType) costType = card.costType;
 
         switch (costType) {
             case "mana":
-                mana = `<cyan>${mana}</cyan>`;
+                cost = `<cyan>${cost}</cyan>`;
                 break;
             case "armor":
-                mana = `<gray>${mana}</gray>`;
+                cost = `<gray>${cost}</gray>`;
                 break;
             case "health":
-                mana = `<red>${mana}</red>`;
+                cost = `<red>${cost}</red>`;
                 break;
             default:
                 break;
@@ -1546,7 +1546,7 @@ export const interact = {
         let displayName = this.getDisplayName(card);
 
         if (i !== -1) sb += `[${i}] `;
-        sb += mana;
+        sb += cost;
         sb += game.functions.colorByRarity(displayName, card.rarity);
         
         if (card.stats) {
@@ -1754,7 +1754,7 @@ export const interact = {
             else locCooldown = ` (<cyan>${card.cooldown?.toString()}</cyan>)`;
         }
 
-        if (help) game.log("<cyan>{mana}</cyan> <b>Name</b> (<bright:green>[attack / health]</bright:green> if is has) (description) <yellow>(type)</yellow> ((tribe) or (spell class) or (cooldown)) <gray>[class]</gray>");
+        if (help) game.log("<cyan>{cost}</cyan> <b>Name</b> (<bright:green>[attack / health]</bright:green> if is has) (description) <yellow>(type)</yellow> ((tribe) or (spell class) or (cooldown)) <gray>[class]</gray>");
         game.log(_card + (tribe || spellSchool || locCooldown) + ` [${_class}]`);
 
         game.input("\nPress enter to continue...\n");

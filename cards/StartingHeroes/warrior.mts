@@ -6,7 +6,7 @@ export const blueprint: Blueprint = {
     name: "Warrior Starting Hero",
     displayName: "Garrosh Hellscream",
     desc: "Warrior starting hero",
-    mana: 0,
+    cost: 0,
     type: "Hero",
     classes: ["Warrior"],
     rarity: "Free",

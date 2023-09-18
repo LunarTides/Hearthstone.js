@@ -54,7 +54,7 @@ export function main() {
         name: name + " Starting Hero",
         displayName: displayName,
         desc: name[0].toUpperCase() + name.slice(1).toLowerCase() + " starting hero",
-        mana: 0,
+        cost: 0,
         type: "Hero" as CardType,
         classes: [name] as CardClass[],
         rarity: "Free" as CardRarity,

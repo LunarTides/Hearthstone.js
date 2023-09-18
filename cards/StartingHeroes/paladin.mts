@@ -6,7 +6,7 @@ export const blueprint: Blueprint = {
     name: "Paladin Starting Hero",
     displayName: "Uther Lightbringer",
     desc: "Paladin starting hero",
-    mana: 0,
+    cost: 0,
     type: "Hero",
     classes: ["Paladin"],
     rarity: "Free",

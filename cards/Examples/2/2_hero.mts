@@ -5,7 +5,7 @@ import { Blueprint } from "@Game/types.js";
 export const blueprint: Blueprint = {
     name: "Hero Example",
     desc: "<b>Battlecry:</b> Restore your hero to full health.",
-    mana: 1,
+    cost: 1,
     type: "Hero",
     classes: ["Neutral"],
     rarity: "Free",

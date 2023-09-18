@@ -13,7 +13,7 @@ export const blueprint: Blueprint = {
 
     stats: [2, 1],
     desc: "",
-    mana: 1,
+    cost: 1,
     type: "Minion",
     tribe: "Beast",
     classes: ["Neutral"],

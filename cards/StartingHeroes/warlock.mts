@@ -6,7 +6,7 @@ export const blueprint: Blueprint = {
     name: "Warlock Starting Hero",
     displayName: "Gul'dan",
     desc: "Warlock starting hero",
-    mana: 0,
+    cost: 0,
     type: "Hero",
     classes: ["Warlock"],
     rarity: "Free",

@@ -10,7 +10,7 @@ export const blueprint: Blueprint = {
     // This is our goal, remember that after this massive info-dump.
     desc: "Your battlecries trigger twice.",
 
-    mana: 1,
+    cost: 1,
     type: "Minion",
     tribe: "None",
     classes: ["Neutral"],

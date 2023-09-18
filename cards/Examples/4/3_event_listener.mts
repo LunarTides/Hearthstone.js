@@ -6,7 +6,7 @@ export const blueprint: Blueprint = {
     name: "Event Listener Example",
     stats: [1, 1],
     desc: "Battlecry: For the rest of the game, your battlecries trigger twice.",
-    mana: 1,
+    cost: 1,
     type: "Minion",
     tribe: "None",
     classes: ["Neutral"],

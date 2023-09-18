@@ -6,7 +6,7 @@ export const blueprint: Blueprint = {
     name: "Rune Example",
     stats: [1, 2],
     desc: "This is an example card to show how runes work.",
-    mana: 1,
+    cost: 1,
     type: "Minion",
     tribe: "None",
     classes: ["Neutral"],

@@ -6,7 +6,7 @@ export const blueprint: Blueprint = {
     name: "Rogue Starting Hero",
     displayName: "Valeera Sanguinar",
     desc: "Rogue starting hero",
-    mana: 0,
+    cost: 0,
     type: "Hero",
     classes: ["Rogue"],
     rarity: "Free",

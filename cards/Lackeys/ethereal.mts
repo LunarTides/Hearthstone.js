@@ -6,7 +6,7 @@ export const blueprint: Blueprint = {
     name: "Ethereal Lackey",
     stats: [1, 1],
     desc: "<b>Battlecry: Discover</b> a spell.",
-    mana: 1,
+    cost: 1,
     type: "Minion",
     tribe: "None",
     classes: ["Neutral"],

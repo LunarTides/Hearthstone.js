@@ -5,7 +5,7 @@ import { Blueprint } from "@Game/types.js";
 export const blueprint: Blueprint = {
     name: "10 Mana",
     desc: "Gain 10 Mana.",
-    mana: 0,
+    cost: 0,
     type: "Spell",
     spellSchool: "None",
     classes: ["Neutral"],

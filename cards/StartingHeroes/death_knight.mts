@@ -6,7 +6,7 @@ export const blueprint: Blueprint = {
     name: "Death Knight Starting Hero",
     displayName: "The Lich King",
     desc: "Death knight starting hero",
-    mana: 0,
+    cost: 0,
     type: "Hero",
     classes: ["Death Knight"],
     rarity: "Free",

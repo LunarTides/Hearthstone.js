@@ -28,7 +28,7 @@ function applyCard(_card: Blueprint) {
     Object.entries(_card).forEach(c => {
         let [key, val] = c;
 
-        let required_keys = ["name", "desc", "mana", "class", "rarity", "stats", "durability", "hpDesc", "hpCost", "cooldown"];
+        let required_keys = ["name", "desc", "cost", "class", "rarity", "stats", "durability", "hpDesc", "hpCost", "cooldown"];
         if (!val && val !== 0 && !required_keys.includes(key)) return;
 
         // @ts-expect-error
@@ -71,7 +71,7 @@ function common(): false | Blueprint {
         name: name,
         displayName: displayName,
         desc: description,
-        mana: parseInt(cost),
+        cost: parseInt(cost),
         type: type,
         classes: [classes],
         rarity: rarity,
@@ -99,7 +99,7 @@ function minion() {
         displayName: _card.displayName,
         stats: statsArray,
         desc: _card.desc,
-        mana: _card.mana,
+        cost: _card.cost,
         type: _card.type,
         tribe: tribe as MinionTribe,
         classes: _card.classes,
@@ -137,7 +137,7 @@ function weapon() {
         displayName: _card.displayName,
         stats: statsArray,
         desc: _card.desc,
-        mana: _card.mana,
+        cost: _card.cost,
         type: _card.type,
         classes: _card.classes,
         rarity: _card.rarity,
@@ -183,7 +183,7 @@ function location() {
         name: _card.name,
         displayName: _card.displayName,
         desc: _card.desc,
-        mana: _card.mana,
+        cost: _card.cost,
         type: _card.type,
         classes: _card.classes,
         rarity: _card.rarity,

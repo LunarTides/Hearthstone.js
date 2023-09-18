@@ -161,7 +161,7 @@ function sortCards(_cards: Blueprint[]) {
         });
     }
 
-    if (["mana", "id"].includes(type)) {
+    if (["cost", "id"].includes(type)) {
         return _cards.sort((a, b) => {
             return calcOrder(a[type], b[type]);
         });
@@ -208,7 +208,7 @@ function searchCards(_cards: Blueprint[], sQuery: string) {
         }
 
         // Mana even / odd
-        if (key == "mana") {
+        if (key == "cost") {
             // Mana range
             let regex = /\d+-\d+/; // 1-10
             if (regex.test(val)) {
@@ -572,8 +572,8 @@ function help() {
     game.log("view (card | id)      - View a card");
     game.log("page (num)            - View a different page");
     game.log("cards (class)         - Show cards from 'class'");
-    game.log("sort (type) [order]   - Sorts by 'type' in 'order'ending order. (Type can be: ('rarity', 'name', 'mana', 'id', 'type'), Order can be: ('asc', 'desc')) (Example: sort mana asc - Will show cards ordered by mana cost, ascending.)");
-    game.log("search [query]        - Searches by query. Keys: ('name', 'desc', 'mana', 'rarity', 'id'), Examples: (search the - Search for all cards with the word 'the' in the name or description, case insensitive.), (search mana:2 - Search for all cards that costs 2 mana, search mana:even name:r - Search for all even cost cards with 'r' in its name)");
+    game.log("sort (type) [order]   - Sorts by 'type' in 'order'ending order. (Type can be: ('rarity', 'name', 'cost', 'id', 'type'), Order can be: ('asc', 'desc')) (Example: sort cost asc - Will show cards ordered by cost cost, ascending.)");
+    game.log("search [query]        - Searches by query. Keys: ('name', 'desc', 'cost', 'rarity', 'id'), Examples: (search the - Search for all cards with the word 'the' in the name or description, case insensitive.), (search cost:2 - Search for all cards that costs 2 cost, search cost:even name:r - Search for all even cost cards with 'r' in its name)");
     game.log("undo                  - Undo the last action.");
     game.log("deck                  - Toggle deck-view");
     game.log("deckcode              - View the current deckcode");

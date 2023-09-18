@@ -6,7 +6,7 @@ export const blueprint: Blueprint = {
     name: "Dormant Example",
     stats: [8, 8],
     desc: "<b>Dormant</b> for 2 turns. <b>Battlecry:</b> Dredge.",
-    mana: 1,
+    cost: 1,
     type: "Minion",
     tribe: "None",
     classes: ["Neutral"],

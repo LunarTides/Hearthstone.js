@@ -56,7 +56,7 @@ tradeThreshold = 2
 statsBias = 0.2
 
 # How much the ai dislikes mana cost.
-manaBias = 0.75
+costBias = 0.75
 
 # How much the ai values spells. This exists for equality with minions, since minions gets stats.
 # The formula is: spellValue * statsBias

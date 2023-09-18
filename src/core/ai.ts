@@ -67,7 +67,7 @@ export class AI {
         this.plr.hand.forEach(c => {
             let score = this.analyzePositiveCard(c);
 
-            if (score <= best_score || c.mana > this.plr.mana || this.cards_played_this_turn.includes(c)) return;
+            if (score <= best_score || c.cost > this.plr.mana || this.cards_played_this_turn.includes(c)) return;
 
             // If the card is a minion and the player doesn't have the board space to play it, ignore the card
             if (game.functions.canBeOnBoard(c) && game.board[this.plr.id].length >= game.config.general.maxBoardSpace) return;
@@ -896,7 +896,7 @@ export class AI {
 
         if (c.stats) score += (c.getAttack() + c.getHealth()) * game.config.ai.statsBias;
         else score += game.config.ai.spellValue * game.config.ai.statsBias; // If the spell value is 4 then it the same value as a 2/2 minion
-        score -= c.mana * game.config.ai.manaBias;
+        score -= c.cost * game.config.ai.costBias;
 
         c.keywords.forEach(() => score += game.config.ai.keywordValue);
         Object.values(c).forEach(c => {

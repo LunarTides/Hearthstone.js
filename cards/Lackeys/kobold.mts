@@ -6,7 +6,7 @@ export const blueprint: Blueprint = {
     name: "Kobold Lackey",
     stats: [1, 1],
     desc: "<b>Battlecry:</b> Deal 2 damage.",
-    mana: 1,
+    cost: 1,
     type: "Minion",
     tribe: "None",
     classes: ["Neutral"],

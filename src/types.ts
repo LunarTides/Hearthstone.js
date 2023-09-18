@@ -305,7 +305,7 @@ export type UnknownEventValue = EventValue<EventKey>;
  */
 export type GamePlayCardReturn = Card |
                                  true |
-                                 "mana" |
+                                 "cost" |
                                  "traded" |
                                  "space" |
                                  "magnetize" |
@@ -444,7 +444,7 @@ export type Blueprint = {
     displayName?: string,
     stats?: number[],
     desc: string,
-    mana: number,
+    cost: number,
     type: CardType,
 
     tribe?: MinionTribe,
@@ -551,7 +551,7 @@ export type GameConfig = {
         mulliganThreshold: number
         tradeThreshold: number,
         statsBias: number
-        manaBias: number
+        costBias: number
         spellValue: number,
         keywordValue: number
         abilityValue: number,

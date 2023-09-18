@@ -6,7 +6,7 @@ export const blueprint: Blueprint = {
     name: "DIY 1",
     stats: [1, 1],
     desc: "<b>This is a DIY card, it does not work by default. Battlecry:</b> Give this minion +1/+1.",
-    mana: 0,
+    cost: 0,
     type: "Minion",
     tribe: "None",
     classes: ["Neutral"],

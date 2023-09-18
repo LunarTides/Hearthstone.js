@@ -5,7 +5,7 @@ import { Blueprint } from "@Game/types.js";
 export const blueprint: Blueprint = {
     name: "DIY 2",
     desc: "<b>This is a DIY card, it does not work by default.</b> Restore 3 health to your hero.",
-    mana: 0,
+    cost: 0,
     type: "Spell",
     spellSchool: "None",
     classes: ["Neutral"],

@@ -12,7 +12,7 @@ export const blueprint: Blueprint = {
     // Look in `functions.parseTags` for a list of these tags.
     desc: "<b>Taunt.</b> This is an example card to show how to add keywords to cards.",
 
-    mana: 1,
+    cost: 1,
     type: "Minion",
     tribe: "None",
     classes: ["Neutral"],

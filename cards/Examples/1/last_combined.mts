@@ -6,7 +6,7 @@ export const blueprint: Blueprint = {
     name: "Combined Example 1",
     stats: [4, 4],
     desc: "<b>Taunt, Divine Shield. Battlecry: Dredge.</b> Gain +1/+1. (This example card combines everything you've learned in stage 1 into this card.)",
-    mana: 1,
+    cost: 1,
     type: "Minion",
     tribe: "All",
     classes: ["Priest", "Paladin"],

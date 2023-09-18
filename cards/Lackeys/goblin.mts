@@ -6,7 +6,7 @@ export const blueprint: Blueprint = {
     name: "Goblin Lackey",
     stats: [1, 1],
     desc: "<b>Battlecry:</b> Give a friendly minion +1 Attack and <b>Rush</b>.",
-    mana: 1,
+    cost: 1,
     type: "Minion",
     tribe: "None",
     classes: ["Neutral"],

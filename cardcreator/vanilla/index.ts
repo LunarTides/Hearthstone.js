@@ -21,7 +21,7 @@ export function create(card: VanillaCard, debug: boolean) {
     // Harvest info
     let cardClass = game.functions.capitalize(card.cardClass ?? "Neutral") as CardClass;
     let collectible = card.collectible ?? false;
-    let mana = card.cost;
+    let cost = card.cost;
     let name = card.name;
     let rarity = "Free" as CardRarity;
     if (card.rarity) rarity = game.functions.capitalize(card.rarity) as CardRarity;
@@ -61,7 +61,7 @@ export function create(card: VanillaCard, debug: boolean) {
             name: realName,
             stats: [attack, health],
             desc,
-            mana,
+            cost,
             type,
             tribe: races[0] || "None", // TODO: Add support for more than 1 tribe
             classes: [cardClass],
@@ -73,7 +73,7 @@ export function create(card: VanillaCard, debug: boolean) {
         blueprint = {
             name: realName,
             desc,
-            mana,
+            cost,
             type,
             spellSchool,
             classes: [cardClass],
@@ -86,7 +86,7 @@ export function create(card: VanillaCard, debug: boolean) {
             name: realName,
             stats: [attack, health],
             desc,
-            mana,
+            cost,
             type,
             classes: [cardClass],
             rarity,
@@ -97,7 +97,7 @@ export function create(card: VanillaCard, debug: boolean) {
         blueprint = {
             name: realName,
             desc,
-            mana,
+            cost,
             type,
             classes: [cardClass],
             rarity,
@@ -110,7 +110,7 @@ export function create(card: VanillaCard, debug: boolean) {
         blueprint = {
             name: realName,
             desc,
-            mana,
+            cost,
             type,
             classes: [cardClass],
             rarity,

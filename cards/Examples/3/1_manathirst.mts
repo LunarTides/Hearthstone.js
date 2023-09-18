@@ -6,7 +6,7 @@ export const blueprint: Blueprint = {
     name: "Manathirst Example",
     stats: [1, 2],
     desc: "<b>Battlecry:</b> Freeze an enemy minion. Manathirst (6): Silence it first.",
-    mana: 1,
+    cost: 1,
     type: "Minion",
     tribe: "None",
     classes: ["Neutral"],

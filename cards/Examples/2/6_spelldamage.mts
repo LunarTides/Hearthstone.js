@@ -10,7 +10,7 @@ export const blueprint: Blueprint = {
     // If you have debug mode enabled, do `/eval game.player.spellDamage += 5` in order to see it working.
     desc: "Deal $3 damage to the enemy hero.",
 
-    mana: 0,
+    cost: 0,
     type: "Spell",
     spellSchool: "None",
     classes: ["Neutral"],

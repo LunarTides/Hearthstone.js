@@ -6,7 +6,7 @@ export const blueprint: Blueprint = {
     name: "Shaman Starting Hero",
     displayName: "Thrall",
     desc: "Shaman starting hero",
-    mana: 0,
+    cost: 0,
     type: "Hero",
     classes: ["Shaman"],
     rarity: "Free",

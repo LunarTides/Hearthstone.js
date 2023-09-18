@@ -10,7 +10,7 @@ export const blueprint: Blueprint = {
     // The description doesn't need to look like this, it is just what Hearthstone does, so we copy it here.
     desc: "Quest: Play 3 cards. Reward: Return those cards back to your hand.",
 
-    mana: 1,
+    cost: 1,
     type: "Spell",
     spellSchool: "None",
     classes: ["Neutral"],

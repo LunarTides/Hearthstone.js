@@ -6,7 +6,7 @@ export const blueprint: Blueprint = {
     name: "Combined Example 2",
     stats: [5, 3],
     desc: "Colossal +2. Dormant. Corrupt.",
-    mana: 0,
+    cost: 0,
     type: "Minion",
     tribe: "None",
     classes: ["Neutral"],

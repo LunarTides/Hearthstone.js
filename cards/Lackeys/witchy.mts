@@ -6,7 +6,7 @@ export const blueprint: Blueprint = {
     name: "Witchy Lackey",
     stats: [1, 1],
     desc: "<b>Battlecry:</b> Transform a friendly minion into one that costs (1) more.",
-    mana: 1,
+    cost: 1,
     type: "Minion",
     tribe: "None",
     classes: ["Neutral"],
@@ -24,13 +24,13 @@ export const blueprint: Blueprint = {
         if (!target) return game.constants.REFUND;
 
         // There isn't any cards that cost more than 10, so refund
-        if (target.mana >= 10) return game.constants.REFUND;
+        if (target.cost >= 10) return game.constants.REFUND;
 
         // Filter minions that cost (1) more than the target
         let minions = game.functions.getCards().filter(card => {
             if (!target) throw new Error("Target is undefined!");
 
-            return card.type === "Minion" && card.mana === target.mana + 1;
+            return card.type === "Minion" && card.cost === target.cost + 1;
         });
 
         // Choose a random minion from the filtered list. Use the actual and not a copy, since a copied blueprint is useless.

@@ -8,7 +8,7 @@ export const blueprint: Blueprint = {
     // The things with `{...}` will be replaced in the `placeholder` function.
     desc: "Battlecry: Gain mana equal to the turn counter. (Currently {0}, {1}, {0}, {next thing is} {10}, {placeholder without replacement})",
 
-    mana: 0,
+    cost: 0,
     type: "Spell",
     spellSchool: "None",
     classes: ["Neutral"],

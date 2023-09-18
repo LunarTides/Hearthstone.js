@@ -6,7 +6,7 @@ export const blueprint: Blueprint = {
     name: "Enchantment Example",
     stats: [1, 1],
     desc: "Your cards cost 1 less.",
-    mana: 1,
+    cost: 1,
     type: "Minion",
     tribe: "None",
     classes: ["Neutral"],
@@ -23,24 +23,24 @@ export const blueprint: Blueprint = {
         // We don't care about the event, we just want to run this code every now and then.
 
         plr.hand.forEach(c => {
-            // If the card was already given the "-1 mana" enchantment from this card, ignore it
-            if (c.enchantmentExists("-1 mana", self)) return;
+            // If the card was already given the "-1 cost" enchantment from this card, ignore it
+            if (c.enchantmentExists("-1 cost", self)) return;
 
-            // Give the card the "-1 mana" enchantment.
-            c.addEnchantment("-1 mana", self);
+            // Give the card the "-1 cost" enchantment.
+            c.addEnchantment("-1 cost", self);
 
-            // You can also give the "+x mana", or "mana = x" enchantments, where x is any number.
+            // You can also give the "+x cost", or "cost = x" enchantments, where x is any number.
         });
     },
 
     // This "ability" triggers whenever this card is about to be removed from the game.
     // It exists to allow cards to undo changes made by `passive`-related effects (e.g. tick).
     remove(plr, game, self) {
-        // Remove the "-1 mana" enchantments that was given by this card from all cards in the player's hand.
+        // Remove the "-1 cost" enchantments that was given by this card from all cards in the player's hand.
 
         plr.hand.forEach(c => {
-            // Only remove the "-1 mana" enchantment given by this card.
-            c.removeEnchantment("-1 mana", self);
+            // Only remove the "-1 cost" enchantment given by this card.
+            c.removeEnchantment("-1 cost", self);
         });
     }
 }

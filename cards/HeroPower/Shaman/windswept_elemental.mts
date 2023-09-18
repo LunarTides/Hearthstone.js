@@ -6,7 +6,7 @@ export const blueprint: Blueprint = {
     name: "Windswept Elemental",
     stats: [2, 1],
     desc: "<b>Rush</b>",
-    mana: 2,
+    cost: 2,
     type: "Minion",
     tribe: "Totem",
     classes: ["Shaman"],
