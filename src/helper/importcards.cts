@@ -4,6 +4,7 @@ import fs from "fs";
 import child_process from "child_process";
 
 let cards: any[] = [];
+let oldContent: string[][] = [];
 let c = 1;
 
 function requireFresh(mod: string) {
@@ -26,11 +27,18 @@ function _doImportCards(path: string, hot = false) {
         let p = `${path}/${file.name}`;
 
         if (file.name.endsWith(".mjs")) {
-            // Synchronously import the card without using require
-            let f;
+            // Don't hot reload the card if it hasn't changed
+            let content = fs.readFileSync(p, { encoding: "utf8" });
+            let shouldHotReload = hot && !oldContent.some(c => c[0] === content);
 
-            if (hot) f = requireFresh(p).blueprint;
+            let f: any;
+
+            if (shouldHotReload) f = requireFresh(p).blueprint;
             else f = require(p).blueprint;
+
+            // Replace the content
+            game.functions.remove(oldContent, oldContent.find(c => c[1] === f.id));
+            oldContent.push([content, f.id]);
 
             if (!f) throw new Error("Card doesn't export a blueprint: " + p);
             cards.push(f);
