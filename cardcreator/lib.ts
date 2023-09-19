@@ -184,9 +184,10 @@ export const blueprint: Blueprint = {
         game.log('File created at: "' + file_path + '"');
     } else {
         // If debug mode is enabled, just show some information about the card.
-        game.log(`\nNew ID: ${id}`); // This is the id that would be written to '.latest_id'
-        game.log(`Would be path: "${file_path.replaceAll("\\", "/")}"`);
-        game.log(`Content:\n${content}`);
+        game.log("\nNew ID: %s", id); // This is the id that would be written to '.latest_id'
+        game.log("Would be path: '%s'", file_path.replaceAll("\\", "/"));
+        game.log("Content:");
+        game.log(content);
         game.input();
     }
 

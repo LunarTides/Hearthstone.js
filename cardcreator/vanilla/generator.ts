@@ -19,7 +19,9 @@ function main() {
             writeFile(game.functions.dirname() + "../cardcreator/vanilla/.ignore.cards.json", JSON.stringify(data), err => {
                 if (err) throw err;
             });
-            game.log(`Found ${oldLength} cards!\nFiltered away ${oldLength - data.length} cards!\nSuccessfully imported ${data.length} cards!`);
+
+            let difference = oldLength - data.length;
+            game.log(`Found %s cards!\nFiltered away %s cards!\nSuccessfully imported %s cards!`, oldLength, difference, data.length);
         });
 }
 

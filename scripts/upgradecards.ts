@@ -69,6 +69,12 @@ function upgradeCard(path: string, filename: string, data: string) {
         game.log(`Updated the spellClass field.`);
     }
 
+    oldData = data;
+    data = data.replace(/ {4}mana: (.*),/, `    cost: $1,`);
+    if (data !== oldData) {
+        game.log(`Updated the mana field.`);
+    }
+
     // Replace the card's id with a new one
     data = data.replace(/\n {4}id: (\d+),?/, "");
     let currentId = Number(fs.readFileSync(game.functions.dirname() + "../cards/.latest_id", { encoding: "utf8" })) + 1;

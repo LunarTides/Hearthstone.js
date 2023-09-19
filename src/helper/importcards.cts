@@ -43,7 +43,7 @@ function _doImportCards(path: string, hot = false) {
             if (!f) throw new Error("Card doesn't export a blueprint: " + p);
             cards.push(f);
         }
-        else if (file.isDirectory()) _doImportCards(p);
+        else if (file.isDirectory()) _doImportCards(p, hot);
     });
 
     return cards;
