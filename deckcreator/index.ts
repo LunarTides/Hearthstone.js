@@ -5,7 +5,7 @@
 import util from "util";
 
 import { createGame } from "../src/internal.js";
-import { Blueprint, CardClass, CardClassNoNeutral } from "../src/types.js";
+import { Blueprint, CardClass, CardClassNoNeutral, GameConfig } from "../src/types.js";
 
 const { game, player1: plr, player2 } = createGame();
 
@@ -19,7 +19,7 @@ let filtered_cards: Blueprint[] = [];
 let deck: Blueprint[] = [];
 let runes = "";
 
-let warnings = {
+let warnings: {[key: string]: boolean} = {
     latestCard: true
 }
 
@@ -449,8 +449,7 @@ function add(card: Blueprint): boolean {
     Object.entries(card.deckSettings).forEach(setting => {
         let [key, val] = setting;
 
-        // @ts-expect-error
-        config[key] = val;
+        config[key as keyof GameConfig] = val as any;
     });
 
     return true;
@@ -796,7 +795,6 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         let new_state;
 
         if (args.length <= 1) {
-            // @ts-expect-error
             new_state = !warnings[key]; // Toggle
         }
         else {
@@ -810,7 +808,6 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
             }
         }
 
-        // @ts-expect-error
         if (warnings[key] == new_state) {
             let strbuilder = "";
 
@@ -824,7 +821,6 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
             return false;
         }
 
-        // @ts-expect-error
         warnings[key] = new_state;
 
         let strbuilder = "";

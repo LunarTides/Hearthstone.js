@@ -49,23 +49,24 @@ function main() {
         });
     });
 
-    function check(key: string, val: string, vanilla: VanillaCard, card: Blueprint) {
+    function check(key: string, val: any, vanilla: VanillaCard, card: Blueprint) {
         let ignore = ["id", "set", "name", "rarity", "type"];
 
-        let table = {
+        let table: {[key in keyof Blueprint]?: keyof VanillaCard} = {
             "desc": "text"
         }
 
-        // @ts-expect-error
-        if (!vanilla[table[key]] || ignore.includes(key)) return;
-        // @ts-expect-error
-        if (val.toLowerCase() == vanilla[table[key]]?.toString().toLowerCase()) return;
+        let vanillaValue: any = key as keyof VanillaCard;
+        if (!vanillaValue) vanillaValue = table[key as keyof Blueprint];
+        vanillaValue = vanilla[vanillaValue as keyof VanillaCard];
+
+        if (!vanillaValue || ignore.includes(key)) return;
+        if (val.toString().toLowerCase() == vanillaValue?.toString().toLowerCase()) return;
 
         game.log("Card outdated!");
         game.log(`Name: ${card.name}`);
         game.log(`Local: "${key}: ${val}"`);
-        // @ts-expect-error
-        game.log(`New:   "${key}: ${vanilla[table[key]]}"\n`);
+        game.log(`New:   "${key}: ${vanillaValue}"\n`);
     }
 }
 

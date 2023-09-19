@@ -380,8 +380,8 @@ export class Card {
         // @ts-expect-error
         if (!this.backups.init) this.backups.init = {};
         Object.entries(this).forEach(i => {
-            // @ts-expect-error
-            this.backups.init[i[0]] = i[1];
+            // HACK: Never usage
+            this.backups.init[i[0] as never] = i[1] as never;
         });
 
         this.randomizeUUID();
@@ -428,15 +428,14 @@ export class Card {
             let [key, val] = i;
 
             if (typeof val == "function") this.abilities[key as CardAbility] = [val];
-            // @ts-expect-error
-            else this[key] = JSON.parse(JSON.stringify(i[1]));
+            else this[key as keyof this] = JSON.parse(JSON.stringify(i[1]));
         });
 
         // Set maxHealth if the card is a minion or weapon
         this.maxHealth = this.blueprint.stats?.at(1);
 
         this.desc = game.functions.parseTags(this.desc || "");
-        this.activate("create");
+        if (activate) this.activate("create");
     }
 
     /**
@@ -753,8 +752,8 @@ export class Card {
         let key = Object.keys(this.backups).length;
 
         Object.entries(this).forEach(i => {
-            // @ts-expect-error
-            this.backups[key][i[0]] = i[1];
+            // HACK: Never usage
+            this.backups[key][i[0] as never] = i[1] as never;
         });
         
         return key;
@@ -769,8 +768,8 @@ export class Card {
      */
     restoreBackup(backup: CardBackup): boolean {
         Object.keys(backup).forEach(att => {
-            // @ts-expect-error
-            this[att] = backup[att];
+            // HACK: Never usage
+            this[att as never] = backup[att as keyof Card] as never;
         });
 
         return true;
@@ -816,12 +815,12 @@ export class Card {
 
         Object.keys(this).forEach(att => {
             // Check if a backup exists for the attribute. If it does; restore it.
-            // @ts-expect-error
-            if (this.backups.init[att]) this[att] = this.backups.init[att];
+            // HACK: Never usage
+            if (this.backups.init[att as never]) this[att as never] = this.backups.init[att as never] as never;
 
             // Check if the attribute if defined in the blueprint. If it is; restore it.
-            // @ts-expect-error
-            else if (this.blueprint[att]) this[att] = this.blueprint[att];
+            // HACK: Never usage
+            else if (this.blueprint[att as never]) this[att as never] = this.blueprint[att as never] as never;
         });
         this.desc = "";
         this.keywords = [];
@@ -1009,8 +1008,8 @@ export class Card {
 
             // Apply backup if it exists, otherwise keep it the same.
             if (this.backups.init?[key] : false) {
-                // @ts-expect-error
-                this[key] = this.backups.init[key];
+                // HACK: Never usage
+                this[key as never] = this.backups.init[key as never] as never;
             }
         });
 
@@ -1025,19 +1024,17 @@ export class Card {
 
             switch (op) {
                 case '=':
-                    // @ts-expect-error
-                    this[key] = numberVal;
+                    this[key as keyof this] = numberVal as any;
                     break;
                 case '+':
-                    // @ts-expect-error
-                    this[key] += numberVal;
+                    this[key as keyof this] += numberVal as any;
                     break;
                 case '-':
-                    // @ts-expect-error
+                    //@ts-expect-error
                     this[key] -= numberVal;
                     break;
                 case '*':
-                    // @ts-expect-error
+                    //@ts-expect-error
                     this[key] *= numberVal;
                     break;
                 case '/':

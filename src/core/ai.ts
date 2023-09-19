@@ -60,7 +60,7 @@ export class AI {
     calcMove(): AICalcMoveOption {
         game = globalThis.game;
 
-        let best_move: AICalcMoveOption;
+        let best_move: AICalcMoveOption | undefined;
         let best_score = -100000;
 
         // Look for highest score
@@ -85,7 +85,6 @@ export class AI {
         });
 
         // If a card wasn't chosen
-        //@ts-expect-error
         if (!best_move) {
             // See if can hero power
             if (this._canHeroPower()) best_move = "hero power";
@@ -327,8 +326,7 @@ export class AI {
 
         if (ret.includes(-1)) return [-1, -1];
 
-        // @ts-expect-error - `ret` here is this type, but ts doesn't know it. So this is a workaround
-        let returned: Target[] = ret;
+        let returned: Target[] = ret as Target[];
 
         this.history.push({"type": "attack", "data": [returned[0].name, returned[1].name]});
 
@@ -483,8 +481,8 @@ export class AI {
      * 
      * @returns Attacker, Target
      */
-    legacy_attack_1(): (Target | -1)[] { // This gets called if you set the ai attack model to 1
-        let worst_minion: Card;
+    legacy_attack_1(): (Target | null)[] { // This gets called if you set the ai attack model to 1
+        let worst_minion: Card | null = null;
         let worst_score = 100000;
         
         game.board[this.plr.id].filter(m => !m.sleepy && !m.frozen && !m.dormant).forEach(m => {
@@ -496,12 +494,17 @@ export class AI {
             worst_score = score;
         });
 
-        // @ts-expect-error
-        let attacker: Target | -1 = worst_minion;
+        if (!worst_minion) {
+            this.history.push({"type": `attack, [null, null]`, "data": [-1, -1]});
+            this.prevent.push("attack");
+            return [null, null];
+        }
+
+        let attacker: Target = worst_minion;
         
         let targets;
 
-        let best_minion;
+        let best_minion: Card | null = null;
         let best_score = -100000;
 
         // Check if there is a minion with taunt
@@ -518,20 +521,18 @@ export class AI {
             best_score = score;
         });
         
-        // @ts-expect-error
-        let target: Target | null | -1 = best_minion;
+        let target: Target | null = best_minion;
 
         // If the AI has no minions to attack, attack the enemy hero
         if (!target) {
-            if (!taunts.length && attacker && attacker.canAttackHero) target = this.plr.getOpponent();
+            if (!taunts.length && attacker && ((attacker as Target).classType === "Player" || (attacker as Card).canAttackHero)) target = this.plr.getOpponent();
             else {
-                attacker = -1;
-                target = -1;
-
+                this.history.push({"type": `attack, [null, null]`, "data": [-1, -1]});
                 this.prevent.push("attack");
+                return [null, null];
             }
         }
-        if (!attacker && (this.plr.attack > 0 && this.plr.canAttack)) attacker = this.plr;
+        if (!attacker && (this.plr.attack > 0 && this.plr.canAttack)) attacker = this.plr as Target;
 
         let arr = [];
         let strbuilder = "";
@@ -543,8 +544,8 @@ export class AI {
         }
             
         if (target instanceof Player) arr.push("P" + (target.id + 1));
-        else if (target instanceof Card) {
-            arr.push(target.name);
+        else if ((target as Target) instanceof Card) {
+            arr.push((target as Card).name);
             strbuilder += best_score;
         }
 
@@ -624,7 +625,7 @@ export class AI {
             return ret;
         }
         
-        let best_minion: Card | false;
+        let best_minion: Card | undefined;
         let best_score = -100000;
 
         game.board[sid].forEach(m => {
@@ -639,7 +640,6 @@ export class AI {
             best_score = s;
         });
 
-        // @ts-expect-error
         if (best_minion) {
             this.history.push({"type": "selectTarget", "data": `${best_minion.name},${best_score}`});
 
@@ -658,7 +658,7 @@ export class AI {
      * @returns Result
      */
     discover(cards: CardLike[]): Card | null {
-        let best_card: CardLike | null;
+        let best_card: CardLike | undefined;
         let best_score = -100000;
 
         // Look for highest score
@@ -673,7 +673,6 @@ export class AI {
             best_score = score;
         });
 
-        // @ts-expect-error
         if (!best_card) return null;
 
         this.history.push({"type": "discover", "data": [best_card.name, best_score]});
@@ -692,7 +691,7 @@ export class AI {
      * @returns Result
      */
     dredge(cards: Card[]): Card | null {
-        let best_card: Card | null;
+        let best_card: Card | undefined;
         let best_score = -100000;
 
         // Look for highest score
@@ -705,7 +704,6 @@ export class AI {
             best_score = score;
         });
 
-        // @ts-expect-error
         if (!best_card) return null;
 
         let name = best_card ? best_card.name : null

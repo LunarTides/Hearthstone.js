@@ -66,8 +66,7 @@ const deckcode = {
 
         if (!game.functions.getClasses().includes(hero as CardClassNoNeutral)) return ERROR("INVALIDHERO");
 
-        // @ts-expect-error
-        plr.heroClass = hero;
+        plr.heroClass = hero as CardClass;
 
         let rune_classes = ["Death Knight"];
         let rune_class = rune_classes.includes(hero);
@@ -361,8 +360,10 @@ const deckcode = {
 
         let cardsSplit = cards.split(",").map(i => parseInt(i, 36));
         let cardsSplitId = cardsSplit.map(i => game.functions.getCardById(i));
-        // @ts-expect-error
-        let cardsSplitCard = cardsSplitId.map(c => new game.Card(c.name, plr));
+        let cardsSplitCard = cardsSplitId.map(c => {
+            if (!c) throw new Error("c is an invalid card");
+            return new game.Card(c.name, plr)
+        });
         let trueCards = cardsSplitCard.map(c => c.displayName);
 
         // Cards is now a list of names
@@ -467,10 +468,10 @@ const deckcode = {
         let invalidCards: VanillaCard[] = [];
         deckDef.forEach(c => {
             let vanillaCard = c[0];
-            if (vanillaCard === undefined || typeof vanillaCard === "number") return;
+            if (!vanillaCard || typeof vanillaCard === "number") return;
 
-            // @ts-expect-error
-            if (createdCards.find(card => card.name == vanillaCard.name || card.displayName == vanillaCard.name)) return;
+            // @xts-expect-error
+            if (createdCards.find(card => card.name == vanillaCard!.name || card.displayName == vanillaCard!.name)) return;
 
             // The card doesn't exist.
             game.log(`<red>ERROR: Card '</red>${vanillaCard.name}<red>' doesn't exist!</red>`);
@@ -490,13 +491,12 @@ const deckcode = {
         let amounts: { [amount: number]: number } = {};
         deckDef.forEach(c => {
             let [vanillaCard, amount] = c;
-            if (vanillaCard === undefined || typeof vanillaCard === "number") return;
+            if (!vanillaCard || typeof vanillaCard === "number") return;
 
-            // @ts-expect-error
-            let name = cards.find(a => a.dbfId == vanillaCard.dbfId).name;
+            let name = vanillaCards.find(a => a.dbfId == vanillaCard!.dbfId)?.name;
             // The name can still not be correct
-            // @ts-expect-error
-            if (!createdCards.find(a => a.name == name)) name = createdCards.find(a => a.displayName == name).name;
+            if (!createdCards.find(a => a.name == name)) name = createdCards.find(a => (a.displayName ?? "") == name)?.name;
+            if (!name) throw new Error("Could not get name from card in deckdefinition");
 
             new_deck.push([new Card(name, plr), amount]);
 

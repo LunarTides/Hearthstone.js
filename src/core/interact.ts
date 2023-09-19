@@ -649,8 +649,8 @@ export const interact = {
                 return false;
             }
 
-            // @ts-expect-error - Strict mode can't index object by string, even though we null check it immediately, so we have to do this
-            let setting: GameConfig = game.config[name];
+            // @xts-expect-error - Strict mode can't index object by string, even though we null check it immediately, so we have to do this
+            let setting: {[key: string]: any} = game.config[name as keyof GameConfig];
 
             if (setting === undefined) {
                 game.input("<red>Invalid setting name!</red>\n");
@@ -696,8 +696,7 @@ export const interact = {
                 return false;
             }
 
-            // @ts-expect-error - We already know that the key is a valid config setting.
-            game.config[key] = newValue;
+            game.config[key as keyof GameConfig] = newValue as any;
             game.doConfigAI();
             
             game.input();
@@ -711,7 +710,7 @@ export const interact = {
 
             let success = true;
 
-            success = success && this.withStatus("Reloading cards", () => {
+            success = success && this.withStatus("Registering cards", () => {
                 game.cards = reloadCards(game.functions.dirname() + "cards");
                 return true;
             });

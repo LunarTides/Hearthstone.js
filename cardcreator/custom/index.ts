@@ -31,8 +31,8 @@ function applyCard(_card: Blueprint) {
         let required_keys = ["name", "desc", "cost", "class", "rarity", "stats", "durability", "hpDesc", "hpCost", "cooldown"];
         if (!val && val !== 0 && !required_keys.includes(key)) return;
 
-        // @ts-expect-error
-        newCard[key] = val;
+        // HACK: Well, it is not ts-expect-error at least
+        newCard[key as keyof Blueprint] = val as never;
     });
 
     return newCard;
