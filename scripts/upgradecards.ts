@@ -57,6 +57,12 @@ function upgradeCard(path: string, filename: string, data: string) {
     }
 
     oldData = data;
+    data = data.replace(/\.maxMaxMana/g, ".maxMana");
+    if (data !== oldData) {
+        game.log(`Updated 'maxMaxMana' to 'maxMana'.`);
+    }
+
+    oldData = data;
     data = data.replace(/\n {4}set: (.*),/, ``);
     if (data !== oldData) {
         game.log(`Removed the set field.`);

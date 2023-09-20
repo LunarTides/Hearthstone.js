@@ -417,7 +417,7 @@ export class Card {
         Do: this.test = true
         
         Function Example:
-        Blueprint: { name: "The Coin", cost: 0, cast(plr, game, self): { plr.refreshMana(1, plr.maxMaxMana) } }
+        Blueprint: { name: "The Coin", cost: 0, cast(plr, game, self): { plr.refreshMana(1, plr.maxMana) } }
                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
         Do: this.abilities.cast = [{ plr.gainMana(1) }]
                                   ^                   ^

@@ -102,13 +102,13 @@ export class Player {
      * 
      * # Examples
      * @example
-     * // Use `player.refreshMana(2, player.maxMaxMana)` instead in a real situation.
+     * // Use `player.refreshMana(2, player.maxMana)` instead in a real situation.
      * player.mana += 2;
      */
     mana: number = 0;
 
     /**
-     * The max amount of mana the player has. This increments every turn until it reaches `player.maxMaxMana`.
+     * The amount of empty mana crystals the player has. This increments every turn until it reaches `player.maxMana`.
      * 
      * # Examples
      * @example
@@ -118,15 +118,15 @@ export class Player {
     emptyMana: number = 0;
     
     /**
-     * The max amount of max mana the player can have. This is normally fixed at `10` but can be changed.
+     * The max amount of mana the player can have. This is normally fixed at `10` but can be changed.
      * 
      * # Examples
      * ```
-     * player.maxMaxMana = 20;
+     * player.maxMana = 20;
      * // Now `player.maxMana` will increment every turn until it reaches 20.
      * ```
      */
-    maxMaxMana: number = 10;
+    maxMana: number = 10;
 
     /**
      * The amount of overload the player has. See the overload mechanic on the Hearthstone Wiki.
@@ -358,12 +358,12 @@ export class Player {
      * 
      * assert.equal(player.mana, 7);
      * ```
-     * If comp is `player.maxMaxMana`
+     * If comp is `player.maxMana`
      * ```
      * assert.equal(player.emptyMana, 7);
      * assert.equal(player.mana, 5);
      * 
-     * player.refreshMana(10, player.maxMaxMana);
+     * player.refreshMana(10, player.maxMana);
      * 
      * assert.equal(player.mana, 10);
      * ```
@@ -392,7 +392,7 @@ export class Player {
     }
 
     /**
-     * Increases max mana by `mana`, avoids going over `player.maxMaxMana` (10 by default) mana.
+     * Increases max mana by `mana`, avoids going over `player.maxMana` (10 by default) mana.
      * 
      * # Examples
      * If you set `cap` to true
@@ -411,7 +411,7 @@ export class Player {
     gainEmptyMana(mana: number): boolean {
         this.emptyMana += mana;
 
-        if (this.maxMana > this.maxMaxMana) this.maxMana = this.maxMaxMana;
+        if (this.emptyMana > this.maxMana) this.emptyMana = this.maxMana;
 
         return true;
     }
