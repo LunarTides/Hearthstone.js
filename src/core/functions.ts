@@ -829,15 +829,15 @@ ${err.stack}
         main_content += config_content;
         main_content += errorContent;
 
-        let commitHash = this.runCommand("git rev-parse HEAD").trim();
+        let commitHash = this.runCommand("git rev-parse --short=7 HEAD").trim();
         let osInfo: string = process.platform;
         if (osInfo === "linux") osInfo = this.runCommand("uname -a");
 
         let content = `Hearthstone.js ${name}
 Date: ${dateString}
-Version: ${game.config.info.version}-${game.config.info.branch} [${commitHash}]
+Version: ${game.config.info.version}-${game.config.info.branch} (${commitHash})
 Operating System: ${osInfo}
-Log File Version: 2
+Log File Version: 3
 
 ${main_content}
 `
