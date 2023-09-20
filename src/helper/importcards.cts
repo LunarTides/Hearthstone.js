@@ -55,7 +55,7 @@ function _doImportCards(path: string, hot = false) {
  * @returns The cards
  */
 export function reloadCards(path: string) {
-    if (game.config.advanced.reloadCommandRecompile) child_process.execSync(`npx tsc -p "${path}/../.."`);
+    if (game.config.advanced.reloadCommandRecompile) game.functions.runCommand(`npx tsc -p "${path}/../.."`);
     
     let result = doImportCards(path, true);
     if (!game.functions.runBlueprintValidator()) {

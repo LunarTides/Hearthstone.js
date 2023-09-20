@@ -143,7 +143,7 @@ function main() {
 
     game.log("Trying to compile...");
     try {
-        child_process.execSync("npx tsc");
+        game.functions.runCommand("npx tsc");
         game.log("<bright:green>Success!</bright:green>");
     } catch (err) {
         // If the error code is 2, warn the user.

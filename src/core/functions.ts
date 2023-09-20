@@ -858,6 +858,13 @@ ${main_content}
     },
 
     /**
+     * Runs a command and returns the result
+     */
+    runCommand(cmd: string) {
+        return child_process.execSync(cmd).toString();
+    },
+
+    /**
      * Returns an AI Error with the provided information.
      *
      * @param code The function where the error occurred.
@@ -972,7 +979,7 @@ ${main_content}
                     game.log(`Trying '${test_command} ${args_specifier}${command} ${args}'...`)
                     attempts.push(test_command);
 
-                    child_process.execSync(`which ${test_command} 2> /dev/null`);
+                    this.runCommand(`which ${test_command} 2> /dev/null`);
                     child_process.exec(`${test_command} ${args_specifier}${command} ${args}`);
 
                     game.log(`Success!`);

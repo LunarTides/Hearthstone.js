@@ -5,7 +5,6 @@
  */
 
 import fs from "fs";
-import { execSync as run } from "child_process";
 import { createGame } from "../src/internal.js";
 
 const { game, player1, player2 } = createGame();
@@ -150,7 +149,7 @@ export function validate(log: boolean): [number, number] {
 
 function main() {
     // Check if your git is clean
-    const gitStatus = run("git status --porcelain").toString();
+    const gitStatus = game.functions.runCommand("git status --porcelain");
     if (gitStatus) {
         game.logError("<yellow>WARNING: You have uncommitted changes. Please commit them before running a non-safe command.</yellow>");
         //process.exit(1);
