@@ -1782,4 +1782,7 @@ export const interact = {
     }
 }
 
-const cls = () => process.stdout.write('\x1bc');
+const cls = () => {
+    console.clear();
+    process.stdout.write('\x1bc');
+}
