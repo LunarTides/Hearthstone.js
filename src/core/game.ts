@@ -692,18 +692,19 @@ export class Game {
         this.board[op.id].forEach(m => {
             // Dormant
             if (m.dormant) {
-                if (this.turns > m.dormant) {
-                    m.dormant = undefined;
-                    m.sleepy = true;
+                if (this.turns <= m.dormant) return;
 
-                    m.immune = m.backups.init.immune;
-                    m.turn = this.turns;
+                // Remove dormant
+                m.dormant = undefined;
+                m.sleepy = true;
 
-                    // If the battlecry use a function that depends on `game.player`
-                    this.player = op;
-                    m.activateBattlecry();
-                    this.player = plr;
-                }
+                m.immune = m.backups.init.immune;
+                m.turn = this.turns;
+
+                // HACK: If the battlecry use a function that depends on `game.player`
+                this.player = op;
+                m.activateBattlecry();
+                this.player = plr;
 
                 return;
             }
@@ -1476,6 +1477,7 @@ const cards = {
         }
 
         if (minion.dormant) {
+            // Oh no... Why is this not documented?
             minion.dormant += game.turns;
             minion.immune = true;
             minion.sleepy = false;

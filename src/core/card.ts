@@ -170,7 +170,6 @@ export class Card {
     /**
      * If the card is dormant | The turn that the dormant runs out
      */
-    // TODO: Rewrite dormant
     dormant?: number;
 
     /**

@@ -13,7 +13,7 @@ export const blueprint: Blueprint = {
     rarity: "Free",
 
     // How many turns this minion should be dormant for.
-    // Full disclosure: The dormant system is one of the most untested parts of this game, and might be rewritten in the future.
+    // Full disclosure: The dormant system is one of the most untested parts of this game.
     // If you find any bugs, please open an issue.
     dormant: 2,
 
