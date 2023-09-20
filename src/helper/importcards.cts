@@ -1,7 +1,6 @@
 require = require('esm')(module);
 
 import fs from "fs";
-import child_process from "child_process";
 
 let cards: any[] = [];
 let oldContent: string[][] = [];

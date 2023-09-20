@@ -2,7 +2,6 @@
  * Interact stuff.
  * @module Interact
  */
-import { exec } from 'child_process';
 import { Card, Player } from '../internal.js';
 import { AIHistory, CardLike, EventValue, GameConfig, GamePlayCardReturn, SelectTargetAlignment, SelectTargetClass, SelectTargetFlag, Target } from '../types.js';
 import { reloadCards } from '../helper/importcards.cjs';
@@ -236,7 +235,7 @@ export const interact = {
         }
         else if (name === "license") {
             let start = (process.platform == 'darwin' ? 'open' : process.platform == 'win32' ? 'start' : 'xdg-open');
-            exec(start + ' ' + license_url);
+            game.functions.runCommand(start + ' ' + license_url);
         }
         else if (name === "version") {
             let version = game.config.info.version;
