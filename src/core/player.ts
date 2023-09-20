@@ -113,9 +113,9 @@ export class Player {
      * # Examples
      * @example
      * // Use `player.gainEmptyMana(2)` instead in a real situation.
-     * player.maxMana += 2;
+     * player.emptyMana += 2;
      */
-    maxMana: number = 0;
+    emptyMana: number = 0;
     
     /**
      * The max amount of max mana the player can have. This is normally fixed at `10` but can be changed.
@@ -351,7 +351,7 @@ export class Player {
      * 
      * # Examples
      * ```
-     * assert.equal(player.maxMana, 7);
+     * assert.equal(player.emptyMana, 7);
      * assert.equal(player.mana, 5);
      * 
      * player.refreshMana(10);
@@ -360,7 +360,7 @@ export class Player {
      * ```
      * If comp is `player.maxMaxMana`
      * ```
-     * assert.equal(player.maxMana, 7);
+     * assert.equal(player.emptyMana, 7);
      * assert.equal(player.mana, 5);
      * 
      * player.refreshMana(10, player.maxMaxMana);
@@ -377,12 +377,12 @@ export class Player {
      * ```
      * 
      * @param mana The mana to add
-     * @param comp The comperison. This defaults to `player.maxMana`.
+     * @param comp The comperison. This defaults to `player.emptyMana`.
      * 
      * @returns Success
      */
     refreshMana(mana: number, comp?: number): boolean {
-        if (!comp) comp = this.maxMana;
+        if (!comp) comp = this.emptyMana;
 
         this.mana += mana;
 
@@ -397,11 +397,11 @@ export class Player {
      * # Examples
      * If you set `cap` to true
      * ```
-     * assert.equal(player.maxMana, 5);
+     * assert.equal(player.emptyMana, 5);
      * 
      * player.gainEmptyMana(10);
      * 
-     * assert.equal(player.maxMana, 10);
+     * assert.equal(player.emptyMana, 10);
      * ```
      * 
      * @param mana The empty mana to add.
@@ -409,7 +409,7 @@ export class Player {
      * @returns Success 
      */
     gainEmptyMana(mana: number): boolean {
-        this.maxMana += mana;
+        this.emptyMana += mana;
 
         if (this.maxMana > this.maxMaxMana) this.maxMana = this.maxMaxMana;
 

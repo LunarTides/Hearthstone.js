@@ -485,8 +485,8 @@ export const interact = {
             game.evaling = false;
         }
         else if (name === "/debug") {    
-            game.player.maxMaxMana = 1000;
             game.player.maxMana = 1000;
+            game.player.emptyMana = 1000;
             game.player.mana = 1000;
     
             game.player.health += 10000;
@@ -1662,7 +1662,7 @@ export const interact = {
 
         // Mana
         doStat((player: Player) => {
-            return [`Mana: <cyan>${player.mana}</cyan> / <cyan>${player.maxMana}</cyan>`, 0];
+            return [`Mana: <cyan>${player.mana}</cyan> / <cyan>${player.emptyMana}</cyan>`, 0];
         });
 
         // Health

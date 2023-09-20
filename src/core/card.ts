@@ -912,12 +912,12 @@ export class Card {
         return this.activate("battlecry", ...args);
     }
     /**
-     * Returns `m` is more than or equal to the player's max mana
+     * Returns manathirst for `m`
      * 
      * @param m The mana to test
      */
     manathirst(m: number): boolean {
-        return this.plr.maxMana >= m;
+        return this.plr.emptyMana >= m;
     }
 
     /**

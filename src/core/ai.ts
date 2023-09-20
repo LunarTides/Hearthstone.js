@@ -244,7 +244,7 @@ export class AI {
         Object.entries(player).forEach(f => {
             let [key, val] = f;
 
-            let i = ["health", "maxHealth", "armor", "maxMana"];
+            let i = ["health", "maxHealth", "armor", "emptyMana"];
             if (!i.includes(key)) return;
 
             score += val;

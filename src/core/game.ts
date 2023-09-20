@@ -609,7 +609,7 @@ export class Game {
         this.player1 = players[0];
         this.player2 = players[1];
 
-        this.player1.maxMana = 1;
+        this.player1.emptyMana = 1;
         this.player1.mana = 1;
 
         let the_coin = new Card("The Coin", this.player2);
@@ -676,7 +676,7 @@ export class Game {
         
         // Mana stuff
         op.gainEmptyMana(1);
-        op.mana = op.maxMana - op.overload;
+        op.mana = op.emptyMana - op.overload;
         op.overload = 0;
         op.attack = 0;
 
