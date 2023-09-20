@@ -830,13 +830,21 @@ ${err.stack}
         main_content += errorContent;
 
         let commitHash = this.runCommand("git rev-parse --short=7 HEAD").trim();
-        let osInfo: string = process.platform;
-        if (osInfo === "linux") osInfo = this.runCommand("uname -a");
+        let osName: string = process.platform;
 
+        if (osName === "linux") {
+            // Get the operating system name from /etc/os-release
+            osName = this.runCommand("cat /etc/os-release").split('PRETTY_NAME="')[1].split('"\n')[0];
+
+            // Also add information from uname
+            osName += " (" + this.runCommand("uname -srvmo").trim() + ")";
+        }
+        else if (osName === "win32") osName = "Windows"
+        
         let content = `Hearthstone.js ${name}
 Date: ${dateString}
 Version: ${game.config.info.version}-${game.config.info.branch} (${commitHash})
-Operating System: ${osInfo}
+Operating System: ${osName}
 Log File Version: 3
 
 ${main_content}
