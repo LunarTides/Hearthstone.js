@@ -3,11 +3,11 @@
  * @module Vanilla Card Creator
  */
 
-import { Blueprint, CardClass, CardRarity, MinionTribe, SpellSchool, VanillaCard } from "../../src/types.js";
-import { createGame } from "../../src/internal.js";
+import { Blueprint, CardClass, CardRarity, MinionTribe, SpellSchool, VanillaCard } from "../src/types.js";
+import { createGame } from "../src/internal.js";
 
 import rl from "readline-sync";
-import * as lib from "../lib.js";
+import * as lib from "./lib.js";
 
 const { game, player1, player2 } = createGame();
 

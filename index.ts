@@ -5,11 +5,11 @@
 import fs from "fs";
 import toml from "toml";
 
-import * as src from "./src/index.js";                 // Source Code
-import * as dc  from "./deckcreator/index.js";         // Deck Creator
-import * as ccc from "./cardcreator/custom/index.js";  // Custom Card Creator
-import * as vcc from "./cardcreator/vanilla/index.js"; // Vanilla Card Creator
-import * as clc from "./cardcreator/class/index.js";   // Class Creator
+import * as src from "./src/index.js";           // Source Code
+import * as dc  from "./deckcreator/index.js";   // Deck Creator
+import * as ccc from "./cardcreator/custom.js";  // Custom Card Creator
+import * as vcc from "./cardcreator/vanilla.js"; // Vanilla Card Creator
+import * as clc from "./cardcreator/class.js";   // Class Creator
 import { GameConfig } from "@Game/types.js";
 
 let config: GameConfig = toml.parse(fs.readFileSync("./config.toml", { encoding: "utf8" }));

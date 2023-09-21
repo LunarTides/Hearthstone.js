@@ -43,5 +43,5 @@ clean:
 	@rm -rf ./dist/
 	@rm -rf ./node_modules/
 	@rm -rf ./docs/
-	@rm -rf ./cardcreator/vanilla/.ignore.cards.json
+	@rm -rf ./.ignore.cards.json
 

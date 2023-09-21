@@ -1127,7 +1127,7 @@ ${main_content}
      * @returns The vanilla cards, and an error message (if any)
      */
     getVanillaCards(error?: string): [VanillaCard[], string | null] {
-        const fileLocation = this.dirname() + "../cardcreator/vanilla/.ignore.cards.json";
+        const fileLocation = this.dirname() + "../.ignore.cards.json";
         if (fs.existsSync(fileLocation)) {
             return [JSON.parse(fs.readFileSync(fileLocation, "utf8")) as VanillaCard[], null];
         }
