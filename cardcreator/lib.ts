@@ -27,11 +27,12 @@ function getCardAbility(card_type: CardType) {
         let reg = /[A-Z][a-z].*?:/;
         func = card.desc.match(reg);
 
-        if (card.desc === "") func = ":"; // If the card doesn't have a description, it doesn't get a default function.
-        else if (!func) func = "Passive:"; // If it didn't find a function, but the card has text in its' description, the function is 'passive'
-        else func = func[0]; // If it found a function, and the card has a description, the function is the function it found in the description.
-
-        func = func.slice(0, -1); // Remove the last ':'
+        if (card.desc === "") func = ""; // If the card doesn't have a description, it doesn't get a default function.
+        else if (!func) func = "Passive"; // If it didn't find a function, but the card has text in its' description, the function is 'passive'
+        else {
+            func = func[0]; // If it found a function, and the card has a description, the function is the function it found in the description.
+            func = func.slice(0, -1); // Remove the last ':'
+        }
     }
 
     return func;
