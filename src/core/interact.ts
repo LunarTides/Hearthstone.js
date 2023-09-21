@@ -240,6 +240,7 @@ export const interact = {
         else if (name === "version") {
             let version = game.config.info.version;
             let branch = game.config.info.branch;
+            let build = game.config.info.build;
 
             while (true) {
                 let todos = Object.entries(game.config.todo);
@@ -253,6 +254,8 @@ export const interact = {
                     else if (branch == "alpha") strbuilder += "the alpha branch";
                     else if (branch == "beta") strbuilder += "the beta branch";
                     else if (branch == "stable") strbuilder += "the stable (release) branch";
+
+                    strbuilder += ` on build ${build}`;
     
                     if (game.config.general.debug === true && game.config.ai.player2 === true) strbuilder += " using the debug settings preset";
                     else if (game.config.general.debug === false && game.config.ai.player2 === false) strbuilder += " using the recommended settings preset";
