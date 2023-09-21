@@ -248,14 +248,15 @@ export const interact = {
                 const print_info = () => {
                     this.printAll(game.player);
 
-                    let strbuilder = `\nYou are on version: ${version} on `;
+                    let strbuilder = `\nYou are on version: ${version}, on `;
     
                     if (branch == "topic") strbuilder += "a topic branch";
                     else if (branch == "alpha") strbuilder += "the alpha branch";
                     else if (branch == "beta") strbuilder += "the beta branch";
                     else if (branch == "stable") strbuilder += "the stable (release) branch";
 
-                    strbuilder += ` on build ${build}`;
+                    strbuilder += `, on build ${build}`;
+                    strbuilder += `, with latest commit hash '${game.functions.getLatestCommit()}',`
     
                     if (game.config.general.debug === true && game.config.ai.player2 === true) strbuilder += " using the debug settings preset";
                     else if (game.config.general.debug === false && game.config.ai.player2 === false) strbuilder += " using the recommended settings preset";
