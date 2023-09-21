@@ -9,6 +9,7 @@
     "start": "node ./dist/index.js",
     "docs": "typedoc ./",
     "script:vcgenerator": "node ./dist/scripts/vanillacards/generator",
+    "script:vcpropfinder": "node ./dist/scripts/vanillacards/propfinder",
     "script:breakingchange": "node ./dist/scripts/breakingchange.js",
     "script:cardupdater": "node ./dist/scripts/cardupdater.js",
     "script:crashtest": "node ./dist/scripts/crashtest.js",
