@@ -579,7 +579,6 @@ export type GameConfig = {
 
     info: {
         version: string,
-        branch: "stable" | "dev" | "topic",
         branch: "stable" | "beta" | "alpha" | "topic",
 
         versionText: string,
@@ -587,6 +586,7 @@ export type GameConfig = {
 
         stableIntroText: string,
         betaIntroText: string,
+        alphaIntroText: string,
         topicIntroText: string,
     }
 

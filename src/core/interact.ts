@@ -250,6 +250,7 @@ export const interact = {
                     let strbuilder = `\nYou are on version: ${version} on `;
     
                     if (branch == "topic") strbuilder += "a topic branch";
+                    else if (branch == "alpha") strbuilder += "the alpha branch";
                     else if (branch == "beta") strbuilder += "the beta branch";
                     else if (branch == "stable") strbuilder += "the stable (release) branch";
     
@@ -264,6 +265,7 @@ export const interact = {
                     let introText;
 
                     if (branch == "topic") introText = game.config.info.topicIntroText;
+                    else if (branch == "alpha") introText = game.config.info.alphaIntroText;
                     else if (branch == "beta") introText = game.config.info.betaIntroText;
                     else if (branch == "stable") introText = game.config.info.stableIntroText;
 

@@ -191,7 +191,7 @@ hideValueHistoryKeys = [
 version = "2.0.0"
 
 # The branch that the version is on.
-# This can be "stable", "dev" or "topic"
+# This can be "stable", "beta", "alpha" or "topic"
 branch = "beta"
 
 # The text that is displayed along this specific version/branch combination.
