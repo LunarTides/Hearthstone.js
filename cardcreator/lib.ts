@@ -14,28 +14,29 @@ let type: CardType;
 
 export type CCType = "Unknown" | "Class" | "Custom" | "Vanilla";
 
-function getCardAbility(card_type: CardType) {
+function getCardAbility(cardType: CardType) {
     // Get the card's ability
-    let func;
+    let ability;
 
-    if (card_type == "Spell") func = "Cast"; // If the card is a spell, the function is 'cast'
-    else if (card_type == "Hero") func = "HeroPower"; // If the card is a hero card, the function is 'heropower'
-    else if (card_type == "Location") func = "Use"; // If the card is a location, the function is 'use'
+    if (cardType == "Spell") ability = "Cast"; // If the card is a spell, the ability is 'cast'
+    else if (cardType == "Hero") ability = "HeroPower"; // If the card is a hero card, the ability is 'heropower'
+    else if (cardType == "Location") ability = "Use"; // If the card is a location, the ability is 'use'
     else {
-        // TODO: Reformat this
-        // Try to extract a function from the card's description
-        let reg = /[A-Z][a-z].*?:/;
-        func = card.desc.match(reg);
+        // Try to extract an ability from the card's description
+        let reg = /([A-Z][a-z].*?):/g;
+        let foundAbility = card.desc.match(reg);
 
-        if (card.desc === "") func = ""; // If the card doesn't have a description, it doesn't get a default function.
-        else if (!func) func = "Passive"; // If it didn't find a function, but the card has text in its' description, the function is 'passive'
-        else {
-            func = func[0]; // If it found a function, and the card has a description, the function is the function it found in the description.
-            func = func.slice(0, -1); // Remove the last ':'
-        }
+        // If the card doesn't have a description, it doesn't get an ability.
+        if (!card.desc) ability = "";
+
+        // If it didn't find an ability, but the card has text in it's description, the ability is 'passive'
+        else if (!foundAbility) ability = "Passive";
+
+        // If it found an ability, and the card has a description, the ability is the ability it found in the description.
+        else ability = foundAbility[1];
     }
 
-    return func;
+    return ability;
 }
 
 function generateCardPath(...args: [CardClass[], CardType]) {
