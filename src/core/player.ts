@@ -478,7 +478,7 @@ export class Player {
      * @returns Success
      */
     setWeapon(weapon: Card): boolean {
-        this.destroyWeapon(true);
+        this.destroyWeapon();
         this.weapon = weapon;
         this.attack += weapon.getAttack();
 
@@ -494,21 +494,20 @@ export class Player {
      * assert.equal(player.weapon.getAttack(), 5);
      * assert.equal(player.attack, 5);
      * 
-     * player.destroyWeapon(false); // Don't trigger the card's deathrattle. This is the default.
+     * player.destroyWeapon();
      * 
      * assert.equal(player.weapon, null);
      * assert.equal(player.attack, 0);
      * ```
      * 
-     * @param triggerDeathrattle Should trigger the weapon's deathrattle
-     * 
      * @returns Success
      */
-    destroyWeapon(triggerDeathrattle = false): boolean {
+    destroyWeapon(): boolean {
         if (!this.weapon) return false;
 
-        if (triggerDeathrattle) this.weapon.activate("deathrattle");
+        this.weapon.activate("deathrattle");
         this.attack -= this.weapon.getAttack();
+
         this.weapon.destroy();
         this.weapon = undefined;
 

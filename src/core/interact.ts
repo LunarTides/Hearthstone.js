@@ -532,7 +532,7 @@ export const interact = {
 
             // If the card is a weapon, destroy it before adding it to the player's hand.
             if (card.type === "Weapon") {
-                game.player.destroyWeapon(true);
+                game.player.destroyWeapon();
             }
 
             // If the card is a hero, reset the player's hero to the default one from their class.

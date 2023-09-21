@@ -672,7 +672,7 @@ export class Card {
         game.events.broadcast("DamageMinion", [this, amount], this.plr);
 
         if (this.type == "Weapon" && this.getHealth() <= 0) {
-            this.plr.destroyWeapon(true);
+            this.plr.destroyWeapon();
         }
 
         return true;
@@ -906,6 +906,7 @@ export class Card {
      * @returns The return values of all the battlecries triggered
      */
     activateBattlecry(...args: any): any[] | -1 | false {
+        // TODO: Is this needed anymore?
         // Trigger the card's passive first, so cards that get played immediately gets their passive triggered before their battlecry
         this.activate("passive", "battlecry", this, game.turns);
 
