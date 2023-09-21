@@ -16,7 +16,7 @@ function main() {
             let oldLength = data.length;
             data = game.functions.filterVanillaCards(data, false, false, true);
 
-            writeFile(game.functions.dirname() + "../.ignore.cards.json", JSON.stringify(data), err => {
+            writeFile(game.functions.dirname() + "../vanillacards.json", JSON.stringify(data), err => {
                 if (err) throw err;
             });
 
