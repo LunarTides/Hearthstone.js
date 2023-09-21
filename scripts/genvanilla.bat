@@ -1,2 +1,2 @@
 @echo off
-npm run generate
+npm run script:vcgenerator

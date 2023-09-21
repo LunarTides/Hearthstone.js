@@ -1,1 +1,1 @@
-npm run generate
+npm run script:vcgenerator
