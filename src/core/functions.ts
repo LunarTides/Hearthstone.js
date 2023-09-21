@@ -1862,7 +1862,7 @@ ${main_content}
 
                 break;
             case "Living Spores":
-                minion.addDeathrattle((plr, game) => {
+                minion.addAbility("deathrattle", (plr, game, self) => {
                     game.summonMinion(new Card("Plant", plr), plr);
                     game.summonMinion(new Card("Plant", plr), plr);
                 });

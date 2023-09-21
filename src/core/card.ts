@@ -438,16 +438,17 @@ export class Card {
     }
 
     /**
-     * Adds a deathrattle to the card
+     * Adds an ability to the card
      * 
-     * @param _deathrattle The deathrattle to add
+     * @param ability The name of the ability
+     * @param callback The callback function to add to the ability
      * 
      * @returns Success
      */
-    addDeathrattle(_deathrattle: Ability): boolean {
-        if (!this.abilities.deathrattle) this.abilities.deathrattle = [];
+    addAbility(ability: CardAbility, callback: Ability): boolean {
+        if (!this.abilities[ability]) this.abilities[ability] = [];
 
-        this.abilities.deathrattle.push(_deathrattle);
+        this.abilities[ability]?.push(callback);
 
         // Just in case we want this function to ever fail, we make it return success.
         return true;

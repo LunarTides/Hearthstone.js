@@ -4,7 +4,7 @@
  */
 import { question }  from 'readline-sync';
 import { functions, interact, Player, Card, AI } from "../internal.js";
-import { Blueprint, EventKey, EventManagerEvents, EventValue, GameAttackReturn, GameConfig, GameConstants, GamePlayCardReturn, QuestType, Target, TickHookCallback, UnknownEventValue } from "../types.js";
+import { Blueprint, CardAbility, EventKey, EventManagerEvents, EventValue, GameAttackReturn, GameConfig, GameConstants, GamePlayCardReturn, QuestType, Target, TickHookCallback, UnknownEventValue } from "../types.js";
 
 // Override the console methods to force using the wrapper functions
 // Set this variable to false to prevent disabling the console. (Not recommended)
@@ -1380,35 +1380,38 @@ const playCard = {
         if (mechs.length <= 0) return false;
 
         // I'm using while loops to prevent a million indents
-        let minion = game.interact.selectCardTarget("Which minion do you want game to Magnetize to:", null, "friendly");
-        if (!minion) return false;
+        let mech = game.interact.selectCardTarget("Which minion do you want game to Magnetize to:", null, "friendly");
+        if (!mech) return false;
 
-        if (!minion.tribe?.includes("Mech")) {
+        if (!mech.tribe?.includes("Mech")) {
             game.log("That minion is not a Mech.");
             return playCard._magnetize(card, player);
         }
 
-        minion.addStats(card.getAttack(), card.getHealth());
+        mech.addStats(card.getAttack(), card.getHealth());
 
         card.keywords.forEach(k => {
             // TSC for some reason, forgets that minion should be of `Card` type here, so we have to remind it. This is a workaround
-            if (!(minion instanceof Card)) return;
+            if (!(mech instanceof Card)) return;
 
-            minion.addKeyword(k);
+            mech.addKeyword(k);
         });
 
-        if (minion.maxHealth && card.maxHealth) {
-            minion.maxHealth += card.maxHealth;
+        if (mech.maxHealth && card.maxHealth) {
+            mech.maxHealth += card.maxHealth;
         }
 
-        if (card.abilities.deathrattle) {
-            card.abilities.deathrattle.forEach(d => {
+        // Transfer the abilities over.
+        Object.entries(card.abilities).forEach(ent => {
+            let [key, val] = ent;
+
+            val.forEach(ability => {
                 // Look at the comment above
-                if (!minion) throw new Error("Target wasn't found.");
+                if (!mech) throw new Error("Target wasn't found.");
 
-                minion.addDeathrattle(d);
+                mech.addAbility(key as CardAbility, ability);
             });
-        }
+        });
 
         // Echo
         playCard._echo(card, player);
