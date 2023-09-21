@@ -418,8 +418,37 @@ export type VanillaCard = {
     health?: number,
 
     howToEarn?: string,
+    // All props below this line was found by the vcpropfinder
+    classes?: CardClass[]
+    heroPowerDbfId?: number,
+    referencesTags?: string[],
+    targetingArrowText?: string,
+    overload?: number,
+    spellDamage?: number,
+    collectionText?: string,
+    hasDiamondSkin?: boolean,
+    howToEarnGolden?: string,
+    armor?: number,
+    multiClassGroup?: string,
+    isMiniSet?: boolean,
+    questReward?: string,
+
+    // Likely part of other gamemodes. Useless for this game
+    mercenariesRole?: string,
+    mercenariesAbilityCooldown?: number,
+    techLevel?: number,
+    hideCost?: boolean,
+    hideStats?: boolean,
+    isBattlegroundsPoolMinion?: boolean,
+    battlegroundsPremiumDbfId?: number,
     battlegroundsNormalDbfId?: number,
-    mercenariesRole?: string
+    battlegroundsBuddyDbfId?: number,
+    battlegroundsHero?: boolean,
+    isBattlegroundsBuddy?: boolean,
+    battlegroundsSkinParentId?: number,
+    battlegroundsDarkmoonPrizeTurn?: number,
+    countAsCopyOfDbfId?: number,
+    puzzleType?: number,
 };
 
 /**
