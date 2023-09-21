@@ -580,19 +580,20 @@ export type GameConfig = {
     info: {
         version: string,
         branch: "stable" | "dev" | "topic",
+        branch: "stable" | "beta" | "alpha" | "topic",
 
         versionText: string,
         todo: {[key: string]: string[]},
 
         stableIntroText: string,
-        developIntroText: string,
+        betaIntroText: string,
         topicIntroText: string,
     }
 
-    todo: {[name: string]: [
+    todo: {[name: string]: {
         state: "not done" | "doing" | "done" | "first pass" | "second pass" | "third pass",
         description: string
-    ]}
+    }}
 }
 
 /**

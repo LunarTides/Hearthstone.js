@@ -250,7 +250,7 @@ export const interact = {
                     let strbuilder = `\nYou are on version: ${version} on `;
     
                     if (branch == "topic") strbuilder += "a topic branch";
-                    else if (branch == "dev") strbuilder += "the develop (beta) branch";
+                    else if (branch == "beta") strbuilder += "the beta branch";
                     else if (branch == "stable") strbuilder += "the stable (release) branch";
     
                     if (game.config.general.debug === true && game.config.ai.player2 === true) strbuilder += " using the debug settings preset";
@@ -264,7 +264,7 @@ export const interact = {
                     let introText;
 
                     if (branch == "topic") introText = game.config.info.topicIntroText;
-                    else if (branch == "dev") introText = game.config.info.developIntroText;
+                    else if (branch == "beta") introText = game.config.info.betaIntroText;
                     else if (branch == "stable") introText = game.config.info.stableIntroText;
 
                     game.log(introText);

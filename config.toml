@@ -192,14 +192,15 @@ version = "2.0.0"
 
 # The branch that the version is on.
 # This can be "stable", "dev" or "topic"
-branch = "dev"
+branch = "beta"
 
 # The text that is displayed along this specific version/branch combination.
-versionText = "Make the project use typescript instead of javascript. THIS VERSION IS HIGHLY UNSTABLE AND WILL CRASH."
+versionText = "Make the project use typescript instead of javascript."
 
 # Some stuff that should really be constants
-stableIntroText = "This is the main (stable) branch. This branch is older, but is more stable. I recommend you use this branch."
-developIntroText = "This is the develop (beta) branch. This has more features, but is less stable. I would advise against using this branch if you can help it. The todo list is not final and can change."
+stableIntroText = "This is the stable branch. This branch is older, but is more stable. I recommend you use this branch."
+betaIntroText = "This is the beta branch. This has more features, but is less stable. I would advise against using this branch if you can help it. The todo list is not final and can change."
+alphaIntroText = "This is the alpha branch. This is the bleeding edge of Hearthstone.js. I would highly advise against using this branch if you can help it. Expect many bugs and breaking changes."
 topicIntroText = "This is a topic (feature) branch. This branch exists to add one single feature, can be highly unstable, and will be deleted in the future once the feature is done. I HIGHLY RECOMMEND NOT USING THIS BRANCH FOR ANY REASON."
 
 [todo]
