@@ -17,6 +17,7 @@ import { doImportCards } from "../helper/importcards.cjs";
 import { Player, Card } from "../internal.js";
 import { Blueprint, CardClass, CardClassNoNeutral, CardLike, CardRarity, EventKey, EventListenerCallback, FunctionsExportDeckError, FunctionsValidateCardReturn, MinionTribe, QuestCallback, RandListReturn, Target, TickHookCallback, VanillaCard } from "../types.js";
 import { validateBlueprint } from "../helper/validator.js";
+import { format } from "util";
 
 let game = globalThis.game;
 
@@ -829,7 +830,6 @@ ${err.stack}
         main_content += config_content;
         main_content += errorContent;
 
-        let commitHash = this.runCommand("git rev-parse --short=7 HEAD").trim();
         let osName: string = process.platform;
 
         if (osName === "linux") {
@@ -843,7 +843,7 @@ ${err.stack}
         
         let content = `Hearthstone.js ${name}
 Date: ${dateString}
-Version: ${game.config.info.version}-${game.config.info.branch} (${commitHash})
+Version: ${game.config.info.version}-${game.config.info.branch}.${game.config.info.build} (${this.getLatestCommit()})
 Operating System: ${osName}
 Log File Version: 3
 
@@ -867,6 +867,14 @@ ${main_content}
         game.input();
 
         return true;
+    },
+
+
+    /**
+     * Returns the latest commit hash
+     */
+    getLatestCommit() {
+        return this.runCommand("git rev-parse --short=7 HEAD").trim();
     },
 
     /**
