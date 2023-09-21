@@ -1349,8 +1349,9 @@ export const interact = {
         game = globalThis.game;
 
         let info = game.config.info;
+        let versionDetail = game.player.detailedView ? 3 : 2;
     
-        let watermarkString = `HEARTHSTONE.JS V${info.version}-${info.branch}`;
+        let watermarkString = `HEARTHSTONE.JS V${game.functions.getVersion(versionDetail)}`;
         let border = "-".repeat(watermarkString.length + 2);
     
         game.log(`|${border}|`);
@@ -1374,12 +1375,12 @@ export const interact = {
     
         cls();
     
-        let version = `Hearthstone.js V${info.version}-${info.branch} | Copyright (C) 2022 | LunarTides`;
+        let version = `Hearthstone.js V${game.functions.getVersion(1)} | Copyright (C) 2022 | LunarTides`;
         game.log('|'.repeat(version.length + 8));
         game.log(`||| ${version} |||`)
-        game.log(`|||     This program is licensed under the GPL-3.0 license.   ` + ' '.repeat(info.branch.length) + "|||")
+        game.log(`|||     This program is licensed under the GPL-3.0 license.  ` + ' '.repeat(info.branch.length) + "|||")
         if (disappear)
-        game.log(`|||         This will disappear once you end your turn.       ` + ' '.repeat(info.branch.length) + `|||`)
+        game.log(`|||         This will disappear once you end your turn.      ` + ' '.repeat(info.branch.length) + `|||`)
         game.log('|'.repeat(version.length + 8));
     },
 
