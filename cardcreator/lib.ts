@@ -14,14 +14,15 @@ let type: CardType;
 
 export type CCType = "Unknown" | "Class" | "Custom" | "Vanilla";
 
-function getCardFunction(card_type: CardType) {
-    // Get the card's 'function' (battlecry, cast, deathrattle, etc...)
+function getCardAbility(card_type: CardType) {
+    // Get the card's ability
     let func;
 
     if (card_type == "Spell") func = "Cast"; // If the card is a spell, the function is 'cast'
     else if (card_type == "Hero") func = "HeroPower"; // If the card is a hero card, the function is 'heropower'
     else if (card_type == "Location") func = "Use"; // If the card is a location, the function is 'use'
-    else { // If the card is a Minion or Weapon
+    else {
+        // TODO: Reformat this
         // Try to extract a function from the card's description
         let reg = /[A-Z][a-z].*?:/;
         func = card.desc.match(reg);
@@ -80,7 +81,7 @@ export function create(creatorType: CCType, cardType: CardType, blueprint: Bluep
     type = cardType;
     card = blueprint;
 
-    let func = getCardFunction(type);
+    let func = getCardAbility(type);
 
     // Here it creates a default function signature
     let isPassive = func.toLowerCase() == "passive";
@@ -101,7 +102,7 @@ export function create(creatorType: CCType, cardType: CardType, blueprint: Bluep
     // card.hpDesc can be undefined, but shouldn't be if the type is Hero.
     if (desc_to_clean === undefined) throw new Error("Card has no hero power description.");
 
-    // If the desc has `<b>Battlecry:</b> Dredge.`, add `// Dredge.` to the battlecry function
+    // If the desc has `<b>Battlecry:</b> Dredge.`, add `// Dredge.` to the battlecry ability
     let cleaned_desc = game.functions.stripTags(desc_to_clean).replace(`${func}: `, "");
 
     // Example 1: '\n\n    passive(plr, game, self, key, _unknownValue) {\n        // Your battlecries trigger twice.\n        ...\n    }',
