@@ -6,9 +6,9 @@
   "main": "./dist/index.js",
   "type": "module",
   "scripts": {
-    "generate": "node dist/cardcreator/vanilla/generator",
     "start": "node ./dist/index.js",
     "docs": "typedoc ./",
+    "script:vcgenerator": "node ./dist/scripts/vanillacards/generator",
     "script:breakingchange": "node ./dist/scripts/breakingchange.js",
     "script:cardupdater": "node ./dist/scripts/cardupdater.js",
     "script:crashtest": "node ./dist/scripts/crashtest.js",
