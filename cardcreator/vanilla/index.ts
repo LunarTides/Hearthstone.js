@@ -172,12 +172,11 @@ export function main() {
             filtered_cards.forEach((c, i) => {
                 // Get rid of useless information
                 delete c["elite"];
+                delete c["heroPowerDbfId"];
                 // @ts-expect-error
                 delete c["id"];
                 // @ts-expect-error
                 delete c["artist"];
-                // @ts-expect-error
-                delete c["heroPowerDbfId"];
                 // @ts-expect-error
                 delete c["flavor"];
                 // @ts-expect-error
