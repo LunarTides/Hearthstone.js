@@ -288,7 +288,7 @@ export const interact = {
                     break;
                 }
 
-                const print_todo = (todo: [string, string[]], id: number, print_desc = false) => {
+                const print_todo = (todo: any, id: number, print_desc = false) => {
                     let [name, info] = todo;
                     let [state, desc] = info;
 
