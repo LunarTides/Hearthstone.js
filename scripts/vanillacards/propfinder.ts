@@ -21,6 +21,9 @@ function main() {
             let [key, val] = ent;
 
             if (Object.keys(props).includes(key)) {
+                let storedType = props[key][0];
+                if (storedType !== typeof val) game.logWarn("<yellow>Discrepancy found. Stored type: %s, Found type %s.</yellow>", storedType, typeof val);
+
                 props[key][1]++;
                 return;
             }
