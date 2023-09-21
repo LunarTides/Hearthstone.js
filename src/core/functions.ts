@@ -843,7 +843,7 @@ ${err.stack}
         
         let content = `Hearthstone.js ${name}
 Date: ${dateString}
-Version: ${this.getVersion(3)}
+Version: ${this.getVersion(4)}
 Operating System: ${osName}
 Log File Version: 3
 
@@ -872,29 +872,29 @@ ${main_content}
     /**
      * Returns the version of the game.
      * 
-     * If detail is 0:
+     * If detail is 1:
      * version
      * 
-     * If detail is 1:
+     * If detail is 2:
      * version-branch
      * 
-     * If detail is 2:
+     * If detail is 3:
      * version-branch.build
      * 
-     * If detail is 3:
+     * If detail is 4:
      * version-branch.build (commit hash)
      */
-    getVersion(detail = 0): string {
+    getVersion(detail = 1): string {
         let info = game.config.info;
 
         switch (detail) {
-            case 0:
-                return format("%s", info.version);
             case 1:
-                return format("%s-%s", info.version, info.branch);
+                return format("%s", info.version);
             case 2:
-                return format("%s-%s.%s", info.version, info.branch, info.build);
+                return format("%s-%s", info.version, info.branch);
             case 3:
+                return format("%s-%s.%s", info.version, info.branch, info.build);
+            case 4:
                 return format("%s-%s.%s (%s)", info.version, info.branch, info.build, this.getLatestCommit());
             default:
                 throw new Error("Invalid detail amount");

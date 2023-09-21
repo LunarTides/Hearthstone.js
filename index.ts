@@ -18,7 +18,7 @@ const cls = () => process.stdout.write("\x1bc");
 
 const watermark = () => {
     cls();
-    game.log("Hearthstone.js Runner V%s (C) 2022\n", game.functions.getVersion(2));
+    game.log("Hearthstone.js Runner V%s (C) 2022\n", game.functions.getVersion(3));
 }
 
 function cardCreator() {

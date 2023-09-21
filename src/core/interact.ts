@@ -1350,7 +1350,7 @@ export const interact = {
         game = globalThis.game;
 
         let info = game.config.info;
-        let versionDetail = game.player.detailedView ? 3 : 2;
+        let versionDetail = game.player.detailedView ? 4 : 3;
     
         let watermarkString = `HEARTHSTONE.JS V${game.functions.getVersion(versionDetail)}`;
         let border = "-".repeat(watermarkString.length + 2);
@@ -1376,7 +1376,7 @@ export const interact = {
     
         cls();
     
-        let version = `Hearthstone.js V${game.functions.getVersion(1)} | Copyright (C) 2022 | LunarTides`;
+        let version = `Hearthstone.js V${game.functions.getVersion(2)} | Copyright (C) 2022 | LunarTides`;
         game.log('|'.repeat(version.length + 8));
         game.log(`||| ${version} |||`)
         game.log(`|||     This program is licensed under the GPL-3.0 license.  ` + ' '.repeat(info.branch.length) + "|||")
