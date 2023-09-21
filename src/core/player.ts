@@ -392,7 +392,7 @@ export class Player {
     }
 
     /**
-     * Increases max mana by `mana`, avoids going over `player.maxMana` (10 by default) mana.
+     * Increases empty mana by `mana`, avoids going over `player.maxMana` (10 by default) mana.
      * 
      * # Examples
      * If you set `cap` to true
@@ -417,7 +417,7 @@ export class Player {
     }
 
     /**
-     * Increases both mana and max mana by `mana`.
+     * Increases both mana and empty mana by `mana`.
      * 
      * This function runs
      * ```
@@ -426,7 +426,7 @@ export class Player {
      * ```
      * so look at these functions for more info.
      * 
-     * @param mana The number to increase mana and max mana by
+     * @param mana The number to increase mana and empty mana by
      * 
      * @returns Success
      */
