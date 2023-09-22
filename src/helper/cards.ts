@@ -1,9 +1,9 @@
-import * as cards from "../../cards/exports.js";
-import { createHash } from "crypto";
+import { Blueprint } from "@Game/types.js";
+import * as cards from "../../cards/exports.js"
 import { writeFileSync } from "fs";
 
 export function doImportCards() {
-    game.cards = Object.values(cards);
+    game.cards = Object.values(cards) as Blueprint[];
 }
 
 export function generateCardExports() {
@@ -13,8 +13,11 @@ export function generateCardExports() {
 
         let relPath = "./" + fullPath.split("cards/")[1];
 
-        let hash = createHash("sha256").update(content, "utf8").digest("hex").slice(0, 7);
-        exportContent += `export { blueprint as card_${hash} } from "${relPath}";\n`;
+        //let name = content.match(/ {4}name: ['"`](.*?)['"`],/)?.[1].replace(/\W/g, "_").toLowerCase();
+        let name = relPath.slice(2, -3).replace(/\W/g, "_").toLowerCase();
+        if (!content.includes("export const blueprint")) return;
+
+        exportContent += `export { blueprint as card_${name} } from "${relPath}";\n`;
     });
 
     writeFileSync(game.functions.dirname() + "../cards/exports.ts", exportContent);
