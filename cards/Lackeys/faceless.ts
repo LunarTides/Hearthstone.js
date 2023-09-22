@@ -21,10 +21,8 @@ export const blueprint: Blueprint = {
         let minions = game.functions.getCards().filter(card => card.type === "Minion" && card.cost === 2);
 
         // Choose a random minion
-        let _rand = game.functions.randList(minions);
-        if (!_rand) return;
-
-        let rand = _rand.actual;
+        let rand = game.functions.randList(minions)?.actual;
+        if (!rand) return;
 
         // Summon the minion
         let minion = new game.Card(rand.name, plr);

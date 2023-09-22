@@ -25,10 +25,8 @@ export const blueprint: Blueprint = {
         game.functions.remove(board, self);
 
         // Choose the random minion
-        const _minion = game.functions.randList(board);
-        if (!_minion) return;
-
-        const minion = _minion.actual;
+        const minion = game.functions.randList(board)?.actual;
+        if (!minion) return;
 
         // Give that minion +1 Attack
         minion.addStats(1, 0);
