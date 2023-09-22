@@ -33,7 +33,8 @@ export function main() {
         // Game loop
         while (game.running) game.interact.doTurn();
     } catch (err) {
-        game.functions.createLogFile(err); // Create error report file
+        // Create error report file
+        game.functions.createLogFile(err);
 
         throw err;
     }

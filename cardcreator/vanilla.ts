@@ -63,7 +63,8 @@ export function create(card: VanillaCard, debug: boolean) {
             desc,
             cost,
             type,
-            tribe: races[0] || "None", // TODO: Add support for more than 1 tribe
+            // TODO: Add support for more than 1 tribe
+            tribe: races[0] || "None",
             classes: [cardClass],
             rarity,
             id: 0,

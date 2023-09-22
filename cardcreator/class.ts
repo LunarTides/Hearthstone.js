@@ -61,7 +61,8 @@ export function main() {
         hpDesc: hpDesc,
         hpCost: parseInt(hpCost),
         uncollectible: true,
-        id: 0, // This will be overwritten by the library
+        // This will be overwritten by the library
+        id: 0,
     };
 
     lib.create("Class", "Hero", card, game.functions.dirname() + "../cards/StartingHeroes/", filename);

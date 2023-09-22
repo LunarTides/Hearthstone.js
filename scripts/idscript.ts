@@ -13,7 +13,8 @@ const idRegex = / {4}id: (\d+)/;
 
 function searchCards(callback: (path: string, content: string, id: number) => void, path?: string) {
     if (!path) path = game.functions.dirname() + "../cards";
-    if (path.includes("cards/Tests")) return; // We don't care about test cards
+    // We don't care about test cards
+    if (path.includes("cards/Tests")) return;
 
     path = path.replaceAll("\\", "/").replace("/dist/..", "");
 

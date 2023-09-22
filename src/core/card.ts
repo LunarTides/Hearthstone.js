@@ -273,7 +273,7 @@ export class Card {
      * 
      * Set to -1 if the card is not frozen.
      */
-    turnFrozen?: number; // TODO: Rename this
+    turnFrozen?: number;
 
     /**
      * The runes of the card.
@@ -367,8 +367,10 @@ export class Card {
         // The turn the card was played
         this.turn = game.turns; 
 
+        // Redundant, makes the TypeScript compiler shut up
+        this.type = this.blueprint.type;
+
         // Set maxHealth if the card is a minion or weapon
-        this.type = this.blueprint.type; // Redundant, makes the TypeScript compiler shut up
         this.maxHealth = this.blueprint.stats?.at(1);
 
         // Override the properties from the blueprint
@@ -389,7 +391,9 @@ export class Card {
         this.randomizeUUID();
 
         let placeholder = this.activate("placeholders");
-        if (placeholder instanceof Array) this.placeholder = placeholder[0]; // This is a list of replacements.
+
+        // This is a list of replacements.
+        if (placeholder instanceof Array) this.placeholder = placeholder[0];
 
         game.events.broadcast("CreateCard", this, this.plr);
         this.activate("create");
@@ -631,7 +635,9 @@ export class Card {
 
         if (this.maxHealth && this.getHealth() > this.maxHealth) {
             // Too much health
-            this.activate("overheal"); // Overheal keyword
+
+            // Overheal keyword
+            this.activate("overheal");
 
             if (this.getHealth() > before) game.events.broadcast("HealthRestored", this.maxHealth, this.plr);
 
@@ -666,7 +672,8 @@ export class Card {
      * @returns Success
      */
     remHealth(amount: number): boolean {
-        if (this.type == "Location") return false; // Don't allow location cards to be damaged
+        // Don't allow location cards to be damaged
+        if (this.type == "Location") return false;
         if (this.keywords.includes("Stealth")) return false;
 
         if (this.immune) return true;
@@ -828,7 +835,8 @@ export class Card {
         this.desc = "";
         this.keywords = [];
 
-        this.applyEnchantments(); // Remove active enchantments.
+        // Remove active enchantments.
+        this.applyEnchantments();
         return true;
     }
 
@@ -878,7 +886,8 @@ export class Card {
             let r = func(this.plr, game, this, ...args);
             if (ret instanceof Array) ret.push(r);
 
-            if (r != game.constants.REFUND || name == "deathrattle") return; // Deathrattle isn't cancellable
+            // Deathrattle isn't cancellable
+            if (r != game.constants.REFUND || name == "deathrattle") return;
 
             // If the return value is -1, meaning "refund", refund the card and stop the for loop
             game.events.broadcast("CancelCard", [this, name], this.plr);
@@ -992,13 +1001,17 @@ export class Card {
         const whitelisted_vars = ["maxHealth", "cost"];
 
         let vars = Object.entries(this);
-        vars = vars.filter(c => typeof(c[1]) == "number"); // Filter for only numbers
-        vars = vars.filter(c => whitelisted_vars.includes(c[0])); // Filter for vars in the whitelist
+        // Filter for only numbers
+        vars = vars.filter(c => typeof(c[1]) == "number");
+
+        // Filter for vars in the whitelist
+        vars = vars.filter(c => whitelisted_vars.includes(c[0]));
 
         // Get keys
         let keys: string[] = [];
 
-        let enchantments = this.enchantments.map(e => e.enchantment); // Get a list of enchantments
+        // Get a list of enchantments
+        let enchantments = this.enchantments.map(e => e.enchantment);
         enchantments.forEach(e => {
             let info = this.getEnchantmentInfo(e);
             let key = info.key;
@@ -1006,7 +1019,8 @@ export class Card {
             keys.push(key);
         });
 
-        vars = vars.filter(c => keys.includes(c[0])); // Only reset the variables if the variable name is in the enchantments list
+        // Only reset the variables if the variable name is in the enchantments list
+        vars = vars.filter(c => keys.includes(c[0]));
         vars.forEach(ent => {
             let [key, val] = ent;
 
@@ -1068,7 +1082,8 @@ export class Card {
     addEnchantment(e: string, card: Card): boolean {
         let info = this.getEnchantmentInfo(e);
 
-        if (info.op == "=") this.enchantments.unshift({"enchantment": e, "owner": card}); // Add the enchantment to the beginning of the list, equal enchantments should apply first
+        // Add the enchantment to the beginning of the list, equal enchantments should apply first
+        if (info.op == "=") this.enchantments.unshift({"enchantment": e, "owner": card});
         else this.enchantments.push({"enchantment": e, "owner": card});
 
         this.applyEnchantments();
@@ -1117,7 +1132,8 @@ export class Card {
         let info = this.getEnchantmentInfo(e);
         let new_enchantment = `+0 ${info.key}`;
 
-        this.addEnchantment(new_enchantment, this); // This will cause the variable to be reset since it is in the enchantments list.
+        // This will cause the variable to be reset since it is in the enchantments list.
+        this.addEnchantment(new_enchantment, this);
         this.removeEnchantment(new_enchantment, this, false);
 
         return true;

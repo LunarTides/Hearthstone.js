@@ -124,11 +124,15 @@ export function create(creatorType: CCType, cardType: CardType, blueprint: Bluep
 
     // Create a path to put the card in.
     let path = generateCardPath(card.classes, type);
-    if (overridePath) path = overridePath; // If this function was passed in a path, use that instead.
+
+    // If this function was passed in a path, use that instead.
+    if (overridePath) path = overridePath; 
 
     // Create a filename. Example: "Test Card" -> "test_card.mts"
     let filename = card.name.toLowerCase().replaceAll(" ", "_") + ".mts";
-    if (overrideFilename) filename = overrideFilename; // If this function was passed in a filename, use that instead.
+
+    // If this function was passed in a filename, use that instead.
+    if (overrideFilename) filename = overrideFilename;
 
     // Get the latest card-id
     let id = parseInt(fs.readFileSync(game.functions.dirname() + "../cards/.latest_id", "utf8")) + 1;
@@ -193,7 +197,8 @@ export const blueprint: Blueprint = {
         game.log('File created at: "' + file_path + '"');
     } else {
         // If debug mode is enabled, just show some information about the card.
-        game.log("\nNew ID: %s", id); // This is the id that would be written to '.latest_id'
+        // This is the id that would be written to '.latest_id'
+        game.log("\nNew ID: %s", id);
         game.log("Would be path: '%s'", file_path.replaceAll("\\", "/"));
         game.log("Content:");
         game.log(content);

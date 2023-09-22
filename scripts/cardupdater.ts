@@ -28,7 +28,8 @@ function main() {
             );
         });
 
-        if (!vanilla) return; // There is no vanilla version of that card.
+        // There is no vanilla version of that card.
+        if (!vanilla) return;
 
         Object.entries(custom).forEach(ent => {
             let [key, val] = ent;

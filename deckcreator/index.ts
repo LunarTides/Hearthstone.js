@@ -63,7 +63,8 @@ let settings: Settings = {
     view: {
         type: "cards",
         page: 1,
-        cpp: 15 // Cards per page
+        // Cards per page
+        cpp: 15
     },
     sort: {
         type: "rarity",
@@ -119,7 +120,8 @@ function askClass(): CardClassNoNeutral {
 }
 
 function sortCards(_cards: Blueprint[]) {
-    if (!["asc", "desc"].includes(settings.sort.order)) settings.sort.order = "asc"; // If the order is invalid, fall back to ascending
+    // If the order is invalid, fall back to ascending
+    if (!["asc", "desc"].includes(settings.sort.order)) settings.sort.order = "asc";
 
     let type = settings.sort.type;
     let order = settings.sort.order;
@@ -202,15 +204,16 @@ function searchCards(_cards: Blueprint[], sQuery: string) {
     const doReturn = (c: Blueprint) => {
         let ret = c[key as keyof Blueprint];
 
-        if (!ret && ret !== 0) { // Javascript
+        // Javascript
+        if (!ret && ret !== 0) {
             game.log(`<red>\nKey '${key}' not valid!</red>`);
             return -1;
         }
 
         // Mana even / odd
         if (key == "cost") {
-            // Mana range
-            let regex = /\d+-\d+/; // 1-10
+            // Mana range (1-10)
+            let regex = /\d+-\d+/;
             if (regex.test(val)) {
                 let _val = val.split("-");
 
@@ -489,7 +492,9 @@ function showDeck() {
 
     wall.forEach(brick => {
         let brickSplit = brick.split("-");
-        brickSplit[0] = brickSplit[0].replaceAll("`", "-"); // Replace '`' with '-'
+
+        // Replace '`' with '-'
+        brickSplit[0] = brickSplit[0].replaceAll("`", "-");
 
         let [nameAndAmount, id] = brickSplit;
 
@@ -742,7 +747,8 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         // Add the cards using handleCmds instead of add because for some reason, adding them with add
         // causes a weird bug that makes modifying the deck impossible because removing a card
         // removes a completly unrelated card because javascript.
-        _deck.forEach(c => handleCmds(`add ${game.interact.getDisplayName(c)}`)); // You can just set deck = functions.importDeck(), but doing it that way doesn't account for renathal or any other card that changes the config in any way since that is done using the add function.
+        // You can just set deck = functions.importDeck(), but doing it that way doesn't account for renathal or any other card that changes the config in any way since that is done using the add function.
+        _deck.forEach(c => handleCmds(`add ${game.interact.getDisplayName(c)}`));
     }
     else if (name === "class") {
         let _runes = runes;
@@ -795,7 +801,8 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         let new_state;
 
         if (args.length <= 1) {
-            new_state = !warnings[key]; // Toggle
+            // Toggle
+            new_state = !warnings[key];
         }
         else {
             let val = args[1];

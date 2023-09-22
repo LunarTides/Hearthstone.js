@@ -127,7 +127,8 @@ const val = _unknownVal as EventValue<typeof key>;
 }
 
 function upgradeCards(path: string) {
-    if (path.includes("cards/Tests")) return; // We don't care about test cards
+    // We don't care about test cards
+    if (path.includes("cards/Tests")) return;
 
     path = path.replaceAll("\\", "/").replace("/dist/..", "");
 

@@ -15,7 +15,8 @@ let finishedCards: string[] = [];
 let finishedCardsPath = "patched_cards.txt";
 
 function getFinishedCards(path: string) {
-    if (!fs.existsSync(path)) return; // If the file doesn't exist, return.
+    // If the file doesn't exist, return.
+    if (!fs.existsSync(path)) return;
 
     let cards = fs.readFileSync(path, { encoding: 'utf8', flag: 'r' });
     finishedCards = cards.split("\n");
@@ -23,7 +24,8 @@ function getFinishedCards(path: string) {
 
 function searchCards(query: RegExp | string, path?: string) {
     if (!path) path = game.functions.dirname() + "../cards";
-    if (path.includes("cards/Tests")) return; // We don't care about test cards
+    // We don't care about test cards
+    if (path.includes("cards/Tests")) return;
 
     path = path.replaceAll("\\", "/").replace("/dist/..", "");
 
@@ -55,15 +57,18 @@ function main() {
     let use_regex = rl.keyInYN("Do you want to use regular expressions? (Don't do this unless you know what regex is, and how to use it)");
     let search: string | RegExp = game.input("Search: ");
 
+    // Ignore case
     if (use_regex) search = new RegExp(search, "i");
 
     finishedCardsPath = `./${search}_${finishedCardsPath}`;
-    finishedCardsPath = finishedCardsPath.replace(/[^\w ]/g, "_"); // Remove any character that is not in /A-Za-z0-9_ /
+    // Remove any character that is not in /A-Za-z0-9_ /
+    finishedCardsPath = finishedCardsPath.replace(/[^\w ]/g, "_");
 
     getFinishedCards(finishedCardsPath);
-    searchCards(search); // Ignore case
+    searchCards(search);
 
-    game.log(); // New line
+    // New line
+    game.log();
 
     while (true) {
         game.interact.cls();
@@ -102,7 +107,8 @@ function main() {
         // `card` is the path to that card.
         // TODO: This is broken
         let success = game.functions.openWithArgs(game.config.general.editor, `"${path}"`);
-        if (!success) game.input(); // The `openWithArgs` shows an error message for us, but we need to pause.
+        // The `openWithArgs` shows an error message for us, but we need to pause.
+        if (!success) game.input();
 
         finishedCards.push(path);
         matchingCards.splice(index, 1);
@@ -112,7 +118,8 @@ function main() {
             game.input("All cards patched!\n");
             if (fs.existsSync(finishedCardsPath)) fs.unlinkSync(finishedCardsPath);
 
-            process.exit(0); // Exit so it doesn't save
+            // Exit so it doesn't save
+            process.exit(0);
         }
     }
 

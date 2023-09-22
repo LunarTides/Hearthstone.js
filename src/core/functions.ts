@@ -4,7 +4,8 @@
  */
 import * as fs from "fs";
 import * as child_process from "child_process";
-import * as deckstrings from "deckstrings"; // To decode vanilla deckcodes
+// To decode vanilla deckcodes
+import * as deckstrings from "deckstrings";
 
 import chalk from "chalk";
 import toml from "toml";
@@ -44,15 +45,21 @@ const deckcode = {
         let vanilla = false;
 
         try {
-            deckstrings.decode(code); // If this doesn't crash, this is a vanilla deckcode
+            // If this doesn't crash, this is a vanilla deckcode
+            deckstrings.decode(code);
 
             vanilla = true;
-        } catch (err) {}; // This isn't a vanilla code, no worries, just parse it as a hearthstone.js deckcode.
+        } catch (err) {
+            // This isn't a vanilla code, no worries, just parse it as a hearthstone.js deckcode.
+        }; 
 
         if (vanilla) code = deckcode.fromVanilla(plr, code);
 
-        let runeRegex = /\[[BFU]{3}\]/; // BFU
-        let altRuneRegex = /\[3[BFU]\]/; // BBB -> 3B
+        // BFU
+        let runeRegex = /\[[BFU]{3}\]/;
+
+        // BBB -> 3B
+        let altRuneRegex = /\[3[BFU]\]/;
 
         let runesExists = runeRegex.test(code) || altRuneRegex.test(code);
 
@@ -100,8 +107,9 @@ const deckcode = {
             game.input(`<yellow>WARNING: This class supports runes but there are no runes in this deck. This deck's class: <bright:yellow>${hero}</bright:yellow>. Supported classes: <bright:yellow>${rune_classes.join(", ")}</bright:yellow yellow>\n`);
         }
 
+        // Find /3:5,2:8,1/
         let copyDefFormat = /\/(\d+:\d+,)*\d+\/ /;
-        if (!copyDefFormat.test(code)) return ERROR("COPYDEFNOTFOUND"); // Find /3:5,2:8,1/
+        if (!copyDefFormat.test(code)) return ERROR("COPYDEFNOTFOUND");
 
         let copyDef = code.split("/")[1];
 
@@ -318,7 +326,8 @@ const deckcode = {
 
         let deck: deckstrings.DeckDefinition = {"cards": [], "heroes": [], "format": 1};
 
-        const vanillaHeroes: {[key in CardClass]?: number} = { // List of vanilla heroes dbfIds
+        // List of vanilla heroes dbfIds
+        const vanillaHeroes: {[key in CardClass]?: number} = {
             "Warrior":      7,
             "Hunter":       31,
             "Druid":        274,
@@ -345,8 +354,11 @@ const deckcode = {
 
         deck.heroes.push(heroClassId);
 
-        codeSplit.splice(0, 1); // Remove the class
-        if (codeSplit[0].endsWith("] ")) codeSplit.splice(0, 1); // Remove runes
+        // Remove the class
+        codeSplit.splice(0, 1);
+
+        // Remove runes
+        if (codeSplit[0].endsWith("] ")) codeSplit.splice(0, 1);
 
         let amountStr = codeSplit[0].trim();
         let cards = codeSplit[1].trim();
@@ -379,7 +391,9 @@ const deckcode = {
             let found = false;
             amountStrSplit.forEach((a, i2) => {
                 if (found) return;
-                if (i2 % 2 == 0) return; // We only want to look at every other one
+
+                // We only want to look at every other one
+                if (i2 % 2 == 0) return;
 
                 if (i >= parseInt(a)) return;
 
@@ -445,7 +459,8 @@ const deckcode = {
      * @returns The Hearthstone.js deckcode
      */
     fromVanilla(plr: Player, code: string): string {
-        let deck: deckstrings.DeckDefinition = deckstrings.decode(code); // Use the 'deckstrings' api's decode
+        // Use the 'deckstrings' library's decode
+        let deck: deckstrings.DeckDefinition = deckstrings.decode(code);
 
         const [vanillaCards, error] = game.functions.getVanillaCards("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'scripts/genvanilla.bat' (requires an internet connection), then try again.");
 
@@ -455,15 +470,18 @@ const deckcode = {
         }
 
         // @ts-expect-error
-        delete deck.format; // We don't care about the format
+        // We don't care about the format
+        delete deck.format;
 
         let _heroClass = vanillaCards.find(a => a.dbfId == deck.heroes[0])?.cardClass;
         let heroClass = game.functions.capitalize(_heroClass?.toString() || game.player2.heroClass);
 
-        if (heroClass == "Deathknight") heroClass = "Death Knight"; // Wtf hearthstone?
-        if (heroClass == "Demonhunter") heroClass = "Demon Hunter"; // I'm not sure if this actually happens, but considering it happened with death knight, you never know
+        // Wtf hearthstone?
+        if (heroClass == "Deathknight") heroClass = "Death Knight";
+        if (heroClass == "Demonhunter") heroClass = "Demon Hunter";
         
-        let deckDef: [VanillaCard | undefined, number][] = deck.cards.map(c => [vanillaCards.find(a => a.dbfId == c[0]), c[1]]); // Get the full card object from the dbfId
+        // Get the full card object from the dbfId
+        let deckDef: [VanillaCard | undefined, number][] = deck.cards.map(c => [vanillaCards.find(a => a.dbfId == c[0]), c[1]]);
         let createdCards: Blueprint[] = game.functions.getCards(false);
         
         let invalidCards: VanillaCard[] = [];
@@ -537,7 +555,8 @@ const deckcode = {
 
             sorted_runes += runes;
 
-            runes = sorted_runes.slice(0, 3); // Only use the first 3 characters
+            // Only use the first 3 characters
+            runes = sorted_runes.slice(0, 3);
 
             if (runes === "") runes = "3B";
 
@@ -552,7 +571,8 @@ const deckcode = {
         Object.entries(amounts).forEach(a => {
             let [key, amount] = a;
 
-            if (!amounts[parseInt(key) + 1]) deckcode += key; // If this is the last amount
+            // If this is the last amount
+            if (!amounts[parseInt(key) + 1]) deckcode += key;
             else deckcode += `${key}:${amount},`;
         });
 
@@ -647,7 +667,8 @@ export const functions = {
     chooseItemsFromList<T>(list: T[], amount: number): (RandListReturn<T>)[] {
         if (amount > list.length) amount = list.length;
 
-        list = list.slice(); // Make a copy of the list
+        // Make a copy of the list
+        list = list.slice();
         let elements: RandListReturn<T>[] = [];
 
         for (let i = 0; i < amount; i++) {
@@ -778,8 +799,12 @@ export const functions = {
         let date = new Date();
 
         let day = date.getDate().toString();
-        let month = (date.getMonth() + 1).toString(); // Month is 0-11 for some reason
-        let year = date.getFullYear().toString().slice(2); // Get the last 2 digits of the year
+
+        // Month is 0-11 for some reason
+        let month = (date.getMonth() + 1).toString();
+
+        // Get the last 2 digits of the year
+        let year = date.getFullYear().toString().slice(2);
 
         let hour = date.getHours().toString();
         let minute = date.getMinutes().toString();
@@ -794,8 +819,11 @@ export const functions = {
         if (parseInt(second) < 10) second = `0${second}`;
 
         // Assemble the time
-        let dateString = `${day}/${month}/${year} ${hour}:${minute}:${second}`; // 01/01/23 23:59:59
-        let dateStringFileFriendly = dateString.replace(/[/:]/g, ".").replaceAll(" ", "-"); // 01.01.23-23.59.59
+        // 01/01/23 23:59:59
+        let dateString = `${day}/${month}/${year} ${hour}:${minute}:${second}`;
+
+        // 01.01.23-23.59.59
+        let dateStringFileFriendly = dateString.replace(/[/:]/g, ".").replaceAll(" ", "-");
 
         // Grab the history of the game
         // handleCmds("history", echo, debug)
@@ -806,7 +834,8 @@ export const functions = {
         history = this.stripTags(history);
 
         // AI log
-        game.config.general.debug = true; // Do this so it can actually run '/ai'
+        // Do this so it can actually run '/ai'
+        game.config.general.debug = true;
         let aiHistory = game.interact.handleCmds("/ai", false);
 
         let name = "Log";
@@ -954,12 +983,18 @@ ${main_content}
      * assert(cards.length, 1);
      */
     filterVanillaCards(cards: VanillaCard[], uncollectible: boolean = true, dangerous: boolean = false, keepHeroSkins = false): VanillaCard[] {
-        if (uncollectible) cards = cards.filter(a => a.collectible); // You're welcome
+        if (uncollectible) cards = cards.filter(a => a.collectible);
         cards = cards.filter(a => !a.id.startsWith("Prologue"));
-        cards = cards.filter(a => !a.id.startsWith("PVPDR")); // Idk what 'PVPDR' means, but ok
+
+        // Idk what 'PVPDR' means, but ok
+        cards = cards.filter(a => !a.id.startsWith("PVPDR"));
         cards = cards.filter(a => !a.id.startsWith("DRGA_BOSS"));
-        cards = cards.filter(a => !a.id.startsWith("BG")); // Battlegrounds
-        cards = cards.filter(a => !a.id.startsWith("TB")); // Tavern Brawl
+
+        // Battlegrounds
+        cards = cards.filter(a => !a.id.startsWith("BG"));
+
+        // Tavern Brawl
+        cards = cards.filter(a => !a.id.startsWith("TB"));
         cards = cards.filter(a => !a.id.startsWith("LOOTA_"));
         cards = cards.filter(a => !a.id.startsWith("DALA_"));
         cards = cards.filter(a => !a.id.startsWith("GILA_"));
@@ -969,7 +1004,9 @@ ${main_content}
         cards = cards.filter(a => !a.id.startsWith("ULDA_"));
         cards = cards.filter(a => !a.id.startsWith("BTA_BOSS_"));
         cards = cards.filter(a => !a.id.startsWith("Story_"));
-        cards = cards.filter(a => !a.id.startsWith("BOM_")); // Book of mercenaries
+
+        // Book of mercenaries
+        cards = cards.filter(a => !a.id.startsWith("BOM_"));
         cards = cards.filter(a => !a.mechanics || !a.mechanics.includes("DUNGEON_PASSIVE_BUFF"));
         cards = cards.filter(a => !a.battlegroundsNormalDbfId);
         cards = cards.filter(a => a.set && !["battlegrounds", "placeholder", "vanilla", "credits"].includes(a.set.toLowerCase()));
@@ -1263,11 +1300,17 @@ ${main_content}
         let classes: CardClassNoNeutral[] = [];
 
         fs.readdirSync(this.dirname() + "cards/StartingHeroes").forEach(file => {
-            if (!file.endsWith(".mjs")) return; // Something is wrong with the file name.
+            // Something is wrong with the file name.
+            if (!file.endsWith(".mjs")) return;
 
-            let name = file.slice(0, -4); // Remove ".mjs"
-            name = name.replaceAll("_", " "); // Remove underscores
-            name = this.capitalizeAll(name); // Capitalize all words
+            // Remove ".mjs"
+            let name = file.slice(0, -4);
+
+            // Remove underscores
+            name = name.replaceAll("_", " ");
+
+            // Capitalize all words
+            name = this.capitalizeAll(name);
 
             let card = this.getCardByName(name + " Starting Hero");
             if (!card || card.classes[0] != name as CardClassNoNeutral || card.type != "Hero" || !card.heropower || card.classes.includes("Neutral")) {
@@ -1523,7 +1566,8 @@ ${main_content}
 
                         ret = chalk.reset(ret);
                         break;
-                    case "b": // You can use `b` instead of `bold`
+                    // You can use `b` instead of `bold`
+                    case "b":
                     case "bold":
                         ret = chalk.bold(ret);
                         break;
@@ -1750,7 +1794,9 @@ ${main_content}
 
         game.eventListeners[id] = (_key, _unknownVal) => {
             // Im writing it like this to make it more readable
-            if (key === "" || _key as EventKey === key) {} // Validate key. If key is empty, match any key.
+
+            // Validate key. If key is empty, match any key.
+            if (key === "" || _key as EventKey === key) {}
             else return;
 
             let msg = callback(_unknownVal);

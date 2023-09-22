@@ -145,7 +145,8 @@ export class AI {
 
         let canHeroPower = enoughMana && canUse;
 
-        this.prevent.push("hero power"); // The ai has already used their hero power that turn.
+        // The ai has already used their hero power that turn.
+        this.prevent.push("hero power");
 
         return canHeroPower;
     }
@@ -204,7 +205,9 @@ export class AI {
             let trades = [...perfect_trades, ...imperfect_trades];
 
             let score = this.analyzePositiveCard(a);
-            if (score > game.config.ai.protectThreshold || trades.map(c => c[0]).includes(a)) return; // Don't attack with high-value minions.
+
+            // Don't attack with high-value minions.
+            if (score > game.config.ai.protectThreshold || trades.map(c => c[0]).includes(a)) return;
 
             // If the card has the `sleepy` prop, it has the attackTimes prop too.
             if (a.sleepy || a.attackTimes! <= 0) return;
@@ -216,7 +219,9 @@ export class AI {
                 if (trades.map(c => c[1]).includes(t)) return;
 
                 let score = this.analyzePositiveCard(t);
-                if (score < game.config.ai.ignoreThreshold) return; // Don't waste resources attacking useless targets.
+
+                // Don't waste resources attacking useless targets.
+                if (score < game.config.ai.ignoreThreshold) return;
 
                 if (a.getAttack() == t.getHealth()) perfect_trades.push([a, t]);
                 else if (a.getAttack() > t.getHealth()) imperfect_trades.push([a, t]);
@@ -317,9 +322,12 @@ export class AI {
 
         // Risky
         let op_score = this._scorePlayer(this.plr.getOpponent(), board);
-        let risk_mode = current_winner[1] >= op_score + game.config.ai.riskThreshold // If the ai is winner by more than 'threshold' points, enable risk mode
 
-        let taunts = this._tauntExists(); // If there are taunts, override risk mode
+        // If the ai is winner by more than 'threshold' points, enable risk mode
+        let risk_mode = current_winner[1] >= op_score + game.config.ai.riskThreshold;
+
+        // If there are taunts, override risk mode
+        let taunts = this._tauntExists();
 
         if (risk_mode && !taunts) ret = this._attackGeneralRisky();
         else ret = this._attackGeneralMinion();
@@ -465,23 +473,28 @@ export class AI {
         // The ai should skip the trade stage if in risk mode
         let current_winner = this._findWinner(board);
         let op_score = this._scorePlayer(this.plr.getOpponent(), board);
-        let risk_mode = current_winner[1] >= op_score + game.config.ai.riskThreshold // If the ai is winner by more than 'threshold' points, enable risk mode
+
+        // If the ai is winner by more than 'threshold' points, enable risk mode
+        let risk_mode = current_winner[1] >= op_score + game.config.ai.riskThreshold;
 
         let taunts = this._tauntExists();
-        if (taunts) return this._attackGeneral(board); // If there is a taunt, attack it before trading
+
+        // If there is a taunt, attack it before trading
+        if (taunts) return this._attackGeneral(board);
 
         if (amount_of_trades > 0 && !risk_mode) return this._attackTrade() ?? [-1, -1];
         return this._attackGeneral(board);
     }
 
     /**
-     * Makes the ai attack
+     * Makes the ai attack.
+     * This gets called if you set the ai attack model to 1.
      * 
      * @deprecated Use `AI.attack` instead.
      * 
      * @returns Attacker, Target
      */
-    legacy_attack_1(): (Target | null)[] { // This gets called if you set the ai attack model to 1
+    legacy_attack_1(): (Target | null)[] { 
         let worst_minion: Card | null = null;
         let worst_score = 100000;
         
@@ -663,7 +676,8 @@ export class AI {
 
         // Look for highest score
         cards.forEach(c => {
-            if (!c.name) return; // Card-like is invalid
+            // Card-like is invalid
+            if (!c.name) return;
 
             let score = this.analyzePositiveCard(new Card(c.name, this.plr));
 
@@ -797,8 +811,11 @@ export class AI {
      * @returns If the card should be traded
      */
     trade(card: Card): boolean {
-        if (this.plr.deck.length <= 1) return false; // If the ai doesn't have any cards to trade into, don't trade the card.
-        if (this.plr.mana < 1) return false; // If the ai can't afford to trade, don't trade the card
+        // If the ai doesn't have any cards to trade into, don't trade the card.
+        if (this.plr.deck.length <= 1) return false;
+
+        // If the ai can't afford to trade, don't trade the card
+        if (this.plr.mana < 1) return false;
 
         let score = this.analyzePositiveCard(card);
 
@@ -863,7 +880,8 @@ export class AI {
                     Object.entries(v[1]).forEach(k => {
                         if (ret) return;
 
-                        const k0 = k[0].replace(/^(.*)[sd]$/, "$1"); // Remove the last "s" or "d" in order to account for plurals 
+                        // Remove the last "s" or "d" in order to account for plurals 
+                        const k0 = k[0].replace(/^(.*)[sd]$/, "$1");
                         if (!new RegExp(k[0]).test(s) && !new RegExp(k0).test(s)) return;
 
                         // If the sentiment is "positive", add to the score. If it is "negative", subtract from the score.
@@ -893,7 +911,9 @@ export class AI {
         let score = this.analyzePositive(c.desc || "");
 
         if (c.stats) score += (c.getAttack() + c.getHealth()) * game.config.ai.statsBias;
-        else score += game.config.ai.spellValue * game.config.ai.statsBias; // If the spell value is 4 then it the same value as a 2/2 minion
+
+        // If the spell value is 4 then it the same value as a 2/2 minion
+        else score += game.config.ai.spellValue * game.config.ai.statsBias;
         score -= c.cost * game.config.ai.costBias;
 
         c.keywords.forEach(() => score += game.config.ai.keywordValue);

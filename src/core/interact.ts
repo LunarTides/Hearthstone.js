@@ -818,8 +818,11 @@ export const interact = {
         const ret = this.doTurnLogic(user);
         game.killMinions();
 
-        if (ret === true || ret instanceof Card) return ret; // If there were no errors, return true.
-        if (["refund", "magnetize", "traded", "colossal"].includes(ret)) return ret; // Ignore these error codes
+        // If there were no errors, return true.
+        if (ret === true || ret instanceof Card) return ret;
+
+        // Ignore these error codes
+        if (["refund", "magnetize", "traded", "colossal"].includes(ret)) return ret;
         let err;
 
         // Get the card
@@ -885,6 +888,7 @@ export const interact = {
         /**
          * If the test deck (30 Sheep) should be allowed
          */
+        // I want to be able to test without debug mode on a non-stable branch
         let allowTestDeck: boolean = game.config.general.debug || game.config.info.branch !== "stable";
 
         let debugStatement = allowTestDeck ? " <gray>(Leave this empty for a test deck)</gray>" : "";
@@ -894,14 +898,14 @@ export const interact = {
 
         if (deckcode.length > 0) result = game.functions.deckcode.import(plr, deckcode);
         else {
-            if (!allowTestDeck) { // I want to be able to test without debug mode on in a non-stable branch
+            if (!allowTestDeck) {
                 // Give error message
                 game.input("<red>Please enter a deckcode!</red>\n");
                 return false;
             }
 
             // Debug mode is enabled, use the 30 Sheep debug deck.
-            while (plr.deck.length < 30) plr.deck.push(new Card("Sheep", plr)); // Debug deck
+            while (plr.deck.length < 30) plr.deck.push(new Card("Sheep", plr));
         }
 
         if (result === null) return false;
@@ -957,7 +961,8 @@ export const interact = {
             let card = game.player.ai.dredge(cards);
             if (!card) return null;
 
-            game.functions.remove(game.player.deck, card); // Removes the selected card from the players deck.
+            // Removes the selected card from the players deck.
+            game.functions.remove(game.player.deck, card);
             game.player.deck.push(card);
 
             return card;
@@ -982,7 +987,8 @@ export const interact = {
             return this.dredge(prompt);
         }
 
-        game.functions.remove(game.player.deck, card); // Removes the selected card from the players deck.
+        // Removes the selected card from the players deck.
+        game.functions.remove(game.player.deck, card);
         game.player.deck.push(card);
 
         return card;
@@ -1246,7 +1252,8 @@ export const interact = {
 
         // Player chose to go back
         if (target.startsWith("b") || this.shouldExit(target)) {
-            return false; // This should always be safe.
+            // This should always be safe.
+            return false;
         }
 
         // Get a list of each side of the board
@@ -1427,7 +1434,8 @@ export const interact = {
             // There is nothing more to extract
             if (!regedDesc) break;
 
-            let key = regedDesc[1]; // Gets the capturing group result
+            // Get the capturing group result
+            let key = regedDesc[1];
 
             card.replacePlaceholders();
             let _replacement = card.placeholder;
@@ -1462,7 +1470,8 @@ export const interact = {
             let regedDesc = reg.exec(desc);
             if (!regedDesc) break;
 
-            let key = regedDesc[1]; // Gets the capturing group result
+            // Get the capturing group result
+            let key = regedDesc[1];
             let replacement = parseInt(key) + game.player.spellDamage;
 
             desc = desc.replace(reg, replacement.toString());
@@ -1783,12 +1792,12 @@ export const interact = {
     /**
      * Clears the screen.
      */
-    cls() { // Do this so it doesn't crash because of "strict mode"
+    cls() {
         cls();
     }
 }
 
-const cls = () => {
+function cls() {
     console.clear();
     process.stdout.write('\x1bc');
 }

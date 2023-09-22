@@ -154,7 +154,8 @@ const eventManager: IEventManager = {
 
         game.board.forEach(p => {
             p.forEach(m => {
-                if (m.getHealth() <= 0) return; // This function gets called directly after a minion is killed.
+                // This function gets called directly after a minion is killed.
+                if (m.getHealth() <= 0) return;
                 m.activate("passive", key, val);
             });
         });
@@ -437,7 +438,8 @@ export class Game {
      */
     setup(player1: Player, player2: Player) {
         // Choose a random player to be player 1
-        this.player1 = player1; // Set this to player 1 temporarily, in order to never be null
+        // Set this to player 1 temporarily, in order to never be null
+        this.player1 = player1;
         this.player2 = player2;
 
         // Choose a random player to be player 1 and player 2
@@ -488,7 +490,9 @@ export class Game {
             let queue = this.player.inputQueue;
 
             if (typeof(queue) == "string") return wrapper(queue);
-            else if (!(queue instanceof Array)) return wrapper(question(q)); // Invalid queue
+
+            // Invalid queue
+            else if (!(queue instanceof Array)) return wrapper(question(q));
 
             const answer = queue[0];
             functions.remove(queue, answer);
@@ -1319,7 +1323,8 @@ const playCard = {
     _echo(card: Card, player: Player): boolean {
         if (!card.keywords.includes("Echo")) return false;
 
-        let echo = card.perfectCopy(); // Create an exact copy of the card played
+        // Create an exact copy of the card played
+        let echo = card.perfectCopy();
         echo.echo = true;
 
         player.addToHand(echo);
