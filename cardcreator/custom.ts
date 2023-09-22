@@ -81,118 +81,138 @@ function common(): false | Blueprint {
     };
 }
 
-function minion() {
-    let _card = common();
-    if (!_card) return false;
+const cardTypeFunctions = {
+    Minion() {
+        let _card = common();
+        if (!_card) return false;
 
-    let stats = input("Stats: ");
-    if (shouldExit) return false;
+        let stats = input("Stats: ");
+        if (shouldExit) return false;
 
-    const tribe = input("Tribe: ");
-    if (shouldExit) return false;
+        const tribe = input("Tribe: ");
+        if (shouldExit) return false;
 
-    // Turn 1/1 to [1, 1]
-    let statsArray = stats.split("/").map(s => parseInt(s));
+        // Turn 1/1 to [1, 1]
+        let statsArray = stats.split("/").map(s => parseInt(s));
 
-    return applyCard({
-        name: _card.name,
-        displayName: _card.displayName,
-        stats: statsArray,
-        desc: _card.desc,
-        cost: _card.cost,
-        type: _card.type,
-        tribe: tribe as MinionTribe,
-        classes: _card.classes,
-        rarity: _card.rarity,
-        runes: _card.runes,
-        keywords: _card.keywords,
-        id: 0,
-    });
-}
+        return applyCard({
+            name: _card.name,
+            displayName: _card.displayName,
+            stats: statsArray,
+            desc: _card.desc,
+            cost: _card.cost,
+            type: _card.type,
+            tribe: tribe as MinionTribe,
+            classes: _card.classes,
+            rarity: _card.rarity,
+            runes: _card.runes,
+            keywords: _card.keywords,
+            id: 0,
+        });
+    },
 
-function spell() {
-    let _card = common();
-    if (!_card) return false;
+    Spell() {
+        let _card = common();
+        if (!_card) return false;
 
-    const spellSchool = input("Spell School: ") as SpellSchool;
-    if (shouldExit) return false;
+        const spellSchool = input("Spell School: ") as SpellSchool;
+        if (shouldExit) return false;
 
-    let combined: Blueprint = Object.assign(_card, { "spellSchool": spellSchool });
+        return applyCard({
+            name: _card.name,
+            displayName: _card.displayName,
+            desc: _card.desc,
+            cost: _card.cost,
+            type: _card.type,
+            classes: _card.classes,
+            rarity: _card.rarity,
+            runes: _card.runes,
+            keywords: _card.keywords,
+            spellSchool: spellSchool,
+            id: 0,
+        });
+    },
 
-    return applyCard(combined);
-}
+    Weapon() {
+        let _card = common();
+        if (!_card) return false;
 
-function weapon() {
-    let _card = common();
-    if (!_card) return false;
+        let stats = input("Stats: ");
+        if (shouldExit) return false;
 
-    let stats = input("Stats: ");
-    if (shouldExit) return false;
+        // Turn 1/1 to [1, 1]
+        let statsArray = stats.split("/").map(s => parseInt(s));
 
-    // Turn 1/1 to [1, 1]
-    let statsArray = stats.split("/").map(s => parseInt(s));
+        return applyCard({
+            name: _card.name,
+            displayName: _card.displayName,
+            stats: statsArray,
+            desc: _card.desc,
+            cost: _card.cost,
+            type: _card.type,
+            classes: _card.classes,
+            rarity: _card.rarity,
+            runes: _card.runes,
+            keywords: _card.keywords,
+            id: 0,
+        });
+    },
 
-    return applyCard({
-        name: _card.name,
-        displayName: _card.displayName,
-        stats: statsArray,
-        desc: _card.desc,
-        cost: _card.cost,
-        type: _card.type,
-        classes: _card.classes,
-        rarity: _card.rarity,
-        runes: _card.runes,
-        keywords: _card.keywords,
-        id: 0,
-    });
-}
+    Hero() {
+        let _card = common();
+        if (!_card) return false;
 
-function hero() {
-    let _card = common();
-    if (!_card) return false;
+        const hpDesc = input("Hero Power Description: ");
+        if (shouldExit) return false;
 
-    const hpDesc = input("Hero Power Description: ");
-    if (shouldExit) return false;
+        let hpCost = parseInt(input("Hero Power Cost (Default: 2): "));
+        if (shouldExit) return false;
 
-    let hpCost = parseInt(input("Hero Power Cost (Default: 2): "));
-    if (shouldExit) return false;
+        if (!hpCost) hpCost = 2;
 
-    if (!hpCost) hpCost = 2;
+        return applyCard({
+            name: _card.name,
+            displayName: _card.displayName,
+            desc: _card.desc,
+            cost: _card.cost,
+            type: _card.type,
+            classes: _card.classes,
+            rarity: _card.rarity,
+            runes: _card.runes,
+            keywords: _card.keywords,
+            hpDesc: hpDesc,
+            hpCost: hpCost,
+            id: 0,
+        });
+    },
 
-    let combined = Object.assign(_card, {
-        hpDesc,
-        hpCost
-    });
+    Location() {
+        let _card = common();
+        if (!_card) return false;
+        
+        let durability = parseInt(input("Durability (How many times you can trigger this location before it is destroyed): "));
+        if (shouldExit) return false;
 
-    return applyCard(combined);
-}
+        let cooldown = parseInt(input("Cooldown (Default: 2): "));
+        if (shouldExit) return false;
 
-function location() {
-    let _card = common();
-    if (!_card) return false;
-    
-    let durability = parseInt(input("Durability (How many times you can trigger this location before it is destroyed): "));
-    if (shouldExit) return false;
+        if (!cooldown) cooldown = 2;
 
-    let cooldown = parseInt(input("Cooldown (Default: 2): "));
-    if (shouldExit) return false;
-
-    if (!cooldown) cooldown = 2;
-
-    return applyCard({
-        name: _card.name,
-        displayName: _card.displayName,
-        desc: _card.desc,
-        cost: _card.cost,
-        type: _card.type,
-        classes: _card.classes,
-        rarity: _card.rarity,
-        runes: _card.runes,
-        keywords: _card.keywords,
-        durability: durability,
-        cooldown: cooldown,
-        id: 0,
-    });
+        return applyCard({
+            name: _card.name,
+            displayName: _card.displayName,
+            desc: _card.desc,
+            cost: _card.cost,
+            type: _card.type,
+            classes: _card.classes,
+            rarity: _card.rarity,
+            runes: _card.runes,
+            keywords: _card.keywords,
+            durability: durability,
+            cooldown: cooldown,
+            id: 0,
+        });
+    }
 }
 
 /**
@@ -212,34 +232,20 @@ export function main() {
     game.log("type 'back' at any step to cancel.\n");
 
     // Ask the user for the type of card they want to make
-    type = input("Type: ") as CardType;
+    type = game.functions.capitalizeAll(input("Type: ")) as CardType;
     if (shouldExit) return false;
 
-    let tmpCard;
-
-    switch (type) {
-        case "Minion":
-            tmpCard = minion();
-            break;
-        case "Weapon":
-            tmpCard = weapon();
-            break;
-        case "Spell":
-            tmpCard = spell();
-            break;
-        case "Location":
-            tmpCard = location();
-            break;
-        case "Hero":
-            tmpCard = hero();
-            break
-        default:
-            game.log("That is not a valid type!");
-            game.input();
-            return false;
+    if (!Object.keys(cardTypeFunctions).includes(type)) {
+        game.log("That is not a valid type!");
+        game.input();
+        return false;
     }
+
+    // HACK: Use of never
+    let cardFunction: Function = cardTypeFunctions[type as never];
+    let tmpCard: Blueprint | false = cardFunction();
     
-    if (typeof tmpCard === "boolean") return false;
+    if (!tmpCard) return false;
     card = tmpCard;
 
     if (shouldExit) return false;
