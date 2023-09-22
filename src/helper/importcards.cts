@@ -1,7 +1,5 @@
 require = require('esm')(module);
 
-import fs from "fs";
-
 let cards: any[] = [];
 let oldContent: string[][] = [];
 let c = 1;
@@ -22,28 +20,21 @@ export function doImportCards(path: string, hot = false) {
     return _doImportCards(path, hot);
 }
 function _doImportCards(path: string, hot = false) {
-    fs.readdirSync(path, { withFileTypes: true }).forEach((file: fs.Dirent) => {
-        let p = `${path}/${file.name}`;
+    game.functions.searchCardsFolder((fullPath, content) => {
+        let shouldHotReload = hot && !oldContent.some(c => c[0] === content);
 
-        if (file.name.endsWith(".mjs")) {
-            // Don't hot reload the card if it hasn't changed
-            let content = fs.readFileSync(p, { encoding: "utf8" });
-            let shouldHotReload = hot && !oldContent.some(c => c[0] === content);
+        let f: any;
 
-            let f: any;
+        if (shouldHotReload) f = requireFresh(fullPath).blueprint;
+        else f = require(fullPath).blueprint;
 
-            if (shouldHotReload) f = requireFresh(p).blueprint;
-            else f = require(p).blueprint;
+        // Replace the content
+        game.functions.remove(oldContent, oldContent.find(c => c[1] === f.id));
+        oldContent.push([content, f.id]);
 
-            // Replace the content
-            game.functions.remove(oldContent, oldContent.find(c => c[1] === f.id));
-            oldContent.push([content, f.id]);
-
-            if (!f) throw new Error("Card doesn't export a blueprint: " + p);
-            cards.push(f);
-        }
-        else if (file.isDirectory()) _doImportCards(p, hot);
-    });
+        if (!f) throw new Error("Card doesn't export a blueprint: " + fullPath);
+        cards.push(f);
+    }, game.functions.dirname() + "cards", ".mjs");
 
     return cards;
 }

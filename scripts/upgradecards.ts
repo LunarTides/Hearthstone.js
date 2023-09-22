@@ -9,13 +9,15 @@ import { createGame } from "../src/internal.js";
 
 const { game, player1, player2 } = createGame();
 
-function upgradeCard(path: string, filename: string, data: string) {
+function upgradeCard(path: string, data: string, file: fs.Dirent) {
     // TODO: Always add `spellSchool`.
     // TODO: Always add `hpCost`.
 
     // Yes, this code is ugly. This script is temporary.
     // This will also not work for ALL cards, they are just too flexible.
     // But it should work for all cards that was created using the card creator.
+    let filename = file.name;
+
     game.log(`--- Found ${filename} ---`);
 
     let hasPassive = data.includes("passive(plr, game, self, key, ");
@@ -126,32 +128,13 @@ const val = _unknownVal as EventValue<typeof key>;
     game.log(`--- Finished ${filename} ---`);
 }
 
-function upgradeCards(path: string) {
-    // We don't care about test cards
-    if (path.includes("cards/Tests")) return;
-
-    path = path.replaceAll("\\", "/").replace("/dist/..", "");
-
-    fs.readdirSync(path, { withFileTypes: true }).forEach(file => {
-        let fullPath = `${path}/${file.name}`;
-
-        if (file.name.endsWith(".js")) {
-            // It is an actual card.
-            let data = fs.readFileSync(fullPath, { encoding: 'utf8', flag: 'r' });
-
-            upgradeCard(fullPath, file.name, data);
-        }
-        else if (file.isDirectory()) upgradeCards(fullPath);
-    });
-}
-
 function main() {
     game.logError("<yellow>WARNING: This will create new cards with the `.mts` extension, but will leave your old card alone. Please verify that the new cards work before deleting the old ones.</yellow>");
 
     let proceed = game.input("Do you want to proceed? ([y]es, [n]o): ").toLowerCase()[0] === "y";
     if (!proceed) process.exit(0);
 
-    upgradeCards(game.functions.dirname() + "../cards");
+    game.functions.searchCardsFolder(upgradeCard, undefined, ".js");
 
     game.log("Trying to compile...");
     try {

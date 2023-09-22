@@ -22,33 +22,16 @@ function getFinishedCards(path: string) {
     finishedCards = cards.split("\n");
 }
 
-function searchCards(query: RegExp | string, path?: string) {
-    if (!path) path = game.functions.dirname() + "../cards";
-    // We don't care about test cards
-    if (path.includes("cards/Tests")) return;
-
-    path = path.replaceAll("\\", "/").replace("/dist/..", "");
-
-    fs.readdirSync(path, { withFileTypes: true }).forEach(file => {
-        let p = `${path}/${file.name}`;
-
-        if (file.name.endsWith(".mts")) {
-            // It is already finished
-            if (finishedCards.includes(p)) return;
-
-            // It is an actual card.
-            let data = fs.readFileSync(p, { encoding: 'utf8', flag: 'r' });
-
-            // The query is not a regular expression
-            if (typeof query === 'string') {
-                if (data.includes(query)) matchingCards.push(p);
-                return;
-            }
-
-            // The query is a regex
-            if (query.test(data)) matchingCards.push(p);
+function searchCards(query: RegExp | string) {
+    game.functions.searchCardsFolder((fullPath, content) => {
+        // The query is not a regular expression
+        if (typeof query === 'string') {
+            if (content.includes(query)) matchingCards.push(fullPath);
+            return;
         }
-        else if (file.isDirectory()) searchCards(query, p);
+
+        // The query is a regex
+        if (query.test(content)) matchingCards.push(fullPath);
     });
 }
 

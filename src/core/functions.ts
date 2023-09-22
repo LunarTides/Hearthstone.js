@@ -2112,6 +2112,32 @@ ${main_content}
     },
 
     /**
+     * Calls `callback` on all cards in the cards folder.
+     *
+     * @param path By default, this is the cards folder (not in dist)
+     * @param extension The extension to look for in cards. By default, this is ".mts"
+     */
+    searchCardsFolder(callback: (path: string, content: string, file: fs.Dirent) => void, path?: string, extension = ".mts") {
+        if (!path) path = this.dirname() + "../cards";
+        // We don't care about test cards
+        if (path.includes("cards/Tests")) return;
+
+        path = path.replaceAll("\\", "/");
+
+        fs.readdirSync(path, { withFileTypes: true }).forEach(file => {
+            let fullPath = `${path}/${file.name}`;
+
+            if (file.name.endsWith(extension)) {
+                // It is an actual card.
+                let data = fs.readFileSync(fullPath, { encoding: 'utf8', flag: 'r' });
+
+                callback(fullPath, data, file);
+            }
+            else if (file.isDirectory()) this.searchCardsFolder(callback, fullPath, extension);
+        });
+    },
+
+    /**
      * Validates the blueprints.
      *
      * @returns If one or more blueprints were found invalid.

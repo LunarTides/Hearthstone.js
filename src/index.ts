@@ -62,6 +62,8 @@ function warnAboutOutdatedCards() {
 }
 
 function findOutdatedCards(path: string) {
+    if (path.includes("cards/Tests")) return;
+
     fs.readdirSync(path, { withFileTypes: true }).forEach(file => {
         let p = `${path}/${file.name}`;
 

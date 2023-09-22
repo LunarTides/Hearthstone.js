@@ -12,30 +12,15 @@ const { game, player1, player2 } = createGame();
 const idRegex = / {4}id: (\d+)/;
 
 function searchCards(callback: (path: string, content: string, id: number) => void, path?: string) {
-    if (!path) path = game.functions.dirname() + "../cards";
-    // We don't care about test cards
-    if (path.includes("cards/Tests")) return;
-
-    path = path.replaceAll("\\", "/").replace("/dist/..", "");
-
-    fs.readdirSync(path, { withFileTypes: true }).forEach(file => {
-        let fullPath = `${path}/${file.name}`;
-
-        if (file.name.endsWith(".mts")) {
-            // It is an actual card.
-            let data = fs.readFileSync(fullPath, { encoding: 'utf8', flag: 'r' });
-
-            // The query is a regex
-            let idMatch = data.match(idRegex);
-            if (!idMatch) {
-                game.logError(`No id found in ${fullPath}`);
-                return;
-            }
-
-            let id = Number(idMatch[1]);
-            callback(fullPath, data, id);
+    game.functions.searchCardsFolder((fullPath, content) => {
+        let idMatch = content.match(idRegex);
+        if (!idMatch) {
+            game.logError(`No id found in ${fullPath}`);
+            return;
         }
-        else if (file.isDirectory()) searchCards(callback, fullPath);
+
+        let id = Number(idMatch[1]);
+        callback(fullPath, content, id);
     });
 }
 
