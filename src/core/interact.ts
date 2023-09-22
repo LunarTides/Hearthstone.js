@@ -654,7 +654,6 @@ export const interact = {
                 return false;
             }
 
-            // @xts-expect-error - Strict mode can't index object by string, even though we null check it immediately, so we have to do this
             let setting: {[key: string]: any} = game.config[name as keyof GameConfig];
 
             if (setting === undefined) {

@@ -4,7 +4,7 @@
  */
 import { question }  from 'readline-sync';
 import { functions, interact, Player, Card, AI } from "../internal.js";
-import { Blueprint, CardAbility, EventKey, EventManagerEvents, EventValue, GameAttackReturn, GameConfig, GameConstants, GamePlayCardReturn, QuestType, Target, TickHookCallback, UnknownEventValue } from "../types.js";
+import { Blueprint, CardAbility, EventKey, EventManagerEvents, EventValue, GameAttackReturn, GameConstants, GamePlayCardReturn, QuestType, Target, TickHookCallback, UnknownEventValue } from "../types.js";
 import { config } from '../../config.js';
 
 // Override the console methods to force using the wrapper functions

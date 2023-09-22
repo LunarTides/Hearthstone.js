@@ -487,7 +487,6 @@ const deckcode = {
             let vanillaCard = c[0];
             if (!vanillaCard || typeof vanillaCard === "number") return;
 
-            // @xts-expect-error
             if (createdCards.find(card => card.name == vanillaCard!.name || card.displayName == vanillaCard!.name)) return;
 
             // The card doesn't exist.
