@@ -1,7 +1,7 @@
 {
   "name": "hearthstone.js",
   "version": "2.0.0-beta.1",
-  "description": "",
+  "description": "A console-based recreation of Hearthstone made in NodeJS",
   "exports": "./index.ts",
   "main": "./dist/index.js",
   "type": "module",
@@ -34,7 +34,6 @@
     "@types/readline-sync": "^1.4.4",
     "@types/uuid": "^9.0.2",
     "esm": "^3.2.25",
-    "typedoc": "^0.25.1",
     "typescript": "^5.2.2"
   },
   "engines": {
