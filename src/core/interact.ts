@@ -1146,7 +1146,7 @@ export const interact = {
 
         // No cards from previous discover loop, we need to generate new ones.
         if (_cards.length == 0) {
-            values = game.functions.chooseItemsFromList(cards, amount).map(c => c.copy);
+            values = game.functions.chooseItemsFromList(cards, amount)?.map(c => c.copy) ?? [];
         }
 
         if (values.length <= 0) return null;

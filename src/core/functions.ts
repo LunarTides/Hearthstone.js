@@ -643,7 +643,9 @@ export const functions = {
      * 
      * @returns actual: The element, copy: If the element is a card, an imperfect copy of that card
      */
-    randList<T>(list: T[]): RandListReturn<T> {
+    randList<T>(list: T[]): RandListReturn<T> | null {
+        if (list.length <= 0) return null;
+
         let item = list[this.randInt(0, list.length - 1)];
         
         if (item instanceof Card) return { actual: item, copy: item.imperfectCopy() as T };
@@ -660,7 +662,8 @@ export const functions = {
      *
      * @returns The items
      */
-    chooseItemsFromList<T>(list: T[], amount: number): (RandListReturn<T>)[] {
+    chooseItemsFromList<T>(list: T[], amount: number): (RandListReturn<T>)[] | null {
+        if (list.length <= 0) return null;
         if (amount > list.length) amount = list.length;
 
         // Make a copy of the list
@@ -669,6 +672,7 @@ export const functions = {
 
         for (let i = 0; i < amount; i++) {
             let el = this.randList(list);
+            if (!el) continue;
 
             elements.push(el);
             this.remove(list, el.actual);
@@ -1903,7 +1907,9 @@ ${main_content}
 
         if (values.length == 0) {
             for (let i = 0; i < 3; i++) {
-                let c = this.randList(possible_cards).actual;
+                let c = this.randList(possible_cards)?.actual;
+                if (!c) throw new Error("null when randomly choosing adapt option");
+
                 if (c instanceof Card) throw new TypeError();
 
                 values.push(c);

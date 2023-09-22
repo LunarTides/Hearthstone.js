@@ -32,7 +32,7 @@ function main() {
         for (let i = 0; i < 2; i++) {
             let plr = game.functions.getPlayerFromId(i);
 
-            let deck = game.functions.randList(decks).actual;
+            let deck = game.functions.randList(decks)?.actual;
             if (typeof deck === "string") game.functions.deckcode.import(plr, deck);
         }
 

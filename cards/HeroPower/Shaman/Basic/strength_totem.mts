@@ -24,11 +24,11 @@ export const blueprint: Blueprint = {
         let board = game.board[plr.id].filter(card => card.type === "Minion");
         game.functions.remove(board, self);
 
-        // If there is no other minions on the board, return
-        if (board.length <= 0) return;
-
         // Choose the random minion
-        let minion = game.functions.randList(board).actual;
+        const _minion = game.functions.randList(board);
+        if (!_minion) return;
+
+        const minion = _minion.actual;
 
         // Give that minion +1 Attack
         minion.addStats(1, 0);

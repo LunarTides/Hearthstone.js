@@ -32,7 +32,10 @@ export const blueprint: Blueprint = {
         if (filteredTotemCardNames.length == 0) return game.constants.REFUND;
 
         // Randomly choose one of the totem cards. Get the actual card and not a copy.
-        const cardName = game.functions.randList(filteredTotemCardNames).actual;
+        const _cardName = game.functions.randList(filteredTotemCardNames);
+        if (!_cardName) throw new game.CardError("null found when randomly choosing totem card name");
+
+        const cardName = _cardName.actual;
 
         // Create a card from the name.
         const card = new game.Card(cardName, plr);

@@ -8,6 +8,17 @@ import { v4 as uuidv4 } from "uuid";
 
 let game = globalThis.game;
 
+/**
+ * Use this error type when throwing an error in a card
+ */
+export class CardError extends Error {
+    constructor(msg: string) {
+        super(msg);
+        Object.setPrototypeOf(this, CardError.prototype);
+        this.name = "CardError";
+    }
+}
+
 export class Card {
     // All
 
