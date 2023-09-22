@@ -301,7 +301,7 @@ export type EventValue<Key extends EventKey> = /**
 export type UnknownEventValue = EventValue<EventKey>;
 
 /**
- * {@link Game.playCard | PlayCard} return value
+ * Game.PlayCard return value
  */
 export type GamePlayCardReturn = Card |
                                  true |
