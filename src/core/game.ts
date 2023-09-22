@@ -5,6 +5,7 @@
 import { question }  from 'readline-sync';
 import { functions, interact, Player, Card, AI } from "../internal.js";
 import { Blueprint, CardAbility, EventKey, EventManagerEvents, EventValue, GameAttackReturn, GameConfig, GameConstants, GamePlayCardReturn, QuestType, Target, TickHookCallback, UnknownEventValue } from "../types.js";
+import { config } from '../../config.js';
 
 // Override the console methods to force using the wrapper functions
 // Set this variable to false to prevent disabling the console. (Not recommended)
@@ -348,7 +349,7 @@ export class Game {
      * 
      * Look in the `config` folder.
      */
-    config: GameConfig;
+    config = config;
 
     /**
      * All of the cards that have been implemented so far.
@@ -821,7 +822,7 @@ export function createGame() {
     const player2 = new Player("Player 2");
     game.setup(player1, player2);
     functions.importCards(functions.dirname() + "cards");
-    functions.importConfig();
+    game.doConfigAI();
 
     return { game, player1, player2 };
 }

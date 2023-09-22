@@ -559,6 +559,11 @@ export type EnchantmentDefinition = {
 }
 
 /**
+ * Game events.
+ */
+export type EventManagerEvents = {[key in EventKey]?: [[[any, number]], [[any, number]]]};
+
+/**
  * {@link game.config | Game configuration}.
  */
 export type GameConfig = {
@@ -618,7 +623,6 @@ export type GameConfig = {
         build: number,
 
         versionText: string,
-        todo: {[key: string]: string[]},
 
         stableIntroText: string,
         betaIntroText: string,
@@ -631,8 +635,3 @@ export type GameConfig = {
         description: string
     }}
 }
-
-/**
- * Game events.
- */
-export type EventManagerEvents = {[key in EventKey]?: [[[any, number]], [[any, number]]]};

@@ -8,7 +8,6 @@ import * as child_process from "child_process";
 import * as deckstrings from "deckstrings";
 
 import chalk from "chalk";
-import toml from "toml";
 
 import { dirname as pathDirname } from "path";
 import { createHash } from "crypto";
@@ -2078,17 +2077,6 @@ ${main_content}
      */
     canBeOnBoard(card: CardLike): boolean {
         return card.type === "Minion" || card.type === "Location";
-    },
-
-    /**
-     * Imports the config file.
-     *
-     * @returns Success
-     */
-    importConfig() {
-        game.config = toml.parse(fs.readFileSync(this.dirname() + "../config.toml", { encoding: "utf8" }));
-        game.doConfigAI();
-        return true;
     },
 
     /**
