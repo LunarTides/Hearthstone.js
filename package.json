@@ -6,7 +6,7 @@
   "main": "./dist/index.js",
   "type": "module",
   "scripts": {
-    "start": "node ./dist/index.js",
+    "start": "npm config set engine-strict true && node ./dist/index.js",
     "docs": "typedoc ./",
     "script:vanilla:generator": "node ./dist/scripts/vanillacards/generator",
     "script:vanilla:propfinder": "node ./dist/scripts/vanillacards/propfinder",

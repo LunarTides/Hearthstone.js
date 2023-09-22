@@ -14,11 +14,12 @@ help:
 install:
 	@echo "Trying to install using npm..."
 	@node --version > /dev/null 2>&1 || (echo "Nodejs is not installed" && exit 1)
+	@npm config set engine-strict true
 	@npm i > /dev/null
 
 vanilla:
 	@echo "Trying to generate vanilla cards..."
-	@npm run generate
+	@npm run script:vanilla:generator
 
 run:
 	@ls dist/index.js > /dev/null 2>&1 || (echo "The game hasn't been built." && exit 1)
@@ -42,6 +43,5 @@ start:
 clean:
 	@rm -rf ./dist/
 	@rm -rf ./node_modules/
-	@rm -rf ./docs/
 	@rm -rf ./vanillacards.json
 
