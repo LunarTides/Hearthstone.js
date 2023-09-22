@@ -469,6 +469,7 @@ type BlueprintAbilities = {
  * The {@link Card.blueprint | blueprint of a card.}
  */
 export type Blueprint = {
+    // Common
     name: string,
     displayName?: string,
     stats?: number[],
@@ -476,6 +477,7 @@ export type Blueprint = {
     cost: number,
     type: CardType,
 
+    // Type specific
     tribe?: MinionTribe,
     spellSchool?: SpellSchool,
     durability?: number,
@@ -483,19 +485,23 @@ export type Blueprint = {
     hpDesc?: string,
     hpCost?: number,
 
+    // Less important
     classes: CardClass[],
     rarity: CardRarity,
     keywords?: CardKeyword[],
 
+    // Rare
     runes?: string,
     dormant?: number,
     colossal?: string[],
     corrupt?: string,
     deckSettings?: any,
 
+    // Other
     conditioned?: CardAbility[],
     storage?: { [key: string]: any },
 
+    // Last
     uncollectible?: boolean,
     id: number
 } & BlueprintAbilities;

@@ -136,12 +136,21 @@ export function validate(log: boolean): [number, number] {
         currentId = id;
     });
 
+    // Check if the .latest_id is valid
+    let latestId = parseInt(fs.readFileSync(game.functions.dirname() + "../cards/.latest_id", { encoding: "utf8" }).trim());
+
     if (log) {
         if (holes > 0) game.log("<yellow>Found %s holes.</yellow>", holes);
         else game.log("<bright:green>No holes found.</bright:green>");
 
         if (duplicates > 0) game.log("<yellow>Found %s duplicates.</yellow>", duplicates);
-        else game.log("<green:bright>No duplicates found.</green:bright>");
+        else game.log("<bright:green>No duplicates found.</bright:green>");
+
+        if (latestId === currentId) game.log("<bright:green>Latest id up-to-date.</bright:green>");
+        else {
+            game.log("<yellow>Latest id is invalid. Latest id found: %s, latest id in file: %s. Fixing...</yellow>", currentId, latestId);
+            fs.writeFileSync(game.functions.dirname() + "../cards/.latest_id", currentId.toString());
+        }
     }
 
     return [holes, duplicates];
