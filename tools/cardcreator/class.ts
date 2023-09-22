@@ -5,8 +5,8 @@
 
 import * as lib from "./lib.js";
 
-import { createGame } from "../src/internal.js";
-import { Blueprint, CardClass, CardRarity, CardType } from "../src/types.js";
+import { createGame } from "../../src/internal.js";
+import { Blueprint, CardClass, CardRarity, CardType } from "../../src/types.js";
 
 const { game, player1, player2 } = createGame();
 

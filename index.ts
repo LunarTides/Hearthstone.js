@@ -3,10 +3,10 @@
  * @module Runner
  */
 import * as src from "./src/index.js";           // Source Code
-import * as dc  from "./deckcreator/index.js";   // Deck Creator
-import * as ccc from "./cardcreator/custom.js";  // Custom Card Creator
-import * as vcc from "./cardcreator/vanilla.js"; // Vanilla Card Creator
-import * as clc from "./cardcreator/class.js";   // Class Creator
+import * as dc  from "./tools/deckcreator.js";   // Deck Creator
+import * as ccc from "./tools/cardcreator/custom.js";  // Custom Card Creator
+import * as vcc from "./tools/cardcreator/vanilla.js"; // Vanilla Card Creator
+import * as clc from "./tools/cardcreator/class.js";   // Class Creator
 
 const watermark = () => {
     game.interact.cls();

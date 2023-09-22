@@ -4,8 +4,8 @@
  */
 
 import fs from "fs";
-import { createGame } from "../src/internal.js";
-import { Blueprint, CardClass, CardType } from "../src/types.js";
+import { createGame } from "../../src/internal.js";
+import { Blueprint, CardClass, CardType } from "../../src/types.js";
 
 const { game, player1, player2 } = createGame();
 

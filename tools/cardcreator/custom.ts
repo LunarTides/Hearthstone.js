@@ -5,8 +5,8 @@
 
 import rl from "readline-sync";
 import * as lib from "./lib.js";
-import { createGame } from "../src/internal.js";
-import { Blueprint, CardClass, CardKeyword, CardRarity, CardType, MinionTribe, SpellSchool } from "../src/types.js";
+import { createGame } from "../../src/internal.js";
+import { Blueprint, CardClass, CardKeyword, CardRarity, CardType, MinionTribe, SpellSchool } from "../../src/types.js";
 
 const { game, player1, player2 } = createGame();
 let card: Blueprint;
