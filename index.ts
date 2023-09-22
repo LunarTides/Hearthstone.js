@@ -2,22 +2,14 @@
  * The entry point of the program. Acts like a hub between the tools / scripts and the game.
  * @module Runner
  */
-import fs from "fs";
-import toml from "toml";
-
 import * as src from "./src/index.js";           // Source Code
 import * as dc  from "./deckcreator/index.js";   // Deck Creator
 import * as ccc from "./cardcreator/custom.js";  // Custom Card Creator
 import * as vcc from "./cardcreator/vanilla.js"; // Vanilla Card Creator
 import * as clc from "./cardcreator/class.js";   // Class Creator
-import { GameConfig } from "@Game/types.js";
-
-let config: GameConfig = toml.parse(fs.readFileSync("./config.toml", { encoding: "utf8" }));
-
-const cls = () => process.stdout.write("\x1bc");
 
 const watermark = () => {
-    cls();
+    game.interact.cls();
     game.log("Hearthstone.js Runner V%s (C) 2022\n", game.functions.getVersion(3));
 }
 
@@ -29,7 +21,7 @@ function cardCreator() {
 
     let isVanilla = choice[0].toLowerCase() === "v";
 
-    cls();
+    game.interact.cls();
 
     if (isVanilla) {
         let [_, error] = game.functions.getVanillaCards();
