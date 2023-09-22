@@ -70,7 +70,7 @@ function findOutdatedCards(path: string) {
         if (file.name.endsWith(".js")) {
             outdatedCards.push(p.replace("/dist/..", "").slice(0, -3));
         }
-        if (file.name.endsWith(".mts")) {
+        if (file.name.endsWith(".ts")) {
             updatedCards.push(p.replace("/dist/..", "").slice(0, -4));
         }
         else if (file.isDirectory()) findOutdatedCards(p);

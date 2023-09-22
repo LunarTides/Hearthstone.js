@@ -34,6 +34,6 @@ export const blueprint: Blueprint = {
         // DON'T CHANGE ANYTHING BELOW THIS LINE
 
         // Testing your solution.
-        game.interact.verifyDIYSolution(self.getAttack() == 2 && self.getHealth() == 2, "1.mts");
+        game.interact.verifyDIYSolution(self.getAttack() == 2 && self.getHealth() == 2, "1.ts");
     }
 }

@@ -116,7 +116,7 @@ export const blueprint: Blueprint = {
             );
         });
 
-        game.interact.verifyDIYSolution(solved, "3.mts");
+        game.interact.verifyDIYSolution(solved, "3.ts");
         if (!solved) plr.addToHand(self);
 
         self.storage.solved = true;

@@ -123,13 +123,13 @@ const val = _unknownVal as EventValue<typeof key>;
         game.log("Updated passive.")
     }
 
-    fs.writeFileSync(path.replace(filename, filename.replace(".js", ".mts")), data);
+    fs.writeFileSync(path.replace(filename, filename.replace(".js", ".ts")), data);
     
     game.log(`--- Finished ${filename} ---`);
 }
 
 function main() {
-    game.logError("<yellow>WARNING: This will create new cards with the `.mts` extension, but will leave your old card alone. Please verify that the new cards work before deleting the old ones.</yellow>");
+    game.logError("<yellow>WARNING: This will create new cards with the `.ts` extension, but will leave your old card alone. Please verify that the new cards work before deleting the old ones.</yellow>");
 
     let proceed = game.input("Do you want to proceed? ([y]es, [n]o): ").toLowerCase()[0] === "y";
     if (!proceed) process.exit(0);

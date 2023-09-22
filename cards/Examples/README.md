@@ -3,7 +3,7 @@ These are some example cards to (hopefully) teach you how to create your own car
 
 You can give yourself any of these cards by having debug mode enabled (`config.toml`), and typing `/give The Card's Name` or `/give The Card's Id`.
 
-Every stage has a big example card at the end, called `combined.mts`. This will show you every concept you learned in that stage, so look at that last.
+Every stage has a big example card at the end, called `combined.ts`. This will show you every concept you learned in that stage, so look at that last.
 
 Look at the name of the file to see the order you should look at it. Look at the files in this order:
 `1 -> 2 -> 3 -> ... -> last`

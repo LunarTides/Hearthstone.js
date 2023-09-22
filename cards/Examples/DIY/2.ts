@@ -79,7 +79,7 @@ export const blueprint: Blueprint = {
 
         plr.health = trueOgHealth;
 
-        game.interact.verifyDIYSolution(solved, "2.mts");
+        game.interact.verifyDIYSolution(solved, "2.ts");
 
         if (!solved) return game.constants.REFUND;
         return true;

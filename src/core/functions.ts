@@ -1301,9 +1301,9 @@ ${main_content}
 
         fs.readdirSync(this.dirname() + "cards/StartingHeroes").forEach(file => {
             // Something is wrong with the file name.
-            if (!file.endsWith(".mjs")) return;
+            if (!file.endsWith(".js")) return;
 
-            // Remove ".mjs"
+            // Remove ".js"
             let name = file.slice(0, -4);
 
             // Remove underscores
@@ -2108,9 +2108,9 @@ ${main_content}
      * Calls `callback` on all cards in the cards folder.
      *
      * @param path By default, this is the cards folder (not in dist)
-     * @param extension The extension to look for in cards. By default, this is ".mts"
+     * @param extension The extension to look for in cards. By default, this is ".ts"
      */
-    searchCardsFolder(callback: (path: string, content: string, file: fs.Dirent) => void, path?: string, extension = ".mts") {
+    searchCardsFolder(callback: (path: string, content: string, file: fs.Dirent) => void, path?: string, extension = ".ts") {
         if (!path) path = this.dirname() + "../cards";
         // We don't care about test cards
         if (path.includes("cards/Tests")) return;

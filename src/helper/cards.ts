@@ -9,7 +9,7 @@ export function doImportCards() {
 export function generateCardExports() {
     let exportContent = "// This file has been automatically created. Do not change this file.\n";
     game.functions.searchCardsFolder((fullPath, content, file) => {
-        fullPath = fullPath.replace(".mts", ".mjs");
+        fullPath = fullPath.replace(".ts", ".js");
 
         let relPath = "./" + fullPath.split("cards/")[1];
 

@@ -65,7 +65,7 @@ function generateCardPath(...args: [CardClass[], CardType]) {
 
     // This can be anything since the card register process ignores folders.
     // Change this if you want the cards to be in different folders.
-    // By default, this is `cards/Classes/{class name}/{Uncollectible | Collectible}/{type}s/{mana cost} Cost/{card name}.mts`;
+    // By default, this is `cards/Classes/{class name}/{Uncollectible | Collectible}/{type}s/{mana cost} Cost/{card name}.ts`;
     // This path can be overridden by passing `overridePath` in the create function.
     let dynamic_path = `Classes/${classesString}/${collectibleString}/${typeString}s/${card.cost} Cost/`;
 
@@ -128,8 +128,8 @@ export function create(creatorType: CCType, cardType: CardType, blueprint: Bluep
     // If this function was passed in a path, use that instead.
     if (overridePath) path = overridePath; 
 
-    // Create a filename. Example: "Test Card" -> "test_card.mts"
-    let filename = card.name.toLowerCase().replaceAll(" ", "_") + ".mts";
+    // Create a filename. Example: "Test Card" -> "test_card.ts"
+    let filename = card.name.toLowerCase().replaceAll(" ", "_") + ".ts";
 
     // If this function was passed in a filename, use that instead.
     if (overrideFilename) filename = overrideFilename;
