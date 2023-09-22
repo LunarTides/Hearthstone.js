@@ -822,7 +822,7 @@ export function createGame() {
     const player1 = new Player("Player 1");
     const player2 = new Player("Player 2");
     game.setup(player1, player2);
-    functions.importCards(functions.dirname() + "cards");
+    functions.importCards();
     game.doConfigAI();
 
     return { game, player1, player2 };

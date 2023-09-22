@@ -956,7 +956,7 @@ let running = true;
  */
 export function main() {
     running = true;
-    game.functions.importCards(game.functions.dirname() + "cards");
+    game.functions.importCards();
 
     chosen_class = askClass();
 

@@ -12,7 +12,7 @@ import chalk from "chalk";
 import { dirname as pathDirname } from "path";
 import { createHash } from "crypto";
 import { fileURLToPath } from "url";
-import { doImportCards } from "../helper/importcards.cjs";
+import { doImportCards, generateCardExports } from "../helper/cards.js";
 
 import { Player, Card } from "../internal.js";
 import { Blueprint, CardClass, CardClassNoNeutral, CardLike, CardRarity, EventKey, EventListenerCallback, FunctionsExportDeckError, FunctionsValidateCardReturn, MinionTribe, QuestCallback, RandListReturn, Target, TickHookCallback, VanillaCard } from "../types.js";
@@ -2090,9 +2090,10 @@ ${main_content}
      * 
      * @returns Success
      */
-    importCards(path: string) {
+    importCards() {
         game = globalThis.game;
-        game.cards = doImportCards(path);
+        generateCardExports();
+        doImportCards();
 
         if (!this.runBlueprintValidator()) {
             game.log(`<red>Some cards are invalid. Please fix these issues before playing.</red>`);

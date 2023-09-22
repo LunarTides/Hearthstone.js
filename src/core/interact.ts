@@ -4,7 +4,7 @@
  */
 import { AI, Card, Player } from '../internal.js';
 import { AIHistory, CardLike, EventValue, GameConfig, GamePlayCardReturn, SelectTargetAlignment, SelectTargetClass, SelectTargetFlag, Target } from '../types.js';
-import { reloadCards } from '../helper/importcards.cjs';
+import { reloadCards } from '../helper/cards.js';
 
 const license_url = 'https://github.com/LunarTides/Hearthstone.js/blob/main/LICENSE';
 let game = globalThis.game;
@@ -716,7 +716,7 @@ export const interact = {
             let success = true;
 
             success = success && this.withStatus("Registering cards", () => {
-                game.cards = reloadCards(game.functions.dirname() + "cards");
+                reloadCards(game.functions.dirname() + "cards");
                 return true;
             });
 
