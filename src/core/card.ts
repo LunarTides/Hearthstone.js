@@ -139,6 +139,9 @@ export class Card {
 
     // Location
 
+    /**
+     * The durability of the location card
+     */
     durability?: number;
 
     /**

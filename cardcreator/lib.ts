@@ -18,9 +18,15 @@ function getCardAbility(cardType: CardType) {
     // Get the card's ability
     let ability;
 
-    if (cardType == "Spell") ability = "Cast"; // If the card is a spell, the ability is 'cast'
-    else if (cardType == "Hero") ability = "HeroPower"; // If the card is a hero card, the ability is 'heropower'
-    else if (cardType == "Location") ability = "Use"; // If the card is a location, the ability is 'use'
+    // If the card is a spell, the ability is 'cast'
+    if (cardType == "Spell") ability = "Cast";
+
+    // If the card is a hero card, the ability is 'heropower'
+    else if (cardType == "Hero") ability = "HeroPower";
+
+    // If the card is a location, the ability is 'use'
+    else if (cardType == "Location") ability = "Use";
+
     else {
         // Try to extract an ability from the card's description
         let reg = /([A-Z][a-z].*?):/g;
