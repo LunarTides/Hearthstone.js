@@ -458,7 +458,7 @@ const deckcode = {
      */
     fromVanilla(plr: Player, code: string): string {
         // Use the 'deckstrings' library's decode
-        let deck: deckstrings.DeckDefinition = deckstrings.decode(code);
+        let deckWithFormat: deckstrings.DeckDefinition = deckstrings.decode(code);
 
         const [vanillaCards, error] = game.functions.getVanillaCards("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'scripts/genvanilla.bat' (requires an internet connection), then try again.");
 
@@ -467,9 +467,8 @@ const deckcode = {
             return "";
         }
 
-        // @ts-expect-error
         // We don't care about the format
-        delete deck.format;
+        const { format, ...deck } = deckWithFormat;
 
         let _heroClass = vanillaCards.find(a => a.dbfId == deck.heroes[0])?.cardClass;
         let heroClass = game.functions.capitalize(_heroClass?.toString() || game.player2.heroClass);

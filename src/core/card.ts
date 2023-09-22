@@ -381,8 +381,7 @@ export class Card {
 
         // Make a backup of "this" to be used when silencing this card
         // TODO: Make the backups work without causing errors
-        // @ts-expect-error
-        if (!this.backups.init) this.backups.init = {};
+        if (!this.backups.init) this.backups.init = {} as CardBackup;
         Object.entries(this).forEach(i => {
             // HACK: Never usage
             this.backups.init[i[0] as never] = i[1] as never;
@@ -1036,32 +1035,31 @@ export class Card {
 
             // Seperate the keys and values
             let info = this.getEnchantmentInfo(enchantment);
-            let [key, val, op] = Object.values(info);
+            let [_key, val, op] = Object.values(info);
+
+            const key = _key as keyof this;
             
             let numberVal = parseInt(val);
+            if (typeof this[key as keyof this] !== "number") return;
 
             switch (op) {
                 case '=':
-                    this[key as keyof this] = numberVal as any;
+                    (this[key] as number) = numberVal;
                     break;
                 case '+':
-                    this[key as keyof this] += numberVal as any;
+                    (this[key] as number) += numberVal;
                     break;
                 case '-':
-                    //@ts-expect-error
-                    this[key] -= numberVal;
+                    (this[key] as number) -= numberVal;
                     break;
                 case '*':
-                    //@ts-expect-error
-                    this[key] *= numberVal;
+                    (this[key] as number) *= numberVal;
                     break;
                 case '/':
-                    // @ts-expect-error
-                    this[key] /= numberVal;
+                    (this[key] as number) /= numberVal;
                     break;
                 case '^':
-                    // @ts-expect-error
-                    this[key] = Math.pow(this[key], numberVal);
+                    (this[key] as number) = Math.pow((this[key] as number), numberVal);
                     break;
                 default:
                     break;

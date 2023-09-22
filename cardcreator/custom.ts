@@ -22,8 +22,7 @@ function input(prompt: string) {
 }
 
 function applyCard(_card: Blueprint) {
-    // @ts-expect-error
-    let newCard: Blueprint = {};
+    let newCard: Blueprint;
 
     Object.entries(_card).forEach(c => {
         let [key, val] = c;
@@ -35,7 +34,7 @@ function applyCard(_card: Blueprint) {
         newCard[key as keyof Blueprint] = val as never;
     });
 
-    return newCard;
+    return newCard!;
 }
 
 function common(): false | Blueprint {
@@ -223,8 +222,7 @@ const cardTypeFunctions = {
  */
 export function main() {
     // Reset the card
-    // @ts-expect-error
-    card = {};
+    card = {} as Blueprint;
 
     // Reset the shouldExit switch so that the program doesn't immediately exit when the user enters the ccc, exits, then enters ccc again
     shouldExit = false;

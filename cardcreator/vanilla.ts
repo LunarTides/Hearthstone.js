@@ -177,11 +177,11 @@ export function main() {
                 delete c["artist"];
                 delete c["flavor"];
                 delete c["mechanics"];
-                // @ts-expect-error
-                delete c["id"];
+
+                const { id, ...card } = c;
 
                 game.log(`\n${i + 1}:`);
-                game.log(c);
+                game.log(card);
             });
 
             let picked = parseInt(game.input(`Pick one (1-${filtered_cards.length}): `));

@@ -2,7 +2,7 @@
  * Interact stuff.
  * @module Interact
  */
-import { Card, Player } from '../internal.js';
+import { AI, Card, Player } from '../internal.js';
 import { AIHistory, CardLike, EventValue, GameConfig, GamePlayCardReturn, SelectTargetAlignment, SelectTargetClass, SelectTargetFlag, Target } from '../types.js';
 import { reloadCards } from '../helper/importcards.cjs';
 
@@ -26,10 +26,11 @@ export const interact = {
 
             let alt_model = `legacy_attack_${game.config.ai.attackModel}`;
 
-            if (Object.keys(game.player.ai).includes(alt_model)) {
-                // @ts-expect-error - We know this exists, because of the if, but strict mode doesn't like it
-                ai = game.player.ai[alt_model]();
-            }
+            // Run the correct ai attack model
+            let model = game.player.ai[alt_model as keyof AI];
+            if (model) ai = (model as Function)();
+
+            // Use the latest model
             else ai = game.player.ai.attack();
 
             attacker = ai[0];
