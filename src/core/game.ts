@@ -1154,25 +1154,11 @@ const playCard = {
         let result: GamePlayCardReturn = true;
 
         // Type specific code
-        switch (card.type) {
-            case "Minion":
-                result = playCard._playMinion(card, player);
-                break;
-            case "Spell":
-                result = playCard._playSpell(card, player);
-                break;
-            case "Weapon":
-                result = playCard._playWeapon(card, player);
-                break;
-            case "Hero":
-                result = playCard._playHero(card, player);
-                break;
-            case "Location":
-                result = playCard._playLocation(card, player);
-                break;
-            default:
-                throw new TypeError("Cannot handle playing card of type: " + card.type);
-        }
+        // HACK: Use of never
+        let typeFunction: Function = playCard.typeSpecific[card.type as never];
+        if (!typeFunction) throw new TypeError("Cannot handle playing card of type: " + card.type);
+
+        result = typeFunction(card, player);
 
         // Refund
         if (result === "refund") return result;
@@ -1195,65 +1181,68 @@ const playCard = {
         return result;
     },
 
-    _playMinion(card: Card, player: Player): GamePlayCardReturn {
-        // Magnetize
-        if (playCard._magnetize(card, player)) return "magnetize";
+    // Card type specific code
+    typeSpecific: {
+        Minion(card: Card, player: Player): GamePlayCardReturn {
+            // Magnetize
+            if (playCard._magnetize(card, player)) return "magnetize";
 
-        if (!card.dormant) {
+            if (!card.dormant) {
+                if (card.activateBattlecry() === -1) return "refund";
+            }
+
+            let unsuppress = functions.suppressEvent("SummonMinion");
+            let ret = cards.summon(card, player);
+            unsuppress();
+
+            return ret;
+        },
+
+        Spell(card: Card, player: Player): GamePlayCardReturn {
+            if (card.activate("cast") === -1) return "refund";
+
+            // Twinspell functionality
+            if (card.keywords.includes("Twinspell")) {
+                card.removeKeyword("Twinspell");
+                card.desc = card.desc?.split("Twinspell")[0].trim();
+
+                player.addToHand(card);
+            }
+
+            // Spellburst functionality
+            game.board[player.id].forEach(m => {
+                m.activate("spellburst");
+                m.abilities.spellburst = undefined;
+            });
+
+            return true;
+        },
+
+        Weapon(card: Card, player: Player): GamePlayCardReturn {
             if (card.activateBattlecry() === -1) return "refund";
+
+            player.setWeapon(card);
+            return true;
+        },
+
+        Hero(card: Card, player: Player): GamePlayCardReturn {
+            if (card.activateBattlecry() === -1) return "refund";
+
+            player.setHero(card, 5);
+            return true;
+        },
+
+        Location(card: Card, player: Player): GamePlayCardReturn {
+            card.setStats(0, card.getHealth());
+            card.immune = true;
+            card.cooldown = 0;
+
+            let unsuppress = functions.suppressEvent("SummonMinion");
+            let ret = cards.summon(card, player);
+            unsuppress();
+
+            return ret;
         }
-
-        let unsuppress = functions.suppressEvent("SummonMinion");
-        let ret = cards.summon(card, player);
-        unsuppress();
-
-        return ret;
-    },
-
-    _playSpell(card: Card, player: Player): GamePlayCardReturn {
-        if (card.activate("cast") === -1) return "refund";
-
-        // Twinspell functionality
-        if (card.keywords.includes("Twinspell")) {
-            card.removeKeyword("Twinspell");
-            card.desc = card.desc?.split("Twinspell")[0].trim();
-
-            player.addToHand(card);
-        }
-
-        // Spellburst functionality
-        game.board[player.id].forEach(m => {
-            m.activate("spellburst");
-            m.abilities.spellburst = undefined;
-        });
-
-        return true;
-    },
-
-    _playWeapon(card: Card, player: Player): GamePlayCardReturn {
-        if (card.activateBattlecry() === -1) return "refund";
-
-        player.setWeapon(card);
-        return true;
-    },
-
-    _playHero(card: Card, player: Player): GamePlayCardReturn {
-        if (card.activateBattlecry() === -1) return "refund";
-
-        player.setHero(card, 5);
-        return true;
-    },
-
-    _playLocation(card: Card, player: Player): GamePlayCardReturn {
-        card.setStats(0, card.getHealth());
-        card.immune = true;
-        card.cooldown = 0;
-
-        let unsuppress = functions.suppressEvent("SummonMinion");
-        let ret = cards.summon(card, player);
-        unsuppress();
-
-        return ret;
     },
 
     _trade(card: Card, player: Player): boolean {
