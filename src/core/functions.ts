@@ -363,7 +363,7 @@ const deckcode = {
         let cards = codeSplit[1].trim();
 
         // Now it's just the cards left
-        const [vanillaCards, error] = game.functions.getVanillaCards("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'scripts/genvanilla.bat' (requires an internet connection), then try again.");
+        const [vanillaCards, error] = game.functions.getVanillaCards("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'npm run script:vanilla:generator' (requires an internet connection), then try again.");
 
         if (error) {
             game.input(error);
@@ -460,7 +460,7 @@ const deckcode = {
         // Use the 'deckstrings' library's decode
         let deckWithFormat: deckstrings.DeckDefinition = deckstrings.decode(code);
 
-        const [vanillaCards, error] = game.functions.getVanillaCards("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'scripts/genvanilla.bat' (requires an internet connection), then try again.");
+        const [vanillaCards, error] = game.functions.getVanillaCards("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'npm run script:vanilla:generator' (requires an internet connection), then try again.");
 
         if (error) {
             game.input(error);
@@ -1165,7 +1165,7 @@ ${main_content}
             return [JSON.parse(fs.readFileSync(fileLocation, "utf8")) as VanillaCard[], null];
         }
 
-        return [[], error ?? "<red>Cards file not found! Run 'scripts/genvanilla.bat' (requires an internet connection), then try again.</red>\n"];
+        return [[], error ?? "<red>Cards file not found! Run 'npm run script:vanilla:generator' (requires an internet connection), then try again.</red>\n"];
     },
 
     /**
