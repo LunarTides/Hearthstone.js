@@ -33,7 +33,6 @@
     "@types/node": "^20.6.3",
     "@types/readline-sync": "^1.4.4",
     "@types/uuid": "^9.0.4",
-    "esm": "^3.2.25",
     "typescript": "^5.2.2"
   },
   "engines": {
