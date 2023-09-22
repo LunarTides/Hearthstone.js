@@ -27,12 +27,12 @@
     "chalk": "^5.3.0",
     "deckstrings": "^3.1.1",
     "readline-sync": "^1.4.10",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
-    "@types/node": "^20.5.9",
+    "@types/node": "^20.6.3",
     "@types/readline-sync": "^1.4.4",
-    "@types/uuid": "^9.0.2",
+    "@types/uuid": "^9.0.4",
     "esm": "^3.2.25",
     "typescript": "^5.2.2"
   },
