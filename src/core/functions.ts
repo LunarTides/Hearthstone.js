@@ -419,16 +419,15 @@ const deckcode = {
                 // Ask the user to pick one
                 matches.forEach((m, i) => {
                     delete m.elite;
-                    // @ts-expect-error
+
+                    // All cards here should already be collectible
+                    delete m.collectible; 
                     delete m.artist;
-                    // @ts-expect-error
-                    delete m.collectible; // All cards here should already be collectible
-                    // @ts-expect-error
-                    delete m.referencedTags;
-                    // @ts-expect-error
                     delete m.mechanics;
-                    // @ts-expect-error
-                    delete m.race; // Just look at `m.races`
+
+                    // Just look at `m.races`
+                    delete m.race; 
+                    delete m.referencesTags;
 
                     game.log(`${i + 1}: `);
                     game.log(m);

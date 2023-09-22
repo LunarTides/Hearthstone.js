@@ -21,7 +21,7 @@ export function create(card: VanillaCard, debug: boolean) {
     // Harvest info
     let cardClass = game.functions.capitalize(card.cardClass ?? "Neutral") as CardClass;
     let collectible = card.collectible ?? false;
-    let cost = card.cost;
+    let cost = card.cost ?? 0;
     let name = card.name;
     let rarity = "Free" as CardRarity;
     if (card.rarity) rarity = game.functions.capitalize(card.rarity) as CardRarity;
@@ -174,14 +174,11 @@ export function main() {
                 // Get rid of useless information
                 delete c["elite"];
                 delete c["heroPowerDbfId"];
+                delete c["artist"];
+                delete c["flavor"];
+                delete c["mechanics"];
                 // @ts-expect-error
                 delete c["id"];
-                // @ts-expect-error
-                delete c["artist"];
-                // @ts-expect-error
-                delete c["flavor"];
-                // @ts-expect-error
-                delete c["mechanics"];
 
                 game.log(`\n${i + 1}:`);
                 game.log(c);
