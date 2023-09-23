@@ -2,8 +2,8 @@
  * The entry point of the program. Acts like a hub between the tools / scripts and the game.
  * @module Runner
  */
-import * as src from "./src/index.js";           // Source Code
-import * as dc  from "./tools/deckcreator.js";   // Deck Creator
+import * as src from "./src/index.js";                 // Source Code
+import * as dc  from "./tools/deckcreator.js";         // Deck Creator
 import * as ccc from "./tools/cardcreator/custom.js";  // Custom Card Creator
 import * as vcc from "./tools/cardcreator/vanilla.js"; // Vanilla Card Creator
 import * as clc from "./tools/cardcreator/class.js";   // Class Creator
@@ -13,57 +13,55 @@ const watermark = () => {
     game.log("Hearthstone.js Runner V%s (C) 2022\n", game.functions.getVersion(3));
 }
 
-function cardCreator() {
-    watermark();
-
-    let choice: string = game.input("Create a (C)ustom Card, Import a (V)anilla Card, Go (B)ack: ");
-    if (!choice || choice[0].toLowerCase() === "b") return;
-
-    let isVanilla = choice[0].toLowerCase() === "v";
-
-    game.interact.cls();
-
-    if (isVanilla) {
-        let [_, error] = game.functions.getVanillaCards();
-
-        if (error) {
-            watermark();
-
-            game.input(error);
-            return;
-        }
-
-        vcc.main();
-    } else {
-        ccc.main();
-    }
-}
-
-function devmode() {
+function userInputLoop(prompt: string, exitCharacter: string | null, callback: (input: string) => void) {
     while (true) {
         watermark();
 
-        let user = game.input("Create a (C)ard, Create a Clas(s), Go (B)ack to Normal Mode: ");
+        let user = game.input(prompt);
         if (!user) continue;
-        
-        user = user[0].toLowerCase();
 
-        if (user == "c") cardCreator();
-        if (user == "s") clc.main();
-        else if (user == "b") break;
+        if (game.interact.shouldExit(user) || user[0].toLowerCase() === exitCharacter?.toLowerCase()) break;
+
+        callback(user);
     }
 }
 
-while (true) {
-    watermark();
+function cardCreator() {
+    userInputLoop("Create a (C)ustom Card, Import a (V)anilla Card, Go (B)ack: ", "b", (input) => {
+        let type = input[0].toLowerCase();
 
-    let user = game.input("(P)lay, Create a (D)eck, Developer (M)ode, (E)xit: ");
-    if (!user) continue;
+        game.interact.cls();
 
-    user = user[0].toLowerCase();
+        if (type === "v") {
+            let [_, error] = game.functions.getVanillaCards();
 
-    if (user == "p") src.main();
-    else if (user == "d") dc.main();
-    else if (user == "m") devmode();
-    else if (user == "e") break;
+            if (error) {
+                watermark();
+
+                game.input(error);
+                return;
+            }
+
+            vcc.main();
+        } else if (type === "c") {
+            ccc.main();
+        }
+    });
 }
+
+function devmode() {
+    userInputLoop("Create a (C)ard, Create a Clas(s), Enter CLI (m)ode, Go (B)ack to Normal Mode: ", "b", (input) => {
+        input = input[0].toLowerCase();
+
+        if (input == "c") cardCreator();
+        else if (input == "s") clc.main();
+    });
+}
+
+userInputLoop("(P)lay, Create a (D)eck, Developer (M)ode, (E)xit: ", "e", (input) => {
+    input = input[0].toLowerCase();
+
+    if (input == "p") src.main();
+    else if (input == "d") dc.main();
+    else if (input == "m") devmode();
+});
