@@ -220,7 +220,7 @@ const cardTypeFunctions = {
  * 
  * @returns The path to the file
  */
-export function main() {
+export function main(debug = false, overrideType?: lib.CCType) {
     // Reset the card
     card = {} as Blueprint;
 
@@ -255,7 +255,10 @@ export function main() {
     // Actually create the card
     game.log("Creating file...");
 
-    let filePath = lib.create("Custom", type, card);
+    let cctype: lib.CCType = "Custom";
+    if (overrideType) cctype = overrideType;
+
+    let filePath = lib.create(cctype, type, card, undefined, undefined, debug);
 
     game.input();
     return filePath;

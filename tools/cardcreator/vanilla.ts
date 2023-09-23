@@ -17,7 +17,7 @@ const { game, player1, player2 } = createGame();
  * @param card The vanilla card
  * @param debug If it should use debug mode
  */
-export function create(card: VanillaCard, debug: boolean) {
+export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CCType) {
     // Harvest info
     let cardClass = game.functions.capitalize(card.cardClass ?? "Neutral") as CardClass;
     let collectible = card.collectible ?? false;
@@ -131,7 +131,10 @@ export function create(card: VanillaCard, debug: boolean) {
         blueprint.displayName = name;
     }
 
-    lib.create("Vanilla", type, blueprint, undefined, undefined, debug);
+    let cctype: lib.CCType = "Vanilla";
+    if (overrideType) cctype = overrideType;
+
+    lib.create(cctype, type, blueprint, undefined, undefined, debug);
 }
 
 /**
@@ -139,7 +142,7 @@ export function create(card: VanillaCard, debug: boolean) {
  * 
  * @returns If a card was created
  */
-export function main() {
+export function main(debug = false, overrideType?: lib.CCType) {
     game.log("Hearthstone.js Vanilla Card Creator (C) 2022\n");
 
     const [vanillaCards, error] = game.functions.getVanillaCards();
@@ -149,7 +152,6 @@ export function main() {
         return false;
     };
 
-    let debug = false;
     if (game.config.general.debug) {
         debug = !rl.keyInYN("Do you want the card to actually be created?");
     }
@@ -196,7 +198,7 @@ export function main() {
 
         game.log(`Found '${card.name}'\n`);
 
-        create(card, debug);
+        create(card, debug, overrideType);
     }
 
     return true;
