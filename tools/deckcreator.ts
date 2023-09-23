@@ -665,8 +665,11 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
     }
 
     let args = cmd.split(" ");
-    let name = args[0].toLowerCase();
-    args.shift();
+    let name = args.shift()?.toLowerCase();
+    if (!name) {
+        game.input("<red>Invalid command.</red>\n");
+        return false;
+    }
 
     if (name === "config" || name === "rules") {
         printName();

@@ -110,8 +110,11 @@ export const interact = {
         game = globalThis.game;
 
         let args = q.split(" ");
-        let name = args[0];
-        args.shift();
+        let name = args.shift()?.toLowerCase();
+        if (!name) {
+            game.input("<red>Invalid command.</red>\n");
+            return false;
+        }
 
         if (name === "end") game.endTurn();
         else if (q === "hero power") {
