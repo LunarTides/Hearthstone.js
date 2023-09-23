@@ -207,7 +207,7 @@ export const blueprint: Blueprint = {
 
     // Open the defined editor on that card if it has a function to edit, and debug mode is disabled
     if (func && !debug) {
-        let success = game.functions.openWithArgs(game.config.general.editor, `"${file_path}"`);
+        let success = game.functions.runCommandAsChildProcess(`${game.config.general.editor} "${file_path}"`);
         if (!success) game.input();
     }
 

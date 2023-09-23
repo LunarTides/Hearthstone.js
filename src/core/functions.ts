@@ -1058,36 +1058,39 @@ ${main_content}
      * Open a program with args
      * 
      * @param command The command/program to run
-     * @param args The arguments
      * 
      * @returns Success
      * 
      * @example
      * // Opens notepad to "foo.txt" in the main folder.
-     * let success = openWithArgs("notepad", "foo.txt");
+     * let success = functions.runCommandAsChildProcess("notepad foo.txt");
      * 
      * // Wait until the user presses enter. This function automatically prints a traceback to the screen but will not pause by itself.
      * if (!success) game.input();
      */
-    openWithArgs(command: string, args: string): boolean {
+    runCommandAsChildProcess(command: string): boolean {
         // Windows vs Linux. Pros and Cons:
         if (process.platform == "win32") {
             // Windows
-            child_process.spawn(`start ${command} ${args}`);
+            child_process.spawn(`start ${command}`);
         } else {
             // Linux (/ Mac)
-            args = args.replaceAll("\\", "/");
+
+            command = command.replaceAll("\\", "/");
+
+            let args = command.split(" ");
+            let name = args.shift();
 
             let attempts: string[] = [];
 
             const isCommandAvailable = (test_command: string, args_specifier: string) => {
-                game.log(`Trying '${test_command} ${args_specifier}${command} ${args}'...`)
+                game.log(`Trying '${test_command} ${args_specifier}${name} ${args}'...`)
                 attempts.push(test_command);
 
                 let error = this.runCommand(`which ${test_command} 2> /dev/null`);
                 if (error instanceof Error) return false;
 
-                child_process.exec(`${test_command} ${args_specifier}${command} ${args}`);
+                child_process.exec(`${test_command} ${args_specifier}${name} ${args}`);
 
                 game.log(`Success!`);
 
