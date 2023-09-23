@@ -129,11 +129,20 @@ const val = _unknownVal as EventValue<typeof key>;
 }
 
 function main() {
-    game.logError("<yellow>WARNING: This will create new cards with the `.ts` extension, but will leave your old card alone. Please verify that the new cards work before deleting the old ones.</yellow>");
+    game.logError("<yellow>WARNING: This will create new cards with the `.ts` extension, but will leave your old cards alone. Please verify that the new cards work before deleting the old ones.</yellow>");
 
     let proceed = game.input("Do you want to proceed? ([y]es, [n]o): ").toLowerCase()[0] === "y";
     if (!proceed) process.exit(0);
 
+    // Update card extensions
+    game.functions.searchCardsFolder((fullPath, content) => {
+        fs.writeFileSync(fullPath.replace(".mts", ".ts"), content);
+        fs.unlinkSync(fullPath);
+
+        game.log(`Updated extension for card ${fullPath.slice(0, -4)}[.mts -> .ts]`);
+    }, undefined, ".mts");
+
+    // Upgrade all cards
     game.functions.searchCardsFolder(upgradeCard, undefined, ".js");
 
     // Remove the dist folder
@@ -142,6 +151,7 @@ function main() {
     } else {
         game.functions.runCommand("rm -rf ./dist/ > /dev/null 2>&1");
     }
+
     game.log("Trying to compile...");
     try {
         let error = game.functions.runCommand("npx tsc");

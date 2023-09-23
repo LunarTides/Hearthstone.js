@@ -41,15 +41,20 @@ export function main() {
 }
 
 let outdatedCards: string[] = [];
+let outdatedExtensions: string[] = [];
 let updatedCards: string[] = [];
 function warnAboutOutdatedCards() {
     findOutdatedCards(game.functions.dirname() + "../cards");
     outdatedCards = outdatedCards.filter(card => !updatedCards.includes(card));
 
-    if (outdatedCards.length <= 0) return;
+    if (outdatedCards.length <= 0 && outdatedExtensions.length <= 0) return;
 
     outdatedCards.forEach(p => {
         game.logWarn(`<yellow>WARNING: Outdated card found: ${p}.js</yellow>`);
+    });
+
+    outdatedExtensions.forEach(p => {
+        game.logWarn(`<yellow>WARNING: Outdated extension found: ${p}.mts. Please change all card file names ending with the '.mts' extension to '.ts' instead.</yellow>`);
     });
 
     game.logWarn("Run the `upgradecards` script to automatically update outdated cards from pre 2.0.");
@@ -65,14 +70,18 @@ function findOutdatedCards(path: string) {
     if (path.includes("cards/Tests")) return;
 
     fs.readdirSync(path, { withFileTypes: true }).forEach(file => {
-        let p = `${path}/${file.name}`;
+        let p = `${path}/${file.name}`.replace("/dist/..", "");
+
+        if (file.name.endsWith(".mts")) {
+            outdatedExtensions.push(p.slice(0, -4))
+        }
 
         if (file.name.endsWith(".js")) {
-            outdatedCards.push(p.replace("/dist/..", "").slice(0, -3));
+            outdatedCards.push(p.slice(0, -3));
         }
         if (file.name.endsWith(".ts")) {
-            updatedCards.push(p.replace("/dist/..", "").slice(0, -3));
+            updatedCards.push(p.slice(0, -3));
         }
         else if (file.isDirectory()) findOutdatedCards(p);
-    })
+    });
 }
