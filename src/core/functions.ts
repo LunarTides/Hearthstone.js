@@ -1081,19 +1081,17 @@ ${main_content}
             let attempts: string[] = [];
 
             const isCommandAvailable = (test_command: string, args_specifier: string) => {
-                try {
-                    game.log(`Trying '${test_command} ${args_specifier}${command} ${args}'...`)
-                    attempts.push(test_command);
+                game.log(`Trying '${test_command} ${args_specifier}${command} ${args}'...`)
+                attempts.push(test_command);
 
-                    this.runCommand(`which ${test_command} 2> /dev/null`);
-                    child_process.exec(`${test_command} ${args_specifier}${command} ${args}`);
+                let error = this.runCommand(`which ${test_command} 2> /dev/null`);
+                if (error instanceof Error) return false;
 
-                    game.log(`Success!`);
+                child_process.exec(`${test_command} ${args_specifier}${command} ${args}`);
 
-                    return true;
-                } catch (error) {
-                    return false;
-                }
+                game.log(`Success!`);
+
+                return true;
             }
 
             if (isCommandAvailable("x-terminal-emulator", "-e ")) {}
