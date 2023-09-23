@@ -136,10 +136,17 @@ function main() {
 
     game.functions.searchCardsFolder(upgradeCard, undefined, ".js");
 
+    // Remove the dist folder
+    if (process.platform === "win32") {
+        game.functions.runCommand("rmdir /S /Q dist > NUL 2>&1");
+    } else {
+        game.functions.runCommand("rm -rf ./dist/ > /dev/null 2>&1");
+    }
     game.log("Trying to compile...");
     try {
         let error = game.functions.runCommand("npx tsc");
         if (error instanceof Error) throw error;
+
         game.log("<bright:green>Success!</bright:green>");
     } catch (err) {
         // If the error code is 2, warn the user.
