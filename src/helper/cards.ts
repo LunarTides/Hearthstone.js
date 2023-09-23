@@ -13,7 +13,6 @@ export function generateCardExports() {
 
         let relPath = "./" + fullPath.split("cards/")[1];
 
-        //let name = content.match(/ {4}name: ['"`](.*?)['"`],/)?.[1].replace(/\W/g, "_").toLowerCase();
         let name = relPath.slice(2, -3).replace(/\W/g, "_").toLowerCase();
         if (!content.includes("export const blueprint")) return;
 
