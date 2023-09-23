@@ -7,6 +7,7 @@ import * as dc  from "./tools/deckcreator.js";         // Deck Creator
 import * as ccc from "./tools/cardcreator/custom.js";  // Custom Card Creator
 import * as vcc from "./tools/cardcreator/vanilla.js"; // Vanilla Card Creator
 import * as clc from "./tools/cardcreator/class.js";   // Class Creator
+import * as cli from "./tools/cli.js";                 // Command Line Interface
 
 const watermark = () => {
     game.interact.cls();
@@ -55,6 +56,7 @@ function devmode() {
 
         if (input == "c") cardCreator();
         else if (input == "s") clc.main();
+        else if (input == "m") cli.main(userInputLoop);
     });
 }
 
