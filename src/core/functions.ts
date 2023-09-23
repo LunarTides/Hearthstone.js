@@ -1435,10 +1435,13 @@ ${main_content}
      * assert.equal(parsed, chalk.red.bgBlueBright.bold("Test") + chalk.red.bold(" Hi") + chalk.red(" there") + " again");
      * 
      * @example
+     * // Try to not use '</>' if you can help it. In this case, it is fine.
      * let parsed = parseTags("<fg:red italic bg:#0000FF>Test</> Another test");
      * assert.equal(parsed, chalk.red.italic("Test") + " Another test");
      */
     parseTags(str: string): string {
+        // TODO: Optimize perhaps
+
         /**
          * Appends text styling based on the current types.
          *
@@ -1542,6 +1545,8 @@ ${main_content}
                         if (bg) ret = chalk.bgWhite(ret);
                         else ret = chalk.white(ret);
                         break;
+                    // Accept both "gray" and "grey"
+                    case "grey":
                     case "gray":
                         if (bg) ret = chalk.bgGray(ret);
                         else ret = chalk.gray(ret);
