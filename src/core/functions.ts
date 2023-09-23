@@ -863,10 +863,18 @@ ${err.stack}
 
         if (osName === "linux") {
             // Get the operating system name from /etc/os-release
-            osName = this.runCommand("cat /etc/os-release").split('PRETTY_NAME="')[1].split('"\n')[0];
+            let osRelease = this.runCommand("cat /etc/os-release");
+            if (osRelease instanceof Error) {
+                throw osRelease;
+            }
+
+            osName = osRelease.split('PRETTY_NAME="')[1].split('"\n')[0];
 
             // Also add information from uname
-            osName += " (" + this.runCommand("uname -srvmo").trim() + ")";
+            let uname = this.runCommand("uname -srvmo");
+            if (uname instanceof Error) throw uname;
+
+            osName += " (" + uname.trim() + ")";
         }
         else if (osName === "win32") osName = "Windows"
         
@@ -934,14 +942,24 @@ ${main_content}
      * Returns the latest commit hash
      */
     getLatestCommit() {
-        return this.runCommand("git rev-parse --short=7 HEAD").trim();
+        let hash = this.runCommand("git rev-parse --short=7 HEAD");
+        if (hash instanceof Error) {
+            game.log("<red>ERROR: Git is not installed.</red>");
+            return "no git found";
+        }
+
+        return hash.trim();
     },
 
     /**
      * Runs a command and returns the result
      */
-    runCommand(cmd: string) {
-        return child_process.execSync(cmd).toString();
+    runCommand(cmd: string): string | Error {
+        try {
+            return child_process.execSync(cmd).toString();
+        } catch (err) {
+            return err;
+        }
     },
 
     /**
@@ -2111,7 +2129,7 @@ ${main_content}
      * @param extension The extension to look for in cards. By default, this is ".ts"
      */
     searchCardsFolder(callback: (path: string, content: string, file: fs.Dirent) => void, path?: string, extension = ".ts") {
-        if (!path) path = this.dirname() + "../cards";
+        if (!path) path = (this.dirname() + "../cards").replace("/dist/..", "");
         // We don't care about test cards
         if (path.includes("cards/Tests")) return;
 

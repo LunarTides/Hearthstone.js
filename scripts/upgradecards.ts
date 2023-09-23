@@ -138,7 +138,8 @@ function main() {
 
     game.log("Trying to compile...");
     try {
-        game.functions.runCommand("npx tsc");
+        let error = game.functions.runCommand("npx tsc");
+        if (error instanceof Error) throw error;
         game.log("<bright:green>Success!</bright:green>");
     } catch (err) {
         // If the error code is 2, warn the user.
