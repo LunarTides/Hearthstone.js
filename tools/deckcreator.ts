@@ -394,7 +394,7 @@ function showCards() {
     let _deckcode = deckcode();
 
     if (!_deckcode.error) {
-        game.log("<bright:green>Valid deck!</>");
+        game.log("<bright:green>Valid deck!</bright:green>");
         game.log(_deckcode.code);
     }
 
@@ -413,7 +413,7 @@ function showRules() {
 
     game.log("#");
 
-    game.log("# Validation: %s", (config.decks.validate ? "<bright:green>ON</>" : "<red>OFF</red>"));
+    game.log("# Validation: %s", (config.decks.validate ? "<bright:green>ON</bright:green>" : "<red>OFF</red>"));
 
     game.log(`#\n# Rule 1. Minimum Deck Length: <yellow>${config.decks.minLength}</yellow>`);
     game.log(`# Rule 2. Maximum Deck Length: %s <yellow>${config.decks.maxLength}</yellow>`);
@@ -525,7 +525,7 @@ function showDeck() {
     game.log("\nCurrent deckcode output:");
     let _deckcode = deckcode();
     if (!_deckcode.error) {
-        game.log("<bright:green>Valid deck!</>");
+        game.log("<bright:green>Valid deck!</bright:green>");
         game.log(_deckcode.code);
     }
 }
@@ -548,10 +548,10 @@ function deckcode(parseVanillaOnPseudo = false) {
                 log = "<red>ERROR: Could not generate deckcode as your deck is empty. The resulting deckcode would be invalid.</red>";
                 break;
             case "TooManyCopies":
-                log += util.format("Too many copies of a card. Maximum: </>'%s'<yellow>. Offender: </>'%s'<yellow>", config.decks.maxOfOneCard, `{ Name: "${error.info?.card?.name}", Copies: "${error.info?.amount}" }`);
+                log += util.format("Too many copies of a card. Maximum: </yellow>'%s'<yellow>. Offender: </yellow>'%s'<yellow>", config.decks.maxOfOneCard, `{ Name: "${error.info?.card?.name}", Copies: "${error.info?.amount}" }`);
                 break;
             case "TooManyLegendaryCopies":
-                log += util.format("Too many copies of a Legendary card. Maximum: </>'%s'<yellow>. Offender: </>'%s'<yellow>", config.decks.maxOfOneLegendary, `{ Name: "${error.info?.card?.name}", Copies: "${error.info?.amount}" }`);
+                log += util.format("Too many copies of a Legendary card. Maximum: </yellow>'%s'<yellow>. Offender: </yellow>'%s'<yellow>", config.decks.maxOfOneLegendary, `{ Name: "${error.info?.card?.name}", Copies: "${error.info?.amount}" }`);
                 break;
         }
 
@@ -589,7 +589,7 @@ function help() {
     game.log("exit                  - Quits the program");
 
     // Set
-    game.log("\n<b>Set Subcommands:</>");
+    game.log("\n<b>Set Subcommands:</b>");
     game.log("(In order to use these; input 'set ', then one of the subcommands. Example: 'set cpp 20')\n");
     game.log("(name) [optional] (required) - (description)\n");
 
@@ -598,10 +598,10 @@ function help() {
     game.log("defaultCommand | dcmd (cmd) - The command that should run when the command is unspecified. ('add', 'remove', 'view') [default = 'add']");
     game.log("warning                     - Disables/enables certain warnings. Look down to 'Warnings' to see changeable warnings.");
 
-    game.log("\n<gray>Note the 'cardsPerPage' commands has 2 different subcommands; cpp & cardsPerPage. Both do the same thing.</>");
+    game.log("\n<gray>Note the 'cardsPerPage' commands has 2 different subcommands; cpp & cardsPerPage. Both do the same thing.</gray>");
 
     // Set Warning
-    game.log("\n<b>Warnings:</>");
+    game.log("\n<b>Warnings:</b>");
     game.log("(In order to use these; input 'set warning (name) [off | on]'. Example: 'set warning latestCard off')\n");
     game.log("(name) - (description)\n");
 
@@ -612,7 +612,7 @@ function help() {
     game.log("Note: The word 'on' can be exchanged with 'enable', 'true', or '1'.");
 
     // Notes
-    game.log("\n<b>Notes:</>");
+    game.log("\n<b>Notes:</b>");
 
     game.log("Type 'cards Neutral' to see Neutral cards.");
     // TODO: #245 Fix this
@@ -641,12 +641,12 @@ function getCardArg(cmd: string, callback: (card: Blueprint) => boolean, errorCa
     let card = findCard(cmd);
 
     if (!card && eligibleForLatest) {
-        if (warnings.latestCard) game.input(`<yellow>Card not found. Using latest valid card instead.</>`);
+        if (warnings.latestCard) game.input(`<yellow>Card not found. Using latest valid card instead.</yellow>`);
         card = game.functions.last(settings.card.history) ?? null;
     }
 
     if (!card) {
-        game.input("<red>Invalid card.</>\n");
+        game.input("<red>Invalid card.</red>\n");
         return false;
     }
 
@@ -690,13 +690,13 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         heroClass = game.functions.capitalizeAll(heroClass) as CardClass;
 
         if (!classes.includes(heroClass as CardClassNoNeutral) && heroClass != "Neutral") {
-            game.input("<red>Invalid class!</>\n");
+            game.input("<red>Invalid class!</red>\n");
             return false;
         }
 
         let correctClass = game.functions.validateClasses([chosen_class], heroClass);
         if (!correctClass) {
-            game.input(`<yellow>Class '${heroClass}' is a different class. To see these cards, please switch class from '${chosen_class}' to '${heroClass}' to avoid confusion.</>\n`);
+            game.input(`<yellow>Class '${heroClass}' is a different class. To see these cards, please switch class from '${chosen_class}' to '${heroClass}' to avoid confusion.</yellow>\n`);
             return false;
         }
 
@@ -758,7 +758,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         let new_class = askClass();
 
         if (new_class == chosen_class && runes == _runes) {
-            game.input("<yellow>Your class was not changed</>\n");
+            game.input("<yellow>Your class was not changed</yellow>\n");
             return false;
         }
 
@@ -768,7 +768,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
     }
     else if (name === "undo") {
         if (settings.commands.undoableHistory.length <= 0) {
-            game.input("<red>Nothing to undo.</>\n");
+            game.input("<red>Nothing to undo.</red>\n");
             return false;
         }
 
@@ -782,7 +782,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         else if (command.startsWith("r")) reverse = "add";
         else {
             // This shouldn't ever happen, but oh well
-            game.log(`<red>Command '${command}' cannot be undoed.</>`);
+            game.log(`<red>Command '${command}' cannot be undoed.</red>`);
             return false;
         }
 
@@ -797,7 +797,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         let key = args[0];
 
         if (!Object.keys(warnings).includes(key)) {
-            game.input(`<red>'${key}' is not a valid warning!</>\n`);
+            game.input(`<red>'${key}' is not a valid warning!</red>\n`);
             return false;
         }
 
@@ -813,7 +813,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
             if (["off", "disable", "false", "no", "0"].includes(val)) new_state = false;
             else if (["on", "enable", "true", "yes", "1"].includes(val)) new_state = true;
             else {
-                game.input(`<red>${val} is not a valid state. View 'help' for more information.</>\n`);
+                game.input(`<red>${val} is not a valid state. View 'help' for more information.</red>\n`);
                 return false;
             }
         }
@@ -821,11 +821,11 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         if (warnings[key] == new_state) {
             let strbuilder = "";
 
-            strbuilder += "<yellow>Warning '</>";
-            strbuilder += `<bright:yellow>${key}</>`;
+            strbuilder += "<yellow>Warning '</yellow>";
+            strbuilder += `<bright:yellow>${key}</bright:yellow>`;
             strbuilder += "<yellow>' is already ";
             strbuilder += (new_state) ? "enabled" : "disabled";
-            strbuilder += ".</>\n";
+            strbuilder += ".</yellow>\n";
 
             game.input(strbuilder);
             return false;
@@ -835,10 +835,10 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
 
         let strbuilder = "";
 
-        strbuilder += (new_state) ? "<bright:green>Enabled warning</>" : "<red>Disabled warning</>";
+        strbuilder += (new_state) ? "<bright:green>Enabled warning</bright:green>" : "<red>Disabled warning</red>";
         strbuilder += "<yellow> '";
         strbuilder += key;
-        strbuilder += "'.</>\n";
+        strbuilder += "'.</yellow>\n";
 
         game.input(strbuilder);
     }
@@ -855,7 +855,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
             case "format":
                 if (args.length == 0) {
                     settings.deckcode.format = "js";
-                    game.log("Reset deckcode format to: <yellow>js</>");
+                    game.log("Reset deckcode format to: <yellow>js</yellow>");
                     break;
                 }
 
@@ -910,7 +910,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
 
         getCardArg(cmd, add, () => {
             // Internal error since add shouldn't return false
-            game.log("<red>Internal Error: Something went wrong while adding a card. Please report this. Error code: DcAddInternal</>");
+            game.log("<red>Internal Error: Something went wrong while adding a card. Please report this. Error code: DcAddInternal</red>");
             game.input();
 
             success = false;
