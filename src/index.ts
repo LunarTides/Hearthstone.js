@@ -71,7 +71,7 @@ function findOutdatedCards(path: string) {
             outdatedCards.push(p.replace("/dist/..", "").slice(0, -3));
         }
         if (file.name.endsWith(".ts")) {
-            updatedCards.push(p.replace("/dist/..", "").slice(0, -4));
+            updatedCards.push(p.replace("/dist/..", "").slice(0, -3));
         }
         else if (file.isDirectory()) findOutdatedCards(p);
     })

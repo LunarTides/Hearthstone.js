@@ -1304,7 +1304,7 @@ ${main_content}
             if (!file.endsWith(".js")) return;
 
             // Remove ".js"
-            let name = file.slice(0, -4);
+            let name = file.slice(0, -3);
 
             // Remove underscores
             name = name.replaceAll("_", " ");
