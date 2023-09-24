@@ -1803,6 +1803,8 @@ export const interact = {
 }
 
 function cls() {
+    if (game.no_output) return;
+
     console.clear();
     process.stdout.write('\x1bc');
 }

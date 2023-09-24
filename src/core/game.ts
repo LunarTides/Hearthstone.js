@@ -410,6 +410,11 @@ export class Game {
     no_input: boolean = false;
 
     /**
+     * Whether or not the game is currently outputting anything to the console.
+     */
+    no_output: boolean = false;
+
+    /**
      * If the game is currently running.
      * 
      * If this is false, the game loop will end.
@@ -483,6 +488,7 @@ export class Game {
             return a;
         }
 
+        if (this.no_output) q = "";
         if (this.no_input && care) return wrapper("");
 
         q = functions.parseTags(q);
@@ -508,6 +514,8 @@ export class Game {
     }
 
     private logWrapper(callback: Function, ...data: any) {
+        if (this.no_output) return;
+
         data = data.map((i: any) => typeof i === "string" ? functions.parseTags(i) : i);
         callback(...data);
     }
