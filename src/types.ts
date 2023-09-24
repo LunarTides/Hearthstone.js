@@ -212,9 +212,9 @@ export type EventValue<Key extends EventKey> = /**
                                                 */
                                                Key extends "GainHeroAttack" ? number : 
                                                /**
-                                                * The amount of damage taken
+                                                * The player that was dealt the damage, The amount of damage taken
                                                 */
-                                               Key extends "TakeDamage" ? number : 
+                                               Key extends "TakeDamage" ? [Player, number] : 
                                                /**
                                                 * The card that was played. (This gets triggered after the text of the card)
                                                 */
