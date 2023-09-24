@@ -14,7 +14,8 @@
     "script:cardupdater": "node ./dist/scripts/cardupdater.js",
     "script:crashtest": "node ./dist/scripts/crashtest.js",
     "script:idscript": "node ./dist/scripts/idscript.js",
-    "script:upgradecards": "node ./dist/scripts/upgradecards.js"
+    "script:upgradecards": "node ./dist/scripts/upgradecards.js",
+    "script:testcards": "node ./dist/scripts/testcards.js"
   },
   "repository": {
     "type": "git",
