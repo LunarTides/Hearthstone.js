@@ -391,7 +391,6 @@ export class Card {
         this.plr = plr;
 
         // Make a backup of "this" to be used when silencing this card
-        // TODO: Make the backups work without causing errors
         if (!this.backups.init) this.backups.init = {} as CardBackup;
         Object.entries(this).forEach(i => {
             // HACK: Never usage
@@ -927,8 +926,8 @@ export class Card {
      * 
      * @returns The return values of all the battlecries triggered
      */
+    // TODO: Is this needed anymore?
     activateBattlecry(...args: any): any[] | -1 | false {
-        // TODO: Is this needed anymore?
         // Trigger the card's passive first, so cards that get played immediately gets their passive triggered before their battlecry
         this.activate("passive", "battlecry", this, game.turns);
 

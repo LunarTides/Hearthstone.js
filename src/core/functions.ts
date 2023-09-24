@@ -319,7 +319,7 @@ const deckcode = {
      * @returns The vanilla deckcode
      */
     toVanilla(plr: Player, code: string, extraFiltering: boolean = true): string {
-        // WARNING: Jank code ahead. Beware!
+        // HACK: Jank code ahead. Beware!
         //
         // Reference: Death Knight [3B] /1:4,2/ 3f,5f,6f...
 

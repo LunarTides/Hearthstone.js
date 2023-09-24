@@ -728,7 +728,6 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         settings.view.type = settings.view.type == "cards" ? "deck" : "cards";
     }
     else if (name === "import") {
-        // TODO: Make sure it works
         let _deckcode = game.input("Please input a deckcode: ");
 
         let _deck = game.functions.deckcode.import(plr, _deckcode);

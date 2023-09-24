@@ -88,7 +88,6 @@ function main() {
         }
 
         // `card` is the path to that card.
-        // TODO: This is broken
         let success = game.functions.runCommandAsChildProcess(`${game.config.general.editor} "${path}"`);
         // The `runCommandAsChildProcess` shows an error message for us, but we need to pause.
         if (!success) game.input();

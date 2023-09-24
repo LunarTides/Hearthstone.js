@@ -1138,7 +1138,7 @@ export const interact = {
     discover(prompt: string, cards: CardLike[] = [], filterClassCards: boolean = true, amount: number = 3, _cards: CardLike[] = []): Card | null {
         game = globalThis.game;
 
-        // TODO: Discover doesn't work
+        // TODO: Discover doesn't work <- Verify this claim
         this.printAll(game.player);
         let values: CardLike[] = _cards;
 
