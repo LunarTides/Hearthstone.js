@@ -68,7 +68,7 @@ export function main(debug = false, overrideType?: lib.CCType) {
     let cctype: lib.CCType = "Class";
     if (overrideType) cctype = overrideType;
 
-    lib.create(cctype, "Hero", card, game.functions.dirname() + "/cards/StartingHeroes/", filename);
+    lib.create(cctype, "Hero", card, game.functions.dirname() + "/cards/StartingHeroes/", filename, debug);
 
     game.log("\nClass Created!");
     game.log(`Next steps:`);
@@ -77,4 +77,5 @@ export function main(debug = false, overrideType?: lib.CCType) {
     game.log(`3. Now when using the Custom Card Creator, type '${name}' into the 'Class' field to use that class.`);
     game.log(`4. When using the Deck Creator, type '${name}' to create a deck with cards from your new class.`);
     game.log(`Enjoy!`);
+    game.input();
 }

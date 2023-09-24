@@ -1735,7 +1735,7 @@ export const interact = {
     printHand(plr: Player): void {
         game.log(`--- ${plr.name} (${plr.heroClass})'s Hand ---`);
         // Add the help message
-        game.log(game.functions.parseTags(`([id] <cyan>{Cost}</cyan> <b>Name</b> <bright:green>[attack / health]</bright:green> <yellow>(type)</yellow>)\n`));
+        game.log(`([id] <cyan>{Cost}</cyan> <b>Name</b> <bright:green>[attack / health]</bright:green> <yellow>(type)</yellow>)\n`);
 
         plr.hand.forEach((card, index) => {
             game.log(this.getReadableCard(card, index + 1));

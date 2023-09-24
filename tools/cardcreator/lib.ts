@@ -123,7 +123,7 @@ export function create(creatorType: CCType, cardType: CardType, blueprint: Bluep
     }`;
 
     // Create a path to put the card in.
-    let path = generateCardPath(card.classes, type);
+    let path = generateCardPath(card.classes, type).replaceAll("\\", "/");
 
     // If this function was passed in a path, use that instead.
     if (overridePath) path = overridePath; 
@@ -180,7 +180,6 @@ export const blueprint: Blueprint = {
 `;
 
     // The path is now "./cardcreator/../cards/...", replace this with "./cards/..."
-    path = path.replace(/[\/\\]dist[\/\\]\.\./, "");
     let file_path = path + filename;
 
     if (!debug) {
@@ -204,6 +203,9 @@ export const blueprint: Blueprint = {
         game.log(content);
         game.input();
     }
+
+    // TODO: Figure out a way to do this while updating the dist version of the exports file
+    //generateCardExports();
 
     // Open the defined editor on that card if it has a function to edit, and debug mode is disabled
     if (func && !debug) {

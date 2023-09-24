@@ -79,7 +79,7 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | nul
             // Taken heavy inspiration from 'man'
             game.log("\n<bold>Commands</bold>");
             game.log("ccc           - Runs the custom card creator");
-            game.log("vcc           - Runs the custom card creator");
+            game.log("vcc           - Runs the vanilla card creator");
             game.log("clc           - Runs the class creator");
             game.log("cclib (args)  - Uses the card creator library to manually create a card");
             game.log("dc            - Runs the deck creator");
