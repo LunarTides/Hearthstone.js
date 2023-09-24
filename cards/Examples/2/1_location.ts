@@ -27,5 +27,13 @@ export const blueprint: Blueprint = {
         // Restore 2 Health to your hero.
 
         plr.addHealth(2);
+    },
+
+    test(plr, game, self) {
+        plr.health = 1;
+        
+        self.activate("use");
+
+        return plr.health = 1 + 2;
     }
 }

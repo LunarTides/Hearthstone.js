@@ -24,6 +24,14 @@ export const blueprint: Blueprint = {
         // Put the $ sign here to make the game apply spell damage correctly.
         // Ideally you wouldn't need to do that and the game would figure it out, but i wasn't able to get it to work.
         game.attack("$3", plr.getOpponent());
-    }
+    },
 
+    test(plr, game, self) {
+        const oldHealth = plr.getOpponent().getHealth();
+
+        plr.spellDamage = 3;
+        self.activate("cast");
+
+        return plr.getOpponent().getHealth() === oldHealth - (3 + plr.spellDamage);
+    }
 }

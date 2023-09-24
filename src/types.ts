@@ -144,6 +144,7 @@ export type CardAbility = CardAbilityReal |
                           "handpassive" |
                           "tick" |
                           "handtick" |
+                          "test" |
                           "create";
 
 /**

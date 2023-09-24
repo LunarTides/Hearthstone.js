@@ -22,5 +22,17 @@ export const blueprint: Blueprint = {
         game.interact.dredge();
 
         self.addStats(1, 1);
+    },
+
+    // Ignore this
+    test(plr, game, self) {
+        // Makes the player answer "1" to the next question
+        plr.inputQueue = ["1"];
+
+        // We can't really check the dredged card here.
+        self.activateBattlecry();
+
+        // Check that the stats went up by 1
+        return self.stats?.every((stat, i) => stat - 1 === self.blueprint.stats?.[i]);
     }
 }

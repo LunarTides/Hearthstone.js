@@ -34,5 +34,21 @@ export const blueprint: Blueprint = {
         // Restore 2 Health to your hero.
 
         plr.addHealth(2);
+    },
+
+    test(plr, game, self) {
+        // Here we test both abilities
+        
+        // Test battlecry
+        plr.health = 1;
+        self.activate("battlecry");
+        let success = plr.health === plr.maxHealth;
+
+        // Test hero power
+        plr.health = 1;
+        self.activate("heropower");
+        success = success && plr.health === 1 + 2;
+
+        return success;
     }
 }

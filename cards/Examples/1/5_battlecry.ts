@@ -28,5 +28,13 @@ export const blueprint: Blueprint = {
 
         // The card class has the `addStats` function that takes in an attack and health, then adds that to the current stats.
         self.addStats(1, 1);
+    },
+
+    // Ignore this, this is just to unit test this card to make sure it doesn't break in the future.
+    // I encourage you to make tests like these yourself. Run `npm run script:testcards` to run these tests.
+    test(plr, game, self) {
+        self.activateBattlecry();
+
+        return self.stats?.every((stat, i) => stat - 1 === self.blueprint.stats?.[i]);
     }
 }

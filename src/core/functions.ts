@@ -2136,8 +2136,6 @@ ${main_content}
      */
     searchCardsFolder(callback: (path: string, content: string, file: fs.Dirent) => void, path?: string, extension = ".ts") {
         if (!path) path = this.dirname() + "/cards";
-        // We don't care about test cards
-        if (path.includes("cards/Tests")) return;
 
         path = path.replaceAll("\\", "/");
 
