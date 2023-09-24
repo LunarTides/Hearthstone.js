@@ -626,7 +626,7 @@ export const functions = {
     /**
      * Returns the last element from a list.
      */
-    last<T>(list: T[]): T {
+    last<T>(list: T[]): T | undefined {
         return list[list.length - 1];
     },
 

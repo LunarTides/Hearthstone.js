@@ -772,7 +772,12 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
             return false;
         }
 
-        let commandSplit = game.functions.last(settings.commands.undoableHistory).split(" ");
+        let commandSplit = game.functions.last(settings.commands.undoableHistory)?.split(" ");
+        if (!commandSplit) {
+            game.input("<red>Could not find anything to undo. This is a bug.</red>\n");
+            return false;
+        }
+
         let args = commandSplit.slice(1);
         let command = commandSplit[0];
 

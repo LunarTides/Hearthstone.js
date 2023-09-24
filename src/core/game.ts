@@ -1342,7 +1342,7 @@ const playCard = {
 
         // Get the latest event
         let latest = functions.last(stat);
-        let latestCard: Card = latest[0];
+        let latestCard: Card = latest?.[0];
 
         // If the previous card played was played on the same turn as this one, activate combo
         if (latestCard.turn == game.turns) card.activate("combo");

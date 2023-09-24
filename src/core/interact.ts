@@ -516,7 +516,11 @@ export const interact = {
                 return false;
             }
 
-            let card = game.functions.last(eventCards)[0];
+            let card = game.functions.last(eventCards)?.[0];
+            if (!card) {
+                game.input("<red>No cards found.</red>\n");
+                return false;
+            }
 
             // Remove the event so you can undo more than the last played card
             game.events.events.PlayCard[game.player.id].pop();
