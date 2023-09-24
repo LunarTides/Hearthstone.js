@@ -1078,19 +1078,16 @@ ${main_content}
 
             command = command.replaceAll("\\", "/");
 
-            let args = command.split(" ");
-            let name = args.shift();
-
             let attempts: string[] = [];
 
             const isCommandAvailable = (test_command: string, args_specifier: string) => {
-                game.log(`Trying '${test_command} ${args_specifier}${name} ${args}'...`)
+                game.log(`Trying '${test_command} ${args_specifier}${command}'...`)
                 attempts.push(test_command);
 
                 let error = this.runCommand(`which ${test_command} 2> /dev/null`);
                 if (error instanceof Error) return false;
 
-                child_process.exec(`${test_command} ${args_specifier}${name} ${args}`);
+                child_process.exec(`${test_command} ${args_specifier}${command}`);
 
                 game.log(`Success!`);
 
