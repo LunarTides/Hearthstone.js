@@ -719,7 +719,7 @@ export const interact = {
             let success = true;
 
             success = success && this.withStatus("Registering cards", () => {
-                reloadCards(game.functions.dirname() + "cards");
+                reloadCards(game.functions.dirname() + "/dist/cards");
                 return true;
             });
 

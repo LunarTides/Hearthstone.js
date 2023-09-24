@@ -68,7 +68,7 @@ export function main(debug = false, overrideType?: lib.CCType) {
     let cctype: lib.CCType = "Class";
     if (overrideType) cctype = overrideType;
 
-    lib.create(cctype, "Hero", card, game.functions.dirname() + "../cards/StartingHeroes/", filename);
+    lib.create(cctype, "Hero", card, game.functions.dirname() + "/cards/StartingHeroes/", filename);
 
     game.log("\nClass Created!");
     game.log(`Next steps:`);

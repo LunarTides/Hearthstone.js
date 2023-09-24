@@ -22,7 +22,7 @@ export function generateCardExports() {
         exportContent += `export { blueprint as card_${hash} } from "${relPath}";\n`;
     });
 
-    writeFileSync(game.functions.dirname() + "../cards/exports.ts", exportContent);
+    writeFileSync(game.functions.dirname() + "/cards/exports.ts", exportContent);
 }
 
 export function reloadCards(path?: string) {

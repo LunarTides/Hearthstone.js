@@ -50,7 +50,7 @@ function generateCardPath(...args: [CardClass[], CardType]) {
     let [classes, type] = args;
 
     // DO NOT CHANGE THIS
-    let static_path = game.functions.dirname() + `../cards/`;
+    let static_path = game.functions.dirname() + "/cards/";
 
     // You can change everything below this comment
     let classesString = classes.join("/");
@@ -135,7 +135,7 @@ export function create(creatorType: CCType, cardType: CardType, blueprint: Bluep
     if (overrideFilename) filename = overrideFilename;
 
     // Get the latest card-id
-    let id = parseInt(fs.readFileSync(game.functions.dirname() + "../cards/.latest_id", "utf8")) + 1;
+    let id = parseInt(fs.readFileSync(game.functions.dirname() + "/cards/.latest_id", "utf8")) + 1;
     let file_id = `\n    id: ${id},`;
 
     // Generate the content of the card
@@ -187,7 +187,7 @@ export const blueprint: Blueprint = {
         // If debug mode is disabled, write the card to disk.
         
         // Increment the id in '.latest_id' by 1
-        fs.writeFileSync(game.functions.dirname() + "../cards/.latest_id", id.toString()); 
+        fs.writeFileSync(game.functions.dirname() + "/cards/.latest_id", id.toString()); 
 
         // If the path the card would be written to doesn't exist, create it.
         if (!fs.existsSync(path)) fs.mkdirSync(path, { recursive: true });

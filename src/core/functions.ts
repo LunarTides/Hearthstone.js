@@ -793,7 +793,7 @@ export const functions = {
      */
     createLogFile(err?: Error): boolean {
         // Create a (crash-)log file
-        if (!fs.existsSync(this.dirname() + `../logs`)) fs.mkdirSync(this.dirname() + `../logs`);
+        if (!fs.existsSync(this.dirname() + "/logs")) fs.mkdirSync(this.dirname() + "/logs");
 
         // Get the day, month, year, hour, minute, and second, as 2 digit numbers.
         let date = new Date();
@@ -896,7 +896,7 @@ ${main_content}
         let checksum = createHash("sha256").update(content).digest("hex");
         content += `\n${checksum}  ${filename}`;
 
-        fs.writeFileSync(this.dirname() + `../logs/${filename}`, content);
+        fs.writeFileSync(this.dirname() + `/logs/${filename}`, content);
 
         if (!err) return true;
 
@@ -1183,7 +1183,7 @@ ${main_content}
      * @returns The vanilla cards, and an error message (if any)
      */
     getVanillaCards(error?: string): [VanillaCard[], string | null] {
-        const fileLocation = this.dirname() + "../vanillacards.json";
+        const fileLocation = this.dirname() + "/vanillacards.json";
         if (fs.existsSync(fileLocation)) {
             return [JSON.parse(fs.readFileSync(fileLocation, "utf8")) as VanillaCard[], null];
         }
@@ -1318,11 +1318,11 @@ ${main_content}
     getClasses(): CardClassNoNeutral[] {
         let classes: CardClassNoNeutral[] = [];
 
-        fs.readdirSync(this.dirname() + "cards/StartingHeroes").forEach(file => {
+        fs.readdirSync(this.dirname() + "/cards/StartingHeroes").forEach(file => {
             // Something is wrong with the file name.
-            if (!file.endsWith(".js")) return;
+            if (!file.endsWith(".ts")) return;
 
-            // Remove ".js"
+            // Remove ".ts"
             let name = file.slice(0, -3);
 
             // Remove underscores
@@ -2135,7 +2135,7 @@ ${main_content}
      * @param extension The extension to look for in cards. By default, this is ".ts"
      */
     searchCardsFolder(callback: (path: string, content: string, file: fs.Dirent) => void, path?: string, extension = ".ts") {
-        if (!path) path = (this.dirname() + "../cards").replace("/dist/..", "");
+        if (!path) path = this.dirname() + "/cards";
         // We don't care about test cards
         if (path.includes("cards/Tests")) return;
 
@@ -2177,13 +2177,19 @@ ${main_content}
     },
 
     /**
-     * Returns the directory name of the program
+     * Returns the directory name of the program.
+     * 
+     * # Example
+     * ```ts
+     * // Outputs: "(path to the folder where hearthstone.js is stored)/Hearthstone.js/cards/the_coin.ts"
+     * game.log(functions.dirname() + "/cards/the_coin.ts");
+     * ```
      *
      * @return The directory name.
      */
     dirname(): string {
         let dirname = pathDirname(fileURLToPath(import.meta.url)).replaceAll("\\", "/");
-        dirname = dirname.replace("/src/core", "/")
+        dirname = dirname.split("/dist")[0];
 
         return dirname;
     },
