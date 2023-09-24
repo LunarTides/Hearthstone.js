@@ -907,7 +907,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
     else if (name === "help") {
         help();
     }
-    else if (name === "exit") {
+    else if (game.interact.shouldExit(name)) {
         running = false;
     }
     else if (name.startsWith("a")) {
