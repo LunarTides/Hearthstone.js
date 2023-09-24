@@ -20,5 +20,10 @@ export const blueprint: Blueprint = {
 
         // Give the player +1 attack.
         plr.addAttack(1);
+    },
+    
+    test(plr, game, self) {
+        // TODO: Add proper tests
+        return true;
     }
 }

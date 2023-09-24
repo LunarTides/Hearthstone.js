@@ -21,5 +21,10 @@ export const blueprint: Blueprint = {
         game.functions.hookToTick(() => {
             plr.gainMana(plr.maxMana);
         });
+    },
+
+    test(plr, game, self) {
+        // TODO: Add proper tests
+        return true;
     }
 }

@@ -20,5 +20,10 @@ export const blueprint: Blueprint = {
         // This is to prevent the player from having more than 10* mana, instead of preventing them from having more than empty mana, which
         // is the thing that goes up every turn until it reaches 10*
         plr.refreshMana(1, plr.maxMana);
+    },
+
+    test(plr, game, self) {
+        // TODO: Add proper tests
+        return true;
     }
 }

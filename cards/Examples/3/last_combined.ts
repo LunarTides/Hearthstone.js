@@ -43,5 +43,10 @@ export const blueprint: Blueprint = {
         if (turns > 10) turns = 10;
 
         return {0: turns};
+    },
+
+    test(plr, game, self) {
+        // TODO: Add proper tests
+        return true;
     }
 }

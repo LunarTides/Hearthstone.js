@@ -51,5 +51,10 @@ export const blueprint: Blueprint = {
         plr.hand.forEach(c => {
             c.removeEnchantment("-1 cost", self);
         });
+    },
+
+    test(plr, game, self) {
+        // TODO: Add proper tests
+        return true;
     }
 }

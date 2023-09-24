@@ -31,5 +31,10 @@ export const blueprint: Blueprint = {
         // Deal 1 damage to the target
         game.attack(1, target);
         return true;
+    },
+
+    test(plr, game, self) {
+        // TODO: Add proper tests
+        return true;
     }
 }

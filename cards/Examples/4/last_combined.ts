@@ -65,5 +65,10 @@ export const blueprint: Blueprint = {
             // The quest event was a success. The game will remove this quest from the player.
             return true;
         });
+    },
+
+    test(plr, game, self) {
+        // TODO: Add proper tests
+        return true;
     }
 }

@@ -30,5 +30,10 @@ export const blueprint: Blueprint = {
 
         // Give that minion +1 Attack
         minion.addStats(1, 0);
+    },
+
+    test(plr, game, self) {
+        // TODO: Add proper tests
+        return true;
     }
 }

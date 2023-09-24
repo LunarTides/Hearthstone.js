@@ -25,5 +25,10 @@ export const blueprint: Blueprint = {
         game.board[plr.id].forEach(minion => {
             minion.addHealth(1, true);
         });
+    },
+
+    test(plr, game, self) {
+        // TODO: Add proper tests
+        return true;
     }
 }

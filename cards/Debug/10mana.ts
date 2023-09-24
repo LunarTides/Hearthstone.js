@@ -16,5 +16,10 @@ export const blueprint: Blueprint = {
     cast(plr, game, self) {
         // Gain 10 Mana.
         plr.gainMana(10);
+    },
+
+    test(plr, game, self) {
+        // TODO: Add proper tests
+        return true;
     }
 }

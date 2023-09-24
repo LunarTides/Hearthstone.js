@@ -24,5 +24,10 @@ export const blueprint: Blueprint = {
 
         // Kill this minion
         self.kill();
+    },
+
+    test(plr, game, self) {
+        // TODO: Add proper tests
+        return true;
     }
 }

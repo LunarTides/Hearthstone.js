@@ -33,5 +33,10 @@ export const blueprint: Blueprint = {
         // Restore 2 health to the target
         target.addHealth(2, true);
         return true;
+    },
+
+    test(plr, game, self) {
+        // TODO: Add proper tests
+        return true;
     }
 }

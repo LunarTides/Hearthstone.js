@@ -27,5 +27,10 @@ export const blueprint: Blueprint = {
         // Summon the minion
         let minion = new game.Card(rand.name, plr);
         game.summonMinion(minion, plr);
+    },
+
+    test(plr, game, self) {
+        // TODO: Add proper tests
+        return true;
     }
 }

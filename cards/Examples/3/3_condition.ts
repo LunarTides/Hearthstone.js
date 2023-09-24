@@ -42,5 +42,10 @@ export const blueprint: Blueprint = {
         //
         //return true; // Uncomment this to see how a fulfilled condition looks like.
         return game.functions.highlander(plr);
+    },
+
+    test(plr, game, self) {
+        // TODO: Add proper tests
+        return true;
     }
 }

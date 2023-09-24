@@ -49,5 +49,10 @@ export const blueprint: Blueprint = {
         }, -1); // This number is how many times the main callback function can run before the event listener self-destructs. If this is set to `-1`, it lasts forever.
 
         // destroy(); // Run this function to destroy the event listener
+    },
+
+    test(plr, game, self) {
+        // TODO: Add proper tests
+        return true;
     }
 }

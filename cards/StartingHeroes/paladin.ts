@@ -23,5 +23,10 @@ export const blueprint: Blueprint = {
 
         // Summon the card
         game.summonMinion(card, plr);
+    },
+
+    test(plr, game, self) {
+        // TODO: Add proper tests
+        return true;
     }
 }

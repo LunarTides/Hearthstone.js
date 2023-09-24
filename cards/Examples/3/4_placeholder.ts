@@ -41,5 +41,10 @@ export const blueprint: Blueprint = {
         // This should give us "Battlecry: Gain mana equal to the turn counter. (Currently x, haha lol, x, The next thing is: test, {placeholder without replacement})"
         // where x is the turn counter
         return {0: turns, 1: "haha lol", 10: "test", "next thing is": "The next thing is:"};
+    },
+
+    test(plr, game, self) {
+        // TODO: Add proper tests
+        return true;
     }
 }

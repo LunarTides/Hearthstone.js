@@ -21,5 +21,10 @@ export const blueprint: Blueprint = {
         // Give the player +2 armor.
         // CARDTODO: Maybe there should be an `addArmor` function?
         plr.armor += 2;
+    },
+
+    test(plr, game, self) {
+        // TODO: Add proper tests
+        return true;
     }
 }

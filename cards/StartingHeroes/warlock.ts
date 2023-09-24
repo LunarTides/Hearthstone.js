@@ -22,5 +22,10 @@ export const blueprint: Blueprint = {
         // CARDTODO: Should this use `game.attack(2, plr)` instead? Is the order correct?
         plr.remHealth(2);
         plr.drawCard();
+    },
+
+    test(plr, game, self) {
+        // TODO: Add proper tests
+        return true;
     }
 }

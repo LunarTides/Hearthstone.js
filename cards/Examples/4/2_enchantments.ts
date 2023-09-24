@@ -42,5 +42,10 @@ export const blueprint: Blueprint = {
             // Only remove the "-1 cost" enchantment given by this card.
             c.removeEnchantment("-1 cost", self);
         });
+    },
+
+    test(plr, game, self) {
+        // TODO: Add proper tests
+        return true;
     }
 }

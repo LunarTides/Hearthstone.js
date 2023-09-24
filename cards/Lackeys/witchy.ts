@@ -46,5 +46,10 @@ export const blueprint: Blueprint = {
         // Summon the card to the player's side of the board
         game.summonMinion(card, plr);
         return true;
+    },
+
+    test(plr, game, self) {
+        // TODO: Add proper tests
+        return true;
     }
 }

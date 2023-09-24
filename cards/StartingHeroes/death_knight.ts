@@ -25,5 +25,10 @@ export const blueprint: Blueprint = {
         game.summonMinion(minion, plr);
 
         // The `It dies at end of turn.` part is handled by the ghoul itself, so we don't need to do anything extra here
+    },
+
+    test(plr, game, self) {
+        // TODO: Add proper tests
+        return true;
     }
 }

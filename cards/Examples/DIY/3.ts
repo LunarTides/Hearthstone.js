@@ -155,5 +155,10 @@ export const blueprint: Blueprint = {
 
         if (!solved) return game.constants.REFUND;
         return true;
+    },
+
+    test(plr, game, self) {
+        // TODO: Add proper tests, maybe move the testing in the battlecry in here?
+        return true;
     }
 }

@@ -79,5 +79,10 @@ export const blueprint: Blueprint = {
             // This finishes the quest
             return true;
         }); // Put `}, "name of the next spell");`, to make a questline. When the quest gets completed, a card with that name gets created and the game immediately activates its cast ability.
+    },
+
+    test(plr, game, self) {
+        // TODO: Add proper tests
+        return true;
     }
 }

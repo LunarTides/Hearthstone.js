@@ -28,5 +28,10 @@ export const blueprint: Blueprint = {
         // Add the card to the player's hand
         plr.addToHand(card);
         return true;
+    },
+
+    test(plr, game, self) {
+        // TODO: Add proper tests
+        return true;
     }
 }

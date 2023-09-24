@@ -23,5 +23,10 @@ export const blueprint: Blueprint = {
 
         // Equip the weapon
         plr.setWeapon(wpn);
+    },
+
+    test(plr, game, self) {
+        // TODO: Add proper tests
+        return true;
     }
 }

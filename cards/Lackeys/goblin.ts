@@ -29,5 +29,10 @@ export const blueprint: Blueprint = {
         // Add Rush
         target.addKeyword("Rush");
         return true;
+    },
+
+    test(plr, game, self) {
+        // TODO: Add proper tests
+        return true;
     }
 }

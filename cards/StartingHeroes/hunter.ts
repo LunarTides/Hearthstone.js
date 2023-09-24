@@ -18,5 +18,10 @@ export const blueprint: Blueprint = {
     heropower(plr, game, self) {
         // Deal 2 damage to the enemy hero.
         game.attack(2, plr.getOpponent());
+    },
+
+    test(plr, game, self) {
+        // TODO: Add proper tests
+        return true;
     }
 }
