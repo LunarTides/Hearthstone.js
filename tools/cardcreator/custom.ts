@@ -22,7 +22,7 @@ function input(prompt: string) {
 }
 
 function applyCard(_card: Blueprint) {
-    let newCard: Blueprint;
+    let newCard = {} as Blueprint;
 
     Object.entries(_card).forEach(c => {
         let [key, val] = c;
