@@ -39,7 +39,7 @@ export class Card {
      * Might include color tags like `Example [033Example 2[142`.
      * Use `stripAnsi()` to remove these.
      */
-    desc: string;
+    text: string;
 
     /**
      * The cost of the card.
@@ -141,7 +141,7 @@ export class Card {
     /**
      * The description of the hero power.
      */
-    hpDesc: string = "PLACEHOLDER";
+    hpText: string = "PLACEHOLDER";
 
     /**
      * The cost of the hero power.
@@ -315,9 +315,9 @@ export class Card {
      *     "turn": game.turns,
      * }
      * 
-     * assert.equal(this.desc, "The current turn is: {turn}");
+     * assert.equal(this.text, "The current turn is: {turn}");
      * // Eventually...
-     * assert.equal(this.desc, "The current turn is: 1");
+     * assert.equal(this.text, "The current turn is: 1");
      */
     placeholder?: {[key: string]: any} = {};
 
@@ -449,7 +449,7 @@ export class Card {
         // Set maxHealth if the card is a minion or weapon
         this.maxHealth = this.blueprint.stats?.at(1);
 
-        this.desc = game.functions.parseTags(this.desc || "");
+        this.text = game.functions.parseTags(this.text || "");
         if (activate) this.activate("create");
     }
 
@@ -841,7 +841,7 @@ export class Card {
             // HACK: Never usage
             else if (this.blueprint[att as never]) this[att as never] = this.blueprint[att as never] as never;
         });
-        this.desc = "";
+        this.text = "";
         this.keywords = [];
 
         // Remove active enchantments.
@@ -953,16 +953,16 @@ export class Card {
         const clearedTextAlt = "<bright:green>Condition cleared!</bright:green>";
 
         // Remove the (Condition cleared!) from the description
-        this.desc = this.desc?.replace(clearedText, "");
-        this.desc = this.desc?.replace(clearedTextAlt, "");
+        this.text = this.text?.replace(clearedText, "");
+        this.text = this.text?.replace(clearedTextAlt, "");
 
         // Check if the condition is met
         let condition = this.activate("condition");
         if (!(condition instanceof Array) || condition[0] === false) return false;
 
         // Add the (Condition cleared!) to the description
-        if (this.desc) this.desc += clearedText;
-        else this.desc += clearedTextAlt;
+        if (this.text) this.text += clearedText;
+        else this.text += clearedTextAlt;
 
         return true;
     }
@@ -1151,7 +1151,7 @@ export class Card {
      * Replaces the placeholders (`{0}`) with their values
      * 
      * @example
-     * card.desc = "The current turn count is {0}";
+     * card.text = "The current turn count is {0}";
      * card.placeholders = [(plr, game, self) => {
      *     let turns = Math.ceil(game.turns / 2);
      * 
@@ -1160,7 +1160,7 @@ export class Card {
      * card.replacePlaceholders();
      * 
      * // The `{ph:0}` tags are removed when displaying cards.
-     * assert.equal(card.desc, "The current turn count is {ph:0} 1 {/ph}");
+     * assert.equal(card.text, "The current turn count is {ph:0} 1 {/ph}");
      * 
      * @returns Success
      */
@@ -1179,8 +1179,8 @@ export class Card {
             let [key, _] = p;
             let replacement = `{ph:${key}} placeholder {/ph}`;
 
-            this.desc = this.desc?.replace(new RegExp(`{ph:${key}} .*? {/ph}`, 'g'), replacement);
-            this.desc = this.desc?.replaceAll(`{${key}}`, replacement);
+            this.text = this.text?.replace(new RegExp(`{ph:${key}} .*? {/ph}`, 'g'), replacement);
+            this.text = this.text?.replaceAll(`{${key}}`, replacement);
         });
 
         return true;

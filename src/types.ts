@@ -473,7 +473,7 @@ export type Blueprint = {
     name: string,
     displayName?: string,
     stats?: number[],
-    desc: string,
+    text: string,
     cost: number,
     type: CardType,
 
@@ -482,7 +482,7 @@ export type Blueprint = {
     spellSchool?: SpellSchool,
     durability?: number,
     cooldown?: number,
-    hpDesc?: string,
+    hpText?: string,
     hpCost?: number,
 
     // Less important

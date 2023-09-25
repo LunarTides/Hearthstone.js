@@ -5,7 +5,7 @@ let requiredFieldsTable: {[x in CardType]: string[]} = {
     "Minion": ["stats", "tribe"],
     "Spell": ["spellSchool"],
     "Weapon": ["stats"],
-    "Hero": ["hpDesc", "hpCost"],
+    "Hero": ["hpText", "hpCost"],
     "Location": ["durability", "cooldown"],
     "Undefined": []
 }

@@ -5,7 +5,7 @@ import { Blueprint } from "@Game/types.js";
 export const blueprint: Blueprint = {
     name: "Goblin Lackey",
     stats: [1, 1],
-    desc: "<b>Battlecry:</b> Give a friendly minion +1 Attack and <b>Rush</b>.",
+    text: "<b>Battlecry:</b> Give a friendly minion +1 Attack and <b>Rush</b>.",
     cost: 1,
     type: "Minion",
     tribe: "None",

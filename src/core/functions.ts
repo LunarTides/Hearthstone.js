@@ -712,7 +712,7 @@ export const functions = {
      * @returns The string capitalized
      */
     capitalizeAll(str: string): string {
-        return str.split(" ").map(k => this.capitalize(k)).join(" ");
+        return str.split(" ").map(this.capitalize).join(" ");
     },
 
     /**

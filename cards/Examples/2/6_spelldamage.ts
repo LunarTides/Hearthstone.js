@@ -8,7 +8,7 @@ export const blueprint: Blueprint = {
     // Put a $ sign before the number to show spell damage in the description.
     // It's like a mini-placeholder, which is something you will learn about in the next chapter.
     // If you have debug mode enabled, do `/eval game.player.spellDamage += 5` in order to see it working.
-    desc: "Deal $3 damage to the enemy hero.",
+    text: "Deal $3 damage to the enemy hero.",
 
     cost: 0,
     type: "Spell",

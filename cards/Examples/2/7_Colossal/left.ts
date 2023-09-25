@@ -12,7 +12,7 @@ export const blueprint: Blueprint = {
     displayName: "Left Arm", 
 
     stats: [2, 1],
-    desc: "",
+    text: "",
     cost: 1,
     type: "Minion",
     tribe: "Beast",

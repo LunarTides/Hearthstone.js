@@ -134,7 +134,7 @@ export const interact = {
             }
 
             this.printAll(game.player);
-            let ask = this.yesNoQuestion(game.player, `<yellow>${game.player.hero?.hpDesc}</yellow> Are you sure you want to use this hero power?`);
+            let ask = this.yesNoQuestion(game.player, `<yellow>${game.player.hero?.hpText}</yellow> Are you sure you want to use this hero power?`);
             if (!ask) return false;
 
             this.printAll(game.player);
@@ -295,13 +295,13 @@ export const interact = {
 
                 const printTodo = (todo: any, id: number, printDesc = false) => {
                     let [name, info] = todo;
-                    let [state, desc] = info;
+                    let [state, text] = info;
 
                     if (state == "done") state = "x";
                     else if (state == "doing") state = "o";
                     else if (state == "not done") state = " ";
 
-                    if (printDesc) game.log(`{${id}} [${state}] ${name}\n${desc}`);
+                    if (printDesc) game.log(`{${id}} [${state}] ${name}\n${text}`);
                     else game.log(`{${id}} [${state}] ${name}`);
                 }
 
@@ -1420,20 +1420,20 @@ export const interact = {
      * Replaces placeholders in the description of a card object.
      *
      * @param card The card.
-     * @param overrideDesc The description. If empty, it uses the card's description instead.
+     * @param overrideText The description. If empty, it uses the card's description instead.
      * @param _depth The depth of recursion.
      * 
      * @return The modified description with placeholders replaced.
      */
-    doPlaceholders(card: Card, overrideDesc: string = "", _depth: number = 0): string {
+    doPlaceholders(card: Card, overrideText: string = "", _depth: number = 0): string {
         game = globalThis.game;
         let reg = new RegExp(`{ph:(.*?)} .*? {/ph}`);
 
-        let desc = overrideDesc;
-        if (!overrideDesc) desc = card.desc || "";
+        let text = overrideText;
+        if (!overrideText) text = card.text || "";
 
         while (true) {
-            let regedDesc = reg.exec(desc);
+            let regedDesc = reg.exec(text);
             
             // There is nothing more to extract
             if (!regedDesc) break;
@@ -1464,24 +1464,24 @@ export const interact = {
                 }
             }
 
-            desc = game.functions.parseTags(desc.replace(reg, replacement));
+            text = game.functions.parseTags(text.replace(reg, replacement));
         }
 
         // Replace spell damage placeholders
         reg = /\$(\d+?)/;
 
         while (true) {
-            let regedDesc = reg.exec(desc);
+            let regedDesc = reg.exec(text);
             if (!regedDesc) break;
 
             // Get the capturing group result
             let key = regedDesc[1];
             let replacement = parseInt(key) + game.player.spellDamage;
 
-            desc = desc.replace(reg, replacement.toString());
+            text = text.replace(reg, replacement.toString());
         }
 
-        return desc;
+        return text;
     },
 
     /**
@@ -1529,14 +1529,14 @@ export const interact = {
 
         let sb = "";
 
-        let desc;
+        let text;
 
-        if (card instanceof Card) desc = (card.desc || "").length > 0 ? ` (${card.desc}) ` : " ";
-        else desc = card.desc.length > 0 ? ` (${game.functions.parseTags(card.desc)}) ` : " ";
+        if (card instanceof Card) text = (card.text || "").length > 0 ? ` (${card.text}) ` : " ";
+        else text = card.text.length > 0 ? ` (${game.functions.parseTags(card.text)}) ` : " ";
 
         // Extract placeholder value, remove the placeholder header and footer
-        if (card instanceof Card && (card.placeholder || /\$(\d+?)/.test(card.desc || ""))) {
-            desc = this.doPlaceholders(card, desc, _depth);
+        if (card instanceof Card && (card.placeholder || /\$(\d+?)/.test(card.text || ""))) {
+            text = this.doPlaceholders(card, text, _depth);
         }
 
         let cost = `{${card.cost}} `;
@@ -1587,7 +1587,7 @@ export const interact = {
             sb += "}";
         }
 
-        sb += desc;
+        sb += text;
         sb += `<yellow>(${card.type})</yellow>`;
 
         if (!(card instanceof Card)) return sb;

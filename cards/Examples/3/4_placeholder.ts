@@ -6,7 +6,7 @@ export const blueprint: Blueprint = {
     name: "Placeholder Example",
 
     // The things with `{...}` will be replaced in the `placeholder` function.
-    desc: "Battlecry: Gain mana equal to the turn counter. (Currently {0}, {1}, {0}, {next thing is} {10}, {placeholder without replacement})",
+    text: "Battlecry: Gain mana equal to the turn counter. (Currently {0}, {1}, {0}, {next thing is} {10}, {placeholder without replacement})",
 
     cost: 0,
     type: "Spell",

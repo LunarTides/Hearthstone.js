@@ -4,7 +4,7 @@ import { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
     name: "The Coin",
-    desc: "Gain 1 Mana Crystal this turn only.",
+    text: "Gain 1 Mana Crystal this turn only.",
     cost: 0,
     type: "Spell",
     classes: ["Neutral"],

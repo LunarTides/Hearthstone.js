@@ -27,7 +27,7 @@ function applyCard(_card: Blueprint) {
     Object.entries(_card).forEach(c => {
         let [key, val] = c;
 
-        let requiredKeys = ["name", "desc", "cost", "class", "rarity", "stats", "durability", "hpDesc", "hpCost", "cooldown"];
+        let requiredKeys = ["name", "text", "cost", "class", "rarity", "stats", "durability", "hpText", "hpCost", "cooldown"];
         if (!val && val !== 0 && !requiredKeys.includes(key)) return;
 
         // HACK: Well, it is not ts-expect-error at least
@@ -69,7 +69,7 @@ function common(): false | Blueprint {
     return {
         name: name,
         displayName: displayName,
-        desc: description,
+        text: description,
         cost: parseInt(cost),
         type: type,
         classes: [classes],
@@ -98,7 +98,7 @@ const cardTypeFunctions = {
             name: _card.name,
             displayName: _card.displayName,
             stats: statsArray,
-            desc: _card.desc,
+            text: _card.text,
             cost: _card.cost,
             type: _card.type,
             tribe: tribe as MinionTribe,
@@ -120,7 +120,7 @@ const cardTypeFunctions = {
         return applyCard({
             name: _card.name,
             displayName: _card.displayName,
-            desc: _card.desc,
+            text: _card.text,
             cost: _card.cost,
             type: _card.type,
             classes: _card.classes,
@@ -146,7 +146,7 @@ const cardTypeFunctions = {
             name: _card.name,
             displayName: _card.displayName,
             stats: statsArray,
-            desc: _card.desc,
+            text: _card.text,
             cost: _card.cost,
             type: _card.type,
             classes: _card.classes,
@@ -161,7 +161,7 @@ const cardTypeFunctions = {
         let _card = common();
         if (!_card) return false;
 
-        const hpDesc = input("Hero Power Description: ");
+        const hpText = input("Hero Power Description: ");
         if (shouldExit) return false;
 
         let hpCost = parseInt(input("Hero Power Cost (Default: 2): "));
@@ -172,14 +172,14 @@ const cardTypeFunctions = {
         return applyCard({
             name: _card.name,
             displayName: _card.displayName,
-            desc: _card.desc,
+            text: _card.text,
             cost: _card.cost,
             type: _card.type,
             classes: _card.classes,
             rarity: _card.rarity,
             runes: _card.runes,
             keywords: _card.keywords,
-            hpDesc: hpDesc,
+            hpText: hpText,
             hpCost: hpCost,
             id: 0,
         });
@@ -200,7 +200,7 @@ const cardTypeFunctions = {
         return applyCard({
             name: _card.name,
             displayName: _card.displayName,
-            desc: _card.desc,
+            text: _card.text,
             cost: _card.cost,
             type: _card.type,
             classes: _card.classes,

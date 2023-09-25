@@ -5,7 +5,7 @@ import { Blueprint, EventValue } from "@Game/types.js";
 // This is the big one
 export const blueprint: Blueprint = {
     name: "Combined Example 4",
-    desc: "Quest: Play 3 cards. Reward: Reduce the cost of the next 10 Minions you play by 1.",
+    text: "Quest: Play 3 cards. Reward: Reduce the cost of the next 10 Minions you play by 1.",
     cost: 1,
     type: "Spell",
     spellSchool: "None",

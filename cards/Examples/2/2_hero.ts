@@ -4,14 +4,14 @@ import { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
     name: "Hero Example",
-    desc: "<b>Battlecry:</b> Restore your hero to full health.",
+    text: "<b>Battlecry:</b> Restore your hero to full health.",
     cost: 1,
     type: "Hero",
     classes: ["Neutral"],
     rarity: "Free",
 
     // The hero power's description
-    hpDesc: "Restore 2 Health to your hero.",
+    hpText: "Restore 2 Health to your hero.",
 
     // How much mana the hero power costs to use.
     hpCost: 2,

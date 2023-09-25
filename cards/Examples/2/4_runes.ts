@@ -5,7 +5,7 @@ import { Blueprint } from "@Game/types.js";
 export const blueprint: Blueprint = {
     name: "Rune Example",
     stats: [1, 2],
-    desc: "This is an example card to show how runes work.",
+    text: "This is an example card to show how runes work.",
     cost: 1,
     type: "Minion",
     tribe: "None",

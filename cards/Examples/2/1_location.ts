@@ -4,7 +4,7 @@ import { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
     name: "Location Example",
-    desc: "Restore 2 Health to your hero.",
+    text: "Restore 2 Health to your hero.",
     cost: 1,
     type: "Location",
     classes: ["Neutral"],

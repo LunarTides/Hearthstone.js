@@ -5,7 +5,7 @@ import { Blueprint } from "@Game/types.js";
 export const blueprint: Blueprint = {
     name: "Faceless Lackey",
     stats: [1, 1],
-    desc: "<b>Battlecry:</b> Summon a random 2-Cost minion.",
+    text: "<b>Battlecry:</b> Summon a random 2-Cost minion.",
     cost: 1,
     type: "Minion",
     tribe: "None",

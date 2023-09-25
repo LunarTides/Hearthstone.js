@@ -19,7 +19,7 @@ export function generateCardExports() {
 
         let hash = createHash("sha256").update(name).digest("hex").toString().slice(0, 7);
 
-        exportContent += `export { blueprint as card_${hash} } from "${relPath}";\n`;
+        exportContent += `export { blueprint as c${hash} } from "${relPath}";\n`;
     });
 
     writeFileSync(game.functions.dirname() + "/cards/exports.ts", exportContent);

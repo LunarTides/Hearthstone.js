@@ -8,7 +8,7 @@ export const blueprint: Blueprint = {
     stats: [1, 1],
 
     // This is our goal, remember that after this massive info-dump.
-    desc: "Your battlecries trigger twice.",
+    text: "Your battlecries trigger twice.",
 
     cost: 1,
     type: "Minion",

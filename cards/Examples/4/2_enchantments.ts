@@ -5,7 +5,7 @@ import { Blueprint } from "@Game/types.js";
 export const blueprint: Blueprint = {
     name: "Enchantment Example",
     stats: [1, 1],
-    desc: "Your cards cost 1 less.",
+    text: "Your cards cost 1 less.",
     cost: 1,
     type: "Minion",
     tribe: "None",

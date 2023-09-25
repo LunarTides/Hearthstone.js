@@ -6,7 +6,7 @@ export const blueprint: Blueprint = {
     name: "Healing Totem",
     stats: [0, 2],
     // TODO: What does this hashtag mean? This was pulled from the vanilla card
-    desc: "At the end of your turn, restore #1 Health to all friendly minions.",
+    text: "At the end of your turn, restore #1 Health to all friendly minions.",
     cost: 1,
     type: "Minion",
     tribe: "Totem",

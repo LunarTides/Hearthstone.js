@@ -5,7 +5,7 @@ import { Blueprint } from "@Game/types.js";
 export const blueprint: Blueprint = {
     name: "Manathirst Example",
     stats: [1, 2],
-    desc: "<b>Battlecry:</b> Freeze an enemy minion. Manathirst (6): Silence it first.",
+    text: "<b>Battlecry:</b> Freeze an enemy minion. Manathirst (6): Silence it first.",
     cost: 1,
     type: "Minion",
     tribe: "None",

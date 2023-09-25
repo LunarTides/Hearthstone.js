@@ -54,7 +54,7 @@ function main() {
         let ignore = ["id", "set", "name", "rarity", "type"];
 
         let table: {[key in keyof Blueprint]?: keyof VanillaCard} = {
-            "desc": "text"
+            "text": "text"
         }
 
         let vanillaValue: any = key as keyof VanillaCard;

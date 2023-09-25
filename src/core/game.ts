@@ -598,7 +598,7 @@ export class Game {
             }
 
             plr.deck.forEach(c => {
-                if (!c.desc?.includes("Quest: ") && !c.desc?.includes("Questline: ")) return;
+                if (!c.text?.includes("Quest: ") && !c.text?.includes("Questline: ")) return;
 
                 let unsuppress = functions.suppressEvent("AddCardToHand");
                 plr.addToHand(c);
@@ -1218,7 +1218,7 @@ const playCard = {
             // Twinspell functionality
             if (card.keywords.includes("Twinspell")) {
                 card.removeKeyword("Twinspell");
-                card.desc = card.desc?.split("Twinspell")[0].trim();
+                card.text = card.text?.split("Twinspell")[0].trim();
 
                 player.addToHand(card);
             }

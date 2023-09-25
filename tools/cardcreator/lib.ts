@@ -30,10 +30,10 @@ function getCardAbility(cardType: CardType) {
     else {
         // Try to extract an ability from the card's description
         let reg = /([A-Z][a-z].*?):/g;
-        let foundAbility = card.desc.match(reg);
+        let foundAbility = card.text.match(reg);
 
         // If the card doesn't have a description, it doesn't get an ability.
-        if (!card.desc) ability = "";
+        if (!card.text) ability = "";
 
         // If it didn't find an ability, but the card has text in it's description, the ability is 'passive'
         else if (!foundAbility) ability = "Passive";
@@ -56,7 +56,7 @@ function generateCardPath(...args: [CardClass[], CardType]) {
     let classesString = classes.join("/");
 
     // If the card has the word "Secret" in its description, put it in the ".../Secrets/..." folder.
-    if (card.desc.includes("Secret:")) type = "Secret" as CardType;
+    if (card.text.includes("Secret:")) type = "Secret" as CardType;
 
     // If the type is Hero, we want the card to go to '.../Heroes/...' and not to '.../Heros/...'
     let typeString = (type == "Hero") ? "Heroe" : type;
@@ -106,11 +106,11 @@ export function create(creatorType: CCType, cardType: CardType, blueprint: Bluep
         const val = _unknownValue as EventValue<typeof key>;
         `;
     
-    let descToClean = type == "Hero" ? card.hpDesc : card.desc;
-    // card.hpDesc can be undefined, but shouldn't be if the type is Hero.
+    let descToClean = type == "Hero" ? card.hpText : card.text;
+    // card.hpText can be undefined, but shouldn't be if the type is Hero.
     if (descToClean === undefined) throw new Error("Card has no hero power description.");
 
-    // If the desc has `<b>Battlecry:</b> Dredge.`, add `// Dredge.` to the battlecry ability
+    // If the text has `<b>Battlecry:</b> Dredge.`, add `// Dredge.` to the battlecry ability
     let cleanedDesc = game.functions.stripTags(descToClean).replace(`${func}: `, "");
 
     // Example 1: '\n\n    passive(plr, game, self, key, _unknownValue) {\n        // Your battlecries trigger twice.\n        ...\n    }',

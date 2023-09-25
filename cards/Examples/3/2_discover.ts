@@ -4,7 +4,7 @@ import { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
     name: "Discover Example",
-    desc: "Discover a spell.",
+    text: "Discover a spell.",
     cost: 1,
     type: "Spell",
     spellSchool: "None",

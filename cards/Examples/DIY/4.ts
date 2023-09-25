@@ -6,7 +6,7 @@ import { Blueprint, EventValue } from "@Game/types.js";
 export const blueprint: Blueprint = {
     name: "DIY 4",
     stats: [1, 10],
-    desc: "<b>This is a DIY card, it does not work by default.</b> Whenever a friendly minion dies, Resurrect it with 1/1 stats.",
+    text: "<b>This is a DIY card, it does not work by default.</b> Whenever a friendly minion dies, Resurrect it with 1/1 stats.",
     cost: 0,
     type: "Minion",
     tribe: "None",

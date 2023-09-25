@@ -46,19 +46,19 @@ export function main(debug = false, overrideType?: lib.CCType) {
 
     if (exited) return;
 
-    let [name, displayName, hpDesc, hpCost] = answers;
+    let [name, displayName, hpText, hpCost] = answers;
 
     let filename = name.toLowerCase().replaceAll(" ", "_") + ".ts";
 
     let card: Blueprint = {
         name: name + " Starting Hero",
         displayName: displayName,
-        desc: name[0].toUpperCase() + name.slice(1).toLowerCase() + " starting hero",
+        text: name[0].toUpperCase() + name.slice(1).toLowerCase() + " starting hero",
         cost: 0,
         type: "Hero" as CardType,
         classes: [name] as CardClass[],
         rarity: "Free" as CardRarity,
-        hpDesc: hpDesc,
+        hpText: hpText,
         hpCost: parseInt(hpCost),
         uncollectible: true,
         // This will be overwritten by the library

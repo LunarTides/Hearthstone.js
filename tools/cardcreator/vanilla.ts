@@ -25,7 +25,7 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CCT
     let name = card.name;
     let rarity = "Free" as CardRarity;
     if (card.rarity) rarity = game.functions.capitalize(card.rarity) as CardRarity;
-    let desc = card.text ?? "";
+    let text = card.text ?? "";
     let type = game.functions.capitalize(card.type);
 
     // Minion info
@@ -41,9 +41,9 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CCT
     // Weapon Info
     let durability = card.durability ?? -1;
 
-    // Modify the desc
-    desc = desc.replaceAll("\n", " ");
-    desc = desc.replaceAll("[x]", "");
+    // Modify the text
+    text = text.replaceAll("\n", " ");
+    text = text.replaceAll("[x]", "");
 
     const classes = game.functions.getClasses() as CardClass[];
     classes.push("Neutral");
@@ -60,7 +60,7 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CCT
         blueprint = {
             name: realName,
             stats: [attack, health],
-            desc,
+            text,
             cost,
             type,
             // TODO: Add support for more than 1 tribe
@@ -73,7 +73,7 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CCT
     else if (type == "Spell") {
         blueprint = {
             name: realName,
-            desc,
+            text,
             cost,
             type,
             spellSchool,
@@ -86,7 +86,7 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CCT
         blueprint = {
             name: realName,
             stats: [attack, health],
-            desc,
+            text,
             cost,
             type,
             classes: [cardClass],
@@ -97,12 +97,12 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CCT
     else if (type == "Hero") {
         blueprint = {
             name: realName,
-            desc,
+            text,
             cost,
             type,
             classes: [cardClass],
             rarity,
-            hpDesc: "",
+            hpText: "",
             hpCost: 2,
             id: 0,
         }
@@ -110,7 +110,7 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CCT
     else if (type == "Location") {
         blueprint = {
             name: realName,
-            desc,
+            text,
             cost,
             type,
             classes: [cardClass],

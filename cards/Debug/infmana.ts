@@ -4,7 +4,7 @@ import { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
     name: "Inf Mana",
-    desc: "Fill up your mana. For the rest of the game, your mana never decreases.",
+    text: "Fill up your mana. For the rest of the game, your mana never decreases.",
     cost: 0,
     type: "Spell",
     spellSchool: "None",

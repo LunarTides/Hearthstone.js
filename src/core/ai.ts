@@ -908,7 +908,7 @@ export class AI {
      * @returns The score
      */
     analyzePositiveCard(c: Card): number {
-        let score = this.analyzePositive(c.desc || "");
+        let score = this.analyzePositive(c.text || "");
 
         if (c.stats) score += (c.getAttack() + c.getHealth()) * game.config.ai.statsBias;
 

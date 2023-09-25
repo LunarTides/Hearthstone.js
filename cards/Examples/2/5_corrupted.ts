@@ -7,7 +7,7 @@ export const blueprint: Blueprint = {
     // This is just an ordinary card.
     name: "Corrupted Example",
     stats: [2, 2],
-    desc: "Corrupted.",
+    text: "Corrupted.",
     cost: 0,
     type: "Minion",
     tribe: "None",

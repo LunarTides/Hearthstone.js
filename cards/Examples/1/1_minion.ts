@@ -13,7 +13,7 @@ export const blueprint: Blueprint = {
     stats: [2, 1],
 
     // The description of the card. This can be anything.
-    desc: "Just an example card (Does nothing)",
+    text: "Just an example card (Does nothing)",
 
     // How much mana the card costs.
     cost: 1,
