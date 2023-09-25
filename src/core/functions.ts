@@ -1202,42 +1202,6 @@ ${main_content}
     },
 
     /**
-     * Returns if the `card`'s class is the same as the `plr`'s class or 'Neutral'
-     *
-     * @param plr
-     * @param card
-     *
-     * @returns Result
-     * 
-     * @example
-     * assert.equal(card.class, "Mage");
-     * assert.equal(plr.class, "Mage");
-     * 
-     * // This should return true
-     * let result = validateClass(plr, card);
-     * assert.equal(result, true);
-     * 
-     * @example
-     * assert.equal(card.class, "Warrior");
-     * assert.equal(plr.class, "Mage");
-     * 
-     * // This should return false
-     * let result = validateClass(plr, card);
-     * assert.equal(result, false);
-     * 
-     * @example
-     * assert.equal(card.class, "Neutral");
-     * assert.equal(plr.class, "Mage");
-     * 
-     * // This should return true
-     * let result = validateClass(plr, card);
-     * assert.equal(result, true);
-     */
-    validateClass(plr: Player, card: CardLike): boolean {
-        return this.validateClasses(card.classes, plr.heroClass);
-    },
-
-    /**
      * Returns if `classes` includes `cardClass` (also Neutral logic).
      */
     validateClasses(classes: CardClass[], cardClass: CardClass): boolean {

@@ -1147,7 +1147,7 @@ export const interact = {
         if (filterClassCards) {
             // We need to filter the cards
             // of the filter function
-            cards = cards.filter(card => game.functions.validateClass(game.player, card));
+            cards = cards.filter(card => game.functions.validateClasses(card.classes, game.player.heroClass));
         }
 
         // No cards from previous discover loop, we need to generate new ones.
