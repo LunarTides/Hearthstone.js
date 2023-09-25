@@ -2118,6 +2118,8 @@ ${mainContent}
             let fullPath = `${path}/${file.name}`;
 
             if (file.name.endsWith(extension)) {
+                if (file.name === "exports.ts") return;
+
                 // It is an actual card.
                 let data = fs.readFileSync(fullPath, { encoding: 'utf8', flag: 'r' });
 
