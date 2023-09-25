@@ -29,7 +29,7 @@ export const blueprint: Blueprint = {
         const assert = game.functions.assert;
 
         const checkIfMinionExists = () => {
-            return game.board[plr.id].some(card => card.name === "Silver Hand Recruit");
+            return game.board[plr.id]?.some(card => card.name === "Silver Hand Recruit") ?? false;
         }
 
         // The minion should not exist

@@ -1,5 +1,6 @@
 // Created by Hand (before the Card Creator Existed)
 
+import { CardError } from "@Game/internal.js";
 import { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
@@ -21,7 +22,9 @@ export const blueprint: Blueprint = {
         if (!(key === "EndTurn" && game.player === plr)) return;
 
         // The list that to choose from. Remove this minion from the list
-        let board = game.board[plr.id].filter(card => card.type === "Minion");
+        let board = game.board[plr.id]?.filter(card => card.type === "Minion");
+        if (!board) throw new CardError(`Cannot index board by player's id (${plr.id})`);
+
         game.functions.remove(board, self);
 
         // Choose the random minion
@@ -42,7 +45,7 @@ export const blueprint: Blueprint = {
         }
 
         const checkSheepAttack = (shouldBeMore: boolean) => {
-            return game.board[plr.id].filter(card => card.name === "Sheep").some(card => card.getHealth() === 1 && ((shouldBeMore && card.getAttack() > 1) || (!shouldBeMore && card.getAttack() === 1)));
+            return game.board[plr.id]?.filter(card => card.name === "Sheep").some(card => card.getHealth() === 1 && ((shouldBeMore && card.getAttack() > 1) || (!shouldBeMore && card.getAttack() === 1))) ?? false;
         }
 
         // Summon this minion. All sheep should have 1 attack.

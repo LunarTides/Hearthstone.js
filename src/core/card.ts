@@ -394,7 +394,7 @@ export class Card {
         if (!this.backups.init) this.backups.init = {} as CardBackup;
         Object.entries(this).forEach(i => {
             // HACK: Never usage
-            this.backups.init[i[0] as never] = i[1] as never;
+            this.backups.init![i[0] as never] = i[1] as never;
         });
 
         this.randomizeUUID();
@@ -772,7 +772,7 @@ export class Card {
 
         Object.entries(this).forEach(i => {
             // HACK: Never usage
-            this.backups[key][i[0] as never] = i[1] as never;
+            this.backups[key]![i[0] as never] = i[1] as never;
         });
         
         return key;
@@ -835,7 +835,7 @@ export class Card {
         Object.keys(this).forEach(att => {
             // Check if a backup exists for the attribute. If it does; restore it.
             // HACK: Never usage
-            if (this.backups.init[att as never]) this[att as never] = this.backups.init[att as never] as never;
+            if (this.backups.init![att as never]) this[att as never] = this.backups.init![att as never] as never;
 
             // Check if the attribute if defined in the blueprint. If it is; restore it.
             // HACK: Never usage
@@ -978,21 +978,21 @@ export class Card {
      *
      * @returns The info
      */
-    getEnchantmentInfo(e: string): { key: string; val: string; op: string; } {
+    getEnchantmentInfo(e: string): { key?: string; val?: string; op?: string; } {
         let equalsRegex = /\w+ = \w+/;
         let otherRegex = /[-+*/^]\d+ \w+/;
 
         let opEquals = equalsRegex.test(e);
         let opOther = otherRegex.test(e);
 
-        let key = "undefined";
-        let val = "undefined";
-        let op = "=";
+        let key;
+        let val;
+        let op;
 
         if (opEquals) [key, val] = e.split(" = ");
         else if (opOther) {
             [val, key] = e.split(" ");
-            val = val.slice(1);
+            if (val) val = val.slice(1);
 
             op = e[0];
         }
@@ -1024,6 +1024,8 @@ export class Card {
         enchantments.forEach(e => {
             let info = this.getEnchantmentInfo(e);
             let key = info.key;
+
+            if (!key) throw new Error(`Invalid enchantment key found at ${key}`);
             
             keys.push(key);
         });
@@ -1036,7 +1038,7 @@ export class Card {
             // Apply backup if it exists, otherwise keep it the same.
             if (this.backups.init?[key] : false) {
                 // HACK: Never usage
-                this[key as never] = this.backups.init[key as never] as never;
+                this[key as never] = this.backups.init![key as never] as never;
             }
         });
 
@@ -1046,6 +1048,8 @@ export class Card {
             // Seperate the keys and values
             let info = this.getEnchantmentInfo(enchantment);
             let [_key, val, op] = Object.values(info);
+
+            if (!val) throw new Error(`Invalid enchantment value found at ${val}`);
 
             const key = _key as keyof this;
             

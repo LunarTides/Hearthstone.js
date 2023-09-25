@@ -760,7 +760,12 @@ export class Player {
      */
     setHero(hero: Card, armor = 5, setHeroClass = true): boolean {
         this.hero = hero;
-        if (setHeroClass) this.heroClass = hero.classes[0];
+        if (setHeroClass) {
+            let heroClass = hero.classes[0];
+            if (!heroClass) throw new TypeError(`Could not extract class from hero card with name: ${hero.displayName}`);
+
+            this.heroClass = heroClass;
+        }
         this.heroPowerCost = hero.hpCost || 2;
 
         this.armor += armor;
@@ -795,7 +800,7 @@ export class Player {
 
         if (this.hero.activate("heropower") == game.constants.REFUND) return -1;
 
-        game.board[this.id].forEach(m => m.activate("inspire"));
+        game.board[this.id]?.forEach(m => m.activate("inspire"));
         this.mana -= this.heroPowerCost;
         this.canUseHeroPower = false;
 

@@ -224,6 +224,10 @@ export const interact = {
             if (!cardId || !parseInt(cardId)) return false;
 
             const card = game.player.hand[parseInt(cardId) - 1];
+            if (!card) {
+                game.input("<red>Invalid card!</red>\n");
+                return false;
+            }
 
             this.viewCard(card);
         }
@@ -505,12 +509,12 @@ export const interact = {
         }
         else if (name === "/undo") {
             // Get the last played card
-            if (!game.events.events.PlayCard || game.events.events.PlayCard[game.player.id].length <= 0) {
+            let eventCards = game.events.events.PlayCard[game.player.id];
+            if (!game.events.events.PlayCard || eventCards.length <= 0) {
                 game.input("<red>No cards to undo.</red>\n");
                 return false;
             }
 
-            let eventCards: [Card, number][] = game.events.events.PlayCard[game.player.id];
             if (eventCards.length <= 0) {
                 game.input("<red>No cards to undo.</red>\n");
                 return false;
@@ -523,7 +527,7 @@ export const interact = {
             }
 
             // Remove the event so you can undo more than the last played card
-            game.events.events.PlayCard[game.player.id].pop();
+            eventCards.pop();
 
             // If the card can appear on the board, remove it.
             if (game.functions.canBeOnBoard(card)) {
@@ -655,6 +659,14 @@ export const interact = {
             }
 
             let [key, value] = args;
+            if (key === undefined) {
+                game.input("<red>Invalid key.</red>\n");
+                return false;
+            }
+            if (value === undefined) {
+                game.input("<red>Invalid value.</red>\n");
+                return false;
+            }
 
             let name = Object.keys(game.config).find(k => k === value);
             if (!name) {
@@ -856,7 +868,7 @@ export const interact = {
     useLocation(): boolean | "nolocations" | "invalidtype" | "cooldown" | -1 {
         game = globalThis.game;
 
-        let locations = game.board[game.player.id].filter(m => m.type == "Location");
+        let locations = game.board[game.player.id]?.filter(m => m.type == "Location") ?? [];
         if (locations.length <= 0) return "nolocations";
 
         let location = this.selectCardTarget("Which location do you want to use?", null, "friendly", ["allowLocations"]);
@@ -869,7 +881,7 @@ export const interact = {
         
         // TODO: Maybe throw an error if the durability is undefined
         if (location.durability) location.durability -= 1;
-        location.cooldown = location.backups.init.cooldown;
+        location.cooldown = location.backups.init?.cooldown;
         return true;
     },
 
@@ -1094,7 +1106,7 @@ export const interact = {
             RETRY();
         }
 
-        return answer;
+        return answer!;
     },
 
     /**
@@ -1261,8 +1273,8 @@ export const interact = {
         }
 
         // Get a list of each side of the board
-        const boardOpponent = game.board[game.opponent.id];
-        const boardFriendly = game.board[game.player.id];
+        const boardOpponent = game.board[game.opponent.id] ?? [];
+        const boardFriendly = game.board[game.player.id] ?? [];
 
         // Get each minion that matches the target.
         const boardOpponentTarget = boardOpponent[parseInt(target) - 1];
@@ -1290,6 +1302,9 @@ export const interact = {
             // If both players have a minion with the same index,
             // ask them which minion to select
             if (boardOpponent.length >= parseInt(target) && boardFriendly.length >= parseInt(target)) {
+                if (!boardFriendlyTarget) throw new Error("unreachable");
+                if (!boardOpponentTarget) throw new Error("unreachable");
+
                 const oName = game.functions.colorByRarity(boardOpponentTarget.displayName, boardOpponentTarget.rarity);
                 const fName = game.functions.colorByRarity(boardFriendlyTarget.displayName, boardFriendlyTarget.rarity);
 
@@ -1574,8 +1589,8 @@ export const interact = {
             let maxCooldown = card.cooldown;
             
             if (card instanceof Card) {
-                maxDurability = card.backups.init.durability;
-                maxCooldown = card.backups.init.cooldown ?? 0;
+                maxDurability = card.backups.init?.durability;
+                maxCooldown = card.backups.init?.cooldown ?? 0;
             }
 
             sb += " {";
@@ -1643,7 +1658,7 @@ export const interact = {
             if (!finishedPlayers[player.id]) finishedPlayers[player.id] = "";
             finishedPlayers[player.id] += `${stat}\n`;
 
-            let split = finishedPlayers[player.id].split("\n");
+            let split = finishedPlayers[player.id]?.split("\n");
             game.functions.remove(split, "");
 
             return [game.functions.createWall(split, ":"), tweak];
@@ -1669,8 +1684,8 @@ export const interact = {
                 let o = line.split("|")[1];
 
                 // Remove `playerTweak` amount of spaces from the left side of `|`, and remove `opponentTweak` amount of spaces from the right side of `|`
-                p = p.replace(new RegExp(` {${playerTweak + totalTweak}}`), "");
-                o = o.replace(new RegExp(` {${opponentTweak + totalTweak}}`), "");
+                p = p?.replace(new RegExp(` {${playerTweak + totalTweak}}`), "");
+                o = o?.replace(new RegExp(` {${opponentTweak + totalTweak}}`), "");
 
                 finishedWall[index] = `${p} | ${o}`;
             });

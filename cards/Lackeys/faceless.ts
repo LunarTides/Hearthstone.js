@@ -36,7 +36,7 @@ export const blueprint: Blueprint = {
         if (!game.functions.getCards().some(card => card.cost === 2 && card.type === "Minion")) return;
 
         let exists2CostMinion = () => {
-            return game.board[plr.id].some(card => card.cost === 2);
+            return game.board[plr.id]?.some(card => card.cost === 2) ?? false;
         }
 
         // There shouldn't exist any 2-Cost minions right now.

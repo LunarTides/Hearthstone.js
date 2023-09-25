@@ -38,7 +38,7 @@ function getCardAbility(cardType: CardType) {
         else if (!foundAbility) ability = "Passive";
 
         // If it found an ability, and the card has a description, the ability is the ability it found in the description.
-        else ability = foundAbility[1];
+        else ability = foundAbility[1] ?? "Passive";
     }
 
     return ability;

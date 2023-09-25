@@ -21,7 +21,7 @@ function userInputLoop(prompt: string, exitCharacter: string | null, callback: (
         let user = game.input(prompt);
         if (!user) continue;
 
-        if (game.interact.shouldExit(user) || user[0].toLowerCase() === exitCharacter?.toLowerCase()) break;
+        if (game.interact.shouldExit(user) || user[0]?.toLowerCase() === exitCharacter?.toLowerCase()) break;
 
         callback(user);
     }
@@ -29,7 +29,7 @@ function userInputLoop(prompt: string, exitCharacter: string | null, callback: (
 
 function cardCreator() {
     userInputLoop("Create a (C)ustom Card, Import a (V)anilla Card, Go (B)ack: ", "b", (input) => {
-        let type = input[0].toLowerCase();
+        let type = input[0]?.toLowerCase();
 
         game.interact.cls();
 
@@ -52,7 +52,7 @@ function cardCreator() {
 
 function devmode() {
     userInputLoop("Create a (C)ard, Create a Clas(s), Enter CLI (m)ode, Go (B)ack to Normal Mode: ", "b", (input) => {
-        input = input[0].toLowerCase();
+        input = input[0]?.toLowerCase() ?? "";
 
         if (input == "c") cardCreator();
         else if (input == "s") clc.main();
@@ -61,7 +61,7 @@ function devmode() {
 }
 
 userInputLoop("(P)lay, Create a (D)eck, Developer (M)ode, (E)xit: ", "e", (input) => {
-    input = input[0].toLowerCase();
+    input = input[0]?.toLowerCase() ?? "";
 
     if (input == "p") src.main();
     else if (input == "d") dc.main();

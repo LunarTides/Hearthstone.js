@@ -196,6 +196,7 @@ export function main(debug = false, overrideType?: lib.CCType) {
         }
         else card = filteredCards[0];
 
+        if (!card) throw new TypeError("Invalid card");
         game.log(`Found '${card.name}'\n`);
 
         create(card, debug, overrideType);

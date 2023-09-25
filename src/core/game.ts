@@ -42,7 +42,7 @@ interface IEventManager {
     broadcast(key: EventKey, val: UnknownEventValue, plr: Player, updateHistory?: boolean): boolean;
     addHistory(key: EventKey, val: UnknownEventValue, plr: Player): void;
     broadcastDummy(plr: Player): boolean;
-    increment(player: Player, key: string, amount?: number): number;
+    increment(player: Player, key: string, amount?: number): number | undefined;
 }
 
 const eventManager: IEventManager = {
@@ -130,7 +130,7 @@ const eventManager: IEventManager = {
                 if (card.cost < 0) card.cost = 0;
             });
 
-            game.board[i].forEach(card => {
+            game.board[i]?.forEach(card => {
                 if (card.type === "Minion" && card.getHealth() <= 0) return;
 
                 card.activate("tick", key, val);
@@ -243,7 +243,7 @@ const eventManager: IEventManager = {
         if (plr.classType !== "Player" || plr.id === -1) return false;
 
         if (!eventManager.events[key]) eventManager.events[key] = [[["GameLoop", game.turns]], [["GameLoop", game.turns]]];
-        eventManager.events[key]![plr.id].push([val, game.turns]);
+        eventManager.events[key]?.[plr.id]?.push([val, game.turns]);
 
         eventManager.cardUpdate(key, val);
 
@@ -266,7 +266,7 @@ const eventManager: IEventManager = {
         if (!game) return;
 
         if (!eventManager.history[game.turns]) eventManager.history[game.turns] = [["GameLoop", `Init ${key}`, plr]];
-        eventManager.history[game.turns].push([key, val, plr]);
+        eventManager.history[game.turns]?.push([key, val, plr]);
     },
 
     /**
@@ -293,10 +293,11 @@ const eventManager: IEventManager = {
      */
     increment(player, key, amount = 1) {
         if (!eventManager.stats[key]) eventManager.stats[key] = [0, 0];
+        if (!eventManager.stats[key]) return undefined;
 
-        eventManager.stats[key][player.id] += amount;
+        eventManager.stats[key]![player.id] += amount;
 
-        return eventManager.stats[key][player.id];
+        return eventManager.stats[key]?.[player.id];
     }
 }
 
@@ -387,7 +388,7 @@ export class Game {
      * The 0th element is `game.player1`'s side of the board,
      * and the 1th element is `game.player2`'s side of the board.
      */
-    board: Card[][] = [[], []];
+    board: Card[][];
 
     /**
      * The graveyard, a list of cards that have been killed.
@@ -395,7 +396,7 @@ export class Game {
      * The 0th element is `game.player1`'s graveyard,
      * and the 1st element is `game.player2`'s graveyard.
      */
-    graveyard: Card[][] = [[], []];
+    graveyard: Card[][];
 
     /**
      * The event listeners that are attached to the game currently.
@@ -508,6 +509,12 @@ export class Game {
             else if (!(queue instanceof Array)) return wrapper(question(q));
 
             const answer = queue[0];
+            if (!answer) {
+                // Queue is an array, but doesn't have any elements.
+                // TODO: Add this to the things of interest
+                this.player.inputQueue = undefined;
+                return wrapper("");
+            }
             queue.splice(0, 1);
 
             if (queue.length <= 0) this.player.inputQueue = undefined;
@@ -625,8 +632,10 @@ export class Game {
             players.push(plr);
         }
 
-        this.player1 = players[0];
-        this.player2 = players[1];
+        if (players.length < 2) throw new Error(`Players list length is invalid. Expected: > 2. Actual: ${players.length}`);
+
+        this.player1 = players[0]!;
+        this.player2 = players[1]!;
 
         this.player1.emptyMana = 1;
         this.player1.mana = 1;
@@ -679,7 +688,7 @@ export class Game {
         let plr = this.player;
         let op = this.opponent;
 
-        this.board[plr.id].forEach(m => {
+        this.board[plr.id]?.forEach(m => {
             m.ready();
         });
 
@@ -708,7 +717,7 @@ export class Game {
         }
 
         // Minion start of turn
-        this.board[op.id].forEach(m => {
+        this.board[op.id]?.forEach(m => {
             // Dormant
             if (m.dormant) {
                 if (this.turns <= m.dormant) return;
@@ -717,7 +726,7 @@ export class Game {
                 m.dormant = undefined;
                 m.sleepy = true;
 
-                m.immune = m.backups.init.immune;
+                m.immune = m.backups.init?.immune ?? false;
                 m.turn = this.turns;
 
                 // HACK: If the battlecry use a function that depends on `game.player`
@@ -763,6 +772,7 @@ export class Game {
      * @returns The amount of minions killed
      */
     killMinions(): number {
+        // TODO: Maybe remove this and have `Card.kill` to this instead.
         let amount = 0;
 
         for (let p = 0; p < 2; p++) {
@@ -773,13 +783,13 @@ export class Game {
                 return card.getHealth() > 0 || ((card.durability ?? 0) > 0);
             }
             
-            this.board[p].forEach(m => {
+            this.board[p]?.forEach(m => {
                 if (shouldSpare(m)) return;
 
                 m.activate("deathrattle");
             });
 
-            this.board[p].forEach(m => {
+            this.board[p]?.forEach(m => {
                 // Add minions with more than 0 health to n.
                 if (shouldSpare(m)) {
                     sparedMinions.push(m);
@@ -794,7 +804,7 @@ export class Game {
                 amount++;
 
                 plr.corpses++;
-                this.graveyard[p].push(m);
+                this.graveyard[p]?.push(m);
 
                 if (!m.keywords.includes("Reborn")) return;
 
@@ -867,8 +877,8 @@ const attack = {
         if (attacker.frozen) return "frozen";
 
         // Check if there is a minion with taunt
-        let taunts = game.board[game.opponent.id].filter(m => m.keywords.includes("Taunt"));
-        if (taunts.length > 0) {
+        let taunts = game.board[game.opponent.id]?.filter(m => m.keywords.includes("Taunt"));
+        if (!taunts || taunts.length > 0) {
             // If the target is a card and has taunt, you are allowed to attack it
             if (target instanceof Card && target.keywords.includes("Taunt")) {}
             else return "taunt";
@@ -1059,11 +1069,14 @@ const attack = {
         return true;
     },
 
-    _cleave(attacker: Card, target: Card): void {
-        if (!attacker.keywords.includes("Cleave")) return;
+    _cleave(attacker: Card, target: Card): boolean {
+        if (!attacker.keywords.includes("Cleave")) return false;
 
         let board = game.board[target.plr.id];
+        if (!board) return false;
+
         let index = board.indexOf(target);
+        if (!index) return false;
 
         let below = board[index - 1];
         let above = board[index + 1];
@@ -1073,6 +1086,8 @@ const attack = {
 
         // If there is a card above the target, also deal damage to it.
         if (above) game.attack(attacker.getAttack(), above);
+        
+        return true;
     },
 
     _doFrenzy(card: Card): void {
@@ -1105,7 +1120,10 @@ const attack = {
         
         if (!match) throw new TypeError("Non-spelldamage string passed into attack.");
 
-        let dmg = parseInt(match[1]);
+        let spellDamage = match[1];
+        if (!spellDamage) throw new TypeError("String parsed as spelldamage, but doesn't have a capturing group hit.");
+
+        let dmg = parseInt(spellDamage);
         dmg += game.player.spellDamage;
 
         game.events.broadcast("SpellDealsDamage", [target, dmg], game.player);
@@ -1223,13 +1241,13 @@ const playCard = {
             // Twinspell functionality
             if (card.keywords.includes("Twinspell")) {
                 card.removeKeyword("Twinspell");
-                card.text = card.text?.split("Twinspell")[0].trim();
+                card.text = card.text?.split("Twinspell")[0]?.trim() ?? card.text;
 
                 player.addToHand(card);
             }
 
             // Spellburst functionality
-            game.board[player.id].forEach(m => {
+            game.board[player.id]?.forEach(m => {
                 m.activate("spellburst");
                 m.abilities.spellburst = undefined;
             });
@@ -1292,7 +1310,7 @@ const playCard = {
 
     _hasCapacity(card: Card, player: Player): boolean {
         // If the board has max capacity, and the card played is a minion or location card, prevent it.
-        if (game.board[player.id].length < game.config.general.maxBoardSpace || !game.functions.canBeOnBoard(card)) return true;
+        if ((game.board[player.id]?.length ?? -Infinity) < game.config.general.maxBoardSpace || !game.functions.canBeOnBoard(card)) return true;
 
         // Refund
         let unsuppress = functions.suppressEvent("AddCardToHand");
@@ -1351,7 +1369,7 @@ const playCard = {
 
         // Get the player's PlayCard event history
         let stat = game.events.events.PlayCard[player.id];
-        if (stat.length <= 0) return false;
+        if (!stat || stat.length <= 0) return false;
 
         // Get the latest event
         let latest = functions.last(stat);
@@ -1381,6 +1399,7 @@ const playCard = {
 
     _magnetize(card: Card, player: Player): boolean {
         const board = game.board[player.id];
+        if (!board) throw new RangeError(`Player's id (${player.id}) is not a valid board index`);
 
         if (!card.keywords.includes("Magnetic") || board.length <= 0) return false;
 
@@ -1452,7 +1471,10 @@ const cards = {
         };
 
         // If the board has max capacity, and the card played is a minion or location card, prevent it.
-        if (game.board[player.id].length >= game.config.general.maxBoardSpace) return "space";
+        let board = game.board[player.id];
+        if (!board) throw new RangeError(`Player's id (${player.id}) is not an index in board - summonMinion`);
+
+        if (board.length >= game.config.general.maxBoardSpace) return "space";
         game.events.broadcast("SummonMinion", minion, player);
 
         player.spellDamage = 0;
@@ -1495,11 +1517,11 @@ const cards = {
             minion.sleepy = false;
         }
 
-        game.board[player.id].push(minion);
+        board.push(minion);
 
-        game.board[player.id].forEach(m => {
+        board.forEach(m => {
             m.keywords.forEach(k => {
-                if (k.startsWith("Spell Damage +")) player.spellDamage += parseInt(k.split("+")[1]);
+                if (k.startsWith("Spell Damage +")) player.spellDamage += parseInt(k.split("+")[1] ?? "0");
             });
         });
 

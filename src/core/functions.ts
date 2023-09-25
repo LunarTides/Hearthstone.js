@@ -78,9 +78,10 @@ const deckcode = {
         if (runesExists) sep = " [";
         
         let hero = code.split(sep)[0];
+        if (!hero) return ERROR("Could not extract hero class.");
 
         hero = hero.trim();
-        code = sep[1] + code.split(sep)[1];
+        code = sep[1]! + code.split(sep)[1];
 
         if (!game.functions.getClasses().includes(hero as CardClassNoNeutral)) return ERROR("INVALIDHERO");
 
@@ -98,6 +99,7 @@ const deckcode = {
         if (altRuneRegex.test(code)) {
             // [3B]
             let rune = code[2];
+            if (rune === undefined) throw new Error("unreachable");
 
             code = code.slice(5);
             addRunes(rune.repeat(3));
@@ -134,11 +136,26 @@ const deckcode = {
 
         let retInvalid = false;
 
-        copyDef.split(",").forEach(c => {
+        copyDef?.split(",").forEach(c => {
             let def = c.split(":");
 
-            let copies = def[0];
-            let times = parseInt(def[1]) || deck.length;
+            let _copies = def[0];
+            if (_copies === undefined) {
+                ERROR("Copy def copies is invalid.");
+                retInvalid = true;
+                return;
+            }
+
+            let copies = parseInt(_copies);
+
+            let _times = def[1];
+            if (!_times) {
+                ERROR("Copy def amount is invalid.");
+                retInvalid = true;
+                return;
+            }
+
+            let times = parseInt(_times) || deck.length;
 
             let cards = deck.slice(processed, times);
 
@@ -153,7 +170,7 @@ const deckcode = {
                 }
                 let card = new Card(bp.name, plr);
 
-                for (let i = 0; i < parseInt(copies); i++) _deck.push(card.perfectCopy());
+                for (let i = 0; i < copies; i++) _deck.push(card.perfectCopy());
 
                 if (card.deckSettings) {
                     Object.entries(card.deckSettings).forEach(setting => {
@@ -280,7 +297,12 @@ const deckcode = {
             let found = cards.find(a => a[0].name == c.name);
 
             if (!found) cards.push([c, 1]);
-            else cards[cards.indexOf(found)][1]++;
+            else {
+                let what = cards[cards.indexOf(found)];
+                if (what === undefined) throw new Error("i sure hope this error never happens :>");
+
+                what[1]++;
+            }
         });
 
         // Sort
@@ -352,7 +374,7 @@ const deckcode = {
         };
 
         let codeSplit = code.split(/[\[/]/);
-        let heroClass = codeSplit[0].trim();
+        let heroClass = codeSplit[0]?.trim();
 
         let heroClassId = vanillaHeroes[heroClass as CardClass];
         if (!heroClassId) {
@@ -368,10 +390,10 @@ const deckcode = {
         codeSplit.splice(0, 1);
 
         // Remove runes
-        if (codeSplit[0].endsWith("] ")) codeSplit.splice(0, 1);
+        if (codeSplit[0]?.endsWith("] ")) codeSplit.splice(0, 1);
 
-        let amountStr = codeSplit[0].trim();
-        let cards = codeSplit[1].trim();
+        let amountStr = codeSplit[0]?.trim();
+        let cards = codeSplit[1]?.trim();
 
         // Now it's just the cards left
         const [vanillaCards, error] = game.functions.getVanillaCards("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'npm run script:vanilla:generator' (requires an internet connection), then try again.");
@@ -381,25 +403,25 @@ const deckcode = {
             return "";
         }
 
-        let cardsSplit = cards.split(",").map(i => parseInt(i, 36));
-        let cardsSplitId = cardsSplit.map(i => game.functions.getCardById(i));
-        let cardsSplitCard = cardsSplitId.map(c => {
+        let cardsSplit = cards?.split(",").map(i => parseInt(i, 36));
+        let cardsSplitId = cardsSplit?.map(i => game.functions.getCardById(i));
+        let cardsSplitCard = cardsSplitId?.map(c => {
             if (!c) throw new Error("c is an invalid card");
             return new game.Card(c.name, plr)
         });
-        let trueCards = cardsSplitCard.map(c => c.displayName);
+        let trueCards = cardsSplitCard?.map(c => c.displayName);
 
         // Cards is now a list of names
         let newCards: [number, number][] = [];
 
-        trueCards.forEach((c, i) => {
+        trueCards?.forEach((c, i) => {
             let amount = 1;
 
             // Find how many copies to put in the deck
-            let amountStrSplit = amountStr.split(":");
+            let amountStrSplit = amountStr?.split(":");
 
             let found = false;
-            amountStrSplit.forEach((a, i2) => {
+            amountStrSplit?.forEach((a, i2) => {
                 if (found) return;
 
                 // We only want to look at every other one
@@ -410,9 +432,18 @@ const deckcode = {
                 // This is correct
                 found = true;
 
-                amount = parseInt(amountStrSplit[amountStrSplit.indexOf(a) - 1]);
+                let index = amountStrSplit?.indexOf(a);
+                if (index === undefined) throw new Error("i don't know what this means, please report this.");
+
+                let value = amountStrSplit?.[index - 1];
+                if (value === undefined) throw new Error("i don't know what this means, please report this.");
+
+                amount = parseInt(value);
             });
-            if (!found) amount = parseInt(game.functions.lastChar(amountStr));
+            if (!found) {
+                if (amountStr === undefined) throw new Error("unreachable, probably");
+                amount = parseInt(game.functions.lastChar(amountStr));
+            }
 
             let matches = vanillaCards.filter(a => a.name.toLowerCase() == c.toLowerCase());
             matches = game.functions.filterVanillaCards(matches, true, extraFiltering);
@@ -423,7 +454,7 @@ const deckcode = {
                 return;
             }
 
-            let match: VanillaCard;
+            let match: VanillaCard | undefined;
 
             if (matches.length > 1) {
                 // Ask the user to pick one
@@ -450,6 +481,7 @@ const deckcode = {
             }
             else match = matches[0];
 
+            if (!match) throw new Error("No card found.");
             newCards.push([match.dbfId, amount]);
         });
 
@@ -645,7 +677,9 @@ export const functions = {
      * Returns the last character from a string.
      */
     lastChar(string: string): string {
-        return string[string.length - 1];
+        if (string.length <= 0) return "";
+
+        return string[string.length - 1]!;
     },
 
     /**
@@ -657,7 +691,7 @@ export const functions = {
     randList<T>(list: T[]): RandListReturn<T> | null {
         if (list.length <= 0) return null;
 
-        let item = list[this.randInt(0, list.length - 1)];
+        let item = list[this.randInt(0, list.length - 1)]!;
         
         if (item instanceof Card) return { actual: item, copy: item.imperfectCopy() as T };
 
@@ -712,7 +746,7 @@ export const functions = {
      * @returns The string capitalized
      */
     capitalize(str: string): string {
-        return str[0].toUpperCase() + str.slice(1).toLowerCase();
+        return str[0]!.toUpperCase() + str.slice(1).toLowerCase();
     },
 
     /**
@@ -767,7 +801,7 @@ export const functions = {
         bricks.forEach(b => {
             let splitBrick = b.split(sep);
 
-            let length = splitBrick[0].length;
+            let length = splitBrick[0]!.length;
 
             if (length <= longestBrick[1]) return;
             longestBrick = [b, length];
@@ -782,7 +816,7 @@ export const functions = {
             let splitBrick = b.split(sep);
 
             let strbuilder = "";
-            let diff = longestBrick[1] - splitBrick[0].length;
+            let diff = longestBrick[1] - splitBrick[0]!.length;
 
             strbuilder += splitBrick[0];
             strbuilder += " ".repeat(diff);
@@ -963,7 +997,12 @@ ${err.stack}
                 throw osRelease;
             }
 
-            osName = osRelease.split('PRETTY_NAME="')[1].split('"\n')[0];
+            let osReleaseSplit = osRelease.split('PRETTY_NAME="');
+            if (osReleaseSplit.length >= 2) {
+                osName = osRelease.split('PRETTY_NAME="')[1]!.split('"\n')[0]!;
+            } else {
+                osName = "Unknown";
+            }
 
             // Also add information from uname
             let uname = this.runCommand("uname -srvmo");
@@ -1255,6 +1294,7 @@ ${mainContent}
      */
     getCardById(id: number | string, refer: boolean = true): Blueprint | null {
         let card = game.cards.filter(c => c.id == id)[0];
+        if (card === undefined) return null;
 
         if (!card && refer) return this.getCardByName(id.toString(), false);
 
@@ -1527,7 +1567,7 @@ ${mainContent}
             const readNextType = (index: number): string => {
                 if (index >= currentTypes.length - 1) return "";
 
-                return currentTypes[index + 1];
+                return currentTypes[index + 1]!;
             };
 
             let partOfRGB: number[] = [];
@@ -1571,12 +1611,13 @@ ${mainContent}
                 if (t.startsWith("rgb")) {
                     t = t.replace(/rgb:?/, "");
                     let [r, g, b] = t.split(",").map(s => parseInt(s.replace(/[()]/, "")));
+                    if ([r, g, b].some(rgb => rgb === undefined)) throw new Error("Invalid rgb");
 
                     if (bg) {
-                        ret = chalk.bgRgb(r, g, b)(ret);
+                        ret = chalk.bgRgb(r!, g!, b!)(ret);
                         return;
                     }
-                    ret = chalk.rgb(r, g, b)(ret);
+                    ret = chalk.rgb(r!, g!, b!)(ret);
                     return;
                 }
 
@@ -1857,7 +1898,7 @@ ${mainContent}
      * @returns Success
      */
     doPlayerTargets(plr: Player, callback: (target: Target) => void): boolean {
-        game.board[plr.id].forEach(m => {
+        game.board[plr.id]?.forEach(m => {
             callback(m);
         });
 
@@ -2039,7 +2080,9 @@ ${mainContent}
 
         if (parseInt(choice) > 3) return this.adapt(minion, prompt, values);
 
-        choice = values[parseInt(choice) - 1][0];
+        let value = values[parseInt(choice) - 1];
+        if (!value) throw new Error(`Wasn't able to get value from: ${choice}`);
+        choice = value[0]!;
 
         switch (choice) {
             case "Crackling Shield":
@@ -2112,7 +2155,7 @@ ${mainContent}
         plr.hand.filter(c => {
             c.activate("invoke");
         });
-        game.board[plr.id].forEach(c => {
+        game.board[plr.id]?.forEach(c => {
             c.activate("invoke");
         });
 
@@ -2267,7 +2310,7 @@ ${mainContent}
      */
     dirname(): string {
         let dirname = pathDirname(fileURLToPath(import.meta.url)).replaceAll("\\", "/");
-        dirname = dirname.split("/dist")[0];
+        dirname = dirname.split("/dist")[0]!;
 
         return dirname;
     },
@@ -2286,7 +2329,13 @@ ${mainContent}
         let cards: Card[] = [];
         let mulligan: Card[] = [];
 
-        input.split("").forEach(c => mulligan.push(plr.hand[parseInt(c) - 1]));
+        input.split("").forEach(c => {
+            let card = plr.hand[parseInt(c) - 1];
+            // Invalid card.
+            if (!card) return;
+
+            mulligan.push(card);
+        });
 
         plr.hand.forEach(c => {
             if (!mulligan.includes(c) || c.name == "The Coin") return;

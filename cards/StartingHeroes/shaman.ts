@@ -23,7 +23,7 @@ export const blueprint: Blueprint = {
         // Filter away totem cards that is already on the player's side of the board.
         totemCardNames.forEach(name => {
             // If the board already has a totem with this name, return
-            if (game.board[plr.id].some(m => m.name === name)) return
+            if (game.board[plr.id]?.some(m => m.name === name)) return
 
             filteredTotemCardNames.push(name);
         });
@@ -48,7 +48,10 @@ export const blueprint: Blueprint = {
 
         const totemCardNames = ["Healing Totem", "Searing Totem", "Stoneclaw Totem", "Strength Totem"];
         const checkForTotemCard = (amount: number) => {
-            return game.board[plr.id].filter(card => totemCardNames.includes(card.name)).length >= amount;
+            let board = game.board[plr.id];
+            if (!board) return false;
+
+            return board.filter(card => totemCardNames.includes(card.name)).length >= amount;
         }
 
         // There should be 0 totem cards on the board
@@ -69,10 +72,10 @@ export const blueprint: Blueprint = {
 
         // Assert that all of the totem cards are on the board
         totemCardNames.forEach(name => {
-            assert(() => game.board[plr.id].some(card => card.name === name));
+            assert(() => game.board[plr.id]?.some(card => card.name === name) ?? false);
         });
 
         // Assert that the board's length is equal to the amount of totem cards.
-        assert(() => game.board[plr.id].length === totemCardNames.length);
+        assert(() => game.board[plr.id]?.length === totemCardNames.length);
     }
 }

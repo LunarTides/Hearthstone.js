@@ -46,20 +46,21 @@ export function main(debug = false, overrideType?: lib.CCType) {
 
     if (exited) return;
 
+    if (answers.some(answer => answer === undefined)) throw new Error("unreachable");
     let [name, displayName, hpText, hpCost] = answers;
 
-    let filename = name.toLowerCase().replaceAll(" ", "_") + ".ts";
+    let filename = name?.toLowerCase().replaceAll(" ", "_") + ".ts";
 
     let card: Blueprint = {
         name: name + " Starting Hero",
         displayName: displayName,
-        text: name[0].toUpperCase() + name.slice(1).toLowerCase() + " starting hero",
+        text: name![0]!.toUpperCase() + name?.slice(1).toLowerCase() + " starting hero",
         cost: 0,
         type: "Hero" as CardType,
         classes: [name] as CardClass[],
         rarity: "Free" as CardRarity,
         hpText: hpText,
-        hpCost: parseInt(hpCost),
+        hpCost: parseInt(hpCost!),
         uncollectible: true,
         // This will be overwritten by the library
         id: 0,

@@ -52,7 +52,7 @@ export const blueprint: Blueprint = {
         const assert = game.functions.assert;
 
         let existsMinionWithCost = (cost: number) => {
-            return game.board[plr.id].some(card => card.cost === cost);
+            return game.board[plr.id]?.some(card => card.cost === cost) ?? false;
         }
 
         // Summon a sheep

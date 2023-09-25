@@ -110,7 +110,7 @@ function askClass(): CardClassNoNeutral {
             let rune = game.input(`What runes do you want to add (${3 - runes.length} more)\nBlood, Frost, Unholy\n`);
             if (!rune || !["B", "F", "U"].includes(rune[0].toUpperCase())) continue;
 
-            runes += rune[0].toUpperCase();
+            runes += rune[0]?.toUpperCase();
         }
 
         plr.runes = runes;
@@ -183,7 +183,7 @@ function searchCards(_cards: Blueprint[], sQuery: string) {
 
     if (splitQuery.length <= 1) {
         // The user didn't specify a key. Do a general search
-        let query = splitQuery[0].toLowerCase();
+        let query = splitQuery[0]?.toLowerCase();
 
         _cards.forEach(c => {
             let name = game.interact.getDisplayName(c).toLowerCase();
@@ -199,7 +199,7 @@ function searchCards(_cards: Blueprint[], sQuery: string) {
 
     let [key, val] = splitQuery;
 
-    val = val.toLowerCase();
+    val = val?.toLowerCase();
 
     const doReturn = (c: Blueprint) => {
         let ret = c[key as keyof Blueprint];
@@ -215,10 +215,10 @@ function searchCards(_cards: Blueprint[], sQuery: string) {
             // Mana range (1-10)
             let regex = /\d+-\d+/;
             if (regex.test(val)) {
-                let _val = val.split("-");
+                let _val = val?.split("-");
 
-                let min = _val[0];
-                let max = _val[1];
+                let min = _val?.[0];
+                let max = _val?.[1];
 
                 return ret >= min && ret <= max;
             }
@@ -782,8 +782,8 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
 
         let reverse;
 
-        if (command.startsWith("a")) reverse = "remove";
-        else if (command.startsWith("r")) reverse = "add";
+        if (command?.startsWith("a")) reverse = "remove";
+        else if (command?.startsWith("r")) reverse = "add";
         else {
             // This shouldn't ever happen, but oh well
             game.log(`<red>Command '${command}' cannot be undoed.</red>`);
@@ -863,7 +863,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
                     break;
                 }
 
-                if (!["vanilla", "js"].includes(args[0])) {
+                if (!["vanilla", "js"].includes(args[0]!)) {
                     game.log("<red>Invalid format!</red>");
                     game.input();
                     return false;
@@ -880,7 +880,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
                     break;
                 }
 
-                settings.view.cpp = parseInt(args[0]);
+                settings.view.cpp = parseInt(args[0]!);
                 break;
             case "dcmd":
             case "defaultCommand":
@@ -890,8 +890,8 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
                     break;
                 }
 
-                if (!["add", "remove", "view"].includes(args[0])) return false;
-                let cmd = args[0];
+                let cmd = args[0]!;
+                if (!["add", "remove", "view"].includes(cmd)) return false;
 
                 settings.commands.default = cmd;
                 game.log(`Set default command to: <yellow>${cmd}</yellow>`);

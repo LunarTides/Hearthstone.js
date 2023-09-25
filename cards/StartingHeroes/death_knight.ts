@@ -33,7 +33,7 @@ export const blueprint: Blueprint = {
         const minion = new game.Card("Death Knight Frail Ghoul", plr);
 
         const lookForMinion = () => {
-            return game.board[plr.id].some(card => card.id === minion.id);
+            return game.board[plr.id]?.some(card => card.id === minion.id) ?? false;
         }
 
         // The minion shouldn't be on the board at first.

@@ -22,7 +22,7 @@ export const blueprint: Blueprint = {
         if (!(key === "EndTurn" && game.player === plr)) return;
 
         // Restore 1 Health to all friendly minions
-        game.board[plr.id].forEach(minion => {
+        game.board[plr.id]?.forEach(minion => {
             minion.addHealth(1, true);
         });
     },
@@ -38,7 +38,7 @@ export const blueprint: Blueprint = {
         }
 
         const checkSheepHealth = (expected: number) => {
-            return game.board[plr.id].filter(card => card.name === "Sheep").every(card => card.getHealth() === expected && card.getAttack() === 1);
+            return game.board[plr.id]?.filter(card => card.name === "Sheep").every(card => card.getHealth() === expected && card.getAttack() === 1) ?? false;
         }
 
         // Summon this minion. All sheep should have 1 health.

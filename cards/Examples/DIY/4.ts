@@ -105,7 +105,7 @@ export const blueprint: Blueprint = {
         // Testing your solution.
         if (self.storage.solved) return true;
 
-        const solved = game.board[plr.id].some(card => {
+        const solved = game.board[plr.id]?.some(card => {
             return (
                 card.id === val.id &&
                 card.type === val.type &&
@@ -116,7 +116,7 @@ export const blueprint: Blueprint = {
             );
         });
 
-        game.interact.verifyDIYSolution(solved, "3.ts");
+        game.interact.verifyDIYSolution(solved ?? false, "3.ts");
         if (!solved) plr.addToHand(self);
 
         self.storage.solved = true;

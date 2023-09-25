@@ -30,7 +30,7 @@ export const blueprint: Blueprint = {
         const assert = game.functions.assert;
 
         const checkIfThisCardIsOnTheBoard = () => {
-            return game.board[plr.id].some(card => card.uuid === self.uuid);
+            return game.board[plr.id]?.some(card => card.uuid === self.uuid) ?? false;
         }
 
         // Summon the minion, the minion should now be on the board

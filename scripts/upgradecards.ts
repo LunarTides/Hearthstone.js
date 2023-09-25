@@ -104,7 +104,10 @@ function upgradeCard(path: string, data: string, file: Dirent) {
         let match = data.match(keyRegex);
         let key = "";
         if (match) {
-            key = match[1];
+            let _key = match[1];
+            if (!_key) throw new TypeError("Match is truthy, but doesn't have a capturing group.");
+
+            key = _key;
             game.log(`Found key: ${key}.`);
         } else {
             game.logError("<yellow>WARNING: Could not find event key in passive.</yellow>");

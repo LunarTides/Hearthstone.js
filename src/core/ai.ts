@@ -70,13 +70,16 @@ export class AI {
             if (score <= bestScore || c.cost > this.plr.mana || this.cardsPlayedThisTurn.includes(c)) return;
 
             // If the card is a minion and the player doesn't have the board space to play it, ignore the card
-            if (game.functions.canBeOnBoard(c) && game.board[this.plr.id].length >= game.config.general.maxBoardSpace) return;
+            let board = game.board[this.plr.id];
+            if (!board) throw new RangeError(`Cannot index board by player's id: ${this.plr.id}`);
+
+            if (game.functions.canBeOnBoard(c) && board.length >= game.config.general.maxBoardSpace) return;
 
             // Prevent the ai from playing the same card they returned from when selecting a target
             let r = false;
 
             this.history.forEach((h, i) => {
-                if (h.data instanceof Array && h.data[1] === "0,1" && this.history[i - 1].data[0] == c.name) r = true;
+                if (h.data instanceof Array && h.data[1] === "0,1" && this.history[i - 1]?.data[0] == c.name) r = true;
             });
             if (r) return;
 
@@ -108,7 +111,7 @@ export class AI {
 
         if (bestMove == "end") {
             this.history.forEach((h, i) => {
-                if (h instanceof Array && h[0] == "selectTarget" && h[1] == "0,1") this.history[i].data = null;
+                if (h instanceof Array && h[0] == "selectTarget" && h[1] == "0,1") this.history[i]!.data = null;
             });
 
             this.cardsPlayedThisTurn = [];
@@ -127,7 +130,7 @@ export class AI {
     private _canAttack(): boolean {
         if (this.prevent.includes("attack")) return false;
 
-        let validAttackers = game.board[this.plr.id].filter(m => this._canMinionAttack(m));
+        let validAttackers = game.board[this.plr.id]?.filter(m => this._canMinionAttack(m)) ?? [];
 
         return validAttackers.length > 0;
     }
@@ -157,7 +160,7 @@ export class AI {
     private _canUseLocation(): boolean {
         if (this.prevent.includes("use")) return false;
 
-        let validLocations = game.board[this.plr.id].filter(m => m.type == "Location" && m.cooldown == 0 && !this.usedLocationsThisTurn.includes(m));
+        let validLocations = game.board[this.plr.id]?.filter(m => m.type == "Location" && m.cooldown == 0 && !this.usedLocationsThisTurn.includes(m)) ?? [];
 
         return validLocations.length > 0;
     }
@@ -199,7 +202,7 @@ export class AI {
         let perfectTrades: Card[][] = [];
         let imperfectTrades: Card[][] = [];
 
-        let currboard = game.board[this.plr.id].filter(m => this._canMinionAttack(m));
+        let currboard = game.board[this.plr.id]?.filter(m => this._canMinionAttack(m)) ?? [];
 
         currboard.forEach(a => {
             let trades = [...perfectTrades, ...imperfectTrades];
@@ -212,7 +215,7 @@ export class AI {
             // If the card has the `sleepy` prop, it has the attackTimes prop too.
             if (a.sleepy || a.attackTimes! <= 0) return;
 
-            let opboard = game.board[this.plr.getOpponent().id].filter(m => this._canTargetMinion(m));
+            let opboard = game.board[this.plr.getOpponent().id]?.filter(m => this._canTargetMinion(m)) ?? [];
 
             opboard.forEach(t => {
                 trades = [...perfectTrades, ...imperfectTrades];
@@ -242,7 +245,7 @@ export class AI {
     private _scorePlayer(player: Player, board: ScoredCard[][]): number {
         let score = 0;
 
-        board[player.id].forEach(m => {
+        board[player.id]?.forEach(m => {
             score += m.score;
         });
 
@@ -284,7 +287,7 @@ export class AI {
      */
     private _tauntExists(returnTaunts: boolean = false): Card[] | boolean {
         // TODO: Make it only return Card[]
-        let taunts = game.board[this.plr.getOpponent().id].filter(m => m.keywords.includes("Taunt"));
+        let taunts = game.board[this.plr.getOpponent().id]?.filter(m => m.keywords.includes("Taunt")) ?? [];
 
         if (returnTaunts) return taunts;
 
@@ -303,7 +306,8 @@ export class AI {
         if (perfectTrades.length > 0) ret = perfectTrades[0];
         else if (imperfectTrades.length > 0) ret = imperfectTrades[0];
 
-        if (ret) this.history.push({"type": "trade", "data": [ret[0].name, ret[1].name]});
+        if (ret) this.history.push({"type": "trade", "data": [ret[0]?.name, ret[1]?.name]});
+        if (ret === undefined) return null;
 
         return ret;
     }
@@ -336,7 +340,7 @@ export class AI {
 
         let returned: Target[] = ret as Target[];
 
-        this.history.push({"type": "attack", "data": [returned[0].name, returned[1].name]});
+        this.history.push({"type": "attack", "data": [returned[0]?.name, returned[1]?.name]});
 
         // If the ai is not focusing on a minion, focus on the returned minion
         if (!this.focus && returned[1] instanceof Card) this.focus = returned[1];
@@ -365,7 +369,7 @@ export class AI {
         let target;
 
         // If the focused minion doesn't exist, select a new minion to focus
-        if (!game.board[this.plr.getOpponent().id].find(a => a == this.focus)) this.focus = null;
+        if (!game.board[this.plr.getOpponent().id]?.find(a => a == this.focus)) this.focus = null;
 
         if (!this.focus || (this._tauntExists() && !this.focus.keywords.includes("Taunt"))) target = this._attackGeneralChooseTarget();
         else target = this.focus
@@ -382,10 +386,11 @@ export class AI {
         let highestScore: (Target | number | null)[] = [null, -9999];
 
         let board = game.board[this.plr.getOpponent().id];
+        if (!board) throw new RangeError(`Player's id (${this.plr.getOpponent().id}) could not be used to index the board.`);
 
         // If there is a taunt, select that as the target
         let taunts = this._tauntExists(true);
-        if (taunts instanceof Array && taunts.length > 0) return taunts[0];
+        if (taunts instanceof Array && taunts.length > 0) return taunts[0] ?? -1;
 
         board = board.filter(m => this._canTargetMinion(m));
 
@@ -425,6 +430,8 @@ export class AI {
         let lowestScore: (Target | number | null)[] = [null, 9999];
 
         let board = game.board[this.plr.id];
+        if (!board) throw new RangeError(`Player's id (${this.plr.getOpponent().id}) could not be used to index the board.`);
+
         board = board.filter(c => this._canMinionAttack(c));
 
         board.forEach(m => {
@@ -498,7 +505,7 @@ export class AI {
         let worstMinion: Card | null = null;
         let worstScore = 100000;
         
-        game.board[this.plr.id].filter(m => !m.sleepy && !m.frozen && !m.dormant).forEach(m => {
+        game.board[this.plr.id]?.filter(m => !m.sleepy && !m.frozen && !m.dormant).forEach(m => {
             let score = this.analyzePositiveCard(m);
 
             if (score >= worstScore) return;
@@ -521,9 +528,9 @@ export class AI {
         let bestScore = -100000;
 
         // Check if there is a minion with taunt
-        let taunts = game.board[this.plr.getOpponent().id].filter(m => m.keywords.includes("Taunt"));
+        let taunts = game.board[this.plr.getOpponent().id]?.filter(m => m.keywords.includes("Taunt")) ?? [];
         if (taunts.length > 0) targets = taunts.filter(m => !m.immune && !m.dormant);
-        else targets = game.board[this.plr.getOpponent().id].filter(m => !m.immune && !m.dormant);
+        else targets = game.board[this.plr.getOpponent().id]?.filter(m => !m.immune && !m.dormant) ?? [];
 
         targets.forEach(m => {
             let score = this.analyzePositiveCard(m);
@@ -583,10 +590,15 @@ export class AI {
      */
     selectTarget(prompt: string, card: Card | null = null, forceSide: SelectTargetAlignment, forceClass: SelectTargetClass, flags: SelectTargetFlag[] = []): Target | false {
         if (flags.includes("allowLocations") && forceClass != "hero") {
-            let locations = game.board[this.plr.id].filter(m => m.type == "Location" && m.cooldown == 0 && !this.usedLocationsThisTurn.includes(m));
-            this.usedLocationsThisTurn.push(locations[0]);
+            let locations = game.board[this.plr.id]?.filter(m => m.type == "Location" && m.cooldown == 0 && !this.usedLocationsThisTurn.includes(m)) ?? [];
+            if (locations.length <= 0) {
+                this.prevent.push("use");
+                return false;
+            }
 
-            if (locations.length > 0) return locations[0];
+            this.usedLocationsThisTurn.push(locations[0]!);
+
+            if (locations.length > 0) return locations[0]!;
         }
 
         let op = this.plr.getOpponent();
@@ -603,7 +615,10 @@ export class AI {
 
         let sid = (side == "self") ? id : op.id;
 
-        if (game.board[sid].length <= 0 && forceClass == "minion") {
+        let board = game.board[sid];
+        if (!board) throw new RangeError(`Side index (${sid}) could not be used to index the board`);
+
+        if (board.length <= 0 && forceClass == "minion") {
             this.history.push({"type": "selectTarget", "data": "0,1"});
 
             return false;
@@ -622,7 +637,7 @@ export class AI {
         }
 
         // The player has no minions, select their face
-        if (game.board[sid].length <= 0) {
+        if (board.length <= 0) {
             let ret: Player | false = false;
 
             if (forceClass === "minion") this.history.push({"type": "selectTarget", "data": -1});
@@ -641,7 +656,7 @@ export class AI {
         let bestMinion: Card | undefined;
         let bestScore = -100000;
 
-        game.board[sid].forEach(m => {
+        board.forEach(m => {
             if (!this._canTargetMinion(m)) return;
             if ((card && card.type == "Spell" && m.keywords.includes("Elusive")) || m.type == "Location") return;
             
