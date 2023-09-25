@@ -824,7 +824,7 @@ export const interact = {
         game.killMinions();
 
         // If there were no errors, return true.
-        if (ret === true || ret instanceof Card) return ret;
+        if (ret === true) return ret;
 
         // Ignore these error codes
         if (["refund", "magnetize", "traded", "colossal"].includes(ret)) return ret;
@@ -1138,7 +1138,6 @@ export const interact = {
     discover(prompt: string, cards: CardLike[] = [], filterClassCards: boolean = true, amount: number = 3, _cards: CardLike[] = []): Card | null {
         game = globalThis.game;
 
-        // TODO: Discover doesn't work <- Verify this claim
         this.printAll(game.player);
         let values: CardLike[] = _cards;
 

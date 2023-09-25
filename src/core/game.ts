@@ -1440,7 +1440,7 @@ const cards = {
      * 
      * @returns The minion summoned
      */
-    summon(minion: Card, player: Player, trigger_colossal: boolean = true): Card | "space" | "colossal" | "invalid" {
+    summon(minion: Card, player: Player, trigger_colossal: boolean = true): true | "space" | "colossal" | "invalid" {
         if (!minion || !player) {
             if (game.evaling) throw new TypeError("Evaling Error - The `minion` or `player` argument passed to `summonMinion` are invalid. Make sure you passed in both arguments.");
             return "invalid";
@@ -1498,6 +1498,6 @@ const cards = {
             });
         });
 
-        return minion;
+        return true;
     }
 };

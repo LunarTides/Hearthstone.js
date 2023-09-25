@@ -304,8 +304,7 @@ export type UnknownEventValue = EventValue<EventKey>;
 /**
  * Game.PlayCard return value
  */
-export type GamePlayCardReturn = Card |
-                                 true |
+export type GamePlayCardReturn = true |
                                  "cost" |
                                  "traded" |
                                  "space" |
