@@ -25,7 +25,19 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, game, self) {
-        // TODO: Add proper tests
-        return true;
+        const assert = game.functions.assert;
+
+        // Clear the player's hand
+        plr.hand = [];
+
+        // The player should have no cards in their hand, and should have 30 health
+        assert(() => plr.hand.length === 0);
+        assert(() => plr.health === 30);
+
+        self.activate("heropower");
+
+        // The player should now have 1 card in their hand, and 28 health.
+        assert(() => plr.hand.length === 1);
+        assert(() => plr.health === 30 - 2);
     }
 }

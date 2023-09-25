@@ -18,7 +18,7 @@ export const blueprint: Blueprint = {
         // Discover a spell.
 
         // Filter out all cards that aren't spells
-        let list = game.functions.getCards().filter(c => c.type == "Spell");
+        let list = game.functions.getCards().filter(c => c.type === "Spell");
         if (list.length <= 0) return;
 
         // Prompt a discover
@@ -31,7 +31,22 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, game, self) {
-        // TODO: Add proper tests
-        return true;
+        const assert = game.functions.assert;
+
+        // If there are no spells, pass the test
+        if (game.functions.getCards().filter(c => c.type === "Spell" && game.functions.validateClasses(self.classes, plr.heroClass)).length <= 0) return;
+
+        // The player ALWAYS answer 1.
+        plr.inputQueue = "1";
+
+        // Do this 50 times
+        for (let i = 0; i < 50; i++) {
+            // Activate the battlecry and get the card from the player's hand.
+            plr.hand = [];
+            self.activateBattlecry();
+            let card = plr.hand[0];
+
+            assert(() => card.type === "Spell");
+        }
     }
 }

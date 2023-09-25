@@ -32,7 +32,18 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, game, self) {
-        // TODO: Add proper tests
-        return true;
+        const assert = game.functions.assert;
+
+        // Summon a sheep
+        let sheep = new game.Card("Sheep", plr);
+        game.summonMinion(sheep, plr);
+
+        // Activate the battlecry, choose the sheep
+        plr.inputQueue = ["1"];
+        self.activateBattlecry();
+
+        // The sheep should have 2 attack and rush
+        assert(() => sheep.getAttack() === 2);
+        assert(() => sheep.keywords.includes("Rush"));
     }
 }

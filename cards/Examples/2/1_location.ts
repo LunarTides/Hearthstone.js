@@ -30,10 +30,11 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, game, self) {
+        const assert = game.functions.assert;
+
         plr.health = 1;
-        
         self.activate("use");
 
-        return plr.health = 1 + 2;
+        assert(() => plr.health === 1 + 2);
     }
 }

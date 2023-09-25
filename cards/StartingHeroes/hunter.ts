@@ -21,7 +21,13 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, game, self) {
-        // TODO: Add proper tests
-        return true;
+        const assert = game.functions.assert;
+
+        // The opponent should have 30 health
+        assert(() => plr.getOpponent().getHealth() === 30);
+        self.activate("heropower");
+
+        // The opponent should now have 28 health.
+        assert(() => plr.getOpponent().getHealth() === 30 - 2);
     }
 }

@@ -121,10 +121,5 @@ export const blueprint: Blueprint = {
 
         self.storage.solved = true;
         return true;
-    },
-
-    test(plr, game, self) {
-        // TODO: Add proper tests, maybe move the testing in the battlecry in here?
-        return true;
     }
 }

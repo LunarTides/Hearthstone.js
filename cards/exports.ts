@@ -1,4 +1,5 @@
 // This file has been automatically created. Do not change this file.
+export { blueprint as card_d85ef00 } from "./adapt_plant.js";
 export { blueprint as card_36b0963 } from "./Debug/10mana.js";
 export { blueprint as card_6d6481e } from "./Debug/infmana.js";
 export { blueprint as card_76bbd35 } from "./Examples/1/1_minion.js";
@@ -51,6 +52,7 @@ export { blueprint as card_50e6c92 } from "./Lackeys/faceless.js";
 export { blueprint as card_d56663c } from "./Lackeys/goblin.js";
 export { blueprint as card_9bab46d } from "./Lackeys/kobold.js";
 export { blueprint as card_f162da5 } from "./Lackeys/witchy.js";
+export { blueprint as card_5c59961 } from "./sheep.js";
 export { blueprint as card_bbe78ac } from "./StartingHeroes/death_knight.js";
 export { blueprint as card_26e21ff } from "./StartingHeroes/demon_hunter.js";
 export { blueprint as card_7344b52 } from "./StartingHeroes/druid.js";
@@ -62,6 +64,4 @@ export { blueprint as card_e2ef9d4 } from "./StartingHeroes/rogue.js";
 export { blueprint as card_658ec83 } from "./StartingHeroes/shaman.js";
 export { blueprint as card_c1cd6aa } from "./StartingHeroes/warlock.js";
 export { blueprint as card_47bbf30 } from "./StartingHeroes/warrior.js";
-export { blueprint as card_d85ef00 } from "./adapt_plant.js";
-export { blueprint as card_5c59961 } from "./sheep.js";
 export { blueprint as card_2bc7383 } from "./the_coin.js";

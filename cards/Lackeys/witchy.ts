@@ -49,7 +49,27 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, game, self) {
-        // TODO: Add proper tests
-        return true;
+        const assert = game.functions.assert;
+
+        let existsMinionWithCost = (cost: number) => {
+            return game.board[plr.id].some(card => card.cost === cost);
+        }
+
+        // Summon a sheep
+        let sheep = new game.Card("Sheep", plr);
+        game.summonMinion(sheep, plr);
+
+        // There shouldn't exist a minion with 1 more cost than the sheep.
+        assert(() => !existsMinionWithCost(sheep.cost + 1));
+
+        // If there doesn't exist any 2-Cost minions, pass the test
+        if (!game.functions.getCards().some(card => card.cost === sheep.cost + 1 && card.type === "Minion")) return;
+
+        // Activate the battlecry, select the sheep.
+        plr.inputQueue = ["1"];
+        self.activateBattlecry();
+
+        // There should now exist a minion with 1 more cost than the sheep.
+        assert(() => existsMinionWithCost(sheep.cost + 1));
     }
 }

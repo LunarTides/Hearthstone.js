@@ -28,7 +28,19 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, game, self) {
-        // TODO: Add proper tests
-        return true;
+        const assert = game.functions.assert;
+
+        const minion = new game.Card("Death Knight Frail Ghoul", plr);
+
+        const lookForMinion = () => {
+            return game.board[plr.id].some(card => card.id === minion.id);
+        }
+
+        // The minion shouldn't be on the board at first.
+        assert(() => !lookForMinion());
+        self.activate("heropower");
+
+        // The minion should now be on the board.
+        assert(lookForMinion);
     }
 }

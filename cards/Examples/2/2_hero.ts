@@ -37,18 +37,17 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, game, self) {
+        const assert = game.functions.assert;
         // Here we test both abilities
         
         // Test battlecry
         plr.health = 1;
         self.activate("battlecry");
-        let success = plr.health === plr.maxHealth;
+        assert(() => plr.health === plr.maxHealth);
 
         // Test hero power
         plr.health = 1;
         self.activate("heropower");
-        success = success && plr.health === 1 + 2;
-
-        return success;
+        assert(() => plr.health === 1 + 2);
     }
 }

@@ -24,7 +24,24 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, game, self) {
-        // TODO: Add proper tests
-        return true;
+        const assert = game.functions.assert;
+
+        plr.mana = 5;
+        self.activate("cast");
+
+        // The game hasn't ticked yet
+        assert(() => plr.mana === 5);
+
+        // Manually tick the game
+        game.events.tick("GameLoop", null);
+
+        assert(() => plr.mana === 10);
+
+        // Play a card to verify that the mana doesn't decrease
+        let card = new game.Card("Sheep", plr);
+        let result = game.playCard(card, plr);
+
+        assert(() => result === true);
+        assert(() => plr.mana === 10);
     }
 }

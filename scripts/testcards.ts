@@ -9,24 +9,25 @@ import { Card, Player, createGame } from "../src/internal.js";
 const { game, player1, player2 } = createGame();
 const cards = game.functions.getCards(false);
 
-function testCard(card: Card): boolean {
-    let returnValues = card.activate("test");
+function testCard(card: Card): boolean | Error {
+    try {
+        card.activate("test");
+    } catch(err) {
+        if (err instanceof Error) return err;
+    };
     
-    // It doesn't have the test ability
-    if (returnValues === false) return true;
-
-    // Refund ig
-    if (!(returnValues instanceof Array)) return false;
-
-    return returnValues.every(value => !!value);
+    return true;
 }
 
 export function main() {
-    let success = true;
+    let failed = false;
 
     cards.forEach(blueprint => {
         // Create a game
         const { game, player1, player2 } = createGame();
+        game.config.ai.player1 = false;
+        game.config.ai.player2 = false;
+
         game.setup(player1, player2);
         game.player = player1;
         game.opponent = player2;
@@ -48,17 +49,19 @@ export function main() {
         const card = new Card(blueprint.name, player1);
         
         game.no_output = true;
-        let success = testCard(card);
+        let error = testCard(card);
         game.no_output = false;
 
-        if (!success) {
-            game.logError(`<red>ERROR: ${card.name} didn't pass its test.</red>`);
+        if (error instanceof Error) {
+            game.logError(`<red>ERROR: ${card.name} didn't pass its test. Here is the error. THIS ERROR IS PART OF THE SCRIPT, NOT AN ACTUAL ERROR.</red>`);
+            game.logError(error.stack)
+            game.logError();
             process.exitCode = 1;
-            success = false;
+            failed = true;
         }
     });
 
-    if (success) {
+    if (!failed) {
         game.log("<bright:green>All tests passed!</bright:green>");
     }
 }

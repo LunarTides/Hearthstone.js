@@ -35,10 +35,5 @@ export const blueprint: Blueprint = {
 
         // Testing your solution.
         game.interact.verifyDIYSolution(self.getAttack() == 2 && self.getHealth() == 2, "1.ts");
-    },
-
-    test(plr, game, self) {
-        // TODO: Add proper tests, maybe move the testing in the battlecry in here?
-        return true;
     }
 }

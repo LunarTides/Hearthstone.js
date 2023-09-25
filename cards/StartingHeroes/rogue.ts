@@ -26,7 +26,13 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, game, self) {
-        // TODO: Add proper tests
-        return true;
+        const assert = game.functions.assert;
+
+        // The player should not have a weapon
+        assert(() => plr.weapon === undefined);
+        self.activate("heropower");
+
+        // The player should now have the wicked knife weapon
+        assert(() => plr.weapon?.name === "Wicked Knife");
     }
 }

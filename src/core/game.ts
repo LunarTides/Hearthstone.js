@@ -503,7 +503,7 @@ export class Game {
             else if (!(queue instanceof Array)) return wrapper(question(q));
 
             const answer = queue[0];
-            functions.remove(queue, answer);
+            queue.splice(0, 1);
 
             if (queue.length <= 0) this.player.inputQueue = undefined;
 

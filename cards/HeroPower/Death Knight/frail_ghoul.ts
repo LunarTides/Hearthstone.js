@@ -20,14 +20,29 @@ export const blueprint: Blueprint = {
         // At the end of your turn, this minion dies.
 
         // Only continue if the event that triggered this is the EndTurn event, and the player that triggered the event is this card's owner.
-        if (!(key === "EndTurn" || game.player === plr)) return;
+        if (!(key === "EndTurn" && game.player === plr)) return;
 
         // Kill this minion
         self.kill();
     },
 
     test(plr, game, self) {
-        // TODO: Add proper tests
-        return true;
+        const assert = game.functions.assert;
+
+        const checkIfThisCardIsOnTheBoard = () => {
+            return game.board[plr.id].some(card => card.uuid === self.uuid);
+        }
+
+        // Summon the minion, the minion should now be on the board
+        game.summonMinion(self, plr);
+        assert(checkIfThisCardIsOnTheBoard);
+
+        // Broadcast a dummy event, the minion should still be on the board
+        game.events.broadcastDummy(plr);
+        assert(checkIfThisCardIsOnTheBoard);
+
+        // End the player's turn, the minion should no longer be on the board
+        game.endTurn();
+        assert(() => !checkIfThisCardIsOnTheBoard());
     }
 }

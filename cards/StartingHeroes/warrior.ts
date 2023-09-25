@@ -24,7 +24,13 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, game, self) {
-        // TODO: Add proper tests
-        return true;
+        const assert = game.functions.assert;
+
+        // The player should have 0 armor
+        assert(() => plr.armor === 0);
+        self.activate("heropower");
+
+        // The player should now have 2 armor
+        assert(() => plr.armor === 2);
     }
 }

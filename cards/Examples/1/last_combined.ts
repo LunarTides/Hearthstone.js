@@ -26,6 +26,8 @@ export const blueprint: Blueprint = {
 
     // Ignore this
     test(plr, game, self) {
+        const assert = game.functions.assert;
+
         // Makes the player answer "1" to the next question
         plr.inputQueue = ["1"];
 
@@ -33,6 +35,7 @@ export const blueprint: Blueprint = {
         self.activateBattlecry();
 
         // Check that the stats went up by 1
-        return self.stats?.every((stat, i) => stat - 1 === self.blueprint.stats?.[i]);
+        assert(() => self.getAttack() - 1 === self.blueprint.stats?.[0]);
+        assert(() => self.getHealth() - 1 === self.blueprint.stats?.[1]);
     }
 }

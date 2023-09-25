@@ -28,7 +28,35 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, game, self) {
-        // TODO: Add proper tests
-        return true;
+        const assert = game.functions.assert;
+
+        // Summon 5 Sheep with 2 max health.
+        for (let i = 0; i < 5; i++) {
+            const card = new game.Card("Sheep", plr);
+            card.maxHealth = 2;
+            game.summonMinion(card, plr);
+        }
+
+        const checkSheepHealth = (expected: number) => {
+            return game.board[plr.id].filter(card => card.name === "Sheep").every(card => card.getHealth() === expected && card.getAttack() === 1);
+        }
+
+        // Summon this minion. All sheep should have 1 health.
+        game.summonMinion(self, plr);
+        assert(() => checkSheepHealth(1));
+
+        // Broadcast a dummy event. All sheep should still have 1 health.
+        game.events.broadcastDummy(plr);
+        assert(() => checkSheepHealth(1));
+
+        // End the player's turn. All sheep should now have 2 health.
+        game.endTurn();
+        assert(() => checkSheepHealth(2));
+
+        // End the player's turn again. All sheep should still have 2 health since it is their max health.
+        // We end the turn twice since we also end the opponent's turn.
+        game.endTurn();
+        game.endTurn();
+        assert(() => checkSheepHealth(2));
     }
 }

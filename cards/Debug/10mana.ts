@@ -19,7 +19,11 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, game, self) {
-        // TODO: Add proper tests
-        return true;
+        const assert = game.functions.assert;
+
+        plr.mana = 5;
+        self.activate("cast");
+
+        assert(() => plr.mana === 10);
     }
 }

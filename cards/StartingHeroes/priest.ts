@@ -36,7 +36,20 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, game, self) {
-        // TODO: Add proper tests
-        return true;
+        const assert = game.functions.assert;
+
+        // Health: 1->3
+        plr.health = 1;
+        plr.inputQueue = ["face", "n"];
+        self.activate("heropower");
+
+        assert(() => plr.health === 1 + 2);
+
+        // Health: 29->30 (cap at 30)
+        plr.health = 29;
+        plr.inputQueue = ["face", "n"];
+        self.activate("heropower");
+
+        assert(() => plr.health === 30);
     }
 }

@@ -44,7 +44,35 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, game, self) {
-        // TODO: Add proper tests
-        return true;
+        const assert = game.functions.assert;
+
+        const totemCardNames = ["Healing Totem", "Searing Totem", "Stoneclaw Totem", "Strength Totem"];
+        const checkForTotemCard = (amount: number) => {
+            return game.board[plr.id].filter(card => totemCardNames.includes(card.name)).length >= amount;
+        }
+
+        // There should be 0 totem cards on the board
+        assert(() => checkForTotemCard(0));
+
+        for (let index = 0; index <= totemCardNames.length + 1; index++) {
+            self.activate("heropower");
+
+            // If all totem cards are on the board
+            if (index > totemCardNames.length) {
+                assert(() => checkForTotemCard(index - 1));
+                continue;
+            }
+
+            // There should be n totem cards on the board
+            assert(() => checkForTotemCard(index));
+        }
+
+        // Assert that all of the totem cards are on the board
+        totemCardNames.forEach(name => {
+            assert(() => game.board[plr.id].some(card => card.name === name));
+        });
+
+        // Assert that the board's length is equal to the amount of totem cards.
+        assert(() => game.board[plr.id].length === totemCardNames.length);
     }
 }

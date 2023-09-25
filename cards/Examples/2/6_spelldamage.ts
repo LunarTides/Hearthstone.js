@@ -27,11 +27,13 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, game, self) {
+        const assert = game.functions.assert;
+
         const oldHealth = plr.getOpponent().getHealth();
 
         plr.spellDamage = 3;
         self.activate("cast");
 
-        return plr.getOpponent().getHealth() === oldHealth - (3 + plr.spellDamage);
+        assert(() => plr.getOpponent().getHealth() === oldHealth - (3 + plr.spellDamage));
     }
 }

@@ -32,9 +32,13 @@ export const blueprint: Blueprint = {
 
     // Ignore this, this is just to unit test this card to make sure it doesn't break in the future.
     // I encourage you to make tests like these yourself. Run `npm run script:testcards` to run these tests.
+    // These tests are run in an isolated environment. The side-effect of the code here won't carry over to other tests.
     test(plr, game, self) {
+        const assert = game.functions.assert;
+
         self.activateBattlecry();
 
-        return self.stats?.every((stat, i) => stat - 1 === self.blueprint.stats?.[i]);
+        assert(() => self.getAttack() - 1 === self.blueprint.stats?.[0]);
+        assert(() => self.getHealth() - 1 === self.blueprint.stats?.[1]);
     }
 }

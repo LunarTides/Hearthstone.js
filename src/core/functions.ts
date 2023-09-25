@@ -1237,8 +1237,13 @@ ${main_content}
         return this.validateClasses(card.classes, plr.heroClass);
     },
 
+    /**
+     * Returns if `classes` includes `cardClass` (also Neutral logic).
+     */
     validateClasses(classes: CardClass[], cardClass: CardClass): boolean {
-        return [...classes, "Neutral"].includes(cardClass);
+        if (classes.includes("Neutral")) return true;
+
+        return classes.includes(cardClass);
     },
 
     /**
@@ -1765,6 +1770,15 @@ ${main_content}
         clone.turn = game.turns;
 
         return clone;
+    },
+
+    /**
+     * If the callback returns a falsy value, throw an Error.
+     */
+    assert(callback: () => boolean) {
+        if (callback()) return;
+
+        throw new Error(`Assertion failed at: ${callback.toString().replace("() => ", "")}`);
     },
 
     /**

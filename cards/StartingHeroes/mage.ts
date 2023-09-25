@@ -34,7 +34,15 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, game, self) {
-        // TODO: Add proper tests
-        return true;
+        const assert = game.functions.assert;
+
+        // The opponent should have 30 health.
+        assert(() => plr.getOpponent().getHealth() === 30);
+
+        plr.inputQueue = ["face", "y"];
+        self.activate("heropower");
+
+        // The opponent should have 29 health.
+        assert(() => plr.getOpponent().getHealth() === 30 - 1);
     }
 }

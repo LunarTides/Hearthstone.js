@@ -30,7 +30,20 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, game, self) {
-        // TODO: Add proper tests
-        return true;
+        const assert = game.functions.assert;
+
+        // If there doesn't exist any 2-Cost minions, pass the test
+        if (!game.functions.getCards().some(card => card.cost === 2 && card.type === "Minion")) return;
+
+        let exists2CostMinion = () => {
+            return game.board[plr.id].some(card => card.cost === 2);
+        }
+
+        // There shouldn't exist any 2-Cost minions right now.
+        assert(() => !exists2CostMinion());
+        self.activateBattlecry();
+
+        // There should exist a 2-Cost minion now.
+        assert(exists2CostMinion);
     }
 }

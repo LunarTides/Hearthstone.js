@@ -29,7 +29,12 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, game, self) {
-        // TODO: Add proper tests
-        return true;
+        const assert = game.functions.assert;
+
+        plr.inputQueue = ["face", "y"];
+        self.activateBattlecry();
+
+        assert(() => plr.getOpponent().getHealth() === 30 - 2);
+        assert(() => plr.inputQueue === undefined);
     }
 }

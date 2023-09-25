@@ -33,7 +33,40 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, game, self) {
-        // TODO: Add proper tests
-        return true;
+        const assert = game.functions.assert;
+
+        // Summon 5 Sheep with 2 max health.
+        for (let i = 0; i < 5; i++) {
+            const card = new game.Card("Sheep", plr);
+            game.summonMinion(card, plr);
+        }
+
+        const checkSheepAttack = (shouldBeMore: boolean) => {
+            return game.board[plr.id].filter(card => card.name === "Sheep").some(card => card.getHealth() === 1 && ((shouldBeMore && card.getAttack() > 1) || (!shouldBeMore && card.getAttack() === 1)));
+        }
+
+        // Summon this minion. All sheep should have 1 attack.
+        game.summonMinion(self, plr);
+        assert(() => checkSheepAttack(false));
+
+        // Broadcast a dummy event. All sheep should still have 1 attack.
+        game.events.broadcastDummy(plr);
+        assert(() => checkSheepAttack(false));
+
+        // Check this 50 times
+        for (let i = 0; i < 50; i++) {
+            // Reset the players faigue to 0 to prevent them from dying
+            plr.fatigue = 0;
+            plr.getOpponent().fatigue = 0;
+
+            game.endTurn();
+
+            // At least 1 sheep should have more than 1 attack.
+            assert(() => checkSheepAttack(true));
+            // This card should not get more attack.
+            assert(() => self.getAttack() === self.blueprint.stats?.[0]);
+            
+            game.endTurn();
+        }
     }
 }

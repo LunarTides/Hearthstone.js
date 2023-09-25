@@ -23,7 +23,13 @@ export const blueprint: Blueprint = {
     },
     
     test(plr, game, self) {
-        // TODO: Add proper tests
-        return true;
+        const assert = game.functions.assert;
+
+        // The player should start with 0 attack
+        assert(() => plr.attack === 0);
+        self.activate("heropower");
+
+        // The player should gain 1 attack
+        assert(() => plr.attack === 1);
     }
 }

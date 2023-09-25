@@ -23,13 +23,13 @@ export const blueprint: Blueprint = {
 
     // Ignore this
     test(plr, game, self) {
+        const assert = game.functions.assert;
+
         // Makes the player answer "1" to the next question
         plr.inputQueue = ["1"];
         let card = game.interact.dredge();
 
         // Check if the top card of the player's deck is the card that was dredged
-        let success = game.functions.last(plr.deck) === card;
-
-        return success;
+        assert(() => game.functions.last(plr.deck) === card);
     }
 }
