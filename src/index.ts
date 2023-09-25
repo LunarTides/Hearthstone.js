@@ -8,7 +8,6 @@
  */
 
 import { createGame } from "./internal.js";
-import fs from "fs";
 
 export function main() {
     const { game, player1, player2 } = createGame();
@@ -69,7 +68,7 @@ function warnAboutOutdatedCards() {
 function findOutdatedCards(path: string) {
     if (path.includes("cards/Test")) return;
 
-    fs.readdirSync(path, { withFileTypes: true }).forEach(file => {
+    game.functions.readDirectory(path).forEach(file => {
         let p = `${path}/${file.name}`.replace("/dist/..", "");
 
         if (file.name.endsWith(".mts")) {

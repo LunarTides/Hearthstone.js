@@ -2,10 +2,21 @@
  * Functions
  * @module Functions
  */
-import * as fs from "fs";
-import * as childProcess from "child_process";
+
+// It only confines these functions to the Hearthstone.js directory. Look in the fs wrapper functions in this file to confirm.
+import { 
+    writeFileSync as fsWriteFileSync,
+    readFileSync as fsReadFileSync,
+    unlinkSync as fsUnlinkSync,
+    existsSync as fsExistsSync,
+    readdirSync as fsReadDirSync,
+    mkdirSync as fsMkDirSync,
+    Dirent as fsDirent
+} from "fs";
+
+import childProcess from "child_process";
 // To decode vanilla deckcodes
-import * as deckstrings from "deckstrings";
+import deckstrings from "deckstrings";
 
 import chalk from "chalk";
 
@@ -785,6 +796,90 @@ export const functions = {
     },
 
     /**
+     * Writes a file to path. Please use this instead of `fs.writeFileSync`.
+     * 
+     * # Examples
+     * ```ts
+     * functions.writeFile("/cards/.latestId", "100");
+     * // Writes "100" to "(path to folder where Hearthstone.js is)/Hearthstone.js/cards/.latestId"
+     * ```
+     */
+    writeFile(path: string, content: string) {
+        path = path.replace(this.dirname(), "");
+        return fsWriteFileSync(this.dirname() + path, content);
+    },
+
+    /**
+     * Reads a file from a path. Please use this instead of `fs.readFileSync`.
+     * 
+     * # Examples
+     * ```ts
+     * functions.readFile("/cards/.latestId");
+     * // Reads from "(path to folder where Hearthstone.js is)/Hearthstone.js/cards/.latestId"
+     * ```
+     */
+    readFile(path: string) {
+        path = path.replace(this.dirname(), "");
+        return fsReadFileSync(this.dirname() + path, { encoding: "utf8" });
+    },
+
+    /**
+     * Deletes a file from path. Please use this instead of `fs.unlinkSync`.
+     * 
+     * # Examples
+     * ```ts
+     * functions.deleteFile("/cards/.latestId");
+     * // Deletes "(path to folder where Hearthstone.js is)/Hearthstone.js/cards/.latestId"
+     * ```
+     */
+    deleteFile(path: string) {
+        path = path.replace(this.dirname(), "");
+        return fsUnlinkSync(this.dirname() + path);
+    },
+
+    /**
+     * Returns if a file exists. Please use this instead of `fs.existsSync`.
+     * 
+     * # Examples
+     * ```ts
+     * functions.existsFile("/cards/.latestId");
+     * // Returns if the file at "(path to folder where Hearthstone.js is)/Hearthstone.js/cards/.latestId" exists.
+     * ```
+     */
+    existsFile(path: string) {
+        path = path.replace(this.dirname(), "");
+        return fsExistsSync(this.dirname() + path);
+    },
+
+    /**
+     * Reads a directory. Please use this instead of `fs.readdirSync`.
+     * 
+     * # Examples
+     * ```ts
+     * functions.readDirectory("/cards");
+     * // Reads the folder at "(path to folder where Hearthstone.js is)/Hearthstone.js/cards"
+     * ```
+     */
+    readDirectory(path: string): fsDirent[] {
+        path = path.replace(this.dirname(), "");
+        return fsReadDirSync(this.dirname() + path, { withFileTypes: true });
+    },
+
+    /**
+     * Creates a directory. Please use this instead of `fs.mkdirSync`.
+     * 
+     * # Examples
+     * ```ts
+     * functions.makeDirectory("/cards");
+     * // Creates the directory "(path to folder where Hearthstone.js is)/Hearthstone.js/cards"
+     * ```
+     */
+    makeDirectory(path: string, recursive = false) {
+        path = path.replace(this.dirname(), "");
+        return fsMkDirSync(this.dirname() + path, { recursive });
+    },
+
+    /**
      * Create a (crash)log file
      *
      * @param err If this is set, create a crash log. If this is not set, create a normal log file.
@@ -793,7 +888,7 @@ export const functions = {
      */
     createLogFile(err?: Error): boolean {
         // Create a (crash-)log file
-        if (!fs.existsSync(this.dirname() + "/logs")) fs.mkdirSync(this.dirname() + "/logs");
+        if (!this.existsFile("/logs")) this.makeDirectory("/logs");
 
         // Get the day, month, year, hour, minute, and second, as 2 digit numbers.
         let date = new Date();
@@ -896,7 +991,7 @@ ${mainContent}
         let checksum = createHash("sha256").update(content).digest("hex");
         content += `\n${checksum}  ${filename}`;
 
-        fs.writeFileSync(this.dirname() + `/logs/${filename}`, content);
+        this.writeFile(`/logs/${filename}`, content);
 
         if (!err) return true;
 
@@ -1181,8 +1276,8 @@ ${mainContent}
      */
     getVanillaCards(error?: string): [VanillaCard[], string | null] {
         const fileLocation = this.dirname() + "/vanillacards.json";
-        if (fs.existsSync(fileLocation)) {
-            return [JSON.parse(fs.readFileSync(fileLocation, "utf8")) as VanillaCard[], null];
+        if (this.existsFile(fileLocation)) {
+            return [JSON.parse(this.readFile(fileLocation)) as VanillaCard[], null];
         }
 
         return [[], error ?? "<red>Cards file not found! Run 'npm run script:vanilla:generator' (requires an internet connection), then try again.</red>\n"];
@@ -1284,12 +1379,12 @@ ${mainContent}
     getClasses(): CardClassNoNeutral[] {
         let classes: CardClassNoNeutral[] = [];
 
-        fs.readdirSync(this.dirname() + "/cards/StartingHeroes").forEach(file => {
+        this.readDirectory("/cards/StartingHeroes").forEach(file => {
             // Something is wrong with the file name.
-            if (!file.endsWith(".ts")) return;
+            if (!file.name.endsWith(".ts")) return;
 
             // Remove ".ts"
-            let name = file.slice(0, -3);
+            let name = file.name.slice(0, -3);
 
             // Remove underscores
             name = name.replaceAll("_", " ");
@@ -2109,19 +2204,19 @@ ${mainContent}
      * @param path By default, this is the cards folder (not in dist)
      * @param extension The extension to look for in cards. By default, this is ".ts"
      */
-    searchCardsFolder(callback: (path: string, content: string, file: fs.Dirent) => void, path?: string, extension = ".ts") {
+    searchCardsFolder(callback: (path: string, content: string, file: fsDirent) => void, path?: string, extension = ".ts") {
         if (!path) path = this.dirname() + "/cards";
 
         path = path.replaceAll("\\", "/");
 
-        fs.readdirSync(path, { withFileTypes: true }).forEach(file => {
+        this.readDirectory(path).forEach(file => {
             let fullPath = `${path}/${file.name}`;
 
             if (file.name.endsWith(extension)) {
                 if (file.name === "exports.ts") return;
 
                 // It is an actual card.
-                let data = fs.readFileSync(fullPath, { encoding: 'utf8', flag: 'r' });
+                let data = this.readFile(fullPath);
 
                 callback(fullPath, data, file);
             }

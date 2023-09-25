@@ -4,12 +4,12 @@
  * @module Upgrade Cards
  */
 
-import fs from "fs";
+import { Dirent } from "fs";
 import { createGame } from "../src/internal.js";
 
 const { game, player1, player2 } = createGame();
 
-function upgradeCard(path: string, data: string, file: fs.Dirent) {
+function upgradeCard(path: string, data: string, file: Dirent) {
     // TODO: Always add `spellSchool`.
     // TODO: Always add `hpCost`.
 
@@ -90,13 +90,13 @@ function upgradeCard(path: string, data: string, file: fs.Dirent) {
 
     // Replace the card's id with a new one
     data = data.replace(/\n {4}id: (\d+),?/, "");
-    let currentId = Number(fs.readFileSync(game.functions.dirname() + "/cards/.latestId", { encoding: "utf8" })) + 1;
+    let currentId = Number(game.functions.readFile("/cards/.latestId")) + 1;
 
     data = data.replace(/( {4}.+: .+,)(\n\n {4}.*\(plr, game, (self|card))/, `$1\n    id: ${currentId},$2`);
     data = data.replace(/( {4}uncollectible: .*?),?\n\}/, `$1,\n    id: ${currentId},\n}`);
     game.log(`Card was assigned id ${currentId}.`);
 
-    fs.writeFileSync(game.functions.dirname() + "/cards/.latestId", `${currentId}`);
+    game.functions.writeFile("/cards/.latestId", `${currentId}`);
 
     if (hasPassive) {
         // Find key
@@ -123,7 +123,9 @@ const val = _unknownVal as EventValue<typeof key>;
         game.log("Updated passive.")
     }
 
-    fs.writeFileSync(path.replace(filename, filename.replace(".js", ".ts")), data);
+    // Replace .js to .ts
+    path = path.replace(filename, filename.replace(".js", ".ts"));
+    game.functions.writeFile(path, data);
     
     game.log(`--- Finished ${filename} ---`);
 }
@@ -136,8 +138,8 @@ function main() {
 
     // Update card extensions
     game.functions.searchCardsFolder((fullPath, content) => {
-        fs.writeFileSync(fullPath.replace(".mts", ".ts"), content);
-        fs.unlinkSync(fullPath);
+        game.functions.writeFile(fullPath.replace(".mts", ".ts"), content);
+        game.functions.deleteFile(fullPath);
 
         game.log(`Updated extension for card ${fullPath.slice(0, -4)}[.mts -> .ts]`);
     }, undefined, ".mts");

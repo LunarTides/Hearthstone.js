@@ -4,7 +4,6 @@
  * @module Id Script
  */
 
-import fs from "fs";
 import { createGame } from "../src/internal.js";
 
 const { game, player1, player2 } = createGame();
@@ -36,17 +35,17 @@ function change(startId: number, callback: (id: number) => number, log: boolean)
         let newId = callback(id);
 
         // Set the new id
-        fs.writeFileSync(path, content.replace(idRegex, `    id: ${newId}`));
+        game.functions.writeFile(path, content.replace(idRegex, `    id: ${newId}`));
 
         if (log) game.log(`<bright:green>Updated ${path}</bright:green>`);
         updated++;
     });
 
     if (updated > 0) {
-        let latestId = Number(fs.readFileSync(game.functions.dirname() + "/cards/.latestId", { encoding: "utf8" }));
+        let latestId = Number(game.functions.readFile("/cards/.latestId"));
         let newLatestId = callback(latestId);
 
-        fs.writeFileSync(game.functions.dirname() + "/cards/.latestId", newLatestId.toString());
+        game.functions.writeFile("/cards/.latestId", newLatestId.toString());
     }
 
     if (log) {
@@ -123,7 +122,7 @@ export function validate(log: boolean): [number, number] {
     });
 
     // Check if the .latestId is valid
-    let latestId = parseInt(fs.readFileSync(game.functions.dirname() + "/cards/.latestId", { encoding: "utf8" }).trim());
+    let latestId = parseInt(game.functions.readFile("/cards/.latestId").trim());
 
     if (log) {
         if (holes > 0) game.log("<yellow>Found %s holes.</yellow>", holes);
@@ -135,7 +134,7 @@ export function validate(log: boolean): [number, number] {
         if (latestId === currentId) game.log("<bright:green>Latest id up-to-date.</bright:green>");
         else {
             game.log("<yellow>Latest id is invalid. Latest id found: %s, latest id in file: %s. Fixing...</yellow>", currentId, latestId);
-            fs.writeFileSync(game.functions.dirname() + "/cards/.latestId", currentId.toString());
+            game.functions.writeFile("/cards/.latestId", currentId.toString());
         }
     }
 

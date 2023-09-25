@@ -4,7 +4,6 @@
  */
 
 import rl from "readline-sync";
-import fs from "fs";
 import { createGame } from "../src/internal.js";
 
 const { game, player1, player2 } = createGame();
@@ -16,9 +15,9 @@ let finishedCardsPath = "patchedCards.txt";
 
 function getFinishedCards(path: string) {
     // If the file doesn't exist, return.
-    if (!fs.existsSync(path)) return;
+    if (!game.functions.existsFile(path)) return;
 
-    let cards = fs.readFileSync(path, { encoding: 'utf8', flag: 'r' });
+    let cards = game.functions.readFile(path);
     finishedCards = cards.split("\n");
 }
 
@@ -66,8 +65,8 @@ function main() {
         if (cmd.toLowerCase().startsWith("delete")) {
             game.log("Deleting file...");
 
-            if (fs.existsSync(finishedCardsPath)) {
-                fs.unlinkSync(finishedCardsPath);
+            if (game.functions.existsFile(finishedCardsPath)) {
+                game.functions.deleteFile(finishedCardsPath);
                 game.log("File deleted!");
             }
             else game.log("File not found!");
@@ -98,7 +97,7 @@ function main() {
         if (matchingCards.length <= 0) {
             // All cards have been patched
             game.input("All cards patched!\n");
-            if (fs.existsSync(finishedCardsPath)) fs.unlinkSync(finishedCardsPath);
+            if (game.functions.existsFile(finishedCardsPath)) game.functions.deleteFile(finishedCardsPath);
 
             // Exit so it doesn't save
             process.exit(0);
@@ -106,7 +105,7 @@ function main() {
     }
 
     // Save progress
-    fs.writeFileSync(finishedCardsPath, finishedCards.join('\n'));
+    game.functions.writeFile(finishedCardsPath, finishedCards.join("\n"));
 }
 
 main();

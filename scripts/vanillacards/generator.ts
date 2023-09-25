@@ -4,7 +4,6 @@
  */
 
 import { Axios } from "axios";
-import { writeFile } from "fs";
 import { createGame } from "../../src/internal.js";
 
 const { game, player1, player2 } = createGame();
@@ -16,9 +15,7 @@ function main() {
             let oldLength = data.length;
             data = game.functions.filterVanillaCards(data, false, false, true);
 
-            writeFile(game.functions.dirname() + "/vanillacards.json", JSON.stringify(data), err => {
-                if (err) throw err;
-            });
+            game.functions.writeFile("/vanillacards.json", JSON.stringify(data));
 
             let difference = oldLength - data.length;
             game.log(`Found %s cards!\nFiltered away %s cards!\nSuccessfully imported %s cards!`, oldLength, difference, data.length);

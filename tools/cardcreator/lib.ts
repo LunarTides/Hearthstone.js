@@ -3,7 +3,6 @@
  * @module Card Creator Library
  */
 
-import fs from "fs";
 import { createGame } from "../../src/internal.js";
 import { Blueprint, CardClass, CardType } from "../../src/types.js";
 
@@ -135,7 +134,7 @@ export function create(creatorType: CCType, cardType: CardType, blueprint: Bluep
     if (overrideFilename) filename = overrideFilename;
 
     // Get the latest card-id
-    let id = parseInt(fs.readFileSync(game.functions.dirname() + "/cards/.latestId", "utf8")) + 1;
+    let id = parseInt(game.functions.readFile("/cards/.latestId")) + 1;
     let fileId = `\n    id: ${id},`;
 
     // Generate the content of the card
@@ -186,12 +185,12 @@ export const blueprint: Blueprint = {
         // If debug mode is disabled, write the card to disk.
         
         // Increment the id in '.latestId' by 1
-        fs.writeFileSync(game.functions.dirname() + "/cards/.latestId", id.toString()); 
+        game.functions.writeFile("/cards/.latestId", id.toString()); 
 
         // If the path the card would be written to doesn't exist, create it.
-        if (!fs.existsSync(path)) fs.mkdirSync(path, { recursive: true });
+        if (!game.functions.existsFile(path)) game.functions.makeDirectory(path, true);
         // Write the file to the path
-        fs.writeFileSync(filePath, content);
+        game.functions.writeFile(filePath, content);
 
         game.log('File created at: "' + filePath + '"');
     } else {
