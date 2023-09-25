@@ -433,6 +433,11 @@ export class Game {
      */
     constants: GameConstants;
 
+    /**
+     * Cache for the game.
+     */
+    cache: {[key: string]: any} = {};
+
     constructor() {
         globalThis.game = this;
     }

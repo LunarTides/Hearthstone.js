@@ -1037,7 +1037,13 @@ ${mainContent}
      * Returns the latest commit hash
      */
     getLatestCommit() {
-        let hash = this.runCommand("git rev-parse --short=7 HEAD");
+        if (!game.cache.latestCommitHash) {
+            // Save to a cache since `runCommand` is slow.
+            game.cache.latestCommitHash = this.runCommand("git rev-parse --short=7 HEAD");
+        }
+
+        let hash = game.cache.latestCommitHash;
+
         if (hash instanceof Error) {
             game.log("<red>ERROR: Git is not installed.</red>");
             return "no git found";
@@ -1047,7 +1053,9 @@ ${mainContent}
     },
 
     /**
-     * Runs a command and returns the result
+     * Runs a command and returns the result.
+     * 
+     * This function is slow, so think about saving the output of this to `game.cache` if you intend to run this multiple times.
      */
     runCommand(cmd: string): string | Error {
         try {
