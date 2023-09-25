@@ -50,7 +50,7 @@ function generateCardPath(...args: [CardClass[], CardType]) {
     let [classes, type] = args;
 
     // DO NOT CHANGE THIS
-    let static_path = game.functions.dirname() + "/cards/";
+    let staticPath = game.functions.dirname() + "/cards/";
 
     // You can change everything below this comment
     let classesString = classes.join("/");
@@ -67,9 +67,9 @@ function generateCardPath(...args: [CardClass[], CardType]) {
     // Change this if you want the cards to be in different folders.
     // By default, this is `cards/Classes/{class name}/{Uncollectible | Collectible}/{type}s/{mana cost} Cost/{card name}.ts`;
     // This path can be overridden by passing `overridePath` in the create function.
-    let dynamic_path = `Classes/${classesString}/${collectibleString}/${typeString}s/${card.cost} Cost/`;
+    let dynamicPath = `Classes/${classesString}/${collectibleString}/${typeString}s/${card.cost} Cost/`;
 
-    return static_path + dynamic_path;
+    return staticPath + dynamicPath;
 }
 
 /**
@@ -106,19 +106,19 @@ export function create(creatorType: CCType, cardType: CardType, blueprint: Bluep
         const val = _unknownValue as EventValue<typeof key>;
         `;
     
-    let desc_to_clean = type == "Hero" ? card.hpDesc : card.desc;
+    let descToClean = type == "Hero" ? card.hpDesc : card.desc;
     // card.hpDesc can be undefined, but shouldn't be if the type is Hero.
-    if (desc_to_clean === undefined) throw new Error("Card has no hero power description.");
+    if (descToClean === undefined) throw new Error("Card has no hero power description.");
 
     // If the desc has `<b>Battlecry:</b> Dredge.`, add `// Dredge.` to the battlecry ability
-    let cleaned_desc = game.functions.stripTags(desc_to_clean).replace(`${func}: `, "");
+    let cleanedDesc = game.functions.stripTags(descToClean).replace(`${func}: `, "");
 
     // Example 1: '\n\n    passive(plr, game, self, key, _unknownValue) {\n        // Your battlecries trigger twice.\n        ...\n    }',
     // Example 2: '\n\n    battlecry(plr, game, self) {\n        // Deal 2 damage to the opponent.\n        \n    }'
     if (func) func = `
     
     ${func.toLowerCase()}(plr, game, self${triggerText} {
-        // ${cleaned_desc}
+        // ${cleanedDesc}
         ${extraPassiveCode}
     }`;
 
@@ -135,8 +135,8 @@ export function create(creatorType: CCType, cardType: CardType, blueprint: Bluep
     if (overrideFilename) filename = overrideFilename;
 
     // Get the latest card-id
-    let id = parseInt(fs.readFileSync(game.functions.dirname() + "/cards/.latest_id", "utf8")) + 1;
-    let file_id = `\n    id: ${id},`;
+    let id = parseInt(fs.readFileSync(game.functions.dirname() + "/cards/.latestId", "utf8")) + 1;
+    let fileId = `\n    id: ${id},`;
 
     // Generate the content of the card
     // If the value is a string, put '"value"'. If it is not a string, put 'value'.
@@ -175,30 +175,30 @@ export function create(creatorType: CCType, cardType: CardType, blueprint: Bluep
 import { Blueprint${passiveImport} } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
-    ${contentArray.join(',\n    ')},${file_id}${func}
+    ${contentArray.join(',\n    ')},${fileId}${func}
 }
 `;
 
     // The path is now "./cardcreator/../cards/...", replace this with "./cards/..."
-    let file_path = path + filename;
+    let filePath = path + filename;
 
     if (!debug) {
         // If debug mode is disabled, write the card to disk.
         
-        // Increment the id in '.latest_id' by 1
-        fs.writeFileSync(game.functions.dirname() + "/cards/.latest_id", id.toString()); 
+        // Increment the id in '.latestId' by 1
+        fs.writeFileSync(game.functions.dirname() + "/cards/.latestId", id.toString()); 
 
         // If the path the card would be written to doesn't exist, create it.
         if (!fs.existsSync(path)) fs.mkdirSync(path, { recursive: true });
         // Write the file to the path
-        fs.writeFileSync(file_path, content);
+        fs.writeFileSync(filePath, content);
 
-        game.log('File created at: "' + file_path + '"');
+        game.log('File created at: "' + filePath + '"');
     } else {
         // If debug mode is enabled, just show some information about the card.
-        // This is the id that would be written to '.latest_id'
+        // This is the id that would be written to '.latestId'
         game.log("\nNew ID: %s", id);
-        game.log("Would be path: '%s'", file_path.replaceAll("\\", "/"));
+        game.log("Would be path: '%s'", filePath.replaceAll("\\", "/"));
         game.log("Content:");
         game.log(content);
         game.input();
@@ -209,9 +209,9 @@ export const blueprint: Blueprint = {
 
     // Open the defined editor on that card if it has a function to edit, and debug mode is disabled
     if (func && !debug) {
-        let success = game.functions.runCommandAsChildProcess(`${game.config.general.editor} "${file_path}"`);
+        let success = game.functions.runCommandAsChildProcess(`${game.config.general.editor} "${filePath}"`);
         if (!success) game.input();
     }
 
-    return file_path;
+    return filePath;
 }

@@ -6,7 +6,7 @@ import { AI, Card, Player } from '../internal.js';
 import { AIHistory, CardLike, EventValue, GameConfig, GamePlayCardReturn, SelectTargetAlignment, SelectTargetClass, SelectTargetFlag, Target } from '../types.js';
 import { reloadCards } from '../helper/cards.js';
 
-const license_url = 'https://github.com/LunarTides/Hearthstone.js/blob/main/LICENSE';
+const licenseUrl = 'https://github.com/LunarTides/Hearthstone.js/blob/main/LICENSE';
 let game = globalThis.game;
 
 export const interact = {
@@ -24,10 +24,10 @@ export const interact = {
         if (game.player.ai) {
             let ai;
 
-            let alt_model = `legacy_attack_${game.config.ai.attackModel}`;
+            let altModel = `legacyAttack${game.config.ai.attackModel}`;
 
             // Run the correct ai attack model
-            let model = game.player.ai[alt_model as keyof AI];
+            let model = game.player.ai[altModel as keyof AI];
             if (model) ai = (model as Function)();
 
             // Use the latest model
@@ -188,20 +188,20 @@ export const interact = {
             game.log("version    - Displays the version, branch, your settings preset, and some information about your current version.");
             game.log("license    - Opens a link to this project's license");
 
-            const cond_color = (str: string) => {return (game.config.general.debug) ? str : `<gray>${str}</gray>`};
+            const condColor = (str: string) => {return (game.config.general.debug) ? str : `<gray>${str}</gray>`};
 
-            game.log(cond_color("\n--- Debug Commands (") + ((game.config.general.debug) ? "<bright:green>ON</bright:green>" : "<red>OFF</red>") + cond_color(") ---"));
-            game.log(cond_color("/give (name)        - Adds a card to your hand"));
-            game.log(cond_color("/eval [log] (code)  - Runs the code specified. If the word 'log' is before the code, instead game.log the code and wait for user input to continue."));
-            game.log(cond_color("/set (name) (value) - Changes a setting to (value). Look in the config files for a list of settings."));
-            game.log(cond_color("/debug              - Gives you infinite mana, health and armor"));
-            game.log(cond_color("/exit               - Force exits the game. There will be no winner, and it will take you straight back to the runner."));
-            game.log(cond_color("/history            - Displays a history of actions. This doesn't hide any information, and is the same thing the log files uses."));
-            game.log(cond_color("/reload | /rl       - Reloads the cards and config in the game (Use '/freload' or '/frl' to ignore the confirmation prompt (or disable the prompt in the advanced config))"));
-            game.log(cond_color("/undo               - Undoes the last card played. It gives the card back to your hand, and removes it from where it was. (This does not undo the actions of the card)"));
-            game.log(cond_color("/cmd                - Shows you a list of debug commands you have run, and allows you to rerun them."));
-            game.log(cond_color("/ai                 - Gives you a list of the actions the ai(s) have taken in the order they took it"));
-            game.log(cond_color("---------------------------" + ((game.config.general.debug) ? "" : "-")));
+            game.log(condColor("\n--- Debug Commands (") + ((game.config.general.debug) ? "<bright:green>ON</bright:green>" : "<red>OFF</red>") + condColor(") ---"));
+            game.log(condColor("/give (name)        - Adds a card to your hand"));
+            game.log(condColor("/eval [log] (code)  - Runs the code specified. If the word 'log' is before the code, instead game.log the code and wait for user input to continue."));
+            game.log(condColor("/set (name) (value) - Changes a setting to (value). Look in the config files for a list of settings."));
+            game.log(condColor("/debug              - Gives you infinite mana, health and armor"));
+            game.log(condColor("/exit               - Force exits the game. There will be no winner, and it will take you straight back to the runner."));
+            game.log(condColor("/history            - Displays a history of actions. This doesn't hide any information, and is the same thing the log files uses."));
+            game.log(condColor("/reload | /rl       - Reloads the cards and config in the game (Use '/freload' or '/frl' to ignore the confirmation prompt (or disable the prompt in the advanced config))"));
+            game.log(condColor("/undo               - Undoes the last card played. It gives the card back to your hand, and removes it from where it was. (This does not undo the actions of the card)"));
+            game.log(condColor("/cmd                - Shows you a list of debug commands you have run, and allows you to rerun them."));
+            game.log(condColor("/ai                 - Gives you a list of the actions the ai(s) have taken in the order they took it"));
+            game.log(condColor("---------------------------" + ((game.config.general.debug) ? "" : "-")));
             
             game.input("\nPress enter to continue...\n");
         }
@@ -210,8 +210,8 @@ export const interact = {
             let isHand = isHandAnswer == "Hand";
 
             if (!isHand) {
-                // allow_locations Makes selecting location cards allowed. This is disabled by default to prevent, for example, spells from killing the card.
-                let minion = this.selectCardTarget("Which minion do you want to view?", null, "any", ["allow_locations"]);
+                // allowLocations Makes selecting location cards allowed. This is disabled by default to prevent, for example, spells from killing the card.
+                let minion = this.selectCardTarget("Which minion do you want to view?", null, "any", ["allowLocations"]);
                 if (!minion) return false;
         
                 this.viewCard(minion);
@@ -239,7 +239,7 @@ export const interact = {
         }
         else if (name === "license") {
             let start = (process.platform == 'darwin' ? 'open' : process.platform == 'win32' ? 'start' : 'xdg-open');
-            game.functions.runCommand(start + ' ' + license_url);
+            game.functions.runCommand(start + ' ' + licenseUrl);
         }
         else if (name === "version") {
             let version = game.config.info.version;
@@ -249,7 +249,7 @@ export const interact = {
             while (true) {
                 let todos = Object.entries(game.config.todo);
 
-                const print_info = () => {
+                const printInfo = () => {
                     this.printAll(game.player);
 
                     let strbuilder = `\nYou are on version: ${version}, on `;
@@ -285,7 +285,7 @@ export const interact = {
                     if (todos.length <= 0) game.log("None.");
                 }
                 
-                print_info();
+                printInfo();
 
                 // Todo list
                 if (todos.length <= 0) {
@@ -293,7 +293,7 @@ export const interact = {
                     break;
                 }
 
-                const print_todo = (todo: any, id: number, print_desc = false) => {
+                const printTodo = (todo: any, id: number, printDesc = false) => {
                     let [name, info] = todo;
                     let [state, desc] = info;
 
@@ -301,21 +301,21 @@ export const interact = {
                     else if (state == "doing") state = "o";
                     else if (state == "not done") state = " ";
 
-                    if (print_desc) game.log(`{${id}} [${state}] ${name}\n${desc}`);
+                    if (printDesc) game.log(`{${id}} [${state}] ${name}\n${desc}`);
                     else game.log(`{${id}} [${state}] ${name}`);
                 }
 
-                todos.forEach((e, i) => print_todo(e, i + 1));
+                todos.forEach((e, i) => printTodo(e, i + 1));
 
-                let todo_id = parseInt(game.input("\nType the id of a todo to see more information about it (eg. 1): "));
-                if (!todo_id || todo_id > todos.length || todo_id <= 0) {
+                let todoId = parseInt(game.input("\nType the id of a todo to see more information about it (eg. 1): "));
+                if (!todoId || todoId > todos.length || todoId <= 0) {
                     break;
                 }
 
-                let todo = todos[todo_id - 1];
+                let todo = todos[todoId - 1];
 
-                print_info();
-                print_todo(todo, todo_id, true);
+                printInfo();
+                printTodo(todo, todoId, true);
                 
                 game.input("\nPress enter to continue...");
             }
@@ -397,10 +397,10 @@ export const interact = {
                     // If the `key` is "AddCardToHand", check if the previous history entry was `DrawCard`, and they both contained the exact same `val`.
                     // If so, ignore it.
                     if (key === "AddCardToHand" && i > 0) {
-                        let last_entry = history[t][i - 1];
+                        let lastEntry = history[t][i - 1];
 
-                        if (last_entry[0] == "DrawCard") {
-                            if ((last_entry[1] as Card).uuid == (val as Card).uuid) return;
+                        if (lastEntry[0] == "DrawCard") {
+                            if ((lastEntry[1] as Card).uuid == (val as Card).uuid) return;
                         }
                     }
 
@@ -859,7 +859,7 @@ export const interact = {
         let locations = game.board[game.player.id].filter(m => m.type == "Location");
         if (locations.length <= 0) return "nolocations";
 
-        let location = this.selectCardTarget("Which location do you want to use?", null, "friendly", ["allow_locations"]);
+        let location = this.selectCardTarget("Which location do you want to use?", null, "friendly", ["allowLocations"]);
         if (!location) return -1;
 
         if (location.type != "Location") return "invalidtype";
@@ -938,9 +938,9 @@ export const interact = {
         if (plr.ai) input = plr.ai.mulligan();
         else input = game.input(sb);
 
-        let is_int = game.functions.mulligan(plr, input);
+        let isInt = game.functions.mulligan(plr, input);
 
-        if (!is_int && input != "") {
+        if (!isInt && input != "") {
             game.input("<red>Invalid input!</red>\n");
             return this.mulligan(plr);
         }
@@ -1081,7 +1081,7 @@ export const interact = {
             let aiChoice = plr.ai.question(prompt, answers);
             if (!aiChoice) {
                 // code, expected, actual
-                throw game.functions.createAIError("ai_question_return_invalid_at_question_function", "some number", aiChoice);
+                throw game.functions.createAIError("AiQuestionReturnInvalidAtQuestionFunction", "some number", aiChoice);
             }
 
             choice = aiChoice;
@@ -1213,43 +1213,43 @@ export const interact = {
      * 
      * @param prompt The prompt to ask
      * @param card The card that called this function.
-     * @param force_side Force the user to only be able to select minions / the hero of a specific side
-     * @param force_class Force the user to only be able to select a minion or a hero
-     * @param flags Change small behaviours ["allow_locations" => Allow selecting location, ]
+     * @param forceSide Force the user to only be able to select minions / the hero of a specific side
+     * @param forceClass Force the user to only be able to select a minion or a hero
+     * @param flags Change small behaviours ["allowLocations" => Allow selecting location, ]
      * 
      * @returns The card or hero chosen
      */
-    selectTarget(prompt: string, card: Card | null, force_side: SelectTargetAlignment, force_class: SelectTargetClass, flags: SelectTargetFlag[] = []): Target | false {
+    selectTarget(prompt: string, card: Card | null, forceSide: SelectTargetAlignment, forceClass: SelectTargetClass, flags: SelectTargetFlag[] = []): Target | false {
         game = globalThis.game;
 
-        game.events.broadcast("TargetSelectionStarts", [prompt, card, force_side, force_class, flags], game.player);
-        let target = this._selectTarget(prompt, card, force_side, force_class, flags);
+        game.events.broadcast("TargetSelectionStarts", [prompt, card, forceSide, forceClass, flags], game.player);
+        let target = this._selectTarget(prompt, card, forceSide, forceClass, flags);
 
         if (target) game.events.broadcast("TargetSelected", [card, target], game.player);
         return target;
     },
 
-    _selectTarget(prompt: string, card: Card | null, force_side: SelectTargetAlignment, force_class: SelectTargetClass, flags: SelectTargetFlag[] = []): Target | false {
+    _selectTarget(prompt: string, card: Card | null, forceSide: SelectTargetAlignment, forceClass: SelectTargetClass, flags: SelectTargetFlag[] = []): Target | false {
         // If the player is forced to select a target, select that target.
         if (game.player.forceTarget) return game.player.forceTarget;
 
         // If the player is an ai, hand over control to the ai.
-        if (game.player.ai) return game.player.ai.selectTarget(prompt, card, force_side, force_class, flags);
+        if (game.player.ai) return game.player.ai.selectTarget(prompt, card, forceSide, forceClass, flags);
 
         // If the player is forced to select a hero
-        if (force_class == "hero") {
+        if (forceClass == "hero") {
             const target = game.input(`Do you want to select the enemy hero, or your own hero? (y: enemy, n: friendly) `);
     
             return (target.startsWith("y")) ? game.opponent : game.player;
         }
 
-        // From this point, force_class is either
+        // From this point, forceClass is either
         // 1. any 
         // 2. minion
 
         // Ask the player to choose a target.
         let p = `\n${prompt} (`;
-        if (force_class === "any") p += "type 'face' to select a hero | ";
+        if (forceClass === "any") p += "type 'face' to select a hero | ";
         p += "type 'back' to go back) ";
 
         const target = game.input(p);
@@ -1261,12 +1261,12 @@ export const interact = {
         }
 
         // Get a list of each side of the board
-        const board_opponent = game.board[game.opponent.id];
-        const board_friendly = game.board[game.player.id];
+        const boardOpponent = game.board[game.opponent.id];
+        const boardFriendly = game.board[game.player.id];
 
         // Get each minion that matches the target.
-        const board_opponent_target = board_opponent[parseInt(target) - 1];
-        const board_friendly_target = board_friendly[parseInt(target) - 1];
+        const boardOpponentTarget = boardOpponent[parseInt(target) - 1];
+        const boardFriendlyTarget = boardFriendly[parseInt(target) - 1];
 
         /**
          * This is the resulting minion that the player chose, if any.
@@ -1274,47 +1274,47 @@ export const interact = {
         let minion: Card;
 
         // If the player didn't choose to attack a hero, and no minions could be found at the index requested, try again.
-        if (!target.startsWith("face") && !board_friendly_target && !board_opponent_target) {
+        if (!target.startsWith("face") && !boardFriendlyTarget && !boardOpponentTarget) {
             // target != "face" and target is not a minion.
             // The input is invalid
             game.input("<red>Invalid input / minion!</red>\n");
 
-            return this._selectTarget(prompt, card, force_side, force_class, flags);
+            return this._selectTarget(prompt, card, forceSide, forceClass, flags);
         }
 
         // If the player is forced to one side.
-        if (force_side === "any") {
+        if (forceSide === "any") {
             // If the player chose to target a hero, it will ask which hero.
-            if (target.startsWith("face") && force_class != "minion") return this._selectTarget(prompt, card, force_side, "hero", flags);
+            if (target.startsWith("face") && forceClass != "minion") return this._selectTarget(prompt, card, forceSide, "hero", flags);
             
             // If both players have a minion with the same index,
             // ask them which minion to select
-            if (board_opponent.length >= parseInt(target) && board_friendly.length >= parseInt(target)) {
-                const oName = game.functions.colorByRarity(board_opponent_target.displayName, board_opponent_target.rarity);
-                const fName = game.functions.colorByRarity(board_friendly_target.displayName, board_friendly_target.rarity);
+            if (boardOpponent.length >= parseInt(target) && boardFriendly.length >= parseInt(target)) {
+                const oName = game.functions.colorByRarity(boardOpponentTarget.displayName, boardOpponentTarget.rarity);
+                const fName = game.functions.colorByRarity(boardFriendlyTarget.displayName, boardFriendlyTarget.rarity);
 
                 let alignment = game.input(`Do you want to select your opponent's (${oName}) or your own (${fName})? (y: opponent, n: friendly | type 'back' to go back) `);
             
                 if (alignment.startsWith("b") || this.shouldExit(alignment)) {
                     // Go back.
-                    return this._selectTarget(prompt, card, force_side, force_class, flags);
+                    return this._selectTarget(prompt, card, forceSide, forceClass, flags);
                 }
 
-                minion = (alignment.startsWith("y")) ? board_opponent_target : board_friendly_target;
+                minion = (alignment.startsWith("y")) ? boardOpponentTarget : boardFriendlyTarget;
             } else {
-                minion = board_opponent.length >= parseInt(target) ? board_opponent_target : board_friendly_target;
+                minion = boardOpponent.length >= parseInt(target) ? boardOpponentTarget : boardFriendlyTarget;
             }
         }
         else {
             // If the player chose a hero, and they are allowed to
-            if (target.startsWith("face") && force_class != "minion") {
-                if (force_side == "enemy") return game.opponent;
+            if (target.startsWith("face") && forceClass != "minion") {
+                if (forceSide == "enemy") return game.opponent;
 
                 return game.player;
             }
 
             // Select the minion on the correct side of the board.
-            minion = (force_side == "enemy") ? board_opponent_target : board_friendly_target;
+            minion = (forceSide == "enemy") ? boardOpponentTarget : boardFriendlyTarget;
         }
 
         // If you didn't select a valid minion, return.
@@ -1324,7 +1324,7 @@ export const interact = {
         }
 
         // If the minion has elusive, and the card that called this function is a spell
-        if ((card && card.type === "Spell") || flags.includes("force_elusive")) {
+        if ((card && card.type === "Spell") || flags.includes("forceElusive")) {
             if (minion.keywords.includes("Elusive")) {
                 game.input("<red>Can't be targeted by Spells or Hero Powers.</red>\n");
             
@@ -1341,8 +1341,8 @@ export const interact = {
             return false;
         }
 
-        // If the minion is a location, don't allow it to be selectted unless the `allow_locations` flag was set.
-        if (minion.type == "Location" && !flags.includes("allow_locations")) {
+        // If the minion is a location, don't allow it to be selectted unless the `allowLocations` flag was set.
+        if (minion.type == "Location" && !flags.includes("allowLocations")) {
             game.input("<red>You cannot target location cards.</red>\n");
 
             return false;
@@ -1802,7 +1802,7 @@ export const interact = {
 }
 
 function cls() {
-    if (game && game.no_output) return;
+    if (game && game.noOutput) return;
 
     console.clear();
     process.stdout.write('\x1bc');

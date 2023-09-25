@@ -38,7 +38,7 @@ interface IEventManager {
 
     tick(key: EventKey, val: UnknownEventValue): boolean;
     cardUpdate(key: EventKey, val: UnknownEventValue): boolean;
-    questUpdate(quests_name: "secrets" | "sidequests" | "quests", key: EventKey, val: UnknownEventValue, plr: Player): boolean;
+    questUpdate(questsName: "secrets" | "sidequests" | "quests", key: EventKey, val: UnknownEventValue, plr: Player): boolean;
     broadcast(key: EventKey, val: UnknownEventValue, plr: Player, updateHistory?: boolean): boolean;
     addHistory(key: EventKey, val: UnknownEventValue, plr: Player): void;
     broadcastDummy(plr: Player): boolean;
@@ -184,18 +184,18 @@ const eventManager: IEventManager = {
     /**
      * Update quests and secrets
      *
-     * @param quests_name The type of quest to update
+     * @param questsName The type of quest to update
      * @param key The key of the event
      * @param val The value of the event
      * @param plr The owner of the quest
      *
      * @returns Success
      */
-    questUpdate(quests_name, key, val, plr) {
+    questUpdate(questsName, key, val, plr) {
         let game = globalThis.game;
         if (!game) return false;
 
-        plr[quests_name].forEach(s => {
+        plr[questsName].forEach(s => {
             let quest: QuestType = s;
 
             if (quest.key != key) return;
@@ -210,9 +210,9 @@ const eventManager: IEventManager = {
             if (!done) return;
 
             // The quest/secret is done
-            plr[quests_name].splice(plr[quests_name].indexOf(quest), 1);
+            plr[questsName].splice(plr[questsName].indexOf(quest), 1);
 
-            if (quests_name == "secrets") game.input("\nYou triggered the opponents's '" + quest.name + "'.\n");
+            if (questsName == "secrets") game.input("\nYou triggered the opponents's '" + quest.name + "'.\n");
 
             if (quest.next) new Card(quest.next, plr).activate("cast");
         });
@@ -407,12 +407,12 @@ export class Game {
      * 
      * If this is true, the user can't interact with the game. This will most likely cause an infinite loop, unless both players are ai's.
      */
-    no_input: boolean = false;
+    noInput: boolean = false;
 
     /**
      * Whether or not the game is currently outputting anything to the console.
      */
-    no_output: boolean = false;
+    noOutput: boolean = false;
 
     /**
      * If the game is currently running.
@@ -478,7 +478,7 @@ export class Game {
      * Ask the user a question and returns their answer
      *
      * @param q The question to ask
-     * @param care If this is false, it overrides `game.no_input`. Only use this when debugging.
+     * @param care If this is false, it overrides `game.noInput`. Only use this when debugging.
      *
      * @returns What the user answered
      */
@@ -488,8 +488,8 @@ export class Game {
             return a;
         }
 
-        if (this.no_output) q = "";
-        if (this.no_input && care) return wrapper("");
+        if (this.noOutput) q = "";
+        if (this.noInput && care) return wrapper("");
 
         q = functions.parseTags(q);
 
@@ -514,7 +514,7 @@ export class Game {
     }
 
     private logWrapper(callback: Function, ...data: any) {
-        if (this.no_output) return;
+        if (this.noOutput) return;
 
         data = data.map((i: any) => typeof i === "string" ? functions.parseTags(i) : i);
         callback(...data);
@@ -626,10 +626,10 @@ export class Game {
         this.player1.emptyMana = 1;
         this.player1.mana = 1;
 
-        let the_coin = new Card("The Coin", this.player2);
+        let coin = new Card("The Coin", this.player2);
 
         let unsuppress = functions.suppressEvent("AddCardToHand");
-        this.player2.addToHand(the_coin);
+        this.player2.addToHand(coin);
         unsuppress();
 
         this.turns += 1;
@@ -1436,11 +1436,11 @@ const cards = {
      * 
      * @param minion The minion to summon
      * @param player The player who gets the minion
-     * @param trigger_colossal If the minion has colossal, summon the other minions.
+     * @param colossal If the minion has colossal, summon the other minions.
      * 
      * @returns The minion summoned
      */
-    summon(minion: Card, player: Player, trigger_colossal: boolean = true): true | "space" | "colossal" | "invalid" {
+    summon(minion: Card, player: Player, colossal: boolean = true): true | "space" | "colossal" | "invalid" {
         if (!minion || !player) {
             if (game.evaling) throw new TypeError("Evaling Error - The `minion` or `player` argument passed to `summonMinion` are invalid. Make sure you passed in both arguments.");
             return "invalid";
@@ -1459,7 +1459,7 @@ const cards = {
             minion.canAttackHero = false;
         }
 
-        if (minion.colossal && trigger_colossal) {
+        if (minion.colossal && colossal) {
             // minion.colossal is a string array.
             // example: ["Left Arm", "", "Right Arm"]
             // the "" gets replaced with the main minion

@@ -90,13 +90,13 @@ function upgradeCard(path: string, data: string, file: fs.Dirent) {
 
     // Replace the card's id with a new one
     data = data.replace(/\n {4}id: (\d+),?/, "");
-    let currentId = Number(fs.readFileSync(game.functions.dirname() + "/cards/.latest_id", { encoding: "utf8" })) + 1;
+    let currentId = Number(fs.readFileSync(game.functions.dirname() + "/cards/.latestId", { encoding: "utf8" })) + 1;
 
     data = data.replace(/( {4}.+: .+,)(\n\n {4}.*\(plr, game, (self|card))/, `$1\n    id: ${currentId},$2`);
     data = data.replace(/( {4}uncollectible: .*?),?\n\}/, `$1,\n    id: ${currentId},\n}`);
     game.log(`Card was assigned id ${currentId}.`);
 
-    fs.writeFileSync(game.functions.dirname() + "/cards/.latest_id", `${currentId}`);
+    fs.writeFileSync(game.functions.dirname() + "/cards/.latestId", `${currentId}`);
 
     if (hasPassive) {
         // Find key

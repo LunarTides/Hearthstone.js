@@ -12,7 +12,7 @@ const { game, player1, player2 } = createGame();
 let matchingCards: string[] = [];
 let finishedCards: string[] = [];
 
-let finishedCardsPath = "patched_cards.txt";
+let finishedCardsPath = "patchedCards.txt";
 
 function getFinishedCards(path: string) {
     // If the file doesn't exist, return.
@@ -37,11 +37,11 @@ function searchCards(query: RegExp | string) {
 
 function main() {
     game.interact.cls();
-    let use_regex = rl.keyInYN("Do you want to use regular expressions? (Don't do this unless you know what regex is, and how to use it)");
+    let useRegex = rl.keyInYN("Do you want to use regular expressions? (Don't do this unless you know what regex is, and how to use it)");
     let search: string | RegExp = game.input("Search: ");
 
     // Ignore case
-    if (use_regex) search = new RegExp(search, "i");
+    if (useRegex) search = new RegExp(search, "i");
 
     finishedCardsPath = `./${search}_${finishedCardsPath}`;
     // Remove any character that is not in /A-Za-z0-9_ /

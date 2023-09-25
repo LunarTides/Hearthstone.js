@@ -160,19 +160,19 @@ export function main(debug = false, overrideType?: lib.CCType) {
         let cardName = game.input("\nName / dbfId (Type 'back' to cancel): ");
         if (game.interact.shouldExit(cardName)) break;
 
-        let filtered_cards = vanillaCards.filter(c => c.name.toLowerCase() == cardName.toLowerCase() || c.dbfId == parseInt(cardName));
-        filtered_cards = game.functions.filterVanillaCards(filtered_cards, false, true);
+        let filteredCards = vanillaCards.filter(c => c.name.toLowerCase() == cardName.toLowerCase() || c.dbfId == parseInt(cardName));
+        filteredCards = game.functions.filterVanillaCards(filteredCards, false, true);
 
-        if (filtered_cards.length <= 0) {
+        if (filteredCards.length <= 0) {
             game.log("Invalid card.\n");
             continue;
         }
 
         let card;
 
-        if (filtered_cards.length > 1) {
+        if (filteredCards.length > 1) {
             // Prompt the user to pick one
-            filtered_cards.forEach((c, i) => {
+            filteredCards.forEach((c, i) => {
                 // Get rid of useless information
                 delete c["elite"];
                 delete c["heroPowerDbfId"];
@@ -186,15 +186,15 @@ export function main(debug = false, overrideType?: lib.CCType) {
                 game.log(card);
             });
 
-            let picked = parseInt(game.input(`Pick one (1-${filtered_cards.length}): `));
-            if (!picked || !filtered_cards[picked - 1]) {
+            let picked = parseInt(game.input(`Pick one (1-${filteredCards.length}): `));
+            if (!picked || !filteredCards[picked - 1]) {
                 game.log("Invalid number.\n");
                 continue;
             }
 
-            card = filtered_cards[picked - 1];
+            card = filteredCards[picked - 1];
         }
-        else card = filtered_cards[0];
+        else card = filteredCards[0];
 
         game.log(`Found '${card.name}'\n`);
 

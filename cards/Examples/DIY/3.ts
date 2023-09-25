@@ -107,12 +107,12 @@ export const blueprint: Blueprint = {
             const val = _unknownVal as EventValue<"TargetSelectionStarts">;
 
             // Don't check for `prompt` since there is no correct prompt
-            let [prompt, card, force_side, force_class, flags] = val;
+            let [prompt, card, forceSide, forceClass, flags] = val;
 
             correctParameters = (
                 card == self &&
-                force_side == "any" &&
-                force_class == "minion" &&
+                forceSide == "any" &&
+                forceClass == "minion" &&
                 flags.length == 0
             );
 

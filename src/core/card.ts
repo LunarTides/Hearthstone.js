@@ -68,12 +68,12 @@ export class Card {
      * 
      * @example
      * let sheep = new Card("Sheep", plr);
-     * let another_sheep = new Card("Sheep", plr);
+     * let anotherSheep = new Card("Sheep", plr);
      * 
-     * let the_coin = new Card("The Coin", plr);
+     * let theCoin = new Card("The Coin", plr);
      * 
-     * assert.equal(sheep.id, another_sheep.id);
-     * assert.notEqual(sheep.id, the_coin.id);
+     * assert.equal(sheep.id, anotherSheep.id);
+     * assert.notEqual(sheep.id, theCoin.id);
      */
     id: number = -1;
 
@@ -226,7 +226,7 @@ export class Card {
      * [
      *     {
      *         "enchantment": "-1 cost",
-     *         "owner": // some_card
+     *         "owner": // someCard
      *     }
      * ]
      * ```
@@ -874,7 +874,7 @@ export class Card {
     activate(name: CardAbility, ...args: any): any[] | -1 | false {
         // This activates a function
         // Example: activate("cast")
-        // Do: this.cast.forEach(cast_func => cast_func(plr, game, card))
+        // Do: this.cast.forEach(castFunc => castFunc(plr, game, card))
         // Returns a list of the return values from all the function calls
         let ability: Ability[] | undefined = this.abilities[name];
 
@@ -949,20 +949,20 @@ export class Card {
      * @returns If the condition is met
      */
     condition(): boolean {
-        const cleared_text = " <bright:green>(Condition cleared!)</bright:green>";
-        const cleared_text_alt = "<bright:green>Condition cleared!</bright:green>";
+        const clearedText = " <bright:green>(Condition cleared!)</bright:green>";
+        const clearedTextAlt = "<bright:green>Condition cleared!</bright:green>";
 
         // Remove the (Condition cleared!) from the description
-        this.desc = this.desc?.replace(cleared_text, "");
-        this.desc = this.desc?.replace(cleared_text_alt, "");
+        this.desc = this.desc?.replace(clearedText, "");
+        this.desc = this.desc?.replace(clearedTextAlt, "");
 
         // Check if the condition is met
         let condition = this.activate("condition");
         if (!(condition instanceof Array) || condition[0] === false) return false;
 
         // Add the (Condition cleared!) to the description
-        if (this.desc) this.desc += cleared_text;
-        else this.desc += cleared_text_alt;
+        if (this.desc) this.desc += clearedText;
+        else this.desc += clearedTextAlt;
 
         return true;
     }
@@ -1007,14 +1007,14 @@ export class Card {
      */
     applyEnchantments(): boolean {
         // Apply baseline for int values.
-        const whitelisted_vars = ["maxHealth", "cost"];
+        const whitelistedVars = ["maxHealth", "cost"];
 
         let vars = Object.entries(this);
         // Filter for only numbers
         vars = vars.filter(c => typeof(c[1]) == "number");
 
         // Filter for vars in the whitelist
-        vars = vars.filter(c => whitelisted_vars.includes(c[0]));
+        vars = vars.filter(c => whitelistedVars.includes(c[0]));
 
         // Get keys
         let keys: string[] = [];
@@ -1138,11 +1138,11 @@ export class Card {
 
         // Update is enabled
         let info = this.getEnchantmentInfo(e);
-        let new_enchantment = `+0 ${info.key}`;
+        let newEnchantment = `+0 ${info.key}`;
 
         // This will cause the variable to be reset since it is in the enchantments list.
-        this.addEnchantment(new_enchantment, this);
-        this.removeEnchantment(new_enchantment, this, false);
+        this.addEnchantment(newEnchantment, this);
+        this.removeEnchantment(newEnchantment, this, false);
 
         return true;
     }

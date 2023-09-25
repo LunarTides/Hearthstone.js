@@ -13,8 +13,8 @@ const config = game.config;
 const classes = game.functions.getClasses();
 let cards = game.functions.getCards();
 
-let chosen_class: CardClassNoNeutral;
-let filtered_cards: Blueprint[] = [];
+let chosenClass: CardClassNoNeutral;
+let filteredCards: Blueprint[] = [];
 
 let deck: Blueprint[] = [];
 let runes = "";
@@ -177,7 +177,7 @@ function sortCards(_cards: Blueprint[]) {
 function searchCards(_cards: Blueprint[], sQuery: string) {
     if (sQuery.length <= 0) return _cards;
 
-    let ret_cards: Blueprint[] = [];
+    let retCards: Blueprint[] = [];
 
     let splitQuery = sQuery.split(":");
 
@@ -191,10 +191,10 @@ function searchCards(_cards: Blueprint[], sQuery: string) {
 
             if (!name.includes(query) && !desc.includes(query)) return;
 
-            ret_cards.push(c);
+            retCards.push(c);
         });
 
-        return ret_cards;
+        return retCards;
     }
 
     let [key, val] = splitQuery;
@@ -249,12 +249,12 @@ function searchCards(_cards: Blueprint[], sQuery: string) {
             return;
         }
 
-        if (ret) ret_cards.push(c);
+        if (ret) retCards.push(c);
     });
 
     if (error) return false;
 
-    return ret_cards;
+    return retCards;
 }
 
 function noCards() {
@@ -279,23 +279,23 @@ function showCards() {
     // If there are no cards, ask the user if they want to search for uncollectible cards
     if (cards.length <= 0) noCards();
 
-    filtered_cards = [];
+    filteredCards = [];
     printName();
 
     // If the user chose to view an invalid class, reset the viewed class to default.
-    let correctClass = game.functions.validateClasses([chosen_class], settings.view.class ?? chosen_class);
-    if (!settings.view.class || !correctClass) settings.view.class = chosen_class;
+    let correctClass = game.functions.validateClasses([chosenClass], settings.view.class ?? chosenClass);
+    if (!settings.view.class || !correctClass) settings.view.class = chosenClass;
 
     // Filter away cards that aren't in the chosen class
     Object.values(cards).forEach(c => {
         if (c.runes && !plr.testRunes(c.runes)) return;
 
-        let correctClass = game.functions.validateClasses(c.classes, settings.view.class ?? chosen_class);
-        if (correctClass) filtered_cards.push(c);
+        let correctClass = game.functions.validateClasses(c.classes, settings.view.class ?? chosenClass);
+        if (correctClass) filteredCards.push(c);
     });
 
-    if (filtered_cards.length <= 0) {
-        game.log(`<yellow>No cards found for the selected classes '${chosen_class} and Neutral'.</yellow>`);
+    if (filteredCards.length <= 0) {
+        game.log(`<yellow>No cards found for the selected classes '${chosenClass} and Neutral'.</yellow>`);
     }
 
     let cpp = settings.view.cpp;
@@ -306,7 +306,7 @@ function showCards() {
     if (settings.search.query.length > 0) game.log(`Searching for '${settings.search.query.join(' ')}'.`);
 
     // Filter to show only cards in the viewed class
-    let classCards = Object.values(filtered_cards).filter(c => c.classes.includes(settings.view.class ?? chosen_class));
+    let classCards = Object.values(filteredCards).filter(c => c.classes.includes(settings.view.class ?? chosenClass));
 
     if (classCards.length <= 0) {
         game.log(`<yellow>No cards found for the viewed class '${settings.view.class}'.</yellow>`);
@@ -406,10 +406,10 @@ function showCards() {
 }
 
 function showRules() {
-    let config_text = "### RULES ###";
-    game.log("#".repeat(config_text.length));
-    game.log(config_text);
-    game.log("#".repeat(config_text.length));
+    let configText = "### RULES ###";
+    game.log("#".repeat(configText.length));
+    game.log(configText);
+    game.log("#".repeat(configText.length));
 
     game.log("#");
 
@@ -431,13 +431,13 @@ function showRules() {
 
     game.log("#");
 
-    game.log("#".repeat(config_text.length));
+    game.log("#".repeat(configText.length));
 }
 
 function findCard(card: string | number): Blueprint | null {
     let _card: Blueprint | null = null;
 
-    Object.values(filtered_cards).forEach(c => {
+    Object.values(filteredCards).forEach(c => {
         if (c.id == card || (typeof card === "string" && game.interact.getDisplayName(c).toLowerCase() == card.toLowerCase())) _card = c;
     });
 
@@ -531,7 +531,7 @@ function showDeck() {
 }
 
 function deckcode(parseVanillaOnPseudo = false) {
-    let _deckcode = game.functions.deckcode.export(deck, chosen_class, runes);
+    let _deckcode = game.functions.deckcode.export(deck, chosenClass, runes);
 
     if (_deckcode.error) {
         let error = _deckcode.error;
@@ -694,9 +694,9 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
             return false;
         }
 
-        let correctClass = game.functions.validateClasses([chosen_class], heroClass);
+        let correctClass = game.functions.validateClasses([chosenClass], heroClass);
         if (!correctClass) {
-            game.input(`<yellow>Class '${heroClass}' is a different class. To see these cards, please switch class from '${chosen_class}' to '${heroClass}' to avoid confusion.</yellow>\n`);
+            game.input(`<yellow>Class '${heroClass}' is a different class. To see these cards, please switch class from '${chosenClass}' to '${heroClass}' to avoid confusion.</yellow>\n`);
             return false;
         }
 
@@ -742,7 +742,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         deck = [];
 
         // Update the filtered cards
-        chosen_class = plr.heroClass as CardClassNoNeutral;
+        chosenClass = plr.heroClass as CardClassNoNeutral;
         runes = plr.runes;
         showCards();
 
@@ -754,16 +754,16 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
     }
     else if (name === "class") {
         let _runes = runes;
-        let new_class = askClass();
+        let newClass = askClass();
 
-        if (new_class == chosen_class && runes == _runes) {
+        if (newClass == chosenClass && runes == _runes) {
             game.input("<yellow>Your class was not changed</yellow>\n");
             return false;
         }
 
         deck = [];
-        chosen_class = new_class as CardClassNoNeutral;
-        if (settings.view.class != "Neutral") settings.view.class = chosen_class;
+        chosenClass = newClass as CardClassNoNeutral;
+        if (settings.view.class != "Neutral") settings.view.class = chosenClass;
     }
     else if (name === "undo") {
         if (settings.commands.undoableHistory.length <= 0) {
@@ -805,41 +805,41 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
             return false;
         }
 
-        let new_state;
+        let newState;
 
         if (args.length <= 1) {
             // Toggle
-            new_state = !warnings[key];
+            newState = !warnings[key];
         }
         else {
             let val = args[1];
 
-            if (["off", "disable", "false", "no", "0"].includes(val)) new_state = false;
-            else if (["on", "enable", "true", "yes", "1"].includes(val)) new_state = true;
+            if (["off", "disable", "false", "no", "0"].includes(val)) newState = false;
+            else if (["on", "enable", "true", "yes", "1"].includes(val)) newState = true;
             else {
                 game.input(`<red>${val} is not a valid state. View 'help' for more information.</red>\n`);
                 return false;
             }
         }
 
-        if (warnings[key] == new_state) {
+        if (warnings[key] == newState) {
             let strbuilder = "";
 
             strbuilder += "<yellow>Warning '</yellow>";
             strbuilder += `<bright:yellow>${key}</bright:yellow>`;
             strbuilder += "<yellow>' is already ";
-            strbuilder += (new_state) ? "enabled" : "disabled";
+            strbuilder += (newState) ? "enabled" : "disabled";
             strbuilder += ".</yellow>\n";
 
             game.input(strbuilder);
             return false;
         }
 
-        warnings[key] = new_state;
+        warnings[key] = newState;
 
         let strbuilder = "";
 
-        strbuilder += (new_state) ? "<bright:green>Enabled warning</bright:green>" : "<red>Disabled warning</red>";
+        strbuilder += (newState) ? "<bright:green>Enabled warning</bright:green>" : "<red>Disabled warning</red>";
         strbuilder += "<yellow> '";
         strbuilder += key;
         strbuilder += "'.</yellow>\n";
@@ -965,7 +965,7 @@ export function main() {
     running = true;
     game.functions.importCards();
 
-    chosen_class = askClass();
+    chosenClass = askClass();
 
     while (running) {
         if (settings.view.type == "cards") showCards();

@@ -467,9 +467,7 @@ export class Player {
      * 
      * # Examples
      * ```
-     * let weapon_name = "some weapon name";
-     * 
-     * let weapon = new Card(weapon_name, player);
+     * let weapon = new Card("some weapon name", player);
      * player.setWeapon(weapon); 
      * ```
      * 
@@ -654,14 +652,14 @@ export class Player {
      * @returns The card drawn | The amount of fatigue the player was dealt
      */
     drawCard(): Card | number {
-        let deck_length = this.deck.length;
+        let deckLength = this.deck.length;
         
         /**
          * The card to draw
          */
         let card = this.deck.pop();
 
-        if (deck_length <= 0 || !(card instanceof Card)) {
+        if (deckLength <= 0 || !(card instanceof Card)) {
             this.fatigue++;
 
             this.remHealth(this.fatigue);
@@ -834,13 +832,13 @@ export class Player {
      */
     testRunes(runes: string): boolean {
         const charCount = (str: string, letter: string) => {
-            let letter_count = 0;
+            let letterCount = 0;
 
             for (let i = 0; i < str.length; i++) {
-                if (str.charAt(i) == letter) letter_count++;
+                if (str.charAt(i) == letter) letterCount++;
             }
 
-            return letter_count;
+            return letterCount;
         }
 
         let blood = charCount(runes, "B");

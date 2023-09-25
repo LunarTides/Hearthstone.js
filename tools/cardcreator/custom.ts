@@ -27,8 +27,8 @@ function applyCard(_card: Blueprint) {
     Object.entries(_card).forEach(c => {
         let [key, val] = c;
 
-        let required_keys = ["name", "desc", "cost", "class", "rarity", "stats", "durability", "hpDesc", "hpCost", "cooldown"];
-        if (!val && val !== 0 && !required_keys.includes(key)) return;
+        let requiredKeys = ["name", "desc", "cost", "class", "rarity", "stats", "durability", "hpDesc", "hpCost", "cooldown"];
+        if (!val && val !== 0 && !requiredKeys.includes(key)) return;
 
         // HACK: Well, it is not ts-expect-error at least
         newCard[key as keyof Blueprint] = val as never;

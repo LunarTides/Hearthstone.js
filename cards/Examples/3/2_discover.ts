@@ -27,7 +27,7 @@ export const blueprint: Blueprint = {
         // What you are looking at now is a Blueprint, so we can access the `type` variable since if you look up, this Blueprint has the `type` variable.
         cards = cards.filter(c => c.type == "Spell"); 
 
-        // interact.discover(prompt, pool, if_it_should_filter_away_cards_that_are_not_the_players_class = true, amount_of_cards_to_choose_from = 3)
+        // interact.discover(prompt, pool, ifItShouldFilterAwayCardsThatAreNotThePlayersClass = true, amountOfCardsToChooseFrom = 3)
         let spell = game.interact.discover("Discover a spell.", cards);
 
         // If no card was chosen, refund

@@ -27,6 +27,7 @@ export function main() {
         const { game, player1, player2 } = createGame();
         game.config.ai.player1 = false;
         game.config.ai.player2 = false;
+        game.doConfigAI();
 
         game.setup(player1, player2);
         game.player = player1;
@@ -48,9 +49,9 @@ export function main() {
 
         const card = new Card(blueprint.name, player1);
         
-        game.no_output = true;
+        game.noOutput = true;
         let error = testCard(card);
-        game.no_output = false;
+        game.noOutput = false;
 
         if (error instanceof Error) {
             game.logError(`<red>ERROR: ${card.name} didn't pass its test. Here is the error. THIS ERROR IS PART OF THE SCRIPT, NOT AN ACTUAL ERROR.</red>`);

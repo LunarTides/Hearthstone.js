@@ -3,7 +3,7 @@
  * @module Functions
  */
 import * as fs from "fs";
-import * as child_process from "child_process";
+import * as childProcess from "child_process";
 // To decode vanilla deckcodes
 import * as deckstrings from "deckstrings";
 
@@ -34,9 +34,9 @@ const deckcode = {
         /**
          * Cause the function to return an error
          */
-        const ERROR = (error_code: string, card_name: string | null = null): null => {
-            game.log(`<red>This deck is not valid!\nError Code: <yellow>${error_code}</yellow red>`);
-            if (card_name) game.log(`<red>Specific Card that caused this error: <yellow>${card_name}</yellow red>`);
+        const ERROR = (errorCode: string, cardName: string | null = null): null => {
+            game.log(`<red>This deck is not valid!\nError Code: <yellow>${errorCode}</yellow red>`);
+            if (cardName) game.log(`<red>Specific Card that caused this error: <yellow>${cardName}</yellow red>`);
             game.input();
             return null;
         }
@@ -75,12 +75,12 @@ const deckcode = {
 
         plr.heroClass = hero as CardClass;
 
-        let rune_classes = ["Death Knight"];
-        let rune_class = rune_classes.includes(hero);
+        let runeClasses = ["Death Knight"];
+        let runeClass = runeClasses.includes(hero);
 
         const addRunes = (runes: string) => {
-            if (rune_class) plr.runes = runes;
-            else game.input(`<yellow>WARNING: This deck has runes in it, but the class is <bright:yellow>${hero}</bright:yellow>. Supported classes: <bright:yellow>${rune_classes.join(", ")}</bright:yellow yellow>\n`);
+            if (runeClass) plr.runes = runes;
+            else game.input(`<yellow>WARNING: This deck has runes in it, but the class is <bright:yellow>${hero}</bright:yellow>. Supported classes: <bright:yellow>${runeClasses.join(", ")}</bright:yellow yellow>\n`);
         }
 
         // Runes
@@ -102,8 +102,8 @@ const deckcode = {
             code = code.slice(6);
             addRunes(runes);
         }
-        else if (rune_class) {
-            game.input(`<yellow>WARNING: This class supports runes but there are no runes in this deck. This deck's class: <bright:yellow>${hero}</bright:yellow>. Supported classes: <bright:yellow>${rune_classes.join(", ")}</bright:yellow yellow>\n`);
+        else if (runeClass) {
+            game.input(`<yellow>WARNING: This class supports runes but there are no runes in this deck. This deck's class: <bright:yellow>${hero}</bright:yellow>. Supported classes: <bright:yellow>${runeClasses.join(", ")}</bright:yellow yellow>\n`);
         }
 
         // Find /3:5,2:8,1/
@@ -500,7 +500,7 @@ const deckcode = {
             process.exit(1);
         }
 
-        let new_deck: [Card, number][] = [];
+        let newDeck: [Card, number][] = [];
 
         // All cards in the deck exists
         let amounts: { [amount: number]: number } = {};
@@ -513,14 +513,14 @@ const deckcode = {
             if (!createdCards.find(a => a.name == name)) name = createdCards.find(a => (a.displayName ?? "") == name)?.name;
             if (!name) throw new Error("Could not get name from card in deckdefinition");
 
-            new_deck.push([new Card(name, plr), amount]);
+            newDeck.push([new Card(name, plr), amount]);
 
             if (!amounts[amount]) amounts[amount] = 0;
             amounts[amount]++;
         });
 
-        // Sort the `new_deck` array, lowest amount first
-        new_deck = new_deck.sort((a, b) => {
+        // Sort the `newDeck` array, lowest amount first
+        newDeck = newDeck.sort((a, b) => {
             return a[1] - b[1];
         });
 
@@ -531,7 +531,7 @@ const deckcode = {
         let runes = "";
 
         if (heroClass == "Death Knight") {
-            new_deck.forEach(c => {
+            newDeck.forEach(c => {
                 let card = c[0];
 
                 if (!card.runes) return;
@@ -539,20 +539,20 @@ const deckcode = {
                 runes += card.runes;
             });
 
-            let sorted_runes = "";
+            let sortedRunes = "";
 
-            if (runes.includes("B")) sorted_runes += "B";
-            if (runes.includes("F")) sorted_runes += "F";
-            if (runes.includes("U")) sorted_runes += "U";
+            if (runes.includes("B")) sortedRunes += "B";
+            if (runes.includes("F")) sortedRunes += "F";
+            if (runes.includes("U")) sortedRunes += "U";
 
             runes = runes.replace("B", "");
             runes = runes.replace("F", "");
             runes = runes.replace("U", "");
 
-            sorted_runes += runes;
+            sortedRunes += runes;
 
             // Only use the first 3 characters
-            runes = sorted_runes.slice(0, 3);
+            runes = sortedRunes.slice(0, 3);
 
             if (runes === "") runes = "3B";
 
@@ -574,7 +574,7 @@ const deckcode = {
 
         deckcode += `/ `;
 
-        deckcode += new_deck.map(c => c[0].id.toString(36)).join(',');
+        deckcode += newDeck.map(c => c[0].id.toString(36)).join(',');
 
         return deckcode;
     }
@@ -751,15 +751,15 @@ export const functions = {
         /**
          * The longest brick
          */
-        let longest_brick: [string, number] = ["", -Infinity];
+        let longestBrick: [string, number] = ["", -Infinity];
 
         bricks.forEach(b => {
             let splitBrick = b.split(sep);
 
             let length = splitBrick[0].length;
 
-            if (length <= longest_brick[1]) return;
-            longest_brick = [b, length];
+            if (length <= longestBrick[1]) return;
+            longestBrick = [b, length];
         });
 
         /**
@@ -771,7 +771,7 @@ export const functions = {
             let splitBrick = b.split(sep);
 
             let strbuilder = "";
-            let diff = longest_brick[1] - splitBrick[0].length;
+            let diff = longestBrick[1] - splitBrick[0].length;
 
             strbuilder += splitBrick[0];
             strbuilder += " ".repeat(diff);
@@ -848,16 +848,16 @@ Error:
 ${err.stack}
 `
 
-        let history_content = `-- History --${history}`;
-        let ai_content = `\n-- AI Logs --\n${aiHistory}`;
+        let historyContent = `-- History --${history}`;
+        let aiContent = `\n-- AI Logs --\n${aiHistory}`;
 
         let config = JSON.stringify(game.config, null, 2);
-        let config_content = `\n-- Config --\n${config}`;
+        let configContent = `\n-- Config --\n${config}`;
 
-        let main_content = history_content;
-        if (game.config.ai.player1 || game.config.ai.player2) main_content += ai_content;
-        main_content += config_content;
-        main_content += errorContent;
+        let mainContent = historyContent;
+        if (game.config.ai.player1 || game.config.ai.player2) mainContent += aiContent;
+        mainContent += configContent;
+        mainContent += errorContent;
 
         let osName: string = process.platform;
 
@@ -884,7 +884,7 @@ Version: ${this.getVersion(4)}
 Operating System: ${osName}
 Log File Version: 3
 
-${main_content}
+${mainContent}
 `
 
         let filename = "log";
@@ -956,7 +956,7 @@ ${main_content}
      */
     runCommand(cmd: string): string | Error {
         try {
-            return child_process.execSync(cmd).toString();
+            return childProcess.execSync(cmd).toString();
         } catch (err) {
             return err;
         }
@@ -1031,19 +1031,19 @@ ${main_content}
         cards = cards.filter(a => a.set && !a.set.includes("PLACEHOLDER_"));
         cards = cards.filter(a => !a.mercenariesRole);
 
-        let __cards: VanillaCard[] = [];
+        let filteredCards: VanillaCard[] = [];
 
         cards.forEach(a => {
             // If the set is `HERO_SKINS`, only include it if it's id is `HERO_xx`, where the x's are a number.
             if (a.set && a.set.includes("HERO_SKINS")) {
-                if (keepHeroSkins && /HERO_\d\d/.test(a.id)) __cards.push(a);
+                if (keepHeroSkins && /HERO_\d\d/.test(a.id)) filteredCards.push(a);
 
                 return;
             }
-            __cards.push(a);
+            filteredCards.push(a);
         });
 
-        cards = __cards;
+        cards = filteredCards;
         
         if (dangerous) {
             // If any of the cards have a 'howToEarn' field, filter away any cards that don't have that
@@ -1072,7 +1072,7 @@ ${main_content}
         // Windows vs Linux. Pros and Cons:
         if (process.platform == "win32") {
             // Windows
-            child_process.spawn(`start ${command}`);
+            childProcess.spawn(`start ${command}`);
         } else {
             // Linux (/ Mac)
 
@@ -1080,14 +1080,14 @@ ${main_content}
 
             let attempts: string[] = [];
 
-            const isCommandAvailable = (test_command: string, args_specifier: string) => {
-                game.log(`Trying '${test_command} ${args_specifier}${command}'...`)
-                attempts.push(test_command);
+            const isCommandAvailable = (testCommand: string, argsSpecifier: string) => {
+                game.log(`Trying '${testCommand} ${argsSpecifier}${command}'...`)
+                attempts.push(testCommand);
 
-                let error = this.runCommand(`which ${test_command} 2> /dev/null`);
+                let error = this.runCommand(`which ${testCommand} 2> /dev/null`);
                 if (error instanceof Error) return false;
 
-                child_process.exec(`${test_command} ${args_specifier}${command}`);
+                childProcess.exec(`${testCommand} ${argsSpecifier}${command}`);
 
                 game.log(`Success!`);
 
@@ -1211,9 +1211,9 @@ ${main_content}
     },
 
     /**
-     * Returns if the `card_tribe` is `tribe` or 'All'
+     * Returns if the `cardTribe` is `tribe` or 'All'
      *
-     * @param card_tribe
+     * @param cardTribe
      * @param tribe
      * 
      * @example
@@ -1230,10 +1230,10 @@ ${main_content}
      * let result = matchTribe(card.tribe, "Beast");
      * assert.equal(result, true);
      */
-    matchTribe(card_tribe: MinionTribe, tribe: MinionTribe): boolean {
+    matchTribe(cardTribe: MinionTribe, tribe: MinionTribe): boolean {
         // If the card's tribe is "All".
-        if (/all/i.test(card_tribe)) return true;
-        else return card_tribe.includes(tribe);
+        if (/all/i.test(cardTribe)) return true;
+        else return cardTribe.includes(tribe);
     },
 
     /**
@@ -1419,16 +1419,16 @@ ${main_content}
 
             // This line fixes a bug that makes, for example, `</b>Test</b>.` make the `.` be red when it should be white. This bug is why all new battlecries were `<b>Battlecry:</b> Deal...` instead of `<b>Battlecry: </b>Deal...`. I will see which one i choose in the future.
             // Update: I discourge the use of `reset` now that you cancel tags manually. Use `</>` instead.
-            if (current_types.includes("reset")) current_types = ["reset"]; 
+            if (currentTypes.includes("reset")) currentTypes = ["reset"]; 
 
             const readNextType = (index: number): string => {
-                if (index >= current_types.length - 1) return "";
+                if (index >= currentTypes.length - 1) return "";
 
-                return current_types[index + 1];
+                return currentTypes[index + 1];
             };
 
             let partOfRGB: number[] = [];
-            current_types.reverse().forEach((t, index) => {
+            currentTypes.reverse().forEach((t, index) => {
                 // The type is part of an rgb value. Ignore it
                 if (partOfRGB.includes(index)) return;
 
@@ -1552,7 +1552,7 @@ ${main_content}
                         break;
                     
                     case "reset":
-                        current_types = [];
+                        currentTypes = [];
 
                         ret = chalk.reset(ret);
                         break;
@@ -1596,7 +1596,7 @@ ${main_content}
 
         let strbuilder = "";
         let wordStringbuilder = "";
-        let current_types: string[] = [];
+        let currentTypes: string[] = [];
 
         let tagbuilder = "";
         let readingTag = false;
@@ -1645,18 +1645,18 @@ ${main_content}
                 let currentTags = tagbuilder.split(" ");
                 tagbuilder = "";
 
-                if (!removeTag) current_types.push(...currentTags);
+                if (!removeTag) currentTypes.push(...currentTags);
                 else {
                     removeTag = false;
 
                     // If the tag is </>, remove all tags
                     if (readPrevious(i) === "/") {
-                        current_types = [];
+                        currentTypes = [];
                         return;
                     };
 
                     currentTags.forEach(tag => {
-                        current_types = current_types.filter(type => !type.startsWith(tag));
+                        currentTypes = currentTypes.filter(type => !type.startsWith(tag));
                     });
                 }
 
@@ -1890,7 +1890,7 @@ ${main_content}
 
         game.interact.printAll(game.player);
 
-        let possible_cards = [
+        let possibleCards = [
             ["Crackling Shield", "Divine Shield"],
             ["Flaming Claws", "+3 Attack"],
             ["Living Spores", "Deathrattle: Summon two 1/1 Plants."],
@@ -1906,13 +1906,13 @@ ${main_content}
 
         if (values.length == 0) {
             for (let i = 0; i < 3; i++) {
-                let c = this.randList(possible_cards)?.actual;
+                let c = this.randList(possibleCards)?.actual;
                 if (!c) throw new Error("null when randomly choosing adapt option");
 
                 if (c instanceof Card) throw new TypeError();
 
                 values.push(c);
-                this.remove(possible_cards, c);
+                this.remove(possibleCards, c);
             }
         }
 
@@ -1999,9 +1999,9 @@ ${main_content}
      */
     invoke(plr: Player): boolean {
         // Find the card in player's deck/hand/hero that begins with "Galakrond, the "
-        let deck_galakrond = plr.deck.find(c => c.displayName.startsWith("Galakrond, the "));
-        let hand_galakrond = plr.hand.find(c => c.displayName.startsWith("Galakrond, the "));
-        if ((!deck_galakrond && !hand_galakrond) && !plr.hero?.displayName.startsWith("Galakrond, the ")) return false;
+        let deckGalakrond = plr.deck.find(c => c.displayName.startsWith("Galakrond, the "));
+        let handGalakrond = plr.hand.find(c => c.displayName.startsWith("Galakrond, the "));
+        if ((!deckGalakrond && !handGalakrond) && !plr.hero?.displayName.startsWith("Galakrond, the ")) return false;
 
         plr.deck.filter(c => {
             c.activate("invoke");
@@ -2014,8 +2014,8 @@ ${main_content}
         });
 
         if (plr.hero?.displayName.startsWith("Galakrond, the ")) plr.hero.activate("heropower");
-        else if (deck_galakrond) deck_galakrond.activate("heropower");
-        else if (hand_galakrond) hand_galakrond.activate("heropower");
+        else if (deckGalakrond) deckGalakrond.activate("heropower");
+        else if (handGalakrond) handGalakrond.activate("heropower");
 
         return true;
     },

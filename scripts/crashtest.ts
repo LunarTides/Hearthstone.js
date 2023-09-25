@@ -26,7 +26,7 @@ function main() {
         game.config.ai.player2 = true;
         game.doConfigAI();
 
-        game.no_input = true;
+        game.noInput = true;
 
         // Choose random decks for the players
         for (let i = 0; i < 2; i++) {

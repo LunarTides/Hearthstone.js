@@ -365,7 +365,7 @@ export type SelectTargetClass = "hero" | "minion" | "any";
 /**
  * {@link interact.selectTarget | SelectTarget} flags
  */
-export type SelectTargetFlag = "allow_locations" | "force_elusive";
+export type SelectTargetFlag = "allowLocations" | "forceElusive";
 
 /**
  * {@link Game.constants | GameConstants} values.
