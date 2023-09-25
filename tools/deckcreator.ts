@@ -576,7 +576,7 @@ function help() {
     game.log("view (card | id)      - View a card");
     game.log("page (num)            - View a different page");
     game.log("cards (class)         - Show cards from 'class'");
-    game.log("sort (type) [order]   - Sorts by 'type' in 'order'ending order. (Type can be: ('rarity', 'name', 'cost', 'id', 'type'), Order can be: ('asc', 'text')) (Example: sort cost asc - Will show cards ordered by cost cost, ascending.)");
+    game.log("sort (type) [order]   - Sorts by 'type' in 'order'ending order. (Type can be: ('rarity', 'name', 'cost', 'id', 'type'), Order can be: ('asc', 'desc')) (Example: sort cost asc - Will show cards ordered by cost cost, ascending.)");
     game.log("search [query]        - Searches by query. Keys: ('name', 'text', 'cost', 'rarity', 'id'), Examples: (search the - Search for all cards with the word 'the' in the name or description, case insensitive.), (search cost:2 - Search for all cards that costs 2 cost, search cost:even name:r - Search for all even cost cards with 'r' in its name)");
     game.log("undo                  - Undo the last action.");
     game.log("deck                  - Toggle deck-view");
