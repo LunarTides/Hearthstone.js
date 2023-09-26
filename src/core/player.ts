@@ -619,12 +619,12 @@ export class Player {
      */
     shuffleIntoDeck(card: Card): boolean {
         // Add the card into a random position in the deck
-        let pos = game.functions.randInt(0, this.deck.length);
+        let pos = game.lodash.random(0, this.deck.length);
         this.deck.splice(pos, 0, card);
 
         game.events.broadcast("AddCardToDeck", card, this);
 
-        this.deck = game.functions.shuffle(this.deck);
+        this.deck = game.lodash.shuffle(this.deck);
 
         return true;
     }

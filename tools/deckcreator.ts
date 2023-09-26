@@ -642,7 +642,7 @@ function getCardArg(cmd: string, callback: (card: Blueprint) => boolean, errorCa
 
     if (!card && eligibleForLatest) {
         if (warnings.latestCard) game.input(`<yellow>Card not found. Using latest valid card instead.</yellow>`);
-        card = game.functions.last(settings.card.history) ?? null;
+        card = game.lodash.last(settings.card.history) ?? null;
     }
 
     if (!card) {
@@ -771,7 +771,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
             return false;
         }
 
-        let commandSplit = game.functions.last(settings.commands.undoableHistory)?.split(" ");
+        let commandSplit = game.lodash.last(settings.commands.undoableHistory)?.split(" ");
         if (!commandSplit) {
             game.input("<red>Could not find anything to undo. This is a bug.</red>\n");
             return false;

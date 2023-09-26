@@ -6,6 +6,7 @@ import { question }  from 'readline-sync';
 import { functions, interact, Player, Card, AI, CardError } from "../internal.js";
 import { Blueprint, CardAbility, EventKey, EventManagerEvents, EventValue, GameAttackReturn, GameConstants, GamePlayCardReturn, QuestType, Target, TickHookCallback, UnknownEventValue } from "../types.js";
 import { config } from '../../config.js';
+import _ from "lodash";
 
 // Override the console methods to force using the wrapper functions
 // Set this variable to false to prevent disabling the console. (Not recommended)
@@ -438,6 +439,8 @@ export class Game {
      */
     cache: {[key: string]: any} = {};
 
+    lodash = _;
+
     constructor() {
         globalThis.game = this;
     }
@@ -455,7 +458,7 @@ export class Game {
         this.player2 = player2;
 
         // Choose a random player to be player 1 and player 2
-        if (functions.randInt(0, 1)) {
+        if (this.lodash.random(0, 1)) {
             this.player1 = player1;
             this.player2 = player2;
         } else {
@@ -1354,7 +1357,7 @@ const playCard = {
         if (stat.length <= 0) return false;
 
         // Get the latest event
-        let latest = functions.last(stat);
+        let latest = game.lodash.last(stat);
         let latestCard: Card = latest?.[0];
 
         // If the previous card played was played on the same turn as this one, activate combo

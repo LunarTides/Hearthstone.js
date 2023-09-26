@@ -30,6 +30,6 @@ export const blueprint: Blueprint = {
         let card = game.interact.dredge();
 
         // Check if the top card of the player's deck is the card that was dredged
-        assert(() => game.functions.last(plr.deck) === card);
+        assert(() => game.lodash.last(plr.deck) === card);
     }
 }

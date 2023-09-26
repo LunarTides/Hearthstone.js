@@ -19,24 +19,24 @@ const { game, player1, player2 } = createGame();
  */
 export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CCType) {
     // Harvest info
-    let cardClass = game.functions.capitalize(card.cardClass ?? "Neutral") as CardClass;
+    let cardClass = game.lodash.capitalize(card.cardClass ?? "Neutral") as CardClass;
     let collectible = card.collectible ?? false;
     let cost = card.cost ?? 0;
     let name = card.name;
     let rarity = "Free" as CardRarity;
-    if (card.rarity) rarity = game.functions.capitalize(card.rarity) as CardRarity;
+    if (card.rarity) rarity = game.lodash.capitalize(card.rarity) as CardRarity;
     let text = card.text ?? "";
-    let type = game.functions.capitalize(card.type);
+    let type = game.lodash.capitalize(card.type);
 
     // Minion info
     let attack = card.attack ?? -1;
     let health = card.health ?? -1;
     let races: MinionTribe[] = [];
-    if (card.races) races = card.races.map(r => game.functions.capitalize(r) as MinionTribe);
+    if (card.races) races = card.races.map(r => game.lodash.capitalize(r) as MinionTribe);
 
     // Spell info
     let spellSchool: SpellSchool | undefined;
-    if (card.spellSchool) spellSchool = game.functions.capitalize(card.spellSchool) as SpellSchool;
+    if (card.spellSchool) spellSchool = game.lodash.capitalize(card.spellSchool) as SpellSchool;
 
     // Weapon Info
     let durability = card.durability ?? -1;
