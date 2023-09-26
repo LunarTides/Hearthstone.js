@@ -33,8 +33,8 @@ export const blueprint: Blueprint = {
             return card.type === "Minion" && card.cost === target.cost + 1;
         });
 
-        // Choose a random minion from the filtered list. Use the actual and not a copy, since a copied blueprint is useless.
-        let rand = game.functions.randList(minions)?.actual;
+        // Choose a random minion from the filtered list.
+        let rand = game.lodash.sample(minions);
         if (!rand) return game.constants.REFUND;
 
         // Create the card

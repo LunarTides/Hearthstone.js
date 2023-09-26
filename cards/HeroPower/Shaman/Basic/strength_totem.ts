@@ -25,7 +25,7 @@ export const blueprint: Blueprint = {
         game.functions.remove(board, self);
 
         // Choose the random minion
-        const minion = game.functions.randList(board)?.actual;
+        const minion = game.lodash.sample(board);
         if (!minion) return;
 
         // Give that minion +1 Attack

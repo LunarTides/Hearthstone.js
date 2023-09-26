@@ -26,7 +26,7 @@ import { fileURLToPath } from "url";
 import { doImportCards, generateCardExports } from "../helper/cards.js";
 
 import { Player, Card } from "../internal.js";
-import { Blueprint, CardClass, CardClassNoNeutral, CardLike, CardRarity, EventKey, EventListenerCallback, FunctionsExportDeckError, FunctionsValidateCardReturn, MinionTribe, QuestCallback, RandListReturn, Target, TickHookCallback, VanillaCard } from "../types.js";
+import { Blueprint, CardClass, CardClassNoNeutral, CardLike, CardRarity, EventKey, EventListenerCallback, FunctionsExportDeckError, FunctionsValidateCardReturn, MinionTribe, QuestCallback, Target, TickHookCallback, VanillaCard } from "../types.js";
 import { validateBlueprint } from "../helper/validator.js";
 import { format } from "util";
 
@@ -235,7 +235,7 @@ const deckcode = {
             return "invalid";
         });
     
-        _deck = game.functions.shuffle(_deck);
+        _deck = game.lodash.shuffle(_deck);
 
         plr.deck = _deck;
 
@@ -482,7 +482,7 @@ const deckcode = {
         const { format, ...deck } = deckWithFormat;
 
         let _heroClass = vanillaCards.find(a => a.dbfId == deck.heroes[0])?.cardClass;
-        let heroClass = game.functions.capitalize(_heroClass?.toString() || game.player2.heroClass);
+        let heroClass = game.lodash.capitalize(_heroClass?.toString() || game.player2.heroClass);
 
         // Wtf hearthstone?
         if (heroClass == "Deathknight") heroClass = "Death Knight";
@@ -595,29 +595,6 @@ export const functions = {
     deckcode: deckcode,
 
     // QoL
-    // https://dev.to/codebubb/how-to-shuffle-an-array-in-javascript-2ikj - Vladyslav
-    /**
-     * Shuffle the array and return the result.
-     * 
-     * Does not change the original array.
-     * 
-     * @param array Array to shuffle
-     * 
-     * @returns Shuffled array
-     */
-    shuffle<T>(array: T[]): T[] {
-        const newArray = [...array];
-        const length = newArray.length;
-
-        for (let start = 0; start < length; start++) {
-            const randomPosition = this.randInt(0, (newArray.length - start) - 1);
-            const randomItem = newArray.splice(randomPosition, 1);
-
-            newArray.push(...randomItem);
-        }
-
-        return newArray;
-    },
 
     /**
      * Removes `element` from `list`.
@@ -635,84 +612,10 @@ export const functions = {
     },
 
     /**
-     * Returns the last element from a list.
-     */
-    last<T>(list: T[]): T | undefined {
-        return list[list.length - 1];
-    },
-
-    /**
      * Returns the last character from a string.
      */
     lastChar(string: string): string {
         return string[string.length - 1];
-    },
-
-    /**
-     * Return a random element from `list`.
-     * The return value might seem weird, but it's to remind you to use imperfect copies when needed.
-     * 
-     * @returns actual: The element, copy: If the element is a card, an imperfect copy of that card
-     */
-    randList<T>(list: T[]): RandListReturn<T> | null {
-        if (list.length <= 0) return null;
-
-        let item = list[this.randInt(0, list.length - 1)];
-        
-        if (item instanceof Card) return { actual: item, copy: item.imperfectCopy() as T };
-
-        return { actual: item, copy: this.cloneObject(item) };
-    },
-
-    /**
-     * Returns `amount` random items from `list`.
-     *
-     * @param list
-     * @param amount
-     * @param cpyCard If this is true and the element is a card, create an imperfect copy of that card.
-     *
-     * @returns The items
-     */
-    chooseItemsFromList<T>(list: T[], amount: number): (RandListReturn<T>)[] | null {
-        if (list.length <= 0) return null;
-        if (amount > list.length) amount = list.length;
-
-        // Make a copy of the list
-        list = list.slice();
-        let elements: RandListReturn<T>[] = [];
-
-        for (let i = 0; i < amount; i++) {
-            let el = this.randList(list);
-            if (!el) continue;
-
-            elements.push(el);
-            this.remove(list, el.actual);
-        }
-
-        return elements;
-    },
-
-    /**
-     * Return a random number between `min` and `max`.
-     * 
-     * @param min The minimum number
-     * @param max The maximum number
-     * 
-     * @returns The random number
-     */
-    randInt(min: number, max: number): number {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-    },
-
-    /**
-     * Capitalizes a string
-     * 
-     * @param str String
-     * 
-     * @returns The string capitalized
-     */
-    capitalize(str: string): string {
-        return str[0].toUpperCase() + str.slice(1).toLowerCase();
     },
 
     /**
@@ -723,7 +626,7 @@ export const functions = {
      * @returns The string capitalized
      */
     capitalizeAll(str: string): string {
-        return str.split(" ").map(this.capitalize).join(" ");
+        return game.lodash.words(str).map(game.lodash.capitalize).join(" ");
     },
 
     /**
@@ -1811,17 +1714,6 @@ ${mainContent}
     },
 
     /**
-     * Clones the `object`.
-     * 
-     * @param object The object to clone
-     * 
-     * @returns Clone
-     */
-    cloneObject<T>(object: T): T {
-        return Object.assign(Object.create(Object.getPrototypeOf(object)), object);
-    },
-
-    /**
      * Creates a PERFECT copy of a card, and sets some essential properties.
      * This is the exact same as `card.perfectCopy`, so use that instead.
      * 
@@ -1830,7 +1722,7 @@ ${mainContent}
      * @returns Clone
      */
     cloneCard(card: Card): Card {
-        let clone = this.cloneObject(card);
+        let clone = game.lodash.clone(card);
 
         clone.randomizeUUID();
         clone.sleepy = true;
@@ -2009,7 +1901,7 @@ ${mainContent}
 
         if (values.length == 0) {
             for (let i = 0; i < 3; i++) {
-                let c = this.randList(possibleCards)?.actual;
+                let c = game.lodash.sample(possibleCards);
                 if (!c) throw new Error("null when randomly choosing adapt option");
 
                 if (c instanceof Card) throw new TypeError();
@@ -2136,7 +2028,7 @@ ${mainContent}
         if (!list) list = plr.deck;
         let _list = list;
 
-        list = this.shuffle(list.slice());
+        list = game.lodash.shuffle(list.slice());
 
         let times = 0;
 

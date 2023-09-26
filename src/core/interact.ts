@@ -516,7 +516,7 @@ export const interact = {
                 return false;
             }
 
-            let card = game.functions.last(eventCards)?.[0];
+            let card = game.lodash.last(eventCards)?.[0];
             if (!card) {
                 game.input("<red>No cards found.</red>\n");
                 return false;
@@ -1152,7 +1152,11 @@ export const interact = {
 
         // No cards from previous discover loop, we need to generate new ones.
         if (_cards.length == 0) {
-            values = game.functions.chooseItemsFromList(cards, amount)?.map(c => c.copy) ?? [];
+            values = game.lodash.sampleSize(cards, amount);
+            values = values.map(c => {
+                if (c instanceof game.Card) game.functions.cloneCard(c);
+                return c;
+            });
         }
 
         if (values.length <= 0) return null;
