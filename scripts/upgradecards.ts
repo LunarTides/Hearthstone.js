@@ -88,6 +88,12 @@ function upgradeCard(path: string, data: string, file: Dirent) {
         game.log(`Updated the mana field.`);
     }
 
+    oldData = data;
+    data = data.replace(/ {4}desc: (.*),/, `    text: $1,`);
+    if (data !== oldData) {
+        game.log(`Updated the desc field.`);
+    }
+
     // Replace the card's id with a new one
     data = data.replace(/\n {4}id: (\d+),?/, "");
     let currentId = Number(game.functions.readFile("/cards/.latestId")) + 1;
