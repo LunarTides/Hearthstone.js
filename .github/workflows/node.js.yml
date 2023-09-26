@@ -29,5 +29,4 @@ jobs:
     - run: npm ci
     # - run: npm run generate
     - run: npx tsc
-    - run: npm run script:testcards
-    # - run: npm test
+    - run: npm test
