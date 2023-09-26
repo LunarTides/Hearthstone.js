@@ -494,21 +494,6 @@ export class Card {
     }
 
     /**
-     * @deprecated Use `game.functions.remove(card.keywords, "Taunt")`
-     * 
-     * Removes a keyword from the card
-     * 
-     * @param keyword The keyword to remove
-     * 
-     * @returns Success
-     */
-    removeKeyword(keyword: CardKeyword): boolean {
-        this.keywords = this.keywords.filter(k => k != keyword);
-
-        return true;
-    }
-
-    /**
      * Freeze the card
      *
      * @returns Success

@@ -733,20 +733,6 @@ export class Player {
         return true;
     }
 
-    /**
-     * @deprecated Use `game.functions.remove(player.hand, card)` instead.
-     * 
-     * Removes a card from the player's hand
-     * 
-     * @param card The card to remove
-     * 
-     * @returns Success
-     */
-    removeFromHand(card: Card): boolean {
-        this.hand = this.hand.filter(c => c !== card);
-        return true;
-    }
-
     // Hero power / Class
 
     /**

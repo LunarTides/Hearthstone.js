@@ -521,14 +521,6 @@ export type EventListenerMsg = boolean | "destroy" | "reset";
 export type EventListenerCallback = (val: UnknownEventValue) => EventListenerMsg;
 
 /**
- * The return value of {@link functions.randList | randList}.
- */
-export type RandListReturn<T> = {
-    actual: T,
-    copy: T 
-}
-
-/**
  * A card-like object.
  */
 export type CardLike = Card | Blueprint;

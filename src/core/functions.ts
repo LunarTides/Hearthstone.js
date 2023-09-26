@@ -2193,7 +2193,7 @@ ${mainContent}
             plr.shuffleIntoDeck(c);
             unsuppress();
 
-            plr.removeFromHand(c);
+            this.remove(plr.hand, c);
 
             cards.push(c);
         });
