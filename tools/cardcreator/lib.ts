@@ -125,7 +125,7 @@ export function create(creatorType: CCType, cardType: CardType, blueprint: Bluep
     let path = generateCardPath(card.classes, type).replaceAll("\\", "/");
 
     // If this function was passed in a path, use that instead.
-    if (overridePath) path = overridePath; 
+    if (overridePath) path = game.functions.dirname() + overridePath; 
 
     // Create a filename. Example: "Test Card" -> "test_card.ts"
     let filename = card.name.toLowerCase().replaceAll(" ", "_") + ".ts";

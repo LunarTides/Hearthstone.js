@@ -1186,7 +1186,7 @@ ${mainContent}
      * @returns The vanilla cards, and an error message (if any)
      */
     getVanillaCards(error?: string): [VanillaCard[], string | null] {
-        const fileLocation = this.dirname() + "/vanillacards.json";
+        const fileLocation = "/vanillacards.json";
         if (this.existsFile(fileLocation)) {
             return [JSON.parse(this.readFile(fileLocation)) as VanillaCard[], null];
         }
