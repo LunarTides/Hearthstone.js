@@ -7,6 +7,7 @@ import { createGame } from "../../src/internal.js";
 const { game, player1, player2 } = createGame();
 
 const props: {[key: string]: [string, number]} = {};
+const types: {[key: string]: number} = {};
 
 function main() {
     const [vanillaCards, error] = game.functions.getVanillaCards();
@@ -28,10 +29,19 @@ function main() {
                 return;
             }
 
-            props[key] = [typeof val, 0];
+            props[key] = [typeof val, 1];
         });
+
+        if (Object.keys(types).includes(vanillaCard.type)) {
+            types[vanillaCard.type]++;
+            return;
+        }
+        types[vanillaCard.type] = 1;
     });
 
+    game.log("<b>TYPES:</b>");
+    game.log(types);
+    game.log("<b>PROPS:</b>");
     game.log(props);
 }
 
