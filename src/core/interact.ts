@@ -401,9 +401,9 @@ export const interact = {
                     // If the `key` is "AddCardToHand", check if the previous history entry was `DrawCard`, and they both contained the exact same `val`.
                     // If so, ignore it.
                     if (key === "AddCardToHand" && i > 0) {
-                        let lastEntry = history[t][i - 1];
+                        let lastEntry = history[t]?.[i - 1];
 
-                        if (lastEntry[0] == "DrawCard") {
+                        if (lastEntry && lastEntry[0] == "DrawCard") {
                             if ((lastEntry[1] as Card).uuid == (val as Card).uuid) return;
                         }
                     }
@@ -427,7 +427,7 @@ export const interact = {
                         val = strbuilder;
                     }
 
-                    let finishedKey = key[0].toUpperCase() + key.slice(1);
+                    let finishedKey = key[0]?.toUpperCase() + key.slice(1);
 
                     finished += `${finishedKey}: ${val}\n`;
                 });
@@ -509,13 +509,10 @@ export const interact = {
         }
         else if (name === "/undo") {
             // Get the last played card
-            let eventCards = game.events.events.PlayCard[game.player.id];
-            if (!game.events.events.PlayCard || eventCards.length <= 0) {
-                game.input("<red>No cards to undo.</red>\n");
-                return false;
-            }
+            let eventCards = game.events.events.PlayCard?.[game.player.id];
+            let length = eventCards?.length ?? 0;
 
-            if (eventCards.length <= 0) {
+            if (!eventCards || length <= 0) {
                 game.input("<red>No cards to undo.</red>\n");
                 return false;
             }
@@ -531,7 +528,12 @@ export const interact = {
 
             // If the card can appear on the board, remove it.
             if (game.functions.canBeOnBoard(card)) {
-                game.functions.remove(game.board[game.player.id], card);
+                let board = game.board[game.player.id];
+
+                // Should be unreachable
+                if (!board) throw new Error(`Could not index board by current player's id: ${game.player.id}`);
+
+                game.functions.remove(board, card);
 
                 // If the card has 0 or less health, restore it to its original health (according to the blueprint)
                 if (card.type === "Minion" && card.getHealth() <= 0) {
@@ -617,18 +619,20 @@ export const interact = {
             });
 
             let turnIndex = parseInt(game.input("\nWhich turn does the command belong to? (eg. 1): "));
-            if (!turnIndex || turnIndex < 0 || !history[turnIndex]) {
+            let value = history[turnIndex];
+
+            if (!turnIndex || turnIndex < 0 || !value) {
                 game.input("<red>Invalid turn.</red>\n");
                 return false;
             }
 
             let commandIndex = parseInt(game.input("\nWhat is the index of the command in that turn? (eg. 1): "));
-            if (!commandIndex || commandIndex < 1 || !history[turnIndex][commandIndex - 1]) {
+            if (!commandIndex || commandIndex < 1 || !value[commandIndex - 1]) {
                 game.input("<red>Invalid command index.</red>\n");
                 return false;
             }
 
-            let command = history[turnIndex][commandIndex - 1][1];
+            let command = value[commandIndex - 1]?.[1];
             if (!command) {
                 game.input("<red>Invalid command.</red>\n");
                 return false;
@@ -1054,6 +1058,7 @@ export const interact = {
         }
 
         if (times === 1) {
+            if (choices[0] === undefined) return null;
             return choices[0];
         } else {
             return choices;
@@ -1125,7 +1130,7 @@ export const interact = {
         if (plr.ai) return plr.ai.yesNoQuestion(prompt);
 
         let _choice = game.input(ask);
-        let choice = _choice.toUpperCase()[0];
+        let choice = _choice.toUpperCase()[0] ?? "";
 
         if (["Y", "N"].includes(choice)) return choice === "Y";
 
@@ -1192,6 +1197,7 @@ export const interact = {
 
         // Potential Blueprint card
         let pbcard = values[parseInt(choice) - 1];
+        if (!pbcard) return null;
 
         if (!(pbcard instanceof Card)) card = new Card(pbcard.name, game.player);
         else card = pbcard;
@@ -1242,6 +1248,8 @@ export const interact = {
     },
 
     _selectTarget(prompt: string, card: Card | null, forceSide: SelectTargetAlignment, forceClass: SelectTargetClass, flags: SelectTargetFlag[] = []): Target | false {
+        // TODO: Rewrite this function.
+
         // If the player is forced to select a target, select that target.
         if (game.player.forceTarget) return game.player.forceTarget;
 
@@ -1317,7 +1325,8 @@ export const interact = {
 
                 minion = (alignment.startsWith("y")) ? boardOpponentTarget : boardFriendlyTarget;
             } else {
-                minion = boardOpponent.length >= parseInt(target) ? boardOpponentTarget : boardFriendlyTarget;
+                if (boardOpponent.length >= parseInt(target)) minion = boardOpponentTarget!;
+                else minion = boardFriendlyTarget!;
             }
         }
         else {
@@ -1329,7 +1338,8 @@ export const interact = {
             }
 
             // Select the minion on the correct side of the board.
-            minion = (forceSide == "enemy") ? boardOpponentTarget : boardFriendlyTarget;
+            if (forceSide === "enemy") minion = boardOpponentTarget!;
+            else minion = boardFriendlyTarget!;
         }
 
         // If you didn't select a valid minion, return.
@@ -1455,6 +1465,7 @@ export const interact = {
 
             // Get the capturing group result
             let key = regedDesc[1];
+            if (!key) throw new Error("Could not replace generic placeholders. The caputuring group result is falsy.");
 
             card.replacePlaceholders();
             let _replacement = card.placeholder;
@@ -1491,6 +1502,8 @@ export const interact = {
 
             // Get the capturing group result
             let key = regedDesc[1];
+            if (!key) throw new Error("Could not replace spell damage placeholders. The caputuring group result is falsy.");
+
             let replacement = parseInt(key) + game.player.spellDamage;
 
             text = text.replace(reg, replacement.toString());
@@ -1658,7 +1671,7 @@ export const interact = {
             if (!finishedPlayers[player.id]) finishedPlayers[player.id] = "";
             finishedPlayers[player.id] += `${stat}\n`;
 
-            let split = finishedPlayers[player.id]?.split("\n");
+            let split = finishedPlayers[player.id]?.split("\n") ?? [];
             game.functions.remove(split, "");
 
             return [game.functions.createWall(split, ":"), tweak];

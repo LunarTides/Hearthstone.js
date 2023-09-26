@@ -108,7 +108,9 @@ function askClass(): CardClassNoNeutral {
             printName();
 
             let rune = game.input(`What runes do you want to add (${3 - runes.length} more)\nBlood, Frost, Unholy\n`);
-            if (!rune || !["B", "F", "U"].includes(rune[0].toUpperCase())) continue;
+
+            let firstCharacter = rune[0] ?? "";
+            if (!rune || !["B", "F", "U"].includes(firstCharacter.toUpperCase())) continue;
 
             runes += rune[0]?.toUpperCase();
         }
@@ -183,7 +185,7 @@ function searchCards(_cards: Blueprint[], sQuery: string) {
 
     if (splitQuery.length <= 1) {
         // The user didn't specify a key. Do a general search
-        let query = splitQuery[0]?.toLowerCase();
+        let query = splitQuery[0]?.toLowerCase() ?? "";
 
         _cards.forEach(c => {
             let name = game.interact.getDisplayName(c).toLowerCase();
@@ -200,6 +202,7 @@ function searchCards(_cards: Blueprint[], sQuery: string) {
     let [key, val] = splitQuery;
 
     val = val?.toLowerCase();
+    if (!val) return false;
 
     const doReturn = (c: Blueprint) => {
         let ret = c[key as keyof Blueprint];
@@ -214,26 +217,26 @@ function searchCards(_cards: Blueprint[], sQuery: string) {
         if (key == "cost") {
             // Mana range (1-10)
             let regex = /\d+-\d+/;
-            if (regex.test(val)) {
-                let _val = val?.split("-");
+            if (regex.test(val!)) {
+                let _val = val!.split("-");
 
-                let min = _val?.[0];
-                let max = _val?.[1];
+                let min = _val[0] ?? "";
+                let max = _val[1] ?? "";
 
                 return ret >= min && ret <= max;
             }
 
             if (val == "even") return ret % 2 == 0;
             else if (val == "odd") return ret % 2 == 1;
-            else if (!Number.isNaN(parseInt(val))) return ret == val;
+            else if (!Number.isNaN(parseInt(val!))) return ret == val;
             else {
                 game.log(`<red>\nValue '${val}' not valid!</red>`);
                 return -1;
             }
         }
 
-        if (typeof(ret) === "string") return ret.toLowerCase().includes(val);
-        else if (typeof(ret) === "number") return ret == parseFloat(val);
+        if (typeof(ret) === "string") return ret.toLowerCase().includes(val!);
+        else if (typeof(ret) === "number") return ret == parseFloat(val!);
         return -1;
     }
 
@@ -382,10 +385,10 @@ function showCards() {
     wall.forEach(brick => {
         let brickSplit = brick.split("-");
 
-        let card = findCard(brickSplit[0].trim());
+        let card = findCard(brickSplit[0]!.trim());
         if (!card) return;
 
-        let toDisplay = game.functions.colorByRarity(brickSplit[0], card.rarity) + "-" + brickSplit[1];
+        let toDisplay = game.functions.colorByRarity(brickSplit[0]!, card.rarity) + "-" + brickSplit[1];
 
         game.log(toDisplay);
     });
@@ -470,8 +473,10 @@ function showDeck() {
     let _cards: { [key: string]: [Blueprint, number] } = {};
 
     deck.forEach(c => {
-        if (!_cards[c.name]) _cards[c.name] = [c, 0];
-        _cards[c.name][1]++;
+        let val = _cards[c.name];
+
+        if (!val) val = [c, 0];
+        val[1]++;
     });
 
     let bricks: string[] = [];
@@ -494,7 +499,7 @@ function showDeck() {
         let brickSplit = brick.split("-");
 
         // Replace '`' with '-'
-        brickSplit[0] = brickSplit[0].replaceAll("`", "-");
+        brickSplit[0] = brickSplit[0]!.replaceAll("`", "-");
 
         let [nameAndAmount, id] = brickSplit;
 
@@ -506,9 +511,11 @@ function showDeck() {
             // Amount specified
             let amount = nameAndAmount.split(r);
             let card = findCard(nameAndAmount.replace(r, "").trim());
-            if (!card) return; // TODO: Maybe throw an error?
+            let cardName = amount[1];
+            if (!card || !cardName) return; // TODO: Maybe throw an error?
 
-            let name = game.functions.colorByRarity(amount[1], card.rarity);
+            // TODO: Can we not just do `card.name`?
+            let name = game.functions.colorByRarity(cardName, card.rarity);
 
             game.log(`${r.exec(nameAndAmount)}${name}-${id}`);
             return;
@@ -628,8 +635,8 @@ function getCardArg(cmd: string, callback: (card: Blueprint) => boolean, errorCa
     cmdSplit.shift();
 
     // Get x2 from the cmd
-    if (cmdSplit.length > 1 && parseInt(cmdSplit[0])) {
-        times = parseInt(cmdSplit[0])
+    if (cmdSplit.length > 1 && parseInt(cmdSplit[0]!)) {
+        times = parseInt(cmdSplit[0]!)
         cmdSplit.shift();
     }
 
@@ -812,7 +819,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
             newState = !warnings[key];
         }
         else {
-            let val = args[1];
+            let val = args[1]!;
 
             if (["off", "disable", "false", "no", "0"].includes(val)) newState = false;
             else if (["on", "enable", "true", "yes", "1"].includes(val)) newState = true;
@@ -952,7 +959,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
     if (!addToHistory) return true;
 
     settings.commands.history.push(cmd);
-    if (["a", "r"].includes(cmd[0])) settings.commands.undoableHistory.push(cmd);
+    if (["a", "r"].includes(cmd[0]!)) settings.commands.undoableHistory.push(cmd);
     return true;
 }
 

@@ -1,6 +1,5 @@
 // Created by Hand (before the Card Creator Existed)
 
-import { CardError } from "@Game/internal.js";
 import { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
@@ -23,7 +22,7 @@ export const blueprint: Blueprint = {
 
         // The list that to choose from. Remove this minion from the list
         let board = game.board[plr.id]?.filter(card => card.type === "Minion");
-        if (!board) throw new CardError(`Cannot index board by player's id (${plr.id})`);
+        if (!board) throw new game.CardError(`Cannot index board by player's id (${plr.id})`);
 
         game.functions.remove(board, self);
 

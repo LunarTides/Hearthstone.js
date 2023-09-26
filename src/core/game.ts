@@ -388,7 +388,7 @@ export class Game {
      * The 0th element is `game.player1`'s side of the board,
      * and the 1th element is `game.player2`'s side of the board.
      */
-    board: Card[][];
+    board: Card[][] = [[], []];
 
     /**
      * The graveyard, a list of cards that have been killed.
@@ -396,7 +396,7 @@ export class Game {
      * The 0th element is `game.player1`'s graveyard,
      * and the 1st element is `game.player2`'s graveyard.
      */
-    graveyard: Card[][];
+    graveyard: Card[][] = [[], []];
 
     /**
      * The event listeners that are attached to the game currently.
