@@ -55,7 +55,7 @@ export const config: GameConfig = {
         // How much score a card needs to not be traded.
         tradeThreshold: 2,
 
-        // How much the ai values score.
+        // How much the ai values stats.
         // For example, at 0.2, 1/1 stats is valued at 0.4
         // Another example, at 1, 1/1 stats is valued at 2
         statsBias: 0.2,
@@ -91,11 +91,11 @@ export const config: GameConfig = {
             positive: {
                 // Any number with a plus in front of it.
                 // For example, +1
-                "\\x\\d*": 1,
+                "\\x\\d+": 1,
 
                 // Anything formed like this "d/d" where "d" is a number.
                 // For example, 1/1
-                "\\d*/\\d*": 1,
+                "\\d+/\\d+": 1,
 
                 "heal": 0.5,
                 "give": 2,
@@ -124,7 +124,7 @@ export const config: GameConfig = {
             negative: {
                 // Any number with a minus in front of it.
                 // For example, -1
-                "-\\d*": 1,
+                "-\\d+": 1,
 
                 "deal": 1,
                 "remove": 2,
@@ -143,7 +143,7 @@ export const config: GameConfig = {
 
         // If this is true, running the reload command will recompile the game.
         // If you disable this, you have to manually recompile the game before running the reload command.
-        // I recommend disabling this and using `tsc --watch`.
+        // I recommend keeping this disabled and using `tsc --watch`.
         reloadCommandRecompile: false,
 
         // If this is true, `getReadableCard` will only show the top level of a card.
@@ -157,13 +157,13 @@ export const config: GameConfig = {
         getReadableCardAlwaysShowFullCard: false,
 
         // This is how many cards `getReadableCard` can display at once.
-        // This is to prevent a card from referencing itself, which would cause a infinite loop.
+        // This is to prevent a card from referencing itself, which would cause an infinite loop.
         // I highly recommend keeping this value below 20.
         getReadableCardMaxDepth: 10,
 
         // These are the keys that will show up when running the history command.
         // Look in `src/types.ts` at the `EventKey` type for a list of valid keys.
-        // Also, the log files override this list and instead shows every valid keyg
+        // Also, the log files override this list and instead shows every valid key
         whitelistedHistoryKeys: [
             "HealthRestored",
             "UnspentMana",
@@ -198,8 +198,8 @@ export const config: GameConfig = {
         // DONT CHANGE ANY OF THESE VALUES UNLESS YOU KNOW WHAT YOU'RE DOING.
 
         // The version of the game.
-        // <2.0.0, this used 'huge.major.(minor/patch)' notation.
-        // >=2.0.0, this uses semver
+        // =<2.0.0, this used 'huge.major.(minor/patch)' notation.
+        // >2.0.0, this uses semver
         version: "2.0.0",
 
         // The branch that the version is on.
