@@ -8,6 +8,7 @@ help:
 	@echo "  run: Runs the game"
 	@echo "  build: Builds the game"
 	@echo "  start: Builds & Runs the game"
+	@echo "  watch: Watches the code and rebuilds it when changed"
 	@echo "  clean: Remove all automatically generated files"
 	@echo ""
 
@@ -39,6 +40,10 @@ start:
 	@npx tsc
 	@echo -e "\r\x1b[KBuilding...Done"
 	@npm start
+
+watch:
+	@rm -rf ./dist/
+	@npx tsc -w
 
 clean:
 	@rm -rf ./dist/
