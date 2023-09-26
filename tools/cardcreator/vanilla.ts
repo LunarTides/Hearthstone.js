@@ -85,7 +85,7 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CCT
     else if (type == "Weapon") {
         blueprint = {
             name: realName,
-            stats: [attack, health],
+            stats: [attack, durability],
             text,
             cost,
             type,
@@ -115,7 +115,7 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CCT
             type,
             classes: [cardClass],
             rarity,
-            durability,
+            durability: health,
             cooldown: 2,
             id: 0,
         }
