@@ -2,7 +2,7 @@
  * Types
  * @module Types
  */
-import { Card, Game, Player, AI, functions, interact } from "./internal.js";
+import { Card, Game, Player } from "./internal.js";
 
 /**
  * Ai scored card
@@ -13,7 +13,7 @@ export type ScoredCard = {
 }
 
 /**
- * The {@link Card.type | type of the card}.
+ * The type of the card.
  */
 export type CardType = "Minion" |
                        "Spell" |
@@ -23,7 +23,7 @@ export type CardType = "Minion" |
                        "Undefined";
 
 /**
- * The {@link Card.classes | class that the card belongs to} (without "Neutral").
+ * The class that the card belongs to. (without "Neutral")
  */
 export type CardClassNoNeutral = "Death Knight" |
                                  "Demon Hunter" |
@@ -39,12 +39,12 @@ export type CardClassNoNeutral = "Death Knight" |
 
 
 /**
- * The {@link Card.classes | class that the card belongs to}.
+ * The class that the card belongs to.
  */
 export type CardClass = CardClassNoNeutral | "Neutral";
 
 /**
- * The {@link Card.rarity | rarity of the card}.
+ * The rarity of the card.
  */
 export type CardRarity = "Free" |
                          "Common" |
@@ -53,14 +53,14 @@ export type CardRarity = "Free" |
                          "Legendary";
 
 /**
- * What the card {@link Card.costType | costs}.
+ * What the card costs.
  */
 export type CostType = "mana" |
                        "armor" |
                        "health";
 
 /**
- * The {@link Card.spellSchool | school of the spell}.
+ * The school of the spell.
  */
 export type SpellSchool = "Arcane" |
                           "Fel" |
@@ -72,7 +72,7 @@ export type SpellSchool = "Arcane" |
                           "None";
 
 /**
- * The {@link Card.tribe | tribe of the minion}.
+ * The tribe of the minion.
  */
 export type MinionTribe = "Beast" |
                           "Demon" |
@@ -89,7 +89,7 @@ export type MinionTribe = "Beast" |
                           "None";
 
 /**
- * {@link Card.keywords | Card keywords}.
+ * Card keywords.
  */
 export type CardKeyword = "Divine Shield" |
                           "Dormant" |
@@ -112,7 +112,7 @@ export type CardKeyword = "Divine Shield" |
                           "Cleave";
 
 /**
- * {@link Card.abilities | Card abilities} that is from vanilla Hearthstone.
+ * Card abilities that is from vanilla Hearthstone.
  */
 export type CardAbilityReal = "adapt" |
                               "battlecry" |
@@ -135,7 +135,7 @@ export type CardAbilityReal = "adapt" |
                               "use";
 
 /**
- * All {@link Card.abilities | Card abilities}.
+ * All Card abilities.
  */
 export type CardAbility = CardAbilityReal |
                           "placeholders" |
@@ -315,7 +315,7 @@ export type GamePlayCardReturn = true |
                                  "invalid";
 
 /**
- * {@link Game.attack | Attack} return value
+ * Attack return value
  */
 export type GameAttackReturn = true |
                                "divineshield" |
@@ -333,7 +333,7 @@ export type GameAttackReturn = true |
                                "invalid";
 
 /**
- * {@link functions.validateCard | ValidateCard} return value
+ * ValidateCard return value
  */
 export type FunctionsValidateCardReturn = boolean |
                                           "class" |
@@ -341,12 +341,12 @@ export type FunctionsValidateCardReturn = boolean |
                                           "runes";
 
 /**
- * {@link functions.deckcode.export | ExportDeck} error return value
+ * ExportDeck error return value
  */
 export type FunctionsExportDeckError = null | { msg: string; info: null | { card?: CardLike, amount?: number }; recoverable: boolean; }; 
 
 /**
- * {@link AI.calcMove | CalcMove} return value
+ * CalcMove return value
  */
 export type AICalcMoveOption = Card |
                                "hero power" |
@@ -355,20 +355,20 @@ export type AICalcMoveOption = Card |
                                "end";
 
 /**
- * {@link interact.selectTarget | SelectTarget} alignment
+ * SelectTarget alignment
  */
 export type SelectTargetAlignment = "friendly" | "enemy" | "any";
 /**
- * {@link interact.selectTarget | SelectTarget} class
+ * SelectTarget class
  */
 export type SelectTargetClass = "hero" | "minion" | "any";
 /**
- * {@link interact.selectTarget | SelectTarget} flags
+ * SelectTarget flags
  */
 export type SelectTargetFlag = "allowLocations" | "forceElusive";
 
 /**
- * {@link Game.constants | GameConstants} values.
+ * GameConstants values.
  */
 export type GameConstants = {
     REFUND: -1
@@ -452,7 +452,7 @@ export type VanillaCard = {
 };
 
 /**
- * A {@link Card.backups | backup of a card.}
+ * A backup of a card.
  */
 export type CardBackup = {
     [key in keyof Card]: Card[key];
@@ -466,7 +466,7 @@ type BlueprintAbilities = {
 }
 
 /**
- * The {@link Card.blueprint | blueprint of a card.}
+ * The blueprint of a card.
  */
 export type Blueprint = {
     // Common
@@ -507,16 +507,16 @@ export type Blueprint = {
 } & BlueprintAbilities;
 
 /**
- * The {@link Card.abilities | ability of a card.}
+ * The ability of a card.
  */
 export type Ability = (plr: Player, game: Game, self: Card, key?: EventKey, val?: UnknownEventValue) => any;
 
 /**
- * {@link functions.addEventListener | The event listener} callback return value.
+ * The event listener callback return value.
  */
 export type EventListenerMsg = boolean | "destroy" | "reset";
 /**
- * {@link functions.addEventListener | The event listener callback} function.
+ * The event listener callback function.
  */
 export type EventListenerCallback = (val: UnknownEventValue) => EventListenerMsg;
 
@@ -530,12 +530,12 @@ export type CardLike = Card | Blueprint;
 export type Target = Card | Player;
 
 /**
- * Callback for tick hooks. Used in {@link functions.hookToTick | hookToTick}.
+ * Callback for tick hooks. Used in hookToTick.
  */
 export type TickHookCallback = (key?: EventKey, val?: UnknownEventValue) => void;
 
 /**
- * {@link AI.history | AI history object}.
+ * AI history object.
  */
 export type AIHistory = {
     type: string,
@@ -543,7 +543,7 @@ export type AIHistory = {
 }
 
 /**
- * {@link Card.enchantments | Card Enchantment} object.
+ * Card Enchantment object.
  */
 export type EnchantmentDefinition = {
     enchantment: string,
@@ -556,7 +556,7 @@ export type EnchantmentDefinition = {
 export type EventManagerEvents = {[key in EventKey]?: [[[any, number]], [[any, number]]]};
 
 /**
- * {@link game.config | Game configuration}.
+ * Game configuration.
  */
 export type GameConfig = {
     general: {
