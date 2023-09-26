@@ -9,6 +9,16 @@ import { createGame } from "../src/internal.js";
 
 const { game, player1, player2 } = createGame();
 
+function upgradeField(data: string, oldValue: string | RegExp, newValue: string, toLog: string) {
+    let oldData = data;
+    data = data.replace(oldValue, newValue);
+    if (data !== oldData) {
+        game.log(toLog);
+    }
+
+    return data;
+}
+
 function upgradeCard(path: string, data: string, file: Dirent) {
     // TODO: Always add `spellSchool`.
     // TODO: Always add `hpCost`.
@@ -28,79 +38,26 @@ function upgradeCard(path: string, data: string, file: Dirent) {
     let bpDefRegex = /\/\*\*\n \* @type {import\("(?:\.\.\/)+src\/types"\)\.Blueprint}\n \*\//g;
     let kwmRegex = /\n    \/\*\*\n     \* @type {import\("(?:\.\.\/)+src\/types"\)\.KeywordMethod}\n     \*\//g;
 
-    let oldData = data;
-    data = data.replaceAll(bpDefRegex, `import { Blueprint${eventValue} } from "@Game/types.js";\n`);
-    if (data !== oldData) {
-        game.log(`Replaced blueprint type from jsdoc to import.`);
-    }
-
-    oldData = data;
-    data = data.replaceAll(kwmRegex, ``);
-    if (data !== oldData) {
-        game.log(`Removed KeywordMethod jsdoc type.`);
-    }
-
-    oldData = data;
-    data = data.replace(`module.exports = {`, `export const blueprint: Blueprint = {`);
-    if (data !== oldData) {
-        game.log(`Replaced blueprint definition from module.exports to object.`);
-    }
-
-    oldData = data;
-    data = data.replace(/&B(.+?)&R/g, `<b>$1</b>`);
-    if (data !== oldData) {
-        game.log(`Updated tags in description.`);
-    }
-
-    oldData = data;
-    data = data.replace(/\.maxMana/g, ".emptyMana");
-    if (data !== oldData) {
-        game.log(`Updated 'maxMana' to 'emptyMana'.`);
-    }
-
-    oldData = data;
-    data = data.replace(/\.maxMaxMana/g, ".maxMana");
-    if (data !== oldData) {
-        game.log(`Updated 'maxMaxMana' to 'maxMana'.`);
-    }
-
-    oldData = data;
-    data = data.replace(/\n {4}set: (.*),/, ``);
-    if (data !== oldData) {
-        game.log(`Removed the set field.`);
-    }
-
-    oldData = data;
-    data = data.replace(/ {4}class: (.*),/, `    classes: [$1],`).replace(/classes: \["(.*?) \/ (.*?)"\]/g, 'classes: ["$1", "$2"]');
-    if (data !== oldData) {
-        game.log(`Updated the class field.`);
-    }
-
-    oldData = data;
-    data = data.replace(/ {4}spellClass: (.*),/, `    spellSchool: $1,`);
-    if (data !== oldData) {
-        game.log(`Updated the spellClass field.`);
-    }
-
-    oldData = data;
-    data = data.replace(/ {4}mana: (.*),/, `    cost: $1,`);
-    if (data !== oldData) {
-        game.log(`Updated the mana field.`);
-    }
-
-    oldData = data;
-    data = data.replace(/ {4}desc: (.*),/, `    text: $1,`);
-    if (data !== oldData) {
-        game.log(`Updated the desc field.`);
-    }
+    data = upgradeField(data, bpDefRegex, `import { Blueprint${eventValue} } from "@Game/types.js";\n`, "Replaced blueprint type from jsdoc to import.");
+    data = upgradeField(data, kwmRegex, "", "Removed KeywordMethod jsdoc type.");
+    data = upgradeField(data, "module.exports = {", "export const blueprint: Blueprint = {", "Replaced blueprint definition from module.exports to object.");
+    data = upgradeField(data, /&B(.+?)&R/g, "<b>&1</b>", "Updated tags in description.");
+    data = upgradeField(data, /\.maxMana/g, ".emptyMana", "Updated 'maxMana' to 'emptyMana'.");
+    data = upgradeField(data, /\.maxMaxMana/g, ".maxMana", "Updated 'maxMaxMana' to 'maxMana'.");
+    data = upgradeField(data, /\n {4}set: (.*),/, "", "Removed the set field.");
+    data = upgradeField(data, / {4}class: (.*),/, "    classes: [$1],", "Update the class field pt1.");
+    data = upgradeField(data, /classes: \["(.*?) \/ (.*?)"\]/g, `classes: ["$1", "$2"]`, "Update the class field pt2.");
+    data = upgradeField(data, / {4}spellClass: (.*),/, "    spellSchool: $1,", "Updated the spellClass field.");
+    data = upgradeField(data, / {4}mana: (.*),/, "    cost: $1,", "Updated the mana field.");
+    data = upgradeField(data, / {4}desc: (.*),/, "    text: $1,", "Updated the desc field.");
+    data = upgradeField(data, / {4}hpDesc: (.*),/, "    hpText: $1,", "Updated the hpDesc field.");
 
     // Replace the card's id with a new one
-    data = data.replace(/\n {4}id: (\d+),?/, "");
+    data = upgradeField(data, /\n {4}id: (\d+),?/, "", "Removed id from card.");
     let currentId = Number(game.functions.readFile("/cards/.latestId")) + 1;
 
-    data = data.replace(/( {4}.+: .+,)(\n\n {4}.*\(plr, game, (self|card))/, `$1\n    id: ${currentId},$2`);
-    data = data.replace(/( {4}uncollectible: .*?),?\n\}/, `$1,\n    id: ${currentId},\n}`);
-    game.log(`Card was assigned id ${currentId}.`);
+    data = upgradeField(data, /( {4}.+: .+,)(\n\n {4}.*\(plr, game, (self|card))/, `$1\n    id: ${currentId},$2`, `Card was assigned id ${currentId} pt1.`);
+    data = upgradeField(data, /( {4}uncollectible: .*?),?\n\}/, `$1,\n    id: ${currentId},\n}`, `Card was assigned id ${currentId} pt2.`);
 
     game.functions.writeFile("/cards/.latestId", `${currentId}`);
 
@@ -116,17 +73,16 @@ function upgradeCard(path: string, data: string, file: Dirent) {
             game.logError("<yellow>WARNING: Could not find event key in passive.</yellow>");
         }
 
-        data = data.replace(/(\n {4}passive\(plr, game, self, key), val\) {/g, `$1, _unknownVal) {
-// Only proceed if the correct event key was broadcast
-if (!(key === "${key}")) return;
+        data = upgradeField(data, /(\n {4}passive\(plr, game, self, key), val\) {/g, `$1, _unknownVal) {
+        // Only proceed if the correct event key was broadcast
+        if (!(key === "${key}")) return;
 
-// Here we cast the value to the correct type.
-// Do not use the '_unknownVal' variable after this.
-const val = _unknownVal as EventValue<typeof key>;
-`);
+        // Here we cast the value to the correct type.
+        // Do not use the '_unknownVal' variable after this.
+        const val = _unknownVal as EventValue<typeof key>;
+`, "Updated passive.");
 
-        data = data.replace(keyRegex, "");
-        game.log("Updated passive.")
+        data = upgradeField(data, keyRegex, "", "Removed key from passive.");
     }
 
     // Replace .js to .ts
