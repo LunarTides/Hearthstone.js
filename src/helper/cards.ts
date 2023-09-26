@@ -27,6 +27,7 @@ export function generateCardExports() {
     });
 
     game.functions.writeFile("/cards/exports.ts", exportContent);
+    game.functions.writeFile("/dist/cards/exports.js", exportContent);
 }
 
 export function reloadCards(path?: string) {

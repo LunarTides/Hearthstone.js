@@ -5,6 +5,7 @@
 
 import { createGame } from "../../src/internal.js";
 import { Blueprint, CardClass, CardType } from "../../src/types.js";
+import { generateCardExports } from "../../src/helper/cards.js";
 
 const { game, player1, player2 } = createGame();
 
@@ -203,8 +204,7 @@ export const blueprint: Blueprint = {
         game.input();
     }
 
-    // TODO: Figure out a way to do this while updating the dist version of the exports file
-    //generateCardExports();
+    generateCardExports();
 
     // Open the defined editor on that card if it has a function to edit, and debug mode is disabled
     if (func && !debug) {
