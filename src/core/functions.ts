@@ -148,15 +148,7 @@ const deckcode = {
 
             let copies = parseInt(_copies);
 
-            let _times = def[1];
-            if (!_times) {
-                ERROR("Copy def amount is invalid.");
-                retInvalid = true;
-                return;
-            }
-
-            let times = parseInt(_times) || deck.length;
-
+            let times = parseInt(def[1] ?? "") || deck.length;
             let cards = deck.slice(processed, times);
 
             cards.forEach(c => {
