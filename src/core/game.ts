@@ -738,7 +738,7 @@ export class Game {
             // Stealth duration
             if (m.stealthDuration && m.stealthDuration > 0 && this.turns > m.stealthDuration) {
                 m.stealthDuration = 0;
-                m.removeKeyword("Stealth");
+                functions.remove(m.keywords, "Stealth");
             }
 
             // Location cooldown
@@ -804,7 +804,7 @@ export class Game {
                 // Reborn
                 let minion = m.imperfectCopy();
 
-                minion.removeKeyword("Reborn");
+                functions.remove(minion.keywords, "Reborn");
 
                 // Reduce the minion's health to 1, keep the minion's attack the same
                 minion.setStats(minion.getAttack(), 1);
@@ -899,7 +899,7 @@ const attack = {
         }
 
         if (target.keywords.includes("Divine Shield")) {
-            target.removeKeyword("Divine Shield");
+            functions.remove(target.keywords, "Divine Shield");
             return "divineshield";
         }
 
@@ -986,7 +986,7 @@ const attack = {
 
         // If attacker has stealth, remove it
         if (attacker.keywords.includes("Stealth")) {
-            attacker.removeKeyword("Stealth");
+            functions.remove(attacker.keywords, "Stealth");
         }
 
         // If attacker has lifesteal, heal it's owner
@@ -1018,7 +1018,7 @@ const attack = {
         attack._cleave(attacker, target);
 
         attacker.decAttack();
-        attacker.removeKeyword("Stealth");
+        functions.remove(attacker.keywords, "Stealth");
 
         const shouldDamage = attack._cardAttackHelper(attacker);
         if (!shouldDamage) return true;
@@ -1055,7 +1055,7 @@ const attack = {
         if (card.immune) return false;
 
         if (card.keywords.includes("Divine Shield")) {
-            card.removeKeyword("Divine Shield");
+            functions.remove(card.keywords, "Divine Shield");
             return false;
         }
 
@@ -1158,7 +1158,7 @@ const playCard = {
 
         // Charge you for the card
         player[card.costType] -= card.cost;
-        player.removeFromHand(card);
+        functions.remove(player.hand, card);
 
         // Counter
         if (playCard._countered(card, player)) return "counter";
@@ -1225,7 +1225,7 @@ const playCard = {
 
             // Twinspell functionality
             if (card.keywords.includes("Twinspell")) {
-                card.removeKeyword("Twinspell");
+                functions.remove(card.keywords, "Twinspell");
                 card.text = card.text?.split("Twinspell")[0].trim();
 
                 player.addToHand(card);
@@ -1284,7 +1284,7 @@ const playCard = {
 
         player.mana -= 1;
 
-        player.removeFromHand(card);
+        functions.remove(player.hand, card);
         player.drawCard();
         player.shuffleIntoDeck(card);
 
@@ -1372,7 +1372,7 @@ const playCard = {
             // Corrupt that card
             let corrupted = new Card(toCorrupt.corrupt, player);
 
-            player.removeFromHand(toCorrupt);
+            functions.remove(player.hand, toCorrupt);
 
             let unsuppress = functions.suppressEvent("AddCardToHand");
             player.addToHand(corrupted);
