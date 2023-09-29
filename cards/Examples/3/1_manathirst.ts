@@ -52,7 +52,31 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, game, self) {
-        // TODO: Add proper tests
-        return true;
+        const assert = game.functions.assert;
+
+        let sheep = new game.Card("Sheep", plr.getOpponent());
+        sheep.addStats(4, 4);
+        game.summonMinion(sheep, plr.getOpponent());
+
+        assert(() => sheep.getAttack() == 5);
+        assert(() => sheep.getHealth() == 5);
+        assert(() => !sheep.frozen);
+
+        plr.emptyMana = 1;
+        assert(() => plr.emptyMana == 1);
+        plr.inputQueue = ["1"];
+        self.activateBattlecry();
+
+        assert(() => sheep.frozen);
+        sheep.frozen = false;
+        assert(() => !sheep.frozen);
+
+        plr.emptyMana = 6;
+        plr.inputQueue = ["1"];
+        self.activateBattlecry();
+
+        assert(() => sheep.frozen);
+        assert(() => sheep.getAttack() == 1);
+        assert(() => sheep.getHealth() == 1);
     }
 }

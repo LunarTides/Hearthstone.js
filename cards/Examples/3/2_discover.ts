@@ -39,7 +39,17 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, game, self) {
-        // TODO: Add proper tests
-        return true;
+        const assert = game.functions.assert;
+
+        plr.inputQueue = "1";
+        plr.hand = [];
+
+        for (let i = 0; i < 50; i++) {
+            self.activate("cast");
+
+            let card = plr.hand.pop();
+            assert(() => card?.type === "Spell");
+            assert(() => !!card && game.functions.validateClasses(card.classes, plr.heroClass));
+        }
     }
 }

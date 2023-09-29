@@ -45,7 +45,25 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, game, self) {
-        // TODO: Add proper tests
-        return true;
+        const assert = game.functions.assert;
+        let length = plr.deck.length;
+        plr.hand = [];
+
+        // The player shouldn't fulfill the condition
+        assert(() => !game.functions.highlander(plr));
+        self.activateBattlecry();
+
+        // Assert that the player didn't draw a card
+        assert(() => plr.deck.length === length);
+        assert(() => plr.hand.length === 0);
+
+        // The player should fulfill the condition
+        plr.deck = [new game.Card("Sheep", plr)];
+        assert(() => game.functions.highlander(plr));
+        assert(() => plr.deck.length === 1);
+
+        self.activateBattlecry();
+
+        assert(() => plr.hand.length === 1);
     }
 }
