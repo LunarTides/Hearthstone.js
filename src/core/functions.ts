@@ -1276,6 +1276,16 @@ ${mainContent}
 
         return (new Set(deck)).size == deck.length;
     },
+    
+    /**
+     * Returns a more traditional turn counter format.
+     * 
+     * `game.turns` increments at the end of every player's turn.
+     * This only increments at the end of the second player's turn.
+     */
+    getTraditionalTurnCounter() {
+        return Math.ceil(game.turns / 2);
+    },
 
     /**
      * Returns all classes in the game
