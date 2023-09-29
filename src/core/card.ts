@@ -1133,7 +1133,7 @@ export class Card {
     }
 
     /**
-     * Replaces the placeholders (`{0}`) with their values
+     * Replaces the placeholders (`{0}`) with a more technical format that the rest of the game can understand.
      * 
      * @example
      * card.text = "The current turn count is {0}";
@@ -1144,8 +1144,8 @@ export class Card {
      * }];
      * card.replacePlaceholders();
      * 
-     * // The `{ph:0}` tags are removed when displaying cards.
-     * assert.equal(card.text, "The current turn count is {ph:0} 1 {/ph}");
+     * // The `{ph:0}` tags are replaced when displaying cards.
+     * assert.equal(card.text, "The current turn count is {ph:0} placeholder {/ph}");
      * 
      * @returns Success
      */
