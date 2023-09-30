@@ -6,8 +6,6 @@ import { Player } from "../internal.js";
 import { Blueprint, CardAbility, CardClass, CardKeyword, CardRarity, CardType, CostType, EnchantmentDefinition, GameConfig, Ability, MinionTribe, SpellSchool, CardBackup } from "../types.js";
 import { v4 as uuidv4 } from "uuid";
 
-let game = globalThis.game;
-
 /**
  * Use this error type when throwing an error in a card
  */
@@ -360,8 +358,6 @@ export class Card {
      * @param plr The card's owner.
      */
     constructor(name: string, plr: Player) {
-        game = globalThis.game;
-
         // Get the blueprint from the cards list
         let blueprint = game.cards.find(c => c.name == name);
         if (!blueprint) {

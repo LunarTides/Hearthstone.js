@@ -66,8 +66,6 @@ export const EventManager: IEventManager = {
     tick(key, val) {
         // The code in here gets executed very often
         // So don't do any expensive stuff here
-        let game = globalThis.game;
-        if (!game) return false;
 
         // Infuse
         if (key === "KillMinion") {
@@ -123,9 +121,6 @@ export const EventManager: IEventManager = {
      * @returns Success
      */
     cardUpdate(key, val) {
-        let game = globalThis.game;
-        if (!game) return false;
-
         game.board.forEach(p => {
             p.forEach(m => {
                 // This function gets called directly after a minion is killed.
@@ -165,9 +160,6 @@ export const EventManager: IEventManager = {
      * @returns Success
      */
     questUpdate(questsName, key, val, plr) {
-        let game = globalThis.game;
-        if (!game) return false;
-
         plr[questsName].forEach(s => {
             let quest: QuestType = s;
 
@@ -204,9 +196,6 @@ export const EventManager: IEventManager = {
      * @returns Success
      */
     broadcast(key, val, plr, updateHistory = true) {
-        let game = globalThis.game;
-        if (!game) return false;
-
         this.tick(key, val);
 
         if (updateHistory) this.addHistory(key, val, plr);
@@ -235,9 +224,6 @@ export const EventManager: IEventManager = {
      * @param plr The player who caused the event to happen
      */
     addHistory(key, val, plr) {
-        let game = globalThis.game;
-        if (!game) return;
-
         if (!this.history[game.turns]) this.history[game.turns] = [["GameLoop", `Init ${key}`, plr]];
         this.history[game.turns].push([key, val, plr]);
     },

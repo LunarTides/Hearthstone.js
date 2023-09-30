@@ -5,8 +5,6 @@
 import { Card, Player } from "../internal.js";
 import { AICalcMoveOption, AIHistory, CardLike, ScoredCard, SelectTargetAlignment, SelectTargetClass, SelectTargetFlag, Target } from "../types.js";
 
-let game = globalThis.game;
-
 // TODO: Ai gets stuck in infinite loop when using cathedral of atonement (location) | shadowcloth needle (0 attack wpn) | that minion has no attack.
 
 /**
@@ -58,8 +56,6 @@ export class AI {
      * @returns Result
      */
     calcMove(): AICalcMoveOption {
-        game = globalThis.game;
-
         let bestMove: AICalcMoveOption | undefined;
         let bestScore = -100000;
 
@@ -862,7 +858,6 @@ export class AI {
      * @returns The score the string gets
      */
     analyzePositive(str: string, context: boolean = true): number {
-        game = globalThis.game;
         if (context) context = game.config.ai.contextAnalysis;
         let score = 0;
 

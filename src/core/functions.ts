@@ -30,8 +30,6 @@ import { Blueprint, CardClass, CardClassNoNeutral, CardLike, CardRarity, EventKe
 import { validateBlueprint } from "../helper/validator.js";
 import { format } from "util";
 
-let game = globalThis.game;
-
 const deckcode = {
     /**
      * Imports a deck using a code and put the cards into the player's deck
@@ -2095,7 +2093,6 @@ ${mainContent}
      * @returns Success
      */
     importCards() {
-        game = globalThis.game;
         generateCardExports();
         doImportCards();
 

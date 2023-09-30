@@ -206,8 +206,6 @@ export class Game {
         this.constants = {
             REFUND: -1
         };
-
-        globalThis.game = this;
     }
 
     /**

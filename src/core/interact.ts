@@ -7,7 +7,6 @@ import { AIHistory, CardLike, EventValue, GameConfig, GamePlayCardReturn, Select
 import { reloadCards } from '../helper/cards.js';
 
 const licenseUrl = 'https://github.com/LunarTides/Hearthstone.js/blob/main/LICENSE';
-let game = globalThis.game;
 
 export const interact = {
     // Constant interaction
@@ -17,8 +16,6 @@ export const interact = {
      * @returns Cancel | Success
      */
     doTurnAttack(): -1 | null | boolean | Card {
-        game = globalThis.game;
-
         let attacker, target;
 
         if (game.player.ai) {
@@ -107,8 +104,6 @@ export const interact = {
      * @returns A string if "echo" is false
      */
     handleCmds(q: string, echo: boolean = true, debug: boolean = false): boolean | string | -1 {
-        game = globalThis.game;
-
         let args = q.split(" ");
         let name = args.shift()?.toLowerCase();
         if (!name) {
@@ -776,8 +771,6 @@ export const interact = {
      * @returns true | The return value of `game.playCard`
      */
     doTurnLogic(input: string): GamePlayCardReturn {
-        game = globalThis.game;
-
         if (this.handleCmds(input) !== -1) return true;
         let parsedInput = parseInt(input);
 
@@ -796,7 +789,6 @@ export const interact = {
      * @returns Success | The return value of doTurnLogic
      */
     doTurn(): boolean | string | GamePlayCardReturn {
-        game = globalThis.game;
         game.events.tick("GameLoop", "doTurn");
 
         if (game.player.ai) {
@@ -854,8 +846,6 @@ export const interact = {
      * @return Success
      */
     useLocation(): boolean | "nolocations" | "invalidtype" | "cooldown" | -1 {
-        game = globalThis.game;
-
         let locations = game.board[game.player.id].filter(m => m.type == "Location");
         if (locations.length <= 0) return "nolocations";
 
@@ -887,7 +877,6 @@ export const interact = {
      * @returns Success
      */
     deckCode(plr: Player): boolean {
-        game = globalThis.game;
         this.printName();
     
         /**
@@ -926,8 +915,6 @@ export const interact = {
      * @returns A string of the indexes of the cards the player mulligan'd
      */
     mulligan(plr: Player): string {
-        game = globalThis.game;
-
         this.printAll(plr);
 
         let sb = "\nChoose the cards to mulligan (1, 2, 3, ...):\n";
@@ -956,8 +943,6 @@ export const interact = {
      * @returns The card chosen
      */
     dredge(prompt: string = "Choose a card to Dredge:"): Card | null {
-        game = globalThis.game;
-
         // Look at the bottom three cards of the deck and put one on the top.
         let cards = game.player.deck.slice(0, 3);
 
@@ -1011,8 +996,6 @@ export const interact = {
      * @returns The chosen answer(s) index(es)
      */
     chooseOne(prompt: string, options: string[], times: number = 1): number | null | (number | null)[] {
-        game = globalThis.game;
-
         this.printAll(game.player);
 
         let choices = [];
@@ -1058,8 +1041,6 @@ export const interact = {
      * @returns Chosen
      */
     question(plr: Player, prompt: string, answers: string[]): string {
-        game = globalThis.game;
-
         const RETRY = () => {
             return this.question(plr, prompt, answers);
         }
@@ -1106,8 +1087,6 @@ export const interact = {
      * @returns `true` if Yes / `false` if No
      */
     yesNoQuestion(plr: Player, prompt: string): boolean {
-        game = globalThis.game;
-
         let ask = `\n${prompt} [<bright:green>Y</bright:green> | <red>N</red>] `;
 
         if (plr.ai) return plr.ai.yesNoQuestion(prompt);
@@ -1136,8 +1115,6 @@ export const interact = {
      * @returns The card chosen.
      */
     discover(prompt: string, cards: CardLike[] = [], filterClassCards: boolean = true, amount: number = 3, _cards: CardLike[] = []): Card | null {
-        game = globalThis.game;
-
         this.printAll(game.player);
         let values: CardLike[] = _cards;
 
@@ -1224,8 +1201,6 @@ export const interact = {
      * @returns The card or hero chosen
      */
     selectTarget(prompt: string, card: Card | null, forceSide: SelectTargetAlignment, forceClass: SelectTargetClass, flags: SelectTargetFlag[] = []): Target | false {
-        game = globalThis.game;
-
         game.events.broadcast("TargetSelectionStarts", [prompt, card, forceSide, forceClass, flags], game.player);
         let target = this._selectTarget(prompt, card, forceSide, forceClass, flags);
 
@@ -1362,7 +1337,6 @@ export const interact = {
      */
     printName(): void {
         cls();
-        game = globalThis.game;
 
         let info = game.config.info;
         let versionDetail = game.player.detailedView ? 4 : 3;
@@ -1385,7 +1359,6 @@ export const interact = {
      * @param disappear If this is true, "This will disappear once you end your turn" will show up.
      */
     printLicense(disappear: boolean = true): void {
-        game = globalThis.game;
         if (game.config.general.debug) return;
         let info = game.config.info;
     
@@ -1409,8 +1382,6 @@ export const interact = {
      * @returns The return value of the callback. If the callback didn't explicitly return false then it was successful.
      */
     withStatus(status: string, callback: () => boolean): boolean {
-        game = globalThis.game;
-
         process.stdout.write(`${status}...`);
         let success = callback() !== false;
         
@@ -1430,7 +1401,6 @@ export const interact = {
      * @return The modified description with placeholders replaced.
      */
     doPlaceholders(card: Card, overrideText: string = "", _depth: number = 0): string {
-        game = globalThis.game;
         let reg = new RegExp(`{ph:(.*?)} .*? {/ph}`);
 
         let text = overrideText;
@@ -1514,8 +1484,6 @@ export const interact = {
      * @returns The readable card
      */
     getReadableCard(card: CardLike, i: number = -1, _depth: number = 0): string {
-        game = globalThis.game;
-
         /**
          * If it should show detailed errors regarding depth.
          */
@@ -1619,8 +1587,6 @@ export const interact = {
      * @param plr The player
      */
     printAll(plr: Player): void {
-        game = globalThis.game;
-
         this.printName();
         if (game.turns <= 2) this.printLicense();
 
@@ -1632,6 +1598,7 @@ export const interact = {
     },
 
     printPlayerStats(plr: Player): void {
+        // TODO: Rewrite this... again...
         const opponent = plr.getOpponent();
 
         let finished = "";
@@ -1696,6 +1663,8 @@ export const interact = {
 
         // Deck Size
         doStat((player: Player) => {
+            // I don't really know what is going on here, but this is what i found so far:
+            // The 10 is because this is after a `number / maxNumber` but this here is just a `number`.
             return [`Deck Size: <yellow>${player.deck.length}</yellow>`, 10];
         });
 
@@ -1752,8 +1721,6 @@ export const interact = {
      * @param help If it should show a help message which displays what the different fields mean.
      */
     viewCard(card: CardLike, help: boolean = true) {
-        game = globalThis.game;
-
         let _card = this.getReadableCard(card);
         let _class = `<gray>${card.classes.join(" / ")}</gray>`;
 

@@ -5,8 +5,6 @@
 import { AI, Card } from "../internal.js";
 import { CardClass, CardType, QuestType, Target } from "../types.js";
 
-let game = globalThis.game;
-
 export class Player {
     /**
      * You might be looking for `Player.id`.
@@ -325,7 +323,6 @@ export class Player {
     detailedView: boolean = false;
 
     constructor(name: string) {
-        game = globalThis.game;
         this.name = name;
     }
 
