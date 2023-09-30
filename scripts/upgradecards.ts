@@ -41,12 +41,13 @@ function upgradeCard(path: string, data: string, file: Dirent) {
     data = upgradeField(data, bpDefRegex, `import { Blueprint${eventValue} } from "@Game/types.js";\n`, "Replaced blueprint type from jsdoc to import.");
     data = upgradeField(data, kwmRegex, "", "Removed KeywordMethod jsdoc type.");
     data = upgradeField(data, "module.exports = {", "export const blueprint: Blueprint = {", "Replaced blueprint definition from module.exports to object.");
+    data = upgradeField(data, "plr, game, self", "plr, self", "Removed 'game' parameter from abilities.");
     data = upgradeField(data, /&B(.+?)&R/g, "<b>&1</b>", "Updated tags in description.");
     data = upgradeField(data, /\.maxMana/g, ".emptyMana", "Updated 'maxMana' to 'emptyMana'.");
     data = upgradeField(data, /\.maxMaxMana/g, ".maxMana", "Updated 'maxMaxMana' to 'maxMana'.");
     data = upgradeField(data, /\n {4}set: (.*),/, "", "Removed the set field.");
-    data = upgradeField(data, / {4}class: (.*),/, "    classes: [$1],", "Update the class field pt1.");
-    data = upgradeField(data, /classes: \["(.*?) \/ (.*?)"\]/g, `classes: ["$1", "$2"]`, "Update the class field pt2.");
+    data = upgradeField(data, / {4}class: (.*),/, "    classes: [$1],", "Updated the class field pt1.");
+    data = upgradeField(data, /classes: \["(.*?) \/ (.*?)"\]/g, `classes: ["$1", "$2"]`, "Updated the class field pt2.");
     data = upgradeField(data, / {4}spellClass: (.*),/, "    spellSchool: $1,", "Updated the spellClass field.");
     data = upgradeField(data, / {4}mana: (.*),/, "    cost: $1,", "Updated the mana field.");
     data = upgradeField(data, / {4}desc: (.*),/, "    text: $1,", "Updated the desc field.");
@@ -56,7 +57,7 @@ function upgradeCard(path: string, data: string, file: Dirent) {
     data = upgradeField(data, /\n {4}id: (\d+),?/, "", "Removed id from card.");
     let currentId = Number(game.functions.readFile("/cards/.latestId")) + 1;
 
-    data = upgradeField(data, /( {4}.+: .+,)(\n\n {4}.*\(plr, game, (self|card))/, `$1\n    id: ${currentId},$2`, `Card was assigned id ${currentId} pt1.`);
+    data = upgradeField(data, /( {4}.+: .+,)(\n\n {4}.*\(plr, (self|card))/, `$1\n    id: ${currentId},$2`, `Card was assigned id ${currentId} pt1.`);
     data = upgradeField(data, /( {4}uncollectible: .*?),?\n\}/, `$1,\n    id: ${currentId},\n}`, `Card was assigned id ${currentId} pt2.`);
 
     game.functions.writeFile("/cards/.latestId", `${currentId}`);

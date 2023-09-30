@@ -855,7 +855,7 @@ export class Card {
     activate(name: CardAbility, ...args: any): any[] | -1 | false {
         // This activates a function
         // Example: activate("cast")
-        // Do: this.cast.forEach(castFunc => castFunc(plr, game, card))
+        // Do: this.cast.forEach(castFunc => castFunc(plr, card))
         // Returns a list of the return values from all the function calls
         let ability: Ability[] | undefined = this.abilities[name];
 
