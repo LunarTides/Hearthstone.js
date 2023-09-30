@@ -30,7 +30,7 @@ function upgradeCard(path: string, data: string, file: Dirent) {
 
     game.log(`--- Found ${filename} ---`);
 
-    let hasPassive = data.includes("passive(plr, game, self, key, ");
+    let hasPassive = data.includes("passive(plr, self, key, ");
     let eventValue = hasPassive ? ", EventValue" : "";
 
     game.log(`Passive: ${hasPassive}`);
@@ -73,7 +73,7 @@ function upgradeCard(path: string, data: string, file: Dirent) {
             game.logError("<yellow>WARNING: Could not find event key in passive.</yellow>");
         }
 
-        data = upgradeField(data, /(\n {4}passive\(plr, game, self, key), val\) {/g, `$1, _unknownVal) {
+        data = upgradeField(data, /(\n {4}passive\(plr, self, key), val\) {/g, `$1, _unknownVal) {
         // Only proceed if the correct event key was broadcast
         if (!(key === "${key}")) return;
 

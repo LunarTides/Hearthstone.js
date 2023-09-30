@@ -14,7 +14,7 @@ export const blueprint: Blueprint = {
     uncollectible: true,
     id: 57,
 
-    battlecry(plr, game, self) {
+    battlecry(plr, self) {
         // For the rest of the game, your battlecries trigger twice.
 
         // Add an event listener.
@@ -51,7 +51,7 @@ export const blueprint: Blueprint = {
         // destroy(); // Run this function to destroy the event listener
     },
 
-    test(plr, game, self) {
+    test(plr, self) {
         // TODO: Add proper tests
         return true;
     }

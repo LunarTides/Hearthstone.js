@@ -16,7 +16,7 @@ export const blueprint: Blueprint = {
     uncollectible: true,
     id: 53,
 
-    cast(plr, game, self) {
+    cast(plr, self) {
         // Gain mana equal to the turn counter.
 
         // The turn counter goes up at the beginning of each player's turn.
@@ -27,7 +27,7 @@ export const blueprint: Blueprint = {
     },
 
     // This function will be run every tick, and will replace the placeholders in the description with this function's return value.
-    placeholders(plr, game, self) {
+    placeholders(plr, self) {
         // All occurances of `{0}` will be replaced by the value in `game.turns`
         // All `{1}` will be replaced by 'haha lol'
         // All `{next thing is}` will be replaced by 'The next thing is:'
@@ -43,7 +43,7 @@ export const blueprint: Blueprint = {
         return {0: turns, 1: "haha lol", 10: "test", "next thing is": "The next thing is:"};
     },
 
-    test(plr, game, self) {
+    test(plr, self) {
         const assert = game.functions.assert;
 
         self.replacePlaceholders();

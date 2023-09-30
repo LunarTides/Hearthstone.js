@@ -14,7 +14,7 @@ export const blueprint: Blueprint = {
     uncollectible: true,
     id: 50,
 
-    battlecry(plr, game, self) {
+    battlecry(plr, self) {
         // `ret` is a boolean.
         let ret = self.manathirst(6);
 
@@ -45,13 +45,13 @@ export const blueprint: Blueprint = {
     },
 
     // This is optional, you will learn more about it in the `condition` example in `3-3`.
-    condition(plr, game, self) {
+    condition(plr, self) {
         // The next comment will only make sense after reading the `condition` example. Come back here after reading that.
         // Since we didn't put the `conditioned: ["battlecry"]` at the top, it won't cancel the battlecry if this returns false, this is just to warn the user that the manathirst isn't triggered.
         return self.manathirst(6);
     },
 
-    test(plr, game, self) {
+    test(plr, self) {
         const assert = game.functions.assert;
 
         let sheep = new game.Card("Sheep", plr.getOpponent());

@@ -15,12 +15,12 @@ export const blueprint: Blueprint = {
     uncollectible: true,
     id: 6,
 
-    heropower(plr, game, self) {
+    heropower(plr, self) {
         // Deal 2 damage to the enemy hero.
         game.attack(2, plr.getOpponent());
     },
 
-    test(plr, game, self) {
+    test(plr, self) {
         const assert = game.functions.assert;
 
         // The opponent should have 30 health

@@ -15,7 +15,7 @@ export const blueprint: Blueprint = {
     uncollectible: true,
     id: 4,
 
-    heropower(plr, game, self) {
+    heropower(plr, self) {
         // Deal 1 damage.
 
         // Suppress the "CastSpellOnMinion" event, since this isn't a spell
@@ -33,7 +33,7 @@ export const blueprint: Blueprint = {
         return true;
     },
 
-    test(plr, game, self) {
+    test(plr, self) {
         const assert = game.functions.assert;
 
         // The opponent should have 30 health.

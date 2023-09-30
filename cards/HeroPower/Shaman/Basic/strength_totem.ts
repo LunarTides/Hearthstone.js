@@ -14,7 +14,7 @@ export const blueprint: Blueprint = {
     uncollectible: true,
     id: 18,
 
-    passive(plr, game, self, key, val) {
+    passive(plr, self, key, val) {
         // At the end of your turn, give another friendly minion +1 Attack.
         
         // Only continue if the event that triggered this is the EndTurn event, and the player that triggered the event is this card's owner.
@@ -32,7 +32,7 @@ export const blueprint: Blueprint = {
         minion.addStats(1, 0);
     },
 
-    test(plr, game, self) {
+    test(plr, self) {
         const assert = game.functions.assert;
 
         // Summon 5 Sheep with 2 max health.

@@ -18,7 +18,7 @@ export const blueprint: Blueprint = {
     uncollectible: true,
     id: 42,
 
-    cast(plr, game, self) {
+    cast(plr, self) {
         // Deal $3 damage to the enemy hero.
 
         // Put the $ sign here to make the game apply spell damage correctly.
@@ -26,7 +26,7 @@ export const blueprint: Blueprint = {
         game.attack("$3", plr.getOpponent());
     },
 
-    test(plr, game, self) {
+    test(plr, self) {
         const assert = game.functions.assert;
 
         const oldHealth = plr.getOpponent().getHealth();

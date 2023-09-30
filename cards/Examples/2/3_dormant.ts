@@ -21,7 +21,7 @@ export const blueprint: Blueprint = {
     id: 38,
 
     // The battlecry only triggers when the minion is no longer dormant.
-    battlecry(plr, game, self) {
+    battlecry(plr, self) {
         // Dredge.
 
         game.interact.dredge();

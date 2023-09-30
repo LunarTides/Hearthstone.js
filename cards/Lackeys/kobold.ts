@@ -14,7 +14,7 @@ export const blueprint: Blueprint = {
     uncollectible: true,
     id: 27,
 
-    battlecry(plr, game, self) {
+    battlecry(plr, self) {
         // Deal 2 damage.
 
         // Select a target
@@ -28,7 +28,7 @@ export const blueprint: Blueprint = {
         return true;
     },
 
-    test(plr, game, self) {
+    test(plr, self) {
         const assert = game.functions.assert;
 
         plr.inputQueue = ["face", "y"];

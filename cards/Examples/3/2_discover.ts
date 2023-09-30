@@ -13,7 +13,7 @@ export const blueprint: Blueprint = {
     uncollectible: true,
     id: 51,
 
-    cast(plr, game, self) {
+    cast(plr, self) {
         // Discover a spell.
 
         // The discover function needs a list of cards to choose from.
@@ -38,7 +38,7 @@ export const blueprint: Blueprint = {
         return true;
     },
 
-    test(plr, game, self) {
+    test(plr, self) {
         const assert = game.functions.assert;
 
         plr.inputQueue = "1";

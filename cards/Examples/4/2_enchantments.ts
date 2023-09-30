@@ -16,7 +16,7 @@ export const blueprint: Blueprint = {
 
     // `tick` works the same as passive, except it's called more often, and isn't dependent on events.
     // More on ticks in '4-5'
-    tick(plr, game, self, key, val) {
+    tick(plr, self, key, val) {
         // Your cards cost 1 less.
 
         // When changing cost of a card USE THE ENCHANTMENT SYSTEM.
@@ -35,7 +35,7 @@ export const blueprint: Blueprint = {
 
     // This "ability" triggers whenever this card is about to be removed from the game.
     // It exists to allow cards to undo changes made by `passive`-related effects (e.g. tick).
-    remove(plr, game, self) {
+    remove(plr, self) {
         // Remove the "-1 cost" enchantments that was given by this card from all cards in the player's hand.
 
         plr.hand.forEach(c => {
@@ -44,7 +44,7 @@ export const blueprint: Blueprint = {
         });
     },
 
-    test(plr, game, self) {
+    test(plr, self) {
         // TODO: Add proper tests
         return true;
     }

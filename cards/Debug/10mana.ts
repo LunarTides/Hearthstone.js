@@ -13,12 +13,12 @@ export const blueprint: Blueprint = {
     uncollectible: true,
     id: 65,
 
-    cast(plr, game, self) {
+    cast(plr, self) {
         // Gain 10 Mana.
         plr.gainMana(10);
     },
 
-    test(plr, game, self) {
+    test(plr, self) {
         const assert = game.functions.assert;
 
         plr.mana = 5;

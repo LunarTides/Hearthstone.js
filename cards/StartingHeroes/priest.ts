@@ -15,7 +15,7 @@ export const blueprint: Blueprint = {
     uncollectible: true,
     id: 8,
 
-    heropower(plr, game, self) {
+    heropower(plr, self) {
         // Restore 2 Health.
 
         // We don't want the "CastSpellOnMinion" event to be broadcast here, so suppress it
@@ -35,7 +35,7 @@ export const blueprint: Blueprint = {
         return true;
     },
 
-    test(plr, game, self) {
+    test(plr, self) {
         const assert = game.functions.assert;
 
         // Health: 1->3

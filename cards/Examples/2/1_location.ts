@@ -23,13 +23,13 @@ export const blueprint: Blueprint = {
     // Remember to use the correct ability
     // For spells, the ability is `cast`.
     // And for location cards, the ability is `use`.
-    use(plr, game, self) {
+    use(plr, self) {
         // Restore 2 Health to your hero.
 
         plr.addHealth(2);
     },
 
-    test(plr, game, self) {
+    test(plr, self) {
         const assert = game.functions.assert;
 
         plr.health = 1;

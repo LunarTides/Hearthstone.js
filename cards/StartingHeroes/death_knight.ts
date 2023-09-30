@@ -15,7 +15,7 @@ export const blueprint: Blueprint = {
     uncollectible: true,
     id: 14,
 
-    heropower(plr, game, self) {
+    heropower(plr, self) {
         // Summon a 1/1 Ghoul with Charge. It dies at end of turn.
 
         // Create the Ghoul
@@ -27,7 +27,7 @@ export const blueprint: Blueprint = {
         // The `It dies at end of turn.` part is handled by the ghoul itself, so we don't need to do anything extra here
     },
 
-    test(plr, game, self) {
+    test(plr, self) {
         const assert = game.functions.assert;
 
         const minion = new game.Card("Death Knight Frail Ghoul", plr);

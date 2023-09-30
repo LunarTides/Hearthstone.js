@@ -14,7 +14,7 @@ export const blueprint: Blueprint = {
     uncollectible: true,
     id: 25,
 
-    battlecry(plr, game, self) {
+    battlecry(plr, self) {
         // Summon a random 2-Cost minion.
 
         // filter out all cards that aren't 2-cost minions
@@ -29,7 +29,7 @@ export const blueprint: Blueprint = {
         game.summonMinion(minion, plr);
     },
 
-    test(plr, game, self) {
+    test(plr, self) {
         const assert = game.functions.assert;
 
         // If there doesn't exist any 2-Cost minions, pass the test

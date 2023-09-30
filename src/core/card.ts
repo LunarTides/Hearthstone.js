@@ -433,7 +433,7 @@ export class Card {
         Do: this.test = true
         
         Function Example:
-        Blueprint: { name: "The Coin", cost: 0, cast(plr, game, self): { plr.refreshMana(1, plr.maxMana) } }
+        Blueprint: { name: "The Coin", cost: 0, cast(plr, self): { plr.refreshMana(1, plr.maxMana) } }
                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
         Do: this.abilities.cast = [{ plr.gainMana(1) }]
                                   ^                   ^
@@ -877,7 +877,7 @@ export class Card {
                 if (!(r instanceof Array) || r[0] === false) return;
             }
 
-            let r = func(this.plr, game, this, ...args);
+            let r = func(this.plr, this, ...args);
             if (ret instanceof Array) ret.push(r);
 
             // Deathrattle isn't cancellable
@@ -1137,7 +1137,7 @@ export class Card {
      * 
      * @example
      * card.text = "The current turn count is {0}";
-     * card.placeholders = [(plr, game, self) => {
+     * card.placeholders = [(plr, self) => {
      *     let turns = Math.ceil(game.turns / 2);
      * 
      *     return {0: turns};

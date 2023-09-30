@@ -14,7 +14,7 @@ export const blueprint: Blueprint = {
     uncollectible: true,
     id: 63,
 
-    cast(plr, game, self) {
+    cast(plr, self) {
         // Choose a minion to kill.
 
         // Try to:

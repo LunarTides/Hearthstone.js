@@ -20,7 +20,7 @@ export const blueprint: Blueprint = {
 
     // Note the new `key` and `_unknownVal` arguments.
     // These are only used in the `passive` and `handpassive` abilities.
-    passive(plr, game, self, key, _unknownVal) {
+    passive(plr, self, key, _unknownVal) {
         // Your battlecries trigger twice.
         // ^ In order to do this, we wait until a minion is played, then manually trigger its battlecry.
 
@@ -61,7 +61,7 @@ export const blueprint: Blueprint = {
         val.activateBattlecry();
     },
 
-    test(plr, game, self) {
+    test(plr, self) {
         // TODO: Add proper tests
         return true;
     }

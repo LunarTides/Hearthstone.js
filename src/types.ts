@@ -509,7 +509,7 @@ export type Blueprint = {
 /**
  * The ability of a card.
  */
-export type Ability = (plr: Player, game: Game, self: Card, key?: EventKey, val?: UnknownEventValue) => any;
+export type Ability = (plr: Player, self: Card, key?: EventKey, val?: UnknownEventValue) => any;
 
 /**
  * The event listener callback return value.

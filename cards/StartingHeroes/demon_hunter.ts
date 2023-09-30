@@ -15,14 +15,14 @@ export const blueprint: Blueprint = {
     uncollectible: true,
     id: 13,
 
-    heropower(plr, game, self) {
+    heropower(plr, self) {
         // +1 Attack this turn.
 
         // Give the player +1 attack.
         plr.addAttack(1);
     },
     
-    test(plr, game, self) {
+    test(plr, self) {
         const assert = game.functions.assert;
 
         // The player should start with 0 attack

@@ -14,7 +14,7 @@ export const blueprint: Blueprint = {
     uncollectible: true,
     id: 59,
 
-    battlecry(plr, game, self) {
+    battlecry(plr, self) {
         // Your cards cost (1) less.
 
         // Ticks are called more often than passives
@@ -42,7 +42,7 @@ export const blueprint: Blueprint = {
     },
 
     // Unhook from the tick when the card is removed
-    remove(plr, game, self) {
+    remove(plr, self) {
         // Unhook from all ticks that the card is hooked to.
         // It is important to unhook before removing the enchantments, since removing the enchantments can cause a tick, which would add the enchantments back.
         if (self.storage.unhooks) self.storage.unhooks.forEach((unhook: Function) => unhook());
@@ -53,7 +53,7 @@ export const blueprint: Blueprint = {
         });
     },
 
-    test(plr, game, self) {
+    test(plr, self) {
         // TODO: Add proper tests
         return true;
     }

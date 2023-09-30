@@ -14,7 +14,7 @@ export const blueprint: Blueprint = {
     uncollectible: true,
     id: 24,
 
-    battlecry(plr, game) {
+    battlecry(plr, self) {
         // Discover a spell.
 
         // Filter out all cards that aren't spells
@@ -30,7 +30,7 @@ export const blueprint: Blueprint = {
         return true;
     },
 
-    test(plr, game, self) {
+    test(plr, self) {
         const assert = game.functions.assert;
 
         // If there are no spells, pass the test

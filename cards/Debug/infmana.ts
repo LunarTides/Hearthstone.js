@@ -13,7 +13,7 @@ export const blueprint: Blueprint = {
     uncollectible: true,
     id: 66,
 
-    cast(plr, game, self) {
+    cast(plr, self) {
         // Fill up your mana. For the rest of the game, your mana never decreases.
 
         // Gain max mana every tick.
@@ -23,7 +23,7 @@ export const blueprint: Blueprint = {
         });
     },
 
-    test(plr, game, self) {
+    test(plr, self) {
         const assert = game.functions.assert;
 
         plr.mana = 5;

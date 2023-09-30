@@ -15,7 +15,7 @@ export const blueprint: Blueprint = {
     uncollectible: true,
     id: 9,
 
-    heropower(plr, game, self) {
+    heropower(plr, self) {
         // The names of the cards that can be summoned
         const totemCardNames = ["Healing Totem", "Searing Totem", "Stoneclaw Totem", "Strength Totem"];
         const filteredTotemCardNames: string[] = [];
@@ -43,7 +43,7 @@ export const blueprint: Blueprint = {
         return true;
     },
 
-    test(plr, game, self) {
+    test(plr, self) {
         const assert = game.functions.assert;
 
         const totemCardNames = ["Healing Totem", "Searing Totem", "Stoneclaw Totem", "Strength Totem"];

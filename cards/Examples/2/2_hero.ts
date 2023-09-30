@@ -19,7 +19,7 @@ export const blueprint: Blueprint = {
     uncollectible: true,
     id: 37,
 
-    battlecry(plr, game, self) {
+    battlecry(plr, self) {
         // Restore your hero to full health.
 
         // Heal this card's owner to full health.
@@ -30,13 +30,13 @@ export const blueprint: Blueprint = {
     // This gets triggered when the player uses their hero power.
     // This only gets triggered if the player uses the hero power of this card, not any other hero power.
     // If you want something to happen every time any hero power is used, you'll have to use `passive`, which is explained in `4-1`.
-    heropower(plr, game, self) {
+    heropower(plr, self) {
         // Restore 2 Health to your hero.
 
         plr.addHealth(2);
     },
 
-    test(plr, game, self) {
+    test(plr, self) {
         const assert = game.functions.assert;
         // Here we test both abilities
         

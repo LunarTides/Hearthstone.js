@@ -113,11 +113,11 @@ export function create(creatorType: CCType, cardType: CardType, blueprint: Bluep
     // If the text has `<b>Battlecry:</b> Dredge.`, add `// Dredge.` to the battlecry ability
     let cleanedDesc = game.functions.stripTags(descToClean).replace(`${func}: `, "");
 
-    // Example 1: '\n\n    passive(plr, game, self, key, _unknownValue) {\n        // Your battlecries trigger twice.\n        ...\n    }',
-    // Example 2: '\n\n    battlecry(plr, game, self) {\n        // Deal 2 damage to the opponent.\n        \n    }'
+    // Example 1: '\n\n    passive(plr, self, key, _unknownValue) {\n        // Your battlecries trigger twice.\n        ...\n    }',
+    // Example 2: '\n\n    battlecry(plr, self) {\n        // Deal 2 damage to the opponent.\n        \n    }'
     if (func) func = `
     
-    ${func.toLowerCase()}(plr, game, self${triggerText} {
+    ${func.toLowerCase()}(plr, self${triggerText} {
         // ${cleanedDesc}
         ${extraPassiveCode}
     }`;

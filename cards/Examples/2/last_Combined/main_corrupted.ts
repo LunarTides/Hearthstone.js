@@ -16,7 +16,7 @@ export const blueprint: Blueprint = {
     uncollectible: true,
     id: 49,
 
-    battlecry(plr, game, self) {
+    battlecry(plr, self) {
         // Dredge.
 
         game.interact.dredge();

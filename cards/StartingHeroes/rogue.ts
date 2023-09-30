@@ -15,7 +15,7 @@ export const blueprint: Blueprint = {
     uncollectible: true,
     id: 12,
 
-    heropower(plr, game, self) {
+    heropower(plr, self) {
         // Equip a 1/2 Dagger.
 
         // Create the weapon card
@@ -25,7 +25,7 @@ export const blueprint: Blueprint = {
         plr.setWeapon(wpn);
     },
 
-    test(plr, game, self) {
+    test(plr, self) {
         const assert = game.functions.assert;
 
         // The player should not have a weapon

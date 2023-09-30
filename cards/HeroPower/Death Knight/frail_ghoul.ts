@@ -16,7 +16,7 @@ export const blueprint: Blueprint = {
     uncollectible: true,
     id: 23,
 
-    passive(plr, game, self, key, val) {
+    passive(plr, self, key, val) {
         // At the end of your turn, this minion dies.
 
         // Only continue if the event that triggered this is the EndTurn event, and the player that triggered the event is this card's owner.
@@ -26,7 +26,7 @@ export const blueprint: Blueprint = {
         self.kill();
     },
 
-    test(plr, game, self) {
+    test(plr, self) {
         const assert = game.functions.assert;
 
         const checkIfThisCardIsOnTheBoard = () => {

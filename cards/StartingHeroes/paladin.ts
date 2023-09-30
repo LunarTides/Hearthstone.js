@@ -15,7 +15,7 @@ export const blueprint: Blueprint = {
     uncollectible: true,
     id: 10,
 
-    heropower(plr, game, self) {
+    heropower(plr, self) {
         // Summon a 1/1 Silver Hand Recruit.
 
         // Create the Silver Hand Recruit card.
@@ -25,7 +25,7 @@ export const blueprint: Blueprint = {
         game.summonMinion(card, plr);
     },
 
-    test(plr, game, self) {
+    test(plr, self) {
         const assert = game.functions.assert;
 
         const checkIfMinionExists = () => {

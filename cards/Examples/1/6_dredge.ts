@@ -14,7 +14,7 @@ export const blueprint: Blueprint = {
     uncollectible: true,
     id: 34,
 
-    battlecry(plr, game, self) {
+    battlecry(plr, self) {
         // Dredge.
         
         // `game.interact` is an instance of the Interact object as defined in `src/interact.ts`.
@@ -22,7 +22,7 @@ export const blueprint: Blueprint = {
     },
 
     // Ignore this
-    test(plr, game, self) {
+    test(plr, self) {
         const assert = game.functions.assert;
 
         // Makes the player answer "1" to the next question

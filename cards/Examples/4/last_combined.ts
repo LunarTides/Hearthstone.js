@@ -14,7 +14,7 @@ export const blueprint: Blueprint = {
     uncollectible: true,
     id: 60,
 
-    cast(plr, game, self) {
+    cast(plr, self) {
         game.functions.addQuest("Quest", plr, self, "PlayCard", 3, (_unknownVal, done) => {
             const val = _unknownVal as EventValue<"PlayCard">;
 
@@ -67,7 +67,7 @@ export const blueprint: Blueprint = {
         });
     },
 
-    test(plr, game, self) {
+    test(plr, self) {
         // TODO: Add proper tests
         return true;
     }

@@ -15,7 +15,7 @@ export const blueprint: Blueprint = {
     uncollectible: true,
     id: 35,
 
-    battlecry(plr, game, self) {
+    battlecry(plr, self) {
         // Dredge. Gain +1/+1.
 
         // Ordering is important. In the description it says that it dredges first, then adds +1/+1.
@@ -25,7 +25,7 @@ export const blueprint: Blueprint = {
     },
 
     // Ignore this
-    test(plr, game, self) {
+    test(plr, self) {
         const assert = game.functions.assert;
 
         // Makes the player answer "1" to the next question

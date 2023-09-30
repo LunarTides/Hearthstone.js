@@ -13,7 +13,7 @@ export const blueprint: Blueprint = {
     uncollectible: true,
     id: 2,
 
-    cast(plr, game, self) {
+    cast(plr, self) {
         // Gain 1 Mana Crystal this turn only.
 
         // Refresh 1 mana, while not going over the player's max mana. In most cases, the max mana is 10.
@@ -22,7 +22,7 @@ export const blueprint: Blueprint = {
         plr.refreshMana(1, plr.maxMana);
     },
 
-    test(plr, game, self) {
+    test(plr, self) {
         const assert = game.functions.assert;
 
         // Assert 5->6

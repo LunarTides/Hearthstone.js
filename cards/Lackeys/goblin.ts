@@ -14,7 +14,7 @@ export const blueprint: Blueprint = {
     uncollectible: true,
     id: 26,
 
-    battlecry(plr, game, self) {
+    battlecry(plr, self) {
         // Give a friendly minion +1 Attack and Rush.
 
         // Prompt the user to select a friendly minion
@@ -31,7 +31,7 @@ export const blueprint: Blueprint = {
         return true;
     },
 
-    test(plr, game, self) {
+    test(plr, self) {
         const assert = game.functions.assert;
 
         // Summon a sheep

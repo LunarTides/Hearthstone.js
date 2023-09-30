@@ -14,7 +14,7 @@ export const blueprint: Blueprint = {
     uncollectible: true,
     id: 61,
 
-    battlecry(plr, game, self) {
+    battlecry(plr, self) {
         // Give this minion +1/+1.
         
         // Try to give this minion +1/+1 yourself.

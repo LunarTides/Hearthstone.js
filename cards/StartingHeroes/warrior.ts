@@ -15,7 +15,7 @@ export const blueprint: Blueprint = {
     uncollectible: true,
     id: 7,
 
-    heropower(plr, game, self) {
+    heropower(plr, self) {
         // Gain 2 Armor.
 
         // Give the player +2 armor.
@@ -23,7 +23,7 @@ export const blueprint: Blueprint = {
         plr.armor += 2;
     },
 
-    test(plr, game, self) {
+    test(plr, self) {
         const assert = game.functions.assert;
 
         // The player should have 0 armor

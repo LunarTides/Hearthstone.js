@@ -18,7 +18,7 @@ export const blueprint: Blueprint = {
     uncollectible: true,
     id: 58,
 
-    cast(plr, game, self) {
+    cast(plr, self) {
         // Quest: Play 3 cards. Reward: Return those cards back to your hand.
 
         // Create a list of cards to put the 3 cards into
@@ -81,7 +81,7 @@ export const blueprint: Blueprint = {
         }); // Put `}, "name of the next spell");`, to make a questline. When the quest gets completed, a card with that name gets created and the game immediately activates its cast ability.
     },
 
-    test(plr, game, self) {
+    test(plr, self) {
         // TODO: Add proper tests
         return true;
     }

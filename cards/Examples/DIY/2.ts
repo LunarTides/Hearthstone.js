@@ -13,7 +13,7 @@ export const blueprint: Blueprint = {
     uncollectible: true,
     id: 62,
 
-    cast(plr, game, self) {
+    cast(plr, self) {
         // Restore 3 health to the hero.
 
         // Try to heal the player by 3 hp.

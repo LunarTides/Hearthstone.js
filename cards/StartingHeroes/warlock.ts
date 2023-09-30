@@ -15,7 +15,7 @@ export const blueprint: Blueprint = {
     uncollectible: true,
     id: 11,
 
-    heropower(plr, game, self) {
+    heropower(plr, self) {
         // Draw a card and take 2 damage.
 
         // Deal 2 damage to the player.
@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
         plr.drawCard();
     },
 
-    test(plr, game, self) {
+    test(plr, self) {
         const assert = game.functions.assert;
 
         // Clear the player's hand

@@ -14,7 +14,7 @@ export const blueprint: Blueprint = {
     uncollectible: true,
     id: 28,
 
-    battlecry(plr, game, self) {
+    battlecry(plr, self) {
         // Transform a friendly minion into one that costs (1) more.
 
         // Ask the user which minion to transform
@@ -48,7 +48,7 @@ export const blueprint: Blueprint = {
         return true;
     },
 
-    test(plr, game, self) {
+    test(plr, self) {
         const assert = game.functions.assert;
 
         let existsMinionWithCost = (cost: number) => {

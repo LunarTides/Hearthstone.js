@@ -15,7 +15,7 @@ export const blueprint: Blueprint = {
     uncollectible: true,
     id: 54,
 
-    cast(plr, game, self) {
+    cast(plr, self) {
         // If the turn counter is an even number, gain mana equal to the turn counter (up to 10).
         let turns = game.functions.getTraditionalTurnCounter();
 
@@ -25,7 +25,7 @@ export const blueprint: Blueprint = {
         plr.gainMana(turns);
     },
 
-    condition(plr, game, self) {
+    condition(plr, self) {
         let turns = game.functions.getTraditionalTurnCounter();
         if (turns > 10) turns = 10;
 
@@ -37,14 +37,14 @@ export const blueprint: Blueprint = {
         return even || manathirst;
     },
 
-    placeholders(plr, game, self) {
+    placeholders(plr, self) {
         let turns = game.functions.getTraditionalTurnCounter();
         if (turns > 10) turns = 10;
 
         return {0: turns};
     },
 
-    test(plr, game, self) {
+    test(plr, self) {
         const assert = game.functions.assert;
 
         const turn = () => {
