@@ -41,7 +41,7 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | nul
 
         // Options - Long, short
         let cmdOptions = [
-            ["--dry-run", "-d"],
+            ["--dry-run", "-n"],
             ["--cc-type", "-t"]
         ];
 
@@ -88,7 +88,7 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | nul
             game.log();
             game.log("<bold>Options</bold>");
             game.log("    <bold>Card Creator Options (ccc, vcc, clc, cclib)</bold>")
-            game.log("        <bold>-d, --dry-run</bold>\n            Don't actually create the card");
+            game.log("        <bold>-n, --dry-run</bold>\n            Don't actually create the card, just show what would be done.");
             game.log("        <bold>-t <underline>type</underline>, --cc-type <underline>type</bold underline>\n            Set the name of the card creator");
             game.log();
             game.log("    <bold>CCLib Options (cclib)</bold>");
