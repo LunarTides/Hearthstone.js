@@ -2015,6 +2015,31 @@ ${mainContent}
     },
 
     /**
+     * Returns the result of the galakrond formula
+     * 
+     * @param invokeCount How many times that the card has been invoked.
+     */
+    galakrondFormula(invokeCount: number) {
+        const x = invokeCount;
+        const y = Math.ceil((x + 1) / 2) + Math.round(x * 0.15);
+
+        return y || 1;
+    },
+
+    /**
+     * Bumps the invoke count for a card.
+     * 
+     * @param card The card. Just put in `self`.
+     * @param storageName The name where the info is stored. I recommend "invokeCount". You can get that information from `card.storage[storageName]` afterwards.
+     */
+    galakrondInvokeBump(card: Card, storageName: string) {
+        if (!card.storage[storageName]) card.storage[storageName] = 0;
+        if (card.storage[storageName] >= 3) card.storage[storageName] = 3;
+
+        card.storage[storageName]++;
+    },
+
+    /**
      * Invoke the `plr`'s Galakrond
      * 
      * @param plr The player
