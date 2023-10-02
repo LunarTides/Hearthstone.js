@@ -41,8 +41,8 @@ function upgradeCard(path: string, data: string, file: Dirent) {
     data = upgradeField(data, bpDefRegex, `import { Blueprint${eventValue} } from "@Game/types.js";\n`, "Replaced blueprint type from jsdoc to import.");
     data = upgradeField(data, kwmRegex, "", "Removed KeywordMethod jsdoc type.");
     data = upgradeField(data, "module.exports = {", "export const blueprint: Blueprint = {", "Replaced blueprint definition from module.exports to object.");
-    data = upgradeField(data, "plr, game, self", "plr, self", "Removed 'game' parameter from abilities.");
-    data = upgradeField(data, /&B(.+?)&R/g, "<b>&1</b>", "Updated tags in description.");
+    data = upgradeField(data, /plr, game, self/g, "plr, self", "Removed 'game' parameter from abilities.");
+    data = upgradeField(data, /&B(.+?)&R/g, "<b>$1</b>", "Updated tags in description.");
     data = upgradeField(data, /\.maxMana/g, ".emptyMana", "Updated 'maxMana' to 'emptyMana'.");
     data = upgradeField(data, /\.maxMaxMana/g, ".maxMana", "Updated 'maxMaxMana' to 'maxMana'.");
     data = upgradeField(data, /\n {4}set: (.*),/, "", "Removed the set field.");
