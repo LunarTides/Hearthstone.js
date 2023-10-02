@@ -27,7 +27,7 @@ export const blueprint: Blueprint = {
 
         // Makes the player answer "1" to the next question
         plr.inputQueue = ["1"];
-        let card = game.interact.dredge();
+        const card = game.interact.dredge();
 
         // Check if the top card of the player's deck is the card that was dredged
         assert(() => game.lodash.last(plr.deck) === card);

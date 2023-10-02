@@ -20,17 +20,17 @@ const { game, player1, player2 } = createGame();
 export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CCType) {
     // Harvest info
     let cardClass = game.lodash.capitalize(card.cardClass ?? "Neutral") as CardClass;
-    let collectible = card.collectible ?? false;
-    let cost = card.cost ?? 0;
-    let name = card.name;
+    const collectible = card.collectible ?? false;
+    const cost = card.cost ?? 0;
+    const name = card.name;
     let rarity = "Free" as CardRarity;
     if (card.rarity) rarity = game.lodash.capitalize(card.rarity) as CardRarity;
     let text = card.text ?? "";
-    let type = game.lodash.capitalize(card.type);
+    const type = game.lodash.capitalize(card.type);
 
     // Minion info
-    let attack = card.attack ?? -1;
-    let health = card.health ?? -1;
+    const attack = card.attack ?? -1;
+    const health = card.health ?? -1;
     let races: MinionTribe[] = [];
     if (card.races) races = card.races.map(r => game.lodash.capitalize(r) as MinionTribe);
 
@@ -39,7 +39,7 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CCT
     if (card.spellSchool) spellSchool = game.lodash.capitalize(card.spellSchool) as SpellSchool;
 
     // Weapon Info
-    let durability = card.durability ?? -1;
+    const durability = card.durability ?? -1;
 
     // Modify the text
     text = text.replaceAll("\n", " ");
@@ -52,7 +52,7 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CCT
         cardClass = game.functions.capitalizeAll(game.input("<red>Was not able to find the class of this card.\nWhat is the class of this card? </red>")) as CardClass;
     }
 
-    let realName = game.input("Override name (this will set 'name' to be the displayname instead) (leave empty to not use display name): ") || name;
+    const realName = game.input("Override name (this will set 'name' to be the displayname instead) (leave empty to not use display name): ") || name;
 
     let blueprint: Blueprint;
 
@@ -157,7 +157,7 @@ export function main(debug = false, overrideType?: lib.CCType) {
     }
 
     while (true) {
-        let cardName = game.input("\nName / dbfId (Type 'back' to cancel): ");
+        const cardName = game.input("\nName / dbfId (Type 'back' to cancel): ");
         if (game.interact.shouldExit(cardName)) break;
 
         let filteredCards = vanillaCards.filter(c => c.name.toLowerCase() == cardName.toLowerCase() || c.dbfId == parseInt(cardName));
@@ -186,7 +186,7 @@ export function main(debug = false, overrideType?: lib.CCType) {
                 game.log(card);
             });
 
-            let picked = parseInt(game.input(`Pick one (1-${filteredCards.length}): `));
+            const picked = parseInt(game.input(`Pick one (1-${filteredCards.length}): `));
             if (!picked || !filteredCards[picked - 1]) {
                 game.log("Invalid number.\n");
                 continue;

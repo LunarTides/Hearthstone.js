@@ -35,7 +35,7 @@ export function main() {
 
         // Assign decks
         const assignDeck = (player: Player) => {
-            let deck = game.functions.deckcode.import(player, "Mage /30/ 1");
+            const deck = game.functions.deckcode.import(player, "Mage /30/ 1");
             if (!deck) throw new Error("Invalid deckcode");
 
             player.deck = deck;
@@ -50,7 +50,7 @@ export function main() {
         const card = new Card(blueprint.name, player1);
         
         game.noOutput = true;
-        let error = testCard(card);
+        const error = testCard(card);
         game.noOutput = false;
 
         if (error instanceof Error) {

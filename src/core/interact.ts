@@ -19,12 +19,12 @@ export const interact = {
         let attacker, target;
 
         if (game.player.ai) {
-            let ai;
+            let ai
 
-            let altModel = `legacyAttack${game.config.ai.attackModel}`;
+            const altModel = `legacyAttack${game.config.ai.attackModel}`;
 
             // Run the correct ai attack model
-            let model = game.player.ai[altModel as keyof AI];
+            const model = game.player.ai[altModel as keyof AI];
             if (model) ai = (model as Function)();
 
             // Use the latest model
@@ -43,12 +43,12 @@ export const interact = {
             if (!target) return false;
         }
     
-        let errorcode = game.attack(attacker, target);
+        const errorcode = game.attack(attacker, target);
         game.killMinions();
 
-        let ignore = ["divineshield"];
+        const ignore = ["divineshield"];
         if (errorcode === true || ignore.includes(errorcode)) return true;
-        let err;
+        let err
 
         switch (errorcode) {
             case "taunt":
@@ -104,8 +104,8 @@ export const interact = {
      * @returns A string if "echo" is false
      */
     handleCmds(q: string, echo: boolean = true, debug: boolean = false): boolean | string | -1 {
-        let args = q.split(" ");
-        let name = args.shift()?.toLowerCase();
+        const args = q.split(" ");
+        const name = args.shift()?.toLowerCase();
         if (!name) {
             game.input("<red>Invalid command.</red>\n");
             return false;
@@ -129,7 +129,7 @@ export const interact = {
             }
 
             this.printAll(game.player);
-            let ask = this.yesNoQuestion(game.player, `<yellow>${game.player.hero?.hpText}</yellow> Are you sure you want to use this hero power?`);
+            const ask = this.yesNoQuestion(game.player, `<yellow>${game.player.hero?.hpText}</yellow> Are you sure you want to use this hero power?`);
             if (!ask) return false;
 
             this.printAll(game.player);
@@ -141,11 +141,11 @@ export const interact = {
         }
         else if (name === "use") {
             // Use location
-            let errorcode = this.useLocation();
+            const errorcode = this.useLocation();
             game.killMinions();
 
             if (errorcode === true || errorcode === -1 || game.player.ai) return true;
-            let err;
+            let err
 
             switch (errorcode) {
                 case "nolocations":
@@ -201,12 +201,12 @@ export const interact = {
             game.input("\nPress enter to continue...\n");
         }
         else if (name === "view") {
-            let isHandAnswer = this.question(game.player, "Do you want to view a minion on the board, or in your hand?", ["Board", "Hand"]);
-            let isHand = isHandAnswer == "Hand";
+            const isHandAnswer = this.question(game.player, "Do you want to view a minion on the board, or in your hand?", ["Board", "Hand"]);
+            const isHand = isHandAnswer == "Hand";
 
             if (!isHand) {
                 // allowLocations Makes selecting location cards allowed. This is disabled by default to prevent, for example, spells from killing the card.
-                let minion = this.selectCardTarget("Which minion do you want to view?", null, "any", ["allowLocations"]);
+                const minion = this.selectCardTarget("Which minion do you want to view?", null, "any", ["allowLocations"]);
                 if (!minion) return false;
         
                 this.viewCard(minion);
@@ -227,22 +227,22 @@ export const interact = {
         }
         else if (name === "concede") {
             this.printAll(game.player);
-            let confirmation = this.yesNoQuestion(game.player, "Are you sure you want to concede?");
+            const confirmation = this.yesNoQuestion(game.player, "Are you sure you want to concede?");
             if (!confirmation) return false;
 
             game.endGame(game.player.getOpponent());
         }
         else if (name === "license") {
-            let start = (process.platform == 'darwin' ? 'open' : process.platform == 'win32' ? 'start' : 'xdg-open');
+            const start = (process.platform == 'darwin' ? 'open' : process.platform == 'win32' ? 'start' : 'xdg-open');
             game.functions.runCommand(start + ' ' + licenseUrl);
         }
         else if (name === "version") {
-            let version = game.config.info.version;
-            let branch = game.config.info.branch;
-            let build = game.config.info.build;
+            const version = game.config.info.version;
+            const branch = game.config.info.branch;
+            const build = game.config.info.build;
 
             while (true) {
-                let todos = Object.entries(game.config.todo);
+                const todos = Object.entries(game.config.todo);
 
                 const printInfo = () => {
                     this.printAll(game.player);
@@ -265,7 +265,7 @@ export const interact = {
     
                     game.log(`Version Description:`);
 
-                    let introText;
+                    let introText
 
                     if (branch == "topic") introText = game.config.info.topicIntroText;
                     else if (branch == "alpha") introText = game.config.info.alphaIntroText;
@@ -289,7 +289,7 @@ export const interact = {
                 }
 
                 const printTodo = (todo: any, id: number, printDesc = false) => {
-                    let [name, info] = todo;
+                    const [name, info] = todo;
                     let [state, text] = info;
 
                     if (state == "done") state = "x";
@@ -302,12 +302,12 @@ export const interact = {
 
                 todos.forEach((e, i) => printTodo(e, i + 1));
 
-                let todoId = parseInt(game.input("\nType the id of a todo to see more information about it (eg. 1): "));
+                const todoId = parseInt(game.input("\nType the id of a todo to see more information about it (eg. 1): "));
                 if (!todoId || todoId > todos.length || todoId <= 0) {
                     break;
                 }
 
-                let todo = todos[todoId - 1];
+                const todo = todos[todoId - 1];
 
                 printInfo();
                 printTodo(todo, todoId, true);
@@ -320,7 +320,7 @@ export const interact = {
             else game.log("<yellow>Cards that are shown are collected while this screen is rendering. This means that it gets the information about the card from where it is when you ran this command, for example; the graveyard. This is why most cards have <1 health.</yellow>");
 
             // History
-            let history = game.events.history;
+            const history = game.events.history;
             let finished = "";
 
             const showCard = (val: Card) => {
@@ -347,7 +347,7 @@ export const interact = {
                         h.forEach(c => {
                             if (revealed) return;
 
-                            let [key, newVal, _] = c;
+                            const [key, newVal, _] = c;
 
                             // This shouldn't happen?
                             if (!newVal) return;
@@ -392,14 +392,14 @@ export const interact = {
                     // If the `key` is "AddCardToHand", check if the previous history entry was `DrawCard`, and they both contained the exact same `val`.
                     // If so, ignore it.
                     if (key === "AddCardToHand" && i > 0) {
-                        let lastEntry = history[t][i - 1];
+                        const lastEntry = history[t][i - 1];
 
                         if (lastEntry[0] == "DrawCard") {
                             if ((lastEntry[1] as Card).uuid == (val as Card).uuid) return;
                         }
                     }
 
-                    let shouldHide = game.config.advanced.hideValueHistoryKeys.includes(key) && !debug;
+                    const shouldHide = game.config.advanced.hideValueHistoryKeys.includes(key) && !debug;
 
                     if (!hasPrintedHeader) finished += `\nTurn ${t} - Player [${plr.name}]\n`; 
                     hasPrintedHeader = true;
@@ -418,7 +418,7 @@ export const interact = {
                         val = strbuilder;
                     }
 
-                    let finishedKey = key[0].toUpperCase() + key.slice(1);
+                    const finishedKey = key[0].toUpperCase() + key.slice(1);
 
                     finished += `${finishedKey}: ${val}\n`;
                 });
@@ -446,9 +446,9 @@ export const interact = {
                 return false;
             }
 
-            let cardName = args.join(" ");
+            const cardName = args.join(" ");
 
-            let card = game.functions.getCardByName(cardName);
+            const card = game.functions.getCardByName(cardName);
             if (!card) {
                 game.input(`<red>Invalid card: <yellow>${cardName}</yellow>.\n`);
                 return false;
@@ -505,7 +505,7 @@ export const interact = {
                 return false;
             }
 
-            let eventCards: [Card, number][] = game.events.events.PlayCard[game.player.id];
+            const eventCards: [Card, number][] = game.events.events.PlayCard[game.player.id];
             if (eventCards.length <= 0) {
                 game.input("<red>No cards to undo.</red>\n");
                 return false;
@@ -561,7 +561,7 @@ export const interact = {
             if (echo) finished += "AI Info:\n\n";
 
             for (let i = 0; i < 2; i++) {
-                let plr = game.functions.getPlayerFromId(i);
+                const plr = game.functions.getPlayerFromId(i);
                 if (!plr.ai) continue;
 
                 finished += `AI${i + 1} History: {\n`;
@@ -583,7 +583,7 @@ export const interact = {
             return finished;
         }
         else if (name === "/cmd") {
-            let history = Object.values(game.events.history).map(t => t.filter(
+            const history = Object.values(game.events.history).map(t => t.filter(
                 (v) => v[0] == "Input" &&
                 (v[1] as EventValue<"Input">).startsWith("/") &&
                 v[2] == game.player &&
@@ -595,24 +595,23 @@ export const interact = {
 
                 game.log(`\nTurn ${i}:`);
 
-                let index = 1;
-                obj.forEach(h => {
+                obj.forEach((h, index) => {
                     /**
                      * The user's input
                      */
-                    let input = h[1];
+                    const input = h[1];
 
-                    game.log(`[${index++}] ${input}`);
+                    game.log(`[${index + 1}] ${input}`);
                 });
             });
 
-            let turnIndex = parseInt(game.input("\nWhich turn does the command belong to? (eg. 1): "));
+            const turnIndex = parseInt(game.input("\nWhich turn does the command belong to? (eg. 1): "));
             if (!turnIndex || turnIndex < 0 || !history[turnIndex]) {
                 game.input("<red>Invalid turn.</red>\n");
                 return false;
             }
 
-            let commandIndex = parseInt(game.input("\nWhat is the index of the command in that turn? (eg. 1): "));
+            const commandIndex = parseInt(game.input("\nWhat is the index of the command in that turn? (eg. 1): "));
             if (!commandIndex || commandIndex < 1 || !history[turnIndex][commandIndex - 1]) {
                 game.input("<red>Invalid command index.</red>\n");
                 return false;
@@ -627,7 +626,7 @@ export const interact = {
             command = command as EventValue<"Input">;
 
             this.printAll(game.player);
-            let options = parseInt(game.input(`\nWhat would you like to do with this command?\n${command}\n\n(1. Run it, 2. Edit it, 0. Cancel): `));
+            const options = parseInt(game.input(`\nWhat would you like to do with this command?\n${command}\n\n(1. Run it, 2. Edit it, 0. Cancel): `));
             if (!options) {
                 game.input("<red>Invalid option.</red>\n");
                 return false;
@@ -638,7 +637,7 @@ export const interact = {
                 this.doTurnLogic(command);
             }
             if (options === 2) {
-                let addition = game.input("Which card do you want to play? " + command);
+                const addition = game.input("Which card do you want to play? " + command);
                 this.doTurnLogic(command + addition);
             }
         }
@@ -648,15 +647,15 @@ export const interact = {
                 return false;
             }
 
-            let [key, value] = args;
+            const [key, value] = args;
 
-            let name = Object.keys(game.config).find(k => k === value);
+            const name = Object.keys(game.config).find(k => k === value);
             if (!name) {
                 game.input("<red>Invalid setting name!</red>\n");
                 return false;
             }
 
-            let setting: {[key: string]: any} = game.config[name as keyof GameConfig];
+            const setting: {[key: string]: any} = game.config[name as keyof GameConfig];
 
             if (setting === undefined) {
                 game.input("<red>Invalid setting name!</red>\n");
@@ -673,7 +672,7 @@ export const interact = {
                 return false;
             }
 
-            let newValue;
+            let newValue
 
             if (["off", "disable", "false", "no", "0"].includes(value)) {
                 game.log(`<bright:green>Setting '${key}' has been disabled.</bright:green>`);
@@ -710,19 +709,19 @@ export const interact = {
         else if (name === "/reload" || name === "/rl") {
             if (game.config.advanced.reloadCommandConfirmation && !debug) {
                 this.printAll(game.player);
-                let sure = this.yesNoQuestion(game.player, "<yellow>Are you sure you want to reload? This will reset all cards to their base state. This can also cause memory leaks with excessive usage.\nThis requires the game to be recompiled. I recommend using `tsc --watch` in another window before running this command.</yellow>");
+                const sure = this.yesNoQuestion(game.player, "<yellow>Are you sure you want to reload? This will reset all cards to their base state. This can also cause memory leaks with excessive usage.\nThis requires the game to be recompiled. I recommend using `tsc --watch` in another window before running this command.</yellow>");
                 if (!sure) return false;
             }
 
             let success = true;
 
-            success = success && this.withStatus("Registering cards", () => {
+            success &&= this.withStatus("Registering cards", () => {
                 reloadCards(game.functions.dirname() + "/dist/cards");
                 return true;
             });
 
             // Go through all the cards and reload them
-            success = success && this.withStatus("Reloading cards", () => {
+            success &&= this.withStatus("Reloading cards", () => {
                 /**
                  * Reloads a card
                  */
@@ -771,9 +770,9 @@ export const interact = {
      */
     doTurnLogic(input: string): GamePlayCardReturn {
         if (this.handleCmds(input) !== -1) return true;
-        let parsedInput = parseInt(input);
+        const parsedInput = parseInt(input);
 
-        let card = game.player.hand[parsedInput - 1];
+        const card = game.player.hand[parsedInput - 1];
         if (!card) return "invalid";
 
         if (parsedInput == game.player.hand.length || parsedInput == 1) card.activate("outcast");
@@ -791,14 +790,14 @@ export const interact = {
         game.events.tick("GameLoop", "doTurn");
 
         if (game.player.ai) {
-            let input;
+            let input
 
             const rawInput = game.player.ai.calcMove();
             if (!rawInput) return false;
             if (rawInput instanceof Card) input = (game.player.hand.indexOf(rawInput) + 1).toString();
             else input = rawInput;
 
-            let turn = this.doTurnLogic(input);
+            const turn = this.doTurnLogic(input);
 
             game.killMinions();
 
@@ -810,7 +809,7 @@ export const interact = {
         let input = "\nWhich card do you want to play? ";
         if (game.turns <= 2 && !game.config.general.debug) input += "(type 'help' for further information <- This will disappear once you end your turn) ";
     
-        let user = game.input(input);
+        const user = game.input(input);
         const ret = this.doTurnLogic(user);
         game.killMinions();
 
@@ -819,10 +818,10 @@ export const interact = {
 
         // Ignore these error codes
         if (["refund", "magnetize", "traded", "colossal"].includes(ret)) return ret;
-        let err;
+        let err
 
         // Get the card
-        let card = game.player.hand[parseInt(user) - 1];
+        const card = game.player.hand[parseInt(user) - 1];
         let cost = "mana";
         if (card) cost = card.costType;
 
@@ -845,10 +844,10 @@ export const interact = {
      * @return Success
      */
     useLocation(): boolean | "nolocations" | "invalidtype" | "cooldown" | -1 {
-        let locations = game.board[game.player.id].filter(m => m.type == "Location");
+        const locations = game.board[game.player.id].filter(m => m.type == "Location");
         if (locations.length <= 0) return "nolocations";
 
-        let location = this.selectCardTarget("Which location do you want to use?", null, "friendly", ["allowLocations"]);
+        const location = this.selectCardTarget("Which location do you want to use?", null, "friendly", ["allowLocations"]);
         if (!location) return -1;
 
         if (location.type != "Location") return "invalidtype";
@@ -882,9 +881,9 @@ export const interact = {
          * If the test deck (30 Sheep) should be allowed
          */
         // I want to be able to test without debug mode on a non-stable branch
-        let allowTestDeck: boolean = game.config.general.debug || game.config.info.branch !== "stable";
+        const allowTestDeck: boolean = game.config.general.debug || game.config.info.branch !== "stable";
 
-        let debugStatement = allowTestDeck ? " <gray>(Leave this empty for a test deck)</gray>" : "";
+        const debugStatement = allowTestDeck ? " <gray>(Leave this empty for a test deck)</gray>" : "";
         const deckcode = game.input(`Player ${plr.id + 1}, please type in your deckcode${debugStatement}: `);
 
         let result: boolean | Card[] | null = true;
@@ -919,12 +918,12 @@ export const interact = {
         let sb = "\nChoose the cards to mulligan (1, 2, 3, ...):\n";
         if (!game.config.general.debug) sb += "<gray>(Example: 13 will mulligan the cards with the ids 1 and 3, 123 will mulligan the cards with the ids 1, 2 and 3, just pressing enter will not mulligan any cards):</gray>\n";
 
-        let input;
+        let input
 
         if (plr.ai) input = plr.ai.mulligan();
         else input = game.input(sb);
 
-        let isInt = game.functions.mulligan(plr, input);
+        const isInt = game.functions.mulligan(plr, input);
 
         if (!isInt && input != "") {
             game.input("<red>Invalid input!</red>\n");
@@ -943,11 +942,11 @@ export const interact = {
      */
     dredge(prompt: string = "Choose a card to Dredge:"): Card | null {
         // Look at the bottom three cards of the deck and put one on the top.
-        let cards = game.player.deck.slice(0, 3);
+        const cards = game.player.deck.slice(0, 3);
 
         // Check if ai
         if (game.player.ai) {
-            let card = game.player.ai.dredge(cards);
+            const card = game.player.ai.dredge(cards);
             if (!card) return null;
 
             // Removes the selected card from the players deck.
@@ -967,10 +966,10 @@ export const interact = {
             game.log(this.getReadableCard(c, i + 1));
         });
 
-        let choice = game.input("> ");
+        const choice = game.input("> ");
 
         const cardId = parseInt(choice) - 1;
-        let card = cards[cardId];
+        const card = cards[cardId];
 
         if (!card) {
             return this.dredge(prompt);
@@ -997,7 +996,7 @@ export const interact = {
     chooseOne(prompt: string, options: string[], times: number = 1): number | null | (number | null)[] {
         this.printAll(game.player);
 
-        let choices = [];
+        const choices = [];
 
         for (let _ = 0; _ < times; _++) {
             if (game.player.ai) {
@@ -1014,7 +1013,7 @@ export const interact = {
             p = p.slice(0, -2);
             p += "] ";
 
-            let choice = game.input(p);
+            const choice = game.input(p);
             if (!parseInt(choice)) {
                 game.input("<red>Invalid input!</red>\n");
                 return this.chooseOne(prompt, options, times);
@@ -1058,7 +1057,7 @@ export const interact = {
         let choice: number;
 
         if (plr.ai) {
-            let aiChoice = plr.ai.question(prompt, answers);
+            const aiChoice = plr.ai.question(prompt, answers);
             if (!aiChoice) {
                 // code, expected, actual
                 throw game.functions.createAIError("AiQuestionReturnInvalidAtQuestionFunction", "some number", aiChoice);
@@ -1068,7 +1067,7 @@ export const interact = {
         }
         else choice = parseInt(game.input(strbuilder));
 
-        let answer = answers[choice - 1];
+        const answer = answers[choice - 1];
         if (!answer) {
             game.input("<red>Invalid input!</red>\n");
             RETRY();
@@ -1086,12 +1085,12 @@ export const interact = {
      * @returns `true` if Yes / `false` if No
      */
     yesNoQuestion(plr: Player, prompt: string): boolean {
-        let ask = `\n${prompt} [<bright:green>Y</bright:green> | <red>N</red>] `;
+        const ask = `\n${prompt} [<bright:green>Y</bright:green> | <red>N</red>] `;
 
         if (plr.ai) return plr.ai.yesNoQuestion(prompt);
 
-        let _choice = game.input(ask);
-        let choice = _choice.toUpperCase()[0];
+        const _choice = game.input(ask);
+        const choice = _choice.toUpperCase()[0];
 
         if (["Y", "N"].includes(choice)) return choice === "Y";
 
@@ -1144,13 +1143,13 @@ export const interact = {
         game.log(`\n${prompt}:`);
 
         values.forEach((v, i) => {
-            let card = game.functions.getCardByName(v.name);
+            const card = game.functions.getCardByName(v.name);
             if (!card) return;
 
             game.log(this.getReadableCard(v, i + 1));
         });
 
-        let choice = game.input();
+        const choice = game.input();
 
         if (!values[parseInt(choice) - 1]) {
             // Invalid input
@@ -1158,7 +1157,7 @@ export const interact = {
             return this.discover(prompt, cards, filterClassCards, amount, values);
         }
 
-        let card = values[parseInt(choice) - 1];
+        const card = values[parseInt(choice) - 1];
 
         return card;
     },
@@ -1197,7 +1196,7 @@ export const interact = {
      */
     selectTarget(prompt: string, card: Card | null, forceSide: SelectTargetAlignment, forceClass: SelectTargetClass, flags: SelectTargetFlag[] = []): Target | false {
         game.events.broadcast("TargetSelectionStarts", [prompt, card, forceSide, forceClass, flags], game.player);
-        let target = this._selectTarget(prompt, card, forceSide, forceClass, flags);
+        const target = this._selectTarget(prompt, card, forceSide, forceClass, flags);
 
         if (target) game.events.broadcast("TargetSelected", [card, target], game.player);
         return target;
@@ -1267,7 +1266,7 @@ export const interact = {
                 const oName = game.functions.colorByRarity(boardOpponentTarget.displayName, boardOpponentTarget.rarity);
                 const fName = game.functions.colorByRarity(boardFriendlyTarget.displayName, boardFriendlyTarget.rarity);
 
-                let alignment = game.input(`Do you want to select your opponent's (${oName}) or your own (${fName})? (y: opponent, n: friendly | type 'back' to go back) `);
+                const alignment = game.input(`Do you want to select your opponent's (${oName}) or your own (${fName})? (y: opponent, n: friendly | type 'back' to go back) `);
             
                 if (alignment.startsWith("b") || this.shouldExit(alignment)) {
                     // Go back.
@@ -1333,11 +1332,11 @@ export const interact = {
     printName(): void {
         cls();
 
-        let info = game.config.info;
-        let versionDetail = game.player.detailedView ? 4 : 3;
+        const info = game.config.info;
+        const versionDetail = game.player.detailedView ? 4 : 3;
     
-        let watermarkString = `HEARTHSTONE.JS V${game.functions.getVersion(versionDetail)}`;
-        let border = "-".repeat(watermarkString.length + 2);
+        const watermarkString = `HEARTHSTONE.JS V${game.functions.getVersion(versionDetail)}`;
+        const border = "-".repeat(watermarkString.length + 2);
     
         game.log(`|${border}|`);
         game.log(`| ${watermarkString} |`);
@@ -1355,11 +1354,11 @@ export const interact = {
      */
     printLicense(disappear: boolean = true): void {
         if (game.config.general.debug) return;
-        let info = game.config.info;
+        const info = game.config.info;
     
         cls();
     
-        let version = `Hearthstone.js V${game.functions.getVersion(2)} | Copyright (C) 2022 | LunarTides`;
+        const version = `Hearthstone.js V${game.functions.getVersion(2)} | Copyright (C) 2022 | LunarTides`;
         game.log('|'.repeat(version.length + 8));
         game.log(`||| ${version} |||`)
         game.log(`|||     This program is licensed under the GPL-3.0 license.  ` + ' '.repeat(info.branch.length) + "|||")
@@ -1378,9 +1377,9 @@ export const interact = {
      */
     withStatus(status: string, callback: () => boolean): boolean {
         process.stdout.write(`${status}...`);
-        let success = callback() !== false;
+        const success = callback() !== false;
         
-        let msg = (success) ? "OK" : "FAIL";
+        const msg = (success) ? "OK" : "FAIL";
         process.stdout.write(`\r\x1b[K${status}...${msg}\n`);
 
         return success;
@@ -1402,23 +1401,23 @@ export const interact = {
         if (!overrideText) text = card.text || "";
 
         while (true) {
-            let regedDesc = reg.exec(text);
+            const regedDesc = reg.exec(text);
             
             // There is nothing more to extract
             if (!regedDesc) break;
 
             // Get the capturing group result
-            let key = regedDesc[1];
+            const key = regedDesc[1];
 
             card.replacePlaceholders();
-            let _replacement = card.placeholder;
+            const _replacement = card.placeholder;
             if (!_replacement) throw new Error("Card placeholder not found.");
 
             let replacement = _replacement[key];
 
             if (replacement instanceof Card) {
                 // The replacement is a card
-                let onlyShowName = (
+                const onlyShowName = (
                     game.config.advanced.getReadableCardNoRecursion ||
                     !game.player.detailedView
                 );
@@ -1440,12 +1439,12 @@ export const interact = {
         reg = /\$(\d+?)/;
 
         while (true) {
-            let regedDesc = reg.exec(text);
+            const regedDesc = reg.exec(text);
             if (!regedDesc) break;
 
             // Get the capturing group result
-            let key = regedDesc[1];
-            let replacement = parseInt(key) + game.player.spellDamage;
+            const key = regedDesc[1];
+            const replacement = parseInt(key) + game.player.spellDamage;
 
             text = text.replace(reg, replacement.toString());
         }
@@ -1484,7 +1483,7 @@ export const interact = {
         /**
          * If it should show detailed errors regarding depth.
          */
-        let showDetailedError: boolean = (game.config.general.debug || game.config.info.branch !== "stable" || game.player.detailedView);
+        const showDetailedError: boolean = (game.config.general.debug || game.config.info.branch !== "stable" || game.player.detailedView);
 
         if (_depth > 0 && game.config.advanced.getReadableCardNoRecursion) {
             if (showDetailedError) return "RECURSION ATTEMPT BLOCKED";
@@ -1524,7 +1523,7 @@ export const interact = {
                 break;
         }
 
-        let displayName = this.getDisplayName(card);
+        const displayName = this.getDisplayName(card);
 
         if (i !== -1) sb += `[${i}] `;
         sb += cost;
@@ -1535,7 +1534,7 @@ export const interact = {
         }
 
         else if (card.type == "Location") {
-            let durability = card.durability;
+            const durability = card.durability;
             let maxDurability = durability;
             let maxCooldown = card.cooldown;
             
@@ -1559,8 +1558,8 @@ export const interact = {
         if (!(card instanceof Card)) return sb;
 
         const excludedKeywords = ["Magnetic", "Corrupt"];
-        let keywords = card.keywords.filter(k => !excludedKeywords.includes(k));
-        let keywordsString = keywords.length > 0 ? ` <gray>{${keywords.join(", ")}}</gray>` : "";
+        const keywords = card.keywords.filter(k => !excludedKeywords.includes(k));
+        const keywordsString = keywords.length > 0 ? ` <gray>{${keywords.join(", ")}}</gray>` : "";
         sb += keywordsString;
 
         ["Frozen", "Dormant", "Immune"].forEach(k => {
@@ -1569,7 +1568,7 @@ export const interact = {
             sb += ` <gray>(${k})</gray>`;
         });
 
-        let sleepy = (card.sleepy) || (card.attackTimes && card.attackTimes <= 0) ? " <gray>(Sleepy)</gray>" : "";
+        const sleepy = (card.sleepy) || (card.attackTimes && card.attackTimes <= 0) ? " <gray>(Sleepy)</gray>" : "";
         sb += sleepy;
 
         return sb;
@@ -1596,7 +1595,7 @@ export const interact = {
         const opponent = plr.getOpponent();
 
         let finished = "";
-        let finishedPlayers: string[] = [];
+        const finishedPlayers: string[] = [];
         let totalTweak = 0;
 
         const doStatPT1 = (player: Player, callback: (player: Player) => [string, number]): [string[], number] => {
@@ -1608,15 +1607,15 @@ export const interact = {
             if (!finishedPlayers[player.id]) finishedPlayers[player.id] = "";
             finishedPlayers[player.id] += `${stat}\n`;
 
-            let split = finishedPlayers[player.id].split("\n");
+            const split = finishedPlayers[player.id].split("\n");
             game.functions.remove(split, "");
 
             return [game.functions.createWall(split, ":"), tweak];
         }
 
         const doStat = (callback: (player: Player) => [string, number]) => {
-            let [playerWall, playerTweak] = doStatPT1(plr, callback);
-            let [opponentWall, opponentTweak] = doStatPT1(opponent, callback);
+            const [playerWall, playerTweak] = doStatPT1(plr, callback);
+            const [opponentWall, opponentTweak] = doStatPT1(opponent, callback);
 
             if (playerWall[0] === "") return;
 
@@ -1625,10 +1624,10 @@ export const interact = {
                 finished += `${line} | ${opponentWall[index]}\n`;
             });
 
-            let finishedSplit = finished.split("\n");
+            const finishedSplit = finished.split("\n");
             game.functions.remove(finishedSplit, "");
 
-            let finishedWall = game.functions.createWall(finishedSplit, "|");
+            const finishedWall = game.functions.createWall(finishedSplit, "|");
             finishedWall.forEach((line, index) => {
                 let p = line.split("|")[0];
                 let o = line.split("|")[1];
@@ -1683,8 +1682,8 @@ export const interact = {
 
     printBoard(plr: Player): void {
         game.board.forEach((side, plrId) => {
-            let player = game.functions.getPlayerFromId(plrId);
-            let sideMessage = plr === player ? "----- Board (You) ------" : "--- Board (Opponent) ---";
+            const player = game.functions.getPlayerFromId(plrId);
+            const sideMessage = plr === player ? "----- Board (You) ------" : "--- Board (Opponent) ---";
             game.log(sideMessage);
 
             if (side.length === 0) {
@@ -1719,14 +1718,14 @@ export const interact = {
     viewCard(card: Card, help: boolean = true) {
         game = globalThis.game;
 
-        let _card = this.getReadableCard(card);
-        let _class = `<gray>${card.classes.join(" / ")}</gray>`;
+        const _card = this.getReadableCard(card);
+        const _class = `<gray>${card.classes.join(" / ")}</gray>`;
 
         let tribe = "";
         let spellSchool = "";
         let locCooldown = "";
 
-        let type = card.type;
+        const type = card.type;
 
         if (type == "Minion") tribe = ` (<gray>${card.tribe ?? "None"}</gray>)`;
         else if (type == "Spell") {

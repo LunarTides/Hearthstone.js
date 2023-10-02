@@ -16,8 +16,8 @@ function main() {
         process.exit(1);
     }
 
-    let filteredVanillaCards = game.functions.filterVanillaCards(vanillaCards, false, false);
-    let customCards = game.functions.getCards(false);
+    const filteredVanillaCards = game.functions.filterVanillaCards(vanillaCards, false, false);
+    const customCards = game.functions.getCards(false);
 
     customCards.forEach(custom => {
         // Find the equivalent vanilla card 
@@ -32,7 +32,7 @@ function main() {
         if (!vanilla) return;
 
         Object.entries(custom).forEach(ent => {
-            let [key, val] = ent;
+            const [key, val] = ent;
 
             // HACK: For some reason, typescript thinks that vanilla can be undefined
             vanilla = vanilla!;
@@ -51,9 +51,9 @@ function main() {
     });
 
     function check(key: string, val: any, vanilla: VanillaCard, card: Card) {
-        let ignore = ["id", "set", "name", "rarity", "type"];
+        const ignore = ["id", "set", "name", "rarity", "type"];
 
-        let table: {[key in keyof Blueprint]?: keyof VanillaCard} = {
+        const table: {[key in keyof Blueprint]?: keyof VanillaCard} = {
             "text": "text"
         }
 

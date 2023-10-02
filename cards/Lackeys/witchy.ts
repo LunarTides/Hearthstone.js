@@ -18,7 +18,7 @@ export const blueprint: Blueprint = {
         // Transform a friendly minion into one that costs (1) more.
 
         // Ask the user which minion to transform
-        let target = game.interact.selectCardTarget("Transform a friendly minion into one that costs (1) more.", self, "friendly");
+        const target = game.interact.selectCardTarget("Transform a friendly minion into one that costs (1) more.", self, "friendly");
 
         // If no target was selected, refund
         if (!target) return game.constants.REFUND;
@@ -27,14 +27,14 @@ export const blueprint: Blueprint = {
         if (target.cost >= 10) return game.constants.REFUND;
 
         // Filter minions that cost (1) more than the target
-        let minions = game.functions.getCards().filter(card => {
+        const minions = game.functions.getCards().filter(card => {
             if (!target) throw new Error("Target is undefined!");
 
             return card.type === "Minion" && card.cost === target.cost + 1;
         });
 
         // Choose a random minion from the filtered list.
-        let rand = game.lodash.sample(minions);
+        const rand = game.lodash.sample(minions);
         if (!rand) return game.constants.REFUND;
 
         // Create the card
@@ -51,12 +51,12 @@ export const blueprint: Blueprint = {
     test(plr, self) {
         const assert = game.functions.assert;
 
-        let existsMinionWithCost = (cost: number) => {
+        const existsMinionWithCost = (cost: number) => {
             return game.board[plr.id].some(card => card.cost === cost);
         }
 
         // Summon a sheep
-        let sheep = new game.Card("Sheep", plr);
+        const sheep = new game.Card("Sheep", plr);
         game.summonMinion(sheep, plr);
 
         // There shouldn't exist a minion with 1 more cost than the sheep.

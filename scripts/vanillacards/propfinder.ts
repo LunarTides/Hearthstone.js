@@ -19,10 +19,10 @@ function main() {
 
     vanillaCards.forEach(vanillaCard => {
         Object.entries(vanillaCard).forEach(ent => {
-            let [key, val] = ent;
+            const [key, val] = ent;
 
             if (Object.keys(props).includes(key)) {
-                let storedType = props[key][0];
+                const storedType = props[key][0];
                 if (storedType !== typeof val) game.logWarn("<yellow>Discrepancy found. Stored type: %s, Found type %s.</yellow>", storedType, typeof val);
 
                 props[key][1]++;

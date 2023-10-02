@@ -47,7 +47,7 @@ export const blueprint: Blueprint = {
 
     test(plr, self) {
         const assert = game.functions.assert;
-        let length = plr.deck.length;
+        const length = plr.deck.length;
         plr.hand = [];
 
         // The player shouldn't fulfill the condition

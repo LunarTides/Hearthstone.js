@@ -49,8 +49,8 @@ export const blueprint: Blueprint = {
         const amount = game.functions.galakrondFormula(self.storage.invokeCount)
         const multiple = amount > 1;
 
-        let plural = multiple ? "s" : "";
-        let plural2 = multiple ? "They" : "It";
+        const plural = multiple ? "s" : "";
+        const plural2 = multiple ? "They" : "It";
 
         return {amount, plural, plural2};
     }

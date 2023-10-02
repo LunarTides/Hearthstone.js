@@ -65,10 +65,10 @@ export class Card {
      * Use uuid for that.
      * 
      * @example
-     * let sheep = new Card("Sheep", plr);
-     * let anotherSheep = new Card("Sheep", plr);
+     * const sheep = new Card("Sheep", plr);
+     * const anotherSheep = new Card("Sheep", plr);
      * 
-     * let theCoin = new Card("The Coin", plr);
+     * const theCoin = new Card("The Coin", plr);
      * 
      * assert.equal(sheep.id, anotherSheep.id);
      * assert.notEqual(sheep.id, theCoin.id);
@@ -359,7 +359,7 @@ export class Card {
      */
     constructor(name: string, plr: Player) {
         // Get the blueprint from the cards list
-        let blueprint = game.cards.find(c => c.name == name);
+        const blueprint = game.cards.find(c => c.name == name);
         if (!blueprint) {
             throw new Error(`Could not find card with name ${name}`);
         }
@@ -395,7 +395,7 @@ export class Card {
 
         this.randomizeUUID();
 
-        let placeholder = this.activate("placeholders");
+        const placeholder = this.activate("placeholders");
 
         // This is a list of replacements.
         if (placeholder instanceof Array) this.placeholder = placeholder[0];
@@ -436,7 +436,7 @@ export class Card {
                                   This is in an array so we can add multiple events on casts
         */
         Object.entries(this.blueprint).forEach(i => {
-            let [key, val] = i;
+            const [key, val] = i;
 
             if (typeof val == "function") this.abilities[key as CardAbility] = [val];
             else this[key as keyof this] = JSON.parse(JSON.stringify(i[1]));
@@ -613,7 +613,7 @@ export class Card {
     addHealth(amount: number, restore: boolean = true): boolean {
         if (!this.stats) return false;
 
-        let before = this.getHealth();
+        const before = this.getHealth();
         this.setStats(this.getAttack(), this.getHealth() + amount, !restore);
     
         if (!restore) {
@@ -749,7 +749,7 @@ export class Card {
      * @returns The key of the backup. You can use it by doing `card.backups[key]`
      */
     createBackup(): number {
-        let key = Object.keys(this.backups).length;
+        const key = Object.keys(this.backups).length;
 
         Object.entries(this).forEach(i => {
             // HACK: Never usage
@@ -857,7 +857,7 @@ export class Card {
         // Example: activate("cast")
         // Do: this.cast.forEach(castFunc => castFunc(plr, card))
         // Returns a list of the return values from all the function calls
-        let ability: Ability[] | undefined = this.abilities[name];
+        const ability: Ability[] | undefined = this.abilities[name];
 
         // If the card has the function
         if (!ability) return false;
@@ -869,11 +869,11 @@ export class Card {
 
             // Check if the method is conditioned
             if (this.conditioned && this.conditioned.includes(name)) {
-                let r = this.activate("condition");
+                const r = this.activate("condition");
                 if (!(r instanceof Array) || r[0] === false) return;
             }
 
-            let r = func(this.plr, this, ...args);
+            const r = func(this.plr, this, ...args);
             if (ret instanceof Array) ret.push(r);
 
             // Deathrattle isn't cancellable
@@ -887,7 +887,7 @@ export class Card {
             // These abilities shouldn't "refund" the card, just stop execution.
             if (["use", "heropower"].includes(name)) return;
 
-            let unsuppress = game.functions.suppressEvent("AddCardToHand");
+            const unsuppress = game.functions.suppressEvent("AddCardToHand");
             this.plr.addToHand(this);
             unsuppress();
 
@@ -938,7 +938,7 @@ export class Card {
         this.text = this.text?.replace(clearedTextAlt, "");
 
         // Check if the condition is met
-        let condition = this.activate("condition");
+        const condition = this.activate("condition");
         if (!(condition instanceof Array) || condition[0] === false) return false;
 
         // Add the (Condition cleared!) to the description
@@ -954,17 +954,17 @@ export class Card {
      * @param e The enchantment string
      * 
      * @example
-     * let info = getEnchantmentInfo("cost = 1");
+     * const info = getEnchantmentInfo("cost = 1");
      * assert.equal(info, {"key": "cost", "val": "1", "op": "="});
      *
      * @returns The info
      */
     getEnchantmentInfo(e: string): { key: string; val: string; op: string; } {
-        let equalsRegex = /\w+ = \w+/;
-        let otherRegex = /[-+*/^]\d+ \w+/;
+        const equalsRegex = /\w+ = \w+/;
+        const otherRegex = /[-+*/^]\d+ \w+/;
 
-        let opEquals = equalsRegex.test(e);
-        let opOther = otherRegex.test(e);
+        const opEquals = equalsRegex.test(e);
+        const opOther = otherRegex.test(e);
 
         let key = "undefined";
         let val = "undefined";
@@ -998,13 +998,13 @@ export class Card {
         vars = vars.filter(c => whitelistedVars.includes(c[0]));
 
         // Get keys
-        let keys: string[] = [];
+        const keys: string[] = [];
 
         // Get a list of enchantments
-        let enchantments = this.enchantments.map(e => e.enchantment);
+        const enchantments = this.enchantments.map(e => e.enchantment);
         enchantments.forEach(e => {
-            let info = this.getEnchantmentInfo(e);
-            let key = info.key;
+            const info = this.getEnchantmentInfo(e);
+            const key = info.key;
             
             keys.push(key);
         });
@@ -1012,7 +1012,7 @@ export class Card {
         // Only reset the variables if the variable name is in the enchantments list
         vars = vars.filter(c => keys.includes(c[0]));
         vars.forEach(ent => {
-            let [key, val] = ent;
+            const [key, val] = ent;
 
             // Apply backup if it exists, otherwise keep it the same.
             if (this.backups.init?[key] : false) {
@@ -1022,15 +1022,15 @@ export class Card {
         });
 
         this.enchantments.forEach(e => {
-            let enchantment = e.enchantment;
+            const enchantment = e.enchantment;
 
             // Seperate the keys and values
-            let info = this.getEnchantmentInfo(enchantment);
-            let [_key, val, op] = Object.values(info);
+            const info = this.getEnchantmentInfo(enchantment);
+            const [_key, val, op] = Object.values(info);
 
             const key = _key as keyof this;
             
-            let numberVal = parseInt(val);
+            const numberVal = parseInt(val);
             if (typeof this[key as keyof this] !== "number") return;
 
             switch (op) {
@@ -1069,7 +1069,7 @@ export class Card {
      * @returns Success
      */
     addEnchantment(e: string, card: Card): boolean {
-        let info = this.getEnchantmentInfo(e);
+        const info = this.getEnchantmentInfo(e);
 
         // Add the enchantment to the beginning of the list, equal enchantments should apply first
         if (info.op == "=") this.enchantments.unshift({"enchantment": e, "owner": card});
@@ -1104,10 +1104,10 @@ export class Card {
      * @returns Success
      */
     removeEnchantment(e: string, card: Card, update: boolean = true): boolean {
-        let enchantment = this.enchantments.find(c => c.enchantment == e && c.owner == card);
+        const enchantment = this.enchantments.find(c => c.enchantment == e && c.owner == card);
         if (!enchantment) return false;
 
-        let index = this.enchantments.indexOf(enchantment);
+        const index = this.enchantments.indexOf(enchantment);
         if (index === -1) return false;
 
         this.enchantments.splice(index, 1);
@@ -1118,8 +1118,8 @@ export class Card {
         }
 
         // Update is enabled
-        let info = this.getEnchantmentInfo(e);
-        let newEnchantment = `+0 ${info.key}`;
+        const info = this.getEnchantmentInfo(e);
+        const newEnchantment = `+0 ${info.key}`;
 
         // This will cause the variable to be reset since it is in the enchantments list.
         this.addEnchantment(newEnchantment, this);
@@ -1134,7 +1134,7 @@ export class Card {
      * @example
      * card.text = "The current turn count is {0}";
      * card.placeholders = [(plr, self) => {
-     *     let turns = Math.ceil(game.turns / 2);
+     *     const turns = Math.ceil(game.turns / 2);
      * 
      *     return {0: turns};
      * }];
@@ -1148,17 +1148,17 @@ export class Card {
     replacePlaceholders(): boolean {
         if (!this.abilities.placeholders) return false;
 
-        let tempPlaceholder = this.activate("placeholders");
+        const tempPlaceholder = this.activate("placeholders");
         if (!(tempPlaceholder instanceof Array)) return false; // Maybe throw an error?
 
-        let placeholder = tempPlaceholder[0];
+        const placeholder = tempPlaceholder[0];
         if (!(placeholder instanceof Object)) return false;
 
         this.placeholder = placeholder;
 
         Object.entries(placeholder).forEach(p => {
-            let [key, _] = p;
-            let replacement = `{ph:${key}} placeholder {/ph}`;
+            const [key, _] = p;
+            const replacement = `{ph:${key}} placeholder {/ph}`;
 
             this.text = this.text?.replace(new RegExp(`{ph:${key}} .*? {/ph}`, 'g'), replacement);
             this.text = this.text?.replaceAll(`{${key}}`, replacement);
@@ -1171,8 +1171,8 @@ export class Card {
      * Return a perfect copy of this card. This will perfectly clone the card. This happens when, for example, a card gets temporarily removed from the board using card.destroy, then put back on the board.
      * 
      * @example
-     * let cloned = card.perfectCopy();
-     * let cloned2 = game.functions.cloneCard(card);
+     * const cloned = card.perfectCopy();
+     * const cloned2 = game.functions.cloneCard(card);
      * 
      * // This will actually fail since they're slightly different, but you get the point
      * assert.equal(cloned, cloned2);
@@ -1187,8 +1187,8 @@ export class Card {
      * Return an imperfect copy of this card. This happens when, for example, a card gets shuffled into your deck in vanilla Hearthstone.
      * 
      * @example
-     * let cloned = card.imperfectCopy();
-     * let cloned2 = new Card(card.name, card.plr);
+     * const cloned = card.imperfectCopy();
+     * const cloned2 = new Card(card.name, card.plr);
      * 
      * // This will actually fail since they're slightly different, but you get the point
      * assert.equal(cloned, cloned2);

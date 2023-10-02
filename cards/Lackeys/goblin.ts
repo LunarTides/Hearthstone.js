@@ -18,7 +18,7 @@ export const blueprint: Blueprint = {
         // Give a friendly minion +1 Attack and Rush.
 
         // Prompt the user to select a friendly minion
-        let target = game.interact.selectCardTarget("Give a friendly minion +1 Attack and Rush", self, "friendly");
+        const target = game.interact.selectCardTarget("Give a friendly minion +1 Attack and Rush", self, "friendly");
 
         // If no target was selected, refund
         if (!target) return game.constants.REFUND;
@@ -35,7 +35,7 @@ export const blueprint: Blueprint = {
         const assert = game.functions.assert;
 
         // Summon a sheep
-        let sheep = new game.Card("Sheep", plr);
+        const sheep = new game.Card("Sheep", plr);
         game.summonMinion(sheep, plr);
 
         // Activate the battlecry, choose the sheep

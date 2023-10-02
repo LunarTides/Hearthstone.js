@@ -21,7 +21,7 @@ export const blueprint: Blueprint = {
         if (!(key === "EndTurn" && game.player === plr)) return;
 
         // The list that to choose from. Remove this minion from the list
-        let board = game.board[plr.id].filter(card => card.type === "Minion");
+        const board = game.board[plr.id].filter(card => card.type === "Minion");
         game.functions.remove(board, self);
 
         // Choose the random minion

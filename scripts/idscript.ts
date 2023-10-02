@@ -12,13 +12,13 @@ const idRegex = / {4}id: (\d+)/;
 
 function searchCards(callback: (path: string, content: string, id: number) => void, path?: string) {
     game.functions.searchCardsFolder((fullPath, content) => {
-        let idMatch = content.match(idRegex);
+        const idMatch = content.match(idRegex);
         if (!idMatch) {
             game.logError(`No id found in ${fullPath}`);
             return;
         }
 
-        let id = Number(idMatch[1]);
+        const id = Number(idMatch[1]);
         callback(fullPath, content, id);
     });
 }
@@ -32,7 +32,7 @@ function change(startId: number, callback: (id: number) => number, log: boolean)
             return;
         }
 
-        let newId = callback(id);
+        const newId = callback(id);
 
         // Set the new id
         game.functions.writeFile(path, content.replace(idRegex, `    id: ${newId}`));
@@ -42,8 +42,8 @@ function change(startId: number, callback: (id: number) => number, log: boolean)
     });
 
     if (updated > 0) {
-        let latestId = Number(game.functions.readFile("/cards/.latestId"));
-        let newLatestId = callback(latestId);
+        const latestId = Number(game.functions.readFile("/cards/.latestId"));
+        const newLatestId = callback(latestId);
 
         game.functions.writeFile("/cards/.latestId", newLatestId.toString());
     }
@@ -93,7 +93,7 @@ export function increment(startId: number, log: boolean) {
  * @returns Amount of holes, and amount of duplicates
  */
 export function validate(log: boolean): [number, number] {
-    let ids: [[number, string]] = [[-1, ""]];
+    const ids: [[number, string]] = [[-1, ""]];
 
     searchCards((path, content, id) => {
         ids.push([id, path]);
@@ -122,7 +122,7 @@ export function validate(log: boolean): [number, number] {
     });
 
     // Check if the .latestId is valid
-    let latestId = parseInt(game.functions.readFile("/cards/.latestId").trim());
+    const latestId = parseInt(game.functions.readFile("/cards/.latestId").trim());
 
     if (log) {
         if (holes > 0) game.log("<yellow>Found %s holes.</yellow>", holes);

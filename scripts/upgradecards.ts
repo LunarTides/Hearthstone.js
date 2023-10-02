@@ -10,7 +10,7 @@ import { createGame } from "../src/internal.js";
 const { game, player1, player2 } = createGame();
 
 function upgradeField(data: string, oldValue: string | RegExp, newValue: string, toLog: string) {
-    let oldData = data;
+    const oldData = data;
     data = data.replace(oldValue, newValue);
     if (data !== oldData) {
         game.log(toLog);
@@ -26,17 +26,17 @@ function upgradeCard(path: string, data: string, file: Dirent) {
     // Yes, this code is ugly. This script is temporary.
     // This will also not work for ALL cards, they are just too flexible.
     // But it should work for all cards that was created using the card creator.
-    let filename = file.name;
+    const filename = file.name;
 
     game.log(`--- Found ${filename} ---`);
 
-    let hasPassive = data.includes("passive(plr, self, key, ");
-    let eventValue = hasPassive ? ", EventValue" : "";
+    const hasPassive = data.includes("passive(plr, self, key, ");
+    const eventValue = hasPassive ? ", EventValue" : "";
 
     game.log(`Passive: ${hasPassive}`);
     
-    let bpDefRegex = /\/\*\*\n \* @type {import\("(?:\.\.\/)+src\/types"\)\.Blueprint}\n \*\//g;
-    let kwmRegex = /\n    \/\*\*\n     \* @type {import\("(?:\.\.\/)+src\/types"\)\.KeywordMethod}\n     \*\//g;
+    const bpDefRegex = /\/\*\*\n \* @type {import\("(?:\.\.\/)+src\/types"\)\.Blueprint}\n \*\//g;
+    const kwmRegex = /\n    \/\*\*\n     \* @type {import\("(?:\.\.\/)+src\/types"\)\.KeywordMethod}\n     \*\//g;
 
     data = upgradeField(data, bpDefRegex, `import { Blueprint${eventValue} } from "@Game/types.js";\n`, "Replaced blueprint type from jsdoc to import.");
     data = upgradeField(data, kwmRegex, "", "Removed KeywordMethod jsdoc type.");
@@ -55,7 +55,7 @@ function upgradeCard(path: string, data: string, file: Dirent) {
 
     // Replace the card's id with a new one
     data = upgradeField(data, /\n {4}id: (\d+),?/, "", "Removed id from card.");
-    let currentId = Number(game.functions.readFile("/cards/.latestId")) + 1;
+    const currentId = Number(game.functions.readFile("/cards/.latestId")) + 1;
 
     data = upgradeField(data, /( {4}.+: .+,)(\n\n {4}.*\(plr, (self|card))/, `$1\n    id: ${currentId},$2`, `Card was assigned id ${currentId} pt1.`);
     data = upgradeField(data, /( {4}uncollectible: .*?),?\n\}/, `$1,\n    id: ${currentId},\n}`, `Card was assigned id ${currentId} pt2.`);
@@ -64,8 +64,8 @@ function upgradeCard(path: string, data: string, file: Dirent) {
 
     if (hasPassive) {
         // Find key
-        let keyRegex = /\n {8}if \(key [!=]+ "(\w+)"\) /;
-        let match = data.match(keyRegex);
+        const keyRegex = /\n {8}if \(key [!=]+ "(\w+)"\) /;
+        const match = data.match(keyRegex);
         let key = "";
         if (match) {
             key = match[1];
@@ -96,7 +96,7 @@ function upgradeCard(path: string, data: string, file: Dirent) {
 function main() {
     game.logError("<yellow>WARNING: This will create new cards with the `.ts` extension, but will leave your old cards alone. Please verify that the new cards work before deleting the old ones.</yellow>");
 
-    let proceed = game.input("Do you want to proceed? ([y]es, [n]o): ").toLowerCase()[0] === "y";
+    const proceed = game.input("Do you want to proceed? ([y]es, [n]o): ").toLowerCase()[0] === "y";
     if (!proceed) process.exit(0);
 
     // Update card extensions

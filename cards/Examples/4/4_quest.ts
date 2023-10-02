@@ -22,7 +22,7 @@ export const blueprint: Blueprint = {
         // Quest: Play 3 cards. Reward: Return those cards back to your hand.
 
         // Create a list of cards to put the 3 cards into
-        let cards: Card[] = [];
+        const cards: Card[] = [];
 
         // addQuest(
         //     type of quest,

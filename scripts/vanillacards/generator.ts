@@ -12,12 +12,12 @@ function main() {
     new Axios({}).get("https://api.hearthstonejson.com/v1/latest/enUS/cards.json")
         .then(res => {
             let data = JSON.parse(res.data);
-            let oldLength = data.length;
+            const oldLength = data.length;
             data = game.functions.filterVanillaCards(data, false, false, true);
 
             game.functions.writeFile("/vanillacards.json", JSON.stringify(data));
 
-            let difference = oldLength - data.length;
+            const difference = oldLength - data.length;
             game.log(`Found %s cards!\nFiltered away %s cards!\nSuccessfully imported %s cards!`, oldLength, difference, data.length);
         });
 }

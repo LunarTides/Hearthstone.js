@@ -18,7 +18,7 @@ export const blueprint: Blueprint = {
         // Deal 2 damage.
 
         // Select a target
-        let target = game.interact.selectTarget("Deal 2 damage.", self, "any", "any");
+        const target = game.interact.selectTarget("Deal 2 damage.", self, "any", "any");
 
         // If no target was selected, refund
         if (!target) return game.constants.REFUND;

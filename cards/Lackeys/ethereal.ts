@@ -18,11 +18,11 @@ export const blueprint: Blueprint = {
         // Discover a spell.
 
         // Filter out all cards that aren't spells
-        let list = game.functions.getCards().filter(c => c.type === "Spell");
+        const list = game.functions.getCards().filter(c => c.type === "Spell");
         if (list.length <= 0) return;
 
         // Prompt a discover
-        let card = game.interact.discover("Discover a spell.", list);
+        const card = game.interact.discover("Discover a spell.", list);
         if (!card) return game.constants.REFUND;
 
         // Add the card to the player's hand
@@ -44,7 +44,7 @@ export const blueprint: Blueprint = {
             // Activate the battlecry and get the card from the player's hand.
             plr.hand = [];
             self.activateBattlecry();
-            let card = plr.hand[0];
+            const card = plr.hand[0];
 
             assert(() => card.type === "Spell");
         }

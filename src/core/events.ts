@@ -82,7 +82,7 @@ export const EventManager: IEventManager = {
         }
 
         for (let i = 0; i < 2; i++) {
-            let plr = game.functions.getPlayerFromId(i);
+            const plr = game.functions.getPlayerFromId(i);
 
             // Activate spells in the players hand
             plr.hand.forEach(card => {
@@ -130,7 +130,7 @@ export const EventManager: IEventManager = {
         });
 
         for (let i = 0; i < 2; i++) {
-            let plr = game.functions.getPlayerFromId(i);
+            const plr = game.functions.getPlayerFromId(i);
 
             // Activate spells in the players hand
             plr.hand.forEach(c => {
@@ -140,7 +140,7 @@ export const EventManager: IEventManager = {
                 c.activate("passive", key, val);
             });
 
-            let wpn = plr.weapon;
+            const wpn = plr.weapon;
             if (!wpn) continue;
             wpn.activate("passive", key, val);
         }
@@ -161,13 +161,13 @@ export const EventManager: IEventManager = {
      */
     questUpdate(questsName, key, val, plr) {
         plr[questsName].forEach(s => {
-            let quest: QuestType = s;
+            const quest: QuestType = s;
 
             if (quest.key != key) return;
 
-            let [current, max] = quest.progress;
+            const [current, max] = quest.progress;
 
-            let done = current + 1 >= max;
+            const done = current + 1 >= max;
             if (quest.callback(val, done) === false) return;
 
             quest.progress[0]++;
