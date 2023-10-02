@@ -4,19 +4,20 @@
  */
 
 import { createGame } from "../../src/internal.js";
-import { Blueprint, CardClass, CardLike, CardType } from "../../src/types.js";
+import { BlueprintWithOptional, CardClass, CardType } from "../../src/types.js";
 import { generateCardExports } from "../../src/helper/cards.js";
+import { validateBlueprint } from "../../src/helper/validator.js";
 
 const { game, player1, player2 } = createGame();
 
-let card: Blueprint;
+let card: BlueprintWithOptional;
 let type: CardType;
 
 export type CCType = "Unknown" | "Class" | "Custom" | "Vanilla";
 
 function getCardAbility(cardType: CardType) {
     // Get the card's ability
-    let ability;
+    let ability: string;
 
     // If the card is a spell, the ability is 'cast'
     if (cardType == "Spell") ability = "Cast";
@@ -84,17 +85,22 @@ function generateCardPath(...args: [CardClass[], CardType]) {
  * 
  * @return The path of the created file.
  */
-export function create(creatorType: CCType, cardType: CardType, blueprint: Blueprint, overridePath?: string, overrideFilename?: string, debug?: boolean) {
-    // TODO: Parse optional fields in blueprint
+export function create(creatorType: CCType, cardType: CardType, blueprint: BlueprintWithOptional, overridePath?: string, overrideFilename?: string, debug?: boolean) {
+    // Validate
+    let error = validateBlueprint(blueprint);
+    if (error !== true) {
+        game.logError(error);
+        return "";
+    }
 
     // If the user didn't specify a tribe, but the tribe exists, set the tribe to "None".
     type = cardType;
     card = blueprint;
 
-    let func = getCardAbility(type);
+    let ability = getCardAbility(type);
 
     // Here it creates a default function signature
-    let isPassive = func.toLowerCase() == "passive";
+    let isPassive = ability.toLowerCase() == "passive";
     let triggerText = ")";
     if (isPassive) triggerText = ", key, _unknownValue)";
     
@@ -113,13 +119,34 @@ export function create(creatorType: CCType, cardType: CardType, blueprint: Bluep
     if (descToClean === undefined) throw new Error("Card has no hero power description.");
 
     // If the text has `<b>Battlecry:</b> Dredge.`, add `// Dredge.` to the battlecry ability
-    let cleanedDesc = game.functions.stripTags(descToClean).replace(`${func}: `, "");
+    let cleanedDesc = game.functions.stripTags(descToClean).replace(`${ability}: `, "");
 
+    // `create` ability
+    let runes = card.runes ? `        self.runes = "${card.runes}"\n` : "";
+    let keywords: string = "";
+
+    if (card.keywords) {
+        card.keywords.forEach(keyword => {
+            // 8 spaces
+            keywords += `        self.addKeyword("${keyword}");\n`;
+        });
+    }
+
+    let createAbility = `
+
+    create(plr, self) {
+${runes}${keywords}
+    },`;
+
+    delete card.runes;
+    delete card.keywords;
+
+    // Normal ability
     // Example 1: '\n\n    passive(plr, self, key, _unknownValue) {\n        // Your battlecries trigger twice.\n        ...\n    }',
     // Example 2: '\n\n    battlecry(plr, self) {\n        // Deal 2 damage to the opponent.\n        \n    }'
-    if (func) func = `
+    if (ability) ability = `
     
-    ${func.toLowerCase()}(plr, self${triggerText} {
+    ${ability.toLowerCase()}(plr, self${triggerText} {
         // ${cleanedDesc}
         ${extraPassiveCode}
     }`;
@@ -177,7 +204,7 @@ export function create(creatorType: CCType, cardType: CardType, blueprint: Bluep
 import { Blueprint${passiveImport} } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
-    ${contentArray.join(',\n    ')},${fileId}${func}
+    ${contentArray.join(',\n    ')},${fileId}${createAbility}${ability}
 }
 `;
 
@@ -196,6 +223,13 @@ export const blueprint: Blueprint = {
         game.functions.writeFile(filePath, content);
 
         game.log('File created at: "' + filePath + '"');
+
+        game.log("Trying to compile...");
+        if (game.functions.tryCompile()) {
+            game.log("<bright:green>Success!</bright:green>");
+        } else {
+            game.logError("<yellow>WARNING: Compiler error occurred. Please fix the errors in the card.</yellow>");
+        }
     } else {
         // If debug mode is enabled, just show some information about the card.
         // This is the id that would be written to '.latestId'
@@ -209,7 +243,7 @@ export const blueprint: Blueprint = {
     generateCardExports();
 
     // Open the defined editor on that card if it has a function to edit, and debug mode is disabled
-    if (func && !debug) {
+    if (ability && !debug) {
         let success = game.functions.runCommandAsChildProcess(`${game.config.general.editor} "${filePath}"`);
         if (!success) game.input();
     }
