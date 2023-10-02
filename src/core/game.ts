@@ -2,7 +2,7 @@
  * Game
  * @module Game
  */
-import { question }  from 'readline-sync';
+import rl from 'readline-sync';
 import { functions, interact, Player, Card, AI, CardError, EventManager } from "../internal.js";
 import { Blueprint, CardAbility, EventKey, GameAttackReturn, GameConstants, GamePlayCardReturn, Target, UnknownEventValue } from "../types.js";
 import { config } from '../../config.js';
@@ -234,7 +234,7 @@ export class Game {
             if (typeof(queue) == "string") return wrapper(queue);
 
             // Invalid queue
-            else if (!(queue instanceof Array)) return wrapper(question(q));
+            else if (!(queue instanceof Array)) return wrapper(rl.question(q));
 
             const answer = queue[0];
             queue.splice(0, 1);
@@ -244,7 +244,7 @@ export class Game {
             return wrapper(answer);
         }
 
-        return wrapper(question(q));
+        return wrapper(rl.question(q));
     }
 
     private logWrapper(callback: Function, ...data: any) {

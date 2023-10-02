@@ -18,9 +18,12 @@ export const blueprint: Blueprint = {
     classes: ["Neutral"],
     rarity: "Free",
 
-    // This is an array of keywords. You could also do `keywords: ["Taunt", "Divine Shield"]` to also give the card divine shield, for example.
-    keywords: ["Taunt"],
-
     uncollectible: true,
-    id: 32
+    id: 32,
+
+    // This is an ability. More on abilities in `1-5`.
+    create(plr, self) {
+        // Add the Taunt keyword to this card
+        self.addKeyword("Taunt");
+    }
 }

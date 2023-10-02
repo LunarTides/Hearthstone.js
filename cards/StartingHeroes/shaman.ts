@@ -8,10 +8,10 @@ export const blueprint: Blueprint = {
     text: "Shaman starting hero",
     cost: 0,
     type: "Hero",
-    classes: ["Shaman"],
-    rarity: "Free",
     hpText: "Summon a random Totem.",
     hpCost: 2,
+    classes: ["Shaman"],
+    rarity: "Free",
     uncollectible: true,
     id: 9,
 

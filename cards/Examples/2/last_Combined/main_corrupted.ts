@@ -11,10 +11,13 @@ export const blueprint: Blueprint = {
     tribe: "None",
     classes: ["Neutral"],
     rarity: "Legendary",
-    colossal: ["Combined Example 2 Left Arm", "", "Combined Example 2 Right Arm"],
-    dormant: 2,
     uncollectible: true,
     id: 49,
+
+    create(plr, self) {
+        self.colossal = ["Combined Example 2 Left Arm", "", "Combined Example 2 Right Arm"];
+        self.dormant = 2;
+    },
 
     battlecry(plr, self) {
         // Dredge.

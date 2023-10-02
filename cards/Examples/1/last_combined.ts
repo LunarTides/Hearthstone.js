@@ -11,9 +11,13 @@ export const blueprint: Blueprint = {
     tribe: "All",
     classes: ["Priest", "Paladin"],
     rarity: "Legendary",
-    keywords: ["Taunt", "Divine Shield"],
     uncollectible: true,
     id: 35,
+
+    create(plr, self) {
+        self.addKeyword("Taunt");
+        self.addKeyword("Divine Shield");
+    },
 
     battlecry(plr, self) {
         // Dredge. Gain +1/+1.

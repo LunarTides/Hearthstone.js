@@ -4,7 +4,7 @@
  */
 
 import { createGame } from "../../src/internal.js";
-import { Blueprint, CardClass, CardType } from "../../src/types.js";
+import { Blueprint, CardClass, CardLike, CardType } from "../../src/types.js";
 import { generateCardExports } from "../../src/helper/cards.js";
 
 const { game, player1, player2 } = createGame();
@@ -85,6 +85,8 @@ function generateCardPath(...args: [CardClass[], CardType]) {
  * @return The path of the created file.
  */
 export function create(creatorType: CCType, cardType: CardType, blueprint: Blueprint, overridePath?: string, overrideFilename?: string, debug?: boolean) {
+    // TODO: Parse optional fields in blueprint
+
     // If the user didn't specify a tribe, but the tribe exists, set the tribe to "None".
     type = cardType;
     card = blueprint;

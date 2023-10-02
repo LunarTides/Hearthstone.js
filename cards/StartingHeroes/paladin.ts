@@ -8,10 +8,10 @@ export const blueprint: Blueprint = {
     text: "Paladin starting hero",
     cost: 0,
     type: "Hero",
+    hpText: "Summon a 1/1 Silver Hand Recruit",
+    hpCost: 2,
     classes: ["Paladin"],
     rarity: "Free",
-    hpText: "Summon a 1/1 Silver Hand Recruit.",
-    hpCost: 2,
     uncollectible: true,
     id: 10,
 

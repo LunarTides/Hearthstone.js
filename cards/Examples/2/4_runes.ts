@@ -11,10 +11,11 @@ export const blueprint: Blueprint = {
     tribe: "None",
     classes: ["Neutral"],
     rarity: "Free",
-
-    // You need 2 frost runes and 1 blood rune to use this card.
-    runes: "FFB",
-
     uncollectible: true,
-    id: 39
+    id: 39,
+
+    create(plr, self) {
+        // You need 2 frost runes and 1 blood rune to use this card.
+        self.runes = "FFB";
+    }
 }

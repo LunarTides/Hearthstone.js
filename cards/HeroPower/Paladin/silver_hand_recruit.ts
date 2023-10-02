@@ -12,5 +12,5 @@ export const blueprint: Blueprint = {
     classes: ["Paladin"],
     rarity: "Free",
     uncollectible: true,
-    id: 20
+    id: 20,
 }

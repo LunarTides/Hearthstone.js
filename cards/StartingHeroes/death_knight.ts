@@ -8,10 +8,10 @@ export const blueprint: Blueprint = {
     text: "Death knight starting hero",
     cost: 0,
     type: "Hero",
-    classes: ["Death Knight"],
-    rarity: "Free",
     hpText: "Summon a 1/1 Ghoul with Charge. It dies at end of turn.",
     hpCost: 2,
+    classes: ["Death Knight"],
+    rarity: "Free",
     uncollectible: true,
     id: 14,
 

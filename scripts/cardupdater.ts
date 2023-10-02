@@ -3,7 +3,7 @@
  * @module Card Updater
  */
 
-import { createGame } from "../src/internal.js";
+import { Card, createGame } from "../src/internal.js";
 import { Blueprint, VanillaCard } from "../src/types.js";
 
 const { game, player1, player2 } = createGame();
@@ -50,7 +50,7 @@ function main() {
         });
     });
 
-    function check(key: string, val: any, vanilla: VanillaCard, card: Blueprint) {
+    function check(key: string, val: any, vanilla: VanillaCard, card: Card) {
         let ignore = ["id", "set", "name", "rarity", "type"];
 
         let table: {[key in keyof Blueprint]?: keyof VanillaCard} = {

@@ -4,6 +4,9 @@
 import { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
+    // A blueprint only has ESSENTIAL properties, and type-specific properties (like stats or tribe)
+    // Other properties, like keywords, has to be added in the 'create' ability. More on that in `1-4`.
+
     // The name of the card. It MUST be unique.
     // If the card has a common name like `Plant`, then use a display name.
     // More on this in `2-7`.

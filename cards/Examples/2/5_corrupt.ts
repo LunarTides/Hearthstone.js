@@ -11,11 +11,12 @@ export const blueprint: Blueprint = {
     tribe: "None",
     classes: ["Neutral"],
     rarity: "Free",
-
-    // Put the name (not the display name) of the corrupted counterpart here.
-    // Corrupted is another system that is very untested and might get a rewrite.
-    corrupt: "Corrupted Example",
-
     uncollectible: true,
-    id: 40
+    id: 40,
+
+    create(plr, self) {
+        // Put the name (not the display name) of the corrupted counterpart here.
+        // Corrupted is another system that is very untested and might get a rewrite.
+        self.corrupt = "Corrupted Example";
+    }
 }

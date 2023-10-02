@@ -11,14 +11,15 @@ export const blueprint: Blueprint = {
     tribe: "None",
     classes: ["Neutral"],
     rarity: "Free",
-
-    // How many turns this minion should be dormant for.
-    // Full disclosure: The dormant system is one of the most untested parts of this game.
-    // If you find any bugs, please open an issue.
-    dormant: 2,
-
     uncollectible: true,
     id: 38,
+
+    create(plr, self) {
+        // How many turns this minion should be dormant for.
+        // Full disclosure: The dormant system is one of the most untested parts of this game.
+        // If you find any bugs, please open an issue.
+        self.dormant = 2;
+    },
 
     // The battlecry only triggers when the minion is no longer dormant.
     battlecry(plr, self) {

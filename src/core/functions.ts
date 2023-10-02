@@ -249,7 +249,7 @@ const deckcode = {
      *
      * @returns The deckcode, An error message alongside any additional information.
      */
-    export(deck: Blueprint[], heroClass: string, runes: string): { code: string; error: FunctionsExportDeckError } {
+    export(deck: CardLike[], heroClass: string, runes: string): { code: string; error: FunctionsExportDeckError } {
         let error: FunctionsExportDeckError = null;
 
         if (deck.length < game.config.decks.minLength) error = {msg: "TooFewCards", info: { amount: deck.length }, recoverable: true};
@@ -272,7 +272,7 @@ const deckcode = {
 
         deckcode += "/";
 
-        let cards: [Blueprint, number][] = [];
+        let cards: [CardLike, number][] = [];
 
         deck.forEach(c => {
             let found = cards.find(a => a[0].name == c.name);
@@ -488,7 +488,7 @@ const deckcode = {
         
         // Get the full card object from the dbfId
         let deckDef: [VanillaCard | undefined, number][] = deck.cards.map(c => [vanillaCards.find(a => a.dbfId == c[0]), c[1]]);
-        let createdCards: Blueprint[] = game.functions.getCards(false);
+        let createdCards: Card[] = game.functions.getCards(false);
         
         let invalidCards: VanillaCard[] = [];
         deckDef.forEach(c => {
@@ -1132,10 +1132,10 @@ ${mainContent}
      * 
      * @returns The blueprint of the card
      */
-    getCardByName(name: string | number, refer: boolean = true): Blueprint | null {
+    getCardByName(name: string | number, refer: boolean = true): Card | null {
         let card = null;
 
-        game.cards.forEach(c => {
+        this.getCards(false).forEach(c => {
             if (typeof name == "number") return;
 
             if (c.name.toLowerCase() == name.toLowerCase()) card = c;
@@ -1154,8 +1154,8 @@ ${mainContent}
      * 
      * @returns The blueprint of the card
      */
-    getCardById(id: number | string, refer: boolean = true): Blueprint | null {
-        let card = game.cards.filter(c => c.id == id)[0];
+    getCardById(id: number | string, refer: boolean = true): Card | null {
+        let card = this.getCards(false).filter(c => c.id == id)[0];
 
         if (!card && refer) return this.getCardByName(id.toString(), false);
 
@@ -1170,8 +1170,8 @@ ${mainContent}
      *
      * @returns Cards
      */
-    getCards(uncollectible: boolean = true, cards: Blueprint[] = game.cards): Blueprint[] {
-        return cards.filter(c => !c.uncollectible || !uncollectible);
+    getCards(uncollectible: boolean = true, cards: CardLike[] = game.cards): Card[] {
+        return cards.filter(c => !c.uncollectible || !uncollectible).map(card => new Card(card.name, game.player));
     },
 
     /**
@@ -1312,7 +1312,7 @@ ${mainContent}
             name = this.capitalizeAll(name);
 
             let card = this.getCardByName(name + " Starting Hero");
-            if (!card || card.classes[0] != name as CardClassNoNeutral || card.type != "Hero" || !card.heropower || card.classes.includes("Neutral")) {
+            if (!card || card.classes[0] != name as CardClassNoNeutral || card.type != "Hero" || !card.abilities.heropower || card.classes.includes("Neutral")) {
                 game.logWarn("Found card in the startingheroes folder that isn't a starting hero. If the game crashes, please note this in your bug report. Name: " + name + ". Error Code: StartingHeroInvalidHandler");
                 return;
             }

@@ -477,8 +477,7 @@ export type Blueprint = {
     cost: number,
     type: CardType,
 
-    // Type specific
-    tribe?: MinionTribe,
+    tribe?: MinionTribe, 
     spellSchool?: SpellSchool,
     durability?: number,
     cooldown?: number,
@@ -488,23 +487,16 @@ export type Blueprint = {
     // Less important
     classes: CardClass[],
     rarity: CardRarity,
-    keywords?: CardKeyword[],
-
-    // Rare
-    runes?: string,
-    dormant?: number,
-    colossal?: string[],
-    corrupt?: string,
-    deckSettings?: any,
-
-    // Other
-    conditioned?: CardAbility[],
-    storage?: { [key: string]: any },
 
     // Last
     uncollectible?: boolean,
     id: number
 } & BlueprintAbilities;
+
+export type BlueprintWithOptional = Blueprint & {
+    runes?: string,
+    keywords?: CardKeyword[],
+}
 
 /**
  * The ability of a card.

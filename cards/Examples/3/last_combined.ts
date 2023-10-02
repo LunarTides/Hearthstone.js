@@ -10,10 +10,13 @@ export const blueprint: Blueprint = {
     spellSchool: "None",
     classes: ["Neutral"],
     rarity: "Legendary",
-    // The cast ability is conditioned
-    conditioned: ["cast"],
     uncollectible: true,
     id: 54,
+
+    create(plr, self) {
+        // The cast ability is conditioned
+        self.conditioned = ["cast"];
+    },
 
     cast(plr, self) {
         // If the turn counter is an even number, gain mana equal to the turn counter (up to 10).

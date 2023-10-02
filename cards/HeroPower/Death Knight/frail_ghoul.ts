@@ -12,9 +12,12 @@ export const blueprint: Blueprint = {
     tribe: "Undead",
     classes: ["Death Knight"],
     rarity: "Free",
-    keywords: ["Charge"],
     uncollectible: true,
     id: 23,
+
+    create(plr, self) {
+        self.addKeyword("Charge")
+    },
 
     passive(plr, self, key, val) {
         // At the end of your turn, this minion dies.

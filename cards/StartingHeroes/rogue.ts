@@ -8,10 +8,10 @@ export const blueprint: Blueprint = {
     text: "Rogue starting hero",
     cost: 0,
     type: "Hero",
-    classes: ["Rogue"],
-    rarity: "Free",
     hpText: "Equip a 1/2 Dagger.",
     hpCost: 2,
+    classes: ["Rogue"],
+    rarity: "Free",
     uncollectible: true,
     id: 12,
 

@@ -11,10 +11,13 @@ export const blueprint: Blueprint = {
     tribe: "None",
     classes: ["Neutral"],
     rarity: "Legendary",
-    runes: "BBB",
-    colossal: ["Combined Example 2 Left Arm", "", "Combined Example 2 Right Arm"],
-    corrupt: "Combined Example 2 Corrupted",
-    dormant: 2,
     uncollectible: true,
-    id: 48
+    id: 48,
+
+    create(plr, self) {
+        self.runes = "BBB";
+        self.colossal = ["Combined Example 2 Left Arm", "", "Combined Example 2 Right Arm"];
+        self.corrupt = "Combined Example 2 Corrupted";
+        self.dormant = 2;
+    }
 }

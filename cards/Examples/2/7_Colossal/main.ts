@@ -11,15 +11,16 @@ export const blueprint: Blueprint = {
     tribe: "Beast",
     classes: ["Neutral"],
     rarity: "Free",
-
-    // Put the names of the cards here. The "" is this card.
-    //
-    // The board will look like this (it uses their display names, if they have them):
-    // Left Arm
-    // Colossal Example
-    // Right Arm
-    colossal: ["Colossal Example Left Arm", "", "Colossal Example Right Arm"],
-
     uncollectible: true,
-    id: 45
+    id: 45,
+
+    create(plr, self) {
+        // Put the names of the cards here. The "" is this card.
+        //
+        // The board will look like this (it uses their display names, if they have them):
+        // Left Arm
+        // Colossal Example
+        // Right Arm
+        self.colossal = ["Colossal Example Left Arm", "", "Colossal Example Right Arm"];
+    }
 }

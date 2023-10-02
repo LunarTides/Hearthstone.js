@@ -8,10 +8,10 @@ export const blueprint: Blueprint = {
     text: "Druid starting hero",
     cost: 0,
     type: "Hero",
+    hpText: "+1 Attack this turn. +1 Armor",
+    hpCost: 2,
     classes: ["Druid"],
     rarity: "Free",
-    hpText: "+1 Attack this turn. +1 Armor.",
-    hpCost: 2,
     uncollectible: true,
     id: 5,
 

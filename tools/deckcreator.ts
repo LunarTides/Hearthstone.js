@@ -4,7 +4,7 @@
  */
 import util from "util";
 
-import { createGame } from "../src/internal.js";
+import { Card, createGame } from "../src/internal.js";
 import { Blueprint, CardClass, CardClassNoNeutral, GameConfig } from "../src/types.js";
 
 const { game, player1: plr, player2 } = createGame();
@@ -14,9 +14,9 @@ const classes = game.functions.getClasses();
 let cards = game.functions.getCards();
 
 let chosenClass: CardClassNoNeutral;
-let filteredCards: Blueprint[] = [];
+let filteredCards: Card[] = [];
 
-let deck: Blueprint[] = [];
+let deck: Card[] = [];
 let runes = "";
 
 let warnings: {[key: string]: boolean} = {
@@ -25,7 +25,7 @@ let warnings: {[key: string]: boolean} = {
 
 type Settings = {
     card: {
-        history: Blueprint[]
+        history: Card[]
     },
     view: {
         type: "cards" | "deck",
@@ -35,7 +35,7 @@ type Settings = {
         class?: CardClass 
     },
     sort: {
-        type: keyof Blueprint,
+        type: keyof Card,
         order: "asc" | "desc"
     },
     search: {
@@ -119,7 +119,7 @@ function askClass(): CardClassNoNeutral {
     return heroClass as CardClassNoNeutral;
 }
 
-function sortCards(_cards: Blueprint[]) {
+function sortCards(_cards: Card[]) {
     // If the order is invalid, fall back to ascending
     if (!["asc", "desc"].includes(settings.sort.order)) settings.sort.order = "asc";
 
@@ -163,9 +163,11 @@ function sortCards(_cards: Blueprint[]) {
         });
     }
 
-    if (["cost", "id"].includes(type)) {
+    if (type === "cost" || type === "id") {
+        let newType = type;
+
         return _cards.sort((a, b) => {
-            return calcOrder(a[type], b[type]);
+            return calcOrder(a[newType], b[newType]);
         });
     }
 
@@ -174,10 +176,10 @@ function sortCards(_cards: Blueprint[]) {
     return sortCards(_cards);
 }
 
-function searchCards(_cards: Blueprint[], sQuery: string) {
+function searchCards(_cards: Card[], sQuery: string) {
     if (sQuery.length <= 0) return _cards;
 
-    let retCards: Blueprint[] = [];
+    let retCards: Card[] = [];
 
     let splitQuery = sQuery.split(":");
 
@@ -201,8 +203,8 @@ function searchCards(_cards: Blueprint[], sQuery: string) {
 
     val = val.toLowerCase();
 
-    const doReturn = (c: Blueprint) => {
-        let ret = c[key as keyof Blueprint];
+    const doReturn = (c: Card) => {
+        let ret = c[key as keyof Card];
 
         // Javascript
         if (!ret && ret !== 0) {
@@ -212,20 +214,22 @@ function searchCards(_cards: Blueprint[], sQuery: string) {
 
         // Mana even / odd
         if (key == "cost") {
+            if (typeof ret !== "number") throw new Error("`ret` is not a number.");
+
             // Mana range (1-10)
             let regex = /\d+-\d+/;
             if (regex.test(val)) {
                 let _val = val.split("-");
 
-                let min = _val[0];
-                let max = _val[1];
+                let min = parseInt(_val[0]);
+                let max = parseInt(_val[1]);
 
                 return ret >= min && ret <= max;
             }
 
             if (val == "even") return ret % 2 == 0;
             else if (val == "odd") return ret % 2 == 1;
-            else if (!Number.isNaN(parseInt(val))) return ret == val;
+            else if (!Number.isNaN(parseInt(val))) return ret == parseInt(val);
             else {
                 game.log(`<red>\nValue '${val}' not valid!</red>`);
                 return -1;
@@ -283,7 +287,7 @@ function showCards() {
     printName();
 
     // If the user chose to view an invalid class, reset the viewed class to default.
-    let correctClass = game.functions.validateClasses([chosenClass], settings.view.class ?? chosenClass);
+    let correctClass = game.functions.validateClasses([settings.view.class ?? chosenClass], chosenClass);
     if (!settings.view.class || !correctClass) settings.view.class = chosenClass;
 
     // Filter away cards that aren't in the chosen class
@@ -434,8 +438,8 @@ function showRules() {
     game.log("#".repeat(configText.length));
 }
 
-function findCard(card: string | number): Blueprint | null {
-    let _card: Blueprint | null = null;
+function findCard(card: string | number): Card | null {
+    let _card: Card | null = null;
 
     Object.values(filteredCards).forEach(c => {
         if (c.id == card || (typeof card === "string" && game.interact.getDisplayName(c).toLowerCase() == card.toLowerCase())) _card = c;
@@ -444,7 +448,7 @@ function findCard(card: string | number): Blueprint | null {
     return _card!;
 }
 
-function add(card: Blueprint): boolean {
+function add(card: Card): boolean {
     deck.push(card);
 
     if (!card.deckSettings) return true;
@@ -457,7 +461,7 @@ function add(card: Blueprint): boolean {
 
     return true;
 }
-function remove(card: Blueprint) {
+function remove(card: Card) {
     return game.functions.remove(deck, card);
 }
 
@@ -467,7 +471,7 @@ function showDeck() {
     game.log(`Deck Size: <yellow>${deck.length}</yellow>\n`);
 
     // Why are we doing this? Can't this be done better?
-    let _cards: { [key: string]: [Blueprint, number] } = {};
+    let _cards: { [key: string]: [Card, number] } = {};
 
     deck.forEach(c => {
         if (!_cards[c.name]) _cards[c.name] = [c, 0];
@@ -621,7 +625,7 @@ function help() {
     game.input("\nPress enter to continue...\n");
 }
 
-function getCardArg(cmd: string, callback: (card: Blueprint) => boolean, errorCallback: () => void): boolean {
+function getCardArg(cmd: string, callback: (card: Card) => boolean, errorCallback: () => void): boolean {
     let times = 1;
 
     let cmdSplit = cmd.split(" ");
@@ -694,7 +698,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
             return false;
         }
 
-        let correctClass = game.functions.validateClasses([chosenClass], heroClass);
+        let correctClass = game.functions.validateClasses([heroClass], chosenClass);
         if (!correctClass) {
             game.input(`<yellow>Class '${heroClass}' is a different class. To see these cards, please switch class from '${chosenClass}' to '${heroClass}' to avoid confusion.</yellow>\n`);
             return false;
@@ -713,7 +717,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
     else if (name === "sort") {
         if (args.length <= 0) return false;
 
-        settings.sort.type = args[0] as keyof Blueprint;
+        settings.sort.type = args[0] as keyof Card;
         if (args.length > 1) settings.sort.order = args[1] as "asc" | "desc";
     }
     else if (name === "search") {

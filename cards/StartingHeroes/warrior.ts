@@ -8,10 +8,10 @@ export const blueprint: Blueprint = {
     text: "Warrior starting hero",
     cost: 0,
     type: "Hero",
-    classes: ["Warrior"],
-    rarity: "Free",
     hpText: "Gain 2 Armor.",
     hpCost: 2,
+    classes: ["Warrior"],
+    rarity: "Free",
     uncollectible: true,
     id: 7,
 

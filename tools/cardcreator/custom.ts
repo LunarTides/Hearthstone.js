@@ -6,7 +6,7 @@
 import rl from "readline-sync";
 import * as lib from "./lib.js";
 import { createGame } from "../../src/internal.js";
-import { Blueprint, CardClass, CardKeyword, CardRarity, CardType, MinionTribe, SpellSchool } from "../../src/types.js";
+import { Blueprint, BlueprintWithOptional, CardClass, CardKeyword, CardRarity, CardType, MinionTribe, SpellSchool } from "../../src/types.js";
 
 const { game, player1, player2 } = createGame();
 let card: Blueprint;
@@ -21,7 +21,7 @@ function input(prompt: string) {
     return ret;
 }
 
-function applyCard(_card: Blueprint) {
+function applyCard(_card: BlueprintWithOptional) {
     let newCard = {} as Blueprint;
 
     Object.entries(_card).forEach(c => {
@@ -37,7 +37,7 @@ function applyCard(_card: Blueprint) {
     return newCard!;
 }
 
-function common(): false | Blueprint {
+function common(): false | BlueprintWithOptional {
     const name = input("Name: ");
     if (shouldExit) return false;
 
@@ -74,9 +74,9 @@ function common(): false | Blueprint {
         type: type,
         classes: [classes],
         rarity: rarity,
+        id: 0,
         runes: runes,
         keywords: realKeywords,
-        id: 0,
     };
 }
 
@@ -88,7 +88,7 @@ const cardTypeFunctions = {
         let stats = input("Stats: ");
         if (shouldExit) return false;
 
-        const tribe = input("Tribe: ");
+        const tribe = input("Tribe: ") as MinionTribe;
         if (shouldExit) return false;
 
         // Turn 1/1 to [1, 1]
@@ -101,7 +101,7 @@ const cardTypeFunctions = {
             text: _card.text,
             cost: _card.cost,
             type: _card.type,
-            tribe: tribe as MinionTribe,
+            tribe: _card.tribe,
             classes: _card.classes,
             rarity: _card.rarity,
             runes: _card.runes,
@@ -123,11 +123,11 @@ const cardTypeFunctions = {
             text: _card.text,
             cost: _card.cost,
             type: _card.type,
+            spellSchool: spellSchool,
             classes: _card.classes,
             rarity: _card.rarity,
             runes: _card.runes,
             keywords: _card.keywords,
-            spellSchool: spellSchool,
             id: 0,
         });
     },
@@ -155,6 +155,7 @@ const cardTypeFunctions = {
             keywords: _card.keywords,
             id: 0,
         });
+
     },
 
     Hero() {
@@ -175,12 +176,12 @@ const cardTypeFunctions = {
             text: _card.text,
             cost: _card.cost,
             type: _card.type,
+            hpText,
+            hpCost,
             classes: _card.classes,
             rarity: _card.rarity,
             runes: _card.runes,
             keywords: _card.keywords,
-            hpText: hpText,
-            hpCost: hpCost,
             id: 0,
         });
     },
@@ -203,12 +204,12 @@ const cardTypeFunctions = {
             text: _card.text,
             cost: _card.cost,
             type: _card.type,
+            durability,
+            cooldown,
             classes: _card.classes,
             rarity: _card.rarity,
             runes: _card.runes,
             keywords: _card.keywords,
-            durability: durability,
-            cooldown: cooldown,
             id: 0,
         });
     }

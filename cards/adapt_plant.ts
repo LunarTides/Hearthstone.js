@@ -12,5 +12,5 @@ export const blueprint: Blueprint = {
     classes: ["Neutral"],
     rarity: "Free",
     uncollectible: true,
-    id: 3 
+    id: 3
 }

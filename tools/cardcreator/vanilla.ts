@@ -63,8 +63,8 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CCT
             text,
             cost,
             type,
-            // TODO: Add support for more than 1 tribe
             tribe: races[0] || "None",
+            // TODO: Add support for more than 1 tribe
             classes: [cardClass],
             rarity,
             id: 0,
@@ -100,10 +100,10 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CCT
             text,
             cost,
             type,
-            classes: [cardClass],
-            rarity,
             hpText: "",
             hpCost: 2,
+            classes: [cardClass],
+            rarity,
             id: 0,
         }
     }
@@ -113,10 +113,10 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CCT
             text,
             cost,
             type,
-            classes: [cardClass],
-            rarity,
             durability: health,
             cooldown: 2,
+            classes: [cardClass],
+            rarity,
             id: 0,
         }
     }

@@ -8,10 +8,10 @@ export const blueprint: Blueprint = {
     text: "Demon hunter starting hero",
     cost: 0,
     type: "Hero",
-    classes: ["Demon Hunter"],
-    rarity: "Free",
     hpText: "+1 Attack this turn.",
     hpCost: 1,
+    classes: ["Demon Hunter"],
+    rarity: "Free",
     uncollectible: true,
     id: 13,
 

@@ -527,13 +527,12 @@ export const interact = {
                 // If the card has 0 or less health, restore it to its original health (according to the blueprint)
                 if (card.type === "Minion" && card.getHealth() <= 0) {
                     if (!card.stats) throw new Error("Minion has no stats!");
-                    if (!card.blueprint.stats) throw new Error("Minion has no blueprint stats!");
 
-                    card.stats[1] = card.blueprint.stats[1];
+                    card.stats[1] = card.storage.init.stats[1];
                 }
                 else if (card.type === "Location" && (card.durability ?? 0 <= 0)) {
                     if (!card.durability) throw new Error("Location has undefined durability!");
-                    card.durability = card.blueprint.durability;
+                    card.durability = card.storage.init.durability;
                 }
             }
 
@@ -1114,9 +1113,11 @@ export const interact = {
      * 
      * @returns The card chosen.
      */
-    discover(prompt: string, cards: CardLike[] = [], filterClassCards: boolean = true, amount: number = 3, _cards: CardLike[] = []): Card | null {
+    discover(prompt: string, cards: Card[] = [], filterClassCards: boolean = true, amount: number = 3, _cards: Card[] = []): Card | null {
+        game = globalThis.game;
+
         this.printAll(game.player);
-        let values: CardLike[] = _cards;
+        let values: Card[] = _cards;
 
         if (cards.length <= 0) cards = game.functions.getCards();
         if (cards.length <= 0 || !cards) return null;
@@ -1157,13 +1158,7 @@ export const interact = {
             return this.discover(prompt, cards, filterClassCards, amount, values);
         }
 
-        let card: Card;
-
-        // Potential Blueprint card
-        let pbcard = values[parseInt(choice) - 1];
-
-        if (!(pbcard instanceof Card)) card = new Card(pbcard.name, game.player);
-        else card = pbcard;
+        let card = values[parseInt(choice) - 1];
 
         return card;
     },
@@ -1483,7 +1478,9 @@ export const interact = {
      * 
      * @returns The readable card
      */
-    getReadableCard(card: CardLike, i: number = -1, _depth: number = 0): string {
+    getReadableCard(card: Card, i: number = -1, _depth: number = 0): string {
+        game = globalThis.game;
+
         /**
          * If it should show detailed errors regarding depth.
          */
@@ -1501,10 +1498,7 @@ export const interact = {
 
         let sb = "";
 
-        let text;
-
-        if (card instanceof Card) text = (card.text || "").length > 0 ? ` (${card.text}) ` : " ";
-        else text = card.text.length > 0 ? ` (${game.functions.parseTags(card.text)}) ` : " ";
+        let text = (card.text || "").length > 0 ? ` (${card.text}) ` : " ";
 
         // Extract placeholder value, remove the placeholder header and footer
         if (card instanceof Card && (card.placeholder || /\$(\d+?)/.test(card.text || ""))) {
@@ -1720,7 +1714,9 @@ export const interact = {
      * @param card The card
      * @param help If it should show a help message which displays what the different fields mean.
      */
-    viewCard(card: CardLike, help: boolean = true) {
+    viewCard(card: Card, help: boolean = true) {
+        game = globalThis.game;
+
         let _card = this.getReadableCard(card);
         let _class = `<gray>${card.classes.join(" / ")}</gray>`;
 
@@ -1736,8 +1732,7 @@ export const interact = {
             else spellSchool = " (None)";
         }
         else if (type == "Location") {
-            if (card instanceof Card) locCooldown = ` (<cyan>${card.blueprint.cooldown ?? 0}</cyan>)`;
-            else locCooldown = ` (<cyan>${card.cooldown?.toString()}</cyan>)`;
+            locCooldown = ` (<cyan>${card.storage.init.cooldown ?? 0}</cyan>)`;
         }
 
         if (help) game.log("<cyan>{cost}</cyan> <b>Name</b> (<bright:green>[attack / health]</bright:green> if is has) (description) <yellow>(type)</yellow> ((tribe) or (spell class) or (cooldown)) <gray>[class]</gray>");

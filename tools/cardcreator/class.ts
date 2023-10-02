@@ -56,10 +56,10 @@ export function main(debug = false, overrideType?: lib.CCType) {
         text: name[0].toUpperCase() + name.slice(1).toLowerCase() + " starting hero",
         cost: 0,
         type: "Hero" as CardType,
+        hpText,
+        hpCost: parseInt(hpCost),
         classes: [name] as CardClass[],
         rarity: "Free" as CardRarity,
-        hpText: hpText,
-        hpCost: parseInt(hpCost),
         uncollectible: true,
         // This will be overwritten by the library
         id: 0,

@@ -11,7 +11,10 @@ export const blueprint: Blueprint = {
     tribe: "Totem",
     classes: ["Shaman"],
     rarity: "Free",
-    keywords: ["Taunt"],
     uncollectible: true,
-    id: 17
+    id: 17,
+
+    create(plr, self) {
+        self.addKeyword("Taunt");
+    }
 }

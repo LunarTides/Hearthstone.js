@@ -14,12 +14,13 @@ export const blueprint: Blueprint = {
     tribe: "None",
     classes: ["Neutral"],
     rarity: "Free",
-
-    // By having this here, the battlecry function below will only trigger if the condition function returns true
-    conditioned: ["battlecry"], 
-
     uncollectible: true,
     id: 52,
+
+    create(plr, self) {
+        // By having this here, the battlecry function below will only trigger if the condition function returns true
+        self.conditioned = ["battlecry"];
+    },
 
     // This will only trigger if the `condition` function below returns true.
     battlecry(plr, self) {
