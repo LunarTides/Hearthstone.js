@@ -22,12 +22,12 @@ function input(prompt: string) {
 }
 
 function applyCard(_card: BlueprintWithOptional) {
-    let newCard = {} as Blueprint;
+    const newCard = {} as Blueprint;
 
     Object.entries(_card).forEach(c => {
-        let [key, val] = c;
+        const [key, val] = c;
 
-        let requiredKeys = ["name", "text", "cost", "class", "rarity", "stats", "durability", "hpText", "hpCost", "cooldown"];
+        const requiredKeys = ["name", "text", "cost", "class", "rarity", "stats", "durability", "hpText", "hpCost", "cooldown"];
         if (!val && val !== 0 && !requiredKeys.includes(key)) return;
 
         // HACK: Well, it is not ts-expect-error at least
@@ -56,7 +56,7 @@ function common(): false | BlueprintWithOptional {
     const rarity = input("Rarity: ") as CardRarity;
     if (shouldExit) return false;
 
-    let keywords = input("Keywords: ");
+    const keywords = input("Keywords: ");
     if (shouldExit) return false;
     
     let runes;
@@ -82,17 +82,17 @@ function common(): false | BlueprintWithOptional {
 
 const cardTypeFunctions = {
     Minion() {
-        let _card = common();
+        const _card = common();
         if (!_card) return false;
 
-        let stats = input("Stats: ");
+        const stats = input("Stats: ");
         if (shouldExit) return false;
 
         const tribe = input("Tribe: ") as MinionTribe;
         if (shouldExit) return false;
 
         // Turn 1/1 to [1, 1]
-        let statsArray = stats.split("/").map(s => parseInt(s));
+        const statsArray = stats.split("/").map(s => parseInt(s));
 
         return applyCard({
             name: _card.name,
@@ -111,7 +111,7 @@ const cardTypeFunctions = {
     },
 
     Spell() {
-        let _card = common();
+        const _card = common();
         if (!_card) return false;
 
         const spellSchool = input("Spell School: ") as SpellSchool;
@@ -133,14 +133,14 @@ const cardTypeFunctions = {
     },
 
     Weapon() {
-        let _card = common();
+        const _card = common();
         if (!_card) return false;
 
-        let stats = input("Stats: ");
+        const stats = input("Stats: ");
         if (shouldExit) return false;
 
         // Turn 1/1 to [1, 1]
-        let statsArray = stats.split("/").map(s => parseInt(s));
+        const statsArray = stats.split("/").map(s => parseInt(s));
 
         return applyCard({
             name: _card.name,
@@ -159,7 +159,7 @@ const cardTypeFunctions = {
     },
 
     Hero() {
-        let _card = common();
+        const _card = common();
         if (!_card) return false;
 
         const hpText = input("Hero Power Description: ");
@@ -187,10 +187,10 @@ const cardTypeFunctions = {
     },
 
     Location() {
-        let _card = common();
+        const _card = common();
         if (!_card) return false;
         
-        let durability = parseInt(input("Durability (How many times you can trigger this location before it is destroyed): "));
+        const durability = parseInt(input("Durability (How many times you can trigger this location before it is destroyed): "));
         if (shouldExit) return false;
 
         let cooldown = parseInt(input("Cooldown (Default: 2): "));
@@ -241,8 +241,8 @@ export function main(debug = false, overrideType?: lib.CCType) {
     }
 
     // HACK: Use of never
-    let cardFunction: Function = cardTypeFunctions[type as never];
-    let tmpCard: Blueprint | false = cardFunction();
+    const cardFunction: Function = cardTypeFunctions[type as never];
+    const tmpCard: Blueprint | false = cardFunction();
     
     if (!tmpCard) return false;
     card = tmpCard;
@@ -250,7 +250,7 @@ export function main(debug = false, overrideType?: lib.CCType) {
     if (shouldExit) return false;
 
     // Ask the user if the card should be uncollectible
-    let uncollectible = rl.keyInYN("Uncollectible?");
+    const uncollectible = rl.keyInYN("Uncollectible?");
     if (uncollectible) card.uncollectible = uncollectible as boolean;
 
     // Actually create the card
@@ -259,7 +259,7 @@ export function main(debug = false, overrideType?: lib.CCType) {
     let cctype: lib.CCType = "Custom";
     if (overrideType) cctype = overrideType;
 
-    let filePath = lib.create(cctype, type, card, undefined, undefined, debug);
+    const filePath = lib.create(cctype, type, card, undefined, undefined, debug);
 
     game.input();
     return filePath;

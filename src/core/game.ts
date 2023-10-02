@@ -10,9 +10,9 @@ import _ from "lodash";
 
 // Override the console methods to force using the wrapper functions
 // Set this variable to false to prevent disabling the console. (Not recommended)
-let disableConsole = true;
+const disableConsole = true;
 
-let overrideConsole = {log: () => {}, warn: () => {}, error: () => {}};
+const overrideConsole = {log: () => {}, warn: () => {}, error: () => {}};
 overrideConsole.log = console.log;
 overrideConsole.warn = console.warn;
 overrideConsole.error = console.error;
@@ -229,7 +229,7 @@ export class Game {
 
         // Let the game make choices for the user
         if (this.player.inputQueue) {
-            let queue = this.player.inputQueue;
+            const queue = this.player.inputQueue;
 
             if (typeof(queue) == "string") return wrapper(queue);
 
@@ -305,7 +305,7 @@ export class Game {
      * @returns Return values of all the executed functions
      */
     triggerEventListeners(key: EventKey, val: UnknownEventValue): any[] {
-        let ret: any[] = [];
+        const ret: any[] = [];
         Object.values(this.eventListeners).forEach(i => ret.push(i(key, val)));
         return ret;
     }
@@ -318,14 +318,14 @@ export class Game {
      * @returns Success
      */
     startGame(): boolean {
-        let players = [];
+        const players = [];
 
         // Add quest cards to the players hands
         for (let i = 0; i < 2; i++) {
             // Set the player's hero to the default hero for the class
-            let plr = functions.getPlayerFromId(i);
+            const plr = functions.getPlayerFromId(i);
             
-            let success = plr.setToStartingHero();
+            const success = plr.setToStartingHero();
             if (!success) {
                 game.log("File 'cards/StartingHeroes/" + plr.heroClass.toLowerCase().replaceAll(" ", "_") + ".ts' is either; Missing or Incorrect. Please copy the working 'cards/StartingHeroes/' folder from the github repo to restore a working copy. Error Code: 12");
                 process.exit(1);
@@ -334,16 +334,16 @@ export class Game {
             plr.deck.forEach(c => {
                 if (!c.text?.includes("Quest: ") && !c.text?.includes("Questline: ")) return;
 
-                let unsuppress = functions.suppressEvent("AddCardToHand");
+                const unsuppress = functions.suppressEvent("AddCardToHand");
                 plr.addToHand(c);
                 unsuppress();
 
                 plr.deck.splice(plr.deck.indexOf(c), 1);
             });
 
-            let nCards = (plr.id == 0) ? 3 : 4;
+            const nCards = (plr.id == 0) ? 3 : 4;
             while (plr.hand.length < nCards) {
-                let unsuppress = functions.suppressEvent("DrawCard");
+                const unsuppress = functions.suppressEvent("DrawCard");
                 plr.drawCard();
                 unsuppress();
             }
@@ -360,9 +360,9 @@ export class Game {
         this.player1.emptyMana = 1;
         this.player1.mana = 1;
 
-        let coin = new Card("The Coin", this.player2);
+        const coin = new Card("The Coin", this.player2);
 
-        let unsuppress = functions.suppressEvent("AddCardToHand");
+        const unsuppress = functions.suppressEvent("AddCardToHand");
         this.player2.addToHand(coin);
         unsuppress();
 
@@ -405,8 +405,8 @@ export class Game {
         // Update events
         this.events.broadcast("EndTurn", this.turns, this.player);
 
-        let plr = this.player;
-        let op = this.opponent;
+        const plr = this.player;
+        const op = this.opponent;
 
         this.board[plr.id].forEach(m => {
             m.ready();
@@ -495,10 +495,10 @@ export class Game {
         let amount = 0;
 
         for (let p = 0; p < 2; p++) {
-            let plr = functions.getPlayerFromId(p);
+            const plr = functions.getPlayerFromId(p);
 
-            let sparedMinions: Card[] = [];
-            let shouldSpare = (card: Card) => {
+            const sparedMinions: Card[] = [];
+            const shouldSpare = (card: Card) => {
                 return card.getHealth() > 0 || ((card.durability ?? 0) > 0);
             }
             
@@ -528,14 +528,14 @@ export class Game {
                 if (!m.keywords.includes("Reborn")) return;
 
                 // Reborn
-                let minion = m.imperfectCopy();
+                const minion = m.imperfectCopy();
 
                 functions.remove(minion.keywords, "Reborn");
 
                 // Reduce the minion's health to 1, keep the minion's attack the same
                 minion.setStats(minion.getAttack(), 1);
 
-                let unsuppress = functions.suppressEvent("SummonMinion");
+                const unsuppress = functions.suppressEvent("SummonMinion");
                 this.summonMinion(minion, plr);
                 unsuppress();
 
@@ -596,7 +596,7 @@ const attack = {
         if (attacker.frozen) return "frozen";
 
         // Check if there is a minion with taunt
-        let taunts = game.board[game.opponent.id].filter(m => m.keywords.includes("Taunt"));
+        const taunts = game.board[game.opponent.id].filter(m => m.keywords.includes("Taunt"));
         if (taunts.length > 0) {
             // If the target is a card and has taunt, you are allowed to attack it
             if (target instanceof Card && target.keywords.includes("Taunt")) {}
@@ -617,7 +617,7 @@ const attack = {
     _attackerIsNum(attacker: number | string, target: Target): GameAttackReturn {
         // Attacker is a number
         // Spell damage
-        let dmg = attack._spellDamage(attacker, target);
+        const dmg = attack._spellDamage(attacker, target);
 
         if (target.classType == "Player") {
             target.remHealth(dmg);
@@ -791,11 +791,11 @@ const attack = {
     _cleave(attacker: Card, target: Card): void {
         if (!attacker.keywords.includes("Cleave")) return;
 
-        let board = game.board[target.plr.id];
-        let index = board.indexOf(target);
+        const board = game.board[target.plr.id];
+        const index = board.indexOf(target);
 
-        let below = board[index - 1];
-        let above = board[index + 1];
+        const below = board[index - 1];
+        const above = board[index + 1];
 
         // If there is a card below the target, also deal damage to it.
         if (below) game.attack(attacker.getAttack(), below);
@@ -829,8 +829,8 @@ const attack = {
         if (typeof attacker !== "string") return attacker;
 
         // The attacker is a string but not spelldamage syntax
-        let spellDmgRegex = /\$(\d+?)/;
-        let match = attacker.match(spellDmgRegex);
+        const spellDmgRegex = /\$(\d+?)/;
+        const match = attacker.match(spellDmgRegex);
         
         if (!match) throw new TypeError("Non-spelldamage string passed into attack.");
 
@@ -903,7 +903,7 @@ const playCard = {
 
         // Type specific code
         // HACK: Use of never
-        let typeFunction: Function = playCard.typeSpecific[card.type as never];
+        const typeFunction: Function = playCard.typeSpecific[card.type as never];
         if (!typeFunction) throw new TypeError("Cannot handle playing card of type: " + card.type);
 
         result = typeFunction(card, player);
@@ -939,8 +939,8 @@ const playCard = {
                 if (card.activateBattlecry() === -1) return "refund";
             }
 
-            let unsuppress = functions.suppressEvent("SummonMinion");
-            let ret = cards.summon(card, player);
+            const unsuppress = functions.suppressEvent("SummonMinion");
+            const ret = cards.summon(card, player);
             unsuppress();
 
             return ret;
@@ -985,8 +985,8 @@ const playCard = {
             card.immune = true;
             card.cooldown = 0;
 
-            let unsuppress = functions.suppressEvent("SummonMinion");
-            let ret = cards.summon(card, player);
+            const unsuppress = functions.suppressEvent("SummonMinion");
+            const ret = cards.summon(card, player);
             unsuppress();
 
             return ret;
@@ -1024,7 +1024,7 @@ const playCard = {
         if (game.board[player.id].length < game.config.general.maxBoardSpace || !game.functions.canBeOnBoard(card)) return true;
 
         // Refund
-        let unsuppress = functions.suppressEvent("AddCardToHand");
+        const unsuppress = functions.suppressEvent("AddCardToHand");
         player.addToHand(card);
         unsuppress();
 
@@ -1035,25 +1035,25 @@ const playCard = {
     },
 
     _condition(card: Card, player: Player): boolean {
-        let condition = card.activate("condition");
+        const condition = card.activate("condition");
         if (!(condition instanceof Array)) return true;
 
         // This is if the condition is cleared
-        let cleared = condition[0];
+        const cleared = condition[0];
         if (cleared === true) return true;
 
         // Warn the user that the condition is not fulfilled
         const warnMessage = "<yellow>WARNING: This card's condition is not fulfilled. Are you sure you want to play this card?</yellow>";
 
         game.interact.printAll(player);
-        let warn = game.interact.yesNoQuestion(player, warnMessage);
+        const warn = game.interact.yesNoQuestion(player, warnMessage);
 
         if (!warn) return false;
         return true;
     },
 
     _countered(card: Card, player: Player): boolean {
-        let op = player.getOpponent();
+        const op = player.getOpponent();
 
         // Check if the card is countered
         if (op.counter && op.counter.includes(card.type)) {
@@ -1068,7 +1068,7 @@ const playCard = {
         if (!card.keywords.includes("Echo")) return false;
 
         // Create an exact copy of the card played
-        let echo = card.perfectCopy();
+        const echo = card.perfectCopy();
         echo.echo = true;
 
         player.addToHand(echo);
@@ -1079,12 +1079,12 @@ const playCard = {
         if (!game.events.events.PlayCard) return false
 
         // Get the player's PlayCard event history
-        let stat = game.events.events.PlayCard[player.id];
+        const stat = game.events.events.PlayCard[player.id];
         if (stat.length <= 0) return false;
 
         // Get the latest event
-        let latest = game.lodash.last(stat);
-        let latestCard: Card = latest?.[0];
+        const latest = game.lodash.last(stat);
+        const latestCard: Card = latest?.[0];
 
         // If the previous card played was played on the same turn as this one, activate combo
         if (latestCard.turn == game.turns) card.activate("combo");
@@ -1096,11 +1096,11 @@ const playCard = {
             if (toCorrupt.corrupt === undefined || card.cost <= toCorrupt.cost) return;
 
             // Corrupt that card
-            let corrupted = new Card(toCorrupt.corrupt, player);
+            const corrupted = new Card(toCorrupt.corrupt, player);
 
             functions.remove(player.hand, toCorrupt);
 
-            let unsuppress = functions.suppressEvent("AddCardToHand");
+            const unsuppress = functions.suppressEvent("AddCardToHand");
             player.addToHand(corrupted);
             unsuppress();
         });
@@ -1118,7 +1118,7 @@ const playCard = {
         if (mechs.length <= 0) return false;
 
         // I'm using while loops to prevent a million indents
-        let mech = game.interact.selectCardTarget("Which minion do you want game to Magnetize to:", null, "friendly");
+        const mech = game.interact.selectCardTarget("Which minion do you want game to Magnetize to:", null, "friendly");
         if (!mech) return false;
 
         if (!mech.tribe?.includes("Mech")) {
@@ -1141,7 +1141,7 @@ const playCard = {
 
         // Transfer the abilities over.
         Object.entries(card.abilities).forEach(ent => {
-            let [key, val] = ent;
+            const [key, val] = ent;
 
             val.forEach(ability => {
                 // Look at the comment above
@@ -1199,7 +1199,7 @@ const cards = {
             // the "" gets replaced with the main minion
 
             minion.colossal.forEach(v => {
-                let unsuppress = functions.suppressEvent("SummonMinion");
+                const unsuppress = functions.suppressEvent("SummonMinion");
 
                 if (v == "") {
                     game.summonMinion(minion, player, false);
@@ -1207,7 +1207,7 @@ const cards = {
                     return;
                 }
 
-                let card = new Card(v, player);
+                const card = new Card(v, player);
                 card.dormant = minion.dormant;
 
                 game.summonMinion(card, player);

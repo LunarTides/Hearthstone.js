@@ -40,8 +40,8 @@ export function main() {
 }
 
 let outdatedCards: string[] = [];
-let outdatedExtensions: string[] = [];
-let updatedCards: string[] = [];
+const outdatedExtensions: string[] = [];
+const updatedCards: string[] = [];
 function warnAboutOutdatedCards() {
     // TODO: This doesn't quite work
     findOutdatedCards(game.functions.dirname() + "/cards");
@@ -62,7 +62,7 @@ function warnAboutOutdatedCards() {
     game.logWarn("You can play the game without upgrading the cards, but the cards won't be registered.");
     game.logWarn("Run the script by running `npm run script:upgradecards`.");
 
-    let proceed = game.input("\nDo you want to proceed? ([y]es, [n]o): ").toLowerCase()[0] === "y";
+    const proceed = game.input("\nDo you want to proceed? ([y]es, [n]o): ").toLowerCase()[0] === "y";
     if (!proceed) process.exit(0);
 }
 
@@ -70,7 +70,7 @@ function findOutdatedCards(path: string) {
     if (path.includes("cards/Test")) return;
 
     game.functions.readDirectory(path).forEach(file => {
-        let p = `${path}/${file.name}`.replace("/dist/..", "");
+        const p = `${path}/${file.name}`.replace("/dist/..", "");
 
         if (file.name.endsWith(".mts")) {
             outdatedExtensions.push(p.slice(0, -4))

@@ -64,12 +64,12 @@ const deckcode = {
         if (vanilla) code = deckcode.fromVanilla(plr, code);
 
         // BFU
-        let runeRegex = /\[[BFU]{3}\]/;
+        const runeRegex = /\[[BFU]{3}\]/;
 
         // BBB -> 3B
-        let altRuneRegex = /\[3[BFU]\]/;
+        const altRuneRegex = /\[3[BFU]\]/;
 
-        let runesExists = runeRegex.test(code) || altRuneRegex.test(code);
+        const runesExists = runeRegex.test(code) || altRuneRegex.test(code);
 
         let sep = " /";
 
@@ -84,8 +84,8 @@ const deckcode = {
 
         plr.heroClass = hero as CardClass;
 
-        let runeClasses = ["Death Knight"];
-        let runeClass = runeClasses.includes(hero);
+        const runeClasses = ["Death Knight"];
+        const runeClass = runeClasses.includes(hero);
 
         const addRunes = (runes: string) => {
             if (runeClass) plr.runes = runes;
@@ -95,7 +95,7 @@ const deckcode = {
         // Runes
         if (altRuneRegex.test(code)) {
             // [3B]
-            let rune = code[2];
+            const rune = code[2];
 
             code = code.slice(5);
             addRunes(rune.repeat(3));
@@ -116,52 +116,51 @@ const deckcode = {
         }
 
         // Find /3:5,2:8,1/
-        let copyDefFormat = /\/(\d+:\d+,)*\d+\/ /;
+        const copyDefFormat = /\/(\d+:\d+,)*\d+\/ /;
         if (!copyDefFormat.test(code)) return ERROR("COPYDEFNOTFOUND");
 
-        let copyDef = code.split("/")[1];
+        const copyDef = code.split("/")[1];
 
         code = code.replace(copyDefFormat, "");
 
-        let deck = code.split(",");
+        const deck = code.split(",");
         let _deck: Card[] = [];
 
-        let localSettings = JSON.parse(JSON.stringify(game.config));
+        const localSettings = JSON.parse(JSON.stringify(game.config));
 
         let processed = 0;
-
         let retInvalid = false;
 
         copyDef.split(",").forEach(c => {
-            let def = c.split(":");
+            const def = c.split(":");
 
-            let copies = def[0];
-            let times = parseInt(def[1]) || deck.length;
+            const copies = def[0];
+            const times = parseInt(def[1]) || deck.length;
 
-            let cards = deck.slice(processed, times);
+            const cards = deck.slice(processed, times);
 
             cards.forEach(c => {
-                let id = parseInt(c, 36);
+                const id = parseInt(c, 36);
 
-                let bp = game.functions.getCardById(id);
+                const bp = game.functions.getCardById(id);
                 if (!bp) {
                     ERROR("NONEXISTANTCARD", id.toString());
                     retInvalid = true;
                     return;
                 }
-                let card = new Card(bp.name, plr);
+                const card = new Card(bp.name, plr);
 
                 for (let i = 0; i < parseInt(copies); i++) _deck.push(card.perfectCopy());
 
                 if (card.deckSettings) {
                     Object.entries(card.deckSettings).forEach(setting => {
-                        let [key, val] = setting;
+                        const [key, val] = setting;
 
                         localSettings[key] = val;
                     });
                 }
 
-                let validateTest = (game.functions.validateCard(card, plr));
+                const validateTest = (game.functions.validateCard(card, plr));
 
                 if (!localSettings.validateDecks || validateTest === true) return;
 
@@ -192,8 +191,8 @@ const deckcode = {
 
         if (retInvalid) return null;
 
-        let max = localSettings.maxDeckLength;
-        let min = localSettings.minDeckLength;
+        const max = localSettings.maxDeckLength;
+        const min = localSettings.minDeckLength;
 
         if ((_deck.length < min || _deck.length > max) && localSettings.validateDecks) {
             const grammar = (min == max) ? `exactly <yellow>${max}</yellow>` : `between <yellow>${min}-${max}</yellow>`;
@@ -202,14 +201,14 @@ const deckcode = {
         }
 
         // Check if you have more than 2 cards or more than 1 legendary in your deck. (The numbers can be changed in the config)
-        let cards: { [key: string]: number } = {};
+        const cards: { [key: string]: number } = {};
         _deck.forEach(c => {
             if (!cards[c.name]) cards[c.name] = 0;
             cards[c.name]++;
         });
         Object.entries(cards).forEach(v => {
-            let amount = v[1];
-            let cardName = v[0];
+            const amount = v[1];
+            const cardName = v[0];
 
             let errorcode;
             if (amount > localSettings.maxOfOneCard) errorcode = "normal";
@@ -275,7 +274,7 @@ const deckcode = {
         let cards: [CardLike, number][] = [];
 
         deck.forEach(c => {
-            let found = cards.find(a => a[0].name == c.name);
+            const found = cards.find(a => a[0].name == c.name);
 
             if (!found) cards.push([c, 1]);
             else cards[cards.indexOf(found)][1]++;
@@ -288,7 +287,7 @@ const deckcode = {
 
         let lastCopy = 0;
         cards.forEach(c => {
-            let [card, copies] = c;
+            const [card, copies] = c;
 
             if (copies == lastCopy) return;
 
@@ -332,7 +331,7 @@ const deckcode = {
         //
         // Reference: Death Knight [3B] /1:4,2/ 3f,5f,6f...
 
-        let deck: deckstrings.DeckDefinition = {"cards": [], "heroes": [], "format": 1};
+        const deck: deckstrings.DeckDefinition = {"cards": [], "heroes": [], "format": 1};
 
         // List of vanilla heroes dbfIds
         const vanillaHeroes: {[key in CardClass]?: number} = {
@@ -349,10 +348,10 @@ const deckcode = {
             "Death Knight": 78065
         };
 
-        let codeSplit = code.split(/[\[/]/);
-        let heroClass = codeSplit[0].trim();
+        const codeSplit = code.split(/[\[/]/);
+        const heroClass = codeSplit[0].trim();
 
-        let heroClassId = vanillaHeroes[heroClass as CardClass];
+        const heroClassId = vanillaHeroes[heroClass as CardClass];
         if (!heroClassId) {
             game.log(`<red>ERROR: Invalid hero class: <yellow>${heroClass}</yellow red>`);
             game.input();
@@ -368,8 +367,8 @@ const deckcode = {
         // Remove runes
         if (codeSplit[0].endsWith("] ")) codeSplit.splice(0, 1);
 
-        let amountStr = codeSplit[0].trim();
-        let cards = codeSplit[1].trim();
+        const amountStr = codeSplit[0].trim();
+        const cards = codeSplit[1].trim();
 
         // Now it's just the cards left
         const [vanillaCards, error] = game.functions.getVanillaCards("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'npm run script:vanilla:generator' (requires an internet connection), then try again.");
@@ -379,22 +378,22 @@ const deckcode = {
             return "";
         }
 
-        let cardsSplit = cards.split(",").map(i => parseInt(i, 36));
-        let cardsSplitId = cardsSplit.map(i => game.functions.getCardById(i));
-        let cardsSplitCard = cardsSplitId.map(c => {
+        const cardsSplit = cards.split(",").map(i => parseInt(i, 36));
+        const cardsSplitId = cardsSplit.map(i => game.functions.getCardById(i));
+        const cardsSplitCard = cardsSplitId.map(c => {
             if (!c) throw new Error("c is an invalid card");
             return new game.Card(c.name, plr)
         });
-        let trueCards = cardsSplitCard.map(c => c.displayName);
+        const trueCards = cardsSplitCard.map(c => c.displayName);
 
         // Cards is now a list of names
-        let newCards: [number, number][] = [];
+        const newCards: [number, number][] = [];
 
         trueCards.forEach((c, i) => {
             let amount = 1;
 
             // Find how many copies to put in the deck
-            let amountStrSplit = amountStr.split(":");
+            const amountStrSplit = amountStr.split(":");
 
             let found = false;
             amountStrSplit.forEach((a, i2) => {
@@ -442,7 +441,7 @@ const deckcode = {
                 });
 
                 game.log(`<yellow>Multiple cards with the name '</yellow>${c}<yellow>' detected! Please choose one:</yellow>`);
-                let chosen = game.input();
+                const chosen = game.input();
 
                 match = matches[parseInt(chosen) - 1];
             }
@@ -453,7 +452,7 @@ const deckcode = {
 
         deck.cards = newCards;
 
-        let encodedDeck = deckstrings.encode(deck);
+        const encodedDeck = deckstrings.encode(deck);
         return encodedDeck;
     },
 
@@ -467,7 +466,7 @@ const deckcode = {
      */
     fromVanilla(plr: Player, code: string): string {
         // Use the 'deckstrings' library's decode
-        let deckWithFormat: deckstrings.DeckDefinition = deckstrings.decode(code);
+        const deckWithFormat: deckstrings.DeckDefinition = deckstrings.decode(code);
 
         const [vanillaCards, error] = game.functions.getVanillaCards("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'npm run script:vanilla:generator' (requires an internet connection), then try again.");
 
@@ -479,7 +478,7 @@ const deckcode = {
         // We don't care about the format
         const { format, ...deck } = deckWithFormat;
 
-        let _heroClass = vanillaCards.find(a => a.dbfId == deck.heroes[0])?.cardClass;
+        const _heroClass = vanillaCards.find(a => a.dbfId == deck.heroes[0])?.cardClass;
         let heroClass = game.lodash.capitalize(_heroClass?.toString() || game.player2.heroClass);
 
         // Wtf hearthstone?
@@ -487,24 +486,26 @@ const deckcode = {
         if (heroClass == "Demonhunter") heroClass = "Demon Hunter";
         
         // Get the full card object from the dbfId
-        let deckDef: [VanillaCard | undefined, number][] = deck.cards.map(c => [vanillaCards.find(a => a.dbfId == c[0]), c[1]]);
-        let createdCards: Card[] = game.functions.getCards(false);
+        const deckDef: [VanillaCard | undefined, number][] = deck.cards.map(c => [vanillaCards.find(a => a.dbfId == c[0]), c[1]]);
+        const createdCards: Card[] = game.functions.getCards(false);
         
-        let invalidCards: VanillaCard[] = [];
+        const invalidCards: VanillaCard[] = [];
         deckDef.forEach(c => {
-            let vanillaCard = c[0];
+            const vanillaCard = c[0];
             if (!vanillaCard || typeof vanillaCard === "number") return;
 
             if (createdCards.find(card => card.name == vanillaCard!.name || card.displayName == vanillaCard!.name)) return;
+            if (invalidCards.includes(vanillaCard)) return;
 
             // The card doesn't exist.
-            game.log(`<red>ERROR: Card '</red>${vanillaCard.name}<red>' doesn't exist!</red>`);
+            game.log(`<red>ERROR: Card <yellow>${vanillaCard.name} <bright:yellow>(${vanillaCard.dbfId})</yellow bright:yellow> doesn't exist!</red>`);
             invalidCards.push(vanillaCard);
         });
 
         if (invalidCards.length > 0) {
             // There was a card in the deck that isn't implemented in Hearthstone.js
-            game.input(`<yellow>Some cards do not currently exist. You cannot play on this deck without them.</yellow>`);
+            game.log(`<yellow>Some cards do not currently exist. You cannot play on this deck without them.</yellow>`);
+            game.input();
 
             process.exit(1);
         }
@@ -512,9 +513,9 @@ const deckcode = {
         let newDeck: [Card, number][] = [];
 
         // All cards in the deck exists
-        let amounts: { [amount: number]: number } = {};
+        const amounts: { [amount: number]: number } = {};
         deckDef.forEach(c => {
-            let [vanillaCard, amount] = c;
+            const [vanillaCard, amount] = c;
             if (!vanillaCard || typeof vanillaCard === "number") return;
 
             let name = vanillaCards.find(a => a.dbfId == vanillaCard!.dbfId)?.name;
@@ -541,7 +542,7 @@ const deckcode = {
 
         if (heroClass == "Death Knight") {
             newDeck.forEach(c => {
-                let card = c[0];
+                const card = c[0];
 
                 if (!card.runes) return;
 
@@ -574,7 +575,7 @@ const deckcode = {
 
         // Amount format
         Object.entries(amounts).forEach(a => {
-            let [key, amount] = a;
+            const [key, amount] = a;
 
             // If this is the last amount
             if (!amounts[parseInt(key) + 1]) deckcode += key;
@@ -637,13 +638,13 @@ export const functions = {
      * @param sep The seperator.
      *  
      * @example
-     * let bricks = [];
+     * const bricks = [];
      * bricks.push('Example - Example');
      * bricks.push('Test - Hello World');
      * bricks.push('This is the longest - Short');
      * bricks.push('Tiny - This is even longer then that one!');
      * 
-     * let wall = createWall(bricks, "-");
+     * const wall = createWall(bricks, "-");
      * 
      * wall.forEach(foo => {
      *     game.log(foo);
@@ -666,9 +667,9 @@ export const functions = {
         let longestBrick: [string, number] = ["", -Infinity];
 
         bricks.forEach(b => {
-            let splitBrick = b.split(sep);
+            const splitBrick = b.split(sep);
 
-            let length = splitBrick[0].length;
+            const length = splitBrick[0].length;
 
             if (length <= longestBrick[1]) return;
             longestBrick = [b, length];
@@ -677,13 +678,13 @@ export const functions = {
         /**
          * The wall to return.
          */
-        let wall: string[] = []
+        const wall: string[] = []
 
         bricks.forEach(b => {
-            let splitBrick = b.split(sep);
+            const splitBrick = b.split(sep);
 
             let strbuilder = "";
-            let diff = longestBrick[1] - splitBrick[0].length;
+            const diff = longestBrick[1] - splitBrick[0].length;
 
             strbuilder += splitBrick[0];
             strbuilder += " ".repeat(diff);
@@ -792,7 +793,7 @@ export const functions = {
         if (!this.existsFile("/logs")) this.makeDirectory("/logs");
 
         // Get the day, month, year, hour, minute, and second, as 2 digit numbers.
-        let date = new Date();
+        const date = new Date();
 
         let day = date.getDate().toString();
 
@@ -816,10 +817,10 @@ export const functions = {
 
         // Assemble the time
         // 01/01/23 23:59:59
-        let dateString = `${day}/${month}/${year} ${hour}:${minute}:${second}`;
+        const dateString = `${day}/${month}/${year} ${hour}:${minute}:${second}`;
 
         // 01.01.23-23.59.59
-        let dateStringFileFriendly = dateString.replace(/[/:]/g, ".").replaceAll(" ", "-");
+        const dateStringFileFriendly = dateString.replace(/[/:]/g, ".").replaceAll(" ", "-");
 
         // Grab the history of the game
         // handleCmds("history", echo, debug)
@@ -832,7 +833,7 @@ export const functions = {
         // AI log
         // Do this so it can actually run '/ai'
         game.config.general.debug = true;
-        let aiHistory = game.interact.handleCmds("/ai", false);
+        const aiHistory = game.interact.handleCmds("/ai", false);
 
         let name = "Log";
         if (err) name = "Crash Log";
@@ -844,11 +845,11 @@ Error:
 ${err.stack}
 `
 
-        let historyContent = `-- History --${history}`;
-        let aiContent = `\n-- AI Logs --\n${aiHistory}`;
+        const historyContent = `-- History --${history}`;
+        const aiContent = `\n-- AI Logs --\n${aiHistory}`;
 
-        let config = JSON.stringify(game.config, null, 2);
-        let configContent = `\n-- Config --\n${config}`;
+        const config = JSON.stringify(game.config, null, 2);
+        const configContent = `\n-- Config --\n${config}`;
 
         let mainContent = historyContent;
         if (game.config.ai.player1 || game.config.ai.player2) mainContent += aiContent;
@@ -859,7 +860,7 @@ ${err.stack}
 
         if (osName === "linux") {
             // Get the operating system name from /etc/os-release
-            let osRelease = this.runCommand("cat /etc/os-release");
+            const osRelease = this.runCommand("cat /etc/os-release");
             if (osRelease instanceof Error) {
                 throw osRelease;
             }
@@ -867,7 +868,7 @@ ${err.stack}
             osName = osRelease.split('PRETTY_NAME="')[1].split('"\n')[0];
 
             // Also add information from uname
-            let uname = this.runCommand("uname -srvmo");
+            const uname = this.runCommand("uname -srvmo");
             if (uname instanceof Error) throw uname;
 
             osName += " (" + uname.trim() + ")";
@@ -889,7 +890,7 @@ ${mainContent}
         filename = `${filename}-${dateStringFileFriendly}.txt`;
 
         // Add a sha256 checksum to the content
-        let checksum = createHash("sha256").update(content).digest("hex");
+        const checksum = createHash("sha256").update(content).digest("hex");
         content += `\n${checksum}  ${filename}`;
 
         this.writeFile(`/logs/${filename}`, content);
@@ -918,7 +919,7 @@ ${mainContent}
      * version-branch.build (commit hash)
      */
     getVersion(detail = 1): string {
-        let info = game.config.info;
+        const info = game.config.info;
 
         switch (detail) {
             case 1:
@@ -943,7 +944,7 @@ ${mainContent}
             game.cache.latestCommitHash = this.runCommand("git rev-parse --short=7 HEAD");
         }
 
-        let hash = game.cache.latestCommitHash;
+        const hash = game.cache.latestCommitHash;
 
         if (hash instanceof Error) {
             game.log("<red>ERROR: Git is not installed.</red>");
@@ -973,7 +974,7 @@ ${mainContent}
      */
     tryCompile(): boolean {
         try {
-            let error = this.runCommand("npx tsc");
+            const error = this.runCommand("npx tsc");
             if (error instanceof Error) throw error;
 
             return true;
@@ -1056,7 +1057,7 @@ ${mainContent}
         cards = cards.filter(a => a.set && !a.set.includes("PLACEHOLDER_"));
         cards = cards.filter(a => !a.mercenariesRole);
 
-        let filteredCards: VanillaCard[] = [];
+        const filteredCards: VanillaCard[] = [];
 
         cards.forEach(a => {
             // If the set is `HERO_SKINS`, only include it if it's id is `HERO_xx`, where the x's are a number.
@@ -1088,7 +1089,7 @@ ${mainContent}
      * 
      * @example
      * // Opens notepad to "foo.txt" in the main folder.
-     * let success = functions.runCommandAsChildProcess("notepad foo.txt");
+     * const success = functions.runCommandAsChildProcess("notepad foo.txt");
      * 
      * // Wait until the user presses enter. This function automatically prints a traceback to the screen but will not pause by itself.
      * if (!success) game.input();
@@ -1103,13 +1104,13 @@ ${mainContent}
 
             command = command.replaceAll("\\", "/");
 
-            let attempts: string[] = [];
+            const attempts: string[] = [];
 
             const isCommandAvailable = (testCommand: string, argsSpecifier: string) => {
                 game.log(`Trying '${testCommand} ${argsSpecifier}${command}'...`)
                 attempts.push(testCommand);
 
-                let error = this.runCommand(`which ${testCommand} 2> /dev/null`);
+                const error = this.runCommand(`which ${testCommand} 2> /dev/null`);
                 if (error instanceof Error) return false;
 
                 childProcess.exec(`${testCommand} ${argsSpecifier}${command}`);
@@ -1176,7 +1177,7 @@ ${mainContent}
      * @returns The blueprint of the card
      */
     getCardById(id: number | string, refer: boolean = true): Card | null {
-        let card = this.getCards(false).filter(c => c.id == id)[0];
+        const card = this.getCards(false).filter(c => c.id == id)[0];
 
         if (!card && refer) return this.getCardByName(id.toString(), false);
 
@@ -1245,14 +1246,14 @@ ${mainContent}
      * assert.equal(card.tribe, "Beast");
      * 
      * // This should return true
-     * let result = matchTribe(card.tribe, "Beast");
+     * const result = matchTribe(card.tribe, "Beast");
      * assert.equal(result, true);
      * 
      * @example
      * assert.equal(card.tribe, "All");
      * 
      * // This should return true
-     * let result = matchTribe(card.tribe, "Beast");
+     * const result = matchTribe(card.tribe, "Beast");
      * assert.equal(result, true);
      */
     matchTribe(cardTribe: MinionTribe, tribe: MinionTribe): boolean {
@@ -1291,7 +1292,7 @@ ${mainContent}
      * @returns Highlander
      */
     highlander(plr: Player): boolean {
-        let deck = plr.deck.map(c => c.name);
+        const deck = plr.deck.map(c => c.name);
 
         return (new Set(deck)).size == deck.length;
     },
@@ -1312,12 +1313,12 @@ ${mainContent}
      * @returns Classes
      * 
      * @example
-     * let classes = getClasses();
+     * const classes = getClasses();
      * 
      * assert.equal(classes, ["Mage", "Warrior", "Druid", ...])
      */
     getClasses(): CardClassNoNeutral[] {
-        let classes: CardClassNoNeutral[] = [];
+        const classes: CardClassNoNeutral[] = [];
 
         this.readDirectory("/cards/StartingHeroes").forEach(file => {
             // Something is wrong with the file name.
@@ -1332,7 +1333,7 @@ ${mainContent}
             // Capitalize all words
             name = this.capitalizeAll(name);
 
-            let card = this.getCardByName(name + " Starting Hero");
+            const card = this.getCardByName(name + " Starting Hero");
             if (!card || card.classes[0] != name as CardClassNoNeutral || card.type != "Hero" || !card.abilities.heropower || card.classes.includes("Neutral")) {
                 game.logWarn("Found card in the startingheroes folder that isn't a starting hero. If the game crashes, please note this in your bug report. Name: " + name + ". Error Code: StartingHeroInvalidHandler");
                 return;
@@ -1356,7 +1357,7 @@ ${mainContent}
      * assert(card.rarity, "Legendary");
      * assert(card.name, "Sheep");
      * 
-     * let colored = colorByRarity(card.name, card.rarity);
+     * const colored = colorByRarity(card.name, card.rarity);
      * assert.equal(colored, chalk.yellow("Sheep"));
      */
     colorByRarity(str: string, rarity: CardRarity): string {
@@ -1422,22 +1423,22 @@ ${mainContent}
      * @returns The resulting string
      * 
      * @example
-     * let parsed = parseTags("<b>Battlecry:</b> Test");
+     * const parsed = parseTags("<b>Battlecry:</b> Test");
      * assert.equal(parsed, chalk.bold("Battlecry:") + " Test");
      * 
      * @example
      * // Add the `~` character to escape the tag
-     * let parsed = parseTags("~<b>Battlecry:~</b> Test ~~<b>Test~~</b> Test");
+     * const parsed = parseTags("~<b>Battlecry:~</b> Test ~~<b>Test~~</b> Test");
      * assert.equal(parsed, "<b>Battlecry:</b> Test ~" + chalk.bold("Test~") + " Test");
      * 
      * @example
      * // You can mix and match tags as much as you want. You can remove categories of tags as well, for example, removing `bg:bright:blue` by doing `</bg>`
-     * let parsed = parseTags("<red bg:bright:blue bold>Test</bg> Hi</b> there</red> again");
+     * const parsed = parseTags("<red bg:bright:blue bold>Test</bg> Hi</b> there</red> again");
      * assert.equal(parsed, chalk.red.bgBlueBright.bold("Test") + chalk.red.bold(" Hi") + chalk.red(" there") + " again");
      * 
      * @example
      * // Try to not use '</>' if you can help it. In this case, it is fine.
-     * let parsed = parseTags("<fg:red italic bg:#0000FF>Test</> Another test");
+     * const parsed = parseTags("<fg:red italic bg:#0000FF>Test</> Another test");
      * assert.equal(parsed, chalk.red.italic("Test") + " Another test");
      */
     parseTags(str: string): string {
@@ -1462,7 +1463,7 @@ ${mainContent}
                 return currentTypes[index + 1];
             };
 
-            let partOfRGB: number[] = [];
+            const partOfRGB: number[] = [];
             currentTypes.reverse().forEach((t, index) => {
                 // The type is part of an rgb value. Ignore it
                 if (partOfRGB.includes(index)) return;
@@ -1502,7 +1503,7 @@ ${mainContent}
                 // RGB
                 if (t.startsWith("rgb")) {
                     t = t.replace(/rgb:?/, "");
-                    let [r, g, b] = t.split(",").map(s => parseInt(s.replace(/[()]/, "")));
+                    const [r, g, b] = t.split(",").map(s => parseInt(s.replace(/[()]/, "")));
 
                     if (bg) {
                         ret = chalk.bgRgb(r, g, b)(ret);
@@ -1650,8 +1651,8 @@ ${mainContent}
         }
 
         const cancelled = (i: number): boolean => {
-            let one = readPrevious(i);
-            let two = readPrevious(i - 1);
+            const one = readPrevious(i);
+            const two = readPrevious(i - 1);
 
             if (two === "~") return false;
             return one === "~";
@@ -1677,7 +1678,7 @@ ${mainContent}
                 // End tag reading
                 readingTag = false;
 
-                let currentTags = tagbuilder.split(" ");
+                const currentTags = tagbuilder.split(" ");
                 tagbuilder = "";
 
                 if (!removeTag) currentTypes.push(...currentTags);
@@ -1724,7 +1725,7 @@ ${mainContent}
      * This only removes the TAGS, not the actual colors.
      * 
      * @example
-     * let str = "<b>Hello</b>";
+     * const str = "<b>Hello</b>";
      * 
      * assert.equal(stripTags(str), "Hello");
      */
@@ -1751,7 +1752,7 @@ ${mainContent}
      * @returns Clone
      */
     cloneCard(card: Card): Card {
-        let clone = game.lodash.clone(card);
+        const clone = game.lodash.clone(card);
 
         clone.randomizeUUID();
         clone.sleepy = true;
@@ -1799,7 +1800,7 @@ ${mainContent}
     addEventListener(key: EventKey | "", callback: EventListenerCallback, lifespan: number = 1): () => boolean {
         let times = 0;
 
-        let id = game.events.eventListeners;
+        const id = game.events.eventListeners;
         let alive = true;
 
         /**
@@ -1822,7 +1823,7 @@ ${mainContent}
             if (key === "" || _key as EventKey === key) {}
             else return;
 
-            let msg = callback(_unknownVal);
+            const msg = callback(_unknownVal);
             times++;
 
             switch (msg) {
@@ -1914,7 +1915,7 @@ ${mainContent}
 
         game.interact.printAll(game.player);
 
-        let possibleCards = [
+        const possibleCards = [
             ["Crackling Shield", "Divine Shield"],
             ["Flaming Claws", "+3 Attack"],
             ["Living Spores", "Deathrattle: Summon two 1/1 Plants."],
@@ -1926,11 +1927,11 @@ ${mainContent}
             ["Shrouding Mist", "Stealth until your next turn."],
             ["Poison Spit", "Poisonous"]
         ];
-        let values = _values;
+        const values = _values;
 
         if (values.length == 0) {
             for (let i = 0; i < 3; i++) {
-                let c = game.lodash.sample(possibleCards);
+                const c = game.lodash.sample(possibleCards);
                 if (!c) throw new Error("null when randomly choosing adapt option");
 
                 if (c instanceof Card) throw new TypeError();
@@ -2048,8 +2049,8 @@ ${mainContent}
      */
     invoke(plr: Player): boolean {
         // Find the card in player's deck/hand/hero that begins with "Galakrond, the "
-        let deckGalakrond = plr.deck.find(c => c.displayName.startsWith("Galakrond, the "));
-        let handGalakrond = plr.hand.find(c => c.displayName.startsWith("Galakrond, the "));
+        const deckGalakrond = plr.deck.find(c => c.displayName.startsWith("Galakrond, the "));
+        const handGalakrond = plr.hand.find(c => c.displayName.startsWith("Galakrond, the "));
         if ((!deckGalakrond && !handGalakrond) && !plr.hero?.displayName.startsWith("Galakrond, the ")) return false;
 
         plr.deck.filter(c => {
@@ -2080,13 +2081,12 @@ ${mainContent}
      */
     recruit(plr: Player, list?: Card[], amount: number = 1): Card[] {
         if (!list) list = plr.deck;
-        let _list = list;
+        const _list = list;
 
         list = game.lodash.shuffle(list.slice());
 
         let times = 0;
-
-        let cards: Card[] = [];
+        const cards: Card[] = [];
 
         list = list.filter(c => c.type == "Minion");
         list.forEach(c => {
@@ -2117,7 +2117,7 @@ ${mainContent}
         const count = plr.jadeCounter;
         const cost = (count < 10) ? count : 10;
 
-        let jade = new Card("Jade Golem", plr);
+        const jade = new Card("Jade Golem", plr);
         jade.setStats(count, count);
         jade.cost = cost;
 
@@ -2163,13 +2163,13 @@ ${mainContent}
         path = path.replaceAll("\\", "/");
 
         this.readDirectory(path).forEach(file => {
-            let fullPath = `${path}/${file.name}`;
+            const fullPath = `${path}/${file.name}`;
 
             if (file.name.endsWith(extension)) {
                 if (file.name === "exports.ts") return;
 
                 // It is an actual card.
-                let data = this.readFile(fullPath);
+                const data = this.readFile(fullPath);
 
                 callback(fullPath, data, file);
             }
@@ -2186,7 +2186,7 @@ ${mainContent}
         // Validate the cards
         let valid = true;
         game.cards.forEach(card => {
-            let errorMessage = validateBlueprint(card);
+            const errorMessage = validateBlueprint(card);
 
             // Success
             if (errorMessage === true) return;
@@ -2228,8 +2228,8 @@ ${mainContent}
     mulligan(plr: Player, input: string): Card[] | TypeError {
         if (!parseInt(input)) return new TypeError("Can't parse `input` to int");
 
-        let cards: Card[] = [];
-        let mulligan: Card[] = [];
+        const cards: Card[] = [];
+        const mulligan: Card[] = [];
 
         input.split("").forEach(c => mulligan.push(plr.hand[parseInt(c) - 1]));
 

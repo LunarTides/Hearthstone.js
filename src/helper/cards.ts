@@ -9,19 +9,19 @@ export function doImportCards() {
 export function generateCardExports() {
     let exportContent = "// This file has been automatically created. Do not change this file.\n";
 
-    let list: string[] = [];
+    const list: string[] = [];
     game.functions.searchCardsFolder((fullPath, content, file) => {
         if (!content.includes("export const blueprint")) return;
 
         fullPath = fullPath.replace(".ts", ".js");
-        let relPath = "./" + fullPath.split("cards/")[1];
+        const relPath = "./" + fullPath.split("cards/")[1];
 
         list.push(relPath);
     });
 
     // Sort the list alphabetically so it will remain constant between different file system formats.
     list.sort().forEach(path => {
-        let hash = createHash("sha256").update(path).digest("hex").toString().slice(0, 7);
+        const hash = createHash("sha256").update(path).digest("hex").toString().slice(0, 7);
 
         exportContent += `export { blueprint as c${hash} } from "${path}";\n`;
     });

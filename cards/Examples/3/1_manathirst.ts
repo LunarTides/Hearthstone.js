@@ -16,7 +16,7 @@ export const blueprint: Blueprint = {
 
     battlecry(plr, self) {
         // `ret` is a boolean.
-        let ret = self.manathirst(6);
+        const ret = self.manathirst(6);
 
         // Build the prompt.
         let prompt: string;
@@ -29,7 +29,7 @@ export const blueprint: Blueprint = {
         // The third argument is the alignment of the target the user is restricted to. If this is "enemy", the user can only select enemy targets, if this is "friendly", the user can only select friendly targets, if this is "any", the user can select any target.
         //
         // Ask the user to select a target based on the `prompt`, the user can only select enemy minions
-        let target = game.interact.selectCardTarget(prompt, self, "enemy");
+        const target = game.interact.selectCardTarget(prompt, self, "enemy");
 
         // If target is false it means that the user cancelled their selection. Return `game.constants.REFUND` to refund the card.
         if (!target) return game.constants.REFUND;
@@ -54,7 +54,7 @@ export const blueprint: Blueprint = {
     test(plr, self) {
         const assert = game.functions.assert;
 
-        let sheep = new game.Card("Sheep", plr.getOpponent());
+        const sheep = new game.Card("Sheep", plr.getOpponent());
         sheep.addStats(4, 4);
         game.summonMinion(sheep, plr.getOpponent());
 

@@ -28,7 +28,7 @@ export const blueprint: Blueprint = {
         cards = cards.filter(c => c.type == "Spell"); 
 
         // interact.discover(prompt, pool, ifItShouldFilterAwayCardsThatAreNotThePlayersClass = true, amountOfCardsToChooseFrom = 3)
-        let spell = game.interact.discover("Discover a spell.", cards);
+        const spell = game.interact.discover("Discover a spell.", cards);
 
         // If no card was chosen, refund
         if (!spell) return game.constants.REFUND;
@@ -47,7 +47,7 @@ export const blueprint: Blueprint = {
         for (let i = 0; i < 50; i++) {
             self.activate("cast");
 
-            let card = plr.hand.pop();
+            const card = plr.hand.pop();
             assert(() => card?.type === "Spell");
             assert(() => !!card && game.functions.validateClasses(card.classes, plr.heroClass));
         }

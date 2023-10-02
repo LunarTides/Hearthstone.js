@@ -26,7 +26,7 @@ export class Player {
      * 
      * # Examples
      * @example
-     * let board = game.board[player.id];
+     * const board = game.board[player.id];
      * 
      * board.forEach(card => {
      *     game.log(card.name);
@@ -39,7 +39,7 @@ export class Player {
      * 
      * # Examples
      * @example
-     * let discover = player.ai.discover();
+     * const discover = player.ai.discover();
      * 
      * game.log(discover);
      */
@@ -59,7 +59,7 @@ export class Player {
      * 
      * # Examples
      * @example
-     * let target = game.functions.selectTarget("Example", null, "any", "any");
+     * const target = game.functions.selectTarget("Example", null, "any", "any");
      * 
      * if (target.classType == "Player") {
      *     game.log(target.health);
@@ -283,7 +283,7 @@ export class Player {
      * # Example
      * ```
      * player.forceTarget = target;
-     * let chosen = game.interact.selectTarget("Example", null, "any", "any");
+     * const chosen = game.interact.selectTarget("Example", null, "any", "any");
      * player.forceTarget = null;
      * 
      * assert.equal(chosen, target);
@@ -331,7 +331,7 @@ export class Player {
      * 
      * # Examples
      * ```
-     * let opponent = player.getOpponent();
+     * const opponent = player.getOpponent();
      * 
      * assert.notEqual(player.id, opponent.id);
      * ```
@@ -464,7 +464,7 @@ export class Player {
      * 
      * # Examples
      * ```
-     * let weapon = new Card("some weapon name", player);
+     * const weapon = new Card("some weapon name", player);
      * player.setWeapon(weapon); 
      * ```
      * 
@@ -555,7 +555,7 @@ export class Player {
         if (this.immune) return true;
 
         // Armor logic
-        let remainingArmor = this.armor - amount;
+        const remainingArmor = this.armor - amount;
         this.armor = Math.max(remainingArmor, 0);
 
         // Armor blocks all damage, return true since there were no errors.
@@ -616,7 +616,7 @@ export class Player {
      */
     shuffleIntoDeck(card: Card): boolean {
         // Add the card into a random position in the deck
-        let pos = game.lodash.random(0, this.deck.length);
+        const pos = game.lodash.random(0, this.deck.length);
         this.deck.splice(pos, 0, card);
 
         game.events.broadcast("AddCardToDeck", card, this);
@@ -649,12 +649,12 @@ export class Player {
      * @returns The card drawn | The amount of fatigue the player was dealt
      */
     drawCard(): Card | number {
-        let deckLength = this.deck.length;
+        const deckLength = this.deck.length;
         
         /**
          * The card to draw
          */
-        let card = this.deck.pop();
+        const card = this.deck.pop();
 
         if (deckLength <= 0 || !(card instanceof Card)) {
             this.fatigue++;
@@ -668,7 +668,7 @@ export class Player {
         // Cast on draw
         if (card.type == "Spell" && card.keywords.includes("Cast On Draw") && card.activate("cast")) return this.drawCard();
 
-        let unsuppress = game.functions.suppressEvent("AddCardToHand");
+        const unsuppress = game.functions.suppressEvent("AddCardToHand");
         this.addToHand(card);
         unsuppress();
 
@@ -683,14 +683,14 @@ export class Player {
      * This works
      * ```
      * // Get a random card from the player's deck
-     * let card = game.functions.randList(player.deck).actual;
+     * const card = game.functions.randList(player.deck).actual;
      * 
      * player.drawSpecific(card);
      * ```
      * 
      * This doesn't work
      * ```
-     * let card = game.functions.randList(player.deck).copy;
+     * const card = game.functions.randList(player.deck).copy;
      * 
      * player.drawSpecific(card);
      * ```
@@ -707,7 +707,7 @@ export class Player {
 
         if (card.type == "Spell" && card.keywords.includes("Cast On Draw") && card.activate("cast")) return null;
 
-        let unsuppress = game.functions.suppressEvent("AddCardToHand");
+        const unsuppress = game.functions.suppressEvent("AddCardToHand");
         this.addToHand(card);
         unsuppress();
 
@@ -758,8 +758,8 @@ export class Player {
      * @returns Success
      */
     setToStartingHero(heroClass = this.heroClass): boolean {
-        let heroCardName = heroClass + " Starting Hero";
-        let heroCard = game.functions.getCardByName(heroCardName);
+        const heroCardName = heroClass + " Starting Hero";
+        const heroCard = game.functions.getCardByName(heroCardName);
 
         if (!heroCard) return false;
         this.setHero(new Card(heroCard.name, this), 0, false);
@@ -824,13 +824,13 @@ export class Player {
             return letterCount;
         }
 
-        let blood = charCount(runes, "B");
-        let frost = charCount(runes, "F");
-        let unholy = charCount(runes, "U");
+        const blood = charCount(runes, "B");
+        const frost = charCount(runes, "F");
+        const unholy = charCount(runes, "U");
 
-        let b = charCount(this.runes, "B");
-        let f = charCount(this.runes, "F");
-        let u = charCount(this.runes, "U");
+        const b = charCount(this.runes, "B");
+        const f = charCount(this.runes, "F");
+        const u = charCount(this.runes, "U");
 
         if (blood > b || frost > f || unholy > u) return false;
         return true;

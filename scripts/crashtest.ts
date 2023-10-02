@@ -5,8 +5,8 @@
 import { createGame } from "../src/internal.js";
 import decks from "../decks.json" assert { type: "json" };
 
-let gamesEnv = process.env.games ?? "";
-let games = parseInt(gamesEnv) ?? 100;
+const gamesEnv = process.env.games ?? "";
+const games = parseInt(gamesEnv) ?? 100;
 
 function main() {
     game.logWarn(`Press enter to play ${games} games`);
@@ -30,9 +30,9 @@ function main() {
 
         // Choose random decks for the players
         for (let i = 0; i < 2; i++) {
-            let plr = game.functions.getPlayerFromId(i);
+            const plr = game.functions.getPlayerFromId(i);
 
-            let deck = game.lodash.sample(decks);
+            const deck = game.lodash.sample(decks);
             if (typeof deck === "string") game.functions.deckcode.import(plr, deck);
         }
 

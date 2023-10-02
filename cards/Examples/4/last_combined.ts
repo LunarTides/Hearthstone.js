@@ -23,7 +23,7 @@ export const blueprint: Blueprint = {
 
             // The quest is done.
             // Add the `-1 cost` enchantment constantly
-            let unhook = game.functions.hookToTick(() => {
+            const unhook = game.functions.hookToTick(() => {
                 // Only add the enchantment to minions
                 plr.hand.filter(card => card.type == "Minion").forEach(minion => {
                     if (minion.enchantmentExists("-1 cost", self)) return;

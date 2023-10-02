@@ -25,7 +25,7 @@ export const blueprint: Blueprint = {
         // The first argument is the key to listen for.
         // The second argument is a callback function.
         // The third argument is the event listeners' lifespan.
-        let destroy = game.functions.addEventListener("PlayCard", (_unknownVal) => {
+        const destroy = game.functions.addEventListener("PlayCard", (_unknownVal) => {
             // This function will be run if the correct event was broadcast
 
             // addEventListener can't figure out the type of `val` by itself, so we have to do the same thing as with passives

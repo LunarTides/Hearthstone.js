@@ -59,7 +59,7 @@ export const blueprint: Blueprint = {
         // Testing your solution.
         let solved = true;
 
-        let trueOgHealth = plr.health;
+        const trueOgHealth = plr.health;
 
         // Restore 3 health when the player has 5 less than max health
         plr.health = plr.maxHealth - 5;

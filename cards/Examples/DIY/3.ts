@@ -107,7 +107,7 @@ export const blueprint: Blueprint = {
             const val = _unknownVal as EventValue<"TargetSelectionStarts">;
 
             // Don't check for `prompt` since there is no correct prompt
-            let [prompt, card, forceSide, forceClass, flags] = val;
+            const [prompt, card, forceSide, forceClass, flags] = val;
 
             correctParameters = (
                 card == self &&
@@ -144,7 +144,7 @@ export const blueprint: Blueprint = {
             return game.constants.REFUND;
         }
 
-        let solved = (
+        const solved = (
             target !== self &&
             target.getHealth() <= 0 &&
             correctParameters &&

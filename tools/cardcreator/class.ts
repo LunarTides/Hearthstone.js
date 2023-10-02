@@ -15,7 +15,7 @@ const { game, player1, player2 } = createGame();
  * This is not meant to be a library. Running this function will temporarily give control to this function.
  */
 export function main(debug = false, overrideType?: lib.CCType) {
-    let watermark = () => {
+    const watermark = () => {
         game.interact.cls();
         game.log("Hearthstone.js Class Creator (C) 2022\n");
         game.log("type 'back' at any step to cancel.\n");
@@ -28,7 +28,7 @@ export function main(debug = false, overrideType?: lib.CCType) {
         "How much should the hero power cost? (Default is 2):"
     ]
 
-    let answers: string[] = [];
+    const answers: string[] = [];
     let exited = false;
 
     // Ask the questions as defined above and push the answer to answers
@@ -38,7 +38,7 @@ export function main(debug = false, overrideType?: lib.CCType) {
         const question = c;
 
         watermark();
-        let val = game.input(question + " ");
+        const val = game.input(question + " ");
         if (!val || game.interact.shouldExit(val)) exited = true;
 
         answers.push(val);
@@ -46,11 +46,11 @@ export function main(debug = false, overrideType?: lib.CCType) {
 
     if (exited) return;
 
-    let [name, displayName, hpText, hpCost] = answers;
+    const [name, displayName, hpText, hpCost] = answers;
 
-    let filename = name.toLowerCase().replaceAll(" ", "_") + ".ts";
+    const filename = name.toLowerCase().replaceAll(" ", "_") + ".ts";
 
-    let card: Blueprint = {
+    const card: Blueprint = {
         name: name + " Starting Hero",
         displayName: displayName,
         text: name[0].toUpperCase() + name.slice(1).toLowerCase() + " starting hero",

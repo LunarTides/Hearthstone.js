@@ -8,7 +8,7 @@ import { createGame } from "../src/internal.js";
 
 const { game, player1, player2 } = createGame();
 
-let matchingCards: string[] = [];
+const matchingCards: string[] = [];
 let finishedCards: string[] = [];
 
 let finishedCardsPath = "patchedCards.txt";
@@ -17,7 +17,7 @@ function getFinishedCards(path: string) {
     // If the file doesn't exist, return.
     if (!game.functions.existsFile(path)) return;
 
-    let cards = game.functions.readFile(path);
+    const cards = game.functions.readFile(path);
     finishedCards = cards.split("\n");
 }
 
@@ -36,7 +36,7 @@ function searchCards(query: RegExp | string) {
 
 function main() {
     game.interact.cls();
-    let useRegex = rl.keyInYN("Do you want to use regular expressions? (Don't do this unless you know what regex is, and how to use it)");
+    const useRegex = rl.keyInYN("Do you want to use regular expressions? (Don't do this unless you know what regex is, and how to use it)");
     let search: string | RegExp = game.input("Search: ");
 
     // Ignore case
@@ -60,7 +60,7 @@ function main() {
             game.log(`${i + 1}: ${c}`);
         });
 
-        let cmd = game.input("\nWhich card do you want to fix (type 'done' to finish | type 'delete' to delete the save file): ");
+        const cmd = game.input("\nWhich card do you want to fix (type 'done' to finish | type 'delete' to delete the save file): ");
         if (cmd.toLowerCase().startsWith("done")) break;
         if (cmd.toLowerCase().startsWith("delete")) {
             game.log("Deleting file...");
@@ -75,10 +75,10 @@ function main() {
             process.exit(0);
         }
 
-        let index = parseInt(cmd) - 1;
+        const index = parseInt(cmd) - 1;
         if (!index) continue;
 
-        let path = matchingCards[index];
+        const path = matchingCards[index];
         if (!path) {
             game.log("Invalid index!");
             game.input();
@@ -87,7 +87,7 @@ function main() {
         }
 
         // `card` is the path to that card.
-        let success = game.functions.runCommandAsChildProcess(`${game.config.general.editor} "${path}"`);
+        const success = game.functions.runCommandAsChildProcess(`${game.config.general.editor} "${path}"`);
         // The `runCommandAsChildProcess` shows an error message for us, but we need to pause.
         if (!success) game.input();
 

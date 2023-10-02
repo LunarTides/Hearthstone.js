@@ -19,7 +19,7 @@ let filteredCards: Card[] = [];
 let deck: Card[] = [];
 let runes = "";
 
-let warnings: {[key: string]: boolean} = {
+const warnings: {[key: string]: boolean} = {
     latestCard: true
 }
 
@@ -56,7 +56,7 @@ type Settings = {
     }
 }
 
-let settings: Settings = {
+const settings: Settings = {
     card: {
         history: []
     },
@@ -107,7 +107,7 @@ function askClass(): CardClassNoNeutral {
         while (runes.length < 3) {
             printName();
 
-            let rune = game.input(`What runes do you want to add (${3 - runes.length} more)\nBlood, Frost, Unholy\n`);
+            const rune = game.input(`What runes do you want to add (${3 - runes.length} more)\nBlood, Frost, Unholy\n`);
             if (!rune || !["B", "F", "U"].includes(rune[0].toUpperCase())) continue;
 
             runes += rune[0].toUpperCase();
@@ -123,8 +123,8 @@ function sortCards(_cards: Card[]) {
     // If the order is invalid, fall back to ascending
     if (!["asc", "desc"].includes(settings.sort.order)) settings.sort.order = "asc";
 
-    let type = settings.sort.type;
-    let order = settings.sort.order;
+    const type = settings.sort.type;
+    const order = settings.sort.order;
 
     const calcOrder = (a: number, b: number) => {
         if (order == "asc") return a - b;
@@ -132,11 +132,11 @@ function sortCards(_cards: Card[]) {
     }
 
     if (type == "rarity") {
-        let sortScores = ["Free", "Common", "Rare", "Epic", "Legendary"];
+        const sortScores = ["Free", "Common", "Rare", "Epic", "Legendary"];
 
         return _cards.sort((a, b) => {
-            let scoreA = sortScores.indexOf(a.rarity);
-            let scoreB = sortScores.indexOf(b.rarity);
+            const scoreA = sortScores.indexOf(a.rarity);
+            const scoreB = sortScores.indexOf(b.rarity);
 
             return calcOrder(scoreA, scoreB);
         });
@@ -164,7 +164,7 @@ function sortCards(_cards: Card[]) {
     }
 
     if (type === "cost" || type === "id") {
-        let newType = type;
+        const newType = type;
 
         return _cards.sort((a, b) => {
             return calcOrder(a[newType], b[newType]);
@@ -179,17 +179,17 @@ function sortCards(_cards: Card[]) {
 function searchCards(_cards: Card[], sQuery: string) {
     if (sQuery.length <= 0) return _cards;
 
-    let retCards: Card[] = [];
+    const retCards: Card[] = [];
 
-    let splitQuery = sQuery.split(":");
+    const splitQuery = sQuery.split(":");
 
     if (splitQuery.length <= 1) {
         // The user didn't specify a key. Do a general search
-        let query = splitQuery[0].toLowerCase();
+        const query = splitQuery[0].toLowerCase();
 
         _cards.forEach(c => {
-            let name = game.interact.getDisplayName(c).toLowerCase();
-            let text = c.text.toLowerCase();
+            const name = game.interact.getDisplayName(c).toLowerCase();
+            const text = c.text.toLowerCase();
 
             if (!name.includes(query) && !text.includes(query)) return;
 
@@ -204,7 +204,7 @@ function searchCards(_cards: Card[], sQuery: string) {
     val = val.toLowerCase();
 
     const doReturn = (c: Card) => {
-        let ret = c[key as keyof Card];
+        const ret = c[key as keyof Card];
 
         // Javascript
         if (!ret && ret !== 0) {
@@ -217,12 +217,12 @@ function searchCards(_cards: Card[], sQuery: string) {
             if (typeof ret !== "number") throw new Error("`ret` is not a number.");
 
             // Mana range (1-10)
-            let regex = /\d+-\d+/;
+            const regex = /\d+-\d+/;
             if (regex.test(val)) {
-                let _val = val.split("-");
+                const _val = val.split("-");
 
-                let min = parseInt(_val[0]);
-                let max = parseInt(_val[1]);
+                const min = parseInt(_val[0]);
+                const max = parseInt(_val[1]);
 
                 return ret >= min && ret <= max;
             }
@@ -246,7 +246,7 @@ function searchCards(_cards: Card[], sQuery: string) {
     _cards.forEach(c => {
         if (error) return;
 
-        let ret = doReturn(c);
+        const ret = doReturn(c);
 
         if (ret === -1) {
             error = true;
@@ -271,7 +271,7 @@ function noCards() {
     // Only ask once
     if (!settings.other.firstScreen) return;
 
-    let uncollectible = game.interact.yesNoQuestion(plr, "Would you like the program to search for uncollectible cards? Decks with uncollectible cards aren't valid. (You will only be asked once)");
+    const uncollectible = game.interact.yesNoQuestion(plr, "Would you like the program to search for uncollectible cards? Decks with uncollectible cards aren't valid. (You will only be asked once)");
     settings.other.firstScreen = false;
 
     if (!uncollectible) return;
@@ -287,14 +287,14 @@ function showCards() {
     printName();
 
     // If the user chose to view an invalid class, reset the viewed class to default.
-    let correctClass = game.functions.validateClasses([settings.view.class ?? chosenClass], chosenClass);
+    const correctClass = game.functions.validateClasses([settings.view.class ?? chosenClass], chosenClass);
     if (!settings.view.class || !correctClass) settings.view.class = chosenClass;
 
     // Filter away cards that aren't in the chosen class
     Object.values(cards).forEach(c => {
         if (c.runes && !plr.testRunes(c.runes)) return;
 
-        let correctClass = game.functions.validateClasses(c.classes, settings.view.class ?? chosenClass);
+        const correctClass = game.functions.validateClasses(c.classes, settings.view.class ?? chosenClass);
         if (correctClass) filteredCards.push(c);
     });
 
@@ -302,7 +302,7 @@ function showCards() {
         game.log(`<yellow>No cards found for the selected classes '${chosenClass} and Neutral'.</yellow>`);
     }
 
-    let cpp = settings.view.cpp;
+    const cpp = settings.view.cpp;
     let page = settings.view.page;
 
     // Search
@@ -323,7 +323,7 @@ function showCards() {
     settings.search.query.forEach(q => {
         if (searchFailed) return;
 
-        let searchedCards = searchCards(classCards, q);
+        const searchedCards = searchCards(classCards, q);
 
         if (searchedCards === false) {
             game.input(`<red>Search failed at '${q}'! Reverting back to last successful query.\n</red>`);
@@ -349,15 +349,15 @@ function showCards() {
     settings.view.maxPage = Math.ceil(classCards.length / cpp);
     if (page > settings.view.maxPage) page = settings.view.maxPage;
 
-    let oldSortType = settings.sort.type;
-    let oldSortOrder = settings.sort.order;
+    const oldSortType = settings.sort.type;
+    const oldSortOrder = settings.sort.order;
     game.log(`Sorting by ${settings.sort.type.toUpperCase()}, ${settings.sort.order}ending.`);
 
     // Sort
     classCards = sortCards(classCards);
 
-    let sortTypeInvalid = oldSortType != settings.sort.type;
-    let sortOrderInvalid = oldSortOrder != settings.sort.order;
+    const sortTypeInvalid = oldSortType != settings.sort.type;
+    const sortOrderInvalid = oldSortOrder != settings.sort.order;
 
     if (sortTypeInvalid) {
         game.log(`<yellow>Sorting by </yellow>'%s'<yellow> failed! Falling back to </yellow>%s.`, oldSortType.toUpperCase(), settings.sort.type.toUpperCase());
@@ -376,26 +376,26 @@ function showCards() {
 
     game.log(`<underline>${settings.view.class}</underline>`);
 
-    let bricks: string[] = [];
+    const bricks: string[] = [];
     classCards.forEach(c => {
         bricks.push(game.interact.getDisplayName(c) + " - " + c.id);
     });
 
-    let wall = game.functions.createWall(bricks, "-");
+    const wall = game.functions.createWall(bricks, "-");
 
     wall.forEach(brick => {
-        let brickSplit = brick.split("-");
+        const brickSplit = brick.split("-");
 
-        let card = findCard(brickSplit[0].trim());
+        const card = findCard(brickSplit[0].trim());
         if (!card) return;
 
-        let toDisplay = game.functions.colorByRarity(brickSplit[0], card.rarity) + "-" + brickSplit[1];
+        const toDisplay = game.functions.colorByRarity(brickSplit[0], card.rarity) + "-" + brickSplit[1];
 
         game.log(toDisplay);
     });
 
     game.log("\nCurrent deckcode output:");
-    let _deckcode = deckcode();
+    const _deckcode = deckcode();
 
     if (!_deckcode.error) {
         game.log("<bright:green>Valid deck!</bright:green>");
@@ -410,7 +410,7 @@ function showCards() {
 }
 
 function showRules() {
-    let configText = "### RULES ###";
+    const configText = "### RULES ###";
     game.log("#".repeat(configText.length));
     game.log(configText);
     game.log("#".repeat(configText.length));
@@ -454,7 +454,7 @@ function add(card: Card): boolean {
     if (!card.deckSettings) return true;
 
     Object.entries(card.deckSettings).forEach(setting => {
-        let [key, val] = setting;
+        const [key, val] = setting;
 
         config[key as keyof GameConfig] = val as any;
     });
@@ -471,18 +471,18 @@ function showDeck() {
     game.log(`Deck Size: <yellow>${deck.length}</yellow>\n`);
 
     // Why are we doing this? Can't this be done better?
-    let _cards: { [key: string]: [Card, number] } = {};
+    const _cards: { [key: string]: [Card, number] } = {};
 
     deck.forEach(c => {
         if (!_cards[c.name]) _cards[c.name] = [c, 0];
         _cards[c.name][1]++;
     });
 
-    let bricks: string[] = [];
+    const bricks: string[] = [];
 
     Object.values(_cards).forEach(c => {
-        let card = c[0];
-        let amount = c[1];
+        const card = c[0];
+        const amount = c[1];
 
         let viewed = "";
 
@@ -492,42 +492,42 @@ function showDeck() {
         bricks.push(viewed);
     });
 
-    let wall = game.functions.createWall(bricks, "-");
+    const wall = game.functions.createWall(bricks, "-");
 
     wall.forEach(brick => {
-        let brickSplit = brick.split("-");
+        const brickSplit = brick.split("-");
 
         // Replace '`' with '-'
         brickSplit[0] = brickSplit[0].replaceAll("`", "-");
 
-        let [nameAndAmount, id] = brickSplit;
+        const [nameAndAmount, id] = brickSplit;
 
         // Color name by rarity
-        let r = /^x\d+ /;
+        const r = /^x\d+ /;
 
         // Extract amount from name
         if (r.test(nameAndAmount)) {
             // Amount specified
-            let amount = nameAndAmount.split(r);
-            let card = findCard(nameAndAmount.replace(r, "").trim());
+            const amount = nameAndAmount.split(r);
+            const card = findCard(nameAndAmount.replace(r, "").trim());
             if (!card) return; // TODO: Maybe throw an error?
 
-            let name = game.functions.colorByRarity(amount[1], card.rarity);
+            const name = game.functions.colorByRarity(amount[1], card.rarity);
 
             game.log(`${r.exec(nameAndAmount)}${name}-${id}`);
             return;
         }
 
-        let card = findCard(nameAndAmount.trim());
+        const card = findCard(nameAndAmount.trim());
         if (!card) return;
 
-        let name = game.functions.colorByRarity(nameAndAmount, card.rarity);
+        const name = game.functions.colorByRarity(nameAndAmount, card.rarity);
 
         game.log(`${name}-${id}`);
     });
 
     game.log("\nCurrent deckcode output:");
-    let _deckcode = deckcode();
+    const _deckcode = deckcode();
     if (!_deckcode.error) {
         game.log("<bright:green>Valid deck!</bright:green>");
         game.log(_deckcode.code);
@@ -535,10 +535,10 @@ function showDeck() {
 }
 
 function deckcode(parseVanillaOnPseudo = false) {
-    let _deckcode = game.functions.deckcode.export(deck, chosenClass, runes);
+    const _deckcode = game.functions.deckcode.export(deck, chosenClass, runes);
 
     if (_deckcode.error) {
-        let error = _deckcode.error;
+        const error = _deckcode.error;
 
         let log = "<yellow>WARNING: ";
         switch (error.msg) {
@@ -628,7 +628,7 @@ function help() {
 function getCardArg(cmd: string, callback: (card: Card) => boolean, errorCallback: () => void): boolean {
     let times = 1;
 
-    let cmdSplit = cmd.split(" ");
+    const cmdSplit = cmd.split(" ");
     cmdSplit.shift();
 
     // Get x2 from the cmd
@@ -668,8 +668,8 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         return handleCmds(`${settings.commands.default} ${cmd}`);
     }
 
-    let args = cmd.split(" ");
-    let name = args.shift()?.toLowerCase();
+    const args = cmd.split(" ");
+    const name = args.shift()?.toLowerCase();
     if (!name) {
         game.input("<red>Invalid command.</red>\n");
         return false;
@@ -698,7 +698,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
             return false;
         }
 
-        let correctClass = game.functions.validateClasses([heroClass], chosenClass);
+        const correctClass = game.functions.validateClasses([heroClass], chosenClass);
         if (!correctClass) {
             game.input(`<yellow>Class '${heroClass}' is a different class. To see these cards, please switch class from '${chosenClass}' to '${heroClass}' to avoid confusion.</yellow>\n`);
             return false;
@@ -707,7 +707,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         settings.view.class = heroClass as CardClass;
     }
     else if (name === "deckcode") {
-        let _deckcode = deckcode(true);
+        const _deckcode = deckcode(true);
 
         let toPrint = _deckcode.code + "\n";
         if (_deckcode.error && !_deckcode.error.recoverable) toPrint = "";
@@ -732,7 +732,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         settings.view.type = settings.view.type == "cards" ? "deck" : "cards";
     }
     else if (name === "import") {
-        let _deckcode = game.input("Please input a deckcode: ");
+        const _deckcode = game.input("Please input a deckcode: ");
 
         let _deck = game.functions.deckcode.import(plr, _deckcode);
         if (!_deck) return false;
@@ -757,8 +757,8 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         _deck.forEach(c => handleCmds(`add ${game.interact.getDisplayName(c)}`));
     }
     else if (name === "class") {
-        let _runes = runes;
-        let newClass = askClass();
+        const _runes = runes;
+        const newClass = askClass();
 
         if (newClass == chosenClass && runes == _runes) {
             game.input("<yellow>Your class was not changed</yellow>\n");
@@ -775,14 +775,14 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
             return false;
         }
 
-        let commandSplit = game.lodash.last(settings.commands.undoableHistory)?.split(" ");
+        const commandSplit = game.lodash.last(settings.commands.undoableHistory)?.split(" ");
         if (!commandSplit) {
             game.input("<red>Could not find anything to undo. This is a bug.</red>\n");
             return false;
         }
 
-        let args = commandSplit.slice(1);
-        let command = commandSplit[0];
+        const args = commandSplit.slice(1);
+        const command = commandSplit[0];
 
         let reverse;
 
@@ -802,7 +802,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
     else if (name === "set" && args[0] === "warning") {
         // Shift since the first element is "warning"
         args.shift();
-        let key = args[0];
+        const key = args[0];
 
         if (!Object.keys(warnings).includes(key)) {
             game.input(`<red>'${key}' is not a valid warning!</red>\n`);
@@ -816,7 +816,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
             newState = !warnings[key];
         }
         else {
-            let val = args[1];
+            const val = args[1];
 
             if (["off", "disable", "false", "no", "0"].includes(val)) newState = false;
             else if (["on", "enable", "true", "yes", "1"].includes(val)) newState = true;
@@ -857,7 +857,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
             return false;
         }
 
-        let setting = args[0];
+        const setting = args[0];
 
         switch (setting) {
             case "format":
@@ -895,7 +895,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
                 }
 
                 if (!["add", "remove", "view"].includes(args[0])) return false;
-                let cmd = args[0];
+                const cmd = args[0];
 
                 settings.commands.default = cmd;
                 game.log(`Set default command to: <yellow>${cmd}</yellow>`);

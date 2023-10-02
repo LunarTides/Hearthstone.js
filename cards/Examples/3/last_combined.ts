@@ -33,8 +33,8 @@ export const blueprint: Blueprint = {
         if (turns > 10) turns = 10;
 
         // `turns` % 2 will always return 0 if it is an even number, and always return 1 if it is an odd number.
-        let even = (turns % 2 == 0);
-        let manathirst = self.manathirst(7);
+        const even = (turns % 2 == 0);
+        const manathirst = self.manathirst(7);
 
         // If the turn counter is an even number or the manathirst is fullfilled, clear the condition.
         return even || manathirst;

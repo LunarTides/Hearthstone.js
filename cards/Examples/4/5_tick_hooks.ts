@@ -26,7 +26,7 @@ export const blueprint: Blueprint = {
         // This returns a function that, when called, will remove the hook
         // You are given the key and value of the event, but i don't think you will need them for tick hooks,
         // since they are supposed to not be (dependent on / specific to certain) events, but you are free to use them if you want.
-        let unhook = game.functions.hookToTick((key, _unknownVal) => {
+        const unhook = game.functions.hookToTick((key, _unknownVal) => {
             plr.hand.forEach(c => {
                 if (c.enchantmentExists("-1 cost", self)) return;
 

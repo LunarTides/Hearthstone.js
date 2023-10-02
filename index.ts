@@ -18,7 +18,7 @@ function userInputLoop(prompt: string, exitCharacter: string | null, callback: (
     while (true) {
         watermark();
 
-        let user = game.input(prompt);
+        const user = game.input(prompt);
         if (!user) continue;
 
         if (game.interact.shouldExit(user) || user[0].toLowerCase() === exitCharacter?.toLowerCase()) break;
@@ -29,12 +29,12 @@ function userInputLoop(prompt: string, exitCharacter: string | null, callback: (
 
 function cardCreator() {
     userInputLoop("Create a (C)ustom Card, Import a (V)anilla Card, Go (B)ack: ", "b", (input) => {
-        let type = input[0].toLowerCase();
+        const type = input[0].toLowerCase();
 
         game.interact.cls();
 
         if (type === "v") {
-            let [_, error] = game.functions.getVanillaCards();
+            const [_, error] = game.functions.getVanillaCards();
 
             if (error) {
                 watermark();

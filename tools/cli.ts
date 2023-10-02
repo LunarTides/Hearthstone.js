@@ -12,8 +12,8 @@ import { CCType } from "./cardcreator/lib.js";
 export function main(userInputLoop: (prompt: string, exitCharacter: string | null, callback: (input: string) => any) => any) {
     // Common card creator variant stuff
     const doCardCreatorVariant = (usedOptions: string[], args: string[], callback: (debug: boolean, overrideType?: CCType) => any) => {
-        let doDryRun = usedOptions.includes("--dry-run");
-        let doCCType = usedOptions.includes("--cc-type");
+        const doDryRun = usedOptions.includes("--dry-run");
+        const doCCType = usedOptions.includes("--cc-type");
 
         let ccType: CCType | undefined;
 
@@ -34,30 +34,30 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | nul
     // Main loop
     userInputLoop("> ", null, (input) => {
         let args = input.split(" ");
-        let name = args.shift()?.toLowerCase();
+        const name = args.shift()?.toLowerCase();
         if (!name) {
             throw new Error("Name is undefined. This should never happen.");
         }
 
         // Options - Long, short
-        let cmdOptions = [
+        const cmdOptions = [
             ["--dry-run", "-n"],
             ["--cc-type", "-t"]
         ];
 
         // Parse args
-        let usedOptions: string[] = [];
+        const usedOptions: string[] = [];
 
         // Clone the args. Kinda hacky.
-        let parsedArgs = JSON.parse(`[${args.map(arg => `"${arg.replaceAll(`"`, `'`)}"`)}]`);
+        const parsedArgs = JSON.parse(`[${args.map(arg => `"${arg.replaceAll(`"`, `'`)}"`)}]`);
         parsedArgs.forEach((arg: string) => {
             // Parse -dt
             if (/^-\w\w+/.test(arg)) {
-                let allArgs = arg.split("");
+                const allArgs = arg.split("");
                 allArgs.shift();
 
                 allArgs.forEach(a => {
-                    let option = cmdOptions.find(option => option.includes("-" + a))?.[0];
+                    const option = cmdOptions.find(option => option.includes("-" + a))?.[0];
                     if (!option) return;
 
                     usedOptions.push(option);
@@ -68,7 +68,7 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | nul
             }
 
             // Parse -d or --dry-run
-            let option = cmdOptions.find(option => option.includes(arg))?.[0];
+            const option = cmdOptions.find(option => option.includes(arg))?.[0];
             if (!option) return;
 
             usedOptions.push(option);
@@ -123,7 +123,7 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | nul
                 // Only include args with an '=' in it.
                 args = args.filter(arg => arg.includes("="));
 
-                let blueprint: Blueprint = {} as Blueprint;
+                const blueprint: Blueprint = {} as Blueprint;
                 args.forEach(arg => {
                     let [key, val] = arg.split("=");
 
@@ -154,7 +154,7 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | nul
             src.main();
         }
         else if (name == "script") {
-            let name = args[0];
+            const name = args[0];
             if (!name) {
                 game.logError("<red>Invalid script name!</red>");
                 game.input();

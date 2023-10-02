@@ -21,7 +21,7 @@ export const blueprint: Blueprint = {
 
         // The turn counter goes up at the beginning of each player's turn.
         // So we devide the number by 2 and round the result up in order to get a more traditional turn count.
-        let turns = Math.ceil(game.turns / 2);
+        const turns = Math.ceil(game.turns / 2);
 
         plr.gainMana(turns);
     },
@@ -32,7 +32,7 @@ export const blueprint: Blueprint = {
         // All `{1}` will be replaced by 'haha lol'
         // All `{next thing is}` will be replaced by 'The next thing is:'
         // The `{placeholder without replacement}` doesn't have a replacement, so it will remain '{placeholder without replacement}'
-        let turns = Math.ceil(game.turns / 2);
+        const turns = Math.ceil(game.turns / 2);
 
         // Here we use static placeholders. Static placeholders are placeholders that don't change. For example, `{1}` here is a static placeholder since you can just add `haha lol`
         // to the description and it wouldn't change anything.
