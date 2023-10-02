@@ -101,7 +101,7 @@ const cardTypeFunctions = {
             text: _card.text,
             cost: _card.cost,
             type: _card.type,
-            tribe: tribe,
+            tribe,
             classes: _card.classes,
             rarity: _card.rarity,
             runes: _card.runes,

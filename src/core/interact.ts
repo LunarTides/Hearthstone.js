@@ -1667,6 +1667,8 @@ export const interact = {
 
         // Attack
         doStat((player: Player) => {
+            // If no players have any attack, don't show the attack.
+            if (game.player1.attack <= 0 && game.player2.attack <= 0) return ["", 0];
             return [`Attack: <bright:green>${player.attack}</bright:green>`, 0];
         });
 
