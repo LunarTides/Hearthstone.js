@@ -967,6 +967,27 @@ ${mainContent}
     },
 
     /**
+     * Tries to compile the project
+     * 
+     * @returns If the compilation was successful 
+     */
+    tryCompile(): boolean {
+        try {
+            let error = this.runCommand("npx tsc");
+            if (error instanceof Error) throw error;
+
+            return true;
+        } catch (err) {
+            // Status 2 means compiler error
+            if (err.status === 2) {
+                return false;
+            } else {
+                throw err;
+            }
+        }
+    },
+
+    /**
      * Returns an AI Error with the provided information.
      *
      * @param code The function where the error occurred.

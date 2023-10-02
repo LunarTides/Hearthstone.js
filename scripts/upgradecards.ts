@@ -118,18 +118,11 @@ function main() {
     }
 
     game.log("Trying to compile...");
-    try {
-        let error = game.functions.runCommand("npx tsc");
-        if (error instanceof Error) throw error;
 
+    if (game.functions.tryCompile()) {
         game.log("<bright:green>Success!</bright:green>");
-    } catch (err) {
-        // If the error code is 2, warn the user.
-        if (err.status === 2) {
-            game.logError("<yellow>WARNING: Compiler error occurred. Please fix the errors in the card.</yellow>");
-        } else {
-            throw err;
-        }
+    } else {
+        game.logError("<yellow>WARNING: Compiler error occurred. Please fix the errors in the card.</yellow>");
     }
 
     game.log("Done");
