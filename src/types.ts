@@ -2,7 +2,7 @@
  * Types
  * @module Types
  */
-import { Card, Game, Player } from "./internal.js";
+import { Card, Player } from "./internal.js";
 
 /**
  * Ai scored card

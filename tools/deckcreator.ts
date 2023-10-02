@@ -5,7 +5,7 @@
 import util from "util";
 
 import { Card, createGame } from "../src/internal.js";
-import { Blueprint, CardClass, CardClassNoNeutral, GameConfig } from "../src/types.js";
+import { CardClass, CardClassNoNeutral, GameConfig } from "../src/types.js";
 
 const { game, player1: plr, player2 } = createGame();
 

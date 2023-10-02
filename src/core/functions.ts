@@ -26,7 +26,7 @@ import { fileURLToPath } from "url";
 import { doImportCards, generateCardExports } from "../helper/cards.js";
 
 import { Player, Card } from "../internal.js";
-import { Blueprint, CardClass, CardClassNoNeutral, CardLike, CardRarity, EventKey, EventListenerCallback, FunctionsExportDeckError, FunctionsValidateCardReturn, MinionTribe, QuestCallback, Target, TickHookCallback, VanillaCard } from "../types.js";
+import { CardClass, CardClassNoNeutral, CardLike, CardRarity, EventKey, EventListenerCallback, FunctionsExportDeckError, FunctionsValidateCardReturn, MinionTribe, QuestCallback, Target, TickHookCallback, VanillaCard } from "../types.js";
 import { validateBlueprint } from "../helper/validator.js";
 import { format } from "util";
 
