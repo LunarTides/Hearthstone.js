@@ -6,6 +6,7 @@
 
 import { Dirent } from "fs";
 import { createGame } from "../src/internal.js";
+import { generateCardExports } from "../src/helper/cards.js";
 
 const { game, player1, player2 } = createGame();
 
@@ -109,6 +110,7 @@ function main() {
 
     // Upgrade all cards
     game.functions.searchCardsFolder(upgradeCard, undefined, ".js");
+    generateCardExports();
 
     // Remove the dist folder
     if (process.platform === "win32") {
