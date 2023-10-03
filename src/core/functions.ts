@@ -698,6 +698,22 @@ export const functions = {
     },
 
     /**
+     * Confines the path specified to the Hearthstone.js folder.
+     * There are no known ways to bypass this.
+     */
+    fsRestrictPath(path: string): string {
+        path = path.replaceAll("\\", "/");
+        path = path.replaceAll(this.dirname(), "");
+        // Prevent '..' usage
+        path = path.replaceAll("../", "");
+        path = path.replaceAll("..", "");
+
+        path = this.dirname() + path;
+
+        return path;
+    },
+
+    /**
      * Writes a file to path. Please use this instead of `fs.writeFileSync`.
      * 
      * # Examples
@@ -706,9 +722,9 @@ export const functions = {
      * // Writes "100" to "(path to folder where Hearthstone.js is)/Hearthstone.js/cards/.latestId"
      * ```
      */
-    writeFile(path: string, content: string) {
-        path = path.replace(this.dirname(), "");
-        return fsWriteFileSync(this.dirname() + path, content);
+    writeFile(_path: string, content: string) {
+        let path = this.fsRestrictPath(_path);
+        return fsWriteFileSync(path, content);
     },
 
     /**
@@ -720,9 +736,9 @@ export const functions = {
      * // Reads from "(path to folder where Hearthstone.js is)/Hearthstone.js/cards/.latestId"
      * ```
      */
-    readFile(path: string) {
-        path = path.replace(this.dirname(), "");
-        return fsReadFileSync(this.dirname() + path, { encoding: "utf8" });
+    readFile(_path: string) {
+        let path = this.fsRestrictPath(_path);
+        return fsReadFileSync(path, { encoding: "utf8" });
     },
 
     /**
@@ -734,9 +750,9 @@ export const functions = {
      * // Deletes "(path to folder where Hearthstone.js is)/Hearthstone.js/cards/.latestId"
      * ```
      */
-    deleteFile(path: string) {
-        path = path.replace(this.dirname(), "");
-        return fsUnlinkSync(this.dirname() + path);
+    deleteFile(_path: string) {
+        let path = this.fsRestrictPath(_path);
+        return fsUnlinkSync(path);
     },
 
     /**
@@ -748,9 +764,9 @@ export const functions = {
      * // Returns if the file at "(path to folder where Hearthstone.js is)/Hearthstone.js/cards/.latestId" exists.
      * ```
      */
-    existsFile(path: string) {
-        path = path.replace(this.dirname(), "");
-        return fsExistsSync(this.dirname() + path);
+    existsFile(_path: string) {
+        let path = this.fsRestrictPath(_path);
+        return fsExistsSync(path);
     },
 
     /**
@@ -762,9 +778,9 @@ export const functions = {
      * // Reads the folder at "(path to folder where Hearthstone.js is)/Hearthstone.js/cards"
      * ```
      */
-    readDirectory(path: string): fsDirent[] {
-        path = path.replace(this.dirname(), "");
-        return fsReadDirSync(this.dirname() + path, { withFileTypes: true });
+    readDirectory(_path: string): fsDirent[] {
+        let path = this.fsRestrictPath(_path);
+        return fsReadDirSync(path, { withFileTypes: true });
     },
 
     /**
@@ -776,9 +792,9 @@ export const functions = {
      * // Creates the directory "(path to folder where Hearthstone.js is)/Hearthstone.js/cards"
      * ```
      */
-    makeDirectory(path: string, recursive = false) {
-        path = path.replace(this.dirname(), "");
-        return fsMkDirSync(this.dirname() + path, { recursive });
+    makeDirectory(_path: string, recursive = false) {
+        let path = this.fsRestrictPath(_path);
+        return fsMkDirSync(path, { recursive });
     },
 
     /**
@@ -2157,9 +2173,7 @@ ${mainContent}
      * @param path By default, this is the cards folder (not in dist)
      * @param extension The extension to look for in cards. By default, this is ".ts"
      */
-    searchCardsFolder(callback: (path: string, content: string, file: fsDirent) => void, path?: string, extension = ".ts") {
-        if (!path) path = this.dirname() + "/cards";
-
+    searchCardsFolder(callback: (path: string, content: string, file: fsDirent) => void, path: string = "/cards", extension = ".ts") {
         path = path.replaceAll("\\", "/");
 
         this.readDirectory(path).forEach(file => {
