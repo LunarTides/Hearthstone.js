@@ -1,3 +1,35 @@
+## v2.0.0-beta.2 (2023-10-03)
+
+### Feat
+
+- add back galakrond cards
+- **cclib**: add blueprint validation. try to compile
+- add traditional turn counter function
+- **cclib**: generate card exports on create
+- add watch in makefile
+
+### Fix
+
+- **uc**: actually replace regex. replace all game params
+- **ccc**: use correct tribe instead of using _card
+
+### Refactor
+
+- split idscript. use idscript in src index
+- **uc**: generate exports on completion
+- add common function for fs functions
+- use const instead of let
+- rename galakrond cards to their class
+- rename dry-run short command to '-n'
+- hide player attack stat if no attack
+- move trying to compile to `tryCompile`
+- remove optional fields from blueprints
+- **uc**: remove game parameter on upgrade
+- remove all `game = globalThis.game`
+- remove `game` parameter from ability
+- put event manager into its own file
+- **cclib**: make overridePath implicitly use dirname
+
 ## v2.0.0-beta.1 (2023-09-26)
 
 ### BREAKING CHANGE
@@ -102,3 +134,23 @@
 - **cclib**: refactored getCardAbility
 - **cclib**: renamed function to ability
 - Refactored dormant a bit
+
+## v2.0.0-beta.0 (2023-09-19)
+
+## v1.6.2 (2023-08-28)
+
+## v1.6.1 (2023-08-21)
+
+## v1.6.0 (2023-08-05)
+
+## v1.5.1 (2023-06-09)
+
+## v1.5.0 (2023-06-09)
+
+## v1.4.0 (2023-05-14)
+
+## v1.3.0 (2023-05-14)
+
+## v1.2.0 (2023-05-14)
+
+## v0.1.0 (2023-05-15)
