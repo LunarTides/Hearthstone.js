@@ -1118,7 +1118,7 @@ const playCard = {
         if (mechs.length <= 0) return false;
 
         // I'm using while loops to prevent a million indents
-        const mech = game.interact.selectCardTarget("Which minion do you want game to Magnetize to:", null, "friendly");
+        const mech = game.interact.selectCardTarget("Which minion do you want this card to Magnetize to:", null, "friendly");
         if (!mech) return false;
 
         if (!mech.tribe?.includes("Mech")) {
