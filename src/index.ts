@@ -7,12 +7,14 @@
  * @module Index
  */
 
+import { validate as validateIds } from "../scripts/id/lib.js";
 import { createGame } from "./internal.js";
 
 export function main() {
     const { game, player1, player2 } = createGame();
 
     game.interact.printName();
+    validateIds(false);
     warnAboutOutdatedCards();
 
     // Ask the players for deck codes.
