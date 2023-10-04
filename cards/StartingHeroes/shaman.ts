@@ -23,7 +23,7 @@ export const blueprint: Blueprint = {
         // Filter away totem cards that is already on the player's side of the board.
         totemCardNames.forEach(name => {
             // If the board already has a totem with this name, return
-            if (game.board[plr.id].some(m => m.name === name)) return
+            if (game.board[plr.id].some(m => m.name === name)) return;
 
             filteredTotemCardNames.push(name);
         });
@@ -48,22 +48,22 @@ export const blueprint: Blueprint = {
 
         const totemCardNames = ["Healing Totem", "Searing Totem", "Stoneclaw Totem", "Strength Totem"];
         const checkForTotemCard = (amount: number) => {
-            return game.board[plr.id].filter(card => totemCardNames.includes(card.name)).length >= amount;
+            return game.board[plr.id].filter(card => totemCardNames.includes(card.name)).length === amount;
         }
 
         // There should be 0 totem cards on the board
         assert(() => checkForTotemCard(0));
 
-        for (let index = 0; index <= totemCardNames.length + 1; index++) {
+        for (let index = 1; index <= totemCardNames.length + 1; index++) {
             self.activate("heropower");
 
-            // If all totem cards are on the board
+            // If all totem cards are on the board, it shouldn't summon a new one
             if (index > totemCardNames.length) {
                 assert(() => checkForTotemCard(index - 1));
                 continue;
             }
 
-            // There should be n totem cards on the board
+            // There should be 'index' totem cards on the board
             assert(() => checkForTotemCard(index));
         }
 

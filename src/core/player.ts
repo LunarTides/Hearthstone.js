@@ -511,6 +511,11 @@ export class Player {
 
     // Stats
 
+    addArmor(amount: number): boolean {
+        this.armor += amount;
+        return true;
+    }
+
     /**
      * Increases the player's attack by `amount`.
      * 

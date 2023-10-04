@@ -493,7 +493,7 @@ export type BlueprintWithOptional = Blueprint & {
 /**
  * The ability of a card.
  */
-export type Ability = (plr: Player, self: Card, key?: EventKey, val?: UnknownEventValue) => any;
+export type Ability = (plr: Player, self: Card, key?: EventKey, val?: UnknownEventValue, eventPlayer?: Player) => any;
 
 /**
  * The event listener callback return value.
@@ -502,7 +502,7 @@ export type EventListenerMsg = boolean | "destroy" | "reset";
 /**
  * The event listener callback function.
  */
-export type EventListenerCallback = (val: UnknownEventValue) => EventListenerMsg;
+export type EventListenerCallback = (val: UnknownEventValue, eventPlayer: Player) => EventListenerMsg;
 
 /**
  * A card-like object.
@@ -516,7 +516,7 @@ export type Target = Card | Player;
 /**
  * Callback for tick hooks. Used in hookToTick.
  */
-export type TickHookCallback = (key?: EventKey, val?: UnknownEventValue) => void;
+export type TickHookCallback = (key: EventKey, val: UnknownEventValue, eventPlayer: Player) => void;
 
 /**
  * AI history object.

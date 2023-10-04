@@ -129,7 +129,7 @@ export class Game {
     /**
      * The event listeners that are attached to the game currently.
      */
-    eventListeners: {[key: number]: (key: EventKey, val: UnknownEventValue) => void} = {};
+    eventListeners: {[key: number]: (key: EventKey, val: UnknownEventValue, eventPlayer: Player) => void} = {};
 
     /**
      * Whether or not the game is currently accepting input from the user.
@@ -304,9 +304,9 @@ export class Game {
      * 
      * @returns Return values of all the executed functions
      */
-    triggerEventListeners(key: EventKey, val: UnknownEventValue): any[] {
+    triggerEventListeners(key: EventKey, val: UnknownEventValue, player: Player): any[] {
         const ret: any[] = [];
-        Object.values(this.eventListeners).forEach(i => ret.push(i(key, val)));
+        Object.values(this.eventListeners).forEach(i => ret.push(i(key, val, player)));
         return ret;
     }
 
@@ -547,7 +547,7 @@ export class Game {
                 // in its passive.
                 // So it looks like this:
                 // minion.activate(key, reason, minion);
-                minion.activate("passive", "reborn", m);
+                minion.activate("passive", "reborn", m, this.player);
 
                 sparedMinions.push(minion);
             });

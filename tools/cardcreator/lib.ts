@@ -102,7 +102,7 @@ export function create(creatorType: CCType, cardType: CardType, blueprint: Bluep
     // Here it creates a default function signature
     const isPassive = ability.toLowerCase() == "passive";
     let triggerText = ")";
-    if (isPassive) triggerText = ", key, _unknownValue)";
+    if (isPassive) triggerText = ", key, _unknownValue, eventPlayer)";
     
     let extraPassiveCode = "";
     if (isPassive) extraPassiveCode = `
@@ -142,7 +142,7 @@ ${runes}${keywords}
     delete card.keywords;
 
     // Normal ability
-    // Example 1: '\n\n    passive(plr, self, key, _unknownValue) {\n        // Your battlecries trigger twice.\n        ...\n    }',
+    // Example 1: '\n\n    passive(plr, self, key, _unknownValue, eventPlayer) {\n        // Your battlecries trigger twice.\n        ...\n    }',
     // Example 2: '\n\n    battlecry(plr, self) {\n        // Deal 2 damage to the opponent.\n        \n    }'
     if (ability) ability = `
     

@@ -910,7 +910,7 @@ export class Card {
     // TODO: Is this needed anymore?
     activateBattlecry(...args: any): any[] | -1 | false {
         // Trigger the card's passive first, so cards that get played immediately gets their passive triggered before their battlecry
-        this.activate("passive", "battlecry", this, game.turns);
+        this.activate("passive", "battlecry", this, this.plr);
 
         // Trigger the battlecry
         return this.activate("battlecry", ...args);

@@ -15,7 +15,7 @@ export const blueprint: Blueprint = {
     uncollectible: true,
     id: 64,
 
-    passive(plr, self, key, _unknownValue) {
+    passive(plr, self, key, _unknownValue, eventPlayer) {
         // Whenever a minion dies, Resurrect it with 1/1 stats.
 
         // If the key is for a different event, stop the function.

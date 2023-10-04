@@ -86,14 +86,14 @@ export const eventFunctions = {
             return true;
         }
 
-        game.eventListeners[id] = (_key, _unknownVal) => {
+        game.eventListeners[id] = (_key, _unknownVal, eventPlayer) => {
             // Im writing it like this to make it more readable
 
             // Validate key. If key is empty, match any key.
             if (key === "" || _key as EventKey === key) {}
             else return;
 
-            const msg = callback(_unknownVal);
+            const msg = callback(_unknownVal, eventPlayer);
             times++;
 
             switch (msg) {

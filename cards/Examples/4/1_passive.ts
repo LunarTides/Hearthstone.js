@@ -20,7 +20,7 @@ export const blueprint: Blueprint = {
 
     // Note the new `key` and `_unknownVal` arguments.
     // These are only used in the `passive` and `handpassive` abilities.
-    passive(plr, self, key, _unknownVal) {
+    passive(plr, self, key, _unknownVal, eventPlayer) {
         // Your battlecries trigger twice.
         // ^ In order to do this, we wait until a minion is played, then manually trigger its battlecry.
 
@@ -30,6 +30,7 @@ export const blueprint: Blueprint = {
         // The card can then choose to only do something if the correct event was broadcast. (By looking at the `key` of the event.)
 
         // `key` is the key of the event. Look in `src/types.ts` `EventKey` type for all keys.
+        // `eventPlayer` is the player that triggered the event.
         // `_unknownVal` is some additional information about the event. The type of this variable is different for each `key`, which is why it's unknown.
         // We will narrow the type of `_unknownVal` once we know what `key` is.
         //
@@ -40,9 +41,9 @@ export const blueprint: Blueprint = {
         // in order for refunding to not trigger the event, so we can trigger the minion's battlecry again.
         // We don't refund here, since refunding from passives is not supported, and currently doesn't do anything.
         // But if i add refunding from passives, it would probably break the card in some way, so just wait until it is supported and you know what it does before using it.
-        // We do `!(key === "PlayCard" && game.player === plr)` instead of `key !== "PlayCard" || game.player !== plr`` for clarity.
+        // We do `!(key === "PlayCard" && eventPlayer === plr)` instead of `key !== "PlayCard" || eventPlayer !== plr`` for clarity.
         // We only want YOUR battlecries to trigger twice. (`game.player` is the current player, so the player that triggered the event)
-        if (!(key === "PlayCard" && game.player === plr)) return;
+        if (!(key === "PlayCard" && eventPlayer === plr)) return;
 
         // Since we now know that the key is `PlayCard`, we can retrieve the correct value by doing this.
         const val = _unknownVal as EventValue<typeof key>;

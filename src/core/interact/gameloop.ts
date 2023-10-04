@@ -782,7 +782,7 @@ export const GameLoopInteract = {
      * @returns Success | The return value of doTurnLogic
      */
     doTurn(): boolean | string | GamePlayCardReturn {
-        game.events.tick("GameLoop", "doTurn");
+        game.events.tick("GameLoop", "doTurn", game.player);
 
         if (game.player.ai) {
             let input

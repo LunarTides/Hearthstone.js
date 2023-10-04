@@ -9,8 +9,8 @@ interface IEventManager {
     suppressed: EventKey[];
     stats: {[key: string]: [number, number]};
 
-    tick(key: EventKey, val: UnknownEventValue): boolean;
-    cardUpdate(key: EventKey, val: UnknownEventValue): boolean;
+    tick(key: EventKey, val: UnknownEventValue, player: Player): boolean;
+    cardUpdate(key: EventKey, val: UnknownEventValue, player: Player): boolean;
     questUpdate(questsName: "secrets" | "sidequests" | "quests", key: EventKey, val: UnknownEventValue, plr: Player): boolean;
     broadcast(key: EventKey, val: UnknownEventValue, plr: Player, updateHistory?: boolean): boolean;
     addHistory(key: EventKey, val: UnknownEventValue, plr: Player): void;
@@ -62,16 +62,16 @@ export const EventManager: IEventManager = {
      *
      * @param key The key of the event that triggered the tick
      * @param val The value of the event that triggered the tick
+     * @param player The player that triggered the tick
      */
-    tick(key, val) {
+    tick(key, val, player) {
         // The code in here gets executed very often
         // So don't do any expensive stuff here
 
         // Infuse
         if (key === "KillMinion") {
             // TODO: Rewrite and move this code
-            val = val as EventValue<typeof key>;
-            val.plr.hand.forEach(p => {
+            player.hand.forEach(p => {
                 if (!p.infuse || p.infuse <= 0) return;
 
                 p.infuse -= 1;
@@ -97,18 +97,18 @@ export const EventManager: IEventManager = {
                 // Just in case. Remove for small performance boost
                 card.applyEnchantments();
 
-                card.activate("handtick", key, val);
+                card.activate("handtick", key, val, player);
                 if (card.cost < 0) card.cost = 0;
             });
 
             game.board[i].forEach(card => {
                 if (card.type === "Minion" && card.getHealth() <= 0) return;
 
-                card.activate("tick", key, val);
+                card.activate("tick", key, val, player);
             });
         }
 
-        this.tickHooks.forEach(hook => hook(key, val));
+        this.tickHooks.forEach(hook => hook(key, val, player));
         return true;
     },
 
@@ -117,15 +117,16 @@ export const EventManager: IEventManager = {
      *
      * @param key The key of the event
      * @param val The value of the event
+     * @param player The player that triggered the event
      *
      * @returns Success
      */
-    cardUpdate(key, val) {
+    cardUpdate(key, val, player) {
         game.board.forEach(p => {
             p.forEach(m => {
                 // This function gets called directly after a minion is killed.
                 if (m.getHealth() <= 0) return;
-                m.activate("passive", key, val);
+                m.activate("passive", key, val, player);
             });
         });
 
@@ -134,18 +135,18 @@ export const EventManager: IEventManager = {
 
             // Activate spells in the players hand
             plr.hand.forEach(c => {
-                c.activate("handpassive", key, val);
+                c.activate("handpassive", key, val, player);
 
                 if (c.type != "Spell") return;
-                c.activate("passive", key, val);
+                c.activate("passive", key, val, player);
             });
 
             const wpn = plr.weapon;
             if (!wpn) continue;
-            wpn.activate("passive", key, val);
+            wpn.activate("passive", key, val, player);
         }
 
-        game.triggerEventListeners(key, val);
+        game.triggerEventListeners(key, val, player);
         return true;
     },
 
@@ -196,7 +197,7 @@ export const EventManager: IEventManager = {
      * @returns Success
      */
     broadcast(key, val, plr, updateHistory = true) {
-        this.tick(key, val);
+        this.tick(key, val, plr);
 
         if (updateHistory) this.addHistory(key, val, plr);
 
@@ -207,7 +208,7 @@ export const EventManager: IEventManager = {
         if (!this.events[key]) this.events[key] = [[["GameLoop", game.turns]], [["GameLoop", game.turns]]];
         this.events[key]![plr.id].push([val, game.turns]);
 
-        this.cardUpdate(key, val);
+        this.cardUpdate(key, val, plr);
 
         this.questUpdate("secrets",    key, val, plr.getOpponent());
         this.questUpdate("sidequests", key, val, plr);

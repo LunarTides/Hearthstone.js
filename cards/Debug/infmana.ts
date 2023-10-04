@@ -33,7 +33,7 @@ export const blueprint: Blueprint = {
         assert(() => plr.mana === 5);
 
         // Manually tick the game
-        game.events.tick("GameLoop", null);
+        game.events.tick("GameLoop", null, plr);
 
         assert(() => plr.mana === 10);
 

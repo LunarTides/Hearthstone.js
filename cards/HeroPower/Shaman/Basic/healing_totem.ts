@@ -15,11 +15,11 @@ export const blueprint: Blueprint = {
     uncollectible: true,
     id: 15,
 
-    passive(plr, self, key, val) {
+    passive(plr, self, key, val, eventPlayer) {
         // At the end of your turn, restore 1 Health to all friendly minions.
 
         // Only continue if the event that triggered this is the EndTurn event, and the player that triggered the event is this card's owner.
-        if (!(key === "EndTurn" && game.player === plr)) return;
+        if (!(key === "EndTurn" && eventPlayer === plr)) return;
 
         // Restore 1 Health to all friendly minions
         game.board[plr.id].forEach(minion => {

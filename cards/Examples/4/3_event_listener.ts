@@ -25,7 +25,7 @@ export const blueprint: Blueprint = {
         // The first argument is the key to listen for.
         // The second argument is a callback function.
         // The third argument is the event listeners' lifespan.
-        const destroy = game.functions.event.addListener("PlayCard", (_unknownVal) => {
+        const destroy = game.functions.event.addListener("PlayCard", (_unknownVal, eventPlayer) => {
             // This function will be run if the correct event was broadcast
 
             // addEventListener can't figure out the type of `val` by itself, so we have to do the same thing as with passives
@@ -34,7 +34,7 @@ export const blueprint: Blueprint = {
             // Only continue if the player that triggered the event is this card's owner and the played card is a minion and it is not this card
             // The `PlayCard` event gets triggered after this battlecry, remember? So we need to prevent it from calling this card's battlecry again.
             // The return value will be explained below
-            if (!(val.type === "Minion" && game.player === plr && val !== self)) return false;
+            if (!(val.type === "Minion" && eventPlayer === plr && val !== self)) return false;
 
             // Activate the battlecry
             val.activateBattlecry();

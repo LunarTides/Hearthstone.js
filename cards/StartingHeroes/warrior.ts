@@ -19,8 +19,7 @@ export const blueprint: Blueprint = {
         // Gain 2 Armor.
 
         // Give the player +2 armor.
-        // CARDTODO: Maybe there should be an `addArmor` function?
-        plr.armor += 2;
+        plr.addArmor(2);
     },
 
     test(plr, self) {

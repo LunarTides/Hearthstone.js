@@ -19,8 +19,7 @@ export const blueprint: Blueprint = {
         // Draw a card and take 2 damage.
 
         // Deal 2 damage to the player.
-        // CARDTODO: Should this use `game.attack(2, plr)` instead? Is the order correct?
-        plr.remHealth(2);
+        game.attack(2, plr);
         plr.drawCard();
     },
 
