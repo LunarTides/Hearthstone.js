@@ -381,7 +381,7 @@ export class Game {
     endGame(winner: Player): boolean {
         if (!winner) return false;
 
-        this.interact.printName();
+        this.interact.info.printName();
 
         this.input(`Player ${winner.name} wins!\n`);
 
@@ -1000,7 +1000,7 @@ const playCard = {
 
         if (player.ai) q = player.ai.trade(card);
         else {
-            interact.printAll(player);
+            interact.info.printAll(player);
             q = interact.yesNoQuestion(player, "Would you like to trade " + functions.color.fromRarity(card.displayName, card.rarity) + " for a random card in your deck?");
         }
 
@@ -1045,7 +1045,7 @@ const playCard = {
         // Warn the user that the condition is not fulfilled
         const warnMessage = "<yellow>WARNING: This card's condition is not fulfilled. Are you sure you want to play this card?</yellow>";
 
-        interact.printAll(player);
+        interact.info.printAll(player);
         const warn = interact.yesNoQuestion(player, warnMessage);
 
         if (!warn) return false;

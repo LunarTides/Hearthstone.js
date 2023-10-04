@@ -45,7 +45,7 @@ export const keywordFunctions = {
     adapt(minion: Card, prompt: string = "Choose One:", _values: string[][] = []): string | -1 {
         if (!minion) return -1;
 
-        game.interact.printAll(game.player);
+        game.interact.info.printAll(game.player);
 
         const possibleCards = [
             ["Crackling Shield", "Divine Shield"],

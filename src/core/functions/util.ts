@@ -148,7 +148,7 @@ export const utilFunctions = {
 
         // Grab the history of the game
         // handleCmds("history", echo, debug)
-        let history = game.interact.handleCmds("history", false, true);
+        let history = game.interact.gameLoop.handleCmds("history", false, true);
         if (typeof history !== "string") throw new Error("createLogFile history did not return a string.");
 
         // Strip the color codes from the history
@@ -157,7 +157,7 @@ export const utilFunctions = {
         // AI log
         // Do this so it can actually run '/ai'
         game.config.general.debug = true;
-        const aiHistory = game.interact.handleCmds("/ai", false);
+        const aiHistory = game.interact.gameLoop.handleCmds("/ai", false);
 
         let name = "Log";
         if (err) name = "Crash Log";

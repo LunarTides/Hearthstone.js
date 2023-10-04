@@ -25,6 +25,6 @@ export const blueprint: Blueprint = {
     battlecry(plr, self) {
         // Dredge.
 
-        game.interact.dredge();
+        game.interact.card.dredge();
     }
 }

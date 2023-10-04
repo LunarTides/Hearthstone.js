@@ -48,11 +48,11 @@ export const blueprint: Blueprint = {
 
         self.replacePlaceholders();
         assert(() => self.text === "Battlecry: Gain mana equal to the turn counter. (Currently {ph:0} placeholder {/ph}, {ph:1} placeholder {/ph}, {ph:0} placeholder {/ph}, {ph:next thing is} placeholder {/ph} {ph:10} placeholder {/ph}, {placeholder without replacement})");
-        assert(() => game.interact.doPlaceholders(self) === "Battlecry: Gain mana equal to the turn counter. (Currently 1, haha lol, 1, The next thing is: test, {placeholder without replacement})");
+        assert(() => game.interact.card.doPlaceholders(self) === "Battlecry: Gain mana equal to the turn counter. (Currently 1, haha lol, 1, The next thing is: test, {placeholder without replacement})");
 
         game.endTurn();
         game.endTurn();
 
-        assert(() => game.interact.doPlaceholders(self) === "Battlecry: Gain mana equal to the turn counter. (Currently 2, haha lol, 2, The next thing is: test, {placeholder without replacement})");
+        assert(() => game.interact.card.doPlaceholders(self) === "Battlecry: Gain mana equal to the turn counter. (Currently 2, haha lol, 2, The next thing is: test, {placeholder without replacement})");
     }
 }

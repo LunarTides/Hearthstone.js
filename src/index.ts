@@ -13,7 +13,7 @@ import { createGame } from "./internal.js";
 export function main() {
     const { game, player1, player2 } = createGame();
 
-    game.interact.printName();
+    game.interact.info.printName();
     validateIds(false);
     warnAboutOutdatedCards();
 
@@ -27,12 +27,12 @@ export function main() {
 
     game.startGame();
 
-    game.interact.mulligan(player1);
-    game.interact.mulligan(player2);
+    game.interact.card.mulligan(player1);
+    game.interact.card.mulligan(player2);
 
     try {
         // Game loop
-        while (game.running) game.interact.doTurn();
+        while (game.running) game.interact.gameLoop.doTurn();
     } catch (err) {
         // Create error report file
         game.functions.util.createLogFile(err);

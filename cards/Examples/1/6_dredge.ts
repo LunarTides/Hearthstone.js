@@ -18,7 +18,7 @@ export const blueprint: Blueprint = {
         // Dredge.
         
         // `game.interact` is an instance of the Interact object as defined in `src/interact.ts`.
-        game.interact.dredge();
+        game.interact.card.dredge();
     },
 
     // Ignore this
@@ -27,7 +27,7 @@ export const blueprint: Blueprint = {
 
         // Makes the player answer "1" to the next question
         plr.inputQueue = ["1"];
-        const card = game.interact.dredge();
+        const card = game.interact.card.dredge();
 
         // Check if the top card of the player's deck is the card that was dredged
         assert(() => game.lodash.last(plr.deck) === card);

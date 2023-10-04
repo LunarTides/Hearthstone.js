@@ -22,7 +22,7 @@ export const blueprint: Blueprint = {
         if (list.length <= 0) return;
 
         // Prompt a discover
-        const card = game.interact.discover("Discover a spell.", list);
+        const card = game.interact.card.discover("Discover a spell.", list);
         if (!card) return game.constants.REFUND;
 
         // Add the card to the player's hand

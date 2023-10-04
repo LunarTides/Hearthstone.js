@@ -148,8 +148,8 @@ function sortCards(_cards: Card[]) {
             let typeB;
 
             if (type == "name") {
-                typeA = game.interact.getDisplayName(a);
-                typeB = game.interact.getDisplayName(b);
+                typeA = a.displayName;
+                typeB = b.displayName;
             }
             else {
                 typeA = a.type;
@@ -188,7 +188,7 @@ function searchCards(_cards: Card[], sQuery: string) {
         const query = splitQuery[0].toLowerCase();
 
         _cards.forEach(c => {
-            const name = game.interact.getDisplayName(c).toLowerCase();
+            const name = c.displayName.toLowerCase();
             const text = c.text.toLowerCase();
 
             if (!name.includes(query) && !text.includes(query)) return;
@@ -378,7 +378,7 @@ function showCards() {
 
     const bricks: string[] = [];
     classCards.forEach(c => {
-        bricks.push(game.interact.getDisplayName(c) + " - " + c.id);
+        bricks.push(c.displayName + " - " + c.id);
     });
 
     const wall = game.functions.util.createWall(bricks, "-");
@@ -442,7 +442,7 @@ function findCard(card: string | number): Card | null {
     let _card: Card | null = null;
 
     Object.values(filteredCards).forEach(c => {
-        if (c.id == card || (typeof card === "string" && game.interact.getDisplayName(c).toLowerCase() == card.toLowerCase())) _card = c;
+        if (c.id == card || (typeof card === "string" && c.displayName.toLowerCase() == card.toLowerCase())) _card = c;
     });
 
     return _card!;
@@ -487,7 +487,7 @@ function showDeck() {
         let viewed = "";
 
         if (amount > 1) viewed += `x${amount} `;
-        viewed += game.interact.getDisplayName(card).replaceAll("-", "`") + ` - ${card.id}`;
+        viewed += card.displayName.replaceAll("-", "`") + ` - ${card.id}`;
 
         bricks.push(viewed);
     });
@@ -683,7 +683,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
     else if (name === "view") {
         // The callback function doesn't return anything, so we don't do anything with the return value of `getCardArg`.
         getCardArg(cmd, (card) => {
-            game.interact.viewCard(card);
+            game.interact.card.view(card);
             return true;
         }, () => {});
     }
@@ -754,7 +754,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         // causes a weird bug that makes modifying the deck impossible because removing a card
         // removes a completly unrelated card because javascript.
         // You can just set deck = functions.importDeck(), but doing it that way doesn't account for renathal or any other card that changes the config in any way since that is done using the add function.
-        _deck.forEach(c => handleCmds(`add ${game.interact.getDisplayName(c)}`));
+        _deck.forEach(c => handleCmds(`add ${c.displayName}`));
     }
     else if (name === "class") {
         const _runes = runes;

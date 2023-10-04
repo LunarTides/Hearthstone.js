@@ -37,18 +37,18 @@ function main() {
         }
 
         game.startGame();
-        game.interact.mulligan(player1);
-        game.interact.mulligan(player2);
+        game.interact.card.mulligan(player1);
+        game.interact.card.mulligan(player2);
 
         try {
-            while (game.running) game.interact.doTurn();
+            while (game.running) game.interact.gameLoop.doTurn();
         } catch(err) {
             // If it crashes, show the ai's actions, and the history of the game before actually crashing
             game.config.general.debug = true;
             game.functions.util.createLogFile(err);
 
-            game.interact.handleCmds("/ai");
-            game.interact.handleCmds("history", true, true);
+            game.interact.gameLoop.handleCmds("/ai");
+            game.interact.gameLoop.handleCmds("history", true, true);
 
             game.log("THE GAME CRASHED: LOOK ABOVE FOR THE HISTORY, AND THE AI'S LOGS.");
 

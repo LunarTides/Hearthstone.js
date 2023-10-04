@@ -23,7 +23,7 @@ export const blueprint: Blueprint = {
         // Dredge. Gain +1/+1.
 
         // Ordering is important. In the description it says that it dredges first, then adds +1/+1.
-        game.interact.dredge();
+        game.interact.card.dredge();
 
         self.addStats(1, 1);
     },

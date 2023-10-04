@@ -9,10 +9,15 @@ export { utilFunctions as _utilFunctions } from "./core/functions/util.js";
 export { eventFunctions as _eventFunctions } from "./core/functions/event.js";
 export { errorFunctions as _errorFunctions } from "./core/functions/error.js";
 
+// Interact
+export { CardInteract } from "./core/interact/card.js";
+export { InfoInteract } from "./core/interact/info.js";
+export { GameLoopInteract } from "./core/interact/gameloop.js";
+
 export * from "./core/game.js";
 export * from "./core/functions/index.js";
 export * from "./core/player.js";
-export * from "./core/interact.js";
+export * from "./core/interact/index.js";
 export * from "./core/card.js";
 export * from "./core/ai.js";
 export * from "./core/events.js";
