@@ -154,8 +154,9 @@ export const cardFunctions = {
      *
      * @returns Cards
      */
-    getAll(uncollectible: boolean = true, cards: CardLike[] = game.cards): Card[] {
-        return cards.filter(c => !c.uncollectible || !uncollectible).map(card => new Card(card.name, game.player));
+    getAll(uncollectible: boolean = true): Card[] {
+        if (game.cards.length <= 0) game.cards = game.blueprints.map(card => new Card(card.name, game.player));
+        return game.cards.filter(c => !c.uncollectible || !uncollectible);
     },
     
     /**
@@ -201,7 +202,7 @@ export const cardFunctions = {
     runBlueprintValidator() {
         // Validate the cards
         let valid = true;
-        game.cards.forEach(card => {
+        game.blueprints.forEach(card => {
             const errorMessage = validateBlueprint(card);
 
             // Success

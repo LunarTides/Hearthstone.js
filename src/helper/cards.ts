@@ -3,7 +3,7 @@ import * as cards from "../../cards/exports.js"
 import { createHash } from "crypto";
 
 export function doImportCards() {
-    game.cards = Object.values(cards) as Blueprint[];
+    game.blueprints = Object.values(cards) as Blueprint[];
 }
 
 export function generateCardExports() {

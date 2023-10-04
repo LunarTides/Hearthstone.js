@@ -81,11 +81,19 @@ export class Game {
     config = config;
 
     /**
+     * All of the blueprints cards that have been implemented so far.
+     * Don't use this if you don't know what you're doing.
+     * 
+     * Use `functions.getCards()` instead.
+     */
+    blueprints: Blueprint[] = [];
+
+    /**
      * All of the cards that have been implemented so far.
      * 
      * Use `functions.getCards()` instead.
      */
-    cards: Blueprint[] = [];
+    cards: Card[] = [];
 
     playCard = cards.play.play;
     summonMinion = cards.summon;

@@ -359,7 +359,7 @@ export class Card {
      */
     constructor(name: string, plr: Player) {
         // Get the blueprint from the cards list
-        const blueprint = game.cards.find(c => c.name == name);
+        const blueprint = game.blueprints.find(c => c.name == name);
         if (!blueprint) {
             throw new Error(`Could not find card with name ${name}`);
         }
@@ -418,7 +418,7 @@ export class Card {
      */
     doBlueprint(activate = true): void {
         // Reset the blueprint
-        this.blueprint = game.cards.find(c => c.name == this.name) || this.blueprint;
+        this.blueprint = game.blueprints.find(c => c.name == this.name) || this.blueprint;
 
         /*
         Go through all blueprint variables and
