@@ -291,7 +291,7 @@ ${config}
     },
 
     parseReplayFile(path: string) {
-        if (!game.functions.file.exists(path)) return false;
+        if (!game.functions.file.exists(path)) return new Error("File does not exist");
 
         let content = game.functions.file.read(path).trim();
         const contentSplit = content.split("\n");
@@ -302,7 +302,7 @@ ${config}
         const checksum = createHash("sha256").update(content).digest("hex") + "  " + filename;
 
         const matchingChecksum = checksum === game.lodash.last(contentSplit);
-        if (!matchingChecksum) return false;
+        if (!matchingChecksum) return new Error("Invalid checksum");
 
         // Checksum matches
         const header = contentSplit[1].trim();
@@ -339,9 +339,9 @@ ${config}
         return ["Input", val, player];
     },
 
-    replayFile(path: string) {
+    replayFile(path: string): Error | true {
         const parsed = this.parseReplayFile(path);
-        if (!parsed) return false;
+        if (parsed instanceof Error) return parsed;
 
         const { header, history, config } = parsed;
 
@@ -349,11 +349,11 @@ ${config}
         game.replaying = true;
 
         // TODO: Verify `header.version` using semver
-        if (header.logVersion !== "1") {
-            return false;
+        let expectedLogVersion = "1";
+        if (header.logVersion !== expectedLogVersion) {
+            return new Error(`Mismatch in log version. Expected: ${expectedLogVersion}, Found: ${header.logVersion}`);
         }
 
-        // TODO: Do more
         const parsedHistory = history.split("\n").map((l, i) => this.parseInputEventFromHistory(l, i, history));
 
         parsedHistory.forEach(event => {
@@ -366,7 +366,7 @@ ${config}
             player.inputQueue.push(val as string);
         });
 
-        return history;
+        return true;
     },
     
     /**

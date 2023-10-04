@@ -14,8 +14,11 @@ export function main(replayPath?: string) {
     const { game, player1, player2 } = createGame();
 
     if (replayPath) {
-        if (!game.functions.util.replayFile(replayPath)) {
-            game.input("Something went wrong when trying to replay the game. Launching a normal game instead...");
+        let error = game.functions.util.replayFile(replayPath);
+
+        if (error instanceof Error) {
+            game.input(`Something went wrong when trying to replay the game. ${error}\n`);
+            throw error;
         }
     }
 
