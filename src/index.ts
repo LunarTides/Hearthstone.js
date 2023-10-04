@@ -10,8 +10,14 @@
 import { validate as validateIds } from "../scripts/id/lib.js";
 import { createGame } from "./internal.js";
 
-export function main() {
+export function main(replayPath?: string) {
     const { game, player1, player2 } = createGame();
+
+    if (replayPath) {
+        if (!game.functions.util.replayFile(replayPath)) {
+            game.input("Something went wrong when trying to replay the game. Launching a normal game instead...");
+        }
+    }
 
     game.interact.info.printName();
     validateIds(false);

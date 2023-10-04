@@ -166,6 +166,11 @@ export class Game {
     evaling: boolean = false;
 
     /**
+     * If the program is currently replaying a previous game.
+     */
+    replaying: boolean = false;
+
+    /**
      * Some constant values.
      */
     constants: GameConstants;
@@ -224,9 +229,12 @@ export class Game {
      *
      * @returns What the user answered
      */
-    input(q: string = "", care: boolean = true): string {
+    input(q: string = "", care: boolean = true, useInputQueue: boolean = true): string {
         const wrapper = (a: string) => {
             if (this.player instanceof Player) this.events.broadcast("Input", a, this.player);
+
+            if (this.replaying && useInputQueue) game.interact.gameLoop.promptReplayOptions();
+
             return a;
         }
 
@@ -236,7 +244,7 @@ export class Game {
         q = functions.color.fromTags(q);
 
         // Let the game make choices for the user
-        if (this.player.inputQueue) {
+        if (this.player.inputQueue && useInputQueue) {
             const queue = this.player.inputQueue;
 
             if (typeof(queue) == "string") return wrapper(queue);

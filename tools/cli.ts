@@ -42,7 +42,8 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | nul
         // Options - Long, short
         const cmdOptions = [
             ["--dry-run", "-n"],
-            ["--cc-type", "-t"]
+            ["--cc-type", "-t"],
+            ["--replay", "-r"],
         ];
 
         // Parse args
@@ -151,7 +152,24 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | nul
             dc.main();
         }
         else if (name === "game") {
-            src.main();
+            const replay = usedOptions.includes("--replay");
+
+            let replayPath: string | undefined;
+
+            // Get cctype
+            if (replay) {
+                replayPath = args[0] as CCType;
+
+                if (!replayPath) {
+                    game.logError("<red>Invalid replay path!</red>");
+                    game.input();
+                    return;
+                }
+
+                replayPath = `/replays/replay-${replayPath}.txt`;
+            }
+
+            src.main(replayPath);
         }
         else if (name == "script") {
             const name = args[0];

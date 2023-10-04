@@ -50,6 +50,14 @@ function cardCreator() {
     });
 }
 
+function replay() {
+    game.logWarn("<yellow>WARNING: This feature is unstable. Expect bugs.</yellow>\n");
+    let path = "/replays/replay-" + game.input("Path: /replays/replay-");
+    if (!path.endsWith(".txt")) path += ".txt";
+
+    src.main(path);
+}
+
 function devmode() {
     userInputLoop("Create a (C)ard, Create a Clas(s), Enter CLI (m)ode, Go (B)ack to Normal Mode: ", "b", (input) => {
         input = input[0].toLowerCase();
@@ -60,10 +68,11 @@ function devmode() {
     });
 }
 
-userInputLoop("(P)lay, Create a (D)eck, Developer (M)ode, (E)xit: ", "e", (input) => {
+userInputLoop("(P)lay, (R)eplay, Create a (D)eck, Developer (M)ode, (E)xit: ", "e", (input) => {
     input = input[0].toLowerCase();
 
     if (input == "p") src.main();
+    if (input == "r") replay();
     else if (input == "d") dc.main();
     else if (input == "m") devmode();
 });

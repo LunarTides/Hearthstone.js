@@ -793,6 +793,7 @@ export const GameLoopInteract = {
             if (rawInput instanceof Card) input = (game.player.hand.indexOf(rawInput) + 1).toString();
             else input = rawInput;
 
+            game.events.broadcast("Input", input, game.player);
             const turn = this.doTurnLogic(input);
 
             game.killMinions();
@@ -833,4 +834,23 @@ export const GameLoopInteract = {
 
         return false;
     },
+
+    promptReplayOptions() {
+        if (!game.running) return;
+
+        game.interact.info.printAll(game.player);
+
+        let choice = game.input("\n(C)ontinue, (P)lay from here: ", false, false).toLowerCase()[0];
+
+        switch (choice) {
+            case "p":
+                game.player1.inputQueue = undefined;
+                game.player2.inputQueue = undefined;
+                game.replaying = false;
+                break;
+            case "c":
+            default:
+                break;
+        }
+    }
 }

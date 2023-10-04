@@ -1,6 +1,7 @@
 import childProcess from "child_process";
 import { createHash } from "node:crypto";
 import { Player } from "@Game/internal.js";
+import { EventKey, HistoryKey } from "@Game/types.js";
 
 export const utilFunctions = {
     /**
@@ -146,6 +147,9 @@ export const utilFunctions = {
      * @returns Success
      */
     createLogFile(err?: Error): boolean {
+        if (game.replaying) return false;
+        this.createReplayFile();
+
         // Create a (crash-)log file
         if (!game.functions.file.exists("/logs")) game.functions.file.directory.create("/logs");
 
@@ -234,6 +238,136 @@ ${mainContent}
         game.input();
 
         return true;
+    },
+
+    /**
+     * Create a repay file
+     *
+     * @returns Success
+     */
+    createReplayFile(): boolean {
+        if (!game.functions.file.exists("/replays")) game.functions.file.directory.create("/replays");
+
+        let dateString = this.getDateAndTime();
+
+        // 01.01.23-23.59.59
+        const dateStringFileFriendly = dateString.replace(/[/:]/g, ".").replaceAll(" ", "-");
+
+        // Grab the history of the game
+        // handleCmds("history", echo, debug)
+        let history = game.interact.gameLoop.handleCmds("history", { echo: false, debug: true, historyCardOnlyName: true });
+        if (typeof history !== "string") throw new Error("createReplayFile history did not return a string.");
+
+        // Strip the color codes from the history
+        history = game.functions.color.stripTags(history);
+        history = game.functions.color.strip(history);
+
+        history = history.split("\n").filter(l => l.startsWith("Input: ") || l.startsWith("Turn ")).join("\n").trim();
+        
+        let playInput = history.split("Input: p")[1];
+        if (playInput) history = game.lodash.initial(playInput.split("\n")).join("\n");
+
+        const config = JSON.stringify(game.config, null, 2);
+
+        let content = `Hearthstone.js Replay File
+${dateString},${game.functions.info.version(2)},1
+
+-- History --
+${history}
+-- History --
+
+-- Config --
+${config}
+-- Config --
+`
+
+        let filename = `replay-${dateStringFileFriendly}.txt`;
+
+        // Add a sha256 checksum to the content
+        const checksum = createHash("sha256").update(content).digest("hex");
+        content += `\n${checksum}  ${filename}`;
+
+        game.functions.file.write(`/replays/${filename}`, content);
+        return true;
+    },
+
+    parseReplayFile(path: string) {
+        if (!game.functions.file.exists(path)) return false;
+
+        let content = game.functions.file.read(path).trim();
+        const contentSplit = content.split("\n");
+        const filename = path.split("/").pop();
+
+        // Verify checksum
+        content = game.lodash.initial(contentSplit).join("\n");
+        const checksum = createHash("sha256").update(content).digest("hex") + "  " + filename;
+
+        const matchingChecksum = checksum === game.lodash.last(contentSplit);
+        if (!matchingChecksum) return false;
+
+        // Checksum matches
+        const header = contentSplit[1].trim();
+        const history = content.split("-- History --")[1].trim();
+        const config = content.split("-- Config --")[1].trim();
+
+        const [ date, version, logVersion ] = header.split(",");
+        const headerObj = { date, version, logVersion };
+
+        return { header: headerObj, history, config };
+    },
+
+    parseInputEventFromHistory(event: string, index: number, history: string): HistoryKey | false {
+        if (!event.includes(": ")) return false;
+
+        const val = event.split(": ")[1];
+
+        let player: Player;
+
+        while (true) {
+            index--;
+
+            const reg = /Turn \d+ - Player \[(.+)\]/.exec(history.split("\n")[index]);
+            if (!reg) continue;
+
+            const playerName = reg[1];
+            const _player = [game.player1, game.player2].find(p => p.name === playerName);
+            if (!_player) throw new Error("passed regex and checksum but no player with that name");
+
+            player = _player;
+            break;
+        }
+
+        return ["Input", val, player];
+    },
+
+    replayFile(path: string) {
+        const parsed = this.parseReplayFile(path);
+        if (!parsed) return false;
+
+        const { header, history, config } = parsed;
+
+        game.config = JSON.parse(config);
+        game.replaying = true;
+
+        // TODO: Verify `header.version` using semver
+        if (header.logVersion !== "1") {
+            return false;
+        }
+
+        // TODO: Do more
+        const parsedHistory = history.split("\n").map((l, i) => this.parseInputEventFromHistory(l, i, history));
+
+        parsedHistory.forEach(event => {
+            if (!event) return;
+
+            // Create the event
+            const [_, val, player] = event;
+
+            if (!(player.inputQueue instanceof Array)) player.inputQueue = [];
+            player.inputQueue.push(val as string);
+        });
+
+        return history;
     },
     
     /**
