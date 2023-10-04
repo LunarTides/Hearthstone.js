@@ -66,7 +66,7 @@ export class AI {
             if (score <= bestScore || c.cost > this.plr.mana || this.cardsPlayedThisTurn.includes(c)) return;
 
             // If the card is a minion and the player doesn't have the board space to play it, ignore the card
-            if (game.functions.card.canBeOnBoard(c) && game.board[this.plr.id].length >= game.config.general.maxBoardSpace) return;
+            if (c.canBeOnBoard() && game.board[this.plr.id].length >= game.config.general.maxBoardSpace) return;
 
             // Prevent the ai from playing the same card they returned from when selecting a target
             let r = false;

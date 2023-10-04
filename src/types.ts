@@ -333,14 +333,6 @@ export type GameAttackReturn = true |
                                "invalid";
 
 /**
- * ValidateCard return value
- */
-export type FunctionsValidateCardReturn = boolean |
-                                          "class" |
-                                          "uncollectible" |
-                                          "runes";
-
-/**
  * ExportDeck error return value
  */
 export type FunctionsExportDeckError = null | { msg: string; info: null | { card?: CardLike, amount?: number }; recoverable: boolean; }; 

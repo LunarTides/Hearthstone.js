@@ -1021,7 +1021,7 @@ const playCard = {
 
     _hasCapacity(card: Card, player: Player): boolean {
         // If the board has max capacity, and the card played is a minion or location card, prevent it.
-        if (game.board[player.id].length < game.config.general.maxBoardSpace || !functions.card.canBeOnBoard(card)) return true;
+        if (game.board[player.id].length < game.config.general.maxBoardSpace || !card.canBeOnBoard()) return true;
 
         // Refund
         const unsuppress = functions.event.suppress("AddCardToHand");

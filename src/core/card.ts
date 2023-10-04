@@ -1180,7 +1180,13 @@ export class Card {
      * @returns A perfect copy of this card.
      */
     perfectCopy(): Card {
-        return game.functions.card.clone(this);
+        const clone = game.lodash.clone(this);
+
+        clone.randomizeUUID();
+        clone.sleepy = true;
+        clone.turn = game.turns;
+
+        return clone;
     }
 
     /**
@@ -1197,5 +1203,31 @@ export class Card {
      */
     imperfectCopy(): Card {
         return new Card(this.name, this.plr);
+    }
+
+    /**
+     * Returns if the card specified has the ability to appear on the board.
+     */
+    canBeOnBoard(): boolean {
+        return this.type === "Minion" || this.type === "Location";
+    }
+    
+    /**
+     * Checks if this card is a valid card to put into its players deck
+     * 
+     * @returns Success | Errorcode
+     */
+    validateForDeck(): true | "class" | "uncollectible" | "runes" {
+        if (!this.classes.includes(this.plr.heroClass)) {
+            // If it is a neutral card, it is valid
+            if (this.classes.includes("Neutral")) {}
+            else return "class";
+        }
+        if (this.uncollectible) return "uncollectible";
+
+        // Runes
+        if (this.runes && !this.plr.testRunes(this.runes)) return "runes";
+
+        return true;
     }
 }

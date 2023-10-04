@@ -521,7 +521,7 @@ export const interact = {
             game.events.events.PlayCard[game.player.id].pop();
 
             // If the card can appear on the board, remove it.
-            if (game.functions.card.canBeOnBoard(card)) {
+            if (card.canBeOnBoard()) {
                 game.functions.util.remove(game.board[game.player.id], card);
 
                 // If the card has 0 or less health, restore it to its original health (according to the blueprint)

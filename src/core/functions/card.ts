@@ -1,5 +1,5 @@
 import { Card, Player } from "../../internal.js";
-import { CardLike, VanillaCard, CardClass, MinionTribe, FunctionsValidateCardReturn, CardClassNoNeutral } from "@Game/types.js";
+import { CardLike, VanillaCard, CardClass, MinionTribe, CardClassNoNeutral } from "@Game/types.js";
 import { doImportCards, generateCardExports } from "../../helper/cards.js";
 import { validateBlueprint } from "../../helper/validator.js";
 
@@ -192,46 +192,6 @@ export const cardFunctions = {
         if (/all/i.test(cardTribe)) return true;
         else return cardTribe.includes(tribe);
     },
-
-    /**
-     * Checks if a card is a valid card to put into a players deck
-     * 
-     * @param card The card to check
-     * @param plr The player to check against
-     * 
-     * @returns Success | Errorcode
-     */
-    validateForDeck(card: Card, plr: Player): FunctionsValidateCardReturn {
-        if (!card.classes.includes(plr.heroClass)) {
-            // If it is a neutral card, it is valid
-            if (card.classes.includes("Neutral")) {}
-            else return "class";
-        }
-        if (card.uncollectible) return "uncollectible";
-
-        // Runes
-        if (card.runes && !plr.testRunes(card.runes)) return "runes";
-
-        return true;
-    },
-
-    /**
-     * Creates a PERFECT copy of a card, and sets some essential properties.
-     * This is the exact same as `card.perfectCopy`, so use that instead.
-     * 
-     * @param card The card to clone
-     * 
-     * @returns Clone
-     */
-    clone(card: Card): Card {
-        const clone = game.lodash.clone(card);
-
-        clone.randomizeUUID();
-        clone.sleepy = true;
-        clone.turn = game.turns;
-
-        return clone;
-    },
     
     /**
      * Validates the blueprints.
@@ -284,13 +244,6 @@ export const cardFunctions = {
      */
     accountForUncollectible(cards: CardLike[]): CardLike[] {
         return cards.filter(c => !c.uncollectible);
-    },
-
-    /**
-     * Returns if the card specified has the ability to appear on the board.
-     */
-    canBeOnBoard(card: CardLike): boolean {
-        return card.type === "Minion" || card.type === "Location";
     },
 
     /**

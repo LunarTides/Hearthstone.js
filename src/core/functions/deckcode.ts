@@ -133,7 +133,7 @@ export const deckcodeFunctions = {
                     });
                 }
 
-                const validateTest = (game.functions.card.validateForDeck(card, plr));
+                const validateTest = card.validateForDeck();
 
                 if (!localSettings.validateDecks || validateTest === true) return;
 
