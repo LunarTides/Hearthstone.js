@@ -1,5 +1,5 @@
-import { createHash } from "node:crypto";
 import childProcess from "child_process";
+import { createHash } from "node:crypto";
 import { Player } from "@Game/internal.js";
 
 export const utilFunctions = {
@@ -106,17 +106,9 @@ export const utilFunctions = {
     },
 
     /**
-     * Create a (crash)log file
-     *
-     * @param err If this is set, create a crash log. If this is not set, create a normal log file.
-     *
-     * @returns Success
+     * Get the day, month, year, hour, minute, and second, as 2 digit numbers.
      */
-    createLogFile(err?: Error): boolean {
-        // Create a (crash-)log file
-        if (!game.functions.file.exists("/logs")) game.functions.file.directory.create("/logs");
-
-        // Get the day, month, year, hour, minute, and second, as 2 digit numbers.
+    getDateAndTime() {
         const date = new Date();
 
         let day = date.getDate().toString();
@@ -142,6 +134,22 @@ export const utilFunctions = {
         // Assemble the time
         // 01/01/23 23:59:59
         const dateString = `${day}/${month}/${year} ${hour}:${minute}:${second}`;
+
+        return dateString;
+    },
+
+    /**
+     * Create a (crash)log file
+     *
+     * @param err If this is set, create a crash log. If this is not set, create a normal log file.
+     *
+     * @returns Success
+     */
+    createLogFile(err?: Error): boolean {
+        // Create a (crash-)log file
+        if (!game.functions.file.exists("/logs")) game.functions.file.directory.create("/logs");
+
+        let dateString = this.getDateAndTime();
 
         // 01.01.23-23.59.59
         const dateStringFileFriendly = dateString.replace(/[/:]/g, ".").replaceAll(" ", "-");
