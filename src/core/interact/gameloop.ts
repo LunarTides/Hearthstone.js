@@ -98,7 +98,7 @@ export const GameLoopInteract = {
      * 
      * @returns A string if "echo" is false
      */
-    handleCmds(q: string, flags?: { echo?: boolean, debug?: boolean, historyCardOnlyName?: boolean }): boolean | string | -1 {
+    handleCmds(q: string, flags?: { echo?: boolean, debug?: boolean }): boolean | string | -1 {
         const args = q.split(" ");
         const name = args.shift()?.toLowerCase();
         if (!name) {
@@ -319,7 +319,6 @@ export const GameLoopInteract = {
             let finished = "";
 
             const showCard = (val: Card) => {
-                if (flags?.historyCardOnlyName) return `${val.name} (${val.uuid.slice(0, 8)})`;
                 return `${game.interact.card.getReadable(val)} which belongs to: <blue>${val.plr.name}</blue>, and has uuid: ${val.uuid.slice(0, 8)}`;
             }
 
@@ -748,7 +747,7 @@ export const GameLoopInteract = {
             return this.handleCmds("/reload", { debug: true });
         }
         else if (name === "/history") {
-            return this.handleCmds("history", { debug: true, historyCardOnlyName: flags?.historyCardOnlyName });
+            return this.handleCmds("history", { debug: true });
         }
         // -1 if the command is not found
         else return -1;

@@ -241,7 +241,7 @@ ${mainContent}
     },
 
     /**
-     * Create a repay file
+     * Create a replay file
      *
      * @returns Success
      */
@@ -254,8 +254,7 @@ ${mainContent}
         const dateStringFileFriendly = dateString.replace(/[/:]/g, ".").replaceAll(" ", "-");
 
         // Grab the history of the game
-        // handleCmds("history", echo, debug)
-        let history = game.interact.gameLoop.handleCmds("history", { echo: false, debug: true, historyCardOnlyName: true });
+        let history = game.interact.gameLoop.handleCmds("history", { echo: false, debug: true });
         if (typeof history !== "string") throw new Error("createReplayFile history did not return a string.");
 
         // Strip the color codes from the history
