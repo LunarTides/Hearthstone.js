@@ -18,7 +18,7 @@ export const blueprint: Blueprint = {
         // Discover a spell.
 
         // Filter out all cards that aren't spells
-        const list = game.functions.getCards().filter(c => c.type === "Spell");
+        const list = game.functions.card.getAll().filter(c => c.type === "Spell");
         if (list.length <= 0) return;
 
         // Prompt a discover
@@ -31,10 +31,10 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        const assert = game.functions.assert;
+        const assert = game.functions.error.assert;
 
         // If there are no spells, pass the test
-        if (game.functions.getCards().filter(c => c.type === "Spell" && game.functions.validateClasses(self.classes, plr.heroClass)).length <= 0) return;
+        if (game.functions.card.getAll().filter(c => c.type === "Spell" && game.functions.card.validateClasses(self.classes, plr.heroClass)).length <= 0) return;
 
         // The player ALWAYS answer 1.
         plr.inputQueue = "1";

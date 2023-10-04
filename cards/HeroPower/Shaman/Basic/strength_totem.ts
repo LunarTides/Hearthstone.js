@@ -22,7 +22,7 @@ export const blueprint: Blueprint = {
 
         // The list that to choose from. Remove this minion from the list
         const board = game.board[plr.id].filter(card => card.type === "Minion");
-        game.functions.remove(board, self);
+        game.functions.util.remove(board, self);
 
         // Choose the random minion
         const minion = game.lodash.sample(board);
@@ -33,7 +33,7 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        const assert = game.functions.assert;
+        const assert = game.functions.error.assert;
 
         // Summon 5 Sheep with 2 max health.
         for (let i = 0; i < 5; i++) {

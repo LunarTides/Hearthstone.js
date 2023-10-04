@@ -19,7 +19,7 @@ export const blueprint: Blueprint = {
         // Restore 2 Health.
 
         // We don't want the "CastSpellOnMinion" event to be broadcast here, so suppress it
-        const unsuppress = game.functions.suppressEvent("CastSpellOnMinion");
+        const unsuppress = game.functions.event.suppress("CastSpellOnMinion");
 
         // Hero power targets need to use the `forceElusive` flag.
         const target = game.interact.selectTarget("Restore 2 health.", self, "any", "any", ["forceElusive"]);
@@ -36,7 +36,7 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        const assert = game.functions.assert;
+        const assert = game.functions.error.assert;
 
         // Health: 1->3
         plr.health = 1;

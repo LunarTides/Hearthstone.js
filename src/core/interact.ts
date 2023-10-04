@@ -234,7 +234,7 @@ export const interact = {
         }
         else if (name === "license") {
             const start = (process.platform == 'darwin' ? 'open' : process.platform == 'win32' ? 'start' : 'xdg-open');
-            game.functions.runCommand(start + ' ' + licenseUrl);
+            game.functions.util.runCommand(start + ' ' + licenseUrl);
         }
         else if (name === "version") {
             const version = game.config.info.version;
@@ -255,7 +255,7 @@ export const interact = {
                     else if (branch == "stable") strbuilder += "the stable (release) branch";
 
                     strbuilder += `, on build ${build}`;
-                    strbuilder += `, with latest commit hash '${game.functions.getLatestCommit()}',`
+                    strbuilder += `, with latest commit hash '${game.functions.info.latestCommit()}',`
     
                     if (game.config.general.debug === true && game.config.ai.player2 === true) strbuilder += " using the debug settings preset";
                     else if (game.config.general.debug === false && game.config.ai.player2 === false) strbuilder += " using the recommended settings preset";
@@ -448,7 +448,7 @@ export const interact = {
 
             const cardName = args.join(" ");
 
-            const card = game.functions.getCardByName(cardName);
+            const card = game.functions.card.getFromName(cardName);
             if (!card) {
                 game.input(`<red>Invalid card: <yellow>${cardName}</yellow>.\n`);
                 return false;
@@ -472,7 +472,7 @@ export const interact = {
             let code = args.join(" ");
 
             if (log) {
-                if (game.functions.lastChar(code) == ";") code = code.slice(0, -1);
+                if (game.functions.util.lastChar(code) == ";") code = code.slice(0, -1);
 
                 code = `game.log(${code});game.input();`;
             }
@@ -521,8 +521,8 @@ export const interact = {
             game.events.events.PlayCard[game.player.id].pop();
 
             // If the card can appear on the board, remove it.
-            if (game.functions.canBeOnBoard(card)) {
-                game.functions.remove(game.board[game.player.id], card);
+            if (game.functions.card.canBeOnBoard(card)) {
+                game.functions.util.remove(game.board[game.player.id], card);
 
                 // If the card has 0 or less health, restore it to its original health (according to the blueprint)
                 if (card.type === "Minion" && card.getHealth() <= 0) {
@@ -553,7 +553,7 @@ export const interact = {
         }
         else if (name === "/exit") {
             game.running = false;
-            game.functions.createLogFile();
+            game.functions.util.createLogFile();
         }
         else if (name === "/ai") {
             let finished = "";
@@ -561,7 +561,7 @@ export const interact = {
             if (echo) finished += "AI Info:\n\n";
 
             for (let i = 0; i < 2; i++) {
-                const plr = game.functions.getPlayerFromId(i);
+                const plr = game.functions.player.getFromId(i);
                 if (!plr.ai) continue;
 
                 finished += `AI${i + 1} History: {\n`;
@@ -716,7 +716,7 @@ export const interact = {
             let success = true;
 
             success &&= this.withStatus("Registering cards", () => {
-                reloadCards(game.functions.dirname() + "/dist/cards");
+                reloadCards(game.functions.file.dirname() + "/dist/cards");
                 return true;
             });
 
@@ -923,7 +923,7 @@ export const interact = {
         if (plr.ai) input = plr.ai.mulligan();
         else input = game.input(sb);
 
-        const isInt = game.functions.mulligan(plr, input);
+        const isInt = game.functions.player.mulligan(plr, input);
 
         if (!isInt && input != "") {
             game.input("<red>Invalid input!</red>\n");
@@ -950,7 +950,7 @@ export const interact = {
             if (!card) return null;
 
             // Removes the selected card from the players deck.
-            game.functions.remove(game.player.deck, card);
+            game.functions.util.remove(game.player.deck, card);
             game.player.deck.push(card);
 
             return card;
@@ -976,7 +976,7 @@ export const interact = {
         }
 
         // Removes the selected card from the players deck.
-        game.functions.remove(game.player.deck, card);
+        game.functions.util.remove(game.player.deck, card);
         game.player.deck.push(card);
 
         return card;
@@ -1060,7 +1060,7 @@ export const interact = {
             const aiChoice = plr.ai.question(prompt, answers);
             if (!aiChoice) {
                 // code, expected, actual
-                throw game.functions.createAIError("AiQuestionReturnInvalidAtQuestionFunction", "some number", aiChoice);
+                throw game.functions.error.AIError("AiQuestionReturnInvalidAtQuestionFunction", "some number", aiChoice);
             }
 
             choice = aiChoice;
@@ -1118,20 +1118,20 @@ export const interact = {
         this.printAll(game.player);
         let values: Card[] = _cards;
 
-        if (cards.length <= 0) cards = game.functions.getCards();
+        if (cards.length <= 0) cards = game.functions.card.getAll();
         if (cards.length <= 0 || !cards) return null;
 
         if (filterClassCards) {
             // We need to filter the cards
             // of the filter function
-            cards = cards.filter(card => game.functions.validateClasses(card.classes, game.player.heroClass));
+            cards = cards.filter(card => game.functions.card.validateClasses(card.classes, game.player.heroClass));
         }
 
         // No cards from previous discover loop, we need to generate new ones.
         if (_cards.length == 0) {
             values = game.lodash.sampleSize(cards, amount);
             values = values.map(c => {
-                if (c instanceof game.Card) game.functions.cloneCard(c);
+                if (c instanceof game.Card) c.perfectCopy();
                 return c;
             });
         }
@@ -1143,7 +1143,7 @@ export const interact = {
         game.log(`\n${prompt}:`);
 
         values.forEach((v, i) => {
-            const card = game.functions.getCardByName(v.name);
+            const card = game.functions.card.getFromName(v.name);
             if (!card) return;
 
             game.log(this.getReadableCard(v, i + 1));
@@ -1263,8 +1263,8 @@ export const interact = {
             // If both players have a minion with the same index,
             // ask them which minion to select
             if (boardOpponent.length >= parseInt(target) && boardFriendly.length >= parseInt(target)) {
-                const oName = game.functions.colorByRarity(boardOpponentTarget.displayName, boardOpponentTarget.rarity);
-                const fName = game.functions.colorByRarity(boardFriendlyTarget.displayName, boardFriendlyTarget.rarity);
+                const oName = game.functions.color.fromRarity(boardOpponentTarget.displayName, boardOpponentTarget.rarity);
+                const fName = game.functions.color.fromRarity(boardFriendlyTarget.displayName, boardFriendlyTarget.rarity);
 
                 const alignment = game.input(`Do you want to select your opponent's (${oName}) or your own (${fName})? (y: opponent, n: friendly | type 'back' to go back) `);
             
@@ -1335,7 +1335,7 @@ export const interact = {
         const info = game.config.info;
         const versionDetail = game.player.detailedView ? 4 : 3;
     
-        const watermarkString = `HEARTHSTONE.JS V${game.functions.getVersion(versionDetail)}`;
+        const watermarkString = `HEARTHSTONE.JS V${game.functions.info.version(versionDetail)}`;
         const border = "-".repeat(watermarkString.length + 2);
     
         game.log(`|${border}|`);
@@ -1358,7 +1358,7 @@ export const interact = {
     
         cls();
     
-        const version = `Hearthstone.js V${game.functions.getVersion(2)} | Copyright (C) 2022 | LunarTides`;
+        const version = `Hearthstone.js V${game.functions.info.version(2)} | Copyright (C) 2022 | LunarTides`;
         game.log('|'.repeat(version.length + 8));
         game.log(`||| ${version} |||`)
         game.log(`|||     This program is licensed under the GPL-3.0 license.  ` + ' '.repeat(info.branch.length) + "|||")
@@ -1424,7 +1424,7 @@ export const interact = {
                 
                 if (onlyShowName && !game.config.advanced.getReadableCardAlwaysShowFullCard) {
                     // Only show the name of the card
-                    replacement = game.functions.colorByRarity(replacement.displayName, replacement.rarity);
+                    replacement = game.functions.color.fromRarity(replacement.displayName, replacement.rarity);
                 }
                 else {
                     // Show the full card using recursion
@@ -1432,7 +1432,7 @@ export const interact = {
                 }
             }
 
-            text = game.functions.parseTags(text.replace(reg, replacement));
+            text = game.functions.color.fromTags(text.replace(reg, replacement));
         }
 
         // Replace spell damage placeholders
@@ -1527,7 +1527,7 @@ export const interact = {
 
         if (i !== -1) sb += `[${i}] `;
         sb += cost;
-        sb += game.functions.colorByRarity(displayName, card.rarity);
+        sb += game.functions.color.fromRarity(displayName, card.rarity);
         
         if (card.stats) {
             sb += `<bright:green> [${card.stats?.join(" / ")}]</bright:green>`;
@@ -1600,7 +1600,7 @@ export const interact = {
 
         const doStatPT1 = (player: Player, callback: (player: Player) => [string, number]): [string[], number] => {
             let [stat, tweak] = callback(player);
-            stat = game.functions.parseTags(stat);
+            stat = game.functions.color.fromTags(stat);
 
             if (!stat) return [[""], 0];
 
@@ -1608,9 +1608,9 @@ export const interact = {
             finishedPlayers[player.id] += `${stat}\n`;
 
             const split = finishedPlayers[player.id].split("\n");
-            game.functions.remove(split, "");
+            game.functions.util.remove(split, "");
 
-            return [game.functions.createWall(split, ":"), tweak];
+            return [game.functions.util.createWall(split, ":"), tweak];
         }
 
         const doStat = (callback: (player: Player) => [string, number]) => {
@@ -1625,9 +1625,9 @@ export const interact = {
             });
 
             const finishedSplit = finished.split("\n");
-            game.functions.remove(finishedSplit, "");
+            game.functions.util.remove(finishedSplit, "");
 
-            const finishedWall = game.functions.createWall(finishedSplit, "|");
+            const finishedWall = game.functions.util.createWall(finishedSplit, "|");
             finishedWall.forEach((line, index) => {
                 let p = line.split("|")[0];
                 let o = line.split("|")[1];
@@ -1682,7 +1682,7 @@ export const interact = {
 
     printBoard(plr: Player): void {
         game.board.forEach((side, plrId) => {
-            const player = game.functions.getPlayerFromId(plrId);
+            const player = game.functions.player.getFromId(plrId);
             const sideMessage = plr === player ? "----- Board (You) ------" : "--- Board (Opponent) ---";
             game.log(sideMessage);
 

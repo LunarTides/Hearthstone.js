@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        const assert = game.functions.assert;
+        const assert = game.functions.error.assert;
 
         // The player should have 0 armor
         assert(() => plr.armor === 0);

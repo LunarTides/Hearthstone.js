@@ -10,7 +10,7 @@ const props: {[key: string]: [string, number]} = {};
 const types: {[key: string]: number} = {};
 
 function main() {
-    const [vanillaCards, error] = game.functions.getVanillaCards();
+    const [vanillaCards, error] = game.functions.card.vanilla.getAll();
 
     if (error) {
         game.input(error);

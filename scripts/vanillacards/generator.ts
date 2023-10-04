@@ -13,9 +13,9 @@ function main() {
         .then(res => {
             let data = JSON.parse(res.data);
             const oldLength = data.length;
-            data = game.functions.filterVanillaCards(data, false, false, true);
+            data = game.functions.card.vanilla.filter(data, false, false, true);
 
-            game.functions.writeFile("/vanillacards.json", JSON.stringify(data));
+            game.functions.file.write("/vanillacards.json", JSON.stringify(data));
 
             const difference = oldLength - data.length;
             game.log(`Found %s cards!\nFiltered away %s cards!\nSuccessfully imported %s cards!`, oldLength, difference, data.length);

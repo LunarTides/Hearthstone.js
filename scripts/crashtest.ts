@@ -30,7 +30,7 @@ function main() {
 
         // Choose random decks for the players
         for (let i = 0; i < 2; i++) {
-            const plr = game.functions.getPlayerFromId(i);
+            const plr = game.functions.player.getFromId(i);
 
             const deck = game.lodash.sample(decks);
             if (typeof deck === "string") game.functions.deckcode.import(plr, deck);
@@ -45,7 +45,7 @@ function main() {
         } catch(err) {
             // If it crashes, show the ai's actions, and the history of the game before actually crashing
             game.config.general.debug = true;
-            game.functions.createLogFile(err);
+            game.functions.util.createLogFile(err);
 
             game.interact.handleCmds("/ai");
             game.interact.handleCmds("history", true, true);

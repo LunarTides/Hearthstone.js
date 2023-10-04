@@ -445,7 +445,7 @@ export class Card {
         // Set maxHealth if the card is a minion or weapon
         this.maxHealth = this.blueprint.stats?.at(1);
 
-        this.text = game.functions.parseTags(this.text || "");
+        this.text = game.functions.color.fromTags(this.text || "");
         if (activate) this.activate("create");
     }
 
@@ -887,7 +887,7 @@ export class Card {
             // These abilities shouldn't "refund" the card, just stop execution.
             if (["use", "heropower"].includes(name)) return;
 
-            const unsuppress = game.functions.suppressEvent("AddCardToHand");
+            const unsuppress = game.functions.event.suppress("AddCardToHand");
             this.plr.addToHand(this);
             unsuppress();
 
@@ -1180,7 +1180,7 @@ export class Card {
      * @returns A perfect copy of this card.
      */
     perfectCopy(): Card {
-        return game.functions.cloneCard(this);
+        return game.functions.card.clone(this);
     }
 
     /**

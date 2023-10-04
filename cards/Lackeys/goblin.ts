@@ -32,7 +32,7 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        const assert = game.functions.assert;
+        const assert = game.functions.error.assert;
 
         // Summon a sheep
         const sheep = new game.Card("Sheep", plr);

@@ -82,7 +82,7 @@ export const EventManager: IEventManager = {
         }
 
         for (let i = 0; i < 2; i++) {
-            const plr = game.functions.getPlayerFromId(i);
+            const plr = game.functions.player.getFromId(i);
 
             // Activate spells in the players hand
             plr.hand.forEach(card => {
@@ -130,7 +130,7 @@ export const EventManager: IEventManager = {
         });
 
         for (let i = 0; i < 2; i++) {
-            const plr = game.functions.getPlayerFromId(i);
+            const plr = game.functions.player.getFromId(i);
 
             // Activate spells in the players hand
             plr.hand.forEach(c => {

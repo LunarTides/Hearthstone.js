@@ -15,14 +15,14 @@ let finishedCardsPath = "patchedCards.txt";
 
 function getFinishedCards(path: string) {
     // If the file doesn't exist, return.
-    if (!game.functions.existsFile(path)) return;
+    if (!game.functions.file.exists(path)) return;
 
-    const cards = game.functions.readFile(path);
+    const cards = game.functions.file.read(path);
     finishedCards = cards.split("\n");
 }
 
 function searchCards(query: RegExp | string) {
-    game.functions.searchCardsFolder((fullPath, content) => {
+    game.functions.file.directory.searchCards((fullPath, content) => {
         // The query is not a regular expression
         if (typeof query === 'string') {
             if (content.includes(query)) matchingCards.push(fullPath);
@@ -65,8 +65,8 @@ function main() {
         if (cmd.toLowerCase().startsWith("delete")) {
             game.log("Deleting file...");
 
-            if (game.functions.existsFile(finishedCardsPath)) {
-                game.functions.deleteFile(finishedCardsPath);
+            if (game.functions.file.exists(finishedCardsPath)) {
+                game.functions.file.delete(finishedCardsPath);
                 game.log("File deleted!");
             }
             else game.log("File not found!");
@@ -87,7 +87,7 @@ function main() {
         }
 
         // `card` is the path to that card.
-        const success = game.functions.runCommandAsChildProcess(`${game.config.general.editor} "${path}"`);
+        const success = game.functions.util.runCommandAsChildProcess(`${game.config.general.editor} "${path}"`);
         // The `runCommandAsChildProcess` shows an error message for us, but we need to pause.
         if (!success) game.input();
 
@@ -97,7 +97,7 @@ function main() {
         if (matchingCards.length <= 0) {
             // All cards have been patched
             game.input("All cards patched!\n");
-            if (game.functions.existsFile(finishedCardsPath)) game.functions.deleteFile(finishedCardsPath);
+            if (game.functions.file.exists(finishedCardsPath)) game.functions.file.delete(finishedCardsPath);
 
             // Exit so it doesn't save
             process.exit(0);
@@ -105,7 +105,7 @@ function main() {
     }
 
     // Save progress
-    game.functions.writeFile(finishedCardsPath, finishedCards.join("\n"));
+    game.functions.file.write(finishedCardsPath, finishedCards.join("\n"));
 }
 
 main();

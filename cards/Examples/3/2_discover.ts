@@ -20,7 +20,7 @@ export const blueprint: Blueprint = {
         // This list will act like a pool of cards.
 
         // This gets every card from the game, excluding uncollectible cards.
-        let cards = game.functions.getCards();
+        let cards = game.functions.card.getAll();
 
         // We need to filter away any non-spell cards.
         // Keep in mind that `getCards` returns a list of Blueprints, not a list of Cards.
@@ -39,7 +39,7 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        const assert = game.functions.assert;
+        const assert = game.functions.error.assert;
 
         plr.inputQueue = "1";
         plr.hand = [];
@@ -49,7 +49,7 @@ export const blueprint: Blueprint = {
 
             const card = plr.hand.pop();
             assert(() => card?.type === "Spell");
-            assert(() => !!card && game.functions.validateClasses(card.classes, plr.heroClass));
+            assert(() => !!card && game.functions.card.validateClasses(card.classes, plr.heroClass));
         }
     }
 }

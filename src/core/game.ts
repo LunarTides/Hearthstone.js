@@ -225,7 +225,7 @@ export class Game {
         if (this.noOutput) q = "";
         if (this.noInput && care) return wrapper("");
 
-        q = functions.parseTags(q);
+        q = functions.color.fromTags(q);
 
         // Let the game make choices for the user
         if (this.player.inputQueue) {
@@ -250,7 +250,7 @@ export class Game {
     private logWrapper(callback: Function, ...data: any) {
         if (this.noOutput) return;
 
-        data = data.map((i: any) => typeof i === "string" ? functions.parseTags(i) : i);
+        data = data.map((i: any) => typeof i === "string" ? functions.color.fromTags(i) : i);
         callback(...data);
     }
 
@@ -323,7 +323,7 @@ export class Game {
         // Add quest cards to the players hands
         for (let i = 0; i < 2; i++) {
             // Set the player's hero to the default hero for the class
-            const plr = functions.getPlayerFromId(i);
+            const plr = functions.player.getFromId(i);
             
             const success = plr.setToStartingHero();
             if (!success) {
@@ -334,7 +334,7 @@ export class Game {
             plr.deck.forEach(c => {
                 if (!c.text?.includes("Quest: ") && !c.text?.includes("Questline: ")) return;
 
-                const unsuppress = functions.suppressEvent("AddCardToHand");
+                const unsuppress = functions.event.suppress("AddCardToHand");
                 plr.addToHand(c);
                 unsuppress();
 
@@ -343,7 +343,7 @@ export class Game {
 
             const nCards = (plr.id == 0) ? 3 : 4;
             while (plr.hand.length < nCards) {
-                const unsuppress = functions.suppressEvent("DrawCard");
+                const unsuppress = functions.event.suppress("DrawCard");
                 plr.drawCard();
                 unsuppress();
             }
@@ -362,7 +362,7 @@ export class Game {
 
         const coin = new Card("The Coin", this.player2);
 
-        const unsuppress = functions.suppressEvent("AddCardToHand");
+        const unsuppress = functions.event.suppress("AddCardToHand");
         this.player2.addToHand(coin);
         unsuppress();
 
@@ -388,7 +388,7 @@ export class Game {
         this.running = false;
 
         // Create log file
-        functions.createLogFile();
+        functions.util.createLogFile();
 
         return true;
     }
@@ -464,7 +464,7 @@ export class Game {
             // Stealth duration
             if (m.stealthDuration && m.stealthDuration > 0 && this.turns > m.stealthDuration) {
                 m.stealthDuration = 0;
-                functions.remove(m.keywords, "Stealth");
+                functions.util.remove(m.keywords, "Stealth");
             }
 
             // Location cooldown
@@ -495,7 +495,7 @@ export class Game {
         let amount = 0;
 
         for (let p = 0; p < 2; p++) {
-            const plr = functions.getPlayerFromId(p);
+            const plr = functions.player.getFromId(p);
 
             const sparedMinions: Card[] = [];
             const shouldSpare = (card: Card) => {
@@ -530,12 +530,12 @@ export class Game {
                 // Reborn
                 const minion = m.imperfectCopy();
 
-                functions.remove(minion.keywords, "Reborn");
+                functions.util.remove(minion.keywords, "Reborn");
 
                 // Reduce the minion's health to 1, keep the minion's attack the same
                 minion.setStats(minion.getAttack(), 1);
 
-                const unsuppress = functions.suppressEvent("SummonMinion");
+                const unsuppress = functions.event.suppress("SummonMinion");
                 this.summonMinion(minion, plr);
                 unsuppress();
 
@@ -564,7 +564,7 @@ export function createGame() {
     const player1 = new Player("Player 1");
     const player2 = new Player("Player 2");
     game.setup(player1, player2);
-    functions.importCards();
+    functions.card.importAll();
     game.doConfigAI();
 
     return { game, player1, player2 };
@@ -625,7 +625,7 @@ const attack = {
         }
 
         if (target.keywords.includes("Divine Shield")) {
-            functions.remove(target.keywords, "Divine Shield");
+            functions.util.remove(target.keywords, "Divine Shield");
             return "divineshield";
         }
 
@@ -712,7 +712,7 @@ const attack = {
 
         // If attacker has stealth, remove it
         if (attacker.keywords.includes("Stealth")) {
-            functions.remove(attacker.keywords, "Stealth");
+            functions.util.remove(attacker.keywords, "Stealth");
         }
 
         // If attacker has lifesteal, heal it's owner
@@ -744,7 +744,7 @@ const attack = {
         attack._cleave(attacker, target);
 
         attacker.decAttack();
-        functions.remove(attacker.keywords, "Stealth");
+        functions.util.remove(attacker.keywords, "Stealth");
 
         const shouldDamage = attack._cardAttackHelper(attacker);
         if (!shouldDamage) return true;
@@ -781,7 +781,7 @@ const attack = {
         if (card.immune) return false;
 
         if (card.keywords.includes("Divine Shield")) {
-            functions.remove(card.keywords, "Divine Shield");
+            functions.util.remove(card.keywords, "Divine Shield");
             return false;
         }
 
@@ -884,7 +884,7 @@ const playCard = {
 
         // Charge you for the card
         player[card.costType] -= card.cost;
-        functions.remove(player.hand, card);
+        functions.util.remove(player.hand, card);
 
         // Counter
         if (playCard._countered(card, player)) return "counter";
@@ -939,7 +939,7 @@ const playCard = {
                 if (card.activateBattlecry() === -1) return "refund";
             }
 
-            const unsuppress = functions.suppressEvent("SummonMinion");
+            const unsuppress = functions.event.suppress("SummonMinion");
             const ret = cards.summon(card, player);
             unsuppress();
 
@@ -951,7 +951,7 @@ const playCard = {
 
             // Twinspell functionality
             if (card.keywords.includes("Twinspell")) {
-                functions.remove(card.keywords, "Twinspell");
+                functions.util.remove(card.keywords, "Twinspell");
                 card.text = card.text?.split("Twinspell")[0].trim();
 
                 player.addToHand(card);
@@ -985,7 +985,7 @@ const playCard = {
             card.immune = true;
             card.cooldown = 0;
 
-            const unsuppress = functions.suppressEvent("SummonMinion");
+            const unsuppress = functions.event.suppress("SummonMinion");
             const ret = cards.summon(card, player);
             unsuppress();
 
@@ -1000,8 +1000,8 @@ const playCard = {
 
         if (player.ai) q = player.ai.trade(card);
         else {
-            game.interact.printAll(player);
-            q = game.interact.yesNoQuestion(player, "Would you like to trade " + functions.colorByRarity(card.displayName, card.rarity) + " for a random card in your deck?");
+            interact.printAll(player);
+            q = interact.yesNoQuestion(player, "Would you like to trade " + functions.color.fromRarity(card.displayName, card.rarity) + " for a random card in your deck?");
         }
 
         if (!q) return false;
@@ -1010,7 +1010,7 @@ const playCard = {
 
         player.mana -= 1;
 
-        functions.remove(player.hand, card);
+        functions.util.remove(player.hand, card);
         player.drawCard();
         player.shuffleIntoDeck(card);
 
@@ -1021,10 +1021,10 @@ const playCard = {
 
     _hasCapacity(card: Card, player: Player): boolean {
         // If the board has max capacity, and the card played is a minion or location card, prevent it.
-        if (game.board[player.id].length < game.config.general.maxBoardSpace || !game.functions.canBeOnBoard(card)) return true;
+        if (game.board[player.id].length < game.config.general.maxBoardSpace || !functions.card.canBeOnBoard(card)) return true;
 
         // Refund
-        const unsuppress = functions.suppressEvent("AddCardToHand");
+        const unsuppress = functions.event.suppress("AddCardToHand");
         player.addToHand(card);
         unsuppress();
 
@@ -1045,8 +1045,8 @@ const playCard = {
         // Warn the user that the condition is not fulfilled
         const warnMessage = "<yellow>WARNING: This card's condition is not fulfilled. Are you sure you want to play this card?</yellow>";
 
-        game.interact.printAll(player);
-        const warn = game.interact.yesNoQuestion(player, warnMessage);
+        interact.printAll(player);
+        const warn = interact.yesNoQuestion(player, warnMessage);
 
         if (!warn) return false;
         return true;
@@ -1057,7 +1057,7 @@ const playCard = {
 
         // Check if the card is countered
         if (op.counter && op.counter.includes(card.type)) {
-            functions.remove(op.counter, card.type);
+            functions.util.remove(op.counter, card.type);
             return true;
         }
 
@@ -1098,9 +1098,9 @@ const playCard = {
             // Corrupt that card
             const corrupted = new Card(toCorrupt.corrupt, player);
 
-            functions.remove(player.hand, toCorrupt);
+            functions.util.remove(player.hand, toCorrupt);
 
-            const unsuppress = functions.suppressEvent("AddCardToHand");
+            const unsuppress = functions.event.suppress("AddCardToHand");
             player.addToHand(corrupted);
             unsuppress();
         });
@@ -1118,7 +1118,7 @@ const playCard = {
         if (mechs.length <= 0) return false;
 
         // I'm using while loops to prevent a million indents
-        const mech = game.interact.selectCardTarget("Which minion do you want this card to Magnetize to:", null, "friendly");
+        const mech = interact.selectCardTarget("Which minion do you want this card to Magnetize to:", null, "friendly");
         if (!mech) return false;
 
         if (!mech.tribe?.includes("Mech")) {
@@ -1199,7 +1199,7 @@ const cards = {
             // the "" gets replaced with the main minion
 
             minion.colossal.forEach(v => {
-                const unsuppress = functions.suppressEvent("SummonMinion");
+                const unsuppress = functions.event.suppress("SummonMinion");
 
                 if (v == "") {
                     game.summonMinion(minion, player, false);

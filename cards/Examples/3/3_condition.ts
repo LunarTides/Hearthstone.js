@@ -42,16 +42,16 @@ export const blueprint: Blueprint = {
         // `game.functions.highlander` will return true if the player has no duplicates in their deck.
         //
         //return true; // Uncomment this to see how a fulfilled condition looks like.
-        return game.functions.highlander(plr);
+        return game.functions.player.highlander(plr);
     },
 
     test(plr, self) {
-        const assert = game.functions.assert;
+        const assert = game.functions.error.assert;
         const length = plr.deck.length;
         plr.hand = [];
 
         // The player shouldn't fulfill the condition
-        assert(() => !game.functions.highlander(plr));
+        assert(() => !game.functions.player.highlander(plr));
         self.activateBattlecry();
 
         // Assert that the player didn't draw a card
@@ -60,7 +60,7 @@ export const blueprint: Blueprint = {
 
         // The player should fulfill the condition
         plr.deck = [new game.Card("Sheep", plr)];
-        assert(() => game.functions.highlander(plr));
+        assert(() => game.functions.player.highlander(plr));
         assert(() => plr.deck.length === 1);
 
         self.activateBattlecry();

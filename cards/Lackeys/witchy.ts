@@ -27,7 +27,7 @@ export const blueprint: Blueprint = {
         if (target.cost >= 10) return game.constants.REFUND;
 
         // Filter minions that cost (1) more than the target
-        const minions = game.functions.getCards().filter(card => {
+        const minions = game.functions.card.getAll().filter(card => {
             if (!target) throw new Error("Target is undefined!");
 
             return card.type === "Minion" && card.cost === target.cost + 1;
@@ -49,7 +49,7 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        const assert = game.functions.assert;
+        const assert = game.functions.error.assert;
 
         const existsMinionWithCost = (cost: number) => {
             return game.board[plr.id].some(card => card.cost === cost);
@@ -63,7 +63,7 @@ export const blueprint: Blueprint = {
         assert(() => !existsMinionWithCost(sheep.cost + 1));
 
         // If there doesn't exist any 2-Cost minions, pass the test
-        if (!game.functions.getCards().some(card => card.cost === sheep.cost + 1 && card.type === "Minion")) return;
+        if (!game.functions.card.getAll().some(card => card.cost === sheep.cost + 1 && card.type === "Minion")) return;
 
         // Activate the battlecry, select the sheep.
         plr.inputQueue = ["1"];

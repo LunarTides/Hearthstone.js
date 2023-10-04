@@ -7,7 +7,7 @@
 import { Card, Player, createGame } from "../src/internal.js";
 
 const { game, player1, player2 } = createGame();
-const cards = game.functions.getCards(false);
+const cards = game.functions.card.getAll(false);
 
 function testCard(card: Card): boolean | Error {
     try {

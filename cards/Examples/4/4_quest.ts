@@ -35,7 +35,7 @@ export const blueprint: Blueprint = {
         //         if the quest has triggered enough times,
         //     ) -> if the event should count towards the quest: bool
         // );
-        game.functions.addQuest("Quest", plr, self, "PlayCard", 3, (_unknownVal, done) => {
+        game.functions.event.quest.add("Quest", plr, self, "PlayCard", 3, (_unknownVal, done) => {
             // This code runs every time the `PlayCard` event gets broadcast.
             // This is like the callback function in event listeners.
 

@@ -18,7 +18,7 @@ export const blueprint: Blueprint = {
         // Summon a random 2-Cost minion.
 
         // filter out all cards that aren't 2-cost minions
-        const minions = game.functions.getCards().filter(card => card.type === "Minion" && card.cost === 2);
+        const minions = game.functions.card.getAll().filter(card => card.type === "Minion" && card.cost === 2);
 
         // Choose a random minion
         const rand = game.lodash.sample(minions);
@@ -30,10 +30,10 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        const assert = game.functions.assert;
+        const assert = game.functions.error.assert;
 
         // If there doesn't exist any 2-Cost minions, pass the test
-        if (!game.functions.getCards().some(card => card.cost === 2 && card.type === "Minion")) return;
+        if (!game.functions.card.getAll().some(card => card.cost === 2 && card.type === "Minion")) return;
 
         const exists2CostMinion = () => {
             return game.board[plr.id].some(card => card.cost === 2);

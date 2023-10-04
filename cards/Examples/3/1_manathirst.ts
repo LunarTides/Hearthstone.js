@@ -52,7 +52,7 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        const assert = game.functions.assert;
+        const assert = game.functions.error.assert;
 
         const sheep = new game.Card("Sheep", plr.getOpponent());
         sheep.addStats(4, 4);

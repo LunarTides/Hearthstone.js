@@ -19,7 +19,7 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        const assert = game.functions.assert;
+        const assert = game.functions.error.assert;
 
         plr.mana = 5;
         self.activate("cast");

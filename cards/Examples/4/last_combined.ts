@@ -15,7 +15,7 @@ export const blueprint: Blueprint = {
     id: 60,
 
     cast(plr, self) {
-        game.functions.addQuest("Quest", plr, self, "PlayCard", 3, (_unknownVal, done) => {
+        game.functions.event.quest.add("Quest", plr, self, "PlayCard", 3, (_unknownVal, done) => {
             const val = _unknownVal as EventValue<"PlayCard">;
 
             if (!(val !== self)) return false;
@@ -23,7 +23,7 @@ export const blueprint: Blueprint = {
 
             // The quest is done.
             // Add the `-1 cost` enchantment constantly
-            const unhook = game.functions.hookToTick(() => {
+            const unhook = game.functions.event.hookToTick(() => {
                 // Only add the enchantment to minions
                 plr.hand.filter(card => card.type == "Minion").forEach(minion => {
                     if (minion.enchantmentExists("-1 cost", self)) return;
@@ -35,7 +35,7 @@ export const blueprint: Blueprint = {
             // Add an event listener to check if you've played 10 cards
             let amount = 0;
 
-            game.functions.addEventListener("PlayCard", _unknownVal => {
+            game.functions.event.addListener("PlayCard", _unknownVal => {
                 const val = _unknownVal as EventValue<"PlayCard">
 
                 // Only continue if the player that triggered the event is this card's owner and the played card is a minion.

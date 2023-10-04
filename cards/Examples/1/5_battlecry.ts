@@ -35,7 +35,7 @@ export const blueprint: Blueprint = {
     // I encourage you to make tests like these yourself. Run `npm run script:testcards` to run these tests.
     // These tests are run in an isolated environment. The side-effect of the code here won't carry over to other tests.
     test(plr, self) {
-        const assert = game.functions.assert;
+        const assert = game.functions.error.assert;
 
         self.activateBattlecry();
 

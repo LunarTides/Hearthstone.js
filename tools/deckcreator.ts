@@ -10,8 +10,8 @@ import { CardClass, CardClassNoNeutral, GameConfig } from "../src/types.js";
 const { game, player1: plr, player2 } = createGame();
 
 const config = game.config;
-const classes = game.functions.getClasses();
-let cards = game.functions.getCards();
+const classes = game.functions.card.getClasses();
+let cards = game.functions.card.getAll();
 
 let chosenClass: CardClassNoNeutral;
 let filteredCards: Card[] = [];
@@ -97,7 +97,7 @@ function askClass(): CardClassNoNeutral {
     printName();
 
     let heroClass = game.input("What class do you want to choose?\n" + classes.join(", ") + "\n");
-    if (heroClass) heroClass = game.functions.capitalizeAll(heroClass);
+    if (heroClass) heroClass = game.functions.util.capitalizeAll(heroClass);
 
     if (!classes.includes(heroClass as CardClassNoNeutral)) return askClass();
 
@@ -276,7 +276,7 @@ function noCards() {
 
     if (!uncollectible) return;
 
-    cards = game.functions.getCards(false);
+    cards = game.functions.card.getAll(false);
 }
 
 function showCards() {
@@ -287,14 +287,14 @@ function showCards() {
     printName();
 
     // If the user chose to view an invalid class, reset the viewed class to default.
-    const correctClass = game.functions.validateClasses([settings.view.class ?? chosenClass], chosenClass);
+    const correctClass = game.functions.card.validateClasses([settings.view.class ?? chosenClass], chosenClass);
     if (!settings.view.class || !correctClass) settings.view.class = chosenClass;
 
     // Filter away cards that aren't in the chosen class
     Object.values(cards).forEach(c => {
         if (c.runes && !plr.testRunes(c.runes)) return;
 
-        const correctClass = game.functions.validateClasses(c.classes, settings.view.class ?? chosenClass);
+        const correctClass = game.functions.card.validateClasses(c.classes, settings.view.class ?? chosenClass);
         if (correctClass) filteredCards.push(c);
     });
 
@@ -381,7 +381,7 @@ function showCards() {
         bricks.push(game.interact.getDisplayName(c) + " - " + c.id);
     });
 
-    const wall = game.functions.createWall(bricks, "-");
+    const wall = game.functions.util.createWall(bricks, "-");
 
     wall.forEach(brick => {
         const brickSplit = brick.split("-");
@@ -389,7 +389,7 @@ function showCards() {
         const card = findCard(brickSplit[0].trim());
         if (!card) return;
 
-        const toDisplay = game.functions.colorByRarity(brickSplit[0], card.rarity) + "-" + brickSplit[1];
+        const toDisplay = game.functions.color.fromRarity(brickSplit[0], card.rarity) + "-" + brickSplit[1];
 
         game.log(toDisplay);
     });
@@ -462,7 +462,7 @@ function add(card: Card): boolean {
     return true;
 }
 function remove(card: Card) {
-    return game.functions.remove(deck, card);
+    return game.functions.util.remove(deck, card);
 }
 
 function showDeck() {
@@ -492,7 +492,7 @@ function showDeck() {
         bricks.push(viewed);
     });
 
-    const wall = game.functions.createWall(bricks, "-");
+    const wall = game.functions.util.createWall(bricks, "-");
 
     wall.forEach(brick => {
         const brickSplit = brick.split("-");
@@ -512,7 +512,7 @@ function showDeck() {
             const card = findCard(nameAndAmount.replace(r, "").trim());
             if (!card) return; // TODO: Maybe throw an error?
 
-            const name = game.functions.colorByRarity(amount[1], card.rarity);
+            const name = game.functions.color.fromRarity(amount[1], card.rarity);
 
             game.log(`${r.exec(nameAndAmount)}${name}-${id}`);
             return;
@@ -521,7 +521,7 @@ function showDeck() {
         const card = findCard(nameAndAmount.trim());
         if (!card) return;
 
-        const name = game.functions.colorByRarity(nameAndAmount, card.rarity);
+        const name = game.functions.color.fromRarity(nameAndAmount, card.rarity);
 
         game.log(`${name}-${id}`);
     });
@@ -691,14 +691,14 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         if (args.length <= 0) return false;
 
         let heroClass = args.join(" ") as CardClass;
-        heroClass = game.functions.capitalizeAll(heroClass) as CardClass;
+        heroClass = game.functions.util.capitalizeAll(heroClass) as CardClass;
 
         if (!classes.includes(heroClass as CardClassNoNeutral) && heroClass != "Neutral") {
             game.input("<red>Invalid class!</red>\n");
             return false;
         }
 
-        const correctClass = game.functions.validateClasses([heroClass], chosenClass);
+        const correctClass = game.functions.card.validateClasses([heroClass], chosenClass);
         if (!correctClass) {
             game.input(`<yellow>Class '${heroClass}' is a different class. To see these cards, please switch class from '${chosenClass}' to '${heroClass}' to avoid confusion.</yellow>\n`);
             return false;
@@ -967,7 +967,7 @@ let running = true;
  */
 export function main() {
     running = true;
-    game.functions.importCards();
+    game.functions.card.importAll();
 
     chosenClass = askClass();
 

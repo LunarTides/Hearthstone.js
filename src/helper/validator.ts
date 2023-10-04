@@ -20,8 +20,8 @@ export function validateBlueprint(blueprint: Blueprint): string | boolean {
     const required = requiredFieldsTable[blueprint.type];
 
     const unwanted = Object.keys(requiredFieldsTable);
-    game.functions.remove(unwanted, blueprint.type);
-    game.functions.remove(unwanted, "Undefined");
+    game.functions.util.remove(unwanted, blueprint.type);
+    game.functions.util.remove(unwanted, "Undefined");
 
     let result: string | boolean = true;
     required.forEach(field => {

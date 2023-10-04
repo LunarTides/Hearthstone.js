@@ -29,7 +29,7 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        const assert = game.functions.assert;
+        const assert = game.functions.error.assert;
 
         plr.inputQueue = ["face", "y"];
         self.activateBattlecry();

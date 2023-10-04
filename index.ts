@@ -11,7 +11,7 @@ import * as cli from "./tools/cli.js";                 // Command Line Interface
 
 const watermark = () => {
     game.interact.cls();
-    game.log("Hearthstone.js Runner V%s (C) 2022\n", game.functions.getVersion(3));
+    game.log("Hearthstone.js Runner V%s (C) 2022\n", game.functions.info.version(3));
 }
 
 function userInputLoop(prompt: string, exitCharacter: string | null, callback: (input: string) => void) {
@@ -34,7 +34,7 @@ function cardCreator() {
         game.interact.cls();
 
         if (type === "v") {
-            const [_, error] = game.functions.getVanillaCards();
+            const [_, error] = game.functions.card.vanilla.getAll();
 
             if (error) {
                 watermark();

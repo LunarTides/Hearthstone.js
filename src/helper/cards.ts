@@ -10,7 +10,7 @@ export function generateCardExports() {
     let exportContent = "// This file has been automatically created. Do not change this file.\n";
 
     const list: string[] = [];
-    game.functions.searchCardsFolder((fullPath, content, file) => {
+    game.functions.file.directory.searchCards((fullPath, content, file) => {
         if (!content.includes("export const blueprint")) return;
 
         fullPath = fullPath.replace(".ts", ".js");
@@ -26,8 +26,8 @@ export function generateCardExports() {
         exportContent += `export { blueprint as c${hash} } from "${path}";\n`;
     });
 
-    game.functions.writeFile("/cards/exports.ts", exportContent);
-    game.functions.writeFile("/dist/cards/exports.js", exportContent);
+    game.functions.file.write("/cards/exports.ts", exportContent);
+    game.functions.file.write("/dist/cards/exports.js", exportContent);
 }
 
 export function reloadCards(path?: string) {

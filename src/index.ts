@@ -35,7 +35,7 @@ export function main() {
         while (game.running) game.interact.doTurn();
     } catch (err) {
         // Create error report file
-        game.functions.createLogFile(err);
+        game.functions.util.createLogFile(err);
 
         throw err;
     }
@@ -46,7 +46,7 @@ const outdatedExtensions: string[] = [];
 const updatedCards: string[] = [];
 function warnAboutOutdatedCards() {
     // TODO: This doesn't quite work
-    findOutdatedCards(game.functions.dirname() + "/cards");
+    findOutdatedCards(game.functions.file.dirname() + "/cards");
     outdatedCards = outdatedCards.filter(card => !updatedCards.includes(card));
 
     if (outdatedCards.length <= 0 && outdatedExtensions.length <= 0) return;
@@ -71,7 +71,7 @@ function warnAboutOutdatedCards() {
 function findOutdatedCards(path: string) {
     if (path.includes("cards/Test")) return;
 
-    game.functions.readDirectory(path).forEach(file => {
+    game.functions.file.directory.read(path).forEach(file => {
         const p = `${path}/${file.name}`.replace("/dist/..", "");
 
         if (file.name.endsWith(".mts")) {

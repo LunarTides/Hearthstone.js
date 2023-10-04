@@ -23,7 +23,7 @@ export const blueprint: Blueprint = {
 
     // Ignore this
     test(plr, self) {
-        const assert = game.functions.assert;
+        const assert = game.functions.error.assert;
 
         // Makes the player answer "1" to the next question
         plr.inputQueue = ["1"];

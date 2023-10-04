@@ -44,7 +44,7 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        const assert = game.functions.assert;
+        const assert = game.functions.error.assert;
 
         const totemCardNames = ["Healing Totem", "Searing Totem", "Stoneclaw Totem", "Strength Totem"];
         const checkForTotemCard = (amount: number) => {

@@ -26,7 +26,7 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        const assert = game.functions.assert;
+        const assert = game.functions.error.assert;
 
         const checkIfMinionExists = () => {
             return game.board[plr.id].some(card => card.name === "Silver Hand Recruit");

@@ -56,12 +56,12 @@ function upgradeCard(path: string, data: string, file: Dirent) {
 
     // Replace the card's id with a new one
     data = upgradeField(data, /\n {4}id: (\d+),?/, "", "Removed id from card.");
-    const currentId = Number(game.functions.readFile("/cards/.latestId")) + 1;
+    const currentId = Number(game.functions.file.read("/cards/.latestId")) + 1;
 
     data = upgradeField(data, /( {4}.+: .+,)(\n\n {4}.*\(plr, (self|card))/, `$1\n    id: ${currentId},$2`, `Card was assigned id ${currentId} pt1.`);
     data = upgradeField(data, /( {4}uncollectible: .*?),?\n\}/, `$1,\n    id: ${currentId},\n}`, `Card was assigned id ${currentId} pt2.`);
 
-    game.functions.writeFile("/cards/.latestId", `${currentId}`);
+    game.functions.file.write("/cards/.latestId", `${currentId}`);
 
     if (hasPassive) {
         // Find key
@@ -89,7 +89,7 @@ function upgradeCard(path: string, data: string, file: Dirent) {
 
     // Replace .js to .ts
     path = path.replace(filename, filename.replace(".js", ".ts"));
-    game.functions.writeFile(path, data);
+    game.functions.file.write(path, data);
     
     game.log(`--- Finished ${filename} ---`);
 }
@@ -101,27 +101,27 @@ function main() {
     if (!proceed) process.exit(0);
 
     // Update card extensions
-    game.functions.searchCardsFolder((fullPath, content) => {
-        game.functions.writeFile(fullPath.replace(".mts", ".ts"), content);
-        game.functions.deleteFile(fullPath);
+    game.functions.file.directory.searchCards((fullPath, content) => {
+        game.functions.file.write(fullPath.replace(".mts", ".ts"), content);
+        game.functions.file.delete(fullPath);
 
         game.log(`Updated extension for card ${fullPath.slice(0, -4)}[.mts -> .ts]`);
     }, undefined, ".mts");
 
     // Upgrade all cards
-    game.functions.searchCardsFolder(upgradeCard, undefined, ".js");
+    game.functions.file.directory.searchCards(upgradeCard, undefined, ".js");
     generateCardExports();
 
     // Remove the dist folder
     if (process.platform === "win32") {
-        game.functions.runCommand("rmdir /S /Q dist > NUL 2>&1");
+        game.functions.util.runCommand("rmdir /S /Q dist > NUL 2>&1");
     } else {
-        game.functions.runCommand("rm -rf ./dist/ > /dev/null 2>&1");
+        game.functions.util.runCommand("rm -rf ./dist/ > /dev/null 2>&1");
     }
 
     game.log("Trying to compile...");
 
-    if (game.functions.tryCompile()) {
+    if (game.functions.util.tryCompile()) {
         game.log("<bright:green>Success!</bright:green>");
     } else {
         game.logError("<yellow>WARNING: Compiler error occurred. Please fix the errors in the card.</yellow>");

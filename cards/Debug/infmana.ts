@@ -18,13 +18,13 @@ export const blueprint: Blueprint = {
 
         // Gain max mana every tick.
         // This lasts for the rest of the game, since we don't unhook it.
-        game.functions.hookToTick(() => {
+        game.functions.event.hookToTick(() => {
             plr.gainMana(plr.maxMana);
         });
     },
 
     test(plr, self) {
-        const assert = game.functions.assert;
+        const assert = game.functions.error.assert;
 
         plr.mana = 5;
         self.activate("cast");

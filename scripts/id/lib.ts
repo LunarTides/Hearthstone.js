@@ -11,7 +11,7 @@ const { game, player1, player2 } = createGame();
 const idRegex = / {4}id: (\d+)/;
 
 function searchCards(callback: (path: string, content: string, id: number) => void, path?: string) {
-    game.functions.searchCardsFolder((fullPath, content) => {
+    game.functions.file.directory.searchCards((fullPath, content) => {
         const idMatch = content.match(idRegex);
         if (!idMatch) {
             game.logError(`No id found in ${fullPath}`);
@@ -35,17 +35,17 @@ function change(startId: number, callback: (id: number) => number, log: boolean)
         const newId = callback(id);
 
         // Set the new id
-        game.functions.writeFile(path, content.replace(idRegex, `    id: ${newId}`));
+        game.functions.file.write(path, content.replace(idRegex, `    id: ${newId}`));
 
         if (log) game.log(`<bright:green>Updated ${path}</bright:green>`);
         updated++;
     });
 
     if (updated > 0) {
-        const latestId = Number(game.functions.readFile("/cards/.latestId"));
+        const latestId = Number(game.functions.file.read("/cards/.latestId"));
         const newLatestId = callback(latestId);
 
-        game.functions.writeFile("/cards/.latestId", newLatestId.toString());
+        game.functions.file.write("/cards/.latestId", newLatestId.toString());
     }
 
     if (log) {
@@ -122,10 +122,10 @@ export function validate(log: boolean): [number, number] {
     });
 
     // Check if the .latestId is valid
-    const latestId = parseInt(game.functions.readFile("/cards/.latestId").trim());
+    const latestId = parseInt(game.functions.file.read("/cards/.latestId").trim());
     if (latestId !== currentId) {
         if (log) game.log("<yellow>Latest id is invalid. Latest id found: %s, latest id in file: %s. Fixing...</yellow>", currentId, latestId);
-        game.functions.writeFile("/cards/.latestId", currentId.toString());
+        game.functions.file.write("/cards/.latestId", currentId.toString());
     }
 
     if (log) {

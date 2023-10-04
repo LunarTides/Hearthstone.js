@@ -51,7 +51,7 @@ function generateCardPath(...args: [CardClass[], CardType]) {
     let [classes, type] = args;
 
     // DO NOT CHANGE THIS
-    const staticPath = game.functions.dirname() + "/cards/";
+    const staticPath = game.functions.file.dirname() + "/cards/";
 
     // You can change everything below this comment
     const classesString = classes.join("/");
@@ -119,7 +119,7 @@ export function create(creatorType: CCType, cardType: CardType, blueprint: Bluep
     if (descToClean === undefined) throw new Error("Card has no hero power description.");
 
     // If the text has `<b>Battlecry:</b> Dredge.`, add `// Dredge.` to the battlecry ability
-    const cleanedDesc = game.functions.stripTags(descToClean).replace(`${ability}: `, "");
+    const cleanedDesc = game.functions.color.stripTags(descToClean).replace(`${ability}: `, "");
 
     // `create` ability
     const runes = card.runes ? `        self.runes = "${card.runes}"\n` : "";
@@ -155,7 +155,7 @@ ${runes}${keywords}
     let path = generateCardPath(card.classes, type).replaceAll("\\", "/");
 
     // If this function was passed in a path, use that instead.
-    if (overridePath) path = game.functions.dirname() + overridePath; 
+    if (overridePath) path = game.functions.file.dirname() + overridePath; 
 
     // Create a filename. Example: "Test Card" -> "test_card.ts"
     let filename = card.name.toLowerCase().replaceAll(" ", "_") + ".ts";
@@ -164,7 +164,7 @@ ${runes}${keywords}
     if (overrideFilename) filename = overrideFilename;
 
     // Get the latest card-id
-    const id = parseInt(game.functions.readFile("/cards/.latestId")) + 1;
+    const id = parseInt(game.functions.file.read("/cards/.latestId")) + 1;
     const fileId = `\n    id: ${id},`;
 
     // Generate the content of the card
@@ -215,17 +215,17 @@ export const blueprint: Blueprint = {
         // If debug mode is disabled, write the card to disk.
         
         // Increment the id in '.latestId' by 1
-        game.functions.writeFile("/cards/.latestId", id.toString()); 
+        game.functions.file.write("/cards/.latestId", id.toString()); 
 
         // If the path the card would be written to doesn't exist, create it.
-        if (!game.functions.existsFile(path)) game.functions.makeDirectory(path, true);
+        if (!game.functions.file.exists(path)) game.functions.file.directory.create(path, true);
         // Write the file to the path
-        game.functions.writeFile(filePath, content);
+        game.functions.file.write(filePath, content);
 
         game.log('File created at: "' + filePath + '"');
 
         game.log("Trying to compile...");
-        if (game.functions.tryCompile()) {
+        if (game.functions.util.tryCompile()) {
             game.log("<bright:green>Success!</bright:green>");
         } else {
             game.logError("<yellow>WARNING: Compiler error occurred. Please fix the errors in the card.</yellow>");
@@ -244,7 +244,7 @@ export const blueprint: Blueprint = {
 
     // Open the defined editor on that card if it has a function to edit, and debug mode is disabled
     if (ability && !debug) {
-        const success = game.functions.runCommandAsChildProcess(`${game.config.general.editor} "${filePath}"`);
+        const success = game.functions.util.runCommandAsChildProcess(`${game.config.general.editor} "${filePath}"`);
         if (!success) game.input();
     }
 

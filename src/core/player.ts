@@ -668,7 +668,7 @@ export class Player {
         // Cast on draw
         if (card.type == "Spell" && card.keywords.includes("Cast On Draw") && card.activate("cast")) return this.drawCard();
 
-        const unsuppress = game.functions.suppressEvent("AddCardToHand");
+        const unsuppress = game.functions.event.suppress("AddCardToHand");
         this.addToHand(card);
         unsuppress();
 
@@ -702,12 +702,12 @@ export class Player {
     drawSpecific(card: Card): Card | null {
         if (this.deck.length <= 0) return null;
 
-        game.functions.remove(this.deck, card);
+        game.functions.util.remove(this.deck, card);
         game.events.broadcast("DrawCard", card, this);
 
         if (card.type == "Spell" && card.keywords.includes("Cast On Draw") && card.activate("cast")) return null;
 
-        const unsuppress = game.functions.suppressEvent("AddCardToHand");
+        const unsuppress = game.functions.event.suppress("AddCardToHand");
         this.addToHand(card);
         unsuppress();
 
@@ -759,7 +759,7 @@ export class Player {
      */
     setToStartingHero(heroClass = this.heroClass): boolean {
         const heroCardName = heroClass + " Starting Hero";
-        const heroCard = game.functions.getCardByName(heroCardName);
+        const heroCard = game.functions.card.getFromName(heroCardName);
 
         if (!heroCard) return false;
         this.setHero(new Card(heroCard.name, this), 0, false);

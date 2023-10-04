@@ -45,11 +45,11 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CCT
     text = text.replaceAll("\n", " ");
     text = text.replaceAll("[x]", "");
 
-    const classes = game.functions.getClasses() as CardClass[];
+    const classes = game.functions.card.getClasses() as CardClass[];
     classes.push("Neutral");
 
     while (!classes.includes(cardClass)) {
-        cardClass = game.functions.capitalizeAll(game.input("<red>Was not able to find the class of this card.\nWhat is the class of this card? </red>")) as CardClass;
+        cardClass = game.functions.util.capitalizeAll(game.input("<red>Was not able to find the class of this card.\nWhat is the class of this card? </red>")) as CardClass;
     }
 
     const realName = game.input("Override name (this will set 'name' to be the displayname instead) (leave empty to not use display name): ") || name;
@@ -145,7 +145,7 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CCT
 export function main(debug = false, overrideType?: lib.CCType) {
     game.log("Hearthstone.js Vanilla Card Creator (C) 2022\n");
 
-    const [vanillaCards, error] = game.functions.getVanillaCards();
+    const [vanillaCards, error] = game.functions.card.vanilla.getAll();
 
     if (error) {
         game.input(error);
@@ -161,7 +161,7 @@ export function main(debug = false, overrideType?: lib.CCType) {
         if (game.interact.shouldExit(cardName)) break;
 
         let filteredCards = vanillaCards.filter(c => c.name.toLowerCase() == cardName.toLowerCase() || c.dbfId == parseInt(cardName));
-        filteredCards = game.functions.filterVanillaCards(filteredCards, false, true);
+        filteredCards = game.functions.card.vanilla.filter(filteredCards, false, true);
 
         if (filteredCards.length <= 0) {
             game.log("Invalid card.\n");

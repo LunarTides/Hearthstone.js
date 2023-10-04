@@ -1,7 +1,7 @@
 import * as lib from "./lib.js";
 
 // Check if your git is clean
-const gitStatus = game.functions.runCommand("git status --porcelain");
+const gitStatus = game.functions.util.runCommand("git status --porcelain");
 if (typeof gitStatus === "string") {
     game.logError("<yellow>WARNING: You have uncommitted changes. Please commit them before running a non-safe command.</yellow>");
     //process.exit(1);

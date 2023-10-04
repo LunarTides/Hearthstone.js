@@ -103,7 +103,7 @@ export const blueprint: Blueprint = {
         let potentiallyCancelled = false;
 
         // Make sure the parameters are correct
-        game.functions.addEventListener("TargetSelectionStarts", (_unknownVal) => {
+        game.functions.event.addListener("TargetSelectionStarts", (_unknownVal) => {
             const val = _unknownVal as EventValue<"TargetSelectionStarts">;
 
             // Don't check for `prompt` since there is no correct prompt
@@ -123,7 +123,7 @@ export const blueprint: Blueprint = {
         }, 1);
 
         // Find the target
-        game.functions.addEventListener("TargetSelected", (_unknownVal) => {
+        game.functions.event.addListener("TargetSelected", (_unknownVal) => {
             const val = _unknownVal as EventValue<"TargetSelected">;
 
             if (!(val[0] === self)) return false;

@@ -44,7 +44,7 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        const assert = game.functions.assert;
+        const assert = game.functions.error.assert;
 
         self.replacePlaceholders();
         assert(() => self.text === "Battlecry: Gain mana equal to the turn counter. (Currently {ph:0} placeholder {/ph}, {ph:1} placeholder {/ph}, {ph:0} placeholder {/ph}, {ph:next thing is} placeholder {/ph} {ph:10} placeholder {/ph}, {placeholder without replacement})");

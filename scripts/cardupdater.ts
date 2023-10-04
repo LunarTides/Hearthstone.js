@@ -9,15 +9,15 @@ import { Blueprint, VanillaCard } from "../src/types.js";
 const { game, player1, player2 } = createGame();
 
 function main() {
-    const [vanillaCards, error] = game.functions.getVanillaCards();
+    const [vanillaCards, error] = game.functions.card.vanilla.getAll();
 
     if (error) {
         game.input(error);
         process.exit(1);
     }
 
-    const filteredVanillaCards = game.functions.filterVanillaCards(vanillaCards, false, false);
-    const customCards = game.functions.getCards(false);
+    const filteredVanillaCards = game.functions.card.vanilla.filter(vanillaCards, false, false);
+    const customCards = game.functions.card.getAll(false);
 
     customCards.forEach(custom => {
         // Find the equivalent vanilla card 

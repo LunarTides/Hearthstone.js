@@ -16,11 +16,11 @@ export const blueprint: Blueprint = {
 
     battlecry(plr, self) {
         // Summon 1 random Demon.
-        const amount = game.functions.galakrondFormula(self.storage.invokeCount);
+        const amount = game.functions.keyword.galakrond.formula(self.storage.invokeCount);
 
         for (let i = 0; i < amount; i++) {
             // Find all demons
-            const possible_cards = game.functions.getCards().filter(c => c.type == "Minion" && game.functions.matchTribe(c.tribe!, "Demon"));
+            const possible_cards = game.functions.card.getAll().filter(c => c.type == "Minion" && game.functions.card.matchTribe(c.tribe!, "Demon"));
 
             // Choose a random one
             let card = game.lodash.sample(possible_cards);
@@ -43,11 +43,11 @@ export const blueprint: Blueprint = {
     },
 
     invoke(plr, self) {
-        game.functions.galakrondInvokeBump(self, "invokeCount");
+        game.functions.keyword.galakrond.bump(self, "invokeCount");
     },
 
     placeholders(plr, self) {
-        const amount = game.functions.galakrondFormula(self.storage.invokeCount);
+        const amount = game.functions.keyword.galakrond.formula(self.storage.invokeCount);
         const multiple = amount > 1;
         const plural = multiple ? "s" : "";
 
