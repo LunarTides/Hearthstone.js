@@ -98,7 +98,7 @@ export const GameLoopInteract = {
      * 
      * @returns A string if "echo" is false
      */
-    handleCmds(q: string, echo: boolean = true, debug: boolean = false): boolean | string | -1 {
+    handleCmds(q: string, flags?: { echo?: boolean, debug?: boolean, historyCardOnlyName?: boolean }): boolean | string | -1 {
         const args = q.split(" ");
         const name = args.shift()?.toLowerCase();
         if (!name) {
@@ -311,7 +311,7 @@ export const GameLoopInteract = {
             }
         }
         else if (name === "history") {
-            if (echo === false) {}
+            if (flags?.echo === false) {}
             else game.log("<yellow>Cards that are shown are collected while this screen is rendering. This means that it gets the information about the card from where it is when you ran this command, for example; the graveyard. This is why most cards have <1 health.</yellow>");
 
             // History
@@ -319,6 +319,7 @@ export const GameLoopInteract = {
             let finished = "";
 
             const showCard = (val: Card) => {
+                if (flags?.historyCardOnlyName) return `${val.name} (${val.uuid.slice(0, 8)})`;
                 return `${game.interact.card.getReadable(val)} which belongs to: <blue>${val.plr.name}</blue>, and has uuid: ${val.uuid.slice(0, 8)}`;
             }
 
@@ -381,7 +382,7 @@ export const GameLoopInteract = {
                     if (plr != prevPlayer) hasPrintedHeader = false;
                     prevPlayer = plr;
 
-                    if (game.config.advanced.whitelistedHistoryKeys.includes(key) || debug) {}
+                    if (game.config.advanced.whitelistedHistoryKeys.includes(key) || flags?.debug) {}
                     else return;
 
                     // If the `key` is "AddCardToHand", check if the previous history entry was `DrawCard`, and they both contained the exact same `val`.
@@ -394,7 +395,7 @@ export const GameLoopInteract = {
                         }
                     }
 
-                    const shouldHide = game.config.advanced.hideValueHistoryKeys.includes(key) && !debug;
+                    const shouldHide = game.config.advanced.hideValueHistoryKeys.includes(key) && !flags?.debug;
 
                     if (!hasPrintedHeader) finished += `\nTurn ${t} - Player [${plr.name}]\n`; 
                     hasPrintedHeader = true;
@@ -420,7 +421,7 @@ export const GameLoopInteract = {
             });
 
 
-            if (echo === false) {}
+            if (flags?.echo === false) {}
             else {
                 game.log(finished);
 
@@ -553,7 +554,7 @@ export const GameLoopInteract = {
         else if (name === "/ai") {
             let finished = "";
 
-            if (echo) finished += "AI Info:\n\n";
+            if (flags?.echo) finished += "AI Info:\n\n";
 
             for (let i = 0; i < 2; i++) {
                 const plr = game.functions.util.getPlayerFromId(i);
@@ -568,7 +569,7 @@ export const GameLoopInteract = {
                 finished += "}\n";
             }
 
-            if (echo === false) {}
+            if (flags?.echo === false) {}
             else {
                 game.log(finished);
 
@@ -702,7 +703,7 @@ export const GameLoopInteract = {
             game.input();
         }
         else if (name === "/reload" || name === "/rl") {
-            if (game.config.advanced.reloadCommandConfirmation && !debug) {
+            if (game.config.advanced.reloadCommandConfirmation && !flags?.debug) {
                 game.interact.info.printAll(game.player);
                 const sure = game.interact.yesNoQuestion(game.player, "<yellow>Are you sure you want to reload? This will reset all cards to their base state. This can also cause memory leaks with excessive usage.\nThis requires the game to be recompiled. I recommend using `tsc --watch` in another window before running this command.</yellow>");
                 if (!sure) return false;
@@ -740,14 +741,14 @@ export const GameLoopInteract = {
                 return true;
             });
 
-            if (!debug && success) game.input("\nThe cards have been reloaded.\nPress enter to continue...");
+            if (!flags?.debug && success) game.input("\nThe cards have been reloaded.\nPress enter to continue...");
             if (!success) game.input("\nSome steps failed. The game could not be fully reloaded. Please report this.\nPress enter to continue...");
         }
         else if (name === "/freload" || name === "/frl") {
-            return this.handleCmds("/reload", true, true);
+            return this.handleCmds("/reload", { debug: true });
         }
         else if (name === "/history") {
-            return this.handleCmds("history", true, true);
+            return this.handleCmds("history", { debug: true, historyCardOnlyName: flags?.historyCardOnlyName });
         }
         // -1 if the command is not found
         else return -1;

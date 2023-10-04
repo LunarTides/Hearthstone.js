@@ -48,7 +48,7 @@ function main() {
             game.functions.util.createLogFile(err);
 
             game.interact.gameLoop.handleCmds("/ai");
-            game.interact.gameLoop.handleCmds("history", true, true);
+            game.interact.gameLoop.handleCmds("history", { debug: true });
 
             game.log("THE GAME CRASHED: LOOK ABOVE FOR THE HISTORY, AND THE AI'S LOGS.");
 
