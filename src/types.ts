@@ -504,6 +504,8 @@ export type EventListenerMsg = boolean | "destroy" | "reset";
  */
 export type EventListenerCallback = (val: UnknownEventValue, eventPlayer: Player) => EventListenerMsg;
 
+export type HistoryKey = [EventKey, UnknownEventValue, Player];
+
 /**
  * A card-like object.
  */

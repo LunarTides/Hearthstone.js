@@ -1,10 +1,10 @@
-import { EventKey, EventManagerEvents, EventValue, QuestType, TickHookCallback, UnknownEventValue } from "@Game/types.js";
+import { EventKey, EventManagerEvents, HistoryKey, QuestType, TickHookCallback, UnknownEventValue } from "@Game/types.js";
 import { Card, Player } from "../internal.js";
 
 interface IEventManager {
     eventListeners: number;
     tickHooks: TickHookCallback[];
-    history: {[x: number]: [[EventKey, UnknownEventValue, Player]]};
+    history: {[x: number]: [HistoryKey]};
     events: EventManagerEvents;
     suppressed: EventKey[];
     stats: {[key: string]: [number, number]};
