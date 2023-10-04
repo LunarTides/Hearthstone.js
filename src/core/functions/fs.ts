@@ -1,4 +1,4 @@
-// It only confines these functions to the Hearthstone.js directory. Look in the fs wrapper functions in this file to confirm.  import { 
+// It only confines these functions to the Hearthstone.js directory. Look in the fs wrapper functions in this file to confirm.
 import {
     writeFileSync as fsWriteFileSync,
     readFileSync as fsReadFileSync,

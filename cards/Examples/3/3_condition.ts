@@ -39,10 +39,10 @@ export const blueprint: Blueprint = {
     // This function will also be run every tick in order to add / remove the ` (Condition cleared!)` text.
     // If this function returns true when this card is played, the battlecry will be triggered.
     condition(plr, self) {
-        // `game.functions.highlander` will return true if the player has no duplicates in their deck.
+        // `plr.highlander` will return true if the player has no duplicates in their deck.
         //
         //return true; // Uncomment this to see how a fulfilled condition looks like.
-        return game.functions.player.highlander(plr);
+        return plr.highlander();
     },
 
     test(plr, self) {
@@ -51,7 +51,7 @@ export const blueprint: Blueprint = {
         plr.hand = [];
 
         // The player shouldn't fulfill the condition
-        assert(() => !game.functions.player.highlander(plr));
+        assert(() => !plr.highlander());
         self.activateBattlecry();
 
         // Assert that the player didn't draw a card
@@ -60,7 +60,7 @@ export const blueprint: Blueprint = {
 
         // The player should fulfill the condition
         plr.deck = [new game.Card("Sheep", plr)];
-        assert(() => game.functions.player.highlander(plr));
+        assert(() => plr.highlander());
         assert(() => plr.deck.length === 1);
 
         self.activateBattlecry();

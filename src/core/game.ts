@@ -323,7 +323,7 @@ export class Game {
         // Add quest cards to the players hands
         for (let i = 0; i < 2; i++) {
             // Set the player's hero to the default hero for the class
-            const plr = functions.player.getFromId(i);
+            const plr = functions.util.getPlayerFromId(i);
             
             const success = plr.setToStartingHero();
             if (!success) {
@@ -495,7 +495,7 @@ export class Game {
         let amount = 0;
 
         for (let p = 0; p < 2; p++) {
-            const plr = functions.player.getFromId(p);
+            const plr = functions.util.getPlayerFromId(p);
 
             const sparedMinions: Card[] = [];
             const shouldSpare = (card: Card) => {

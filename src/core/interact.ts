@@ -561,7 +561,7 @@ export const interact = {
             if (echo) finished += "AI Info:\n\n";
 
             for (let i = 0; i < 2; i++) {
-                const plr = game.functions.player.getFromId(i);
+                const plr = game.functions.util.getPlayerFromId(i);
                 if (!plr.ai) continue;
 
                 finished += `AI${i + 1} History: {\n`;
@@ -923,7 +923,7 @@ export const interact = {
         if (plr.ai) input = plr.ai.mulligan();
         else input = game.input(sb);
 
-        const isInt = game.functions.player.mulligan(plr, input);
+        const isInt = plr.mulligan(input);
 
         if (!isInt && input != "") {
             game.input("<red>Invalid input!</red>\n");
@@ -1682,7 +1682,7 @@ export const interact = {
 
     printBoard(plr: Player): void {
         game.board.forEach((side, plrId) => {
-            const player = game.functions.player.getFromId(plrId);
+            const player = game.functions.util.getPlayerFromId(plrId);
             const sideMessage = plr === player ? "----- Board (You) ------" : "--- Board (Opponent) ---";
             game.log(sideMessage);
 

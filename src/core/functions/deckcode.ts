@@ -1,7 +1,7 @@
-import { CardClass, CardClassNoNeutral, CardLike, FunctionsExportDeckError, VanillaCard } from "@Game/types.js";
-import { Card, Player } from "../../internal.js";
 // To decode vanilla deckcodes
 import deckstrings from "deckstrings";
+import { CardClass, CardClassNoNeutral, CardLike, FunctionsExportDeckError, VanillaCard } from "@Game/types.js";
+import { Card, Player } from "../../internal.js";
 
 export const deckcodeFunctions = {
     /**

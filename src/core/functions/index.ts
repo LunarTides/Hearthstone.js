@@ -12,7 +12,6 @@ import {
     _utilFunctions,
     _infoFunctions,
     _eventFunctions,
-    _playerFunctions,
     _errorFunctions
 } from "../../internal.js";
 
@@ -57,11 +56,6 @@ export const functions = {
      * Event related functions
      */
     event: _eventFunctions,
-
-    /**
-     * Player related functions
-     */
-    player: _playerFunctions,
 
     /**
      * Error related functions

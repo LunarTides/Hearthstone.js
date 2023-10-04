@@ -1,5 +1,5 @@
 import { EventKey, EventListenerCallback, TickHookCallback, QuestCallback } from "@Game/types.js";
-import { Card, Player } from "../../internal.js";
+import { Card, Player } from "@Game/internal.js";
 
 const quest = {
     /**

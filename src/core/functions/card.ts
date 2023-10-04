@@ -1,7 +1,7 @@
 import { Card, Player } from "../../internal.js";
+import { CardLike, VanillaCard, CardClass, MinionTribe, FunctionsValidateCardReturn, CardClassNoNeutral } from "@Game/types.js";
 import { doImportCards, generateCardExports } from "../../helper/cards.js";
 import { validateBlueprint } from "../../helper/validator.js";
-import { CardLike, VanillaCard, CardClass, MinionTribe, FunctionsValidateCardReturn, CardClassNoNeutral } from "@Game/types.js";
 
 const vanilla = {
     /**

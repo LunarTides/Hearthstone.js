@@ -30,7 +30,7 @@ function main() {
 
         // Choose random decks for the players
         for (let i = 0; i < 2; i++) {
-            const plr = game.functions.player.getFromId(i);
+            const plr = game.functions.util.getPlayerFromId(i);
 
             const deck = game.lodash.sample(decks);
             if (typeof deck === "string") game.functions.deckcode.import(plr, deck);

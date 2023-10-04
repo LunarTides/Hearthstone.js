@@ -835,4 +835,66 @@ export class Player {
         if (blood > b || frost > f || unholy > u) return false;
         return true;
     }
+    
+    /**
+     * Mulligans the cards from input. Read `interact.mulligan` for more info.
+     *
+     * @param input The ids of the cards to mulligan
+     *
+     * @returns The cards mulligan'd
+     */
+    mulligan(input: string): Card[] | TypeError {
+        if (!parseInt(input)) return new TypeError("Can't parse `input` to int");
+
+        const cards: Card[] = [];
+        const mulligan: Card[] = [];
+
+        input.split("").forEach(c => mulligan.push(this.hand[parseInt(c) - 1]));
+
+        this.hand.forEach(c => {
+            if (!mulligan.includes(c) || c.name == "The Coin") return;
+
+            game.functions.util.remove(mulligan, c);
+            
+            let unsuppress = game.functions.event.suppress("DrawCard");
+            this.drawCard();
+            unsuppress();
+
+            unsuppress = game.functions.event.suppress("AddCardToDeck");
+            this.shuffleIntoDeck(c);
+            unsuppress();
+
+            game.functions.util.remove(this.hand, c);
+
+            cards.push(c);
+        });
+
+        return cards;
+    }
+
+    /**
+     * Calls `callback` on all this player's targets, including the player itself.
+     *
+     * @param callback The callback to call
+     * 
+     * @returns Success
+     */
+    doTargets(callback: (target: Target) => void): boolean {
+        game.board[this.id].forEach(m => {
+            callback(m);
+        });
+
+        callback(this);
+
+        return true;
+    }
+
+    /**
+     * Returns if this player's deck has no duplicates.
+     */
+    highlander(): boolean {
+        const deck = this.deck.map(c => c.name);
+
+        return (new Set(deck)).size == deck.length;
+    }
 }

@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import childProcess from "child_process";
+import { Player } from "@Game/internal.js";
 
 export const utilFunctions = {
     /**
@@ -333,4 +334,17 @@ ${mainContent}
     getTraditionalTurnCounter() {
         return Math.ceil(game.turns / 2);
     },
+
+    /**
+     * Retrieves the player corresponding to the given id.
+     * 0 is Player 1.
+     * 1 is Player 2.
+     *
+     * @param id The id of the player - 1.
+     * @return The player
+     */
+    getPlayerFromId(id: number): Player {
+        if (id === 0) return game.player1;
+        else return game.player2;
+    }
 }
