@@ -1,4 +1,5 @@
 import chalk from "chalk";
+import stripAnsi from "strip-ansi";
 import { CardRarity } from "@Game/types.js";
 
 export const colorFunctions = {
@@ -398,4 +399,11 @@ export const colorFunctions = {
 
         return strippedString;
     },
+
+    /**
+     * Removes ansi color codes from a string.
+     */
+    strip(str: string): string {
+        return stripAnsi(str);
+    }
 }

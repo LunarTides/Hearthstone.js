@@ -29,6 +29,7 @@
     "deckstrings": "^3.1.1",
     "lodash": "^4.17.21",
     "readline-sync": "^1.4.10",
+    "strip-ansi": "^7.1.0",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
