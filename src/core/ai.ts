@@ -274,17 +274,10 @@ export class AI {
     }
 
     /**
-     * Returns if there is a taunt on the board
-     *
-     * @param returnTaunts If the function should return the taunts it found, or just if there is a taunt. If this is true it will return the taunts it found.
+     * Returns the taunts on the board
      */
-    private _tauntExists(returnTaunts: boolean = false): Card[] | boolean {
-        // TODO: Make it only return Card[]
-        const taunts = game.board[this.plr.getOpponent().id].filter(m => m.keywords.includes("Taunt"));
-
-        if (returnTaunts) return taunts;
-
-        return taunts.length > 0;
+    private _findTaunts(): Card[] {
+        return game.board[this.plr.getOpponent().id].filter(m => m.keywords.includes("Taunt"));
     }
 
     /**
@@ -323,9 +316,9 @@ export class AI {
         const riskMode = currentWinner[1] >= opScore + game.config.ai.riskThreshold;
 
         // If there are taunts, override risk mode
-        const taunts = this._tauntExists();
+        const taunts = this._findTaunts();
 
-        if (riskMode && !taunts) ret = this._attackGeneralRisky();
+        if (riskMode && taunts.length <= 0) ret = this._attackGeneralRisky();
         else ret = this._attackGeneralMinion();
 
         if (ret.includes(-1)) return [-1, -1];
@@ -363,7 +356,7 @@ export class AI {
         // If the focused minion doesn't exist, select a new minion to focus
         if (!game.board[this.plr.getOpponent().id].find(a => a == this.focus)) this.focus = null;
 
-        if (!this.focus || (this._tauntExists() && !this.focus.keywords.includes("Taunt"))) target = this._attackGeneralChooseTarget();
+        if (!this.focus || (this._findTaunts().length > 0 && !this.focus.keywords.includes("Taunt"))) target = this._attackGeneralChooseTarget();
         else target = this.focus
 
         return [this._attackGeneralChooseAttacker(target instanceof Player), target];
@@ -380,7 +373,7 @@ export class AI {
         let board = game.board[this.plr.getOpponent().id];
 
         // If there is a taunt, select that as the target
-        const taunts = this._tauntExists(true);
+        const taunts = this._findTaunts();
         if (taunts instanceof Array && taunts.length > 0) return taunts[0];
 
         board = board.filter(m => this._canTargetMinion(m));
@@ -396,7 +389,7 @@ export class AI {
 
         const target = highestScore[0];
 
-        // TODO: Does this never fail?
+        // TODO: Does this never fail? What is going on here!?
         if (!target) return this.plr.getOpponent();
 
         if (!target) {
@@ -473,10 +466,10 @@ export class AI {
         // If the ai is winner by more than 'threshold' points, enable risk mode
         const riskMode = currentWinner[1] >= opScore + game.config.ai.riskThreshold;
 
-        const taunts = this._tauntExists();
+        const taunts = this._findTaunts();
 
         // If there is a taunt, attack it before trading
-        if (taunts) return this._attackGeneral(board);
+        if (taunts.length > 0) return this._attackGeneral(board);
 
         if (amountOfTrades > 0 && !riskMode) return this._attackTrade() ?? [-1, -1];
         return this._attackGeneral(board);
