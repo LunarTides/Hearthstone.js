@@ -9,12 +9,12 @@ import { createGame } from "../../src/internal.js";
 import { Blueprint, BlueprintWithOptional, CardClass, CardKeyword, CardRarity, CardType, MinionTribe, SpellSchool } from "../../src/types.js";
 
 const { game, player1, player2 } = createGame();
-let card: Blueprint;
 
 let shouldExit = false;
 let type: CardType;
 
 function input(prompt: string) {
+    if (shouldExit) return "";
     const ret = game.input(prompt);
 
     if (game.interact.shouldExit(ret)) shouldExit = true;
@@ -25,57 +25,73 @@ function applyCard(_card: BlueprintWithOptional) {
     const newCard = {} as Blueprint;
 
     Object.entries(_card).forEach(c => {
-        const [key, val] = c;
+        let [key, val] = c;
 
-        const requiredKeys = ["name", "text", "cost", "class", "rarity", "stats", "durability", "hpText", "hpCost", "cooldown"];
-        if (!val && val !== 0 && !requiredKeys.includes(key)) return;
+        // These are the required fields and their default values.
+        const defaults = {
+            name: "CHANGE THIS",
+            text: "",
+            cost: 0,
+            classes: ["Neutral"],
+            rarity: "Free",
+            stats: [1, 1],
+            tribe: "None",
+            spellSchool: "None",
+            hpText: "CHANGE THIS",
+            hpCost: 2,
+            durability: 2,
+            cooldown: 2,
+        };
+
+        let valUndefined = !val;
+
+        // If the value is an array, the value is undefined if every element is falsy
+        valUndefined ||= val instanceof Array && val.every(v => !v);
+
+        // The value should not be undefined if it is 0
+        valUndefined &&= val !== 0;
+
+        // Don't include the key if the value is falsy, unless the key is required.
+        const defaultVal = game.lodash.get(defaults, key, undefined);
+        if (defaultVal !== undefined && valUndefined) {
+            val = defaultVal;
+            valUndefined = false;
+        }
+
+        if (valUndefined) return;
 
         // HACK: Well, it is not ts-expect-error at least
         newCard[key as keyof Blueprint] = val as never;
     });
 
-    return newCard!;
+    return newCard;
 }
 
-function common(): false | BlueprintWithOptional {
+function common(): BlueprintWithOptional {
     const name = input("Name: ");
-    if (shouldExit) return false;
-
     const displayName = input("Display Name: ");
-    if (shouldExit) return false;
-
-    const description = input("Description: ");
-    if (shouldExit) return false;
-
-    const cost = input("Mana Cost: ");
-    if (shouldExit) return false;
-
+    const text = input("Text: ");
+    const cost = parseInt(input("Cost: "));
     const classes = input("Classes: ") as CardClass;
-    if (shouldExit) return false;
-
     const rarity = input("Rarity: ") as CardRarity;
-    if (shouldExit) return false;
-
     const keywords = input("Keywords: ");
-    if (shouldExit) return false;
-    
+
     let runes;
     if (classes == "Death Knight") runes = input("Runes: ");
-    if (shouldExit) return false;
 
     let realKeywords: CardKeyword[] | undefined;
     if (keywords) realKeywords = keywords.split(', ') as CardKeyword[];
 
     return {
-        name: name,
-        displayName: displayName,
-        text: description,
-        cost: parseInt(cost),
-        type: type,
+        name,
+        displayName,
+        text,
+        cost,
+        type,
         classes: [classes],
-        rarity: rarity,
+        rarity,
         id: 0,
-        runes: runes,
+        runes,
         keywords: realKeywords,
     };
 }
@@ -83,13 +99,9 @@ function common(): false | BlueprintWithOptional {
 const cardTypeFunctions = {
     Minion() {
         const _card = common();
-        if (!_card) return false;
 
         const stats = input("Stats: ");
-        if (shouldExit) return false;
-
         const tribe = input("Tribe: ") as MinionTribe;
-        if (shouldExit) return false;
 
         // Turn 1/1 to [1, 1]
         const statsArray = stats.split("/").map(s => parseInt(s));
@@ -112,10 +124,8 @@ const cardTypeFunctions = {
 
     Spell() {
         const _card = common();
-        if (!_card) return false;
 
         const spellSchool = input("Spell School: ") as SpellSchool;
-        if (shouldExit) return false;
 
         return applyCard({
             name: _card.name,
@@ -134,10 +144,8 @@ const cardTypeFunctions = {
 
     Weapon() {
         const _card = common();
-        if (!_card) return false;
 
         const stats = input("Stats: ");
-        if (shouldExit) return false;
 
         // Turn 1/1 to [1, 1]
         const statsArray = stats.split("/").map(s => parseInt(s));
@@ -160,15 +168,9 @@ const cardTypeFunctions = {
 
     Hero() {
         const _card = common();
-        if (!_card) return false;
 
         const hpText = input("Hero Power Description: ");
-        if (shouldExit) return false;
-
-        let hpCost = parseInt(input("Hero Power Cost (Default: 2): "));
-        if (shouldExit) return false;
-
-        if (!hpCost) hpCost = 2;
+        let hpCost = parseInt(input("Hero Power Cost (Default: 2): ")) ?? 2;
 
         return applyCard({
             name: _card.name,
@@ -188,15 +190,9 @@ const cardTypeFunctions = {
 
     Location() {
         const _card = common();
-        if (!_card) return false;
         
         const durability = parseInt(input("Durability (How many times you can trigger this location before it is destroyed): "));
-        if (shouldExit) return false;
-
-        let cooldown = parseInt(input("Cooldown (Default: 2): "));
-        if (shouldExit) return false;
-
-        if (!cooldown) cooldown = 2;
+        let cooldown = parseInt(input("Cooldown (Default: 2): ")) ?? 2;
 
         return applyCard({
             name: _card.name,
@@ -222,11 +218,9 @@ const cardTypeFunctions = {
  * @returns The path to the file
  */
 export function main(debug = false, overrideType?: lib.CCType) {
-    // Reset the card
-    card = {} as Blueprint;
-
     // Reset the shouldExit switch so that the program doesn't immediately exit when the user enters the ccc, exits, then enters ccc again
     shouldExit = false;
+
     game.log("Hearthstone.js Custom Card Creator (C) 2022\n");
     game.log("type 'back' at any step to cancel.\n");
 
@@ -242,10 +236,7 @@ export function main(debug = false, overrideType?: lib.CCType) {
 
     // HACK: Use of never
     const cardFunction: Function = cardTypeFunctions[type as never];
-    const tmpCard: Blueprint | false = cardFunction();
-    
-    if (!tmpCard) return false;
-    card = tmpCard;
+    let card = cardFunction();
 
     if (shouldExit) return false;
 
