@@ -560,6 +560,8 @@ export class Card {
      * @returns Success
      */
     setStats(attack?: number, health?: number, changeMaxHealth: boolean = true): boolean {
+        if (!this.stats) return false;
+
         if (attack == undefined) attack = this.getAttack();
         if (health == undefined) health = this.getHealth();
 
@@ -581,6 +583,8 @@ export class Card {
      * @returns Success
      */
     addStats(attack: number = 0, health: number = 0): boolean {
+        if (!this.stats) return false;
+
         this.addAttack(attack);
         this.addHealth(health, false);
 
@@ -596,6 +600,8 @@ export class Card {
      * @returns Success
      */
     remStats(attack: number = 0, health: number = 0): boolean {
+        if (!this.stats) return false;
+
         this.remAttack(attack);
         this.remHealth(health);
 
@@ -647,6 +653,8 @@ export class Card {
      * @returns Success
      */
     addAttack(amount: number): boolean {
+        if (!this.stats) return false;
+
         this.setStats(this.getAttack() + amount, this.getHealth());
 
         return true;
@@ -662,6 +670,8 @@ export class Card {
      * @returns Success
      */
     remHealth(amount: number): boolean {
+        if (!this.stats) return false;
+
         // Don't allow location cards to be damaged
         if (this.type == "Location") return false;
         if (this.keywords.includes("Stealth")) return false;
@@ -686,6 +696,8 @@ export class Card {
      * @returns Success
      */
     remAttack(amount: number): boolean {
+        if (!this.stats) return false;
+
         this.setStats(this.getAttack() - amount, this.getHealth());
 
         return true;
@@ -699,6 +711,7 @@ export class Card {
      * @returns If it reset the card's max health.
      */
     resetMaxHealth(check: boolean = false): boolean {
+        if (!this.stats) return false;
         if (!this.maxHealth) return false;
 
         if (check && this.getHealth() <= this.maxHealth) return false;

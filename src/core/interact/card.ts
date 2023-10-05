@@ -18,8 +18,9 @@ export const CardInteract = {
         
         if (location.activate("use") === game.constants.REFUND) return -1;
         
-        // TODO: Maybe throw an error if the durability is undefined
-        if (location.durability) location.durability -= 1;
+        if (location.durability === undefined) throw new Error("Location card's durability is undefined");
+
+        location.durability -= 1;
         location.cooldown = location.backups.init.cooldown;
         return true;
     },
@@ -113,8 +114,6 @@ export const CardInteract = {
      * @returns The card chosen.
      */
     discover(prompt: string, cards: Card[] = [], filterClassCards: boolean = true, amount: number = 3, _cards: Card[] = []): Card | null {
-        game = globalThis.game;
-
         game.interact.info.printAll(game.player);
         let values: Card[] = _cards;
 
@@ -239,8 +238,6 @@ export const CardInteract = {
      * @returns The readable card
      */
     getReadable(card: Card, i: number = -1, _depth: number = 0): string {
-        game = globalThis.game;
-
         /**
          * If it should show detailed errors regarding depth.
          */
@@ -342,8 +339,6 @@ export const CardInteract = {
      * @param help If it should show a help message which displays what the different fields mean.
      */
     view(card: Card, help: boolean = true) {
-        game = globalThis.game;
-
         const _card = this.getReadable(card);
         const _class = `<gray>${card.classes.join(" / ")}</gray>`;
 
