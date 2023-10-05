@@ -1,10 +1,10 @@
 /**
- * The card updater script.
- * @module Card Updater
+ * The card parity script.
+ * @module Card Parity
  */
 
-import { Card, createGame } from "../src/internal.js";
-import { Blueprint, VanillaCard } from "../src/types.js";
+import { Card, createGame } from "../../src/internal.js";
+import { Blueprint, VanillaCard } from "../../src/types.js";
 
 const { game, player1, player2 } = createGame();
 

@@ -8,14 +8,14 @@
   "scripts": {
     "start": "npm config set engine-strict true && node ./dist/index.js",
     "test": "npm run script:testcards",
-    "script:vanilla:generator": "node ./dist/scripts/vanillacards/generator",
-    "script:vanilla:propfinder": "node ./dist/scripts/vanillacards/propfinder",
-    "script:breakingchange": "node ./dist/scripts/breakingchange.js",
-    "script:cardupdater": "node ./dist/scripts/cardupdater.js",
-    "script:crashtest": "node ./dist/scripts/crashtest.js",
-    "script:idscript": "node ./dist/scripts/id/main.js",
-    "script:upgradecards": "node ./dist/scripts/upgradecards.js",
-    "script:testcards": "node ./dist/scripts/testcards.js"
+    "script:vanilla:generator": "node ./dist/scripts/vanilla/generator",
+    "script:vanilla:propfinder": "node ./dist/scripts/vanilla/propfinder",
+    "script:vanilla:cardparity": "node ./dist/scripts/vanilla/cardparity",
+    "script:breakingchange": "node ./dist/scripts/breakingchange",
+    "script:crashtest": "node ./dist/scripts/crashtest",
+    "script:idscript": "node ./dist/scripts/id/main",
+    "script:upgradecards": "node ./dist/scripts/upgradecards",
+    "script:testcards": "node ./dist/scripts/testcards"
   },
   "repository": {
     "type": "git",
