@@ -88,10 +88,7 @@ export const EventManager: IEventManager = {
             plr.hand.forEach(card => {
                 if (!(card instanceof Card)) throw new Error("Hand contains a non-card");
                 if (card.getHealth() <= 0) return;
-                
-                // Placeholders
-                // TODO: Why do we replace placeholders every tick here?
-                card.replacePlaceholders();
+
                 card.condition();
 
                 // Just in case. Remove for small performance boost

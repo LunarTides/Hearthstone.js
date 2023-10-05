@@ -402,6 +402,8 @@ export class Card {
 
         game.events.broadcast("CreateCard", this, this.plr);
         this.activate("create");
+
+        this.replacePlaceholders();
     }
 
     /**
