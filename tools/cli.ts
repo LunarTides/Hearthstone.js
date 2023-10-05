@@ -156,7 +156,7 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | nul
 
             let replayPath: string | undefined;
 
-            // Get cctype
+            // Get replay path
             if (replay) {
                 replayPath = args[0] as CCType;
 
