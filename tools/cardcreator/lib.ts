@@ -132,7 +132,7 @@ export function create(creatorType: CCType, cardType: CardType, blueprint: Bluep
         });
     }
 
-    const createAbility = `
+    const createAbility = !card.text ? "" : `
 
     create(plr, self) {
 ${runes}${keywords}
