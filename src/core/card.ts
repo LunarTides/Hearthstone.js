@@ -987,6 +987,9 @@ export class Card {
      * @returns Success
      */
     applyEnchantments(): boolean {
+        // Don't waste resources if this card doesn't have any enchantments, this gets called every tick after all.
+        if (this.enchantments.length <= 0) return false;
+
         // Apply baseline for int values.
         const whitelistedVars = ["maxHealth", "cost"];
 
