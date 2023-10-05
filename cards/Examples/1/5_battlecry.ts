@@ -37,7 +37,7 @@ export const blueprint: Blueprint = {
     test(plr, self) {
         const assert = game.functions.error.assert;
 
-        self.activateBattlecry();
+        self.activate("battlecry");
 
         assert(() => self.getAttack() - 1 === self.blueprint.stats?.[0]);
         assert(() => self.getHealth() - 1 === self.blueprint.stats?.[1]);

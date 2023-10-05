@@ -37,7 +37,7 @@ export const blueprint: Blueprint = {
             if (!(val.type === "Minion" && eventPlayer === plr && val !== self)) return false;
 
             // Activate the battlecry
-            val.activateBattlecry();
+            val.activate("battlecry");
 
             // You have to return a message to the event listener handler to tell it what to do next.
             // If you return "destroy", the event listener gets destroyed (this is the same as running the `destroy` function).

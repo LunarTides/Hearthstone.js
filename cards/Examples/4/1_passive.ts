@@ -59,7 +59,7 @@ export const blueprint: Blueprint = {
         // Activate the battlecry of the minion.
         // Remember, this passive triggers after the minion's battlecry (in order to handle refunding).
         // This means that once we trigger the battlecry here, the minion's battlecry will have triggered twice in total.
-        val.activateBattlecry();
+        val.activate("battlecry");
     },
 
     test(plr, self) {

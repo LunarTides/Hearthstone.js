@@ -36,7 +36,7 @@ export const blueprint: Blueprint = {
         plr.inputQueue = ["1"];
 
         // We can't really check the dredged card here.
-        self.activateBattlecry();
+        self.activate("battlecry");
 
         // Check that the stats went up by 1
         assert(() => self.getAttack() - 1 === self.blueprint.stats?.[0]);

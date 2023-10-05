@@ -901,21 +901,6 @@ export class Card {
     }
 
     /**
-     * Activates a card's battlecry
-     * 
-     * @param args Any arguments to pass to battlecry.
-     * 
-     * @returns The return values of all the battlecries triggered
-     */
-    // TODO: Is this needed anymore?
-    activateBattlecry(...args: any): any[] | -1 | false {
-        // Trigger the card's passive first, so cards that get played immediately gets their passive triggered before their battlecry
-        this.activate("passive", "battlecry", this, this.plr);
-
-        // Trigger the battlecry
-        return this.activate("battlecry", ...args);
-    }
-    /**
      * Returns manathirst for `m`
      * 
      * @param m The mana to test

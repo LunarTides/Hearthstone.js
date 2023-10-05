@@ -43,7 +43,7 @@ export const blueprint: Blueprint = {
         for (let i = 0; i < 50; i++) {
             // Activate the battlecry and get the card from the player's hand.
             plr.hand = [];
-            self.activateBattlecry();
+            self.activate("battlecry");
             const card = plr.hand[0];
 
             assert(() => card.type === "Spell");

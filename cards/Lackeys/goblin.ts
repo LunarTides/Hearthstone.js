@@ -40,7 +40,7 @@ export const blueprint: Blueprint = {
 
         // Activate the battlecry, choose the sheep
         plr.inputQueue = ["1"];
-        self.activateBattlecry();
+        self.activate("battlecry");
 
         // The sheep should have 2 attack and rush
         assert(() => sheep.getAttack() === 2);

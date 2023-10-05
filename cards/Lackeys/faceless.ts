@@ -41,7 +41,7 @@ export const blueprint: Blueprint = {
 
         // There shouldn't exist any 2-Cost minions right now.
         assert(() => !exists2CostMinion());
-        self.activateBattlecry();
+        self.activate("battlecry");
 
         // There should exist a 2-Cost minion now.
         assert(exists2CostMinion);

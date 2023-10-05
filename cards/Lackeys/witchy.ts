@@ -67,7 +67,7 @@ export const blueprint: Blueprint = {
 
         // Activate the battlecry, select the sheep.
         plr.inputQueue = ["1"];
-        self.activateBattlecry();
+        self.activate("battlecry");
 
         // There should now exist a minion with 1 more cost than the sheep.
         assert(() => existsMinionWithCost(sheep.cost + 1));

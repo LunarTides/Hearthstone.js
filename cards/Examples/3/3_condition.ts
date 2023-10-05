@@ -52,7 +52,7 @@ export const blueprint: Blueprint = {
 
         // The player shouldn't fulfill the condition
         assert(() => !plr.highlander());
-        self.activateBattlecry();
+        self.activate("battlecry");
 
         // Assert that the player didn't draw a card
         assert(() => plr.deck.length === length);
@@ -63,7 +63,7 @@ export const blueprint: Blueprint = {
         assert(() => plr.highlander());
         assert(() => plr.deck.length === 1);
 
-        self.activateBattlecry();
+        self.activate("battlecry");
 
         assert(() => plr.hand.length === 1);
     }

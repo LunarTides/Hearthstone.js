@@ -467,7 +467,7 @@ export class Game {
 
                 // HACK: If the battlecry use a function that depends on `game.player`
                 this.player = op;
-                m.activateBattlecry();
+                m.activate("battlecry");
                 this.player = plr;
 
                 return;
@@ -952,7 +952,7 @@ const playCard = {
             if (playCard._magnetize(card, player)) return "magnetize";
 
             if (!card.dormant) {
-                if (card.activateBattlecry() === -1) return "refund";
+                if (card.activate("battlecry") === -1) return "refund";
             }
 
             const unsuppress = functions.event.suppress("SummonMinion");
@@ -983,14 +983,14 @@ const playCard = {
         },
 
         Weapon(card: Card, player: Player): GamePlayCardReturn {
-            if (card.activateBattlecry() === -1) return "refund";
+            if (card.activate("battlecry") === -1) return "refund";
 
             player.setWeapon(card);
             return true;
         },
 
         Hero(card: Card, player: Player): GamePlayCardReturn {
-            if (card.activateBattlecry() === -1) return "refund";
+            if (card.activate("battlecry") === -1) return "refund";
 
             player.setHero(card, 5);
             return true;

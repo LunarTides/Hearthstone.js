@@ -65,7 +65,7 @@ export const blueprint: Blueprint = {
         plr.emptyMana = 1;
         assert(() => plr.emptyMana == 1);
         plr.inputQueue = ["1"];
-        self.activateBattlecry();
+        self.activate("battlecry");
 
         assert(() => sheep.frozen);
         sheep.frozen = false;
@@ -73,7 +73,7 @@ export const blueprint: Blueprint = {
 
         plr.emptyMana = 6;
         plr.inputQueue = ["1"];
-        self.activateBattlecry();
+        self.activate("battlecry");
 
         assert(() => sheep.frozen);
         assert(() => sheep.getAttack() == 1);
