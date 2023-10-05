@@ -1,7 +1,7 @@
 import childProcess from "child_process";
 import { createHash } from "node:crypto";
 import { Player } from "@Game/internal.js";
-import { EventKey, HistoryKey } from "@Game/types.js";
+import { HistoryKey } from "@Game/types.js";
 
 export const utilFunctions = {
     /**
@@ -148,7 +148,6 @@ export const utilFunctions = {
      */
     createLogFile(err?: Error): boolean {
         if (game.replaying) return false;
-        this.createReplayFile();
 
         // Create a (crash-)log file
         if (!game.functions.file.exists("/logs")) game.functions.file.directory.create("/logs");
@@ -182,11 +181,11 @@ Error:
 ${err.stack}
 `
 
-        const historyContent = `-- History --${history}`;
-        const aiContent = `\n-- AI Logs --\n${aiHistory}`;
+        const historyContent = `-- History --${history}-- History --\n`;
+        const aiContent = `\n-- AI Logs --\n${aiHistory}-- AI Logs --\n`;
 
         const config = JSON.stringify(game.config, null, 2);
-        const configContent = `\n-- Config --\n${config}`;
+        const configContent = `\n-- Config --\n${config}\n-- Config --`;
 
         let mainContent = historyContent;
         if (game.config.ai.player1 || game.config.ai.player2) mainContent += aiContent;
@@ -240,57 +239,7 @@ ${mainContent}
         return true;
     },
 
-    /**
-     * Create a replay file
-     *
-     * @returns Success
-     */
-    createReplayFile(): boolean {
-        if (!game.functions.file.exists("/replays")) game.functions.file.directory.create("/replays");
-
-        let dateString = this.getDateAndTime();
-
-        // 01.01.23-23.59.59
-        const dateStringFileFriendly = dateString.replace(/[/:]/g, ".").replaceAll(" ", "-");
-
-        // Grab the history of the game
-        let history = game.interact.gameLoop.handleCmds("history", { echo: false, debug: true });
-        if (typeof history !== "string") throw new Error("createReplayFile history did not return a string.");
-
-        // Strip the color codes from the history
-        history = game.functions.color.stripTags(history);
-        history = game.functions.color.strip(history);
-
-        history = history.split("\n").filter(l => l.startsWith("Input: ") || l.startsWith("Turn ")).join("\n").trim();
-        
-        let playInput = history.split("Input: p")[1];
-        if (playInput) history = game.lodash.initial(playInput.split("\n")).join("\n");
-
-        const config = JSON.stringify(game.config, null, 2);
-
-        let content = `Hearthstone.js Replay File
-${dateString},${game.functions.info.version(2)},1
-
--- History --
-${history}
--- History --
-
--- Config --
-${config}
--- Config --
-`
-
-        let filename = `replay-${dateStringFileFriendly}.txt`;
-
-        // Add a sha256 checksum to the content
-        const checksum = createHash("sha256").update(content).digest("hex");
-        content += `\n${checksum}  ${filename}`;
-
-        game.functions.file.write(`/replays/${filename}`, content);
-        return true;
-    },
-
-    parseReplayFile(path: string) {
+    parseLogFile(path: string) {
         if (!game.functions.file.exists(path)) return new Error("File does not exist");
 
         let content = game.functions.file.read(path).trim();
@@ -305,20 +254,20 @@ ${config}
         if (!matchingChecksum) return new Error("Invalid checksum");
 
         // Checksum matches
-        const header = contentSplit[1].trim();
+        const [ _, date, version, os, logVersion ] = contentSplit.map(l => l.split(": ")[1]);
         const history = content.split("-- History --")[1].trim();
+        const ai = content.split("-- AI Logs --")[1].trim();
         const config = content.split("-- Config --")[1].trim();
 
-        const [ date, version, logVersion ] = header.split(",");
-        const headerObj = { date, version, logVersion };
+        const headerObj = { date, version: parseInt(version), os, logVersion: parseInt(logVersion) };
 
-        return { header: headerObj, history, config };
+        return { header: headerObj, history, ai, config };
     },
 
     parseInputEventFromHistory(event: string, index: number, history: string): HistoryKey | false {
-        if (!event.includes(": ")) return false;
+        if (!event.startsWith("Input: ")) return false;
 
-        const val = event.split(": ")[1];
+        const val = event.split("Input: ")[1];
 
         let player: Player;
 
@@ -340,7 +289,7 @@ ${config}
     },
 
     replayFile(path: string): Error | true {
-        const parsed = this.parseReplayFile(path);
+        const parsed = this.parseLogFile(path);
         if (parsed instanceof Error) return parsed;
 
         const { header, history, config } = parsed;
@@ -349,7 +298,7 @@ ${config}
         game.replaying = true;
 
         // TODO: Verify `header.version` using semver
-        let expectedLogVersion = "1";
+        let expectedLogVersion = 3;
         if (header.logVersion !== expectedLogVersion) {
             return new Error(`Mismatch in log version. Expected: ${expectedLogVersion}, Found: ${header.logVersion}`);
         }

@@ -837,6 +837,12 @@ export const GameLoopInteract = {
     promptReplayOptions() {
         if (!game.running) return;
 
+        // Stop replaying if the player doesn't have anything more in their input queue
+        if (game.player.inputQueue === undefined) {
+            game.replaying = false;
+            return;
+        }
+
         game.interact.info.printAll(game.player);
 
         let choice = game.input("\n(C)ontinue, (P)lay from here: ", false, false).toLowerCase()[0];

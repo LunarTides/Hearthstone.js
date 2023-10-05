@@ -84,7 +84,7 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | nul
             game.log("clc           - Runs the class creator");
             game.log("cclib (args)  - Uses the card creator library to manually create a card");
             game.log("dc            - Runs the deck creator");
-            game.log("game          - Runs the main game");
+            game.log("game [replay] - Runs the main game");
             game.log("script (name) - Runs the specified script (NOT IMPLEMENTED!)");
             game.log();
             game.log("<bold>Options</bold>");
@@ -166,7 +166,7 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | nul
                     return;
                 }
 
-                replayPath = `/replays/replay-${replayPath}.txt`;
+                replayPath = `/logs/log-${replayPath}.txt`;
             }
 
             src.main(replayPath);

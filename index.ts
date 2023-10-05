@@ -52,7 +52,7 @@ function cardCreator() {
 
 function replay() {
     game.logWarn("<yellow>WARNING: This feature is unstable. Expect bugs.</yellow>\n");
-    let path = "/replays/replay-" + game.input("Path: /replays/replay-");
+    let path = "/logs/log-" + game.input("Path: /logs/log-");
     if (!path.endsWith(".txt")) path += ".txt";
 
     src.main(path);
