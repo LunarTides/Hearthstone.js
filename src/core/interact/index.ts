@@ -132,7 +132,7 @@ export const interact = {
             const aiChoice = plr.ai.question(prompt, answers);
             if (!aiChoice) {
                 // code, expected, actual
-                throw game.functions.error.AIError("AiQuestionReturnInvalidAtQuestionFunction", "some number", aiChoice);
+                throw game.functions.util.AIError("AiQuestionReturnInvalidAtQuestionFunction", "some number", aiChoice);
             }
 
             choice = aiChoice;

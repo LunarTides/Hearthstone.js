@@ -2,7 +2,7 @@
 import {
     writeFileSync as fsWriteFileSync,
     readFileSync as fsReadFileSync,
-    unlinkSync as fsUnlinkSync,
+    rmSync as fsRmSync,
     existsSync as fsExistsSync,
     readdirSync as fsReadDirSync,
     mkdirSync as fsMkDirSync,
@@ -22,7 +22,7 @@ const directory = {
      * ```
      */
     read(_path: string): fsDirent[] {
-        let path = game.functions.file.fsRestrictPath(_path);
+        let path = game.functions.file.restrictPath(_path);
         return fsReadDirSync(path, { withFileTypes: true });
     },
 
@@ -36,8 +36,36 @@ const directory = {
      * ```
      */
     create(_path: string, recursive = false) {
-        let path = game.functions.file.fsRestrictPath(_path);
+        let path = game.functions.file.restrictPath(_path);
         return fsMkDirSync(path, { recursive });
+    },
+
+    /**
+     * Deletes the directory at path. Please use this instead of `fs.rmSync`.
+     * 
+     * # Examples
+     * ```ts
+     * delete("/cards/");
+     * // Deletes "(path to folder where Hearthstone.js is)/Hearthstone.js/cards/"
+     * ```
+     */
+    delete(_path: string) {
+        let path = game.functions.file.restrictPath(_path);
+        return fsRmSync(path);
+    },
+
+    /**
+     * Deletes the directory at path, forcibly and recursively. Same as doing 'rm -rf' on linux. Please use this instead of `fs.rmSync`.
+     * 
+     * # Examples
+     * ```ts
+     * rmrf("/cards/");
+     * // Deletes "(path to folder where Hearthstone.js is)/Hearthstone.js/cards/"
+     * ```
+     */
+    rmrf(_path: string) {
+        let path = game.functions.file.restrictPath(_path);
+        return fsRmSync(path, { force: true, recursive: true });
     },
     
     /**
@@ -75,7 +103,7 @@ export const fsFunctions = {
      * Confines the path specified to the Hearthstone.js folder.
      * There are no known ways to bypass this.
      */
-    fsRestrictPath(path: string): string {
+    restrictPath(path: string): string {
         path = path.replaceAll("\\", "/");
         path = path.replaceAll(this.dirname(), "");
         // Prevent '..' usage
@@ -97,7 +125,7 @@ export const fsFunctions = {
      * ```
      */
     write(_path: string, content: string) {
-        let path = this.fsRestrictPath(_path);
+        let path = this.restrictPath(_path);
         return fsWriteFileSync(path, content);
     },
 
@@ -111,12 +139,12 @@ export const fsFunctions = {
      * ```
      */
     read(_path: string) {
-        let path = this.fsRestrictPath(_path);
+        let path = this.restrictPath(_path);
         return fsReadFileSync(path, { encoding: "utf8" });
     },
 
     /**
-     * Deletes a file from path. Please use this instead of `fs.unlinkSync`.
+     * Deletes a file from path. Please use this instead of `fs.unlinkSync` or `fs.rmSync`..
      * 
      * # Examples
      * ```ts
@@ -125,8 +153,8 @@ export const fsFunctions = {
      * ```
      */
     delete(_path: string) {
-        let path = this.fsRestrictPath(_path);
-        return fsUnlinkSync(path);
+        let path = this.restrictPath(_path);
+        return fsRmSync(path);
     },
 
     /**
@@ -139,7 +167,7 @@ export const fsFunctions = {
      * ```
      */
     exists(_path: string) {
-        let path = this.fsRestrictPath(_path);
+        let path = this.restrictPath(_path);
         return fsExistsSync(path);
     },
 

@@ -4,10 +4,8 @@ export { infoFunctions as _infoFunctions } from "./core/functions/info.js";
 export { fsFunctions as _fsFunctions } from "./core/functions/fs.js";
 export { deckcodeFunctions as _deckcodeFunctions } from "./core/functions/deckcode.js";
 export { cardFunctions as _cardFunctions } from "./core/functions/card.js";
-export { keywordFunctions as _keywordFunctions } from "./core/functions/keyword.js";
 export { utilFunctions as _utilFunctions } from "./core/functions/util.js";
 export { eventFunctions as _eventFunctions } from "./core/functions/event.js";
-export { errorFunctions as _errorFunctions } from "./core/functions/error.js";
 
 // Interact
 export { CardInteract } from "./core/interact/card.js";

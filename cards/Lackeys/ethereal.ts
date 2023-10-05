@@ -31,7 +31,7 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        const assert = game.functions.error.assert;
+        const assert = game.functions.util.assert;
 
         // If there are no spells, pass the test
         if (game.functions.card.getAll().filter(c => c.type === "Spell" && game.functions.card.validateClasses(self.classes, plr.heroClass)).length <= 0) return;

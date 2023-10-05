@@ -30,7 +30,7 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        const assert = game.functions.error.assert;
+        const assert = game.functions.util.assert;
 
         // If there doesn't exist any 2-Cost minions, pass the test
         if (!game.functions.card.getAll().some(card => card.cost === 2 && card.type === "Minion")) return;

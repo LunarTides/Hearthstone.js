@@ -27,7 +27,7 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        const assert = game.functions.error.assert;
+        const assert = game.functions.util.assert;
 
         const oldHealth = plr.getOpponent().getHealth();
 

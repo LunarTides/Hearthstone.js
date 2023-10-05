@@ -30,7 +30,7 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        const assert = game.functions.error.assert;
+        const assert = game.functions.util.assert;
 
         const checkIfThisCardIsOnTheBoard = () => {
             return game.board[plr.id].some(card => card.uuid === self.uuid);

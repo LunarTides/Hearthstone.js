@@ -15,7 +15,7 @@ export const blueprint: Blueprint = {
     id: 60,
 
     cast(plr, self) {
-        game.functions.event.quest.add("Quest", plr, self, "PlayCard", 3, (_unknownVal, done) => {
+        plr.addQuest("Quest", self, "PlayCard", 3, (_unknownVal, done) => {
             const val = _unknownVal as EventValue<"PlayCard">;
 
             if (!(val !== self)) return false;

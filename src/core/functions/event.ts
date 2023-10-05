@@ -1,63 +1,6 @@
-import { EventKey, EventListenerCallback, TickHookCallback, QuestCallback } from "@Game/types.js";
-import { Card, Player } from "@Game/internal.js";
-
-const quest = {
-    /**
-     * Progress a quest by a value
-     * 
-     * @param plr The player
-     * @param name The name of the quest
-     * @param value The amount to progress the quest by
-     * 
-     * @returns The new progress
-     */
-    progress(plr: Player, name: string, value: number = 1): number | null {
-        let quest = plr.secrets.find(s => s["name"] == name);
-        if (!quest) quest = plr.sidequests.find(s => s["name"] == name);
-        if (!quest) quest = plr.quests.find(s => s["name"] == name);
-        
-        if (!quest) return null;
-        quest["progress"][0] += value;
-
-        return quest["progress"][0];
-    },
-
-    /**
-     * Adds a quest / secrets to a player
-     * 
-     * @param type The type of the quest
-     * @param plr The player to add the quest to
-     * @param card The card that created the quest / secret
-     * @param key The key to listen for
-     * @param amount The amount of times that the quest is triggered before being considered complete
-     * @param callback The function to call when the key is invoked.
-     * @param next The name of the next quest / sidequest / secret that should be added when the quest is done
-     * 
-     * @returns Success
-     */
-    add(type: "Quest" | "Sidequest" | "Secret", plr: Player, card: Card, key: EventKey, amount: number, callback: QuestCallback, next?: string): boolean {
-        let t;
-        if (type == "Quest") t = plr.quests;
-        else if (type == "Sidequest") t = plr.sidequests;
-        else if (type == "Secret") t = plr.secrets;
-        else return false;
-
-        if ( (type.toLowerCase() == "quest" && t.length > 0) || ((type.toLowerCase() == "secret" || type.toLowerCase() == "sidequest") && (t.length >= 3 || t.filter(s => s.name == card.displayName).length > 0)) ) {
-            plr.addToHand(card);
-            return false;
-        }
-
-        t.push({"name": card.displayName, "progress": [0, amount], "key": key, "value": amount, "callback": callback, "next": next});
-        return true;
-    }
-}
+import { EventKey, EventListenerCallback, TickHookCallback } from "@Game/types.js";
 
 export const eventFunctions = {
-    /**
-     * Quest related functions
-     */
-    quest,
-
     /**
      * Add an event listener.
      *

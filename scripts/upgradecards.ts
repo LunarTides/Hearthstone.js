@@ -113,11 +113,7 @@ function main() {
     generateCardExports();
 
     // Remove the dist folder
-    if (process.platform === "win32") {
-        game.functions.util.runCommand("rmdir /S /Q dist > NUL 2>&1");
-    } else {
-        game.functions.util.runCommand("rm -rf ./dist/ > /dev/null 2>&1");
-    }
+    game.functions.file.directory.rmrf("/dist");
 
     game.log("Trying to compile...");
 

@@ -37,7 +37,7 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        const assert = game.functions.error.assert;
+        const assert = game.functions.util.assert;
         // Here we test both abilities
         
         // Test battlecry

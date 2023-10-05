@@ -1233,4 +1233,105 @@ export class Card {
 
         return true;
     }
+    
+    /**
+     * Asks the user a `prompt` and show 3 choices for the player to choose, and do something to the minion based on the choice.
+     * 
+     * @param prompt The prompt to ask the user
+     * @param _values DON'T TOUCH THIS UNLESS YOU KNOW WHAT YOU'RE DOING
+     * 
+     * @returns An array with the name of the adapt(s) chosen, or -1 if the user cancelled.
+     */
+    adapt(prompt: string = "Choose One:", _values: string[][] = []): string | -1 {
+        game.interact.info.printAll(game.player);
+
+        const possibleCards = [
+            ["Crackling Shield", "Divine Shield"],
+            ["Flaming Claws", "+3 Attack"],
+            ["Living Spores", "Deathrattle: Summon two 1/1 Plants."],
+            ["Lightning Speed", "Windfury"],
+            ["Liquid Membrane", "Can't be targeted by spells or Hero Powers."],
+            ["Massive", "Taunt"],
+            ["Volcanic Might", "+1/+1"],
+            ["Rocky Carapace", "+3 Health"],
+            ["Shrouding Mist", "Stealth until your next turn."],
+            ["Poison Spit", "Poisonous"]
+        ];
+        const values = _values;
+
+        if (values.length == 0) {
+            for (let i = 0; i < 3; i++) {
+                const c = game.lodash.sample(possibleCards);
+                if (!c) throw new Error("null when randomly choosing adapt option");
+
+                if (c instanceof Card) throw new TypeError();
+
+                values.push(c);
+                game.functions.util.remove(possibleCards, c);
+            }
+        }
+
+        let p = `\n${prompt}\n[\n`;
+
+        values.forEach((v, i) => {
+            // Check for a TypeError and ignore it
+            try {
+                p += `${i + 1}: ${v[0]}; ${v[1]},\n`;
+            } catch (e) {}
+        });
+
+        p = p.slice(0, -2);
+        p += "\n] ";
+
+        let choice = game.input(p);
+        if (!parseInt(choice)) {
+            game.input("<red>Invalid choice!</red>\n");
+            return this.adapt(prompt, values);
+        }
+
+        if (parseInt(choice) > 3) return this.adapt(prompt, values);
+
+        choice = values[parseInt(choice) - 1][0];
+
+        switch (choice) {
+            case "Crackling Shield":
+                this.addKeyword("Divine Shield");
+                break;
+            case "Flaming Claws":
+                this.addStats(3, 0);
+                break;
+            case "Living Spores":
+                this.addAbility("deathrattle", (plr, self) => {
+                    game.summonMinion(new Card("Plant", plr), plr);
+                    game.summonMinion(new Card("Plant", plr), plr);
+                });
+                break;
+            case "Lightning Speed":
+                this.addKeyword("Windfury");
+                break;
+            case "Liquid Membrane":
+                this.addKeyword("Elusive");
+                break;
+            case "Massive":
+                this.addKeyword("Taunt");
+                break;
+            case "Volcanic Might":
+                this.addStats(1, 1);
+                break;
+            case "Rocky Carapace":
+                this.addStats(0, 3);
+                break;
+            case "Shrouding Mist":
+                this.addKeyword("Stealth");
+                this.setStealthDuration(1);
+                break;
+            case "Poison Spit":
+                this.addKeyword("Poisonous");
+                break;
+            default:
+                break;
+        }
+
+        return choice;
+    }
 }

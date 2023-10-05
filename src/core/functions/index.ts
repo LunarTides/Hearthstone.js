@@ -7,12 +7,10 @@ import {
     _deckcodeFunctions,
     _fsFunctions,
     _cardFunctions,
-    _keywordFunctions,
     _colorFunctions,
     _utilFunctions,
     _infoFunctions,
     _eventFunctions,
-    _errorFunctions
 } from "../../internal.js";
 
 export const functions = {
@@ -33,11 +31,6 @@ export const functions = {
     card: _cardFunctions,
 
     /**
-     * Keyword related functions
-     */
-    keyword: _keywordFunctions,
-
-    /**
      * Color related functions
      */
     color: _colorFunctions,
@@ -56,9 +49,4 @@ export const functions = {
      * Event related functions
      */
     event: _eventFunctions,
-
-    /**
-     * Error related functions
-     */
-    error: _errorFunctions,
 }

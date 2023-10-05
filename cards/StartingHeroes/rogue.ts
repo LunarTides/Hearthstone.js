@@ -26,7 +26,7 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        const assert = game.functions.error.assert;
+        const assert = game.functions.util.assert;
 
         // The player should not have a weapon
         assert(() => plr.weapon === undefined);

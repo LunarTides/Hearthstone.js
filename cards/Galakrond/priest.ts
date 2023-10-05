@@ -16,7 +16,7 @@ export const blueprint: Blueprint = {
 
     battlecry(plr, self) {
         // Destroy 1 random enemy minion.
-        const amount = game.functions.keyword.galakrond.formula(self.storage.invokeCount);
+        const amount = game.functions.card.galakrondFormula(self.storage.invokeCount);
 
         for (let i = 0; i < amount; i++) {
             // Get a random minion from the opponent's board.
@@ -44,11 +44,11 @@ export const blueprint: Blueprint = {
     },
 
     invoke(plr, self) {
-        game.functions.keyword.galakrond.bump(self, "invokeCount");
+        game.functions.card.galakrondBump(self, "invokeCount");
     },
 
     placeholders(plr, self) {
-        const amount = game.functions.keyword.galakrond.formula(self.storage.invokeCount);
+        const amount = game.functions.card.galakrondFormula(self.storage.invokeCount);
         const multiple = amount > 1;
         const plural = multiple ? "s" : "";
 

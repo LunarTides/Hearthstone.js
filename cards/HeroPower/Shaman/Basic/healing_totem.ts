@@ -28,7 +28,7 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        const assert = game.functions.error.assert;
+        const assert = game.functions.util.assert;
 
         // Summon 5 Sheep with 2 max health.
         for (let i = 0; i < 5; i++) {
