@@ -23,7 +23,16 @@ export function main(replayPath?: string) {
     }
 
     game.interact.info.printName();
-    validateIds(false);
+
+    // Find holes and dupes in the ids
+    game.logWarn("Validating ids...");
+    let [holes, dupes] = validateIds(true);
+    if (holes > 0 || dupes > 0) {
+        // If there were holes or dupes, pause the game so that the user gets a
+        // chance to see what the problem was
+        game.input();
+    }
+
     warnAboutOutdatedCards();
 
     // Ask the players for deck codes.

@@ -110,11 +110,11 @@ export function validate(log: boolean): [number, number] {
         if (id === -1) return;
 
         if (id === currentId) {
-            if (log) game.logError(`<bright:yellow>Duplicate id in ${path}. Previous id: ${currentId}. Got id: ${id}</bright:yellow>`);
+            if (log) game.logError(`<bright:yellow>Duplicate id in ${path}. Previous id: ${currentId}. Got id: ${id}. <green>Suggestion: Change one of these ids.</green bright:yellow>`);
             duplicates++;
         }
         else if (id != currentId + 1) {
-            if (log) game.logError(`<bright:yellow>Hole in ${path}. Previous id: ${currentId}. Got id: ${id}</bright:yellow>`);
+            if (log) game.logError(`<bright:yellow>Hole in ${path}. Previous id: ${currentId}. Got id: ${id}. <green>Suggestion: Change card with id ${id} to ${id - 1}</green bright:yellow>`);
             holes++;
         }
 
