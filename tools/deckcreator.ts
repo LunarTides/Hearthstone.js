@@ -365,9 +365,12 @@ function showCards() {
     wall.forEach(brick => {
         const brickSplit = brick.split("-");
 
+        // Find the card before the '-'
         const card = findCard(brickSplit[0].trim());
         if (!card) return;
 
+        // The card's name should be colored, while the id should not
+        // I don't add colors above, since createWall breaks when colors are used.
         const toDisplay = game.functions.color.fromRarity(brickSplit[0], card.rarity) + "-" + brickSplit[1];
 
         game.log(toDisplay);
