@@ -158,6 +158,13 @@ export class Card {
      */
     cooldown?: number = 2;
 
+    // Example
+
+    /**
+     * The id of the corresponding example card
+     */
+    example?: number;
+
     // Not-null
 
     /**
@@ -1213,7 +1220,7 @@ export class Card {
      * Returns if the card specified has the ability to appear on the board.
      */
     canBeOnBoard(): boolean {
-        return this.type === "Minion" || this.type === "Location";
+        return this.type === "Minion" || this.type === "Location" || this.type === "Example";
     }
     
     /**

@@ -7,6 +7,7 @@ const requiredFieldsTable: {[x in CardType]: string[]} = {
     "Weapon": ["stats"],
     "Hero": ["hpText", "hpCost"],
     "Location": ["durability", "cooldown"],
+    "Example": ["stats", "example"],
     "Undefined": []
 }
 

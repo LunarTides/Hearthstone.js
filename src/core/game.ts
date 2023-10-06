@@ -966,7 +966,18 @@ const playCard = {
             unsuppress();
 
             return ret;
-        }
+        },
+
+        Example(card: Card, player: Player): GamePlayCardReturn {
+            // Copy-and-pasted from Minion
+            if (card.activate("hi") === -1) return "refund";
+
+            const unsuppress = functions.event.suppress("SummonMinion");
+            const ret = cards.summon(card, player);
+            unsuppress();
+
+            return ret;
+        },
     },
 
     _trade(card: Card, player: Player): boolean {

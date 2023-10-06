@@ -28,6 +28,9 @@ function getCardAbility(cardType: CardType) {
     // If the card is a location, the ability is 'use'
     else if (cardType == "Location") ability = "Use";
 
+    // If the card is an example, the ability is 'hi'
+    else if (cardType == "Example") ability = "Hi";
+
     else {
         // Try to extract an ability from the card's description
         const reg = /([A-Z][a-z].*?):/g;

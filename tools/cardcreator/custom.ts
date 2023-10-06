@@ -208,7 +208,33 @@ const cardTypeFunctions = {
             keywords: _card.keywords,
             id: 0,
         });
-    }
+    },
+
+    Example() {
+        // Copy-and-pasted from Minion
+        const _card = common();
+
+        const stats = input("Stats: ");
+        const example = parseInt(input("Example: "));
+
+        // Turn 1/1 to [1, 1]
+        const statsArray = stats.split("/").map(s => parseInt(s));
+
+        return applyCard({
+            name: _card.name,
+            displayName: _card.displayName,
+            stats: statsArray,
+            text: _card.text,
+            cost: _card.cost,
+            type: _card.type,
+            example,
+            classes: _card.classes,
+            rarity: _card.rarity,
+            runes: _card.runes,
+            keywords: _card.keywords,
+            id: 0,
+        });
+    },
 }
 
 /**

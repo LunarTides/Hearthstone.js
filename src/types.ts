@@ -20,6 +20,7 @@ export type CardType = "Minion" |
                        "Weapon" |
                        "Hero" |
                        "Location" |
+                       "Example" |
                        "Undefined";
 
 /**
@@ -132,7 +133,8 @@ export type CardAbilityReal = "adapt" |
                               "passive" |
                               "spellburst" |
                               "startofgame" |
-                              "use";
+                              "use" |
+                              "hi";
 
 /**
  * All Card abilities.
@@ -469,12 +471,14 @@ export type Blueprint = {
     cost: number,
     type: CardType,
 
+    // Type specific
     tribe?: MinionTribe, 
     spellSchool?: SpellSchool,
     durability?: number,
     cooldown?: number,
     hpText?: string,
     hpCost?: number,
+    example?: number,
 
     // Less important
     classes: CardClass[],

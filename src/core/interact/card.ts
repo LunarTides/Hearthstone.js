@@ -311,6 +311,11 @@ export const CardInteract = {
         }
 
         sb += text;
+
+        if (card.type === "Example") {
+            sb += `<gray>|${card.example}|</gray> `;
+        }
+
         sb += `<yellow>(${card.type})</yellow>`;
 
         if (!(card instanceof Card)) return sb;
