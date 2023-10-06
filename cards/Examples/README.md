@@ -9,8 +9,9 @@ Look at the name of the file to see the order you should look at it. Look at the
 `1 -> 2 -> 3 -> ... -> last`
 This is important since the card files won't explain a concept if it has already been explained in a card before it.
 
-1. Look at the cards in `1`. These are the essentials, showing you the structure of cards and a little bit of code.
-2. Look at the cards in `2`. These are a bit more advanced, where you will be modifying some values.
-3. Look in `3`. This is where you will write more actual code. (It can get overwhelming quick, sorry)
-4. Look in `4`. These are the most advanced concepts so far.
-5. Look in `DIY`. These are cards that have a description but no functionality by default. You have to write the code yourself, and play the card in-game to verify your solution.
+1: These are the essentials, showing you the structure of cards and a little bit of code.
+2: These are a bit more advanced, where you will be modifying some values.
+3: This is where you will write more actual code. (It can get overwhelming quick, sorry)
+4: These are the most advanced concepts so far.
+DIY: These are cards that have a description but no functionality by default. You have to write the code yourself, and play the card in-game to verify your solution.
+Test: These are cards that are used for unit tests, but they also contain some more niche topics. This stage assumes you have read all numbered stages.
