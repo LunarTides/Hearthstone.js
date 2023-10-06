@@ -1,10 +1,104 @@
+import rl from 'readline-sync';
 import { AI, Card, Player } from "../../internal.js";
 import { AIHistory, EventValue, GameConfig, GamePlayCardReturn } from "@Game/types.js";
 import { reloadCards } from "../../helper/cards.js";
 
 const licenseUrl = 'https://github.com/LunarTides/Hearthstone.js/blob/main/LICENSE';
 
-export const GameLoopInteract = {
+// Override the console methods to force using the wrapper functions
+// Set this variable to false to prevent disabling the console. (Not recommended)
+const disableConsole = true;
+
+const overrideConsole = {log: (...data: any[]) => {}, warn: (...data: any[]) => {}, error: (...data: any[]) => {}};
+overrideConsole.log = console.log;
+overrideConsole.warn = console.warn;
+overrideConsole.error = console.error;
+
+if (disableConsole) {
+    console.log = (..._) => {
+        throw new Error("Use `game.log` instead.")
+    };
+    console.warn = (..._) => {
+        throw new Error("Use `game.logWarn` instead.")
+    };
+    console.error = (..._) => {
+        throw new Error("Use `game.logError` instead.")
+    };
+}
+
+export const GameLoopInteract = {    /**
+     * Ask the user a question and returns their answer
+     *
+     * @param q The question to ask
+     * @param care If this is false, it overrides `game.noInput`. Only use this when debugging.
+     *
+     * @returns What the user answered
+     */
+    input(q: string = "", care: boolean = true, useInputQueue: boolean = true): string {
+        const wrapper = (a: string) => {
+            if (game.player instanceof Player) game.events.broadcast("Input", a, game.player);
+
+            if (game.replaying && useInputQueue) this.promptReplayOptions();
+
+            return a;
+        }
+
+        if (game.noOutput) q = "";
+        if (game.noInput && care) return wrapper("");
+
+        q = game.functions.color.fromTags(q);
+
+        // Let the game make choices for the user
+        if (game.player.inputQueue && useInputQueue) {
+            const queue = game.player.inputQueue;
+
+            if (typeof(queue) == "string") return wrapper(queue);
+
+            // Invalid queue
+            else if (!(queue instanceof Array)) return wrapper(rl.question(q));
+
+            const answer = queue[0];
+            queue.splice(0, 1);
+
+            if (queue.length <= 0) game.player.inputQueue = undefined;
+
+            return wrapper(answer);
+        }
+
+        return wrapper(rl.question(q));
+    },
+
+    /**
+     * Helper function for the `game.log` functions. Don't use.
+     */
+    logWrapper(callback: (...data: any) => void, ...data: any) {
+        if (game.noOutput) return;
+
+        data = data.map((i: any) => typeof i === "string" ? game.functions.color.fromTags(i) : i);
+        return callback(...data);
+    },
+
+    /**
+     * Wrapper for console.log 
+     */
+    log(...data: any) {
+        return this.logWrapper(overrideConsole.log, ...data);
+    },
+
+    /**
+     * Wrapper for console.error
+     */
+    logError(...data: any) {
+        return this.logWrapper(overrideConsole.error, ...data);
+    },
+
+    /**
+     * Wrapper for console.warn
+     */
+    logWarn(...data: any) {
+        return this.logWrapper(overrideConsole.warn, ...data);
+    },
+
     /**
      * Asks the user to attack a minion or hero
      *

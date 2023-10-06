@@ -8,27 +8,6 @@ import { Blueprint, CardAbility, EventKey, GameAttackReturn, GameConstants, Game
 import { config } from '../../config.js';
 import _ from "lodash";
 
-// Override the console methods to force using the wrapper functions
-// Set this variable to false to prevent disabling the console. (Not recommended)
-const disableConsole = true;
-
-const overrideConsole = {log: () => {}, warn: () => {}, error: () => {}};
-overrideConsole.log = console.log;
-overrideConsole.warn = console.warn;
-overrideConsole.error = console.error;
-
-if (disableConsole) {
-    console.log = (..._) => {
-        throw new Error("Use `game.log` instead.")
-    };
-    console.warn = (..._) => {
-        throw new Error("Use `game.logWarn` instead.")
-    };
-    console.error = (..._) => {
-        throw new Error("Use `game.logError` instead.")
-    };
-}
-
 export class Game {
     /**
      * Some general functions that can be used.
@@ -230,65 +209,28 @@ export class Game {
      * @returns What the user answered
      */
     input(q: string = "", care: boolean = true, useInputQueue: boolean = true): string {
-        const wrapper = (a: string) => {
-            if (this.player instanceof Player) this.events.broadcast("Input", a, this.player);
-
-            if (this.replaying && useInputQueue) game.interact.gameLoop.promptReplayOptions();
-
-            return a;
-        }
-
-        if (this.noOutput) q = "";
-        if (this.noInput && care) return wrapper("");
-
-        q = functions.color.fromTags(q);
-
-        // Let the game make choices for the user
-        if (this.player.inputQueue && useInputQueue) {
-            const queue = this.player.inputQueue;
-
-            if (typeof(queue) == "string") return wrapper(queue);
-
-            // Invalid queue
-            else if (!(queue instanceof Array)) return wrapper(rl.question(q));
-
-            const answer = queue[0];
-            queue.splice(0, 1);
-
-            if (queue.length <= 0) this.player.inputQueue = undefined;
-
-            return wrapper(answer);
-        }
-
-        return wrapper(rl.question(q));
-    }
-
-    private logWrapper(callback: Function, ...data: any) {
-        if (this.noOutput) return;
-
-        data = data.map((i: any) => typeof i === "string" ? functions.color.fromTags(i) : i);
-        callback(...data);
+        return interact.gameLoop.input(q, care, useInputQueue);
     }
 
     /**
      * Wrapper for console.log 
      */
     log(...data: any) {
-        this.logWrapper(overrideConsole.log, ...data);
+        return interact.gameLoop.log(data);
     }
 
     /**
      * Wrapper for console.error
      */
     logError(...data: any) {
-        this.logWrapper(overrideConsole.error, ...data);
+        return interact.gameLoop.logError(data);
     }
 
     /**
      * Wrapper for console.warn
      */
     logWarn(...data: any) {
-        this.logWrapper(overrideConsole.warn, ...data);
+        return interact.gameLoop.logWarn(data);
     }
 
     /**
