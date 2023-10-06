@@ -15,27 +15,29 @@ export type ScoredCard = {
 /**
  * The type of the card.
  */
-export type CardType = "Minion" |
-                       "Spell" |
-                       "Weapon" |
-                       "Hero" |
-                       "Location" |
-                       "Undefined";
+export type CardType =
+| "Minion"
+| "Spell"
+| "Weapon"
+| "Hero"
+| "Location"
+| "Undefined";
 
 /**
  * The class that the card belongs to. (without "Neutral")
  */
-export type CardClassNoNeutral = "Death Knight" |
-                                 "Demon Hunter" |
-                                 "Druid" |
-                                 "Hunter" |
-                                 "Mage" |
-                                 "Paladin" |
-                                 "Priest" |
-                                 "Rogue" |
-                                 "Shaman" |
-                                 "Warlock" |
-                                 "Warrior";
+export type CardClassNoNeutral =
+| "Death Knight"
+| "Demon Hunter"
+| "Druid"
+| "Hunter"
+| "Mage"
+| "Paladin"
+| "Priest"
+| "Rogue"
+| "Shaman"
+| "Warlock"
+| "Warrior";
 
 
 /**
@@ -46,291 +48,148 @@ export type CardClass = CardClassNoNeutral | "Neutral";
 /**
  * The rarity of the card.
  */
-export type CardRarity = "Free" |
-                         "Common" |
-                         "Rare" |
-                         "Epic" |
-                         "Legendary";
+export type CardRarity = 
+| "Free"
+| "Common"
+| "Rare"
+| "Epic"
+| "Legendary";
 
 /**
  * What the card costs.
  */
-export type CostType = "mana" |
-                       "armor" |
-                       "health";
+export type CostType =
+| "mana"
+| "armor"
+| "health";
 
 /**
  * The school of the spell.
  */
-export type SpellSchool = "Arcane" |
-                          "Fel" |
-                          "Fire" |
-                          "Frost" |
-                          "Holy" |
-                          "Nature" |
-                          "Shadow" |
-                          "None";
+export type SpellSchool =
+| "Arcane"
+| "Fel"
+| "Fire"
+| "Frost"
+| "Holy"
+| "Nature"
+| "Shadow"
+| "None";
 
 /**
  * The tribe of the minion.
  */
-export type MinionTribe = "Beast" |
-                          "Demon" |
-                          "Dragon" |
-                          "Elemental" |
-                          "Mech" |
-                          "Murloc" |
-                          "Naga" |
-                          "Pirate" |
-                          "Quilboar" |
-                          "Totem" |
-                          "Undead" |
-                          "All" |
-                          "None";
+export type MinionTribe =
+| "Beast"
+| "Demon"
+| "Dragon"
+| "Elemental"
+| "Mech"
+| "Murloc"
+| "Naga"
+| "Pirate"
+| "Quilboar"
+| "Totem"
+| "Undead"
+| "All"
+| "None";
 
 /**
  * Card keywords.
  */
-export type CardKeyword = "Divine Shield" |
-                          "Dormant" |
-                          "Lifesteal" |
-                          "Poisonous" |
-                          "Reborn" |
-                          "Rush" |
-                          "Stealth" |
-                          "Taunt" |
-                          "Tradeable" |
-                          "Windfury" |
-                          "Outcast" |
-                          "Cast On Draw" |
-                          "Charge" |
-                          "Mega-Windfury" |
-                          "Echo" |
-                          "Magnetic" |
-                          "Twinspell" |
-                          "Elusive" |
-                          "Cleave";
+export type CardKeyword =
+| "Divine Shield"
+| "Dormant"
+| "Lifesteal"
+| "Poisonous"
+| "Reborn"
+| "Rush"
+| "Stealth"
+| "Taunt"
+| "Tradeable"
+| "Windfury"
+| "Outcast"
+| "Cast On Draw"
+| "Charge"
+| "Mega-Windfury"
+| "Echo"
+| "Magnetic"
+| "Twinspell"
+| "Elusive"
+| "Cleave";
 
 /**
  * Card abilities that is from vanilla Hearthstone.
  */
-export type CardAbilityReal = "adapt" |
-                              "battlecry" |
-                              "cast" |
-                              "combo" |
-                              "deathrattle" |
-                              "finale" |
-                              "frenzy" |
-                              "heropower" |
-                              "honorablekill" |
-                              "infuse" |
-                              "inspire" |
-                              "invoke" |
-                              "outcast" |
-                              "overheal" |
-                              "overkill" |
-                              "passive" |
-                              "spellburst" |
-                              "startofgame" |
-                              "use";
+export type CardAbilityReal =
+| "adapt"
+| "battlecry"
+| "cast"
+| "combo"
+| "deathrattle"
+| "finale"
+| "frenzy"
+| "heropower"
+| "honorablekill"
+| "infuse"
+| "inspire"
+| "invoke"
+| "outcast"
+| "overheal"
+| "overkill"
+| "passive"
+| "spellburst"
+| "startofgame"
+| "use";
 
 /**
  * All Card abilities.
  */
-export type CardAbility = CardAbilityReal |
-                          "placeholders" |
-                          "condition" |
-                          "remove" |
-                          "handpassive" |
-                          "tick" |
-                          "handtick" |
-                          "test" |
-                          "create";
-
-/**
- * Event keys
- */
-export type EventKey = "FatalDamage" |
-                       "EndTurn" |
-                       "StartTurn" |
-                       "HealthRestored" |
-                       "UnspentMana" |
-                       "GainOverload" |
-                       "GainHeroAttack" |
-                       "TakeDamage" |
-                       "PlayCard" |
-                       "PlayCardUnsafe" |
-                       "SummonMinion" |
-                       "KillMinion" |
-                       "DamageMinion" |
-                       "CancelCard" |
-                       "CastSpellOnMinion" |
-                       "TradeCard" |
-                       "FreezeCard" |
-                       "CreateCard" |
-                       "AddCardToDeck" |
-                       "AddCardToHand" |
-                       "DrawCard" |
-                       "SpellDealsDamage" |
-                       "Attack" |
-                       "HeroPower" |
-                       "TargetSelectionStarts" |
-                       "TargetSelected" |
-                       "Dummy" |
-                       "Eval" |
-                       "Input" |
-                       "GameLoop";
-
-/**
- * Event values
- */
-export type EventValue<Key extends EventKey> = /**
-                                                * This is always null. 
-                                                */
-                                               Key extends "FatalDamage" ? null : 
-                                               /**
-                                                * The current turn (before turn counter increment)
-                                                */
-                                               Key extends "EndTurn" ? number : 
-                                               /**
-                                                * The current turn (after turn counter increment)
-                                                */
-                                               Key extends "StartTurn" ? number : 
-                                               /**
-                                                * The amount of health after restore
-                                                */
-                                               Key extends "HealthRestored" ? number : 
-                                               /**
-                                                * The amount of mana the player has left
-                                                */
-                                               Key extends "UnspentMana" ? number : 
-                                               /**
-                                                * The amount of overload gained
-                                                */
-                                               Key extends "GainOverload" ? number : 
-                                               /**
-                                                * The amount of hero attack gained
-                                                */
-                                               Key extends "GainHeroAttack" ? number : 
-                                               /**
-                                                * The player that was dealt the damage, The amount of damage taken
-                                                */
-                                               Key extends "TakeDamage" ? [Player, number] : 
-                                               /**
-                                                * The card that was played. (This gets triggered after the text of the card)
-                                                */
-                                               Key extends "PlayCard" ? Card : 
-                                               /**
-                                                * The card that was played. (This gets triggered before the text of the card, which means it also gets triggered before the cancelling logic. So you have to handle cards being cancelled.)
-                                                */
-                                               Key extends "PlayCardUnsafe" ? Card : 
-                                               /**
-                                                * The minion that was summoned
-                                                */
-                                               Key extends "SummonMinion" ? Card : 
-                                               /**
-                                                * The minion that was killed
-                                                */
-                                               Key extends "KillMinion" ? Card : 
-                                               /**
-                                                * The minion that was damaged, and the amount of damage
-                                                */
-                                               Key extends "DamageMinion" ? [Card, number] : 
-                                               /**
-                                                * The card that was cancelled, and the ability that was cancelled
-                                                */
-                                               Key extends "CancelCard" ? [Card, CardAbility] : 
-                                               /**
-                                                * The spell that was cast, and the target
-                                                */
-                                               Key extends "CastSpellOnMinion" ? [Card, Card] : 
-                                               /**
-                                                * The card that was traded
-                                                */
-                                               Key extends "TradeCard" ? Card : 
-                                               /**
-                                                * The card that was frozen
-                                                */
-                                               Key extends "FreezeCard" ? Card : 
-                                               /**
-                                                * The card that was created
-                                                */
-                                               Key extends "CreateCard" ? Card : 
-                                               /**
-                                                * The card that was added to the deck
-                                                */
-                                               Key extends "AddCardToDeck" ? Card : 
-                                               /**
-                                                * The card that was added to the hand
-                                                */
-                                               Key extends "AddCardToHand" ? Card : 
-                                               /**
-                                                * The card that was drawn
-                                                */
-                                               Key extends "DrawCard" ? Card : 
-                                               /**
-                                                * The target, and the amount of damage
-                                                */
-                                               Key extends "SpellDealsDamage" ? [Target, number] : 
-                                               /**
-                                                * The attacker, and the target
-                                                */
-                                               Key extends "Attack" ? [Target, Target] : 
-                                               /**
-                                                * The class of the hero power. (Warrior, Mage, Priest, ...)
-                                                */
-                                               Key extends "HeroPower" ? string : 
-                                               /**
-                                                * The code to evaluate
-                                                */
-                                               Key extends "Eval" ? string : 
-                                               /**
-                                                * The input
-                                                */
-                                               Key extends "Input" ? string : 
-                                               /**
-                                                * The prompt, the card that requested target selection, the alignment that the target should be, the class of the target (hero | minion), and the flags (if any).
-                                                */
-                                               Key extends "TargetSelectionStarts" ? [string, Card | null, SelectTargetAlignment, SelectTargetClass, SelectTargetFlag[]] : 
-                                               /**
-                                                * The card that requested target selection, and the target
-                                                */
-                                               Key extends "TargetSelected" ? [Card | null, Target] : 
-                                               never;
-
+export type CardAbility =
+| CardAbilityReal
+| "placeholders"
+| "condition"
+| "remove"
+| "handpassive"
+| "tick"
+| "handtick"
+| "test"
+| "create";
 
 export type UnknownEventValue = EventValue<EventKey>;
 
 /**
  * Game.PlayCard return value
  */
-export type GamePlayCardReturn = true |
-                                 "cost" |
-                                 "traded" |
-                                 "space" |
-                                 "magnetize" |
-                                 "colossal" |
-                                 "refund" |
-                                 "counter" |
-                                 "invalid";
+export type GamePlayCardReturn =
+| true
+| "cost"
+| "traded"
+| "space"
+| "magnetize"
+| "colossal"
+| "refund"
+| "counter"
+| "invalid";
 
 /**
  * Attack return value
  */
-export type GameAttackReturn = true |
-                               "divineshield" |
-                               "taunt" |
-                               "stealth" |
-                               "frozen" |
-                               "plrnoattack" |
-                               "noattack" |
-                               "plrhasattacked" |
-                               "hasattacked" |
-                               "sleepy" |
-                               "cantattackhero" |
-                               "immune" |
-                               "dormant" |
-                               "invalid";
+export type GameAttackReturn =
+| true
+| "divineshield"
+| "taunt"
+| "stealth"
+| "frozen"
+| "plrnoattack"
+| "noattack"
+| "plrhasattacked"
+| "hasattacked"
+| "sleepy"
+| "cantattackhero"
+| "immune"
+| "dormant"
+| "invalid";
 
 /**
  * ExportDeck error return value
@@ -340,11 +199,12 @@ export type FunctionsExportDeckError = null | { msg: string; info: null | { card
 /**
  * CalcMove return value
  */
-export type AICalcMoveOption = Card |
-                               "hero power" |
-                               "attack" |
-                               "use" |
-                               "end";
+export type AICalcMoveOption =
+| Card
+| "hero power"
+| "attack"
+| "use"
+| "end";
 
 /**
  * SelectTarget alignment
@@ -469,6 +329,7 @@ export type Blueprint = {
     cost: number,
     type: CardType,
 
+    // Type specific
     tribe?: MinionTribe, 
     spellSchool?: SpellSchool,
     durability?: number,
@@ -614,3 +475,156 @@ export type GameConfig = {
         description: string
     }}
 }
+
+/**
+ * Event keys
+ */
+export type EventKey =
+| "FatalDamage"
+| "EndTurn"
+| "StartTurn"
+| "HealthRestored"
+| "UnspentMana"
+| "GainOverload"
+| "GainHeroAttack"
+| "TakeDamage"
+| "PlayCard"
+| "PlayCardUnsafe"
+| "SummonMinion"
+| "KillMinion"
+| "DamageMinion"
+| "CancelCard"
+| "CastSpellOnMinion"
+| "TradeCard"
+| "FreezeCard"
+| "CreateCard"
+| "AddCardToDeck"
+| "AddCardToHand"
+| "DrawCard"
+| "SpellDealsDamage"
+| "Attack"
+| "HeroPower"
+| "TargetSelectionStarts"
+| "TargetSelected"
+| "Dummy"
+| "Eval"
+| "Input"
+| "GameLoop";
+
+/**
+ * Event values
+ */
+export type EventValue<Key extends EventKey> =
+    /**
+     * This is always null. 
+     */
+    Key extends "FatalDamage" ? null : 
+    /**
+     * The current turn (before turn counter increment)
+     */
+    Key extends "EndTurn" ? number : 
+    /**
+     * The current turn (after turn counter increment)
+     */
+    Key extends "StartTurn" ? number : 
+    /**
+     * The amount of health after restore
+     */
+    Key extends "HealthRestored" ? number : 
+    /**
+     * The amount of mana the player has left
+     */
+    Key extends "UnspentMana" ? number : 
+    /**
+     * The amount of overload gained
+     */
+    Key extends "GainOverload" ? number : 
+    /**
+     * The amount of hero attack gained
+     */
+    Key extends "GainHeroAttack" ? number : 
+    /**
+     * The player that was dealt the damage, The amount of damage taken
+     */
+    Key extends "TakeDamage" ? [Player, number] : 
+    /**
+     * The card that was played. (This gets triggered after the text of the card)
+     */
+    Key extends "PlayCard" ? Card : 
+    /**
+     * The card that was played. (This gets triggered before the text of the card, which means it also gets triggered before the cancelling logic. So you have to handle cards being cancelled.)
+     */
+    Key extends "PlayCardUnsafe" ? Card : 
+    /**
+     * The minion that was summoned
+     */
+    Key extends "SummonMinion" ? Card : 
+    /**
+     * The minion that was killed
+     */
+    Key extends "KillMinion" ? Card : 
+    /**
+     * The minion that was damaged, and the amount of damage
+     */
+    Key extends "DamageMinion" ? [Card, number] : 
+    /**
+     * The card that was cancelled, and the ability that was cancelled
+     */
+    Key extends "CancelCard" ? [Card, CardAbility] : 
+    /**
+     * The spell that was cast, and the target
+     */
+    Key extends "CastSpellOnMinion" ? [Card, Card] : 
+    /**
+     * The card that was traded
+     */
+    Key extends "TradeCard" ? Card : 
+    /**
+     * The card that was frozen
+     */
+    Key extends "FreezeCard" ? Card : 
+    /**
+     * The card that was created
+     */
+    Key extends "CreateCard" ? Card : 
+    /**
+     * The card that was added to the deck
+     */
+    Key extends "AddCardToDeck" ? Card : 
+    /**
+     * The card that was added to the hand
+     */
+    Key extends "AddCardToHand" ? Card : 
+    /**
+     * The card that was drawn
+     */
+    Key extends "DrawCard" ? Card : 
+    /**
+     * The target, and the amount of damage
+     */
+    Key extends "SpellDealsDamage" ? [Target, number] : 
+    /**
+     * The attacker, and the target
+     */
+    Key extends "Attack" ? [Target, Target] : 
+    /**
+     * The class of the hero power. (Warrior, Mage, Priest, ...)
+     */
+    Key extends "HeroPower" ? string : 
+    /**
+     * The code to evaluate
+     */
+    Key extends "Eval" ? string : 
+    /**
+     * The input
+     */
+    Key extends "Input" ? string : 
+    /**
+     * The prompt, the card that requested target selection, the alignment that the target should be, the class of the target (hero | minion), and the flags (if any).
+     */
+    Key extends "TargetSelectionStarts" ? [string, Card | null, SelectTargetAlignment, SelectTargetClass, SelectTargetFlag[]] : 
+    /**
+     * The card that requested target selection, and the target
+     */
+    Key extends "TargetSelected" ? [Card | null, Target] : 
+    never;
