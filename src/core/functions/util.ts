@@ -370,10 +370,9 @@ ${mainContent}
         // Windows vs Linux. Pros and Cons:
         if (process.platform == "win32") {
             // Windows
-            childProcess.spawn(`start ${command}`);
+            this.runCommand(`start ${command}`);
         } else {
             // Linux (/ Mac)
-
             command = command.replaceAll("\\", "/");
 
             const attempts: string[] = [];

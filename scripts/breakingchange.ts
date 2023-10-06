@@ -87,7 +87,7 @@ function main() {
         }
 
         // `card` is the path to that card.
-        const success = game.functions.util.runCommandAsChildProcess(`${game.config.general.editor} "${path}"`);
+        const success = game.functions.util.runCommandAsChildProcess(`${game.config.general.editor} "${game.functions.file.dirname() + path}"`);
         // The `runCommandAsChildProcess` shows an error message for us, but we need to pause.
         if (!success) game.pause();
 
