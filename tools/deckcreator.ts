@@ -88,6 +88,8 @@ const settings: Settings = {
     }
 }
 
+const defaultSettings: Settings = game.lodash.cloneDeep(settings);
+
 function printName() {
     game.interact.cls();
     game.log("Hearthstone.js Deck Creator (C) 2022\n");
@@ -121,7 +123,7 @@ function askClass(): CardClassNoNeutral {
 
 function sortCards(_cards: Card[]) {
     // If the order is invalid, fall back to ascending
-    if (!["asc", "desc"].includes(settings.sort.order)) settings.sort.order = "asc";
+    if (!["asc", "desc"].includes(settings.sort.order)) settings.sort.order = defaultSettings.sort.order;
 
     const type = settings.sort.type;
     const order = settings.sort.order;
@@ -172,7 +174,7 @@ function sortCards(_cards: Card[]) {
     }
 
     // If 'type' isn't valid, fall back to sorting by rarity
-    settings.sort.type = "rarity";
+    settings.sort.type = defaultSettings.sort.type;
     return sortCards(_cards);
 }
 
@@ -829,13 +831,13 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
             return false;
         }
 
-        const setting = args[0];
+        const setting = args.shift();
 
         switch (setting) {
             case "format":
                 if (args.length == 0) {
-                    settings.deckcode.format = "js";
-                    game.log("Reset deckcode format to: <yellow>js</yellow>");
+                    settings.deckcode.format = defaultSettings.deckcode.format;
+                    game.log(`Reset deckcode format to: <yellow>${defaultSettings.deckcode.format}</yellow>`);
                     break;
                 }
 
@@ -851,8 +853,8 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
             case "cpp":
             case "cardsPerPage":
                 if (args.length == 0) {
-                    settings.view.cpp = 15;
-                    game.log("Reset cards per page to: <yellow>15</yellow>");
+                    settings.view.cpp = defaultSettings.view.cpp;
+                    game.log(`Reset cards per page to: <yellow>${defaultSettings.view.cpp}</yellow>`);
                     break;
                 }
 
@@ -861,8 +863,8 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
             case "dcmd":
             case "defaultCommand":
                 if (args.length == 0) {
-                    settings.commands.default = "add";
-                    game.log("Set default command to: <yellow>add</yellow>");
+                    settings.commands.default = defaultSettings.commands.default;
+                    game.log(`Set default command to: <yellow>${defaultSettings.commands.default}</yellow>`);
                     break;
                 }
 
