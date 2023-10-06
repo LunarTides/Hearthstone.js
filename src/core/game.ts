@@ -216,21 +216,31 @@ export class Game {
      * Wrapper for console.log 
      */
     log(...data: any) {
-        return interact.gameLoop.log(data);
+        return interact.gameLoop.log(...data);
     }
 
     /**
      * Wrapper for console.error
      */
     logError(...data: any) {
-        return interact.gameLoop.logError(data);
+        return interact.gameLoop.logError(...data);
     }
 
     /**
      * Wrapper for console.warn
      */
     logWarn(...data: any) {
-        return interact.gameLoop.logWarn(data);
+        return interact.gameLoop.logWarn(...data);
+    }
+
+    /**
+     * Pause the game until the user presses the enter key.
+     * Use this instead of `input` if you don't care about the return value for clarity.
+     * 
+     * @param [prompt="Press enter to continue..."] The prompt to show the user
+     */
+    pause(prompt = "Press enter to continue...") {
+        interact.gameLoop.input(prompt);
     }
 
     /**

@@ -227,7 +227,7 @@ export const cardFunctions = {
 
         if (!this.runBlueprintValidator()) {
             game.log(`<red>Some cards are invalid. Please fix these issues before playing.</red>`);
-            game.input();
+            game.pause();
             process.exit(1);
         }
 

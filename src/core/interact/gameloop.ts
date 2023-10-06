@@ -179,7 +179,7 @@ export const GameLoopInteract = {    /**
         }
 
         game.log(`<red>${err}.</red>`);
-        game.input();
+        game.pause();
         return false;
     },
 
@@ -196,7 +196,7 @@ export const GameLoopInteract = {    /**
         const args = q.split(" ");
         const name = args.shift()?.toLowerCase();
         if (!name) {
-            game.input("<red>Invalid command.</red>\n");
+            game.pause("<red>Invalid command.</red>\n");
             return false;
         }
 
@@ -208,12 +208,12 @@ export const GameLoopInteract = {    /**
             }
 
             if (game.player.mana < game.player.heroPowerCost) {
-                game.input("<red>You do not have enough mana.</red>\n");
+                game.pause("<red>You do not have enough mana.</red>\n");
                 return false;
             }
 
             if (!game.player.canUseHeroPower) {
-                game.input("<red>You have already used your hero power this turn.</red>\n");
+                game.pause("<red>You have already used your hero power this turn.</red>\n");
                 return false;
             }
 
@@ -252,7 +252,7 @@ export const GameLoopInteract = {    /**
             }
 
             game.log(`<red>${err}.</red>`);
-            game.input();
+            game.pause();
         }
         else if (name === "help") {
             game.interact.info.printName();
@@ -287,7 +287,7 @@ export const GameLoopInteract = {    /**
             game.log(condColor("/ai                 - Gives you a list of the actions the ai(s) have taken in the order they took it"));
             game.log(condColor("---------------------------" + ((game.config.general.debug) ? "" : "-")));
             
-            game.input("\nPress enter to continue...\n");
+            game.pause("\nPress enter to continue...\n");
         }
         else if (name === "view") {
             const isHandAnswer = game.interact.question(game.player, "Do you want to view a minion on the board, or in your hand?", ["Board", "Hand"]);
@@ -373,7 +373,7 @@ export const GameLoopInteract = {    /**
 
                 // Todo list
                 if (todos.length <= 0) {
-                    game.input("\nPress enter to continue...");
+                    game.pause("\nPress enter to continue...");
                     break;
                 }
 
@@ -401,7 +401,7 @@ export const GameLoopInteract = {    /**
                 printInfo();
                 printTodo(todo, todoId, true);
                 
-                game.input("\nPress enter to continue...");
+                game.pause("\nPress enter to continue...");
             }
         }
         else if (name === "history") {
@@ -518,20 +518,20 @@ export const GameLoopInteract = {    /**
             else {
                 game.log(finished);
 
-                game.input("\nPress enter to continue...");
+                game.pause("\nPress enter to continue...");
             }
 
             return finished;
         }
 
         else if (name.startsWith("/") && !game.config.general.debug) {
-            game.input("<red>You are not allowed to use this command.</red>");
+            game.pause("<red>You are not allowed to use this command.</red>");
             return false;
         }
 
         else if (name === "/give") {    
             if (args.length <= 0) {
-                game.input("<red>Too few arguments.</red>\n");
+                game.pause("<red>Too few arguments.</red>\n");
                 return false;
             }
 
@@ -539,7 +539,7 @@ export const GameLoopInteract = {    /**
 
             const card = game.functions.card.getFromName(cardName);
             if (!card) {
-                game.input(`<red>Invalid card: <yellow>${cardName}</yellow>.\n`);
+                game.pause(`<red>Invalid card: <yellow>${cardName}</yellow>.\n`);
                 return false;
             }
     
@@ -547,7 +547,7 @@ export const GameLoopInteract = {    /**
         }
         else if (name === "/eval") {
             if (args.length <= 0) {
-                game.input("<red>Too few arguments.</red>\n");
+                game.pause("<red>Too few arguments.</red>\n");
                 return -1;
             }
 
@@ -563,7 +563,7 @@ export const GameLoopInteract = {    /**
             if (log) {
                 if (game.functions.util.lastChar(code) == ";") code = code.slice(0, -1);
 
-                code = `game.log(${code});game.input();`;
+                code = `game.log(${code});game.pause();`;
             }
     
             game.evaling = true;
@@ -574,7 +574,7 @@ export const GameLoopInteract = {    /**
             } catch (err) {
                 game.log("\n<red>An error happened while running this code! Here is the error:</red>");
                 game.log(err.stack);
-                game.input("Press enter to continue...");
+                game.pause();
             }
             game.evaling = false;
         }
@@ -590,19 +590,19 @@ export const GameLoopInteract = {    /**
         else if (name === "/undo") {
             // Get the last played card
             if (!game.events.events.PlayCard || game.events.events.PlayCard[game.player.id].length <= 0) {
-                game.input("<red>No cards to undo.</red>\n");
+                game.pause("<red>No cards to undo.</red>\n");
                 return false;
             }
 
             const eventCards: [Card, number][] = game.events.events.PlayCard[game.player.id];
             if (eventCards.length <= 0) {
-                game.input("<red>No cards to undo.</red>\n");
+                game.pause("<red>No cards to undo.</red>\n");
                 return false;
             }
 
             let card = game.lodash.last(eventCards)?.[0];
             if (!card) {
-                game.input("<red>No cards found.</red>\n");
+                game.pause("<red>No cards found.</red>\n");
                 return false;
             }
 
@@ -666,7 +666,7 @@ export const GameLoopInteract = {    /**
             else {
                 game.log(finished);
 
-                game.input("\nPress enter to continue...");
+                game.pause("\nPress enter to continue...");
             }
 
             return finished;
@@ -696,19 +696,19 @@ export const GameLoopInteract = {    /**
 
             const turnIndex = parseInt(game.input("\nWhich turn does the command belong to? (eg. 1): "));
             if (!turnIndex || turnIndex < 0 || !history[turnIndex]) {
-                game.input("<red>Invalid turn.</red>\n");
+                game.pause("<red>Invalid turn.</red>\n");
                 return false;
             }
 
             const commandIndex = parseInt(game.input("\nWhat is the index of the command in that turn? (eg. 1): "));
             if (!commandIndex || commandIndex < 1 || !history[turnIndex][commandIndex - 1]) {
-                game.input("<red>Invalid command index.</red>\n");
+                game.pause("<red>Invalid command index.</red>\n");
                 return false;
             }
 
             let command = history[turnIndex][commandIndex - 1][1];
             if (!command) {
-                game.input("<red>Invalid command.</red>\n");
+                game.pause("<red>Invalid command.</red>\n");
                 return false;
             }
 
@@ -717,7 +717,7 @@ export const GameLoopInteract = {    /**
             game.interact.info.printAll(game.player);
             const options = parseInt(game.input(`\nWhat would you like to do with this command?\n${command}\n\n(1. Run it, 2. Edit it, 0. Cancel): `));
             if (!options) {
-                game.input("<red>Invalid option.</red>\n");
+                game.pause("<red>Invalid option.</red>\n");
                 return false;
             }
 
@@ -732,7 +732,7 @@ export const GameLoopInteract = {    /**
         }
         else if (name === "/set") {
             if (args.length != 2) {
-                game.input("<red>Invalid amount of arguments!</red>\n");
+                game.pause("<red>Invalid amount of arguments!</red>\n");
                 return false;
             }
 
@@ -740,24 +740,24 @@ export const GameLoopInteract = {    /**
 
             const name = Object.keys(game.config).find(k => k === value);
             if (!name) {
-                game.input("<red>Invalid setting name!</red>\n");
+                game.pause("<red>Invalid setting name!</red>\n");
                 return false;
             }
 
             const setting: {[key: string]: any} = game.config[name as keyof GameConfig];
 
             if (setting === undefined) {
-                game.input("<red>Invalid setting name!</red>\n");
+                game.pause("<red>Invalid setting name!</red>\n");
                 return false;
             }
 
             if (!(/number|boolean|string/.test(typeof setting))) {
-                game.input(`<red>You cannot change this setting, as it is a '${typeof setting}', and you can only change: number, boolean, string.</red>\n`);
+                game.pause(`<red>You cannot change this setting, as it is a '${typeof setting}', and you can only change: number, boolean, string.</red>\n`);
                 return false;
             }
 
             if (key === "debug") {
-                game.input("<red>You can't change the debug setting, as that could lock you out of the set command.</red>\n");
+                game.pause("<red>You can't change the debug setting, as that could lock you out of the set command.</red>\n");
                 return false;
             }
 
@@ -786,14 +786,14 @@ export const GameLoopInteract = {    /**
 
             if (newValue === undefined) {
                 // This should never really happen
-                game.input("<red>Invalid value!</red>\n");
+                game.pause("<red>Invalid value!</red>\n");
                 return false;
             }
 
             game.config[key as keyof GameConfig] = newValue as any;
             game.doConfigAI();
             
-            game.input();
+            game.pause();
         }
         else if (name === "/reload" || name === "/rl") {
             if (game.config.advanced.reloadCommandConfirmation && !flags?.debug) {
@@ -834,8 +834,8 @@ export const GameLoopInteract = {    /**
                 return true;
             });
 
-            if (!flags?.debug && success) game.input("\nThe cards have been reloaded.\nPress enter to continue...");
-            if (!success) game.input("\nSome steps failed. The game could not be fully reloaded. Please report this.\nPress enter to continue...");
+            if (!flags?.debug && success) game.pause("\nThe cards have been reloaded.\nPress enter to continue...");
+            if (!success) game.pause("\nSome steps failed. The game could not be fully reloaded. Please report this.\nPress enter to continue...");
         }
         else if (name === "/freload" || name === "/frl") {
             return this.handleCmds("/reload", { debug: true });
@@ -923,7 +923,7 @@ export const GameLoopInteract = {    /**
         else err = `An unknown error occurred. Error code: UnexpectedDoTurnResult@${ret}`;
 
         game.log(`<red>${err}.</red>`);
-        game.input();
+        game.pause();
 
         return false;
     },

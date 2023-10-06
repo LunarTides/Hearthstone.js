@@ -17,7 +17,7 @@ export function main(replayPath?: string) {
         let error = game.functions.util.replayFile(replayPath);
 
         if (error instanceof Error) {
-            game.input(`Something went wrong when trying to replay the game. ${error}\n`);
+            game.pause(`Something went wrong when trying to replay the game. ${error}\n`);
             throw error;
         }
     }
@@ -30,7 +30,7 @@ export function main(replayPath?: string) {
     if (holes > 0 || dupes > 0) {
         // If there were holes or dupes, pause the game so that the user gets a
         // chance to see what the problem was
-        game.input();
+        game.pause();
     }
 
     warnAboutOutdatedCards();

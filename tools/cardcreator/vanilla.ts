@@ -148,7 +148,7 @@ export function main(debug = false, overrideType?: lib.CCType) {
     const [vanillaCards, error] = game.functions.card.vanilla.getAll();
 
     if (error) {
-        game.input(error);
+        game.pause(error);
         return false;
     };
 

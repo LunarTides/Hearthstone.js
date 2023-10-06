@@ -46,7 +46,7 @@ export const CardInteract = {
         const isInt = plr.mulligan(input);
 
         if (!isInt && input != "") {
-            game.input("<red>Invalid input!</red>\n");
+            game.pause("<red>Invalid input!</red>\n");
             return this.mulligan(plr);
         }
 
@@ -360,6 +360,7 @@ export const CardInteract = {
         if (help) game.log("<cyan>{cost}</cyan> <b>Name</b> (<bright:green>[attack / health]</bright:green> if is has) (description) <yellow>(type)</yellow> ((tribe) or (spell class) or (cooldown)) <gray>[class]</gray>");
         game.log(_card + (tribe || spellSchool || locCooldown) + ` [${_class}]`);
 
-        game.input("\nPress enter to continue...\n");
+        game.log();
+        game.pause();
     },
 }

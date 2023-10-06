@@ -71,7 +71,7 @@ function main() {
             }
             else game.log("File not found!");
 
-            game.input();
+            game.pause();
             process.exit(0);
         }
 
@@ -81,7 +81,7 @@ function main() {
         const path = matchingCards[index];
         if (!path) {
             game.log("Invalid index!");
-            game.input();
+            game.pause();
 
             continue;
         }
@@ -89,14 +89,14 @@ function main() {
         // `card` is the path to that card.
         const success = game.functions.util.runCommandAsChildProcess(`${game.config.general.editor} "${path}"`);
         // The `runCommandAsChildProcess` shows an error message for us, but we need to pause.
-        if (!success) game.input();
+        if (!success) game.pause();
 
         finishedCards.push(path);
         matchingCards.splice(index, 1);
 
         if (matchingCards.length <= 0) {
             // All cards have been patched
-            game.input("All cards patched!\n");
+            game.pause("All cards patched!\n");
             if (game.functions.file.exists(finishedCardsPath)) game.functions.file.delete(finishedCardsPath);
 
             // Exit so it doesn't save

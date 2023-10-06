@@ -237,7 +237,7 @@ export const blueprint: Blueprint = {
         game.log("Would be path: '%s'", filePath.replaceAll("\\", "/"));
         game.log("Content:");
         game.log(content);
-        game.input();
+        game.pause();
     }
 
     generateCardExports();
@@ -245,7 +245,7 @@ export const blueprint: Blueprint = {
     // Open the defined editor on that card if it has a function to edit, and debug mode is disabled
     if (ability && !debug) {
         const success = game.functions.util.runCommandAsChildProcess(`${game.config.general.editor} "${filePath}"`);
-        if (!success) game.input();
+        if (!success) game.pause();
     }
 
     return filePath;

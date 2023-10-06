@@ -23,7 +23,7 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | nul
 
             if (!ccType) {
                 game.logError("<red>Invalid cc type!</red>");
-                game.input();
+                game.pause();
                 return;
             }
         }
@@ -102,7 +102,7 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | nul
             game.log(`       Dry-run The name of the card     The description of the card. Etc...`);
             game.log(`        CC type is "Test"   The stats of the card`);
             game.log();
-            game.input();
+            game.pause();
         }
         // Custom Card Creator
         else if (name === "ccc") {
@@ -162,7 +162,7 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | nul
 
                 if (!replayPath) {
                     game.logError("<red>Invalid replay path!</red>");
-                    game.input();
+                    game.pause();
                     return;
                 }
 
@@ -175,7 +175,7 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | nul
             const name = args[0];
             if (!name) {
                 game.logError("<red>Invalid script name!</red>");
-                game.input();
+                game.pause();
                 return;
             }
 
@@ -184,7 +184,7 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | nul
         }
         else {
             game.logWarn("<yellow>That is not a valid command.</yellow>");
-            game.input();
+            game.pause();
         }
     });
 }

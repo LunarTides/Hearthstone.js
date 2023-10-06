@@ -19,7 +19,7 @@ export const deckcodeFunctions = {
         const ERROR = (errorCode: string, cardName: string | null = null): null => {
             game.log(`<red>This deck is not valid!\nError Code: <yellow>${errorCode}</yellow red>`);
             if (cardName) game.log(`<red>Specific Card that caused this error: <yellow>${cardName}</yellow red>`);
-            game.input();
+            game.pause();
             return null;
         }
 
@@ -62,7 +62,7 @@ export const deckcodeFunctions = {
 
         const addRunes = (runes: string) => {
             if (runeClass) plr.runes = runes;
-            else game.input(`<yellow>WARNING: This deck has runes in it, but the class is <bright:yellow>${hero}</bright:yellow>. Supported classes: <bright:yellow>${runeClasses.join(", ")}</bright:yellow yellow>\n`);
+            else game.pause(`<yellow>WARNING: This deck has runes in it, but the class is <bright:yellow>${hero}</bright:yellow>. Supported classes: <bright:yellow>${runeClasses.join(", ")}</bright:yellow yellow>\n`);
         }
 
         // Runes
@@ -85,7 +85,7 @@ export const deckcodeFunctions = {
             addRunes(runes);
         }
         else if (runeClass) {
-            game.input(`<yellow>WARNING: This class supports runes but there are no runes in this deck. This deck's class: <bright:yellow>${hero}</bright:yellow>. Supported classes: <bright:yellow>${runeClasses.join(", ")}</bright:yellow yellow>\n`);
+            game.pause(`<yellow>WARNING: This class supports runes but there are no runes in this deck. This deck's class: <bright:yellow>${hero}</bright:yellow>. Supported classes: <bright:yellow>${runeClasses.join(", ")}</bright:yellow yellow>\n`);
         }
 
         // Find /3:5,2:8,1/
@@ -153,7 +153,7 @@ export const deckcodeFunctions = {
                         err = "";
                         break;
                 }
-                game.input(`<red>${err}.\nSpecific Card that caused the error: <yellow>${card.name}</yellow red>\n`);
+                game.pause(`<red>${err}.\nSpecific Card that caused the error: <yellow>${card.name}</yellow red>\n`);
                 retInvalid = true;
             });
 
@@ -169,7 +169,7 @@ export const deckcodeFunctions = {
 
         if ((_deck.length < min || _deck.length > max) && localSettings.validateDecks) {
             const grammar = (min == max) ? `exactly <yellow>${max}</yellow>` : `between <yellow>${min}-${max}</yellow>`;
-            game.input(`<red>The deck needs ${grammar} cards. Your deck has: <yellow>${_deck.length}</yellow>.\n`);
+            game.pause(`<red>The deck needs ${grammar} cards. Your deck has: <yellow>${_deck.length}</yellow>.\n`);
             return null;
         }
 
@@ -201,7 +201,7 @@ export const deckcodeFunctions = {
                     err = "";
                     break;
             }
-            game.input(err + `\n<red>Specific card that caused this error: <yellow>${cardName}</yellow>. Amount: <yellow>${amount}</yellow>.\n`);
+            game.pause(err + `\n<red>Specific card that caused this error: <yellow>${cardName}</yellow>. Amount: <yellow>${amount}</yellow>.\n`);
             return "invalid";
         });
     
@@ -327,7 +327,7 @@ export const deckcodeFunctions = {
         const heroClassId = vanillaHeroes[heroClass as CardClass];
         if (!heroClassId) {
             game.log(`<red>ERROR: Invalid hero class: <yellow>${heroClass}</yellow red>`);
-            game.input();
+            game.pause();
 
             process.exit(1);
         }
@@ -347,7 +347,7 @@ export const deckcodeFunctions = {
         const [vanillaCards, error] = game.functions.card.vanilla.getAll("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'npm run script:vanilla:generator' (requires an internet connection), then try again.");
 
         if (error) {
-            game.input(error);
+            game.pause(error);
             return "";
         }
 
@@ -389,7 +389,7 @@ export const deckcodeFunctions = {
 
             if (matches.length == 0) {
                 // Invalid card
-                game.input("<red>ERROR: Invalid card found!</red>\n");
+                game.pause("<red>ERROR: Invalid card found!</red>\n");
                 return;
             }
 
@@ -444,7 +444,7 @@ export const deckcodeFunctions = {
         const [vanillaCards, error] = game.functions.card.vanilla.getAll("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'npm run script:vanilla:generator' (requires an internet connection), then try again.");
 
         if (error) {
-            game.input(error);
+            game.pause(error);
             return "";
         }
 
@@ -478,7 +478,7 @@ export const deckcodeFunctions = {
         if (invalidCards.length > 0) {
             // There was a card in the deck that isn't implemented in Hearthstone.js
             game.log(`<yellow>Some cards do not currently exist. You cannot play on this deck without them.</yellow>`);
-            game.input();
+            game.pause();
 
             process.exit(1);
         }

@@ -234,7 +234,7 @@ ${mainContent}
         if (!err) return true;
 
         game.log(`\n<red>The game crashed!\nCrash report created in 'logs/${filename}'\nPlease create a bug report at:\nhttps://github.com/LunarTides/Hearthstone.js/issues</red>`);
-        game.input();
+        game.pause();
 
         return true;
     },
@@ -364,7 +364,7 @@ ${mainContent}
      * const success = runCommandAsChildProcess("notepad foo.txt");
      * 
      * // Wait until the user presses enter. This function automatically prints a traceback to the screen but will not pause by itself.
-     * if (!success) game.input();
+     * if (!success) game.pause();
      */
     runCommandAsChildProcess(command: string): boolean {
         // Windows vs Linux. Pros and Cons:
@@ -407,7 +407,7 @@ ${mainContent}
 
                 game.log("Please install any of these using your package manager.");
                 game.log("If you're not using linux, open up an issue on the github page.");
-                // game.input(); <- It is your job to pause the program when you run this, since function.ts functions should generally not pause the game.
+                // game.pause(); <- It is your job to pause the program when you run this, since function.ts functions should generally not pause the game.
 
                 return false;
             }

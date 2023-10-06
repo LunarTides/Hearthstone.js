@@ -41,7 +41,7 @@ export const interact = {
         else {
             if (!allowTestDeck) {
                 // Give error message
-                game.input("<red>Please enter a deckcode!</red>\n");
+                game.pause("<red>Please enter a deckcode!</red>\n");
                 return false;
             }
 
@@ -87,7 +87,7 @@ export const interact = {
 
             const choice = game.input(p);
             if (!parseInt(choice)) {
-                game.input("<red>Invalid input!</red>\n");
+                game.pause("<red>Invalid input!</red>\n");
                 return this.chooseOne(prompt, options, times);
             }
 
@@ -141,7 +141,7 @@ export const interact = {
 
         const answer = answers[choice - 1];
         if (!answer) {
-            game.input("<red>Invalid input!</red>\n");
+            game.pause("<red>Invalid input!</red>\n");
             RETRY();
         }
 
@@ -168,7 +168,7 @@ export const interact = {
 
         // Invalid input
         game.log(`<red>Unexpected input: '<yellow>${_choice}</yellow>'. Valid inputs: </red>[<bright:green>Y</bright:green> | <red>N</red>]`);
-        game.input();
+        game.pause();
 
         return this.yesNoQuestion(plr, prompt);
     },
@@ -261,7 +261,7 @@ export const interact = {
         if (!target.startsWith("face") && !boardFriendlyTarget && !boardOpponentTarget) {
             // target != "face" and target is not a minion.
             // The input is invalid
-            game.input("<red>Invalid input / minion!</red>\n");
+            game.pause("<red>Invalid input / minion!</red>\n");
 
             return this._selectTarget(prompt, card, forceSide, forceClass, flags);
         }
@@ -303,14 +303,14 @@ export const interact = {
 
         // If you didn't select a valid minion, return.
         if (minion === undefined) {
-            game.input("<red>Invalid minion.</red>\n");
+            game.pause("<red>Invalid minion.</red>\n");
             return false;
         }
 
         // If the minion has elusive, and the card that called this function is a spell
         if ((card && card.type === "Spell") || flags.includes("forceElusive")) {
             if (minion.keywords.includes("Elusive")) {
-                game.input("<red>Can't be targeted by Spells or Hero Powers.</red>\n");
+                game.pause("<red>Can't be targeted by Spells or Hero Powers.</red>\n");
             
                 return false;
             }
@@ -320,14 +320,14 @@ export const interact = {
 
         // If the minion has stealth, don't allow the opponent to target it.
         if (minion.keywords.includes("Stealth") && game.player != minion.plr) {
-            game.input("<red>This minion has stealth.</red>\n");
+            game.pause("<red>This minion has stealth.</red>\n");
 
             return false;
         }
 
         // If the minion is a location, don't allow it to be selectted unless the `allowLocations` flag was set.
         if (minion.type == "Location" && !flags.includes("allowLocations")) {
-            game.input("<red>You cannot target location cards.</red>\n");
+            game.pause("<red>You cannot target location cards.</red>\n");
 
             return false;
         }
@@ -356,7 +356,7 @@ export const interact = {
         if (condition) game.log("Success! You did it, well done!");
         else game.log(`Hm. This card doesn't seem to do what it's supposed to do... Maybe you should try to fix it? The card is in: './cards/Examples/DIY/${fileName}'.`);
         
-        game.input();
+        game.pause();
         return true;
     },
 

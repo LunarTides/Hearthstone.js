@@ -39,7 +39,7 @@ function cardCreator() {
             if (error) {
                 watermark();
 
-                game.input(error);
+                game.pause(error);
                 return;
             }
 

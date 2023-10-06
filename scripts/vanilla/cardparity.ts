@@ -12,7 +12,7 @@ function main() {
     const [vanillaCards, error] = game.functions.card.vanilla.getAll();
 
     if (error) {
-        game.input(error);
+        game.pause(error);
         process.exit(1);
     }
 

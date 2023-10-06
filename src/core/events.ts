@@ -175,7 +175,7 @@ export const EventManager: IEventManager = {
             // The quest/secret is done
             plr[questsName].splice(plr[questsName].indexOf(quest), 1);
 
-            if (questsName == "secrets") game.input("\nYou triggered the opponents's '" + quest.name + "'.\n");
+            if (questsName == "secrets") game.pause("\nYou triggered the opponents's '" + quest.name + "'.\n");
 
             if (quest.next) new Card(quest.next, plr).activate("cast");
         });

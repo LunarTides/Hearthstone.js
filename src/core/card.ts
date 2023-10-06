@@ -1285,7 +1285,7 @@ export class Card {
 
         let choice = game.input(p);
         if (!parseInt(choice)) {
-            game.input("<red>Invalid choice!</red>\n");
+            game.pause("<red>Invalid choice!</red>\n");
             return this.adapt(prompt, values);
         }
 

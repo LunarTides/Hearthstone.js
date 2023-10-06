@@ -140,7 +140,7 @@ export const blueprint: Blueprint = {
         // This only happens if the `TargetSelectionStarts` event fired, but not `TargetSelected`.
         // That only happens if the card was cancelled after the `TargetSelectionStarts` event fired
         if (potentiallyCancelled) {
-            game.input("You cancelled the card. The verification process depends on a minion actually being killed. Try again.\n");
+            game.pause("You cancelled the card. The verification process depends on a minion actually being killed. Try again.\n");
             return game.constants.REFUND;
         }
 

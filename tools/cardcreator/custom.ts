@@ -230,7 +230,7 @@ export function main(debug = false, overrideType?: lib.CCType) {
 
     if (!Object.keys(cardTypeFunctions).includes(type)) {
         game.log("That is not a valid type!");
-        game.input();
+        game.pause();
         return false;
     }
 
@@ -252,6 +252,6 @@ export function main(debug = false, overrideType?: lib.CCType) {
 
     const filePath = lib.create(cctype, type, card, undefined, undefined, debug);
 
-    game.input();
+    game.pause();
     return filePath;
 }

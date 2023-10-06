@@ -305,7 +305,7 @@ function showCards() {
         const searchedCards = searchCards(classCards, q);
 
         if (searchedCards === false) {
-            game.input(`<red>Search failed at '${q}'! Reverting back to last successful query.\n</red>`);
+            game.pause(`<red>Search failed at '${q}'! Reverting back to last successful query.\n</red>`);
             searchFailed = true;
             return;
         }
@@ -314,7 +314,7 @@ function showCards() {
     });
 
     if (classCards.length <= 0) {
-        game.input(`<yellow>\nNo cards match search.\n</yellow>`);
+        game.pause(`<yellow>\nNo cards match search.\n</yellow>`);
         searchFailed = true;
     }
 
@@ -601,7 +601,7 @@ function help() {
     // TODO: #245 Fix this
     game.log("There is a known bug where if you add 'Prince Renathal', and then remove him, the deck will still require 40 cards. The only way around this is to restart the deck creator.");
 
-    game.input("\nPress enter to continue...\n");
+    game.pause("\nPress enter to continue...\n");
 }
 
 function getCardArg(cmd: string, callback: (card: Card) => boolean, errorCallback: () => void): boolean {
@@ -626,12 +626,12 @@ function getCardArg(cmd: string, callback: (card: Card) => boolean, errorCallbac
     let card = findCard(cmd);
 
     if (!card && eligibleForLatest) {
-        if (warnings.latestCard) game.input(`<yellow>Card not found. Using latest valid card instead.</yellow>`);
+        if (warnings.latestCard) game.pause(`<yellow>Card not found. Using latest valid card instead.</yellow>`);
         card = game.lodash.last(settings.card.history) ?? null;
     }
 
     if (!card) {
-        game.input("<red>Invalid card.</red>\n");
+        game.pause("<red>Invalid card.</red>\n");
         return false;
     }
 
@@ -652,14 +652,14 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
     const args = cmd.split(" ");
     const name = args.shift()?.toLowerCase();
     if (!name) {
-        game.input("<red>Invalid command.</red>\n");
+        game.pause("<red>Invalid command.</red>\n");
         return false;
     }
 
     if (name === "config" || name === "rules") {
         printName();
         showRules();
-        game.input("\nPress enter to continue...\n");
+        game.pause("\nPress enter to continue...\n");
     }
     else if (name === "view") {
         // The callback function doesn't return anything, so we don't do anything with the return value of `getCardArg`.
@@ -675,13 +675,13 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         heroClass = game.functions.util.capitalizeAll(heroClass) as CardClass;
 
         if (!classes.includes(heroClass as CardClassNoNeutral) && heroClass != "Neutral") {
-            game.input("<red>Invalid class!</red>\n");
+            game.pause("<red>Invalid class!</red>\n");
             return false;
         }
 
         const correctClass = game.functions.card.validateClasses([heroClass], chosenClass);
         if (!correctClass) {
-            game.input(`<yellow>Class '${heroClass}' is a different class. To see these cards, please switch class from '${chosenClass}' to '${heroClass}' to avoid confusion.</yellow>\n`);
+            game.pause(`<yellow>Class '${heroClass}' is a different class. To see these cards, please switch class from '${chosenClass}' to '${heroClass}' to avoid confusion.</yellow>\n`);
             return false;
         }
 
@@ -693,7 +693,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         let toPrint = _deckcode.code + "\n";
         if (_deckcode.error && !_deckcode.error.recoverable) toPrint = "";
 
-        game.input(toPrint);
+        game.pause(toPrint);
     }
     else if (name === "sort") {
         if (args.length <= 0) return false;
@@ -742,7 +742,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         const newClass = askClass();
 
         if (newClass == chosenClass && runes == _runes) {
-            game.input("<yellow>Your class was not changed</yellow>\n");
+            game.pause("<yellow>Your class was not changed</yellow>\n");
             return false;
         }
 
@@ -752,13 +752,13 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
     }
     else if (name === "undo") {
         if (settings.commands.undoableHistory.length <= 0) {
-            game.input("<red>Nothing to undo.</red>\n");
+            game.pause("<red>Nothing to undo.</red>\n");
             return false;
         }
 
         const commandSplit = game.lodash.last(settings.commands.undoableHistory)?.split(" ");
         if (!commandSplit) {
-            game.input("<red>Could not find anything to undo. This is a bug.</red>\n");
+            game.pause("<red>Could not find anything to undo. This is a bug.</red>\n");
             return false;
         }
 
@@ -786,7 +786,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         const key = args[0];
 
         if (!Object.keys(warnings).includes(key)) {
-            game.input(`<red>'${key}' is not a valid warning!</red>\n`);
+            game.pause(`<red>'${key}' is not a valid warning!</red>\n`);
             return false;
         }
 
@@ -802,7 +802,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
             if (["off", "disable", "false", "no", "0"].includes(val)) newState = false;
             else if (["on", "enable", "true", "yes", "1"].includes(val)) newState = true;
             else {
-                game.input(`<red>${val} is not a valid state. View 'help' for more information.</red>\n`);
+                game.pause(`<red>${val} is not a valid state. View 'help' for more information.</red>\n`);
                 return false;
             }
         }
@@ -816,7 +816,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
             strbuilder += (newState) ? "enabled" : "disabled";
             strbuilder += ".</yellow>\n";
 
-            game.input(strbuilder);
+            game.pause(strbuilder);
             return false;
         }
 
@@ -829,12 +829,12 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         strbuilder += key;
         strbuilder += "'.</yellow>\n";
 
-        game.input(strbuilder);
+        game.pause(strbuilder);
     }
     else if (name === "set") {
         if (args.length <= 0) {
             game.log("<yellow>Too few arguments</yellow>");
-            game.input();
+            game.pause();
             return false;
         }
 
@@ -850,7 +850,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
 
                 if (!["vanilla", "js"].includes(args[0])) {
                     game.log("<red>Invalid format!</red>");
-                    game.input();
+                    game.pause();
                     return false;
                 }
 
@@ -882,11 +882,11 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
                 game.log(`Set default command to: <yellow>${cmd}</yellow>`);
                 break;
             default:
-                game.input(`<red>'${setting}' is not a valid setting.</red>\n`);
+                game.pause(`<red>'${setting}' is not a valid setting.</red>\n`);
                 return false;
         }
 
-        game.input("<bright:green>Setting successfully changed!<bright:green>\n");
+        game.pause("<bright:green>Setting successfully changed!<bright:green>\n");
     }
     else if (name === "help") {
         help();
@@ -900,7 +900,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         getCardArg(cmd, add, () => {
             // Internal error since add shouldn't return false
             game.log("<red>Internal Error: Something went wrong while adding a card. Please report this. Error code: DcAddInternal</red>");
-            game.input();
+            game.pause();
 
             success = false;
         });
@@ -913,7 +913,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         getCardArg(cmd, remove, () => {
             // User error
             game.log("<red>Invalid card.</red>");
-            game.input();
+            game.pause();
 
             success = false;
         });
