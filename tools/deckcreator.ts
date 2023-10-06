@@ -610,8 +610,10 @@ function getCardArg(cmd: string, callback: (card: Card) => boolean, errorCallbac
     const cmdSplit = cmd.split(" ");
     cmdSplit.shift();
 
+    let cardFromFullString = findCard(cmdSplit.join(" "));
+
     // Get x2 from the cmd
-    if (cmdSplit.length > 1 && parseInt(cmdSplit[0])) {
+    if (cmdSplit.length > 1 && parseInt(cmdSplit[0]) && !cardFromFullString) {
         times = parseInt(cmdSplit[0])
         cmdSplit.shift();
     }
