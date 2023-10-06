@@ -26,5 +26,9 @@ export const blueprint: Blueprint = {
         // Dredge.
 
         game.interact.card.dredge();
+    },
+
+    test(plr, self) {
+        // TODO: Test
     }
 }

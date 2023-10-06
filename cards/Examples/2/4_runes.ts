@@ -17,5 +17,9 @@ export const blueprint: Blueprint = {
     create(plr, self) {
         // You need 2 frost runes and 1 blood rune to use this card.
         self.runes = "FFB";
+    },
+
+    test(plr, self) {
+        // TODO: Test
     }
 }

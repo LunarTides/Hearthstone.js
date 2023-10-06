@@ -22,5 +22,9 @@ export const blueprint: Blueprint = {
         // Colossal Example
         // Right Arm
         self.colossal = ["Colossal Example Left Arm", "", "Colossal Example Right Arm"];
+    },
+
+    test(plr, self) {
+        // TODO: Test
     }
 }

@@ -492,7 +492,8 @@ export class Card {
     }
 
     /**
-     * Freeze the card
+     * Freeze the card.
+     * Broadcasts the `FreezeCard` event.
      *
      * @returns Success
      */
