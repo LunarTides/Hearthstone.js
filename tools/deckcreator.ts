@@ -811,28 +811,16 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         }
 
         if (warnings[key] == newState) {
-            let strbuilder = "";
+            let newStateName = newState ? "enabled" : "disabled";
 
-            strbuilder += "<yellow>Warning '</yellow>";
-            strbuilder += `<bright:yellow>${key}</bright:yellow>`;
-            strbuilder += "<yellow>' is already ";
-            strbuilder += (newState) ? "enabled" : "disabled";
-            strbuilder += ".</yellow>\n";
-
-            game.pause(strbuilder);
+            game.pause(`<yellow>Warning '<bright:yellow>${key}</bright:yellow>' is already ${newStateName}.</yellow>\n`);
             return false;
         }
 
         warnings[key] = newState;
 
-        let strbuilder = "";
-
-        strbuilder += (newState) ? "<bright:green>Enabled warning</bright:green>" : "<red>Disabled warning</red>";
-        strbuilder += "<yellow> '";
-        strbuilder += key;
-        strbuilder += "'.</yellow>\n";
-
-        game.pause(strbuilder);
+        let newStateName = (newState) ? "<bright:green>Enabled warning</bright:green>" : "<red>Disabled warning</red>";
+        game.pause(`${newStateName} <yellow>'${key}'</yellow>\n`);
     }
     else if (name === "set") {
         if (args.length <= 0) {
