@@ -137,6 +137,10 @@ export const config: GameConfig = {
     },
 
     advanced: {
+        // If this is true, the deckcreator will also show collectible cards.
+        // These deckcodes will be rejected by the game as psuedo-valid if `config.decks.validate` is false.
+        dcShowUncollectible: true,
+
         // If this is true, the game will ask for confirmation before reloading the cards.
         // This is because reloading the cards will reset them all to their base state.
         reloadCommandConfirmation: true,

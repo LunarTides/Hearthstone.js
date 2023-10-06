@@ -585,6 +585,7 @@ export type GameConfig = {
     }
 
     advanced: {
+        dcShowUncollectible: boolean,
         reloadCommandConfirmation: boolean,
         reloadCommandRecompile: boolean,
         getReadableCardMaxDepth: number,

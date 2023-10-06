@@ -11,7 +11,7 @@ const { game, player1: plr, player2 } = createGame();
 
 const config = game.config;
 const classes = game.functions.card.getClasses();
-let cards = game.functions.card.getAll();
+let cards = game.functions.card.getAll(!game.config.advanced.dcShowUncollectible);
 
 let chosenClass: CardClassNoNeutral;
 let filteredCards: Card[] = [];
@@ -261,28 +261,7 @@ function searchCards(_cards: Card[], sQuery: string) {
     return retCards;
 }
 
-function noCards() {
-    // If there are no cards, ask the user if they want to search for uncollectible cards
-    if (cards.length > 0) return;
-
-    printName();
-    game.log("<yellow>No cards found. This means that the game doesn't have any (collectible) cards.</yellow>");
-
-    // Only ask once
-    if (!settings.other.firstScreen) return;
-
-    const uncollectible = game.interact.yesNoQuestion(plr, "Would you like the program to search for uncollectible cards? Decks with uncollectible cards aren't valid. (You will only be asked once)");
-    settings.other.firstScreen = false;
-
-    if (!uncollectible) return;
-
-    cards = game.functions.card.getAll(false);
-}
-
 function showCards() {
-    // If there are no cards, ask the user if they want to search for uncollectible cards
-    if (cards.length <= 0) noCards();
-
     filteredCards = [];
     printName();
 
