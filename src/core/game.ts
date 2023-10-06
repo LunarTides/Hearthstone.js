@@ -2,7 +2,6 @@
  * Game
  * @module Game
  */
-import rl from 'readline-sync';
 import { functions, interact, Player, Card, AI, CardError, EventManager } from "../internal.js";
 import { Blueprint, CardAbility, EventKey, GameAttackReturn, GameConstants, GamePlayCardReturn, Target, UnknownEventValue } from "../types.js";
 import { config } from '../../config.js';
@@ -555,10 +554,16 @@ const attack = {
 
         game.killMinions();
 
+        let returnValue: GameAttackReturn;
+
         if (target.immune) return "immune";
 
         // Attacker is a number
-        if (typeof attacker === "string" || typeof attacker === "number") return attack._attackerIsNum(attacker, target);
+        if (typeof attacker === "string" || typeof attacker === "number") {
+            returnValue = attack._attackerIsNum(attacker, target);
+            game.killMinions();
+            return returnValue;
+        }
 
         // The attacker is a card or player
         if (attacker.frozen) return "frozen";
@@ -572,13 +577,16 @@ const attack = {
         }
 
         // Attacker is a player
-        if (attacker.classType === "Player") return attack._attackerIsPlayer(attacker, target);
+        if (attacker.classType === "Player") returnValue = attack._attackerIsPlayer(attacker, target);
 
         // Attacker is a minion
-        else if (attacker.classType === "Card") return attack._attackerIsCard(attacker, target);
+        else if (attacker.classType === "Card") returnValue = attack._attackerIsCard(attacker, target);
 
         // Otherwise
         else return "invalid";
+
+        game.killMinions();
+        return returnValue;
     },
 
     // Attacker is a number
