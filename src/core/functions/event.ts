@@ -98,4 +98,23 @@ export const eventFunctions = {
 
         return unsuppress;
     },
+
+    /**
+     * Ignores suppression for the specified event key.
+     *
+     * @param key The event key to be forced.
+     * @return A function that undoes this.
+     */
+    ignoreSuppression(key: EventKey) {
+        game.events.forced.push(key);
+
+        /**
+         * Stops ignoring suppressions for that key
+         */
+        const undo = () => {
+            return game.functions.util.remove(game.events.suppressed, key);
+        }
+
+        return undo;
+    },
 }

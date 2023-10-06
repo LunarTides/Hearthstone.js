@@ -7,6 +7,7 @@ interface IEventManager {
     history: {[x: number]: [HistoryKey]};
     events: EventManagerEvents;
     suppressed: EventKey[];
+    forced: EventKey[];
     stats: {[key: string]: [number, number]};
 
     tick(key: EventKey, val: UnknownEventValue, player: Player): boolean;
@@ -44,13 +45,17 @@ export const EventManager: IEventManager = {
      */
     events: {},
 
-
     /**
      * A list of event keys to suppress.
      * 
      * If an event with a key in this list is broadcast, it will add it to the history, and tick the game, but will not activate any passives / event listeners.
      */
     suppressed: [],
+
+    /**
+     * A list of event keys to never suppress.
+     */
+    forced: [],
 
     /**
      * Some general stats for each player.
@@ -199,7 +204,7 @@ export const EventManager: IEventManager = {
         if (updateHistory) this.addHistory(key, val, plr);
 
         // Check if the event is suppressed
-        if (this.suppressed.includes(key)) return false;
+        if (this.suppressed.includes(key) && !this.forced.includes(key)) return false;
         if (plr.classType !== "Player" || plr.id === -1) return false;
 
         if (!this.events[key]) this.events[key] = [[["GameLoop", game.turns]], [["GameLoop", game.turns]]];
