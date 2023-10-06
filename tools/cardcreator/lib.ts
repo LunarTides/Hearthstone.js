@@ -31,7 +31,7 @@ function getCardAbility(cardType: CardType) {
     else {
         // Try to extract an ability from the card's description
         const reg = /([A-Z][a-z].*?):/g;
-        const foundAbility = card.text.match(reg);
+        const foundAbility = reg.exec(card.text);
 
         // If the card doesn't have a description, it doesn't get an ability.
         if (!card.text) ability = "";
