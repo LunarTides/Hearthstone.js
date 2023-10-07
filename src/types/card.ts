@@ -103,6 +103,7 @@ export type CardKeyword =
 | "Stealth"
 | "Taunt"
 | "Tradeable"
+| "Forge"
 | "Windfury"
 | "Outcast"
 | "Cast On Draw"

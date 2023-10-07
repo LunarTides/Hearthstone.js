@@ -907,7 +907,7 @@ export const GameLoopInteract = {    /**
         if (ret === true) return ret;
 
         // Ignore these error codes
-        if (["refund", "magnetize", "traded", "colossal"].includes(ret)) return ret;
+        if (["refund", "magnetize", "traded", "forged", "colossal"].includes(ret)) return ret;
         let err
 
         // Get the card
@@ -922,8 +922,7 @@ export const GameLoopInteract = {    /**
         else if (ret == "invalid") err = "Invalid card";
         else err = `An unknown error occurred. Error code: UnexpectedDoTurnResult@${ret}`;
 
-        game.log(`<red>${err}.</red>`);
-        game.pause();
+        game.pause(`<red>${err}.</red>\n`);
 
         return false;
     },

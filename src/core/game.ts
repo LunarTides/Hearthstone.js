@@ -853,8 +853,13 @@ const playCard = {
 
         game.killMinions();
 
+        // Forge
+        let forge = playCard._forge(card, player);
+        if (forge !== "invalid") return forge;
+
         // Trade
-        if (playCard._trade(card, player)) return "traded";
+        let trade = playCard._trade(card, player);
+        if (trade !== "invalid") return trade;
 
         // Cost
         if (player[card.costType] < card.cost) return "cost";
@@ -973,8 +978,8 @@ const playCard = {
         }
     },
 
-    _trade(card: Card, player: Player): boolean {
-        if (!card.hasKeyword("Tradeable")) return false;
+    _trade(card: Card, player: Player): GamePlayCardReturn {
+        if (!card.hasKeyword("Tradeable")) return "invalid";
 
         let q;
 
@@ -984,9 +989,9 @@ const playCard = {
             q = interact.yesNoQuestion(player, "Would you like to trade " + functions.color.fromRarity(card.displayName, card.rarity) + " for a random card in your deck?");
         }
 
-        if (!q) return false;
+        if (!q) return "invalid";
         
-        if (player.mana < 1) return false;
+        if (player.mana < 1) return "cost";
 
         player.mana -= 1;
 
@@ -995,6 +1000,34 @@ const playCard = {
         player.shuffleIntoDeck(card);
 
         game.events.broadcast("TradeCard", card, player);
+
+        return true;
+    },
+
+    _forge(card: Card, player: Player): GamePlayCardReturn {
+        let forge: string | undefined = card.getKeyword("Forge");
+
+        if (!forge) return "invalid";
+
+        let q;
+
+        if (player.ai) q = player.ai.forge(card);
+        else {
+            interact.info.printAll(player);
+            q = interact.yesNoQuestion(player, "Would you like to forge " + functions.color.fromRarity(card.displayName, card.rarity) + "?");
+        }
+
+        if (!q) return "invalid";
+        
+        if (player.mana < 2) return "cost";
+
+        player.mana -= 2;
+
+        functions.util.remove(player.hand, card);
+        let forged = new Card(forge, player);
+        player.addToHand(forged);
+
+        game.events.broadcast("ForgeCard", card, player);
 
         return true;
     },

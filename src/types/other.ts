@@ -10,6 +10,7 @@ export type GamePlayCardReturn =
 | true
 | "cost"
 | "traded"
+| "forged"
 | "space"
 | "magnetize"
 | "colossal"

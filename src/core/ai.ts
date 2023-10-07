@@ -816,6 +816,24 @@ export class AI {
     }
 
     /**
+     * Returns if the ai wants `card` to be forged
+     *
+     * @param card The card to check
+     *
+     * @returns If the card should be forged
+     */
+    forge(card: Card): boolean {
+        let ret;
+
+        // Always forge the card if the ai has enough mana
+        if (this.plr.mana < 2) ret = false;
+        else ret = true;
+
+        this.history.push({"type": "forge", "data": [card.name, ret]});
+        return ret;
+    }
+
+    /**
      * Returns the list of cards the ai wants to mulligan.
      * 
      * @returns The indexes of the cards to mulligan. Look in `Interact.mulligan` for more details.

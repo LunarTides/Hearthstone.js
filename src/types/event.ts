@@ -61,6 +61,7 @@ export type EventKey =
 | "CancelCard"
 | "CastSpellOnMinion"
 | "TradeCard"
+| "ForgeCard"
 | "FreezeCard"
 | "CreateCard"
 | "AddCardToDeck"
@@ -144,6 +145,10 @@ export type EventValue<Key extends EventKey> =
      * The card that was traded
      */
     Key extends "TradeCard" ? Card : 
+    /**
+     * The card that was forged
+     */
+    Key extends "ForgeCard" ? Card : 
     /**
      * The card that was frozen
      */
