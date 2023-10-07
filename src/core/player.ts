@@ -728,7 +728,7 @@ export class Player {
      * @returns Success
      */
     addToHand(card: Card): boolean {
-        if (this.hand.length >= 10) return false;
+        if (this.hand.length >= game.config.general.maxHandLength) return false;
         this.hand.push(card);
 
         game.events.broadcast("AddCardToHand", card, this);

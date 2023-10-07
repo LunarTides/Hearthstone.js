@@ -157,7 +157,8 @@ export type GameConfig = {
         debug: boolean,
         editor: string,
         topicBranchWarning: boolean,
-        maxBoardSpace: number
+        maxBoardSpace: number,
+        maxHandLength: number,
     }
 
     decks: {

@@ -12,7 +12,10 @@ export const config: GameConfig = {
         topicBranchWarning: true,
 
         // How many cards can be on a player's board at once.
-        maxBoardSpace: 7 
+        maxBoardSpace: 7,
+
+        // The maximum amount of cards that is allowed in a hand. Don't go under 4
+        maxHandLength: 10,
     },
 
     decks: {
