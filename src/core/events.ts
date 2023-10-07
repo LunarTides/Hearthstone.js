@@ -77,10 +77,12 @@ export const EventManager: IEventManager = {
         if (key === "KillMinion") {
             // TODO: Rewrite and move this code
             player.hand.forEach(p => {
-                if (!p.infuse || p.infuse <= 0) return;
+                let num: number | undefined = p.getKeyword("Infuse");
+                if (!num) return;
+                if (num <= 0) return;
 
-                p.infuse -= 1;
-                if (p.infuse > 0) return;
+                p.setKeyword("Infuse", num - 1);
+                if (num - 1 > 0) return;
 
                 p.activate("infuse");
             });

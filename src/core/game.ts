@@ -3,7 +3,7 @@
  * @module Game
  */
 import { functions, interact, Player, Card, AI, CardError, EventManager } from "../internal.js";
-import { Blueprint, CardAbility, EventKey, GameAttackReturn, GameConstants, GamePlayCardReturn, Target, UnknownEventValue } from "../types.js";
+import { Blueprint, CardAbility, CardKeyword, EventKey, GameAttackReturn, GameConstants, GamePlayCardReturn, Target, UnknownEventValue } from "../types.js";
 import { config } from '../../config.js';
 import _ from "lodash";
 
@@ -383,7 +383,7 @@ export class Game {
         if (plr.mana > 0) this.events.broadcast("UnspentMana", plr.mana, plr);
 
         // Remove echo cards
-        plr.hand = plr.hand.filter(c => !c.echo);
+        plr.hand = plr.hand.filter(c => !c.hasKeyword("Echo"));
         plr.canAttack = true;
 
         // Turn starts
@@ -406,14 +406,17 @@ export class Game {
         // Minion start of turn
         this.board[op.id].forEach(m => {
             // Dormant
-            if (m.dormant) {
-                if (this.turns <= m.dormant) return;
+            let dormant: number | undefined = m.getKeyword("Dormant");
+
+            if (dormant) {
+                if (this.turns <= dormant) return;
 
                 // Remove dormant
-                m.dormant = undefined;
+                m.remKeyword("Dormant");
                 m.sleepy = true;
 
-                m.immune = m.backups.init.immune;
+                if (Object.keys(m.backups.init.keywords).includes("Immune")) m.addKeyword("Immune");
+
                 m.turn = this.turns;
 
                 // HACK: If the battlecry use a function that depends on `game.player`
@@ -425,13 +428,13 @@ export class Game {
             }
 
             m.canAttackHero = true;
-            if (this.turns > (m.turnFrozen ?? -1) + 1) m.frozen = false;
+            if (this.turns > (m.turnFrozen ?? -1) + 1) m.remKeyword("Frozen");
             m.ready();
 
             // Stealth duration
             if (m.stealthDuration && m.stealthDuration > 0 && this.turns > m.stealthDuration) {
                 m.stealthDuration = 0;
-                functions.util.remove(m.keywords, "Stealth");
+                m.remKeyword("Stealth");
             }
 
             // Location cooldown
@@ -492,12 +495,11 @@ export class Game {
                 plr.corpses++;
                 this.graveyard[p].push(m);
 
-                if (!m.keywords.includes("Reborn")) return;
+                if (!m.hasKeyword("Reborn")) return;
 
                 // Reborn
                 const minion = m.imperfectCopy();
-
-                functions.util.remove(minion.keywords, "Reborn");
+                minion.remKeyword("Reborn")
 
                 // Reduce the minion's health to 1, keep the minion's attack the same
                 minion.setStats(minion.getAttack(), 1);
@@ -556,7 +558,8 @@ const attack = {
 
         let returnValue: GameAttackReturn;
 
-        if (target.immune) return "immune";
+        if (target instanceof Card && target.hasKeyword("Immune")) return "immune";
+        else if (target instanceof Player && target.immune) return "immune";
 
         // Attacker is a number
         if (typeof attacker === "string" || typeof attacker === "number") {
@@ -566,13 +569,14 @@ const attack = {
         }
 
         // The attacker is a card or player
-        if (attacker.frozen) return "frozen";
+        if (attacker instanceof Card && attacker.hasKeyword("Frozen")) return "frozen";
+        else if (attacker instanceof Player && attacker.frozen) return "frozen";
 
         // Check if there is a minion with taunt
-        const taunts = game.board[game.opponent.id].filter(m => m.keywords.includes("Taunt"));
+        const taunts = game.board[game.opponent.id].filter(m => m.hasKeyword("Taunt"));
         if (taunts.length > 0) {
             // If the target is a card and has taunt, you are allowed to attack it
-            if (target instanceof Card && target.keywords.includes("Taunt")) {}
+            if (target instanceof Card && target.hasKeyword("Taunt")) {}
             else return "taunt";
         }
 
@@ -600,8 +604,8 @@ const attack = {
             return true;
         }
 
-        if (target.keywords.includes("Divine Shield")) {
-            functions.util.remove(target.keywords, "Divine Shield");
+        if (target.hasKeyword("Divine Shield")) {
+            target.remKeyword("Divine Shield");
             return "divineshield";
         }
 
@@ -644,7 +648,7 @@ const attack = {
     // Attacker is a player and target is a card
     _attackerIsPlayerAndTargetIsCard(attacker: Player, target: Card): GameAttackReturn {
         // If the target has stealth, the attacker can't attack it
-        if (target.keywords.includes("Stealth")) return "stealth";
+        if (target.hasKeyword("Stealth")) return "stealth";
 
         // The attacker should damage the target
         game.attack(attacker.attack, target);
@@ -667,7 +671,7 @@ const attack = {
 
     // Attacker is a card
     _attackerIsCard(attacker: Card, target: Target): GameAttackReturn {
-        if (attacker.dormant) return "dormant";
+        if (attacker instanceof Card && attacker.hasKeyword("Dormant")) return "dormant";
         if (attacker.attackTimes && attacker.attackTimes <= 0) return "hasattacked";
         if (attacker.sleepy) return "sleepy";
         if (attacker.getAttack() <= 0) return "noattack";
@@ -687,8 +691,8 @@ const attack = {
         if (!attacker.canAttackHero) return "cantattackhero";
 
         // If attacker has stealth, remove it
-        if (attacker.keywords.includes("Stealth")) {
-            functions.util.remove(attacker.keywords, "Stealth");
+        if (attacker.hasKeyword("Stealth")) {
+            attacker.remKeyword("Stealth");
         }
 
         // If attacker has lifesteal, heal it's owner
@@ -706,7 +710,7 @@ const attack = {
 
     // Attacker is a card and target is a card
     _attackerIsCardAndTargetIsCard(attacker: Card, target: Card): GameAttackReturn {
-        if (target.keywords.includes("Stealth")) return "stealth";
+        if (target.hasKeyword("Stealth")) return "stealth";
 
         attack._attackerIsCardAndTargetIsCardDoAttacker(attacker, target);
         attack._attackerIsCardAndTargetIsCardDoTarget(attacker, target);
@@ -720,7 +724,7 @@ const attack = {
         attack._cleave(attacker, target);
 
         attacker.decAttack();
-        functions.util.remove(attacker.keywords, "Stealth");
+        attacker.remKeyword("Stealth");
 
         const shouldDamage = attack._cardAttackHelper(attacker);
         if (!shouldDamage) return true;
@@ -754,10 +758,10 @@ const attack = {
 
     // Helper functions
     _cardAttackHelper(card: Card): boolean {
-        if (card.immune) return false;
+        if (card.hasKeyword("Immune")) return false;
 
-        if (card.keywords.includes("Divine Shield")) {
-            functions.util.remove(card.keywords, "Divine Shield");
+        if (card.hasKeyword("Divine Shield")) {
+            card.remKeyword("Divine Shield");
             return false;
         }
 
@@ -765,7 +769,7 @@ const attack = {
     },
 
     _cleave(attacker: Card, target: Card): void {
-        if (!attacker.keywords.includes("Cleave")) return;
+        if (!attacker.hasKeyword("Cleave")) return;
 
         const board = game.board[target.plr.id];
         const index = board.indexOf(target);
@@ -788,14 +792,14 @@ const attack = {
     },
 
     _doPoison(poisonCard: Card, other: Card): void {
-        if (!poisonCard.keywords.includes("Poisonous")) return;
+        if (!poisonCard.hasKeyword("Poisonous")) return;
 
         // The attacker has poison
         other.kill();
     },
 
     _doLifesteal(attacker: Card): void {
-        if (!attacker.keywords.includes("Lifesteal")) return;
+        if (!attacker.hasKeyword("Lifesteal")) return;
 
         // The attacker has lifesteal
         attacker.plr.addHealth(attacker.getAttack());
@@ -911,7 +915,7 @@ const playCard = {
             // Magnetize
             if (playCard._magnetize(card, player)) return "magnetize";
 
-            if (!card.dormant) {
+            if (!card.hasKeyword("Dormant")) {
                 if (card.activate("battlecry") === -1) return "refund";
             }
 
@@ -926,8 +930,8 @@ const playCard = {
             if (card.activate("cast") === -1) return "refund";
 
             // Twinspell functionality
-            if (card.keywords.includes("Twinspell")) {
-                functions.util.remove(card.keywords, "Twinspell");
+            if (card.hasKeyword("Twinspell")) {
+                card.remKeyword("Twinspell");
                 card.text = card.text?.split("Twinspell")[0].trim();
 
                 player.addToHand(card);
@@ -958,7 +962,7 @@ const playCard = {
 
         Location(card: Card, player: Player): GamePlayCardReturn {
             card.setStats(0, card.getHealth());
-            card.immune = true;
+            card.addKeyword("Immune");
             card.cooldown = 0;
 
             const unsuppress = functions.event.suppress("SummonMinion");
@@ -970,7 +974,7 @@ const playCard = {
     },
 
     _trade(card: Card, player: Player): boolean {
-        if (!card.keywords.includes("Tradeable")) return false;
+        if (!card.hasKeyword("Tradeable")) return false;
 
         let q;
 
@@ -1041,11 +1045,11 @@ const playCard = {
     },
 
     _echo(card: Card, player: Player): boolean {
-        if (!card.keywords.includes("Echo")) return false;
+        if (!card.hasKeyword("Echo")) return false;
 
         // Create an exact copy of the card played
         const echo = card.perfectCopy();
-        echo.echo = true;
+        echo.addKeyword("Echo");
 
         player.addToHand(echo);
         return true;
@@ -1069,10 +1073,11 @@ const playCard = {
 
     _corrupt(card: Card, player: Player): boolean {
         player.hand.forEach(toCorrupt => {
-            if (toCorrupt.corrupt === undefined || card.cost <= toCorrupt.cost) return;
+            let corrupt: string | undefined = toCorrupt.getKeyword("Corrupt");
+            if (!corrupt || card.cost <= toCorrupt.cost) return;
 
             // Corrupt that card
-            const corrupted = new Card(toCorrupt.corrupt, player);
+            const corrupted = new Card(corrupt, player);
 
             functions.util.remove(player.hand, toCorrupt);
 
@@ -1087,7 +1092,7 @@ const playCard = {
     _magnetize(card: Card, player: Player): boolean {
         const board = game.board[player.id];
 
-        if (!card.keywords.includes("Magnetic") || board.length <= 0) return false;
+        if (!card.hasKeyword("Magnetic") || board.length <= 0) return false;
 
         // Find the mechs on the board
         const mechs = board.filter(m => m.tribe?.includes("Mech"));
@@ -1104,11 +1109,11 @@ const playCard = {
 
         mech.addStats(card.getAttack(), card.getHealth());
 
-        card.keywords.forEach(k => {
+        Object.keys(card.keywords).forEach(k => {
             // TSC for some reason, forgets that minion should be of `Card` type here, so we have to remind it. This is a workaround
             if (!(mech instanceof Card)) return;
 
-            mech.addKeyword(k);
+            mech.addKeyword(k as CardKeyword);
         });
 
         if (mech.maxHealth && card.maxHealth) {
@@ -1162,19 +1167,22 @@ const cards = {
 
         player.spellDamage = 0;
 
-        if (minion.keywords.includes("Charge")) minion.sleepy = false;
+        if (minion.hasKeyword("Charge")) minion.sleepy = false;
 
-        if (minion.keywords.includes("Rush")) {
+        if (minion.hasKeyword("Rush")) {
             minion.sleepy = false;
             minion.canAttackHero = false;
         }
 
-        if (minion.colossal && colossal) {
+        let dormant: number | undefined = minion.getKeyword("Dormant");
+
+        let colossalMinions: string[] | undefined = minion.getKeyword("Colossal");
+        if (colossalMinions && colossal) {
             // minion.colossal is a string array.
             // example: ["Left Arm", "", "Right Arm"]
             // the "" gets replaced with the main minion
 
-            minion.colossal.forEach(v => {
+            colossalMinions.forEach(v => {
                 const unsuppress = functions.event.suppress("SummonMinion");
 
                 if (v == "") {
@@ -1184,7 +1192,8 @@ const cards = {
                 }
 
                 const card = new Card(v, player);
-                card.dormant = minion.dormant;
+
+                if (dormant) card.addKeyword("Dormant", dormant);
 
                 game.summonMinion(card, player);
                 unsuppress();
@@ -1193,17 +1202,17 @@ const cards = {
             return "colossal";
         }
 
-        if (minion.dormant) {
+        if (dormant) {
             // Oh no... Why is this not documented?
-            minion.dormant += game.turns;
-            minion.immune = true;
+            minion.setKeyword("Dormant", dormant + game.turns);
+            minion.addKeyword("Immune");
             minion.sleepy = false;
         }
 
         game.board[player.id].push(minion);
 
         game.board[player.id].forEach(m => {
-            m.keywords.forEach(k => {
+            Object.keys(m.keywords).forEach(k => {
                 if (k.startsWith("Spell Damage +")) player.spellDamage += parseInt(k.split("+")[1]);
             });
         });

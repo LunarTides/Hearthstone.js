@@ -112,6 +112,12 @@ export type CardKeyword =
 | "Magnetic"
 | "Twinspell"
 | "Elusive"
+| "Frozen"
+| "Immune"
+| "Corrupt"
+| "Colossal"
+| "Infuse"
+| "Echo"
 | "Cleave";
 
 /**

@@ -16,8 +16,11 @@ export const blueprint: Blueprint = {
 
     create(plr, self) {
         self.runes = "BBB";
-        self.colossal = ["Combined Example 2 Left Arm", "", "Combined Example 2 Right Arm"];
-        self.corrupt = "Combined Example 2 Corrupted";
-        self.dormant = 2;
+
+        self.addKeyword("Colossal", ["Combined Example 2 Left Arm", "", "Combined Example 2 Right Arm"]);
+        self.addKeyword("Corrupt", "Combined Example 2 Corrupted");
+
+        // The summoned minions get Dormant automatically if the main minion has dormant.
+        self.addKeyword("Dormant", 2);
     }
 }

@@ -87,7 +87,7 @@ export class Card {
     /**
      * The keywords that the card has. E.g. ["Taunt", "Divine Shield", etc...]
      */
-    keywords: CardKeyword[] = [];
+    keywords: {[key in CardKeyword]?: any} = {};
 
     /**
      * The card's blueprint.
@@ -180,30 +180,6 @@ export class Card {
     costType: CostType = "mana";
 
     /**
-     * If the card is dormant | The turn that the dormant runs out
-     */
-    dormant?: number;
-
-    /**
-     * If the card is frozen.
-     * A frozen card cannot attack.
-     */
-    frozen: boolean = false;
-
-    /**
-     * If the card is immune.
-     * An immune card cannot be targeted at all.
-     */
-    immune: boolean = false;
-
-    /**
-     * If the card is an echo.
-     * - Echo cards can be played as many times as the player wants, as long as they have the resources.
-     * - Echo cards get removed from the player's hand at the end of the turn.
-     */
-    echo: boolean = false;
-
-    /**
      * Information stored in the card.
      * This information can be anything, and the card can access it at any point.
      * 
@@ -273,11 +249,6 @@ export class Card {
     turnKilled?: number;
 
     /**
-     * The amount of infuse a card has.
-     */
-    infuse?: number;
-    
-    /**
      * The turn that the card was frozen.
      * 
      * Set to -1 if the card is not frozen.
@@ -320,27 +291,6 @@ export class Card {
     placeholder?: {[key: string]: any} = {};
 
     /**
-     * The _name_ of the corrupted counterpart of this card.
-     */
-    corrupt?: string;
-
-    /**
-     * ["Name of the card above the minion", "", "Name of the card below the minion"]
-     * 
-     * The "" gets replaced by this minion.
-     * This is flexible, you can add as many as you want, in any order. You can even add another "".
-     * 
-     * @example
-     * card = new Card("Sheep", plr);
-     * card.colossal = ["Left Arm", "", "Right Arm"];
-     * 
-     * // Left Arm
-     * // Sheep
-     * // Right Arm
-     */
-    colossal?: string[];
-
-    /**
      * A list of abilities that can only be used if the `condition` ability returns true.
      */
     conditioned?: CardAbility[];
@@ -349,7 +299,6 @@ export class Card {
      * The abilities of the card (battlecry, deathrattle, etc...)
      */
     abilities: {[key in CardAbility]?: Ability[]} = {};
-    
 
     /**
      * Create a card.
@@ -470,6 +419,10 @@ export class Card {
 
     // Keywords
 
+    hasKeyword(keyword: CardKeyword): boolean {
+        return Object.keys(this.keywords).includes(keyword);
+    }
+
     /**
      * Adds a keyword to the card
      * 
@@ -477,16 +430,54 @@ export class Card {
      * 
      * @returns Success
      */
-    addKeyword(keyword: CardKeyword): boolean {
-        if (this.keywords.includes(keyword)) return false;
+    addKeyword(keyword: CardKeyword, info?: any): boolean {
+        if (this.hasKeyword(keyword)) return false;
 
-        this.keywords.push(keyword);
+        this.keywords[keyword] = info;
 
         if (keyword === "Charge") this.sleepy = false;
         else if (keyword === "Rush") {
             this.sleepy = false;
             this.canAttackHero = false;
         }
+
+        return true;
+    }
+
+    /**
+     * Adds a keyword to the card
+     * 
+     * @param keyword The keyword to add
+     * 
+     * @returns Success
+     */
+    remKeyword(keyword: CardKeyword): boolean {
+        if (!this.hasKeyword(keyword)) return false;
+        delete this.keywords[keyword];
+
+        return true;
+    }
+
+    /**
+     * Gets the information stored in a keyword
+     * 
+     * @returns The info
+     */
+    getKeyword(keyword: CardKeyword): undefined | any {
+        if (!this.hasKeyword(keyword)) return false;
+
+        return this.keywords[keyword];
+    }
+
+    /**
+     * Sets the information stored in a keyword. RETURNS FALSE IF THIS CARD DOESN'T ALREADY HAVE THIS KEYWORD.
+     * 
+     * @returns Success
+     */
+    setKeyword(keyword: CardKeyword, info: any): boolean {
+        if (!this.hasKeyword(keyword)) return false;
+
+        this.keywords[keyword] = info;
 
         return true;
     }
@@ -499,7 +490,7 @@ export class Card {
      */
     freeze(): boolean {
         this.turnFrozen = game.turns;
-        this.frozen = true;
+        this.addKeyword("Frozen");
 
         game.events.broadcast("FreezeCard", this, this.plr);
 
@@ -677,9 +668,9 @@ export class Card {
 
         // Don't allow location cards to be damaged
         if (this.type == "Location") return false;
-        if (this.keywords.includes("Stealth")) return false;
+        if (this.hasKeyword("Stealth")) return false;
 
-        if (this.immune) return true;
+        if (this.hasKeyword("Immune")) return true;
 
         this.setStats(this.getAttack(), this.getHealth() - amount);
         game.events.broadcast("DamageMinion", [this, amount], this.plr);
@@ -749,10 +740,10 @@ export class Card {
     resetAttackTimes(): boolean {
         this.attackTimes = 1;
 
-        if (this.keywords.includes("Windfury")) {
+        if (this.hasKeyword("Windfury")) {
             this.attackTimes = 2;
         }
-        if (this.keywords.includes("Mega-Windfury")) {
+        if (this.hasKeyword("Mega-Windfury")) {
             this.attackTimes = 4;
         }
 
@@ -839,7 +830,7 @@ export class Card {
             else if (this.blueprint[att as never]) this[att as never] = this.blueprint[att as never] as never;
         });
         this.text = "";
-        this.keywords = [];
+        this.keywords = {};
 
         // Remove active enchantments.
         this.applyEnchantments();

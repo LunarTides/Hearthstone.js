@@ -671,7 +671,7 @@ export class Player {
         game.events.broadcast("DrawCard", card, this);
 
         // Cast on draw
-        if (card.type == "Spell" && card.keywords.includes("Cast On Draw") && card.activate("cast")) return this.drawCard();
+        if (card.type == "Spell" && card.hasKeyword("Cast On Draw") && card.activate("cast")) return this.drawCard();
 
         const unsuppress = game.functions.event.suppress("AddCardToHand");
         this.addToHand(card);
@@ -710,7 +710,7 @@ export class Player {
         game.functions.util.remove(this.deck, card);
         game.events.broadcast("DrawCard", card, this);
 
-        if (card.type == "Spell" && card.keywords.includes("Cast On Draw") && card.activate("cast")) return null;
+        if (card.type == "Spell" && card.hasKeyword("Cast On Draw") && card.activate("cast")) return null;
 
         const unsuppress = game.functions.event.suppress("AddCardToHand");
         this.addToHand(card);

@@ -1,3 +1,4 @@
+import { CardKeyword } from "@Game/types.js";
 import { Card, Player } from "../../internal.js";
 
 export const CardInteract = {
@@ -315,8 +316,8 @@ export const CardInteract = {
 
         if (!(card instanceof Card)) return sb;
 
-        const excludedKeywords = ["Magnetic", "Corrupt"];
-        const keywords = card.keywords.filter(k => !excludedKeywords.includes(k));
+        const excludedKeywords: CardKeyword[] = ["Magnetic", "Corrupt"];
+        const keywords = excludedKeywords.filter(k => card.hasKeyword(k));
         const keywordsString = keywords.length > 0 ? ` <gray>{${keywords.join(", ")}}</gray>` : "";
         sb += keywordsString;
 

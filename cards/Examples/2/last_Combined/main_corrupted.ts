@@ -15,8 +15,8 @@ export const blueprint: Blueprint = {
     id: 49,
 
     create(plr, self) {
-        self.colossal = ["Combined Example 2 Left Arm", "", "Combined Example 2 Right Arm"];
-        self.dormant = 2;
+        self.addKeyword("Colossal", ["Combined Example 2 Left Arm", "", "Combined Example 2 Right Arm"]);
+        self.addKeyword("Dormant", 2);
     },
 
     battlecry(plr, self) {

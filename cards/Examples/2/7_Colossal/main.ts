@@ -21,7 +21,7 @@ export const blueprint: Blueprint = {
         // Left Arm
         // Colossal Example
         // Right Arm
-        self.colossal = ["Colossal Example Left Arm", "", "Colossal Example Right Arm"];
+        self.addKeyword("Colossal", ["Colossal Example Left Arm", "", "Colossal Example Right Arm"]);
     },
 
     test(plr, self) {

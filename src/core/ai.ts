@@ -166,7 +166,7 @@ export class AI {
      * @returns Can attack
      */
     private _canMinionAttack(m: Card): boolean {
-        const booleans = !m.sleepy && !m.frozen && !m.dormant;
+        const booleans = !m.sleepy && !m.hasKeyword("Frozen") && !m.hasKeyword("Dormant");
         const numbers = m.getAttack() && m.attackTimes;
 
         return booleans && !!numbers;
@@ -180,7 +180,7 @@ export class AI {
      * @returns If it is targettable
      */
     private _canTargetMinion(m: Card): boolean {
-        const booleans = !m.dormant && !m.immune && !m.keywords.includes("Stealth");
+        const booleans = !m.hasKeyword("Dormant") && !m.hasKeyword("Immune") && !m.hasKeyword("Stealth");
 
         return booleans;
     }
@@ -277,7 +277,7 @@ export class AI {
      * Returns the taunts on the board
      */
     private _findTaunts(): Card[] {
-        return game.board[this.plr.getOpponent().id].filter(m => m.keywords.includes("Taunt"));
+        return game.board[this.plr.getOpponent().id].filter(m => m.hasKeyword("Taunt"));
     }
 
     /**
@@ -356,7 +356,7 @@ export class AI {
         // If the focused minion doesn't exist, select a new minion to focus
         if (!game.board[this.plr.getOpponent().id].find(a => a == this.focus)) this.focus = null;
 
-        if (!this.focus || (this._findTaunts().length > 0 && !this.focus.keywords.includes("Taunt"))) target = this._attackGeneralChooseTarget();
+        if (!this.focus || (this._findTaunts().length > 0 && !this.focus.hasKeyword("Taunt"))) target = this._attackGeneralChooseTarget();
         else target = this.focus
 
         return [this._attackGeneralChooseAttacker(target instanceof Player), target];
@@ -487,7 +487,7 @@ export class AI {
         let worstMinion: Card | null = null;
         let worstScore = 100000;
         
-        game.board[this.plr.id].filter(m => !m.sleepy && !m.frozen && !m.dormant).forEach(m => {
+        game.board[this.plr.id].filter(m => !m.sleepy && !m.hasKeyword("Frozen") && !m.hasKeyword("Dormant")).forEach(m => {
             const score = this.analyzePositiveCard(m);
 
             if (score >= worstScore) return;
@@ -510,9 +510,9 @@ export class AI {
         let bestScore = -100000;
 
         // Check if there is a minion with taunt
-        const taunts = game.board[this.plr.getOpponent().id].filter(m => m.keywords.includes("Taunt"));
-        if (taunts.length > 0) targets = taunts.filter(m => !m.immune && !m.dormant);
-        else targets = game.board[this.plr.getOpponent().id].filter(m => !m.immune && !m.dormant);
+        const taunts = game.board[this.plr.getOpponent().id].filter(m => m.hasKeyword("Taunt"));
+        if (taunts.length > 0) targets = taunts.filter(m => !m.hasKeyword("Immune") && !m.hasKeyword("Dormant"));
+        else targets = game.board[this.plr.getOpponent().id].filter(m => !m.hasKeyword("Immune") && !m.hasKeyword("Dormant"));
 
         targets.forEach(m => {
             const score = this.analyzePositiveCard(m);
@@ -632,7 +632,7 @@ export class AI {
 
         game.board[sid].forEach(m => {
             if (!this._canTargetMinion(m)) return;
-            if ((card && card.type == "Spell" && m.keywords.includes("Elusive")) || m.type == "Location") return;
+            if ((card && card.type == "Spell" && m.hasKeyword("Elusive")) || m.type == "Location") return;
             
             const s = this.analyzePositiveCard(m);
 
@@ -903,7 +903,7 @@ export class AI {
         else score += game.config.ai.spellValue * game.config.ai.statsBias;
         score -= c.cost * game.config.ai.costBias;
 
-        c.keywords.forEach(() => score += game.config.ai.keywordValue);
+        Object.keys(c.keywords).forEach(() => score += game.config.ai.keywordValue);
         Object.values(c).forEach(c => {
             if (c instanceof Array && c[0] instanceof Function) score += game.config.ai.abilityValue;
         });

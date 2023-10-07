@@ -44,6 +44,6 @@ export const blueprint: Blueprint = {
 
         // The sheep should have 2 attack and rush
         assert(() => sheep.getAttack() === 2);
-        assert(() => sheep.keywords.includes("Rush"));
+        assert(() => sheep.hasKeyword("Rush"));
     }
 }

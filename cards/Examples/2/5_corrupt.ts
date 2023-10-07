@@ -17,7 +17,7 @@ export const blueprint: Blueprint = {
     create(plr, self) {
         // Put the name (not the display name) of the corrupted counterpart here.
         // Corrupted is another system that is very untested and might get a rewrite.
-        self.corrupt = "Corrupted Example";
+        self.addKeyword("Corrupt", "Corrupted Example");
     },
 
     test(plr, self) {

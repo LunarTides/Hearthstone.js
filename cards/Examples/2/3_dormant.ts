@@ -15,10 +15,10 @@ export const blueprint: Blueprint = {
     id: 38,
 
     create(plr, self) {
-        // How many turns this minion should be dormant for.
+        // The 2 is how many turns this minion should be dormant for.
         // Full disclosure: The dormant system is one of the most untested parts of this game.
         // If you find any bugs, please open an issue.
-        self.dormant = 2;
+        self.addKeyword("Dormant", 2);
     },
 
     // The battlecry only triggers when the minion is no longer dormant.

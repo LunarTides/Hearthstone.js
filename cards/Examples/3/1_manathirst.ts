@@ -60,22 +60,22 @@ export const blueprint: Blueprint = {
 
         assert(() => sheep.getAttack() == 5);
         assert(() => sheep.getHealth() == 5);
-        assert(() => !sheep.frozen);
+        assert(() => !sheep.hasKeyword("Frozen"));
 
         plr.emptyMana = 1;
         assert(() => plr.emptyMana == 1);
         plr.inputQueue = ["1"];
         self.activate("battlecry");
 
-        assert(() => sheep.frozen);
-        sheep.frozen = false;
-        assert(() => !sheep.frozen);
+        assert(() => sheep.hasKeyword("Frozen"));
+        sheep.remKeyword("Frozen");
+        assert(() => !sheep.hasKeyword("Frozen"));
 
         plr.emptyMana = 6;
         plr.inputQueue = ["1"];
         self.activate("battlecry");
 
-        assert(() => sheep.frozen);
+        assert(() => sheep.hasKeyword("Frozen"));
         assert(() => sheep.getAttack() == 1);
         assert(() => sheep.getHealth() == 1);
     }
