@@ -992,6 +992,8 @@ const playCard = {
         if (!q) return "invalid";
         
         if (player.mana < 1) return "cost";
+        if (player.hand.length >= 10) return "space";
+        if (player.deck.length <= 0) return "space";
 
         player.mana -= 1;
 

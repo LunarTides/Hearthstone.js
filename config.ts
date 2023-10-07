@@ -179,6 +179,7 @@ export const config: GameConfig = {
             "KillMinion",
             "DamageMinion",
             "TradeCard",
+            "ForgeCard",
             "FreezeCard",
             "AddCardToDeck",
             "AddCardToHand",
@@ -193,6 +194,7 @@ export const config: GameConfig = {
         // The log files override this list and shows the value regardless.
         hideValueHistoryKeys: [
             "DrawCard",
+            "ForgeCard",
             "AddCardToHand",
             "AddCardToDeck"
         ]
