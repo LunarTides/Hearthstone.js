@@ -572,7 +572,7 @@ export class Player {
 
         this.health -= amount;
 
-        game.events.broadcast("TakeDamage", [this, amount], this);
+        game.events.broadcast("TakeDamage", amount, this);
 
         if (this.health <= 0) {
             game.events.broadcast("FatalDamage", null, this);
