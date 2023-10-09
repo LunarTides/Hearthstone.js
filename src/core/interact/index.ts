@@ -351,7 +351,7 @@ export const interact = {
      * @returns Success
      */
     verifyDIYSolution(condition: boolean, fileName: string = ""): boolean {
-        // TODO: Maybe spawn in diy cards mid-game in normal games to encourage players to solve them.
+        // TODO: Maybe spawn in diy cards mid-game in normal games to encourage players to solve them. #332
         // Allow that to be toggled in the config.
         if (condition) game.log("Success! You did it, well done!");
         else game.log(`Hm. This card doesn't seem to do what it's supposed to do... Maybe you should try to fix it? The card is in: './cards/Examples/DIY/${fileName}'.`);

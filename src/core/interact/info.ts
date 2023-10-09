@@ -77,7 +77,7 @@ export const InfoInteract = {
     },
 
     printPlayerStats(plr: Player): void {
-        // TODO: Rewrite this... again...
+        // TODO: Rewrite this... again... #326
         const opponent = plr.getOpponent();
 
         let finished = "";

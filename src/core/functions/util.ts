@@ -297,7 +297,7 @@ ${mainContent}
         game.config = JSON.parse(config);
         game.replaying = true;
 
-        // TODO: Verify `header.version` using semver
+        // TODO: Verify `header.version` using semver. #328
         let expectedLogVersion = 3;
         if (header.logVersion !== expectedLogVersion) {
             return new Error(`Mismatch in log version. Expected: ${expectedLogVersion}, Found: ${header.logVersion}`);

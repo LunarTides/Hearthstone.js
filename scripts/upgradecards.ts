@@ -21,8 +21,8 @@ function upgradeField(data: string, oldValue: string | RegExp, newValue: string,
 }
 
 function upgradeCard(path: string, data: string, file: Dirent) {
-    // TODO: Always add `spellSchool`.
-    // TODO: Always add `hpCost`.
+    // TODO: Always add `spellSchool`. #335
+    // TODO: Always add `hpCost`. #335
 
     // Yes, this code is ugly. This script is temporary.
     // This will also not work for ALL cards, they are just too flexible.

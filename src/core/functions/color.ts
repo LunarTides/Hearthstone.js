@@ -99,7 +99,7 @@ export const colorFunctions = {
      * assert.equal(parsed, chalk.red.italic("Test") + " Another test");
      */
     fromTags(str: string): string {
-        // TODO: Optimize perhaps
+        // TODO: Optimize perhaps. #333
 
         /**
          * Appends text styling based on the current types.

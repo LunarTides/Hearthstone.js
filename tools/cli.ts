@@ -179,7 +179,7 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | nul
                 return;
             }
 
-            // TODO: Implement
+            // TODO: Implement.
             throw new Error("not implemented");
         }
         else {

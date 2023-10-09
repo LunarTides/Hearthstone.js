@@ -29,6 +29,6 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        // TODO: Test
+        // TODO: Test. #325
     }
 }

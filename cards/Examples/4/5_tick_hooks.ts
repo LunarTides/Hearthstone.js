@@ -54,7 +54,7 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        // TODO: Add proper tests
+        // TODO: Add proper tests. #325
         return true;
     }
 }

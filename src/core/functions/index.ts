@@ -14,7 +14,7 @@ import {
 } from "../../internal.js";
 
 export const functions = {
-    // TODO: Create better docstrings. (remember to also change the docstrings for, for example, functions.card.vanilla)
+    // TODO: Create better docstrings. (remember to also change the docstrings for, for example, functions.card.vanilla). #324
     /**
      * Deckcode related functions
      */

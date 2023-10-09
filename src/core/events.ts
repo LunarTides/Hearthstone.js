@@ -75,7 +75,7 @@ export const EventManager: IEventManager = {
 
         // Infuse
         if (key === "KillMinion") {
-            // TODO: Rewrite and move this code
+            // TODO: Rewrite and move this code. #329
             player.hand.forEach(p => {
                 let num: number | undefined = p.getKeyword("Infuse");
                 if (!num) return;
