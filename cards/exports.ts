@@ -7,6 +7,7 @@ export { blueprint as caedc9ac } from "./Examples/1/3_weapon.js";
 export { blueprint as c6145c8b } from "./Examples/1/4_taunt.js";
 export { blueprint as c030721c } from "./Examples/1/5_battlecry.js";
 export { blueprint as c6aae1fa } from "./Examples/1/6_dredge.js";
+export { blueprint as c0695201 } from "./Examples/1/7_another_ability.js";
 export { blueprint as c9dbcdcf } from "./Examples/1/last_combined.js";
 export { blueprint as ce4124fe } from "./Examples/2/1_location.js";
 export { blueprint as ceb6161d } from "./Examples/2/2_hero.js";
