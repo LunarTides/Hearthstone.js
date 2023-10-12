@@ -1,3 +1,78 @@
+#### 2.0.0-beta.3 (2023-10-12)
+
+##### Chores
+
+*  add example to show another ability format ([f6476427](https://github.com/LunarTides/Hearthstone.js/commit/f6476427cfe040e2a266a01e8a0cc29e522c3151))
+*  add issue number to todos ([f08e0fe9](https://github.com/LunarTides/Hearthstone.js/commit/f08e0fe91dfec2d252624950b5808220cb313293))
+*  update dependancies ([75b8f82e](https://github.com/LunarTides/Hearthstone.js/commit/75b8f82ec2531c62aac4cbb7bfc285f94687ad9c))
+*  add test todos to more stage 2 cards ([cc58d769](https://github.com/LunarTides/Hearthstone.js/commit/cc58d769ff5629dd5c233ad2742940fa71a9e49c))
+*  update loc count in loc.sh ([ae2b8cd1](https://github.com/LunarTides/Hearthstone.js/commit/ae2b8cd13d435f0152ee5a55f67fcf7994d5e03f))
+*  bump version to 2.0.0-beta.3 ([9f30772f](https://github.com/LunarTides/Hearthstone.js/commit/9f30772f75f4c42fd37e9cc1512dde48fed4fee3))
+
+##### New Features
+
+*  make maximum hand length customizable ([f941a4d5](https://github.com/LunarTides/Hearthstone.js/commit/f941a4d57fc275330d8f0f8f7ada7a4bf5263adc))
+*  add forge keyword ([9db981b7](https://github.com/LunarTides/Hearthstone.js/commit/9db981b7ea7143fe672b6786775a6855d767f326))
+*  add ability to prevent event suppression ([809dc3ce](https://github.com/LunarTides/Hearthstone.js/commit/809dc3ceabdd36ffe0095f48de296b1d31f42aaf))
+*  add ability to replay previous games ([abda1963](https://github.com/LunarTides/Hearthstone.js/commit/abda19639f69a88221ef4f7a2e08d0564baff99b))
+*  add stripAnsi to the color functions ([44a936f1](https://github.com/LunarTides/Hearthstone.js/commit/44a936f1ecd638eed4e5ae1cdc7b998d8e8ca924))
+* **dc:**  add config to show uncollectible cards ([5202190c](https://github.com/LunarTides/Hearthstone.js/commit/5202190c9958976ecb68388db4765a328f23eef0))
+
+##### Bug Fixes
+
+*  add forging to history and fixes to trading ([16ecf54d](https://github.com/LunarTides/Hearthstone.js/commit/16ecf54d47d2cc8a9055e77b2c63e9b7f9cd22f8))
+*  fix game not launching editor on windows ([6b86d11c](https://github.com/LunarTides/Hearthstone.js/commit/6b86d11c6e7ba91b95ec335c078a53dbcb79876c))
+*  fix location cards being displayed as minions ([51963cbf](https://github.com/LunarTides/Hearthstone.js/commit/51963cbfabf936d43b24efb73848005a6be8e8cd))
+* **game:**  run killMinions directly in attack ([ffcd7cea](https://github.com/LunarTides/Hearthstone.js/commit/ffcd7cea3da22cd8b9a409bf73d316c8ba6cb58d))
+* **cclib:**  fix finding abilities from text ([b4d7401c](https://github.com/LunarTides/Hearthstone.js/commit/b4d7401c0450e105f1fcae28fa44115fa9505c96))
+* **dc:**  parse cmd as card before assuming times ([4689a6e9](https://github.com/LunarTides/Hearthstone.js/commit/4689a6e9373280acdb28ca4e9a03d0ee24f22406))
+
+##### Other Changes
+
+*  make vanilla.getAll return [] | Error ([f4272c13](https://github.com/LunarTides/Hearthstone.js/commit/f4272c139488983d93c6e858dbfee5bf37d255c6))
+*  remove player from take damage event ([8b2e4935](https://github.com/LunarTides/Hearthstone.js/commit/8b2e4935c0ad10f2507a6dc1d2bf1e24fa5afc78))
+*  made a lot of card variables keywords ([188ea0dd](https://github.com/LunarTides/Hearthstone.js/commit/188ea0dd0aacc6a0e5d80c4964726db27e9e0601))
+*  move cardupdater to vanilla category ([753c0c75](https://github.com/LunarTides/Hearthstone.js/commit/753c0c7574449d1f040006d08a9bce4ec7690abd))
+*  remove keyword and error function files ([bd4cbd63](https://github.com/LunarTides/Hearthstone.js/commit/bd4cbd6344967bf96e9d15309dfa73f1184471f5))
+*  remove activateBattlecry ([1475e178](https://github.com/LunarTides/Hearthstone.js/commit/1475e178b6d1bc41d9c4dcc75f6801757bb06b15))
+*  use log files instead of replay files ([3bff3262](https://github.com/LunarTides/Hearthstone.js/commit/3bff3262627aa52b58ee938422d45084c8e59b80))
+*  change game.cards to game.blueprints ([9e413084](https://github.com/LunarTides/Hearthstone.js/commit/9e413084decf9e253580c1316398cbcd51b3fd15))
+*  make handleCmds take in an object for flags ([9fbaca3d](https://github.com/LunarTides/Hearthstone.js/commit/9fbaca3d81d0e28a1249b2c8c77f843d777c0d50))
+*  split interact into multiple files ([8835d6fc](https://github.com/LunarTides/Hearthstone.js/commit/8835d6fce61f827ac1ec27998b80f6c29362be94))
+*  move some card related functions to card class ([bbabead4](https://github.com/LunarTides/Hearthstone.js/commit/bbabead44648015ac1b5eafc8564d0b64109bd09))
+*  remove player functions module ([3d47f754](https://github.com/LunarTides/Hearthstone.js/commit/3d47f75456200dd85331d963f43f0eb3f668f8ca))
+*  refactor functions into multiple files ([3e3fe4a6](https://github.com/LunarTides/Hearthstone.js/commit/3e3fe4a67dbd9a2fb25c34484f09b6d7325f57ce))
+* **dc:**  add comments explaining colored names ([8a73a7f6](https://github.com/LunarTides/Hearthstone.js/commit/8a73a7f6a3d109ec1a1a4d0c611539b806b6e360))
+
+##### Performance Improvements
+
+*  return early in applyEnchantments if list is empty ([f75f6823](https://github.com/LunarTides/Hearthstone.js/commit/f75f682340f3a112c3aa21f040517cf60216196f))
+
+##### Refactors
+
+*  allow "./" and fix a bug with restrictPath ([eace3d3b](https://github.com/LunarTides/Hearthstone.js/commit/eace3d3b8461e871655a27cf73b7b9feee156377))
+*  split types into multiple files ([455d074c](https://github.com/LunarTides/Hearthstone.js/commit/455d074ca915f45a3c48e9058a0824f6305f65c4))
+*  reformat types file ([95e717bc](https://github.com/LunarTides/Hearthstone.js/commit/95e717bc75f9e22b4b6d3787e7871f76eeccbc12))
+*  add game.pause to pause the game ([4b898f8d](https://github.com/LunarTides/Hearthstone.js/commit/4b898f8de1e817144b81dcae2cd1c21788614f37))
+*  move input, log from game to gameLoop ([e2474fa0](https://github.com/LunarTides/Hearthstone.js/commit/e2474fa06553272470af770197c583ff8384d31a))
+*  remove replacePlaceholders from tick ([357723bf](https://github.com/LunarTides/Hearthstone.js/commit/357723bf76bdc9c6f013acfea219bb613af938b3))
+*  make replay throw error instead of false ([b03a0273](https://github.com/LunarTides/Hearthstone.js/commit/b03a027312565c1f23d83bd1e9c3eed99727ea4c))
+*  remove `historyCardOnlyName` from handleCmds ([a8e265a0](https://github.com/LunarTides/Hearthstone.js/commit/a8e265a0f239acc37bb19883540167b7ee33de49))
+*  add getting date into its own function ([32ac6374](https://github.com/LunarTides/Hearthstone.js/commit/32ac6374232611fb2d79e443af66c9070f298c56))
+*  add history type to the types.ts file ([80f2db86](https://github.com/LunarTides/Hearthstone.js/commit/80f2db8670f5a114894d430cdc9d314f87d5e6f3))
+*  add `eventPlayer` to passive ability ([fa92254d](https://github.com/LunarTides/Hearthstone.js/commit/fa92254ded17b0ca40e1415a4a498ec7633f9233))
+* **dc:**
+  *  add less hardcoded defaults ([f2502439](https://github.com/LunarTides/Hearthstone.js/commit/f250243955db027d718bf570e8130bda654e4269))
+  *  reformat warning state logging ([9707c4f8](https://github.com/LunarTides/Hearthstone.js/commit/9707c4f8c1a059b4f546ee4ab68f193ef78fab8b))
+* **id:**  warn user about holes / dupes on start ([4caf07ac](https://github.com/LunarTides/Hearthstone.js/commit/4caf07acc9c10d7788bef3012f184489d0b4deff))
+* **ai:**  make _tauntExists always return Card[] ([8c42da21](https://github.com/LunarTides/Hearthstone.js/commit/8c42da2145809c8b1934b26c7dc803322adbab3a))
+* **cclib:**  only add create if text is truthy ([b2225f38](https://github.com/LunarTides/Hearthstone.js/commit/b2225f38abb655efd1f45d4d42f7fb1032c980d5))
+* **ccc:**  removed exit checks and added defaults ([6f5297ee](https://github.com/LunarTides/Hearthstone.js/commit/6f5297ee6015722221330562f16b763582ca92be))
+
+##### Tests
+
+*  began adding test cards ([08c61696](https://github.com/LunarTides/Hearthstone.js/commit/08c61696b668a0caf128ad0043dac58081ffbd5a))
+
 ## v2.0.0-beta.2 (2023-10-03)
 
 ### Feat
