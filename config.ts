@@ -216,7 +216,7 @@ export const config: GameConfig = {
         branch: "beta",
 
         // The build number of the game.
-        build: 3,
+        build: 4,
 
         // The text that is displayed along this specific version/branch combination.
         versionText: "Make the project use typescript instead of javascript",
