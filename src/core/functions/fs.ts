@@ -106,11 +106,16 @@ export const fsFunctions = {
     restrictPath(path: string): string {
         path = path.replaceAll("\\", "/");
         path = path.replaceAll(this.dirname(), "");
+
         // Prevent '..' usage
         path = path.replaceAll("../", "");
         path = path.replaceAll("..", "");
 
-        path = this.dirname() + path;
+        // Remove "~/", "./", or "/" from the start of the path
+        path = path.replace(/^[~.]?\//, "");
+
+        // The path doesn't begin with a "/", so we add one in
+        path = this.dirname() + "/" + path;
 
         return path;
     },
