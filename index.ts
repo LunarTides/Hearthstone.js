@@ -34,12 +34,13 @@ function cardCreator() {
         game.interact.cls();
 
         if (type === "v") {
-            const [_, error] = game.functions.card.vanilla.getAll();
+            const error = game.functions.card.vanilla.getAll();
 
-            if (error) {
+            if (error instanceof Error) {
                 watermark();
 
-                game.pause(error);
+                game.log(error.stack);
+                game.pause();
                 return;
             }
 

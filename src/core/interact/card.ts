@@ -108,7 +108,7 @@ export const CardInteract = {
      * 
      * @param prompt The prompt to ask
      * @param cards The cards to choose from
-     * @param filterClassCards If it should filter away cards that do not belong to the player's class. Keep this at default if you are using `functions.getCards()`, disable this if you are using either player's deck / hand / graveyard / etc...
+     * @param filterClassCards If it should filter away cards that do not belong to the player's class. Keep this at default if you are using `functions.card.getAll()`, disable this if you are using either player's deck / hand / graveyard / etc...
      * @param amount The amount of cards to show
      * @param _cards Do not use this variable, keep it at default
      * 

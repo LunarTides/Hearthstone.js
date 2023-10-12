@@ -344,10 +344,11 @@ export const deckcodeFunctions = {
         const cards = codeSplit[1].trim();
 
         // Now it's just the cards left
-        const [vanillaCards, error] = game.functions.card.vanilla.getAll("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'npm run script:vanilla:generator' (requires an internet connection), then try again.");
+        const vanillaCards = game.functions.card.vanilla.getAll();
 
-        if (error) {
-            game.pause(error);
+        if (vanillaCards instanceof Error) {
+            game.log(vanillaCards.stack);
+            game.pause();
             return "";
         }
 
@@ -441,10 +442,11 @@ export const deckcodeFunctions = {
         // Use the 'deckstrings' library's decode
         const deckWithFormat: deckstrings.DeckDefinition = deckstrings.decode(code);
 
-        const [vanillaCards, error] = game.functions.card.vanilla.getAll("ERROR: It looks like you were attempting to parse a vanilla deckcode. In order for the program to support this, run 'npm run script:vanilla:generator' (requires an internet connection), then try again.");
+        const vanillaCards = game.functions.card.vanilla.getAll();
 
-        if (error) {
-            game.pause(error);
+        if (vanillaCards instanceof Error) {
+            game.log(vanillaCards.stack);
+            game.pause("\n");
             return "";
         }
 

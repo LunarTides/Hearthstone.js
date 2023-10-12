@@ -145,10 +145,11 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CCT
 export function main(debug = false, overrideType?: lib.CCType) {
     game.log("Hearthstone.js Vanilla Card Creator (C) 2022\n");
 
-    const [vanillaCards, error] = game.functions.card.vanilla.getAll();
+    const vanillaCards = game.functions.card.vanilla.getAll();
 
-    if (error) {
-        game.pause(error);
+    if (vanillaCards instanceof Error) {
+        game.log(vanillaCards.stack);
+        game.pause();
         return false;
     };
 

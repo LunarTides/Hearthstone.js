@@ -9,17 +9,29 @@ const vanilla = {
      * 
      * This will return an error message if the user has not run the vanilla card generator,
      * 
-     * @param error The error message to return if the file doesn't exist. If this is not set, it will use a default error message.
+     * @example
+     * const vanillaCards = getAll();
      * 
-     * @returns The vanilla cards, and an error message (if any)
+     * if (vanillaCards instanceof Error) {
+     *     // There is a default message, but you can override it
+     *     // vanillaCards.message = "Example";
+     *     game.log(vanillaCards.stack);
+     *     game.pause();
+     * }
+     * 
+     * vanillaCards.forEach(vanillaCard => {
+     *     game.log(vanillaCard.dbfId);
+     * });
+     * 
+     * @returns The vanilla cards | An error
      */
-    getAll(error?: string): [VanillaCard[], string | null] {
+    getAll(): VanillaCard[] | Error {
         const fileLocation = "/vanillacards.json";
         if (game.functions.file.exists(fileLocation)) {
-            return [JSON.parse(game.functions.file.read(fileLocation)) as VanillaCard[], null];
+            return JSON.parse(game.functions.file.read(fileLocation)) as VanillaCard[];
         }
 
-        return [[], error ?? "<red>Cards file not found! Run 'npm run script:vanilla:generator' (requires an internet connection), then try again.</red>\n"];
+        return new Error("Cards file not found! Run 'npm run script:vanilla:generator' (requires an internet connection), then try again.");
     },
     
     /**

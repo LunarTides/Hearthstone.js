@@ -23,8 +23,6 @@ export const blueprint: Blueprint = {
         let cards = game.functions.card.getAll();
 
         // We need to filter away any non-spell cards.
-        // Keep in mind that `getCards` returns a list of Blueprints, not a list of Cards.
-        // What you are looking at now is a Blueprint, so we can access the `type` variable since if you look up, this Blueprint has the `type` variable.
         cards = cards.filter(c => c.type == "Spell"); 
 
         // interact.discover(prompt, pool, ifItShouldFilterAwayCardsThatAreNotThePlayersClass = true, amountOfCardsToChooseFrom = 3)

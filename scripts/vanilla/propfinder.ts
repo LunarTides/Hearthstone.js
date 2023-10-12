@@ -10,10 +10,11 @@ const props: {[key: string]: [string, number]} = {};
 const types: {[key: string]: number} = {};
 
 function main() {
-    const [vanillaCards, error] = game.functions.card.vanilla.getAll();
+    const vanillaCards = game.functions.card.vanilla.getAll();
 
-    if (error) {
-        game.pause(error);
+    if (vanillaCards instanceof Error) {
+        game.log(vanillaCards.stack);
+        game.pause();
         process.exit(1);
     }
 

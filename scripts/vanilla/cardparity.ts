@@ -9,10 +9,11 @@ import { Blueprint, VanillaCard } from "../../src/types.js";
 const { game, player1, player2 } = createGame();
 
 function main() {
-    const [vanillaCards, error] = game.functions.card.vanilla.getAll();
+    const vanillaCards = game.functions.card.vanilla.getAll();
 
-    if (error) {
-        game.pause(error);
+    if (vanillaCards instanceof Error) {
+        game.log(vanillaCards.stack)
+        game.pause();
         process.exit(1);
     }
 
