@@ -38,12 +38,12 @@ export const blueprint: Blueprint = {
 
     test(plr, self) {
         // The opponent should have 30 health.
-        assert(plr.getOpponent().getHealth() === 30);
+        assert.equal(plr.getOpponent().getHealth(), 30);
 
         plr.inputQueue = ['face', 'y'];
         self.activate('heropower');
 
         // The opponent should have 29 health.
-        assert(plr.getOpponent().getHealth() === 30 - 1);
+        assert.equal(plr.getOpponent().getHealth(), 30 - 1);
     },
 };

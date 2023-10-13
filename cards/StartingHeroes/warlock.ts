@@ -29,13 +29,13 @@ export const blueprint: Blueprint = {
         plr.hand = [];
 
         // The player should have no cards in their hand, and should have 30 health
-        assert(plr.hand.length === 0);
-        assert(plr.health === 30);
+        assert.equal(plr.hand.length, 0);
+        assert.equal(plr.health, 30);
 
         self.activate('heropower');
 
         // The player should now have 1 card in their hand, and 28 health.
-        assert(plr.hand.length as number === 1);
-        assert(plr.health === 30 - 2);
+        assert.equal(plr.hand.length, 1);
+        assert.equal(plr.health, 30 - 2);
     },
 };

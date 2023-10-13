@@ -36,7 +36,7 @@ export const blueprint: Blueprint = {
         for (let i = 0; i < 5; i++) {
             // Attacking the enemy hero this this minion should always return "frozen"
             const returnValue = game.attack(self, plr.getOpponent());
-            assert(returnValue === 'frozen');
+            assert.equal(returnValue, 'frozen');
 
             game.endTurn();
             game.endTurn();

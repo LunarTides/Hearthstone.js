@@ -25,10 +25,10 @@ export const blueprint: Blueprint = {
 
     test(plr, self) {
         // The player should have 0 armor
-        assert(plr.armor === 0);
+        assert.equal(plr.armor, 0);
         self.activate('heropower');
 
         // The player should now have 2 armor
-        assert(plr.armor as number === 2);
+        assert.equal(plr.armor, 2);
     },
 };

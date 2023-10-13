@@ -29,10 +29,10 @@ export const blueprint: Blueprint = {
 
     test(plr, self) {
         // The player should not have a weapon
-        assert(plr.weapon === undefined);
+        assert.equal(plr.weapon, undefined);
         self.activate('heropower');
 
         // The player should now have the wicked knife weapon
-        assert((plr.weapon as Card | undefined)?.name === 'Wicked Knife');
+        assert.equal((plr.weapon)?.name, 'Wicked Knife');
     },
 };

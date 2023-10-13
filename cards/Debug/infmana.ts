@@ -29,18 +29,18 @@ export const blueprint: Blueprint = {
         self.activate('cast');
 
         // The game hasn't ticked yet
-        assert(plr.mana === 5);
+        assert.equal(plr.mana, 5);
 
         // Manually tick the game
         game.events.tick('GameLoop', undefined, plr);
 
-        assert(plr.mana as number === 10);
+        assert.equal(plr.mana, 10);
 
         // Play a card to verify that the mana doesn't decrease
         const card = game.createCard('Sheep', plr);
         const result = game.playCard(card, plr);
 
-        assert(result === true);
-        assert(plr.mana as number === 10);
+        assert.equal(result, true);
+        assert.equal(plr.mana, 10);
     },
 };

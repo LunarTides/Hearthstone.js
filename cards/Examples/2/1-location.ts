@@ -34,6 +34,6 @@ export const blueprint: Blueprint = {
         plr.health = 1;
         self.activate('use');
 
-        assert(plr.health === 1 + 2);
+        assert.equal(plr.health, 1 + 2);
     },
 };

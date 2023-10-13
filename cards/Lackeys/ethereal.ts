@@ -51,7 +51,7 @@ export const blueprint: Blueprint = {
             self.activate('battlecry');
             const card = plr.hand[0];
 
-            assert(card.type === 'Spell');
+            assert.equal(card.type, 'Spell');
         }
     },
 };

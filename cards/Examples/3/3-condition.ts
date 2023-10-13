@@ -55,16 +55,16 @@ export const blueprint: Blueprint = {
         self.activate('battlecry');
 
         // Assert that the player didn't draw a card
-        assert(plr.deck.length === length);
-        assert(plr.hand.length === 0);
+        assert.equal(plr.deck.length, length);
+        assert.equal(plr.hand.length, 0);
 
         // The player should fulfill the condition
         plr.deck = [game.createCard('Sheep', plr)];
         assert(plr.highlander());
-        assert(plr.deck.length === 1);
+        assert.equal(plr.deck.length, 1);
 
         self.activate('battlecry');
 
-        assert(plr.hand.length as number === 1);
+        assert.equal(plr.hand.length, 1);
     },
 };

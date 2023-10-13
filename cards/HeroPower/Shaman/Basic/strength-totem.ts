@@ -65,7 +65,7 @@ export const blueprint: Blueprint = {
             // At least 1 sheep should have more than 1 attack.
             assert(checkSheepAttack(true));
             // This card should not get more attack.
-            assert(self.getAttack() === self.blueprint.stats?.[0]);
+            assert.equal(self.getAttack(), self.blueprint.stats?.[0]);
 
             game.endTurn();
         }

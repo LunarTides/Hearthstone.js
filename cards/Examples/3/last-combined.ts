@@ -66,10 +66,10 @@ export const blueprint: Blueprint = {
 
         // The condition is not cleared
         let {mana} = plr;
-        assert(turn() === 1);
+        assert.equal(turn(), 1);
         self.activate('cast');
 
-        assert(plr.mana === mana);
+        assert.equal(plr.mana, mana);
 
         // Next
         game.endTurn();
@@ -77,10 +77,10 @@ export const blueprint: Blueprint = {
 
         // The condition is cleared, gain 2 mana.
         mana = plr.mana;
-        assert(turn() === 2);
+        assert.equal(turn(), 2);
         self.activate('cast');
 
-        assert(plr.mana === mana + 2);
+        assert.equal(plr.mana, mana + 2);
 
         // Next
         game.endTurn();
@@ -89,9 +89,9 @@ export const blueprint: Blueprint = {
         // The manathirst is cleared, but not the condition, still gain 3 mana.
         plr.emptyMana = 7;
         mana = plr.mana;
-        assert(turn() === 3);
+        assert.equal(turn(), 3);
         self.activate('cast');
 
-        assert(plr.mana === mana + 3);
+        assert.equal(plr.mana, mana + 3);
     },
 };

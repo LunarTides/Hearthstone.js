@@ -39,7 +39,7 @@ export function main() {
         // Assign decks
         const assignDeck = (player: Player) => {
             const deck = game.functions.deckcode.import(player, 'Mage /30/ 1');
-            if (!deck) {
+            if (!deck || deck.length <= 0) {
                 throw new Error('Invalid deckcode');
             }
 

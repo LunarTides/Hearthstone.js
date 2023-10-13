@@ -76,6 +76,6 @@ export const blueprint: Blueprint = {
         }
 
         // Assert that the board's length is equal to the amount of totem cards.
-        assert(game.board[plr.id].length === totemCardNames.length);
+        assert.equal(game.board[plr.id].length, totemCardNames.length);
     },
 };

@@ -59,12 +59,12 @@ export const blueprint: Blueprint = {
         sheep.addStats(4, 4);
         game.summonMinion(sheep, plr.getOpponent());
 
-        assert(sheep.getAttack() === 5);
-        assert(sheep.getHealth() === 5);
+        assert.equal(sheep.getAttack(), 5);
+        assert.equal(sheep.getHealth(), 5);
         assert(!sheep.hasKeyword('Frozen'));
 
         plr.emptyMana = 1;
-        assert(plr.emptyMana === 1);
+        assert.equal(plr.emptyMana, 1);
         plr.inputQueue = ['1'];
         self.activate('battlecry');
 
@@ -77,7 +77,7 @@ export const blueprint: Blueprint = {
         self.activate('battlecry');
 
         assert(sheep.hasKeyword('Frozen'));
-        assert(sheep.getAttack() === 1);
-        assert(sheep.getHealth() === 1);
+        assert.equal(sheep.getAttack(), 1);
+        assert.equal(sheep.getHealth(), 1);
     },
 };

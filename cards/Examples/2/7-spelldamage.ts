@@ -33,6 +33,6 @@ export const blueprint: Blueprint = {
         plr.spellDamage = 3;
         self.activate('cast');
 
-        assert(plr.getOpponent().getHealth() === oldHealth - (3 + plr.spellDamage));
+        assert.equal(plr.getOpponent().getHealth(), oldHealth - (3 + plr.spellDamage));
     },
 };

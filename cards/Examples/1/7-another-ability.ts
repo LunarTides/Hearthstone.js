@@ -13,8 +13,8 @@ const battlecry: Ability = (plr, self) => {
 const theTestAbility: Ability = (plr, self) => {
     self.activate('battlecry');
 
-    assert(self.getAttack() - 1 === self.blueprint.stats?.[0]);
-    assert(self.getHealth() - 1 === self.blueprint.stats?.[1]);
+    assert.equal(self.getAttack() - 1, self.blueprint.stats?.[0]);
+    assert.equal(self.getHealth() - 1, self.blueprint.stats?.[1]);
 };
 
 export const blueprint: Blueprint = {

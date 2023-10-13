@@ -44,7 +44,7 @@ export const blueprint: Blueprint = {
         self.activate('battlecry');
 
         // The sheep should have 2 attack and rush
-        assert(sheep.getAttack() === 2);
+        assert.equal(sheep.getAttack(), 2);
         assert(sheep.hasKeyword('Rush'));
     },
 };

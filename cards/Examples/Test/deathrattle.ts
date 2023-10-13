@@ -29,15 +29,15 @@ export const blueprint: Blueprint = {
 
     test(plr, self) {
         // There should be 0 minions on the board
-        assert(game.board[plr.id].length === 0);
+        assert.equal(game.board[plr.id].length, 0);
         game.summonMinion(self, plr);
 
         // There should be 0 minions on the board
-        assert(game.board[plr.id].length === 1);
+        assert.equal(game.board[plr.id].length, 1);
 
         game.attack(2, self);
 
         // There should be 2 minions on the board since the deathrattle should have triggered
-        assert(game.board[plr.id].length === 2);
+        assert.equal(game.board[plr.id].length, 2);
     },
 };

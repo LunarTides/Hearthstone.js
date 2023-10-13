@@ -28,12 +28,12 @@ export const blueprint: Blueprint = {
 
     test(plr, self) {
         // The player should start with 0 attack
-        assert(plr.attack === 0);
-        assert(plr.armor === 0);
+        assert.equal(plr.attack, 0);
+        assert.equal(plr.armor, 0);
         self.activate('heropower');
 
         // The player should gain 1 attack
-        assert(plr.attack as number === 1);
-        assert(plr.armor as number === 1);
+        assert.equal(plr.attack, 1);
+        assert.equal(plr.armor, 1);
     },
 };

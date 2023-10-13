@@ -23,6 +23,6 @@ export const blueprint: Blueprint = {
         plr.mana = 5;
         self.activate('cast');
 
-        assert(plr.mana === 10);
+        assert.equal(plr.mana, 10);
     },
 };

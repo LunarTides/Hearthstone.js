@@ -43,11 +43,11 @@ export const blueprint: Blueprint = {
         // Test battlecry
         plr.health = 1;
         self.activate('battlecry');
-        assert(plr.health === plr.maxHealth);
+        assert.equal(plr.health, plr.maxHealth);
 
         // Test hero power
         plr.health = 1;
         self.activate('heropower');
-        assert(plr.health === 1 + 2);
+        assert.equal(plr.health, 1 + 2);
     },
 };

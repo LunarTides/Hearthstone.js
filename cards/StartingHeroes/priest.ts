@@ -44,13 +44,13 @@ export const blueprint: Blueprint = {
         plr.inputQueue = ['face', 'n'];
         self.activate('heropower');
 
-        assert(plr.health === 1 + 2);
+        assert.equal(plr.health, 1 + 2);
 
         // Health: 29->30 (cap at 30)
         plr.health = 29;
         plr.inputQueue = ['face', 'n'];
         self.activate('heropower');
 
-        assert(plr.health === 30);
+        assert.equal(plr.health, 30);
     },
 };

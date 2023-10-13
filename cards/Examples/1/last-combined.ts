@@ -38,7 +38,7 @@ export const blueprint: Blueprint = {
         self.activate('battlecry');
 
         // Check that the stats went up by 1
-        assert(self.getAttack() - 1 === self.blueprint.stats?.[0]);
-        assert(self.getHealth() - 1 === self.blueprint.stats?.[1]);
+        assert.equal(self.getAttack() - 1, self.blueprint.stats?.[0]);
+        assert.equal(self.getHealth() - 1, self.blueprint.stats?.[1]);
     },
 };

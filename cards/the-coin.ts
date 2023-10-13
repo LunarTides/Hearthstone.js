@@ -28,12 +28,12 @@ export const blueprint: Blueprint = {
         plr.mana = 5;
         self.activate('cast');
 
-        assert(plr.mana === 6);
+        assert.equal(plr.mana, 6);
 
         // Assert 10->10
         plr.mana = 10;
         self.activate('cast');
 
-        assert(plr.mana === 10);
+        assert.equal(plr.mana, 10);
     },
 };
