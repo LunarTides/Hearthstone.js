@@ -17,150 +17,150 @@ const {game, player1, player2} = createGame();
  * @param debug If it should use debug mode
  */
 export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CcType) {
-	// Harvest info
-	let cardClass = game.lodash.capitalize(card.cardClass ?? 'Neutral') as CardClass;
-	const collectible = card.collectible ?? false;
-	const cost = card.cost ?? 0;
-	const {name} = card;
-	let rarity = 'Free' as CardRarity;
-	if (card.rarity) {
-		rarity = game.lodash.capitalize(card.rarity) as CardRarity;
-	}
+    // Harvest info
+    let cardClass = game.lodash.capitalize(card.cardClass ?? 'Neutral') as CardClass;
+    const collectible = card.collectible ?? false;
+    const cost = card.cost ?? 0;
+    const {name} = card;
+    let rarity = 'Free' as CardRarity;
+    if (card.rarity) {
+        rarity = game.lodash.capitalize(card.rarity) as CardRarity;
+    }
 
-	let text = card.text ?? '';
-	const type = game.lodash.capitalize(card.type);
+    let text = card.text ?? '';
+    const type = game.lodash.capitalize(card.type);
 
-	// Minion info
-	const attack = card.attack ?? -1;
-	const health = card.health ?? -1;
-	let races: MinionTribe[] = [];
-	if (card.races) {
-		races = card.races.map(r => game.lodash.capitalize(r) as MinionTribe);
-	}
+    // Minion info
+    const attack = card.attack ?? -1;
+    const health = card.health ?? -1;
+    let races: MinionTribe[] = [];
+    if (card.races) {
+        races = card.races.map(r => game.lodash.capitalize(r) as MinionTribe);
+    }
 
-	// Spell info
-	let spellSchool: SpellSchool | undefined;
-	if (card.spellSchool) {
-		spellSchool = game.lodash.capitalize(card.spellSchool) as SpellSchool;
-	}
+    // Spell info
+    let spellSchool: SpellSchool | undefined;
+    if (card.spellSchool) {
+        spellSchool = game.lodash.capitalize(card.spellSchool) as SpellSchool;
+    }
 
-	// Weapon Info
-	const durability = card.durability ?? -1;
+    // Weapon Info
+    const durability = card.durability ?? -1;
 
-	// Modify the text
-	text = text.replaceAll('\n', ' ');
-	text = text.replaceAll('[x]', '');
+    // Modify the text
+    text = text.replaceAll('\n', ' ');
+    text = text.replaceAll('[x]', '');
 
-	const classes = game.functions.card.getClasses() as CardClass[];
-	classes.push('Neutral');
+    const classes = game.functions.card.getClasses() as CardClass[];
+    classes.push('Neutral');
 
-	while (!classes.includes(cardClass)) {
-		cardClass = game.functions.util.capitalizeAll(game.input('<red>Was not able to find the class of this card.\nWhat is the class of this card? </red>')) as CardClass;
-	}
+    while (!classes.includes(cardClass)) {
+        cardClass = game.functions.util.capitalizeAll(game.input('<red>Was not able to find the class of this card.\nWhat is the class of this card? </red>')) as CardClass;
+    }
 
-	const realName = game.input('Override name (this will set \'name\' to be the displayname instead) (leave empty to not use display name): ') || name;
+    const realName = game.input('Override name (this will set \'name\' to be the displayname instead) (leave empty to not use display name): ') || name;
 
-	let blueprint: Blueprint;
+    let blueprint: Blueprint;
 
-	switch (type) {
-		case 'Minion': {
-			blueprint = {
-				name: realName,
-				stats: [attack, health],
-				text,
-				cost,
-				type,
-				// TODO: Add support for more than 1 tribe. #334
-				tribe: races[0] || 'None',
-				classes: [cardClass],
-				rarity,
-				id: 0,
-			};
+    switch (type) {
+        case 'Minion': {
+            blueprint = {
+                name: realName,
+                stats: [attack, health],
+                text,
+                cost,
+                type,
+                // TODO: Add support for more than 1 tribe. #334
+                tribe: races[0] || 'None',
+                classes: [cardClass],
+                rarity,
+                id: 0,
+            };
 
-			break;
-		}
+            break;
+        }
 
-		case 'Spell': {
-			blueprint = {
-				name: realName,
-				text,
-				cost,
-				type,
-				spellSchool,
-				classes: [cardClass],
-				rarity,
-				id: 0,
-			};
+        case 'Spell': {
+            blueprint = {
+                name: realName,
+                text,
+                cost,
+                type,
+                spellSchool,
+                classes: [cardClass],
+                rarity,
+                id: 0,
+            };
 
-			break;
-		}
+            break;
+        }
 
-		case 'Weapon': {
-			blueprint = {
-				name: realName,
-				stats: [attack, durability],
-				text,
-				cost,
-				type,
-				classes: [cardClass],
-				rarity,
-				id: 0,
-			};
+        case 'Weapon': {
+            blueprint = {
+                name: realName,
+                stats: [attack, durability],
+                text,
+                cost,
+                type,
+                classes: [cardClass],
+                rarity,
+                id: 0,
+            };
 
-			break;
-		}
+            break;
+        }
 
-		case 'Hero': {
-			blueprint = {
-				name: realName,
-				text,
-				cost,
-				type,
-				hpText: '',
-				hpCost: 2,
-				classes: [cardClass],
-				rarity,
-				id: 0,
-			};
+        case 'Hero': {
+            blueprint = {
+                name: realName,
+                text,
+                cost,
+                type,
+                hpText: '',
+                hpCost: 2,
+                classes: [cardClass],
+                rarity,
+                id: 0,
+            };
 
-			break;
-		}
+            break;
+        }
 
-		case 'Location': {
-			blueprint = {
-				name: realName,
-				text,
-				cost,
-				type,
-				durability: health,
-				cooldown: 2,
-				classes: [cardClass],
-				rarity,
-				id: 0,
-			};
+        case 'Location': {
+            blueprint = {
+                name: realName,
+                text,
+                cost,
+                type,
+                durability: health,
+                cooldown: 2,
+                classes: [cardClass],
+                rarity,
+                id: 0,
+            };
 
-			break;
-		}
+            break;
+        }
 
-		default: {
-			throw new TypeError(`${type} is not a valid type!`);
-		}
-	}
+        default: {
+            throw new TypeError(`${type} is not a valid type!`);
+        }
+    }
 
-	if (!collectible) {
-		blueprint.uncollectible = true;
-	}
+    if (!collectible) {
+        blueprint.uncollectible = true;
+    }
 
-	if (realName !== name) {
-		blueprint.displayName = name;
-	}
+    if (realName !== name) {
+        blueprint.displayName = name;
+    }
 
-	let cctype: lib.CcType = 'Vanilla';
-	if (overrideType) {
-		cctype = overrideType;
-	}
+    let cctype: lib.CcType = 'Vanilla';
+    if (overrideType) {
+        cctype = overrideType;
+    }
 
-	lib.create(cctype, type, blueprint, undefined, undefined, debug);
+    lib.create(cctype, type, blueprint, undefined, undefined, debug);
 }
 
 /**
@@ -169,63 +169,63 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CcT
  * @returns If a card was created
  */
 export function main(debug = false, overrideType?: lib.CcType) {
-	game.log('Hearthstone.js Vanilla Card Creator (C) 2022\n');
+    game.log('Hearthstone.js Vanilla Card Creator (C) 2022\n');
 
-	const vanillaCards = game.functions.card.vanilla.getAll();
+    const vanillaCards = game.functions.card.vanilla.getAll();
 
-	if (game.config.general.debug) {
-		debug = !rl.keyInYN('Do you want the card to actually be created?');
-	}
+    if (game.config.general.debug) {
+        debug = !rl.keyInYN('Do you want the card to actually be created?');
+    }
 
-	let running = true;
-	while (running) {
-		const cardName = game.input('\nName / dbfId (Type \'back\' to cancel): ');
-		if (game.interact.shouldExit(cardName)) {
-			running = false;
-			break;
-		}
+    let running = true;
+    while (running) {
+        const cardName = game.input('\nName / dbfId (Type \'back\' to cancel): ');
+        if (game.interact.shouldExit(cardName)) {
+            running = false;
+            break;
+        }
 
-		let filteredCards = vanillaCards.filter(c => c.name.toLowerCase() === cardName.toLowerCase() || c.dbfId === game.lodash.parseInt(cardName));
-		filteredCards = game.functions.card.vanilla.filter(filteredCards, false, true);
+        let filteredCards = vanillaCards.filter(c => c.name.toLowerCase() === cardName.toLowerCase() || c.dbfId === game.lodash.parseInt(cardName));
+        filteredCards = game.functions.card.vanilla.filter(filteredCards, false, true);
 
-		if (filteredCards.length <= 0) {
-			game.log('Invalid card.\n');
-			continue;
-		}
+        if (filteredCards.length <= 0) {
+            game.log('Invalid card.\n');
+            continue;
+        }
 
-		let card;
+        let card;
 
-		if (filteredCards.length > 1) {
-			// Prompt the user to pick one
-			for (const [i, c] of filteredCards.entries()) {
-				// Get rid of useless information
-				delete c.elite;
-				delete c.heroPowerDbfId;
-				delete c.artist;
-				delete c.flavor;
-				delete c.mechanics;
+        if (filteredCards.length > 1) {
+            // Prompt the user to pick one
+            for (const [i, c] of filteredCards.entries()) {
+                // Get rid of useless information
+                delete c.elite;
+                delete c.heroPowerDbfId;
+                delete c.artist;
+                delete c.flavor;
+                delete c.mechanics;
 
-				const {id, ...card} = c;
+                const {id, ...card} = c;
 
-				game.log(`\n${i + 1}:`);
-				game.log(card);
-			}
+                game.log(`\n${i + 1}:`);
+                game.log(card);
+            }
 
-			const picked = game.lodash.parseInt(game.input(`Pick one (1-${filteredCards.length}): `));
-			if (!picked || !filteredCards[picked - 1]) {
-				game.log('Invalid number.\n');
-				continue;
-			}
+            const picked = game.lodash.parseInt(game.input(`Pick one (1-${filteredCards.length}): `));
+            if (!picked || !filteredCards[picked - 1]) {
+                game.log('Invalid number.\n');
+                continue;
+            }
 
-			card = filteredCards[picked - 1];
-		} else {
-			card = filteredCards[0];
-		}
+            card = filteredCards[picked - 1];
+        } else {
+            card = filteredCards[0];
+        }
 
-		game.log(`Found '${card.name}'\n`);
+        game.log(`Found '${card.name}'\n`);
 
-		create(card, debug, overrideType);
-	}
+        create(card, debug, overrideType);
+    }
 
-	return true;
+    return true;
 }

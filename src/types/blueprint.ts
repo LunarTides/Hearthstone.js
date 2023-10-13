@@ -11,39 +11,39 @@ export type Ability = (plr: Player, self: Card, key?: EventKey, value?: UnknownE
  * The abilities that a blueprint can have. (From CardAbility)
  */
 type BlueprintAbilities = {
-	[Property in CardAbility]?: Ability;
+    [Property in CardAbility]?: Ability;
 };
 
 /**
  * The blueprint of a card.
  */
 export type Blueprint = {
-	// Common
-	name: string;
-	displayName?: string;
-	stats?: number[];
-	text: string;
-	cost: number;
-	type: CardType;
+    // Common
+    name: string;
+    displayName?: string;
+    stats?: number[];
+    text: string;
+    cost: number;
+    type: CardType;
 
-	// Type specific
-	tribe?: MinionTribe;
-	spellSchool?: SpellSchool;
-	durability?: number;
-	cooldown?: number;
-	hpText?: string;
-	hpCost?: number;
+    // Type specific
+    tribe?: MinionTribe;
+    spellSchool?: SpellSchool;
+    durability?: number;
+    cooldown?: number;
+    hpText?: string;
+    hpCost?: number;
 
-	// Less important
-	classes: CardClass[];
-	rarity: CardRarity;
+    // Less important
+    classes: CardClass[];
+    rarity: CardRarity;
 
-	// Last
-	uncollectible?: boolean;
-	id: number;
+    // Last
+    uncollectible?: boolean;
+    id: number;
 } & BlueprintAbilities;
 
 export type BlueprintWithOptional = Blueprint & {
-	runes?: string;
-	keywords?: CardKeyword[];
+    runes?: string;
+    keywords?: CardKeyword[];
 };

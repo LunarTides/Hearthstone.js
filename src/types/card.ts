@@ -4,8 +4,8 @@ import {type Card} from '@Game/internal.js';
  * Ai scored card
  */
 export type ScoredCard = {
-	card: Card;
-	score: number;
+    card: Card;
+    score: number;
 };
 
 /**
@@ -162,13 +162,13 @@ export type CardAbility =
  * Card Enchantment object.
  */
 export type EnchantmentDefinition = {
-	enchantment: string;
-	owner: Card;
+    enchantment: string;
+    owner: Card;
 };
 
 /**
  * A backup of a card.
  */
 export type CardBackup = {
-	[key in keyof Card]: Card[key];
+    [key in keyof Card]: Card[key];
 };

@@ -69,67 +69,67 @@ export type SelectTargetFlag = 'allowLocations' | 'forceElusive';
  * GameConstants values.
  */
 export type GameConstants = {
-	refund: -1;
+    refund: -1;
 };
 
 /**
  * Vanilla Hearthstone's card blueprint.
  */
 export type VanillaCard = {
-	id: string;
-	dbfId: number;
-	name: string;
-	text?: string;
-	flavor?: string;
-	artist?: string;
-	cardClass?: CardClass;
-	collectible?: boolean;
-	cost?: number;
-	mechanics?: string[];
-	rarity?: CardRarity;
-	set: string;
-	race?: CardType;
-	races?: CardType[];
-	type: CardType;
-	spellSchool?: SpellSchool;
-	durability?: number;
-	faction?: string;
-	elite?: boolean;
-	attack?: number;
-	health?: number;
+    id: string;
+    dbfId: number;
+    name: string;
+    text?: string;
+    flavor?: string;
+    artist?: string;
+    cardClass?: CardClass;
+    collectible?: boolean;
+    cost?: number;
+    mechanics?: string[];
+    rarity?: CardRarity;
+    set: string;
+    race?: CardType;
+    races?: CardType[];
+    type: CardType;
+    spellSchool?: SpellSchool;
+    durability?: number;
+    faction?: string;
+    elite?: boolean;
+    attack?: number;
+    health?: number;
 
-	howToEarn?: string;
-	// All props below this line was found by the vcpropfinder
-	classes?: CardClass[];
-	heroPowerDbfId?: number;
-	referencesTags?: string[];
-	targetingArrowText?: string;
-	overload?: number;
-	spellDamage?: number;
-	collectionText?: string;
-	hasDiamondSkin?: boolean;
-	howToEarnGolden?: string;
-	armor?: number;
-	multiClassGroup?: string;
-	isMiniSet?: boolean;
-	questReward?: string;
+    howToEarn?: string;
+    // All props below this line was found by the vcpropfinder
+    classes?: CardClass[];
+    heroPowerDbfId?: number;
+    referencesTags?: string[];
+    targetingArrowText?: string;
+    overload?: number;
+    spellDamage?: number;
+    collectionText?: string;
+    hasDiamondSkin?: boolean;
+    howToEarnGolden?: string;
+    armor?: number;
+    multiClassGroup?: string;
+    isMiniSet?: boolean;
+    questReward?: string;
 
-	// Likely part of other gamemodes. Useless for this game
-	mercenariesRole?: string;
-	mercenariesAbilityCooldown?: number;
-	techLevel?: number;
-	hideCost?: boolean;
-	hideStats?: boolean;
-	isBattlegroundsPoolMinion?: boolean;
-	battlegroundsPremiumDbfId?: number;
-	battlegroundsNormalDbfId?: number;
-	battlegroundsBuddyDbfId?: number;
-	battlegroundsHero?: boolean;
-	isBattlegroundsBuddy?: boolean;
-	battlegroundsSkinParentId?: number;
-	battlegroundsDarkmoonPrizeTurn?: number;
-	countAsCopyOfDbfId?: number;
-	puzzleType?: number;
+    // Likely part of other gamemodes. Useless for this game
+    mercenariesRole?: string;
+    mercenariesAbilityCooldown?: number;
+    techLevel?: number;
+    hideCost?: boolean;
+    hideStats?: boolean;
+    isBattlegroundsPoolMinion?: boolean;
+    battlegroundsPremiumDbfId?: number;
+    battlegroundsNormalDbfId?: number;
+    battlegroundsBuddyDbfId?: number;
+    battlegroundsHero?: boolean;
+    isBattlegroundsBuddy?: boolean;
+    battlegroundsSkinParentId?: number;
+    battlegroundsDarkmoonPrizeTurn?: number;
+    countAsCopyOfDbfId?: number;
+    puzzleType?: number;
 };
 
 /**
@@ -145,81 +145,81 @@ export type Target = Card | Player;
  * AI history object.
  */
 export type AiHistory = {
-	type: string;
-	data: any;
+    type: string;
+    data: any;
 };
 
 /**
  * Game configuration.
  */
 export type GameConfig = {
-	general: {
-		debug: boolean;
-		editor: string;
-		topicBranchWarning: boolean;
-		maxBoardSpace: number;
-		maxHandLength: number;
-	};
+    general: {
+        debug: boolean;
+        editor: string;
+        topicBranchWarning: boolean;
+        maxBoardSpace: number;
+        maxHandLength: number;
+    };
 
-	decks: {
-		validate: boolean;
-		minLength: number;
-		maxLength: number;
-		maxOfOneCard: number;
-		maxOfOneLegendary: number;
-	};
+    decks: {
+        validate: boolean;
+        minLength: number;
+        maxLength: number;
+        maxOfOneCard: number;
+        maxOfOneLegendary: number;
+    };
 
-	ai: {
-		player1: boolean;
-		player2: boolean;
+    ai: {
+        player1: boolean;
+        player2: boolean;
 
-		contextAnalysis: boolean;
-		attackModel: number;
-		mulliganThreshold: number;
-		tradeThreshold: number;
-		statsBias: number;
-		costBias: number;
-		spellValue: number;
-		keywordValue: number;
-		abilityValue: number;
+        contextAnalysis: boolean;
+        attackModel: number;
+        mulliganThreshold: number;
+        tradeThreshold: number;
+        statsBias: number;
+        costBias: number;
+        spellValue: number;
+        keywordValue: number;
+        abilityValue: number;
 
-		protectThreshold: number;
-		ignoreThreshold: number;
-		riskThreshold: number;
+        protectThreshold: number;
+        ignoreThreshold: number;
+        riskThreshold: number;
 
-		sentiments: {
-			positive: Record<string, number>;
-			negative: Record<string, number>;
-		};
-	};
+        sentiments: {
+            positive: Record<string, number>;
+            negative: Record<string, number>;
+        };
+    };
 
-	advanced: {
-		dcShowUncollectible: boolean;
-		reloadCommandConfirmation: boolean;
-		reloadCommandRecompile: boolean;
-		getReadableCardMaxDepth: number;
-		getReadableCardNoRecursion: boolean;
-		getReadableCardAlwaysShowFullCard: boolean;
+    advanced: {
+        dcShowUncollectible: boolean;
+        reloadCommandConfirmation: boolean;
+        reloadCommandRecompile: boolean;
+        getReadableCardMaxDepth: number;
+        getReadableCardNoRecursion: boolean;
+        getReadableCardAlwaysShowFullCard: boolean;
 
-		whitelistedHistoryKeys: EventKey[];
-		hideValueHistoryKeys: EventKey[];
-	};
+        whitelistedHistoryKeys: EventKey[];
+        hideValueHistoryKeys: EventKey[];
+    };
 
-	info: {
-		version: string;
-		branch: 'stable' | 'beta' | 'alpha' | 'topic';
-		build: number;
+    info: {
+        version: string;
+        branch: 'stable' | 'beta' | 'alpha' | 'topic';
+        build: number;
 
-		versionText: string;
+        versionText: string;
 
-		stableIntroText: string;
-		betaIntroText: string;
-		alphaIntroText: string;
-		topicIntroText: string;
-	};
+        stableIntroText: string;
+        betaIntroText: string;
+        alphaIntroText: string;
+        topicIntroText: string;
+    };
 
-	todo: Record<string, {
-		state: 'not done' | 'doing' | 'done' | 'first pass' | 'second pass' | 'third pass';
-		description: string;
-	}>;
+    todo: Record<string, {
+        state: 'not done' | 'doing' | 'done' | 'first pass' | 'second pass' | 'third pass';
+        description: string;
+    }>;
 };

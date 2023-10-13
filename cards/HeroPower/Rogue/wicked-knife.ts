@@ -3,13 +3,13 @@
 import {type Blueprint} from '@Game/types.js';
 
 export const blueprint: Blueprint = {
-	name: 'Wicked Knife',
-	stats: [1, 2],
-	text: '',
-	cost: 1,
-	type: 'Weapon',
-	classes: ['Rogue'],
-	rarity: 'Free',
-	uncollectible: true,
-	id: 22,
+    name: 'Wicked Knife',
+    stats: [1, 2],
+    text: '',
+    cost: 1,
+    type: 'Weapon',
+    classes: ['Rogue'],
+    rarity: 'Free',
+    uncollectible: true,
+    id: 22,
 };

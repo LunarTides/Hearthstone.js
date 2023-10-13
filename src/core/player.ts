@@ -6,16 +6,16 @@ import {type Ai, Card} from '../internal.js';
 import {type CardClass, type CardType, type EventKey, type QuestCallback, type QuestType, type Target} from '../types.js';
 
 export class Player {
-	/**
+    /**
      * You might be looking for `Player.id`.
      *
      * The player's name. For example: "Player 1".
      *
      * There is no real use for this outside of the source code, so i would advise you to not use this.
      */
-	name = 'Unknown';
+    name = 'Unknown';
 
-	/**
+    /**
      * This is:
      *
      * 0: if this is the starting player
@@ -32,9 +32,9 @@ export class Player {
      *     game.log(card.name);
      * });
      */
-	id = -1;
+    id = -1;
 
-	/**
+    /**
      * The player's AI.
      *
      * # Examples
@@ -43,16 +43,16 @@ export class Player {
      *
      * game.log(discover);
      */
-	ai?: Ai;
+    ai?: Ai;
 
-	/**
+    /**
      * How much damage the player gets damaged the next time they draw a card from an empty deck.
      *
      * This increments every time a player draws from an empty deck.
      */
-	fatigue = 0;
+    fatigue = 0;
 
-	/**
+    /**
      * The player's deck.
      *
      * This can be shuffled at any time so don't rely on the order of the cards.
@@ -63,9 +63,9 @@ export class Player {
      *     game.log(card.name);
      * });
      */
-	deck: Card[] = [];
+    deck: Card[] = [];
 
-	/**
+    /**
      * The player's hand.
      *
      * # Examples
@@ -74,9 +74,9 @@ export class Player {
      *     game.log(card.name);
      * });
      */
-	hand: Card[] = [];
+    hand: Card[] = [];
 
-	/**
+    /**
      * The amount of mana that the player CURRENTLY has.
      *
      * # Examples
@@ -84,9 +84,9 @@ export class Player {
      * // Use `player.refreshMana(2, player.maxMana)` instead in a real situation.
      * player.mana += 2;
      */
-	mana = 0;
+    mana = 0;
 
-	/**
+    /**
      * The amount of empty mana crystals the player has. This increments every turn until it reaches `player.maxMana`.
      *
      * # Examples
@@ -94,9 +94,9 @@ export class Player {
      * // Use `player.gainEmptyMana(2)` instead in a real situation.
      * player.emptyMana += 2;
      */
-	emptyMana = 0;
+    emptyMana = 0;
 
-	/**
+    /**
      * The max amount of mana the player can have. This is normally fixed at `10` but can be changed.
      *
      * # Examples
@@ -105,9 +105,9 @@ export class Player {
      * // Now `player.maxMana` will increment every turn until it reaches 20.
      * ```
      */
-	maxMana = 10;
+    maxMana = 10;
 
-	/**
+    /**
      * The amount of overload the player has. See the overload mechanic on the Hearthstone Wiki.
      *
      * # Examples
@@ -117,9 +117,9 @@ export class Player {
      * // Now the player will have 2 less mana next turn.
      * ```
      */
-	overload = 0;
+    overload = 0;
 
-	/**
+    /**
      * The amount of health the player has.
      *
      * # Examples
@@ -128,9 +128,9 @@ export class Player {
      * player.health -= 3;
      * ```
      */
-	health = 30;
+    health = 30;
 
-	/**
+    /**
      * The maximum health the player can have. This is normally fixed to the amount of health the player starts with (`30`).
      *
      * # Examples
@@ -138,9 +138,9 @@ export class Player {
      * player.maxHealth = 40;
      * ```
      */
-	maxHealth = 30;
+    maxHealth = 30;
 
-	/**
+    /**
      * The amount of armor the player has.
      *
      * # Examples
@@ -148,9 +148,9 @@ export class Player {
      * player.armor += 3;
      * ```
      */
-	armor = 0;
+    armor = 0;
 
-	/**
+    /**
      * The hero card that the player has. This is normally set to one of the starting heroes.
      *
      * # Examples
@@ -163,24 +163,24 @@ export class Player {
      * player.hero.activate("heropower");
      * ```
      */
-	hero?: Card;
+    hero?: Card;
 
-	/**
+    /**
      * The class the player is. This is set to either: Mage, Priest, Warlock, Warrior, ...
      */
-	heroClass: CardClass = 'Mage';
+    heroClass: CardClass = 'Mage';
 
-	/**
+    /**
      * How much the player's hero power costs.
      */
-	heroPowerCost = 2;
+    heroPowerCost = 2;
 
-	/**
+    /**
      * If the player can use their hero power.
      */
-	canUseHeroPower = true;
+    canUseHeroPower = true;
 
-	/**
+    /**
      * The player's weapon. Functions like any other card.
      *
      * # Examples
@@ -189,76 +189,76 @@ export class Player {
      * player.weapon.kill();
      * ```
      */
-	weapon?: Card;
+    weapon?: Card;
 
-	/**
+    /**
      * If the player can attack.
      * This is set to `true` by default, and only gets set to `false` once the player attacks, and is reset to `true` at the end of the turn.
      */
-	canAttack = true;
+    canAttack = true;
 
-	/**
+    /**
      * If the player is frozen.
      *
      * If a player is frozen, they can't attack.
      */
-	frozen = false;
+    frozen = false;
 
-	/**
+    /**
      * If the player is immune to damage.
      */
-	immune = false;
+    immune = false;
 
-	/**
+    /**
      * How much attack the player has.
      */
-	attack = 0;
+    attack = 0;
 
-	/**
+    /**
      * How much spell damage the player has.
      */
-	spellDamage = 0;
+    spellDamage = 0;
 
-	/**
+    /**
      * The card types to counter.
      *
      * If this player's counter includes "Minion", and this player plays a Minion, it gets countered.
      */
-	counter: CardType[] = [];
+    counter: CardType[] = [];
 
-	/**
+    /**
      * The secrets that the player has.
      */
-	secrets: QuestType[] = [];
+    secrets: QuestType[] = [];
 
-	/**
+    /**
      * The sidequests that the player has.
      */
-	sidequests: QuestType[] = [];
+    sidequests: QuestType[] = [];
 
-	/**
+    /**
      * The quest that the player has.
      */
-	quests: QuestType[] = [];
+    quests: QuestType[] = [];
 
-	/**
+    /**
      * How much attack/health (+1) the player's next jade golem will have.
      */
-	jadeCounter = 0;
+    jadeCounter = 0;
 
-	/**
+    /**
      * How many corpses the player has.
      *
      * This increases even if the player is not a Death Knight, so don't count on this number telling you if the player is a Death Knight or not.
      */
-	corpses = 0;
+    corpses = 0;
 
-	/**
+    /**
      * A three letter rune combination. For example "BBB" for 3 blood runes, or "BFU" for one of each rune.
      */
-	runes = '';
+    runes = '';
 
-	/**
+    /**
      * If this is not null, it will automatically choose this target when asked instead of asking the player.
      *
      * # Example
@@ -270,9 +270,9 @@ export class Player {
      * assert.equal(chosen, target);
      * ```
      */
-	forceTarget?: Target;
+    forceTarget?: Target;
 
-	/**
+    /**
      * Answers for the player.
      *
      * If this is a list, whenever the game asks for input from the user, instead it answers with the first element from the list, then it removes that element from the list.
@@ -294,20 +294,20 @@ export class Player {
      * player.inputQueue = "e";
      * ```
      */
-	inputQueue?: string | string[];
+    inputQueue?: string | string[];
 
-	/**
+    /**
      * If the player has `detail mode` enabled.
      *
      * This gets enabled when the player enters the `detail` command.
      */
-	detailedView = false;
+    detailedView = false;
 
-	constructor(name: string) {
-		this.name = name;
-	}
+    constructor(name: string) {
+        this.name = name;
+    }
 
-	/**
+    /**
      * Get this player's opponent
      *
      * # Examples
@@ -317,17 +317,17 @@ export class Player {
      * assert.notEqual(player.id, opponent.id);
      * ```
      */
-	getOpponent(): Player {
-		if (this.id === 0) {
-			return game.player2;
-		}
+    getOpponent(): Player {
+        if (this.id === 0) {
+            return game.player2;
+        }
 
-		return game.player1; // We always need to return a player.
-	}
+        return game.player1; // We always need to return a player.
+    }
 
-	// Mana
+    // Mana
 
-	/**
+    /**
      * Adds `mana` to this player, without going over `comp` mana.
      *
      * # Examples
@@ -362,21 +362,21 @@ export class Player {
      *
      * @returns Success
      */
-	refreshMana(mana: number, comp?: number): boolean {
-		if (!comp) {
-			comp = this.emptyMana;
-		}
+    refreshMana(mana: number, comp?: number): boolean {
+        if (!comp) {
+            comp = this.emptyMana;
+        }
 
-		this.mana += mana;
+        this.mana += mana;
 
-		if (this.mana > comp) {
-			this.mana = comp;
-		}
+        if (this.mana > comp) {
+            this.mana = comp;
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	/**
+    /**
      * Increases empty mana by `mana`, avoids going over `player.maxMana` (10 by default) mana.
      *
      * # Examples
@@ -393,17 +393,17 @@ export class Player {
      *
      * @returns Success
      */
-	gainEmptyMana(mana: number): boolean {
-		this.emptyMana += mana;
+    gainEmptyMana(mana: number): boolean {
+        this.emptyMana += mana;
 
-		if (this.emptyMana > this.maxMana) {
-			this.emptyMana = this.maxMana;
-		}
+        if (this.emptyMana > this.maxMana) {
+            this.emptyMana = this.maxMana;
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	/**
+    /**
      * Increases both mana and empty mana by `mana`.
      *
      * This function runs
@@ -417,14 +417,14 @@ export class Player {
      *
      * @returns Success
      */
-	gainMana(mana: number): boolean {
-		this.gainEmptyMana(mana);
-		this.refreshMana(mana);
+    gainMana(mana: number): boolean {
+        this.gainEmptyMana(mana);
+        this.refreshMana(mana);
 
-		return true;
-	}
+        return true;
+    }
 
-	/**
+    /**
      * Increases the players overload by `overload`. Overload will not take into affect until the player's next turn.
      *
      * ```
@@ -439,17 +439,17 @@ export class Player {
      *
      * @returns Success
      */
-	gainOverload(overload: number): boolean {
-		this.overload += overload;
+    gainOverload(overload: number): boolean {
+        this.overload += overload;
 
-		game.events.broadcast('GainOverload', overload, this);
+        game.events.broadcast('GainOverload', overload, this);
 
-		return true;
-	}
+        return true;
+    }
 
-	// Weapons
+    // Weapons
 
-	/**
+    /**
      * Sets this player's weapon to `weapon`
      *
      * # Examples
@@ -462,15 +462,15 @@ export class Player {
      *
      * @returns Success
      */
-	setWeapon(weapon: Card): boolean {
-		this.destroyWeapon();
-		this.weapon = weapon;
-		this.attack += weapon.getAttack();
+    setWeapon(weapon: Card): boolean {
+        this.destroyWeapon();
+        this.weapon = weapon;
+        this.attack += weapon.getAttack();
 
-		return true;
-	}
+        return true;
+    }
 
-	/**
+    /**
      * Destroys this player's weapon
      *
      * # Examples
@@ -487,60 +487,60 @@ export class Player {
      *
      * @returns Success
      */
-	destroyWeapon(): boolean {
-		if (!this.weapon) {
-			return false;
-		}
+    destroyWeapon(): boolean {
+        if (!this.weapon) {
+            return false;
+        }
 
-		this.weapon.activate('deathrattle');
-		this.attack -= this.weapon.getAttack();
+        this.weapon.activate('deathrattle');
+        this.attack -= this.weapon.getAttack();
 
-		this.weapon.destroy();
-		this.weapon = undefined;
+        this.weapon.destroy();
+        this.weapon = undefined;
 
-		return true;
-	}
+        return true;
+    }
 
-	// Stats
+    // Stats
 
-	addArmor(amount: number): boolean {
-		this.armor += amount;
-		return true;
-	}
+    addArmor(amount: number): boolean {
+        this.armor += amount;
+        return true;
+    }
 
-	/**
+    /**
      * Increases the player's attack by `amount`.
      *
      * @param amount The amount the player's attack should increase by
      *
      * @returns Success
      */
-	addAttack(amount: number): boolean {
-		this.attack += amount;
+    addAttack(amount: number): boolean {
+        this.attack += amount;
 
-		game.events.broadcast('GainHeroAttack', amount, this);
+        game.events.broadcast('GainHeroAttack', amount, this);
 
-		return true;
-	}
+        return true;
+    }
 
-	/**
+    /**
      * Increases the player's health by `amount`
      *
      * @param amount The amount the player's health should increase by
      *
      * @returns Success
      */
-	addHealth(amount: number): boolean {
-		this.health += amount;
+    addHealth(amount: number): boolean {
+        this.health += amount;
 
-		if (this.health > this.maxHealth) {
-			this.health = this.maxHealth;
-		}
+        if (this.health > this.maxHealth) {
+            this.health = this.maxHealth;
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	/**
+    /**
      * Decreases the player's health by `amount`. If the player has armor, the armor gets decreased instead.
      *
      * This also handles the player being dealt a fatal attack. In other words, if this function causes the player to die, it will immediately end the game.
@@ -550,58 +550,58 @@ export class Player {
      *
      * @returns Success
      */
-	remHealth(amount: number): boolean {
-		if (this.immune) {
-			return true;
-		}
+    remHealth(amount: number): boolean {
+        if (this.immune) {
+            return true;
+        }
 
-		// Armor logic
-		const remainingArmor = this.armor - amount;
-		this.armor = Math.max(remainingArmor, 0);
+        // Armor logic
+        const remainingArmor = this.armor - amount;
+        this.armor = Math.max(remainingArmor, 0);
 
-		// Armor blocks all damage, return true since there were no errors.
-		if (remainingArmor >= 0) {
-			return true;
-		}
+        // Armor blocks all damage, return true since there were no errors.
+        if (remainingArmor >= 0) {
+            return true;
+        }
 
-		// The amount of damage to take is however much damage penetrated the armor.
-		// The remaining armor is negative, so turn it into a positive number so it's easier to work with
-		amount = -remainingArmor;
+        // The amount of damage to take is however much damage penetrated the armor.
+        // The remaining armor is negative, so turn it into a positive number so it's easier to work with
+        amount = -remainingArmor;
 
-		this.health -= amount;
+        this.health -= amount;
 
-		game.events.broadcast('TakeDamage', amount, this);
+        game.events.broadcast('TakeDamage', amount, this);
 
-		if (this.health <= 0) {
-			game.events.broadcast('FatalDamage', undefined, this);
+        if (this.health <= 0) {
+            game.events.broadcast('FatalDamage', undefined, this);
 
-			if (this.health <= 0) { // This is done to allow secrets to prevent death
-				game.endGame(this.getOpponent());
-			}
-		}
+            if (this.health <= 0) { // This is done to allow secrets to prevent death
+                game.endGame(this.getOpponent());
+            }
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	/**
+    /**
      * Returns this player's health.
      */
-	getHealth(): number {
-		// I have this here for compatibility with minions
-		return this.health;
-	}
+    getHealth(): number {
+        // I have this here for compatibility with minions
+        return this.health;
+    }
 
-	/**
+    /**
      * Returns this player's attack.
      */
-	getAttack(): number {
-		// I have this here for compatibility with minions
-		return this.attack;
-	}
+    getAttack(): number {
+        // I have this here for compatibility with minions
+        return this.attack;
+    }
 
-	// Hand / Deck
+    // Hand / Deck
 
-	/**
+    /**
      * Shuffle a card into this player's deck. This will shuffle the deck.
      * Broadcasts the `AddCardToDeck` event.
      *
@@ -618,19 +618,19 @@ export class Player {
      *
      * @returns Success
      */
-	shuffleIntoDeck(card: Card): boolean {
-		// Add the card into a random position in the deck
-		const pos = game.lodash.random(0, this.deck.length);
-		this.deck.splice(pos, 0, card);
+    shuffleIntoDeck(card: Card): boolean {
+        // Add the card into a random position in the deck
+        const pos = game.lodash.random(0, this.deck.length);
+        this.deck.splice(pos, 0, card);
 
-		game.events.broadcast('AddCardToDeck', card, this);
+        game.events.broadcast('AddCardToDeck', card, this);
 
-		this.deck = game.lodash.shuffle(this.deck);
+        this.deck = game.lodash.shuffle(this.deck);
 
-		return true;
-	}
+        return true;
+    }
 
-	/**
+    /**
      * Adds a card to the bottom of this player's deck. This keeps the order of the deck..
      * Broadcasts the `AddCardToDeck` event
      *
@@ -638,50 +638,50 @@ export class Player {
      *
      * @returns Success
      */
-	addToBottomOfDeck(card: Card): boolean {
-		this.deck = [card, ...this.deck];
+    addToBottomOfDeck(card: Card): boolean {
+        this.deck = [card, ...this.deck];
 
-		game.events.broadcast('AddCardToDeck', card, this);
+        game.events.broadcast('AddCardToDeck', card, this);
 
-		return true;
-	}
+        return true;
+    }
 
-	/**
+    /**
      * Draws the card from the top of this player's deck.
      * Broadcasts the `DrawCard` event
      *
      * @returns The card drawn | The amount of fatigue the player was dealt
      */
-	drawCard(): Card | number {
-		const deckLength = this.deck.length;
+    drawCard(): Card | number {
+        const deckLength = this.deck.length;
 
-		/**
+        /**
          * The card to draw
          */
-		const card = this.deck.pop();
+        const card = this.deck.pop();
 
-		if (deckLength <= 0 || !(card instanceof Card)) {
-			this.fatigue++;
+        if (deckLength <= 0 || !(card instanceof Card)) {
+            this.fatigue++;
 
-			this.remHealth(this.fatigue);
-			return this.fatigue;
-		}
+            this.remHealth(this.fatigue);
+            return this.fatigue;
+        }
 
-		game.events.broadcast('DrawCard', card, this);
+        game.events.broadcast('DrawCard', card, this);
 
-		// Cast on draw
-		if (card.type === 'Spell' && card.hasKeyword('Cast On Draw') && card.activate('cast')) {
-			return this.drawCard();
-		}
+        // Cast on draw
+        if (card.type === 'Spell' && card.hasKeyword('Cast On Draw') && card.activate('cast')) {
+            return this.drawCard();
+        }
 
-		const unsuppress = game.functions.event.suppress('AddCardToHand');
-		this.addToHand(card);
-		unsuppress();
+        const unsuppress = game.functions.event.suppress('AddCardToHand');
+        this.addToHand(card);
+        unsuppress();
 
-		return card;
-	}
+        return card;
+    }
 
-	/**
+    /**
      * Draws a specific card from this player's deck.
      * Broadcasts the `DrawCard` event
      *
@@ -705,26 +705,26 @@ export class Player {
      *
      * @returns The card drawn
      */
-	drawSpecific(card: Card): Card | undefined {
-		if (this.deck.length <= 0) {
-			return undefined;
-		}
+    drawSpecific(card: Card): Card | undefined {
+        if (this.deck.length <= 0) {
+            return undefined;
+        }
 
-		game.functions.util.remove(this.deck, card);
-		game.events.broadcast('DrawCard', card, this);
+        game.functions.util.remove(this.deck, card);
+        game.events.broadcast('DrawCard', card, this);
 
-		if (card.type === 'Spell' && card.hasKeyword('Cast On Draw') && card.activate('cast')) {
-			return undefined;
-		}
+        if (card.type === 'Spell' && card.hasKeyword('Cast On Draw') && card.activate('cast')) {
+            return undefined;
+        }
 
-		const unsuppress = game.functions.event.suppress('AddCardToHand');
-		this.addToHand(card);
-		unsuppress();
+        const unsuppress = game.functions.event.suppress('AddCardToHand');
+        this.addToHand(card);
+        unsuppress();
 
-		return card;
-	}
+        return card;
+    }
 
-	/**
+    /**
      * Adds a card to the player's hand.
      * Broadcasts the `AddCardToHand` event
      *
@@ -732,20 +732,20 @@ export class Player {
      *
      * @returns Success
      */
-	addToHand(card: Card): boolean {
-		if (this.hand.length >= game.config.general.maxHandLength) {
-			return false;
-		}
+    addToHand(card: Card): boolean {
+        if (this.hand.length >= game.config.general.maxHandLength) {
+            return false;
+        }
 
-		this.hand.push(card);
+        this.hand.push(card);
 
-		game.events.broadcast('AddCardToHand', card, this);
-		return true;
-	}
+        game.events.broadcast('AddCardToHand', card, this);
+        return true;
+    }
 
-	// Hero power / Class
+    // Hero power / Class
 
-	/**
+    /**
      * Sets the player's hero to `hero`
      *
      * @param hero The hero that the player should be set to
@@ -754,70 +754,70 @@ export class Player {
      *
      * @returns Success
      */
-	setHero(hero: Card, armor = 5, setHeroClass = true): boolean {
-		this.hero = hero;
-		if (setHeroClass) {
-			this.heroClass = hero.classes[0];
-		}
+    setHero(hero: Card, armor = 5, setHeroClass = true): boolean {
+        this.hero = hero;
+        if (setHeroClass) {
+            this.heroClass = hero.classes[0];
+        }
 
-		this.heroPowerCost = hero.hpCost ?? 2;
+        this.heroPowerCost = hero.hpCost ?? 2;
 
-		this.armor += armor;
-		return true;
-	}
+        this.armor += armor;
+        return true;
+    }
 
-	/**
+    /**
      * Sets the player's hero to the default hero of `heroClass`
      *
      * @param heroClass The class of the hero. This defaults to the player's class.
      *
      * @returns Success
      */
-	setToStartingHero(heroClass = this.heroClass): boolean {
-		const heroCardName = heroClass + ' Starting Hero';
-		const heroCard = game.functions.card.getFromName(heroCardName);
+    setToStartingHero(heroClass = this.heroClass): boolean {
+        const heroCardName = heroClass + ' Starting Hero';
+        const heroCard = game.functions.card.getFromName(heroCardName);
 
-		if (!heroCard) {
-			return false;
-		}
+        if (!heroCard) {
+            return false;
+        }
 
-		this.setHero(new Card(heroCard.name, this), 0, false);
+        this.setHero(new Card(heroCard.name, this), 0, false);
 
-		return true;
-	}
+        return true;
+    }
 
-	/**
+    /**
      * Activate the player's hero power.
      *
      * @returns Success | Cancelled
      */
-	heroPower(): boolean | -1 {
-		if (this.mana < this.heroPowerCost || !this.canUseHeroPower) {
-			return false;
-		}
+    heroPower(): boolean | -1 {
+        if (this.mana < this.heroPowerCost || !this.canUseHeroPower) {
+            return false;
+        }
 
-		if (!this.hero) {
-			return false;
-		}
+        if (!this.hero) {
+            return false;
+        }
 
-		if (this.hero.activate('heropower') === game.constants.refund) {
-			return -1;
-		}
+        if (this.hero.activate('heropower') === game.constants.refund) {
+            return -1;
+        }
 
-		for (const m of game.board[this.id]) {
-			m.activate('inspire');
-		}
+        for (const m of game.board[this.id]) {
+            m.activate('inspire');
+        }
 
-		this.mana -= this.heroPowerCost;
-		this.canUseHeroPower = false;
+        this.mana -= this.heroPowerCost;
+        this.canUseHeroPower = false;
 
-		game.events.broadcast('HeroPower', this.heroClass, this);
-		return true;
-	}
+        game.events.broadcast('HeroPower', this.heroClass, this);
+        return true;
+    }
 
-	// Other
+    // Other
 
-	/**
+    /**
      * Calls `callback` if the player has `amount` corpses. Doesn't work if the player isn't a Death Knight, or if the player doesn't have enough corpses.
      *
      * @param amount The amount of corpses to trade
@@ -825,125 +825,125 @@ export class Player {
      *
      * @returns Success
      */
-	tradeCorpses(amount: number, callback: () => void): boolean {
-		if (this.heroClass !== 'Death Knight') {
-			return false;
-		}
+    tradeCorpses(amount: number, callback: () => void): boolean {
+        if (this.heroClass !== 'Death Knight') {
+            return false;
+        }
 
-		if (this.corpses < amount) {
-			return false;
-		}
+        if (this.corpses < amount) {
+            return false;
+        }
 
-		this.corpses -= amount;
-		callback();
+        this.corpses -= amount;
+        callback();
 
-		return true;
-	}
+        return true;
+    }
 
-	/**
+    /**
      * Returns true if the player has the correct runes
      *
      * @param runes The runes to test against
      *
      * @return Whether or not the player has the correct runes
      */
-	testRunes(runes: string): boolean {
-		const charCount = (string_: string, letter: string) => {
-			let letterCount = 0;
+    testRunes(runes: string): boolean {
+        const charCount = (string_: string, letter: string) => {
+            let letterCount = 0;
 
-			for (let i = 0; i < string_.length; i++) {
-				if (string_.charAt(i) === letter) {
-					letterCount++;
-				}
-			}
+            for (let i = 0; i < string_.length; i++) {
+                if (string_.charAt(i) === letter) {
+                    letterCount++;
+                }
+            }
 
-			return letterCount;
-		};
+            return letterCount;
+        };
 
-		const blood = charCount(runes, 'B');
-		const frost = charCount(runes, 'F');
-		const unholy = charCount(runes, 'U');
+        const blood = charCount(runes, 'B');
+        const frost = charCount(runes, 'F');
+        const unholy = charCount(runes, 'U');
 
-		const b = charCount(this.runes, 'B');
-		const f = charCount(this.runes, 'F');
-		const u = charCount(this.runes, 'U');
+        const b = charCount(this.runes, 'B');
+        const f = charCount(this.runes, 'F');
+        const u = charCount(this.runes, 'U');
 
-		if (blood > b || frost > f || unholy > u) {
-			return false;
-		}
+        if (blood > b || frost > f || unholy > u) {
+            return false;
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	/**
+    /**
      * Mulligans the cards from input. Read `interact.mulligan` for more info.
      *
      * @param input The ids of the cards to mulligan
      *
      * @returns The cards mulligan'd
      */
-	mulligan(input: string): Card[] | TypeError {
-		if (!game.lodash.parseInt(input)) {
-			return new TypeError('Can\'t parse `input` to int');
-		}
+    mulligan(input: string): Card[] | TypeError {
+        if (!game.lodash.parseInt(input)) {
+            return new TypeError('Can\'t parse `input` to int');
+        }
 
-		const cards: Card[] = [];
-		const mulligan: Card[] = [];
+        const cards: Card[] = [];
+        const mulligan: Card[] = [];
 
-		for (const c of input) {
-			mulligan.push(this.hand[game.lodash.parseInt(c) - 1]);
-		}
+        for (const c of input) {
+            mulligan.push(this.hand[game.lodash.parseInt(c) - 1]);
+        }
 
-		for (const c of this.hand) {
-			if (!mulligan.includes(c) || c.name === 'The Coin') {
-				continue;
-			}
+        for (const c of this.hand) {
+            if (!mulligan.includes(c) || c.name === 'The Coin') {
+                continue;
+            }
 
-			game.functions.util.remove(mulligan, c);
+            game.functions.util.remove(mulligan, c);
 
-			let unsuppress = game.functions.event.suppress('DrawCard');
-			this.drawCard();
-			unsuppress();
+            let unsuppress = game.functions.event.suppress('DrawCard');
+            this.drawCard();
+            unsuppress();
 
-			unsuppress = game.functions.event.suppress('AddCardToDeck');
-			this.shuffleIntoDeck(c);
-			unsuppress();
+            unsuppress = game.functions.event.suppress('AddCardToDeck');
+            this.shuffleIntoDeck(c);
+            unsuppress();
 
-			game.functions.util.remove(this.hand, c);
+            game.functions.util.remove(this.hand, c);
 
-			cards.push(c);
-		}
+            cards.push(c);
+        }
 
-		return cards;
-	}
+        return cards;
+    }
 
-	/**
+    /**
      * Calls `callback` on all this player's targets, including the player itself.
      *
      * @param callback The callback to call
      *
      * @returns Success
      */
-	doTargets(callback: (target: Target) => void): boolean {
-		for (const m of game.board[this.id]) {
-			callback(m);
-		}
+    doTargets(callback: (target: Target) => void): boolean {
+        for (const m of game.board[this.id]) {
+            callback(m);
+        }
 
-		callback(this);
+        callback(this);
 
-		return true;
-	}
+        return true;
+    }
 
-	/**
+    /**
      * Returns if this player's deck has no duplicates.
      */
-	highlander(): boolean {
-		const deck = this.deck.map(c => c.name);
+    highlander(): boolean {
+        const deck = this.deck.map(c => c.name);
 
-		return (new Set(deck)).size === deck.length;
-	}
+        return (new Set(deck)).size === deck.length;
+    }
 
-	/**
+    /**
      * Progress a quest by a value
      *
      * @param name The name of the quest
@@ -951,26 +951,26 @@ export class Player {
      *
      * @returns The new progress
      */
-	progressQuest(name: string, value = 1): number | undefined {
-		let quest = this.secrets.find(s => s.name === name);
-		if (!quest) {
-			quest = this.sidequests.find(s => s.name === name);
-		}
+    progressQuest(name: string, value = 1): number | undefined {
+        let quest = this.secrets.find(s => s.name === name);
+        if (!quest) {
+            quest = this.sidequests.find(s => s.name === name);
+        }
 
-		if (!quest) {
-			quest = this.quests.find(s => s.name === name);
-		}
+        if (!quest) {
+            quest = this.quests.find(s => s.name === name);
+        }
 
-		if (!quest) {
-			return undefined;
-		}
+        if (!quest) {
+            return undefined;
+        }
 
-		quest.progress[0] += value;
+        quest.progress[0] += value;
 
-		return quest.progress[0];
-	}
+        return quest.progress[0];
+    }
 
-	/**
+    /**
      * Adds a quest / secrets to a player
      *
      * @param type The type of the quest
@@ -982,76 +982,76 @@ export class Player {
      *
      * @returns Success
      */
-	addQuest(type: 'Quest' | 'Sidequest' | 'Secret', card: Card, key: EventKey, amount: number, callback: QuestCallback, next?: string): boolean {
-		let t;
+    addQuest(type: 'Quest' | 'Sidequest' | 'Secret', card: Card, key: EventKey, amount: number, callback: QuestCallback, next?: string): boolean {
+        let t;
 
-		switch (type) {
-			case 'Quest': {
-				t = this.quests;
-				break;
-			}
+        switch (type) {
+            case 'Quest': {
+                t = this.quests;
+                break;
+            }
 
-			case 'Sidequest': {
-				t = this.sidequests;
-				break;
-			}
+            case 'Sidequest': {
+                t = this.sidequests;
+                break;
+            }
 
-			case 'Secret': {
-				t = this.secrets;
-				break;
-			}
+            case 'Secret': {
+                t = this.secrets;
+                break;
+            }
 
-			default: {
-				return false;
-			}
-		}
+            default: {
+                return false;
+            }
+        }
 
-		if ((type.toLowerCase() === 'quest' && t.length > 0) || ((type.toLowerCase() === 'secret' || type.toLowerCase() === 'sidequest') && (t.length >= 3 || t.some(s => s.name === card.displayName)))) {
-			this.addToHand(card);
-			return false;
-		}
+        if ((type.toLowerCase() === 'quest' && t.length > 0) || ((type.toLowerCase() === 'secret' || type.toLowerCase() === 'sidequest') && (t.length >= 3 || t.some(s => s.name === card.displayName)))) {
+            this.addToHand(card);
+            return false;
+        }
 
-		t.push({name: card.displayName, progress: [0, amount], key, value: amount, callback, next});
-		return true;
-	}
+        t.push({name: card.displayName, progress: [0, amount], key, value: amount, callback, next});
+        return true;
+    }
 
-	/**
+    /**
      * Invoke this player's Galakrond
      *
      * @returns Success
      */
-	invoke(): boolean {
-		// Find the card in player's deck/hand/hero that begins with "Galakrond, the "
-		const deckGalakrond = this.deck.find(c => c.displayName.startsWith('Galakrond, the '));
-		const handGalakrond = this.hand.find(c => c.displayName.startsWith('Galakrond, the '));
-		if ((!deckGalakrond && !handGalakrond) && !this.hero?.displayName.startsWith('Galakrond, the ')) {
-			return false;
-		}
+    invoke(): boolean {
+        // Find the card in player's deck/hand/hero that begins with "Galakrond, the "
+        const deckGalakrond = this.deck.find(c => c.displayName.startsWith('Galakrond, the '));
+        const handGalakrond = this.hand.find(c => c.displayName.startsWith('Galakrond, the '));
+        if ((!deckGalakrond && !handGalakrond) && !this.hero?.displayName.startsWith('Galakrond, the ')) {
+            return false;
+        }
 
-		for (const c of this.deck) {
-			c.activate('invoke');
-		}
+        for (const c of this.deck) {
+            c.activate('invoke');
+        }
 
-		for (const c of this.hand) {
-			c.activate('invoke');
-		}
+        for (const c of this.hand) {
+            c.activate('invoke');
+        }
 
-		for (const c of game.board[this.id]) {
-			c.activate('invoke');
-		}
+        for (const c of game.board[this.id]) {
+            c.activate('invoke');
+        }
 
-		if (this.hero?.displayName.startsWith('Galakrond, the ')) {
-			this.hero.activate('heropower');
-		} else if (deckGalakrond) {
-			deckGalakrond.activate('heropower');
-		} else if (handGalakrond) {
-			handGalakrond.activate('heropower');
-		}
+        if (this.hero?.displayName.startsWith('Galakrond, the ')) {
+            this.hero.activate('heropower');
+        } else if (deckGalakrond) {
+            deckGalakrond.activate('heropower');
+        } else if (handGalakrond) {
+            handGalakrond.activate('heropower');
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	/**
+    /**
      * Chooses a minion from `list` and puts it onto the board.
      *
      * @param list The list to recruit from. This defaults to `plr`'s deck.
@@ -1059,34 +1059,34 @@ export class Player {
      *
      * @returns Returns the cards recruited
      */
-	recruit(list?: Card[], amount = 1): Card[] {
-		if (!list) {
-			list = this.deck;
-		}
+    recruit(list?: Card[], amount = 1): Card[] {
+        if (!list) {
+            list = this.deck;
+        }
 
-		const _list = list;
+        const _list = list;
 
-		list = game.lodash.shuffle([...list]);
+        list = game.lodash.shuffle([...list]);
 
-		let times = 0;
-		const cards: Card[] = [];
+        let times = 0;
+        const cards: Card[] = [];
 
-		list = list.filter(c => c.type === 'Minion');
-		for (const c of list) {
-			if (times >= amount) {
-				continue;
-			}
+        list = list.filter(c => c.type === 'Minion');
+        for (const c of list) {
+            if (times >= amount) {
+                continue;
+            }
 
-			game.summonMinion(c.imperfectCopy(), this);
+            game.summonMinion(c.imperfectCopy(), this);
 
-			times++;
-			cards.push(c);
-		}
+            times++;
+            cards.push(c);
+        }
 
-		for (const c of cards) {
-			game.functions.util.remove(_list, c);
-		}
+        for (const c of cards) {
+            game.functions.util.remove(_list, c);
+        }
 
-		return cards;
-	}
+        return cards;
+    }
 }

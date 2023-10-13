@@ -4,63 +4,63 @@ import {type Blueprint} from '@Game/types.js';
 import {Card} from '../../src/core/card.js';
 
 export const blueprint: Blueprint = {
-	name: 'Galakrond the Nightmare',
-	displayName: 'Galakrond, the Nightmare',
-	text: '<b>Battlecry:</b> Draw {amount} card{plural}. {plural2} costs (0).',
-	cost: 7,
-	type: 'Hero',
-	classes: ['Rogue'],
-	rarity: 'Legendary',
-	hpText: 'Add a <b>Lackey</b> to your hand.',
-	hpCost: 2,
-	id: 67,
+    name: 'Galakrond the Nightmare',
+    displayName: 'Galakrond, the Nightmare',
+    text: '<b>Battlecry:</b> Draw {amount} card{plural}. {plural2} costs (0).',
+    cost: 7,
+    type: 'Hero',
+    classes: ['Rogue'],
+    rarity: 'Legendary',
+    hpText: 'Add a <b>Lackey</b> to your hand.',
+    hpCost: 2,
+    id: 67,
 
-	battlecry(plr, self) {
-		// Draw {amount} cards. They cost (0).
+    battlecry(plr, self) {
+        // Draw {amount} cards. They cost (0).
 
-		// Get the amount of cards to draw
-		const amount = game.functions.card.galakrondFormula(self.storage.invokeCount);
+        // Get the amount of cards to draw
+        const amount = game.functions.card.galakrondFormula(self.storage.invokeCount);
 
-		for (let i = 0; i < amount; i++) {
-			const card = plr.drawCard();
-			if (!(card instanceof Card)) {
-				return;
-			}
+        for (let i = 0; i < amount; i++) {
+            const card = plr.drawCard();
+            if (!(card instanceof Card)) {
+                return;
+            }
 
-			// Set the cost to 0
-			card.addEnchantment('cost = 0', self);
-		}
-	},
+            // Set the cost to 0
+            card.addEnchantment('cost = 0', self);
+        }
+    },
 
-	heropower(plr, self) {
-		// Add a lacky to your hand.
-		const lackeyNames = ['Ethereal Lackey', 'Faceless Lackey', 'Goblin Lackey', 'Kobold Lackey', 'Witchy Lackey'];
+    heropower(plr, self) {
+        // Add a lacky to your hand.
+        const lackeyNames = ['Ethereal Lackey', 'Faceless Lackey', 'Goblin Lackey', 'Kobold Lackey', 'Witchy Lackey'];
 
-		const lackeyName = game.lodash.sample(lackeyNames);
-		if (!lackeyName) {
-			return;
-		}
+        const lackeyName = game.lodash.sample(lackeyNames);
+        if (!lackeyName) {
+            return;
+        }
 
-		const lackey = game.createCard(lackeyName, plr);
+        const lackey = game.createCard(lackeyName, plr);
 
-		plr.addToHand(lackey);
-	},
+        plr.addToHand(lackey);
+    },
 
-	invoke(plr, self) {
-		game.functions.card.galakrondBump(self, 'invokeCount');
-	},
+    invoke(plr, self) {
+        game.functions.card.galakrondBump(self, 'invokeCount');
+    },
 
-	placeholders(plr, self) {
-		if (!self.storage.invokeCount) {
-			return {amount: 0, plural: 's', plural2: 'They'};
-		}
+    placeholders(plr, self) {
+        if (!self.storage.invokeCount) {
+            return {amount: 0, plural: 's', plural2: 'They'};
+        }
 
-		const amount = game.functions.card.galakrondFormula(self.storage.invokeCount);
-		const multiple = amount > 1;
+        const amount = game.functions.card.galakrondFormula(self.storage.invokeCount);
+        const multiple = amount > 1;
 
-		const plural = multiple ? 's' : '';
-		const plural2 = multiple ? 'They' : 'It';
+        const plural = multiple ? 's' : '';
+        const plural2 = multiple ? 'They' : 'It';
 
-		return {amount, plural, plural2};
-	},
+        return {amount, plural, plural2};
+    },
 };

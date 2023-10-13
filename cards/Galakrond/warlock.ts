@@ -4,64 +4,64 @@ import {type Blueprint} from '@Game/types.js';
 import {type Card} from '../../src/core/card.js';
 
 export const blueprint: Blueprint = {
-	name: 'Galakrond the Wretched',
-	displayName: 'Galakrond, the Wretched',
-	text: '<b>Battlecry:</b> Summon {amount} random Demon{plural}.',
-	cost: 7,
-	type: 'Hero',
-	classes: ['Warlock'],
-	rarity: 'Legendary',
-	hpText: 'Summon two 1/1 Imps.',
-	hpCost: 2,
-	id: 71,
+    name: 'Galakrond the Wretched',
+    displayName: 'Galakrond, the Wretched',
+    text: '<b>Battlecry:</b> Summon {amount} random Demon{plural}.',
+    cost: 7,
+    type: 'Hero',
+    classes: ['Warlock'],
+    rarity: 'Legendary',
+    hpText: 'Summon two 1/1 Imps.',
+    hpCost: 2,
+    id: 71,
 
-	battlecry(plr, self) {
-		// Summon 1 random Demon.
-		const amount = game.functions.card.galakrondFormula(self.storage.invokeCount);
+    battlecry(plr, self) {
+        // Summon 1 random Demon.
+        const amount = game.functions.card.galakrondFormula(self.storage.invokeCount);
 
-		const testDemoness = (card: Card) => game.functions.card.matchTribe(card.tribe!, 'Demon');
+        const testDemoness = (card: Card) => game.functions.card.matchTribe(card.tribe!, 'Demon');
 
-		for (let i = 0; i < amount; i++) {
-			// Find all demons
-			const possibleCards = game.functions.card.getAll().filter(c => c.type === 'Minion' && testDemoness(c));
+        for (let i = 0; i < amount; i++) {
+            // Find all demons
+            const possibleCards = game.functions.card.getAll().filter(c => c.type === 'Minion' && testDemoness(c));
 
-			// Choose a random one
-			let card = game.lodash.sample(possibleCards);
-			if (!card) {
-				break;
-			}
+            // Choose a random one
+            let card = game.lodash.sample(possibleCards);
+            if (!card) {
+                break;
+            }
 
-			// Summon it
-			card = game.createCard(card.name, plr);
-			game.summonMinion(card, plr);
-		}
-	},
+            // Summon it
+            card = game.createCard(card.name, plr);
+            game.summonMinion(card, plr);
+        }
+    },
 
-	heropower(plr, self) {
-		// Summon two 1/1 Imps.
-		for (let i = 0; i < 2; i++) {
-			const card = game.createCard('Draconic Imp', plr);
-			if (!card) {
-				break;
-			}
+    heropower(plr, self) {
+        // Summon two 1/1 Imps.
+        for (let i = 0; i < 2; i++) {
+            const card = game.createCard('Draconic Imp', plr);
+            if (!card) {
+                break;
+            }
 
-			game.summonMinion(card, plr);
-		}
-	},
+            game.summonMinion(card, plr);
+        }
+    },
 
-	invoke(plr, self) {
-		game.functions.card.galakrondBump(self, 'invokeCount');
-	},
+    invoke(plr, self) {
+        game.functions.card.galakrondBump(self, 'invokeCount');
+    },
 
-	placeholders(plr, self) {
-		if (!self.storage.invokeCount) {
-			return {amount: 0, plural: 's', plural2: 'They'};
-		}
+    placeholders(plr, self) {
+        if (!self.storage.invokeCount) {
+            return {amount: 0, plural: 's', plural2: 'They'};
+        }
 
-		const amount = game.functions.card.galakrondFormula(self.storage.invokeCount);
-		const multiple = amount > 1;
-		const plural = multiple ? 's' : '';
+        const amount = game.functions.card.galakrondFormula(self.storage.invokeCount);
+        const multiple = amount > 1;
+        const plural = multiple ? 's' : '';
 
-		return {amount, plural};
-	},
+        return {amount, plural};
+    },
 };
