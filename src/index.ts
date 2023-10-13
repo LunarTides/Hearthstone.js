@@ -14,7 +14,8 @@ export function main(replayPath?: string) {
     const {game, player1, player2} = createGame();
 
     if (replayPath) {
-        const error = game.functions.util.replayFile(replayPath);
+        const forceEval = game.interact.yesNoQuestion(game.player, 'Would you like to disable eval command protection? If you disable this protection, you take the risk of executing malicious code.');
+        const error = game.functions.util.replayFile(replayPath, forceEval);
 
         if (error instanceof Error) {
             game.pause(`Something went wrong when trying to replay the game. ${error.stack}\n`);

@@ -2,7 +2,7 @@ import childProcess from 'node:child_process';
 import process from 'node:process';
 import {createHash} from 'node:crypto';
 import {type Player} from '@Game/internal.js';
-import {type GameConfig, type HistoryKey} from '@Game/types.js';
+import {type EventValue, type GameConfig, type HistoryKey} from '@Game/types.js';
 
 export const utilFunctions = {
     /**
@@ -343,7 +343,14 @@ ${mainContent}
         return ['Input', value, player];
     },
 
-    replayFile(path: string): Error | true {
+    /**
+     * Replays a file and returns an error if there is an issue, otherwise returns true.
+     *
+     * @param path the path of the file to replay
+     * @param overrideEvalSafety whether to override the safety check for eval commands (default: false)
+     * @return An error if there is a mismatch in log version, otherwise true
+     */
+    replayFile(path: string, overrideEvalSafety = false): Error | true {
         const parsed = this.parseLogFile(path);
         if (parsed instanceof Error) {
             return parsed;
@@ -368,18 +375,33 @@ ${mainContent}
             }
 
             // Create the event
-            const [_, value, player] = event;
+            const [_, _value, player] = event;
+            const value = _value as EventValue<'Input'>;
 
-            // TODO: Maybe throw an error
             if (!player) {
-                continue;
+                throw new TypeError('`player` is undefined');
             }
 
             if (!(Array.isArray(player.inputQueue))) {
                 player.inputQueue = [];
             }
 
-            player.inputQueue.push(value as string);
+            // Prevent eval commands from being replayed to prevent maliciously crafted replay files from executing code
+            if (value.includes('eval')) {
+                if (overrideEvalSafety) {
+                    // Prompt the user to prevent the eval
+                    const allow = game.input(`Would you like to allow this command to be replayed?\n${value}\n`, false, false).toLowerCase().startsWith('y');
+
+                    if (!allow) {
+                        continue;
+                    }
+                } else {
+                    game.pause('<yellow>WARNING: Eval command has been blocked.</yellow>');
+                    continue;
+                }
+            }
+
+            player.inputQueue.push(value);
         }
 
         return true;
