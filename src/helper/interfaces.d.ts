@@ -1,8 +1,9 @@
-import { Game } from "../internal.js";
+import {type Game} from '../internal.js';
 
 declare global {
-    /**
+	/**
      * The global game
      */
-    var game: Game;
+	// eslint-disable-next-line no-var
+	var game: Game;
 }

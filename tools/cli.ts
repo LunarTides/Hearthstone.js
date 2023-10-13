@@ -1,190 +1,219 @@
-import * as src from "../src/index.js";                 // Source Code
-import * as dc  from "../tools/deckcreator.js";         // Deck Creator
-import * as ccc from "../tools/cardcreator/custom.js";  // Custom Card Creator
-import * as vcc from "../tools/cardcreator/vanilla.js"; // Vanilla Card Creator
-import * as clc from "../tools/cardcreator/class.js";   // Class Creator
-import * as cclib from "../tools/cardcreator/lib.js";   // Class Creator
+import * as src from '../src/index.js'; // Source Code
+import * as dc from '../tools/deckcreator.js'; // Deck Creator
+import * as ccc from '../tools/cardcreator/custom.js'; // Custom Card Creator
+import * as vcc from '../tools/cardcreator/vanilla.js'; // Vanilla Card Creator
+import * as clc from '../tools/cardcreator/class.js'; // Class Creator
+import * as cclib from '../tools/cardcreator/lib.js'; // Class Creator
+import {validateBlueprint} from '../src/helper/validator.js';
+import {type Blueprint} from '../src/types.js';
+import {type CcType} from './cardcreator/lib.js';
 
-import { validateBlueprint } from "../src/helper/validator.js";
-import { Blueprint } from "../src/types.js";
-import { CCType } from "./cardcreator/lib.js";
+export function main(userInputLoop: (prompt: string, exitCharacter: string | undefined, callback: (input: string) => any) => any) {
+	// Common card creator variant stuff
+	const doCardCreatorVariant = (usedOptions: string[], args: string[], callback: (debug: boolean, overrideType?: CcType) => any) => {
+		const doDryRun = usedOptions.includes('--dry-run');
+		const doCcType = usedOptions.includes('--cc-type');
 
-export function main(userInputLoop: (prompt: string, exitCharacter: string | null, callback: (input: string) => any) => any) {
-    // Common card creator variant stuff
-    const doCardCreatorVariant = (usedOptions: string[], args: string[], callback: (debug: boolean, overrideType?: CCType) => any) => {
-        const doDryRun = usedOptions.includes("--dry-run");
-        const doCCType = usedOptions.includes("--cc-type");
+		let ccType: CcType | undefined;
 
-        let ccType: CCType | undefined;
+		// Get cctype
+		if (doCcType) {
+			ccType = args[0] as CcType;
 
-        // Get cctype
-        if (doCCType) {
-            ccType = args[0] as CCType;
+			if (!ccType) {
+				game.logError('<red>Invalid cc type!</red>');
+				game.pause();
+				return;
+			}
+		}
 
-            if (!ccType) {
-                game.logError("<red>Invalid cc type!</red>");
-                game.pause();
-                return;
-            }
-        }
+		callback(doDryRun, ccType);
+	};
 
-        callback(doDryRun, ccType);
-    }
+	// Main loop
+	userInputLoop('> ', undefined, input => {
+		let args = input.split(' ');
+		const name = args.shift()?.toLowerCase();
+		if (!name) {
+			throw new Error('Name is undefined. This should never happen.');
+		}
 
-    // Main loop
-    userInputLoop("> ", null, (input) => {
-        let args = input.split(" ");
-        const name = args.shift()?.toLowerCase();
-        if (!name) {
-            throw new Error("Name is undefined. This should never happen.");
-        }
+		// Options - Long, short
+		const cmdOptions = [
+			['--dry-run', '-n'],
+			['--cc-type', '-t'],
+			['--replay', '-r'],
+		];
 
-        // Options - Long, short
-        const cmdOptions = [
-            ["--dry-run", "-n"],
-            ["--cc-type", "-t"],
-            ["--replay", "-r"],
-        ];
+		// Parse args
+		const usedOptions: string[] = [];
 
-        // Parse args
-        const usedOptions: string[] = [];
+		// Clone the args. Kinda hacky.
+		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+		const parsedArgs = JSON.parse(`[${args.map(arg => `"${arg.replaceAll('"', '\'')}"`)}]`) as string[];
+		for (const arg of parsedArgs) {
+			// Parse -dt
+			if (/^-\w\w+/.test(arg)) {
+				const allArgs = [...arg];
+				allArgs.shift();
 
-        // Clone the args. Kinda hacky.
-        const parsedArgs = JSON.parse(`[${args.map(arg => `"${arg.replaceAll(`"`, `'`)}"`)}]`);
-        parsedArgs.forEach((arg: string) => {
-            // Parse -dt
-            if (/^-\w\w+/.test(arg)) {
-                const allArgs = arg.split("");
-                allArgs.shift();
+				for (const a of allArgs) {
+					const option = cmdOptions.find(option => option.includes('-' + a))?.[0];
+					if (!option) {
+						continue;
+					}
 
-                allArgs.forEach(a => {
-                    const option = cmdOptions.find(option => option.includes("-" + a))?.[0];
-                    if (!option) return;
+					usedOptions.push(option);
+				}
 
-                    usedOptions.push(option);
-                });
+				args.shift();
+				return;
+			}
 
-                args.shift();
-                return;
-            }
+			// Parse -d or --dry-run
+			const option = cmdOptions.find(option => option.includes(arg))?.[0];
+			if (!option) {
+				return;
+			}
 
-            // Parse -d or --dry-run
-            const option = cmdOptions.find(option => option.includes(arg))?.[0];
-            if (!option) return;
+			usedOptions.push(option);
+			args.shift();
+		}
 
-            usedOptions.push(option);
-            args.shift();
-        });
+		switch (name) {
+			case 'help': {
+			// Taken heavy inspiration from 'man'
+				game.log('\n<bold>Commands</bold>');
+				game.log('ccc           - Runs the custom card creator');
+				game.log('vcc           - Runs the vanilla card creator');
+				game.log('clc           - Runs the class creator');
+				game.log('cclib (args)  - Uses the card creator library to manually create a card');
+				game.log('dc            - Runs the deck creator');
+				game.log('game [replay] - Runs the main game');
+				game.log('script (name) - Runs the specified script (NOT IMPLEMENTED!)');
+				game.log();
+				game.log('<bold>Options</bold>');
+				game.log('    <bold>Card Creator Options (ccc, vcc, clc, cclib)</bold>');
+				game.log('        <bold>-n, --dry-run</bold>\n            Don\'t actually create the card, just show what would be done.');
+				game.log('        <bold>-t <underline>type</underline>, --cc-type <underline>type</bold underline>\n            Set the name of the card creator');
+				game.log();
+				game.log('    <bold>CCLib Options (cclib)</bold>');
+				game.log('        <bold>name</bold>=<underline>name</underline><bold>');
+				game.log('        <bold>stats</bold>=<underline>[attack, health]</underline><bold>');
+				game.log();
+				game.log('<bold>CCLib Example</bold>');
+				game.log('cclib -dt Test name="Sheep" stats=[1,1] text="" cost=1 type="Minion" tribe="Beast" classes=["Neutral"] rarity="Free" uncollectible=true id=0');
+				game.log('       ^^      ^            ^           ^');
+				game.log('       Dry-run The name of the card     The description of the card. Etc...');
+				game.log('        CC type is "Test"   The stats of the card');
+				game.log();
+				game.pause();
 
-        if (name === "help") {
-            // Taken heavy inspiration from 'man'
-            game.log("\n<bold>Commands</bold>");
-            game.log("ccc           - Runs the custom card creator");
-            game.log("vcc           - Runs the vanilla card creator");
-            game.log("clc           - Runs the class creator");
-            game.log("cclib (args)  - Uses the card creator library to manually create a card");
-            game.log("dc            - Runs the deck creator");
-            game.log("game [replay] - Runs the main game");
-            game.log("script (name) - Runs the specified script (NOT IMPLEMENTED!)");
-            game.log();
-            game.log("<bold>Options</bold>");
-            game.log("    <bold>Card Creator Options (ccc, vcc, clc, cclib)</bold>")
-            game.log("        <bold>-n, --dry-run</bold>\n            Don't actually create the card, just show what would be done.");
-            game.log("        <bold>-t <underline>type</underline>, --cc-type <underline>type</bold underline>\n            Set the name of the card creator");
-            game.log();
-            game.log("    <bold>CCLib Options (cclib)</bold>");
-            game.log("        <bold>name</bold>=<underline>name</underline><bold>");
-            game.log("        <bold>stats</bold>=<underline>[attack, health]</underline><bold>");
-            game.log();
-            game.log("<bold>CCLib Example</bold>");
-            game.log(`cclib -dt Test name="Sheep" stats=[1,1] text="" cost=1 type="Minion" tribe="Beast" classes=["Neutral"] rarity="Free" uncollectible=true id=0`);
-            game.log(`       ^^      ^            ^           ^`);
-            game.log(`       Dry-run The name of the card     The description of the card. Etc...`);
-            game.log(`        CC type is "Test"   The stats of the card`);
-            game.log();
-            game.pause();
-        }
-        // Custom Card Creator
-        else if (name === "ccc") {
-            doCardCreatorVariant(usedOptions, args, ccc.main);
-        }
-        // Vanilla Card Creator
-        else if (name === "vcc") {
-            doCardCreatorVariant(usedOptions, args, vcc.main);
-        }
-        // Class Creator
-        else if (name === "clc") {
-            doCardCreatorVariant(usedOptions, args, clc.main);
-        }
-        // Card Creator Library
-        else if (name === "cclib") {
-            doCardCreatorVariant(usedOptions, args, (debug, overrideType) => {
-                // Here we implement our own card creator variant
+				break;
+			}
 
-                // Only include args with an '=' in it.
-                args = args.filter(arg => arg.includes("="));
+			case 'ccc': {
+				doCardCreatorVariant(usedOptions, args, ccc.main);
 
-                const blueprint: Blueprint = {} as Blueprint;
-                args.forEach(arg => {
-                    let [key, val] = arg.split("=");
+				break;
+			}
 
-                    // Parse it as its real value instead of a string.
-                    val = JSON.parse(`[ ${val} ]`)[0];
+			case 'vcc': {
+				doCardCreatorVariant(usedOptions, args, vcc.main);
 
-                    // HACK: Use of never
-                    blueprint[key as keyof Blueprint] = val as never;
-                });
-                if (!blueprint.name) return;
+				break;
+			}
 
-                // Validate it. This will not do the compiler's job for us, only the stuff that the compiler doesn't do.
-                // That means that the blueprint isn't very validated, which means this WILL crash if you create an invalid card.
-                validateBlueprint(blueprint);
+			case 'clc': {
+				doCardCreatorVariant(usedOptions, args, clc.main);
 
-                // The default type is CLI 
-                let type = "CLI";
-                if (overrideType) type = overrideType;
+				break;
+			}
 
-                cclib.create(type as CCType, blueprint.type, blueprint, undefined, undefined, debug);
-            });
-        }
-        // Deck Creator
-        else if (name === "dc") {
-            dc.main();
-        }
-        else if (name === "game") {
-            const replay = usedOptions.includes("--replay");
+			case 'cclib': {
+				doCardCreatorVariant(usedOptions, args, (debug, overrideType) => {
+				// Here we implement our own card creator variant
 
-            let replayPath: string | undefined;
+					// Only include args with an '=' in it.
+					args = args.filter(arg => arg.includes('='));
 
-            // Get replay path
-            if (replay) {
-                replayPath = args[0] as CCType;
+					// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+					const blueprint = {} as Blueprint;
+					for (const arg of args) {
+						let [key, value] = arg.split('=');
 
-                if (!replayPath) {
-                    game.logError("<red>Invalid replay path!</red>");
-                    game.pause();
-                    return;
-                }
+						// Parse it as its real value instead of a string.
+						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+						value = JSON.parse(`[ ${value} ]`)[0];
 
-                replayPath = `/logs/log-${replayPath}.txt`;
-            }
+						// HACK: Use of never
+						blueprint[key as keyof Blueprint] = value as never;
+					}
 
-            src.main(replayPath);
-        }
-        else if (name == "script") {
-            const name = args[0];
-            if (!name) {
-                game.logError("<red>Invalid script name!</red>");
-                game.pause();
-                return;
-            }
+					if (!blueprint.name) {
+						return;
+					}
 
-            // TODO: Implement.
-            throw new Error("not implemented");
-        }
-        else {
-            game.logWarn("<yellow>That is not a valid command.</yellow>");
-            game.pause();
-        }
-    });
+					// Validate it. This will not do the compiler's job for us, only the stuff that the compiler doesn't do.
+					// That means that the blueprint isn't very validated, which means this WILL crash if you create an invalid card.
+					validateBlueprint(blueprint);
+
+					// The default type is CLI
+					let type = 'CLI';
+					if (overrideType) {
+						type = overrideType;
+					}
+
+					cclib.create(type as CcType, blueprint.type, blueprint, undefined, undefined, debug);
+				});
+
+				break;
+			}
+
+			case 'dc': {
+				dc.main();
+
+				break;
+			}
+
+			case 'game': {
+				const replay = usedOptions.includes('--replay');
+
+				let replayPath: string | undefined;
+
+				// Get replay path
+				if (replay) {
+					replayPath = args[0] as CcType;
+
+					if (!replayPath) {
+						game.logError('<red>Invalid replay path!</red>');
+						game.pause();
+						return;
+					}
+
+					replayPath = `/logs/log-${replayPath}.txt`;
+				}
+
+				src.main(replayPath);
+
+				break;
+			}
+
+			default: { if (name === 'script') {
+				const name = args[0];
+				if (!name) {
+					game.logError('<red>Invalid script name!</red>');
+					game.pause();
+					return;
+				}
+
+				// TODO: Implement.
+				throw new Error('not implemented');
+			} else {
+				game.logWarn('<yellow>That is not a valid command.</yellow>');
+				game.pause();
+			}
+			}
+		}
+	});
 }

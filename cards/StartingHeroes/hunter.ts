@@ -1,33 +1,32 @@
 // Created by the Custom Card Creator
 
-import { Blueprint } from "@Game/types.js";
+import assert from 'node:assert';
+import {type Blueprint} from '@Game/types.js';
 
 export const blueprint: Blueprint = {
-    name: "Hunter Starting Hero",
-    displayName: "Rexxar",
-    text: "Hunter starting hero",
-    cost: 0,
-    type: "Hero",
-    hpText: "Deal 2 damage to the enemy hero.",
-    hpCost: 2,
-    classes: ["Hunter"],
-    rarity: "Free",
-    uncollectible: true,
-    id: 6,
+	name: 'Hunter Starting Hero',
+	displayName: 'Rexxar',
+	text: 'Hunter starting hero',
+	cost: 0,
+	type: 'Hero',
+	hpText: 'Deal 2 damage to the enemy hero.',
+	hpCost: 2,
+	classes: ['Hunter'],
+	rarity: 'Free',
+	uncollectible: true,
+	id: 6,
 
-    heropower(plr, self) {
-        // Deal 2 damage to the enemy hero.
-        game.attack(2, plr.getOpponent());
-    },
+	heropower(plr, self) {
+		// Deal 2 damage to the enemy hero.
+		game.attack(2, plr.getOpponent());
+	},
 
-    test(plr, self) {
-        const assert = game.functions.util.assert;
+	test(plr, self) {
+		// The opponent should have 30 health
+		assert(plr.getOpponent().getHealth() === 30);
+		self.activate('heropower');
 
-        // The opponent should have 30 health
-        assert(() => plr.getOpponent().getHealth() === 30);
-        self.activate("heropower");
-
-        // The opponent should now have 28 health.
-        assert(() => plr.getOpponent().getHealth() === 30 - 2);
-    }
-}
+		// The opponent should now have 28 health.
+		assert(plr.getOpponent().getHealth() === 30 - 2);
+	},
+};

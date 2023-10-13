@@ -1,5 +1,6 @@
-import { Card, Player } from "@Game/internal.js";
-import { CardAbility, SelectTargetAlignment, SelectTargetClass, SelectTargetFlag, Target } from "@Game/types.js";
+/* eslint-disable @typescript-eslint/indent */
+import {type Card, type Player} from '@Game/internal.js';
+import {type CardAbility, type SelectTargetAlignment, type SelectTargetClass, type SelectTargetFlag, type Target} from '@Game/types.js';
 
 export type UnknownEventValue = EventValue<EventKey>;
 
@@ -11,190 +12,190 @@ export type EventManagerEvents = {[key in EventKey]?: [[[any, number]], [[any, n
 /**
  * Callback for tick hooks. Used in hookToTick.
  */
-export type TickHookCallback = (key: EventKey, val: UnknownEventValue, eventPlayer: Player) => void;
+export type TickHookCallback = (key: EventKey, value: UnknownEventValue, eventPlayer: Player) => void;
 
 /**
  * The event listener callback return value.
  */
-export type EventListenerMsg = boolean | "destroy" | "reset";
+export type EventListenerMessage = boolean | 'destroy' | 'reset';
 /**
  * The event listener callback function.
  */
-export type EventListenerCallback = (val: UnknownEventValue, eventPlayer: Player) => EventListenerMsg;
+export type EventListenerCallback = (value: UnknownEventValue, eventPlayer: Player) => EventListenerMessage;
 
-export type HistoryKey = [EventKey, UnknownEventValue, Player];
+export type HistoryKey = [EventKey, UnknownEventValue, Player | undefined];
 
 /**
  * The quest callback used in card blueprints.
  */
-export type QuestCallback = (val: UnknownEventValue, done: boolean) => boolean;
+export type QuestCallback = (value: UnknownEventValue, done: boolean) => boolean;
 
 /**
  * The backend of a quest.
  */
 export type QuestType = {
-    name: string,
-    progress: [number, number],
-    key: EventKey,
-    value: number,
-    callback: QuestCallback,
-    next?: string
+	name: string;
+	progress: [number, number];
+	key: EventKey;
+	value: number;
+	callback: QuestCallback;
+	next?: string;
 };
 
 /**
  * Event keys
  */
 export type EventKey =
-| "FatalDamage"
-| "EndTurn"
-| "StartTurn"
-| "HealthRestored"
-| "UnspentMana"
-| "GainOverload"
-| "GainHeroAttack"
-| "TakeDamage"
-| "PlayCard"
-| "PlayCardUnsafe"
-| "SummonMinion"
-| "KillMinion"
-| "DamageMinion"
-| "CancelCard"
-| "CastSpellOnMinion"
-| "TradeCard"
-| "ForgeCard"
-| "FreezeCard"
-| "CreateCard"
-| "AddCardToDeck"
-| "AddCardToHand"
-| "DrawCard"
-| "SpellDealsDamage"
-| "Attack"
-| "HeroPower"
-| "TargetSelectionStarts"
-| "TargetSelected"
-| "Dummy"
-| "Eval"
-| "Input"
-| "GameLoop";
+| 'FatalDamage'
+| 'EndTurn'
+| 'StartTurn'
+| 'HealthRestored'
+| 'UnspentMana'
+| 'GainOverload'
+| 'GainHeroAttack'
+| 'TakeDamage'
+| 'PlayCard'
+| 'PlayCardUnsafe'
+| 'SummonMinion'
+| 'KillMinion'
+| 'DamageMinion'
+| 'CancelCard'
+| 'CastSpellOnMinion'
+| 'TradeCard'
+| 'ForgeCard'
+| 'FreezeCard'
+| 'CreateCard'
+| 'AddCardToDeck'
+| 'AddCardToHand'
+| 'DrawCard'
+| 'SpellDealsDamage'
+| 'Attack'
+| 'HeroPower'
+| 'TargetSelectionStarts'
+| 'TargetSelected'
+| 'Dummy'
+| 'Eval'
+| 'Input'
+| 'GameLoop';
 
 /**
  * Event values
  */
 export type EventValue<Key extends EventKey> =
     /**
-     * This is always null. 
+     * This is always null.
      */
-    Key extends "FatalDamage" ? null : 
+    Key extends 'FatalDamage' ? undefined :
     /**
      * The current turn (before turn counter increment)
      */
-    Key extends "EndTurn" ? number : 
+    Key extends 'EndTurn' ? number :
     /**
      * The current turn (after turn counter increment)
      */
-    Key extends "StartTurn" ? number : 
+    Key extends 'StartTurn' ? number :
     /**
      * The amount of health after restore
      */
-    Key extends "HealthRestored" ? number : 
+    Key extends 'HealthRestored' ? number :
     /**
      * The amount of mana the player has left
      */
-    Key extends "UnspentMana" ? number : 
+    Key extends 'UnspentMana' ? number :
     /**
      * The amount of overload gained
      */
-    Key extends "GainOverload" ? number : 
+    Key extends 'GainOverload' ? number :
     /**
      * The amount of hero attack gained
      */
-    Key extends "GainHeroAttack" ? number : 
+    Key extends 'GainHeroAttack' ? number :
     /**
      * The player that was dealt the damage, The amount of damage taken
      */
-    Key extends "TakeDamage" ? number : 
+    Key extends 'TakeDamage' ? number :
     /**
      * The card that was played. (This gets triggered after the text of the card)
      */
-    Key extends "PlayCard" ? Card : 
+    Key extends 'PlayCard' ? Card :
     /**
      * The card that was played. (This gets triggered before the text of the card, which means it also gets triggered before the cancelling logic. So you have to handle cards being cancelled.)
      */
-    Key extends "PlayCardUnsafe" ? Card : 
+    Key extends 'PlayCardUnsafe' ? Card :
     /**
      * The minion that was summoned
      */
-    Key extends "SummonMinion" ? Card : 
+    Key extends 'SummonMinion' ? Card :
     /**
      * The minion that was killed
      */
-    Key extends "KillMinion" ? Card : 
+    Key extends 'KillMinion' ? Card :
     /**
      * The minion that was damaged, and the amount of damage
      */
-    Key extends "DamageMinion" ? [Card, number] : 
+    Key extends 'DamageMinion' ? [Card, number] :
     /**
      * The card that was cancelled, and the ability that was cancelled
      */
-    Key extends "CancelCard" ? [Card, CardAbility] : 
+    Key extends 'CancelCard' ? [Card, CardAbility] :
     /**
      * The spell that was cast, and the target
      */
-    Key extends "CastSpellOnMinion" ? [Card, Card] : 
+    Key extends 'CastSpellOnMinion' ? [Card, Card] :
     /**
      * The card that was traded
      */
-    Key extends "TradeCard" ? Card : 
+    Key extends 'TradeCard' ? Card :
     /**
      * The card that was forged
      */
-    Key extends "ForgeCard" ? Card : 
+    Key extends 'ForgeCard' ? Card :
     /**
      * The card that was frozen
      */
-    Key extends "FreezeCard" ? Card : 
+    Key extends 'FreezeCard' ? Card :
     /**
      * The card that was created
      */
-    Key extends "CreateCard" ? Card : 
+    Key extends 'CreateCard' ? Card :
     /**
      * The card that was added to the deck
      */
-    Key extends "AddCardToDeck" ? Card : 
+    Key extends 'AddCardToDeck' ? Card :
     /**
      * The card that was added to the hand
      */
-    Key extends "AddCardToHand" ? Card : 
+    Key extends 'AddCardToHand' ? Card :
     /**
      * The card that was drawn
      */
-    Key extends "DrawCard" ? Card : 
+    Key extends 'DrawCard' ? Card :
     /**
      * The target, and the amount of damage
      */
-    Key extends "SpellDealsDamage" ? [Target, number] : 
+    Key extends 'SpellDealsDamage' ? [Target, number] :
     /**
      * The attacker, and the target
      */
-    Key extends "Attack" ? [Target, Target] : 
+    Key extends 'Attack' ? [Target, Target] :
     /**
      * The class of the hero power. (Warrior, Mage, Priest, ...)
      */
-    Key extends "HeroPower" ? string : 
+    Key extends 'HeroPower' ? string :
     /**
      * The code to evaluate
      */
-    Key extends "Eval" ? string : 
+    Key extends 'Eval' ? string :
     /**
      * The input
      */
-    Key extends "Input" ? string : 
+    Key extends 'Input' ? string :
     /**
      * The prompt, the card that requested target selection, the alignment that the target should be, the class of the target (hero | minion), and the flags (if any).
      */
-    Key extends "TargetSelectionStarts" ? [string, Card | null, SelectTargetAlignment, SelectTargetClass, SelectTargetFlag[]] : 
+    Key extends 'TargetSelectionStarts' ? [string, Card | undefined, SelectTargetAlignment, SelectTargetClass, SelectTargetFlag[]] :
     /**
      * The card that requested target selection, and the target
      */
-    Key extends "TargetSelected" ? [Card | null, Target] : 
+    Key extends 'TargetSelected' ? [Card | undefined, Target] :
     never;

@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "start": "npm config set engine-strict true && node ./dist/index.js",
-    "test": "npm run script:testcards",
+    "test": "xo && npm run script:testcards",
     "script:vanilla:generator": "node ./dist/scripts/vanilla/generator",
     "script:vanilla:propfinder": "node ./dist/scripts/vanilla/propfinder",
     "script:vanilla:cardparity": "node ./dist/scripts/vanilla/cardparity",
@@ -36,7 +36,8 @@
     "@types/node": "^20.8.4",
     "@types/readline-sync": "^1.4.5",
     "@types/uuid": "^9.0.5",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "xo": "^0.56.0"
   },
   "engines": {
     "node": ">=15.0.0",

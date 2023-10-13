@@ -1,218 +1,265 @@
 // To decode vanilla deckcodes
-import deckstrings from "deckstrings";
-import { CardClass, CardClassNoNeutral, CardLike, FunctionsExportDeckError, VanillaCard } from "@Game/types.js";
-import { Card, Player } from "../../internal.js";
+import deckstrings from 'deckstrings';
+import {type CardClass, type CardClassNoNeutral, type CardLike, type FunctionsExportDeckError, type VanillaCard} from '@Game/types.js';
+import {Card, type Player} from '../../internal.js';
 
 export const deckcodeFunctions = {
-    /**
+	/**
      * Imports a deck using a code and put the cards into the player's deck
-     * 
+     *
      * @param plr The player to put the cards into the deck of
      * @param code The deck code
-     * 
+     *
      * @returns The deck
      */
-    import(plr: Player, code: string): Card[] | null {
-        /**
+	import(plr: Player, code: string): Card[] | undefined {
+		/**
          * Cause the function to return an error
          */
-        const ERROR = (errorCode: string, cardName: string | null = null): null => {
-            game.log(`<red>This deck is not valid!\nError Code: <yellow>${errorCode}</yellow red>`);
-            if (cardName) game.log(`<red>Specific Card that caused this error: <yellow>${cardName}</yellow red>`);
-            game.pause();
-            return null;
-        }
+		const panic = (errorCode: string, cardName?: string) => {
+			game.log(`<red>This deck is not valid!\nError Code: <yellow>${errorCode}</yellow red>`);
+			if (cardName) {
+				game.log(`<red>Specific Card that caused this error: <yellow>${cardName}</yellow red>`);
+			}
 
-        let vanilla = false;
+			game.pause();
+		};
 
-        try {
-            // If this doesn't crash, this is a vanilla deckcode
-            deckstrings.decode(code);
+		let vanilla = false;
 
-            vanilla = true;
-        } catch (err) {
-            // This isn't a vanilla code, no worries, just parse it as a hearthstone.js deckcode.
-        }; 
+		try {
+			// If this doesn't crash, this is a vanilla deckcode
+			deckstrings.decode(code);
 
-        if (vanilla) code = deckcodeFunctions.fromVanilla(plr, code);
+			vanilla = true;
+		} catch {
+			// This isn't a vanilla code, no worries, just parse it as a hearthstone.js deckcode.
+		}
 
-        // BFU
-        const runeRegex = /\[[BFU]{3}\]/;
+		if (vanilla) {
+			code = deckcodeFunctions.fromVanilla(plr, code);
+		}
 
-        // BBB -> 3B
-        const altRuneRegex = /\[3[BFU]\]/;
+		// BFU
+		const runeRegex = /\[[BFU]{3}]/;
 
-        const runesExists = runeRegex.test(code) || altRuneRegex.test(code);
+		// BBB -> 3B
+		const altRuneRegex = /\[3[BFU]]/;
 
-        let sep = " /";
+		const runesExists = runeRegex.test(code) || altRuneRegex.test(code);
 
-        if (runesExists) sep = " [";
-        
-        let hero = code.split(sep)[0];
+		let sep = ' /';
 
-        hero = hero.trim();
-        code = sep[1] + code.split(sep)[1];
+		if (runesExists) {
+			sep = ' [';
+		}
 
-        if (!game.functions.card.getClasses().includes(hero as CardClassNoNeutral)) return ERROR("INVALIDHERO");
+		let hero = code.split(sep)[0];
 
-        plr.heroClass = hero as CardClass;
+		hero = hero.trim();
+		code = sep[1] + code.split(sep)[1];
 
-        const runeClasses = ["Death Knight"];
-        const runeClass = runeClasses.includes(hero);
+		if (!game.functions.card.getClasses().includes(hero as CardClassNoNeutral)) {
+			panic('INVALIDHERO');
+			return;
+		}
 
-        const addRunes = (runes: string) => {
-            if (runeClass) plr.runes = runes;
-            else game.pause(`<yellow>WARNING: This deck has runes in it, but the class is <bright:yellow>${hero}</bright:yellow>. Supported classes: <bright:yellow>${runeClasses.join(", ")}</bright:yellow yellow>\n`);
-        }
+		plr.heroClass = hero as CardClass;
 
-        // Runes
-        if (altRuneRegex.test(code)) {
-            // [3B]
-            const rune = code[2];
+		const runeClasses = ['Death Knight'];
+		const runeClass = runeClasses.includes(hero);
 
-            code = code.slice(5);
-            addRunes(rune.repeat(3));
-        }
-        else if (runeRegex.test(code)) {
-            // [BFU]
-            let runes = "";
+		const addRunes = (runes: string) => {
+			if (runeClass) {
+				plr.runes = runes;
+			} else {
+				game.pause(`<yellow>WARNING: This deck has runes in it, but the class is <bright:yellow>${hero}</bright:yellow>. Supported classes: <bright:yellow>${runeClasses.join(', ')}</bright:yellow yellow>\n`);
+			}
+		};
 
-            for (let i = 1; i <= 3; i++) {
-                runes += code[i];
-            }
-            
-            code = code.slice(6);
-            addRunes(runes);
-        }
-        else if (runeClass) {
-            game.pause(`<yellow>WARNING: This class supports runes but there are no runes in this deck. This deck's class: <bright:yellow>${hero}</bright:yellow>. Supported classes: <bright:yellow>${runeClasses.join(", ")}</bright:yellow yellow>\n`);
-        }
+		// Runes
+		if (altRuneRegex.test(code)) {
+			// [3B]
+			const rune = code[2];
 
-        // Find /3:5,2:8,1/
-        const copyDefFormat = /\/(\d+:\d+,)*\d+\/ /;
-        if (!copyDefFormat.test(code)) return ERROR("COPYDEFNOTFOUND");
+			code = code.slice(5);
+			addRunes(rune.repeat(3));
+		} else if (runeRegex.test(code)) {
+			// [BFU]
+			let runes = '';
 
-        const copyDef = code.split("/")[1];
+			for (let i = 1; i <= 3; i++) {
+				runes += code[i];
+			}
 
-        code = code.replace(copyDefFormat, "");
+			code = code.slice(6);
+			addRunes(runes);
+		} else if (runeClass) {
+			game.pause(`<yellow>WARNING: This class supports runes but there are no runes in this deck. This deck's class: <bright:yellow>${hero}</bright:yellow>. Supported classes: <bright:yellow>${runeClasses.join(', ')}</bright:yellow yellow>\n`);
+		}
 
-        const deck = code.split(",");
-        let _deck: Card[] = [];
+		// Find /3:5,2:8,1/
+		const copyDefFormat = /\/(\d+:\d+,)*\d+\/ /;
+		if (!copyDefFormat.test(code)) {
+			panic('COPYDEFNOTFOUND');
+			return;
+		}
 
-        const localSettings = JSON.parse(JSON.stringify(game.config));
+		const copyDef = code.split('/')[1];
 
-        let processed = 0;
-        let retInvalid = false;
+		code = code.replace(copyDefFormat, '');
 
-        copyDef.split(",").forEach(c => {
-            const def = c.split(":");
+		const deck = code.split(',');
+		let _deck: Card[] = [];
 
-            const copies = def[0];
-            const times = parseInt(def[1]) || deck.length;
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+		const localSettings = JSON.parse(JSON.stringify(game.config));
 
-            const cards = deck.slice(processed, times);
+		let processed = 0;
+		let returnValueInvalid = false;
 
-            cards.forEach(c => {
-                const id = parseInt(c, 36);
+		for (const c of copyDef.split(',')) {
+			const def = c.split(':');
 
-                const bp = game.functions.card.getFromId(id);
-                if (!bp) {
-                    ERROR("NONEXISTANTCARD", id.toString());
-                    retInvalid = true;
-                    return;
-                }
-                const card = new Card(bp.name, plr);
+			const copies = def[0];
+			const times = game.lodash.parseInt(def[1]) ?? deck.length;
 
-                for (let i = 0; i < parseInt(copies); i++) _deck.push(card.perfectCopy());
+			const cards = deck.slice(processed, times);
 
-                if (card.deckSettings) {
-                    Object.entries(card.deckSettings).forEach(setting => {
-                        const [key, val] = setting;
+			for (const c of cards) {
+				const id = game.lodash.parseInt(c, 36);
 
-                        localSettings[key] = val;
-                    });
-                }
+				const bp = game.functions.card.getFromId(id);
+				if (!bp) {
+					panic('NONEXISTANTCARD', id.toString());
+					returnValueInvalid = true;
+					continue;
+				}
 
-                const validateTest = card.validateForDeck();
+				const card = new Card(bp.name, plr);
 
-                if (!localSettings.validateDecks || validateTest === true) return;
+				for (let i = 0; i < game.lodash.parseInt(copies); i++) {
+					_deck.push(card.perfectCopy());
+				}
 
-                let err;
+				if (card.deckSettings) {
+					for (const setting of Object.entries(card.deckSettings)) {
+						const [key, value] = setting;
 
-                switch (validateTest) {
-                    case "class":
-                        err = "You have a card from a different class in your deck";
-                        break;
-                    case "uncollectible":
-                        err = "You have an uncollectible card in your deck";
-                        break;
-                    case "runes":
-                        err = "A card does not support your current runes";
-                        break;
-                    default:
-                        err = "";
-                        break;
-                }
-                game.pause(`<red>${err}.\nSpecific Card that caused the error: <yellow>${card.name}</yellow red>\n`);
-                retInvalid = true;
-            });
+						localSettings[key] = value;
+					}
+				}
 
-            if (retInvalid) return;
+				const validateTest = card.validateForDeck();
 
-            processed += times;
-        });
+				if (!localSettings.validateDecks || validateTest === true) {
+					continue;
+				}
 
-        if (retInvalid) return null;
+				let error;
 
-        const max = localSettings.maxDeckLength;
-        const min = localSettings.minDeckLength;
+				switch (validateTest) {
+					case 'class': {
+						error = 'You have a card from a different class in your deck';
+						break;
+					}
 
-        if ((_deck.length < min || _deck.length > max) && localSettings.validateDecks) {
-            const grammar = (min == max) ? `exactly <yellow>${max}</yellow>` : `between <yellow>${min}-${max}</yellow>`;
-            game.pause(`<red>The deck needs ${grammar} cards. Your deck has: <yellow>${_deck.length}</yellow>.\n`);
-            return null;
-        }
+					case 'uncollectible': {
+						error = 'You have an uncollectible card in your deck';
+						break;
+					}
 
-        // Check if you have more than 2 cards or more than 1 legendary in your deck. (The numbers can be changed in the config)
-        const cards: { [key: string]: number } = {};
-        _deck.forEach(c => {
-            if (!cards[c.name]) cards[c.name] = 0;
-            cards[c.name]++;
-        });
-        Object.entries(cards).forEach(v => {
-            const amount = v[1];
-            const cardName = v[0];
+					case 'runes': {
+						error = 'A card does not support your current runes';
+						break;
+					}
 
-            let errorcode;
-            if (amount > localSettings.maxOfOneCard) errorcode = "normal";
-            if (game.functions.card.getFromName(cardName)?.rarity == "Legendary" && amount > localSettings.maxOfOneLegendary) errorcode = "legendary";
+					default: {
+						error = '';
+						break;
+					}
+				}
 
-            if (!localSettings.validateDecks || !errorcode) return;
+				game.pause(`<red>${error}.\nSpecific Card that caused the error: <yellow>${card.name}</yellow red>\n`);
+				returnValueInvalid = true;
+			}
 
-            let err;
-            switch (errorcode) {
-                case "normal":
-                    err = `<red>There are more than <yellow>${localSettings.maxOfOneCard}</yellow> of a card in your deck.</red>`;
-                    break
-                case "legendary":
-                    err = `<red>There are more than <yellow>${localSettings.maxOfOneLegendary}</yellow> of a legendary card in your deck.</red>`;
-                    break
-                default:
-                    err = "";
-                    break;
-            }
-            game.pause(err + `\n<red>Specific card that caused this error: <yellow>${cardName}</yellow>. Amount: <yellow>${amount}</yellow>.\n`);
-            return "invalid";
-        });
-    
-        _deck = game.lodash.shuffle(_deck);
+			if (returnValueInvalid) {
+				continue;
+			}
 
-        plr.deck = _deck;
+			processed += times;
+		}
 
-        return _deck;
-    },
+		if (returnValueInvalid) {
+			return undefined;
+		}
 
-    /**
+		const max = localSettings.maxDeckLength as number;
+		const min = localSettings.minDeckLength as number;
+
+		if ((_deck.length < min || _deck.length > max) && localSettings.validateDecks) {
+			const grammar = (min === max) ? `exactly <yellow>${max}</yellow>` : `between <yellow>${min}-${max}</yellow>`;
+			game.pause(`<red>The deck needs ${grammar} cards. Your deck has: <yellow>${_deck.length}</yellow>.\n`);
+			return undefined;
+		}
+
+		// Check if you have more than 2 cards or more than 1 legendary in your deck. (The numbers can be changed in the config)
+		const cards: Record<string, number> = {};
+		for (const c of _deck) {
+			if (!cards[c.name]) {
+				cards[c.name] = 0;
+			}
+
+			cards[c.name]++;
+		}
+
+		for (const v of Object.entries(cards)) {
+			const amount = v[1];
+			const cardName = v[0];
+
+			let errorcode;
+			if (amount > localSettings.maxOfOneCard) {
+				errorcode = 'normal';
+			}
+
+			if (game.functions.card.getFromName(cardName)?.rarity === 'Legendary' && amount > localSettings.maxOfOneLegendary) {
+				errorcode = 'legendary';
+			}
+
+			if (!localSettings.validateDecks || !errorcode) {
+				continue;
+			}
+
+			let error;
+			switch (errorcode) {
+				case 'normal': {
+					error = `<red>There are more than <yellow>${localSettings.maxOfOneCard}</yellow> of a card in your deck.</red>`;
+					break;
+				}
+
+				case 'legendary': {
+					error = `<red>There are more than <yellow>${localSettings.maxOfOneLegendary}</yellow> of a legendary card in your deck.</red>`;
+					break;
+				}
+
+				default: {
+					error = '';
+					break;
+				}
+			}
+
+			throw new Error(error + `\n<red>Specific card that caused this error: <yellow>${cardName}</yellow>. Amount: <yellow>${amount}</yellow>.\n`);
+		}
+
+		_deck = game.lodash.shuffle(_deck);
+
+		plr.deck = _deck;
+
+		return _deck;
+	},
+
+	/**
      * Generates a deckcode from a list of blueprints
      *
      * @param deck The deck to create a deckcode from
@@ -221,216 +268,246 @@ export const deckcodeFunctions = {
      *
      * @returns The deckcode, An error message alongside any additional information.
      */
-    export(deck: CardLike[], heroClass: string, runes: string): { code: string; error: FunctionsExportDeckError } {
-        let error: FunctionsExportDeckError = null;
+	export(deck: CardLike[], heroClass: string, runes: string): {code: string; error: FunctionsExportDeckError} {
+		let error: FunctionsExportDeckError;
 
-        if (deck.length < game.config.decks.minLength) error = {msg: "TooFewCards", info: { amount: deck.length }, recoverable: true};
-        if (deck.length > game.config.decks.maxLength) error = {msg: "TooManyCards", info: { amount: deck.length }, recoverable: true};
+		if (deck.length < game.config.decks.minLength) {
+			error = {msg: 'TooFewCards', info: {amount: deck.length}, recoverable: true};
+		}
 
-        if (deck.length <= 0) {
-            // Unrecoverable error
-            error = {"msg": "EmptyDeck", "info": null, "recoverable": false};
+		if (deck.length > game.config.decks.maxLength) {
+			error = {msg: 'TooManyCards', info: {amount: deck.length}, recoverable: true};
+		}
 
-            return {"code": "", "error": error};
-        }
+		if (deck.length <= 0) {
+			// Unrecoverable error
+			error = {msg: 'EmptyDeck', info: undefined, recoverable: false};
 
-        let deckcode = `${heroClass} `;
+			return {code: '', error};
+		}
 
-        if (runes) {
-            // If the runes is 3 of one type, write, for example, 3B instead of BBB
-            if (new Set(runes.split("")).size == 1) deckcode += `[3${runes[0]}] `;
-            else deckcode += `[${runes}] `;
-        }
+		let deckcode = `${heroClass} `;
 
-        deckcode += "/";
+		if (runes) {
+			// If the runes is 3 of one type, write, for example, 3B instead of BBB
+			deckcode += new Set(...runes).size === 1 ? `[3${runes[0]}] ` : `[${runes}] `;
+		}
 
-        let cards: [CardLike, number][] = [];
+		deckcode += '/';
 
-        deck.forEach(c => {
-            const found = cards.find(a => a[0].name == c.name);
+		let cards: Array<[CardLike, number]> = [];
 
-            if (!found) cards.push([c, 1]);
-            else cards[cards.indexOf(found)][1]++;
-        });
+		for (const c of deck) {
+			const found = cards.find(a => a[0].name === c.name);
 
-        // Sort
-        cards = cards.sort((a, b) => {
-            return a[1] - b[1];
-        });
+			if (found) {
+				cards[cards.indexOf(found)][1]++;
+			} else {
+				cards.push([c, 1]);
+			}
+		}
 
-        let lastCopy = 0;
-        cards.forEach(c => {
-            const [card, copies] = c;
+		// Sort
+		cards = cards.sort((a, b) => a[1] - b[1]);
 
-            if (copies == lastCopy) return;
+		let lastCopy = 0;
+		for (const c of cards) {
+			const [card, copies] = c;
 
-            let amount = 0;
-            let last = false;
+			if (copies === lastCopy) {
+				continue;
+			}
 
-            cards.forEach((c, i) => {
-                if (c[1] != copies) return;
-                if ((i + 1) == cards.length) last = true;
+			let amount = 0;
+			let last = false;
 
-                amount++;
-            });
+			for (const [i, c] of cards.entries()) {
+				if (c[1] !== copies) {
+					continue;
+				}
 
-            lastCopy = copies;
+				if ((i + 1) === cards.length) {
+					last = true;
+				}
 
-            if (last) deckcode += copies;
-            else deckcode += `${copies}:${amount},`;
+				amount++;
+			}
 
-            if (copies > game.config.decks.maxOfOneLegendary && card.rarity == "Legendary") error = {"msg": "TooManyLegendaryCopies", "info": {"card": card, "amount": copies}, "recoverable": true};
-            else if (copies > game.config.decks.maxOfOneCard) error = {"msg": "TooManyCopies", "info": {"card": card, "amount": copies}, "recoverable": true};
-        });
+			lastCopy = copies;
 
-        deckcode += "/ ";
+			deckcode += last ? copies : `${copies}:${amount},`;
 
-        deckcode += cards.map(c => c[0].id?.toString(36)).join(",");
+			if (copies > game.config.decks.maxOfOneLegendary && card.rarity === 'Legendary') {
+				error = {msg: 'TooManyLegendaryCopies', info: {card, amount: copies}, recoverable: true};
+			} else if (copies > game.config.decks.maxOfOneCard) {
+				error = {msg: 'TooManyCopies', info: {card, amount: copies}, recoverable: true};
+			}
+		}
 
-        return {"code": deckcode, "error": error};
-    },
+		deckcode += '/ ';
 
-    /**
+		deckcode += cards.map(c => c[0].id?.toString(36)).join(',');
+
+		return {code: deckcode, error};
+	},
+
+	/**
      * Turns a Hearthstone.js deckcode into a vanilla deckcode
      *
      * @param plr The player that will get the deckcode
      * @param code The deckcode
-     * @param extraFiltering If it should do extra filtering when there are more than 1 possible card. This may choose the wrong card. 
+     * @param extraFiltering If it should do extra filtering when there are more than 1 possible card. This may choose the wrong card.
      *
      * @returns The vanilla deckcode
      */
-    toVanilla(plr: Player, code: string, extraFiltering: boolean = true): string {
-        // HACK: Jank code ahead. Beware!
-        //
-        // Reference: Death Knight [3B] /1:4,2/ 3f,5f,6f...
+	toVanilla(plr: Player, code: string, extraFiltering = true): string {
+		// HACK: Jank code ahead. Beware!
+		//
+		// Reference: Death Knight [3B] /1:4,2/ 3f,5f,6f...
 
-        const deck: deckstrings.DeckDefinition = {"cards": [], "heroes": [], "format": 1};
+		const deck: deckstrings.DeckDefinition = {cards: [], heroes: [], format: 1};
 
-        // List of vanilla heroes dbfIds
-        const vanillaHeroes: {[key in CardClass]?: number} = {
-            "Warrior":      7,
-            "Hunter":       31,
-            "Druid":        274,
-            "Mage":         637,
-            "Paladin":      671,
-            "Priest":       813,
-            "Warlock":      893,
-            "Rogue":        930,
-            "Shaman":       1066,
-            "Demon Hunter": 56550,
-            "Death Knight": 78065
-        };
+		// List of vanilla heroes dbfIds
+		const vanillaHeroes: {[key in CardClass]?: number} = {
+			// eslint-disable-next-line @typescript-eslint/naming-convention
+			Warrior: 7,
+			// eslint-disable-next-line @typescript-eslint/naming-convention
+			Hunter: 31,
+			// eslint-disable-next-line @typescript-eslint/naming-convention
+			Druid: 274,
+			// eslint-disable-next-line @typescript-eslint/naming-convention
+			Mage: 637,
+			// eslint-disable-next-line @typescript-eslint/naming-convention
+			Paladin: 671,
+			// eslint-disable-next-line @typescript-eslint/naming-convention
+			Priest: 813,
+			// eslint-disable-next-line @typescript-eslint/naming-convention
+			Warlock: 893,
+			// eslint-disable-next-line @typescript-eslint/naming-convention
+			Rogue: 930,
+			// eslint-disable-next-line @typescript-eslint/naming-convention
+			Shaman: 1066,
+			'Demon Hunter': 56_550,
+			'Death Knight': 78_065,
+		};
 
-        const codeSplit = code.split(/[\[/]/);
-        const heroClass = codeSplit[0].trim();
+		const codeSplit = code.split(/[[/]/);
+		const heroClass = codeSplit[0].trim();
 
-        const heroClassId = vanillaHeroes[heroClass as CardClass];
-        if (!heroClassId) {
-            game.log(`<red>ERROR: Invalid hero class: <yellow>${heroClass}</yellow red>`);
-            game.pause();
+		const heroClassId = vanillaHeroes[heroClass as CardClass];
+		if (!heroClassId) {
+			throw new Error(`Invalid hero class: ${heroClass}`);
+		}
 
-            process.exit(1);
-        }
+		deck.heroes.push(heroClassId);
 
-        deck.heroes.push(heroClassId);
+		// Remove the class
+		codeSplit.splice(0, 1);
 
-        // Remove the class
-        codeSplit.splice(0, 1);
+		// Remove runes
+		if (codeSplit[0].endsWith('] ')) {
+			codeSplit.splice(0, 1);
+		}
 
-        // Remove runes
-        if (codeSplit[0].endsWith("] ")) codeSplit.splice(0, 1);
+		const amountString = codeSplit[0].trim();
+		const cards = codeSplit[1].trim();
 
-        const amountStr = codeSplit[0].trim();
-        const cards = codeSplit[1].trim();
+		// Now it's just the cards left
+		const vanillaCards = game.functions.card.vanilla.getAll();
 
-        // Now it's just the cards left
-        const vanillaCards = game.functions.card.vanilla.getAll();
+		const cardsSplit = cards.split(',').map(i => game.lodash.parseInt(i, 36));
+		const cardsSplitId = cardsSplit.map(i => game.functions.card.getFromId(i));
+		const cardsSplitCard = cardsSplitId.map(c => {
+			if (!c) {
+				throw new Error('c is an invalid card');
+			}
 
-        if (vanillaCards instanceof Error) {
-            game.log(vanillaCards.stack);
-            game.pause();
-            return "";
-        }
+			return new Card(c.name, plr);
+		});
+		const trueCards = cardsSplitCard.map(c => c.displayName);
 
-        const cardsSplit = cards.split(",").map(i => parseInt(i, 36));
-        const cardsSplitId = cardsSplit.map(i => game.functions.card.getFromId(i));
-        const cardsSplitCard = cardsSplitId.map(c => {
-            if (!c) throw new Error("c is an invalid card");
-            return new game.Card(c.name, plr)
-        });
-        const trueCards = cardsSplitCard.map(c => c.displayName);
+		// Cards is now a list of names
+		const newCards: Array<[number, number]> = [];
 
-        // Cards is now a list of names
-        const newCards: [number, number][] = [];
+		for (const [i, c] of trueCards.entries()) {
+			let amount = 1;
 
-        trueCards.forEach((c, i) => {
-            let amount = 1;
+			// Find how many copies to put in the deck
+			const amountStringSplit = amountString.split(':');
 
-            // Find how many copies to put in the deck
-            const amountStrSplit = amountStr.split(":");
+			let found = false;
+			for (const [i2, a] of amountStringSplit.entries()) {
+				if (found) {
+					continue;
+				}
 
-            let found = false;
-            amountStrSplit.forEach((a, i2) => {
-                if (found) return;
+				// We only want to look at every other one
+				if (i2 % 2 === 0) {
+					continue;
+				}
 
-                // We only want to look at every other one
-                if (i2 % 2 == 0) return;
+				if (i >= game.lodash.parseInt(a)) {
+					continue;
+				}
 
-                if (i >= parseInt(a)) return;
+				// This is correct
+				found = true;
 
-                // This is correct
-                found = true;
+				amount = game.lodash.parseInt(amountStringSplit[amountStringSplit.indexOf(a) - 1]);
+			}
 
-                amount = parseInt(amountStrSplit[amountStrSplit.indexOf(a) - 1]);
-            });
-            if (!found) amount = parseInt(game.functions.util.lastChar(amountStr));
+			if (!found) {
+				const char = game.functions.util.lastChar(amountString);
+				amount = game.lodash.parseInt(char ?? '0');
+			}
 
-            let matches = vanillaCards.filter(a => a.name.toLowerCase() == c.toLowerCase());
-            matches = game.functions.card.vanilla.filter(matches, true, extraFiltering);
+			let matches = vanillaCards.filter(a => a.name.toLowerCase() === c.toLowerCase());
+			matches = game.functions.card.vanilla.filter(matches, true, extraFiltering);
 
-            if (matches.length == 0) {
-                // Invalid card
-                game.pause("<red>ERROR: Invalid card found!</red>\n");
-                return;
-            }
+			if (matches.length === 0) {
+				// Invalid card
+				game.pause('<red>ERROR: Invalid card found!</red>\n');
+				continue;
+			}
 
-            let match: VanillaCard;
+			let match: VanillaCard;
 
-            if (matches.length > 1) {
-                // Ask the user to pick one
-                matches.forEach((m, i) => {
-                    delete m.elite;
+			if (matches.length > 1) {
+				// Ask the user to pick one
+				for (const [i, m] of matches.entries()) {
+					delete m.elite;
 
-                    // All cards here should already be collectible
-                    delete m.collectible; 
-                    delete m.artist;
-                    delete m.mechanics;
+					// All cards here should already be collectible
+					delete m.collectible;
+					delete m.artist;
+					delete m.mechanics;
 
-                    // Just look at `m.races`
-                    delete m.race; 
-                    delete m.referencesTags;
+					// Just look at `m.races`
+					delete m.race;
+					delete m.referencesTags;
 
-                    game.log(`${i + 1}: `);
-                    game.log(m);
-                });
+					game.log(`${i + 1}: `);
+					game.log(m);
+				}
 
-                game.log(`<yellow>Multiple cards with the name '</yellow>${c}<yellow>' detected! Please choose one:</yellow>`);
-                const chosen = game.input();
+				game.log(`<yellow>Multiple cards with the name '</yellow>${c}<yellow>' detected! Please choose one:</yellow>`);
+				const chosen = game.input();
 
-                match = matches[parseInt(chosen) - 1];
-            }
-            else match = matches[0];
+				match = matches[game.lodash.parseInt(chosen) - 1];
+			} else {
+				match = matches[0];
+			}
 
-            newCards.push([match.dbfId, amount]);
-        });
+			newCards.push([match.dbfId, amount]);
+		}
 
-        deck.cards = newCards;
+		deck.cards = newCards;
 
-        const encodedDeck = deckstrings.encode(deck);
-        return encodedDeck;
-    },
+		const encodedDeck = deckstrings.encode(deck);
+		return encodedDeck;
+	},
 
-    /**
+	/**
      * Turns a vanilla deckcode into a Hearthstone.js deckcode
      *
      * @param plr The player that will get the deckcode
@@ -438,129 +515,153 @@ export const deckcodeFunctions = {
      *
      * @returns The Hearthstone.js deckcode
      */
-    fromVanilla(plr: Player, code: string): string {
-        // Use the 'deckstrings' library's decode
-        const deckWithFormat: deckstrings.DeckDefinition = deckstrings.decode(code);
+	fromVanilla(plr: Player, code: string): string {
+		// Use the 'deckstrings' library's decode
+		const deckWithFormat: deckstrings.DeckDefinition = deckstrings.decode(code);
 
-        const vanillaCards = game.functions.card.vanilla.getAll();
+		const vanillaCards = game.functions.card.vanilla.getAll();
 
-        if (vanillaCards instanceof Error) {
-            game.log(vanillaCards.stack);
-            game.pause("\n");
-            return "";
-        }
+		// We don't care about the format
+		const {format, ...deck} = deckWithFormat;
 
-        // We don't care about the format
-        const { format, ...deck } = deckWithFormat;
+		const _heroClass = vanillaCards.find(a => a.dbfId === deck.heroes[0])?.cardClass;
+		let heroClass = game.lodash.capitalize(_heroClass?.toString() ?? game.player2.heroClass);
 
-        const _heroClass = vanillaCards.find(a => a.dbfId == deck.heroes[0])?.cardClass;
-        let heroClass = game.lodash.capitalize(_heroClass?.toString() || game.player2.heroClass);
+		// Wtf hearthstone?
+		if (heroClass === 'Deathknight') {
+			heroClass = 'Death Knight';
+		}
 
-        // Wtf hearthstone?
-        if (heroClass == "Deathknight") heroClass = "Death Knight";
-        if (heroClass == "Demonhunter") heroClass = "Demon Hunter";
-        
-        // Get the full card object from the dbfId
-        const deckDef: [VanillaCard | undefined, number][] = deck.cards.map(c => [vanillaCards.find(a => a.dbfId == c[0]), c[1]]);
-        const createdCards: Card[] = game.functions.card.getAll(false);
-        
-        const invalidCards: VanillaCard[] = [];
-        deckDef.forEach(c => {
-            const vanillaCard = c[0];
-            if (!vanillaCard || typeof vanillaCard === "number") return;
+		if (heroClass === 'Demonhunter') {
+			heroClass = 'Demon Hunter';
+		}
 
-            if (createdCards.find(card => card.name == vanillaCard!.name || card.displayName == vanillaCard!.name)) return;
-            if (invalidCards.includes(vanillaCard)) return;
+		// Get the full card object from the dbfId
+		const deckDef: Array<[VanillaCard | undefined, number]> = deck.cards.map(c => [vanillaCards.find(a => a.dbfId === c[0]), c[1]]);
+		const createdCards: Card[] = game.functions.card.getAll(false);
 
-            // The card doesn't exist.
-            game.log(`<red>ERROR: Card <yellow>${vanillaCard.name} <bright:yellow>(${vanillaCard.dbfId})</yellow bright:yellow> doesn't exist!</red>`);
-            invalidCards.push(vanillaCard);
-        });
+		const invalidCards: VanillaCard[] = [];
+		for (const c of deckDef) {
+			const vanillaCard = c[0];
+			if (!vanillaCard || typeof vanillaCard === 'number') {
+				continue;
+			}
 
-        if (invalidCards.length > 0) {
-            // There was a card in the deck that isn't implemented in Hearthstone.js
-            game.log(`<yellow>Some cards do not currently exist. You cannot play on this deck without them.</yellow>`);
-            game.pause();
+			if (createdCards.some(card => card.name === vanillaCard.name || card.displayName === vanillaCard.name)) {
+				continue;
+			}
 
-            process.exit(1);
-        }
+			if (invalidCards.includes(vanillaCard)) {
+				continue;
+			}
 
-        let newDeck: [Card, number][] = [];
+			// The card doesn't exist.
+			game.log(`<red>ERROR: Card <yellow>${vanillaCard.name} <bright:yellow>(${vanillaCard.dbfId})</yellow bright:yellow> doesn't exist!</red>`);
+			invalidCards.push(vanillaCard);
+		}
 
-        // All cards in the deck exists
-        const amounts: { [amount: number]: number } = {};
-        deckDef.forEach(c => {
-            const [vanillaCard, amount] = c;
-            if (!vanillaCard || typeof vanillaCard === "number") return;
+		if (invalidCards.length > 0) {
+			// There was a card in the deck that isn't implemented in Hearthstone.js
+			throw new Error('Some cards do not currently exist. You cannot play on this deck without them.');
+		}
 
-            let name = vanillaCards.find(a => a.dbfId == vanillaCard!.dbfId)?.name;
-            // The name can still not be correct
-            if (!createdCards.find(a => a.name == name)) name = createdCards.find(a => (a.displayName ?? "") == name)?.name;
-            if (!name) throw new Error("Could not get name from card in deckdefinition");
+		let newDeck: Array<[Card, number]> = [];
 
-            newDeck.push([new Card(name, plr), amount]);
+		// All cards in the deck exists
+		const amounts: Record<number, number> = {};
+		for (const c of deckDef) {
+			const [vanillaCard, amount] = c;
+			if (!vanillaCard || typeof vanillaCard === 'number') {
+				continue;
+			}
 
-            if (!amounts[amount]) amounts[amount] = 0;
-            amounts[amount]++;
-        });
+			let name = vanillaCards.find(a => a.dbfId === vanillaCard.dbfId)?.name;
+			// The name can still not be correct
+			if (!createdCards.some(a => a.name === name)) {
+				name = createdCards.find(a => (a.displayName ?? '') === name)?.name;
+			}
 
-        // Sort the `newDeck` array, lowest amount first
-        newDeck = newDeck.sort((a, b) => {
-            return a[1] - b[1];
-        });
+			if (!name) {
+				throw new Error('Could not get name from card in deckdefinition');
+			}
 
-        // Assemble Hearthstone.js deckcode.
-        let deckcode = `${heroClass} `;
+			newDeck.push([new Card(name, plr), amount]);
 
-        // Generate runes
-        let runes = "";
+			if (!amounts[amount]) {
+				amounts[amount] = 0;
+			}
 
-        if (heroClass == "Death Knight") {
-            newDeck.forEach(c => {
-                const card = c[0];
+			amounts[amount]++;
+		}
 
-                if (!card.runes) return;
+		// Sort the `newDeck` array, lowest amount first
+		newDeck = newDeck.sort((a, b) => a[1] - b[1]);
 
-                runes += card.runes;
-            });
+		// Assemble Hearthstone.js deckcode.
+		let deckcode = `${heroClass} `;
 
-            let sortedRunes = "";
+		// Generate runes
+		let runes = '';
 
-            if (runes.includes("B")) sortedRunes += "B";
-            if (runes.includes("F")) sortedRunes += "F";
-            if (runes.includes("U")) sortedRunes += "U";
+		if (heroClass === 'Death Knight') {
+			for (const c of newDeck) {
+				const card = c[0];
 
-            runes = runes.replace("B", "");
-            runes = runes.replace("F", "");
-            runes = runes.replace("U", "");
+				if (!card.runes) {
+					continue;
+				}
 
-            sortedRunes += runes;
+				runes += card.runes;
+			}
 
-            // Only use the first 3 characters
-            runes = sortedRunes.slice(0, 3);
+			let sortedRunes = '';
 
-            if (runes === "") runes = "3B";
+			if (runes.includes('B')) {
+				sortedRunes += 'B';
+			}
 
-            if (runes[0] == runes[1] && runes[1] == runes[2]) runes = `3${runes[0]}`;
+			if (runes.includes('F')) {
+				sortedRunes += 'F';
+			}
 
-            deckcode += `[${runes}] `;
-        }
+			if (runes.includes('U')) {
+				sortedRunes += 'U';
+			}
 
-        deckcode += `/`;
+			runes = runes.replace('B', '');
+			runes = runes.replace('F', '');
+			runes = runes.replace('U', '');
 
-        // Amount format
-        Object.entries(amounts).forEach(a => {
-            const [key, amount] = a;
+			sortedRunes += runes;
 
-            // If this is the last amount
-            if (!amounts[parseInt(key) + 1]) deckcode += key;
-            else deckcode += `${key}:${amount},`;
-        });
+			// Only use the first 3 characters
+			runes = sortedRunes.slice(0, 3);
 
-        deckcode += `/ `;
+			if (runes === '') {
+				runes = '3B';
+			}
 
-        deckcode += newDeck.map(c => c[0].id.toString(36)).join(',');
+			if (runes.startsWith(runes[1]) && runes[1] === runes[2]) {
+				runes = `3${runes[0]}`;
+			}
 
-        return deckcode;
-    }
-}
+			deckcode += `[${runes}] `;
+		}
+
+		deckcode += '/';
+
+		// Amount format
+		for (const a of Object.entries(amounts)) {
+			const [key, amount] = a;
+
+			// If this is the last amount
+			deckcode += amounts[game.lodash.parseInt(key) + 1] ? `${key}:${amount},` : key;
+		}
+
+		deckcode += '/ ';
+
+		deckcode += newDeck.map(c => c[0].id.toString(36)).join(',');
+
+		return deckcode;
+	},
+};
