@@ -1,7 +1,7 @@
 import childProcess from "child_process";
 import { createHash } from "node:crypto";
 import { Player } from "@Game/internal.js";
-import { HistoryKey } from "@Game/types.js";
+import { EventValue, HistoryKey } from "@Game/types.js";
 
 export const utilFunctions = {
     /**
@@ -288,7 +288,14 @@ ${mainContent}
         return ["Input", val, player];
     },
 
-    replayFile(path: string): Error | true {
+    /**
+     * Replays a file and returns an error if there is an issue, otherwise returns true.
+     *
+     * @param path the path of the file to replay
+     * @param overrideEvalSafety whether to override the safety check for eval commands (default: false)
+     * @return An error if there is a mismatch in log version, otherwise true
+     */
+    replayFile(path: string, overrideEvalSafety = false): Error | true {
         const parsed = this.parseLogFile(path);
         if (parsed instanceof Error) return parsed;
 
@@ -305,15 +312,36 @@ ${mainContent}
 
         const parsedHistory = history.split("\n").map((l, i) => this.parseInputEventFromHistory(l, i, history));
 
+        let inputQueues: [string[], string[]] = [[], []];
         parsedHistory.forEach(event => {
             if (!event) return;
 
             // Create the event
-            const [_, val, player] = event;
+            const [_, _val, player] = event;
+            const val = _val as EventValue<'Input'>;
 
             if (!(player.inputQueue instanceof Array)) player.inputQueue = [];
-            player.inputQueue.push(val as string);
+
+            // Prevent eval commands from being replayed to prevent maliciously crafted replay files from executing code
+            if (val.includes("eval")) {
+                if (overrideEvalSafety) {
+                    // Prompt the user to prevent the eval
+                    const prevent = game.input(`Would you like to prevent this command from being replayed?\n${val}\n`).toLowerCase()[0] !== 'n';
+
+                    if (prevent) {
+                        return;
+                    }
+                } else {
+                    game.pause("<yellow>WARNING: Eval command has been blocked.</yellow>");
+                    return;
+                }
+            }
+
+            inputQueues[player.id].push(val);
         });
+
+        game.player1.inputQueue = inputQueues[0];
+        game.player2.inputQueue = inputQueues[1];
 
         return true;
     },
