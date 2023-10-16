@@ -297,6 +297,7 @@ function searchCards(_cards: Card[], sQuery: string) {
     return returnValueCards;
 }
 
+// eslint-disable-next-line complexity
 function showCards() {
     filteredCards = [];
     printName();
@@ -741,6 +742,7 @@ function getCardArg(cmd: string, callback: (card: Card) => boolean, errorCallbac
     return true;
 }
 
+// eslint-disable-next-line complexity
 function handleCmds(cmd: string, addToHistory = true): boolean {
     if (findCard(cmd)) {
         // You just typed the name of a card.

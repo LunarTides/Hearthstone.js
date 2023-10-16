@@ -56,6 +56,7 @@ export class Ai {
      *
      * @returns Result
      */
+    // eslint-disable-next-line complexity
     calcMove(): AiCalcMoveOption {
         let bestMove: AiCalcMoveOption | undefined;
         let bestScore = -100_000;
@@ -258,6 +259,7 @@ export class Ai {
      *
      * @returns The target selected.
      */
+    // eslint-disable-next-line complexity
     selectTarget(prompt: string, card: Card | undefined, forceSide: SelectTargetAlignment, forceClass: SelectTargetClass, flags: SelectTargetFlag[] = []): Target | false {
         if (flags.includes('allowLocations') && forceClass !== 'hero') {
             const locations = game.board[this.plr.id].filter(m => m.type === 'Location' && m.cooldown === 0 && !this.usedLocationsThisTurn.includes(m));

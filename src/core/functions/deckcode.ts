@@ -519,6 +519,7 @@ export const deckcodeFunctions = {
      *
      * @returns The Hearthstone.js deckcode
      */
+    // eslint-disable-next-line complexity
     fromVanilla(plr: Player, code: string): string {
         // Use the 'deckstrings' library's decode
         const deckWithFormat: deckstrings.DeckDefinition = deckstrings.decode(code);

@@ -16,6 +16,7 @@ const {game, player1, player2} = createGame();
  * @param card The vanilla card
  * @param debug If it should use debug mode
  */
+// eslint-disable-next-line complexity
 export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CcType) {
     // Harvest info
     let cardClass = game.lodash.capitalize(card.cardClass ?? 'Neutral') as CardClass;

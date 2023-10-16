@@ -274,6 +274,7 @@ export const cardInteract = {
      *
      * @returns The readable card
      */
+    // eslint-disable-next-line complexity
     getReadable(card: Card, i = -1, _depth = 0): string {
         /**
          * If it should show detailed errors regarding depth.
