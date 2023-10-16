@@ -129,24 +129,13 @@ export const cardFunctions = {
      *
      * @returns The blueprint of the card
      */
-    getFromName(name: string | number, refer = true): Card | undefined {
-        let card;
-
-        for (const c of this.getAll(false)) {
-            if (typeof name === 'number') {
-                continue;
-            }
-
-            if (c.name.toLowerCase() === name.toLowerCase()) {
-                card = c;
-            }
+    getFromName(name: string, refer = true): Card | undefined {
+        const id = this.getFromId(Number.parseInt(name, 10), false);
+        if (id && refer) {
+            return id;
         }
 
-        if (!card && refer) {
-            card = this.getFromId(name, false);
-        }
-
-        return card;
+        return this.getAll(false).find(c => c.name.toLowerCase() === name.toLowerCase());
     },
 
     /**
@@ -157,7 +146,7 @@ export const cardFunctions = {
      *
      * @returns The blueprint of the card
      */
-    getFromId(id: number | string, refer = true): Card | undefined {
+    getFromId(id: number, refer = true): Card | undefined {
         const card = this.getAll(false).find(c => c.id === id);
 
         if (!card && refer) {
