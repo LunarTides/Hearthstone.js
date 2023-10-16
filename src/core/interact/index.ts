@@ -71,37 +71,38 @@ export const interact = {
      *
      * @returns The chosen answer(s) index(es)
      */
-    chooseOne(prompt: string, options: string[], times = 1): number | undefined | Array<number | undefined> {
-        game.interact.info.printAll(game.player);
-
-        const choices = [];
+    chooseOne(times: number, ...prompts: string[]): number[] {
+        const choices: number[] = [];
+        let chosen = 0;
 
         for (let _ = 0; _ < times; _++) {
+            game.interact.info.printAll(game.player);
+
             if (game.player.ai) {
-                choices.push(game.player.ai.chooseOne(options));
+                const ai = game.player.ai.chooseOne(prompts);
+                if (!ai) {
+                    continue;
+                }
+
+                chosen++;
+                choices.push(ai);
                 continue;
             }
 
-            let p = `\n${prompt} [`;
+            let p = `\nChoose ${times - chosen}:\n`;
 
-            for (const [i, v] of options.entries()) {
-                p += `${i + 1}: ${v}, `;
+            for (const [i, v] of prompts.entries()) {
+                p += `${i + 1}: ${v},\n`;
             }
 
-            p = p.slice(0, -2);
-            p += '] ';
-
-            const choice = game.input(p);
-            if (!game.lodash.parseInt(choice)) {
+            const choice = game.lodash.parseInt(game.input(p));
+            if (!choice || choice < 1 || choice > prompts.length) {
                 game.pause('<red>Invalid input!</red>\n');
-                return this.chooseOne(prompt, options, times);
+                return this.chooseOne(times, ...prompts);
             }
 
-            choices.push(game.lodash.parseInt(choice) - 1);
-        }
-
-        if (times === 1) {
-            return choices[0];
+            chosen++;
+            choices.push(choice - 1);
         }
 
         return choices;
