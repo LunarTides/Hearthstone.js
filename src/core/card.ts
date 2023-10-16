@@ -1227,19 +1227,19 @@ export class Card {
     }
 
     /**
-     * Replaces the placeholders (`{0}`) with a more technical format that the rest of the game can understand.
+     * Replaces the placeholders (`{placeholder}`) with a more technical format that the rest of the game can understand.
      *
      * @example
-     * card.text = "The current turn count is {0}";
+     * card.text = "The current turn count is {turns}";
      * card.placeholders = [(plr, self) => {
-     *     const turns = Math.ceil(game.turns / 2);
+     *     const turns = game.functions.util.getTraditionalTurnCounter();
      *
-     *     return {0: turns};
+     *     return {turns};
      * }];
      * card.replacePlaceholders();
      *
-     * // The `{ph:0}` tags are replaced when displaying cards.
-     * assert.equal(card.text, "The current turn count is {ph:0} placeholder {/ph}");
+     * // The `{ph:turns}` tag is replaced when displaying the card.
+     * assert.equal(card.text, "The current turn count is {ph:turns}");
      *
      * @returns Success
      */
@@ -1250,8 +1250,9 @@ export class Card {
 
         const temporaryPlaceholder = this.activate('placeholders');
         if (!(Array.isArray(temporaryPlaceholder))) {
+            // TODO: Maybe throw an error?
             return false;
-        } // Maybe throw an error?
+        }
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const placeholder = temporaryPlaceholder[0];
@@ -1264,11 +1265,8 @@ export class Card {
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         for (const p of Object.entries(placeholder)) {
-            const [key, _] = p;
-            const replacement = `{ph:${key}} placeholder {/ph}`;
-
-            this.text = this.text?.replace(new RegExp(`{ph:${key}} .*? {/ph}`, 'g'), replacement);
-            this.text = this.text?.replaceAll(`{${key}}`, replacement);
+            const [key] = p;
+            this.text = this.text?.replaceAll(`{${key}}`, `{ph:${key}}`);
         }
 
         return true;

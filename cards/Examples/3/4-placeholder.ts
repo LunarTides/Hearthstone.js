@@ -26,8 +26,8 @@ export const blueprint: Blueprint = {
 
     // This function will be run every tick, and will replace the placeholders in the description with this function's return value.
     placeholders(plr, self) {
-        // All occurances of `{0}` will be replaced by the value in `game.turns`
-        // All `{1}` will be replaced by 'haha lol'
+        // All occurances of `{turns}` will be replaced by the value in `game.turns`
+        // All `{laugh}` will be replaced by 'haha lol'
         // All `{next thing is}` will be replaced by 'The next thing is:'
         // The `{placeholder without replacement}` doesn't have a replacement, so it will remain '{placeholder without replacement}'
         const turns = game.functions.util.getTraditionalTurnCounter();
@@ -43,7 +43,7 @@ export const blueprint: Blueprint = {
 
     test(plr, self) {
         self.replacePlaceholders();
-        assert.equal(self.text, 'Battlecry: Gain mana equal to the turn counter. (Currently {ph:0} placeholder {/ph}, {ph:1} placeholder {/ph}, {ph:0} placeholder {/ph}, {ph:next thing is} placeholder {/ph} {ph:10} placeholder {/ph}, {placeholder without replacement})');
+        assert.equal(self.text, 'Battlecry: Gain mana equal to the turn counter. (Currently {ph:turns}, {ph:laugh}, {ph:turns}, {ph:next thing is} {ph:test}, {placeholder without replacement})');
         assert.equal(game.interact.card.doPlaceholders(self), 'Battlecry: Gain mana equal to the turn counter. (Currently 1, haha lol, 1, The next thing is: test, {placeholder without replacement})');
 
         game.endTurn();

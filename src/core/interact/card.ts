@@ -201,7 +201,7 @@ export const cardInteract = {
      * @return The modified description with placeholders replaced.
      */
     doPlaceholders(card: Card, overrideText = '', _depth = 0): string {
-        let reg = /{ph:(.*?)} .*? {\/ph}/;
+        let reg = /{ph:(.*?)}/;
 
         let text = overrideText;
         if (!overrideText) {
