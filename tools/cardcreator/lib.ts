@@ -185,6 +185,11 @@ ${runes}${keywords}
 
     ${ability.toLowerCase()}(plr, self${triggerText} {
         // ${cleanedDesc}${extraPassiveCode}${extraNewline}
+    },
+
+    test(plr, self) {
+        // Unit testing
+        assert(false);
     },`;
     }
 
@@ -255,11 +260,6 @@ import {type Blueprint${passiveImport}} from '@Game/types.js';
 
 export const blueprint: Blueprint = {
     ${contentArray.join(',\n    ')},${fileId}${createAbility}${ability}
-
-    test(plr, self) {
-        // Unit testing
-        assert(false);
-    },
 };
 `;
 
