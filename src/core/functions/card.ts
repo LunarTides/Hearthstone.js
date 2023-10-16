@@ -130,7 +130,7 @@ export const cardFunctions = {
      * @returns The blueprint of the card
      */
     getFromName(name: string, refer = true): Card | undefined {
-        const id = this.getFromId(Number.parseInt(name, 10), false);
+        const id = this.getFromId(game.lodash.parseInt(name), false);
         if (id && refer) {
             return id;
         }
