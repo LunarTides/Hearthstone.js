@@ -9,7 +9,7 @@ export const infoInteract = {
         game.interact.cls();
 
         const {info} = game.config;
-        const versionDetail = game.player.detailedView ? 4 : 3;
+        const versionDetail = game.player.detailedView || game.config.general.debug ? 4 : 3;
 
         const watermarkString = `HEARTHSTONE.JS V${game.functions.info.version(versionDetail)}`;
         const border = '-'.repeat(watermarkString.length + 2);
