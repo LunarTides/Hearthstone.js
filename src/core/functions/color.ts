@@ -193,6 +193,8 @@ export const colorFunctions = {
 
             if (tag === 'b') {
                 tag = 'bold';
+            } else if (tag === 'i') {
+                tag = 'italic';
             }
 
             let tagFuncString = bg ? 'bg' + game.lodash.capitalize(tag) : tag;
