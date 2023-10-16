@@ -371,8 +371,8 @@ export const cardInteract = {
             return sb;
         }
 
-        const excludedKeywords: CardKeyword[] = ['Magnetic', 'Corrupt'];
-        const keywords = excludedKeywords.filter(k => card.hasKeyword(k));
+        const excludedKeywords = new Set<CardKeyword>(['Magnetic', 'Corrupt']);
+        const keywords = Object.keys(card.keywords).filter(k => !excludedKeywords.has(k as CardKeyword));
         const keywordsString = keywords.length > 0 ? ` <gray>{${keywords.join(', ')}}</gray>` : '';
         sb += keywordsString;
 
