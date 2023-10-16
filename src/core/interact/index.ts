@@ -373,17 +373,25 @@ export const interact = {
      *
      * @returns Success
      */
-    verifyDiySolution(condition: boolean, fileName = ''): boolean {
-        // TODO: Maybe spawn in diy cards mid-game in normal games to encourage players to solve them. #332
-        // Allow that to be toggled in the config.
+    verifyDiySolution(condition: boolean, card: Card): boolean {
+        if (card.plr.ai) {
+            return false;
+        }
+
+        let success = false;
+
         if (condition) {
             game.log('Success! You did it, well done!');
+            success = true;
         } else {
-            game.log(`Hm. This card doesn't seem to do what it's supposed to do... Maybe you should try to fix it? The card is in: './cards/Examples/DIY/${fileName}'.`);
+            const match = /DIY (\d+)/.exec(card.name);
+            const filename = match ? match[1] : 'unknown';
+
+            game.log(`Hm. This card doesn't seem to do what it's supposed to do... Maybe you should try to fix it? The card is in: './cards/Examples/DIY/${filename}.ts'.`);
         }
 
         game.pause();
-        return true;
+        return success;
     },
 
     /**

@@ -87,11 +87,7 @@ export const blueprint: Blueprint = {
             && game.graveyard.some(p => p.includes(target))
         );
 
-        game.interact.verifyDiySolution(solved, '3.ts');
-
-        if (!solved) {
-            return game.constants.refund;
-        }
+        game.interact.verifyDiySolution(solved, self);
 
         return true;
     },

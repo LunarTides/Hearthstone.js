@@ -5,7 +5,7 @@ import {type Blueprint, type EventValue} from '@Game/types.js';
 
 export const blueprint: Blueprint = {
     name: 'DIY 4',
-    stats: [1, 10],
+    stats: [0, 10],
     text: '<b>This is a DIY card, it does not work by default.</b> Whenever a friendly minion dies, Resurrect it with 1/1 stats.',
     cost: 0,
     type: 'Minion',
@@ -55,9 +55,9 @@ export const blueprint: Blueprint = {
                 && card.plr === plr
         ));
 
-        game.interact.verifyDiySolution(solved, '3.ts');
+        game.interact.verifyDiySolution(solved, self);
         if (!solved) {
-            plr.addToHand(self);
+            self.kill();
         }
 
         self.storage.solved = true;

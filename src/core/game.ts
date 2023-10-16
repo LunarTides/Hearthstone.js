@@ -417,6 +417,11 @@ export class Game {
             op.weapon.resetAttackTimes();
         }
 
+        // Chance to spawn in a diy card
+        if (this.lodash.random(0, 1, true) <= config.advanced.diyCardSpawnChance && config.advanced.spawnInDiyCards) {
+            interact.card.spawnInDiyCard(op);
+        }
+
         // Minion start of turn
         for (const m of this.board[op.id]) {
             // Dormant

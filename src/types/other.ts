@@ -194,6 +194,8 @@ export type GameConfig = {
     };
 
     advanced: {
+        spawnInDiyCards: boolean;
+        diyCardSpawnChance: number;
         dcShowUncollectible: boolean;
         reloadCommandConfirmation: boolean;
         reloadCommandRecompile: boolean;

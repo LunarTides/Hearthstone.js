@@ -141,6 +141,15 @@ export const config: GameConfig = {
     },
 
     advanced: {
+        // If this is true, the game will have a chance to add a DIY card to a player's hand.
+        // This is to encourage players to make their own cards
+        // DIY cards do not do anything by default, so this won't give any advantage.
+        spawnInDiyCards: true,
+
+        // The chance of a DIY card spawning every turn.
+        // This is a number from 0 to 1
+        diyCardSpawnChance: 1 / 100,
+
         // If this is true, the deckcreator will also show collectible cards.
         // These deckcodes will be rejected by the game as psuedo-valid if `config.decks.validate` is false.
         dcShowUncollectible: true,

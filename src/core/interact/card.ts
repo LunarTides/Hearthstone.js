@@ -443,4 +443,20 @@ export const cardInteract = {
         game.log();
         game.pause();
     },
+
+    spawnInDiyCard(player: Player) {
+        // Don't allow ai's to get diy cards
+        if (player.ai) {
+            return;
+        }
+
+        const list = game.functions.card.getAll(false).filter(card => /DIY \d+/.test(card.name));
+        const card = game.lodash.sample(list);
+        if (!card) {
+            return;
+        }
+
+        card.plr = player;
+        player.addToHand(card);
+    },
 };
