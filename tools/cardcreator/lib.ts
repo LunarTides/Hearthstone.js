@@ -133,12 +133,13 @@ export function create(creatorType: CcType, cardType: CardType, blueprint: Bluep
     let extraPassiveCode = '';
     if (isPassive) {
         extraPassiveCode = `
+
         // Only proceed if the correct event key was broadcast
         if (!(key === "")) return;
 
         // Here we cast the value to the correct type.
         // Do not use the '_unknownValue' variable after this.
-        const val = _unknownValue as EventValue<typeof key>;
+        const value = _unknownValue as EventValue<typeof key>;
         `;
     }
 
@@ -165,6 +166,7 @@ export function create(creatorType: CcType, cardType: CardType, blueprint: Bluep
     const createAbility = card.text ? `
 
     create(plr, self) {
+        // Add additional fields here
 ${runes}${keywords}
     },` : '';
 
@@ -176,11 +178,11 @@ ${runes}${keywords}
     // Example 2: '\n\n    battlecry(plr, self) {\n        // Deal 2 damage to the opponent.\n        \n    }'
     if (ability) {
         ability = `
-    
+
     ${ability.toLowerCase()}(plr, self${triggerText} {
-        // ${cleanedDesc}
-        ${extraPassiveCode}
-    }`;
+        // ${cleanedDesc}${extraPassiveCode}
+
+    },`;
     }
 
     // Create a path to put the card in.
@@ -212,7 +214,7 @@ ${runes}${keywords}
         /**
          * Adds double quotes around the string
          */
-        const stringify = (value_: string) => `"${value_}"`;
+        const stringify = (value_: string) => `'${value_}'`;
 
         // If the value is an array, put "["value1", "value2"]", or "[1, 2]", or any combination of those two.
         if (Array.isArray(value)) {
@@ -237,7 +239,7 @@ ${runes}${keywords}
     };
 
     // If the function is passive, add `EventValue` to the list of imports
-    const passiveImport = isPassive ? ', EventValue' : '';
+    const passiveImport = isPassive ? ', type EventValue' : '';
 
     // Add the key/value pairs to the content
     const contentArray = Object.entries(card).filter(c => c[0] !== 'id').map(c => `${c[0]}: ${getTypeValue(c[1])}`);
@@ -245,11 +247,17 @@ ${runes}${keywords}
     // Add the content
     const content = `// Created by the ${creatorType} Card Creator
 
-import { Blueprint${passiveImport} } from "@Game/types.js";
+import assert from 'node:assert';
+import {type Blueprint${passiveImport}} from '@Game/types.js';
 
 export const blueprint: Blueprint = {
     ${contentArray.join(',\n    ')},${fileId}${createAbility}${ability}
-}
+
+    test(plr, self) {
+        // Unit testing
+        assert(false);
+    },
+};
 `;
 
     // The path is now "./cardcreator/../cards/...", replace this with "./cards/..."
