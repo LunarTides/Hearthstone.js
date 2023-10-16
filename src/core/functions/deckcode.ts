@@ -12,6 +12,7 @@ export const deckcodeFunctions = {
      *
      * @returns The deck
      */
+    // eslint-disable-next-line complexity
     import(plr: Player, code: string): Card[] | undefined {
         /**
          * Cause the function to return an error
@@ -122,7 +123,10 @@ export const deckcodeFunctions = {
             const def = c.split(':');
 
             const copies = def[0];
-            const times = game.lodash.parseInt(def[1]) ?? deck.length;
+            let times = game.lodash.parseInt(def[1]);
+            if (Number.isNaN(times)) {
+                times = deck.length;
+            }
 
             const cards = deck.slice(processed, times);
 

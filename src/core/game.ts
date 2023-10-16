@@ -87,7 +87,7 @@ export class Game {
      *
      * Do
      * ```
-     * Math.ceil(game.turns / 2)
+     * game.functions.util.getTraditionalTurnCounter();
      * ```
      * for a more conventional turn counter.
      */
