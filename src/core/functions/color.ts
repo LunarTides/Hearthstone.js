@@ -179,6 +179,11 @@ export const colorFunctions = {
                 bright = true;
             }
 
+            // Remove `dark:` prefix
+            if (tag.startsWith('dark:')) {
+                tag = tag.replace('dark:', '');
+            }
+
             returnValue = handleSpecialTags(index, tag, returnValue, bg);
 
             // Here are the non-special color tags
