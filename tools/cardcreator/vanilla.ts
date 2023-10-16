@@ -48,6 +48,16 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CcT
     // Weapon Info
     const durability = card.durability ?? -1;
 
+    // Get hero power desc
+    let hpCost = 2;
+    let hpText = '';
+
+    const heroPower = game.functions.card.vanilla.getAll().find(c => c.dbfId === card.heroPowerDbfId);
+    if (heroPower) {
+        hpCost = heroPower.cost!;
+        hpText = heroPower.text!;
+    }
+
     // Modify the text
     text = text.replaceAll('\n', ' ');
     text = text.replaceAll('[x]', '');
@@ -117,8 +127,8 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CcT
                 text,
                 cost,
                 type,
-                hpText: '',
-                hpCost: 2,
+                hpText,
+                hpCost,
                 classes: [cardClass],
                 rarity,
                 id: 0,
