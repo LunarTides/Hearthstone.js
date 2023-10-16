@@ -109,6 +109,7 @@ function generateCardPath(...args: [CardClass[], CardType]) {
  *
  * @return The path of the created file.
  */
+// eslint-disable-next-line complexity
 export function create(creatorType: CcType, cardType: CardType, blueprint: BlueprintWithOptional, overridePath?: string, overrideFilename?: string, debug?: boolean) {
     // Validate
     const error = validateBlueprint(blueprint);
@@ -135,12 +136,13 @@ export function create(creatorType: CcType, cardType: CardType, blueprint: Bluep
         extraPassiveCode = `
 
         // Only proceed if the correct event key was broadcast
-        if (!(key === "")) return;
+        if (!(key === '')) {
+            return;
+        }
 
         // Here we cast the value to the correct type.
         // Do not use the '_unknownValue' variable after this.
-        const value = _unknownValue as EventValue<typeof key>;
-        `;
+        const value = _unknownValue as EventValue<typeof key>;`;
     }
 
     const descToClean = type === 'Hero' ? card.hpText : card.text;
@@ -177,11 +179,12 @@ ${runes}${keywords}
     // Example 1: '\n\n    passive(plr, self, key, _unknownValue, eventPlayer) {\n        // Your battlecries trigger twice.\n        ...\n    }',
     // Example 2: '\n\n    battlecry(plr, self) {\n        // Deal 2 damage to the opponent.\n        \n    }'
     if (ability) {
+        const extraNewline = extraPassiveCode ? '' : '\n';
+
         ability = `
 
     ${ability.toLowerCase()}(plr, self${triggerText} {
-        // ${cleanedDesc}${extraPassiveCode}
-
+        // ${cleanedDesc}${extraPassiveCode}${extraNewline}
     },`;
     }
 
