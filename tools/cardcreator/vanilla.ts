@@ -23,7 +23,7 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CcT
     const collectible = card.collectible ?? false;
     const cost = card.cost ?? 0;
     const {name} = card;
-    let rarity = 'Free' as CardRarity;
+    let rarity: CardRarity = 'Free';
     if (card.rarity) {
         rarity = game.lodash.capitalize(card.rarity) as CardRarity;
     }
@@ -40,7 +40,7 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CcT
     }
 
     // Spell info
-    let spellSchool: SpellSchool | undefined;
+    let spellSchool: SpellSchool = 'None';
     if (card.spellSchool) {
         spellSchool = game.lodash.capitalize(card.spellSchool) as SpellSchool;
     }
