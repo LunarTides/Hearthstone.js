@@ -1,6 +1,5 @@
 import {type Card, type Player} from '@Game/internal.js';
 import {type Blueprint} from './blueprint.js';
-import {type CardClass, type CardRarity, type CardType, type SpellSchool} from './card.js';
 import {type EventKey} from './event.js';
 
 /**
@@ -70,66 +69,6 @@ export type SelectTargetFlag = 'allowLocations' | 'forceElusive';
  */
 export type GameConstants = {
     refund: -1;
-};
-
-/**
- * Vanilla Hearthstone's card blueprint.
- */
-export type VanillaCard = {
-    id: string;
-    dbfId: number;
-    name: string;
-    text?: string;
-    flavor?: string;
-    artist?: string;
-    cardClass?: CardClass;
-    collectible?: boolean;
-    cost?: number;
-    mechanics?: string[];
-    rarity?: CardRarity;
-    set: string;
-    race?: CardType;
-    races?: CardType[];
-    type: CardType;
-    spellSchool?: SpellSchool;
-    durability?: number;
-    faction?: string;
-    elite?: boolean;
-    attack?: number;
-    health?: number;
-
-    howToEarn?: string;
-    // All props below this line was found by the vcpropfinder
-    classes?: CardClass[];
-    heroPowerDbfId?: number;
-    referencesTags?: string[];
-    targetingArrowText?: string;
-    overload?: number;
-    spellDamage?: number;
-    collectionText?: string;
-    hasDiamondSkin?: boolean;
-    howToEarnGolden?: string;
-    armor?: number;
-    multiClassGroup?: string;
-    isMiniSet?: boolean;
-    questReward?: string;
-
-    // Likely part of other gamemodes. Useless for this game
-    mercenariesRole?: string;
-    mercenariesAbilityCooldown?: number;
-    techLevel?: number;
-    hideCost?: boolean;
-    hideStats?: boolean;
-    isBattlegroundsPoolMinion?: boolean;
-    battlegroundsPremiumDbfId?: number;
-    battlegroundsNormalDbfId?: number;
-    battlegroundsBuddyDbfId?: number;
-    battlegroundsHero?: boolean;
-    isBattlegroundsBuddy?: boolean;
-    battlegroundsSkinParentId?: number;
-    battlegroundsDarkmoonPrizeTurn?: number;
-    countAsCopyOfDbfId?: number;
-    puzzleType?: number;
 };
 
 /**

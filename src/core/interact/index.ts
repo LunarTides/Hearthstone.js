@@ -36,10 +36,10 @@ export const interact = {
         const debugStatement = allowTestDeck ? ' <gray>(Leave this empty for a test deck)</gray>' : '';
         const deckcode = game.input(`Player ${plr.id + 1}, please type in your deckcode${debugStatement}: `);
 
-        let result: boolean | Card[] | undefined = true;
+        let result = true;
 
         if (deckcode.length > 0) {
-            result = game.functions.deckcode.import(plr, deckcode);
+            result = Boolean(game.functions.deckcode.import(plr, deckcode));
         } else {
             if (!allowTestDeck) {
                 // Give error message
@@ -53,11 +53,7 @@ export const interact = {
             }
         }
 
-        if (result === null) {
-            return false;
-        }
-
-        return true;
+        return result;
     },
 
     // One-time things

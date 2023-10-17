@@ -283,7 +283,7 @@ ${mainContent}
 
     parseLogFile(path: string) {
         if (!game.functions.file.exists(path)) {
-            return new Error('File does not exist');
+            throw new Error('File does not exist');
         }
 
         let content = game.functions.file.read(path).trim();
@@ -296,7 +296,7 @@ ${mainContent}
 
         const matchingChecksum = checksum === game.lodash.last(contentSplit);
         if (!matchingChecksum) {
-            return new Error('Invalid checksum');
+            throw new Error('Invalid checksum');
         }
 
         // Checksum matches
@@ -350,11 +350,8 @@ ${mainContent}
      * @param overrideEvalSafety whether to override the safety check for eval commands (default: false)
      * @return An error if there is a mismatch in log version, otherwise true
      */
-    replayFile(path: string, overrideEvalSafety = false): Error | true {
+    replayFile(path: string, overrideEvalSafety = false): boolean {
         const parsed = this.parseLogFile(path);
-        if (parsed instanceof Error) {
-            return parsed;
-        }
 
         const {header, history, config} = parsed;
 
@@ -364,7 +361,7 @@ ${mainContent}
         // TODO: Verify `header.version` using semver. #328
         const expectedLogVersion = 3;
         if (header.logVersion !== expectedLogVersion) {
-            return new Error(`Mismatch in log version. Expected: ${expectedLogVersion}, Found: ${header.logVersion}`);
+            throw new Error(`Mismatch in log version. Expected: ${expectedLogVersion}, Found: ${header.logVersion}`);
         }
 
         const parsedHistory = history.split('\n').map((l, i) => this.parseInputEventFromHistory(l, i, history));

@@ -9,12 +9,32 @@ const {game, player1, player2} = createGame();
 const props: Record<string, [string, number]> = {};
 const types: Record<string, number> = {};
 
+const stored: Array<[string, number]> = [];
+const storedType = 'mechanics';
+
 function main() {
     const vanillaCards = game.functions.card.vanilla.getAll();
 
     for (const vanillaCard of vanillaCards) {
         for (const ent of Object.entries(vanillaCard)) {
             const [key, value] = ent;
+
+            if (key === storedType) {
+                const values = Array.isArray(value) ? value : [value];
+
+                for (const v of values) {
+                    if (typeof v !== 'string') {
+                        throw new TypeError('v is not a string');
+                    }
+
+                    const s = stored.find(dsa => game.lodash.isEqual(dsa[0], v));
+                    if (s) {
+                        s[1]++;
+                    } else {
+                        stored.push([v, 1]);
+                    }
+                }
+            }
 
             if (Object.keys(props).includes(key)) {
                 const storedType = props[key][0];
@@ -41,6 +61,8 @@ function main() {
     game.log(types);
     game.log('<b>PROPS:</b>');
     game.log(props);
+    game.log('<b>STORED:</b>');
+    game.log(stored.sort((a, b) => b[1] - a[1]));
 }
 
 main();

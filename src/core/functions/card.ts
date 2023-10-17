@@ -81,10 +81,17 @@ const vanilla = {
         // Book of mercenaries
         cards = cards.filter(a => !a.id.startsWith('BOM_'));
         cards = cards.filter(a => !a.mechanics || !a.mechanics.includes('DUNGEON_PASSIVE_BUFF'));
-        cards = cards.filter(a => !a.battlegroundsNormalDbfId);
         cards = cards.filter(a => a.set && !['battlegrounds', 'placeholder', 'vanilla', 'credits'].includes(a.set.toLowerCase()));
         cards = cards.filter(a => a.set && !a.set.includes('PLACEHOLDER_'));
         cards = cards.filter(a => !a.mercenariesRole);
+
+        cards = cards.filter(a => !a.battlegroundsBuddyDbfId);
+        cards = cards.filter(a => !a.battlegroundsDarkmoonPrizeTurn);
+        cards = cards.filter(a => !a.battlegroundsHero);
+        cards = cards.filter(a => !a.battlegroundsNormalDbfId);
+        cards = cards.filter(a => !a.battlegroundsPremiumDbfId);
+        cards = cards.filter(a => !a.battlegroundsSkinParentId);
+        cards = cards.filter(a => !a.isBattlegroundsBuddy);
 
         const filteredCards: VanillaCard[] = [];
 

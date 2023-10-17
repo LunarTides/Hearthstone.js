@@ -1,7 +1,6 @@
 import rl from 'readline-sync';
 import {type Target, type GamePlayCardReturn} from '@Game/types.js';
-import {type Ai, Card, Player} from '../../internal.js';
-import {commands, debugCommands} from './commands.js';
+import {type Ai, Card, Player, commands, debugCommands} from '../../internal.js';
 
 // Override the console methods to force using the wrapper functions
 // Set this variable to false to prevent disabling the console. (Not recommended)
