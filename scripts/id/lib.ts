@@ -38,7 +38,7 @@ function change(startId: number, callback: (id: number) => number, log: boolean)
         const newId = callback(id);
 
         // Set the new id
-        game.functions.file.write(path, content.replace(idRegex, `    id: ${newId}`));
+        game.functions.file.write(path, content.replace(idRegex, `id: ${newId}`));
 
         if (log) {
             game.log(`<bright:green>Updated ${path}</bright:green>`);
