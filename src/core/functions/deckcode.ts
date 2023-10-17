@@ -561,12 +561,14 @@ export const deckcodeFunctions = {
             }
 
             // The card doesn't exist.
-            game.log(`<red>ERROR: Card <yellow>${vanillaCard.name} <bright:yellow>(${vanillaCard.dbfId})</yellow bright:yellow> doesn't exist!</red>`);
+            game.logError(`<red>ERROR: Card <yellow>${vanillaCard.name} <bright:yellow>(${vanillaCard.dbfId})</yellow bright:yellow> doesn't exist!</red>`);
             invalidCards.push(vanillaCard);
         }
 
         if (invalidCards.length > 0) {
             // There was a card in the deck that isn't implemented in Hearthstone.js
+            // Add a newline
+            game.logError();
             throw new Error('Some cards do not currently exist. You cannot play on this deck without them.');
         }
 
