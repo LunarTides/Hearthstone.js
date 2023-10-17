@@ -63,49 +63,48 @@ export const interact = {
     // One-time things
 
     /**
-     * Asks the current player a `prompt` give the user `options` and do it all `times` times
+     * Asks the player to choose an option.
      *
-     * @param prompt The prompt to ask the user
-     * @param options The options to give the user
      * @param times The amount of times to ask
-     *
-     * @returns The chosen answer(s) index(es)
+     * @param prompts [prompt, callback]
      */
-    chooseOne(times: number, ...prompts: string[]): number[] {
-        const choices: number[] = [];
+    chooseOne(times: number, ...prompts: Array<[string, () => void]>): void {
         let chosen = 0;
 
-        for (let _ = 0; _ < times; _++) {
+        while (chosen < times) {
             game.interact.info.printAll(game.player);
 
             if (game.player.ai) {
-                const ai = game.player.ai.chooseOne(prompts);
+                const ai = game.player.ai.chooseOne(prompts.map(p => p[0]));
                 if (!ai) {
                     continue;
                 }
 
                 chosen++;
-                choices.push(ai);
+
+                // Call the callback function
+                prompts[ai][1]();
                 continue;
             }
 
             let p = `\nChoose ${times - chosen}:\n`;
 
             for (const [i, v] of prompts.entries()) {
-                p += `${i + 1}: ${v},\n`;
+                p += `${i + 1}: ${v[0]},\n`;
             }
 
-            const choice = game.lodash.parseInt(game.input(p));
-            if (!choice || choice < 1 || choice > prompts.length) {
+            const choice = game.lodash.parseInt(game.input(p)) - 1;
+            if (Number.isNaN(choice) || choice < 0 || choice >= prompts.length) {
                 game.pause('<red>Invalid input!</red>\n');
-                return this.chooseOne(times, ...prompts);
+                this.chooseOne(times, ...prompts);
+                return;
             }
 
             chosen++;
-            choices.push(choice - 1);
-        }
 
-        return choices;
+            // Call the callback function
+            prompts[choice][1]();
+        }
     },
 
     /**
