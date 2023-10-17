@@ -132,8 +132,7 @@ function sortCards(_cards: Card[]) {
         settings.sort.order = defaultSettings.sort.order;
     }
 
-    const {type} = settings.sort;
-    const {order} = settings.sort;
+    const {type, order} = settings.sort;
 
     const calcOrder = (a: number, b: number) => {
         if (order === 'asc') {
@@ -187,14 +186,14 @@ function sortCards(_cards: Card[]) {
     return sortCards(_cards);
 }
 
-function searchCards(_cards: Card[], sQuery: string) {
-    if (sQuery.length <= 0) {
+function searchCards(_cards: Card[], searchQuery: string) {
+    if (searchQuery.length <= 0) {
         return _cards;
     }
 
     const returnValueCards: Card[] = [];
 
-    const splitQuery = sQuery.split(':');
+    const splitQuery = searchQuery.split(':');
 
     if (splitQuery.length <= 1) {
         // The user didn't specify a key. Do a general search
@@ -223,7 +222,7 @@ function searchCards(_cards: Card[], sQuery: string) {
 
         // Javascript
         if (!returnValue && returnValue !== 0) {
-            game.log(`<red>\nKey '${key}' not valid!</red>`);
+            game.log(`\n<red>Key '${key}' not valid!</red>`);
             return -1;
         }
 
@@ -231,6 +230,14 @@ function searchCards(_cards: Card[], sQuery: string) {
         if (key === 'cost') {
             if (typeof returnValue !== 'number') {
                 throw new TypeError('`ret` is not a number.');
+            }
+
+            if (value === 'even') {
+                return returnValue % 2 === 0;
+            }
+
+            if (value === 'odd') {
+                return returnValue % 2 === 1;
             }
 
             // Mana range (1-10)
@@ -244,19 +251,13 @@ function searchCards(_cards: Card[], sQuery: string) {
                 return returnValue >= min && returnValue <= max;
             }
 
-            if (value === 'even') {
-                return returnValue % 2 === 0;
+            const parsedValue = game.lodash.parseInt(value);
+
+            if (!Number.isNaN(parsedValue)) {
+                return returnValue === parsedValue;
             }
 
-            if (value === 'odd') {
-                return returnValue % 2 === 1;
-            }
-
-            if (!Number.isNaN(game.lodash.parseInt(value))) {
-                return returnValue === game.lodash.parseInt(value);
-            }
-
-            game.log(`<red>\nValue '${value}' not valid!</red>`);
+            game.log(`\n<red>Value '${value}' not valid!</red>`);
             return -1;
         }
 
