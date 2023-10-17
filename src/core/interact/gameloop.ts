@@ -600,12 +600,6 @@ export const gameLoopInteract = {/**
                 }
 
                 case 'history': {
-                    if (flags?.echo === false) {
-                        // Don't do anything
-                    } else {
-                        game.log('<yellow>Cards that are shown are collected while this screen is rendering. This means that it gets the information about the card from where it is when you ran this command, for example; the graveyard. This is why most cards have <1 health.</yellow>');
-                    }
-
                     // History
                     const {history} = game.events;
                     let finished = '';

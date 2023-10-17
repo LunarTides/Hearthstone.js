@@ -242,7 +242,14 @@ export const eventManager: EventManagerType = {
         this.tick(key, value, plr);
 
         if (updateHistory) {
-            this.addHistory(key, value, plr);
+            // Clone the value if it is a card.
+            let historyValue = value;
+            if (value instanceof Card) {
+                historyValue = value.perfectCopy();
+                historyValue.uuid = value.uuid;
+            }
+
+            this.addHistory(key, historyValue, plr);
         }
 
         // Check if the event is suppressed
