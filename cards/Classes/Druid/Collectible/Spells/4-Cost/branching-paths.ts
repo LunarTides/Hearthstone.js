@@ -15,22 +15,18 @@ export const blueprint: Blueprint = {
 
     cast(plr, self) {
         // Choose Twice - Draw a card; Give your minions  +1 Attack; Gain 6 Armor.
-        const chosen = game.interact.chooseOne(2, 'Draw a card', 'Give your minions +1 Attack', 'Gain 6 Armor');
-
-        for (const i of chosen) {
-            if (i === 0) {
-                // Draw a card
-                plr.drawCard();
-            } else if (i === 1) {
-                // Give your minions +1 Attack
-                for (const card of game.board[plr.id]) {
-                    card.addAttack(1);
-                }
-            } else {
-                // Gain 6 Armor
-                plr.addArmor(6);
+        game.interact.chooseOne(2, ['Draw a card', () => {
+            // Draw a card
+            plr.drawCard();
+        }], ['Give your minions +1 Attack', () => {
+            // Give your minions +1 Attack
+            for (const card of game.board[plr.id]) {
+                card.addAttack(1);
             }
-        }
+        }], ['Gain 6 Armor', () => {
+            // Gain 6 Armor
+            plr.addArmor(6);
+        }]);
     },
 
     test(plr, self) {

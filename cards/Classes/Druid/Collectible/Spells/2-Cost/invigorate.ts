@@ -15,15 +15,13 @@ export const blueprint: Blueprint = {
 
     cast(plr, self) {
         // Choose One - Gain an empty Mana Crystal; or Draw a card.
-        const chosen = game.interact.chooseOne(1, 'Gain an empty ManaCrystal', 'Draw a card')[0];
-
-        if (chosen === 0) {
-            // Gain an empty ManaCrystal
+        game.interact.chooseOne(1, ['Gain an empty Mana Crystal', () => {
+            // Gain an empty Mana Crystal
             plr.gainEmptyMana(1);
-        } else {
+        }], ['Draw a card', () => {
             // Draw a card
             plr.drawCard();
-        }
+        }]);
     },
 
     test(plr, self) {
