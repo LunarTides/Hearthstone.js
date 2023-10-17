@@ -23,15 +23,13 @@ export const blueprint: Blueprint = {
 
     heropower(plr, self) {
         // Choose One - Draw a card; or Gain an empty Mana Crystal.
-        const chosen = game.interact.chooseOne(1, 'Draw a card', 'Gain an empty Mana Crystal')[0];
-
-        if (chosen === 0) {
+        game.interact.chooseOne(1, ['Draw a card', () => {
             // Draw a card
             plr.drawCard();
-        } else {
+        }], ['Gain an empty Mana Crystal', () => {
             // Gain an empty ManaCrystal
             plr.gainEmptyMana(1);
-        }
+        }]);
     },
 
     test(plr, self) {

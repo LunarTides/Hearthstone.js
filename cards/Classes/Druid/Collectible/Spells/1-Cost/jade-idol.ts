@@ -15,18 +15,16 @@ export const blueprint: Blueprint = {
 
     cast(plr, self) {
         // Choose One - Summon a Jade Golem; or Shuffle 3 copies of this card into your deck.
-        const chosen = game.interact.chooseOne(1, 'Summon a Jade Golem', 'Shuffle 3 copies of this card into your deck')[0];
-
-        if (chosen === 0) {
-            // Create a Jade Golem
+        game.interact.chooseOne(1, ['Summon a Jade Golem', () => {
+            // Summon a Jade Golem
             const jade = game.functions.card.createJade(plr);
             game.summonMinion(jade, plr);
-        } else {
+        }], ['Shuffle 3 copies of this card into your deck', () => {
             // Shuffle
             for (let i = 0; i < 3; i++) {
                 plr.shuffleIntoDeck(self.imperfectCopy());
             }
-        }
+        }]);
     },
 
     test(plr, self) {
