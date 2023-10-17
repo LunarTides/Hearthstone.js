@@ -111,6 +111,9 @@ function generateCardPath(...args: [CardClass[], CardType]) {
  */
 // eslint-disable-next-line complexity
 export function create(creatorType: CcType, cardType: CardType, blueprint: BlueprintWithOptional, overridePath?: string, overrideFilename?: string, debug?: boolean) {
+    // TODO: Search for keywords in the card text and don't add a passive ability if one was found. And vice versa
+    // TODO: Look for placeholders in the text and add a placeholder ability if it finds one
+
     // Validate
     const error = validateBlueprint(blueprint);
     if (error !== true) {
