@@ -10,6 +10,7 @@ export {eventFunctions as _eventFunctions} from './core/functions/event.js';
 // Interact
 export {cardInteract} from './core/interact/card.js';
 export {infoInteract} from './core/interact/info.js';
+export {commands, debugCommands} from './core/interact/commands.js';
 export {gameLoopInteract} from './core/interact/gameloop.js';
 
 export * from './core/game.js';

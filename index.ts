@@ -80,7 +80,7 @@ function devmode() {
                 break;
             }
 
-			// No default
+            // No default
         }
     });
 }
@@ -109,6 +109,6 @@ userInputLoop('(P)lay, (R)eplay, Create a (D)eck, Developer (M)ode, (E)xit: ', '
             break;
         }
 
-		// No default
+        // No default
     }
 });
