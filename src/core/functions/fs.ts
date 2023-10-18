@@ -138,10 +138,23 @@ export const fsFunctions = {
      * // Reads from "(path to folder where Hearthstone.js is)/Hearthstone.js/cards/.latestId"
      * ```
      */
-    read(_path: string) {
+    read(_path: string, invalidateCache = false): string {
         const path = this.restrictPath(_path);
 
+        if (!game.cache.files) {
+            game.cache.files = {};
+        }
+
+        if (invalidateCache) {
+            // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+            delete game.cache.files[path];
+        } else if (game.cache.files[path]) {
+            return game.cache.files[path] as string;
+        }
+
         const content = fs.readFileSync(path, {encoding: 'utf8'});
+        game.cache.files[path] = content;
+
         return content;
     },
 
