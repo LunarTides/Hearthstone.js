@@ -145,11 +145,13 @@ export const fsFunctions = {
             game.cache.files = {};
         }
 
-        if (invalidateCache) {
+        const cached = game.cache.files[path] as string | undefined;
+
+        if (invalidateCache && cached) {
             // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
             delete game.cache.files[path];
-        } else if (game.cache.files[path]) {
-            return game.cache.files[path] as string;
+        } else if (cached) {
+            return cached;
         }
 
         const content = fs.readFileSync(path, {encoding: 'utf8'});

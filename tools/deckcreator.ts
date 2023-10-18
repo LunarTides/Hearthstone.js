@@ -634,7 +634,7 @@ function deckcode(parseVanillaOnPseudo = false) {
 
     if (settings.deckcode.format === 'vanilla' && (parseVanillaOnPseudo || !_deckcode.error)) {
         // Don't convert if the error is unrecoverable
-        if (!_deckcode.error?.recoverable) {
+        if (_deckcode.error && !_deckcode.error.recoverable) {
             return _deckcode;
         }
 
