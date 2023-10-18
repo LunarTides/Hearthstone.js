@@ -1467,4 +1467,21 @@ export class Card {
 
         return choice;
     }
+
+    /**
+     * Bumps the invoke count for a card.
+     *
+     * @param storageName The name where the info is stored. I recommend "invokeCount". You can get that information from `card.storage[storageName]` afterwards.
+     */
+    galakrondBump(storageName: string) {
+        if (!this.storage[storageName]) {
+            this.storage[storageName] = 0;
+        }
+
+        if (this.storage[storageName] >= 3) {
+            this.storage[storageName] = 3;
+        }
+
+        this.storage[storageName]++;
+    }
 }

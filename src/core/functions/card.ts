@@ -1,7 +1,7 @@
 import {createHash} from 'node:crypto';
 import {type CardLike, type VanillaCard, type CardClass, type MinionTribe, type CardClassNoNeutral, type Blueprint, type CardType} from '@Game/types.js';
 import {Card, CardError, type Player} from '../../internal.js';
-import * as cards from '../../../cards/exports.js';
+import * as blueprints from '../../../cards/exports.js';
 
 const vanilla = {
     /**
@@ -250,7 +250,7 @@ export const cardFunctions = {
      */
     importAll() {
         this.generateExports();
-        game.blueprints = Object.values(cards);
+        game.blueprints = Object.values(blueprints);
 
         if (!this.runBlueprintValidator()) {
             throw new Error('Some cards are invalid. Please fix these issues before playing.');
@@ -346,24 +346,6 @@ export const cardFunctions = {
         const y = Math.ceil((x + 1) / 2) + Math.round(x * 0.15);
 
         return y || 1;
-    },
-
-    /**
-     * Bumps the invoke count for a card.
-     *
-     * @param card The card. Just put in `self`.
-     * @param storageName The name where the info is stored. I recommend "invokeCount". You can get that information from `card.storage[storageName]` afterwards.
-     */
-    galakrondBump(card: Card, storageName: string) {
-        if (!card.storage[storageName]) {
-            card.storage[storageName] = 0;
-        }
-
-        if (card.storage[storageName] >= 3) {
-            card.storage[storageName] = 3;
-        }
-
-        card.storage[storageName]++;
     },
 
     createCardError(message: string) {

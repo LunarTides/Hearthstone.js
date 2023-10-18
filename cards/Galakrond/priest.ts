@@ -50,7 +50,7 @@ export const blueprint: Blueprint = {
     },
 
     invoke(plr, self) {
-        game.functions.card.galakrondBump(self, 'invokeCount');
+        self.galakrondBump('invokeCount');
     },
 
     placeholders(plr, self) {
