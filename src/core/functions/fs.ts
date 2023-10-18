@@ -1,13 +1,5 @@
 // It only confines these functions to the Hearthstone.js directory. Look in the fs wrapper functions in this file to confirm.
-import {
-    writeFileSync as fsWriteFileSync,
-    readFileSync as fsReadFileSync,
-    rmSync as fsRmSync,
-    existsSync as fsExistsSync,
-    readdirSync as fsReadDirSync,
-    mkdirSync as fsMkDirSync,
-    type Dirent as fsDirent,
-} from 'node:fs';
+import fs from 'node:fs';
 import {dirname as pathDirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
@@ -21,9 +13,9 @@ const directory = {
      * // Reads the folder at "(path to folder where Hearthstone.js is)/Hearthstone.js/cards"
      * ```
      */
-    read(_path: string): fsDirent[] {
+    read(_path: string): fs.Dirent[] {
         const path = game.functions.file.restrictPath(_path);
-        return fsReadDirSync(path, {withFileTypes: true});
+        return fs.readdirSync(path, {withFileTypes: true});
     },
 
     /**
@@ -37,7 +29,7 @@ const directory = {
      */
     create(_path: string, recursive = false) {
         const path = game.functions.file.restrictPath(_path);
-        return fsMkDirSync(path, {recursive});
+        return fs.mkdirSync(path, {recursive});
     },
 
     /**
@@ -51,7 +43,7 @@ const directory = {
      */
     delete(_path: string) {
         const path = game.functions.file.restrictPath(_path);
-        fsRmSync(path);
+        fs.rmSync(path);
     },
 
     /**
@@ -65,7 +57,7 @@ const directory = {
      */
     rmrf(_path: string) {
         const path = game.functions.file.restrictPath(_path);
-        fsRmSync(path, {force: true, recursive: true});
+        fs.rmSync(path, {force: true, recursive: true});
     },
 
     /**
@@ -74,7 +66,7 @@ const directory = {
      * @param path By default, this is the cards folder (not in dist)
      * @param extension The extension to look for in cards. By default, this is ".ts"
      */
-    searchCards(callback: (path: string, content: string, file: fsDirent) => void, path = '/cards', extension = '.ts') {
+    searchCards(callback: (path: string, content: string, file: fs.Dirent) => void, path = '/cards', extension = '.ts') {
         path = path.replaceAll('\\', '/');
 
         for (const file of this.read(path)) {
@@ -134,7 +126,7 @@ export const fsFunctions = {
      */
     write(_path: string, content: string) {
         const path = this.restrictPath(_path);
-        fsWriteFileSync(path, content);
+        fs.writeFileSync(path, content);
     },
 
     /**
@@ -148,7 +140,9 @@ export const fsFunctions = {
      */
     read(_path: string) {
         const path = this.restrictPath(_path);
-        return fsReadFileSync(path, {encoding: 'utf8'});
+
+        const content = fs.readFileSync(path, {encoding: 'utf8'});
+        return content;
     },
 
     /**
@@ -162,7 +156,7 @@ export const fsFunctions = {
      */
     delete(_path: string) {
         const path = this.restrictPath(_path);
-        fsRmSync(path);
+        fs.rmSync(path);
     },
 
     /**
@@ -176,7 +170,7 @@ export const fsFunctions = {
      */
     exists(_path: string) {
         const path = this.restrictPath(_path);
-        return fsExistsSync(path);
+        return fs.existsSync(path);
     },
 
     /**

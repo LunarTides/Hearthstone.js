@@ -4,7 +4,6 @@
  * @module Upgrade Cards
  */
 
-import {type Dirent} from 'node:fs';
 import {createGame} from '../src/internal.js';
 import {generateCardExports} from '../src/helper/cards.js';
 
@@ -20,14 +19,14 @@ function upgradeField(data: string, oldValue: string | RegExp, newValue: string,
     return data;
 }
 
-function upgradeCard(path: string, data: string, file: Dirent) {
+function upgradeCard(path: string, data: string, file: any) {
     // TODO: Always add `spellSchool`. #335
     // TODO: Always add `hpCost`. #335
 
     // Yes, this code is ugly. This script is temporary.
     // This will also not work for ALL cards, they are just too flexible.
     // But it should work for all cards that was created using the card creator.
-    const filename = file.name;
+    const filename = file.name as string;
 
     game.log(`--- Found ${filename} ---`);
 
