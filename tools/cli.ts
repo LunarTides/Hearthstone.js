@@ -4,7 +4,6 @@ import * as ccc from '../tools/cardcreator/custom.js'; // Custom Card Creator
 import * as vcc from '../tools/cardcreator/vanilla.js'; // Vanilla Card Creator
 import * as clc from '../tools/cardcreator/class.js'; // Class Creator
 import * as cclib from '../tools/cardcreator/lib.js'; // Class Creator
-import {validateBlueprint} from '../src/helper/validator.js';
 import {type Blueprint} from '../src/types.js';
 import {type CcType} from './cardcreator/lib.js';
 
@@ -156,7 +155,7 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | und
 
                     // Validate it. This will not do the compiler's job for us, only the stuff that the compiler doesn't do.
                     // That means that the blueprint isn't very validated, which means this WILL crash if you create an invalid card.
-                    validateBlueprint(blueprint);
+                    game.functions.card.validateBlueprint(blueprint);
 
                     // The default type is CLI
                     let type = 'CLI';

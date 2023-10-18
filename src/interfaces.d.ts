@@ -1,4 +1,4 @@
-import {type Game} from '../internal.js';
+import {type Game} from './internal.js';
 
 declare global {
     /**

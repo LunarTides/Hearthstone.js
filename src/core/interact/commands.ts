@@ -1,6 +1,5 @@
 import process from 'node:process';
 import {type GameConfig, type EventValue} from '@Game/types.js';
-import {reloadCards} from '../../helper/cards.js';
 import {Card, Player} from '../../internal.js';
 
 const licenseUrl = 'https://github.com/LunarTides/Hearthstone.js/blob/main/LICENSE';
@@ -804,7 +803,7 @@ export const debugCommands: CommandList = {
         let success = true;
 
         success &&= game.interact.info.withStatus('Registering cards', () => {
-            reloadCards(game.functions.file.dirname() + '/dist/cards');
+            game.functions.card.reloadAll(game.functions.file.dirname() + '/dist/cards');
             return true;
         });
 

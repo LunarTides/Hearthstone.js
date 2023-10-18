@@ -5,7 +5,6 @@
  */
 
 import {createGame} from '../src/internal.js';
-import {generateCardExports} from '../src/helper/cards.js';
 
 const {game, player1, player2} = createGame();
 
@@ -111,7 +110,7 @@ function main() {
 
     // Upgrade all cards
     game.functions.file.directory.searchCards(upgradeCard, undefined, '.js');
-    generateCardExports();
+    game.functions.card.generateExports();
 
     // Remove the dist folder
     game.functions.file.directory.rmrf('/dist');

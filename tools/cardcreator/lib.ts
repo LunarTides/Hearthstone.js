@@ -5,8 +5,6 @@
 
 import {createGame} from '../../src/internal.js';
 import {type BlueprintWithOptional, type CardClass, type CardType} from '../../src/types.js';
-import {generateCardExports} from '../../src/helper/cards.js';
-import {validateBlueprint} from '../../src/helper/validator.js';
 
 const {game, player1, player2} = createGame();
 
@@ -115,7 +113,7 @@ export function create(creatorType: CcType, cardType: CardType, blueprint: Bluep
     // TODO: Look for placeholders in the text and add a placeholder ability if it finds one
 
     // Validate
-    const error = validateBlueprint(blueprint);
+    const error = game.functions.card.validateBlueprint(blueprint);
     if (error !== true) {
         game.logError(error);
         return '';
@@ -301,7 +299,7 @@ export const blueprint: Blueprint = {
         }
     }
 
-    generateCardExports();
+    game.functions.card.generateExports();
 
     // Open the defined editor on that card if it has a function to edit, and debug mode is disabled
     if (ability && !debug) {

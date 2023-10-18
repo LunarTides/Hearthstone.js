@@ -1,7 +1,7 @@
-import {type CardLike, type VanillaCard, type CardClass, type MinionTribe, type CardClassNoNeutral} from '@Game/types.js';
+import {createHash} from 'node:crypto';
+import {type CardLike, type VanillaCard, type CardClass, type MinionTribe, type CardClassNoNeutral, type Blueprint, type CardType} from '@Game/types.js';
 import {Card, CardError, type Player} from '../../internal.js';
-import {doImportCards, generateCardExports} from '../../helper/cards.js';
-import {validateBlueprint} from '../../helper/validator.js';
+import * as cards from '../../../cards/exports.js';
 
 const vanilla = {
     /**
@@ -228,7 +228,7 @@ export const cardFunctions = {
         // Validate the cards
         let valid = true;
         for (const card of game.blueprints) {
-            const errorMessage = validateBlueprint(card);
+            const errorMessage = this.validateBlueprint(card);
 
             // Success
             if (errorMessage === true) {
@@ -249,8 +249,8 @@ export const cardFunctions = {
      * @returns Success
      */
     importAll() {
-        generateCardExports();
-        doImportCards();
+        this.generateExports();
+        game.blueprints = Object.values(cards);
 
         if (!this.runBlueprintValidator()) {
             throw new Error('Some cards are invalid. Please fix these issues before playing.');
@@ -368,5 +368,92 @@ export const cardFunctions = {
 
     createCardError(message: string) {
         return new CardError(message);
+    },
+
+    /**
+     * Validates a blueprint
+     *
+     * @returns Success / Error message
+     */
+    validateBlueprint(blueprint: Blueprint): string | boolean {
+        // These are the required fields for all card types.
+        const requiredFieldsTable: {[x in CardType]: string[]} = {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            Minion: ['stats', 'tribe'],
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            Spell: ['spellSchool'],
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            Weapon: ['stats'],
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            Hero: ['hpText', 'hpCost'],
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            Location: ['durability', 'cooldown'],
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            Undefined: [],
+        };
+
+        // We trust the typescript compiler to do most of the work for us, but the type specific code is handled here.
+        const required = requiredFieldsTable[blueprint.type];
+
+        const unwanted = Object.keys(requiredFieldsTable);
+        game.functions.util.remove(unwanted, blueprint.type);
+        game.functions.util.remove(unwanted, 'Undefined');
+
+        let result: string | boolean = true;
+        for (const field of required) {
+            // Field does not exist
+            if (!blueprint[field as keyof Blueprint]) {
+                result = `<bold>'${field}' DOES NOT</bold> exist for that card.`;
+            }
+        }
+
+        for (const key of unwanted) {
+            const fields = requiredFieldsTable[key as CardType];
+
+            for (const field of fields) {
+                // We already require that field. For example, both minions and weapons require stats
+                if (required.includes(field)) {
+                    continue;
+                }
+
+                // We have an unwanted field
+
+                if (blueprint[field as keyof Blueprint]) {
+                    result = `<bold>${field} SHOULD NOT</bold> exist on card type ${blueprint.type}.`;
+                }
+            }
+        }
+
+        return result;
+    },
+
+    generateExports() {
+        let exportContent = '// This file has been automatically created. Do not change this file.\n';
+
+        const list: string[] = [];
+        game.functions.file.directory.searchCards((fullPath, content, file) => {
+            if (!content.includes('export const blueprint')) {
+                return;
+            }
+
+            fullPath = fullPath.replace('.ts', '.js');
+            const relPath = './' + fullPath.split('cards/')[1];
+
+            list.push(relPath);
+        });
+
+        // Sort the list alphabetically so it will remain constant between different file system formats.
+        for (const path of list.sort()) {
+            const hash = createHash('sha256').update(path).digest('hex').toString().slice(0, 7);
+
+            exportContent += `export {blueprint as c${hash}} from '${path}';\n`;
+        }
+
+        game.functions.file.write('/cards/exports.ts', exportContent);
+        game.functions.file.write('/dist/cards/exports.js', exportContent);
+    },
+
+    reloadAll(path?: string) {
+        // TODO: Implement. #323
     },
 };
