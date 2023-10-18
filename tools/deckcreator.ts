@@ -476,11 +476,11 @@ function showRules() {
     game.log('#'.repeat(configText.length));
 }
 
-function findCard(card: string | number): Card | undefined {
+function findCard(card: string): Card | undefined {
     let _card: Card | undefined;
 
     for (const c of Object.values(filteredCards)) {
-        if (c.id === card || (typeof card === 'string' && c.displayName.toLowerCase() === card.toLowerCase())) {
+        if (c.id === game.lodash.parseInt(card) || (typeof card === 'string' && c.displayName.toLowerCase() === card.toLowerCase())) {
             _card = c;
         }
     }
