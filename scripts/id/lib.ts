@@ -11,7 +11,7 @@ const {game, player1, player2} = createGame();
 const idRegex = /id: (\d+)/;
 
 function searchCards(callback: (path: string, content: string, id: number) => void, path?: string) {
-    game.functions.file.directory.searchCards((fullPath, content) => {
+    game.functions.util.searchCardsFolder((fullPath, content) => {
         const idMatch = idRegex.exec(content);
         if (!idMatch) {
             game.logError(`No id found in ${fullPath}`);
@@ -38,7 +38,7 @@ function change(startId: number, callback: (id: number) => number, log: boolean)
         const newId = callback(id);
 
         // Set the new id
-        game.functions.file.write(path, content.replace(idRegex, `id: ${newId}`));
+        game.functions.util.fs('write', path, content.replace(idRegex, `id: ${newId}`));
 
         if (log) {
             game.log(`<bright:green>Updated ${path}</bright:green>`);
@@ -48,10 +48,10 @@ function change(startId: number, callback: (id: number) => number, log: boolean)
     });
 
     if (updated > 0) {
-        const latestId = Number(game.functions.file.read('/cards/.latestId'));
+        const latestId = Number(game.functions.util.fs('read', '/cards/.latestId'));
         const newLatestId = callback(latestId);
 
-        game.functions.file.write('/cards/.latestId', newLatestId.toString());
+        game.functions.util.fs('write', '/cards/.latestId', newLatestId.toString());
     }
 
     if (log) {
@@ -138,13 +138,13 @@ export function validate(log: boolean): [number, number] {
     }
 
     // Check if the .latestId is valid
-    const latestId = game.lodash.parseInt(game.functions.file.read('/cards/.latestId').trim());
+    const latestId = game.lodash.parseInt((game.functions.util.fs('read', '/cards/.latestId') as string).trim());
     if (latestId !== currentId) {
         if (log) {
             game.log('<yellow>Latest id is invalid. Latest id found: %s, latest id in file: %s. Fixing...</yellow>', currentId, latestId);
         }
 
-        game.functions.file.write('/cards/.latestId', currentId.toString());
+        game.functions.util.fs('write', '/cards/.latestId', currentId.toString());
     }
 
     if (log) {

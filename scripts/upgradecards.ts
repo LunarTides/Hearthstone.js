@@ -54,12 +54,12 @@ function upgradeCard(path: string, data: string, file: any) {
 
     // Replace the card's id with a new one
     data = upgradeField(data, /\n {4}id: (\d+),?/, '', 'Removed id from card.');
-    const currentId = Number(game.functions.file.read('/cards/.latestId')) + 1;
+    const currentId = Number(game.functions.util.fs('read', '/cards/.latestId')) + 1;
 
     data = upgradeField(data, /( {4}.+: .+,)(\n\n {4}.*\(plr, (self|card))/, `$1\n    id: ${currentId},$2`, `Card was assigned id ${currentId} pt1.`);
     data = upgradeField(data, /( {4}uncollectible: .*?),?\n}/, `$1,\n    id: ${currentId},\n}`, `Card was assigned id ${currentId} pt2.`);
 
-    game.functions.file.write('/cards/.latestId', `${currentId}`);
+    game.functions.util.fs('write', '/cards/.latestId', `${currentId}`);
 
     if (hasPassive) {
         // Find key
@@ -87,7 +87,7 @@ function upgradeCard(path: string, data: string, file: any) {
 
     // Replace .js to .ts
     path = path.replace(filename, filename.replace('.js', '.ts'));
-    game.functions.file.write(path, data);
+    game.functions.util.fs('write', path, data);
 
     game.log(`--- Finished ${filename} ---`);
 }
@@ -101,19 +101,19 @@ function main() {
     }
 
     // Update card extensions
-    game.functions.file.directory.searchCards((fullPath, content) => {
-        game.functions.file.write(fullPath.replace('.mts', '.ts'), content);
-        game.functions.file.delete(fullPath);
+    game.functions.util.searchCardsFolder((fullPath, content) => {
+        game.functions.util.fs('write', fullPath.replace('.mts', '.ts'), content);
+        game.functions.util.fs('rm', fullPath);
 
         game.log(`Updated extension for card ${fullPath.slice(0, -4)}[.mts -> .ts]`);
     }, undefined, '.mts');
 
     // Upgrade all cards
-    game.functions.file.directory.searchCards(upgradeCard, undefined, '.js');
+    game.functions.util.searchCardsFolder(upgradeCard, undefined, '.js');
     game.functions.card.generateExports();
 
     // Remove the dist folder
-    game.functions.file.directory.rmrf('/dist');
+    game.functions.util.fs('rm', '/dist', {recursive: true, force: true});
 
     game.log('Trying to compile...');
 

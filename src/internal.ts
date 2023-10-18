@@ -1,7 +1,6 @@
 // Functions
 export {colorFunctions as _colorFunctions} from './core/functions/color.js';
 export {infoFunctions as _infoFunctions} from './core/functions/info.js';
-export {fsFunctions as _fsFunctions} from './core/functions/fs.js';
 export {deckcodeFunctions as _deckcodeFunctions} from './core/functions/deckcode.js';
 export {cardFunctions as _cardFunctions} from './core/functions/card.js';
 export {utilFunctions as _utilFunctions} from './core/functions/util.js';

@@ -1,3 +1,7 @@
+// It only confines these functions to the Hearthstone.js directory. Look in the fs wrapper functions in this file to confirm.
+import fs from 'node:fs';
+import {dirname as pathDirname} from 'node:path';
+import {fileURLToPath} from 'node:url';
 import childProcess from 'node:child_process';
 import process from 'node:process';
 import {createHash} from 'node:crypto';
@@ -174,8 +178,8 @@ export const utilFunctions = {
         }
 
         // Create a (crash-)log file
-        if (!game.functions.file.exists('/logs')) {
-            game.functions.file.directory.create('/logs');
+        if (!this.fs('exists', '/logs')) {
+            this.fs('mkdir', '/logs');
         }
 
         const dateString = this.getDateAndTime();
@@ -269,7 +273,7 @@ ${mainContent}
         const checksum = createHash('sha256').update(content).digest('hex');
         content += `\n${checksum}  ${filename}`;
 
-        game.functions.file.write(`/logs/${filename}`, content);
+        this.fs('write', `/logs/${filename}`, content);
 
         if (!error) {
             return true;
@@ -282,11 +286,11 @@ ${mainContent}
     },
 
     parseLogFile(path: string) {
-        if (!game.functions.file.exists(path)) {
+        if (!this.fs('exists', path)) {
             throw new Error('File does not exist');
         }
 
-        let content = game.functions.file.read(path).trim();
+        let content = (this.fs('read', path) as string).trim();
         const contentSplit = content.split('\n');
         const filename = path.split('/').pop();
 
@@ -538,5 +542,113 @@ ${mainContent}
         }
 
         return game.player2;
+    },
+
+    fs(callback: keyof typeof fs, path: string, ...args: any[]): any {
+        path = this.restrictPath(path);
+        if (callback.endsWith('Sync')) {
+            callback = callback.replace('Sync', '') as keyof typeof fs;
+        }
+
+        if (callback === 'write') {
+            callback = 'writeFile';
+        }
+
+        if (callback === 'read') {
+            callback = 'readFile';
+        }
+
+        const func = fs[callback + 'Sync' as keyof typeof fs];
+        if (typeof func !== 'function') {
+            throw new TypeError(`Invalid fs function: ${callback}Sync`);
+        }
+
+        if (callback === 'readFile') {
+            if (!game.cache.files) {
+                game.cache.files = {};
+            }
+
+            const cached = game.cache.files[path] as string | undefined;
+
+            if (args[0]?.invalidateCache && cached) {
+                // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+                delete game.cache.files[path];
+            } else if (cached) {
+                return cached;
+            }
+
+            const content = fs.readFileSync(path, {encoding: 'utf8'});
+            game.cache.files[path] = content;
+            return content;
+        }
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        return (func as (path: string, ...args: any[]) => any)(path, ...args);
+    },
+
+    /**
+     * Calls `callback` on all cards in the cards folder.
+     *
+     * @param path By default, this is the cards folder (not in dist)
+     * @param extension The extension to look for in cards. By default, this is ".ts"
+     */
+    searchCardsFolder(callback: (path: string, content: string, file: fs.Dirent) => void, path = '/cards', extension = '.ts') {
+        path = path.replaceAll('\\', '/');
+
+        for (const file of this.fs('readdir', path, {withFileTypes: true}) as fs.Dirent[]) {
+            const fullPath = `${path}/${file.name}`;
+
+            if (file.name.endsWith(extension)) {
+                if (file.name === 'exports.ts') {
+                    continue;
+                }
+
+                // It is an actual card.
+                const data = this.fs('read', fullPath) as string;
+
+                callback(fullPath, data, file);
+            } else if (file.isDirectory()) {
+                this.searchCardsFolder(callback, fullPath, extension);
+            }
+        }
+    },
+
+    /**
+     * Confines the path specified to the Hearthstone.js folder.
+     * There are no known ways to bypass this.
+     */
+    restrictPath(path: string): string {
+        path = path.replaceAll('\\', '/');
+        path = path.replaceAll(this.dirname(), '');
+
+        // Prevent '..' usage
+        path = path.replaceAll('../', '');
+        path = path.replaceAll('..', '');
+
+        // Remove "~/", "./", or "/" from the start of the path
+        path = path.replace(/^[~.]?\//, '');
+
+        // The path doesn't begin with a "/", so we add one in
+        path = this.dirname() + '/' + path;
+
+        return path;
+    },
+
+    /**
+     * Returns the directory name of the program.
+     *
+     * # Example
+     * ```ts
+     * // Outputs: "(path to the folder where hearthstone.js is stored)/Hearthstone.js/cards/the_coin.ts"
+     * game.log(dirname() + "/cards/the_coin.ts");
+     * ```
+     *
+     * @return The directory name.
+     */
+    dirname(): string {
+        let dirname = pathDirname(fileURLToPath(import.meta.url)).replaceAll('\\', '/');
+        dirname = dirname.split('/dist')[0];
+
+        return dirname;
     },
 };

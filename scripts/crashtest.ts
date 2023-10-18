@@ -9,7 +9,7 @@ const gamesEnv = process.env.games ?? '';
 const games = game.lodash.parseInt(gamesEnv) ?? 100;
 
 function main() {
-    const decks = JSON.parse(game.functions.file.read('/decks.json')) as string[];
+    const decks = JSON.parse(game.functions.util.fs('read', '/decks.json') as string) as string[];
 
     game.logWarn(`Press enter to play ${games} games`);
     if (!process.env.games) {

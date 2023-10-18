@@ -803,7 +803,7 @@ export const debugCommands: CommandList = {
         let success = true;
 
         success &&= game.interact.info.withStatus('Registering cards', () => {
-            game.functions.card.reloadAll(game.functions.file.dirname() + '/dist/cards');
+            game.functions.card.reloadAll(game.functions.util.dirname() + '/dist/cards');
             return true;
         });
 

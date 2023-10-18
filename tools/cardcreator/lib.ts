@@ -71,7 +71,7 @@ function generateCardPath(...args: [CardClass[], CardType]) {
     let [classes, type] = args;
 
     // DO NOT CHANGE THIS
-    const staticPath = game.functions.file.dirname() + '/cards/';
+    const staticPath = game.functions.util.dirname() + '/cards/';
 
     // You can change everything below this comment
     const classesString = classes.join('/');
@@ -199,7 +199,7 @@ ${runes}${keywords}
 
     // If this function was passed in a path, use that instead.
     if (overridePath) {
-        path = game.functions.file.dirname() + overridePath;
+        path = game.functions.util.dirname() + overridePath;
     }
 
     // Create a filename. Example: "Test Card" -> "test_card.ts"
@@ -211,7 +211,7 @@ ${runes}${keywords}
     }
 
     // Get the latest card-id
-    const id = game.lodash.parseInt(game.functions.file.read('/cards/.latestId')) + 1;
+    const id = game.lodash.parseInt(game.functions.util.fs('readFile', '/cards/.latestId') as string) + 1;
     const fileId = `\n    id: ${id},`;
 
     // Generate the content of the card
@@ -279,15 +279,15 @@ export const blueprint: Blueprint = {
         // If debug mode is disabled, write the card to disk.
 
         // Increment the id in '.latestId' by 1
-        game.functions.file.write('/cards/.latestId', id.toString());
+        game.functions.util.fs('write', '/cards/.latestId', id.toString());
 
         // If the path the card would be written to doesn't exist, create it.
-        if (!game.functions.file.exists(path)) {
-            game.functions.file.directory.create(path, true);
+        if (!game.functions.util.fs('exists', path)) {
+            game.functions.util.fs('mkdir', path, {recursive: true});
         }
 
         // Write the file to the path
-        game.functions.file.write(filePath, content);
+        game.functions.util.fs('write', filePath, content);
 
         game.log('File created at: "' + filePath + '"');
 

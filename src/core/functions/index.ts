@@ -5,7 +5,6 @@
 
 import {
     _deckcodeFunctions,
-    _fsFunctions,
     _cardFunctions,
     _colorFunctions,
     _utilFunctions,
@@ -19,11 +18,6 @@ export const functions = {
      * Deckcode related functions
      */
     deckcode: _deckcodeFunctions,
-
-    /**
-     * File-system related functions
-     */
-    file: _fsFunctions,
 
     /**
      * Card related functions

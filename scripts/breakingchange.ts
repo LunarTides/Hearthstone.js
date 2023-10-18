@@ -15,16 +15,16 @@ let finishedCardsPath = 'patchedCards.txt';
 
 function getFinishedCards(path: string) {
     // If the file doesn't exist, return.
-    if (!game.functions.file.exists(path)) {
+    if (!game.functions.util.fs('exists', path)) {
         return;
     }
 
-    const cards = game.functions.file.read(path);
+    const cards = game.functions.util.fs('read', path) as string;
     finishedCards = cards.split('\n');
 }
 
 function searchCards(query: RegExp | string) {
-    game.functions.file.directory.searchCards((fullPath, content) => {
+    game.functions.util.searchCardsFolder((fullPath, content) => {
         // The query is not a regular expression
         if (typeof query === 'string') {
             if (content.includes(query)) {
@@ -79,8 +79,8 @@ function main() {
         if (cmd.toLowerCase().startsWith('delete')) {
             game.log('Deleting file...');
 
-            if (game.functions.file.exists(finishedCardsPath)) {
-                game.functions.file.delete(finishedCardsPath);
+            if (game.functions.util.fs('exists', finishedCardsPath)) {
+                game.functions.util.fs('rm', finishedCardsPath);
                 game.log('File deleted!');
             } else {
                 game.log('File not found!');
@@ -104,7 +104,7 @@ function main() {
         }
 
         // `card` is the path to that card.
-        const success = game.functions.util.runCommandAsChildProcess(`${game.config.general.editor} "${game.functions.file.dirname() + path}"`);
+        const success = game.functions.util.runCommandAsChildProcess(`${game.config.general.editor} "${game.functions.util.dirname() + path}"`);
         // The `runCommandAsChildProcess` shows an error message for us, but we need to pause.
         if (!success) {
             game.pause();
@@ -116,8 +116,8 @@ function main() {
         if (matchingCards.length <= 0) {
             // All cards have been patched
             game.pause('All cards patched!\n');
-            if (game.functions.file.exists(finishedCardsPath)) {
-                game.functions.file.delete(finishedCardsPath);
+            if (game.functions.util.fs('exists', finishedCardsPath)) {
+                game.functions.util.fs('rm', finishedCardsPath);
             }
 
             // Exit so it doesn't save
@@ -126,7 +126,7 @@ function main() {
     }
 
     // Save progress
-    game.functions.file.write(finishedCardsPath, finishedCards.join('\n'));
+    game.functions.util.fs('write', finishedCardsPath, finishedCards.join('\n'));
 }
 
 main();

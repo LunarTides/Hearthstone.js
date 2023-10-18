@@ -7,6 +7,7 @@
  * @module Index
  */
 
+import {type Dirent} from 'node:fs';
 import {validate as validateIds} from '../scripts/id/lib.js';
 import {createGame} from './internal.js';
 
@@ -70,7 +71,7 @@ const outdatedExtensions: string[] = [];
 const updatedCards: string[] = [];
 function warnAboutOutdatedCards() {
     // TODO: This doesn't quite work. #336
-    findOutdatedCards(game.functions.file.dirname() + '/cards');
+    findOutdatedCards(game.functions.util.dirname() + '/cards');
     outdatedCards = outdatedCards.filter(card => !updatedCards.includes(card));
 
     if (outdatedCards.length <= 0 && outdatedExtensions.length <= 0) {
@@ -101,7 +102,7 @@ function findOutdatedCards(path: string) {
         return;
     }
 
-    for (const file of game.functions.file.directory.read(path)) {
+    for (const file of game.functions.util.fs('readdir', path, {withFileTypes: true}) as Dirent[]) {
         const p = `${path}/${file.name}`.replace('/dist/..', '');
 
         if (file.name.endsWith('.mts')) {

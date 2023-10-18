@@ -1,4 +1,5 @@
 import {createHash} from 'node:crypto';
+import {type Dirent} from 'node:fs';
 import {type CardLike, type VanillaCard, type CardClass, type MinionTribe, type CardClassNoNeutral, type Blueprint, type CardType} from '@Game/types.js';
 import {Card, CardError, type Player} from '../../internal.js';
 import * as blueprints from '../../../cards/exports.js';
@@ -20,8 +21,8 @@ const vanilla = {
      */
     getAll(): VanillaCard[] {
         const fileLocation = '/vanillacards.json';
-        if (game.functions.file.exists(fileLocation)) {
-            return JSON.parse(game.functions.file.read(fileLocation)) as VanillaCard[];
+        if (game.functions.util.fs('exists', fileLocation)) {
+            return JSON.parse(game.functions.util.fs('read', fileLocation) as string) as VanillaCard[];
         }
 
         throw new Error('Cards file not found! Run \'npm run script:vanilla:generator\' (requires an internet connection), then try again.');
@@ -305,7 +306,7 @@ export const cardFunctions = {
     getClasses(): CardClassNoNeutral[] {
         const classes: CardClassNoNeutral[] = [];
 
-        for (const file of game.functions.file.directory.read('/cards/StartingHeroes')) {
+        for (const file of game.functions.util.fs('readdir', '/cards/StartingHeroes', {withFileTypes: true}) as Dirent[]) {
             // Something is wrong with the file name.
             if (!file.name.endsWith('.ts')) {
                 continue;
@@ -413,7 +414,7 @@ export const cardFunctions = {
         let exportContent = '// This file has been automatically created. Do not change this file.\n';
 
         const list: string[] = [];
-        game.functions.file.directory.searchCards((fullPath, content, file) => {
+        game.functions.util.searchCardsFolder((fullPath, content, file) => {
             if (!content.includes('export const blueprint')) {
                 return;
             }
@@ -431,8 +432,8 @@ export const cardFunctions = {
             exportContent += `export {blueprint as c${hash}} from '${path}';\n`;
         }
 
-        game.functions.file.write('/cards/exports.ts', exportContent);
-        game.functions.file.write('/dist/cards/exports.js', exportContent);
+        game.functions.util.fs('write', '/cards/exports.ts', exportContent);
+        game.functions.util.fs('write', '/dist/cards/exports.js', exportContent);
     },
 
     reloadAll(path?: string) {
