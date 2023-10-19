@@ -2,7 +2,7 @@
  * Card
  * @module Card
  */
-import {v4 as uuidv4} from 'uuid';
+import {randomUUID} from 'node:crypto';
 import {type Player} from '../internal.js';
 import {type Blueprint, type CardAbility, type CardClass, type CardKeyword, type CardRarity, type CardType, type CostType, type EnchantmentDefinition, type GameConfig, type Ability, type MinionTribe, type SpellSchool, type CardBackup} from '../types.js';
 
@@ -357,7 +357,7 @@ export class Card {
      * Randomizes the uuid for this card to prevent cards from being "linked"
      */
     randomizeUuid() {
-        this.uuid = uuidv4();
+        this.uuid = randomUUID();
     }
 
     /**

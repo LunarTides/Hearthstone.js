@@ -28,14 +28,12 @@
     "deckstrings": "^3.1.1",
     "lodash": "^4.17.21",
     "readline-sync": "^1.4.10",
-    "strip-ansi": "^7.1.0",
-    "uuid": "^9.0.1"
+    "strip-ansi": "^7.1.0"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.199",
     "@types/node": "^20.8.4",
     "@types/readline-sync": "^1.4.5",
-    "@types/uuid": "^9.0.5",
     "generate-changelog": "^1.8.0",
     "typescript": "^5.2.2",
     "xo": "^0.56.0"
