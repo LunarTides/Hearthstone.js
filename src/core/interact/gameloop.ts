@@ -277,7 +277,7 @@ export const gameLoopInteract = {/**
             return getReturn(result);
         }
 
-        if (!name.startsWith('/')) {
+        if (!name.startsWith(game.config.advanced.debugCommandPrefix)) {
             return -1;
         }
 

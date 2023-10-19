@@ -141,6 +141,9 @@ export const config: GameConfig = {
     },
 
     advanced: {
+        // You need to type this as the first character(s) to run debug commands
+        debugCommandPrefix: '/',
+
         // If this is true, the game will have a chance to add a DIY card to a player's hand.
         // This is to encourage players to make their own cards
         // DIY cards do not do anything by default, so this won't give any advantage.

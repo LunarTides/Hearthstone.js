@@ -133,6 +133,7 @@ export type GameConfig = {
     };
 
     advanced: {
+        debugCommandPrefix: string;
         spawnInDiyCards: boolean;
         diyCardSpawnChance: number;
         dcShowUncollectible: boolean;
