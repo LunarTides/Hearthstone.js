@@ -89,34 +89,54 @@ export const commands: CommandList = {
         game.interact.info.printName();
         game.log('(In order to run a command; input the name of the command and follow further instruction.)\n');
         game.log('Available commands:');
-        game.log('(name)     - (description)\n');
 
-        game.log('end        - Ends your turn');
-        game.log('attack     - Attack');
-        game.log('hero power - Use your hero power');
-        game.log('history    - Displays a history of actions');
-        game.log('concede    - Forfeits the game');
-        game.log('view       - View a minion');
-        game.log('use        - Use a location card');
-        game.log('detail     - Get more details about opponent');
-        game.log('help       - Displays this message');
-        game.log('version    - Displays the version, branch, your settings preset, and some information about your current version.');
-        game.log('license    - Opens a link to this project\'s license');
+        const bricks = [
+            '(name) - (description)\n',
+
+            'end - Ends your turn',
+            'attack - Attack',
+            'hero power - Use your hero power',
+            'history - Displays a history of actions',
+            'concede - Forfeits the game',
+            'view - View a minion',
+            'use - Use a location card',
+            'detail - Get more details about opponent',
+            'help - Displays this message',
+            'version - Displays the version, branch, your settings preset, and some information about your current version.',
+            'license - Opens a link to this project\'s license',
+        ];
+
+        const debugBricks = [
+            'give (name) - Adds a card to your hand',
+            'eval [log] (code) - Runs the code specified. If the word \'log\' is before the code, instead game.log the code and wait for user input to continue.',
+            'set (category) (name) (value) - Changes a setting to (value). Look in the config files for a list of settings. Example: set advanced debugCommandPrefix !',
+            'debug - Gives you infinite mana, health and armor',
+            'exit - Force exits the game. There will be no winner, and it will take you straight back to the runner.',
+            'history - Displays a history of actions. This doesn\'t hide any information, and is the same thing the log files uses.',
+            'reload | /rl - Reloads the cards and config in the game (Use \'/freload\' or \'/frl\' to ignore the confirmation prompt (or disable the prompt in the advanced config))',
+            'undo - Undoes the last card played. It gives the card back to your hand, and removes it from where it was. (This does not undo the actions of the card)',
+            'cmd - Shows you a list of debug commands you have run, and allows you to rerun them.',
+            'ai - Gives you a list of the actions the ai(s) have taken in the order they took it',
+        ];
+
+        const wall = game.functions.util.createWall(bricks, '-');
+        const debugWall = game.functions.util.createWall(debugBricks, '-');
+
+        // Normal commands
+        for (const brick of wall) {
+            game.log(brick);
+        }
 
         const condColor = (string_: string) => (game.config.general.debug) ? string_ : `<gray>${string_}</gray>`;
-        const p = game.config.advanced.debugCommandPrefix;
+        const debugEnabled = (game.config.general.debug) ? '<bright:green>ON</bright:green>' : '<red>OFF</red>';
 
-        game.log(condColor('\n--- Debug Commands (') + ((game.config.general.debug) ? '<bright:green>ON</bright:green>' : '<red>OFF</red>') + condColor(') ---'));
-        game.log(condColor(p + 'give (name)                   - Adds a card to your hand'));
-        game.log(condColor(p + 'eval [log] (code)             - Runs the code specified. If the word \'log\' is before the code, instead game.log the code and wait for user input to continue.'));
-        game.log(condColor(p + 'set (category) (name) (value) - Changes a setting to (value). Look in the config files for a list of settings. Example: set advanced debugCommandPrefix !'));
-        game.log(condColor(p + 'debug                         - Gives you infinite mana, health and armor'));
-        game.log(condColor(p + 'exit                          - Force exits the game. There will be no winner, and it will take you straight back to the runner.'));
-        game.log(condColor(p + 'history                       - Displays a history of actions. This doesn\'t hide any information, and is the same thing the log files uses.'));
-        game.log(condColor(p + 'reload | /rl                  - Reloads the cards and config in the game (Use \'/freload\' or \'/frl\' to ignore the confirmation prompt (or disable the prompt in the advanced config))'));
-        game.log(condColor(p + 'undo                          - Undoes the last card played. It gives the card back to your hand, and removes it from where it was. (This does not undo the actions of the card)'));
-        game.log(condColor(p + 'cmd                           - Shows you a list of debug commands you have run, and allows you to rerun them.'));
-        game.log(condColor(p + 'ai                            - Gives you a list of the actions the ai(s) have taken in the order they took it'));
+        game.log(condColor(`\n--- Debug Commands (${debugEnabled}) ---`));
+
+        // Debug Commands
+        for (const brick of debugWall) {
+            game.log(condColor(game.config.advanced.debugCommandPrefix + brick));
+        }
+
         game.log(condColor('---------------------------' + ((game.config.general.debug) ? '' : '-')));
 
         game.pause('\nPress enter to continue...\n');
