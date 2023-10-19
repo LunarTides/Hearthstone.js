@@ -16,7 +16,7 @@ export const blueprint: Blueprint = {
 
     cast(plr, self) {
         // Gain 10 Mana.
-        plr.gainMana(10);
+        plr.addMana(10);
     },
 
     test(plr, self) {

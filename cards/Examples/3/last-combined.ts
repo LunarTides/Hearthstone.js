@@ -28,7 +28,7 @@ export const blueprint: Blueprint = {
             turns = 10;
         }
 
-        plr.gainMana(turns);
+        plr.addMana(turns);
     },
 
     condition(plr, self) {

@@ -21,7 +21,7 @@ export const blueprint: Blueprint = {
         // Gain mana equal to the turn counter.
         const turns = game.functions.util.getTraditionalTurnCounter();
 
-        plr.gainMana(turns);
+        plr.addMana(turns);
     },
 
     // This function will be run every tick, and will replace the placeholders in the description with this function's return value.

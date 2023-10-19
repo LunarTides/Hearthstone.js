@@ -417,7 +417,7 @@ export class Player {
      *
      * @returns Success
      */
-    gainMana(mana: number): boolean {
+    addMana(mana: number): boolean {
         this.addEmptyMana(mana);
         this.refreshMana(mana);
 

@@ -380,8 +380,8 @@ export class Card {
         Function Example:
         Blueprint: { name: "The Coin", cost: 0, cast(plr, self): { plr.refreshMana(1, plr.maxMana) } }
                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        Do: this.abilities.cast = [{ plr.gainMana(1) }]
-                                  ^                   ^
+        Do: this.abilities.cast = [{ plr.addMana(1) }]
+                                  ^                  ^
                                   This is in an array so we can add multiple events on casts
         */
         for (const i of Object.entries(this.blueprint)) {
