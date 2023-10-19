@@ -1484,4 +1484,27 @@ export class Card {
 
         this.storage[storageName]++;
     }
+
+    /**
+     * Decrements the infuse count by 1.
+     * Activates the card's infuse ability if the infuse count is 0.
+     *
+     * @returns Success
+     */
+    tryInfuse() {
+        const infuse = this.getKeyword('Infuse') as number | undefined;
+        if (!infuse || infuse <= 0) {
+            return false;
+        }
+
+        const newInfuse = infuse - 1;
+
+        this.setKeyword('Infuse', newInfuse);
+        if (newInfuse > 0) {
+            return false;
+        }
+
+        this.activate('infuse');
+        return true;
+    }
 }

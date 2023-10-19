@@ -1,5 +1,5 @@
 import {type EventKey, type EventManagerEvents, type HistoryKey, type QuestType, type TickHookCallback, type UnknownEventValue} from '@Game/types.js';
-import {Card, Player} from '../internal.js';
+import {Card, type Player} from '../internal.js';
 
 type EventManagerType = {
     eventListeners: number;
@@ -75,23 +75,8 @@ export const eventManager: EventManagerType = {
 
         // Infuse
         if (key === 'KillMinion') {
-            // TODO: Rewrite and move this code. #329
             for (const p of player.hand) {
-                const number_ = p.getKeyword('Infuse') as number | undefined;
-                if (!number_) {
-                    continue;
-                }
-
-                if (number_ <= 0) {
-                    continue;
-                }
-
-                p.setKeyword('Infuse', number_ - 1);
-                if (number_ - 1 > 0) {
-                    continue;
-                }
-
-                p.activate('infuse');
+                p.tryInfuse();
             }
         }
 
