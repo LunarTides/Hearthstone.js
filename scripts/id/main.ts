@@ -14,6 +14,7 @@ type Commands = 'i' | 'd' | 'v' | 'q';
 
 let func = game.input('\nWhat do you want to do? ([i]ncrement, [d]ecrement, [v]alidate, [q]uit): ')[0] as Commands;
 if (!func) {
+    // TODO: Maybe don't throw errors here
     throw new Error('Invalid command');
 }
 

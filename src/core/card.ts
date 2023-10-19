@@ -302,7 +302,7 @@ export class Card {
         // Get the blueprint from the cards list
         const blueprint = game.blueprints.find(c => c.name === name);
         if (!blueprint) {
-            throw new Error(`Could not find card with name ${name}`);
+            throw new Error(`Could not find card with name "${name}"`);
         }
 
         // Set the blueprint (every thing that gets set before the `doBlueprint` call can be overriden by the blueprint)
@@ -1373,7 +1373,7 @@ export class Card {
             for (let i = 0; i < 3; i++) {
                 const c = game.lodash.sample(possibleCards);
                 if (!c) {
-                    throw new Error('null when randomly choosing adapt option');
+                    throw new Error('undefined when randomly choosing adapt option');
                 }
 
                 values.push(c);
