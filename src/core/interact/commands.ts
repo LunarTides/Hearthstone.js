@@ -549,7 +549,6 @@ export const debugCommands: CommandList = {
             code = `game.log(${code});game.pause();`;
         }
 
-        game.evaling = true;
         try {
             // eslint-disable-next-line no-eval
             eval(code);
@@ -565,7 +564,6 @@ export const debugCommands: CommandList = {
             game.pause();
         }
 
-        game.evaling = false;
         return true;
     },
 

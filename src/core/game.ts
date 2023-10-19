@@ -134,13 +134,6 @@ export class Game {
     running = true;
 
     /**
-     * If the program is currently evaluating code. Should only be enabled while running a `eval` function.
-     *
-     * This is used to throw errors in places that normally would just return null / "invalid".
-     */
-    evaling = false;
-
-    /**
      * If the program is currently replaying a previous game.
      */
     replaying = false;
@@ -583,14 +576,6 @@ const attack = {
      * @returns Success | Errorcode
      */
     attack(attacker: Target | number | string, target: Target): GameAttackReturn {
-        if (!attacker || !target) {
-            if (game.evaling) {
-                throw new TypeError('Evaling Error - The `attacker` or `target` argument passed to `attack` are invalid. Make sure you passed in both arguments.');
-            }
-
-            return 'invalid';
-        }
-
         game.killMinions();
 
         let returnValue: GameAttackReturn;
@@ -960,15 +945,6 @@ const playCard = {
      * @param player The card's owner
      */
     play(card: Card, player: Player): GamePlayCardReturn {
-        // Make sure the parameters are valid
-        if (!card || !player) {
-            if (game.evaling) {
-                throw new TypeError('Evaling Error - The `card` or `player` argument passed to `playCard` are invalid. Make sure you passed in both arguments.');
-            }
-
-            return 'invalid';
-        }
-
         game.killMinions();
 
         // Forge
@@ -1389,14 +1365,6 @@ const cards = {
      * @returns The minion summoned
      */
     summon(minion: Card, player: Player, colossal = true): true | 'space' | 'colossal' | 'invalid' {
-        if (!minion || !player) {
-            if (game.evaling) {
-                throw new TypeError('Evaling Error - The `minion` or `player` argument passed to `summonMinion` are invalid. Make sure you passed in both arguments.');
-            }
-
-            return 'invalid';
-        }
-
         // If the board has max capacity, and the card played is a minion or location card, prevent it.
         if (game.board[player.id].length >= game.config.general.maxBoardSpace) {
             return 'space';
