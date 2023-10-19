@@ -32,13 +32,7 @@ export const blueprint: Blueprint = {
         }
 
         // Filter minions that cost (1) more than the target
-        const minions = game.functions.card.getAll().filter(card => {
-            if (!target) {
-                throw new Error('Target is undefined!');
-            }
-
-            return card.type === 'Minion' && card.cost === target.cost + 1;
-        });
+        const minions = game.functions.card.getAll().filter(card => card.type === 'Minion' && card.cost === target.cost + 1);
 
         // Choose a random minion from the filtered list.
         const rand = game.lodash.sample(minions);

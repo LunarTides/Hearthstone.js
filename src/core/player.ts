@@ -660,7 +660,7 @@ export class Player {
          */
         const card = this.deck.pop();
 
-        if (deckLength <= 0 || !(card instanceof Card)) {
+        if (deckLength <= 0 || !card) {
             this.fatigue++;
 
             this.remHealth(this.fatigue);

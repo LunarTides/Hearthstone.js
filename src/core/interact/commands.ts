@@ -853,7 +853,7 @@ export const debugCommands: CommandList = {
             return false;
         }
 
-        throw new Error('unreachable');
+        return true;
     },
 
     frl() {

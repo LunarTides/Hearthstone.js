@@ -1315,11 +1315,6 @@ const playCard = {
         mech.addStats(card.getAttack(), card.getHealth());
 
         for (const k of Object.keys(card.keywords)) {
-            // TSC for some reason, forgets that minion should be of `Card` type here, so we have to remind it. This is a workaround
-            if (!(mech instanceof Card)) {
-                continue;
-            }
-
             mech.addKeyword(k as CardKeyword);
         }
 
@@ -1332,11 +1327,6 @@ const playCard = {
             const [key, value] = ent;
 
             for (const ability of value) {
-                // Look at the comment above
-                if (!mech) {
-                    throw new Error('Target wasn\'t found.');
-                }
-
                 mech.addAbility(key as CardAbility, ability);
             }
         }

@@ -100,14 +100,6 @@ export const eventManager: EventManagerType = {
 
             // Activate spells in the players hand
             for (const card of plr.hand) {
-                if (!(card instanceof Card)) {
-                    throw new TypeError('Hand contains a non-card');
-                }
-
-                if (card.getHealth() <= 0) {
-                    continue;
-                }
-
                 card.condition();
 
                 // Just in case. Remove for small performance boost
@@ -257,7 +249,7 @@ export const eventManager: EventManagerType = {
             return false;
         }
 
-        if (!(plr instanceof Player) || plr.id === -1) {
+        if (plr.id === -1) {
             return false;
         }
 

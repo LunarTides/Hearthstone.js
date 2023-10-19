@@ -45,9 +45,7 @@ export const gameLoopInteract = {/**
      */
     input(q = '', care = true, useInputQueue = true): string {
         const wrapper = (a: string) => {
-            if (game.player instanceof Player) {
-                game.events.broadcast('Input', a, game.player);
-            }
+            game.events.broadcast('Input', a, game.player);
 
             if (game.replaying && useInputQueue) {
                 this.promptReplayOptions();

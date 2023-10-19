@@ -302,14 +302,14 @@ export const cardInteract = {
         let text = (card.text || '').length > 0 ? ` (${card.text}) ` : ' ';
 
         // Extract placeholder value, remove the placeholder header and footer
-        if (card instanceof Card && (card.placeholder ?? /\$(\d+?)/.test(card.text || ''))) {
+        if (card.placeholder ?? /\$(\d+?)/.test(card.text || '')) {
             text = this.doPlaceholders(card, text, _depth);
         }
 
         let cost = `{${card.cost}} `;
 
         let costType = 'mana';
-        if (card instanceof Card && card.costType) {
+        if (card.costType) {
             costType = card.costType;
         }
 
@@ -347,13 +347,8 @@ export const cardInteract = {
             sb += `<bright:green> [${card.stats?.join(' / ')}]</bright:green>`;
         } else if (card.type === 'Location') {
             const {durability} = card;
-            let maxDurability = durability;
-            let maxCooldown = card.cooldown;
-
-            if (card instanceof Card) {
-                maxDurability = card.backups.init.durability;
-                maxCooldown = card.backups.init.cooldown ?? 0;
-            }
+            const maxDurability = card.backups.init.durability;
+            const maxCooldown = card.backups.init.cooldown ?? 0;
 
             sb += ' {';
             sb += `<bright:green>Durability: ${durability} / `;
@@ -366,10 +361,6 @@ export const cardInteract = {
 
         sb += text;
         sb += `<yellow>(${card.type})</yellow>`;
-
-        if (!(card instanceof Card)) {
-            return sb;
-        }
 
         const excludedKeywords = new Set<CardKeyword>(['Magnetic', 'Corrupt']);
         const keywords = Object.keys(card.keywords).filter(k => !excludedKeywords.has(k as CardKeyword));
