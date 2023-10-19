@@ -1,3 +1,77 @@
+#### 2.0.0-beta.4 (2023-10-19)
+
+##### Chores
+
+* **cclib:**  add todos for smarter abilities ([e926e820](https://github.com/LunarTides/Hearthstone.js/commit/e926e8206c916b11568cfb4acbe04502ff10d75d))
+*  update types/node dependancy ([95239bda](https://github.com/LunarTides/Hearthstone.js/commit/95239bda67ed76d2be00347a32b688c82a263230))
+*  bump build number to 4 ([8eb1c580](https://github.com/LunarTides/Hearthstone.js/commit/8eb1c580a09ceeb4dd9541494bdfe33600a1da83))
+
+##### New Features
+
+* **vcc:**  find hero power text from the vanilla card ([cdb219e3](https://github.com/LunarTides/Hearthstone.js/commit/cdb219e3486823efc3a42a4315551ea15fc7505a))
+*  spawn in diy cards mid-game ([0afb0d61](https://github.com/LunarTides/Hearthstone.js/commit/0afb0d610ddf94b3beda58fe855fe0193c5e6f2d))
+
+##### Bug Fixes
+
+*  make set command work with new config system ([6ac7e7d1](https://github.com/LunarTides/Hearthstone.js/commit/6ac7e7d113e7ccfd6d68f7e031e49137be242042))
+*  fix showing keywords in cards ([86a19529](https://github.com/LunarTides/Hearthstone.js/commit/86a1952987bbd6fd63083d50181e44fde6bacd2d))
+*  fix looking up cards from their ids ([d47f739d](https://github.com/LunarTides/Hearthstone.js/commit/d47f739db493001fc4e2954820df71b2c6f3bc83))
+*  prevent cards from causing xo errors ([688b7356](https://github.com/LunarTides/Hearthstone.js/commit/688b735648349ed341181c7b097fe12b5a4d87dd))
+*  prevent eval commands in replay files ([cbbe7fe5](https://github.com/LunarTides/Hearthstone.js/commit/cbbe7fe55bb237cc4560a88f3e95fcca6f01e594))
+* **dc:**
+  *  don't convert to vanilla if fatal error ([4bc838a0](https://github.com/LunarTides/Hearthstone.js/commit/4bc838a028cdf0e45fa28a15377364ec3494f55d))
+  *  fix adding / removing cards by ids ([f89ada3c](https://github.com/LunarTides/Hearthstone.js/commit/f89ada3cf8832cc1b90241e18a8a00d518a046f6))
+* **id:**  remove redundant tab when changing ids ([1eaa1546](https://github.com/LunarTides/Hearthstone.js/commit/1eaa1546dda0cf4d2bcb97a55613b51d1f1e9d86))
+* **vcc:**  add default spell school ([ec2c32d7](https://github.com/LunarTides/Hearthstone.js/commit/ec2c32d7e7c119bb37fd9c16acce9dd45e730c2a))
+
+##### Other Changes
+
+*  update help for the set command ([65011a38](https://github.com/LunarTides/Hearthstone.js/commit/65011a389ad6cd8e5280ffbbd15e546d06371c3e))
+*  rename gainOverload to addOverload ([78cc70e6](https://github.com/LunarTides/Hearthstone.js/commit/78cc70e6f5ee01cc05054c3879821506ac412cec))
+*  rename gainMana to addMana ([27084fb1](https://github.com/LunarTides/Hearthstone.js/commit/27084fb1721a01b948d4602e3fc32b805a90efa6))
+*  rename gainEmptyMana to addEmptyMana ([8783580a](https://github.com/LunarTides/Hearthstone.js/commit/8783580a158c7182c259c00e9dd6e1520983d80a))
+*  small error message improvements ([eb392c5e](https://github.com/LunarTides/Hearthstone.js/commit/eb392c5ed41284b1bd67904b245ddec51f55598b))
+*  remove evaling flag from the game ([7c5d1e24](https://github.com/LunarTides/Hearthstone.js/commit/7c5d1e2472aeeef6f79420d28d7f002eaa5fc059))
+*  combine all fs files into 1 wrapper ([70bb269b](https://github.com/LunarTides/Hearthstone.js/commit/70bb269bcb4fa83daf3a07dd47863da4459aaea4))
+*  merge helper files into functions ([c2dbf84a](https://github.com/LunarTides/Hearthstone.js/commit/c2dbf84a7c58d4361c204919667f4b064a3874ad))
+*  rewrote chooseOne ([a2671dc9](https://github.com/LunarTides/Hearthstone.js/commit/a2671dc9c00b81dced25a2323f52456d550cd46d))
+*  change how chooseOne shows the options ([65084013](https://github.com/LunarTides/Hearthstone.js/commit/65084013a5248ad8c5e2882375f9e51138aef5fd))
+
+##### Refactors
+
+* **dc:**
+  *  make help command use walls ([59b87733](https://github.com/LunarTides/Hearthstone.js/commit/59b877339cc65b6639c899d6eba20bca11ae56d2))
+  *  small general refactoring ([286668cf](https://github.com/LunarTides/Hearthstone.js/commit/286668cfcef60dfc9edf0141be71938249c21f47))
+*  make help command use walls ([61abdec4](https://github.com/LunarTides/Hearthstone.js/commit/61abdec4b64ecf794a948a455f82777fc63a5705))
+*  add debugCommandPrefix to config ([bd0de770](https://github.com/LunarTides/Hearthstone.js/commit/bd0de770a85d7626a644d9d9ce669e6bc99e4406))
+*  invert condition in history command ([f78e8027](https://github.com/LunarTides/Hearthstone.js/commit/f78e8027eb254411717cca53722eb8cff595bfa1))
+*  move infuse code from tick to card class ([ba640c14](https://github.com/LunarTides/Hearthstone.js/commit/ba640c1459ebdf97f41dbf70aca9cdd12b970d89))
+*  remove some useless checks ([17dab137](https://github.com/LunarTides/Hearthstone.js/commit/17dab137fd2e9e8f43419bc1a93fb2c5561b0296))
+*  add useUnknownInCatchVariables ([1dfd7b8e](https://github.com/LunarTides/Hearthstone.js/commit/1dfd7b8e4e0fdc8ee1bf2b235583d1885b4e14bf))
+*  change param in galakrondFormula to number ([8ba2c128](https://github.com/LunarTides/Hearthstone.js/commit/8ba2c1281bd2bc5f3fe453958a2f9a03062f268c))
+*  use process.exit instead of errors ([cb66bdf6](https://github.com/LunarTides/Hearthstone.js/commit/cb66bdf619ea79a4adb5ded5c522cb387bb92872))
+*  move galakrondBump to the card class ([9ba00076](https://github.com/LunarTides/Hearthstone.js/commit/9ba0007649cc060d9f12b58a2bb1447d6e7f9c17))
+*  consolidated code from previous commits ([b94a6af8](https://github.com/LunarTides/Hearthstone.js/commit/b94a6af8355fd212edee1c76429f3a3e85c59886))
+*  add caching to reading files ([823bd62b](https://github.com/LunarTides/Hearthstone.js/commit/823bd62b8b27ac1c1e318332ca65ddc53ffc004d))
+*  combine fs imports into one variable ([1315aeba](https://github.com/LunarTides/Hearthstone.js/commit/1315aeba9547cb38b99c618e1207797d87d5a37c))
+*  add vanilla card type file ([19e3d9c0](https://github.com/LunarTides/Hearthstone.js/commit/19e3d9c0e8656ff8c3a2013975872270331ee0d4))
+*  add a commands interact file ([8f5188ce](https://github.com/LunarTides/Hearthstone.js/commit/8f5188cef7cf61bcf9ee865f62a19962311d458b))
+*  clone cards before adding it to history ([8af4e3ca](https://github.com/LunarTides/Hearthstone.js/commit/8af4e3ca869c52ef9cea77ae3be76f1075c710fb))
+*  add newline after error in fromVanilla ([d18c6800](https://github.com/LunarTides/Hearthstone.js/commit/d18c680043da1714334d20311040d7a5685585a2))
+*  show commit hash in name if in debug mode ([1f1fd6a9](https://github.com/LunarTides/Hearthstone.js/commit/1f1fd6a9f3d32e36f360ce144598c2ffad1014a9))
+*  change all Number.parseInt to lodash.parseInt ([345937eb](https://github.com/LunarTides/Hearthstone.js/commit/345937eb8b310075f958cc7886321c92ab474095))
+*  add short version of italic in fromTags ([3e24f3f5](https://github.com/LunarTides/Hearthstone.js/commit/3e24f3f51448e4119c53e4a57d7f0163b5f83ac3))
+*  add dark prefix to fromTags ([7bbbcc4b](https://github.com/LunarTides/Hearthstone.js/commit/7bbbcc4b0ca7d942ab7e47709b0e25e0962cf56a))
+*  temporarily disable complexity checking ([d5907ac5](https://github.com/LunarTides/Hearthstone.js/commit/d5907ac5e70b5312bb9bdcc8c7fe4d97953296fd))
+*  prevent passives from causing xo errors ([5092f063](https://github.com/LunarTides/Hearthstone.js/commit/5092f063cb3672f272f1fa29f52936f6757bc110))
+*  change placeholders behind-the-scenes ([26735d90](https://github.com/LunarTides/Hearthstone.js/commit/26735d90062df3439e0b0571975bf59be13b256d))
+*  use traditional turn counter function ([1df672f1](https://github.com/LunarTides/Hearthstone.js/commit/1df672f17887457c2590561b137dc7b11b709a82))
+*  use assert.equal instead of just assert ([682c0b31](https://github.com/LunarTides/Hearthstone.js/commit/682c0b3168fb3f554ec30b8cf8afdb7323641cce))
+*  change back to 4 spaces instead of tabs ([a17a68db](https://github.com/LunarTides/Hearthstone.js/commit/a17a68db97c1d840f9f7a20832302236aa91e432))
+*  began adding compatibility with xo ([2e0f1278](https://github.com/LunarTides/Hearthstone.js/commit/2e0f12780da976a812dd55d158861a295fa99d1c))
+*  remove axios dependancy ([a5ec4c80](https://github.com/LunarTides/Hearthstone.js/commit/a5ec4c8015274d0b9cda4eb9c7cff247a25ed604))
+* **cclib:**  only add tests to cards that have an ability ([199d7e78](https://github.com/LunarTides/Hearthstone.js/commit/199d7e78421c69895bf6e8cf83f6064dd4717128))
+
 #### 2.0.0-beta.3 (2023-10-12)
 
 ##### Chores

@@ -36,6 +36,7 @@
     "@types/node": "^20.8.4",
     "@types/readline-sync": "^1.4.5",
     "@types/uuid": "^9.0.5",
+    "generate-changelog": "^1.8.0",
     "typescript": "^5.2.2",
     "xo": "^0.56.0"
   },
