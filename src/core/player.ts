@@ -112,7 +112,7 @@ export class Player {
      *
      * # Examples
      * ```
-     * // Use `player.gainOverload(2)` instead in a real situation.
+     * // Use `player.addOverload(2)` instead in a real situation.
      * player.overload += 2;
      * // Now the player will have 2 less mana next turn.
      * ```
@@ -430,7 +430,7 @@ export class Player {
      * ```
      * assert.equal(player.overload, 0);
      *
-     * player.gainOverload(2);
+     * player.addOverload(2);
      *
      * assert.equal(player.overload, 2);
      * ```
@@ -439,7 +439,7 @@ export class Player {
      *
      * @returns Success
      */
-    gainOverload(overload: number): boolean {
+    addOverload(overload: number): boolean {
         this.overload += overload;
 
         game.events.broadcast('GainOverload', overload, this);
