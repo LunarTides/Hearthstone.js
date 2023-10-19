@@ -351,70 +351,70 @@ export const commands: CommandList = {
         * @param hide If it should hide the card
         */
         const doValue = (value: any, plr: Player, hide: boolean): any => {
-            if (value instanceof Card) {
-                // If the card is not hidden, or the card belongs to the current player, show it
-                if (!hide || value.plr === plr) {
-                    return showCard(value);
-                }
-
-                // Hide the card
-                let revealed = false;
-
-                // It has has been revealed, show it.
-                for (const h of Object.values(history)) {
-                    if (revealed) {
-                        continue;
-                    }
-
-                    for (const c of h) {
-                        if (revealed) {
-                            continue;
-                        }
-
-                        const [key, newValue, _] = c;
-
-                        // This shouldn't happen?
-                        if (!newValue) {
-                            continue;
-                        }
-
-                        if (game.config.advanced.whitelistedHistoryKeys.includes(key)) {
-                            // Do nothing
-                        } else {
-                            continue;
-                        }
-
-                        if (game.config.advanced.hideValueHistoryKeys.includes(key)) {
-                            continue;
-                        }
-
-                        // If it is not a card
-                        if (!(newValue instanceof Card)) {
-                            continue;
-                        }
-
-                        if (value.uuid !== newValue.uuid) {
-                            continue;
-                        }
-
-                        // The card has been revealed.
-                        revealed = true;
-                    }
-                }
-
-                if (revealed) {
-                    return 'Hidden > Revealed as: ' + showCard(value);
-                }
-
-                return 'Hidden';
-            }
-
             if (value instanceof Player) {
                 return `Player ${value.id + 1}`;
             }
 
-            // Return val as-is if it is not a card / player
-            return value;
+            if (!(value instanceof Card)) {
+                // Return val as-is if it is not a card / player
+                return value;
+            }
+
+            // If the card is not hidden, or the card belongs to the current player, show it
+            if (!hide || value.plr === plr) {
+                return showCard(value);
+            }
+
+            // Hide the card
+            let revealed = false;
+
+            // It has has been revealed, show it.
+            for (const h of Object.values(history)) {
+                if (revealed) {
+                    continue;
+                }
+
+                for (const c of h) {
+                    if (revealed) {
+                        continue;
+                    }
+
+                    const [key, newValue, _] = c;
+
+                    // This shouldn't happen?
+                    if (!newValue) {
+                        continue;
+                    }
+
+                    if (game.config.advanced.whitelistedHistoryKeys.includes(key)) {
+                        // Do nothing
+                    } else {
+                        continue;
+                    }
+
+                    if (game.config.advanced.hideValueHistoryKeys.includes(key)) {
+                        continue;
+                    }
+
+                    // If it is not a card
+                    if (!(newValue instanceof Card)) {
+                        continue;
+                    }
+
+                    if (value.uuid !== newValue.uuid) {
+                        continue;
+                    }
+
+                    // The card has been revealed.
+                    revealed = true;
+                }
+            }
+
+            if (revealed) {
+                return 'Hidden > Revealed as: ' + showCard(value);
+            }
+
+            return 'Hidden';
         };
 
         for (const [t, h] of Object.values(history).entries()) {
