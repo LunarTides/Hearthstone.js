@@ -336,13 +336,9 @@ export const cardFunctions = {
     /**
      * Returns the result of the galakrond formula
      *
-     * @param invokeCount How many times that the card has been invoked. If this is not a number, this will throw an error.
+     * @param invokeCount How many times that the card has been invoked.
      */
-    galakrondFormula(invokeCount: any) {
-        if (typeof invokeCount !== 'number') {
-            throw new TypeError('invokeCount is not a number');
-        }
-
+    galakrondFormula(invokeCount: number) {
         const x = invokeCount;
         const y = Math.ceil((x + 1) / 2) + Math.round(x * 0.15);
 

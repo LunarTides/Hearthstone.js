@@ -18,7 +18,7 @@ export const blueprint: Blueprint = {
         // Summon two 1/1 Storms with Rush. (Equip a 5/2 Claw.)
 
         // Get the stats
-        const amount = game.functions.card.galakrondFormula(self.storage.invokeCount);
+        const amount = game.functions.card.galakrondFormula(self.storage.invokeCount as number);
         const shouldGiveWeapon = amount >= 7;
 
         // Summon the two minions
@@ -60,7 +60,7 @@ export const blueprint: Blueprint = {
             return {amount: 0, plural: 's', plural2: 'They'};
         }
 
-        const amount = game.functions.card.galakrondFormula(self.storage.invokeCount);
+        const amount = game.functions.card.galakrondFormula(self.storage.invokeCount as number);
         const weapon = amount >= 7 ? ' Equip a 5/2 Claw.' : '';
 
         return {amount, weapon};

@@ -17,7 +17,7 @@ export const blueprint: Blueprint = {
 
     battlecry(plr, self) {
         // Summon 1 random Demon.
-        const amount = game.functions.card.galakrondFormula(self.storage.invokeCount);
+        const amount = game.functions.card.galakrondFormula(self.storage.invokeCount as number);
 
         const testDemoness = (card: Card) => game.functions.card.matchTribe(card.tribe!, 'Demon');
 
@@ -58,7 +58,7 @@ export const blueprint: Blueprint = {
             return {amount: 0, plural: 's', plural2: 'They'};
         }
 
-        const amount = game.functions.card.galakrondFormula(self.storage.invokeCount);
+        const amount = game.functions.card.galakrondFormula(self.storage.invokeCount as number);
         const multiple = amount > 1;
         const plural = multiple ? 's' : '';
 
