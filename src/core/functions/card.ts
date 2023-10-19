@@ -213,7 +213,7 @@ export const cardFunctions = {
      */
     matchTribe(cardTribe: MinionTribe, tribe: MinionTribe): boolean {
         // If the card's tribe is "All".
-        if (/all/i.test(cardTribe)) {
+        if (cardTribe === 'All') {
             return true;
         }
 

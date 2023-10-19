@@ -731,20 +731,15 @@ export const debugCommands: CommandList = {
     },
 
     set(args) {
-        if (args.length !== 2) {
+        if (args.length !== 3) {
             game.pause('<red>Invalid amount of arguments!</red>\n');
             return false;
         }
 
-        const [key, value] = args;
+        const [cat, key, value] = args;
 
-        const name = Object.keys(game.config).find(k => k === value);
-        if (!name) {
-            game.pause('<red>Invalid setting name!</red>\n');
-            return false;
-        }
-
-        const setting: Record<string, any> = game.config[name as keyof GameConfig];
+        // @ts-expect-error For some strange reason, game.config[cat] is not allowed even though cat is a string. Very strange.
+        const setting = Object.entries(game.config[cat] as keyof GameConfig).find(ent => ent[0].toLowerCase() === key.toLowerCase())[1];
 
         if (setting === undefined) {
             game.pause('<red>Invalid setting name!</red>\n');
@@ -786,8 +781,9 @@ export const debugCommands: CommandList = {
             return false;
         }
 
+        // @ts-expect-error Same story as up above.
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        game.config[key as keyof GameConfig] = newValue as any;
+        game.config[cat][key as keyof GameConfig] = newValue as any;
         game.doConfigAi();
 
         game.pause();
