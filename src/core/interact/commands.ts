@@ -107,16 +107,16 @@ export const commands: CommandList = {
         const p = game.config.advanced.debugCommandPrefix;
 
         game.log(condColor('\n--- Debug Commands (') + ((game.config.general.debug) ? '<bright:green>ON</bright:green>' : '<red>OFF</red>') + condColor(') ---'));
-        game.log(condColor(p + 'give (name)        - Adds a card to your hand'));
-        game.log(condColor(p + 'eval [log] (code)  - Runs the code specified. If the word \'log\' is before the code, instead game.log the code and wait for user input to continue.'));
-        game.log(condColor(p + 'set (name) (value) - Changes a setting to (value). Look in the config files for a list of settings.'));
-        game.log(condColor(p + 'debug              - Gives you infinite mana, health and armor'));
-        game.log(condColor(p + 'exit               - Force exits the game. There will be no winner, and it will take you straight back to the runner.'));
-        game.log(condColor(p + 'history            - Displays a history of actions. This doesn\'t hide any information, and is the same thing the log files uses.'));
-        game.log(condColor(p + 'reload | /rl       - Reloads the cards and config in the game (Use \'/freload\' or \'/frl\' to ignore the confirmation prompt (or disable the prompt in the advanced config))'));
-        game.log(condColor(p + 'undo               - Undoes the last card played. It gives the card back to your hand, and removes it from where it was. (This does not undo the actions of the card)'));
-        game.log(condColor(p + 'cmd                - Shows you a list of debug commands you have run, and allows you to rerun them.'));
-        game.log(condColor(p + 'ai                 - Gives you a list of the actions the ai(s) have taken in the order they took it'));
+        game.log(condColor(p + 'give (name)                   - Adds a card to your hand'));
+        game.log(condColor(p + 'eval [log] (code)             - Runs the code specified. If the word \'log\' is before the code, instead game.log the code and wait for user input to continue.'));
+        game.log(condColor(p + 'set (category) (name) (value) - Changes a setting to (value). Look in the config files for a list of settings. Example: set advanced debugCommandPrefix !'));
+        game.log(condColor(p + 'debug                         - Gives you infinite mana, health and armor'));
+        game.log(condColor(p + 'exit                          - Force exits the game. There will be no winner, and it will take you straight back to the runner.'));
+        game.log(condColor(p + 'history                       - Displays a history of actions. This doesn\'t hide any information, and is the same thing the log files uses.'));
+        game.log(condColor(p + 'reload | /rl                  - Reloads the cards and config in the game (Use \'/freload\' or \'/frl\' to ignore the confirmation prompt (or disable the prompt in the advanced config))'));
+        game.log(condColor(p + 'undo                          - Undoes the last card played. It gives the card back to your hand, and removes it from where it was. (This does not undo the actions of the card)'));
+        game.log(condColor(p + 'cmd                           - Shows you a list of debug commands you have run, and allows you to rerun them.'));
+        game.log(condColor(p + 'ai                            - Gives you a list of the actions the ai(s) have taken in the order they took it'));
         game.log(condColor('---------------------------' + ((game.config.general.debug) ? '' : '-')));
 
         game.pause('\nPress enter to continue...\n');
