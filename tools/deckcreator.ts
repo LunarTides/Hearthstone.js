@@ -650,43 +650,67 @@ function help() {
     // Commands
     game.log('<b>Available commands:</b>');
     game.log('(In order to run a command; input the name of the command and follow further instruction.)\n');
-    game.log('(name) [optional] (required) - (description)\n');
 
-    game.log('add (name | id)       - Add a card to the deck');
-    game.log('remove (card | id)    - Remove a card from the deck');
-    game.log('view (card | id)      - View a card');
-    game.log('page (num)            - View a different page');
-    game.log('cards (class)         - Show cards from \'class\'');
-    game.log('sort (type) [order]   - Sorts by \'type\' in \'order\'ending order. (Type can be: (\'rarity\', \'name\', \'cost\', \'id\', \'type\'), Order can be: (\'asc\', \'desc\')) (Example: sort cost asc - Will show cards ordered by cost cost, ascending.)');
-    game.log('search [query]        - Searches by query. Keys: (\'name\', \'text\', \'cost\', \'rarity\', \'id\'), Examples: (search the - Search for all cards with the word \'the\' in the name or description, case insensitive.), (search cost:2 - Search for all cards that costs 2 cost, search cost:even name:r - Search for all even cost cards with \'r\' in its name)');
-    game.log('undo                  - Undo the last action.');
-    game.log('deck                  - Toggle deck-view');
-    game.log('deckcode              - View the current deckcode');
-    game.log('import                - Imports a deckcode (Overrides your deck)');
-    game.log('set (setting) (value) - Change some settings. Look down to \'Set Subcommands\' to see available settings');
-    game.log('class                 - Change the class');
-    game.log('config | rules        - Shows the rules for valid decks and invalid decks');
-    game.log('help                  - Displays this message');
-    game.log('exit                  - Quits the program');
+    const bricks = [
+        '(name) [optional] (required) - (description)\n',
+
+        'add (name | id) - Add a card to the deck',
+        'remove (card | id) - Remove a card from the deck',
+        'view (card | id) - View a card',
+        'page (num) - View a different page',
+        'cards (class) - Show cards from \'class\'',
+        'sort (type) [order] - Sorts by \'type\' in \'order\'ending order. (Type can be: (\'rarity\', \'name\', \'cost\', \'id\', \'type\'), Order can be: (\'asc\', \'desc\')) (Example: sort cost asc - Will show cards ordered by cost cost, ascending.)',
+        'search [query] - Searches by query. Keys: (\'name\', \'text\', \'cost\', \'rarity\', \'id\'), Examples: (search the - Search for all cards with the word \'the\' in the name or description, case insensitive.), (search cost:2 - Search for all cards that costs 2 cost, search cost:even name:r - Search for all even cost cards with \'r\' in its name)',
+        'undo - Undo the last action.',
+        'deck - Toggle deck-view',
+        'deckcode - View the current deckcode',
+        'import - Imports a deckcode (Overrides your deck)',
+        'set (setting) (value) - Change some settings. Look down to \'Set Subcommands\' to see available settings',
+        'class - Change the class',
+        'config | rules - Shows the rules for valid decks and invalid decks',
+        'help - Displays this message',
+        'exit - Quits the program',
+    ];
+
+    const wall = game.functions.util.createWall(bricks, '-');
+    for (const brick of wall) {
+        game.log(brick);
+    }
 
     // Set
     game.log('\n<b>Set Subcommands:</b>');
     game.log('(In order to use these; input \'set \', then one of the subcommands. Example: \'set cpp 20\')\n');
-    game.log('(name) [optional] (required) - (description)\n');
 
-    game.log('format (format)             - Makes the deckcode generator output the deckcode as a different format. If you set this to \'vanilla\', it is only going to show the deckcode as vanilla. If you set it to \'vanilla\', you will be asked to choose a card if there are multiple vanilla cards with the same name. This should be rare, but just know that it might happen. (\'js\', \'vanilla\') [default = \'js\']');
-    game.log('cardsPerPage | cpp (num)    - How many cards to show per page [default = 15]');
-    game.log('defaultCommand | dcmd (cmd) - The command that should run when the command is unspecified. (\'add\', \'remove\', \'view\') [default = \'add\']');
-    game.log('warning                     - Disables/enables certain warnings. Look down to \'Warnings\' to see changeable warnings.');
+    const setSubcommandBricks = [
+        '(name) [optional] (required) - (description)\n',
+
+        'format (format) - Makes the deckcode generator output the deckcode as a different format. If you set this to \'vanilla\', it is only going to show the deckcode as vanilla. If you set it to \'vanilla\', you will be asked to choose a card if there are multiple vanilla cards with the same name. This should be rare, but just know that it might happen. (\'js\', \'vanilla\') [default = \'js\']',
+        'cardsPerPage | cpp (num) - How many cards to show per page [default = 15]',
+        'defaultCommand | dcmd (cmd) - The command that should run when the command is unspecified. (\'add\', \'remove\', \'view\') [default = \'add\']',
+        'warning - Disables/enables certain warnings. Look down to \'Warnings\' to see changeable warnings.',
+    ];
+
+    const setSubcommandWall = game.functions.util.createWall(setSubcommandBricks, '-');
+    for (const brick of setSubcommandWall) {
+        game.log(brick);
+    }
 
     game.log('\n<gray>Note the \'cardsPerPage\' commands has 2 different subcommands; cpp & cardsPerPage. Both do the same thing.</gray>');
 
     // Set Warning
     game.log('\n<b>Warnings:</b>');
     game.log('(In order to use these; input \'set warning (name) [off | on]\'. Example: \'set warning latestCard off\')\n');
-    game.log('(name) - (description)\n');
 
-    game.log('latestCard - Warning that shows up when attemping to use the latest card. The latest card is used if the card chosen in a command is invalid and the name specified begins with \'l\'. Example: \'add latest\' - Adds a copy of the latest card to the deck.');
+    const warningBricks = [
+        '(name) - (description)\n',
+
+        'latestCard - Warning that shows up when attemping to use the latest card. The latest card is used if the card chosen in a command is invalid and the name specified begins with \'l\'. Example: \'add latest\' - Adds a copy of the latest card to the deck.',
+    ];
+
+    const warningWall = game.functions.util.createWall(warningBricks, '-');
+    for (const brick of warningWall) {
+        game.log(brick);
+    }
 
     game.log('\nNote: If you don\'t specify a state (off / on) it will toggle the state of the warning.');
     game.log('Note: The word \'off\' can be exchanged with \'disable\', \'false\', or \'0\'.');
