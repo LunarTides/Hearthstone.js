@@ -31,9 +31,9 @@
     "strip-ansi": "^7.1.0"
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.199",
-    "@types/node": "^20.8.4",
-    "@types/readline-sync": "^1.4.5",
+    "@types/lodash": "^4.14.200",
+    "@types/node": "^20.8.7",
+    "@types/readline-sync": "^1.4.6",
     "generate-changelog": "^1.8.0",
     "typescript": "^5.2.2",
     "xo": "^0.56.0"
