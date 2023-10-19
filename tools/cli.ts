@@ -41,7 +41,6 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | und
         const cmdOptions = [
             ['--dry-run', '-n'],
             ['--cc-type', '-t'],
-            ['--replay', '-r'],
         ];
 
         // Parse args
@@ -88,7 +87,7 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | und
                 game.log('clc           - Runs the class creator');
                 game.log('cclib (args)  - Uses the card creator library to manually create a card');
                 game.log('dc            - Runs the deck creator');
-                game.log('game [replay] - Runs the main game');
+                game.log('game          - Runs the main game');
                 game.log('script (name) - Runs the specified script (NOT IMPLEMENTED!)');
                 game.log();
                 game.log('<bold>Options</bold>');
@@ -176,24 +175,7 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | und
             }
 
             case 'game': {
-                const replay = usedOptions.includes('--replay');
-
-                let replayPath: string | undefined;
-
-                // Get replay path
-                if (replay) {
-                    replayPath = args[0] as CcType;
-
-                    if (!replayPath) {
-                        game.logError('<red>Invalid replay path!</red>');
-                        game.pause();
-                        return;
-                    }
-
-                    replayPath = `/logs/log-${replayPath}.txt`;
-                }
-
-                src.main(replayPath);
+                src.main();
 
                 break;
             }

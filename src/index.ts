@@ -12,13 +12,8 @@ import {type Dirent} from 'node:fs';
 import {validate as validateIds} from '../scripts/id/lib.js';
 import {createGame} from './internal.js';
 
-export function main(replayPath?: string) {
+export function main() {
     const {game, player1, player2} = createGame();
-
-    if (replayPath) {
-        const forceEval = game.interact.yesNoQuestion(game.player, 'Would you like to disable eval command protection? If you disable this protection, you take the risk of executing malicious code.');
-        game.functions.util.replayFile(replayPath, forceEval);
-    }
 
     game.interact.info.printName();
 

@@ -47,10 +47,6 @@ export const gameLoopInteract = {/**
         const wrapper = (a: string) => {
             game.events.broadcast('Input', a, game.player);
 
-            if (game.replaying && useInputQueue) {
-                this.promptReplayOptions();
-            }
-
             return a;
         };
 
@@ -416,34 +412,5 @@ export const gameLoopInteract = {/**
         game.pause(`<red>${error}.</red>\n`);
 
         return false;
-    },
-
-    promptReplayOptions() {
-        if (!game.running) {
-            return;
-        }
-
-        // Stop replaying if the player doesn't have anything more in their input queue
-        if (game.player.inputQueue === undefined) {
-            game.replaying = false;
-            return;
-        }
-
-        game.interact.info.printAll(game.player);
-
-        const choice = game.input('\n(C)ontinue, (P)lay from here: ', false, false).toLowerCase()[0];
-
-        switch (choice) {
-            case 'p': {
-                game.player1.inputQueue = undefined;
-                game.player2.inputQueue = undefined;
-                game.replaying = false;
-                break;
-            }
-
-            default: {
-                break;
-            }
-        }
     },
 };

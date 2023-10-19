@@ -134,11 +134,6 @@ export class Game {
     running = true;
 
     /**
-     * If the program is currently replaying a previous game.
-     */
-    replaying = false;
-
-    /**
      * Some constant values.
      */
     constants: GameConstants;

@@ -173,10 +173,6 @@ export const utilFunctions = {
      * @returns Success
      */
     createLogFile(error?: Error): boolean {
-        if (game.replaying) {
-            return false;
-        }
-
         // Create a (crash-)log file
         if (!this.fs('exists', '/logs')) {
             this.fs('mkdir', '/logs');
@@ -312,100 +308,6 @@ ${mainContent}
         const headerObject = {date, version: game.lodash.parseInt(version), os, logVersion: game.lodash.parseInt(logVersion)};
 
         return {header: headerObject, history, ai, config};
-    },
-
-    parseInputEventFromHistory(event: string, index: number, history: string): HistoryKey | false {
-        if (!event.startsWith('Input: ')) {
-            return false;
-        }
-
-        const value = event.split('Input: ')[1];
-
-        let player: Player | undefined;
-
-        let running = true;
-        while (running) {
-            index--;
-
-            const reg = /Turn \d+ - Player \[(.+)]/.exec(history.split('\n')[index]);
-            if (!reg) {
-                continue;
-            }
-
-            const playerName = reg[1];
-            const _player = [game.player1, game.player2].find(p => p.name === playerName);
-            if (!_player) {
-                throw new Error('passed regex and checksum but no player with that name');
-            }
-
-            player = _player;
-
-            running = false;
-            break;
-        }
-
-        return ['Input', value, player];
-    },
-
-    /**
-     * Replays a file and returns an error if there is an issue, otherwise returns true.
-     *
-     * @param path the path of the file to replay
-     * @param overrideEvalSafety whether to override the safety check for eval commands (default: false)
-     * @return An error if there is a mismatch in log version, otherwise true
-     */
-    replayFile(path: string, overrideEvalSafety = false): boolean {
-        const parsed = this.parseLogFile(path);
-
-        const {header, history, config} = parsed;
-
-        game.config = JSON.parse(config) as GameConfig;
-        game.replaying = true;
-
-        // TODO: Verify `header.version` using semver. #328
-        const expectedLogVersion = 3;
-        if (header.logVersion !== expectedLogVersion) {
-            throw new Error(`Mismatch in log version. Expected: ${expectedLogVersion}, Found: ${header.logVersion}`);
-        }
-
-        const parsedHistory = history.split('\n').map((l, i) => this.parseInputEventFromHistory(l, i, history));
-
-        for (const event of parsedHistory) {
-            if (!event) {
-                continue;
-            }
-
-            // Create the event
-            const [_, _value, player] = event;
-            const value = _value as EventValue<'Input'>;
-
-            if (!player) {
-                throw new TypeError('`player` is undefined');
-            }
-
-            if (!(Array.isArray(player.inputQueue))) {
-                player.inputQueue = [];
-            }
-
-            // Prevent eval commands from being replayed to prevent maliciously crafted replay files from executing code
-            if (value.includes('eval')) {
-                if (overrideEvalSafety) {
-                    // Prompt the user to prevent the eval
-                    const allow = game.input(`Would you like to allow this command to be replayed?\n${value}\n`, false, false).toLowerCase().startsWith('y');
-
-                    if (!allow) {
-                        continue;
-                    }
-                } else {
-                    game.pause('<yellow>WARNING: Eval command has been blocked.</yellow>');
-                    continue;
-                }
-            }
-
-            player.inputQueue.push(value);
-        }
-
-        return true;
     },
 
     /**
