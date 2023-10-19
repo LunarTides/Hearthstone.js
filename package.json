@@ -44,6 +44,9 @@
     "npm": ">=7.0.0"
   },
   "xo": {
-    "space": 4
+    "space": 4,
+    "rules": {
+      "unicorn/no-process-exit": "off"
+    }
   }
 }

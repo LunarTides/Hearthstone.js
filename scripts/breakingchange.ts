@@ -3,6 +3,7 @@
  * @module Breaking Change
  */
 
+import process from 'node:process';
 import rl from 'readline-sync';
 import {createGame} from '../src/internal.js';
 
@@ -87,7 +88,7 @@ function main() {
             }
 
             game.pause();
-            throw new Error('Exiting');
+            process.exit(0);
         }
 
         const index = game.lodash.parseInt(cmd) - 1;
@@ -121,7 +122,7 @@ function main() {
             }
 
             // Exit so it doesn't save
-            throw new Error('Exiting');
+            process.exit(0);
         }
     }
 

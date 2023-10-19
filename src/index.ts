@@ -7,6 +7,7 @@
  * @module Index
  */
 
+import process from 'node:process';
 import {type Dirent} from 'node:fs';
 import {validate as validateIds} from '../scripts/id/lib.js';
 import {createGame} from './internal.js';
@@ -93,7 +94,7 @@ function warnAboutOutdatedCards() {
 
     const proceed = game.input('\nDo you want to proceed? ([y]es, [n]o): ').toLowerCase().startsWith('y');
     if (!proceed) {
-        throw new Error('THIS IS NOT AN ACTUAL ERROR. The program has to throw an error to exit prematurely.');
+        process.exit(0);
     }
 }
 

@@ -4,6 +4,7 @@
  * @module Upgrade Cards
  */
 
+import process from 'node:process';
 import {createGame} from '../src/internal.js';
 
 const {game, player1, player2} = createGame();
@@ -97,7 +98,7 @@ function main() {
 
     const proceed = game.input('Do you want to proceed? ([y]es, [n]o): ').toLowerCase().startsWith('y');
     if (!proceed) {
-        throw new Error('exited the program');
+        process.exit(0);
     }
 
     // Update card extensions
