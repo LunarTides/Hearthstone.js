@@ -91,7 +91,7 @@ export class Player {
      *
      * # Examples
      * @example
-     * // Use `player.gainEmptyMana(2)` instead in a real situation.
+     * // Use `player.addEmptyMana(2)` instead in a real situation.
      * player.emptyMana += 2;
      */
     emptyMana = 0;
@@ -384,7 +384,7 @@ export class Player {
      * ```
      * assert.equal(player.emptyMana, 5);
      *
-     * player.gainEmptyMana(10);
+     * player.addEmptyMana(10);
      *
      * assert.equal(player.emptyMana, 10);
      * ```
@@ -393,7 +393,7 @@ export class Player {
      *
      * @returns Success
      */
-    gainEmptyMana(mana: number): boolean {
+    addEmptyMana(mana: number): boolean {
         this.emptyMana += mana;
 
         if (this.emptyMana > this.maxMana) {
@@ -408,7 +408,7 @@ export class Player {
      *
      * This function runs
      * ```
-     * player.gainEmptyMana(mana);
+     * player.addEmptyMana(mana);
      * player.refreshMana(mana);
      * ```
      * so look at these functions for more info.
@@ -418,7 +418,7 @@ export class Player {
      * @returns Success
      */
     gainMana(mana: number): boolean {
-        this.gainEmptyMana(mana);
+        this.addEmptyMana(mana);
         this.refreshMana(mana);
 
         return true;

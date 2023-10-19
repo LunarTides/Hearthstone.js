@@ -117,7 +117,6 @@ export type CardKeyword =
 | 'Corrupt'
 | 'Colossal'
 | 'Infuse'
-
 | 'Cleave';
 
 /**

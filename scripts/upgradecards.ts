@@ -52,6 +52,7 @@ function upgradeCard(path: string, data: string, file: any) {
     data = upgradeField(data, / {4}mana: (.*),/, '    cost: $1,', 'Updated the mana field.');
     data = upgradeField(data, / {4}desc: (.*),/, '    text: $1,', 'Updated the desc field.');
     data = upgradeField(data, / {4}hpDesc: (.*),/, '    hpText: $1,', 'Updated the hpDesc field.');
+    data = upgradeField(data, / {4}gainEmptyMana: (.*),/, '    addEmptyMana: $1,', 'Updated gainEmptyMana.');
 
     // Replace the card's id with a new one
     data = upgradeField(data, /\n {4}id: (\d+),?/, '', 'Removed id from card.');

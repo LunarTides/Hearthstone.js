@@ -399,7 +399,7 @@ export class Game {
         this.turns++;
 
         // Mana stuff
-        op.gainEmptyMana(1);
+        op.addEmptyMana(1);
         op.mana = op.emptyMana - op.overload;
         op.overload = 0;
         op.attack = 0;
