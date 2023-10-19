@@ -439,12 +439,16 @@ ${mainContent}
 
             return true;
         } catch (error) {
+            if (!(error instanceof Error)) {
+                throw new TypeError('`error` is not an error in tryCompile');
+            }
+
             // Status 2 means compiler error
-            if (error.status === 2) {
+            if ((error as any).status === 2) {
                 return false;
             }
 
-            throw error as Error;
+            throw error;
         }
     },
 

@@ -556,6 +556,10 @@ export const debugCommands: CommandList = {
 
             game.events.broadcast('Eval', code, game.player);
         } catch (error) {
+            if (!(error instanceof Error)) {
+                throw new TypeError('`error` is not an instance of Error');
+            }
+
             game.log('\n<red>An error happened while running this code! Here is the error:</red>');
             game.log(error.stack);
             game.pause();
