@@ -1,6 +1,6 @@
 // Created by the Custom Card Creator
 
-import {type Blueprint} from '@Game/types.js';
+import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
     name: 'Galakrond The Unspeakable',
@@ -55,13 +55,13 @@ export const blueprint: Blueprint = {
 
     placeholders(plr, self) {
         if (!self.storage.invokeCount) {
-            return {amount: 0, plural: 's', plural2: 'They'};
+            return { amount: 0, plural: 's', plural2: 'They' };
         }
 
         const amount = game.functions.card.galakrondFormula(self.storage.invokeCount as number);
         const multiple = amount > 1;
         const plural = multiple ? 's' : '';
 
-        return {amount, plural};
+        return { amount, plural };
     },
 };

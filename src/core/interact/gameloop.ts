@@ -1,6 +1,6 @@
 import rl from 'readline-sync';
-import {type Target, type GamePlayCardReturn} from '@Game/types.js';
-import {type Ai, Card, commands, debugCommands} from '../../internal.js';
+import { type Target, type GamePlayCardReturn } from '@Game/types.js';
+import { type Ai, Card, commands, debugCommands } from '../../internal.js';
 
 // Override the console methods to force using the wrapper functions
 // Set this variable to false to prevent disabling the console. (Not recommended)
@@ -35,7 +35,7 @@ if (disableConsole) {
     };
 }
 
-export const gameLoopInteract = {/**
+export const gameLoopInteract = { /**
      * Ask the user a question and returns their answer
      *
      * @param q The question to ask
@@ -249,7 +249,7 @@ export const gameLoopInteract = {/**
      *
      * @returns A string if "echo" is false
      */
-    handleCmds(q: string, flags?: {echo?: boolean; debug?: boolean}): boolean | string | -1 {
+    handleCmds(q: string, flags?: { echo?: boolean; debug?: boolean }): boolean | string | -1 {
         const args = q.split(' ');
         const name = args.shift()?.toLowerCase();
         if (!name) {

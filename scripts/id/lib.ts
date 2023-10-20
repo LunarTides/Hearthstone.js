@@ -4,9 +4,9 @@
  * @module Id Script
  */
 
-import {createGame} from '../../src/internal.js';
+import { createGame } from '../../src/internal.js';
 
-const {game} = createGame();
+const { game } = createGame();
 
 const idRegex = /id: (\d+)/;
 

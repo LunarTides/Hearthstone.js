@@ -1,7 +1,7 @@
 // Created by Hand
 
 import assert from 'node:assert';
-import {type Blueprint} from '@Game/types.js';
+import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
     name: 'Placeholder Example',
@@ -38,7 +38,7 @@ export const blueprint: Blueprint = {
         //
         // This should give us "Battlecry: Gain mana equal to the turn counter. (Currently x, haha lol, x, The next thing is: test, {placeholder without replacement})"
         // where x is the turn counter
-        return {turns, laugh: 'haha lol', test: 'test', 'next thing is': 'The next thing is:'};
+        return { turns, laugh: 'haha lol', test: 'test', 'next thing is': 'The next thing is:' };
     },
 
     test(plr, self) {

@@ -2,8 +2,8 @@
  * The AI
  * @module AI
  */
-import {Card, Player} from '../internal.js';
-import {type AiCalcMoveOption, type AiHistory, type CardLike, type ScoredCard, type SelectTargetAlignment, type SelectTargetClass, type SelectTargetFlag, type Target} from '../types.js';
+import { Card, Player } from '../internal.js';
+import { type AiCalcMoveOption, type AiHistory, type CardLike, type ScoredCard, type SelectTargetAlignment, type SelectTargetClass, type SelectTargetFlag, type Target } from '../types.js';
 
 // TODO: Ai gets stuck in infinite loop when using cathedral of atonement (location) | shadowcloth needle (0 attack wpn) | that minion has no attack.
 
@@ -103,9 +103,9 @@ export class Ai {
                 bestMove = 'end';
             }
 
-            this.history.push({type: 'calcMove', data: bestMove});
+            this.history.push({ type: 'calcMove', data: bestMove });
         } else if (bestMove instanceof Card) {
-            this.history.push({type: 'calcMove', data: [bestMove.name, bestScore]});
+            this.history.push({ type: 'calcMove', data: [bestMove.name, bestScore] });
 
             this.cardsPlayedThisTurn.push(bestMove);
         }
@@ -132,7 +132,7 @@ export class Ai {
      */
     attack(): Array<Target | -1> {
         // Assign a score to all minions
-        const board: ScoredCard[][] = game.board.map(m => m.map(c => ({card: c, score: this.analyzePositiveCard(c)})));
+        const board: ScoredCard[][] = game.board.map(m => m.map(c => ({ card: c, score: this.analyzePositiveCard(c) })));
 
         const amountOfTrades = this._attackFindTrades().map(t => t.length).reduce((a, b) => a + b);
 
@@ -181,7 +181,7 @@ export class Ai {
         }
 
         if (!worstMinion) {
-            this.history.push({type: 'attack, [null, null]', data: [-1, -1]});
+            this.history.push({ type: 'attack, [null, null]', data: [-1, -1] });
             this.prevent.push('attack');
             return [undefined, undefined];
         }
@@ -213,7 +213,7 @@ export class Ai {
             if (taunts.length === 0 && attacker && ((attacker as Target) instanceof Player || (attacker).canAttackHero)) {
                 target = this.plr.getOpponent();
             } else {
-                this.history.push({type: 'attack, [null, null]', data: [-1, -1]});
+                this.history.push({ type: 'attack, [null, null]', data: [-1, -1] });
                 this.prevent.push('attack');
                 return [undefined, undefined];
             }
@@ -240,7 +240,7 @@ export class Ai {
             strbuilder += bestScore;
         }
 
-        this.history.push({type: `attack, [${strbuilder}]`, data: array});
+        this.history.push({ type: `attack, [${strbuilder}]`, data: array });
 
         return [attacker, target];
     }
@@ -271,7 +271,7 @@ export class Ai {
         }
 
         const op = this.plr.getOpponent();
-        const {id} = this.plr;
+        const { id } = this.plr;
 
         let side = null;
 
@@ -290,7 +290,7 @@ export class Ai {
         const sid = (side === 'self') ? id : op.id;
 
         if (game.board[sid].length <= 0 && forceClass === 'minion') {
-            this.history.push({type: 'selectTarget', data: '0,1'});
+            this.history.push({ type: 'selectTarget', data: '0,1' });
 
             return false;
         }
@@ -306,7 +306,7 @@ export class Ai {
 
             const _returnValue = (returnValue instanceof Player) ? 'P' + (returnValue.id + 1) : returnValue;
 
-            this.history.push({type: 'selectTarget', data: _returnValue});
+            this.history.push({ type: 'selectTarget', data: _returnValue });
 
             return returnValue;
         }
@@ -316,7 +316,7 @@ export class Ai {
             const returnValue: Player | false = false;
 
             if (forceClass === 'minion') {
-                this.history.push({type: 'selectTarget', data: -1});
+                this.history.push({ type: 'selectTarget', data: -1 });
             } else {
                 let returnValue_;
                 if (sid === 0) {
@@ -329,7 +329,7 @@ export class Ai {
                     throw new Error('Player ' + (sid + 1) + ' not found');
                 }
 
-                this.history.push({type: 'selectTarget', data: 'P' + (returnValue_.id + 1)});
+                this.history.push({ type: 'selectTarget', data: 'P' + (returnValue_.id + 1) });
             }
 
             return returnValue;
@@ -358,12 +358,12 @@ export class Ai {
         }
 
         if (bestMinion) {
-            this.history.push({type: 'selectTarget', data: `${bestMinion.name},${bestScore}`});
+            this.history.push({ type: 'selectTarget', data: `${bestMinion.name},${bestScore}` });
 
             return bestMinion;
         }
 
-        this.history.push({type: 'selectTarget', data: -1});
+        this.history.push({ type: 'selectTarget', data: -1 });
         return false;
     }
 
@@ -399,7 +399,7 @@ export class Ai {
             return undefined;
         }
 
-        this.history.push({type: 'discover', data: [bestCard.name, bestScore]});
+        this.history.push({ type: 'discover', data: [bestCard.name, bestScore] });
 
         // `cards` can be a list of blueprints, so calling bestCard.imperfectCopy is dangerous
         bestCard = new Card(bestCard.name, this.plr);
@@ -436,7 +436,7 @@ export class Ai {
 
         const name = bestCard ? bestCard.name : null;
 
-        this.history.push({type: 'dredge', data: [name, bestScore]});
+        this.history.push({ type: 'dredge', data: [name, bestScore] });
         return bestCard;
     }
 
@@ -467,7 +467,7 @@ export class Ai {
             bestScore = score;
         }
 
-        this.history.push({type: 'chooseOne', data: [bestChoice, bestScore]});
+        this.history.push({ type: 'chooseOne', data: [bestChoice, bestScore] });
 
         return bestChoice;
     }
@@ -495,7 +495,7 @@ export class Ai {
             bestScore = score;
         }
 
-        this.history.push({type: `question: ${prompt}`, data: [bestChoice, bestScore]});
+        this.history.push({ type: `question: ${prompt}`, data: [bestChoice, bestScore] });
 
         if (!bestChoice) {
             return undefined;
@@ -515,7 +515,7 @@ export class Ai {
         const score = this.analyzePositive(prompt);
         const returnValue = score > 0;
 
-        this.history.push({type: 'yesNoQuestion', data: [prompt, returnValue]});
+        this.history.push({ type: 'yesNoQuestion', data: [prompt, returnValue] });
 
         return returnValue;
     }
@@ -542,7 +542,7 @@ export class Ai {
 
         const returnValue = score <= game.config.ai.tradeThreshold;
 
-        this.history.push({type: 'trade', data: [card.name, returnValue, score]});
+        this.history.push({ type: 'trade', data: [card.name, returnValue, score] });
 
         return returnValue;
     }
@@ -558,7 +558,7 @@ export class Ai {
         // Always forge the card if the ai has enough mana
         const returnValue = !(this.plr.mana < 2);
 
-        this.history.push({type: 'forge', data: [card.name, returnValue]});
+        this.history.push({ type: 'forge', data: [card.name, returnValue] });
         return returnValue;
     }
 
@@ -587,7 +587,7 @@ export class Ai {
 
         scores = scores.slice(0, -2) + ')';
 
-        this.history.push({type: `mulligan (T${game.config.ai.mulliganThreshold})`, data: [toMulligan, scores]});
+        this.history.push({ type: `mulligan (T${game.config.ai.mulliganThreshold})`, data: [toMulligan, scores] });
 
         return toMulligan;
     }
@@ -607,12 +607,38 @@ export class Ai {
 
         let score = 0;
 
-        for (let i of string_.toLowerCase().split(/[^a-z\d ]/)) {
-            i = i.trim();
+        const handleEntriesForV = (v: [string, Record<string, number>], sentance: string, word: string, returnValue: boolean) => {
+            for (const k of Object.entries(v[1])) {
+                if (returnValue) {
+                    continue;
+                }
 
-            for (let s of i.split(' ')) {
+                // Remove the last "s" or "d" in order to account for plurals
+                const k0 = k[0].replace(/^(.*)[sd]$/, '$1');
+                if (!new RegExp(k[0]).test(word) && !new RegExp(k0).test(word)) {
+                    continue;
+                }
+
+                // If the sentiment is "positive", add to the score. If it is "negative", subtract from the score.
+                const opponentTest = /enemy|enemies|opponent/;
+                let pos = k[1];
+                if (context && opponentTest.test(sentance)) {
+                    pos = -pos;
+                }
+
+                score -= (v[0] === 'positive') ? -pos : pos;
+                returnValue = true;
+            }
+
+            return returnValue;
+        };
+
+        for (let sentance of string_.toLowerCase().split(/[^a-z\d ]/)) {
+            sentance = sentance.trim();
+
+            for (let word of sentance.split(' ')) {
                 // Filter out any characters not in the alphabet
-                s = s.replaceAll(/[^a-z]/g, '');
+                word = word.replaceAll(/[^a-z]/g, '');
                 let returnValue = false;
 
                 for (const v of Object.entries(game.config.ai.sentiments)) {
@@ -620,27 +646,7 @@ export class Ai {
                         continue;
                     }
 
-                    for (const k of Object.entries(v[1])) {
-                        if (returnValue) {
-                            continue;
-                        }
-
-                        // Remove the last "s" or "d" in order to account for plurals
-                        const k0 = k[0].replace(/^(.*)[sd]$/, '$1');
-                        if (!new RegExp(k[0]).test(s) && !new RegExp(k0).test(s)) {
-                            continue;
-                        }
-
-                        // If the sentiment is "positive", add to the score. If it is "negative", subtract from the score.
-                        const opponentTest = /enemy|enemies|opponent/;
-                        let pos = k[1];
-                        if (context && opponentTest.test(i)) {
-                            pos = -pos;
-                        }
-
-                        score -= (v[0] === 'positive') ? -pos : pos;
-                        returnValue = true;
-                    }
+                    returnValue = handleEntriesForV(v, sentance, word, returnValue);
                 }
             }
         }
@@ -885,7 +891,7 @@ export class Ai {
         }
 
         if (returnValue) {
-            this.history.push({type: 'trade', data: [returnValue[0].name, returnValue[1].name]});
+            this.history.push({ type: 'trade', data: [returnValue[0].name, returnValue[1].name] });
         }
 
         return returnValue;
@@ -920,7 +926,7 @@ export class Ai {
 
         const returned: Target[] = returnValue as Target[];
 
-        this.history.push({type: 'attack', data: [returned[0].name, returned[1].name]});
+        this.history.push({ type: 'attack', data: [returned[0].name, returned[1].name] });
 
         // If the ai is not focusing on a minion, focus on the returned minion
         if (!this.focus && returned[1] instanceof Card) {

@@ -1,8 +1,8 @@
 // Created by Hand
 
 // Import the card type. Use the `internal` module when importing anything from the game. (except for the `types`)
-import {type Blueprint, type EventValue} from '@Game/types.js';
-import {type Card} from '../../../src/core/card.js';
+import { type Blueprint, type EventValue } from '@Game/types.js';
+import { type Card } from '../../../src/core/card.js';
 
 export const blueprint: Blueprint = {
     name: 'Quest Example',

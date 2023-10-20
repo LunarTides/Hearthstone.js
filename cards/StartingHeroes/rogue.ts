@@ -1,8 +1,8 @@
 // Created by the Custom Card Creator
 
 import assert from 'node:assert';
-import {type Blueprint} from '@Game/types.js';
-import {type Card} from '../../src/core/card.js';
+import { type Blueprint } from '@Game/types.js';
+import { type Card } from '../../src/core/card.js';
 
 export const blueprint: Blueprint = {
     name: 'Rogue Starting Hero',

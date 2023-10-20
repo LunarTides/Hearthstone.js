@@ -1,11 +1,11 @@
 // It only confines these functions to the Hearthstone.js directory. Look in the fs wrapper functions in this file to confirm.
 import fs from 'node:fs';
-import {dirname as pathDirname} from 'node:path';
-import {fileURLToPath} from 'node:url';
+import { dirname as pathDirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import childProcess from 'node:child_process';
 import process from 'node:process';
-import {createHash} from 'node:crypto';
-import {type Player} from '@Game/internal.js';
+import { createHash } from 'node:crypto';
+import { type Player } from '@Game/internal.js';
 
 export const utilFunctions = {
     /**
@@ -84,7 +84,7 @@ export const utilFunctions = {
         for (const b of bricks) {
             const splitBrick = b.split(sep);
 
-            const {length} = splitBrick[0];
+            const { length } = splitBrick[0];
 
             if (length <= longestBrick[1]) {
                 continue;
@@ -184,7 +184,7 @@ export const utilFunctions = {
 
         // Grab the history of the game
         // handleCmds("history", echo, debug)
-        let history = game.interact.gameLoop.handleCmds('history', {echo: false, debug: true});
+        let history = game.interact.gameLoop.handleCmds('history', { echo: false, debug: true });
         if (typeof history !== 'string') {
             throw new TypeError('createLogFile history did not return a string.');
         }
@@ -196,7 +196,7 @@ export const utilFunctions = {
         // AI log
         // Do this so it can actually run '/ai'
         game.config.general.debug = true;
-        const aiHistory = game.interact.gameLoop.handleCmds('/ai', {echo: false});
+        const aiHistory = game.interact.gameLoop.handleCmds('/ai', { echo: false });
 
         let name = 'Log';
         if (error) {
@@ -304,9 +304,9 @@ ${mainContent}
         const ai = content.split('-- AI Logs --')[1].trim();
         const config = content.split('-- Config --')[1].trim();
 
-        const headerObject = {watermark, date, version: game.lodash.parseInt(version), os, logVersion: game.lodash.parseInt(logVersion)};
+        const headerObject = { watermark, date, version: game.lodash.parseInt(version), os, logVersion: game.lodash.parseInt(logVersion) };
 
-        return {header: headerObject, history, ai, config};
+        return { header: headerObject, history, ai, config };
     },
 
     /**
@@ -482,7 +482,7 @@ ${mainContent}
                 return cached;
             }
 
-            const content = fs.readFileSync(path, {encoding: 'utf8'});
+            const content = fs.readFileSync(path, { encoding: 'utf8' });
             game.cache.files[path] = content;
             return content;
         }
@@ -500,7 +500,7 @@ ${mainContent}
     searchCardsFolder(callback: (path: string, content: string, file: fs.Dirent) => void, path = '/cards', extension = '.ts') {
         path = path.replaceAll('\\', '/');
 
-        for (const file of this.fs('readdir', path, {withFileTypes: true}) as fs.Dirent[]) {
+        for (const file of this.fs('readdir', path, { withFileTypes: true }) as fs.Dirent[]) {
             const fullPath = `${path}/${file.name}`;
 
             if (file.name.endsWith(extension)) {

@@ -1,6 +1,6 @@
-import chalk, {type ChalkInstance} from 'chalk';
+import chalk, { type ChalkInstance } from 'chalk';
 import stripAnsi from 'strip-ansi';
-import {type CardRarity} from '@Game/types.js';
+import { type CardRarity } from '@Game/types.js';
 
 export const colorFunctions = {
     /**

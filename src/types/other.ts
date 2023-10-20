@@ -1,6 +1,6 @@
-import {type Card, type Player} from '@Game/internal.js';
-import {type Blueprint} from './blueprint.js';
-import {type EventKey} from './event.js';
+import { type Card, type Player } from '@Game/internal.js';
+import { type Blueprint } from './blueprint.js';
+import { type EventKey } from './event.js';
 
 /**
  * Game.PlayCard return value
@@ -39,7 +39,7 @@ export type GameAttackReturn =
 /**
  * ExportDeck error return value
  */
-export type FunctionsExportDeckError = undefined | {msg: string; info: undefined | {card?: CardLike; amount?: number}; recoverable: boolean};
+export type FunctionsExportDeckError = undefined | { msg: string; info: undefined | { card?: CardLike; amount?: number }; recoverable: boolean };
 
 /**
  * CalcMove return value

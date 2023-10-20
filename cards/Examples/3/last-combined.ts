@@ -1,7 +1,7 @@
 // Created by Hand
 
 import assert from 'node:assert';
-import {type Blueprint} from '@Game/types.js';
+import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
     name: 'Combined Example 3',
@@ -51,7 +51,7 @@ export const blueprint: Blueprint = {
             turns = 10;
         }
 
-        return {turns};
+        return { turns };
     },
 
     test(plr, self) {
@@ -65,7 +65,7 @@ export const blueprint: Blueprint = {
         };
 
         // The condition is not cleared
-        let {mana} = plr;
+        let { mana } = plr;
         assert.equal(turn(), 1);
         self.activate('cast');
 

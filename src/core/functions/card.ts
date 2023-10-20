@@ -1,7 +1,7 @@
-import {createHash} from 'node:crypto';
-import {type Dirent} from 'node:fs';
-import {type CardLike, type VanillaCard, type CardClass, type MinionTribe, type CardClassNoNeutral, type Blueprint, type CardType} from '@Game/types.js';
-import {Card, CardError, type Player} from '../../internal.js';
+import { createHash } from 'node:crypto';
+import { type Dirent } from 'node:fs';
+import { type CardLike, type VanillaCard, type CardClass, type MinionTribe, type CardClassNoNeutral, type Blueprint, type CardType } from '@Game/types.js';
+import { Card, CardError, type Player } from '../../internal.js';
 import * as blueprints from '../../../cards/exports.js';
 
 const vanilla = {
@@ -306,7 +306,7 @@ export const cardFunctions = {
     getClasses(): CardClassNoNeutral[] {
         const classes: CardClassNoNeutral[] = [];
 
-        for (const file of game.functions.util.fs('readdir', '/cards/StartingHeroes', {withFileTypes: true}) as Dirent[]) {
+        for (const file of game.functions.util.fs('readdir', '/cards/StartingHeroes', { withFileTypes: true }) as Dirent[]) {
             // Something is wrong with the file name.
             if (!file.name.endsWith('.ts')) {
                 continue;
@@ -356,7 +356,7 @@ export const cardFunctions = {
      */
     validateBlueprint(blueprint: Blueprint): string | boolean {
         // These are the required fields for all card types.
-        const requiredFieldsTable: {[x in CardType]: string[]} = {
+        const requiredFieldsTable: { [x in CardType]: string[] } = {
             // eslint-disable-next-line @typescript-eslint/naming-convention
             Minion: ['stats', 'tribe'],
             // eslint-disable-next-line @typescript-eslint/naming-convention

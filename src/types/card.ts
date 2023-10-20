@@ -1,4 +1,4 @@
-import {type Card} from '@Game/internal.js';
+import { type Card } from '@Game/internal.js';
 
 /**
  * Ai scored card

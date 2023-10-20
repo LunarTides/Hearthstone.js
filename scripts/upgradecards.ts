@@ -5,9 +5,9 @@
  */
 
 import process from 'node:process';
-import {createGame} from '../src/internal.js';
+import { createGame } from '../src/internal.js';
 
-const {game} = createGame();
+const { game } = createGame();
 
 function upgradeField(data: string, oldValue: string | RegExp, newValue: string, toLog: string) {
     const oldData = data;
@@ -117,7 +117,7 @@ function main() {
     game.functions.card.generateExports();
 
     // Remove the dist folder
-    game.functions.util.fs('rm', '/dist', {recursive: true, force: true});
+    game.functions.util.fs('rm', '/dist', { recursive: true, force: true });
 
     game.log('Trying to compile...');
 

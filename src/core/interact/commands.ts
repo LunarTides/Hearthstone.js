@@ -1,12 +1,12 @@
 import process from 'node:process';
-import {type GameConfig, type EventValue} from '@Game/types.js';
-import {Card, Player} from '../../internal.js';
+import { type GameConfig, type EventValue } from '@Game/types.js';
+import { Card, Player } from '../../internal.js';
 
 const licenseUrl = 'https://github.com/LunarTides/Hearthstone.js/blob/main/LICENSE';
 
 const getGame = () => game;
 
-type CommandList = Record<string, (args: string[], flags?: {echo?: boolean; debug?: boolean}) => any>;
+type CommandList = Record<string, (args: string[], flags?: { echo?: boolean; debug?: boolean }) => any>;
 
 export const commands: CommandList = {
     end() {
@@ -194,9 +194,9 @@ export const commands: CommandList = {
     },
 
     version() {
-        const {version} = game.config.info;
-        const {branch} = game.config.info;
-        const {build} = game.config.info;
+        const { version } = game.config.info;
+        const { branch } = game.config.info;
+        const { build } = game.config.info;
 
         let running = true;
         while (running) {
@@ -296,14 +296,14 @@ export const commands: CommandList = {
 
             printInfo();
 
-            // Todo list
+            // This is the todo list
             if (todos.length <= 0) {
                 game.pause('\nPress enter to continue...');
                 running = false;
                 break;
             }
 
-            const printTodo = (todo: [string, {state: string; description: string}], id: number, printDesc = false) => {
+            const printTodo = (todo: [string, { state: string; description: string }], id: number, printDesc = false) => {
                 const game = getGame();
 
                 const [name, info] = todo;
@@ -361,7 +361,7 @@ export const commands: CommandList = {
 
     history(_, flags) {
         // History
-        const {history} = game.events;
+        const { history } = game.events;
         let finished = '';
 
         const showCard = (value: Card) => `${game.interact.card.getReadable(value)} which belongs to: <blue>${value.plr.name}</blue>, and has uuid: ${value.uuid.slice(0, 8)}`;
@@ -874,10 +874,10 @@ export const debugCommands: CommandList = {
     },
 
     frl() {
-        return game.interact.gameLoop.handleCmds('/rl', {debug: true});
+        return game.interact.gameLoop.handleCmds('/rl', { debug: true });
     },
 
     history() {
-        return game.interact.gameLoop.handleCmds('history', {debug: true});
+        return game.interact.gameLoop.handleCmds('history', { debug: true });
     },
 };

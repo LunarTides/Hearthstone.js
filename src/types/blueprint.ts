@@ -1,6 +1,6 @@
-import {type Card, type Player} from '@Game/internal.js';
-import {type CardAbility, type CardType, type MinionTribe, type SpellSchool, type CardClass, type CardRarity, type CardKeyword} from './card.js';
-import {type EventKey, type UnknownEventValue} from './event.js';
+import { type Card, type Player } from '@Game/internal.js';
+import { type CardAbility, type CardType, type MinionTribe, type SpellSchool, type CardClass, type CardRarity, type CardKeyword } from './card.js';
+import { type EventKey, type UnknownEventValue } from './event.js';
 
 /**
  * The ability of a card.

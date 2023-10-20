@@ -3,12 +3,12 @@
  * @module Vanilla Card Generator
  */
 
-import {Buffer} from 'node:buffer';
+import { Buffer } from 'node:buffer';
 import https from 'node:https';
-import {type VanillaCard} from '@Game/types.js';
-import {createGame} from '../../src/internal.js';
+import { type VanillaCard } from '@Game/types.js';
+import { createGame } from '../../src/internal.js';
 
-const {game} = createGame();
+const { game } = createGame();
 
 // Copy-and-pasted from this stackoverflow answer:
 // https://stackoverflow.com/a/62588602

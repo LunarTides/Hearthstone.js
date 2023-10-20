@@ -3,12 +3,12 @@
  * @module Deck Creator
  */
 import util from 'node:util';
-import {type Card, createGame} from '../src/internal.js';
-import {type CardClass, type CardClassNoNeutral, type GameConfig} from '../src/types.js';
+import { type Card, createGame } from '../src/internal.js';
+import { type CardClass, type CardClassNoNeutral, type GameConfig } from '../src/types.js';
 
-const {game, player1: plr} = createGame();
+const { game, player1: plr } = createGame();
 
-const {config} = game;
+const { config } = game;
 const classes = game.functions.card.getClasses();
 const cards = game.functions.card.getAll(!game.config.advanced.dcShowUncollectible);
 
@@ -132,7 +132,7 @@ function sortCards(_cards: Card[]) {
         settings.sort.order = defaultSettings.sort.order;
     }
 
-    const {type, order} = settings.sort;
+    const { type, order } = settings.sort;
 
     const calcOrder = (a: number, b: number) => {
         if (order === 'asc') {
@@ -325,8 +325,8 @@ function showCards() {
         game.log(`<yellow>No cards found for the selected classes '${chosenClass} and Neutral'.</yellow>`);
     }
 
-    const {cpp} = settings.view;
-    let {page} = settings.view;
+    const { cpp } = settings.view;
+    let { page } = settings.view;
 
     // Search
 
@@ -595,7 +595,7 @@ function deckcode(parseVanillaOnPseudo = false) {
     const _deckcode = game.functions.deckcode.export(deck, chosenClass, runes);
 
     if (_deckcode.error) {
-        const {error} = _deckcode;
+        const { error } = _deckcode;
 
         let log = '<yellow>WARNING: ';
         switch (error.msg) {

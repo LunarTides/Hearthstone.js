@@ -1,4 +1,4 @@
-import {format} from 'node:util';
+import { format } from 'node:util';
 
 export const infoFunctions = {
     /**
@@ -17,7 +17,7 @@ export const infoFunctions = {
      * version-branch.build (commit hash)
      */
     version(detail = 1): string {
-        const {info} = game.config;
+        const { info } = game.config;
 
         switch (detail) {
             case 1: {

@@ -5,9 +5,9 @@
  */
 
 import process from 'node:process';
-import {Card, type Player, createGame} from '../src/internal.js';
+import { Card, type Player, createGame } from '../src/internal.js';
 
-const {game} = createGame();
+const { game } = createGame();
 const cards = game.functions.card.getAll(false);
 
 function testCard(card: Card): boolean | Error {
@@ -27,7 +27,7 @@ export function main() {
 
     for (const blueprint of cards) {
         // Create a game
-        const {game, player1, player2} = createGame();
+        const { game, player1, player2 } = createGame();
         game.config.ai.player1 = false;
         game.config.ai.player2 = false;
         game.doConfigAi();

@@ -1,7 +1,7 @@
 // Created by the Custom Card Creator
 
-import {type Blueprint} from '@Game/types.js';
-import {Card} from '../../src/core/card.js';
+import { type Blueprint } from '@Game/types.js';
+import { Card } from '../../src/core/card.js';
 
 export const blueprint: Blueprint = {
     name: 'Galakrond the Nightmare',
@@ -52,7 +52,7 @@ export const blueprint: Blueprint = {
 
     placeholders(plr, self) {
         if (!self.storage.invokeCount) {
-            return {amount: 0, plural: 's', plural2: 'They'};
+            return { amount: 0, plural: 's', plural2: 'They' };
         }
 
         const amount = game.functions.card.galakrondFormula(self.storage.invokeCount as number);
@@ -61,6 +61,6 @@ export const blueprint: Blueprint = {
         const plural = multiple ? 's' : '';
         const plural2 = multiple ? 'They' : 'It';
 
-        return {amount, plural, plural2};
+        return { amount, plural, plural2 };
     },
 };

@@ -3,11 +3,11 @@
  * @module Class Creator
  */
 
-import {createGame} from '../../src/internal.js';
-import {type Blueprint, type CardClass, type CardRarity, type CardType} from '../../src/types.js';
+import { createGame } from '../../src/internal.js';
+import { type Blueprint, type CardClass, type CardRarity, type CardType } from '../../src/types.js';
 import * as lib from './lib.js';
 
-const {game} = createGame();
+const { game } = createGame();
 
 /**
  * Asks the user a series of questions, and creates a class card using it.

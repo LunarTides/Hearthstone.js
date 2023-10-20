@@ -4,11 +4,11 @@
  */
 
 import rl from 'readline-sync';
-import {type Blueprint, type CardClass, type CardRarity, type MinionTribe, type SpellSchool, type VanillaCard} from '../../src/types.js';
-import {createGame} from '../../src/internal.js';
+import { type Blueprint, type CardClass, type CardRarity, type MinionTribe, type SpellSchool, type VanillaCard } from '../../src/types.js';
+import { createGame } from '../../src/internal.js';
 import * as lib from './lib.js';
 
-const {game} = createGame();
+const { game } = createGame();
 
 /**
  * Create a card from a vanilla card.
@@ -22,7 +22,7 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CcT
     let cardClass = game.lodash.capitalize(card.cardClass ?? 'Neutral') as CardClass;
     const collectible = card.collectible ?? false;
     const cost = card.cost ?? 0;
-    const {name} = card;
+    const { name } = card;
     let rarity: CardRarity = 'Free';
     if (card.rarity) {
         rarity = game.lodash.capitalize(card.rarity) as CardRarity;
@@ -216,7 +216,7 @@ export function main(debug = false, overrideType?: lib.CcType) {
                 delete c.flavor;
                 delete c.mechanics;
 
-                const {id, ...card} = c;
+                const { id, ...card } = c;
 
                 game.log(`\n${i + 1}:`);
                 game.log(card);

@@ -3,10 +3,10 @@
  * @module Card Creator Library
  */
 
-import {createGame} from '../../src/internal.js';
-import {type BlueprintWithOptional, type CardClass, type CardType} from '../../src/types.js';
+import { createGame } from '../../src/internal.js';
+import { type BlueprintWithOptional, type CardClass, type CardType } from '../../src/types.js';
 
-const {game} = createGame();
+const { game } = createGame();
 
 let card: BlueprintWithOptional;
 let type: CardType;
@@ -283,7 +283,7 @@ export const blueprint: Blueprint = {
 
         // If the path the card would be written to doesn't exist, create it.
         if (!game.functions.util.fs('exists', path)) {
-            game.functions.util.fs('mkdir', path, {recursive: true});
+            game.functions.util.fs('mkdir', path, { recursive: true });
         }
 
         // Write the file to the path

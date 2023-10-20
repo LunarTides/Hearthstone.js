@@ -3,9 +3,9 @@
  * @module Game
  */
 import _ from 'lodash';
-import {functions, interact, Player, Card, Ai, eventManager} from '../internal.js';
-import {type Blueprint, type CardAbility, type CardKeyword, type EventKey, type GameAttackReturn, type GameConstants, type GamePlayCardReturn, type Target, type UnknownEventValue} from '../types.js';
-import {config} from '../../config.js';
+import { functions, interact, Player, Card, Ai, eventManager } from '../internal.js';
+import { type Blueprint, type CardAbility, type CardKeyword, type EventKey, type GameAttackReturn, type GameConstants, type GamePlayCardReturn, type Target, type UnknownEventValue } from '../types.js';
+import { config } from '../../config.js';
 
 export class Game {
     /**
@@ -558,7 +558,7 @@ export function createGame() {
     functions.card.importAll();
     game.doConfigAi();
 
-    return {game, player1, player2};
+    return { game, player1, player2 };
 }
 
 const attack = {

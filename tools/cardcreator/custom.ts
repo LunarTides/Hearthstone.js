@@ -5,11 +5,11 @@
  */
 
 import rl from 'readline-sync';
-import {createGame} from '../../src/internal.js';
-import {type Blueprint, type BlueprintWithOptional, type CardClass, type CardKeyword, type CardRarity, type CardType, type MinionTribe, type SpellSchool} from '../../src/types.js';
+import { createGame } from '../../src/internal.js';
+import { type Blueprint, type BlueprintWithOptional, type CardClass, type CardKeyword, type CardRarity, type CardType, type MinionTribe, type SpellSchool } from '../../src/types.js';
 import * as lib from './lib.js';
 
-const {game} = createGame();
+const { game } = createGame();
 
 let shouldExit = false;
 let type: CardType;
@@ -112,7 +112,7 @@ function common(): BlueprintWithOptional {
     };
 }
 
-const cardTypeFunctions: {[x in CardType]: () => Blueprint} = {
+const cardTypeFunctions: { [x in CardType]: () => Blueprint } = {
     Minion() {
         const _card = common();
 

@@ -2,8 +2,8 @@
  * Player
  * @module Player
  */
-import {type Ai, Card} from '../internal.js';
-import {type CardClass, type CardType, type EventKey, type QuestCallback, type QuestType, type Target} from '../types.js';
+import { type Ai, Card } from '../internal.js';
+import { type CardClass, type CardType, type EventKey, type QuestCallback, type QuestType, type Target } from '../types.js';
 
 export class Player {
     /**
@@ -1011,7 +1011,7 @@ export class Player {
             return false;
         }
 
-        t.push({name: card.displayName, progress: [0, amount], key, value: amount, callback, next});
+        t.push({ name: card.displayName, progress: [0, amount], key, value: amount, callback, next });
         return true;
     }
 

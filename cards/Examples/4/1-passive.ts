@@ -1,6 +1,6 @@
 // Created by Hand
 
-import {type Blueprint, type EventValue} from '@Game/types.js';
+import { type Blueprint, type EventValue } from '@Game/types.js';
 
 // Im sorry, things are about to become a lot more complicated from this point on.
 export const blueprint: Blueprint = {

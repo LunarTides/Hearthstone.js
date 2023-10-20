@@ -3,10 +3,10 @@
  * @module Card Parity
  */
 
-import {type Card, createGame} from '../../src/internal.js';
-import {type Blueprint, type VanillaCard} from '../../src/types.js';
+import { type Card, createGame } from '../../src/internal.js';
+import { type Blueprint, type VanillaCard } from '../../src/types.js';
 
-const {game} = createGame();
+const { game } = createGame();
 
 function main() {
     const vanillaCards = game.functions.card.vanilla.getAll();
@@ -51,7 +51,7 @@ function main() {
     function check(key: string, value: any, vanilla: VanillaCard, card: Card) {
         const ignore = ['id', 'set', 'name', 'rarity', 'type'];
 
-        const table: {[key in keyof Blueprint]?: keyof VanillaCard} = {
+        const table: { [key in keyof Blueprint]?: keyof VanillaCard } = {
             text: 'text',
         };
 

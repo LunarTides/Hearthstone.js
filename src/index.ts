@@ -8,12 +8,12 @@
  */
 
 import process from 'node:process';
-import {type Dirent} from 'node:fs';
-import {validate as validateIds} from '../scripts/id/lib.js';
-import {createGame} from './internal.js';
+import { type Dirent } from 'node:fs';
+import { validate as validateIds } from '../scripts/id/lib.js';
+import { createGame } from './internal.js';
 
 export function main() {
-    const {game, player1, player2} = createGame();
+    const { game, player1, player2 } = createGame();
 
     game.interact.info.printName();
 
@@ -98,7 +98,7 @@ function findOutdatedCards(path: string) {
         return;
     }
 
-    for (const file of game.functions.util.fs('readdir', path, {withFileTypes: true}) as Dirent[]) {
+    for (const file of game.functions.util.fs('readdir', path, { withFileTypes: true }) as Dirent[]) {
         const p = `${path}/${file.name}`.replace('/dist/..', '');
 
         if (file.name.endsWith('.mts')) {

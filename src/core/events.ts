@@ -1,5 +1,5 @@
-import {type EventKey, type EventManagerEvents, type HistoryKey, type QuestType, type TickHookCallback, type UnknownEventValue} from '@Game/types.js';
-import {Card, type Player} from '../internal.js';
+import { type EventKey, type EventManagerEvents, type HistoryKey, type QuestType, type TickHookCallback, type UnknownEventValue } from '@Game/types.js';
+import { Card, type Player } from '../internal.js';
 
 type EventManagerType = {
     eventListeners: number;

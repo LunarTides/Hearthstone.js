@@ -1,7 +1,7 @@
 // Created by Hand
 
 // You shouldn't touch anything outside of the blueprint object.
-import {type Blueprint} from '@Game/types.js';
+import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
     // A blueprint only has ESSENTIAL properties, and type-specific properties (like stats or tribe)

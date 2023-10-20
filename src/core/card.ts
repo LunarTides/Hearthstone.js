@@ -2,9 +2,9 @@
  * Card
  * @module Card
  */
-import {randomUUID} from 'node:crypto';
-import {type Player} from '../internal.js';
-import {type Blueprint, type CardAbility, type CardClass, type CardKeyword, type CardRarity, type CardType, type CostType, type EnchantmentDefinition, type GameConfig, type Ability, type MinionTribe, type SpellSchool, type CardBackup} from '../types.js';
+import { randomUUID } from 'node:crypto';
+import { type Player } from '../internal.js';
+import { type Blueprint, type CardAbility, type CardClass, type CardKeyword, type CardRarity, type CardType, type CostType, type EnchantmentDefinition, type GameConfig, type Ability, type MinionTribe, type SpellSchool, type CardBackup } from '../types.js';
 
 /**
  * Use this error type when throwing an error in a card
@@ -87,7 +87,7 @@ export class Card {
     /**
      * The keywords that the card has. E.g. ["Taunt", "Divine Shield", etc...]
      */
-    keywords: {[key in CardKeyword]?: any} = {};
+    keywords: { [key in CardKeyword]?: any } = {};
 
     /**
      * The card's blueprint.
@@ -290,7 +290,7 @@ export class Card {
     /**
      * The abilities of the card (battlecry, deathrattle, etc...)
      */
-    abilities: {[key in CardAbility]?: Ability[]} = {};
+    abilities: { [key in CardAbility]?: Ability[] } = {};
 
     /**
      * Create a card.
@@ -1029,7 +1029,7 @@ export class Card {
      *
      * @returns The info
      */
-    getEnchantmentInfo(enchantment: string): {key: string; val: string; op: string} {
+    getEnchantmentInfo(enchantment: string): { key: string; val: string; op: string } {
         const equalsRegex = /\w+ = \w+/;
         const otherRegex = /[-+*/^]\d+ \w+/;
 
@@ -1049,7 +1049,7 @@ export class Card {
             op = enchantment[0];
         }
 
-        return {key, val: value, op};
+        return { key, val: value, op };
     }
 
     /**
@@ -1080,7 +1080,7 @@ export class Card {
         const enchantments = this.enchantments.map(enchantment => enchantment.enchantment);
         for (const enchantment of enchantments) {
             const info = this.getEnchantmentInfo(enchantment);
-            const {key} = info;
+            const { key } = info;
 
             keys.push(key);
         }
@@ -1098,7 +1098,7 @@ export class Card {
         }
 
         for (const enchantmentObject of this.enchantments) {
-            const {enchantment} = enchantmentObject;
+            const { enchantment } = enchantmentObject;
 
             // Seperate the keys and values
             const info = this.getEnchantmentInfo(enchantment);
@@ -1164,9 +1164,9 @@ export class Card {
 
         // Add the enchantment to the beginning of the list, equal enchantments should apply first
         if (info.op === '=') {
-            this.enchantments.unshift({enchantment, owner});
+            this.enchantments.unshift({ enchantment, owner });
         } else {
-            this.enchantments.push({enchantment, owner});
+            this.enchantments.push({ enchantment, owner });
         }
 
         this.applyEnchantments();

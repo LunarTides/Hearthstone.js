@@ -1,4 +1,4 @@
-import {type EventKey, type EventListenerCallback, type TickHookCallback} from '@Game/types.js';
+import { type EventKey, type EventListenerCallback, type TickHookCallback } from '@Game/types.js';
 
 export const eventFunctions = {
     /**

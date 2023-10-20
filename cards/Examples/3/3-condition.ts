@@ -1,7 +1,7 @@
 // Created by Hand
 
 import assert from 'node:assert';
-import {type Blueprint} from '@Game/types.js';
+import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
     name: 'Condition Example',
@@ -47,7 +47,7 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        const {length} = plr.deck;
+        const { length } = plr.deck;
         plr.hand = [];
 
         // The player shouldn't fulfill the condition

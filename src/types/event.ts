@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/indent */
-import {type Card, type Player} from '@Game/internal.js';
-import {type CardAbility, type SelectTargetAlignment, type SelectTargetClass, type SelectTargetFlag, type Target} from '@Game/types.js';
+import { type Card, type Player } from '@Game/internal.js';
+import { type CardAbility, type SelectTargetAlignment, type SelectTargetClass, type SelectTargetFlag, type Target } from '@Game/types.js';
 
 export type UnknownEventValue = EventValue<EventKey>;
 
 /**
  * Game events.
  */
-export type EventManagerEvents = {[key in EventKey]?: [[[any, number]], [[any, number]]]};
+export type EventManagerEvents = { [key in EventKey]?: [[[any, number]], [[any, number]]] };
 
 /**
  * Callback for tick hooks. Used in hookToTick.

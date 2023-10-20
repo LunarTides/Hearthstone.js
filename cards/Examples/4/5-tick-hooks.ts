@@ -1,6 +1,6 @@
 // Created by Hand
 
-import {type Blueprint} from '@Game/types.js';
+import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
     name: 'Tick Hook Example',

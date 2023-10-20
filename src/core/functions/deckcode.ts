@@ -1,7 +1,7 @@
 // To decode vanilla deckcodes
 import deckstrings from 'deckstrings';
-import {type CardClass, type CardClassNoNeutral, type CardLike, type FunctionsExportDeckError, type VanillaCard} from '@Game/types.js';
-import {Card, type Player} from '../../internal.js';
+import { type CardClass, type CardClassNoNeutral, type CardLike, type FunctionsExportDeckError, type VanillaCard } from '@Game/types.js';
+import { Card, type Player } from '../../internal.js';
 
 export const deckcodeFunctions = {
     /**
@@ -272,22 +272,22 @@ export const deckcodeFunctions = {
      *
      * @returns The deckcode, An error message alongside any additional information.
      */
-    export(deck: CardLike[], heroClass: string, runes: string): {code: string; error: FunctionsExportDeckError} {
+    export(deck: CardLike[], heroClass: string, runes: string): { code: string; error: FunctionsExportDeckError } {
         let error: FunctionsExportDeckError;
 
         if (deck.length < game.config.decks.minLength) {
-            error = {msg: 'TooFewCards', info: {amount: deck.length}, recoverable: true};
+            error = { msg: 'TooFewCards', info: { amount: deck.length }, recoverable: true };
         }
 
         if (deck.length > game.config.decks.maxLength) {
-            error = {msg: 'TooManyCards', info: {amount: deck.length}, recoverable: true};
+            error = { msg: 'TooManyCards', info: { amount: deck.length }, recoverable: true };
         }
 
         if (deck.length <= 0) {
             // Unrecoverable error
-            error = {msg: 'EmptyDeck', info: undefined, recoverable: false};
+            error = { msg: 'EmptyDeck', info: undefined, recoverable: false };
 
-            return {code: '', error};
+            return { code: '', error };
         }
 
         let deckcode = `${heroClass} `;
@@ -342,9 +342,9 @@ export const deckcodeFunctions = {
             deckcode += last ? copies : `${copies}:${amount},`;
 
             if (copies > game.config.decks.maxOfOneLegendary && card.rarity === 'Legendary') {
-                error = {msg: 'TooManyLegendaryCopies', info: {card, amount: copies}, recoverable: true};
+                error = { msg: 'TooManyLegendaryCopies', info: { card, amount: copies }, recoverable: true };
             } else if (copies > game.config.decks.maxOfOneCard) {
-                error = {msg: 'TooManyCopies', info: {card, amount: copies}, recoverable: true};
+                error = { msg: 'TooManyCopies', info: { card, amount: copies }, recoverable: true };
             }
         }
 
@@ -352,7 +352,7 @@ export const deckcodeFunctions = {
 
         deckcode += cards.map(c => c[0].id?.toString(36)).join(',');
 
-        return {code: deckcode, error};
+        return { code: deckcode, error };
     },
 
     /**
@@ -369,10 +369,10 @@ export const deckcodeFunctions = {
         //
         // Reference: Death Knight [3B] /1:4,2/ 3f,5f,6f...
 
-        const deck: deckstrings.DeckDefinition = {cards: [], heroes: [], format: 1};
+        const deck: deckstrings.DeckDefinition = { cards: [], heroes: [], format: 1 };
 
         // List of vanilla heroes dbfIds
-        const vanillaHeroes: {[key in CardClass]?: number} = {
+        const vanillaHeroes: { [key in CardClass]?: number } = {
             // eslint-disable-next-line @typescript-eslint/naming-convention
             Warrior: 7,
             // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -527,7 +527,7 @@ export const deckcodeFunctions = {
         const vanillaCards = game.functions.card.vanilla.getAll();
 
         // We don't care about the format
-        const {format, ...deck} = deckWithFormat;
+        const { format, ...deck } = deckWithFormat;
 
         const _heroClass = vanillaCards.find(a => a.dbfId === deck.heroes[0])?.cardClass;
         let heroClass = game.lodash.capitalize(_heroClass?.toString() ?? game.player2.heroClass);

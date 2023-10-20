@@ -1,6 +1,6 @@
 // Created by the Custom Card Creator
 
-import {type Blueprint} from '@Game/types.js';
+import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
     // Look in `forge.ts` first.

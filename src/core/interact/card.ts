@@ -1,5 +1,5 @@
-import {type CardKeyword} from '@Game/types.js';
-import {Card, type Player} from '../../internal.js';
+import { type CardKeyword } from '@Game/types.js';
+import { Card, type Player } from '../../internal.js';
 
 export const cardInteract = {
     /**
@@ -334,7 +334,7 @@ export const cardInteract = {
             }
         }
 
-        const {displayName} = card;
+        const { displayName } = card;
 
         if (i !== -1) {
             sb += `[${i}] `;
@@ -346,7 +346,7 @@ export const cardInteract = {
         if (card.stats) {
             sb += `<bright:green> [${card.stats?.join(' / ')}]</bright:green>`;
         } else if (card.type === 'Location') {
-            const {durability} = card;
+            const { durability } = card;
             const maxDurability = card.backups.init.durability;
             const maxCooldown = card.backups.init.cooldown ?? 0;
 
@@ -395,7 +395,7 @@ export const cardInteract = {
         let spellSchool = '';
         let locCooldown = '';
 
-        const {type} = card;
+        const { type } = card;
 
         switch (type) {
             case 'Minion': {

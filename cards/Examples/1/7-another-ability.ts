@@ -1,7 +1,7 @@
 // Created by Hand
 
 import assert from 'node:assert';
-import {type Blueprint, type Ability} from '@Game/types.js';
+import { type Blueprint, type Ability } from '@Game/types.js';
 
 // This is another way to write blueprints
 // You might want to do this if you make a very complicated card

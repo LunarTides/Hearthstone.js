@@ -1,5 +1,5 @@
 import process from 'node:process';
-import {type Player} from '@Game/internal.js';
+import { type Player } from '@Game/internal.js';
 
 export const infoInteract = {
     /**
@@ -8,7 +8,7 @@ export const infoInteract = {
     printName(): void {
         game.interact.cls();
 
-        const {info} = game.config;
+        const { info } = game.config;
         const versionDetail = game.player.detailedView || game.config.general.debug ? 4 : 3;
 
         const watermarkString = `HEARTHSTONE.JS V${game.functions.info.version(versionDetail)}`;
@@ -33,7 +33,7 @@ export const infoInteract = {
             return;
         }
 
-        const {info} = game.config;
+        const { info } = game.config;
 
         game.interact.cls();
 

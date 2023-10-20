@@ -1,6 +1,6 @@
 // Created by Hand (before the Card Creator Existed)
 
-import {type Blueprint} from '@Game/types.js';
+import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
     name: 'Draconic Imp',

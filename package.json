@@ -46,7 +46,10 @@
     "space": 4,
     "rules": {
       "unicorn/no-process-exit": "off",
-      "no-unused-vars": "error"
+      "max-params": "off",
+      "no-warning-comments": "off",
+      "no-unused-vars": "error",
+      "@typescript-eslint/object-curly-spacing": ["error", "always"]
     },
     "overrides": [
       {

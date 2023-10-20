@@ -3,8 +3,8 @@
  * @module Interact
  */
 import process from 'node:process';
-import {Card, cardInteract, gameLoopInteract, infoInteract, type Player} from '../../internal.js';
-import {type SelectTargetAlignment, type SelectTargetClass, type SelectTargetFlag, type Target} from '../../types.js';
+import { Card, cardInteract, gameLoopInteract, infoInteract, type Player } from '../../internal.js';
+import { type SelectTargetAlignment, type SelectTargetClass, type SelectTargetFlag, type Target } from '../../types.js';
 
 export const interact = {
     card: cardInteract,

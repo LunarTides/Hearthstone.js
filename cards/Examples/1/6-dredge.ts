@@ -1,7 +1,7 @@
 // Created by Hand
 
 import assert from 'node:assert';
-import {type Blueprint} from '@Game/types.js';
+import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
     name: 'Dredge Example',

@@ -2,9 +2,9 @@
  * @module Vanilla Card Property Finder
  */
 
-import {createGame} from '../../src/internal.js';
+import { createGame } from '../../src/internal.js';
 
-const {game} = createGame();
+const { game } = createGame();
 
 const props: Record<string, [string, number]> = {};
 const types: Record<string, number> = {};

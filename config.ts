@@ -1,4 +1,4 @@
-import {type GameConfig} from '@Game/types.js';
+import { type GameConfig } from '@Game/types.js';
 
 export const config: GameConfig = {
     general: {

@@ -3,7 +3,7 @@
  * @module Crash Test
  */
 import process from 'node:process';
-import {createGame} from '../src/internal.js';
+import { createGame } from '../src/internal.js';
 
 const gamesEnv = process.env.games ?? '';
 const games = game.lodash.parseInt(gamesEnv) ?? 100;
@@ -26,7 +26,7 @@ function main() {
         }
 
         // Test the main game
-        const {game, player1, player2} = createGame();
+        const { game, player1, player2 } = createGame();
 
         // Setup the ais
         game.config.ai.player1 = true;
@@ -63,7 +63,7 @@ function main() {
             game.functions.util.createLogFile(error);
 
             game.interact.gameLoop.handleCmds('/ai');
-            game.interact.gameLoop.handleCmds('history', {debug: true});
+            game.interact.gameLoop.handleCmds('history', { debug: true });
 
             game.log('THE GAME CRASHED: LOOK ABOVE FOR THE HISTORY, AND THE AI\'S LOGS.');
 
