@@ -6,7 +6,7 @@
 import {type Card, createGame} from '../../src/internal.js';
 import {type Blueprint, type VanillaCard} from '../../src/types.js';
 
-const {game, player1, player2} = createGame();
+const {game} = createGame();
 
 function main() {
     const vanillaCards = game.functions.card.vanilla.getAll();

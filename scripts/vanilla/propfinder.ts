@@ -4,13 +4,30 @@
 
 import {createGame} from '../../src/internal.js';
 
-const {game, player1, player2} = createGame();
+const {game} = createGame();
 
 const props: Record<string, [string, number]> = {};
 const types: Record<string, number> = {};
 
 const stored: Array<[string, number]> = [];
 const storedType = 'mechanics';
+
+function handleStoredTypes(value: any) {
+    const values = Array.isArray(value) ? value : [value];
+
+    for (const v of values) {
+        if (typeof v !== 'string') {
+            throw new TypeError('v is not a string');
+        }
+
+        const found = stored.find(s => game.lodash.isEqual(s[0], v));
+        if (found) {
+            found[1]++;
+        } else {
+            stored.push([v, 1]);
+        }
+    }
+}
 
 function main() {
     const vanillaCards = game.functions.card.vanilla.getAll();
@@ -20,20 +37,7 @@ function main() {
             const [key, value] = ent;
 
             if (key === storedType) {
-                const values = Array.isArray(value) ? value : [value];
-
-                for (const v of values) {
-                    if (typeof v !== 'string') {
-                        throw new TypeError('v is not a string');
-                    }
-
-                    const s = stored.find(dsa => game.lodash.isEqual(dsa[0], v));
-                    if (s) {
-                        s[1]++;
-                    } else {
-                        stored.push([v, 1]);
-                    }
-                }
+                handleStoredTypes(value);
             }
 
             if (Object.keys(props).includes(key)) {

@@ -6,7 +6,6 @@ import childProcess from 'node:child_process';
 import process from 'node:process';
 import {createHash} from 'node:crypto';
 import {type Player} from '@Game/internal.js';
-import {type EventValue, type GameConfig, type HistoryKey} from '@Game/types.js';
 
 export const utilFunctions = {
     /**
@@ -300,12 +299,12 @@ ${mainContent}
         }
 
         // Checksum matches
-        const [_, date, version, os, logVersion] = contentSplit.map(l => l.split(': ')[1]);
+        const [watermark, date, version, os, logVersion] = contentSplit.map(l => l.split(': ')[1]);
         const history = content.split('-- History --')[1].trim();
         const ai = content.split('-- AI Logs --')[1].trim();
         const config = content.split('-- Config --')[1].trim();
 
-        const headerObject = {date, version: game.lodash.parseInt(version), os, logVersion: game.lodash.parseInt(logVersion)};
+        const headerObject = {watermark, date, version: game.lodash.parseInt(version), os, logVersion: game.lodash.parseInt(logVersion)};
 
         return {header: headerObject, history, ai, config};
     },

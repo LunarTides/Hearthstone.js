@@ -1417,7 +1417,7 @@ export class Card {
             }
 
             case 'Living Spores': {
-                this.addAbility('deathrattle', (plr, self) => {
+                this.addAbility('deathrattle', (plr, _) => {
                     game.summonMinion(new Card('Plant', plr), plr);
                     game.summonMinion(new Card('Plant', plr), plr);
                 });

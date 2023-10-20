@@ -8,7 +8,7 @@ import {type Blueprint, type CardClass, type CardRarity, type MinionTribe, type 
 import {createGame} from '../../src/internal.js';
 import * as lib from './lib.js';
 
-const {game, player1, player2} = createGame();
+const {game} = createGame();
 
 /**
  * Create a card from a vanilla card.

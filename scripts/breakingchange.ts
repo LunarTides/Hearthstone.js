@@ -7,7 +7,7 @@ import process from 'node:process';
 import rl from 'readline-sync';
 import {createGame} from '../src/internal.js';
 
-const {game, player1, player2} = createGame();
+const {game} = createGame();
 
 const matchingCards: string[] = [];
 let finishedCards: string[] = [];

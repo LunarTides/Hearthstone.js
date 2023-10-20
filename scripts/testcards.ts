@@ -7,7 +7,7 @@
 import process from 'node:process';
 import {Card, type Player, createGame} from '../src/internal.js';
 
-const {game, player1, player2} = createGame();
+const {game} = createGame();
 const cards = game.functions.card.getAll(false);
 
 function testCard(card: Card): boolean | Error {

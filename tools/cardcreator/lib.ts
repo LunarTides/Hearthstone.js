@@ -6,7 +6,7 @@
 import {createGame} from '../../src/internal.js';
 import {type BlueprintWithOptional, type CardClass, type CardType} from '../../src/types.js';
 
-const {game, player1, player2} = createGame();
+const {game} = createGame();
 
 let card: BlueprintWithOptional;
 let type: CardType;

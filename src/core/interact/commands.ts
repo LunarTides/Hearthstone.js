@@ -400,7 +400,7 @@ export const commands: CommandList = {
                         continue;
                     }
 
-                    const [key, newValue, _] = c;
+                    const [key, newValue] = c;
 
                     // This shouldn't happen?
                     if (!newValue) {

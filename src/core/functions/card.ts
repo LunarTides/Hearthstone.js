@@ -410,7 +410,7 @@ export const cardFunctions = {
         let exportContent = '// This file has been automatically created. Do not change this file.\n';
 
         const list: string[] = [];
-        game.functions.util.searchCardsFolder((fullPath, content, file) => {
+        game.functions.util.searchCardsFolder((fullPath, content) => {
             if (!content.includes('export const blueprint')) {
                 return;
             }
@@ -432,7 +432,7 @@ export const cardFunctions = {
         game.functions.util.fs('write', '/dist/cards/exports.js', exportContent);
     },
 
-    reloadAll(path?: string) {
+    reloadAll(_path?: string) {
         // TODO: Implement. #323
     },
 };

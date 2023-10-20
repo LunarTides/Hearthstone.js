@@ -8,7 +8,7 @@ import https from 'node:https';
 import {type VanillaCard} from '@Game/types.js';
 import {createGame} from '../../src/internal.js';
 
-const {game, player1, player2} = createGame();
+const {game} = createGame();
 
 // Copy-and-pasted from this stackoverflow answer:
 // https://stackoverflow.com/a/62588602

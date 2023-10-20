@@ -7,7 +7,7 @@
 import process from 'node:process';
 import {createGame} from '../src/internal.js';
 
-const {game, player1, player2} = createGame();
+const {game} = createGame();
 
 function upgradeField(data: string, oldValue: string | RegExp, newValue: string, toLog: string) {
     const oldData = data;

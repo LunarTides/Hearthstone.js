@@ -666,6 +666,7 @@ export class Ai {
         score -= c.cost * game.config.ai.costBias;
 
         // Keywords
+        // eslint-disable-next-line no-unused-vars
         for (const _ of Object.keys(c.keywords)) {
             score += game.config.ai.keywordValue;
         }

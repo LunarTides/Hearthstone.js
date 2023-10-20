@@ -45,7 +45,16 @@
   "xo": {
     "space": 4,
     "rules": {
-      "unicorn/no-process-exit": "off"
-    }
+      "unicorn/no-process-exit": "off",
+      "no-unused-vars": "error"
+    },
+    "overrides": [
+      {
+        "files": "cards/**",
+        "rules": {
+          "no-unused-vars": "off"
+        }
+      }
+    ]
   }
 }

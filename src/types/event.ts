@@ -34,12 +34,12 @@ export type QuestCallback = (value: UnknownEventValue, done: boolean) => boolean
  * The backend of a quest.
  */
 export type QuestType = {
-	name: string;
-	progress: [number, number];
-	key: EventKey;
-	value: number;
-	callback: QuestCallback;
-	next?: string;
+    name: string;
+    progress: [number, number];
+    key: EventKey;
+    value: number;
+    callback: QuestCallback;
+    next?: string;
 };
 
 /**

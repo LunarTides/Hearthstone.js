@@ -6,11 +6,11 @@
 
 import {createGame} from '../../src/internal.js';
 
-const {game, player1, player2} = createGame();
+const {game} = createGame();
 
 const idRegex = /id: (\d+)/;
 
-function searchCards(callback: (path: string, content: string, id: number) => void, path?: string) {
+function searchCards(callback: (path: string, content: string, id: number) => void) {
     game.functions.util.searchCardsFolder((fullPath, content) => {
         const idMatch = idRegex.exec(content);
         if (!idMatch) {

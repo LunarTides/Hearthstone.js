@@ -6,7 +6,7 @@ import util from 'node:util';
 import {type Card, createGame} from '../src/internal.js';
 import {type CardClass, type CardClassNoNeutral, type GameConfig} from '../src/types.js';
 
-const {game, player1: plr, player2} = createGame();
+const {game, player1: plr} = createGame();
 
 const {config} = game;
 const classes = game.functions.card.getClasses();
