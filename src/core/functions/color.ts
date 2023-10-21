@@ -307,6 +307,11 @@ export const colorFunctions = {
                     }
 
                     for (const tag of currentTags) {
+                        const success = game.functions.util.remove(currentTypes, tag);
+                        if (success) {
+                            continue;
+                        }
+
                         currentTypes = currentTypes.filter(type => !type.startsWith(tag));
                     }
                 } else {
