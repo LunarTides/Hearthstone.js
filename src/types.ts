@@ -4,6 +4,5 @@
  */
 export * from './types/event.js';
 export * from './types/card.js';
-export * from './types/vanilla.js';
 export * from './types/blueprint.js';
 export * from './types/other.js';

@@ -5,7 +5,7 @@
 
 import { Buffer } from 'node:buffer';
 import https from 'node:https';
-import { type VanillaCard } from '@Game/types.js';
+import { type VanillaCard } from '@hearthstonejs/vanillatypes';
 import { createGame } from '../../src/internal.js';
 
 const { game } = createGame();

@@ -31,6 +31,7 @@
     "strip-ansi": "^7.1.0"
   },
   "devDependencies": {
+    "@hearthstonejs/vanillatypes": "^1.0.0",
     "@types/lodash": "^4.14.200",
     "@types/node": "^20.8.7",
     "@types/readline-sync": "^1.4.6",
@@ -49,7 +50,10 @@
       "max-params": "off",
       "no-warning-comments": "off",
       "no-unused-vars": "error",
-      "@typescript-eslint/object-curly-spacing": ["error", "always"]
+      "@typescript-eslint/object-curly-spacing": [
+        "error",
+        "always"
+      ]
     },
     "overrides": [
       {

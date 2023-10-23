@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { type Dirent } from 'node:fs';
-import { type CardLike, type VanillaCard, type CardClass, type MinionTribe, type CardClassNoNeutral, type Blueprint, type CardType } from '@Game/types.js';
+import { type VanillaCard } from '@hearthstonejs/vanillatypes';
+import { type CardLike, type CardClass, type MinionTribe, type CardClassNoNeutral, type Blueprint, type CardType } from '@Game/types.js';
 import { Card, CardError, type Player } from '../../internal.js';
 import * as blueprints from '../../../cards/exports.js';
 
