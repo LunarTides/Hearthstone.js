@@ -107,7 +107,7 @@ export const utilFunctions = {
             strbuilder += splitBrick[0];
             strbuilder += ' '.repeat(diff);
             strbuilder += sep;
-            strbuilder += splitBrick[1];
+            strbuilder += game.lodash.tail(splitBrick).join(sep);
 
             wall.push(strbuilder);
         }
