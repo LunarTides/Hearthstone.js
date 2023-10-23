@@ -96,32 +96,32 @@ export const infoInteract = {
             }
 
             if (!player) {
-                finished += `<i gray>Nothing</i gray> | ${opponent}`;
+                finished += `${opponent.split(':')[0]}: <italic gray>Nothing</italic gray> | ${opponent}`;
             } else if (opponent) {
                 finished += `${player} | ${opponent}`;
             } else {
-                finished += `${player} | <i gray>Nothing</i gray>`;
+                finished += `${player} | ${player.split(':')[0]}: <italic gray>Nothing</italic gray>`;
             }
 
             finished += '\n';
         };
 
-        const wallify = () => {
-            const finishedSplit = game.lodash.initial(finished.split('\n'));
+        const wallify = (text: string) => {
+            const textSplit = game.lodash.initial(text.split('\n'));
 
             // Wallify the ':' in the first half
-            const firstHalf = finishedSplit.map(line => line.split('|')[0]);
+            const firstHalf = textSplit.map(line => line.split('|')[0]);
             const firstHalfWall = game.functions.util.createWall(firstHalf, ':');
 
             // Wallify the ':' in the second half
-            const secondHalf = finishedSplit.map(line => line.split('|')[1]);
+            const secondHalf = textSplit.map(line => line.split('|')[1]);
             const secondHalfWall = game.functions.util.createWall(secondHalf, ':');
 
             // Combine the two halves
-            const newFinished = firstHalfWall.map((line, index) => line + '|' + secondHalfWall[index]);
+            const newText = firstHalfWall.map((line, index) => line + '|' + secondHalfWall[index]);
 
             // Wallify the '|' in the final result
-            const wall = game.functions.util.createWall(newFinished, '|');
+            const wall = game.functions.util.createWall(newText, '|');
 
             return wall.join('\n');
         };
@@ -135,13 +135,25 @@ export const infoInteract = {
         // Deck Size
         doStat((player: Player) => `Deck Size: <yellow>${player.deck.length}</yellow>`);
 
-        // TODO: Add weapon
+        // Weapon
+        doStat((player: Player) => {
+            if (!player.weapon) {
+                return '';
+            }
+
+            if (plr.detailedView) {
+                return `Weapon: ${game.interact.card.getReadable(player.weapon)}`;
+            }
+
+            return `Weapon: ${game.functions.color.fromRarity(player.weapon.displayName, player.weapon.rarity, false)}`;
+        });
+
         // TODO: Add quests, secrets, etc...
 
         // Attack
         doStat((player: Player) => {
             // If no players have any attack, don't show the attack.
-            if (game.player1.attack <= 0 && game.player2.attack <= 0) {
+            if (player.attack <= 0) {
                 return '';
             }
 
@@ -150,14 +162,14 @@ export const infoInteract = {
 
         // Corpses
         doStat((player: Player) => {
-            if (!plr.detailedView || plr.heroClass !== 'Death Knight') {
+            if (!plr.detailedView || player.heroClass !== 'Death Knight') {
                 return '';
             }
 
             return `Corpses: <gray>${player.corpses}</gray>`;
         });
 
-        game.log(wallify());
+        game.log(wallify(finished));
     },
 
     printBoard(plr: Player): void {
