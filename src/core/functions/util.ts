@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import childProcess from 'node:child_process';
 import process from 'node:process';
 import { createHash } from 'node:crypto';
+import date from 'date-and-time';
 import { type Player } from '@Game/internal.js';
 
 export const utilFunctions = {
@@ -116,55 +117,6 @@ export const utilFunctions = {
     },
 
     /**
-     * Get the day, month, year, hour, minute, and second, as 2 digit numbers.
-     */
-    getDateAndTime() {
-        const date = new Date();
-
-        let day = date.getDate().toString();
-
-        // Month is 0-11 for some reason
-        let month = (date.getMonth() + 1).toString();
-
-        // Get the last 2 digits of the year
-        let year = date.getFullYear().toString().slice(2);
-
-        let hour = date.getHours().toString();
-        let minute = date.getMinutes().toString();
-        let second = date.getSeconds().toString();
-
-        if (game.lodash.parseInt(day) < 10) {
-            day = `0${day}`;
-        }
-
-        if (game.lodash.parseInt(month) < 10) {
-            month = `0${month}`;
-        }
-
-        if (game.lodash.parseInt(year) < 10) {
-            year = `0${year}`;
-        }
-
-        if (game.lodash.parseInt(hour) < 10) {
-            hour = `0${hour}`;
-        }
-
-        if (game.lodash.parseInt(minute) < 10) {
-            minute = `0${minute}`;
-        }
-
-        if (game.lodash.parseInt(second) < 10) {
-            second = `0${second}`;
-        }
-
-        // Assemble the time
-        // 01/01/23 23:59:59
-        const dateString = `${day}/${month}/${year} ${hour}:${minute}:${second}`;
-
-        return dateString;
-    },
-
-    /**
      * Create a (crash)log file
      *
      * @param err If this is set, create a crash log. If this is not set, create a normal log file.
@@ -177,10 +129,11 @@ export const utilFunctions = {
             this.fs('mkdir', '/logs');
         }
 
-        const dateString = this.getDateAndTime();
+        const now = new Date();
+        const dateString = date.format(now, 'DD/MM/YYYY HH:mm:ss');
 
         // 01.01.23-23.59.59
-        const dateStringFileFriendly = dateString.replaceAll(/[/:]/g, '.').replaceAll(' ', '-');
+        const dateStringFileFriendly = date.format(now, 'DD.MM.YY-HH.mm.ss');
 
         // Grab the history of the game
         // handleCmds("history", echo, debug)
