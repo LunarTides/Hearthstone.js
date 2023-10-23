@@ -1,6 +1,5 @@
 import { type Card, type Player } from '@Game/internal.js';
-import { type Blueprint } from './blueprint.js';
-import { type EventKey } from './event.js';
+import { type Blueprint, type EventKey } from '@Game/types.js';
 
 /**
  * Game.PlayCard return value
