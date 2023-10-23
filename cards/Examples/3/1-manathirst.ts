@@ -16,10 +16,9 @@ export const blueprint: Blueprint = {
     id: 50,
 
     battlecry(plr, self) {
-        // `ret` is a boolean.
         const returnValue = self.manathirst(6);
 
-        // Build the prompt.
+        // Make the prompt.
         const prompt = returnValue ? 'Silence then freeze an enemy minion.' : 'Freeze an enemy minion.';
 
         // Select a target to freeze (and silence)
@@ -49,8 +48,6 @@ export const blueprint: Blueprint = {
 
     // This is optional, you will learn more about it in the `condition` example in `3-3`.
     condition(plr, self) {
-        // The next comment will only make sense after reading the `condition` example. Come back here after reading that.
-        // Since we didn't put the `conditioned: ["battlecry"]` at the top, it won't cancel the battlecry if this returns false, this is just to warn the user that the manathirst isn't triggered.
         return self.manathirst(6);
     },
 

@@ -176,7 +176,7 @@ export type CardBackup = {
 /**
  * The ability of a card.
  */
-export type Ability = (plr: Player, self: Card, key?: EventKey, value?: UnknownEventValue, eventPlayer?: Player) => any;
+export type Ability = (plr: Player, self: Card, key?: EventKey, _unknownValue?: UnknownEventValue, eventPlayer?: Player) => any;
 
 /**
  * The abilities that a blueprint can have. (From CardAbility)

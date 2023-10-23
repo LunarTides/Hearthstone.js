@@ -21,13 +21,13 @@ export const blueprint: Blueprint = {
         // This list will act like a pool of cards.
 
         // This gets every card from the game, excluding uncollectible cards.
-        let cards = game.functions.card.getAll();
+        let pool = game.functions.card.getAll();
 
         // We need to filter away any non-spell cards.
-        cards = cards.filter(c => c.type === 'Spell');
+        pool = pool.filter(c => c.type === 'Spell');
 
         // Interact.discover(prompt, pool, ifItShouldFilterAwayCardsThatAreNotThePlayersClass = true, amountOfCardsToChooseFrom = 3)
-        const spell = game.interact.card.discover('Discover a spell.', cards);
+        const spell = game.interact.card.discover('Discover a spell.', pool);
 
         // If no card was chosen, refund
         if (!spell) {
