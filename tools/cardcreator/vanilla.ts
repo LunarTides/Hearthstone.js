@@ -4,7 +4,7 @@
  */
 
 import rl from 'readline-sync';
-import { type VanillaCard } from '@hearthstonejs/vanillatypes';
+import { type Card as VanillaCard } from '@hearthstonejs/vanillatypes';
 import { type Blueprint, type CardClass, type CardRarity, type MinionTribe, type SpellSchool } from '../../src/types.js';
 import { createGame } from '../../src/internal.js';
 import * as lib from './lib.js';

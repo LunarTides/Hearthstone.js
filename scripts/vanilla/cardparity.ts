@@ -3,7 +3,7 @@
  * @module Card Parity
  */
 
-import { type VanillaCard } from '@hearthstonejs/vanillatypes';
+import { type Card as VanillaCard } from '@hearthstonejs/vanillatypes';
 import { type Card, createGame } from '../../src/internal.js';
 import { type Blueprint } from '../../src/types.js';
 

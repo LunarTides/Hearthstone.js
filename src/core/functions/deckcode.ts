@@ -1,6 +1,6 @@
 // To decode vanilla deckcodes
 import deckstrings from 'deckstrings';
-import { type VanillaCard } from '@hearthstonejs/vanillatypes';
+import { type Card as VanillaCard } from '@hearthstonejs/vanillatypes';
 import { type CardClass, type CardClassNoNeutral, type CardLike, type FunctionsExportDeckError } from '@Game/types.js';
 import { Card, type Player } from '../../internal.js';
 
