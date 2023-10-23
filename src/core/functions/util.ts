@@ -27,13 +27,6 @@ export const utilFunctions = {
     },
 
     /**
-     * Returns the last character from a string.
-     */
-    lastChar(string: string): string | undefined {
-        return string.at(-1);
-    },
-
-    /**
      * Capitalizes all words in string
      *
      * @param str The string

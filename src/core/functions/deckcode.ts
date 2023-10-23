@@ -462,7 +462,7 @@ export const deckcodeFunctions = {
             }
 
             if (!found) {
-                const char = game.functions.util.lastChar(amountString);
+                const char = amountString.at(-1);
                 amount = game.lodash.parseInt(char ?? '0');
             }
 

@@ -563,7 +563,7 @@ export const debugCommands: CommandList = {
         let code = args.join(' ');
 
         if (log) {
-            if (game.functions.util.lastChar(code) === ';') {
+            if (code.at(-1) === ';') {
                 code = code.slice(0, -1);
             }
 
