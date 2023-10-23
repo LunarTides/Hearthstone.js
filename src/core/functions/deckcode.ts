@@ -1,7 +1,7 @@
 // To decode vanilla deckcodes
 import deckstrings from 'deckstrings';
 import { type Card as VanillaCard } from '@hearthstonejs/vanillatypes';
-import { type CardClass, type CardClassNoNeutral, type CardLike, type FunctionsExportDeckError } from '@Game/types.js';
+import { type GameConfig, type CardClass, type CardClassNoNeutral, type CardLike, type FunctionsExportDeckError } from '@Game/types.js';
 import { Card, type Player } from '../../internal.js';
 
 export const deckcodeFunctions = {
@@ -114,8 +114,7 @@ export const deckcodeFunctions = {
         const deck = code.split(',');
         let _deck: Card[] = [];
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const localSettings = JSON.parse(JSON.stringify(game.config));
+        const localSettings = JSON.parse(JSON.stringify(game.config)) as GameConfig;
 
         let processed = 0;
         let returnValueInvalid = false;
@@ -151,13 +150,14 @@ export const deckcodeFunctions = {
                     for (const setting of Object.entries(card.deckSettings)) {
                         const [key, value] = setting;
 
-                        localSettings[key] = value;
+                        // HACK: Never usage
+                        localSettings[key as keyof GameConfig] = value as never;
                     }
                 }
 
                 const validateTest = card.validateForDeck();
 
-                if (!localSettings.validateDecks || validateTest === true) {
+                if (!localSettings.decks.validate || validateTest === true) {
                     continue;
                 }
 
@@ -180,8 +180,7 @@ export const deckcodeFunctions = {
                     }
 
                     default: {
-                        error = '';
-                        break;
+                        throw new Error('Unknown error code when validating a card in a deck');
                     }
                 }
 
@@ -200,10 +199,10 @@ export const deckcodeFunctions = {
             return undefined;
         }
 
-        const max = localSettings.maxDeckLength as number;
-        const min = localSettings.minDeckLength as number;
+        const max = localSettings.decks.maxLength;
+        const min = localSettings.decks.minLength;
 
-        if ((_deck.length < min || _deck.length > max) && localSettings.validateDecks) {
+        if ((_deck.length < min || _deck.length > max) && localSettings.decks.validate) {
             const grammar = (min === max) ? `exactly <yellow>${max}</yellow>` : `between <yellow>${min}-${max}</yellow>`;
             game.pause(`<red>The deck needs ${grammar} cards. Your deck has: <yellow>${_deck.length}</yellow>.\n`);
             return undefined;
@@ -224,27 +223,27 @@ export const deckcodeFunctions = {
             const cardName = v[0];
 
             let errorcode;
-            if (amount > localSettings.maxOfOneCard) {
+            if (amount > localSettings.decks.maxOfOneCard) {
                 errorcode = 'normal';
             }
 
-            if (game.functions.card.getFromName(cardName)?.rarity === 'Legendary' && amount > localSettings.maxOfOneLegendary) {
+            if (game.functions.card.getFromName(cardName)?.rarity === 'Legendary' && amount > localSettings.decks.maxOfOneLegendary) {
                 errorcode = 'legendary';
             }
 
-            if (!localSettings.validateDecks || !errorcode) {
+            if (!localSettings.decks.validate || !errorcode) {
                 continue;
             }
 
             let error;
             switch (errorcode) {
                 case 'normal': {
-                    error = `<red>There are more than <yellow>${localSettings.maxOfOneCard}</yellow> of a card in your deck.</red>`;
+                    error = `<red>There are more than <yellow>${localSettings.decks.maxOfOneCard}</yellow> of a card in your deck.</red>`;
                     break;
                 }
 
                 case 'legendary': {
-                    error = `<red>There are more than <yellow>${localSettings.maxOfOneLegendary}</yellow> of a legendary card in your deck.</red>`;
+                    error = `<red>There are more than <yellow>${localSettings.decks.maxOfOneLegendary}</yellow> of a legendary card in your deck.</red>`;
                     break;
                 }
 
