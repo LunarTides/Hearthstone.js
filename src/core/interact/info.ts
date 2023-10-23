@@ -28,7 +28,7 @@ export const infoInteract = {
      *
      * @param disappear If this is true, "This will disappear once you end your turn" will show up.
      */
-    printLicense(disappear = true): void {
+    license(disappear = true): void {
         if (game.config.general.debug) {
             return;
         }
@@ -74,7 +74,7 @@ export const infoInteract = {
     showGame(plr: Player): void {
         this.watermark();
         if (game.turns <= 2) {
-            this.printLicense();
+            this.license();
         }
 
         this.printPlayerStats(plr);
