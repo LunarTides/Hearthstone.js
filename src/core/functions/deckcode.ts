@@ -15,9 +15,6 @@ export const deckcodeFunctions = {
      */
     // eslint-disable-next-line complexity
     import(plr: Player, code: string): Card[] | undefined {
-        /**
-         * Cause the function to return an error
-         */
         const panic = (errorCode: string, cardName?: string) => {
             game.log(`<red>This deck is not valid!\nError Code: <yellow>${errorCode}</yellow red>`);
             if (cardName) {
@@ -38,8 +35,9 @@ export const deckcodeFunctions = {
             // This isn't a vanilla code, no worries, just parse it as a hearthstone.js deckcode.
         }
 
+        // We don't convert the code in the try-catch block, since this function could throw an error which would be ignored
         if (vanilla) {
-            code = deckcodeFunctions.fromVanilla(plr, code);
+            code = this.fromVanilla(plr, code);
         }
 
         // BFU
@@ -68,6 +66,7 @@ export const deckcodeFunctions = {
 
         plr.heroClass = hero as CardClass;
 
+        // TODO: Make this less hardcoded
         const runeClasses = ['Death Knight'];
         const runeClass = runeClasses.includes(hero);
 

@@ -845,7 +845,7 @@ export class Player {
      *
      * @param runes The runes to test against
      *
-     * @return Whether or not the player has the correct runes
+     * @returns Whether or not the player has the correct runes
      */
     testRunes(runes: string): boolean {
         const charCount = (text: string, letter: string) => {

@@ -54,6 +54,7 @@ export const infoFunctions = {
         const hash = game.cache.latestCommitHash as string | Error;
 
         if (hash instanceof Error) {
+            // TODO: Save as a thing of interest. #259
             game.log('<red>ERROR: Git is not installed.</red>');
             return 'no git found';
         }

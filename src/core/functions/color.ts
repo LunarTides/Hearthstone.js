@@ -220,7 +220,7 @@ export const colorFunctions = {
          * Appends text styling based on the current types.
          *
          * @param c The text to be styled
-         * @return The text with applied styling
+         * @returns The text with applied styling
          */
         const appendTypes = (c: string): string => {
             let returnValue = c;
@@ -364,7 +364,7 @@ export const colorFunctions = {
      * assert.equal(stripTags(str), "Hello");
      */
     stripTags(text: string): string {
-        // Regular expressions created by AI's, it removes the "<b>"'s but keeps the "~<b>"'s since the '~' here works like an escape character.
+        // Regular expressions created by AIs, it removes the "<b>"'s but keeps the "~<b>"'s since the '~' here works like an escape character.
         // It does however remove the escape character itself.
         // Remove unescaped tags
         text = text.replaceAll(/(?<!~)<.+?>/g, '');

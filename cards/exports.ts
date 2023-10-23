@@ -1,4 +1,4 @@
-// This file has been automatically created. Do not change this file.
+// This file has been automatically generated. Do not change this file.
 export { blueprint as c44a2687 } from './Debug/10mana.js';
 export { blueprint as c6f22543 } from './Debug/infmana.js';
 export { blueprint as c8ddfe25 } from './Examples/1/1-minion.js';

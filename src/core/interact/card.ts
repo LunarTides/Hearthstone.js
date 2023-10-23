@@ -5,7 +5,7 @@ export const cardInteract = {
     /**
      * Asks the user to select a location card to use, and activate it.
      *
-     * @return Success
+     * @returns Success
      */
     useLocation(): boolean | 'nolocations' | 'invalidtype' | 'cooldown' | 'refund' {
         const locations = game.board[game.player.id].filter(m => m.type === 'Location');
@@ -55,9 +55,9 @@ export const cardInteract = {
         }
 
         const input = plr.ai ? plr.ai.mulligan() : game.input(sb);
-        const isInt = plr.mulligan(input);
+        const success = plr.mulligan(input);
 
-        if (!isInt && input !== '') {
+        if (!success && input !== '') {
             game.pause('<red>Invalid input!</red>\n');
             return this.mulligan(plr);
         }
@@ -198,7 +198,7 @@ export const cardInteract = {
      * @param overrideText The description. If empty, it uses the card's description instead.
      * @param _depth The depth of recursion.
      *
-     * @return The modified description with placeholders replaced.
+     * @returns The modified description with placeholders replaced.
      */
     doPlaceholders(card: Card, overrideText = '', _depth = 0): string {
         let reg = /{ph:(.*?)}/;
@@ -268,7 +268,6 @@ export const cardInteract = {
     /**
      * Returns a card in a user readable state. If you game.log the result of this, the user will get all the information they need from the card.
      *
-     * @param card The card
      * @param i If this is set, this function will add `[i]` to the beginning of the card. This is useful if there are many different cards to choose from.
      * @param _depth The depth of recursion. DO NOT SET THIS MANUALLY.
      *
@@ -384,7 +383,6 @@ export const cardInteract = {
     /**
      * Shows information from the card, game.log's it and waits for the user to press enter.
      *
-     * @param card The card
      * @param help If it should show a help message which displays what the different fields mean.
      */
     view(card: Card, help = true) {
@@ -435,6 +433,9 @@ export const cardInteract = {
         game.pause();
     },
 
+    /**
+     * Spawns a DIY card for the given player.
+     */
     spawnInDiyCard(player: Player) {
         // Don't allow ai's to get diy cards
         if (player.ai) {

@@ -7,16 +7,27 @@ import { Card, cardInteract, gameLoopInteract, infoInteract, type Player } from 
 import { type SelectTargetAlignment, type SelectTargetClass, type SelectTargetFlag, type Target } from '../../types.js';
 
 export const interact = {
+    /**
+     * Card related interactions.
+     */
     card: cardInteract,
+
+    /**
+     * Information.
+     */
     info: infoInteract,
+
+    /**
+     * Game loop related interactions.
+     */
     gameLoop: gameLoopInteract,
 
     // Deck stuff
 
     /**
-     * Asks the player to supply a deck code, if no code was given, fill the players deck with 30 Sheep.
+     * Asks the player to supply a deck code.
      *
-     * This does not fill the players deck with 30 Sheep if:
+     * If no code was given, fill the players deck with 30 Sheep unless both;
      * - Debug mode is disabled
      * - The program is running on the stable branch
      *
@@ -365,7 +376,7 @@ export const interact = {
      * Verifies that the diy card has been solved.
      *
      * @param condition The condition where, if true, congratulates the user
-     * @param fileName The file's name in the `DIY` folder. E.g. `1.ts`
+     * @param card The DIY card itself
      *
      * @returns Success
      */

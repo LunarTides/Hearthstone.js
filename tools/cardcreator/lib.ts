@@ -105,7 +105,7 @@ function generateCardPath(...args: [CardClass[], CardType]) {
  * @param overrideFilename The override filename for the card.
  * @param debug If true, doesn't save the card, just prints out details about it.
  *
- * @return The path of the created file.
+ * @returns The path of the created file.
  */
 // eslint-disable-next-line complexity
 export function create(creatorType: CcType, cardType: CardType, blueprint: BlueprintWithOptional, overridePath?: string, overrideFilename?: string, debug?: boolean) {

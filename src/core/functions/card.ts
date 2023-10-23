@@ -133,10 +133,13 @@ export const cardFunctions = {
     /**
      * Returns the card with the name `name`.
      *
-     * @param name The name
      * @param refer If this should call `getCardById` if it doesn't find the card from the name
      *
-     * @returns The blueprint of the card
+     * @example
+     * const card = getFromName('The Coin');
+     *
+     * assert.ok(card instanceof Card);
+     * assert.equal(card.name, 'The Coin');
      */
     getFromName(name: string, refer = true): Card | undefined {
         const id = this.getFromId(game.lodash.parseInt(name), false);
@@ -150,10 +153,13 @@ export const cardFunctions = {
     /**
      * Returns the card with the id of `id`.
      *
-     * @param id The id
      * @param refer If this should call `getCardByName` if it doesn't find the card from the id
      *
-     * @returns The blueprint of the card
+     * @example
+     * const card = getFromId(2);
+     *
+     * assert.ok(card instanceof Card);
+     * assert.equal(card.name, 'The Coin');
      */
     getFromId(id: number, refer = true): Card | undefined {
         const card = this.getAll(false).find(c => c.id === id);
@@ -168,10 +174,7 @@ export const cardFunctions = {
     /**
      * Returns all cards added to Hearthstone.js
      *
-     * @param uncollectible Filter out all uncollectible cards
-     * @param cards This defaults to `game.cards`, which contains all cards in the game.
-     *
-     * @returns Cards
+     * @param uncollectible If it should filter out all uncollectible cards
      */
     getAll(uncollectible = true): Card[] {
         if (game.cards.length <= 0) {
@@ -194,9 +197,6 @@ export const cardFunctions = {
 
     /**
      * Returns if the `cardTribe` is `tribe` or 'All'
-     *
-     * @param cardTribe
-     * @param tribe
      *
      * @example
      * assert.equal(card.tribe, "Beast");
@@ -297,8 +297,6 @@ export const cardFunctions = {
     /**
      * Returns all classes in the game
      *
-     * @returns Classes
-     *
      * @example
      * const classes = getClasses();
      *
@@ -346,6 +344,9 @@ export const cardFunctions = {
         return y || 1;
     },
 
+    /**
+     * Creates a new CardError with the provided message.
+     */
     createCardError(message: string) {
         return new CardError(message);
     },
@@ -408,7 +409,7 @@ export const cardFunctions = {
     },
 
     generateExports() {
-        let exportContent = '// This file has been automatically created. Do not change this file.\n';
+        let exportContent = '// This file has been automatically generated. Do not change this file.\n';
 
         const list: string[] = [];
         game.functions.util.searchCardsFolder((fullPath, content) => {

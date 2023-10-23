@@ -39,11 +39,12 @@ export const gameLoopInteract = { /**
      * Ask the user a question and returns their answer
      *
      * @param q The question to ask
-     * @param care If this is false, it overrides `game.noInput`. Only use this when debugging.
+     * @param overrideNoInput If this is true, it overrides `game.noInput`. Only use this when debugging.
+     * @param useInputQueue If it should use the player's input queue
      *
      * @returns What the user answered
      */
-    input(q = '', care = true, useInputQueue = true): string {
+    input(q = '', overrideNoInput = false, useInputQueue = true): string {
         const wrapper = (a: string) => {
             game.events.broadcast('Input', a, game.player);
 
@@ -54,7 +55,7 @@ export const gameLoopInteract = { /**
             q = '';
         }
 
-        if (game.noInput && care) {
+        if (game.noInput && overrideNoInput) {
             return wrapper('');
         }
 
@@ -241,16 +242,15 @@ export const gameLoopInteract = { /**
     },
 
     /**
-     * Checks if "q" is a command, if it is, do something, if not return -1
+     * Tries to run `cmd` as a command. If it fails, return -1
      *
-     * @param q The command
-     * @param echo If this is false, it doesn't log information to the screen. Only used by "history", "/ai"
-     * @param debug If this is true, it does some additional, debug only, things. Only used by "history"
+     * @param cmd The command
+     * @param flags Some flags to pass to the commands
      *
      * @returns A string if "echo" is false
      */
-    handleCmds(q: string, flags?: { echo?: boolean; debug?: boolean }): boolean | string | -1 {
-        const args = q.split(' ');
+    handleCmds(cmd: string, flags?: { echo?: boolean; debug?: boolean }): boolean | string | -1 {
+        const args = cmd.split(' ');
         const name = args.shift()?.toLowerCase();
         if (!name) {
             game.pause('<red>Invalid command.</red>\n');
@@ -296,11 +296,11 @@ export const gameLoopInteract = { /**
     },
 
     /**
-     * Takes the input and checks if it is a command, if it is not, play the card with the id of input parsed into a number
+     * Tries to handle `input` as a command. If it fails, try to play the card with the index of `input`.
      *
      * @param input The user input
      *
-     * @returns true | The return value of `game.playCard`
+     * @returns The return value of `game.playCard`
      */
     doTurnLogic(input: string): GamePlayCardReturn {
         if (this.handleCmds(input) !== -1) {
@@ -326,7 +326,7 @@ export const gameLoopInteract = { /**
      *
      * This is the core of the game loop.
      *
-     * @returns Success | The return value of doTurnLogic
+     * @returns Success | Ignored error code | The return value of doTurnLogic
      */
     doTurn(): boolean | string | GamePlayCardReturn {
         game.events.tick('GameLoop', 'doTurn', game.player);

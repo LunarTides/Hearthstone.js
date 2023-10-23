@@ -5,7 +5,7 @@ export const eventFunctions = {
      * Add an event listener.
      *
      * @param key The event to listen for. If this is an empty string, it will listen for any event.
-     * @param callback The code that will be ran if the event listener gets triggered and gets through `checkCallback`. If this returns true, the event listener will be destroyed.
+     * @param callback The code that will be ran if the event listener gets triggered.
      * @param lifespan How many times the event listener will trigger and call "callback" before self-destructing. Set this to -1 to make it last forever, or until it is manually destroyed using "callback".
      *
      * @returns If you call this function, it will destroy the event listener.
@@ -19,7 +19,7 @@ export const eventFunctions = {
         /**
          * Destroys the eventlistener and removes it from the game event listeners.
          *
-         * @return Returns true if the object was successfully destroyed, false otherwise.
+         * @returns Returns true if the object was successfully destroyed, false otherwise.
          */
         const destroy = () => {
             if (!alive) {
@@ -98,7 +98,8 @@ export const eventFunctions = {
      * Suppresses the specified event key by adding it to the list of suppressed events.
      *
      * @param key The event key to be suppressed.
-     * @return A function that undoes the suppression.
+     *
+     * @returns A function that undoes the suppression.
      */
     suppress(key: EventKey) {
         game.events.suppressed.push(key);
@@ -115,7 +116,8 @@ export const eventFunctions = {
      * Ignores suppression for the specified event key.
      *
      * @param key The event key to be forced.
-     * @return A function that undoes this.
+     *
+     * @returns A function that undoes this.
      */
     ignoreSuppression(key: EventKey) {
         game.events.forced.push(key);

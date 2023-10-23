@@ -49,12 +49,12 @@ export const infoInteract = {
     },
 
     /**
-     * Shows `status`..., calls `callback`, then adds 'OK' or 'FAIL' to the end of that line depending on the result the callback
+     * Shows `status...`, calls `callback`, then adds 'OK' or 'FAIL' to the end of that line depending on the result the callback
      *
      * @param status The status to show.
      * @param callback The callback to call.
      *
-     * @returns The return value of the callback. If the callback didn't explicitly return false then it was successful.
+     * @returns The return value of the callback.
      */
     withStatus(status: string, callback: () => boolean): boolean {
         process.stdout.write(`${status}...`);
@@ -84,6 +84,9 @@ export const infoInteract = {
         this.printHand(plr);
     },
 
+    /**
+     * Prints the player stats.
+     */
     printPlayerStats(plr: Player): void {
         game.functions.color.preventParsingTags = true;
         let finished = '';
@@ -153,7 +156,7 @@ export const infoInteract = {
 
         // Attack
         doStat((player: Player) => {
-            // If no players have any attack, don't show the attack.
+            // If the player doesn't have any attack, don't show the attack.
             if (player.attack <= 0) {
                 return '';
             }
@@ -163,7 +166,7 @@ export const infoInteract = {
 
         // Corpses
         doStat((player: Player) => {
-            if (!plr.detailedView || player.heroClass !== 'Death Knight') {
+            if (!(plr.detailedView || player.heroClass === 'Death Knight')) {
                 return '';
             }
 
@@ -174,6 +177,9 @@ export const infoInteract = {
         game.log(wallify(finished));
     },
 
+    /**
+     * Prints the board for a specific player.
+     */
     printBoard(plr: Player): void {
         for (const [plrId, side] of game.board.entries()) {
             const player = game.functions.util.getPlayerFromId(plrId);
@@ -193,6 +199,9 @@ export const infoInteract = {
         game.log('------------------------');
     },
 
+    /**
+     * Prints the hand of the specified player.
+     */
     printHand(plr: Player): void {
         game.log(`--- ${plr.name} (${plr.heroClass})'s Hand ---`);
         // Add the help message

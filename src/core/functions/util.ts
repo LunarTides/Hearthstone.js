@@ -215,6 +215,13 @@ ${mainContent}
         return true;
     },
 
+    /**
+     * Parses the contents of a log file.
+     *
+     * @param path The path to the log file.
+     *
+     * @returns An object containing the parsed log data.
+     */
     parseLogFile(path: string) {
         if (!this.fs('exists', path)) {
             throw new Error('File does not exist');
@@ -289,7 +296,7 @@ ${mainContent}
     },
 
     /**
-     * Open a program with args
+     * Creates a child process and runs a command in it.
      *
      * @param command The command/program to run
      *
@@ -374,7 +381,8 @@ ${mainContent}
      * 1 is Player 2.
      *
      * @param id The id of the player - 1.
-     * @return The player
+     *
+     * @returns The player
      */
     getPlayerFromId(id: number): Player {
         if (id === 0) {
@@ -384,6 +392,15 @@ ${mainContent}
         return game.player2;
     },
 
+    /**
+     * Executes a file system operation based on the provided callback.
+     *
+     * @param callback The name of the fs operation to execute.
+     * @param path The path of the file or directory.
+     * @param args Additional arguments for the fs operation.
+     *
+     * @returns The result of the fs operation.
+     */
     fs(callback: keyof typeof fs, path: string, ...args: any[]): any {
         path = this.restrictPath(path);
         if (callback.endsWith('Sync')) {
@@ -438,11 +455,11 @@ ${mainContent}
         for (const file of this.fs('readdir', path, { withFileTypes: true }) as fs.Dirent[]) {
             const fullPath = `${path}/${file.name}`;
 
-            if (file.name.endsWith(extension)) {
-                if (file.name === 'exports.ts') {
-                    continue;
-                }
+            if (file.name === 'exports.ts') {
+                continue;
+            }
 
+            if (file.name.endsWith(extension)) {
                 // It is an actual card.
                 const data = this.fs('read', fullPath) as string;
 
@@ -483,7 +500,7 @@ ${mainContent}
      * game.log(dirname() + "/cards/the_coin.ts");
      * ```
      *
-     * @return The directory name.
+     * @returns The directory name.
      */
     dirname(): string {
         let dirname = pathDirname(fileURLToPath(import.meta.url)).replaceAll('\\', '/');
