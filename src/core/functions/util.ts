@@ -27,17 +27,6 @@ export const utilFunctions = {
     },
 
     /**
-     * Capitalizes all words in string
-     *
-     * @param str The string
-     *
-     * @returns The string capitalized
-     */
-    capitalizeAll(text: string): string {
-        return game.lodash.words(text).map(word => game.lodash.capitalize(word)).join(' ');
-    },
-
-    /**
      * Creates a wall.
      *
      * Walls are a formatting tool for strings, which makes them easier to read.

@@ -320,7 +320,7 @@ export const cardFunctions = {
             name = name.replaceAll('_', ' ');
 
             // Capitalize all words
-            name = game.functions.util.capitalizeAll(name);
+            name = game.lodash.startCase(name);
 
             const card = this.getFromName(name + ' Starting Hero');
             if (!card || card.classes[0] !== name as CardClassNoNeutral || card.type !== 'Hero' || !card.abilities.heropower || card.classes.includes('Neutral')) {

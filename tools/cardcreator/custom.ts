@@ -244,7 +244,7 @@ export function main(debug = false, overrideType?: lib.CcType) {
     game.log('type \'back\' at any step to cancel.\n');
 
     // Ask the user for the type of card they want to make
-    type = game.functions.util.capitalizeAll(input('Type: ')) as CardType;
+    type = game.lodash.startCase(input('Type: ')) as CardType;
     if (shouldExit) {
         return false;
     }

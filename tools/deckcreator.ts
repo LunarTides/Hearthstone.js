@@ -99,7 +99,7 @@ function askClass(): CardClassNoNeutral {
 
     let heroClass = game.input('What class do you want to choose?\n' + classes.join(', ') + '\n');
     if (heroClass) {
-        heroClass = game.functions.util.capitalizeAll(heroClass);
+        heroClass = game.lodash.startCase(heroClass);
     }
 
     if (!classes.includes(heroClass as CardClassNoNeutral)) {
@@ -814,7 +814,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
             }
 
             let heroClass = args.join(' ') as CardClass;
-            heroClass = game.functions.util.capitalizeAll(heroClass) as CardClass;
+            heroClass = game.lodash.startCase(heroClass) as CardClass;
 
             if (!classes.includes(heroClass as CardClassNoNeutral) && heroClass !== 'Neutral') {
                 game.pause('<red>Invalid class!</red>\n');

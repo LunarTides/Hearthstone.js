@@ -67,7 +67,7 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CcT
     classes.push('Neutral');
 
     while (!classes.includes(cardClass)) {
-        cardClass = game.functions.util.capitalizeAll(game.input('<red>Was not able to find the class of this card.\nWhat is the class of this card? </red>')) as CardClass;
+        cardClass = game.lodash.startCase(game.input('<red>Was not able to find the class of this card.\nWhat is the class of this card? </red>')) as CardClass;
     }
 
     const realName = game.input('Override name (this will set \'name\' to be the displayname instead) (leave empty to not use display name): ') || name;
