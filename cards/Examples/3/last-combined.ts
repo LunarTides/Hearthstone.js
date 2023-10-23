@@ -14,12 +14,11 @@ export const blueprint: Blueprint = {
     uncollectible: true,
     id: 54,
 
-    create(plr, self) {
-        // The cast ability is conditioned
-        self.conditioned = ['cast'];
-    },
-
     cast(plr, self) {
+        if (!self.condition()) {
+            return;
+        }
+
         // If the turn counter is an even number, gain mana equal to the turn counter (up to 10).
         let turns = game.functions.util.getTraditionalTurnCounter();
 

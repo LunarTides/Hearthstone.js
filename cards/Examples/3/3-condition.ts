@@ -18,19 +18,13 @@ export const blueprint: Blueprint = {
     uncollectible: true,
     id: 52,
 
-    create(plr, self) {
-        // By having this here, the battlecry function below will only trigger if the condition function returns true
-        self.conditioned = ['battlecry'];
-    },
-
-    // This will only trigger if the `condition` function below returns true.
     battlecry(plr, self) {
         // If your deck has no duplicates, draw a card.
 
-        // Makes the card's owner draw a card.
-        //
-        // If you don't put the `conditioned: ["battlecry"]` at the top, you can use this code to achieve the same thing.
-        // if (!self.condition()) return;
+        // Check if the condition is cleared
+        if (!self.condition()) {
+            return;
+        }
 
         // Draw a card
         plr.drawCard();

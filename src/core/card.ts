@@ -283,11 +283,6 @@ export class Card {
     placeholder?: Record<string, any> = {};
 
     /**
-     * A list of abilities that can only be used if the `condition` ability returns true.
-     */
-    conditioned?: CardAbility[];
-
-    /**
      * The abilities of the card (battlecry, deathrattle, etc...)
      */
     abilities: { [key in CardAbility]?: Ability[] } = {};
@@ -941,14 +936,6 @@ export class Card {
         for (const func of ability) {
             if (returnValue === game.constants.refund) {
                 continue;
-            }
-
-            // Check if the method is conditioned
-            if (this.conditioned && this.conditioned.includes(name)) {
-                const r = this.activate('condition');
-                if (!(Array.isArray(r)) || r[0] === false) {
-                    continue;
-                }
             }
 
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument
