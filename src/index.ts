@@ -15,7 +15,7 @@ import { createGame } from './internal.js';
 export function main() {
     const { game, player1, player2 } = createGame();
 
-    game.interact.info.printName();
+    game.interact.info.watermark();
 
     // Find holes and dupes in the ids
     game.logWarn('Validating ids...');

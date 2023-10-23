@@ -5,7 +5,7 @@ export const infoInteract = {
     /**
      * Prints the "watermark" border
      */
-    printName(): void {
+    watermark(): void {
         game.interact.cls();
 
         const { info } = game.config;
@@ -72,6 +72,7 @@ export const infoInteract = {
      * @param plr The player
      */
     showGame(plr: Player): void {
+        this.watermark();
         if (game.turns <= 2) {
             this.printLicense();
         }

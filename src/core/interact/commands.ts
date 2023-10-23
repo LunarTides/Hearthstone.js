@@ -86,7 +86,7 @@ export const commands: CommandList = {
     },
 
     help() {
-        game.interact.info.printName();
+        game.interact.info.watermark();
         game.log('(In order to run a command; input the name of the command and follow further instruction.)\n');
         game.log('Available commands:');
 

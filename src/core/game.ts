@@ -350,7 +350,7 @@ export class Game {
             return false;
         }
 
-        this.interact.info.printName();
+        this.interact.info.watermark();
 
         this.input(`Player ${winner.name} wins!\n`);
 
