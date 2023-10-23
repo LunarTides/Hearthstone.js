@@ -85,78 +85,55 @@ export const infoInteract = {
     },
 
     printPlayerStats(plr: Player): void {
-        // TODO: Rewrite this... again... #326
-        const opponent = plr.getOpponent();
-
         let finished = '';
-        const finishedPlayers: string[] = [];
-        let totalTweak = 0;
 
-        const doStatPt1 = (player: Player, callback: (player: Player) => [string, number]): [string[], number] => {
-            let [stat, tweak] = callback(player);
-            stat = game.functions.color.fromTags(stat);
+        const doStat = (callback: (player: Player) => string) => {
+            const player = callback(plr);
+            const opponent = callback(plr.getOpponent());
 
-            if (!stat) {
-                return [[''], 0];
-            }
-
-            if (!finishedPlayers[player.id]) {
-                finishedPlayers[player.id] = '';
-            }
-
-            finishedPlayers[player.id] += `${stat}\n`;
-
-            const split = finishedPlayers[player.id].split('\n');
-            game.functions.util.remove(split, '');
-
-            return [game.functions.util.createWall(split, ':'), tweak];
-        };
-
-        const doStat = (callback: (player: Player) => [string, number]) => {
-            const [playerWall, playerTweak] = doStatPt1(plr, callback);
-            const [opponentWall, opponentTweak] = doStatPt1(opponent, callback);
-
-            if (playerWall[0] === '') {
+            if (!player && !opponent) {
                 return;
             }
 
-            finished = '';
-            for (const [index, line] of playerWall.entries()) {
-                finished += `${line} | ${opponentWall[index]}\n`;
+            if (!player) {
+                finished += `<i gray>Nothing</i gray> | ${opponent}`;
+            } else if (opponent) {
+                finished += `${player} | ${opponent}`;
+            } else {
+                finished += `${player} | <i gray>Nothing</i gray>`;
             }
 
-            const finishedSplit = finished.split('\n');
-            game.functions.util.remove(finishedSplit, '');
+            finished += '\n';
+        };
 
-            const finishedWall = game.functions.util.createWall(finishedSplit, '|');
-            for (const [index, line] of finishedWall.entries()) {
-                let p = line.split('|')[0];
-                let o = line.split('|')[1];
+        const wallify = () => {
+            const finishedSplit = game.lodash.initial(finished.split('\n'));
 
-                // Remove `playerTweak` amount of spaces from the left side of `|`, and remove `opponentTweak` amount of spaces from the right side of `|`
-                p = p.replace(new RegExp(` {${playerTweak + totalTweak}}`), '');
-                o = o.replace(new RegExp(` {${opponentTweak + totalTweak}}`), '');
+            // Wallify the ':' in the first half
+            const firstHalf = finishedSplit.map(line => line.split('|')[0]);
+            const firstHalfWall = game.functions.util.createWall(firstHalf, ':');
 
-                finishedWall[index] = `${p} | ${o}`;
-            }
+            // Wallify the ':' in the second half
+            const secondHalf = finishedSplit.map(line => line.split('|')[1]);
+            const secondHalfWall = game.functions.util.createWall(secondHalf, ':');
 
-            totalTweak += playerTweak;
+            // Combine the two halves
+            const newFinished = firstHalfWall.map((line, index) => line + '|' + secondHalfWall[index]);
 
-            finished = `${finishedWall.join('\n')}`;
+            // Wallify the '|' in the final result
+            const wall = game.functions.util.createWall(newFinished, '|');
+
+            return wall.join('\n');
         };
 
         // Mana
-        doStat((player: Player) => [`Mana: <cyan>${player.mana}</cyan> / <cyan>${player.emptyMana}</cyan>`, 0]);
+        doStat((player: Player) => `Mana: <cyan>${player.mana}</cyan> / <cyan>${player.emptyMana}</cyan>`);
 
         // Health
-        doStat((player: Player) => [`Health: <red>${player.health}</red> / <red>${player.maxHealth}</red>`, 0]);
+        doStat((player: Player) => `Health: <red>${player.health}</red> / <red>${player.maxHealth}</red>`);
 
         // Deck Size
-        doStat((player: Player) =>
-        // I don't really know what is going on here, but this is what i found so far:
-        // The 10 is because this is after a `number / maxNumber` but this here is just a `number`.
-            [`Deck Size: <yellow>${player.deck.length}</yellow>`, 10],
-        );
+        doStat((player: Player) => `Deck Size: <yellow>${player.deck.length}</yellow>`);
 
         // TODO: Add weapon
         // TODO: Add quests, secrets, etc...
@@ -165,22 +142,22 @@ export const infoInteract = {
         doStat((player: Player) => {
             // If no players have any attack, don't show the attack.
             if (game.player1.attack <= 0 && game.player2.attack <= 0) {
-                return ['', 0];
+                return '';
             }
 
-            return [`Attack: <bright:green>${player.attack}</bright:green>`, 0];
+            return `Attack: <bright:green>${player.attack}</bright:green>`;
         });
 
         // Corpses
         doStat((player: Player) => {
             if (!plr.detailedView || plr.heroClass !== 'Death Knight') {
-                return ['', 0];
+                return '';
             }
 
-            return [`Corpses: <gray>${player.corpses}</gray>`, 0];
+            return `Corpses: <gray>${player.corpses}</gray>`;
         });
 
-        game.log(finished);
+        game.log(wallify());
     },
 
     printBoard(plr: Player): void {
