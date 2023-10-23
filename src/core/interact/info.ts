@@ -71,8 +71,7 @@ export const infoInteract = {
      *
      * @param plr The player
      */
-    printAll(plr: Player): void {
-        this.printName();
+    showGame(plr: Player): void {
         if (game.turns <= 2) {
             this.printLicense();
         }

@@ -1104,7 +1104,7 @@ const playCard = {
         if (player.ai) {
             q = player.ai.trade(card);
         } else {
-            interact.info.printAll(player);
+            interact.info.showGame(player);
             q = interact.yesNoQuestion(player, 'Would you like to trade ' + functions.color.fromRarity(card.displayName, card.rarity) + ' for a random card in your deck?');
         }
 
@@ -1147,7 +1147,7 @@ const playCard = {
         if (player.ai) {
             q = player.ai.forge(card);
         } else {
-            interact.info.printAll(player);
+            interact.info.showGame(player);
             q = interact.yesNoQuestion(player, 'Would you like to forge ' + functions.color.fromRarity(card.displayName, card.rarity) + '?');
         }
 
@@ -1205,7 +1205,7 @@ const playCard = {
         // Warn the user that the condition is not fulfilled
         const warnMessage = '<yellow>WARNING: This card\'s condition is not fulfilled. Are you sure you want to play this card?</yellow>';
 
-        interact.info.printAll(player);
+        interact.info.showGame(player);
         const warn = interact.yesNoQuestion(player, warnMessage);
 
         if (!warn) {

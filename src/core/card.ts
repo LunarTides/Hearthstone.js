@@ -1353,7 +1353,7 @@ export class Card {
      * @returns An array with the name of the adapt(s) chosen, or -1 if the user cancelled.
      */
     adapt(prompt = 'Choose One:', _values: string[][] = []): string | -1 {
-        game.interact.info.printAll(game.player);
+        game.interact.info.showGame(game.player);
 
         const possibleCards = [
             ['Crackling Shield', 'Divine Shield'],

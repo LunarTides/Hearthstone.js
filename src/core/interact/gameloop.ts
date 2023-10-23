@@ -347,7 +347,7 @@ export const gameLoopInteract = { /**
             return turn;
         }
 
-        game.interact.info.printAll(game.player);
+        game.interact.info.showGame(game.player);
 
         let input = '\nWhich card do you want to play? ';
         if (game.turns <= 2 && !game.config.general.debug) {

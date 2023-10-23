@@ -68,7 +68,7 @@ export const interact = {
         let chosen = 0;
 
         while (chosen < times) {
-            game.interact.info.printAll(game.player);
+            game.interact.info.showGame(game.player);
 
             if (game.player.ai) {
                 const ai = game.player.ai.chooseOne(prompts.map(p => p[0]));
@@ -115,7 +115,7 @@ export const interact = {
     question(plr: Player, prompt: string, answers: string[]): string {
         const retry = () => this.question(plr, prompt, answers);
 
-        game.interact.info.printAll(plr);
+        game.interact.info.showGame(plr);
 
         let strbuilder = `\n${prompt} [`;
 

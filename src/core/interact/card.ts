@@ -7,7 +7,7 @@ export const cardInteract = {
      *
      * @return Success
      */
-    useLocation(): boolean | 'nolocations' | 'invalidtype' | 'cooldown' | -1 {
+    useLocation(): boolean | 'nolocations' | 'invalidtype' | 'cooldown' | 'refund' {
         const locations = game.board[game.player.id].filter(m => m.type === 'Location');
         if (locations.length <= 0) {
             return 'nolocations';
@@ -15,7 +15,7 @@ export const cardInteract = {
 
         const location = game.interact.selectCardTarget('Which location do you want to use?', undefined, 'friendly', ['allowLocations']);
         if (!location) {
-            return -1;
+            return 'refund';
         }
 
         if (location.type !== 'Location') {
@@ -27,7 +27,7 @@ export const cardInteract = {
         }
 
         if (location.activate('use') === game.constants.refund) {
-            return -1;
+            return 'refund';
         }
 
         if (location.durability === undefined) {
@@ -47,7 +47,7 @@ export const cardInteract = {
      * @returns A string of the indexes of the cards the player mulligan'd
      */
     mulligan(plr: Player): string {
-        game.interact.info.printAll(plr);
+        game.interact.info.showGame(plr);
 
         let sb = '\nChoose the cards to mulligan (1, 2, 3, ...):\n';
         if (!game.config.general.debug) {
@@ -90,7 +90,7 @@ export const cardInteract = {
             return card;
         }
 
-        game.interact.info.printAll(game.player);
+        game.interact.info.showGame(game.player);
 
         game.log(`\n${prompt}`);
 
@@ -130,7 +130,7 @@ export const cardInteract = {
      * @returns The card chosen.
      */
     discover(prompt: string, cards: Card[] = [], filterClassCards = true, amount = 3, _cards: Card[] = []): Card | undefined {
-        game.interact.info.printAll(game.player);
+        game.interact.info.showGame(game.player);
         let values: Card[] = _cards;
 
         if (cards.length <= 0) {

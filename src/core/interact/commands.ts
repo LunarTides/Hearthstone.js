@@ -30,13 +30,13 @@ export const commands: CommandList = {
             return false;
         }
 
-        game.interact.info.printAll(game.player);
+        game.interact.info.showGame(game.player);
         const ask = game.interact.yesNoQuestion(game.player, `<yellow>${game.player.hero?.hpText}</yellow> Are you sure you want to use this hero power?`);
         if (!ask) {
             return false;
         }
 
-        game.interact.info.printAll(game.player);
+        game.interact.info.showGame(game.player);
         game.player.heroPower();
         return true;
     },
@@ -52,7 +52,7 @@ export const commands: CommandList = {
         const errorcode = game.interact.card.useLocation();
         game.killMinions();
 
-        if (errorcode === true || errorcode === -1 || game.player.ai) {
+        if (errorcode === true || errorcode === 'refund' || game.player.ai) {
             return true;
         }
 
@@ -177,7 +177,7 @@ export const commands: CommandList = {
     },
 
     concede() {
-        game.interact.info.printAll(game.player);
+        game.interact.info.showGame(game.player);
         const confirmation = game.interact.yesNoQuestion(game.player, 'Are you sure you want to concede?');
         if (!confirmation) {
             return false;
@@ -204,7 +204,7 @@ export const commands: CommandList = {
 
             const printInfo = () => {
                 const game = getGame();
-                game.interact.info.printAll(game.player);
+                game.interact.info.showGame(game.player);
 
                 let strbuilder = `\nYou are on version: ${version}, on `;
 
@@ -727,7 +727,7 @@ export const debugCommands: CommandList = {
 
         command = command as EventValue<'Input'>;
 
-        game.interact.info.printAll(game.player);
+        game.interact.info.showGame(game.player);
         const options = game.lodash.parseInt(game.input(`\nWhat would you like to do with this command?\n${command}\n\n(1. Run it, 2. Edit it, 0. Cancel): `));
         if (!options) {
             game.pause('<red>Invalid option.</red>\n');
@@ -812,7 +812,7 @@ export const debugCommands: CommandList = {
 
     rl(_, flags) {
         if (game.config.advanced.reloadCommandConfirmation && !flags?.debug) {
-            game.interact.info.printAll(game.player);
+            game.interact.info.showGame(game.player);
             const sure = game.interact.yesNoQuestion(game.player, '<yellow>Are you sure you want to reload? This will reset all cards to their base state. This can also cause memory leaks with excessive usage.\nThis requires the game to be recompiled. I recommend using `tsc --watch` in another window before running this command.</yellow>');
             if (!sure) {
                 return false;
