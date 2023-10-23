@@ -3,6 +3,8 @@ import stripAnsi from 'strip-ansi';
 import { type CardRarity } from '@Game/types.js';
 
 export const colorFunctions = {
+    preventParsingTags: false,
+
     /**
      * Colors `text` based on `rarity`.
      *
@@ -18,7 +20,7 @@ export const colorFunctions = {
      * const colored = fromRarity(card.name, card.rarity);
      * assert.equal(colored, chalk.yellow("Sheep"));
      */
-    fromRarity(text: string, rarity: CardRarity, convertTags = true): string {
+    fromRarity(text: string, rarity: CardRarity): string {
         switch (rarity) {
             case 'Free': {
                 break;
@@ -49,11 +51,7 @@ export const colorFunctions = {
             }
         }
 
-        if (convertTags) {
-            text = this.fromTags(text);
-        }
-
-        return text;
+        return this.fromTags(text);
     },
 
     /**
@@ -116,6 +114,10 @@ export const colorFunctions = {
      * assert.equal(parsed, chalk.red.italic.bgHex("#0000FF")("Test") + " Another test");
      */
     fromTags(text: string): string {
+        if (this.preventParsingTags) {
+            return text;
+        }
+
         // TODO: Optimize perhaps. #333
         const partOfRgb: number[] = [];
 

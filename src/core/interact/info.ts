@@ -85,6 +85,7 @@ export const infoInteract = {
     },
 
     printPlayerStats(plr: Player): void {
+        game.functions.color.preventParsingTags = true;
         let finished = '';
 
         const doStat = (callback: (player: Player) => string) => {
@@ -145,7 +146,7 @@ export const infoInteract = {
                 return `Weapon: ${game.interact.card.getReadable(player.weapon)}`;
             }
 
-            return `Weapon: ${game.functions.color.fromRarity(player.weapon.displayName, player.weapon.rarity, false)}`;
+            return `Weapon: ${game.functions.color.fromRarity(player.weapon.displayName, player.weapon.rarity)}`;
         });
 
         // TODO: Add quests, secrets, etc...
@@ -169,6 +170,7 @@ export const infoInteract = {
             return `Corpses: <gray>${player.corpses}</gray>`;
         });
 
+        game.functions.color.preventParsingTags = false;
         game.log(wallify(finished));
     },
 
