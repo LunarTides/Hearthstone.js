@@ -18,7 +18,7 @@ export const colorFunctions = {
      * const colored = fromRarity(card.name, card.rarity);
      * assert.equal(colored, chalk.yellow("Sheep"));
      */
-    fromRarity(text: string, rarity: CardRarity): string {
+    fromRarity(text: string, rarity: CardRarity, convertTags = true): string {
         switch (rarity) {
             case 'Free': {
                 break;
@@ -49,7 +49,11 @@ export const colorFunctions = {
             }
         }
 
-        return this.fromTags(text);
+        if (convertTags) {
+            text = this.fromTags(text);
+        }
+
+        return text;
     },
 
     /**
@@ -205,8 +209,6 @@ export const colorFunctions = {
             const func = chalk[tagFuncString as keyof ChalkInstance] as unknown;
             if (func instanceof Function) {
                 returnValue = (func as (...text: any) => string)(returnValue);
-            } else {
-                throw new TypeError(`Unknown tag: ${tag}. Assumed function: ${tagFuncString}. Available functions: ${Object.entries(chalk).filter(t => t[1] instanceof Function).map(t => t[0]).join(', ')}`);
             }
 
             return returnValue;
