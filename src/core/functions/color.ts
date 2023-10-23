@@ -4,7 +4,7 @@ import { type CardRarity } from '@Game/types.js';
 
 export const colorFunctions = {
     /**
-     * Colors `str` based on `rarity`.
+     * Colors `text` based on `rarity`.
      *
      * @param str The string to color
      * @param rarity The rarity
@@ -18,38 +18,42 @@ export const colorFunctions = {
      * const colored = fromRarity(card.name, card.rarity);
      * assert.equal(colored, chalk.yellow("Sheep"));
      */
-    fromRarity(string_: string, rarity: CardRarity): string {
+    fromRarity(text: string, rarity: CardRarity): string {
         switch (rarity) {
+            case 'Free': {
+                break;
+            }
+
             case 'Common': {
-                string_ = `<gray>${string_}</gray>`;
+                text = `<gray>${text}</gray>`;
                 break;
             }
 
             case 'Rare': {
-                string_ = `<blue>${string_}</blue>`;
+                text = `<blue>${text}</blue>`;
                 break;
             }
 
             case 'Epic': {
-                string_ = `<bright:magenta>${string_}</bright:magenta>`;
+                text = `<bright:magenta>${text}</bright:magenta>`;
                 break;
             }
 
             case 'Legendary': {
-                string_ = `<yellow>${string_}</yellow>`;
+                text = `<yellow>${text}</yellow>`;
                 break;
             }
 
             default: {
-                break;
+                throw new Error('Unknown rarity');
             }
         }
 
-        return this.fromTags(string_);
+        return this.fromTags(text);
     },
 
     /**
-     * Parses color tags in `str`.
+     * Parses color tags in `text`.
      *
      * Look at the examples for some of the things you can do.
      *
@@ -64,7 +68,7 @@ export const colorFunctions = {
      * // Windows Powershell (doesn't support overline)
      *
      * // Foreground
-     * '[fg:]red', '[fg:]green', '[fg:]blue' // (The `fg` is optional. For example: `fg:blue`)
+     * '[fg:][dark:]red', '[fg:][dark:]green', '[fg:][dark:]blue' // (The `fg` and `dark` are both optional. For example: `fg:blue`)
      *
      * // Background
      * 'bg:red', 'bg:green', 'bg:blue'
@@ -76,15 +80,15 @@ export const colorFunctions = {
      * 'bg:bright:red', 'bg:bright:green', 'bg:bright:blue'
      *
      * // Special
-     * 'b[old]', 'italic', 'underline' // The `old` in bold is optional
+     * 'b[old]', 'i[talic]', 'underline' // The `old` in bold and `talic` in italic are optional
      *
      * // Hex
      * '[fg:]#FF0000', 'bg:#FF0000'
      *
      * // RGB
-     * '[fg:]rgb[:][(]255[ ],0[ ],0[)]', 'bg:rgb:255,0,0' // E.g. rgb:(0, 0, 255). rgb:0,0,255). rgb:(0,0,255). rgb(0, 0, 255). bg:rgb(0, 0, 255)
+     * '[fg:]rgb[:][(]255[ ],0[ ],0[)]', 'bg:rgb(255, 0, 0)' // E.g. rgb:(0, 0, 255). rgb:0,0,255). rgb:(0,0,255). rgb(0, 0, 255). bg:rgb(0, 0, 255)
      *
-     * @param str The string to parse
+     * @param text The text to parse
      *
      * @returns The resulting string
      *
@@ -105,9 +109,9 @@ export const colorFunctions = {
      * @example
      * // Try to not use '</>' if you can help it. In this case, it is fine.
      * const parsed = fromTags("<fg:red italic bg:#0000FF>Test</> Another test");
-     * assert.equal(parsed, chalk.red.italic("Test") + " Another test");
+     * assert.equal(parsed, chalk.red.italic.bgHex("#0000FF")("Test") + " Another test");
      */
-    fromTags(string_: string): string {
+    fromTags(text: string): string {
         // TODO: Optimize perhaps. #333
         const partOfRgb: number[] = [];
 
@@ -135,8 +139,6 @@ export const colorFunctions = {
 
             // Hex
             if (tag.startsWith('#')) {
-                tag = tag.slice(1);
-
                 if (bg) {
                     return chalk.bgHex(tag)(returnValue);
                 }
@@ -203,6 +205,8 @@ export const colorFunctions = {
             const func = chalk[tagFuncString as keyof ChalkInstance] as unknown;
             if (func instanceof Function) {
                 returnValue = (func as (...text: any) => string)(returnValue);
+            } else {
+                throw new TypeError(`Unknown tag: ${tag}. Assumed function: ${tagFuncString}. Available functions: ${Object.entries(chalk).filter(t => t[1] instanceof Function).map(t => t[0]).join(', ')}`);
             }
 
             return returnValue;
@@ -231,8 +235,8 @@ export const colorFunctions = {
         };
 
         // Don't waste resources if the string doesn't contain tags
-        if (!string_.includes('<') || !string_.includes('>')) {
-            return string_;
+        if (!text.includes('<') || !text.includes('>')) {
+            return text;
         }
 
         let strbuilder = '';
@@ -248,15 +252,15 @@ export const colorFunctions = {
                 return '';
             }
 
-            return string_[i - 1];
+            return text[i - 1];
         };
 
         const readNext = (i: number) => {
-            if (i >= string_.length - 1) {
+            if (i >= text.length - 1) {
                 return '';
             }
 
-            return string_[i + 1];
+            return text[i + 1];
         };
 
         const cancelled = (i: number): boolean => {
@@ -271,7 +275,7 @@ export const colorFunctions = {
         };
 
         // Loop through the characters in str
-        for (const [i, c] of [...string_].entries()) {
+        for (const [i, c] of [...text].entries()) {
             if (cancelled(i)) {
                 wordStringbuilder += c;
                 continue;
@@ -355,24 +359,22 @@ export const colorFunctions = {
      *
      * assert.equal(stripTags(str), "Hello");
      */
-    stripTags(string_: string): string {
+    stripTags(text: string): string {
         // Regular expressions created by AI's, it removes the "<b>"'s but keeps the "~<b>"'s since the '~' here works like an escape character.
         // It does however remove the escape character itself.
-        let strippedString = string_;
-
         // Remove unescaped tags
-        strippedString = strippedString.replaceAll(/(?<!~)<.+?>/g, '');
+        text = text.replaceAll(/(?<!~)<.+?>/g, '');
 
         // Remove escape character
-        strippedString = strippedString.replaceAll(/~(<.+?>)/g, '$1');
+        text = text.replaceAll(/~(<.+?>)/g, '$1');
 
-        return strippedString;
+        return text;
     },
 
     /**
      * Removes ansi color codes from a string.
      */
-    strip(string_: string): string {
-        return stripAnsi(string_);
+    strip(text: string): string {
+        return stripAnsi(text);
     },
 };

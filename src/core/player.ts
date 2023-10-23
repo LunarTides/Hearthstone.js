@@ -848,11 +848,11 @@ export class Player {
      * @return Whether or not the player has the correct runes
      */
     testRunes(runes: string): boolean {
-        const charCount = (string_: string, letter: string) => {
+        const charCount = (text: string, letter: string) => {
             let letterCount = 0;
 
-            for (let i = 0; i < string_.length; i++) {
-                if (string_.charAt(i) === letter) {
+            for (let i = 0; i < text.length; i++) {
+                if (text.charAt(i) === letter) {
                     letterCount++;
                 }
             }

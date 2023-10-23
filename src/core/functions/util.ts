@@ -39,8 +39,8 @@ export const utilFunctions = {
      *
      * @returns The string capitalized
      */
-    capitalizeAll(string_: string): string {
-        return game.lodash.words(string_).map(word => game.lodash.capitalize(word)).join(' ');
+    capitalizeAll(text: string): string {
+        return game.lodash.words(text).map(word => game.lodash.capitalize(word)).join(' ');
     },
 
     /**

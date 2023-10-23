@@ -127,7 +127,7 @@ export const commands: CommandList = {
             game.log(brick);
         }
 
-        const condColor = (string_: string) => (game.config.general.debug) ? string_ : `<gray>${string_}</gray>`;
+        const condColor = (text: string) => (game.config.general.debug) ? text : `<gray>${text}</gray>`;
         const debugEnabled = (game.config.general.debug) ? '<bright:green>ON</bright:green>' : '<red>OFF</red>';
 
         game.log(condColor(`\n--- Debug Commands (${debugEnabled}) ---`));

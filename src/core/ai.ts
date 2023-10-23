@@ -600,7 +600,7 @@ export class Ai {
      *
      * @returns The score the string gets
      */
-    analyzePositive(string_: string, context = true): number {
+    analyzePositive(text: string, context = true): number {
         if (context) {
             context = game.config.ai.contextAnalysis;
         }
@@ -633,7 +633,7 @@ export class Ai {
             return returnValue;
         };
 
-        for (let sentance of string_.toLowerCase().split(/[^a-z\d ]/)) {
+        for (let sentance of text.toLowerCase().split(/[^a-z\d ]/)) {
             sentance = sentance.trim();
 
             for (let word of sentance.split(' ')) {

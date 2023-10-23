@@ -223,7 +223,7 @@ ${runes}${keywords}
         /**
          * Adds double quotes around the string
          */
-        const stringify = (value_: string) => `'${value_}'`;
+        const stringify = (text: string) => `'${text}'`;
 
         // If the value is an array, put "["value1", "value2"]", or "[1, 2]", or any combination of those two.
         if (Array.isArray(value)) {
