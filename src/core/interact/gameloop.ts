@@ -55,7 +55,7 @@ export const gameLoopInteract = { /**
             q = '';
         }
 
-        if (game.noInput && overrideNoInput) {
+        if (game.noInput && !overrideNoInput) {
             return wrapper('');
         }
 
