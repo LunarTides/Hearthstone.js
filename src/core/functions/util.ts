@@ -126,7 +126,7 @@ export const utilFunctions = {
 
         // Strip the color codes from the history
         history = game.functions.color.stripTags(history);
-        history = game.functions.color.strip(history);
+        history = game.functions.color.stripColors(history);
 
         // AI log
         // Do this so it can actually run '/ai'

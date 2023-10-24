@@ -378,7 +378,7 @@ export const colorFunctions = {
     /**
      * Removes ansi color codes from a string.
      */
-    strip(text: string): string {
+    stripColors(text: string): string {
         return stripAnsi(text);
     },
 };
