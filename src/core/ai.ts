@@ -697,7 +697,7 @@ export class Ai {
             return false;
         }
 
-        const validAttackers = game.board[this.plr.id].filter(m => this._canMinionAttack(m));
+        const validAttackers = game.board[this.plr.id].filter(m => m.canAttack());
 
         return validAttackers.length > 0;
     }
@@ -737,20 +737,6 @@ export class Ai {
     }
 
     /**
-     * Returns if the minion specified can attack
-     *
-     * @param m The minion to check
-     *
-     * @returns Can attack
-     */
-    private _canMinionAttack(m: Card): boolean {
-        const booleans = !m.sleepy && !m.hasKeyword('Frozen') && !m.hasKeyword('Dormant');
-        const numbers = m.getAttack() && m.attackTimes;
-
-        return booleans && Boolean(numbers);
-    }
-
-    /**
      * Returns if the minion specified is targettable
      *
      * @param m Minion to check
@@ -773,7 +759,7 @@ export class Ai {
         const perfectTrades: Card[][] = [];
         const imperfectTrades: Card[][] = [];
 
-        const currboard = game.board[this.plr.id].filter(m => this._canMinionAttack(m));
+        const currboard = game.board[this.plr.id].filter(m => m.canAttack());
 
         for (const a of currboard) {
             let trades = [...perfectTrades, ...imperfectTrades];
@@ -1026,7 +1012,7 @@ export class Ai {
         let lowestScore: Array<Target | number | undefined> = [undefined, 9999];
 
         let board = game.board[this.plr.id];
-        board = board.filter(c => this._canMinionAttack(c));
+        board = board.filter(c => c.canAttack());
 
         for (const m of board) {
             if (typeof lowestScore[1] !== 'number') {

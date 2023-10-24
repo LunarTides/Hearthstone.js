@@ -806,6 +806,24 @@ export class Card {
     }
 
     /**
+     * Returns if the card can attack.
+     */
+    canAttack() {
+        if (this.type === 'Weapon') {
+            return this.attackTimes! > 0;
+        }
+
+        if (this.type !== 'Minion') {
+            return false;
+        }
+
+        const booleans = !this.sleepy && !this.hasKeyword('Frozen') && !this.hasKeyword('Dormant');
+        const numbers = this.getAttack() && this.attackTimes;
+
+        return booleans && Boolean(numbers);
+    }
+
+    /**
      * Create a backup of the card.
      *
      * @returns The key of the backup. You can use it by doing `card.backups[key]`
