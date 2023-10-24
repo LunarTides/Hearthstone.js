@@ -87,12 +87,12 @@ export const infoInteract = {
     /**
      * Prints the player stats.
      */
-    printPlayerStats(plr: Player): void {
+    printPlayerStats(currentPlayer: Player): void {
         let finished = '';
 
         const doStat = (callback: (player: Player) => string) => {
-            const player = callback(plr);
-            const opponent = callback(plr.getOpponent());
+            const player = callback(currentPlayer);
+            const opponent = callback(currentPlayer.getOpponent());
 
             if (!player && !opponent) {
                 return;
@@ -130,21 +130,21 @@ export const infoInteract = {
         };
 
         // Mana
-        doStat((player: Player) => `Mana: <cyan>${player.mana}</cyan> / <cyan>${player.emptyMana}</cyan>`);
+        doStat(player => `Mana: <cyan>${player.mana}</cyan> / <cyan>${player.emptyMana}</cyan>`);
 
         // Health
-        doStat((player: Player) => `Health: <red>${player.health}</red> / <red>${player.maxHealth}</red>`);
+        doStat(player => `Health: <red>${player.health}</red> / <red>${player.maxHealth}</red>`);
 
         // Deck Size
-        doStat((player: Player) => `Deck Size: <yellow>${player.deck.length}</yellow>`);
+        doStat(player => `Deck Size: <yellow>${player.deck.length}</yellow>`);
 
         // Weapon
-        doStat((player: Player) => {
+        doStat(player => {
             if (!player.weapon) {
                 return '';
             }
 
-            if (plr.detailedView) {
+            if (currentPlayer.detailedView) {
                 return `Weapon: ${game.interact.card.getReadable(player.weapon)}`;
             }
 
@@ -154,7 +154,7 @@ export const infoInteract = {
         // TODO: Add quests, secrets, etc...
 
         // Attack
-        doStat((player: Player) => {
+        doStat(player => {
             // If the player doesn't have any attack, don't show the attack.
             if (player.attack <= 0) {
                 return '';
@@ -164,8 +164,8 @@ export const infoInteract = {
         });
 
         // Corpses
-        doStat((player: Player) => {
-            if (!(plr.detailedView || player.heroClass === 'Death Knight')) {
+        doStat(player => {
+            if (!(currentPlayer.detailedView || player.heroClass === 'Death Knight')) {
                 return '';
             }
 

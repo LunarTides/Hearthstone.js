@@ -348,8 +348,9 @@ export const gameLoopInteract = { /**
         }
 
         game.interact.info.showGame(game.player);
+        game.log();
 
-        let input = '\nWhich card do you want to play? ';
+        let input = 'Which card do you want to play? ';
         if (game.turns <= 2 && !game.config.general.debug) {
             input += '(type \'help\' for further information <- This will disappear once you end your turn) ';
         }
