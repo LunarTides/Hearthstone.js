@@ -818,9 +818,9 @@ export class Card {
         }
 
         const booleans = !this.sleepy && !this.hasKeyword('Frozen') && !this.hasKeyword('Dormant');
-        const numbers = this.getAttack() && this.attackTimes;
+        const numbers = this.getAttack() > 0 && this.attackTimes! > 0;
 
-        return booleans && Boolean(numbers);
+        return booleans && numbers;
     }
 
     /**
