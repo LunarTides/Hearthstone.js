@@ -136,10 +136,10 @@ export const infoInteract = {
         doStat(player => `Mana: <cyan>${player.mana}</cyan> / <cyan>${player.emptyMana}</cyan>`);
 
         // Health
-        doStat(player => `Health: <red>${player.health}</red> / <red>${player.maxHealth}</red>`);
+        doStat(player => `Health: <red>${player.health}</red> <gray>[${player.armor}]</gray> / <red>${player.maxHealth}</red>`);
 
         // Deck Size
-        doStat(player => `Deck Size: <yellow>${player.deck.length}</yellow>`);
+        doStat(player => `Deck Size: <yellow>${player.deck.length}</yellow> & <yellow>${player.hand.length}</yellow>`);
 
         // Hero Power
         doStat(player => {
