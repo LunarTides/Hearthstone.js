@@ -1,4 +1,3 @@
-import { type CardKeyword } from '@Game/types.js';
 import { Card, type Player } from '../../internal.js';
 
 export const cardInteract = {
@@ -273,7 +272,6 @@ export const cardInteract = {
      *
      * @returns The readable card
      */
-    // eslint-disable-next-line complexity
     getReadable(card: Card, i = -1, _depth = 0): string {
         /**
          * If it should show detailed errors regarding depth.
@@ -307,12 +305,7 @@ export const cardInteract = {
 
         let cost = `{${card.cost}} `;
 
-        let costType = 'mana';
-        if (card.costType) {
-            costType = card.costType;
-        }
-
-        switch (costType) {
+        switch (card.costType) {
             case 'mana': {
                 cost = `<cyan>${cost}</cyan>`;
                 break;
@@ -349,30 +342,15 @@ export const cardInteract = {
             const maxDurability = card.backups.init.durability;
             const maxCooldown = card.backups.init.cooldown ?? 0;
 
-            sb += ' {';
-            sb += `<bright:green>Durability: ${durability} / `;
-            sb += maxDurability;
-            sb += '</bright:green>, ';
-
-            sb += `<cyan>Cooldown: ${card.cooldown} / ${maxCooldown}</cyan>`;
-            sb += '}';
+            sb += ` {<bright:green>Durability: ${durability} / ${maxDurability}</bright:green>,`;
+            sb += ` <cyan>Cooldown: ${card.cooldown} / ${maxCooldown}</cyan>}`;
         }
 
         sb += text;
         sb += `<yellow>(${card.type})</yellow>`;
 
-        const excludedKeywords = new Set<CardKeyword>(['Magnetic', 'Corrupt']);
-        const keywords = Object.keys(card.keywords).filter(k => !excludedKeywords.has(k as CardKeyword));
-        const keywordsString = keywords.length > 0 ? ` <gray>{${keywords.join(', ')}}</gray>` : '';
-        sb += keywordsString;
-
-        for (const k of ['Frozen', 'Dormant', 'Immune']) {
-            if (!card[k.toLowerCase() as keyof Card]) {
-                continue;
-            }
-
-            sb += ` <gray>(${k})</gray>`;
-        }
+        // Add the keywords
+        sb += Object.keys(card.keywords).map(keyword => ` <gray>{${keyword}}</gray>`).join('');
 
         return sb;
     },
