@@ -67,7 +67,7 @@ export const utilFunctions = {
         for (const b of bricks) {
             const splitBrick = b.split(sep);
 
-            const { length } = game.functions.color.stripTags(splitBrick[0]);
+            const { length } = game.functions.color.stripAll(splitBrick[0]);
 
             if (length <= longestBrick[1]) {
                 continue;
@@ -85,7 +85,7 @@ export const utilFunctions = {
             const splitBrick = b.split(sep);
 
             let strbuilder = '';
-            const diff = longestBrick[1] - game.functions.color.stripTags(splitBrick[0]).length;
+            const diff = longestBrick[1] - game.functions.color.stripAll(splitBrick[0]).length;
 
             strbuilder += splitBrick[0];
             strbuilder += ' '.repeat(diff);

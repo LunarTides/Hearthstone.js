@@ -381,4 +381,11 @@ export const colorFunctions = {
     stripColors(text: string): string {
         return stripAnsi(text);
     },
+
+    /**
+     * Removes both color tags and ansi codes from a string.
+     */
+    stripAll(text: string): string {
+        return this.stripColors(this.stripTags(text));
+    },
 };
