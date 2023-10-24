@@ -299,25 +299,27 @@ export const colorFunctions = {
                 const currentTags = tagbuilder.split(' ');
                 tagbuilder = '';
 
-                if (removeTag) {
-                    removeTag = false;
+                if (!removeTag) {
+                    currentTypes.push(...currentTags);
+                    continue;
+                }
 
-                    // If the tag is </>, remove all tags
-                    if (readPrevious(i) === '/') {
-                        currentTypes = [];
+                // Remove the tags
+                removeTag = false;
+
+                // If the tag is </>, remove all tags
+                if (readPrevious(i) === '/') {
+                    currentTypes = [];
+                    continue;
+                }
+
+                for (const tag of currentTags) {
+                    const success = game.functions.util.remove(currentTypes, tag);
+                    if (success) {
                         continue;
                     }
 
-                    for (const tag of currentTags) {
-                        const success = game.functions.util.remove(currentTypes, tag);
-                        if (success) {
-                            continue;
-                        }
-
-                        currentTypes = currentTypes.filter(type => !type.startsWith(tag));
-                    }
-                } else {
-                    currentTypes.push(...currentTags);
+                    currentTypes = currentTypes.filter(type => !type.startsWith(tag));
                 }
 
                 continue;
