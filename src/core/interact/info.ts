@@ -130,6 +130,7 @@ export const infoInteract = {
         };
 
         const colorIf = game.functions.color.if;
+        const detail = (noDetail: string, detail: string) => currentPlayer.detailedView ? detail : noDetail;
 
         // Mana
         doStat(player => `Mana: <cyan>${player.mana}</cyan> / <cyan>${player.emptyMana}</cyan>`);
@@ -144,11 +145,7 @@ export const infoInteract = {
         doStat(player => {
             const heroPowerCost = colorIf(player.canUseHeroPower, 'cyan', `{${player.hero.hpCost}}`);
 
-            if (currentPlayer.detailedView) {
-                return `Hero Power: ${heroPowerCost} ${player.hero.hpText}`;
-            }
-
-            return `Hero Power: ${heroPowerCost} ${player.hero.displayName}`;
+            return `Hero Power: ${heroPowerCost} ${detail(player.hero.displayName, player.hero.hpText)}`;
         });
 
         // Weapon
@@ -157,11 +154,7 @@ export const infoInteract = {
                 return '';
             }
 
-            if (currentPlayer.detailedView) {
-                return `Weapon: ${game.interact.card.getReadable(player.weapon)}`;
-            }
-
-            return `Weapon: ${game.functions.color.fromRarity(player.weapon.displayName, player.weapon.rarity)}`;
+            return `Weapon: ${detail(player.weapon.colorFromRarity(), game.interact.card.getReadable(player.weapon))}`;
         });
 
         // TODO: Add quests, secrets, etc...
