@@ -129,6 +129,8 @@ export const infoInteract = {
             return wall.join('\n');
         };
 
+        const colorIf = game.functions.color.if;
+
         // Mana
         doStat(player => `Mana: <cyan>${player.mana}</cyan> / <cyan>${player.emptyMana}</cyan>`);
 
@@ -137,6 +139,17 @@ export const infoInteract = {
 
         // Deck Size
         doStat(player => `Deck Size: <yellow>${player.deck.length}</yellow>`);
+
+        // Hero Power
+        doStat(player => {
+            const heroPowerCost = colorIf(player.canUseHeroPower, 'cyan', `{${player.hero.hpCost}}`);
+
+            if (currentPlayer.detailedView) {
+                return `Hero Power: ${heroPowerCost} ${player.hero.hpText}`;
+            }
+
+            return `Hero Power: ${heroPowerCost} ${player.hero.displayName}`;
+        });
 
         // Weapon
         doStat(player => {

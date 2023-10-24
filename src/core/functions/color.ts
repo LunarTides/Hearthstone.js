@@ -350,6 +350,17 @@ export const colorFunctions = {
     },
 
     /**
+     * Generates a colored text based on a condition.
+     *
+     * @param condition Determines whether to apply the color.
+     * @param color The color to apply to the text.
+     * @param text The text to be colored.
+     */
+    if(condition: boolean, color: string, text: string) {
+        return condition ? `<${color}>${text}</${color}>` : `<gray>${text}</gray>`;
+    },
+
+    /**
      * Removes color tags from a string. Look in `parseTags` for more information.
      *
      * This only removes the TAGS, not the actual colors.
