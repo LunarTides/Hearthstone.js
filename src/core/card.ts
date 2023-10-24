@@ -1512,4 +1512,11 @@ export class Card {
         this.activate('infuse');
         return true;
     }
+
+    /**
+     * @param text The text to add the the color to. Defaults to this card's displayName
+     */
+    colorFromRarity(text = this.displayName) {
+        return game.functions.color.fromRarity(text, this.rarity);
+    }
 }

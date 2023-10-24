@@ -1105,7 +1105,7 @@ const playCard = {
             q = player.ai.trade(card);
         } else {
             interact.info.showGame(player);
-            q = interact.yesNoQuestion(player, 'Would you like to trade ' + functions.color.fromRarity(card.displayName, card.rarity) + ' for a random card in your deck?');
+            q = interact.yesNoQuestion(player, 'Would you like to trade ' + card.colorFromRarity() + ' for a random card in your deck?');
         }
 
         if (!q) {
@@ -1148,7 +1148,7 @@ const playCard = {
             q = player.ai.forge(card);
         } else {
             interact.info.showGame(player);
-            q = interact.yesNoQuestion(player, 'Would you like to forge ' + functions.color.fromRarity(card.displayName, card.rarity) + '?');
+            q = interact.yesNoQuestion(player, 'Would you like to forge ' + card.colorFromRarity() + '?');
         }
 
         if (!q) {

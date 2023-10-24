@@ -238,7 +238,7 @@ export const cardInteract = {
 
                 const alwaysShowFullCard = game.config.advanced.getReadableCardAlwaysShowFullCard;
 
-                replacement = onlyShowName && !alwaysShowFullCard ? game.functions.color.fromRarity(replacement.displayName, replacement.rarity) : game.interact.card.getReadable(replacement, -1, _depth + 1);
+                replacement = onlyShowName && !alwaysShowFullCard ? replacement.colorFromRarity() : game.interact.card.getReadable(replacement, -1, _depth + 1);
             }
 
             text = game.functions.color.fromTags(text.replace(reg, replacement));
@@ -340,7 +340,7 @@ export const cardInteract = {
         }
 
         sb += cost;
-        sb += game.functions.color.fromRarity(displayName, card.rarity);
+        sb += card.colorFromRarity(displayName);
 
         if (card.stats) {
             sb += game.functions.color.if(card.canAttack(), 'bright:green', ` [${card.stats?.join(' / ')}]`);

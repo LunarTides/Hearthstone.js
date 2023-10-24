@@ -303,8 +303,8 @@ export const interact = {
             // If both players have a minion with the same index,
             // ask them which minion to select
             if (boardOpponent.length >= game.lodash.parseInt(target) && boardFriendly.length >= game.lodash.parseInt(target)) {
-                const oName = game.functions.color.fromRarity(boardOpponentTarget.displayName, boardOpponentTarget.rarity);
-                const fName = game.functions.color.fromRarity(boardFriendlyTarget.displayName, boardFriendlyTarget.rarity);
+                const oName = boardOpponentTarget.colorFromRarity();
+                const fName = boardFriendlyTarget.colorFromRarity();
 
                 const alignment = game.input(`Do you want to select your opponent's (${oName}) or your own (${fName})? (y: opponent, n: friendly | type 'back' to go back) `);
 

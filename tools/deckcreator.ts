@@ -427,7 +427,7 @@ function showCards() {
 
         // The card's name should be colored, while the id should not
         // I don't add colors above, since createWall breaks when colors are used.
-        const toDisplay = game.functions.color.fromRarity(brickSplit[0], card.rarity) + '-' + brickSplit[1];
+        const toDisplay = card.colorFromRarity(brickSplit[0]) + '-' + brickSplit[1];
 
         game.log(toDisplay);
     }
@@ -566,7 +566,7 @@ function showDeck() {
                 continue;
             }
 
-            const name = game.functions.color.fromRarity(amount[1], card.rarity);
+            const name = card.colorFromRarity(amount[1]);
 
             const amountString = r.exec(nameAndAmount) ?? 'undefined';
             game.log(`${amountString as string}${name}-${id}`);
@@ -578,7 +578,7 @@ function showDeck() {
             continue;
         }
 
-        const name = game.functions.color.fromRarity(nameAndAmount, card.rarity);
+        const name = card.colorFromRarity(nameAndAmount);
 
         game.log(`${name}-${id}`);
     }
