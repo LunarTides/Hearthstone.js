@@ -20,7 +20,7 @@ export const commands: CommandList = {
             return true;
         }
 
-        if (game.player.mana < game.player.heroPowerCost) {
+        if (game.player.mana < game.player.hero.hpCost!) {
             game.pause('<red>You do not have enough mana.</red>\n');
             return false;
         }

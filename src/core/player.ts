@@ -163,17 +163,12 @@ export class Player {
      * player.hero.activate("heropower");
      * ```
      */
-    hero?: Card;
+    hero: Card;
 
     /**
      * The class the player is. This is set to either: Mage, Priest, Warlock, Warrior, ...
      */
     heroClass: CardClass = 'Mage';
-
-    /**
-     * How much the player's hero power costs.
-     */
-    heroPowerCost = 2;
 
     /**
      * If the player can use their hero power.
@@ -760,8 +755,6 @@ export class Player {
             this.heroClass = hero.classes[0];
         }
 
-        this.heroPowerCost = hero.hpCost ?? 2;
-
         this.armor += armor;
         return true;
     }
@@ -792,7 +785,7 @@ export class Player {
      * @returns Success | Cancelled
      */
     heroPower(): boolean | -1 {
-        if (this.mana < this.heroPowerCost || !this.canUseHeroPower) {
+        if (this.mana < this.hero.hpCost! || !this.canUseHeroPower) {
             return false;
         }
 
@@ -808,7 +801,7 @@ export class Player {
             m.activate('inspire');
         }
 
-        this.mana -= this.heroPowerCost;
+        this.mana -= this.hero.hpCost!;
         this.canUseHeroPower = false;
 
         game.events.broadcast('HeroPower', this.heroClass, this);
