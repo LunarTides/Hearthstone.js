@@ -343,7 +343,7 @@ export const cardInteract = {
         sb += game.functions.color.fromRarity(displayName, card.rarity);
 
         if (card.stats) {
-            sb += `<bright:green> [${card.stats?.join(' / ')}]</bright:green>`;
+            sb += game.functions.color.if(card.canAttack(), 'bright:green', ` [${card.stats?.join(' / ')}]`);
         } else if (card.type === 'Location') {
             const { durability } = card;
             const maxDurability = card.backups.init.durability;
@@ -373,9 +373,6 @@ export const cardInteract = {
 
             sb += ` <gray>(${k})</gray>`;
         }
-
-        const sleepy = (card.sleepy) ?? (card.attackTimes && card.attackTimes <= 0) ? ' <gray>(Sleepy)</gray>' : '';
-        sb += sleepy;
 
         return sb;
     },
