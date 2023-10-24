@@ -88,7 +88,6 @@ export const infoInteract = {
      * Prints the player stats.
      */
     printPlayerStats(plr: Player): void {
-        game.functions.color.preventParsingTags = true;
         let finished = '';
 
         const doStat = (callback: (player: Player) => string) => {
@@ -173,7 +172,6 @@ export const infoInteract = {
             return `Corpses: <gray>${player.corpses}</gray>`;
         });
 
-        game.functions.color.preventParsingTags = false;
         game.log(wallify(finished));
     },
 
