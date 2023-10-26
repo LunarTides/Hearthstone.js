@@ -1,3 +1,60 @@
+#### 2.0.0-beta.5 (2023-10-26)
+
+##### Chores
+
+*  update @hearthstonejs/vanillatypes dependancy ([aa854803](https://github.com/LunarTides/Hearthstone.js/commit/aa8548036414fe0f517be7220b7745af3b660ab0))
+*  update dependancies ([f5b93caf](https://github.com/LunarTides/Hearthstone.js/commit/f5b93caf61e4765c1d3ce3ad6340069ee7f192a5))
+*  bump build number to 5 ([c27de037](https://github.com/LunarTides/Hearthstone.js/commit/c27de03748ead8c7e15c3c8033df68cdaa1ceef4))
+
+##### Bug Fixes
+
+*  fix bug in card.canAttack ([594c5c84](https://github.com/LunarTides/Hearthstone.js/commit/594c5c84088bd7e9384761682ccc34a3cba5f767))
+*  negate check for overrideNoInput ([7dbf2920](https://github.com/LunarTides/Hearthstone.js/commit/7dbf2920f4b1f08c27d58141b2cbc9a310b8c9ea))
+*  make config file affect deckcode importing ([cf02a072](https://github.com/LunarTides/Hearthstone.js/commit/cf02a072ba24de4c1bc0014f125d55141e71bfff))
+*  allow disabling converting tags in fromRarity ([4edeeaef](https://github.com/LunarTides/Hearthstone.js/commit/4edeeaefbe09d95d2d7cefe8af829dc703d0f4d2))
+*  allow tags with colons to work with walls ([5b1690b8](https://github.com/LunarTides/Hearthstone.js/commit/5b1690b8cd4db41973b1158002d4d144d1a28d15))
+*  tags don't remove partial matches if perfect match exists ([cd272552](https://github.com/LunarTides/Hearthstone.js/commit/cd272552876d5b50b58790ff865d3ab321261ded))
+*  add spaces when generating card exports ([6809bbce](https://github.com/LunarTides/Hearthstone.js/commit/6809bbce2f3a7840014e49aeb257d715c24ecfab))
+* **script:**  manually exit from the generator ([c95f760c](https://github.com/LunarTides/Hearthstone.js/commit/c95f760c8dcfe703d160bdb9847ffb6b2d872af7))
+
+##### Other Changes
+
+*  remove player.heroPowerCost ([55e810ad](https://github.com/LunarTides/Hearthstone.js/commit/55e810ad2db117ab3a98604e67cb477ba2462b76))
+*  rename color.strip to color.stripColors ([bc54af16](https://github.com/LunarTides/Hearthstone.js/commit/bc54af163d0f3533bc60b761d7a8a6c73ebfdbe8))
+*  improve example cards ([9de55adc](https://github.com/LunarTides/Hearthstone.js/commit/9de55adcf699b9a0b0e0a2eccbca7f212407e378))
+*  remove Card.conditioned ([4e235700](https://github.com/LunarTides/Hearthstone.js/commit/4e23570078cb961e004616120784eca1a273c6a6))
+*  update documentation for functions / interact ([4e0a3b10](https://github.com/LunarTides/Hearthstone.js/commit/4e0a3b10e5194d253eb5254832250a20f06a21a0))
+*  rename printLicense to license ([5316a011](https://github.com/LunarTides/Hearthstone.js/commit/5316a01172483932588517b40f69c44df24695ab))
+*  rename printName to watermark ([0307f014](https://github.com/LunarTides/Hearthstone.js/commit/0307f014c79bc7660fe14f781307b5960d26ab85))
+*  rename printAll to showGame ([563a4fd3](https://github.com/LunarTides/Hearthstone.js/commit/563a4fd34a9c4ee9bc7d6a33c1d5cde2fb829e9b))
+*  remove capitalizeAll from util functions ([f5b8aab8](https://github.com/LunarTides/Hearthstone.js/commit/f5b8aab8c989ed94a4deadadf2fffefd7945a5e4))
+*  remove lastChar util function ([a2f9eeb3](https://github.com/LunarTides/Hearthstone.js/commit/a2f9eeb3c63a8ae91d1b40120b0aa98230085a5b))
+*  add date-and-time dependancy ([e5878cc7](https://github.com/LunarTides/Hearthstone.js/commit/e5878cc783cd936716640a37c9f4ac2366a4bb7b))
+*  move vanilla card types to another project ([dfc45f4f](https://github.com/LunarTides/Hearthstone.js/commit/dfc45f4fec04df9b3cdbefbb3c26468c4ee754ac))
+*  fix all xo warnings ([8b18426e](https://github.com/LunarTides/Hearthstone.js/commit/8b18426e010c529414910af4121c0b5d722bf0ac))
+*  force no unused variables in linting ([d82b63e4](https://github.com/LunarTides/Hearthstone.js/commit/d82b63e4246e88089a51a0832c111ffb5ea2e5b8))
+
+##### Refactors
+
+*  remove useless code from getReadable ([a2661508](https://github.com/LunarTides/Hearthstone.js/commit/a2661508194bfda6c82ddc31c4ad8c66da0295b8))
+*  add armor and hand size in printPlayerStats ([d1f7f7f2](https://github.com/LunarTides/Hearthstone.js/commit/d1f7f7f2f66e5353dc6c27aa8e2bafe6cc532640))
+*  add detail function in printPlayerStats ([253b93c2](https://github.com/LunarTides/Hearthstone.js/commit/253b93c26716953573d5c6c64bf38adde4365d0b))
+*  add card.colorFromRarity ([36dd5fc9](https://github.com/LunarTides/Hearthstone.js/commit/36dd5fc9de18c9d90199c7fc5a53dda3fe0cca3d))
+*  make stats gray if cannot attack ([a9a9ec50](https://github.com/LunarTides/Hearthstone.js/commit/a9a9ec50322d6a2fdb09e688482e03aced25cffd))
+*  add hero power to printPlayerStats ([e4359817](https://github.com/LunarTides/Hearthstone.js/commit/e43598179cc2a8cc17594a90ff66795222115a92))
+*  move canAttack to Card class ([606b2033](https://github.com/LunarTides/Hearthstone.js/commit/606b2033c11c0d5a9e3d1dd9d7de35126beb32da))
+*  invert condition to remove a tab ([2f1442c2](https://github.com/LunarTides/Hearthstone.js/commit/2f1442c238d96caeb4d76d17349770f4af05d2d3))
+*  simplified code in printPlayerStats ([673d1636](https://github.com/LunarTides/Hearthstone.js/commit/673d16363ef939bb22e2f5f3f5d5494d3358a468))
+*  remove color.preventParsingTags ([1fe2ef03](https://github.com/LunarTides/Hearthstone.js/commit/1fe2ef03e3e41eba70e76a83853b0e8c3f813be6))
+*  add color.stripAll to remove ansi and tags ([bafd2c05](https://github.com/LunarTides/Hearthstone.js/commit/bafd2c05122e99a759e9aa1ab5686f54913346b4))
+*  combined blueprint into card types ([3afbff23](https://github.com/LunarTides/Hearthstone.js/commit/3afbff23cd6c5e053f9ca6db28f6f2e8207825a9))
+*  add option to prevent parsing color tags ([bbbeca89](https://github.com/LunarTides/Hearthstone.js/commit/bbbeca897e3c4d10e88669547ffd4d1e6326717d))
+*  show player weapon in printPlayerStats ([79e02ccd](https://github.com/LunarTides/Hearthstone.js/commit/79e02ccda6932e7ff8fd7ac5f730ee447d6f6b28))
+*  rewrote printPlayerStats ([5103abdc](https://github.com/LunarTides/Hearthstone.js/commit/5103abdca31f5bf37a2540ac1d7b13e50262a5f5))
+*  rename some parameters to remove underscores ([9a9dc6c5](https://github.com/LunarTides/Hearthstone.js/commit/9a9dc6c50209335eaee3939d75e06b6e847a94fc))
+*  remove uuid dependancy ([c59c3199](https://github.com/LunarTides/Hearthstone.js/commit/c59c31992e417ff30cac3937a16bf79e33d1dea6))
+*  remove replay mechanic ([b7bbce00](https://github.com/LunarTides/Hearthstone.js/commit/b7bbce0080196e772d2dcf09c1d2ec7e4063a4d3))
+
 #### 2.0.0-beta.4 (2023-10-19)
 
 ##### Chores
