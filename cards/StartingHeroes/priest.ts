@@ -3,7 +3,7 @@
 import assert from 'node:assert';
 import { type Blueprint } from '@Game/types.js';
 
-export const blueprint: Blueprint = {
+export const BLUEPRINT: Blueprint = {
     name: 'Priest Starting Hero',
     displayName: 'Anduin Wrynn',
     text: 'Priest starting hero',
@@ -23,18 +23,18 @@ export const blueprint: Blueprint = {
         const unsuppress = game.functions.event.suppress('CastSpellOnMinion');
 
         // Hero power targets need to use the `forceElusive` flag.
-        const target = game.interact.selectTarget('Restore 2 health.', self, 'any', 'any', ['forceElusive']);
+        const TARGET = game.interact.selectTarget('Restore 2 health.', self, 'any', 'any', ['forceElusive']);
 
         // Re-enable the "CastSpellOnMinion" event
         unsuppress();
 
         // If no target was selected, refund the hero power
-        if (!target) {
-            return game.constants.refund;
+        if (!TARGET) {
+            return game.constants.REFUND;
         }
 
         // Restore 2 health to the target
-        target.addHealth(2, true);
+        TARGET.addHealth(2, true);
         return true;
     },
 

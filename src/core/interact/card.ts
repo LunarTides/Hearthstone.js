@@ -1,40 +1,40 @@
 import { Card, type Player } from '../../internal.js';
 
-export const cardInteract = {
+export const CARD_INTERACT = {
     /**
      * Asks the user to select a location card to use, and activate it.
      *
      * @returns Success
      */
     useLocation(): boolean | 'nolocations' | 'invalidtype' | 'cooldown' | 'refund' {
-        const locations = game.board[game.player.id].filter(m => m.type === 'Location');
-        if (locations.length <= 0) {
+        const LOCATIONS = game.board[game.player.id].filter(m => m.type === 'Location');
+        if (LOCATIONS.length <= 0) {
             return 'nolocations';
         }
 
-        const location = game.interact.selectCardTarget('Which location do you want to use?', undefined, 'friendly', ['allowLocations']);
-        if (!location) {
+        const LOCATION = game.interact.selectCardTarget('Which location do you want to use?', undefined, 'friendly', ['allowLocations']);
+        if (!LOCATION) {
             return 'refund';
         }
 
-        if (location.type !== 'Location') {
+        if (LOCATION.type !== 'Location') {
             return 'invalidtype';
         }
 
-        if (location.cooldown && location.cooldown > 0) {
+        if (LOCATION.cooldown && LOCATION.cooldown > 0) {
             return 'cooldown';
         }
 
-        if (location.activate('use') === game.constants.refund) {
+        if (LOCATION.activate('use') === game.constants.REFUND) {
             return 'refund';
         }
 
-        if (location.durability === undefined) {
+        if (LOCATION.durability === undefined) {
             throw new Error('Location card\'s durability is undefined');
         }
 
-        location.durability -= 1;
-        location.cooldown = location.backups.init.cooldown;
+        LOCATION.durability -= 1;
+        LOCATION.cooldown = LOCATION.backups.init.cooldown;
         return true;
     },
 
@@ -53,15 +53,15 @@ export const cardInteract = {
             sb += '<gray>(Example: 13 will mulligan the cards with the ids 1 and 3, 123 will mulligan the cards with the ids 1, 2 and 3, just pressing enter will not mulligan any cards):</gray>\n';
         }
 
-        const input = plr.ai ? plr.ai.mulligan() : game.input(sb);
-        const success = plr.mulligan(input);
+        const INPUT = plr.ai ? plr.ai.mulligan() : game.input(sb);
+        const SUCCESS = plr.mulligan(INPUT);
 
-        if (!success && input !== '') {
+        if (!SUCCESS && INPUT !== '') {
             game.pause('<red>Invalid input!</red>\n');
             return this.mulligan(plr);
         }
 
-        return input;
+        return INPUT;
     },
 
     /**
@@ -73,48 +73,48 @@ export const cardInteract = {
      */
     dredge(prompt = 'Choose a card to Dredge:'): Card | undefined {
         // Look at the bottom three cards of the deck and put one on the top.
-        const cards = game.player.deck.slice(0, 3);
+        const CARDS = game.player.deck.slice(0, 3);
 
         // Check if ai
         if (game.player.ai) {
-            const card = game.player.ai.dredge(cards);
-            if (!card) {
+            const CARD = game.player.ai.dredge(CARDS);
+            if (!CARD) {
                 return undefined;
             }
 
             // Removes the selected card from the players deck.
-            game.functions.util.remove(game.player.deck, card);
-            game.player.deck.push(card);
+            game.functions.util.remove(game.player.deck, CARD);
+            game.player.deck.push(CARD);
 
-            return card;
+            return CARD;
         }
 
         game.interact.info.showGame(game.player);
 
         game.log(`\n${prompt}`);
 
-        if (cards.length <= 0) {
+        if (CARDS.length <= 0) {
             return undefined;
         }
 
-        for (const [i, c] of cards.entries()) {
-            game.log(game.interact.card.getReadable(c, i + 1));
+        for (const [INDEX, CARD] of CARDS.entries()) {
+            game.log(game.interact.card.getReadable(CARD, INDEX + 1));
         }
 
-        const choice = game.input('> ');
+        const CHOICE = game.input('> ');
 
-        const cardId = game.lodash.parseInt(choice) - 1;
-        const card = cards[cardId];
+        const CARD_ID = game.lodash.parseInt(CHOICE) - 1;
+        const CARD = CARDS[CARD_ID];
 
-        if (!card) {
+        if (!CARD) {
             return this.dredge(prompt);
         }
 
         // Removes the selected card from the players deck.
-        game.functions.util.remove(game.player.deck, card);
-        game.player.deck.push(card);
+        game.functions.util.remove(game.player.deck, CARD);
+        game.player.deck.push(CARD);
 
-        return card;
+        return CARD;
     },
 
     /**
@@ -168,26 +168,21 @@ export const cardInteract = {
 
         game.log(`\n${prompt}:`);
 
-        for (const [i, v] of values.entries()) {
-            const card = game.functions.card.getFromName(v.name);
-            if (!card) {
-                continue;
-            }
-
-            game.log(game.interact.card.getReadable(v, i + 1));
+        for (const [INDEX, CARD] of values.entries()) {
+            game.log(game.interact.card.getReadable(CARD, INDEX + 1));
         }
 
-        const choice = game.input();
+        const CHOICE = game.input();
 
-        if (!values[game.lodash.parseInt(choice) - 1]) {
+        if (!values[game.lodash.parseInt(CHOICE) - 1]) {
             // Invalid input
             // We still want the user to be able to select a card, so we force it to be valid
             return this.discover(prompt, cards, filterClassCards, amount, values);
         }
 
-        const card = values[game.lodash.parseInt(choice) - 1];
+        const CARD = values[game.lodash.parseInt(CHOICE) - 1];
 
-        return card;
+        return CARD;
     },
 
     /**
@@ -209,35 +204,35 @@ export const cardInteract = {
 
         let running = true;
         while (running) {
-            const regedDesc = reg.exec(text);
+            const REGED_DESC = reg.exec(text);
 
             // There is nothing more to extract
-            if (!regedDesc) {
+            if (!REGED_DESC) {
                 running = false;
                 break;
             }
 
             // Get the capturing group result
-            const key = regedDesc[1];
+            const KEY = REGED_DESC[1];
 
             card.replacePlaceholders();
-            const _replacement = card.placeholder;
-            if (!_replacement) {
+            const REPLACEMENT = card.placeholder;
+            if (!REPLACEMENT) {
                 throw new Error('Card placeholder not found.');
             }
 
-            let replacement = _replacement[key] as string | Card;
+            let replacement = REPLACEMENT[KEY] as string | Card;
 
             if (replacement instanceof Card) {
                 // The replacement is a card
-                const onlyShowName = (
+                const ONLY_SHOW_NAME = (
                     game.config.advanced.getReadableCardNoRecursion
                     || !game.player.detailedView
                 );
 
-                const alwaysShowFullCard = game.config.advanced.getReadableCardAlwaysShowFullCard;
+                const ALWAYS_SHOW_FULL_CARD = game.config.advanced.getReadableCardAlwaysShowFullCard;
 
-                replacement = onlyShowName && !alwaysShowFullCard ? replacement.colorFromRarity() : game.interact.card.getReadable(replacement, -1, _depth + 1);
+                replacement = ONLY_SHOW_NAME && !ALWAYS_SHOW_FULL_CARD ? replacement.colorFromRarity() : game.interact.card.getReadable(replacement, -1, _depth + 1);
             }
 
             text = game.functions.color.fromTags(text.replace(reg, replacement));
@@ -248,17 +243,17 @@ export const cardInteract = {
 
         running = true;
         while (running) {
-            const regedDesc = reg.exec(text);
-            if (!regedDesc) {
+            const REGED_DESC = reg.exec(text);
+            if (!REGED_DESC) {
                 running = false;
                 break;
             }
 
             // Get the capturing group result
-            const key = regedDesc[1];
-            const replacement = game.lodash.parseInt(key) + game.player.spellDamage;
+            const KEY = REGED_DESC[1];
+            const REPLACEMENT = game.lodash.parseInt(KEY) + game.player.spellDamage;
 
-            text = text.replace(reg, replacement.toString());
+            text = text.replace(reg, REPLACEMENT.toString());
         }
 
         return text;
@@ -276,10 +271,10 @@ export const cardInteract = {
         /**
          * If it should show detailed errors regarding depth.
          */
-        const showDetailedError: boolean = (game.config.general.debug || game.config.info.branch !== 'stable' || game.player.detailedView);
+        const SHOW_DETAILED_ERROR: boolean = (game.config.general.debug || game.config.info.branch !== 'stable' || game.player.detailedView);
 
         if (_depth > 0 && game.config.advanced.getReadableCardNoRecursion) {
-            if (showDetailedError) {
+            if (SHOW_DETAILED_ERROR) {
                 return 'RECURSION ATTEMPT BLOCKED';
             }
 
@@ -287,7 +282,7 @@ export const cardInteract = {
         }
 
         if (_depth > game.config.advanced.getReadableCardMaxDepth) {
-            if (showDetailedError) {
+            if (SHOW_DETAILED_ERROR) {
                 return 'MAX DEPTH REACHED';
             }
 
@@ -326,24 +321,24 @@ export const cardInteract = {
             }
         }
 
-        const { displayName } = card;
+        const { displayName: DISPLAY_NAME } = card;
 
         if (i !== -1) {
             sb += `[${i}] `;
         }
 
         sb += cost;
-        sb += card.colorFromRarity(displayName);
+        sb += card.colorFromRarity(DISPLAY_NAME);
 
         if (card.stats) {
             sb += game.functions.color.if(card.canAttack(), 'bright:green', ` [${card.stats?.join(' / ')}]`);
         } else if (card.type === 'Location') {
-            const { durability } = card;
-            const maxDurability = card.backups.init.durability;
-            const maxCooldown = card.backups.init.cooldown ?? 0;
+            const { durability: DURABILITY } = card;
+            const MAX_DURABILITY = card.backups.init.durability;
+            const MAX_COOLDOWN = card.backups.init.cooldown ?? 0;
 
-            sb += ` {<bright:green>Durability: ${durability} / ${maxDurability}</bright:green>,`;
-            sb += ` <cyan>Cooldown: ${card.cooldown} / ${maxCooldown}</cyan>}`;
+            sb += ` {<bright:green>Durability: ${DURABILITY} / ${MAX_DURABILITY}</bright:green>,`;
+            sb += ` <cyan>Cooldown: ${card.cooldown} / ${MAX_COOLDOWN}</cyan>}`;
         }
 
         sb += text;
@@ -361,16 +356,16 @@ export const cardInteract = {
      * @param help If it should show a help message which displays what the different fields mean.
      */
     view(card: Card, help = true) {
-        const _card = this.getReadable(card);
-        const _class = `<gray>${card.classes.join(' / ')}</gray>`;
+        const CARD = this.getReadable(card);
+        const CLASS = `<gray>${card.classes.join(' / ')}</gray>`;
 
         let tribe = '';
         let spellSchool = '';
         let locCooldown = '';
 
-        const { type } = card;
+        const { type: TYPE } = card;
 
-        switch (type) {
+        switch (TYPE) {
             case 'Minion': {
                 tribe = ` (<gray>${card.tribe ?? 'None'}</gray>)`;
                 break;
@@ -402,7 +397,7 @@ export const cardInteract = {
             game.log('<cyan>{cost}</cyan> <b>Name</b> (<bright:green>[attack / health]</bright:green> if is has) (description) <yellow>(type)</yellow> ((tribe) or (spell class) or (cooldown)) <gray>[class]</gray>');
         }
 
-        game.log(_card + (tribe || spellSchool || locCooldown) + ` [${_class}]`);
+        game.log(CARD + (tribe || spellSchool || locCooldown) + ` [${CLASS}]`);
 
         game.log();
         game.pause();
@@ -417,13 +412,13 @@ export const cardInteract = {
             return;
         }
 
-        const list = game.functions.card.getAll(false).filter(card => /DIY \d+/.test(card.name));
-        const card = game.lodash.sample(list);
-        if (!card) {
+        const LIST = game.functions.card.getAll(false).filter(card => /DIY \d+/.test(card.name));
+        const CARD = game.lodash.sample(LIST);
+        if (!CARD) {
             return;
         }
 
-        card.plr = player;
-        player.addToHand(card);
+        CARD.plr = player;
+        player.addToHand(CARD);
     },
 };

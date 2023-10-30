@@ -3,7 +3,7 @@
 import assert from 'node:assert';
 import { type Blueprint } from '@Game/types.js';
 
-export const blueprint: Blueprint = {
+export const BLUEPRINT: Blueprint = {
     name: 'Combined Example 1',
     stats: [4, 4],
     text: '<b>Taunt, Divine Shield. Battlecry: Dredge.</b> Gain +1/+1. (This example card combines everything you\'ve learned in stage 1 into this card.)',

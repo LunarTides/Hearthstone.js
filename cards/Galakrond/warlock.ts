@@ -3,7 +3,7 @@
 import { type Blueprint } from '@Game/types.js';
 import { type Card } from '../../src/core/card.js';
 
-export const blueprint: Blueprint = {
+export const BLUEPRINT: Blueprint = {
     name: 'Galakrond the Wretched',
     displayName: 'Galakrond, the Wretched',
     text: '<b>Battlecry:</b> Summon {amount} random Demon{plural}.',
@@ -17,16 +17,16 @@ export const blueprint: Blueprint = {
 
     battlecry(plr, self) {
         // Summon 1 random Demon.
-        const amount = game.functions.card.galakrondFormula(self.storage.invokeCount as number);
+        const AMOUNT = game.functions.card.galakrondFormula(self.storage.invokeCount as number);
 
         const testDemoness = (card: Card) => game.functions.card.matchTribe(card.tribe!, 'Demon');
 
-        for (let i = 0; i < amount; i++) {
+        for (let i = 0; i < AMOUNT; i++) {
             // Find all demons
-            const possibleCards = game.functions.card.getAll().filter(c => c.type === 'Minion' && testDemoness(c));
+            const POSSIBLE_CARDS = game.functions.card.getAll().filter(c => c.type === 'Minion' && testDemoness(c));
 
             // Choose a random one
-            let card = game.lodash.sample(possibleCards);
+            let card = game.lodash.sample(POSSIBLE_CARDS);
             if (!card) {
                 break;
             }
@@ -40,12 +40,12 @@ export const blueprint: Blueprint = {
     heropower(plr, self) {
         // Summon two 1/1 Imps.
         for (let i = 0; i < 2; i++) {
-            const card = game.createCard('Draconic Imp', plr);
-            if (!card) {
+            const CARD = game.createCard('Draconic Imp', plr);
+            if (!CARD) {
                 break;
             }
 
-            game.summonMinion(card, plr);
+            game.summonMinion(CARD, plr);
         }
     },
 
@@ -58,10 +58,10 @@ export const blueprint: Blueprint = {
             return { amount: 0, plural: 's', plural2: 'They' };
         }
 
-        const amount = game.functions.card.galakrondFormula(self.storage.invokeCount as number);
-        const multiple = amount > 1;
-        const plural = multiple ? 's' : '';
+        const AMOUNT = game.functions.card.galakrondFormula(self.storage.invokeCount as number);
+        const MULTILPE = AMOUNT > 1;
+        const PLURAL = MULTILPE ? 's' : '';
 
-        return { amount, plural };
+        return { amount: AMOUNT, plural: PLURAL };
     },
 };

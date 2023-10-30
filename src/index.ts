@@ -19,8 +19,8 @@ export function main() {
 
     // Find holes and dupes in the ids
     game.logWarn('Validating ids...');
-    const [holes, dupes] = validateIds(true);
-    if (holes > 0 || dupes > 0) {
+    const [HOLES, DUPES] = validateIds(true);
+    if (HOLES > 0 || DUPES > 0) {
         // If there were holes or dupes, pause the game so that the user gets a
         // chance to see what the problem was
         game.pause();
@@ -29,13 +29,13 @@ export function main() {
     warnAboutOutdatedCards();
 
     // Ask the players for deck codes.
-    for (const plr of [player1, player2]) {
-        if (plr.deck.length > 0) {
+    for (const PLAYER of [player1, player2]) {
+        if (PLAYER.deck.length > 0) {
             continue;
         }
 
         // Put this in a while loop to make sure the function repeats if it fails.
-        while (!game.interact.deckCode(plr)) {
+        while (!game.interact.deckCode(PLAYER)) {
             // Pass
         }
     }
@@ -63,23 +63,23 @@ export function main() {
 }
 
 let outdatedCards: string[] = [];
-const outdatedExtensions: string[] = [];
-const updatedCards: string[] = [];
+const OUTDATED_EXTENSIONS: string[] = [];
+const UPDATED_CARDS: string[] = [];
 function warnAboutOutdatedCards() {
     // TODO: This doesn't quite work. #336
     findOutdatedCards(game.functions.util.dirname() + '/cards');
-    outdatedCards = outdatedCards.filter(card => !updatedCards.includes(card));
+    outdatedCards = outdatedCards.filter(card => !UPDATED_CARDS.includes(card));
 
-    if (outdatedCards.length <= 0 && outdatedExtensions.length <= 0) {
+    if (outdatedCards.length <= 0 && OUTDATED_EXTENSIONS.length <= 0) {
         return;
     }
 
-    for (const p of outdatedCards) {
-        game.logWarn(`<yellow>WARNING: Outdated card found: ${p}.js</yellow>`);
+    for (const FILE_NAME of outdatedCards) {
+        game.logWarn(`<yellow>WARNING: Outdated card found: ${FILE_NAME}.js</yellow>`);
     }
 
-    for (const p of outdatedExtensions) {
-        game.logWarn(`<yellow>WARNING: Outdated extension found: ${p}.mts. Please change all card file names ending with the '.mts' extension to '.ts' instead.</yellow>`);
+    for (const FILE_NAME of OUTDATED_EXTENSIONS) {
+        game.logWarn(`<yellow>WARNING: Outdated extension found: ${FILE_NAME}.mts. Please change all card file names ending with the '.mts' extension to '.ts' instead.</yellow>`);
     }
 
     game.logWarn('Run the `upgradecards` script to automatically update outdated cards from pre 2.0.');
@@ -87,8 +87,8 @@ function warnAboutOutdatedCards() {
     game.logWarn('You can play the game without upgrading the cards, but the cards won\'t be registered.');
     game.logWarn('Run the script by running `npm run script:upgradecards`.');
 
-    const proceed = game.input('\nDo you want to proceed? ([y]es, [n]o): ').toLowerCase().startsWith('y');
-    if (!proceed) {
+    const PROCEED = game.input('\nDo you want to proceed? ([y]es, [n]o): ').toLowerCase().startsWith('y');
+    if (!PROCEED) {
         process.exit(0);
     }
 }
@@ -98,21 +98,21 @@ function findOutdatedCards(path: string) {
         return;
     }
 
-    for (const file of game.functions.util.fs('readdir', path, { withFileTypes: true }) as Dirent[]) {
-        const p = `${path}/${file.name}`.replace('/dist/..', '');
+    for (const FILE of game.functions.util.fs('readdir', path, { withFileTypes: true }) as Dirent[]) {
+        const PATH = `${path}/${FILE.name}`.replace('/dist/..', '');
 
-        if (file.name.endsWith('.mts')) {
-            outdatedExtensions.push(p.slice(0, -4));
+        if (FILE.name.endsWith('.mts')) {
+            OUTDATED_EXTENSIONS.push(PATH.slice(0, -4));
         }
 
-        if (file.name.endsWith('.js')) {
-            outdatedCards.push(p.slice(0, -3));
+        if (FILE.name.endsWith('.js')) {
+            outdatedCards.push(PATH.slice(0, -3));
         }
 
-        if (file.name.endsWith('.ts')) {
-            updatedCards.push(p.slice(0, -3));
-        } else if (file.isDirectory()) {
-            findOutdatedCards(p);
+        if (FILE.name.endsWith('.ts')) {
+            UPDATED_CARDS.push(PATH.slice(0, -3));
+        } else if (FILE.isDirectory()) {
+            findOutdatedCards(PATH);
         }
     }
 }

@@ -3,7 +3,7 @@
 import assert from 'node:assert';
 import { type Blueprint } from '@Game/types.js';
 
-export const blueprint: Blueprint = {
+export const BLUEPRINT: Blueprint = {
     name: 'Condition Example',
     stats: [5, 2],
 
@@ -41,7 +41,7 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        const { length } = plr.deck;
+        const { length: LENGTH } = plr.deck;
         plr.hand = [];
 
         // The player shouldn't fulfill the condition
@@ -49,7 +49,7 @@ export const blueprint: Blueprint = {
         self.activate('battlecry');
 
         // Assert that the player didn't draw a card
-        assert.equal(plr.deck.length, length);
+        assert.equal(plr.deck.length, LENGTH);
         assert.equal(plr.hand.length, 0);
 
         // The player should fulfill the condition

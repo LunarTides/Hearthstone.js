@@ -3,7 +3,7 @@
 import assert from 'node:assert';
 import { type Blueprint } from '@Game/types.js';
 
-export const blueprint: Blueprint = {
+export const BLUEPRINT: Blueprint = {
     name: 'Goblin Lackey',
     stats: [1, 1],
     text: '<b>Battlecry:</b> Give a friendly minion +1 Attack and <b>Rush</b>.',
@@ -19,32 +19,32 @@ export const blueprint: Blueprint = {
         // Give a friendly minion +1 Attack and Rush.
 
         // Prompt the user to select a friendly minion
-        const target = game.interact.selectCardTarget('Give a friendly minion +1 Attack and Rush', self, 'friendly');
+        const TARGET = game.interact.selectCardTarget('Give a friendly minion +1 Attack and Rush', self, 'friendly');
 
         // If no target was selected, refund
-        if (!target) {
-            return game.constants.refund;
+        if (!TARGET) {
+            return game.constants.REFUND;
         }
 
         // Add +1 Attack
-        target.addStats(1, 0);
+        TARGET.addStats(1, 0);
 
         // Add Rush
-        target.addKeyword('Rush');
+        TARGET.addKeyword('Rush');
         return true;
     },
 
     test(plr, self) {
         // Summon a sheep
-        const sheep = game.createCard('Sheep', plr);
-        game.summonMinion(sheep, plr);
+        const SHEEP = game.createCard('Sheep', plr);
+        game.summonMinion(SHEEP, plr);
 
         // Activate the battlecry, choose the sheep
         plr.inputQueue = ['1'];
         self.activate('battlecry');
 
         // The sheep should have 2 attack and rush
-        assert.equal(sheep.getAttack(), 2);
-        assert(sheep.hasKeyword('Rush'));
+        assert.equal(SHEEP.getAttack(), 2);
+        assert(SHEEP.hasKeyword('Rush'));
     },
 };

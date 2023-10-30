@@ -62,33 +62,33 @@ export class Ai {
         let bestScore = -100_000;
 
         // Look for highest score
-        for (const c of this.plr.hand) {
-            const score = this.analyzePositiveCard(c);
+        for (const CARD of this.plr.hand) {
+            const SCORE = this.analyzePositiveCard(CARD);
 
-            if (score <= bestScore || c.cost > this.plr.mana || this.cardsPlayedThisTurn.includes(c)) {
+            if (SCORE <= bestScore || CARD.cost > this.plr.mana || this.cardsPlayedThisTurn.includes(CARD)) {
                 continue;
             }
 
             // If the card is a minion and the player doesn't have the board space to play it, ignore the card
-            if (c.canBeOnBoard() && game.board[this.plr.id].length >= game.config.general.maxBoardSpace) {
+            if (CARD.canBeOnBoard() && game.board[this.plr.id].length >= game.config.general.maxBoardSpace) {
                 continue;
             }
 
             // Prevent the ai from playing the same card they returned from when selecting a target
-            let r = false;
+            let prevent = false;
 
-            for (const [i, h] of this.history.entries()) {
-                if (Array.isArray(h.data) && h.data[1] === '0,1' && this.history[i - 1].data[0] === c.name) {
-                    r = true;
+            for (const [INDEX, HISTORY_ENTRY] of this.history.entries()) {
+                if (Array.isArray(HISTORY_ENTRY.data) && HISTORY_ENTRY.data[1] === '0,1' && this.history[INDEX - 1].data[0] === CARD.name) {
+                    prevent = true;
                 }
             }
 
-            if (r) {
+            if (prevent) {
                 continue;
             }
 
-            bestMove = c;
-            bestScore = score;
+            bestMove = CARD;
+            bestScore = SCORE;
         }
 
         // If a card wasn't chosen
@@ -111,9 +111,9 @@ export class Ai {
         }
 
         if (bestMove === 'end') {
-            for (const [i, h] of this.history.entries()) {
-                if (Array.isArray(h) && h[0] === 'selectTarget' && h[1] === '0,1') {
-                    this.history[i].data = null;
+            for (const [INDEX, HISTORY_ENTRY] of this.history.entries()) {
+                if (Array.isArray(HISTORY_ENTRY) && HISTORY_ENTRY[0] === 'selectTarget' && HISTORY_ENTRY[1] === '0,1') {
+                    this.history[INDEX].data = null;
                 }
             }
 
@@ -132,29 +132,29 @@ export class Ai {
      */
     attack(): Array<Target | -1> {
         // Assign a score to all minions
-        const board: ScoredCard[][] = game.board.map(m => m.map(c => ({ card: c, score: this.analyzePositiveCard(c) })));
+        const BOARD: ScoredCard[][] = game.board.map(m => m.map(c => ({ card: c, score: this.analyzePositiveCard(c) })));
 
-        const amountOfTrades = this._attackFindTrades().map(t => t.length).reduce((a, b) => a + b);
+        const AMOUNT_OF_TRADES = this._attackFindTrades().map(t => t.length).reduce((a, b) => a + b);
 
         // The ai should skip the trade stage if in risk mode
-        const currentWinner = this._findWinner(board);
-        const opScore = this._scorePlayer(this.plr.getOpponent(), board);
+        const CURRENT_WINNER = this._findWinner(BOARD);
+        const OPPONENT_SCORE = this._scorePlayer(this.plr.getOpponent(), BOARD);
 
         // If the ai is winner by more than 'threshold' points, enable risk mode
-        const riskMode = currentWinner[1] >= opScore + game.config.ai.riskThreshold;
+        const RISK_MODE = CURRENT_WINNER[1] >= OPPONENT_SCORE + game.config.ai.riskThreshold;
 
-        const taunts = this._findTaunts();
+        const TAUNTS = this._findTaunts();
 
         // If there is a taunt, attack it before trading
-        if (taunts.length > 0) {
-            return this._attackGeneral(board);
+        if (TAUNTS.length > 0) {
+            return this._attackGeneral(BOARD);
         }
 
-        if (amountOfTrades > 0 && !riskMode) {
+        if (AMOUNT_OF_TRADES > 0 && !RISK_MODE) {
             return this._attackTrade() ?? [-1, -1];
         }
 
-        return this._attackGeneral(board);
+        return this._attackGeneral(BOARD);
     }
 
     /**
@@ -169,15 +169,15 @@ export class Ai {
         let worstMinion: Card | undefined;
         let worstScore = 100_000;
 
-        for (const m of game.board[this.plr.id].filter(m => !m.sleepy && !m.hasKeyword('Frozen') && !m.hasKeyword('Dormant'))) {
-            const score = this.analyzePositiveCard(m);
+        for (const MINION of game.board[this.plr.id].filter(m => m.canAttack())) {
+            const SCORE = this.analyzePositiveCard(MINION);
 
-            if (score >= worstScore) {
+            if (SCORE >= worstScore) {
                 continue;
             }
 
-            worstMinion = m;
-            worstScore = score;
+            worstMinion = MINION;
+            worstScore = SCORE;
         }
 
         if (!worstMinion) {
@@ -192,25 +192,25 @@ export class Ai {
         let bestScore = -100_000;
 
         // Check if there is a minion with taunt
-        const taunts = game.board[this.plr.getOpponent().id].filter(m => m.hasKeyword('Taunt'));
-        const targets = taunts.length > 0 ? taunts.filter(m => !m.hasKeyword('Immune') && !m.hasKeyword('Dormant')) : game.board[this.plr.getOpponent().id].filter(m => !m.hasKeyword('Immune') && !m.hasKeyword('Dormant'));
+        const TAUNTS = this._findTaunts();
+        const TARGETS = TAUNTS.length > 0 ? TAUNTS : game.board[this.plr.getOpponent().id];
 
-        for (const m of targets) {
-            const score = this.analyzePositiveCard(m);
+        for (const TARGET of TARGETS.filter(target => this._canTargetMinion(target))) {
+            const SCORE = this.analyzePositiveCard(TARGET);
 
-            if (score <= bestScore) {
+            if (SCORE <= bestScore) {
                 continue;
             }
 
-            bestMinion = m;
-            bestScore = score;
+            bestMinion = TARGET;
+            bestScore = SCORE;
         }
 
         let target: Target | undefined = bestMinion;
 
         // If the AI has no minions to attack, attack the enemy hero
         if (!target) {
-            if (taunts.length === 0 && attacker && ((attacker as Target) instanceof Player || (attacker).canAttackHero)) {
+            if (TAUNTS.length === 0 && attacker && ((attacker as Target) instanceof Player || (attacker).canAttackHero)) {
                 target = this.plr.getOpponent();
             } else {
                 this.history.push({ type: 'attack, [null, null]', data: [-1, -1] });
@@ -223,24 +223,24 @@ export class Ai {
             attacker = this.plr as Target;
         }
 
-        const array = [];
+        const ARRAY = [];
         let strbuilder = '';
 
         if (attacker instanceof Player) {
-            array.push('P' + (attacker.id + 1));
+            ARRAY.push('P' + (attacker.id + 1));
         } else if (attacker instanceof Card) {
-            array.push(attacker.name);
+            ARRAY.push(attacker.name);
             strbuilder += worstScore + ', ';
         }
 
         if (target instanceof Player) {
-            array.push('P' + (target.id + 1));
+            ARRAY.push('P' + (target.id + 1));
         } else if ((target as Target) instanceof Card) {
-            array.push((target).name);
+            ARRAY.push((target).name);
             strbuilder += bestScore;
         }
 
-        this.history.push({ type: `attack, [${strbuilder}]`, data: array });
+        this.history.push({ type: `attack, [${strbuilder}]`, data: ARRAY });
 
         return [attacker, target];
     }
@@ -262,24 +262,23 @@ export class Ai {
     // eslint-disable-next-line complexity
     selectTarget(prompt: string, card: Card | undefined, forceSide: SelectTargetAlignment, forceClass: SelectTargetClass, flags: SelectTargetFlag[] = []): Target | false {
         if (flags.includes('allowLocations') && forceClass !== 'hero') {
-            const locations = game.board[this.plr.id].filter(m => m.type === 'Location' && m.cooldown === 0 && !this.usedLocationsThisTurn.includes(m));
-            this.usedLocationsThisTurn.push(locations[0]);
+            const LOCATIONS = game.board[this.plr.id].filter(m => m.type === 'Location' && m.cooldown === 0 && !this.usedLocationsThisTurn.includes(m));
+            this.usedLocationsThisTurn.push(LOCATIONS[0]);
 
-            if (locations.length > 0) {
-                return locations[0];
+            if (LOCATIONS.length > 0) {
+                return LOCATIONS[0];
             }
         }
 
-        const op = this.plr.getOpponent();
-        const { id } = this.plr;
+        const OPPONENT = this.plr.getOpponent();
 
         let side = null;
 
-        const score = this.analyzePositive(prompt, false);
+        const SCORE = this.analyzePositive(prompt, false);
 
-        if (score > 0) {
+        if (SCORE > 0) {
             side = 'self';
-        } else if (score < 0) {
+        } else if (SCORE < 0) {
             side = 'enemy';
         }
 
@@ -287,9 +286,9 @@ export class Ai {
             side = forceSide;
         }
 
-        const sid = (side === 'self') ? id : op.id;
+        const SIDE_ID = (side === 'self') ? this.plr.id : OPPONENT.id;
 
-        if (game.board[sid].length <= 0 && forceClass === 'minion') {
+        if (game.board[SIDE_ID].length <= 0 && forceClass === 'minion') {
             this.history.push({ type: 'selectTarget', data: '0,1' });
 
             return false;
@@ -301,60 +300,60 @@ export class Ai {
             if (side === 'self') {
                 returnValue = this.plr;
             } else if (side === 'enemy') {
-                returnValue = op;
+                returnValue = OPPONENT;
             }
 
-            const _returnValue = (returnValue instanceof Player) ? 'P' + (returnValue.id + 1) : returnValue;
+            const HISTORY_DATA = (returnValue instanceof Player) ? 'P' + (returnValue.id + 1) : returnValue;
 
-            this.history.push({ type: 'selectTarget', data: _returnValue });
+            this.history.push({ type: 'selectTarget', data: HISTORY_DATA });
 
             return returnValue;
         }
 
         // The player has no minions, select their face
-        if (game.board[sid].length <= 0) {
-            const returnValue: Player | false = false;
+        if (game.board[SIDE_ID].length <= 0) {
+            const RETURN_VALUE: Player | false = false;
 
             if (forceClass === 'minion') {
                 this.history.push({ type: 'selectTarget', data: -1 });
             } else {
-                let returnValue_;
-                if (sid === 0) {
-                    returnValue_ = game.player1;
-                } else if (sid === 1) {
-                    returnValue_ = game.player2;
+                let returnValue;
+                if (SIDE_ID === 0) {
+                    returnValue = game.player1;
+                } else if (SIDE_ID === 1) {
+                    returnValue = game.player2;
                 }
 
-                if (!returnValue_) {
-                    throw new Error('Player ' + (sid + 1) + ' not found');
+                if (!returnValue) {
+                    throw new Error('Player ' + (SIDE_ID + 1) + ' not found');
                 }
 
-                this.history.push({ type: 'selectTarget', data: 'P' + (returnValue_.id + 1) });
+                this.history.push({ type: 'selectTarget', data: 'P' + (returnValue.id + 1) });
             }
 
-            return returnValue;
+            return RETURN_VALUE;
         }
 
         let bestMinion: Card | undefined;
         let bestScore = -100_000;
 
-        for (const m of game.board[sid]) {
-            if (!this._canTargetMinion(m)) {
+        for (const TARGET of game.board[SIDE_ID]) {
+            if (!this._canTargetMinion(TARGET)) {
                 continue;
             }
 
-            if ((card && card.type === 'Spell' && m.hasKeyword('Elusive')) ?? m.type === 'Location') {
+            if ((card && card.type === 'Spell' && TARGET.hasKeyword('Elusive')) ?? TARGET.type === 'Location') {
                 continue;
             }
 
-            const s = this.analyzePositiveCard(m);
+            const SCORE = this.analyzePositiveCard(TARGET);
 
-            if (s <= bestScore) {
+            if (SCORE <= bestScore) {
                 continue;
             }
 
-            bestMinion = m;
-            bestScore = s;
+            bestMinion = TARGET;
+            bestScore = SCORE;
         }
 
         if (bestMinion) {
@@ -379,20 +378,20 @@ export class Ai {
         let bestScore = -100_000;
 
         // Look for highest score
-        for (const c of cards) {
+        for (const CARD of cards) {
             // Card-like is invalid
-            if (!c.name) {
+            if (!CARD.name) {
                 continue;
             }
 
-            const score = this.analyzePositiveCard(new Card(c.name, this.plr));
+            const SCORE = this.analyzePositiveCard(new Card(CARD.name, this.plr));
 
-            if (score <= bestScore) {
+            if (SCORE <= bestScore) {
                 continue;
             }
 
-            bestCard = c;
-            bestScore = score;
+            bestCard = CARD;
+            bestScore = SCORE;
         }
 
         if (!bestCard) {
@@ -419,24 +418,24 @@ export class Ai {
         let bestScore = -100_000;
 
         // Look for highest score
-        for (const c of cards) {
-            const score = this.analyzePositiveCard(c);
+        for (const CARD of cards) {
+            const SCORE = this.analyzePositiveCard(CARD);
 
-            if (score <= bestScore) {
+            if (SCORE <= bestScore) {
                 continue;
             }
 
-            bestCard = c;
-            bestScore = score;
+            bestCard = CARD;
+            bestScore = SCORE;
         }
 
         if (!bestCard) {
             return undefined;
         }
 
-        const name = bestCard ? bestCard.name : null;
+        const NAME = bestCard ? bestCard.name : null;
 
-        this.history.push({ type: 'dredge', data: [name, bestScore] });
+        this.history.push({ type: 'dredge', data: [NAME, bestScore] });
         return bestCard;
     }
 
@@ -456,15 +455,15 @@ export class Ai {
         let bestScore = -100_000;
 
         // Look for highest score
-        for (const [i, c] of options.entries()) {
-            const score = this.analyzePositive(c);
+        for (const [INDEX, CARD] of options.entries()) {
+            const SCORE = this.analyzePositive(CARD);
 
-            if (score <= bestScore) {
+            if (SCORE <= bestScore) {
                 continue;
             }
 
-            bestChoice = i;
-            bestScore = score;
+            bestChoice = INDEX;
+            bestScore = SCORE;
         }
 
         this.history.push({ type: 'chooseOne', data: [bestChoice, bestScore] });
@@ -484,15 +483,15 @@ export class Ai {
         let bestChoice = null;
         let bestScore = -100_000;
 
-        for (const [i, v] of options.entries()) {
-            const score = this.analyzePositive(v);
+        for (const [INDEX, CARD] of options.entries()) {
+            const SCORE = this.analyzePositive(CARD);
 
-            if (score <= bestScore) {
+            if (SCORE <= bestScore) {
                 continue;
             }
 
-            bestChoice = i;
-            bestScore = score;
+            bestChoice = INDEX;
+            bestScore = SCORE;
         }
 
         this.history.push({ type: `question: ${prompt}`, data: [bestChoice, bestScore] });
@@ -512,12 +511,12 @@ export class Ai {
      * @returns `true` if "Yes", `false` if "No"
      */
     yesNoQuestion(prompt: string): boolean {
-        const score = this.analyzePositive(prompt);
-        const returnValue = score > 0;
+        const SCORE = this.analyzePositive(prompt);
+        const RETURN_VALUE = SCORE > 0;
 
-        this.history.push({ type: 'yesNoQuestion', data: [prompt, returnValue] });
+        this.history.push({ type: 'yesNoQuestion', data: [prompt, RETURN_VALUE] });
 
-        return returnValue;
+        return RETURN_VALUE;
     }
 
     /**
@@ -538,13 +537,12 @@ export class Ai {
             return false;
         }
 
-        const score = this.analyzePositiveCard(card);
+        const SCORE = this.analyzePositiveCard(card);
+        const RETURN_VALUE = SCORE <= game.config.ai.tradeThreshold;
 
-        const returnValue = score <= game.config.ai.tradeThreshold;
+        this.history.push({ type: 'trade', data: [card.name, RETURN_VALUE, SCORE] });
 
-        this.history.push({ type: 'trade', data: [card.name, returnValue, score] });
-
-        return returnValue;
+        return RETURN_VALUE;
     }
 
     /**
@@ -556,10 +554,10 @@ export class Ai {
      */
     forge(card: Card): boolean {
         // Always forge the card if the ai has enough mana
-        const returnValue = !(this.plr.mana < 2);
+        const RETURN_VALUE = !(this.plr.mana < 2);
 
-        this.history.push({ type: 'forge', data: [card.name, returnValue] });
-        return returnValue;
+        this.history.push({ type: 'forge', data: [card.name, RETURN_VALUE] });
+        return RETURN_VALUE;
     }
 
     /**
@@ -571,18 +569,18 @@ export class Ai {
         let toMulligan = '';
         let scores = '(';
 
-        for (const c of this.plr.hand) {
-            if (c.name === 'The Coin') {
+        for (const CARD of this.plr.hand) {
+            if (CARD.name === 'The Coin') {
                 continue;
             }
 
-            const score = this.analyzePositiveCard(c);
+            const SCORE = this.analyzePositiveCard(CARD);
 
-            if (score < game.config.ai.mulliganThreshold) {
-                toMulligan += (this.plr.hand.indexOf(c) + 1).toString();
+            if (SCORE < game.config.ai.mulliganThreshold) {
+                toMulligan += (this.plr.hand.indexOf(CARD) + 1).toString();
             }
 
-            scores += `${c.name}:${score}, `;
+            scores += `${CARD.name}:${SCORE}, `;
         }
 
         scores = scores.slice(0, -2) + ')';
@@ -607,26 +605,25 @@ export class Ai {
 
         let score = 0;
 
-        const handleEntriesForV = (v: [string, Record<string, number>], sentance: string, word: string, returnValue: boolean) => {
-            for (const k of Object.entries(v[1])) {
+        const handleEntriesForV = (sentimentObject: [string, Record<string, number>], sentance: string, word: string, returnValue: boolean) => {
+            for (const ENTRY of Object.entries(sentimentObject[1])) {
                 if (returnValue) {
                     continue;
                 }
 
                 // Remove the last "s" or "d" in order to account for plurals
-                const k0 = k[0].replace(/^(.*)[sd]$/, '$1');
-                if (!new RegExp(k[0]).test(word) && !new RegExp(k0).test(word)) {
+                const SENTIMENT_WITHOUT_PLURAL = ENTRY[0].replace(/^(.*)[sd]$/, '$1');
+                if (!new RegExp(ENTRY[0]).test(word) && !new RegExp(SENTIMENT_WITHOUT_PLURAL).test(word)) {
                     continue;
                 }
 
                 // If the sentiment is "positive", add to the score. If it is "negative", subtract from the score.
-                const opponentTest = /enemy|enemies|opponent/;
-                let pos = k[1];
-                if (context && opponentTest.test(sentance)) {
+                let pos = ENTRY[1];
+                if (context && /enemy|enemies|opponent/.test(sentance)) {
                     pos = -pos;
                 }
 
-                score -= (v[0] === 'positive') ? -pos : pos;
+                score -= (sentimentObject[0] === 'positive') ? -pos : pos;
                 returnValue = true;
             }
 
@@ -641,12 +638,12 @@ export class Ai {
                 word = word.replaceAll(/[^a-z]/g, '');
                 let returnValue = false;
 
-                for (const v of Object.entries(game.config.ai.sentiments)) {
+                for (const SENTIMENT_OBJECT of Object.entries(game.config.ai.sentiments)) {
                     if (returnValue) {
                         continue;
                     }
 
-                    returnValue = handleEntriesForV(v, sentance, word, returnValue);
+                    returnValue = handleEntriesForV(SENTIMENT_OBJECT, sentance, word, returnValue);
                 }
             }
         }
@@ -672,14 +669,14 @@ export class Ai {
         score -= c.cost * game.config.ai.costBias;
 
         // Keywords
-        // eslint-disable-next-line no-unused-vars
+        // eslint-disable-next-line @typescript-eslint/naming-convention, no-unused-vars
         for (const _ of Object.keys(c.keywords)) {
             score += game.config.ai.keywordValue;
         }
 
         // Abilities
-        for (const v of Object.values(c)) {
-            if (Array.isArray(v) && v[0] instanceof Function) {
+        for (const VALUE of Object.values(c)) {
+            if (Array.isArray(VALUE) && VALUE[0] instanceof Function) {
                 score += game.config.ai.abilityValue;
             }
         }
@@ -697,9 +694,9 @@ export class Ai {
             return false;
         }
 
-        const validAttackers = game.board[this.plr.id].filter(m => m.canAttack());
+        const VALID_ATTACKERS = game.board[this.plr.id].filter(m => m.canAttack());
 
-        return validAttackers.length > 0;
+        return VALID_ATTACKERS.length > 0;
     }
 
     /**
@@ -712,15 +709,15 @@ export class Ai {
             return false;
         }
 
-        const enoughMana = this.plr.mana >= this.plr.hero.hpCost!;
-        const canUse = this.plr.canUseHeroPower;
+        const ENOUGH_MANA = this.plr.mana >= this.plr.hero.hpCost!;
+        const CAN_USE = this.plr.canUseHeroPower;
 
-        const canHeroPower = enoughMana && canUse;
+        const CAN_HERO_POWER = ENOUGH_MANA && CAN_USE;
 
         // The ai has already used their hero power that turn.
         this.prevent.push('hero power');
 
-        return canHeroPower;
+        return CAN_HERO_POWER;
     }
 
     /**
@@ -731,9 +728,9 @@ export class Ai {
             return false;
         }
 
-        const validLocations = game.board[this.plr.id].filter(m => m.type === 'Location' && m.cooldown === 0 && !this.usedLocationsThisTurn.includes(m));
+        const VALID_LOCATIONS = game.board[this.plr.id].filter(m => m.type === 'Location' && m.cooldown === 0 && !this.usedLocationsThisTurn.includes(m));
 
-        return validLocations.length > 0;
+        return VALID_LOCATIONS.length > 0;
     }
 
     /**
@@ -744,9 +741,7 @@ export class Ai {
      * @returns If it is targettable
      */
     private _canTargetMinion(m: Card): boolean {
-        const booleans = !m.hasKeyword('Dormant') && !m.hasKeyword('Immune') && !m.hasKeyword('Stealth');
-
-        return booleans;
+        return !m.hasKeyword('Dormant') && !m.hasKeyword('Immune') && !m.hasKeyword('Stealth');
     }
 
     // ATTACKING
@@ -756,50 +751,50 @@ export class Ai {
      * @returns `Perfect Trades`: [[attacker, target], ...], `Imperfect Trades`: [[attacker, target], ...]
      */
     private _attackFindTrades(): [Card[][], Card[][]] {
-        const perfectTrades: Card[][] = [];
-        const imperfectTrades: Card[][] = [];
+        const PERFECT_TRADES: Card[][] = [];
+        const IMPERFECT_TRADES: Card[][] = [];
 
-        const currboard = game.board[this.plr.id].filter(m => m.canAttack());
+        const CURRENT_BOARD = game.board[this.plr.id].filter(m => m.canAttack());
 
-        for (const a of currboard) {
-            let trades = [...perfectTrades, ...imperfectTrades];
+        for (const CARD of CURRENT_BOARD) {
+            let trades = [...PERFECT_TRADES, ...IMPERFECT_TRADES];
 
-            const score = this.analyzePositiveCard(a);
+            const SCORE = this.analyzePositiveCard(CARD);
 
             // Don't attack with high-value minions.
-            if (score > game.config.ai.protectThreshold || trades.map(c => c[0]).includes(a)) {
+            if (SCORE > game.config.ai.protectThreshold || trades.map(c => c[0]).includes(CARD)) {
                 continue;
             }
 
             // If the card has the `sleepy` prop, it has the attackTimes prop too.
-            if (a.sleepy ?? a.attackTimes! <= 0) {
+            if (CARD.sleepy ?? CARD.attackTimes! <= 0) {
                 continue;
             }
 
-            const opboard = game.board[this.plr.getOpponent().id].filter(m => this._canTargetMinion(m));
+            const OPPONENT_BOARD = game.board[this.plr.getOpponent().id].filter(m => this._canTargetMinion(m));
 
-            for (const t of opboard) {
-                trades = [...perfectTrades, ...imperfectTrades];
-                if (trades.map(c => c[1]).includes(t)) {
+            for (const TARGET of OPPONENT_BOARD) {
+                trades = [...PERFECT_TRADES, ...IMPERFECT_TRADES];
+                if (trades.map(c => c[1]).includes(TARGET)) {
                     continue;
                 }
 
-                const score = this.analyzePositiveCard(t);
+                const SCORE = this.analyzePositiveCard(TARGET);
 
                 // Don't waste resources attacking useless targets.
-                if (score < game.config.ai.ignoreThreshold) {
+                if (SCORE < game.config.ai.ignoreThreshold) {
                     continue;
                 }
 
-                if (a.getAttack() === t.getHealth()) {
-                    perfectTrades.push([a, t]);
-                } else if (a.getAttack() > t.getHealth()) {
-                    imperfectTrades.push([a, t]);
+                if (CARD.getAttack() === TARGET.getHealth()) {
+                    PERFECT_TRADES.push([CARD, TARGET]);
+                } else if (CARD.getAttack() > TARGET.getHealth()) {
+                    IMPERFECT_TRADES.push([CARD, TARGET]);
                 }
             }
         }
 
-        return [perfectTrades, imperfectTrades];
+        return [PERFECT_TRADES, IMPERFECT_TRADES];
     }
 
     /**
@@ -813,23 +808,23 @@ export class Ai {
     private _scorePlayer(player: Player, board: ScoredCard[][]): number {
         let score = 0;
 
-        for (const m of board[player.id]) {
-            score += m.score;
+        for (const SCORED_CARD of board[player.id]) {
+            score += SCORED_CARD.score;
         }
 
-        for (const f of Object.entries(player)) {
-            if (typeof f[1] !== 'number') {
+        for (const ENTRY of Object.entries(player)) {
+            const [KEY, VALUE] = ENTRY as [string, number];
+
+            if (typeof VALUE !== 'number') {
                 continue;
             }
 
-            const [key, value] = f as [string, number];
-
-            const i = ['health', 'maxHealth', 'armor', 'emptyMana'];
-            if (!i.includes(key)) {
+            const VALID_KEYS = ['health', 'maxHealth', 'armor', 'emptyMana'];
+            if (!VALID_KEYS.includes(KEY)) {
                 continue;
             }
 
-            score += value;
+            score += VALUE;
         }
 
         score += player.deck.length;
@@ -845,13 +840,13 @@ export class Ai {
      * @returns Winner, Score
      */
     private _findWinner(board: ScoredCard[][]): [Player, number] {
-        const score = this._scorePlayer(this.plr, board);
-        const opScore = this._scorePlayer(this.plr.getOpponent(), board);
+        const SCORE = this._scorePlayer(this.plr, board);
+        const OPPONENT_SCORE = this._scorePlayer(this.plr.getOpponent(), board);
 
-        const winner = (score > opScore) ? this.plr : this.plr.getOpponent();
-        const s = (winner === this.plr) ? score : opScore;
+        const WINNER = (SCORE > OPPONENT_SCORE) ? this.plr : this.plr.getOpponent();
+        const WINNER_SCORE = (WINNER === this.plr) ? SCORE : OPPONENT_SCORE;
 
-        return [winner, s];
+        return [WINNER, WINNER_SCORE];
     }
 
     /**
@@ -866,21 +861,15 @@ export class Ai {
      *
      * @returns Attacker, Target
      */
-    private _attackTrade(): Card[] | undefined {
-        const [perfectTrades, imperfectTrades] = this._attackFindTrades();
+    private _attackTrade(): Card[] {
+        const [PERFECT_TRADES, IMPERFECT_TRADES] = this._attackFindTrades();
+        const RETURN_VALUE = PERFECT_TRADES.length > 0 ? PERFECT_TRADES[0] : IMPERFECT_TRADES[0];
 
-        let returnValue;
-        if (perfectTrades.length > 0) {
-            returnValue = perfectTrades[0];
-        } else if (imperfectTrades.length > 0) {
-            returnValue = imperfectTrades[0];
+        if (RETURN_VALUE) {
+            this.history.push({ type: 'trade', data: [RETURN_VALUE[0].name, RETURN_VALUE[1].name] });
         }
 
-        if (returnValue) {
-            this.history.push({ type: 'trade', data: [returnValue[0].name, returnValue[1].name] });
-        }
-
-        return returnValue;
+        return RETURN_VALUE;
     }
 
     /**
@@ -891,35 +880,33 @@ export class Ai {
      * @returns Attacker, Target
      */
     private _attackGeneral(board: ScoredCard[][]): Array<Target | -1> {
-        const currentWinner = this._findWinner(board);
-
-        let returnValue = null;
+        const WINNER = this._findWinner(board);
 
         // Risky
-        const opScore = this._scorePlayer(this.plr.getOpponent(), board);
+        const OPPONENT_SCORE = this._scorePlayer(this.plr.getOpponent(), board);
 
         // If the ai is winner by more than 'threshold' points, enable risk mode
-        const riskMode = currentWinner[1] >= opScore + game.config.ai.riskThreshold;
+        const RISK_MODE = WINNER[1] >= OPPONENT_SCORE + game.config.ai.riskThreshold;
 
         // If there are taunts, override risk mode
-        const taunts = this._findTaunts();
+        const TAUNTS = this._findTaunts();
 
-        returnValue = riskMode && taunts.length <= 0 ? this._attackGeneralRisky() : this._attackGeneralMinion();
+        const RETURN_VALUE = RISK_MODE && TAUNTS.length <= 0 ? this._attackGeneralRisky() : this._attackGeneralMinion();
 
-        if (returnValue.includes(-1)) {
+        if (RETURN_VALUE.includes(-1)) {
             return [-1, -1];
         }
 
-        const returned: Target[] = returnValue as Target[];
+        const RETURNED = RETURN_VALUE as Target[];
 
-        this.history.push({ type: 'attack', data: [returned[0].name, returned[1].name] });
+        this.history.push({ type: 'attack', data: [RETURNED[0].name, RETURNED[1].name] });
 
         // If the ai is not focusing on a minion, focus on the returned minion
-        if (!this.focus && returned[1] instanceof Card) {
-            this.focus = returned[1];
+        if (!this.focus && RETURNED[1] instanceof Card) {
+            this.focus = RETURNED[1];
         }
 
-        return returned;
+        return RETURNED;
     }
 
     /**
@@ -945,9 +932,9 @@ export class Ai {
             this.focus = undefined;
         }
 
-        const target = !this.focus || (this._findTaunts().length > 0 && !this.focus.hasKeyword('Taunt')) ? this._attackGeneralChooseTarget() : this.focus;
+        const TARGET = !this.focus || (this._findTaunts().length > 0 && !this.focus.hasKeyword('Taunt')) ? this._attackGeneralChooseTarget() : this.focus;
 
-        return [this._attackGeneralChooseAttacker(target instanceof Player), target];
+        return [this._attackGeneralChooseAttacker(TARGET instanceof Player), TARGET];
     }
 
     /**
@@ -961,44 +948,44 @@ export class Ai {
         let board = game.board[this.plr.getOpponent().id];
 
         // If there is a taunt, select that as the target
-        const taunts = this._findTaunts();
-        if (Array.isArray(taunts) && taunts.length > 0) {
-            return taunts[0];
+        const TAUNTS = this._findTaunts();
+        if (Array.isArray(TAUNTS) && TAUNTS.length > 0) {
+            return TAUNTS[0];
         }
 
         board = board.filter(m => this._canTargetMinion(m));
 
-        for (const m of board) {
+        for (const CARD of board) {
             if (typeof highestScore[1] !== 'number') {
                 highestScore[1] = -9999;
             }
 
-            const score = this.analyzePositiveCard(m);
-            if (score < highestScore[1]) {
+            const SCORE = this.analyzePositiveCard(CARD);
+            if (SCORE < highestScore[1]) {
                 continue;
             }
 
-            highestScore = [m, score];
+            highestScore = [CARD, SCORE];
         }
 
-        const target = highestScore[0];
+        const TARGET = highestScore[0];
 
         // TODO: Does this never fail? What is going on here!?
-        if (!target) {
+        if (!TARGET) {
             return this.plr.getOpponent();
         }
 
-        if (!target) {
+        if (!TARGET) {
             this.prevent.push('attack');
             return -1;
         }
 
         // Only -1 is a valid number
-        if (typeof target === 'number' && target !== -1) {
+        if (typeof TARGET === 'number' && TARGET !== -1) {
             return -1;
         }
 
-        return target;
+        return TARGET;
     }
 
     /**
@@ -1014,45 +1001,45 @@ export class Ai {
         let board = game.board[this.plr.id];
         board = board.filter(c => c.canAttack());
 
-        for (const m of board) {
+        for (const CARD of board) {
             if (typeof lowestScore[1] !== 'number') {
                 lowestScore[1] = 9999;
             }
 
-            const score = this.analyzePositiveCard(m);
+            const SCORE = this.analyzePositiveCard(CARD);
 
-            if (score > lowestScore[1] || (score > game.config.ai.protectThreshold && !targetIsPlayer)) {
+            if (SCORE > lowestScore[1] || (SCORE > game.config.ai.protectThreshold && !targetIsPlayer)) {
                 continue;
             }
 
-            if (m.sleepy ?? m.attackTimes! <= 0) {
+            if (CARD.sleepy ?? CARD.attackTimes! <= 0) {
                 continue;
             }
 
-            if (targetIsPlayer && !m.canAttackHero) {
+            if (targetIsPlayer && !CARD.canAttackHero) {
                 continue;
             }
 
-            lowestScore = [m, score];
+            lowestScore = [CARD, SCORE];
         }
 
-        const attacker = lowestScore[0];
+        const ATTACKER = lowestScore[0];
 
         // TODO: Does this never fail?
-        if (!attacker && (this.plr.attack > 0 && this.plr.canAttack)) {
+        if (!ATTACKER && (this.plr.attack > 0 && this.plr.canAttack)) {
             return this.plr;
         }
 
-        if (!attacker) {
+        if (!ATTACKER) {
             this.prevent.push('attack');
             return -1;
         }
 
         // Only -1 is a valid number
-        if (typeof attacker === 'number' && attacker !== -1) {
+        if (typeof ATTACKER === 'number' && ATTACKER !== -1) {
             return -1;
         }
 
-        return attacker;
+        return ATTACKER;
     }
 }

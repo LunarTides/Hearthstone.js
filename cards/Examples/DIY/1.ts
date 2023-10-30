@@ -2,7 +2,7 @@
 
 import { type Blueprint } from '@Game/types.js';
 
-export const blueprint: Blueprint = {
+export const BLUEPRINT: Blueprint = {
     name: 'DIY 1',
     stats: [1, 1],
     text: '<b>This is a DIY card, it does not work by default. Battlecry:</b> Give this minion +1/+1.',
@@ -22,8 +22,8 @@ export const blueprint: Blueprint = {
         // DON'T CHANGE ANYTHING BELOW THIS LINE
 
         // Testing your solution.
-        const success = game.interact.verifyDiySolution(self.getAttack() === 2 && self.getHealth() === 2, self);
-        if (!success) {
+        const SUCCESS = game.interact.verifyDiySolution(self.getAttack() === 2 && self.getHealth() === 2, self);
+        if (!SUCCESS) {
             self.kill();
         }
 

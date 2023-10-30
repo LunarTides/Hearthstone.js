@@ -3,7 +3,7 @@
 
 import { type Blueprint, type EventValue } from '@Game/types.js';
 
-export const blueprint: Blueprint = {
+export const BLUEPRINT: Blueprint = {
     name: 'DIY 4',
     stats: [0, 10],
     text: '<b>This is a DIY card, it does not work by default.</b> Whenever a friendly minion dies, Resurrect it with 1/1 stats.',
@@ -25,10 +25,10 @@ export const blueprint: Blueprint = {
 
         // Here we cast the value to the correct type.
         // Do not use the '_unknownValue' variable after this.
-        const value = _unknownValue as EventValue<typeof key>;
+        const VALUE = _unknownValue as EventValue<typeof key>;
 
         // Don't change this line
-        if (value.plr !== plr) {
+        if (VALUE.plr !== plr) {
             return;
         }
 
@@ -46,17 +46,17 @@ export const blueprint: Blueprint = {
             return true;
         }
 
-        const solved = game.board[plr.id].some(card => (
-            card.id === value.id
-                && card.type === value.type
+        const SOLVED = game.board[plr.id].some(card => (
+            card.id === VALUE.id
+                && card.type === VALUE.type
                 && card.getAttack() === 1
                 && card.getHealth() === 1
-                && card.uuid !== value.uuid
+                && card.uuid !== VALUE.uuid
                 && card.plr === plr
         ));
 
-        game.interact.verifyDiySolution(solved, self);
-        if (!solved) {
+        game.interact.verifyDiySolution(SOLVED, self);
+        if (!SOLVED) {
             self.kill();
         }
 

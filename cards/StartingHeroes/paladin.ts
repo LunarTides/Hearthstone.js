@@ -3,7 +3,7 @@
 import assert from 'node:assert';
 import { type Blueprint } from '@Game/types.js';
 
-export const blueprint: Blueprint = {
+export const BLUEPRINT: Blueprint = {
     name: 'Paladin Starting Hero',
     displayName: 'Uther Lightbringer',
     text: 'Paladin starting hero',
@@ -20,10 +20,10 @@ export const blueprint: Blueprint = {
         // Summon a 1/1 Silver Hand Recruit.
 
         // Create the Silver Hand Recruit card.
-        const card = game.createCard('Silver Hand Recruit', plr);
+        const CARD = game.createCard('Silver Hand Recruit', plr);
 
         // Summon the card
-        game.summonMinion(card, plr);
+        game.summonMinion(CARD, plr);
     },
 
     test(plr, self) {

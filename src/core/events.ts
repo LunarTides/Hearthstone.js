@@ -1,4 +1,4 @@
-import { type EventKey, type EventManagerEvents, type HistoryKey, type QuestType, type TickHookCallback, type UnknownEventValue } from '@Game/types.js';
+import { type EventKey, type EventManagerEvents, type HistoryKey, type TickHookCallback, type UnknownEventValue } from '@Game/types.js';
 import { Card, type Player } from '../internal.js';
 
 type EventManagerType = {
@@ -19,7 +19,7 @@ type EventManagerType = {
     increment(player: Player, key: string, amount?: number): number;
 };
 
-export const eventManager: EventManagerType = {
+export const EVENT_MANAGER: EventManagerType = {
     /**
      * The amount of event listeners that have been added to the game, this never decreases.
      */
@@ -75,33 +75,33 @@ export const eventManager: EventManagerType = {
 
         // Infuse
         if (key === 'KillMinion') {
-            for (const p of player.hand) {
-                p.tryInfuse();
+            for (const CARD of player.hand) {
+                CARD.tryInfuse();
             }
         }
 
         for (let i = 0; i < 2; i++) {
-            const plr = game.functions.util.getPlayerFromId(i);
+            const PLAYER = game.functions.util.getPlayerFromId(i);
 
             // Activate spells in the players hand
-            for (const card of plr.hand) {
-                card.condition();
+            for (const CARD of PLAYER.hand) {
+                CARD.condition();
 
                 // Just in case. Remove for small performance boost
-                card.applyEnchantments();
+                CARD.applyEnchantments();
 
-                card.activate('handtick', key, value, player);
-                if (card.cost < 0) {
-                    card.cost = 0;
+                CARD.activate('handtick', key, value, player);
+                if (CARD.cost < 0) {
+                    CARD.cost = 0;
                 }
             }
 
-            for (const card of game.board[i]) {
-                if (card.type === 'Minion' && card.getHealth() <= 0) {
+            for (const CARD of game.board[i]) {
+                if (CARD.type === 'Minion' && CARD.getHealth() <= 0) {
                     continue;
                 }
 
-                card.activate('tick', key, value, player);
+                CARD.activate('tick', key, value, player);
             }
         }
 
@@ -122,37 +122,37 @@ export const eventManager: EventManagerType = {
      * @returns Success
      */
     cardUpdate(key, value, player) {
-        for (const p of game.board) {
-            for (const m of p) {
+        for (const CARDS of game.board) {
+            for (const CARD of CARDS) {
                 // This function gets called directly after a minion is killed.
-                if (m.getHealth() <= 0) {
+                if (CARD.getHealth() <= 0) {
                     continue;
                 }
 
-                m.activate('passive', key, value, player);
+                CARD.activate('passive', key, value, player);
             }
         }
 
         for (let i = 0; i < 2; i++) {
-            const plr = game.functions.util.getPlayerFromId(i);
+            const PLAYER = game.functions.util.getPlayerFromId(i);
 
             // Activate spells in the players hand
-            for (const c of plr.hand) {
-                c.activate('handpassive', key, value, player);
+            for (const CARD of PLAYER.hand) {
+                CARD.activate('handpassive', key, value, player);
 
-                if (c.type !== 'Spell') {
+                if (CARD.type !== 'Spell') {
                     continue;
                 }
 
-                c.activate('passive', key, value, player);
+                CARD.activate('passive', key, value, player);
             }
 
-            const wpn = plr.weapon;
-            if (!wpn) {
+            const WEAPON = PLAYER.weapon;
+            if (!WEAPON) {
                 continue;
             }
 
-            wpn.activate('passive', key, value, player);
+            WEAPON.activate('passive', key, value, player);
         }
 
         game.triggerEventListeners(key, value, player);
@@ -170,35 +170,33 @@ export const eventManager: EventManagerType = {
      * @returns Success
      */
     questUpdate(questsName, key, value, plr) {
-        for (const s of plr[questsName]) {
-            const quest: QuestType = s;
-
-            if (quest.key !== key) {
+        for (const QUEST of plr[questsName]) {
+            if (QUEST.key !== key) {
                 continue;
             }
 
-            const [current, max] = quest.progress;
+            const [CURRENT, MAX] = QUEST.progress;
 
-            const done = current + 1 >= max;
-            if (!quest.callback(value, done)) {
+            const DONE = CURRENT + 1 >= MAX;
+            if (!QUEST.callback(value, DONE)) {
                 continue;
             }
 
-            quest.progress[0]++;
+            QUEST.progress[0]++;
 
-            if (!done) {
+            if (!DONE) {
                 continue;
             }
 
             // The quest/secret is done
-            plr[questsName].splice(plr[questsName].indexOf(quest), 1);
+            plr[questsName].splice(plr[questsName].indexOf(QUEST), 1);
 
             if (questsName === 'secrets') {
-                game.pause('\nYou triggered the opponents\'s \'' + quest.name + '\'.\n');
+                game.pause('\nYou triggered the opponents\'s \'' + QUEST.name + '\'.\n');
             }
 
-            if (quest.next) {
-                new Card(quest.next, plr).activate('cast');
+            if (QUEST.next) {
+                new Card(QUEST.next, plr).activate('cast');
             }
         }
 

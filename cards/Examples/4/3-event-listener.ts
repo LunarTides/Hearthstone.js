@@ -2,7 +2,7 @@
 
 import { type Blueprint, type EventValue } from '@Game/types.js';
 
-export const blueprint: Blueprint = {
+export const BLUEPRINT: Blueprint = {
     name: 'Event Listener Example',
     stats: [1, 1],
     text: 'Battlecry: For the rest of the game, your battlecries trigger twice.',
@@ -29,17 +29,17 @@ export const blueprint: Blueprint = {
             // This function will be run if the correct event was broadcast
 
             // addEventListener can't figure out the type of `val` by itself, so we have to do the same thing as with passives
-            const value = _unknownValue as EventValue<'PlayCard'>;
+            const VALUE = _unknownValue as EventValue<'PlayCard'>;
 
             // Only continue if the player that triggered the event is this card's owner and the played card is a minion and it is not this card
             // The `PlayCard` event gets triggered after this battlecry, remember? So we need to prevent it from calling this card's battlecry again.
             // The return value will be explained below
-            if (!(value.type === 'Minion' && eventPlayer === plr && value !== self)) {
+            if (!(VALUE.type === 'Minion' && eventPlayer === plr && VALUE !== self)) {
                 return false;
             }
 
             // Activate the battlecry
-            value.activate('battlecry');
+            VALUE.activate('battlecry');
 
             // You have to return a message to the event listener handler to tell it what to do next.
             // If you return "destroy", the event listener gets destroyed (this is the same as running the `destroy` function).

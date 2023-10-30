@@ -2,7 +2,7 @@
 
 import { type Blueprint } from '@Game/types.js';
 
-export const blueprint: Blueprint = {
+export const BLUEPRINT: Blueprint = {
     // Look in `main.ts` first.
     // This will be summoned above the main minion
     name: 'Colossal Example Left Arm',

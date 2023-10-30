@@ -1,6 +1,6 @@
 import { type EventKey, type EventListenerCallback, type TickHookCallback } from '@Game/types.js';
 
-export const eventFunctions = {
+export const EVENT_FUNCTIONS = {
     /**
      * Add an event listener.
      *
@@ -13,7 +13,7 @@ export const eventFunctions = {
     addListener(key: EventKey | '', callback: EventListenerCallback, lifespan = 1): () => boolean {
         let times = 0;
 
-        const id = game.events.eventListeners;
+        const ID = game.events.eventListeners;
         let alive = true;
 
         /**
@@ -27,22 +27,22 @@ export const eventFunctions = {
             }
 
             // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-            delete game.eventListeners[id];
+            delete game.eventListeners[ID];
 
             alive = false;
             return true;
         };
 
-        game.eventListeners[id] = (_key, _unknownValue, eventPlayer) => {
+        game.eventListeners[ID] = (_key, _unknownValue, eventPlayer) => {
             // Validate key. If key is empty, match any key.
             if (key !== '' && _key !== key) {
                 return;
             }
 
-            const message = callback(_unknownValue, eventPlayer);
+            const MESSAGE = callback(_unknownValue, eventPlayer);
             times++;
 
-            switch (message) {
+            switch (MESSAGE) {
                 case 'destroy': {
                     destroy();
                     break;

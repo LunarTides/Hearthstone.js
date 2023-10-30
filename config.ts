@@ -1,6 +1,6 @@
 import { type GameConfig } from '@Game/types.js';
 
-export const config: GameConfig = {
+export const CONFIG: GameConfig = {
     general: {
         // Debug mode enables debug commands, and hides redundant information.
         debug: true,
@@ -93,12 +93,10 @@ export const config: GameConfig = {
             positive: {
                 // Any number with a plus in front of it.
                 // For example, +1
-                // eslint-disable-next-line @typescript-eslint/naming-convention
                 '\\x\\d+': 1,
 
                 // Anything formed like this "d/d" where "d" is a number.
                 // For example, 1/1
-                // eslint-disable-next-line @typescript-eslint/naming-convention
                 '\\d+/\\d+': 1,
 
                 heal: 0.5,

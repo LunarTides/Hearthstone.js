@@ -8,7 +8,7 @@ import process from 'node:process';
 import { Card, type Player, createGame } from '../src/internal.js';
 
 const { game } = createGame();
-const cards = game.functions.card.getAll(false);
+const CARDS = game.functions.card.getAll(false);
 
 function testCard(card: Card): boolean | Error {
     try {
@@ -25,7 +25,7 @@ function testCard(card: Card): boolean | Error {
 export function main() {
     let failed = false;
 
-    for (const blueprint of cards) {
+    for (const BLUEPRINT of CARDS) {
         // Create a game
         const { game, player1, player2 } = createGame();
         game.config.ai.player1 = false;
@@ -38,12 +38,12 @@ export function main() {
 
         // Assign decks
         const assignDeck = (player: Player) => {
-            const deck = game.functions.deckcode.import(player, 'Mage /30/ 1');
-            if (!deck || deck.length <= 0) {
+            const DECK = game.functions.deckcode.import(player, 'Mage /30/ 1');
+            if (!DECK || DECK.length <= 0) {
                 throw new Error('Invalid deckcode');
             }
 
-            player.deck = deck;
+            player.deck = DECK;
         };
 
         game.config.decks.validate = false;
@@ -52,15 +52,15 @@ export function main() {
 
         game.startGame();
 
-        const card = new Card(blueprint.name, player1);
+        const CARD = new Card(BLUEPRINT.name, player1);
 
         game.noOutput = true;
-        const error = testCard(card);
+        const ERROR = testCard(CARD);
         game.noOutput = false;
 
-        if (error instanceof Error) {
-            game.logError(`<red>ERROR: ${card.name} didn't pass its test. Here is the error. THIS ERROR IS PART OF THE SCRIPT, NOT AN ACTUAL ERROR.</red>`);
-            game.logError(error.stack);
+        if (ERROR instanceof Error) {
+            game.logError(`<red>ERROR: ${CARD.name} didn't pass its test. Here is the error. THIS ERROR IS PART OF THE SCRIPT, NOT AN ACTUAL ERROR.</red>`);
+            game.logError(ERROR.stack);
             game.logError();
             process.exitCode = 1;
             failed = true;

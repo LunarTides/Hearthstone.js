@@ -3,24 +3,24 @@
  * @module Interact
  */
 import process from 'node:process';
-import { Card, cardInteract, gameLoopInteract, infoInteract, type Player } from '../../internal.js';
+import { type Player, Card, CARD_INTERACT, GAMELOOP_INTERACT, INFO_INTERACT } from '../../internal.js';
 import { type SelectTargetAlignment, type SelectTargetClass, type SelectTargetFlag, type Target } from '../../types.js';
 
-export const interact = {
+export const INTERACT = {
     /**
      * Card related interactions.
      */
-    card: cardInteract,
+    card: CARD_INTERACT,
 
     /**
      * Information.
      */
-    info: infoInteract,
+    info: INFO_INTERACT,
 
     /**
      * Game loop related interactions.
      */
-    gameLoop: gameLoopInteract,
+    gameLoop: GAMELOOP_INTERACT,
 
     // Deck stuff
 
@@ -42,17 +42,17 @@ export const interact = {
          * If the test deck (30 Sheep) should be allowed
          */
         // I want to be able to test without debug mode on a non-stable branch
-        const allowTestDeck: boolean = game.config.general.debug || game.config.info.branch !== 'stable';
+        const ALLOW_TEST_DECK: boolean = game.config.general.debug || game.config.info.branch !== 'stable';
 
-        const debugStatement = allowTestDeck ? ' <gray>(Leave this empty for a test deck)</gray>' : '';
-        const deckcode = game.input(`Player ${plr.id + 1}, please type in your deckcode${debugStatement}: `);
+        const DEBUG_STATEMENT = ALLOW_TEST_DECK ? ' <gray>(Leave this empty for a test deck)</gray>' : '';
+        const DECKCODE = game.input(`Player ${plr.id + 1}, please type in your deckcode${DEBUG_STATEMENT}: `);
 
         let result = true;
 
-        if (deckcode.length > 0) {
-            result = Boolean(game.functions.deckcode.import(plr, deckcode));
+        if (DECKCODE.length > 0) {
+            result = Boolean(game.functions.deckcode.import(plr, DECKCODE));
         } else {
-            if (!allowTestDeck) {
+            if (!ALLOW_TEST_DECK) {
                 // Give error message
                 game.pause('<red>Please enter a deckcode!</red>\n');
                 return false;
@@ -82,26 +82,26 @@ export const interact = {
             game.interact.info.showGame(game.player);
 
             if (game.player.ai) {
-                const ai = game.player.ai.chooseOne(prompts.map(p => p[0]));
-                if (!ai) {
+                const AI_CHOICE = game.player.ai.chooseOne(prompts.map(p => p[0]));
+                if (!AI_CHOICE) {
                     continue;
                 }
 
                 chosen++;
 
                 // Call the callback function
-                prompts[ai][1]();
+                prompts[AI_CHOICE][1]();
                 continue;
             }
 
             let p = `\nChoose ${times - chosen}:\n`;
 
-            for (const [i, v] of prompts.entries()) {
-                p += `${i + 1}: ${v[0]},\n`;
+            for (const [INDEX, PROMPT_OBJECT] of prompts.entries()) {
+                p += `${INDEX + 1}: ${PROMPT_OBJECT[0]},\n`;
             }
 
-            const choice = game.lodash.parseInt(game.input(p)) - 1;
-            if (Number.isNaN(choice) || choice < 0 || choice >= prompts.length) {
+            const CHOICE = game.lodash.parseInt(game.input(p)) - 1;
+            if (Number.isNaN(CHOICE) || CHOICE < 0 || CHOICE >= prompts.length) {
                 game.pause('<red>Invalid input!</red>\n');
                 this.chooseOne(times, ...prompts);
                 return;
@@ -110,7 +110,7 @@ export const interact = {
             chosen++;
 
             // Call the callback function
-            prompts[choice][1]();
+            prompts[CHOICE][1]();
         }
     },
 
@@ -130,8 +130,8 @@ export const interact = {
 
         let strbuilder = `\n${prompt} [`;
 
-        for (const [i, v] of answers.entries()) {
-            strbuilder += `${i + 1}: ${v}, `;
+        for (const [INDEX, ANSWER] of answers.entries()) {
+            strbuilder += `${INDEX + 1}: ${ANSWER}, `;
         }
 
         strbuilder = strbuilder.slice(0, -2);
@@ -140,24 +140,24 @@ export const interact = {
         let choice: number;
 
         if (plr.ai) {
-            const aiChoice = plr.ai.question(prompt, answers);
-            if (!aiChoice) {
+            const AI_CHOICE = plr.ai.question(prompt, answers);
+            if (!AI_CHOICE) {
                 // Code, expected, actual
-                throw new Error(`AI Error: expected: ${aiChoice}, got: some number. Error Code: AiQuestionReturnInvalidAtQuestionFunction`);
+                throw new Error(`AI Error: expected: ${AI_CHOICE}, got: some number. Error Code: AiQuestionReturnInvalidAtQuestionFunction`);
             }
 
-            choice = aiChoice;
+            choice = AI_CHOICE;
         } else {
             choice = game.lodash.parseInt(game.input(strbuilder));
         }
 
-        const answer = answers[choice - 1];
-        if (!answer) {
+        const ANSWER = answers[choice - 1];
+        if (!ANSWER) {
             game.pause('<red>Invalid input!</red>\n');
             retry();
         }
 
-        return answer;
+        return ANSWER;
     },
 
     /**
@@ -169,21 +169,21 @@ export const interact = {
      * @returns `true` if Yes / `false` if No
      */
     yesNoQuestion(plr: Player, prompt: string): boolean {
-        const ask = `\n${prompt} [<bright:green>Y</bright:green> | <red>N</red>] `;
+        const ASK = `\n${prompt} [<bright:green>Y</bright:green> | <red>N</red>] `;
 
         if (plr.ai) {
             return plr.ai.yesNoQuestion(prompt);
         }
 
-        const _choice = game.input(ask);
-        const choice = _choice.toUpperCase()[0];
+        const RAW_CHOICE = game.input(ASK);
+        const CHOICE = RAW_CHOICE.toUpperCase()[0];
 
-        if (['Y', 'N'].includes(choice)) {
-            return choice === 'Y';
+        if (['Y', 'N'].includes(CHOICE)) {
+            return CHOICE === 'Y';
         }
 
         // Invalid input
-        game.log(`<red>Unexpected input: '<yellow>${_choice}</yellow>'. Valid inputs: </red>[<bright:green>Y</bright:green> | <red>N</red>]`);
+        game.log(`<red>Unexpected input: '<yellow>${RAW_CHOICE}</yellow>'. Valid inputs: </red>[<bright:green>Y</bright:green> | <red>N</red>]`);
         game.pause();
 
         return this.yesNoQuestion(plr, prompt);
@@ -223,13 +223,13 @@ export const interact = {
      */
     selectTarget(prompt: string, card: Card | undefined, forceSide: SelectTargetAlignment, forceClass: SelectTargetClass, flags: SelectTargetFlag[] = []): Target | false {
         game.events.broadcast('TargetSelectionStarts', [prompt, card, forceSide, forceClass, flags], game.player);
-        const target = this._selectTarget(prompt, card, forceSide, forceClass, flags);
+        const TARGET = this._selectTarget(prompt, card, forceSide, forceClass, flags);
 
-        if (target) {
-            game.events.broadcast('TargetSelected', [card, target], game.player);
+        if (TARGET) {
+            game.events.broadcast('TargetSelected', [card, TARGET], game.player);
         }
 
-        return target;
+        return TARGET;
     },
 
     // eslint-disable-next-line complexity
@@ -246,9 +246,9 @@ export const interact = {
 
         // If the player is forced to select a hero
         if (forceClass === 'hero') {
-            const target = game.input('Do you want to select the enemy hero, or your own hero? (y: enemy, n: friendly) ');
+            const TARGET = game.input('Do you want to select the enemy hero, or your own hero? (y: enemy, n: friendly) ');
 
-            return (target.startsWith('y')) ? game.opponent : game.player;
+            return (TARGET.startsWith('y')) ? game.opponent : game.player;
         }
 
         // From this point, forceClass is either
@@ -263,21 +263,21 @@ export const interact = {
 
         p += 'type \'back\' to go back) ';
 
-        const target = game.input(p);
+        const TARGET = game.input(p);
 
         // Player chose to go back
-        if (target.startsWith('b') || this.shouldExit(target)) {
+        if (TARGET.startsWith('b') || this.shouldExit(TARGET)) {
             // This should always be safe.
             return false;
         }
 
         // Get a list of each side of the board
-        const boardOpponent = game.board[game.opponent.id];
-        const boardFriendly = game.board[game.player.id];
+        const BOARD_OPPONENT = game.board[game.opponent.id];
+        const BOARD_FRIENDLY = game.board[game.player.id];
 
         // Get each minion that matches the target.
-        const boardOpponentTarget = boardOpponent[game.lodash.parseInt(target) - 1];
-        const boardFriendlyTarget = boardFriendly[game.lodash.parseInt(target) - 1];
+        const BOARD_OPPONENT_TARGET = BOARD_OPPONENT[game.lodash.parseInt(TARGET) - 1];
+        const BOARD_FRIENDLY_TARGET = BOARD_FRIENDLY[game.lodash.parseInt(TARGET) - 1];
 
         /**
          * This is the resulting minion that the player chose, if any.
@@ -285,7 +285,7 @@ export const interact = {
         let minion: Card;
 
         // If the player didn't choose to attack a hero, and no minions could be found at the index requested, try again.
-        if (!target.startsWith('face') && !boardFriendlyTarget && !boardOpponentTarget) {
+        if (!TARGET.startsWith('face') && !BOARD_FRIENDLY_TARGET && !BOARD_OPPONENT_TARGET) {
             // Target !== "face" and target is not a minion.
             // The input is invalid
             game.pause('<red>Invalid input / minion!</red>\n');
@@ -296,30 +296,30 @@ export const interact = {
         // If the player is forced to one side.
         if (forceSide === 'any') {
             // If the player chose to target a hero, it will ask which hero.
-            if (target.startsWith('face') && forceClass !== 'minion') {
+            if (TARGET.startsWith('face') && forceClass !== 'minion') {
                 return this._selectTarget(prompt, card, forceSide, 'hero', flags);
             }
 
             // If both players have a minion with the same index,
             // ask them which minion to select
-            if (boardOpponent.length >= game.lodash.parseInt(target) && boardFriendly.length >= game.lodash.parseInt(target)) {
-                const oName = boardOpponentTarget.colorFromRarity();
-                const fName = boardFriendlyTarget.colorFromRarity();
+            if (BOARD_OPPONENT.length >= game.lodash.parseInt(TARGET) && BOARD_FRIENDLY.length >= game.lodash.parseInt(TARGET)) {
+                const OPPONENT_TARGET_NAME = BOARD_OPPONENT_TARGET.colorFromRarity();
+                const FRIENDLY_TARGET_NAME = BOARD_FRIENDLY_TARGET.colorFromRarity();
 
-                const alignment = game.input(`Do you want to select your opponent's (${oName}) or your own (${fName})? (y: opponent, n: friendly | type 'back' to go back) `);
+                const ALIGNMENT = game.input(`Do you want to select your opponent's (${OPPONENT_TARGET_NAME}) or your own (${FRIENDLY_TARGET_NAME})? (y: opponent, n: friendly | type 'back' to go back) `);
 
-                if (alignment.startsWith('b') || this.shouldExit(alignment)) {
+                if (ALIGNMENT.startsWith('b') || this.shouldExit(ALIGNMENT)) {
                     // Go back.
                     return this._selectTarget(prompt, card, forceSide, forceClass, flags);
                 }
 
-                minion = (alignment.startsWith('y')) ? boardOpponentTarget : boardFriendlyTarget;
+                minion = (ALIGNMENT.startsWith('y')) ? BOARD_OPPONENT_TARGET : BOARD_FRIENDLY_TARGET;
             } else {
-                minion = boardOpponent.length >= game.lodash.parseInt(target) ? boardOpponentTarget : boardFriendlyTarget;
+                minion = BOARD_OPPONENT.length >= game.lodash.parseInt(TARGET) ? BOARD_OPPONENT_TARGET : BOARD_FRIENDLY_TARGET;
             }
         } else {
             // If the player chose a hero, and they are allowed to
-            if (target.startsWith('face') && forceClass !== 'minion') {
+            if (TARGET.startsWith('face') && forceClass !== 'minion') {
                 if (forceSide === 'enemy') {
                     return game.opponent;
                 }
@@ -328,7 +328,7 @@ export const interact = {
             }
 
             // Select the minion on the correct side of the board.
-            minion = (forceSide === 'enemy') ? boardOpponentTarget : boardFriendlyTarget;
+            minion = (forceSide === 'enemy') ? BOARD_OPPONENT_TARGET : BOARD_FRIENDLY_TARGET;
         }
 
         // If you didn't select a valid minion, return.
@@ -391,10 +391,10 @@ export const interact = {
             game.log('Success! You did it, well done!');
             success = true;
         } else {
-            const match = /DIY (\d+)/.exec(card.name);
-            const filename = match ? match[1] : 'unknown';
+            const MATCH = /DIY (\d+)/.exec(card.name);
+            const FILE_NAME = MATCH ? MATCH[1] : 'unknown';
 
-            game.log(`Hm. This card doesn't seem to do what it's supposed to do... Maybe you should try to fix it? The card is in: './cards/Examples/DIY/${filename}.ts'.`);
+            game.log(`Hm. This card doesn't seem to do what it's supposed to do... Maybe you should try to fix it? The card is in: './cards/Examples/DIY/${FILE_NAME}.ts'.`);
         }
 
         game.pause();

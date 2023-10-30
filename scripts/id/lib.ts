@@ -8,18 +8,18 @@ import { createGame } from '../../src/internal.js';
 
 const { game } = createGame();
 
-const idRegex = /id: (\d+)/;
+const ID_REGEX = /id: (\d+)/;
 
 function searchCards(callback: (path: string, content: string, id: number) => void) {
     game.functions.util.searchCardsFolder((fullPath, content) => {
-        const idMatch = idRegex.exec(content);
-        if (!idMatch) {
+        const ID_MATCH = ID_REGEX.exec(content);
+        if (!ID_MATCH) {
             game.logError(`No id found in ${fullPath}`);
             return;
         }
 
-        const id = Number(idMatch[1]);
-        callback(fullPath, content, id);
+        const ID = Number(ID_MATCH[1]);
+        callback(fullPath, content, ID);
     });
 }
 
@@ -35,10 +35,10 @@ function change(startId: number, callback: (id: number) => number, log: boolean)
             return;
         }
 
-        const newId = callback(id);
+        const NEW_ID = callback(id);
 
         // Set the new id
-        game.functions.util.fs('write', path, content.replace(idRegex, `id: ${newId}`));
+        game.functions.util.fs('write', path, content.replace(ID_REGEX, `id: ${NEW_ID}`));
 
         if (log) {
             game.log(`<bright:green>Updated ${path}</bright:green>`);
@@ -48,10 +48,10 @@ function change(startId: number, callback: (id: number) => number, log: boolean)
     });
 
     if (updated > 0) {
-        const latestId = Number(game.functions.util.fs('read', '/cards/.latestId'));
-        const newLatestId = callback(latestId);
+        const LATEST_ID = Number(game.functions.util.fs('read', '/cards/.latestId'));
+        const NEW_LATEST_ID = callback(LATEST_ID);
 
-        game.functions.util.fs('write', '/cards/.latestId', newLatestId.toString());
+        game.functions.util.fs('write', '/cards/.latestId', NEW_LATEST_ID.toString());
     }
 
     if (log) {
@@ -102,46 +102,46 @@ export function increment(startId: number, log: boolean) {
  * @returns Amount of holes, and amount of duplicates
  */
 export function validate(log: boolean): [number, number] {
-    const ids: [[number, string]] = [[-1, '']];
+    const IDS: [[number, string]] = [[-1, '']];
 
     searchCards((path, content, id) => {
-        ids.push([id, path]);
+        IDS.push([id, path]);
     });
 
-    ids.sort((a, b) => a[0] - b[0]);
+    IDS.sort((a, b) => a[0] - b[0]);
 
     // Check if there are any holes
     let currentId = 0;
     let holes = 0;
     let duplicates = 0;
 
-    for (const [id, path] of ids) {
-        if (id === -1) {
+    for (const [ID, PATH] of IDS) {
+        if (ID === -1) {
             continue;
         }
 
-        if (id === currentId) {
+        if (ID === currentId) {
             if (log) {
-                game.logError(`<bright:yellow>Duplicate id in ${path}. Previous id: ${currentId}. Got id: ${id}. <green>Suggestion: Change one of these ids.</green bright:yellow>`);
+                game.logError(`<bright:yellow>Duplicate id in ${PATH}. Previous id: ${currentId}. Got id: ${ID}. <green>Suggestion: Change one of these ids.</green bright:yellow>`);
             }
 
             duplicates++;
-        } else if (id !== currentId + 1) {
+        } else if (ID !== currentId + 1) {
             if (log) {
-                game.logError(`<bright:yellow>Hole in ${path}. Previous id: ${currentId}. Got id: ${id}. <green>Suggestion: Change card with id ${id} to ${id - 1}</green bright:yellow>`);
+                game.logError(`<bright:yellow>Hole in ${PATH}. Previous id: ${currentId}. Got id: ${ID}. <green>Suggestion: Change card with id ${ID} to ${ID - 1}</green bright:yellow>`);
             }
 
             holes++;
         }
 
-        currentId = id;
+        currentId = ID;
     }
 
     // Check if the .latestId is valid
-    const latestId = game.lodash.parseInt((game.functions.util.fs('read', '/cards/.latestId') as string).trim());
-    if (latestId !== currentId) {
+    const LATEST_ID = game.lodash.parseInt((game.functions.util.fs('read', '/cards/.latestId') as string).trim());
+    if (LATEST_ID !== currentId) {
         if (log) {
-            game.log('<yellow>Latest id is invalid. Latest id found: %s, latest id in file: %s. Fixing...</yellow>', currentId, latestId);
+            game.log('<yellow>Latest id is invalid. Latest id found: %s, latest id in file: %s. Fixing...</yellow>', currentId, LATEST_ID);
         }
 
         game.functions.util.fs('write', '/cards/.latestId', currentId.toString());
@@ -160,7 +160,7 @@ export function validate(log: boolean): [number, number] {
             game.log('<bright:green>No duplicates found.</bright:green>');
         }
 
-        if (latestId === currentId) {
+        if (LATEST_ID === currentId) {
             game.log('<bright:green>Latest id up-to-date.</bright:green>');
         }
     }

@@ -4,7 +4,7 @@ import assert from 'node:assert';
 import { type Blueprint } from '@Game/types.js';
 import { type Card } from '../../src/core/card.js';
 
-export const blueprint: Blueprint = {
+export const BLUEPRINT: Blueprint = {
     name: 'Rogue Starting Hero',
     displayName: 'Valeera Sanguinar',
     text: 'Rogue starting hero',
@@ -21,10 +21,10 @@ export const blueprint: Blueprint = {
         // Equip a 1/2 Dagger.
 
         // Create the weapon card
-        const wpn = game.createCard('Wicked Knife', plr);
+        const WEAPON = game.createCard('Wicked Knife', plr);
 
         // Equip the weapon
-        plr.setWeapon(wpn);
+        plr.setWeapon(WEAPON);
     },
 
     test(plr, self) {

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/naming-convention */
+
 /**
  * This is the custom card creator.
  * @module Custom Card Creator
@@ -19,24 +19,24 @@ function input(prompt: string) {
         return '';
     }
 
-    const returnValue = game.input(prompt);
+    const RETURN_VALUE = game.input(prompt);
 
-    if (game.interact.shouldExit(returnValue)) {
+    if (game.interact.shouldExit(RETURN_VALUE)) {
         shouldExit = true;
     }
 
-    return returnValue;
+    return RETURN_VALUE;
 }
 
 function applyCard(_card: BlueprintWithOptional) {
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    const newCard = {} as Blueprint;
+    const NEW_CARD = {} as Blueprint;
 
-    for (const c of Object.entries(_card)) {
-        let [key, value] = c;
+    for (const ENTRY of Object.entries(_card)) {
+        let [KEY, VALUE] = ENTRY;
 
         // These are the required fields and their default values.
-        const defaults = {
+        const DEFAULTS = {
             name: 'CHANGE THIS',
             text: '',
             cost: 0,
@@ -51,20 +51,20 @@ function applyCard(_card: BlueprintWithOptional) {
             cooldown: 2,
         };
 
-        let valueUndefined = !value;
+        let valueUndefined = !VALUE;
 
         // If the value is an array, the value is undefined if every element is falsy
-        valueUndefined ||= Array.isArray(value) && value.every(v => !v);
+        valueUndefined ||= Array.isArray(VALUE) && VALUE.every(v => !v);
 
         // The value should not be undefined if it is 0
-        valueUndefined &&= value !== 0;
+        valueUndefined &&= VALUE !== 0;
 
         // Don't include the key if the value is falsy, unless the key is required.
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const defaultValue = game.lodash.get(defaults, key);
-        if (defaultValue !== undefined && valueUndefined) {
+        const DEFAULT_VALUE = game.lodash.get(DEFAULTS, KEY);
+        if (DEFAULT_VALUE !== undefined && valueUndefined) {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            value = defaultValue;
+            VALUE = DEFAULT_VALUE;
             valueUndefined = false;
         }
 
@@ -73,154 +73,154 @@ function applyCard(_card: BlueprintWithOptional) {
         }
 
         // HACK: Well, it is not ts-expect-error at least
-        newCard[key as keyof Blueprint] = value as never;
+        NEW_CARD[KEY as keyof Blueprint] = VALUE as never;
     }
 
-    return newCard;
+    return NEW_CARD;
 }
 
 function common(): BlueprintWithOptional {
-    const name = input('Name: ');
-    const displayName = input('Display Name: ');
-    const text = input('Text: ');
-    const cost = game.lodash.parseInt(input('Cost: '));
-    const classes = input('Classes: ') as CardClass;
-    const rarity = input('Rarity: ') as CardRarity;
-    const keywords = input('Keywords: ');
+    const NAME = input('Name: ');
+    const DISPLAY_NAME = input('Display Name: ');
+    const TEXT = input('Text: ');
+    const COST = game.lodash.parseInt(input('Cost: '));
+    const CLASSES = input('Classes: ') as CardClass;
+    const RARITY = input('Rarity: ') as CardRarity;
+    const KEYWORDS = input('Keywords: ');
 
     let runes;
-    if (classes === 'Death Knight') {
+    if (CLASSES === 'Death Knight') {
         runes = input('Runes: ');
     }
 
     let realKeywords: CardKeyword[] | undefined;
-    if (keywords) {
-        realKeywords = keywords.split(', ') as CardKeyword[];
+    if (KEYWORDS) {
+        realKeywords = KEYWORDS.split(', ') as CardKeyword[];
     }
 
     return {
-        name,
-        displayName,
-        text,
-        cost,
+        name: NAME,
+        displayName: DISPLAY_NAME,
+        text: TEXT,
+        cost: COST,
         type,
-        classes: [classes],
-        rarity,
+        classes: [CLASSES],
+        rarity: RARITY,
         id: 0,
         runes,
         keywords: realKeywords,
     };
 }
 
-const cardTypeFunctions: { [x in CardType]: () => Blueprint } = {
+const CARD_TYPE_FUNCTIONS: { [x in CardType]: () => Blueprint } = {
     Minion() {
-        const _card = common();
+        const CARD = common();
 
-        const stats = input('Stats: ');
-        const tribe = input('Tribe: ') as MinionTribe;
+        const STATS = input('Stats: ');
+        const TRIBE = input('Tribe: ') as MinionTribe;
 
         // Turn 1/1 to [1, 1]
-        const statsArray = stats.split('/').map(s => game.lodash.parseInt(s));
+        const STATS_ARRAY = STATS.split('/').map(s => game.lodash.parseInt(s));
 
         return applyCard({
-            name: _card.name,
-            displayName: _card.displayName,
-            stats: statsArray,
-            text: _card.text,
-            cost: _card.cost,
-            type: _card.type,
-            tribe,
-            classes: _card.classes,
-            rarity: _card.rarity,
-            runes: _card.runes,
-            keywords: _card.keywords,
+            name: CARD.name,
+            displayName: CARD.displayName,
+            stats: STATS_ARRAY,
+            text: CARD.text,
+            cost: CARD.cost,
+            type: CARD.type,
+            tribe: TRIBE,
+            classes: CARD.classes,
+            rarity: CARD.rarity,
+            runes: CARD.runes,
+            keywords: CARD.keywords,
             id: 0,
         });
     },
 
     Spell() {
-        const _card = common();
+        const CARD = common();
 
-        const spellSchool = input('Spell School: ') as SpellSchool;
+        const SPELL_SCHOOL = input('Spell School: ') as SpellSchool;
 
         return applyCard({
-            name: _card.name,
-            displayName: _card.displayName,
-            text: _card.text,
-            cost: _card.cost,
-            type: _card.type,
-            spellSchool,
-            classes: _card.classes,
-            rarity: _card.rarity,
-            runes: _card.runes,
-            keywords: _card.keywords,
+            name: CARD.name,
+            displayName: CARD.displayName,
+            text: CARD.text,
+            cost: CARD.cost,
+            type: CARD.type,
+            spellSchool: SPELL_SCHOOL,
+            classes: CARD.classes,
+            rarity: CARD.rarity,
+            runes: CARD.runes,
+            keywords: CARD.keywords,
             id: 0,
         });
     },
 
     Weapon() {
-        const _card = common();
+        const CARD = common();
 
-        const stats = input('Stats: ');
+        const STATS = input('Stats: ');
 
         // Turn 1/1 to [1, 1]
-        const statsArray = stats.split('/').map(s => game.lodash.parseInt(s));
+        const STATS_ARRAY = STATS.split('/').map(s => game.lodash.parseInt(s));
 
         return applyCard({
-            name: _card.name,
-            displayName: _card.displayName,
-            stats: statsArray,
-            text: _card.text,
-            cost: _card.cost,
-            type: _card.type,
-            classes: _card.classes,
-            rarity: _card.rarity,
-            runes: _card.runes,
-            keywords: _card.keywords,
+            name: CARD.name,
+            displayName: CARD.displayName,
+            stats: STATS_ARRAY,
+            text: CARD.text,
+            cost: CARD.cost,
+            type: CARD.type,
+            classes: CARD.classes,
+            rarity: CARD.rarity,
+            runes: CARD.runes,
+            keywords: CARD.keywords,
             id: 0,
         });
     },
 
     Hero() {
-        const _card = common();
+        const CARD = common();
 
-        const hpText = input('Hero Power Description: ');
-        const hpCost = game.lodash.parseInt(input('Hero Power Cost (Default: 2): ')) ?? 2;
+        const HP_TEXT = input('Hero Power Description: ');
+        const HP_COST = game.lodash.parseInt(input('Hero Power Cost (Default: 2): ')) ?? 2;
 
         return applyCard({
-            name: _card.name,
-            displayName: _card.displayName,
-            text: _card.text,
-            cost: _card.cost,
-            type: _card.type,
-            hpText,
-            hpCost,
-            classes: _card.classes,
-            rarity: _card.rarity,
-            runes: _card.runes,
-            keywords: _card.keywords,
+            name: CARD.name,
+            displayName: CARD.displayName,
+            text: CARD.text,
+            cost: CARD.cost,
+            type: CARD.type,
+            hpText: HP_TEXT,
+            hpCost: HP_COST,
+            classes: CARD.classes,
+            rarity: CARD.rarity,
+            runes: CARD.runes,
+            keywords: CARD.keywords,
             id: 0,
         });
     },
 
     Location() {
-        const _card = common();
+        const CARD = common();
 
-        const durability = game.lodash.parseInt(input('Durability (How many times you can trigger this location before it is destroyed): '));
-        const cooldown = game.lodash.parseInt(input('Cooldown (Default: 2): ')) ?? 2;
+        const DURABILITY = game.lodash.parseInt(input('Durability (How many times you can trigger this location before it is destroyed): '));
+        const COOLDOWN = game.lodash.parseInt(input('Cooldown (Default: 2): ')) ?? 2;
 
         return applyCard({
-            name: _card.name,
-            displayName: _card.displayName,
-            text: _card.text,
-            cost: _card.cost,
-            type: _card.type,
-            durability,
-            cooldown,
-            classes: _card.classes,
-            rarity: _card.rarity,
-            runes: _card.runes,
-            keywords: _card.keywords,
+            name: CARD.name,
+            displayName: CARD.displayName,
+            text: CARD.text,
+            cost: CARD.cost,
+            type: CARD.type,
+            durability: DURABILITY,
+            cooldown: COOLDOWN,
+            classes: CARD.classes,
+            rarity: CARD.rarity,
+            runes: CARD.runes,
+            keywords: CARD.keywords,
             id: 0,
         });
     },
@@ -249,24 +249,24 @@ export function main(debug = false, overrideType?: lib.CcType) {
         return false;
     }
 
-    if (!Object.keys(cardTypeFunctions).includes(type)) {
+    if (!Object.keys(CARD_TYPE_FUNCTIONS).includes(type)) {
         game.log('That is not a valid type!');
         game.pause();
         return false;
     }
 
     // HACK: Use of never
-    const cardFunction: () => Blueprint = cardTypeFunctions[type as never];
-    const card = cardFunction();
+    const cardFunction: () => Blueprint = CARD_TYPE_FUNCTIONS[type as never];
+    const CARD = cardFunction();
 
     if (shouldExit) {
         return false;
     }
 
     // Ask the user if the card should be uncollectible
-    const uncollectible = rl.keyInYN('Uncollectible?');
-    if (uncollectible) {
-        card.uncollectible = uncollectible as boolean;
+    const UNCOLLECTIBLE = rl.keyInYN('Uncollectible?');
+    if (UNCOLLECTIBLE) {
+        CARD.uncollectible = UNCOLLECTIBLE as boolean;
     }
 
     // Actually create the card
@@ -277,8 +277,8 @@ export function main(debug = false, overrideType?: lib.CcType) {
         cctype = overrideType;
     }
 
-    const filePath = lib.create(cctype, type, card, undefined, undefined, debug);
+    const FILE_PATH = lib.create(cctype, type, CARD, undefined, undefined, debug);
 
     game.pause();
-    return filePath;
+    return FILE_PATH;
 }

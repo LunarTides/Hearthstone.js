@@ -3,7 +3,7 @@
 import assert from 'node:assert';
 import { type Blueprint } from '@Game/types.js';
 
-export const blueprint: Blueprint = {
+export const BLUEPRINT: Blueprint = {
     name: 'Inf Mana',
     text: 'Fill up your mana. For the rest of the game, your mana never decreases.',
     cost: 0,
@@ -37,10 +37,10 @@ export const blueprint: Blueprint = {
         assert.equal(plr.mana, 10);
 
         // Play a card to verify that the mana doesn't decrease
-        const card = game.createCard('Sheep', plr);
-        const result = game.playCard(card, plr);
+        const CARD = game.createCard('Sheep', plr);
+        const RESULT = game.playCard(CARD, plr);
 
-        assert.equal(result, true);
+        assert.equal(RESULT, true);
         assert.equal(plr.mana, 10);
     },
 };

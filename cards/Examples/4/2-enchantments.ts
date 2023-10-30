@@ -2,7 +2,7 @@
 
 import { type Blueprint } from '@Game/types.js';
 
-export const blueprint: Blueprint = {
+export const BLUEPRINT: Blueprint = {
     name: 'Enchantment Example',
     stats: [1, 1],
     text: 'Your cards cost 1 less.',
@@ -22,14 +22,14 @@ export const blueprint: Blueprint = {
         // When changing cost of a card USE THE ENCHANTMENT SYSTEM.
         // We don't care about the event, we just want to run this code every now and then.
 
-        for (const c of plr.hand) {
+        for (const CARD of plr.hand) {
             // If the card was already given the "-1 cost" enchantment from this card, ignore it
-            if (c.enchantmentExists('-1 cost', self)) {
+            if (CARD.enchantmentExists('-1 cost', self)) {
                 continue;
             }
 
             // Give the card the "-1 cost" enchantment.
-            c.addEnchantment('-1 cost', self);
+            CARD.addEnchantment('-1 cost', self);
 
             // You can also give the "+x cost", or "cost = x" enchantments, where x is any number.
         }
@@ -40,9 +40,9 @@ export const blueprint: Blueprint = {
     remove(plr, self) {
         // Remove the "-1 cost" enchantments that was given by this card from all cards in the player's hand.
 
-        for (const c of plr.hand) {
+        for (const CARD of plr.hand) {
             // Only remove the "-1 cost" enchantment given by this card.
-            c.removeEnchantment('-1 cost', self);
+            CARD.removeEnchantment('-1 cost', self);
         }
     },
 

@@ -4,43 +4,43 @@
  */
 
 import {
-    _deckcodeFunctions,
-    _cardFunctions,
-    _colorFunctions,
-    _utilFunctions,
-    _infoFunctions,
-    _eventFunctions,
+    DECKCODE_FUNCTIONS,
+    CARD_FUNCTIONS,
+    COLOR_FUNCTIONS,
+    UTIL_FUNCTIONS,
+    INFO_FUNCTIONS,
+    EVENT_FUNCTIONS,
 } from '../../internal.js';
 
-export const functions = {
+export const FUNCTIONS = {
     // TODO: Create better docstrings. (remember to also change the docstrings for, for example, functions.card.vanilla). #324
     /**
      * Deckcode related functions
      */
-    deckcode: _deckcodeFunctions,
+    deckcode: DECKCODE_FUNCTIONS,
 
     /**
      * Card related functions
      */
-    card: _cardFunctions,
+    card: CARD_FUNCTIONS,
 
     /**
      * Color related functions
      */
-    color: _colorFunctions,
+    color: COLOR_FUNCTIONS,
 
     /**
      * Utility functions
      */
-    util: _utilFunctions,
+    util: UTIL_FUNCTIONS,
 
     /**
      * Info functions
      */
-    info: _infoFunctions,
+    info: INFO_FUNCTIONS,
 
     /**
      * Event related functions
      */
-    event: _eventFunctions,
+    event: EVENT_FUNCTIONS,
 };

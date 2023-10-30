@@ -19,32 +19,32 @@ function userInputLoop(prompt: string, exitCharacter: string | undefined, callba
     while (running) {
         watermark();
 
-        const user = game.input(prompt);
-        if (!user) {
+        const USER = game.input(prompt);
+        if (!USER) {
             continue;
         }
 
-        if (game.interact.shouldExit(user) || user[0].toLowerCase() === exitCharacter?.toLowerCase()) {
+        if (game.interact.shouldExit(USER) || USER[0].toLowerCase() === exitCharacter?.toLowerCase()) {
             running = false;
             break;
         }
 
-        callback(user);
+        callback(USER);
     }
 }
 
 function cardCreator() {
     userInputLoop('Create a (C)ustom Card, Import a (V)anilla Card, Go (B)ack: ', 'b', input => {
-        const type = input[0].toLowerCase();
+        const TYPE = input[0].toLowerCase();
 
         game.interact.cls();
 
-        if (type === 'v') {
+        if (TYPE === 'v') {
             // This is to throw an error if it can't find the vanilla cards
             game.functions.card.vanilla.getAll();
 
             vcc.main();
-        } else if (type === 'c') {
+        } else if (TYPE === 'c') {
             ccc.main();
         }
     });

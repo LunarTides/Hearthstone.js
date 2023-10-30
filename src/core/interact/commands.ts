@@ -2,13 +2,13 @@ import process from 'node:process';
 import { type GameConfig, type EventValue } from '@Game/types.js';
 import { Card, Player } from '../../internal.js';
 
-const licenseUrl = 'https://github.com/LunarTides/Hearthstone.js/blob/main/LICENSE';
+const LICENSE_URL = 'https://github.com/LunarTides/Hearthstone.js/blob/main/LICENSE';
 
 const getGame = () => game;
 
 type CommandList = Record<string, (args: string[], flags?: { echo?: boolean; debug?: boolean }) => any>;
 
-export const commands: CommandList = {
+export const COMMANDS: CommandList = {
     end() {
         game.endTurn();
         return true;
@@ -31,8 +31,8 @@ export const commands: CommandList = {
         }
 
         game.interact.info.showGame(game.player);
-        const ask = game.interact.yesNoQuestion(game.player, `<yellow>${game.player.hero?.hpText}</yellow> Are you sure you want to use this hero power?`);
-        if (!ask) {
+        const ASK = game.interact.yesNoQuestion(game.player, `<yellow>${game.player.hero?.hpText}</yellow> Are you sure you want to use this hero power?`);
+        if (!ASK) {
             return false;
         }
 
@@ -49,16 +49,16 @@ export const commands: CommandList = {
 
     use() {
         // Use location
-        const errorcode = game.interact.card.useLocation();
+        const ERROR_CODE = game.interact.card.useLocation();
         game.killMinions();
 
-        if (errorcode === true || errorcode === 'refund' || game.player.ai) {
+        if (ERROR_CODE === true || ERROR_CODE === 'refund' || game.player.ai) {
             return true;
         }
 
         let error;
 
-        switch (errorcode) {
+        switch (ERROR_CODE) {
             case 'nolocations': {
                 error = 'You have no location cards';
                 break;
@@ -75,7 +75,7 @@ export const commands: CommandList = {
             }
 
             default: {
-                error = `An unknown error occourred. Error code: UnexpectedUseLocationResult@${errorcode}`;
+                error = `An unknown error occourred. Error code: UnexpectedUseLocationResult@${ERROR_CODE}`;
                 break;
             }
         }
@@ -90,7 +90,7 @@ export const commands: CommandList = {
         game.log('(In order to run a command; input the name of the command and follow further instruction.)\n');
         game.log('Available commands:');
 
-        const bricks = [
+        const BRICKS = [
             '(name) - (description)\n',
 
             'end - Ends your turn',
@@ -106,7 +106,7 @@ export const commands: CommandList = {
             'license - Opens a link to this project\'s license',
         ];
 
-        const debugBricks = [
+        const DEBUG_BRICKS = [
             'give (name) - Adds a card to your hand',
             'eval [log] (code) - Runs the code specified. If the word \'log\' is before the code, instead game.log the code and wait for user input to continue.',
             'set (category) (name) (value) - Changes a setting to (value). Look in the config files for a list of settings. Example: set advanced debugCommandPrefix !',
@@ -119,22 +119,22 @@ export const commands: CommandList = {
             'ai - Gives you a list of the actions the ai(s) have taken in the order they took it',
         ];
 
-        const wall = game.functions.util.createWall(bricks, '-');
-        const debugWall = game.functions.util.createWall(debugBricks, '-');
+        const WALL = game.functions.util.createWall(BRICKS, '-');
+        const DEBUG_WALLL = game.functions.util.createWall(DEBUG_BRICKS, '-');
 
         // Normal commands
-        for (const brick of wall) {
-            game.log(brick);
+        for (const BRICK of WALL) {
+            game.log(BRICK);
         }
 
         const condColor = (text: string) => (game.config.general.debug) ? text : `<gray>${text}</gray>`;
-        const debugEnabled = (game.config.general.debug) ? '<bright:green>ON</bright:green>' : '<red>OFF</red>';
+        const DEBUG_ENABLED = (game.config.general.debug) ? '<bright:green>ON</bright:green>' : '<red>OFF</red>';
 
-        game.log(condColor(`\n--- Debug Commands (${debugEnabled}) ---`));
+        game.log(condColor(`\n--- Debug Commands (${DEBUG_ENABLED}) ---`));
 
         // Debug Commands
-        for (const brick of debugWall) {
-            game.log(condColor(game.config.advanced.debugCommandPrefix + brick));
+        for (const BRICK of DEBUG_WALLL) {
+            game.log(condColor(game.config.advanced.debugCommandPrefix + BRICK));
         }
 
         game.log(condColor('---------------------------' + ((game.config.general.debug) ? '' : '-')));
@@ -144,30 +144,30 @@ export const commands: CommandList = {
     },
 
     view() {
-        const isHandAnswer = game.interact.question(game.player, 'Do you want to view a minion on the board, or in your hand?', ['Board', 'Hand']);
-        const isHand = isHandAnswer === 'Hand';
+        const IS_HAND_ANSWER = game.interact.question(game.player, 'Do you want to view a minion on the board, or in your hand?', ['Board', 'Hand']);
+        const IS_HAND = IS_HAND_ANSWER === 'Hand';
 
-        if (!isHand) {
+        if (!IS_HAND) {
             // AllowLocations Makes selecting location cards allowed. This is disabled by default to prevent, for example, spells from killing the card.
-            const minion = game.interact.selectCardTarget('Which minion do you want to view?', undefined, 'any', ['allowLocations']);
-            if (!minion) {
+            const CARD = game.interact.selectCardTarget('Which minion do you want to view?', undefined, 'any', ['allowLocations']);
+            if (!CARD) {
                 return false;
             }
 
-            game.interact.card.view(minion);
+            game.interact.card.view(CARD);
 
             return true;
         }
 
         // View minion on the board
-        const cardId = game.input('\nWhich card do you want to view? ');
-        if (!cardId || !game.lodash.parseInt(cardId)) {
+        const CARD_INDEX = game.input('\nWhich card do you want to view? ');
+        if (!CARD_INDEX || !game.lodash.parseInt(CARD_INDEX)) {
             return false;
         }
 
-        const card = game.player.hand[game.lodash.parseInt(cardId) - 1];
+        const CARD = game.player.hand[game.lodash.parseInt(CARD_INDEX) - 1];
 
-        game.interact.card.view(card);
+        game.interact.card.view(CARD);
         return true;
     },
 
@@ -178,8 +178,8 @@ export const commands: CommandList = {
 
     concede() {
         game.interact.info.showGame(game.player);
-        const confirmation = game.interact.yesNoQuestion(game.player, 'Are you sure you want to concede?');
-        if (!confirmation) {
+        const CONFIRMATION = game.interact.yesNoQuestion(game.player, 'Are you sure you want to concede?');
+        if (!CONFIRMATION) {
             return false;
         }
 
@@ -188,27 +188,27 @@ export const commands: CommandList = {
     },
 
     license() {
-        const start = (process.platform === 'darwin' ? 'open' : (process.platform === 'win32' ? 'start' : 'xdg-open'));
-        game.functions.util.runCommand(start + ' ' + licenseUrl);
+        const START = (process.platform === 'darwin' ? 'open' : (process.platform === 'win32' ? 'start' : 'xdg-open'));
+        game.functions.util.runCommand(START + ' ' + LICENSE_URL);
         return true;
     },
 
     version() {
-        const { version } = game.config.info;
-        const { branch } = game.config.info;
-        const { build } = game.config.info;
+        const { version: VERSION } = game.config.info;
+        const { branch: BRANCH } = game.config.info;
+        const { build: BUILD } = game.config.info;
 
         let running = true;
         while (running) {
-            const todos = Object.entries(game.config.todo);
+            const TODOS = Object.entries(game.config.todo);
 
             const printInfo = () => {
                 const game = getGame();
                 game.interact.info.showGame(game.player);
 
-                let strbuilder = `\nYou are on version: ${version}, on `;
+                let strbuilder = `\nYou are on version: ${VERSION}, on `;
 
-                switch (branch) {
+                switch (BRANCH) {
                     case 'topic': {
                         strbuilder += 'a topic branch';
 
@@ -236,7 +236,7 @@ export const commands: CommandList = {
                     // No default
                 }
 
-                strbuilder += `, on build ${build}`;
+                strbuilder += `, on build ${BUILD}`;
                 strbuilder += `, with latest commit hash '${game.functions.info.latestCommit()}',`;
 
                 if (game.config.general.debug && game.config.ai.player2) {
@@ -253,7 +253,7 @@ export const commands: CommandList = {
 
                 let introText;
 
-                switch (branch) {
+                switch (BRANCH) {
                     case 'topic': {
                         introText = game.config.info.topicIntroText;
 
@@ -289,7 +289,7 @@ export const commands: CommandList = {
                 game.log();
 
                 game.log('Todo List:');
-                if (todos.length <= 0) {
+                if (TODOS.length <= 0) {
                     game.log('None.');
                 }
             };
@@ -297,7 +297,7 @@ export const commands: CommandList = {
             printInfo();
 
             // This is the todo list
-            if (todos.length <= 0) {
+            if (TODOS.length <= 0) {
                 game.pause('\nPress enter to continue...');
                 running = false;
                 break;
@@ -306,8 +306,8 @@ export const commands: CommandList = {
             const printTodo = (todo: [string, { state: string; description: string }], id: number, printDesc = false) => {
                 const game = getGame();
 
-                const [name, info] = todo;
-                let [state, text] = Object.values(info);
+                const [NAME, INFO] = todo;
+                let [state, text] = Object.values(INFO);
 
                 switch (state) {
                     case 'done': {
@@ -332,26 +332,26 @@ export const commands: CommandList = {
                 }
 
                 if (printDesc) {
-                    game.log(`{${id}} [${state}] ${name}\n${text}`);
+                    game.log(`{${id}} [${state}] ${NAME}\n${text}`);
                 } else {
-                    game.log(`{${id}} [${state}] ${name}`);
+                    game.log(`{${id}} [${state}] ${NAME}`);
                 }
             };
 
-            for (const [index, todo] of todos.entries()) {
-                printTodo(todo, index + 1);
+            for (const [INDEX, TODO] of TODOS.entries()) {
+                printTodo(TODO, INDEX + 1);
             }
 
-            const todoId = game.lodash.parseInt(game.input('\nType the id of a todo to see more information about it (eg. 1): '));
-            if (!todoId || todoId > todos.length || todoId <= 0) {
+            const TODO_INDEX = game.lodash.parseInt(game.input('\nType the id of a todo to see more information about it (eg. 1): '));
+            if (!TODO_INDEX || TODO_INDEX > TODOS.length || TODO_INDEX <= 0) {
                 running = false;
                 break;
             }
 
-            const todo = todos[todoId - 1];
+            const TODO = TODOS[TODO_INDEX - 1];
 
             printInfo();
-            printTodo(todo, todoId, true);
+            printTodo(TODO, TODO_INDEX, true);
 
             game.pause('\nPress enter to continue...');
         }
@@ -361,7 +361,7 @@ export const commands: CommandList = {
 
     history(_, flags) {
         // History
-        const { history } = game.events;
+        const { history: HISTORY } = game.events;
         let finished = '';
 
         const showCard = (value: Card) => `${game.interact.card.getReadable(value)} which belongs to: <blue>${value.plr.name}</blue>, and has uuid: ${value.uuid.slice(0, 8)}`;
@@ -390,39 +390,39 @@ export const commands: CommandList = {
             let revealed = false;
 
             // It has has been revealed, show it.
-            for (const h of Object.values(history)) {
+            for (const HISTORY_VALUE of Object.values(HISTORY)) {
                 if (revealed) {
                     continue;
                 }
 
-                for (const c of h) {
+                for (const HISTORY_KEY of HISTORY_VALUE) {
                     if (revealed) {
                         continue;
                     }
 
-                    const [key, newValue] = c;
+                    const [KEY, NEW_VALUE] = HISTORY_KEY;
 
                     // This shouldn't happen?
-                    if (!newValue) {
+                    if (!NEW_VALUE) {
                         continue;
                     }
 
-                    if (game.config.advanced.whitelistedHistoryKeys.includes(key)) {
+                    if (game.config.advanced.whitelistedHistoryKeys.includes(KEY)) {
                         // Do nothing
                     } else {
                         continue;
                     }
 
-                    if (game.config.advanced.hideValueHistoryKeys.includes(key)) {
+                    if (game.config.advanced.hideValueHistoryKeys.includes(KEY)) {
                         continue;
                     }
 
                     // If it is not a card
-                    if (!(newValue instanceof Card)) {
+                    if (!(NEW_VALUE instanceof Card)) {
                         continue;
                     }
 
-                    if (value.uuid !== newValue.uuid) {
+                    if (value.uuid !== NEW_VALUE.uuid) {
                         continue;
                     }
 
@@ -438,22 +438,22 @@ export const commands: CommandList = {
             return 'Hidden';
         };
 
-        for (const [t, h] of Object.values(history).entries()) {
+        for (const [HISTORY_LIST_INDEX, HISTORY_LIST] of Object.values(HISTORY).entries()) {
             let hasPrintedHeader = false;
             let previousPlayer: Player | undefined;
 
-            for (const [i, c] of h.entries()) {
-                let [key, value, plr] = c;
-                if (!plr) {
+            for (const [HISTORY_INDEX, HISTORY_KEY] of HISTORY_LIST.entries()) {
+                let [key, value, player] = HISTORY_KEY;
+                if (!player) {
                     // TODO: Maybe throw an error
                     continue;
                 }
 
-                if (plr !== previousPlayer) {
+                if (player !== previousPlayer) {
                     hasPrintedHeader = false;
                 }
 
-                previousPlayer = plr;
+                previousPlayer = player;
 
                 if (game.config.advanced.whitelistedHistoryKeys.includes(key) || flags?.debug) {
                     // Pass
@@ -463,31 +463,31 @@ export const commands: CommandList = {
 
                 // If the `key` is "AddCardToHand", check if the previous history entry was `DrawCard`, and they both contained the exact same `val`.
                 // If so, ignore it.
-                if (key === 'AddCardToHand' && i > 0) {
-                    const lastEntry = history[t][i - 1];
+                if (key === 'AddCardToHand' && HISTORY_INDEX > 0) {
+                    const LAST_ENTRY = HISTORY[HISTORY_LIST_INDEX][HISTORY_INDEX - 1];
 
-                    if (lastEntry[0] === 'DrawCard' && (lastEntry[1] as Card).uuid === (value as Card).uuid) {
+                    if (LAST_ENTRY[0] === 'DrawCard' && (LAST_ENTRY[1] as Card).uuid === (value as Card).uuid) {
                         continue;
                     }
                 }
 
-                const shouldHide = game.config.advanced.hideValueHistoryKeys.includes(key) && !flags?.debug;
+                const SHOULD_HIDE = game.config.advanced.hideValueHistoryKeys.includes(key) && !flags?.debug;
 
                 if (!hasPrintedHeader) {
-                    finished += `\nTurn ${t} - Player [${plr.name}]\n`;
+                    finished += `\nTurn ${HISTORY_LIST_INDEX} - Player [${player.name}]\n`;
                 }
 
                 hasPrintedHeader = true;
 
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-                value = doValue(value, game.player, shouldHide);
+                value = doValue(value, game.player, SHOULD_HIDE);
 
                 if (Array.isArray(value)) {
                     let strbuilder = '';
 
                     for (let v of value) {
                         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-                        v = doValue(v, game.player, shouldHide);
+                        v = doValue(v, game.player, SHOULD_HIDE);
                         strbuilder += `${v?.toString()}, `;
                     }
 
@@ -495,9 +495,9 @@ export const commands: CommandList = {
                     value = strbuilder;
                 }
 
-                const finishedKey = key[0].toUpperCase() + key.slice(1);
+                const FINISHED_KEY = key[0].toUpperCase() + key.slice(1);
 
-                finished += `${finishedKey}: ${value?.toString()}\n`;
+                finished += `${FINISHED_KEY}: ${value?.toString()}\n`;
             }
         }
 
@@ -513,22 +513,22 @@ export const commands: CommandList = {
     },
 };
 
-export const debugCommands: CommandList = {
+export const DEBUG_COMMANDS: CommandList = {
     give(args) {
         if (args.length <= 0) {
             game.pause('<red>Too few arguments.</red>\n');
             return false;
         }
 
-        const cardName = args.join(' ');
+        const CARD_NAME = args.join(' ');
 
-        const card = game.functions.card.getFromName(cardName);
-        if (!card) {
-            game.pause(`<red>Invalid card: <yellow>${cardName}</yellow>.\n`);
+        const CARD = game.functions.card.getFromName(CARD_NAME);
+        if (!CARD) {
+            game.pause(`<red>Invalid card: <yellow>${CARD_NAME}</yellow>.\n`);
             return false;
         }
 
-        game.player.addToHand(new Card(card.name, game.player));
+        game.player.addToHand(new Card(CARD.name, game.player));
         return true;
     },
 
@@ -581,7 +581,12 @@ export const debugCommands: CommandList = {
             }
 
             game.log('\n<red>An error happened while running this code! Here is the error:</red>');
+
+            // The stack includes "<anonymous>", which would be parsed as a tag, which would cause another error
+            game.functions.color.parseTags = false;
             game.log(error.stack);
+            game.functions.color.parseTags = true;
+
             game.pause();
         }
 
@@ -595,13 +600,13 @@ export const debugCommands: CommandList = {
             return false;
         }
 
-        const eventCards: Array<[Card, number]> = game.events.events.PlayCard[game.player.id];
-        if (eventCards.length <= 0) {
+        const EVENT_CARDS: Array<[Card, number]> = game.events.events.PlayCard[game.player.id];
+        if (EVENT_CARDS.length <= 0) {
             game.pause('<red>No cards to undo.</red>\n');
             return false;
         }
 
-        let card = game.lodash.last(eventCards)?.[0];
+        let card = game.lodash.last(EVENT_CARDS)?.[0];
         if (!card) {
             game.pause('<red>No cards found.</red>\n');
             return false;
@@ -657,15 +662,15 @@ export const debugCommands: CommandList = {
         }
 
         for (let i = 0; i < 2; i++) {
-            const plr = game.functions.util.getPlayerFromId(i);
-            if (!plr.ai) {
+            const PLAYER = game.functions.util.getPlayerFromId(i);
+            if (!PLAYER.ai) {
                 continue;
             }
 
             finished += `AI${i + 1} History: {\n`;
 
-            for (const [objectIndex, object] of plr.ai.history.entries()) {
-                finished += `${objectIndex + 1} ${object.type}: (${object.data}),\n`;
+            for (const [OBJECT_INEDX, OBJECT] of PLAYER.ai.history.entries()) {
+                finished += `${OBJECT_INEDX + 1} ${OBJECT.type}: (${OBJECT.data}),\n`;
             }
 
             finished += '}\n';
@@ -683,43 +688,43 @@ export const debugCommands: CommandList = {
     },
 
     cmd() {
-        const history = Object.values(game.events.history).map(t => t.filter(
+        const HISTORY = Object.values(game.events.history).map(t => t.filter(
             v => v[0] === 'Input'
             && (v[1] as EventValue<'Input'>).startsWith('/')
             && v[2] === game.player
             && !(v[1] as EventValue<'Input'>).startsWith('/cmd'),
         ));
 
-        for (const [i, object] of history.entries()) {
-            if (object.length <= 0) {
+        for (const [HISTORY_LIST_INDEX, OBJECT] of HISTORY.entries()) {
+            if (OBJECT.length <= 0) {
                 continue;
             }
 
-            game.log(`\nTurn ${i}:`);
+            game.log(`\nTurn ${HISTORY_LIST_INDEX}:`);
 
-            for (const [index, h] of object.entries()) {
+            for (const [HISTORY_INDEX, HISTORY_KEY] of OBJECT.entries()) {
                 /**
-                    * The user's input
-                    */
-                const input = h[1];
+                * The user's input
+                */
+                const INPUT = HISTORY_KEY[1];
 
-                game.log(`[${index + 1}] ${input?.toString()}`);
+                game.log(`[${HISTORY_INDEX + 1}] ${INPUT?.toString()}`);
             }
         }
 
-        const turnIndex = game.lodash.parseInt(game.input('\nWhich turn does the command belong to? (eg. 1): '));
-        if (!turnIndex || turnIndex < 0 || !history[turnIndex]) {
+        const TURN_INDEX = game.lodash.parseInt(game.input('\nWhich turn does the command belong to? (eg. 1): '));
+        if (!TURN_INDEX || TURN_INDEX < 0 || !HISTORY[TURN_INDEX]) {
             game.pause('<red>Invalid turn.</red>\n');
             return false;
         }
 
-        const commandIndex = game.lodash.parseInt(game.input('\nWhat is the index of the command in that turn? (eg. 1): '));
-        if (!commandIndex || commandIndex < 1 || !history[turnIndex][commandIndex - 1]) {
+        const COMMAND_INDEX = game.lodash.parseInt(game.input('\nWhat is the index of the command in that turn? (eg. 1): '));
+        if (!COMMAND_INDEX || COMMAND_INDEX < 1 || !HISTORY[TURN_INDEX][COMMAND_INDEX - 1]) {
             game.pause('<red>Invalid command index.</red>\n');
             return false;
         }
 
-        let command = history[turnIndex][commandIndex - 1][1];
+        let command = HISTORY[TURN_INDEX][COMMAND_INDEX - 1][1];
         if (!command) {
             game.pause('<red>Invalid command.</red>\n');
             return false;
@@ -728,23 +733,23 @@ export const debugCommands: CommandList = {
         command = command as EventValue<'Input'>;
 
         game.interact.info.showGame(game.player);
-        const options = game.lodash.parseInt(game.input(`\nWhat would you like to do with this command?\n${command}\n\n(1. Run it, 2. Edit it, 0. Cancel): `));
-        if (!options) {
+        const OPTIONS = game.lodash.parseInt(game.input(`\nWhat would you like to do with this command?\n${command}\n\n(1. Run it, 2. Edit it, 0. Cancel): `));
+        if (!OPTIONS) {
             game.pause('<red>Invalid option.</red>\n');
             return false;
         }
 
-        if (options === 0) {
+        if (OPTIONS === 0) {
             return false;
         }
 
-        if (options === 1) {
+        if (OPTIONS === 1) {
             game.interact.gameLoop.doTurnLogic(command);
         }
 
-        if (options === 2) {
-            const addition = game.input('Which card do you want to play? ' + command);
-            game.interact.gameLoop.doTurnLogic(command + addition);
+        if (OPTIONS === 2) {
+            const ADDITION = game.input('Which card do you want to play? ' + command);
+            game.interact.gameLoop.doTurnLogic(command + ADDITION);
         }
 
         return true;
@@ -756,43 +761,43 @@ export const debugCommands: CommandList = {
             return false;
         }
 
-        const [cat, key, value] = args;
+        const [CATEGORY, KEY, VALUE] = args;
 
         // @ts-expect-error For some strange reason, game.config[cat] is not allowed even though cat is a string. Very strange.
-        const setting = Object.entries(game.config[cat] as keyof GameConfig).find(ent => ent[0].toLowerCase() === key.toLowerCase())[1];
+        const SETTING = Object.entries(game.config[CATEGORY] as keyof GameConfig).find(ent => ent[0].toLowerCase() === KEY.toLowerCase())[1];
 
-        if (setting === undefined) {
+        if (SETTING === undefined) {
             game.pause('<red>Invalid setting name!</red>\n');
             return false;
         }
 
-        if (!(/number|boolean|string/.test(typeof setting))) {
-            game.pause(`<red>You cannot change this setting, as it is a '${typeof setting}', and you can only change: number, boolean, string.</red>\n`);
+        if (!(/number|boolean|string/.test(typeof SETTING))) {
+            game.pause(`<red>You cannot change this setting, as it is a '${typeof SETTING}', and you can only change: number, boolean, string.</red>\n`);
             return false;
         }
 
-        if (key === 'debug') {
+        if (KEY === 'debug') {
             game.pause('<red>You can\'t change the debug setting, as that could lock you out of the set command.</red>\n');
             return false;
         }
 
         let newValue;
 
-        if (['off', 'disable', 'false', 'no', '0'].includes(value)) {
-            game.log(`<bright:green>Setting '${key}' has been disabled.</bright:green>`);
+        if (['off', 'disable', 'false', 'no', '0'].includes(VALUE)) {
+            game.log(`<bright:green>Setting '${KEY}' has been disabled.</bright:green>`);
             newValue = false;
-        } else if (['on', 'enable', 'true', 'yes', '1'].includes(value)) {
-            game.log(`<bright:green>Setting '${key}' has been disabled.</bright:green>`);
+        } else if (['on', 'enable', 'true', 'yes', '1'].includes(VALUE)) {
+            game.log(`<bright:green>Setting '${KEY}' has been disabled.</bright:green>`);
             newValue = true;
-        } else if (Number.parseFloat(value)) {
-            game.log(`<bright:green>Setting '${key}' has been set to the float: ${value}.</bright:green>`);
-            newValue = Number.parseFloat(value);
-        } else if (game.lodash.parseInt(value)) {
-            game.log(`<bright:green>Setting '${key}' has been set to the integer: ${value}.</bright:green>`);
-            newValue = game.lodash.parseInt(value);
+        } else if (Number.parseFloat(VALUE)) {
+            game.log(`<bright:green>Setting '${KEY}' has been set to the float: ${VALUE}.</bright:green>`);
+            newValue = Number.parseFloat(VALUE);
+        } else if (game.lodash.parseInt(VALUE)) {
+            game.log(`<bright:green>Setting '${KEY}' has been set to the integer: ${VALUE}.</bright:green>`);
+            newValue = game.lodash.parseInt(VALUE);
         } else {
-            game.log(`<bright:green>Setting '${key}' has been set to the string literal: ${value}.</bright:green>`);
-            newValue = value;
+            game.log(`<bright:green>Setting '${KEY}' has been set to the string literal: ${VALUE}.</bright:green>`);
+            newValue = VALUE;
         }
 
         if (newValue === undefined) {
@@ -803,7 +808,7 @@ export const debugCommands: CommandList = {
 
         // @ts-expect-error Same story as up above.
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        game.config[cat][key as keyof GameConfig] = newValue as any;
+        game.config[CATEGORY][KEY as keyof GameConfig] = newValue as any;
         game.doConfigAi();
 
         game.pause();
@@ -813,8 +818,8 @@ export const debugCommands: CommandList = {
     rl(_, flags) {
         if (game.config.advanced.reloadCommandConfirmation && !flags?.debug) {
             game.interact.info.showGame(game.player);
-            const sure = game.interact.yesNoQuestion(game.player, '<yellow>Are you sure you want to reload? This will reset all cards to their base state. This can also cause memory leaks with excessive usage.\nThis requires the game to be recompiled. I recommend using `tsc --watch` in another window before running this command.</yellow>');
-            if (!sure) {
+            const SURE = game.interact.yesNoQuestion(game.player, '<yellow>Are you sure you want to reload? This will reset all cards to their base state. This can also cause memory leaks with excessive usage.\nThis requires the game to be recompiled. I recommend using `tsc --watch` in another window before running this command.</yellow>');
+            if (!SURE) {
                 return false;
             }
         }
@@ -835,25 +840,25 @@ export const debugCommands: CommandList = {
                 card.doBlueprint();
             };
 
-            for (const p of [game.player1, game.player2]) {
-                for (const c of p.hand) {
-                    reload(c);
+            for (const PLAYER of [game.player1, game.player2]) {
+                for (const CARD of PLAYER.hand) {
+                    reload(CARD);
                 }
 
-                for (const c of p.deck) {
-                    reload(c);
-                }
-            }
-
-            for (const p of game.board) {
-                for (const c of p) {
-                    reload(c);
+                for (const CARD of PLAYER.deck) {
+                    reload(CARD);
                 }
             }
 
-            for (const p of game.graveyard) {
-                for (const c of p) {
-                    reload(c);
+            for (const SIDE of game.board) {
+                for (const CARD of SIDE) {
+                    reload(CARD);
+                }
+            }
+
+            for (const SIDE of game.graveyard) {
+                for (const CARD of SIDE) {
+                    reload(CARD);
                 }
             }
 

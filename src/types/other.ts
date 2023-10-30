@@ -67,7 +67,7 @@ export type SelectTargetFlag = 'allowLocations' | 'forceElusive';
  * GameConstants values.
  */
 export type GameConstants = {
-    refund: -1;
+    REFUND: -1;
 };
 
 /**

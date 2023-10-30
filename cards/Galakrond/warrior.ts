@@ -3,7 +3,7 @@
 import { type Blueprint } from '@Game/types.js';
 import { Card } from '../../src/core/card.js';
 
-export const blueprint: Blueprint = {
+export const BLUEPRINT: Blueprint = {
     name: 'Galakrond the Unbreakable',
     displayName: 'Galakrond, the Unbreakable',
     text: '<b>Battlecry:</b> Draw {amount} minion{plural}. Give {plural2} +4/+4.',
@@ -17,17 +17,17 @@ export const blueprint: Blueprint = {
 
     battlecry(plr, self) {
         // Draw 1 minion. Give them +4/+4.
-        const amount = game.functions.card.galakrondFormula(self.storage.invokeCount as number);
+        const AMOUNT = game.functions.card.galakrondFormula(self.storage.invokeCount as number);
 
         // Draw the minions
-        for (let i = 0; i < amount; i++) {
-            const card = plr.drawCard();
-            if (!(card instanceof Card)) {
+        for (let i = 0; i < AMOUNT; i++) {
+            const CARD = plr.drawCard();
+            if (!(CARD instanceof Card)) {
                 continue;
             }
 
             // Give it +4/+4
-            card.addStats(4, 4);
+            CARD.addStats(4, 4);
         }
     },
 
@@ -46,12 +46,12 @@ export const blueprint: Blueprint = {
             return { amount: 0, plural: 's', plural2: 'They' };
         }
 
-        const amount = game.functions.card.galakrondFormula(self.storage.invokeCount as number);
-        const multiple = amount > 1;
+        const AMOUNT = game.functions.card.galakrondFormula(self.storage.invokeCount as number);
+        const MULTIPLE = AMOUNT > 1;
 
-        const plural = multiple ? 's' : '';
-        const plural2 = multiple ? 'them' : 'it';
+        const PLURAL = MULTIPLE ? 's' : '';
+        const PLURAL2 = MULTIPLE ? 'them' : 'it';
 
-        return { amount, plural, plural2 };
+        return { amount: AMOUNT, plural: PLURAL, plural2: PLURAL2 };
     },
 };

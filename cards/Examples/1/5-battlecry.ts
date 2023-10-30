@@ -3,7 +3,7 @@
 import assert from 'node:assert';
 import { type Blueprint } from '@Game/types.js';
 
-export const blueprint: Blueprint = {
+export const BLUEPRINT: Blueprint = {
     name: 'Battlecry Example',
     stats: [1, 2],
     text: '<b>Battlecry:</b> Give this minion +1/+1.',

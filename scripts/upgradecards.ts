@@ -10,9 +10,9 @@ import { createGame } from '../src/internal.js';
 const { game } = createGame();
 
 function upgradeField(data: string, oldValue: string | RegExp, newValue: string, toLog: string) {
-    const oldData = data;
+    const OLD_DATA = data;
     data = data.replace(oldValue, newValue);
-    if (data !== oldData) {
+    if (data !== OLD_DATA) {
         game.log(toLog);
     }
 
@@ -26,21 +26,21 @@ function upgradeCard(path: string, data: string, file: any) {
     // Yes, this code is ugly. This script is temporary.
     // This will also not work for ALL cards, they are just too flexible.
     // But it should work for all cards that was created using the card creator.
-    const filename = file.name as string;
+    const FILE_NAME = file.name as string;
 
-    game.log(`--- Found ${filename} ---`);
+    game.log(`--- Found ${FILE_NAME} ---`);
 
-    const hasPassive = data.includes('passive(plr, self, key, ');
-    const eventValue = hasPassive ? ', EventValue' : '';
+    const HAS_PASSIVE = data.includes('passive(plr, self, key, ');
+    const EVENT_VALUE = HAS_PASSIVE ? ', EventValue' : '';
 
-    game.log(`Passive: ${hasPassive}`);
+    game.log(`Passive: ${HAS_PASSIVE}`);
 
-    const bpDefRegex = /\/\*\*\n \* @type {import\("(?:\.\.\/)+src\/types"\)\.Blueprint}\n \*\//g;
-    const kwmRegex = /\n {4}\/\*{2}\n {5}\* @type {import\("(?:\.{2}\/)+src\/types"\)\.KeywordMethod}\n {5}\*\//g;
+    const BLUEPRINT_DEFINITION_REGEX = /\/\*\*\n \* @type {import\("(?:\.\.\/)+src\/types"\)\.Blueprint}\n \*\//g;
+    const ABILITY_DEFINITION_REGEX = /\n {4}\/\*{2}\n {5}\* @type {import\("(?:\.{2}\/)+src\/types"\)\.KeywordMethod}\n {5}\*\//g;
 
-    data = upgradeField(data, bpDefRegex, `import { Blueprint${eventValue} } from "@Game/types.js";\n`, 'Replaced blueprint type from jsdoc to import.');
-    data = upgradeField(data, kwmRegex, '', 'Removed KeywordMethod jsdoc type.');
-    data = upgradeField(data, 'module.exports = {', 'export const blueprint: Blueprint = {', 'Replaced blueprint definition from module.exports to object.');
+    data = upgradeField(data, BLUEPRINT_DEFINITION_REGEX, `import { Blueprint${EVENT_VALUE} } from "@Game/types.js";\n`, 'Replaced blueprint type from jsdoc to import.');
+    data = upgradeField(data, ABILITY_DEFINITION_REGEX, '', 'Removed KeywordMethod jsdoc type.');
+    data = upgradeField(data, 'module.exports = {', 'export const BLUEPRINT: Blueprint = {', 'Replaced blueprint definition from module.exports to object.');
     data = upgradeField(data, /plr, game, self/g, 'plr, self', 'Removed \'game\' parameter from abilities.');
     data = upgradeField(data, /&B(.+?)&R/g, '<b>$1</b>', 'Updated tags in description.');
     data = upgradeField(data, /\.maxMana/g, '.emptyMana', 'Updated \'maxMana\' to \'emptyMana\'.');
@@ -58,20 +58,20 @@ function upgradeCard(path: string, data: string, file: any) {
 
     // Replace the card's id with a new one
     data = upgradeField(data, /\n {4}id: (\d+),?/, '', 'Removed id from card.');
-    const currentId = Number(game.functions.util.fs('read', '/cards/.latestId')) + 1;
+    const CURRENT_ID = Number(game.functions.util.fs('read', '/cards/.latestId')) + 1;
 
-    data = upgradeField(data, /( {4}.+: .+,)(\n\n {4}.*\(plr, (self|card))/, `$1\n    id: ${currentId},$2`, `Card was assigned id ${currentId} pt1.`);
-    data = upgradeField(data, /( {4}uncollectible: .*?),?\n}/, `$1,\n    id: ${currentId},\n}`, `Card was assigned id ${currentId} pt2.`);
+    data = upgradeField(data, /( {4}.+: .+,)(\n\n {4}.*\(plr, (self|card))/, `$1\n    id: ${CURRENT_ID},$2`, `Card was assigned id ${CURRENT_ID} pt1.`);
+    data = upgradeField(data, /( {4}uncollectible: .*?),?\n}/, `$1,\n    id: ${CURRENT_ID},\n}`, `Card was assigned id ${CURRENT_ID} pt2.`);
 
-    game.functions.util.fs('write', '/cards/.latestId', `${currentId}`);
+    game.functions.util.fs('write', '/cards/.latestId', `${CURRENT_ID}`);
 
-    if (hasPassive) {
+    if (HAS_PASSIVE) {
         // Find key
-        const keyRegex = /\n {8}if \(key [!=]+ "(\w+)"\) /;
-        const match = keyRegex.exec(data);
+        const KEY_REGEX = /\n {8}if \(key [!=]+ "(\w+)"\) /;
+        const MATCH = KEY_REGEX.exec(data);
         let key = '';
-        if (match) {
-            key = match[1];
+        if (MATCH) {
+            key = MATCH[1];
             game.log(`Found key: ${key}.`);
         } else {
             game.logError('<yellow>WARNING: Could not find event key in passive.</yellow>');
@@ -83,24 +83,24 @@ function upgradeCard(path: string, data: string, file: any) {
 
         // Here we cast the value to the correct type.
         // Do not use the '_unknownVal' variable after this.
-        const val = _unknownVal as EventValue<typeof key>;
+        const VALUE = _unknownVal as EventValue<typeof key>;
 `, 'Updated passive.');
 
-        data = upgradeField(data, keyRegex, '', 'Removed key from passive.');
+        data = upgradeField(data, KEY_REGEX, '', 'Removed key from passive.');
     }
 
     // Replace .js to .ts
-    path = path.replace(filename, filename.replace('.js', '.ts'));
+    path = path.replace(FILE_NAME, FILE_NAME.replace('.js', '.ts'));
     game.functions.util.fs('write', path, data);
 
-    game.log(`--- Finished ${filename} ---`);
+    game.log(`--- Finished ${FILE_NAME} ---`);
 }
 
 function main() {
     game.logError('<yellow>WARNING: This will create new cards with the `.ts` extension, but will leave your old cards alone. Please verify that the new cards work before deleting the old ones.</yellow>');
 
-    const proceed = game.input('Do you want to proceed? ([y]es, [n]o): ').toLowerCase().startsWith('y');
-    if (!proceed) {
+    const PROCEED = game.input('Do you want to proceed? ([y]es, [n]o): ').toLowerCase().startsWith('y');
+    if (!PROCEED) {
         process.exit(0);
     }
 

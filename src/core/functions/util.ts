@@ -8,7 +8,7 @@ import { createHash } from 'node:crypto';
 import date from 'date-and-time';
 import { type Player } from '@Game/internal.js';
 
-export const utilFunctions = {
+export const UTIL_FUNCTIONS = {
     /**
      * Removes `element` from `list`.
      *
@@ -36,15 +36,15 @@ export const utilFunctions = {
      * @param sep The seperator.
      *
      * @example
-     * const bricks = [];
-     * bricks.push('Example - Example');
-     * bricks.push('Test - Hello World');
-     * bricks.push('This is the longest - Short');
-     * bricks.push('Tiny - This is even longer then that one!');
+     * const BRICKS = [];
+     * BRICKS.push('Example - Example');
+     * BRICKS.push('Test - Hello World');
+     * BRICKS.push('This is the longest - Short');
+     * BRICKS.push('Tiny - This is even longer then that one!');
      *
-     * const wall = createWall(bricks, "-");
+     * const WALL = createWall(BRICKS, "-");
      *
-     * wall.forEach(foo => {
+     * WALL.forEach(foo => {
      *     game.log(foo);
      * });
      * // Example             - Example
@@ -52,7 +52,7 @@ export const utilFunctions = {
      * // This is the longest - Short
      * // Tiny                - This is even longer then that one!
      *
-     * assert.equal(wall, ["Example             - Example", "Test                - Hello World", "This is the longest - Short", "Tiny                - This is even longer then that one!"]);
+     * assert.equal(WALL, ["Example             - Example", "Test                - Hello World", "This is the longest - Short", "Tiny                - This is even longer then that one!"]);
      *
      * @returns The wall
      */
@@ -64,38 +64,38 @@ export const utilFunctions = {
          */
         let longestBrick: [string, number] = ['', Number.NEGATIVE_INFINITY];
 
-        for (const b of bricks) {
-            const splitBrick = b.split(sep);
+        for (const BRICK of bricks) {
+            const SPLIT_BRICK = BRICK.split(sep);
 
-            const { length } = game.functions.color.stripAll(splitBrick[0]);
+            const { length: LENGTH } = game.functions.color.stripAll(SPLIT_BRICK[0]);
 
-            if (length <= longestBrick[1]) {
+            if (LENGTH <= longestBrick[1]) {
                 continue;
             }
 
-            longestBrick = [b, length];
+            longestBrick = [BRICK, LENGTH];
         }
 
         /**
          * The wall to return.
          */
-        const wall: string[] = [];
+        const WALL: string[] = [];
 
-        for (const b of bricks) {
-            const splitBrick = b.split(sep);
+        for (const BRICK of bricks) {
+            const SPLIT_BRICK = BRICK.split(sep);
 
             let strbuilder = '';
-            const diff = longestBrick[1] - game.functions.color.stripAll(splitBrick[0]).length;
+            const DIFFERENCE = longestBrick[1] - game.functions.color.stripAll(SPLIT_BRICK[0]).length;
 
-            strbuilder += splitBrick[0];
-            strbuilder += ' '.repeat(diff);
+            strbuilder += SPLIT_BRICK[0];
+            strbuilder += ' '.repeat(DIFFERENCE);
             strbuilder += sep;
-            strbuilder += game.lodash.tail(splitBrick).join(sep);
+            strbuilder += game.lodash.tail(SPLIT_BRICK).join(sep);
 
-            wall.push(strbuilder);
+            WALL.push(strbuilder);
         }
 
-        return wall;
+        return WALL;
     },
 
     /**
@@ -111,11 +111,11 @@ export const utilFunctions = {
             this.fs('mkdir', '/logs');
         }
 
-        const now = new Date();
-        const dateString = date.format(now, 'DD/MM/YYYY HH:mm:ss');
+        const NOW = new Date();
+        const DATE_STRING = date.format(NOW, 'DD/MM/YYYY HH:mm:ss');
 
         // 01.01.23-23.59.59
-        const dateStringFileFriendly = date.format(now, 'DD.MM.YY-HH.mm.ss');
+        const DATE_STRING_FILE_FRIENDLY = date.format(NOW, 'DD.MM.YY-HH.mm.ss');
 
         // Grab the history of the game
         // handleCmds("history", echo, debug)
@@ -131,7 +131,7 @@ export const utilFunctions = {
         // AI log
         // Do this so it can actually run '/ai'
         game.config.general.debug = true;
-        const aiHistory = game.interact.gameLoop.handleCmds('/ai', { echo: false });
+        const AI_HISTORY = game.interact.gameLoop.handleCmds('/ai', { echo: false });
 
         let name = 'Log';
         if (error) {
@@ -147,44 +147,44 @@ ${error.stack}
 `;
         }
 
-        const historyContent = `-- History --${history}-- History --\n`;
-        const aiContent = `\n-- AI Logs --\n${aiHistory}-- AI Logs --\n`;
+        const HISTORY_CONTENT = `-- History --${history}-- History --\n`;
+        const AI_CONTENT = `\n-- AI Logs --\n${AI_HISTORY}-- AI Logs --\n`;
 
-        const config = JSON.stringify(game.config, null, 2);
-        const configContent = `\n-- Config --\n${config}\n-- Config --`;
+        const CONFIG = JSON.stringify(game.config, null, 2);
+        const CONFIG_CONTENT = `\n-- Config --\n${CONFIG}\n-- Config --`;
 
-        let mainContent = historyContent;
+        let mainContent = HISTORY_CONTENT;
         if (game.config.ai.player1 || game.config.ai.player2) {
-            mainContent += aiContent;
+            mainContent += AI_CONTENT;
         }
 
-        mainContent += configContent;
+        mainContent += CONFIG_CONTENT;
         mainContent += errorContent;
 
         let osName: string = process.platform;
 
         if (osName === 'linux') {
             // Get the operating system name from /etc/os-release
-            const osRelease = this.runCommand('cat /etc/os-release');
-            if (osRelease instanceof Error) {
-                throw osRelease;
+            const OS_RELEASE = this.runCommand('cat /etc/os-release');
+            if (OS_RELEASE instanceof Error) {
+                throw OS_RELEASE;
             }
 
-            osName = osRelease.split('PRETTY_NAME="')[1].split('"\n')[0];
+            osName = OS_RELEASE.split('PRETTY_NAME="')[1].split('"\n')[0];
 
             // Also add information from uname
-            const uname = this.runCommand('uname -srvmo');
-            if (uname instanceof Error) {
-                throw uname;
+            const UNAME = this.runCommand('uname -srvmo');
+            if (UNAME instanceof Error) {
+                throw UNAME;
             }
 
-            osName += ' (' + uname.trim() + ')';
+            osName += ' (' + UNAME.trim() + ')';
         } else if (osName === 'win32') {
             osName = 'Windows';
         }
 
         let content = `Hearthstone.js ${name}
-Date: ${dateString}
+Date: ${DATE_STRING}
 Version: ${game.functions.info.version(4)}
 Operating System: ${osName}
 Log File Version: 3
@@ -197,11 +197,11 @@ ${mainContent}
             filename = 'crashlog';
         }
 
-        filename = `${filename}-${dateStringFileFriendly}.txt`;
+        filename = `${filename}-${DATE_STRING_FILE_FRIENDLY}.txt`;
 
         // Add a sha256 checksum to the content
-        const checksum = createHash('sha256').update(content).digest('hex');
-        content += `\n${checksum}  ${filename}`;
+        const CHECKSUM = createHash('sha256').update(content).digest('hex');
+        content += `\n${CHECKSUM}  ${filename}`;
 
         this.fs('write', `/logs/${filename}`, content);
 
@@ -228,27 +228,27 @@ ${mainContent}
         }
 
         let content = (this.fs('read', path) as string).trim();
-        const contentSplit = content.split('\n');
-        const filename = path.split('/').pop();
+        const CONTENT_SPLIT = content.split('\n');
+        const FILE_NAME = path.split('/').pop();
 
         // Verify checksum
-        content = game.lodash.initial(contentSplit).join('\n');
-        const checksum = createHash('sha256').update(content).digest('hex') + '  ' + filename;
+        content = game.lodash.initial(CONTENT_SPLIT).join('\n');
+        const CHECKSUM = createHash('sha256').update(content).digest('hex') + '  ' + FILE_NAME;
 
-        const matchingChecksum = checksum === game.lodash.last(contentSplit);
-        if (!matchingChecksum) {
+        const MATCHING_CHECKSUM = CHECKSUM === game.lodash.last(CONTENT_SPLIT);
+        if (!MATCHING_CHECKSUM) {
             throw new Error('Invalid checksum');
         }
 
         // Checksum matches
-        const [watermark, date, version, os, logVersion] = contentSplit.map(l => l.split(': ')[1]);
-        const history = content.split('-- History --')[1].trim();
-        const ai = content.split('-- AI Logs --')[1].trim();
-        const config = content.split('-- Config --')[1].trim();
+        const [WATERMARK, DATE, VERSION, OS, LOG_VERSION] = CONTENT_SPLIT.map(l => l.split(': ')[1]);
+        const HISTORY = content.split('-- History --')[1].trim();
+        const AI = content.split('-- AI Logs --')[1].trim();
+        const CONFIG = content.split('-- Config --')[1].trim();
 
-        const headerObject = { watermark, date, version: game.lodash.parseInt(version), os, logVersion: game.lodash.parseInt(logVersion) };
+        const HEADER_OBJECT = { watermark: WATERMARK, date: DATE, version: game.lodash.parseInt(VERSION), os: OS, logVersion: game.lodash.parseInt(LOG_VERSION) };
 
-        return { header: headerObject, history, ai, config };
+        return { header: HEADER_OBJECT, history: HISTORY, ai: AI, config: CONFIG };
     },
 
     /**
@@ -275,9 +275,9 @@ ${mainContent}
      */
     tryCompile(): boolean {
         try {
-            const error = this.runCommand('npx tsc');
-            if (error instanceof Error) {
-                throw error;
+            const ERROR = this.runCommand('npx tsc');
+            if (ERROR instanceof Error) {
+                throw ERROR;
             }
 
             return true;
@@ -304,10 +304,10 @@ ${mainContent}
      *
      * @example
      * // Opens notepad to "foo.txt" in the main folder.
-     * const success = runCommandAsChildProcess("notepad foo.txt");
+     * const SUCCESS = runCommandAsChildProcess("notepad foo.txt");
      *
      * // Wait until the user presses enter. This function automatically prints a traceback to the screen but will not pause by itself.
-     * if (!success) game.pause();
+     * if (!SUCCESS) game.pause();
      */
     runCommandAsChildProcess(command: string): boolean {
         // Windows vs Linux. Pros and Cons:
@@ -318,14 +318,14 @@ ${mainContent}
             // Linux (/ Mac)
             command = command.replaceAll('\\', '/');
 
-            const attempts: string[] = [];
+            const ATTEMPTS: string[] = [];
 
             const isCommandAvailable = (testCommand: string, argsSpecifier: string) => {
                 game.log(`Trying '${testCommand} ${argsSpecifier}${command}'...`);
-                attempts.push(testCommand);
+                ATTEMPTS.push(testCommand);
 
-                const error = this.runCommand(`which ${testCommand} 2> /dev/null`);
-                if (error instanceof Error) {
+                const ERROR = this.runCommand(`which ${testCommand} 2> /dev/null`);
+                if (ERROR instanceof Error) {
                     return false;
                 }
 
@@ -350,8 +350,8 @@ ${mainContent}
                 game.log('Error: Failed to open program. Traceback:');
                 game.log('Operating system: Linux');
 
-                for (const a of attempts) {
-                    game.log(`Tried '${a}'... failed!`);
+                for (const ATTEMPT of ATTEMPTS) {
+                    game.log(`Tried '${ATTEMPT}'... failed!`);
                 }
 
                 game.log('Please install any of these using your package manager.');
@@ -415,8 +415,8 @@ ${mainContent}
             callback = 'readFile';
         }
 
-        const func = fs[callback + 'Sync' as keyof typeof fs];
-        if (typeof func !== 'function') {
+        const CALLBACK = fs[callback + 'Sync' as keyof typeof fs];
+        if (typeof CALLBACK !== 'function') {
             throw new TypeError(`Invalid fs function: ${callback}Sync`);
         }
 
@@ -425,22 +425,22 @@ ${mainContent}
                 game.cache.files = {};
             }
 
-            const cached = game.cache.files[path] as string | undefined;
+            const CACHED = game.cache.files[path] as string | undefined;
 
-            if (args[0]?.invalidateCache && cached) {
+            if (args[0]?.invalidateCache && CACHED) {
                 // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
                 delete game.cache.files[path];
-            } else if (cached) {
-                return cached;
+            } else if (CACHED) {
+                return CACHED;
             }
 
-            const content = fs.readFileSync(path, { encoding: 'utf8' });
-            game.cache.files[path] = content;
-            return content;
+            const CONTENT = fs.readFileSync(path, { encoding: 'utf8' });
+            game.cache.files[path] = CONTENT;
+            return CONTENT;
         }
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        return (func as (path: string, ...args: any[]) => any)(path, ...args);
+        return (CALLBACK as (path: string, ...args: any[]) => any)(path, ...args);
     },
 
     /**
@@ -452,20 +452,20 @@ ${mainContent}
     searchCardsFolder(callback: (path: string, content: string, file: fs.Dirent) => void, path = '/cards', extension = '.ts') {
         path = path.replaceAll('\\', '/');
 
-        for (const file of this.fs('readdir', path, { withFileTypes: true }) as fs.Dirent[]) {
-            const fullPath = `${path}/${file.name}`;
+        for (const FILE of this.fs('readdir', path, { withFileTypes: true }) as fs.Dirent[]) {
+            const FULL_PATH = `${path}/${FILE.name}`;
 
-            if (file.name === 'exports.ts') {
+            if (FILE.name === 'exports.ts') {
                 continue;
             }
 
-            if (file.name.endsWith(extension)) {
+            if (FILE.name.endsWith(extension)) {
                 // It is an actual card.
-                const data = this.fs('read', fullPath) as string;
+                const DATA = this.fs('read', FULL_PATH) as string;
 
-                callback(fullPath, data, file);
-            } else if (file.isDirectory()) {
-                this.searchCardsFolder(callback, fullPath, extension);
+                callback(FULL_PATH, DATA, FILE);
+            } else if (FILE.isDirectory()) {
+                this.searchCardsFolder(callback, FULL_PATH, extension);
             }
         }
     },

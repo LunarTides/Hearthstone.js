@@ -54,6 +54,45 @@
       "@typescript-eslint/object-curly-spacing": [
         "error",
         "always"
+      ],
+      "@typescript-eslint/naming-convention": [
+        "error",
+        {
+          "selector": "default",
+          "format": [
+            "camelCase"
+          ],
+          "leadingUnderscore": "allow"
+        },
+        {
+          "selector": "variable",
+          "format": [
+            "camelCase",
+            "UPPER_CASE"
+          ]
+        },
+        {
+          "selector": "typeLike",
+          "format": [
+            "PascalCase"
+          ]
+        },
+        {
+          "selector": "typeProperty",
+          "format": [
+            "camelCase",
+            "UPPER_CASE"
+          ]
+        },
+        {
+          "selector": "objectLiteralProperty",
+          "format": null
+        },
+        {
+          "selector": "objectLiteralMethod",
+          "format": null,
+          "leadingUnderscore": "allow"
+        }
       ]
     },
     "overrides": [

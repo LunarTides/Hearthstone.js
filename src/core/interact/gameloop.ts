@@ -1,12 +1,12 @@
 import rl from 'readline-sync';
 import { type Target, type GamePlayCardReturn } from '@Game/types.js';
-import { type Ai, Card, commands, debugCommands } from '../../internal.js';
+import { type Ai, Card, COMMANDS, DEBUG_COMMANDS } from '../../internal.js';
 
 // Override the console methods to force using the wrapper functions
 // Set this variable to false to prevent disabling the console. (Not recommended)
-const disableConsole = true;
+const DISABLE_CONSOLE = true;
 
-const overrideConsole = {
+const OVERRIDE_CONSOLE = {
     log(..._data: any[]): void {
         throw new Error('Attempting to use override console before being given the `log` function.');
     },
@@ -17,11 +17,11 @@ const overrideConsole = {
         throw new Error('Attempting to use override console before being given the `error` function.');
     },
 };
-overrideConsole.log = console.log;
-overrideConsole.warn = console.warn;
-overrideConsole.error = console.error;
+OVERRIDE_CONSOLE.log = console.log;
+OVERRIDE_CONSOLE.warn = console.warn;
+OVERRIDE_CONSOLE.error = console.error;
 
-if (disableConsole) {
+if (DISABLE_CONSOLE) {
     console.log = (..._) => {
         throw new Error('Use `game.log` instead.');
     };
@@ -35,7 +35,7 @@ if (disableConsole) {
     };
 }
 
-export const gameLoopInteract = { /**
+export const GAMELOOP_INTERACT = { /**
      * Ask the user a question and returns their answer
      *
      * @param q The question to ask
@@ -63,25 +63,25 @@ export const gameLoopInteract = { /**
 
         // Let the game make choices for the user
         if (game.player.inputQueue && useInputQueue) {
-            const queue = game.player.inputQueue;
+            const QUEUE = game.player.inputQueue;
 
-            if (typeof (queue) === 'string') {
-                return wrapper(queue);
+            if (typeof (QUEUE) === 'string') {
+                return wrapper(QUEUE);
             }
 
             // Invalid queue
-            if (!(Array.isArray(queue))) {
+            if (!(Array.isArray(QUEUE))) {
                 return wrapper(rl.question(q));
             }
 
-            const answer = queue[0];
-            queue.splice(0, 1);
+            const ANSWER = QUEUE[0];
+            QUEUE.splice(0, 1);
 
-            if (queue.length <= 0) {
+            if (QUEUE.length <= 0) {
                 game.player.inputQueue = undefined;
             }
 
-            return wrapper(answer);
+            return wrapper(ANSWER);
         }
 
         return wrapper(rl.question(q));
@@ -106,7 +106,7 @@ export const gameLoopInteract = { /**
      */
     log(...data: any) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        this.logWrapper(overrideConsole.log, ...data);
+        this.logWrapper(OVERRIDE_CONSOLE.log, ...data);
     },
 
     /**
@@ -114,7 +114,7 @@ export const gameLoopInteract = { /**
      */
     logError(...data: any) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        this.logWrapper(overrideConsole.error, ...data);
+        this.logWrapper(OVERRIDE_CONSOLE.error, ...data);
     },
 
     /**
@@ -122,7 +122,7 @@ export const gameLoopInteract = { /**
      */
     logWarn(...data: any) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        this.logWrapper(overrideConsole.warn, ...data);
+        this.logWrapper(OVERRIDE_CONSOLE.warn, ...data);
     },
 
     /**
@@ -136,14 +136,14 @@ export const gameLoopInteract = { /**
         let target;
 
         if (game.player.ai) {
-            const altModel = `legacyAttack${game.config.ai.attackModel}`;
+            const ALTERNATIVE_MODEL = `legacyAttack${game.config.ai.attackModel}`;
 
             // Run the correct ai attack model
-            const model = game.player.ai[altModel as keyof Ai];
-            const ai = model ? (model as () => Array<-1 | Target>)() : game.player.ai.attack();
+            const MODEL = game.player.ai[ALTERNATIVE_MODEL as keyof Ai];
+            const AI_SELECTIONS = MODEL ? (MODEL as () => Array<-1 | Target>)() : game.player.ai.attack();
 
-            attacker = ai[0];
-            target = ai[1];
+            attacker = AI_SELECTIONS[0];
+            target = AI_SELECTIONS[1];
 
             if (attacker === -1 || target === -1) {
                 return -1;
@@ -164,17 +164,17 @@ export const gameLoopInteract = { /**
             }
         }
 
-        const errorcode = game.attack(attacker, target);
+        const ERROR_CODE = game.attack(attacker, target);
         game.killMinions();
 
-        const ignore = ['divineshield'];
-        if (errorcode === true || ignore.includes(errorcode)) {
+        const IGNORE = ['divineshield'];
+        if (ERROR_CODE === true || IGNORE.includes(ERROR_CODE)) {
             return true;
         }
 
         let error;
 
-        switch (errorcode) {
+        switch (ERROR_CODE) {
             case 'taunt': {
                 error = 'There is a minion with taunt in the way';
                 break;
@@ -231,7 +231,7 @@ export const gameLoopInteract = { /**
             }
 
             default: {
-                error = `An unknown error occurred. Error code: UnexpectedAttackingResult@${errorcode}`;
+                error = `An unknown error occurred. Error code: UnexpectedAttackingResult@${ERROR_CODE}`;
                 break;
             }
         }
@@ -250,9 +250,9 @@ export const gameLoopInteract = { /**
      * @returns A string if "echo" is false
      */
     handleCmds(cmd: string, flags?: { echo?: boolean; debug?: boolean }): boolean | string | -1 {
-        const args = cmd.split(' ');
-        const name = args.shift()?.toLowerCase();
-        if (!name) {
+        const ARGS = cmd.split(' ');
+        const NAME = ARGS.shift()?.toLowerCase();
+        if (!NAME) {
             game.pause('<red>Invalid command.</red>\n');
             return false;
         }
@@ -265,31 +265,31 @@ export const gameLoopInteract = { /**
             return true;
         };
 
-        const commandName = Object.keys(commands).find(cmd => cmd.startsWith(name));
-        if (commandName) {
-            const command = commands[commandName];
+        const COMMAND_NAME = Object.keys(COMMANDS).find(cmd => cmd.startsWith(NAME));
+        if (COMMAND_NAME) {
+            const command = COMMANDS[COMMAND_NAME];
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            const result = command(args, flags);
-            return getReturn(result);
+            const RESULT = command(ARGS, flags);
+            return getReturn(RESULT);
         }
 
-        if (!name.startsWith(game.config.advanced.debugCommandPrefix)) {
+        if (!NAME.startsWith(game.config.advanced.debugCommandPrefix)) {
             return -1;
         }
 
-        const debugName = name.slice(1);
+        const DEBUG_NAME = NAME.slice(1);
 
-        const debugCommandName = Object.keys(debugCommands).find(cmd => cmd.startsWith(debugName));
-        if (debugCommandName) {
+        const DEBUG_COMMAND_NAME = Object.keys(DEBUG_COMMANDS).find(cmd => cmd.startsWith(DEBUG_NAME));
+        if (DEBUG_COMMAND_NAME) {
             if (!game.config.general.debug) {
                 game.pause('<red>You are not allowed to use this command.</red>');
                 return false;
             }
 
-            const command = debugCommands[debugCommandName];
+            const command = DEBUG_COMMANDS[DEBUG_COMMAND_NAME];
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            const result = command(args, flags);
-            return getReturn(result);
+            const RESULT = command(ARGS, flags);
+            return getReturn(RESULT);
         }
 
         return -1;
@@ -307,18 +307,18 @@ export const gameLoopInteract = { /**
             return true;
         }
 
-        const parsedInput = game.lodash.parseInt(input);
+        const PARSED_INPUT = game.lodash.parseInt(input);
 
-        const card = game.player.hand[parsedInput - 1];
-        if (!card) {
+        const CARD = game.player.hand[PARSED_INPUT - 1];
+        if (!CARD) {
             return 'invalid';
         }
 
-        if (parsedInput === game.player.hand.length || parsedInput === 1) {
-            card.activate('outcast');
+        if (PARSED_INPUT === game.player.hand.length || PARSED_INPUT === 1) {
+            CARD.activate('outcast');
         }
 
-        return game.playCard(card, game.player);
+        return game.playCard(CARD, game.player);
     },
 
     /**
@@ -332,19 +332,19 @@ export const gameLoopInteract = { /**
         game.events.tick('GameLoop', 'doTurn', game.player);
 
         if (game.player.ai) {
-            const rawInput = game.player.ai.calcMove();
-            if (!rawInput) {
+            const RAW_INPUT = game.player.ai.calcMove();
+            if (!RAW_INPUT) {
                 return false;
             }
 
-            const input = rawInput instanceof Card ? (game.player.hand.indexOf(rawInput) + 1).toString() : rawInput;
+            const INPUT = RAW_INPUT instanceof Card ? (game.player.hand.indexOf(RAW_INPUT) + 1).toString() : RAW_INPUT;
 
-            game.events.broadcast('Input', input, game.player);
-            const turn = this.doTurnLogic(input);
+            game.events.broadcast('Input', INPUT, game.player);
+            const TURN = this.doTurnLogic(INPUT);
 
             game.killMinions();
 
-            return turn;
+            return TURN;
         }
 
         game.interact.info.showGame(game.player);
@@ -355,26 +355,26 @@ export const gameLoopInteract = { /**
             input += '(type \'help\' for further information <- This will disappear once you end your turn) ';
         }
 
-        const user = game.input(input);
-        const returnValue = this.doTurnLogic(user);
+        const USER = game.input(input);
+        const RETURN_VALUE = this.doTurnLogic(USER);
         game.killMinions();
 
         // If there were no errors, return true.
-        if (returnValue === true) {
-            return returnValue;
+        if (RETURN_VALUE === true) {
+            return RETURN_VALUE;
         }
 
         let error;
 
         // Get the card
-        const card = game.player.hand[game.lodash.parseInt(user) - 1];
+        const CARD = game.player.hand[game.lodash.parseInt(USER) - 1];
         let cost = 'mana';
-        if (card) {
-            cost = card.costType;
+        if (CARD) {
+            cost = CARD.costType;
         }
 
         // Error Codes
-        switch (returnValue) {
+        switch (RETURN_VALUE) {
             case 'cost': {
                 error = `Not enough ${cost}`;
                 break;
@@ -401,11 +401,11 @@ export const gameLoopInteract = { /**
             case 'traded':
             case 'forged':
             case 'colossal': {
-                return returnValue;
+                return RETURN_VALUE;
             }
 
             default: {
-                error = `An unknown error occurred. Error code: UnexpectedDoTurnResult@${returnValue as string}`;
+                error = `An unknown error occurred. Error code: UnexpectedDoTurnResult@${RETURN_VALUE as string}`;
                 break;
             }
         }

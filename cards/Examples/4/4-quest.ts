@@ -4,7 +4,7 @@
 import { type Blueprint, type EventValue } from '@Game/types.js';
 import { type Card } from '../../../src/core/card.js';
 
-export const blueprint: Blueprint = {
+export const BLUEPRINT: Blueprint = {
     name: 'Quest Example',
 
     // The description doesn't need to look like this, it is just what Hearthstone does, so we copy it here.
@@ -22,7 +22,7 @@ export const blueprint: Blueprint = {
         // Quest: Play 3 cards. Reward: Return those cards back to your hand.
 
         // Create a list of cards to put the 3 cards into
-        const cards: Card[] = [];
+        const CARDS: Card[] = [];
 
         // AddQuest(
         //     type of quest,
@@ -39,7 +39,7 @@ export const blueprint: Blueprint = {
             // This is like the callback function in event listeners.
 
             // Get the value of the event
-            const value = _unknownValue as EventValue<'PlayCard'>;
+            const VALUE = _unknownValue as EventValue<'PlayCard'>;
 
             // Returning false will prevent this event from counting towards the quest
             // If the card played was this card, it doesn't count towards this quest.
@@ -47,12 +47,12 @@ export const blueprint: Blueprint = {
             // The `PlayCard` event gets triggered after the text of the card played.
             // That means when you play this card, the quest gets added, then the `PlayCard` event gets broadcast,
             // which triggers this quest. So we need to prevent that event from counting towards the quest.
-            if (!(value !== self)) {
+            if (!(VALUE !== self)) {
                 return false;
             }
 
             // Otherwise, add it to the cards array, and count it.
-            cards.push(value);
+            CARDS.push(VALUE);
 
             // Return true to count this event towards the quest
             // Only return if the quest isn't considered done. It is considered done if the quest has been triggered enough times (in this case 3).
@@ -63,7 +63,7 @@ export const blueprint: Blueprint = {
             // The quest is done. The code above has been triggered 3 times in total.
 
             // Go through the list of cards that was played, and add them back to the player's hand
-            for (const playedCard of cards) {
+            for (const PLAYED_CARD of CARDS) {
                 // Create an imperfect copy of the card.
                 // This is what heartstone does when a card gets bounced back to a player's hand, for example.
                 // This puts the card back to its original state. Defined by this blueprint.
@@ -72,10 +72,10 @@ export const blueprint: Blueprint = {
                 // If you don't want the card to be reset, but you want to avoid it being linked, use `perfectCopy`
                 // If we were to do `plr.addToHand(playedCard)`, the card added to the player's hand would be (most likely) linked to the original card.
 
-                const card = playedCard.imperfectCopy();
+                const CARD = PLAYED_CARD.imperfectCopy();
 
                 // Add the imperfect copy of the card to the player's hand
-                plr.addToHand(card);
+                plr.addToHand(CARD);
             }
 
             // Return true to count this event towards the quest

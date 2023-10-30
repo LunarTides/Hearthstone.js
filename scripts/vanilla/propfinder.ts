@@ -6,67 +6,67 @@ import { createGame } from '../../src/internal.js';
 
 const { game } = createGame();
 
-const props: Record<string, [string, number]> = {};
-const types: Record<string, number> = {};
+const PROPS: Record<string, [string, number]> = {};
+const TYPES: Record<string, number> = {};
 
-const stored: Array<[string, number]> = [];
-const storedType = 'mechanics';
+const STORED: Array<[string, number]> = [];
+const STORED_TYPE = 'mechanics';
 
 function handleStoredTypes(value: any) {
-    const values = Array.isArray(value) ? value : [value];
+    const VALUES = Array.isArray(value) ? value : [value];
 
-    for (const v of values) {
-        if (typeof v !== 'string') {
+    for (const VALUE of VALUES) {
+        if (typeof VALUE !== 'string') {
             throw new TypeError('v is not a string');
         }
 
-        const found = stored.find(s => game.lodash.isEqual(s[0], v));
-        if (found) {
-            found[1]++;
+        const FOUND = STORED.find(s => game.lodash.isEqual(s[0], VALUE));
+        if (FOUND) {
+            FOUND[1]++;
         } else {
-            stored.push([v, 1]);
+            STORED.push([VALUE, 1]);
         }
     }
 }
 
 function main() {
-    const vanillaCards = game.functions.card.vanilla.getAll();
+    const VANILLA_CARDS = game.functions.card.vanilla.getAll();
 
-    for (const vanillaCard of vanillaCards) {
-        for (const ent of Object.entries(vanillaCard)) {
-            const [key, value] = ent;
+    for (const VANILLA_CARD of VANILLA_CARDS) {
+        for (const ENTRY of Object.entries(VANILLA_CARD)) {
+            const [KEY, VALUE] = ENTRY;
 
-            if (key === storedType) {
-                handleStoredTypes(value);
+            if (KEY === STORED_TYPE) {
+                handleStoredTypes(VALUE);
             }
 
-            if (Object.keys(props).includes(key)) {
-                const storedType = props[key][0];
-                if (storedType !== typeof value) {
-                    game.logWarn('<yellow>Discrepancy found. Stored type: %s, Found type %s.</yellow>', storedType, typeof value);
+            if (Object.keys(PROPS).includes(KEY)) {
+                const STORED_TYPE = PROPS[KEY][0];
+                if (STORED_TYPE !== typeof VALUE) {
+                    game.logWarn('<yellow>Discrepancy found. Stored type: %s, Found type %s.</yellow>', STORED_TYPE, typeof VALUE);
                 }
 
-                props[key][1]++;
+                PROPS[KEY][1]++;
                 continue;
             }
 
-            props[key] = [typeof value, 1];
+            PROPS[KEY] = [typeof VALUE, 1];
         }
 
-        if (Object.keys(types).includes(vanillaCard.type)) {
-            types[vanillaCard.type]++;
+        if (Object.keys(TYPES).includes(VANILLA_CARD.type)) {
+            TYPES[VANILLA_CARD.type]++;
             continue;
         }
 
-        types[vanillaCard.type] = 1;
+        TYPES[VANILLA_CARD.type] = 1;
     }
 
     game.log('<b>TYPES:</b>');
-    game.log(types);
+    game.log(TYPES);
     game.log('<b>PROPS:</b>');
-    game.log(props);
+    game.log(PROPS);
     game.log('<b>STORED:</b>');
-    game.log(stored.sort((a, b) => b[1] - a[1]));
+    game.log(STORED.sort((a, b) => b[1] - a[1]));
 }
 
 main();

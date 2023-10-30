@@ -3,7 +3,7 @@
 import assert from 'node:assert';
 import { type Blueprint } from '@Game/types.js';
 
-export const blueprint: Blueprint = {
+export const BLUEPRINT: Blueprint = {
     name: 'Healing Totem',
     stats: [0, 2],
     // TODO: What does this hashtag mean? This was pulled from the vanilla card
@@ -25,17 +25,17 @@ export const blueprint: Blueprint = {
         }
 
         // Restore 1 Health to all friendly minions
-        for (const minion of game.board[plr.id]) {
-            minion.addHealth(1, true);
+        for (const CARD of game.board[plr.id].filter(card => card.type === 'Minion')) {
+            CARD.addHealth(1, true);
         }
     },
 
     test(plr, self) {
         // Summon 5 Sheep with 2 max health.
         for (let i = 0; i < 5; i++) {
-            const card = game.createCard('Sheep', plr);
-            card.maxHealth = 2;
-            game.summonMinion(card, plr);
+            const CARD = game.createCard('Sheep', plr);
+            CARD.maxHealth = 2;
+            game.summonMinion(CARD, plr);
         }
 
         const checkSheepHealth = (expected: number) => game.board[plr.id].filter(card => card.name === 'Sheep').every(card => card.getHealth() === expected && card.getAttack() === 1);

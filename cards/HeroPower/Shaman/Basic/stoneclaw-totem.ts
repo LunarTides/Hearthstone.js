@@ -2,7 +2,7 @@
 
 import { type Blueprint } from '@Game/types.js';
 
-export const blueprint: Blueprint = {
+export const BLUEPRINT: Blueprint = {
     name: 'Stoneclaw Totem',
     stats: [0, 2],
     text: '<b>Taunt</b>',

@@ -3,7 +3,7 @@
 import assert from 'node:assert';
 import { type Blueprint } from '@Game/types.js';
 
-export const blueprint: Blueprint = {
+export const BLUEPRINT: Blueprint = {
     name: 'Combined Example 3',
     text: 'If the turn counter is an even number, gain mana equal to the turn counter (up to 10). Manathirst (7): Remove the condition. (Currently: {turns})',
     cost: 0,
@@ -37,11 +37,11 @@ export const blueprint: Blueprint = {
         }
 
         // `turns` % 2 will always return 0 if it is an even number, and always return 1 if it is an odd number.
-        const even = (turns % 2 === 0);
-        const manathirst = self.manathirst(7);
+        const EVEN = (turns % 2 === 0);
+        const MANATHIRST = self.manathirst(7);
 
         // If the turn counter is an even number or the manathirst is fullfilled, clear the condition.
-        return even || manathirst;
+        return EVEN || MANATHIRST;
     },
 
     placeholders(plr, self) {

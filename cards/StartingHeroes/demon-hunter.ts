@@ -3,7 +3,7 @@
 import assert from 'node:assert';
 import { type Blueprint } from '@Game/types.js';
 
-export const blueprint: Blueprint = {
+export const BLUEPRINT: Blueprint = {
     name: 'Demon Hunter Starting Hero',
     displayName: 'Illidan Stormrage',
     text: 'Demon hunter starting hero',

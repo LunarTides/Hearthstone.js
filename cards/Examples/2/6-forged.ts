@@ -2,7 +2,7 @@
 
 import { type Blueprint } from '@Game/types.js';
 
-export const blueprint: Blueprint = {
+export const BLUEPRINT: Blueprint = {
     // Look in `forge.ts` first.
     // This is just an ordinary card.
     name: 'Forged Example',

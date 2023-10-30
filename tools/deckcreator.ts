@@ -6,11 +6,11 @@ import util from 'node:util';
 import { type Card, createGame } from '../src/internal.js';
 import { type CardClass, type CardClassNoNeutral, type GameConfig } from '../src/types.js';
 
-const { game, player1: plr } = createGame();
+const { game, player1 } = createGame();
 
-const { config } = game;
-const classes = game.functions.card.getClasses();
-const cards = game.functions.card.getAll(!game.config.advanced.dcShowUncollectible);
+const { config: CONFIG } = game;
+const CLASSES = game.functions.card.getClasses();
+const CARDS = game.functions.card.getAll(!game.config.advanced.dcShowUncollectible);
 
 let chosenClass: CardClassNoNeutral;
 let filteredCards: Card[] = [];
@@ -18,7 +18,7 @@ let filteredCards: Card[] = [];
 let deck: Card[] = [];
 let runes = '';
 
-const warnings: Record<string, boolean> = {
+const WARNINGS: Record<string, boolean> = {
     latestCard: true,
 };
 
@@ -55,7 +55,7 @@ type Settings = {
     };
 };
 
-const settings: Settings = {
+const SETTINGS: Settings = {
     card: {
         history: [],
     },
@@ -87,7 +87,7 @@ const settings: Settings = {
     },
 };
 
-const defaultSettings: Settings = game.lodash.cloneDeep(settings);
+const DEFAULT_SETTINGS: Settings = game.lodash.cloneDeep(SETTINGS);
 
 function printName() {
     game.interact.cls();
@@ -97,12 +97,12 @@ function printName() {
 function askClass(): CardClassNoNeutral {
     printName();
 
-    let heroClass = game.input('What class do you want to choose?\n' + classes.join(', ') + '\n');
+    let heroClass = game.input('What class do you want to choose?\n' + CLASSES.join(', ') + '\n');
     if (heroClass) {
         heroClass = game.lodash.startCase(heroClass);
     }
 
-    if (!classes.includes(heroClass as CardClassNoNeutral)) {
+    if (!CLASSES.includes(heroClass as CardClassNoNeutral)) {
         return askClass();
     }
 
@@ -112,15 +112,15 @@ function askClass(): CardClassNoNeutral {
         while (runes.length < 3) {
             printName();
 
-            const rune = game.input(`What runes do you want to add (${3 - runes.length} more)\nBlood, Frost, Unholy\n`);
-            if (!rune || !['B', 'F', 'U'].includes(rune[0].toUpperCase())) {
+            const RUNE = game.input(`What runes do you want to add (${3 - runes.length} more)\nBlood, Frost, Unholy\n`);
+            if (!RUNE || !['B', 'F', 'U'].includes(RUNE[0].toUpperCase())) {
                 continue;
             }
 
-            runes += rune[0].toUpperCase();
+            runes += RUNE[0].toUpperCase();
         }
 
-        plr.runes = runes;
+        player1.runes = runes;
     }
 
     return heroClass as CardClassNoNeutral;
@@ -128,37 +128,37 @@ function askClass(): CardClassNoNeutral {
 
 function sortCards(_cards: Card[]) {
     // If the order is invalid, fall back to ascending
-    if (!['asc', 'desc'].includes(settings.sort.order)) {
-        settings.sort.order = defaultSettings.sort.order;
+    if (!['asc', 'desc'].includes(SETTINGS.sort.order)) {
+        SETTINGS.sort.order = DEFAULT_SETTINGS.sort.order;
     }
 
-    const { type, order } = settings.sort;
+    const { type: TYPE, order: ORDER } = SETTINGS.sort;
 
     const calcOrder = (a: number, b: number) => {
-        if (order === 'asc') {
+        if (ORDER === 'asc') {
             return a - b;
         }
 
         return b - a;
     };
 
-    if (type === 'rarity') {
-        const sortScores = ['Free', 'Common', 'Rare', 'Epic', 'Legendary'];
+    if (TYPE === 'rarity') {
+        const SORT_SCORES = ['Free', 'Common', 'Rare', 'Epic', 'Legendary'];
 
         return _cards.sort((a, b) => {
-            const scoreA = sortScores.indexOf(a.rarity);
-            const scoreB = sortScores.indexOf(b.rarity);
+            const SCORE_A = SORT_SCORES.indexOf(a.rarity);
+            const SCORE_B = SORT_SCORES.indexOf(b.rarity);
 
-            return calcOrder(scoreA, scoreB);
+            return calcOrder(SCORE_A, SCORE_B);
         });
     }
 
-    if (['name', 'type'].includes(type)) {
+    if (['name', 'type'].includes(TYPE)) {
         return _cards.sort((a, b) => {
             let typeA;
             let typeB;
 
-            if (type === 'name') {
+            if (TYPE === 'name') {
                 typeA = a.displayName;
                 typeB = b.displayName;
             } else {
@@ -167,7 +167,7 @@ function sortCards(_cards: Card[]) {
             }
 
             let returnValue = typeA.localeCompare(typeB);
-            if (order === 'desc') {
+            if (ORDER === 'desc') {
                 returnValue = -returnValue;
             }
 
@@ -175,14 +175,14 @@ function sortCards(_cards: Card[]) {
         });
     }
 
-    if (type === 'cost' || type === 'id') {
-        const newType = type;
+    if (TYPE === 'cost' || TYPE === 'id') {
+        const NEW_TYPE = TYPE;
 
-        return _cards.sort((a, b) => calcOrder(a[newType], b[newType]));
+        return _cards.sort((a, b) => calcOrder(a[NEW_TYPE], b[NEW_TYPE]));
     }
 
     // If 'type' isn't valid, fall back to sorting by rarity
-    settings.sort.type = defaultSettings.sort.type;
+    SETTINGS.sort.type = DEFAULT_SETTINGS.sort.type;
     return sortCards(_cards);
 }
 
@@ -191,82 +191,82 @@ function searchCards(_cards: Card[], searchQuery: string) {
         return _cards;
     }
 
-    const returnValueCards: Card[] = [];
+    const RETURN_VALUE_CARDS: Card[] = [];
 
-    const splitQuery = searchQuery.split(':');
+    const SPLIT_QUERY = searchQuery.split(':');
 
-    if (splitQuery.length <= 1) {
+    if (SPLIT_QUERY.length <= 1) {
         // The user didn't specify a key. Do a general search
-        const query = splitQuery[0].toLowerCase();
+        const QUERY = SPLIT_QUERY[0].toLowerCase();
 
-        for (const c of _cards) {
-            const name = c.displayName.toLowerCase();
-            const text = c.text.toLowerCase();
+        for (const CARD of _cards) {
+            const NAME = CARD.displayName.toLowerCase();
+            const TEXT = CARD.text.toLowerCase();
 
-            if (!name.includes(query) && !text.includes(query)) {
+            if (!NAME.includes(QUERY) && !TEXT.includes(QUERY)) {
                 continue;
             }
 
-            returnValueCards.push(c);
+            RETURN_VALUE_CARDS.push(CARD);
         }
 
-        return returnValueCards;
+        return RETURN_VALUE_CARDS;
     }
 
-    let [key, value] = splitQuery;
+    let [key, value] = SPLIT_QUERY;
 
     value = value.toLowerCase();
 
     const doReturn = (c: Card) => {
-        const returnValue = c[key as keyof Card];
+        const RETURN_VALUE = c[key as keyof Card];
 
         // Javascript
-        if (!returnValue && returnValue !== 0) {
+        if (!RETURN_VALUE && RETURN_VALUE !== 0) {
             game.log(`\n<red>Key '${key}' not valid!</red>`);
             return -1;
         }
 
         // Mana even / odd
         if (key === 'cost') {
-            if (typeof returnValue !== 'number') {
+            if (typeof RETURN_VALUE !== 'number') {
                 throw new TypeError('`ret` is not a number.');
             }
 
             if (value === 'even') {
-                return returnValue % 2 === 0;
+                return RETURN_VALUE % 2 === 0;
             }
 
             if (value === 'odd') {
-                return returnValue % 2 === 1;
+                return RETURN_VALUE % 2 === 1;
             }
 
             // Mana range (1-10)
-            const regex = /\d+-\d+/;
-            if (regex.test(value)) {
-                const _value = value.split('-');
+            const REGEX = /\d+-\d+/;
+            if (REGEX.test(value)) {
+                const VALUE = value.split('-');
 
-                const min = game.lodash.parseInt(_value[0]);
-                const max = game.lodash.parseInt(_value[1]);
+                const MIN = game.lodash.parseInt(VALUE[0]);
+                const MAX = game.lodash.parseInt(VALUE[1]);
 
-                return returnValue >= min && returnValue <= max;
+                return RETURN_VALUE >= MIN && RETURN_VALUE <= MAX;
             }
 
-            const parsedValue = game.lodash.parseInt(value);
+            const PARSED_VALUE = game.lodash.parseInt(value);
 
-            if (!Number.isNaN(parsedValue)) {
-                return returnValue === parsedValue;
+            if (!Number.isNaN(PARSED_VALUE)) {
+                return RETURN_VALUE === PARSED_VALUE;
             }
 
             game.log(`\n<red>Value '${value}' not valid!</red>`);
             return -1;
         }
 
-        if (typeof (returnValue) === 'string') {
-            return returnValue.toLowerCase().includes(value);
+        if (typeof (RETURN_VALUE) === 'string') {
+            return RETURN_VALUE.toLowerCase().includes(value);
         }
 
-        if (typeof (returnValue) === 'number') {
-            return returnValue === Number.parseFloat(value);
+        if (typeof (RETURN_VALUE) === 'number') {
+            return RETURN_VALUE === Number.parseFloat(value);
         }
 
         return -1;
@@ -274,20 +274,20 @@ function searchCards(_cards: Card[], searchQuery: string) {
 
     let error = false;
 
-    for (const c of _cards) {
+    for (const CARD of _cards) {
         if (error) {
             continue;
         }
 
-        const returnValue = doReturn(c);
+        const RETURN_VALUE = doReturn(CARD);
 
-        if (returnValue === -1) {
+        if (RETURN_VALUE === -1) {
             error = true;
             continue;
         }
 
-        if (returnValue) {
-            returnValueCards.push(c);
+        if (RETURN_VALUE) {
+            RETURN_VALUE_CARDS.push(CARD);
         }
     }
 
@@ -295,7 +295,7 @@ function searchCards(_cards: Card[], searchQuery: string) {
         return false;
     }
 
-    return returnValueCards;
+    return RETURN_VALUE_CARDS;
 }
 
 // eslint-disable-next-line complexity
@@ -304,20 +304,20 @@ function showCards() {
     printName();
 
     // If the user chose to view an invalid class, reset the viewed class to default.
-    const correctClass = game.functions.card.validateClasses([settings.view.class ?? chosenClass], chosenClass);
-    if (!settings.view.class || !correctClass) {
-        settings.view.class = chosenClass;
+    const CORRECT_CLASS = game.functions.card.validateClasses([SETTINGS.view.class ?? chosenClass], chosenClass);
+    if (!SETTINGS.view.class || !CORRECT_CLASS) {
+        SETTINGS.view.class = chosenClass;
     }
 
     // Filter away cards that aren't in the chosen class
-    for (const c of Object.values(cards)) {
-        if (c.runes && !plr.testRunes(c.runes)) {
+    for (const CARD of Object.values(CARDS)) {
+        if (CARD.runes && !player1.testRunes(CARD.runes)) {
             continue;
         }
 
-        const correctClass = game.functions.card.validateClasses(c.classes, settings.view.class ?? chosenClass);
-        if (correctClass) {
-            filteredCards.push(c);
+        const CORRECT_CLASS = game.functions.card.validateClasses(CARD.classes, SETTINGS.view.class ?? chosenClass);
+        if (CORRECT_CLASS) {
+            filteredCards.push(CARD);
         }
     }
 
@@ -325,40 +325,40 @@ function showCards() {
         game.log(`<yellow>No cards found for the selected classes '${chosenClass} and Neutral'.</yellow>`);
     }
 
-    const { cpp } = settings.view;
-    let { page } = settings.view;
+    const { cpp: CARDS_PER_PAGE } = SETTINGS.view;
+    let { page: PAGE } = SETTINGS.view;
 
     // Search
 
-    if (settings.search.query.length > 0) {
-        game.log(`Searching for '${settings.search.query.join(' ')}'.`);
+    if (SETTINGS.search.query.length > 0) {
+        game.log(`Searching for '${SETTINGS.search.query.join(' ')}'.`);
     }
 
     // Filter to show only cards in the viewed class
-    let classCards = Object.values(filteredCards).filter(c => c.classes.includes(settings.view.class ?? chosenClass));
+    let classCards = Object.values(filteredCards).filter(c => c.classes.includes(SETTINGS.view.class ?? chosenClass));
 
     if (classCards.length <= 0) {
-        game.log(`<yellow>No cards found for the viewed class '${settings.view.class}'.</yellow>`);
+        game.log(`<yellow>No cards found for the viewed class '${SETTINGS.view.class}'.</yellow>`);
         return;
     }
 
     let searchFailed = false;
 
     // Search functionality
-    for (const q of settings.search.query) {
+    for (const QUERY of SETTINGS.search.query) {
         if (searchFailed) {
             continue;
         }
 
-        const searchedCards = searchCards(classCards, q);
+        const SEARCHED_CARDS = searchCards(classCards, QUERY);
 
-        if (searchedCards === false) {
-            game.pause(`<red>Search failed at '${q}'! Reverting back to last successful query.\n</red>`);
+        if (SEARCHED_CARDS === false) {
+            game.pause(`<red>Search failed at '${QUERY}'! Reverting back to last successful query.\n</red>`);
             searchFailed = true;
             continue;
         }
 
-        classCards = searchedCards;
+        classCards = SEARCHED_CARDS;
     }
 
     if (classCards.length <= 0) {
@@ -367,101 +367,101 @@ function showCards() {
     }
 
     if (searchFailed) {
-        settings.search.query = settings.search.prevQuery;
+        SETTINGS.search.query = SETTINGS.search.prevQuery;
         showCards();
         return;
     }
 
-    settings.search.prevQuery = settings.search.query;
+    SETTINGS.search.prevQuery = SETTINGS.search.query;
 
-    settings.view.maxPage = Math.ceil(classCards.length / cpp);
-    if (page > settings.view.maxPage) {
-        page = settings.view.maxPage;
+    SETTINGS.view.maxPage = Math.ceil(classCards.length / CARDS_PER_PAGE);
+    if (PAGE > SETTINGS.view.maxPage) {
+        PAGE = SETTINGS.view.maxPage;
     }
 
-    const oldSortType = settings.sort.type;
-    const oldSortOrder = settings.sort.order;
-    game.log(`Sorting by ${settings.sort.type.toUpperCase()}, ${settings.sort.order}ending.`);
+    const OLD_SORT_TYPE = SETTINGS.sort.type;
+    const OLD_SORT_ORDER = SETTINGS.sort.order;
+    game.log(`Sorting by ${SETTINGS.sort.type.toUpperCase()}, ${SETTINGS.sort.order}ending.`);
 
     // Sort
     classCards = sortCards(classCards);
 
-    const sortTypeInvalid = oldSortType !== settings.sort.type;
-    const sortOrderInvalid = oldSortOrder !== settings.sort.order;
+    const SORT_TYPE_INVALID = OLD_SORT_TYPE !== SETTINGS.sort.type;
+    const SORT_ORDER_INVALID = OLD_SORT_ORDER !== SETTINGS.sort.order;
 
-    if (sortTypeInvalid) {
-        game.log('<yellow>Sorting by </yellow>\'%s\'<yellow> failed! Falling back to </yellow>%s.', oldSortType.toUpperCase(), settings.sort.type.toUpperCase());
+    if (SORT_TYPE_INVALID) {
+        game.log('<yellow>Sorting by </yellow>\'%s\'<yellow> failed! Falling back to </yellow>%s.', OLD_SORT_TYPE.toUpperCase(), SETTINGS.sort.type.toUpperCase());
     }
 
-    if (sortOrderInvalid) {
-        game.log('<yellow>Ordering by </yellow>\'%sending\'<yellow> failed! Falling back to </yellow>%sending.', oldSortOrder, settings.sort.order);
+    if (SORT_ORDER_INVALID) {
+        game.log('<yellow>Ordering by </yellow>\'%sending\'<yellow> failed! Falling back to </yellow>%sending.', OLD_SORT_ORDER, SETTINGS.sort.order);
     }
 
-    if (sortTypeInvalid || sortOrderInvalid) {
-        game.log(`\nSorting by ${settings.sort.type.toUpperCase()}, ${settings.sort.order}ending.`);
+    if (SORT_TYPE_INVALID || SORT_ORDER_INVALID) {
+        game.log(`\nSorting by ${SETTINGS.sort.type.toUpperCase()}, ${SETTINGS.sort.order}ending.`);
     }
 
     // Page logic
-    classCards = classCards.slice(cpp * (page - 1), cpp * page);
+    classCards = classCards.slice(CARDS_PER_PAGE * (PAGE - 1), CARDS_PER_PAGE * PAGE);
 
     // Loop
-    game.log(`\nPage ${page} / ${settings.view.maxPage}\n`);
+    game.log(`\nPage ${PAGE} / ${SETTINGS.view.maxPage}\n`);
 
-    game.log(`<underline>${settings.view.class}</underline>`);
+    game.log(`<underline>${SETTINGS.view.class}</underline>`);
 
-    const bricks: string[] = [];
-    for (const c of classCards) {
-        bricks.push(c.displayName + ' - ' + c.id);
+    const BRICKS: string[] = [];
+    for (const CARD of classCards) {
+        BRICKS.push(CARD.displayName + ' - ' + CARD.id);
     }
 
-    const wall = game.functions.util.createWall(bricks, '-');
+    const WALL = game.functions.util.createWall(BRICKS, '-');
 
-    for (const brick of wall) {
-        const brickSplit = brick.split('-');
+    for (const BRICK of WALL) {
+        const BRICK_SPLIT = BRICK.split('-');
 
         // Find the card before the '-'
-        const card = findCard(brickSplit[0].trim());
-        if (!card) {
+        const CARD = findCard(BRICK_SPLIT[0].trim());
+        if (!CARD) {
             continue;
         }
 
         // The card's name should be colored, while the id should not
         // I don't add colors above, since createWall breaks when colors are used.
-        const toDisplay = card.colorFromRarity(brickSplit[0]) + '-' + brickSplit[1];
+        const TO_DISPLAY = CARD.colorFromRarity(BRICK_SPLIT[0]) + '-' + BRICK_SPLIT[1];
 
-        game.log(toDisplay);
+        game.log(TO_DISPLAY);
     }
 
     game.log('\nCurrent deckcode output:');
-    const _deckcode = deckcode();
+    const DECKCODE = deckcode();
 
-    if (!_deckcode.error) {
+    if (!DECKCODE.error) {
         game.log('<bright:green>Valid deck!</bright:green>');
-        game.log(_deckcode.code);
+        game.log(DECKCODE.code);
     }
 
-    if (settings.other.firstScreen) {
+    if (SETTINGS.other.firstScreen) {
         game.log('\nType \'rules\' to see a list of rules.');
 
-        settings.other.firstScreen = false;
+        SETTINGS.other.firstScreen = false;
     }
 }
 
 function showRules() {
-    const configText = '### RULES ###';
-    game.log('#'.repeat(configText.length));
-    game.log(configText);
-    game.log('#'.repeat(configText.length));
+    const CONFIG_TEXT = '### RULES ###';
+    game.log('#'.repeat(CONFIG_TEXT.length));
+    game.log(CONFIG_TEXT);
+    game.log('#'.repeat(CONFIG_TEXT.length));
 
     game.log('#');
 
-    game.log('# Validation: %s', (config.decks.validate ? '<bright:green>ON</bright:green>' : '<red>OFF</red>'));
+    game.log('# Validation: %s', (CONFIG.decks.validate ? '<bright:green>ON</bright:green>' : '<red>OFF</red>'));
 
-    game.log(`#\n# Rule 1. Minimum Deck Length: <yellow>${config.decks.minLength}</yellow>`);
-    game.log(`# Rule 2. Maximum Deck Length: %s <yellow>${config.decks.maxLength}</yellow>`);
+    game.log(`#\n# Rule 1. Minimum Deck Length: <yellow>${CONFIG.decks.minLength}</yellow>`);
+    game.log(`# Rule 2. Maximum Deck Length: %s <yellow>${CONFIG.decks.maxLength}</yellow>`);
 
-    game.log(`#\n# Rule 3. Maximum amount of cards for each card (eg. You can only have: <yellow>x</yellow> Seances in a deck): <yellow>${config.decks.maxOfOneCard}</yellow>`);
-    game.log(`# Rule 4. Maximum amount of cards for each legendary card (Same as Rule 3 but for legendaries): <yellow>${config.decks.maxOfOneLegendary}</yellow>`);
+    game.log(`#\n# Rule 3. Maximum amount of cards for each card (eg. You can only have: <yellow>x</yellow> Seances in a deck): <yellow>${CONFIG.decks.maxOfOneCard}</yellow>`);
+    game.log(`# Rule 4. Maximum amount of cards for each legendary card (Same as Rule 3 but for legendaries): <yellow>${CONFIG.decks.maxOfOneLegendary}</yellow>`);
 
     game.log('#');
 
@@ -473,19 +473,19 @@ function showRules() {
 
     game.log('#');
 
-    game.log('#'.repeat(configText.length));
+    game.log('#'.repeat(CONFIG_TEXT.length));
 }
 
 function findCard(card: string): Card | undefined {
-    let _card: Card | undefined;
+    let RETURN_CARD: Card | undefined;
 
-    for (const c of Object.values(filteredCards)) {
-        if (c.id === game.lodash.parseInt(card) || (typeof card === 'string' && c.displayName.toLowerCase() === card.toLowerCase())) {
-            _card = c;
+    for (const CARD of Object.values(filteredCards)) {
+        if (CARD.id === game.lodash.parseInt(card) || (typeof card === 'string' && CARD.displayName.toLowerCase() === card.toLowerCase())) {
+            RETURN_CARD = CARD;
         }
     }
 
-    return _card!;
+    return RETURN_CARD;
 }
 
 function add(card: Card): boolean {
@@ -495,11 +495,11 @@ function add(card: Card): boolean {
         return true;
     }
 
-    for (const setting of Object.entries(card.deckSettings)) {
-        const [key, value] = setting;
+    for (const SETTING of Object.entries(card.deckSettings)) {
+        const [KEY, VALUE] = SETTING;
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        config[key as keyof GameConfig] = value as any;
+        CONFIG[KEY as keyof GameConfig] = VALUE as any;
     }
 
     return true;
@@ -515,90 +515,90 @@ function showDeck() {
     game.log(`Deck Size: <yellow>${deck.length}</yellow>\n`);
 
     // Why are we doing this? Can't this be done better?
-    const _cards: Record<string, [Card, number]> = {};
+    const CARDS: Record<string, [Card, number]> = {};
 
-    for (const c of deck) {
-        if (!_cards[c.name]) {
-            _cards[c.name] = [c, 0];
+    for (const CARD of deck) {
+        if (!CARDS[CARD.name]) {
+            CARDS[CARD.name] = [CARD, 0];
         }
 
-        _cards[c.name][1]++;
+        CARDS[CARD.name][1]++;
     }
 
-    const bricks: string[] = [];
+    const BRICKS: string[] = [];
 
-    for (const c of Object.values(_cards)) {
-        const card = c[0];
-        const amount = c[1];
+    for (const CARD_OBJECT of Object.values(CARDS)) {
+        const CARD = CARD_OBJECT[0];
+        const AMOUNT = CARD_OBJECT[1];
 
         let viewed = '';
 
-        if (amount > 1) {
-            viewed += `x${amount} `;
+        if (AMOUNT > 1) {
+            viewed += `x${AMOUNT} `;
         }
 
-        viewed += card.displayName.replaceAll('-', '`') + ` - ${card.id}`;
+        viewed += CARD.displayName.replaceAll('-', '`') + ` - ${CARD.id}`;
 
-        bricks.push(viewed);
+        BRICKS.push(viewed);
     }
 
-    const wall = game.functions.util.createWall(bricks, '-');
+    const WALL = game.functions.util.createWall(BRICKS, '-');
 
-    for (const brick of wall) {
-        const brickSplit = brick.split('-');
+    for (const BRICK of WALL) {
+        const BRICK_SPLIT = BRICK.split('-');
 
         // Replace '`' with '-'
-        brickSplit[0] = brickSplit[0].replaceAll('`', '-');
+        BRICK_SPLIT[0] = BRICK_SPLIT[0].replaceAll('`', '-');
 
-        const [nameAndAmount, id] = brickSplit;
+        const [NAME_AND_AMOUNT, ID] = BRICK_SPLIT;
 
         // Color name by rarity
-        const r = /^x\d+ /;
+        const REG = /^x\d+ /;
 
         // Extract amount from name
-        if (r.test(nameAndAmount)) {
+        if (REG.test(NAME_AND_AMOUNT)) {
             // Amount specified
-            const amount = nameAndAmount.split(r);
-            const card = findCard(nameAndAmount.replace(r, '').trim());
+            const AMOUNT = NAME_AND_AMOUNT.split(REG);
+            const CARD = findCard(NAME_AND_AMOUNT.replace(REG, '').trim());
 
             // TODO: Maybe throw an error?
-            if (!card) {
+            if (!CARD) {
                 continue;
             }
 
-            const name = card.colorFromRarity(amount[1]);
+            const NAME = CARD.colorFromRarity(AMOUNT[1]);
 
-            const amountString = r.exec(nameAndAmount) ?? 'undefined';
-            game.log(`${amountString as string}${name}-${id}`);
+            const AMOUNT_STRING = REG.exec(NAME_AND_AMOUNT) ?? 'undefined';
+            game.log(`${AMOUNT_STRING as string}${NAME}-${ID}`);
             continue;
         }
 
-        const card = findCard(nameAndAmount.trim());
-        if (!card) {
+        const CARD = findCard(NAME_AND_AMOUNT.trim());
+        if (!CARD) {
             continue;
         }
 
-        const name = card.colorFromRarity(nameAndAmount);
+        const NAME = CARD.colorFromRarity(NAME_AND_AMOUNT);
 
-        game.log(`${name}-${id}`);
+        game.log(`${NAME}-${ID}`);
     }
 
     game.log('\nCurrent deckcode output:');
-    const _deckcode = deckcode();
-    if (!_deckcode.error) {
+    const DECKCODE = deckcode();
+    if (!DECKCODE.error) {
         game.log('<bright:green>Valid deck!</bright:green>');
-        game.log(_deckcode.code);
+        game.log(DECKCODE.code);
     }
 }
 
 function deckcode(parseVanillaOnPseudo = false) {
-    const _deckcode = game.functions.deckcode.export(deck, chosenClass, runes);
+    const DECKCODE = game.functions.deckcode.export(deck, chosenClass, runes);
 
-    if (_deckcode.error) {
-        const { error } = _deckcode;
+    if (DECKCODE.error) {
+        const { error: ERROR } = DECKCODE;
 
         let log = '<yellow>WARNING: ';
-        switch (error.msg) {
+        switch (ERROR.msg) {
             case 'TooFewCards': {
                 log += 'Too few cards.';
                 break;
@@ -615,12 +615,12 @@ function deckcode(parseVanillaOnPseudo = false) {
             }
 
             case 'TooManyCopies': {
-                log += util.format('Too many copies of a card. Maximum: </yellow>\'%s\'<yellow>. Offender: </yellow>\'%s\'<yellow>', config.decks.maxOfOneCard, `{ Name: "${error.info?.card?.name}", Copies: "${error.info?.amount}" }`);
+                log += util.format('Too many copies of a card. Maximum: </yellow>\'%s\'<yellow>. Offender: </yellow>\'%s\'<yellow>', CONFIG.decks.maxOfOneCard, `{ Name: "${ERROR.info?.card?.name}", Copies: "${ERROR.info?.amount}" }`);
                 break;
             }
 
             case 'TooManyLegendaryCopies': {
-                log += util.format('Too many copies of a Legendary card. Maximum: </yellow>\'%s\'<yellow>. Offender: </yellow>\'%s\'<yellow>', config.decks.maxOfOneLegendary, `{ Name: "${error.info?.card?.name}", Copies: "${error.info?.amount}" }`);
+                log += util.format('Too many copies of a Legendary card. Maximum: </yellow>\'%s\'<yellow>. Offender: </yellow>\'%s\'<yellow>', CONFIG.decks.maxOfOneLegendary, `{ Name: "${ERROR.info?.card?.name}", Copies: "${ERROR.info?.amount}" }`);
                 break;
             }
 
@@ -632,16 +632,16 @@ function deckcode(parseVanillaOnPseudo = false) {
         game.log(log);
     }
 
-    if (settings.deckcode.format === 'vanilla' && (parseVanillaOnPseudo || !_deckcode.error)) {
+    if (SETTINGS.deckcode.format === 'vanilla' && (parseVanillaOnPseudo || !DECKCODE.error)) {
         // Don't convert if the error is unrecoverable
-        if (_deckcode.error && !_deckcode.error.recoverable) {
-            return _deckcode;
+        if (DECKCODE.error && !DECKCODE.error.recoverable) {
+            return DECKCODE;
         }
 
-        _deckcode.code = game.functions.deckcode.toVanilla(plr, _deckcode.code);
+        DECKCODE.code = game.functions.deckcode.toVanilla(player1, DECKCODE.code);
     }
 
-    return _deckcode;
+    return DECKCODE;
 }
 
 function help() {
@@ -651,7 +651,7 @@ function help() {
     game.log('<b>Available commands:</b>');
     game.log('(In order to run a command; input the name of the command and follow further instruction.)\n');
 
-    const bricks = [
+    const BRICKS = [
         '(name) [optional] (required) - (description)\n',
 
         'add (name | id) - Add a card to the deck',
@@ -672,16 +672,16 @@ function help() {
         'exit - Quits the program',
     ];
 
-    const wall = game.functions.util.createWall(bricks, '-');
-    for (const brick of wall) {
-        game.log(brick);
+    const WALL = game.functions.util.createWall(BRICKS, '-');
+    for (const BRICKS of WALL) {
+        game.log(BRICKS);
     }
 
     // Set
     game.log('\n<b>Set Subcommands:</b>');
     game.log('(In order to use these; input \'set \', then one of the subcommands. Example: \'set cpp 20\')\n');
 
-    const setSubcommandBricks = [
+    const SET_SUBCOMMAND_BRICKS = [
         '(name) [optional] (required) - (description)\n',
 
         'format (format) - Makes the deckcode generator output the deckcode as a different format. If you set this to \'vanilla\', it is only going to show the deckcode as vanilla. If you set it to \'vanilla\', you will be asked to choose a card if there are multiple vanilla cards with the same name. This should be rare, but just know that it might happen. (\'js\', \'vanilla\') [default = \'js\']',
@@ -690,9 +690,9 @@ function help() {
         'warning - Disables/enables certain warnings. Look down to \'Warnings\' to see changeable warnings.',
     ];
 
-    const setSubcommandWall = game.functions.util.createWall(setSubcommandBricks, '-');
-    for (const brick of setSubcommandWall) {
-        game.log(brick);
+    const SET_SUBCOMMAND_WALL = game.functions.util.createWall(SET_SUBCOMMAND_BRICKS, '-');
+    for (const BRICK of SET_SUBCOMMAND_WALL) {
+        game.log(BRICK);
     }
 
     game.log('\n<gray>Note the \'cardsPerPage\' commands has 2 different subcommands; cpp & cardsPerPage. Both do the same thing.</gray>');
@@ -701,15 +701,15 @@ function help() {
     game.log('\n<b>Warnings:</b>');
     game.log('(In order to use these; input \'set warning (name) [off | on]\'. Example: \'set warning latestCard off\')\n');
 
-    const warningBricks = [
+    const WARNING_BRICKS = [
         '(name) - (description)\n',
 
         'latestCard - Warning that shows up when attemping to use the latest card. The latest card is used if the card chosen in a command is invalid and the name specified begins with \'l\'. Example: \'add latest\' - Adds a copy of the latest card to the deck.',
     ];
 
-    const warningWall = game.functions.util.createWall(warningBricks, '-');
-    for (const brick of warningWall) {
-        game.log(brick);
+    const WARNING_WALL = game.functions.util.createWall(WARNING_BRICKS, '-');
+    for (const BRICK of WARNING_WALL) {
+        game.log(BRICK);
     }
 
     game.log('\nNote: If you don\'t specify a state (off / on) it will toggle the state of the warning.');
@@ -729,18 +729,18 @@ function help() {
 function getCardArg(cmd: string, callback: (card: Card) => boolean, errorCallback: () => void): boolean {
     let times = 1;
 
-    const cmdSplit = cmd.split(' ');
-    cmdSplit.shift();
+    const COMMAND_SPLIT = cmd.split(' ');
+    COMMAND_SPLIT.shift();
 
-    const cardFromFullString = findCard(cmdSplit.join(' '));
+    const CARD_FROM_FULL_STRING = findCard(COMMAND_SPLIT.join(' '));
 
     // Get x2 from the cmd
-    if (cmdSplit.length > 1 && game.lodash.parseInt(cmdSplit[0]) && !cardFromFullString) {
-        times = game.lodash.parseInt(cmdSplit[0], 10);
-        cmdSplit.shift();
+    if (COMMAND_SPLIT.length > 1 && game.lodash.parseInt(COMMAND_SPLIT[0]) && !CARD_FROM_FULL_STRING) {
+        times = game.lodash.parseInt(COMMAND_SPLIT[0], 10);
+        COMMAND_SPLIT.shift();
     }
 
-    cmd = cmdSplit.join(' ');
+    cmd = COMMAND_SPLIT.join(' ');
 
     let eligibleForLatest = false;
     if (cmd.startsWith('l')) {
@@ -750,11 +750,11 @@ function getCardArg(cmd: string, callback: (card: Card) => boolean, errorCallbac
     let card = findCard(cmd);
 
     if (!card && eligibleForLatest) {
-        if (warnings.latestCard) {
+        if (WARNINGS.latestCard) {
             game.pause('<yellow>Card not found. Using latest valid card instead.</yellow>');
         }
 
-        card = game.lodash.last(settings.card.history);
+        card = game.lodash.last(SETTINGS.card.history);
     }
 
     if (!card) {
@@ -768,7 +768,7 @@ function getCardArg(cmd: string, callback: (card: Card) => boolean, errorCallbac
         }
     }
 
-    settings.card.history.push(card);
+    SETTINGS.card.history.push(card);
     return true;
 }
 
@@ -776,17 +776,17 @@ function getCardArg(cmd: string, callback: (card: Card) => boolean, errorCallbac
 function handleCmds(cmd: string, addToHistory = true): boolean {
     if (findCard(cmd)) {
         // You just typed the name of a card.
-        return handleCmds(`${settings.commands.default} ${cmd}`);
+        return handleCmds(`${SETTINGS.commands.default} ${cmd}`);
     }
 
-    const args = cmd.split(' ');
-    const name = args.shift()?.toLowerCase();
-    if (!name) {
+    const ARGUMENTS = cmd.split(' ');
+    const NAME = ARGUMENTS.shift()?.toLowerCase();
+    if (!NAME) {
         game.pause('<red>Invalid command.</red>\n');
         return false;
     }
 
-    switch (name) {
+    switch (NAME) {
         case 'config':
         case 'rules': {
             printName();
@@ -809,34 +809,34 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         }
 
         case 'cards': {
-            if (args.length <= 0) {
+            if (ARGUMENTS.length <= 0) {
                 return false;
             }
 
-            let heroClass = args.join(' ') as CardClass;
+            let heroClass = ARGUMENTS.join(' ') as CardClass;
             heroClass = game.lodash.startCase(heroClass) as CardClass;
 
-            if (!classes.includes(heroClass as CardClassNoNeutral) && heroClass !== 'Neutral') {
+            if (!CLASSES.includes(heroClass as CardClassNoNeutral) && heroClass !== 'Neutral') {
                 game.pause('<red>Invalid class!</red>\n');
                 return false;
             }
 
-            const correctClass = game.functions.card.validateClasses([heroClass], chosenClass);
-            if (!correctClass) {
+            const CORRECT_CLASS = game.functions.card.validateClasses([heroClass], chosenClass);
+            if (!CORRECT_CLASS) {
                 game.pause(`<yellow>Class '${heroClass}' is a different class. To see these cards, please switch class from '${chosenClass}' to '${heroClass}' to avoid confusion.</yellow>\n`);
                 return false;
             }
 
-            settings.view.class = heroClass;
+            SETTINGS.view.class = heroClass;
 
             break;
         }
 
         case 'deckcode': {
-            const _deckcode = deckcode(true);
+            const DECKCODE = deckcode(true);
 
-            let toPrint = _deckcode.code + '\n';
-            if (_deckcode.error && !_deckcode.error.recoverable) {
+            let toPrint = DECKCODE.code + '\n';
+            if (DECKCODE.error && !DECKCODE.error.recoverable) {
                 toPrint = '';
             }
 
@@ -846,228 +846,228 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         }
 
         case 'sort': {
-            if (args.length <= 0) {
+            if (ARGUMENTS.length <= 0) {
                 return false;
             }
 
-            settings.sort.type = args[0] as keyof Card;
-            if (args.length > 1) {
-                settings.sort.order = args[1] as 'asc' | 'desc';
+            SETTINGS.sort.type = ARGUMENTS[0] as keyof Card;
+            if (ARGUMENTS.length > 1) {
+                SETTINGS.sort.order = ARGUMENTS[1] as 'asc' | 'desc';
             }
 
             break;
         }
 
         case 'search': {
-            if (args.length <= 0) {
-                settings.search.query = [];
+            if (ARGUMENTS.length <= 0) {
+                SETTINGS.search.query = [];
                 return false;
             }
 
-            settings.search.query = args;
+            SETTINGS.search.query = ARGUMENTS;
 
             break;
         }
 
         case 'deck': {
-            settings.view.type = settings.view.type === 'cards' ? 'deck' : 'cards';
+            SETTINGS.view.type = SETTINGS.view.type === 'cards' ? 'deck' : 'cards';
 
             break;
         }
 
         case 'import': {
-            const _deckcode = game.input('Please input a deckcode: ');
+            const DECKCODE = game.input('Please input a deckcode: ');
 
-            let _deck = game.functions.deckcode.import(plr, _deckcode);
-            if (!_deck) {
+            let DECK = game.functions.deckcode.import(player1, DECKCODE);
+            if (!DECK) {
                 return false;
             }
 
-            config.decks.validate = false;
-            _deck = _deck.sort((a, b) => a.name.localeCompare(b.name));
-            config.decks.validate = true;
+            CONFIG.decks.validate = false;
+            DECK = DECK.sort((a, b) => a.name.localeCompare(b.name));
+            CONFIG.decks.validate = true;
 
             deck = [];
 
             // Update the filtered cards
-            chosenClass = plr.heroClass as CardClassNoNeutral;
-            runes = plr.runes;
+            chosenClass = player1.heroClass as CardClassNoNeutral;
+            runes = player1.runes;
             showCards();
 
             // Add the cards using handleCmds instead of add because for some reason, adding them with add
             // causes a weird bug that makes modifying the deck impossible because removing a card
             // removes a completly unrelated card because javascript.
             // You can just set deck = functions.importDeck(), but doing it that way doesn't account for renathal or any other card that changes the config in any way since that is done using the add function.
-            for (const c of _deck) {
-                handleCmds(`add ${c.displayName}`);
+            for (const CARD of DECK) {
+                handleCmds(`add ${CARD.displayName}`);
             }
 
             break;
         }
 
         case 'class': {
-            const _runes = runes;
-            const newClass = askClass();
+            const RUNES = runes;
+            const NEW_CLASS = askClass();
 
-            if (newClass === chosenClass && runes === _runes) {
+            if (NEW_CLASS === chosenClass && runes === RUNES) {
                 game.pause('<yellow>Your class was not changed</yellow>\n');
                 return false;
             }
 
             deck = [];
-            chosenClass = newClass;
-            if (settings.view.class !== 'Neutral') {
-                settings.view.class = chosenClass;
+            chosenClass = NEW_CLASS;
+            if (SETTINGS.view.class !== 'Neutral') {
+                SETTINGS.view.class = chosenClass;
             }
 
             break;
         }
 
         case 'undo': {
-            if (settings.commands.undoableHistory.length <= 0) {
+            if (SETTINGS.commands.undoableHistory.length <= 0) {
                 game.pause('<red>Nothing to undo.</red>\n');
                 return false;
             }
 
-            const commandSplit = game.lodash.last(settings.commands.undoableHistory)?.split(' ');
-            if (!commandSplit) {
+            const COMMAND_SPLIT = game.lodash.last(SETTINGS.commands.undoableHistory)?.split(' ');
+            if (!COMMAND_SPLIT) {
                 game.pause('<red>Could not find anything to undo. This is a bug.</red>\n');
                 return false;
             }
 
-            const args = commandSplit.slice(1);
-            const command = commandSplit[0];
+            const ARGUMENTS = COMMAND_SPLIT.slice(1);
+            const COMMAND = COMMAND_SPLIT[0];
 
             let reverse;
 
-            if (command.startsWith('a')) {
+            if (COMMAND.startsWith('a')) {
                 reverse = 'remove';
-            } else if (command.startsWith('r')) {
+            } else if (COMMAND.startsWith('r')) {
                 reverse = 'add';
             } else {
                 // This shouldn't ever happen, but oh well
-                game.log(`<red>Command '${command}' cannot be undoed.</red>`);
+                game.log(`<red>Command '${COMMAND}' cannot be undoed.</red>`);
                 return false;
             }
 
-            handleCmds(`${reverse} ` + args.join(' '), false);
+            handleCmds(`${reverse} ` + ARGUMENTS.join(' '), false);
 
-            settings.commands.undoableHistory.pop();
-            settings.commands.history.pop();
+            SETTINGS.commands.undoableHistory.pop();
+            SETTINGS.commands.history.pop();
 
             break;
         }
 
-        default: { if (name === 'set' && args[0] === 'warning') {
+        default: { if (NAME === 'set' && ARGUMENTS[0] === 'warning') {
             // Shift since the first element is "warning"
-            args.shift();
-            const key = args[0];
+            ARGUMENTS.shift();
+            const KEY = ARGUMENTS[0];
 
-            if (!Object.keys(warnings).includes(key)) {
-                game.pause(`<red>'${key}' is not a valid warning!</red>\n`);
+            if (!Object.keys(WARNINGS).includes(KEY)) {
+                game.pause(`<red>'${KEY}' is not a valid warning!</red>\n`);
                 return false;
             }
 
             let newState;
 
-            if (args.length <= 1) {
+            if (ARGUMENTS.length <= 1) {
                 // Toggle
-                newState = !warnings[key];
+                newState = !WARNINGS[KEY];
             } else {
-                const value = args[1];
+                const VALUE = ARGUMENTS[1];
 
-                if (['off', 'disable', 'false', 'no', '0'].includes(value)) {
+                if (['off', 'disable', 'false', 'no', '0'].includes(VALUE)) {
                     newState = false;
-                } else if (['on', 'enable', 'true', 'yes', '1'].includes(value)) {
+                } else if (['on', 'enable', 'true', 'yes', '1'].includes(VALUE)) {
                     newState = true;
                 } else {
-                    game.pause(`<red>${value} is not a valid state. View 'help' for more information.</red>\n`);
+                    game.pause(`<red>${VALUE} is not a valid state. View 'help' for more information.</red>\n`);
                     return false;
                 }
             }
 
-            if (warnings[key] === newState) {
-                const newStateName = newState ? 'enabled' : 'disabled';
+            if (WARNINGS[KEY] === newState) {
+                const NEW_STATE_NAME = newState ? 'enabled' : 'disabled';
 
-                game.pause(`<yellow>Warning '<bright:yellow>${key}</bright:yellow>' is already ${newStateName}.</yellow>\n`);
+                game.pause(`<yellow>Warning '<bright:yellow>${KEY}</bright:yellow>' is already ${NEW_STATE_NAME}.</yellow>\n`);
                 return false;
             }
 
-            warnings[key] = newState;
+            WARNINGS[KEY] = newState;
 
-            const newStateName = (newState) ? '<bright:green>Enabled warning</bright:green>' : '<red>Disabled warning</red>';
-            game.pause(`${newStateName} <yellow>'${key}'</yellow>\n`);
-        } else if (name === 'set') {
-            if (args.length <= 0) {
+            const NEW_STATE_NAME = (newState) ? '<bright:green>Enabled warning</bright:green>' : '<red>Disabled warning</red>';
+            game.pause(`${NEW_STATE_NAME} <yellow>'${KEY}'</yellow>\n`);
+        } else if (NAME === 'set') {
+            if (ARGUMENTS.length <= 0) {
                 game.log('<yellow>Too few arguments</yellow>');
                 game.pause();
                 return false;
             }
 
-            const setting = args.shift();
+            const SETTING = ARGUMENTS.shift();
 
-            switch (setting) {
+            switch (SETTING) {
                 case 'format': {
-                    if (args.length === 0) {
-                        settings.deckcode.format = defaultSettings.deckcode.format;
-                        game.log(`Reset deckcode format to: <yellow>${defaultSettings.deckcode.format}</yellow>`);
+                    if (ARGUMENTS.length === 0) {
+                        SETTINGS.deckcode.format = DEFAULT_SETTINGS.deckcode.format;
+                        game.log(`Reset deckcode format to: <yellow>${DEFAULT_SETTINGS.deckcode.format}</yellow>`);
                         break;
                     }
 
-                    if (!['vanilla', 'js'].includes(args[0])) {
+                    if (!['vanilla', 'js'].includes(ARGUMENTS[0])) {
                         game.log('<red>Invalid format!</red>');
                         game.pause();
                         return false;
                     }
 
-                    settings.deckcode.format = args[0] as 'vanilla' | 'js';
-                    game.log(`Set deckcode format to: <yellow>${args[0]}</yellow>`);
+                    SETTINGS.deckcode.format = ARGUMENTS[0] as 'vanilla' | 'js';
+                    game.log(`Set deckcode format to: <yellow>${ARGUMENTS[0]}</yellow>`);
                     break;
                 }
 
                 case 'cpp':
                 case 'cardsPerPage': {
-                    if (args.length === 0) {
-                        settings.view.cpp = defaultSettings.view.cpp;
-                        game.log(`Reset cards per page to: <yellow>${defaultSettings.view.cpp}</yellow>`);
+                    if (ARGUMENTS.length === 0) {
+                        SETTINGS.view.cpp = DEFAULT_SETTINGS.view.cpp;
+                        game.log(`Reset cards per page to: <yellow>${DEFAULT_SETTINGS.view.cpp}</yellow>`);
                         break;
                     }
 
-                    settings.view.cpp = game.lodash.parseInt(args[0]);
+                    SETTINGS.view.cpp = game.lodash.parseInt(ARGUMENTS[0]);
                     break;
                 }
 
                 case 'dcmd':
                 case 'defaultCommand': {
-                    if (args.length === 0) {
-                        settings.commands.default = defaultSettings.commands.default;
-                        game.log(`Set default command to: <yellow>${defaultSettings.commands.default}</yellow>`);
+                    if (ARGUMENTS.length === 0) {
+                        SETTINGS.commands.default = DEFAULT_SETTINGS.commands.default;
+                        game.log(`Set default command to: <yellow>${DEFAULT_SETTINGS.commands.default}</yellow>`);
                         break;
                     }
 
-                    if (!['add', 'remove', 'view'].includes(args[0])) {
+                    if (!['add', 'remove', 'view'].includes(ARGUMENTS[0])) {
                         return false;
                     }
 
-                    const cmd = args[0];
+                    const COMMAND = ARGUMENTS[0];
 
-                    settings.commands.default = cmd;
-                    game.log(`Set default command to: <yellow>${cmd}</yellow>`);
+                    SETTINGS.commands.default = COMMAND;
+                    game.log(`Set default command to: <yellow>${COMMAND}</yellow>`);
                     break;
                 }
 
                 default: {
-                    game.pause(`<red>'${setting}' is not a valid setting.</red>\n`);
+                    game.pause(`<red>'${SETTING}' is not a valid setting.</red>\n`);
                     return false;
                 }
             }
 
             game.pause('<bright:green>Setting successfully changed!<bright:green>\n');
-        } else if (name === 'help') {
+        } else if (NAME === 'help') {
             help();
-        } else if (game.interact.shouldExit(name)) {
+        } else if (game.interact.shouldExit(NAME)) {
             running = false;
-        } else if (name.startsWith('a')) {
+        } else if (NAME.startsWith('a')) {
             let success = true;
 
             getCardArg(cmd, add, () => {
@@ -1081,7 +1081,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
             if (!success) {
                 return false;
             }
-        } else if (name.startsWith('r')) {
+        } else if (NAME.startsWith('r')) {
             let success = true;
 
             getCardArg(cmd, remove, () => {
@@ -1096,7 +1096,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
                 return false;
             }
         } else if (cmd.startsWith('p')) {
-            let page = game.lodash.parseInt(args.join(' '));
+            let page = game.lodash.parseInt(ARGUMENTS.join(' '));
             if (!page) {
                 return false;
             }
@@ -1105,12 +1105,12 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
                 page = 1;
             }
 
-            settings.view.page = page;
+            SETTINGS.view.page = page;
         } else {
             // Infer add
-            const tryCommand = `${settings.commands.default} ${cmd}`;
-            game.log(`<yellow>Unable to find command. Trying '${tryCommand}'</yellow>`);
-            return handleCmds(tryCommand);
+            const TRY_COMMAND = `${SETTINGS.commands.default} ${cmd}`;
+            game.log(`<yellow>Unable to find command. Trying '${TRY_COMMAND}'</yellow>`);
+            return handleCmds(TRY_COMMAND);
         }
         }
     }
@@ -1119,9 +1119,9 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         return true;
     }
 
-    settings.commands.history.push(cmd);
+    SETTINGS.commands.history.push(cmd);
     if (['a', 'r'].includes(cmd[0])) {
-        settings.commands.undoableHistory.push(cmd);
+        SETTINGS.commands.undoableHistory.push(cmd);
     }
 
     return true;
@@ -1139,9 +1139,9 @@ export function main() {
     chosenClass = askClass();
 
     while (running) {
-        if (settings.view.type === 'cards') {
+        if (SETTINGS.view.type === 'cards') {
             showCards();
-        } else if (settings.view.type === 'deck') {
+        } else if (SETTINGS.view.type === 'deck') {
             showDeck();
         }
 

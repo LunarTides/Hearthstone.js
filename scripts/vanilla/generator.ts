@@ -25,16 +25,16 @@ function get(url: string, resolve: (value: unknown) => void, reject: (reason: an
             return;
         }
 
-        const body: any[] = [];
+        const BODY: any[] = [];
 
         response.on('data', chunk => {
-            body.push(chunk);
+            BODY.push(chunk);
         });
 
         response.on('end', () => {
             try {
                 // Remove JSON.parse(...) for plain data
-                resolve(JSON.parse(Buffer.concat(body).toString()));
+                resolve(JSON.parse(Buffer.concat(BODY).toString()));
             } catch (error) {
                 reject(error);
             }
@@ -53,13 +53,13 @@ async function main() {
         let data = r as VanillaCard[];
 
         // Let data = JSON.parse(r);
-        const oldLength = data.length;
+        const OLD_LENGTH = data.length;
         data = game.functions.card.vanilla.filter(data, false, false, true);
 
         game.functions.util.fs('write', '/vanillacards.json', JSON.stringify(data));
 
-        const difference = oldLength - data.length;
-        game.log('Found %s cards!\nFiltered away %s cards!\nSuccessfully imported %s cards!', oldLength, difference, data.length);
+        const DIFFERENCE = OLD_LENGTH - data.length;
+        game.log('Found %s cards!\nFiltered away %s cards!\nSuccessfully imported %s cards!', OLD_LENGTH, DIFFERENCE, data.length);
 
         process.exit(0);
     });

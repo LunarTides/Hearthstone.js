@@ -2,7 +2,9 @@ import chalk, { type ChalkInstance } from 'chalk';
 import stripAnsi from 'strip-ansi';
 import { type CardRarity } from '@Game/types.js';
 
-export const colorFunctions = {
+export const COLOR_FUNCTIONS = {
+    parseTags: true,
+
     /**
      * Colors `text` based on `rarity`.
      *
@@ -15,8 +17,8 @@ export const colorFunctions = {
      * assert(card.rarity, "Legendary");
      * assert(card.name, "Sheep");
      *
-     * const colored = fromRarity(card.name, card.rarity);
-     * assert.equal(colored, chalk.yellow("Sheep"));
+     * const COLORED = fromRarity(card.name, card.rarity);
+     * assert.equal(COLORED, chalk.yellow("Sheep"));
      */
     fromRarity(text: string, rarity: CardRarity): string {
         switch (rarity) {
@@ -93,27 +95,31 @@ export const colorFunctions = {
      * @returns The resulting string
      *
      * @example
-     * const parsed = fromTags("<b>Battlecry:</b> Test");
-     * assert.equal(parsed, chalk.bold("Battlecry:") + " Test");
+     * const PARSED = fromTags("<b>Battlecry:</b> Test");
+     * assert.equal(PARSED, chalk.bold("Battlecry:") + " Test");
      *
      * @example
      * // Add the `~` character to escape the tag
-     * const parsed = fromTags("~<b>Battlecry:~</b> Test ~~<b>Test~~</b> Test");
-     * assert.equal(parsed, "<b>Battlecry:</b> Test ~" + chalk.bold("Test~") + " Test");
+     * const PARSED = fromTags("~<b>Battlecry:~</b> Test ~~<b>Test~~</b> Test");
+     * assert.equal(PARSED, "<b>Battlecry:</b> Test ~" + chalk.bold("Test~") + " Test");
      *
      * @example
      * // You can mix and match tags as much as you want. You can remove categories of tags as well, for example, removing `bg:bright:blue` by doing `</bg>`
-     * const parsed = fromTags("<red bg:bright:blue bold>Test</bg> Hi</b> there</red> again");
-     * assert.equal(parsed, chalk.red.bgBlueBright.bold("Test") + chalk.red.bold(" Hi") + chalk.red(" there") + " again");
+     * const PARSED = fromTags("<red bg:bright:blue bold>Test</bg> Hi</b> there</red> again");
+     * assert.equal(PARSED, chalk.red.bgBlueBright.bold("Test") + chalk.red.bold(" Hi") + chalk.red(" there") + " again");
      *
      * @example
      * // Try to not use '</>' if you can help it. In this case, it is fine.
-     * const parsed = fromTags("<fg:red italic bg:#0000FF>Test</> Another test");
-     * assert.equal(parsed, chalk.red.italic.bgHex("#0000FF")("Test") + " Another test");
+     * const PARSED = fromTags("<fg:red italic bg:#0000FF>Test</> Another test");
+     * assert.equal(PARSED, chalk.red.italic.bgHex("#0000FF")("Test") + " Another test");
      */
     fromTags(text: string): string {
         // TODO: Optimize perhaps. #333
-        const partOfRgb: number[] = [];
+        if (!this.parseTags) {
+            return text;
+        }
+
+        const PART_OF_RGB: number[] = [];
 
         const handleSpecialTags = (index: number, tag: string, returnValue: string, bg: boolean): string => {
             const readNextType = (index: number): string => {
@@ -125,7 +131,7 @@ export const colorFunctions = {
             };
 
             // The type is part of an rgb value. Ignore it
-            if (partOfRgb.includes(index)) {
+            if (PART_OF_RGB.includes(index)) {
                 return returnValue;
             }
 
@@ -134,7 +140,7 @@ export const colorFunctions = {
             // Support for rgb values with spaces after the commas
             if (tag.endsWith(')') && /rgb:?\(/.test(readNextType(index + 1))) {
                 tag = readNextType(index + 1) + readNextType(index) + tag;
-                partOfRgb.push(index + 1, index + 2);
+                PART_OF_RGB.push(index + 1, index + 2);
             }
 
             // Hex
@@ -149,13 +155,13 @@ export const colorFunctions = {
             // RGB
             if (tag.startsWith('rgb')) {
                 tag = tag.replace(/rgb:?/, '');
-                const [r, g, b] = tag.split(',').map(s => game.lodash.parseInt(s.replace(/[()]/, '')));
+                const [RED, GREEN, BLUE] = tag.split(',').map(s => game.lodash.parseInt(s.replace(/[()]/, '')));
 
                 if (bg) {
-                    return chalk.bgRgb(r, g, b)(returnValue);
+                    return chalk.bgRgb(RED, GREEN, BLUE)(returnValue);
                 }
 
-                return chalk.rgb(r, g, b)(returnValue);
+                return chalk.rgb(RED, GREEN, BLUE)(returnValue);
             }
 
             return returnValue;
@@ -202,9 +208,11 @@ export const colorFunctions = {
             let tagFuncString = bg ? 'bg' + game.lodash.capitalize(tag) : tag;
             tagFuncString = bright ? tagFuncString + 'Bright' : tagFuncString;
 
-            const func = chalk[tagFuncString as keyof ChalkInstance] as unknown;
-            if (func instanceof Function) {
-                returnValue = (func as (...text: any) => string)(returnValue);
+            const CALLBACK = chalk[tagFuncString as keyof ChalkInstance] as unknown;
+            if (CALLBACK instanceof Function) {
+                returnValue = (CALLBACK as (...text: any) => string)(returnValue);
+            } else {
+                throw new TypeError(`"${tag}" is not a valid color tag. "${tag}" results in 'chalk.${tagFuncString}' which is not a function.`);
             }
 
             return returnValue;
@@ -225,8 +233,8 @@ export const colorFunctions = {
                 currentTypes = ['reset'];
             }
 
-            for (const [index, tag] of currentTypes.reverse().entries()) {
-                returnValue = applyColorFromTag(index, tag, returnValue);
+            for (const [INDEX, TAG] of currentTypes.reverse().entries()) {
+                returnValue = applyColorFromTag(INDEX, TAG, returnValue);
             }
 
             return returnValue;
@@ -253,54 +261,43 @@ export const colorFunctions = {
             return text[i - 1];
         };
 
-        const readNext = (i: number) => {
-            if (i >= text.length - 1) {
-                return '';
-            }
-
-            return text[i + 1];
-        };
-
         const cancelled = (i: number): boolean => {
-            const one = readPrevious(i);
-            const two = readPrevious(i - 1);
+            const ONE = readPrevious(i);
+            const TWO = readPrevious(i - 1);
 
-            if (two === '~') {
+            if (TWO === '~') {
                 return false;
             }
 
-            return one === '~';
+            return ONE === '~';
         };
 
         // Loop through the characters in str
-        for (const [i, c] of [...text].entries()) {
-            if (cancelled(i)) {
-                wordStringbuilder += c;
+        for (const [INDEX, CHARACTER] of [...text].entries()) {
+            if (cancelled(INDEX)) {
+                wordStringbuilder += CHARACTER;
                 continue;
             }
 
-            if (c === '~') {
+            if (CHARACTER === '~') {
                 continue;
             }
 
-            if (c === '<' && !readingTag) {
+            if (CHARACTER === '<' && !readingTag) {
                 // Start a new tag
                 strbuilder += appendTypes(wordStringbuilder);
                 wordStringbuilder = '';
 
                 readingTag = true;
-                continue;
-            }
-
-            if (c === '>' && readingTag) {
+            } else if (CHARACTER === '>' && readingTag) {
                 // End tag reading
                 readingTag = false;
 
-                const currentTags = tagbuilder.split(' ');
+                const CURRENT_TAGS = tagbuilder.split(' ');
                 tagbuilder = '';
 
                 if (!removeTag) {
-                    currentTypes.push(...currentTags);
+                    currentTypes.push(...CURRENT_TAGS);
                     continue;
                 }
 
@@ -308,40 +305,27 @@ export const colorFunctions = {
                 removeTag = false;
 
                 // If the tag is </>, remove all tags
-                if (readPrevious(i) === '/') {
+                if (readPrevious(INDEX) === '/') {
                     currentTypes = [];
                     continue;
                 }
 
-                for (const tag of currentTags) {
-                    const success = game.functions.util.remove(currentTypes, tag);
-                    if (success) {
+                for (const TAG of CURRENT_TAGS) {
+                    const SUCCESS = game.functions.util.remove(currentTypes, TAG);
+                    if (SUCCESS) {
                         continue;
                     }
 
-                    currentTypes = currentTypes.filter(type => !type.startsWith(tag));
+                    currentTypes = currentTypes.filter(type => !type.startsWith(TAG));
                 }
-
+            } else if (CHARACTER === '/' && readingTag && readPrevious(INDEX) === '<') {
+                removeTag = true;
+            } else if (readingTag) {
+                tagbuilder += CHARACTER;
                 continue;
+            } else {
+                wordStringbuilder += CHARACTER;
             }
-
-            if (c === '/' && readingTag) {
-                if (readPrevious(i) === '<') {
-                    removeTag = true;
-                    continue;
-                }
-
-                if (readNext(i) === '>') {
-                    continue;
-                }
-            }
-
-            if (readingTag) {
-                tagbuilder += c;
-                continue;
-            }
-
-            wordStringbuilder += c;
         }
 
         strbuilder += appendTypes(wordStringbuilder);
@@ -366,9 +350,9 @@ export const colorFunctions = {
      * This only removes the TAGS, not the actual colors.
      *
      * @example
-     * const str = "<b>Hello</b>";
+     * const STR = "<b>Hello</b>";
      *
-     * assert.equal(stripTags(str), "Hello");
+     * assert.equal(stripTags(STR), "Hello");
      */
     stripTags(text: string): string {
         // Regular expressions created by AIs, it removes the "<b>"'s but keeps the "~<b>"'s since the '~' here works like an escape character.

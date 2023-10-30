@@ -3,7 +3,7 @@
 import assert from 'node:assert';
 import { type Blueprint } from '@Game/types.js';
 
-export const blueprint: Blueprint = {
+export const BLUEPRINT: Blueprint = {
     name: 'Discover Example',
     text: 'Discover a spell.',
     cost: 1,
@@ -27,15 +27,15 @@ export const blueprint: Blueprint = {
         pool = pool.filter(c => c.type === 'Spell');
 
         // Interact.discover(prompt, pool, ifItShouldFilterAwayCardsThatAreNotThePlayersClass = true, amountOfCardsToChooseFrom = 3)
-        const spell = game.interact.card.discover('Discover a spell.', pool);
+        const SPELL = game.interact.card.discover('Discover a spell.', pool);
 
         // If no card was chosen, refund
-        if (!spell) {
-            return game.constants.refund;
+        if (!SPELL) {
+            return game.constants.REFUND;
         }
 
         // Now we need to actually add the card to the player's hand
-        plr.addToHand(spell);
+        plr.addToHand(SPELL);
         return true;
     },
 
@@ -46,9 +46,9 @@ export const blueprint: Blueprint = {
         for (let i = 0; i < 50; i++) {
             self.activate('cast');
 
-            const card = plr.hand.pop();
-            assert.equal(card?.type, 'Spell');
-            assert(Boolean(card) && game.functions.card.validateClasses(card!.classes, plr.heroClass));
+            const CARD = plr.hand.pop();
+            assert.equal(CARD?.type, 'Spell');
+            assert(Boolean(CARD) && game.functions.card.validateClasses(CARD!.classes, plr.heroClass));
         }
     },
 };

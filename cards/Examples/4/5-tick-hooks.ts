@@ -2,7 +2,7 @@
 
 import { type Blueprint } from '@Game/types.js';
 
-export const blueprint: Blueprint = {
+export const BLUEPRINT: Blueprint = {
     name: 'Tick Hook Example',
     stats: [1, 1],
     text: 'Your cards cost (1) less.',
@@ -27,12 +27,12 @@ export const blueprint: Blueprint = {
         // You are given the key and value of the event, but i don't think you will need them for tick hooks,
         // since they are supposed to not be (dependent on / specific to certain) events, but you are free to use them if you want.
         const unhook = game.functions.event.hookToTick((key, _unknownValue) => {
-            for (const c of plr.hand) {
-                if (c.enchantmentExists('-1 cost', self)) {
+            for (const CARD of plr.hand) {
+                if (CARD.enchantmentExists('-1 cost', self)) {
                     continue;
                 }
 
-                c.addEnchantment('-1 cost', self);
+                CARD.addEnchantment('-1 cost', self);
             }
         });
 
@@ -51,16 +51,16 @@ export const blueprint: Blueprint = {
         // Unhook from all ticks that the card is hooked to.
         // It is important to unhook before removing the enchantments, since removing the enchantments can cause a tick, which would add the enchantments back.
         if (Array.isArray(self.storage.unhooks)) {
-            for (const _unhook of self.storage.unhooks) {
-                const unhook = _unhook as () => void;
+            for (const UNHOOK of self.storage.unhooks) {
+                const unhook = UNHOOK as () => void;
 
                 unhook();
             }
         }
 
         // Undo the enchantments
-        for (const c of plr.hand) {
-            c.removeEnchantment('-1 cost', self);
+        for (const CARD of plr.hand) {
+            CARD.removeEnchantment('-1 cost', self);
         }
     },
 
