@@ -865,6 +865,7 @@ export class Card {
             plr = this.plr;
         }
 
+        this.plr = plr;
         plr.addToHand(this.perfectCopy());
         this.destroy();
         return true;

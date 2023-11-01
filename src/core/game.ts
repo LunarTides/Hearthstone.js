@@ -3,8 +3,8 @@
  * @module Game
  */
 import _ from 'lodash';
-import { FUNCTIONS, INTERACT, Player, Card, Ai, EVENT_MANAGER } from '../internal.js';
-import { type Blueprint, type CardAbility, type CardKeyword, type EventKey, type GameAttackReturn, type GameConstants, type GamePlayCardReturn, type Target, type UnknownEventValue } from '../types.js';
+import { Player, Card, Ai, FUNCTIONS, INTERACT, EVENT_MANAGER } from '../internal.js';
+import { type TickHookCallback, type Blueprint, type CardAbility, type CardKeyword, type EventKey, type GameAttackReturn, type GameConstants, type GamePlayCardReturn, type Target, type UnknownEventValue } from '../types.js';
 import { CONFIG } from '../../config.js';
 
 export class Game {
@@ -112,17 +112,15 @@ export class Game {
     /**
      * The event listeners that are attached to the game currently.
      */
-    eventListeners: Record<number, (key: EventKey, value: UnknownEventValue, eventPlayer: Player) => void> = {};
+    eventListeners: Record<number, TickHookCallback> = {};
 
     /**
-     * Whether or not the game is currently accepting input from the user.
-     *
-     * If this is true, the user can't interact with the game. This will most likely cause an infinite loop, unless both players are ai's.
+     * If this is true, the game will not accept input from the user, and so the user can't interact with the game. This will most likely cause an infinite loop, unless both players are ai's.
      */
     noInput = false;
 
     /**
-     * Whether or not the game is currently outputting anything to the console.
+     * If this is true, the game will not output anything to the console.
      */
     noOutput = false;
 
@@ -156,7 +154,6 @@ export class Game {
      * @param player2 The second player.
      */
     setup(player1: Player, player2: Player) {
-        // Choose a random player to be player 1
         // Set this to player 1 temporarily, in order to never be null
         this.player1 = player1;
         this.player2 = player2;
@@ -187,37 +184,13 @@ export class Game {
     /**
      * Ask the user a question and returns their answer
      *
-     * @param q The question to ask
+     * @param prompt The question to ask
      * @param care If this is false, it overrides `game.noInput`. Only use this when debugging.
      *
      * @returns What the user answered
      */
-    input(q = '', care = true, useInputQueue = true): string {
-        return INTERACT.gameLoop.input(q, care, useInputQueue);
-    }
-
-    /**
-     * Wrapper for console.log
-     */
-    log(...data: any) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        INTERACT.gameLoop.log(...data);
-    }
-
-    /**
-     * Wrapper for console.error
-     */
-    logError(...data: any) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        INTERACT.gameLoop.logError(...data);
-    }
-
-    /**
-     * Wrapper for console.warn
-     */
-    logWarn(...data: any) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        INTERACT.gameLoop.logWarn(...data);
+    input(prompt = '', care = true, useInputQueue = true): string {
+        return this.interact.gameLoop.input(prompt, care, useInputQueue);
     }
 
     /**
@@ -227,7 +200,31 @@ export class Game {
      * @param [prompt="Press enter to continue..."] The prompt to show the user
      */
     pause(prompt = 'Press enter to continue...') {
-        INTERACT.gameLoop.input(prompt);
+        this.interact.gameLoop.input(prompt);
+    }
+
+    /**
+     * Wrapper for console.log
+     */
+    log(...data: any) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        this.interact.gameLoop.log(...data);
+    }
+
+    /**
+     * Wrapper for console.error
+     */
+    logError(...data: any) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        this.interact.gameLoop.logError(...data);
+    }
+
+    /**
+     * Wrapper for console.warn
+     */
+    logWarn(...data: any) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        this.interact.gameLoop.logWarn(...data);
     }
 
     /**
@@ -238,20 +235,16 @@ export class Game {
      * @returns Success
      */
     doConfigAi(): boolean {
-        if (this.config.ai.player1) {
-            if (!this.player1.ai) {
-                this.player1.ai = new Ai(this.player1);
+        for (const PLAYER of [this.player1, this.player2]) {
+            // HACK: Use of never. Might not update correctly if the config format is changed
+            if (!this.config.ai['player' + (PLAYER.id + 1) as never]) {
+                PLAYER.ai = undefined;
+                continue;
             }
-        } else {
-            this.player1.ai = undefined;
-        }
 
-        if (this.config.ai.player2) {
-            if (!this.player2.ai) {
-                this.player2.ai = new Ai(this.player2);
+            if (!PLAYER.ai) {
+                PLAYER.ai = new Ai(PLAYER);
             }
-        } else {
-            this.player2.ai = undefined;
         }
 
         return true;
@@ -281,31 +274,33 @@ export class Game {
     startGame(): boolean {
         const PLAYERS = [];
 
-        // Add quest cards to the players hands
+        // Make players draw cards
         for (let i = 0; i < 2; i++) {
             // Set the player's hero to the default hero for the class
-            const PLAYER = FUNCTIONS.util.getPlayerFromId(i);
+            const PLAYER = this.functions.util.getPlayerFromId(i);
 
             const SUCCESS = PLAYER.setToStartingHero();
             if (!SUCCESS) {
                 throw new Error('File \'cards/StartingHeroes/' + PLAYER.heroClass.toLowerCase().replaceAll(' ', '_') + '.ts\' is either; Missing or Incorrect. Please copy the working \'cards/StartingHeroes/\' folder from the github repo to restore a working copy. Error Code: 12');
             }
 
+            // Add quest cards to the players hands
             for (const CARD of PLAYER.deck) {
                 if (!CARD.text.includes('Quest: ') && !CARD.text.includes('Questline: ')) {
                     continue;
                 }
 
-                const unsuppress = FUNCTIONS.event.suppress('AddCardToHand');
+                const unsuppress = this.functions.event.suppress('AddCardToHand');
                 PLAYER.addToHand(CARD);
                 unsuppress();
 
                 PLAYER.deck.splice(PLAYER.deck.indexOf(CARD), 1);
             }
 
+            // Draw 3-4 cards
             const AMOUNT_OF_CARDS = (PLAYER.id === 0) ? 3 : 4;
             while (PLAYER.hand.length < AMOUNT_OF_CARDS) {
-                const unsuppress = FUNCTIONS.event.suppress('DrawCard');
+                const unsuppress = this.functions.event.suppress('DrawCard');
                 PLAYER.drawCard();
                 unsuppress();
             }
@@ -329,7 +324,7 @@ export class Game {
 
         const COIN = new Card('The Coin', this.player2);
 
-        const unsuppress = FUNCTIONS.event.suppress('AddCardToHand');
+        const unsuppress = this.functions.event.suppress('AddCardToHand');
         this.player2.addToHand(COIN);
         unsuppress();
 
@@ -357,7 +352,7 @@ export class Game {
         this.running = false;
 
         // Create log file
-        FUNCTIONS.util.createLogFile();
+        this.functions.util.createLogFile();
 
         return true;
     }
@@ -407,7 +402,7 @@ export class Game {
 
         // Chance to spawn in a diy card
         if (this.lodash.random(0, 1, true) <= CONFIG.advanced.diyCardSpawnChance && CONFIG.advanced.spawnInDiyCards) {
-            INTERACT.card.spawnInDiyCard(OPPONENT);
+            this.interact.card.spawnInDiyCard(OPPONENT);
         }
 
         // Minion start of turn
@@ -481,7 +476,7 @@ export class Game {
         let amount = 0;
 
         for (let p = 0; p < 2; p++) {
-            const PLAYER = FUNCTIONS.util.getPlayerFromId(p);
+            const PLAYER = this.functions.util.getPlayerFromId(p);
 
             const SPARED: Card[] = [];
             const shouldSpare = (card: Card) => card.getHealth() > 0 || ((card.durability ?? 0) > 0);
@@ -522,7 +517,7 @@ export class Game {
                 // Reduce the minion's health to 1, keep the minion's attack the same
                 MINION.setStats(MINION.getAttack(), 1);
 
-                const unsuppress = FUNCTIONS.event.suppress('SummonMinion');
+                const unsuppress = this.functions.event.suppress('SummonMinion');
                 this.summonMinion(MINION, PLAYER);
                 unsuppress();
 
@@ -555,7 +550,7 @@ export function createGame() {
     const PLAYER_1 = new Player('Player 1');
     const PLAYER_2 = new Player('Player 2');
     GAME.setup(PLAYER_1, PLAYER_2);
-    FUNCTIONS.card.importAll();
+    GAME.functions.card.importAll();
     GAME.doConfigAi();
 
     return { game: GAME, player1: PLAYER_1, player2: PLAYER_2 };
@@ -966,7 +961,7 @@ const PLAY_CARD = {
 
         // Charge you for the card
         player[card.costType] -= card.cost;
-        FUNCTIONS.util.remove(player.hand, card);
+        game.functions.util.remove(player.hand, card);
 
         // Counter
         if (PLAY_CARD._countered(card, player)) {
@@ -1033,7 +1028,7 @@ const PLAY_CARD = {
                 return 'refund';
             }
 
-            const unsuppress = FUNCTIONS.event.suppress('SummonMinion');
+            const unsuppress = game.functions.event.suppress('SummonMinion');
             const RETURN_VALUE = CARDS.summon(card, player);
             unsuppress();
 
@@ -1085,7 +1080,7 @@ const PLAY_CARD = {
             card.addKeyword('Immune');
             card.cooldown = 0;
 
-            const unsuppress = FUNCTIONS.event.suppress('SummonMinion');
+            const unsuppress = game.functions.event.suppress('SummonMinion');
             const RETURN_VALUE = CARDS.summon(card, player);
             unsuppress();
 
@@ -1103,8 +1098,8 @@ const PLAY_CARD = {
         if (player.ai) {
             q = player.ai.trade(card);
         } else {
-            INTERACT.info.showGame(player);
-            q = INTERACT.yesNoQuestion(player, 'Would you like to trade ' + card.colorFromRarity() + ' for a random card in your deck?');
+            game.interact.info.showGame(player);
+            q = game.interact.yesNoQuestion(player, 'Would you like to trade ' + card.colorFromRarity() + ' for a random card in your deck?');
         }
 
         if (!q) {
@@ -1125,7 +1120,7 @@ const PLAY_CARD = {
 
         player.mana -= 1;
 
-        FUNCTIONS.util.remove(player.hand, card);
+        game.functions.util.remove(player.hand, card);
         player.drawCard();
         player.shuffleIntoDeck(card);
 
@@ -1146,8 +1141,8 @@ const PLAY_CARD = {
         if (player.ai) {
             q = player.ai.forge(card);
         } else {
-            INTERACT.info.showGame(player);
-            q = INTERACT.yesNoQuestion(player, 'Would you like to forge ' + card.colorFromRarity() + '?');
+            game.interact.info.showGame(player);
+            q = game.interact.yesNoQuestion(player, 'Would you like to forge ' + card.colorFromRarity() + '?');
         }
 
         if (!q) {
@@ -1160,7 +1155,7 @@ const PLAY_CARD = {
 
         player.mana -= 2;
 
-        FUNCTIONS.util.remove(player.hand, card);
+        game.functions.util.remove(player.hand, card);
         const FORGED = new Card(FORGE, player);
         player.addToHand(FORGED);
 
@@ -1176,7 +1171,7 @@ const PLAY_CARD = {
         }
 
         // Refund
-        const unsuppress = FUNCTIONS.event.suppress('AddCardToHand');
+        const unsuppress = game.functions.event.suppress('AddCardToHand');
         player.addToHand(card);
         unsuppress();
 
@@ -1204,8 +1199,8 @@ const PLAY_CARD = {
         // Warn the user that the condition is not fulfilled
         const WARN_MESSAGE = '<yellow>WARNING: This card\'s condition is not fulfilled. Are you sure you want to play this card?</yellow>';
 
-        INTERACT.info.showGame(player);
-        const WARN = INTERACT.yesNoQuestion(player, WARN_MESSAGE);
+        game.interact.info.showGame(player);
+        const WARN = game.interact.yesNoQuestion(player, WARN_MESSAGE);
 
         if (!WARN) {
             return false;
@@ -1219,7 +1214,7 @@ const PLAY_CARD = {
 
         // Check if the card is countered
         if (OPPONENT.counter && OPPONENT.counter.includes(card.type)) {
-            FUNCTIONS.util.remove(OPPONENT.counter, card.type);
+            game.functions.util.remove(OPPONENT.counter, card.type);
             return true;
         }
 
@@ -1272,9 +1267,9 @@ const PLAY_CARD = {
             // Corrupt that card
             const CORRUPTED = new Card(CORRUPT, player);
 
-            FUNCTIONS.util.remove(player.hand, TO_CORRUPT);
+            game.functions.util.remove(player.hand, TO_CORRUPT);
 
-            const unsuppress = FUNCTIONS.event.suppress('AddCardToHand');
+            const unsuppress = game.functions.event.suppress('AddCardToHand');
             player.addToHand(CORRUPTED);
             unsuppress();
         }
@@ -1296,7 +1291,7 @@ const PLAY_CARD = {
         }
 
         // I'm using while loops to prevent a million indents
-        const MECH = INTERACT.selectCardTarget('Which minion do you want this card to Magnetize to:', undefined, 'friendly');
+        const MECH = game.interact.selectCardTarget('Which minion do you want this card to Magnetize to:', undefined, 'friendly');
         if (!MECH) {
             return false;
         }
@@ -1376,7 +1371,7 @@ const CARDS = {
             // the "" gets replaced with the main minion
 
             for (const CARD_NAME of COLOSSAL_MINIONS) {
-                const unsuppress = FUNCTIONS.event.suppress('SummonMinion');
+                const unsuppress = game.functions.event.suppress('SummonMinion');
 
                 if (CARD_NAME === '') {
                     game.summonMinion(minion, player, false);
