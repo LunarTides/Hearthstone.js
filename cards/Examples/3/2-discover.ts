@@ -47,8 +47,10 @@ export const BLUEPRINT: Blueprint = {
             self.activate('cast');
 
             const CARD = plr.hand.pop();
-            assert.equal(CARD?.type, 'Spell');
-            assert(Boolean(CARD) && game.functions.card.validateClasses(CARD!.classes, plr.heroClass));
+
+            assert(CARD);
+            assert.equal(CARD.type, 'Spell');
+            assert(Boolean(CARD) && game.functions.card.validateClasses(CARD.classes, plr.heroClass));
         }
     },
 };

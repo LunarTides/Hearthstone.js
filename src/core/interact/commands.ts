@@ -31,7 +31,7 @@ export const COMMANDS: CommandList = {
         }
 
         game.interact.info.showGame(game.player);
-        const ASK = game.interact.yesNoQuestion(game.player, `<yellow>${game.player.hero?.hpText}</yellow> Are you sure you want to use this hero power?`);
+        const ASK = game.interact.yesNoQuestion(game.player, `<yellow>${game.player.hero.hpText}</yellow> Are you sure you want to use this hero power?`);
         if (!ASK) {
             return false;
         }

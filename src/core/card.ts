@@ -412,7 +412,7 @@ export class Card {
             this.abilities[ability] = [];
         }
 
-        this.abilities[ability]?.push(callback);
+        this.abilities[ability]!.push(callback);
 
         // Just in case we want this function to ever fail, we make it return success.
         return true;
@@ -1008,8 +1008,8 @@ export class Card {
         const CLEARED_TEXT_ALTERNATIVE = '<bright:green>Condition cleared!</bright:green>';
 
         // Remove the (Condition cleared!) from the description
-        this.text = this.text?.replace(CLEARED_TEXT, '');
-        this.text = this.text?.replace(CLEARED_TEXT_ALTERNATIVE, '');
+        this.text = this.text.replace(CLEARED_TEXT, '');
+        this.text = this.text.replace(CLEARED_TEXT_ALTERNATIVE, '');
 
         // Check if the condition is met
         const CONDITION = this.activate('condition');
@@ -1265,7 +1265,7 @@ export class Card {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         for (const PLACEHOLDER_OBJECT of Object.entries(PLACEHOLDER)) {
             const [KEY] = PLACEHOLDER_OBJECT;
-            this.text = this.text?.replaceAll(`{${KEY}}`, `{ph:${KEY}}`);
+            this.text = this.text.replaceAll(`{${KEY}}`, `{ph:${KEY}}`);
         }
 
         return true;

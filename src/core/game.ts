@@ -292,7 +292,7 @@ export class Game {
             }
 
             for (const CARD of PLAYER.deck) {
-                if (!CARD.text?.includes('Quest: ') && !CARD.text?.includes('Questline: ')) {
+                if (!CARD.text.includes('Quest: ') && !CARD.text.includes('Questline: ')) {
                     continue;
                 }
 
@@ -1048,7 +1048,7 @@ const PLAY_CARD = {
             // Twinspell functionality
             if (card.hasKeyword('Twinspell')) {
                 card.remKeyword('Twinspell');
-                card.text = card.text?.split('Twinspell')[0].trim();
+                card.text = card.text.split('Twinspell')[0].trim();
 
                 player.addToHand(card);
             }

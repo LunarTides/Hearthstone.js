@@ -1017,7 +1017,7 @@ export class Player {
         // Find the card in player's deck/hand/hero that begins with "Galakrond, the "
         const DECK_GALAKROND = this.deck.find(c => c.displayName.startsWith('Galakrond, the '));
         const HAND_GALAKROND = this.hand.find(c => c.displayName.startsWith('Galakrond, the '));
-        if ((!DECK_GALAKROND && !HAND_GALAKROND) && !this.hero?.displayName.startsWith('Galakrond, the ')) {
+        if ((!DECK_GALAKROND && !HAND_GALAKROND) && !this.hero.displayName.startsWith('Galakrond, the ')) {
             return false;
         }
 
@@ -1033,7 +1033,7 @@ export class Player {
             CARD.activate('invoke');
         }
 
-        if (this.hero?.displayName.startsWith('Galakrond, the ')) {
+        if (this.hero.displayName.startsWith('Galakrond, the ')) {
             this.hero.activate('heropower');
         } else if (DECK_GALAKROND) {
             DECK_GALAKROND.activate('heropower');

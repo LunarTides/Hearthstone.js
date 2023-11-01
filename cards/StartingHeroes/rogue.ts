@@ -33,6 +33,7 @@ export const BLUEPRINT: Blueprint = {
         self.activate('heropower');
 
         // The player should now have the wicked knife weapon
-        assert.equal((plr.weapon)?.name, 'Wicked Knife');
+        assert.ok(plr.weapon);
+        assert.equal(plr.weapon.name, 'Wicked Knife');
     },
 };

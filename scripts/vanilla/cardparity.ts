@@ -68,7 +68,7 @@ function main() {
         }
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        if (value.toString().toLowerCase() === vanillaValue?.toString().toLowerCase()) {
+        if (value.toString().toLowerCase() === vanillaValue.toString().toLowerCase()) {
             return;
         }
 

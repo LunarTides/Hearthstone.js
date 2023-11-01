@@ -346,7 +346,7 @@ export const DECKCODE_FUNCTIONS = {
 
         deckcode += '/ ';
 
-        deckcode += cards.map(c => c[0].id?.toString(36)).join(',');
+        deckcode += cards.map(c => c[0].id.toString(36)).join(',');
 
         return { code: deckcode, error };
     },
