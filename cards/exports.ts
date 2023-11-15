@@ -1,6 +1,7 @@
 // This file has been automatically generated. Do not change this file.
 export { blueprint as c39f4f7d } from './Classes/Druid/Collectible/Heroes/5-Cost/wildheart-guff.js';
 export { blueprint as c97bc6e9 } from './Classes/Druid/Collectible/Spells/0-Cost/aquatic-form.js';
+export { blueprint as ca36ac1f } from './Classes/Druid/Collectible/Spells/1-Cost/floops-gloop.js';
 export { blueprint as c7e13bc0 } from './Classes/Druid/Collectible/Spells/1-Cost/jade-idol.js';
 export { blueprint as c8a4c499 } from './Classes/Druid/Collectible/Spells/2-Cost/dew-process.js';
 export { blueprint as c507cc60 } from './Classes/Druid/Collectible/Spells/2-Cost/invigorate.js';
