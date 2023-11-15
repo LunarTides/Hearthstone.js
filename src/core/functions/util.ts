@@ -509,4 +509,11 @@ ${mainContent}
 
         return dirname;
     },
+
+    /**
+     * Calculate the remaining board space for the given player.
+     */
+    getRemainingBoardSpace(plr: Player) {
+        return game.config.general.maxBoardSpace - game.board[plr.id].length;
+    },
 };
