@@ -1,7 +1,7 @@
 // Created by the Vanilla Card Creator
 
 import assert from 'node:assert';
-import {type Blueprint} from '@Game/types.js';
+import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
     name: 'Frost Lotus Seedling',
@@ -35,7 +35,7 @@ export const blueprint: Blueprint = {
     cast(plr, self) {
         // Draw {1|2} card{|s}. Gain {5|10} Armor.{ (Blossoms in 3 turns.)|}
         //       ^ ^ Left side is if not blossomed, right side if blossomed
-        const {blossomed} = self.storage;
+        const { blossomed } = self.storage;
 
         plr.drawCard();
         if (blossomed) {
@@ -52,7 +52,7 @@ export const blueprint: Blueprint = {
     placeholders(plr, self) {
         const placeholder = self.storage.blossomed ? 'Draw 2 cards. Gain 10 Armor.' : `Draw 1 card. Gain 5 Armor. <i>(Blossoms in ${3 - self.storage.blossom} turns.)</i>`;
 
-        return {placeholder};
+        return { placeholder };
     },
 
     test(plr, self) {

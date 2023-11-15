@@ -1,7 +1,7 @@
 // Created by the Vanilla Card Creator
 
 import assert from 'node:assert';
-import {type Blueprint} from '@Game/types.js';
+import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
     name: 'Wildheart Guff',
@@ -17,7 +17,7 @@ export const blueprint: Blueprint = {
     battlecry(plr, self) {
         // Set your maximum Mana to 20. Gain an empty Mana Crystal. Draw a card.
         plr.maxMana = 20;
-        plr.gainEmptyMana(1);
+        plr.addEmptyMana(1);
         plr.drawCard();
     },
 
@@ -28,7 +28,7 @@ export const blueprint: Blueprint = {
             plr.drawCard();
         }], ['Gain an empty Mana Crystal', () => {
             // Gain an empty ManaCrystal
-            plr.gainEmptyMana(1);
+            plr.addEmptyMana(1);
         }]);
     },
 

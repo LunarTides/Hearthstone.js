@@ -1,7 +1,7 @@
 // Created by the Vanilla Card Creator
 
 import assert from 'node:assert';
-import {type Blueprint} from '@Game/types.js';
+import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
     name: 'Invigorate',
@@ -17,7 +17,7 @@ export const blueprint: Blueprint = {
         // Choose One - Gain an empty Mana Crystal; or Draw a card.
         game.interact.chooseOne(1, ['Gain an empty Mana Crystal', () => {
             // Gain an empty Mana Crystal
-            plr.gainEmptyMana(1);
+            plr.addEmptyMana(1);
         }], ['Draw a card', () => {
             // Draw a card
             plr.drawCard();
