@@ -153,6 +153,7 @@ export const commands: CommandList = {
             'concede - Forfeits the game',
             'view - View a minion',
             'use - Use a location card',
+            'titan - Use a titan card',
             'detail - Get more details about opponent',
             'help - Displays this message',
             'version - Displays the version, branch, your settings preset, and some information about your current version.',
