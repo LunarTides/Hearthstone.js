@@ -20,9 +20,6 @@ function upgradeField(data: string, oldValue: string | RegExp, newValue: string,
 }
 
 function upgradeCard(path: string, data: string, file: any) {
-    // TODO: Always add `spellSchool`. #335
-    // TODO: Always add `hpCost`. #335
-
     // Yes, this code is ugly. This script is temporary.
     // This will also not work for ALL cards, they are just too flexible.
     // But it should work for all cards that was created using the card creator.
@@ -55,6 +52,8 @@ function upgradeCard(path: string, data: string, file: any) {
     data = upgradeField(data, / {4}gainEmptyMana: (.*),/, '    addEmptyMana: $1,', 'Updated gainEmptyMana.');
     data = upgradeField(data, / {4}gainMana: (.*),/, '    addMana: $1,', 'Updated gainMana.');
     data = upgradeField(data, / {4}gainOverload: (.*),/, '    addOverload: $1,', 'Updated gainOverload.');
+    data = upgradeField(data, /( {4}type: .*,)/, '$1\n    spellSchool: "None",', 'Added spellSchool.');
+    data = upgradeField(data, /( {4}hpDesc: .*,)/, '$1\n    hpCost: 2,', 'Added hpCost.');
 
     // Replace the card's id with a new one
     data = upgradeField(data, /\n {4}id: (\d+),?/, '', 'Removed id from card.');
