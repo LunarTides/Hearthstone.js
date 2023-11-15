@@ -19,14 +19,8 @@ export const blueprint: Blueprint = {
     heropower(plr, self) {
         // Restore 2 Health.
 
-        // We don't want the "CastSpellOnMinion" event to be broadcast here, so suppress it
-        const unsuppress = game.functions.event.suppress('CastSpellOnMinion');
-
         // Hero power targets need to use the `forceElusive` flag.
         const target = game.interact.selectTarget('Restore 2 health.', self, 'any', 'any', ['forceElusive']);
-
-        // Re-enable the "CastSpellOnMinion" event
-        unsuppress();
 
         // If no target was selected, refund the hero power
         if (!target) {

@@ -60,7 +60,6 @@ export type EventKey =
 | 'KillMinion'
 | 'DamageMinion'
 | 'CancelCard'
-| 'CastSpellOnMinion'
 | 'TradeCard'
 | 'ForgeCard'
 | 'FreezeCard'
@@ -139,10 +138,6 @@ export type EventValue<Key extends EventKey> =
      * The card that was cancelled, and the ability that was cancelled
      */
     Key extends 'CancelCard' ? [Card, CardAbility] :
-    /**
-     * The spell that was cast, and the target
-     */
-    Key extends 'CastSpellOnMinion' ? [Card, Card] :
     /**
      * The card that was traded
      */
