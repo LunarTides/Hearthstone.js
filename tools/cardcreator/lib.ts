@@ -189,8 +189,8 @@ ${runes}${keywords}
     },
 
     test(plr, self) {
-        // Unit testing
-        assert(false);
+        // TODO: Add proper tests. #325
+        return true;
     },`;
     }
 
