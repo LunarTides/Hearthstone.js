@@ -3,7 +3,7 @@
 import assert from 'node:assert';
 import { type Blueprint } from '@Game/types.js';
 
-export const BLUEPRINT: Blueprint = {
+export const blueprint: Blueprint = {
     name: 'Frozen Test',
     stats: [1, 1],
     text: 'This is forever <b>Frozen</b>',
@@ -35,8 +35,8 @@ export const BLUEPRINT: Blueprint = {
 
         for (let i = 0; i < 5; i++) {
             // Attacking the enemy hero this this minion should always return "frozen"
-            const RETURN_VALUE = game.attack(self, plr.getOpponent());
-            assert.equal(RETURN_VALUE, 'frozen');
+            const returnValue = game.attack(self, plr.getOpponent());
+            assert.equal(returnValue, 'frozen');
 
             game.endTurn();
             game.endTurn();

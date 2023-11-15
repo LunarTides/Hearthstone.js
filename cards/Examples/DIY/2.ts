@@ -2,7 +2,7 @@
 
 import { type Blueprint } from '@Game/types.js';
 
-export const BLUEPRINT: Blueprint = {
+export const blueprint: Blueprint = {
     name: 'DIY 2',
     text: '<b>This is a DIY card, it does not work by default.</b> Restore 3 health to your hero.',
     cost: 0,
@@ -30,7 +30,7 @@ export const BLUEPRINT: Blueprint = {
         // Testing your solution.
         let solved = true;
 
-        const TRUE_OG_HEALTH = plr.health;
+        const trueOgHealth = plr.health;
 
         // Restore 3 health when the player has 5 less than max health
         plr.health = plr.maxHealth - 5;
@@ -48,7 +48,7 @@ export const BLUEPRINT: Blueprint = {
 
         solved = solved && (plr.health === plr.maxHealth);
 
-        plr.health = TRUE_OG_HEALTH;
+        plr.health = trueOgHealth;
 
         game.interact.verifyDiySolution(solved, self);
 

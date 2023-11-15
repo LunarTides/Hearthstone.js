@@ -3,7 +3,7 @@
 import assert from 'node:assert';
 import { type Blueprint } from '@Game/types.js';
 
-export const BLUEPRINT: Blueprint = {
+export const blueprint: Blueprint = {
     name: 'Witchy Lackey',
     stats: [1, 1],
     text: '<b>Battlecry:</b> Transform a friendly minion into one that costs (1) more.',
@@ -19,35 +19,35 @@ export const BLUEPRINT: Blueprint = {
         // Transform a friendly minion into one that costs (1) more.
 
         // Ask the user which minion to transform
-        const TARGET = game.interact.selectCardTarget('Transform a friendly minion into one that costs (1) more.', self, 'friendly');
+        const target = game.interact.selectCardTarget('Transform a friendly minion into one that costs (1) more.', self, 'friendly');
 
         // If no target was selected, refund
-        if (!TARGET) {
-            return game.constants.REFUND;
+        if (!target) {
+            return game.constants.refund;
         }
 
         // There isn't any cards that cost more than 10, so refund
-        if (TARGET.cost >= 10) {
-            return game.constants.REFUND;
+        if (target.cost >= 10) {
+            return game.constants.refund;
         }
 
         // Filter minions that cost (1) more than the target
-        const MINIONS = game.functions.card.getAll().filter(card => card.type === 'Minion' && card.cost === TARGET.cost + 1);
+        const minions = game.functions.card.getAll().filter(card => card.type === 'Minion' && card.cost === target.cost + 1);
 
         // Choose a random minion from the filtered list.
-        const RANDOM = game.lodash.sample(MINIONS);
-        if (!RANDOM) {
-            return game.constants.REFUND;
+        const random = game.lodash.sample(minions);
+        if (!random) {
+            return game.constants.refund;
         }
 
         // Create the card
-        const MINION = game.createCard(RANDOM.name, plr);
+        const minion = game.createCard(random.name, plr);
 
         // Destroy the target and summon the new minion in order to get the illusion that the card was transformed
-        TARGET.destroy();
+        target.destroy();
 
         // Summon the card to the player's side of the board
-        game.summonMinion(MINION, plr);
+        game.summonMinion(minion, plr);
         return true;
     },
 
@@ -55,14 +55,14 @@ export const BLUEPRINT: Blueprint = {
         const existsMinionWithCost = (cost: number) => game.board[plr.id].some(card => card.cost === cost);
 
         // Summon a sheep
-        const SHEEP = game.createCard('Sheep', plr);
-        game.summonMinion(SHEEP, plr);
+        const sheep = game.createCard('Sheep', plr);
+        game.summonMinion(sheep, plr);
 
         // There shouldn't exist a minion with 1 more cost than the sheep.
-        assert(!existsMinionWithCost(SHEEP.cost + 1));
+        assert(!existsMinionWithCost(sheep.cost + 1));
 
         // If there doesn't exist any 2-Cost minions, pass the test
-        if (!game.functions.card.getAll().some(card => card.cost === SHEEP.cost + 1 && card.type === 'Minion')) {
+        if (!game.functions.card.getAll().some(card => card.cost === sheep.cost + 1 && card.type === 'Minion')) {
             return;
         }
 
@@ -71,6 +71,6 @@ export const BLUEPRINT: Blueprint = {
         self.activate('battlecry');
 
         // There should now exist a minion with 1 more cost than the sheep.
-        assert(existsMinionWithCost(SHEEP.cost + 1));
+        assert(existsMinionWithCost(sheep.cost + 1));
     },
 };

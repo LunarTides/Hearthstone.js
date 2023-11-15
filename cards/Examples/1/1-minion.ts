@@ -3,7 +3,7 @@
 // You shouldn't touch anything outside of the blueprint object.
 import { type Blueprint } from '@Game/types.js';
 
-export const BLUEPRINT: Blueprint = {
+export const blueprint: Blueprint = {
     // A blueprint only has ESSENTIAL properties, and type-specific properties (like stats or tribe)
     // Other properties, like keywords, has to be added in the 'create' ability. More on that in `1-4`.
 

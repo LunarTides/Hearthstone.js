@@ -1,6 +1,6 @@
 import { type GameConfig } from '@Game/types.js';
 
-export const CONFIG: GameConfig = {
+export const config: GameConfig = {
     general: {
         // Debug mode enables debug commands, and hides redundant information.
         debug: true,

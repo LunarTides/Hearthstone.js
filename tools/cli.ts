@@ -10,13 +10,13 @@ import { type CcType } from './cardcreator/lib.js';
 export function main(userInputLoop: (prompt: string, exitCharacter: string | undefined, callback: (input: string) => any) => any) {
     // Common card creator variant stuff
     const doCardCreatorVariant = (usedOptions: string[], args: string[], callback: (debug: boolean, overrideType?: CcType) => any) => {
-        const DO_DRY_RUN = usedOptions.includes('--dry-run');
-        const DO_CC_TYPE = usedOptions.includes('--cc-type');
+        const doDryRun = usedOptions.includes('--dry-run');
+        const doCcType = usedOptions.includes('--cc-type');
 
         let ccType: CcType | undefined;
 
         // Get cctype
-        if (DO_CC_TYPE) {
+        if (doCcType) {
             ccType = args[0] as CcType;
 
             if (!ccType) {
@@ -26,42 +26,42 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | und
             }
         }
 
-        callback(DO_DRY_RUN, ccType);
+        callback(doDryRun, ccType);
     };
 
     // Main loop
     userInputLoop('> ', undefined, input => {
         let args = input.split(' ');
-        const NAME = args.shift()?.toLowerCase();
-        if (!NAME) {
+        const name = args.shift()?.toLowerCase();
+        if (!name) {
             throw new Error('Name is undefined. This should never happen.');
         }
 
         // Options - Long, short
-        const COMMAND_OPTIONS = [
+        const commandOptions = [
             ['--dry-run', '-n'],
             ['--cc-type', '-t'],
         ];
 
         // Parse args
-        const USED_OPTIONS: string[] = [];
+        const usedOptions: string[] = [];
 
         // Clone the args. Kinda hacky.
         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-        const PARSED_ARGUMENTS = JSON.parse(`[${args.map(arg => `"${arg.replaceAll('"', '\'')}"`)}]`) as string[];
-        for (const PARSED_ARGUMENT of PARSED_ARGUMENTS) {
+        const parsedArguments = JSON.parse(`[${args.map(arg => `"${arg.replaceAll('"', '\'')}"`)}]`) as string[];
+        for (const parsedArgument of parsedArguments) {
             // Parse -dt
-            if (/^-\w\w+/.test(PARSED_ARGUMENT)) {
-                const ALL_ARGUMENTS = [...PARSED_ARGUMENT];
-                ALL_ARGUMENTS.shift();
+            if (/^-\w\w+/.test(parsedArgument)) {
+                const allArguments = [...parsedArgument];
+                allArguments.shift();
 
-                for (const ARGUMENT of ALL_ARGUMENTS) {
-                    const OPTION = COMMAND_OPTIONS.find(option => option.includes('-' + ARGUMENT))?.[0];
-                    if (!OPTION) {
+                for (const argument of allArguments) {
+                    const option = commandOptions.find(option => option.includes('-' + argument))?.[0];
+                    if (!option) {
                         continue;
                     }
 
-                    USED_OPTIONS.push(OPTION);
+                    usedOptions.push(option);
                 }
 
                 args.shift();
@@ -69,16 +69,16 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | und
             }
 
             // Parse -d or --dry-run
-            const OPTION = COMMAND_OPTIONS.find(option => option.includes(PARSED_ARGUMENT))?.[0];
-            if (!OPTION) {
+            const option = commandOptions.find(option => option.includes(parsedArgument))?.[0];
+            if (!option) {
                 return;
             }
 
-            USED_OPTIONS.push(OPTION);
+            usedOptions.push(option);
             args.shift();
         }
 
-        switch (NAME) {
+        switch (name) {
             case 'help': {
                 // Taken heavy inspiration from 'man'
                 game.log('\n<bold>Commands</bold>');
@@ -111,50 +111,50 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | und
             }
 
             case 'ccc': {
-                doCardCreatorVariant(USED_OPTIONS, args, ccc.main);
+                doCardCreatorVariant(usedOptions, args, ccc.main);
 
                 break;
             }
 
             case 'vcc': {
-                doCardCreatorVariant(USED_OPTIONS, args, vcc.main);
+                doCardCreatorVariant(usedOptions, args, vcc.main);
 
                 break;
             }
 
             case 'clc': {
-                doCardCreatorVariant(USED_OPTIONS, args, clc.main);
+                doCardCreatorVariant(usedOptions, args, clc.main);
 
                 break;
             }
 
             case 'cclib': {
-                doCardCreatorVariant(USED_OPTIONS, args, (debug, overrideType) => {
+                doCardCreatorVariant(usedOptions, args, (debug, overrideType) => {
                     // Here we implement our own card creator variant
 
                     // Only include args with an '=' in it.
                     args = args.filter(arg => arg.includes('='));
 
                     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-                    const BLUEPRINT = {} as Blueprint;
-                    for (const ARGUMENT of args) {
-                        let [key, value] = ARGUMENT.split('=');
+                    const blueprint = {} as Blueprint;
+                    for (const argument of args) {
+                        let [key, value] = argument.split('=');
 
                         // Parse it as its real value instead of a string.
                         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                         value = JSON.parse(`[ ${value} ]`)[0];
 
                         // HACK: Use of never
-                        BLUEPRINT[key as keyof Blueprint] = value as never;
+                        blueprint[key as keyof Blueprint] = value as never;
                     }
 
-                    if (!BLUEPRINT.name) {
+                    if (!blueprint.name) {
                         return;
                     }
 
                     // Validate it. This will not do the compiler's job for us, only the stuff that the compiler doesn't do.
                     // That means that the blueprint isn't very validated, which means this WILL crash if you create an invalid card.
-                    game.functions.card.validateBlueprint(BLUEPRINT);
+                    game.functions.card.validateBlueprint(blueprint);
 
                     // The default type is CLI
                     let type = 'CLI';
@@ -162,7 +162,7 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | und
                         type = overrideType;
                     }
 
-                    cclib.create(type as CcType, BLUEPRINT.type, BLUEPRINT, undefined, undefined, debug);
+                    cclib.create(type as CcType, blueprint.type, blueprint, undefined, undefined, debug);
                 });
 
                 break;
@@ -180,9 +180,9 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | und
                 break;
             }
 
-            default: { if (NAME === 'script') {
-                const NAME = args[0];
-                if (!NAME) {
+            default: { if (name === 'script') {
+                const name = args[0];
+                if (!name) {
                     game.logError('<red>Invalid script name!</red>');
                     game.pause();
                     return;

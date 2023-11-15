@@ -3,7 +3,7 @@
 import assert from 'node:assert';
 import { type Blueprint } from '@Game/types.js';
 
-export const BLUEPRINT: Blueprint = {
+export const blueprint: Blueprint = {
     name: 'Ethereal Lackey',
     stats: [1, 1],
     text: '<b>Battlecry: Discover</b> a spell.',
@@ -19,19 +19,19 @@ export const BLUEPRINT: Blueprint = {
         // Discover a spell.
 
         // Filter out all cards that aren't spells
-        const POOL = game.functions.card.getAll().filter(c => c.type === 'Spell');
-        if (POOL.length <= 0) {
+        const pool = game.functions.card.getAll().filter(c => c.type === 'Spell');
+        if (pool.length <= 0) {
             return;
         }
 
         // Prompt a discover
-        const CARD = game.interact.card.discover('Discover a spell.', POOL);
-        if (!CARD) {
-            return game.constants.REFUND;
+        const card = game.interact.card.discover('Discover a spell.', pool);
+        if (!card) {
+            return game.constants.refund;
         }
 
         // Add the card to the player's hand
-        plr.addToHand(CARD);
+        plr.addToHand(card);
         return true;
     },
 
@@ -49,9 +49,9 @@ export const BLUEPRINT: Blueprint = {
             // Activate the battlecry and get the card from the player's hand.
             plr.hand = [];
             self.activate('battlecry');
-            const CARD = plr.hand[0];
+            const card = plr.hand[0];
 
-            assert.equal(CARD.type, 'Spell');
+            assert.equal(card.type, 'Spell');
         }
     },
 };

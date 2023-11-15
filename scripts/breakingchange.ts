@@ -9,7 +9,7 @@ import { createGame } from '../src/internal.js';
 
 const { game } = createGame();
 
-const MATCHING_CARDS: string[] = [];
+const matchingCards: string[] = [];
 let finishedCards: string[] = [];
 
 let finishedCardsPath = 'patchedCards.txt';
@@ -20,8 +20,8 @@ function getFinishedCards(path: string) {
         return;
     }
 
-    const CARDS = game.functions.util.fs('read', path) as string;
-    finishedCards = CARDS.split('\n');
+    const cards = game.functions.util.fs('read', path) as string;
+    finishedCards = cards.split('\n');
 }
 
 function searchCards(query: RegExp | string) {
@@ -29,7 +29,7 @@ function searchCards(query: RegExp | string) {
         // The query is not a regular expression
         if (typeof query === 'string') {
             if (content.includes(query)) {
-                MATCHING_CARDS.push(fullPath);
+                matchingCards.push(fullPath);
             }
 
             return;
@@ -37,18 +37,18 @@ function searchCards(query: RegExp | string) {
 
         // The query is a regex
         if (query.test(content)) {
-            MATCHING_CARDS.push(fullPath);
+            matchingCards.push(fullPath);
         }
     });
 }
 
 function main() {
     game.interact.cls();
-    const USE_REGEX = rl.keyInYN('Do you want to use regular expressions? (Don\'t do this unless you know what regex is, and how to use it)');
+    const useRegex = rl.keyInYN('Do you want to use regular expressions? (Don\'t do this unless you know what regex is, and how to use it)');
     let search: string | RegExp = game.input('Search: ');
 
     // Ignore case
-    if (USE_REGEX) {
+    if (useRegex) {
         search = new RegExp(search, 'i');
     }
 
@@ -66,18 +66,18 @@ function main() {
     while (running) {
         game.interact.cls();
 
-        for (const [INDEX, CARD_NAME] of MATCHING_CARDS.entries()) {
+        for (const [index, cardName] of matchingCards.entries()) {
             // `c` is the path to the card.
-            game.log(`${INDEX + 1}: ${CARD_NAME}`);
+            game.log(`${index + 1}: ${cardName}`);
         }
 
-        const COMMAND = game.input('\nWhich card do you want to fix (type \'done\' to finish | type \'delete\' to delete the save file): ');
-        if (COMMAND.toLowerCase().startsWith('done')) {
+        const command = game.input('\nWhich card do you want to fix (type \'done\' to finish | type \'delete\' to delete the save file): ');
+        if (command.toLowerCase().startsWith('done')) {
             running = false;
             break;
         }
 
-        if (COMMAND.toLowerCase().startsWith('delete')) {
+        if (command.toLowerCase().startsWith('delete')) {
             game.log('Deleting file...');
 
             if (game.functions.util.fs('exists', finishedCardsPath)) {
@@ -91,13 +91,13 @@ function main() {
             process.exit(0);
         }
 
-        const INDEX = game.lodash.parseInt(COMMAND) - 1;
-        if (!INDEX) {
+        const index = game.lodash.parseInt(command) - 1;
+        if (!index) {
             continue;
         }
 
-        const PATH = MATCHING_CARDS[INDEX];
-        if (!PATH) {
+        const path = matchingCards[index];
+        if (!path) {
             game.log('Invalid index!');
             game.pause();
 
@@ -105,16 +105,16 @@ function main() {
         }
 
         // `card` is the path to that card.
-        const SUCCESS = game.functions.util.runCommandAsChildProcess(`${game.config.general.editor} "${game.functions.util.dirname() + PATH}"`);
+        const success = game.functions.util.runCommandAsChildProcess(`${game.config.general.editor} "${game.functions.util.dirname() + path}"`);
         // The `runCommandAsChildProcess` shows an error message for us, but we need to pause.
-        if (!SUCCESS) {
+        if (!success) {
             game.pause();
         }
 
-        finishedCards.push(PATH);
-        MATCHING_CARDS.splice(INDEX, 1);
+        finishedCards.push(path);
+        matchingCards.splice(index, 1);
 
-        if (MATCHING_CARDS.length <= 0) {
+        if (matchingCards.length <= 0) {
             // All cards have been patched
             game.pause('All cards patched!\n');
             if (game.functions.util.fs('exists', finishedCardsPath)) {

@@ -37,15 +37,15 @@ function getCardAbility(cardType: CardType) {
         case 'Minion':
         case 'Weapon': {
             // Try to extract an ability from the card's description
-            const REG = /([A-Z][a-z].*?):/g;
-            const FOUND_ABILITY = REG.exec(card.text);
+            const reg = /([A-Z][a-z].*?):/g;
+            const foundAbility = reg.exec(card.text);
 
             if (!card.text) {
                 // If the card doesn't have a description, it doesn't get an ability.
                 ability = '';
-            } else if (FOUND_ABILITY) {
+            } else if (foundAbility) {
                 // If it didn't find an ability, but the card has text in it's description, the ability is 'passive'
-                ability = FOUND_ABILITY[1];
+                ability = foundAbility[1];
             } else {
                 // If it found an ability, and the card has a description, the ability is the ability it found in the description.
                 ability = 'Passive';
@@ -71,10 +71,10 @@ function generateCardPath(...args: [CardClass[], CardType]) {
     let [classes, type] = args;
 
     // DO NOT CHANGE THIS
-    const STATIC_PATH = game.functions.util.dirname() + '/cards/';
+    const staticPath = game.functions.util.dirname() + '/cards/';
 
     // You can change everything below this comment
-    const CLASSES_STRING = classes.join('/');
+    const classesString = classes.join('/');
 
     // If the card has the word "Secret" in its description, put it in the ".../Secrets/..." folder.
     if (card.text.includes('Secret:')) {
@@ -82,17 +82,17 @@ function generateCardPath(...args: [CardClass[], CardType]) {
     }
 
     // If the type is Hero, we want the card to go to '.../Heroes/...' and not to '.../Heros/...'
-    const TYPE_STRING = (type === 'Hero') ? 'Heroe' : type;
+    const typeString = (type === 'Hero') ? 'Heroe' : type;
 
-    const COLLECTIBLE_STRING = card.uncollectible ? 'Uncollectible' : 'Collectible';
+    const collectibleString = card.uncollectible ? 'Uncollectible' : 'Collectible';
 
     // This can be anything since the card register process ignores folders.
     // Change this if you want the cards to be in different folders.
     // By default, this is `cards/Classes/{class name}/{Uncollectible | Collectible}/{type}s/{mana cost} Cost/{card name}.ts`;
     // This path can be overridden by passing `overridePath` in the create function.
-    const DYNAMIC_PATH = `Classes/${CLASSES_STRING}/${COLLECTIBLE_STRING}/${TYPE_STRING}s/${card.cost}-Cost/`;
+    const dynamicPath = `Classes/${classesString}/${collectibleString}/${typeString}s/${card.cost}-Cost/`;
 
-    return STATIC_PATH + DYNAMIC_PATH;
+    return staticPath + dynamicPath;
 }
 
 /**
@@ -113,9 +113,9 @@ export function create(creatorType: CcType, cardType: CardType, blueprint: Bluep
     // TODO: Look for placeholders in the text and add a placeholder ability if it finds one
 
     // Validate
-    const ERROR = game.functions.card.validateBlueprint(blueprint);
-    if (ERROR !== true) {
-        game.logError(ERROR);
+    const error = game.functions.card.validateBlueprint(blueprint);
+    if (error !== true) {
+        game.logError(error);
         return '';
     }
 
@@ -126,51 +126,51 @@ export function create(creatorType: CcType, cardType: CardType, blueprint: Bluep
     let ability = getCardAbility(type);
 
     // Here it creates a default function signature
-    const IS_PASSIVE = ability.toLowerCase() === 'passive';
+    const isPassive = ability.toLowerCase() === 'passive';
     let triggerText = ')';
-    if (IS_PASSIVE) {
+    if (isPassive) {
         triggerText = ', key, _unknownValue, eventPlayer)';
     }
 
     let extraPassiveCode = '';
-    if (IS_PASSIVE) {
+    if (isPassive) {
         extraPassiveCode = `
 
         // Only proceed if the correct event key was broadcast
-        if (!(key === '')) {
+        if (key !== '') {
             return;
         }
 
         // Here we cast the value to the correct type.
         // Do not use the '_unknownValue' variable after this.
-        const VALUE = _unknownValue as EventValue<typeof key>;`;
+        const value = _unknownValue as EventValue<typeof key>;`;
     }
 
-    const DESCRIPTION_TO_CLEAN = type === 'Hero' ? card.hpText : card.text;
+    const descriptionToClean = type === 'Hero' ? card.hpText : card.text;
     // Card.hpText can be undefined, but shouldn't be if the type is Hero.
-    if (DESCRIPTION_TO_CLEAN === undefined) {
+    if (descriptionToClean === undefined) {
         throw new Error('Card has no hero power description.');
     }
 
     // If the text has `<b>Battlecry:</b> Dredge.`, add `// Dredge.` to the battlecry ability
-    const CLEANED_DESCRIPTION = game.functions.color.stripTags(DESCRIPTION_TO_CLEAN).replace(`${ability}: `, '');
+    const cleanedDescription = game.functions.color.stripTags(descriptionToClean).replace(`${ability}: `, '');
 
     // `create` ability
-    const RUNES = card.runes ? `        self.runes = "${card.runes}"\n` : '';
+    const runes = card.runes ? `        self.runes = "${card.runes}"\n` : '';
     let keywords = '';
 
     if (card.keywords) {
-        for (const KEYWORD of card.keywords) {
+        for (const keyword of card.keywords) {
             // 8 spaces
-            keywords += `        self.addKeyword("${KEYWORD}");\n`;
+            keywords += `        self.addKeyword("${keyword}");\n`;
         }
     }
 
-    const CREATE_ABILITY = card.text ? `
+    const createAbility = card.text ? `
 
     create(plr, self) {
         // Add additional fields here
-${RUNES}${keywords}
+${runes}${keywords}
     },` : '';
 
     delete card.runes;
@@ -180,12 +180,12 @@ ${RUNES}${keywords}
     // Example 1: '\n\n    passive(plr, self, key, _unknownValue, eventPlayer) {\n        // Your battlecries trigger twice.\n        ...\n    }',
     // Example 2: '\n\n    battlecry(plr, self) {\n        // Deal 2 damage to the opponent.\n        \n    }'
     if (ability) {
-        const EXTRA_NEWLINE = extraPassiveCode ? '' : '\n';
+        const extraNewline = extraPassiveCode ? '' : '\n';
 
         ability = `
 
     ${ability.toLowerCase()}(plr, self${triggerText} {
-        // ${CLEANED_DESCRIPTION}${extraPassiveCode}${EXTRA_NEWLINE}
+        // ${cleanedDescription}${extraPassiveCode}${extraNewline}
     },
 
     test(plr, self) {
@@ -211,8 +211,8 @@ ${RUNES}${keywords}
     }
 
     // Get the latest card-id
-    const ID = game.lodash.parseInt(game.functions.util.fs('readFile', '/cards/.latestId') as string) + 1;
-    const FILE_ID = `\n    id: ${ID},`;
+    const id = game.lodash.parseInt(game.functions.util.fs('readFile', '/cards/.latestId') as string) + 1;
+    const fileId = `\n    id: ${id},`;
 
     // Generate the content of the card
     // If the value is a string, put '"value"'. If it is not a string, put 'value'.
@@ -248,38 +248,38 @@ ${RUNES}${keywords}
     };
 
     // If the function is passive, add `EventValue` to the list of imports
-    const PASSIVE_IMPORT = IS_PASSIVE ? ', type EventValue' : '';
+    const passiveImport = isPassive ? ', type EventValue' : '';
 
     // Add the key/value pairs to the content
-    const CONTENT_ARRAY = Object.entries(card).filter(c => c[0] !== 'id').map(c => `${c[0]}: ${getTypeValue(c[1])}`);
+    const contentArray = Object.entries(card).filter(c => c[0] !== 'id').map(c => `${c[0]}: ${getTypeValue(c[1])}`);
 
     // Add the content
-    const CONTENT = `// Created by the ${creatorType} Card Creator
+    const content = `// Created by the ${creatorType} Card Creator
 
 import assert from 'node:assert';
-import {type Blueprint${PASSIVE_IMPORT}} from '@Game/types.js';
+import {type Blueprint${passiveImport}} from '@Game/types.js';
 
-export const BLUEPRINT: Blueprint = {
-    ${CONTENT_ARRAY.join(',\n    ')},${FILE_ID}${CREATE_ABILITY}${ability}
+export const blueprint: Blueprint = {
+    ${contentArray.join(',\n    ')},${fileId}${createAbility}${ability}
 };
 `;
 
     // The path is now "./cardcreator/../cards/...", replace this with "./cards/..."
-    const FILE_PATH = path + filename;
+    const filePath = path + filename;
 
     if (debug) {
         // If debug mode is enabled, just show some information about the card.
         // This is the id that would be written to '.latestId'
-        game.log('\nNew ID: %s', ID);
-        game.log('Would be path: \'%s\'', FILE_PATH.replaceAll('\\', '/'));
+        game.log('\nNew ID: %s', id);
+        game.log('Would be path: \'%s\'', filePath.replaceAll('\\', '/'));
         game.log('Content:');
-        game.log(CONTENT);
+        game.log(content);
         game.pause();
     } else {
         // If debug mode is disabled, write the card to disk.
 
         // Increment the id in '.latestId' by 1
-        game.functions.util.fs('write', '/cards/.latestId', ID.toString());
+        game.functions.util.fs('write', '/cards/.latestId', id.toString());
 
         // If the path the card would be written to doesn't exist, create it.
         if (!game.functions.util.fs('exists', path)) {
@@ -287,9 +287,9 @@ export const BLUEPRINT: Blueprint = {
         }
 
         // Write the file to the path
-        game.functions.util.fs('write', FILE_PATH, CONTENT);
+        game.functions.util.fs('write', filePath, content);
 
-        game.log('File created at: "' + FILE_PATH + '"');
+        game.log('File created at: "' + filePath + '"');
 
         game.log('Trying to compile...');
         if (game.functions.util.tryCompile()) {
@@ -303,11 +303,11 @@ export const BLUEPRINT: Blueprint = {
 
     // Open the defined editor on that card if it has a function to edit, and debug mode is disabled
     if (ability && !debug) {
-        const SUCCESS = game.functions.util.runCommandAsChildProcess(`${game.config.general.editor} "${FILE_PATH}"`);
-        if (!SUCCESS) {
+        const success = game.functions.util.runCommandAsChildProcess(`${game.config.general.editor} "${filePath}"`);
+        if (!success) {
             game.pause();
         }
     }
 
-    return FILE_PATH;
+    return filePath;
 }

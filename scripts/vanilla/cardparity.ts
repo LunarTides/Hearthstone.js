@@ -10,16 +10,16 @@ import { type Blueprint } from '../../src/types.js';
 const { game } = createGame();
 
 function main() {
-    const VANILLA_CARDS = game.functions.card.vanilla.getAll();
+    const vanillaCards = game.functions.card.vanilla.getAll();
 
-    const FILTERED_VANILLA_CARDS = game.functions.card.vanilla.filter(VANILLA_CARDS, false, false);
-    const CUSTOM_CARDS = game.functions.card.getAll(false);
+    const filteredVanillaCards = game.functions.card.vanilla.filter(vanillaCards, false, false);
+    const customCards = game.functions.card.getAll(false);
 
-    for (const CUSTOM of CUSTOM_CARDS) {
+    for (const custom of customCards) {
         // Find the equivalent vanilla card
-        let vanilla = FILTERED_VANILLA_CARDS.find(vanilla => (
-            vanilla.name.toLowerCase() === CUSTOM.displayName.toLowerCase()
-                && vanilla.type.toLowerCase() === CUSTOM.type.toLowerCase()
+        let vanilla = filteredVanillaCards.find(vanilla => (
+            vanilla.name.toLowerCase() === custom.displayName.toLowerCase()
+                && vanilla.type.toLowerCase() === custom.type.toLowerCase()
         ));
 
         // There is no vanilla version of that card.
@@ -27,43 +27,43 @@ function main() {
             continue;
         }
 
-        for (const ENTRY of Object.entries(CUSTOM)) {
+        for (const entry of Object.entries(custom)) {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            const [KEY, VALUE] = ENTRY;
+            const [key, value] = entry;
 
             // HACK: For some reason, typescript thinks that vanilla can be undefined
             vanilla = vanilla!;
 
-            if (KEY === 'stats') {
+            if (key === 'stats') {
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-                check('attack', VALUE[0].toString(), vanilla, CUSTOM);
+                check('attack', value[0].toString(), vanilla, custom);
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-                check('health', VALUE[1].toString(), vanilla, CUSTOM);
+                check('health', value[1].toString(), vanilla, custom);
                 continue;
             }
 
             vanilla.text = vanilla.text?.replaceAll('\n', ' ');
             vanilla.text = vanilla.text?.replaceAll('[x]', '');
 
-            check(KEY, VALUE, vanilla, CUSTOM);
+            check(key, value, vanilla, custom);
         }
     }
 
     function check(key: string, value: any, vanilla: VanillaCard, card: Card) {
-        const IGNORE = ['id', 'set', 'name', 'rarity', 'type'];
+        const ignore = ['id', 'set', 'name', 'rarity', 'type'];
 
-        const TABLE: { [key in keyof Blueprint]?: keyof VanillaCard } = {
+        const table: { [key in keyof Blueprint]?: keyof VanillaCard } = {
             text: 'text',
         };
 
         let vanillaValue: any = key as keyof VanillaCard;
         if (!vanillaValue) {
-            vanillaValue = TABLE[key as keyof Blueprint];
+            vanillaValue = table[key as keyof Blueprint];
         }
 
         vanillaValue = vanilla[vanillaValue as keyof VanillaCard];
 
-        if (!vanillaValue || IGNORE.includes(key)) {
+        if (!vanillaValue || ignore.includes(key)) {
             return;
         }
 

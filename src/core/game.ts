@@ -3,9 +3,9 @@
  * @module Game
  */
 import _ from 'lodash';
-import { Player, Card, Ai, FUNCTIONS, INTERACT, EVENT_MANAGER } from '../internal.js';
+import { Player, Card, Ai, functions, interact, eventManager } from '../internal.js';
 import { type TickHookCallback, type Blueprint, type CardAbility, type CardKeyword, type EventKey, type GameAttackReturn, type GameConstants, type GamePlayCardReturn, type Target, type UnknownEventValue } from '../types.js';
-import { CONFIG } from '../../config.js';
+import { config } from '../../config.js';
 
 export class Game {
     /**
@@ -14,7 +14,7 @@ export class Game {
      * This has a lot of abstraction, so don't be afraid to use them.
      * Look in here for more.
      */
-    functions = FUNCTIONS;
+    functions = functions;
 
     /**
      * The player that starts first.
@@ -41,7 +41,7 @@ export class Game {
     /**
      * Events & History managment and tracker.
      */
-    events = EVENT_MANAGER;
+    events = eventManager;
 
     /**
      * This has a lot of functions for interacting with the user.
@@ -49,14 +49,14 @@ export class Game {
      * This is generally less useful than the `functions` object, since the majority of these functions are only used once in the source code.
      * However, some functions are still useful. For example, the `selectTarget` function.
      */
-    interact = INTERACT;
+    interact = interact;
 
     /**
      * Some configuration for the game.
      *
      * Look in the `config` folder.
      */
-    config = CONFIG;
+    config = config;
 
     /**
      * All of the blueprints cards that have been implemented so far.
@@ -73,10 +73,10 @@ export class Game {
      */
     cards: Card[] = [];
 
-    playCard = CARDS.play.play;
-    summonMinion = CARDS.summon;
+    playCard = cards.play.play;
+    summonMinion = cards.summon;
 
-    attack = ATTACK.attack;
+    attack = attack.attack;
 
     /**
      * The turn counter.
@@ -177,7 +177,7 @@ export class Game {
 
         // Some constants
         this.constants = {
-            REFUND: -1,
+            refund: -1,
         };
     }
 
@@ -235,15 +235,15 @@ export class Game {
      * @returns Success
      */
     doConfigAi(): boolean {
-        for (const PLAYER of [this.player1, this.player2]) {
+        for (const player of [this.player1, this.player2]) {
             // HACK: Use of never. Might not update correctly if the config format is changed
-            if (!this.config.ai['player' + (PLAYER.id + 1) as never]) {
-                PLAYER.ai = undefined;
+            if (!this.config.ai['player' + (player.id + 1) as never]) {
+                player.ai = undefined;
                 continue;
             }
 
-            if (!PLAYER.ai) {
-                PLAYER.ai = new Ai(PLAYER);
+            if (!player.ai) {
+                player.ai = new Ai(player);
             }
         }
 
@@ -272,60 +272,60 @@ export class Game {
      * @returns Success
      */
     startGame(): boolean {
-        const PLAYERS = [];
+        const players = [];
 
         // Make players draw cards
         for (let i = 0; i < 2; i++) {
             // Set the player's hero to the default hero for the class
-            const PLAYER = this.functions.util.getPlayerFromId(i);
+            const player = this.functions.util.getPlayerFromId(i);
 
-            const SUCCESS = PLAYER.setToStartingHero();
-            if (!SUCCESS) {
-                throw new Error('File \'cards/StartingHeroes/' + PLAYER.heroClass.toLowerCase().replaceAll(' ', '_') + '.ts\' is either; Missing or Incorrect. Please copy the working \'cards/StartingHeroes/\' folder from the github repo to restore a working copy. Error Code: 12');
+            const success = player.setToStartingHero();
+            if (!success) {
+                throw new Error('File \'cards/StartingHeroes/' + player.heroClass.toLowerCase().replaceAll(' ', '_') + '.ts\' is either; Missing or Incorrect. Please copy the working \'cards/StartingHeroes/\' folder from the github repo to restore a working copy. Error Code: 12');
             }
 
             // Add quest cards to the players hands
-            for (const CARD of PLAYER.deck) {
-                if (!CARD.text.includes('Quest: ') && !CARD.text.includes('Questline: ')) {
+            for (const card of player.deck) {
+                if (!card.text.includes('Quest: ') && !card.text.includes('Questline: ')) {
                     continue;
                 }
 
                 const unsuppress = this.functions.event.suppress('AddCardToHand');
-                PLAYER.addToHand(CARD);
+                player.addToHand(card);
                 unsuppress();
 
-                PLAYER.deck.splice(PLAYER.deck.indexOf(CARD), 1);
+                player.deck.splice(player.deck.indexOf(card), 1);
             }
 
             // Draw 3-4 cards
-            const AMOUNT_OF_CARDS = (PLAYER.id === 0) ? 3 : 4;
-            while (PLAYER.hand.length < AMOUNT_OF_CARDS) {
+            const amountOfCards = (player.id === 0) ? 3 : 4;
+            while (player.hand.length < amountOfCards) {
                 const unsuppress = this.functions.event.suppress('DrawCard');
-                PLAYER.drawCard();
+                player.drawCard();
                 unsuppress();
             }
 
-            for (const CARD of PLAYER.deck) {
-                CARD.activate('startofgame');
+            for (const card of player.deck) {
+                card.activate('startofgame');
             }
 
-            for (const CARD of PLAYER.hand) {
-                CARD.activate('startofgame');
+            for (const card of player.hand) {
+                card.activate('startofgame');
             }
 
-            PLAYERS.push(PLAYER);
+            players.push(player);
         }
 
-        this.player1 = PLAYERS[0];
-        this.player2 = PLAYERS[1];
+        this.player1 = players[0];
+        this.player2 = players[1];
 
         this.player1.emptyMana = 1;
         this.player1.mana = 1;
 
-        const COIN = new Card('The Coin', this.player2);
+        const coin = new Card('The Coin', this.player2);
 
         const unsuppress = this.functions.event.suppress('AddCardToHand');
-        this.player2.addToHand(COIN);
+        this.player2.addToHand(coin);
         unsuppress();
 
         this.turns += 1;
@@ -369,98 +369,97 @@ export class Game {
         // Update events
         this.events.broadcast('EndTurn', this.turns, this.player);
 
-        const PLAYER = this.player;
-        const OPPONENT = this.opponent;
+        const { player, opponent } = this;
 
-        for (const CARD of this.board[PLAYER.id]) {
-            CARD.ready();
+        for (const card of this.board[player.id]) {
+            card.ready();
         }
 
         // Trigger unspent mana
-        if (PLAYER.mana > 0) {
-            this.events.broadcast('UnspentMana', PLAYER.mana, PLAYER);
+        if (player.mana > 0) {
+            this.events.broadcast('UnspentMana', player.mana, player);
         }
 
         // Remove echo cards
-        PLAYER.hand = PLAYER.hand.filter(c => !c.hasKeyword('Echo'));
-        PLAYER.canAttack = true;
+        player.hand = player.hand.filter(c => !c.hasKeyword('Echo'));
+        player.canAttack = true;
 
         // Turn starts
         this.turns++;
 
         // Mana stuff
-        OPPONENT.addEmptyMana(1);
-        OPPONENT.mana = OPPONENT.emptyMana - OPPONENT.overload;
-        OPPONENT.overload = 0;
-        OPPONENT.attack = 0;
+        opponent.addEmptyMana(1);
+        opponent.mana = opponent.emptyMana - opponent.overload;
+        opponent.overload = 0;
+        opponent.attack = 0;
 
         // Weapon stuff
-        if (OPPONENT.weapon && OPPONENT.weapon.getAttack() > 0) {
-            OPPONENT.attack = OPPONENT.weapon.getAttack();
-            OPPONENT.weapon.resetAttackTimes();
+        if (opponent.weapon && opponent.weapon.getAttack() > 0) {
+            opponent.attack = opponent.weapon.getAttack();
+            opponent.weapon.resetAttackTimes();
         }
 
         // Chance to spawn in a diy card
-        if (this.lodash.random(0, 1, true) <= CONFIG.advanced.diyCardSpawnChance && CONFIG.advanced.spawnInDiyCards) {
-            this.interact.card.spawnInDiyCard(OPPONENT);
+        if (this.lodash.random(0, 1, true) <= config.advanced.diyCardSpawnChance && config.advanced.spawnInDiyCards) {
+            this.interact.card.spawnInDiyCard(opponent);
         }
 
         // Minion start of turn
-        for (const CARD of this.board[OPPONENT.id]) {
+        for (const card of this.board[opponent.id]) {
             // Dormant
-            const DORMANT = CARD.getKeyword('Dormant') as number | undefined;
+            const dormant = card.getKeyword('Dormant') as number | undefined;
 
-            if (DORMANT) {
-                if (this.turns <= DORMANT) {
+            if (dormant) {
+                if (this.turns <= dormant) {
                     continue;
                 }
 
                 // Remove dormant
-                CARD.remKeyword('Dormant');
-                CARD.sleepy = true;
+                card.remKeyword('Dormant');
+                card.sleepy = true;
 
-                if (Object.keys(CARD.backups.init.keywords).includes('Immune')) {
-                    CARD.addKeyword('Immune');
+                if (Object.keys(card.backups.init.keywords).includes('Immune')) {
+                    card.addKeyword('Immune');
                 }
 
-                CARD.turn = this.turns;
+                card.turn = this.turns;
 
                 // HACK: If the battlecry use a function that depends on `game.player`
-                this.player = OPPONENT;
-                CARD.activate('battlecry');
-                this.player = PLAYER;
+                this.player = opponent;
+                card.activate('battlecry');
+                this.player = player;
 
                 continue;
             }
 
-            CARD.canAttackHero = true;
-            if (this.turns > (CARD.turnFrozen ?? -1) + 1) {
-                CARD.remKeyword('Frozen');
+            card.canAttackHero = true;
+            if (this.turns > (card.turnFrozen ?? -1) + 1) {
+                card.remKeyword('Frozen');
             }
 
-            CARD.ready();
+            card.ready();
 
             // Stealth duration
-            if (CARD.stealthDuration && CARD.stealthDuration > 0 && this.turns > CARD.stealthDuration) {
-                CARD.stealthDuration = 0;
-                CARD.remKeyword('Stealth');
+            if (card.stealthDuration && card.stealthDuration > 0 && this.turns > card.stealthDuration) {
+                card.stealthDuration = 0;
+                card.remKeyword('Stealth');
             }
 
             // Location cooldown
-            if (CARD.type === 'Location' && CARD.cooldown && CARD.cooldown > 0) {
-                CARD.cooldown--;
+            if (card.type === 'Location' && card.cooldown && card.cooldown > 0) {
+                card.cooldown--;
             }
         }
 
         // Draw card
-        OPPONENT.drawCard();
+        opponent.drawCard();
 
-        OPPONENT.canUseHeroPower = true;
+        opponent.canUseHeroPower = true;
 
-        this.events.broadcast('StartTurn', this.turns, OPPONENT);
+        this.events.broadcast('StartTurn', this.turns, opponent);
 
-        this.player = OPPONENT;
-        this.opponent = PLAYER;
+        this.player = opponent;
+        this.opponent = player;
 
         return true;
     }
@@ -476,49 +475,49 @@ export class Game {
         let amount = 0;
 
         for (let p = 0; p < 2; p++) {
-            const PLAYER = this.functions.util.getPlayerFromId(p);
+            const player = this.functions.util.getPlayerFromId(p);
 
-            const SPARED: Card[] = [];
+            const spared: Card[] = [];
             const shouldSpare = (card: Card) => card.getHealth() > 0 || ((card.durability ?? 0) > 0);
 
-            for (const CARD of this.board[p]) {
-                if (shouldSpare(CARD)) {
+            for (const card of this.board[p]) {
+                if (shouldSpare(card)) {
                     continue;
                 }
 
-                CARD.activate('deathrattle');
+                card.activate('deathrattle');
             }
 
-            for (const CARD of this.board[p]) {
+            for (const card of this.board[p]) {
                 // Add minions with more than 0 health to n.
-                if (shouldSpare(CARD)) {
-                    SPARED.push(CARD);
+                if (shouldSpare(card)) {
+                    spared.push(card);
                     continue;
                 }
 
                 // Calmly tell the minion that it is going to die
-                CARD.activate('remove');
-                this.events.broadcast('KillMinion', CARD, this.player);
+                card.activate('remove');
+                this.events.broadcast('KillMinion', card, this.player);
 
-                CARD.turnKilled = this.turns;
+                card.turnKilled = this.turns;
                 amount++;
 
-                PLAYER.corpses++;
-                this.graveyard[p].push(CARD);
+                player.corpses++;
+                this.graveyard[p].push(card);
 
-                if (!CARD.hasKeyword('Reborn')) {
+                if (!card.hasKeyword('Reborn')) {
                     continue;
                 }
 
                 // Reborn
-                const MINION = CARD.imperfectCopy();
-                MINION.remKeyword('Reborn');
+                const minion = card.imperfectCopy();
+                minion.remKeyword('Reborn');
 
                 // Reduce the minion's health to 1, keep the minion's attack the same
-                MINION.setStats(MINION.getAttack(), 1);
+                minion.setStats(minion.getAttack(), 1);
 
                 const unsuppress = this.functions.event.suppress('SummonMinion');
-                this.summonMinion(MINION, PLAYER);
+                this.summonMinion(minion, player);
                 unsuppress();
 
                 // Activate the minion's passive
@@ -529,12 +528,12 @@ export class Game {
                 // in its passive.
                 // So it looks like this:
                 // minion.activate(key, reason, minion);
-                MINION.activate('passive', 'reborn', CARD, this.player);
+                minion.activate('passive', 'reborn', card, this.player);
 
-                SPARED.push(MINION);
+                spared.push(minion);
             }
 
-            this.board[p] = SPARED;
+            this.board[p] = spared;
         }
 
         return amount;
@@ -546,17 +545,17 @@ export class Game {
 }
 
 export function createGame() {
-    const GAME = new Game();
-    const PLAYER_1 = new Player('Player 1');
-    const PLAYER_2 = new Player('Player 2');
-    GAME.setup(PLAYER_1, PLAYER_2);
-    GAME.functions.card.importAll();
-    GAME.doConfigAi();
+    const game = new Game();
+    const player1 = new Player('Player 1');
+    const player2 = new Player('Player 2');
+    game.setup(player1, player2);
+    game.functions.card.importAll();
+    game.doConfigAi();
 
-    return { game: GAME, player1: PLAYER_1, player2: PLAYER_2 };
+    return { game, player1, player2 };
 }
 
-const ATTACK = {
+const attack = {
     /**
      * Makes a minion or hero attack another minion or hero
      *
@@ -580,7 +579,7 @@ const ATTACK = {
 
         // Attacker is a number
         if (typeof attacker === 'string' || typeof attacker === 'number') {
-            returnValue = ATTACK._attackerIsNum(attacker, target);
+            returnValue = attack._attackerIsNum(attacker, target);
             game.killMinions();
             return returnValue;
         }
@@ -595,8 +594,8 @@ const ATTACK = {
         }
 
         // Check if there is a minion with taunt
-        const TAUNTS = game.board[game.opponent.id].filter(m => m.hasKeyword('Taunt'));
-        if (TAUNTS.length > 0) {
+        const taunts = game.board[game.opponent.id].filter(m => m.hasKeyword('Taunt'));
+        if (taunts.length > 0) {
             // If the target is a card and has taunt, you are allowed to attack it
             if (target instanceof Card && target.hasKeyword('Taunt')) {
                 // Allow the attack since the target also has taunt
@@ -607,10 +606,10 @@ const ATTACK = {
 
         if (attacker instanceof Player) {
             // Attacker is a player
-            returnValue = ATTACK._attackerIsPlayer(attacker, target);
+            returnValue = attack._attackerIsPlayer(attacker, target);
         } else if (attacker instanceof Card) {
             // Attacker is a minion
-            returnValue = ATTACK._attackerIsCard(attacker, target);
+            returnValue = attack._attackerIsCard(attacker, target);
         } else {
             // Otherwise
             return 'invalid';
@@ -624,10 +623,10 @@ const ATTACK = {
     _attackerIsNum(attacker: number | string, target: Target): GameAttackReturn {
         // Attacker is a number
         // Spell damage
-        const DAMAGE = ATTACK._spellDamage(attacker, target);
+        const damage = attack._spellDamage(attacker, target);
 
         if (target instanceof Player) {
-            target.remHealth(DAMAGE);
+            target.remHealth(damage);
             return true;
         }
 
@@ -636,10 +635,10 @@ const ATTACK = {
             return 'divineshield';
         }
 
-        target.remStats(0, DAMAGE);
+        target.remStats(0, damage);
 
         // Remove frenzy
-        ATTACK._doFrenzy(target);
+        attack._doFrenzy(target);
 
         return true;
     },
@@ -656,12 +655,12 @@ const ATTACK = {
 
         // Target is a player
         if (target instanceof Player) {
-            return ATTACK._attackerIsPlayerAndTargetIsPlayer(attacker, target);
+            return attack._attackerIsPlayerAndTargetIsPlayer(attacker, target);
         }
 
         // Target is a card
         if (target instanceof Card) {
-            return ATTACK._attackerIsPlayerAndTargetIsCard(attacker, target);
+            return attack._attackerIsPlayerAndTargetIsCard(attacker, target);
         }
 
         // Otherwise
@@ -671,12 +670,12 @@ const ATTACK = {
     // Attacker is a player and target is a player
     _attackerIsPlayerAndTargetIsPlayer(attacker: Player, target: Player): GameAttackReturn {
         // Get the attacker's attack damage, and attack the target with it
-        ATTACK.attack(attacker.attack, target);
+        attack.attack(attacker.attack, target);
         game.events.broadcast('Attack', [attacker, target], attacker);
 
         // The attacker can't attack anymore this turn.
         attacker.canAttack = false;
-        ATTACK._removeDurabilityFromWeapon(attacker, target);
+        attack._removeDurabilityFromWeapon(attacker, target);
 
         return true;
     },
@@ -699,10 +698,10 @@ const ATTACK = {
         attacker.canAttack = false;
 
         // Remove frenzy
-        ATTACK._doFrenzy(target);
+        attack._doFrenzy(target);
 
         game.killMinions();
-        ATTACK._removeDurabilityFromWeapon(attacker, target);
+        attack._removeDurabilityFromWeapon(attacker, target);
 
         return true;
     },
@@ -727,12 +726,12 @@ const ATTACK = {
 
         // Target is a player
         if (target instanceof Player) {
-            return ATTACK._attackerIsCardAndTargetIsPlayer(attacker, target);
+            return attack._attackerIsCardAndTargetIsPlayer(attacker, target);
         }
 
         // Target is a minion
         if (target instanceof Card) {
-            return ATTACK._attackerIsCardAndTargetIsCard(attacker, target);
+            return attack._attackerIsCardAndTargetIsCard(attacker, target);
         }
 
         // Otherwise
@@ -751,10 +750,10 @@ const ATTACK = {
         }
 
         // If attacker has lifesteal, heal it's owner
-        ATTACK._doLifesteal(attacker);
+        attack._doLifesteal(attacker);
 
         // Deal damage
-        ATTACK.attack(attacker.getAttack(), target);
+        attack.attack(attacker.getAttack(), target);
 
         // Remember this attack
         attacker.decAttack();
@@ -769,8 +768,8 @@ const ATTACK = {
             return 'stealth';
         }
 
-        ATTACK._attackerIsCardAndTargetIsCardDoAttacker(attacker, target);
-        ATTACK._attackerIsCardAndTargetIsCardDoTarget(attacker, target);
+        attack._attackerIsCardAndTargetIsCardDoAttacker(attacker, target);
+        attack._attackerIsCardAndTargetIsCardDoTarget(attacker, target);
 
         game.events.broadcast('Attack', [attacker, target], attacker.plr);
 
@@ -778,39 +777,39 @@ const ATTACK = {
     },
     _attackerIsCardAndTargetIsCardDoAttacker(attacker: Card, target: Card): GameAttackReturn {
         // Cleave
-        ATTACK._cleave(attacker, target);
+        attack._cleave(attacker, target);
 
         attacker.decAttack();
         attacker.remKeyword('Stealth');
 
-        const SHOULD_DAMAGE = ATTACK._cardAttackHelper(attacker);
-        if (!SHOULD_DAMAGE) {
+        const shouldDamage = attack._cardAttackHelper(attacker);
+        if (!shouldDamage) {
             return true;
         }
 
-        ATTACK.attack(target.getAttack(), attacker);
+        attack.attack(target.getAttack(), attacker);
 
         // Remove frenzy
-        ATTACK._doFrenzy(attacker);
+        attack._doFrenzy(attacker);
 
         // If the target has poison, kill the attacker
-        ATTACK._doPoison(target, attacker);
+        attack._doPoison(target, attacker);
 
         return true;
     },
     _attackerIsCardAndTargetIsCardDoTarget(attacker: Card, target: Card): GameAttackReturn {
-        const SHOULD_DAMAGE = ATTACK._cardAttackHelper(target);
-        if (!SHOULD_DAMAGE) {
+        const shouldDamage = attack._cardAttackHelper(target);
+        if (!shouldDamage) {
             return true;
         }
 
-        ATTACK.attack(attacker.getAttack(), target);
+        attack.attack(attacker.getAttack(), target);
 
-        ATTACK._doLifesteal(attacker);
-        ATTACK._doPoison(attacker, target);
+        attack._doLifesteal(attacker);
+        attack._doPoison(attacker, target);
 
         // Remove frenzy
-        ATTACK._doFrenzy(target);
+        attack._doFrenzy(target);
         if (target.getHealth() < 0) {
             attacker.activate('overkill');
         }
@@ -841,20 +840,20 @@ const ATTACK = {
             return;
         }
 
-        const BOARD = game.board[target.plr.id];
-        const INDEX = BOARD.indexOf(target);
+        const board = game.board[target.plr.id];
+        const index = board.indexOf(target);
 
-        const BELOW = BOARD[INDEX - 1];
-        const ABOVE = BOARD[INDEX + 1];
+        const below = board[index - 1];
+        const above = board[index + 1];
 
         // If there is a card below the target, also deal damage to it.
-        if (BELOW) {
-            game.attack(attacker.getAttack(), BELOW);
+        if (below) {
+            game.attack(attacker.getAttack(), below);
         }
 
         // If there is a card above the target, also deal damage to it.
-        if (ABOVE) {
-            game.attack(attacker.getAttack(), ABOVE);
+        if (above) {
+            game.attack(attacker.getAttack(), above);
         }
     },
 
@@ -893,14 +892,14 @@ const ATTACK = {
         }
 
         // The attacker is a string but not spelldamage syntax
-        const SPELL_DAMAGE_REGEX = /\$(\d+?)/;
-        const MATCH = SPELL_DAMAGE_REGEX.exec(attacker);
+        const spellDamageRegex = /\$(\d+?)/;
+        const match = spellDamageRegex.exec(attacker);
 
-        if (!MATCH) {
+        if (!match) {
             throw new TypeError('Non-spelldamage string passed into attack.');
         }
 
-        let dmg = game.lodash.parseInt(MATCH[1]);
+        let dmg = game.lodash.parseInt(match[1]);
         dmg += game.player.spellDamage;
 
         game.events.broadcast('SpellDealsDamage', [target, dmg], game.player);
@@ -908,18 +907,18 @@ const ATTACK = {
     },
 
     _removeDurabilityFromWeapon(attacker: Player, target: Target): void {
-        const WEAPON = attacker.weapon;
-        if (!WEAPON) {
+        const { weapon } = attacker;
+        if (!weapon) {
             return;
         }
 
         // If the weapon would be part of the attack, remove 1 durability
-        if (WEAPON.attackTimes && WEAPON.attackTimes > 0 && WEAPON.getAttack()) {
-            WEAPON.attackTimes -= 1;
-            WEAPON.remStats(0, 1);
+        if (weapon.attackTimes && weapon.attackTimes > 0 && weapon.getAttack()) {
+            weapon.attackTimes -= 1;
+            weapon.remStats(0, 1);
 
             if (target instanceof Card) {
-                ATTACK._doPoison(WEAPON, target);
+                attack._doPoison(weapon, target);
             }
         }
 
@@ -927,7 +926,7 @@ const ATTACK = {
     },
 };
 
-const PLAY_CARD = {
+const playCard = {
     /**
      * Play a card
      *
@@ -938,15 +937,15 @@ const PLAY_CARD = {
         game.killMinions();
 
         // Forge
-        const FORGE = PLAY_CARD._forge(card, player);
-        if (FORGE !== 'invalid') {
-            return FORGE;
+        const forge = playCard._forge(card, player);
+        if (forge !== 'invalid') {
+            return forge;
         }
 
         // Trade
-        const TRADE = PLAY_CARD._trade(card, player);
-        if (TRADE !== 'invalid') {
-            return TRADE;
+        const trade = playCard._trade(card, player);
+        if (trade !== 'invalid') {
+            return trade;
         }
 
         // Cost
@@ -955,7 +954,7 @@ const PLAY_CARD = {
         }
 
         // Condition
-        if (!PLAY_CARD._condition(card, player)) {
+        if (!playCard._condition(card, player)) {
             return 'refund';
         }
 
@@ -964,12 +963,12 @@ const PLAY_CARD = {
         game.functions.util.remove(player.hand, card);
 
         // Counter
-        if (PLAY_CARD._countered(card, player)) {
+        if (playCard._countered(card, player)) {
             return 'counter';
         }
 
         // If the board has max capacity, and the card played is a minion or location card, prevent it.
-        if (!PLAY_CARD._hasCapacity(card, player)) {
+        if (!playCard._hasCapacity(card, player)) {
             return 'space';
         }
 
@@ -986,7 +985,7 @@ const PLAY_CARD = {
 
         // Type specific code
         // HACK: Use of never
-        const typeFunction: (card: Card, player: Player) => GamePlayCardReturn = PLAY_CARD.TYPE_SPECIFIC[card.type as never];
+        const typeFunction: (card: Card, player: Player) => GamePlayCardReturn = playCard.TYPE_SPECIFIC[card.type as never];
         if (!typeFunction) {
             throw new TypeError('Cannot handle playing card of type: ' + card.type);
         }
@@ -1002,15 +1001,15 @@ const PLAY_CARD = {
         game.events.addHistory('PlayCardUnsafe', card, player);
 
         // Echo
-        PLAY_CARD._echo(card, player);
+        playCard._echo(card, player);
 
         // Combo
-        PLAY_CARD._combo(card, player);
+        playCard._combo(card, player);
 
         // Broadcast `PlayCard` event
         game.events.broadcast('PlayCard', card, player);
 
-        PLAY_CARD._corrupt(card, player);
+        playCard._corrupt(card, player);
         game.killMinions();
 
         return result;
@@ -1020,7 +1019,7 @@ const PLAY_CARD = {
     TYPE_SPECIFIC: {
         Minion(card: Card, player: Player): GamePlayCardReturn {
             // Magnetize
-            if (PLAY_CARD._magnetize(card, player)) {
+            if (playCard._magnetize(card, player)) {
                 return 'magnetize';
             }
 
@@ -1029,10 +1028,10 @@ const PLAY_CARD = {
             }
 
             const unsuppress = game.functions.event.suppress('SummonMinion');
-            const RETURN_VALUE = CARDS.summon(card, player);
+            const returnValue = cards.summon(card, player);
             unsuppress();
 
-            return RETURN_VALUE;
+            return returnValue;
         },
 
         Spell(card: Card, player: Player): GamePlayCardReturn {
@@ -1049,9 +1048,9 @@ const PLAY_CARD = {
             }
 
             // Spellburst functionality
-            for (const CARD of game.board[player.id]) {
-                CARD.activate('spellburst');
-                CARD.abilities.spellburst = undefined;
+            for (const card of game.board[player.id]) {
+                card.activate('spellburst');
+                card.abilities.spellburst = undefined;
             }
 
             return true;
@@ -1081,10 +1080,10 @@ const PLAY_CARD = {
             card.cooldown = 0;
 
             const unsuppress = game.functions.event.suppress('SummonMinion');
-            const RETURN_VALUE = CARDS.summon(card, player);
+            const returnValue = cards.summon(card, player);
             unsuppress();
 
-            return RETURN_VALUE;
+            return returnValue;
         },
     },
 
@@ -1110,7 +1109,7 @@ const PLAY_CARD = {
             return 'cost';
         }
 
-        if (player.hand.length >= CONFIG.general.maxHandLength) {
+        if (player.hand.length >= config.general.maxHandLength) {
             return 'space';
         }
 
@@ -1130,9 +1129,9 @@ const PLAY_CARD = {
     },
 
     _forge(card: Card, player: Player): GamePlayCardReturn {
-        const FORGE = card.getKeyword('Forge') as string | undefined;
+        const forge = card.getKeyword('Forge') as string | undefined;
 
-        if (!FORGE) {
+        if (!forge) {
             return 'invalid';
         }
 
@@ -1156,8 +1155,8 @@ const PLAY_CARD = {
         player.mana -= 2;
 
         game.functions.util.remove(player.hand, card);
-        const FORGED = new Card(FORGE, player);
-        player.addToHand(FORGED);
+        const forged = new Card(forge, player);
+        player.addToHand(forged);
 
         game.events.broadcast('ForgeCard', card, player);
 
@@ -1185,24 +1184,24 @@ const PLAY_CARD = {
     },
 
     _condition(card: Card, player: Player): boolean {
-        const CONDITION = card.activate('condition');
-        if (!(Array.isArray(CONDITION))) {
+        const condition = card.activate('condition');
+        if (!(Array.isArray(condition))) {
             return true;
         }
 
         // This is if the condition is cleared
-        const CLEARED = CONDITION[0] as boolean;
-        if (CLEARED) {
+        const cleared = condition[0] as boolean;
+        if (cleared) {
             return true;
         }
 
         // Warn the user that the condition is not fulfilled
-        const WARN_MESSAGE = '<yellow>WARNING: This card\'s condition is not fulfilled. Are you sure you want to play this card?</yellow>';
+        const warnMessage = '<yellow>WARNING: This card\'s condition is not fulfilled. Are you sure you want to play this card?</yellow>';
 
         game.interact.info.showGame(player);
-        const WARN = game.interact.yesNoQuestion(player, WARN_MESSAGE);
+        const warn = game.interact.yesNoQuestion(player, warnMessage);
 
-        if (!WARN) {
+        if (!warn) {
             return false;
         }
 
@@ -1210,11 +1209,11 @@ const PLAY_CARD = {
     },
 
     _countered(card: Card, player: Player): boolean {
-        const OPPONENT = player.getOpponent();
+        const opponent = player.getOpponent();
 
         // Check if the card is countered
-        if (OPPONENT.counter && OPPONENT.counter.includes(card.type)) {
-            game.functions.util.remove(OPPONENT.counter, card.type);
+        if (opponent.counter && opponent.counter.includes(card.type)) {
+            game.functions.util.remove(opponent.counter, card.type);
             return true;
         }
 
@@ -1227,10 +1226,10 @@ const PLAY_CARD = {
         }
 
         // Create an exact copy of the card played
-        const ECHO = card.perfectCopy();
-        ECHO.addKeyword('Echo');
+        const echo = card.perfectCopy();
+        echo.addKeyword('Echo');
 
-        player.addToHand(ECHO);
+        player.addToHand(echo);
         return true;
     },
 
@@ -1240,17 +1239,17 @@ const PLAY_CARD = {
         }
 
         // Get the player's PlayCard event history
-        const STAT = game.events.events.PlayCard[player.id];
-        if (STAT.length <= 0) {
+        const stat = game.events.events.PlayCard[player.id];
+        if (stat.length <= 0) {
             return false;
         }
 
         // Get the latest event
-        const LATEST = game.lodash.last(STAT);
-        const LATEST_CARD = LATEST?.[0] as Card;
+        const latest = game.lodash.last(stat);
+        const latestCard = latest?.[0] as Card;
 
         // If the previous card played was played on the same turn as this one, activate combo
-        if (LATEST_CARD.turn === game.turns) {
+        if (latestCard.turn === game.turns) {
             card.activate('combo');
         }
 
@@ -1258,19 +1257,19 @@ const PLAY_CARD = {
     },
 
     _corrupt(card: Card, player: Player): boolean {
-        for (const TO_CORRUPT of player.hand) {
-            const CORRUPT = TO_CORRUPT.getKeyword('Corrupt') as string | undefined;
-            if (!CORRUPT || card.cost <= TO_CORRUPT.cost) {
+        for (const toCorrupt of player.hand) {
+            const corrupt = toCorrupt.getKeyword('Corrupt') as string | undefined;
+            if (!corrupt || card.cost <= toCorrupt.cost) {
                 continue;
             }
 
             // Corrupt that card
-            const CORRUPTED = new Card(CORRUPT, player);
+            const corrupted = new Card(corrupt, player);
 
-            game.functions.util.remove(player.hand, TO_CORRUPT);
+            game.functions.util.remove(player.hand, toCorrupt);
 
             const unsuppress = game.functions.event.suppress('AddCardToHand');
-            player.addToHand(CORRUPTED);
+            player.addToHand(corrupted);
             unsuppress();
         }
 
@@ -1278,60 +1277,60 @@ const PLAY_CARD = {
     },
 
     _magnetize(card: Card, player: Player): boolean {
-        const BOARD = game.board[player.id];
+        const board = game.board[player.id];
 
-        if (!card.hasKeyword('Magnetic') || BOARD.length <= 0) {
+        if (!card.hasKeyword('Magnetic') || board.length <= 0) {
             return false;
         }
 
         // Find the mechs on the board
-        const MECHS = BOARD.filter(m => m.tribe?.includes('Mech'));
-        if (MECHS.length <= 0) {
+        const mechs = board.filter(m => m.tribe?.includes('Mech'));
+        if (mechs.length <= 0) {
             return false;
         }
 
         // I'm using while loops to prevent a million indents
-        const MECH = game.interact.selectCardTarget('Which minion do you want this card to Magnetize to:', undefined, 'friendly');
-        if (!MECH) {
+        const mech = game.interact.selectCardTarget('Which minion do you want this card to Magnetize to:', undefined, 'friendly');
+        if (!mech) {
             return false;
         }
 
-        if (!MECH.tribe?.includes('Mech')) {
+        if (!mech.tribe?.includes('Mech')) {
             game.log('That minion is not a Mech.');
-            return PLAY_CARD._magnetize(card, player);
+            return playCard._magnetize(card, player);
         }
 
-        MECH.addStats(card.getAttack(), card.getHealth());
+        mech.addStats(card.getAttack(), card.getHealth());
 
-        for (const KEY of Object.keys(card.keywords)) {
-            MECH.addKeyword(KEY as CardKeyword);
+        for (const key of Object.keys(card.keywords)) {
+            mech.addKeyword(key as CardKeyword);
         }
 
-        if (MECH.maxHealth && card.maxHealth) {
-            MECH.maxHealth += card.maxHealth;
+        if (mech.maxHealth && card.maxHealth) {
+            mech.maxHealth += card.maxHealth;
         }
 
         // Transfer the abilities over.
-        for (const ENTRY of Object.entries(card.abilities)) {
-            const [KEY, VALUE] = ENTRY;
+        for (const entry of Object.entries(card.abilities)) {
+            const [key, value] = entry;
 
-            for (const ability of VALUE) {
-                MECH.addAbility(KEY as CardAbility, ability);
+            for (const ability of value) {
+                mech.addAbility(key as CardAbility, ability);
             }
         }
 
         // Echo
-        PLAY_CARD._echo(card, player);
+        playCard._echo(card, player);
 
         // Corrupt
-        PLAY_CARD._corrupt(card, player);
+        playCard._corrupt(card, player);
 
         return true;
     },
 };
 
-const CARDS = {
-    play: PLAY_CARD,
+const cards = {
+    play: playCard,
 
     /**
      * Summon a minion.
@@ -1362,49 +1361,49 @@ const CARDS = {
             minion.canAttackHero = false;
         }
 
-        const DORMANT = minion.getKeyword('Dormant') as number | undefined;
+        const dormant = minion.getKeyword('Dormant') as number | undefined;
 
-        const COLOSSAL_MINIONS = minion.getKeyword('Colossal') as string[] | undefined;
-        if (COLOSSAL_MINIONS && colossal) {
+        const colossalMinions = minion.getKeyword('Colossal') as string[] | undefined;
+        if (colossalMinions && colossal) {
             // Minion.colossal is a string array.
             // example: ["Left Arm", "", "Right Arm"]
             // the "" gets replaced with the main minion
 
-            for (const CARD_NAME of COLOSSAL_MINIONS) {
+            for (const cardName of colossalMinions) {
                 const unsuppress = game.functions.event.suppress('SummonMinion');
 
-                if (CARD_NAME === '') {
+                if (cardName === '') {
                     game.summonMinion(minion, player, false);
                     unsuppress();
                     continue;
                 }
 
-                const CARD = new Card(CARD_NAME, player);
+                const card = new Card(cardName, player);
 
-                if (DORMANT) {
-                    CARD.addKeyword('Dormant', DORMANT);
+                if (dormant) {
+                    card.addKeyword('Dormant', dormant);
                 }
 
-                game.summonMinion(CARD, player);
+                game.summonMinion(card, player);
                 unsuppress();
             }
 
             return 'colossal';
         }
 
-        if (DORMANT) {
+        if (dormant) {
             // Oh no... Why is this not documented?
-            minion.setKeyword('Dormant', DORMANT + game.turns);
+            minion.setKeyword('Dormant', dormant + game.turns);
             minion.addKeyword('Immune');
             minion.sleepy = false;
         }
 
         game.board[player.id].push(minion);
 
-        for (const CARD of game.board[player.id]) {
-            for (const KEY of Object.keys(CARD.keywords)) {
-                if (KEY.startsWith('Spell Damage +')) {
-                    player.spellDamage += game.lodash.parseInt(KEY.split('+')[1]);
+        for (const card of game.board[player.id]) {
+            for (const key of Object.keys(card.keywords)) {
+                if (key.startsWith('Spell Damage +')) {
+                    player.spellDamage += game.lodash.parseInt(key.split('+')[1]);
                 }
             }
         }

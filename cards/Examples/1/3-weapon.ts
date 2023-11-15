@@ -2,7 +2,7 @@
 
 import { type Blueprint } from '@Game/types.js';
 
-export const BLUEPRINT: Blueprint = {
+export const blueprint: Blueprint = {
     // This looks like a minion card except for the type.
     name: 'Weapon Example',
     stats: [5, 3],

@@ -3,7 +3,7 @@
 import assert from 'node:assert';
 import { type Blueprint } from '@Game/types.js';
 
-export const BLUEPRINT: Blueprint = {
+export const blueprint: Blueprint = {
     name: 'Faceless Lackey',
     stats: [1, 1],
     text: '<b>Battlecry:</b> Summon a random 2-Cost minion.',
@@ -19,19 +19,19 @@ export const BLUEPRINT: Blueprint = {
         // Summon a random 2-Cost minion.
 
         // filter out all cards that aren't 2-cost minions
-        const MINIONS = game.functions.card.getAll().filter(card => card.type === 'Minion' && card.cost === 2);
+        const minions = game.functions.card.getAll().filter(card => card.type === 'Minion' && card.cost === 2);
 
         // Choose a random minion
-        const RANDOM = game.lodash.sample(MINIONS);
-        if (!RANDOM) {
+        const random = game.lodash.sample(minions);
+        if (!random) {
             return;
         }
 
         // Create a new minion since we shouldn't directly use the cards from `game.functions.card.getAll()`.
-        const MINION = game.createCard(RANDOM.name, plr);
+        const minion = game.createCard(random.name, plr);
 
         // Summon the minion
-        game.summonMinion(MINION, plr);
+        game.summonMinion(minion, plr);
     },
 
     test(plr, self) {

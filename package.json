@@ -65,23 +65,9 @@
           "leadingUnderscore": "allow"
         },
         {
-          "selector": "variable",
-          "format": [
-            "camelCase",
-            "UPPER_CASE"
-          ]
-        },
-        {
           "selector": "typeLike",
           "format": [
             "PascalCase"
-          ]
-        },
-        {
-          "selector": "typeProperty",
-          "format": [
-            "camelCase",
-            "UPPER_CASE"
           ]
         },
         {

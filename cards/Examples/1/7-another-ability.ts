@@ -17,7 +17,7 @@ const theTestAbility: Ability = (plr, self) => {
     assert.equal(self.getHealth() - 1, self.blueprint.stats?.[1]);
 };
 
-export const BLUEPRINT: Blueprint = {
+export const blueprint: Blueprint = {
     name: 'Another Ability Example',
     stats: [1, 2],
     text: '<b>Battlecry:</b> Give this minion +1/+1.',

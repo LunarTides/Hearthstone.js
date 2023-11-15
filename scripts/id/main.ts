@@ -1,8 +1,8 @@
 import * as lib from './lib.js';
 
 // Check if your git is clean
-const GIT_STATUS = game.functions.util.runCommand('git status --porcelain');
-if (typeof GIT_STATUS === 'string') {
+const gitStatus = game.functions.util.runCommand('git status --porcelain');
+if (typeof gitStatus === 'string') {
     game.logError('<yellow>WARNING: You have uncommitted changes. Please commit them before running a non-safe command.</yellow>');
     // Process.exit(1);
 }
@@ -19,9 +19,9 @@ if (!func) {
 }
 
 func = func.toLowerCase() as Commands;
-const DESTRUCTIVE = ['i', 'd'] as Commands[];
+const destructive = ['i', 'd'] as Commands[];
 
-if (DESTRUCTIVE.includes(func)) {
+if (destructive.includes(func)) {
     game.logError('<yellow>WARNING: This is a destructive action. Be careful.</yellow>\n');
 }
 

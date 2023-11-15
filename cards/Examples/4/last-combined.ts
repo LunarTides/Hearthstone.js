@@ -3,7 +3,7 @@
 import { type Blueprint, type EventValue } from '@Game/types.js';
 
 // This is the big one
-export const BLUEPRINT: Blueprint = {
+export const blueprint: Blueprint = {
     name: 'Combined Example 4',
     text: 'Quest: Play 3 cards. Reward: Reduce the cost of the next 10 Minions you play by 1.',
     cost: 1,
@@ -16,9 +16,9 @@ export const BLUEPRINT: Blueprint = {
 
     cast(plr, self) {
         plr.addQuest('Quest', self, 'PlayCard', 3, (_unknownValue, done) => {
-            const VALUE = _unknownValue as EventValue<'PlayCard'>;
+            const value = _unknownValue as EventValue<'PlayCard'>;
 
-            if (!(VALUE !== self)) {
+            if (!(value !== self)) {
                 return false;
             }
 
@@ -30,12 +30,12 @@ export const BLUEPRINT: Blueprint = {
             // Add the `-1 cost` enchantment constantly
             const unhook = game.functions.event.hookToTick(() => {
                 // Only add the enchantment to minions
-                for (const MINION of plr.hand.filter(card => card.type === 'Minion')) {
-                    if (MINION.enchantmentExists('-1 cost', self)) {
+                for (const minion of plr.hand.filter(card => card.type === 'Minion')) {
+                    if (minion.enchantmentExists('-1 cost', self)) {
                         continue;
                     }
 
-                    MINION.addEnchantment('-1 cost', self);
+                    minion.addEnchantment('-1 cost', self);
                 }
             });
 
@@ -43,10 +43,10 @@ export const BLUEPRINT: Blueprint = {
             let amount = 0;
 
             game.functions.event.addListener('PlayCard', _unknownValue => {
-                const VALUE = _unknownValue as EventValue<'PlayCard'>;
+                const value = _unknownValue as EventValue<'PlayCard'>;
 
                 // Only continue if the player that triggered the event is this card's owner and the played card is a minion.
-                if (!(game.player === plr && VALUE.type === 'Minion')) {
+                if (!(game.player === plr && value.type === 'Minion')) {
                     return false;
                 }
 
@@ -65,8 +65,8 @@ export const BLUEPRINT: Blueprint = {
 
                 // Reverse the enchantment
                 // You might be able to just do `plr.hand.forEach(m => ...)` instead, since `removeEnchantment` only removes enchantments if it's there.
-                for (const MINION of plr.hand.filter(c => c.type === 'Minion')) {
-                    MINION.removeEnchantment('-1 cost', self);
+                for (const minion of plr.hand.filter(c => c.type === 'Minion')) {
+                    minion.removeEnchantment('-1 cost', self);
                 }
 
                 // Destroy this event listener so it doesn't run again

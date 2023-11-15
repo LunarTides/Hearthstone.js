@@ -3,7 +3,7 @@
 import { type Blueprint, type EventValue } from '@Game/types.js';
 
 // Im sorry, things are about to become a lot more complicated from this point on.
-export const BLUEPRINT: Blueprint = {
+export const blueprint: Blueprint = {
     name: 'Passive Example',
     stats: [1, 1],
 
@@ -48,13 +48,13 @@ export const BLUEPRINT: Blueprint = {
         }
 
         // Since we now know that the key is `PlayCard`, we can retrieve the correct value by doing this.
-        const VALUE = _unknownValue as EventValue<typeof key>;
+        const value = _unknownValue as EventValue<typeof key>;
 
         // `val` is now the correct type for that key (in this case `Card`)
         // If i change the event's value in the future, this will correctly cause an error instead of unexpected behavior.
 
         // We check if the card played is not a minion
-        if (VALUE.type !== 'Minion') {
+        if (value.type !== 'Minion') {
             return;
         }
 
@@ -63,7 +63,7 @@ export const BLUEPRINT: Blueprint = {
         // Activate the battlecry of the minion.
         // Remember, this passive triggers after the minion's battlecry (in order to handle refunding).
         // This means that once we trigger the battlecry here, the minion's battlecry will have triggered twice in total.
-        VALUE.activate('battlecry');
+        value.activate('battlecry');
     },
 
     test(plr, self) {

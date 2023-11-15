@@ -3,7 +3,7 @@
 import assert from 'node:assert';
 import { type Blueprint } from '@Game/types.js';
 
-export const BLUEPRINT: Blueprint = {
+export const blueprint: Blueprint = {
     name: 'Mage Starting Hero',
     displayName: 'Jaina Proudmoore',
     text: 'Mage starting hero',
@@ -23,16 +23,16 @@ export const BLUEPRINT: Blueprint = {
         const unsuppress = game.functions.event.suppress('CastSpellOnMinion');
         // Use of `selectTarget` in the `heropower` ability requires the use of the `forceElusive` flag
         // This flag might cause the `CastSpellOnMinion` event to be broadcast, so suppress it since this isn't a spell
-        const TARGET = game.interact.selectTarget('Deal 1 damage.', self, 'any', 'any', ['forceElusive']);
+        const target = game.interact.selectTarget('Deal 1 damage.', self, 'any', 'any', ['forceElusive']);
         unsuppress();
 
         // If no target was selected, refund the hero power
-        if (!TARGET) {
-            return game.constants.REFUND;
+        if (!target) {
+            return game.constants.refund;
         }
 
         // Deal 1 damage to the target
-        game.attack(1, TARGET);
+        game.attack(1, target);
         return true;
     },
 

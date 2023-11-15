@@ -26,9 +26,9 @@ export class Player {
      *
      * # Examples
      * @example
-     * const BOARD = game.board[player.id];
+     * const board = game.board[player.id];
      *
-     * BOARD.forEach(card => {
+     * board.forEach(card => {
      *     game.log(card.name);
      * });
      */
@@ -39,9 +39,9 @@ export class Player {
      *
      * # Examples
      * @example
-     * const DISCOVER = player.ai.discover();
+     * const discover = player.ai.discover();
      *
-     * game.log(DISCOVER);
+     * game.log(discover);
      */
     ai?: Ai;
 
@@ -259,10 +259,10 @@ export class Player {
      * # Example
      * ```
      * player.forceTarget = target;
-     * const CHOSEN = game.interact.selectTarget("Example", null, "any", "any");
+     * const chosen = game.interact.selectTarget("Example", null, "any", "any");
      * player.forceTarget = null;
      *
-     * assert.equal(CHOSEN, target);
+     * assert.equal(chosen, target);
      * ```
      */
     forceTarget?: Target;
@@ -307,9 +307,9 @@ export class Player {
      *
      * # Examples
      * ```
-     * const OPPONENT = player.getOpponent();
+     * const opponent = player.getOpponent();
      *
-     * assert.notEqual(player.id, OPPONENT.id);
+     * assert.notEqual(player.id, opponent.id);
      * ```
      */
     getOpponent(): Player {
@@ -449,8 +449,8 @@ export class Player {
      *
      * # Examples
      * ```
-     * const WEAPON = new Card("some weapon name", player);
-     * player.setWeapon(WEAPON);
+     * const weapon = new Card("some weapon name", player);
+     * player.setWeapon(weapon);
      * ```
      *
      * @param weapon The weapon to set
@@ -551,17 +551,17 @@ export class Player {
         }
 
         // Armor logic
-        const REMAINING_ARMOR = this.armor - amount;
-        this.armor = Math.max(REMAINING_ARMOR, 0);
+        const remainingArmor = this.armor - amount;
+        this.armor = Math.max(remainingArmor, 0);
 
         // Armor blocks all damage, return true since there were no errors.
-        if (REMAINING_ARMOR >= 0) {
+        if (remainingArmor >= 0) {
             return true;
         }
 
         // The amount of damage to take is however much damage penetrated the armor.
         // The remaining armor is negative, so turn it into a positive number so it's easier to work with
-        amount = Math.abs(REMAINING_ARMOR);
+        amount = Math.abs(remainingArmor);
 
         this.health -= amount;
 
@@ -615,8 +615,8 @@ export class Player {
      */
     shuffleIntoDeck(card: Card): boolean {
         // Add the card into a random position in the deck
-        const POSITION = game.lodash.random(0, this.deck.length);
-        this.deck.splice(POSITION, 0, card);
+        const position = game.lodash.random(0, this.deck.length);
+        this.deck.splice(position, 0, card);
 
         game.events.broadcast('AddCardToDeck', card, this);
 
@@ -648,32 +648,32 @@ export class Player {
      * @returns The card drawn | The amount of fatigue the player was dealt
      */
     drawCard(): Card | number {
-        const DECK_LENGTH = this.deck.length;
+        const deckLength = this.deck.length;
 
         /**
          * The card to draw
          */
-        const CARD = this.deck.pop();
+        const card = this.deck.pop();
 
-        if (DECK_LENGTH <= 0 || !CARD) {
+        if (deckLength <= 0 || !card) {
             this.fatigue++;
 
             this.remHealth(this.fatigue);
             return this.fatigue;
         }
 
-        game.events.broadcast('DrawCard', CARD, this);
+        game.events.broadcast('DrawCard', card, this);
 
         // Cast on draw
-        if (CARD.type === 'Spell' && CARD.hasKeyword('Cast On Draw') && CARD.activate('cast')) {
+        if (card.type === 'Spell' && card.hasKeyword('Cast On Draw') && card.activate('cast')) {
             return this.drawCard();
         }
 
         const unsuppress = game.functions.event.suppress('AddCardToHand');
-        this.addToHand(CARD);
+        this.addToHand(card);
         unsuppress();
 
-        return CARD;
+        return card;
     }
 
     /**
@@ -684,16 +684,16 @@ export class Player {
      * This works
      * ```
      * // Get a random card from the player's deck
-     * const CARD = game.functions.randList(player.deck).actual;
+     * const card = game.functions.randList(player.deck).actual;
      *
-     * player.drawSpecific(CARD);
+     * player.drawSpecific(card);
      * ```
      *
      * This doesn't work
      * ```
-     * const CARD = game.functions.randList(player.deck).copy;
+     * const card = game.functions.randList(player.deck).copy;
      *
-     * player.drawSpecific(CARD);
+     * player.drawSpecific(card);
      * ```
      *
      * @param card The card to draw
@@ -767,14 +767,14 @@ export class Player {
      * @returns Success
      */
     setToStartingHero(heroClass = this.heroClass): boolean {
-        const HERO_CARD_NAME = heroClass + ' Starting Hero';
-        const HERO_CARD = game.functions.card.getFromName(HERO_CARD_NAME);
+        const heroCardName = heroClass + ' Starting Hero';
+        const heroCard = game.functions.card.getFromName(heroCardName);
 
-        if (!HERO_CARD) {
+        if (!heroCard) {
             return false;
         }
 
-        this.setHero(new Card(HERO_CARD.name, this), 0, false);
+        this.setHero(new Card(heroCard.name, this), 0, false);
 
         return true;
     }
@@ -793,12 +793,12 @@ export class Player {
             return false;
         }
 
-        if (this.hero.activate('heropower') === game.constants.REFUND) {
+        if (this.hero.activate('heropower') === game.constants.refund) {
             return -1;
         }
 
-        for (const CARD of game.board[this.id]) {
-            CARD.activate('inspire');
+        for (const card of game.board[this.id]) {
+            card.activate('inspire');
         }
 
         this.mana -= this.hero.hpCost!;
@@ -853,15 +853,15 @@ export class Player {
             return letterCount;
         };
 
-        const REQUIRED_BLOOD = charCount(runes, 'B');
-        const REQUIRED_FROST = charCount(runes, 'F');
-        const REQUIRED_UNHOLY = charCount(runes, 'U');
+        const requiredBlood = charCount(runes, 'B');
+        const requiredFrost = charCount(runes, 'F');
+        const requiredUnholy = charCount(runes, 'U');
 
-        const BLOOD = charCount(this.runes, 'B');
-        const FROST = charCount(this.runes, 'F');
-        const UNHOLY = charCount(this.runes, 'U');
+        const blood = charCount(this.runes, 'B');
+        const frost = charCount(this.runes, 'F');
+        const unholy = charCount(this.runes, 'U');
 
-        if (REQUIRED_BLOOD > BLOOD || REQUIRED_FROST > FROST || REQUIRED_UNHOLY > UNHOLY) {
+        if (requiredBlood > blood || requiredFrost > frost || requiredUnholy > unholy) {
             return false;
         }
 
@@ -880,34 +880,34 @@ export class Player {
             return new TypeError('Can\'t parse `input` to int');
         }
 
-        const CARDS: Card[] = [];
-        const MULLIGAN: Card[] = [];
+        const cards: Card[] = [];
+        const mulligan: Card[] = [];
 
-        for (const CHARACTER of input) {
-            MULLIGAN.push(this.hand[game.lodash.parseInt(CHARACTER) - 1]);
+        for (const character of input) {
+            mulligan.push(this.hand[game.lodash.parseInt(character) - 1]);
         }
 
-        for (const CARD of this.hand) {
-            if (!MULLIGAN.includes(CARD) || CARD.name === 'The Coin') {
+        for (const card of this.hand) {
+            if (!mulligan.includes(card) || card.name === 'The Coin') {
                 continue;
             }
 
-            game.functions.util.remove(MULLIGAN, CARD);
+            game.functions.util.remove(mulligan, card);
 
             let unsuppress = game.functions.event.suppress('DrawCard');
             this.drawCard();
             unsuppress();
 
             unsuppress = game.functions.event.suppress('AddCardToDeck');
-            this.shuffleIntoDeck(CARD);
+            this.shuffleIntoDeck(card);
             unsuppress();
 
-            game.functions.util.remove(this.hand, CARD);
+            game.functions.util.remove(this.hand, card);
 
-            CARDS.push(CARD);
+            cards.push(card);
         }
 
-        return CARDS;
+        return cards;
     }
 
     /**
@@ -918,8 +918,8 @@ export class Player {
      * @returns Success
      */
     doTargets(callback: (target: Target) => void): boolean {
-        for (const CARD of game.board[this.id]) {
-            callback(CARD);
+        for (const card of game.board[this.id]) {
+            callback(card);
         }
 
         callback(this);
@@ -931,9 +931,9 @@ export class Player {
      * Returns if this player's deck has no duplicates.
      */
     highlander(): boolean {
-        const DECK = this.deck.map(c => c.name);
+        const deck = this.deck.map(c => c.name);
 
-        return (new Set(DECK)).size === DECK.length;
+        return (new Set(deck)).size === deck.length;
     }
 
     /**
@@ -1015,30 +1015,30 @@ export class Player {
      */
     invoke(): boolean {
         // Find the card in player's deck/hand/hero that begins with "Galakrond, the "
-        const DECK_GALAKROND = this.deck.find(c => c.displayName.startsWith('Galakrond, the '));
-        const HAND_GALAKROND = this.hand.find(c => c.displayName.startsWith('Galakrond, the '));
-        if ((!DECK_GALAKROND && !HAND_GALAKROND) && !this.hero.displayName.startsWith('Galakrond, the ')) {
+        const deckGalakrond = this.deck.find(c => c.displayName.startsWith('Galakrond, the '));
+        const handGalakrond = this.hand.find(c => c.displayName.startsWith('Galakrond, the '));
+        if ((!deckGalakrond && !handGalakrond) && !this.hero.displayName.startsWith('Galakrond, the ')) {
             return false;
         }
 
-        for (const CARD of this.deck) {
-            CARD.activate('invoke');
+        for (const card of this.deck) {
+            card.activate('invoke');
         }
 
-        for (const CARD of this.hand) {
-            CARD.activate('invoke');
+        for (const card of this.hand) {
+            card.activate('invoke');
         }
 
-        for (const CARD of game.board[this.id]) {
-            CARD.activate('invoke');
+        for (const card of game.board[this.id]) {
+            card.activate('invoke');
         }
 
         if (this.hero.displayName.startsWith('Galakrond, the ')) {
             this.hero.activate('heropower');
-        } else if (DECK_GALAKROND) {
-            DECK_GALAKROND.activate('heropower');
-        } else if (HAND_GALAKROND) {
-            HAND_GALAKROND.activate('heropower');
+        } else if (deckGalakrond) {
+            deckGalakrond.activate('heropower');
+        } else if (handGalakrond) {
+            handGalakrond.activate('heropower');
         }
 
         return true;
@@ -1057,30 +1057,29 @@ export class Player {
             list = this.deck;
         }
 
-        // TODO: Verify that this works
-        const LIST = list;
+        const clonedList = game.lodash.clone(list);
 
         list = game.lodash.shuffle([...list]);
 
         let times = 0;
-        const CARDS: Card[] = [];
+        const cards: Card[] = [];
 
         list = list.filter(c => c.type === 'Minion');
-        for (const CARD of list) {
+        for (const card of list) {
             if (times >= amount) {
                 continue;
             }
 
-            game.summonMinion(CARD.imperfectCopy(), this);
+            game.summonMinion(card.imperfectCopy(), this);
 
             times++;
-            CARDS.push(CARD);
+            cards.push(card);
         }
 
-        for (const CARD of CARDS) {
-            game.functions.util.remove(LIST, CARD);
+        for (const card of cards) {
+            game.functions.util.remove(clonedList, card);
         }
 
-        return CARDS;
+        return cards;
     }
 }

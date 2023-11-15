@@ -5,25 +5,25 @@ import { type CardLike, type CardClass, type MinionTribe, type CardClassNoNeutra
 import { Card, CardError, type Player } from '../../internal.js';
 import * as blueprints from '../../../cards/exports.js';
 
-const VANILLA = {
+const vanilla = {
     /**
      * Returns all cards added to Vanilla Hearthstone.
      *
      * This will throw an error if the user has not run the vanilla card generator,
      *
      * @example
-     * const VANILLA_CARDS = getAll();
+     * const vanillaCards = getAll();
      *
-     * for (const VANILLA_CARD of VANILLA_CARD) {
-     *     game.log(VANILLA_CARD.dbfId);
+     * for (const vanillaCard of vanillaCard) {
+     *     game.log(vanillaCard.dbfId);
      * }
      *
      * @returns The vanilla cards
      */
     getAll(): VanillaCard[] {
-        const FILE_LOCATION = '/vanillacards.json';
-        if (game.functions.util.fs('exists', FILE_LOCATION)) {
-            return JSON.parse(game.functions.util.fs('read', FILE_LOCATION) as string) as VanillaCard[];
+        const fileLocation = '/vanillacards.json';
+        if (game.functions.util.fs('exists', fileLocation)) {
+            return JSON.parse(game.functions.util.fs('read', fileLocation) as string) as VanillaCard[];
         }
 
         throw new Error('Cards file not found! Run \'npm run script:vanilla:generator\' (requires an internet connection), then try again.');
@@ -95,28 +95,28 @@ const VANILLA = {
         cards = cards.filter(a => !a.battlegroundsSkinParentId);
         cards = cards.filter(a => !a.isBattlegroundsBuddy);
 
-        const FILTERED_CARDS: VanillaCard[] = [];
+        const filteredCards: VanillaCard[] = [];
 
-        for (const VANILLA_CARD of cards) {
+        for (const vanillaCard of cards) {
             // If the set is `HERO_SKINS`, only include it if it's id is `HERO_xx`, where the x's are a number.
-            if (VANILLA_CARD.set && VANILLA_CARD.set.includes('HERO_SKINS')) {
-                if (keepHeroSkins && /HERO_\d\d/.test(VANILLA_CARD.id)) {
-                    FILTERED_CARDS.push(VANILLA_CARD);
+            if (vanillaCard.set && vanillaCard.set.includes('HERO_SKINS')) {
+                if (keepHeroSkins && /HERO_\d\d/.test(vanillaCard.id)) {
+                    filteredCards.push(vanillaCard);
                 }
 
                 continue;
             }
 
-            FILTERED_CARDS.push(VANILLA_CARD);
+            filteredCards.push(vanillaCard);
         }
 
-        cards = FILTERED_CARDS;
+        cards = filteredCards;
 
         if (dangerous) {
             // If any of the cards have a 'howToEarn' field, filter away any cards that don't have that
-            const CARDS = cards.filter(a => a.howToEarn);
-            if (CARDS.length > 0) {
-                cards = CARDS;
+            const newCards = cards.filter(a => a.howToEarn);
+            if (newCards.length > 0) {
+                cards = newCards;
             }
         }
 
@@ -124,11 +124,11 @@ const VANILLA = {
     },
 };
 
-export const CARD_FUNCTIONS = {
+export const cardFunctions = {
     /**
      * Vanilla card related functions
      */
-    vanilla: VANILLA,
+    vanilla,
 
     /**
      * Returns the card with the name `name`.
@@ -136,15 +136,15 @@ export const CARD_FUNCTIONS = {
      * @param refer If this should call `getCardById` if it doesn't find the card from the name
      *
      * @example
-     * const CARD = getFromName('The Coin');
+     * const card = getFromName('The Coin');
      *
-     * assert.ok(CARD instanceof Card);
-     * assert.equal(CARD.name, 'The Coin');
+     * assert.ok(card instanceof Card);
+     * assert.equal(card.name, 'The Coin');
      */
     getFromName(name: string, refer = true): Card | undefined {
-        const ID = this.getFromId(game.lodash.parseInt(name), false);
-        if (ID && refer) {
-            return ID;
+        const id = this.getFromId(game.lodash.parseInt(name), false);
+        if (id && refer) {
+            return id;
         }
 
         return this.getAll(false).find(c => c.name.toLowerCase() === name.toLowerCase());
@@ -156,19 +156,19 @@ export const CARD_FUNCTIONS = {
      * @param refer If this should call `getCardByName` if it doesn't find the card from the id
      *
      * @example
-     * const CARD = getFromId(2);
+     * const card = getFromId(2);
      *
-     * assert.ok(CARD instanceof Card);
-     * assert.equal(CARD.name, 'The Coin');
+     * assert.ok(card instanceof Card);
+     * assert.equal(card.name, 'The Coin');
      */
     getFromId(id: number, refer = true): Card | undefined {
-        const CARD = this.getAll(false).find(c => c.id === id);
+        const card = this.getAll(false).find(c => c.id === id);
 
-        if (!CARD && refer) {
+        if (!card && refer) {
             return this.getFromName(id.toString(), false);
         }
 
-        return CARD;
+        return card;
     },
 
     /**
@@ -202,15 +202,15 @@ export const CARD_FUNCTIONS = {
      * assert.equal(card.tribe, "Beast");
      *
      * // This should return true
-     * const RESULT = matchTribe(card.tribe, "Beast");
-     * assert.equal(RESULT, true);
+     * const result = matchTribe(card.tribe, "Beast");
+     * assert.equal(result, true);
      *
      * @example
      * assert.equal(card.tribe, "All");
      *
      * // This should return true
-     * const RESULT = matchTribe(card.tribe, "Beast");
-     * assert.equal(RESULT, true);
+     * const result = matchTribe(card.tribe, "Beast");
+     * assert.equal(result, true);
      */
     matchTribe(cardTribe: MinionTribe, tribe: MinionTribe): boolean {
         // If the card's tribe is "All".
@@ -229,16 +229,16 @@ export const CARD_FUNCTIONS = {
     runBlueprintValidator() {
         // Validate the cards
         let valid = true;
-        for (const BLUEPRINT of game.blueprints) {
-            const ERROR_MESSAGE = this.validateBlueprint(BLUEPRINT);
+        for (const blueprint of game.blueprints) {
+            const errorMessage = this.validateBlueprint(blueprint);
 
             // Success
-            if (ERROR_MESSAGE === true) {
+            if (errorMessage === true) {
                 continue;
             }
 
             // Validation error
-            game.log(`<red>Card <bold>'${BLUEPRINT.name}'</bold> is invalid since ${ERROR_MESSAGE}</red>`);
+            game.log(`<red>Card <bold>'${blueprint.name}'</bold> is invalid since ${errorMessage}</red>`);
             valid = false;
         }
 
@@ -284,35 +284,35 @@ export const CARD_FUNCTIONS = {
             plr.jadeCounter += 1;
         }
 
-        const COUNT = plr.jadeCounter;
-        const COST = (COUNT < 10) ? COUNT : 10;
+        const count = plr.jadeCounter;
+        const cost = (count < 10) ? count : 10;
 
-        const JADE = new Card('Jade Golem', plr);
-        JADE.setStats(COUNT, COUNT);
-        JADE.cost = COST;
+        const jade = new Card('Jade Golem', plr);
+        jade.setStats(count, count);
+        jade.cost = cost;
 
-        return JADE;
+        return jade;
     },
 
     /**
      * Returns all classes in the game
      *
      * @example
-     * const CLASSES = getClasses();
+     * const classes = getClasses();
      *
-     * assert.equal(CLASSES, ["Mage", "Warrior", "Druid", ...])
+     * assert.equal(classes, ["Mage", "Warrior", "Druid", ...])
      */
     getClasses(): CardClassNoNeutral[] {
-        const CLASSES: CardClassNoNeutral[] = [];
+        const classes: CardClassNoNeutral[] = [];
 
-        for (const FILE of game.functions.util.fs('readdir', '/cards/StartingHeroes', { withFileTypes: true }) as Dirent[]) {
+        for (const file of game.functions.util.fs('readdir', '/cards/StartingHeroes', { withFileTypes: true }) as Dirent[]) {
             // Something is wrong with the file name.
-            if (!FILE.name.endsWith('.ts')) {
+            if (!file.name.endsWith('.ts')) {
                 continue;
             }
 
             // Remove ".ts"
-            let name = FILE.name.slice(0, -3);
+            let name = file.name.slice(0, -3);
 
             // Remove underscores
             name = name.replaceAll('_', ' ');
@@ -320,16 +320,16 @@ export const CARD_FUNCTIONS = {
             // Capitalize all words
             name = game.lodash.startCase(name);
 
-            const CARD = this.getFromName(name + ' Starting Hero');
-            if (!CARD || CARD.classes[0] !== name as CardClassNoNeutral || CARD.type !== 'Hero' || !CARD.abilities.heropower || CARD.classes.includes('Neutral')) {
+            const card = this.getFromName(name + ' Starting Hero');
+            if (!card || card.classes[0] !== name as CardClassNoNeutral || card.type !== 'Hero' || !card.abilities.heropower || card.classes.includes('Neutral')) {
                 game.logWarn('Found card in the startingheroes folder that isn\'t a starting hero. If the game crashes, please note this in your bug report. Name: ' + name + '. Error Code: StartingHeroInvalidHandler');
                 continue;
             }
 
-            CLASSES.push(CARD.classes[0]);
+            classes.push(card.classes[0]);
         }
 
-        return CLASSES;
+        return classes;
     },
 
     /**
@@ -338,10 +338,10 @@ export const CARD_FUNCTIONS = {
      * @param invokeCount How many times that the card has been invoked.
      */
     galakrondFormula(invokeCount: number) {
-        const X = invokeCount;
-        const Y = Math.ceil((X + 1) / 2) + Math.round(X * 0.15);
+        const x = invokeCount;
+        const y = Math.ceil((x + 1) / 2) + Math.round(x * 0.15);
 
-        return Y || 1;
+        return y || 1;
     },
 
     /**
@@ -358,7 +358,7 @@ export const CARD_FUNCTIONS = {
      */
     validateBlueprint(blueprint: Blueprint): string | boolean {
         // These are the required fields for all card types.
-        const REQUIRED_FIELDS_TABLE: { [x in CardType]: string[] } = {
+        const requiredFieldsTable: { [x in CardType]: string[] } = {
             Minion: ['stats', 'tribe'],
             Spell: ['spellSchool'],
             Weapon: ['stats'],
@@ -368,33 +368,33 @@ export const CARD_FUNCTIONS = {
         };
 
         // We trust the typescript compiler to do most of the work for us, but the type specific code is handled here.
-        const REQUIRED = REQUIRED_FIELDS_TABLE[blueprint.type];
+        const required = requiredFieldsTable[blueprint.type];
 
-        const UNWANTED = Object.keys(REQUIRED_FIELDS_TABLE);
-        game.functions.util.remove(UNWANTED, blueprint.type);
-        game.functions.util.remove(UNWANTED, 'Undefined');
+        const unwanted = Object.keys(requiredFieldsTable);
+        game.functions.util.remove(unwanted, blueprint.type);
+        game.functions.util.remove(unwanted, 'Undefined');
 
         let result: string | boolean = true;
-        for (const FIELD of REQUIRED) {
+        for (const field of required) {
             // Field does not exist
-            if (!blueprint[FIELD as keyof Blueprint]) {
-                result = `<bold>'${FIELD}' DOES NOT</bold> exist for that card.`;
+            if (!blueprint[field as keyof Blueprint]) {
+                result = `<bold>'${field}' DOES NOT</bold> exist for that card.`;
             }
         }
 
-        for (const KEY of UNWANTED) {
-            const FIELDS = REQUIRED_FIELDS_TABLE[KEY as CardType];
+        for (const key of unwanted) {
+            const fields = requiredFieldsTable[key as CardType];
 
-            for (const FIELD of FIELDS) {
+            for (const field of fields) {
                 // We already require that field. For example, both minions and weapons require stats
-                if (REQUIRED.includes(FIELD)) {
+                if (required.includes(field)) {
                     continue;
                 }
 
                 // We have an unwanted field
 
-                if (blueprint[FIELD as keyof Blueprint]) {
-                    result = `<bold>${FIELD} SHOULD NOT</bold> exist on card type ${blueprint.type}.`;
+                if (blueprint[field as keyof Blueprint]) {
+                    result = `<bold>${field} SHOULD NOT</bold> exist on card type ${blueprint.type}.`;
                 }
             }
         }
@@ -405,23 +405,23 @@ export const CARD_FUNCTIONS = {
     generateExports() {
         let exportContent = '// This file has been automatically generated. Do not change this file.\n';
 
-        const LIST: string[] = [];
+        const list: string[] = [];
         game.functions.util.searchCardsFolder((fullPath, content) => {
-            if (!content.includes('export const BLUEPRINT')) {
+            if (!content.includes('export const blueprint')) {
                 return;
             }
 
             fullPath = fullPath.replace('.ts', '.js');
-            const RELATIVE_PATH = './' + fullPath.split('cards/')[1];
+            const relativePath = './' + fullPath.split('cards/')[1];
 
-            LIST.push(RELATIVE_PATH);
+            list.push(relativePath);
         });
 
         // Sort the list alphabetically so it will remain constant between different file system formats.
-        for (const PATH of LIST.sort()) {
-            const HASH = createHash('sha256').update(PATH).digest('hex').toString().slice(0, 7).toUpperCase();
+        for (const path of list.sort()) {
+            const hash = createHash('sha256').update(path).digest('hex').toString().slice(0, 7).toUpperCase();
 
-            exportContent += `export { BLUEPRINT as C${HASH} } from '${PATH}';\n`;
+            exportContent += `export { blueprint as C${hash} } from '${path}';\n`;
         }
 
         game.functions.util.fs('write', '/cards/exports.ts', exportContent);

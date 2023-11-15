@@ -3,7 +3,7 @@
 import assert from 'node:assert';
 import { type Blueprint } from '@Game/types.js';
 
-export const BLUEPRINT: Blueprint = {
+export const blueprint: Blueprint = {
     name: 'Kobold Lackey',
     stats: [1, 1],
     text: '<b>Battlecry:</b> Deal 2 damage.',
@@ -19,15 +19,15 @@ export const BLUEPRINT: Blueprint = {
         // Deal 2 damage.
 
         // Select a target
-        const TARGET = game.interact.selectTarget('Deal 2 damage.', self, 'any', 'any');
+        const target = game.interact.selectTarget('Deal 2 damage.', self, 'any', 'any');
 
         // If no target was selected, refund
-        if (!TARGET) {
-            return game.constants.REFUND;
+        if (!target) {
+            return game.constants.refund;
         }
 
         // Deal 2 damage to the target
-        game.attack(2, TARGET);
+        game.attack(2, target);
         return true;
     },
 

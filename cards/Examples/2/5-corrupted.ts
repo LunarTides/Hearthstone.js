@@ -2,7 +2,7 @@
 
 import { type Blueprint } from '@Game/types.js';
 
-export const BLUEPRINT: Blueprint = {
+export const blueprint: Blueprint = {
     // Look in `corrupt.ts` first.
     // This is just an ordinary card.
     name: 'Corrupted Example',

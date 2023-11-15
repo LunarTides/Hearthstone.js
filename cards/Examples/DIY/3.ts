@@ -3,7 +3,7 @@
 import { type Blueprint, type EventValue } from '@Game/types.js';
 import { type Card } from '../../../src/core/card.js';
 
-export const BLUEPRINT: Blueprint = {
+export const blueprint: Blueprint = {
     name: 'DIY 3',
     text: '<b>This is a DIY card, it does not work by default.</b> Choose a minion to kill.',
     cost: 0,
@@ -38,16 +38,16 @@ export const BLUEPRINT: Blueprint = {
 
         // Make sure the parameters are correct
         game.functions.event.addListener('TargetSelectionStarts', _unknownValue => {
-            const VALUE = _unknownValue as EventValue<'TargetSelectionStarts'>;
+            const value = _unknownValue as EventValue<'TargetSelectionStarts'>;
 
             // Don't check for `prompt` since there is no correct prompt
-            const [PROMPT, CARD, FORCE_SIDE, FORCE_CLASS, FLAGS] = VALUE;
+            const [prompt, card, forceSide, forceClass, flags] = value;
 
             correctParameters = (
-                CARD === self
-                && FORCE_SIDE === 'any'
-                && FORCE_CLASS === 'minion'
-                && FLAGS.length === 0
+                card === self
+                && forceSide === 'any'
+                && forceClass === 'minion'
+                && flags.length === 0
             );
 
             // The `TargetSelectionStarts` event fired. This means that the card has a chance of being cancelled.
@@ -58,14 +58,14 @@ export const BLUEPRINT: Blueprint = {
 
         // Find the target
         game.functions.event.addListener('TargetSelected', _unknownValue => {
-            const VALUE = _unknownValue as EventValue<'TargetSelected'>;
+            const value = _unknownValue as EventValue<'TargetSelected'>;
 
-            if (!(VALUE[0] === self)) {
+            if (!(value[0] === self)) {
                 return false;
             }
 
             // At this point we know that the card wasn't cancelled, since the `TargetSelected` event doesn't fire if the card is cancelled
-            target = VALUE[1] as Card;
+            target = value[1] as Card;
             potentiallyCancelled = false;
 
             return 'destroy';
@@ -77,17 +77,17 @@ export const BLUEPRINT: Blueprint = {
         // That only happens if the card was cancelled after the `TargetSelectionStarts` event fired
         if (potentiallyCancelled) {
             game.pause('You cancelled the card. The verification process depends on a minion actually being killed. Try again.\n');
-            return game.constants.REFUND;
+            return game.constants.refund;
         }
 
-        const SOLVED = (
+        const solved = (
             target !== self
             && target.getHealth() <= 0
             && correctParameters
             && game.graveyard.some(p => p.includes(target))
         );
 
-        game.interact.verifyDiySolution(SOLVED, self);
+        game.interact.verifyDiySolution(solved, self);
 
         return true;
     },

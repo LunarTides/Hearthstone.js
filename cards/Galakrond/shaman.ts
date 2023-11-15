@@ -2,7 +2,7 @@
 
 import { type Blueprint } from '@Game/types.js';
 
-export const BLUEPRINT: Blueprint = {
+export const blueprint: Blueprint = {
     name: 'Galakrond the Tempest',
     displayName: 'Galakrond, the Tempest',
     text: '<b>Battlecry:</b> Summon two {amount}/{amount} Storms with <b>Rush</b>.{weapon}',
@@ -18,37 +18,37 @@ export const BLUEPRINT: Blueprint = {
         // Summon two 1/1 Storms with Rush. (Equip a 5/2 Claw.)
 
         // Get the stats
-        const AMOUNT = game.functions.card.galakrondFormula(self.storage.invokeCount as number);
-        const SHOULD_GIVE_WEAPON = AMOUNT >= 7;
+        const amount = game.functions.card.galakrondFormula(self.storage.invokeCount as number);
+        const shouldGiveWeapon = amount >= 7;
 
         // Summon the two minions
         for (let i = 0; i < 2; i++) {
-            const MINION = game.createCard('Brewing Storm', plr);
-            if (!MINION) {
+            const minion = game.createCard('Brewing Storm', plr);
+            if (!minion) {
                 break;
             }
 
-            MINION.setStats(AMOUNT, AMOUNT);
-            game.summonMinion(MINION, plr);
+            minion.setStats(amount, amount);
+            game.summonMinion(minion, plr);
         }
 
-        if (!SHOULD_GIVE_WEAPON) {
+        if (!shouldGiveWeapon) {
             return;
         }
 
         // Give the weapon
-        const WEAPON = game.createCard('Dragon Claw', plr);
-        plr.setWeapon(WEAPON);
+        const weapon = game.createCard('Dragon Claw', plr);
+        plr.setWeapon(weapon);
     },
 
     heropower(plr, self) {
         // Summon a 2/1 Elemental with Rush.
-        const CARD = game.createCard('Windswept Elemental', plr);
-        if (!CARD) {
+        const card = game.createCard('Windswept Elemental', plr);
+        if (!card) {
             return;
         }
 
-        game.summonMinion(CARD, plr);
+        game.summonMinion(card, plr);
     },
 
     invoke(plr, self) {
@@ -60,9 +60,9 @@ export const BLUEPRINT: Blueprint = {
             return { amount: 0, plural: 's', plural2: 'They' };
         }
 
-        const AMOUNT = game.functions.card.galakrondFormula(self.storage.invokeCount as number);
-        const WEAPON = AMOUNT >= 7 ? ' Equip a 5/2 Claw.' : '';
+        const amount = game.functions.card.galakrondFormula(self.storage.invokeCount as number);
+        const weapon = amount >= 7 ? ' Equip a 5/2 Claw.' : '';
 
-        return { amount: AMOUNT, weapon: WEAPON };
+        return { amount, weapon };
     },
 };

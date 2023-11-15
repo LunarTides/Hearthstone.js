@@ -5,13 +5,13 @@
 import process from 'node:process';
 import { createGame } from '../src/internal.js';
 
-const GAMES_ENV = process.env.games ?? '';
-const GAMES = game.lodash.parseInt(GAMES_ENV) ?? 100;
+const gamesEnv = process.env.games ?? '';
+const games = game.lodash.parseInt(gamesEnv) ?? 100;
 
 function main() {
-    const DECKS = JSON.parse(game.functions.util.fs('read', '/decks.json') as string) as string[];
+    const decks = JSON.parse(game.functions.util.fs('read', '/decks.json') as string) as string[];
 
-    game.logWarn(`Press enter to play ${GAMES} games`);
+    game.logWarn(`Press enter to play ${games} games`);
     if (!process.env.games) {
         game.log('Set the GAMES env variable to change how many games to play.');
     }
@@ -19,10 +19,10 @@ function main() {
     game.log('NOTE: If you see no progress being made for an extended period of time, chances are the game got stuck in an infinite loop.');
     game.pause();
 
-    for (let index = 0; index < GAMES; index++) {
+    for (let index = 0; index < games; index++) {
         // If you're redirecting output to a file, show a progress bar
         if (!process.stdout.isTTY) {
-            process.stderr.write(`\r\u001B[KPlaying game #${index + 1} / ${GAMES}...`);
+            process.stderr.write(`\r\u001B[KPlaying game #${index + 1} / ${games}...`);
         }
 
         // Test the main game
@@ -37,11 +37,11 @@ function main() {
 
         // Choose random decks for the players
         for (let i = 0; i < 2; i++) {
-            const PLAYER = game.functions.util.getPlayerFromId(i);
+            const player = game.functions.util.getPlayerFromId(i);
 
-            const DECK = game.lodash.sample(DECKS);
-            if (typeof DECK === 'string') {
-                game.functions.deckcode.import(PLAYER, DECK);
+            const deck = game.lodash.sample(decks);
+            if (typeof deck === 'string') {
+                game.functions.deckcode.import(player, deck);
             }
         }
 

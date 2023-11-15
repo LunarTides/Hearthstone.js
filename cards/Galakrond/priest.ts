@@ -2,7 +2,7 @@
 
 import { type Blueprint } from '@Game/types.js';
 
-export const BLUEPRINT: Blueprint = {
+export const blueprint: Blueprint = {
     name: 'Galakrond The Unspeakable',
     displayName: 'Galakrond, the Unspeakable',
     text: '<b>Battlecry:</b> Destroy {amount} random enemy minion{plural}.',
@@ -16,30 +16,30 @@ export const BLUEPRINT: Blueprint = {
 
     battlecry(plr, self) {
         // Destroy 1 random enemy minion.
-        const AMOUNT = game.functions.card.galakrondFormula(self.storage.invokeCount as number);
+        const amount = game.functions.card.galakrondFormula(self.storage.invokeCount as number);
 
-        for (let i = 0; i < AMOUNT; i++) {
+        for (let i = 0; i < amount; i++) {
             // Get a random minion from the opponent's board.
-            const BOARD = game.board[plr.getOpponent().id];
+            const board = game.board[plr.getOpponent().id];
 
-            const MINION = game.lodash.sample(BOARD);
-            if (!MINION) {
+            const minion = game.lodash.sample(board);
+            if (!minion) {
                 continue;
             }
 
             // Kill it
-            MINION.kill();
+            minion.kill();
         }
     },
 
     heropower(plr, self) {
         // Add a random Priest minion to your hand.
-        const POSSIBLE_CARDS = game.functions.card.getAll().filter(c => c.type === 'Minion' && game.functions.card.validateClasses(c.classes, 'Priest'));
-        if (POSSIBLE_CARDS.length <= 0) {
+        const possibleCards = game.functions.card.getAll().filter(c => c.type === 'Minion' && game.functions.card.validateClasses(c.classes, 'Priest'));
+        if (possibleCards.length <= 0) {
             return;
         }
 
-        let card = game.lodash.sample(POSSIBLE_CARDS);
+        let card = game.lodash.sample(possibleCards);
         if (!card) {
             return;
         }
@@ -58,10 +58,10 @@ export const BLUEPRINT: Blueprint = {
             return { amount: 0, plural: 's', plural2: 'They' };
         }
 
-        const AMOUNT = game.functions.card.galakrondFormula(self.storage.invokeCount as number);
-        const MULTIPLE = AMOUNT > 1;
-        const PLURAL = MULTIPLE ? 's' : '';
+        const amount = game.functions.card.galakrondFormula(self.storage.invokeCount as number);
+        const multiple = amount > 1;
+        const plural = multiple ? 's' : '';
 
-        return { amount: AMOUNT, plural: PLURAL };
+        return { amount, plural };
     },
 };

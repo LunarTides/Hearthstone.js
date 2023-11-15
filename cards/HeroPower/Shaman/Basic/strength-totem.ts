@@ -3,7 +3,7 @@
 import assert from 'node:assert';
 import { type Blueprint } from '@Game/types.js';
 
-export const BLUEPRINT: Blueprint = {
+export const blueprint: Blueprint = {
     name: 'Strength Totem',
     stats: [0, 2],
     text: 'At the end of your turn, give another friendly minion +1 Attack.',
@@ -24,24 +24,24 @@ export const BLUEPRINT: Blueprint = {
         }
 
         // The list that to choose from. Remove this minion from the list
-        const BOARD = game.board[plr.id].filter(card => card.type === 'Minion');
-        game.functions.util.remove(BOARD, self);
+        const board = game.board[plr.id].filter(card => card.type === 'Minion');
+        game.functions.util.remove(board, self);
 
         // Choose the random minion
-        const MINION = game.lodash.sample(BOARD);
-        if (!MINION) {
+        const minion = game.lodash.sample(board);
+        if (!minion) {
             return;
         }
 
         // Give that minion +1 Attack
-        MINION.addStats(1, 0);
+        minion.addStats(1, 0);
     },
 
     test(plr, self) {
         // Summon 5 Sheep with 2 max health.
         for (let i = 0; i < 5; i++) {
-            const CARD = game.createCard('Sheep', plr);
-            game.summonMinion(CARD, plr);
+            const card = game.createCard('Sheep', plr);
+            game.summonMinion(card, plr);
         }
 
         const checkSheepAttack = (shouldBeMore: boolean) => game.board[plr.id].filter(card => card.name === 'Sheep').some(card => card.getHealth() === 1 && ((shouldBeMore && card.getAttack() > 1) || (!shouldBeMore && card.getAttack() === 1)));

@@ -20,48 +20,48 @@ export function main(debug = false, overrideType?: lib.CcType) {
         game.log('type \'back\' at any step to cancel.\n');
     };
 
-    const QUESTIONS = [
+    const questions = [
         'What should the name of the class be?',
         'What should the default hero\'s name be?',
         'What should the description of the hero power be? (example: Deal 2 damage to the enemy hero.):',
         'How much should the hero power cost? (Default is 2):',
     ];
 
-    const ANSWERS: string[] = [];
+    const answers: string[] = [];
     let exited = false;
 
     // Ask the questions as defined above and push the answer to answers
-    for (const QUESTION of QUESTIONS) {
+    for (const question of questions) {
         if (exited) {
             continue;
         }
 
         watermark();
-        const VALUE = game.input(QUESTION + ' ');
-        if (!VALUE || game.interact.shouldExit(VALUE)) {
+        const value = game.input(question + ' ');
+        if (!value || game.interact.shouldExit(value)) {
             exited = true;
         }
 
-        ANSWERS.push(VALUE);
+        answers.push(value);
     }
 
     if (exited) {
         return;
     }
 
-    const [NAME, DISPLAY_NAME, HP_TEXT, HP_COST] = ANSWERS;
+    const [name, displayName, hpText, hpCost] = answers;
 
-    const FILE_NAME = NAME.toLowerCase().replaceAll(' ', '_') + '.ts';
+    const fileName = name.toLowerCase().replaceAll(' ', '_') + '.ts';
 
-    const BLUEPRINT: Blueprint = {
-        name: NAME + ' Starting Hero',
-        displayName: DISPLAY_NAME,
-        text: NAME[0].toUpperCase() + NAME.slice(1).toLowerCase() + ' starting hero',
+    const blueprint: Blueprint = {
+        name: name + ' Starting Hero',
+        displayName,
+        text: name[0].toUpperCase() + name.slice(1).toLowerCase() + ' starting hero',
         cost: 0,
         type: 'Hero' as CardType,
-        hpText: HP_TEXT,
-        hpCost: game.lodash.parseInt(HP_COST),
-        classes: [NAME] as CardClass[],
+        hpText,
+        hpCost: game.lodash.parseInt(hpCost),
+        classes: [name] as CardClass[],
         rarity: 'Free' as CardRarity,
         uncollectible: true,
         // This will be overwritten by the library
@@ -73,14 +73,14 @@ export function main(debug = false, overrideType?: lib.CcType) {
         cctype = overrideType;
     }
 
-    lib.create(cctype, 'Hero', BLUEPRINT, '/cards/StartingHeroes/', FILE_NAME, debug);
+    lib.create(cctype, 'Hero', blueprint, '/cards/StartingHeroes/', fileName, debug);
 
     game.log('\nClass Created!');
     game.log('Next steps:');
     game.log('1. Open \'src/types.ts\', navigate to \'CardClass\', and add the name of the class to that. There is unfortunately no way to automate that.');
-    game.log(`2. Open 'cards/StartingHeroes/${FILE_NAME}' and add logic to the 'heropower' function.`);
-    game.log(`3. Now when using the Custom Card Creator, type '${NAME}' into the 'Class' field to use that class.`);
-    game.log(`4. When using the Deck Creator, type '${NAME}' to create a deck with cards from your new class.`);
+    game.log(`2. Open 'cards/StartingHeroes/${fileName}' and add logic to the 'heropower' function.`);
+    game.log(`3. Now when using the Custom Card Creator, type '${name}' into the 'Class' field to use that class.`);
+    game.log(`4. When using the Deck Creator, type '${name}' to create a deck with cards from your new class.`);
     game.log('Enjoy!');
     game.pause();
 }

@@ -3,7 +3,7 @@
 import assert from 'node:assert';
 import { type Blueprint } from '@Game/types.js';
 
-export const BLUEPRINT: Blueprint = {
+export const blueprint: Blueprint = {
     name: 'Placeholder Example',
 
     // The things with `{...}` will be replaced in the `placeholder` function.
@@ -19,9 +19,9 @@ export const BLUEPRINT: Blueprint = {
 
     cast(plr, self) {
         // Gain mana equal to the turn counter.
-        const TURNS = game.functions.util.getTraditionalTurnCounter();
+        const turns = game.functions.util.getTraditionalTurnCounter();
 
-        plr.addMana(TURNS);
+        plr.addMana(turns);
     },
 
     // This function will be run every tick, and will replace the placeholders in the description with this function's return value.
@@ -30,7 +30,7 @@ export const BLUEPRINT: Blueprint = {
         // All `{laugh}` will be replaced by 'haha lol'
         // All `{nextThingIs}` will be replaced by 'The next thing is:'
         // The `{placeholder without replacement}` doesn't have a replacement, so it will remain '{placeholder without replacement}'
-        const TURNS = game.functions.util.getTraditionalTurnCounter();
+        const turns = game.functions.util.getTraditionalTurnCounter();
 
         // Here we use static placeholders. Static placeholders are placeholders that don't change.
         // For example, `{laugh}` here is a static placeholder since you can just add `haha lol` to the description and it wouldn't change anything.
@@ -38,7 +38,7 @@ export const BLUEPRINT: Blueprint = {
         //
         // This should give us "Battlecry: Gain mana equal to the turn counter. (Currently x, haha lol, x, The next thing is: test, {placeholder without replacement})"
         // where x is the turn counter
-        return { turns: TURNS, laugh: 'haha lol', test: 'test', 'next thing is': 'The next thing is:' };
+        return { turns, laugh: 'haha lol', test: 'test', 'next thing is': 'The next thing is:' };
     },
 
     test(plr, self) {

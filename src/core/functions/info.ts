@@ -1,6 +1,6 @@
 import { format } from 'node:util';
 
-export const INFO_FUNCTIONS = {
+export const infoFunctions = {
     /**
      * Returns the version of the game.
      *
@@ -17,23 +17,23 @@ export const INFO_FUNCTIONS = {
      * version-branch.build (commit hash)
      */
     version(detail = 1): string {
-        const { info: INFO } = game.config;
+        const { info } = game.config;
 
         switch (detail) {
             case 1: {
-                return format('%s', INFO.version);
+                return format('%s', info.version);
             }
 
             case 2: {
-                return format('%s-%s', INFO.version, INFO.branch);
+                return format('%s-%s', info.version, info.branch);
             }
 
             case 3: {
-                return format('%s-%s.%s', INFO.version, INFO.branch, INFO.build);
+                return format('%s-%s.%s', info.version, info.branch, info.build);
             }
 
             case 4: {
-                return format('%s-%s.%s (%s)', INFO.version, INFO.branch, INFO.build, this.latestCommit());
+                return format('%s-%s.%s (%s)', info.version, info.branch, info.build, this.latestCommit());
             }
 
             default: {
@@ -51,14 +51,14 @@ export const INFO_FUNCTIONS = {
             game.cache.latestCommitHash = game.functions.util.runCommand('git rev-parse --short=7 HEAD');
         }
 
-        const HASH = game.cache.latestCommitHash as string | Error;
+        const hash = game.cache.latestCommitHash as string | Error;
 
-        if (HASH instanceof Error) {
+        if (hash instanceof Error) {
             // TODO: Save as a thing of interest. #259
             game.log('<red>ERROR: Git is not installed.</red>');
             return 'no git found';
         }
 
-        return HASH.trim();
+        return hash.trim();
     },
 };

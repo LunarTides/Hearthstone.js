@@ -5,19 +5,19 @@ export * from './core/ai.js';
 export * from './core/events.js';
 
 // Interact
-export { CARD_INTERACT } from './core/interact/card.js';
-export { INFO_INTERACT } from './core/interact/info.js';
-export { COMMANDS, DEBUG_COMMANDS } from './core/interact/commands.js';
-export { GAMELOOP_INTERACT } from './core/interact/gameloop.js';
+export { cardInteract } from './core/interact/card.js';
+export { infoInteract } from './core/interact/info.js';
+export { commands, debugCommands } from './core/interact/commands.js';
+export { gameloopInteract } from './core/interact/gameloop.js';
 
 export * from './core/interact/index.js';
 
 // Functions
-export { COLOR_FUNCTIONS } from './core/functions/color.js';
-export { INFO_FUNCTIONS } from './core/functions/info.js';
-export { DECKCODE_FUNCTIONS } from './core/functions/deckcode.js';
-export { CARD_FUNCTIONS } from './core/functions/card.js';
-export { UTIL_FUNCTIONS } from './core/functions/util.js';
-export { EVENT_FUNCTIONS } from './core/functions/event.js';
+export { colorFunctions } from './core/functions/color.js';
+export { infoFunctions } from './core/functions/info.js';
+export { deckcodeFunctions } from './core/functions/deckcode.js';
+export { cardFunctions } from './core/functions/card.js';
+export { utilFunctions } from './core/functions/util.js';
+export { eventFunctions } from './core/functions/event.js';
 
 export * from './core/functions/index.js';

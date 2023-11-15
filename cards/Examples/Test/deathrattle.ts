@@ -3,7 +3,7 @@
 import assert from 'node:assert';
 import { type Blueprint } from '@Game/types.js';
 
-export const BLUEPRINT: Blueprint = {
+export const blueprint: Blueprint = {
     name: 'Deathrattle Test',
     stats: [1, 2],
     text: '<b>Deathrattle:</b> Summon two 1/1 Sheep.',
@@ -20,10 +20,10 @@ export const BLUEPRINT: Blueprint = {
 
         for (let i = 0; i < 2; i++) {
             // Create the sheep
-            const SHEEP = game.createCard('Sheep', plr);
+            const sheep = game.createCard('Sheep', plr);
 
             // Summon the sheep
-            game.summonMinion(SHEEP, plr);
+            game.summonMinion(sheep, plr);
         }
     },
 

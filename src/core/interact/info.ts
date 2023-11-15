@@ -1,24 +1,24 @@
 import process from 'node:process';
 import { type Player } from '@Game/internal.js';
 
-export const INFO_INTERACT = {
+export const infoInteract = {
     /**
      * Prints the "watermark" border
      */
     watermark(): void {
         game.interact.cls();
 
-        const { info: INFO } = game.config;
-        const VERSION_DETAIL = game.player.detailedView || game.config.general.debug ? 4 : 3;
+        const { info } = game.config;
+        const versionDetail = game.player.detailedView || game.config.general.debug ? 4 : 3;
 
-        const WATERMARK = `HEARTHSTONE.JS V${game.functions.info.version(VERSION_DETAIL)}`;
-        const BORDER = '-'.repeat(WATERMARK.length + 2);
+        const watermark = `HEARTHSTONE.JS V${game.functions.info.version(versionDetail)}`;
+        const border = '-'.repeat(watermark.length + 2);
 
-        game.log(`|${BORDER}|`);
-        game.log(`| ${WATERMARK} |`);
-        game.log(`|${BORDER}|\n`);
+        game.log(`|${border}|`);
+        game.log(`| ${watermark} |`);
+        game.log(`|${border}|\n`);
 
-        if (INFO.branch === 'topic' && game.config.general.topicBranchWarning) {
+        if (info.branch === 'topic' && game.config.general.topicBranchWarning) {
             game.log('<yellow>WARNING: YOU ARE ON A TOPIC BRANCH. THIS VERSION IS NOT READY.</yellow>\n');
         }
     },
@@ -33,19 +33,19 @@ export const INFO_INTERACT = {
             return;
         }
 
-        const { info: INFO } = game.config;
+        const { info } = game.config;
 
         game.interact.cls();
 
-        const VERSION = `Hearthstone.js V${game.functions.info.version(2)} | Copyright (C) 2022 | LunarTides`;
-        game.log('|'.repeat(VERSION.length + 8));
-        game.log(`||| ${VERSION} |||`);
-        game.log('|||     This program is licensed under the GPL-3.0 license.  ' + ' '.repeat(INFO.branch.length) + '|||');
+        const version = `Hearthstone.js V${game.functions.info.version(2)} | Copyright (C) 2022 | LunarTides`;
+        game.log('|'.repeat(version.length + 8));
+        game.log(`||| ${version} |||`);
+        game.log('|||     This program is licensed under the GPL-3.0 license.  ' + ' '.repeat(info.branch.length) + '|||');
         if (disappear) {
-            game.log('|||         This will disappear once you end your turn.      ' + ' '.repeat(INFO.branch.length) + '|||');
+            game.log('|||         This will disappear once you end your turn.      ' + ' '.repeat(info.branch.length) + '|||');
         }
 
-        game.log('|'.repeat(VERSION.length + 8));
+        game.log('|'.repeat(version.length + 8));
     },
 
     /**
@@ -58,12 +58,12 @@ export const INFO_INTERACT = {
      */
     withStatus(status: string, callback: () => boolean): boolean {
         process.stdout.write(`${status}...`);
-        const SUCCESS = callback();
+        const success = callback();
 
-        const MESSAGE = (SUCCESS) ? 'OK' : 'FAIL';
-        process.stdout.write(`\r\u001B[K${status}...${MESSAGE}\n`);
+        const message = (success) ? 'OK' : 'FAIL';
+        process.stdout.write(`\r\u001B[K${status}...${message}\n`);
 
-        return SUCCESS;
+        return success;
     },
 
     /**
@@ -91,42 +91,42 @@ export const INFO_INTERACT = {
         let finished = '';
 
         const doStat = (callback: (player: Player) => string) => {
-            const PLAYER = callback(currentPlayer);
-            const OPPONENT = callback(currentPlayer.getOpponent());
+            const player = callback(currentPlayer);
+            const opponent = callback(currentPlayer.getOpponent());
 
-            if (!PLAYER && !OPPONENT) {
+            if (!player && !opponent) {
                 return;
             }
 
-            if (!PLAYER) {
-                finished += `${OPPONENT.split(':')[0]}: <italic gray>Nothing</italic gray> | ${OPPONENT}`;
-            } else if (OPPONENT) {
-                finished += `${PLAYER} | ${OPPONENT}`;
+            if (!player) {
+                finished += `${opponent.split(':')[0]}: <italic gray>Nothing</italic gray> | ${opponent}`;
+            } else if (opponent) {
+                finished += `${player} | ${opponent}`;
             } else {
-                finished += `${PLAYER} | ${PLAYER.split(':')[0]}: <italic gray>Nothing</italic gray>`;
+                finished += `${player} | ${player.split(':')[0]}: <italic gray>Nothing</italic gray>`;
             }
 
             finished += '\n';
         };
 
         const wallify = (text: string) => {
-            const TEXT_SPLIT = game.lodash.initial(text.split('\n'));
+            const textSplit = game.lodash.initial(text.split('\n'));
 
             // Wallify the ':' in the first half
-            const FIRST_HALF = TEXT_SPLIT.map(line => line.split('|')[0]);
-            const FIRST_HALF_WALL = game.functions.util.createWall(FIRST_HALF, ':');
+            const firstHalf = textSplit.map(line => line.split('|')[0]);
+            const firstHalfWall = game.functions.util.createWall(firstHalf, ':');
 
             // Wallify the ':' in the second half
-            const SECOND_HALF = TEXT_SPLIT.map(line => line.split('|')[1]);
-            const SECOND_HALF_WALL = game.functions.util.createWall(SECOND_HALF, ':');
+            const secondHalf = textSplit.map(line => line.split('|')[1]);
+            const secondHalfWall = game.functions.util.createWall(secondHalf, ':');
 
             // Combine the two halves
-            const NEW_TEXT = FIRST_HALF_WALL.map((line, index) => line + '|' + SECOND_HALF_WALL[index]);
+            const newText = firstHalfWall.map((line, index) => line + '|' + secondHalfWall[index]);
 
             // Wallify the '|' in the final result
-            const WALL = game.functions.util.createWall(NEW_TEXT, '|');
+            const wall = game.functions.util.createWall(newText, '|');
 
-            return WALL.join('\n');
+            return wall.join('\n');
         };
 
         const colorIf = game.functions.color.if;
@@ -143,9 +143,9 @@ export const INFO_INTERACT = {
 
         // Hero Power
         doStat(player => {
-            const HERO_POWER_COST = colorIf(player.canUseHeroPower, 'cyan', `{${player.hero.hpCost}}`);
+            const heroPowerCost = colorIf(player.canUseHeroPower, 'cyan', `{${player.hero.hpCost}}`);
 
-            return `Hero Power: ${HERO_POWER_COST} ${detail(player.hero.displayName, player.hero.hpText)}`;
+            return `Hero Power: ${heroPowerCost} ${detail(player.hero.displayName, player.hero.hpText)}`;
         });
 
         // Weapon
@@ -185,18 +185,18 @@ export const INFO_INTERACT = {
      * Prints the board for a specific player.
      */
     printBoard(plr: Player): void {
-        for (const [PLAYER_INDEX, SIDE] of game.board.entries()) {
-            const PLAYER = game.functions.util.getPlayerFromId(PLAYER_INDEX);
-            const SIDE_MESSAGE = plr === PLAYER ? '----- Board (You) ------' : '--- Board (Opponent) ---';
-            game.log(SIDE_MESSAGE);
+        for (const [playerIndex, side] of game.board.entries()) {
+            const player = game.functions.util.getPlayerFromId(playerIndex);
+            const sideMessage = plr === player ? '----- Board (You) ------' : '--- Board (Opponent) ---';
+            game.log(sideMessage);
 
-            if (SIDE.length === 0) {
+            if (side.length === 0) {
                 game.log('<gray>Empty</gray>');
                 continue;
             }
 
-            for (const [INDEX, CARD] of SIDE.entries()) {
-                game.log(game.interact.card.getReadable(CARD, INDEX + 1));
+            for (const [index, card] of side.entries()) {
+                game.log(game.interact.card.getReadable(card, index + 1));
             }
         }
 
@@ -209,10 +209,10 @@ export const INFO_INTERACT = {
     printHand(plr: Player): void {
         game.log(`--- ${plr.name} (${plr.heroClass})'s Hand ---`);
         // Add the help message
-        game.log('([id] <cyan>{Cost}</cyan> <b>Name</b> <bright:green>[attack / health]</bright:green> <yellow>(type)</yellow>)\n');
+        game.log('([index] <cyan>{Cost}</cyan> <b>Name</b> <bright:green>[attack / health]</bright:green> <yellow>(type)</yellow>)\n');
 
-        for (const [INDEX, CARD] of plr.hand.entries()) {
-            game.log(game.interact.card.getReadable(CARD, INDEX + 1));
+        for (const [index, card] of plr.hand.entries()) {
+            game.log(game.interact.card.getReadable(card, index + 1));
         }
     },
 };

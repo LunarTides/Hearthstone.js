@@ -2,7 +2,7 @@
 
 import { type Blueprint } from '@Game/types.js';
 
-export const BLUEPRINT: Blueprint = {
+export const blueprint: Blueprint = {
     name: 'Dormant Example',
     stats: [8, 8],
     text: '<b>Dormant</b> for 2 turns. <b>Battlecry:</b> Dredge.',

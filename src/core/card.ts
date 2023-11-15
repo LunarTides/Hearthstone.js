@@ -65,13 +65,13 @@ export class Card {
      * Use uuid for that.
      *
      * @example
-     * const SHEEP = new Card("Sheep", plr);
-     * const ANOTHER_SHEEP = new Card("Sheep", plr);
+     * const sheep = new Card("Sheep", plr);
+     * const anotherSheep = new Card("Sheep", plr);
      *
-     * const THE_COIN = new Card("The Coin", plr);
+     * const theCoin = new Card("The Coin", plr);
      *
-     * assert.equal(SHEEP.id, ANOTHER_SHEEP.id);
-     * assert.notEqual(SHEEP.id, THE_COIN.id);
+     * assert.equal(sheep.id, anotherSheep.id);
+     * assert.notEqual(sheep.id, theCoin.id);
      */
     id = -1;
 
@@ -295,13 +295,13 @@ export class Card {
      */
     constructor(name: string, plr: Player) {
         // Get the blueprint from the cards list
-        const BLUEPRINT = game.blueprints.find(c => c.name === name);
-        if (!BLUEPRINT) {
+        const blueprint = game.blueprints.find(c => c.name === name);
+        if (!blueprint) {
             throw new Error(`Could not find card with name "${name}"`);
         }
 
         // Set the blueprint (every thing that gets set before the `doBlueprint` call can be overriden by the blueprint)
-        this.blueprint = BLUEPRINT;
+        this.blueprint = blueprint;
         this.name = name;
 
         // The display name is equal to the unique name, unless manually overriden by the blueprint when calling the `doBlueprint` function.
@@ -328,18 +328,18 @@ export class Card {
             this.backups.init = {} as CardBackup;
         }
 
-        for (const ENTRY of Object.entries(this)) {
+        for (const entry of Object.entries(this)) {
             // HACK: Never usage
-            this.backups.init[ENTRY[0] as never] = ENTRY[1] as never;
+            this.backups.init[entry[0] as never] = entry[1] as never;
         }
 
         this.randomizeUuid();
 
-        const PLACEHOLDER = this.activate('placeholders');
+        const placeholder = this.activate('placeholders');
 
         // This is a list of replacements.
-        if (Array.isArray(PLACEHOLDER)) {
-            this.placeholder = PLACEHOLDER[0] as Record<string, any>;
+        if (Array.isArray(placeholder)) {
+            this.placeholder = placeholder[0] as Record<string, any>;
         }
 
         game.events.broadcast('CreateCard', this, this.plr);
@@ -379,14 +379,14 @@ export class Card {
                                   ^                  ^
                                   This is in an array so we can add multiple events on casts
         */
-        for (const ENTRY of Object.entries(this.blueprint)) {
-            const [KEY, VALUE] = ENTRY;
+        for (const entry of Object.entries(this.blueprint)) {
+            const [key, value] = entry;
 
-            if (typeof VALUE === 'function') {
-                this.abilities[KEY as CardAbility] = [VALUE];
+            if (typeof value === 'function') {
+                this.abilities[key as CardAbility] = [value];
             } else {
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-                this[KEY as keyof this] = JSON.parse(JSON.stringify(ENTRY[1]));
+                this[key as keyof this] = JSON.parse(JSON.stringify(entry[1]));
             }
         }
 
@@ -523,8 +523,8 @@ export class Card {
 
         this.attackTimes--;
 
-        const SHOULD_EXHAUST = (this.attackTimes <= 0);
-        if (SHOULD_EXHAUST) {
+        const shouldExhaust = (this.attackTimes <= 0);
+        if (shouldExhaust) {
             this.sleepy = true;
         }
 
@@ -645,7 +645,7 @@ export class Card {
             return false;
         }
 
-        const BEFORE = this.getHealth();
+        const before = this.getHealth();
         this.setStats(this.getAttack(), this.getHealth() + amount, !restore);
 
         if (!restore) {
@@ -661,12 +661,12 @@ export class Card {
             // Overheal keyword
             this.activate('overheal');
 
-            if (this.getHealth() > BEFORE) {
+            if (this.getHealth() > before) {
                 game.events.broadcast('HealthRestored', this.maxHealth, this.plr);
             }
 
             this.stats[1] = this.maxHealth ?? -1;
-        } else if (this.getHealth() > BEFORE) {
+        } else if (this.getHealth() > before) {
             game.events.broadcast('HealthRestored', this.getHealth(), this.plr);
         }
 
@@ -817,10 +817,10 @@ export class Card {
             return false;
         }
 
-        const BOOLEANS = !this.sleepy && !this.hasKeyword('Frozen') && !this.hasKeyword('Dormant');
-        const NUMBERS = this.getAttack() > 0 && this.attackTimes! > 0;
+        const booleans = !this.sleepy && !this.hasKeyword('Frozen') && !this.hasKeyword('Dormant');
+        const numbers = this.getAttack() > 0 && this.attackTimes! > 0;
 
-        return BOOLEANS && NUMBERS;
+        return booleans && numbers;
     }
 
     /**
@@ -829,14 +829,14 @@ export class Card {
      * @returns The key of the backup. You can use it by doing `card.backups[key]`
      */
     createBackup(): number {
-        const INDEX = Object.keys(this.backups).length;
+        const index = Object.keys(this.backups).length;
 
-        for (const ENTRY of Object.entries(this)) {
+        for (const entry of Object.entries(this)) {
             // HACK: Never usage
-            this.backups[INDEX][ENTRY[0] as never] = ENTRY[1] as never;
+            this.backups[index][entry[0] as never] = entry[1] as never;
         }
 
-        return INDEX;
+        return index;
     }
 
     /**
@@ -847,9 +847,9 @@ export class Card {
      * @returns Success
      */
     restoreBackup(backup: CardBackup): boolean {
-        for (const KEY of Object.keys(backup)) {
+        for (const key of Object.keys(backup)) {
             // HACK: Never usage
-            this[KEY as never] = backup[KEY as keyof Card] as never;
+            this[key as never] = backup[key as keyof Card] as never;
         }
 
         return true;
@@ -896,15 +896,15 @@ export class Card {
         // so it should finish whatever it is doing.
         this.activate('remove');
 
-        for (const KEY of Object.keys(this)) {
+        for (const key of Object.keys(this)) {
             // Check if a backup exists for the attribute. If it does; restore it.
             // HACK: Never usage
-            if (this.backups.init[KEY as never]) {
-                this[KEY as never] = this.backups.init[KEY as never];
-            } else if (this.blueprint[KEY as never]) {
+            if (this.backups.init[key as never]) {
+                this[key as never] = this.backups.init[key as never];
+            } else if (this.blueprint[key as never]) {
                 // Check if the attribute if defined in the blueprint. If it is; restore it.
                 // HACK: Never usage
-                this[KEY as never] = this.blueprint[KEY as never];
+                this[key as never] = this.blueprint[key as never];
             }
         }
 
@@ -943,35 +943,35 @@ export class Card {
         // Example: activate("cast")
         // Do: this.cast.forEach(castFunc => castFunc(plr, card))
         // Returns a list of the return values from all the function calls
-        const ABILITY: Ability[] | undefined = this.abilities[name];
+        const ability: Ability[] | undefined = this.abilities[name];
 
         // If the card has the function
-        if (!ABILITY) {
+        if (!ability) {
             return false;
         }
 
         let returnValue: any[] | -1 = [];
 
-        for (const callback of ABILITY) {
-            if (returnValue === game.constants.REFUND) {
+        for (const callback of ability) {
+            if (returnValue === game.constants.refund) {
                 continue;
             }
 
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument
-            const RESULT = callback(this.plr, this, ...args);
+            const result = callback(this.plr, this, ...args);
             if (Array.isArray(returnValue)) {
-                returnValue.push(RESULT);
+                returnValue.push(result);
             }
 
             // Deathrattle isn't cancellable
-            if (RESULT !== game.constants.REFUND || name === 'deathrattle') {
+            if (result !== game.constants.refund || name === 'deathrattle') {
                 continue;
             }
 
             // If the return value is -1, meaning "refund", refund the card and stop the for loop
             game.events.broadcast('CancelCard', [this, name], this.plr);
 
-            returnValue = game.constants.REFUND;
+            returnValue = game.constants.refund;
 
             // These abilities shouldn't "refund" the card, just stop execution.
             if (['use', 'heropower'].includes(name)) {
@@ -1005,21 +1005,21 @@ export class Card {
      * @returns If the condition is met
      */
     condition(): boolean {
-        const CLEARED_TEXT = ' <bright:green>(Condition cleared!)</bright:green>';
-        const CLEARED_TEXT_ALTERNATIVE = '<bright:green>Condition cleared!</bright:green>';
+        const clearedText = ' <bright:green>(Condition cleared!)</bright:green>';
+        const clearedTextAlternative = '<bright:green>Condition cleared!</bright:green>';
 
         // Remove the (Condition cleared!) from the description
-        this.text = this.text.replace(CLEARED_TEXT, '');
-        this.text = this.text.replace(CLEARED_TEXT_ALTERNATIVE, '');
+        this.text = this.text.replace(clearedText, '');
+        this.text = this.text.replace(clearedTextAlternative, '');
 
         // Check if the condition is met
-        const CONDITION = this.activate('condition');
-        if (!(Array.isArray(CONDITION)) || CONDITION[0] === false) {
+        const condition = this.activate('condition');
+        if (!(Array.isArray(condition)) || condition[0] === false) {
             return false;
         }
 
         // Add the (Condition cleared!) to the description
-        this.text += this.text ? CLEARED_TEXT : CLEARED_TEXT_ALTERNATIVE;
+        this.text += this.text ? clearedText : clearedTextAlternative;
 
         return true;
     }
@@ -1030,25 +1030,25 @@ export class Card {
      * @param enchantment The enchantment string
      *
      * @example
-     * const INFO = getEnchantmentInfo("cost = 1");
-     * assert.equal(INFO, {"key": "cost", "val": "1", "op": "="});
+     * const info = getEnchantmentInfo("cost = 1");
+     * assert.equal(info, {"key": "cost", "val": "1", "op": "="});
      *
      * @returns The info
      */
     getEnchantmentInfo(enchantment: string): { key: string; val: string; op: string } {
-        const EQUALS_REGEX = /\w+ = \w+/;
-        const OTHER_REGEX = /[-+*/^]\d+ \w+/;
+        const equalsRegex = /\w+ = \w+/;
+        const otherRegex = /[-+*/^]\d+ \w+/;
 
-        const OP_EQUALS = EQUALS_REGEX.test(enchantment);
-        const OP_OTHER = OTHER_REGEX.test(enchantment);
+        const opEquals = equalsRegex.test(enchantment);
+        const opOther = otherRegex.test(enchantment);
 
         let key = 'undefined';
         let value = 'undefined';
         let op = '=';
 
-        if (OP_EQUALS) {
+        if (opEquals) {
             [key, value] = enchantment.split(' = ');
-        } else if (OP_OTHER) {
+        } else if (opOther) {
             [value, key] = enchantment.split(' ');
             value = value.slice(1);
 
@@ -1070,75 +1070,75 @@ export class Card {
         }
 
         // Apply baseline for int values.
-        const ALLOWED_KEYS = new Set(['maxHealth', 'cost']);
+        const allowedKeys = new Set(['maxHealth', 'cost']);
 
-        let ENTRIES = Object.entries(this);
+        let entries = Object.entries(this);
         // Filter for only numbers
-        ENTRIES = ENTRIES.filter(c => typeof (c[1]) === 'number');
+        entries = entries.filter(c => typeof (c[1]) === 'number');
 
         // Filter for vars in the whitelist
-        ENTRIES = ENTRIES.filter(c => ALLOWED_KEYS.has(c[0]));
+        entries = entries.filter(c => allowedKeys.has(c[0]));
 
         // Get a list of enchantments
-        const ENCHANTMENTS = this.enchantments.map(enchantment => enchantment.enchantment);
+        const enchantments = this.enchantments.map(enchantment => enchantment.enchantment);
 
         // Get keys
-        const KEYS = new Set(ENCHANTMENTS.map(enchantment => this.getEnchantmentInfo(enchantment).key));
+        const keys = new Set(enchantments.map(enchantment => this.getEnchantmentInfo(enchantment).key));
 
         // Only reset the variables if the variable name is in the enchantments list
-        ENTRIES = ENTRIES.filter(c => KEYS.has(c[0]));
-        for (const ENTRY of ENTRIES) {
-            const [KEY] = ENTRY;
+        entries = entries.filter(c => keys.has(c[0]));
+        for (const entry of entries) {
+            const [key] = entry;
 
             // Apply backup if it exists, otherwise keep it the same.
-            if (this.backups.init ? [KEY] : false) {
+            if (this.backups.init ? [key] : false) {
                 // HACK: Never usage
-                this[KEY as never] = this.backups.init[KEY as never];
+                this[key as never] = this.backups.init[key as never];
             }
         }
 
-        for (const ENCHANTMENT_OBJECT of this.enchantments) {
-            const { enchantment: ENCHANTMENT } = ENCHANTMENT_OBJECT;
+        for (const enchantmentObject of this.enchantments) {
+            const { enchantment } = enchantmentObject;
 
             // Seperate the keys and values
-            const INFO = this.getEnchantmentInfo(ENCHANTMENT);
-            const [ANY_KEY, VALUE, OPERATION] = Object.values(INFO);
+            const info = this.getEnchantmentInfo(enchantment);
+            const [anyKey, value, operation] = Object.values(info);
 
-            const KEY = ANY_KEY as keyof this;
+            const key = anyKey as keyof this;
 
-            const NUMBER_VALUE = game.lodash.parseInt(VALUE);
-            if (typeof this[KEY] !== 'number') {
+            const numberValue = game.lodash.parseInt(value);
+            if (typeof this[key] !== 'number') {
                 continue;
             }
 
-            switch (OPERATION) {
+            switch (operation) {
                 case '=': {
-                    (this[KEY] as number) = NUMBER_VALUE;
+                    (this[key] as number) = numberValue;
                     break;
                 }
 
                 case '+': {
-                    (this[KEY] as number) += NUMBER_VALUE;
+                    (this[key] as number) += numberValue;
                     break;
                 }
 
                 case '-': {
-                    (this[KEY] as number) -= NUMBER_VALUE;
+                    (this[key] as number) -= numberValue;
                     break;
                 }
 
                 case '*': {
-                    (this[KEY] as number) *= NUMBER_VALUE;
+                    (this[key] as number) *= numberValue;
                     break;
                 }
 
                 case '/': {
-                    (this[KEY] as number) /= NUMBER_VALUE;
+                    (this[key] as number) /= numberValue;
                     break;
                 }
 
                 case '^': {
-                    (this[KEY] as number) = (this[KEY] as number) ** NUMBER_VALUE;
+                    (this[key] as number) = (this[key] as number) ** numberValue;
                     break;
                 }
 
@@ -1160,10 +1160,10 @@ export class Card {
      * @returns Success
      */
     addEnchantment(enchantment: string, owner: Card): boolean {
-        const INFO = this.getEnchantmentInfo(enchantment);
+        const info = this.getEnchantmentInfo(enchantment);
 
         // Add the enchantment to the beginning of the list, equal enchantments should apply first
-        if (INFO.op === '=') {
+        if (info.op === '=') {
             this.enchantments.unshift({ enchantment, owner });
         } else {
             this.enchantments.push({ enchantment, owner });
@@ -1198,17 +1198,17 @@ export class Card {
      * @returns Success
      */
     removeEnchantment(enchantmentString: string, card: Card, update = true): boolean {
-        const ENCHANTMENT = this.enchantments.find(c => c.enchantment === enchantmentString && c.owner === card);
-        if (!ENCHANTMENT) {
+        const enchantment = this.enchantments.find(c => c.enchantment === enchantmentString && c.owner === card);
+        if (!enchantment) {
             return false;
         }
 
-        const INDEX = this.enchantments.indexOf(ENCHANTMENT);
-        if (INDEX === -1) {
+        const index = this.enchantments.indexOf(enchantment);
+        if (index === -1) {
             return false;
         }
 
-        this.enchantments.splice(INDEX, 1);
+        this.enchantments.splice(index, 1);
 
         if (!update) {
             this.applyEnchantments();
@@ -1216,12 +1216,12 @@ export class Card {
         }
 
         // Update is enabled
-        const INFO = this.getEnchantmentInfo(enchantmentString);
-        const NEW_ENCHANTMENT = `+0 ${INFO.key}`;
+        const info = this.getEnchantmentInfo(enchantmentString);
+        const newEnchantment = `+0 ${info.key}`;
 
         // This will cause the variable to be reset since it is in the enchantments list.
-        this.addEnchantment(NEW_ENCHANTMENT, this);
-        this.removeEnchantment(NEW_ENCHANTMENT, this, false);
+        this.addEnchantment(newEnchantment, this);
+        this.removeEnchantment(newEnchantment, this, false);
 
         return true;
     }
@@ -1232,9 +1232,9 @@ export class Card {
      * @example
      * card.text = "The current turn count is {turns}";
      * card.placeholders = [(plr, self) => {
-     *     const TURNS = game.functions.util.getTraditionalTurnCounter();
+     *     const turns = game.functions.util.getTraditionalTurnCounter();
      *
-     *     return {turns: TURNS};
+     *     return { turns };
      * }];
      * card.replacePlaceholders();
      *
@@ -1248,25 +1248,25 @@ export class Card {
             return false;
         }
 
-        const TEMPORARY_PLACEHOLDER = this.activate('placeholders');
-        if (!(Array.isArray(TEMPORARY_PLACEHOLDER))) {
+        const temporaryPlaceholder = this.activate('placeholders');
+        if (!(Array.isArray(temporaryPlaceholder))) {
             // TODO: Maybe throw an error?
             return false;
         }
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const PLACEHOLDER = TEMPORARY_PLACEHOLDER[0];
-        if (!(PLACEHOLDER instanceof Object)) {
+        const placeholder = temporaryPlaceholder[0];
+        if (!(placeholder instanceof Object)) {
             return false;
         }
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        this.placeholder = PLACEHOLDER;
+        this.placeholder = placeholder;
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        for (const PLACEHOLDER_OBJECT of Object.entries(PLACEHOLDER)) {
-            const [KEY] = PLACEHOLDER_OBJECT;
-            this.text = this.text.replaceAll(`{${KEY}}`, `{ph:${KEY}}`);
+        for (const placeholderObject of Object.entries(placeholder)) {
+            const [key] = placeholderObject;
+            this.text = this.text.replaceAll(`{${key}}`, `{ph:${key}}`);
         }
 
         return true;
@@ -1276,32 +1276,32 @@ export class Card {
      * Return a perfect copy of this card. This will perfectly clone the card. This happens when, for example, a card gets temporarily removed from the board using card.destroy, then put back on the board.
      *
      * @example
-     * const CLONED = card.perfectCopy();
+     * const cloned = card.perfectCopy();
      *
      * // This will actually fail since they're slightly different, but you get the point
-     * assert.equal(CLONED, card);
+     * assert.equal(cloned, card);
      *
      * @returns A perfect copy of this card.
      */
     perfectCopy(): this {
-        const CLONE = game.lodash.clone(this);
+        const clone = game.lodash.clone(this);
 
-        CLONE.randomizeUuid();
-        CLONE.sleepy = true;
-        CLONE.turn = game.turns;
+        clone.randomizeUuid();
+        clone.sleepy = true;
+        clone.turn = game.turns;
 
-        return CLONE;
+        return clone;
     }
 
     /**
      * Return an imperfect copy of this card. This happens when, for example, a card gets shuffled into your deck in vanilla Hearthstone.
      *
      * @example
-     * const CLONED = card.imperfectCopy();
-     * const CLONED_2 = new Card(card.name, card.plr);
+     * const cloned = card.imperfectCopy();
+     * const cloned2 = new Card(card.name, card.plr);
      *
      * // This will actually fail since they're slightly different, but you get the point
-     * assert.equal(CLONED, CLONED_2);
+     * assert.equal(cloned, cloned2);
      *
      * @returns An imperfect copy of this card.
      */
@@ -1354,7 +1354,7 @@ export class Card {
     adapt(prompt = 'Choose One:', _values: string[][] = []): string | -1 {
         game.interact.info.showGame(game.player);
 
-        const POSSIBLE_CARDS = [
+        const possibleCards = [
             ['Crackling Shield', 'Divine Shield'],
             ['Flaming Claws', '+3 Attack'],
             ['Living Spores', 'Deathrattle: Summon two 1/1 Plants.'],
@@ -1366,26 +1366,26 @@ export class Card {
             ['Shrouding Mist', 'Stealth until your next turn.'],
             ['Poison Spit', 'Poisonous'],
         ];
-        const VALUES = _values;
+        const values = _values;
 
-        if (VALUES.length === 0) {
+        if (values.length === 0) {
             for (let i = 0; i < 3; i++) {
-                const CARD = game.lodash.sample(POSSIBLE_CARDS);
-                if (!CARD) {
+                const card = game.lodash.sample(possibleCards);
+                if (!card) {
                     throw new Error('undefined when randomly choosing adapt option');
                 }
 
-                VALUES.push(CARD);
-                game.functions.util.remove(POSSIBLE_CARDS, CARD);
+                values.push(card);
+                game.functions.util.remove(possibleCards, card);
             }
         }
 
         let p = `\n${prompt}\n[\n`;
 
-        for (const [INDEX, VALUE] of VALUES.entries()) {
+        for (const [index, value] of values.entries()) {
             // Check for a TypeError and ignore it
             try {
-                p += `${INDEX + 1}: ${VALUE[0]}; ${VALUE[1]},\n`;
+                p += `${index + 1}: ${value[0]}; ${value[1]},\n`;
             } catch {}
         }
 
@@ -1395,14 +1395,14 @@ export class Card {
         let choice = game.input(p);
         if (!game.lodash.parseInt(choice)) {
             game.pause('<red>Invalid choice!</red>\n');
-            return this.adapt(prompt, VALUES);
+            return this.adapt(prompt, values);
         }
 
         if (game.lodash.parseInt(choice) > 3) {
-            return this.adapt(prompt, VALUES);
+            return this.adapt(prompt, values);
         }
 
-        choice = VALUES[game.lodash.parseInt(choice) - 1][0];
+        choice = values[game.lodash.parseInt(choice) - 1][0];
 
         switch (choice) {
             case 'Crackling Shield': {
@@ -1491,15 +1491,15 @@ export class Card {
      * @returns Success
      */
     tryInfuse() {
-        const INFUSE = this.getKeyword('Infuse') as number | undefined;
-        if (!INFUSE || INFUSE <= 0) {
+        const infuse = this.getKeyword('Infuse') as number | undefined;
+        if (!infuse || infuse <= 0) {
             return false;
         }
 
-        const NEW_INFUSE = INFUSE - 1;
+        const newInfuse = infuse - 1;
 
-        this.setKeyword('Infuse', NEW_INFUSE);
-        if (NEW_INFUSE > 0) {
+        this.setKeyword('Infuse', newInfuse);
+        if (newInfuse > 0) {
             return false;
         }
 

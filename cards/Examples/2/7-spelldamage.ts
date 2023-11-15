@@ -3,7 +3,7 @@
 import assert from 'node:assert';
 import { type Blueprint } from '@Game/types.js';
 
-export const BLUEPRINT: Blueprint = {
+export const blueprint: Blueprint = {
     name: 'Spell Damage Example',
 
     // Put a $ sign before the number to show spell damage in the description.
@@ -28,11 +28,11 @@ export const BLUEPRINT: Blueprint = {
     },
 
     test(plr, self) {
-        const OLD_HEALTH = plr.getOpponent().getHealth();
+        const oldHealth = plr.getOpponent().getHealth();
 
         plr.spellDamage = 3;
         self.activate('cast');
 
-        assert.equal(plr.getOpponent().getHealth(), OLD_HEALTH - (3 + plr.spellDamage));
+        assert.equal(plr.getOpponent().getHealth(), oldHealth - (3 + plr.spellDamage));
     },
 };

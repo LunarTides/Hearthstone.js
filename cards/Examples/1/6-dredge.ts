@@ -3,7 +3,7 @@
 import assert from 'node:assert';
 import { type Blueprint } from '@Game/types.js';
 
-export const BLUEPRINT: Blueprint = {
+export const blueprint: Blueprint = {
     name: 'Dredge Example',
     stats: [1, 1],
     text: 'This example card shows you how to use keywords like dredge. <b>Battlecry: Dredge.</b>',
@@ -26,9 +26,9 @@ export const BLUEPRINT: Blueprint = {
     test(plr, self) {
         // Makes the player answer "1" to the next question
         plr.inputQueue = ['1'];
-        const CARD = game.interact.card.dredge();
+        const card = game.interact.card.dredge();
 
         // Check if the top card of the player's deck is the card that was dredged
-        assert.equal(game.lodash.last(plr.deck), CARD);
+        assert.equal(game.lodash.last(plr.deck), card);
     },
 };
