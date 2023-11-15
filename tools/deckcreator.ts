@@ -878,14 +878,15 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         case 'import': {
             const deckcode = game.input('Please input a deckcode: ');
 
-            let deck = game.functions.deckcode.import(player1, deckcode);
-            if (!deck) {
+            config.decks.validate = false;
+            let newDeck = game.functions.deckcode.import(player1, deckcode);
+            config.decks.validate = true;
+
+            if (!newDeck) {
                 return false;
             }
 
-            config.decks.validate = false;
-            deck = deck.sort((a, b) => a.name.localeCompare(b.name));
-            config.decks.validate = true;
+            newDeck = newDeck.sort((a, b) => a.name.localeCompare(b.name));
 
             deck = [];
 
@@ -898,7 +899,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
             // causes a weird bug that makes modifying the deck impossible because removing a card
             // removes a completly unrelated card because javascript.
             // You can just set deck = functions.importDeck(), but doing it that way doesn't account for renathal or any other card that changes the config in any way since that is done using the add function.
-            for (const card of deck) {
+            for (const card of newDeck) {
                 handleCmds(`add ${card.displayName}`);
             }
 
