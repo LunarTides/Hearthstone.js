@@ -7,6 +7,7 @@ import process from 'node:process';
 import { createHash } from 'node:crypto';
 import date from 'date-and-time';
 import { type Player } from '@Game/internal.js';
+import { type Target } from '@Game/types.js';
 
 export const utilFunctions = {
     /**
@@ -508,6 +509,17 @@ ${mainContent}
         dirname = dirname.split('/dist')[0];
 
         return dirname;
+    },
+
+    getRandomTarget(): Target {
+        const targets: Target[] = [...game.board[0], ...game.board[1], game.player1, game.player2];
+
+        const target = game.lodash.sample(targets);
+        if (!target) {
+            throw new TypeError('Could not find a target to cast the spell on. This is an error since it means that one of the players / minions on the board is undefined.');
+        }
+
+        return target;
     },
 
     /**
