@@ -38,7 +38,7 @@ function upgradeCard(path: string, data: string, file: any) {
     const blueprintDefinitionRegex = /\/\*\*\n \* @type {import\("(?:\.\.\/)+src\/types"\)\.Blueprint}\n \*\//g;
     const abilityDefinitionRegex = /\n {4}\/\*{2}\n {5}\* @type {import\("(?:\.{2}\/)+src\/types"\)\.KeywordMethod}\n {5}\*\//g;
 
-    data = upgradeField(data, blueprintDefinitionRegex, `import { Blueprint${eventValue} } from "@Game/types.js";\n`, 'Replaced blueprint type from jsdoc to import.');
+    data = upgradeField(data, blueprintDefinitionRegex, `import { type Blueprint${eventValue} } from "@Game/types.js";\n`, 'Replaced blueprint type from jsdoc to import.');
     data = upgradeField(data, abilityDefinitionRegex, '', 'Removed KeywordMethod jsdoc type.');
     data = upgradeField(data, 'module.exports = {', 'export const blueprint: Blueprint = {', 'Replaced blueprint definition from module.exports to object.');
     data = upgradeField(data, /plr, game, self/g, 'plr, self', 'Removed \'game\' parameter from abilities.');
@@ -89,8 +89,10 @@ function upgradeCard(path: string, data: string, file: any) {
         data = upgradeField(data, keyRegex, '', 'Removed key from passive.');
     }
 
+    data = data.replaceAll('"', '\'');
+
     // Replace .js to .ts
-    path = path.replace(fileName, fileName.replace('.js', '.ts'));
+    path = path.replace(fileName, fileName.replaceAll('_', '-').replace('.js', '.ts'));
     game.functions.util.fs('write', path, data);
 
     game.log(`--- Finished ${fileName} ---`);

@@ -110,7 +110,7 @@ function findOutdatedCards(path: string) {
         }
 
         if (file.name.endsWith('.ts')) {
-            updatedCards.push(fullPath.slice(0, -3));
+            updatedCards.push(fullPath.slice(0, -3), fullPath.replaceAll('-', '_').slice(0, -3));
         } else if (file.isDirectory()) {
             findOutdatedCards(fullPath);
         }
