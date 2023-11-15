@@ -133,6 +133,7 @@ export const commands: CommandList = {
         }
 
         card.sleepy = true;
+        game.events.broadcast('Titan', [card, ability], game.player);
 
         return true;
     },
