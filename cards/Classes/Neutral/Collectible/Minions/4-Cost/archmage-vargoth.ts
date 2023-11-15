@@ -23,10 +23,6 @@ export const blueprint: Blueprint = {
             return;
         }
 
-        // Here we cast the value to the correct type.
-        // Do not use the '_unknownValue' variable after this.
-        const value = _unknownValue as EventValue<typeof key>;
-
         const spells: Card[] | undefined = game.events.events.PlayCard?.[plr.id].filter(object => object[0] instanceof Card && object[0].type === 'Spell' && object[1] === game.turns).map(object => object[0] as Card);
         if (!spells || spells.length <= 0) {
             return;

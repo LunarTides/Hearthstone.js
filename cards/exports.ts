@@ -17,11 +17,16 @@ export { blueprint as c2fa128c } from './Classes/Druid/Uncollectible/Minions/1-C
 export { blueprint as c68098a5 } from './Classes/Druid/Uncollectible/Minions/6-Cost/flipper-friends-orca.js';
 export { blueprint as cd33d38f } from './Classes/Mage/Collectible/Spells/10-Cost/pyroblast.js';
 export { blueprint as c3299035 } from './Classes/Neutral/Collectible/Locations/7-Cost/prison-of-yogg-saron.js';
+export { blueprint as c3252240 } from './Classes/Neutral/Collectible/Minions/1-Cost/chaotic-tendril.js';
 export { blueprint as c65314e1 } from './Classes/Neutral/Collectible/Minions/10-Cost/yogg-saron-hopes-end.js';
 export { blueprint as c28b127c } from './Classes/Neutral/Collectible/Minions/10-Cost/yogg-saron-master-of-fate.js';
 export { blueprint as cf7a985c } from './Classes/Neutral/Collectible/Minions/4-Cost/archmage-vargoth.js';
 export { blueprint as c1cbe9d0 } from './Classes/Neutral/Collectible/Minions/4-Cost/injured-marauder.js';
+export { blueprint as c712c09a } from './Classes/Neutral/Collectible/Minions/9-Cost/yogg-saron-unleashed.js';
 export { blueprint as cce3c49d } from './Classes/Neutral/Uncollectible/Minions/1-Cost/onyxian-whelp.js';
+export { blueprint as c97abe43 } from './Classes/Neutral/Uncollectible/Spells/0-Cost/yogg-saron-unleashed-induced-insanity.js';
+export { blueprint as cceecd95 } from './Classes/Neutral/Uncollectible/Spells/0-Cost/yogg-saron-unleashed-reign-of-chaos.js';
+export { blueprint as c460f278 } from './Classes/Neutral/Uncollectible/Spells/0-Cost/yogg-saron-unleashed-tentacle-swarm.js';
 export { blueprint as c44a2687 } from './Debug/10mana.js';
 export { blueprint as c6f22543 } from './Debug/infmana.js';
 export { blueprint as c8ddfe25 } from './Examples/1/1-minion.js';

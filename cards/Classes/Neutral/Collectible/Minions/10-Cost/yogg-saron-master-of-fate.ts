@@ -109,12 +109,7 @@ export const blueprint: Blueprint = {
                         continue;
                     }
 
-                    const cardClone = card.perfectCopy();
-                    cardClone.plr = plr;
-
-                    card.destroy();
-
-                    game.summonMinion(cardClone, plr);
+                    card.takeControl(plr);
                 }
 
                 break;
