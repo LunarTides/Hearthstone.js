@@ -11,7 +11,7 @@ export const blueprint: Blueprint = {
     spellSchool: 'Fire',
     classes: ['Mage'],
     rarity: 'Epic',
-    id: 101,
+    id: 105,
 
     cast(plr, self) {
         // Deal $10 damage.

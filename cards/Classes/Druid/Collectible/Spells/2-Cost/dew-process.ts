@@ -11,7 +11,7 @@ export const blueprint: Blueprint = {
     spellSchool: 'Nature',
     classes: ['Druid'],
     rarity: 'Rare',
-    id: 87,
+    id: 91,
 
     cast(plr, self) {
         // For the rest of the game, players draw an extra card at the start of their turn.

@@ -14,7 +14,7 @@ export const blueprint: Blueprint = {
     classes: ['Neutral'],
     rarity: 'Legendary',
     displayName: 'Yogg-Saron, Hope\'s End',
-    id: 99,
+    id: 103,
 
     battlecry(plr, self) {
         // Cast a random spell for each spell you've cast this game (targets chosen randomly).

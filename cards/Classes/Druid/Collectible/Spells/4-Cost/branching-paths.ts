@@ -11,7 +11,7 @@ export const blueprint: Blueprint = {
     spellSchool: 'None',
     classes: ['Druid'],
     rarity: 'Epic',
-    id: 82,
+    id: 86,
 
     cast(plr, self) {
         // Choose Twice - Draw a card; Give your minions  +1 Attack; Gain 6 Armor.

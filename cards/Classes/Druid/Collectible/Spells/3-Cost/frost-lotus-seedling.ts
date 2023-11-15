@@ -11,7 +11,7 @@ export const blueprint: Blueprint = {
     spellSchool: 'Nature',
     classes: ['Druid'],
     rarity: 'Rare',
-    id: 90,
+    id: 94,
 
     create(plr, self) {
         // Initialize storage

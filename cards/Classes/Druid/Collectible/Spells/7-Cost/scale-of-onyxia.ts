@@ -11,7 +11,7 @@ export const blueprint: Blueprint = {
     spellSchool: 'None',
     classes: ['Druid'],
     rarity: 'Common',
-    id: 96,
+    id: 100,
 
     cast(plr, self) {
         // Fill your board with 2/1 Whelps with Rush.

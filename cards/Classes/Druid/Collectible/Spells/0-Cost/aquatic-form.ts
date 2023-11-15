@@ -11,7 +11,7 @@ export const blueprint: Blueprint = {
     spellSchool: 'None',
     classes: ['Druid'],
     rarity: 'Rare',
-    id: 89,
+    id: 93,
 
     cast(plr, self) {
         // Dredge. If you have the Mana to play the card this turn, draw it.

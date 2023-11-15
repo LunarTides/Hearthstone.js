@@ -11,7 +11,7 @@ export const blueprint: Blueprint = {
     spellSchool: 'Nature',
     classes: ['Druid'],
     rarity: 'Rare',
-    id: 88,
+    id: 92,
 
     cast(plr, self) {
         // Choose One - Gain an empty Mana Crystal; or Draw a card.

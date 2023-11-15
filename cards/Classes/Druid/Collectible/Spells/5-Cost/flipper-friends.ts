@@ -11,7 +11,7 @@ export const blueprint: Blueprint = {
     spellSchool: 'Nature',
     classes: ['Druid'],
     rarity: 'Common',
-    id: 93,
+    id: 97,
 
     cast(plr, self) {
         // Choose One - Summon a 6/6 Orca with Taunt; or six 1/1 Otters with Rush.

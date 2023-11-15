@@ -11,7 +11,7 @@ export const blueprint: Blueprint = {
     spellSchool: 'Nature',
     classes: ['Druid'],
     rarity: 'Common',
-    id: 78,
+    id: 82,
 
     cast(plr, self) {
         // Destroy all minions and summon 2/2 Treants to replace them.

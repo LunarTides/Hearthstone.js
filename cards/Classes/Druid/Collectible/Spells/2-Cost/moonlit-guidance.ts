@@ -11,7 +11,7 @@ export const blueprint: Blueprint = {
     spellSchool: 'Arcane',
     classes: ['Druid'],
     rarity: 'Rare',
-    id: 86,
+    id: 90,
 
     cast(plr, self) {
         // Discover a copy of a card in your deck. If you play it this turn, draw the original.

@@ -13,7 +13,7 @@ export const blueprint: Blueprint = {
     tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Legendary',
-    id: 94,
+    id: 98,
 
     passive(plr, self, key, _unknownValue) {
         // At the end of your turn, cast a spell you've cast this turn (targets are random).

@@ -12,7 +12,7 @@ export const blueprint: Blueprint = {
     classes: ['Neutral'],
     rarity: 'Free',
     uncollectible: true,
-    id: 95,
+    id: 99,
 
     create(plr, self) {
         // Add additional fields here

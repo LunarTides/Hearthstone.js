@@ -12,7 +12,7 @@ export const blueprint: Blueprint = {
     tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Common',
-    id: 84,
+    id: 88,
 
     create(plr, self) {
         // Add additional fields here

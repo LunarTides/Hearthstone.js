@@ -13,7 +13,7 @@ export const blueprint: Blueprint = {
     rarity: 'Free',
     uncollectible: true,
     displayName: 'Orca',
-    id: 92,
+    id: 96,
 
     create(plr, self) {
         // Add additional fields here

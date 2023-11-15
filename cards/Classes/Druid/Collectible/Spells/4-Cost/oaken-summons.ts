@@ -11,7 +11,7 @@ export const blueprint: Blueprint = {
     spellSchool: 'Nature',
     classes: ['Druid'],
     rarity: 'Common',
-    id: 83,
+    id: 87,
 
     cast(plr, self) {
         // Gain 6 Armor. Recruit a minion that costs (4) or less.

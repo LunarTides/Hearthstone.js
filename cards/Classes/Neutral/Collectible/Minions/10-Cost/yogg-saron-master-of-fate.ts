@@ -14,7 +14,7 @@ export const blueprint: Blueprint = {
     classes: ['Neutral'],
     rarity: 'Legendary',
     displayName: 'Yogg-Saron, Master of Fate',
-    id: 100,
+    id: 104,
 
     // eslint-disable-next-line complexity
     battlecry(plr, self) {

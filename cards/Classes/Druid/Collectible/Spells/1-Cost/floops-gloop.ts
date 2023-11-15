@@ -12,7 +12,7 @@ export const blueprint: Blueprint = {
     spellSchool: 'Nature',
     classes: ['Druid'],
     rarity: 'Legendary',
-    id: 97,
+    id: 101,
 
     cast(plr, self) {
         // Whenever a minion dies this turn, gain 1 Mana Crystal this turn only.

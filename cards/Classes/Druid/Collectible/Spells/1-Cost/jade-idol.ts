@@ -11,7 +11,7 @@ export const blueprint: Blueprint = {
     spellSchool: 'None',
     classes: ['Druid'],
     rarity: 'Rare',
-    id: 80,
+    id: 84,
 
     cast(plr, self) {
         // Choose One - Summon a Jade Golem; or Shuffle 3 copies of this card into your deck.

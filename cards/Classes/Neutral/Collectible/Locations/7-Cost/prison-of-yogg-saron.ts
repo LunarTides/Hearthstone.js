@@ -12,7 +12,7 @@ export const blueprint: Blueprint = {
     cooldown: 2,
     classes: ['Neutral'],
     rarity: 'Legendary',
-    id: 98,
+    id: 102,
 
     use(plr, self) {
         // Choose a character. Cast 4 random spells (targeting it if possible).
