@@ -10,11 +10,13 @@ export { blueprint as c1ad781a } from './Classes/Druid/Collectible/Spells/4-Cost
 export { blueprint as cdd81f0c } from './Classes/Druid/Collectible/Spells/4-Cost/oaken-summons.js';
 export { blueprint as c9178ac9 } from './Classes/Druid/Collectible/Spells/4-Cost/poison-seeds.js';
 export { blueprint as c96f6777 } from './Classes/Druid/Collectible/Spells/5-Cost/flipper-friends.js';
+export { blueprint as cd24ede2 } from './Classes/Druid/Collectible/Spells/7-Cost/scale-of-onyxia.js';
 export { blueprint as c2aa0a46 } from './Classes/Druid/Uncollectible/Minions/1-Cost/flipper-friends-otter.js';
 export { blueprint as c2fa128c } from './Classes/Druid/Uncollectible/Minions/1-Cost/treant.js';
 export { blueprint as c68098a5 } from './Classes/Druid/Uncollectible/Minions/6-Cost/flipper-friends-orca.js';
 export { blueprint as cf7a985c } from './Classes/Neutral/Collectible/Minions/4-Cost/archmage-vargoth.js';
 export { blueprint as c1cbe9d0 } from './Classes/Neutral/Collectible/Minions/4-Cost/injured-marauder.js';
+export { blueprint as cce3c49d } from './Classes/Neutral/Uncollectible/Minions/1-Cost/onyxian-whelp.js';
 export { blueprint as c44a2687 } from './Debug/10mana.js';
 export { blueprint as c6f22543 } from './Debug/infmana.js';
 export { blueprint as c8ddfe25 } from './Examples/1/1-minion.js';
