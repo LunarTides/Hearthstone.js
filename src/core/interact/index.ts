@@ -211,7 +211,7 @@ export const interact = {
      * #### You might want to use `selectPlayerTarget` or `selectCardTarget` instead.
      *
      * Asks the user a `prompt`, the user can then select a minion or hero.
-     * Broadcasts the `TargetSelectionStarts` and the `TargetSelected` event. Can broadcast the `CastSpellOnMinion` event.
+     * Broadcasts the `TargetSelectionStarts` and the `TargetSelected` event.
      *
      * @param prompt The prompt to ask
      * @param card The card that called this function.
@@ -338,14 +338,9 @@ export const interact = {
         }
 
         // If the minion has elusive, and the card that called this function is a spell
-        if ((card && card.type === 'Spell') ?? flags.includes('forceElusive')) {
-            if (minion.hasKeyword('Elusive')) {
-                game.pause('<red>Can\'t be targeted by Spells or Hero Powers.</red>\n');
-
-                return false;
-            }
-
-            game.events.broadcast('CastSpellOnMinion', [card, minion], game.player);
+        if (((card && card.type === 'Spell') ?? flags.includes('forceElusive')) && minion.hasKeyword('Elusive')) {
+            game.pause('<red>Can\'t be targeted by Spells or Hero Powers.</red>\n');
+            return false;
         }
 
         // If the minion has stealth, don't allow the opponent to target it.

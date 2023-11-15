@@ -19,12 +19,8 @@ export const blueprint: Blueprint = {
     heropower(plr, self) {
         // Deal 1 damage.
 
-        // Suppress the "CastSpellOnMinion" event, since this isn't a spell
-        const unsuppress = game.functions.event.suppress('CastSpellOnMinion');
         // Use of `selectTarget` in the `heropower` ability requires the use of the `forceElusive` flag
-        // This flag might cause the `CastSpellOnMinion` event to be broadcast, so suppress it since this isn't a spell
         const target = game.interact.selectTarget('Deal 1 damage.', self, 'any', 'any', ['forceElusive']);
-        unsuppress();
 
         // If no target was selected, refund the hero power
         if (!target) {
