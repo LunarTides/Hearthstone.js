@@ -516,4 +516,11 @@ ${mainContent}
     getRemainingBoardSpace(plr: Player) {
         return game.config.general.maxBoardSpace - game.board[plr.id].length;
     },
+
+    /**
+     * Calculate the remaining hand size for the given player.
+     */
+    getRemainingHandSize(plr: Player) {
+        return game.config.general.maxHandLength - plr.hand.length;
+    },
 };
