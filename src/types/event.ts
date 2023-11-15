@@ -73,6 +73,7 @@ export type EventKey =
 | 'HeroPower'
 | 'TargetSelectionStarts'
 | 'TargetSelected'
+| 'CardEvent'
 | 'Dummy'
 | 'Eval'
 | 'Input'
@@ -182,6 +183,10 @@ export type EventValue<Key extends EventKey> =
      * The class of the hero power. (Warrior, Mage, Priest, ...)
      */
     Key extends 'HeroPower' ? string :
+    /**
+     * The card, some information about the event
+     */
+    Key extends 'CardEvent' ? [Card, string] :
     /**
      * The code to evaluate
      */

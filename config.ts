@@ -202,6 +202,7 @@ export const config: GameConfig = {
             'HeroPower',
             'TargetSelectionStarts',
             'TargetSelected',
+            'CardEvent',
         ],
 
         // These keys will have their value hidden when running the history command unless you caused the event.
