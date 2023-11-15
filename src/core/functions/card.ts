@@ -419,9 +419,9 @@ export const cardFunctions = {
 
         // Sort the list alphabetically so it will remain constant between different file system formats.
         for (const path of list.sort()) {
-            const hash = createHash('sha256').update(path).digest('hex').toString().slice(0, 7).toUpperCase();
+            const hash = createHash('sha256').update(path).digest('hex').toString().slice(0, 7);
 
-            exportContent += `export { blueprint as C${hash} } from '${path}';\n`;
+            exportContent += `export { blueprint as c${hash} } from '${path}';\n`;
         }
 
         game.functions.util.fs('write', '/cards/exports.ts', exportContent);
