@@ -33,14 +33,8 @@ export const blueprint: Blueprint = {
         }
 
         const spell = game.lodash.sample(spells);
-        const targets: Target[] = [...game.board[0], ...game.board[1], plr, plr.getOpponent()];
 
-        const target = game.lodash.sample(targets);
-        if (!target) {
-            throw new TypeError('Could not find a target to cast the spell on. This is an error since it means that one of the players / minions on the board is undefined.');
-        }
-
-        plr.forceTarget = target;
+        plr.forceTarget = game.functions.util.getRandomTarget();
         spell?.activate('cast');
         plr.forceTarget = undefined;
     },
