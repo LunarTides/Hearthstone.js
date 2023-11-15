@@ -12,12 +12,6 @@ import { type AiCalcMoveOption, type AiHistory, type CardLike, type ScoredCard, 
  */
 export class Ai {
     /**
-     * The player that the AI is playing for
-     */
-    // eslint-disable-next-line @typescript-eslint/parameter-properties
-    plr: Player;
-
-    /**
      * The history of the AI. Also known as its "logs".
      */
     history: AiHistory[] = [];
@@ -45,7 +39,7 @@ export class Ai {
     /**
      * Sentiment-based AI
      */
-    constructor(plr: Player) {
+    constructor(private readonly plr: Player) {
         this.plr = plr;
     }
 

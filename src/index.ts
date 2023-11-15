@@ -66,7 +66,6 @@ let outdatedCards: string[] = [];
 const outdatedExtensions: string[] = [];
 const updatedCards: string[] = [];
 function warnAboutOutdatedCards() {
-    // TODO: This doesn't quite work. #336
     findOutdatedCards(game.functions.util.dirname() + '/cards');
     outdatedCards = outdatedCards.filter(card => !updatedCards.includes(card));
 

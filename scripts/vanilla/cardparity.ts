@@ -17,7 +17,7 @@ function main() {
 
     for (const custom of customCards) {
         // Find the equivalent vanilla card
-        let vanilla = filteredVanillaCards.find(vanilla => (
+        const vanilla = filteredVanillaCards.find(vanilla => (
             vanilla.name.toLowerCase() === custom.displayName.toLowerCase()
                 && vanilla.type.toLowerCase() === custom.type.toLowerCase()
         ));
@@ -30,9 +30,6 @@ function main() {
         for (const entry of Object.entries(custom)) {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             const [key, value] = entry;
-
-            // HACK: For some reason, typescript thinks that vanilla can be undefined
-            vanilla = vanilla!;
 
             if (key === 'stats') {
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-call

@@ -762,8 +762,9 @@ export const debugCommands: CommandList = {
 
         const [category, key, value] = args;
 
-        // @ts-expect-error For some strange reason, game.config[cat] is not allowed even though cat is a string. Very strange.
-        const setting = Object.entries(game.config[category] as keyof GameConfig).find(ent => ent[0].toLowerCase() === key.toLowerCase())[1];
+        // HACK: Use of never
+        const settingCategory = game.config[category as never] as keyof GameConfig;
+        const setting = Object.entries(settingCategory).find(ent => ent[0].toLowerCase() === key.toLowerCase())?.[1];
 
         if (setting === undefined) {
             game.pause('<red>Invalid setting name!</red>\n');
@@ -805,9 +806,9 @@ export const debugCommands: CommandList = {
             return false;
         }
 
-        // @ts-expect-error Same story as up above.
+        // HACK: Hmm
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        game.config[category][key as keyof GameConfig] = newValue as any;
+        (game.config[category as never] as any)[key as never] = newValue as any;
         game.doConfigAi();
 
         game.pause();
