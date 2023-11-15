@@ -1513,4 +1513,16 @@ export class Card {
     colorFromRarity(text = this.displayName) {
         return game.functions.color.fromRarity(text, this.rarity);
     }
+
+    /**
+     * Takes control of the card by changing its owner.
+     *
+     * @param newOwner The new owner of the card.
+     */
+    takeControl(newOwner: Player) {
+        game.functions.util.remove(game.board[this.plr.id], this);
+
+        this.plr = newOwner;
+        game.summonMinion(this, newOwner);
+    }
 }
