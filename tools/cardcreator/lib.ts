@@ -257,7 +257,7 @@ ${runes}${keywords}
     const content = `// Created by the ${creatorType} Card Creator
 
 import assert from 'node:assert';
-import {type Blueprint${passiveImport}} from '@Game/types.js';
+import { type Blueprint${passiveImport} } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
     ${contentArray.join(',\n    ')},${fileId}${createAbility}${ability}
