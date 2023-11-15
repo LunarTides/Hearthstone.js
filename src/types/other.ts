@@ -33,6 +33,7 @@ export type GameAttackReturn =
 | 'cantattackhero'
 | 'immune'
 | 'dormant'
+| 'titan'
 | 'invalid';
 
 /**

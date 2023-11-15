@@ -712,8 +712,12 @@ const attack = {
 
     // Attacker is a card
     _attackerIsCard(attacker: Card, target: Target): GameAttackReturn {
-        if (attacker instanceof Card && attacker.hasKeyword('Dormant')) {
+        if (attacker.hasKeyword('Dormant')) {
             return 'dormant';
+        }
+
+        if (attacker.hasKeyword('Titan')) {
+            return 'titan';
         }
 
         if (attacker.attackTimes && attacker.attackTimes <= 0) {
@@ -1356,7 +1360,7 @@ const cards = {
 
         player.spellDamage = 0;
 
-        if (minion.hasKeyword('Charge')) {
+        if (minion.hasKeyword('Charge') || minion.hasKeyword('Titan')) {
             minion.sleepy = false;
         }
 

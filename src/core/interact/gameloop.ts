@@ -231,6 +231,11 @@ export const gameloopInteract = { /**
                 break;
             }
 
+            case 'titan': {
+                error = 'That minion has titan abilities that hasn\'t been used';
+                break;
+            }
+
             default: {
                 error = `An unknown error occurred. Error code: UnexpectedAttackingResult@${errorCode}`;
                 break;
@@ -238,7 +243,7 @@ export const gameloopInteract = { /**
         }
 
         game.log(`<red>${error}.</red>`);
-        game.pause();
+        game.pause('');
         return false;
     },
 

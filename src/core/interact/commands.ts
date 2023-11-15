@@ -86,6 +86,57 @@ export const commands: CommandList = {
         return true;
     },
 
+    titan() {
+        // Use titan card
+        const card = game.interact.selectCardTarget('Which card do you want to use?', undefined, 'friendly');
+        if (!card) {
+            return false;
+        }
+
+        if (card.sleepy) {
+            game.pause('<red>That card is exhausted.</red>\n');
+            return false;
+        }
+
+        const titanNames = card.getKeyword('Titan') as string[] | undefined;
+
+        if (!titanNames) {
+            game.pause('<red>That card is not a titan.</red>\n');
+            return false;
+        }
+
+        const titanCards = titanNames.map(name => new Card(name, game.player));
+
+        game.interact.info.showGame(game.player);
+        game.log(`\nWhich ability do you want to trigger?\n${titanCards.map(c => game.interact.card.getReadable(c)).join(',\n')}`);
+
+        const choice = game.lodash.parseInt(game.input());
+
+        if (!choice || choice < 1 || choice > titanCards.length || Number.isNaN(choice)) {
+            game.pause('<red>Invalid choice.</red>\n');
+            return false;
+        }
+
+        const ability = titanCards[choice - 1];
+
+        if (ability.activate('cast') === -1) {
+            game.functions.util.remove(ability.plr.hand, ability);
+            return false;
+        }
+
+        titanNames.splice(choice - 1, 1);
+
+        card.setKeyword('Titan', titanNames);
+
+        if (titanNames.length <= 0) {
+            card.remKeyword('Titan');
+        }
+
+        card.sleepy = true;
+
+        return true;
+    },
+
     help() {
         game.interact.info.watermark();
         game.log('(In order to run a command; input the name of the command and follow further instruction.)\n');

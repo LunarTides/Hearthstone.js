@@ -9,7 +9,7 @@ export const blueprint: Blueprint = {
 
     // The name of the card. It MUST be unique.
     // If the card has a common name like `Plant`, then use a display name.
-    // More on this in `2-7`.
+    // More on this in `2-8`.
     name: 'Minion Example',
 
     // The stats. The first number is its attack, and the second number is its health.

@@ -118,7 +118,8 @@ export type CardKeyword =
 | 'Corrupt'
 | 'Colossal'
 | 'Infuse'
-| 'Cleave';
+| 'Cleave'
+| 'Titan';
 
 /**
  * Card abilities that is from vanilla Hearthstone.
