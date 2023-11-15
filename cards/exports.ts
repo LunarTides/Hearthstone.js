@@ -15,6 +15,7 @@ export { blueprint as cd24ede2 } from './Classes/Druid/Collectible/Spells/7-Cost
 export { blueprint as c2aa0a46 } from './Classes/Druid/Uncollectible/Minions/1-Cost/flipper-friends-otter.js';
 export { blueprint as c2fa128c } from './Classes/Druid/Uncollectible/Minions/1-Cost/treant.js';
 export { blueprint as c68098a5 } from './Classes/Druid/Uncollectible/Minions/6-Cost/flipper-friends-orca.js';
+export { blueprint as c3299035 } from './Classes/Neutral/Collectible/Locations/7-Cost/prison-of-yogg-saron.js';
 export { blueprint as cf7a985c } from './Classes/Neutral/Collectible/Minions/4-Cost/archmage-vargoth.js';
 export { blueprint as c1cbe9d0 } from './Classes/Neutral/Collectible/Minions/4-Cost/injured-marauder.js';
 export { blueprint as cce3c49d } from './Classes/Neutral/Uncollectible/Minions/1-Cost/onyxian-whelp.js';
