@@ -64,6 +64,7 @@ export type EventKey =
 | 'ForgeCard'
 | 'FreezeCard'
 | 'CreateCard'
+| 'Titan'
 | 'AddCardToDeck'
 | 'AddCardToHand'
 | 'DrawCard'
@@ -154,6 +155,10 @@ export type EventValue<Key extends EventKey> =
      * The card that was created
      */
     Key extends 'CreateCard' ? Card :
+    /**
+     * The titan card, the ability that was used
+     */
+    Key extends 'Titan' ? [Card, Card] :
     /**
      * The card that was added to the deck
      */

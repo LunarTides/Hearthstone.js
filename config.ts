@@ -195,6 +195,7 @@ export const config: GameConfig = {
             'TradeCard',
             'ForgeCard',
             'FreezeCard',
+            'Titan',
             'AddCardToDeck',
             'AddCardToHand',
             'DrawCard',
