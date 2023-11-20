@@ -83,7 +83,7 @@ export const interact = {
 
             if (game.player.ai) {
                 const aiChoice = game.player.ai.chooseOne(prompts.map(p => p[0]));
-                if (!aiChoice) {
+                if (aiChoice === undefined) {
                     continue;
                 }
 
