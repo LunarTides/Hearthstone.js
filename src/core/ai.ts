@@ -753,6 +753,10 @@ export class Ai {
         for (const card of currentBoard) {
             let trades = [...perfectTrades, ...imperfectTrades];
 
+            if (!card.canAttack()) {
+                continue;
+            }
+
             const score = this.analyzePositiveCard(card);
 
             // Don't attack with high-value minions.
@@ -760,15 +764,15 @@ export class Ai {
                 continue;
             }
 
-            // If the card has the `sleepy` prop, it has the attackTimes prop too.
-            if (card.sleepy ?? card.attackTimes! <= 0) {
-                continue;
-            }
-
             const opponentBoard = game.board[this.plr.getOpponent().id].filter(m => this._canTargetMinion(m));
 
             for (const target of opponentBoard) {
                 trades = [...perfectTrades, ...imperfectTrades];
+                
+                if (!this._canTargetMinion(target)) {
+                    continue;
+                }
+
                 if (trades.map(c => c[1]).includes(target)) {
                     continue;
                 }
