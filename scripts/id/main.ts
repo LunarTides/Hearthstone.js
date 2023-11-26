@@ -22,7 +22,7 @@ func = func.toLowerCase() as Commands;
 const destructive = ['i', 'd'] as Commands[];
 
 if (destructive.includes(func)) {
-    game.logError('<yellow>WARNING: This is a destructive action. Be careful.</yellow>\n');
+    game.logError('<yellow>WARNING: This is a destructive action. Be careful. I heavily recommend not doing this.</yellow>\n');
 }
 
 let startId: number;

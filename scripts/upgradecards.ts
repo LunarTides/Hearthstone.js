@@ -35,7 +35,7 @@ function upgradeCard(path: string, data: string, file: any) {
     const blueprintDefinitionRegex = /\/\*\*\n \* @type {import\("(?:\.\.\/)+src\/types"\)\.Blueprint}\n \*\//g;
     const abilityDefinitionRegex = /\n {4}\/\*{2}\n {5}\* @type {import\("(?:\.{2}\/)+src\/types"\)\.KeywordMethod}\n {5}\*\//g;
 
-    data = upgradeField(data, blueprintDefinitionRegex, `import { type Blueprint${eventValue} } from "@Game/types.js";\n`, 'Replaced blueprint type from jsdoc to import.');
+    data = upgradeField(data, blueprintDefinitionRegex, `import { type Blueprint${eventValue} } from '@Game/types.js';\n`, 'Replaced blueprint type from jsdoc to import.');
     data = upgradeField(data, abilityDefinitionRegex, '', 'Removed KeywordMethod jsdoc type.');
     data = upgradeField(data, 'module.exports = {', 'export const blueprint: Blueprint = {', 'Replaced blueprint definition from module.exports to object.');
     data = upgradeField(data, /plr, game, self/g, 'plr, self', 'Removed \'game\' parameter from abilities.');
@@ -44,7 +44,7 @@ function upgradeCard(path: string, data: string, file: any) {
     data = upgradeField(data, /\.maxMaxMana/g, '.maxMana', 'Updated \'maxMaxMana\' to \'maxMana\'.');
     data = upgradeField(data, /\n {4}set: (.*),/, '', 'Removed the set field.');
     data = upgradeField(data, / {4}class: (.*),/, '    classes: [$1],', 'Updated the class field pt1.');
-    data = upgradeField(data, /classes: \["(.*?) \/ (.*?)"]/g, 'classes: ["$1", "$2"]', 'Updated the class field pt2.');
+    data = upgradeField(data, /classes: \["(.*?) \/ (.*?)"]/g, 'classes: [\'$1\', \'$2\']', 'Updated the class field pt2.');
     data = upgradeField(data, / {4}spellClass: (.*),/, '    spellSchool: $1,', 'Updated the spellClass field.');
     data = upgradeField(data, / {4}mana: (.*),/, '    cost: $1,', 'Updated the mana field.');
     data = upgradeField(data, / {4}desc: (.*),/, '    text: $1,', 'Updated the desc field.');
@@ -52,7 +52,7 @@ function upgradeCard(path: string, data: string, file: any) {
     data = upgradeField(data, / {4}gainEmptyMana: (.*),/, '    addEmptyMana: $1,', 'Updated gainEmptyMana.');
     data = upgradeField(data, / {4}gainMana: (.*),/, '    addMana: $1,', 'Updated gainMana.');
     data = upgradeField(data, / {4}gainOverload: (.*),/, '    addOverload: $1,', 'Updated gainOverload.');
-    data = upgradeField(data, /( {4}type: .*,)/, '$1\n    spellSchool: "None",', 'Added spellSchool.');
+    data = upgradeField(data, /( {4}type: .*,)/, '$1\n    spellSchool: \'None\',', 'Added spellSchool.');
     data = upgradeField(data, /( {4}hpDesc: .*,)/, '$1\n    hpCost: 2,', 'Added hpCost.');
 
     // Replace the card's id with a new one
@@ -78,7 +78,7 @@ function upgradeCard(path: string, data: string, file: any) {
 
         data = upgradeField(data, /(\n {4}passive\(plr, self, key), val\) {/g, `$1, _unknownVal) {
         // Only proceed if the correct event key was broadcast
-        if (key !== "${key}") return;
+        if (key !== '${key}') return;
 
         // Here we cast the value to the correct type.
         // Do not use the '_unknownVal' variable after this.
