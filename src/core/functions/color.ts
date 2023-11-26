@@ -192,7 +192,12 @@ export const colorFunctions = {
                 tag = tag.replace('dark:', '');
             }
 
+            const oldReturnValue = returnValue;
             returnValue = handleSpecialTags(index, tag, returnValue, bg);
+
+            if (returnValue !== oldReturnValue) {
+                return returnValue;
+            }
 
             // Here are the non-special color tags
             if (tag === 'reset') {
