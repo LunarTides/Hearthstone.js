@@ -4,6 +4,13 @@ import { type CardLike, type CardClass, type MinionTribe, type CardClassNoNeutra
 import { Card, CardError, type Player } from '../../internal.js';
 import * as blueprints from '../../../cards/exports.js';
 
+// TODO: Add a card collection
+// const collections = {
+//     lackeys: [24, 25, 26, 27, 28],
+//     totems: [15, 16, 17, 18],
+//     classes: [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+// };
+
 const vanilla = {
     /**
      * Returns all cards added to Vanilla Hearthstone.

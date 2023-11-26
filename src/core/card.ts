@@ -21,8 +21,9 @@ export class Card {
     // All
 
     /**
-     * This is the name of the card, it must be unique.
-     * Please do not change this
+     * The name of the card.
+     *
+     * Please do not change this in code.
      */
     name: string;
 
