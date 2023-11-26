@@ -143,9 +143,9 @@ export const infoInteract = {
 
         // Hero Power
         doStat(player => {
-            const heroPowerCost = colorIf(player.canUseHeroPower, 'cyan', `{${player.hero.hpCost}}`);
+            const heroPowerCost = colorIf(player.canUseHeroPower, 'cyan', `{${player.hero.heroPower!.cost}}`);
 
-            return `Hero Power: ${heroPowerCost} ${detail(player.hero.name, player.hero.hpText)}`;
+            return `Hero Power: ${heroPowerCost} ${detail(player.hero.name, player.hero.heroPower!.cost.toString())}`;
         });
 
         // Weapon

@@ -1,7 +1,7 @@
 // Created by the Custom Card Creator
 
 import { type Blueprint } from '@Game/types.js';
-import { type Card } from '../../src/core/card.js';
+import { type Card } from '../../../src/core/card.js';
 
 export const blueprint: Blueprint = {
     name: 'Galakrond, the Wretched',
@@ -10,8 +10,7 @@ export const blueprint: Blueprint = {
     type: 'Hero',
     classes: ['Warlock'],
     rarity: 'Legendary',
-    hpText: 'Summon two 1/1 Imps.',
-    hpCost: 2,
+    heropowerId: 129,
     id: 71,
 
     battlecry(plr, self) {
@@ -32,18 +31,6 @@ export const blueprint: Blueprint = {
 
             // Summon it
             card = game.createCard(card.id, plr);
-            game.summonMinion(card, plr);
-        }
-    },
-
-    heropower(plr, self) {
-        // Summon two 1/1 Imps.
-        for (let i = 0; i < 2; i++) {
-            const card = game.createCard(21, plr);
-            if (!card) {
-                break;
-            }
-
             game.summonMinion(card, plr);
         }
     },

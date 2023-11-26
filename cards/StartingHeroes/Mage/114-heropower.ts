@@ -1,21 +1,20 @@
-// Created by the Custom Card Creator
+// Created by Hand
 
 import assert from 'node:assert';
 import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
-    name: 'Jaina Proudmoore',
-    text: 'Mage starting hero',
-    cost: 0,
-    type: 'Hero',
-    hpText: 'Deal 1 damage.',
-    hpCost: 2,
+    name: 'Fireblast',
+    text: 'Deal 1 damage.',
+    cost: 2,
+    type: 'Spell',
+    spellSchool: 'None',
     classes: ['Mage'],
     rarity: 'Free',
     uncollectible: true,
-    id: 4,
+    id: 114,
 
-    heropower(plr, self) {
+    cast(plr, self) {
         // Deal 1 damage.
 
         // Use of `selectTarget` in the `heropower` ability requires the use of the `forceElusive` flag
@@ -36,9 +35,10 @@ export const blueprint: Blueprint = {
         assert.equal(plr.getOpponent().getHealth(), 30);
 
         plr.inputQueue = ['face', 'y'];
-        self.activate('heropower');
+        self.activate('cast');
 
         // The opponent should have 29 health.
         assert.equal(plr.getOpponent().getHealth(), 30 - 1);
     },
 };
+

@@ -4,18 +4,17 @@ import assert from 'node:assert';
 import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
-    name: 'Gul\'dan',
-    text: 'Warlock starting hero',
-    cost: 0,
-    type: 'Hero',
-    hpText: 'Draw a card and take 2 damage.',
-    hpCost: 2,
+    name: 'Life Tap',
+    text: 'Draw a card and take 2 damage.',
+    cost: 2,
+    type: 'Spell',
+    spellSchool: 'None',
     classes: ['Warlock'],
     rarity: 'Free',
     uncollectible: true,
-    id: 11,
+    id: 121,
 
-    heropower(plr, self) {
+    cast(plr, self) {
         // Draw a card and take 2 damage.
 
         // Deal 2 damage to the player.
@@ -31,7 +30,7 @@ export const blueprint: Blueprint = {
         assert.equal(plr.hand.length, 0);
         assert.equal(plr.health, 30);
 
-        self.activate('heropower');
+        self.activate('cast');
 
         // The player should now have 1 card in their hand, and 28 health.
         assert.equal(plr.hand.length, 1);

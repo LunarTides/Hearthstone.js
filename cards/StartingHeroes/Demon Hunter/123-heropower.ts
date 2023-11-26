@@ -4,18 +4,17 @@ import assert from 'node:assert';
 import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
-    name: 'Illidan Stormrage',
-    text: 'Demon hunter starting hero',
-    cost: 0,
-    type: 'Hero',
-    hpText: '+1 Attack this turn.',
-    hpCost: 1,
+    name: 'Demon Claws',
+    text: '+1 Attack this turn.',
+    cost: 1,
+    type: 'Spell',
+    spellSchool: 'None',
     classes: ['Demon Hunter'],
     rarity: 'Free',
     uncollectible: true,
-    id: 13,
+    id: 123,
 
-    heropower(plr, self) {
+    cast(plr, self) {
         // +1 Attack this turn.
 
         // Give the player +1 attack.
@@ -25,7 +24,7 @@ export const blueprint: Blueprint = {
     test(plr, self) {
         // The player should start with 0 attack
         assert.equal(plr.attack, 0);
-        self.activate('heropower');
+        self.activate('cast');
 
         // The player should gain 1 attack
         assert.equal(plr.attack, 1);

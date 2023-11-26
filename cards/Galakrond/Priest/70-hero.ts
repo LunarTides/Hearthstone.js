@@ -1,39 +1,33 @@
 // Created by the Custom Card Creator
 
 import { type Blueprint } from '@Game/types.js';
-import { Card } from '../../src/core/card.js';
 
 export const blueprint: Blueprint = {
-    name: 'Galakrond, the Unbreakable',
-    text: '<b>Battlecry:</b> Draw {amount} minion{plural}. Give {plural2} +4/+4.',
+    name: 'Galakrond, the Unspeakable',
+    text: '<b>Battlecry:</b> Destroy {amount} random enemy minion{plural}.',
     cost: 7,
     type: 'Hero',
-    classes: ['Warrior'],
+    classes: ['Priest'],
     rarity: 'Legendary',
-    hpText: 'Give your hero +3 Attack this turn.',
-    hpCost: 2,
-    id: 69,
+    heropowerId: 128,
+    id: 70,
 
     battlecry(plr, self) {
-        // Draw 1 minion. Give them +4/+4.
+        // Destroy 1 random enemy minion.
         const amount = game.functions.card.galakrondFormula(self.storage.invokeCount as number);
 
-        // Draw the minions
         for (let i = 0; i < amount; i++) {
-            const card = plr.drawCard();
-            if (!(card instanceof Card)) {
+            // Get a random minion from the opponent's board.
+            const board = game.board[plr.getOpponent().id];
+
+            const minion = game.lodash.sample(board);
+            if (!minion) {
                 continue;
             }
 
-            // Give it +4/+4
-            card.addStats(4, 4);
+            // Kill it
+            minion.kill();
         }
-    },
-
-    heropower(plr, self) {
-        // Give your hero +3 Attack this turn.
-
-        plr.attack += 3;
     },
 
     invoke(plr, self) {
@@ -47,10 +41,8 @@ export const blueprint: Blueprint = {
 
         const amount = game.functions.card.galakrondFormula(self.storage.invokeCount as number);
         const multiple = amount > 1;
-
         const plural = multiple ? 's' : '';
-        const plural2 = multiple ? 'them' : 'it';
 
-        return { amount, plural, plural2 };
+        return { amount, plural };
     },
 };

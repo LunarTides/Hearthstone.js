@@ -25,7 +25,7 @@ function getCardAbility(cardType: CardType) {
         }
 
         case 'Hero': {
-            ability = 'HeroPower';
+            ability = 'Battlecry';
             break;
         }
 
@@ -95,6 +95,10 @@ function generateCardPath(...args: [CardClass[], CardType]) {
     return staticPath + dynamicPath;
 }
 
+export function getLatestId() {
+    return game.lodash.parseInt(game.functions.util.fs('readFile', '/cards/.latestId', { invalidateCache: true }) as string);
+}
+
 /**
  * Generates a new card based on the provided arguments and saves it to a file.
  *
@@ -107,7 +111,6 @@ function generateCardPath(...args: [CardClass[], CardType]) {
  *
  * @returns The path of the created file.
  */
-// eslint-disable-next-line complexity
 export function create(creatorType: CcType, cardType: CardType, blueprint: BlueprintWithOptional, overridePath?: string, overrideFilename?: string, debug?: boolean) {
     // TODO: Search for keywords in the card text and don't add a passive ability if one was found. And vice versa
     // TODO: Look for placeholders in the text and add a placeholder ability if it finds one
@@ -147,14 +150,8 @@ export function create(creatorType: CcType, cardType: CardType, blueprint: Bluep
         const value = _unknownValue as EventValue<typeof key>;`;
     }
 
-    const descriptionToClean = type === 'Hero' ? card.hpText : card.text;
-    // Card.hpText can be undefined, but shouldn't be if the type is Hero.
-    if (descriptionToClean === undefined) {
-        throw new Error('Card has no hero power description.');
-    }
-
     // If the text has `<b>Battlecry:</b> Dredge.`, add `// Dredge.` to the battlecry ability
-    const cleanedDescription = game.functions.color.stripTags(descriptionToClean).replace(`${ability}: `, '');
+    const cleanedDescription = game.functions.color.stripTags(card.text).replace(`${ability}: `, '');
 
     // `create` ability
     const runes = card.runes ? `        self.runes = "${card.runes}"\n` : '';
@@ -196,7 +193,7 @@ ${runes}${keywords}
     }
 
     // Get the latest card-id
-    const id = game.lodash.parseInt(game.functions.util.fs('readFile', '/cards/.latestId') as string) + 1;
+    const id = getLatestId() + 1;
     const fileId = `\n    id: ${id},`;
 
     // Create a path to put the card in.
@@ -212,7 +209,7 @@ ${runes}${keywords}
 
     // If this function was passed in a filename, use that instead.
     if (overrideFilename) {
-        filename = overrideFilename;
+        filename = `${id}-${overrideFilename}`;
     }
 
     // Generate the content of the card

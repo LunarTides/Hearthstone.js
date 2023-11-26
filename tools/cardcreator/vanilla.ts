@@ -30,7 +30,10 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CcT
     }
 
     let text = card.text ?? '';
-    const type = game.lodash.capitalize(card.type);
+    let type = game.lodash.capitalize(card.type);
+    if (type === 'Hero_power') {
+        type = 'Spell';
+    }
 
     // Minion info
     const attack = card.attack ?? -1;
@@ -49,16 +52,6 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CcT
     // Weapon Info
     const durability = card.durability ?? -1;
 
-    // Get hero power desc
-    let hpCost = 2;
-    let hpText = '';
-
-    const heroPower = game.functions.card.vanilla.getAll().find(c => c.dbfId === card.heroPowerDbfId);
-    if (heroPower) {
-        hpCost = heroPower.cost!;
-        hpText = heroPower.text!;
-    }
-
     // Modify the text
     text = text.replaceAll('\n', ' ');
     text = text.replaceAll('[x]', '');
@@ -68,6 +61,18 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CcT
 
     while (!classes.includes(cardClass)) {
         cardClass = game.lodash.startCase(game.input('<red>Was not able to find the class of this card.\nWhat is the class of this card? </red>')) as CardClass;
+    }
+
+    if (type === 'Hero') {
+        // Add the hero power
+        game.log('<green>Adding the hero power</green>');
+
+        const heroPower = game.functions.card.vanilla.getAll().find(c => c.dbfId === card.heroPowerDbfId);
+        if (!heroPower) {
+            throw new Error('No hero power found');
+        }
+
+        create(heroPower, debug);
     }
 
     let blueprint: Blueprint;
@@ -128,8 +133,7 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CcT
                 text,
                 cost,
                 type,
-                hpText,
-                hpCost,
+                heropowerId: lib.getLatestId(),
                 classes: [cardClass],
                 rarity,
                 id: 0,

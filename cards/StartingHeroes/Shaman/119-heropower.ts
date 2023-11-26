@@ -4,18 +4,17 @@ import assert from 'node:assert';
 import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
-    name: 'Thrall',
-    text: 'Shaman starting hero',
-    cost: 0,
-    type: 'Hero',
-    hpText: 'Summon a random Totem.',
-    hpCost: 2,
+    name: 'Totemic Call',
+    text: 'Summon a random basic Totem.',
+    cost: 2,
+    type: 'Spell',
+    spellSchool: 'None',
     classes: ['Shaman'],
     rarity: 'Free',
     uncollectible: true,
-    id: 9,
+    id: 119,
 
-    heropower(plr, self) {
+    cast(plr, self) {
         // Filter away totem cards that is already on the player's side of the board.
         const filteredTotemCardNames = game.cardCollections.totems.filter(id => !game.board[plr.id].some(m => m.id === id));
 
@@ -46,7 +45,7 @@ export const blueprint: Blueprint = {
         assert(checkForTotemCard(0));
 
         for (let index = 1; index <= totemCardIds.length + 1; index++) {
-            self.activate('heropower');
+            self.activate('cast');
 
             // If all totem cards are on the board, it shouldn't summon a new one
             if (index > totemCardIds.length) {

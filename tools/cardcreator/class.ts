@@ -4,7 +4,7 @@
  */
 
 import { createGame } from '../../src/internal.js';
-import { type Blueprint, type CardClass, type CardRarity, type CardType } from '../../src/types.js';
+import { type Blueprint, type CardClass, type CardRarity } from '../../src/types.js';
 import * as lib from './lib.js';
 
 const { game } = createGame();
@@ -23,6 +23,7 @@ export function main(debug = false, overrideType?: lib.CcType) {
     const questions = [
         'What should the name of the class be?',
         'What should the default hero\'s name be?',
+        'What should the name of the heropower be?',
         'What should the description of the hero power be? (example: Deal 2 damage to the enemy hero.):',
         'How much should the hero power cost? (Default is 2):',
     ];
@@ -49,17 +50,28 @@ export function main(debug = false, overrideType?: lib.CcType) {
         return;
     }
 
-    const [className, heroName, hpText, hpCost] = answers;
+    const [className, heroName, hpName, hpText, hpCost] = answers;
 
-    const fileName = className.toLowerCase().replaceAll(' ', '_') + '.ts';
-
-    const blueprint: Blueprint = {
+    const heroBlueprint: Blueprint = {
         name: heroName,
         text: className[0].toUpperCase() + className.slice(1).toLowerCase() + ' starting hero',
         cost: 0,
-        type: 'Hero' as CardType,
-        hpText,
-        hpCost: game.lodash.parseInt(hpCost),
+        type: 'Hero',
+        // We do +2 since the hero card will be created first (+1), then the heropower (+1)
+        heropowerId: lib.getLatestId() + 2,
+        classes: [className] as CardClass[],
+        rarity: 'Free' as CardRarity,
+        uncollectible: true,
+        // This will be overwritten by the library
+        id: 0,
+    };
+
+    const heropowerBlueprint: Blueprint = {
+        name: hpName,
+        text: hpText,
+        cost: game.lodash.parseInt(hpCost),
+        type: 'Spell',
+        spellSchool: 'None',
         classes: [className] as CardClass[],
         rarity: 'Free' as CardRarity,
         uncollectible: true,
@@ -72,12 +84,13 @@ export function main(debug = false, overrideType?: lib.CcType) {
         cctype = overrideType;
     }
 
-    lib.create(cctype, 'Hero', blueprint, '/cards/StartingHeroes/', fileName, debug);
+    lib.create(cctype, 'Hero', heroBlueprint, `/cards/StartingHeroes/${game.lodash.startCase(className)}/`, 'hero.ts', debug);
+    lib.create(cctype, 'Spell', heropowerBlueprint, `/cards/StartingHeroes/${game.lodash.startCase(className)}/`, 'heropower.ts', debug);
 
     game.log('\nClass Created!');
     game.log('Next steps:');
     game.log('1. Open \'src/types.ts\', navigate to \'CardClass\', and add the name of the class to that. There is unfortunately no way to automate that.');
-    game.log(`2. Open 'cards/StartingHeroes/${fileName}' and add logic to the 'heropower' function.`);
+    game.log(`2. Open 'cards/StartingHeroes/${game.lodash.startCase(className)}/${lib.getLatestId()}-heropower.ts' and add logic to the 'cast' function.`);
     game.log(`3. Now when using the Custom Card Creator, type '${className}' into the 'Class' field to use that class.`);
     game.log(`4. When using the Deck Creator, type '${className}' to create a deck with cards from your new class.`);
     game.log('Enjoy!');

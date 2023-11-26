@@ -336,7 +336,7 @@ export const cardFunctions = {
             Minion: ['attack', 'health', 'tribe'],
             Spell: ['spellSchool'],
             Weapon: ['attack', 'health'],
-            Hero: ['hpText', 'hpCost'],
+            Hero: ['heropowerId'],
             Location: ['durability', 'cooldown'],
             Undefined: [],
         };

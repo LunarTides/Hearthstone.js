@@ -4,18 +4,17 @@ import assert from 'node:assert';
 import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
-    name: 'Anduin Wrynn',
-    text: 'Priest starting hero',
-    cost: 0,
-    type: 'Hero',
-    hpText: 'Restore 2 Health.',
-    hpCost: 2,
+    name: 'Lesser Heal',
+    text: 'Restore 2 Health.',
+    cost: 2,
+    type: 'Spell',
+    spellSchool: 'None',
     classes: ['Priest'],
     rarity: 'Free',
     uncollectible: true,
-    id: 8,
+    id: 118,
 
-    heropower(plr, self) {
+    cast(plr, self) {
         // Restore 2 Health.
 
         // Hero power targets need to use the `forceElusive` flag.
@@ -35,14 +34,14 @@ export const blueprint: Blueprint = {
         // Health: 1->3
         plr.health = 1;
         plr.inputQueue = ['face', 'n'];
-        self.activate('heropower');
+        self.activate('cast');
 
         assert.equal(plr.health, 1 + 2);
 
         // Health: 29->30 (cap at 30)
         plr.health = 29;
         plr.inputQueue = ['face', 'n'];
-        self.activate('heropower');
+        self.activate('cast');
 
         assert.equal(plr.health, 30);
     },

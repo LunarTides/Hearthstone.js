@@ -130,15 +130,8 @@ export class Card {
 
     // Hero
 
-    /**
-     * The description of the hero power.
-     */
-    hpText = 'PLACEHOLDER';
-
-    /**
-     * The cost of the hero power.
-     */
-    hpCost?: number = 2;
+    heropowerId?: number;
+    heroPower?: Card;
 
     // Location
 
@@ -306,13 +299,12 @@ export class Card {
 
         // Set maxHealth if the card is a minion or weapon
         this.maxHealth = this.blueprint.health;
+        this.plr = plr;
 
         // Override the properties from the blueprint
         this.doBlueprint(false);
 
         // Properties after this point can't be overriden
-        this.plr = plr;
-
         // Make a backup of "this" to be used when silencing this card
         if (!this.backups.init) {
             // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
@@ -383,6 +375,10 @@ export class Card {
 
         // Set maxHealth if the card is a minion or weapon
         this.maxHealth = this.blueprint.health;
+
+        if (this.heropowerId) {
+            this.heroPower = new Card(this.heropowerId, this.plr);
+        }
 
         this.text = game.functions.color.fromTags(this.text || '');
         if (activate) {

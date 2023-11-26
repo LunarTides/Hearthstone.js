@@ -4,18 +4,17 @@ import assert from 'node:assert';
 import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
-    name: 'Rexxar',
-    text: 'Hunter starting hero',
-    cost: 0,
-    type: 'Hero',
-    hpText: 'Deal 2 damage to the enemy hero.',
-    hpCost: 2,
+    name: 'Steady Shot',
+    text: 'Deal 2 damage to the enemy hero.',
+    cost: 2,
+    type: 'Spell',
+    spellSchool: 'None',
     classes: ['Hunter'],
     rarity: 'Free',
     uncollectible: true,
-    id: 6,
+    id: 116,
 
-    heropower(plr, self) {
+    cast(plr, self) {
         // Deal 2 damage to the enemy hero.
         game.attack(2, plr.getOpponent());
     },
@@ -23,7 +22,7 @@ export const blueprint: Blueprint = {
     test(plr, self) {
         // The opponent should have 30 health
         assert.equal(plr.getOpponent().getHealth(), 30);
-        self.activate('heropower');
+        self.activate('cast');
 
         // The opponent should now have 28 health.
         assert.equal(plr.getOpponent().getHealth(), 30 - 2);

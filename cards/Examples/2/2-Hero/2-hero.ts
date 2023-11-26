@@ -11,11 +11,9 @@ export const blueprint: Blueprint = {
     classes: ['Neutral'],
     rarity: 'Free',
 
-    // The hero power's description
-    hpText: 'Restore 2 Health to your hero.',
-
-    // How much mana the hero power costs to use.
-    hpCost: 2,
+    // The id of the hero power card.
+    // The hero power card can be any spell. Here we use the 2-heropower.ts card.
+    heropowerId: 130,
 
     uncollectible: true,
     id: 37,
@@ -28,26 +26,10 @@ export const blueprint: Blueprint = {
         plr.addHealth(plr.maxHealth);
     },
 
-    // This gets triggered when the player uses their hero power.
-    // This only gets triggered if the player uses the hero power of this card, not any other hero power.
-    // If you want something to happen every time any hero power is used, you'll have to use `passive`, which is explained in `4-1`.
-    heropower(plr, self) {
-        // Restore 2 Health to your hero.
-
-        plr.addHealth(2);
-    },
-
     test(plr, self) {
-        // Here we test both abilities
-
         // Test battlecry
         plr.health = 1;
         self.activate('battlecry');
         assert.equal(plr.health, plr.maxHealth);
-
-        // Test hero power
-        plr.health = 1;
-        self.activate('heropower');
-        assert.equal(plr.health, 1 + 2);
     },
 };

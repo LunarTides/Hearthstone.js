@@ -1,46 +1,32 @@
 // Created by the Custom Card Creator
 
 import { type Blueprint } from '@Game/types.js';
-import { Card } from '../../src/core/card.js';
+import { Card } from '../../../src/core/card.js';
 
 export const blueprint: Blueprint = {
-    name: 'Galakrond, the Nightmare',
-    text: '<b>Battlecry:</b> Draw {amount} card{plural}. {plural2} costs (0).',
+    name: 'Galakrond, the Unbreakable',
+    text: '<b>Battlecry:</b> Draw {amount} minion{plural}. Give {plural2} +4/+4.',
     cost: 7,
     type: 'Hero',
-    classes: ['Rogue'],
+    heropowerId: 127,
+    classes: ['Warrior'],
     rarity: 'Legendary',
-    hpText: 'Add a <b>Lackey</b> to your hand.',
-    hpCost: 2,
-    id: 67,
+    id: 69,
 
     battlecry(plr, self) {
-        // Draw {amount} cards. They cost (0).
-
-        // Get the amount of cards to draw
+        // Draw 1 minion. Give them +4/+4.
         const amount = game.functions.card.galakrondFormula(self.storage.invokeCount as number);
 
+        // Draw the minions
         for (let i = 0; i < amount; i++) {
             const card = plr.drawCard();
             if (!(card instanceof Card)) {
-                return;
+                continue;
             }
 
-            // Set the cost to 0
-            card.addEnchantment('cost = 0', self);
+            // Give it +4/+4
+            card.addStats(4, 4);
         }
-    },
-
-    heropower(plr, self) {
-        // Add a lacky to your hand.
-        const lackeyId = game.lodash.sample(game.cardCollections.lackeys);
-        if (!lackeyId) {
-            return;
-        }
-
-        const lackey = game.createCard(lackeyId, plr);
-
-        plr.addToHand(lackey);
     },
 
     invoke(plr, self) {
@@ -56,7 +42,7 @@ export const blueprint: Blueprint = {
         const multiple = amount > 1;
 
         const plural = multiple ? 's' : '';
-        const plural2 = multiple ? 'They' : 'It';
+        const plural2 = multiple ? 'them' : 'it';
 
         return { amount, plural, plural2 };
     },

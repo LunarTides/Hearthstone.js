@@ -7,10 +7,9 @@ export const blueprint: Blueprint = {
     text: '<b>Battlecry:</b> Summon two {amount}/{amount} Storms with <b>Rush</b>.{weapon}',
     cost: 7,
     type: 'Hero',
+    heropowerId: 126,
     classes: ['Shaman'],
     rarity: 'Legendary',
-    hpText: 'Summon a 2/1 Elemental with <b>Rush</b>.',
-    hpCost: 2,
     id: 68,
 
     battlecry(plr, self) {
@@ -38,16 +37,6 @@ export const blueprint: Blueprint = {
         // Give the weapon
         const weapon = game.createCard(111, plr);
         plr.setWeapon(weapon);
-    },
-
-    heropower(plr, self) {
-        // Summon a 2/1 Elemental with Rush.
-        const card = game.createCard(19, plr);
-        if (!card) {
-            return;
-        }
-
-        game.summonMinion(card, plr);
     },
 
     invoke(plr, self) {

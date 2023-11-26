@@ -177,16 +177,17 @@ const cardTypeFunctions: { [x in CardType]: () => Blueprint } = {
     Hero() {
         const card = common();
 
-        const hpText = input('Hero Power Description: ');
-        const hpCost = game.lodash.parseInt(input('Hero Power Cost (Default: 2): ')) ?? 2;
+        game.log('Make the Hero Power:');
+        if (!main()) {
+            throw new Error('Failed to create hero power');
+        }
 
         return applyCard({
             name: card.name,
             text: card.text,
             cost: card.cost,
             type: card.type,
-            hpText,
-            hpCost,
+            heropowerId: lib.getLatestId(),
             classes: card.classes,
             rarity: card.rarity,
             runes: card.runes,

@@ -696,7 +696,7 @@ export class Ai {
             return false;
         }
 
-        const enoughMana = this.plr.mana >= this.plr.hero.hpCost!;
+        const enoughMana = this.plr.mana >= this.plr.hero.heroPower!.cost;
         const canUse = this.plr.canUseHeroPower;
 
         const canHeroPower = enoughMana && canUse;

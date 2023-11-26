@@ -4,18 +4,17 @@ import assert from 'node:assert';
 import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
-    name: 'Uther Lightbringer',
-    text: 'Paladin starting hero',
-    cost: 0,
-    type: 'Hero',
-    hpText: 'Summon a 1/1 Silver Hand Recruit',
-    hpCost: 2,
+    name: 'Reinforce',
+    text: 'Summon a 1/1 Silver Hand Recruit.',
+    cost: 2,
+    type: 'Spell',
+    spellSchool: 'None',
     classes: ['Paladin'],
     rarity: 'Free',
     uncollectible: true,
-    id: 10,
+    id: 120,
 
-    heropower(plr, self) {
+    cast(plr, self) {
         // Summon a 1/1 Silver Hand Recruit.
 
         // Create the Silver Hand Recruit card.
@@ -30,7 +29,7 @@ export const blueprint: Blueprint = {
 
         // The minion should not exist
         assert(!checkIfMinionExists());
-        self.activate('heropower');
+        self.activate('cast');
 
         // The minion should now exist
         assert(checkIfMinionExists());

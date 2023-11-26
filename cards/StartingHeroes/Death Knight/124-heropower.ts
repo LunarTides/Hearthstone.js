@@ -4,18 +4,17 @@ import assert from 'node:assert';
 import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
-    name: 'The Lich King',
-    text: 'Death knight starting hero',
-    cost: 0,
-    type: 'Hero',
-    hpText: 'Summon a 1/1 Ghoul with Charge. It dies at end of turn.',
-    hpCost: 2,
+    name: 'Ghoul Charge',
+    text: 'Summon a 1/1 Ghoul with Charge. It dies at end of turn.',
+    cost: 2,
+    type: 'Spell',
+    spellSchool: 'None',
     classes: ['Death Knight'],
     rarity: 'Free',
     uncollectible: true,
-    id: 14,
+    id: 124,
 
-    heropower(plr, self) {
+    cast(plr, self) {
         // Summon a 1/1 Ghoul with Charge. It dies at end of turn.
 
         // Create the Ghoul
@@ -34,7 +33,7 @@ export const blueprint: Blueprint = {
 
         // The minion shouldn't be on the board at first.
         assert(!lookForMinion());
-        self.activate('heropower');
+        self.activate('cast');
 
         // The minion should now be on the board.
         assert(lookForMinion());

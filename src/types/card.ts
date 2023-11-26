@@ -132,7 +132,6 @@ export type CardAbilityReal =
 | 'deathrattle'
 | 'finale'
 | 'frenzy'
-| 'heropower'
 | 'honorablekill'
 | 'infuse'
 | 'inspire'
@@ -203,8 +202,7 @@ export type Blueprint = {
     spellSchool?: SpellSchool;
     durability?: number;
     cooldown?: number;
-    hpText?: string;
-    hpCost?: number;
+    heropowerId?: number;
 
     // Less important
     classes: CardClass[];

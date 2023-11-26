@@ -2,21 +2,19 @@
 
 import assert from 'node:assert';
 import { type Blueprint } from '@Game/types.js';
-import { type Card } from '../../src/core/card.js';
 
 export const blueprint: Blueprint = {
-    name: 'Valeera Sanguinar',
-    text: 'Rogue starting hero',
-    cost: 0,
-    type: 'Hero',
-    hpText: 'Equip a 1/2 Dagger.',
-    hpCost: 2,
+    name: 'Dagger Mastery',
+    text: 'Equip a 1/2 Dagger.',
+    cost: 2,
+    type: 'Spell',
+    spellSchool: 'None',
     classes: ['Rogue'],
     rarity: 'Free',
     uncollectible: true,
-    id: 12,
+    id: 122,
 
-    heropower(plr, self) {
+    cast(plr, self) {
         // Equip a 1/2 Dagger.
 
         // Create the weapon card
@@ -29,7 +27,7 @@ export const blueprint: Blueprint = {
     test(plr, self) {
         // The player should not have a weapon
         assert.equal(plr.weapon, undefined);
-        self.activate('heropower');
+        self.activate('cast');
 
         // The player should now have the wicked knife weapon
         assert.ok(plr.weapon);

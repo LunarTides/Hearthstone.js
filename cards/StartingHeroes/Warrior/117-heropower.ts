@@ -4,18 +4,17 @@ import assert from 'node:assert';
 import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
-    name: 'Garrosh Hellscream',
-    text: 'Warrior starting hero',
-    cost: 0,
-    type: 'Hero',
-    hpText: 'Gain 2 Armor.',
-    hpCost: 2,
+    name: 'Armor Up',
+    text: 'Gain 2 Armor.',
+    cost: 2,
+    type: 'Spell',
+    spellSchool: 'None',
     classes: ['Warrior'],
     rarity: 'Free',
     uncollectible: true,
-    id: 7,
+    id: 117,
 
-    heropower(plr, self) {
+    cast(plr, self) {
         // Gain 2 Armor.
 
         // Give the player +2 armor.
@@ -25,7 +24,7 @@ export const blueprint: Blueprint = {
     test(plr, self) {
         // The player should have 0 armor
         assert.equal(plr.armor, 0);
-        self.activate('heropower');
+        self.activate('cast');
 
         // The player should now have 2 armor
         assert.equal(plr.armor, 2);
