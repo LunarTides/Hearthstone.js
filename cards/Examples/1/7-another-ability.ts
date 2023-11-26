@@ -13,16 +13,17 @@ const battlecry: Ability = (plr, self) => {
 const theTestAbility: Ability = (plr, self) => {
     self.activate('battlecry');
 
-    assert.equal(self.getAttack() - 1, self.blueprint.stats?.[0]);
-    assert.equal(self.getHealth() - 1, self.blueprint.stats?.[1]);
+    assert.equal(self.attack! - 1, self.blueprint.attack);
+    assert.equal(self.health! - 1, self.blueprint.health);
 };
 
 export const blueprint: Blueprint = {
     name: 'Another Ability Example',
-    stats: [1, 2],
     text: '<b>Battlecry:</b> Give this minion +1/+1.',
     cost: 1,
     type: 'Minion',
+    attack: 1,
+    health: 2,
     tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',

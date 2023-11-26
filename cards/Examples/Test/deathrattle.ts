@@ -5,10 +5,11 @@ import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
     name: 'Deathrattle Test',
-    stats: [1, 2],
     text: '<b>Deathrattle:</b> Summon two 1/1 Sheep.',
     cost: 1,
     type: 'Minion',
+    attack: 1,
+    health: 2,
     tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
@@ -32,7 +33,7 @@ export const blueprint: Blueprint = {
         assert.equal(game.board[plr.id].length, 0);
         game.summonMinion(self, plr);
 
-        // There should be 0 minions on the board
+        // There should be 1 minion on the board
         assert.equal(game.board[plr.id].length, 1);
 
         game.attack(2, self);

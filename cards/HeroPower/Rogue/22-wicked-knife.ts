@@ -4,10 +4,11 @@ import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
     name: 'Wicked Knife',
-    stats: [1, 2],
     text: '',
     cost: 1,
     type: 'Weapon',
+    attack: 1,
+    health: 2,
     classes: ['Rogue'],
     rarity: 'Free',
     uncollectible: true,

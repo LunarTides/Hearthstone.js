@@ -5,10 +5,11 @@ import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
     name: 'Combined Example 1',
-    stats: [4, 4],
     text: '<b>Taunt, Divine Shield. Battlecry: Dredge.</b> Gain +1/+1. (This example card combines everything you\'ve learned in stage 1 into this card.)',
     cost: 1,
     type: 'Minion',
+    attack: 4,
+    health: 4,
     tribe: 'All',
     classes: ['Priest', 'Paladin'],
     rarity: 'Legendary',
@@ -38,7 +39,7 @@ export const blueprint: Blueprint = {
         self.activate('battlecry');
 
         // Check that the stats went up by 1
-        assert.equal(self.getAttack() - 1, self.blueprint.stats?.[0]);
-        assert.equal(self.getHealth() - 1, self.blueprint.stats?.[1]);
+        assert.equal(self.attack! - 1, self.blueprint.attack);
+        assert.equal(self.health! - 1, self.blueprint.health);
     },
 };

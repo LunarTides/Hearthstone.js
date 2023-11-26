@@ -5,10 +5,11 @@ import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
     name: 'Manathirst Example',
-    stats: [1, 2],
     text: '<b>Battlecry:</b> Freeze an enemy minion. Manathirst (6): Silence it first.',
     cost: 1,
     type: 'Minion',
+    attack: 1,
+    health: 2,
     tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
@@ -56,8 +57,8 @@ export const blueprint: Blueprint = {
         sheep.addStats(4, 4);
         game.summonMinion(sheep, plr.getOpponent());
 
-        assert.equal(sheep.getAttack(), 5);
-        assert.equal(sheep.getHealth(), 5);
+        assert.equal(sheep.attack, 5);
+        assert.equal(sheep.health, 5);
         assert(!sheep.hasKeyword('Frozen'));
 
         plr.emptyMana = 1;
@@ -74,7 +75,7 @@ export const blueprint: Blueprint = {
         self.activate('battlecry');
 
         assert(sheep.hasKeyword('Frozen'));
-        assert.equal(sheep.getAttack(), 1);
-        assert.equal(sheep.getHealth(), 1);
+        assert.equal(sheep.attack, 1);
+        assert.equal(sheep.health, 1);
     },
 };

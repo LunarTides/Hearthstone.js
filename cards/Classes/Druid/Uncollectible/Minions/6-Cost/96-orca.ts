@@ -6,10 +6,11 @@ import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
     name: 'Orca',
-    stats: [6, 6],
     text: '<b>Taunt</b>',
     cost: 6,
     type: 'Minion',
+    attack: 6,
+    health: 6,
     tribe: 'Beast',
     classes: ['Druid'],
     rarity: 'Free',

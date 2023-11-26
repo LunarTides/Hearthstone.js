@@ -4,10 +4,11 @@ import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
     name: 'Draconic Imp',
-    stats: [1, 1],
     text: '',
     cost: 1,
     type: 'Minion',
+    attack: 1,
+    health: 1,
     tribe: 'Demon',
     classes: ['Warlock'],
     rarity: 'Free',

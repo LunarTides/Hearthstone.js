@@ -4,10 +4,11 @@ import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
     name: 'Colossal Example',
-    stats: [5, 3],
     text: 'Colossal +2.',
     cost: 2,
     type: 'Minion',
+    attack: 5,
+    health: 3,
     tribe: 'Beast',
     classes: ['Neutral'],
     rarity: 'Free',

@@ -4,10 +4,11 @@ import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
     name: 'Combined Example 2 Corrupted',
-    stats: [9, 9],
     text: 'Colossal +2. Dormant. Corrupted. <b>Battlecry: Dredge.</b>',
     cost: 0,
     type: 'Minion',
+    attack: 9,
+    health: 9,
     tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Legendary',

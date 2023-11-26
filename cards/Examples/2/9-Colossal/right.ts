@@ -6,10 +6,11 @@ export const blueprint: Blueprint = {
     // Look in `main.ts` first.
     // This will be summoned below the main minion
     name: 'Right Arm',
-    stats: [1, 2],
     text: '',
     cost: 1,
     type: 'Minion',
+    attack: 1,
+    health: 2,
     tribe: 'Beast',
     classes: ['Neutral'],
     rarity: 'Free',

@@ -5,11 +5,12 @@ import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
     name: 'Healing Totem',
-    stats: [0, 2],
     // TODO: What does this hashtag mean? This was pulled from the vanilla card
     text: 'At the end of your turn, restore #1 Health to all friendly minions.',
     cost: 1,
     type: 'Minion',
+    attack: 0,
+    health: 2,
     tribe: 'Totem',
     classes: ['Shaman'],
     rarity: 'Free',
@@ -38,7 +39,7 @@ export const blueprint: Blueprint = {
             game.summonMinion(card, plr);
         }
 
-        const checkSheepHealth = (expected: number) => game.board[plr.id].filter(card => card.id === 1).every(card => card.getHealth() === expected && card.getAttack() === 1);
+        const checkSheepHealth = (expected: number) => game.board[plr.id].filter(card => card.id === 1).every(card => card.health === expected && card.attack === 1);
 
         // Summon this minion. All sheep should have 1 health.
         game.summonMinion(self, plr);

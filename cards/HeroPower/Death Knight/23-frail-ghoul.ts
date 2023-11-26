@@ -5,10 +5,11 @@ import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
     name: 'Frail Ghoul',
-    stats: [1, 1],
     text: '<b>Charge</b> At the end of your turn, this minion dies.',
     cost: 1,
     type: 'Minion',
+    attack: 1,
+    health: 1,
     tribe: 'Undead',
     classes: ['Death Knight'],
     rarity: 'Free',

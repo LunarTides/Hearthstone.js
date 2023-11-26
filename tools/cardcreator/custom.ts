@@ -114,18 +114,17 @@ const cardTypeFunctions: { [x in CardType]: () => Blueprint } = {
     Minion() {
         const card = common();
 
-        const stats = input('Stats: ');
+        const attack = game.lodash.parseInt(input('Attack: '));
+        const health = game.lodash.parseInt(input('Health: '));
         const tribe = input('Tribe: ') as MinionTribe;
-
-        // Turn 1/1 to [1, 1]
-        const statsArray = stats.split('/').map(s => game.lodash.parseInt(s));
 
         return applyCard({
             name: card.name,
-            stats: statsArray,
             text: card.text,
             cost: card.cost,
             type: card.type,
+            attack,
+            health,
             tribe,
             classes: card.classes,
             rarity: card.rarity,
@@ -157,17 +156,16 @@ const cardTypeFunctions: { [x in CardType]: () => Blueprint } = {
     Weapon() {
         const card = common();
 
-        const stats = input('Stats: ');
-
-        // Turn 1/1 to [1, 1]
-        const statsArray = stats.split('/').map(s => game.lodash.parseInt(s));
+        const attack = game.lodash.parseInt(input('Attack: '));
+        const health = game.lodash.parseInt(input('Health: '));
 
         return applyCard({
             name: card.name,
-            stats: statsArray,
             text: card.text,
             cost: card.cost,
             type: card.type,
+            attack,
+            health,
             classes: card.classes,
             rarity: card.rarity,
             runes: card.runes,

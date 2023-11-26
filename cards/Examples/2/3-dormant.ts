@@ -4,10 +4,11 @@ import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
     name: 'Dormant Example',
-    stats: [8, 8],
     text: '<b>Dormant</b> for 2 turns. <b>Battlecry:</b> Dredge.',
     cost: 1,
     type: 'Minion',
+    attack: 8,
+    health: 8,
     tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',

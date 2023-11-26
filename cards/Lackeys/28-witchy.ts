@@ -5,10 +5,11 @@ import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
     name: 'Witchy Lackey',
-    stats: [1, 1],
     text: '<b>Battlecry:</b> Transform a friendly minion into one that costs (1) more.',
     cost: 1,
     type: 'Minion',
+    attack: 1,
+    health: 1,
     tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',

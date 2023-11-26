@@ -6,10 +6,11 @@ export const blueprint: Blueprint = {
     // Look in `corrupt.ts` first.
     // This is just an ordinary card.
     name: 'Corrupted Example',
-    stats: [2, 2],
     text: 'Corrupted.',
     cost: 0,
     type: 'Minion',
+    attack: 2,
+    health: 2,
     tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',

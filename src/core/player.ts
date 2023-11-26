@@ -460,7 +460,7 @@ export class Player {
     setWeapon(weapon: Card): boolean {
         this.destroyWeapon();
         this.weapon = weapon;
-        this.attack += weapon.getAttack();
+        this.attack += weapon.attack!;
 
         return true;
     }
@@ -488,7 +488,7 @@ export class Player {
         }
 
         this.weapon.activate('deathrattle');
-        this.attack -= this.weapon.getAttack();
+        this.attack -= this.weapon.attack!;
 
         this.weapon.destroy();
         this.weapon = undefined;

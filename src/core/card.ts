@@ -88,15 +88,13 @@ export class Card {
     /**
      * The card's blueprint.
      * This is the baseline of the card
-     *
-     * Properties of this blueprint are set in this class.
-     * For example, if the blueprint has a property called "foo", and it is set to 1, then the card will get a property called "foo", with value 1
      */
     blueprint: Blueprint;
 
     // Minion / Weapon
 
-    stats?: [number, number];
+    attack?: number;
+    health?: number;
 
     /**
      * The tribe the card belongs to.
@@ -307,7 +305,7 @@ export class Card {
         this.type = this.blueprint.type;
 
         // Set maxHealth if the card is a minion or weapon
-        this.maxHealth = this.blueprint.stats?.at(1);
+        this.maxHealth = this.blueprint.health;
 
         // Override the properties from the blueprint
         this.doBlueprint(false);
@@ -384,7 +382,7 @@ export class Card {
         }
 
         // Set maxHealth if the card is a minion or weapon
-        this.maxHealth = this.blueprint.stats?.at(1);
+        this.maxHealth = this.blueprint.health;
 
         this.text = game.functions.color.fromTags(this.text || '');
         if (activate) {
@@ -539,24 +537,6 @@ export class Card {
     // Change stats
 
     /**
-     * Returns the card's attack
-     *
-     * Returns -1 if the card does not have attack
-     */
-    getAttack(): number {
-        return this.stats?.at(0) ?? 1001;
-    }
-
-    /**
-     * Returns the card's health
-     *
-     * Returns -1 if the card does not have health
-     */
-    getHealth(): number {
-        return this.stats?.at(1) ?? 1001;
-    }
-
-    /**
      * Sets the card's attack and health.
      *
      * @param attack The attack to set
@@ -565,23 +545,16 @@ export class Card {
      *
      * @returns Success
      */
-    setStats(attack?: number, health?: number, changeMaxHealth = true): boolean {
-        if (!this.stats) {
+    setStats(attack: number | undefined = this.attack, health: number | undefined = this.health, changeMaxHealth = true): boolean {
+        if (this.attack === undefined || this.health === undefined) {
             return false;
         }
 
-        if (attack === undefined) {
-            attack = this.getAttack();
-        }
+        this.attack = attack;
+        this.health = health;
 
-        if (health === undefined) {
-            health = this.getHealth();
-        }
-
-        this.stats = [attack, health];
-
-        if (changeMaxHealth && health > (this.maxHealth ?? -1)) {
-            this.maxHealth = health;
+        if (changeMaxHealth) {
+            this.resetMaxHealth(false);
         }
 
         return true;
@@ -596,11 +569,11 @@ export class Card {
      * @returns Success
      */
     addStats(attack = 0, health = 0): boolean {
-        if (!this.stats) {
+        if (this.attack === undefined || this.health === undefined) {
             return false;
         }
 
-        this.addAttack(attack);
+        this.attack += attack;
         this.addHealth(health, false);
 
         return true;
@@ -615,11 +588,11 @@ export class Card {
      * @returns Success
      */
     remStats(attack = 0, health = 0): boolean {
-        if (!this.stats) {
+        if (this.attack === undefined || this.health === undefined) {
             return false;
         }
 
-        this.remAttack(attack);
+        this.attack -= attack;
         this.remHealth(health);
 
         return true;
@@ -634,12 +607,12 @@ export class Card {
      * @returns Success
      */
     addHealth(amount: number, restore = true): boolean {
-        if (!this.stats) {
+        if (this.health === undefined) {
             return false;
         }
 
-        const before = this.getHealth();
-        this.setStats(this.getAttack(), this.getHealth() + amount, !restore);
+        const before = this.health;
+        this.health += amount;
 
         if (!restore) {
             this.resetMaxHealth(true);
@@ -648,37 +621,20 @@ export class Card {
 
         // Restore health
 
-        if (this.maxHealth && this.getHealth() > this.maxHealth) {
+        if (this.maxHealth && this.health > this.maxHealth) {
             // Too much health
 
             // Overheal keyword
             this.activate('overheal');
 
-            if (this.getHealth() > before) {
+            this.health = this.maxHealth ?? -1;
+
+            if (this.health > before) {
                 game.events.broadcast('HealthRestored', this.maxHealth, this.plr);
             }
-
-            this.stats[1] = this.maxHealth ?? -1;
-        } else if (this.getHealth() > before) {
-            game.events.broadcast('HealthRestored', this.getHealth(), this.plr);
+        } else if (this.health > before) {
+            game.events.broadcast('HealthRestored', this.health, this.plr);
         }
-
-        return true;
-    }
-
-    /**
-     * Adds `amount` to the card's attack
-     *
-     * @param amount The attack to add
-     *
-     * @returns Success
-     */
-    addAttack(amount: number): boolean {
-        if (!this.stats) {
-            return false;
-        }
-
-        this.setStats(this.getAttack() + amount, this.getHealth());
 
         return true;
     }
@@ -693,7 +649,7 @@ export class Card {
      * @returns Success
      */
     remHealth(amount: number): boolean {
-        if (!this.stats) {
+        if (this.health === undefined) {
             return false;
         }
 
@@ -710,29 +666,12 @@ export class Card {
             return true;
         }
 
-        this.setStats(this.getAttack(), this.getHealth() - amount);
+        this.setStats(this.attack, this.health - amount);
         game.events.broadcast('DamageMinion', [this, amount], this.plr);
 
-        if (this.type === 'Weapon' && this.getHealth() <= 0) {
+        if (this.type === 'Weapon' && this.health <= 0) {
             this.plr.destroyWeapon();
         }
-
-        return true;
-    }
-
-    /**
-     * Removes `amount` from the card's attack
-     *
-     * @param amount The attack to remove
-     *
-     * @returns Success
-     */
-    remAttack(amount: number): boolean {
-        if (!this.stats) {
-            return false;
-        }
-
-        this.setStats(this.getAttack() - amount, this.getHealth());
 
         return true;
     }
@@ -745,7 +684,7 @@ export class Card {
      * @returns If it reset the card's max health.
      */
     resetMaxHealth(check = false): boolean {
-        if (!this.stats) {
+        if (this.health === undefined) {
             return false;
         }
 
@@ -753,11 +692,11 @@ export class Card {
             return false;
         }
 
-        if (check && this.getHealth() <= this.maxHealth) {
+        if (check && this.health <= this.maxHealth) {
             return false;
         }
 
-        this.maxHealth = this.getHealth();
+        this.maxHealth = this.health;
         return true;
     }
 
@@ -801,7 +740,7 @@ export class Card {
     /**
      * Returns if the card can attack.
      */
-    canAttack() {
+    canAttack(): boolean {
         if (this.type === 'Weapon') {
             return this.attackTimes! > 0;
         }
@@ -811,7 +750,7 @@ export class Card {
         }
 
         const booleans = !this.sleepy && !this.hasKeyword('Frozen') && !this.hasKeyword('Dormant');
-        const numbers = this.getAttack() > 0 && this.attackTimes! > 0;
+        const numbers = (this.attack ?? 0) > 0 && this.attackTimes! > 0;
 
         return booleans && numbers;
     }
@@ -872,7 +811,7 @@ export class Card {
      * @returns Success
      */
     kill(): boolean {
-        this.setStats(this.getAttack(), 0);
+        this.setStats(this.attack, 0);
         game.killMinions();
 
         return true;

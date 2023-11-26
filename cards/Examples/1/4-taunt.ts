@@ -4,7 +4,6 @@ import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
     name: 'Taunt Example',
-    stats: [2, 3],
 
     // The description doesn't really matter, but it's nice to explain what the card does.
     // The `<b>` will bold all characters after it, and the `</b>` stops the bolding. This just makes the word `Taunt.` bold, but nothing after it.
@@ -14,6 +13,8 @@ export const blueprint: Blueprint = {
 
     cost: 1,
     type: 'Minion',
+    attack: 2,
+    health: 3,
     tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',

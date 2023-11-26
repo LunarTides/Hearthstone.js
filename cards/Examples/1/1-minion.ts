@@ -10,9 +10,6 @@ export const blueprint: Blueprint = {
     // The name of the card.
     name: 'Minion Example',
 
-    // The stats. The first number is its attack, and the second number is its health.
-    stats: [2, 1],
-
     // The description of the card. This can be anything.
     text: 'Just an example card (Does nothing)',
 
@@ -21,6 +18,12 @@ export const blueprint: Blueprint = {
 
     // The type of the card. E.g. "Minion", "Spell", "Weapon", etc...
     type: 'Minion',
+
+    // The amount of attack the card has.
+    attack: 2,
+
+    // The amount of health the card has.
+    health: 1,
 
     // The tribe of the minion. E.g. "Undead", "Naga", "Beast", etc...
     tribe: 'None',

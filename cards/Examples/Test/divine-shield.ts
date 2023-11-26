@@ -5,10 +5,11 @@ import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
     name: 'Divine Shield Test',
-    stats: [1, 1],
     text: '<b>Divine Shield</b>',
     cost: 1,
     type: 'Minion',
+    attack: 1,
+    health: 1,
     tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',

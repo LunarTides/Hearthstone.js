@@ -336,8 +336,8 @@ export const cardInteract = {
             sb += ` (#<#${idHex}>${card.id}</#> @${card.coloredUUID()})`;
         }
 
-        if (card.stats) {
-            sb += game.functions.color.if(card.canAttack(), 'bright:green', ` [${card.stats?.join(' / ')}]`);
+        if (card.attack && card.health) {
+            sb += game.functions.color.if(card.canAttack(), 'bright:green', ` [${card.attack} / ${card.health}]`);
         } else if (card.type === 'Location') {
             const { durability } = card;
             const maxDurability = card.backups.init.durability;

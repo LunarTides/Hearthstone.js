@@ -1,15 +1,16 @@
 // Created by the Vanilla Card Creator
 
 import assert from 'node:assert';
-import { type Target, type Blueprint, type EventValue } from '@Game/types.js';
+import { type Blueprint } from '@Game/types.js';
 import { Card } from '../../../../../../src/core/card.js';
 
 export const blueprint: Blueprint = {
     name: 'Archmage Vargoth',
-    stats: [2, 6],
     text: 'At the end of your turn, cast a spell you\'ve cast this turn <i>(targets are random)</i>.',
     cost: 4,
     type: 'Minion',
+    attack: 2,
+    health: 6,
     tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Legendary',

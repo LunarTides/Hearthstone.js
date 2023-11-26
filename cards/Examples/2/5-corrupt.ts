@@ -4,10 +4,11 @@ import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
     name: 'Corrupt Example',
-    stats: [1, 1],
     text: '<b>Corrupt.</b>',
     cost: 0,
     type: 'Minion',
+    attack: 1,
+    health: 1,
     tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',

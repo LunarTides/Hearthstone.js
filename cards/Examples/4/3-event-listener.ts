@@ -4,10 +4,11 @@ import { type Blueprint, type EventValue } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
     name: 'Event Listener Example',
-    stats: [1, 1],
     text: 'Battlecry: For the rest of the game, your battlecries trigger twice.',
     cost: 1,
     type: 'Minion',
+    attack: 1,
+    health: 1,
     tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',

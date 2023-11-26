@@ -5,10 +5,11 @@ import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
     name: 'Dredge Example',
-    stats: [1, 1],
     text: 'This example card shows you how to use keywords like dredge. <b>Battlecry: Dredge.</b>',
     cost: 1,
     type: 'Minion',
+    attack: 1,
+    health: 1,
     tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',

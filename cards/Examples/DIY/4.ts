@@ -5,10 +5,11 @@ import { type Blueprint, type EventValue } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
     name: 'DIY 4',
-    stats: [0, 10],
     text: '<b>This is a DIY card, it does not work by default.</b> Whenever a friendly minion dies, Resurrect it with 1/1 stats.',
     cost: 0,
     type: 'Minion',
+    attack: 0,
+    health: 10,
     tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
@@ -49,8 +50,8 @@ export const blueprint: Blueprint = {
         const solved = game.board[plr.id].some(card => (
             card.id === value.id
                 && card.type === value.type
-                && card.getAttack() === 1
-                && card.getHealth() === 1
+                && card.attack === 1
+                && card.health === 1
                 && card.uuid !== value.uuid
                 && card.plr === plr
         ));

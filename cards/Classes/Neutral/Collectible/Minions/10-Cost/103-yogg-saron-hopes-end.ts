@@ -6,10 +6,11 @@ import { Card } from '../../../../../../src/core/card.js';
 
 export const blueprint: Blueprint = {
     name: 'Yogg-Saron, Hope\'s End',
-    stats: [7, 5],
     text: '<b>Battlecry:</b> Cast a random spell for each spell you\'ve cast this game <i>(targets chosen randomly)</i>.',
     cost: 10,
     type: 'Minion',
+    attack: 7,
+    health: 5,
     tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Legendary',

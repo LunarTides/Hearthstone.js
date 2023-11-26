@@ -21,7 +21,9 @@ export const blueprint: Blueprint = {
         }], ['Give your minions +1 Attack', () => {
             // Give your minions +1 Attack
             for (const card of game.board[plr.id]) {
-                card.addAttack(1);
+                if (card.attack) {
+                    card.attack += 1;
+                }
             }
         }], ['Gain 6 Armor', () => {
             // Gain 6 Armor

@@ -5,10 +5,11 @@ import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
     name: 'Chaotic Tendril',
-    stats: [1, 1],
     text: '<b>Battlecry:</b> Cast a random 1-Cost spell. Improve your future Chaotic Tendrils.',
     cost: 1,
     type: 'Minion',
+    attack: 1,
+    health: 1,
     tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Common',

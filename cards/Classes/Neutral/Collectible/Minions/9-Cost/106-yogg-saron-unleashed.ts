@@ -5,10 +5,11 @@ import { type Blueprint, type EventValue } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
     name: 'Yogg-Saron, Unleashed',
-    stats: [7, 5],
     text: '<b>Titan</b> After this uses an ability, cast two random spells.',
     cost: 9,
     type: 'Minion',
+    attack: 7,
+    health: 5,
     tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Legendary',

@@ -673,13 +673,9 @@ export const debugCommands: CommandList = {
             game.functions.util.remove(game.board[game.player.id], card);
 
             // If the card has 0 or less health, restore it to its original health (according to the blueprint)
-            if (card.type === 'Minion' && card.getHealth() <= 0) {
-                if (!card.stats) {
-                    throw new Error('Minion has no stats!');
-                }
-
+            if (card.type === 'Minion' && card.health && card.health <= 0) {
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-                card.stats[1] = card.storage.init.stats[1];
+                card.health = card.storage.init.health;
             } else if (card.type === 'Location' && card.durability! <= 0) {
                 if (!card.durability) {
                     throw new Error('Location has undefined durability!');

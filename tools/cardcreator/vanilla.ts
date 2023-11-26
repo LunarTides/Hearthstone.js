@@ -76,10 +76,11 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CcT
         case 'Minion': {
             blueprint = {
                 name,
-                stats: [attack, health],
                 text,
                 cost,
                 type,
+                attack,
+                health,
                 // TODO: Add support for more than 1 tribe. #334
                 tribe: races[0] || 'None',
                 classes: [cardClass],
@@ -108,10 +109,11 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CcT
         case 'Weapon': {
             blueprint = {
                 name,
-                stats: [attack, durability],
                 text,
                 cost,
                 type,
+                attack,
+                health: durability,
                 classes: [cardClass],
                 rarity,
                 id: 0,

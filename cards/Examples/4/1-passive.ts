@@ -5,13 +5,14 @@ import { type Blueprint, type EventValue } from '@Game/types.js';
 // Im sorry, things are about to become a lot more complicated from this point on.
 export const blueprint: Blueprint = {
     name: 'Passive Example',
-    stats: [1, 1],
 
     // This is our goal, remember that after this massive info-dump.
     text: 'Your battlecries trigger twice.',
 
     cost: 1,
     type: 'Minion',
+    attack: 1,
+    health: 1,
     tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',

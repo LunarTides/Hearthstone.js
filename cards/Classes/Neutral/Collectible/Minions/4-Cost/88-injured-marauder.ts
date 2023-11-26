@@ -5,10 +5,11 @@ import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
     name: 'Injured Marauder',
-    stats: [5, 10],
     text: '<b>Taunt. Battlecry:</b> Deal 6 damage to this minion.',
     cost: 4,
     type: 'Minion',
+    attack: 5,
+    health: 10,
     tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Common',

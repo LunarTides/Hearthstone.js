@@ -333,9 +333,9 @@ export const cardFunctions = {
     validateBlueprint(blueprint: Blueprint): string | boolean {
         // These are the required fields for all card types.
         const requiredFieldsTable: { [x in CardType]: string[] } = {
-            Minion: ['stats', 'tribe'],
+            Minion: ['attack', 'health', 'tribe'],
             Spell: ['spellSchool'],
-            Weapon: ['stats'],
+            Weapon: ['attack', 'health'],
             Hero: ['hpText', 'hpCost'],
             Location: ['durability', 'cooldown'],
             Undefined: [],
@@ -351,7 +351,8 @@ export const cardFunctions = {
         let result: string | boolean = true;
         for (const field of required) {
             // Field does not exist
-            if (!blueprint[field as keyof Blueprint]) {
+            const value = blueprint[field as keyof Blueprint];
+            if (!value && value !== 0) {
                 result = `<bold>'${field}' DOES NOT</bold> exist for that card.`;
             }
         }

@@ -82,7 +82,8 @@ export const blueprint: Blueprint = {
 
         const solved = (
             target !== self
-            && target.getHealth() <= 0
+            && Boolean(target.health)
+            && target.health! <= 0
             && correctParameters
             && game.graveyard.some(p => p.includes(target))
         );

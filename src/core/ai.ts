@@ -650,7 +650,7 @@ export class Ai {
         let score = this.analyzePositive(c.text || '');
 
         // Stats
-        score += (c.stats ? c.getAttack() + c.getHealth() : game.config.ai.spellValue) * game.config.ai.statsBias;
+        score += (c.attack && c.health ? c.attack + c.health : game.config.ai.spellValue) * game.config.ai.statsBias;
 
         // Cost
         score -= c.cost * game.config.ai.costBias;
@@ -777,9 +777,9 @@ export class Ai {
                     continue;
                 }
 
-                if (card.getAttack() === target.getHealth()) {
+                if (card.attack === target.health) {
                     perfectTrades.push([card, target]);
-                } else if (card.getAttack() > target.getHealth()) {
+                } else if (card.attack && target.health && card.attack > target.health) {
                     imperfectTrades.push([card, target]);
                 }
             }

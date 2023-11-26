@@ -97,7 +97,7 @@ export const eventManager: EventManagerType = {
             }
 
             for (const card of game.board[i]) {
-                if (card.type === 'Minion' && card.getHealth() <= 0) {
+                if (card.type === 'Minion' && card.health! <= 0) {
                     continue;
                 }
 
@@ -125,7 +125,7 @@ export const eventManager: EventManagerType = {
         for (const cards of game.board) {
             for (const card of cards) {
                 // This function gets called directly after a minion is killed.
-                if (card.getHealth() <= 0) {
+                if (card.health && card.health <= 0) {
                     continue;
                 }
 

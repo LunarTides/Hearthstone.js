@@ -31,14 +31,6 @@ function main() {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             const [key, value] = entry;
 
-            if (key === 'stats') {
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-                check('attack', value[0].toString(), vanilla, custom);
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-                check('health', value[1].toString(), vanilla, custom);
-                continue;
-            }
-
             vanilla.text = vanilla.text?.replaceAll('\n', ' ');
             vanilla.text = vanilla.text?.replaceAll('[x]', '');
 

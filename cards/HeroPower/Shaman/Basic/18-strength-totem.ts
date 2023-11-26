@@ -5,10 +5,11 @@ import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
     name: 'Strength Totem',
-    stats: [0, 2],
     text: 'At the end of your turn, give another friendly minion +1 Attack.',
     cost: 1,
     type: 'Minion',
+    attack: 0,
+    health: 2,
     tribe: 'Totem',
     classes: ['Shaman'],
     rarity: 'Free',
@@ -44,7 +45,7 @@ export const blueprint: Blueprint = {
             game.summonMinion(card, plr);
         }
 
-        const checkSheepAttack = (shouldBeMore: boolean) => game.board[plr.id].filter(card => card.id === 1).some(card => card.getHealth() === 1 && ((shouldBeMore && card.getAttack() > 1) || (!shouldBeMore && card.getAttack() === 1)));
+        const checkSheepAttack = (shouldBeMore: boolean) => game.board[plr.id].filter(card => card.id === 1).some(card => card.health === 1 && ((shouldBeMore && card.attack! > 1) || (!shouldBeMore && card.attack === 1)));
 
         // Summon this minion. All sheep should have 1 attack.
         game.summonMinion(self, plr);
@@ -65,7 +66,7 @@ export const blueprint: Blueprint = {
             // At least 1 sheep should have more than 1 attack.
             assert(checkSheepAttack(true));
             // This card should not get more attack.
-            assert.equal(self.getAttack(), self.blueprint.stats?.[0]);
+            assert.equal(self.attack, self.blueprint.attack);
 
             game.endTurn();
         }

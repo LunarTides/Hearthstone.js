@@ -4,10 +4,11 @@ import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
     name: 'Left Arm',
-    stats: [3, 3],
     text: '',
     cost: 1,
     type: 'Minion',
+    attack: 3,
+    health: 3,
     tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',

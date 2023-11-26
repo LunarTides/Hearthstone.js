@@ -5,13 +5,14 @@ import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
     name: 'Condition Example',
-    stats: [5, 2],
 
     // This is a common condition
     text: '<b>Battlecry:</b> If your deck has no duplicates, draw a card.',
 
     cost: 1,
     type: 'Minion',
+    attack: 5,
+    health: 2,
     tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',

@@ -6,10 +6,11 @@ import { Card } from '../../../../../../src/core/card.js';
 
 export const blueprint: Blueprint = {
     name: 'Yogg-Saron, Master of Fate',
-    stats: [7, 5],
     text: '<b>Battlecry:</b> If you\'ve cast 10 spells this game, spin the Wheel of Yogg-Saron.{left}',
     cost: 10,
     type: 'Minion',
+    attack: 7,
+    health: 5,
     tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Legendary',
@@ -68,7 +69,7 @@ export const blueprint: Blueprint = {
                         }
 
                         card.kill();
-                        self.addStats(card.getAttack(), card.getHealth());
+                        self.addStats(card.attack, card.health);
                     }
                 }
 

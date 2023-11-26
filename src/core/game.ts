@@ -406,8 +406,8 @@ export class Game {
         opponent.attack = 0;
 
         // Weapon stuff
-        if (opponent.weapon && opponent.weapon.getAttack() > 0) {
-            opponent.attack = opponent.weapon.getAttack();
+        if (opponent.weapon && opponent.weapon.attack! > 0) {
+            opponent.attack = opponent.weapon.attack!;
             opponent.weapon.resetAttackTimes();
         }
 
@@ -490,7 +490,7 @@ export class Game {
             const player = this.functions.util.getPlayerFromId(p);
 
             const spared: Card[] = [];
-            const shouldSpare = (card: Card) => card.getHealth() > 0 || ((card.durability ?? 0) > 0);
+            const shouldSpare = (card: Card) => (card.health ?? 1) > 0 || ((card.durability ?? 0) > 0);
 
             for (const card of this.board[p]) {
                 if (shouldSpare(card)) {
@@ -526,7 +526,7 @@ export class Game {
                 minion.remKeyword('Reborn');
 
                 // Reduce the minion's health to 1, keep the minion's attack the same
-                minion.setStats(minion.getAttack(), 1);
+                minion.setStats(minion.attack, 1);
 
                 const unsuppress = this.functions.event.suppress('SummonMinion');
                 this.summonMinion(minion, player);
@@ -701,7 +701,7 @@ const attack = {
 
         // The attacker should damage the target
         game.attack(attacker.attack, target);
-        game.attack(target.getAttack(), attacker);
+        game.attack(target.attack!, attacker);
         game.events.broadcast('Attack', [attacker, target], attacker);
 
         game.killMinions();
@@ -736,7 +736,7 @@ const attack = {
             return 'sleepy';
         }
 
-        if (attacker.getAttack() <= 0) {
+        if (attacker.attack! <= 0) {
             return 'noattack';
         }
 
@@ -769,7 +769,7 @@ const attack = {
         attack._doLifesteal(attacker);
 
         // Deal damage
-        attack.attack(attacker.getAttack(), target);
+        attack.attack(attacker.attack!, target);
 
         // Remember this attack
         attacker.decAttack();
@@ -803,7 +803,7 @@ const attack = {
             return true;
         }
 
-        attack.attack(target.getAttack(), attacker);
+        attack.attack(target.attack!, attacker);
 
         // Remove frenzy
         attack._doFrenzy(attacker);
@@ -819,18 +819,18 @@ const attack = {
             return true;
         }
 
-        attack.attack(attacker.getAttack(), target);
+        attack.attack(attacker.attack!, target);
 
         attack._doLifesteal(attacker);
         attack._doPoison(attacker, target);
 
         // Remove frenzy
         attack._doFrenzy(target);
-        if (target.getHealth() < 0) {
+        if (target.health! < 0) {
             attacker.activate('overkill');
         }
 
-        if (target.getHealth() === 0) {
+        if (target.health! === 0) {
             attacker.activate('honorablekill');
         }
 
@@ -864,17 +864,17 @@ const attack = {
 
         // If there is a card below the target, also deal damage to it.
         if (below) {
-            game.attack(attacker.getAttack(), below);
+            game.attack(attacker.attack!, below);
         }
 
         // If there is a card above the target, also deal damage to it.
         if (above) {
-            game.attack(attacker.getAttack(), above);
+            game.attack(attacker.attack!, above);
         }
     },
 
     _doFrenzy(card: Card): void {
-        if (card.getHealth() <= 0) {
+        if (card.health! <= 0) {
             return;
         }
 
@@ -899,7 +899,7 @@ const attack = {
         }
 
         // The attacker has lifesteal
-        attacker.plr.addHealth(attacker.getAttack());
+        attacker.plr.addHealth(attacker.attack!);
     },
 
     _spellDamage(attacker: number | string, target: Target): number {
@@ -929,7 +929,7 @@ const attack = {
         }
 
         // If the weapon would be part of the attack, remove 1 durability
-        if (weapon.attackTimes && weapon.attackTimes > 0 && weapon.getAttack()) {
+        if (weapon.attackTimes && weapon.attackTimes > 0 && weapon.attack) {
             weapon.attackTimes -= 1;
             weapon.remStats(0, 1);
 
@@ -1091,7 +1091,7 @@ const playCard = {
         },
 
         Location(card: Card, player: Player): GamePlayCardReturn {
-            card.setStats(0, card.getHealth());
+            card.setStats(0, card.health);
             card.addKeyword('Immune');
             card.cooldown = 0;
 
@@ -1316,7 +1316,7 @@ const playCard = {
             return playCard._magnetize(card, player);
         }
 
-        mech.addStats(card.getAttack(), card.getHealth());
+        mech.addStats(card.attack, card.health);
 
         for (const entry of Object.entries(card.keywords)) {
             mech.addKeyword(entry[0] as CardKeyword, entry[1]);

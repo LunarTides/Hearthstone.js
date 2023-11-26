@@ -192,12 +192,13 @@ type BlueprintAbilities = {
 export type Blueprint = {
     // Common
     name: string;
-    stats?: number[];
     text: string;
     cost: number;
     type: CardType;
 
     // Type specific
+    attack?: number;
+    health?: number;
     tribe?: MinionTribe;
     spellSchool?: SpellSchool;
     durability?: number;
