@@ -332,7 +332,7 @@ export const cardInteract = {
         sb += card.colorFromRarity(name);
 
         if (game.config.general.debug) {
-            const idHex = (card.id + 1000).toString(16).repeat(7 - (card.id + 1000).toString(16).length);
+            const idHex = (card.id + 1000).toString(16).repeat(6).slice(0, 6);
             sb += ` (#<#${idHex}>${card.id}</#> @${card.coloredUUID()})`;
         }
 

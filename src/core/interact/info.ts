@@ -145,7 +145,7 @@ export const infoInteract = {
         doStat(player => {
             const heroPowerCost = colorIf(player.canUseHeroPower, 'cyan', `{${player.hero.heroPower!.cost}}`);
 
-            return `Hero Power: ${heroPowerCost} ${detail(player.hero.name, player.hero.heroPower!.cost.toString())}`;
+            return `Hero Power: ${heroPowerCost} ${player.hero.name}`;
         });
 
         // Weapon
@@ -171,7 +171,7 @@ export const infoInteract = {
 
         // Corpses
         doStat(player => {
-            if (!(currentPlayer.detailedView || player.heroClass === 'Death Knight')) {
+            if (player.corpses <= 0) {
                 return '';
             }
 
