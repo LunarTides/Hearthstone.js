@@ -33,9 +33,7 @@ export const blueprint: Blueprint = {
 
     heropower(plr, self) {
         // Add a lacky to your hand.
-        const lackeyIds = [24, 25, 26, 27, 28];
-
-        const lackeyId = game.lodash.sample(lackeyIds);
+        const lackeyId = game.lodash.sample(game.cardCollections.lackeys);
         if (!lackeyId) {
             return;
         }

@@ -9,7 +9,7 @@ import { type CardClass, type CardClassNoNeutral, type GameConfig } from '../src
 const { game, player1 } = createGame();
 
 const { config } = game;
-const classes = Object.keys(game.functions.card.getClasses());
+const classes = game.functions.card.getClasses();
 const cards = game.functions.card.getAll(!game.config.advanced.dcShowUncollectible);
 
 let chosenClass: CardClassNoNeutral;

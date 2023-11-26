@@ -59,7 +59,7 @@ export const deckcodeFunctions = {
         hero = hero.trim();
         code = sep[1] + code.split(sep)[1];
 
-        if (!Object.keys(game.functions.card.getClasses()).includes(hero as CardClassNoNeutral)) {
+        if (!game.functions.card.getClasses().includes(hero as CardClassNoNeutral)) {
             panic('INVALIDHERO');
             return;
         }

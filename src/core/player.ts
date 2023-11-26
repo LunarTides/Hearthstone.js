@@ -767,7 +767,7 @@ export class Player {
      * @returns Success
      */
     setToStartingHero(heroClass = this.heroClass): boolean {
-        const heroCardId = Object.entries(game.functions.card.getClasses()).find(ent => ent[0] === heroClass)?.[1];
+        const heroCardId = game.cardCollections.classes.map(heroId => new Card(heroId, this)).find(card => card.classes.includes(heroClass))?.id;
 
         if (!heroCardId) {
             return false;

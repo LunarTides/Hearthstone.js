@@ -63,7 +63,7 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CcT
     text = text.replaceAll('\n', ' ');
     text = text.replaceAll('[x]', '');
 
-    const classes = Object.keys(game.functions.card.getClasses()) as CardClass[];
+    const classes = game.functions.card.getClasses() as CardClass[];
     classes.push('Neutral');
 
     while (!classes.includes(cardClass)) {

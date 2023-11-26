@@ -7,6 +7,12 @@ import { Player, Card, Ai, functions, interact, eventManager } from '../internal
 import { type TickHookCallback, type Blueprint, type CardAbility, type CardKeyword, type EventKey, type GameAttackReturn, type GameConstants, type GamePlayCardReturn, type Target, type UnknownEventValue } from '../types.js';
 import { config } from '../../config.js';
 
+const cardCollections = {
+    lackeys: [24, 25, 26, 27, 28],
+    totems: [15, 16, 17, 18],
+    classes: [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+};
+
 export class Game {
     /**
      * Some general functions that can be used.
@@ -141,6 +147,7 @@ export class Game {
      */
     cache: Record<string, any> = {};
 
+    cardCollections = cardCollections;
     lodash = _;
 
     constructor() {

@@ -4,13 +4,6 @@ import { type CardLike, type CardClass, type MinionTribe, type CardClassNoNeutra
 import { Card, CardError, type Player } from '../../internal.js';
 import * as blueprints from '../../../cards/exports.js';
 
-// TODO: Add a card collection
-// const collections = {
-//     lackeys: [24, 25, 26, 27, 28],
-//     totems: [15, 16, 17, 18],
-//     classes: [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
-// };
-
 const vanilla = {
     /**
      * Returns all cards added to Vanilla Hearthstone.
@@ -307,22 +300,10 @@ export const cardFunctions = {
     },
 
     /**
-     * Returns all classes in the game: And their hero id
+     * Returns all classes in the game
      */
-    getClasses(): Record<CardClassNoNeutral, number> {
-        return {
-            Mage: 4,
-            Druid: 5,
-            Hunter: 6,
-            Warrior: 7,
-            Priest: 8,
-            Shaman: 9,
-            Paladin: 10,
-            Warlock: 11,
-            Rogue: 12,
-            'Demon Hunter': 13,
-            'Death Knight': 14,
-        };
+    getClasses(): CardClassNoNeutral[] {
+        return game.cardCollections.classes.map(heroId => new Card(heroId, game.player).classes[0]) as CardClassNoNeutral[];
     },
 
     /**
