@@ -59,7 +59,7 @@ export const deckcodeFunctions = {
         hero = hero.trim();
         code = sep[1] + code.split(sep)[1];
 
-        if (!game.functions.card.getClasses().includes(hero as CardClassNoNeutral)) {
+        if (!Object.keys(game.functions.card.getClasses()).includes(hero as CardClassNoNeutral)) {
             panic('INVALIDHERO');
             return;
         }
@@ -136,7 +136,7 @@ export const deckcodeFunctions = {
                     continue;
                 }
 
-                const card = new Card(blueprint.name, plr);
+                const card = new Card(blueprint.id, plr);
 
                 for (let i = 0; i < game.lodash.parseInt(copies); i++) {
                     newDeck.push(card.perfectCopy());
@@ -180,7 +180,7 @@ export const deckcodeFunctions = {
                     }
                 }
 
-                game.pause(`<red>${error}.\nSpecific Card that caused the error: <yellow>${card.name}</yellow red>\n`);
+                game.pause(`<red>${error}.\nSpecific Card that caused the error: <yellow>${card.name} (${card.id})</yellow red>\n`);
                 returnValueInvalid = true;
             }
 
@@ -207,11 +207,11 @@ export const deckcodeFunctions = {
         // Check if you have more than 2 cards or more than 1 legendary in your deck. (The numbers can be changed in the config)
         const cards: Record<string, number> = {};
         for (const card of newDeck) {
-            if (!cards[card.name]) {
-                cards[card.name] = 0;
+            if (!cards[card.id]) {
+                cards[card.id] = 0;
             }
 
-            cards[card.name]++;
+            cards[card.id]++;
         }
 
         for (const cardObject of Object.entries(cards)) {
@@ -223,7 +223,7 @@ export const deckcodeFunctions = {
                 errorcode = 'normal';
             }
 
-            if (game.functions.card.getFromName(cardName)?.rarity === 'Legendary' && amount > localSettings.decks.maxOfOneLegendary) {
+            if (game.functions.card.getFromName(cardName, game.player)?.rarity === 'Legendary' && amount > localSettings.decks.maxOfOneLegendary) {
                 errorcode = 'legendary';
             }
 
@@ -298,7 +298,7 @@ export const deckcodeFunctions = {
         let cards: Array<[CardLike, number]> = [];
 
         for (const card of deck) {
-            const found = cards.find(a => a[0].name === card.name);
+            const found = cards.find(a => a[0].id === card.id);
 
             if (found) {
                 cards[cards.indexOf(found)][1]++;
@@ -413,9 +413,9 @@ export const deckcodeFunctions = {
                 throw new Error('c is an invalid card');
             }
 
-            return new Card(c.name, plr);
+            return new Card(c.id, plr);
         });
-        const trueCards = cardsSplitCard.map(c => c.displayName);
+        const trueCards = cardsSplitCard.map(c => c.name);
 
         // Cards is now a list of names
         const newCards: Array<[number, number]> = [];
@@ -539,7 +539,7 @@ export const deckcodeFunctions = {
                 continue;
             }
 
-            if (createdCards.some(card => card.name === vanillaCard.name || card.displayName === vanillaCard.name)) {
+            if (createdCards.some(card => card.name === vanillaCard.name || card.name === vanillaCard.name)) {
                 continue;
             }
 
@@ -569,17 +569,15 @@ export const deckcodeFunctions = {
                 continue;
             }
 
-            let name = vanillaCards.find(a => a.dbfId === vanillaCard.dbfId)?.name;
-            // The name can still not be correct
-            if (!createdCards.some(a => a.name === name)) {
-                name = createdCards.find(a => (a.displayName ?? '') === name)?.name;
-            }
+            const name = vanillaCards.find(a => a.dbfId === vanillaCard.dbfId)?.name;
 
             if (!name) {
                 throw new Error('Could not get name from card in deckdefinition');
             }
 
-            newDeck.push([new Card(name, plr), amount]);
+            // TODO: Use ids instead
+            const card = game.functions.card.getFromName(name, plr)!;
+            newDeck.push([card, amount]);
 
             if (!amounts[amount]) {
                 amounts[amount] = 0;

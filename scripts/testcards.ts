@@ -52,14 +52,14 @@ export function main() {
 
         game.startGame();
 
-        const card = new Card(blueprint.name, player1);
+        const card = new Card(blueprint.id, player1);
 
         game.noOutput = true;
         const error = testCard(card);
         game.noOutput = false;
 
         if (error instanceof Error) {
-            game.logError(`<red>ERROR: ${card.name} didn't pass its test. Here is the error. THIS ERROR IS PART OF THE SCRIPT, NOT AN ACTUAL ERROR.</red>`);
+            game.logError(`<red>ERROR: ${card.name} (${card.id}) didn't pass its test. Here is the error. THIS ERROR IS PART OF THE SCRIPT, NOT AN ACTUAL ERROR.</red>`);
             game.logError(error.stack);
             game.logError();
             process.exitCode = 1;

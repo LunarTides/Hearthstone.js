@@ -111,6 +111,7 @@ function generateCardPath(...args: [CardClass[], CardType]) {
 export function create(creatorType: CcType, cardType: CardType, blueprint: BlueprintWithOptional, overridePath?: string, overrideFilename?: string, debug?: boolean) {
     // TODO: Search for keywords in the card text and don't add a passive ability if one was found. And vice versa
     // TODO: Look for placeholders in the text and add a placeholder ability if it finds one
+    // TODO: If the name of the card contains a ', escape it
 
     // Validate
     const error = game.functions.card.validateBlueprint(blueprint);
@@ -194,6 +195,10 @@ ${runes}${keywords}
     },`;
     }
 
+    // Get the latest card-id
+    const id = game.lodash.parseInt(game.functions.util.fs('readFile', '/cards/.latestId') as string) + 1;
+    const fileId = `\n    id: ${id},`;
+
     // Create a path to put the card in.
     let path = generateCardPath(card.classes, type).replaceAll('\\', '/');
 
@@ -203,16 +208,12 @@ ${runes}${keywords}
     }
 
     // Create a filename. Example: "Test Card" -> "test_card.ts"
-    let filename = card.name.toLowerCase().replaceAll(' ', '-') + '.ts';
+    let filename = `${id}-` + card.name.toLowerCase().replaceAll(' ', '-').replaceAll(/[^a-z\d-]/g, '') + '.ts';
 
     // If this function was passed in a filename, use that instead.
     if (overrideFilename) {
         filename = overrideFilename;
     }
-
-    // Get the latest card-id
-    const id = game.lodash.parseInt(game.functions.util.fs('readFile', '/cards/.latestId') as string) + 1;
-    const fileId = `\n    id: ${id},`;
 
     // Generate the content of the card
     // If the value is a string, put '"value"'. If it is not a string, put 'value'.

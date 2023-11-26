@@ -49,19 +49,18 @@ export function main(debug = false, overrideType?: lib.CcType) {
         return;
     }
 
-    const [name, displayName, hpText, hpCost] = answers;
+    const [className, heroName, hpText, hpCost] = answers;
 
-    const fileName = name.toLowerCase().replaceAll(' ', '_') + '.ts';
+    const fileName = className.toLowerCase().replaceAll(' ', '_') + '.ts';
 
     const blueprint: Blueprint = {
-        name: name + ' Starting Hero',
-        displayName,
-        text: name[0].toUpperCase() + name.slice(1).toLowerCase() + ' starting hero',
+        name: heroName,
+        text: className[0].toUpperCase() + className.slice(1).toLowerCase() + ' starting hero',
         cost: 0,
         type: 'Hero' as CardType,
         hpText,
         hpCost: game.lodash.parseInt(hpCost),
-        classes: [name] as CardClass[],
+        classes: [className] as CardClass[],
         rarity: 'Free' as CardRarity,
         uncollectible: true,
         // This will be overwritten by the library
@@ -79,8 +78,8 @@ export function main(debug = false, overrideType?: lib.CcType) {
     game.log('Next steps:');
     game.log('1. Open \'src/types.ts\', navigate to \'CardClass\', and add the name of the class to that. There is unfortunately no way to automate that.');
     game.log(`2. Open 'cards/StartingHeroes/${fileName}' and add logic to the 'heropower' function.`);
-    game.log(`3. Now when using the Custom Card Creator, type '${name}' into the 'Class' field to use that class.`);
-    game.log(`4. When using the Deck Creator, type '${name}' to create a deck with cards from your new class.`);
+    game.log(`3. Now when using the Custom Card Creator, type '${className}' into the 'Class' field to use that class.`);
+    game.log(`4. When using the Deck Creator, type '${className}' to create a deck with cards from your new class.`);
     game.log('Enjoy!');
     game.pause();
 }

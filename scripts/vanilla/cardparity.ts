@@ -18,7 +18,7 @@ function main() {
     for (const custom of customCards) {
         // Find the equivalent vanilla card
         const vanilla = filteredVanillaCards.find(vanilla => (
-            vanilla.name.toLowerCase() === custom.displayName.toLowerCase()
+            vanilla.name.toLowerCase() === custom.name.toLowerCase()
                 && vanilla.type.toLowerCase() === custom.type.toLowerCase()
         ));
 
@@ -70,7 +70,7 @@ function main() {
         }
 
         game.log('Card outdated!');
-        game.log(`Name: ${card.name}`);
+        game.log(`Name: ${card.name} (${card.id})`);
         game.log(`Local: "${key}: ${value}"`);
         game.log(`New:   "${key}: ${vanillaValue}"\n`);
     }

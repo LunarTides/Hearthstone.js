@@ -321,14 +321,14 @@ export const cardInteract = {
             }
         }
 
-        const { displayName } = card;
+        const { name } = card;
 
         if (i !== -1) {
             sb += `[${i}] `;
         }
 
         sb += cost;
-        sb += card.colorFromRarity(displayName);
+        sb += card.colorFromRarity(name);
 
         if (card.stats) {
             sb += game.functions.color.if(card.canAttack(), 'bright:green', ` [${card.stats?.join(' / ')}]`);

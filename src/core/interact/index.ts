@@ -60,7 +60,7 @@ export const interact = {
 
             // Debug mode is enabled, use the 30 Sheep debug deck.
             while (plr.deck.length < 30) {
-                plr.deck.push(new Card('Sheep', plr));
+                plr.deck.push(new Card(1, plr));
             }
         }
 

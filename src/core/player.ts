@@ -449,7 +449,7 @@ export class Player {
      *
      * # Examples
      * ```
-     * const weapon = new Card("some weapon name", player);
+     * const weapon = new Card(0, player);
      * player.setWeapon(weapon);
      * ```
      *
@@ -603,7 +603,7 @@ export class Player {
      * ```
      * assert.equal(player.deck.length, 30);
      *
-     * card = new Card("Sheep", player);
+     * card = new Card(1, player);
      * player.shuffleIntoDeck(card);
      *
      * assert.equal(player.deck.length, 31);
@@ -767,14 +767,13 @@ export class Player {
      * @returns Success
      */
     setToStartingHero(heroClass = this.heroClass): boolean {
-        const heroCardName = heroClass + ' Starting Hero';
-        const heroCard = game.functions.card.getFromName(heroCardName);
+        const heroCardId = Object.entries(game.functions.card.getClasses()).find(ent => ent[0] === heroClass)?.[1];
 
-        if (!heroCard) {
+        if (!heroCardId) {
             return false;
         }
 
-        this.setHero(new Card(heroCard.name, this), 0, false);
+        this.setHero(new Card(heroCardId, this), 0, false);
 
         return true;
     }
@@ -888,7 +887,8 @@ export class Player {
         }
 
         for (const card of this.hand) {
-            if (!mulligan.includes(card) || card.name === 'The Coin') {
+            // The Coin card shouldn't be mulligan'd
+            if (!mulligan.includes(card) || card.id === 2) {
                 continue;
             }
 
@@ -931,7 +931,7 @@ export class Player {
      * Returns if this player's deck has no duplicates.
      */
     highlander(): boolean {
-        const deck = this.deck.map(c => c.name);
+        const deck = this.deck.map(c => c.id);
 
         return (new Set(deck)).size === deck.length;
     }
@@ -971,11 +971,11 @@ export class Player {
      * @param key The key to listen for
      * @param amount The amount of times that the quest is triggered before being considered complete
      * @param callback The function to call when the key is invoked.
-     * @param next The name of the next quest / sidequest / secret that should be added when the quest is done
+     * @param next The id of the next quest / sidequest / secret that should be added when the quest is done
      *
      * @returns Success
      */
-    addQuest(type: 'Quest' | 'Sidequest' | 'Secret', card: Card, key: EventKey, amount: number, callback: QuestCallback, next?: string): boolean {
+    addQuest(type: 'Quest' | 'Sidequest' | 'Secret', card: Card, key: EventKey, amount: number, callback: QuestCallback, next?: number): boolean {
         let t;
 
         switch (type) {
@@ -999,12 +999,12 @@ export class Player {
             }
         }
 
-        if ((type.toLowerCase() === 'quest' && t.length > 0) || ((type.toLowerCase() === 'secret' || type.toLowerCase() === 'sidequest') && (t.length >= 3 || t.some(s => s.name === card.displayName)))) {
+        if ((type.toLowerCase() === 'quest' && t.length > 0) || ((type.toLowerCase() === 'secret' || type.toLowerCase() === 'sidequest') && (t.length >= 3 || t.some(s => s.name === card.name)))) {
             this.addToHand(card);
             return false;
         }
 
-        t.push({ name: card.displayName, progress: [0, amount], key, value: amount, callback, next });
+        t.push({ name: card.name, progress: [0, amount], key, value: amount, callback, next });
         return true;
     }
 
@@ -1015,9 +1015,9 @@ export class Player {
      */
     invoke(): boolean {
         // Find the card in player's deck/hand/hero that begins with "Galakrond, the "
-        const deckGalakrond = this.deck.find(c => c.displayName.startsWith('Galakrond, the '));
-        const handGalakrond = this.hand.find(c => c.displayName.startsWith('Galakrond, the '));
-        if ((!deckGalakrond && !handGalakrond) && !this.hero.displayName.startsWith('Galakrond, the ')) {
+        const deckGalakrond = this.deck.find(c => c.name.startsWith('Galakrond, the '));
+        const handGalakrond = this.hand.find(c => c.name.startsWith('Galakrond, the '));
+        if ((!deckGalakrond && !handGalakrond) && !this.hero.name.startsWith('Galakrond, the ')) {
             return false;
         }
 
@@ -1033,7 +1033,7 @@ export class Player {
             card.activate('invoke');
         }
 
-        if (this.hero.displayName.startsWith('Galakrond, the ')) {
+        if (this.hero.name.startsWith('Galakrond, the ')) {
             this.hero.activate('heropower');
         } else if (deckGalakrond) {
             deckGalakrond.activate('heropower');

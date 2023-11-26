@@ -81,7 +81,6 @@ function applyCard(_card: BlueprintWithOptional) {
 
 function common(): BlueprintWithOptional {
     const name = input('Name: ');
-    const displayName = input('Display Name: ');
     const text = input('Text: ');
     const cost = game.lodash.parseInt(input('Cost: '));
     const classes = input('Classes: ') as CardClass;
@@ -100,7 +99,6 @@ function common(): BlueprintWithOptional {
 
     return {
         name,
-        displayName,
         text,
         cost,
         type,
@@ -124,7 +122,6 @@ const cardTypeFunctions: { [x in CardType]: () => Blueprint } = {
 
         return applyCard({
             name: card.name,
-            displayName: card.displayName,
             stats: statsArray,
             text: card.text,
             cost: card.cost,
@@ -145,7 +142,6 @@ const cardTypeFunctions: { [x in CardType]: () => Blueprint } = {
 
         return applyCard({
             name: card.name,
-            displayName: card.displayName,
             text: card.text,
             cost: card.cost,
             type: card.type,
@@ -168,7 +164,6 @@ const cardTypeFunctions: { [x in CardType]: () => Blueprint } = {
 
         return applyCard({
             name: card.name,
-            displayName: card.displayName,
             stats: statsArray,
             text: card.text,
             cost: card.cost,
@@ -189,7 +184,6 @@ const cardTypeFunctions: { [x in CardType]: () => Blueprint } = {
 
         return applyCard({
             name: card.name,
-            displayName: card.displayName,
             text: card.text,
             cost: card.cost,
             type: card.type,
@@ -211,7 +205,6 @@ const cardTypeFunctions: { [x in CardType]: () => Blueprint } = {
 
         return applyCard({
             name: card.name,
-            displayName: card.displayName,
             text: card.text,
             cost: card.cost,
             type: card.type,

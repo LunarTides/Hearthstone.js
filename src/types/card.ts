@@ -192,7 +192,6 @@ type BlueprintAbilities = {
 export type Blueprint = {
     // Common
     name: string;
-    displayName?: string;
     stats?: number[];
     text: string;
     cost: number;

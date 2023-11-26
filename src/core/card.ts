@@ -27,11 +27,6 @@ export class Card {
     name: string;
 
     /**
-     * This is used instead of the name when displaying the card, this does not have to be unique.
-     */
-    displayName: string;
-
-    /**
      * The card's description / text.
      *
      * Might include color tags like `Example [033Example 2[142`.
@@ -65,10 +60,10 @@ export class Card {
      * Use uuid for that.
      *
      * @example
-     * const sheep = new Card("Sheep", plr);
-     * const anotherSheep = new Card("Sheep", plr);
+     * const sheep = new Card(1, plr);
+     * const anotherSheep = new Card(1, plr);
      *
-     * const theCoin = new Card("The Coin", plr);
+     * const theCoin = new Card(2, plr);
      *
      * assert.equal(sheep.id, anotherSheep.id);
      * assert.notEqual(sheep.id, theCoin.id);
@@ -293,19 +288,16 @@ export class Card {
      * @param name The name of the card
      * @param plr The card's owner.
      */
-    constructor(name: string, plr: Player) {
+    constructor(id: number, plr: Player) {
         // Get the blueprint from the cards list
-        const blueprint = game.blueprints.find(c => c.name === name);
+        const blueprint = game.blueprints.find(c => c.id === id);
         if (!blueprint) {
-            throw new Error(`Could not find card with name "${name}"`);
+            throw new Error(`Could not find card with id "${id}"`);
         }
 
         // Set the blueprint (every thing that gets set before the `doBlueprint` call can be overriden by the blueprint)
         this.blueprint = blueprint;
-        this.name = name;
-
-        // The display name is equal to the unique name, unless manually overriden by the blueprint when calling the `doBlueprint` function.
-        this.displayName = name;
+        this.name = blueprint.name;
 
         // The turn the card was played
         this.turn = game.turns;
@@ -362,7 +354,7 @@ export class Card {
      */
     doBlueprint(activate = true): void {
         // Reset the blueprint
-        this.blueprint = game.blueprints.find(c => c.name === this.name) ?? this.blueprint;
+        this.blueprint = game.blueprints.find(c => c.id === this.id) ?? this.blueprint;
 
         /*
         Go through all blueprint variables and
@@ -1298,7 +1290,7 @@ export class Card {
      *
      * @example
      * const cloned = card.imperfectCopy();
-     * const cloned2 = new Card(card.name, card.plr);
+     * const cloned2 = new Card(card.id, card.plr);
      *
      * // This will actually fail since they're slightly different, but you get the point
      * assert.equal(cloned, cloned2);
@@ -1306,7 +1298,7 @@ export class Card {
      * @returns An imperfect copy of this card.
      */
     imperfectCopy(): Card {
-        return new Card(this.name, this.plr);
+        return new Card(this.id, this.plr);
     }
 
     /**
@@ -1417,8 +1409,8 @@ export class Card {
 
             case 'Living Spores': {
                 this.addAbility('deathrattle', (plr, _) => {
-                    game.summonMinion(new Card('Plant', plr), plr);
-                    game.summonMinion(new Card('Plant', plr), plr);
+                    game.summonMinion(new Card(3, plr), plr);
+                    game.summonMinion(new Card(3, plr), plr);
                 });
                 break;
             }
@@ -1508,9 +1500,9 @@ export class Card {
     }
 
     /**
-     * @param text The text to add the the color to. Defaults to this card's displayName
+     * @param text The text to add the the color to. Defaults to this card's name
      */
-    colorFromRarity(text = this.displayName) {
+    colorFromRarity(text = this.name) {
         return game.functions.color.fromRarity(text, this.rarity);
     }
 

@@ -72,7 +72,7 @@ export class Ai {
             let prevent = false;
 
             for (const [index, historyEntry] of this.history.entries()) {
-                if (Array.isArray(historyEntry.data) && historyEntry.data[1] === '0,1' && this.history[index - 1].data[0] === card.name) {
+                if (Array.isArray(historyEntry.data) && historyEntry.data[1] === '0,1' && this.history[index - 1].data[0] === card.uuid) {
                     prevent = true;
                 }
             }
@@ -99,7 +99,7 @@ export class Ai {
 
             this.history.push({ type: 'calcMove', data: bestMove });
         } else if (bestMove instanceof Card) {
-            this.history.push({ type: 'calcMove', data: [bestMove.name, bestScore] });
+            this.history.push({ type: 'calcMove', data: [bestMove.uuid, bestScore] });
 
             this.cardsPlayedThisTurn.push(bestMove);
         }
@@ -223,14 +223,14 @@ export class Ai {
         if (attacker instanceof Player) {
             array.push('P' + (attacker.id + 1));
         } else if (attacker instanceof Card) {
-            array.push(attacker.name);
+            array.push(attacker.uuid);
             strbuilder += worstScore + ', ';
         }
 
         if (target instanceof Player) {
             array.push('P' + (target.id + 1));
         } else if ((target as Target) instanceof Card) {
-            array.push((target).name);
+            array.push((target).uuid);
             strbuilder += bestScore;
         }
 
@@ -351,7 +351,7 @@ export class Ai {
         }
 
         if (bestMinion) {
-            this.history.push({ type: 'selectTarget', data: `${bestMinion.name},${bestScore}` });
+            this.history.push({ type: 'selectTarget', data: `${bestMinion.uuid},${bestScore}` });
 
             return bestMinion;
         }
@@ -373,12 +373,7 @@ export class Ai {
 
         // Look for highest score
         for (const card of cards) {
-            // Card-like is invalid
-            if (!card.name) {
-                continue;
-            }
-
-            const score = this.analyzePositiveCard(new Card(card.name, this.plr));
+            const score = this.analyzePositiveCard(new Card(card.id, this.plr));
 
             if (score <= bestScore) {
                 continue;
@@ -392,10 +387,10 @@ export class Ai {
             return undefined;
         }
 
-        this.history.push({ type: 'discover', data: [bestCard.name, bestScore] });
+        this.history.push({ type: 'discover', data: [bestCard.id, bestScore] });
 
         // `cards` can be a list of blueprints, so calling bestCard.imperfectCopy is dangerous
-        bestCard = new Card(bestCard.name, this.plr);
+        bestCard = new Card(bestCard.id, this.plr);
 
         return bestCard;
     }
@@ -427,9 +422,7 @@ export class Ai {
             return undefined;
         }
 
-        const name = bestCard ? bestCard.name : null;
-
-        this.history.push({ type: 'dredge', data: [name, bestScore] });
+        this.history.push({ type: 'dredge', data: [bestCard.uuid, bestScore] });
         return bestCard;
     }
 
@@ -534,7 +527,7 @@ export class Ai {
         const score = this.analyzePositiveCard(card);
         const returnValue = score <= game.config.ai.tradeThreshold;
 
-        this.history.push({ type: 'trade', data: [card.name, returnValue, score] });
+        this.history.push({ type: 'trade', data: [card.uuid, returnValue, score] });
 
         return returnValue;
     }
@@ -550,7 +543,7 @@ export class Ai {
         // Always forge the card if the ai has enough mana
         const returnValue = !(this.plr.mana < 2);
 
-        this.history.push({ type: 'forge', data: [card.name, returnValue] });
+        this.history.push({ type: 'forge', data: [card.uuid, returnValue] });
         return returnValue;
     }
 
@@ -564,7 +557,7 @@ export class Ai {
         let scores = '(';
 
         for (const card of this.plr.hand) {
-            if (card.name === 'The Coin') {
+            if (card.uuid === 'The Coin') {
                 continue;
             }
 
@@ -574,7 +567,7 @@ export class Ai {
                 toMulligan += (this.plr.hand.indexOf(card) + 1).toString();
             }
 
-            scores += `${card.name}:${score}, `;
+            scores += `${card.uuid}:${score}, `;
         }
 
         scores = scores.slice(0, -2) + ')';
@@ -768,7 +761,7 @@ export class Ai {
 
             for (const target of opponentBoard) {
                 trades = [...perfectTrades, ...imperfectTrades];
-                
+
                 if (!this._canTargetMinion(target)) {
                     continue;
                 }
@@ -864,7 +857,7 @@ export class Ai {
         const returnValue = perfectTrades.length > 0 ? perfectTrades[0] : imperfectTrades[0];
 
         if (returnValue) {
-            this.history.push({ type: 'trade', data: [returnValue[0].name, returnValue[1].name] });
+            this.history.push({ type: 'trade', data: [returnValue[0].uuid, returnValue[1].uuid] });
         }
 
         return returnValue;
@@ -897,7 +890,9 @@ export class Ai {
 
         const returned = returnValue as Target[];
 
-        this.history.push({ type: 'attack', data: [returned[0].name, returned[1].name] });
+        const getHistoryDataForReturned = (returned: Target) => returned instanceof Card ? returned.uuid : returned.name;
+
+        this.history.push({ type: 'attack', data: [getHistoryDataForReturned(returned[0]), getHistoryDataForReturned(returned[1])] });
 
         // If the ai is not focusing on a minion, focus on the returned minion
         if (!this.focus && returned[1] instanceof Card) {

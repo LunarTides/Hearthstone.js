@@ -39,7 +39,7 @@ export type QuestType = {
     key: EventKey;
     value: number;
     callback: QuestCallback;
-    next?: string;
+    next?: number;
 };
 
 /**

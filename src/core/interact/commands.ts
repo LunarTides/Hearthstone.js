@@ -98,14 +98,14 @@ export const commands: CommandList = {
             return false;
         }
 
-        const titanNames = card.getKeyword('Titan') as string[] | undefined;
+        const titanIds = card.getKeyword('Titan') as number[] | undefined;
 
-        if (!titanNames) {
+        if (!titanIds) {
             game.pause('<red>That card is not a titan.</red>\n');
             return false;
         }
 
-        const titanCards = titanNames.map(name => new Card(name, game.player));
+        const titanCards = titanIds.map(id => new Card(id, game.player));
 
         game.interact.info.showGame(game.player);
         game.log(`\nWhich ability do you want to trigger?\n${titanCards.map(c => game.interact.card.getReadable(c)).join(',\n')}`);
@@ -124,11 +124,11 @@ export const commands: CommandList = {
             return false;
         }
 
-        titanNames.splice(choice - 1, 1);
+        titanIds.splice(choice - 1, 1);
 
-        card.setKeyword('Titan', titanNames);
+        card.setKeyword('Titan', titanIds);
 
-        if (titanNames.length <= 0) {
+        if (titanIds.length <= 0) {
             card.remKeyword('Titan');
         }
 
@@ -416,7 +416,7 @@ export const commands: CommandList = {
         const { history } = game.events;
         let finished = '';
 
-        const showCard = (value: Card) => `${game.interact.card.getReadable(value)} which belongs to: <blue>${value.plr.name}</blue>, and has uuid: ${value.uuid.slice(0, 8)}`;
+        const showCard = (value: Card) => `${game.interact.card.getReadable(value)} which belongs to: <blue>${value.plr.name}</blue>, and has uuid: ${value.coloredUUID()}`;
 
         /**
         * Transform the `value` into a readable string
@@ -574,13 +574,14 @@ export const debugCommands: CommandList = {
 
         const cardName = args.join(' ');
 
-        const card = game.functions.card.getFromName(cardName);
+        // TODO: Get all cards from the name and ask the user which one they want
+        const card = game.functions.card.getFromName(cardName, game.player);
         if (!card) {
             game.pause(`<red>Invalid card: <yellow>${cardName}</yellow>.\n`);
             return false;
         }
 
-        game.player.addToHand(new Card(card.name, game.player));
+        game.player.addToHand(card);
         return true;
     },
 

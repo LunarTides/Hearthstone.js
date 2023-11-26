@@ -322,7 +322,8 @@ export class Game {
         this.player1.emptyMana = 1;
         this.player1.mana = 1;
 
-        const coin = new Card('The Coin', this.player2);
+        // The id of The Coin is 2
+        const coin = new Card(2, this.player2);
 
         const unsuppress = this.functions.event.suppress('AddCardToHand');
         this.player2.addToHand(coin);
@@ -543,8 +544,8 @@ export class Game {
         return amount;
     }
 
-    createCard(name: string, owner: Player): Card {
-        return new Card(name, owner);
+    createCard(id: number, owner: Player): Card {
+        return new Card(id, owner);
     }
 }
 
@@ -1137,9 +1138,9 @@ const playCard = {
     },
 
     _forge(card: Card, player: Player): GamePlayCardReturn {
-        const forge = card.getKeyword('Forge') as string | undefined;
+        const forgeId = card.getKeyword('Forge') as number | undefined;
 
-        if (!forge) {
+        if (!forgeId) {
             return 'invalid';
         }
 
@@ -1163,7 +1164,7 @@ const playCard = {
         player.mana -= 2;
 
         game.functions.util.remove(player.hand, card);
-        const forged = new Card(forge, player);
+        const forged = new Card(forgeId, player);
         player.addToHand(forged);
 
         game.events.broadcast('ForgeCard', card, player);
@@ -1266,13 +1267,13 @@ const playCard = {
 
     _corrupt(card: Card, player: Player): boolean {
         for (const toCorrupt of player.hand) {
-            const corrupt = toCorrupt.getKeyword('Corrupt') as string | undefined;
-            if (!corrupt || card.cost <= toCorrupt.cost) {
+            const corruptId = toCorrupt.getKeyword('Corrupt') as number | undefined;
+            if (!corruptId || card.cost <= toCorrupt.cost) {
                 continue;
             }
 
             // Corrupt that card
-            const corrupted = new Card(corrupt, player);
+            const corrupted = new Card(corruptId, player);
 
             game.functions.util.remove(player.hand, toCorrupt);
 
@@ -1310,8 +1311,8 @@ const playCard = {
 
         mech.addStats(card.getAttack(), card.getHealth());
 
-        for (const key of Object.keys(card.keywords)) {
-            mech.addKeyword(key as CardKeyword);
+        for (const entry of Object.entries(card.keywords)) {
+            mech.addKeyword(entry[0] as CardKeyword, entry[1]);
         }
 
         if (mech.maxHealth && card.maxHealth) {
@@ -1371,22 +1372,22 @@ const cards = {
 
         const dormant = minion.getKeyword('Dormant') as number | undefined;
 
-        const colossalMinions = minion.getKeyword('Colossal') as string[] | undefined;
-        if (colossalMinions && colossal) {
+        const colossalMinionIds = minion.getKeyword('Colossal') as number[] | undefined;
+        if (colossalMinionIds && colossal) {
             // Minion.colossal is a string array.
             // example: ["Left Arm", "", "Right Arm"]
             // the "" gets replaced with the main minion
 
-            for (const cardName of colossalMinions) {
+            for (const cardId of colossalMinionIds) {
                 const unsuppress = game.functions.event.suppress('SummonMinion');
 
-                if (cardName === '') {
+                if (cardId <= 0) {
                     game.summonMinion(minion, player, false);
                     unsuppress();
                     continue;
                 }
 
-                const card = new Card(cardName, player);
+                const card = new Card(cardId, player);
 
                 if (dormant) {
                     card.addKeyword('Dormant', dormant);

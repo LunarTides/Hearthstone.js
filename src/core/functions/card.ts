@@ -1,5 +1,4 @@
 import { createHash } from 'node:crypto';
-import { type Dirent } from 'node:fs';
 import { type Card as VanillaCard } from '@hearthstonejs/vanillatypes';
 import { type CardLike, type CardClass, type MinionTribe, type CardClassNoNeutral, type Blueprint, type CardType } from '@Game/types.js';
 import { Card, CardError, type Player } from '../../internal.js';
@@ -131,29 +130,27 @@ export const cardFunctions = {
     vanilla,
 
     /**
-     * Returns the card with the name `name`.
+     * Returns all cards with the name `name`.
      *
      * @param refer If this should call `getCardById` if it doesn't find the card from the name
      *
      * @example
-     * const card = getFromName('The Coin');
+     * const cards = getAllFromName('The Coin');
      *
-     * assert.ok(card instanceof Card);
-     * assert.equal(card.name, 'The Coin');
+     * assert.ok(card[0] instanceof Card);
+     * assert.equal(card[0].name, 'The Coin');
      */
-    getFromName(name: string, refer = true): Card | undefined {
-        const id = this.getFromId(game.lodash.parseInt(name), false);
+    getAllFromName(name: string, refer = true): Card[] {
+        const id = this.getFromId(game.lodash.parseInt(name));
         if (id && refer) {
-            return id;
+            return [id];
         }
 
-        return this.getAll(false).find(c => c.name.toLowerCase() === name.toLowerCase());
+        return this.getAll(false).filter(c => c.name.toLowerCase() === name.toLowerCase());
     },
 
     /**
      * Returns the card with the id of `id`.
-     *
-     * @param refer If this should call `getCardByName` if it doesn't find the card from the id
      *
      * @example
      * const card = getFromId(2);
@@ -161,14 +158,22 @@ export const cardFunctions = {
      * assert.ok(card instanceof Card);
      * assert.equal(card.name, 'The Coin');
      */
-    getFromId(id: number, refer = true): Card | undefined {
-        const card = this.getAll(false).find(c => c.id === id);
+    getFromId(id: number): Card | undefined {
+        return this.getAll(false).find(c => c.id === id);
+    },
 
-        if (!card && refer) {
-            return this.getFromName(id.toString(), false);
+    /**
+     * Creates a card with the given name for the specified player. If there are multiple cards with the same name, this will use the first occurrence.
+     *
+     * @returns The created card, or undefined if no card is found.
+     */
+    getFromName(name: string, player: Player): Card | undefined {
+        const cards = this.getAllFromName(name);
+        if (cards.length <= 0) {
+            return undefined;
         }
 
-        return card;
+        return game.createCard(cards[0].id, player);
     },
 
     /**
@@ -178,7 +183,7 @@ export const cardFunctions = {
      */
     getAll(uncollectible = true): Card[] {
         if (game.cards.length <= 0) {
-            game.cards = game.blueprints.map(card => new Card(card.name, game.player));
+            game.cards = game.blueprints.map(card => new Card(card.id, game.player));
         }
 
         return game.cards.filter(c => !c.uncollectible || !uncollectible);
@@ -238,7 +243,7 @@ export const cardFunctions = {
             }
 
             // Validation error
-            game.log(`<red>Card <bold>'${blueprint.name}'</bold> is invalid since ${errorMessage}</red>`);
+            game.log(`<red>Card <bold>'${blueprint.name}'</bold> (${blueprint.id}) is invalid since ${errorMessage}</red>`);
             valid = false;
         }
 
@@ -287,7 +292,7 @@ export const cardFunctions = {
         const count = plr.jadeCounter;
         const cost = (count < 10) ? count : 10;
 
-        const jade = new Card('Jade Golem', plr);
+        const jade = game.createCard(85, plr);
         jade.setStats(count, count);
         jade.cost = cost;
 
@@ -295,41 +300,22 @@ export const cardFunctions = {
     },
 
     /**
-     * Returns all classes in the game
-     *
-     * @example
-     * const classes = getClasses();
-     *
-     * assert.equal(classes, ["Mage", "Warrior", "Druid", ...])
+     * Returns all classes in the game: And their hero id
      */
-    getClasses(): CardClassNoNeutral[] {
-        const classes: CardClassNoNeutral[] = [];
-
-        for (const file of game.functions.util.fs('readdir', '/cards/StartingHeroes', { withFileTypes: true }) as Dirent[]) {
-            // Something is wrong with the file name.
-            if (!file.name.endsWith('.ts')) {
-                continue;
-            }
-
-            // Remove ".ts"
-            let name = file.name.slice(0, -3);
-
-            // Remove underscores
-            name = name.replaceAll('_', ' ');
-
-            // Capitalize all words
-            name = game.lodash.startCase(name);
-
-            const card = this.getFromName(name + ' Starting Hero');
-            if (!card || card.classes[0] !== name as CardClassNoNeutral || card.type !== 'Hero' || !card.abilities.heropower || card.classes.includes('Neutral')) {
-                game.logWarn('Found card in the startingheroes folder that isn\'t a starting hero. If the game crashes, please note this in your bug report. Name: ' + name + '. Error Code: StartingHeroInvalidHandler');
-                continue;
-            }
-
-            classes.push(card.classes[0]);
-        }
-
-        return classes;
+    getClasses(): Record<CardClassNoNeutral, number> {
+        return {
+            Mage: 4,
+            Druid: 5,
+            Hunter: 6,
+            Warrior: 7,
+            Priest: 8,
+            Shaman: 9,
+            Paladin: 10,
+            Warlock: 11,
+            Rogue: 12,
+            'Demon Hunter': 13,
+            'Death Knight': 14,
+        };
     },
 
     /**

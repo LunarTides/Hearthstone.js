@@ -148,7 +148,7 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | und
                         blueprint[key as keyof Blueprint] = value as never;
                     }
 
-                    if (!blueprint.name) {
+                    if (!blueprint.id) {
                         return;
                     }
 

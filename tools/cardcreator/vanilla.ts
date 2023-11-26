@@ -63,21 +63,19 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CcT
     text = text.replaceAll('\n', ' ');
     text = text.replaceAll('[x]', '');
 
-    const classes = game.functions.card.getClasses() as CardClass[];
+    const classes = Object.keys(game.functions.card.getClasses()) as CardClass[];
     classes.push('Neutral');
 
     while (!classes.includes(cardClass)) {
         cardClass = game.lodash.startCase(game.input('<red>Was not able to find the class of this card.\nWhat is the class of this card? </red>')) as CardClass;
     }
 
-    const realName = game.input('Override name (this will set \'name\' to be the displayname instead) (leave empty to not use display name): ') || name;
-
     let blueprint: Blueprint;
 
     switch (type) {
         case 'Minion': {
             blueprint = {
-                name: realName,
+                name,
                 stats: [attack, health],
                 text,
                 cost,
@@ -94,7 +92,7 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CcT
 
         case 'Spell': {
             blueprint = {
-                name: realName,
+                name,
                 text,
                 cost,
                 type,
@@ -109,7 +107,7 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CcT
 
         case 'Weapon': {
             blueprint = {
-                name: realName,
+                name,
                 stats: [attack, durability],
                 text,
                 cost,
@@ -124,7 +122,7 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CcT
 
         case 'Hero': {
             blueprint = {
-                name: realName,
+                name,
                 text,
                 cost,
                 type,
@@ -140,7 +138,7 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CcT
 
         case 'Location': {
             blueprint = {
-                name: realName,
+                name,
                 text,
                 cost,
                 type,
@@ -161,10 +159,6 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CcT
 
     if (!collectible) {
         blueprint.uncollectible = true;
-    }
-
-    if (realName !== name) {
-        blueprint.displayName = name;
     }
 
     let cctype: lib.CcType = 'Vanilla';

@@ -9,7 +9,7 @@ import { type CardClass, type CardClassNoNeutral, type GameConfig } from '../src
 const { game, player1 } = createGame();
 
 const { config } = game;
-const classes = game.functions.card.getClasses();
+const classes = Object.keys(game.functions.card.getClasses());
 const cards = game.functions.card.getAll(!game.config.advanced.dcShowUncollectible);
 
 let chosenClass: CardClassNoNeutral;
@@ -159,8 +159,8 @@ function sortCards(_cards: Card[]) {
             let typeB;
 
             if (type === 'name') {
-                typeA = a.displayName;
-                typeB = b.displayName;
+                typeA = a.name;
+                typeB = b.name;
             } else {
                 typeA = a.type;
                 typeB = b.type;
@@ -200,7 +200,7 @@ function searchCards(_cards: Card[], searchQuery: string) {
         const query = splitQuery[0].toLowerCase();
 
         for (const card of _cards) {
-            const name = card.displayName.toLowerCase();
+            const name = card.name.toLowerCase();
             const text = card.text.toLowerCase();
 
             if (!name.includes(query) && !text.includes(query)) {
@@ -411,7 +411,7 @@ function showCards() {
 
     const bricks: string[] = [];
     for (const card of classCards) {
-        bricks.push(card.displayName + ' - ' + card.id);
+        bricks.push(card.name + ' - ' + card.id);
     }
 
     const wall = game.functions.util.createWall(bricks, '-');
@@ -480,7 +480,7 @@ function findCard(cardName: string): Card | undefined {
     let returnCard: Card | undefined;
 
     for (const card of Object.values(filteredCards)) {
-        if (card.id === game.lodash.parseInt(cardName) || (typeof cardName === 'string' && card.displayName.toLowerCase() === cardName.toLowerCase())) {
+        if (card.id === game.lodash.parseInt(cardName) || (typeof cardName === 'string' && card.name.toLowerCase() === cardName.toLowerCase())) {
             returnCard = card;
         }
     }
@@ -515,14 +515,14 @@ function showDeck() {
     game.log(`Deck Size: <yellow>${deck.length}</yellow>\n`);
 
     // Why are we doing this? Can't this be done better?
-    const cards: Record<string, [Card, number]> = {};
+    const cards: Record<number, [Card, number]> = {};
 
     for (const card of deck) {
-        if (!cards[card.name]) {
-            cards[card.name] = [card, 0];
+        if (!cards[card.id]) {
+            cards[card.id] = [card, 0];
         }
 
-        cards[card.name][1]++;
+        cards[card.id][1]++;
     }
 
     const bricks: string[] = [];
@@ -537,7 +537,7 @@ function showDeck() {
             viewed += `x${amount} `;
         }
 
-        viewed += card.displayName.replaceAll('-', '`') + ` - ${card.id}`;
+        viewed += card.name.replaceAll('-', '`') + ` - ${card.id}`;
 
         bricks.push(viewed);
     }
@@ -614,12 +614,12 @@ function generateDeckcode(parseVanillaOnPseudo = false) {
             }
 
             case 'TooManyCopies': {
-                log += util.format('Too many copies of a card. Maximum: </yellow>\'%s\'<yellow>. Offender: </yellow>\'%s\'<yellow>', config.decks.maxOfOneCard, `{ Name: "${error.info?.card?.name}", Copies: "${error.info?.amount}" }`);
+                log += util.format('Too many copies of a card. Maximum: </yellow>\'%s\'<yellow>. Offender: </yellow>\'%s\'<yellow>', config.decks.maxOfOneCard, `{ Id: "${error.info?.card?.id}", Copies: "${error.info?.amount}" }`);
                 break;
             }
 
             case 'TooManyLegendaryCopies': {
-                log += util.format('Too many copies of a Legendary card. Maximum: </yellow>\'%s\'<yellow>. Offender: </yellow>\'%s\'<yellow>', config.decks.maxOfOneLegendary, `{ Name: "${error.info?.card?.name}", Copies: "${error.info?.amount}" }`);
+                log += util.format('Too many copies of a Legendary card. Maximum: </yellow>\'%s\'<yellow>. Offender: </yellow>\'%s\'<yellow>', config.decks.maxOfOneLegendary, `{ Id: "${error.info?.card?.id}", Copies: "${error.info?.amount}" }`);
                 break;
             }
 
@@ -900,7 +900,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
             // removes a completly unrelated card because javascript.
             // You can just set deck = functions.importDeck(), but doing it that way doesn't account for renathal or any other card that changes the config in any way since that is done using the add function.
             for (const card of newDeck) {
-                handleCmds(`add ${card.displayName}`);
+                handleCmds(`add ${card.id}`);
             }
 
             break;
