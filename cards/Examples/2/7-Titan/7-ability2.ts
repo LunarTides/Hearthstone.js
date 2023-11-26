@@ -4,8 +4,7 @@ import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
     // Look in `titan.ts` first.
-    name: 'Titan Example Ability 2',
-    displayName: 'Ability 2',
+    name: 'Ability 2',
     text: 'Heal 3 damage.',
     cost: 0,
     type: 'Spell',

@@ -15,9 +15,9 @@ export const blueprint: Blueprint = {
     id: 40,
 
     create(plr, self) {
-        // Put the name (not the display name) of the corrupted counterpart here.
+        // Put the id of the corrupted counterpart here. This is the id of 5-corrupted.ts
         // Corrupted is another system that is very untested and might get a rewrite.
-        self.addKeyword('Corrupt', 'Corrupted Example');
+        self.addKeyword('Corrupt', 41);
     },
 
     test(plr, self) {

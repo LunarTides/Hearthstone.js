@@ -1,29 +1,29 @@
-// Created by Hand (before the Card Creator Existed)
+// Created by the Vanilla Card Creator
 
+// This is the Yogg-Saron, Unleashed Reign of Chaos card.
+
+import assert from 'node:assert';
 import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
-    // Look in `titan.ts` first.
-    name: 'Ability 1',
-    text: 'Destroy an enemy minion.',
+    name: 'Reign of Chaos',
+    text: 'Take control of an enemy minion.',
     cost: 0,
     type: 'Spell',
     spellSchool: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
     uncollectible: true,
-    id: 79,
+    id: 108,
 
     cast(plr, self) {
-        // Destroy an enemy minion.
-
-        // Select an enemy minion to destroy
-        const target = game.interact.selectCardTarget(self.text, self, 'enemy');
-        if (!target) {
+        // Take control of an enemy minion.
+        const card = game.interact.selectCardTarget(self.text, self, 'enemy');
+        if (!card) {
             return game.constants.refund;
         }
 
-        target.kill();
+        card.takeControl(plr);
         return true;
     },
 
@@ -32,4 +32,3 @@ export const blueprint: Blueprint = {
         return true;
     },
 };
-

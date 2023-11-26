@@ -15,13 +15,13 @@ export const blueprint: Blueprint = {
     id: 45,
 
     create(plr, self) {
-        // Put the names of the cards here. The "" is this card.
+        // Put the names of the cards here. The 0 is this card.
         //
-        // The board will look like this (it uses their display names, if they have them):
+        // The board will look like this
         // Left Arm
         // Colossal Example
         // Right Arm
-        self.addKeyword('Colossal', ['Colossal Example Left Arm', '', 'Colossal Example Right Arm']);
+        self.addKeyword('Colossal', [43, 0, 44]);
     },
 
     test(plr, self) {

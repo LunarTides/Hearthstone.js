@@ -1,18 +1,18 @@
-// Created by Hand
+// Created by Hand (before the Card Creator Existed)
+
+// This is used in Adapt
 
 import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
-    // Look in `main.ts` first.
-    // This will be summoned below the main minion
-    name: 'Right Arm',
-    stats: [1, 2],
+    name: 'Plant',
+    stats: [1, 1],
     text: '',
     cost: 1,
     type: 'Minion',
-    tribe: 'Beast',
+    tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
     uncollectible: true,
-    id: 44,
+    id: 3,
 };

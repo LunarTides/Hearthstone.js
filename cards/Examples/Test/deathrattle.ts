@@ -20,7 +20,7 @@ export const blueprint: Blueprint = {
 
         for (let i = 0; i < 2; i++) {
             // Create the sheep
-            const sheep = game.createCard('Sheep', plr);
+            const sheep = game.createCard(1, plr);
 
             // Summon the sheep
             game.summonMinion(sheep, plr);

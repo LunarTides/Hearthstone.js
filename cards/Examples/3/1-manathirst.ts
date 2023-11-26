@@ -52,7 +52,7 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        const sheep = game.createCard('Sheep', plr.getOpponent());
+        const sheep = game.createCard(1, plr.getOpponent());
         sheep.addStats(4, 4);
         game.summonMinion(sheep, plr.getOpponent());
 

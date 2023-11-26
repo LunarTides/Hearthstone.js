@@ -1,16 +1,16 @@
-// Created by Hand
+// Created by the Vanilla Card Creator
 
 import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
-    name: 'Left Arm',
-    stats: [3, 3],
+    name: 'Treant',
+    stats: [2, 2],
     text: '',
     cost: 1,
     type: 'Minion',
     tribe: 'None',
-    classes: ['Neutral'],
+    classes: ['Druid'],
     rarity: 'Free',
     uncollectible: true,
-    id: 46,
+    id: 83,
 };

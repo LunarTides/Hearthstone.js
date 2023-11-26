@@ -15,7 +15,7 @@ export const blueprint: Blueprint = {
     id: 49,
 
     create(plr, self) {
-        self.addKeyword('Colossal', ['Combined Example 2 Left Arm', '', 'Combined Example 2 Right Arm']);
+        self.addKeyword('Colossal', [46, 0, 47]);
         self.addKeyword('Dormant', 2);
     },
 

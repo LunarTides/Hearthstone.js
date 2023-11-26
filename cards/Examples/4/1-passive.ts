@@ -41,7 +41,7 @@ export const blueprint: Blueprint = {
         // in order for refunding to not trigger the event, so we can trigger the minion's battlecry again.
         // We don't refund here, since refunding from passives is not supported, and currently doesn't do anything.
         // But if i add refunding from passives, it would probably break the card in some way, so just wait until it is supported and you know what it does before using it.
-        // We do `!(key === "PlayCard" && eventPlayer === plr)` instead of `key !== "PlayCard" || eventPlayer !== plr`` for clarity.
+        // We do `!(key === 'PlayCard' && eventPlayer === plr)` instead of `key !== 'PlayCard' || eventPlayer !== plr`` for clarity.
         // We only want YOUR battlecries to trigger twice. (`game.player` is the current player, so the player that triggered the event)
         if (!(key === 'PlayCard' && eventPlayer === plr)) {
             return;

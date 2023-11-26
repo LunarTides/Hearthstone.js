@@ -15,7 +15,7 @@ export const blueprint: Blueprint = {
     id: 75,
 
     create(plr, self) {
-        // Put the name of the forged counterpart, like in corrupt.
-        self.addKeyword('Forge', 'Forged Example');
+        // Put the id of the forged counterpart, like in corrupt.
+        self.addKeyword('Forge', 76);
     },
 };

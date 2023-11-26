@@ -15,8 +15,8 @@ export const blueprint: Blueprint = {
     id: 78,
 
     create(plr, self) {
-        // Put the names of the titan ability cards, like in corrupt, but a list.
-        self.addKeyword('Titan', ['Titan Example Ability 1', 'Titan Example Ability 2', 'Titan Example Ability 3']);
+        // Put the ids of the titan ability cards, like in corrupt, but a list.
+        self.addKeyword('Titan', [79, 80, 81]);
     },
 
     test(plr, self) {
