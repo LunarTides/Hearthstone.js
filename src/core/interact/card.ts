@@ -267,6 +267,7 @@ export const cardInteract = {
      *
      * @returns The readable card
      */
+    // eslint-disable-next-line complexity
     getReadable(card: Card, i = -1, _depth = 0): string {
         /**
          * If it should show detailed errors regarding depth.
@@ -329,6 +330,11 @@ export const cardInteract = {
 
         sb += cost;
         sb += card.colorFromRarity(name);
+
+        if (game.config.general.debug) {
+            const idHex = (card.id + 1000).toString(16).repeat(7 - (card.id + 1000).toString(16).length);
+            sb += ` (#<#${idHex}>${card.id}</#> @${card.coloredUUID()})`;
+        }
 
         if (card.stats) {
             sb += game.functions.color.if(card.canAttack(), 'bright:green', ` [${card.stats?.join(' / ')}]`);

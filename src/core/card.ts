@@ -1507,6 +1507,15 @@ export class Card {
     }
 
     /**
+     * Returns a colored version of the card's UUID.
+     *
+     * @param length How many characters of the UUID to return
+     */
+    coloredUUID(length = 7) {
+        return game.functions.color.fromTags(`<#${this.uuid.slice(0, 6)}>${this.uuid.slice(0, length)}</#>`);
+    }
+
+    /**
      * Takes control of the card by changing its owner.
      *
      * @param newOwner The new owner of the card.
