@@ -162,14 +162,14 @@ export const commands: CommandList = {
 
         const debugBricks = [
             'give (name) - Adds a card to your hand',
-            'eval [log] (code) - Runs the code specified. If the word \'log\' is before the code, instead game.log the code and wait for user input to continue.',
-            'set (category) (name) (value) - Changes a setting to (value). Look in the config files for a list of settings. Example: set advanced debugCommandPrefix !',
-            '<underline>debug - Gives you infinite mana, health and armor</underline>',
+            'eval [log] (code) - Runs the code specified. If the word \'log\' is before the code, instead game.log the code and wait for user input to continue. Examples: `/eval game.endGame(game.player)` (Win the game) `/eval @Player1.addToHand(@fe48ac1.perfectCopy())` (Adds a perfect copy of the card with uuid "fe48ac1" to player 1\'s hand) `/eval log h#c#1.attack + d#o#26.health + b#c#1.attack` (Logs the card in the current player\'s hand with index 1\'s attack value + the 26th card in the opponent\'s deck\'s health value + the card on the current player\'s side of the board with index 1\'s attack value)',
+            '<strikethrough>set (category) (name) (value) - Changes a setting to (value). Look in the config files for a list of settings. Example: set advanced debugCommandPrefix !</strikethrough> (Deprecated)',
+            '<strikethrough>debug - Gives you infinite mana, health and armor</strikethrough> (Deprecated)',
             'exit - Force exits the game. There will be no winner, and it will take you straight back to the runner.',
             'history - Displays a history of actions. This doesn\'t hide any information, and is the same thing the log files uses.',
             'reload | /rl - Reloads the cards and config in the game (Use \'/freload\' or \'/frl\' to ignore the confirmation prompt (or disable the prompt in the advanced config))',
             'undo - Undoes the last card played. It gives the card back to your hand, and removes it from where it was. (This does not undo the actions of the card)',
-            'cmd - Shows you a list of debug commands you have run, and allows you to rerun them.',
+            '<strikethrough>cmd - Shows you a list of debug commands you have run, and allows you to rerun them.</strikethrough> (Deprecated)',
             'ai - Gives you a list of the actions the ai(s) have taken in the order they took it',
         ];
 
@@ -604,7 +604,6 @@ export const debugCommands: CommandList = {
     },
 
     eval(args): boolean {
-        // TODO: Add ability to do something like `/eval @Player1.addToHand(@b439d1d.perfectCopy())`
         if (args.length <= 0) {
             game.pause('<red>Too few arguments.</red>\n');
             return false;
@@ -618,6 +617,63 @@ export const debugCommands: CommandList = {
         }
 
         let code = args.join(' ');
+
+        // Allow for stuff like `/eval @Player1.addToHand(@00ff00.perfectCopy());`
+        code = code.replaceAll('@Player', 'game.player');
+
+        function lookForUUID(uuid: string, where: Card[], stringOfWhere: string): void {
+            const card = where.find(card => card.uuid.startsWith(uuid));
+            if (!card) {
+                return;
+            }
+
+            code = code.replace(`@${uuid}`, `${stringOfWhere}[${where.indexOf(card)}]`);
+        }
+
+        const uuidRegex = /@\w+/g;
+        for (const match of code.matchAll(uuidRegex)) {
+            const uuid = match[0].slice(1);
+
+            for (const player of [game.player1, game.player2]) {
+                const gamePlayer = `game.player${player.id + 1}`;
+
+                lookForUUID(uuid, player.deck, `${gamePlayer}.deck`);
+                lookForUUID(uuid, player.hand, `${gamePlayer}.hand`);
+                lookForUUID(uuid, game.board[player.id], `game.board[${player.id}]`);
+                lookForUUID(uuid, game.board[player.id], `game.graveyard[${player.id}]`);
+            }
+        }
+
+        // Allow for stuff like `/eval h#c#1.addAttack(b#o#2.attack)`;
+        // ^^ This adds the second card on the opponent's side of the board's attack to the card at index 1 in the current player's hand
+        const indexBasedRegex = /([hbd])#([co])#(\d+)/g;
+        for (const match of code.matchAll(indexBasedRegex)) {
+            let [line, where, side, index] = match;
+
+            switch (where) {
+                case 'h': {
+                    where = 'game.player[x].hand';
+                    break;
+                }
+
+                case 'd': {
+                    where = 'game.player[x].deck';
+                    break;
+                }
+
+                case 'b': {
+                    where = 'game.board[[x] - 1]';
+                    break;
+                }
+
+                // No default
+            }
+
+            side = side === 'c' ? (game.player.id + 1).toString() : (game.opponent.id + 1).toString();
+            where = where.replaceAll('[x]', side);
+
+            code = code.replace(line, `${where}[${index} - 1]`);
+        }
 
         if (log) {
             if (code.at(-1) === ';') {
