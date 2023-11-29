@@ -101,7 +101,7 @@ export const eventFunctions = {
      *
      * @returns A function that undoes the suppression.
      */
-    suppress(key: EventKey) {
+    suppress(key: EventKey): () => boolean {
         game.events.suppressed.push(key);
 
         /**
@@ -119,7 +119,7 @@ export const eventFunctions = {
      *
      * @returns A function that undoes this.
      */
-    ignoreSuppression(key: EventKey) {
+    ignoreSuppression(key: EventKey): () => boolean {
         game.events.forced.push(key);
 
         /**

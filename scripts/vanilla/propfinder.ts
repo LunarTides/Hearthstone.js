@@ -12,7 +12,7 @@ const types: Record<string, number> = {};
 const stored: Array<[string, number]> = [];
 const storedType = 'mechanics';
 
-function handleStoredTypes(value: any) {
+function handleStoredTypes(value: any): void {
     const values = Array.isArray(value) ? value : [value];
 
     for (const value of values) {
@@ -29,7 +29,7 @@ function handleStoredTypes(value: any) {
     }
 }
 
-function main() {
+function main(): void {
     const vanillaCards = game.functions.card.vanilla.getAll();
 
     for (const vanillaCard of vanillaCards) {

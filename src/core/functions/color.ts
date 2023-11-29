@@ -345,7 +345,7 @@ export const colorFunctions = {
      * @param color The color to apply to the text.
      * @param text The text to be colored.
      */
-    if(condition: boolean, color: string, text: string) {
+    if(condition: boolean, color: string, text: string): string {
         return condition ? `<${color}>${text}</${color}>` : `<gray>${text}</gray>`;
     },
 

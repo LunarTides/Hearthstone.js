@@ -10,7 +10,7 @@ const { game } = createGame();
 
 const idRegex = /id: (\d+)/;
 
-function searchCards(callback: (path: string, content: string, id: number) => void) {
+function searchCards(callback: (path: string, content: string, id: number) => void): void {
     game.functions.util.searchCardsFolder((fullPath, content) => {
         const idMatch = idRegex.exec(content);
         if (!idMatch) {
@@ -23,7 +23,7 @@ function searchCards(callback: (path: string, content: string, id: number) => vo
     });
 }
 
-function change(startId: number, callback: (id: number) => number, log: boolean) {
+function change(startId: number, callback: (id: number) => number, log: boolean): number {
     let updated = 0;
 
     searchCards((path, content, id) => {
@@ -75,7 +75,7 @@ function change(startId: number, callback: (id: number) => number, log: boolean)
  *
  * @returns The number of cards that were updated
  */
-export function decrement(startId: number, log: boolean) {
+export function decrement(startId: number, log: boolean): number {
     return change(startId, id => id - 1, log);
 }
 
@@ -89,7 +89,7 @@ export function decrement(startId: number, log: boolean) {
  *
  * @returns The number of cards that were updated
  */
-export function increment(startId: number, log: boolean) {
+export function increment(startId: number, log: boolean): number {
     return change(startId, id => id + 1, log);
 }
 

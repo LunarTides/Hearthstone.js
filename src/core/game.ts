@@ -160,7 +160,7 @@ export class Game {
      * @param player1 The first player.
      * @param player2 The second player.
      */
-    setup(player1: Player, player2: Player) {
+    setup(player1: Player, player2: Player): void {
         // Set this to player 1 temporarily, in order to never be null
         this.player1 = player1;
         this.player2 = player2;
@@ -206,14 +206,14 @@ export class Game {
      *
      * @param [prompt="Press enter to continue..."] The prompt to show the user
      */
-    pause(prompt = 'Press enter to continue...') {
+    pause(prompt = 'Press enter to continue...'): void {
         this.interact.gameLoop.input(prompt);
     }
 
     /**
      * Wrapper for console.log
      */
-    log(...data: any) {
+    log(...data: any): void {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         this.interact.gameLoop.log(...data);
     }
@@ -221,7 +221,7 @@ export class Game {
     /**
      * Wrapper for console.error
      */
-    logError(...data: any) {
+    logError(...data: any): void {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         this.interact.gameLoop.logError(...data);
     }
@@ -229,7 +229,7 @@ export class Game {
     /**
      * Wrapper for console.warn
      */
-    logWarn(...data: any) {
+    logWarn(...data: any): void {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         this.interact.gameLoop.logWarn(...data);
     }
@@ -265,7 +265,7 @@ export class Game {
      *
      * @returns Return values of all the executed functions
      */
-    triggerEventListeners(key: EventKey, value: UnknownEventValue, player: Player) {
+    triggerEventListeners(key: EventKey, value: UnknownEventValue, player: Player): void {
         for (const eventListener of Object.values(this.eventListeners)) {
             eventListener(key, value, player);
         }

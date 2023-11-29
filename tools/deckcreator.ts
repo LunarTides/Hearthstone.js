@@ -89,13 +89,13 @@ const settings: Settings = {
 
 const defaultSettings: Settings = game.lodash.cloneDeep(settings);
 
-function printName() {
+function watermark(): void {
     game.interact.cls();
     game.log('Hearthstone.js Deck Creator (C) 2022\n');
 }
 
 function askClass(): CardClassNoNeutral {
-    printName();
+    watermark();
 
     let heroClass = game.input('What class do you want to choose?\n' + classes.join(', ') + '\n');
     if (heroClass) {
@@ -110,7 +110,7 @@ function askClass(): CardClassNoNeutral {
         runes = '';
 
         while (runes.length < 3) {
-            printName();
+            watermark();
 
             const rune = game.input(`What runes do you want to add (${3 - runes.length} more)\nBlood, Frost, Unholy\n`);
             if (!rune || !['B', 'F', 'U'].includes(rune[0].toUpperCase())) {
@@ -126,7 +126,7 @@ function askClass(): CardClassNoNeutral {
     return heroClass as CardClassNoNeutral;
 }
 
-function sortCards(_cards: Card[]) {
+function sortCards(_cards: Card[]): Card[] {
     // If the order is invalid, fall back to ascending
     if (!['asc', 'desc'].includes(settings.sort.order)) {
         settings.sort.order = defaultSettings.sort.order;
@@ -186,7 +186,7 @@ function sortCards(_cards: Card[]) {
     return sortCards(_cards);
 }
 
-function searchCards(_cards: Card[], searchQuery: string) {
+function searchCards(_cards: Card[], searchQuery: string): Card[] | false {
     if (searchQuery.length <= 0) {
         return _cards;
     }
@@ -299,9 +299,9 @@ function searchCards(_cards: Card[], searchQuery: string) {
 }
 
 // eslint-disable-next-line complexity
-function showCards() {
+function showCards(): void {
     filteredCards = [];
-    printName();
+    watermark();
 
     // If the user chose to view an invalid class, reset the viewed class to default.
     const correctClass = game.functions.card.validateClasses([settings.view.class ?? chosenClass], chosenClass);
@@ -447,7 +447,7 @@ function showCards() {
     }
 }
 
-function showRules() {
+function showRules(): void {
     const configText = '### RULES ###';
     game.log('#'.repeat(configText.length));
     game.log(configText);
@@ -505,12 +505,12 @@ function add(card: Card): boolean {
     return true;
 }
 
-function remove(card: Card) {
+function remove(card: Card): boolean {
     return game.functions.util.remove(deck, card);
 }
 
-function showDeck() {
-    printName();
+function showDeck(): void {
+    watermark();
 
     game.log(`Deck Size: <yellow>${deck.length}</yellow>\n`);
 
@@ -643,8 +643,8 @@ function generateDeckcode(parseVanillaOnPseudo = false) {
     return deckcode;
 }
 
-function help() {
-    printName();
+function help(): void {
+    watermark();
 
     // Commands
     game.log('<b>Available commands:</b>');
@@ -789,7 +789,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
     switch (name) {
         case 'config':
         case 'rules': {
-            printName();
+            watermark();
             showRules();
             game.pause('\nPress enter to continue...\n');
 
@@ -1134,7 +1134,7 @@ let running = true;
 /**
  * Runs the deck creator.
  */
-export function main() {
+export function main(): void {
     running = true;
     game.functions.card.importAll();
 

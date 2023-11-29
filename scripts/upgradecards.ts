@@ -9,7 +9,7 @@ import { createGame } from '../src/internal.js';
 
 const { game } = createGame();
 
-function upgradeField(data: string, oldValue: string | RegExp, newValue: string, toLog: string) {
+function upgradeField(data: string, oldValue: string | RegExp, newValue: string, toLog: string): string {
     const oldData = data;
     data = data.replace(oldValue, newValue);
     if (data !== oldData) {
@@ -19,7 +19,7 @@ function upgradeField(data: string, oldValue: string | RegExp, newValue: string,
     return data;
 }
 
-function upgradeCard(path: string, data: string, file: any) {
+function upgradeCard(path: string, data: string, file: any): void {
     // TODO: Split stats into attack and health
 
     // Yes, this code is ugly. This script is temporary.
@@ -99,7 +99,7 @@ function upgradeCard(path: string, data: string, file: any) {
     game.log(`--- Finished ${fileName} ---`);
 }
 
-function main() {
+function main(): void {
     game.logError('<yellow>WARNING: This will create new cards with the `.ts` extension, but will leave your old cards alone. Please verify that the new cards work before deleting the old ones.</yellow>');
 
     const proceed = game.input('Do you want to proceed? ([y]es, [n]o): ').toLowerCase().startsWith('y');

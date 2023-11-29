@@ -54,12 +54,7 @@ export const cardInteract = {
         }
 
         const input = plr.ai ? plr.ai.mulligan() : game.input(sb);
-        const success = plr.mulligan(input);
-
-        if (!success && input !== '') {
-            game.pause('<red>Invalid input!</red>\n');
-            return this.mulligan(plr);
-        }
+        plr.mulligan(input);
 
         return input;
     },
@@ -361,7 +356,7 @@ export const cardInteract = {
      *
      * @param help If it should show a help message which displays what the different fields mean.
      */
-    view(card: Card, help = true) {
+    view(card: Card, help = true): void {
         const cardInfo = this.getReadable(card);
         const classInfo = `<gray>${card.classes.join(' / ')}</gray>`;
 
@@ -397,7 +392,6 @@ export const cardInteract = {
                 throw new Error('Type of card cannot be viewed as it is not handled by `interact.card.view`');
             }
         }
-        // No default
 
         if (help) {
             game.log('<cyan>{cost}</cyan> <b>Name</b> (<bright:green>[attack / health]</bright:green> if is has) (description) <yellow>(type)</yellow> ((tribe) or (spell class) or (cooldown)) <gray>[class]</gray>');
@@ -412,7 +406,7 @@ export const cardInteract = {
     /**
      * Spawns a DIY card for the given player.
      */
-    spawnInDiyCard(player: Player) {
+    spawnInDiyCard(player: Player): void {
         // Don't allow ai's to get diy cards
         if (player.ai) {
             return;

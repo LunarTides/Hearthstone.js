@@ -22,7 +22,7 @@ function testCard(card: Card): boolean | Error {
     return true;
 }
 
-export function main() {
+export function main(): void {
     let failed = false;
 
     for (const blueprint of cards) {

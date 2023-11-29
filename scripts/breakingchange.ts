@@ -14,7 +14,7 @@ let finishedCards: string[] = [];
 
 let finishedCardsPath = 'patchedCards.txt';
 
-function getFinishedCards(path: string) {
+function getFinishedCards(path: string): void {
     // If the file doesn't exist, return.
     if (!game.functions.util.fs('exists', path)) {
         return;
@@ -24,7 +24,7 @@ function getFinishedCards(path: string) {
     finishedCards = cards.split('\n');
 }
 
-function searchCards(query: RegExp | string) {
+function searchCards(query: RegExp | string): void {
     game.functions.util.searchCardsFolder((fullPath, content) => {
         // The query is not a regular expression
         if (typeof query === 'string') {
@@ -42,7 +42,7 @@ function searchCards(query: RegExp | string) {
     });
 }
 
-function main() {
+function main(): void {
     game.interact.cls();
     const useRegex = rl.keyInYN('Do you want to use regular expressions? (Don\'t do this unless you know what regex is, and how to use it)');
     let search: string | RegExp = game.input('Search: ');

@@ -8,7 +8,7 @@ import { createGame } from '../src/internal.js';
 const gamesEnv = process.env.games ?? '';
 const games = game.lodash.parseInt(gamesEnv) ?? 100;
 
-function main() {
+function main(): void {
     const decks = JSON.parse(game.functions.util.fs('read', '/decks.json') as string) as string[];
 
     game.logWarn(`Press enter to play ${games} games`);

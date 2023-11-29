@@ -91,7 +91,7 @@ export const gameloopInteract = { /**
     /**
      * Helper function for the `game.log` functions. Don't use.
      */
-    logWrapper(callback: (...data: any) => void, ...data: any) {
+    logWrapper(callback: (...data: any) => void, ...data: any): void {
         if (game.noOutput) {
             return;
         }
@@ -105,7 +105,7 @@ export const gameloopInteract = { /**
     /**
      * Wrapper for console.log
      */
-    log(...data: any) {
+    log(...data: any): void {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         this.logWrapper(overrideConsole.log, ...data);
     },
@@ -113,7 +113,7 @@ export const gameloopInteract = { /**
     /**
      * Wrapper for console.error
      */
-    logError(...data: any) {
+    logError(...data: any): void {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         this.logWrapper(overrideConsole.error, ...data);
     },
@@ -121,7 +121,7 @@ export const gameloopInteract = { /**
     /**
      * Wrapper for console.warn
      */
-    logWarn(...data: any) {
+    logWarn(...data: any): void {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         this.logWrapper(overrideConsole.warn, ...data);
     },
@@ -274,7 +274,6 @@ export const gameloopInteract = { /**
         const commandName = Object.keys(commands).find(cmd => cmd.startsWith(name));
         if (commandName) {
             const command = commands[commandName];
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             const result = command(args, flags);
             return getReturn(result);
         }
@@ -293,7 +292,6 @@ export const gameloopInteract = { /**
             }
 
             const command = debugCommands[debugCommandName];
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             const result = command(args, flags);
             return getReturn(result);
         }

@@ -231,7 +231,7 @@ export const cardFunctions = {
      *
      * @returns If one or more blueprints were found invalid.
      */
-    runBlueprintValidator() {
+    runBlueprintValidator(): boolean {
         // Validate the cards
         let valid = true;
         for (const blueprint of game.blueprints) {
@@ -255,7 +255,7 @@ export const cardFunctions = {
      *
      * @returns Success
      */
-    importAll() {
+    importAll(): boolean {
         this.generateExports();
         game.blueprints = Object.values(blueprints);
 
@@ -311,7 +311,7 @@ export const cardFunctions = {
      *
      * @param invokeCount How many times that the card has been invoked.
      */
-    galakrondFormula(invokeCount: number) {
+    galakrondFormula(invokeCount: number): number {
         const x = invokeCount;
         const y = Math.ceil((x + 1) / 2) + Math.round(x * 0.15);
 
@@ -321,7 +321,7 @@ export const cardFunctions = {
     /**
      * Creates a new CardError with the provided message.
      */
-    createCardError(message: string) {
+    createCardError(message: string): CardError {
         return new CardError(message);
     },
 
@@ -377,7 +377,7 @@ export const cardFunctions = {
         return result;
     },
 
-    generateExports() {
+    generateExports(): void {
         let exportContent = '// This file has been automatically generated. Do not change this file.\n';
 
         const list: string[] = [];
@@ -403,7 +403,8 @@ export const cardFunctions = {
         game.functions.util.fs('write', '/dist/cards/exports.js', exportContent);
     },
 
-    reloadAll(_path?: string) {
+    reloadAll(_path?: string): boolean {
         // TODO: Implement. #323
+        return true;
     },
 };

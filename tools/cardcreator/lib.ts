@@ -13,7 +13,7 @@ let type: CardType;
 
 export type CcType = 'Unknown' | 'Class' | 'Custom' | 'Vanilla';
 
-function getCardAbility(cardType: CardType) {
+function getCardAbility(cardType: CardType): string {
     // Get the card's ability
     let ability: string;
 
@@ -66,7 +66,7 @@ function getCardAbility(cardType: CardType) {
     return ability;
 }
 
-function generateCardPath(...args: [CardClass[], CardType]) {
+function generateCardPath(...args: [CardClass[], CardType]): string {
     // Create a path to put the card in.
     let [classes, type] = args;
 
@@ -95,7 +95,7 @@ function generateCardPath(...args: [CardClass[], CardType]) {
     return staticPath + dynamicPath;
 }
 
-export function getLatestId() {
+export function getLatestId(): number {
     return game.lodash.parseInt(game.functions.util.fs('readFile', '/cards/.latestId', { invalidateCache: true }) as string);
 }
 
@@ -111,7 +111,7 @@ export function getLatestId() {
  *
  * @returns The path of the created file.
  */
-export function create(creatorType: CcType, cardType: CardType, blueprint: BlueprintWithOptional, overridePath?: string, overrideFilename?: string, debug?: boolean) {
+export function create(creatorType: CcType, cardType: CardType, blueprint: BlueprintWithOptional, overridePath?: string, overrideFilename?: string, debug?: boolean): string {
     // TODO: Search for keywords in the card text and don't add a passive ability if one was found. And vice versa
     // TODO: Look for placeholders in the text and add a placeholder ability if it finds one
     // TODO: If the name of the card contains a ', escape it

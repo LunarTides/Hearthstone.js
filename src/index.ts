@@ -12,7 +12,7 @@ import { type Dirent } from 'node:fs';
 import { validate as validateIds } from '../scripts/id/lib.js';
 import { createGame } from './internal.js';
 
-export function main() {
+export function main(): void {
     const { game, player1, player2 } = createGame();
 
     game.interact.info.watermark();
@@ -65,7 +65,7 @@ export function main() {
 let outdatedCards: string[] = [];
 const outdatedExtensions: string[] = [];
 const updatedCards: string[] = [];
-function warnAboutOutdatedCards() {
+function warnAboutOutdatedCards(): void {
     findOutdatedCards(game.functions.util.dirname() + '/cards');
     outdatedCards = outdatedCards.filter(card => !updatedCards.includes(card));
 
@@ -92,7 +92,7 @@ function warnAboutOutdatedCards() {
     }
 }
 
-function findOutdatedCards(path: string) {
+function findOutdatedCards(path: string): void {
     if (path.includes('cards/Test')) {
         return;
     }

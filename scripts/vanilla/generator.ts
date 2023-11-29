@@ -13,7 +13,7 @@ const { game } = createGame();
 
 // Copy-and-pasted from this stackoverflow answer:
 // https://stackoverflow.com/a/62588602
-function get(url: string, resolve: (value: unknown) => void, reject: (reason: any) => void) {
+function get(url: string, resolve: (value: unknown) => void, reject: (reason: any) => void): void {
     https.get(url, response => {
         // If any other status codes are returned, those needed to be added here
         if (response.statusCode === 301 || response.statusCode === 302) {
@@ -42,13 +42,13 @@ function get(url: string, resolve: (value: unknown) => void, reject: (reason: an
     });
 }
 
-async function getData(url: string) {
+async function getData(url: string): Promise<unknown> {
     return new Promise((resolve, reject) => {
         get(url, resolve, reject);
     });
 }
 
-async function main() {
+async function main(): Promise<void> {
     await getData('https://api.hearthstonejson.com/v1/latest/enUS/cards.json').then(r => {
         let data = r as VanillaCard[];
 

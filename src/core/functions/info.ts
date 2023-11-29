@@ -45,7 +45,7 @@ export const infoFunctions = {
     /**
      * Returns the latest commit hash
      */
-    latestCommit() {
+    latestCommit(): string {
         if (!game.cache.latestCommitHash) {
             // Save to a cache since `runCommand` is slow.
             game.cache.latestCommitHash = game.functions.util.runCommand('git rev-parse --short=7 HEAD');

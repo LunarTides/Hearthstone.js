@@ -316,7 +316,7 @@ export class Card {
             this.backups.init[entry[0] as never] = entry[1] as never;
         }
 
-        this.randomizeUuid();
+        this.randomizeUUID();
 
         const placeholder = this.activate('placeholders');
 
@@ -334,7 +334,7 @@ export class Card {
     /**
      * Randomizes the uuid for this card to prevent cards from being "linked"
      */
-    randomizeUuid() {
+    randomizeUUID(): void {
         this.uuid = randomUUID();
     }
 
@@ -459,7 +459,7 @@ export class Card {
      *
      * @returns The info
      */
-    getKeyword(keyword: CardKeyword): undefined | unknown {
+    getKeyword(keyword: CardKeyword): unknown | false {
         if (!this.hasKeyword(keyword)) {
             return false;
         }
@@ -1214,7 +1214,7 @@ export class Card {
     perfectCopy(): this {
         const clone = game.lodash.clone(this);
 
-        clone.randomizeUuid();
+        clone.randomizeUUID();
         clone.sleepy = true;
         clone.turn = game.turns;
 
@@ -1400,7 +1400,7 @@ export class Card {
      *
      * @param storageName The name where the info is stored. I recommend "invokeCount". You can get that information from `card.storage[storageName]` afterwards.
      */
-    galakrondBump(storageName: string) {
+    galakrondBump(storageName: string): void {
         if (!this.storage[storageName]) {
             this.storage[storageName] = 0;
         }
@@ -1418,7 +1418,7 @@ export class Card {
      *
      * @returns Success
      */
-    tryInfuse() {
+    tryInfuse(): boolean {
         const infuse = this.getKeyword('Infuse') as number | undefined;
         if (!infuse || infuse <= 0) {
             return false;
@@ -1438,7 +1438,7 @@ export class Card {
     /**
      * @param text The text to add the the color to. Defaults to this card's name
      */
-    colorFromRarity(text = this.name) {
+    colorFromRarity(text = this.name): string {
         return game.functions.color.fromRarity(text, this.rarity);
     }
 
@@ -1447,7 +1447,7 @@ export class Card {
      *
      * @param length How many characters of the UUID to return
      */
-    coloredUUID(length = 7) {
+    coloredUUID(length = 7): string {
         return game.functions.color.fromTags(`<#${this.uuid.slice(0, 6)}>${this.uuid.slice(0, length)}</#>`);
     }
 
@@ -1456,7 +1456,7 @@ export class Card {
      *
      * @param newOwner The new owner of the card.
      */
-    takeControl(newOwner: Player) {
+    takeControl(newOwner: Player): void {
         game.functions.util.remove(game.board[this.plr.id], this);
 
         this.plr = newOwner;

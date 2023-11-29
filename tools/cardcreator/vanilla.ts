@@ -18,7 +18,7 @@ const { game } = createGame();
  * @param debug If it should use debug mode
  */
 // eslint-disable-next-line complexity
-export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CcType) {
+export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CcType): void {
     // Harvest info
     let cardClass = game.lodash.capitalize(card.cardClass ?? 'Neutral') as CardClass;
     const collectible = card.collectible ?? false;
@@ -180,7 +180,7 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CcT
  *
  * @returns If a card was created
  */
-export function main(debug = false, overrideType?: lib.CcType) {
+export function main(debug = false, overrideType?: lib.CcType): boolean {
     game.log('Hearthstone.js Vanilla Card Creator (C) 2022\n');
 
     const vanillaCards = game.functions.card.vanilla.getAll();

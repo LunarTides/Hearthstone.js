@@ -14,7 +14,7 @@ const { game } = createGame();
 let shouldExit = false;
 let type: CardType;
 
-function input(prompt: string) {
+function input(prompt: string): string {
     if (shouldExit) {
         return '';
     }
@@ -28,7 +28,7 @@ function input(prompt: string) {
     return returnValue;
 }
 
-function applyCard(_card: BlueprintWithOptional) {
+function applyCard(_card: BlueprintWithOptional): Blueprint {
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const newCard = {} as Blueprint;
 
@@ -111,7 +111,7 @@ function common(): BlueprintWithOptional {
 }
 
 const cardTypeFunctions: { [x in CardType]: () => Blueprint } = {
-    Minion() {
+    Minion(): Blueprint {
         const card = common();
 
         const attack = game.lodash.parseInt(input('Attack: '));
@@ -134,7 +134,7 @@ const cardTypeFunctions: { [x in CardType]: () => Blueprint } = {
         });
     },
 
-    Spell() {
+    Spell(): Blueprint {
         const card = common();
 
         const spellSchool = input('Spell School: ') as SpellSchool;
@@ -153,7 +153,7 @@ const cardTypeFunctions: { [x in CardType]: () => Blueprint } = {
         });
     },
 
-    Weapon() {
+    Weapon(): Blueprint {
         const card = common();
 
         const attack = game.lodash.parseInt(input('Attack: '));
@@ -174,7 +174,7 @@ const cardTypeFunctions: { [x in CardType]: () => Blueprint } = {
         });
     },
 
-    Hero() {
+    Hero(): Blueprint {
         const card = common();
 
         game.log('Make the Hero Power:');
@@ -196,7 +196,7 @@ const cardTypeFunctions: { [x in CardType]: () => Blueprint } = {
         });
     },
 
-    Location() {
+    Location(): Blueprint {
         const card = common();
 
         const durability = game.lodash.parseInt(input('Durability (How many times you can trigger this location before it is destroyed): '));
@@ -217,7 +217,7 @@ const cardTypeFunctions: { [x in CardType]: () => Blueprint } = {
         });
     },
 
-    Undefined() {
+    Undefined(): Blueprint {
         throw new TypeError('Undefined type');
     },
 };
@@ -228,7 +228,7 @@ const cardTypeFunctions: { [x in CardType]: () => Blueprint } = {
  *
  * @returns The path to the file
  */
-export function main(debug = false, overrideType?: lib.CcType) {
+export function main(debug = false, overrideType?: lib.CcType): string | false {
     // Reset the shouldExit switch so that the program doesn't immediately exit when the user enters the ccc, exits, then enters ccc again
     shouldExit = false;
 

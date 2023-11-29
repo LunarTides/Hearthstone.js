@@ -7,15 +7,15 @@ const licenseUrl = 'https://github.com/LunarTides/Hearthstone.js/blob/main/LICEN
 
 const getGame = () => game;
 
-type CommandList = Record<string, (args: string[], flags?: { echo?: boolean; debug?: boolean }) => any>;
+type CommandList = Record<string, (args: string[], flags?: { echo?: boolean; debug?: boolean }) => string | boolean>;
 
 export const commands: CommandList = {
-    end() {
+    end(): boolean {
         game.endTurn();
         return true;
     },
 
-    'hero power'() {
+    'hero power'(): boolean {
         if (game.player.ai) {
             game.player.heroPower();
             return true;
@@ -42,13 +42,13 @@ export const commands: CommandList = {
         return true;
     },
 
-    attack() {
+    attack(): boolean {
         game.interact.gameLoop.doTurnAttack();
         game.killMinions();
         return true;
     },
 
-    use() {
+    use(): boolean {
         // Use location
         const errorCode = game.interact.card.useLocation();
         game.killMinions();
@@ -86,7 +86,7 @@ export const commands: CommandList = {
         return true;
     },
 
-    titan() {
+    titan(): boolean {
         // Use titan card
         const card = game.interact.selectCardTarget('Which card do you want to use?', undefined, 'friendly');
         if (!card) {
@@ -138,7 +138,7 @@ export const commands: CommandList = {
         return true;
     },
 
-    help() {
+    help(): boolean {
         game.interact.info.watermark();
         game.log('(In order to run a command; input the name of the command and follow further instruction.)\n');
         game.log('Available commands:');
@@ -164,7 +164,7 @@ export const commands: CommandList = {
             'give (name) - Adds a card to your hand',
             'eval [log] (code) - Runs the code specified. If the word \'log\' is before the code, instead game.log the code and wait for user input to continue.',
             'set (category) (name) (value) - Changes a setting to (value). Look in the config files for a list of settings. Example: set advanced debugCommandPrefix !',
-            'debug - Gives you infinite mana, health and armor',
+            '<underline>debug - Gives you infinite mana, health and armor</underline>',
             'exit - Force exits the game. There will be no winner, and it will take you straight back to the runner.',
             'history - Displays a history of actions. This doesn\'t hide any information, and is the same thing the log files uses.',
             'reload | /rl - Reloads the cards and config in the game (Use \'/freload\' or \'/frl\' to ignore the confirmation prompt (or disable the prompt in the advanced config))',
@@ -197,7 +197,7 @@ export const commands: CommandList = {
         return true;
     },
 
-    view() {
+    view(): boolean {
         const isHandAnswer = game.interact.question(game.player, 'Do you want to view a minion on the board, or in your hand?', ['Board', 'Hand']);
         const isHand = isHandAnswer === 'Hand';
 
@@ -225,12 +225,12 @@ export const commands: CommandList = {
         return true;
     },
 
-    detail() {
+    detail(): boolean {
         game.player.detailedView = !game.player.detailedView;
         return true;
     },
 
-    concede() {
+    concede(): boolean {
         game.interact.info.showGame(game.player);
         const confirmation = game.interact.yesNoQuestion(game.player, 'Are you sure you want to concede?');
         if (!confirmation) {
@@ -241,13 +241,13 @@ export const commands: CommandList = {
         return true;
     },
 
-    license() {
+    license(): boolean {
         const start = (process.platform === 'darwin' ? 'open' : (process.platform === 'win32' ? 'start' : 'xdg-open'));
         game.functions.util.runCommand(start + ' ' + licenseUrl);
         return true;
     },
 
-    version() {
+    version(): boolean {
         const { version, branch, build } = game.config.info;
 
         let running = true;
@@ -411,7 +411,7 @@ export const commands: CommandList = {
         return true;
     },
 
-    history(_, flags) {
+    history(_, flags): string {
         // History
         const { history } = game.events;
         let finished = '';
@@ -566,7 +566,7 @@ export const commands: CommandList = {
 };
 
 export const debugCommands: CommandList = {
-    give(args) {
+    give(args): boolean {
         if (args.length <= 0) {
             game.pause('<red>Too few arguments.</red>\n');
             return false;
@@ -585,12 +585,14 @@ export const debugCommands: CommandList = {
         return true;
     },
 
-    exit() {
+    exit(): boolean {
         game.running = false;
         game.functions.util.createLogFile();
+        return true;
     },
 
-    debug() {
+    debug(): boolean {
+        // TODO: Remove
         game.player.maxMana = 1000;
         game.player.emptyMana = 1000;
         game.player.mana = 1000;
@@ -598,12 +600,14 @@ export const debugCommands: CommandList = {
         game.player.health += 10_000;
         game.player.armor += 100_000;
         game.player.fatigue = 0;
+        return true;
     },
 
-    eval(args) {
+    eval(args): boolean {
+        // TODO: Add ability to do something like `/eval @Player1.addToHand(@b439d1d.perfectCopy())`
         if (args.length <= 0) {
             game.pause('<red>Too few arguments.</red>\n');
-            return -1;
+            return false;
         }
 
         let log = false;
@@ -646,7 +650,7 @@ export const debugCommands: CommandList = {
         return true;
     },
 
-    undo() {
+    undo(): boolean {
         // Get the last played card
         if (!game.events.events.PlayCard || game.events.events.PlayCard[game.player.id].length <= 0) {
             game.pause('<red>No cards to undo.</red>\n');
@@ -703,7 +707,7 @@ export const debugCommands: CommandList = {
         return true;
     },
 
-    ai(_, flags) {
+    ai(_, flags): string {
         let finished = '';
 
         if (flags?.echo) {
@@ -736,7 +740,8 @@ export const debugCommands: CommandList = {
         return finished;
     },
 
-    cmd() {
+    cmd(): boolean {
+        // TODO: Maybe remove?
         const history = Object.values(game.events.history).map(t => t.filter(
             v => v[0] === 'Input'
             && (v[1] as EventValue<'Input'>).startsWith('/')
@@ -804,7 +809,8 @@ export const debugCommands: CommandList = {
         return true;
     },
 
-    set(args) {
+    set(args): boolean {
+        // TODO: Maybe remove
         if (args.length !== 3) {
             game.pause('<red>Invalid amount of arguments!</red>\n');
             return false;
@@ -865,7 +871,7 @@ export const debugCommands: CommandList = {
         return true;
     },
 
-    rl(_, flags) {
+    rl(_, flags): boolean {
         if (game.config.advanced.reloadCommandConfirmation && !flags?.debug) {
             game.interact.info.showGame(game.player);
             const sure = game.interact.yesNoQuestion(game.player, '<yellow>Are you sure you want to reload? This will reset all cards to their base state. This can also cause memory leaks with excessive usage.\nThis requires the game to be recompiled. I recommend using `tsc --watch` in another window before running this command.</yellow>');
@@ -928,11 +934,11 @@ export const debugCommands: CommandList = {
         return true;
     },
 
-    frl() {
-        return game.interact.gameLoop.handleCmds('/rl', { debug: true });
+    frl(): boolean {
+        return game.interact.gameLoop.handleCmds('/rl', { debug: true }) as boolean;
     },
 
-    history() {
-        return game.interact.gameLoop.handleCmds('history', { debug: true });
+    history(): string {
+        return game.interact.gameLoop.handleCmds('history', { debug: true }) as string;
     },
 };

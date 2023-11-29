@@ -9,7 +9,7 @@ import { type Blueprint } from '../../src/types.js';
 
 const { game } = createGame();
 
-function main() {
+function main(): void {
     const vanillaCards = game.functions.card.vanilla.getAll();
 
     const filteredVanillaCards = game.functions.card.vanilla.filter(vanillaCards, false, false);
@@ -37,35 +37,35 @@ function main() {
             check(key, value, vanilla, custom);
         }
     }
+}
 
-    function check(key: string, value: any, vanilla: VanillaCard, card: Card) {
-        const ignore = ['id', 'set', 'name', 'rarity', 'type'];
+function check(key: string, value: any, vanilla: VanillaCard, card: Card): void {
+    const ignore = ['id', 'set', 'name', 'rarity', 'type'];
 
-        const table: { [key in keyof Blueprint]?: keyof VanillaCard } = {
-            text: 'text',
-        };
+    const table: { [key in keyof Blueprint]?: keyof VanillaCard } = {
+        text: 'text',
+    };
 
-        let vanillaValue: any = key as keyof VanillaCard;
-        if (!vanillaValue) {
-            vanillaValue = table[key as keyof Blueprint];
-        }
-
-        vanillaValue = vanilla[vanillaValue as keyof VanillaCard];
-
-        if (!vanillaValue || ignore.includes(key)) {
-            return;
-        }
-
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        if (value.toString().toLowerCase() === vanillaValue.toString().toLowerCase()) {
-            return;
-        }
-
-        game.log('Card outdated!');
-        game.log(`Name: ${card.name} (${card.id})`);
-        game.log(`Local: "${key}: ${value}"`);
-        game.log(`New:   "${key}: ${vanillaValue}"\n`);
+    let vanillaValue: any = key as keyof VanillaCard;
+    if (!vanillaValue) {
+        vanillaValue = table[key as keyof Blueprint];
     }
+
+    vanillaValue = vanilla[vanillaValue as keyof VanillaCard];
+
+    if (!vanillaValue || ignore.includes(key)) {
+        return;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    if (value.toString().toLowerCase() === vanillaValue.toString().toLowerCase()) {
+        return;
+    }
+
+    game.log('Card outdated!');
+    game.log(`Name: ${card.name} (${card.id})`);
+    game.log(`Local: "${key}: ${value}"`);
+    game.log(`New:   "${key}: ${vanillaValue}"\n`);
 }
 
 main();

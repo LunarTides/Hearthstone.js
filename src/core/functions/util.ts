@@ -372,7 +372,7 @@ ${mainContent}
      * `game.turns` increments at the end of every player's turn.
      * This only increments at the end of the second player's turn.
      */
-    getTraditionalTurnCounter() {
+    getTraditionalTurnCounter(): number {
         return Math.ceil(game.turns / 2);
     },
 
@@ -402,7 +402,7 @@ ${mainContent}
      *
      * @returns The result of the fs operation.
      */
-    fs(callback: keyof typeof fs, path: string, ...args: any[]): any {
+    fs(callback: keyof typeof fs, path: string, ...args: any[]): unknown {
         path = this.restrictPath(path);
         if (callback.endsWith('Sync')) {
             callback = callback.replace('Sync', '') as keyof typeof fs;
@@ -451,7 +451,7 @@ ${mainContent}
      * @param path By default, this is the cards folder (not in dist)
      * @param extension The extension to look for in cards. By default, this is ".ts"
      */
-    searchCardsFolder(callback: (path: string, content: string, file: fs.Dirent) => void, path = '/cards', extension = '.ts') {
+    searchCardsFolder(callback: (path: string, content: string, file: fs.Dirent) => void, path = '/cards', extension = '.ts'): void {
         path = path.replaceAll('\\', '/');
 
         for (const file of this.fs('readdir', path, { withFileTypes: true }) as fs.Dirent[]) {
@@ -525,14 +525,14 @@ ${mainContent}
     /**
      * Calculate the remaining board space for the given player.
      */
-    getRemainingBoardSpace(plr: Player) {
+    getRemainingBoardSpace(plr: Player): number {
         return game.config.general.maxBoardSpace - game.board[plr.id].length;
     },
 
     /**
      * Calculate the remaining hand size for the given player.
      */
-    getRemainingHandSize(plr: Player) {
+    getRemainingHandSize(plr: Player): number {
         return game.config.general.maxHandLength - plr.hand.length;
     },
 };

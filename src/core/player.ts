@@ -874,9 +874,14 @@ export class Player {
      *
      * @returns The cards mulligan'd
      */
-    mulligan(input: string): Card[] | TypeError {
+    mulligan(input: string): Card[] {
+        if (input === '') {
+            return [];
+        }
+
         if (!game.lodash.parseInt(input)) {
-            return new TypeError('Can\'t parse `input` to int');
+            game.pause('<red>Invalid input!</red>\n');
+            return this.mulligan(input);
         }
 
         const cards: Card[] = [];

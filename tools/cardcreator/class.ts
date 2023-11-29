@@ -13,7 +13,7 @@ const { game } = createGame();
  * Asks the user a series of questions, and creates a class card using it.
  * This is not meant to be a library. Running this function will temporarily give control to this function.
  */
-export function main(debug = false, overrideType?: lib.CcType) {
+export function main(debug = false, overrideType?: lib.CcType): void {
     const watermark = () => {
         game.interact.cls();
         game.log('Hearthstone.js Class Creator (C) 2022\n');

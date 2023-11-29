@@ -69,7 +69,7 @@ export const eventManager: EventManagerType = {
      * @param val The value of the event that triggered the tick
      * @param player The player that triggered the tick
      */
-    tick(key, value, player) {
+    tick(key, value, player): boolean {
         // The code in here gets executed very often
         // So don't do any expensive stuff here
 
@@ -121,7 +121,7 @@ export const eventManager: EventManagerType = {
      *
      * @returns Success
      */
-    cardUpdate(key, value, player) {
+    cardUpdate(key, value, player): boolean {
         for (const cards of game.board) {
             for (const card of cards) {
                 // This function gets called directly after a minion is killed.
@@ -169,7 +169,7 @@ export const eventManager: EventManagerType = {
      *
      * @returns Success
      */
-    questUpdate(questsName, key, value, plr) {
+    questUpdate(questsName, key, value, plr): boolean {
         for (const quest of plr[questsName]) {
             if (quest.key !== key) {
                 continue;
@@ -213,7 +213,7 @@ export const eventManager: EventManagerType = {
      *
      * @returns Success
      */
-    broadcast(key, value, plr, updateHistory = true) {
+    broadcast(key, value, plr, updateHistory = true): boolean {
         this.tick(key, value, plr);
 
         if (updateHistory) {
@@ -258,7 +258,7 @@ export const eventManager: EventManagerType = {
      * @param val The value of the event
      * @param plr The player who caused the event to happen
      */
-    addHistory(key, value, plr) {
+    addHistory(key, value, plr): void {
         if (!this.history[game.turns]) {
             this.history[game.turns] = [['GameLoop', `Init ${key}`, plr]];
         }
@@ -275,7 +275,7 @@ export const eventManager: EventManagerType = {
      *
      * @returns Success
      */
-    broadcastDummy(plr) {
+    broadcastDummy(plr): boolean {
         return this.broadcast('Dummy', undefined, plr, false);
     },
 
@@ -288,7 +288,7 @@ export const eventManager: EventManagerType = {
      *
      * @returns The new value
      */
-    increment(player, key, amount = 1) {
+    increment(player, key, amount = 1): number {
         if (!this.stats[key]) {
             this.stats[key] = [0, 0];
         }

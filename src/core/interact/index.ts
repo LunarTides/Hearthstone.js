@@ -399,16 +399,12 @@ export const interact = {
     /**
      * Clears the screen.
      */
-    cls() {
-        cls();
+    cls(): void {
+        if (game && game.noOutput) {
+            return;
+        }
+
+        console.clear();
+        process.stdout.write('\u001Bc');
     },
 };
-
-function cls() {
-    if (game && game.noOutput) {
-        return;
-    }
-
-    console.clear();
-    process.stdout.write('\u001Bc');
-}
