@@ -1,3 +1,70 @@
+#### 2.0.0-beta.6 (2023-12-01)
+
+##### Chores
+
+*  update dependancies ([13455f1a](https://github.com/LunarTides/Hearthstone.js/commit/13455f1ab457f37d7807c809e0f011a14716601a))
+*  change Card.name doc to reflect new non-uniqueness ([69db3e30](https://github.com/LunarTides/Hearthstone.js/commit/69db3e30717131745e2b41de3fbf423201852ba6))
+*  bump build number to 6 ([989da702](https://github.com/LunarTides/Hearthstone.js/commit/989da70271a6a2cbf21b7703dbcb0df16923c6d6))
+
+##### Continuous Integration
+
+*  update node version to hopefully fix failing ci ([13a335bc](https://github.com/LunarTides/Hearthstone.js/commit/13a335bc1088dbbd63f411a8c0398af270d4e0fa))
+
+##### New Features
+
+*  add fancy shortcuts to the eval command ([cc29764d](https://github.com/LunarTides/Hearthstone.js/commit/cc29764d37b00b8299f72375c449f0c0db919054))
+*  add id and uuid to readable cards when in debug mode ([a910ec8b](https://github.com/LunarTides/Hearthstone.js/commit/a910ec8b065ac6f08effc0d413d1e2d932c9c5e9))
+*  add a deck ([#342](https://github.com/LunarTides/Hearthstone.js/pull/342)) ([cbeb34df](https://github.com/LunarTides/Hearthstone.js/commit/cbeb34df2bb47e310efc7d481d2d683fc0dc9b6d))
+*  add Card.takeControl method ([7b84b027](https://github.com/LunarTides/Hearthstone.js/commit/7b84b0271ff63ad38f617810779d3c734070916f))
+*  add titan event ([25548a3b](https://github.com/LunarTides/Hearthstone.js/commit/25548a3b3f9d4a7e70ec7b67f809b80bf341f769))
+*  add titan keyword ([5825b759](https://github.com/LunarTides/Hearthstone.js/commit/5825b7592b6c088454648999be39c4ebb74a221c))
+*  add CardEvent event ([4e93e35f](https://github.com/LunarTides/Hearthstone.js/commit/4e93e35fb77fd01c669f826c22aea851b40ff0cd))
+*  add getRandomTarget util function ([f8e1ac32](https://github.com/LunarTides/Hearthstone.js/commit/f8e1ac328a86bf568e482cd56d2e239afa820097))
+*  add getRemainingHandSize util function ([2badeca0](https://github.com/LunarTides/Hearthstone.js/commit/2badeca077f15c604e26c0c93556fd2ce0951657))
+*  add getRemainingBoardSpace util function ([9c9023d0](https://github.com/LunarTides/Hearthstone.js/commit/9c9023d00505498dd8af7bcf5ed7f928f92b4f32))
+* **script:**  add spellSchool and hpCost to upgradecards ([e757973a](https://github.com/LunarTides/Hearthstone.js/commit/e757973a5837936ab5f79d4e84b88e90cb11754e))
+
+##### Bug Fixes
+
+*  prevent fromTags from crashing when using special tags ([e96664d1](https://github.com/LunarTides/Hearthstone.js/commit/e96664d1580fe9842ff1443d9d37eed28d5e73cd))
+*  update cards to use ids ([c3e2d0ff](https://github.com/LunarTides/Hearthstone.js/commit/c3e2d0ffc1476362c61c91ebef306e802d3d1597))
+*  add titan command to help command ([b54cb8d3](https://github.com/LunarTides/Hearthstone.js/commit/b54cb8d3fbb2dbe8259168383a595057a777d4bc))
+* **uc:**  work better with xo ([f38e07dc](https://github.com/LunarTides/Hearthstone.js/commit/f38e07dce9e8c0ab05c3dad69bbd59a9cad303ae))
+* **ai:**
+  *  use canAttack and canTargetMinion in more places ([e59e9535](https://github.com/LunarTides/Hearthstone.js/commit/e59e953506285b81565f61cbecd3bec34d7c7fce))
+  *  prevent infinite loop in chooseOne ([62f8b704](https://github.com/LunarTides/Hearthstone.js/commit/62f8b7043f5e8a3501fae130eb19a28cad3770fd))
+* **dc:**  fix importing not working ([e1d157b7](https://github.com/LunarTides/Hearthstone.js/commit/e1d157b758e2ec05dcbdbb2a33258d26084a78b5))
+* **cclib:**  fix xo issues in import blueprint ([9c935812](https://github.com/LunarTides/Hearthstone.js/commit/9c9358123f9764ce5b06e99eb8a8d91aed50530f))
+* **script:**  make upgradecards to work with xo ([a5ef98e8](https://github.com/LunarTides/Hearthstone.js/commit/a5ef98e8224541a9c7458e8d32cacc1ec6ba7f22))
+
+##### Other Changes
+
+*  add unordered cards ([47db90c3](https://github.com/LunarTides/Hearthstone.js/commit/47db90c3a69b76f7404eddbc39910ecf84424b2a))
+*  split hero cards and hero powers ([5c7acda3](https://github.com/LunarTides/Hearthstone.js/commit/5c7acda3f4e5cb0ff56191cf08e38027c8253264))
+*  split stats into attack and health ([ad1773e0](https://github.com/LunarTides/Hearthstone.js/commit/ad1773e054de3f9b662fcc2ed2244faacfaadd26))
+*  add cardCollections to game ([41865a13](https://github.com/LunarTides/Hearthstone.js/commit/41865a1349c1c030fda04ecc3a7caa03843ac2b5))
+*  add brewing storm and dragon claw cards ([4b1c2fbf](https://github.com/LunarTides/Hearthstone.js/commit/4b1c2fbf8f30514260bc6434d20718cbf97fa3d6))
+*  remove CastSpellOnMinion event ([cede02a5](https://github.com/LunarTides/Hearthstone.js/commit/cede02a554d9218a0dc7bc25c417d425a4ab16f6))
+*  make all constant variables uppercase ([d70b52e9](https://github.com/LunarTides/Hearthstone.js/commit/d70b52e99379d0101e718a2c9aeb39838168dfe3))
+
+##### Performance Improvements
+
+*  slightly optimize death knight heropwoer test ([1bf264c1](https://github.com/LunarTides/Hearthstone.js/commit/1bf264c1a8b0410c0daeadf2defff28aa7f7ebb1))
+
+##### Refactors
+
+*  add return types to all functions ([6503084e](https://github.com/LunarTides/Hearthstone.js/commit/6503084e539494068fa4052bffc7fad53fa69828))
+*  remove displayName and make name non-unique ([161d97c2](https://github.com/LunarTides/Hearthstone.js/commit/161d97c25baca6e350aa51fc5db920d4d3777d79))
+*  show history on game end ([b2607e0a](https://github.com/LunarTides/Hearthstone.js/commit/b2607e0a91884277731090ac14a7bd3b8c982fc5))
+*  remove some ts-expect-errors ([9626bfca](https://github.com/LunarTides/Hearthstone.js/commit/9626bfca1094a5c777c5be8353f7d46e6f567b4a))
+*  make exports.ts exports lowercase ([6fbde3d1](https://github.com/LunarTides/Hearthstone.js/commit/6fbde3d1522225ecdeca7ab6a2099e3af75c2c2e))
+*  make game class use this.functions ([84230738](https://github.com/LunarTides/Hearthstone.js/commit/84230738caf5ffc8ff196e2f86a0c283e816c54c))
+*  remove useless ? and ! ([ceef5288](https://github.com/LunarTides/Hearthstone.js/commit/ceef5288cd937f2dfd0d47f4259d5d256cb49f87))
+
+##### Reverts
+
+*  make all constant variables uppercase ([3705412f](https://github.com/LunarTides/Hearthstone.js/commit/3705412f3c57b8fd6dc5627e43da2c2a131bfd02))
+
 #### 2.0.0-beta.5 (2023-10-26)
 
 ##### Chores
