@@ -5,7 +5,7 @@
  */
 
 import process from 'node:process';
-import { Card, type Player, createGame } from '../src/internal.js';
+import { type Card, type Player, createGame } from '../src/internal.js';
 
 const { game } = createGame();
 const cards = game.functions.card.getAll(false);
@@ -52,7 +52,8 @@ export function main(): void {
 
         game.startGame();
 
-        const card = new Card(blueprint.id, player1);
+        const card = blueprint.imperfectCopy();
+        card.plr = player1;
 
         game.noOutput = true;
         const error = testCard(card);

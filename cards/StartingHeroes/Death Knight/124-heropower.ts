@@ -27,9 +27,7 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        const minion = game.createCard(23, plr);
-
-        const lookForMinion = () => game.board[plr.id].some(card => card.id === minion.id);
+        const lookForMinion = () => game.board[plr.id].some(card => card.id === 23);
 
         // The minion shouldn't be on the board at first.
         assert(!lookForMinion());
