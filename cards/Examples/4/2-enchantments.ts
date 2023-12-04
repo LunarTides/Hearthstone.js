@@ -12,7 +12,7 @@ export const blueprint: Blueprint = {
     tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
-    uncollectible: true,
+    collectible: false,
     id: 56,
 
     // `tick` works the same as passive, except it's called more often, and isn't dependent on events.

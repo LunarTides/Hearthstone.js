@@ -11,7 +11,7 @@ export const blueprint: Blueprint = {
     spellSchool: 'None',
     classes: ['Mage'],
     rarity: 'Free',
-    uncollectible: true,
+    collectible: false,
     id: 114,
 
     cast(plr, self) {

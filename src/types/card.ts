@@ -209,7 +209,7 @@ export type Blueprint = {
     rarity: CardRarity;
 
     // Last
-    uncollectible?: boolean;
+    collectible?: boolean;
     id: number;
 } & BlueprintAbilities;
 

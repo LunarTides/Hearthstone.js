@@ -11,7 +11,7 @@ export const blueprint: Blueprint = {
     spellSchool: 'None',
     classes: ['Warlock'],
     rarity: 'Free',
-    uncollectible: true,
+    collectible: false,
     id: 121,
 
     cast(plr, self) {

@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { type Card as VanillaCard } from '@hearthstonejs/vanillatypes';
-import { type CardLike, type CardClass, type MinionTribe, type CardClassNoNeutral, type Blueprint, type CardType } from '@Game/types.js';
+import { type CardClass, type MinionTribe, type CardClassNoNeutral, type Blueprint, type CardType } from '@Game/types.js';
 import { Card, CardError, type Player } from '../../internal.js';
 import * as blueprints from '../../../cards/exports.js';
 
@@ -186,7 +186,7 @@ export const cardFunctions = {
             game.cards = game.blueprints.map(card => new Card(card.id, game.player));
         }
 
-        return game.cards.filter(c => !c.uncollectible || !uncollectible);
+        return game.cards.filter(c => c.collectible || !uncollectible);
     },
 
     /**
@@ -264,17 +264,6 @@ export const cardFunctions = {
         }
 
         return true;
-    },
-
-    /**
-     * Filters out all cards that are uncollectible in a list
-     *
-     * @param cards The list of cards
-     *
-     * @returns The cards without the uncollectible cards
-     */
-    accountForUncollectible(cards: CardLike[]): CardLike[] {
-        return cards.filter(c => !c.uncollectible);
     },
 
     /**

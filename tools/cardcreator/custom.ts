@@ -258,7 +258,7 @@ export function main(debug = false, overrideType?: lib.CcType): string | false {
     // Ask the user if the card should be uncollectible
     const uncollectible = rl.keyInYN('Uncollectible?');
     if (uncollectible) {
-        card.uncollectible = uncollectible as boolean;
+        card.collectible = !uncollectible;
     }
 
     // Actually create the card

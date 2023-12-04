@@ -11,7 +11,7 @@ export const blueprint: Blueprint = {
     spellSchool: 'None',
     classes: ['Death Knight'],
     rarity: 'Free',
-    uncollectible: true,
+    collectible: false,
     id: 124,
 
     cast(plr, self) {

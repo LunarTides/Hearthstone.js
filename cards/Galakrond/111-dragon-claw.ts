@@ -11,6 +11,6 @@ export const blueprint: Blueprint = {
     health: 2,
     classes: ['Neutral'],
     rarity: 'Free',
-    uncollectible: true,
+    collectible: false,
     id: 111,
 };

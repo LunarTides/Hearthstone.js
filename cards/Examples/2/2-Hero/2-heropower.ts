@@ -11,7 +11,7 @@ export const blueprint: Blueprint = {
     spellSchool: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
-    uncollectible: true,
+    collectible: false,
     id: 130,
 
     // This gets triggered when the player uses their hero power.

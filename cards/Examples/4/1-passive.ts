@@ -16,7 +16,7 @@ export const blueprint: Blueprint = {
     tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
-    uncollectible: true,
+    collectible: false,
     id: 55,
 
     // Note the new `key` and `_unknownVal` arguments.

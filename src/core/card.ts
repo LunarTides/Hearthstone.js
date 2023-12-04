@@ -72,13 +72,11 @@ export class Card {
     id = -1;
 
     /**
-     * If the card is uncollectible.
-     * - Uncollectible cards cannot be added to a deck, and cannot be found in card pools[1].
+     * If the card is collectible.
+     * - Uncollectible cards cannot be added to a deck, and cannot be found in card pools unless explicitly stated otherwise.
      * - Uncollectible cards can mostly only be explicitly created by other collectible cards.
-     *
-     * [1] Unless explicitly stated otherwise
      */
-    uncollectible = false;
+    collectible = false;
 
     /**
      * The keywords that the card has. E.g. ["Taunt", "Divine Shield", etc...]
@@ -1259,7 +1257,7 @@ export class Card {
             }
         }
 
-        if (this.uncollectible) {
+        if (!this.collectible) {
             return 'uncollectible';
         }
 

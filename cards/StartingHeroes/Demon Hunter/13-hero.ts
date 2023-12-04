@@ -10,6 +10,6 @@ export const blueprint: Blueprint = {
     heropowerId: 123,
     classes: ['Demon Hunter'],
     rarity: 'Free',
-    uncollectible: true,
+    collectible: false,
     id: 13,
 };

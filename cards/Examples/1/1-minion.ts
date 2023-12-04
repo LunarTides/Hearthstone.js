@@ -34,10 +34,10 @@ export const blueprint: Blueprint = {
     // The rarity of the card. E.g. "Free", "Common", "Rare", etc...
     rarity: 'Free',
 
-    // If the card should not be allowed in decks, or in card pools.
+    // If the card should be allowed in decks, or in card pools.
     // These example cards should not be randomly generated in `discover`, or added in a deck, so all of them are uncollectible.
-    // If the card isn't uncollectible, you don't need to set the uncollectible property at all.
-    uncollectible: true,
+    // If the card is collectible, you don't need to set the collectible property at all.
+    collectible: false,
 
     // The ID of the card. This is used in deckcodes, and should be unique per blueprint. This gets generated automatically by the card creator.
     // If you have debug mode enabled, you can type `/give (id)` to give yourself the card with that id.

@@ -164,7 +164,7 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CcT
     }
 
     if (!collectible) {
-        blueprint.uncollectible = true;
+        blueprint.collectible = false;
     }
 
     let cctype: lib.CcType = 'Vanilla';

@@ -19,7 +19,7 @@ export const blueprint: Blueprint = {
     classes: ['Neutral'],
     rarity: 'Free',
 
-    uncollectible: true,
+    collectible: false,
     id: 32,
 
     // This is an ability. More on abilities in `1-5`.

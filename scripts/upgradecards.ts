@@ -21,6 +21,7 @@ function upgradeField(data: string, oldValue: string | RegExp, newValue: string,
 
 function upgradeCard(path: string, data: string, file: any): void {
     // TODO: Split stats into attack and health
+    // TODO: uncollectible -> collectible
 
     // Yes, this code is ugly. This script is temporary.
     // This will also not work for ALL cards, they are just too flexible.

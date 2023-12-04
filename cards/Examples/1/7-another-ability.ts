@@ -27,7 +27,7 @@ export const blueprint: Blueprint = {
     tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
-    uncollectible: true,
+    collectible: false,
     id: 77,
 
     // If the function is named correctly, you can just write the name of the ability

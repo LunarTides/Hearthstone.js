@@ -12,6 +12,6 @@ export const blueprint: Blueprint = {
     tribe: 'None',
     classes: ['Druid'],
     rarity: 'Free',
-    uncollectible: true,
+    collectible: false,
     id: 83,
 };

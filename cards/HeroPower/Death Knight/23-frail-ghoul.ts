@@ -13,7 +13,7 @@ export const blueprint: Blueprint = {
     tribe: 'Undead',
     classes: ['Death Knight'],
     rarity: 'Free',
-    uncollectible: true,
+    collectible: false,
     id: 23,
 
     create(plr, self) {

@@ -100,10 +100,10 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | und
                 game.log('        <bold>stats</bold>=<underline>[attack, health]</underline><bold>');
                 game.log();
                 game.log('<bold>CCLib Example</bold>');
-                game.log('cclib -dt Test name="Sheep" stats=[1,1] text="" cost=1 type="Minion" tribe="Beast" classes=["Neutral"] rarity="Free" uncollectible=true id=0');
-                game.log('       ^^      ^            ^           ^');
-                game.log('       Dry-run The name of the card     The description of the card. Etc...');
-                game.log('        CC type is "Test"   The stats of the card');
+                game.log('cclib -dt Test name="Sheep" text="" cost=1 type="Minion" attack=1 health=1 tribe="Beast" classes=["Neutral"] rarity="Free" collectible=false id=0');
+                game.log('       ^^      ^            ^              ^');
+                game.log('       Dry-run The name of the card        The type of the card. Etc...');
+                game.log('        CC type is "Test"   The description of the card');
                 game.log();
                 game.pause();
 

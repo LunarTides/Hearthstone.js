@@ -12,6 +12,6 @@ export const blueprint: Blueprint = {
     tribe: 'None',
     classes: ['Paladin'],
     rarity: 'Free',
-    uncollectible: true,
+    collectible: false,
     id: 20,
 };

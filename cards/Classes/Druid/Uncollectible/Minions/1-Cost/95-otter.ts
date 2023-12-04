@@ -14,7 +14,7 @@ export const blueprint: Blueprint = {
     tribe: 'Beast',
     classes: ['Druid'],
     rarity: 'Free',
-    uncollectible: true,
+    collectible: false,
     id: 95,
 
     create(plr, self) {

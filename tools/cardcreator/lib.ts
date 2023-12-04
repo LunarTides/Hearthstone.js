@@ -84,11 +84,11 @@ function generateCardPath(...args: [CardClass[], CardType]): string {
     // If the type is Hero, we want the card to go to '.../Heroes/...' and not to '.../Heros/...'
     const typeString = (type === 'Hero') ? 'Heroe' : type;
 
-    const collectibleString = card.uncollectible ? 'Uncollectible' : 'Collectible';
+    const collectibleString = card.collectible ? 'Collectible' : 'Uncollectible';
 
     // This can be anything since the card register process ignores folders.
     // Change this if you want the cards to be in different folders.
-    // By default, this is `cards/Classes/{class name}/{Uncollectible | Collectible}/{type}s/{mana cost} Cost/{card name}.ts`;
+    // By default, this is `cards/Classes/{class name}/{Collectible | Uncollectible}/{type}s/{mana cost} Cost/{card name}.ts`;
     // This path can be overridden by passing `overridePath` in the create function.
     const dynamicPath = `Classes/${classesString}/${collectibleString}/${typeString}s/${card.cost}-Cost/`;
 

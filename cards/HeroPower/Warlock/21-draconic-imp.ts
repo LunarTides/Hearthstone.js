@@ -12,6 +12,6 @@ export const blueprint: Blueprint = {
     tribe: 'Demon',
     classes: ['Warlock'],
     rarity: 'Free',
-    uncollectible: true,
+    collectible: false,
     id: 21,
 };

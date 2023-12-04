@@ -13,7 +13,7 @@ export const blueprint: Blueprint = {
     tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
-    uncollectible: true,
+    collectible: false,
     id: 33,
 
     // Here we put the name of the ability we want to add.

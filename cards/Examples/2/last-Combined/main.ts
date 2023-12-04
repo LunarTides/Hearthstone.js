@@ -12,7 +12,7 @@ export const blueprint: Blueprint = {
     tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Legendary',
-    uncollectible: true,
+    collectible: false,
     id: 48,
 
     create(plr, self) {

@@ -13,7 +13,7 @@ export const blueprint: Blueprint = {
     tribe: 'All',
     classes: ['Priest', 'Paladin'],
     rarity: 'Legendary',
-    uncollectible: true,
+    collectible: false,
     id: 35,
 
     create(plr, self) {

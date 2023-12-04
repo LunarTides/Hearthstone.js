@@ -61,7 +61,7 @@ export function main(debug = false, overrideType?: lib.CcType): void {
         heropowerId: lib.getLatestId() + 2,
         classes: [className] as CardClass[],
         rarity: 'Free' as CardRarity,
-        uncollectible: true,
+        collectible: false,
         // This will be overwritten by the library
         id: 0,
     };
@@ -74,7 +74,7 @@ export function main(debug = false, overrideType?: lib.CcType): void {
         spellSchool: 'None',
         classes: [className] as CardClass[],
         rarity: 'Free' as CardRarity,
-        uncollectible: true,
+        collectible: false,
         // This will be overwritten by the library
         id: 0,
     };

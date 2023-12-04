@@ -13,7 +13,7 @@ export const blueprint: Blueprint = {
     tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
-    uncollectible: true,
+    collectible: false,
     id: 64,
 
     passive(plr, self, key, _unknownValue, eventPlayer) {

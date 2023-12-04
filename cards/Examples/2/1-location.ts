@@ -18,7 +18,7 @@ export const blueprint: Blueprint = {
     // Afaik, in hearthstone, this is always 2.
     cooldown: 2,
 
-    uncollectible: true,
+    collectible: false,
     id: 36,
 
     // Remember to use the correct ability

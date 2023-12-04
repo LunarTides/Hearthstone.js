@@ -14,7 +14,7 @@ export const blueprint: Blueprint = {
     tribe: 'Totem',
     classes: ['Shaman'],
     rarity: 'Free',
-    uncollectible: true,
+    collectible: false,
     id: 15,
 
     passive(plr, self, key, value, eventPlayer) {
