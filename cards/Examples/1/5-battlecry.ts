@@ -8,13 +8,14 @@ export const blueprint: Blueprint = {
     text: '<b>Battlecry:</b> Give this minion +1/+1.',
     cost: 1,
     type: 'Minion',
-    attack: 1,
-    health: 2,
-    tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
     collectible: false,
     id: 33,
+
+    attack: 1,
+    health: 2,
+    tribe: 'None',
 
     // Here we put the name of the ability we want to add.
     // The card creator should be able to automatically add the correct ability

@@ -8,13 +8,14 @@ export const blueprint: Blueprint = {
     text: '<b>Charge</b> At the end of your turn, this minion dies.',
     cost: 1,
     type: 'Minion',
-    attack: 1,
-    health: 1,
-    tribe: 'Undead',
     classes: ['Death Knight'],
     rarity: 'Free',
     collectible: false,
     id: 23,
+
+    attack: 1,
+    health: 1,
+    tribe: 'Undead',
 
     create(plr, self) {
         self.addKeyword('Charge');

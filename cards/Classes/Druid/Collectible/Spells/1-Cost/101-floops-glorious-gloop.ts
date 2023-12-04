@@ -8,10 +8,12 @@ export const blueprint: Blueprint = {
     text: 'Whenever a minion dies this turn, gain 1 Mana Crystal this turn only.',
     cost: 1,
     type: 'Spell',
-    spellSchool: 'Nature',
     classes: ['Druid'],
     rarity: 'Legendary',
+    collectible: true,
     id: 101,
+
+    spellSchool: 'Nature',
 
     cast(plr, self) {
         // Whenever a minion dies this turn, gain 1 Mana Crystal this turn only.

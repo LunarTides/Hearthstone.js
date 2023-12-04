@@ -7,13 +7,14 @@ export const blueprint: Blueprint = {
     text: '<b>Rush</b>',
     cost: 2,
     type: 'Minion',
-    attack: 2,
-    health: 2,
-    tribe: 'Elemental',
     classes: ['Shaman'],
     rarity: 'Free',
     collectible: false,
     id: 112,
+
+    attack: 2,
+    health: 2,
+    tribe: 'Elemental',
 
     create(plr, self) {
         // Add additional fields here

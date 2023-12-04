@@ -10,11 +10,12 @@ export const blueprint: Blueprint = {
     text: 'Fill your hand with 1/1 Chaotic Tendrils.',
     cost: 0,
     type: 'Spell',
-    spellSchool: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
     collectible: false,
     id: 109,
+
+    spellSchool: 'None',
 
     cast(plr, self) {
         // Fill your hand with 1/1 Chaotic Tendrils.

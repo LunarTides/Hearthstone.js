@@ -10,13 +10,12 @@ export const blueprint: Blueprint = {
     type: 'Hero',
     classes: ['Neutral'],
     rarity: 'Free',
+    collectible: false,
+    id: 37,
 
     // The id of the hero power card.
     // The hero power card can be any spell. Here we use the 2-heropower.ts card.
     heropowerId: 130,
-
-    collectible: false,
-    id: 37,
 
     battlecry(plr, self) {
         // Restore your hero to full health.

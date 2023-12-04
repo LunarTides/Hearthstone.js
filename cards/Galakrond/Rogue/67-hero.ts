@@ -10,8 +10,10 @@ export const blueprint: Blueprint = {
     type: 'Hero',
     classes: ['Rogue'],
     rarity: 'Legendary',
-    heropowerId: 125,
+    collectible: true,
     id: 67,
+
+    heropowerId: 125,
 
     battlecry(plr, self) {
         // Draw {amount} cards. They cost (0).

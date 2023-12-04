@@ -8,10 +8,12 @@ export const blueprint: Blueprint = {
     text: 'Add a random Priest minion to your hand.',
     cost: 2,
     type: 'Spell',
-    spellSchool: 'None',
     classes: ['Priest'],
     rarity: 'Legendary',
+    collectible: true,
     id: 128,
+
+    spellSchool: 'None',
 
     cast(plr, self) {
         // Add a random Priest minion to your hand.

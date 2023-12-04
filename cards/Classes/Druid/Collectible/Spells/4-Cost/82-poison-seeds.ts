@@ -8,10 +8,12 @@ export const blueprint: Blueprint = {
     text: 'Destroy all minions and summon 2/2 Treants to replace them.',
     cost: 4,
     type: 'Spell',
-    spellSchool: 'Nature',
     classes: ['Druid'],
     rarity: 'Common',
+    collectible: true,
     id: 82,
+
+    spellSchool: 'Nature',
 
     cast(plr, self) {
         // Destroy all minions and summon 2/2 Treants to replace them.

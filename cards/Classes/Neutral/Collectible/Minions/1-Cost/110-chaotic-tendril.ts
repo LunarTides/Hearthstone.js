@@ -8,12 +8,14 @@ export const blueprint: Blueprint = {
     text: '<b>Battlecry:</b> Cast a random 1-Cost spell. Improve your future Chaotic Tendrils.',
     cost: 1,
     type: 'Minion',
+    classes: ['Neutral'],
+    rarity: 'Common',
+    collectible: true,
+    id: 110,
+
     attack: 1,
     health: 1,
     tribe: 'None',
-    classes: ['Neutral'],
-    rarity: 'Common',
-    id: 110,
 
     battlecry(plr, self) {
         // Cast a random 1-Cost spell. Improve your future Chaotic Tendrils.

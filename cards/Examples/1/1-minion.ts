@@ -7,6 +7,8 @@ export const blueprint: Blueprint = {
     // A blueprint only has ESSENTIAL properties, and type-specific properties (like stats or tribe)
     // Other properties, like keywords, has to be added in the 'create' ability. More on that in `1-4`.
 
+    // Essential properties first (all cards have these)
+
     // The name of the card.
     name: 'Minion Example',
 
@@ -18,15 +20,6 @@ export const blueprint: Blueprint = {
 
     // The type of the card. E.g. "Minion", "Spell", "Weapon", etc...
     type: 'Minion',
-
-    // The amount of attack the card has.
-    attack: 2,
-
-    // The amount of health the card has.
-    health: 1,
-
-    // The tribe of the minion. E.g. "Undead", "Naga", "Beast", etc...
-    tribe: 'None',
 
     // The classes of the card. E.g. "Neutral", "Warrior", "Hunter", etc...
     classes: ['Neutral'],
@@ -42,4 +35,16 @@ export const blueprint: Blueprint = {
     // The ID of the card. This is used in deckcodes, and should be unique per blueprint. This gets generated automatically by the card creator.
     // If you have debug mode enabled, you can type `/give (id)` to give yourself the card with that id.
     id: 29,
+
+    // After the id property, all properties below (except for abilties) are type-specific
+
+    // The amount of attack the minion has.
+    attack: 2,
+
+    // The amount of health the minion has.
+    health: 1,
+
+    // The tribe of the minion. E.g. "Undead", "Naga", "Beast", etc...
+    tribe: 'None',
+
 };

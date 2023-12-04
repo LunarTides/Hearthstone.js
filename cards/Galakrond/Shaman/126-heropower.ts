@@ -8,10 +8,12 @@ export const blueprint: Blueprint = {
     text: 'Summon a 2/1 Elemental with <b>Rush</b>.',
     cost: 2,
     type: 'Spell',
-    spellSchool: 'None',
     classes: ['Shaman'],
     rarity: 'Legendary',
+    collectible: true,
     id: 126,
+
+    spellSchool: 'None',
 
     cast(plr, self) {
         // Summon a 2/1 Elemental with Rush.

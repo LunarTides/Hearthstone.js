@@ -8,13 +8,14 @@ export const blueprint: Blueprint = {
     text: 'This is forever <b>Frozen</b>',
     cost: 1,
     type: 'Minion',
-    attack: 1,
-    health: 1,
-    tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
     collectible: false,
     id: 74,
+
+    attack: 1,
+    health: 1,
+    tribe: 'None',
 
     create(plr, self) {
         self.freeze();

@@ -13,14 +13,14 @@ export const blueprint: Blueprint = {
 
     cost: 1,
     type: 'Minion',
-    attack: 2,
-    health: 3,
     tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
-
     collectible: false,
     id: 32,
+
+    attack: 2,
+    health: 3,
 
     // This is an ability. More on abilities in `1-5`.
     // Be careful when interacting with `plr` or `self.plr` in the create ability, it might not always be the player you're expecting.

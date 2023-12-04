@@ -7,12 +7,11 @@ export const blueprint: Blueprint = {
     text: 'Just an example card (Does nothing)',
     cost: 1,
     type: 'Spell',
-
-    // The spell school of the spell.
-    spellSchool: 'Shadow',
-
     classes: ['Neutral'],
     rarity: 'Free',
     collectible: false,
     id: 30,
+
+    // The spell school of the spell.
+    spellSchool: 'Shadow',
 };

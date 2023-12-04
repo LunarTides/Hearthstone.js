@@ -8,13 +8,14 @@ export const blueprint: Blueprint = {
     text: '<b>Battlecry:</b> Give a friendly minion +1 Attack and <b>Rush</b>.',
     cost: 1,
     type: 'Minion',
-    attack: 1,
-    health: 1,
-    tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
     collectible: false,
     id: 26,
+
+    attack: 1,
+    health: 1,
+    tribe: 'None',
 
     battlecry(plr, self) {
         // Give a friendly minion +1 Attack and Rush.

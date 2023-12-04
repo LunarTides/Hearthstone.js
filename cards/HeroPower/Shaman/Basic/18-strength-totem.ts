@@ -8,13 +8,14 @@ export const blueprint: Blueprint = {
     text: 'At the end of your turn, give another friendly minion +1 Attack.',
     cost: 1,
     type: 'Minion',
-    attack: 0,
-    health: 2,
-    tribe: 'Totem',
     classes: ['Shaman'],
     rarity: 'Free',
     collectible: false,
     id: 18,
+
+    attack: 0,
+    health: 2,
+    tribe: 'Totem',
 
     passive(plr, self, key, value, eventPlayer) {
         // At the end of your turn, give another friendly minion +1 Attack.

@@ -8,11 +8,12 @@ export const blueprint: Blueprint = {
     text: 'Restore 2 mana.',
     cost: 0,
     type: 'Spell',
-    spellSchool: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
     collectible: false,
     id: 81,
+
+    spellSchool: 'None',
 
     cast(plr, self) {
         // Restore 2 mana.

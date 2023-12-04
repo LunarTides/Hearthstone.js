@@ -8,10 +8,12 @@ export const blueprint: Blueprint = {
     text: '<b>Choose Twice -</b> Draw a card; Give your minions +1 Attack; Gain 6 Armor.',
     cost: 4,
     type: 'Spell',
-    spellSchool: 'None',
     classes: ['Druid'],
     rarity: 'Epic',
+    collectible: true,
     id: 86,
+
+    spellSchool: 'None',
 
     cast(plr, self) {
         // Choose Twice - Draw a card; Give your minions  +1 Attack; Gain 6 Armor.

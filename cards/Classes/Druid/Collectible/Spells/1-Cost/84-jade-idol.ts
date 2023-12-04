@@ -8,10 +8,12 @@ export const blueprint: Blueprint = {
     text: '<b>Choose One -</b> Summon a <b>Jade Golem</b>; or Shuffle 3 copies of this card into your deck.',
     cost: 1,
     type: 'Spell',
-    spellSchool: 'None',
     classes: ['Druid'],
     rarity: 'Rare',
+    collectible: true,
     id: 84,
+
+    spellSchool: 'None',
 
     cast(plr, self) {
         // Choose One - Summon a Jade Golem; or Shuffle 3 copies of this card into your deck.

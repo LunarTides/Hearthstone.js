@@ -8,11 +8,12 @@ export const blueprint: Blueprint = {
     text: 'Restore 2 Health.',
     cost: 2,
     type: 'Spell',
-    spellSchool: 'None',
     classes: ['Priest'],
     rarity: 'Free',
     collectible: false,
     id: 118,
+
+    spellSchool: 'None',
 
     cast(plr, self) {
         // Restore 2 Health.

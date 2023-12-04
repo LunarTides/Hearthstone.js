@@ -9,13 +9,14 @@ export const blueprint: Blueprint = {
     text: '<b>Rush</b>',
     cost: 1,
     type: 'Minion',
-    attack: 1,
-    health: 1,
-    tribe: 'Beast',
     classes: ['Druid'],
     rarity: 'Free',
     collectible: false,
     id: 95,
+
+    attack: 1,
+    health: 1,
+    tribe: 'Beast',
 
     create(plr, self) {
         // Add additional fields here

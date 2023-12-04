@@ -194,7 +194,6 @@ ${runes}${keywords}
 
     // Get the latest card-id
     const id = getLatestId() + 1;
-    const fileId = `\n    id: ${id},`;
 
     // Create a path to put the card in.
     let path = generateCardPath(card.classes, type).replaceAll('\\', '/');
@@ -249,7 +248,7 @@ ${runes}${keywords}
     const passiveImport = isPassive ? ', type EventValue' : '';
 
     // Add the key/value pairs to the content
-    const contentArray = Object.entries(card).filter(c => c[0] !== 'id').map(c => `${c[0]}: ${getTypeValue(c[1])}`);
+    const contentArray = Object.entries(card).map(c => `${c[0]}: ${getTypeValue(c[1])},\n    `);
 
     // Add the content
     const content = `// Created by the ${creatorType} Card Creator
@@ -258,7 +257,7 @@ import assert from 'node:assert';
 import { type Blueprint${passiveImport} } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
-    ${contentArray.join(',\n    ')},${fileId}${createAbility}${ability}
+    ${contentArray.join('').replace(/ {4}id: .*?,/, `    id: ${id},\n`)}${createAbility}${ability}
 };
 `;
 

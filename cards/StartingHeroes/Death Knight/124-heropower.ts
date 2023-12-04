@@ -8,11 +8,12 @@ export const blueprint: Blueprint = {
     text: 'Summon a 1/1 Ghoul with Charge. It dies at end of turn.',
     cost: 2,
     type: 'Spell',
-    spellSchool: 'None',
     classes: ['Death Knight'],
     rarity: 'Free',
     collectible: false,
     id: 124,
+
+    spellSchool: 'None',
 
     cast(plr, self) {
         // Summon a 1/1 Ghoul with Charge. It dies at end of turn.

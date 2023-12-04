@@ -8,10 +8,12 @@ export const blueprint: Blueprint = {
     text: '<b>Choose One</b> - Summon a 6/6 Orca with <b>Taunt</b>; or six 1/1 Otters with <b>Rush</b>.',
     cost: 5,
     type: 'Spell',
-    spellSchool: 'Nature',
     classes: ['Druid'],
     rarity: 'Common',
+    collectible: true,
     id: 97,
+
+    spellSchool: 'Nature',
 
     cast(plr, self) {
         // Choose One - Summon a 6/6 Orca with Taunt; or six 1/1 Otters with Rush.

@@ -7,10 +7,11 @@ export const blueprint: Blueprint = {
     text: '',
     cost: 1,
     type: 'Weapon',
-    attack: 1,
-    health: 2,
     classes: ['Rogue'],
     rarity: 'Free',
     collectible: false,
     id: 22,
+
+    attack: 1,
+    health: 2,
 };

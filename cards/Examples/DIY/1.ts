@@ -7,13 +7,14 @@ export const blueprint: Blueprint = {
     text: '<b>This is a DIY card, it does not work by default. Battlecry:</b> Give this minion +1/+1.',
     cost: 0,
     type: 'Minion',
-    attack: 0,
-    health: 1,
-    tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
     collectible: false,
     id: 61,
+
+    attack: 0,
+    health: 1,
+    tribe: 'None',
 
     battlecry(plr, self) {
         // Give this minion +1/+1.

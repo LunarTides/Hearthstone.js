@@ -9,12 +9,14 @@ export const blueprint: Blueprint = {
     text: '<b>Battlecry:</b> Cast a random spell for each spell you\'ve cast this game <i>(targets chosen randomly)</i>.',
     cost: 10,
     type: 'Minion',
+    classes: ['Neutral'],
+    rarity: 'Legendary',
+    collectible: true,
+    id: 103,
+
     attack: 7,
     health: 5,
     tribe: 'None',
-    classes: ['Neutral'],
-    rarity: 'Legendary',
-    id: 103,
 
     battlecry(plr, self) {
         // Cast a random spell for each spell you've cast this game (targets chosen randomly).

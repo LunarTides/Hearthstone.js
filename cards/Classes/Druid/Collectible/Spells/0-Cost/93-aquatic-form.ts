@@ -8,10 +8,12 @@ export const blueprint: Blueprint = {
     text: '<b>Dredge</b>. If you have the Mana to play the card this turn, draw it.',
     cost: 0,
     type: 'Spell',
-    spellSchool: 'None',
     classes: ['Druid'],
     rarity: 'Rare',
+    collectible: true,
     id: 93,
+
+    spellSchool: 'None',
 
     cast(plr, self) {
         // Dredge. If you have the Mana to play the card this turn, draw it.

@@ -5,7 +5,7 @@
 
 import rl from 'readline-sync';
 import { type Card as VanillaCard } from '@hearthstonejs/vanillatypes';
-import { type Blueprint, type CardClass, type CardRarity, type MinionTribe, type SpellSchool } from '../../src/types.js';
+import { type CardType, type Blueprint, type CardClass, type CardRarity, type MinionTribe, type SpellSchool } from '../../src/types.js';
 import { createGame } from '../../src/internal.js';
 import * as lib from './lib.js';
 
@@ -75,85 +75,59 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CcT
         create(heroPower, debug);
     }
 
-    let blueprint: Blueprint;
+    let blueprint: Blueprint = {
+        name,
+        text,
+        cost,
+        type: type as CardType,
+        classes: [cardClass],
+        rarity,
+        collectible,
+        id: 0,
+    };
 
     switch (type) {
         case 'Minion': {
-            blueprint = {
-                name,
-                text,
-                cost,
-                type,
+            blueprint = Object.assign(blueprint, {
                 attack,
                 health,
                 // TODO: Add support for more than 1 tribe. #334
                 tribe: races[0] || 'None',
-                classes: [cardClass],
-                rarity,
-                id: 0,
-            };
+            });
 
             break;
         }
 
         case 'Spell': {
-            blueprint = {
-                name,
-                text,
-                cost,
-                type,
+            blueprint = Object.assign(blueprint, {
                 spellSchool,
-                classes: [cardClass],
-                rarity,
-                id: 0,
-            };
+            });
 
             break;
         }
 
         case 'Weapon': {
-            blueprint = {
-                name,
-                text,
-                cost,
-                type,
+            blueprint = Object.assign(blueprint, {
                 attack,
                 health: durability,
-                classes: [cardClass],
-                rarity,
-                id: 0,
-            };
+            });
 
             break;
         }
 
         case 'Hero': {
-            blueprint = {
-                name,
-                text,
-                cost,
-                type,
+            blueprint = Object.assign(blueprint, {
                 heropowerId: lib.getLatestId(),
-                classes: [cardClass],
-                rarity,
-                id: 0,
-            };
+            });
 
             break;
         }
 
         case 'Location': {
-            blueprint = {
-                name,
-                text,
-                cost,
-                type,
+            blueprint = Object.assign(blueprint, {
                 durability: health,
                 cooldown: 2,
-                classes: [cardClass],
-                rarity,
-                id: 0,
-            };
+            });
 
             break;
         }
@@ -161,10 +135,6 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CcT
         default: {
             throw new TypeError(`${type} is not a valid type!`);
         }
-    }
-
-    if (!collectible) {
-        blueprint.collectible = false;
     }
 
     let cctype: lib.CcType = 'Vanilla';

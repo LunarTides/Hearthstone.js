@@ -8,11 +8,12 @@ export const blueprint: Blueprint = {
     text: 'Summon a 1/1 Silver Hand Recruit.',
     cost: 2,
     type: 'Spell',
-    spellSchool: 'None',
     classes: ['Paladin'],
     rarity: 'Free',
     collectible: false,
     id: 120,
+
+    spellSchool: 'None',
 
     cast(plr, self) {
         // Summon a 1/1 Silver Hand Recruit.

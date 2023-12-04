@@ -9,12 +9,14 @@ export const blueprint: Blueprint = {
     text: 'At the end of your turn, cast a spell you\'ve cast this turn <i>(targets are random)</i>.',
     cost: 4,
     type: 'Minion',
+    classes: ['Neutral'],
+    rarity: 'Legendary',
+    collectible: true,
+    id: 98,
+
     attack: 2,
     health: 6,
     tribe: 'None',
-    classes: ['Neutral'],
-    rarity: 'Legendary',
-    id: 98,
 
     passive(plr, self, key, _unknownValue) {
         // At the end of your turn, cast a spell you've cast this turn (targets are random).

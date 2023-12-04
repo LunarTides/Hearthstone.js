@@ -10,11 +10,12 @@ export const blueprint: Blueprint = {
     text: 'Force each enemy minion to attack a random enemy minion.',
     cost: 0,
     type: 'Spell',
-    spellSchool: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
     collectible: false,
     id: 107,
+
+    spellSchool: 'None',
 
     cast(plr, self) {
         // Force each enemy minion to attack a random enemy minion.

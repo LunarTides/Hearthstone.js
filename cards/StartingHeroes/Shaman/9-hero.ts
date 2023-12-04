@@ -7,9 +7,10 @@ export const blueprint: Blueprint = {
     text: 'Shaman starting hero',
     cost: 0,
     type: 'Hero',
-    heropowerId: 119,
     classes: ['Shaman'],
     rarity: 'Free',
     collectible: false,
     id: 9,
+
+    heropowerId: 119,
 };

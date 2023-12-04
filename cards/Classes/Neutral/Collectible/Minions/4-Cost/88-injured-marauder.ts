@@ -8,12 +8,14 @@ export const blueprint: Blueprint = {
     text: '<b>Taunt. Battlecry:</b> Deal 6 damage to this minion.',
     cost: 4,
     type: 'Minion',
+    classes: ['Neutral'],
+    rarity: 'Common',
+    collectible: true,
+    id: 88,
+
     attack: 5,
     health: 10,
     tribe: 'None',
-    classes: ['Neutral'],
-    rarity: 'Common',
-    id: 88,
 
     create(plr, self) {
         // Add additional fields here

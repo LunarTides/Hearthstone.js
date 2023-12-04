@@ -42,11 +42,11 @@ function applyCard(_card: BlueprintWithOptional): Blueprint {
             cost: 0,
             classes: ['Neutral'],
             rarity: 'Free',
-            stats: [1, 1],
+            attack: 1,
+            health: 1,
             tribe: 'None',
             spellSchool: 'None',
-            hpText: 'CHANGE THIS',
-            hpCost: 2,
+            heropowerId: 0,
             durability: 2,
             cooldown: 2,
         };
@@ -104,9 +104,10 @@ function common(): BlueprintWithOptional {
         type,
         classes: [classes],
         rarity,
-        id: 0,
         runes,
         keywords: realKeywords,
+        collectible: true,
+        id: 0,
     };
 }
 
@@ -119,18 +120,10 @@ const cardTypeFunctions: { [x in CardType]: () => Blueprint } = {
         const tribe = input('Tribe: ') as MinionTribe;
 
         return applyCard({
-            name: card.name,
-            text: card.text,
-            cost: card.cost,
-            type: card.type,
+            ...card,
             attack,
             health,
             tribe,
-            classes: card.classes,
-            rarity: card.rarity,
-            runes: card.runes,
-            keywords: card.keywords,
-            id: 0,
         });
     },
 
@@ -140,16 +133,8 @@ const cardTypeFunctions: { [x in CardType]: () => Blueprint } = {
         const spellSchool = input('Spell School: ') as SpellSchool;
 
         return applyCard({
-            name: card.name,
-            text: card.text,
-            cost: card.cost,
-            type: card.type,
+            ...card,
             spellSchool,
-            classes: card.classes,
-            rarity: card.rarity,
-            runes: card.runes,
-            keywords: card.keywords,
-            id: 0,
         });
     },
 
@@ -160,17 +145,9 @@ const cardTypeFunctions: { [x in CardType]: () => Blueprint } = {
         const health = game.lodash.parseInt(input('Health: '));
 
         return applyCard({
-            name: card.name,
-            text: card.text,
-            cost: card.cost,
-            type: card.type,
+            ...card,
             attack,
             health,
-            classes: card.classes,
-            rarity: card.rarity,
-            runes: card.runes,
-            keywords: card.keywords,
-            id: 0,
         });
     },
 
@@ -183,16 +160,8 @@ const cardTypeFunctions: { [x in CardType]: () => Blueprint } = {
         }
 
         return applyCard({
-            name: card.name,
-            text: card.text,
-            cost: card.cost,
-            type: card.type,
+            ...card,
             heropowerId: lib.getLatestId(),
-            classes: card.classes,
-            rarity: card.rarity,
-            runes: card.runes,
-            keywords: card.keywords,
-            id: 0,
         });
     },
 
@@ -203,17 +172,9 @@ const cardTypeFunctions: { [x in CardType]: () => Blueprint } = {
         const cooldown = game.lodash.parseInt(input('Cooldown (Default: 2): ')) ?? 2;
 
         return applyCard({
-            name: card.name,
-            text: card.text,
-            cost: card.cost,
-            type: card.type,
+            ...card,
             durability,
             cooldown,
-            classes: card.classes,
-            rarity: card.rarity,
-            runes: card.runes,
-            keywords: card.keywords,
-            id: 0,
         });
     },
 

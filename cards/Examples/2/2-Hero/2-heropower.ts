@@ -8,11 +8,12 @@ export const blueprint: Blueprint = {
     text: 'Restore 2 Health to your hero.',
     cost: 2,
     type: 'Spell',
-    spellSchool: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
     collectible: false,
     id: 130,
+
+    spellSchool: 'None',
 
     // This gets triggered when the player uses their hero power.
     cast(plr, self) {

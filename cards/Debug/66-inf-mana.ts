@@ -8,11 +8,12 @@ export const blueprint: Blueprint = {
     text: 'Fill up your mana. For the rest of the game, your mana never decreases.',
     cost: 0,
     type: 'Spell',
-    spellSchool: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
     collectible: false,
     id: 66,
+
+    spellSchool: 'None',
 
     cast(plr, self) {
         // Fill up your mana. For the rest of the game, your mana never decreases.

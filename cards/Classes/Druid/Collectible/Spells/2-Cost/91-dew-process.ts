@@ -8,10 +8,12 @@ export const blueprint: Blueprint = {
     text: 'For the rest of the game, players draw an extra card at the start of their turn.',
     cost: 2,
     type: 'Spell',
-    spellSchool: 'Nature',
     classes: ['Druid'],
     rarity: 'Rare',
+    collectible: true,
     id: 91,
+
+    spellSchool: 'Nature',
 
     cast(plr, self) {
         // For the rest of the game, players draw an extra card at the start of their turn.

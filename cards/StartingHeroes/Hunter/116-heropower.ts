@@ -8,11 +8,12 @@ export const blueprint: Blueprint = {
     text: 'Deal 2 damage to the enemy hero.',
     cost: 2,
     type: 'Spell',
-    spellSchool: 'None',
     classes: ['Hunter'],
     rarity: 'Free',
     collectible: false,
     id: 116,
+
+    spellSchool: 'None',
 
     cast(plr, self) {
         // Deal 2 damage to the enemy hero.

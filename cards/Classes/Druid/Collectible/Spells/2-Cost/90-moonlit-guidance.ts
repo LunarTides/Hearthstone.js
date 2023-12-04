@@ -8,10 +8,12 @@ export const blueprint: Blueprint = {
     text: '<b>Discover</b> a copy of a card in your deck. If you play it this turn, draw the original.',
     cost: 2,
     type: 'Spell',
-    spellSchool: 'Arcane',
     classes: ['Druid'],
     rarity: 'Rare',
+    collectible: true,
     id: 90,
+
+    spellSchool: 'Arcane',
 
     cast(plr, self) {
         // Discover a copy of a card in your deck. If you play it this turn, draw the original.

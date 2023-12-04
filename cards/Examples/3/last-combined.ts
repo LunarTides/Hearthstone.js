@@ -8,11 +8,12 @@ export const blueprint: Blueprint = {
     text: 'If the turn counter is an even number, gain mana equal to the turn counter (up to 10). Manathirst (7): Remove the condition. (Currently: {turns})',
     cost: 0,
     type: 'Spell',
-    spellSchool: 'None',
     classes: ['Neutral'],
     rarity: 'Legendary',
     collectible: false,
     id: 54,
+
+    spellSchool: 'None',
 
     cast(plr, self) {
         if (!self.condition()) {

@@ -22,13 +22,14 @@ export const blueprint: Blueprint = {
     text: '<b>Battlecry:</b> Give this minion +1/+1.',
     cost: 1,
     type: 'Minion',
-    attack: 1,
-    health: 2,
-    tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
     collectible: false,
     id: 77,
+
+    attack: 1,
+    health: 2,
+    tribe: 'None',
 
     // If the function is named correctly, you can just write the name of the ability
     battlecry,

@@ -8,11 +8,12 @@ export const blueprint: Blueprint = {
     text: 'Deal 1 damage.',
     cost: 2,
     type: 'Spell',
-    spellSchool: 'None',
     classes: ['Mage'],
     rarity: 'Free',
     collectible: false,
     id: 114,
+
+    spellSchool: 'None',
 
     cast(plr, self) {
         // Deal 1 damage.

@@ -12,11 +12,12 @@ export const blueprint: Blueprint = {
 
     cost: 1,
     type: 'Spell',
-    spellSchool: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
     collectible: false,
     id: 58,
+
+    spellSchool: 'None',
 
     cast(plr, self) {
         // Quest: Play 3 cards. Reward: Return those cards back to your hand.

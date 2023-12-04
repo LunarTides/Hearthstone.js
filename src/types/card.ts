@@ -194,23 +194,22 @@ export type Blueprint = {
     text: string;
     cost: number;
     type: CardType;
+    classes: CardClass[];
+    rarity: CardRarity;
+    collectible: boolean;
+    id: number;
 
     // Type specific
     attack?: number;
     health?: number;
     tribe?: MinionTribe;
+
     spellSchool?: SpellSchool;
+
     durability?: number;
     cooldown?: number;
+
     heropowerId?: number;
-
-    // Less important
-    classes: CardClass[];
-    rarity: CardRarity;
-
-    // Last
-    collectible?: boolean;
-    id: number;
 } & BlueprintAbilities;
 
 export type BlueprintWithOptional = Blueprint & {

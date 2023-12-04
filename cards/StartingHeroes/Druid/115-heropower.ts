@@ -8,11 +8,12 @@ export const blueprint: Blueprint = {
     text: '+1 Attack this turn. +1 Armor.',
     cost: 2,
     type: 'Spell',
-    spellSchool: 'None',
     classes: ['Druid'],
     rarity: 'Free',
     collectible: false,
     id: 115,
+
+    spellSchool: 'None',
 
     cast(plr, self) {
         // +1 Attack this turn. +1 Armor.

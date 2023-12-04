@@ -11,13 +11,14 @@ export const blueprint: Blueprint = {
 
     cost: 1,
     type: 'Minion',
-    attack: 1,
-    health: 1,
-    tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
     collectible: false,
     id: 55,
+
+    attack: 1,
+    health: 1,
+    tribe: 'None',
 
     // Note the new `key` and `_unknownVal` arguments.
     // These are only used in the `passive` and `handpassive` abilities.

@@ -7,13 +7,14 @@ export const blueprint: Blueprint = {
     text: 'Colossal +2. Dormant. Corrupted. <b>Battlecry: Dredge.</b>',
     cost: 0,
     type: 'Minion',
-    attack: 9,
-    health: 9,
-    tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Legendary',
     collectible: false,
     id: 49,
+
+    attack: 9,
+    health: 9,
+    tribe: 'None',
 
     create(plr, self) {
         self.addKeyword('Colossal', [46, 0, 47]);

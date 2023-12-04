@@ -10,11 +10,12 @@ export const blueprint: Blueprint = {
     text: 'Take control of an enemy minion.',
     cost: 0,
     type: 'Spell',
-    spellSchool: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
     collectible: false,
     id: 108,
+
+    spellSchool: 'None',
 
     cast(plr, self) {
         // Take control of an enemy minion.

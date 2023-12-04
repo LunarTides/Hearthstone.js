@@ -8,11 +8,13 @@ export const blueprint: Blueprint = {
     text: 'Choose a character. Cast 4 random spells <i>(targeting it if possible)</i>.',
     cost: 7,
     type: 'Location',
-    durability: 3,
-    cooldown: 2,
     classes: ['Neutral'],
     rarity: 'Legendary',
+    collectible: true,
     id: 102,
+
+    durability: 3,
+    cooldown: 2,
 
     use(plr, self) {
         // Choose a character. Cast 4 random spells (targeting it if possible).

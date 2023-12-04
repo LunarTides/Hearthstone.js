@@ -8,11 +8,12 @@ export const blueprint: Blueprint = {
     text: 'Gain 2 Armor.',
     cost: 2,
     type: 'Spell',
-    spellSchool: 'None',
     classes: ['Warrior'],
     rarity: 'Free',
     collectible: false,
     id: 117,
+
+    spellSchool: 'None',
 
     cast(plr, self) {
         // Gain 2 Armor.

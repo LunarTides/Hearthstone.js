@@ -8,10 +8,12 @@ export const blueprint: Blueprint = {
     text: 'Give your hero +3 Attack this turn.',
     cost: 2,
     type: 'Spell',
-    spellSchool: 'None',
     classes: ['Warrior'],
     rarity: 'Legendary',
+    collectible: true,
     id: 127,
+
+    spellSchool: 'None',
 
     cast(plr, self) {
         // Give your hero +3 Attack this turn.

@@ -8,13 +8,14 @@ export const blueprint: Blueprint = {
     text: '<b>Battlecry:</b> Freeze an enemy minion. Manathirst (6): Silence it first.',
     cost: 1,
     type: 'Minion',
-    attack: 1,
-    health: 2,
-    tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
     collectible: false,
     id: 50,
+
+    attack: 1,
+    health: 2,
+    tribe: 'None',
 
     battlecry(plr, self) {
         const returnValue = self.manathirst(6);

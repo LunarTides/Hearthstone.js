@@ -8,13 +8,14 @@ export const blueprint: Blueprint = {
     text: '<b>Taunt, Divine Shield. Battlecry: Dredge.</b> Gain +1/+1. (This example card combines everything you\'ve learned in stage 1 into this card.)',
     cost: 1,
     type: 'Minion',
-    attack: 4,
-    health: 4,
-    tribe: 'All',
     classes: ['Priest', 'Paladin'],
     rarity: 'Legendary',
     collectible: false,
     id: 35,
+
+    attack: 4,
+    health: 4,
+    tribe: 'All',
 
     create(plr, self) {
         self.addKeyword('Taunt');

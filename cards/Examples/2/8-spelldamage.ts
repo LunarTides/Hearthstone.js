@@ -13,11 +13,12 @@ export const blueprint: Blueprint = {
 
     cost: 0,
     type: 'Spell',
-    spellSchool: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
     collectible: false,
     id: 42,
+
+    spellSchool: 'None',
 
     cast(plr, self) {
         // Deal $3 damage to the enemy hero.

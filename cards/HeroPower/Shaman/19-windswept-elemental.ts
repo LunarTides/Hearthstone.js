@@ -7,13 +7,14 @@ export const blueprint: Blueprint = {
     text: '<b>Rush</b>',
     cost: 2,
     type: 'Minion',
-    attack: 2,
-    health: 1,
-    tribe: 'Totem',
     classes: ['Shaman'],
     rarity: 'Free',
     collectible: false,
     id: 19,
+
+    attack: 2,
+    health: 1,
+    tribe: 'Totem',
 
     create(plr, self) {
         self.addKeyword('Rush');

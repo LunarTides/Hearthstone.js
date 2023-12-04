@@ -8,13 +8,14 @@ export const blueprint: Blueprint = {
     text: '<b>Divine Shield</b>',
     cost: 1,
     type: 'Minion',
-    attack: 1,
-    health: 1,
-    tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
     collectible: false,
     id: 73,
+
+    attack: 1,
+    health: 1,
+    tribe: 'None',
 
     create(plr, self) {
         self.addKeyword('Divine Shield');

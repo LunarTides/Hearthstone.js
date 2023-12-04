@@ -216,8 +216,6 @@ export const colorFunctions = {
             const callback = chalk[tagFuncString as keyof ChalkInstance] as unknown;
             if (callback instanceof Function) {
                 returnValue = (callback as (...text: any) => string)(returnValue);
-            } else {
-                throw new TypeError(`"${tag}" is not a valid color tag. "${tag}" results in 'chalk.${tagFuncString}' which is not a function.`);
             }
 
             return returnValue;

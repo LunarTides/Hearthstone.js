@@ -8,10 +8,12 @@ export const blueprint: Blueprint = {
     text: '<b>Battlecry:</b> Draw {amount} minion{plural}. Give {plural2} +4/+4.',
     cost: 7,
     type: 'Hero',
-    heropowerId: 127,
     classes: ['Warrior'],
     rarity: 'Legendary',
+    collectible: true,
     id: 69,
+
+    heropowerId: 127,
 
     battlecry(plr, self) {
         // Draw 1 minion. Give them +4/+4.

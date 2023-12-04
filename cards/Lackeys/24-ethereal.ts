@@ -8,13 +8,14 @@ export const blueprint: Blueprint = {
     text: '<b>Battlecry: Discover</b> a spell.',
     cost: 1,
     type: 'Minion',
-    attack: 1,
-    health: 1,
-    tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
     collectible: false,
     id: 24,
+
+    attack: 1,
+    health: 1,
+    tribe: 'None',
 
     battlecry(plr, self) {
         // Discover a spell.

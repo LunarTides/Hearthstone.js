@@ -11,11 +11,12 @@ export const blueprint: Blueprint = {
 
     cost: 0,
     type: 'Spell',
-    spellSchool: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
     collectible: false,
     id: 53,
+
+    spellSchool: 'None',
 
     cast(plr, self) {
         // Gain mana equal to the turn counter.

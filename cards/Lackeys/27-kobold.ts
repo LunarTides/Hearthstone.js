@@ -8,13 +8,14 @@ export const blueprint: Blueprint = {
     text: '<b>Battlecry:</b> Deal 2 damage.',
     cost: 1,
     type: 'Minion',
-    attack: 1,
-    health: 1,
-    tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
     collectible: false,
     id: 27,
+
+    attack: 1,
+    health: 1,
+    tribe: 'None',
 
     battlecry(plr, self) {
         // Deal 2 damage.

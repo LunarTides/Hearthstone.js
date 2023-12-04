@@ -8,10 +8,12 @@ export const blueprint: Blueprint = {
     text: 'Gain 6 Armor. <b>Recruit</b> a minion that costs (4) or less.',
     cost: 4,
     type: 'Spell',
-    spellSchool: 'Nature',
     classes: ['Druid'],
     rarity: 'Common',
+    collectible: true,
     id: 87,
+
+    spellSchool: 'Nature',
 
     cast(plr, self) {
         // Gain 6 Armor. Recruit a minion that costs (4) or less.

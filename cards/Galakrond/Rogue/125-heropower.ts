@@ -8,10 +8,12 @@ export const blueprint: Blueprint = {
     text: 'Add a <b>Lackey</b> to your hand.',
     cost: 2,
     type: 'Spell',
-    spellSchool: 'None',
     classes: ['Rogue'],
     rarity: 'Legendary',
+    collectible: true,
     id: 125,
+
+    spellSchool: 'None',
 
     cast(plr, self) {
         // Add a lacky to your hand.

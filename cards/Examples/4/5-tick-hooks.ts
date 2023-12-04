@@ -7,13 +7,14 @@ export const blueprint: Blueprint = {
     text: 'Your cards cost (1) less.',
     cost: 1,
     type: 'Minion',
-    attack: 1,
-    health: 1,
-    tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
     collectible: false,
     id: 59,
+
+    attack: 1,
+    health: 1,
+    tribe: 'None',
 
     battlecry(plr, self) {
         // Your cards cost (1) less.

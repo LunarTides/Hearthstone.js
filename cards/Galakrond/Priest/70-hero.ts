@@ -9,8 +9,10 @@ export const blueprint: Blueprint = {
     type: 'Hero',
     classes: ['Priest'],
     rarity: 'Legendary',
-    heropowerId: 128,
+    collectible: true,
     id: 70,
+
+    heropowerId: 128,
 
     battlecry(plr, self) {
         // Destroy 1 random enemy minion.

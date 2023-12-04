@@ -7,13 +7,14 @@ export const blueprint: Blueprint = {
     text: '<b>Dormant</b> for 2 turns. <b>Battlecry:</b> Dredge.',
     cost: 1,
     type: 'Minion',
-    attack: 8,
-    health: 8,
-    tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
     collectible: false,
     id: 38,
+
+    attack: 8,
+    health: 8,
+    tribe: 'None',
 
     create(plr, self) {
         // The 2 is how many turns this minion should be dormant for.

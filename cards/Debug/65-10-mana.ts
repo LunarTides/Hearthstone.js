@@ -9,11 +9,12 @@ export const blueprint: Blueprint = {
     text: 'Gain 10 Mana.',
     cost: 0,
     type: 'Spell',
-    spellSchool: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
     collectible: false,
     id: 65,
+
+    spellSchool: 'None',
 
     cast(plr, self) {
         // Gain 10 Mana.

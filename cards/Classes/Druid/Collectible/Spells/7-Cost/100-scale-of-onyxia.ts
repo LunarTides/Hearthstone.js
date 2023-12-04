@@ -8,10 +8,12 @@ export const blueprint: Blueprint = {
     text: 'Fill your board with 2/1 Whelps with <b>Rush</b>.',
     cost: 7,
     type: 'Spell',
-    spellSchool: 'None',
     classes: ['Druid'],
     rarity: 'Common',
+    collectible: true,
     id: 100,
+
+    spellSchool: 'None',
 
     cast(plr, self) {
         // Fill your board with 2/1 Whelps with Rush.

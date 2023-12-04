@@ -9,12 +9,14 @@ export const blueprint: Blueprint = {
     text: '<b>Battlecry:</b> If you\'ve cast 10 spells this game, spin the Wheel of Yogg-Saron.{left}',
     cost: 10,
     type: 'Minion',
+    classes: ['Neutral'],
+    rarity: 'Legendary',
+    collectible: true,
+    id: 104,
+
     attack: 7,
     health: 5,
     tribe: 'None',
-    classes: ['Neutral'],
-    rarity: 'Legendary',
-    id: 104,
 
     // eslint-disable-next-line complexity
     battlecry(plr, self) {

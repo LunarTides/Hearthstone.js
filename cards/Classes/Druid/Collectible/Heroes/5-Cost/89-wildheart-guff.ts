@@ -8,10 +8,12 @@ export const blueprint: Blueprint = {
     text: '<b>Battlecry:</b> Set your maximum Mana to 20. Gain an empty Mana Crystal. Draw a card.',
     cost: 5,
     type: 'Hero',
-    heropowerId: 113,
     classes: ['Druid'],
     rarity: 'Legendary',
+    collectible: true,
     id: 89,
+
+    heropowerId: 113,
 
     battlecry(plr, self) {
         // Set your maximum Mana to 20. Gain an empty Mana Crystal. Draw a card.

@@ -9,11 +9,12 @@ export const blueprint: Blueprint = {
     text: '',
     cost: 1,
     type: 'Minion',
-    attack: 2,
-    health: 2,
-    tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
     collectible: false,
     id: 76,
+
+    attack: 2,
+    health: 2,
+    tribe: 'None',
 };

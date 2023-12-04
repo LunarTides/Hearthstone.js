@@ -8,11 +8,12 @@ export const blueprint: Blueprint = {
     text: 'Summon a random basic Totem.',
     cost: 2,
     type: 'Spell',
-    spellSchool: 'None',
     classes: ['Shaman'],
     rarity: 'Free',
     collectible: false,
     id: 119,
+
+    spellSchool: 'None',
 
     cast(plr, self) {
         // Filter away totem cards that is already on the player's side of the board.

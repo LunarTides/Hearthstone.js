@@ -7,13 +7,14 @@ export const blueprint: Blueprint = {
     text: 'Battlecry: For the rest of the game, your battlecries trigger twice.',
     cost: 1,
     type: 'Minion',
-    attack: 1,
-    health: 1,
-    tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
     collectible: false,
     id: 57,
+
+    attack: 1,
+    health: 1,
+    tribe: 'None',
 
     battlecry(plr, self) {
         // For the rest of the game, your battlecries trigger twice.

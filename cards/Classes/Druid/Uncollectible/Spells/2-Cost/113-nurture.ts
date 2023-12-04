@@ -8,11 +8,12 @@ export const blueprint: Blueprint = {
     text: '<b>Choose One -</b> Draw a card; or Gain an empty Mana Crystal.',
     cost: 2,
     type: 'Spell',
-    spellSchool: 'None',
     classes: ['Druid'],
     rarity: 'Free',
     collectible: false,
     id: 113,
+
+    spellSchool: 'None',
 
     cast(plr, self) {
         // Choose One - Draw a card; or Gain an empty Mana Crystal.

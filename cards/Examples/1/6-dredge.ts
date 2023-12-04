@@ -8,13 +8,14 @@ export const blueprint: Blueprint = {
     text: 'This example card shows you how to use keywords like dredge. <b>Battlecry: Dredge.</b>',
     cost: 1,
     type: 'Minion',
-    attack: 1,
-    health: 1,
-    tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
     collectible: false,
     id: 34,
+
+    attack: 1,
+    health: 1,
+    tribe: 'None',
 
     battlecry(plr, self) {
         // Dredge.

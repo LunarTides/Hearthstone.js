@@ -8,13 +8,14 @@ export const blueprint: Blueprint = {
     text: '<b>Battlecry:</b> Summon a random 2-Cost minion.',
     cost: 1,
     type: 'Minion',
-    attack: 1,
-    health: 1,
-    tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
     collectible: false,
     id: 25,
+
+    attack: 1,
+    health: 1,
+    tribe: 'None',
 
     battlecry(plr, self) {
         // Summon a random 2-Cost minion.

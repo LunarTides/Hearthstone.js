@@ -7,13 +7,14 @@ export const blueprint: Blueprint = {
     text: 'Colossal +2. Dormant. Corrupt.',
     cost: 0,
     type: 'Minion',
-    attack: 5,
-    health: 3,
-    tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Legendary',
     collectible: false,
     id: 48,
+
+    attack: 5,
+    health: 3,
+    tribe: 'None',
 
     create(plr, self) {
         self.runes = 'BBB';

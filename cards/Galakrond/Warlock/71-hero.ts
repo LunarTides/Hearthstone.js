@@ -10,8 +10,10 @@ export const blueprint: Blueprint = {
     type: 'Hero',
     classes: ['Warlock'],
     rarity: 'Legendary',
-    heropowerId: 129,
+    collectible: true,
     id: 71,
+
+    heropowerId: 129,
 
     battlecry(plr, self) {
         // Summon 1 random Demon.

@@ -7,13 +7,14 @@ export const blueprint: Blueprint = {
     text: '<b>Titan</b>.',
     cost: 1,
     type: 'Minion',
-    attack: 10,
-    health: 10,
-    tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
     collectible: false,
     id: 78,
+
+    attack: 10,
+    health: 10,
+    tribe: 'None',
 
     create(plr, self) {
         // Put the ids of the titan ability cards, like in corrupt, but a list.

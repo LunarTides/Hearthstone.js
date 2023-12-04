@@ -7,13 +7,14 @@ export const blueprint: Blueprint = {
     text: 'This is an example card to show how runes work.',
     cost: 1,
     type: 'Minion',
-    attack: 1,
-    health: 2,
-    tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
     collectible: false,
     id: 39,
+
+    attack: 1,
+    health: 2,
+    tribe: 'None',
 
     create(plr, self) {
         // You need 2 frost runes and 1 blood rune to use this card.

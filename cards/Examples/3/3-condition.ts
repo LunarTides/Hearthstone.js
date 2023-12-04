@@ -11,13 +11,14 @@ export const blueprint: Blueprint = {
 
     cost: 1,
     type: 'Minion',
-    attack: 5,
-    health: 2,
-    tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
     collectible: false,
     id: 52,
+
+    attack: 5,
+    health: 2,
+    tribe: 'None',
 
     battlecry(plr, self) {
         // If your deck has no duplicates, draw a card.

@@ -8,10 +8,12 @@ export const blueprint: Blueprint = {
     text: '{placeholder}',
     cost: 3,
     type: 'Spell',
-    spellSchool: 'Nature',
     classes: ['Druid'],
     rarity: 'Rare',
+    collectible: true,
     id: 94,
+
+    spellSchool: 'Nature',
 
     create(plr, self) {
         // Initialize storage

@@ -7,13 +7,14 @@ export const blueprint: Blueprint = {
     text: 'Circular card reference: {card}',
     cost: 1,
     type: 'Minion',
-    attack: 1,
-    health: 1,
-    tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
     collectible: false,
     id: 132,
+
+    attack: 1,
+    health: 1,
+    tribe: 'None',
 
     placeholders(plr, self) {
         // You can reference this card in placeholders.

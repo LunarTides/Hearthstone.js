@@ -8,13 +8,14 @@ export const blueprint: Blueprint = {
     text: '<b>Deathrattle:</b> Summon two 1/1 Sheep.',
     cost: 1,
     type: 'Minion',
-    attack: 1,
-    health: 2,
-    tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
     collectible: false,
     id: 72,
+
+    attack: 1,
+    health: 2,
+    tribe: 'None',
 
     deathrattle(plr, self) {
         // Summon two 1/1 Sheep.

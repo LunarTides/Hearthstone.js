@@ -10,6 +10,8 @@ export const blueprint: Blueprint = {
     type: 'Location',
     classes: ['Neutral'],
     rarity: 'Free',
+    collectible: false,
+    id: 36,
 
     // This is the amount of times you can trigger the location card before it breaking.
     durability: 3,
@@ -17,9 +19,6 @@ export const blueprint: Blueprint = {
     // How many turns you have to wait until you can use the location card again.
     // Afaik, in hearthstone, this is always 2.
     cooldown: 2,
-
-    collectible: false,
-    id: 36,
 
     // Remember to use the correct ability
     // For spells, the ability is `cast`.

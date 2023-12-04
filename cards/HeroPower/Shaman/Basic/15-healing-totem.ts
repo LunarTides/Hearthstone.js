@@ -9,13 +9,14 @@ export const blueprint: Blueprint = {
     text: 'At the end of your turn, restore #1 Health to all friendly minions.',
     cost: 1,
     type: 'Minion',
-    attack: 0,
-    health: 2,
-    tribe: 'Totem',
     classes: ['Shaman'],
     rarity: 'Free',
     collectible: false,
     id: 15,
+
+    attack: 0,
+    health: 2,
+    tribe: 'Totem',
 
     passive(plr, self, key, value, eventPlayer) {
         // At the end of your turn, restore 1 Health to all friendly minions.

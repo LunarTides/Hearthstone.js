@@ -8,11 +8,12 @@ export const blueprint: Blueprint = {
     text: 'Destroy an enemy minion.',
     cost: 0,
     type: 'Spell',
-    spellSchool: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
     collectible: false,
     id: 79,
+
+    spellSchool: 'None',
 
     cast(plr, self) {
         // Destroy an enemy minion.

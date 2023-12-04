@@ -7,13 +7,14 @@ export const blueprint: Blueprint = {
     text: '<b>Corrupt.</b>',
     cost: 0,
     type: 'Minion',
-    attack: 1,
-    health: 1,
-    tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
     collectible: false,
     id: 40,
+
+    attack: 1,
+    health: 1,
+    tribe: 'None',
 
     create(plr, self) {
         // Put the id of the corrupted counterpart here. This is the id of 5-corrupted.ts

@@ -8,11 +8,12 @@ export const blueprint: Blueprint = {
     text: 'Equip a 1/2 Dagger.',
     cost: 2,
     type: 'Spell',
-    spellSchool: 'None',
     classes: ['Rogue'],
     rarity: 'Free',
     collectible: false,
     id: 122,
+
+    spellSchool: 'None',
 
     cast(plr, self) {
         // Equip a 1/2 Dagger.

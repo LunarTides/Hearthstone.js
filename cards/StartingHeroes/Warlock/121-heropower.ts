@@ -8,11 +8,12 @@ export const blueprint: Blueprint = {
     text: 'Draw a card and take 2 damage.',
     cost: 2,
     type: 'Spell',
-    spellSchool: 'None',
     classes: ['Warlock'],
     rarity: 'Free',
     collectible: false,
     id: 121,
+
+    spellSchool: 'None',
 
     cast(plr, self) {
         // Draw a card and take 2 damage.

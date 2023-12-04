@@ -8,11 +8,12 @@ export const blueprint: Blueprint = {
     text: 'Discover a spell.',
     cost: 1,
     type: 'Spell',
-    spellSchool: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
     collectible: false,
     id: 51,
+
+    spellSchool: 'None',
 
     cast(plr, self) {
         // Discover a spell.

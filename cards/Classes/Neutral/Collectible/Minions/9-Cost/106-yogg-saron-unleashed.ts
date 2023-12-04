@@ -8,12 +8,14 @@ export const blueprint: Blueprint = {
     text: '<b>Titan</b> After this uses an ability, cast two random spells.',
     cost: 9,
     type: 'Minion',
+    classes: ['Neutral'],
+    rarity: 'Legendary',
+    collectible: true,
+    id: 106,
+
     attack: 7,
     health: 5,
     tribe: 'None',
-    classes: ['Neutral'],
-    rarity: 'Legendary',
-    id: 106,
 
     create(plr, self) {
         // Add additional fields here

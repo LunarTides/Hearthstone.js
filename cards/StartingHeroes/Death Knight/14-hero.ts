@@ -7,9 +7,10 @@ export const blueprint: Blueprint = {
     text: 'Death knight starting hero',
     cost: 0,
     type: 'Hero',
-    heropowerId: 124,
     classes: ['Death Knight'],
     rarity: 'Free',
     collectible: false,
     id: 14,
+
+    heropowerId: 124,
 };

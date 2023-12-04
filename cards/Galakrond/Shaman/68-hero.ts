@@ -7,10 +7,12 @@ export const blueprint: Blueprint = {
     text: '<b>Battlecry:</b> Summon two {amount}/{amount} Storms with <b>Rush</b>.{weapon}',
     cost: 7,
     type: 'Hero',
-    heropowerId: 126,
     classes: ['Shaman'],
     rarity: 'Legendary',
+    collectible: true,
     id: 68,
+
+    heropowerId: 126,
 
     battlecry(plr, self) {
         // Summon two 1/1 Storms with Rush. (Equip a 5/2 Claw.)

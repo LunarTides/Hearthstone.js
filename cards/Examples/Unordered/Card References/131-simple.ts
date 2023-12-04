@@ -7,13 +7,14 @@ export const blueprint: Blueprint = {
     text: 'The Coin: {coin}',
     cost: 1,
     type: 'Minion',
-    attack: 1,
-    health: 1,
-    tribe: 'None',
     classes: ['Neutral'],
     rarity: 'Free',
     collectible: false,
     id: 131,
+
+    attack: 1,
+    health: 1,
+    tribe: 'None',
 
     placeholders(plr, self) {
         // You can reference entire cards in placeholders.

@@ -7,13 +7,14 @@ export const blueprint: Blueprint = {
     text: 'Colossal +2.',
     cost: 2,
     type: 'Minion',
-    attack: 5,
-    health: 3,
-    tribe: 'Beast',
     classes: ['Neutral'],
     rarity: 'Free',
     collectible: false,
     id: 45,
+
+    attack: 5,
+    health: 3,
+    tribe: 'Beast',
 
     create(plr, self) {
         // Put the names of the cards here. The 0 is this card.

@@ -9,10 +9,12 @@ export const blueprint: Blueprint = {
     text: 'Summon two 1/1 Imps.',
     cost: 2,
     type: 'Spell',
-    spellSchool: 'None',
     classes: ['Warlock'],
     rarity: 'Legendary',
+    collectible: true,
     id: 129,
+
+    spellSchool: 'None',
 
     cast(plr, self) {
         // Summon two 1/1 Imps.
