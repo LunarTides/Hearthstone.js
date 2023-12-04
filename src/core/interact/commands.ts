@@ -165,7 +165,7 @@ export const commands: CommandList = {
             'eval [log] (code) - Runs the code specified. If the word \'log\' is before the code, instead game.log the code and wait for user input to continue. Examples: `/eval game.endGame(game.player)` (Win the game) `/eval @Player1.addToHand(@fe48ac1.perfectCopy())` (Adds a perfect copy of the card with uuid "fe48ac1" to player 1\'s hand) `/eval log h#c#1.attack + d#o#26.health + b#c#1.attack` (Logs the card in the current player\'s hand with index 1\'s attack value + the 26th card in the opponent\'s deck\'s health value + the card on the current player\'s side of the board with index 1\'s attack value)',
             '<strikethrough>set (category) (name) (value) - Changes a setting to (value). Look in the config files for a list of settings. Example: set advanced debugCommandPrefix !</strikethrough> (Deprecated)',
             '<strikethrough>debug - Gives you infinite mana, health and armor</strikethrough> (Deprecated)',
-            'exit - Force exits the game. There will be no winner, and it will take you straight back to the runner.',
+            'exit - Force exits the game. There will be no winner, and it will take you straight back to the hub.',
             'history - Displays a history of actions. This doesn\'t hide any information, and is the same thing the log files uses.',
             'reload | /rl - Reloads the cards and config in the game (Use \'/freload\' or \'/frl\' to ignore the confirmation prompt (or disable the prompt in the advanced config))',
             'undo - Undoes the last card played. It gives the card back to your hand, and removes it from where it was. (This does not undo the actions of the card)',

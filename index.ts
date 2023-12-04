@@ -1,6 +1,6 @@
 /**
  * The entry point of the program. Acts like a hub between the tools / scripts and the game.
- * @module Runner
+ * @module Hub
  */
 import * as src from './src/index.js'; // Source Code
 import * as dc from './tools/deckcreator.js'; // Deck Creator
@@ -11,7 +11,7 @@ import * as cli from './tools/cli.js'; // Command Line Interface
 
 const watermark = () => {
     game.interact.cls();
-    game.log('Hearthstone.js Runner V%s (C) 2022\n', game.functions.info.version(3));
+    game.log('Hearthstone.js Hub V%s (C) 2022\n', game.functions.info.version(3));
 };
 
 function userInputLoop(prompt: string, exitCharacter: string | undefined, callback: (input: string) => void) {
