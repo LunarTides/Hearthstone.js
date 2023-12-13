@@ -20,7 +20,7 @@ export const blueprint: Blueprint = {
     health: 1,
     tribe: 'None',
 
-    // Note the new `key` and `_unknownVal` arguments.
+    // Note the new `key`, `_unknownVal` and `eventPlayer` arguments.
     // These are only used in the `passive` and `handpassive` abilities.
     passive(plr, self, key, _unknownValue, eventPlayer) {
         // Your battlecries trigger twice.
@@ -44,7 +44,7 @@ export const blueprint: Blueprint = {
         // We don't refund here, since refunding from passives is not supported, and currently doesn't do anything.
         // But if i add refunding from passives, it would probably break the card in some way, so just wait until it is supported and you know what it does before using it.
         // We do `!(key === 'PlayCard' && eventPlayer === plr)` instead of `key !== 'PlayCard' || eventPlayer !== plr`` for clarity.
-        // We only want YOUR battlecries to trigger twice. (`game.player` is the current player, so the player that triggered the event)
+        // We only want YOUR battlecries to trigger twice. (`eventPlayer` is the player that triggered the event)
         if (!(key === 'PlayCard' && eventPlayer === plr)) {
             return;
         }
@@ -52,10 +52,10 @@ export const blueprint: Blueprint = {
         // Since we now know that the key is `PlayCard`, we can retrieve the correct value by doing this.
         const value = _unknownValue as EventValue<typeof key>;
 
-        // `val` is now the correct type for that key (in this case `Card`)
+        // `value` is now the correct type for that key (in this case `Card`)
         // If i change the event's value in the future, this will correctly cause an error instead of unexpected behavior.
 
-        // We check if the card played is not a minion
+        // We check if the card played is not a minion (this is not neccessary in this case, but is here for clarity)
         if (value.type !== 'Minion') {
             return;
         }

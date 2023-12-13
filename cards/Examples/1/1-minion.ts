@@ -29,7 +29,6 @@ export const blueprint: Blueprint = {
 
     // If the card should be allowed in decks, or in card pools.
     // These example cards should not be randomly generated in `discover`, or added in a deck, so all of them are uncollectible.
-    // If the card is collectible, you don't need to set the collectible property at all.
     collectible: false,
 
     // The ID of the card. This is used in deckcodes, and should be unique per blueprint. This gets generated automatically by the card creator.
@@ -46,5 +45,4 @@ export const blueprint: Blueprint = {
 
     // The tribe of the minion. E.g. "Undead", "Naga", "Beast", etc...
     tribe: 'None',
-
 };

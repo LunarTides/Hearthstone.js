@@ -1,13 +1,12 @@
 // Created by Hand
 
-// Import the card type. Use the `internal` module when importing anything from the game. (except for the `types`)
 import { type Blueprint, type EventValue } from '@Game/types.js';
 import { type Card } from '../../../src/core/card.js';
 
 export const blueprint: Blueprint = {
     name: 'Quest Example',
 
-    // The description doesn't need to look like this, it is just what Hearthstone does, so we copy it here.
+    // The description doesn't need to look like this, it is just what Vanilla Hearthstone does, so we copy it here.
     text: 'Quest: Play 3 cards. Reward: Return those cards back to your hand.',
 
     cost: 1,
@@ -48,7 +47,7 @@ export const blueprint: Blueprint = {
             // The `PlayCard` event gets triggered after the text of the card played.
             // That means when you play this card, the quest gets added, then the `PlayCard` event gets broadcast,
             // which triggers this quest. So we need to prevent that event from counting towards the quest.
-            if (!(value !== self)) {
+            if (value === self) {
                 return false;
             }
 

@@ -12,6 +12,6 @@ export const blueprint: Blueprint = {
     collectible: false,
     id: 30,
 
-    // The spell school of the spell.
+    // The school of the spell.
     spellSchool: 'Shadow',
 };
