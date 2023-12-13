@@ -356,8 +356,6 @@ export const commands: CommandList = {
             }
 
             const printTodo = (todo: [string, { state: string; description: string }], id: number, printDesc = false) => {
-                const game = getGame();
-
                 const [name, info] = todo;
                 let [state, text] = Object.values(info);
 
