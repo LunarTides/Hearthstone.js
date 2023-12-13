@@ -34,10 +34,10 @@
   "devDependencies": {
     "@hearthstonejs/vanillatypes": "^2.0.0",
     "@types/lodash": "^4.14.202",
-    "@types/node": "^20.10.1",
+    "@types/node": "^20.10.4",
     "@types/readline-sync": "^1.4.8",
     "generate-changelog": "^1.8.0",
-    "typescript": "^5.3.2",
+    "typescript": "^5.3.3",
     "xo": "^0.56.0"
   },
   "engines": {
