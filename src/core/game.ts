@@ -357,7 +357,7 @@ export class Game {
 
         // Do this to bypass 'Press enter to continue' prompt when showing history
         const history = this.interact.gameLoop.handleCmds('history', { echo: false });
-        game.log(history);
+        console.log(history);
 
         this.input(`Player ${winner.name} wins!\n`);
 
@@ -1312,7 +1312,7 @@ const playCard = {
         }
 
         if (!mech.tribe?.includes('Mech')) {
-            game.log('That minion is not a Mech.');
+            console.log('That minion is not a Mech.');
             return playCard._magnetize(card, player);
         }
 

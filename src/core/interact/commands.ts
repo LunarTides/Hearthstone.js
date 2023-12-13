@@ -81,7 +81,7 @@ export const commands: CommandList = {
             }
         }
 
-        game.log(`<red>${error}.</red>`);
+        console.log(`<red>${error}.</red>`);
         game.pause();
         return true;
     },
@@ -108,7 +108,7 @@ export const commands: CommandList = {
         const titanCards = titanIds.map(id => new Card(id, game.player));
 
         game.interact.info.showGame(game.player);
-        game.log(`\nWhich ability do you want to trigger?\n${titanCards.map(c => game.interact.card.getReadable(c)).join(',\n')}`);
+        console.log(`\nWhich ability do you want to trigger?\n${titanCards.map(c => game.interact.card.getReadable(c)).join(',\n')}`);
 
         const choice = game.lodash.parseInt(game.input());
 
@@ -140,8 +140,8 @@ export const commands: CommandList = {
 
     help(): boolean {
         game.interact.info.watermark();
-        game.log('(In order to run a command; input the name of the command and follow further instruction.)\n');
-        game.log('Available commands:');
+        console.log('(In order to run a command; input the name of the command and follow further instruction.)\n');
+        console.log('Available commands:');
 
         const bricks = [
             '(name) - (description)\n',
@@ -162,7 +162,7 @@ export const commands: CommandList = {
 
         const debugBricks = [
             'give (name) - Adds a card to your hand',
-            'eval [log] (code) - Runs the code specified. If the word \'log\' is before the code, instead game.log the code and wait for user input to continue. Examples: `/eval game.endGame(game.player)` (Win the game) `/eval @Player1.addToHand(@fe48ac1.perfectCopy())` (Adds a perfect copy of the card with uuid "fe48ac1" to player 1\'s hand) `/eval log h#c#1.attack + d#o#26.health + b#c#1.attack` (Logs the card in the current player\'s hand with index 1\'s attack value + the 26th card in the opponent\'s deck\'s health value + the card on the current player\'s side of the board with index 1\'s attack value)',
+            'eval [log] (code) - Runs the code specified. If the word \'log\' is before the code, instead console.log the code and wait for user input to continue. Examples: `/eval game.endGame(game.player)` (Win the game) `/eval @Player1.addToHand(@fe48ac1.perfectCopy())` (Adds a perfect copy of the card with uuid "fe48ac1" to player 1\'s hand) `/eval log h#c#1.attack + d#o#26.health + b#c#1.attack` (Logs the card in the current player\'s hand with index 1\'s attack value + the 26th card in the opponent\'s deck\'s health value + the card on the current player\'s side of the board with index 1\'s attack value)',
             '<strikethrough>set (category) (name) (value) - Changes a setting to (value). Look in the config files for a list of settings. Example: set advanced debugCommandPrefix !</strikethrough> (Deprecated)',
             '<strikethrough>debug - Gives you infinite mana, health and armor</strikethrough> (Deprecated)',
             'exit - Force exits the game. There will be no winner, and it will take you straight back to the hub.',
@@ -178,20 +178,20 @@ export const commands: CommandList = {
 
         // Normal commands
         for (const brick of wall) {
-            game.log(brick);
+            console.log(brick);
         }
 
         const condColor = (text: string) => (game.config.general.debug) ? text : `<gray>${text}</gray>`;
         const debugEnabled = (game.config.general.debug) ? '<bright:green>ON</bright:green>' : '<red>OFF</red>';
 
-        game.log(condColor(`\n--- Debug Commands (${debugEnabled}) ---`));
+        console.log(condColor(`\n--- Debug Commands (${debugEnabled}) ---`));
 
         // Debug Commands
         for (const brick of debugWall) {
-            game.log(condColor(game.config.advanced.debugCommandPrefix + brick));
+            console.log(condColor(game.config.advanced.debugCommandPrefix + brick));
         }
 
-        game.log(condColor('---------------------------' + ((game.config.general.debug) ? '' : '-')));
+        console.log(condColor('---------------------------' + ((game.config.general.debug) ? '' : '-')));
 
         game.pause('\nPress enter to continue...\n');
         return true;
@@ -299,9 +299,9 @@ export const commands: CommandList = {
                     strbuilder += ' using custom settings';
                 }
 
-                game.log(strbuilder + '.\n');
+                console.log(strbuilder + '.\n');
 
-                game.log('Version Description:');
+                console.log('Version Description:');
 
                 let introText;
 
@@ -333,16 +333,16 @@ export const commands: CommandList = {
                     // No default
                 }
 
-                game.log(introText);
+                console.log(introText);
                 if (game.config.info.versionText) {
-                    game.log(game.config.info.versionText);
+                    console.log(game.config.info.versionText);
                 }
 
-                game.log();
+                console.log();
 
-                game.log('Todo List:');
+                console.log('Todo List:');
                 if (todos.length <= 0) {
-                    game.log('None.');
+                    console.log('None.');
                 }
             };
 
@@ -384,9 +384,9 @@ export const commands: CommandList = {
                 }
 
                 if (printDesc) {
-                    game.log(`{${id}} [${state}] ${name}\n${text}`);
+                    console.log(`{${id}} [${state}] ${name}\n${text}`);
                 } else {
-                    game.log(`{${id}} [${state}] ${name}`);
+                    console.log(`{${id}} [${state}] ${name}`);
                 }
             };
 
@@ -556,7 +556,7 @@ export const commands: CommandList = {
         if (flags?.echo === false) {
             // Do nothing
         } else {
-            game.log(finished);
+            console.log(finished);
 
             game.pause('\nPress enter to continue...');
         }
@@ -680,7 +680,7 @@ export const debugCommands: CommandList = {
                 code = code.slice(0, -1);
             }
 
-            code = `game.log(${code});game.pause();`;
+            code = `console.log(${code});game.pause();`;
         }
 
         try {
@@ -693,11 +693,11 @@ export const debugCommands: CommandList = {
                 throw new TypeError('`error` is not an instance of Error');
             }
 
-            game.log('\n<red>An error happened while running this code! Here is the error:</red>');
+            console.log('\n<red>An error happened while running this code! Here is the error:</red>');
 
             // The stack includes "<anonymous>", which would be parsed as a tag, which would cause another error
             game.functions.color.parseTags = false;
-            game.log(error.stack);
+            console.log(error.stack);
             game.functions.color.parseTags = true;
 
             game.pause();
@@ -788,7 +788,7 @@ export const debugCommands: CommandList = {
         if (flags?.echo === false) {
             // Do nothing
         } else {
-            game.log(finished);
+            console.log(finished);
 
             game.pause('\nPress enter to continue...');
         }
@@ -810,7 +810,7 @@ export const debugCommands: CommandList = {
                 continue;
             }
 
-            game.log(`\nTurn ${historyListIndex}:`);
+            console.log(`\nTurn ${historyListIndex}:`);
 
             for (const [historyIndex, historyKey] of object.entries()) {
                 /**
@@ -818,7 +818,7 @@ export const debugCommands: CommandList = {
                 */
                 const input = historyKey[1];
 
-                game.log(`[${historyIndex + 1}] ${input?.toString()}`);
+                console.log(`[${historyIndex + 1}] ${input?.toString()}`);
             }
         }
 
@@ -896,19 +896,19 @@ export const debugCommands: CommandList = {
         let newValue;
 
         if (['off', 'disable', 'false', 'no', '0'].includes(value)) {
-            game.log(`<bright:green>Setting '${key}' has been disabled.</bright:green>`);
+            console.log(`<bright:green>Setting '${key}' has been disabled.</bright:green>`);
             newValue = false;
         } else if (['on', 'enable', 'true', 'yes', '1'].includes(value)) {
-            game.log(`<bright:green>Setting '${key}' has been disabled.</bright:green>`);
+            console.log(`<bright:green>Setting '${key}' has been disabled.</bright:green>`);
             newValue = true;
         } else if (Number.parseFloat(value)) {
-            game.log(`<bright:green>Setting '${key}' has been set to the float: ${value}.</bright:green>`);
+            console.log(`<bright:green>Setting '${key}' has been set to the float: ${value}.</bright:green>`);
             newValue = Number.parseFloat(value);
         } else if (game.lodash.parseInt(value)) {
-            game.log(`<bright:green>Setting '${key}' has been set to the integer: ${value}.</bright:green>`);
+            console.log(`<bright:green>Setting '${key}' has been set to the integer: ${value}.</bright:green>`);
             newValue = game.lodash.parseInt(value);
         } else {
-            game.log(`<bright:green>Setting '${key}' has been set to the string literal: ${value}.</bright:green>`);
+            console.log(`<bright:green>Setting '${key}' has been set to the string literal: ${value}.</bright:green>`);
             newValue = value;
         }
 

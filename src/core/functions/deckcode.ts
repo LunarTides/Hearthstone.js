@@ -16,9 +16,9 @@ export const deckcodeFunctions = {
     // eslint-disable-next-line complexity
     import(plr: Player, code: string): Card[] | undefined {
         const panic = (errorCode: string, cardName?: string) => {
-            game.log(`<red>This deck is not valid!\nError Code: <yellow>${errorCode}</yellow red>`);
+            console.log(`<red>This deck is not valid!\nError Code: <yellow>${errorCode}</yellow red>`);
             if (cardName) {
-                game.log(`<red>Specific Card that caused this error: <yellow>${cardName}</yellow red>`);
+                console.log(`<red>Specific Card that caused this error: <yellow>${cardName}</yellow red>`);
             }
 
             game.pause();
@@ -477,11 +477,11 @@ export const deckcodeFunctions = {
                     delete vanillaCard.race;
                     delete vanillaCard.referencesTags;
 
-                    game.log(`${index + 1}: `);
-                    game.log(vanillaCard);
+                    console.log(`${index + 1}: `);
+                    console.log(vanillaCard);
                 }
 
-                game.log(`<yellow>Multiple cards with the name '</yellow>${cardName}<yellow>' detected! Please choose one:</yellow>`);
+                console.log(`<yellow>Multiple cards with the name '</yellow>${cardName}<yellow>' detected! Please choose one:</yellow>`);
                 const chosen = game.input();
 
                 match = matches[game.lodash.parseInt(chosen) - 1];
@@ -548,14 +548,14 @@ export const deckcodeFunctions = {
             }
 
             // The card doesn't exist.
-            game.logError(`<red>ERROR: Card <yellow>${vanillaCard.name} <bright:yellow>(${vanillaCard.dbfId})</yellow bright:yellow> doesn't exist!</red>`);
+            console.error(`<red>ERROR: Card <yellow>${vanillaCard.name} <bright:yellow>(${vanillaCard.dbfId})</yellow bright:yellow> doesn't exist!</red>`);
             invalidCards.push(vanillaCard);
         }
 
         if (invalidCards.length > 0) {
             // There was a card in the deck that isn't implemented in Hearthstone.js
             // Add a newline
-            game.logError();
+            console.error();
             throw new Error('Some cards do not currently exist. You cannot play on this deck without them.');
         }
 

@@ -20,7 +20,7 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | und
             ccType = args[0] as CcType;
 
             if (!ccType) {
-                game.logError('<red>Invalid cc type!</red>');
+                console.error('<red>Invalid cc type!</red>');
                 game.pause();
                 return;
             }
@@ -81,30 +81,30 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | und
         switch (name) {
             case 'help': {
                 // Taken heavy inspiration from 'man'
-                game.log('\n<bold>Commands</bold>');
-                game.log('ccc           - Runs the custom card creator');
-                game.log('vcc           - Runs the vanilla card creator');
-                game.log('clc           - Runs the class creator');
-                game.log('cclib (args)  - Uses the card creator library to manually create a card');
-                game.log('dc            - Runs the deck creator');
-                game.log('game          - Runs the main game');
-                game.log('script (name) - Runs the specified script (NOT IMPLEMENTED!)');
-                game.log();
-                game.log('<bold>Options</bold>');
-                game.log('    <bold>Card Creator Options (ccc, vcc, clc, cclib)</bold>');
-                game.log('        <bold>-n, --dry-run</bold>\n            Don\'t actually create the card, just show what would be done.');
-                game.log('        <bold>-t <underline>type</underline>, --cc-type <underline>type</bold underline>\n            Set the name of the card creator');
-                game.log();
-                game.log('    <bold>CCLib Options (cclib)</bold>');
-                game.log('        <bold>name</bold>=<underline>name</underline><bold>');
-                game.log('        <bold>stats</bold>=<underline>[attack, health]</underline><bold>');
-                game.log();
-                game.log('<bold>CCLib Example</bold>');
-                game.log('cclib -dt Test name="Sheep" text="" cost=1 type="Minion" attack=1 health=1 tribe="Beast" classes=["Neutral"] rarity="Free" collectible=false id=0');
-                game.log('       ^^      ^            ^              ^');
-                game.log('       Dry-run The name of the card        The type of the card. Etc...');
-                game.log('        CC type is "Test"   The description of the card');
-                game.log();
+                console.log('\n<bold>Commands</bold>');
+                console.log('ccc           - Runs the custom card creator');
+                console.log('vcc           - Runs the vanilla card creator');
+                console.log('clc           - Runs the class creator');
+                console.log('cclib (args)  - Uses the card creator library to manually create a card');
+                console.log('dc            - Runs the deck creator');
+                console.log('game          - Runs the main game');
+                console.log('script (name) - Runs the specified script (NOT IMPLEMENTED!)');
+                console.log();
+                console.log('<bold>Options</bold>');
+                console.log('    <bold>Card Creator Options (ccc, vcc, clc, cclib)</bold>');
+                console.log('        <bold>-n, --dry-run</bold>\n            Don\'t actually create the card, just show what would be done.');
+                console.log('        <bold>-t <underline>type</underline>, --cc-type <underline>type</bold underline>\n            Set the name of the card creator');
+                console.log();
+                console.log('    <bold>CCLib Options (cclib)</bold>');
+                console.log('        <bold>name</bold>=<underline>name</underline><bold>');
+                console.log('        <bold>stats</bold>=<underline>[attack, health]</underline><bold>');
+                console.log();
+                console.log('<bold>CCLib Example</bold>');
+                console.log('cclib -dt Test name="Sheep" text="" cost=1 type="Minion" attack=1 health=1 tribe="Beast" classes=["Neutral"] rarity="Free" collectible=false id=0');
+                console.log('       ^^      ^            ^              ^');
+                console.log('       Dry-run The name of the card        The type of the card. Etc...');
+                console.log('        CC type is "Test"   The description of the card');
+                console.log();
                 game.pause();
 
                 break;
@@ -183,7 +183,7 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | und
             default: { if (name === 'script') {
                 const name = args[0];
                 if (!name) {
-                    game.logError('<red>Invalid script name!</red>');
+                    console.error('<red>Invalid script name!</red>');
                     game.pause();
                     return;
                 }
@@ -191,7 +191,7 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | und
                 // TODO: Implement.
                 throw new Error('not implemented');
             } else {
-                game.logWarn('<yellow>That is not a valid command.</yellow>');
+                console.warn('<yellow>That is not a valid command.</yellow>');
                 game.pause();
             }
             }

@@ -18,7 +18,7 @@ export function main(): void {
     game.interact.info.watermark();
 
     // Find holes and dupes in the ids
-    game.logWarn('Validating ids...');
+    console.warn('Validating ids...');
     const [holes, dupes] = validateIds(true);
     if (holes > 0 || dupes > 0) {
         // If there were holes or dupes, pause the game so that the user gets a
@@ -74,17 +74,17 @@ function warnAboutOutdatedCards(): void {
     }
 
     for (const fileName of outdatedCards) {
-        game.logWarn(`<yellow>WARNING: Outdated card found: ${fileName}.js</yellow>`);
+        console.warn(`<yellow>WARNING: Outdated card found: ${fileName}.js</yellow>`);
     }
 
     for (const fileName of outdatedExtensions) {
-        game.logWarn(`<yellow>WARNING: Outdated extension found: ${fileName}.mts. Please change all card file names ending with the '.mts' extension to '.ts' instead.</yellow>`);
+        console.warn(`<yellow>WARNING: Outdated extension found: ${fileName}.mts. Please change all card file names ending with the '.mts' extension to '.ts' instead.</yellow>`);
     }
 
-    game.logWarn('Run the `upgradecards` script to automatically update outdated cards from pre 2.0.');
-    game.logWarn('This will only upgrade pre 2.0 cards to 2.0 cards.');
-    game.logWarn('You can play the game without upgrading the cards, but the cards won\'t be registered.');
-    game.logWarn('Run the script by running `npm run script:upgradecards`.');
+    console.warn('Run the `upgradecards` script to automatically update outdated cards from pre 2.0.');
+    console.warn('This will only upgrade pre 2.0 cards to 2.0 cards.');
+    console.warn('You can play the game without upgrading the cards, but the cards won\'t be registered.');
+    console.warn('Run the script by running `npm run script:upgradecards`.');
 
     const proceed = game.input('\nDo you want to proceed? ([y]es, [n]o): ').toLowerCase().startsWith('y');
     if (!proceed) {

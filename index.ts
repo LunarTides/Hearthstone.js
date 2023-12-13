@@ -11,7 +11,7 @@ import * as cli from './tools/cli.js'; // Command Line Interface
 
 const watermark = () => {
     game.interact.cls();
-    game.log('Hearthstone.js Hub V%s (C) 2022\n', game.functions.info.version(3));
+    console.log('Hearthstone.js Hub V%s (C) 2022\n', game.functions.info.version(3));
 };
 
 function userInputLoop(prompt: string, exitCharacter: string | undefined, callback: (input: string) => void) {

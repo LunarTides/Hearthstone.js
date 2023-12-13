@@ -55,7 +55,7 @@ export const infoFunctions = {
 
         if (hash instanceof Error) {
             // TODO: Save as a thing of interest. #259
-            game.log('<red>ERROR: Git is not installed.</red>');
+            console.log('<red>ERROR: Git is not installed.</red>');
             return 'no git found';
         }
 

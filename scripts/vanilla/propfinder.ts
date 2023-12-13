@@ -43,7 +43,7 @@ function main(): void {
             if (Object.keys(props).includes(key)) {
                 const storedType = props[key][0];
                 if (storedType !== typeof value) {
-                    game.logWarn('<yellow>Discrepancy found. Stored type: %s, Found type %s.</yellow>', storedType, typeof value);
+                    console.warn('<yellow>Discrepancy found. Stored type: %s, Found type %s.</yellow>', storedType, typeof value);
                 }
 
                 props[key][1]++;
@@ -61,12 +61,12 @@ function main(): void {
         types[vanillaCard.type] = 1;
     }
 
-    game.log('<b>TYPES:</b>');
-    game.log(types);
-    game.log('<b>PROPS:</b>');
-    game.log(props);
-    game.log('<b>STORED:</b>');
-    game.log(stored.sort((a, b) => b[1] - a[1]));
+    console.log('<b>TYPES:</b>');
+    console.log(types);
+    console.log('<b>PROPS:</b>');
+    console.log(props);
+    console.log('<b>STORED:</b>');
+    console.log(stored.sort((a, b) => b[1] - a[1]));
 }
 
 main();

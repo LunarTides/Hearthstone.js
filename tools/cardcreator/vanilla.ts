@@ -65,7 +65,7 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CcT
 
     if (type === 'Hero') {
         // Add the hero power
-        game.log('<green>Adding the hero power</green>');
+        console.log('<green>Adding the hero power</green>');
 
         const heroPower = game.functions.card.vanilla.getAll().find(c => c.dbfId === card.heroPowerDbfId);
         if (!heroPower) {
@@ -151,7 +151,7 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CcT
  * @returns If a card was created
  */
 export function main(debug = false, overrideType?: lib.CcType): boolean {
-    game.log('Hearthstone.js Vanilla Card Creator (C) 2022\n');
+    console.log('Hearthstone.js Vanilla Card Creator (C) 2022\n');
 
     const vanillaCards = game.functions.card.vanilla.getAll();
 
@@ -171,7 +171,7 @@ export function main(debug = false, overrideType?: lib.CcType): boolean {
         filteredCards = game.functions.card.vanilla.filter(filteredCards, false, true);
 
         if (filteredCards.length <= 0) {
-            game.log('Invalid card.\n');
+            console.log('Invalid card.\n');
             continue;
         }
 
@@ -189,13 +189,13 @@ export function main(debug = false, overrideType?: lib.CcType): boolean {
 
                 const { id, ...card } = vanillaCard;
 
-                game.log(`\n${index + 1}:`);
-                game.log(card);
+                console.log(`\n${index + 1}:`);
+                console.log(card);
             }
 
             const picked = game.lodash.parseInt(game.input(`Pick one (1-${filteredCards.length}): `));
             if (!picked || !filteredCards[picked - 1]) {
-                game.log('Invalid number.\n');
+                console.log('Invalid number.\n');
                 continue;
             }
 
@@ -204,7 +204,7 @@ export function main(debug = false, overrideType?: lib.CcType): boolean {
             card = filteredCards[0];
         }
 
-        game.log(`Found '${card.name}'\n`);
+        console.log(`Found '${card.name}'\n`);
 
         create(card, debug, overrideType);
     }

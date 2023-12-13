@@ -14,7 +14,7 @@ const vanilla = {
      * const vanillaCards = getAll();
      *
      * for (const vanillaCard of vanillaCard) {
-     *     game.log(vanillaCard.dbfId);
+     *     console.log(vanillaCard.dbfId);
      * }
      *
      * @returns The vanilla cards
@@ -243,7 +243,7 @@ export const cardFunctions = {
             }
 
             // Validation error
-            game.log(`<red>Card <bold>'${blueprint.name}'</bold> (${blueprint.id}) is invalid since ${errorMessage}</red>`);
+            console.log(`<red>Card <bold>'${blueprint.name}'</bold> (${blueprint.id}) is invalid since ${errorMessage}</red>`);
             valid = false;
         }
 

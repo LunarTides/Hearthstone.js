@@ -5,8 +5,6 @@ import { type Ai, Card, commands, debugCommands } from '../../internal.js';
 // Override the console methods to force using the wrapper functions
 // Set this variable to false to prevent disabling the console. (Not recommended)
 // TODO: Add this to the config instead of being hardcoded
-const disableConsole = true;
-
 const overrideConsole = {
     log(..._data: any[]): void {
         throw new Error('Attempting to use override console before being given the `log` function.');
@@ -22,19 +20,17 @@ overrideConsole.log = console.log;
 overrideConsole.warn = console.warn;
 overrideConsole.error = console.error;
 
-if (disableConsole) {
-    console.log = (..._) => {
-        throw new Error('Use `game.log` instead.');
-    };
+console.log = (...data) => {
+    game.log(...data);
+};
 
-    console.warn = (..._) => {
-        throw new Error('Use `game.logWarn` instead.');
-    };
+console.warn = (...data) => {
+    game.logWarn(...data);
+};
 
-    console.error = (..._) => {
-        throw new Error('Use `game.logError` instead.');
-    };
-}
+console.error = (...data) => {
+    game.logError(...data);
+};
 
 export const gameloopInteract = { /**
      * Ask the user a question and returns their answer
@@ -89,7 +85,7 @@ export const gameloopInteract = { /**
     },
 
     /**
-     * Helper function for the `game.log` functions. Don't use.
+     * Helper function for the `console.log` functions. Don't use.
      */
     logWrapper(callback: (...data: any) => void, ...data: any): void {
         if (game.noOutput) {
@@ -242,7 +238,7 @@ export const gameloopInteract = { /**
             }
         }
 
-        game.log(`<red>${error}.</red>`);
+        console.log(`<red>${error}.</red>`);
         game.pause('');
         return false;
     },
@@ -352,7 +348,7 @@ export const gameloopInteract = { /**
         }
 
         game.interact.info.showGame(game.player);
-        game.log();
+        console.log();
 
         let input = 'Which card do you want to play? ';
         if (game.turns <= 2 && !game.config.general.debug) {

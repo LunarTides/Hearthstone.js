@@ -86,14 +86,14 @@ export const cardInteract = {
 
         game.interact.info.showGame(game.player);
 
-        game.log(`\n${prompt}`);
+        console.log(`\n${prompt}`);
 
         if (cards.length <= 0) {
             return undefined;
         }
 
         for (const [index, card] of cards.entries()) {
-            game.log(game.interact.card.getReadable(card, index + 1));
+            console.log(game.interact.card.getReadable(card, index + 1));
         }
 
         const choice = game.input('> ');
@@ -161,10 +161,10 @@ export const cardInteract = {
             return game.player.ai.discover(values);
         }
 
-        game.log(`\n${prompt}:`);
+        console.log(`\n${prompt}:`);
 
         for (const [index, card] of values.entries()) {
-            game.log(game.interact.card.getReadable(card, index + 1));
+            console.log(game.interact.card.getReadable(card, index + 1));
         }
 
         const choice = game.input();
@@ -255,7 +255,7 @@ export const cardInteract = {
     },
 
     /**
-     * Returns a card in a user readable state. If you game.log the result of this, the user will get all the information they need from the card.
+     * Returns a card in a user readable state. If you console.log the result of this, the user will get all the information they need from the card.
      *
      * @param i If this is set, this function will add `[i]` to the beginning of the card. This is useful if there are many different cards to choose from.
      * @param _depth The depth of recursion. DO NOT SET THIS MANUALLY.
@@ -352,7 +352,7 @@ export const cardInteract = {
     },
 
     /**
-     * Shows information from the card, game.log's it and waits for the user to press enter.
+     * Shows information from the card, console.log's it and waits for the user to press enter.
      *
      * @param help If it should show a help message which displays what the different fields mean.
      */
@@ -394,12 +394,12 @@ export const cardInteract = {
         }
 
         if (help) {
-            game.log('<cyan>{cost}</cyan> <b>Name</b> (<bright:green>[attack / health]</bright:green> if is has) (description) <yellow>(type)</yellow> ((tribe) or (spell class) or (cooldown)) <gray>[class]</gray>');
+            console.log('<cyan>{cost}</cyan> <b>Name</b> (<bright:green>[attack / health]</bright:green> if is has) (description) <yellow>(type)</yellow> ((tribe) or (spell class) or (cooldown)) <gray>[class]</gray>');
         }
 
-        game.log(cardInfo + (tribe || spellSchool || locCooldown) + ` [${classInfo}]`);
+        console.log(cardInfo + (tribe || spellSchool || locCooldown) + ` [${classInfo}]`);
 
-        game.log();
+        console.log();
         game.pause();
     },
 

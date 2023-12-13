@@ -60,16 +60,16 @@ export function main(): void {
         game.noOutput = false;
 
         if (error instanceof Error) {
-            game.logError(`<red>ERROR: ${card.name} (${card.id}) didn't pass its test. Here is the error. THIS ERROR IS PART OF THE SCRIPT, NOT AN ACTUAL ERROR.</red>`);
-            game.logError(error.stack);
-            game.logError();
+            console.error(`<red>ERROR: ${card.name} (${card.id}) didn't pass its test. Here is the error. THIS ERROR IS PART OF THE SCRIPT, NOT AN ACTUAL ERROR.</red>`);
+            console.error(error.stack);
+            console.error();
             process.exitCode = 1;
             failed = true;
         }
     }
 
     if (!failed) {
-        game.log('<bright:green>All tests passed!</bright:green>');
+        console.log('<bright:green>All tests passed!</bright:green>');
     }
 }
 

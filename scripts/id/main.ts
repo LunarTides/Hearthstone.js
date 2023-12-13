@@ -3,12 +3,12 @@ import * as lib from './lib.js';
 // Check if your git is clean
 const gitStatus = game.functions.util.runCommand('git status --porcelain');
 if (typeof gitStatus === 'string') {
-    game.logError('<yellow>WARNING: You have uncommitted changes. Please commit them before running a non-safe command.</yellow>');
+    console.error('<yellow>WARNING: You have uncommitted changes. Please commit them before running a non-safe command.</yellow>');
     // Process.exit(1);
 }
 
-game.logError('<yellow>WARNING: Be careful with this script. This might break things that are dependent on ids remaining the same, like deckcodes.</yellow>');
-game.log('<green>The validate and quit commands are safe to use without issue.</green>');
+console.error('<yellow>WARNING: Be careful with this script. This might break things that are dependent on ids remaining the same, like deckcodes.</yellow>');
+console.log('<green>The validate and quit commands are safe to use without issue.</green>');
 
 type Commands = 'i' | 'd' | 'v' | 'q';
 
@@ -22,7 +22,7 @@ func = func.toLowerCase() as Commands;
 const destructive = ['i', 'd'] as Commands[];
 
 if (destructive.includes(func)) {
-    game.logError('<yellow>WARNING: This is a destructive action. Be careful. I heavily recommend not doing this.</yellow>\n');
+    console.error('<yellow>WARNING: This is a destructive action. Be careful. I heavily recommend not doing this.</yellow>\n');
 }
 
 let startId: number;
@@ -62,4 +62,4 @@ switch (func) {
     }
 }
 
-game.log('Done');
+console.log('Done');

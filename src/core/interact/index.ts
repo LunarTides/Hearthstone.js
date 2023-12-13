@@ -183,7 +183,7 @@ export const interact = {
         }
 
         // Invalid input
-        game.log(`<red>Unexpected input: '<yellow>${rawChoice}</yellow>'. Valid inputs: </red>[<bright:green>Y</bright:green> | <red>N</red>]`);
+        console.log(`<red>Unexpected input: '<yellow>${rawChoice}</yellow>'. Valid inputs: </red>[<bright:green>Y</bright:green> | <red>N</red>]`);
         game.pause();
 
         return this.yesNoQuestion(plr, prompt);
@@ -383,13 +383,13 @@ export const interact = {
         let success = false;
 
         if (condition) {
-            game.log('Success! You did it, well done!');
+            console.log('Success! You did it, well done!');
             success = true;
         } else {
             const match = /DIY (\d+)/.exec(card.name);
             const fileName = match ? match[1] : 'unknown';
 
-            game.log(`Hm. This card doesn't seem to do what it's supposed to do... Maybe you should try to fix it? The card is in: './cards/Examples/DIY/${fileName}.ts'.`);
+            console.log(`Hm. This card doesn't seem to do what it's supposed to do... Maybe you should try to fix it? The card is in: './cards/Examples/DIY/${fileName}.ts'.`);
         }
 
         game.pause();

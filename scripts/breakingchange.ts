@@ -60,7 +60,7 @@ function main(): void {
     searchCards(search);
 
     // New line
-    game.log();
+    console.log();
 
     let running = true;
     while (running) {
@@ -68,7 +68,7 @@ function main(): void {
 
         for (const [index, cardName] of matchingCards.entries()) {
             // `c` is the path to the card.
-            game.log(`${index + 1}: ${cardName}`);
+            console.log(`${index + 1}: ${cardName}`);
         }
 
         const command = game.input('\nWhich card do you want to fix (type \'done\' to finish | type \'delete\' to delete the save file): ');
@@ -78,13 +78,13 @@ function main(): void {
         }
 
         if (command.toLowerCase().startsWith('delete')) {
-            game.log('Deleting file...');
+            console.log('Deleting file...');
 
             if (game.functions.util.fs('exists', finishedCardsPath)) {
                 game.functions.util.fs('rm', finishedCardsPath);
-                game.log('File deleted!');
+                console.log('File deleted!');
             } else {
-                game.log('File not found!');
+                console.log('File not found!');
             }
 
             game.pause();
@@ -98,7 +98,7 @@ function main(): void {
 
         const path = matchingCards[index];
         if (!path) {
-            game.log('Invalid index!');
+            console.log('Invalid index!');
             game.pause();
 
             continue;

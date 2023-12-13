@@ -46,7 +46,7 @@ export const utilFunctions = {
      * const wall = createWall(bricks, "-");
      *
      * wall.forEach(foo => {
-     *     game.log(foo);
+     *     console.log(foo);
      * });
      * // Example             - Example
      * // Test                - Hello World
@@ -210,7 +210,7 @@ ${mainContent}
             return true;
         }
 
-        game.log(`\n<red>The game crashed!\nCrash report created in 'logs/${filename}'\nPlease create a bug report at:\nhttps://github.com/LunarTides/Hearthstone.js/issues</red>`);
+        console.log(`\n<red>The game crashed!\nCrash report created in 'logs/${filename}'\nPlease create a bug report at:\nhttps://github.com/LunarTides/Hearthstone.js/issues</red>`);
         game.pause();
 
         return true;
@@ -322,7 +322,7 @@ ${mainContent}
             const attempts: string[] = [];
 
             const isCommandAvailable = (testCommand: string, argsSpecifier: string) => {
-                game.log(`Trying '${testCommand} ${argsSpecifier}${command}'...`);
+                console.log(`Trying '${testCommand} ${argsSpecifier}${command}'...`);
                 attempts.push(testCommand);
 
                 const error = this.runCommand(`which ${testCommand} 2> /dev/null`);
@@ -332,7 +332,7 @@ ${mainContent}
 
                 childProcess.exec(`${testCommand} ${argsSpecifier}${command}`);
 
-                game.log('Success!');
+                console.log('Success!');
 
                 return true;
             };
@@ -348,15 +348,15 @@ ${mainContent}
             } else if (isCommandAvailable('xfce4-terminal', '--command=')) {
                 // Sucess
             } else {
-                game.log('Error: Failed to open program. Traceback:');
-                game.log('Operating system: Linux');
+                console.log('Error: Failed to open program. Traceback:');
+                console.log('Operating system: Linux');
 
                 for (const attempt of attempts) {
-                    game.log(`Tried '${attempt}'... failed!`);
+                    console.log(`Tried '${attempt}'... failed!`);
                 }
 
-                game.log('Please install any of these using your package manager.');
-                game.log('If you\'re not using linux, open up an issue on the github page.');
+                console.log('Please install any of these using your package manager.');
+                console.log('If you\'re not using linux, open up an issue on the github page.');
                 // Game.pause(); <- It is your job to pause the program when you run this, since function.ts functions should generally not pause the game.
 
                 return false;
@@ -499,7 +499,7 @@ ${mainContent}
      * # Example
      * ```ts
      * // Outputs: "(path to the folder where hearthstone.js is stored)/Hearthstone.js/cards/the_coin.ts"
-     * game.log(dirname() + "/cards/the_coin.ts");
+     * console.log(dirname() + "/cards/the_coin.ts");
      * ```
      *
      * @returns The directory name.

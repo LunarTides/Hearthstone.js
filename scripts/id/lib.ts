@@ -14,7 +14,7 @@ function searchCards(callback: (path: string, content: string, id: number) => vo
     game.functions.util.searchCardsFolder((fullPath, content) => {
         const idMatch = idRegex.exec(content);
         if (!idMatch) {
-            game.logError(`No id found in ${fullPath}`);
+            console.error(`No id found in ${fullPath}`);
             return;
         }
 
@@ -29,7 +29,7 @@ function change(startId: number, callback: (id: number) => number, log: boolean)
     searchCards((path, content, id) => {
         if (id < startId) {
             if (log) {
-                game.log(`<bright:yellow>Skipping ${path}</bright:yellow>`);
+                console.log(`<bright:yellow>Skipping ${path}</bright:yellow>`);
             }
 
             return;
@@ -41,7 +41,7 @@ function change(startId: number, callback: (id: number) => number, log: boolean)
         game.functions.util.fs('write', path, content.replace(idRegex, `id: ${newId}`));
 
         if (log) {
-            game.log(`<bright:green>Updated ${path}</bright:green>`);
+            console.log(`<bright:green>Updated ${path}</bright:green>`);
         }
 
         updated++;
@@ -56,9 +56,9 @@ function change(startId: number, callback: (id: number) => number, log: boolean)
 
     if (log) {
         if (updated > 0) {
-            game.log('<bright:green>Updated %s cards.</bright:green>', updated);
+            console.log('<bright:green>Updated %s cards.</bright:green>', updated);
         } else {
-            game.log('<yellow>No cards were updated.</yellow>');
+            console.log('<yellow>No cards were updated.</yellow>');
         }
     }
 
@@ -122,13 +122,13 @@ export function validate(log: boolean): [number, number] {
 
         if (id === currentId) {
             if (log) {
-                game.logError(`<bright:yellow>Duplicate id in ${path}. Previous id: ${currentId}. Got id: ${id}. <green>Suggestion: Change one of these ids.</green bright:yellow>`);
+                console.error(`<bright:yellow>Duplicate id in ${path}. Previous id: ${currentId}. Got id: ${id}. <green>Suggestion: Change one of these ids.</green bright:yellow>`);
             }
 
             duplicates++;
         } else if (id !== currentId + 1) {
             if (log) {
-                game.logError(`<bright:yellow>Hole in ${path}. Previous id: ${currentId}. Got id: ${id}. <green>Suggestion: Change card with id ${id} to ${id - 1}</green bright:yellow>`);
+                console.error(`<bright:yellow>Hole in ${path}. Previous id: ${currentId}. Got id: ${id}. <green>Suggestion: Change card with id ${id} to ${id - 1}</green bright:yellow>`);
             }
 
             holes++;
@@ -141,7 +141,7 @@ export function validate(log: boolean): [number, number] {
     const latestId = game.lodash.parseInt((game.functions.util.fs('read', '/cards/.latestId') as string).trim());
     if (latestId !== currentId) {
         if (log) {
-            game.log('<yellow>Latest id is invalid. Latest id found: %s, latest id in file: %s. Fixing...</yellow>', currentId, latestId);
+            console.log('<yellow>Latest id is invalid. Latest id found: %s, latest id in file: %s. Fixing...</yellow>', currentId, latestId);
         }
 
         game.functions.util.fs('write', '/cards/.latestId', currentId.toString());
@@ -149,19 +149,19 @@ export function validate(log: boolean): [number, number] {
 
     if (log) {
         if (holes > 0) {
-            game.log('<yellow>Found %s holes.</yellow>', holes);
+            console.log('<yellow>Found %s holes.</yellow>', holes);
         } else {
-            game.log('<bright:green>No holes found.</bright:green>');
+            console.log('<bright:green>No holes found.</bright:green>');
         }
 
         if (duplicates > 0) {
-            game.log('<yellow>Found %s duplicates.</yellow>', duplicates);
+            console.log('<yellow>Found %s duplicates.</yellow>', duplicates);
         } else {
-            game.log('<bright:green>No duplicates found.</bright:green>');
+            console.log('<bright:green>No duplicates found.</bright:green>');
         }
 
         if (latestId === currentId) {
-            game.log('<bright:green>Latest id up-to-date.</bright:green>');
+            console.log('<bright:green>Latest id up-to-date.</bright:green>');
         }
     }
 

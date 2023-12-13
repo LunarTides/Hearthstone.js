@@ -13,7 +13,7 @@ function upgradeField(data: string, oldValue: string | RegExp, newValue: string,
     const oldData = data;
     data = data.replace(oldValue, newValue);
     if (data !== oldData) {
-        game.log(toLog);
+        console.log(toLog);
     }
 
     return data;
@@ -28,12 +28,12 @@ function upgradeCard(path: string, data: string, file: any): void {
     // But it should work for all cards that was created using the card creator.
     const fileName = file.name as string;
 
-    game.log(`--- Found ${fileName} ---`);
+    console.log(`--- Found ${fileName} ---`);
 
     const hasPassive = data.includes('passive(plr, self, key, ');
     const eventValue = hasPassive ? ', EventValue' : '';
 
-    game.log(`Passive: ${hasPassive}`);
+    console.log(`Passive: ${hasPassive}`);
 
     const blueprintDefinitionRegex = /\/\*\*\n \* @type {import\("(?:\.\.\/)+src\/types"\)\.Blueprint}\n \*\//g;
     const abilityDefinitionRegex = /\n {4}\/\*{2}\n {5}\* @type {import\("(?:\.{2}\/)+src\/types"\)\.KeywordMethod}\n {5}\*\//g;
@@ -74,9 +74,9 @@ function upgradeCard(path: string, data: string, file: any): void {
         let key = '';
         if (match) {
             key = match[1];
-            game.log(`Found key: ${key}.`);
+            console.log(`Found key: ${key}.`);
         } else {
-            game.logError('<yellow>WARNING: Could not find event key in passive.</yellow>');
+            console.error('<yellow>WARNING: Could not find event key in passive.</yellow>');
         }
 
         data = upgradeField(data, /(\n {4}passive\(plr, self, key), val\) {/g, `$1, _unknownVal) {
@@ -97,11 +97,11 @@ function upgradeCard(path: string, data: string, file: any): void {
     path = path.replace(fileName, fileName.replaceAll('_', '-').replace('.js', '.ts'));
     game.functions.util.fs('write', path, data);
 
-    game.log(`--- Finished ${fileName} ---`);
+    console.log(`--- Finished ${fileName} ---`);
 }
 
 function main(): void {
-    game.logError('<yellow>WARNING: This will create new cards with the `.ts` extension, but will leave your old cards alone. Please verify that the new cards work before deleting the old ones.</yellow>');
+    console.error('<yellow>WARNING: This will create new cards with the `.ts` extension, but will leave your old cards alone. Please verify that the new cards work before deleting the old ones.</yellow>');
 
     const proceed = game.input('Do you want to proceed? ([y]es, [n]o): ').toLowerCase().startsWith('y');
     if (!proceed) {
@@ -113,7 +113,7 @@ function main(): void {
         game.functions.util.fs('write', fullPath.replace('.mts', '.ts'), content);
         game.functions.util.fs('rm', fullPath);
 
-        game.log(`Updated extension for card ${fullPath.slice(0, -4)}[.mts -> .ts]`);
+        console.log(`Updated extension for card ${fullPath.slice(0, -4)}[.mts -> .ts]`);
     }, undefined, '.mts');
 
     // Upgrade all cards
@@ -123,15 +123,15 @@ function main(): void {
     // Remove the dist folder
     game.functions.util.fs('rm', '/dist', { recursive: true, force: true });
 
-    game.log('Trying to compile...');
+    console.log('Trying to compile...');
 
     if (game.functions.util.tryCompile()) {
-        game.log('<bright:green>Success!</bright:green>');
+        console.log('<bright:green>Success!</bright:green>');
     } else {
-        game.logError('<yellow>WARNING: Compiler error occurred. Please fix the errors in the card.</yellow>');
+        console.error('<yellow>WARNING: Compiler error occurred. Please fix the errors in the card.</yellow>');
     }
 
-    game.log('Done');
+    console.log('Done');
 }
 
 main();

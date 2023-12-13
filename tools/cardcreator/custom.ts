@@ -154,7 +154,7 @@ const cardTypeFunctions: { [x in CardType]: () => Blueprint } = {
     Hero(): Blueprint {
         const card = common();
 
-        game.log('Make the Hero Power:');
+        console.log('Make the Hero Power:');
         if (!main()) {
             throw new Error('Failed to create hero power');
         }
@@ -193,8 +193,8 @@ export function main(debug = false, overrideType?: lib.CcType): string | false {
     // Reset the shouldExit switch so that the program doesn't immediately exit when the user enters the ccc, exits, then enters ccc again
     shouldExit = false;
 
-    game.log('Hearthstone.js Custom Card Creator (C) 2022\n');
-    game.log('type \'back\' at any step to cancel.\n');
+    console.log('Hearthstone.js Custom Card Creator (C) 2022\n');
+    console.log('type \'back\' at any step to cancel.\n');
 
     // Ask the user for the type of card they want to make
     type = game.lodash.startCase(input('Type: ')) as CardType;
@@ -203,7 +203,7 @@ export function main(debug = false, overrideType?: lib.CcType): string | false {
     }
 
     if (!Object.keys(cardTypeFunctions).includes(type)) {
-        game.log('That is not a valid type!');
+        console.log('That is not a valid type!');
         game.pause();
         return false;
     }
@@ -223,7 +223,7 @@ export function main(debug = false, overrideType?: lib.CcType): string | false {
     }
 
     // Actually create the card
-    game.log('Creating file...');
+    console.log('Creating file...');
 
     let cctype: lib.CcType = 'Custom';
     if (overrideType) {

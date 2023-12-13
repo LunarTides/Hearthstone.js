@@ -16,8 +16,8 @@ const { game } = createGame();
 export function main(debug = false, overrideType?: lib.CcType): void {
     const watermark = () => {
         game.interact.cls();
-        game.log('Hearthstone.js Class Creator (C) 2022\n');
-        game.log('type \'back\' at any step to cancel.\n');
+        console.log('Hearthstone.js Class Creator (C) 2022\n');
+        console.log('type \'back\' at any step to cancel.\n');
     };
 
     const questions = [
@@ -87,12 +87,12 @@ export function main(debug = false, overrideType?: lib.CcType): void {
     lib.create(cctype, 'Hero', heroBlueprint, `/cards/StartingHeroes/${game.lodash.startCase(className)}/`, 'hero.ts', debug);
     lib.create(cctype, 'Spell', heropowerBlueprint, `/cards/StartingHeroes/${game.lodash.startCase(className)}/`, 'heropower.ts', debug);
 
-    game.log('\nClass Created!');
-    game.log('Next steps:');
-    game.log('1. Open \'src/types.ts\', navigate to \'CardClass\', and add the name of the class to that. There is unfortunately no way to automate that.');
-    game.log(`2. Open 'cards/StartingHeroes/${game.lodash.startCase(className)}/${lib.getLatestId()}-heropower.ts' and add logic to the 'cast' function.`);
-    game.log(`3. Now when using the Custom Card Creator, type '${className}' into the 'Class' field to use that class.`);
-    game.log(`4. When using the Deck Creator, type '${className}' to create a deck with cards from your new class.`);
-    game.log('Enjoy!');
+    console.log('\nClass Created!');
+    console.log('Next steps:');
+    console.log('1. Open \'src/types.ts\', navigate to \'CardClass\', and add the name of the class to that. There is unfortunately no way to automate that.');
+    console.log(`2. Open 'cards/StartingHeroes/${game.lodash.startCase(className)}/${lib.getLatestId()}-heropower.ts' and add logic to the 'cast' function.`);
+    console.log(`3. Now when using the Custom Card Creator, type '${className}' into the 'Class' field to use that class.`);
+    console.log(`4. When using the Deck Creator, type '${className}' to create a deck with cards from your new class.`);
+    console.log('Enjoy!');
     game.pause();
 }

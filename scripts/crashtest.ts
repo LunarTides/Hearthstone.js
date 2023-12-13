@@ -11,12 +11,12 @@ const games = game.lodash.parseInt(gamesEnv) ?? 100;
 function main(): void {
     const decks = JSON.parse(game.functions.util.fs('read', '/decks.json') as string) as string[];
 
-    game.logWarn(`Press enter to play ${games} games`);
+    console.warn(`Press enter to play ${games} games`);
     if (!process.env.games) {
-        game.log('Set the GAMES env variable to change how many games to play.');
+        console.log('Set the GAMES env variable to change how many games to play.');
     }
 
-    game.log('NOTE: If you see no progress being made for an extended period of time, chances are the game got stuck in an infinite loop.');
+    console.log('NOTE: If you see no progress being made for an extended period of time, chances are the game got stuck in an infinite loop.');
     game.pause();
 
     for (let index = 0; index < games; index++) {
@@ -65,13 +65,13 @@ function main(): void {
             game.interact.gameLoop.handleCmds('/ai');
             game.interact.gameLoop.handleCmds('history', { debug: true });
 
-            game.log('THE GAME CRASHED: LOOK ABOVE FOR THE HISTORY, AND THE AI\'S LOGS.');
+            console.log('THE GAME CRASHED: LOOK ABOVE FOR THE HISTORY, AND THE AI\'S LOGS.');
 
             throw error;
         }
     }
 
-    game.logWarn('Test passed!');
+    console.warn('Test passed!');
     game.pause();
 }
 

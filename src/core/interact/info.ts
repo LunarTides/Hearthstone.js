@@ -14,12 +14,12 @@ export const infoInteract = {
         const watermark = `HEARTHSTONE.JS V${game.functions.info.version(versionDetail)}`;
         const border = '-'.repeat(watermark.length + 2);
 
-        game.log(`|${border}|`);
-        game.log(`| ${watermark} |`);
-        game.log(`|${border}|\n`);
+        console.log(`|${border}|`);
+        console.log(`| ${watermark} |`);
+        console.log(`|${border}|\n`);
 
         if (info.branch === 'topic' && game.config.general.topicBranchWarning) {
-            game.log('<yellow>WARNING: YOU ARE ON A TOPIC BRANCH. THIS VERSION IS NOT READY.</yellow>\n');
+            console.log('<yellow>WARNING: YOU ARE ON A TOPIC BRANCH. THIS VERSION IS NOT READY.</yellow>\n');
         }
     },
 
@@ -38,14 +38,14 @@ export const infoInteract = {
         game.interact.cls();
 
         const version = `Hearthstone.js V${game.functions.info.version(2)} | Copyright (C) 2022 | LunarTides`;
-        game.log('|'.repeat(version.length + 8));
-        game.log(`||| ${version} |||`);
-        game.log('|||     This program is licensed under the GPL-3.0 license.  ' + ' '.repeat(info.branch.length) + '|||');
+        console.log('|'.repeat(version.length + 8));
+        console.log(`||| ${version} |||`);
+        console.log('|||     This program is licensed under the GPL-3.0 license.  ' + ' '.repeat(info.branch.length) + '|||');
         if (disappear) {
-            game.log('|||         This will disappear once you end your turn.      ' + ' '.repeat(info.branch.length) + '|||');
+            console.log('|||         This will disappear once you end your turn.      ' + ' '.repeat(info.branch.length) + '|||');
         }
 
-        game.log('|'.repeat(version.length + 8));
+        console.log('|'.repeat(version.length + 8));
     },
 
     /**
@@ -78,9 +78,9 @@ export const infoInteract = {
         }
 
         this.printPlayerStats(plr);
-        game.log();
+        console.log();
         this.printBoard(plr);
-        game.log();
+        console.log();
         this.printHand(plr);
     },
 
@@ -178,7 +178,7 @@ export const infoInteract = {
             return `Corpses: <gray>${player.corpses}</gray>`;
         });
 
-        game.log(wallify(finished));
+        console.log(wallify(finished));
     },
 
     /**
@@ -188,31 +188,31 @@ export const infoInteract = {
         for (const [playerIndex, side] of game.board.entries()) {
             const player = game.functions.util.getPlayerFromId(playerIndex);
             const sideMessage = plr === player ? '----- Board (You) ------' : '--- Board (Opponent) ---';
-            game.log(sideMessage);
+            console.log(sideMessage);
 
             if (side.length === 0) {
-                game.log('<gray>Empty</gray>');
+                console.log('<gray>Empty</gray>');
                 continue;
             }
 
             for (const [index, card] of side.entries()) {
-                game.log(game.interact.card.getReadable(card, index + 1));
+                console.log(game.interact.card.getReadable(card, index + 1));
             }
         }
 
-        game.log('------------------------');
+        console.log('------------------------');
     },
 
     /**
      * Prints the hand of the specified player.
      */
     printHand(plr: Player): void {
-        game.log(`--- ${plr.name} (${plr.heroClass})'s Hand ---`);
+        console.log(`--- ${plr.name} (${plr.heroClass})'s Hand ---`);
         // Add the help message
-        game.log('([index] <cyan>{Cost}</cyan> <b>Name</b> <bright:green>[attack / health]</bright:green> <yellow>(type)</yellow>)\n');
+        console.log('([index] <cyan>{Cost}</cyan> <b>Name</b> <bright:green>[attack / health]</bright:green> <yellow>(type)</yellow>)\n');
 
         for (const [index, card] of plr.hand.entries()) {
-            game.log(game.interact.card.getReadable(card, index + 1));
+            console.log(game.interact.card.getReadable(card, index + 1));
         }
     },
 };

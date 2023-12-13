@@ -119,7 +119,7 @@ export function create(creatorType: CcType, cardType: CardType, blueprint: Bluep
     // Validate
     const error = game.functions.card.validateBlueprint(blueprint);
     if (error !== true) {
-        game.logError(error);
+        console.error(error);
         return '';
     }
 
@@ -267,10 +267,10 @@ export const blueprint: Blueprint = {
     if (debug) {
         // If debug mode is enabled, just show some information about the card.
         // This is the id that would be written to '.latestId'
-        game.log('\nNew ID: %s', id);
-        game.log('Would be path: \'%s\'', filePath.replaceAll('\\', '/'));
-        game.log('Content:');
-        game.log(content);
+        console.log('\nNew ID: %s', id);
+        console.log('Would be path: \'%s\'', filePath.replaceAll('\\', '/'));
+        console.log('Content:');
+        console.log(content);
         game.pause();
     } else {
         // If debug mode is disabled, write the card to disk.
@@ -286,13 +286,13 @@ export const blueprint: Blueprint = {
         // Write the file to the path
         game.functions.util.fs('write', filePath, content);
 
-        game.log('File created at: "' + filePath + '"');
+        console.log('File created at: "' + filePath + '"');
 
-        game.log('Trying to compile...');
+        console.log('Trying to compile...');
         if (game.functions.util.tryCompile()) {
-            game.log('<bright:green>Success!</bright:green>');
+            console.log('<bright:green>Success!</bright:green>');
         } else {
-            game.logError('<yellow>WARNING: Compiler error occurred. Please fix the errors in the card.</yellow>');
+            console.error('<yellow>WARNING: Compiler error occurred. Please fix the errors in the card.</yellow>');
         }
     }
 

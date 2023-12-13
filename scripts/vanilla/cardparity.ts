@@ -62,10 +62,10 @@ function check(key: string, value: any, vanilla: VanillaCard, card: Card): void 
         return;
     }
 
-    game.log('Card outdated!');
-    game.log(`Name: ${card.name} (${card.id})`);
-    game.log(`Local: "${key}: ${value}"`);
-    game.log(`New:   "${key}: ${vanillaValue}"\n`);
+    console.log('Card outdated!');
+    console.log(`Name: ${card.name} (${card.id})`);
+    console.log(`Local: "${key}: ${value}"`);
+    console.log(`New:   "${key}: ${vanillaValue}"\n`);
 }
 
 main();

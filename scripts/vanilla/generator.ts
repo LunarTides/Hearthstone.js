@@ -59,7 +59,7 @@ async function main(): Promise<void> {
         game.functions.util.fs('write', '/vanillacards.json', JSON.stringify(data));
 
         const difference = oldLength - data.length;
-        game.log('Found %s cards!\nFiltered away %s cards!\nSuccessfully imported %s cards!', oldLength, difference, data.length);
+        console.log('Found %s cards!\nFiltered away %s cards!\nSuccessfully imported %s cards!', oldLength, difference, data.length);
 
         process.exit(0);
     });

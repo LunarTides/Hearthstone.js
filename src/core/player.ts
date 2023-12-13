@@ -29,7 +29,7 @@ export class Player {
      * const board = game.board[player.id];
      *
      * board.forEach(card => {
-     *     game.log(card.name);
+     *     console.log(card.name);
      * });
      */
     id = -1;
@@ -41,7 +41,7 @@ export class Player {
      * @example
      * const discover = player.ai.discover();
      *
-     * game.log(discover);
+     * console.log(discover);
      */
     ai?: Ai;
 
@@ -60,7 +60,7 @@ export class Player {
      * # Examples
      * @example
      * player.deck.forEach(card => {
-     *     game.log(card.name);
+     *     console.log(card.name);
      * });
      */
     deck: Card[] = [];
@@ -71,7 +71,7 @@ export class Player {
      * # Examples
      * @example
      * player.hand.forEach(card => {
-     *     game.log(card.name);
+     *     console.log(card.name);
      * });
      */
     hand: Card[] = [];
