@@ -490,7 +490,7 @@ export class Game {
             const player = this.functions.util.getPlayerFromId(p);
 
             const spared: Card[] = [];
-            const shouldSpare = (card: Card) => (card.health ?? 1) > 0 || ((card.durability ?? 0) > 0);
+            const shouldSpare = (card: Card) => (card.health ?? 0) > 0 || ((card.durability ?? 0) > 0);
 
             for (const card of this.board[p]) {
                 if (shouldSpare(card)) {
