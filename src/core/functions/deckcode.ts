@@ -65,16 +65,13 @@ export const deckcodeFunctions = {
         }
 
         plr.heroClass = hero as CardClass;
-
-        // TODO: Make this less hardcoded
-        const runeClasses = ['Death Knight'];
-        const runeClass = runeClasses.includes(hero);
+        const runeClass = plr.canUseRunes();
 
         const addRunes = (runes: string) => {
             if (runeClass) {
                 plr.runes = runes;
             } else {
-                game.pause(`<yellow>WARNING: This deck has runes in it, but the class is <bright:yellow>${hero}</bright:yellow>. Supported classes: <bright:yellow>${runeClasses.join(', ')}</bright:yellow yellow>\n`);
+                game.pause(`<yellow>WARNING: This deck has runes in it, but the class is <bright:yellow>${hero}</bright:yellow>.\n`);
             }
         };
 
@@ -96,7 +93,7 @@ export const deckcodeFunctions = {
             code = code.slice(6);
             addRunes(runes);
         } else if (runeClass) {
-            game.pause(`<yellow>WARNING: This class supports runes but there are no runes in this deck. This deck's class: <bright:yellow>${hero}</bright:yellow>. Supported classes: <bright:yellow>${runeClasses.join(', ')}</bright:yellow yellow>\n`);
+            game.pause(`<yellow>WARNING: This class supports runes but there are no runes in this deck. This deck's class: <bright:yellow>${hero}</bright:yellow>.\n`);
         }
 
         // Find /3:5,2:8,1/
@@ -595,7 +592,9 @@ export const deckcodeFunctions = {
         // Generate runes
         let runes = '';
 
-        if (heroClassName === 'Death Knight') {
+        plr.heroClass = heroClassName as CardClass;
+
+        if (plr.canUseRunes()) {
             for (const cardAmountObject of newDeck) {
                 const card = cardAmountObject[0];
 

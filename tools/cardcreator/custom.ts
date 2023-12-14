@@ -9,7 +9,7 @@ import { createGame } from '../../src/internal.js';
 import { type Blueprint, type BlueprintWithOptional, type CardClass, type CardKeyword, type CardRarity, type CardType, type MinionTribe, type SpellSchool } from '../../src/types.js';
 import * as lib from './lib.js';
 
-const { game } = createGame();
+const { player1, game } = createGame();
 
 let shouldExit = false;
 let type: CardType;
@@ -87,8 +87,10 @@ function common(): BlueprintWithOptional {
     const rarity = input('Rarity: ') as CardRarity;
     const keywords = input('Keywords: ');
 
+    player1.heroClass = classes;
+
     let runes;
-    if (classes === 'Death Knight') {
+    if (player1.canUseRunes()) {
         runes = input('Runes: ');
     }
 

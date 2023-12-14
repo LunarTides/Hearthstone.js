@@ -106,7 +106,9 @@ function askClass(): CardClassNoNeutral {
         return askClass();
     }
 
-    if (heroClass === 'Death Knight') {
+    player1.heroClass = heroClass as CardClass;
+
+    if (player1.canUseRunes()) {
         runes = '';
 
         while (runes.length < 3) {

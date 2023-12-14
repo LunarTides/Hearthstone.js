@@ -818,7 +818,7 @@ export class Player {
      * @returns Success
      */
     tradeCorpses(amount: number, callback: () => void): boolean {
-        if (this.heroClass !== 'Death Knight') {
+        if (!this.canUseCorpses()) {
             return false;
         }
 
@@ -830,6 +830,20 @@ export class Player {
         callback();
 
         return true;
+    }
+
+    /**
+     * Returns whether or not the player can use corpses
+     */
+    canUseCorpses(): boolean {
+        return ['Death Knight'].includes(this.heroClass);
+    }
+
+    /**
+     * Returns whether or not the player can use runes
+     */
+    canUseRunes(): boolean {
+        return ['Death Knight'].includes(this.heroClass);
     }
 
     /**
