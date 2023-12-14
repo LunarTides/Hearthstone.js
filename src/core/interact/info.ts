@@ -171,7 +171,7 @@ export const infoInteract = {
 
         // Corpses
         doStat(player => {
-            if (player.corpses <= 0) {
+            if (player.corpses <= 0 || !player.canUseCorpses()) {
                 return '';
             }
 
