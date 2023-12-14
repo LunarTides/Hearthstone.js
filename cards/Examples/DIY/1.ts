@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
         // DON'T CHANGE ANYTHING BELOW THIS LINE
 
         // Testing your solution.
-        const success = game.interact.verifyDiySolution(self.attack === 2 && self.health === 2, self);
+        const success = game.interact.verifyDiySolution(self.attack === 1 && self.health === 2, self);
         if (!success) {
             self.kill();
         }
