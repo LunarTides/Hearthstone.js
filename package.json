@@ -8,7 +8,8 @@
   "scripts": {
     "start": "npm config set engine-strict true && node ./dist/index.js",
     "test": "npm run script:testcards && xo",
-    "script:vanilla:generator": "node ./dist/scripts/vanilla/generator",
+    "script:vanilla:generate": "node ./dist/scripts/vanilla/generate",
+    "script:vanilla:generate-no-filter": "node ./dist/scripts/vanilla/generate --no-filter",
     "script:vanilla:propfinder": "node ./dist/scripts/vanilla/propfinder",
     "script:vanilla:cardparity": "node ./dist/scripts/vanilla/cardparity",
     "script:breakingchange": "node ./dist/scripts/breakingchange",

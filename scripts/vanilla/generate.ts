@@ -9,6 +9,8 @@ import process from 'node:process';
 import { type Card as VanillaCard } from '@hearthstonejs/vanillatypes';
 import { createGame } from '../../src/internal.js';
 
+const filterAwayUseless = process.argv[2] !== '--no-filter';
+
 const { game } = createGame();
 
 // Copy-and-pasted from this stackoverflow answer:
@@ -54,7 +56,10 @@ async function main(): Promise<void> {
 
         // Let data = JSON.parse(r);
         const oldLength = data.length;
-        data = game.functions.card.vanilla.filter(data, false, false, true);
+
+        if (filterAwayUseless) {
+            data = game.functions.card.vanilla.filter(data, false, false, true);
+        }
 
         game.functions.util.fs('write', '/vanillacards.json', JSON.stringify(data));
 

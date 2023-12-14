@@ -31,7 +31,11 @@ function handleStoredTypes(key: string, value: any): void {
 function main(): void {
     const vanillaCards = game.functions.card.vanilla.getAll();
 
-    for (const vanillaCard of vanillaCards) {
+    for (const [index, vanillaCard] of vanillaCards.entries()) {
+        if (index % 100 === 0) {
+            console.warn(`Processing ${index / 100} / ${vanillaCards.length / 100}`);
+        }
+
         for (const entry of Object.entries(vanillaCard)) {
             const [key, value] = entry;
 
