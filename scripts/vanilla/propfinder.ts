@@ -7,24 +7,23 @@ import { createGame } from '../../src/internal.js';
 const { game } = createGame();
 
 const props: Record<string, [string, number]> = {};
-const types: Record<string, number> = {};
 
-const stored: Array<[string, number]> = [];
-const storedType = 'mechanics';
+const stored: Record<string, Array<[any, number]>> = {};
 
-function handleStoredTypes(value: any): void {
+function handleStoredTypes(key: string, value: any): void {
     const values = Array.isArray(value) ? value : [value];
 
     for (const value of values) {
-        if (typeof value !== 'string') {
-            throw new TypeError('v is not a string');
+        if (!stored[key]) {
+            stored[key] = [[value, 1]];
+            continue;
         }
 
-        const found = stored.find(s => game.lodash.isEqual(s[0], value));
+        const found = stored[key].find(s => game.lodash.isEqual(s[0], value));
         if (found) {
             found[1]++;
         } else {
-            stored.push([value, 1]);
+            stored[key].push([value, 1]);
         }
     }
 }
@@ -36,9 +35,7 @@ function main(): void {
         for (const entry of Object.entries(vanillaCard)) {
             const [key, value] = entry;
 
-            if (key === storedType) {
-                handleStoredTypes(value);
-            }
+            handleStoredTypes(key, value);
 
             if (Object.keys(props).includes(key)) {
                 const storedType = props[key][0];
@@ -52,21 +49,19 @@ function main(): void {
 
             props[key] = [typeof value, 1];
         }
-
-        if (Object.keys(types).includes(vanillaCard.type)) {
-            types[vanillaCard.type]++;
-            continue;
-        }
-
-        types[vanillaCard.type] = 1;
     }
 
-    console.log('<b>TYPES:</b>');
-    console.log(types);
     console.log('<b>PROPS:</b>');
     console.log(props);
     console.log('<b>STORED:</b>');
-    console.log(stored.sort((a, b) => b[1] - a[1]));
+
+    for (const object of Object.entries(stored)) {
+        let [key, value] = object;
+        value = value.sort((a, b) => b[1] - a[1]);
+
+        console.log(`${key}:`);
+        console.log(value);
+    }
 }
 
 main();
