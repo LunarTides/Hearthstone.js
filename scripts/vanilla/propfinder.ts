@@ -2,6 +2,7 @@
  * @module Vanilla Card Property Finder
  */
 
+import process from 'node:process';
 import { createGame } from '../../src/internal.js';
 
 const { game } = createGame();
@@ -32,8 +33,8 @@ function main(): void {
     const vanillaCards = game.functions.card.vanilla.getAll();
 
     for (const [index, vanillaCard] of vanillaCards.entries()) {
-        if (index % 100 === 0) {
-            console.warn(`Processing ${index / 100} / ${vanillaCards.length / 100}`);
+        if (!process.stdout.isTTY && index % 100 === 0) {
+            process.stderr.write(`\r\u001B[KProcessing ${(index / 100) + 1} / ${Math.ceil(vanillaCards.length / 100)}...`);
         }
 
         for (const entry of Object.entries(vanillaCard)) {
@@ -54,6 +55,8 @@ function main(): void {
             props[key] = [typeof value, 1];
         }
     }
+
+    console.warn('Done!');
 
     console.log('<b>PROPS:</b>');
     console.log(props);
