@@ -84,8 +84,8 @@ function upgradeCard(path: string, data: string, file: any): void {
         if (key !== '${key}') return;
 
         // Here we cast the value to the correct type.
-        // Do not use the '_unknownVal' variable after this.
-        const value = _unknownVal as EventValue<typeof key>;
+        // Do not use the '_unknownValue' variable after this.
+        const value = _unknownValue as EventValue<typeof key>;
 `, 'Updated passive.');
 
         data = upgradeField(data, keyRegex, '', 'Removed key from passive.');

@@ -21,7 +21,7 @@ export const blueprint: Blueprint = {
     tick(plr, self, key, value) {
         // Your cards cost 1 less.
 
-        // When changing cost of a card USE THE ENCHANTMENT SYSTEM.
+        // When changing cost of a card USE THE ENCHANTMENT SYSTEM. This will ensure that mutliple cards can change the cost of cards without interfering with each other.
         // We don't care about the event, we just want to run this code every now and then.
 
         for (const card of plr.hand) {

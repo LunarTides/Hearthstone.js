@@ -261,7 +261,7 @@ export class Game {
      * Broadcast event to event listeners
      *
      * @param key The name of the event (see `EventKey`)
-     * @param val The value of the event
+     * @param value The value of the event
      *
      * @returns Return values of all the executed functions
      */

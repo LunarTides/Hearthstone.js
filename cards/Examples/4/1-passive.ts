@@ -20,7 +20,7 @@ export const blueprint: Blueprint = {
     health: 1,
     tribe: 'None',
 
-    // Note the new `key`, `_unknownVal` and `eventPlayer` arguments.
+    // Note the new `key`, `_unknownValue` and `eventPlayer` arguments.
     // These are only used in the `passive` and `handpassive` abilities.
     passive(plr, self, key, _unknownValue, eventPlayer) {
         // Your battlecries trigger twice.

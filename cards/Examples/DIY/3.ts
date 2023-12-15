@@ -61,7 +61,7 @@ export const blueprint: Blueprint = {
         game.functions.event.addListener('TargetSelected', _unknownValue => {
             const value = _unknownValue as EventValue<'TargetSelected'>;
 
-            if (!(value[0] === self)) {
+            if (value[0] !== self) {
                 return false;
             }
 

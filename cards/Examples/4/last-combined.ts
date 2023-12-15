@@ -19,7 +19,7 @@ export const blueprint: Blueprint = {
         plr.addQuest('Quest', self, 'PlayCard', 3, (_unknownValue, done) => {
             const value = _unknownValue as EventValue<'PlayCard'>;
 
-            if (!(value !== self)) {
+            if (value === self) {
                 return false;
             }
 
@@ -43,11 +43,11 @@ export const blueprint: Blueprint = {
             // Add an event listener to check if you've played 10 cards
             let amount = 0;
 
-            game.functions.event.addListener('PlayCard', _unknownValue => {
+            game.functions.event.addListener('PlayCard', (_unknownValue, eventPlayer) => {
                 const value = _unknownValue as EventValue<'PlayCard'>;
 
                 // Only continue if the player that triggered the event is this card's owner and the played card is a minion.
-                if (!(game.player === plr && value.type === 'Minion')) {
+                if (!(eventPlayer === plr && value.type === 'Minion')) {
                     return false;
                 }
 
@@ -65,7 +65,7 @@ export const blueprint: Blueprint = {
                 unhook();
 
                 // Reverse the enchantment
-                // You might be able to just do `plr.hand.forEach(m => ...)` instead, since `removeEnchantment` only removes enchantments if it's there.
+                // You might be able to just do `for (const minion of plr.hand)` instead, since `removeEnchantment` only removes enchantments if it's there.
                 for (const minion of plr.hand.filter(c => c.type === 'Minion')) {
                     minion.removeEnchantment('-1 cost', self);
                 }

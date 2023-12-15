@@ -66,7 +66,7 @@ export const eventManager: EventManagerType = {
      * Tick the game
      *
      * @param key The key of the event that triggered the tick
-     * @param val The value of the event that triggered the tick
+     * @param value The value of the event that triggered the tick
      * @param player The player that triggered the tick
      */
     tick(key, value, player): boolean {
@@ -116,7 +116,7 @@ export const eventManager: EventManagerType = {
      * Do card passives
      *
      * @param key The key of the event
-     * @param val The value of the event
+     * @param value The value of the event
      * @param player The player that triggered the event
      *
      * @returns Success
@@ -164,7 +164,7 @@ export const eventManager: EventManagerType = {
      *
      * @param questsName The type of quest to update
      * @param key The key of the event
-     * @param val The value of the event
+     * @param value The value of the event
      * @param plr The owner of the quest
      *
      * @returns Success
@@ -207,7 +207,7 @@ export const eventManager: EventManagerType = {
      * Broadcast an event
      *
      * @param key The key of the event
-     * @param val The value of the event
+     * @param value The value of the event
      * @param plr The player who caused the event to happen
      * @param updateHistory Whether or not to update the history
      *
@@ -255,7 +255,7 @@ export const eventManager: EventManagerType = {
      * Write an event to history. Done automatically by `broadcast`.
      *
      * @param key The key of the event
-     * @param val The value of the event
+     * @param value The value of the event
      * @param plr The player who caused the event to happen
      */
     addHistory(key, value, plr): void {

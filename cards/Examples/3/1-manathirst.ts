@@ -18,10 +18,10 @@ export const blueprint: Blueprint = {
     tribe: 'None',
 
     battlecry(plr, self) {
-        const returnValue = self.manathirst(6);
+        const manathirst = self.manathirst(6);
 
         // Make the prompt.
-        const prompt = returnValue ? 'Silence then freeze an enemy minion.' : 'Freeze an enemy minion.';
+        const prompt = manathirst ? 'Silence then freeze an enemy minion.' : 'Freeze an enemy minion.';
 
         // Select a target to freeze (and silence)
         // The first argument is the prompt to ask the user.
@@ -31,13 +31,13 @@ export const blueprint: Blueprint = {
         // Ask the user to select a target based on the `prompt`, the user can only select enemy minions
         const target = game.interact.selectCardTarget(prompt, self, 'enemy');
 
-        // If target is false it means that the user cancelled their selection. Return `game.constants.REFUND` to refund the card.
+        // If target is false it means that the user cancelled their selection. Return `game.constants.refund` to refund the card.
         if (!target) {
             return game.constants.refund;
         }
 
         // If the manathirst was successful, silence the target first
-        if (returnValue) {
+        if (manathirst) {
             target.silence();
         }
 

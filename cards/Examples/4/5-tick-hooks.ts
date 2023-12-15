@@ -50,6 +50,8 @@ export const blueprint: Blueprint = {
 
     // Unhook from the tick when the card is removed
     remove(plr, self) {
+        // This is kind of a bad example, since this is what the `tick` ability is supposed to do anyway, but oh well
+
         // Unhook from all ticks that the card is hooked to.
         // It is important to unhook before removing the enchantments, since removing the enchantments can cause a tick, which would add the enchantments back.
         if (Array.isArray(self.storage.unhooks)) {

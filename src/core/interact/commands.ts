@@ -427,7 +427,7 @@ export const commands: CommandList = {
             }
 
             if (!(value instanceof Card)) {
-                // Return val as-is if it is not a card / player
+                // Return value as-is if it is not a card / player
                 return value;
             }
 
