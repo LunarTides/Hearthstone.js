@@ -239,6 +239,8 @@ export const config: GameConfig = {
         betaIntroText: 'This is the beta branch. This has more features, but is less stable. I would advise against using this branch if you can help it. The todo list is not final and can change.',
         alphaIntroText: 'This is the alpha branch. This is the bleeding edge of Hearthstone.js. I would highly advise against using this branch if you can help it. Expect many bugs and breaking changes.',
         topicIntroText: 'This is a topic (feature) branch. This branch exists to add one single feature, can be highly unstable, and will be deleted in the future once the feature is done. I HIGHLY RECOMMEND NOT USING THIS BRANCH FOR ANY REASON.',
+
+        licenseUrl: 'https://github.com/LunarTides/Hearthstone.js/blob/main/LICENSE',
     },
 
     todo: {

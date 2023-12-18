@@ -2,9 +2,6 @@ import rl from 'readline-sync';
 import { type Target, type GamePlayCardReturn } from '@Game/types.js';
 import { type Ai, Card, commands, debugCommands } from '../../internal.js';
 
-// Override the console methods to force using the wrapper functions
-// Set this variable to false to prevent disabling the console. (Not recommended)
-// TODO: Add this to the config instead of being hardcoded
 const overrideConsole = {
     log(..._data: any[]): void {
         throw new Error('Attempting to use override console before being given the `log` function.');

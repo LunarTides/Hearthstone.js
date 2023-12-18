@@ -2,9 +2,6 @@ import process from 'node:process';
 import { type GameConfig, type EventValue } from '@Game/types.js';
 import { Card, Player } from '../../internal.js';
 
-// TODO: Put this in the config
-const licenseUrl = 'https://github.com/LunarTides/Hearthstone.js/blob/main/LICENSE';
-
 const getGame = () => game;
 
 type CommandList = Record<string, (args: string[], flags?: { echo?: boolean; debug?: boolean }) => string | boolean>;
@@ -243,7 +240,7 @@ export const commands: CommandList = {
 
     license(): boolean {
         const start = (process.platform === 'darwin' ? 'open' : (process.platform === 'win32' ? 'start' : 'xdg-open'));
-        game.functions.util.runCommand(start + ' ' + licenseUrl);
+        game.functions.util.runCommand(start + ' ' + game.config.info.licenseUrl);
         return true;
     },
 

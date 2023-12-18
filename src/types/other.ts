@@ -158,6 +158,8 @@ export type GameConfig = {
         betaIntroText: string;
         alphaIntroText: string;
         topicIntroText: string;
+
+        licenseUrl: string;
     };
 
     todo: Record<string, {
