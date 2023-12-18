@@ -117,7 +117,6 @@ export function getLatestId(): number {
 export function create(creatorType: CcType, blueprint: BlueprintWithOptional, overridePath?: string, overrideFilename?: string, debug?: boolean): string {
     // TODO: Search for keywords in the card text and don't add a passive ability if one was found. And vice versa
     // TODO: Look for placeholders in the text and add a placeholder ability if it finds one
-    // TODO: If the name of the card contains a ', escape it
 
     // Validate
     const error = game.functions.card.validateBlueprint(blueprint);
@@ -223,7 +222,7 @@ ${runes}${keywords}
         /**
          * Adds double quotes around the string
          */
-        const stringify = (text: string) => `'${text}'`;
+        const stringify = (text: string) => `'${text.replace('\'', '\\\'')}'`;
 
         // If the value is an array, put "["value1", "value2"]", or "[1, 2]", or any combination of those two.
         if (Array.isArray(value)) {
@@ -251,7 +250,7 @@ ${runes}${keywords}
     const passiveImport = isPassive ? ', type EventValue' : '';
 
     // Add the key/value pairs to the content
-    const contentArray = Object.entries(card).map(c => `${c[0]}: ${getTypeValue(c[1])},\n    `);
+    const contentArray = Object.entries(card).map(c => `${c[0].replace('\'', '\\\'')}: ${getTypeValue(c[1])},\n    `);
 
     // Add the content
     const content = `// Created by the ${creatorType} Card Creator
