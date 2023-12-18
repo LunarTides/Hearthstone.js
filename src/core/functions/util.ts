@@ -511,16 +511,26 @@ ${mainContent}
         return dirname;
     },
 
-    getRandomTarget(): Target {
-        // TODO: Add more arguments to this function
-        const targets: Target[] = [...game.board[0], ...game.board[1], game.player1, game.player2];
+    getRandomTarget(includePlayer1 = true, includePlayer2 = true, includePlayer1Board = true, includePlayer2Board = true): Target | undefined {
+        const targets: Target[] = [];
 
-        const target = game.lodash.sample(targets);
-        if (!target) {
-            throw new TypeError('Could not find a target. This is an error since it means that one of the players / minions on the board is undefined.');
+        if (includePlayer1) {
+            targets.push(game.player1);
         }
 
-        return target;
+        if (includePlayer2) {
+            targets.push(game.player2);
+        }
+
+        if (includePlayer1Board) {
+            targets.push(...game.board[game.player1.id]);
+        }
+
+        if (includePlayer2Board) {
+            targets.push(...game.board[game.player2.id]);
+        }
+
+        return game.lodash.sample(targets);
     },
 
     /**
