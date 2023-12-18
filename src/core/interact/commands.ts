@@ -161,7 +161,6 @@ export const commands: CommandList = {
             'give (name) - Adds a card to your hand',
             'eval [log] (code) - Runs the code specified. If the word \'log\' is before the code, instead console.log the code and wait for user input to continue. Examples: `/eval game.endGame(game.player)` (Win the game) `/eval @Player1.addToHand(@fe48ac1.perfectCopy())` (Adds a perfect copy of the card with uuid "fe48ac1" to player 1\'s hand) `/eval log h#c#1.attack + d#o#26.health + b#c#1.attack` (Logs the card in the current player\'s hand with index 1\'s attack value + the 26th card in the opponent\'s deck\'s health value + the card on the current player\'s side of the board with index 1\'s attack value)',
             '<strikethrough>set (category) (name) (value) - Changes a setting to (value). Look in the config files for a list of settings. Example: set advanced debugCommandPrefix !</strikethrough> (Deprecated)',
-            '<strikethrough>debug - Gives you infinite mana, health and armor</strikethrough> (Deprecated)',
             'exit - Force exits the game. There will be no winner, and it will take you straight back to the hub.',
             'history - Displays a history of actions. This doesn\'t hide any information, and is the same thing the log files uses.',
             'reload | /rl - Reloads the cards and config in the game (Use \'/freload\' or \'/frl\' to ignore the confirmation prompt (or disable the prompt in the advanced config))',
@@ -583,18 +582,6 @@ export const debugCommands: CommandList = {
     exit(): boolean {
         game.running = false;
         game.functions.util.createLogFile();
-        return true;
-    },
-
-    debug(): boolean {
-        // TODO: Remove
-        game.player.maxMana = 1000;
-        game.player.emptyMana = 1000;
-        game.player.mana = 1000;
-
-        game.player.health += 10_000;
-        game.player.armor += 100_000;
-        game.player.fatigue = 0;
         return true;
     },
 
