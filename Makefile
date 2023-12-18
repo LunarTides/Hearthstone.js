@@ -20,7 +20,7 @@ install:
 
 vanilla:
     @echo "Trying to generate vanilla cards..."
-    @npm run script:vanilla:generator
+    @npm run script:vanilla:generate
 
 run:
     @ls dist/index.js > /dev/null 2>&1 || (echo "The game hasn't been built." && exit 1)

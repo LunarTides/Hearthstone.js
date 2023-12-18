@@ -25,7 +25,7 @@ const vanilla = {
             return JSON.parse(game.functions.util.fs('read', fileLocation) as string) as VanillaCard[];
         }
 
-        throw new Error('Cards file not found! Run \'npm run script:vanilla:generator\' (requires an internet connection), then try again.');
+        throw new Error('Cards file not found! Run \'npm run script:vanilla:generate\' (requires an internet connection), then try again.');
     },
 
     /**
