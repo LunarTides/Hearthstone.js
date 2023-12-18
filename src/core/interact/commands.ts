@@ -165,7 +165,6 @@ export const commands: CommandList = {
             'history - Displays a history of actions. This doesn\'t hide any information, and is the same thing the log files uses.',
             'reload | /rl - Reloads the cards and config in the game (Use \'/freload\' or \'/frl\' to ignore the confirmation prompt (or disable the prompt in the advanced config))',
             'undo - Undoes the last card played. It gives the card back to your hand, and removes it from where it was. (This does not undo the actions of the card)',
-            '<strikethrough>cmd - Shows you a list of debug commands you have run, and allows you to rerun them.</strikethrough> (Deprecated)',
             'ai - Gives you a list of the actions the ai(s) have taken in the order they took it',
         ];
 
@@ -776,75 +775,6 @@ export const debugCommands: CommandList = {
         }
 
         return finished;
-    },
-
-    cmd(): boolean {
-        // TODO: Maybe remove?
-        const history = Object.values(game.events.history).map(t => t.filter(
-            v => v[0] === 'Input'
-            && (v[1] as EventValue<'Input'>).startsWith('/')
-            && v[2] === game.player
-            && !(v[1] as EventValue<'Input'>).startsWith('/cmd'),
-        ));
-
-        for (const [historyListIndex, object] of history.entries()) {
-            if (object.length <= 0) {
-                continue;
-            }
-
-            console.log(`\nTurn ${historyListIndex}:`);
-
-            for (const [historyIndex, historyKey] of object.entries()) {
-                /**
-                * The user's input
-                */
-                const input = historyKey[1];
-
-                console.log(`[${historyIndex + 1}] ${input?.toString()}`);
-            }
-        }
-
-        const turnIndex = game.lodash.parseInt(game.input('\nWhich turn does the command belong to? (eg. 1): '));
-        if (!turnIndex || turnIndex < 0 || !history[turnIndex]) {
-            game.pause('<red>Invalid turn.</red>\n');
-            return false;
-        }
-
-        const commandIndex = game.lodash.parseInt(game.input('\nWhat is the index of the command in that turn? (eg. 1): '));
-        if (!commandIndex || commandIndex < 1 || !history[turnIndex][commandIndex - 1]) {
-            game.pause('<red>Invalid command index.</red>\n');
-            return false;
-        }
-
-        let command = history[turnIndex][commandIndex - 1][1];
-        if (!command) {
-            game.pause('<red>Invalid command.</red>\n');
-            return false;
-        }
-
-        command = command as EventValue<'Input'>;
-
-        game.interact.info.showGame(game.player);
-        const options = game.lodash.parseInt(game.input(`\nWhat would you like to do with this command?\n${command}\n\n(1. Run it, 2. Edit it, 0. Cancel): `));
-        if (!options) {
-            game.pause('<red>Invalid option.</red>\n');
-            return false;
-        }
-
-        if (options === 0) {
-            return false;
-        }
-
-        if (options === 1) {
-            game.interact.gameLoop.doTurnLogic(command);
-        }
-
-        if (options === 2) {
-            const addition = game.input('Which card do you want to play? ' + command);
-            game.interact.gameLoop.doTurnLogic(command + addition);
-        }
-
-        return true;
     },
 
     set(args): boolean {
