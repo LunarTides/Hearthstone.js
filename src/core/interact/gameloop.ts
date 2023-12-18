@@ -280,7 +280,7 @@ export const gameloopInteract = { /**
         const debugCommandName = Object.keys(debugCommands).find(cmd => cmd.startsWith(debugName));
         if (debugCommandName) {
             if (!game.config.general.debug) {
-                game.pause('<red>You are not allowed to use this command.</red>');
+                game.pause('<red>You are not allowed to use this command.</red>\n');
                 return false;
             }
 

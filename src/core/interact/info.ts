@@ -16,10 +16,10 @@ export const infoInteract = {
 
         console.log(`|${border}|`);
         console.log(`| ${watermark} |`);
-        console.log(`|${border}|\n`);
+        console.log(`|${border}|`);
 
         if (info.branch === 'topic' && game.config.general.topicBranchWarning) {
-            console.log('<yellow>WARNING: YOU ARE ON A TOPIC BRANCH. THIS VERSION IS NOT READY.</yellow>\n');
+            console.log('\n<yellow>WARNING: YOU ARE ON A TOPIC BRANCH. THIS VERSION IS NOT READY.</yellow>');
         }
     },
 
@@ -73,8 +73,11 @@ export const infoInteract = {
      */
     showGame(plr: Player): void {
         this.watermark();
-        if (game.turns <= 2) {
+        console.log();
+
+        if (game.turns <= 2 && !game.config.general.debug) {
             this.license();
+            console.log();
         }
 
         this.printPlayerStats(plr);

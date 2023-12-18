@@ -354,6 +354,7 @@ export class Game {
         }
 
         this.interact.info.watermark();
+        console.log();
 
         // Do this to bypass 'Press enter to continue' prompt when showing history
         const history = this.interact.gameLoop.handleCmds('history', { echo: false });

@@ -37,6 +37,7 @@ export const interact = {
      */
     deckCode(plr: Player): boolean {
         game.interact.info.watermark();
+        console.log();
 
         /**
          * If the test deck (30 Sheep) should be allowed

@@ -18,7 +18,7 @@ export function main(): void {
     game.interact.info.watermark();
 
     // Find holes and dupes in the ids
-    console.warn('Validating ids...');
+    console.warn('\nValidating ids...');
     const [holes, dupes] = validateIds(true);
     if (holes > 0 || dupes > 0) {
         // If there were holes or dupes, pause the game so that the user gets a
