@@ -235,8 +235,7 @@ export const commands: CommandList = {
     },
 
     license(): boolean {
-        const start = (process.platform === 'darwin' ? 'open' : (process.platform === 'win32' ? 'start' : 'xdg-open'));
-        game.functions.util.runCommand(start + ' ' + game.config.info.licenseUrl);
+        game.functions.util.openInBrowser(game.config.info.githubUrl + '/blob/main/LICENSE');
         return true;
     },
 

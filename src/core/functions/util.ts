@@ -367,6 +367,16 @@ ${mainContent}
     },
 
     /**
+     * Open the provided link in the users browser.
+     *
+     * This uses the "open" command in Mac, the "start" command in Windows, and the "xdg-open" command in Linux
+     */
+    openInBrowser(link: string) {
+        const start = (process.platform === 'darwin' ? 'open' : (process.platform === 'win32' ? 'start' : 'xdg-open'));
+        game.functions.util.runCommand(start + ' ' + link);
+    },
+
+    /**
      * Returns a more traditional turn counter format.
      *
      * `game.turns` increments at the end of every player's turn.

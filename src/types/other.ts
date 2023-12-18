@@ -159,7 +159,7 @@ export type GameConfig = {
         alphaIntroText: string;
         topicIntroText: string;
 
-        licenseUrl: string;
+        githubUrl: string;
     };
 
     todo: Record<string, {
