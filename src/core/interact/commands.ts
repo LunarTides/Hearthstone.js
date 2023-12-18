@@ -1,5 +1,4 @@
 import process from 'node:process';
-import { type GameConfig, type EventValue } from '@Game/types.js';
 import { Card, Player } from '../../internal.js';
 
 const getGame = () => game;
@@ -160,7 +159,6 @@ export const commands: CommandList = {
         const debugBricks = [
             'give (name) - Adds a card to your hand',
             'eval [log] (code) - Runs the code specified. If the word \'log\' is before the code, instead console.log the code and wait for user input to continue. Examples: `/eval game.endGame(game.player)` (Win the game) `/eval @Player1.addToHand(@fe48ac1.perfectCopy())` (Adds a perfect copy of the card with uuid "fe48ac1" to player 1\'s hand) `/eval log h#c#1.attack + d#o#26.health + b#c#1.attack` (Logs the card in the current player\'s hand with index 1\'s attack value + the 26th card in the opponent\'s deck\'s health value + the card on the current player\'s side of the board with index 1\'s attack value)',
-            '<strikethrough>set (category) (name) (value) - Changes a setting to (value). Look in the config files for a list of settings. Example: set advanced debugCommandPrefix !</strikethrough> (Deprecated)',
             'exit - Force exits the game. There will be no winner, and it will take you straight back to the hub.',
             'history - Displays a history of actions. This doesn\'t hide any information, and is the same thing the log files uses.',
             'reload | /rl - Reloads the cards and config in the game (Use \'/freload\' or \'/frl\' to ignore the confirmation prompt (or disable the prompt in the advanced config))',
@@ -775,68 +773,6 @@ export const debugCommands: CommandList = {
         }
 
         return finished;
-    },
-
-    set(args): boolean {
-        // TODO: Maybe remove
-        if (args.length !== 3) {
-            game.pause('<red>Invalid amount of arguments!</red>\n');
-            return false;
-        }
-
-        const [category, key, value] = args;
-
-        // HACK: Use of never
-        const settingCategory = game.config[category as never] as keyof GameConfig;
-        const setting = Object.entries(settingCategory).find(ent => ent[0].toLowerCase() === key.toLowerCase())?.[1];
-
-        if (setting === undefined) {
-            game.pause('<red>Invalid setting name!</red>\n');
-            return false;
-        }
-
-        if (!(/number|boolean|string/.test(typeof setting))) {
-            game.pause(`<red>You cannot change this setting, as it is a '${typeof setting}', and you can only change: number, boolean, string.</red>\n`);
-            return false;
-        }
-
-        if (key === 'debug') {
-            game.pause('<red>You can\'t change the debug setting, as that could lock you out of the set command.</red>\n');
-            return false;
-        }
-
-        let newValue;
-
-        if (['off', 'disable', 'false', 'no', '0'].includes(value)) {
-            console.log(`<bright:green>Setting '${key}' has been disabled.</bright:green>`);
-            newValue = false;
-        } else if (['on', 'enable', 'true', 'yes', '1'].includes(value)) {
-            console.log(`<bright:green>Setting '${key}' has been disabled.</bright:green>`);
-            newValue = true;
-        } else if (Number.parseFloat(value)) {
-            console.log(`<bright:green>Setting '${key}' has been set to the float: ${value}.</bright:green>`);
-            newValue = Number.parseFloat(value);
-        } else if (game.lodash.parseInt(value)) {
-            console.log(`<bright:green>Setting '${key}' has been set to the integer: ${value}.</bright:green>`);
-            newValue = game.lodash.parseInt(value);
-        } else {
-            console.log(`<bright:green>Setting '${key}' has been set to the string literal: ${value}.</bright:green>`);
-            newValue = value;
-        }
-
-        if (newValue === undefined) {
-            // This should never really happen
-            game.pause('<red>Invalid value!</red>\n');
-            return false;
-        }
-
-        // HACK: Hmm
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        (game.config[category as never] as any)[key as never] = newValue as any;
-        game.doConfigAi();
-
-        game.pause();
-        return true;
     },
 
     rl(_, flags): boolean {
