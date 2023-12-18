@@ -1,4 +1,4 @@
-import process from 'node:process';
+import { type Todo } from '@Game/types.js';
 import { Card, Player } from '../../internal.js';
 
 const getGame = () => game;
@@ -136,7 +136,7 @@ export const commands: CommandList = {
 
     help(): boolean {
         game.interact.info.watermark();
-        console.log('(In order to run a command; input the name of the command and follow further instruction.)\n');
+        console.log('\n(In order to run a command; input the name of the command and follow further instruction.)\n');
         console.log('Available commands:');
 
         const bricks = [
@@ -347,11 +347,13 @@ export const commands: CommandList = {
                 break;
             }
 
-            const printTodo = (todo: [string, { state: string; description: string }], id: number, printDesc = false) => {
-                const [name, info] = todo;
-                let [state, text] = Object.values(info);
+            const printTodo = (todo: [string, Todo], id: number, printDesc = false) => {
+                let [name, info] = todo;
 
-                switch (state) {
+                name = name.replaceAll('_', ' ');
+                let state: string;
+
+                switch (info.state) {
                     case 'done': {
                         state = 'x';
 
@@ -370,11 +372,19 @@ export const commands: CommandList = {
                         break;
                     }
 
+                    case 'first pass':
+                    case 'second pass':
+                    case 'third pass': {
+                        state = info.state;
+
+                        break;
+                    }
+
                     // No default
                 }
 
                 if (printDesc) {
-                    console.log(`{${id}} [${state}] ${name}\n${text}`);
+                    console.log(`{${id}} [${state}] ${name}\n${info.description}`);
                 } else {
                     console.log(`{${id}} [${state}] ${name}`);
                 }
@@ -395,7 +405,11 @@ export const commands: CommandList = {
             printInfo();
             printTodo(todo, todoIndex, true);
 
-            game.pause('\nPress enter to continue...');
+            const command = game.input('\nType "issue" to open the todo in your webbrowser.\n');
+            if (command === 'issue') {
+                const link = game.config.info.githubUrl + `/issues/${todo[1].issue}`;
+                game.functions.util.openInBrowser(link);
+            }
         }
 
         return true;

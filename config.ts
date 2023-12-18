@@ -247,10 +247,10 @@ export const config: GameConfig = {
         // A todo list
 
         // For example:
-        // one = ["first pass", "Description."]
-        // two = ["second pass", "Another description."]
-        // three = ["not done", "A third description."]
-        // four = ["doing", "A fourth description."]
-        // five = ["done", "A fifth description."]
+        // Add_Battlecry: { state: 'first pass', description: 'Description.' },
+        // Two: { 'second pass', 'Another description.' },
+        // Three: { 'not done", "A third description.' },
+        // Four: { 'doing", "A fourth description.' },
+        // Five: { 'done", "A fifth description.' },
     },
 };

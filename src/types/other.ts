@@ -88,6 +88,12 @@ export type AiHistory = {
     data: any;
 };
 
+export type Todo = {
+    state: 'not done' | 'doing' | 'done' | 'first pass' | 'second pass' | 'third pass';
+    description: string;
+    issue: number;
+};
+
 /**
  * Game configuration.
  */
@@ -162,8 +168,5 @@ export type GameConfig = {
         githubUrl: string;
     };
 
-    todo: Record<string, {
-        state: 'not done' | 'doing' | 'done' | 'first pass' | 'second pass' | 'third pass';
-        description: string;
-    }>;
+    todo: Record<string, Todo>;
 };
