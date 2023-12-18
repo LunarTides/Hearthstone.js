@@ -7,15 +7,13 @@ export const blueprint: Blueprint = {
     name: 'Lesser Heal',
     text: 'Restore 2 Health.',
     cost: 2,
-    type: 'Spell',
+    type: 'Heropower',
     classes: ['Priest'],
     rarity: 'Free',
     collectible: false,
     id: 118,
 
-    spellSchool: 'None',
-
-    cast(plr, self) {
+    heropower(plr, self) {
         // Restore 2 Health.
 
         // Hero power targets need to use the `forceElusive` flag.
@@ -35,14 +33,14 @@ export const blueprint: Blueprint = {
         // Health: 1->3
         plr.health = 1;
         plr.inputQueue = ['face', 'n'];
-        self.activate('cast');
+        self.activate('heropower');
 
         assert.equal(plr.health, 1 + 2);
 
         // Health: 29->30 (cap at 30)
         plr.health = 29;
         plr.inputQueue = ['face', 'n'];
-        self.activate('cast');
+        self.activate('heropower');
 
         assert.equal(plr.health, 30);
     },

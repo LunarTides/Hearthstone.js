@@ -7,15 +7,13 @@ export const blueprint: Blueprint = {
     name: 'Nurture',
     text: '<b>Choose One -</b> Draw a card; or Gain an empty Mana Crystal.',
     cost: 2,
-    type: 'Spell',
+    type: 'Heropower',
     classes: ['Druid'],
     rarity: 'Free',
     collectible: false,
     id: 113,
 
-    spellSchool: 'None',
-
-    cast(plr, self) {
+    heropower(plr, self) {
         // Choose One - Draw a card; or Gain an empty Mana Crystal.
         game.interact.chooseOne(1, ['Draw a card', () => {
             // Draw a card

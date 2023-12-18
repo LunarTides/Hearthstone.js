@@ -7,15 +7,13 @@ export const blueprint: Blueprint = {
     name: 'Steady Shot',
     text: 'Deal 2 damage to the enemy hero.',
     cost: 2,
-    type: 'Spell',
+    type: 'Heropower',
     classes: ['Hunter'],
     rarity: 'Free',
     collectible: false,
     id: 116,
 
-    spellSchool: 'None',
-
-    cast(plr, self) {
+    heropower(plr, self) {
         // Deal 2 damage to the enemy hero.
         game.attack(2, plr.getOpponent());
     },
@@ -23,7 +21,7 @@ export const blueprint: Blueprint = {
     test(plr, self) {
         // The opponent should have 30 health
         assert.equal(plr.getOpponent().getHealth(), 30);
-        self.activate('cast');
+        self.activate('heropower');
 
         // The opponent should now have 28 health.
         assert.equal(plr.getOpponent().getHealth(), 30 - 2);

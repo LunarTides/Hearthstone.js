@@ -7,15 +7,13 @@ export const blueprint: Blueprint = {
     name: 'Galakrond\'s Guile',
     text: 'Add a <b>Lackey</b> to your hand.',
     cost: 2,
-    type: 'Spell',
+    type: 'Heropower',
     classes: ['Rogue'],
     rarity: 'Legendary',
     collectible: true,
     id: 125,
 
-    spellSchool: 'None',
-
-    cast(plr, self) {
+    heropower(plr, self) {
         // Add a lacky to your hand.
         const lackeyId = game.lodash.sample(game.cardCollections.lackeys);
         if (!lackeyId) {

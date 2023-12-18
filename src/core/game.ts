@@ -1001,7 +1001,7 @@ const playCard = {
 
         // Type specific code
         // HACK: Use of never
-        const typeFunction: (card: Card, player: Player) => GamePlayCardReturn = playCard.TYPE_SPECIFIC[card.type as never];
+        const typeFunction: (card: Card, player: Player) => GamePlayCardReturn = playCard.typeSpecific[card.type as never];
         if (!typeFunction) {
             throw new TypeError('Cannot handle playing card of type: ' + card.type);
         }
@@ -1032,7 +1032,7 @@ const playCard = {
     },
 
     // Card type specific code
-    TYPE_SPECIFIC: {
+    typeSpecific: {
         Minion(card: Card, player: Player): GamePlayCardReturn {
             // Magnetize
             if (playCard._magnetize(card, player)) {
@@ -1100,6 +1100,14 @@ const playCard = {
             unsuppress();
 
             return returnValue;
+        },
+
+        Heropower(card: Card, player: Player): GamePlayCardReturn {
+            // A hero power card shouldn't really be played, but oh well.
+            player.hero.heropowerId = card.id;
+            player.hero.heroPower = card;
+
+            return true;
         },
     },
 

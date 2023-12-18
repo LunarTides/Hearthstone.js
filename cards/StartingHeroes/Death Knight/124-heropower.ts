@@ -7,15 +7,13 @@ export const blueprint: Blueprint = {
     name: 'Ghoul Charge',
     text: 'Summon a 1/1 Ghoul with Charge. It dies at end of turn.',
     cost: 2,
-    type: 'Spell',
+    type: 'Heropower',
     classes: ['Death Knight'],
     rarity: 'Free',
     collectible: false,
     id: 124,
 
-    spellSchool: 'None',
-
-    cast(plr, self) {
+    heropower(plr, self) {
         // Summon a 1/1 Ghoul with Charge. It dies at end of turn.
 
         // Create the Ghoul
@@ -32,7 +30,7 @@ export const blueprint: Blueprint = {
 
         // The minion shouldn't be on the board at first.
         assert(!lookForMinion());
-        self.activate('cast');
+        self.activate('heropower');
 
         // The minion should now be on the board.
         assert(lookForMinion());

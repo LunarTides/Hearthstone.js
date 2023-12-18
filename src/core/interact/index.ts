@@ -338,7 +338,7 @@ export const interact = {
         }
 
         // If the minion has elusive, and the card that called this function is a spell
-        if (((card && card.type === 'Spell') ?? flags.includes('forceElusive')) && minion.hasKeyword('Elusive')) {
+        if (((card && (card.type === 'Spell' || card.type === 'Heropower')) ?? flags.includes('forceElusive')) && minion.hasKeyword('Elusive')) {
             game.pause('<red>Can\'t be targeted by Spells or Hero Powers.</red>\n');
             return false;
         }

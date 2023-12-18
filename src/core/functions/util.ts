@@ -512,11 +512,12 @@ ${mainContent}
     },
 
     getRandomTarget(): Target {
+        // TODO: Add more arguments to this function
         const targets: Target[] = [...game.board[0], ...game.board[1], game.player1, game.player2];
 
         const target = game.lodash.sample(targets);
         if (!target) {
-            throw new TypeError('Could not find a target to cast the spell on. This is an error since it means that one of the players / minions on the board is undefined.');
+            throw new TypeError('Could not find a target. This is an error since it means that one of the players / minions on the board is undefined.');
         }
 
         return target;

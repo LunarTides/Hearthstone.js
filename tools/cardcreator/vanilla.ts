@@ -30,10 +30,12 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CcT
     }
 
     let text = card.text ?? '';
-    let type = game.lodash.capitalize(card.type);
-    if (type === 'Hero_power') {
-        type = 'Spell';
+    let typeString = game.lodash.capitalize(card.type);
+    if (typeString === 'Hero_power') {
+        typeString = 'Heropower';
     }
+
+    const type = typeString as CardType;
 
     // Minion info
     const attack = card.attack ?? -1;
@@ -72,14 +74,14 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CcT
             throw new Error('No hero power found');
         }
 
-        create(heroPower, debug);
+        create(heroPower, debug, overrideType);
     }
 
     let blueprint: Blueprint = {
         name,
         text,
         cost,
-        type: type as CardType,
+        type,
         classes: [cardClass],
         rarity,
         collectible,
@@ -133,9 +135,12 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CcT
             break;
         }
 
-        default: {
-            throw new TypeError(`${type} is not a valid type!`);
+        case 'Heropower':
+        case 'Undefined': {
+            break;
         }
+
+        // No default
     }
 
     let cctype: lib.CcType = 'Vanilla';

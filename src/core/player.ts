@@ -791,7 +791,7 @@ export class Player {
             return false;
         }
 
-        if (this.hero.heroPower?.activate('cast') === game.constants.refund) {
+        if (this.hero.heroPower?.activate('heropower') === game.constants.refund) {
             return -1;
         }
 

@@ -7,15 +7,13 @@ export const blueprint: Blueprint = {
     name: 'Life Tap',
     text: 'Draw a card and take 2 damage.',
     cost: 2,
-    type: 'Spell',
+    type: 'Heropower',
     classes: ['Warlock'],
     rarity: 'Free',
     collectible: false,
     id: 121,
 
-    spellSchool: 'None',
-
-    cast(plr, self) {
+    heropower(plr, self) {
         // Draw a card and take 2 damage.
 
         // Deal 2 damage to the player.
@@ -31,7 +29,7 @@ export const blueprint: Blueprint = {
         assert.equal(plr.hand.length, 0);
         assert.equal(plr.health, 30);
 
-        self.activate('cast');
+        self.activate('heropower');
 
         // The player should now have 1 card in their hand, and 28 health.
         assert.equal(plr.hand.length, 1);

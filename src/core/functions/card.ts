@@ -327,6 +327,7 @@ export const cardFunctions = {
             Weapon: ['attack', 'health'],
             Hero: ['armor', 'heropowerId'],
             Location: ['durability', 'cooldown'],
+            Heropower: ['heropower'],
             Undefined: [],
         };
 

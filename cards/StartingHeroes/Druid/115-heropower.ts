@@ -7,15 +7,13 @@ export const blueprint: Blueprint = {
     name: 'Shapeshift',
     text: '+1 Attack this turn. +1 Armor.',
     cost: 2,
-    type: 'Spell',
+    type: 'Heropower',
     classes: ['Druid'],
     rarity: 'Free',
     collectible: false,
     id: 115,
 
-    spellSchool: 'None',
-
-    cast(plr, self) {
+    heropower(plr, self) {
         // +1 Attack this turn. +1 Armor.
 
         // Give the player +1 attack.
@@ -29,7 +27,7 @@ export const blueprint: Blueprint = {
         // The player should start with 0 attack
         assert.equal(plr.attack, 0);
         assert.equal(plr.armor, 0);
-        self.activate('cast');
+        self.activate('heropower');
 
         // The player should gain 1 attack
         assert.equal(plr.attack, 1);

@@ -18,6 +18,7 @@ export type CardType =
 | 'Weapon'
 | 'Hero'
 | 'Location'
+| 'Heropower'
 | 'Undefined';
 
 /**
@@ -142,6 +143,7 @@ export type CardAbilityReal =
 | 'passive'
 | 'spellburst'
 | 'startofgame'
+| 'heropower'
 | 'use';
 
 /**
@@ -276,7 +278,7 @@ export type Blueprint = {
      *
      * The id of the hero power card for the hero.
      *
-     * The hero power card should be a spell, and its `cast` ability will be triggered every time the player uses their hero power.
+     * The hero power card should be of type "Heropower", and its `heropower` ability will be triggered every time the player uses their hero power.
      */
     heropowerId?: number;
 } & BlueprintAbilities;

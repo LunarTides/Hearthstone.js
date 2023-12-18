@@ -16,8 +16,7 @@ export const blueprint: Blueprint = {
     // The amount of armor that the player will gain when playing this card.
     armor: 5,
 
-    // The id of the hero power card.
-    // The hero power card can be any spell. Here we use the `2-heropower.ts` card.
+    // The id of the hero power card. Here we use the `2-heropower.ts` card.
     heropowerId: 130,
 
     battlecry(plr, self) {

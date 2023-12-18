@@ -184,6 +184,12 @@ const cardTypeFunctions: { [x in CardType]: () => Blueprint } = {
         });
     },
 
+    Heropower(): Blueprint {
+        const card = common();
+
+        return applyCard(card);
+    },
+
     Undefined(): Blueprint {
         throw new TypeError('Undefined type');
     },

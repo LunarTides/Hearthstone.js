@@ -7,15 +7,13 @@ export const blueprint: Blueprint = {
     name: 'Galakrond\'s Wit',
     text: 'Add a random Priest minion to your hand.',
     cost: 2,
-    type: 'Spell',
+    type: 'Heropower',
     classes: ['Priest'],
     rarity: 'Legendary',
     collectible: true,
     id: 128,
 
-    spellSchool: 'None',
-
-    cast(plr, self) {
+    heropower(plr, self) {
         // Add a random Priest minion to your hand.
         const possibleCards = game.functions.card.getAll().filter(c => c.type === 'Minion' && game.functions.card.validateClasses(c.classes, 'Priest'));
         if (possibleCards.length <= 0) {

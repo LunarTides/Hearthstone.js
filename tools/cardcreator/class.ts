@@ -60,20 +60,19 @@ export function main(debug = false, overrideType?: lib.CcType): void {
         type: 'Hero',
         armor: game.lodash.parseInt(armor || '5'),
         // We do +2 since the hero card will be created first (+1), then the heropower (+1)
-        heropowerId: lib.getLatestId() + 2,
         classes: [className] as CardClass[],
         rarity: 'Free' as CardRarity,
         collectible: false,
         // This will be overwritten by the library
         id: 0,
+        heropowerId: lib.getLatestId() + 2,
     };
 
     const heropowerBlueprint: Blueprint = {
         name: hpName,
         text: hpText,
         cost: game.lodash.parseInt(hpCost),
-        type: 'Spell',
-        spellSchool: 'None',
+        type: 'Heropower',
         classes: [className] as CardClass[],
         rarity: 'Free' as CardRarity,
         collectible: false,
@@ -87,7 +86,7 @@ export function main(debug = false, overrideType?: lib.CcType): void {
     }
 
     lib.create(cctype, 'Hero', heroBlueprint, `/cards/StartingHeroes/${game.lodash.startCase(className)}/`, 'hero.ts', debug);
-    lib.create(cctype, 'Spell', heropowerBlueprint, `/cards/StartingHeroes/${game.lodash.startCase(className)}/`, 'heropower.ts', debug);
+    lib.create(cctype, 'Heropower', heropowerBlueprint, `/cards/StartingHeroes/${game.lodash.startCase(className)}/`, 'heropower.ts', debug);
 
     console.log('\nClass Created!');
     console.log('Next steps:');

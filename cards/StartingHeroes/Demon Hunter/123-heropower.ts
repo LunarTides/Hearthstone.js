@@ -7,15 +7,13 @@ export const blueprint: Blueprint = {
     name: 'Demon Claws',
     text: '+1 Attack this turn.',
     cost: 1,
-    type: 'Spell',
+    type: 'Heropower',
     classes: ['Demon Hunter'],
     rarity: 'Free',
     collectible: false,
     id: 123,
 
-    spellSchool: 'None',
-
-    cast(plr, self) {
+    heropower(plr, self) {
         // +1 Attack this turn.
 
         // Give the player +1 attack.
@@ -25,7 +23,7 @@ export const blueprint: Blueprint = {
     test(plr, self) {
         // The player should start with 0 attack
         assert.equal(plr.attack, 0);
-        self.activate('cast');
+        self.activate('heropower');
 
         // The player should gain 1 attack
         assert.equal(plr.attack, 1);

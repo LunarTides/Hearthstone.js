@@ -7,15 +7,13 @@ export const blueprint: Blueprint = {
     name: 'Totemic Call',
     text: 'Summon a random basic Totem.',
     cost: 2,
-    type: 'Spell',
+    type: 'Heropower',
     classes: ['Shaman'],
     rarity: 'Free',
     collectible: false,
     id: 119,
 
-    spellSchool: 'None',
-
-    cast(plr, self) {
+    heropower(plr, self) {
         // Filter away totem cards that is already on the player's side of the board.
         const filteredTotemCardNames = game.cardCollections.totems.filter(id => !game.board[plr.id].some(m => m.id === id));
 
@@ -46,7 +44,7 @@ export const blueprint: Blueprint = {
         assert(checkForTotemCard(0));
 
         for (let index = 1; index <= totemCardIds.length + 1; index++) {
-            self.activate('cast');
+            self.activate('heropower');
 
             // If all totem cards are on the board, it shouldn't summon a new one
             if (index > totemCardIds.length) {

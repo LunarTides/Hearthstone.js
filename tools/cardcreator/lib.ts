@@ -34,6 +34,11 @@ function getCardAbility(cardType: CardType): string {
             break;
         }
 
+        case 'Heropower': {
+            ability = 'Heropower';
+            break;
+        }
+
         case 'Minion':
         case 'Weapon': {
             // Try to extract an ability from the card's description
@@ -58,9 +63,7 @@ function getCardAbility(cardType: CardType): string {
             throw new Error('undefined type');
         }
 
-        default: {
-            throw new Error('invalid type');
-        }
+        // No default
     }
 
     return ability;
@@ -115,6 +118,7 @@ export function create(creatorType: CcType, cardType: CardType, blueprint: Bluep
     // TODO: Search for keywords in the card text and don't add a passive ability if one was found. And vice versa
     // TODO: Look for placeholders in the text and add a placeholder ability if it finds one
     // TODO: If the name of the card contains a ', escape it
+    // TODO: Remove "cardType"
 
     // Validate
     const error = game.functions.card.validateBlueprint(blueprint);
@@ -124,7 +128,7 @@ export function create(creatorType: CcType, cardType: CardType, blueprint: Bluep
     }
 
     // If the user didn't specify a tribe, but the tribe exists, set the tribe to "None".
-    type = cardType;
+    type = blueprint.type;
     card = blueprint;
 
     let ability = getCardAbility(type);

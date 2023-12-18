@@ -7,15 +7,13 @@ export const blueprint: Blueprint = {
     name: 'Fireblast',
     text: 'Deal 1 damage.',
     cost: 2,
-    type: 'Spell',
+    type: 'Heropower',
     classes: ['Mage'],
     rarity: 'Free',
     collectible: false,
     id: 114,
 
-    spellSchool: 'None',
-
-    cast(plr, self) {
+    heropower(plr, self) {
         // Deal 1 damage.
 
         // Use of `selectTarget` in the `heropower` ability requires the use of the `forceElusive` flag
@@ -36,7 +34,7 @@ export const blueprint: Blueprint = {
         assert.equal(plr.getOpponent().getHealth(), 30);
 
         plr.inputQueue = ['face', 'y'];
-        self.activate('cast');
+        self.activate('heropower');
 
         // The opponent should have 29 health.
         assert.equal(plr.getOpponent().getHealth(), 30 - 1);

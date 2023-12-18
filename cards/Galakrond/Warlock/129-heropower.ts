@@ -2,21 +2,18 @@
 
 import assert from 'node:assert';
 import { type Blueprint } from '@Game/types.js';
-import { type Card } from '../../../src/core/card.js';
 
 export const blueprint: Blueprint = {
     name: 'Galakrond\'s Malice',
     text: 'Summon two 1/1 Imps.',
     cost: 2,
-    type: 'Spell',
+    type: 'Heropower',
     classes: ['Warlock'],
     rarity: 'Legendary',
     collectible: true,
     id: 129,
 
-    spellSchool: 'None',
-
-    cast(plr, self) {
+    heropower(plr, self) {
         // Summon two 1/1 Imps.
         for (let i = 0; i < 2; i++) {
             const card = game.createCard(21, plr);

@@ -83,7 +83,6 @@ export const eventManager: EventManagerType = {
         for (let i = 0; i < 2; i++) {
             const player = game.functions.util.getPlayerFromId(i);
 
-            // Activate spells in the players hand
             for (const card of player.hand) {
                 card.condition();
 

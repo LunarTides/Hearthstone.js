@@ -7,15 +7,13 @@ export const blueprint: Blueprint = {
     name: 'Galakrond\'s Fury',
     text: 'Summon a 2/1 Elemental with <b>Rush</b>.',
     cost: 2,
-    type: 'Spell',
+    type: 'Heropower',
     classes: ['Shaman'],
     rarity: 'Legendary',
     collectible: true,
     id: 126,
 
-    spellSchool: 'None',
-
-    cast(plr, self) {
+    heropower(plr, self) {
         // Summon a 2/1 Elemental with Rush.
         const card = game.createCard(19, plr);
         if (!card) {

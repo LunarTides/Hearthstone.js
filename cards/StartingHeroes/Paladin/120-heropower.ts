@@ -7,15 +7,13 @@ export const blueprint: Blueprint = {
     name: 'Reinforce',
     text: 'Summon a 1/1 Silver Hand Recruit.',
     cost: 2,
-    type: 'Spell',
+    type: 'Heropower',
     classes: ['Paladin'],
     rarity: 'Free',
     collectible: false,
     id: 120,
 
-    spellSchool: 'None',
-
-    cast(plr, self) {
+    heropower(plr, self) {
         // Summon a 1/1 Silver Hand Recruit.
 
         // Create the Silver Hand Recruit card.
@@ -30,7 +28,7 @@ export const blueprint: Blueprint = {
 
         // The minion should not exist
         assert(!checkIfMinionExists());
-        self.activate('cast');
+        self.activate('heropower');
 
         // The minion should now exist
         assert(checkIfMinionExists());

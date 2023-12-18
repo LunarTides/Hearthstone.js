@@ -384,13 +384,12 @@ export const cardInteract = {
 
             case 'Hero':
             case 'Weapon':
+            case 'Heropower':
             case 'Undefined': {
                 break;
             }
 
-            default: {
-                throw new Error('Type of card cannot be viewed as it is not handled by `interact.card.view`');
-            }
+            // No default
         }
 
         if (help) {
