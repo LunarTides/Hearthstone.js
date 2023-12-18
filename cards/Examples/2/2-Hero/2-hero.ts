@@ -13,6 +13,9 @@ export const blueprint: Blueprint = {
     collectible: false,
     id: 37,
 
+    // The amount of armor that the player will gain when playing this card.
+    armor: 5,
+
     // The id of the hero power card.
     // The hero power card can be any spell. Here we use the `2-heropower.ts` card.
     heropowerId: 130,

@@ -12,5 +12,6 @@ export const blueprint: Blueprint = {
     collectible: false,
     id: 13,
 
+    armor: 0,
     heropowerId: 123,
 };

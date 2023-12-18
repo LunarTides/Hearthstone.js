@@ -12,6 +12,7 @@ export const blueprint: Blueprint = {
     collectible: true,
     id: 68,
 
+    armor: 5,
     heropowerId: 126,
 
     battlecry(plr, self) {

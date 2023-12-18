@@ -23,6 +23,7 @@ export function main(debug = false, overrideType?: lib.CcType): void {
     const questions = [
         'What should the name of the class be?',
         'What should the default hero\'s name be?',
+        'How much armor should the player gain when playing the hero card? (Default is 5):',
         'What should the name of the heropower be?',
         'What should the description of the hero power be? (example: Deal 2 damage to the enemy hero.):',
         'How much should the hero power cost? (Default is 2):',
@@ -50,13 +51,14 @@ export function main(debug = false, overrideType?: lib.CcType): void {
         return;
     }
 
-    const [className, heroName, hpName, hpText, hpCost] = answers;
+    const [className, heroName, armor, hpName, hpText, hpCost] = answers;
 
     const heroBlueprint: Blueprint = {
         name: heroName,
         text: className[0].toUpperCase() + className.slice(1).toLowerCase() + ' starting hero',
         cost: 0,
         type: 'Hero',
+        armor: game.lodash.parseInt(armor || '5'),
         // We do +2 since the hero card will be created first (+1), then the heropower (+1)
         heropowerId: lib.getLatestId() + 2,
         classes: [className] as CardClass[],

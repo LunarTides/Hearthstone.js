@@ -117,6 +117,7 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CcT
 
         case 'Hero': {
             blueprint = Object.assign(blueprint, {
+                armor: card.armor,
                 heropowerId: lib.getLatestId(),
             });
 

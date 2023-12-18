@@ -46,6 +46,7 @@ function applyCard(_card: BlueprintWithOptional): Blueprint {
             health: 1,
             tribe: 'None',
             spellSchool: 'None',
+            armor: 5,
             heropowerId: 0,
             durability: 2,
             cooldown: 2,
@@ -156,6 +157,8 @@ const cardTypeFunctions: { [x in CardType]: () => Blueprint } = {
     Hero(): Blueprint {
         const card = common();
 
+        const armor = game.lodash.parseInt(game.input('Armor (Default: 5):')) ?? 5;
+
         console.log('Make the Hero Power:');
         if (!main()) {
             throw new Error('Failed to create hero power');
@@ -163,6 +166,7 @@ const cardTypeFunctions: { [x in CardType]: () => Blueprint } = {
 
         return applyCard({
             ...card,
+            armor,
             heropowerId: lib.getLatestId(),
         });
     },

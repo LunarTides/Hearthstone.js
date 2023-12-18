@@ -268,6 +268,12 @@ export type Blueprint = {
     /**
      * ### This is required for Heroes
      *
+     * The amount of armor that the player should gain when playing the card.
+     */
+    armor?: number;
+    /**
+     * ### This is required for Heroes
+     *
      * The id of the hero power card for the hero.
      *
      * The hero power card should be a spell, and its `cast` ability will be triggered every time the player uses their hero power.

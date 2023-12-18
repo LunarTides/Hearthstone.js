@@ -744,18 +744,17 @@ export class Player {
      * Sets the player's hero to `hero`
      *
      * @param hero The hero that the player should be set to
-     * @param armor The amount of armor the player should gain
      * @param setHeroClass Set the players hero class.
      *
      * @returns Success
      */
-    setHero(hero: Card, armor = 5, setHeroClass = true): boolean {
+    setHero(hero: Card, setHeroClass = true): boolean {
         this.hero = hero;
         if (setHeroClass) {
             this.heroClass = hero.classes[0];
         }
 
-        this.armor += armor;
+        this.armor += hero.armor!;
         return true;
     }
 
@@ -773,7 +772,7 @@ export class Player {
             return false;
         }
 
-        this.setHero(new Card(heroCardId, this), 0, false);
+        this.setHero(new Card(heroCardId, this), false);
 
         return true;
     }

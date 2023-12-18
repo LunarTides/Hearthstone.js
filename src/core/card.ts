@@ -128,6 +128,7 @@ export class Card {
 
     // Hero
 
+    armor?: number;
     heropowerId?: number;
     heroPower?: Card;
 

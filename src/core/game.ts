@@ -1086,7 +1086,7 @@ const playCard = {
                 return 'refund';
             }
 
-            player.setHero(card, 5);
+            player.setHero(card);
             return true;
         },
 
