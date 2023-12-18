@@ -7,12 +7,16 @@ export const blueprint: Blueprint = {
     name: 'Weapon Example',
     text: 'Just an example card (Does nothing)',
     cost: 1,
+
+    // Remember to properly set the type (Done automatically be the card creator)
     type: 'Weapon',
+
     classes: ['Neutral'],
     rarity: 'Free',
     collectible: false,
     id: 31,
 
+    // Weapons have attack / health, but no tribe
     attack: 5,
     health: 3,
 };

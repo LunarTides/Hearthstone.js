@@ -14,7 +14,7 @@ export const blueprint: Blueprint = {
     id: 37,
 
     // The id of the hero power card.
-    // The hero power card can be any spell. Here we use the 2-heropower.ts card.
+    // The hero power card can be any spell. Here we use the `2-heropower.ts` card.
     heropowerId: 130,
 
     battlecry(plr, self) {

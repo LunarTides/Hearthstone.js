@@ -5,7 +5,7 @@ import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
     // A blueprint only has ESSENTIAL properties, and type-specific properties (like stats or tribe)
-    // Other properties, like keywords, has to be added in the 'create' ability. More on that in `1-4`.
+    // Other properties, like keywords, has to be added in the 'create' ability. More on that in `1-4`. (`Examples/1/4-???.ts`)
 
     // Essential properties first (all cards have these)
 
@@ -27,7 +27,7 @@ export const blueprint: Blueprint = {
     // The rarity of the card. E.g. "Free", "Common", "Rare", etc...
     rarity: 'Free',
 
-    // If the card should be allowed in decks, or in card pools.
+    // If the card should be allowed in decks or card pools.
     // These example cards should not be randomly generated in `discover`, or added in a deck, so all of them are uncollectible.
     collectible: false,
 
@@ -35,7 +35,7 @@ export const blueprint: Blueprint = {
     // If you have debug mode enabled, you can type `/give (id)` to give yourself the card with that id.
     id: 29,
 
-    // After the id property, all properties below (except for abilties) are type-specific
+    // After the id property, all properties below (except for abilities) are type-specific
 
     // The amount of attack the minion has.
     attack: 2,

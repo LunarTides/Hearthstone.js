@@ -5,7 +5,7 @@ import { type Blueprint, type Ability } from '@Game/types.js';
 
 // This is another way to write blueprints
 // You might want to do this if you make a very complicated card
-// however it is not as supported by scripts as the default method.
+// however it is not _as_ supported by scripts as the default method.
 const battlecry: Ability = (plr, self) => {
     self.addStats(1, 1);
 };
@@ -13,8 +13,8 @@ const battlecry: Ability = (plr, self) => {
 const theTestAbility: Ability = (plr, self) => {
     self.activate('battlecry');
 
-    assert.equal(self.attack! - 1, self.blueprint.attack);
-    assert.equal(self.health! - 1, self.blueprint.health);
+    assert.equal(self.blueprint.attack! + 1, self.attack);
+    assert.equal(self.blueprint.health! + 1, self.health);
 };
 
 export const blueprint: Blueprint = {

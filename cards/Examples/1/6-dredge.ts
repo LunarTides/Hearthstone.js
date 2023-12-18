@@ -20,7 +20,7 @@ export const blueprint: Blueprint = {
     battlecry(plr, self) {
         // Dredge.
 
-        // `game.interact` is an instance of the Interact object as defined in `src/interact.ts`.
+        // "game.interact" is an instance of the Interact object as defined in `src/core/interact/index.ts`.
         game.interact.card.dredge();
     },
 

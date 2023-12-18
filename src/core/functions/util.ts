@@ -45,9 +45,9 @@ export const utilFunctions = {
      *
      * const wall = createWall(bricks, "-");
      *
-     * wall.forEach(foo => {
-     *     console.log(foo);
-     * });
+     * for (const brick of wall) {
+     *     console.log(brick);
+     * }
      * // Example             - Example
      * // Test                - Hello World
      * // This is the longest - Short

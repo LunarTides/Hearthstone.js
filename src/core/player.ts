@@ -28,9 +28,9 @@ export class Player {
      * @example
      * const board = game.board[player.id];
      *
-     * board.forEach(card => {
+     * for (const card of board) {
      *     console.log(card.name);
-     * });
+     * }
      */
     id = -1;
 
@@ -59,9 +59,9 @@ export class Player {
      *
      * # Examples
      * @example
-     * player.deck.forEach(card => {
+     * for (const card of player.deck) {
      *     console.log(card.name);
-     * });
+     * }
      */
     deck: Card[] = [];
 
@@ -70,9 +70,9 @@ export class Player {
      *
      * # Examples
      * @example
-     * player.hand.forEach(card => {
+     * for (const card of player.hand)
      *     console.log(card.name);
-     * });
+     * }
      */
     hand: Card[] = [];
 
