@@ -252,5 +252,12 @@ export const config: GameConfig = {
         // Three: { 'not done", "A third description.' },
         // Four: { 'doing", "A fourth description.' },
         // Five: { 'done", "A fifth description.' },
+
+        Add_Quickdraw: { state: 'not done', description: 'Add quickdraw', issue: 353 },
+        Add_Excavate: { state: 'not done', description: 'Add excavate', issue: 354 },
+        Add_Unit_Tests_To_All_Cards: { state: 'not done', description: 'Add unit tests to all cards', issue: 325 },
+        Add_Better_Docstrings: { state: 'not done', description: 'Add better docstrings to functions / interact submodules', issue: 324 },
+        Add_New_Docstrings: { state: 'not done', description: 'Add docstrings to all new functions / fields', issue: 322 },
+        Resolve_All_Remaining_Todos: { state: 'not done', description: 'Resolve all todos that doesn\'t have an issue attached', issue: 277 },
     },
 };
