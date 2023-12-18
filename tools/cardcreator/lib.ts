@@ -114,11 +114,10 @@ export function getLatestId(): number {
  *
  * @returns The path of the created file.
  */
-export function create(creatorType: CcType, cardType: CardType, blueprint: BlueprintWithOptional, overridePath?: string, overrideFilename?: string, debug?: boolean): string {
+export function create(creatorType: CcType, blueprint: BlueprintWithOptional, overridePath?: string, overrideFilename?: string, debug?: boolean): string {
     // TODO: Search for keywords in the card text and don't add a passive ability if one was found. And vice versa
     // TODO: Look for placeholders in the text and add a placeholder ability if it finds one
     // TODO: If the name of the card contains a ', escape it
-    // TODO: Remove "cardType"
 
     // Validate
     const error = game.functions.card.validateBlueprint(blueprint);

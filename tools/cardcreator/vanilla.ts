@@ -148,7 +148,7 @@ export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CcT
         cctype = overrideType;
     }
 
-    lib.create(cctype, type, blueprint, undefined, undefined, debug);
+    lib.create(cctype, blueprint, undefined, undefined, debug);
 }
 
 /**

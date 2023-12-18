@@ -242,7 +242,7 @@ export function main(debug = false, overrideType?: lib.CcType): string | false {
         cctype = overrideType;
     }
 
-    const filePath = lib.create(cctype, type, card, undefined, undefined, debug);
+    const filePath = lib.create(cctype, card, undefined, undefined, debug);
 
     game.pause();
     return filePath;

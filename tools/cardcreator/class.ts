@@ -85,8 +85,8 @@ export function main(debug = false, overrideType?: lib.CcType): void {
         cctype = overrideType;
     }
 
-    lib.create(cctype, 'Hero', heroBlueprint, `/cards/StartingHeroes/${game.lodash.startCase(className)}/`, 'hero.ts', debug);
-    lib.create(cctype, 'Heropower', heropowerBlueprint, `/cards/StartingHeroes/${game.lodash.startCase(className)}/`, 'heropower.ts', debug);
+    lib.create(cctype, heroBlueprint, `/cards/StartingHeroes/${game.lodash.startCase(className)}/`, 'hero.ts', debug);
+    lib.create(cctype, heropowerBlueprint, `/cards/StartingHeroes/${game.lodash.startCase(className)}/`, 'heropower.ts', debug);
 
     console.log('\nClass Created!');
     console.log('Next steps:');

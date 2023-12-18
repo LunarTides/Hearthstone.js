@@ -162,7 +162,7 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | und
                         type = overrideType;
                     }
 
-                    cclib.create(type as CcType, blueprint.type, blueprint, undefined, undefined, debug);
+                    cclib.create(type as CcType, blueprint, undefined, undefined, debug);
                 });
 
                 break;
