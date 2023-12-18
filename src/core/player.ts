@@ -802,7 +802,7 @@ export class Player {
         this.mana -= this.hero.heroPower!.cost;
         this.canUseHeroPower = false;
 
-        game.events.broadcast('HeroPower', this.heroClass, this);
+        game.events.broadcast('HeroPower', this.hero.heroPower, this);
         return true;
     }
 

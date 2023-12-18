@@ -180,9 +180,9 @@ export type EventValue<Key extends EventKey> =
      */
     Key extends 'Attack' ? [Target, Target] :
     /**
-     * The class of the hero power. (Warrior, Mage, Priest, ...)
+     * The hero power card
      */
-    Key extends 'HeroPower' ? string :
+    Key extends 'HeroPower' ? Card :
     /**
      * The card, some information about the event
      */
