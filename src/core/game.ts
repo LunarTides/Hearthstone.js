@@ -1123,7 +1123,7 @@ const playCard = {
             q = player.ai.trade(card);
         } else {
             game.interact.info.showGame(player);
-            q = game.interact.yesNoQuestion(player, 'Would you like to trade ' + card.colorFromRarity() + ' for a random card in your deck?');
+            q = game.interact.yesNoQuestion('Would you like to trade ' + card.colorFromRarity() + ' for a random card in your deck?', player);
         }
 
         if (!q) {
@@ -1166,7 +1166,7 @@ const playCard = {
             q = player.ai.forge(card);
         } else {
             game.interact.info.showGame(player);
-            q = game.interact.yesNoQuestion(player, 'Would you like to forge ' + card.colorFromRarity() + '?');
+            q = game.interact.yesNoQuestion('Would you like to forge ' + card.colorFromRarity() + '?', player);
         }
 
         if (!q) {
@@ -1224,7 +1224,7 @@ const playCard = {
         const warnMessage = '<yellow>WARNING: This card\'s condition is not fulfilled. Are you sure you want to play this card?</yellow>';
 
         game.interact.info.showGame(player);
-        const warn = game.interact.yesNoQuestion(player, warnMessage);
+        const warn = game.interact.yesNoQuestion(warnMessage, player);
 
         if (!warn) {
             return false;

@@ -28,7 +28,7 @@ export const commands: CommandList = {
         }
 
         game.interact.info.showGame(game.player);
-        const ask = game.interact.yesNoQuestion(game.player, `<yellow>${game.player.hero.heroPower!.text}</yellow> Are you sure you want to use this hero power?`);
+        const ask = game.interact.yesNoQuestion(`<yellow>${game.player.hero.heroPower!.text}</yellow> Are you sure you want to use this hero power?`, game.player);
         if (!ask) {
             return false;
         }
@@ -224,7 +224,7 @@ export const commands: CommandList = {
 
     concede(): boolean {
         game.interact.info.showGame(game.player);
-        const confirmation = game.interact.yesNoQuestion(game.player, 'Are you sure you want to concede?');
+        const confirmation = game.interact.yesNoQuestion('Are you sure you want to concede?', game.player);
         if (!confirmation) {
             return false;
         }

@@ -164,16 +164,16 @@ export const interact = {
     /**
      * Asks the user a yes/no question
      *
-     * @param plr The player to ask
      * @param prompt The prompt to ask
+     * @param player Used to check if the player is an ai
      *
      * @returns `true` if Yes / `false` if No
      */
-    yesNoQuestion(plr: Player, prompt: string): boolean {
+    yesNoQuestion(prompt: string, player?: Player): boolean {
         const ask = `\n${prompt} [<bright:green>Y</bright:green> | <red>N</red>] `;
 
-        if (plr.ai) {
-            return plr.ai.yesNoQuestion(prompt);
+        if (player?.ai) {
+            return player.ai.yesNoQuestion(prompt);
         }
 
         const rawChoice = game.input(ask);
@@ -187,7 +187,7 @@ export const interact = {
         console.log(`<red>Unexpected input: '<yellow>${rawChoice}</yellow>'. Valid inputs: </red>[<bright:green>Y</bright:green> | <red>N</red>]`);
         game.pause();
 
-        return this.yesNoQuestion(plr, prompt);
+        return this.yesNoQuestion(prompt, player);
     },
 
     /**
