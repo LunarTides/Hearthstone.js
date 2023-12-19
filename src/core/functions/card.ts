@@ -392,9 +392,4 @@ export const cardFunctions = {
         game.functions.util.fs('write', '/cards/exports.ts', exportContent);
         game.functions.util.fs('write', '/dist/cards/exports.js', exportContent);
     },
-
-    reloadAll(_path?: string): boolean {
-        // TODO: Implement. #323
-        return true;
-    },
 };

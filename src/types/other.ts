@@ -143,8 +143,6 @@ export type GameConfig = {
         spawnInDiyCards: boolean;
         diyCardSpawnChance: number;
         dcShowUncollectible: boolean;
-        reloadCommandConfirmation: boolean;
-        reloadCommandRecompile: boolean;
         getReadableCardMaxDepth: number;
         getReadableCardNoRecursion: boolean;
         getReadableCardAlwaysShowFullCard: boolean;

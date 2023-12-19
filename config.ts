@@ -155,15 +155,6 @@ export const config: GameConfig = {
         // These deckcodes will be rejected by the game as psuedo-valid if `config.decks.validate` is false.
         dcShowUncollectible: true,
 
-        // If this is true, the game will ask for confirmation before reloading the cards.
-        // This is because reloading the cards will reset them all to their base state.
-        reloadCommandConfirmation: true,
-
-        // If this is true, running the reload command will recompile the game.
-        // If you disable this, you have to manually recompile the game before running the reload command.
-        // I recommend keeping this disabled and using `tsc --watch`.
-        reloadCommandRecompile: false,
-
         // If this is true, `getReadableCard` will only show the top level of a card.
         // This will prevent cards from referencing other cards in their description
         // however it will still show that card's name.
