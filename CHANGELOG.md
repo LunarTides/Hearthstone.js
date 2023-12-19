@@ -1,3 +1,56 @@
+#### 2.0.0-beta.7 (2023-12-19)
+
+##### Chores
+
+*  add todos to config ([cff359c2](https://github.com/LunarTides/Hearthstone.js/commit/cff359c205bd3295adbeb21dd29c0775dd9d4465))
+*  update vanillatypes dependancy to 3.0.0 ([06e5dae0](https://github.com/LunarTides/Hearthstone.js/commit/06e5dae0913026b37a5633ad1fdbaaba00e9c0c4))
+*  update dependencies ([69d2aa4c](https://github.com/LunarTides/Hearthstone.js/commit/69d2aa4c80f9092c8520c2ec605155ca41806e65))
+*  rename runner to hub for clarity ([a5265eaa](https://github.com/LunarTides/Hearthstone.js/commit/a5265eaa21c914b29d3eef0516ecd48946bdabc4))
+*  bump version to 2.0.0-beta.7 ([2f2f8fcd](https://github.com/LunarTides/Hearthstone.js/commit/2f2f8fcda0d68417ac3a608b6b6dde6747284762))
+
+##### New Features
+
+* **script:**  add argument to not filter cards in vc generator ([5505d7e9](https://github.com/LunarTides/Hearthstone.js/commit/5505d7e9d924a6b9cddfdb2000258e0893d095ec))
+
+##### Bug Fixes
+
+* **cclib:**  escape ' in fields ([20b56a66](https://github.com/LunarTides/Hearthstone.js/commit/20b56a666f0d9c826aa34bb68489c0626880992d))
+*  fix location card immortality ([ad43b55f](https://github.com/LunarTides/Hearthstone.js/commit/ad43b55fb211df16933730fbd1f4a5e985e9db32))
+*  fix diy 1 verification ([4c98a708](https://github.com/LunarTides/Hearthstone.js/commit/4c98a708b3cf6c711e31d01fb8a74ab537b749fe))
+*  fix singular xo issue ([35c50bcd](https://github.com/LunarTides/Hearthstone.js/commit/35c50bcda6c33ba2949737d61b4a677363e7cb86))
+
+##### Other Changes
+
+*  make yesNoQuestion player argument optional ([224ca471](https://github.com/LunarTides/Hearthstone.js/commit/224ca471534f16b4784c0d47ac17b74cbff5643a))
+* generate instead of generator ([264ce4ad](https://github.com/LunarTides/Hearthstone.js/commit/264ce4ad5c91bde0d2facac77083013c4e069242))
+*  change the type of HeroPower event to Card ([e5f29e93](https://github.com/LunarTides/Hearthstone.js/commit/e5f29e93c862cf6fb00074959172f77bdb8003a3))
+*  fix example cards readme file ([d4d3c4af](https://github.com/LunarTides/Hearthstone.js/commit/d4d3c4afcde07ff2ad8430fc432246396e3221d0))
+*  add hero powers to their own card type ([76415838](https://github.com/LunarTides/Hearthstone.js/commit/764158381b3e338a35f73b8a2f7f51c908f99eb8))
+*  add armor to hero blueprints ([6c23f583](https://github.com/LunarTides/Hearthstone.js/commit/6c23f583b6759b7049609bbf9db025161887f0af))
+*  improve example cards even more ([3d5ebcd6](https://github.com/LunarTides/Hearthstone.js/commit/3d5ebcd6e73fa859d6523082bd8f0ec4bdaf6ace))
+*  more small improvements to example cards ([0e1f2aa0](https://github.com/LunarTides/Hearthstone.js/commit/0e1f2aa045f45c55b072ab8a50140c2b2255d2aa))
+*  small improvements to example cards ([fa1ca87e](https://github.com/LunarTides/Hearthstone.js/commit/fa1ca87ecb9ecd46a28b680f773a0a1ca84c5db5))
+*  reenable use of console.log ([a55c6877](https://github.com/LunarTides/Hearthstone.js/commit/a55c6877430fb4eb3eeed099a39960daac14bb59))
+*  rename uncollectible to collectible ([50a89483](https://github.com/LunarTides/Hearthstone.js/commit/50a89483fe6ecac756d32e64f41a0b62603193e2))
+
+##### Refactors
+
+*  remove "reload" debug command ([f88a0237](https://github.com/LunarTides/Hearthstone.js/commit/f88a023782d29f565e817b2da33074dfaaa3cee4))
+*  improve todo system ([f2126b05](https://github.com/LunarTides/Hearthstone.js/commit/f2126b051d634748c91d5036c2e16a16081dcf9b))
+*  remove trailing newline from watermark ([cafbbb9b](https://github.com/LunarTides/Hearthstone.js/commit/cafbbb9ba645787b59717802ae3d210b77225b40))
+*  add 'openInBrowser' util function, change licenseUrl to githubUrl ([d03c9701](https://github.com/LunarTides/Hearthstone.js/commit/d03c970166f9839bd7d1755731e7d1244f9703a6))
+*  remove "set" debug command ([4b2e7bcd](https://github.com/LunarTides/Hearthstone.js/commit/4b2e7bcdafc21580bba4a993dba4b5fdeeefdc81))
+*  remove "cmd" debug command ([1ab1c84b](https://github.com/LunarTides/Hearthstone.js/commit/1ab1c84bce6a0a9d2f4ad89506238015c30c10a6))
+*  remove "debug" debug command ([b918e187](https://github.com/LunarTides/Hearthstone.js/commit/b918e187386551452103fb1be16d243f4f19090b))
+*  move licenseUrl to the config file ([ae6c09cf](https://github.com/LunarTides/Hearthstone.js/commit/ae6c09cf40997a58114c89020ee8c469d20608ff))
+*  add arguments to getRandomTarget ([e2a6a013](https://github.com/LunarTides/Hearthstone.js/commit/e2a6a013de65177d44408396912e20595340391c))
+*  dont show corpses for players if they cant use them ([4d9ee808](https://github.com/LunarTides/Hearthstone.js/commit/4d9ee8082635e70ca61f5dfdc7b281abef61b8a8))
+*  make corpse / runes supported classes less hardcoded ([1891ea3d](https://github.com/LunarTides/Hearthstone.js/commit/1891ea3db8dfc1a446e89286f32f1a4bf941a21a))
+*  make the blueprint format more consistant ([444192bb](https://github.com/LunarTides/Hearthstone.js/commit/444192bb1f05d4095aea6941cec908f046d7f80e))
+* **script:**
+  *  improve processing message in propfinder ([ab26a75c](https://github.com/LunarTides/Hearthstone.js/commit/ab26a75c09c4ba0405f4a1e8c672e2ea7f6ff074))
+  *  update propfinder to find everything at once ([4f497da4](https://github.com/LunarTides/Hearthstone.js/commit/4f497da413c849dbe4878efc5289e5999f4dbb42))
+
 #### 2.0.0-beta.6 (2023-12-01)
 
 ##### Chores
