@@ -33,9 +33,9 @@
     "strip-ansi": "^7.1.0"
   },
   "devDependencies": {
-    "@hearthstonejs/vanillatypes": "^3.0.0",
+    "@hearthstonejs/vanillatypes": "^3.0.1",
     "@types/lodash": "^4.14.202",
-    "@types/node": "^20.10.4",
+    "@types/node": "^20.10.5",
     "@types/readline-sync": "^1.4.8",
     "generate-changelog": "^1.8.0",
     "typescript": "^5.3.3",

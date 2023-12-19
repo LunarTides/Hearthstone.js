@@ -59,6 +59,6 @@ export const infoFunctions = {
             return 'no git found';
         }
 
-        return hash.trim();
+        return hash?.trim();
     },
 };
