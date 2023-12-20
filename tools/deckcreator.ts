@@ -4,7 +4,7 @@
  */
 import util from 'node:util';
 import { type Card, createGame } from '../src/internal.js';
-import { type CardClass, type CardClassNoNeutral, type GameConfig } from '../src/types.js';
+import { type CommandList, type CardClass, type CardClassNoNeutral, type GameConfig } from '../src/types.js';
 
 const { game, player1 } = createGame();
 
@@ -727,21 +727,18 @@ function help(): void {
     game.pause('\nPress enter to continue...\n');
 }
 
-function getCardArg(cmd: string, callback: (card: Card) => boolean, errorCallback: () => void): boolean {
+function getCardArg(args: string[], callback: (card: Card) => boolean, errorCallback: () => void): boolean {
     let times = 1;
 
-    const commandSplit = cmd.split(' ');
-    commandSplit.shift();
-
-    const cardFromFullString = findCard(commandSplit.join(' '));
+    const cardFromFullString = findCard(args.join(' '));
 
     // Get x2 from the cmd
-    if (commandSplit.length > 1 && game.lodash.parseInt(commandSplit[0]) && !cardFromFullString) {
-        times = game.lodash.parseInt(commandSplit[0], 10);
-        commandSplit.shift();
+    if (args.length > 1 && game.lodash.parseInt(args[0]) && !cardFromFullString) {
+        times = game.lodash.parseInt(args[0], 10);
+        args.shift();
     }
 
-    cmd = commandSplit.join(' ');
+    const cmd = args.join(' ');
 
     let eligibleForLatest = false;
     if (cmd.startsWith('l')) {
@@ -773,8 +770,6 @@ function getCardArg(cmd: string, callback: (card: Card) => boolean, errorCallbac
     return true;
 }
 
-// TODO: Do something simular to how the main game does commands
-// eslint-disable-next-line complexity
 function handleCmds(cmd: string, addToHistory = true): boolean {
     if (findCard(cmd)) {
         // You just typed the name of a card.
@@ -788,335 +783,30 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         return false;
     }
 
-    switch (name) {
-        case 'config':
-        case 'rules': {
-            watermark();
-            showRules();
-            game.pause('\nPress enter to continue...\n');
-
-            break;
-        }
-
-        case 'view': {
-            // The callback function doesn't return anything, so we don't do anything with the return value of `getCardArg`.
-            getCardArg(cmd, card => {
-                game.interact.card.view(card);
-                return true;
-            }, () => {
-                // Pass
-            });
-
-            break;
-        }
-
-        case 'cards': {
-            if (args.length <= 0) {
-                return false;
-            }
-
-            let heroClass = args.join(' ') as CardClass;
-            heroClass = game.lodash.startCase(heroClass) as CardClass;
-
-            if (!classes.includes(heroClass as CardClassNoNeutral) && heroClass !== 'Neutral') {
-                game.pause('<red>Invalid class!</red>\n');
-                return false;
-            }
-
-            const correctClass = game.functions.card.validateClasses([heroClass], chosenClass);
-            if (!correctClass) {
-                game.pause(`<yellow>Class '${heroClass}' is a different class. To see these cards, please switch class from '${chosenClass}' to '${heroClass}' to avoid confusion.</yellow>\n`);
-                return false;
-            }
-
-            settings.view.class = heroClass;
-
-            break;
-        }
-
-        case 'deckcode': {
-            const deckcode = generateDeckcode(true);
-
-            let toPrint = deckcode.code + '\n';
-            if (deckcode.error && !deckcode.error.recoverable) {
-                toPrint = '';
-            }
-
-            game.pause(toPrint);
-
-            break;
-        }
-
-        case 'sort': {
-            if (args.length <= 0) {
-                return false;
-            }
-
-            settings.sort.type = args[0] as keyof Card;
-            if (args.length > 1) {
-                settings.sort.order = args[1] as 'asc' | 'desc';
-            }
-
-            break;
-        }
-
-        case 'search': {
-            if (args.length <= 0) {
-                settings.search.query = [];
-                return false;
-            }
-
-            settings.search.query = args;
-
-            break;
-        }
-
-        case 'deck': {
-            settings.view.type = settings.view.type === 'cards' ? 'deck' : 'cards';
-
-            break;
-        }
-
-        case 'import': {
-            const deckcode = game.input('Please input a deckcode: ');
-
-            config.decks.validate = false;
-            let newDeck = game.functions.deckcode.import(player1, deckcode);
-            config.decks.validate = true;
-
-            if (!newDeck) {
-                return false;
-            }
-
-            newDeck = newDeck.sort((a, b) => a.name.localeCompare(b.name));
-
-            deck = [];
-
-            // Update the filtered cards
-            chosenClass = player1.heroClass as CardClassNoNeutral;
-            runes = player1.runes;
-            showCards();
-
-            // Add the cards using handleCmds instead of add because for some reason, adding them with add
-            // causes a weird bug that makes modifying the deck impossible because removing a card
-            // removes a completly unrelated card because javascript.
-            // You can just set deck = functions.importDeck(), but doing it that way doesn't account for renathal or any other card that changes the config in any way since that is done using the add function.
-            for (const card of newDeck) {
-                handleCmds(`add ${card.id}`);
-            }
-
-            break;
-        }
-
-        case 'class': {
-            const oldRunes = game.lodash.clone(runes);
-            const newClass = askClass();
-
-            if (newClass === chosenClass && runes === oldRunes) {
-                game.pause('<yellow>Your class was not changed</yellow>\n');
-                return false;
-            }
-
-            deck = [];
-            chosenClass = newClass;
-            if (settings.view.class !== 'Neutral') {
-                settings.view.class = chosenClass;
-            }
-
-            break;
-        }
-
-        case 'undo': {
-            if (settings.commands.undoableHistory.length <= 0) {
-                game.pause('<red>Nothing to undo.</red>\n');
-                return false;
-            }
-
-            const commandSplit = game.lodash.last(settings.commands.undoableHistory)?.split(' ');
-            if (!commandSplit) {
-                game.pause('<red>Could not find anything to undo. This is a bug.</red>\n');
-                return false;
-            }
-
-            const args = commandSplit.slice(1);
-            const command = commandSplit[0];
-
-            let reverse;
-
-            if (command.startsWith('a')) {
-                reverse = 'remove';
-            } else if (command.startsWith('r')) {
-                reverse = 'add';
-            } else {
-                // This shouldn't ever happen, but oh well
-                console.log(`<red>Command '${command}' cannot be undoed.</red>`);
-                return false;
-            }
-
-            handleCmds(`${reverse} ` + args.join(' '), false);
-
-            settings.commands.undoableHistory.pop();
-            settings.commands.history.pop();
-
-            break;
-        }
-
-        // TODO: Fix this
-        default: {if (name === 'set' && args[0] === 'warning') {
-            // Shift since the first element is "warning"
-            args.shift();
-            const key = args[0];
-
-            if (!Object.keys(warnings).includes(key)) {
-                game.pause(`<red>'${key}' is not a valid warning!</red>\n`);
-                return false;
-            }
-
-            let newState;
-
-            if (args.length <= 1) {
-                // Toggle
-                newState = !warnings[key];
-            } else {
-                const value = args[1];
-
-                if (['off', 'disable', 'false', 'no', '0'].includes(value)) {
-                    newState = false;
-                } else if (['on', 'enable', 'true', 'yes', '1'].includes(value)) {
-                    newState = true;
-                } else {
-                    game.pause(`<red>${value} is not a valid state. View 'help' for more information.</red>\n`);
-                    return false;
-                }
-            }
-
-            if (warnings[key] === newState) {
-                const newStateName = newState ? 'enabled' : 'disabled';
-
-                game.pause(`<yellow>Warning '<bright:yellow>${key}</bright:yellow>' is already ${newStateName}.</yellow>\n`);
-                return false;
-            }
-
-            warnings[key] = newState;
-
-            const newStateName = (newState) ? '<bright:green>Enabled warning</bright:green>' : '<red>Disabled warning</red>';
-            game.pause(`${newStateName} <yellow>'${key}'</yellow>\n`);
-        } else if (name === 'set') {
-            if (args.length <= 0) {
-                console.log('<yellow>Too few arguments</yellow>');
-                game.pause();
-                return false;
-            }
-
-            const setting = args.shift();
-
-            switch (setting) {
-                case 'format': {
-                    if (args.length === 0) {
-                        settings.deckcode.format = defaultSettings.deckcode.format;
-                        console.log(`Reset deckcode format to: <yellow>${defaultSettings.deckcode.format}</yellow>`);
-                        break;
-                    }
-
-                    if (!['vanilla', 'js'].includes(args[0])) {
-                        console.log('<red>Invalid format!</red>');
-                        game.pause();
-                        return false;
-                    }
-
-                    settings.deckcode.format = args[0] as 'vanilla' | 'js';
-                    console.log(`Set deckcode format to: <yellow>${args[0]}</yellow>`);
-                    break;
-                }
-
-                case 'cpp':
-                case 'cardsPerPage': {
-                    if (args.length === 0) {
-                        settings.view.cpp = defaultSettings.view.cpp;
-                        console.log(`Reset cards per page to: <yellow>${defaultSettings.view.cpp}</yellow>`);
-                        break;
-                    }
-
-                    settings.view.cpp = game.lodash.parseInt(args[0]);
-                    break;
-                }
-
-                case 'dcmd':
-                case 'defaultCommand': {
-                    if (args.length === 0) {
-                        settings.commands.default = defaultSettings.commands.default;
-                        console.log(`Set default command to: <yellow>${defaultSettings.commands.default}</yellow>`);
-                        break;
-                    }
-
-                    if (!['add', 'remove', 'view'].includes(args[0])) {
-                        return false;
-                    }
-
-                    const command = args[0];
-
-                    settings.commands.default = command;
-                    console.log(`Set default command to: <yellow>${command}</yellow>`);
-                    break;
-                }
-
-                default: {
-                    game.pause(`<red>'${setting}' is not a valid setting.</red>\n`);
-                    return false;
-                }
-            }
-
-            game.pause('<bright:green>Setting successfully changed!<bright:green>\n');
-        } else if (name === 'help') {
-            help();
-        } else if (game.interact.shouldExit(name)) {
-            running = false;
-        } else if (name.startsWith('a')) {
-            let success = true;
-
-            getCardArg(cmd, add, () => {
-                // Internal error since add shouldn't return false
-                console.log('<red>Internal Error: Something went wrong while adding a card. Please report this. Error code: DcAddInternal</red>');
-                game.pause();
-
-                success = false;
-            });
-
-            if (!success) {
-                return false;
-            }
-        } else if (name.startsWith('r')) {
-            let success = true;
-
-            getCardArg(cmd, remove, () => {
-                // User error
-                console.log('<red>Invalid card.</red>');
-                game.pause();
-
-                success = false;
-            });
-
-            if (!success) {
-                return false;
-            }
-        } else if (cmd.startsWith('p')) {
-            let page = game.lodash.parseInt(args.join(' '));
-            if (!page) {
-                return false;
-            }
-
-            if (page < 1) {
-                page = 1;
-            }
-
-            settings.view.page = page;
-        } else {
-            // Infer add
-            const tryCommand = `${settings.commands.default} ${cmd}`;
-            console.log(`<yellow>Unable to find command. Trying '${tryCommand}'</yellow>`);
-            return handleCmds(tryCommand);
-        }
-        }
+    let successfull = false;
+
+    if (game.interact.shouldExit(name)) {
+        running = false;
+    }
+
+    let commandName = Object.keys(commands).find(commandName => commandName === name);
+
+    // HACK: Hardcoding "set warning" since otherwise, it just uses the "set" command.
+    // TODO: Rename "set warning" to "warning"
+    if (cmd.startsWith('set warning')) {
+        commandName = 'set warning';
+    }
+
+    if (commandName) {
+        const command = commands[commandName];
+        successfull = command(args) as boolean;
+    }
+
+    if (!successfull) {
+        // Infer add
+        const tryCommand = `${settings.commands.default} ${cmd}`;
+        console.log(`<yellow>Unable to find command. Trying '${tryCommand}'</yellow>`);
+        return handleCmds(tryCommand);
     }
 
     if (!addToHistory) {
@@ -1152,3 +842,335 @@ export function main(): void {
         handleCmds(game.input('\n> '));
     }
 }
+
+const commands: CommandList = {
+    add(args): boolean {
+        let success = true;
+
+        getCardArg(args, add, () => {
+            // Internal error since add shouldn't return false
+            console.log('<red>Internal Error: Something went wrong while adding a card. Please report this. Error code: DcAddInternal</red>');
+            game.pause();
+
+            success = false;
+        });
+
+        if (!success) {
+            return false;
+        }
+
+        return true;
+    },
+    remove(args): boolean {
+        let success = true;
+
+        getCardArg(args, remove, () => {
+            // User error
+            console.log('<red>Invalid card.</red>');
+            game.pause();
+
+            success = false;
+        });
+
+        if (!success) {
+            return false;
+        }
+
+        return true;
+    },
+    page(args): boolean {
+        let page = game.lodash.parseInt(args.join(' '));
+        if (!page) {
+            return false;
+        }
+
+        if (page < 1) {
+            page = 1;
+        }
+
+        settings.view.page = page;
+
+        return true;
+    },
+    config(): boolean {
+        watermark();
+        showRules();
+        game.pause('\nPress enter to continue...\n');
+
+        return true;
+    },
+    rules(args, flags): boolean {
+        return commands.config(args, flags) as boolean;
+    },
+    view(args): boolean {
+        // The callback function doesn't return anything, so we don't do anything with the return value of `getCardArg`.
+        getCardArg(args, card => {
+            game.interact.card.view(card);
+            return true;
+        }, () => {
+            // Pass
+        });
+
+        return true;
+    },
+    cards(args): boolean {
+        if (args.length <= 0) {
+            return false;
+        }
+
+        let heroClass = args.join(' ') as CardClass;
+        heroClass = game.lodash.startCase(heroClass) as CardClass;
+
+        if (!classes.includes(heroClass as CardClassNoNeutral) && heroClass !== 'Neutral') {
+            game.pause('<red>Invalid class!</red>\n');
+            return false;
+        }
+
+        const correctClass = game.functions.card.validateClasses([heroClass], chosenClass);
+        if (!correctClass) {
+            game.pause(`<yellow>Class '${heroClass}' is a different class. To see these cards, please switch class from '${chosenClass}' to '${heroClass}' to avoid confusion.</yellow>\n`);
+            return false;
+        }
+
+        settings.view.class = heroClass;
+
+        return true;
+    },
+    deckcode(): boolean {
+        const deckcode = generateDeckcode(true);
+
+        let toPrint = deckcode.code + '\n';
+        if (deckcode.error && !deckcode.error.recoverable) {
+            toPrint = '';
+        }
+
+        game.pause(toPrint);
+
+        return true;
+    },
+    sort(args): boolean {
+        if (args.length <= 0) {
+            return false;
+        }
+
+        settings.sort.type = args[0] as keyof Card;
+        if (args.length > 1) {
+            settings.sort.order = args[1] as 'asc' | 'desc';
+        }
+
+        return true;
+    },
+    search(args): boolean {
+        if (args.length <= 0) {
+            settings.search.query = [];
+            return false;
+        }
+
+        settings.search.query = args;
+
+        return true;
+    },
+    deck(): boolean {
+        settings.view.type = settings.view.type === 'cards' ? 'deck' : 'cards';
+
+        return true;
+    },
+    // TODO: Make this take the deckcode as an argument
+    import(): boolean {
+        const deckcode = game.input('Please input a deckcode: ');
+
+        config.decks.validate = false;
+        let newDeck = game.functions.deckcode.import(player1, deckcode);
+        config.decks.validate = true;
+
+        if (!newDeck) {
+            return false;
+        }
+
+        newDeck = newDeck.sort((a, b) => a.name.localeCompare(b.name));
+
+        deck = [];
+
+        // Update the filtered cards
+        chosenClass = player1.heroClass as CardClassNoNeutral;
+        runes = player1.runes;
+        showCards();
+
+        // Add the cards using handleCmds instead of add because for some reason, adding them with add
+        // causes a weird bug that makes modifying the deck impossible because removing a card
+        // removes a completly unrelated card because javascript.
+        // You can just set deck = functions.importDeck(), but doing it that way doesn't account for renathal or any other card that changes the config in any way since that is done using the add function.
+        for (const card of newDeck) {
+            handleCmds(`add ${card.id}`);
+        }
+
+        return true;
+    },
+    class(): boolean {
+        const oldRunes = game.lodash.clone(runes);
+        const newClass = askClass();
+
+        if (newClass === chosenClass && runes === oldRunes) {
+            game.pause('<yellow>Your class was not changed</yellow>\n');
+            return false;
+        }
+
+        deck = [];
+        chosenClass = newClass;
+        if (settings.view.class !== 'Neutral') {
+            settings.view.class = chosenClass;
+        }
+
+        return true;
+    },
+    undo(): boolean {
+        if (settings.commands.undoableHistory.length <= 0) {
+            game.pause('<red>Nothing to undo.</red>\n');
+            return false;
+        }
+
+        const commandSplit = game.lodash.last(settings.commands.undoableHistory)?.split(' ');
+        if (!commandSplit) {
+            game.pause('<red>Could not find anything to undo. This is a bug.</red>\n');
+            return false;
+        }
+
+        const args = commandSplit.slice(1);
+        const command = commandSplit[0];
+
+        let reverse;
+
+        if (command.startsWith('a')) {
+            reverse = 'remove';
+        } else if (command.startsWith('r')) {
+            reverse = 'add';
+        } else {
+            // This shouldn't ever happen, but oh well
+            console.log(`<red>Command '${command}' cannot be undoed.</red>`);
+            return false;
+        }
+
+        handleCmds(`${reverse} ` + args.join(' '), false);
+
+        settings.commands.undoableHistory.pop();
+        settings.commands.history.pop();
+
+        return true;
+    },
+    help(): boolean {
+        help();
+
+        return true;
+    },
+    'set warning'(args): boolean {
+        // Shift since the first element is "warning"
+        args.shift();
+        const key = args[0];
+
+        if (!Object.keys(warnings).includes(key)) {
+            game.pause(`<red>'${key}' is not a valid warning!</red>\n`);
+            return false;
+        }
+
+        let newState;
+
+        if (args.length <= 1) {
+            // Toggle
+            newState = !warnings[key];
+        } else {
+            const value = args[1];
+
+            if (['off', 'disable', 'false', 'no', '0'].includes(value)) {
+                newState = false;
+            } else if (['on', 'enable', 'true', 'yes', '1'].includes(value)) {
+                newState = true;
+            } else {
+                game.pause(`<red>${value} is not a valid state. View 'help' for more information.</red>\n`);
+                return false;
+            }
+        }
+
+        if (warnings[key] === newState) {
+            const newStateName = newState ? 'enabled' : 'disabled';
+
+            game.pause(`<yellow>Warning '<bright:yellow>${key}</bright:yellow>' is already ${newStateName}.</yellow>\n`);
+            return false;
+        }
+
+        warnings[key] = newState;
+
+        const newStateName = (newState) ? '<bright:green>Enabled warning</bright:green>' : '<red>Disabled warning</red>';
+        game.pause(`${newStateName} <yellow>'${key}'</yellow>\n`);
+
+        return true;
+    },
+    set(args): boolean {
+        if (args.length <= 0) {
+            console.log('<yellow>Too few arguments</yellow>');
+            game.pause();
+            return false;
+        }
+
+        const setting = args.shift();
+
+        switch (setting) {
+            case 'format': {
+                if (args.length === 0) {
+                    settings.deckcode.format = defaultSettings.deckcode.format;
+                    console.log(`Reset deckcode format to: <yellow>${defaultSettings.deckcode.format}</yellow>`);
+                    break;
+                }
+
+                if (!['vanilla', 'js'].includes(args[0])) {
+                    console.log('<red>Invalid format!</red>');
+                    game.pause();
+                    return false;
+                }
+
+                settings.deckcode.format = args[0] as 'vanilla' | 'js';
+                console.log(`Set deckcode format to: <yellow>${args[0]}</yellow>`);
+                break;
+            }
+
+            case 'cpp':
+            case 'cardsPerPage': {
+                if (args.length === 0) {
+                    settings.view.cpp = defaultSettings.view.cpp;
+                    console.log(`Reset cards per page to: <yellow>${defaultSettings.view.cpp}</yellow>`);
+                    break;
+                }
+
+                settings.view.cpp = game.lodash.parseInt(args[0]);
+                break;
+            }
+
+            case 'dcmd':
+            case 'defaultCommand': {
+                if (args.length === 0) {
+                    settings.commands.default = defaultSettings.commands.default;
+                    console.log(`Set default command to: <yellow>${defaultSettings.commands.default}</yellow>`);
+                    break;
+                }
+
+                if (!['add', 'remove', 'view'].includes(args[0])) {
+                    return false;
+                }
+
+                const command = args[0];
+
+                settings.commands.default = command;
+                console.log(`Set default command to: <yellow>${command}</yellow>`);
+                break;
+            }
+
+            default: {
+                game.pause(`<red>'${setting}' is not a valid setting.</red>\n`);
+                return false;
+            }
+        }
+
+        game.pause('<bright:green>Setting successfully changed!<bright:green>\n');
+
+        return true;
+    },
+};

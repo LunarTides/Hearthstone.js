@@ -1,9 +1,7 @@
-import { type Todo } from '@Game/types.js';
+import { type CommandList, type Todo } from '@Game/types.js';
 import { Card, Player } from '../../internal.js';
 
 const getGame = () => game;
-
-type CommandList = Record<string, (args: string[], flags?: { echo?: boolean; debug?: boolean }) => string | boolean>;
 
 export const commands: CommandList = {
     end(): boolean {

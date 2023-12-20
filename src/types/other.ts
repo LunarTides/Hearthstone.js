@@ -64,6 +64,8 @@ export type SelectTargetClass = 'hero' | 'minion' | 'any';
  */
 export type SelectTargetFlag = 'allowLocations' | 'forceElusive';
 
+export type CommandList = Record<string, (args: string[], flags?: { echo?: boolean; debug?: boolean }) => string | boolean>;
+
 /**
  * GameConstants values.
  */

@@ -8,7 +8,7 @@ function count {
     xargs -d '\n' wc -l | grep 'total' | grep --color=never -o '[0-9]*'
 }
 
-# Currently ~19.6k
+# Currently ~19.9k
 echo "With Cards:"
 git ls-files | exclude | count
 

@@ -101,7 +101,8 @@ function upgradeCard(path: string, data: string, file: any): void {
 }
 
 function main(): void {
-    console.error('<yellow>WARNING: This will create new cards with the `.ts` extension, but will leave your old cards alone. Please verify that the new cards work before deleting the old ones.</yellow>');
+    console.warn('<yellow>WARNING: This will create new cards with the `.ts` extension, but will leave your old cards alone. Please verify that the new cards work before deleting the old ones.</yellow>');
+    console.warn('<yellow>WARNING: This script is outdated and might not perfectly upgrade cards. Treat this script as being deprecated. I won\'t remove it yet since it might still be useful, but I don\'t guarantee that it works.</yellow>');
 
     const proceed = game.input('Do you want to proceed? ([y]es, [n]o): ').toLowerCase().startsWith('y');
     if (!proceed) {
