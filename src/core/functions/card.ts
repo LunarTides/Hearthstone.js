@@ -142,7 +142,10 @@ export const cardFunctions = {
      */
     getAllFromName(name: string, refer = true): Card[] {
         const id = this.getFromId(game.lodash.parseInt(name));
-        if (id && refer) {
+
+        // For some reason, "10 Mana" turns into 10 when passed through `parseInt`.
+        // So we check if it has a space
+        if (id && refer && !name.includes(' ')) {
             return [id];
         }
 

@@ -4,7 +4,6 @@ import assert from 'node:assert';
 import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
-    // TODO: You can't give this card to yourself using the name
     name: '10 Mana',
     text: 'Gain 10 Mana.',
     cost: 0,
