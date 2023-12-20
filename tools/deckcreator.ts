@@ -667,6 +667,7 @@ function help(): void {
         'deckcode - View the current deckcode',
         'import - Imports a deckcode (Overrides your deck)',
         'set (setting) (value) - Change some settings. Look down to \'Set Subcommands\' to see available settings',
+        'warning (name) [off | on] - Change some warnings. Look down to \'Warnings\' to see available warnings',
         'class - Change the class',
         'config | rules - Shows the rules for valid decks and invalid decks',
         'help - Displays this message',
@@ -688,7 +689,6 @@ function help(): void {
         'format (format) - Makes the deckcode generator output the deckcode as a different format. If you set this to \'vanilla\', it is only going to show the deckcode as vanilla. If you set it to \'vanilla\', you will be asked to choose a card if there are multiple vanilla cards with the same name. This should be rare, but just know that it might happen. (\'js\', \'vanilla\') [default = \'js\']',
         'cardsPerPage | cpp (num) - How many cards to show per page [default = 15]',
         'defaultCommand | dcmd (cmd) - The command that should run when the command is unspecified. (\'add\', \'remove\', \'view\') [default = \'add\']',
-        'warning - Disables/enables certain warnings. Look down to \'Warnings\' to see changeable warnings.',
     ];
 
     const setSubcommandWall = game.functions.util.createWall(setSubcommandBricks, '-');
@@ -698,9 +698,9 @@ function help(): void {
 
     console.log('\n<gray>Note the \'cardsPerPage\' commands has 2 different subcommands; cpp & cardsPerPage. Both do the same thing.</gray>');
 
-    // Set Warning
+    // Warning
     console.log('\n<b>Warnings:</b>');
-    console.log('(In order to use these; input \'set warning (name) [off | on]\'. Example: \'set warning latestCard off\')\n');
+    console.log('(In order to use these; input \'warning (name) [off | on]\'. Example: \'warning latestCard off\')\n');
 
     const warningBricks = [
         '(name) - (description)\n',
@@ -783,26 +783,22 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
         return false;
     }
 
-    let successfull = false;
+    let foundCommand = false;
 
     if (game.interact.shouldExit(name)) {
         running = false;
     }
 
-    let commandName = Object.keys(commands).find(commandName => commandName === name);
-
-    // HACK: Hardcoding "set warning" since otherwise, it just uses the "set" command.
-    // TODO: Rename "set warning" to "warning"
-    if (cmd.startsWith('set warning')) {
-        commandName = 'set warning';
-    }
+    const commandName = Object.keys(commands).find(commandName => commandName === name);
 
     if (commandName) {
+        foundCommand = true;
+
         const command = commands[commandName];
-        successfull = command(args) as boolean;
+        command(args) as boolean;
     }
 
-    if (!successfull) {
+    if (!foundCommand) {
         // Infer add
         const tryCommand = `${settings.commands.default} ${cmd}`;
         console.log(`<yellow>Unable to find command. Trying '${tryCommand}'</yellow>`);
@@ -1062,9 +1058,7 @@ const commands: CommandList = {
 
         return true;
     },
-    'set warning'(args): boolean {
-        // Shift since the first element is "warning"
-        args.shift();
+    warning(args): boolean {
         const key = args[0];
 
         if (!Object.keys(warnings).includes(key)) {
