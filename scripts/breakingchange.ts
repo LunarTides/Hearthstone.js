@@ -14,6 +14,11 @@ let finishedCards: string[] = [];
 
 let finishedCardsPath = 'patchedCards.txt';
 
+/**
+ * Retrieves the finished cards from the specified path.
+ *
+ * @param path The path to the file containing the finished cards.
+ */
 function getFinishedCards(path: string): void {
     // If the file doesn't exist, return.
     if (!game.functions.util.fs('exists', path)) {
@@ -24,6 +29,11 @@ function getFinishedCards(path: string): void {
     finishedCards = cards.split('\n');
 }
 
+/**
+ * Searches for cards that match the given query and adds their paths to the `matchingCards` array.
+ *
+ * @param query The regular expression or string to match against the card content.
+ */
 function searchCards(query: RegExp | string): void {
     game.functions.util.searchCardsFolder((fullPath, content) => {
         // The query is not a regular expression
@@ -42,6 +52,9 @@ function searchCards(query: RegExp | string): void {
     });
 }
 
+/**
+ * Executes the main logic of the program.
+ */
 function main(): void {
     game.interact.cls();
     const useRegex = rl.keyInYN('Do you want to use regular expressions? (Don\'t do this unless you know what regex is, and how to use it)');

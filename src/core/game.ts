@@ -557,6 +557,11 @@ export class Game {
     }
 }
 
+/**
+ * Creates a new game instance, initializes players, sets up the game, imports all cards, and configures AI.
+ *
+ * @return An object containing the game instance, player 1, and player 2.
+ */
 export function createGame() {
     const game = new Game();
     const player1 = new Player('Player 1');

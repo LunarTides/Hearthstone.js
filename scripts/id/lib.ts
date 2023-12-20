@@ -10,6 +10,15 @@ const { game } = createGame();
 
 const idRegex = /id: (\d+)/;
 
+/**
+ * Searches for cards and calls the callback function for each card found.
+ *
+ * @param callback The callback function to be called for each card found.
+ *                 It takes three parameters:
+ *                 - path: the path of the card file
+ *                 - content: the content of the card file
+ *                 - id: the ID of the card
+ */
 function searchCards(callback: (path: string, content: string, id: number) => void): void {
     game.functions.util.searchCardsFolder((fullPath, content) => {
         const idMatch = idRegex.exec(content);
@@ -23,6 +32,15 @@ function searchCards(callback: (path: string, content: string, id: number) => vo
     });
 }
 
+/**
+ * Change the ids of cards starting from a given id and apply a callback function to each id.
+ *
+ * @param startId The id to start the changes from.
+ * @param callback The callback function to apply to each id.
+ * @param log Indicates whether to log the changes or not.
+ *
+ * @returns The number of cards that were updated.
+ */
 function change(startId: number, callback: (id: number) => number, log: boolean): number {
     let updated = 0;
 

@@ -13,6 +13,12 @@ let type: CardType;
 
 export type CcType = 'Unknown' | 'Class' | 'Custom' | 'Vanilla';
 
+/**
+ * Returns the ability of a card based on its type.
+ *
+ * @param cardType The type of the card.
+ * @returns The ability of the card.
+ */
 function getCardAbility(cardType: CardType): string {
     // Get the card's ability
     let ability: string;
@@ -69,6 +75,12 @@ function getCardAbility(cardType: CardType): string {
     return ability;
 }
 
+/**
+ * Generates a path for a card based on its classes and type.
+ *
+ * @param args [The classes of the card, The type of the card]
+ * @returns The generated card path
+ */
 function generateCardPath(...args: [CardClass[], CardType]): string {
     // Create a path to put the card in.
     let [classes, type] = args;
@@ -98,6 +110,11 @@ function generateCardPath(...args: [CardClass[], CardType]): string {
     return staticPath + dynamicPath;
 }
 
+/**
+ * Returns the latest ID from the file '/cards/.latestId'.
+ *
+ * @returns The latest ID.
+ */
 export function getLatestId(): number {
     return game.lodash.parseInt(game.functions.util.fs('readFile', '/cards/.latestId', { invalidateCache: true }) as string);
 }

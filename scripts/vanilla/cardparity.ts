@@ -9,6 +9,9 @@ import { type Blueprint } from '../../src/types.js';
 
 const { game } = createGame();
 
+/**
+ * Runs the card parity script.
+ */
 function main(): void {
     const vanillaCards = game.functions.card.vanilla.getAll();
 
@@ -39,6 +42,14 @@ function main(): void {
     }
 }
 
+/**
+ * Checks the given key and value against the vanilla card and logs a message if they are different.
+ *
+ * @param key The key to check against the vanilla card.
+ * @param value The value to check against the vanilla card.
+ * @param vanilla The vanilla card object to check against.
+ * @param card The card object to log information about.
+ */
 function check(key: string, value: any, vanilla: VanillaCard, card: Card): void {
     const ignore = ['id', 'set', 'name', 'rarity', 'type'];
 

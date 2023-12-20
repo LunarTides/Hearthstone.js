@@ -12,6 +12,9 @@ import { type Dirent } from 'node:fs';
 import { validate as validateIds } from '../scripts/id/lib.js';
 import { createGame } from './internal.js';
 
+/**
+ * Starts the game.
+ */
 export function main(): void {
     const { game, player1, player2 } = createGame();
 
@@ -65,6 +68,10 @@ export function main(): void {
 let outdatedCards: string[] = [];
 const outdatedExtensions: string[] = [];
 const updatedCards: string[] = [];
+
+/**
+ * Warns about outdated cards.
+ */
 function warnAboutOutdatedCards(): void {
     findOutdatedCards(game.functions.util.dirname() + '/cards');
     outdatedCards = outdatedCards.filter(card => !updatedCards.includes(card));
@@ -92,6 +99,11 @@ function warnAboutOutdatedCards(): void {
     }
 }
 
+/**
+ * Finds and collects outdated cards from the specified path.
+ *
+ * @param path The path to search for outdated cards.
+ */
 function findOutdatedCards(path: string): void {
     if (path.includes('cards/Test')) {
         return;

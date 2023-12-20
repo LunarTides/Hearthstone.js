@@ -10,6 +10,13 @@ import { type Card, type Player, createGame } from '../src/internal.js';
 const { game } = createGame();
 const cards = game.functions.card.getAll(false);
 
+/**
+ * Tests that a card works properly by triggering the `test` ability.
+ *
+ * @param card The card to test
+ *
+ * @returns Success | Error
+ */
 function testCard(card: Card): boolean | Error {
     try {
         card.activate('test');
@@ -22,6 +29,9 @@ function testCard(card: Card): boolean | Error {
     return true;
 }
 
+/**
+ * Executes a series of tests on the cards in the 'cards' array.
+ */
 export function main(): void {
     let failed = false;
 

@@ -52,6 +52,7 @@
       "max-params": "off",
       "no-warning-comments": "off",
       "no-unused-vars": "error",
+      "require-jsdoc": "error",
       "@typescript-eslint/object-curly-spacing": [
         "error",
         "always"

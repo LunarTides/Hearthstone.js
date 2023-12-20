@@ -9,6 +9,16 @@ import { createGame } from '../src/internal.js';
 
 const { game } = createGame();
 
+/**
+ * Replaces occurrences of `oldValue` in `data` with `newValue` and logs a message if the data is modified.
+ *
+ * @param data The original string data.
+ * @param oldValue The value or regular expression to replace.
+ * @param newValue The new value to replace the old value with.
+ * @param toLog The message to log if the data is modified.
+ *
+ * @returns The modified string data.
+ */
 function upgradeField(data: string, oldValue: string | RegExp, newValue: string, toLog: string): string {
     const oldData = data;
     data = data.replace(oldValue, newValue);
@@ -19,6 +29,13 @@ function upgradeField(data: string, oldValue: string | RegExp, newValue: string,
     return data;
 }
 
+/**
+ * Upgrades a card with the given path, data, and file to 2.0.
+ *
+ * @param path The path of the card.
+ * @param data The data of the card.
+ * @param file The file of the card.
+ */
 function upgradeCard(path: string, data: string, file: any): void {
     // TODO: Split stats into attack and health
     // TODO: uncollectible -> collectible
@@ -100,6 +117,9 @@ function upgradeCard(path: string, data: string, file: any): void {
     console.log(`--- Finished ${fileName} ---`);
 }
 
+/**
+ * The main function of the program.
+ */
 function main(): void {
     console.warn('<yellow>WARNING: This will create new cards with the `.ts` extension, but will leave your old cards alone. Please verify that the new cards work before deleting the old ones.</yellow>');
     console.warn('<yellow>WARNING: This script is outdated and might not perfectly upgrade cards. Treat this script as being deprecated. I won\'t remove it yet since it might still be useful, but I don\'t guarantee that it works.</yellow>');

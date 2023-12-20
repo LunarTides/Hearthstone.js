@@ -7,6 +7,9 @@ import * as cclib from '../tools/cardcreator/lib.js'; // Class Creator
 import { type Blueprint } from '../src/types.js';
 import { type CcType } from './cardcreator/lib.js';
 
+/**
+ * Runs the CLI.
+ */
 export function main(userInputLoop: (prompt: string, exitCharacter: string | undefined, callback: (input: string) => any) => any): void {
     // Common card creator variant stuff
     const doCardCreatorVariant = (usedOptions: string[], args: string[], callback: (debug: boolean, overrideType?: CcType) => any): void => {

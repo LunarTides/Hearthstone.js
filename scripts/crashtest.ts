@@ -8,6 +8,9 @@ import { createGame } from '../src/internal.js';
 const gamesEnv = process.env.games ?? '';
 const games = game.lodash.parseInt(gamesEnv) ?? 100;
 
+/**
+ * Executes the main function for the program.
+ */
 function main(): void {
     const decks = JSON.parse(game.functions.util.fs('read', '/decks.json') as string) as string[];
 

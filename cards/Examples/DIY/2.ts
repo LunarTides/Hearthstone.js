@@ -22,6 +22,9 @@ export const blueprint: Blueprint = {
         // This is in a function so i can unit test it
         // This is to make sure you got the right solution, since otherwise it can cause bugs
 
+        /**
+         * Put all your code in this function please
+         */
         function solution() {
             // Put all your code in this function please
         }

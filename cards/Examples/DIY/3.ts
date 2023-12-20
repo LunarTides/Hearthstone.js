@@ -22,6 +22,9 @@ export const blueprint: Blueprint = {
         // 1. Ask the user which minion to kill.
         // 2. Kill that minion
 
+        /**
+         * Put all your code inside this function please.
+         */
         function solution() {
             // Put all your code inside this function please.
 

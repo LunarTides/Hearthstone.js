@@ -17,8 +17,7 @@ const { game } = createGame();
  * @param card The vanilla card
  * @param debug If it should use debug mode
  */
-// eslint-disable-next-line complexity
-export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CcType): void {
+export function create(card: VanillaCard, debug: boolean, overrideType?: lib.CcType): void {// eslint-disable-line complexity
     // Harvest info
     let cardClass = game.lodash.capitalize(card.cardClass ?? 'Neutral') as CardClass;
     const collectible = card.collectible ?? false;
