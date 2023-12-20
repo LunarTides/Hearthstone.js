@@ -665,7 +665,7 @@ function help(): void {
         'undo - Undo the last action.',
         'deck - Toggle deck-view',
         'deckcode - View the current deckcode',
-        'import - Imports a deckcode (Overrides your deck)',
+        'import (deckcode) - Imports a deckcode (Overrides your deck)',
         'set (setting) (value) - Change some settings. Look down to \'Set Subcommands\' to see available settings',
         'warning (name) [off | on] - Change some warnings. Look down to \'Warnings\' to see available warnings',
         'class - Change the class',
@@ -793,9 +793,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
 
     if (commandName) {
         foundCommand = true;
-
-        const command = commands[commandName];
-        command(args) as boolean;
+        commands[commandName](args);
     }
 
     if (!foundCommand) {
@@ -971,9 +969,8 @@ const commands: CommandList = {
 
         return true;
     },
-    // TODO: Make this take the deckcode as an argument
-    import(): boolean {
-        const deckcode = game.input('Please input a deckcode: ');
+    import(args): boolean {
+        const deckcode = args.join(' ');
 
         config.decks.validate = false;
         let newDeck = game.functions.deckcode.import(player1, deckcode);
