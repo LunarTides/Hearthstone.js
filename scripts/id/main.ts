@@ -8,58 +8,65 @@ if (typeof gitStatus === 'string') {
 }
 
 console.error('<yellow>WARNING: Be careful with this script. This might break things that are dependent on ids remaining the same, like deckcodes.</yellow>');
-console.log('<green>The validate and quit commands are safe to use without issue.</green>');
+console.log('<green>The validate and quit commands are safe to use without issue.</green>\n');
 
 type Commands = 'i' | 'd' | 'v' | 'q';
+let running = true;
 
-let func = game.input('\nWhat do you want to do? ([i]ncrement, [d]ecrement, [v]alidate, [q]uit): ')[0] as Commands;
-if (!func) {
-    // TODO: Maybe don't throw errors here
-    throw new Error('Invalid command');
-}
+while (running) {
+    let func = game.input('What do you want to do? ([i]ncrement, [d]ecrement, [v]alidate, [q]uit): ')[0] as Commands;
+    if (!func) {
+        game.pause('<red>Invalid command.</red>\n');
+        continue;
+    }
 
-func = func.toLowerCase() as Commands;
-const destructive = ['i', 'd'] as Commands[];
+    func = func.toLowerCase() as Commands;
+    const destructive = ['i', 'd'] as Commands[];
 
-if (destructive.includes(func)) {
-    console.error('<yellow>WARNING: This is a destructive action. Be careful. I heavily recommend not doing this.</yellow>\n');
-}
+    if (destructive.includes(func)) {
+        console.error('<yellow>WARNING: This is a destructive action. Be careful. I heavily recommend not doing this.</yellow>\n');
+    }
 
-let startId: number;
+    let startId: number;
 
-switch (func) {
-    case 'i': {
-        startId = Number(game.input('What id to start at: '));
-        if (!startId) {
-            throw new Error('Invalid start id');
+    switch (func) {
+        case 'i': {
+            startId = Number(game.input('What id to start at: '));
+            if (!startId) {
+                game.pause('<red>Invalid start id.</red>\n');
+                break;
+            }
+
+            lib.increment(startId, true);
+            break;
         }
 
-        lib.increment(startId, true);
-        break;
-    }
+        case 'd': {
+            startId = Number(game.input('What id to start at: '));
+            if (!startId) {
+                game.pause('<red>Invalid start id.</red>\n');
+                break;
+            }
 
-    case 'd': {
-        startId = Number(game.input('What id to start at: '));
-        if (!startId) {
-            throw new Error('Invalid start id');
+            lib.decrement(startId, true);
+            break;
         }
 
-        lib.decrement(startId, true);
-        break;
+        case 'v': {
+            lib.validate(true);
+            break;
+        }
+
+        case 'q': {
+            running = false;
+            break;
+        }
+
+        default: {
+            game.pause('<red>Invalid command.</red>\n');
+            break;
+        }
     }
 
-    case 'v': {
-        lib.validate(true);
-        break;
-    }
-
-    case 'q': {
-        break;
-    }
-
-    default: {
-        throw new Error('Invalid command');
-    }
+    console.log('Done.\n');
 }
-
-console.log('Done');

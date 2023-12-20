@@ -1177,7 +1177,6 @@ export class Card {
 
         const temporaryPlaceholder = this.activate('placeholders');
         if (!(Array.isArray(temporaryPlaceholder))) {
-            // TODO: Maybe throw an error?
             return false;
         }
 
