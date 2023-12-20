@@ -909,7 +909,7 @@ const attack = {
         }
 
         // The attacker is a string but not spelldamage syntax
-        const spellDamageRegex = /\$(\d+?)/;
+        const spellDamageRegex = /\$(\d+)/;
         const match = spellDamageRegex.exec(attacker);
 
         if (!match) {

@@ -22,8 +22,7 @@ export const blueprint: Blueprint = {
             return game.constants.refund;
         }
 
-        // TODO: This doesn't work with spelldamage. +2 spell damage = 30 damage, for some reason
-        game.attack(10, target);
+        game.attack('$10', target);
         return true;
     },
 

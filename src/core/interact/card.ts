@@ -234,7 +234,7 @@ export const cardInteract = {
         }
 
         // Replace spell damage placeholders
-        reg = /\$(\d+?)/;
+        reg = /\$(\d+)/;
 
         running = true;
         while (running) {
@@ -290,7 +290,7 @@ export const cardInteract = {
         let text = (card.text || '').length > 0 ? ` (${card.text}) ` : ' ';
 
         // Extract placeholder value, remove the placeholder header and footer
-        if (card.placeholder ?? /\$(\d+?)/.test(card.text || '')) {
+        if (card.placeholder ?? /\$(\d+)/.test(card.text || '')) {
             text = this.doPlaceholders(card, text, _depth);
         }
 

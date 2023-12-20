@@ -240,6 +240,19 @@ export const interact = {
             return game.player.forceTarget;
         }
 
+        // Add spell damage in prompt
+        const spellDamageRegex = /\$(\d+)/g;
+        const matches = spellDamageRegex.exec(prompt);
+        matches?.splice(0, 1);
+
+        if (matches) {
+            for (const match of matches) {
+                prompt = prompt.replace(match, (game.lodash.parseInt(match) + game.player.spellDamage).toString());
+            }
+        }
+
+        prompt = prompt.replaceAll(spellDamageRegex, '$1');
+
         // If the player is an ai, hand over control to the ai.
         if (game.player.ai) {
             return game.player.ai.selectTarget(prompt, card, forceSide, forceClass, flags);
