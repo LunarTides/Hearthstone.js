@@ -10,7 +10,7 @@ export const blueprint: Blueprint = {
     type: 'Heropower',
     classes: ['Priest'],
     rarity: 'Legendary',
-    collectible: true,
+    collectible: false,
     id: 128,
 
     heropower(plr, self) {
