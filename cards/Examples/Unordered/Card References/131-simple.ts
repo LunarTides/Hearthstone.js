@@ -1,5 +1,6 @@
 // Created by Hand
 
+import { type Card } from '@Game/internal.js';
 import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
@@ -16,10 +17,18 @@ export const blueprint: Blueprint = {
     health: 1,
     tribe: 'None',
 
+    create(plr, self) {
+        // Store a coin for later
+        self.storage.the_coin = game.createCard(2, plr);
+    },
+
     placeholders(plr, self) {
         // You can reference entire cards in placeholders.
         // Go in-game, give yourself this card, and type 'detail' to see how it works.
-        return { coin: game.createCard(2, plr) };
+        // We use the card's storage so we don't create a bajillion cards and cause memory leaks.
+        const coin = self.storage.the_coin as Card | undefined;
+
+        return { coin };
     },
 
     test(plr, self) {
