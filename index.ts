@@ -9,12 +9,40 @@ import * as vcc from './tools/cardcreator/vanilla.js'; // Vanilla Card Creator
 import * as clc from './tools/cardcreator/class.js'; // Class Creator
 import * as cli from './tools/cli.js'; // Command Line Interface
 
+// These are here so we don't have to recalculate them every watermark call.
+const version = game.functions.info.version(4);
+const customCardsAmount = game.functions.card.getAll(false).length;
+const collectibleCardsAmount = game.functions.card.getAll(true).length;
+let vanillaCardsAmount = Number.NaN;
+let collectibleVanillaCardsAmount = Number.NaN;
+
+try {
+    // `vanilla.getAll` will throw an error if the `vanillacards.json` file is missing.
+    const vanillaCards = game.functions.card.vanilla.getAll();
+    vanillaCardsAmount = vanillaCards.length;
+    collectibleVanillaCardsAmount = vanillaCards.filter(card => card.collectible).length;
+} catch {}
+
 /**
  * Clears the console and prints the version information of the Hearthstone.js Hub.
  */
 const watermark = () => {
     game.interact.cls();
-    console.log('Hearthstone.js Hub V%s (C) 2022\n', game.functions.info.version(3));
+
+    console.log(` /$$   /$$  /$$$$$$        /$$$$$  /$$$$$$ 
+| $$  | $$ /$$__  $$      |__  $$ /$$__  $$
+| $$  | $$| $$  \\__/         | $$| $$  \\__/
+| $$$$$$$$|  $$$$$$          | $$|  $$$$$$ 
+| $$__  $$ \\____  $$    /$$  | $$ \\____  $$
+| $$  | $$ /$$  \\ $$   | $$  | $$ /$$  \\ $$
+| $$  | $$|  $$$$$$//$$|  $$$$$$/|  $$$$$$/
+|__/  |__/ \\______/|__/ \\______/  \\______/ 
+    `);
+
+    console.log('Version: %s', version);
+    console.log('Custom Cards: <yellow>%s</yellow> (<green>%s</green> Collectible)', customCardsAmount, collectibleCardsAmount);
+    console.log('Vanilla Cards: <blue>%s</blue> (<cyan>%s</cyan> Collectible)', vanillaCardsAmount, collectibleVanillaCardsAmount);
+    console.log();
 };
 
 /**
@@ -47,7 +75,7 @@ function userInputLoop(prompt: string, exitCharacter: string | undefined, callba
  * Asks the user which card creator variant they want to use.
  */
 function cardCreator() {
-    userInputLoop('Create a (C)ustom Card, Import a (V)anilla Card, Go (B)ack: ', 'b', input => {
+    userInputLoop('<green>Create a (C)ustom Card</green>, <blue>Import a (V)anilla Card</blue>, <red>Go (B)ack</red>: ', 'b', input => {
         const type = input[0].toLowerCase();
 
         game.interact.cls();
@@ -67,7 +95,7 @@ function cardCreator() {
  * More developer friendly options.
  */
 function devmode() {
-    userInputLoop('Create a (C)ard, Create a Clas(s), Enter CLI (m)ode, Go (B)ack to Normal Mode: ', 'b', input => {
+    userInputLoop('<green>Create a (C)ard</green>, <blue>Create a Clas(s)</blue>, <yellow>Enter CLI (m)ode</yellow>, <red>Go (B)ack to Normal Mode</red>: ', 'b', input => {
         input = input[0].toLowerCase();
 
         switch (input) {
@@ -91,7 +119,7 @@ function devmode() {
     });
 }
 
-userInputLoop('(P)lay, Create a (D)eck, Developer (M)ode, (E)xit: ', 'e', input => {
+userInputLoop('<green>(P)lay</green>, <blue>Create a (D)eck</blue>, <yellow>Developer (M)ode</yellow>, <red>(E)xit</red>: ', 'e', input => {
     input = input[0].toLowerCase();
 
     switch (input) {
