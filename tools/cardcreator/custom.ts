@@ -14,6 +14,10 @@ const { player1, game } = createGame();
 let shouldExit = false;
 let type: CardType;
 
+/**
+ * Asks the user a question and returns the result.
+ * This is a wrapper for `game.input` that might set the global `shouldExit` variable.
+ */
 function input(prompt: string): string {
     if (shouldExit) {
         return '';
@@ -28,6 +32,9 @@ function input(prompt: string): string {
     return returnValue;
 }
 
+/**
+ * Parses user input, `_card`, into a working card that can be passed to the library.
+ */
 function applyCard(_card: BlueprintWithOptional): Blueprint {
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const newCard = {} as Blueprint;
@@ -80,6 +87,9 @@ function applyCard(_card: BlueprintWithOptional): Blueprint {
     return newCard;
 }
 
+/**
+ * Asks the user questions that apply to every card type.
+ */
 function common(): BlueprintWithOptional {
     const name = input('Name: ');
     const text = input('Text: ');

@@ -8,9 +8,11 @@ import { createGame } from '../../src/internal.js';
 const { game } = createGame();
 
 const props: Record<string, [string, number]> = {};
-
 const stored: Record<string, Array<[any, number]>> = {};
 
+/**
+ * Does something(?) to the key and value and applies it to `stored`.
+ */
 function handleStoredTypes(key: string, value: any): void {
     const values = Array.isArray(value) ? value : [value];
 
@@ -29,6 +31,9 @@ function handleStoredTypes(key: string, value: any): void {
     }
 }
 
+/**
+ * Runs the propfinder
+ */
 function main(): void {
     const vanillaCards = game.functions.card.vanilla.getAll();
 

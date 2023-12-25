@@ -89,11 +89,17 @@ const settings: Settings = {
 
 const defaultSettings: Settings = game.lodash.cloneDeep(settings);
 
+/**
+ * Shows the watermark for the Deck Creator
+ */
 function watermark(): void {
     game.interact.cls();
     console.log('Hearthstone.js Deck Creator (C) 2022\n');
 }
 
+/**
+ * Asks the user which class to choose, and returns it.
+ */
 function askClass(): CardClassNoNeutral {
     watermark();
 
@@ -128,6 +134,11 @@ function askClass(): CardClassNoNeutral {
     return heroClass as CardClassNoNeutral;
 }
 
+/**
+ * Sort the input cards based on the current `settings`.
+ *
+ * @returns The sorted cards
+ */
 function sortCards(_cards: Card[]): Card[] {
     // If the order is invalid, fall back to ascending
     if (!['asc', 'desc'].includes(settings.sort.order)) {
@@ -188,6 +199,16 @@ function sortCards(_cards: Card[]): Card[] {
     return sortCards(_cards);
 }
 
+/**
+ * Searches cards based on a query.
+ *
+ * # Examples:
+ * ```ts
+ * let searched = searchCards(cards, 'cost:1');
+ * searched = searchCards(cards, 'cost:even');
+ * searched = searchCards(cards, 'name:Hi rarity:Legendary');
+  ```
+ */
 function searchCards(_cards: Card[], searchQuery: string): Card[] | false {
     if (searchQuery.length <= 0) {
         return _cards;
@@ -300,8 +321,10 @@ function searchCards(_cards: Card[], searchQuery: string): Card[] | false {
     return returnValueCards;
 }
 
-// eslint-disable-next-line complexity
-function showCards(): void {
+/**
+ * Shows the possible cards that the user can add to their deck.
+ */
+function showCards(): void {// eslint-disable-line complexity
     filteredCards = [];
     watermark();
 
@@ -449,6 +472,9 @@ function showCards(): void {
     }
 }
 
+/**
+ * Prints the rules / config to the screen
+ */
 function showRules(): void {
     const configText = '### RULES ###';
     console.log('#'.repeat(configText.length));
@@ -478,6 +504,11 @@ function showRules(): void {
     console.log('#'.repeat(configText.length));
 }
 
+/**
+ * Find a card from a name / id.
+ *
+ * @param cardName The name / id of the card
+ */
 function findCard(cardName: string): Card | undefined {
     let returnCard: Card | undefined;
 
@@ -490,6 +521,9 @@ function findCard(cardName: string): Card | undefined {
     return returnCard;
 }
 
+/**
+ * Adds a card to the deck
+ */
 function add(card: Card): boolean {
     deck.push(card);
 
@@ -507,10 +541,16 @@ function add(card: Card): boolean {
     return true;
 }
 
+/**
+ * Removes a card from the deck
+ */
 function remove(card: Card): boolean {
     return game.functions.util.remove(deck, card);
 }
 
+/**
+ * Shows the cards that are in the users deck. This is a replacement for `showCards`.
+ */
 function showDeck(): void {
     watermark();
 
@@ -593,6 +633,11 @@ function showDeck(): void {
     }
 }
 
+/**
+ * Generates a deckcode from the current deck.
+ *
+ * @param parseVanillaOnPseudo Converts the deckcode to a vanilla one even if the deck is pseudo-valid. This will decrease performance.
+ */
 function generateDeckcode(parseVanillaOnPseudo = false) {
     const deckcode = game.functions.deckcode.export(deck, chosenClass, runes);
     const { error } = deckcode;
@@ -645,6 +690,9 @@ function generateDeckcode(parseVanillaOnPseudo = false) {
     return deckcode;
 }
 
+/**
+ * Show the help message. To be used by the "help" command.
+ */
 function help(): void {
     watermark();
 
@@ -727,6 +775,15 @@ function help(): void {
     game.pause('\nPress enter to continue...\n');
 }
 
+/**
+ * Gets a card from arguments
+ *
+ * @param args Arguments for the command
+ * @param callback Callback to run
+ * @param errorCallback If the `callback` returns false, run this function.
+ *
+ * @returns Success
+ */
 function getCardArg(args: string[], callback: (card: Card) => boolean, errorCallback: () => void): boolean {
     let times = 1;
 
@@ -770,6 +827,14 @@ function getCardArg(args: string[], callback: (card: Card) => boolean, errorCall
     return true;
 }
 
+/**
+ * Runs the correct command based on the input.
+ *
+ * @param cmd The user input
+ * @param addToHistory If it should add the command to the history
+ *
+ * @returns Success
+ */
 function handleCmds(cmd: string, addToHistory = true): boolean {
     if (findCard(cmd)) {
         // You just typed the name of a card.
