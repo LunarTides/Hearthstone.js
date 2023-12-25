@@ -787,6 +787,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
 
     if (game.interact.shouldExit(name)) {
         running = false;
+        return true;
     }
 
     const commandName = Object.keys(commands).find(commandName => commandName === name);
