@@ -210,7 +210,7 @@ ${mainContent}
             return true;
         }
 
-        console.log(`\n<red>The game crashed!\nCrash report created in 'logs/${filename}'\nPlease create a bug report at:\nhttps://github.com/LunarTides/Hearthstone.js/issues</red>`);
+        console.log(`\n<red>The game crashed!\nCrash report created in 'logs/${filename}'\nPlease create a bug report at:\n${game.config.info.githubUrl}/issues</red>`);
         game.pause();
 
         return true;
