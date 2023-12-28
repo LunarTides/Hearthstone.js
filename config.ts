@@ -153,7 +153,7 @@ export const config: GameConfig = {
 
         // If this is true, the deckcreator will also show collectible cards.
         // These deckcodes will be rejected by the game as psuedo-valid if `config.decks.validate` is false.
-        dcShowUncollectible: true,
+        dcShowUncollectible: false,
 
         // If this is true, `getReadableCard` will only show the top level of a card.
         // This will prevent cards from referencing other cards in their description
