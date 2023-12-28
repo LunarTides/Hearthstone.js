@@ -8,7 +8,7 @@ export const blueprint: Blueprint = {
     text: 'Just an example card (Does nothing)',
     cost: 1,
 
-    // Remember to properly set the type (Done automatically be the card creator)
+    // Remember to properly set the type (Done automatically by the card creator)
     type: 'Weapon',
 
     classes: ['Neutral'],

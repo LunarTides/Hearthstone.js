@@ -19,7 +19,7 @@ export { blueprint as cc90c788 } from './Classes/Druid/Collectible/Spells/7-Cost
 export { blueprint as c30d97aa } from './Classes/Druid/Uncollectible/Minions/1-Cost/83-treant.js';
 export { blueprint as c7245d5c } from './Classes/Druid/Uncollectible/Minions/1-Cost/95-otter.js';
 export { blueprint as cbca7e23 } from './Classes/Druid/Uncollectible/Minions/6-Cost/96-orca.js';
-export { blueprint as c94212df } from './Classes/Druid/Uncollectible/Spells/2-Cost/113-nurture.js';
+export { blueprint as c94212df } from './Classes/Druid/Uncollectible/Heropowers/113-nurture.js';
 export { blueprint as c9841922 } from './Classes/Mage/Collectible/Spells/10-Cost/105-pyroblast.js';
 export { blueprint as c3dee25b } from './Classes/Neutral/Collectible/Locations/7-Cost/102-prison-of-yogg-saron.js';
 export { blueprint as c28b7adc } from './Classes/Neutral/Collectible/Minions/1-Cost/110-chaotic-tendril.js';
