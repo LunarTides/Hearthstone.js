@@ -15,7 +15,6 @@
     "script:breakingchange": "node ./dist/scripts/breakingchange",
     "script:crashtest": "node ./dist/scripts/crashtest",
     "script:idscript": "node ./dist/scripts/id/main",
-    "script:upgradecards": "node ./dist/scripts/upgradecards",
     "script:testcards": "node ./dist/scripts/testcards"
   },
   "repository": {

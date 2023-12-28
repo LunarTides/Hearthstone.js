@@ -12,6 +12,6 @@ function count {
 echo "With Cards:"
 git ls-files | exclude | count
 
-# Currently ~14.6k
+# Currently ~14.8k
 echo -e "\nWithout Cards:"
 git ls-files | exclude | grep -v 'cards/*' | count

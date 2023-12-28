@@ -7,8 +7,6 @@
  * @module Index
  */
 
-import process from 'node:process';
-import { type Dirent } from 'node:fs';
 import { validate as validateIds } from '../scripts/id/lib.js';
 import { createGame } from './internal.js';
 
@@ -28,8 +26,6 @@ export function main(): void {
         // chance to see what the problem was
         game.pause();
     }
-
-    warnAboutOutdatedCards();
 
     // Ask the players for deck codes.
     for (const player of [player1, player2]) {
@@ -62,68 +58,5 @@ export function main(): void {
         game.functions.util.createLogFile(error);
 
         throw error;
-    }
-}
-
-let outdatedCards: string[] = [];
-const outdatedExtensions: string[] = [];
-const updatedCards: string[] = [];
-
-/**
- * Warns about outdated cards.
- */
-function warnAboutOutdatedCards(): void {
-    findOutdatedCards(game.functions.util.dirname() + '/cards');
-    outdatedCards = outdatedCards.filter(card => !updatedCards.includes(card));
-
-    if (outdatedCards.length <= 0 && outdatedExtensions.length <= 0) {
-        return;
-    }
-
-    for (const fileName of outdatedCards) {
-        console.warn(`<yellow>WARNING: Outdated card found: ${fileName}.js</yellow>`);
-    }
-
-    for (const fileName of outdatedExtensions) {
-        console.warn(`<yellow>WARNING: Outdated extension found: ${fileName}.mts. Please change all card file names ending with the '.mts' extension to '.ts' instead.</yellow>`);
-    }
-
-    console.warn('Run the `upgradecards` script to automatically update outdated cards from pre 2.0.');
-    console.warn('This will only upgrade pre 2.0 cards to 2.0 cards.');
-    console.warn('You can play the game without upgrading the cards, but the cards won\'t be registered.');
-    console.warn('Run the script by running `npm run script:upgradecards`.');
-
-    const proceed = game.input('\nDo you want to proceed? ([y]es, [n]o): ').toLowerCase().startsWith('y');
-    if (!proceed) {
-        process.exit(0);
-    }
-}
-
-/**
- * Finds and collects outdated cards from the specified path.
- *
- * @param path The path to search for outdated cards.
- */
-function findOutdatedCards(path: string): void {
-    if (path.includes('cards/Test')) {
-        return;
-    }
-
-    for (const file of game.functions.util.fs('readdir', path, { withFileTypes: true }) as Dirent[]) {
-        const fullPath = `${path}/${file.name}`.replace('/dist/..', '');
-
-        if (file.name.endsWith('.mts')) {
-            outdatedExtensions.push(fullPath.slice(0, -4));
-        }
-
-        if (file.name.endsWith('.js')) {
-            outdatedCards.push(fullPath.slice(0, -3));
-        }
-
-        if (file.name.endsWith('.ts')) {
-            updatedCards.push(fullPath.slice(0, -3), fullPath.replaceAll('-', '_').slice(0, -3));
-        } else if (file.isDirectory()) {
-            findOutdatedCards(fullPath);
-        }
     }
 }
