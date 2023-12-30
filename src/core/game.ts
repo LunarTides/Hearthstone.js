@@ -6,6 +6,7 @@ import _ from 'lodash';
 import { Player, Card, Ai, functions, interact, eventManager } from '../internal.js';
 import { type TickHookCallback, type Blueprint, type CardAbility, type CardKeyword, type EventKey, type GameAttackReturn, type GameConstants, type GamePlayCardReturn, type Target, type UnknownEventValue } from '../types.js';
 import { config } from '../../config.js';
+import { cardIds } from '../../cards/ids.js';
 
 const cardCollections = {
     lackeys: [24, 25, 26, 27, 28],
@@ -149,6 +150,7 @@ export class Game {
 
     cardCollections = cardCollections;
     lodash = _;
+    cardIds = cardIds;
 
     constructor() {
         globalThis.game = this;
@@ -330,7 +332,7 @@ export class Game {
         this.player1.mana = 1;
 
         // The id of The Coin is 2
-        const coin = new Card(2, this.player2);
+        const coin = new Card(this.cardIds.theCoin2, this.player2);
 
         const unsuppress = this.functions.event.suppress('AddCardToHand');
         this.player2.addToHand(coin);

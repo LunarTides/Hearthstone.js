@@ -61,10 +61,10 @@ export class Card {
      * Use uuid for that.
      *
      * @example
-     * const sheep = new Card(1, plr);
-     * const anotherSheep = new Card(1, plr);
+     * const sheep = new Card(game.cardIds.sheep1, plr);
+     * const anotherSheep = new Card(game.cardIds.sheep1, plr);
      *
-     * const theCoin = new Card(2, plr);
+     * const theCoin = new Card(game.cardIds.theCoin2, plr);
      *
      * assert.equal(sheep.id, anotherSheep.id);
      * assert.notEqual(sheep.id, theCoin.id);
@@ -1343,8 +1343,8 @@ export class Card {
 
             case 'Living Spores': {
                 this.addAbility('deathrattle', (plr, _) => {
-                    game.summonMinion(new Card(3, plr), plr);
-                    game.summonMinion(new Card(3, plr), plr);
+                    game.summonMinion(new Card(game.cardIds.plant3, plr), plr);
+                    game.summonMinion(new Card(game.cardIds.plant3, plr), plr);
                 });
                 break;
             }

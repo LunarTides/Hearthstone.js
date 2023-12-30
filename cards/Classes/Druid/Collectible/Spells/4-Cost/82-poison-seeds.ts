@@ -23,7 +23,7 @@ export const blueprint: Blueprint = {
             for (const card of side) {
                 card.kill();
 
-                const treant = game.createCard(83, player);
+                const treant = game.createCard(game.cardIds.treant83, player);
                 game.summonMinion(treant, player);
             }
         }

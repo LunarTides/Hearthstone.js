@@ -187,6 +187,7 @@ export const cardFunctions = {
     getAll(uncollectible = true): Card[] {
         if (game.cards.length <= 0) {
             game.cards = game.blueprints.map(card => new Card(card.id, game.player));
+            this.generateIdsFile();
         }
 
         return game.cards.filter(c => c.collectible || !uncollectible);
@@ -284,7 +285,7 @@ export const cardFunctions = {
         const count = plr.jadeCounter;
         const cost = (count < 10) ? count : 10;
 
-        const jade = game.createCard(85, plr);
+        const jade = game.createCard(game.cardIds.jadeGolem85, plr);
         jade.setStats(count, count);
         jade.cost = cost;
 
@@ -394,5 +395,20 @@ export const cardFunctions = {
 
         game.functions.util.fs('write', '/cards/exports.ts', exportContent);
         game.functions.util.fs('write', '/dist/cards/exports.js', exportContent);
+    },
+
+    generateIdsFile(): void {
+        let idsContent = '// This file has been automatically generated. Do not change this file.\n\n';
+        idsContent += 'export const cardIds = {';
+
+        for (const card of game.cards.sort((a, b) => a.id - b.id)) {
+            const numberIdentifier = /^\d/.test(card.name) ? 'n' : '';
+            idsContent += `\n    ${numberIdentifier}${game.lodash.camelCase(card.name)}${card.id}: ${card.id},`;
+        }
+
+        idsContent += '\n};\n';
+
+        game.functions.util.fs('write', '/cards/ids.ts', idsContent);
+        game.functions.util.fs('write', '/dist/cards/ids.js', idsContent);
     },
 };

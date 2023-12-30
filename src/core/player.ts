@@ -449,7 +449,7 @@ export class Player {
      *
      * # Examples
      * ```
-     * const weapon = new Card(0, player);
+     * const weapon = new Card(game.cardIds.notRealExampleWeapon0, player);
      * player.setWeapon(weapon);
      * ```
      *
@@ -603,7 +603,7 @@ export class Player {
      * ```
      * assert.equal(player.deck.length, 30);
      *
-     * card = new Card(1, player);
+     * const card = new Card(game.cardIds.sheep1, player);
      * player.shuffleIntoDeck(card);
      *
      * assert.equal(player.deck.length, 31);

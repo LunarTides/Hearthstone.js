@@ -19,7 +19,7 @@ export const blueprint: Blueprint = {
         // Fill your board with 2/1 Whelps with Rush.
         const remainingBoardSpace = game.functions.util.getRemainingBoardSpace(plr);
         for (let index = 0; index < remainingBoardSpace; index++) {
-            const whelp = game.createCard(99, plr);
+            const whelp = game.createCard(game.cardIds.onyxianWhelp99, plr);
             game.summonMinion(whelp, plr);
         }
     },

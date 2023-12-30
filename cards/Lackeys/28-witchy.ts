@@ -57,7 +57,7 @@ export const blueprint: Blueprint = {
         const existsMinionWithCost = (cost: number) => game.board[plr.id].some(card => card.cost === cost);
 
         // Summon a sheep
-        const sheep = game.createCard(1, plr);
+        const sheep = game.createCard(game.cardIds.sheep1, plr);
         game.summonMinion(sheep, plr);
 
         // There shouldn't exist a minion with 1 more cost than the sheep.

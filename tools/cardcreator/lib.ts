@@ -316,6 +316,7 @@ export const blueprint: Blueprint = {
     }
 
     game.functions.card.generateExports();
+    game.functions.card.generateIdsFile();
 
     // Open the defined editor on that card if it has a function to edit, and debug mode is disabled
     if (ability && !debug) {

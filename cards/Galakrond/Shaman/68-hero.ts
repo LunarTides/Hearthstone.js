@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
 
         // Summon the two minions
         for (let i = 0; i < 2; i++) {
-            const minion = game.createCard(112, plr);
+            const minion = game.createCard(game.cardIds.brewingStorm112, plr);
             if (!minion) {
                 break;
             }
@@ -38,7 +38,7 @@ export const blueprint: Blueprint = {
         }
 
         // Give the weapon
-        const weapon = game.createCard(111, plr);
+        const weapon = game.createCard(game.cardIds.dragonClaw111, plr);
         plr.setWeapon(weapon);
     },
 

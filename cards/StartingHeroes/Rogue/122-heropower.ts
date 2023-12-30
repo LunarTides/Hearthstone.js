@@ -17,7 +17,7 @@ export const blueprint: Blueprint = {
         // Equip a 1/2 Dagger.
 
         // Create the weapon card
-        const weapon = game.createCard(22, plr);
+        const weapon = game.createCard(game.cardIds.wickedKnife22, plr);
 
         // Equip the weapon
         plr.setWeapon(weapon);
