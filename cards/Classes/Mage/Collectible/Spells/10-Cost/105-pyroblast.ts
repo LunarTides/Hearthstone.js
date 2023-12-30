@@ -27,7 +27,20 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        // TODO: Add proper tests. #325
-        return true;
+        const enemyHealth = plr.getOpponent().health;
+        plr.forceTarget = plr.getOpponent();
+
+        // If no spellDamage
+        self.activate('cast');
+        assert.equal(plr.getOpponent().health, enemyHealth - 10);
+
+        // Reset health
+        plr.getOpponent().health = enemyHealth;
+
+        // If 5 spellDamage
+        plr.spellDamage = 5;
+
+        self.activate('cast');
+        assert.equal(plr.getOpponent().health, enemyHealth - 15);
     },
 };

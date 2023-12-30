@@ -24,7 +24,16 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        // TODO: Add proper tests. #325
-        return true;
+        const handSize = plr.hand.length;
+        const { emptyMana } = plr;
+
+        // Update if changing the default max mana.
+        assert.equal(plr.maxMana, 10);
+
+        self.activate('battlecry');
+
+        assert.equal(plr.maxMana, 20);
+        assert.equal(plr.emptyMana, emptyMana + 1);
+        assert.equal(plr.hand.length, handSize + 1);
     },
 };

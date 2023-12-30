@@ -26,7 +26,13 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        // TODO: Add proper tests. #325
-        return true;
+        const countImps = () => game.board[plr.id].filter(card => card.id === 21).length;
+
+        // There should be 0 imps by default
+        assert.equal(countImps(), 0);
+
+        // There should be 2 imps when using the hero power
+        self.activate('heropower');
+        assert.equal(countImps(), 2);
     },
 };

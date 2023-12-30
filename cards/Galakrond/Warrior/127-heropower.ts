@@ -20,7 +20,9 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        // TODO: Add proper tests. #325
-        return true;
+        assert.equal(plr.attack, 0);
+        self.activate('heropower');
+
+        assert.equal(plr.attack, 3);
     },
 };

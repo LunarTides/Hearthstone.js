@@ -28,7 +28,7 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        // TODO: Add proper tests. #325
-        return true;
+        self.activate('battlecry');
+        assert.equal(self.health, 4);
     },
 };

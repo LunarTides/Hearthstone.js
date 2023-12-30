@@ -26,7 +26,21 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        // TODO: Add proper tests. #325
-        return true;
+        const handSize = plr.hand.length;
+
+        // Make the player answer 1
+        plr.inputQueue = '1';
+
+        // Shouldn't draw any cards
+        plr.mana = -1;
+
+        self.activate('cast');
+        assert.equal(plr.hand.length, handSize);
+
+        // Should draw a card
+        plr.mana = 10;
+
+        self.activate('cast');
+        assert.equal(plr.hand.length, handSize + 1);
     },
 };

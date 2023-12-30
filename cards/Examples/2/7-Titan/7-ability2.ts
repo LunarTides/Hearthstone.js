@@ -1,5 +1,6 @@
 // Created by Hand (before the Card Creator Existed)
 
+import assert from 'node:assert';
 import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
@@ -22,8 +23,10 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        // TODO: Add proper tests. #325
-        return true;
+        plr.health = plr.maxHealth - 5;
+        self.activate('cast');
+
+        assert.equal(plr.health, plr.maxHealth - 2);
     },
 };
 

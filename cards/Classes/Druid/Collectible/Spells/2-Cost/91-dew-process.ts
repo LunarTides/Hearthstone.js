@@ -24,7 +24,20 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        // TODO: Add proper tests. #325
-        return true;
+        let handSize = plr.hand.length;
+
+        // When the card hasn't been played, draw 1 card every turn.
+        game.endTurn();
+        game.endTurn();
+
+        // Increment handSize by 1 so that we can do handSize + 2
+        assert.equal(plr.hand.length, ++handSize);
+
+        self.activate('cast');
+
+        game.endTurn();
+        game.endTurn();
+
+        assert.equal(plr.hand.length, handSize + 2);
     },
 };
