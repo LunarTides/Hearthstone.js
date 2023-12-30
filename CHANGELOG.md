@@ -1,3 +1,44 @@
+#### 2.0.0-beta.8 (2023-12-30)
+
+##### Chores
+
+*  update dependency ([6c983e11](https://github.com/LunarTides/Hearthstone.js/commit/6c983e11d3214321f508b9cd5f127f8a314cef11))
+*  update dependencies ([58b7c670](https://github.com/LunarTides/Hearthstone.js/commit/58b7c670cbc675687aea8e8934ff7eae0ac004e3))
+*  bump version to 2.0.0-beta.8 ([34373561](https://github.com/LunarTides/Hearthstone.js/commit/34373561fe105cb21b5e079273ae1d8dd4c99055))
+
+##### Bug Fixes
+
+*  remove require-jsdoc from card files ([f7b2bfb9](https://github.com/LunarTides/Hearthstone.js/commit/f7b2bfb9fe42a7b58c1cabe02f714e86e1f2a8af))
+*  move heropower cards into mana cost folders ([88f4ec9c](https://github.com/LunarTides/Hearthstone.js/commit/88f4ec9caea7c99af3a2eda4f90f5d52691f3b29))
+*  default `dcShowUncollectible` to false ([a4c2a7e0](https://github.com/LunarTides/Hearthstone.js/commit/a4c2a7e0939a9930d64e9134243d265648c3f3a0))
+*  move heropower cards from spells folder ([3885043d](https://github.com/LunarTides/Hearthstone.js/commit/3885043d942de057c101f9d828fa9054fbe4ce42))
+*  allow giving cards starting with a number ([bdc50dbd](https://github.com/LunarTides/Hearthstone.js/commit/bdc50dbd9ac145731cbacc45f73708355a94bd57))
+*  fix spelldamage where damage > 9 ([ff2f7be9](https://github.com/LunarTides/Hearthstone.js/commit/ff2f7be97608394b465f6e36904cead60d63c998))
+* **card:**
+  *  make galakrond heropower cards uncollectible ([247c2e27](https://github.com/LunarTides/Hearthstone.js/commit/247c2e279c7001de5b76392b5c153d4000c7b31d))
+  *  fix memory leaks in simple card reference example ([a443e52e](https://github.com/LunarTides/Hearthstone.js/commit/a443e52e8fa6c0f3b2f188b7e833380d6ad9ba0b))
+* **dc:**  fix error message when exiting using command ([841252bd](https://github.com/LunarTides/Hearthstone.js/commit/841252bdb491af530f4ca676543aacaccaa236a9))
+
+##### Other Changes
+
+*  finish adding docstrings to remaining functions ([97da9331](https://github.com/LunarTides/Hearthstone.js/commit/97da9331ebade83ca8dcaea635ec8aefb5a6038b))
+*  start mandating docstrings ([95daf1de](https://github.com/LunarTides/Hearthstone.js/commit/95daf1de7349e8437dc5474acb0315d70cc29da6))
+
+##### Refactors
+
+*  add cardIds file to make hardcoding ids less painful ([d599794f](https://github.com/LunarTides/Hearthstone.js/commit/d599794f49a352677915d96d2ca655d3f79d5fea))
+*  remove detecting/upgrading .js/.mts files ([d1e51b23](https://github.com/LunarTides/Hearthstone.js/commit/d1e51b231a2be5f7ea3a12e56b4480bc4ac6821d))
+*  revamp hub watermark ([1d284e38](https://github.com/LunarTides/Hearthstone.js/commit/1d284e3822d41a22e7048b3fd54809732ddb2198))
+*  put idscript in a loop ([bb1082b4](https://github.com/LunarTides/Hearthstone.js/commit/bb1082b434ce5e226178b3e37658b317ba2872a1))
+* **dc:**
+  *  make import command take an argument ([c6faa0a0](https://github.com/LunarTides/Hearthstone.js/commit/c6faa0a0365ac4e81f5c27409c86123156541005))
+  *  make warning its own command ([fadff432](https://github.com/LunarTides/Hearthstone.js/commit/fadff432b25d71a100dfe43fb890c840a172a925))
+  *  rewrite the command system ([3b830f82](https://github.com/LunarTides/Hearthstone.js/commit/3b830f82d62493d06457ecd56bf16a9d626b5600))
+
+##### Tests
+
+*  add more tests to cards ([9bc14681](https://github.com/LunarTides/Hearthstone.js/commit/9bc14681bb7821f172a573dbe51a8f158a10256b))
+
 #### 2.0.0-beta.7 (2023-12-19)
 
 ##### Chores
