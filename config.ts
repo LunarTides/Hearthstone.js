@@ -244,9 +244,8 @@ export const config: GameConfig = {
         // Four: { 'doing", "A fourth description.' },
         // Five: { 'done", "A fifth description.' },
 
-        Add_Unit_Tests_To_All_Cards: { state: 'not done', description: 'Add unit tests to all cards', issue: 325 },
+        Add_Unit_Tests_To_All_Cards: { state: 'doing', description: 'Add unit tests to all cards', issue: 325 },
         Add_Better_Docstrings: { state: 'not done', description: 'Add better docstrings to functions / interact submodules', issue: 324 },
         Add_New_Docstrings: { state: 'not done', description: 'Add docstrings to all new functions / fields', issue: 322 },
-        Resolve_All_Remaining_Todos: { state: 'doing', description: 'Resolve all todos that doesn\'t have an issue attached', issue: 277 },
     },
 };
