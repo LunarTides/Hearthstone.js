@@ -554,6 +554,14 @@ export class Game {
         return amount;
     }
 
+    /**
+     * Creates a card from the blueprint of an id.
+     *
+     * @param id The id of the blueprint. Use `game.cardIds`
+     * @param owner The owner of the card
+     *
+     * @returns The card
+     */
     createCard(id: number, owner: Player): Card {
         return new Card(id, owner);
     }

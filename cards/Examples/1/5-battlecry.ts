@@ -39,7 +39,7 @@ export const blueprint: Blueprint = {
     },
 
     // Ignore this, this is just to unit test this card to make sure it doesn't break in the future.
-    // I encourage you to make tests like these yourself. Run `npm test` to run these tests.
+    // I encourage you to make tests like these yourself. Run `npm run cardtest` to run these tests.
     // These tests are run in an isolated environment. The side-effect of the code here won't carry over to other tests or the game.
     test(plr, self) {
         self.activate('battlecry');

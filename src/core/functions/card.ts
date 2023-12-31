@@ -371,6 +371,11 @@ export const cardFunctions = {
         return result;
     },
 
+    /**
+     * Generate an exports file in `/cards/exports.ts`.
+     *
+     * Don't use this function manually unless you know what you're doing.
+     */
     generateExports(): void {
         let exportContent = '// This file has been automatically generated. Do not change this file.\n';
 
@@ -397,6 +402,11 @@ export const cardFunctions = {
         game.functions.util.fs('write', '/dist/cards/exports.js', exportContent);
     },
 
+    /**
+     * Generates an ids file in `cards/ids.ts`. This is used in `game.cardIds`.
+     *
+     * Don't use this function manually unless you know what you're doing.
+     */
     generateIdsFile(): void {
         let idsContent = '// This file has been automatically generated. Do not change this file.\n\n';
         idsContent += 'export const cardIds = {\n';

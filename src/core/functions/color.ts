@@ -3,6 +3,9 @@ import stripAnsi from 'strip-ansi';
 import { type CardRarity } from '@Game/types.js';
 
 export const colorFunctions = {
+    /**
+     * If it should parse color tags (`<b>`)
+     */
     parseTags: true,
 
     /**

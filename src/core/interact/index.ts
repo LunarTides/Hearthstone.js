@@ -233,6 +233,9 @@ export const interact = {
         return target;
     },
 
+    /**
+     * # USE `selectTarget` INSTEAD.
+     */
     // eslint-disable-next-line complexity
     _selectTarget(prompt: string, card: Card | undefined, forceSide: SelectTargetAlignment, forceClass: SelectTargetClass, flags: SelectTargetFlag[] = []): Target | false {
         // If the player is forced to select a target, select that target.

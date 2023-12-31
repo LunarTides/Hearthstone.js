@@ -521,6 +521,14 @@ ${mainContent}
         return dirname;
     },
 
+    /**
+     * Gets a random target from the game. All arguments default to true.
+     *
+     * @param includePlayer1 If it should include `game.player1` in the list of targets.
+     * @param includePlayer2 If it should include `game.player2` in the list of targets.
+     * @param includePlayer1Board If it should include player1's board in the list of targets.
+     * @param includePlayer2Board If it should include player2's board in the list of targets.
+     */
     getRandomTarget(includePlayer1 = true, includePlayer2 = true, includePlayer1Board = true, includePlayer2Board = true): Target | undefined {
         const targets: Target[] = [];
 

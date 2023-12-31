@@ -498,6 +498,13 @@ export class Player {
 
     // Stats
 
+    /**
+     * Increases the player's armor by `amount`.
+     *
+     * @param amount The amount the player's armor should increase by
+     *
+     * @returns Success
+     */
     addArmor(amount: number): boolean {
         this.armor += amount;
         return true;
