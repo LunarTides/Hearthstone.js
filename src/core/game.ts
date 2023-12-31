@@ -198,8 +198,8 @@ export class Game {
      *
      * @returns What the user answered
      */
-    input(prompt = '', care = true, useInputQueue = true): string {
-        return this.interact.gameLoop.input(prompt, care, useInputQueue);
+    input(prompt = '', overrideNoInput = false, useInputQueue = true): string {
+        return this.interact.gameLoop.input(prompt, overrideNoInput, useInputQueue);
     }
 
     /**
