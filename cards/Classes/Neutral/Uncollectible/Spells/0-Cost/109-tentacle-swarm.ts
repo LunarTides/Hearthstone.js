@@ -28,7 +28,11 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        // TODO: Add proper tests. #325
-        return true;
+        const handSize = plr.hand.length;
+        self.activate('cast');
+
+        // Check if the player's hand was filled with tendrils
+        const amountOfCards = plr.hand.length - handSize;
+        assert.equal(plr.hand.filter(card => card.id === game.cardIds.chaoticTendril110).length, amountOfCards);
     },
 };

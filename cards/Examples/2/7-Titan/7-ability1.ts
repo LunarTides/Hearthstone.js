@@ -1,5 +1,6 @@
 // Created by Hand (before the Card Creator Existed)
 
+import assert from 'node:assert';
 import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
@@ -29,8 +30,19 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        // TODO: Add proper tests. #325
-        return true;
+        const opponent = plr.getOpponent();
+
+        // Create a sheep and summon it on the opponent's side of the board
+        const sheep = game.createCard(game.cardIds.sheep1, opponent);
+        game.summonMinion(sheep, opponent);
+
+        // Kill the sheep
+        plr.inputQueue = ['1'];
+        self.activate('cast');
+
+        // Check if the sheep is dead
+        assert.equal(game.board[plr.id].length, 0);
+        assert.equal(sheep.health, 0);
     },
 };
 

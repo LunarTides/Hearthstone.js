@@ -16,7 +16,7 @@ export const blueprint: Blueprint = {
     spellSchool: 'None',
 
     cast(plr, self) {
-        // Choose Twice - Draw a card; Give your minions  +1 Attack; Gain 6 Armor.
+        // Choose Twice - Draw a card; Give your minions +1 Attack; Gain 6 Armor.
         game.interact.chooseOne(2, ['Draw a card', () => {
             // Draw a card
             plr.drawCard();
@@ -34,7 +34,24 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        // TODO: Add proper tests. #325
-        return true;
+        // Summon a Sheep
+        const sheep = game.createCard(game.cardIds.sheep1, plr);
+        game.summonMinion(sheep, plr);
+
+        const handSize = plr.hand.length;
+
+        // Test 'Draw a Card', and 'Give your minions +1 Attack'.
+        plr.inputQueue = ['1', '2'];
+        self.activate('cast');
+
+        assert.equal(plr.hand.length, handSize + 1);
+        assert.equal(sheep.attack, 2);
+
+        // Test '+1 Attack', and 'Gain 6 Armor'.
+        plr.inputQueue = ['2', '3'];
+        self.activate('cast');
+
+        assert.equal(sheep.attack, 3);
+        assert.equal(plr.armor, 6);
     },
 };

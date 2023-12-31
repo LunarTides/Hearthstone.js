@@ -25,7 +25,13 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        // TODO: Add proper tests. #325
-        return true;
+        assert.equal(game.board[plr.id].length, 0);
+        self.activate('cast');
+
+        // Check if the board has been filled
+        assert.equal(game.board[plr.id].length, game.config.general.maxBoardSpace);
+
+        // Check if every card on the board is a whelp
+        assert.ok(game.board[plr.id].every(card => card.id === game.cardIds.onyxianWhelp99));
     },
 };

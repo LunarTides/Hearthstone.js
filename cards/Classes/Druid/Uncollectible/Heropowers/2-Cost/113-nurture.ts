@@ -25,7 +25,20 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        // TODO: Add proper tests. #325
-        return true;
+        // Draw a card
+        const handSize = plr.hand.length;
+
+        plr.inputQueue = ['1'];
+        self.activate('heropower');
+
+        assert.equal(plr.hand.length, handSize + 1);
+
+        // Gain an empty Mana Crystal
+        const { emptyMana } = plr;
+
+        plr.inputQueue = ['2'];
+        self.activate('heropower');
+
+        assert.equal(plr.emptyMana, emptyMana + 1);
     },
 };

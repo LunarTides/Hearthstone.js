@@ -30,7 +30,21 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        // TODO: Add proper tests. #325
-        return true;
+        const amountOfCards = 3;
+
+        // Summon n Sheep
+        for (let i = 0; i < amountOfCards; i++) {
+            const sheep = game.createCard(game.cardIds.sheep1, plr);
+            game.summonMinion(sheep, plr);
+        }
+
+        // Replace with Treants
+        self.activate('cast');
+
+        // Check if every card is a Treant
+        const board = game.board[plr.id];
+
+        assert.equal(board.length, amountOfCards);
+        assert.ok(board.every(card => card.id === game.cardIds.treant83));
     },
 };

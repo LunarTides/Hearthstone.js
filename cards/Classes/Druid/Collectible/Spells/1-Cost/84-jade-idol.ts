@@ -30,7 +30,18 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        // TODO: Add proper tests. #325
-        return true;
+        // Summon a Jade Golem
+        plr.inputQueue = ['1'];
+        self.activate('cast');
+
+        // There should be a jade golem
+        assert.ok(game.board[plr.id].some(card => card.id === game.cardIds.jadeGolem85));
+
+        // Shuffle 3 copies
+        plr.inputQueue = ['2'];
+        self.activate('cast');
+
+        // There should be 3 copies of this card in the player's deck
+        assert.equal(plr.deck.filter(card => card.id === self.id).length, 3);
     },
 };

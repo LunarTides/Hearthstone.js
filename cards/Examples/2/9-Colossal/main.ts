@@ -1,5 +1,6 @@
 // Created by Hand
 
+import assert from 'node:assert';
 import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
@@ -27,6 +28,12 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        // TODO: Test. #325
+        game.summonMinion(self, plr);
+
+        const board = game.board[plr.id];
+
+        assert.ok(board.some(card => card.id === game.cardIds.leftArm43));
+        assert.ok(board.some(card => card.id === self.id));
+        assert.ok(board.some(card => card.id === game.cardIds.rightArm44));
     },
 };
