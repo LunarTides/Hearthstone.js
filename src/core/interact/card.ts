@@ -332,7 +332,9 @@ export const cardInteract = {
         }
 
         if (card.attack && card.health) {
-            sb += game.functions.color.if(card.canAttack(), 'bright:green', ` [${card.attack} / ${card.health}]`);
+            const titan = card.getKeyword('Titan') as number[] | false;
+
+            sb += titan ? game.functions.color.if(!card.sleepy!, 'bright:green', ` [${titan.length} Abilities Left]`) : game.functions.color.if(card.canAttack(), 'bright:green', ` [${card.attack} / ${card.health}]`);
         } else if (card.type === 'Location') {
             const { durability } = card;
             const maxDurability = card.backups.init.durability;

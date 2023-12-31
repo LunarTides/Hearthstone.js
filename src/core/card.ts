@@ -744,7 +744,7 @@ export class Card {
             return false;
         }
 
-        if (this.getKeyword('Titan') as number[] | undefined) {
+        if (this.getKeyword('Titan') as number[] | false) {
             // The card still has titan cards
             return false;
         }

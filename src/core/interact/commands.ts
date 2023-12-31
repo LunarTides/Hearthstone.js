@@ -124,9 +124,10 @@ export const commands: CommandList = {
 
         if (titanIds.length <= 0) {
             card.remKeyword('Titan');
+        } else {
+            card.sleepy = true;
         }
 
-        card.sleepy = true;
         game.events.broadcast('Titan', [card, ability], game.player);
 
         return true;
