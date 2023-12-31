@@ -217,10 +217,10 @@ export const config: GameConfig = {
 
         // The branch that the version is on.
         // This can be "stable", "beta", "alpha" or "topic"
-        branch: 'beta',
+        branch: 'stable',
 
         // The build number of the game.
-        build: 9,
+        build: 0,
 
         // The text that is displayed along this specific version/branch combination.
         versionText: 'Make the project use typescript instead of javascript',
@@ -243,8 +243,5 @@ export const config: GameConfig = {
         // Three: { 'not done", "A third description.' },
         // Four: { 'doing", "A fourth description.' },
         // Five: { 'done", "A fifth description.' },
-
-        Add_Better_Docstrings: { state: 'doing', description: 'Add better docstrings to functions / interact submodules', issue: 324 },
-        Add_New_Docstrings: { state: 'doing', description: 'Add docstrings to all new functions / fields', issue: 322 },
     },
 };
