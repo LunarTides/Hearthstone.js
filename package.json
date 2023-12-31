@@ -12,7 +12,6 @@
     "script:vanilla:generate-no-filter": "node ./dist/scripts/vanilla/generate --no-filter",
     "script:vanilla:propfinder": "node ./dist/scripts/vanilla/propfinder",
     "script:vanilla:cardparity": "node ./dist/scripts/vanilla/cardparity",
-    "script:breakingchange": "node ./dist/scripts/breakingchange",
     "script:crashtest": "node ./dist/scripts/crashtest",
     "script:idscript": "node ./dist/scripts/id/main",
     "script:testcards": "node ./dist/scripts/testcards"
