@@ -471,7 +471,7 @@ export class Player {
      * # Examples
      * ```
      * // Assume the player has a weapon with 5 attack and the player hasn't attacked this turn.
-     * assert.equal(player.weapon.getAttack(), 5);
+     * assert.equal(player.weapon.attack, 5);
      * assert.equal(player.attack, 5);
      *
      * player.destroyWeapon();
@@ -576,22 +576,6 @@ export class Player {
         }
 
         return true;
-    }
-
-    /**
-     * Returns this player's health.
-     */
-    getHealth(): number {
-        // I have this here for compatibility with minions
-        return this.health;
-    }
-
-    /**
-     * Returns this player's attack.
-     */
-    getAttack(): number {
-        // I have this here for compatibility with minions
-        return this.attack;
     }
 
     // Hand / Deck

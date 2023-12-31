@@ -29,11 +29,11 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        const oldHealth = plr.getOpponent().getHealth();
+        const oldHealth = plr.getOpponent().health;
 
         plr.spellDamage = 3;
         self.activate('cast');
 
-        assert.equal(plr.getOpponent().getHealth(), oldHealth - (3 + plr.spellDamage));
+        assert.equal(plr.getOpponent().health, oldHealth - (3 + plr.spellDamage));
     },
 };

@@ -37,7 +37,7 @@ export const blueprint: Blueprint = {
         plr.inputQueue = ['face', 'y'];
         self.activate('battlecry');
 
-        assert.equal(plr.getOpponent().getHealth(), 30 - 2);
+        assert.equal(plr.getOpponent().health, 30 - 2);
         assert.equal(plr.inputQueue, undefined);
     },
 };

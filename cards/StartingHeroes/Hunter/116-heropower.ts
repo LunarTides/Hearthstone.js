@@ -20,10 +20,10 @@ export const blueprint: Blueprint = {
 
     test(plr, self) {
         // The opponent should have 30 health
-        assert.equal(plr.getOpponent().getHealth(), 30);
+        assert.equal(plr.getOpponent().health, 30);
         self.activate('heropower');
 
         // The opponent should now have 28 health.
-        assert.equal(plr.getOpponent().getHealth(), 30 - 2);
+        assert.equal(plr.getOpponent().health, 30 - 2);
     },
 };
