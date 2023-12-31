@@ -29,10 +29,18 @@ export const infoFunctions = {
             }
 
             case 3: {
+                if (info.branch === 'stable') {
+                    return format('%s-%s', info.version, info.branch);
+                }
+
                 return format('%s-%s.%s', info.version, info.branch, info.build);
             }
 
             case 4: {
+                if (info.branch === 'stable') {
+                    return format('%s-%s (%s)', info.version, info.branch, this.latestCommit());
+                }
+
                 return format('%s-%s.%s (%s)', info.version, info.branch, info.build, this.latestCommit());
             }
 
