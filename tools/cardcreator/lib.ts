@@ -8,6 +8,9 @@ import { type BlueprintWithOptional, type CardClass, type CardType } from '../..
 
 const { game } = createGame();
 
+// If this is set to true, this will force debug mode.
+const mainDebugSwitch = false;
+
 let card: BlueprintWithOptional;
 let type: CardType;
 
@@ -131,7 +134,7 @@ export function getLatestId(): number {
  *
  * @returns The path of the created file.
  */
-export function create(creatorType: CcType, blueprint: BlueprintWithOptional, overridePath?: string, overrideFilename?: string, debug?: boolean): string {
+export function create(creatorType: CcType, blueprint: BlueprintWithOptional, overridePath?: string, overrideFilename?: string, debug?: boolean): string {// eslint-disable-line complexity
     // TODO: Search for keywords in the card text and don't add a passive ability if one was found. And vice versa
     // TODO: Look for placeholders in the text and add a placeholder ability if it finds one
 
@@ -140,6 +143,10 @@ export function create(creatorType: CcType, blueprint: BlueprintWithOptional, ov
     if (error !== true) {
         console.error(error);
         return '';
+    }
+
+    if (!debug) {
+        debug = mainDebugSwitch;
     }
 
     // If the user didn't specify a tribe, but the tribe exists, set the tribe to "None".
@@ -184,7 +191,6 @@ export function create(creatorType: CcType, blueprint: BlueprintWithOptional, ov
     }
 
     const createAbility = card.text ? `
-
     create(plr, self) {
         // Add additional fields here
 ${runes}${keywords}
@@ -286,7 +292,13 @@ export const blueprint: Blueprint = {
     if (debug) {
         // If debug mode is enabled, just show some information about the card.
         // This is the id that would be written to '.latestId'
-        console.log('\nNew ID: %s', id);
+        console.log();
+
+        if (mainDebugSwitch) {
+            console.warn('<yellow>Main Debug Switch is enabled.</yellow>');
+        }
+
+        console.log('New ID: %s', id);
         console.log('Would be path: \'%s\'', filePath.replaceAll('\\', '/'));
         console.log('Content:');
         console.log(content);
