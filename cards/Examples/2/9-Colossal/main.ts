@@ -23,7 +23,7 @@ export const blueprint: Blueprint = {
         // Left Arm
         // Colossal Example
         // Right Arm
-        self.addKeyword('Colossal', [43, 0, 44]);
+        self.addKeyword('Colossal', [game.cardIds.leftArm43, 0, game.cardIds.rightArm44]);
     },
 
     test(plr, self) {

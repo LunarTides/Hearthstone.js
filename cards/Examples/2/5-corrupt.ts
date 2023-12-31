@@ -19,7 +19,7 @@ export const blueprint: Blueprint = {
     create(plr, self) {
         // Put the id of the corrupted counterpart here. This is the id of 5-corrupted.ts
         // Corrupted is another system that is very untested and might get a rewrite.
-        self.addKeyword('Corrupt', 41);
+        self.addKeyword('Corrupt', game.cardIds.corruptedExample41);
     },
 
     test(plr, self) {

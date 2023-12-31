@@ -19,7 +19,7 @@ export const blueprint: Blueprint = {
 
     create(plr, self) {
         // Add additional fields here
-        self.addKeyword('Titan', [107, 108, 109]);
+        self.addKeyword('Titan', [game.cardIds.induceInsanity107, game.cardIds.reignOfChaos108, game.cardIds.tentacleSwarm109]);
     },
 
     passive(plr, self, key, _unknownValue) {

@@ -18,11 +18,6 @@ export const blueprint: Blueprint = {
 
     create(plr, self) {
         // Put the ids of the titan ability cards, like in corrupt, but a list.
-        self.addKeyword('Titan', [79, 80, 81]);
-    },
-
-    test(plr, self) {
-        // TODO: Add proper tests. #325
-        return true;
+        self.addKeyword('Titan', [game.cardIds.ability179, game.cardIds.ability280, game.cardIds.ability381]);
     },
 };

@@ -18,6 +18,6 @@ export const blueprint: Blueprint = {
 
     create(plr, self) {
         // Put the id of the forged counterpart, like in corrupt.
-        self.addKeyword('Forge', 76);
+        self.addKeyword('Forge', game.cardIds.forgedExample76);
     },
 };
