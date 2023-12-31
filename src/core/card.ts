@@ -744,6 +744,11 @@ export class Card {
             return false;
         }
 
+        if (this.getKeyword('Titan') as number[] | undefined) {
+            // The card still has titan cards
+            return false;
+        }
+
         const booleans = !this.sleepy && !this.hasKeyword('Frozen') && !this.hasKeyword('Dormant');
         const numbers = (this.attack ?? 0) > 0 && this.attackTimes! > 0;
 
