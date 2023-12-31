@@ -399,7 +399,8 @@ export const cardFunctions = {
 
     generateIdsFile(): void {
         let idsContent = '// This file has been automatically generated. Do not change this file.\n\n';
-        idsContent += 'export const cardIds = {';
+        idsContent += 'export const cardIds = {\n';
+        idsContent += '    null0: 0,';
 
         for (const card of game.cards.sort((a, b) => a.id - b.id)) {
             const numberIdentifier = /^\d/.test(card.name) ? 'n' : '';

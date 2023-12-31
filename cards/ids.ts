@@ -1,6 +1,7 @@
 // This file has been automatically generated. Do not change this file.
 
 export const cardIds = {
+    null0: 0,
     sheep1: 1,
     theCoin2: 2,
     plant3: 3,

@@ -18,13 +18,13 @@ export const blueprint: Blueprint = {
     tribe: 'Beast',
 
     create(plr, self) {
-        // Put the names of the cards here. The 0 is this card.
+        // Put the names of the cards here. The "null0" is this card. You could replace it with `0`
         //
         // The board will look like this
         // Left Arm
         // Colossal Example
         // Right Arm
-        self.addKeyword('Colossal', [game.cardIds.leftArm43, 0, game.cardIds.rightArm44]);
+        self.addKeyword('Colossal', [game.cardIds.leftArm43, game.cardIds.null0, game.cardIds.rightArm44]);
     },
 
     test(plr, self) {

@@ -17,7 +17,7 @@ export const blueprint: Blueprint = {
     tribe: 'None',
 
     create(plr, self) {
-        self.addKeyword('Colossal', [game.cardIds.leftArm46, 0, game.cardIds.rightArm47]);
+        self.addKeyword('Colossal', [game.cardIds.leftArm46, game.cardIds.null0, game.cardIds.rightArm47]);
         self.addKeyword('Dormant', 2);
     },
 
