@@ -35,7 +35,9 @@ function testCard(card: Card): boolean | Error {
 export function main(): void {
     let failed = false;
 
-    for (const blueprint of cards) {
+    for (const [index, blueprint] of cards.entries()) {
+        process.stderr.write(`\r\u001B[KTesting card ${index + 1} / ${cards.length}...`);
+
         // Create a game
         const { game, player1, player2 } = createGame();
         game.config.ai.player1 = false;
@@ -79,8 +81,10 @@ export function main(): void {
     }
 
     if (!failed) {
-        console.log('<bright:green>All tests passed!</bright:green>');
+        console.log('\n<bright:green>All tests passed!</bright:green>');
     }
+
+    console.log();
 }
 
 main();
