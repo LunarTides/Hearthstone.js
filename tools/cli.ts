@@ -68,13 +68,13 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | und
                 }
 
                 args.shift();
-                return;
+                continue;
             }
 
             // Parse -d or --dry-run
             const option = commandOptions.find(option => option.includes(parsedArgument))?.[0];
             if (!option) {
-                return;
+                continue;
             }
 
             usedOptions.push(option);
@@ -151,7 +151,7 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | und
                         blueprint[key as keyof Blueprint] = value as never;
                     }
 
-                    if (!blueprint.id) {
+                    if (!blueprint.id && blueprint.id !== 0) {
                         return;
                     }
 
