@@ -213,11 +213,11 @@ export const config: GameConfig = {
         // The version of the game.
         // =<2.0.0, this used 'huge.major.(minor/patch)' notation.
         // >2.0.0, this uses semver
-        version: '2.0.0',
+        version: '3.0.0',
 
         // The branch that the version is on.
         // This can be "stable", "beta", "alpha" or "topic"
-        branch: 'stable',
+        branch: 'beta',
 
         // The build number of the game.
         build: 0,

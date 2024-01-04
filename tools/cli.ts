@@ -40,6 +40,9 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | und
             throw new Error('Name is undefined. This should never happen.');
         }
 
+        args = args.map(arg => arg.replaceAll('%20', ' '));
+        input = input.replaceAll('%20', ' ');
+
         // Options - Long, short
         const commandOptions = [
             ['--dry-run', '-n'],
@@ -88,7 +91,7 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | und
                 console.log('ccc           - Runs the custom card creator');
                 console.log('vcc           - Runs the vanilla card creator');
                 console.log('clc           - Runs the class creator');
-                console.log('cclib (args)  - Uses the card creator library to manually create a card');
+                console.log('cclib (args)  - Uses the card creator library to manually create a card. <b>Use "%20" instead of spaces in the arguments.</b>');
                 console.log('dc            - Runs the deck creator');
                 console.log('game          - Runs the main game');
                 console.log('script (name) - Runs the specified script (NOT IMPLEMENTED!)');
@@ -100,10 +103,10 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | und
                 console.log();
                 console.log('    <bold>CCLib Options (cclib)</bold>');
                 console.log('        <bold>name</bold>=<underline>name</underline><bold>');
-                console.log('        <bold>stats</bold>=<underline>[attack, health]</underline><bold>');
+                console.log('        <bold>attack</bold>=<underline>attack</underline><bold>');
                 console.log();
                 console.log('<bold>CCLib Example</bold>');
-                console.log('cclib -dt Test name="Sheep" text="" cost=1 type="Minion" attack=1 health=1 tribe="Beast" classes=["Neutral"] rarity="Free" collectible=false id=0');
+                console.log('cclib -nt Test name="Sheep" text="" cost=1 type="Minion" classes=["Neutral"] rarity="Free" collectible=false id=0 attack=1 health=1 tribe="Beast"');
                 console.log('       ^^      ^            ^              ^');
                 console.log('       Dry-run The name of the card        The type of the card. Etc...');
                 console.log('        CC type is "Test"   The description of the card');
@@ -152,6 +155,7 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | und
                     }
 
                     if (!blueprint.id && blueprint.id !== 0) {
+                        game.pause('<red>Missing card id! Set `id=0` before the type-specific fields to generate a correctly formatted card.</red>\n');
                         return;
                     }
 
