@@ -3,7 +3,6 @@
  * @module Vanilla Card Creator
  */
 
-import rl from 'readline-sync';
 import { type Card as VanillaCard } from '@hearthstonejs/vanillatypes';
 import { type CardType, type Blueprint, type CardClass, type CardRarity, type MinionTribe, type SpellSchool } from '../../src/types.js';
 import { createGame } from '../../src/internal.js';
@@ -159,10 +158,6 @@ export function main(debug = false, overrideType?: lib.CcType): boolean {
     console.log('Hearthstone.js Vanilla Card Creator (C) 2022\n');
 
     const vanillaCards = game.functions.card.vanilla.getAll();
-
-    if (game.config.general.debug) {
-        debug = !rl.keyInYN('Do you want the card to actually be created?');
-    }
 
     let running = true;
     while (running) {
