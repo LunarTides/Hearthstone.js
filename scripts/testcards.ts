@@ -33,8 +33,6 @@ function testCard(card: Card): boolean | Error {
  * Executes a series of tests on the cards in the 'cards' array.
  */
 export function main(): void {
-    let failed = false;
-
     for (const [index, blueprint] of cards.entries()) {
         process.stderr.write(`\r\u001B[KTesting card ${index + 1} / ${cards.length}...`);
 
@@ -76,11 +74,10 @@ export function main(): void {
             console.error(error.stack);
             console.error();
             process.exitCode = 1;
-            failed = true;
         }
     }
 
-    if (!failed) {
+    if (process.exitCode !== 1) {
         console.log('\n<bright:green>All tests passed!</bright:green>');
     }
 

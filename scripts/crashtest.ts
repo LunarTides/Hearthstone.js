@@ -79,8 +79,7 @@ function main(): void {
 
     // Create a new game to reset `noOutput` to false.
     // Trust me, it doesn't log anything without this
-    // eslint-disable-next-line no-unused-vars
-    const _ = createGame();
+    createGame();
     console.warn('\n<green>Crash test passed!</green>');
 }
 
