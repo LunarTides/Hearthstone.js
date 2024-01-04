@@ -9,7 +9,7 @@ const { game } = createGame();
 
 const gamesEnv = process.env.GAMES ?? '';
 let games = game.lodash.parseInt(gamesEnv);
-games = Number.isNaN(games) ? 50 : games;
+games = Number.isNaN(games) ? 10 : games;
 
 /**
  * Executes the main function for the program.

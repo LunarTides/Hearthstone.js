@@ -7,8 +7,9 @@
   "type": "module",
   "scripts": {
     "start": "npm config set engine-strict true && node ./dist/index.js",
-    "test": "npm run cardtest && echo Running xo... && xo && echo OK && npm run script:crashtest",
+    "test": "npm run cardtest && echo Running xo... && xo && echo OK && npm run crashtest",
     "cardtest": "npm run script:testcards",
+    "crashtest": "npm run script:crashtest && npm run script:crashtest && npm run script:crashtest && npm run script:crashtest && npm run script:crashtest",
     "script:vanilla:generate": "node ./dist/scripts/vanilla/generate",
     "script:vanilla:generate-no-filter": "node ./dist/scripts/vanilla/generate --no-filter",
     "script:vanilla:propfinder": "node ./dist/scripts/vanilla/propfinder",
