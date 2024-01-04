@@ -4,15 +4,12 @@
  */
 
 import { createGame } from '../../src/internal.js';
-import { type BlueprintWithOptional, type CardClass, type CardType } from '../../src/types.js';
+import { type BlueprintWithOptional, type CardType } from '../../src/types.js';
 
 const { game } = createGame();
 
 // If this is set to true, this will force debug mode.
 const mainDebugSwitch = false;
-
-let card: BlueprintWithOptional;
-let type: CardType;
 
 export type CcType = 'Unknown' | 'Class' | 'Custom' | 'Vanilla';
 
@@ -22,12 +19,12 @@ export type CcType = 'Unknown' | 'Class' | 'Custom' | 'Vanilla';
  * @param cardType The type of the card.
  * @returns The ability of the card.
  */
-function getCardAbility(cardType: CardType): string {
+function getCardAbility(blueprint: BlueprintWithOptional): string {
     // Get the card's ability
     let ability: string;
 
     // If the card is a spell, the ability is 'cast'
-    switch (cardType) {
+    switch (blueprint.type) {
         case 'Spell': {
             ability = 'Cast';
             break;
@@ -52,9 +49,9 @@ function getCardAbility(cardType: CardType): string {
         case 'Weapon': {
             // Try to extract an ability from the card's description
             const reg = /([A-Z][a-z].*?):/g;
-            const foundAbility = reg.exec(card.text);
+            const foundAbility = reg.exec(blueprint.text);
 
-            if (!card.text) {
+            if (!blueprint.text) {
                 // If the card doesn't have a description, it doesn't get an ability.
                 ability = '';
             } else if (foundAbility) {
@@ -84,31 +81,32 @@ function getCardAbility(cardType: CardType): string {
  * @param args [The classes of the card, The type of the card]
  * @returns The generated card path
  */
-function generateCardPath(...args: [CardClass[], CardType]): string {
+function generateCardPath(blueprint: BlueprintWithOptional): string {
     // Create a path to put the card in.
-    let [classes, type] = args;
 
     // DO NOT CHANGE THIS
     const staticPath = game.functions.util.dirname() + '/cards/';
 
     // You can change everything below this comment
-    const classesString = classes.join('/');
+    const classesString = blueprint.classes.join('/');
+
+    let { type } = blueprint;
 
     // If the card has the word "Secret" in its description, put it in the ".../Secrets/..." folder.
-    if (card.text.includes('Secret:')) {
+    if (blueprint.text.includes('Secret:')) {
         type = 'Secret' as CardType;
     }
 
     // If the type is Hero, we want the card to go to '.../Heroes/...' and not to '.../Heros/...'
     const typeString = (type === 'Hero') ? 'Heroe' : type;
 
-    const collectibleString = card.collectible ? 'Collectible' : 'Uncollectible';
+    const collectibleString = blueprint.collectible ? 'Collectible' : 'Uncollectible';
 
     // This can be anything since the card register process ignores folders.
     // Change this if you want the cards to be in different folders.
     // By default, this is `cards/Classes/{class name}/{Collectible | Uncollectible}/{type}s/{mana cost} Cost/{card name}.ts`;
     // This path can be overridden by passing `overridePath` in the create function.
-    const dynamicPath = `Classes/${classesString}/${collectibleString}/${typeString}s/${card.cost}-Cost/`;
+    const dynamicPath = `Classes/${classesString}/${collectibleString}/${typeString}s/${blueprint.cost}-Cost/`;
 
     return staticPath + dynamicPath;
 }
@@ -149,11 +147,7 @@ export function create(creatorType: CcType, blueprint: BlueprintWithOptional, ov
         debug = mainDebugSwitch;
     }
 
-    // If the user didn't specify a tribe, but the tribe exists, set the tribe to "None".
-    type = blueprint.type;
-    card = blueprint;
-
-    let ability = getCardAbility(type);
+    let ability = getCardAbility(blueprint);
 
     // Here it creates a default function signature
     const isPassive = ability.toLowerCase() === 'passive';
@@ -177,27 +171,27 @@ export function create(creatorType: CcType, blueprint: BlueprintWithOptional, ov
     }
 
     // If the text has `<b>Battlecry:</b> Dredge.`, add `// Dredge.` to the battlecry ability
-    const cleanedDescription = game.functions.color.stripTags(card.text).replace(`${ability}: `, '');
+    const cleanedDescription = game.functions.color.stripTags(blueprint.text).replace(`${ability}: `, '');
 
     // `create` ability
-    const runes = card.runes ? `        self.runes = "${card.runes}"\n` : '';
+    const runes = blueprint.runes ? `        self.runes = "${blueprint.runes}"\n` : '';
     let keywords = '';
 
-    if (card.keywords) {
-        for (const keyword of card.keywords) {
+    if (blueprint.keywords) {
+        for (const keyword of blueprint.keywords) {
             // 8 spaces
             keywords += `        self.addKeyword("${keyword}");\n`;
         }
     }
 
-    const createAbility = card.text ? `
+    const createAbility = blueprint.text ? `
     create(plr, self) {
         // Add additional fields here
 ${runes}${keywords}
     },` : '';
 
-    delete card.runes;
-    delete card.keywords;
+    delete blueprint.runes;
+    delete blueprint.keywords;
 
     // Normal ability
     // Example 1: '\n\n    passive(plr, self, key, _unknownValue, eventPlayer) {\n        // Your battlecries trigger twice.\n        ...\n    }',
@@ -221,7 +215,7 @@ ${runes}${keywords}
     const id = getLatestId() + 1;
 
     // Create a path to put the card in.
-    let path = generateCardPath(card.classes, type).replaceAll('\\', '/');
+    let path = generateCardPath(blueprint).replaceAll('\\', '/');
 
     // If this function was passed in a path, use that instead.
     if (overridePath) {
@@ -229,7 +223,7 @@ ${runes}${keywords}
     }
 
     // Create a filename. Example: "Test Card" -> "test_card.ts"
-    let filename = `${id}-` + card.name.toLowerCase().replaceAll(' ', '-').replaceAll(/[^a-z\d-]/g, '') + '.ts';
+    let filename = `${id}-` + blueprint.name.toLowerCase().replaceAll(' ', '-').replaceAll(/[^a-z\d-]/g, '') + '.ts';
 
     // If this function was passed in a filename, use that instead.
     if (overrideFilename) {
@@ -273,7 +267,7 @@ ${runes}${keywords}
     const passiveImport = isPassive ? ', type EventValue' : '';
 
     // Add the key/value pairs to the content
-    const contentArray = Object.entries(card).map(c => `${c[0].replace('\'', '\\\'')}: ${getTypeValue(c[1])},\n    `);
+    const contentArray = Object.entries(blueprint).map(c => `${c[0].replace('\'', '\\\'')}: ${getTypeValue(c[1])},\n    `);
 
     // Add the content
     const content = `// Created by the ${creatorType} Card Creator
@@ -298,10 +292,14 @@ export const blueprint: Blueprint = {
             console.warn('<yellow>Main Debug Switch is enabled.</yellow>');
         }
 
+        game.functions.color.parseTags = false;
+
         console.log('New ID: %s', id);
         console.log('Would be path: \'%s\'', filePath.replaceAll('\\', '/'));
         console.log('Content:');
         console.log(content);
+
+        game.functions.color.parseTags = true;
         game.pause();
     } else {
         // If debug mode is disabled, write the card to disk.
