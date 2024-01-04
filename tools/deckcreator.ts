@@ -717,6 +717,7 @@ function help(): void {
         'set (setting) (value) - Change some settings. Look down to \'Set Subcommands\' to see available settings',
         'warning (name) [off | on] - Change some warnings. Look down to \'Warnings\' to see available warnings',
         'class - Change the class',
+        'eval - Runs some code. Be careful with this, it can be used to break the program',
         'config | rules - Shows the rules for valid decks and invalid decks',
         'help - Displays this message',
         'exit - Quits the program',
@@ -1227,6 +1228,36 @@ const commands: CommandList = {
         }
 
         game.pause('<bright:green>Setting successfully changed!<bright:green>\n');
+
+        return true;
+    },
+    eval(args): boolean {
+        if (args.length <= 0) {
+            game.pause('<red>Too few arguments.</red>\n');
+            return false;
+        }
+
+        const code = game.interact.parseEvalArgs(args);
+
+        try {
+            // eslint-disable-next-line no-eval
+            eval(code);
+
+            game.events.broadcast('Eval', code, game.player);
+        } catch (error) {
+            if (!(error instanceof Error)) {
+                throw new TypeError('`error` is not an instance of Error');
+            }
+
+            console.log('\n<red>An error happened while running this code! Here is the error:</red>');
+
+            // The stack includes "<anonymous>", which would be parsed as a tag, which would cause another error
+            game.functions.color.parseTags = false;
+            console.log(error.stack);
+            game.functions.color.parseTags = true;
+
+            game.pause();
+        }
 
         return true;
     },
