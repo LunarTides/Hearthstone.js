@@ -95,6 +95,7 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | und
                 console.log('dc            - Runs the deck creator');
                 console.log('game          - Runs the main game');
                 console.log('script (name) - Runs the specified script (NOT IMPLEMENTED!)');
+                console.log('eval (cmd)    - Evalutes some code. Works the same as in the game.');
                 console.log();
                 console.log('<bold>Options</bold>');
                 console.log('    <bold>Card Creator Options (ccc, vcc, clc, cclib)</bold>');
@@ -183,6 +184,37 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | und
 
             case 'game': {
                 src.main();
+
+                break;
+            }
+
+            case 'eval': {
+                if (args.length <= 0) {
+                    game.pause('<red>Too few arguments.</red>\n');
+                    break;
+                }
+
+                const code = game.interact.parseEvalArgs(args);
+
+                try {
+                    // eslint-disable-next-line no-eval
+                    eval(code);
+
+                    game.events.broadcast('Eval', code, game.player);
+                } catch (error) {
+                    if (!(error instanceof Error)) {
+                        throw new TypeError('`error` is not an instance of Error');
+                    }
+
+                    console.log('\n<red>An error happened while running this code! Here is the error:</red>');
+
+                    // The stack includes "<anonymous>", which would be parsed as a tag, which would cause another error
+                    game.functions.color.parseTags = false;
+                    console.log(error.stack);
+                    game.functions.color.parseTags = true;
+
+                    game.pause();
+                }
 
                 break;
             }
