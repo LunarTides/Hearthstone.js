@@ -414,6 +414,100 @@ export const interact = {
     },
 
     /**
+     * Parses the given arguments for the eval command and returns the code to evaluate
+     */
+    parseEvalArgs(args: string[]): string {
+        if (args.length <= 0) {
+            game.pause('<red>Too few arguments.</red>\n');
+            return args.join(' ');
+        }
+
+        let log = false;
+
+        if (args[0] === 'log') {
+            log = true;
+            args.shift();
+        }
+
+        let code = args.join(' ');
+
+        // Allow for stuff like `/eval @Player1.addToHand(@00ff00.perfectCopy());`
+        code = code.replaceAll('@Player', 'game.player');
+
+        /**
+         * Looks for a specific UUID in an array of cards and replaces it with a string representation of the index of the card in the array.
+         *
+         * @param uuid The UUID to look for.
+         * @param where The array of cards to search in.
+         * @param stringOfWhere The string representation of the array of cards.
+         * @return This function does not return a value.
+         */
+        function lookForUUID(uuid: string, where: Card[], stringOfWhere: string): void {
+            const card = where.find(card => card.uuid.startsWith(uuid));
+            if (!card) {
+                return;
+            }
+
+            code = code.replace(`@${uuid}`, `${stringOfWhere}[${where.indexOf(card)}]`);
+        }
+
+        const uuidRegex = /@\w+/g;
+        for (const match of code.matchAll(uuidRegex)) {
+            const uuid = match[0].slice(1);
+
+            for (const player of [game.player1, game.player2]) {
+                const gamePlayer = `game.player${player.id + 1}`;
+
+                lookForUUID(uuid, player.deck, `${gamePlayer}.deck`);
+                lookForUUID(uuid, player.hand, `${gamePlayer}.hand`);
+                lookForUUID(uuid, game.board[player.id], `game.board[${player.id}]`);
+                lookForUUID(uuid, game.board[player.id], `game.graveyard[${player.id}]`);
+            }
+        }
+
+        // Allow for stuff like `/eval h#c#1.addAttack(b#o#2.attack)`;
+        // ^^ This adds the second card on the opponent's side of the board's attack to the card at index 1 in the current player's hand
+        const indexBasedRegex = /([hbd])#([co])#(\d+)/g;
+        for (const match of code.matchAll(indexBasedRegex)) {
+            let [line, where, side, index] = match;
+
+            switch (where) {
+                case 'h': {
+                    where = 'game.player[x].hand';
+                    break;
+                }
+
+                case 'd': {
+                    where = 'game.player[x].deck';
+                    break;
+                }
+
+                case 'b': {
+                    where = 'game.board[[x] - 1]';
+                    break;
+                }
+
+                // No default
+            }
+
+            side = side === 'c' ? (game.player.id + 1).toString() : (game.opponent.id + 1).toString();
+            where = where.replaceAll('[x]', side);
+
+            code = code.replace(line, `${where}[${index} - 1]`);
+        }
+
+        if (log) {
+            if (code.at(-1) === ';') {
+                code = code.slice(0, -1);
+            }
+
+            code = `console.log(${code});game.pause();`;
+        }
+
+        return code;
+    },
+
+    /**
      * Clears the screen.
      */
     cls(): void {
