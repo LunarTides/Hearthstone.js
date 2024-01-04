@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "start": "npm config set engine-strict true && node ./dist/index.js",
-    "test": "npm run cardtest && xo && npm run script:crashtest > .ignore.crashlog.txt",
+    "test": "npm run cardtest && echo Running xo... && xo && echo OK && npm run script:crashtest",
     "cardtest": "npm run script:testcards",
     "script:vanilla:generate": "node ./dist/scripts/vanilla/generate",
     "script:vanilla:generate-no-filter": "node ./dist/scripts/vanilla/generate --no-filter",

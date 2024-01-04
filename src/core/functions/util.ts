@@ -148,13 +148,14 @@ ${error.stack}
 `;
         }
 
-        const historyContent = `-- History --${history}-- History --\n`;
+        const debugLogContent = `-- Log --\n${game.debugLog.join('\n')}-- Log --\n`;
+        const historyContent = `\n-- History --${history}-- History --\n`;
         const aiContent = `\n-- AI Logs --\n${aiHistory}-- AI Logs --\n`;
 
         const config = JSON.stringify(game.config, null, 2);
         const configContent = `\n-- Config --\n${config}\n-- Config --`;
 
-        let mainContent = historyContent;
+        let mainContent = debugLogContent + historyContent;
         if (game.config.ai.player1 || game.config.ai.player2) {
             mainContent += aiContent;
         }
