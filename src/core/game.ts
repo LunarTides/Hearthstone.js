@@ -400,6 +400,7 @@ export class Game {
 
         for (const card of this.board[player.id]) {
             card.ready();
+            card.resetAttackTimes();
         }
 
         // Trigger unspent mana
@@ -465,6 +466,7 @@ export class Game {
             }
 
             card.ready();
+            card.resetAttackTimes();
 
             // Stealth duration
             if (card.stealthDuration && card.stealthDuration > 0 && this.turns > card.stealthDuration) {
@@ -1412,10 +1414,12 @@ const cards = {
 
         if (minion.hasKeyword('Charge') || minion.hasKeyword('Titan')) {
             minion.ready();
+            minion.resetAttackTimes();
         }
 
         if (minion.hasKeyword('Rush')) {
             minion.ready();
+            minion.resetAttackTimes();
             minion.canAttackHero = false;
         }
 
@@ -1459,6 +1463,7 @@ const cards = {
 
             // TODO: Why are we readying the dormant minion?
             minion.ready();
+            minion.resetAttackTimes();
         }
 
         game.board[player.id].push(minion);

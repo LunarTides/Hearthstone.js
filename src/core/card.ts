@@ -543,7 +543,9 @@ export class Card {
     }
 
     /**
-     * Makes this minion ready for attack
+     * Makes this minion ready for attack. Use this instead of `sleepy = false`.
+     *
+     * You might have to run `resetAttackTimes` after this if you want the card to be able to attack again. Be careful with that.
      *
      * @returns Success
      */
@@ -557,7 +559,6 @@ export class Card {
         }
 
         this.sleepy = false;
-        this.resetAttackTimes();
 
         return true;
     }
