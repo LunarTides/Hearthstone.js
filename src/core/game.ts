@@ -1428,16 +1428,15 @@ const cards = {
         const colossalMinionIds = minion.getKeyword('Colossal') as number[] | undefined;
         if (colossalMinionIds && colossal) {
             /*
-             * Minion.colossal is a string array.
-             * example: ["Left Arm", "", "Right Arm"]
-             * the "" gets replaced with the main minion
+             * Minion.colossal is an id array.
+             * example: [game.cardIds.leftArm36, game.cardIds.null0, game.cardIds.rightArm37]
+             * the null0 / 0 gets replaced with the main minion
              */
 
-            for (const cardId of colossalMinionIds) {
-                const unsuppress = game.functions.event.suppress('SummonMinion');
+            const unsuppress = game.functions.event.suppress('SummonMinion');
 
+            for (const cardId of colossalMinionIds) {
                 if (cardId <= 0) {
-                    unsuppress();
                     // Summon this minion without triggering colossal again
                     player.summon(minion, false);
                     continue;
@@ -1445,19 +1444,31 @@ const cards = {
 
                 const card = new Card(cardId, player);
 
+                // If this card has dormant, add it to the summoned minions as well.
                 if (dormant) {
                     card.addKeyword('Dormant', dormant);
                 }
 
-                unsuppress();
                 player.summon(card);
             }
 
+            unsuppress();
+
+            /*
+             * Return since we already handled the main minion up in the "cardId <= 0" if statement
+             * You should probably just ignore this error code
+             */
             return 'colossal';
         }
 
         if (dormant) {
-            // Oh no... Why is this not documented?
+            /*
+             * Oh no... Why is this not documented?
+             *
+             * If the minion that got summoned has dormant, it sets the dormant value to itself plus the current turn.
+             * This is so that the game can know when to remove the dormant by checking which turn it is.
+             * We should really document this somewhere, since it can easily be overriden by a card after it has been summoned, which would cause unexpected behavior.
+             */
             minion.setKeyword('Dormant', dormant + game.turns);
             minion.addKeyword('Immune');
 
