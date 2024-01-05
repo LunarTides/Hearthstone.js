@@ -1411,11 +1411,11 @@ const cards = {
         player.spellDamage = 0;
 
         if (minion.hasKeyword('Charge') || minion.hasKeyword('Titan')) {
-            minion.sleepy = false;
+            minion.ready();
         }
 
         if (minion.hasKeyword('Rush')) {
-            minion.sleepy = false;
+            minion.ready();
             minion.canAttackHero = false;
         }
 
@@ -1456,7 +1456,9 @@ const cards = {
             // Oh no... Why is this not documented?
             minion.setKeyword('Dormant', dormant + game.turns);
             minion.addKeyword('Immune');
-            minion.sleepy = false;
+
+            // TODO: Why are we readying the dormant minion?
+            minion.ready();
         }
 
         game.board[player.id].push(minion);

@@ -1024,7 +1024,7 @@ export class Ai {
                 continue;
             }
 
-            if (card.sleepy ?? card.attackTimes! <= 0) {
+            if (!card.canAttack()) {
                 continue;
             }
 

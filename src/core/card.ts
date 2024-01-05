@@ -427,11 +427,29 @@ export class Card {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         this.keywords[keyword] = info;
 
-        if (keyword === 'Charge') {
-            this.sleepy = false;
-        } else if (keyword === 'Rush') {
-            this.sleepy = false;
-            this.canAttackHero = false;
+        switch (keyword) {
+            case 'Charge': {
+                this.ready();
+
+                break;
+            }
+
+            case 'Rush': {
+                this.ready();
+                this.canAttackHero = false;
+
+                break;
+            }
+
+            case 'Cant Attack': {
+                this.sleepy = true;
+
+                break;
+            }
+
+            default: {
+                break;
+            }
         }
 
         return true;
@@ -525,6 +543,14 @@ export class Card {
      * @returns Success
      */
     ready(): boolean {
+        /*
+         * If the card can't attack, prevent it from being ready
+         * This will show the card as being "Exhausted" when you play it which is not exactly correct, but it's fine for now
+         */
+        if (this.hasKeyword('Cant Attack')) {
+            return false;
+        }
+
         this.sleepy = false;
         this.resetAttackTimes();
 
@@ -751,7 +777,7 @@ export class Card {
             return false;
         }
 
-        const booleans = !this.sleepy && !this.hasKeyword('Frozen') && !this.hasKeyword('Dormant');
+        const booleans = !this.sleepy && !this.hasKeyword('Frozen') && !this.hasKeyword('Dormant') && !this.hasKeyword('Cant Attack');
         const numbers = (this.attack ?? 0) > 0 && this.attackTimes! > 0;
 
         return booleans && numbers;

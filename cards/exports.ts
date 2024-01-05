@@ -78,6 +78,7 @@ export { blueprint as cfa70b36 } from './Examples/DIY/1.js';
 export { blueprint as c331827b } from './Examples/DIY/2.js';
 export { blueprint as ccf73ac4 } from './Examples/DIY/3.js';
 export { blueprint as cdf4d1e2 } from './Examples/DIY/4.js';
+export { blueprint as ca0a9166 } from './Examples/Test/cant-attack.js';
 export { blueprint as c8cb530e } from './Examples/Test/deathrattle.js';
 export { blueprint as c764ac82 } from './Examples/Test/divine-shield.js';
 export { blueprint as ca10465c } from './Examples/Test/frozen.js';

@@ -135,4 +135,5 @@ export const cardIds = {
     simpleCardReferenceExample131: 131,
     circularCardReferenceExample132: 132,
     summonOnDrawTest133: 133,
+    cantAttackTest134: 134,
 };
