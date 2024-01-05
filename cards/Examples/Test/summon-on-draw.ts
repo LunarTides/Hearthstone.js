@@ -25,6 +25,22 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        assert(false);
+        // Set the player's deck and hand
+        plr.deck = [game.createCard(game.cardIds.sheep1, plr), self];
+        plr.hand = [];
+
+        // Make the player draw this card
+        plr.drawCard();
+
+        const board = game.board[plr.id];
+
+        // Check if this minion and the two arms are on the board
+        assert.ok(board.some(card => card.id === game.cardIds.leftArm46));
+        assert.ok(board.some(card => card.id === self.id));
+        assert.ok(board.some(card => card.id === game.cardIds.rightArm47));
+
+        // Check that the player's deck is empty and the player's hand has one card (the sheep)
+        assert.equal(plr.deck.length, 0);
+        assert.equal(plr.hand.length, 1);
     },
 };
