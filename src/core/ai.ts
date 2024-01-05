@@ -908,8 +908,14 @@ export class Ai {
      * @returns Attacker, Target
      */
     private _attackGeneralRisky(): Array<Target | -1> {
+        // If the opponent is immune, just attack a minion
+        const opponent = this.plr.getOpponent();
+        if (opponent.immune) {
+            return this._attackGeneralMinion();
+        }
+
         // Only attack the enemy hero
-        return [this._attackGeneralChooseAttacker(true), this.plr.getOpponent()];
+        return [this._attackGeneralChooseAttacker(true), opponent];
     }
 
     /**
@@ -921,8 +927,17 @@ export class Ai {
      */
     private _attackGeneralMinion(): Array<Target | -1> {
         // If the focused minion doesn't exist, select a new minion to focus
-        if (this.focus && !game.board[this.plr.getOpponent().id].includes(this.focus)) {
-            this.focus = undefined;
+        if (this.focus) {
+            if (!game.board[this.plr.getOpponent().id].includes(this.focus)) {
+                // If the focused card is not on the board
+                this.focus = undefined;
+            } else if (this.focus instanceof Card && this.focus.hasKeyword('Immune')) {
+                // If the focused card is immune
+                this.focus = undefined;
+            } else if (this.focus instanceof Player && this.focus.immune) {
+                // If the focused player is immune
+                this.focus = undefined;
+            }
         }
 
         const target = !this.focus || (this._findTaunts().length > 0 && !this.focus.hasKeyword('Taunt')) ? this._attackGeneralChooseTarget() : this.focus;
@@ -936,9 +951,10 @@ export class Ai {
      * @returns Target | -1 (Go back)
      */
     private _attackGeneralChooseTarget(): Target | -1 {
+        const opponent = this.plr.getOpponent();
         let highestScore: Array<Target | number | undefined> = [undefined, -9999];
 
-        let board = game.board[this.plr.getOpponent().id];
+        let board = game.board[opponent.id];
 
         // If there is a taunt, select that as the target
         const taunts = this._findTaunts();
@@ -963,12 +979,13 @@ export class Ai {
 
         const target = highestScore[0];
 
-        // TODO: Does this never fail? What is going on here!?
         if (!target) {
-            return this.plr.getOpponent();
-        }
+            // If a target wasn't found, but the opponent can be attacked, attack the opponent
+            if (opponent.canBeAttacked()) {
+                return opponent;
+            }
 
-        if (!target) {
+            // Otherwise, don't attack
             this.prevent.push('attack');
             return -1;
         }

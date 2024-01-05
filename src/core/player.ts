@@ -837,6 +837,13 @@ export class Player {
     }
 
     /**
+     * @returns If the player can attack
+     */
+    canBeAttacked(): boolean {
+        return !this.immune;
+    }
+
+    /**
      * Returns true if the player has the correct runes
      *
      * @param runes The runes to test against
