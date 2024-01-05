@@ -189,7 +189,7 @@ export class Ai {
         const taunts = this._findTaunts();
         const targets = taunts.length > 0 ? taunts : game.board[this.plr.getOpponent().id];
 
-        for (const target of targets.filter(target => this._canTargetMinion(target))) {
+        for (const target of targets.filter(target => target.canBeAttacked())) {
             const score = this.analyzePositiveCard(target);
 
             if (score <= bestScore) {
@@ -332,7 +332,7 @@ export class Ai {
         let bestScore = -100_000;
 
         for (const target of game.board[sideId]) {
-            if (!this._canTargetMinion(target)) {
+            if (!target.canBeAttacked()) {
                 continue;
             }
 
@@ -722,17 +722,6 @@ export class Ai {
         return validLocations.length > 0;
     }
 
-    /**
-     * Returns if the minion specified is targettable
-     *
-     * @param m Minion to check
-     *
-     * @returns If it is targettable
-     */
-    private _canTargetMinion(m: Card): boolean {
-        return !m.hasKeyword('Dormant') && !m.hasKeyword('Immune') && !m.hasKeyword('Stealth');
-    }
-
     // ATTACKING
     /**
      * Finds all possible trades for the ai and returns them
@@ -759,12 +748,12 @@ export class Ai {
                 continue;
             }
 
-            const opponentBoard = game.board[this.plr.getOpponent().id].filter(m => this._canTargetMinion(m));
+            const opponentBoard = game.board[this.plr.getOpponent().id].filter(m => m.canBeAttacked());
 
             for (const target of opponentBoard) {
                 trades = [...perfectTrades, ...imperfectTrades];
 
-                if (!this._canTargetMinion(target)) {
+                if (!target.canBeAttacked()) {
                     continue;
                 }
 
@@ -933,11 +922,8 @@ export class Ai {
             if (!game.board[this.plr.getOpponent().id].includes(this.focus)) {
                 // If the focused card is not on the board
                 this.focus = undefined;
-            } else if (this.focus instanceof Card && this.focus.hasKeyword('Immune')) {
-                // If the focused card is immune
-                this.focus = undefined;
-            } else if (this.focus instanceof Player && this.focus.immune) {
-                // If the focused player is immune
+            } else if (!this.focus.canBeAttacked()) {
+                // If the focused card can't be attacked
                 this.focus = undefined;
             }
         }
@@ -964,7 +950,7 @@ export class Ai {
             return taunts[0];
         }
 
-        board = board.filter(m => this._canTargetMinion(m));
+        board = board.filter(m => m.canBeAttacked());
 
         for (const card of board) {
             if (typeof highestScore[1] !== 'number') {

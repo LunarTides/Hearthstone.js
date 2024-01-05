@@ -790,6 +790,13 @@ export class Card {
     }
 
     /**
+     * @returns If this card can be attacked
+     */
+    canBeAttacked(): boolean {
+        return !this.hasKeyword('Dormant') && !this.hasKeyword('Immune') && !this.hasKeyword('Stealth');
+    }
+
+    /**
      * Create a backup of the card.
      *
      * @returns The key of the backup. You can use it by doing `card.backups[key]`
