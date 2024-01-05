@@ -29,7 +29,7 @@ export const infoFunctions = {
             }
 
             case 3: {
-                if (info.branch === 'stable') {
+                if (info.build === 0) {
                     return format('%s-%s', info.version, info.branch);
                 }
 
@@ -37,7 +37,7 @@ export const infoFunctions = {
             }
 
             case 4: {
-                if (info.branch === 'stable') {
+                if (info.build === 0) {
                     return format('%s-%s (%s)', info.version, info.branch, this.latestCommit());
                 }
 
