@@ -1396,36 +1396,40 @@ const cards = {
      * Summon a minion.
      * Broadcasts the `SummonMinion` event
      *
-     * @param minion The minion to summon
+     * @param card The minion to summon
      * @param player The player who gets the minion
      * @param colossal If the minion has colossal, summon the other minions.
      *
      * @returns The minion summoned
      */
-    summon(minion: Card, player: Player, colossal = true): true | 'space' | 'colossal' | 'invalid' {
+    summon(card: Card, player: Player, colossal = true): true | 'space' | 'colossal' | 'invalid' {
+        if (!card.canBeOnBoard()) {
+            return 'invalid';
+        }
+
         // If the board has max capacity, and the card played is a minion or location card, prevent it.
         if (game.board[player.id].length >= game.config.general.maxBoardSpace) {
             return 'space';
         }
 
-        game.events.broadcast('SummonMinion', minion, player);
+        game.events.broadcast('SummonMinion', card, player);
 
         player.spellDamage = 0;
 
-        if (minion.hasKeyword('Charge') || minion.hasKeyword('Titan')) {
-            minion.ready();
-            minion.resetAttackTimes();
+        if (card.hasKeyword('Charge') || card.hasKeyword('Titan')) {
+            card.ready();
+            card.resetAttackTimes();
         }
 
-        if (minion.hasKeyword('Rush')) {
-            minion.ready();
-            minion.resetAttackTimes();
-            minion.canAttackHero = false;
+        if (card.hasKeyword('Rush')) {
+            card.ready();
+            card.resetAttackTimes();
+            card.canAttackHero = false;
         }
 
-        const dormant = minion.getKeyword('Dormant') as number | undefined;
+        const dormant = card.getKeyword('Dormant') as number | undefined;
 
-        const colossalMinionIds = minion.getKeyword('Colossal') as number[] | undefined;
+        const colossalMinionIds = card.getKeyword('Colossal') as number[] | undefined;
         if (colossalMinionIds && colossal) {
             /*
              * Minion.colossal is an id array.
@@ -1438,18 +1442,18 @@ const cards = {
             for (const cardId of colossalMinionIds) {
                 if (cardId <= 0) {
                     // Summon this minion without triggering colossal again
-                    player.summon(minion, false);
+                    player.summon(card, false);
                     continue;
                 }
 
-                const card = new Card(cardId, player);
+                const cardToSummon = new Card(cardId, player);
 
                 // If this card has dormant, add it to the summoned minions as well.
                 if (dormant) {
-                    card.addKeyword('Dormant', dormant);
+                    cardToSummon.addKeyword('Dormant', dormant);
                 }
 
-                player.summon(card);
+                player.summon(cardToSummon);
             }
 
             unsuppress();
@@ -1469,15 +1473,15 @@ const cards = {
              * This is so that the game can know when to remove the dormant by checking which turn it is.
              * We should really document this somewhere, since it can easily be overriden by a card after it has been summoned, which would cause unexpected behavior.
              */
-            minion.setKeyword('Dormant', dormant + game.turns);
-            minion.addKeyword('Immune');
+            card.setKeyword('Dormant', dormant + game.turns);
+            card.addKeyword('Immune');
 
             // TODO: Why are we readying the dormant minion?
-            minion.ready();
-            minion.resetAttackTimes();
+            card.ready();
+            card.resetAttackTimes();
         }
 
-        game.board[player.id].push(minion);
+        game.board[player.id].push(card);
 
         // Calculate new spell damage
         for (const card of game.board[player.id]) {

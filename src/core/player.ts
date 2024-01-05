@@ -663,7 +663,7 @@ export class Player {
         }
 
         // Summon on draw
-        if (card.hasKeyword('Summon On Draw') && (card.type === 'Minion' || card.type === 'Location')) {
+        if (card.hasKeyword('Summon On Draw') && card.canBeOnBoard()) {
             this.summon(card);
             return this.drawCard();
         }
