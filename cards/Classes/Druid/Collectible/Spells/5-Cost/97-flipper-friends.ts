@@ -20,12 +20,12 @@ export const blueprint: Blueprint = {
         game.interact.chooseOne(1, ['Summon a 6/6 Orca with <b>Taunt</b>', () => {
             // Summon a 6/6 Orca with Taunt
             const orca = game.createCard(game.cardIds.orca96, plr);
-            game.summonMinion(orca, plr);
+            plr.summon(orca);
         }], ['Summon six 1/1 Otters with <b>Rush</b>', () => {
             // Summon six 1/1 Otters with Rush
             for (let index = 0; index < 6; index++) {
                 const otter = game.createCard(game.cardIds.otter95, plr);
-                game.summonMinion(otter, plr);
+                plr.summon(otter);
             }
         }]);
     },

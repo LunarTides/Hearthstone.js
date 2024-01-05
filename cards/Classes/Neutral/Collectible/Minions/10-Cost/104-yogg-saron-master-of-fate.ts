@@ -55,7 +55,7 @@ export const blueprint: Blueprint = {
                             card.addKeyword('Rush');
                         }
 
-                        game.summonMinion(card, player);
+                        player.summon(card);
                     }
                 }
 

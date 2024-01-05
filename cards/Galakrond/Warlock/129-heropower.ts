@@ -21,7 +21,7 @@ export const blueprint: Blueprint = {
                 break;
             }
 
-            game.summonMinion(card, plr);
+            plr.summon(card);
         }
     },
 

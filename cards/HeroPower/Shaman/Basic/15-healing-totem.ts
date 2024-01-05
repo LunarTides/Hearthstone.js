@@ -36,13 +36,13 @@ export const blueprint: Blueprint = {
         for (let i = 0; i < 5; i++) {
             const card = game.createCard(game.cardIds.sheep1, plr);
             card.maxHealth = 2;
-            game.summonMinion(card, plr);
+            plr.summon(card);
         }
 
         const checkSheepHealth = (expected: number) => game.board[plr.id].filter(card => card.id === 1).every(card => card.health === expected && card.attack === 1);
 
         // Summon this minion. All sheep should have 1 health.
-        game.summonMinion(self, plr);
+        plr.summon(self);
         assert(checkSheepHealth(1));
 
         // Broadcast a dummy event. All sheep should still have 1 health.

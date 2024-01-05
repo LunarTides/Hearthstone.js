@@ -33,7 +33,7 @@ export const blueprint: Blueprint = {
 
     test(plr, self) {
         // Summon this minion
-        game.summonMinion(self, plr);
+        plr.summon(self);
 
         for (let i = 0; i < 5; i++) {
             // Attacking the enemy hero this this minion should always return "frozen"

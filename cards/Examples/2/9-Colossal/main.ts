@@ -30,7 +30,7 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        game.summonMinion(self, plr);
+        plr.summon(self);
 
         const board = game.board[plr.id];
 

@@ -34,7 +34,7 @@ export const blueprint: Blueprint = {
 
             // Summon it
             card = game.createCard(card.id, plr);
-            game.summonMinion(card, plr);
+            plr.summon(card);
         }
     },
 

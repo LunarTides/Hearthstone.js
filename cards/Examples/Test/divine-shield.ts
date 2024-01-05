@@ -26,7 +26,7 @@ export const blueprint: Blueprint = {
         assert.equal(game.board[plr.id].length, 0);
 
         // There should be 1 minion on the board
-        game.summonMinion(self, plr);
+        plr.summon(self);
         assert.equal(game.board[plr.id].length, 1);
 
         // There should be 1 minion on the board since the divine shield saves it

@@ -34,7 +34,7 @@ export const blueprint: Blueprint = {
 
         // Create a sheep and summon it on the opponent's side of the board
         const sheep = game.createCard(game.cardIds.sheep1, opponent);
-        game.summonMinion(sheep, opponent);
+        opponent.summon(sheep);
 
         // Check if the sheep's owner is the opponent, is on the opponent's side of the board, and not the friendly player's side of the board
         assert.equal(sheep.plr, opponent);

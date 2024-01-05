@@ -58,7 +58,7 @@ export const blueprint: Blueprint = {
     test(plr, self) {
         const sheep = game.createCard(game.cardIds.sheep1, plr.getOpponent());
         sheep.addStats(4, 4);
-        game.summonMinion(sheep, plr.getOpponent());
+        plr.getOpponent().summon(sheep);
 
         assert.equal(sheep.attack, 5);
         assert.equal(sheep.health, 5);

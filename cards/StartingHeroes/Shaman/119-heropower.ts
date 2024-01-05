@@ -32,7 +32,7 @@ export const blueprint: Blueprint = {
         const card = game.createCard(cardName, plr);
 
         // Summon the card on the player's side of the board
-        game.summonMinion(card, plr);
+        plr.summon(card);
         return true;
     },
 

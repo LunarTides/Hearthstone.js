@@ -20,7 +20,7 @@ export const blueprint: Blueprint = {
         const minion = game.createCard(game.cardIds.frailGhoul23, plr);
 
         // Summon the Ghoul
-        game.summonMinion(minion, plr);
+        plr.summon(minion);
 
         // The `It dies at end of turn.` part is handled by the ghoul itself, so we don't need to do anything extra here
     },

@@ -39,7 +39,7 @@ export const blueprint: Blueprint = {
     test(plr, self) {
         // Summon a sheep
         const sheep = game.createCard(game.cardIds.sheep1, plr);
-        game.summonMinion(sheep, plr);
+        plr.summon(sheep);
 
         // Activate the battlecry, choose the sheep
         plr.inputQueue = ['1'];

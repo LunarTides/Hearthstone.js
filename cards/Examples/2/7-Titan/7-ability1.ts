@@ -34,7 +34,7 @@ export const blueprint: Blueprint = {
 
         // Create a sheep and summon it on the opponent's side of the board
         const sheep = game.createCard(game.cardIds.sheep1, opponent);
-        game.summonMinion(sheep, opponent);
+        opponent.summon(sheep);
 
         // Kill the sheep
         plr.inputQueue = ['1'];

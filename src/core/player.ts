@@ -664,7 +664,7 @@ export class Player {
 
         // Summon on draw
         if (card.hasKeyword('Summon On Draw') && (card.type === 'Minion' || card.type === 'Location')) {
-            game.summonMinion(card, this);
+            this.summon(card);
             return this.drawCard();
         }
 
@@ -1094,7 +1094,7 @@ export class Player {
                 continue;
             }
 
-            game.summonMinion(card.imperfectCopy(), this);
+            this.summon(card.imperfectCopy());
 
             times++;
             cards.push(card);
@@ -1105,5 +1105,18 @@ export class Player {
         }
 
         return cards;
+    }
+
+    /**
+     * Summon a minion.
+     * Broadcasts the `SummonMinion` event
+     *
+     * @param minion The minion to summon
+     * @param colossal If the minion has colossal, summon the other minions.
+     *
+     * @returns The minion summoned
+     */
+    summon(card: Card, colossal = true) {
+        return game.summonMinion(card, this, colossal);
     }
 }

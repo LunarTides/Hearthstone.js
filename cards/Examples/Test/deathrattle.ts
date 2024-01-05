@@ -25,14 +25,14 @@ export const blueprint: Blueprint = {
             const sheep = game.createCard(game.cardIds.sheep1, plr);
 
             // Summon the sheep
-            game.summonMinion(sheep, plr);
+            plr.summon(sheep);
         }
     },
 
     test(plr, self) {
         // There should be 0 minions on the board
         assert.equal(game.board[plr.id].length, 0);
-        game.summonMinion(self, plr);
+        plr.summon(self);
 
         // There should be 1 minion on the board
         assert.equal(game.board[plr.id].length, 1);

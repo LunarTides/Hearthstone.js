@@ -1358,8 +1358,8 @@ export class Card {
 
             case 'Living Spores': {
                 this.addAbility('deathrattle', (plr, _) => {
-                    game.summonMinion(new Card(game.cardIds.plant3, plr), plr);
-                    game.summonMinion(new Card(game.cardIds.plant3, plr), plr);
+                    plr.summon(new Card(game.cardIds.plant3, plr));
+                    plr.summon(new Card(game.cardIds.plant3, plr));
                 });
                 break;
             }
@@ -1473,6 +1473,6 @@ export class Card {
         game.functions.util.remove(game.board[this.plr.id], this);
 
         this.plr = newOwner;
-        game.summonMinion(this, newOwner);
+        newOwner.summon(this);
     }
 }

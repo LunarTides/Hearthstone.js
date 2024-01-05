@@ -20,7 +20,7 @@ export const blueprint: Blueprint = {
         const card = game.createCard(game.cardIds.silverHandRecruit20, plr);
 
         // Summon the card
-        game.summonMinion(card, plr);
+        plr.summon(card);
     },
 
     test(plr, self) {

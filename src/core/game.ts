@@ -1433,8 +1433,9 @@ const cards = {
                 const unsuppress = game.functions.event.suppress('SummonMinion');
 
                 if (cardId <= 0) {
-                    game.summonMinion(minion, player, false);
                     unsuppress();
+                    // Summon this minion without triggering colossal again
+                    player.summon(minion, false);
                     continue;
                 }
 
@@ -1444,8 +1445,8 @@ const cards = {
                     card.addKeyword('Dormant', dormant);
                 }
 
-                game.summonMinion(card, player);
                 unsuppress();
+                player.summon(card);
             }
 
             return 'colossal';

@@ -20,7 +20,7 @@ export const blueprint: Blueprint = {
         const remainingBoardSpace = game.functions.util.getRemainingBoardSpace(plr);
         for (let index = 0; index < remainingBoardSpace; index++) {
             const whelp = game.createCard(game.cardIds.onyxianWhelp99, plr);
-            game.summonMinion(whelp, plr);
+            plr.summon(whelp);
         }
     },
 

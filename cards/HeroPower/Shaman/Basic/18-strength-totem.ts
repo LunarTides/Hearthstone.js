@@ -43,13 +43,13 @@ export const blueprint: Blueprint = {
         // Summon 5 Sheep with 2 max health.
         for (let i = 0; i < 5; i++) {
             const card = game.createCard(game.cardIds.sheep1, plr);
-            game.summonMinion(card, plr);
+            plr.summon(card);
         }
 
         const checkSheepAttack = (shouldBeMore: boolean) => game.board[plr.id].filter(card => card.id === 1).some(card => card.health === 1 && ((shouldBeMore && card.attack! > 1) || (!shouldBeMore && card.attack === 1)));
 
         // Summon this minion. All sheep should have 1 attack.
-        game.summonMinion(self, plr);
+        plr.summon(self);
         assert(checkSheepAttack(false));
 
         // Broadcast a dummy event. All sheep should still have 1 attack.

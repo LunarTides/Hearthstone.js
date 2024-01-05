@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
                 card.kill();
 
                 const treant = game.createCard(game.cardIds.treant83, player);
-                game.summonMinion(treant, player);
+                player.summon(treant);
             }
         }
     },
@@ -35,7 +35,7 @@ export const blueprint: Blueprint = {
         // Summon n Sheep
         for (let i = 0; i < amountOfCards; i++) {
             const sheep = game.createCard(game.cardIds.sheep1, plr);
-            game.summonMinion(sheep, plr);
+            plr.summon(sheep);
         }
 
         // Replace with Treants

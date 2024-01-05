@@ -30,7 +30,7 @@ export const blueprint: Blueprint = {
             }
 
             minion.setStats(amount, amount);
-            game.summonMinion(minion, plr);
+            plr.summon(minion);
         }
 
         if (!shouldGiveWeapon) {

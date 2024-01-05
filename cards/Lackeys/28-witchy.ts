@@ -49,7 +49,7 @@ export const blueprint: Blueprint = {
         target.destroy();
 
         // Summon the card to the player's side of the board
-        game.summonMinion(minion, plr);
+        plr.summon(minion);
         return true;
     },
 
@@ -58,7 +58,7 @@ export const blueprint: Blueprint = {
 
         // Summon a sheep
         const sheep = game.createCard(game.cardIds.sheep1, plr);
-        game.summonMinion(sheep, plr);
+        plr.summon(sheep);
 
         // There shouldn't exist a minion with 1 more cost than the sheep.
         assert(!existsMinionWithCost(sheep.cost + 1));
