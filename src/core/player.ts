@@ -660,6 +660,12 @@ export class Player {
             return this.drawCard();
         }
 
+        // Summon on draw
+        if (card.hasKeyword('Summon On Draw') && (card.type === 'Minion' || card.type === 'Location')) {
+            game.summonMinion(card, this);
+            return this.drawCard();
+        }
+
         const unsuppress = game.functions.event.suppress('AddCardToHand');
         this.addToHand(card);
         unsuppress();
@@ -823,14 +829,14 @@ export class Player {
     }
 
     /**
-     * Returns whether or not the player can use corpses
+     * @returns Whether or not the player can use corpses
      */
     canUseCorpses(): boolean {
         return ['Death Knight'].includes(this.heroClass);
     }
 
     /**
-     * Returns whether or not the player can use runes
+     * @returns Whether or not the player can use runes
      */
     canUseRunes(): boolean {
         return ['Death Knight'].includes(this.heroClass);

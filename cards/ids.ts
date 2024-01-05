@@ -134,4 +134,5 @@ export const cardIds = {
     heropowerExample130: 130,
     simpleCardReferenceExample131: 131,
     circularCardReferenceExample132: 132,
+    summonOnDrawTest133: 133,
 };
