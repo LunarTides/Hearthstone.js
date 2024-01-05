@@ -354,19 +354,19 @@ export class Card {
         this.blueprint = game.blueprints.find(c => c.id === this.id) ?? this.blueprint;
 
         /*
-         *Go through all blueprint variables and
-         *set them in the card object
-         *Example:
-         *Blueprint: { name: "Sheep", stats: [1, 1], test: true }
-         *                                           ^^^^^^^^^^
-         *Do: this.test = true
+         * Go through all blueprint variables and
+         * set them in the card object
+         * Example:
+         * Blueprint: { name: "Sheep", stats: [1, 1], test: true }
+         *                                            ^^^^^^^^^^
+         * Do: this.test = true
          *
-         *Function Example:
-         *Blueprint: { name: "The Coin", cost: 0, cast(plr, self): { plr.refreshMana(1, plr.maxMana) } }
-         *                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-         *Do: this.abilities.cast = [{ plr.addMana(1) }]
-         *                          ^                  ^
-         *                          This is in an array so we can add multiple events on casts
+         * Function Example:
+         * Blueprint: { name: "The Coin", cost: 0, cast(plr, self): { plr.refreshMana(1, plr.maxMana) } }
+         *                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+         * Do: this.abilities.cast = [{ plr.addMana(1) }]
+         *                           ^                  ^
+         *                           This is in an array so we can add multiple events on casts
          */
         for (const entry of Object.entries(this.blueprint)) {
             const [key, value] = entry;
@@ -767,7 +767,7 @@ export class Card {
     }
 
     /**
-     * Returns if the card can attack.
+     * @returns If this card can attack.
      */
     canAttack(): boolean {
         if (this.type === 'Weapon') {
