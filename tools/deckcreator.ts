@@ -207,7 +207,7 @@ function sortCards(_cards: Card[]): Card[] {
  * let searched = searchCards(cards, 'cost:1');
  * searched = searchCards(cards, 'cost:even');
  * searched = searchCards(cards, 'name:Hi rarity:Legendary');
-  ```
+ *```
  */
 function searchCards(_cards: Card[], searchQuery: string): Card[] | false {
     if (searchQuery.length <= 0) {
@@ -450,8 +450,10 @@ function showCards(): void {// eslint-disable-line complexity
             continue;
         }
 
-        // The card's name should be colored, while the id should not
-        // I don't add colors above, since createWall breaks when colors are used.
+        /*
+         * The card's name should be colored, while the id should not
+         * I don't add colors above, since createWall breaks when colors are used.
+         */
         const toDisplay = card.colorFromRarity(brickSplit[0]) + '-' + brickSplit[1];
 
         console.log(toDisplay);
@@ -1056,10 +1058,12 @@ const commands: CommandList = {
         runes = player1.runes;
         showCards();
 
-        // Add the cards using handleCmds instead of add because for some reason, adding them with add
-        // causes a weird bug that makes modifying the deck impossible because removing a card
-        // removes a completly unrelated card because javascript.
-        // You can just set deck = functions.importDeck(), but doing it that way doesn't account for renathal or any other card that changes the config in any way since that is done using the add function.
+        /*
+         * Add the cards using handleCmds instead of add because for some reason, adding them with add
+         * causes a weird bug that makes modifying the deck impossible because removing a card
+         * removes a completly unrelated card because javascript.
+         * You can just set deck = functions.importDeck(), but doing it that way doesn't account for renathal or any other card that changes the config in any way since that is done using the add function.
+         */
         for (const card of newDeck) {
             handleCmds(`add ${card.id}`);
         }

@@ -3,9 +3,11 @@
 import assert from 'node:assert';
 import { type Blueprint, type Ability } from '@Game/types.js';
 
-// This is another way to write blueprints
-// You might want to do this if you make a very complicated card
-// however it is not _as_ supported by scripts as the default method.
+/*
+ * This is another way to write blueprints
+ * You might want to do this if you make a very complicated card
+ * however it is not _as_ supported by scripts as the default method.
+ */
 const battlecry: Ability = (plr, self) => {
     self.addStats(1, 1);
 };

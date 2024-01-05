@@ -70,8 +70,10 @@ export const eventManager: EventManagerType = {
      * @param player The player that triggered the tick
      */
     tick(key, value, player): boolean {
-        // The code in here gets executed very often
-        // So don't do any expensive stuff here
+        /*
+         * The code in here gets executed very often
+         * So don't do any expensive stuff here
+         */
 
         // Infuse
         if (key === 'KillMinion') {

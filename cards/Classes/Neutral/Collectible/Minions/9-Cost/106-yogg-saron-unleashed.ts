@@ -30,8 +30,10 @@ export const blueprint: Blueprint = {
             return;
         }
 
-        // Here we cast the value to the correct type.
-        // Do not use the '_unknownValue' variable after this.
+        /*
+         * Here we cast the value to the correct type.
+         * Do not use the '_unknownValue' variable after this.
+         */
         const value = _unknownValue as EventValue<typeof key>;
 
         if (value[0] !== self) {

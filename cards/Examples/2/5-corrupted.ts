@@ -3,8 +3,10 @@
 import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
-    // Look in `corrupt.ts` first.
-    // This is just an ordinary card.
+    /*
+     * Look in `corrupt.ts` first.
+     * This is just an ordinary card.
+     */
     name: 'Corrupted Example',
     text: 'Corrupted.',
     cost: 0,

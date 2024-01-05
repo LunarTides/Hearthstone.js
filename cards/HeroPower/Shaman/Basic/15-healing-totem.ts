@@ -53,8 +53,10 @@ export const blueprint: Blueprint = {
         game.endTurn();
         assert(checkSheepHealth(2));
 
-        // End the player's turn again. All sheep should still have 2 health since it is their max health.
-        // We end the turn twice since we also end the opponent's turn.
+        /*
+         * End the player's turn again. All sheep should still have 2 health since it is their max health.
+         * We end the turn twice since we also end the opponent's turn.
+         */
         game.endTurn();
         game.endTurn();
         assert(checkSheepHealth(2));

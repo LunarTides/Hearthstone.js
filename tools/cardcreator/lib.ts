@@ -102,10 +102,12 @@ function generateCardPath(blueprint: BlueprintWithOptional): string {
 
     const collectibleString = blueprint.collectible ? 'Collectible' : 'Uncollectible';
 
-    // This can be anything since the card register process ignores folders.
-    // Change this if you want the cards to be in different folders.
-    // By default, this is `cards/Classes/{class name}/{Collectible | Uncollectible}/{type}s/{mana cost} Cost/{card name}.ts`;
-    // This path can be overridden by passing `overridePath` in the create function.
+    /*
+     * This can be anything since the card register process ignores folders.
+     * Change this if you want the cards to be in different folders.
+     * By default, this is `cards/Classes/{class name}/{Collectible | Uncollectible}/{type}s/{mana cost} Cost/{card name}.ts`;
+     * This path can be overridden by passing `overridePath` in the create function.
+     */
     const dynamicPath = `Classes/${classesString}/${collectibleString}/${typeString}s/${blueprint.cost}-Cost/`;
 
     return staticPath + dynamicPath;
@@ -133,8 +135,10 @@ export function getLatestId(): number {
  * @returns The path of the created file.
  */
 export function create(creatorType: CcType, blueprint: BlueprintWithOptional, overridePath?: string, overrideFilename?: string, debug?: boolean): string {// eslint-disable-line complexity
-    // TODO: Search for keywords in the card text and don't add a passive ability if one was found. And vice versa
-    // TODO: Look for placeholders in the text and add a placeholder ability if it finds one
+    /*
+     * TODO: Search for keywords in the card text and don't add a passive ability if one was found. And vice versa
+     * TODO: Look for placeholders in the text and add a placeholder ability if it finds one
+     */
 
     // Validate
     const error = game.functions.card.validateBlueprint(blueprint);
@@ -193,9 +197,11 @@ ${runes}${keywords}
     delete blueprint.runes;
     delete blueprint.keywords;
 
-    // Normal ability
-    // Example 1: '\n\n    passive(plr, self, key, _unknownValue, eventPlayer) {\n        // Your battlecries trigger twice.\n        ...\n    }',
-    // Example 2: '\n\n    battlecry(plr, self) {\n        // Deal 2 damage to the opponent.\n        \n    }'
+    /*
+     * Normal ability
+     * Example 1: '\n\n    passive(plr, self, key, _unknownValue, eventPlayer) {\n        // Your battlecries trigger twice.\n        ...\n    }',
+     * Example 2: '\n\n    battlecry(plr, self) {\n        // Deal 2 damage to the opponent.\n        \n    }'
+     */
     if (ability) {
         const extraNewline = extraPassiveCode ? '' : '\n';
 
@@ -230,8 +236,10 @@ ${runes}${keywords}
         filename = `${id}-${overrideFilename}`;
     }
 
-    // Generate the content of the card
-    // If the value is a string, put '"value"'. If it is not a string, put 'value'.
+    /*
+     * Generate the content of the card
+     * If the value is a string, put '"value"'. If it is not a string, put 'value'.
+     */
     const getTypeValue = (value: any) => {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         let returnValue = value;
@@ -284,8 +292,10 @@ export const blueprint: Blueprint = {
     const filePath = path + filename;
 
     if (debug) {
-        // If debug mode is enabled, just show some information about the card.
-        // This is the id that would be written to '.latestId'
+        /*
+         * If debug mode is enabled, just show some information about the card.
+         * This is the id that would be written to '.latestId'
+         */
         console.log();
 
         if (mainDebugSwitch) {

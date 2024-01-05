@@ -358,9 +358,11 @@ export const deckcodeFunctions = {
      * @returns The vanilla deckcode
      */
     toVanilla(plr: Player, code: string, extraFiltering = true): string {
-        // HACK: Jank code ahead. Beware!
-        //
-        // Reference: Death Knight [3B] /1:4,2/ 3f,5f,6f...
+        /*
+         * HACK: Jank code ahead. Beware!
+         *
+         * Reference: Death Knight [3B] /1:4,2/ 3f,5f,6f...
+         */
 
         const deck: deckstrings.DeckDefinition = { cards: [], heroes: [], format: 1 };
 
@@ -550,8 +552,10 @@ export const deckcodeFunctions = {
         }
 
         if (invalidCards.length > 0) {
-            // There was a card in the deck that isn't implemented in Hearthstone.js
-            // Add a newline
+            /*
+             * There was a card in the deck that isn't implemented in Hearthstone.js
+             * Add a newline
+             */
             console.error();
             throw new Error('Some cards do not currently exist. You cannot play on this deck without them.');
         }

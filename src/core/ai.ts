@@ -434,10 +434,12 @@ export class Ai {
      * @returns The index of the question chosen
      */
     chooseOne(options: string[]): number | undefined {
-        // I know this is a bad solution
-        // "Deal 2 damage to a minion; or Restore 5 Health."
-        // ^^^^^ It will always choose to restore 5 health, since it sees deal 2 damage as bad but oh well, future me problem.
-        // ^^^^^ Update 29/05/23  TODO: Fix this
+        /*
+         * I know this is a bad solution
+         * "Deal 2 damage to a minion; or Restore 5 Health."
+         * ^^^^^ It will always choose to restore 5 health, since it sees deal 2 damage as bad but oh well, future me problem.
+         * ^^^^^ Update 29/05/23  TODO: Fix this
+         */
         let bestChoice;
         let bestScore = -100_000;
 

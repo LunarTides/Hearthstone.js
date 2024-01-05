@@ -22,8 +22,10 @@ export const blueprint: Blueprint = {
     battlecry(plr, self) {
         // Restore your hero to full health.
 
-        // Heal this card's owner to full health.
-        // The `addHealth` method automatically caps the health of the player, so you don't need to worry.
+        /*
+         * Heal this card's owner to full health.
+         * The `addHealth` method automatically caps the health of the player, so you don't need to worry.
+         */
         plr.addHealth(plr.maxHealth);
     },
 

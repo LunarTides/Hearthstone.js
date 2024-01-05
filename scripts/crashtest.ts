@@ -77,8 +77,10 @@ function main(): void {
         }
     }
 
-    // Create a new game to reset `noOutput` to false.
-    // Trust me, it doesn't log anything without this
+    /*
+     * Create a new game to reset `noOutput` to false.
+     * Trust me, it doesn't log anything without this
+     */
     createGame();
     console.warn('\n<green>Crash test passed!</green>');
 }

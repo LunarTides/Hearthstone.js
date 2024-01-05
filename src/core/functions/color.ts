@@ -233,8 +233,10 @@ export const colorFunctions = {
         const appendTypes = (c: string): string => {
             let returnValue = c;
 
-            // This line fixes a bug that makes, for example, `</b>Test</b>.` make the `.` be red when it should be white. This bug is why all new battlecries were `<b>Battlecry:</b> Deal...` instead of `<b>Battlecry: </b>Deal...`. I will see which one i choose in the future.
-            // Update: I discourge the use of `reset` now that you cancel tags manually. Use `</>` instead.
+            /*
+             * This line fixes a bug that makes, for example, `</b>Test</b>.` make the `.` be red when it should be white. This bug is why all new battlecries were `<b>Battlecry:</b> Deal...` instead of `<b>Battlecry: </b>Deal...`. I will see which one i choose in the future.
+             * Update: I discourge the use of `reset` now that you cancel tags manually. Use `</>` instead.
+             */
             if (currentTypes.includes('reset')) {
                 currentTypes = ['reset'];
             }
@@ -361,9 +363,11 @@ export const colorFunctions = {
      * assert.equal(stripTags(str), "Hello");
      */
     stripTags(text: string): string {
-        // Regular expressions created by AIs, it removes the "<b>"'s but keeps the "~<b>"'s since the '~' here works like an escape character.
-        // It does however remove the escape character itself.
-        // Remove unescaped tags
+        /*
+         * Regular expressions created by AIs, it removes the "<b>"'s but keeps the "~<b>"'s since the '~' here works like an escape character.
+         * It does however remove the escape character itself.
+         * Remove unescaped tags
+         */
         text = text.replaceAll(/(?<!~)<.+?>/g, '');
 
         // Remove escape character

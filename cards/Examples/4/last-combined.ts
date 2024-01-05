@@ -27,8 +27,10 @@ export const blueprint: Blueprint = {
                 return true;
             }
 
-            // The quest is done.
-            // Add the `-1 cost` enchantment constantly
+            /*
+             * The quest is done.
+             * Add the `-1 cost` enchantment constantly
+             */
             const unhook = game.functions.event.hookToTick(() => {
                 // Only add the enchantment to minions
                 for (const minion of plr.hand.filter(card => card.type === 'Minion')) {
@@ -64,8 +66,10 @@ export const blueprint: Blueprint = {
                 // Destroy the tick hook
                 unhook();
 
-                // Reverse the enchantment
-                // You might be able to just do `for (const minion of plr.hand)` instead, since `removeEnchantment` only removes enchantments if it's there.
+                /*
+                 * Reverse the enchantment
+                 * You might be able to just do `for (const minion of plr.hand)` instead, since `removeEnchantment` only removes enchantments if it's there.
+                 */
                 for (const minion of plr.hand.filter(c => c.type === 'Minion')) {
                     minion.removeEnchantment('-1 cost', self);
                 }

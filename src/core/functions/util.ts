@@ -118,8 +118,10 @@ export const utilFunctions = {
         // 01.01.23-23.59.59
         const dateStringFileFriendly = date.format(now, 'DD.MM.YY-HH.mm.ss');
 
-        // Grab the history of the game
-        // handleCmds("history", echo, debug)
+        /*
+         * Grab the history of the game
+         * handleCmds("history", echo, debug)
+         */
         let history = game.interact.gameLoop.handleCmds('history', { echo: false, debug: true });
         if (typeof history !== 'string') {
             throw new TypeError('createLogFile history did not return a string.');
@@ -129,8 +131,10 @@ export const utilFunctions = {
         history = game.functions.color.stripTags(history);
         history = game.functions.color.stripColors(history);
 
-        // AI log
-        // Do this so it can actually run '/ai'
+        /*
+         * AI log
+         * Do this so it can actually run '/ai'
+         */
         game.config.general.debug = true;
         const aiHistory = game.interact.gameLoop.handleCmds('/ai', { echo: false });
 

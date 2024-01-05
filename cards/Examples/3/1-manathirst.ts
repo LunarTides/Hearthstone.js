@@ -23,12 +23,14 @@ export const blueprint: Blueprint = {
         // Make the prompt.
         const prompt = manathirst ? 'Silence then freeze an enemy minion.' : 'Freeze an enemy minion.';
 
-        // Select a target to freeze (and silence)
-        // The first argument is the prompt to ask the user.
-        // The second argument is this card (aka `self`).
-        // The third argument is the alignment of the target the user is restricted to. If this is "enemy", the user can only select enemy targets, if this is "friendly", the user can only select friendly targets, if this is "any", the user can select any target.
-        //
-        // Ask the user to select a target based on the `prompt`, the user can only select enemy minions
+        /*
+         * Select a target to freeze (and silence)
+         * The first argument is the prompt to ask the user.
+         * The second argument is this card (aka `self`).
+         * The third argument is the alignment of the target the user is restricted to. If this is "enemy", the user can only select enemy targets, if this is "friendly", the user can only select friendly targets, if this is "any", the user can select any target.
+         *
+         * Ask the user to select a target based on the `prompt`, the user can only select enemy minions
+         */
         const target = game.interact.selectCardTarget(prompt, self, 'enemy');
 
         // If target is false it means that the user cancelled their selection. Return `game.constants.refund` to refund the card.

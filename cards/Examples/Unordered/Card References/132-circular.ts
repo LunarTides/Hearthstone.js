@@ -17,8 +17,10 @@ export const blueprint: Blueprint = {
     tribe: 'None',
 
     placeholders(plr, self) {
-        // You can reference this card in placeholders.
-        // Go in-game, give yourself this card, and type 'detail' to see how it works.
+        /*
+         * You can reference this card in placeholders.
+         * Go in-game, give yourself this card, and type 'detail' to see how it works.
+         */
 
         // It will eventually reach a max depth, which is set in the config.
         return { card: self };

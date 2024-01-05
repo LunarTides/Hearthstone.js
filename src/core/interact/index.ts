@@ -268,9 +268,11 @@ export const interact = {
             return (target.startsWith('y')) ? game.opponent : game.player;
         }
 
-        // From this point, forceClass is either
-        // 1. any
-        // 2. minion
+        /*
+         * From this point, forceClass is either
+         * 1. any
+         * 2. minion
+         */
 
         // Ask the player to choose a target.
         let p = `\n${prompt} (`;
@@ -303,8 +305,10 @@ export const interact = {
 
         // If the player didn't choose to attack a hero, and no minions could be found at the index requested, try again.
         if (!target.startsWith('face') && !boardFriendlyTarget && !boardOpponentTarget) {
-            // Target !== "face" and target is not a minion.
-            // The input is invalid
+            /*
+             * Target !== "face" and target is not a minion.
+             * The input is invalid
+             */
             game.pause('<red>Invalid input / minion!</red>\n');
 
             return this._selectTarget(prompt, card, forceSide, forceClass, flags);
@@ -317,8 +321,10 @@ export const interact = {
                 return this._selectTarget(prompt, card, forceSide, 'hero', flags);
             }
 
-            // If both players have a minion with the same index,
-            // ask them which minion to select
+            /*
+             * If both players have a minion with the same index,
+             * ask them which minion to select
+             */
             if (boardOpponent.length >= game.lodash.parseInt(target) && boardFriendly.length >= game.lodash.parseInt(target)) {
                 const opponentTargetName = boardOpponentTarget.colorFromRarity();
                 const friendlyTargetName = boardFriendlyTarget.colorFromRarity();
@@ -465,8 +471,10 @@ export const interact = {
             }
         }
 
-        // Allow for stuff like `/eval h#c#1.addAttack(b#o#2.attack)`;
-        // ^^ This adds the second card on the opponent's side of the board's attack to the card at index 1 in the current player's hand
+        /*
+         * Allow for stuff like `/eval h#c#1.addAttack(b#o#2.attack)`;
+         * ^^ This adds the second card on the opponent's side of the board's attack to the card at index 1 in the current player's hand
+         */
         const indexBasedRegex = /([hbd])#([co])#(\d+)/g;
         for (const match of code.matchAll(indexBasedRegex)) {
             let [line, where, side, index] = match;

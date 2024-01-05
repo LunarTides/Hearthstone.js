@@ -19,8 +19,10 @@ export const blueprint: Blueprint = {
 
         // Try to heal the player by 3 hp.
 
-        // This is in a function so i can unit test it
-        // This is to make sure you got the right solution, since otherwise it can cause bugs
+        /*
+         * This is in a function so i can unit test it
+         * This is to make sure you got the right solution, since otherwise it can cause bugs
+         */
 
         /**
          * Put all your code in this function please

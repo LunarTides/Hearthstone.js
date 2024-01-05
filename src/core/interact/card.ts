@@ -136,8 +136,10 @@ export const cardInteract = {
         }
 
         if (filterClassCards) {
-            // We need to filter the cards
-            // of the filter function
+            /*
+             * We need to filter the cards
+             * of the filter function
+             */
             cards = cards.filter(card => game.functions.card.validateClasses(card.classes, game.player.heroClass));
         }
 
@@ -170,8 +172,10 @@ export const cardInteract = {
         const choice = game.input();
 
         if (!values[game.lodash.parseInt(choice) - 1]) {
-            // Invalid input
-            // We still want the user to be able to select a card, so we force it to be valid
+            /*
+             * Invalid input
+             * We still want the user to be able to select a card, so we force it to be valid
+             */
             return this.discover(prompt, cards, filterClassCards, amount, values);
         }
 

@@ -23,9 +23,11 @@ export const blueprint: Blueprint = {
     },
 
     placeholders(plr, self) {
-        // You can reference entire cards in placeholders.
-        // Go in-game, give yourself this card, and type 'detail' to see how it works.
-        // We use the card's storage so we don't create a bajillion cards and cause memory leaks.
+        /*
+         * You can reference entire cards in placeholders.
+         * Go in-game, give yourself this card, and type 'detail' to see how it works.
+         * We use the card's storage so we don't create a bajillion cards and cause memory leaks.
+         */
         const coin = self.storage.the_coin as Card | undefined;
 
         return { coin };

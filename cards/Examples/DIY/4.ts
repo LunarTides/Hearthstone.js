@@ -25,8 +25,10 @@ export const blueprint: Blueprint = {
             return;
         }
 
-        // Here we cast the value to the correct type.
-        // Do not use the '_unknownValue' variable after this.
+        /*
+         * Here we cast the value to the correct type.
+         * Do not use the '_unknownValue' variable after this.
+         */
         const value = _unknownValue as EventValue<typeof key>;
 
         // Don't change this line
@@ -34,14 +36,18 @@ export const blueprint: Blueprint = {
             return;
         }
 
-        // Try to:
-        // 1. Resurrect the minion (val) with 1/1 stats.
+        /*
+         * Try to:
+         * 1. Resurrect the minion (val) with 1/1 stats.
+         */
 
         // THIS ONLY GETS VALIDATED ONCE A MINION DIES. PLEASE TRY TO CAUSE A MINION TO DIE IN ORDER TO VALIDATE YOUR SOLUTION
 
-        // DON'T CHANGE ANYTHING BELOW THIS LINE
-        // Also there are some spoilers about the solution in the verification process down below
-        // so if you don't want to see it, don't scroll down
+        /*
+         * DON'T CHANGE ANYTHING BELOW THIS LINE
+         * Also there are some spoilers about the solution in the verification process down below
+         * so if you don't want to see it, don't scroll down
+         */
 
         // Testing your solution.
         if (self.storage.solved) {

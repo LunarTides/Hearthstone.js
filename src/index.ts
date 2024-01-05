@@ -22,8 +22,10 @@ export function main(): void {
     console.warn('\nValidating ids...');
     const [holes, dupes] = validateIds(true);
     if (holes > 0 || dupes > 0) {
-        // If there were holes or dupes, pause the game so that the user gets a
-        // chance to see what the problem was
+        /*
+         * If there were holes or dupes, pause the game so that the user gets a
+         * chance to see what the problem was
+         */
         game.pause();
     }
 

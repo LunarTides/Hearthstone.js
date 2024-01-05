@@ -303,8 +303,10 @@ export class Card {
         // Override the properties from the blueprint
         this.doBlueprint(false);
 
-        // Properties after this point can't be overriden
-        // Make a backup of "this" to be used when silencing this card
+        /*
+         * Properties after this point can't be overriden
+         * Make a backup of "this" to be used when silencing this card
+         */
         if (!this.backups.init) {
             // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             this.backups.init = {} as CardBackup;
@@ -347,20 +349,20 @@ export class Card {
         this.blueprint = game.blueprints.find(c => c.id === this.id) ?? this.blueprint;
 
         /*
-        Go through all blueprint variables and
-        set them in the card object
-        Example:
-        Blueprint: { name: "Sheep", stats: [1, 1], test: true }
-                                                   ^^^^^^^^^^
-        Do: this.test = true
-
-        Function Example:
-        Blueprint: { name: "The Coin", cost: 0, cast(plr, self): { plr.refreshMana(1, plr.maxMana) } }
-                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        Do: this.abilities.cast = [{ plr.addMana(1) }]
-                                  ^                  ^
-                                  This is in an array so we can add multiple events on casts
-        */
+         *Go through all blueprint variables and
+         *set them in the card object
+         *Example:
+         *Blueprint: { name: "Sheep", stats: [1, 1], test: true }
+         *                                           ^^^^^^^^^^
+         *Do: this.test = true
+         *
+         *Function Example:
+         *Blueprint: { name: "The Coin", cost: 0, cast(plr, self): { plr.refreshMana(1, plr.maxMana) } }
+         *                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+         *Do: this.abilities.cast = [{ plr.addMana(1) }]
+         *                          ^                  ^
+         *                          This is in an array so we can add multiple events on casts
+         */
         for (const entry of Object.entries(this.blueprint)) {
             const [key, value] = entry;
 
@@ -823,19 +825,25 @@ export class Card {
      * @returns Success
      */
     silence(): boolean {
-        // Tell the minion to undo it's passive.
-        // The false tells the minion that this is the last time it will call remove
-        // so it should finish whatever it is doing.
+        /*
+         * Tell the minion to undo it's passive.
+         * The false tells the minion that this is the last time it will call remove
+         * so it should finish whatever it is doing.
+         */
         this.activate('remove');
 
         for (const key of Object.keys(this)) {
-            // Check if a backup exists for the attribute. If it does; restore it.
-            // HACK: Never usage
+            /*
+             * Check if a backup exists for the attribute. If it does; restore it.
+             * HACK: Never usage
+             */
             if (this.backups.init[key as never]) {
                 this[key as never] = this.backups.init[key as never];
             } else if (this.blueprint[key as never]) {
-                // Check if the attribute if defined in the blueprint. If it is; restore it.
-                // HACK: Never usage
+                /*
+                 * Check if the attribute if defined in the blueprint. If it is; restore it.
+                 * HACK: Never usage
+                 */
                 this[key as never] = this.blueprint[key as never];
             }
         }
@@ -871,10 +879,12 @@ export class Card {
      * @returns All the return values of the method keywords
      */
     activate(name: CardAbility, ...args: any): any[] | -1 | false {
-        // This activates a function
-        // Example: activate("cast")
-        // Do: this.cast.forEach(castFunc => castFunc(plr, card))
-        // Returns a list of the return values from all the function calls
+        /*
+         * This activates a function
+         * Example: activate("cast")
+         * Do: this.cast.forEach(castFunc => castFunc(plr, card))
+         * Returns a list of the return values from all the function calls
+         */
         const ability: Ability[] | undefined = this.abilities[name];
 
         // If the card has the function

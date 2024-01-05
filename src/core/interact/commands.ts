@@ -421,10 +421,10 @@ export const commands: CommandList = {
         const showCard = (value: Card) => `${game.interact.card.getReadable(value)} which belongs to: <blue>${value.plr.name}</blue>, and has uuid: ${value.coloredUUID()}`;
 
         /**
-        * Transform the `value` into a readable string
-        *
-        * @param hide If it should hide the card
-        */
+         * Transform the `value` into a readable string
+         *
+         * @param hide If it should hide the card
+         */
         const doValue = (value: any, plr: Player, hide: boolean): any => {
             if (value instanceof Player) {
                 return `Player ${value.id + 1}`;
@@ -515,8 +515,10 @@ export const commands: CommandList = {
                     continue;
                 }
 
-                // If the `key` is "AddCardToHand", check if the previous history entry was `DrawCard`, and they both contained the exact same `val`.
-                // If so, ignore it.
+                /*
+                 * If the `key` is "AddCardToHand", check if the previous history entry was `DrawCard`, and they both contained the exact same `val`.
+                 * If so, ignore it.
+                 */
                 if (key === 'AddCardToHand' && historyIndex > 0) {
                     const lastEntry = history[historyListIndex][historyIndex - 1];
 

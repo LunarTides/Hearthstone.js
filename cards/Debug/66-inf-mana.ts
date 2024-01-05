@@ -18,8 +18,10 @@ export const blueprint: Blueprint = {
     cast(plr, self) {
         // Fill up your mana. For the rest of the game, your mana never decreases.
 
-        // Gain max mana every tick.
-        // This lasts for the rest of the game, since we don't unhook it.
+        /*
+         * Gain max mana every tick.
+         * This lasts for the rest of the game, since we don't unhook it.
+         */
         game.functions.event.hookToTick(() => {
             plr.addMana(plr.maxMana);
         });

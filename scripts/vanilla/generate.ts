@@ -13,8 +13,10 @@ const filterAwayUseless = process.argv[2] !== '--no-filter';
 
 const { game } = createGame();
 
-// Copy-and-pasted from this stackoverflow answer:
-// https://stackoverflow.com/a/62588602
+/*
+ * Copy-and-pasted from this stackoverflow answer:
+ * https://stackoverflow.com/a/62588602
+ */
 
 /**
  * Sends an HTTP GET request to the specified URL and resolves or rejects a promise based on the response.

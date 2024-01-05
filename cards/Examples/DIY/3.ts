@@ -18,9 +18,11 @@ export const blueprint: Blueprint = {
     cast(plr, self) {
         // Choose a minion to kill.
 
-        // Try to:
-        // 1. Ask the user which minion to kill.
-        // 2. Kill that minion
+        /*
+         * Try to:
+         * 1. Ask the user which minion to kill.
+         * 2. Kill that minion
+         */
 
         /**
          * Put all your code inside this function please.
@@ -30,12 +32,16 @@ export const blueprint: Blueprint = {
 
         }
 
-        // DON'T CHANGE ANYTHING BELOW THIS LINE
-        // Also there are some spoilers about the solution in the verification process down below
-        // so if you don't want to see it, don't scroll down
+        /*
+         * DON'T CHANGE ANYTHING BELOW THIS LINE
+         * Also there are some spoilers about the solution in the verification process down below
+         * so if you don't want to see it, don't scroll down
+         */
 
-        // Testing your solution.
-        // TODO: All this code is bad. Please fix it. #330
+        /*
+         * Testing your solution.
+         * TODO: All this code is bad. Please fix it. #330
+         */
         let target = self;
         let correctParameters = false;
         let potentiallyCancelled = false;
@@ -77,8 +83,10 @@ export const blueprint: Blueprint = {
 
         solution();
 
-        // This only happens if the `TargetSelectionStarts` event fired, but not `TargetSelected`.
-        // That only happens if the card was cancelled after the `TargetSelectionStarts` event fired
+        /*
+         * This only happens if the `TargetSelectionStarts` event fired, but not `TargetSelected`.
+         * That only happens if the card was cancelled after the `TargetSelectionStarts` event fired
+         */
         if (potentiallyCancelled) {
             game.pause('You cancelled the card. The verification process depends on a minion actually being killed. Try again.\n');
             return game.constants.refund;

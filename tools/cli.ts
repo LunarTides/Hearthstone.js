@@ -160,8 +160,10 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | und
                         return;
                     }
 
-                    // Validate it. This will not do the compiler's job for us, only the stuff that the compiler doesn't do.
-                    // That means that the blueprint isn't very validated, which means this WILL crash if you create an invalid card.
+                    /*
+                     * Validate it. This will not do the compiler's job for us, only the stuff that the compiler doesn't do.
+                     * That means that the blueprint isn't very validated, which means this WILL crash if you create an invalid card.
+                     */
                     game.functions.card.validateBlueprint(blueprint);
 
                     // The default type is CLI

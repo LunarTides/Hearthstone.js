@@ -566,8 +566,10 @@ export class Player {
             return true;
         }
 
-        // The amount of damage to take is however much damage penetrated the armor.
-        // The remaining armor is negative, so turn it into a positive number so it's easier to work with
+        /*
+         * The amount of damage to take is however much damage penetrated the armor.
+         * The remaining armor is negative, so turn it into a positive number so it's easier to work with
+         */
         amount = Math.abs(remainingArmor);
 
         this.health -= amount;

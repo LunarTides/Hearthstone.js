@@ -52,6 +52,10 @@
       "no-warning-comments": "off",
       "no-unused-vars": "error",
       "require-jsdoc": "error",
+      "multiline-comment-style": [
+        "error",
+        "starred-block"
+      ],
       "@typescript-eslint/object-curly-spacing": [
         "error",
         "always"

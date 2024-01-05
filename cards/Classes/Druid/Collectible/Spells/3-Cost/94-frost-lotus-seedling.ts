@@ -35,8 +35,10 @@ export const blueprint: Blueprint = {
     },
 
     cast(plr, self) {
-        // Draw {1|2} card{|s}. Gain {5|10} Armor.{ (Blossoms in 3 turns.)|}
-        //       ^ ^ Left side is if not blossomed, right side if blossomed
+        /*
+         * Draw {1|2} card{|s}. Gain {5|10} Armor.{ (Blossoms in 3 turns.)|}
+         *       ^ ^ Left side is if not blossomed, right side if blossomed
+         */
         const { blossomed } = self.storage;
 
         plr.drawCard();

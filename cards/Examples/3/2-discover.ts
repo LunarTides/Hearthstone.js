@@ -18,8 +18,10 @@ export const blueprint: Blueprint = {
     cast(plr, self) {
         // Discover a spell.
 
-        // The discover function needs a list of cards to choose from.
-        // This list will act like a pool of cards.
+        /*
+         * The discover function needs a list of cards to choose from.
+         * This list will act like a pool of cards.
+         */
 
         // This gets every card from the game, excluding uncollectible cards.
         let pool = game.functions.card.getAll();

@@ -547,14 +547,16 @@ export class Game {
                 this.summonMinion(minion, player);
                 unsuppress();
 
-                // Activate the minion's passive
-                // We're doing this because otherwise, the passive won't be activated this turn
-                // Normally when we summon a minion, it will be activated immediately, since the `PlayCard` event gets triggered immediately after playing the card
-                // but this is not the case here, since we are directly summoning the minion, and we told it to not broadcast the event.
-                // The `reborn` string is passed in order for the card to know why the passive was triggered. The card can explicitly look for the `reborn` string
-                // in its passive.
-                // So it looks like this:
-                // minion.activate(key, reason, minion);
+                /*
+                 * Activate the minion's passive
+                 * We're doing this because otherwise, the passive won't be activated this turn
+                 * Normally when we summon a minion, it will be activated immediately, since the `PlayCard` event gets triggered immediately after playing the card
+                 * but this is not the case here, since we are directly summoning the minion, and we told it to not broadcast the event.
+                 * The `reborn` string is passed in order for the card to know why the passive was triggered. The card can explicitly look for the `reborn` string
+                 * in its passive.
+                 * So it looks like this:
+                 * minion.activate(key, reason, minion);
+                 */
                 minion.activate('passive', 'reborn', card, this.player);
 
                 spared.push(minion);
@@ -661,8 +663,10 @@ const attack = {
 
     // Attacker is a number
     _attackerIsNum(attacker: number | string, target: Target): GameAttackReturn {
-        // Attacker is a number
-        // Spell damage
+        /*
+         * Attacker is a number
+         * Spell damage
+         */
         const damage = attack._spellDamage(attacker, target);
 
         if (target instanceof Player) {
@@ -1027,8 +1031,10 @@ const playCard = {
         // Store the result of the type-specific code
         let result: GamePlayCardReturn = true;
 
-        // Type specific code
-        // HACK: Use of never
+        /*
+         * Type specific code
+         * HACK: Use of never
+         */
         const typeFunction: (card: Card, player: Player) => GamePlayCardReturn = playCard.typeSpecific[card.type as never];
         if (!typeFunction) {
             throw new TypeError('Cannot handle playing card of type: ' + card.type);
@@ -1417,9 +1423,11 @@ const cards = {
 
         const colossalMinionIds = minion.getKeyword('Colossal') as number[] | undefined;
         if (colossalMinionIds && colossal) {
-            // Minion.colossal is a string array.
-            // example: ["Left Arm", "", "Right Arm"]
-            // the "" gets replaced with the main minion
+            /*
+             * Minion.colossal is a string array.
+             * example: ["Left Arm", "", "Right Arm"]
+             * the "" gets replaced with the main minion
+             */
 
             for (const cardId of colossalMinionIds) {
                 const unsuppress = game.functions.event.suppress('SummonMinion');

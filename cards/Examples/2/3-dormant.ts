@@ -17,9 +17,11 @@ export const blueprint: Blueprint = {
     tribe: 'None',
 
     create(plr, self) {
-        // The 2 is how many turns this minion should be dormant for.
-        // Full disclosure: The dormant system is one of the most untested parts of this game.
-        // If you find any bugs, please open an issue.
+        /*
+         * The 2 is how many turns this minion should be dormant for.
+         * Full disclosure: The dormant system is one of the most untested parts of this game.
+         * If you find any bugs, please open an issue.
+         */
         self.addKeyword('Dormant', 2);
     },
 
