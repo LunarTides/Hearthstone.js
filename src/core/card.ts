@@ -239,6 +239,11 @@ export class Card {
     runes?: string;
 
     /**
+     * The amount of spell damage the card has.
+     */
+    spellDamage?: number;
+
+    /**
      * The amount of turns stealth should last.
      *
      * Set to 0 if the card is does not have a stealth duration.

@@ -1463,11 +1463,10 @@ const cards = {
 
         game.board[player.id].push(minion);
 
+        // Calculate new spell damage
         for (const card of game.board[player.id]) {
-            for (const key of Object.keys(card.keywords)) {
-                if (key.startsWith('Spell Damage +')) {
-                    player.spellDamage += game.lodash.parseInt(key.split('+')[1]);
-                }
+            if (card.spellDamage) {
+                player.spellDamage += card.spellDamage;
             }
         }
 
