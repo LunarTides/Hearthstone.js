@@ -178,7 +178,11 @@ export const cardFunctions = {
             return undefined;
         }
 
-        return game.createCard(cards[0].id, player);
+        const unsuppress = game.functions.event.suppress('CreateCard');
+        const returnValue = game.createCard(cards[0].id, player);
+        unsuppress();
+
+        return returnValue;
     },
 
     /**
@@ -187,10 +191,16 @@ export const cardFunctions = {
      * @param uncollectible If it should filter out all uncollectible cards
      */
     getAll(uncollectible = true): Card[] {
+        // Don't broadcast CreateCard event here since it would spam the history and log files
+        const unsuppress = game.functions.event.suppress('CreateCard');
+
         if (game.cards.length <= 0) {
             game.cards = game.blueprints.map(card => new Card(card.id, game.player));
+
             this.generateIdsFile();
         }
+
+        unsuppress();
 
         return game.cards.filter(c => c.collectible || !uncollectible);
     },
@@ -298,7 +308,11 @@ export const cardFunctions = {
      * Returns all classes in the game
      */
     getClasses(): CardClassNoNeutral[] {
-        return game.cardCollections.classes.map(heroId => new Card(heroId, game.player).classes[0]) as CardClassNoNeutral[];
+        const unsuppress = game.functions.event.suppress('CreateCard');
+        const returnValue = game.cardCollections.classes.map(heroId => new Card(heroId, game.player).classes[0]) as CardClassNoNeutral[];
+        unsuppress();
+
+        return returnValue;
     },
 
     /**

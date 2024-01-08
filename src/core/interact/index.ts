@@ -60,9 +60,13 @@ export const interact = {
             }
 
             // Debug mode is enabled, use the 30 Sheep debug deck.
+            const unsuppress = game.functions.event.suppress('CreateCard');
+
             while (plr.deck.length < 30) {
                 plr.deck.push(new Card(game.cardIds.sheep1, plr));
             }
+
+            unsuppress();
         }
 
         return result;

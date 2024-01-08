@@ -133,7 +133,9 @@ export const deckcodeFunctions = {
                     continue;
                 }
 
+                const unsuppress = game.functions.event.suppress('CreateCard');
                 const card = new Card(blueprint.id, plr);
+                unsuppress();
 
                 for (let i = 0; i < game.lodash.parseInt(copies); i++) {
                     newDeck.push(card.perfectCopy());
@@ -412,7 +414,11 @@ export const deckcodeFunctions = {
                 throw new Error('c is an invalid card');
             }
 
-            return new Card(c.id, plr);
+            const unsuppress = game.functions.event.suppress('CreateCard');
+            const returnValue = new Card(c.id, plr);
+            unsuppress();
+
+            return returnValue;
         });
         const trueCards = cardsSplitCard.map(c => c.name);
 

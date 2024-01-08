@@ -777,7 +777,9 @@ export class Player {
      * @returns Success
      */
     setToStartingHero(heroClass = this.heroClass): boolean {
+        const unsuppress = game.functions.event.suppress('CreateCard');
         const heroCardId = game.cardCollections.classes.map(heroId => new Card(heroId, this)).find(card => card.classes.includes(heroClass))?.id;
+        unsuppress();
 
         if (!heroCardId) {
             return false;

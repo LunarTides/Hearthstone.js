@@ -223,6 +223,11 @@ export const eventManager: EventManagerType = {
     broadcast(key, value, plr, updateHistory = true): boolean {
         this.tick(key, value, plr);
 
+        // Check if the event is suppressed
+        if (this.suppressed.includes(key) && !this.forced.includes(key)) {
+            return false;
+        }
+
         if (updateHistory) {
             // Clone the value if it is a card.
             let historyValue = value;
@@ -232,11 +237,6 @@ export const eventManager: EventManagerType = {
             }
 
             this.addHistory(key, historyValue, plr);
-        }
-
-        // Check if the event is suppressed
-        if (this.suppressed.includes(key) && !this.forced.includes(key)) {
-            return false;
         }
 
         if (plr.id === -1) {
