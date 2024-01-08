@@ -1296,6 +1296,13 @@ export class Card {
     }
 
     /**
+     * @returns If this card has stats
+     */
+    hasStats(): boolean {
+        return this.type === 'Minion' || this.type === 'Weapon';
+    }
+
+    /**
      * Checks if this card is a valid card to put into its players deck
      *
      * @returns Success | Errorcode

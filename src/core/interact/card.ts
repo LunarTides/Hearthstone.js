@@ -335,7 +335,7 @@ export const cardInteract = {
             sb += ` (#<#${idHex}>${card.id}</#> @${card.coloredUUID()})`;
         }
 
-        if (card.attack && card.health) {
+        if (card.hasStats()) {
             const titan = card.getKeyword('Titan') as number[] | false;
 
             sb += titan ? game.functions.color.if(!card.sleepy!, 'bright:green', ` [${titan.length} Abilities Left]`) : game.functions.color.if(card.canAttack(), 'bright:green', ` [${card.attack} / ${card.health}]`);
