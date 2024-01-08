@@ -223,11 +223,11 @@ export const interact = {
      * @returns The card or hero chosen
      */
     selectTarget(prompt: string, card: Card | undefined, forceSide: SelectTargetAlignment, forceClass: SelectTargetClass, flags: SelectTargetFlag[] = []): Target | false {
-        game.events.broadcast('TargetSelectionStarts', [prompt, card, forceSide, forceClass, flags], game.player);
+        game.event.broadcast('TargetSelectionStarts', [prompt, card, forceSide, forceClass, flags], game.player);
         const target = this._selectTarget(prompt, card, forceSide, forceClass, flags);
 
         if (target) {
-            game.events.broadcast('TargetSelected', [card, target], game.player);
+            game.event.broadcast('TargetSelected', [card, target], game.player);
         }
 
         return target;

@@ -46,9 +46,9 @@ export class Game {
     opponent: Player;
 
     /**
-     * Events & History managment and tracker.
+     * Event & History managment and tracker.
      */
-    events = eventManager;
+    event = eventManager;
 
     /**
      * This has a lot of functions for interacting with the user.
@@ -393,10 +393,9 @@ export class Game {
         // Kill all minions with 0 or less health
         this.killMinions();
 
-        // Update events
-        this.events.broadcast('EndTurn', this.turns, this.player);
-
+        // Everything after this comment happens when the player's turn ends
         const { player, opponent } = this;
+        this.event.broadcast('EndTurn', this.turn, player);
 
         // Ready the minions for the next turn.
         for (const card of player.getBoard()) {
@@ -406,7 +405,7 @@ export class Game {
 
         // Trigger unspent mana
         if (player.mana > 0) {
-            this.events.broadcast('UnspentMana', player.mana, player);
+            this.event.broadcast('UnspentMana', player.mana, player);
         }
 
         // Remove echo cards
@@ -486,7 +485,7 @@ export class Game {
 
         opponent.canUseHeroPower = true;
 
-        this.events.broadcast('StartTurn', this.turns, opponent);
+        this.event.broadcast('StartTurn', this.turn, opponent);
 
         this.player = opponent;
         this.opponent = player;
@@ -527,9 +526,9 @@ export class Game {
 
                 // Calmly tell the minion that it is going to die
                 card.activate('remove');
-                this.events.broadcast('KillMinion', card, this.player);
 
                 card.turnKilled = this.turns;
+                this.event.broadcast('KillCard', card, this.player);
                 amount++;
 
                 player.corpses++;
@@ -718,7 +717,7 @@ const attack = {
     _attackerIsPlayerAndTargetIsPlayer(attacker: Player, target: Player): GameAttackReturn {
         // Get the attacker's attack damage, and attack the target with it
         attack.attack(attacker.attack, target);
-        game.events.broadcast('Attack', [attacker, target], attacker);
+        game.event.broadcast('Attack', [attacker, target], attacker);
 
         // The attacker can't attack anymore this turn.
         attacker.canAttack = false;
@@ -737,9 +736,9 @@ const attack = {
         // The attacker should damage the target
         game.attack(attacker.attack, target);
         game.attack(target.attack!, attacker);
-        game.events.broadcast('Attack', [attacker, target], attacker);
 
         game.killMinions();
+        game.event.broadcast('Attack', [attacker, target], attacker);
 
         // The attacker can't attack anymore this turn.
         attacker.canAttack = false;
@@ -808,7 +807,7 @@ const attack = {
 
         // Remember this attack
         attacker.decAttack();
-        game.events.broadcast('Attack', [attacker, target], attacker.plr);
+        game.event.broadcast('Attack', [attacker, target], attacker.plr);
 
         return true;
     },
@@ -822,7 +821,7 @@ const attack = {
         attack._attackerIsCardAndTargetIsCardDoAttacker(attacker, target);
         attack._attackerIsCardAndTargetIsCardDoTarget(attacker, target);
 
-        game.events.broadcast('Attack', [attacker, target], attacker.plr);
+        game.event.broadcast('Attack', [attacker, target], attacker.plr);
 
         return true;
     },
@@ -953,7 +952,7 @@ const attack = {
         let dmg = game.lodash.parseInt(match[1]);
         dmg += game.player.spellDamage;
 
-        game.events.broadcast('SpellDealsDamage', [target, dmg], game.player);
+        game.event.broadcast('SpellDealsDamage', [target, dmg], game.player);
         return dmg;
     },
 
@@ -1024,7 +1023,7 @@ const playCard = {
         }
 
         // Broadcast `PlayCardUnsafe` event without adding it to the history
-        game.events.broadcast('PlayCardUnsafe', card, player, false);
+        game.event.broadcast('PlayCardUnsafe', card, player, false);
 
         // Finale
         if (player[card.costType] === 0) {
@@ -1051,7 +1050,7 @@ const playCard = {
         }
 
         // Add the `PlayCardUnsafe` event to the history, now that it's safe to do so
-        game.events.addHistory('PlayCardUnsafe', card, player);
+        game.event.addHistory('PlayCardUnsafe', card, player);
 
         // Echo
         playCard._echo(card, player);
@@ -1060,7 +1059,7 @@ const playCard = {
         playCard._combo(card, player);
 
         // Broadcast `PlayCard` event
-        game.events.broadcast('PlayCard', card, player);
+        game.event.broadcast('PlayCard', card, player);
 
         playCard._corrupt(card, player);
         game.killMinions();
@@ -1184,7 +1183,7 @@ const playCard = {
         player.drawCard();
         player.shuffleIntoDeck(card);
 
-        game.events.broadcast('TradeCard', card, player);
+        game.event.broadcast('TradeCard', card, player);
 
         return true;
     },
@@ -1219,7 +1218,7 @@ const playCard = {
         const forged = new Card(forgeId, player);
         player.addToHand(forged);
 
-        game.events.broadcast('ForgeCard', card, player);
+        game.event.broadcast('ForgeCard', card, player);
 
         return true;
     },
@@ -1295,12 +1294,12 @@ const playCard = {
     },
 
     _combo(card: Card, player: Player): boolean {
-        if (!game.events.events.PlayCard) {
+        if (!game.event.events.PlayCard) {
             return false;
         }
 
         // Get the player's PlayCard event history
-        const stat = game.events.events.PlayCard[player.id];
+        const stat = game.event.events.PlayCard[player.id];
         if (stat.length <= 0) {
             return false;
         }

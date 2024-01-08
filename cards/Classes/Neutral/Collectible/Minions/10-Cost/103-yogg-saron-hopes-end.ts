@@ -20,7 +20,7 @@ export const blueprint: Blueprint = {
 
     battlecry(plr, self) {
         // Cast a random spell for each spell you've cast this game (targets chosen randomly).
-        const amount = game.events.events.PlayCard?.[plr.id].filter(object => object[0] instanceof Card && object[0].type === 'Spell').length;
+        const amount = game.event.events.PlayCard?.[plr.id].filter(object => object[0] instanceof Card && object[0].type === 'Spell').length;
         if (!amount) {
             return;
         }

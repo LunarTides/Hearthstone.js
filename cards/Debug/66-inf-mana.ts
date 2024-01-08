@@ -35,7 +35,7 @@ export const blueprint: Blueprint = {
         assert.equal(plr.mana, 5);
 
         // Manually tick the game
-        game.events.tick('GameLoop', undefined, plr);
+        game.event.tick('GameLoop', undefined, plr);
 
         assert.equal(plr.mana, 10);
 

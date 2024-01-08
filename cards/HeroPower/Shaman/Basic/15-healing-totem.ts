@@ -46,7 +46,7 @@ export const blueprint: Blueprint = {
         assert(checkSheepHealth(1));
 
         // Broadcast a dummy event. All sheep should still have 1 health.
-        game.events.broadcastDummy(plr);
+        game.event.broadcastDummy(plr);
         assert(checkSheepHealth(1));
 
         // End the player's turn. All sheep should now have 2 health.

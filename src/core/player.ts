@@ -444,7 +444,7 @@ export class Player {
     addOverload(overload: number): boolean {
         this.overload += overload;
 
-        game.events.broadcast('GainOverload', overload, this);
+        game.event.broadcast('GainOverload', overload, this);
 
         return true;
     }
@@ -527,7 +527,7 @@ export class Player {
     addAttack(amount: number): boolean {
         this.attack += amount;
 
-        game.events.broadcast('GainHeroAttack', amount, this);
+        game.event.broadcast('GainHeroAttack', amount, this);
 
         return true;
     }
@@ -581,10 +581,10 @@ export class Player {
 
         this.health -= amount;
 
-        game.events.broadcast('TakeDamage', amount, this);
+        game.event.broadcast('TakeDamage', amount, this);
 
         if (this.health <= 0) {
-            game.events.broadcast('FatalDamage', undefined, this);
+            game.event.broadcast('FatalDamage', undefined, this);
 
             if (this.health <= 0) { // This is done to allow secrets to prevent death
                 game.endGame(this.getOpponent());
@@ -618,7 +618,7 @@ export class Player {
         const position = game.lodash.random(0, this.deck.length);
         this.deck.splice(position, 0, card);
 
-        game.events.broadcast('AddCardToDeck', card, this);
+        game.event.broadcast('AddCardToDeck', card, this);
 
         this.deck = game.lodash.shuffle(this.deck);
 
@@ -636,7 +636,7 @@ export class Player {
     addToBottomOfDeck(card: Card): boolean {
         this.deck = [card, ...this.deck];
 
-        game.events.broadcast('AddCardToDeck', card, this);
+        game.event.broadcast('AddCardToDeck', card, this);
 
         return true;
     }
@@ -662,7 +662,7 @@ export class Player {
             return this.fatigue;
         }
 
-        game.events.broadcast('DrawCard', card, this);
+        game.event.broadcast('DrawCard', card, this);
 
         // Cast on draw
         if (card.type === 'Spell' && card.hasKeyword('Cast On Draw') && card.activate('cast')) {
@@ -712,7 +712,7 @@ export class Player {
         }
 
         game.functions.util.remove(this.deck, card);
-        game.events.broadcast('DrawCard', card, this);
+        game.event.broadcast('DrawCard', card, this);
 
         if (card.type === 'Spell' && card.hasKeyword('Cast On Draw') && card.activate('cast')) {
             return undefined;
@@ -740,7 +740,7 @@ export class Player {
 
         this.hand.push(card);
 
-        game.events.broadcast('AddCardToHand', card, this);
+        game.event.broadcast('AddCardToHand', card, this);
         return true;
     }
 
@@ -808,7 +808,7 @@ export class Player {
         this.mana -= this.hero.heroPower!.cost;
         this.canUseHeroPower = false;
 
-        game.events.broadcast('HeroPower', this.hero.heroPower, this);
+        game.event.broadcast('HeroPower', this.hero.heropower, this);
         return true;
     }
 

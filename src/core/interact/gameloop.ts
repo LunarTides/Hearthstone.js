@@ -40,7 +40,7 @@ export const gameloopInteract = { /**
      */
     input(q = '', overrideNoInput = false, useInputQueue = true): string {
         const wrapper = (a: string) => {
-            game.events.broadcast('Input', a, game.player);
+            game.event.broadcast('Input', a, game.player);
 
             return a;
         };
@@ -326,7 +326,7 @@ export const gameloopInteract = { /**
      * @returns Success | Ignored error code | The return value of doTurnLogic
      */
     doTurn(): boolean | string | GamePlayCardReturn {
-        game.events.tick('GameLoop', 'doTurn', game.player);
+        game.event.tick('GameLoop', 'doTurn', game.player);
 
         if (game.player.ai) {
             const rawInput = game.player.ai.calcMove();
@@ -336,7 +336,7 @@ export const gameloopInteract = { /**
 
             const input = rawInput instanceof Card ? (game.player.hand.indexOf(rawInput) + 1).toString() : rawInput;
 
-            game.events.broadcast('Input', input, game.player);
+            game.event.broadcast('Input', input, game.player);
             const turn = this.doTurnLogic(input);
 
             game.killMinions();

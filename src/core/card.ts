@@ -331,7 +331,7 @@ export class Card {
             this.placeholder = placeholder[0] as Record<string, any>;
         }
 
-        game.events.broadcast('CreateCard', this, this.plr);
+        game.event.broadcast('CreateCard', this, this.plr);
         this.activate('create');
 
         this.replacePlaceholders();
@@ -517,7 +517,7 @@ export class Card {
         this.turnFrozen = game.turns;
         this.addKeyword('Frozen');
 
-        game.events.broadcast('FreezeCard', this, this.plr);
+        game.event.broadcast('FreezeCard', this, this.plr);
 
         return true;
     }
@@ -659,10 +659,10 @@ export class Card {
             this.health = this.maxHealth ?? -1;
 
             if (this.health > before) {
-                game.events.broadcast('HealthRestored', this.maxHealth, this.plr);
+                game.event.broadcast('HealthRestored', this.maxHealth, this.plr);
             }
         } else if (this.health > before) {
-            game.events.broadcast('HealthRestored', this.health, this.plr);
+            game.event.broadcast('HealthRestored', this.health, this.plr);
         }
 
         return true;
@@ -696,7 +696,7 @@ export class Card {
         }
 
         this.setStats(this.attack, this.health - amount);
-        game.events.broadcast('DamageMinion', [this, amount], this.plr);
+        game.event.broadcast('DamageCard', [this, amount], this.plr);
 
         if (this.type === 'Weapon' && this.health <= 0) {
             this.plr.destroyWeapon();
@@ -950,7 +950,7 @@ export class Card {
             }
 
             // If the return value is -1, meaning "refund", refund the card and stop the for loop
-            game.events.broadcast('CancelCard', [this, name], this.plr);
+            game.event.broadcast('CancelCard', [this, name], this.plr);
 
             returnValue = game.constants.refund;
 

@@ -2,7 +2,7 @@ import { type EventKey, type EventManagerEvents, type HistoryKey, type TickHookC
 import { Card, type Player } from '../internal.js';
 
 type EventManagerType = {
-    eventListeners: number;
+    listenerCount: number;
     tickHooks: TickHookCallback[];
     history: Record<number, HistoryKey[]>;
     events: EventManagerEvents;
@@ -23,7 +23,7 @@ export const eventManager: EventManagerType = {
     /**
      * The amount of event listeners that have been added to the game, this never decreases.
      */
-    eventListeners: 0,
+    listenerCount: 0,
 
     /**
      * The hooks that will be run when the game ticks.
@@ -76,7 +76,7 @@ export const eventManager: EventManagerType = {
          */
 
         // Infuse
-        if (key === 'KillMinion') {
+        if (key === 'KillCard') {
             for (const card of player.hand) {
                 card.tryInfuse();
             }
@@ -238,10 +238,10 @@ export const eventManager: EventManagerType = {
         }
 
         if (!this.events[key]) {
-            this.events[key] = [[['GameLoop', game.turns]], [['GameLoop', game.turns]]];
+            this.events[key] = [[['GameLoop', game.turn]], [['GameLoop', game.turn]]];
         }
 
-        this.events[key]![plr.id].push([value, game.turns]);
+        this.events[key]![plr.id].push([value, game.turn]);
 
         this.cardUpdate(key, value, plr);
 
@@ -260,11 +260,11 @@ export const eventManager: EventManagerType = {
      * @param plr The player who caused the event to happen
      */
     addHistory(key, value, plr): void {
-        if (!this.history[game.turns]) {
-            this.history[game.turns] = [['GameLoop', `Init ${key}`, plr]];
+        if (!this.history[game.turn]) {
+            this.history[game.turn] = [['GameLoop', `Init ${key}`, plr]];
         }
 
-        this.history[game.turns].push([key, value, plr]);
+        this.history[game.turn].push([key, value, plr]);
     },
 
     /**

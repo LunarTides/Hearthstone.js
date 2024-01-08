@@ -31,7 +31,7 @@ export const blueprint: Blueprint = {
             throw new Error('No choice found');
         }
 
-        game.events.broadcast('CardEvent', [self, choice], plr);
+        game.event.broadcast('CardEvent', [self, choice], plr);
 
         const minionPool = game.functions.card.getAll().filter(card => card.type === 'Minion');
         const spellPool = game.functions.card.getAll().filter(card => card.type === 'Spell');
@@ -146,7 +146,7 @@ export const blueprint: Blueprint = {
     },
 
     placeholders(plr, self) {
-        const amount = game.events.events.PlayCard?.[plr.id].filter(object => object[0] instanceof Card && object[0].type === 'Spell').length;
+        const amount = game.event.events.PlayCard?.[plr.id].filter(object => object[0] instanceof Card && object[0].type === 'Spell').length;
         if (!amount) {
             return { left: ' <i>(10 left!)</i>' };
         }
@@ -159,7 +159,7 @@ export const blueprint: Blueprint = {
     },
 
     condition(plr, self) {
-        const amount = game.events.events.PlayCard?.[plr.id].filter(object => object[0] instanceof Card && object[0].type === 'Spell').length;
+        const amount = game.event.events.PlayCard?.[plr.id].filter(object => object[0] instanceof Card && object[0].type === 'Spell').length;
         if (!amount) {
             return false;
         }

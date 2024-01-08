@@ -53,7 +53,7 @@ export const blueprint: Blueprint = {
         assert(checkSheepAttack(false));
 
         // Broadcast a dummy event. All sheep should still have 1 attack.
-        game.events.broadcastDummy(plr);
+        game.event.broadcastDummy(plr);
         assert(checkSheepAttack(false));
 
         // Check this 50 times

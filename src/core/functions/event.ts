@@ -13,7 +13,7 @@ export const eventFunctions = {
     addListener(key: EventKey | '', callback: EventListenerCallback, lifespan = 1): () => boolean {
         let times = 0;
 
-        const id = game.events.eventListeners;
+        const id = game.event.listenerCount;
         let alive = true;
 
         /**
@@ -72,7 +72,7 @@ export const eventFunctions = {
             }
         };
 
-        game.events.eventListeners++;
+        game.event.listenerCount++;
 
         return destroy;
     },
@@ -85,10 +85,10 @@ export const eventFunctions = {
      * @returns A function that, when called, will remove the hook from the tick event.
      */
     hookToTick(callback: TickHookCallback): () => void {
-        game.events.tickHooks.push(callback);
+        game.event.tickHooks.push(callback);
 
         const unhook = () => {
-            game.functions.util.remove(game.events.tickHooks, callback);
+            game.functions.util.remove(game.event.tickHooks, callback);
         };
 
         return unhook;
@@ -102,12 +102,12 @@ export const eventFunctions = {
      * @returns A function that undoes the suppression.
      */
     suppress(key: EventKey): () => boolean {
-        game.events.suppressed.push(key);
+        game.event.suppressed.push(key);
 
         /**
          * Unsuppresses the event key.
          */
-        const unsuppress = () => game.functions.util.remove(game.events.suppressed, key);
+        const unsuppress = () => game.functions.util.remove(game.event.suppressed, key);
 
         return unsuppress;
     },
@@ -120,12 +120,12 @@ export const eventFunctions = {
      * @returns A function that undoes this.
      */
     ignoreSuppression(key: EventKey): () => boolean {
-        game.events.forced.push(key);
+        game.event.forced.push(key);
 
         /**
          * Stops ignoring suppressions for that key
          */
-        const undo = () => game.functions.util.remove(game.events.suppressed, key);
+        const undo = () => game.functions.util.remove(game.event.suppressed, key);
 
         return undo;
     },

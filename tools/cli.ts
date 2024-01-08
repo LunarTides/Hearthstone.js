@@ -202,7 +202,7 @@ export function main(userInputLoop: (prompt: string, exitCharacter: string | und
                     // eslint-disable-next-line no-eval
                     eval(code);
 
-                    game.events.broadcast('Eval', code, game.player);
+                    game.event.broadcast('Eval', code, game.player);
                 } catch (error) {
                     if (!(error instanceof Error)) {
                         throw new TypeError('`error` is not an instance of Error');

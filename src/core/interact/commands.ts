@@ -128,7 +128,7 @@ export const commands: CommandList = {
             card.sleepy = true;
         }
 
-        game.events.broadcast('Titan', [card, ability], game.player);
+        game.event.broadcast('Titan', [card, ability], game.player);
 
         return true;
     },
@@ -415,7 +415,7 @@ export const commands: CommandList = {
 
     history(_, flags): string {
         // History
-        const { history } = game.events;
+        const { history } = game.event;
         let finished = '';
 
         const showCard = (value: Card) => `${game.interact.card.getReadable(value)} which belongs to: <blue>${value.plr.name}</blue>, and has uuid: ${value.coloredUUID()}`;
@@ -607,7 +607,7 @@ export const debugCommands: CommandList = {
             // eslint-disable-next-line no-eval
             eval(code);
 
-            game.events.broadcast('Eval', code, game.player);
+            game.event.broadcast('Eval', code, game.player);
         } catch (error) {
             if (!(error instanceof Error)) {
                 throw new TypeError('`error` is not an instance of Error');
@@ -628,12 +628,12 @@ export const debugCommands: CommandList = {
 
     undo(): boolean {
         // Get the last played card
-        if (!game.events.events.PlayCard || game.events.events.PlayCard[game.player.id].length <= 0) {
+        if (!game.event.events.PlayCard || game.event.events.PlayCard[game.player.id].length <= 0) {
             game.pause('<red>No cards to undo.</red>\n');
             return false;
         }
 
-        const eventCards: Array<[Card, number]> = game.events.events.PlayCard[game.player.id];
+        const eventCards: Array<[Card, number]> = game.event.events.PlayCard[game.player.id];
         if (eventCards.length <= 0) {
             game.pause('<red>No cards to undo.</red>\n');
             return false;
@@ -646,7 +646,7 @@ export const debugCommands: CommandList = {
         }
 
         // Remove the event so you can undo more than the last played card
-        game.events.events.PlayCard[game.player.id].pop();
+        game.event.events.PlayCard[game.player.id].pop();
 
         // If the card can appear on the board, remove it.
         if (card.canBeOnBoard()) {

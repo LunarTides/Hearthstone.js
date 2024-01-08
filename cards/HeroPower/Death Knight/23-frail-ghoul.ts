@@ -41,7 +41,7 @@ export const blueprint: Blueprint = {
         assert(checkIfThisCardIsOnTheBoard());
 
         // Broadcast a dummy event, the minion should still be on the board
-        game.events.broadcastDummy(plr);
+        game.event.broadcastDummy(plr);
         assert(checkIfThisCardIsOnTheBoard());
 
         // End the player's turn, the minion should no longer be on the board
