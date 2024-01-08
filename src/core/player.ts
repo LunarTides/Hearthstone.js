@@ -1143,4 +1143,18 @@ export class Player {
     summon(card: Card, colossal = true) {
         return game.summon(card, this, colossal);
     }
+
+    /**
+     * Makes this player attack a minion or hero
+     *
+     * This is just a shortcut for `game.attack(this, target, force)`. Whether to use this or `game.attack` is up to you and your preferences.
+     *
+     * @param target The target
+     * @param force Whether to force the attack. This will bypass any attack restrictions. By default, this is false.
+     *
+     * @returns Success | Errorcode
+     */
+    attackTarget(target: Target, force = false) {
+        return game.attack(this, target, force);
+    }
 }

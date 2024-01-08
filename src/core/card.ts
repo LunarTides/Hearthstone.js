@@ -4,7 +4,7 @@
  */
 import { randomUUID } from 'node:crypto';
 import { type Player } from '../internal.js';
-import { type Blueprint, type CardAbility, type CardClass, type CardKeyword, type CardRarity, type CardType, type CostType, type EnchantmentDefinition, type GameConfig, type Ability, type MinionTribe, type SpellSchool, type CardBackup } from '../types.js';
+import { type Blueprint, type CardAbility, type CardClass, type CardKeyword, type CardRarity, type CardType, type CostType, type EnchantmentDefinition, type GameConfig, type Ability, type MinionTribe, type SpellSchool, type CardBackup, type Target } from '../types.js';
 
 /**
  * Use this error type when throwing an error in a card
@@ -1557,5 +1557,19 @@ export class Card {
 
         this.plr = newOwner;
         newOwner.summon(this);
+    }
+
+    /**
+     * Makes this card attack a minion or hero
+     *
+     * This is just a shortcut for `game.attack(this, target, force)`. Whether to use this or `game.attack` is up to you and your preferences.
+     *
+     * @param target The target
+     * @param force Whether to force the attack. This will bypass any attack restrictions. By default, this is false.
+     *
+     * @returns Success | Errorcode
+     */
+    attackTarget(target: Target, force = false) {
+        return game.attack(this, target, force);
     }
 }
