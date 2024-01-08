@@ -136,7 +136,9 @@ export class Game {
     /**
      * Some constant values.
      */
-    constants: GameConstants;
+    constants: GameConstants = {
+        refund: -1,
+    };
 
     /**
      * Cache for the game.
@@ -160,10 +162,6 @@ export class Game {
      * @param player2 The second player.
      */
     setup(player1: Player, player2: Player): void {
-        // Set this to player 1 temporarily, in order to never be null
-        this.player1 = player1;
-        this.player2 = player2;
-
         // Choose a random player to be player 1 and player 2
         if (this.lodash.random(0, 1)) {
             this.player1 = player1;
@@ -180,11 +178,6 @@ export class Game {
         // Set the player's ids
         this.player1.id = 0;
         this.player2.id = 1;
-
-        // Some constants
-        this.constants = {
-            refund: -1,
-        };
     }
 
     /**
@@ -288,38 +281,44 @@ export class Game {
      * @returns Success
      */
     startGame(): boolean {
-        const players = [];
-
         // Make players draw cards
         for (let i = 0; i < 2; i++) {
-            // Set the player's hero to the default hero for the class
             const player = this.functions.util.getPlayerFromId(i);
 
+            // Suppress "AddCardToHand" and "DrawCard" events in the loop since the events need to be unsuppressed by the time any `card.activate` is called
+            const unsuppressAddCardToHand = this.functions.event.suppress('AddCardToHand');
+            const unsuppressDrawCard = this.functions.event.suppress('DrawCard');
+
+            // Set the player's hero to the starting hero for the class
             const success = player.setToStartingHero();
             if (!success) {
-                throw new Error('File \'cards/StartingHeroes/' + player.heroClass.toLowerCase().replaceAll(' ', '_') + '.ts\' is either; Missing or Incorrect. Please copy the working \'cards/StartingHeroes/\' folder from the github repo to restore a working copy. Error Code: 12');
+                // The starting hero for that class doesn't exist
+                throw new Error(`File 'cards/StartingHeroes/${player.heroClass}/?-hero.ts' is either; Missing or Incorrect. Please copy the working 'cards/StartingHeroes/' folder from the github repo to restore a working copy. Error Code: 12`);
             }
 
-            // Add quest cards to the players hands
+            /*
+             * Add quest cards to the players hands
+             * Loop through the player's deck and find cards that have the text "Quest: " or "Questline: " and add them to the player's hand
+             */
             for (const card of player.deck) {
-                if (!card.text.includes('Quest: ') && !card.text.includes('Questline: ')) {
+                const rawText = game.functions.color.stripTags(card.text);
+                if (!/^Quest(?:line)?: /.test(rawText)) {
                     continue;
                 }
 
-                const unsuppress = this.functions.event.suppress('AddCardToHand');
-                player.addToHand(card);
-                unsuppress();
-
-                player.deck.splice(player.deck.indexOf(card), 1);
+                player.drawSpecific(card);
             }
 
             // Draw 3-4 cards
             const amountOfCards = (player.id === 0) ? 3 : 4;
+
+            // This accounts for the quest cards
             while (player.hand.length < amountOfCards) {
-                const unsuppress = this.functions.event.suppress('DrawCard');
                 player.drawCard();
-                unsuppress();
             }
+
+            unsuppressAddCardToHand();
+            unsuppressDrawCard();
 
             for (const card of player.deck) {
                 card.activate('startofgame');
@@ -328,12 +327,7 @@ export class Game {
             for (const card of player.hand) {
                 card.activate('startofgame');
             }
-
-            players.push(player);
         }
-
-        this.player1 = players[0];
-        this.player2 = players[1];
 
         /*
          * Set the starting mana for the first player.
@@ -370,7 +364,7 @@ export class Game {
         const history = this.interact.gameLoop.handleCmds('history', { echo: false });
         console.log(history);
 
-        this.input(`Player ${winner.name} wins!\n`);
+        this.pause(`Player ${winner.name} wins!\n`);
 
         this.running = false;
 
@@ -440,10 +434,6 @@ export class Game {
                 card.remKeyword('Dormant');
                 card.sleepy = true;
 
-                if (Object.keys(card.backups.init.keywords).includes('Immune')) {
-                    card.addKeyword('Immune');
-                }
-
                 /*
                  * Set the card's turn to this turn.
                  * TODO: Should this happen?
@@ -471,8 +461,8 @@ export class Game {
             }
 
             // Location cooldown
-            if (card.type === 'Location' && card.cooldown && card.cooldown > 0) {
-                card.cooldown--;
+            if (card.type === 'Location' && card.cooldown! > 0) {
+                card.cooldown!--;
             }
         }
 
@@ -499,6 +489,12 @@ export class Game {
     killCardsOnBoard(): number {
         let amount = 0;
 
+        /*
+         * It should spare a card if it has more than 0 health, or if it has more than 0 durability
+         * TODO: Make this less hacky
+         */
+        const shouldSpare = (card: Card) => (card.health ?? 0) > 0 || ((card.durability ?? 0) > 0);
+
         for (let p = 0; p < 2; p++) {
             const player = this.functions.util.getPlayerFromId(p);
 
@@ -508,7 +504,6 @@ export class Game {
              * This will effectively remove all minions with 0 or less health from the board
              */
             const spared: Card[] = [];
-            const shouldSpare = (card: Card) => (card.health ?? 0) > 0 || ((card.durability ?? 0) > 0);
 
             // Trigger the deathrattles before doing the actual killing so the deathrattles can save the card by setting it's health to above 0
             for (const card of this.board[p]) {
