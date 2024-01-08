@@ -388,7 +388,7 @@ ${mainContent}
      * This only increments at the end of the second player's turn.
      */
     getTraditionalTurnCounter(): number {
-        return Math.ceil(game.turns / 2);
+        return Math.ceil(game.turn / 2);
     },
 
     /**

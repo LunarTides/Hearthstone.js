@@ -75,7 +75,7 @@ export const infoInteract = {
         this.watermark();
         console.log();
 
-        if (game.turns <= 2 && !game.config.general.debug) {
+        if (game.turn <= 2 && !game.config.general.debug) {
             this.license();
             console.log();
         }

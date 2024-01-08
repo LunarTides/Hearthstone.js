@@ -98,7 +98,7 @@ export class Game {
      * ```
      * for a more conventional turn counter.
      */
-    turns = 0;
+    turn = 0;
 
     /**
      * The board of the game.
@@ -342,8 +342,7 @@ export class Game {
         const coin = new Card(this.cardIds.theCoin2, this.player2);
         this.functions.event.withSuppressed('AddCardToHand', () => this.player2.addToHand(coin));
 
-
-        this.turns += 1;
+        this.turn += 1;
 
         return true;
     }
@@ -402,8 +401,8 @@ export class Game {
         player.hand = player.hand.filter(c => !c.hasKeyword('Echo'));
         player.canAttack = true;
 
-        // Turn starts
-        this.turns++;
+        // Everything after this comment happens when the opponent's turn starts
+        this.turn++;
 
         // Mana stuff
         opponent.addEmptyMana(1);
@@ -428,7 +427,8 @@ export class Game {
             const dormant = card.getKeyword('Dormant') as number | undefined;
 
             if (dormant) {
-                if (this.turns <= dormant) {
+                // If the current turn is less than the dormant value, do nothing
+                if (this.turn <= dormant) {
                     continue;
                 }
 
@@ -440,7 +440,11 @@ export class Game {
                     card.addKeyword('Immune');
                 }
 
-                card.turn = this.turns;
+                /*
+                 * Set the card's turn to this turn.
+                 * TODO: Should this happen?
+                 */
+                card.turn = this.turn;
 
                 // HACK: If the battlecry use a function that depends on `game.player`
                 this.player = opponent;
@@ -451,15 +455,13 @@ export class Game {
             }
 
             card.canAttackHero = true;
-            if (this.turns > (card.turnFrozen ?? -1) + 1) {
-                card.remKeyword('Frozen');
-            }
+            card.remKeyword('Frozen');
 
             card.ready();
             card.resetAttackTimes();
 
             // Stealth duration
-            if (card.stealthDuration && card.stealthDuration > 0 && this.turns > card.stealthDuration) {
+            if (card.stealthDuration && card.stealthDuration > 0 && this.turn > card.stealthDuration) {
                 card.stealthDuration = 0;
                 card.remKeyword('Stealth');
             }
@@ -517,8 +519,9 @@ export class Game {
                 // Calmly tell the minion that it is going to die
                 card.activate('remove');
 
-                card.turnKilled = this.turns;
                 this.event.broadcast('KillCard', card, this.player);
+
+                card.turnKilled = this.turn;
                 amount++;
 
                 player.corpses++;
@@ -1277,7 +1280,7 @@ const playCard = {
         const latestCard = latest?.[0] as Card;
 
         // If the previous card played was played on the same turn as this one, activate combo
-        if (latestCard.turn === game.turns) {
+        if (latestCard.turn === game.turn) {
             card.activate('combo');
         }
 
@@ -1295,7 +1298,6 @@ const playCard = {
             const corrupted = new Card(corruptId, player);
 
             game.functions.util.remove(player.hand, toCorrupt);
-
             game.functions.event.withSuppressed('AddCardToHand', () => player.addToHand(corrupted));
         }
 
@@ -1439,7 +1441,7 @@ const cards = {
              * This is so that the game can know when to remove the dormant by checking which turn it is.
              * We should really document this somewhere, since it can easily be overriden by a card after it has been summoned, which would cause unexpected behavior.
              */
-            card.setKeyword('Dormant', dormant + game.turns);
+            card.setKeyword('Dormant', dormant + game.turn);
             card.addKeyword('Immune');
 
             // TODO: Why are we readying the dormant minion?

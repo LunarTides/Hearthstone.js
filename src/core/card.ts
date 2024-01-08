@@ -296,7 +296,7 @@ export class Card {
         this.name = blueprint.name;
 
         // The turn the card was played
-        this.turn = game.turns;
+        this.turn = game.turn;
 
         // Redundant, makes the TypeScript compiler shut up
         this.type = this.blueprint.type;
@@ -743,7 +743,7 @@ export class Card {
      * @returns Success.
      */
     setStealthDuration(duration: number): boolean {
-        this.stealthDuration = game.turns + duration;
+        this.stealthDuration = game.turn + duration;
 
         return true;
     }
@@ -1275,7 +1275,7 @@ export class Card {
 
         clone.randomizeUUID();
         clone.sleepy = true;
-        clone.turn = game.turns;
+        clone.turn = game.turn;
 
         return clone;
     }
