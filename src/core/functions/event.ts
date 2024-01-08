@@ -27,13 +27,13 @@ export const eventFunctions = {
             }
 
             // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-            delete game.eventListeners[id];
+            delete game.event.listeners[id];
 
             alive = false;
             return true;
         };
 
-        game.eventListeners[id] = (_key, _unknownValue, eventPlayer) => {
+        game.event.listeners[id] = (_key, _unknownValue, eventPlayer) => {
             // Validate key. If key is empty, match any key.
             if (key !== '' && _key !== key) {
                 return;

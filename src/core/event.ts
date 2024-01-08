@@ -2,6 +2,7 @@ import { type EventKey, type EventManagerEvents, type HistoryKey, type TickHookC
 import { Card, type Player } from '../internal.js';
 
 type EventManagerType = {
+    listeners: Record<number, TickHookCallback>;
     listenerCount: number;
     tickHooks: TickHookCallback[];
     history: Record<number, HistoryKey[]>;
@@ -20,6 +21,11 @@ type EventManagerType = {
 };
 
 export const eventManager: EventManagerType = {
+    /**
+     * The event listeners that are attached to the game currently.
+     */
+    listeners: {},
+
     /**
      * The amount of event listeners that have been added to the game, this never decreases.
      */

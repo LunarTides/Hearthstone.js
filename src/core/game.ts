@@ -4,7 +4,7 @@
  */
 import _ from 'lodash';
 import { Player, Card, Ai, functions, interact, eventManager } from '../internal.js';
-import { type TickHookCallback, type Blueprint, type CardAbility, type CardKeyword, type EventKey, type GameAttackReturn, type GameConstants, type GamePlayCardReturn, type Target, type UnknownEventValue } from '../types.js';
+import { type Blueprint, type CardAbility, type CardKeyword, type EventKey, type GameAttackReturn, type GameConstants, type GamePlayCardReturn, type Target, type UnknownEventValue } from '../types.js';
 import { config } from '../../config.js';
 import { cardIds } from '../../cards/ids.js';
 
@@ -115,11 +115,6 @@ export class Game {
      * and the 1st element is `game.player2`'s graveyard.
      */
     graveyard: Card[][] = [[], []];
-
-    /**
-     * The event listeners that are attached to the game currently.
-     */
-    eventListeners: Record<number, TickHookCallback> = {};
 
     /**
      * If this is true, the game will not accept input from the user, and so the user can't interact with the game. This will most likely cause an infinite loop, unless both players are ai's.
@@ -280,7 +275,7 @@ export class Game {
      * @returns Return values of all the executed functions
      */
     triggerEventListeners(key: EventKey, value: UnknownEventValue, player: Player): void {
-        for (const eventListener of Object.values(this.eventListeners)) {
+        for (const eventListener of Object.values(this.event.listeners)) {
             eventListener(key, value, player);
         }
     }
