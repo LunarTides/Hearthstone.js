@@ -627,40 +627,43 @@ const attack = {
      *
      * @param attacker attacker | Amount of damage to deal
      * @param target The target
+     * @param force Whether to force the attack. This will bypass any attack restrictions. By default, this is false.
      *
      * @returns Success | Errorcode
      */
-    attack(attacker: Target | number | string, target: Target): GameAttackReturn {
+    attack(attacker: Target | number | string, target: Target, force = false): GameAttackReturn {
         let returnValue: GameAttackReturn;
 
-        // If the target is a card and is immune, you are not allowed to attack it
-        if (target instanceof Card && target.hasKeyword('Immune')) {
-            return 'immune';
-        }
+        if (!force) {
+            // If the target is a card and is immune, you are not allowed to attack it
+            if (target instanceof Card && target.hasKeyword('Immune')) {
+                return 'immune';
+            }
 
-        // If the target is a player and is immune, you are not allowed to attack it
-        if (target instanceof Player && target.immune) {
-            return 'immune';
-        }
+            // If the target is a player and is immune, you are not allowed to attack it
+            if (target instanceof Player && target.immune) {
+                return 'immune';
+            }
 
-        // If the attacker is a card and is frozen, it is not allowed to attack
-        if (attacker instanceof Card && attacker.hasKeyword('Frozen')) {
-            return 'frozen';
-        }
+            // If the attacker is a card and is frozen, it is not allowed to attack
+            if (attacker instanceof Card && attacker.hasKeyword('Frozen')) {
+                return 'frozen';
+            }
 
-        // If the attacker is a player and is frozen, it is not allowed to attack
-        if (attacker instanceof Player && attacker.frozen) {
-            return 'frozen';
+            // If the attacker is a player and is frozen, it is not allowed to attack
+            if (attacker instanceof Player && attacker.frozen) {
+                return 'frozen';
+            }
         }
 
         // Attacker is a number
         if (typeof attacker === 'string' || typeof attacker === 'number') {
-            return attack._attackerIsNum(attacker, target);
+            return attack._attackerIsNum(attacker, target, force);
         }
 
         // Check if there is a minion with taunt
         const taunts = game.opponent.getBoard().filter(m => m.hasKeyword('Taunt'));
-        if (taunts.length > 0) {
+        if (taunts.length > 0 && !force) {
             // If the target is a card and has taunt, you are allowed to attack it
             if (target instanceof Card && target.hasKeyword('Taunt')) {
                 // Allow the attack since the target also has taunt
@@ -671,10 +674,10 @@ const attack = {
 
         if (attacker instanceof Player) {
             // Attacker is a player
-            returnValue = attack._attackerIsPlayer(attacker, target);
+            returnValue = attack._attackerIsPlayer(attacker, target, force);
         } else if (attacker instanceof Card) {
             // Attacker is a minion
-            returnValue = attack._attackerIsCard(attacker, target);
+            returnValue = attack._attackerIsCard(attacker, target, force);
         } else {
             // Otherwise
             return 'invalid';
@@ -684,7 +687,7 @@ const attack = {
     },
 
     // Attacker is a number
-    _attackerIsNum(attacker: number | string, target: Target): GameAttackReturn {
+    _attackerIsNum(attacker: number | string, target: Target, _force: boolean): GameAttackReturn {
         /*
          * Attacker is a number
          * Spell damage
@@ -710,23 +713,25 @@ const attack = {
     },
 
     // Attacker is a player
-    _attackerIsPlayer(attacker: Player, target: Target): GameAttackReturn {
-        if (attacker.attack <= 0) {
-            return 'plrnoattack';
-        }
+    _attackerIsPlayer(attacker: Player, target: Target, force: boolean): GameAttackReturn {
+        if (!force) {
+            if (attacker.attack <= 0) {
+                return 'plrnoattack';
+            }
 
-        if (!attacker.canAttack) {
-            return 'plrhasattacked';
+            if (!attacker.canAttack) {
+                return 'plrhasattacked';
+            }
         }
 
         // Target is a player
         if (target instanceof Player) {
-            return attack._attackerIsPlayerAndTargetIsPlayer(attacker, target);
+            return attack._attackerIsPlayerAndTargetIsPlayer(attacker, target, force);
         }
 
         // Target is a card
         if (target instanceof Card) {
-            return attack._attackerIsPlayerAndTargetIsCard(attacker, target);
+            return attack._attackerIsPlayerAndTargetIsCard(attacker, target, force);
         }
 
         // Otherwise
@@ -734,7 +739,7 @@ const attack = {
     },
 
     // Attacker is a player and target is a player
-    _attackerIsPlayerAndTargetIsPlayer(attacker: Player, target: Player): GameAttackReturn {
+    _attackerIsPlayerAndTargetIsPlayer(attacker: Player, target: Player, _force: boolean): GameAttackReturn {
         // Get the attacker's attack damage, and attack the target with it
         attack.attack(attacker.attack, target);
         game.event.broadcast('Attack', [attacker, target], attacker);
@@ -747,9 +752,9 @@ const attack = {
     },
 
     // Attacker is a player and target is a card
-    _attackerIsPlayerAndTargetIsCard(attacker: Player, target: Card): GameAttackReturn {
+    _attackerIsPlayerAndTargetIsCard(attacker: Player, target: Card, force: boolean): GameAttackReturn {
         // If the target has stealth, the attacker can't attack it
-        if (target.hasKeyword('Stealth')) {
+        if (target.hasKeyword('Stealth') && !force) {
             return 'stealth';
         }
 
@@ -769,35 +774,37 @@ const attack = {
     },
 
     // Attacker is a card
-    _attackerIsCard(attacker: Card, target: Target): GameAttackReturn {
-        if (attacker.hasKeyword('Dormant')) {
-            return 'dormant';
-        }
+    _attackerIsCard(attacker: Card, target: Target, force: boolean): GameAttackReturn {
+        if (!force) {
+            if (attacker.hasKeyword('Dormant')) {
+                return 'dormant';
+            }
 
-        if (attacker.hasKeyword('Titan')) {
-            return 'titan';
-        }
+            if (attacker.hasKeyword('Titan')) {
+                return 'titan';
+            }
 
-        if (attacker.attackTimes && attacker.attackTimes <= 0) {
-            return 'hasattacked';
-        }
+            if (attacker.attackTimes && attacker.attackTimes <= 0) {
+                return 'hasattacked';
+            }
 
-        if (attacker.sleepy) {
-            return 'sleepy';
-        }
+            if (attacker.sleepy) {
+                return 'sleepy';
+            }
 
-        if (attacker.attack! <= 0) {
-            return 'noattack';
+            if (attacker.attack! <= 0) {
+                return 'noattack';
+            }
         }
 
         // Target is a player
         if (target instanceof Player) {
-            return attack._attackerIsCardAndTargetIsPlayer(attacker, target);
+            return attack._attackerIsCardAndTargetIsPlayer(attacker, target, force);
         }
 
         // Target is a minion
         if (target instanceof Card) {
-            return attack._attackerIsCardAndTargetIsCard(attacker, target);
+            return attack._attackerIsCardAndTargetIsCard(attacker, target, force);
         }
 
         // Otherwise
@@ -805,15 +812,13 @@ const attack = {
     },
 
     // Attacker is a card and target is a player
-    _attackerIsCardAndTargetIsPlayer(attacker: Card, target: Player): GameAttackReturn {
-        if (!attacker.canAttackHero) {
+    _attackerIsCardAndTargetIsPlayer(attacker: Card, target: Player, force: boolean): GameAttackReturn {
+        if (!force && !attacker.canAttackHero) {
             return 'cantattackhero';
         }
 
         // If attacker has stealth, remove it
-        if (attacker.hasKeyword('Stealth')) {
-            attacker.remKeyword('Stealth');
-        }
+        attacker.remKeyword('Stealth');
 
         // If attacker has lifesteal, heal it's owner
         attack._doLifesteal(attacker);
@@ -829,19 +834,19 @@ const attack = {
     },
 
     // Attacker is a card and target is a card
-    _attackerIsCardAndTargetIsCard(attacker: Card, target: Card): GameAttackReturn {
-        if (target.hasKeyword('Stealth')) {
+    _attackerIsCardAndTargetIsCard(attacker: Card, target: Card, force: boolean): GameAttackReturn {
+        if (!force && target.hasKeyword('Stealth')) {
             return 'stealth';
         }
 
-        attack._attackerIsCardAndTargetIsCardDoAttacker(attacker, target);
-        attack._attackerIsCardAndTargetIsCardDoTarget(attacker, target);
+        attack._attackerIsCardAndTargetIsCardDoAttacker(attacker, target, force);
+        attack._attackerIsCardAndTargetIsCardDoTarget(attacker, target, force);
 
         game.event.broadcast('Attack', [attacker, target], attacker.plr);
 
         return true;
     },
-    _attackerIsCardAndTargetIsCardDoAttacker(attacker: Card, target: Card): GameAttackReturn {
+    _attackerIsCardAndTargetIsCardDoAttacker(attacker: Card, target: Card, _force: boolean): GameAttackReturn {
         // Cleave
         attack._cleave(attacker, target);
 
@@ -863,7 +868,7 @@ const attack = {
 
         return true;
     },
-    _attackerIsCardAndTargetIsCardDoTarget(attacker: Card, target: Card): GameAttackReturn {
+    _attackerIsCardAndTargetIsCardDoTarget(attacker: Card, target: Card, _force: boolean): GameAttackReturn {
         const shouldDamage = attack._cardAttackHelper(target);
         if (!shouldDamage) {
             return true;
