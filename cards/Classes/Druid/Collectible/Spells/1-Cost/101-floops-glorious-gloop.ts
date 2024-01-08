@@ -17,7 +17,7 @@ export const blueprint: Blueprint = {
 
     cast(plr, self) {
         // Whenever a minion dies this turn, gain 1 Mana Crystal this turn only.
-        const destroy = game.functions.event.addListener('KillMinion', () => {
+        const destroy = game.functions.event.addListener('KillCard', () => {
             // Gain 1 Mana Crystal
             plr.refreshMana(1, plr.maxMana);
 

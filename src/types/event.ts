@@ -56,9 +56,9 @@ export type EventKey =
 | 'TakeDamage'
 | 'PlayCard'
 | 'PlayCardUnsafe'
-| 'SummonMinion'
-| 'KillMinion'
-| 'DamageMinion'
+| 'SummonCard'
+| 'KillCard'
+| 'DamageCard'
 | 'CancelCard'
 | 'TradeCard'
 | 'ForgeCard'
@@ -124,17 +124,17 @@ export type EventValue<Key extends EventKey> =
      */
     Key extends 'PlayCardUnsafe' ? Card :
     /**
-     * The minion that was summoned
+     * The card that was summoned
      */
-    Key extends 'SummonMinion' ? Card :
+    Key extends 'SummonCard' ? Card :
     /**
-     * The minion that was killed
+     * The card that was killed
      */
-    Key extends 'KillMinion' ? Card :
+    Key extends 'KillCard' ? Card :
     /**
-     * The minion that was damaged, and the amount of damage
+     * The card that was damaged, and the amount of damage
      */
-    Key extends 'DamageMinion' ? [Card, number] :
+    Key extends 'DamageCard' ? [Card, number] :
     /**
      * The card that was cancelled, and the ability that was cancelled
      */
@@ -196,7 +196,7 @@ export type EventValue<Key extends EventKey> =
      */
     Key extends 'Input' ? string :
     /**
-     * The prompt, the card that requested target selection, the alignment that the target should be, the class of the target (hero | minion), and the flags (if any).
+     * The prompt, the card that requested target selection, the alignment that the target should be, the class of the target (hero | card), and the flags (if any).
      */
     Key extends 'TargetSelectionStarts' ? [string, Card | undefined, SelectTargetAlignment, SelectTargetClass, SelectTargetFlag[]] :
     /**

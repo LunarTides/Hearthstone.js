@@ -1106,13 +1106,13 @@ export class Player {
     }
 
     /**
-     * Summon a minion.
-     * Broadcasts the `SummonMinion` event
+     * Summon a card.
+     * Broadcasts the `SummonCard` event
      *
-     * @param minion The minion to summon
-     * @param colossal If the minion has colossal, summon the other minions.
+     * @param card The card to summon
+     * @param colossal If the card has colossal, summon the other cards.
      *
-     * @returns The minion summoned
+     * @returns The card summoned
      */
     summon(card: Card, colossal = true) {
         return game.summonMinion(card, this, colossal);

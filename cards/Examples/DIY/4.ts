@@ -21,7 +21,7 @@ export const blueprint: Blueprint = {
         // Whenever a minion dies, Resurrect it with 1/1 stats.
 
         // If the key is for a different event, stop the function.
-        if (key !== 'KillMinion') {
+        if (key !== 'KillCard') {
             return;
         }
 
