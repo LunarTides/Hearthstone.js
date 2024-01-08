@@ -888,6 +888,8 @@ export class Card {
         // Remove active enchantments.
         this.applyEnchantments();
 
+        game.event.broadcast('SilenceCard', this, this.plr);
+
         game.killCardsOnBoard();
         return true;
     }
