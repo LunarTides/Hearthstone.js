@@ -320,6 +320,13 @@ export class Player {
         return game.player1; // We always need to return a player.
     }
 
+    /**
+     * Get this player's side of the board
+     */
+    getBoard(): Card[] {
+        return game.board[this.id];
+    }
+
     // Mana
 
     /**
@@ -794,7 +801,7 @@ export class Player {
             return -1;
         }
 
-        for (const card of game.board[this.id]) {
+        for (const card of this.getBoard()) {
             card.activate('inspire');
         }
 
@@ -942,7 +949,7 @@ export class Player {
      * @returns Success
      */
     doTargets(callback: (target: Target) => void): boolean {
-        for (const card of game.board[this.id]) {
+        for (const card of this.getBoard()) {
             callback(card);
         }
 
@@ -1053,7 +1060,7 @@ export class Player {
             card.activate('invoke');
         }
 
-        for (const card of game.board[this.id]) {
+        for (const card of this.getBoard()) {
             card.activate('invoke');
         }
 

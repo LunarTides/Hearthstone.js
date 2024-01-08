@@ -26,7 +26,7 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        const countImps = () => game.board[plr.id].filter(card => card.id === 21).length;
+        const countImps = () => plr.getBoard().filter(card => card.id === 21).length;
 
         // There should be 0 imps by default
         assert.equal(countImps(), 0);

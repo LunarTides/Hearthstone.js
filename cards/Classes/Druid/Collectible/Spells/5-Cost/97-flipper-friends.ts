@@ -36,7 +36,7 @@ export const blueprint: Blueprint = {
         self.activate('cast');
 
         // There should be 1 Orca on the board
-        assert.equal(game.board[plr.id].filter(card => card.id === game.cardIds.orca96).length, 1);
+        assert.equal(plr.getBoard().filter(card => card.id === game.cardIds.orca96).length, 1);
 
         // Clear the board. Isn't really required in this case, but will cause buggy behavior if summoning more than 6 Otters.
         game.board[plr.id] = [];
@@ -46,6 +46,6 @@ export const blueprint: Blueprint = {
         self.activate('cast');
 
         // There should be 6 Otters on the board
-        assert.equal(game.board[plr.id].filter(card => card.id === game.cardIds.otter95).length, 6);
+        assert.equal(plr.getBoard().filter(card => card.id === game.cardIds.otter95).length, 6);
     },
 };

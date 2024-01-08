@@ -105,8 +105,10 @@ export const blueprint: Blueprint = {
 
             case 'Mindflayer Goggles': {
                 // Take control of three random enemy minions.
+                const board = plr.getOpponent().getBoard();
+
                 for (let index = 0; index < 3; index++) {
-                    const card = game.lodash.sample(game.board[plr.getOpponent().id]);
+                    const card = game.lodash.sample(board);
                     if (!card) {
                         continue;
                     }

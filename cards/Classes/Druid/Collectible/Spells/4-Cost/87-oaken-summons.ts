@@ -31,7 +31,7 @@ export const blueprint: Blueprint = {
             assert.equal(plr.armor, 6 * index);
 
             // Check if there exists a minion on the board that costs 4 or less
-            assert.ok(game.board[plr.id].some(card => card.cost <= 4 && card.type === 'Minion' && card.uuid !== self.uuid));
+            assert.ok(plr.getBoard().some(card => card.cost <= 4 && card.type === 'Minion' && card.uuid !== self.uuid));
 
             // Clear the board
             game.board[plr.id] = [];

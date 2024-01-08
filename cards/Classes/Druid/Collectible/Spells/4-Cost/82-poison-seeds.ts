@@ -42,7 +42,7 @@ export const blueprint: Blueprint = {
         self.activate('cast');
 
         // Check if every card is a Treant
-        const board = game.board[plr.id];
+        const board = plr.getBoard();
 
         assert.equal(board.length, amountOfCards);
         assert.ok(board.every(card => card.id === game.cardIds.treant83));

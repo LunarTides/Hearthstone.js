@@ -546,11 +546,11 @@ ${mainContent}
         }
 
         if (includePlayer1Board) {
-            targets.push(...game.board[game.player1.id]);
+            targets.push(...game.player1.getBoard());
         }
 
         if (includePlayer2Board) {
-            targets.push(...game.board[game.player2.id]);
+            targets.push(...game.player2.getBoard());
         }
 
         return game.lodash.sample(targets);
@@ -560,7 +560,7 @@ ${mainContent}
      * Calculate the remaining board space for the given player.
      */
     getRemainingBoardSpace(plr: Player): number {
-        return game.config.general.maxBoardSpace - game.board[plr.id].length;
+        return game.config.general.maxBoardSpace - plr.getBoard().length;
     },
 
     /**

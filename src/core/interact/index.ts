@@ -291,8 +291,8 @@ export const interact = {
         }
 
         // Get a list of each side of the board
-        const boardOpponent = game.board[game.opponent.id];
-        const boardFriendly = game.board[game.player.id];
+        const boardOpponent = game.opponent.getBoard();
+        const boardFriendly = game.player.getBoard();
 
         // Get each minion that matches the target.
         const boardOpponentTarget = boardOpponent[game.lodash.parseInt(target) - 1];
@@ -466,8 +466,8 @@ export const interact = {
 
                 lookForUUID(uuid, player.deck, `${gamePlayer}.deck`);
                 lookForUUID(uuid, player.hand, `${gamePlayer}.hand`);
-                lookForUUID(uuid, game.board[player.id], `game.board[${player.id}]`);
-                lookForUUID(uuid, game.board[player.id], `game.graveyard[${player.id}]`);
+                lookForUUID(uuid, player.getBoard(), `game.board[${player.id}]`);
+                lookForUUID(uuid, player.getBoard(), `game.graveyard[${player.id}]`);
             }
         }
 

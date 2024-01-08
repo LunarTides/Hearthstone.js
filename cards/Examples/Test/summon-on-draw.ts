@@ -32,7 +32,7 @@ export const blueprint: Blueprint = {
         // Make the player draw this card
         plr.drawCard();
 
-        const board = game.board[plr.id];
+        const board = plr.getBoard();
 
         // Check if this minion and the two arms are on the board
         assert.ok(board.some(card => card.id === game.cardIds.leftArm46));

@@ -398,7 +398,8 @@ export class Game {
 
         const { player, opponent } = this;
 
-        for (const card of this.board[player.id]) {
+        // Ready the minions for the next turn.
+        for (const card of player.getBoard()) {
             card.ready();
             card.resetAttackTimes();
         }
@@ -433,7 +434,7 @@ export class Game {
         }
 
         // Minion start of turn
-        for (const card of this.board[opponent.id]) {
+        for (const card of opponent.getBoard()) {
             // Dormant
             const dormant = card.getKeyword('Dormant') as number | undefined;
 
@@ -638,7 +639,7 @@ const attack = {
         }
 
         // Check if there is a minion with taunt
-        const taunts = game.board[game.opponent.id].filter(m => m.hasKeyword('Taunt'));
+        const taunts = game.opponent.getBoard().filter(m => m.hasKeyword('Taunt'));
         if (taunts.length > 0) {
             // If the target is a card and has taunt, you are allowed to attack it
             if (target instanceof Card && target.hasKeyword('Taunt')) {
@@ -890,7 +891,7 @@ const attack = {
             return;
         }
 
-        const board = game.board[target.plr.id];
+        const board = target.plr.getBoard();
         const index = board.indexOf(target);
 
         const below = board[index - 1];
@@ -1100,7 +1101,7 @@ const playCard = {
             }
 
             // Spellburst functionality
-            for (const card of game.board[player.id]) {
+            for (const card of player.getBoard()) {
                 card.activate('spellburst');
                 card.abilities.spellburst = undefined;
             }
@@ -1225,7 +1226,7 @@ const playCard = {
 
     _hasCapacity(card: Card, player: Player): boolean {
         // If the board has max capacity, and the card played is a minion or location card, prevent it.
-        if (game.board[player.id].length < game.config.general.maxBoardSpace || !card.canBeOnBoard()) {
+        if (player.getBoard().length < game.config.general.maxBoardSpace || !card.canBeOnBoard()) {
             return true;
         }
 
@@ -1337,7 +1338,7 @@ const playCard = {
     },
 
     _magnetize(card: Card, player: Player): boolean {
-        const board = game.board[player.id];
+        const board = player.getBoard();
 
         if (!card.hasKeyword('Magnetic') || board.length <= 0) {
             return false;
@@ -1408,7 +1409,7 @@ const cards = {
         }
 
         // If the board has max capacity, and the card played is a minion or location card, prevent it.
-        if (game.board[player.id].length >= game.config.general.maxBoardSpace) {
+        if (player.getBoard().length >= game.config.general.maxBoardSpace) {
             return 'space';
         }
 
@@ -1484,7 +1485,7 @@ const cards = {
         game.board[player.id].push(card);
 
         // Calculate new spell damage
-        for (const card of game.board[player.id]) {
+        for (const card of player.getBoard()) {
             if (card.spellDamage) {
                 player.spellDamage += card.spellDamage;
             }

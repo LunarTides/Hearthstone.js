@@ -54,7 +54,7 @@ export const blueprint: Blueprint = {
             return true;
         }
 
-        const solved = game.board[plr.id].some(card => (
+        const solved = plr.getBoard().some(card => (
             card.id === value.id
                 && card.type === value.type
                 && card.attack === 1

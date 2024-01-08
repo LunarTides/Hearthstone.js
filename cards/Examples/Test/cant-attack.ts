@@ -18,6 +18,8 @@ export const blueprint: Blueprint = {
     tribe: 'None',
 
     create(plr, self) {
+        // Cant Attack
+
         self.addKeyword('Cant Attack');
     },
 

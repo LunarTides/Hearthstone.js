@@ -22,7 +22,7 @@ export const blueprint: Blueprint = {
             plr.drawCard();
         }], ['Give your minions +1 Attack', () => {
             // Give your minions +1 Attack
-            for (const card of game.board[plr.id]) {
+            for (const card of plr.getBoard()) {
                 if (card.attack) {
                     card.attack += 1;
                 }

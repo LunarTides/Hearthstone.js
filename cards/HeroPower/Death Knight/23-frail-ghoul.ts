@@ -34,7 +34,7 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        const checkIfThisCardIsOnTheBoard = () => game.board[plr.id].some(card => card.uuid === self.uuid);
+        const checkIfThisCardIsOnTheBoard = () => plr.getBoard().some(card => card.uuid === self.uuid);
 
         // Summon the minion, the minion should now be on the board
         plr.summon(self);
