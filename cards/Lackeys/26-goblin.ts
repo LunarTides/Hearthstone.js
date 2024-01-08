@@ -38,7 +38,7 @@ export const blueprint: Blueprint = {
 
     test(plr, self) {
         // Summon a sheep
-        const sheep = game.createCard(game.cardIds.sheep1, plr);
+        const sheep = game.newCard(game.cardIds.sheep1, plr);
         plr.summon(sheep);
 
         // Activate the battlecry, choose the sheep

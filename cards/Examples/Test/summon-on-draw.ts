@@ -26,7 +26,7 @@ export const blueprint: Blueprint = {
 
     test(plr, self) {
         // Set the player's deck and hand
-        plr.deck = [game.createCard(game.cardIds.sheep1, plr), self];
+        plr.deck = [game.newCard(game.cardIds.sheep1, plr), self];
         plr.hand = [];
 
         // Make the player draw this card

@@ -376,7 +376,7 @@ export class Card {
         this.maxHealth = this.blueprint.health;
 
         if (this.heropowerId) {
-            this.heropower = game.createCard(this.heropowerId, this.plr);
+            this.heropower = game.newCard(this.heropowerId, this.plr);
         }
 
         this.text = game.functions.color.fromTags(this.text || '');
@@ -1323,7 +1323,7 @@ export class Card {
      * @returns An imperfect copy of this card.
      */
     imperfectCopy(): Card {
-        return game.createCard(this.id, this.plr);
+        return game.newCard(this.id, this.plr);
     }
 
     /**
@@ -1441,8 +1441,8 @@ export class Card {
 
             case 'Living Spores': {
                 this.addAbility('deathrattle', (plr, _) => {
-                    plr.summon(game.createCard(game.cardIds.plant3, plr));
-                    plr.summon(game.createCard(game.cardIds.plant3, plr));
+                    plr.summon(game.newCard(game.cardIds.plant3, plr));
+                    plr.summon(game.newCard(game.cardIds.plant3, plr));
                 });
                 break;
             }

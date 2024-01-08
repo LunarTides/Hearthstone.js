@@ -34,7 +34,7 @@ export const blueprint: Blueprint = {
     test(plr, self) {
         // Summon 5 Sheep with 2 max health.
         for (let i = 0; i < 5; i++) {
-            const card = game.createCard(game.cardIds.sheep1, plr);
+            const card = game.newCard(game.cardIds.sheep1, plr);
             card.maxHealth = 2;
             plr.summon(card);
         }

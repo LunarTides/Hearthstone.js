@@ -17,7 +17,7 @@ export const blueprint: Blueprint = {
         // Summon a 1/1 Ghoul with Charge. It dies at end of turn.
 
         // Create the Ghoul
-        const minion = game.createCard(game.cardIds.frailGhoul23, plr);
+        const minion = game.newCard(game.cardIds.frailGhoul23, plr);
 
         // Summon the Ghoul
         plr.summon(minion);

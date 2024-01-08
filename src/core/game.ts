@@ -337,7 +337,7 @@ export class Game {
         this.player1.mana = 1;
 
         // Give the coin to the second player
-        const coin = this.createCard(this.cardIds.theCoin2, this.player2);
+        const coin = this.newCard(this.cardIds.theCoin2, this.player2);
         this.functions.event.withSuppressed('AddCardToHand', () => this.player2.addToHand(coin));
 
         this.turn += 1;
@@ -586,7 +586,7 @@ export class Game {
      *
      * @returns The card
      */
-    createCard(id: number, owner: Player, suppress = false): Card {
+    newCard(id: number, owner: Player, suppress = false): Card {
         let unsuppress;
         if (suppress) {
             unsuppress = this.functions.event.suppress('CreateCard');
@@ -1214,7 +1214,7 @@ const playCard = {
         player.mana -= 2;
 
         game.functions.event.withSuppressed('DiscardCard', () => card.discard());
-        const forged = game.createCard(forgeId, player);
+        const forged = game.newCard(forgeId, player);
         player.addToHand(forged);
 
         game.event.broadcast('ForgeCard', card, player);
@@ -1321,7 +1321,7 @@ const playCard = {
             }
 
             // Corrupt that card
-            const corrupted = game.createCard(corruptId, player);
+            const corrupted = game.newCard(corruptId, player);
 
             game.functions.event.withSuppressed('DiscardCard', () => card.discard());
             game.functions.event.withSuppressed('AddCardToHand', () => player.addToHand(corrupted));
@@ -1440,7 +1440,7 @@ const cards = {
                     continue;
                 }
 
-                const cardToSummon = game.createCard(cardId, player);
+                const cardToSummon = game.newCard(cardId, player);
 
                 // If this card has dormant, add it to the summoned minions as well.
                 if (dormant) {

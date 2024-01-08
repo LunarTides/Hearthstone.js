@@ -29,7 +29,7 @@ export const blueprint: Blueprint = {
         }
 
         // Create a card from the name.
-        const card = game.createCard(cardName, plr);
+        const card = game.newCard(cardName, plr);
 
         // Summon the card on the player's side of the board
         plr.summon(card);

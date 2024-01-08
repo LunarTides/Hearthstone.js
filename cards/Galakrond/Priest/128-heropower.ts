@@ -25,7 +25,7 @@ export const blueprint: Blueprint = {
             return;
         }
 
-        card = game.createCard(card.id, plr);
+        card = game.newCard(card.id, plr);
 
         plr.addToHand(card);
     },

@@ -33,7 +33,7 @@ export const blueprint: Blueprint = {
             }
 
             // Summon it
-            card = game.createCard(card.id, plr);
+            card = game.newCard(card.id, plr);
             plr.summon(card);
         }
     },

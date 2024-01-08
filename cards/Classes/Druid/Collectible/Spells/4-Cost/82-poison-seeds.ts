@@ -23,7 +23,7 @@ export const blueprint: Blueprint = {
             for (const card of side) {
                 card.kill();
 
-                const treant = game.createCard(game.cardIds.treant83, player);
+                const treant = game.newCard(game.cardIds.treant83, player);
                 player.summon(treant);
             }
         }
@@ -34,7 +34,7 @@ export const blueprint: Blueprint = {
 
         // Summon n Sheep
         for (let i = 0; i < amountOfCards; i++) {
-            const sheep = game.createCard(game.cardIds.sheep1, plr);
+            const sheep = game.newCard(game.cardIds.sheep1, plr);
             plr.summon(sheep);
         }
 

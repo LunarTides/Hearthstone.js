@@ -102,7 +102,7 @@ export const commands: CommandList = {
             return false;
         }
 
-        const titanCards = titanIds.map(id => game.createCard(id, game.player, true));
+        const titanCards = titanIds.map(id => game.newCard(id, game.player, true));
 
         game.interact.info.showGame(game.player);
         console.log(`\nWhich ability do you want to trigger?\n${titanCards.map(c => game.interact.card.getReadable(c)).join(',\n')}`);

@@ -15,7 +15,7 @@ export const blueprint: Blueprint = {
 
     heropower(plr, self) {
         // Summon a 2/1 Elemental with Rush.
-        const card = game.createCard(game.cardIds.windsweptElemental19, plr);
+        const card = game.newCard(game.cardIds.windsweptElemental19, plr);
         if (!card) {
             return;
         }

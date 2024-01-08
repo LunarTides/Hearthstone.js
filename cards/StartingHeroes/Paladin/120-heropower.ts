@@ -17,7 +17,7 @@ export const blueprint: Blueprint = {
         // Summon a 1/1 Silver Hand Recruit.
 
         // Create the Silver Hand Recruit card.
-        const card = game.createCard(game.cardIds.silverHandRecruit20, plr);
+        const card = game.newCard(game.cardIds.silverHandRecruit20, plr);
 
         // Summon the card
         plr.summon(card);

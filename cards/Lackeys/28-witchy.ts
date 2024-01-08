@@ -43,7 +43,7 @@ export const blueprint: Blueprint = {
         }
 
         // Create the card
-        const minion = game.createCard(random.id, plr);
+        const minion = game.newCard(random.id, plr);
 
         // Destroy the target and summon the new minion in order to get the illusion that the card was transformed
         target.destroy();
@@ -57,7 +57,7 @@ export const blueprint: Blueprint = {
         const existsMinionWithCost = (cost: number) => plr.getBoard().some(card => card.cost === cost);
 
         // Summon a sheep
-        const sheep = game.createCard(game.cardIds.sheep1, plr);
+        const sheep = game.newCard(game.cardIds.sheep1, plr);
         plr.summon(sheep);
 
         // There shouldn't exist a minion with 1 more cost than the sheep.

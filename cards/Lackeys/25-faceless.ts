@@ -30,7 +30,7 @@ export const blueprint: Blueprint = {
         }
 
         // Create a new minion since we shouldn't directly use the cards from `game.functions.card.getAll()`.
-        const minion = game.createCard(random.id, plr);
+        const minion = game.newCard(random.id, plr);
 
         // Summon the minion
         plr.summon(minion);

@@ -19,7 +19,7 @@ export const blueprint: Blueprint = {
 
     create(plr, self) {
         // Store a coin for later
-        self.storage.the_coin = game.createCard(game.cardIds.theCoin2, plr);
+        self.storage.the_coin = game.newCard(game.cardIds.theCoin2, plr);
     },
 
     placeholders(plr, self) {

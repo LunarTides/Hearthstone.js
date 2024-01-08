@@ -56,7 +56,7 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        const sheep = game.createCard(game.cardIds.sheep1, plr.getOpponent());
+        const sheep = game.newCard(game.cardIds.sheep1, plr.getOpponent());
         sheep.addStats(4, 4);
         plr.getOpponent().summon(sheep);
 

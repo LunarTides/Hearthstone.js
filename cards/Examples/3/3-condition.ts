@@ -58,7 +58,7 @@ export const blueprint: Blueprint = {
         assert.equal(plr.hand.length, 0);
 
         // The player should fulfill the condition
-        plr.deck = [game.createCard(game.cardIds.sheep1, plr)];
+        plr.deck = [game.newCard(game.cardIds.sheep1, plr)];
         assert(plr.highlander());
         assert.equal(plr.deck.length, 1);
 

@@ -35,7 +35,7 @@ export const blueprint: Blueprint = {
 
     test(plr, self) {
         // Summon a Sheep
-        const sheep = game.createCard(game.cardIds.sheep1, plr);
+        const sheep = game.newCard(game.cardIds.sheep1, plr);
         plr.summon(sheep);
 
         const handSize = plr.hand.length;

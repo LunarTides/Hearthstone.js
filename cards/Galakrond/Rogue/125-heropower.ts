@@ -20,7 +20,7 @@ export const blueprint: Blueprint = {
             return;
         }
 
-        const lackey = game.createCard(lackeyId, plr);
+        const lackey = game.newCard(lackeyId, plr);
 
         plr.addToHand(lackey);
     },

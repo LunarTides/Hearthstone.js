@@ -178,7 +178,7 @@ export const cardFunctions = {
             return undefined;
         }
 
-        return game.createCard(cards[0].id, player, true);
+        return game.newCard(cards[0].id, player, true);
     },
 
     /**
@@ -189,7 +189,7 @@ export const cardFunctions = {
     getAll(uncollectible = true): Card[] {
         // Don't broadcast CreateCard event here since it would spam the history and log files
         if (game.cards.length <= 0) {
-            game.cards = game.blueprints.map(card => game.createCard(card.id, game.player, true));
+            game.cards = game.blueprints.map(card => game.newCard(card.id, game.player, true));
 
             this.generateIdsFile();
         }
@@ -289,7 +289,7 @@ export const cardFunctions = {
         const count = plr.jadeCounter;
         const cost = (count < 10) ? count : 10;
 
-        const jade = game.createCard(game.cardIds.jadeGolem85, plr);
+        const jade = game.newCard(game.cardIds.jadeGolem85, plr);
         jade.setStats(count, count);
         jade.cost = cost;
 
@@ -300,7 +300,7 @@ export const cardFunctions = {
      * Returns all classes in the game
      */
     getClasses(): CardClassNoNeutral[] {
-        return game.cardCollections.classes.map(heroId => game.createCard(heroId, game.player, true).classes[0]) as CardClassNoNeutral[];
+        return game.cardCollections.classes.map(heroId => game.newCard(heroId, game.player, true).classes[0]) as CardClassNoNeutral[];
     },
 
     /**

@@ -22,7 +22,7 @@ export const blueprint: Blueprint = {
         const remaining = game.functions.util.getRemainingHandSize(plr);
 
         for (let index = 0; index < remaining; index++) {
-            const card = game.createCard(game.cardIds.chaoticTendril110, plr);
+            const card = game.newCard(game.cardIds.chaoticTendril110, plr);
             plr.addToHand(card);
         }
     },

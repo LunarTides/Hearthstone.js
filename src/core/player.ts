@@ -777,13 +777,13 @@ export class Player {
      * @returns Success
      */
     setToStartingHero(heroClass = this.heroClass): boolean {
-        const heroCardId = game.cardCollections.classes.map(heroId => game.createCard(heroId, this, true)).find(card => card.classes.includes(heroClass))?.id;
+        const heroCardId = game.cardCollections.classes.map(heroId => game.newCard(heroId, this, true)).find(card => card.classes.includes(heroClass))?.id;
 
         if (!heroCardId) {
             return false;
         }
 
-        this.setHero(game.createCard(heroCardId, this), false);
+        this.setHero(game.newCard(heroCardId, this), false);
 
         return true;
     }
