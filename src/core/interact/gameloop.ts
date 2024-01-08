@@ -159,7 +159,6 @@ export const gameloopInteract = { /**
         }
 
         const errorCode = game.attack(attacker, target);
-        game.killMinions();
 
         const ignore = ['divineshield'];
         if (errorCode === true || ignore.includes(errorCode)) {
@@ -315,7 +314,7 @@ export const gameloopInteract = { /**
             card.activate('outcast');
         }
 
-        return game.playCard(card, game.player);
+        return game.play(card, game.player);
     },
 
     /**
@@ -339,8 +338,6 @@ export const gameloopInteract = { /**
             game.event.broadcast('Input', input, game.player);
             const turn = this.doTurnLogic(input);
 
-            game.killMinions();
-
             return turn;
         }
 
@@ -354,7 +351,6 @@ export const gameloopInteract = { /**
 
         const user = game.input(input);
         const returnValue = this.doTurnLogic(user);
-        game.killMinions();
 
         // If there were no errors, return true.
         if (returnValue === true) {

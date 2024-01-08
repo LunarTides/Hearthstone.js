@@ -41,7 +41,7 @@ export const blueprint: Blueprint = {
 
         // Play a card to verify that the mana doesn't decrease
         const card = game.createCard(game.cardIds.sheep1, plr);
-        const result = game.playCard(card, plr);
+        const result = game.play(card, plr);
 
         assert.equal(result, true);
         assert.equal(plr.mana, 10);

@@ -38,14 +38,12 @@ export const commands: CommandList = {
 
     attack(): boolean {
         game.interact.gameLoop.doTurnAttack();
-        game.killMinions();
         return true;
     },
 
     use(): boolean {
         // Use location
         const errorCode = game.interact.card.useLocation();
-        game.killMinions();
 
         if (errorCode === true || errorCode === 'refund' || game.player.ai) {
             return true;

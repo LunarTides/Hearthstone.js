@@ -1115,6 +1115,6 @@ export class Player {
      * @returns The card summoned
      */
     summon(card: Card, colossal = true) {
-        return game.summonMinion(card, this, colossal);
+        return game.summon(card, this, colossal);
     }
 }

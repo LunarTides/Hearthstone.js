@@ -80,8 +80,8 @@ export class Game {
      */
     cards: Card[] = [];
 
-    playCard = cards.play.play;
-    summonMinion = cards.summon;
+    play = cards.play.play;
+    summon = cards.summon;
 
     attack = attack.attack;
 
@@ -383,9 +383,6 @@ export class Game {
      * @returns Success
      */
     endTurn(): boolean {
-        // Kill all minions with 0 or less health
-        this.killMinions();
-
         // Everything after this comment happens when the player's turn ends
         const { player, opponent } = this;
         this.event.broadcast('EndTurn', this.turn, player);
@@ -493,7 +490,7 @@ export class Game {
      *
      * @returns The amount of minions killed
      */
-    killMinions(): number {
+    killCardsOnBoard(): number {
         let amount = 0;
 
         for (let p = 0; p < 2; p++) {
@@ -538,9 +535,12 @@ export class Game {
                 // Reduce the minion's health to 1, keep the minion's attack the same
                 minion.setStats(minion.attack, 1);
 
-                const unsuppress = this.functions.event.suppress('SummonMinion');
-                this.summonMinion(minion, player);
-                unsuppress();
+                /*
+                 * Suppress the event here since we activate some abilities on the minion further up.
+                 * This isn't great performance wise, but there's not much we can do about it.
+                 * Although the performance hit is only a few milliseconds in total every time (This function does get called often), so there's bigger performance gains to be had elsewhere.
+                 */
+                this.functions.event.withSuppressed('SummonCard', () => this.summon(minion, player));
 
                 /*
                  * Activate the minion's passive
@@ -602,8 +602,6 @@ const attack = {
      * @returns Success | Errorcode
      */
     attack(attacker: Target | number | string, target: Target): GameAttackReturn {
-        game.killMinions();
-
         let returnValue: GameAttackReturn;
 
         if (target instanceof Card && target.hasKeyword('Immune')) {
@@ -616,9 +614,7 @@ const attack = {
 
         // Attacker is a number
         if (typeof attacker === 'string' || typeof attacker === 'number') {
-            returnValue = attack._attackerIsNum(attacker, target);
-            game.killMinions();
-            return returnValue;
+            return attack._attackerIsNum(attacker, target);
         }
 
         // The attacker is a card or player
@@ -652,7 +648,6 @@ const attack = {
             return 'invalid';
         }
 
-        game.killMinions();
         return returnValue;
     },
 
@@ -729,8 +724,6 @@ const attack = {
         // The attacker should damage the target
         game.attack(attacker.attack, target);
         game.attack(target.attack!, attacker);
-
-        game.killMinions();
         game.event.broadcast('Attack', [attacker, target], attacker);
 
         // The attacker can't attack anymore this turn.
@@ -738,8 +731,6 @@ const attack = {
 
         // Remove frenzy
         attack._doFrenzy(target);
-
-        game.killMinions();
         attack._removeDurabilityFromWeapon(attacker, target);
 
         return true;
@@ -964,8 +955,6 @@ const attack = {
                 attack._doPoison(weapon, target);
             }
         }
-
-        game.killMinions();
     },
 };
 
@@ -977,8 +966,6 @@ const playCard = {
      * @param player The card's owner
      */
     play(card: Card, player: Player): GamePlayCardReturn {
-        game.killMinions();
-
         // Forge
         const forge = playCard._forge(card, player);
         if (forge !== 'invalid') {
@@ -1055,8 +1042,6 @@ const playCard = {
         game.event.broadcast('PlayCard', card, player);
 
         playCard._corrupt(card, player);
-        game.killMinions();
-
         return result;
     },
 
@@ -1072,11 +1057,7 @@ const playCard = {
                 return 'refund';
             }
 
-            const unsuppress = game.functions.event.suppress('SummonMinion');
-            const returnValue = cards.summon(card, player);
-            unsuppress();
-
-            return returnValue;
+            return game.functions.event.withSuppressed('SummonCard', () => player.summon(card));
         },
 
         Spell(card: Card, player: Player): GamePlayCardReturn {
@@ -1124,11 +1105,7 @@ const playCard = {
             card.addKeyword('Immune');
             card.cooldown = 0;
 
-            const unsuppress = game.functions.event.suppress('SummonMinion');
-            const returnValue = cards.summon(card, player);
-            unsuppress();
-
-            return returnValue;
+            return game.functions.event.withSuppressed('SummonCard', () => player.summon(card));
         },
 
         Heropower(card: Card, player: Player): GamePlayCardReturn {
@@ -1223,9 +1200,7 @@ const playCard = {
         }
 
         // Refund
-        const unsuppress = game.functions.event.suppress('AddCardToHand');
-        player.addToHand(card);
-        unsuppress();
+        game.functions.event.withSuppressed('AddCardToHand', () => player.addToHand(card));
 
         if (card.costType === 'mana') {
             player.refreshMana(card.cost);
@@ -1321,9 +1296,7 @@ const playCard = {
 
             game.functions.util.remove(player.hand, toCorrupt);
 
-            const unsuppress = game.functions.event.suppress('AddCardToHand');
-            player.addToHand(corrupted);
-            unsuppress();
+            game.functions.event.withSuppressed('AddCardToHand', () => player.addToHand(corrupted));
         }
 
         return true;
@@ -1387,7 +1360,7 @@ const cards = {
 
     /**
      * Summon a minion.
-     * Broadcasts the `SummonMinion` event
+     * Broadcasts the `SummonCard` event
      *
      * @param card The minion to summon
      * @param player The player who gets the minion
@@ -1405,7 +1378,7 @@ const cards = {
             return 'space';
         }
 
-        game.events.broadcast('SummonMinion', card, player);
+        game.event.broadcast('SummonCard', card, player);
 
         player.spellDamage = 0;
 
@@ -1430,7 +1403,7 @@ const cards = {
              * the null0 / 0 gets replaced with the main minion
              */
 
-            const unsuppress = game.functions.event.suppress('SummonMinion');
+            const unsuppress = game.functions.event.suppress('SummonCard');
 
             for (const cardId of colossalMinionIds) {
                 if (cardId <= 0) {

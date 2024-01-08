@@ -586,6 +586,8 @@ export class Card {
             this.resetMaxHealth(false);
         }
 
+        game.killCardsOnBoard();
+
         return true;
     }
 
@@ -701,6 +703,8 @@ export class Card {
         if (this.type === 'Weapon' && this.health <= 0) {
             this.plr.destroyWeapon();
         }
+
+        game.killCardsOnBoard();
 
         return true;
     }
@@ -853,8 +857,7 @@ export class Card {
      */
     kill(): boolean {
         this.setStats(this.attack, 0);
-        game.killMinions();
-
+        game.killCardsOnBoard();
         return true;
     }
 
@@ -892,6 +895,8 @@ export class Card {
 
         // Remove active enchantments.
         this.applyEnchantments();
+
+        game.killCardsOnBoard();
         return true;
     }
 
