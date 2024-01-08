@@ -1007,7 +1007,7 @@ const playCard = {
 
         // Charge you for the card
         player[card.costType] -= card.cost;
-        game.functions.util.remove(player.hand, card);
+        game.functions.event.withSuppressed('DiscardCard', () => card.discard());
 
         // Counter
         if (playCard._countered(card, player)) {
@@ -1166,7 +1166,7 @@ const playCard = {
 
         player.mana -= 1;
 
-        game.functions.util.remove(player.hand, card);
+        game.functions.event.withSuppressed('DiscardCard', () => card.discard());
         player.drawCard();
         player.shuffleIntoDeck(card);
 
@@ -1201,7 +1201,7 @@ const playCard = {
 
         player.mana -= 2;
 
-        game.functions.util.remove(player.hand, card);
+        game.functions.event.withSuppressed('DiscardCard', () => card.discard());
         const forged = new Card(forgeId, player);
         player.addToHand(forged);
 
@@ -1311,7 +1311,7 @@ const playCard = {
             // Corrupt that card
             const corrupted = new Card(corruptId, player);
 
-            game.functions.util.remove(player.hand, toCorrupt);
+            game.functions.event.withSuppressed('DiscardCard', () => card.discard());
             game.functions.event.withSuppressed('AddCardToHand', () => player.addToHand(corrupted));
         }
 

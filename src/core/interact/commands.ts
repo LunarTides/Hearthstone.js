@@ -119,7 +119,7 @@ export const commands: CommandList = {
         const ability = titanCards[choice - 1];
 
         if (ability.activate('cast') === -1) {
-            game.functions.util.remove(ability.plr.hand, ability);
+            game.functions.event.withSuppressed('DiscardCard', () => ability.discard());
             return false;
         }
 

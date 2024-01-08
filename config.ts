@@ -219,6 +219,8 @@ export const config: GameConfig = {
             'SummonCard',
             'KillCard',
             'DamageCard',
+            'SilenceCard',
+            'DiscardCard',
             'TradeCard',
             'ForgeCard',
             'FreezeCard',

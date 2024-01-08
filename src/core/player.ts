@@ -941,13 +941,23 @@ export class Player {
 
             game.functions.event.withSuppressed('DrawCard', () => this.drawCard());
             game.functions.event.withSuppressed('AddCardToDeck', () => this.shuffleIntoDeck(card));
-
-            game.functions.util.remove(this.hand, card);
+            game.functions.event.withSuppressed('DiscardCard', () => card.discard());
 
             cards.push(card);
         }
 
         return cards;
+    }
+
+    /**
+     * Discards `card` from this player's hand.
+     *
+     * Equivalent to `card.discard()`.
+     *
+     * @returns If the card was successfully discarded
+     */
+    discard(card: Card): boolean {
+        return card.discard(this);
     }
 
     /**

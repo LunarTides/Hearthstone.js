@@ -1000,6 +1000,24 @@ export class Card {
     }
 
     /**
+     * Discards this card from a player's hand.
+     * Broadcasts the `DiscardCard` event if the card was successfully discarded.
+     *
+     * @param plr The player to discard the card from. Defaults to the card's owner
+     *
+     * @returns If the card was successfully discarded
+     */
+    discard(plr = this.plr): boolean {
+        const returnValue = game.functions.util.remove(plr.hand, this);
+
+        if (returnValue) {
+            game.event.broadcast('DiscardCard', this, plr);
+        }
+
+        return returnValue;
+    }
+
+    /**
      * Checks if the condition is met, and if it is, adds `(Condition cleared!)` to the description
      *
      * @returns If the condition is met

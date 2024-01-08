@@ -60,6 +60,7 @@ export type EventKey =
 | 'KillCard'
 | 'DamageCard'
 | 'SilenceCard'
+| 'DiscardCard'
 | 'CancelCard'
 | 'TradeCard'
 | 'ForgeCard'
@@ -140,6 +141,10 @@ export type EventValue<Key extends EventKey> =
      * The card that was silenced
      */
     Key extends 'SilenceCard' ? Card :
+    /**
+     * The card that was discarded
+     */
+    Key extends 'DiscardCard' ? Card :
     /**
      * The card that was cancelled, and the ability that was cancelled
      */
