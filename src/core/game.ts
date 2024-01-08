@@ -527,7 +527,13 @@ export class Game {
                 }
 
                 // Calmly tell the minion that it is going to die
-                card.activate('remove');
+                const removeReturn = card.activate('remove', 'KillCard');
+
+                // If the "remove" ability returns false, the card is not removed from the board
+                if (Array.isArray(removeReturn) && removeReturn[0] === false) {
+                    spared.push(card);
+                    continue;
+                }
 
                 this.event.broadcast('KillCard', card, this.player);
 

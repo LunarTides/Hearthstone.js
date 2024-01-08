@@ -82,6 +82,7 @@ export { blueprint as ca0a9166 } from './Examples/Test/cant-attack.js';
 export { blueprint as c8cb530e } from './Examples/Test/deathrattle.js';
 export { blueprint as c764ac82 } from './Examples/Test/divine-shield.js';
 export { blueprint as ca10465c } from './Examples/Test/frozen.js';
+export { blueprint as c210f67e } from './Examples/Test/immortal.js';
 export { blueprint as cf619072 } from './Examples/Test/summon-on-draw.js';
 export { blueprint as cb7cfa03 } from './Examples/Unordered/Card References/131-simple.js';
 export { blueprint as c37cb320 } from './Examples/Unordered/Card References/132-circular.js';

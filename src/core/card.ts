@@ -864,7 +864,12 @@ export class Card {
          * The false tells the minion that this is the last time it will call remove
          * so it should finish whatever it is doing.
          */
-        this.activate('remove');
+        const removeReturn = this.activate('remove', 'SilenceCard');
+
+        // If the remove function returned false, then we should not silence.
+        if (Array.isArray(removeReturn) && removeReturn[0] === false) {
+            return false;
+        }
 
         for (const key of Object.keys(this)) {
             /*

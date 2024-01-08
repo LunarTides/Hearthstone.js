@@ -136,4 +136,5 @@ export const cardIds = {
     circularCardReferenceExample132: 132,
     summonOnDrawTest133: 133,
     cantAttackTest134: 134,
+    immortalTest135: 135,
 };
