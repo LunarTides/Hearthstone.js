@@ -871,7 +871,20 @@ export class Card {
             return false;
         }
 
+        // Remove abilities from the card.
+        for (const ability of Object.keys(this.abilities)) {
+            this.abilities[ability as CardAbility] = [];
+        }
+
         for (const key of Object.keys(this)) {
+            if (key === 'health' && this.health! < this.backups.init.health!) {
+                continue;
+            }
+
+            if (key === 'sleepy' || key === 'attackTimes') {
+                continue;
+            }
+
             /*
              * Check if a backup exists for the attribute. If it does; restore it.
              * HACK: Never usage
@@ -887,7 +900,7 @@ export class Card {
             }
         }
 
-        this.text = '';
+        this.text = `<strikethrough>${this.text}</strikethrough>`;
         this.keywords = {};
 
         // Remove active enchantments.
