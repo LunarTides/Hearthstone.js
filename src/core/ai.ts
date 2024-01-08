@@ -710,7 +710,7 @@ export class Ai {
     }
 
     /**
-     * Returns if there are any location cards the ai can use.
+     * @returns If there are any location cards the ai can use.
      */
     private _canUseLocation(): boolean {
         if (this.prevent.includes('use')) {
@@ -832,7 +832,7 @@ export class Ai {
     }
 
     /**
-     * Returns the taunts on the board
+     * @returns The taunts on the board
      */
     private _findTaunts(): Card[] {
         return this.plr.getOpponent().getBoard().filter(m => m.hasKeyword('Taunt'));

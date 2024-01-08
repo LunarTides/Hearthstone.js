@@ -950,7 +950,7 @@ export class Player {
     }
 
     /**
-     * Returns if this player's deck has no duplicates.
+     * @returns If this player's deck has no duplicates.
      */
     highlander(): boolean {
         const deck = this.deck.map(c => c.id);

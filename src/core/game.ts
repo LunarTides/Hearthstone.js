@@ -335,10 +335,14 @@ export class Game {
         this.player1 = players[0];
         this.player2 = players[1];
 
+        /*
+         * Set the starting mana for the first player.
+         * The second player will get this when their turn starts
+         */
         this.player1.emptyMana = 1;
         this.player1.mana = 1;
 
-        // The id of The Coin is 2
+        // Give the coin to the second player
         const coin = new Card(this.cardIds.theCoin2, this.player2);
         this.functions.event.withSuppressed('AddCardToHand', () => this.player2.addToHand(coin));
 
@@ -498,9 +502,15 @@ export class Game {
         for (let p = 0; p < 2; p++) {
             const player = this.functions.util.getPlayerFromId(p);
 
+            /*
+             * The minions with more than 0 health will be added to this list.
+             * The player's side of the board will be set to this list at the end.
+             * This will effectively remove all minions with 0 or less health from the board
+             */
             const spared: Card[] = [];
             const shouldSpare = (card: Card) => (card.health ?? 0) > 0 || ((card.durability ?? 0) > 0);
 
+            // Trigger the deathrattles before doing the actual killing so the deathrattles can save the card by setting it's health to above 0
             for (const card of this.board[p]) {
                 if (shouldSpare(card)) {
                     continue;
@@ -510,7 +520,7 @@ export class Game {
             }
 
             for (const card of this.board[p]) {
-                // Add minions with more than 0 health to n.
+                // Add minions with more than 0 health to `spared`.
                 if (shouldSpare(card)) {
                     spared.push(card);
                     continue;

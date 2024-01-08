@@ -971,9 +971,9 @@ export class Card {
     }
 
     /**
-     * Returns manathirst for `m`
-     *
      * @param m The mana to test
+     *
+     * @returns Manathirst for `m`
      */
     manathirst(m: number): boolean {
         return this.plr.emptyMana >= m;
@@ -1289,7 +1289,7 @@ export class Card {
     }
 
     /**
-     * Returns if the card specified has the ability to appear on the board.
+     * @returns If the card specified has the ability to appear on the board.
      */
     canBeOnBoard(): boolean {
         return this.type === 'Minion' || this.type === 'Location';
@@ -1501,9 +1501,9 @@ export class Card {
     }
 
     /**
-     * Returns a colored version of the card's UUID.
-     *
      * @param length How many characters of the UUID to return
+     *
+     * @returns A colored version of the card's UUID.
      */
     coloredUUID(length = 7): string {
         return game.functions.color.fromTags(`<#${this.uuid.slice(0, 6)}>${this.uuid.slice(0, length)}</#>`);
