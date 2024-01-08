@@ -102,9 +102,7 @@ export const commands: CommandList = {
             return false;
         }
 
-        const unsuppress = game.functions.event.suppress('CreateCard');
-        const titanCards = titanIds.map(id => new Card(id, game.player));
-        unsuppress();
+        const titanCards = titanIds.map(id => game.createCard(id, game.player, true));
 
         game.interact.info.showGame(game.player);
         console.log(`\nWhich ability do you want to trigger?\n${titanCards.map(c => game.interact.card.getReadable(c)).join(',\n')}`);

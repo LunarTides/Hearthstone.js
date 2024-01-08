@@ -3,7 +3,7 @@
  * @module AI
  */
 import { Card, Player } from '../internal.js';
-import { type AiCalcMoveOption, type AiHistory, type CardLike, type ScoredCard, type SelectTargetAlignment, type SelectTargetClass, type SelectTargetFlag, type Target } from '../types.js';
+import { type AiCalcMoveOption, type AiHistory, type ScoredCard, type SelectTargetAlignment, type SelectTargetClass, type SelectTargetFlag, type Target } from '../types.js';
 
 // TODO: Ai gets stuck in infinite loop when using cathedral of atonement (location) | shadowcloth needle (0 attack wpn) | that minion has no attack.
 
@@ -361,19 +361,19 @@ export class Ai {
     }
 
     /**
-     * Choose the "best" minion to discover.
+     * Choose the "best" card to discover.
      *
      * @param cards The cards to choose from
      *
      * @returns Result
      */
-    discover(cards: CardLike[]): Card | undefined {
-        let bestCard: CardLike | undefined;
+    discover(cards: Card[]): Card | undefined {
+        let bestCard: Card | undefined;
         let bestScore = -100_000;
 
         // Look for highest score
         for (const card of cards) {
-            const score = this.analyzePositiveCard(new Card(card.id, this.plr));
+            const score = this.analyzePositiveCard(card);
 
             if (score <= bestScore) {
                 continue;
@@ -388,10 +388,6 @@ export class Ai {
         }
 
         this.history.push({ type: 'discover', data: [bestCard.id, bestScore] });
-
-        // `cards` can be a list of blueprints, so calling bestCard.imperfectCopy is dangerous
-        bestCard = new Card(bestCard.id, this.plr);
-
         return bestCard;
     }
 

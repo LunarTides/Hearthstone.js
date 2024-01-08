@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { type Card as VanillaCard } from '@hearthstonejs/vanillatypes';
 import { type CardClass, type MinionTribe, type CardClassNoNeutral, type Blueprint, type CardType } from '@Game/types.js';
-import { Card, CardError, type Player } from '../../internal.js';
+import { type Card, CardError, type Player } from '../../internal.js';
 import * as blueprints from '../../../cards/exports.js';
 
 const vanilla = {
@@ -178,11 +178,7 @@ export const cardFunctions = {
             return undefined;
         }
 
-        const unsuppress = game.functions.event.suppress('CreateCard');
-        const returnValue = game.createCard(cards[0].id, player);
-        unsuppress();
-
-        return returnValue;
+        return game.createCard(cards[0].id, player, true);
     },
 
     /**
@@ -192,15 +188,11 @@ export const cardFunctions = {
      */
     getAll(uncollectible = true): Card[] {
         // Don't broadcast CreateCard event here since it would spam the history and log files
-        const unsuppress = game.functions.event.suppress('CreateCard');
-
         if (game.cards.length <= 0) {
-            game.cards = game.blueprints.map(card => new Card(card.id, game.player));
+            game.cards = game.blueprints.map(card => game.createCard(card.id, game.player, true));
 
             this.generateIdsFile();
         }
-
-        unsuppress();
 
         return game.cards.filter(c => c.collectible || !uncollectible);
     },
@@ -308,11 +300,7 @@ export const cardFunctions = {
      * Returns all classes in the game
      */
     getClasses(): CardClassNoNeutral[] {
-        const unsuppress = game.functions.event.suppress('CreateCard');
-        const returnValue = game.cardCollections.classes.map(heroId => new Card(heroId, game.player).classes[0]) as CardClassNoNeutral[];
-        unsuppress();
-
-        return returnValue;
+        return game.cardCollections.classes.map(heroId => game.createCard(heroId, game.player, true).classes[0]) as CardClassNoNeutral[];
     },
 
     /**

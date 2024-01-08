@@ -337,7 +337,7 @@ export class Game {
         this.player1.mana = 1;
 
         // Give the coin to the second player
-        const coin = new Card(this.cardIds.theCoin2, this.player2);
+        const coin = this.createCard(this.cardIds.theCoin2, this.player2);
         this.functions.event.withSuppressed('AddCardToHand', () => this.player2.addToHand(coin));
 
         this.turn += 1;
@@ -582,11 +582,23 @@ export class Game {
      *
      * @param id The id of the blueprint. Use `game.cardIds`
      * @param owner The owner of the card
+     * @param suppress Whether to suppress the `CreateCard` event. By default, this is false.
      *
      * @returns The card
      */
-    createCard(id: number, owner: Player): Card {
-        return new Card(id, owner);
+    createCard(id: number, owner: Player, suppress = false): Card {
+        let unsuppress;
+        if (suppress) {
+            unsuppress = this.functions.event.suppress('CreateCard');
+        }
+
+        const card = new Card(id, owner);
+
+        if (unsuppress) {
+            unsuppress();
+        }
+
+        return card;
     }
 }
 
@@ -1202,7 +1214,7 @@ const playCard = {
         player.mana -= 2;
 
         game.functions.event.withSuppressed('DiscardCard', () => card.discard());
-        const forged = new Card(forgeId, player);
+        const forged = game.createCard(forgeId, player);
         player.addToHand(forged);
 
         game.event.broadcast('ForgeCard', card, player);
@@ -1309,7 +1321,7 @@ const playCard = {
             }
 
             // Corrupt that card
-            const corrupted = new Card(corruptId, player);
+            const corrupted = game.createCard(corruptId, player);
 
             game.functions.event.withSuppressed('DiscardCard', () => card.discard());
             game.functions.event.withSuppressed('AddCardToHand', () => player.addToHand(corrupted));
@@ -1428,7 +1440,7 @@ const cards = {
                     continue;
                 }
 
-                const cardToSummon = new Card(cardId, player);
+                const cardToSummon = game.createCard(cardId, player);
 
                 // If this card has dormant, add it to the summoned minions as well.
                 if (dormant) {

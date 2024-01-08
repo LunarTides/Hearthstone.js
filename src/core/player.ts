@@ -2,7 +2,7 @@
  * Player
  * @module Player
  */
-import { type Ai, Card } from '../internal.js';
+import { type Ai, type Card } from '../internal.js';
 import { type CardClass, type CardType, type EventKey, type QuestCallback, type QuestType, type Target } from '../types.js';
 
 export class Player {
@@ -465,7 +465,7 @@ export class Player {
      *
      * # Examples
      * ```
-     * const weapon = new Card(game.cardIds.notRealExampleWeapon0, player);
+     * const weapon = game.createCard(game.cardIds.notRealExampleWeapon0, player);
      * player.setWeapon(weapon);
      * ```
      *
@@ -612,7 +612,7 @@ export class Player {
      * ```
      * assert.equal(player.deck.length, 30);
      *
-     * const card = new Card(game.cardIds.sheep1, player);
+     * const card = game.createCard(game.cardIds.sheep1, player);
      * player.shuffleIntoDeck(card);
      *
      * assert.equal(player.deck.length, 31);
@@ -777,15 +777,13 @@ export class Player {
      * @returns Success
      */
     setToStartingHero(heroClass = this.heroClass): boolean {
-        const unsuppress = game.functions.event.suppress('CreateCard');
-        const heroCardId = game.cardCollections.classes.map(heroId => new Card(heroId, this)).find(card => card.classes.includes(heroClass))?.id;
-        unsuppress();
+        const heroCardId = game.cardCollections.classes.map(heroId => game.createCard(heroId, this, true)).find(card => card.classes.includes(heroClass))?.id;
 
         if (!heroCardId) {
             return false;
         }
 
-        this.setHero(new Card(heroCardId, this), false);
+        this.setHero(game.createCard(heroCardId, this), false);
 
         return true;
     }

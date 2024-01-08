@@ -2,7 +2,7 @@
 import deckstrings from 'deckstrings';
 import { type Card as VanillaCard } from '@hearthstonejs/vanillatypes';
 import { type GameConfig, type CardClass, type CardClassNoNeutral, type CardLike, type FunctionsExportDeckError } from '@Game/types.js';
-import { Card, type Player } from '../../internal.js';
+import { type Card, type Player } from '../../internal.js';
 
 export const deckcodeFunctions = {
     /**
@@ -133,9 +133,7 @@ export const deckcodeFunctions = {
                     continue;
                 }
 
-                const unsuppress = game.functions.event.suppress('CreateCard');
-                const card = new Card(blueprint.id, plr);
-                unsuppress();
+                const card = game.createCard(blueprint.id, plr, true);
 
                 for (let i = 0; i < game.lodash.parseInt(copies); i++) {
                     newDeck.push(card.perfectCopy());
@@ -414,11 +412,7 @@ export const deckcodeFunctions = {
                 throw new Error('c is an invalid card');
             }
 
-            const unsuppress = game.functions.event.suppress('CreateCard');
-            const returnValue = new Card(c.id, plr);
-            unsuppress();
-
-            return returnValue;
+            return game.createCard(c.id, plr, true);
         });
         const trueCards = cardsSplitCard.map(c => c.name);
 

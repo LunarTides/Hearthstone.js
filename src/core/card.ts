@@ -61,10 +61,10 @@ export class Card {
      * Use uuid for that.
      *
      * @example
-     * const sheep = new Card(game.cardIds.sheep1, plr);
-     * const anotherSheep = new Card(game.cardIds.sheep1, plr);
+     * const sheep = game.createCard(game.cardIds.sheep1, plr);
+     * const anotherSheep = game.createCard(game.cardIds.sheep1, plr);
      *
-     * const theCoin = new Card(game.cardIds.theCoin2, plr);
+     * const theCoin = game.createCard(game.cardIds.theCoin2, plr);
      *
      * assert.equal(sheep.id, anotherSheep.id);
      * assert.notEqual(sheep.id, theCoin.id);
@@ -376,7 +376,7 @@ export class Card {
         this.maxHealth = this.blueprint.health;
 
         if (this.heropowerId) {
-            this.heropower = new Card(this.heropowerId, this.plr);
+            this.heropower = game.createCard(this.heropowerId, this.plr);
         }
 
         this.text = game.functions.color.fromTags(this.text || '');
@@ -1315,7 +1315,7 @@ export class Card {
      *
      * @example
      * const cloned = card.imperfectCopy();
-     * const cloned2 = new Card(card.id, card.plr);
+     * const cloned2 = game.createCard(card.id, card.plr);
      *
      * // This will actually fail since they're slightly different, but you get the point
      * assert.equal(cloned, cloned2);
@@ -1323,7 +1323,7 @@ export class Card {
      * @returns An imperfect copy of this card.
      */
     imperfectCopy(): Card {
-        return new Card(this.id, this.plr);
+        return game.createCard(this.id, this.plr);
     }
 
     /**
@@ -1441,8 +1441,8 @@ export class Card {
 
             case 'Living Spores': {
                 this.addAbility('deathrattle', (plr, _) => {
-                    plr.summon(new Card(game.cardIds.plant3, plr));
-                    plr.summon(new Card(game.cardIds.plant3, plr));
+                    plr.summon(game.createCard(game.cardIds.plant3, plr));
+                    plr.summon(game.createCard(game.cardIds.plant3, plr));
                 });
                 break;
             }

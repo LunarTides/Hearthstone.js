@@ -3,7 +3,7 @@
  * @module Interact
  */
 import process from 'node:process';
-import { type Player, Card, cardInteract, gameloopInteract, infoInteract } from '../../internal.js';
+import { type Player, type Card, cardInteract, gameloopInteract, infoInteract } from '../../internal.js';
 import { type SelectTargetAlignment, type SelectTargetClass, type SelectTargetFlag, type Target } from '../../types.js';
 
 export const interact = {
@@ -60,13 +60,9 @@ export const interact = {
             }
 
             // Debug mode is enabled, use the 30 Sheep debug deck.
-            const unsuppress = game.functions.event.suppress('CreateCard');
-
             while (plr.deck.length < 30) {
-                plr.deck.push(new Card(game.cardIds.sheep1, plr));
+                plr.deck.push(game.createCard(game.cardIds.sheep1, plr, true));
             }
-
-            unsuppress();
         }
 
         return result;

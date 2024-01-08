@@ -203,7 +203,7 @@ export const eventManager: EventManagerType = {
             }
 
             if (quest.next) {
-                new Card(quest.next, plr).activate('cast');
+                game.createCard(quest.next, plr).activate('cast');
             }
         }
 
