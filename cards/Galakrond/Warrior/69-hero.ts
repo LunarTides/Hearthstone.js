@@ -1,7 +1,6 @@
 // Created by the Custom Card Creator
 
 import { type Blueprint } from '@Game/types.js';
-import { Card } from '../../../src/core/card.js';
 
 export const blueprint: Blueprint = {
     name: 'Galakrond, the Unbreakable',
@@ -23,7 +22,7 @@ export const blueprint: Blueprint = {
         // Draw the minions
         for (let i = 0; i < amount; i++) {
             const card = plr.drawCard();
-            if (!(card instanceof Card)) {
+            if (!(card instanceof game.Card)) {
                 continue;
             }
 

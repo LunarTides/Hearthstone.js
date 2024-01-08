@@ -2,7 +2,6 @@
 
 import assert from 'node:assert';
 import { type Blueprint } from '@Game/types.js';
-import { Card } from '../../../../../../src/core/card.js';
 
 export const blueprint: Blueprint = {
     name: 'Yogg-Saron, Master of Fate',
@@ -146,7 +145,7 @@ export const blueprint: Blueprint = {
     },
 
     placeholders(plr, self) {
-        const amount = game.event.events.PlayCard?.[plr.id].filter(object => object[0] instanceof Card && object[0].type === 'Spell').length;
+        const amount = game.event.events.PlayCard?.[plr.id].filter(object => object[0] instanceof game.Card && object[0].type === 'Spell').length;
         if (!amount) {
             return { left: ' <i>(10 left!)</i>' };
         }
@@ -159,7 +158,7 @@ export const blueprint: Blueprint = {
     },
 
     condition(plr, self) {
-        const amount = game.event.events.PlayCard?.[plr.id].filter(object => object[0] instanceof Card && object[0].type === 'Spell').length;
+        const amount = game.event.events.PlayCard?.[plr.id].filter(object => object[0] instanceof game.Card && object[0].type === 'Spell').length;
         if (!amount) {
             return false;
         }

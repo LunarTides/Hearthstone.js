@@ -2,7 +2,7 @@
 
 import assert from 'node:assert';
 import { type Blueprint } from '@Game/types.js';
-import { Card } from '../../../../../../src/core/card.js';
+import { type Card } from '../../../../../../src/core/card.js';
 
 export const blueprint: Blueprint = {
     name: 'Archmage Vargoth',
@@ -26,7 +26,7 @@ export const blueprint: Blueprint = {
             return;
         }
 
-        const spells: Card[] | undefined = game.event.events.PlayCard?.[plr.id].filter(object => object[0] instanceof Card && object[0].type === 'Spell' && object[1] === game.turn).map(object => object[0] as Card);
+        const spells: Card[] | undefined = game.event.events.PlayCard?.[plr.id].filter(object => object[0] instanceof game.Card && object[0].type === 'Spell' && object[1] === game.turn).map(object => object[0] as Card);
         if (!spells || spells.length <= 0) {
             return;
         }

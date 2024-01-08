@@ -151,6 +151,9 @@ export class Game {
     lodash = _;
     cardIds = cardIds;
 
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    Card = Card;
+
     constructor() {
         globalThis.game = this;
     }

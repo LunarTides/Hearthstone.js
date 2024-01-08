@@ -1,7 +1,6 @@
 // Created by the Custom Card Creator
 
 import { type Blueprint } from '@Game/types.js';
-import { Card } from '../../../src/core/card.js';
 
 export const blueprint: Blueprint = {
     name: 'Galakrond, the Nightmare',
@@ -24,7 +23,7 @@ export const blueprint: Blueprint = {
 
         for (let i = 0; i < amount; i++) {
             const card = plr.drawCard();
-            if (!(card instanceof Card)) {
+            if (!(card instanceof game.Card)) {
                 return;
             }
 
