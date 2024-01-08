@@ -1114,7 +1114,7 @@ const playCard = {
         Heropower(card: Card, player: Player): GamePlayCardReturn {
             // A hero power card shouldn't really be played, but oh well.
             player.hero.heropowerId = card.id;
-            player.hero.heroPower = card;
+            player.hero.heropower = card;
 
             return true;
         },

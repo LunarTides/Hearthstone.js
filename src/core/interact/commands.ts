@@ -15,7 +15,7 @@ export const commands: CommandList = {
             return true;
         }
 
-        if (game.player.mana < game.player.hero.heroPower!.cost) {
+        if (game.player.mana < game.player.hero.heropower!.cost) {
             game.pause('<red>You do not have enough mana.</red>\n');
             return false;
         }
@@ -26,7 +26,7 @@ export const commands: CommandList = {
         }
 
         game.interact.info.showGame(game.player);
-        const ask = game.interact.yesNoQuestion(`<yellow>${game.player.hero.heroPower!.text}</yellow> Are you sure you want to use this hero power?`, game.player);
+        const ask = game.interact.yesNoQuestion(`<yellow>${game.player.hero.heropower!.text}</yellow> Are you sure you want to use this hero power?`, game.player);
         if (!ask) {
             return false;
         }

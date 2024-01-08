@@ -130,7 +130,7 @@ export class Card {
 
     armor?: number;
     heropowerId?: number;
-    heroPower?: Card;
+    heropower?: Card;
 
     // Location
 
@@ -383,7 +383,7 @@ export class Card {
         this.maxHealth = this.blueprint.health;
 
         if (this.heropowerId) {
-            this.heroPower = new Card(this.heropowerId, this.plr);
+            this.heropower = new Card(this.heropowerId, this.plr);
         }
 
         this.text = game.functions.color.fromTags(this.text || '');

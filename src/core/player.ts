@@ -785,7 +785,7 @@ export class Player {
      * @returns Success | Cancelled
      */
     heroPower(): boolean | -1 {
-        if (this.mana < this.hero.heroPower!.cost || !this.canUseHeroPower) {
+        if (this.mana < this.hero.heropower!.cost || !this.canUseHeroPower) {
             return false;
         }
 
@@ -793,7 +793,7 @@ export class Player {
             return false;
         }
 
-        if (this.hero.heroPower?.activate('heropower') === game.constants.refund) {
+        if (this.hero.heropower?.activate('heropower') === game.constants.refund) {
             return -1;
         }
 
@@ -801,7 +801,7 @@ export class Player {
             card.activate('inspire');
         }
 
-        this.mana -= this.hero.heroPower!.cost;
+        this.mana -= this.hero.heropower!.cost;
         this.canUseHeroPower = false;
 
         game.event.broadcast('HeroPower', this.hero.heropower, this);
@@ -1056,11 +1056,11 @@ export class Player {
         }
 
         if (this.hero.name.startsWith('Galakrond, the ')) {
-            this.hero.heroPower?.activate('cast');
+            this.hero.heropower?.activate('cast');
         } else if (deckGalakrond) {
-            deckGalakrond.heroPower?.activate('cast');
+            deckGalakrond.heropower?.activate('cast');
         } else if (handGalakrond) {
-            handGalakrond.heroPower?.activate('cast');
+            handGalakrond.heropower?.activate('cast');
         }
 
         return true;
