@@ -227,13 +227,6 @@ export class Card {
     turnKilled?: number;
 
     /**
-     * The turn that the card was frozen.
-     *
-     * Set to -1 if the card is not frozen.
-     */
-    turnFrozen?: number;
-
-    /**
      * The runes of the card.
      */
     runes?: string;
@@ -514,7 +507,6 @@ export class Card {
      * @returns Success
      */
     freeze(): boolean {
-        this.turnFrozen = game.turns;
         this.addKeyword('Frozen');
 
         game.event.broadcast('FreezeCard', this, this.plr);
