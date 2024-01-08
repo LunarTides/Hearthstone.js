@@ -20,8 +20,13 @@ export const commands: CommandList = {
             return false;
         }
 
-        if (!game.player.canUseHeroPower) {
+        if (game.player.hasUsedHeroPowerThisTurn) {
             game.pause('<red>You have already used your hero power this turn.</red>\n');
+            return false;
+        }
+
+        if (game.player.disableHeroPower) {
+            game.pause('<red>Your hero power is currently disabled.</red>\n');
             return false;
         }
 

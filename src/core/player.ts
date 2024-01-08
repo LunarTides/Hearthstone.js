@@ -172,8 +172,17 @@ export class Player {
 
     /**
      * If the player can use their hero power.
+     *
+     * This resets to true every turn.
      */
-    canUseHeroPower = true;
+    hasUsedHeroPowerThisTurn = false;
+
+    /**
+     * If the player's hero power is disabled.
+     *
+     * This has to manually be set.
+     */
+    disableHeroPower = false;
 
     /**
      * The player's weapon. Functions like any other card.
@@ -785,7 +794,7 @@ export class Player {
      * @returns Success | Cancelled
      */
     heroPower(): boolean | -1 {
-        if (this.mana < this.hero.heropower!.cost || !this.canUseHeroPower) {
+        if (!this.canUseHeroPower()) {
             return false;
         }
 
@@ -802,7 +811,7 @@ export class Player {
         }
 
         this.mana -= this.hero.heropower!.cost;
-        this.canUseHeroPower = false;
+        this.hasUsedHeroPowerThisTurn = true;
 
         game.event.broadcast('HeroPower', this.hero.heropower, this);
         return true;
@@ -852,6 +861,13 @@ export class Player {
      */
     canBeAttacked(): boolean {
         return !this.immune;
+    }
+
+    /**
+     * @returns If the player can use their heropower
+     */
+    canUseHeroPower(): boolean {
+        return this.mana >= this.hero.heropower!.cost && !this.hasUsedHeroPowerThisTurn && !this.disableHeroPower;
     }
 
     /**

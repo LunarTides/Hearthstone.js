@@ -698,15 +698,10 @@ export class Ai {
             return false;
         }
 
-        const enoughMana = this.plr.mana >= this.plr.hero.heropower!.cost;
-        const canUse = this.plr.canUseHeroPower;
-
-        const canHeroPower = enoughMana && canUse;
-
         // The ai has already used their hero power that turn.
         this.prevent.push('hero power');
 
-        return canHeroPower;
+        return this.plr.canUseHeroPower();
     }
 
     /**

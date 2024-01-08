@@ -469,7 +469,7 @@ export class Game {
         // Draw card
         opponent.drawCard();
 
-        opponent.canUseHeroPower = true;
+        opponent.hasUsedHeroPowerThisTurn = false;
 
         this.event.broadcast('StartTurn', this.turn, opponent);
 
@@ -618,26 +618,29 @@ const attack = {
     attack(attacker: Target | number | string, target: Target): GameAttackReturn {
         let returnValue: GameAttackReturn;
 
+        // If the target is a card and is immune, you are not allowed to attack it
         if (target instanceof Card && target.hasKeyword('Immune')) {
             return 'immune';
         }
 
+        // If the target is a player and is immune, you are not allowed to attack it
         if (target instanceof Player && target.immune) {
             return 'immune';
+        }
+
+        // If the attacker is a card and is frozen, it is not allowed to attack
+        if (attacker instanceof Card && attacker.hasKeyword('Frozen')) {
+            return 'frozen';
+        }
+
+        // If the attacker is a player and is frozen, it is not allowed to attack
+        if (attacker instanceof Player && attacker.frozen) {
+            return 'frozen';
         }
 
         // Attacker is a number
         if (typeof attacker === 'string' || typeof attacker === 'number') {
             return attack._attackerIsNum(attacker, target);
-        }
-
-        // The attacker is a card or player
-        if (attacker instanceof Card && attacker.hasKeyword('Frozen')) {
-            return 'frozen';
-        }
-
-        if (attacker instanceof Player && attacker.frozen) {
-            return 'frozen';
         }
 
         // Check if there is a minion with taunt
@@ -1468,6 +1471,9 @@ const cards = {
                 player.spellDamage += card.spellDamage;
             }
         }
+
+        // Do this to instantly trigger tick abilities. Most useful for unit tests.
+        game.event.tick('SummonCard', card, player);
 
         return true;
     },

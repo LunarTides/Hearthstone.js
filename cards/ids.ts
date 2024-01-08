@@ -137,4 +137,5 @@ export const cardIds = {
     summonOnDrawTest133: 133,
     cantAttackTest134: 134,
     immortalTest135: 135,
+    disableHeropowerTest136: 136,
 };
