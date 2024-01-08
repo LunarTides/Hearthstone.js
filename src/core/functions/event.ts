@@ -129,4 +129,29 @@ export const eventFunctions = {
 
         return undo;
     },
+
+    /**
+     * Executes the given callback while suppressing the specified key or keys.
+     *
+     * @param key The key or keys to suppress.
+     * @param callback The callback to execute.
+     *
+     * @returns The return value of the callback.
+     */
+    withSuppressed<T>(key: EventKey | EventKey[], callback: () => T): T {
+        let unsuppress: () => boolean;
+
+        if (Array.isArray(key)) {
+            for (const _key of key) {
+                unsuppress = this.suppress(_key);
+            }
+        } else {
+            unsuppress = this.suppress(key);
+        }
+
+        const returnValue = callback();
+        unsuppress!();
+
+        return returnValue;
+    },
 };

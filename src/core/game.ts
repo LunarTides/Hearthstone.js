@@ -340,10 +340,8 @@ export class Game {
 
         // The id of The Coin is 2
         const coin = new Card(this.cardIds.theCoin2, this.player2);
+        this.functions.event.withSuppressed('AddCardToHand', () => this.player2.addToHand(coin));
 
-        const unsuppress = this.functions.event.suppress('AddCardToHand');
-        this.player2.addToHand(coin);
-        unsuppress();
 
         this.turns += 1;
 

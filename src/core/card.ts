@@ -959,9 +959,11 @@ export class Card {
                 continue;
             }
 
-            const unsuppress = game.functions.event.suppress('AddCardToHand');
-            this.plr.addToHand(this);
-            unsuppress();
+            /*
+             * We have to suppress inside the loop in order to not have the event suppressed when calling the ability
+             * It's a bit hacky, and not very efficient, but it works
+             */
+            game.functions.event.withSuppressed('AddCardToHand', () => this.plr.addToHand(this));
 
             this.plr[this.costType] += this.cost;
 

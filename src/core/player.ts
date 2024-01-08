@@ -675,9 +675,7 @@ export class Player {
             return this.drawCard();
         }
 
-        const unsuppress = game.functions.event.suppress('AddCardToHand');
-        this.addToHand(card);
-        unsuppress();
+        game.functions.event.withSuppressed('AddCardToHand', () => this.addToHand(card));
 
         return card;
     }
@@ -718,9 +716,7 @@ export class Player {
             return undefined;
         }
 
-        const unsuppress = game.functions.event.suppress('AddCardToHand');
-        this.addToHand(card);
-        unsuppress();
+        game.functions.event.withSuppressed('AddCardToHand', () => this.addToHand(card));
 
         return card;
     }
@@ -925,13 +921,8 @@ export class Player {
 
             game.functions.util.remove(mulligan, card);
 
-            let unsuppress = game.functions.event.suppress('DrawCard');
-            this.drawCard();
-            unsuppress();
-
-            unsuppress = game.functions.event.suppress('AddCardToDeck');
-            this.shuffleIntoDeck(card);
-            unsuppress();
+            game.functions.event.withSuppressed('DrawCard', () => this.drawCard());
+            game.functions.event.withSuppressed('AddCardToDeck', () => this.shuffleIntoDeck(card));
 
             game.functions.util.remove(this.hand, card);
 
