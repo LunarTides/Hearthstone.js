@@ -717,16 +717,16 @@ const attack = {
     // Attacker is a player
     _attackerIsPlayer(attacker: Player, target: Target, force: boolean): GameAttackReturn {
         if (!force) {
-            if (attacker.attack <= 0) {
-                return 'plrnoattack';
+            if (attacker.frozen) {
+                return 'frozen';
             }
 
             if (!attacker.canAttack) {
                 return 'plrhasattacked';
             }
 
-            if (attacker.frozen) {
-                return 'frozen';
+            if (attacker.attack <= 0) {
+                return 'plrnoattack';
             }
         }
 
@@ -814,16 +814,20 @@ const attack = {
                 return 'titan';
             }
 
+            if (attacker.hasKeyword('Frozen')) {
+                return 'frozen';
+            }
+
             if (attacker.attackTimes && attacker.attackTimes <= 0) {
                 return 'hasattacked';
             }
 
-            if (attacker.sleepy) {
-                return 'sleepy';
-            }
-
             if (attacker.attack! <= 0) {
                 return 'noattack';
+            }
+
+            if (attacker.sleepy) {
+                return 'sleepy';
             }
         }
 
@@ -844,12 +848,12 @@ const attack = {
     // Attacker is a card and target is a player
     _attackerIsCardAndTargetIsPlayer(attacker: Card, target: Player, force: boolean): GameAttackReturn {
         if (!force) {
-            if (!attacker.canAttackHero) {
-                return 'cantattackhero';
-            }
-
             if (target.immune) {
                 return 'immune';
+            }
+
+            if (!attacker.canAttackHero) {
+                return 'cantattackhero';
             }
 
             if (!target.canBeAttacked()) {
