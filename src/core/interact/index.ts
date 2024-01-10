@@ -263,6 +263,15 @@ export const interact = {
 
         // If the player is forced to select a hero
         if (forceClass === 'hero') {
+            // You shouldn't really force a side while forcing a hero, but it should still work
+            if (forceSide === 'enemy') {
+                return game.opponent;
+            }
+
+            if (forceSide === 'friendly') {
+                return game.player;
+            }
+
             const target = game.input('Do you want to select the enemy hero, or your own hero? (y: enemy, n: friendly) ');
 
             return (target.startsWith('y')) ? game.opponent : game.player;
@@ -277,7 +286,10 @@ export const interact = {
         // Ask the player to choose a target.
         let p = `\n${prompt} (`;
         if (forceClass === 'any') {
-            p += 'type \'face\' to select a hero | ';
+            let possibleHeroes = forceSide === 'enemy' ? 'the enemy' : 'your';
+            possibleHeroes = forceSide === 'any' ? 'a' : possibleHeroes;
+
+            p += `type 'face' to select ${possibleHeroes} hero | `;
         }
 
         p += 'type \'back\' to go back) ';
@@ -289,6 +301,13 @@ export const interact = {
             // This should always be safe.
             return false;
         }
+
+        // If the player chose to target a hero, it will ask which hero.
+        if (target.startsWith('face') && forceClass !== 'minion') {
+            return this._selectTarget(prompt, card, forceSide, 'hero', flags);
+        }
+
+        // From this point, the player has chosen a minion.
 
         // Get a list of each side of the board
         const boardOpponent = game.opponent.getBoard();
@@ -304,23 +323,14 @@ export const interact = {
         let minion: Card;
 
         // If the player didn't choose to attack a hero, and no minions could be found at the index requested, try again.
-        if (!target.startsWith('face') && !boardFriendlyTarget && !boardOpponentTarget) {
-            /*
-             * Target !== "face" and target is not a minion.
-             * The input is invalid
-             */
+        if (!boardFriendlyTarget && !boardOpponentTarget) {
             game.pause('<red>Invalid input / minion!</red>\n');
 
+            // Try again
             return this._selectTarget(prompt, card, forceSide, forceClass, flags);
         }
 
-        // If the player is forced to one side.
         if (forceSide === 'any') {
-            // If the player chose to target a hero, it will ask which hero.
-            if (target.startsWith('face') && forceClass !== 'minion') {
-                return this._selectTarget(prompt, card, forceSide, 'hero', flags);
-            }
-
             /*
              * If both players have a minion with the same index,
              * ask them which minion to select
@@ -338,19 +348,14 @@ export const interact = {
 
                 minion = (alignment.startsWith('y')) ? boardOpponentTarget : boardFriendlyTarget;
             } else {
+                // If there is only one minion, select it.
                 minion = boardOpponent.length >= game.lodash.parseInt(target) ? boardOpponentTarget : boardFriendlyTarget;
             }
         } else {
-            // If the player chose a hero, and they are allowed to
-            if (target.startsWith('face') && forceClass !== 'minion') {
-                if (forceSide === 'enemy') {
-                    return game.opponent;
-                }
-
-                return game.player;
-            }
-
-            // Select the minion on the correct side of the board.
+            /*
+             * If the player is forced to one side.
+             * Select the minion on the correct side of the board.
+             */
             minion = (forceSide === 'enemy') ? boardOpponentTarget : boardFriendlyTarget;
         }
 
@@ -361,7 +366,7 @@ export const interact = {
         }
 
         // If the minion has elusive, and the card that called this function is a spell
-        if (((card && (card.type === 'Spell' || card.type === 'Heropower')) ?? flags.includes('forceElusive')) && minion.hasKeyword('Elusive')) {
+        if (((card?.type === 'Spell' || card?.type === 'Heropower') || flags.includes('forceElusive')) && minion.hasKeyword('Elusive')) {
             game.pause('<red>Can\'t be targeted by Spells or Hero Powers.</red>\n');
             return false;
         }
@@ -373,7 +378,7 @@ export const interact = {
             return false;
         }
 
-        // If the minion is a location, don't allow it to be selectted unless the `allowLocations` flag was set.
+        // If the minion is a location, don't allow it to be selected unless the `allowLocations` flag was set.
         if (minion.type === 'Location' && !flags.includes('allowLocations')) {
             game.pause('<red>You cannot target location cards.</red>\n');
 
