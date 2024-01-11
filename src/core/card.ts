@@ -445,6 +445,17 @@ export class Card {
                 break;
             }
 
+            case 'Unlimited Attacks': {
+                this.ready();
+                this.resetAttackTimes();
+
+                if (this.plr.weapon === this) {
+                    this.plr.canAttack = true;
+                }
+
+                break;
+            }
+
             default: {
                 break;
             }
@@ -521,6 +532,10 @@ export class Card {
      */
     decAttack(): boolean {
         if (!this.attackTimes) {
+            return false;
+        }
+
+        if (this.hasKeyword('Unlimited Attacks')) {
             return false;
         }
 

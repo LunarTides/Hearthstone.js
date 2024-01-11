@@ -760,7 +760,6 @@ const attack = {
         game.event.broadcast('Attack', [attacker, target], attacker);
 
         // The attacker can't attack anymore this turn.
-        attacker.canAttack = false;
         attack._removeDurabilityFromWeapon(attacker, target);
 
         return true;
@@ -791,9 +790,6 @@ const attack = {
         game.attack(attacker.attack, target);
         game.attack(target.attack!, attacker);
         game.event.broadcast('Attack', [attacker, target], attacker);
-
-        // The attacker can't attack anymore this turn.
-        attacker.canAttack = false;
 
         // Remove frenzy
         attack._doFrenzy(target);
@@ -1101,16 +1097,22 @@ const attack = {
     _removeDurabilityFromWeapon(attacker: Player, target: Target): void {
         const { weapon } = attacker;
         if (!weapon) {
+            attacker.canAttack = false;
             return;
         }
 
         // If the weapon would be part of the attack, remove 1 durability
         if (weapon.attackTimes && weapon.attackTimes > 0 && weapon.attack) {
-            weapon.attackTimes -= 1;
+            weapon.decAttack();
 
             // Only remove 1 durability if the weapon is not unbreakable
             if (!weapon.hasKeyword('Unbreakable')) {
                 weapon.remStats(0, 1);
+            }
+
+            // If the weapon is alive and it has unlimited attacks, the player can attack again this turn
+            if (!weapon.isAlive() || !weapon.hasKeyword('Unlimited Attacks')) {
+                attacker.canAttack = false;
             }
 
             if (target instanceof Card) {

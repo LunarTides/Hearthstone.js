@@ -110,6 +110,7 @@ export type CardKeyword =
 | 'Cast On Draw'
 | 'Summon On Draw'
 | 'Unbreakable'
+| 'Unlimited Attacks'
 | 'Charge'
 | 'Mega-Windfury'
 | 'Echo'
