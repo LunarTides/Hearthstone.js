@@ -1182,8 +1182,8 @@ export class Player {
         }
 
         // Reveal them to both players
-        game.event.addHistory('RevealCard', [friendlyCard, 'Joust'], this);
-        game.event.addHistory('RevealCard', [enemyCard, 'Joust'], this);
+        game.event.broadcast('RevealCard', [friendlyCard, 'Joust'], this);
+        game.event.broadcast('RevealCard', [enemyCard, 'Joust'], this);
 
         // Check which card has the higher cost
         const win = winCondition(friendlyCard, enemyCard);

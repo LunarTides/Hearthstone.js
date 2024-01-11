@@ -839,6 +839,7 @@ const attack = {
              * Do Forgetful last
              * It is in a while loop so that it can be returned early
              */
+            // eslint-disable-next-line no-unreachable-loop
             while (attacker.hasKeyword('Forgetful')) {
                 // Get the forgetful state
                 let forgetfulState = attacker.getKeyword('Forgetful') as undefined | number;
@@ -894,6 +895,8 @@ const attack = {
                 if (result === true) {
                     return true;
                 }
+
+                break;
             }
         }
 
