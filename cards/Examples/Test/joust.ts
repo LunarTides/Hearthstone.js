@@ -5,7 +5,7 @@ import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
     name: 'Joust Test',
-    text: '<b>Battlecry:</b> Reveal a card from each player\'s deck. If yours costs more, gain +1/+1.',
+    text: '<b>Battlecry:</b> Reveal a minion from each player\'s deck. If yours costs more, gain +1/+1.',
     cost: 1,
     type: 'Minion',
     classes: ['Neutral'],
@@ -20,7 +20,8 @@ export const blueprint: Blueprint = {
     battlecry(plr, self) {
         // Reveal a minion from each player's deck. If yours costs more, gain +1/+1.
 
-        const win = plr.joust();
+        // Joust. Only allow minion cards to be selected
+        const win = plr.joust(card => card.type === 'Minion');
 
         if (!win) {
             return;
