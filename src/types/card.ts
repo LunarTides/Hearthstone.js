@@ -109,6 +109,7 @@ export type CardKeyword =
 | 'Outcast'
 | 'Cast On Draw'
 | 'Summon On Draw'
+| 'Unbreakable'
 | 'Charge'
 | 'Mega-Windfury'
 | 'Echo'

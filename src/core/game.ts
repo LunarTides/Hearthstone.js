@@ -1113,7 +1113,11 @@ const attack = {
         // If the weapon would be part of the attack, remove 1 durability
         if (weapon.attackTimes && weapon.attackTimes > 0 && weapon.attack) {
             weapon.attackTimes -= 1;
-            weapon.remStats(0, 1);
+
+            // Only remove 1 durability if the weapon is not unbreakable
+            if (!weapon.hasKeyword('Unbreakable')) {
+                weapon.remStats(0, 1);
+            }
 
             if (target instanceof Card) {
                 attack._doPoison(weapon, target);
