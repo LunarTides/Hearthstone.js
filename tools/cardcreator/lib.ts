@@ -178,13 +178,13 @@ export function create(creatorType: CcType, blueprint: BlueprintWithOptional, ov
     const cleanedDescription = game.functions.color.stripTags(blueprint.text).replace(`${ability}: `, '');
 
     // `create` ability
-    const runes = blueprint.runes ? `        self.runes = "${blueprint.runes}"\n` : '';
+    const runes = blueprint.runes ? `        self.runes = '${blueprint.runes}'\n` : '';
     let keywords = '';
 
     if (blueprint.keywords) {
         for (const keyword of blueprint.keywords) {
             // 8 spaces
-            keywords += `        self.addKeyword("${keyword}");\n`;
+            keywords += `        self.addKeyword('${keyword}');\n`;
         }
     }
 
