@@ -204,6 +204,12 @@ export const config: GameConfig = {
          */
         getReadableCardMaxDepth: 10,
 
+        /**
+         * This is how many times the 'Forgetful' keyword can try to attack a random target before giving up.
+         * This is to prevent the game from getting stuck in an endless loop if none of the possible targets can be attacked.
+         */
+        forgetfulRandomTargetFailAmount: 25,
+
         /*
          * These are the keys that will show up when running the history command.
          * Look in `src/types.ts` at the `EventKey` type for a list of valid keys.

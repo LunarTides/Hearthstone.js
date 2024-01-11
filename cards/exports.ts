@@ -83,6 +83,7 @@ export { blueprint as c8cb530e } from './Examples/Test/deathrattle.js';
 export { blueprint as cf6e30c6 } from './Examples/Test/disable-heropower.js';
 export { blueprint as c764ac82 } from './Examples/Test/divine-shield.js';
 export { blueprint as c2548b3e } from './Examples/Test/force-attack.js';
+export { blueprint as c529e777 } from './Examples/Test/forgetful.js';
 export { blueprint as ca10465c } from './Examples/Test/frozen.js';
 export { blueprint as c210f67e } from './Examples/Test/immortal.js';
 export { blueprint as cf619072 } from './Examples/Test/summon-on-draw.js';

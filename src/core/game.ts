@@ -634,6 +634,11 @@ const attack = {
     attack(attacker: Target | number | string, target: Target, force = false): GameAttackReturn {
         let returnValue: GameAttackReturn;
 
+        // Target is the same as the attacker
+        if (!force && attacker === target) {
+            return 'invalid';
+        }
+
         // Attacker is a number
         if (typeof attacker === 'string' || typeof attacker === 'number') {
             return attack._attackerIsNum(attacker, target, force);
@@ -828,6 +833,67 @@ const attack = {
 
             if (attacker.sleepy) {
                 return 'sleepy';
+            }
+
+            /*
+             * Do Forgetful last
+             * It is in a while loop so that it can be returned early
+             */
+            while (attacker.hasKeyword('Forgetful')) {
+                // Get the forgetful state
+                let forgetfulState = attacker.getKeyword('Forgetful') as undefined | number;
+
+                // If the forgetful state is undefined, set it to 1
+                if (forgetfulState === undefined) {
+                    attacker.setKeyword('Forgetful', 1);
+                    forgetfulState = 1;
+                }
+
+                /*
+                 * We only do the coin flip if the forgetful state is 1
+                 * This is so we can disable forgetful when attacking the random target
+                 */
+                if (forgetfulState !== 1 || game.lodash.random(0, 1) === 0) {
+                    break;
+                }
+
+                // Attack a random target instead
+                let result: GameAttackReturn = 'invalid';
+
+                // Get the owner of the attacker, so we can exclude them from the target selection
+                const ownerIsPlayer1 = attacker.plr === game.player1;
+                const ownerIsPlayer2 = attacker.plr === game.player2;
+
+                // Set the forgetful state to 2, so we don't do the coin flip again when attacking the random target
+                attacker.setKeyword('Forgetful', 2);
+
+                // Keep on trying to attack random targets until it works, or we've tried the max times
+                for (let i = 0; i < game.config.advanced.forgetfulRandomTargetFailAmount && result !== true; i++) {
+                    /*
+                     * Choose a random enemy target
+                     * Only include "Player 1" if player 1 isn't the owner of the attacker
+                     * Only include "Player 2" if player 2 isn't the owner of the attacker
+                     * Only include player 1's side of the board if player 1 isn't the owner of the attacker
+                     * Only include player 2's side of the board if player 2 isn't the owner of the attacker
+                     */
+                    const target = game.functions.util.getRandomTarget(!ownerIsPlayer1, !ownerIsPlayer2, !ownerIsPlayer1, !ownerIsPlayer2);
+
+                    // If a target wasn't found, just continue with the attack
+                    if (!target) {
+                        break;
+                    }
+
+                    // If this doesn't work, it tries again do to the loop
+                    result = game.attack(attacker, target);
+                }
+
+                // After the loop, set the forgetful state back to 1 so we can do the coin flip again next time
+                attacker.setKeyword('Forgetful', 1);
+
+                // If the attack was successful, return since it already attacked a random target and this attack is useless now.
+                if (result === true) {
+                    return true;
+                }
             }
         }
 

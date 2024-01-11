@@ -122,6 +122,7 @@ export type CardKeyword =
 | 'Infuse'
 | 'Cleave'
 | 'Titan'
+| 'Forgetful'
 | 'Cant Attack';
 
 /**

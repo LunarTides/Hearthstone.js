@@ -149,6 +149,8 @@ export type GameConfig = {
         getReadableCardNoRecursion: boolean;
         getReadableCardAlwaysShowFullCard: boolean;
 
+        forgetfulRandomTargetFailAmount: number;
+
         whitelistedHistoryKeys: EventKey[];
         hideValueHistoryKeys: EventKey[];
     };
