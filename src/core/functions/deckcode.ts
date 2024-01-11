@@ -108,7 +108,7 @@ export const deckcodeFunctions = {
         code = code.replace(copyDefinitionFormat, '');
 
         const deck = code.split(',');
-        let newDeck: Card[] = [];
+        const newDeck: Card[] = [];
 
         const localSettings = JSON.parse(JSON.stringify(game.config)) as GameConfig;
 
@@ -249,9 +249,8 @@ export const deckcodeFunctions = {
             throw new Error(error + `\n<red>Specific card that caused this error: <yellow>${cardName}</yellow>. Amount: <yellow>${amount}</yellow>.\n`);
         }
 
-        newDeck = game.lodash.shuffle(newDeck);
-
         plr.deck = newDeck;
+        plr.shuffleDeck();
 
         return newDeck;
     },

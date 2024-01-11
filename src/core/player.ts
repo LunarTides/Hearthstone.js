@@ -606,8 +606,17 @@ export class Player {
     // Hand / Deck
 
     /**
+     * Shuffles this player's deck
+     */
+    shuffleDeck(): void {
+        this.deck = game.lodash.shuffle(this.deck);
+    }
+
+    /**
      * Shuffle a card into this player's deck. This will shuffle the deck.
      * Broadcasts the `AddCardToDeck` event.
+     *
+     * This gets acheived by adding the card to the top of the deck, then shuffling the entire deck.
      *
      * ```
      * assert.equal(player.deck.length, 30);
@@ -623,14 +632,11 @@ export class Player {
      * @returns Success
      */
     shuffleIntoDeck(card: Card): boolean {
-        // Add the card into a random position in the deck
-        const position = game.lodash.random(0, this.deck.length);
-        this.deck.splice(position, 0, card);
-
+        // Push the card to the top of the deck, then shuffle it
+        this.deck.push(card);
         game.event.broadcast('AddCardToDeck', card, this);
 
-        this.deck = game.lodash.shuffle(this.deck);
-
+        this.shuffleDeck();
         return true;
     }
 
@@ -643,7 +649,7 @@ export class Player {
      * @returns Success
      */
     addToBottomOfDeck(card: Card): boolean {
-        this.deck = [card, ...this.deck];
+        this.deck.unshift(card);
 
         game.event.broadcast('AddCardToDeck', card, this);
 
