@@ -140,4 +140,5 @@ export const cardIds = {
     disableHeropowerTest136: 136,
     forceAttackTest137: 137,
     forgetfulTest138: 138,
+    joustTest139: 139,
 };

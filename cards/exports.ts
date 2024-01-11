@@ -86,6 +86,7 @@ export { blueprint as c2548b3e } from './Examples/Test/force-attack.js';
 export { blueprint as c529e777 } from './Examples/Test/forgetful.js';
 export { blueprint as ca10465c } from './Examples/Test/frozen.js';
 export { blueprint as c210f67e } from './Examples/Test/immortal.js';
+export { blueprint as ce77ad32 } from './Examples/Test/joust.js';
 export { blueprint as cf619072 } from './Examples/Test/summon-on-draw.js';
 export { blueprint as cb7cfa03 } from './Examples/Unordered/Card References/131-simple.js';
 export { blueprint as c37cb320 } from './Examples/Unordered/Card References/132-circular.js';

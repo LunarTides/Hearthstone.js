@@ -1138,6 +1138,72 @@ export class Player {
     }
 
     /**
+     * Starts a joust.
+     * Reveals a random card from each player's deck.
+     * If the cost of this player's card is higher than the cost of the opponent's card, this player wins.
+     *
+     * @param predicate The predicate to filter cards in both players' deck. Defaults to `() => true`
+     * @param winCondition The win condition. `c1` is the friendly card, `c2` is the enemy card. Defaults to `(c1, c2) => c1.cost > c2.cost`
+     *
+     * @returns If this player won the joust
+     */
+    joust(predicate?: (card: Card) => boolean, winCondition?: (c1: Card, c2: Card) => boolean): boolean {
+        if (!predicate) {
+            // The default predicate is to always return true
+            predicate = () => true;
+        }
+
+        if (!winCondition) {
+            // The default win condition is to compare the cost of the cards
+            winCondition = (c1, c2) => c1.cost > c2.cost;
+        }
+
+        // Select a random card from both player's deck.
+        const friendlyCard = game.lodash.sample(this.deck.filter(card => predicate!(card)));
+        const enemyCard = game.lodash.sample(this.getOpponent().deck.filter(card => predicate!(card)));
+
+        /*
+         * Check if both players have cards. If not, don't reveal them.
+         * The logic is found here: https://hearthstone.wiki.gg/wiki/Joust
+         */
+        if (!friendlyCard && !enemyCard) {
+            // None of the players have targets. Lose the joust
+            return false;
+        }
+
+        if (!friendlyCard) {
+            // Friendly player has no card. Lose the joust
+            return false;
+        }
+
+        if (!enemyCard) {
+            // Enemy player has no card. Win the joust
+            return true;
+        }
+
+        // Reveal them to both players
+        game.event.addHistory('RevealCard', [friendlyCard, 'Joust'], this);
+        game.event.addHistory('RevealCard', [enemyCard, 'Joust'], this);
+
+        // Check which card has the higher cost
+        const win = winCondition(friendlyCard, enemyCard);
+
+        // Shuffle the decks of both players
+        this.shuffleDeck();
+        this.getOpponent().shuffleDeck();
+
+        game.log('\n--- JOUST ---');
+        game.log(`Yours: ${game.interact.card.getReadable(friendlyCard)}`);
+        game.log(`Opponent: ${game.interact.card.getReadable(enemyCard)}`);
+        game.log('-------------');
+
+        game.log(win ? 'You win!' : 'You lose!');
+        game.pause('');
+
+        return win;
+    }
+
+    /**
      * Summon a card.
      * Broadcasts the `SummonCard` event
      *
