@@ -492,12 +492,6 @@ export class Game {
     killCardsOnBoard(): number {
         let amount = 0;
 
-        /*
-         * It should spare a card if it has more than 0 health, or if it has more than 0 durability
-         * TODO: Make this less hacky
-         */
-        const shouldSpare = (card: Card) => (card.health ?? 0) > 0 || ((card.durability ?? 0) > 0);
-
         for (let p = 0; p < 2; p++) {
             const player = this.functions.util.getPlayerFromId(p);
 
@@ -510,7 +504,7 @@ export class Game {
 
             // Trigger the deathrattles before doing the actual killing so the deathrattles can save the card by setting it's health to above 0
             for (const card of this.board[p]) {
-                if (shouldSpare(card)) {
+                if (card.isAlive()) {
                     continue;
                 }
 
@@ -519,7 +513,7 @@ export class Game {
 
             for (const card of this.board[p]) {
                 // Add minions with more than 0 health to `spared`.
-                if (shouldSpare(card)) {
+                if (card.isAlive()) {
                     spared.push(card);
                     continue;
                 }
@@ -1056,7 +1050,7 @@ const attack = {
     },
 
     _doFrenzy(card: Card): void {
-        if (card.health! <= 0) {
+        if (!card.isAlive()) {
             return;
         }
 

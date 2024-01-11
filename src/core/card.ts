@@ -692,7 +692,7 @@ export class Card {
         this.setStats(this.attack, this.health - amount);
         game.event.broadcast('DamageCard', [this, amount], this.plr);
 
-        if (this.type === 'Weapon' && this.health <= 0) {
+        if (this.type === 'Weapon' && !this.isAlive()) {
             this.plr.destroyWeapon();
         }
 
@@ -1338,6 +1338,21 @@ export class Card {
      */
     hasStats(): boolean {
         return this.type === 'Minion' || this.type === 'Weapon';
+    }
+
+    /**
+     * @returns If this card is alive
+     */
+    isAlive(): boolean {
+        if (this.health !== undefined) {
+            return this.health > 0;
+        }
+
+        if (this.durability !== undefined) {
+            return this.durability > 0;
+        }
+
+        return false;
     }
 
     /**

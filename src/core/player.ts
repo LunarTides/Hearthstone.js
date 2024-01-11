@@ -592,10 +592,11 @@ export class Player {
 
         game.event.broadcast('TakeDamage', amount, this);
 
-        if (this.health <= 0) {
+        if (!this.isAlive()) {
             game.event.broadcast('FatalDamage', undefined, this);
 
-            if (this.health <= 0) { // This is done to allow secrets to prevent death
+            // This is done to allow secrets to prevent death
+            if (!this.isAlive()) {
                 game.endGame(this.getOpponent());
             }
         }
@@ -874,6 +875,13 @@ export class Player {
      */
     canUseHeroPower(): boolean {
         return this.mana >= this.hero.heropower!.cost && !this.hasUsedHeroPowerThisTurn && !this.disableHeroPower;
+    }
+
+    /**
+     * @returns If this player is alive
+     */
+    isAlive(): boolean {
+        return this.health > 0;
     }
 
     /**

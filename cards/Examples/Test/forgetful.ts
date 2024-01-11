@@ -36,7 +36,7 @@ export const blueprint: Blueprint = {
 
         /*
          * 4 for (let i = 0; i < 10; i++) {
-         * 5     if (sheep.health! <= 0) {
+         * 5     if (!sheep.isAlive()) {
          * 6         break;
          * 7     }
          */
@@ -51,7 +51,7 @@ export const blueprint: Blueprint = {
          * 11 }
          */
 
-        // assert(sheep.health! <= 0);
+        // assert(!sheep.isAlive());
     },
 };
 

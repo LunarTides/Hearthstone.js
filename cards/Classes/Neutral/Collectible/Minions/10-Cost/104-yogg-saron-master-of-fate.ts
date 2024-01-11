@@ -130,7 +130,7 @@ export const blueprint: Blueprint = {
                 // Cast 'Pyroblast' randomly until a hero dies.
                 const rod = game.newCard(game.cardIds.pyroblast105, plr);
 
-                while (game.player1.health > 0 && game.player2.health > 0) {
+                while (game.player1.isAlive() && game.player2.isAlive()) {
                     plr.forceTarget = game.functions.util.getRandomTarget();
                     rod.activate('cast');
                 }
