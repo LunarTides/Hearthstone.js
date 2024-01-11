@@ -247,7 +247,7 @@ ${runes}${keywords}
         /**
          * Adds double quotes around the string
          */
-        const stringify = (text: string) => `'${text.replace('\'', '\\\'')}'`;
+        const stringify = (text: string) => `'${text.replaceAll('\'', '\\\'')}'`;
 
         // If the value is an array, put "["value1", "value2"]", or "[1, 2]", or any combination of those two.
         if (Array.isArray(value)) {
@@ -275,7 +275,7 @@ ${runes}${keywords}
     const passiveImport = isPassive ? ', type EventValue' : '';
 
     // Add the key/value pairs to the content
-    const contentArray = Object.entries(blueprint).map(c => `${c[0].replace('\'', '\\\'')}: ${getTypeValue(c[1])},\n    `);
+    const contentArray = Object.entries(blueprint).map(c => `${c[0].replaceAll('\'', '\\\'')}: ${getTypeValue(c[1])},\n    `);
 
     // Add the content
     const content = `// Created by the ${creatorType} Card Creator
