@@ -403,7 +403,11 @@ export const cardFunctions = {
         }
 
         game.functions.util.fs('write', '/cards/exports.ts', exportContent);
-        game.functions.util.fs('write', '/dist/cards/exports.js', exportContent);
+
+        // The dist folder doesn't exist if using bun instead of node
+        if (game.functions.util.fs('exists', '/dist')) {
+            game.functions.util.fs('write', '/dist/cards/exports.js', exportContent);
+        }
     },
 
     /**
@@ -424,6 +428,10 @@ export const cardFunctions = {
         idsContent += '\n};\n';
 
         game.functions.util.fs('write', '/cards/ids.ts', idsContent);
-        game.functions.util.fs('write', '/dist/cards/ids.js', idsContent);
+
+        // The dist folder doesn't exist if using bun instead of node
+        if (game.functions.util.fs('exists', '/dist')) {
+            game.functions.util.fs('write', '/dist/cards/ids.js', idsContent);
+        }
     },
 };

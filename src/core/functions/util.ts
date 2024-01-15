@@ -521,7 +521,12 @@ ${mainContent}
      */
     dirname(): string {
         let dirname = pathDirname(fileURLToPath(import.meta.url)).replaceAll('\\', '/');
+
+        // If using node
         dirname = dirname.split('/dist')[0];
+
+        // If using bun
+        dirname = dirname.split('/src')[0];
 
         return dirname;
     },
