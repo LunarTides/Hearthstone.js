@@ -1,5 +1,5 @@
 import { type EventKey, type EventManagerEvents, type HistoryKey, type TickHookCallback, type UnknownEventValue } from '@Game/types.js';
-import { Card, type Player } from '../internal.js';
+import { Card, type Player } from '@Game/internal.js';
 
 type EventManagerType = {
     listeners: Record<number, TickHookCallback>;

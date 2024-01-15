@@ -2,8 +2,8 @@
  * Player
  * @module Player
  */
-import { type Ai, type Card } from '../internal.js';
-import { type CardClass, type CardType, type EventKey, type QuestCallback, type QuestType, type Target } from '../types.js';
+import { type Ai, type Card } from '@Game/internal.js';
+import { type CardClass, type CardType, type EventKey, type QuestCallback, type QuestType, type Target } from '@Game/types.js';
 
 export class Player {
     /**

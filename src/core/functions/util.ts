@@ -7,7 +7,7 @@ import process from 'node:process';
 import { createHash } from 'node:crypto';
 import date from 'date-and-time';
 import { type Player } from '@Game/internal.js';
-import { type Target } from '@Game/types.js';
+import { type GameConfig, type Target } from '@Game/types.js';
 
 export const utilFunctions = {
     /**
@@ -97,6 +97,19 @@ export const utilFunctions = {
         }
 
         return wall;
+    },
+
+    /**
+     * Imports the config and sets it to `game.config`.
+     *
+     * @returns Success
+     */
+    importConfig(): boolean {
+        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+        delete require.cache[require.resolve('../../../config.ts')];
+
+        game.config = require('../../../config.ts').config as GameConfig;
+        return true;
     },
 
     /**
@@ -467,7 +480,7 @@ ${mainContent}
      * @param extension The extension to look for in cards. By default, this is ".ts"
      */
     searchCardsFolder(callback: (path: string, content: string, file: fs.Dirent) => void, path = '/cards', extension = '.ts'): void {
-        path = path.replaceAll('\\', '/');
+        path = this.restrictPath(path);
 
         for (const file of this.fs('readdir', path, { withFileTypes: true }) as fs.Dirent[]) {
             const fullPath = `${path}/${file.name}`;
@@ -521,11 +534,6 @@ ${mainContent}
      */
     dirname(): string {
         let dirname = pathDirname(fileURLToPath(import.meta.url)).replaceAll('\\', '/');
-
-        // If using node
-        dirname = dirname.split('/dist')[0];
-
-        // If using bun
         dirname = dirname.split('/src')[0];
 
         return dirname;

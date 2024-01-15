@@ -3,18 +3,16 @@
 Hearthstone.js is a console-based clone of Hearthstone.
 
 ### Prerequisites
-You need to have Node.js installed.
+You need to have [Bun](https://bun.sh) installed.
 
 ### Running
 #### Simple
 If you are on Windows, open `setup.bat`, then `run.bat`.
 
-If you are on Linux, run `make install`, then `make start` (Which is the same as running `make build`, then `make run`).
-
 #### Advanced
 This works on all platforms.
 
-In a console / terminal, run `npm i`, then `npx tsc`, then `node .`
+In a console / terminal, run `bun install`, then `bun .`
 
 ### Images
 #### Generic game

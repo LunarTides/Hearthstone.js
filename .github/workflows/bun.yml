@@ -1,0 +1,23 @@
+name: Bun CI
+
+on:
+  push:
+    branches: [ "stable", "main" ]
+  pull_request:
+    branches: [ "stable", "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: oven-sh/setup-bun@v1
+      with:
+        # Use canary since the latest version (v1.0.22) doesn't `support process.binding("tty_wrap")`. Use the latest when v1.0.23 is released
+        # bun-version: latest
+        bun-version: canary
+    - run: bun install
+    # - run: bun run generate
+    - run: bun run test

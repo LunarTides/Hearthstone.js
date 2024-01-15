@@ -5,7 +5,7 @@
  */
 
 import process from 'node:process';
-import { type Card, type Player, createGame } from '../src/internal.js';
+import { type Card, type Player, createGame } from '@Game/internal.js';
 
 const { game } = createGame();
 const cards = game.functions.card.getAll(false);
@@ -29,6 +29,16 @@ function testCard(card: Card): boolean | Error {
     return true;
 }
 
+// Assign decks
+const assignDeck = (player: Player) => {
+    const deck = game.functions.deckcode.import(player, 'Mage /30/ 1');
+    if (!deck || deck.length <= 0) {
+        throw new Error('Invalid deckcode');
+    }
+
+    player.deck = deck;
+};
+
 /**
  * Executes a series of tests on the cards in the 'cards' array.
  */
@@ -45,16 +55,6 @@ export function main(): void {
         game.setup(player1, player2);
         game.player = player1;
         game.opponent = player2;
-
-        // Assign decks
-        const assignDeck = (player: Player) => {
-            const deck = game.functions.deckcode.import(player, 'Mage /30/ 1');
-            if (!deck || deck.length <= 0) {
-                throw new Error('Invalid deckcode');
-            }
-
-            player.deck = deck;
-        };
 
         game.config.decks.validate = false;
         assignDeck(player1);

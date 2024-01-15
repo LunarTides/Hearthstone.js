@@ -1,11 +1,11 @@
 @echo off
-node --version > NUL
+bun --version > NUL
 
 if errorlevel 1 (
-    echo "nodejs is not installed"
-    echo "go to http://nodejs.org/download/ and download the latest version"
+    echo "Bun is not installed"
+    echo "go to https://bun.sh and download the latest version"
     pause
     exit /b 1
 )
 
-npm i > NUL
+bun install

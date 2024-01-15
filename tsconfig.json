@@ -111,7 +111,6 @@
   "exclude": [
     "**/node_modules/*",
     "./tests",
-    "./dist",
     "./docs"
   ],
   "include": [

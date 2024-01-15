@@ -4,7 +4,7 @@
  * @module Id Script
  */
 
-import { createGame } from '../../src/internal.js';
+import { createGame } from '@Game/internal.js';
 
 const { game } = createGame();
 

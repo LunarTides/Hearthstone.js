@@ -1,4 +1,4 @@
-import { Card, type Player } from '../../internal.js';
+import { Card, type Player } from '@Game/internal.js';
 
 export const cardInteract = {
     /**

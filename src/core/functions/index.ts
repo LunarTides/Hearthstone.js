@@ -10,7 +10,7 @@ import {
     utilFunctions,
     infoFunctions,
     eventFunctions,
-} from '../../internal.js';
+} from '@Game/internal.js';
 
 export const functions = {
     // TODO: Create better docstrings. (remember to also change the docstrings for, for example, functions.card.vanilla). #324

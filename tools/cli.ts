@@ -1,10 +1,10 @@
-import * as src from '../src/index.js'; // Source Code
+import * as src from '@Game/index.js'; // Source Code
+import { type Blueprint } from '@Game/types.js';
 import * as dc from '../tools/deckcreator.js'; // Deck Creator
 import * as ccc from '../tools/cardcreator/custom.js'; // Custom Card Creator
 import * as vcc from '../tools/cardcreator/vanilla.js'; // Vanilla Card Creator
 import * as clc from '../tools/cardcreator/class.js'; // Class Creator
 import * as cclib from '../tools/cardcreator/lib.js'; // Class Creator
-import { type Blueprint } from '../src/types.js';
 import { type CcType } from './cardcreator/lib.js';
 
 /**

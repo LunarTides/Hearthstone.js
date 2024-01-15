@@ -1,8 +1,6 @@
-import { createHash } from 'node:crypto';
 import { type Card as VanillaCard } from '@hearthstonejs/vanillatypes';
 import { type CardClass, type MinionTribe, type CardClassNoNeutral, type Blueprint, type CardType } from '@Game/types.js';
-import { type Card, CardError, type Player } from '../../internal.js';
-import * as blueprints from '../../../cards/exports.js';
+import { type Card, CardError, type Player } from '@Game/internal.js';
 
 const vanilla = {
     /**
@@ -25,7 +23,7 @@ const vanilla = {
             return JSON.parse(game.functions.util.fs('read', fileLocation) as string) as VanillaCard[];
         }
 
-        throw new Error('Cards file not found! Run \'npm run script:vanilla:generate\' (requires an internet connection), then try again.');
+        throw new Error('Cards file not found! Run \'bun run script:vanilla:generate\' (requires an internet connection), then try again.');
     },
 
     /**
@@ -259,22 +257,6 @@ export const cardFunctions = {
     },
 
     /**
-     * Imports all cards from a folder
-     *
-     * @returns Success
-     */
-    importAll(): boolean {
-        this.generateExports();
-        game.blueprints = Object.values(blueprints);
-
-        if (!this.runBlueprintValidator()) {
-            throw new Error('Some cards are invalid. Please fix these issues before playing.');
-        }
-
-        return true;
-    },
-
-    /**
      * Creates and returns a jade golem with the correct stats and cost for the player
      *
      * @param plr The jade golem's owner
@@ -376,38 +358,44 @@ export const cardFunctions = {
     },
 
     /**
-     * Generate an exports file in `/cards/exports.ts`.
+     * Imports all cards from a folder
      *
-     * Don't use this function manually unless you know what you're doing.
+     * @returns Success
      */
-    generateExports(): void {
-        let exportContent = '// This file has been automatically generated. Do not change this file.\n';
-
-        const list: string[] = [];
-        game.functions.util.searchCardsFolder((fullPath, content) => {
-            if (!content.includes('export const blueprint')) {
-                return;
-            }
-
-            fullPath = fullPath.replace('.ts', '.js');
-            const relativePath = './' + fullPath.split('cards/')[1];
-
-            list.push(relativePath);
+    importAll(): boolean {
+        game.functions.util.searchCardsFolder(fullPath => {
+            const blueprint = require(fullPath).blueprint as Blueprint;
+            game.blueprints.push(blueprint);
         });
 
-        // Sort the list alphabetically so it will remain constant between different file system formats.
-        for (const path of list.sort()) {
-            const hash = createHash('sha256').update(path).digest('hex').toString().slice(0, 7);
+        // Remove falsy values
+        game.blueprints = game.blueprints.filter(Boolean);
 
-            exportContent += `export { blueprint as c${hash} } from '${path}';\n`;
+        if (!this.runBlueprintValidator()) {
+            throw new Error('Some cards are invalid. Please fix these issues before playing.');
         }
 
-        game.functions.util.fs('write', '/cards/exports.ts', exportContent);
+        return true;
+    },
 
-        // The dist folder doesn't exist if using bun instead of node
-        if (game.functions.util.fs('exists', '/dist')) {
-            game.functions.util.fs('write', '/dist/cards/exports.js', exportContent);
+    /**
+     * Reloads all cards
+     *
+     * @returns Success
+     */
+    reloadAll(): boolean {
+        game.blueprints = [];
+
+        for (const key of Object.keys(require.cache)) {
+            if (!key.includes('/cards/')) {
+                continue;
+            }
+
+            // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+            delete require.cache[key];
         }
+
+        return this.importAll();
     },
 
     /**
@@ -428,10 +416,5 @@ export const cardFunctions = {
         idsContent += '\n};\n';
 
         game.functions.util.fs('write', '/cards/ids.ts', idsContent);
-
-        // The dist folder doesn't exist if using bun instead of node
-        if (game.functions.util.fs('exists', '/dist')) {
-            game.functions.util.fs('write', '/dist/cards/ids.js', idsContent);
-        }
     },
 };

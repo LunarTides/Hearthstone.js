@@ -3,9 +3,8 @@
  * @module Game
  */
 import _ from 'lodash';
-import { Player, Card, Ai, functions, interact, eventManager } from '../internal.js';
-import { type Blueprint, type CardAbility, type CardKeyword, type EventKey, type GameAttackReturn, type GameConstants, type GamePlayCardReturn, type Target, type UnknownEventValue } from '../types.js';
-import { config } from '../../config.js';
+import { Player, Card, Ai, functions, interact, eventManager } from '@Game/internal.js';
+import { type GameConfig, type Blueprint, type CardAbility, type CardKeyword, type EventKey, type GameAttackReturn, type GameConstants, type GamePlayCardReturn, type Target, type UnknownEventValue } from '@Game/types.js';
 import { cardIds } from '../../cards/ids.js';
 
 const cardCollections = {
@@ -63,7 +62,7 @@ export class Game {
      *
      * Look in the `config` folder.
      */
-    config = config;
+    config: GameConfig;
 
     /**
      * All of the blueprints cards that have been implemented so far.
@@ -418,7 +417,7 @@ export class Game {
         }
 
         // Chance to spawn in a diy card
-        if (this.lodash.random(0, 1, true) <= config.advanced.diyCardSpawnChance && config.advanced.spawnInDiyCards) {
+        if (this.lodash.random(0, 1, true) <= this.config.advanced.diyCardSpawnChance && this.config.advanced.spawnInDiyCards) {
             this.interact.card.spawnInDiyCard(opponent);
         }
 
@@ -608,8 +607,9 @@ export function createGame() {
     const game = new Game();
     const player1 = new Player('Player 1');
     const player2 = new Player('Player 2');
-    game.setup(player1, player2);
+    game.functions.util.importConfig();
     game.functions.card.importAll();
+    game.setup(player1, player2);
     game.doConfigAi();
 
     return { game, player1, player2 };
@@ -1303,7 +1303,7 @@ const playCard = {
             return 'cost';
         }
 
-        if (player.hand.length >= config.general.maxHandLength) {
+        if (player.hand.length >= game.config.general.maxHandLength) {
             return 'space';
         }
 

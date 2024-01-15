@@ -3,19 +3,19 @@
   "version": "2.0.0-beta",
   "description": "A console-based recreation of Hearthstone made in NodeJS",
   "exports": "./index.ts",
-  "main": "./dist/index.js",
+  "main": "./index.ts",
   "type": "module",
   "scripts": {
-    "start": "npm config set engine-strict true && node ./dist/index.js",
-    "test": "npm run cardtest && echo Running xo... && xo && echo OK && npm run crashtest",
-    "cardtest": "npm run script:testcards",
-    "crashtest": "npm run script:crashtest && npm run script:crashtest && npm run script:crashtest && npm run script:crashtest && npm run script:crashtest",
-    "script:vanilla:generate": "node ./dist/scripts/vanilla/generate",
-    "script:vanilla:generate-no-filter": "node ./dist/scripts/vanilla/generate --no-filter",
-    "script:vanilla:propfinder": "node ./dist/scripts/vanilla/propfinder",
-    "script:crashtest": "node ./dist/scripts/crashtest",
-    "script:idscript": "node ./dist/scripts/id/main",
-    "script:testcards": "node ./dist/scripts/testcards"
+    "start": "bun .",
+    "test": "bun run cardtest && echo Running xo... && bunx xo && echo OK && bun run crashtest",
+    "cardtest": "bun run script:testcards",
+    "crashtest": "bun run script:crashtest && bun run script:crashtest && bun run script:crashtest && bun run script:crashtest && bun run script:crashtest",
+    "script:vanilla:generate": "bun ./scripts/vanilla/generate.ts",
+    "script:vanilla:generate-no-filter": "bun ./scripts/vanilla/generate.ts --no-filter",
+    "script:vanilla:propfinder": "bun ./scripts/vanilla/propfinder.ts",
+    "script:crashtest": "bun ./scripts/crashtest.ts",
+    "script:idscript": "bun ./scripts/id/main.ts",
+    "script:testcards": "bun ./scripts/testcards.ts"
   },
   "repository": {
     "type": "git",
@@ -40,18 +40,17 @@
     "typescript": "^5.3.3",
     "xo": "^0.56.0"
   },
-  "engines": {
-    "node": ">=15.0.0",
-    "npm": ">=7.0.0"
-  },
   "xo": {
     "space": 4,
     "rules": {
       "unicorn/no-process-exit": "off",
+      "unicorn/prefer-module": "off",
       "max-params": "off",
       "no-warning-comments": "off",
       "no-unused-vars": "error",
       "require-jsdoc": "error",
+      "@typescript-eslint/no-require-imports": "off",
+      "@typescript-eslint/no-var-requires": "off",
       "multiline-comment-style": [
         "error",
         "starred-block"

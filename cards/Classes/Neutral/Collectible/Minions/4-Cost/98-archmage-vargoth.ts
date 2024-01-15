@@ -2,7 +2,7 @@
 
 import assert from 'node:assert';
 import { type Blueprint } from '@Game/types.js';
-import { type Card } from '../../../../../../src/core/card.js';
+import { type Card } from '@Game/core/card.js';
 
 export const blueprint: Blueprint = {
     name: 'Archmage Vargoth',

@@ -1,6 +1,6 @@
 import rl from 'readline-sync';
 import { type Target, type GamePlayCardReturn } from '@Game/types.js';
-import { type Ai, Card, commands, debugCommands } from '../../internal.js';
+import { type Ai, Card, commands, debugCommands } from '@Game/internal.js';
 
 const overrideConsole = {
     log(..._data: any[]): void {

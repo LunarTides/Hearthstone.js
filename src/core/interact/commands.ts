@@ -1,5 +1,5 @@
 import { type CommandList, type Todo } from '@Game/types.js';
-import { Card, Player } from '../../internal.js';
+import { Card, Player } from '@Game/internal.js';
 
 const getGame = () => game;
 
@@ -163,6 +163,7 @@ export const commands: CommandList = {
             'eval [log] (code) - Runs the code specified. If the word \'log\' is before the code, instead console.log the code and wait for user input to continue. Examples: `/eval game.endGame(game.player)` (Win the game) `/eval @Player1.addToHand(@fe48ac1.perfectCopy())` (Adds a perfect copy of the card with uuid "fe48ac1" to player 1\'s hand) `/eval log h#c#1.attack + d#o#26.health + b#c#1.attack` (Logs the card in the current player\'s hand with index 1\'s attack value + the 26th card in the opponent\'s deck\'s health value + the card on the current player\'s side of the board with index 1\'s attack value)',
             'exit - Force exits the game. There will be no winner, and it will take you straight back to the hub.',
             'history - Displays a history of actions. This doesn\'t hide any information, and is the same thing the log files uses.',
+            'rl - Reloads the cards and config in the game.',
             'undo - Undoes the last card played. It gives the card back to your hand, and removes it from where it was. (This does not undo the actions of the card)',
             'ai - Gives you a list of the actions the ai(s) have taken in the order they took it',
         ];
@@ -627,6 +628,52 @@ export const debugCommands: CommandList = {
         }
 
         return true;
+    },
+
+    rl(): boolean {
+        let success = true;
+
+        success &&= game.interact.info.withStatus('Reloading cards', () => game.functions.card.reloadAll());
+
+        // Go through all the cards and reload them
+        success &&= game.interact.info.withStatus('Applying changes to existing cards', () => {
+            // Hand and decks of the players
+            for (const player of [game.player1, game.player2]) {
+                for (const card of player.hand) {
+                    card.doBlueprint();
+                }
+
+                for (const card of player.deck) {
+                    card.doBlueprint();
+                }
+            }
+
+            // Board
+            for (const side of game.board) {
+                for (const card of side) {
+                    card.doBlueprint();
+                }
+            }
+
+            // Graveyard
+            for (const side of game.graveyard) {
+                for (const card of side) {
+                    card.doBlueprint();
+                }
+            }
+
+            return true;
+        });
+
+        success &&= game.interact.info.withStatus('Reloading config', () => game.functions.util.importConfig());
+
+        if (success) {
+            game.pause('\nThe cards have been reloaded.\nPress enter to continue...');
+            return true;
+        }
+
+        game.pause('\nSome steps failed. The game could not be fully reloaded. Please report this.\nPress enter to continue...');
+        return false;
     },
 
     undo(): boolean {

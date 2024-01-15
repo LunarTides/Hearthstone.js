@@ -3,8 +3,8 @@
  * @module Deck Creator
  */
 import util from 'node:util';
-import { type Card, createGame } from '../src/internal.js';
-import { type CommandList, type CardClass, type CardClassNoNeutral, type GameConfig } from '../src/types.js';
+import { type Card, createGame } from '@Game/internal.js';
+import { type CommandList, type CardClass, type CardClassNoNeutral, type GameConfig } from '@Game/types.js';
 
 const { game, player1 } = createGame();
 

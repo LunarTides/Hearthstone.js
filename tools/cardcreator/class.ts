@@ -3,8 +3,8 @@
  * @module Class Creator
  */
 
-import { createGame } from '../../src/internal.js';
-import { type Blueprint, type CardClass, type CardRarity } from '../../src/types.js';
+import { createGame } from '@Game/internal.js';
+import { type Blueprint, type CardClass, type CardRarity } from '@Game/types.js';
 import * as lib from './lib.js';
 
 const { game } = createGame();

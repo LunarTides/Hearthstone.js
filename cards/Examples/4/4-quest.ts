@@ -1,7 +1,7 @@
 // Created by Hand
 
 import { type Blueprint, type EventValue } from '@Game/types.js';
-import { type Card } from '../../../src/core/card.js';
+import { type Card } from '@Game/core/card.js';
 
 export const blueprint: Blueprint = {
     name: 'Quest Example',

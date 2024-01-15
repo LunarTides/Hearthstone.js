@@ -2,7 +2,7 @@
 import deckstrings from 'deckstrings';
 import { type Card as VanillaCard } from '@hearthstonejs/vanillatypes';
 import { type GameConfig, type CardClass, type CardClassNoNeutral, type CardLike, type FunctionsExportDeckError } from '@Game/types.js';
-import { type Card, type Player } from '../../internal.js';
+import { type Card, type Player } from '@Game/internal.js';
 
 export const deckcodeFunctions = {
     /**

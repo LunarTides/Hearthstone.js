@@ -3,8 +3,8 @@
  * @module Card
  */
 import { randomUUID } from 'node:crypto';
-import { type Player } from '../internal.js';
-import { type Blueprint, type CardAbility, type CardClass, type CardKeyword, type CardRarity, type CardType, type CostType, type EnchantmentDefinition, type GameConfig, type Ability, type MinionTribe, type SpellSchool, type CardBackup, type Target } from '../types.js';
+import { type Player } from '@Game/internal.js';
+import { type Blueprint, type CardAbility, type CardClass, type CardKeyword, type CardRarity, type CardType, type CostType, type EnchantmentDefinition, type GameConfig, type Ability, type MinionTribe, type SpellSchool, type CardBackup, type Target } from '@Game/types.js';
 
 /**
  * Use this error type when throwing an error in a card

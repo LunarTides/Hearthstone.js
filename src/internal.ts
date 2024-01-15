@@ -21,3 +21,8 @@ export { utilFunctions } from './core/functions/util.js';
 export { eventFunctions } from './core/functions/event.js';
 
 export * from './core/functions/index.js';
+
+/*
+ * Maybe?
+ * Export * from './types.js';
+ */
