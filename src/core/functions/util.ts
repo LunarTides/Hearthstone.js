@@ -293,30 +293,25 @@ ${mainContent}
      * @returns If the compilation was successful
      */
     tryCompile(): boolean {
-        // TODO: Make this work in bun
-        return true;
+        try {
+            const error = this.runCommand('bunx tsc');
+            if (error instanceof Error) {
+                throw error;
+            }
 
-        /*
-         * Try {
-         *     const error = this.runCommand('bun .');
-         *     if (error instanceof Error) {
-         *         throw error;
-         *     }
-         *
-         *     return true;
-         * } catch (error) {
-         *     if (!(error instanceof Error)) {
-         *         throw new TypeError('`error` is not an error in tryCompile');
-         *     }
-         *
-         *     // Status 2 means compiler error
-         *     if ((error as any).status === 2) {
-         *         return false;
-         *     }
-         *
-         *     throw error;
-         * }
-         */
+            return true;
+        } catch (error) {
+            if (!(error instanceof Error)) {
+                throw new TypeError('`error` is not an error in tryCompile');
+            }
+
+            // Status 2 means compiler error
+            if ((error as any).status === 2) {
+                return false;
+            }
+
+            throw error;
+        }
     },
 
     /**

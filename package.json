@@ -6,8 +6,8 @@
   "main": "./index.ts",
   "type": "module",
   "scripts": {
-    "start": "bun .",
-    "test": "bun run cardtest && echo Running xo... && bunx xo && echo OK && bun run crashtest",
+    "start": "bunx tsc && bun .",
+    "test": "bunx tsc && bun run cardtest && bun test && echo Running xo... && bunx xo && echo OK && bun run crashtest",
     "cardtest": "bun run script:testcards",
     "crashtest": "bun run script:crashtest && bun run script:crashtest && bun run script:crashtest && bun run script:crashtest && bun run script:crashtest",
     "script:vanilla:generate": "bun ./scripts/vanilla/generate.ts",
@@ -38,7 +38,8 @@
     "@types/readline-sync": "^1.4.8",
     "generate-changelog": "^1.8.0",
     "typescript": "^5.3.3",
-    "xo": "^0.56.0"
+    "xo": "^0.56.0",
+    "@types/bun": "latest"
   },
   "xo": {
     "space": 4,
