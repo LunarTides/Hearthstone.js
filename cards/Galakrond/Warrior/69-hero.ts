@@ -1,5 +1,6 @@
 // Created by the Custom Card Creator
 
+import { Card } from '@Game/internal.js';
 import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
@@ -22,7 +23,7 @@ export const blueprint: Blueprint = {
         // Draw the minions
         for (let i = 0; i < amount; i++) {
             const card = plr.drawCard();
-            if (!(card instanceof game.Card)) {
+            if (!(card instanceof Card)) {
                 continue;
             }
 

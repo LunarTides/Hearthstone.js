@@ -82,6 +82,15 @@ export class Game {
     play = cards.play.play;
     summon = cards.summon;
 
+    /**
+     * Makes a minion or hero attack another minion or hero
+     *
+     * @param attacker attacker | Amount of damage to deal
+     * @param target The target
+     * @param force Whether to force the attack. This will bypass any attack restrictions. By default, this is false.
+     *
+     * @returns Success | Errorcode
+     */
     attack = attack.attack;
 
     /**
@@ -149,9 +158,6 @@ export class Game {
     cardCollections = cardCollections;
     lodash = _;
     cardIds = cardIds;
-
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    Card = Card;
 
     constructor() {
         globalThis.game = this;

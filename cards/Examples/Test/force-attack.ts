@@ -2,6 +2,7 @@
 
 import assert from 'node:assert';
 import { type EventValue, type Blueprint } from '@Game/types.js';
+import { Card } from '@Game/internal.js';
 
 export const blueprint: Blueprint = {
     name: 'Force Attack Test',
@@ -52,7 +53,7 @@ export const blueprint: Blueprint = {
         // If it is not the same, clear the storage.
         self.storage.attack = [];
 
-        if (!(attacker instanceof game.Card)) {
+        if (!(attacker instanceof Card)) {
             return;
         }
 
