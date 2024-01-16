@@ -885,6 +885,20 @@ export class Player {
     }
 
     /**
+     * @returns The remaining board space for this player.
+     */
+    getRemainingBoardSpace(): number {
+        return game.config.general.maxBoardSpace - this.getBoard().length;
+    }
+
+    /**
+     * @returns The remaining hand size for this given player.
+     */
+    getRemainingHandSpace(): number {
+        return game.config.general.maxHandLength - this.hand.length;
+    }
+
+    /**
      * Returns true if the player has the correct runes
      *
      * @param runes The runes to test against

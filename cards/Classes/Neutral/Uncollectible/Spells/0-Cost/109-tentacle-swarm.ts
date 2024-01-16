@@ -19,7 +19,7 @@ export const blueprint: Blueprint = {
 
     cast(plr, self) {
         // Fill your hand with 1/1 Chaotic Tendrils.
-        const remaining = game.functions.util.getRemainingHandSize(plr);
+        const remaining = plr.getRemainingHandSpace();
 
         for (let index = 0; index < remaining; index++) {
             const card = game.newCard(game.cardIds.chaoticTendril110, plr);

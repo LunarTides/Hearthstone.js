@@ -43,7 +43,7 @@ export const blueprint: Blueprint = {
                     const player = game.functions.util.getPlayerFromId(id);
 
                     // Subtract to account for yogg-saron being on the board
-                    const remaining = game.functions.util.getRemainingBoardSpace(player) - (player === plr ? 1 : 0);
+                    const remaining = player.getRemainingBoardSpace() - (player === plr ? 1 : 0);
 
                     for (let index = 0; index < remaining; index++) {
                         const card = game.lodash.sample(minionPool)?.imperfectCopy();
@@ -80,7 +80,7 @@ export const blueprint: Blueprint = {
 
             case 'Hand of Fate': {
                 // Fill your hand with random spells. They cost (0) this turn.
-                const remaining = game.functions.util.getRemainingHandSize(plr);
+                const remaining = plr.getRemainingHandSpace();
 
                 for (let index = 0; index < remaining; index++) {
                     const card = game.lodash.sample(spellPool)?.imperfectCopy();

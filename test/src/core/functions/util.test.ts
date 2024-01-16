@@ -91,33 +91,17 @@ describe('src/core/functions/util', () => {
         expect(false).toEqual(true);
     });
 
-    test('getRemainingBoardSpace', async () => {
-        // Get the remaining board space when no minions
-        expect(game.player.getBoard().length).toBe(0);
 
-        let remainingBoardSpace = utilFunctions.getRemainingBoardSpace(game.player);
-        expect(remainingBoardSpace).toEqual(game.config.general.maxBoardSpace);
 
-        // Summon a minion
-        game.player.summon(new Card(1, game.player));
 
-        // The remaining board space should be 1 less
-        remainingBoardSpace = utilFunctions.getRemainingBoardSpace(game.player);
-        expect(remainingBoardSpace).toEqual(game.config.general.maxBoardSpace - 1);
+
+
+    test.todo('dirname', async () => {
+        // I don't know how to test this
+        expect(false).toEqual(true);
     });
 
-    test('getRemainingHandSize', async () => {
-        // Get the remaining hand size when no cards
-        expect(game.player.hand.length).toEqual(0);
-
-        let remainingHandSize = utilFunctions.getRemainingHandSize(game.player);
-        expect(remainingHandSize).toEqual(game.config.general.maxHandLength);
-
-        // Add a card to the hand
-        game.player.addToHand(new Card(1, game.player));
-
-        // The remaining hand size should be 1 less
-        remainingHandSize = utilFunctions.getRemainingHandSize(game.player);
-        expect(remainingHandSize).toEqual(game.config.general.maxHandLength - 1);
+    test.todo('getRandomTarget', async () => {
+        expect(false).toEqual(true);
     });
 });

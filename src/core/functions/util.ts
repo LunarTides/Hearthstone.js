@@ -551,18 +551,4 @@ ${mainContent}
 
         return game.lodash.sample(targets);
     },
-
-    /**
-     * Calculate the remaining board space for the given player.
-     */
-    getRemainingBoardSpace(plr: Player): number {
-        return game.config.general.maxBoardSpace - plr.getBoard().length;
-    },
-
-    /**
-     * Calculate the remaining hand size for the given player.
-     */
-    getRemainingHandSize(plr: Player): number {
-        return game.config.general.maxHandLength - plr.hand.length;
-    },
 };
