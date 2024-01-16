@@ -54,19 +54,27 @@ export const infoFunctions = {
      * Returns the latest commit hash
      */
     latestCommit(): string {
-        if (!game.cache.latestCommitHash) {
+        if (game.cache.latestCommitHash === undefined) {
             // Save to a cache since `runCommand` is slow.
-            game.cache.latestCommitHash = game.functions.util.runCommand('git rev-parse --short=7 HEAD');
+            try {
+                game.cache.latestCommitHash = game.functions.util.runCommand('git rev-parse --short=7 HEAD').trim();
+            } catch (error) {
+                if (!(error instanceof Error)) {
+                    throw new TypeError('`err` is not an error in latestCommit');
+                }
+
+                /*
+                 * Sets the cache to the error in order to prevent
+                 * repeatedly trying to get the latest commit hash
+                 * even though it will always fail.
+                 */
+                game.cache.latestCommitHash = error;
+                game.logDebug('Failed to get latest commit hash:', error.stack);
+                console.log('<red>ERROR: Git is not installed.</red>');
+                return 'no git found';
+            }
         }
 
-        const hash = game.cache.latestCommitHash as string | Error;
-
-        if (hash instanceof Error) {
-            game.logDebug('Failed to get latest commit hash:', hash.stack);
-            console.log('<red>ERROR: Git is not installed.</red>');
-            return 'no git found';
-        }
-
-        return hash?.trim();
+        return game.cache.latestCommitHash as string;
     },
 };

@@ -185,18 +185,10 @@ ${error.stack}
         if (osName === 'linux') {
             // Get the operating system name from /etc/os-release
             const osRelease = this.runCommand('cat /etc/os-release');
-            if (osRelease instanceof Error) {
-                throw osRelease;
-            }
-
             osName = osRelease.split('PRETTY_NAME="')[1].split('"\n')[0];
 
             // Also add information from uname
             const uname = this.runCommand('uname -srvmo');
-            if (uname instanceof Error) {
-                throw uname;
-            }
-
             osName += ' (' + uname.trim() + ')';
         } else if (osName === 'win32') {
             osName = 'Windows';
@@ -274,17 +266,11 @@ ${mainContent}
      * Runs a command and returns the result.
      *
      * This function is slow, so think about saving the output of this to `game.cache` if you intend to run this multiple times.
+     *
+     * @throws If the command times out or has a non-zero exit code
      */
-    runCommand(cmd: string): string | Error {
-        try {
-            return childProcess.execSync(cmd).toString();
-        } catch (error) {
-            if (!(error instanceof Error)) {
-                throw new TypeError('`error` is not an error in runCommand');
-            }
-
-            return error;
-        }
+    runCommand(cmd: string): string {
+        return childProcess.execSync(cmd).toString();
     },
 
     /**
@@ -294,11 +280,7 @@ ${mainContent}
      */
     tryCompile(): boolean {
         try {
-            const error = this.runCommand('bunx tsc');
-            if (error instanceof Error) {
-                throw error;
-            }
-
+            this.runCommand('bunx tsc');
             return true;
         } catch (error) {
             if (!(error instanceof Error)) {
@@ -343,8 +325,9 @@ ${mainContent}
                 console.log(`Trying '${testCommand} ${argsSpecifier}${command}'...`);
                 attempts.push(testCommand);
 
-                const error = this.runCommand(`which ${testCommand} 2> /dev/null`);
-                if (error instanceof Error) {
+                try {
+                    this.runCommand(`which ${testCommand} 2> /dev/null`);
+                } catch {
                     return false;
                 }
 

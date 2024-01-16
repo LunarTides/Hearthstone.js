@@ -1,10 +1,12 @@
 import * as lib from './lib.js';
 
 // Check if your git is clean
-const gitStatus = game.functions.util.runCommand('git status --porcelain');
-if (typeof gitStatus === 'string') {
+try {
+    game.functions.util.runCommand('git status --porcelain');
     console.error('<yellow>WARNING: You have uncommitted changes. Please commit them before running a non-safe command.</yellow>');
     // Process.exit(1);
+} catch {
+    // Do nothing
 }
 
 console.error('<yellow>WARNING: Be careful with this script. This might break things that are dependent on ids remaining the same, like deckcodes.</yellow>');
