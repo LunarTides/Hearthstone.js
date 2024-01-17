@@ -4,16 +4,33 @@
 
 import process from 'node:process';
 import { createGame } from '@Game/internal.js';
+import { type Card as VanillaCard } from '@hearthstonejs/vanillatypes';
 
 const { game } = createGame();
 
 const props: Record<string, [string, number]> = {};
 const stored: Record<string, Array<[any, number]>> = {};
 
+const whitelistedProps = new Set<keyof VanillaCard>([
+    'cardClass',
+    'set',
+    'type',
+    'rarity',
+    'faction',
+    'spellSchool',
+    'mechanics',
+    'race',
+    'multiClassGroup',
+]);
+
 /**
  * Does something(?) to the key and value and applies it to `stored`.
  */
-function handleStoredTypes(key: string, value: any): void {
+function handleStoredTypes(key: keyof VanillaCard, value: any): void {
+    if (!whitelistedProps.has(key)) {
+        return;
+    }
+
     const values = Array.isArray(value) ? value : [value];
 
     for (const value of values) {
@@ -45,7 +62,7 @@ function main(): void {
         for (const entry of Object.entries(vanillaCard)) {
             const [key, value] = entry;
 
-            handleStoredTypes(key, value);
+            handleStoredTypes(key as keyof VanillaCard, value);
 
             if (Object.keys(props).includes(key)) {
                 const storedType = props[key][0];
