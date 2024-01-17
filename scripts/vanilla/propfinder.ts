@@ -4,7 +4,7 @@
 
 import process from 'node:process';
 import { createGame } from '@Game/internal.js';
-import { type Card as VanillaCard } from '@hearthstonejs/vanillatypes';
+import { type VanillaCard } from '@Game/types.js';
 
 const { game } = createGame();
 

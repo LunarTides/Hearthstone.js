@@ -1,5 +1,8 @@
 import { type Player, type Card } from '@Game/internal.js';
 import { type EventKey, type UnknownEventValue } from '@Game/types.js';
+import { type Card as _VanillaCard } from '@hearthstonejs/vanillatypes';
+
+export type VanillaCard = _VanillaCard;
 
 /**
  * Ai scored card

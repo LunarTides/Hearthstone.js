@@ -3,8 +3,7 @@
  * @module Vanilla Card Creator
  */
 
-import { type Card as VanillaCard } from '@hearthstonejs/vanillatypes';
-import { type CardType, type Blueprint, type CardClass, type CardRarity, type MinionTribe, type SpellSchool } from '@Game/types.js';
+import { type VanillaCard, type CardType, type Blueprint, type CardClass, type CardRarity, type MinionTribe, type SpellSchool } from '@Game/types.js';
 import { createGame } from '@Game/internal.js';
 import * as lib from './lib.js';
 

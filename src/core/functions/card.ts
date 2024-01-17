@@ -1,5 +1,4 @@
-import { type Card as VanillaCard } from '@hearthstonejs/vanillatypes';
-import { type CardClass, type MinionTribe, type CardClassNoNeutral, type Blueprint, type CardType } from '@Game/types.js';
+import { type CardClass, type MinionTribe, type CardClassNoNeutral, type Blueprint, type CardType, type VanillaCard } from '@Game/types.js';
 import { type Card, CardError, type Player } from '@Game/internal.js';
 
 const vanilla = {

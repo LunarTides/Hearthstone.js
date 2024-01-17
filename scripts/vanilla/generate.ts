@@ -6,8 +6,8 @@
 import { Buffer } from 'node:buffer';
 import https from 'node:https';
 import process from 'node:process';
-import { type Card as VanillaCard } from '@hearthstonejs/vanillatypes';
 import { createGame } from '@Game/internal.js';
+import { type VanillaCard } from '@Game/types.js';
 
 const filterAwayUseless = process.argv[2] !== '--no-filter';
 
