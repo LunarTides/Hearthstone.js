@@ -300,6 +300,19 @@ export class Card {
 
         // Override the properties from the blueprint
         this.doBlueprint(false);
+        this.randomizeUUID();
+
+        const placeholder = this.activate('placeholders');
+
+        // This is a list of replacements.
+        if (Array.isArray(placeholder)) {
+            this.placeholder = placeholder[0] as Record<string, any>;
+        }
+
+        game.event.broadcast('CreateCard', this, this.plr);
+        this.activate('create');
+
+        this.replacePlaceholders();
 
         /*
          * Properties after this point can't be overriden
@@ -314,20 +327,6 @@ export class Card {
             // HACK: Never usage
             this.backups.init[entry[0] as never] = entry[1] as never;
         }
-
-        this.randomizeUUID();
-
-        const placeholder = this.activate('placeholders');
-
-        // This is a list of replacements.
-        if (Array.isArray(placeholder)) {
-            this.placeholder = placeholder[0] as Record<string, any>;
-        }
-
-        game.event.broadcast('CreateCard', this, this.plr);
-        this.activate('create');
-
-        this.replacePlaceholders();
     }
 
     /**
@@ -929,14 +928,31 @@ export class Card {
 
     /**
      * Silences, then kills the card.
-     *
-     * @returns Success
      */
-    destroy(): boolean {
+    destroy(): void {
         this.silence();
         this.kill();
+    }
 
-        return true;
+    /**
+     * Resets this card to its original state.
+     */
+    reset(): void {
+        // Silence it to remove any new abilities
+        game.functions.event.withSuppressed('SilenceCard', () => this.silence());
+        this.restoreBackup(this.backups.init);
+    }
+
+    /**
+     * Reloads this card. This will set the card's state to the default one from its blueprint.
+     *
+     * If the blueprint has changed since the last time it was loaded, it will apply the new blueprint to this card.
+     *
+     * Run this after having reloaded the blueprints to apply the new changes to this card.
+     */
+    reload(): void {
+        this.reset();
+        this.doBlueprint();
     }
 
     // Handling functions

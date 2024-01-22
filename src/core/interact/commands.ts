@@ -640,25 +640,25 @@ export const debugCommands: CommandList = {
             // Hand and decks of the players
             for (const player of [game.player1, game.player2]) {
                 for (const card of player.hand) {
-                    card.doBlueprint();
+                    card.reload();
                 }
 
                 for (const card of player.deck) {
-                    card.doBlueprint();
+                    card.reload();
                 }
             }
 
             // Board
             for (const side of game.board) {
                 for (const card of side) {
-                    card.doBlueprint();
+                    card.reload();
                 }
             }
 
             // Graveyard
             for (const side of game.graveyard) {
                 for (const card of side) {
-                    card.doBlueprint();
+                    card.reload();
                 }
             }
 
