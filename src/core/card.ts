@@ -914,7 +914,11 @@ export class Card {
             }
         }
 
-        this.text = `<strikethrough>${this.text}</strikethrough>`;
+        // Don't strikethrough the text if the card doesn't have text (e.g. Sheep)
+        if (this.text) {
+            this.text = `<strikethrough>${this.text}</strikethrough>`;
+        }
+
         this.keywords = {};
 
         // Remove active enchantments.
