@@ -139,18 +139,18 @@ export const eventFunctions = {
      * @returns The return value of the callback.
      */
     withSuppressed<T>(key: EventKey | EventKey[], callback: () => T): T {
-        let unsuppress: () => boolean;
+        let unsuppressed: Array<() => boolean> = [];
 
         if (Array.isArray(key)) {
             for (const _key of key) {
-                unsuppress = this.suppress(_key);
+                unsuppressed.push(this.suppress(_key));
             }
         } else {
-            unsuppress = this.suppress(key);
+            unsuppressed.push(this.suppress(key));
         }
 
         const returnValue = callback();
-        unsuppress!();
+        unsuppressed.forEach(unsuppress => unsuppress());
 
         return returnValue;
     },
