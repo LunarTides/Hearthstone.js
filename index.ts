@@ -2,12 +2,17 @@
  * The entry point of the program. Acts like a hub between the tools / scripts and the game.
  * @module Hub
  */
+import { Logger } from '@Game/internal.js';
 import * as src from './src/index.js'; // Source Code
 import * as dc from './tools/deckcreator.js'; // Deck Creator
 import * as ccc from './tools/cardcreator/custom.js'; // Custom Card Creator
 import * as vcc from './tools/cardcreator/vanilla.js'; // Vanilla Card Creator
 import * as clc from './tools/cardcreator/class.js'; // Class Creator
 import * as cli from './tools/cli.js'; // Command Line Interface
+
+globalThis.logger = new Logger();
+
+logger.debug('Starting Hub...');
 
 // These are here so we don't have to recalculate them every watermark call.
 const version = game.functions.info.version(4);
@@ -84,9 +89,13 @@ function cardCreator() {
             // This is to throw an error if it can't find the vanilla cards
             game.functions.card.vanilla.getAll();
 
+            logger.debug('Starting Vanilla Card Creator...');
             vcc.main();
+            logger.debug('Starting Vanilla Card Creator...OK');
         } else if (type === 'c') {
+            logger.debug('Starting Custom Card Creator...');
             ccc.main();
+            logger.debug('Starting Custom Card Creator...OK');
         }
     });
 }
@@ -100,17 +109,23 @@ function devmode() {
 
         switch (input) {
             case 'c': {
+                logger.debug('Loading Card Creator options...');
                 cardCreator();
+                logger.debug('Loading Card Creator options...OK');
                 break;
             }
 
             case 's': {
+                logger.debug('Starting Class Creator...');
                 clc.main();
+                logger.debug('Starting Class Creator...OK');
                 break;
             }
 
             case 'm': {
+                logger.debug('Starting CLI...');
                 cli.main(userInputLoop);
+                logger.debug('Starting CLI...OK');
                 break;
             }
 
@@ -119,22 +134,35 @@ function devmode() {
     });
 }
 
+logger.debug('Starting Hub...OK');
+
 userInputLoop('<green>(P)lay</green>, <blue>Create a (D)eck</blue>, <yellow>Developer (M)ode</yellow>, <red>(E)xit</red>: ', 'e', input => {
     input = input[0].toLowerCase();
 
     switch (input) {
         case 'p': {
+            logger.debug('Starting Game...');
             src.main();
+
+            /*
+             * This line will likely never be seen in a log file, since the log file gets generated before this line.
+             * All the other similar lines are fine, since only the game generates log files for now.
+             */
+            logger.debug('Starting Game...OK');
             break;
         }
 
         case 'd': {
+            logger.debug('Starting Deck Creator...');
             dc.main();
+            logger.debug('Starting Deck Creator...OK');
             break;
         }
 
         case 'm': {
+            logger.debug('Loading Developer Mode options...');
             devmode();
+            logger.debug('Loading Developer Mode options...OK');
             break;
         }
 

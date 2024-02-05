@@ -69,7 +69,7 @@ export const infoFunctions = {
                  * even though it will always fail.
                  */
                 game.cache.latestCommitHash = error;
-                game.logDebug('Failed to get latest commit hash:', error.stack);
+                logger.debug('Failed to get latest commit hash:', error.stack);
                 console.log('<red>ERROR: Git is not installed.</red>');
                 return 'no git found';
             }

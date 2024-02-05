@@ -3,6 +3,7 @@ export * from './core/player.js';
 export * from './core/game.js';
 export * from './core/ai.js';
 export * from './core/event.js';
+export * from './core/logger.js';
 
 // Interact
 export { cardInteract } from './core/interact/card.js';

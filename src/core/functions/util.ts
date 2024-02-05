@@ -165,7 +165,7 @@ ${error.stack}
 `;
         }
 
-        const debugLogContent = `-- Log --\n${game.debugLog.join('\n')}-- Log --\n`;
+        const debugLogContent = `-- Log --\n${logger.debugLog.join('\n')}\n-- Log --\n`;
         const historyContent = `\n-- History --${history}-- History --\n`;
         const aiContent = `\n-- AI Logs --\n${aiHistory}-- AI Logs --\n`;
 

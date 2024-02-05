@@ -153,8 +153,6 @@ export class Game {
      */
     cache: Record<string, any> = {};
 
-    debugLog: any[] = [];
-
     cardCollections = cardCollections;
     lodash = _;
     cardIds = cardIds;
@@ -232,16 +230,6 @@ export class Game {
     logWarn(...data: any): void {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         this.interact.gameLoop.logWarn(...data);
-    }
-
-    /**
-     * Saves debug information to be used in log files.
-     *
-     * @param data The data to be saved.
-     */
-    logDebug(...data: any): void {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        this.debugLog.push(...data);
     }
 
     /**
@@ -375,9 +363,6 @@ export class Game {
         this.pause(`Player ${winner.name} wins!\n`);
 
         this.running = false;
-
-        // Create log file
-        this.functions.util.createLogFile();
 
         return true;
     }

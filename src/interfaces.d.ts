@@ -1,4 +1,4 @@
-import { type Game } from './internal.js';
+import { type Game, type Logger } from './internal.js';
 
 declare global {
     /**
@@ -6,4 +6,10 @@ declare global {
      */
     // eslint-disable-next-line no-var, no-unused-vars
     var game: Game;
+
+    /**
+     * The global logger
+     */
+    // eslint-disable-next-line no-var, no-unused-vars
+    var logger: Logger;
 }

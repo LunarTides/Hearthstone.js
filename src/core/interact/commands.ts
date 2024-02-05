@@ -595,7 +595,6 @@ export const debugCommands: CommandList = {
 
     exit(): boolean {
         game.running = false;
-        game.functions.util.createLogFile();
         return true;
     },
 

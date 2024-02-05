@@ -51,7 +51,14 @@ export const interact = {
         let result = true;
 
         if (deckcode.length > 0) {
+            logger.debug(`${plr.name} chose deck code: ${deckcode}...`);
             result = Boolean(game.functions.deckcode.import(plr, deckcode));
+
+            if (result) {
+                logger.debug(`${plr.name} chose deck code: ${deckcode}...OK`);
+            } else {
+                logger.debug(`${plr.name} chose deck code: ${deckcode}...FAIL`);
+            }
         } else {
             if (!allowTestDeck) {
                 // Give error message
@@ -59,10 +66,14 @@ export const interact = {
                 return false;
             }
 
+            logger.debug(`${plr.name} chose debug deck...`);
+
             // Debug mode is enabled, use the 30 Sheep debug deck.
             while (plr.deck.length < 30) {
                 plr.deck.push(game.newCard(game.cardIds.sheep1, plr, true));
             }
+
+            logger.debug(`${plr.name} chose debug deck...OK`);
         }
 
         return result;
