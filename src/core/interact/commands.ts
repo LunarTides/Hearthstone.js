@@ -621,8 +621,6 @@ export const debugCommands: CommandList = {
         try {
             // eslint-disable-next-line no-eval
             eval(code);
-
-            game.event.broadcast('Eval', code, game.player);
         } catch (error) {
             if (!(error instanceof Error)) {
                 throw new TypeError('`error` is not an instance of Error');
@@ -636,6 +634,8 @@ export const debugCommands: CommandList = {
             game.functions.color.parseTags = true;
 
             game.pause();
+        } finally {
+            game.event.broadcast('Eval', code, game.player);
         }
 
         return true;
