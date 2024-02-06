@@ -456,35 +456,11 @@ export const interact = {
         // Allow for stuff like `/eval @Player1.addToHand(@00ff00.perfectCopy());`
         code = code.replaceAll('@Player', 'game.player');
 
-        /**
-         * Looks for a specific UUID in an array of cards and replaces it with a string representation of the index of the card in the array.
-         *
-         * @param uuid The UUID to look for.
-         * @param where The array of cards to search in.
-         * @param stringOfWhere The string representation of the array of cards.
-         * @return This function does not return a value.
-         */
-        function lookForUUID(uuid: string, where: Card[], stringOfWhere: string): void {
-            const card = where.find(card => card.uuid.startsWith(uuid));
-            if (!card) {
-                return;
-            }
-
-            code = code.replace(`@${uuid}`, `${stringOfWhere}[${where.indexOf(card)}]`);
-        }
-
         const uuidRegex = /@\w+/g;
         for (const match of code.matchAll(uuidRegex)) {
             const uuid = match[0].slice(1);
 
-            for (const player of [game.player1, game.player2]) {
-                const gamePlayer = `game.player${player.id + 1}`;
-
-                lookForUUID(uuid, player.deck, `${gamePlayer}.deck`);
-                lookForUUID(uuid, player.hand, `${gamePlayer}.hand`);
-                lookForUUID(uuid, player.getBoard(), `game.board[${player.id}]`);
-                lookForUUID(uuid, player.getBoard(), `game.graveyard[${player.id}]`);
-            }
+            code = code.replace(`@${uuid}`, `let __card = game.functions.card.findFromUUID('${uuid}');if (!__card) throw new Error('Card with uuid "${uuid}" not found');__card`);
         }
 
         /*
