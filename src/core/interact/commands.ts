@@ -678,21 +678,16 @@ export const debugCommands: CommandList = {
 
         success &&= game.interact.info.withStatus('Reloading config', () => game.functions.util.importConfig());
 
-        const pause = (prompt: string) => {
+        if (success) {
             if (flags?.debug) {
-                return false;
+                return true;
             }
 
-            game.pause(prompt);
-            return true;
-        };
-
-        if (success) {
-            pause('\nThe cards have been reloaded.\nPress enter to continue...');
+            game.pause('\nThe cards have been reloaded.\nPress enter to continue...');
             return true;
         }
 
-        pause('\nSome steps failed. The game could not be fully reloaded. Please report this.\nPress enter to continue...');
+        game.pause('\nSome steps failed. The game could not be fully reloaded. Please report this.\nPress enter to continue...');
         return false;
     },
 
