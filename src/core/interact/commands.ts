@@ -164,6 +164,7 @@ export const commands: CommandList = {
             'exit - Force exits the game. There will be no winner, and it will take you straight back to the hub.',
             'history - Displays a history of actions. This doesn\'t hide any information, and is the same thing the log files uses.',
             'rl - Reloads the cards and config in the game.',
+            'frl - Does the same thing as rl, but doesn\'t wait for you to press enter before continuing.',
             'undo - Undoes the last card played. It gives the card back to your hand, and removes it from where it was. (This does not undo the actions of the card)',
             'ai - Gives you a list of the actions the ai(s) have taken in the order they took it',
         ];
@@ -629,7 +630,7 @@ export const debugCommands: CommandList = {
         return true;
     },
 
-    rl(): boolean {
+    rl(_, flags): boolean {
         let success = true;
 
         success &&= game.interact.info.withStatus('Reloading cards', () => game.functions.card.reloadAll());
@@ -666,12 +667,21 @@ export const debugCommands: CommandList = {
 
         success &&= game.interact.info.withStatus('Reloading config', () => game.functions.util.importConfig());
 
+        const pause = (prompt: string) => {
+            if (flags?.debug) {
+                return false;
+            }
+
+            game.pause(prompt);
+            return true;
+        };
+
         if (success) {
-            game.pause('\nThe cards have been reloaded.\nPress enter to continue...');
+            pause('\nThe cards have been reloaded.\nPress enter to continue...');
             return true;
         }
 
-        game.pause('\nSome steps failed. The game could not be fully reloaded. Please report this.\nPress enter to continue...');
+        pause('\nSome steps failed. The game could not be fully reloaded. Please report this.\nPress enter to continue...');
         return false;
     },
 
@@ -767,5 +777,9 @@ export const debugCommands: CommandList = {
 
     history(): string {
         return game.interact.gameLoop.handleCmds('history', { debug: true }) as string;
+    },
+
+    frl(): string {
+        return game.interact.gameLoop.handleCmds(game.config.advanced.debugCommandPrefix + 'rl', { debug: true }) as string;
     },
 };
