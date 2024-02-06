@@ -336,6 +336,13 @@ export class Player {
         return game.board[this.id];
     }
 
+    /**
+     * Get this player's side of the graveyard
+     */
+    getGraveyard(): Card[] {
+        return game.graveyard[this.id];
+    }
+
     // Mana
 
     /**
