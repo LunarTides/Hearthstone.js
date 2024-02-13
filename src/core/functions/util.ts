@@ -405,6 +405,31 @@ ${mainContent}
     },
 
     /**
+     * Returns a language map based on the game's locale.
+     *
+     * @param refresh Whether to refresh the cache
+     * @return The language map
+     */
+    getLanguageMap(refresh = false): Record<string, string> {
+        if (!this.fs('exists', `/locale/${game.config.general.locale}.json`)) {
+            return {};
+        }
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+        return JSON.parse(this.fs('read', `/locale/${game.config.general.locale}.json`, { invalidateCache: refresh }) as string);
+    },
+
+    /**
+     * Translates the input text to the current locale using the language map, or returns the input text if no translation is found.
+     *
+     * @param text The text to be translated
+     * @returns The translated text or the original text if no translation is found
+     */
+    translate(text: string): string {
+        return this.getLanguageMap()[text] || text;
+    },
+
+    /**
      * Executes a file system operation based on the provided callback.
      *
      * @param callback The name of the fs operation to execute.

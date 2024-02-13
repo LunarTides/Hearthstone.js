@@ -677,6 +677,7 @@ export const debugCommands: CommandList = {
         });
 
         success &&= game.interact.info.withStatus('Reloading config', () => game.functions.util.importConfig());
+        success &&= game.interact.info.withStatus('Reloading language map', () => Boolean(game.functions.util.getLanguageMap(true)));
 
         if (success) {
             if (flags?.debug) {

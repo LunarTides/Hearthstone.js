@@ -101,6 +101,7 @@ export type Todo = {
  */
 export type GameConfig = {
     general: {
+        locale: string;
         debug: boolean;
         editor: string;
         topicBranchWarning: boolean;

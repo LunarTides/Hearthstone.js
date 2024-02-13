@@ -2,6 +2,9 @@ import { type GameConfig } from '@Game/types.js';
 
 export const config: GameConfig = {
     general: {
+        // The locale to use. If the specified locale doesn't exist, it will default to 'en_US'.
+        locale: 'en_US',
+
         // Debug mode enables debug commands, and hides redundant information.
         debug: true,
 

@@ -53,6 +53,7 @@ export const gameloopInteract = { /**
             return wrapper('');
         }
 
+        q = game.functions.util.translate(q);
         q = game.functions.color.fromTags(q);
 
         // Let the game make choices for the user
@@ -90,7 +91,7 @@ export const gameloopInteract = { /**
         }
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return
-        data = data.map((i: any) => typeof i === 'string' ? game.functions.color.fromTags(i) : i);
+        data = data.map((i: any) => typeof i === 'string' ? game.functions.color.fromTags(game.functions.util.translate(i)) : i);
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         callback(...data);
     },
