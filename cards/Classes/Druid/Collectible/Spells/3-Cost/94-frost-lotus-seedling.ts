@@ -41,8 +41,9 @@ export const blueprint: Blueprint = {
          */
         const { blossomed } = self.storage;
 
-        plr.drawCard();
         if (blossomed) {
+            plr.drawCards(2);
+        } else {
             plr.drawCard();
         }
 

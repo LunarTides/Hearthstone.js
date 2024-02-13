@@ -1,6 +1,5 @@
 // Created by the Custom Card Creator
 
-import { Card } from '@Game/internal.js';
 import { type Blueprint } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
@@ -21,13 +20,9 @@ export const blueprint: Blueprint = {
 
         // Get the amount of cards to draw
         const amount = game.functions.card.galakrondFormula(self.storage.invokeCount as number);
+        const cards = plr.drawCards(amount);
 
-        for (let i = 0; i < amount; i++) {
-            const card = plr.drawCard();
-            if (!(card instanceof Card)) {
-                return;
-            }
-
+        for (const card of cards) {
             // Set the cost to 0
             card.addEnchantment('cost = 0', self);
         }

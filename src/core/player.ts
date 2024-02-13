@@ -2,7 +2,7 @@
  * Player
  * @module Player
  */
-import { type Ai, type Card } from '@Game/internal.js';
+import { Card, type Ai } from '@Game/internal.js';
 import { type CardClass, type CardType, type EventKey, type QuestCallback, type QuestType, type Target } from '@Game/types.js';
 
 export class Player {
@@ -701,6 +701,27 @@ export class Player {
         game.functions.event.withSuppressed('AddCardToHand', () => this.addToHand(card));
 
         return card;
+    }
+
+    /**
+     * Draws `amount` cards from this player's deck.
+     * Broadcasts the `DrawCard` event for each card drawn
+     *
+     * @param amount The amount of cards to draw
+     * @returns The cards drawn
+     */
+    drawCards(amount: number): Card[] {
+        const cards: Card[] = [];
+
+        for (let i = 0; i < amount; i++) {
+            const card = this.drawCard();
+
+            if (card instanceof Card) {
+                cards.push(card);
+            }
+        }
+
+        return cards;
     }
 
     /**

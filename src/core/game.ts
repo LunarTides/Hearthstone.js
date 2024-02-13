@@ -309,9 +309,7 @@ export class Game {
             const amountOfCards = (player.id === 0) ? 3 : 4;
 
             // This accounts for the quest cards
-            while (player.hand.length < amountOfCards) {
-                player.drawCard();
-            }
+            player.drawCards(amountOfCards - player.hand.length);
 
             unsuppressAddCardToHand();
             unsuppressDrawCard();

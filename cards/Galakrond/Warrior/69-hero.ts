@@ -19,14 +19,10 @@ export const blueprint: Blueprint = {
     battlecry(plr, self) {
         // Draw 1 minion. Give them +4/+4.
         const amount = game.functions.card.galakrondFormula(self.storage.invokeCount as number);
+        const cards = plr.drawCards(amount);
 
         // Draw the minions
-        for (let i = 0; i < amount; i++) {
-            const card = plr.drawCard();
-            if (!(card instanceof Card)) {
-                continue;
-            }
-
+        for (const card of cards) {
             // Give it +4/+4
             card.addStats(4, 4);
         }
