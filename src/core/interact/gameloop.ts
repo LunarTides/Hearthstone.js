@@ -18,15 +18,15 @@ overrideConsole.warn = console.warn;
 overrideConsole.error = console.error;
 
 console.log = (...data) => {
-    game.log(...data);
+    game.interact.gameLoop.log(...data);
 };
 
 console.warn = (...data) => {
-    game.logWarn(...data);
+    game.interact.gameLoop.logWarn(...data);
 };
 
 console.error = (...data) => {
-    game.logError(...data);
+    game.interact.gameLoop.logError(...data);
 };
 
 export const gameloopInteract = { /**

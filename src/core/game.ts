@@ -209,30 +209,6 @@ export class Game {
     }
 
     /**
-     * Wrapper for console.log
-     */
-    log(...data: any): void {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        this.interact.gameLoop.log(...data);
-    }
-
-    /**
-     * Wrapper for console.error
-     */
-    logError(...data: any): void {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        this.interact.gameLoop.logError(...data);
-    }
-
-    /**
-     * Wrapper for console.warn
-     */
-    logWarn(...data: any): void {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        this.interact.gameLoop.logWarn(...data);
-    }
-
-    /**
      * Assigns an ai to the players if in the config.
      *
      * Unassigns the player's ai's if not in the config.

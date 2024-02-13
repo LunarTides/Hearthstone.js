@@ -1,9 +1,9 @@
 export class Logger {
     debugLog: string[] = [];
 
-    log = game.log;
-    warn = game.logWarn;
-    error = game.logError;
+    log = console.log;
+    warn = console.warn;
+    error = console.error;
 
     debug(...data: any) {
         /*
