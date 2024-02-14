@@ -3,7 +3,7 @@
  * @module Game
  */
 import _ from 'lodash';
-import { Player, Card, Ai, functions, interact, eventManager } from '@Game/internal.js';
+import { Player, Card, Ai, functions, interact, eventManager, Logger } from '@Game/internal.js';
 import { type GameConfig, type Blueprint, type CardAbility, type CardKeyword, type EventKey, type GameAttackReturn, type GameConstants, type GamePlayCardReturn, type Target, type UnknownEventValue } from '@Game/types.js';
 import date from 'date-and-time';
 import { cardIds } from '../../cards/ids.js';
@@ -577,6 +577,8 @@ export function createGame() {
     game.functions.card.importAll();
     game.setup(player1, player2);
     game.doConfigAi();
+
+    globalThis.logger = new Logger();
 
     // Check if the date is the 14th of February
     const currentDate = new Date();

@@ -2,15 +2,12 @@
  * The entry point of the program. Acts like a hub between the tools / scripts and the game.
  * @module Hub
  */
-import { Logger } from '@Game/internal.js';
 import * as src from './src/index.js'; // Source Code
 import * as dc from './tools/deckcreator.js'; // Deck Creator
 import * as ccc from './tools/cardcreator/custom.js'; // Custom Card Creator
 import * as vcc from './tools/cardcreator/vanilla.js'; // Vanilla Card Creator
 import * as clc from './tools/cardcreator/class.js'; // Class Creator
 import * as cli from './tools/cli.js'; // Command Line Interface
-
-globalThis.logger = new Logger();
 
 logger.debug('Starting Hub...');
 
