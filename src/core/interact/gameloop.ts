@@ -1,3 +1,4 @@
+import { format } from 'node:util';
 import rl from 'readline-sync';
 import { type Target, type GamePlayCardReturn } from '@Game/types.js';
 import { type Ai, Card, commands, debugCommands } from '@Game/internal.js';
@@ -230,12 +231,12 @@ export const gameloopInteract = { /**
             }
 
             default: {
-                error = `An unknown error occurred. Error code: UnexpectedAttackingResult@${errorCode}`;
+                error = format('An unknown error occurred. Error code: UnexpectedAttackingResult@%s', errorCode);
                 break;
             }
         }
 
-        console.log(`<red>${error}.</red>`);
+        console.log('<red>%s.</red>', game.functions.util.translate(error));
         game.pause('');
         return false;
     },

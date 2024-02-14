@@ -112,7 +112,7 @@ export const commands: CommandList = {
             }
         }
 
-        console.log(`<red>${error}.</red>`);
+        console.log('<red>%s.</red>', error);
         game.pause();
         return true;
     },
@@ -139,7 +139,7 @@ export const commands: CommandList = {
         const titanCards = titanIds.map(id => game.newCard(id, game.player, true));
 
         game.interact.info.showGame(game.player);
-        console.log(`\nWhich ability do you want to trigger?\n${titanCards.map(c => game.interact.card.getReadable(c)).join(',\n')}`);
+        console.log('\nWhich ability do you want to trigger?\n%s', titanCards.map(c => game.interact.card.getReadable(c)).join(',\n'));
 
         const choice = game.lodash.parseInt(game.input());
 
@@ -176,8 +176,8 @@ export const commands: CommandList = {
         console.log('Available commands:');
 
         const bricks = [
-            '(name) - (description)\n',
-            ...helpBricks,
+            game.functions.util.translate('(name) - (description)\n'),
+            ...helpBricks.map(brick => game.functions.util.translate(brick)),
         ];
 
         const wall = game.functions.util.createWall(bricks, '-');
@@ -398,9 +398,9 @@ export const commands: CommandList = {
                 }
 
                 if (printDesc) {
-                    console.log(`{${id}} [${state}] ${name}\n${info.description}`);
+                    console.log('{%s} [%s] %s\n%s', id, state, name, info.description);
                 } else {
-                    console.log(`{${id}} [${state}] ${name}`);
+                    console.log('{%s} [%s] %s', id, state, name);
                 }
             };
 

@@ -14,9 +14,9 @@ export const infoInteract = {
         const watermark = `HEARTHSTONE.JS V${game.functions.info.version(versionDetail)}`;
         const border = '-'.repeat(watermark.length + 2);
 
-        console.log(`|${border}|`);
-        console.log(`| ${watermark} |`);
-        console.log(`|${border}|`);
+        console.log('|%s|', border);
+        console.log('| %s |', watermark);
+        console.log('|%s|', border);
 
         if (info.branch === 'topic' && game.config.general.topicBranchWarning) {
             console.log('\n<yellow>WARNING: YOU ARE ON A TOPIC BRANCH. THIS VERSION IS NOT READY.</yellow>');
@@ -39,7 +39,7 @@ export const infoInteract = {
 
         const version = `Hearthstone.js V${game.functions.info.version(2)} | Copyright (C) 2022 | LunarTides`;
         console.log('|'.repeat(version.length + 8));
-        console.log(`||| ${version} |||`);
+        console.log('||| %s |||', version);
         console.log('|||     This program is licensed under the GPL-3.0 license.  ' + ' '.repeat(info.branch.length) + '|||');
         if (disappear) {
             console.log('|||         This will disappear once you end your turn.      ' + ' '.repeat(info.branch.length) + '|||');
@@ -210,7 +210,7 @@ export const infoInteract = {
      * Prints the hand of the specified player.
      */
     printHand(plr: Player): void {
-        console.log(`--- ${plr.name} (${plr.heroClass})'s Hand ---`);
+        console.log('--- %s (%s)\'s Hand ---', plr.name, plr.heroClass);
         // Add the help message
         console.log('([index] <cyan>{Cost}</cyan> <b>Name</b> <bright:green>[attack / health]</bright:green> <yellow>(type)</yellow>)\n');
 

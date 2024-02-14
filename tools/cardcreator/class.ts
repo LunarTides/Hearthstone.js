@@ -91,9 +91,9 @@ export function main(debug = false, overrideType?: lib.CcType): void {
     console.log('\nClass Created!');
     console.log('Next steps:');
     console.log('1. Open \'src/types.ts\', navigate to \'CardClass\', and add the name of the class to that. There is unfortunately no way to automate that.');
-    console.log(`2. Open 'cards/StartingHeroes/${game.lodash.startCase(className)}/${lib.getLatestId()}-heropower.ts' and add logic to the 'cast' function.`);
-    console.log(`3. Now when using the Custom Card Creator, type '${className}' into the 'Class' field to use that class.`);
-    console.log(`4. When using the Deck Creator, type '${className}' to create a deck with cards from your new class.`);
+    console.log('2. Open \'cards/StartingHeroes/%s/%s-heropower.ts\' and add logic to the \'cast\' function.', game.lodash.startCase(className), lib.getLatestId());
+    console.log('3. Now when using the Custom Card Creator, type \'%s\' into the \'Class\' field to use that class.', className);
+    console.log('4. When using the Deck Creator, type \'%s\' to create a deck with cards from your new class.', className);
     console.log('Enjoy!');
     game.pause();
 }

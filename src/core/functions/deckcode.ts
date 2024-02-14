@@ -15,9 +15,9 @@ export const deckcodeFunctions = {
     // eslint-disable-next-line complexity
     import(plr: Player, code: string): Card[] | undefined {
         const panic = (errorCode: string, cardName?: string) => {
-            console.log(`<red>This deck is not valid!\nError Code: <yellow>${errorCode}</yellow red>`);
+            console.log('<red>This deck is not valid!\nError Code: <yellow>%s</yellow red>', errorCode);
             if (cardName) {
-                console.log(`<red>Specific Card that caused this error: <yellow>${cardName}</yellow red>`);
+                console.log('<red>Specific Card that caused this error: <yellow>%s</yellow red>', cardName);
             }
 
             game.pause();
@@ -474,11 +474,11 @@ export const deckcodeFunctions = {
                     delete vanillaCard.race;
                     delete vanillaCard.referencesTags;
 
-                    console.log(`${index + 1}: `);
+                    console.log('%s:', index + 1);
                     console.log(vanillaCard);
                 }
 
-                console.log(`<yellow>Multiple cards with the name '</yellow>${cardName}<yellow>' detected! Please choose one:</yellow>`);
+                console.log('<yellow>Multiple cards with the name \'</yellow>%s<yellow>\' detected! Please choose one:</yellow>', cardName);
                 const chosen = game.input();
 
                 match = matches[game.lodash.parseInt(chosen) - 1];

@@ -1243,8 +1243,8 @@ export class Player {
         this.getOpponent().shuffleDeck();
 
         console.log('\n--- JOUST ---');
-        console.log(`Yours: ${game.interact.card.getReadable(friendlyCard)}`);
-        console.log(`Opponent: ${game.interact.card.getReadable(enemyCard)}`);
+        console.log('Yours: %s', game.interact.card.getReadable(friendlyCard));
+        console.log('Opponent: %s', game.interact.card.getReadable(enemyCard));
         console.log('-------------');
 
         console.log(win ? 'You win!' : 'You lose!');

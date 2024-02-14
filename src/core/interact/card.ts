@@ -86,7 +86,7 @@ export const cardInteract = {
 
         game.interact.info.showGame(game.player);
 
-        console.log(`\n${prompt}`);
+        console.log('\n%s', prompt);
 
         if (cards.length <= 0) {
             return undefined;
@@ -163,7 +163,7 @@ export const cardInteract = {
             return game.player.ai.discover(values);
         }
 
-        console.log(`\n${prompt}:`);
+        console.log('\n%s:', prompt);
 
         for (const [index, card] of values.entries()) {
             console.log(game.interact.card.getReadable(card, index + 1));

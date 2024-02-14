@@ -47,7 +47,7 @@ function change(startId: number, callback: (id: number) => number, log: boolean)
     searchCards((path, content, id) => {
         if (id < startId) {
             if (log) {
-                console.log(`<bright:yellow>Skipping ${path}</bright:yellow>`);
+                console.log('<bright:yellow>Skipping %s</bright:yellow>', path);
             }
 
             return;
@@ -59,7 +59,7 @@ function change(startId: number, callback: (id: number) => number, log: boolean)
         game.functions.util.fs('write', path, content.replace(idRegex, `id: ${newId}`));
 
         if (log) {
-            console.log(`<bright:green>Updated ${path}</bright:green>`);
+            console.log('<bright:green>Updated %s</bright:green>', path);
         }
 
         updated++;

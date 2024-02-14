@@ -188,11 +188,11 @@ export function main(debug = false, overrideType?: lib.CcType): boolean {
 
                 const { id, ...card } = vanillaCard;
 
-                console.log(`\n${index + 1}:`);
+                console.log('\n%s:', index + 1);
                 console.log(card);
             }
 
-            const picked = game.lodash.parseInt(game.input(`Pick one (1-${filteredCards.length}): `));
+            const picked = game.lodash.parseInt(game.input(game.functions.util.translate('Pick one (1-%s): ', filteredCards.length)));
             if (!picked || !filteredCards[picked - 1]) {
                 console.log('Invalid number.\n');
                 continue;
@@ -203,7 +203,7 @@ export function main(debug = false, overrideType?: lib.CcType): boolean {
             card = filteredCards[0];
         }
 
-        console.log(`Found '${card.name}'\n`);
+        console.log('Found \'%s\'\n', card.name);
 
         create(card, debug, overrideType);
     }

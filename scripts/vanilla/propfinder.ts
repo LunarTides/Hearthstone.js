@@ -88,7 +88,7 @@ function main(): void {
         let [key, value] = object;
         value = value.sort((a, b) => b[1] - a[1]);
 
-        console.log(`${key}:`);
+        console.log('%s:', key);
         console.log(value);
     }
 }

@@ -46,7 +46,7 @@ export const interact = {
         const allowTestDeck: boolean = game.config.general.debug || game.config.info.branch !== 'stable';
 
         const debugStatement = allowTestDeck ? ' <gray>(Leave this empty for a test deck)</gray>' : '';
-        const deckcode = game.input(`Player ${plr.id + 1}, please type in your deckcode${debugStatement}: `);
+        const deckcode = game.input(game.functions.util.translate('Player %s, please type in your deckcode%s: ', plr.id + 1, debugStatement));
 
         let result = true;
 
@@ -195,7 +195,7 @@ export const interact = {
         }
 
         // Invalid input
-        console.log(`<red>Unexpected input: '<yellow>${rawChoice}</yellow>'. Valid inputs: </red>[<bright:green>Y</bright:green> | <red>N</red>]`);
+        console.log('<red>Unexpected input: \'<yellow>%s</yellow>\'. Valid inputs: </red>[<bright:green>Y</bright:green> | <red>N</red>]', rawChoice);
         game.pause();
 
         return this.yesNoQuestion(prompt, player);
@@ -350,7 +350,7 @@ export const interact = {
                 const opponentTargetName = boardOpponentTarget.colorFromRarity();
                 const friendlyTargetName = boardFriendlyTarget.colorFromRarity();
 
-                const alignment = game.input(`Do you want to select your opponent's (${opponentTargetName}) or your own (${friendlyTargetName})? (y: opponent, n: friendly | type 'back' to go back) `);
+                const alignment = game.input(game.functions.util.translate('Do you want to select your opponent\'s (%s) or your own (%s)? (y: opponent, n: friendly | type \'back\' to go back) ', opponentTargetName, friendlyTargetName));
 
                 if (alignment.startsWith('b') || this.shouldExit(alignment)) {
                     // Go back.
@@ -428,7 +428,7 @@ export const interact = {
             const match = /DIY (\d+)/.exec(card.name);
             const fileName = match ? match[1] : 'unknown';
 
-            console.log(`Hm. This card doesn't seem to do what it's supposed to do... Maybe you should try to fix it? The card is in: './cards/Examples/DIY/${fileName}.ts'.`);
+            console.log('Hm. This card doesn\'t seem to do what it\'s supposed to do... Maybe you should try to fix it? The card is in: \'./cards/Examples/DIY/%s.ts\'.', fileName);
         }
 
         game.pause();

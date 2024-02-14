@@ -120,7 +120,7 @@ function askClass(): CardClassNoNeutral {
         while (runes.length < 3) {
             watermark();
 
-            const rune = game.input(`What runes do you want to add (${3 - runes.length} more)\nBlood, Frost, Unholy\n`);
+            const rune = game.input(game.functions.util.translate('What runes do you want to add (%s more)\nBlood, Frost, Unholy\n', 3 - runes.length));
             if (!rune || !['B', 'F', 'U'].includes(rune[0].toUpperCase())) {
                 continue;
             }
@@ -245,7 +245,7 @@ function searchCards(_cards: Card[], searchQuery: string): Card[] | false {
 
         // Javascript
         if (!returnValue && returnValue !== 0) {
-            console.log(`\n<red>Key '${key}' not valid!</red>`);
+            console.log('\n<red>Key \'%s\' not valid!</red>', key);
             return -1;
         }
 
@@ -280,7 +280,7 @@ function searchCards(_cards: Card[], searchQuery: string): Card[] | false {
                 return returnValue === parsedValue;
             }
 
-            console.log(`\n<red>Value '${value}' not valid!</red>`);
+            console.log('\n<red>Value \'%s\' not valid!</red>', value);
             return -1;
         }
 
@@ -347,7 +347,7 @@ function showCards(): void {// eslint-disable-line complexity
     }
 
     if (filteredCards.length <= 0) {
-        console.log(`<yellow>No cards found for the selected classes '${chosenClass} and Neutral'.</yellow>`);
+        console.log('<yellow>No cards found for the selected classes \'%s and Neutral\'.</yellow>', chosenClass);
     }
 
     const { cpp: cardsPerPage } = settings.view;
@@ -356,14 +356,14 @@ function showCards(): void {// eslint-disable-line complexity
     // Search
 
     if (settings.search.query.length > 0) {
-        console.log(`Searching for '${settings.search.query.join(' ')}'.`);
+        console.log('Searching for \'%s\'.', settings.search.query.join(' '));
     }
 
     // Filter to show only cards in the viewed class
     let classCards = Object.values(filteredCards).filter(c => c.classes.includes(settings.view.class ?? chosenClass));
 
     if (classCards.length <= 0) {
-        console.log(`<yellow>No cards found for the viewed class '${settings.view.class}'.</yellow>`);
+        console.log('<yellow>No cards found for the viewed class \'%s\'.</yellow>', settings.view.class);
         return;
     }
 
@@ -406,7 +406,7 @@ function showCards(): void {// eslint-disable-line complexity
 
     const oldSortType = settings.sort.type;
     const oldSortOrder = settings.sort.order;
-    console.log(`Sorting by ${settings.sort.type.toUpperCase()}, ${settings.sort.order}ending.`);
+    console.log('Sorting by %s, %sending.', settings.sort.type.toUpperCase(), settings.sort.order);
 
     // Sort
     classCards = sortCards(classCards);
@@ -423,16 +423,16 @@ function showCards(): void {// eslint-disable-line complexity
     }
 
     if (sortTypeInvalid || sortOrderInvalid) {
-        console.log(`\nSorting by ${settings.sort.type.toUpperCase()}, ${settings.sort.order}ending.`);
+        console.log('\nSorting by %s, %sending.', settings.sort.type.toUpperCase(), settings.sort.order);
     }
 
     // Page logic
     classCards = classCards.slice(cardsPerPage * (page - 1), cardsPerPage * page);
 
     // Loop
-    console.log(`\nPage ${page} / ${settings.view.maxPage}\n`);
+    console.log('\nPage %s / %s\n', page, settings.view.maxPage);
 
-    console.log(`<underline>${settings.view.class}</underline>`);
+    console.log('<underline>%s</underline>', settings.view.class);
 
     const bricks: string[] = [];
     for (const card of classCards) {
@@ -485,13 +485,13 @@ function showRules(): void {
 
     console.log('#');
 
-    console.log('# Validation: %s', (config.decks.validate ? '<bright:green>ON</bright:green>' : '<red>OFF</red>'));
+    console.log('# Validation: %s', game.functions.util.translate(config.decks.validate ? '<bright:green>ON</bright:green>' : '<red>OFF</red>'));
 
-    console.log(`#\n# Rule 1. Minimum Deck Length: <yellow>${config.decks.minLength}</yellow>`);
-    console.log(`# Rule 2. Maximum Deck Length: %s <yellow>${config.decks.maxLength}</yellow>`);
+    console.log('#\n# Rule 1. Minimum Deck Length: <yellow>%s</yellow>', config.decks.minLength);
+    console.log('# Rule 2. Maximum Deck Length: %s <yellow>%s</yellow>', config.decks.maxLength);
 
-    console.log(`#\n# Rule 3. Maximum amount of cards for each card (eg. You can only have: <yellow>x</yellow> Seances in a deck): <yellow>${config.decks.maxOfOneCard}</yellow>`);
-    console.log(`# Rule 4. Maximum amount of cards for each legendary card (Same as Rule 3 but for legendaries): <yellow>${config.decks.maxOfOneLegendary}</yellow>`);
+    console.log('#\n# Rule 3. Maximum amount of cards for each card (eg. You can only have: <yellow>x</yellow> Seances in a deck): <yellow>%s</yellow>', config.decks.maxOfOneCard);
+    console.log('# Rule 4. Maximum amount of cards for each legendary card (Same as Rule 3 but for legendaries): <yellow>%s</yellow>', config.decks.maxOfOneLegendary);
 
     console.log('#');
 
@@ -556,7 +556,7 @@ function remove(card: Card): boolean {
 function showDeck(): void {
     watermark();
 
-    console.log(`Deck Size: <yellow>${deck.length}</yellow>\n`);
+    console.log('Deck Size: <yellow>%s</yellow>\n', deck.length);
 
     // Why are we doing this? Can't this be done better?
     const cards: Record<number, [Card, number]> = {};
@@ -613,7 +613,7 @@ function showDeck(): void {
             const name = card.colorFromRarity(amount[1]);
 
             const amountString = regex.exec(nameAndAmount) ?? 'undefined';
-            console.log(`${amountString as string}${name}-${id}`);
+            console.log('%s%s-%s', amountString, name, id);
             continue;
         }
 
@@ -624,7 +624,7 @@ function showDeck(): void {
 
         const name = card.colorFromRarity(nameAndAmount);
 
-        console.log(`${name}-${id}`);
+        console.log('%s-%s', name, id);
     }
 
     console.log('\nCurrent deckcode output:');
@@ -868,7 +868,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
     if (!foundCommand) {
         // Infer add
         const tryCommand = `${settings.commands.default} ${cmd}`;
-        console.log(`<yellow>Unable to find command. Trying '${tryCommand}'</yellow>`);
+        console.log('<yellow>Unable to find command. Trying \'%s\'</yellow>', tryCommand);
         return handleCmds(tryCommand);
     }
 
@@ -1110,7 +1110,7 @@ const commands: CommandList = {
             reverse = 'add';
         } else {
             // This shouldn't ever happen, but oh well
-            console.log(`<red>Command '${command}' cannot be undoed.</red>`);
+            console.log('<red>Command \'%s\' cannot be undoed.</red>', command);
             return false;
         }
 
@@ -1179,7 +1179,7 @@ const commands: CommandList = {
             case 'format': {
                 if (args.length === 0) {
                     settings.deckcode.format = defaultSettings.deckcode.format;
-                    console.log(`Reset deckcode format to: <yellow>${defaultSettings.deckcode.format}</yellow>`);
+                    console.log('Reset deckcode format to: <yellow>%s</yellow>', defaultSettings.deckcode.format);
                     break;
                 }
 
@@ -1190,7 +1190,7 @@ const commands: CommandList = {
                 }
 
                 settings.deckcode.format = args[0] as 'vanilla' | 'js';
-                console.log(`Set deckcode format to: <yellow>${args[0]}</yellow>`);
+                console.log('Set deckcode format to: <yellow>%s</yellow>', args[0]);
                 break;
             }
 
@@ -1198,7 +1198,7 @@ const commands: CommandList = {
             case 'cardsPerPage': {
                 if (args.length === 0) {
                     settings.view.cpp = defaultSettings.view.cpp;
-                    console.log(`Reset cards per page to: <yellow>${defaultSettings.view.cpp}</yellow>`);
+                    console.log('Reset cards per page to: <yellow>%s</yellow>', defaultSettings.view.cpp);
                     break;
                 }
 
@@ -1210,7 +1210,7 @@ const commands: CommandList = {
             case 'defaultCommand': {
                 if (args.length === 0) {
                     settings.commands.default = defaultSettings.commands.default;
-                    console.log(`Set default command to: <yellow>${defaultSettings.commands.default}</yellow>`);
+                    console.log('Set default command to: <yellow>%s</yellow>', defaultSettings.commands.default);
                     break;
                 }
 
@@ -1221,7 +1221,7 @@ const commands: CommandList = {
                 const command = args[0];
 
                 settings.commands.default = command;
-                console.log(`Set default command to: <yellow>${command}</yellow>`);
+                console.log('Set default command to: <yellow>%s</yellow>', command);
                 break;
             }
 

@@ -282,7 +282,7 @@ export const cardFunctions = {
             }
 
             // Validation error
-            console.log(`<red>Card <bold>'${blueprint.name}'</bold> (${blueprint.id}) is invalid since ${errorMessage}</red>`);
+            console.log('<red>Card <bold>\'%s\'</bold> (%s) is invalid since %s</red>', blueprint.name, blueprint.id, errorMessage);
             valid = false;
         }
 

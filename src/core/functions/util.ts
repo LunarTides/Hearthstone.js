@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import childProcess from 'node:child_process';
 import process from 'node:process';
 import { createHash } from 'node:crypto';
+import { format } from 'node:util';
 import date from 'date-and-time';
 import { type Player } from '@Game/internal.js';
 import { type GameConfig, type Target } from '@Game/types.js';
@@ -220,7 +221,7 @@ ${mainContent}
             return true;
         }
 
-        console.log(`\n<red>The game crashed!\nCrash report created in 'logs/${filename}'\nPlease create a bug report at:\n${game.config.info.githubUrl}/issues</red>`);
+        console.log('\n<red>The game crashed!\nCrash report created in \'logs/%s\'\nPlease create a bug report at:\n%s/issues</red>', filename, game.config.info.githubUrl);
         game.pause();
 
         return true;
@@ -322,7 +323,7 @@ ${mainContent}
             const attempts: string[] = [];
 
             const isCommandAvailable = (testCommand: string, argsSpecifier: string) => {
-                console.log(`Trying '${testCommand} ${argsSpecifier}${command}'...`);
+                console.log('Trying \'%s %s%s\'...', testCommand, argsSpecifier, command);
                 attempts.push(testCommand);
 
                 try {
@@ -353,7 +354,7 @@ ${mainContent}
                 console.log('Operating system: Linux');
 
                 for (const attempt of attempts) {
-                    console.log(`Tried '${attempt}'... failed!`);
+                    console.log('Tried \'%s\'... failed!', attempt);
                 }
 
                 console.log('Please install any of these using your package manager.');
@@ -425,8 +426,11 @@ ${mainContent}
      * @param text The text to be translated
      * @returns The translated text or the original text if no translation is found
      */
-    translate(text: string): string {
-        return this.getLanguageMap()[text] || text;
+    translate(text: string, ...args: any[]): string {
+        text = this.getLanguageMap()[text] || text;
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        return format(text, ...args);
     },
 
     /**
