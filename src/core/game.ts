@@ -5,6 +5,7 @@
 import _ from 'lodash';
 import { Player, Card, Ai, functions, interact, eventManager } from '@Game/internal.js';
 import { type GameConfig, type Blueprint, type CardAbility, type CardKeyword, type EventKey, type GameAttackReturn, type GameConstants, type GamePlayCardReturn, type Target, type UnknownEventValue } from '@Game/types.js';
+import date from 'date-and-time';
 import { cardIds } from '../../cards/ids.js';
 
 const cardCollections = {
@@ -576,6 +577,14 @@ export function createGame() {
     game.functions.card.importAll();
     game.setup(player1, player2);
     game.doConfigAi();
+
+    // Check if the date is the 14th of February
+    const currentDate = new Date();
+    const isFebruary14th = date.format(currentDate, 'MM-DD') === '02-14';
+
+    if (isFebruary14th && game.config.general.locale === 'en_US') {
+        game.config.general.locale = 'anniversary';
+    }
 
     return { game, player1, player2 };
 }
