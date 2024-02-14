@@ -46,7 +46,7 @@ export const interact = {
         const allowTestDeck: boolean = game.config.general.debug || game.config.info.branch !== 'stable';
 
         const debugStatement = allowTestDeck ? ' <gray>(Leave this empty for a test deck)</gray>' : '';
-        const deckcode = game.input(game.functions.util.translate('Player %s, please type in your deckcode%s: ', plr.id + 1, debugStatement));
+        const deckcode = logger.inputTranslate('Player %s, please type in your deckcode%s: ', plr.id + 1, debugStatement);
 
         let result = true;
 
@@ -350,7 +350,7 @@ export const interact = {
                 const opponentTargetName = boardOpponentTarget.colorFromRarity();
                 const friendlyTargetName = boardFriendlyTarget.colorFromRarity();
 
-                const alignment = game.input(game.functions.util.translate('Do you want to select your opponent\'s (%s) or your own (%s)? (y: opponent, n: friendly | type \'back\' to go back) ', opponentTargetName, friendlyTargetName));
+                const alignment = logger.inputTranslate('Do you want to select your opponent\'s (%s) or your own (%s)? (y: opponent, n: friendly | type \'back\' to go back) ', opponentTargetName, friendlyTargetName);
 
                 if (alignment.startsWith('b') || this.shouldExit(alignment)) {
                     // Go back.

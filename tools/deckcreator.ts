@@ -120,7 +120,7 @@ function askClass(): CardClassNoNeutral {
         while (runes.length < 3) {
             watermark();
 
-            const rune = game.input(game.functions.util.translate('What runes do you want to add (%s more)\nBlood, Frost, Unholy\n', 3 - runes.length));
+            const rune = logger.inputTranslate('What runes do you want to add (%s more)\nBlood, Frost, Unholy\n', 3 - runes.length);
             if (!rune || !['B', 'F', 'U'].includes(rune[0].toUpperCase())) {
                 continue;
             }
@@ -485,7 +485,7 @@ function showRules(): void {
 
     console.log('#');
 
-    console.log('# Validation: %s', game.functions.util.translate(config.decks.validate ? '<bright:green>ON</bright:green>' : '<red>OFF</red>'));
+    console.log('# Validation: %s', logger.translate(config.decks.validate ? '<bright:green>ON</bright:green>' : '<red>OFF</red>'));
 
     console.log('#\n# Rule 1. Minimum Deck Length: <yellow>%s</yellow>', config.decks.minLength);
     console.log('# Rule 2. Maximum Deck Length: %s <yellow>%s</yellow>', config.decks.maxLength);

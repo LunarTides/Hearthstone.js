@@ -192,7 +192,7 @@ export function main(debug = false, overrideType?: lib.CcType): boolean {
                 console.log(card);
             }
 
-            const picked = game.lodash.parseInt(game.input(game.functions.util.translate('Pick one (1-%s): ', filteredCards.length)));
+            const picked = game.lodash.parseInt(logger.inputTranslate('Pick one (1-%s): ', filteredCards.length));
             if (!picked || !filteredCards[picked - 1]) {
                 console.log('Invalid number.\n');
                 continue;

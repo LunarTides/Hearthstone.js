@@ -323,7 +323,9 @@ ${mainContent}
             const attempts: string[] = [];
 
             const isCommandAvailable = (testCommand: string, argsSpecifier: string) => {
-                console.log('Trying \'%s %s%s\'...', testCommand, argsSpecifier, command);
+                const toLog = logger.translate('Trying \'%s %s|%s\'...', testCommand, argsSpecifier, command).replace('|', '');
+                console.log(toLog);
+
                 attempts.push(testCommand);
 
                 try {

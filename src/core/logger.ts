@@ -5,7 +5,10 @@ export class Logger {
     warn = console.warn;
     error = console.error;
 
-    debug(...data: any) {
+    input = game.input;
+    pause = game.pause;
+
+    debug(...data: any): void {
         /*
          * Example:
          * logger.debug("Starting...");
@@ -34,5 +37,34 @@ export class Logger {
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         this.debugLog.push(...data);
+    }
+
+    translate(text: string, ...args: any[]): string {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        return game.functions.util.translate(text, ...args);
+    }
+
+    logTranslate(text: string, ...args: any[]): void {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        this.log(this.translate(text, ...args));
+    }
+
+    inputTranslate(text: string, ...args: any[]): string {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        text = this.translate(text, ...args);
+
+        return game.input(text);
+    }
+
+    inputTranslateWithOptions(text: string, overrideNoInput = false, useInputQueue = true, ...args: any[]): string {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        text = this.translate(text, ...args);
+
+        return game.input(text, overrideNoInput, useInputQueue);
+    }
+
+    pauseTranslate(text: string, ...args: any[]): void {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        game.pause(this.translate(text, ...args));
     }
 }
