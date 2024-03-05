@@ -1246,8 +1246,6 @@ const commands: CommandList = {
         try {
             // eslint-disable-next-line no-eval
             eval(code);
-
-            game.event.broadcast('Eval', code, game.player);
         } catch (error) {
             if (!(error instanceof Error)) {
                 throw new TypeError('`error` is not an instance of Error');
@@ -1263,6 +1261,7 @@ const commands: CommandList = {
             game.pause();
         }
 
+        game.event.broadcast('Eval', code, game.player);
         return true;
     },
 };

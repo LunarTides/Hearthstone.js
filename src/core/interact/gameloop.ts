@@ -42,7 +42,6 @@ export const gameloopInteract = { /**
     input(q = '', overrideNoInput = false, useInputQueue = true): string {
         const wrapper = (a: string) => {
             game.event.broadcast('Input', a, game.player);
-
             return a;
         };
 
@@ -336,10 +335,9 @@ export const gameloopInteract = { /**
             }
 
             const input = rawInput instanceof Card ? (game.player.hand.indexOf(rawInput) + 1).toString() : rawInput;
-
-            game.event.broadcast('Input', input, game.player);
             const turn = this.doTurnLogic(input);
 
+            game.event.broadcast('Input', input, game.player);
             return turn;
         }
 

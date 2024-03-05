@@ -469,7 +469,6 @@ export class Player {
         this.overload += overload;
 
         game.event.broadcast('GainOverload', overload, this);
-
         return true;
     }
 
@@ -552,7 +551,6 @@ export class Player {
         this.attack += amount;
 
         game.event.broadcast('GainHeroAttack', amount, this);
-
         return true;
     }
 
@@ -650,9 +648,9 @@ export class Player {
     shuffleIntoDeck(card: Card): boolean {
         // Push the card to the top of the deck, then shuffle it
         this.deck.push(card);
-        game.event.broadcast('AddCardToDeck', card, this);
-
         this.shuffleDeck();
+
+        game.event.broadcast('AddCardToDeck', card, this);
         return true;
     }
 
@@ -668,7 +666,6 @@ export class Player {
         this.deck.unshift(card);
 
         game.event.broadcast('AddCardToDeck', card, this);
-
         return true;
     }
 
@@ -749,13 +746,13 @@ export class Player {
         }
 
         game.functions.util.remove(this.deck, card);
-        game.event.broadcast('DrawCard', card, this);
 
         if (card.type === 'Spell' && card.hasKeyword('Cast On Draw') && card.activate('cast')) {
             return undefined;
         }
 
         game.functions.event.withSuppressed('AddCardToHand', () => this.addToHand(card));
+        game.event.broadcast('DrawCard', card, this);
 
         return card;
     }
@@ -1226,16 +1223,16 @@ export class Player {
             return true;
         }
 
-        // Reveal them to both players
-        game.event.broadcast('RevealCard', [friendlyCard, 'Joust'], this);
-        game.event.broadcast('RevealCard', [enemyCard, 'Joust'], this);
-
         // Check which card has the higher cost
         const win = winCondition(friendlyCard, enemyCard);
 
         // Shuffle the decks of both players
         this.shuffleDeck();
         this.getOpponent().shuffleDeck();
+
+        // Reveal them to both players
+        game.event.broadcast('RevealCard', [friendlyCard, 'Joust'], this);
+        game.event.broadcast('RevealCard', [enemyCard, 'Joust'], this);
 
         console.log('\n--- JOUST ---');
         console.log('Yours: %s', game.interact.card.getReadable(friendlyCard));

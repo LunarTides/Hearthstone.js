@@ -309,9 +309,7 @@ export class Card {
             this.placeholder = placeholder[0] as Record<string, any>;
         }
 
-        game.event.broadcast('CreateCard', this, this.plr);
         this.activate('create');
-
         this.replacePlaceholders();
 
         /*
@@ -327,6 +325,8 @@ export class Card {
             // HACK: Never usage
             this.backups.init[entry[0] as never] = entry[1] as never;
         }
+
+        game.event.broadcast('CreateCard', this, this.plr);
     }
 
     /**

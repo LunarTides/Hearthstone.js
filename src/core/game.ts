@@ -334,7 +334,6 @@ export class Game {
     endTurn(): boolean {
         // Everything after this comment happens when the player's turn ends
         const { player, opponent } = this;
-        this.event.broadcast('EndTurn', this.turn, player);
 
         // Ready the minions for the next turn.
         for (const card of player.board) {
@@ -342,14 +341,16 @@ export class Game {
             card.resetAttackTimes();
         }
 
+        // Remove echo cards
+        player.hand = player.hand.filter(c => !c.hasKeyword('Echo'));
+        player.canAttack = true;
+
         // Trigger unspent mana
         if (player.mana > 0) {
             this.event.broadcast('UnspentMana', player.mana, player);
         }
 
-        // Remove echo cards
-        player.hand = player.hand.filter(c => !c.hasKeyword('Echo'));
-        player.canAttack = true;
+        this.event.broadcast('EndTurn', this.turn, player);
 
         // Everything after this comment happens when the opponent's turn starts
         this.turn++;
@@ -423,11 +424,10 @@ export class Game {
 
         opponent.hasUsedHeroPowerThisTurn = false;
 
-        this.event.broadcast('StartTurn', this.turn, opponent);
-
         this.player = opponent;
         this.opponent = player;
 
+        this.event.broadcast('StartTurn', this.turn, opponent);
         return true;
     }
 
@@ -476,13 +476,13 @@ export class Game {
                     continue;
                 }
 
-                this.event.broadcast('KillCard', card, this.player);
-
                 card.turnKilled = this.turn;
                 amount++;
 
                 player.corpses++;
                 player.graveyard.push(card);
+
+                this.event.broadcast('KillCard', card, this.player);
 
                 if (!card.hasKeyword('Reborn')) {
                     continue;
@@ -717,11 +717,11 @@ const attack = {
 
         // Get the attacker's attack damage, and attack the target with it
         attack.attack(attacker.attack, target);
-        game.event.broadcast('Attack', [attacker, target], attacker);
 
         // The attacker can't attack anymore this turn.
         attack._removeDurabilityFromWeapon(attacker, target);
 
+        game.event.broadcast('Attack', [attacker, target], attacker);
         return true;
     },
 
@@ -749,12 +749,12 @@ const attack = {
         // The attacker should damage the target
         game.attack(attacker.attack, target);
         game.attack(target.attack!, attacker);
-        game.event.broadcast('Attack', [attacker, target], attacker);
 
         // Remove frenzy
         attack._doFrenzy(target);
         attack._removeDurabilityFromWeapon(attacker, target);
 
+        game.event.broadcast('Attack', [attacker, target], attacker);
         return true;
     },
 
@@ -891,8 +891,8 @@ const attack = {
 
         // Remember this attack
         attacker.decAttack();
-        game.event.broadcast('Attack', [attacker, target], attacker.plr);
 
+        game.event.broadcast('Attack', [attacker, target], attacker.plr);
         return true;
     },
 
@@ -920,7 +920,6 @@ const attack = {
         attack._attackerIsCardAndTargetIsCardDoTarget(attacker, target);
 
         game.event.broadcast('Attack', [attacker, target], attacker.plr);
-
         return true;
     },
     _attackerIsCardAndTargetIsCardDoAttacker(attacker: Card, target: Card): GameAttackReturn {
@@ -1162,10 +1161,11 @@ const playCard = {
         // Combo
         playCard._combo(card, player);
 
+        // Corrupt
+        playCard._corrupt(card, player);
+
         // Broadcast `PlayCard` event
         game.event.broadcast('PlayCard', card, player);
-
-        playCard._corrupt(card, player);
         return result;
     },
 
@@ -1278,7 +1278,6 @@ const playCard = {
         player.shuffleIntoDeck(card);
 
         game.event.broadcast('TradeCard', card, player);
-
         return true;
     },
 
@@ -1313,7 +1312,6 @@ const playCard = {
         player.addToHand(forged);
 
         game.event.broadcast('ForgeCard', card, player);
-
         return true;
     },
 
@@ -1501,8 +1499,6 @@ const cards = {
             return 'space';
         }
 
-        game.event.broadcast('SummonCard', card, player);
-
         player.spellDamage = 0;
 
         if (card.hasKeyword('Charge') || card.hasKeyword('Titan')) {
@@ -1579,9 +1575,7 @@ const cards = {
             }
         }
 
-        // Do this to instantly trigger tick abilities. Most useful for unit tests.
-        game.event.tick('SummonCard', card, player);
-
+        game.event.broadcast('SummonCard', card, player);
         return true;
     },
 };

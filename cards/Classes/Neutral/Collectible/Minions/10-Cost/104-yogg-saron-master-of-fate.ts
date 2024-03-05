@@ -31,8 +31,6 @@ export const blueprint: Blueprint = {
             throw new Error('No choice found');
         }
 
-        game.event.broadcast('CardEvent', [self, choice], plr);
-
         const minionPool = game.functions.card.getAll().filter(card => card.type === 'Minion');
         const spellPool = game.functions.card.getAll().filter(card => card.type === 'Spell');
 
@@ -143,6 +141,8 @@ export const blueprint: Blueprint = {
 
             // No default
         }
+
+        game.event.broadcast('CardEvent', [self, choice], plr);
     },
 
     placeholders(plr, self) {

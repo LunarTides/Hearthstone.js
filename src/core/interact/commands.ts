@@ -166,7 +166,6 @@ export const commands: CommandList = {
         }
 
         game.event.broadcast('Titan', [card, ability], game.player);
-
         return true;
     },
 
@@ -634,10 +633,9 @@ export const debugCommands: CommandList = {
             game.functions.color.parseTags = true;
 
             game.pause();
-        } finally {
-            game.event.broadcast('Eval', code, game.player);
         }
 
+        game.event.broadcast('Eval', code, game.player);
         return true;
     },
 
