@@ -2,7 +2,7 @@
  * Player
  * @module Player
  */
-import { Card, type Ai } from '@Game/internal.js';
+import { type Card, type Ai } from '@Game/internal.js';
 import { type CardClass, type CardType, type EventKey, type QuestCallback, type QuestType, type Target } from '@Game/types.js';
 
 export class Player {
@@ -673,45 +673,6 @@ export class Player {
     }
 
     /**
-     * Draws the card from the top of this player's deck.
-     * Broadcasts the `DrawCard` event
-     *
-     * @returns The card drawn | The amount of fatigue the player was dealt
-     */
-    drawCard(): Card | number {
-        const deckLength = this.deck.length;
-
-        /**
-         * The card to draw
-         */
-        const card = this.deck.pop();
-
-        if (deckLength <= 0 || !card) {
-            this.fatigue++;
-
-            this.remHealth(this.fatigue);
-            return this.fatigue;
-        }
-
-        game.event.broadcast('DrawCard', card, this);
-
-        // Cast on draw
-        if (card.type === 'Spell' && card.hasKeyword('Cast On Draw') && card.activate('cast')) {
-            return this.drawCard();
-        }
-
-        // Summon on draw
-        if (card.hasKeyword('Summon On Draw') && card.canBeOnBoard()) {
-            this.summon(card);
-            return this.drawCard();
-        }
-
-        game.functions.event.withSuppressed('AddCardToHand', () => this.addToHand(card));
-
-        return card;
-    }
-
-    /**
      * Draws `amount` cards from this player's deck.
      * Broadcasts the `DrawCard` event for each card drawn
      *
@@ -721,13 +682,39 @@ export class Player {
     drawCards(amount: number): Card[] {
         const cards: Card[] = [];
 
-        for (let i = 0; i < amount; i++) {
-            const card = this.drawCard();
+        const unsuppress = game.functions.event.suppress('AddCardToHand');
 
-            if (card instanceof Card) {
-                cards.push(card);
+        for (let i = 0; i < amount; i++) {
+            const card = this.deck.pop();
+
+            // Fatigue
+            if (this.deck.length <= 0 || !card) {
+                this.fatigue++;
+
+                this.remHealth(this.fatigue);
+                continue;
             }
+
+            // Cast on draw
+            if (card.type === 'Spell' && card.hasKeyword('Cast On Draw') && card.activate('cast')) {
+                amount += 1;
+                continue;
+            }
+
+            // Summon on draw
+            if (card.hasKeyword('Summon On Draw') && card.canBeOnBoard()) {
+                this.summon(card);
+
+                amount += 1;
+                continue;
+            }
+
+            this.addToHand(card);
+            game.event.broadcast('DrawCard', card, this);
+            cards.push(card);
         }
+
+        unsuppress();
 
         return cards;
     }
@@ -1001,7 +988,7 @@ export class Player {
 
             game.functions.util.remove(mulligan, card);
 
-            game.functions.event.withSuppressed('DrawCard', () => this.drawCard());
+            game.functions.event.withSuppressed('DrawCard', () => this.drawCards(1));
             game.functions.event.withSuppressed('AddCardToDeck', () => this.shuffleIntoDeck(card));
             game.functions.event.withSuppressed('DiscardCard', () => card.discard());
 

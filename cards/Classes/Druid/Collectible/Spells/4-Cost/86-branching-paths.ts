@@ -19,7 +19,7 @@ export const blueprint: Blueprint = {
         // Choose Twice - Draw a card; Give your minions +1 Attack; Gain 6 Armor.
         game.interact.chooseOne(2, ['Draw a card', () => {
             // Draw a card
-            plr.drawCard();
+            plr.drawCards(1);
         }], ['Give your minions +1 Attack', () => {
             // Give your minions +1 Attack
             for (const card of plr.board) {

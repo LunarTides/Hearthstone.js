@@ -419,7 +419,7 @@ export class Game {
         }
 
         // Draw card
-        opponent.drawCard();
+        opponent.drawCards(1);
 
         opponent.hasUsedHeroPowerThisTurn = false;
 
@@ -1274,7 +1274,7 @@ const playCard = {
         player.mana -= 1;
 
         game.functions.event.withSuppressed('DiscardCard', () => card.discard());
-        player.drawCard();
+        player.drawCards(1);
         player.shuffleIntoDeck(card);
 
         game.event.broadcast('TradeCard', card, player);

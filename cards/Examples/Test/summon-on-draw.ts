@@ -30,7 +30,7 @@ export const blueprint: Blueprint = {
         plr.hand = [];
 
         // Make the player draw this card
-        plr.drawCard();
+        plr.drawCards(1);
 
         const board = plr.board;
 

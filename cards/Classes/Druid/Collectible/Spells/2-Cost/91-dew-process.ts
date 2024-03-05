@@ -18,7 +18,7 @@ export const blueprint: Blueprint = {
     cast(plr, self) {
         // For the rest of the game, players draw an extra card at the start of their turn.
         game.functions.event.addListener('StartTurn', (_unknownValue, eventPlayer) => {
-            eventPlayer.drawCard();
+            eventPlayer.drawCards(1);
             return true;
         }, -1);
     },

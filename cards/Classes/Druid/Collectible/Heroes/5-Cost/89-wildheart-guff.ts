@@ -20,7 +20,7 @@ export const blueprint: Blueprint = {
         // Set your maximum Mana to 20. Gain an empty Mana Crystal. Draw a card.
         plr.maxMana = 20;
         plr.addEmptyMana(1);
-        plr.drawCard();
+        plr.drawCards(1);
     },
 
     test(plr, self) {

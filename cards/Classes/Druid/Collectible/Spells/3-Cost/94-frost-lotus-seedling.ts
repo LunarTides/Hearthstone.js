@@ -44,7 +44,7 @@ export const blueprint: Blueprint = {
         if (blossomed) {
             plr.drawCards(2);
         } else {
-            plr.drawCard();
+            plr.drawCards(1);
         }
 
         plr.addArmor(blossomed ? 10 : 5);

@@ -18,7 +18,7 @@ export const blueprint: Blueprint = {
 
         // Deal 2 damage to the player.
         game.attack(2, plr);
-        plr.drawCard();
+        plr.drawCards(1);
     },
 
     test(plr, self) {

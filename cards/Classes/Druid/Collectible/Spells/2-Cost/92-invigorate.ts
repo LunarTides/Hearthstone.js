@@ -22,7 +22,7 @@ export const blueprint: Blueprint = {
             plr.addEmptyMana(1);
         }], ['Draw a card', () => {
             // Draw a card
-            plr.drawCard();
+            plr.drawCards(1);
         }]);
     },
 

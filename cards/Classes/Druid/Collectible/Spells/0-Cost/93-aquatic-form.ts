@@ -22,7 +22,7 @@ export const blueprint: Blueprint = {
             return;
         }
 
-        plr.drawCard();
+        plr.drawCards(1);
     },
 
     test(plr, self) {
