@@ -23,18 +23,18 @@ export const blueprint: Blueprint = {
 
     test(plr, self) {
         // There should be no minions on the board
-        assert.equal(plr.getBoard().length, 0);
+        assert.equal(plr.board.length, 0);
 
         // There should be 1 minion on the board
         plr.summon(self);
-        assert.equal(plr.getBoard().length, 1);
+        assert.equal(plr.board.length, 1);
 
         // There should be 1 minion on the board since the divine shield saves it
         game.attack(9999, self);
-        assert.equal(plr.getBoard().length, 1);
+        assert.equal(plr.board.length, 1);
 
         // There should be no minions on the board since the divine shield is gone
         game.attack(9999, self);
-        assert.equal(plr.getBoard().length, 0);
+        assert.equal(plr.board.length, 0);
     },
 };

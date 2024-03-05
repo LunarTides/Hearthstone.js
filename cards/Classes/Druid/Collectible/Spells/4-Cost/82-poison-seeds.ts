@@ -17,10 +17,8 @@ export const blueprint: Blueprint = {
 
     cast(plr, self) {
         // Destroy all minions and summon 2/2 Treants to replace them.
-        for (const [id, side] of game.board.entries()) {
-            const player = game.functions.util.getPlayerFromId(id);
-
-            for (const card of side) {
+        for (const player of [game.player1, game.player2]) {
+            for (const card of player.board) {
                 card.kill();
 
                 const treant = game.newCard(game.cardIds.treant83, player);
@@ -42,7 +40,7 @@ export const blueprint: Blueprint = {
         self.activate('cast');
 
         // Check if every card is a Treant
-        const board = plr.getBoard();
+        const board = plr.board;
 
         assert.equal(board.length, amountOfCards);
         assert.ok(board.every(card => card.id === game.cardIds.treant83));

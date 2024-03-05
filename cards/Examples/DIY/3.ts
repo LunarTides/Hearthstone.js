@@ -97,7 +97,7 @@ export const blueprint: Blueprint = {
             && Boolean(target.health)
             && !target.isAlive()
             && correctParameters
-            && game.graveyard.some(p => p.includes(target))
+            && (game.player1.graveyard.includes(target) || game.player2.graveyard.includes(target))
         );
 
         game.interact.verifyDiySolution(solved, self);

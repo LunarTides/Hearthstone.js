@@ -21,7 +21,7 @@ export const blueprint: Blueprint = {
 
         for (let i = 0; i < amount; i++) {
             // Get a random minion from the opponent's board.
-            const board = plr.getOpponent().getBoard();
+            const board = plr.getOpponent().board;
 
             const minion = game.lodash.sample(board);
             if (!minion) {

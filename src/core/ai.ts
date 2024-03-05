@@ -64,7 +64,7 @@ export class Ai {
             }
 
             // If the card is a minion and the player doesn't have the board space to play it, ignore the card
-            if (card.canBeOnBoard() && this.plr.getBoard().length >= game.config.general.maxBoardSpace) {
+            if (card.canBeOnBoard() && this.plr.board.length >= game.config.general.maxBoardSpace) {
                 continue;
             }
 
@@ -126,7 +126,7 @@ export class Ai {
      */
     attack(): Array<Target | -1> {
         // Assign a score to all minions
-        const board: ScoredCard[][] = game.board.map(m => m.map(c => ({ card: c, score: this.analyzePositiveCard(c) })));
+        const board: ScoredCard[][] = [game.player1.board, game.player2.board].map(m => m.map(c => ({ card: c, score: this.analyzePositiveCard(c) })));
 
         const amountOfTrades = this._attackFindTrades().map(t => t.length).reduce((a, b) => a + b);
 
@@ -163,7 +163,7 @@ export class Ai {
         let worstMinion: Card | undefined;
         let worstScore = 100_000;
 
-        for (const minion of this.plr.getBoard().filter(m => m.canAttack())) {
+        for (const minion of this.plr.board.filter(m => m.canAttack())) {
             const score = this.analyzePositiveCard(minion);
 
             if (score >= worstScore) {
@@ -187,7 +187,7 @@ export class Ai {
 
         // Check if there is a minion with taunt
         const taunts = this._findTaunts();
-        const targets = taunts.length > 0 ? taunts : this.plr.getOpponent().getBoard();
+        const targets = taunts.length > 0 ? taunts : this.plr.getOpponent().board;
 
         for (const target of targets.filter(target => target.canBeAttacked())) {
             const score = this.analyzePositiveCard(target);
@@ -256,7 +256,7 @@ export class Ai {
     // eslint-disable-next-line complexity
     selectTarget(prompt: string, card: Card | undefined, forceSide: SelectTargetAlignment, forceClass: SelectTargetClass, flags: SelectTargetFlag[] = []): Target | false {
         if (flags.includes('allowLocations') && forceClass !== 'hero') {
-            const locations = this.plr.getBoard().filter(m => m.type === 'Location' && m.cooldown === 0 && !this.usedLocationsThisTurn.includes(m));
+            const locations = this.plr.board.filter(m => m.type === 'Location' && m.cooldown === 0 && !this.usedLocationsThisTurn.includes(m));
             this.usedLocationsThisTurn.push(locations[0]);
 
             if (locations.length > 0) {
@@ -280,9 +280,9 @@ export class Ai {
             side = forceSide;
         }
 
-        const sideId = (side === 'self') ? this.plr.id : opponent.id;
+        const sidePlayer = (side === 'self') ? this.plr : opponent;
 
-        if (game.board[sideId].length <= 0 && forceClass === 'minion') {
+        if (sidePlayer.board.length <= 0 && forceClass === 'minion') {
             this.history.push({ type: 'selectTarget', data: '0,1' });
 
             return false;
@@ -305,23 +305,13 @@ export class Ai {
         }
 
         // The player has no minions, select their face
-        if (game.board[sideId].length <= 0) {
-            const returnValue: Player | false = false;
+        if (sidePlayer.board.length <= 0) {
+            let returnValue: Player | false = false;
 
             if (forceClass === 'minion') {
                 this.history.push({ type: 'selectTarget', data: -1 });
             } else {
-                let returnValue;
-                if (sideId === 0) {
-                    returnValue = game.player1;
-                } else if (sideId === 1) {
-                    returnValue = game.player2;
-                }
-
-                if (!returnValue) {
-                    throw new Error('Player ' + (sideId + 1) + ' not found');
-                }
-
+                returnValue = sidePlayer;
                 this.history.push({ type: 'selectTarget', data: 'P' + (returnValue.id + 1) });
             }
 
@@ -331,7 +321,7 @@ export class Ai {
         let bestMinion: Card | undefined;
         let bestScore = -100_000;
 
-        for (const target of game.board[sideId]) {
+        for (const target of sidePlayer.board) {
             if (!target.canBeAttacked()) {
                 continue;
             }
@@ -679,7 +669,7 @@ export class Ai {
             return false;
         }
 
-        const validAttackers = this.plr.getBoard().filter(m => m.canAttack());
+        const validAttackers = this.plr.board.filter(m => m.canAttack());
 
         return validAttackers.length > 0;
     }
@@ -708,7 +698,7 @@ export class Ai {
             return false;
         }
 
-        const validLocations = this.plr.getBoard().filter(m => m.type === 'Location' && m.cooldown === 0 && !this.usedLocationsThisTurn.includes(m));
+        const validLocations = this.plr.board.filter(m => m.type === 'Location' && m.cooldown === 0 && !this.usedLocationsThisTurn.includes(m));
 
         return validLocations.length > 0;
     }
@@ -723,7 +713,7 @@ export class Ai {
         const perfectTrades: Card[][] = [];
         const imperfectTrades: Card[][] = [];
 
-        const currentBoard = this.plr.getBoard().filter(m => m.canAttack());
+        const currentBoard = this.plr.board.filter(m => m.canAttack());
 
         for (const card of currentBoard) {
             let trades = [...perfectTrades, ...imperfectTrades];
@@ -739,7 +729,7 @@ export class Ai {
                 continue;
             }
 
-            const opponentBoard = this.plr.getOpponent().getBoard().filter(m => m.canBeAttacked());
+            const opponentBoard = this.plr.getOpponent().board.filter(m => m.canBeAttacked());
 
             for (const target of opponentBoard) {
                 trades = [...perfectTrades, ...imperfectTrades];
@@ -826,7 +816,7 @@ export class Ai {
      * @returns The taunts on the board
      */
     private _findTaunts(): Card[] {
-        return this.plr.getOpponent().getBoard().filter(m => m.hasKeyword('Taunt'));
+        return this.plr.getOpponent().board.filter(m => m.hasKeyword('Taunt'));
     }
 
     /**
@@ -910,7 +900,7 @@ export class Ai {
     private _attackGeneralMinion(): Array<Target | -1> {
         // If the focused minion doesn't exist, select a new minion to focus
         if (this.focus) {
-            if (!this.plr.getOpponent().getBoard().includes(this.focus)) {
+            if (!this.plr.getOpponent().board.includes(this.focus)) {
                 // If the focused card is not on the board
                 this.focus = undefined;
             } else if (!this.focus.canBeAttacked()) {
@@ -933,7 +923,7 @@ export class Ai {
         const opponent = this.plr.getOpponent();
         let highestScore: Array<Target | number | undefined> = [undefined, -9999];
 
-        let board = opponent.getBoard();
+        let board = opponent.board;
 
         // If there is a taunt, select that as the target
         const taunts = this._findTaunts();
@@ -987,7 +977,7 @@ export class Ai {
     private _attackGeneralChooseAttacker(targetIsPlayer = false): Target | -1 {
         let lowestScore: Array<Target | number | undefined> = [undefined, 9999];
 
-        let board = this.plr.getBoard();
+        let board = this.plr.board;
         board = board.filter(c => c.canAttack());
 
         for (const card of board) {

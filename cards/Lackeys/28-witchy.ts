@@ -54,7 +54,7 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        const existsMinionWithCost = (cost: number) => plr.getBoard().some(card => card.cost === cost);
+        const existsMinionWithCost = (cost: number) => plr.board.some(card => card.cost === cost);
 
         // Summon a sheep
         const sheep = game.newCard(game.cardIds.sheep1, plr);

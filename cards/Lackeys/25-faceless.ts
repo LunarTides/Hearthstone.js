@@ -42,7 +42,7 @@ export const blueprint: Blueprint = {
             return;
         }
 
-        const exists2CostMinion = () => plr.getBoard().some(card => card.cost === 2);
+        const exists2CostMinion = () => plr.board.some(card => card.cost === 2);
 
         // There shouldn't exist any 2-Cost minions right now.
         assert(!exists2CostMinion());

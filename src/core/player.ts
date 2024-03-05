@@ -22,11 +22,11 @@ export class Player {
      *
      * 1: if this is the player that starts with the coin
      *
-     * You can use this in `game.board[Player.id]` in order to get this player's side of the board.
+     * You can use this in `player.board` in order to get this player's side of the board.
      *
      * # Examples
      * @example
-     * const board = game.board[player.id];
+     * const board = player.board;
      *
      * for (const card of board) {
      *     console.log(card.name);
@@ -75,6 +75,28 @@ export class Player {
      * }
      */
     hand: Card[] = [];
+
+    /**
+     * The player's side of the board.
+     *
+     * # Examples
+     * @example
+     * for (const card of player.board)
+     *     console.log(card.name);
+     * }
+     */
+    board: Card[] = [];
+
+    /**
+     * The player's side of the graveyard, a list of cards that have been killed.
+     *
+     * # Examples
+     * @example
+     * for (const card of player.graveyard)
+     *     console.log(card.name);
+     * }
+     */
+    graveyard: Card[] = [];
 
     /**
      * The amount of mana that the player CURRENTLY has.
@@ -327,20 +349,6 @@ export class Player {
         }
 
         return game.player1; // We always need to return a player.
-    }
-
-    /**
-     * Get this player's side of the board
-     */
-    getBoard(): Card[] {
-        return game.board[this.id];
-    }
-
-    /**
-     * Get this player's side of the graveyard
-     */
-    getGraveyard(): Card[] {
-        return game.graveyard[this.id];
     }
 
     // Mana
@@ -841,7 +849,7 @@ export class Player {
             return -1;
         }
 
-        for (const card of this.getBoard()) {
+        for (const card of this.board) {
             card.activate('inspire');
         }
 
@@ -916,7 +924,7 @@ export class Player {
      * @returns The remaining board space for this player.
      */
     getRemainingBoardSpace(): number {
-        return game.config.general.maxBoardSpace - this.getBoard().length;
+        return game.config.general.maxBoardSpace - this.board.length;
     }
 
     /**
@@ -1022,7 +1030,7 @@ export class Player {
      * @returns Success
      */
     doTargets(callback: (target: Target) => void): boolean {
-        for (const card of this.getBoard()) {
+        for (const card of this.board) {
             callback(card);
         }
 
@@ -1133,7 +1141,7 @@ export class Player {
             card.activate('invoke');
         }
 
-        for (const card of this.getBoard()) {
+        for (const card of this.board) {
             card.activate('invoke');
         }
 

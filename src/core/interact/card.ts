@@ -7,7 +7,7 @@ export const cardInteract = {
      * @returns Success
      */
     useLocation(): boolean | 'nolocations' | 'invalidtype' | 'cooldown' | 'refund' {
-        const locations = game.player.getBoard().filter(m => m.type === 'Location');
+        const locations = game.player.board.filter(m => m.type === 'Location');
         if (locations.length <= 0) {
             return 'nolocations';
         }

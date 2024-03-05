@@ -657,18 +657,12 @@ export const debugCommands: CommandList = {
                 for (const card of player.deck) {
                     card.reload();
                 }
-            }
 
-            // Board
-            for (const side of game.board) {
-                for (const card of side) {
+                for (const card of player.board) {
                     card.reload();
                 }
-            }
 
-            // Graveyard
-            for (const side of game.graveyard) {
-                for (const card of side) {
+                for (const card of player.graveyard) {
                     card.reload();
                 }
             }
@@ -716,7 +710,7 @@ export const debugCommands: CommandList = {
 
         // If the card can appear on the board, remove it.
         if (card.canBeOnBoard()) {
-            game.functions.util.remove(game.board[game.player.id], card);
+            game.functions.util.remove(game.player.board, card);
 
             // If the card has 0 or less health, restore it to its original health (according to the blueprint)
             if (card.type === 'Minion' && !card.isAlive()) {

@@ -35,7 +35,7 @@ export const blueprint: Blueprint = {
         self.activate('cast');
 
         // There should be a jade golem
-        assert.ok(plr.getBoard().some(card => card.id === game.cardIds.jadeGolem85));
+        assert.ok(plr.board.some(card => card.id === game.cardIds.jadeGolem85));
 
         // Shuffle 3 copies
         plr.inputQueue = ['2'];

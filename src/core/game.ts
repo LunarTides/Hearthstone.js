@@ -110,22 +110,6 @@ export class Game {
     turn = 0;
 
     /**
-     * The board of the game.
-     *
-     * The 0th element is `game.player1`'s side of the board,
-     * and the 1th element is `game.player2`'s side of the board.
-     */
-    board: Card[][] = [[], []];
-
-    /**
-     * The graveyard, a list of cards that have been killed.
-     *
-     * The 0th element is `game.player1`'s graveyard,
-     * and the 1st element is `game.player2`'s graveyard.
-     */
-    graveyard: Card[][] = [[], []];
-
-    /**
      * If this is true, the game will not accept input from the user, and so the user can't interact with the game. This will most likely cause an infinite loop, unless both players are ai's.
      */
     noInput = false;
@@ -353,7 +337,7 @@ export class Game {
         this.event.broadcast('EndTurn', this.turn, player);
 
         // Ready the minions for the next turn.
-        for (const card of player.getBoard()) {
+        for (const card of player.board) {
             card.ready();
             card.resetAttackTimes();
         }
@@ -388,7 +372,7 @@ export class Game {
         }
 
         // Minion start of turn
-        for (const card of opponent.getBoard()) {
+        for (const card of opponent.board) {
             // Dormant
             const dormant = card.getKeyword('Dormant') as number | undefined;
 
@@ -468,7 +452,7 @@ export class Game {
             const spared: Card[] = [];
 
             // Trigger the deathrattles before doing the actual killing so the deathrattles can save the card by setting it's health to above 0
-            for (const card of this.board[p]) {
+            for (const card of player.board) {
                 if (card.isAlive()) {
                     continue;
                 }
@@ -476,7 +460,7 @@ export class Game {
                 card.activate('deathrattle');
             }
 
-            for (const card of this.board[p]) {
+            for (const card of player.board) {
                 // Add minions with more than 0 health to `spared`.
                 if (card.isAlive()) {
                     spared.push(card);
@@ -498,7 +482,7 @@ export class Game {
                 amount++;
 
                 player.corpses++;
-                this.graveyard[p].push(card);
+                player.graveyard.push(card);
 
                 if (!card.hasKeyword('Reborn')) {
                     continue;
@@ -533,7 +517,7 @@ export class Game {
                 spared.push(minion);
             }
 
-            this.board[p] = spared;
+            player.board = spared;
         }
 
         return amount;
@@ -615,7 +599,7 @@ const attack = {
         }
 
         // Check if there is a minion with taunt
-        const taunts = game.opponent.getBoard().filter(m => m.hasKeyword('Taunt'));
+        const taunts = game.opponent.board.filter(m => m.hasKeyword('Taunt'));
         if (taunts.length > 0 && !force) {
             // If the target is a card and has taunt, you are allowed to attack it
             if (target instanceof Card && target.hasKeyword('Taunt')) {
@@ -1004,7 +988,7 @@ const attack = {
             return;
         }
 
-        const board = target.plr.getBoard();
+        const board = target.plr.board;
         const index = board.indexOf(target);
 
         const below = board[index - 1];
@@ -1214,7 +1198,7 @@ const playCard = {
             }
 
             // Spellburst functionality
-            for (const card of player.getBoard()) {
+            for (const card of player.board) {
                 card.activate('spellburst');
                 card.abilities.spellburst = undefined;
             }
@@ -1335,7 +1319,7 @@ const playCard = {
 
     _hasCapacity(card: Card, player: Player): boolean {
         // If the board has max capacity, and the card played is a minion or location card, prevent it.
-        if (player.getBoard().length < game.config.general.maxBoardSpace || !card.canBeOnBoard()) {
+        if (player.board.length < game.config.general.maxBoardSpace || !card.canBeOnBoard()) {
             return true;
         }
 
@@ -1442,7 +1426,7 @@ const playCard = {
     },
 
     _magnetize(card: Card, player: Player): boolean {
-        const board = player.getBoard();
+        const board = player.board;
 
         if (!card.hasKeyword('Magnetic') || board.length <= 0) {
             return false;
@@ -1513,7 +1497,7 @@ const cards = {
         }
 
         // If the board has max capacity, and the card played is a minion or location card, prevent it.
-        if (player.getBoard().length >= game.config.general.maxBoardSpace) {
+        if (player.board.length >= game.config.general.maxBoardSpace) {
             return 'space';
         }
 
@@ -1586,10 +1570,10 @@ const cards = {
             card.resetAttackTimes();
         }
 
-        game.board[player.id].push(card);
+        player.board.push(card);
 
         // Calculate new spell damage
-        for (const card of player.getBoard()) {
+        for (const card of player.board) {
             if (card.spellDamage) {
                 player.spellDamage += card.spellDamage;
             }

@@ -573,11 +573,11 @@ ${mainContent}
         }
 
         if (includePlayer1Board) {
-            targets.push(...game.player1.getBoard());
+            targets.push(...game.player1.board);
         }
 
         if (includePlayer2Board) {
-            targets.push(...game.player2.getBoard());
+            targets.push(...game.player2.board);
         }
 
         return game.lodash.sample(targets);

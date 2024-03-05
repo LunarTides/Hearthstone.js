@@ -38,8 +38,8 @@ export const blueprint: Blueprint = {
 
         // Check if the sheep's owner is the opponent, is on the opponent's side of the board, and not the friendly player's side of the board
         assert.equal(sheep.plr, opponent);
-        assert.ok(opponent.getBoard().includes(sheep));
-        assert.ok(!plr.getBoard().includes(sheep));
+        assert.ok(opponent.board.includes(sheep));
+        assert.ok(!plr.board.includes(sheep));
 
         // Activate cast and make the player choose the sheep
         plr.inputQueue = ['1'];
@@ -47,7 +47,7 @@ export const blueprint: Blueprint = {
 
         // Check if the sheep's owner is the friendly player, is on this side of the board, and not the opponent's side of the board
         assert.equal(sheep.plr, plr);
-        assert.ok(!opponent.getBoard().includes(sheep));
-        assert.ok(plr.getBoard().includes(sheep));
+        assert.ok(!opponent.board.includes(sheep));
+        assert.ok(plr.board.includes(sheep));
     },
 };

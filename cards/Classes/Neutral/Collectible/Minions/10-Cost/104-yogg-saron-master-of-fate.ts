@@ -64,8 +64,8 @@ export const blueprint: Blueprint = {
 
             case 'Devouring Hunger': {
                 // Destroy all other minions. Gain their Attack and Health.
-                for (const side of game.board) {
-                    for (const card of side) {
+                for (const player of [game.player1, game.player2]) {
+                    for (const card of player.board) {
                         if (card === self) {
                             continue;
                         }
@@ -105,7 +105,7 @@ export const blueprint: Blueprint = {
 
             case 'Mindflayer Goggles': {
                 // Take control of three random enemy minions.
-                const board = plr.getOpponent().getBoard();
+                const board = plr.getOpponent().board;
 
                 for (let index = 0; index < 3; index++) {
                     const card = game.lodash.sample(board);

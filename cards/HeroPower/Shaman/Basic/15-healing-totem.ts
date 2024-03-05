@@ -26,7 +26,7 @@ export const blueprint: Blueprint = {
         }
 
         // Restore 1 Health to all friendly minions
-        for (const card of plr.getBoard().filter(card => card.type === 'Minion')) {
+        for (const card of plr.board.filter(card => card.type === 'Minion')) {
             card.addHealth(1, true);
         }
     },
@@ -39,7 +39,7 @@ export const blueprint: Blueprint = {
             plr.summon(card);
         }
 
-        const checkSheepHealth = (expected: number) => plr.getBoard().filter(card => card.id === 1).every(card => card.health === expected && card.attack === 1);
+        const checkSheepHealth = (expected: number) => plr.board.filter(card => card.id === 1).every(card => card.health === expected && card.attack === 1);
 
         // Summon this minion. All sheep should have 1 health.
         plr.summon(self);

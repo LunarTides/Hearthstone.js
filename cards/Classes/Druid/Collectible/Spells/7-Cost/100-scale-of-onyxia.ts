@@ -25,13 +25,13 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        assert.equal(plr.getBoard().length, 0);
+        assert.equal(plr.board.length, 0);
         self.activate('cast');
 
         // Check if the board has been filled
-        assert.equal(plr.getBoard().length, game.config.general.maxBoardSpace);
+        assert.equal(plr.board.length, game.config.general.maxBoardSpace);
 
         // Check if every card on the board is a whelp
-        assert.ok(plr.getBoard().every(card => card.id === game.cardIds.onyxianWhelp99));
+        assert.ok(plr.board.every(card => card.id === game.cardIds.onyxianWhelp99));
     },
 };

@@ -19,7 +19,7 @@ export const blueprint: Blueprint = {
 
     cast(plr, self) {
         // Force each enemy minion to attack a random enemy minion.
-        const board = plr.getOpponent().getBoard();
+        const board = plr.getOpponent().board;
 
         for (const enemyMinion of board) {
             const targetMinion = game.lodash.sample(board);

@@ -321,8 +321,8 @@ export const interact = {
         // From this point, the player has chosen a minion.
 
         // Get a list of each side of the board
-        const boardOpponent = game.opponent.getBoard();
-        const boardFriendly = game.player.getBoard();
+        const boardOpponent = game.opponent.board;
+        const boardFriendly = game.player.board;
 
         // Get each minion that matches the target.
         const boardOpponentTarget = boardOpponent[game.lodash.parseInt(target) - 1];
@@ -467,7 +467,7 @@ export const interact = {
          * Allow for stuff like `/eval h#c#1.addAttack(b#o#2.attack)`;
          * ^^ This adds the second card on the opponent's side of the board's attack to the card at index 1 in the current player's hand
          */
-        const indexBasedRegex = /([hbd])#([co])#(\d+)/g;
+        const indexBasedRegex = /([hbdg])#([co])#(\d+)/g;
         for (const match of code.matchAll(indexBasedRegex)) {
             let [line, where, side, index] = match;
 
@@ -483,7 +483,12 @@ export const interact = {
                 }
 
                 case 'b': {
-                    where = 'game.board[[x] - 1]';
+                    where = 'game.player[x].board';
+                    break;
+                }
+
+                case 'g': {
+                    where = 'game.player[x].graveyard';
                     break;
                 }
 

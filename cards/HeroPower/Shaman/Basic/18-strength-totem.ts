@@ -26,7 +26,7 @@ export const blueprint: Blueprint = {
         }
 
         // The list that to choose from. Remove this minion from the list
-        const board = plr.getBoard().filter(card => card.type === 'Minion');
+        const board = plr.board.filter(card => card.type === 'Minion');
         game.functions.util.remove(board, self);
 
         // Choose the random minion
@@ -46,7 +46,7 @@ export const blueprint: Blueprint = {
             plr.summon(card);
         }
 
-        const checkSheepAttack = (shouldBeMore: boolean) => plr.getBoard().filter(card => card.id === 1).some(card => card.health === 1 && ((shouldBeMore && card.attack! > 1) || (!shouldBeMore && card.attack === 1)));
+        const checkSheepAttack = (shouldBeMore: boolean) => plr.board.filter(card => card.id === 1).some(card => card.health === 1 && ((shouldBeMore && card.attack! > 1) || (!shouldBeMore && card.attack === 1)));
 
         // Summon this minion. All sheep should have 1 attack.
         plr.summon(self);

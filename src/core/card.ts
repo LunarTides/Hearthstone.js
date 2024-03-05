@@ -1603,7 +1603,7 @@ export class Card {
      * @param newOwner The new owner of the card.
      */
     takeControl(newOwner: Player): void {
-        game.functions.util.remove(game.board[this.plr.id], this);
+        game.functions.util.remove(this.plr.board, this);
 
         this.plr = newOwner;
         newOwner.summon(this);

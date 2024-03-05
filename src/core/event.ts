@@ -103,7 +103,7 @@ export const eventManager: EventManagerType = {
                 }
             }
 
-            for (const card of game.board[i]) {
+            for (const card of player.board) {
                 if (card.type === 'Minion' && !card.isAlive()) {
                     continue;
                 }
@@ -129,8 +129,8 @@ export const eventManager: EventManagerType = {
      * @returns Success
      */
     cardUpdate(key, value, player): boolean {
-        for (const cards of game.board) {
-            for (const card of cards) {
+        for (const player of [game.player1, game.player2]) {
+            for (const card of player.board) {
                 // This function gets called directly after a minion is killed.
                 if (!card.isAlive()) {
                     continue;

@@ -32,7 +32,7 @@ export const blueprint: Blueprint = {
     test(plr, self) {
         plr.summon(self);
 
-        const board = plr.getBoard();
+        const board = plr.board;
 
         assert.ok(board.some(card => card.id === game.cardIds.leftArm43));
         assert.ok(board.some(card => card.id === self.id));

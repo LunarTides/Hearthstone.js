@@ -41,7 +41,7 @@ export const blueprint: Blueprint = {
         self.activate('cast');
 
         // Check if the sheep is dead
-        assert.equal(plr.getBoard().length, 0);
+        assert.equal(plr.board.length, 0);
         assert.equal(sheep.health, 0);
     },
 };

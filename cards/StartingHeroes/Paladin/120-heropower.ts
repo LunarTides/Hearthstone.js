@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
     },
 
     test(plr, self) {
-        const checkIfMinionExists = () => plr.getBoard().some(card => card.id === 20);
+        const checkIfMinionExists = () => plr.board.some(card => card.id === 20);
 
         // The minion should not exist
         assert(!checkIfMinionExists());

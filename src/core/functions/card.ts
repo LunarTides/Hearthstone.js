@@ -221,8 +221,8 @@ export const cardFunctions = {
         for (const player of [game.player1, game.player2]) {
             lookForUUID(player.deck);
             lookForUUID(player.hand);
-            lookForUUID(player.getBoard());
-            lookForUUID(player.getGraveyard());
+            lookForUUID(player.board);
+            lookForUUID(player.graveyard);
         }
 
         return card;

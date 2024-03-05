@@ -188,17 +188,16 @@ export const infoInteract = {
      * Prints the board for a specific player.
      */
     printBoard(plr: Player): void {
-        for (const [playerIndex, side] of game.board.entries()) {
-            const player = game.functions.util.getPlayerFromId(playerIndex);
+        for (const player of [game.player1, game.player2]) {
             const sideMessage = plr === player ? '----- Board (You) ------' : '--- Board (Opponent) ---';
             console.log(sideMessage);
 
-            if (side.length === 0) {
+            if (player.board.length === 0) {
                 console.log('<gray>Empty</gray>');
                 continue;
             }
 
-            for (const [index, card] of side.entries()) {
+            for (const [index, card] of player.board.entries()) {
                 console.log(game.interact.card.getReadable(card, index + 1));
             }
         }

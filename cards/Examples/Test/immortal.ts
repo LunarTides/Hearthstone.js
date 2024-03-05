@@ -42,7 +42,7 @@ export const blueprint: Blueprint = {
         plr.summon(self);
         self.kill();
 
-        assert(plr.getBoard().includes(self));
+        assert(plr.board.includes(self));
     },
 };
 
