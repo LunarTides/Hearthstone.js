@@ -682,10 +682,12 @@ export class Player {
         const unsuppress = game.functions.event.suppress('AddCardToHand');
 
         for (let i = 0; i < amount; i++) {
+            // We need the `deckLength` variable since pop may change the length of the deck
+            const deckLength = this.deck.length;
             const card = this.deck.pop();
 
             // Fatigue
-            if (this.deck.length <= 0 || !card) {
+            if (deckLength <= 0 || !card) {
                 this.fatigue++;
 
                 this.remHealth(this.fatigue);
