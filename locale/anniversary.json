@@ -1,17 +1,17 @@
 {
-    "Version: %s": "Version: %s [Anniversary edition 🎉🎉🎉]",
-    "Custom Cards: <yellow>%s</yellow> (<green>%s</green> Collectible)": "Custom Cards: <yellow>%s</yellow> (<green>%s</green> Collectible) [Started with <yellow>30</yellow> Cards (<green>0</green> Collectible). <yellow>326</yellow> Cards (<green>?</green> Collectible) pre 2.0 - Anniversary edition 🎉🎉🎉]",
-    "Vanilla Cards: <blue>%s</blue> (<cyan>%s</cyan> Collectible)": "Vanilla Cards: <blue>%s</blue> (<cyan>%s</cyan> Collectible) [Vanilla support was added in <yellow>1.2</yellow> (<cyan>ec8ce35</cyan>) - Anniversary edition 🎉🎉🎉]",
+	"Version: %s": "Version: %s [Anniversary edition 🎉🎉🎉]",
+	"Custom Cards: <yellow>%s</yellow> (<green>%s</green> Collectible)": "Custom Cards: <yellow>%s</yellow> (<green>%s</green> Collectible) [Started with <yellow>30</yellow> Cards (<green>0</green> Collectible). <yellow>326</yellow> Cards (<green>?</green> Collectible) pre 2.0 - Anniversary edition 🎉🎉🎉]",
+	"Vanilla Cards: <blue>%s</blue> (<cyan>%s</cyan> Collectible)": "Vanilla Cards: <blue>%s</blue> (<cyan>%s</cyan> Collectible) [Vanilla support was added in <yellow>1.2</yellow> (<cyan>ec8ce35</cyan>) - Anniversary edition 🎉🎉🎉]",
 
-    "<green>(P)lay</green>, <blue>Create a (D)eck</blue>, <yellow>Developer (M)ode</yellow>, <red>(E)xit</red>: ": "<green>(P)lay</green>, <blue>Create a (D)eck</blue>, <yellow>Developer (M)ode</yellow>, <red>(E)xit</red> [The HUB was originally called the <i>Runner</i> - Anniversary edition 🎉🎉🎉]: ",
-    "<green>Create a (C)ard</green>, <blue>Create a Clas(s)</blue>, <yellow>Enter CLI (m)ode</yellow>, <red>Go (B)ack to Normal Mode</red>: ": "<green>Create a (C)ard</green>, <blue>Create a Clas(s)</blue>, <yellow>Enter CLI (m)ode</yellow>, <red>Go (B)ack to Normal Mode</red> [Anniversary edition 🎉🎉🎉]: ",
-    "<green>Create a (C)ustom Card</green>, <blue>Import a (V)anilla Card</blue>, <red>Go (B)ack</red>: ": "<green>Create a (C)ustom Card</green>, <blue>Import a (V)anilla Card</blue>, <red>Go (B)ack</red> [Anniversary edition 🎉🎉🎉]: ",
+	"<green>(P)lay</green>, <blue>Create a (D)eck</blue>, <yellow>Developer (M)ode</yellow>, <red>(E)xit</red>: ": "<green>(P)lay</green>, <blue>Create a (D)eck</blue>, <yellow>Developer (M)ode</yellow>, <red>(E)xit</red> [The HUB was originally called the <i>Runner</i> - Anniversary edition 🎉🎉🎉]: ",
+	"<green>Create a (C)ard</green>, <blue>Create a Clas(s)</blue>, <yellow>Enter CLI (m)ode</yellow>, <red>Go (B)ack to Normal Mode</red>: ": "<green>Create a (C)ard</green>, <blue>Create a Clas(s)</blue>, <yellow>Enter CLI (m)ode</yellow>, <red>Go (B)ack to Normal Mode</red> [Anniversary edition 🎉🎉🎉]: ",
+	"<green>Create a (C)ustom Card</green>, <blue>Import a (V)anilla Card</blue>, <red>Go (B)ack</red>: ": "<green>Create a (C)ustom Card</green>, <blue>Import a (V)anilla Card</blue>, <red>Go (B)ack</red> [Anniversary edition 🎉🎉🎉]: ",
 
-    "Player %s, please type in your deckcode%s: ": "Player %s, please type in your deckcode%s [Decks existed since the beginning, but you couldn't use a deckcode since (<cyan>917c4dd</cyan>) - Anniversary edition 🎉🎉🎉]: ",
-    "\nChoose the cards to mulligan (1, 2, 3, ...):\n": "\nChoose the cards to mulligan (1, 2, 3, ...): [Mulligan was added very late in development. (<cyan>c9db935</cyan>, commit no 105) - Anniversary edition 🎉🎉🎉]:\n",
+	"Player %s, please type in your deckcode%s: ": "Player %s, please type in your deckcode%s [Decks existed since the beginning, but you couldn't use a deckcode since (<cyan>917c4dd</cyan>) - Anniversary edition 🎉🎉🎉]: ",
+	"\nChoose the cards to mulligan (1, 2, 3, ...):\n": "\nChoose the cards to mulligan (1, 2, 3, ...): [Mulligan was added very late in development. (<cyan>c9db935</cyan>, commit no 105) - Anniversary edition 🎉🎉🎉]:\n",
 
-    "----- Board (You) ------": "----- Board (You) ------ [^^^^ The code for the stats above was rewritten 3 times in total - Anniversary edition 🎉🎉🎉]",
-    "--- Board (Opponent) ---": "--- Board (Opponent) --- [Anniversary edition 🎉🎉🎉]",
+	"----- Board (You) ------": "----- Board (You) ------ [^^^^ The code for the stats above was rewritten 3 times in total - Anniversary edition 🎉🎉🎉]",
+	"--- Board (Opponent) ---": "--- Board (Opponent) --- [Anniversary edition 🎉🎉🎉]",
 
-    "Which card do you want to play? ": "Which card do you want to play? [Anniversary edition 🎉🎉🎉]: "
+	"Which card do you want to play? ": "Which card do you want to play? [Anniversary edition 🎉🎉🎉]: "
 }

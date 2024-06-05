@@ -1,48 +1,47 @@
 // Created by Hand (before the Card Creator Existed)
 
-import assert from 'node:assert';
-import { type Blueprint } from '@Game/types.js';
+import assert from "node:assert";
+import type { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
-    // Look in `titan.ts` first.
-    name: 'Ability 1',
-    text: 'Destroy an enemy minion.',
-    cost: 0,
-    type: 'Spell',
-    classes: ['Neutral'],
-    rarity: 'Free',
-    collectible: false,
-    id: 79,
+	// Look in `titan.ts` first.
+	name: "Ability 1",
+	text: "Destroy an enemy minion.",
+	cost: 0,
+	type: "Spell",
+	classes: ["Neutral"],
+	rarity: "Free",
+	collectible: false,
+	id: 79,
 
-    spellSchool: 'None',
+	spellSchool: "None",
 
-    cast(plr, self) {
-        // Destroy an enemy minion.
+	cast(plr, self) {
+		// Destroy an enemy minion.
 
-        // Select an enemy minion to destroy
-        const target = game.interact.selectCardTarget(self.text, self, 'enemy');
-        if (!target) {
-            return game.constants.refund;
-        }
+		// Select an enemy minion to destroy
+		const target = game.interact.selectCardTarget(self.text, self, "enemy");
+		if (!target) {
+			return game.constants.refund;
+		}
 
-        target.kill();
-        return true;
-    },
+		target.kill();
+		return true;
+	},
 
-    test(plr, self) {
-        const opponent = plr.getOpponent();
+	test(plr, self) {
+		const opponent = plr.getOpponent();
 
-        // Create a sheep and summon it on the opponent's side of the board
-        const sheep = game.newCard(game.cardIds.sheep1, opponent);
-        opponent.summon(sheep);
+		// Create a sheep and summon it on the opponent's side of the board
+		const sheep = game.newCard(game.cardIds.sheep1, opponent);
+		opponent.summon(sheep);
 
-        // Kill the sheep
-        plr.inputQueue = ['1'];
-        self.activate('cast');
+		// Kill the sheep
+		plr.inputQueue = ["1"];
+		self.activate("cast");
 
-        // Check if the sheep is dead
-        assert.equal(plr.board.length, 0);
-        assert.equal(sheep.health, 0);
-    },
+		// Check if the sheep is dead
+		assert.equal(plr.board.length, 0);
+		assert.equal(sheep.health, 0);
+	},
 };
-

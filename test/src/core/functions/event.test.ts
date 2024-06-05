@@ -1,6 +1,5 @@
-import { expect, describe, test } from 'bun:test';
-// eslint-disable-next-line no-unused-vars
-import { eventFunctions } from '@Game/internal.js';
+import { describe, expect, test } from "bun:test";
+import { eventFunctions } from "@Game/internal.js";
 
 /*
  * Need to create a game in case the functions need it
@@ -8,24 +7,24 @@ import { eventFunctions } from '@Game/internal.js';
  */
 // createGame();
 
-describe('src/core/functions/event', () => {
-    test.todo('addListener', async () => {
-        expect(false).toEqual(true);
-    });
+describe("src/core/functions/event", () => {
+	test.todo("addListener", async () => {
+		expect(false).toEqual(true);
+	});
 
-    test.todo('hookToTick', async () => {
-        expect(false).toEqual(true);
-    });
+	test.todo("hookToTick", async () => {
+		expect(false).toEqual(true);
+	});
 
-    test.todo('suppress', async () => {
-        expect(false).toEqual(true);
-    });
+	test.todo("suppress", async () => {
+		expect(false).toEqual(true);
+	});
 
-    test.todo('ignoreSuppression', async () => {
-        expect(false).toEqual(true);
-    });
+	test.todo("ignoreSuppression", async () => {
+		expect(false).toEqual(true);
+	});
 
-    test.todo('withSuppressed', async () => {
-        expect(false).toEqual(true);
-    });
+	test.todo("withSuppressed", async () => {
+		expect(false).toEqual(true);
+	});
 });
