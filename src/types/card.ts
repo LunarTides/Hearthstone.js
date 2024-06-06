@@ -181,7 +181,7 @@ export type CardBackup = {
 export type Ability = (
 	plr: Player,
 	self: Card,
-	key?: EventKey | string,
+	key?: EventKey,
 	_unknownValue?: UnknownEventValue,
 	eventPlayer?: Player,
 ) => unknown;

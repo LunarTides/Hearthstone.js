@@ -1022,7 +1022,13 @@ export class Card {
 				continue;
 			}
 
-			const result = callback(this.plr, this, key, _unknownValue, eventPlayer);
+			const result = callback(
+				this.plr,
+				this,
+				key as EventKey,
+				_unknownValue,
+				eventPlayer,
+			);
 			if (Array.isArray(returnValue)) {
 				returnValue.push(result);
 			}

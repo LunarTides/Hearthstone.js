@@ -289,25 +289,35 @@ ${runes}${keywords}
 		}
 
 		// Turn the value into a string.
-		return returnValue.toString();
+		if (returnValue) {
+			return returnValue.toString();
+		}
+
+		return undefined;
 	};
 
 	// If the function is passive, add `EventValue` to the list of imports
-	const passiveImport = isPassive ? ", type EventValue" : "";
+	const passiveImport = isPassive ? ", EventValue" : "";
 
 	// Add the key/value pairs to the content
-	const contentArray = Object.entries(blueprint).map(
-		(c) => `${c[0].replaceAll("'", "\\'")}: ${getTypeValue(c[1])},\n    `,
-	);
+	const contentArray = Object.entries(blueprint).map((c) => {
+		const value = getTypeValue(c[1]);
+		if (!value) {
+			return "";
+		}
+
+		return `${c[0].replaceAll("'", "\\'")}: ${value},\n    `;
+	});
 
 	// Add the content
 	const content = `// Created by the ${creatorType} Card Creator
 
 import assert from 'node:assert';
-import { type Blueprint${passiveImport} } from '@Game/types.js';
+import type { Blueprint${passiveImport} } from '@Game/types.js';
 
 export const blueprint: Blueprint = {
-    ${contentArray.join("").replace(/ {4}id: .*?,/, `    id: ${id},\n`)}${createAbility}${ability}
+    ${contentArray.join("")}id: ${id},
+${createAbility}${ability}
 };
 `;
 
