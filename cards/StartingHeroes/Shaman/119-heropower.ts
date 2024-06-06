@@ -1,67 +1,73 @@
 // Created by the Custom Card Creator
 
-import assert from 'node:assert';
-import { type Blueprint } from '@Game/types.js';
+import assert from "node:assert";
+import type { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
-    name: 'Totemic Call',
-    text: 'Summon a random basic Totem.',
-    cost: 2,
-    type: 'Heropower',
-    classes: ['Shaman'],
-    rarity: 'Free',
-    collectible: false,
-    id: 119,
+	name: "Totemic Call",
+	text: "Summon a random basic Totem.",
+	cost: 2,
+	type: "Heropower",
+	classes: ["Shaman"],
+	rarity: "Free",
+	collectible: false,
+	id: 119,
 
-    heropower(plr, self) {
-        // Filter away totem cards that is already on the player's side of the board.
-        const filteredTotemCardNames = game.cardCollections.totems.filter(id => !plr.board.some(m => m.id === id));
+	heropower(plr, self) {
+		// Filter away totem cards that is already on the player's side of the board.
+		const filteredTotemCardNames = game.cardCollections.totems.filter(
+			(id) => !plr.board.some((m) => m.id === id),
+		);
 
-        // If there are no totem cards to summon, refund the hero power, which gives the player back their mana
-        if (filteredTotemCardNames.length === 0) {
-            return game.constants.refund;
-        }
+		// If there are no totem cards to summon, refund the hero power, which gives the player back their mana
+		if (filteredTotemCardNames.length === 0) {
+			return game.constants.refund;
+		}
 
-        // Randomly choose one of the totem cards.
-        const cardName = game.lodash.sample(filteredTotemCardNames);
-        if (!cardName) {
-            throw game.functions.card.createCardError('null found when randomly choosing totem card name');
-        }
+		// Randomly choose one of the totem cards.
+		const cardName = game.lodash.sample(filteredTotemCardNames);
+		if (!cardName) {
+			throw game.functions.card.createCardError(
+				"null found when randomly choosing totem card name",
+			);
+		}
 
-        // Create a card from the name.
-        const card = game.newCard(cardName, plr);
+		// Create a card from the name.
+		const card = game.newCard(cardName, plr);
 
-        // Summon the card on the player's side of the board
-        plr.summon(card);
-        return true;
-    },
+		// Summon the card on the player's side of the board
+		plr.summon(card);
+		return true;
+	},
 
-    test(plr, self) {
-        const totemCardIds = game.cardCollections.totems;
-        const checkForTotemCard = (amount: number) => plr.board.filter(card => totemCardIds.includes(card.id)).length === amount;
+	test(plr, self) {
+		const totemCardIds = game.cardCollections.totems;
+		const checkForTotemCard = (amount: number) =>
+			plr.board.filter((card) => totemCardIds.includes(card.id)).length ===
+			amount;
 
-        // There should be 0 totem cards on the board
-        assert(checkForTotemCard(0));
+		// There should be 0 totem cards on the board
+		assert(checkForTotemCard(0));
 
-        for (let index = 1; index <= totemCardIds.length + 1; index++) {
-            self.activate('heropower');
+		for (let index = 1; index <= totemCardIds.length + 1; index++) {
+			self.activate("heropower");
 
-            // If all totem cards are on the board, it shouldn't summon a new one
-            if (index > totemCardIds.length) {
-                assert(checkForTotemCard(index - 1));
-                continue;
-            }
+			// If all totem cards are on the board, it shouldn't summon a new one
+			if (index > totemCardIds.length) {
+				assert(checkForTotemCard(index - 1));
+				continue;
+			}
 
-            // There should be 'index' totem cards on the board
-            assert(checkForTotemCard(index));
-        }
+			// There should be 'index' totem cards on the board
+			assert(checkForTotemCard(index));
+		}
 
-        // Assert that all of the totem cards are on the board
-        for (const id of totemCardIds) {
-            assert(plr.board.some(card => card.id === id));
-        }
+		// Assert that all of the totem cards are on the board
+		for (const id of totemCardIds) {
+			assert(plr.board.some((card) => card.id === id));
+		}
 
-        // Assert that the board's length is equal to the amount of totem cards.
-        assert.equal(plr.board.length, totemCardIds.length);
-    },
+		// Assert that the board's length is equal to the amount of totem cards.
+		assert.equal(plr.board.length, totemCardIds.length);
+	},
 };

@@ -1,174 +1,189 @@
 // Created by the Vanilla Card Creator
 
-import assert from 'node:assert';
-import { type Blueprint } from '@Game/types.js';
-import { Card } from '@Game/internal.js';
+import assert from "node:assert";
+import { Card } from "@Game/internal.js";
+import type { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
-    name: 'Yogg-Saron, Master of Fate',
-    text: '<b>Battlecry:</b> If you\'ve cast 10 spells this game, spin the Wheel of Yogg-Saron.{left}',
-    cost: 10,
-    type: 'Minion',
-    classes: ['Neutral'],
-    rarity: 'Legendary',
-    collectible: true,
-    id: 104,
+	name: "Yogg-Saron, Master of Fate",
+	text: "<b>Battlecry:</b> If you've cast 10 spells this game, spin the Wheel of Yogg-Saron.{left}",
+	cost: 10,
+	type: "Minion",
+	classes: ["Neutral"],
+	rarity: "Legendary",
+	collectible: true,
+	id: 104,
 
-    attack: 7,
-    health: 5,
-    tribe: 'None',
+	attack: 7,
+	health: 5,
+	tribe: "None",
 
-    // eslint-disable-next-line complexity
-    battlecry(plr, self) {
-        // If you've cast 10 spells this game, spin the Wheel of Yogg-Saron. ({amount} left!)
-        if (!self.condition()) {
-            return;
-        }
+	battlecry(plr, self) {
+		// If you've cast 10 spells this game, spin the Wheel of Yogg-Saron. ({amount} left!)
+		if (!self.condition()) {
+			return;
+		}
 
-        const choices = ['Curse of Flesh', 'Devouring Hunger', 'Hand of Fate', 'Mindflayer Goggles', 'Mysterybox', 'Rod of Roasting'];
-        const choice = game.lodash.sample(choices);
-        if (!choice) {
-            throw new Error('No choice found');
-        }
+		const choices = [
+			"Curse of Flesh",
+			"Devouring Hunger",
+			"Hand of Fate",
+			"Mindflayer Goggles",
+			"Mysterybox",
+			"Rod of Roasting",
+		];
+		const choice = game.lodash.sample(choices);
+		if (!choice) {
+			throw new Error("No choice found");
+		}
 
-        const minionPool = game.functions.card.getAll().filter(card => card.type === 'Minion');
-        const spellPool = game.functions.card.getAll().filter(card => card.type === 'Spell');
+		const minionPool = game.functions.card
+			.getAll()
+			.filter((card) => card.type === "Minion");
+		const spellPool = game.functions.card
+			.getAll()
+			.filter((card) => card.type === "Spell");
 
-        switch (choice) {
-            case 'Curse of Flesh': {
-                // Fill the board with random minions, then give yours Rush.
-                for (let id = 0; id < 2; id++) {
-                    const player = game.functions.util.getPlayerFromId(id);
+		switch (choice) {
+			case "Curse of Flesh": {
+				// Fill the board with random minions, then give yours Rush.
+				for (let id = 0; id < 2; id++) {
+					const player = game.functions.util.getPlayerFromId(id);
 
-                    // Subtract to account for yogg-saron being on the board
-                    const remaining = player.getRemainingBoardSpace() - (player === plr ? 1 : 0);
+					// Subtract to account for yogg-saron being on the board
+					const remaining =
+						player.getRemainingBoardSpace() - (player === plr ? 1 : 0);
 
-                    for (let index = 0; index < remaining; index++) {
-                        const card = game.lodash.sample(minionPool)?.imperfectCopy();
-                        if (!card) {
-                            continue;
-                        }
+					for (let index = 0; index < remaining; index++) {
+						const card = game.lodash.sample(minionPool)?.imperfectCopy();
+						if (!card) {
+							continue;
+						}
 
-                        if (player === plr) {
-                            card.addKeyword('Rush');
-                        }
+						if (player === plr) {
+							card.addKeyword("Rush");
+						}
 
-                        player.summon(card);
-                    }
-                }
+						player.summon(card);
+					}
+				}
 
-                break;
-            }
+				break;
+			}
 
-            case 'Devouring Hunger': {
-                // Destroy all other minions. Gain their Attack and Health.
-                for (const player of [game.player1, game.player2]) {
-                    for (const card of player.board) {
-                        if (card === self) {
-                            continue;
-                        }
+			case "Devouring Hunger": {
+				// Destroy all other minions. Gain their Attack and Health.
+				for (const player of [game.player1, game.player2]) {
+					for (const card of player.board) {
+						if (card === self) {
+							continue;
+						}
 
-                        card.kill();
-                        self.addStats(card.attack, card.health);
-                    }
-                }
+						card.kill();
+						self.addStats(card.attack, card.health);
+					}
+				}
 
-                break;
-            }
+				break;
+			}
 
-            case 'Hand of Fate': {
-                // Fill your hand with random spells. They cost (0) this turn.
-                const remaining = plr.getRemainingHandSpace();
+			case "Hand of Fate": {
+				// Fill your hand with random spells. They cost (0) this turn.
+				const remaining = plr.getRemainingHandSpace();
 
-                for (let index = 0; index < remaining; index++) {
-                    const card = game.lodash.sample(spellPool)?.imperfectCopy();
-                    if (!card) {
-                        continue;
-                    }
+				for (let index = 0; index < remaining; index++) {
+					const card = game.lodash.sample(spellPool)?.imperfectCopy();
+					if (!card) {
+						continue;
+					}
 
-                    card.addEnchantment('cost = 0', self);
-                    plr.addToHand(card);
-                }
+					card.addEnchantment("cost = 0", self);
+					plr.addToHand(card);
+				}
 
-                game.functions.event.addListener('EndTurn', () => {
-                    for (const card of plr.hand) {
-                        card.removeEnchantment('cost = 0', self);
-                    }
+				game.functions.event.addListener("EndTurn", () => {
+					for (const card of plr.hand) {
+						card.removeEnchantment("cost = 0", self);
+					}
 
-                    return 'destroy';
-                });
+					return "destroy";
+				});
 
-                break;
-            }
+				break;
+			}
 
-            case 'Mindflayer Goggles': {
-                // Take control of three random enemy minions.
-                const board = plr.getOpponent().board;
+			case "Mindflayer Goggles": {
+				// Take control of three random enemy minions.
+				const board = plr.getOpponent().board;
 
-                for (let index = 0; index < 3; index++) {
-                    const card = game.lodash.sample(board);
-                    if (!card) {
-                        continue;
-                    }
+				for (let index = 0; index < 3; index++) {
+					const card = game.lodash.sample(board);
+					if (!card) {
+						continue;
+					}
 
-                    card.takeControl(plr);
-                }
+					card.takeControl(plr);
+				}
 
-                break;
-            }
+				break;
+			}
 
-            case 'Mysterybox': {
-                // Cast a random spell for every spell you've cast this game (targets chosen randomly).
-                const oldYogg = game.newCard(game.cardIds.yoggSaronHopesEnd103, plr);
-                oldYogg.activate('battlecry');
+			case "Mysterybox": {
+				// Cast a random spell for every spell you've cast this game (targets chosen randomly).
+				const oldYogg = game.newCard(game.cardIds.yoggSaronHopesEnd103, plr);
+				oldYogg.activate("battlecry");
 
-                break;
-            }
+				break;
+			}
 
-            case 'Rod of Roasting': {
-                // Cast 'Pyroblast' randomly until a hero dies.
-                const rod = game.newCard(game.cardIds.pyroblast105, plr);
+			case "Rod of Roasting": {
+				// Cast 'Pyroblast' randomly until a hero dies.
+				const rod = game.newCard(game.cardIds.pyroblast105, plr);
 
-                while (game.player1.isAlive() && game.player2.isAlive()) {
-                    plr.forceTarget = game.functions.util.getRandomTarget();
-                    rod.activate('cast');
-                }
+				while (game.player1.isAlive() && game.player2.isAlive()) {
+					plr.forceTarget = game.functions.util.getRandomTarget();
+					rod.activate("cast");
+				}
 
-                plr.forceTarget = undefined;
+				plr.forceTarget = undefined;
 
-                break;
-            }
+				break;
+			}
 
-            // No default
-        }
+			// No default
+		}
 
-        game.event.broadcast('CardEvent', [self, choice], plr);
-    },
+		game.event.broadcast("CardEvent", [self, choice], plr);
+	},
 
-    placeholders(plr, self) {
-        const amount = game.event.events.PlayCard?.[plr.id].filter(object => object[0] instanceof Card && object[0].type === 'Spell').length;
-        if (!amount) {
-            return { left: ' <i>(10 left!)</i>' };
-        }
+	placeholders(plr, self) {
+		const amount = game.event.events.PlayCard?.[plr.id].filter(
+			(object) => object[0] instanceof Card && object[0].type === "Spell",
+		).length;
+		if (!amount) {
+			return { left: " <i>(10 left!)</i>" };
+		}
 
-        if (amount >= 10) {
-            return { left: '' };
-        }
+		if (amount >= 10) {
+			return { left: "" };
+		}
 
-        return { left: ` <i>(${10 - amount} left!)</i>` };
-    },
+		return { left: ` <i>(${10 - amount} left!)</i>` };
+	},
 
-    condition(plr, self) {
-        const amount = game.event.events.PlayCard?.[plr.id].filter(object => object[0] instanceof Card && object[0].type === 'Spell').length;
-        if (!amount) {
-            return false;
-        }
+	condition(plr, self) {
+		const amount = game.event.events.PlayCard?.[plr.id].filter(
+			(object) => object[0] instanceof Card && object[0].type === "Spell",
+		).length;
+		if (!amount) {
+			return false;
+		}
 
-        return amount >= 10;
-    },
+		return amount >= 10;
+	},
 
-    test(plr, self) {
-        // TODO: Add proper tests. #325
-        return true;
-    },
+	test(plr, self) {
+		// TODO: Add proper tests. #325
+		return true;
+	},
 };

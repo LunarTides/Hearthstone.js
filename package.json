@@ -1,100 +1,45 @@
 {
-  "name": "hearthstone.js",
-  "version": "3.0.0-beta",
-  "description": "A console-based recreation of Hearthstone made in NodeJS",
-  "exports": "./index.ts",
-  "main": "./index.ts",
-  "type": "module",
-  "scripts": {
-    "start": "bunx tsc && bun .",
-    "test": "bunx tsc && bun run cardtest && bun test && echo Running xo... && bunx xo && echo OK && bun run crashtest",
-    "cardtest": "bun run script:testcards",
-    "crashtest": "bun run script:crashtest && bun run script:crashtest && bun run script:crashtest && bun run script:crashtest && bun run script:crashtest",
-    "script:vanilla:generate": "bun ./scripts/vanilla/generate.ts",
-    "script:vanilla:generate-no-filter": "bun ./scripts/vanilla/generate.ts --no-filter",
-    "script:vanilla:propfinder": "bun ./scripts/vanilla/propfinder.ts",
-    "script:crashtest": "bun ./scripts/crashtest.ts",
-    "script:idscript": "bun ./scripts/id/main.ts",
-    "script:testcards": "bun ./scripts/testcards.ts"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/LunarTides/Hearthstone.js.git"
-  },
-  "author": "LunarTides",
-  "license": "GPL-3.0-or-later",
-  "dependencies": {
-    "chalk": "^5.3.0",
-    "date-and-time": "^3.3.0",
-    "deckstrings": "^3.1.2",
-    "lodash": "^4.17.21",
-    "readline-sync": "^1.4.10",
-    "strip-ansi": "^7.1.0"
-  },
-  "devDependencies": {
-    "@hearthstonejs/vanillatypes": "^4.0.1",
-    "@types/lodash": "^4.17.4",
-    "@types/node": "^20.14.0",
-    "@types/readline-sync": "^1.4.8",
-    "generate-changelog": "^1.8.0",
-    "typescript": "^5.4.5",
-    "xo": "^0.58.0",
-    "bun": "^1.1.12",
-    "@types/bun": "^1.1.3"
-  },
-  "xo": {
-    "space": 4,
-    "rules": {
-      "unicorn/no-process-exit": "off",
-      "unicorn/prefer-module": "off",
-      "max-params": "off",
-      "no-warning-comments": "off",
-      "no-unused-vars": "error",
-      "require-jsdoc": "error",
-      "@typescript-eslint/no-require-imports": "off",
-      "@typescript-eslint/no-var-requires": "off",
-      "multiline-comment-style": [
-        "error",
-        "starred-block"
-      ],
-      "@typescript-eslint/object-curly-spacing": [
-        "error",
-        "always"
-      ],
-      "@typescript-eslint/naming-convention": [
-        "error",
-        {
-          "selector": "default",
-          "format": [
-            "camelCase"
-          ],
-          "leadingUnderscore": "allow"
-        },
-        {
-          "selector": "typeLike",
-          "format": [
-            "PascalCase"
-          ]
-        },
-        {
-          "selector": "objectLiteralProperty",
-          "format": null
-        },
-        {
-          "selector": "objectLiteralMethod",
-          "format": null,
-          "leadingUnderscore": "allow"
-        }
-      ]
-    },
-    "overrides": [
-      {
-        "files": "cards/**",
-        "rules": {
-          "no-unused-vars": "off",
-          "require-jsdoc": "off"
-        }
-      }
-    ]
-  }
+	"name": "hearthstone.js",
+	"version": "3.0.0-beta",
+	"description": "A console-based recreation of Hearthstone made in NodeJS",
+	"exports": "./index.ts",
+	"main": "./index.ts",
+	"type": "module",
+	"scripts": {
+		"start": "bunx tsc && bun .",
+		"test": "bunx tsc && bun run cardtest && bun test && bunx biome ci && bun run crashtest",
+		"cardtest": "bun run script:testcards",
+		"crashtest": "bun run script:crashtest && bun run script:crashtest && bun run script:crashtest && bun run script:crashtest && bun run script:crashtest",
+		"script:vanilla:generate": "bun ./scripts/vanilla/generate.ts",
+		"script:vanilla:generate-no-filter": "bun ./scripts/vanilla/generate.ts --no-filter",
+		"script:vanilla:propfinder": "bun ./scripts/vanilla/propfinder.ts",
+		"script:crashtest": "bun ./scripts/crashtest.ts",
+		"script:idscript": "bun ./scripts/id/main.ts",
+		"script:testcards": "bun ./scripts/testcards.ts"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/LunarTides/Hearthstone.js.git"
+	},
+	"author": "LunarTides",
+	"license": "GPL-3.0-or-later",
+	"dependencies": {
+		"chalk": "^5.3.0",
+		"date-and-time": "^3.3.0",
+		"deckstrings": "^3.1.2",
+		"lodash": "^4.17.21",
+		"readline-sync": "^1.4.10",
+		"strip-ansi": "^7.1.0"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^1.8.0",
+		"@hearthstonejs/vanillatypes": "^4.0.1",
+		"@types/bun": "^1.1.3",
+		"@types/lodash": "^4.17.4",
+		"@types/node": "^20.14.2",
+		"@types/readline-sync": "^1.4.8",
+		"bun": "^1.1.12",
+		"generate-changelog": "^1.8.0",
+		"typescript": "^5.4.5"
+	}
 }

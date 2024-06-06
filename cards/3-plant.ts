@@ -2,19 +2,20 @@
 
 // This is used in Adapt
 
-import { type Blueprint } from '@Game/types.js';
+import assert from "node:assert";
+import type { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
-    name: 'Plant',
-    text: '',
-    cost: 1,
-    type: 'Minion',
-    classes: ['Neutral'],
-    rarity: 'Free',
-    collectible: false,
-    id: 3,
+	name: "Plant",
+	text: "",
+	cost: 1,
+	type: "Minion",
+	classes: ["Neutral"],
+	rarity: "Free",
+	collectible: false,
+	id: 3,
 
-    attack: 1,
-    health: 1,
-    tribe: 'None',
+	attack: 1,
+	health: 1,
+	tribe: "None",
 };

@@ -1,76 +1,83 @@
-import { type Card, type Player } from '@Game/internal.js';
-import { type Blueprint, type EventKey } from '@Game/types.js';
+import type { Card, Player } from "@Game/internal.js";
+import type { Blueprint, EventKey } from "@Game/types.js";
 
 /**
  * Game.PlayCard return value
  */
 export type GamePlayCardReturn =
-| true
-| 'cost'
-| 'traded'
-| 'forged'
-| 'space'
-| 'magnetize'
-| 'colossal'
-| 'refund'
-| 'counter'
-| 'invalid';
+	| true
+	| "cost"
+	| "traded"
+	| "forged"
+	| "space"
+	| "magnetize"
+	| "colossal"
+	| "refund"
+	| "counter"
+	| "invalid";
 
 /**
  * Attack return value
  */
 export type GameAttackReturn =
-| true
-| 'divineshield'
-| 'taunt'
-| 'stealth'
-| 'frozen'
-| 'plrnoattack'
-| 'noattack'
-| 'plrhasattacked'
-| 'hasattacked'
-| 'sleepy'
-| 'cantattackhero'
-| 'immune'
-| 'dormant'
-| 'titan'
-| 'invalid';
+	| true
+	| "divineshield"
+	| "taunt"
+	| "stealth"
+	| "frozen"
+	| "plrnoattack"
+	| "noattack"
+	| "plrhasattacked"
+	| "hasattacked"
+	| "sleepy"
+	| "cantattackhero"
+	| "immune"
+	| "dormant"
+	| "titan"
+	| "invalid";
 
 /**
  * ExportDeck error return value
  */
-export type FunctionsExportDeckError = undefined | { msg: string; info: undefined | { card?: CardLike; amount?: number }; recoverable: boolean };
+export type FunctionsExportDeckError =
+	| undefined
+	| {
+			msg: string;
+			info: undefined | { card?: CardLike; amount?: number };
+			recoverable: boolean;
+	  };
 
 /**
  * CalcMove return value
  */
-export type AiCalcMoveOption =
-| Card
-| 'hero power'
-| 'attack'
-| 'use'
-| 'end';
+export type AiCalcMoveOption = Card | "hero power" | "attack" | "use" | "end";
 
 /**
  * SelectTarget alignment
  */
-export type SelectTargetAlignment = 'friendly' | 'enemy' | 'any';
+export type SelectTargetAlignment = "friendly" | "enemy" | "any";
 /**
  * SelectTarget class
  */
-export type SelectTargetClass = 'hero' | 'minion' | 'any';
+export type SelectTargetClass = "hero" | "minion" | "any";
 /**
  * SelectTarget flags
  */
-export type SelectTargetFlag = 'allowLocations' | 'forceElusive';
+export type SelectTargetFlag = "allowLocations" | "forceElusive";
 
-export type CommandList = Record<string, (args: string[], flags?: { echo?: boolean; debug?: boolean }) => string | boolean>;
+export type CommandList = Record<
+	string,
+	(
+		args: string[],
+		flags?: { echo?: boolean; debug?: boolean },
+	) => string | boolean
+>;
 
 /**
  * GameConstants values.
  */
 export type GameConstants = {
-    refund: -1;
+	refund: -1;
 };
 
 /**
@@ -86,90 +93,97 @@ export type Target = Card | Player;
  * AI history object.
  */
 export type AiHistory = {
-    type: string;
-    data: any;
+	type: string;
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+	data: any;
 };
 
 export type Todo = {
-    state: 'not done' | 'doing' | 'done' | 'first pass' | 'second pass' | 'third pass';
-    description: string;
-    issue: number;
+	state:
+		| "not done"
+		| "doing"
+		| "done"
+		| "first pass"
+		| "second pass"
+		| "third pass";
+	description: string;
+	issue: number;
 };
 
 /**
  * Game configuration.
  */
 export type GameConfig = {
-    general: {
-        locale: string;
-        debug: boolean;
-        editor: string;
-        topicBranchWarning: boolean;
-        maxBoardSpace: number;
-        maxHandLength: number;
-    };
+	general: {
+		locale: string;
+		debug: boolean;
+		editor: string;
+		topicBranchWarning: boolean;
+		maxBoardSpace: number;
+		maxHandLength: number;
+	};
 
-    decks: {
-        validate: boolean;
-        minLength: number;
-        maxLength: number;
-        maxOfOneCard: number;
-        maxOfOneLegendary: number;
-    };
+	decks: {
+		validate: boolean;
+		minLength: number;
+		maxLength: number;
+		maxOfOneCard: number;
+		maxOfOneLegendary: number;
+	};
 
-    ai: {
-        player1: boolean;
-        player2: boolean;
+	ai: {
+		player1: boolean;
+		player2: boolean;
 
-        contextAnalysis: boolean;
-        attackModel: number;
-        mulliganThreshold: number;
-        tradeThreshold: number;
-        statsBias: number;
-        costBias: number;
-        spellValue: number;
-        keywordValue: number;
-        abilityValue: number;
+		contextAnalysis: boolean;
+		attackModel: number;
+		mulliganThreshold: number;
+		tradeThreshold: number;
+		statsBias: number;
+		costBias: number;
+		spellValue: number;
+		keywordValue: number;
+		abilityValue: number;
 
-        protectThreshold: number;
-        ignoreThreshold: number;
-        riskThreshold: number;
+		protectThreshold: number;
+		ignoreThreshold: number;
+		riskThreshold: number;
 
-        sentiments: {
-            positive: Record<string, number>;
-            negative: Record<string, number>;
-        };
-    };
+		sentiments: {
+			positive: Record<string, number>;
+			negative: Record<string, number>;
+		};
+	};
 
-    advanced: {
-        debugCommandPrefix: string;
-        spawnInDiyCards: boolean;
-        diyCardSpawnChance: number;
-        dcShowUncollectible: boolean;
-        getReadableCardMaxDepth: number;
-        getReadableCardNoRecursion: boolean;
-        getReadableCardAlwaysShowFullCard: boolean;
+	advanced: {
+		debugCommandPrefix: string;
+		spawnInDiyCards: boolean;
+		diyCardSpawnChance: number;
+		dcShowUncollectible: boolean;
+		getReadableCardMaxDepth: number;
+		getReadableCardNoRecursion: boolean;
+		getReadableCardAlwaysShowFullCard: boolean;
 
-        forgetfulRandomTargetFailAmount: number;
+		forgetfulRandomTargetFailAmount: number;
 
-        whitelistedHistoryKeys: EventKey[];
-        hideValueHistoryKeys: EventKey[];
-    };
+		whitelistedHistoryKeys: EventKey[];
+		hideValueHistoryKeys: EventKey[];
+	};
 
-    info: {
-        version: string;
-        branch: 'stable' | 'beta' | 'alpha' | 'topic';
-        build: number;
+	info: {
+		version: string;
+		branch: "stable" | "beta" | "alpha" | "topic";
+		build: number;
 
-        versionText: string;
+		versionText: string;
 
-        stableIntroText: string;
-        betaIntroText: string;
-        alphaIntroText: string;
-        topicIntroText: string;
+		stableIntroText: string;
+		betaIntroText: string;
+		alphaIntroText: string;
+		topicIntroText: string;
 
-        githubUrl: string;
-    };
+		githubUrl: string;
+	};
 
-    todo: Record<string, Todo>;
+	todo: Record<string, Todo>;
 };
