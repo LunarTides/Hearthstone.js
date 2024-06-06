@@ -51,7 +51,7 @@ export const deckcodeFunctions = {
 
 		// We don't convert the code in the try-catch block, since this function could throw an error which would be ignored
 		if (vanilla) {
-			actualCode = this.fromVanilla(plr, code);
+			actualCode = this.fromVanilla(plr, actualCode);
 		}
 
 		// BFU
@@ -126,7 +126,7 @@ export const deckcodeFunctions = {
 
 		const copyDefinition = actualCode.split("/")[1];
 
-		actualCode = code.replace(copyDefinitionFormat, "");
+		actualCode = actualCode.replace(copyDefinitionFormat, "");
 
 		const deck = actualCode.split(",");
 		const newDeck: Card[] = [];

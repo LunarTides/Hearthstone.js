@@ -687,7 +687,7 @@ export class Player {
 		const unsuppress = game.functions.event.suppress("AddCardToHand");
 
 		let drawAmount = amount;
-		for (let i = 0; i < amount; i++) {
+		for (let i = 0; i < drawAmount; i++) {
 			// We need the `deckLength` variable since pop may change the length of the deck
 			const deckLength = this.deck.length;
 			const card = this.deck.pop();
