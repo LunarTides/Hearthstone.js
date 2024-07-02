@@ -32,14 +32,14 @@
 		"strip-ansi": "^7.1.0"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^1.8.0",
-		"@hearthstonejs/vanillatypes": "^4.0.1",
-		"@types/bun": "^1.1.3",
-		"@types/lodash": "^4.17.4",
-		"@types/node": "^20.14.2",
+		"@biomejs/biome": "^1.8.3",
+		"@hearthstonejs/vanillatypes": "^5.1.0",
+		"@types/bun": "^1.1.6",
+		"@types/lodash": "^4.17.6",
+		"@types/node": "^20.14.9",
 		"@types/readline-sync": "^1.4.8",
-		"bun": "^1.1.12",
+		"bun": "^1.1.17",
 		"generate-changelog": "^1.8.0",
-		"typescript": "^5.4.5"
+		"typescript": "^5.5.3"
 	}
 }
