@@ -16,7 +16,7 @@ export const blueprint: Blueprint = {
 	health: 2,
 	tribe: "Totem",
 
-	create(plr, self) {
+	create(owner, self) {
 		self.addKeyword("Taunt");
 	},
 };

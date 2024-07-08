@@ -14,10 +14,10 @@ export const blueprint: Blueprint = {
 	collectible: false,
 	id: 119,
 
-	heropower(plr, self) {
+	heropower(owner, self) {
 		// Filter away totem cards that is already on the player's side of the board.
 		const filteredTotemCardNames = game.cardCollections.totems.filter(
-			(id) => !plr.board.some((m) => m.id === id),
+			(id) => !owner.board.some((m) => m.id === id),
 		);
 
 		// If there are no totem cards to summon, refund the hero power, which gives the player back their mana
@@ -32,17 +32,17 @@ export const blueprint: Blueprint = {
 		}
 
 		// Create a card from the name.
-		const card = new Card(cardName, plr);
+		const card = new Card(cardName, owner);
 
 		// Summon the card on the player's side of the board
-		plr.summon(card);
+		owner.summon(card);
 		return true;
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		const totemCardIds = game.cardCollections.totems;
 		const checkForTotemCard = (amount: number) =>
-			plr.board.filter((card) => totemCardIds.includes(card.id)).length ===
+			owner.board.filter((card) => totemCardIds.includes(card.id)).length ===
 			amount;
 
 		// There should be 0 totem cards on the board
@@ -63,10 +63,10 @@ export const blueprint: Blueprint = {
 
 		// Assert that all of the totem cards are on the board
 		for (const id of totemCardIds) {
-			assert(plr.board.some((card) => card.id === id));
+			assert(owner.board.some((card) => card.id === id));
 		}
 
 		// Assert that the board's length is equal to the amount of totem cards.
-		assert.equal(plr.board.length, totemCardIds.length);
+		assert.equal(owner.board.length, totemCardIds.length);
 	},
 };

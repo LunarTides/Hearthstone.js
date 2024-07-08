@@ -13,17 +13,17 @@ export const blueprint: Blueprint = {
 	collectible: false,
 	id: 116,
 
-	heropower(plr, self) {
+	heropower(owner, self) {
 		// Deal 2 damage to the enemy hero.
-		game.attack(2, plr.getOpponent());
+		game.attack(2, owner.getOpponent());
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		// The opponent should have 30 health
-		assert.equal(plr.getOpponent().health, 30);
+		assert.equal(owner.getOpponent().health, 30);
 		self.activate("heropower");
 
 		// The opponent should now have 28 health.
-		assert.equal(plr.getOpponent().health, 30 - 2);
+		assert.equal(owner.getOpponent().health, 30 - 2);
 	},
 };

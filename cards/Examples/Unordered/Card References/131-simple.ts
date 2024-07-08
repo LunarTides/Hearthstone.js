@@ -17,12 +17,12 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribe: "None",
 
-	create(plr, self) {
+	create(owner, self) {
 		// Store a coin for later
-		self.storage.the_coin = new Card(game.cardIds.theCoin2, plr);
+		self.storage.the_coin = new Card(game.cardIds.theCoin2, owner);
 	},
 
-	placeholders(plr, self) {
+	placeholders(owner, self) {
 		/*
 		 * You can reference entire cards in placeholders.
 		 * Go in-game, give yourself this card, and type 'detail' to see how it works.
@@ -33,7 +33,7 @@ export const blueprint: Blueprint = {
 		return { coin };
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		// TODO: Add proper tests. #325
 		return true;
 	},

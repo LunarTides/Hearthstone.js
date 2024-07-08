@@ -13,7 +13,7 @@ export const blueprint: Blueprint = {
 	collectible: false,
 	id: 118,
 
-	heropower(plr, self) {
+	heropower(owner, self) {
 		// Restore 2 Health.
 
 		// Hero power targets need to use the `forceElusive` flag.
@@ -35,19 +35,19 @@ export const blueprint: Blueprint = {
 		return true;
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		// Health: 1->3
-		plr.health = 1;
-		plr.inputQueue = ["face", "n"];
+		owner.health = 1;
+		owner.inputQueue = ["face", "n"];
 		self.activate("heropower");
 
-		assert.equal(plr.health, 1 + 2);
+		assert.equal(owner.health, 1 + 2);
 
 		// Health: 29->30 (cap at 30)
-		plr.health = 29;
-		plr.inputQueue = ["face", "n"];
+		owner.health = 29;
+		owner.inputQueue = ["face", "n"];
 		self.activate("heropower");
 
-		assert.equal(plr.health, 30);
+		assert.equal(owner.health, 30);
 	},
 };

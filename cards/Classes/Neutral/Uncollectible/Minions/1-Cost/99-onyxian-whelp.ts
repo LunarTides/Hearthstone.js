@@ -16,7 +16,7 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribe: "Dragon",
 
-	create(plr, self) {
+	create(owner, self) {
 		// Add additional fields here
 		self.addKeyword("Rush");
 	},

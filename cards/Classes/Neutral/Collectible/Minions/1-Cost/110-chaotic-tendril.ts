@@ -18,7 +18,7 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribe: "None",
 
-	battlecry(plr, self) {
+	battlecry(owner, self) {
 		// Cast a random 1-Cost spell. Improve your future Chaotic Tendrils.
 		const pool = Card.all().filter(
 			(card) => card.type === "Spell" && card.cost === 1,
@@ -31,7 +31,7 @@ export const blueprint: Blueprint = {
 		// TODO: Improve your future Chaotic Tendrils
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		// TODO: Add proper tests. #325
 		return true;
 	},

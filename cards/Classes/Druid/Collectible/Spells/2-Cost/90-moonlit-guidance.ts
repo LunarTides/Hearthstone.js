@@ -15,15 +15,15 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "Arcane",
 
-	cast(plr, self) {
+	cast(owner, self) {
 		// Discover a copy of a card in your deck. If you play it this turn, draw the original.
-		const original = game.interact.card.discover(self.text, plr.deck, false);
+		const original = game.interact.card.discover(self.text, owner.deck, false);
 		if (!original) {
 			return;
 		}
 
 		const card = original.imperfectCopy();
-		plr.addToHand(card);
+		owner.addToHand(card);
 
 		// Wait for the player to play the card
 		const destroy = game.functions.event.addListener(
@@ -35,7 +35,7 @@ export const blueprint: Blueprint = {
 					return false;
 				}
 
-				plr.drawSpecific(original);
+				owner.drawSpecific(original);
 				return true;
 			},
 		);
@@ -44,7 +44,7 @@ export const blueprint: Blueprint = {
 		game.functions.event.addListener("EndTurn", destroy);
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		// TODO: Add proper tests. #325
 		return true;
 	},

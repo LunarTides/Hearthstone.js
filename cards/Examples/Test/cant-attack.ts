@@ -17,14 +17,14 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribe: "None",
 
-	create(plr, self) {
+	create(owner, self) {
 		// Cant Attack
 
 		self.addKeyword("Cant Attack");
 	},
 
-	test(plr, self) {
-		plr.summon(self);
+	test(owner, self) {
+		owner.summon(self);
 
 		// The card should be sleepy by default
 		assert.ok(self.sleepy);

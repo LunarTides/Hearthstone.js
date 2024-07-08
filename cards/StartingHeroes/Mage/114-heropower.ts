@@ -13,7 +13,7 @@ export const blueprint: Blueprint = {
 	collectible: false,
 	id: 114,
 
-	heropower(plr, self) {
+	heropower(owner, self) {
 		// Deal 1 damage.
 
 		// Use of `selectTarget` in the `heropower` ability requires the use of the `forceElusive` flag
@@ -35,14 +35,14 @@ export const blueprint: Blueprint = {
 		return true;
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		// The opponent should have 30 health.
-		assert.equal(plr.getOpponent().health, 30);
+		assert.equal(owner.getOpponent().health, 30);
 
-		plr.inputQueue = ["face", "y"];
+		owner.inputQueue = ["face", "y"];
 		self.activate("heropower");
 
 		// The opponent should have 29 health.
-		assert.equal(plr.getOpponent().health, 30 - 1);
+		assert.equal(owner.getOpponent().health, 30 - 1);
 	},
 };

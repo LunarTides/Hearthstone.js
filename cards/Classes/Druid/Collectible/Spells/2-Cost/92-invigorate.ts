@@ -15,7 +15,7 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "Nature",
 
-	cast(plr, self) {
+	cast(owner, self) {
 		// Choose One - Gain an empty Mana Crystal; or Draw a card.
 		game.interact.chooseOne(
 			1,
@@ -23,34 +23,34 @@ export const blueprint: Blueprint = {
 				"Gain an empty Mana Crystal",
 				() => {
 					// Gain an empty Mana Crystal
-					plr.addEmptyMana(1);
+					owner.addEmptyMana(1);
 				},
 			],
 			[
 				"Draw a card",
 				() => {
 					// Draw a card
-					plr.drawCards(1);
+					owner.drawCards(1);
 				},
 			],
 		);
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		// Gain an empty Mana Crystal
-		const { emptyMana } = plr;
+		const { emptyMana } = owner;
 
-		plr.inputQueue = ["1"];
+		owner.inputQueue = ["1"];
 		self.activate("cast");
 
-		assert.equal(plr.emptyMana, emptyMana + 1);
+		assert.equal(owner.emptyMana, emptyMana + 1);
 
 		// Draw a card
-		const handSize = plr.hand.length;
+		const handSize = owner.hand.length;
 
-		plr.inputQueue = ["2"];
+		owner.inputQueue = ["2"];
 		self.activate("cast");
 
-		assert.equal(plr.hand.length, handSize + 1);
+		assert.equal(owner.hand.length, handSize + 1);
 	},
 };

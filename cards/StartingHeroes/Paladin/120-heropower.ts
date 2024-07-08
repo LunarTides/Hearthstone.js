@@ -14,18 +14,19 @@ export const blueprint: Blueprint = {
 	collectible: false,
 	id: 120,
 
-	heropower(plr, self) {
+	heropower(owner, self) {
 		// Summon a 1/1 Silver Hand Recruit.
 
 		// Create the Silver Hand Recruit card.
-		const card = new Card(game.cardIds.silverHandRecruit20, plr);
+		const card = new Card(game.cardIds.silverHandRecruit20, owner);
 
 		// Summon the card
-		plr.summon(card);
+		owner.summon(card);
 	},
 
-	test(plr, self) {
-		const checkIfMinionExists = () => plr.board.some((card) => card.id === 20);
+	test(owner, self) {
+		const checkIfMinionExists = () =>
+			owner.board.some((card) => card.id === 20);
 
 		// The minion should not exist
 		assert(!checkIfMinionExists());

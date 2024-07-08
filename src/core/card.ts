@@ -219,9 +219,9 @@ export class Card {
 	deckSettings?: GameConfig;
 
 	/**
-	 * The owner of the card.
+	 * The owner of this card.
 	 */
-	plr: Player;
+	owner: Player;
 
 	/**
 	 * A list of backups of this card.
@@ -292,11 +292,11 @@ export class Card {
 	/**
 	 * Create a card.
 	 *
-	 * @param name The name of the card
-	 * @param plr The card's owner.
+	 * @param name The name of this card
+	 * @param owner This card's owner.
 	 * @param [suppressEvent=false] If the "CreateCard" event should be suppressed.
 	 */
-	constructor(id: number, plr: Player, suppressEvent = false) {
+	constructor(id: number, owner: Player, suppressEvent = false) {
 		// Get the blueprint from the cards list
 		const blueprint = game.blueprints.find((c) => c.id === id);
 		if (!blueprint) {
@@ -315,7 +315,7 @@ export class Card {
 
 		// Set maxHealth if the card is a minion or weapon
 		this.maxHealth = this.blueprint.health;
-		this.plr = plr;
+		this.owner = owner;
 
 		// Override the properties from the blueprint
 		this.doBlueprint(false);
@@ -349,7 +349,7 @@ export class Card {
 			unsuppress = game.functions.event.suppress("CreateCard");
 		}
 
-		game.event.broadcast("CreateCard", this, this.plr);
+		game.event.broadcast("CreateCard", this, this.owner);
 
 		if (unsuppress) {
 			unsuppress();
@@ -530,9 +530,9 @@ export class Card {
 		 * Do: this.test = true
 		 *
 		 * Function Example:
-		 * Blueprint: { name: "The Coin", cost: 0, cast(plr, self): { plr.refreshMana(1, plr.maxMana) } }
-		 *                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-		 * Do: this.abilities.cast = [{ plr.addMana(1) }]
+		 * Blueprint: { name: "The Coin", cost: 0, cast(owner, self): { owner.refreshMana(1, owner.maxMana) } }
+		 *                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+		 * Do: this.abilities.cast = [{ owner.addMana(1) }]
 		 *                           ^                  ^
 		 *                           This is in an array so we can add multiple events on casts
 		 */
@@ -550,7 +550,7 @@ export class Card {
 		this.maxHealth = this.blueprint.health;
 
 		if (this.heropowerId) {
-			this.heropower = new Card(this.heropowerId, this.plr);
+			this.heropower = new Card(this.heropowerId, this.owner);
 		}
 
 		this.text = game.functions.color.fromTags(this.text || "");
@@ -622,8 +622,8 @@ export class Card {
 				this.ready();
 				this.resetAttackTimes();
 
-				if (this.plr.weapon === this) {
-					this.plr.canAttack = true;
+				if (this.owner.weapon === this) {
+					this.owner.canAttack = true;
 				}
 
 				break;
@@ -691,7 +691,7 @@ export class Card {
 	freeze(): boolean {
 		this.addKeyword("Frozen");
 
-		game.event.broadcast("FreezeCard", this, this.plr);
+		game.event.broadcast("FreezeCard", this, this.owner);
 
 		return true;
 	}
@@ -843,10 +843,10 @@ export class Card {
 			this.health = this.maxHealth ?? -1;
 
 			if (this.health > before) {
-				game.event.broadcast("HealthRestored", this.maxHealth, this.plr);
+				game.event.broadcast("HealthRestored", this.maxHealth, this.owner);
 			}
 		} else if (this.health > before) {
-			game.event.broadcast("HealthRestored", this.health, this.plr);
+			game.event.broadcast("HealthRestored", this.health, this.owner);
 		}
 
 		return true;
@@ -880,10 +880,10 @@ export class Card {
 		}
 
 		this.setStats(this.attack, this.health - amount);
-		game.event.broadcast("DamageCard", [this, amount], this.plr);
+		game.event.broadcast("DamageCard", [this, amount], this.owner);
 
 		if (this.type === "Weapon" && !this.isAlive()) {
-			this.plr.destroyWeapon();
+			this.owner.destroyWeapon();
 		}
 
 		game.killCardsOnBoard();
@@ -1027,8 +1027,8 @@ export class Card {
 	 *
 	 * @param plr
 	 */
-	bounce(plr: Player = this.plr): boolean {
-		this.plr = plr;
+	bounce(plr: Player = this.owner): boolean {
+		this.owner = plr;
 		plr.addToHand(this.perfectCopy());
 		this.destroy();
 		return true;
@@ -1107,7 +1107,7 @@ export class Card {
 		// Remove active enchantments.
 		this.applyEnchantments();
 
-		game.event.broadcast("SilenceCard", this, this.plr);
+		game.event.broadcast("SilenceCard", this, this.owner);
 
 		game.killCardsOnBoard();
 		return true;
@@ -1163,7 +1163,7 @@ export class Card {
 		/*
 		 * This activates a function
 		 * Example: activate("cast")
-		 * Do: this.cast.forEach(castFunc => castFunc(plr, card))
+		 * Do: this.cast.forEach(castFunc => castFunc(owner, card))
 		 * Returns a list of the return values from all the function calls
 		 */
 		const ability: Ability[] | undefined = this.abilities[name];
@@ -1181,7 +1181,7 @@ export class Card {
 			}
 
 			const result = callback(
-				this.plr,
+				this.owner,
 				this,
 				key as EventKey,
 				_unknownValue,
@@ -1197,7 +1197,7 @@ export class Card {
 			}
 
 			// If the return value is -1, meaning "refund", refund the card and stop the for loop
-			game.event.broadcast("CancelCard", [this, name], this.plr);
+			game.event.broadcast("CancelCard", [this, name], this.owner);
 
 			returnValue = game.constants.refund;
 
@@ -1211,10 +1211,10 @@ export class Card {
 			 * It's a bit hacky, and not very efficient, but it works
 			 */
 			game.functions.event.withSuppressed("AddCardToHand", () =>
-				this.plr.addToHand(this),
+				this.owner.addToHand(this),
 			);
 
-			this.plr[this.costType] += this.cost;
+			this.owner[this.costType] += this.cost;
 
 			// Return from the for loop
 		}
@@ -1228,7 +1228,7 @@ export class Card {
 	 * @returns Manathirst for `m`
 	 */
 	manathirst(m: number): boolean {
-		return this.plr.emptyMana >= m;
+		return this.owner.emptyMana >= m;
 	}
 
 	/**
@@ -1239,7 +1239,7 @@ export class Card {
 	 *
 	 * @returns If the card was successfully discarded
 	 */
-	discard(plr = this.plr): boolean {
+	discard(plr = this.owner): boolean {
 		const returnValue = game.functions.util.remove(plr.hand, this);
 
 		if (returnValue) {
@@ -1500,7 +1500,7 @@ export class Card {
 	 *
 	 * @example
 	 * card.text = "The current turn count is {turns}";
-	 * card.placeholders = [(plr, self) => {
+	 * card.placeholders = [(owner, self) => {
 	 *     const turns = game.functions.util.getTraditionalTurnCounter();
 	 *
 	 *     return { turns };
@@ -1563,7 +1563,7 @@ export class Card {
 	 *
 	 * @example
 	 * const cloned = card.imperfectCopy();
-	 * const cloned2 = game.createCard(card.id, card.plr);
+	 * const cloned2 = game.createCard(card.id, card.owner);
 	 *
 	 * // This will actually fail since they're slightly different, but you get the point
 	 * assert.equal(cloned, cloned2);
@@ -1571,7 +1571,7 @@ export class Card {
 	 * @returns An imperfect copy of this card.
 	 */
 	imperfectCopy(): Card {
-		return new Card(this.id, this.plr);
+		return new Card(this.id, this.owner);
 	}
 
 	/**
@@ -1609,7 +1609,7 @@ export class Card {
 	 * @returns Success | Errorcode
 	 */
 	validateForDeck(): true | "class" | "uncollectible" | "runes" {
-		if (!this.classes.includes(this.plr.heroClass)) {
+		if (!this.classes.includes(this.owner.heroClass)) {
 			// If it is a neutral card, it is valid
 			if (this.classes.includes("Neutral")) {
 				// Valid
@@ -1623,7 +1623,7 @@ export class Card {
 		}
 
 		// Runes
-		if (this.runes && !this.plr.testRunes(this.runes)) {
+		if (this.runes && !this.owner.testRunes(this.runes)) {
 			return "runes";
 		}
 
@@ -1703,9 +1703,9 @@ export class Card {
 			}
 
 			case "Living Spores": {
-				this.addAbility("deathrattle", (plr, _) => {
-					plr.summon(new Card(game.cardIds.plant3, plr));
-					plr.summon(new Card(game.cardIds.plant3, plr));
+				this.addAbility("deathrattle", (owner, _) => {
+					owner.summon(new Card(game.cardIds.plant3, owner));
+					owner.summon(new Card(game.cardIds.plant3, owner));
 				});
 				break;
 			}
@@ -1818,9 +1818,9 @@ export class Card {
 	 * @param newOwner The new owner of the card.
 	 */
 	takeControl(newOwner: Player): void {
-		game.functions.util.remove(this.plr.board, this);
+		game.functions.util.remove(this.owner.board, this);
 
-		this.plr = newOwner;
+		this.owner = newOwner;
 		newOwner.summon(this);
 	}
 

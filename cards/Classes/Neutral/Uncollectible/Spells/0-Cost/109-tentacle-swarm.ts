@@ -18,24 +18,24 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "None",
 
-	cast(plr, self) {
+	cast(owner, self) {
 		// Fill your hand with 1/1 Chaotic Tendrils.
-		const remaining = plr.getRemainingHandSpace();
+		const remaining = owner.getRemainingHandSpace();
 
 		for (let index = 0; index < remaining; index++) {
-			const card = new Card(game.cardIds.chaoticTendril110, plr);
-			plr.addToHand(card);
+			const card = new Card(game.cardIds.chaoticTendril110, owner);
+			owner.addToHand(card);
 		}
 	},
 
-	test(plr, self) {
-		const handSize = plr.hand.length;
+	test(owner, self) {
+		const handSize = owner.hand.length;
 		self.activate("cast");
 
 		// Check if the player's hand was filled with tendrils
-		const amountOfCards = plr.hand.length - handSize;
+		const amountOfCards = owner.hand.length - handSize;
 		assert.equal(
-			plr.hand.filter((card) => card.id === game.cardIds.chaoticTendril110)
+			owner.hand.filter((card) => card.id === game.cardIds.chaoticTendril110)
 				.length,
 			amountOfCards,
 		);

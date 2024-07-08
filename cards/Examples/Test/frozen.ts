@@ -17,11 +17,11 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribe: "None",
 
-	create(plr, self) {
+	create(owner, self) {
 		self.freeze();
 	},
 
-	passive(plr, self, key, _unknownValue, eventPlayer) {
+	passive(owner, self, key, _unknownValue, eventPlayer) {
 		// This is forever Frozen
 
 		if (key !== "StartTurn") {
@@ -31,13 +31,13 @@ export const blueprint: Blueprint = {
 		self.freeze();
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		// Summon this minion
-		plr.summon(self);
+		owner.summon(self);
 
 		for (let i = 0; i < 5; i++) {
 			// Attacking the enemy hero this this minion should always return "frozen"
-			const returnValue = game.attack(self, plr.getOpponent());
+			const returnValue = game.attack(self, owner.getOpponent());
 			assert.equal(returnValue, "frozen");
 
 			game.endTurn();

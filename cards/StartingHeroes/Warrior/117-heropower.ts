@@ -13,19 +13,19 @@ export const blueprint: Blueprint = {
 	collectible: false,
 	id: 117,
 
-	heropower(plr, self) {
+	heropower(owner, self) {
 		// Gain 2 Armor.
 
 		// Give the player +2 armor.
-		plr.addArmor(2);
+		owner.addArmor(2);
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		// The player should have 0 armor
-		assert.equal(plr.armor, 0);
+		assert.equal(owner.armor, 0);
 		self.activate("heropower");
 
 		// The player should now have 2 armor
-		assert.equal(plr.armor, 2);
+		assert.equal(owner.armor, 2);
 	},
 };

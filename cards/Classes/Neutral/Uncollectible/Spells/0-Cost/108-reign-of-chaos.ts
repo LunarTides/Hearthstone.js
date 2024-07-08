@@ -18,37 +18,37 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "None",
 
-	cast(plr, self) {
+	cast(owner, self) {
 		// Take control of an enemy minion.
 		const card = game.interact.selectCardTarget(self.text, self, "enemy");
 		if (!card) {
 			return game.constants.refund;
 		}
 
-		card.takeControl(plr);
+		card.takeControl(owner);
 		return true;
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		// Get the opponent
-		const opponent = plr.getOpponent();
+		const opponent = owner.getOpponent();
 
 		// Create a sheep and summon it on the opponent's side of the board
 		const sheep = new Card(game.cardIds.sheep1, opponent);
 		opponent.summon(sheep);
 
 		// Check if the sheep's owner is the opponent, is on the opponent's side of the board, and not the friendly player's side of the board
-		assert.equal(sheep.plr, opponent);
+		assert.equal(sheep.owner, opponent);
 		assert.ok(opponent.board.includes(sheep));
-		assert.ok(!plr.board.includes(sheep));
+		assert.ok(!owner.board.includes(sheep));
 
 		// Activate cast and make the player choose the sheep
-		plr.inputQueue = ["1"];
+		owner.inputQueue = ["1"];
 		self.activate("cast");
 
 		// Check if the sheep's owner is the friendly player, is on this side of the board, and not the opponent's side of the board
-		assert.equal(sheep.plr, plr);
+		assert.equal(sheep.owner, owner);
 		assert.ok(!opponent.board.includes(sheep));
-		assert.ok(plr.board.includes(sheep));
+		assert.ok(owner.board.includes(sheep));
 	},
 };

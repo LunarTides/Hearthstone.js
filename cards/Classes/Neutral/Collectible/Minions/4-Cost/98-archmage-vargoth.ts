@@ -18,7 +18,7 @@ export const blueprint: Blueprint = {
 	health: 6,
 	tribe: "None",
 
-	passive(plr, self, key, _unknownValue) {
+	passive(owner, self, key, _unknownValue) {
 		// At the end of your turn, cast a spell you've cast this turn (targets are random).
 
 		// Only proceed if the correct event key was broadcast
@@ -26,7 +26,7 @@ export const blueprint: Blueprint = {
 			return;
 		}
 
-		const spells: Card[] | undefined = game.event.events.PlayCard?.[plr.id]
+		const spells: Card[] | undefined = game.event.events.PlayCard?.[owner.id]
 			.filter(
 				(object) =>
 					object[0] instanceof Card &&
@@ -40,12 +40,12 @@ export const blueprint: Blueprint = {
 
 		const spell = game.lodash.sample(spells);
 
-		plr.forceTarget = game.functions.util.getRandomTarget();
+		owner.forceTarget = game.functions.util.getRandomTarget();
 		spell?.activate("cast");
-		plr.forceTarget = undefined;
+		owner.forceTarget = undefined;
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		// TODO: Add proper tests. #325
 		return true;
 	},

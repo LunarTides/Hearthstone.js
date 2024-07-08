@@ -14,19 +14,19 @@ export const blueprint: Blueprint = {
 	collectible: false,
 	id: 125,
 
-	heropower(plr, self) {
+	heropower(owner, self) {
 		// Add a lacky to your hand.
 		const lackeyId = game.lodash.sample(game.cardCollections.lackeys);
 		if (!lackeyId) {
 			return;
 		}
 
-		const lackey = new Card(lackeyId, plr);
+		const lackey = new Card(lackeyId, owner);
 
-		plr.addToHand(lackey);
+		owner.addToHand(lackey);
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		// TODO: Add proper tests. #325
 		return true;
 	},

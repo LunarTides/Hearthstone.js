@@ -18,7 +18,7 @@ export const blueprint: Blueprint = {
 	health: 5,
 	tribe: "None",
 
-	create(plr, self) {
+	create(owner, self) {
 		// Add additional fields here
 		self.addKeyword("Titan", [
 			game.cardIds.induceInsanity107,
@@ -27,7 +27,7 @@ export const blueprint: Blueprint = {
 		]);
 	},
 
-	passive(plr, self, key, _unknownValue) {
+	passive(owner, self, key, _unknownValue) {
 		// After this uses an ability, cast two random spells
 
 		// Only proceed if the correct event key was broadcast
@@ -57,7 +57,7 @@ export const blueprint: Blueprint = {
 		}
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		// TODO: Add proper tests. #325
 		return true;
 	},

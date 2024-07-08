@@ -16,25 +16,25 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "None",
 
-	cast(plr, self) {
+	cast(owner, self) {
 		// Fill your board with 2/1 Whelps with Rush.
-		const remainingBoardSpace = plr.getRemainingBoardSpace();
+		const remainingBoardSpace = owner.getRemainingBoardSpace();
 		for (let index = 0; index < remainingBoardSpace; index++) {
-			const whelp = new Card(game.cardIds.onyxianWhelp99, plr);
-			plr.summon(whelp);
+			const whelp = new Card(game.cardIds.onyxianWhelp99, owner);
+			owner.summon(whelp);
 		}
 	},
 
-	test(plr, self) {
-		assert.equal(plr.board.length, 0);
+	test(owner, self) {
+		assert.equal(owner.board.length, 0);
 		self.activate("cast");
 
 		// Check if the board has been filled
-		assert.equal(plr.board.length, game.config.general.maxBoardSpace);
+		assert.equal(owner.board.length, game.config.general.maxBoardSpace);
 
 		// Check if every card on the board is a whelp
 		assert.ok(
-			plr.board.every((card) => card.id === game.cardIds.onyxianWhelp99),
+			owner.board.every((card) => card.id === game.cardIds.onyxianWhelp99),
 		);
 	},
 };

@@ -15,7 +15,7 @@ export const blueprint: Blueprint = {
 	armor: 5,
 	heropowerId: 128,
 
-	battlecry(plr, self) {
+	battlecry(owner, self) {
 		// Destroy 1 random enemy minion.
 		const amount = game.functions.card.galakrondFormula(
 			self.storage.invokeCount as number,
@@ -23,7 +23,7 @@ export const blueprint: Blueprint = {
 
 		for (let i = 0; i < amount; i++) {
 			// Get a random minion from the opponent's board.
-			const board = plr.getOpponent().board;
+			const board = owner.getOpponent().board;
 
 			const minion = game.lodash.sample(board);
 			if (!minion) {
@@ -35,11 +35,11 @@ export const blueprint: Blueprint = {
 		}
 	},
 
-	invoke(plr, self) {
+	invoke(owner, self) {
 		self.galakrondBump("invokeCount");
 	},
 
-	placeholders(plr, self) {
+	placeholders(owner, self) {
 		if (!self.storage.invokeCount) {
 			return { amount: 0, plural: "s", plural2: "They" };
 		}

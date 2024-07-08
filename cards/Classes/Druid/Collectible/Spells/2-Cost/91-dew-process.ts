@@ -15,7 +15,7 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "Nature",
 
-	cast(plr, self) {
+	cast(owner, self) {
 		// For the rest of the game, players draw an extra card at the start of their turn.
 		game.functions.event.addListener(
 			"StartTurn",
@@ -27,21 +27,21 @@ export const blueprint: Blueprint = {
 		);
 	},
 
-	test(plr, self) {
-		let handSize = plr.hand.length;
+	test(owner, self) {
+		let handSize = owner.hand.length;
 
 		// When the card hasn't been played, draw 1 card every turn.
 		game.endTurn();
 		game.endTurn();
 
 		// Increment handSize by 1 so that we can do handSize + 2
-		assert.equal(plr.hand.length, ++handSize);
+		assert.equal(owner.hand.length, ++handSize);
 
 		self.activate("cast");
 
 		game.endTurn();
 		game.endTurn();
 
-		assert.equal(plr.hand.length, handSize + 2);
+		assert.equal(owner.hand.length, handSize + 2);
 	},
 };

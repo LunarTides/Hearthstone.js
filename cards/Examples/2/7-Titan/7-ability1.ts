@@ -17,7 +17,7 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "None",
 
-	cast(plr, self) {
+	cast(owner, self) {
 		// Destroy an enemy minion.
 
 		// Select an enemy minion to destroy
@@ -30,19 +30,19 @@ export const blueprint: Blueprint = {
 		return true;
 	},
 
-	test(plr, self) {
-		const opponent = plr.getOpponent();
+	test(owner, self) {
+		const opponent = owner.getOpponent();
 
 		// Create a sheep and summon it on the opponent's side of the board
 		const sheep = new Card(game.cardIds.sheep1, opponent);
 		opponent.summon(sheep);
 
 		// Kill the sheep
-		plr.inputQueue = ["1"];
+		owner.inputQueue = ["1"];
 		self.activate("cast");
 
 		// Check if the sheep is dead
-		assert.equal(plr.board.length, 0);
+		assert.equal(owner.board.length, 0);
 		assert.equal(sheep.health, 0);
 	},
 };

@@ -23,15 +23,15 @@ type EventManagerType = {
 		questsName: "secrets" | "sidequests" | "quests",
 		key: EventKey,
 		value: UnknownEventValue,
-		plr: Player,
+		owner: Player,
 	): boolean;
 	broadcast(
 		key: EventKey,
 		value: UnknownEventValue,
-		plr: Player,
+		owner: Player,
 		updateHistory?: boolean,
 	): boolean;
-	addHistory(key: EventKey, value: UnknownEventValue, plr: Player): void;
+	addHistory(key: EventKey, value: UnknownEventValue, owner: Player): void;
 	broadcastDummy(plr: Player): boolean;
 	increment(player: Player, key: string, amount?: number): number;
 };

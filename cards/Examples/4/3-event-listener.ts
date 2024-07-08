@@ -16,7 +16,7 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribe: "None",
 
-	battlecry(plr, self) {
+	battlecry(owner, self) {
 		// For the rest of the game, your battlecries trigger twice.
 
 		/*
@@ -45,7 +45,7 @@ export const blueprint: Blueprint = {
 				 * The return value will be explained below
 				 */
 				if (
-					!(value.type === "Minion" && eventPlayer === plr && value !== self)
+					!(value.type === "Minion" && eventPlayer === owner && value !== self)
 				) {
 					return false;
 				}
@@ -69,7 +69,7 @@ export const blueprint: Blueprint = {
 		// destroy(); // Run this function to destroy the event listener
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		// TODO: Add proper tests. #325
 		return true;
 	},

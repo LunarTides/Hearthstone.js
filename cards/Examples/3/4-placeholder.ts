@@ -18,15 +18,15 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "None",
 
-	cast(plr, self) {
+	cast(owner, self) {
 		// Gain mana equal to the turn counter.
 		const turns = game.functions.util.getTraditionalTurnCounter();
 
-		plr.addMana(turns);
+		owner.addMana(turns);
 	},
 
 	// This function will be run every tick, and will replace the placeholders in the description with this function's return value.
-	placeholders(plr, self) {
+	placeholders(owner, self) {
 		/*
 		 * All occurances of `{turns}` will be replaced by the value in `game.turns`
 		 * All `{laugh}` will be replaced by 'haha lol'
@@ -51,7 +51,7 @@ export const blueprint: Blueprint = {
 		};
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		self.replacePlaceholders();
 		assert.equal(
 			self.text,

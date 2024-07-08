@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
 	 * Note the new `key`, `_unknownValue` and `eventPlayer` arguments.
 	 * These are only used in the `passive` and `handpassive` abilities.
 	 */
-	passive(plr, self, key, _unknownValue, eventPlayer) {
+	passive(owner, self, key, _unknownValue, eventPlayer) {
 		/*
 		 * Your battlecries trigger twice.
 		 * ^ In order to do this, we wait until a minion is played, then manually trigger its battlecry.
@@ -52,10 +52,10 @@ export const blueprint: Blueprint = {
 		 * in order for refunding to not trigger the event, so we can trigger the minion's battlecry again.
 		 * We don't refund here, since refunding from passives is not supported, and currently doesn't do anything.
 		 * But if i add refunding from passives, it would probably break the card in some way, so just wait until it is supported and you know what it does before using it.
-		 * We do `!(key === 'PlayCard' && eventPlayer === plr)` instead of `key !== 'PlayCard' || eventPlayer !== plr`` for clarity.
+		 * We do `!(key === 'PlayCard' && eventPlayer === owner)` instead of `key !== 'PlayCard' || eventPlayer !== owner`` for clarity.
 		 * We only want YOUR battlecries to trigger twice. (`eventPlayer` is the player that triggered the event)
 		 */
-		if (!(key === "PlayCard" && eventPlayer === plr)) {
+		if (!(key === "PlayCard" && eventPlayer === owner)) {
 			return;
 		}
 
@@ -82,7 +82,7 @@ export const blueprint: Blueprint = {
 		value.activate("battlecry");
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		// TODO: Add proper tests. #325
 		return true;
 	},

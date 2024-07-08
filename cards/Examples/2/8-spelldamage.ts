@@ -23,22 +23,25 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "None",
 
-	cast(plr, self) {
+	cast(owner, self) {
 		// Deal $3 damage to the enemy hero.
 
 		/*
 		 * Put the $ sign here to make the game apply spell damage correctly.
 		 * Ideally you wouldn't need to do that and the game would figure it out, but i wasn't able to get it to work.
 		 */
-		game.attack("$3", plr.getOpponent());
+		game.attack("$3", owner.getOpponent());
 	},
 
-	test(plr, self) {
-		const oldHealth = plr.getOpponent().health;
+	test(owner, self) {
+		const oldHealth = owner.getOpponent().health;
 
-		plr.spellDamage = 3;
+		owner.spellDamage = 3;
 		self.activate("cast");
 
-		assert.equal(plr.getOpponent().health, oldHealth - (3 + plr.spellDamage));
+		assert.equal(
+			owner.getOpponent().health,
+			oldHealth - (3 + owner.spellDamage),
+		);
 	},
 };

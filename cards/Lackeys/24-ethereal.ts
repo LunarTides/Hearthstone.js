@@ -18,7 +18,7 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribe: "None",
 
-	battlecry(plr, self) {
+	battlecry(owner, self) {
 		// Discover a spell.
 
 		// Filter out all cards that aren't spells
@@ -34,31 +34,31 @@ export const blueprint: Blueprint = {
 		}
 
 		// Add the card to the player's hand
-		plr.addToHand(card);
+		owner.addToHand(card);
 		return true;
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		// If there are no spells, pass the test
 		if (
 			Card.all().filter(
 				(c) =>
 					c.type === "Spell" &&
-					game.functions.card.validateClasses(self.classes, plr.heroClass),
+					game.functions.card.validateClasses(self.classes, owner.heroClass),
 			).length <= 0
 		) {
 			return;
 		}
 
 		// The player ALWAYS answer 1.
-		plr.inputQueue = "1";
+		owner.inputQueue = "1";
 
 		// Do this 50 times
 		for (let i = 0; i < 50; i++) {
 			// Activate the battlecry and get the card from the player's hand.
-			plr.hand = [];
+			owner.hand = [];
 			self.activate("battlecry");
-			const card = plr.hand[0];
+			const card = owner.hand[0];
 
 			assert.equal(card.type, "Spell");
 		}

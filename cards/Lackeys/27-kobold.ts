@@ -17,7 +17,7 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribe: "None",
 
-	battlecry(plr, self) {
+	battlecry(owner, self) {
 		// Deal 2 damage.
 
 		// Select a target
@@ -38,11 +38,11 @@ export const blueprint: Blueprint = {
 		return true;
 	},
 
-	test(plr, self) {
-		plr.inputQueue = ["face", "y"];
+	test(owner, self) {
+		owner.inputQueue = ["face", "y"];
 		self.activate("battlecry");
 
-		assert.equal(plr.getOpponent().health, 30 - 2);
-		assert.equal(plr.inputQueue, undefined);
+		assert.equal(owner.getOpponent().health, 30 - 2);
+		assert.equal(owner.inputQueue, undefined);
 	},
 };

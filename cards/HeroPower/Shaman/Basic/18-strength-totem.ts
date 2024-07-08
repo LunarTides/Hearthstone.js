@@ -18,16 +18,16 @@ export const blueprint: Blueprint = {
 	health: 2,
 	tribe: "Totem",
 
-	passive(plr, self, key, value, eventPlayer) {
+	passive(owner, self, key, value, eventPlayer) {
 		// At the end of your turn, give another friendly minion +1 Attack.
 
 		// Only continue if the event that triggered this is the EndTurn event, and the player that triggered the event is this card's owner.
-		if (!(key === "EndTurn" && eventPlayer === plr)) {
+		if (!(key === "EndTurn" && eventPlayer === owner)) {
 			return;
 		}
 
 		// The list that to choose from. Remove this minion from the list
-		const board = plr.board.filter((card) => card.type === "Minion");
+		const board = owner.board.filter((card) => card.type === "Minion");
 		game.functions.util.remove(board, self);
 
 		// Choose the random minion
@@ -40,15 +40,15 @@ export const blueprint: Blueprint = {
 		minion.addStats(1, 0);
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		// Summon 5 Sheep with 2 max health.
 		for (let i = 0; i < 5; i++) {
-			const card = new Card(game.cardIds.sheep1, plr);
-			plr.summon(card);
+			const card = new Card(game.cardIds.sheep1, owner);
+			owner.summon(card);
 		}
 
 		const checkSheepAttack = (shouldBeMore: boolean) =>
-			plr.board
+			owner.board
 				.filter((card) => card.id === 1)
 				.some(
 					(card) =>
@@ -58,18 +58,18 @@ export const blueprint: Blueprint = {
 				);
 
 		// Summon this minion. All sheep should have 1 attack.
-		plr.summon(self);
+		owner.summon(self);
 		assert(checkSheepAttack(false));
 
 		// Broadcast a dummy event. All sheep should still have 1 attack.
-		game.event.broadcastDummy(plr);
+		game.event.broadcastDummy(owner);
 		assert(checkSheepAttack(false));
 
 		// Check this 50 times
 		for (let i = 0; i < 50; i++) {
 			// Reset the players faigue to 0 to prevent them from dying
-			plr.fatigue = 0;
-			plr.getOpponent().fatigue = 0;
+			owner.fatigue = 0;
+			owner.getOpponent().fatigue = 0;
 
 			game.endTurn();
 

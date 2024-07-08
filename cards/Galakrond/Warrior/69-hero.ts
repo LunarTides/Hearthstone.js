@@ -16,12 +16,12 @@ export const blueprint: Blueprint = {
 	armor: 5,
 	heropowerId: 127,
 
-	battlecry(plr, self) {
+	battlecry(owner, self) {
 		// Draw 1 minion. Give them +4/+4.
 		const amount = game.functions.card.galakrondFormula(
 			self.storage.invokeCount as number,
 		);
-		const cards = plr.drawCards(amount);
+		const cards = owner.drawCards(amount);
 
 		// Draw the minions
 		for (const card of cards) {
@@ -30,11 +30,11 @@ export const blueprint: Blueprint = {
 		}
 	},
 
-	invoke(plr, self) {
+	invoke(owner, self) {
 		self.galakrondBump("invokeCount");
 	},
 
-	placeholders(plr, self) {
+	placeholders(owner, self) {
 		if (!self.storage.invokeCount) {
 			return { amount: 0, plural: "s", plural2: "They" };
 		}

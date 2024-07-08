@@ -16,7 +16,7 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribe: "None",
 
-	battlecry(plr, self) {
+	battlecry(owner, self) {
 		// Your cards cost (1) less.
 
 		/*
@@ -33,7 +33,7 @@ export const blueprint: Blueprint = {
 		 * since they are supposed to not be (dependent on / specific to certain) events, but you are free to use them if you want.
 		 */
 		const unhook = game.functions.event.hookToTick((key, _unknownValue) => {
-			for (const card of plr.hand) {
+			for (const card of owner.hand) {
 				if (card.enchantmentExists("-1 cost", self)) {
 					continue;
 				}
@@ -55,7 +55,7 @@ export const blueprint: Blueprint = {
 	},
 
 	// Unhook from the tick when the card is removed
-	remove(plr, self) {
+	remove(owner, self) {
 		// This is kind of a bad example, since this is what the `tick` ability is supposed to do anyway, but oh well
 
 		/*
@@ -69,12 +69,12 @@ export const blueprint: Blueprint = {
 		}
 
 		// Undo the enchantments
-		for (const card of plr.hand) {
+		for (const card of owner.hand) {
 			card.removeEnchantment("-1 cost", self);
 		}
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		// TODO: Add proper tests. #325
 		return true;
 	},

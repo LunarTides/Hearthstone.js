@@ -15,15 +15,15 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "Nature",
 
-	create(plr, self) {
+	create(owner, self) {
 		// Initialize storage
 		self.storage.blossom = 0;
 		self.storage.blossomed = false;
 	},
 
-	passive(plr, self, key, _unknownValue, eventPlayer) {
+	passive(owner, self, key, _unknownValue, eventPlayer) {
 		// Increment blossom counter at the end of the owner's turn
-		if (!(key === "EndTurn" && eventPlayer === plr)) {
+		if (!(key === "EndTurn" && eventPlayer === owner)) {
 			return;
 		}
 
@@ -34,7 +34,7 @@ export const blueprint: Blueprint = {
 		}
 	},
 
-	cast(plr, self) {
+	cast(owner, self) {
 		/*
 		 * Draw {1|2} card{|s}. Gain {5|10} Armor.{ (Blossoms in 3 turns.)|}
 		 *       ^ ^ Left side is if not blossomed, right side if blossomed
@@ -42,19 +42,19 @@ export const blueprint: Blueprint = {
 		const { blossomed } = self.storage;
 
 		if (blossomed) {
-			plr.drawCards(2);
+			owner.drawCards(2);
 		} else {
-			plr.drawCards(1);
+			owner.drawCards(1);
 		}
 
-		plr.addArmor(blossomed ? 10 : 5);
+		owner.addArmor(blossomed ? 10 : 5);
 	},
 
-	condition(plr, self) {
+	condition(owner, self) {
 		return Boolean(self.storage.blossomed);
 	},
 
-	placeholders(plr, self) {
+	placeholders(owner, self) {
 		const placeholder = self.storage.blossomed
 			? "Draw 2 cards. Gain 10 Armor."
 			: `Draw 1 card. Gain 5 Armor. <i>(Blossoms in ${3 - self.storage.blossom} turns.)</i>`;
@@ -62,7 +62,7 @@ export const blueprint: Blueprint = {
 		return { placeholder };
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		// TODO: Add proper tests. #325
 		return true;
 	},

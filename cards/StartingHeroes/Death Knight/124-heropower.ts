@@ -14,20 +14,20 @@ export const blueprint: Blueprint = {
 	collectible: false,
 	id: 124,
 
-	heropower(plr, self) {
+	heropower(owner, self) {
 		// Summon a 1/1 Ghoul with Charge. It dies at end of turn.
 
 		// Create the Ghoul
-		const minion = new Card(game.cardIds.frailGhoul23, plr);
+		const minion = new Card(game.cardIds.frailGhoul23, owner);
 
 		// Summon the Ghoul
-		plr.summon(minion);
+		owner.summon(minion);
 
 		// The `It dies at end of turn.` part is handled by the ghoul itself, so we don't need to do anything extra here
 	},
 
-	test(plr, self) {
-		const lookForMinion = () => plr.board.some((card) => card.id === 23);
+	test(owner, self) {
+		const lookForMinion = () => owner.board.some((card) => card.id === 23);
 
 		// The minion shouldn't be on the board at first.
 		assert(!lookForMinion());

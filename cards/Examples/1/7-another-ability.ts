@@ -8,11 +8,11 @@ import type { Ability, Blueprint } from "@Game/types.js";
  * You might want to do this if you make a very complicated card
  * however it is not _as_ supported by scripts as the default method.
  */
-const battlecry: Ability = (plr, self) => {
+const battlecry: Ability = (owner, self) => {
 	self.addStats(1, 1);
 };
 
-const theTestAbility: Ability = (plr, self) => {
+const theTestAbility: Ability = (owner, self) => {
 	self.activate("battlecry");
 
 	assert.equal((self.blueprint.attack ?? 0) + 1, self.attack);

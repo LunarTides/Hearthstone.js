@@ -477,7 +477,7 @@ export const interact = {
 		}
 
 		// If the minion has stealth, don't allow the opponent to target it.
-		if (minion.hasKeyword("Stealth") && game.player !== minion.plr) {
+		if (minion.hasKeyword("Stealth") && game.player !== minion.owner) {
 			game.pause("<red>This minion has stealth.</red>\n");
 
 			return false;
@@ -511,7 +511,7 @@ export const interact = {
 	 * @returns Success
 	 */
 	verifyDiySolution(condition: boolean, card: Card): boolean {
-		if (card.plr.ai) {
+		if (card.owner.ai) {
 			return false;
 		}
 

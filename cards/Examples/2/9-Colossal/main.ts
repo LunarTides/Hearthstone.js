@@ -17,7 +17,7 @@ export const blueprint: Blueprint = {
 	health: 3,
 	tribe: "Beast",
 
-	create(plr, self) {
+	create(owner, self) {
 		/*
 		 * Put the names of the cards here. The "null0" is this card. You could replace it with `0`
 		 *
@@ -33,10 +33,10 @@ export const blueprint: Blueprint = {
 		]);
 	},
 
-	test(plr, self) {
-		plr.summon(self);
+	test(owner, self) {
+		owner.summon(self);
 
-		const board = plr.board;
+		const board = owner.board;
 
 		assert.ok(board.some((card) => card.id === game.cardIds.leftArm43));
 		assert.ok(board.some((card) => card.id === self.id));

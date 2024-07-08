@@ -18,9 +18,9 @@ export const blueprint: Blueprint = {
 	health: 5,
 	tribe: "None",
 
-	battlecry(plr, self) {
+	battlecry(owner, self) {
 		// Cast a random spell for each spell you've cast this game (targets chosen randomly).
-		const amount = game.event.events.PlayCard?.[plr.id].filter(
+		const amount = game.event.events.PlayCard?.[owner.id].filter(
 			(object) => object[0] instanceof Card && object[0].type === "Spell",
 		).length;
 		if (!amount) {
@@ -38,7 +38,7 @@ export const blueprint: Blueprint = {
 		}
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		// TODO: Add proper tests. #325
 		return true;
 	},

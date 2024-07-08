@@ -16,7 +16,7 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "None",
 
-	cast(plr, self) {
+	cast(owner, self) {
 		// Choose Twice - Draw a card; Give your minions +1 Attack; Gain 6 Armor.
 		game.interact.chooseOne(
 			2,
@@ -24,14 +24,14 @@ export const blueprint: Blueprint = {
 				"Draw a card",
 				() => {
 					// Draw a card
-					plr.drawCards(1);
+					owner.drawCards(1);
 				},
 			],
 			[
 				"Give your minions +1 Attack",
 				() => {
 					// Give your minions +1 Attack
-					for (const card of plr.board) {
+					for (const card of owner.board) {
 						if (card.attack) {
 							card.attack += 1;
 						}
@@ -42,31 +42,31 @@ export const blueprint: Blueprint = {
 				"Gain 6 Armor",
 				() => {
 					// Gain 6 Armor
-					plr.addArmor(6);
+					owner.addArmor(6);
 				},
 			],
 		);
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		// Summon a Sheep
-		const sheep = new Card(game.cardIds.sheep1, plr);
-		plr.summon(sheep);
+		const sheep = new Card(game.cardIds.sheep1, owner);
+		owner.summon(sheep);
 
-		const handSize = plr.hand.length;
+		const handSize = owner.hand.length;
 
 		// Test 'Draw a Card', and 'Give your minions +1 Attack'.
-		plr.inputQueue = ["1", "2"];
+		owner.inputQueue = ["1", "2"];
 		self.activate("cast");
 
-		assert.equal(plr.hand.length, handSize + 1);
+		assert.equal(owner.hand.length, handSize + 1);
 		assert.equal(sheep.attack, 2);
 
 		// Test '+1 Attack', and 'Gain 6 Armor'.
-		plr.inputQueue = ["2", "3"];
+		owner.inputQueue = ["2", "3"];
 		self.activate("cast");
 
 		assert.equal(sheep.attack, 3);
-		assert.equal(plr.armor, 6);
+		assert.equal(owner.armor, 6);
 	},
 };

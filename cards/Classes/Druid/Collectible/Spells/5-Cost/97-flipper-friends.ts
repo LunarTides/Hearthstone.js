@@ -16,7 +16,7 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "Nature",
 
-	cast(plr, self) {
+	cast(owner, self) {
 		// Choose One - Summon a 6/6 Orca with Taunt; or six 1/1 Otters with Rush.
 		game.interact.chooseOne(
 			1,
@@ -24,8 +24,8 @@ export const blueprint: Blueprint = {
 				"Summon a 6/6 Orca with <b>Taunt</b>",
 				() => {
 					// Summon a 6/6 Orca with Taunt
-					const orca = new Card(game.cardIds.orca96, plr);
-					plr.summon(orca);
+					const orca = new Card(game.cardIds.orca96, owner);
+					owner.summon(orca);
 				},
 			],
 			[
@@ -33,35 +33,35 @@ export const blueprint: Blueprint = {
 				() => {
 					// Summon six 1/1 Otters with Rush
 					for (let index = 0; index < 6; index++) {
-						const otter = new Card(game.cardIds.otter95, plr);
-						plr.summon(otter);
+						const otter = new Card(game.cardIds.otter95, owner);
+						owner.summon(otter);
 					}
 				},
 			],
 		);
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		// Summon a 6/6 Orca with Taunt
-		plr.inputQueue = ["1"];
+		owner.inputQueue = ["1"];
 		self.activate("cast");
 
 		// There should be 1 Orca on the board
 		assert.equal(
-			plr.board.filter((card) => card.id === game.cardIds.orca96).length,
+			owner.board.filter((card) => card.id === game.cardIds.orca96).length,
 			1,
 		);
 
 		// Clear the board. Isn't really required in this case, but will cause buggy behavior if summoning more than 6 Otters.
-		plr.board = [];
+		owner.board = [];
 
 		// Summon six 1/1 Otters with Rush
-		plr.inputQueue = ["2"];
+		owner.inputQueue = ["2"];
 		self.activate("cast");
 
 		// There should be 6 Otters on the board
 		assert.equal(
-			plr.board.filter((card) => card.id === game.cardIds.otter95).length,
+			owner.board.filter((card) => card.id === game.cardIds.otter95).length,
 			6,
 		);
 	},

@@ -15,31 +15,31 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "Nature",
 
-	cast(plr, self) {
+	cast(owner, self) {
 		// Gain 6 Armor. Recruit a minion that costs (4) or less.
-		plr.addArmor(6);
+		owner.addArmor(6);
 
-		const list = plr.deck.filter((card) => card.cost <= 4);
-		plr.recruit(list);
+		const list = owner.deck.filter((card) => card.cost <= 4);
+		owner.recruit(list);
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		for (let index = 1; index <= 10; index++) {
 			self.activate("cast");
 
 			// Check if the armor is correct
-			assert.equal(plr.armor, 6 * index);
+			assert.equal(owner.armor, 6 * index);
 
 			// Check if there exists a minion on the board that costs 4 or less
 			assert.ok(
-				plr.board.some(
+				owner.board.some(
 					(card) =>
 						card.cost <= 4 && card.type === "Minion" && card.uuid !== self.uuid,
 				),
 			);
 
 			// Clear the board
-			plr.board = [];
+			owner.board = [];
 		}
 	},
 };

@@ -13,19 +13,19 @@ export const blueprint: Blueprint = {
 	collectible: false,
 	id: 123,
 
-	heropower(plr, self) {
+	heropower(owner, self) {
 		// +1 Attack this turn.
 
 		// Give the player +1 attack.
-		plr.addAttack(1);
+		owner.addAttack(1);
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		// The player should start with 0 attack
-		assert.equal(plr.attack, 0);
+		assert.equal(owner.attack, 0);
 		self.activate("heropower");
 
 		// The player should gain 1 attack
-		assert.equal(plr.attack, 1);
+		assert.equal(owner.attack, 1);
 	},
 };

@@ -18,7 +18,7 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribe: "None",
 
-	battlecry(plr, self) {
+	battlecry(owner, self) {
 		// Summon a random 2-Cost minion.
 
 		// filter out all cards that aren't 2-cost minions
@@ -33,19 +33,19 @@ export const blueprint: Blueprint = {
 		}
 
 		// Create a new minion since we shouldn't directly use the cards from `game.functions.card.getAll()`.
-		const minion = new Card(random.id, plr);
+		const minion = new Card(random.id, owner);
 
 		// Summon the minion
-		plr.summon(minion);
+		owner.summon(minion);
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		// If there doesn't exist any 2-Cost minions, pass the test
 		if (!Card.all().some((card) => card.cost === 2 && card.type === "Minion")) {
 			return;
 		}
 
-		const exists2CostMinion = () => plr.board.some((card) => card.cost === 2);
+		const exists2CostMinion = () => owner.board.some((card) => card.cost === 2);
 
 		// There shouldn't exist any 2-Cost minions right now.
 		assert(!exists2CostMinion());

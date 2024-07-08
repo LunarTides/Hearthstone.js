@@ -30,11 +30,11 @@ export const blueprint: Blueprint = {
 	 *
 	 * Instead of "battlecry", you could put "deathrattle", or "inspire", for example.
 	 */
-	battlecry(plr, self) {
+	battlecry(owner, self) {
 		// Give this minion +1/+1.
 
 		/*
-		 * The `plr` variable is the card's owner. This is an instance of the Player class as defined in `src/core/player.ts`.
+		 * The `owner` variable is the card's owner. This is an instance of the Player class as defined in `src/core/player.ts`.
 		 * The `self` variable is the actual card itself in-game. This is an instance of the Card class as defined in `src/core/card.ts`.
 		 *
 		 * The global `game` (used later on) variable is the current game. This is an instance of the Game class as defined in `src/core/game.ts`.
@@ -49,7 +49,7 @@ export const blueprint: Blueprint = {
 	 * I encourage you to make tests like these yourself. Run `bun run cardtest` to run these tests.
 	 * These tests are run in an isolated environment. The side-effect of the code here won't carry over to other tests or the game.
 	 */
-	test(plr, self) {
+	test(owner, self) {
 		self.activate("battlecry");
 
 		assert.equal((self.blueprint.attack ?? 0) + 1, self.attack);

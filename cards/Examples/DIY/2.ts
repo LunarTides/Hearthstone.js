@@ -14,7 +14,7 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "None",
 
-	cast(plr, self) {
+	cast(owner, self) {
 		// Restore 3 health to the hero.
 
 		// Try to heal the player by 3 hp.
@@ -36,25 +36,25 @@ export const blueprint: Blueprint = {
 		// Testing your solution.
 		let solved = true;
 
-		const trueOgHealth = plr.health;
+		const trueOgHealth = owner.health;
 
 		// Restore 3 health when the player has 5 less than max health
-		plr.health = plr.maxHealth - 5;
-		let ogHealth = plr.health;
+		owner.health = owner.maxHealth - 5;
+		let ogHealth = owner.health;
 
 		solution();
 
-		solved = solved && plr.health === ogHealth + 3;
+		solved = solved && owner.health === ogHealth + 3;
 
 		// Restore to max health when the player has 1 less than max health
-		plr.health = plr.maxHealth - 1;
-		ogHealth = plr.health;
+		owner.health = owner.maxHealth - 1;
+		ogHealth = owner.health;
 
 		solution();
 
-		solved = solved && plr.health === plr.maxHealth;
+		solved = solved && owner.health === owner.maxHealth;
 
-		plr.health = trueOgHealth;
+		owner.health = trueOgHealth;
 
 		game.interact.verifyDiySolution(solved, self);
 

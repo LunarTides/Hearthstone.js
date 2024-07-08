@@ -65,7 +65,7 @@ export function main(): void {
 		game.startGame();
 
 		const card = blueprint.imperfectCopy();
-		card.plr = player1;
+		card.owner = player1;
 
 		game.noOutput = true;
 		const error = testCard(card);

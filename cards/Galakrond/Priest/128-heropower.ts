@@ -14,7 +14,7 @@ export const blueprint: Blueprint = {
 	collectible: false,
 	id: 128,
 
-	heropower(plr, self) {
+	heropower(owner, self) {
 		// Add a random Priest minion to your hand.
 		const possibleCards = Card.all().filter(
 			(c) =>
@@ -30,12 +30,12 @@ export const blueprint: Blueprint = {
 			return;
 		}
 
-		card = new Card(card.id, plr);
+		card = new Card(card.id, owner);
 
-		plr.addToHand(card);
+		owner.addToHand(card);
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		// TODO: Add proper tests. #325
 		return true;
 	},

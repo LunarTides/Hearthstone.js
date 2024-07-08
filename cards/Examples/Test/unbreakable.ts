@@ -16,17 +16,17 @@ export const blueprint: Blueprint = {
 	attack: 2,
 	health: 4,
 
-	create(plr, self) {
+	create(owner, self) {
 		// Add additional fields here
 		self.addKeyword("Unbreakable");
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		// Unit testing
 		assert.equal(self.health, 4);
-		plr.setWeapon(self);
+		owner.setWeapon(self);
 
-		game.attack(plr, plr.getOpponent(), true);
+		game.attack(owner, owner.getOpponent(), true);
 		assert.equal(self.health, 4);
 	},
 };

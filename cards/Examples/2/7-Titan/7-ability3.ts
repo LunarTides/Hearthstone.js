@@ -16,19 +16,19 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "None",
 
-	cast(plr, self) {
+	cast(owner, self) {
 		// Restore 2 mana.
 
-		plr.refreshMana(2);
+		owner.refreshMana(2);
 	},
 
-	test(plr, self) {
-		plr.mana = 5;
-		plr.emptyMana = 10;
+	test(owner, self) {
+		owner.mana = 5;
+		owner.emptyMana = 10;
 
-		const { mana } = plr;
+		const { mana } = owner;
 		self.activate("cast");
 
-		assert.equal(plr.mana, mana + 2);
+		assert.equal(owner.mana, mana + 2);
 	},
 };

@@ -17,9 +17,9 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "None",
 
-	cast(plr, self) {
+	cast(owner, self) {
 		// Force each enemy minion to attack a random enemy minion.
-		const board = plr.getOpponent().board;
+		const board = owner.getOpponent().board;
 
 		for (const enemyMinion of board) {
 			const targetMinion = game.lodash.sample(board);
@@ -31,7 +31,7 @@ export const blueprint: Blueprint = {
 		}
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		// TODO: Add proper tests. #325
 		return true;
 	},

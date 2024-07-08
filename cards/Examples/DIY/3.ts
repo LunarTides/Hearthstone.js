@@ -15,7 +15,7 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "None",
 
-	cast(plr, self) {
+	cast(owner, self) {
 		// Choose a minion to kill.
 
 		/*

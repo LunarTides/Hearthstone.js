@@ -18,7 +18,7 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribe: "None",
 
-	battlecry(plr, self) {
+	battlecry(owner, self) {
 		// Give a friendly minion +1 Attack and Rush.
 
 		// Prompt the user to select a friendly minion
@@ -41,13 +41,13 @@ export const blueprint: Blueprint = {
 		return true;
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		// Summon a sheep
-		const sheep = new Card(game.cardIds.sheep1, plr);
-		plr.summon(sheep);
+		const sheep = new Card(game.cardIds.sheep1, owner);
+		owner.summon(sheep);
 
 		// Activate the battlecry, choose the sheep
-		plr.inputQueue = ["1"];
+		owner.inputQueue = ["1"];
 		self.activate("battlecry");
 
 		// The sheep should have 2 attack and rush

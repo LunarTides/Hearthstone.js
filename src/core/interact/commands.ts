@@ -491,7 +491,7 @@ export const commands: CommandList = {
 		let finished = "";
 
 		const showCard = (value: Card) =>
-			`${value.readable()} which belongs to: <blue>${value.plr.name}</blue>, and has uuid: ${value.coloredUUID()}`;
+			`${value.readable()} which belongs to: <blue>${value.owner.name}</blue>, and has uuid: ${value.coloredUUID()}`;
 
 		/**
 		 * Transform the `value` into a readable string
@@ -509,7 +509,7 @@ export const commands: CommandList = {
 			}
 
 			// If the card is not hidden, or the card belongs to the current player, show it
-			if (!hide || value.plr === plr) {
+			if (!hide || value.owner === plr) {
 				return showCard(value);
 			}
 

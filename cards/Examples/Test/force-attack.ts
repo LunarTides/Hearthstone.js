@@ -18,13 +18,13 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribe: "None",
 
-	create(plr, self) {
+	create(owner, self) {
 		// Store the attacker / target combo in storage.
 
 		self.storage.attack = [];
 	},
 
-	passive(plr, self, key, _unknownValue, eventPlayer) {
+	passive(owner, self, key, _unknownValue, eventPlayer) {
 		// Whenever a minion attacks, it attacks again.
 
 		/*
@@ -66,11 +66,11 @@ export const blueprint: Blueprint = {
 		game.attack(attacker, target, true);
 	},
 
-	test(plr, self) {
-		const opponent = plr.getOpponent();
+	test(owner, self) {
+		const opponent = owner.getOpponent();
 
 		assert.equal(opponent.health, 30);
-		plr.summon(self);
+		owner.summon(self);
 
 		game.attack(self, opponent, true);
 		assert.equal(self.attack, 1);

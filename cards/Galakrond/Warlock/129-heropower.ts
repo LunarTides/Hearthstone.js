@@ -14,20 +14,20 @@ export const blueprint: Blueprint = {
 	collectible: false,
 	id: 129,
 
-	heropower(plr, self) {
+	heropower(owner, self) {
 		// Summon two 1/1 Imps.
 		for (let i = 0; i < 2; i++) {
-			const card = new Card(game.cardIds.draconicImp21, plr);
+			const card = new Card(game.cardIds.draconicImp21, owner);
 			if (!card) {
 				break;
 			}
 
-			plr.summon(card);
+			owner.summon(card);
 		}
 	},
 
-	test(plr, self) {
-		const countImps = () => plr.board.filter((card) => card.id === 21).length;
+	test(owner, self) {
+		const countImps = () => owner.board.filter((card) => card.id === 21).length;
 
 		// There should be 0 imps by default
 		assert.equal(countImps(), 0);

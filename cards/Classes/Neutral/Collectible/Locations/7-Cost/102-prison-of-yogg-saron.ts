@@ -17,14 +17,14 @@ export const blueprint: Blueprint = {
 	durability: 3,
 	cooldown: 2,
 
-	use(plr, self) {
+	use(owner, self) {
 		// Choose a character. Cast 4 random spells (targeting it if possible).
 		const target = game.interact.selectTarget(self.text, self, "any", "any");
 		if (!target) {
 			return game.constants.refund;
 		}
 
-		plr.forceTarget = target;
+		owner.forceTarget = target;
 
 		const pool = Card.all().filter((card) => card.type === "Spell");
 		for (let i = 0; i < 4; i++) {
@@ -36,11 +36,11 @@ export const blueprint: Blueprint = {
 			card.activate("cast");
 		}
 
-		plr.forceTarget = undefined;
+		owner.forceTarget = undefined;
 		return true;
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		// TODO: Add proper tests. #325
 		return true;
 	},

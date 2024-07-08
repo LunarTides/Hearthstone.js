@@ -16,7 +16,7 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "None",
 
-	cast(plr, self) {
+	cast(owner, self) {
 		// Fill up your mana. For the rest of the game, your mana never decreases.
 
 		/*
@@ -24,27 +24,27 @@ export const blueprint: Blueprint = {
 		 * This lasts for the rest of the game, since we don't unhook it.
 		 */
 		game.functions.event.hookToTick(() => {
-			plr.addMana(plr.maxMana);
+			owner.addMana(owner.maxMana);
 		});
 	},
 
-	test(plr, self) {
-		plr.mana = 5;
+	test(owner, self) {
+		owner.mana = 5;
 		self.activate("cast");
 
 		// The game hasn't ticked yet
-		assert.equal(plr.mana, 5);
+		assert.equal(owner.mana, 5);
 
 		// Manually tick the game
-		game.event.tick("GameLoop", undefined, plr);
+		game.event.tick("GameLoop", undefined, owner);
 
-		assert.equal(plr.mana, 10);
+		assert.equal(owner.mana, 10);
 
 		// Play a card to verify that the mana doesn't decrease
-		const card = new Card(game.cardIds.sheep1, plr);
-		const result = game.play(card, plr);
+		const card = new Card(game.cardIds.sheep1, owner);
+		const result = game.play(card, owner);
 
 		assert.equal(result, true);
-		assert.equal(plr.mana, 10);
+		assert.equal(owner.mana, 10);
 	},
 };

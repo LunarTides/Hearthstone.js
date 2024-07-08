@@ -13,26 +13,26 @@ export const blueprint: Blueprint = {
 	collectible: false,
 	id: 121,
 
-	heropower(plr, self) {
+	heropower(owner, self) {
 		// Draw a card and take 2 damage.
 
 		// Deal 2 damage to the player.
-		game.attack(2, plr);
-		plr.drawCards(1);
+		game.attack(2, owner);
+		owner.drawCards(1);
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		// Clear the player's hand
-		plr.hand = [];
+		owner.hand = [];
 
 		// The player should have no cards in their hand, and should have 30 health
-		assert.equal(plr.hand.length, 0);
-		assert.equal(plr.health, 30);
+		assert.equal(owner.hand.length, 0);
+		assert.equal(owner.health, 30);
 
 		self.activate("heropower");
 
 		// The player should now have 1 card in their hand, and 28 health.
-		assert.equal(plr.hand.length, 1);
-		assert.equal(plr.health, 30 - 2);
+		assert.equal(owner.hand.length, 1);
+		assert.equal(owner.health, 30 - 2);
 	},
 };

@@ -16,7 +16,7 @@ export const blueprint: Blueprint = {
 	health: 8,
 	tribe: "None",
 
-	create(plr, self) {
+	create(owner, self) {
 		/*
 		 * The 2 is how many turns this minion should be dormant for.
 		 * Full disclosure: The dormant system is one of the most untested parts of this game.
@@ -26,13 +26,13 @@ export const blueprint: Blueprint = {
 	},
 
 	// The battlecry only triggers when the minion is no longer dormant.
-	battlecry(plr, self) {
+	battlecry(owner, self) {
 		// Dredge.
 
 		game.interact.card.dredge();
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		// TODO: Test. #325
 	},
 };

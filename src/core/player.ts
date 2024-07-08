@@ -1238,10 +1238,10 @@ export class Player {
 	/**
 	 * Chooses a minion from `list` and puts it onto the board.
 	 *
-	 * @param list The list to recruit from. This defaults to `plr`'s deck.
-	 * @param amount The amount of minions to recruit
+	 * @param list The list to recruit from.
+	 * @param amount The amount of minions to recruit.
 	 *
-	 * @returns Returns the cards recruited
+	 * @returns Returns the cards recruited.
 	 */
 	recruit(list: Card[], amount = 1): Card[] {
 		let recruitList = list ?? this.deck;
@@ -1377,7 +1377,7 @@ export class Player {
 			return;
 		}
 
-		card.plr = this;
+		card.owner = this;
 		this.addToHand(card);
 	}
 }

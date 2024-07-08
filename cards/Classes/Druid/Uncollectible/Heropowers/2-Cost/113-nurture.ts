@@ -13,7 +13,7 @@ export const blueprint: Blueprint = {
 	collectible: false,
 	id: 113,
 
-	heropower(plr, self) {
+	heropower(owner, self) {
 		// Choose One - Draw a card; or Gain an empty Mana Crystal.
 		game.interact.chooseOne(
 			1,
@@ -21,34 +21,34 @@ export const blueprint: Blueprint = {
 				"Draw a card",
 				() => {
 					// Draw a card
-					plr.drawCards(1);
+					owner.drawCards(1);
 				},
 			],
 			[
 				"Gain an empty Mana Crystal",
 				() => {
 					// Gain an empty ManaCrystal
-					plr.addEmptyMana(1);
+					owner.addEmptyMana(1);
 				},
 			],
 		);
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		// Draw a card
-		const handSize = plr.hand.length;
+		const handSize = owner.hand.length;
 
-		plr.inputQueue = ["1"];
+		owner.inputQueue = ["1"];
 		self.activate("heropower");
 
-		assert.equal(plr.hand.length, handSize + 1);
+		assert.equal(owner.hand.length, handSize + 1);
 
 		// Gain an empty Mana Crystal
-		const { emptyMana } = plr;
+		const { emptyMana } = owner;
 
-		plr.inputQueue = ["2"];
+		owner.inputQueue = ["2"];
 		self.activate("heropower");
 
-		assert.equal(plr.emptyMana, emptyMana + 1);
+		assert.equal(owner.emptyMana, emptyMana + 1);
 	},
 };

@@ -16,7 +16,7 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribe: "None",
 
-	create(plr, self) {
+	create(owner, self) {
 		// Put the id of the forged counterpart, like in corrupt.
 		self.addKeyword("Forge", game.cardIds.forgedExample76);
 	},

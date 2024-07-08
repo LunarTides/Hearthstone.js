@@ -15,13 +15,13 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "Nature",
 
-	cast(plr, self) {
+	cast(owner, self) {
 		// Whenever a minion dies this turn, gain 1 Mana Crystal this turn only.
 		const destroy = game.functions.event.addListener(
 			"KillCard",
 			() => {
 				// Gain 1 Mana Crystal
-				plr.refreshMana(1, plr.maxMana);
+				owner.refreshMana(1, owner.maxMana);
 
 				return true;
 			},
@@ -31,7 +31,7 @@ export const blueprint: Blueprint = {
 		game.functions.event.addListener("EndTurn", destroy);
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		// TODO: Add proper tests. #325
 		return true;
 	},

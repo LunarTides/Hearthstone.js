@@ -18,7 +18,7 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribe: "None",
 
-	create(plr, self) {
+	create(owner, self) {
 		self.addKeyword("Summon On Draw");
 
 		// Use the preexisting colossal example minions
@@ -29,15 +29,15 @@ export const blueprint: Blueprint = {
 		]);
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		// Set the player's deck and hand
-		plr.deck = [new Card(game.cardIds.sheep1, plr), self];
-		plr.hand = [];
+		owner.deck = [new Card(game.cardIds.sheep1, owner), self];
+		owner.hand = [];
 
 		// Make the player draw this card
-		plr.drawCards(1);
+		owner.drawCards(1);
 
-		const board = plr.board;
+		const board = owner.board;
 
 		// Check if this minion and the two arms are on the board
 		assert.ok(board.some((card) => card.id === game.cardIds.leftArm46));
@@ -45,7 +45,7 @@ export const blueprint: Blueprint = {
 		assert.ok(board.some((card) => card.id === game.cardIds.rightArm47));
 
 		// Check that the player's deck is empty and the player's hand has one card (the sheep)
-		assert.equal(plr.deck.length, 0);
-		assert.equal(plr.hand.length, 1);
+		assert.equal(owner.deck.length, 0);
+		assert.equal(owner.hand.length, 1);
 	},
 };

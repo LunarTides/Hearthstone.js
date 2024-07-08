@@ -16,7 +16,7 @@ export const blueprint: Blueprint = {
 	health: 10,
 	tribe: "None",
 
-	create(plr, self) {
+	create(owner, self) {
 		// Put the ids of the titan ability cards, like in corrupt, but a list.
 		self.addKeyword("Titan", [
 			game.cardIds.ability179,

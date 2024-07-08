@@ -18,7 +18,7 @@ export const blueprint: Blueprint = {
 	health: 2,
 	tribe: "None",
 
-	battlecry(plr, self) {
+	battlecry(owner, self) {
 		const manathirst = self.manathirst(6);
 
 		// Make the prompt.
@@ -54,30 +54,30 @@ export const blueprint: Blueprint = {
 	},
 
 	// This is optional, you will learn more about it in the `condition` example in `3-3`.
-	condition(plr, self) {
+	condition(owner, self) {
 		return self.manathirst(6);
 	},
 
-	test(plr, self) {
-		const sheep = new Card(game.cardIds.sheep1, plr.getOpponent());
+	test(owner, self) {
+		const sheep = new Card(game.cardIds.sheep1, owner.getOpponent());
 		sheep.addStats(4, 4);
-		plr.getOpponent().summon(sheep);
+		owner.getOpponent().summon(sheep);
 
 		assert.equal(sheep.attack, 5);
 		assert.equal(sheep.health, 5);
 		assert(!sheep.hasKeyword("Frozen"));
 
-		plr.emptyMana = 1;
-		assert.equal(plr.emptyMana, 1);
-		plr.inputQueue = ["1"];
+		owner.emptyMana = 1;
+		assert.equal(owner.emptyMana, 1);
+		owner.inputQueue = ["1"];
 		self.activate("battlecry");
 
 		assert(sheep.hasKeyword("Frozen"));
 		sheep.remKeyword("Frozen");
 		assert(!sheep.hasKeyword("Frozen"));
 
-		plr.emptyMana = 6;
-		plr.inputQueue = ["1"];
+		owner.emptyMana = 6;
+		owner.inputQueue = ["1"];
 		self.activate("battlecry");
 
 		assert(sheep.hasKeyword("Frozen"));

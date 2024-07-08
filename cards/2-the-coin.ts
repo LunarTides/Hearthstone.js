@@ -15,7 +15,7 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "None",
 
-	cast(plr, self) {
+	cast(owner, self) {
 		// Gain 1 Mana Crystal this turn only.
 
 		/*
@@ -23,20 +23,20 @@ export const blueprint: Blueprint = {
 		 * This is to prevent the player from having more than 10* mana, instead of preventing them from having more than empty mana, which
 		 * is the thing that goes up every turn until it reaches 10*
 		 */
-		plr.refreshMana(1, plr.maxMana);
+		owner.refreshMana(1, owner.maxMana);
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		// Assert 5->6
-		plr.mana = 5;
+		owner.mana = 5;
 		self.activate("cast");
 
-		assert.equal(plr.mana, 6);
+		assert.equal(owner.mana, 6);
 
 		// Assert 10->10
-		plr.mana = 10;
+		owner.mana = 10;
 		self.activate("cast");
 
-		assert.equal(plr.mana, 10);
+		assert.equal(owner.mana, 10);
 	},
 };

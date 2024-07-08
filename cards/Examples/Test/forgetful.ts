@@ -17,21 +17,21 @@ export const blueprint: Blueprint = {
 	health: 4,
 	tribe: "None",
 
-	create(plr, self) {
+	create(owner, self) {
 		// Forgetful
 
 		self.addKeyword("Forgetful");
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		// TODO: Test #325
 		assert(true);
 
-		// 1 plr.summon(self);
+		// 1 owner.summon(self);
 
 		/*
-		 * 2 const sheep = game.newCard(game.cardIds.sheep1, plr.getOpponent());
-		 * 3 plr.getOpponent().summon(sheep);
+		 * 2 const sheep = game.newCard(game.cardIds.sheep1, owner.getOpponent());
+		 * 3 owner.getOpponent().summon(sheep);
 		 */
 
 		/*
@@ -47,7 +47,7 @@ export const blueprint: Blueprint = {
 		 */
 
 		/*
-		 * 10    game.attack(self, plr.getOpponent());
+		 * 10    game.attack(self, owner.getOpponent());
 		 * 11 }
 		 */
 

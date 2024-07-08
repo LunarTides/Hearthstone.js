@@ -16,7 +16,7 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "None",
 
-	cast(plr, self) {
+	cast(owner, self) {
 		// Discover a spell.
 
 		/*
@@ -39,24 +39,24 @@ export const blueprint: Blueprint = {
 		}
 
 		// Now we need to actually add the card to the player's hand
-		plr.addToHand(spell);
+		owner.addToHand(spell);
 		return true;
 	},
 
-	test(plr, self) {
-		plr.inputQueue = "1";
-		plr.hand = [];
+	test(owner, self) {
+		owner.inputQueue = "1";
+		owner.hand = [];
 
 		for (let i = 0; i < 50; i++) {
 			self.activate("cast");
 
-			const card = plr.hand.pop();
+			const card = owner.hand.pop();
 
 			assert(card);
 			assert.equal(card.type, "Spell");
 			assert(
 				Boolean(card) &&
-					game.functions.card.validateClasses(card.classes, plr.heroClass),
+					game.functions.card.validateClasses(card.classes, owner.heroClass),
 			);
 		}
 	},

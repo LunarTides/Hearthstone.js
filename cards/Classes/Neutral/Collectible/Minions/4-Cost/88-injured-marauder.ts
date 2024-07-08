@@ -17,17 +17,17 @@ export const blueprint: Blueprint = {
 	health: 10,
 	tribe: "None",
 
-	create(plr, self) {
+	create(owner, self) {
 		// Add additional fields here
 		self.addKeyword("Taunt");
 	},
 
-	battlecry(plr, self) {
+	battlecry(owner, self) {
 		// Taunt Battlecry: Deal 6 damage to this minion.
 		game.attack(6, self);
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		self.activate("battlecry");
 		assert.equal(self.health, 4);
 	},

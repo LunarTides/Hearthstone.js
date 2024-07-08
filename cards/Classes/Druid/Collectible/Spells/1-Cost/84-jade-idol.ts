@@ -16,7 +16,7 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "None",
 
-	cast(plr, self) {
+	cast(owner, self) {
 		// Choose One - Summon a Jade Golem; or Shuffle 3 copies of this card into your deck.
 		game.interact.chooseOne(
 			1,
@@ -24,8 +24,8 @@ export const blueprint: Blueprint = {
 				"Summon a Jade Golem",
 				() => {
 					// Summon a Jade Golem
-					const jade = plr.createJade();
-					plr.summon(jade);
+					const jade = owner.createJade();
+					owner.summon(jade);
 				},
 			],
 			[
@@ -33,26 +33,26 @@ export const blueprint: Blueprint = {
 				() => {
 					// Shuffle
 					for (let i = 0; i < 3; i++) {
-						plr.shuffleIntoDeck(self.imperfectCopy());
+						owner.shuffleIntoDeck(self.imperfectCopy());
 					}
 				},
 			],
 		);
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		// Summon a Jade Golem
-		plr.inputQueue = ["1"];
+		owner.inputQueue = ["1"];
 		self.activate("cast");
 
 		// There should be a jade golem
-		assert.ok(plr.board.some((card) => card.id === game.cardIds.jadeGolem85));
+		assert.ok(owner.board.some((card) => card.id === game.cardIds.jadeGolem85));
 
 		// Shuffle 3 copies
-		plr.inputQueue = ["2"];
+		owner.inputQueue = ["2"];
 		self.activate("cast");
 
 		// There should be 3 copies of this card in the player's deck
-		assert.equal(plr.deck.filter((card) => card.id === self.id).length, 3);
+		assert.equal(owner.deck.filter((card) => card.id === self.id).length, 3);
 	},
 };

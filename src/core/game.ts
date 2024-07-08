@@ -295,8 +295,8 @@ const attack = {
 				let result: GameAttackReturn = "invalid";
 
 				// Get the owner of the attacker, so we can exclude them from the target selection
-				const ownerIsPlayer1 = attacker.plr === game.player1;
-				const ownerIsPlayer2 = attacker.plr === game.player2;
+				const ownerIsPlayer1 = attacker.owner === game.player1;
+				const ownerIsPlayer2 = attacker.owner === game.player2;
 
 				// Set the forgetful state to 2, so we don't do the coin flip again when attacking the random target
 				attacker.setKeyword("Forgetful", 2);
@@ -389,7 +389,7 @@ const attack = {
 		// Remember this attack
 		attacker.decAttack();
 
-		game.event.broadcast("Attack", [attacker, target], attacker.plr);
+		game.event.broadcast("Attack", [attacker, target], attacker.owner);
 		return true;
 	},
 
@@ -420,7 +420,7 @@ const attack = {
 		attack._attackerIsCardAndTargetIsCardDoAttacker(attacker, target);
 		attack._attackerIsCardAndTargetIsCardDoTarget(attacker, target);
 
-		game.event.broadcast("Attack", [attacker, target], attacker.plr);
+		game.event.broadcast("Attack", [attacker, target], attacker.owner);
 		return true;
 	},
 	_attackerIsCardAndTargetIsCardDoAttacker(
@@ -494,7 +494,7 @@ const attack = {
 			return;
 		}
 
-		const board = target.plr.board;
+		const board = target.owner.board;
 		const index = board.indexOf(target);
 
 		const below = board[index - 1];
@@ -537,7 +537,7 @@ const attack = {
 		}
 
 		// The attacker has lifesteal
-		attacker.plr.addHealth(attacker.attack ?? 0);
+		attacker.owner.addHealth(attacker.attack ?? 0);
 	},
 
 	_spellDamage(attacker: number | string, target: Target): number {

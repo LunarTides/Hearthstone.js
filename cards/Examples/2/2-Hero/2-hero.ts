@@ -19,20 +19,20 @@ export const blueprint: Blueprint = {
 	// The id of the hero power card. Here we use the `2-heropower.ts` card.
 	heropowerId: 130,
 
-	battlecry(plr, self) {
+	battlecry(owner, self) {
 		// Restore your hero to full health.
 
 		/*
 		 * Heal this card's owner to full health.
 		 * The `addHealth` method automatically caps the health of the player, so you don't need to worry.
 		 */
-		plr.addHealth(plr.maxHealth);
+		owner.addHealth(owner.maxHealth);
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		// Test battlecry
-		plr.health = 1;
+		owner.health = 1;
 		self.activate("battlecry");
-		assert.equal(plr.health, plr.maxHealth);
+		assert.equal(owner.health, owner.maxHealth);
 	},
 };

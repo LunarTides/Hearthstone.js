@@ -16,16 +16,16 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "None",
 
-	cast(plr, self) {
+	cast(owner, self) {
 		// Heal 3 damage.
 
-		plr.addHealth(3);
+		owner.addHealth(3);
 	},
 
-	test(plr, self) {
-		plr.health = plr.maxHealth - 5;
+	test(owner, self) {
+		owner.health = owner.maxHealth - 5;
 		self.activate("cast");
 
-		assert.equal(plr.health, plr.maxHealth - 2);
+		assert.equal(owner.health, owner.maxHealth - 2);
 	},
 };

@@ -17,28 +17,28 @@ export const blueprint: Blueprint = {
 	health: 2,
 	tribe: "None",
 
-	tick(plr, self) {
+	tick(owner, self) {
 		// Disable your hero power.
 
-		plr.disableHeroPower = true;
+		owner.disableHeroPower = true;
 	},
 
-	remove(plr, self) {
-		plr.disableHeroPower = false;
+	remove(owner, self) {
+		owner.disableHeroPower = false;
 	},
 
-	test(plr, self) {
-		plr.mana = 10;
+	test(owner, self) {
+		owner.mana = 10;
 
 		// By default, you can use your hero power.
-		assert(plr.canUseHeroPower());
+		assert(owner.canUseHeroPower());
 
 		// When this card is on the board, you can't use your hero power.
-		plr.summon(self);
-		assert(!plr.canUseHeroPower());
+		owner.summon(self);
+		assert(!owner.canUseHeroPower());
 
 		// When this card dies, you can use your hero power.
 		self.kill();
-		assert(plr.canUseHeroPower());
+		assert(owner.canUseHeroPower());
 	},
 };

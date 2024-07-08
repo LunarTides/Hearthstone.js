@@ -15,15 +15,15 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "None",
 
-	cast(plr, self) {
+	cast(owner, self) {
 		// Gain 10 Mana.
-		plr.addMana(10);
+		owner.addMana(10);
 	},
 
-	test(plr, self) {
-		plr.mana = 5;
+	test(owner, self) {
+		owner.mana = 5;
 		self.activate("cast");
 
-		assert.equal(plr.mana, 10);
+		assert.equal(owner.mana, 10);
 	},
 };

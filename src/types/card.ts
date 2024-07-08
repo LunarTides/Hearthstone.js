@@ -179,7 +179,7 @@ export type CardBackup = {
  * The ability of a card.
  */
 export type Ability = (
-	plr: Player,
+	owner: Player,
 	self: Card,
 	key?: EventKey,
 	_unknownValue?: UnknownEventValue,

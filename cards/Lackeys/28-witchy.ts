@@ -18,7 +18,7 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribe: "None",
 
-	battlecry(plr, self) {
+	battlecry(owner, self) {
 		// Transform a friendly minion into one that costs (1) more.
 
 		// Ask the user which minion to transform
@@ -50,23 +50,23 @@ export const blueprint: Blueprint = {
 		}
 
 		// Create the card
-		const minion = new Card(random.id, plr);
+		const minion = new Card(random.id, owner);
 
 		// Destroy the target and summon the new minion in order to get the illusion that the card was transformed
 		target.destroy();
 
 		// Summon the card to the player's side of the board
-		plr.summon(minion);
+		owner.summon(minion);
 		return true;
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		const existsMinionWithCost = (cost: number) =>
-			plr.board.some((card) => card.cost === cost);
+			owner.board.some((card) => card.cost === cost);
 
 		// Summon a sheep
-		const sheep = new Card(game.cardIds.sheep1, plr);
-		plr.summon(sheep);
+		const sheep = new Card(game.cardIds.sheep1, owner);
+		owner.summon(sheep);
 
 		// There shouldn't exist a minion with 1 more cost than the sheep.
 		assert(!existsMinionWithCost(sheep.cost + 1));
@@ -81,7 +81,7 @@ export const blueprint: Blueprint = {
 		}
 
 		// Activate the battlecry, select the sheep.
-		plr.inputQueue = ["1"];
+		owner.inputQueue = ["1"];
 		self.activate("battlecry");
 
 		// There should now exist a minion with 1 more cost than the sheep.

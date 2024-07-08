@@ -18,7 +18,7 @@ export const blueprint: Blueprint = {
 	health: 5,
 	tribe: "None",
 
-	battlecry(plr, self) {
+	battlecry(owner, self) {
 		// If you've cast 10 spells this game, spin the Wheel of Yogg-Saron. ({amount} left!)
 		if (!self.condition()) {
 			return;
@@ -50,7 +50,7 @@ export const blueprint: Blueprint = {
 
 					// Subtract to account for yogg-saron being on the board
 					const remaining =
-						player.getRemainingBoardSpace() - (player === plr ? 1 : 0);
+						player.getRemainingBoardSpace() - (player === owner ? 1 : 0);
 
 					for (let index = 0; index < remaining; index++) {
 						const card = game.lodash.sample(minionPool)?.imperfectCopy();
@@ -58,7 +58,7 @@ export const blueprint: Blueprint = {
 							continue;
 						}
 
-						if (player === plr) {
+						if (player === owner) {
 							card.addKeyword("Rush");
 						}
 
@@ -87,7 +87,7 @@ export const blueprint: Blueprint = {
 
 			case "Hand of Fate": {
 				// Fill your hand with random spells. They cost (0) this turn.
-				const remaining = plr.getRemainingHandSpace();
+				const remaining = owner.getRemainingHandSpace();
 
 				for (let index = 0; index < remaining; index++) {
 					const card = game.lodash.sample(spellPool)?.imperfectCopy();
@@ -96,11 +96,11 @@ export const blueprint: Blueprint = {
 					}
 
 					card.addEnchantment("cost = 0", self);
-					plr.addToHand(card);
+					owner.addToHand(card);
 				}
 
 				game.functions.event.addListener("EndTurn", () => {
-					for (const card of plr.hand) {
+					for (const card of owner.hand) {
 						card.removeEnchantment("cost = 0", self);
 					}
 
@@ -112,7 +112,7 @@ export const blueprint: Blueprint = {
 
 			case "Mindflayer Goggles": {
 				// Take control of three random enemy minions.
-				const board = plr.getOpponent().board;
+				const board = owner.getOpponent().board;
 
 				for (let index = 0; index < 3; index++) {
 					const card = game.lodash.sample(board);
@@ -120,7 +120,7 @@ export const blueprint: Blueprint = {
 						continue;
 					}
 
-					card.takeControl(plr);
+					card.takeControl(owner);
 				}
 
 				break;
@@ -128,7 +128,7 @@ export const blueprint: Blueprint = {
 
 			case "Mysterybox": {
 				// Cast a random spell for every spell you've cast this game (targets chosen randomly).
-				const oldYogg = new Card(game.cardIds.yoggSaronHopesEnd103, plr);
+				const oldYogg = new Card(game.cardIds.yoggSaronHopesEnd103, owner);
 				oldYogg.activate("battlecry");
 
 				break;
@@ -136,14 +136,14 @@ export const blueprint: Blueprint = {
 
 			case "Rod of Roasting": {
 				// Cast 'Pyroblast' randomly until a hero dies.
-				const rod = new Card(game.cardIds.pyroblast105, plr);
+				const rod = new Card(game.cardIds.pyroblast105, owner);
 
 				while (game.player1.isAlive() && game.player2.isAlive()) {
-					plr.forceTarget = game.functions.util.getRandomTarget();
+					owner.forceTarget = game.functions.util.getRandomTarget();
 					rod.activate("cast");
 				}
 
-				plr.forceTarget = undefined;
+				owner.forceTarget = undefined;
 
 				break;
 			}
@@ -151,11 +151,11 @@ export const blueprint: Blueprint = {
 			// No default
 		}
 
-		game.event.broadcast("CardEvent", [self, choice], plr);
+		game.event.broadcast("CardEvent", [self, choice], owner);
 	},
 
-	placeholders(plr, self) {
-		const amount = game.event.events.PlayCard?.[plr.id].filter(
+	placeholders(owner, self) {
+		const amount = game.event.events.PlayCard?.[owner.id].filter(
 			(object) => object[0] instanceof Card && object[0].type === "Spell",
 		).length;
 		if (!amount) {
@@ -169,8 +169,8 @@ export const blueprint: Blueprint = {
 		return { left: ` <i>(${10 - amount} left!)</i>` };
 	},
 
-	condition(plr, self) {
-		const amount = game.event.events.PlayCard?.[plr.id].filter(
+	condition(owner, self) {
+		const amount = game.event.events.PlayCard?.[owner.id].filter(
 			(object) => object[0] instanceof Card && object[0].type === "Spell",
 		).length;
 		if (!amount) {
@@ -180,7 +180,7 @@ export const blueprint: Blueprint = {
 		return amount >= 10;
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		// TODO: Add proper tests. #325
 		return true;
 	},

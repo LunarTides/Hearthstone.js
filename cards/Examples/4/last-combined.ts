@@ -15,8 +15,8 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "None",
 
-	cast(plr, self) {
-		plr.addQuest("Quest", self, "PlayCard", 3, (_unknownValue, done) => {
+	cast(owner, self) {
+		owner.addQuest("Quest", self, "PlayCard", 3, (_unknownValue, done) => {
 			const value = _unknownValue as EventValue<"PlayCard">;
 
 			if (value === self) {
@@ -33,7 +33,7 @@ export const blueprint: Blueprint = {
 			 */
 			const unhook = game.functions.event.hookToTick(() => {
 				// Only add the enchantment to minions
-				for (const minion of plr.hand.filter(
+				for (const minion of owner.hand.filter(
 					(card) => card.type === "Minion",
 				)) {
 					if (minion.enchantmentExists("-1 cost", self)) {
@@ -53,7 +53,7 @@ export const blueprint: Blueprint = {
 					const value = _unknownValue as EventValue<"PlayCard">;
 
 					// Only continue if the player that triggered the event is this card's owner and the played card is a minion.
-					if (!(eventPlayer === plr && value.type === "Minion")) {
+					if (!(eventPlayer === owner && value.type === "Minion")) {
 						return false;
 					}
 
@@ -72,9 +72,9 @@ export const blueprint: Blueprint = {
 
 					/*
 					 * Reverse the enchantment
-					 * You might be able to just do `for (const minion of plr.hand)` instead, since `removeEnchantment` only removes enchantments if it's there.
+					 * You might be able to just do `for (const minion of owner.hand)` instead, since `removeEnchantment` only removes enchantments if it's there.
 					 */
-					for (const minion of plr.hand.filter((c) => c.type === "Minion")) {
+					for (const minion of owner.hand.filter((c) => c.type === "Minion")) {
 						minion.removeEnchantment("-1 cost", self);
 					}
 
@@ -89,7 +89,7 @@ export const blueprint: Blueprint = {
 		});
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		// TODO: Add proper tests. #325
 		return true;
 	},

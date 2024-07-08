@@ -206,7 +206,7 @@ export function create(
 
 	const createAbility = blueprint.text
 		? `
-    create(plr, self) {
+    create(owner, self) {
         // Add additional fields here
 ${runes}${keywords}
     },`
@@ -217,19 +217,19 @@ ${runes}${keywords}
 
 	/*
 	 * Normal ability
-	 * Example 1: '\n\n    passive(plr, self, key, _unknownValue, eventPlayer) {\n        // Your battlecries trigger twice.\n        ...\n    }',
-	 * Example 2: '\n\n    battlecry(plr, self) {\n        // Deal 2 damage to the opponent.\n        \n    }'
+	 * Example 1: '\n\n    passive(owner, self, key, _unknownValue, eventPlayer) {\n        // Your battlecries trigger twice.\n        ...\n    }',
+	 * Example 2: '\n\n    battlecry(owner, self) {\n        // Deal 2 damage to the opponent.\n        \n    }'
 	 */
 	if (ability) {
 		const extraNewline = extraPassiveCode ? "" : "\n";
 
 		ability = `
 
-    ${ability.toLowerCase()}(plr, self${triggerText} {
+    ${ability.toLowerCase()}(owner, self${triggerText} {
         // ${cleanedDescription}${extraPassiveCode}${extraNewline}
     },
 
-    test(plr, self) {
+    test(owner, self) {
         // Unit testing
         assert(false);
     },`;

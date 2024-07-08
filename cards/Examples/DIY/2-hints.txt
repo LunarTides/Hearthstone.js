@@ -1,2 +1,2 @@
-Try to look at the `plr` object.
+Try to look at the `owner` object.
 ^ See if there is any function related to health before changing fields directly

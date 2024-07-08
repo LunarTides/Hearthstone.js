@@ -16,7 +16,7 @@ export const blueprint: Blueprint = {
 	armor: 5,
 	heropowerId: 126,
 
-	battlecry(plr, self) {
+	battlecry(owner, self) {
 		// Summon two 1/1 Storms with Rush. (Equip a 5/2 Claw.)
 
 		// Get the stats
@@ -27,13 +27,13 @@ export const blueprint: Blueprint = {
 
 		// Summon the two minions
 		for (let i = 0; i < 2; i++) {
-			const minion = new Card(game.cardIds.brewingStorm112, plr);
+			const minion = new Card(game.cardIds.brewingStorm112, owner);
 			if (!minion) {
 				break;
 			}
 
 			minion.setStats(amount, amount);
-			plr.summon(minion);
+			owner.summon(minion);
 		}
 
 		if (!shouldGiveWeapon) {
@@ -41,15 +41,15 @@ export const blueprint: Blueprint = {
 		}
 
 		// Give the weapon
-		const weapon = new Card(game.cardIds.dragonClaw111, plr);
-		plr.setWeapon(weapon);
+		const weapon = new Card(game.cardIds.dragonClaw111, owner);
+		owner.setWeapon(weapon);
 	},
 
-	invoke(plr, self) {
+	invoke(owner, self) {
 		self.galakrondBump("invokeCount");
 	},
 
-	placeholders(plr, self) {
+	placeholders(owner, self) {
 		if (!self.storage.invokeCount) {
 			return { amount: 0, plural: "s", plural2: "They" };
 		}

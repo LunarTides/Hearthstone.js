@@ -16,7 +16,7 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribe: "None",
 
-	create(plr, self) {
+	create(owner, self) {
 		/*
 		 * Put the id of the corrupted counterpart here. This is the id of 5-corrupted.ts
 		 * Corrupted is another system that is very untested and might get a rewrite.
@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
 		self.addKeyword("Corrupt", game.cardIds.corruptedExample41);
 	},
 
-	test(plr, self) {
+	test(owner, self) {
 		// TODO: Test. #325
 	},
 };
