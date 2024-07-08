@@ -1,6 +1,6 @@
 // Created by Hand
 
-import type { Card } from "@Game/core/card.js";
+import { Card } from "@Game/core/card.js";
 import type { Blueprint, EventValue } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
@@ -97,7 +97,7 @@ export const blueprint: Blueprint = {
 			game.pause(
 				"You cancelled the card. The verification process depends on a minion actually being killed. Try again.\n",
 			);
-			return game.constants.refund;
+			return Card.REFUND;
 		}
 
 		const solved =

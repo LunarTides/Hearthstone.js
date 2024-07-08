@@ -35,7 +35,7 @@ export const cardInteract = {
 			return "cooldown";
 		}
 
-		if (location.activate("use") === game.constants.refund) {
+		if (location.activate("use") === Card.REFUND) {
 			return "refund";
 		}
 

@@ -21,7 +21,7 @@ export const blueprint: Blueprint = {
 		// Choose a character. Cast 4 random spells (targeting it if possible).
 		const target = game.interact.selectTarget(self.text, self, "any", "any");
 		if (!target) {
-			return game.constants.refund;
+			return Card.REFUND;
 		}
 
 		owner.forceTarget = target;

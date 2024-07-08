@@ -30,12 +30,12 @@ export const blueprint: Blueprint = {
 
 		// If no target was selected, refund
 		if (!target) {
-			return game.constants.refund;
+			return Card.REFUND;
 		}
 
 		// There isn't any cards that cost more than 10, so refund
 		if (target.cost >= 10) {
-			return game.constants.refund;
+			return Card.REFUND;
 		}
 
 		// Filter minions that cost (1) more than the target
@@ -46,7 +46,7 @@ export const blueprint: Blueprint = {
 		// Choose a random minion from the filtered list.
 		const random = game.lodash.sample(minions);
 		if (!random) {
-			return game.constants.refund;
+			return Card.REFUND;
 		}
 
 		// Create the card

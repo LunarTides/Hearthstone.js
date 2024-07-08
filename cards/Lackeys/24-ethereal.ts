@@ -30,7 +30,7 @@ export const blueprint: Blueprint = {
 		// Prompt a discover
 		const card = game.interact.card.discover("Discover a spell.", pool);
 		if (!card) {
-			return game.constants.refund;
+			return Card.REFUND;
 		}
 
 		// Add the card to the player's hand

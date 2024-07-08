@@ -74,13 +74,6 @@ export type CommandList = Record<
 >;
 
 /**
- * GameConstants values.
- */
-export type GameConstants = {
-	refund: -1;
-};
-
-/**
  * A card-like object.
  */
 export type CardLike = Card | Blueprint;

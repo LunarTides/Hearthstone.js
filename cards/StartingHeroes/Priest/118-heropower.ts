@@ -1,6 +1,7 @@
 // Created by the Custom Card Creator
 
 import assert from "node:assert";
+import { Card } from "@Game/internal.js";
 import type { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
@@ -27,7 +28,7 @@ export const blueprint: Blueprint = {
 
 		// If no target was selected, refund the hero power
 		if (!target) {
-			return game.constants.refund;
+			return Card.REFUND;
 		}
 
 		// Restore 2 health to the target

@@ -356,6 +356,8 @@ export class Card {
 		}
 	}
 
+	static REFUND: -1 = -1;
+
 	/**
 	 * Returns all cards with the name `name`.
 	 *
@@ -1176,7 +1178,7 @@ export class Card {
 		let returnValue: unknown[] | -1 = [];
 
 		for (const callback of ability) {
-			if (returnValue === game.constants.refund) {
+			if (returnValue === Card.REFUND) {
 				continue;
 			}
 
@@ -1192,14 +1194,14 @@ export class Card {
 			}
 
 			// Deathrattle isn't cancellable
-			if (result !== game.constants.refund || name === "deathrattle") {
+			if (result !== Card.REFUND || name === "deathrattle") {
 				continue;
 			}
 
 			// If the return value is -1, meaning "refund", refund the card and stop the for loop
 			game.event.broadcast("CancelCard", [this, name], this.owner);
 
-			returnValue = game.constants.refund;
+			returnValue = Card.REFUND;
 
 			// These abilities shouldn't "refund" the card, just stop execution.
 			if (["use", "heropower"].includes(name)) {

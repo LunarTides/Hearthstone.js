@@ -867,7 +867,7 @@ export class Player {
 			return false;
 		}
 
-		if (this.hero.heropower?.activate("heropower") === game.constants.refund) {
+		if (this.hero.heropower?.activate("heropower") === Card.REFUND) {
 			return -1;
 		}
 

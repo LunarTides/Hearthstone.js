@@ -14,7 +14,6 @@ import type {
 	EventKey,
 	GameAttackReturn,
 	GameConfig,
-	GameConstants,
 	GamePlayCardReturn,
 	Target,
 	UnknownEventValue,
@@ -1227,13 +1226,6 @@ export class Game {
 	 * If this is false, the game loop will end.
 	 */
 	running = true;
-
-	/**
-	 * Some constant values.
-	 */
-	constants: GameConstants = {
-		refund: -1,
-	};
 
 	/**
 	 * Cache for the game.

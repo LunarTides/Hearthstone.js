@@ -36,9 +36,9 @@ export const blueprint: Blueprint = {
 		 */
 		const target = game.interact.selectCardTarget(prompt, self, "enemy");
 
-		// If target is false it means that the user cancelled their selection. Return `game.constants.refund` to refund the card.
+		// If target is false it means that the user cancelled their selection. Return `Card.REFUND` to refund the card.
 		if (!target) {
-			return game.constants.refund;
+			return Card.REFUND;
 		}
 
 		// If the manathirst was successful, silence the target first

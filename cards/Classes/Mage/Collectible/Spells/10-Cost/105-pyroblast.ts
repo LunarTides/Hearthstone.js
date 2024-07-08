@@ -1,6 +1,7 @@
 // Created by the Vanilla Card Creator
 
 import assert from "node:assert";
+import { Card } from "@Game/internal.js";
 import type { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
@@ -19,7 +20,7 @@ export const blueprint: Blueprint = {
 		// Deal $10 damage.
 		const target = game.interact.selectTarget(self.text, self, "any", "any");
 		if (!target) {
-			return game.constants.refund;
+			return Card.REFUND;
 		}
 
 		game.attack("$10", target);

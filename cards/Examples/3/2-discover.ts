@@ -35,7 +35,7 @@ export const blueprint: Blueprint = {
 
 		// If no card was chosen, refund
 		if (!spell) {
-			return game.constants.refund;
+			return Card.REFUND;
 		}
 
 		// Now we need to actually add the card to the player's hand

@@ -22,7 +22,7 @@ export const blueprint: Blueprint = {
 		// Take control of an enemy minion.
 		const card = game.interact.selectCardTarget(self.text, self, "enemy");
 		if (!card) {
-			return game.constants.refund;
+			return Card.REFUND;
 		}
 
 		card.takeControl(owner);

@@ -30,7 +30,7 @@ export const blueprint: Blueprint = {
 
 		// If no target was selected, refund
 		if (!target) {
-			return game.constants.refund;
+			return Card.REFUND;
 		}
 
 		// Add +1 Attack

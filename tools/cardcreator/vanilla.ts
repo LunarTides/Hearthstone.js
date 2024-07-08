@@ -208,11 +208,16 @@ export function main(debug = false, overrideType?: lib.CcType): boolean {
 			// Prompt the user to pick one
 			for (const [index, vanillaCard] of filteredCards.entries()) {
 				// Get rid of useless information
-				vanillaCard.elite = undefined;
-				vanillaCard.heroPowerDbfId = undefined;
-				vanillaCard.artist = undefined;
-				vanillaCard.flavor = undefined;
-				vanillaCard.mechanics = undefined;
+				// biome-ignore lint/performance/noDelete: <explanation>
+				delete vanillaCard.elite;
+				// biome-ignore lint/performance/noDelete: <explanation>
+				delete vanillaCard.heroPowerDbfId;
+				// biome-ignore lint/performance/noDelete: <explanation>
+				delete vanillaCard.artist;
+				// biome-ignore lint/performance/noDelete: <explanation>
+				delete vanillaCard.flavor;
+				// biome-ignore lint/performance/noDelete: <explanation>
+				delete vanillaCard.mechanics;
 
 				const { id, ...card } = vanillaCard;
 

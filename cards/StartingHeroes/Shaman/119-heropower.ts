@@ -22,7 +22,7 @@ export const blueprint: Blueprint = {
 
 		// If there are no totem cards to summon, refund the hero power, which gives the player back their mana
 		if (filteredTotemCardNames.length === 0) {
-			return game.constants.refund;
+			return Card.REFUND;
 		}
 
 		// Randomly choose one of the totem cards.

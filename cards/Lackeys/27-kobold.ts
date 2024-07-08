@@ -1,6 +1,7 @@
 // Created by Hand (before the Card Creator Existed)
 
 import assert from "node:assert";
+import { Card } from "@Game/internal.js";
 import type { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
@@ -30,7 +31,7 @@ export const blueprint: Blueprint = {
 
 		// If no target was selected, refund
 		if (!target) {
-			return game.constants.refund;
+			return Card.REFUND;
 		}
 
 		// Deal 2 damage to the target
