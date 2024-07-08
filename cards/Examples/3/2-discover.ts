@@ -1,6 +1,7 @@
 // Created by Hand
 
 import assert from "node:assert";
+import { Card } from "@Game/internal.js";
 import type { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
@@ -24,7 +25,7 @@ export const blueprint: Blueprint = {
 		 */
 
 		// This gets every card from the game, excluding uncollectible cards.
-		let pool = game.functions.card.getAll();
+		let pool = Card.all();
 
 		// We need to filter away any non-spell cards.
 		pool = pool.filter((c) => c.type === "Spell");

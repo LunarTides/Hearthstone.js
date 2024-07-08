@@ -1,6 +1,6 @@
 // Created by Hand
 
-import type { Card } from "@Game/internal.js";
+import { Card } from "@Game/internal.js";
 import type { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
@@ -19,7 +19,7 @@ export const blueprint: Blueprint = {
 
 	create(plr, self) {
 		// Store a coin for later
-		self.storage.the_coin = game.newCard(game.cardIds.theCoin2, plr);
+		self.storage.the_coin = new Card(game.cardIds.theCoin2, plr);
 	},
 
 	placeholders(plr, self) {

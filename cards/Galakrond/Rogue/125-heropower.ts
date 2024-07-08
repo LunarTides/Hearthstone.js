@@ -1,6 +1,7 @@
 // Created by the Custom Card Creator
 
 import assert from "node:assert";
+import { Card } from "@Game/internal.js";
 import type { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
@@ -20,7 +21,7 @@ export const blueprint: Blueprint = {
 			return;
 		}
 
-		const lackey = game.newCard(lackeyId, plr);
+		const lackey = new Card(lackeyId, plr);
 
 		plr.addToHand(lackey);
 	},

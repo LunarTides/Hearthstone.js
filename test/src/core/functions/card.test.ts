@@ -16,22 +16,6 @@ describe("src/core/functions/card", () => {
 		expect(false).toEqual(true);
 	});
 
-	test.todo("getAllFromName", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("getFromId", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("getFromName", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("getAll", async () => {
-		expect(false).toEqual(true);
-	});
-
 	test.todo("validateClasses", async () => {
 		expect(false).toEqual(true);
 	});
@@ -56,19 +40,7 @@ describe("src/core/functions/card", () => {
 		expect(false).toEqual(true);
 	});
 
-	test.todo("createCardError", async () => {
-		expect(false).toEqual(true);
-	});
-
 	test.todo("validateBlueprint", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("importAll", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("reloadAll", async () => {
 		expect(false).toEqual(true);
 	});
 

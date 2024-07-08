@@ -2,7 +2,8 @@
  * Player
  * @module Player
  */
-import type { Ai, Card } from "@Game/internal.js";
+import { type Ai, Card } from "@Game/internal.js";
+
 import type {
 	CardClass,
 	CardType,
@@ -338,6 +339,23 @@ export class Player {
 
 	constructor(name: string) {
 		this.name = name;
+	}
+
+	/**
+	 * Retrieves the player corresponding to the given id.
+	 * 0 is Player 1.
+	 * 1 is Player 2.
+	 *
+	 * @param id The id of the player - 1.
+	 *
+	 * @returns The player
+	 */
+	static fromID(id: number) {
+		if (id === 0) {
+			return game.player1;
+		}
+
+		return game.player2;
 	}
 
 	/**
@@ -823,14 +841,14 @@ export class Player {
 	 */
 	setToStartingHero(heroClass = this.heroClass): boolean {
 		const heroCardId = game.cardCollections.classes
-			.map((heroId) => game.newCard(heroId, this, true))
+			.map((heroId) => new Card(heroId, this, true))
 			.find((card) => card.classes.includes(heroClass))?.id;
 
 		if (!heroCardId) {
 			return false;
 		}
 
-		this.setHero(game.newCard(heroCardId, this), false);
+		this.setHero(new Card(heroCardId, this), false);
 
 		return true;
 	}
@@ -1023,6 +1041,26 @@ export class Player {
 		}
 
 		return cards;
+	}
+
+	/**
+	 * Creates and returns a jade golem with the correct stats and cost for this player
+	 *
+	 * @returns The jade golem
+	 */
+	createJade(): Card {
+		if (this.jadeCounter < 30) {
+			this.jadeCounter += 1;
+		}
+
+		const count = this.jadeCounter;
+		const cost = count < 10 ? count : 10;
+
+		const jade = new Card(game.cardIds.jadeGolem85, this);
+		jade.setStats(count, count);
+		jade.cost = cost;
+
+		return jade;
 	}
 
 	/**
@@ -1287,8 +1325,8 @@ export class Player {
 		game.event.broadcast("RevealCard", [enemyCard, "Joust"], this);
 
 		console.log("\n--- JOUST ---");
-		console.log("Yours: %s", game.interact.card.getReadable(friendlyCard));
-		console.log("Opponent: %s", game.interact.card.getReadable(enemyCard));
+		console.log("Yours: %s", friendlyCard.readable());
+		console.log("Opponent: %s", enemyCard.readable());
 		console.log("-------------");
 
 		console.log(win ? "You win!" : "You lose!");
@@ -1322,5 +1360,24 @@ export class Player {
 	 */
 	attackTarget(target: Target, force = false) {
 		return game.attack(this, target, force);
+	}
+
+	/**
+	 * Spawns a DIY card for this player.
+	 */
+	spawnInDIYCard(): void {
+		// Don't allow ai's to get diy cards
+		if (this.ai) {
+			return;
+		}
+
+		const list = Card.all(false).filter((card) => /DIY \d+/.test(card.name));
+		const card = game.lodash.sample(list);
+		if (!card) {
+			return;
+		}
+
+		card.plr = this;
+		this.addToHand(card);
 	}
 }

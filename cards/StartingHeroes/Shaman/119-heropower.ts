@@ -1,6 +1,7 @@
 // Created by the Custom Card Creator
 
 import assert from "node:assert";
+import { Card, CardError } from "@Game/internal.js";
 import type { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
@@ -27,13 +28,11 @@ export const blueprint: Blueprint = {
 		// Randomly choose one of the totem cards.
 		const cardName = game.lodash.sample(filteredTotemCardNames);
 		if (!cardName) {
-			throw game.functions.card.createCardError(
-				"null found when randomly choosing totem card name",
-			);
+			throw new CardError("null found when randomly choosing totem card name");
 		}
 
 		// Create a card from the name.
-		const card = game.newCard(cardName, plr);
+		const card = new Card(cardName, plr);
 
 		// Summon the card on the player's side of the board
 		plr.summon(card);

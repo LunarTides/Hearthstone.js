@@ -294,8 +294,9 @@ export class Card {
 	 *
 	 * @param name The name of the card
 	 * @param plr The card's owner.
+	 * @param [suppressEvent=false] If the "CreateCard" event should be suppressed.
 	 */
-	constructor(id: number, plr: Player) {
+	constructor(id: number, plr: Player, suppressEvent = false) {
 		// Get the blueprint from the cards list
 		const blueprint = game.blueprints.find((c) => c.id === id);
 		if (!blueprint) {
@@ -343,7 +344,164 @@ export class Card {
 			this.backups.init[entry[0] as never] = entry[1] as never;
 		}
 
+		let unsuppress: undefined | (() => boolean);
+		if (suppressEvent) {
+			unsuppress = game.functions.event.suppress("CreateCard");
+		}
+
 		game.event.broadcast("CreateCard", this, this.plr);
+
+		if (unsuppress) {
+			unsuppress();
+		}
+	}
+
+	/**
+	 * Returns all cards with the name `name`.
+	 *
+	 * @param refer If this should call `getCardById` if it doesn't find the card from the name
+	 *
+	 * @example
+	 * const cards = Card.allFromName('The Coin');
+	 *
+	 * assert.ok(card[0] instanceof Card);
+	 * assert.equal(card[0].name, 'The Coin');
+	 */
+	static allFromName(name: string, refer = true): Card[] {
+		const id = Card.fromId(game.lodash.parseInt(name));
+
+		/*
+		 * For some reason, "10 Mana" turns into 10 when passed through `parseInt`.
+		 * So we check if it has a space
+		 */
+		if (id && refer && !name.includes(" ")) {
+			return [id];
+		}
+
+		return Card.all(false).filter(
+			(c) => c.name.toLowerCase() === name.toLowerCase(),
+		);
+	}
+
+	/**
+	 * Creates a card with the given name for the specified player. If there are multiple cards with the same name, this will use the first occurrence.
+	 *
+	 * @returns The created card, or undefined if no card is found.
+	 */
+	static fromName(name: string, player: Player): Card | undefined {
+		const cards = Card.allFromName(name);
+		if (cards.length <= 0) {
+			return undefined;
+		}
+
+		return new Card(cards[0].id, player, true);
+	}
+
+	/**
+	 * Returns the card with the id of `id`.
+	 *
+	 * @example
+	 * const card = Card.fromId(2);
+	 *
+	 * assert.ok(card instanceof Card);
+	 * assert.equal(card.name, 'The Coin');
+	 */
+	static fromId(id: number): Card | undefined {
+		return Card.all(false).find((c) => c.id === id);
+	}
+
+	/**
+	 * Returns all cards added to Hearthstone.js from the "cards" folder.
+	 *
+	 * @param uncollectible If it should filter out all uncollectible cards
+	 */
+	static all(uncollectible = true): Card[] {
+		// Don't broadcast CreateCard event here since it would spam the history and log files
+		if (game.cards.length <= 0) {
+			game.cards = game.blueprints.map(
+				(card) => new Card(card.id, game.player, true),
+			);
+
+			game.functions.card.generateIdsFile();
+		}
+
+		return game.cards.filter((c) => c.collectible || !uncollectible);
+	}
+
+	/**
+	 * Returns the card with the given UUID wherever it is.
+	 *
+	 * This searches both players' deck, hand, board, and graveyard.
+	 *
+	 * @param uuid The UUID to search for. This matches if the card's UUID starts with the given UUID (this).
+	 * @returns The card that matches the UUID, or undefined if no match is found.
+	 */
+	static fromUUID(uuid: string): Card | undefined {
+		let card: Card | undefined;
+
+		/**
+		 * Searches for a UUID in the given array of cards and updates the 'card' variable if found.
+		 *
+		 * @param where The array of cards to search
+		 */
+		function lookForUUID(where: Card[]): void {
+			const foundCard = where.find((card) => card.uuid.startsWith(uuid));
+
+			if (foundCard) {
+				card = foundCard;
+			}
+		}
+
+		for (const player of [game.player1, game.player2]) {
+			lookForUUID(player.deck);
+			lookForUUID(player.hand);
+			lookForUUID(player.board);
+			lookForUUID(player.graveyard);
+		}
+
+		return card;
+	}
+
+	/**
+	 * Imports and registers all cards from the "cards" folder
+	 *
+	 * @returns Success
+	 */
+	static registerAll(): boolean {
+		game.functions.util.searchCardsFolder((fullPath) => {
+			const blueprint = require(fullPath).blueprint as Blueprint;
+			game.blueprints.push(blueprint);
+		});
+
+		// Remove falsy values
+		game.blueprints = game.blueprints.filter(Boolean);
+
+		if (!game.functions.card.runBlueprintValidator()) {
+			throw new Error(
+				"Some cards are invalid. Please fix these issues before playing.",
+			);
+		}
+
+		return true;
+	}
+
+	/**
+	 * Reloads all cards
+	 *
+	 * @returns Success
+	 */
+	static reloadAll(): boolean {
+		game.blueprints = [];
+
+		for (const key of Object.keys(require.cache)) {
+			if (!key.includes("/cards/")) {
+				continue;
+			}
+
+			delete require.cache[key];
+		}
+
+		return Card.registerAll();
 	}
 
 	/**
@@ -392,7 +550,7 @@ export class Card {
 		this.maxHealth = this.blueprint.health;
 
 		if (this.heropowerId) {
-			this.heropower = game.newCard(this.heropowerId, this.plr);
+			this.heropower = new Card(this.heropowerId, this.plr);
 		}
 
 		this.text = game.functions.color.fromTags(this.text || "");
@@ -1413,7 +1571,7 @@ export class Card {
 	 * @returns An imperfect copy of this card.
 	 */
 	imperfectCopy(): Card {
-		return game.newCard(this.id, this.plr);
+		return new Card(this.id, this.plr);
 	}
 
 	/**
@@ -1546,8 +1704,8 @@ export class Card {
 
 			case "Living Spores": {
 				this.addAbility("deathrattle", (plr, _) => {
-					plr.summon(game.newCard(game.cardIds.plant3, plr));
-					plr.summon(game.newCard(game.cardIds.plant3, plr));
+					plr.summon(new Card(game.cardIds.plant3, plr));
+					plr.summon(new Card(game.cardIds.plant3, plr));
 				});
 				break;
 			}
@@ -1678,5 +1836,251 @@ export class Card {
 	 */
 	attackTarget(target: Target, force = false) {
 		return game.attack(this, target, force);
+	}
+
+	/**
+	 * Replaces placeholders in the description of this card.
+	 *
+	 * @param overrideText The description. If empty, it uses this card's description instead.
+	 * @param _depth The depth of recursion.
+	 *
+	 * @returns The modified description with placeholders replaced.
+	 */
+	doPlaceholders(overrideText = "", _depth = 0): string {
+		let reg = /{ph:(.*?)}/;
+
+		let text = overrideText;
+		if (!overrideText) {
+			text = this.text || "";
+		}
+
+		let running = true;
+		while (running) {
+			const regedDesc = reg.exec(text);
+
+			// There is nothing more to extract
+			if (!regedDesc) {
+				running = false;
+				break;
+			}
+
+			// Get the capturing group result
+			const key = regedDesc[1];
+
+			this.replacePlaceholders();
+			const rawReplacement = this.placeholder;
+			if (!rawReplacement) {
+				throw new Error("Card placeholder not found.");
+			}
+
+			let replacement = rawReplacement[key] as string | Card;
+
+			if (replacement instanceof Card) {
+				// The replacement is a card
+				const onlyShowName =
+					game.config.advanced.getReadableCardNoRecursion ||
+					!game.player.detailedView;
+
+				const alwaysShowFullCard =
+					game.config.advanced.getReadableCardAlwaysShowFullCard;
+
+				replacement =
+					onlyShowName && !alwaysShowFullCard
+						? replacement.colorFromRarity()
+						: replacement.readable(-1, _depth + 1);
+			}
+
+			text = game.functions.color.fromTags(text.replace(reg, replacement));
+		}
+
+		// Replace spell damage placeholders
+		reg = /\$(\d+)/;
+
+		running = true;
+		while (running) {
+			const regedDesc = reg.exec(text);
+			if (!regedDesc) {
+				running = false;
+				break;
+			}
+
+			// Get the capturing group result
+			const key = regedDesc[1];
+			const replacement = game.lodash.parseInt(key) + game.player.spellDamage;
+
+			text = text.replace(reg, replacement.toString());
+		}
+
+		return text;
+	}
+
+	/**
+	 * Returns this card in a human readable state. If you "console.log" the result of this, the user will get all the information they need from this card.
+	 *
+	 * @param i If this is set, this function will add `[i]` to the beginning of the string. This is useful if there are many different cards to choose from.
+	 * @param _depth The depth of recursion. DO NOT SET THIS MANUALLY.
+	 *
+	 * @returns The human readable card string
+	 */
+	readable(i = -1, _depth = 0): string {
+		/**
+		 * If it should show detailed errors regarding depth.
+		 */
+		const showDetailedError: boolean =
+			game.config.general.debug ||
+			game.config.info.branch !== "stable" ||
+			game.player.detailedView;
+
+		if (_depth > 0 && game.config.advanced.getReadableCardNoRecursion) {
+			if (showDetailedError) {
+				return "RECURSION ATTEMPT BLOCKED";
+			}
+
+			return "...";
+		}
+
+		if (_depth > game.config.advanced.getReadableCardMaxDepth) {
+			if (showDetailedError) {
+				return "MAX DEPTH REACHED";
+			}
+
+			return "...";
+		}
+
+		let sb = "";
+
+		let text = (this.text || "").length > 0 ? ` (${this.text}) ` : " ";
+
+		// Extract placeholder value, remove the placeholder header and footer
+		if (this.placeholder ?? /\$(\d+)/.test(this.text || "")) {
+			text = this.doPlaceholders(text, _depth);
+		}
+
+		let cost = `{${this.cost}} `;
+
+		switch (this.costType) {
+			case "mana": {
+				cost = `<cyan>${cost}</cyan>`;
+				break;
+			}
+
+			case "armor": {
+				cost = `<gray>${cost}</gray>`;
+				break;
+			}
+
+			case "health": {
+				cost = `<red>${cost}</red>`;
+				break;
+			}
+
+			default: {
+				break;
+			}
+		}
+
+		const { name } = this;
+
+		if (i !== -1) {
+			sb += `[${i}] `;
+		}
+
+		sb += cost;
+		sb += this.colorFromRarity(name);
+
+		if (game.config.general.debug) {
+			const idHex = (this.id + 1000).toString(16).repeat(6).slice(0, 6);
+			sb += ` (#<#${idHex}>${this.id}</#> @${this.coloredUUID()})`;
+		}
+
+		if (this.hasStats()) {
+			const titan = this.getKeyword("Titan") as number[] | false;
+
+			sb += titan
+				? game.functions.color.if(
+						!this.sleepy,
+						"bright:green",
+						` [${titan.length} Abilities Left]`,
+					)
+				: game.functions.color.if(
+						this.canAttack(),
+						"bright:green",
+						` [${this.attack} / ${this.health}]`,
+					);
+		} else if (this.type === "Location") {
+			const { durability } = this;
+			const maxDurability = this.backups.init.durability;
+			const maxCooldown = this.backups.init.cooldown ?? 0;
+
+			sb += ` {<bright:green>Durability: ${durability} / ${maxDurability}</bright:green>,`;
+			sb += ` <cyan>Cooldown: ${this.cooldown} / ${maxCooldown}</cyan>}`;
+		}
+
+		sb += text;
+		sb += `<yellow>(${this.type})</yellow>`;
+
+		// Add the keywords
+		sb += Object.keys(this.keywords)
+			.map((keyword) => ` <gray>{${keyword}}</gray>`)
+			.join("");
+
+		return sb;
+	}
+
+	/**
+	 * Shows information from this card, "console.log"'s it and waits for the user to press enter. See `readable`.
+	 *
+	 * @param help If it should show a help message which displays what the different fields mean.
+	 */
+	view(help = true): void {
+		const cardInfo = this.readable();
+		const classInfo = `<gray>${this.classes.join(" / ")}</gray>`;
+
+		let tribe = "";
+		let spellSchool = "";
+		let locCooldown = "";
+
+		const { type } = this;
+
+		switch (type) {
+			case "Minion": {
+				tribe = ` (<gray>${this.tribe ?? "None"}</gray>)`;
+				break;
+			}
+
+			case "Spell": {
+				spellSchool = this.spellSchool
+					? ` (<cyan>${this.spellSchool}</cyan>)`
+					: " (None)";
+				break;
+			}
+
+			case "Location": {
+				locCooldown = ` (<cyan>${this.storage.init.cooldown ?? 0}</cyan>)`;
+				break;
+			}
+
+			case "Hero":
+			case "Weapon":
+			case "Heropower":
+			case "Undefined": {
+				break;
+			}
+
+			// No default
+		}
+
+		if (help) {
+			console.log(
+				"<cyan>{cost}</cyan> <b>Name</b> (<bright:green>[attack / health]</bright:green> if is has) (description) <yellow>(type)</yellow> ((tribe) or (spell class) or (cooldown)) <gray>[class]</gray>",
+			);
+		}
+
+		console.log(
+			`${cardInfo + (tribe || spellSchool || locCooldown)} [${classInfo}]`,
+		);
+
+		console.log();
+		game.pause();
 	}
 }

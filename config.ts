@@ -187,7 +187,7 @@ export const config: GameConfig = {
 		dcShowUncollectible: false,
 
 		/*
-		 * If this is true, `getReadableCard` will only show the top level of a card.
+		 * If this is true, `Card.readable` will only show the top level of a card.
 		 * This will prevent cards from referencing other cards in their description
 		 * however it will still show that card's name.
 		 * Enable this if you don't like cards showing other cards in their description.
@@ -195,13 +195,13 @@ export const config: GameConfig = {
 		getReadableCardNoRecursion: false,
 
 		/*
-		 * If this is true, `getReadableCard` will always show the full card in another card's description
+		 * If this is true, `Card.readable` will always show the full card in another card's description
 		 * instead of it only being in detail mode.
 		 */
 		getReadableCardAlwaysShowFullCard: false,
 
 		/*
-		 * This is how many cards `getReadableCard` can display at once.
+		 * This is how many cards `Card.readable` can display at once.
 		 * This is to prevent a card from referencing itself, which would cause an infinite loop.
 		 * I highly recommend keeping this value below 20.
 		 */

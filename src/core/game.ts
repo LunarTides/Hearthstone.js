@@ -826,7 +826,7 @@ const playCard = {
 		player.mana -= 2;
 
 		game.functions.event.withSuppressed("DiscardCard", () => card.discard());
-		const forged = game.newCard(forgeId, player);
+		const forged = new Card(forgeId, player);
 		player.addToHand(forged);
 
 		game.event.broadcast("ForgeCard", card, player);
@@ -938,7 +938,7 @@ const playCard = {
 			}
 
 			// Corrupt that card
-			const corrupted = game.newCard(corruptId, player);
+			const corrupted = new Card(corruptId, player);
 
 			game.functions.event.withSuppressed("DiscardCard", () => card.discard());
 			game.functions.event.withSuppressed("AddCardToHand", () =>
@@ -1067,7 +1067,7 @@ const cards = {
 					continue;
 				}
 
-				const cardToSummon = game.newCard(cardId, player);
+				const cardToSummon = new Card(cardId, player);
 
 				// If this card has dormant, add it to the summoned minions as well.
 				if (dormant) {
@@ -1347,7 +1347,7 @@ export class Game {
 	startGame(): boolean {
 		// Make players draw cards
 		for (let i = 0; i < 2; i++) {
-			const player = this.functions.util.getPlayerFromId(i);
+			const player = Player.fromID(i);
 
 			// Suppress "AddCardToHand" and "DrawCard" events in the loop since the events need to be unsuppressed by the time any `card.activate` is called
 			const unsuppressAddCardToHand =
@@ -1402,7 +1402,7 @@ export class Game {
 		this.player1.mana = 1;
 
 		// Give the coin to the second player
-		const coin = this.newCard(this.cardIds.theCoin2, this.player2);
+		const coin = new Card(this.cardIds.theCoin2, this.player2);
 		this.functions.event.withSuppressed("AddCardToHand", () =>
 			this.player2.addToHand(coin),
 		);
@@ -1487,7 +1487,7 @@ export class Game {
 				this.config.advanced.diyCardSpawnChance &&
 			this.config.advanced.spawnInDiyCards
 		) {
-			this.interact.card.spawnInDiyCard(opponent);
+			opponent.spawnInDIYCard();
 		}
 
 		// Minion start of turn
@@ -1564,7 +1564,7 @@ export class Game {
 		let amount = 0;
 
 		for (let p = 0; p < 2; p++) {
-			const player = this.functions.util.getPlayerFromId(p);
+			const player = Player.fromID(p);
 
 			/*
 			 * The minions with more than 0 health will be added to this list.
@@ -1646,30 +1646,6 @@ export class Game {
 
 		return amount;
 	}
-
-	/**
-	 * Creates a card from the blueprint of an id.
-	 *
-	 * @param id The id of the blueprint. Use `game.cardIds`
-	 * @param owner The owner of the card
-	 * @param suppress Whether to suppress the `CreateCard` event. By default, this is false.
-	 *
-	 * @returns The card
-	 */
-	newCard(id: number, owner: Player, suppress = false): Card {
-		let unsuppress: undefined | (() => boolean);
-		if (suppress) {
-			unsuppress = this.functions.event.suppress("CreateCard");
-		}
-
-		const card = new Card(id, owner);
-
-		if (unsuppress) {
-			unsuppress();
-		}
-
-		return card;
-	}
 }
 
 /**
@@ -1682,7 +1658,7 @@ export function createGame() {
 	const player1 = new Player("Player 1");
 	const player2 = new Player("Player 2");
 	game.functions.util.importConfig();
-	game.functions.card.importAll();
+	Card.registerAll();
 	game.setup(player1, player2);
 	game.doConfigAi();
 

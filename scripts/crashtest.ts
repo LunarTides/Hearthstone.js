@@ -3,7 +3,7 @@
  * @module Crash Test
  */
 import process from "node:process";
-import { createGame } from "@Game/internal.js";
+import { Player, createGame } from "@Game/internal.js";
 
 const { game } = createGame();
 
@@ -47,7 +47,7 @@ function main(): void {
 
 		// Choose random decks for the players
 		for (let i = 0; i < 2; i++) {
-			const player = game.functions.util.getPlayerFromId(i);
+			const player = Player.fromID(i);
 
 			const deck = game.lodash.sample(decks);
 			if (typeof deck === "string") {

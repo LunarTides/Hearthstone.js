@@ -1,6 +1,6 @@
 // Created by the Custom Card Creator
 
-import type { Card } from "@Game/core/card.js";
+import { Card } from "@Game/core/card.js";
 import type { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
@@ -32,9 +32,9 @@ export const blueprint: Blueprint = {
 
 		for (let i = 0; i < amount; i++) {
 			// Find all demons
-			const possibleCards = game.functions.card
-				.getAll()
-				.filter((c) => c.type === "Minion" && testDemoness(c));
+			const possibleCards = Card.all().filter(
+				(c) => c.type === "Minion" && testDemoness(c),
+			);
 
 			// Choose a random one
 			let card = game.lodash.sample(possibleCards);
@@ -43,7 +43,7 @@ export const blueprint: Blueprint = {
 			}
 
 			// Summon it
-			card = game.newCard(card.id, plr);
+			card = new Card(card.id, plr);
 			plr.summon(card);
 		}
 	},

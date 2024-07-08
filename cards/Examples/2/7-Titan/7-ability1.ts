@@ -1,6 +1,7 @@
 // Created by Hand (before the Card Creator Existed)
 
 import assert from "node:assert";
+import { Card } from "@Game/internal.js";
 import type { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
@@ -33,7 +34,7 @@ export const blueprint: Blueprint = {
 		const opponent = plr.getOpponent();
 
 		// Create a sheep and summon it on the opponent's side of the board
-		const sheep = game.newCard(game.cardIds.sheep1, opponent);
+		const sheep = new Card(game.cardIds.sheep1, opponent);
 		opponent.summon(sheep);
 
 		// Kill the sheep

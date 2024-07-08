@@ -23,20 +23,4 @@ describe("src/core/interact/card", () => {
 	test.todo("discover", async () => {
 		expect(false).toEqual(true);
 	});
-
-	test.todo("doPlaceholders", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("getReadable", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("view", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("spawnInDiyCard", async () => {
-		expect(false).toEqual(true);
-	});
 });

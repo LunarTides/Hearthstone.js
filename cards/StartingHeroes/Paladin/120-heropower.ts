@@ -1,6 +1,7 @@
 // Created by the Custom Card Creator
 
 import assert from "node:assert";
+import { Card } from "@Game/internal.js";
 import type { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
@@ -17,7 +18,7 @@ export const blueprint: Blueprint = {
 		// Summon a 1/1 Silver Hand Recruit.
 
 		// Create the Silver Hand Recruit card.
-		const card = game.newCard(game.cardIds.silverHandRecruit20, plr);
+		const card = new Card(game.cardIds.silverHandRecruit20, plr);
 
 		// Summon the card
 		plr.summon(card);

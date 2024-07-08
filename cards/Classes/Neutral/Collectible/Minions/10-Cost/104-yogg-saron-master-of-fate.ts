@@ -1,7 +1,7 @@
 // Created by the Vanilla Card Creator
 
 import assert from "node:assert";
-import { Card } from "@Game/internal.js";
+import { Card, Player } from "@Game/internal.js";
 import type { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
@@ -37,18 +37,16 @@ export const blueprint: Blueprint = {
 			throw new Error("No choice found");
 		}
 
-		const minionPool = game.functions.card
-			.getAll()
-			.filter((card) => card.type === "Minion");
-		const spellPool = game.functions.card
-			.getAll()
-			.filter((card) => card.type === "Spell");
+		const pool = Card.all();
+
+		const minionPool = pool.filter((card) => card.type === "Minion");
+		const spellPool = pool.filter((card) => card.type === "Spell");
 
 		switch (choice) {
 			case "Curse of Flesh": {
 				// Fill the board with random minions, then give yours Rush.
 				for (let id = 0; id < 2; id++) {
-					const player = game.functions.util.getPlayerFromId(id);
+					const player = Player.fromID(id);
 
 					// Subtract to account for yogg-saron being on the board
 					const remaining =
@@ -130,7 +128,7 @@ export const blueprint: Blueprint = {
 
 			case "Mysterybox": {
 				// Cast a random spell for every spell you've cast this game (targets chosen randomly).
-				const oldYogg = game.newCard(game.cardIds.yoggSaronHopesEnd103, plr);
+				const oldYogg = new Card(game.cardIds.yoggSaronHopesEnd103, plr);
 				oldYogg.activate("battlecry");
 
 				break;
@@ -138,7 +136,7 @@ export const blueprint: Blueprint = {
 
 			case "Rod of Roasting": {
 				// Cast 'Pyroblast' randomly until a hero dies.
-				const rod = game.newCard(game.cardIds.pyroblast105, plr);
+				const rod = new Card(game.cardIds.pyroblast105, plr);
 
 				while (game.player1.isAlive() && game.player2.isAlive()) {
 					plr.forceTarget = game.functions.util.getRandomTarget();

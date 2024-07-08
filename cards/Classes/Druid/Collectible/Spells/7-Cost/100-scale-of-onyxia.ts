@@ -1,6 +1,7 @@
 // Created by the Vanilla Card Creator
 
 import assert from "node:assert";
+import { Card } from "@Game/internal.js";
 import type { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
@@ -19,7 +20,7 @@ export const blueprint: Blueprint = {
 		// Fill your board with 2/1 Whelps with Rush.
 		const remainingBoardSpace = plr.getRemainingBoardSpace();
 		for (let index = 0; index < remainingBoardSpace; index++) {
-			const whelp = game.newCard(game.cardIds.onyxianWhelp99, plr);
+			const whelp = new Card(game.cardIds.onyxianWhelp99, plr);
 			plr.summon(whelp);
 		}
 	},

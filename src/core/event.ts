@@ -1,4 +1,4 @@
-import { Card, type Player } from "@Game/internal.js";
+import { Card, Player } from "@Game/internal.js";
 import type {
 	EventKey,
 	EventManagerEvents,
@@ -105,7 +105,7 @@ export const eventManager: EventManagerType = {
 		}
 
 		for (let i = 0; i < 2; i++) {
-			const player = game.functions.util.getPlayerFromId(i);
+			const player = Player.fromID(i);
 
 			for (const card of player.hand) {
 				card.condition();
@@ -157,7 +157,7 @@ export const eventManager: EventManagerType = {
 		}
 
 		for (let i = 0; i < 2; i++) {
-			const player = game.functions.util.getPlayerFromId(i);
+			const player = Player.fromID(i);
 
 			// Activate spells in the players hand
 			for (const card of player.hand) {
@@ -219,7 +219,7 @@ export const eventManager: EventManagerType = {
 			}
 
 			if (quest.next) {
-				game.newCard(quest.next, plr).activate("cast");
+				new Card(quest.next, plr).activate("cast");
 			}
 		}
 

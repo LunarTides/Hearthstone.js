@@ -1,5 +1,6 @@
 // Created by the Custom Card Creator
 
+import { Card } from "@Game/internal.js";
 import type { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
@@ -26,7 +27,7 @@ export const blueprint: Blueprint = {
 
 		// Summon the two minions
 		for (let i = 0; i < 2; i++) {
-			const minion = game.newCard(game.cardIds.brewingStorm112, plr);
+			const minion = new Card(game.cardIds.brewingStorm112, plr);
 			if (!minion) {
 				break;
 			}
@@ -40,7 +41,7 @@ export const blueprint: Blueprint = {
 		}
 
 		// Give the weapon
-		const weapon = game.newCard(game.cardIds.dragonClaw111, plr);
+		const weapon = new Card(game.cardIds.dragonClaw111, plr);
 		plr.setWeapon(weapon);
 	},
 

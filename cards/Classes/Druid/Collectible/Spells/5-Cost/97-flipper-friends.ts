@@ -1,6 +1,7 @@
 // Created by the Vanilla Card Creator
 
 import assert from "node:assert";
+import { Card } from "@Game/internal.js";
 import type { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
@@ -23,7 +24,7 @@ export const blueprint: Blueprint = {
 				"Summon a 6/6 Orca with <b>Taunt</b>",
 				() => {
 					// Summon a 6/6 Orca with Taunt
-					const orca = game.newCard(game.cardIds.orca96, plr);
+					const orca = new Card(game.cardIds.orca96, plr);
 					plr.summon(orca);
 				},
 			],
@@ -32,7 +33,7 @@ export const blueprint: Blueprint = {
 				() => {
 					// Summon six 1/1 Otters with Rush
 					for (let index = 0; index < 6; index++) {
-						const otter = game.newCard(game.cardIds.otter95, plr);
+						const otter = new Card(game.cardIds.otter95, plr);
 						plr.summon(otter);
 					}
 				},

@@ -1,6 +1,7 @@
 // Created by the Custom Card Creator
 
 import assert from "node:assert";
+import { Card } from "@Game/internal.js";
 import type { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
@@ -22,7 +23,7 @@ export const blueprint: Blueprint = {
 
 		for (let i = 0; i < 2; i++) {
 			// Create the sheep
-			const sheep = game.newCard(game.cardIds.sheep1, plr);
+			const sheep = new Card(game.cardIds.sheep1, plr);
 
 			// Summon the sheep
 			plr.summon(sheep);

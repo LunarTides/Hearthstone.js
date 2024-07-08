@@ -28,6 +28,7 @@ export const colorFunctions = {
 
 		switch (rarity) {
 			case "Free": {
+				newText = text;
 				break;
 			}
 

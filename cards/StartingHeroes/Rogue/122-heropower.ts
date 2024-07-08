@@ -1,6 +1,7 @@
 // Created by the Custom Card Creator
 
 import assert from "node:assert";
+import { Card } from "@Game/internal.js";
 import type { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
@@ -17,7 +18,7 @@ export const blueprint: Blueprint = {
 		// Equip a 1/2 Dagger.
 
 		// Create the weapon card
-		const weapon = game.newCard(game.cardIds.wickedKnife22, plr);
+		const weapon = new Card(game.cardIds.wickedKnife22, plr);
 
 		// Equip the weapon
 		plr.setWeapon(weapon);

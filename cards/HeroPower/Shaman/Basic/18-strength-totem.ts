@@ -1,6 +1,7 @@
 // Created by Hand (before the Card Creator Existed)
 
 import assert from "node:assert";
+import { Card } from "@Game/internal.js";
 import type { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
@@ -42,7 +43,7 @@ export const blueprint: Blueprint = {
 	test(plr, self) {
 		// Summon 5 Sheep with 2 max health.
 		for (let i = 0; i < 5; i++) {
-			const card = game.newCard(game.cardIds.sheep1, plr);
+			const card = new Card(game.cardIds.sheep1, plr);
 			plr.summon(card);
 		}
 

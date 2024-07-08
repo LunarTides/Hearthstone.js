@@ -2,6 +2,8 @@
  * The entry point of the program. Acts like a hub between the tools / scripts and the game.
  * @module Hub
  */
+import { Card } from "@Game/internal.js";
+
 import * as src from "./src/index.js"; // Source Code
 import * as clc from "./tools/cardcreator/class.js"; // Class Creator
 import * as ccc from "./tools/cardcreator/custom.js"; // Custom Card Creator
@@ -13,8 +15,8 @@ logger.debug("Starting Hub...");
 
 // These are here so we don't have to recalculate them every watermark call.
 const version = game.functions.info.version(4);
-const customCardsAmount = game.functions.card.getAll(false).length;
-const collectibleCardsAmount = game.functions.card.getAll(true).length;
+const customCardsAmount = Card.all(false).length;
+const collectibleCardsAmount = Card.all(true).length;
 let vanillaCardsAmount = Number.NaN;
 let collectibleVanillaCardsAmount = Number.NaN;
 

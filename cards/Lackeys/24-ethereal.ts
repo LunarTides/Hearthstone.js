@@ -1,6 +1,7 @@
 // Created by Hand (before the Card Creator Existed)
 
 import assert from "node:assert";
+import { Card } from "@Game/internal.js";
 import type { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
@@ -21,7 +22,7 @@ export const blueprint: Blueprint = {
 		// Discover a spell.
 
 		// Filter out all cards that aren't spells
-		const pool = game.functions.card.getAll().filter((c) => c.type === "Spell");
+		const pool = Card.all().filter((c) => c.type === "Spell");
 		if (pool.length <= 0) {
 			return;
 		}
@@ -40,13 +41,11 @@ export const blueprint: Blueprint = {
 	test(plr, self) {
 		// If there are no spells, pass the test
 		if (
-			game.functions.card
-				.getAll()
-				.filter(
-					(c) =>
-						c.type === "Spell" &&
-						game.functions.card.validateClasses(self.classes, plr.heroClass),
-				).length <= 0
+			Card.all().filter(
+				(c) =>
+					c.type === "Spell" &&
+					game.functions.card.validateClasses(self.classes, plr.heroClass),
+			).length <= 0
 		) {
 			return;
 		}

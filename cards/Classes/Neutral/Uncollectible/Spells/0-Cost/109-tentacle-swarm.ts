@@ -3,6 +3,7 @@
 // This is the Yogg-Saron, Unleashed Tentacle Swarm card.
 
 import assert from "node:assert";
+import { Card } from "@Game/internal.js";
 import type { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
@@ -22,7 +23,7 @@ export const blueprint: Blueprint = {
 		const remaining = plr.getRemainingHandSpace();
 
 		for (let index = 0; index < remaining; index++) {
-			const card = game.newCard(game.cardIds.chaoticTendril110, plr);
+			const card = new Card(game.cardIds.chaoticTendril110, plr);
 			plr.addToHand(card);
 		}
 	},

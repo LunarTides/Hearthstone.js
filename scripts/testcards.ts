@@ -5,10 +5,10 @@
  */
 
 import process from "node:process";
-import { type Card, type Player, createGame } from "@Game/internal.js";
+import { Card, type Player, createGame } from "@Game/internal.js";
 
 const { game } = createGame();
-const cards = game.functions.card.getAll(false);
+const cards = Card.all(false);
 
 /**
  * Tests that a card works properly by triggering the `test` ability.

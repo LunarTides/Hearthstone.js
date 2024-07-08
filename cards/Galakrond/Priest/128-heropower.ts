@@ -1,6 +1,7 @@
 // Created by the Custom Card Creator
 
 import assert from "node:assert";
+import { Card } from "@Game/internal.js";
 import type { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
@@ -15,13 +16,11 @@ export const blueprint: Blueprint = {
 
 	heropower(plr, self) {
 		// Add a random Priest minion to your hand.
-		const possibleCards = game.functions.card
-			.getAll()
-			.filter(
-				(c) =>
-					c.type === "Minion" &&
-					game.functions.card.validateClasses(c.classes, "Priest"),
-			);
+		const possibleCards = Card.all().filter(
+			(c) =>
+				c.type === "Minion" &&
+				game.functions.card.validateClasses(c.classes, "Priest"),
+		);
 		if (possibleCards.length <= 0) {
 			return;
 		}
@@ -31,7 +30,7 @@ export const blueprint: Blueprint = {
 			return;
 		}
 
-		card = game.newCard(card.id, plr);
+		card = new Card(card.id, plr);
 
 		plr.addToHand(card);
 	},

@@ -1,6 +1,7 @@
 // Created by Hand
 
 import assert from "node:assert";
+import { Card } from "@Game/internal.js";
 import type { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
@@ -58,7 +59,7 @@ export const blueprint: Blueprint = {
 	},
 
 	test(plr, self) {
-		const sheep = game.newCard(game.cardIds.sheep1, plr.getOpponent());
+		const sheep = new Card(game.cardIds.sheep1, plr.getOpponent());
 		sheep.addStats(4, 4);
 		plr.getOpponent().summon(sheep);
 

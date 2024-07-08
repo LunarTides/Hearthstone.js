@@ -1,6 +1,7 @@
 // Created by the Vanilla Card Creator
 
 import assert from "node:assert";
+import { Card } from "@Game/internal.js";
 import type { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
@@ -21,7 +22,7 @@ export const blueprint: Blueprint = {
 			for (const card of player.board) {
 				card.kill();
 
-				const treant = game.newCard(game.cardIds.treant83, player);
+				const treant = new Card(game.cardIds.treant83, player);
 				player.summon(treant);
 			}
 		}
@@ -32,7 +33,7 @@ export const blueprint: Blueprint = {
 
 		// Summon n Sheep
 		for (let i = 0; i < amountOfCards; i++) {
-			const sheep = game.newCard(game.cardIds.sheep1, plr);
+			const sheep = new Card(game.cardIds.sheep1, plr);
 			plr.summon(sheep);
 		}
 

@@ -1,6 +1,7 @@
 // Created by the Vanilla Card Creator
 
 import assert from "node:assert";
+import { Card } from "@Game/internal.js";
 import type { Blueprint, EventValue } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
@@ -44,9 +45,7 @@ export const blueprint: Blueprint = {
 			return;
 		}
 
-		const pool = game.functions.card
-			.getAll()
-			.filter((card) => card.type === "Spell");
+		const pool = Card.all().filter((card) => card.type === "Spell");
 
 		for (let i = 0; i < 2; i++) {
 			const card = game.lodash.sample(pool)?.imperfectCopy();

@@ -150,14 +150,12 @@ export const commands: CommandList = {
 			return false;
 		}
 
-		const titanCards = titanIds.map((id) =>
-			game.newCard(id, game.player, true),
-		);
+		const titanCards = titanIds.map((id) => new Card(id, game.player, true));
 
 		game.interact.info.showGame(game.player);
 		console.log(
 			"\nWhich ability do you want to trigger?\n%s",
-			titanCards.map((c) => game.interact.card.getReadable(c)).join(",\n"),
+			titanCards.map((c) => c.readable).join(",\n"),
 		);
 
 		const choice = game.lodash.parseInt(game.input());
@@ -258,7 +256,7 @@ export const commands: CommandList = {
 				return false;
 			}
 
-			game.interact.card.view(card);
+			card.view();
 
 			return true;
 		}
@@ -271,7 +269,7 @@ export const commands: CommandList = {
 
 		const card = game.player.hand[game.lodash.parseInt(cardIndex) - 1];
 
-		game.interact.card.view(card);
+		card.view();
 		return true;
 	},
 
@@ -493,7 +491,7 @@ export const commands: CommandList = {
 		let finished = "";
 
 		const showCard = (value: Card) =>
-			`${game.interact.card.getReadable(value)} which belongs to: <blue>${value.plr.name}</blue>, and has uuid: ${value.coloredUUID()}`;
+			`${value.readable()} which belongs to: <blue>${value.plr.name}</blue>, and has uuid: ${value.coloredUUID()}`;
 
 		/**
 		 * Transform the `value` into a readable string
@@ -668,7 +666,7 @@ export const debugCommands: CommandList = {
 		const cardName = args.join(" ");
 
 		// TODO: Get all cards from the name and ask the user which one they want
-		const card = game.functions.card.getFromName(cardName, game.player);
+		const card = Card.fromName(cardName, game.player);
 		if (!card) {
 			game.pause(`<red>Invalid card: <yellow>${cardName}</yellow>.\n`);
 			return false;
@@ -690,6 +688,7 @@ export const debugCommands: CommandList = {
 		}
 
 		const code = game.interact.parseEvalArgs(args);
+		console.log(`Running: ${code}\n`);
 
 		try {
 			// biome-ignore lint/security/noGlobalEval: This is a security issue yes, but it's a debug command.
@@ -719,7 +718,7 @@ export const debugCommands: CommandList = {
 		let success = true;
 
 		success &&= game.interact.info.withStatus("Reloading cards", () =>
-			game.functions.card.reloadAll(),
+			Card.reloadAll(),
 		);
 
 		// Go through all the cards and reload them
@@ -838,7 +837,7 @@ export const debugCommands: CommandList = {
 		}
 
 		for (let i = 0; i < 2; i++) {
-			const player = game.functions.util.getPlayerFromId(i);
+			const player = Player.fromID(i);
 			if (!player.ai) {
 				continue;
 			}

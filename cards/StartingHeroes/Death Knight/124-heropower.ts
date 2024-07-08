@@ -1,6 +1,7 @@
 // Created by the Custom Card Creator
 
 import assert from "node:assert";
+import { Card } from "@Game/internal.js";
 import type { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
@@ -17,7 +18,7 @@ export const blueprint: Blueprint = {
 		// Summon a 1/1 Ghoul with Charge. It dies at end of turn.
 
 		// Create the Ghoul
-		const minion = game.newCard(game.cardIds.frailGhoul23, plr);
+		const minion = new Card(game.cardIds.frailGhoul23, plr);
 
 		// Summon the Ghoul
 		plr.summon(minion);

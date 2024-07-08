@@ -1,6 +1,7 @@
 // Created by the Vanilla Card Creator
 
 import assert from "node:assert";
+import { Card } from "@Game/internal.js";
 import type { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
@@ -49,7 +50,7 @@ export const blueprint: Blueprint = {
 
 	test(plr, self) {
 		// Summon a Sheep
-		const sheep = game.newCard(game.cardIds.sheep1, plr);
+		const sheep = new Card(game.cardIds.sheep1, plr);
 		plr.summon(sheep);
 
 		const handSize = plr.hand.length;

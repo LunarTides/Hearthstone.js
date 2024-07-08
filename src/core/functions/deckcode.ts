@@ -1,4 +1,5 @@
-import type { Card, Player } from "@Game/internal.js";
+import { Card, type Player } from "@Game/internal.js";
+
 import type {
 	CardClass,
 	CardClassNoNeutral,
@@ -149,14 +150,14 @@ export const deckcodeFunctions = {
 			for (const cardId of cards) {
 				const id = game.lodash.parseInt(cardId, 36);
 
-				const blueprint = game.functions.card.getFromId(id);
+				const blueprint = Card.fromId(id);
 				if (!blueprint) {
 					panic("NONEXISTANTCARD", id.toString());
 					returnValueInvalid = true;
 					continue;
 				}
 
-				const card = game.newCard(blueprint.id, plr, true);
+				const card = new Card(blueprint.id, plr, true);
 
 				for (let i = 0; i < game.lodash.parseInt(copies); i++) {
 					newDeck.push(card.perfectCopy());
@@ -256,8 +257,7 @@ export const deckcodeFunctions = {
 			}
 
 			if (
-				game.functions.card.getFromName(cardName, game.player)?.rarity ===
-					"Legendary" &&
+				Card.fromName(cardName, game.player)?.rarity === "Legendary" &&
 				amount > localSettings.decks.maxOfOneLegendary
 			) {
 				errorcode = "legendary";
@@ -474,15 +474,13 @@ export const deckcodeFunctions = {
 		const vanillaCards = game.functions.card.vanilla.getAll();
 
 		const cardsSplit = cards.split(",").map((i) => game.lodash.parseInt(i, 36));
-		const cardsSplitId = cardsSplit.map((i) =>
-			game.functions.card.getFromId(i),
-		);
+		const cardsSplitId = cardsSplit.map(Card.fromId);
 		const cardsSplitCard = cardsSplitId.map((c) => {
 			if (!c) {
 				throw new Error("c is an invalid card");
 			}
 
-			return game.newCard(c.id, plr, true);
+			return new Card(c.id, plr, true);
 		});
 		const trueCards = cardsSplitCard.map((c) => c.name);
 
@@ -614,7 +612,7 @@ export const deckcodeFunctions = {
 		// Get the full card object from the dbfId
 		const deckDefinition: Array<[VanillaCard | undefined, number]> =
 			deck.cards.map((c) => [vanillaCards.find((a) => a.dbfId === c[0]), c[1]]);
-		const createdCards: Card[] = game.functions.card.getAll(false);
+		const createdCards: Card[] = Card.all(false);
 
 		const invalidCards: VanillaCard[] = [];
 		for (const vanillaCardObject of deckDefinition) {
@@ -673,7 +671,7 @@ export const deckcodeFunctions = {
 			}
 
 			// TODO: Use ids instead
-			const card = game.functions.card.getFromName(name, plr);
+			const card = Card.fromName(name, plr);
 			if (!card) {
 				throw new Error("Invalid card name");
 			}

@@ -96,14 +96,6 @@ describe("src/core/functions/util", () => {
 		expect(counter).toEqual(2);
 	});
 
-	test("getPlayerFromId", async () => {
-		const p1 = utilFunctions.getPlayerFromId(0);
-		const p2 = utilFunctions.getPlayerFromId(1);
-
-		expect(p1).toEqual(game.player1);
-		expect(p2).toEqual(game.player2);
-	});
-
 	test.todo("fs", async () => {
 		expect(false).toEqual(true);
 	});

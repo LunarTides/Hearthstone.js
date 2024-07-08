@@ -27,9 +27,7 @@ export const blueprint: Blueprint = {
 			return;
 		}
 
-		const pool = game.functions.card
-			.getAll()
-			.filter((card) => card.type === "Spell");
+		const pool = Card.all().filter((card) => card.type === "Spell");
 		for (let i = 0; i < amount; i++) {
 			const card = game.lodash.sample(pool)?.imperfectCopy();
 			if (!card) {

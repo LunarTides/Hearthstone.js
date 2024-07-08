@@ -1,4 +1,4 @@
-import { type Card, CardError, type Player } from "@Game/internal.js";
+import { Card, CardError, type Player } from "@Game/internal.js";
 import type {
 	Blueprint,
 	CardClass,
@@ -157,112 +157,6 @@ export const cardFunctions = {
 	vanilla,
 
 	/**
-	 * Returns all cards with the name `name`.
-	 *
-	 * @param refer If this should call `getCardById` if it doesn't find the card from the name
-	 *
-	 * @example
-	 * const cards = getAllFromName('The Coin');
-	 *
-	 * assert.ok(card[0] instanceof Card);
-	 * assert.equal(card[0].name, 'The Coin');
-	 */
-	getAllFromName(name: string, refer = true): Card[] {
-		const id = this.getFromId(game.lodash.parseInt(name));
-
-		/*
-		 * For some reason, "10 Mana" turns into 10 when passed through `parseInt`.
-		 * So we check if it has a space
-		 */
-		if (id && refer && !name.includes(" ")) {
-			return [id];
-		}
-
-		return this.getAll(false).filter(
-			(c) => c.name.toLowerCase() === name.toLowerCase(),
-		);
-	},
-
-	/**
-	 * Returns the card with the id of `id`.
-	 *
-	 * @example
-	 * const card = getFromId(2);
-	 *
-	 * assert.ok(card instanceof Card);
-	 * assert.equal(card.name, 'The Coin');
-	 */
-	getFromId(id: number): Card | undefined {
-		return this.getAll(false).find((c) => c.id === id);
-	},
-
-	/**
-	 * Creates a card with the given name for the specified player. If there are multiple cards with the same name, this will use the first occurrence.
-	 *
-	 * @returns The created card, or undefined if no card is found.
-	 */
-	getFromName(name: string, player: Player): Card | undefined {
-		const cards = this.getAllFromName(name);
-		if (cards.length <= 0) {
-			return undefined;
-		}
-
-		return game.newCard(cards[0].id, player, true);
-	},
-
-	/**
-	 * Returns all cards added to Hearthstone.js
-	 *
-	 * @param uncollectible If it should filter out all uncollectible cards
-	 */
-	getAll(uncollectible = true): Card[] {
-		// Don't broadcast CreateCard event here since it would spam the history and log files
-		if (game.cards.length <= 0) {
-			game.cards = game.blueprints.map((card) =>
-				game.newCard(card.id, game.player, true),
-			);
-
-			this.generateIdsFile();
-		}
-
-		return game.cards.filter((c) => c.collectible || !uncollectible);
-	},
-
-	/**
-	 * Returns the card with the given UUID wherever it is.
-	 *
-	 * This searches both players' deck, hand, board, and graveyard.
-	 *
-	 * @param uuid The UUID to search for. This matches if the card's UUID starts with the given UUID (this).
-	 * @returns The card that matches the UUID, or undefined if no match is found.
-	 */
-	findFromUUID(uuid: string): Card | undefined {
-		let card: Card | undefined;
-
-		/**
-		 * Searches for a UUID in the given array of cards and updates the 'card' variable if found.
-		 *
-		 * @param where The array of cards to search
-		 */
-		function lookForUUID(where: Card[]): void {
-			const foundCard = where.find((card) => card.uuid.startsWith(uuid));
-
-			if (foundCard) {
-				card = foundCard;
-			}
-		}
-
-		for (const player of [game.player1, game.player2]) {
-			lookForUUID(player.deck);
-			lookForUUID(player.hand);
-			lookForUUID(player.board);
-			lookForUUID(player.graveyard);
-		}
-
-		return card;
-	},
-
-	/**
 	 * Returns if `classes` includes `cardClass` (also Neutral logic).
 	 */
 	validateClasses(classes: CardClass[], cardClass: CardClass): boolean {
@@ -329,33 +223,11 @@ export const cardFunctions = {
 	},
 
 	/**
-	 * Creates and returns a jade golem with the correct stats and cost for the player
-	 *
-	 * @param plr The jade golem's owner
-	 *
-	 * @returns The jade golem
-	 */
-	createJade(plr: Player): Card {
-		if (plr.jadeCounter < 30) {
-			plr.jadeCounter += 1;
-		}
-
-		const count = plr.jadeCounter;
-		const cost = count < 10 ? count : 10;
-
-		const jade = game.newCard(game.cardIds.jadeGolem85, plr);
-		jade.setStats(count, count);
-		jade.cost = cost;
-
-		return jade;
-	},
-
-	/**
 	 * Returns all classes in the game
 	 */
 	getClasses(): CardClassNoNeutral[] {
 		return game.cardCollections.classes.map(
-			(heroId) => game.newCard(heroId, game.player, true).classes[0],
+			(heroId) => new Card(heroId, game.player, true).classes[0],
 		) as CardClassNoNeutral[];
 	},
 
@@ -369,13 +241,6 @@ export const cardFunctions = {
 		const y = Math.ceil((x + 1) / 2) + Math.round(x * 0.15);
 
 		return y || 1;
-	},
-
-	/**
-	 * Creates a new CardError with the provided message.
-	 */
-	createCardError(message: string): CardError {
-		return new CardError(message);
 	},
 
 	/**
@@ -429,48 +294,6 @@ export const cardFunctions = {
 		}
 
 		return result;
-	},
-
-	/**
-	 * Imports all cards from a folder
-	 *
-	 * @returns Success
-	 */
-	importAll(): boolean {
-		game.functions.util.searchCardsFolder((fullPath) => {
-			const blueprint = require(fullPath).blueprint as Blueprint;
-			game.blueprints.push(blueprint);
-		});
-
-		// Remove falsy values
-		game.blueprints = game.blueprints.filter(Boolean);
-
-		if (!this.runBlueprintValidator()) {
-			throw new Error(
-				"Some cards are invalid. Please fix these issues before playing.",
-			);
-		}
-
-		return true;
-	},
-
-	/**
-	 * Reloads all cards
-	 *
-	 * @returns Success
-	 */
-	reloadAll(): boolean {
-		game.blueprints = [];
-
-		for (const key of Object.keys(require.cache)) {
-			if (!key.includes("/cards/")) {
-				continue;
-			}
-
-			delete require.cache[key];
-		}
-
-		return this.importAll();
 	},
 
 	/**

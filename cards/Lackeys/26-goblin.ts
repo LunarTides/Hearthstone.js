@@ -1,6 +1,7 @@
 // Created by Hand (before the Card Creator Existed)
 
 import assert from "node:assert";
+import { Card } from "@Game/internal.js";
 import type { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
@@ -42,7 +43,7 @@ export const blueprint: Blueprint = {
 
 	test(plr, self) {
 		// Summon a sheep
-		const sheep = game.newCard(game.cardIds.sheep1, plr);
+		const sheep = new Card(game.cardIds.sheep1, plr);
 		plr.summon(sheep);
 
 		// Activate the battlecry, choose the sheep

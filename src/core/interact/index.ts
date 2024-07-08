@@ -4,7 +4,7 @@
  */
 import process from "node:process";
 import {
-	type Card,
+	Card,
 	type Player,
 	cardInteract,
 	gameloopInteract,
@@ -88,7 +88,7 @@ export const interact = {
 
 			// Debug mode is enabled, use the 30 Sheep debug deck.
 			while (plr.deck.length < 30) {
-				plr.deck.push(game.newCard(game.cardIds.sheep1, plr, true));
+				plr.deck.push(new Card(game.cardIds.sheep1, plr, true));
 			}
 
 			logger.debug(`${plr.name} chose debug deck...OK`);
@@ -555,14 +555,27 @@ export const interact = {
 		// Allow for stuff like `/eval @Player1.addToHand(@00ff00.perfectCopy());`
 		code = code.replaceAll("@Player", "game.player");
 
+		let trueLog = false;
+
 		const uuidRegex = /@\w+/g;
 		for (const match of code.matchAll(uuidRegex)) {
 			const uuid = match[0].slice(1);
 
-			code = code.replace(
-				`@${uuid}`,
-				`let __card = game.functions.card.findFromUUID('${uuid}');if (!__card) throw new Error('Card with uuid "${uuid}" not found');__card`,
-			);
+			// HACK: Do this or logging doesn't work.
+			if (log) {
+				code = code.replace(
+					`@${uuid}`,
+					`let __card = Card.fromUUID("${uuid}");if (!__card) throw new Error("Card with uuid \\"${uuid}\\" not found");console.log(__card`,
+				);
+
+				log = false;
+				trueLog = true;
+			} else {
+				code = code.replace(
+					`@${uuid}`,
+					`let __card = Card.fromUUID("${uuid}");if (!__card) throw new Error("Card with uuid \\"${uuid}\\" not found");__card`,
+				);
+			}
 		}
 
 		/*
@@ -612,6 +625,14 @@ export const interact = {
 			}
 
 			code = `console.log(${code});game.pause();`;
+		}
+
+		if (trueLog) {
+			if (code.at(-1) === ";") {
+				code = code.slice(0, -1);
+			}
+
+			code = `${code});game.pause();`;
 		}
 
 		return code;

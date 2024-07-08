@@ -6,7 +6,7 @@ import { dirname as pathDirname } from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { format } from "node:util";
-import type { Player } from "@Game/internal.js";
+import { Player } from "@Game/internal.js";
 import type { GameConfig, Target } from "@Game/types.js";
 import date from "date-and-time";
 
@@ -415,23 +415,6 @@ ${mainContent}
 	 */
 	getTraditionalTurnCounter(): number {
 		return Math.ceil(game.turn / 2);
-	},
-
-	/**
-	 * Retrieves the player corresponding to the given id.
-	 * 0 is Player 1.
-	 * 1 is Player 2.
-	 *
-	 * @param id The id of the player - 1.
-	 *
-	 * @returns The player
-	 */
-	getPlayerFromId(id: number): Player {
-		if (id === 0) {
-			return game.player1;
-		}
-
-		return game.player2;
 	},
 
 	/**

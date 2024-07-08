@@ -1,6 +1,7 @@
 // Created by the Vanilla Card Creator
 
 import assert from "node:assert";
+import { Player } from "@Game/internal.js";
 import type { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
@@ -23,7 +24,7 @@ export const blueprint: Blueprint = {
 				"Summon a Jade Golem",
 				() => {
 					// Summon a Jade Golem
-					const jade = game.functions.card.createJade(plr);
+					const jade = plr.createJade();
 					plr.summon(jade);
 				},
 			],

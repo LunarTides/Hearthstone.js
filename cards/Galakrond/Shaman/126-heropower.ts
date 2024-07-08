@@ -1,6 +1,7 @@
 // Created by the Custom Card Creator
 
 import assert from "node:assert";
+import { Card } from "@Game/internal.js";
 import type { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
@@ -15,7 +16,7 @@ export const blueprint: Blueprint = {
 
 	heropower(plr, self) {
 		// Summon a 2/1 Elemental with Rush.
-		const card = game.newCard(game.cardIds.windsweptElemental19, plr);
+		const card = new Card(game.cardIds.windsweptElemental19, plr);
 		if (!card) {
 			return;
 		}

@@ -58,7 +58,7 @@ export const blueprint: Blueprint = {
 			"Battlecry: Gain mana equal to the turn counter. (Currently {ph:turns}, {ph:laugh}, {ph:turns}, {ph:next thing is} {ph:test}, {placeholder without replacement})",
 		);
 		assert.equal(
-			game.interact.card.doPlaceholders(self),
+			self.doPlaceholders(),
 			"Battlecry: Gain mana equal to the turn counter. (Currently 1, haha lol, 1, The next thing is: test, {placeholder without replacement})",
 		);
 
@@ -66,7 +66,7 @@ export const blueprint: Blueprint = {
 		game.endTurn();
 
 		assert.equal(
-			game.interact.card.doPlaceholders(self),
+			self.doPlaceholders(),
 			"Battlecry: Gain mana equal to the turn counter. (Currently 2, haha lol, 2, The next thing is: test, {placeholder without replacement})",
 		);
 	},

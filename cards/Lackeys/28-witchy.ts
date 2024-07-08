@@ -1,6 +1,7 @@
 // Created by Hand (before the Card Creator Existed)
 
 import assert from "node:assert";
+import { Card } from "@Game/internal.js";
 import type { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
@@ -38,11 +39,9 @@ export const blueprint: Blueprint = {
 		}
 
 		// Filter minions that cost (1) more than the target
-		const minions = game.functions.card
-			.getAll()
-			.filter(
-				(card) => card.type === "Minion" && card.cost === target.cost + 1,
-			);
+		const minions = Card.all().filter(
+			(card) => card.type === "Minion" && card.cost === target.cost + 1,
+		);
 
 		// Choose a random minion from the filtered list.
 		const random = game.lodash.sample(minions);
@@ -51,7 +50,7 @@ export const blueprint: Blueprint = {
 		}
 
 		// Create the card
-		const minion = game.newCard(random.id, plr);
+		const minion = new Card(random.id, plr);
 
 		// Destroy the target and summon the new minion in order to get the illusion that the card was transformed
 		target.destroy();
@@ -66,7 +65,7 @@ export const blueprint: Blueprint = {
 			plr.board.some((card) => card.cost === cost);
 
 		// Summon a sheep
-		const sheep = game.newCard(game.cardIds.sheep1, plr);
+		const sheep = new Card(game.cardIds.sheep1, plr);
 		plr.summon(sheep);
 
 		// There shouldn't exist a minion with 1 more cost than the sheep.
@@ -74,9 +73,9 @@ export const blueprint: Blueprint = {
 
 		// If there doesn't exist any 2-Cost minions, pass the test
 		if (
-			!game.functions.card
-				.getAll()
-				.some((card) => card.cost === sheep.cost + 1 && card.type === "Minion")
+			!Card.all().some(
+				(card) => card.cost === sheep.cost + 1 && card.type === "Minion",
+			)
 		) {
 			return;
 		}

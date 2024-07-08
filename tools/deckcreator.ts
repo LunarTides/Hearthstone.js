@@ -3,7 +3,7 @@
  * @module Deck Creator
  */
 import util from "node:util";
-import { type Card, createGame } from "@Game/internal.js";
+import { Card, createGame } from "@Game/internal.js";
 import type {
 	CardClass,
 	CardClassNoNeutral,
@@ -16,9 +16,7 @@ const { game, player1 } = createGame();
 
 const { config } = game;
 const classes = game.functions.card.getClasses();
-const cards = game.functions.card.getAll(
-	!game.config.advanced.dcShowUncollectible,
-);
+const cards = Card.all(!game.config.advanced.dcShowUncollectible);
 
 let chosenClass: CardClassNoNeutral;
 let filteredCards: Card[] = [];
@@ -1010,7 +1008,7 @@ let running = true;
  */
 export function main(): void {
 	running = true;
-	game.functions.card.importAll();
+	Card.registerAll();
 
 	chosenClass = askClass();
 
@@ -1091,7 +1089,7 @@ const commands: CommandList = {
 		getCardArg(
 			args,
 			(card) => {
-				game.interact.card.view(card);
+				card.view();
 				return true;
 			},
 			() => {

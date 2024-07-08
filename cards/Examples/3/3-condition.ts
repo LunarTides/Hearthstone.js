@@ -1,6 +1,7 @@
 // Created by Hand
 
 import assert from "node:assert";
+import { Card } from "@Game/internal.js";
 import type { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
@@ -58,7 +59,7 @@ export const blueprint: Blueprint = {
 		assert.equal(plr.hand.length, 0);
 
 		// The player should fulfill the condition
-		plr.deck = [game.newCard(game.cardIds.sheep1, plr)];
+		plr.deck = [new Card(game.cardIds.sheep1, plr)];
 		assert(plr.highlander());
 		assert.equal(plr.deck.length, 1);
 

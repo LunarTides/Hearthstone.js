@@ -180,7 +180,7 @@ export const infoInteract = {
 				return "";
 			}
 
-			return `Weapon: ${detail(player.weapon.colorFromRarity(), game.interact.card.getReadable(player.weapon))}`;
+			return `Weapon: ${detail(player.weapon.colorFromRarity(), player.weapon.readable())}`;
 		});
 
 		// TODO: Add quests, secrets, etc...
@@ -224,7 +224,7 @@ export const infoInteract = {
 			}
 
 			for (const [index, card] of player.board.entries()) {
-				console.log(game.interact.card.getReadable(card, index + 1));
+				console.log(card.readable(index + 1));
 			}
 		}
 
@@ -242,7 +242,7 @@ export const infoInteract = {
 		);
 
 		for (const [index, card] of plr.hand.entries()) {
-			console.log(game.interact.card.getReadable(card, index + 1));
+			console.log(card.readable(index + 1));
 		}
 	},
 };
