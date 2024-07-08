@@ -125,7 +125,12 @@ export const colorFunctions = {
 			return text;
 		}
 
-		const partOfRgb: number[] = [];
+		// Don't waste resources if the string doesn't contain tags
+		if (!text.includes("<") || !text.includes(">")) {
+			return text;
+		}
+
+		let partOfRgb: number[] = [];
 
 		const handleSpecialTags = (
 			index: number,
@@ -151,7 +156,7 @@ export const colorFunctions = {
 			newTag = newTag.toLowerCase();
 
 			// Support for rgb values with spaces after the commas
-			if (tag.endsWith(")") && /rgb:?\(/.test(readNextType(index + 1))) {
+			if (newTag.endsWith(")") && /rgb:?\(/.test(readNextType(index + 1))) {
 				newTag = readNextType(index + 1) + readNextType(index) + newTag;
 				partOfRgb.push(index + 1, index + 2);
 			}
@@ -213,10 +218,9 @@ export const colorFunctions = {
 				newTag = newTag.replace("dark:", "");
 			}
 
-			const oldReturnValue = returnValue;
 			let newReturnValue = handleSpecialTags(index, newTag, returnValue, bg);
 
-			if (newReturnValue !== oldReturnValue) {
+			if (newReturnValue !== returnValue) {
 				return newReturnValue;
 			}
 
@@ -268,11 +272,6 @@ export const colorFunctions = {
 			return returnValue;
 		};
 
-		// Don't waste resources if the string doesn't contain tags
-		if (!text.includes("<") || !text.includes(">")) {
-			return text;
-		}
-
 		let strbuilder = "";
 		let wordStringbuilder = "";
 		let currentTypes: string[] = [];
@@ -323,6 +322,8 @@ export const colorFunctions = {
 
 				const currentTags = tagbuilder.split(" ");
 				tagbuilder = "";
+
+				partOfRgb = [];
 
 				if (!removeTag) {
 					currentTypes.push(...currentTags);
