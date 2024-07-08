@@ -51,12 +51,12 @@ export const cardInteract = {
 	/**
 	 * Asks the player to mulligan their cards
 	 *
-	 * @param plr The player to ask
+	 * @param player The player to ask
 	 *
 	 * @returns A string of the indexes of the cards the player mulligan'd
 	 */
-	mulligan(plr: Player): string {
-		game.interact.info.showGame(plr);
+	mulligan(player: Player): string {
+		game.interact.info.showGame(player);
 
 		let sb = "\nChoose the cards to mulligan (1, 2, 3, ...):\n";
 		if (!game.config.general.debug) {
@@ -64,8 +64,8 @@ export const cardInteract = {
 				"<gray>(Example: 13 will mulligan the cards with the ids 1 and 3, 123 will mulligan the cards with the ids 1, 2 and 3, just pressing enter will not mulligan any cards):</gray>\n";
 		}
 
-		const input = plr.ai ? plr.ai.mulligan() : game.input(sb);
-		plr.mulligan(input);
+		const input = player.ai ? player.ai.mulligan() : game.input(sb);
+		player.mulligan(input);
 
 		return input;
 	},

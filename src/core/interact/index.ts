@@ -42,11 +42,11 @@ export const interact = {
 	 * - Debug mode is disabled
 	 * - The program is running on the stable branch
 	 *
-	 * @param plr The player to ask
+	 * @param player The player to ask
 	 *
 	 * @returns Success
 	 */
-	deckCode(plr: Player): boolean {
+	deckCode(player: Player): boolean {
 		game.interact.info.watermark();
 		console.log();
 
@@ -62,20 +62,20 @@ export const interact = {
 			: "";
 		const deckcode = logger.inputTranslate(
 			"Player %s, please type in your deckcode%s: ",
-			plr.id + 1,
+			player.id + 1,
 			debugStatement,
 		);
 
 		let result = true;
 
 		if (deckcode.length > 0) {
-			logger.debug(`${plr.name} chose deck code: ${deckcode}...`);
-			result = Boolean(game.functions.deckcode.import(plr, deckcode));
+			logger.debug(`${player.name} chose deck code: ${deckcode}...`);
+			result = Boolean(game.functions.deckcode.import(player, deckcode));
 
 			if (result) {
-				logger.debug(`${plr.name} chose deck code: ${deckcode}...OK`);
+				logger.debug(`${player.name} chose deck code: ${deckcode}...OK`);
 			} else {
-				logger.debug(`${plr.name} chose deck code: ${deckcode}...FAIL`);
+				logger.debug(`${player.name} chose deck code: ${deckcode}...FAIL`);
 			}
 		} else {
 			if (!allowTestDeck) {
@@ -84,14 +84,14 @@ export const interact = {
 				return false;
 			}
 
-			logger.debug(`${plr.name} chose debug deck...`);
+			logger.debug(`${player.name} chose debug deck...`);
 
 			// Debug mode is enabled, use the 30 Sheep debug deck.
-			while (plr.deck.length < 30) {
-				plr.deck.push(new Card(game.cardIds.sheep1, plr, true));
+			while (player.deck.length < 30) {
+				player.deck.push(new Card(game.cardIds.sheep1, player, true));
 			}
 
-			logger.debug(`${plr.name} chose debug deck...OK`);
+			logger.debug(`${player.name} chose debug deck...OK`);
 		}
 
 		return result;
@@ -145,18 +145,18 @@ export const interact = {
 	},
 
 	/**
-	 * Asks the `plr` a `prompt`, show them a list of `answers` and make them choose one
+	 * Asks the `player` a `prompt`, show them a list of `answers` and make them choose one
 	 *
-	 * @param plr The player to ask
+	 * @param player The player to ask
 	 * @param prompt The prompt to show
 	 * @param answers The answers to choose from
 	 *
 	 * @returns Chosen
 	 */
-	question(plr: Player, prompt: string, answers: string[]): string {
-		const retry = () => this.question(plr, prompt, answers);
+	question(player: Player, prompt: string, answers: string[]): string {
+		const retry = () => this.question(player, prompt, answers);
 
-		game.interact.info.showGame(plr);
+		game.interact.info.showGame(player);
 
 		let strbuilder = `\n${prompt} [`;
 
@@ -169,8 +169,8 @@ export const interact = {
 
 		let choice: number;
 
-		if (plr.ai) {
-			const aiChoice = plr.ai.question(prompt, answers);
+		if (player.ai) {
+			const aiChoice = player.ai.question(prompt, answers);
 			if (!aiChoice) {
 				// Code, expected, actual
 				throw new Error(

@@ -151,11 +151,11 @@ const attack = {
 			}
 
 			if (!attacker.canAttack) {
-				return "plrhasattacked";
+				return "playerhasattacked";
 			}
 
 			if (attacker.attack <= 0) {
-				return "plrnoattack";
+				return "playernoattack";
 			}
 		}
 

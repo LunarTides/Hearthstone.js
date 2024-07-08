@@ -47,8 +47,8 @@ export class Ai {
 	/**
 	 * Sentiment-based AI
 	 */
-	constructor(private readonly plr: Player) {
-		this.plr = plr;
+	constructor(private readonly player: Player) {
+		this.player = player;
 	}
 
 	/**
@@ -63,12 +63,12 @@ export class Ai {
 		let bestScore = -100_000;
 
 		// Look for highest score
-		for (const card of this.plr.hand) {
+		for (const card of this.player.hand) {
 			const score = this.analyzePositiveCard(card);
 
 			if (
 				score <= bestScore ||
-				card.cost > this.plr.mana ||
+				card.cost > this.player.mana ||
 				this.cardsPlayedThisTurn.includes(card)
 			) {
 				continue;
@@ -77,7 +77,7 @@ export class Ai {
 			// If the card is a minion and the player doesn't have the board space to play it, ignore the card
 			if (
 				card.canBeOnBoard() &&
-				this.plr.board.length >= game.config.general.maxBoardSpace
+				this.player.board.length >= game.config.general.maxBoardSpace
 			) {
 				continue;
 			}
@@ -158,7 +158,7 @@ export class Ai {
 
 		// The ai should skip the trade stage if in risk mode
 		const currentWinner = this._findWinner(board);
-		const opponentScore = this._scorePlayer(this.plr.getOpponent(), board);
+		const opponentScore = this._scorePlayer(this.player.getOpponent(), board);
 
 		// If the ai is winner by more than 'threshold' points, enable risk mode
 		const riskMode =
@@ -190,7 +190,7 @@ export class Ai {
 		let worstMinion: Card | undefined;
 		let worstScore = 100_000;
 
-		for (const minion of this.plr.board.filter((m) => m.canAttack())) {
+		for (const minion of this.player.board.filter((m) => m.canAttack())) {
 			const score = this.analyzePositiveCard(minion);
 
 			if (score >= worstScore) {
@@ -214,7 +214,8 @@ export class Ai {
 
 		// Check if there is a minion with taunt
 		const taunts = this._findTaunts();
-		const targets = taunts.length > 0 ? taunts : this.plr.getOpponent().board;
+		const targets =
+			taunts.length > 0 ? taunts : this.player.getOpponent().board;
 
 		for (const target of targets.filter((target) => target.canBeAttacked())) {
 			const score = this.analyzePositiveCard(target);
@@ -236,7 +237,7 @@ export class Ai {
 				attacker &&
 				((attacker as Target) instanceof Player || attacker.canAttackHero)
 			) {
-				target = this.plr.getOpponent();
+				target = this.player.getOpponent();
 			} else {
 				this.history.push({ type: "attack, [null, null]", data: [-1, -1] });
 				this.prevent.push("attack");
@@ -244,8 +245,8 @@ export class Ai {
 			}
 		}
 
-		if (!attacker && this.plr.attack > 0 && this.plr.canAttack) {
-			attacker = this.plr as Target;
+		if (!attacker && this.player.attack > 0 && this.player.canAttack) {
+			attacker = this.player as Target;
 		}
 
 		const array = [];
@@ -292,7 +293,7 @@ export class Ai {
 		flags: SelectTargetFlag[] = [],
 	): Target | false {
 		if (flags.includes("allowLocations") && forceClass !== "hero") {
-			const locations = this.plr.board.filter(
+			const locations = this.player.board.filter(
 				(m) =>
 					m.type === "Location" &&
 					m.cooldown === 0 &&
@@ -305,7 +306,7 @@ export class Ai {
 			}
 		}
 
-		const opponent = this.plr.getOpponent();
+		const opponent = this.player.getOpponent();
 
 		let side = null;
 
@@ -321,7 +322,7 @@ export class Ai {
 			side = forceSide;
 		}
 
-		const sidePlayer = side === "self" ? this.plr : opponent;
+		const sidePlayer = side === "self" ? this.player : opponent;
 
 		if (sidePlayer.board.length <= 0 && forceClass === "minion") {
 			this.history.push({ type: "selectTarget", data: "0,1" });
@@ -333,7 +334,7 @@ export class Ai {
 			let returnValue: Player | false = false;
 
 			if (side === "self") {
-				returnValue = this.plr;
+				returnValue = this.player;
 			} else if (side === "enemy") {
 				returnValue = opponent;
 			}
@@ -557,12 +558,12 @@ export class Ai {
 	 */
 	trade(card: Card): boolean {
 		// If the ai doesn't have any cards to trade into, don't trade the card.
-		if (this.plr.deck.length <= 1) {
+		if (this.player.deck.length <= 1) {
 			return false;
 		}
 
 		// If the ai can't afford to trade, don't trade the card
-		if (this.plr.mana < 1) {
+		if (this.player.mana < 1) {
 			return false;
 		}
 
@@ -583,7 +584,7 @@ export class Ai {
 	 */
 	forge(card: Card): boolean {
 		// Always forge the card if the ai has enough mana
-		const returnValue = !(this.plr.mana < 2);
+		const returnValue = !(this.player.mana < 2);
 
 		this.history.push({ type: "forge", data: [card.uuid, returnValue] });
 		return returnValue;
@@ -598,7 +599,7 @@ export class Ai {
 		let toMulligan = "";
 		let scores = "(";
 
-		for (const card of this.plr.hand) {
+		for (const card of this.player.hand) {
 			if (card.uuid === "The Coin") {
 				continue;
 			}
@@ -606,7 +607,7 @@ export class Ai {
 			const score = this.analyzePositiveCard(card);
 
 			if (score < game.config.ai.mulliganThreshold) {
-				toMulligan += (this.plr.hand.indexOf(card) + 1).toString();
+				toMulligan += (this.player.hand.indexOf(card) + 1).toString();
 			}
 
 			scores += `${card.uuid}:${score}, `;
@@ -742,7 +743,7 @@ export class Ai {
 			return false;
 		}
 
-		const validAttackers = this.plr.board.filter((m) => m.canAttack());
+		const validAttackers = this.player.board.filter((m) => m.canAttack());
 
 		return validAttackers.length > 0;
 	}
@@ -760,7 +761,7 @@ export class Ai {
 		// The ai has already used their hero power that turn.
 		this.prevent.push("hero power");
 
-		return this.plr.canUseHeroPower();
+		return this.player.canUseHeroPower();
 	}
 
 	/**
@@ -771,7 +772,7 @@ export class Ai {
 			return false;
 		}
 
-		const validLocations = this.plr.board.filter(
+		const validLocations = this.player.board.filter(
 			(m) =>
 				m.type === "Location" &&
 				m.cooldown === 0 &&
@@ -791,7 +792,7 @@ export class Ai {
 		const perfectTrades: Card[][] = [];
 		const imperfectTrades: Card[][] = [];
 
-		const currentBoard = this.plr.board.filter((m) => m.canAttack());
+		const currentBoard = this.player.board.filter((m) => m.canAttack());
 
 		for (const card of currentBoard) {
 			let trades = [...perfectTrades, ...imperfectTrades];
@@ -810,7 +811,7 @@ export class Ai {
 				continue;
 			}
 
-			const opponentBoard = this.plr
+			const opponentBoard = this.player
 				.getOpponent()
 				.board.filter((m) => m.canBeAttacked());
 
@@ -890,11 +891,12 @@ export class Ai {
 	 * @returns Winner, Score
 	 */
 	private _findWinner(board: ScoredCard[][]): [Player, number] {
-		const score = this._scorePlayer(this.plr, board);
-		const opponentScore = this._scorePlayer(this.plr.getOpponent(), board);
+		const score = this._scorePlayer(this.player, board);
+		const opponentScore = this._scorePlayer(this.player.getOpponent(), board);
 
-		const winner = score > opponentScore ? this.plr : this.plr.getOpponent();
-		const winnerScore = winner === this.plr ? score : opponentScore;
+		const winner =
+			score > opponentScore ? this.player : this.player.getOpponent();
+		const winnerScore = winner === this.player ? score : opponentScore;
 
 		return [winner, winnerScore];
 	}
@@ -903,7 +905,7 @@ export class Ai {
 	 * @returns The taunts on the board
 	 */
 	private _findTaunts(): Card[] {
-		return this.plr.getOpponent().board.filter((m) => m.hasKeyword("Taunt"));
+		return this.player.getOpponent().board.filter((m) => m.hasKeyword("Taunt"));
 	}
 
 	/**
@@ -937,7 +939,7 @@ export class Ai {
 		const winner = this._findWinner(board);
 
 		// Risky
-		const opponentScore = this._scorePlayer(this.plr.getOpponent(), board);
+		const opponentScore = this._scorePlayer(this.player.getOpponent(), board);
 
 		// If the ai is winner by more than 'threshold' points, enable risk mode
 		const riskMode = winner[1] >= opponentScore + game.config.ai.riskThreshold;
@@ -982,7 +984,7 @@ export class Ai {
 	 */
 	private _attackGeneralRisky(): Array<Target | -1> {
 		// If the opponent is immune, just attack a minion
-		const opponent = this.plr.getOpponent();
+		const opponent = this.player.getOpponent();
 		if (opponent.immune) {
 			return this._attackGeneralMinion();
 		}
@@ -1001,7 +1003,7 @@ export class Ai {
 	private _attackGeneralMinion(): Array<Target | -1> {
 		// If the focused minion doesn't exist, select a new minion to focus
 		if (this.focus) {
-			if (!this.plr.getOpponent().board.includes(this.focus)) {
+			if (!this.player.getOpponent().board.includes(this.focus)) {
 				// If the focused card is not on the board
 				this.focus = undefined;
 			} else if (!this.focus.canBeAttacked()) {
@@ -1028,7 +1030,7 @@ export class Ai {
 	 * @returns Target | -1 (Go back)
 	 */
 	private _attackGeneralChooseTarget(): Target | -1 {
-		const opponent = this.plr.getOpponent();
+		const opponent = this.player.getOpponent();
 		let highestScore: Array<Target | number | undefined> = [undefined, -9999];
 
 		let board = opponent.board;
@@ -1085,7 +1087,7 @@ export class Ai {
 	private _attackGeneralChooseAttacker(targetIsPlayer = false): Target | -1 {
 		let lowestScore: Array<Target | number | undefined> = [undefined, 9999];
 
-		let board = this.plr.board;
+		let board = this.player.board;
 		board = board.filter((c) => c.canAttack());
 
 		for (const card of board) {
@@ -1116,8 +1118,8 @@ export class Ai {
 		const attacker = lowestScore[0];
 
 		// TODO: Does this never fail?
-		if (!attacker && this.plr.attack > 0 && this.plr.canAttack) {
-			return this.plr;
+		if (!attacker && this.player.attack > 0 && this.player.canAttack) {
+			return this.player;
 		}
 
 		if (!attacker) {

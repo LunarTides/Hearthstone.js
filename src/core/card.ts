@@ -78,10 +78,10 @@ export class Card {
 	 * Use uuid for that.
 	 *
 	 * @example
-	 * const sheep = game.createCard(game.cardIds.sheep1, plr);
-	 * const anotherSheep = game.createCard(game.cardIds.sheep1, plr);
+	 * const sheep = game.createCard(game.cardIds.sheep1, player);
+	 * const anotherSheep = game.createCard(game.cardIds.sheep1, player);
 	 *
-	 * const theCoin = game.createCard(game.cardIds.theCoin2, plr);
+	 * const theCoin = game.createCard(game.cardIds.theCoin2, player);
 	 *
 	 * assert.equal(sheep.id, anotherSheep.id);
 	 * assert.notEqual(sheep.id, theCoin.id);
@@ -1023,13 +1023,13 @@ export class Card {
 	}
 
 	/**
-	 * Bounces the card to the `plr`'s hand.
+	 * Bounces the card to the `player`'s hand.
 	 *
-	 * @param plr
+	 * @param player
 	 */
-	bounce(plr: Player = this.owner): boolean {
-		this.owner = plr;
-		plr.addToHand(this.perfectCopy());
+	bounce(player: Player = this.owner): boolean {
+		this.owner = player;
+		player.addToHand(this.perfectCopy());
 		this.destroy();
 		return true;
 	}
@@ -1235,15 +1235,15 @@ export class Card {
 	 * Discards this card from a player's hand.
 	 * Broadcasts the `DiscardCard` event if the card was successfully discarded.
 	 *
-	 * @param plr The player to discard the card from. Defaults to the card's owner
+	 * @param player The player to discard the card from. Defaults to the card's owner
 	 *
 	 * @returns If the card was successfully discarded
 	 */
-	discard(plr = this.owner): boolean {
-		const returnValue = game.functions.util.remove(plr.hand, this);
+	discard(player = this.owner): boolean {
+		const returnValue = game.functions.util.remove(player.hand, this);
 
 		if (returnValue) {
-			game.event.broadcast("DiscardCard", this, plr);
+			game.event.broadcast("DiscardCard", this, player);
 		}
 
 		return returnValue;

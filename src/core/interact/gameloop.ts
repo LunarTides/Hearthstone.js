@@ -208,7 +208,7 @@ export const gameloopInteract = {
 				break;
 			}
 
-			case "plrnoattack": {
+			case "playernoattack": {
 				error = "You don't have any attack";
 				break;
 			}
@@ -218,7 +218,7 @@ export const gameloopInteract = {
 				break;
 			}
 
-			case "plrhasattacked": {
+			case "playerhasattacked": {
 				error = "Your hero has already attacked this turn";
 				break;
 			}

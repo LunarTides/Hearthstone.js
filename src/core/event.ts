@@ -23,16 +23,16 @@ type EventManagerType = {
 		questsName: "secrets" | "sidequests" | "quests",
 		key: EventKey,
 		value: UnknownEventValue,
-		owner: Player,
+		player: Player,
 	): boolean;
 	broadcast(
 		key: EventKey,
 		value: UnknownEventValue,
-		owner: Player,
+		player: Player,
 		updateHistory?: boolean,
 	): boolean;
-	addHistory(key: EventKey, value: UnknownEventValue, owner: Player): void;
-	broadcastDummy(plr: Player): boolean;
+	addHistory(key: EventKey, value: UnknownEventValue, player: Player): void;
+	broadcastDummy(player: Player): boolean;
 	increment(player: Player, key: string, amount?: number): number;
 };
 
@@ -55,7 +55,7 @@ export const eventManager: EventManagerType = {
 	/**
 	 * The history of the game.
 	 *
-	 * It looks like this: `history[turn] = [[key, val, plr], ...]`
+	 * It looks like this: `history[turn] = [[key, val, player], ...]`
 	 */
 	history: {},
 
@@ -188,12 +188,12 @@ export const eventManager: EventManagerType = {
 	 * @param questsName The type of quest to update
 	 * @param key The key of the event
 	 * @param value The value of the event
-	 * @param plr The owner of the quest
+	 * @param player The owner of the quest
 	 *
 	 * @returns Success
 	 */
-	questUpdate(questsName, key, value, plr): boolean {
-		for (const quest of plr[questsName]) {
+	questUpdate(questsName, key, value, player): boolean {
+		for (const quest of player[questsName]) {
 			if (quest.key !== key) {
 				continue;
 			}
@@ -212,14 +212,14 @@ export const eventManager: EventManagerType = {
 			}
 
 			// The quest/secret is done
-			plr[questsName].splice(plr[questsName].indexOf(quest), 1);
+			player[questsName].splice(player[questsName].indexOf(quest), 1);
 
 			if (questsName === "secrets") {
 				game.pause(`\nYou triggered the opponents's '${quest.name}'.\n`);
 			}
 
 			if (quest.next) {
-				new Card(quest.next, plr).activate("cast");
+				new Card(quest.next, player).activate("cast");
 			}
 		}
 
@@ -231,13 +231,13 @@ export const eventManager: EventManagerType = {
 	 *
 	 * @param key The key of the event
 	 * @param value The value of the event
-	 * @param plr The player who caused the event to happen
+	 * @param player The player who caused the event to happen
 	 * @param updateHistory Whether or not to update the history
 	 *
 	 * @returns Success
 	 */
-	broadcast(key, value, plr, updateHistory = true): boolean {
-		this.tick(key, value, plr);
+	broadcast(key, value, player, updateHistory = true): boolean {
+		this.tick(key, value, player);
 
 		// Check if the event is suppressed
 		if (this.suppressed.includes(key) && !this.forced.includes(key)) {
@@ -252,10 +252,10 @@ export const eventManager: EventManagerType = {
 				historyValue.uuid = value.uuid;
 			}
 
-			this.addHistory(key, historyValue, plr);
+			this.addHistory(key, historyValue, player);
 		}
 
-		if (plr.id === -1) {
+		if (player.id === -1) {
 			return false;
 		}
 
@@ -263,13 +263,13 @@ export const eventManager: EventManagerType = {
 			this.events[key] = [[["GameLoop", game.turn]], [["GameLoop", game.turn]]];
 		}
 
-		this.events[key]?.[plr.id].push([value, game.turn]);
+		this.events[key]?.[player.id].push([value, game.turn]);
 
-		this.cardUpdate(key, value, plr);
+		this.cardUpdate(key, value, player);
 
-		this.questUpdate("secrets", key, value, plr.getOpponent());
-		this.questUpdate("sidequests", key, value, plr);
-		this.questUpdate("quests", key, value, plr);
+		this.questUpdate("secrets", key, value, player.getOpponent());
+		this.questUpdate("sidequests", key, value, player);
+		this.questUpdate("quests", key, value, player);
 
 		return true;
 	},
@@ -279,14 +279,14 @@ export const eventManager: EventManagerType = {
 	 *
 	 * @param key The key of the event
 	 * @param value The value of the event
-	 * @param plr The player who caused the event to happen
+	 * @param player The player who caused the event to happen
 	 */
-	addHistory(key, value, plr): void {
+	addHistory(key, value, player): void {
 		if (!this.history[game.turn]) {
-			this.history[game.turn] = [["GameLoop", `Init ${key}`, plr]];
+			this.history[game.turn] = [["GameLoop", `Init ${key}`, player]];
 		}
 
-		this.history[game.turn].push([key, value, plr]);
+		this.history[game.turn].push([key, value, player]);
 	},
 
 	/**
@@ -294,12 +294,12 @@ export const eventManager: EventManagerType = {
 	 *
 	 * Specifically, this broadcasts the `Dummy` event. DO NOT LISTEN FOR THAT EVENT.
 	 *
-	 * @param plr The player who caused the event to happen
+	 * @param player The player who caused the event to happen
 	 *
 	 * @returns Success
 	 */
-	broadcastDummy(plr): boolean {
-		return this.broadcast("Dummy", undefined, plr, false);
+	broadcastDummy(player): boolean {
+		return this.broadcast("Dummy", undefined, player, false);
 	},
 
 	/**

@@ -498,7 +498,11 @@ export const commands: CommandList = {
 		 *
 		 * @param hide If it should hide the card
 		 */
-		const doValue = (value: unknown, plr: Player, hide: boolean): unknown => {
+		const doValue = (
+			value: unknown,
+			player: Player,
+			hide: boolean,
+		): unknown => {
 			if (value instanceof Player) {
 				return `Player ${value.id + 1}`;
 			}
@@ -509,7 +513,7 @@ export const commands: CommandList = {
 			}
 
 			// If the card is not hidden, or the card belongs to the current player, show it
-			if (!hide || value.owner === plr) {
+			if (!hide || value.owner === player) {
 				return showCard(value);
 			}
 

@@ -16,12 +16,12 @@ export const deckcodeFunctions = {
 	/**
 	 * Imports a deck using a code and put the cards into the player's deck
 	 *
-	 * @param plr The player to put the cards into the deck of
+	 * @param player The player to put the cards into the deck of
 	 * @param code The deck code
 	 *
 	 * @returns The deck
 	 */
-	import(plr: Player, code: string): Card[] | undefined {
+	import(player: Player, code: string): Card[] | undefined {
 		const panic = (errorCode: string, cardName?: string) => {
 			console.log(
 				"<red>This deck is not valid!\nError Code: <yellow>%s</yellow red>",
@@ -52,7 +52,7 @@ export const deckcodeFunctions = {
 
 		// We don't convert the code in the try-catch block, since this function could throw an error which would be ignored
 		if (vanilla) {
-			actualCode = this.fromVanilla(plr, actualCode);
+			actualCode = this.fromVanilla(player, actualCode);
 		}
 
 		// BFU
@@ -82,12 +82,12 @@ export const deckcodeFunctions = {
 			return;
 		}
 
-		plr.heroClass = hero as CardClass;
-		const runeClass = plr.canUseRunes();
+		player.heroClass = hero as CardClass;
+		const runeClass = player.canUseRunes();
 
 		const addRunes = (runes: string) => {
 			if (runeClass) {
-				plr.runes = runes;
+				player.runes = runes;
 			} else {
 				game.pause(
 					`<yellow>WARNING: This deck has runes in it, but the class is <bright:yellow>${hero}</bright:yellow>.\n`,
@@ -157,7 +157,7 @@ export const deckcodeFunctions = {
 					continue;
 				}
 
-				const card = new Card(blueprint.id, plr, true);
+				const card = new Card(blueprint.id, player, true);
 
 				for (let i = 0; i < game.lodash.parseInt(copies); i++) {
 					newDeck.push(card.perfectCopy());
@@ -290,8 +290,8 @@ export const deckcodeFunctions = {
 			);
 		}
 
-		plr.deck = newDeck;
-		plr.shuffleDeck();
+		player.deck = newDeck;
+		player.shuffleDeck();
 
 		return newDeck;
 	},
@@ -415,13 +415,13 @@ export const deckcodeFunctions = {
 	/**
 	 * Turns a Hearthstone.js deckcode into a vanilla deckcode
 	 *
-	 * @param plr The player that will get the deckcode
+	 * @param player The player that will get the deckcode
 	 * @param code The deckcode
 	 * @param extraFiltering If it should do extra filtering when there are more than 1 possible card. This may choose the wrong card.
 	 *
 	 * @returns The vanilla deckcode
 	 */
-	toVanilla(plr: Player, code: string, extraFiltering = true): string {
+	toVanilla(player: Player, code: string, extraFiltering = true): string {
 		/*
 		 * HACK: Jank code ahead. Beware!
 		 *
@@ -480,7 +480,7 @@ export const deckcodeFunctions = {
 				throw new Error("c is an invalid card");
 			}
 
-			return new Card(c.id, plr, true);
+			return new Card(c.id, player, true);
 		});
 		const trueCards = cardsSplitCard.map((c) => c.name);
 
@@ -579,12 +579,12 @@ export const deckcodeFunctions = {
 	/**
 	 * Turns a vanilla deckcode into a Hearthstone.js deckcode
 	 *
-	 * @param plr The player that will get the deckcode
+	 * @param player The player that will get the deckcode
 	 * @param code The deckcode
 	 *
 	 * @returns The Hearthstone.js deckcode
 	 */
-	fromVanilla(plr: Player, code: string): string {
+	fromVanilla(player: Player, code: string): string {
 		// Use the 'deckstrings' library's decode
 		const deckWithFormat: deckstrings.DeckDefinition = deckstrings.decode(code);
 
@@ -671,7 +671,7 @@ export const deckcodeFunctions = {
 			}
 
 			// TODO: Use ids instead
-			const card = Card.fromName(name, plr);
+			const card = Card.fromName(name, player);
 			if (!card) {
 				throw new Error("Invalid card name");
 			}
@@ -694,9 +694,9 @@ export const deckcodeFunctions = {
 		// Generate runes
 		let runes = "";
 
-		plr.heroClass = heroClassName as CardClass;
+		player.heroClass = heroClassName as CardClass;
 
-		if (plr.canUseRunes()) {
+		if (player.canUseRunes()) {
 			for (const cardAmountObject of newDeck) {
 				const card = cardAmountObject[0];
 

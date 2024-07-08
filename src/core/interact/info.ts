@@ -76,9 +76,9 @@ export const infoInteract = {
 	/**
 	 * Prints all the information you need to understand the game state
 	 *
-	 * @param plr The player
+	 * @param player The player
 	 */
-	showGame(plr: Player): void {
+	showGame(player: Player): void {
 		this.watermark();
 		console.log();
 
@@ -87,11 +87,11 @@ export const infoInteract = {
 			console.log();
 		}
 
-		this.printPlayerStats(plr);
+		this.printPlayerStats(player);
 		console.log();
-		this.printBoard(plr);
+		this.printBoard(player);
 		console.log();
-		this.printHand(plr);
+		this.printHand(player);
 	},
 
 	/**
@@ -210,20 +210,20 @@ export const infoInteract = {
 	/**
 	 * Prints the board for a specific player.
 	 */
-	printBoard(plr: Player): void {
-		for (const player of [game.player1, game.player2]) {
+	printBoard(player: Player): void {
+		for (const plr of [game.player1, game.player2]) {
 			const sideMessage =
 				plr === player
 					? "----- Board (You) ------"
 					: "--- Board (Opponent) ---";
 			console.log(sideMessage);
 
-			if (player.board.length === 0) {
+			if (plr.board.length === 0) {
 				console.log("<gray>Empty</gray>");
 				continue;
 			}
 
-			for (const [index, card] of player.board.entries()) {
+			for (const [index, card] of plr.board.entries()) {
 				console.log(card.readable(index + 1));
 			}
 		}
@@ -234,14 +234,14 @@ export const infoInteract = {
 	/**
 	 * Prints the hand of the specified player.
 	 */
-	printHand(plr: Player): void {
-		console.log("--- %s (%s)'s Hand ---", plr.name, plr.heroClass);
+	printHand(player: Player): void {
+		console.log("--- %s (%s)'s Hand ---", player.name, player.heroClass);
 		// Add the help message
 		console.log(
 			"([index] <cyan>{Cost}</cyan> <b>Name</b> <bright:green>[attack / health]</bright:green> <yellow>(type)</yellow>)\n",
 		);
 
-		for (const [index, card] of plr.hand.entries()) {
+		for (const [index, card] of player.hand.entries()) {
 			console.log(card.readable(index + 1));
 		}
 	},
