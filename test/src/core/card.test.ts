@@ -8,6 +8,34 @@ import { Card } from "@Game/internal.js";
 // createGame();
 
 describe("src/core/card", () => {
+	test.todo("allFromName - static", async () => {
+		expect(false).toEqual(true);
+	});
+
+	test.todo("fromName - static", async () => {
+		expect(false).toEqual(true);
+	});
+
+	test.todo("fromID - static", async () => {
+		expect(false).toEqual(true);
+	});
+
+	test.todo("all - static", async () => {
+		expect(false).toEqual(true);
+	});
+
+	test.todo("fromUUID - static", async () => {
+		expect(false).toEqual(true);
+	});
+
+	test.todo("registerAll - static", async () => {
+		expect(false).toEqual(true);
+	});
+
+	test.todo("reloadAll - static", async () => {
+		expect(false).toEqual(true);
+	});
+
 	test.todo("randomizeUUID", async () => {
 		expect(false).toEqual(true);
 	});
@@ -116,6 +144,14 @@ describe("src/core/card", () => {
 		expect(false).toEqual(true);
 	});
 
+	test.todo("reset", async () => {
+		expect(false).toEqual(true);
+	});
+
+	test.todo("reload", async () => {
+		expect(false).toEqual(true);
+	});
+
 	test.todo("activate", async () => {
 		expect(false).toEqual(true);
 	});
@@ -153,6 +189,10 @@ describe("src/core/card", () => {
 	});
 
 	test.todo("replacePlaceholders", async () => {
+		expect(false).toEqual(true);
+	});
+
+	test.todo("doPlaceholders", async () => {
 		expect(false).toEqual(true);
 	});
 
@@ -205,6 +245,14 @@ describe("src/core/card", () => {
 	});
 
 	test.todo("attackTarget", async () => {
+		expect(false).toEqual(true);
+	});
+
+	test.todo("readable", async () => {
+		expect(false).toEqual(true);
+	});
+
+	test.todo("view", async () => {
 		expect(false).toEqual(true);
 	});
 });

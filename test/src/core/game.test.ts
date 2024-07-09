@@ -52,10 +52,6 @@ describe("src/core/game", () => {
 		expect(false).toEqual(true);
 	});
 
-	test.todo("newCard", async () => {
-		expect(false).toEqual(true);
-	});
-
 	test.todo("createGame", async () => {
 		expect(false).toEqual(true);
 	});

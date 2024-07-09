@@ -190,7 +190,7 @@ export const cardFunctions = {
 			return true;
 		}
 
-		return cardTribe.includes(tribe);
+		return cardTribe === tribe;
 	},
 
 	/**
@@ -237,10 +237,12 @@ export const cardFunctions = {
 	 * @param invokeCount How many times that the card has been invoked.
 	 */
 	galakrondFormula(invokeCount: number): number {
-		const x = invokeCount;
-		const y = Math.ceil((x + 1) / 2) + Math.round(x * 0.15);
-
-		return y || 1;
+		return (
+			Math.min(
+				4,
+				Math.ceil((invokeCount + 1) / 2) + Math.round(invokeCount * 0.15),
+			) || 1
+		);
 	},
 
 	/**

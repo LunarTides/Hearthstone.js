@@ -411,7 +411,7 @@ export class Player {
 	 * @param mana The mana to add
 	 * @param comp The comperison. This defaults to `player.emptyMana`.
 	 *
-	 * @returns Success
+	 * @returns Whether or not the mana was capped
 	 */
 	refreshMana(mana: number, comp?: number): boolean {
 		const comperison = comp ?? this.emptyMana;
@@ -420,9 +420,10 @@ export class Player {
 
 		if (this.mana > comperison) {
 			this.mana = comperison;
+			return true;
 		}
 
-		return true;
+		return false;
 	}
 
 	/**
@@ -440,16 +441,17 @@ export class Player {
 	 *
 	 * @param mana The empty mana to add.
 	 *
-	 * @returns Success
+	 * @returns Whether or not the empty mana was capped to the max mana
 	 */
 	addEmptyMana(mana: number): boolean {
 		this.emptyMana += mana;
 
 		if (this.emptyMana > this.maxMana) {
 			this.emptyMana = this.maxMana;
+			return true;
 		}
 
-		return true;
+		return false;
 	}
 
 	/**
@@ -464,13 +466,13 @@ export class Player {
 	 *
 	 * @param mana The number to increase mana and empty mana by
 	 *
-	 * @returns Success
+	 * @returns Whether or not the mana or empty mana was capped
 	 */
 	addMana(mana: number): boolean {
-		this.addEmptyMana(mana);
-		this.refreshMana(mana);
+		const emptyCapped = this.addEmptyMana(mana);
+		const fullCapped = this.refreshMana(mana, this.maxMana);
 
-		return true;
+		return emptyCapped || fullCapped;
 	}
 
 	/**
@@ -582,16 +584,17 @@ export class Player {
 	 *
 	 * @param amount The amount the player's health should increase by
 	 *
-	 * @returns Success
+	 * @returns Whether or not the health was capped to the max health.
 	 */
 	addHealth(amount: number): boolean {
 		this.health += amount;
 
 		if (this.health > this.maxHealth) {
 			this.health = this.maxHealth;
+			return true;
 		}
 
-		return true;
+		return false;
 	}
 
 	/**

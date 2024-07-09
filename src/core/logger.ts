@@ -8,18 +8,18 @@ export class Logger {
 	input = game.input;
 	pause = game.pause;
 
+	/**
+	 * @example
+	 * logger.debug("Starting...");
+	 * assert.equal(logger.debugLog[0], "Starting...");
+	 * logger.debug("Something else");
+	 * assert.equal(logger.debugLog[1], "Something else");
+	 *
+	 * logger.debug("Starting...OK");
+	 * assert.equal(logger.debugLog[0], "Starting...OK");
+	 * assert.equal(logger.debugLog[1], "Something else");
+	 */
 	debug(...data: string[]): void {
-		/*
-		 * Example:
-		 * logger.debug("Starting...");
-		 * assert.equal(logger.debugLog[0], "Starting...");
-		 * logger.debug("Something else");
-		 * assert.equal(logger.debugLog[1], "Something else");
-		 *
-		 * logger.debug("Starting...OK");
-		 * assert.equal(logger.debugLog[0], "Starting...OK");
-		 * assert.equal(logger.debugLog[1], "Something else");
-		 */
 		for (const string of data) {
 			if (typeof string !== "string") {
 				continue;

@@ -150,7 +150,7 @@ export const deckcodeFunctions = {
 			for (const cardId of cards) {
 				const id = game.lodash.parseInt(cardId, 36);
 
-				const blueprint = Card.fromId(id);
+				const blueprint = Card.fromID(id);
 				if (!blueprint) {
 					panic("NONEXISTANTCARD", id.toString());
 					returnValueInvalid = true;
@@ -474,7 +474,7 @@ export const deckcodeFunctions = {
 		const vanillaCards = game.functions.card.vanilla.getAll();
 
 		const cardsSplit = cards.split(",").map((i) => game.lodash.parseInt(i, 36));
-		const cardsSplitId = cardsSplit.map(Card.fromId);
+		const cardsSplitId = cardsSplit.map(Card.fromID);
 		const cardsSplitCard = cardsSplitId.map((c) => {
 			if (!c) {
 				throw new Error("c is an invalid card");

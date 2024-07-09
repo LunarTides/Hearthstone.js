@@ -50,12 +50,14 @@ export const interact = {
 		game.interact.info.watermark();
 		console.log();
 
+		const { branch } = game.functions.info.version();
+
 		/**
 		 * If the test deck (30 Sheep) should be allowed
 		 */
 		// I want to be able to test without debug mode on a non-stable branch
 		const allowTestDeck: boolean =
-			game.config.general.debug || game.config.info.branch !== "stable";
+			game.config.general.debug || branch !== "stable";
 
 		const debugStatement = allowTestDeck
 			? " <gray>(Leave this empty for a test deck)</gray>"

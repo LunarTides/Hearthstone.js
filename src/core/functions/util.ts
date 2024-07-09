@@ -2,6 +2,7 @@ import childProcess from "node:child_process";
 import { createHash } from "node:crypto";
 // It only confines these functions to the Hearthstone.js directory. Look in the fs wrapper functions in this file to confirm.
 import fs from "node:fs";
+import os from "node:os";
 import { dirname as pathDirname } from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
@@ -116,7 +117,7 @@ export const utilFunctions = {
 	/**
 	 * Create a (crash)log file
 	 *
-	 * @param err If this is set, create a crash log. If this is not set, create a normal log file.
+	 * @param error If this is set, create a crash log. If this is not set, create a normal log file.
 	 *
 	 * @returns Success
 	 */
@@ -132,21 +133,18 @@ export const utilFunctions = {
 		// 01.01.23-23.59.59
 		const dateStringFileFriendly = date.format(now, "DD.MM.YY-HH.mm.ss");
 
-		/*
-		 * Grab the history of the game
-		 * handleCmds("history", echo, debug)
-		 */
+		// Grab the history of the game
 		let history = game.interact.gameLoop.handleCmds("history", {
 			echo: false,
 			debug: true,
 		});
+
 		if (typeof history !== "string") {
 			throw new TypeError("createLogFile history did not return a string.");
 		}
 
 		// Strip the color codes from the history
-		history = game.functions.color.stripTags(history);
-		history = game.functions.color.stripColors(history);
+		history = game.functions.color.stripAll(history);
 
 		/*
 		 * AI log
@@ -155,10 +153,7 @@ export const utilFunctions = {
 		game.config.general.debug = true;
 		const aiHistory = game.interact.gameLoop.handleCmds("/ai", { echo: false });
 
-		let name = "Log";
-		if (error) {
-			name = "Crash Log";
-		}
+		const name = error ? "Crash Log" : "Log";
 
 		let errorContent = "";
 
@@ -195,12 +190,12 @@ ${error.stack}
 			const uname = this.runCommand("uname -srvmo");
 			osName += ` (${uname.trim()})`;
 		} else if (osName === "win32") {
-			osName = "Windows";
+			osName = `Windows ${os.release()}`;
 		}
 
 		let content = `Hearthstone.js ${name}
 Date: ${dateString}
-Version: ${game.functions.info.version(4)}
+Version: ${game.functions.info.versionString(4)}
 Operating System: ${osName}
 Log File Version: 3
 

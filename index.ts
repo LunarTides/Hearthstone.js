@@ -14,7 +14,7 @@ import * as dc from "./tools/deckcreator.js"; // Deck Creator
 logger.debug("Starting Hub...");
 
 // These are here so we don't have to recalculate them every watermark call.
-const version = game.functions.info.version(4);
+const version = game.functions.info.versionString(4);
 const customCardsAmount = Card.all(false).length;
 const collectibleCardsAmount = Card.all(true).length;
 let vanillaCardsAmount = Number.NaN;

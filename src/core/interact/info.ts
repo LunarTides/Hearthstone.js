@@ -8,18 +8,19 @@ export const infoInteract = {
 	watermark(): void {
 		game.interact.cls();
 
-		const { info } = game.config;
 		const versionDetail =
 			game.player.detailedView || game.config.general.debug ? 4 : 3;
 
-		const watermark = `HEARTHSTONE.JS V${game.functions.info.version(versionDetail)}`;
+		const watermark = `HEARTHSTONE.JS V${game.functions.info.versionString(versionDetail)}`;
 		const border = "-".repeat(watermark.length + 2);
 
 		console.log("|%s|", border);
 		console.log("| %s |", watermark);
 		console.log("|%s|", border);
 
-		if (info.branch === "topic" && game.config.general.topicBranchWarning) {
+		const { branch } = game.functions.info.version();
+
+		if (branch === "topic" && game.config.general.topicBranchWarning) {
 			console.log(
 				"\n<yellow>WARNING: YOU ARE ON A TOPIC BRANCH. THIS VERSION IS NOT READY.</yellow>",
 			);
@@ -36,19 +37,19 @@ export const infoInteract = {
 			return;
 		}
 
-		const { info } = game.config;
+		const { branch } = game.functions.info.version();
 
 		game.interact.cls();
 
-		const version = `Hearthstone.js V${game.functions.info.version(2)} | Copyright (C) 2022 | LunarTides`;
+		const version = `Hearthstone.js V${game.functions.info.versionString(2)} | Copyright (C) 2022 | LunarTides`;
 		console.log("|".repeat(version.length + 8));
 		console.log("||| %s |||", version);
 		console.log(
-			`|||     This program is licensed under the GPL-3.0 license.  ${" ".repeat(info.branch.length)}|||`,
+			`|||     This program is licensed under the GPL-3.0 license.  ${" ".repeat(branch.length)}|||`,
 		);
 		if (disappear) {
 			console.log(
-				`|||         This will disappear once you end your turn.      ${" ".repeat(info.branch.length)}|||`,
+				`|||         This will disappear once you end your turn.      ${" ".repeat(branch.length)}|||`,
 			);
 		}
 

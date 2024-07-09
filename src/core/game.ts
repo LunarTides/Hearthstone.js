@@ -612,6 +612,11 @@ const playCard = {
 			return "cost";
 		}
 
+		// If the board has max capacity, and the card played is a minion or location card, prevent it.
+		if (!playCard._hasCapacity(card, player)) {
+			return "space";
+		}
+
 		// Condition
 		if (!playCard._condition(card, player)) {
 			return "refund";
@@ -624,11 +629,6 @@ const playCard = {
 		// Counter
 		if (playCard._countered(card, player)) {
 			return "counter";
-		}
-
-		// If the board has max capacity, and the card played is a minion or location card, prevent it.
-		if (!playCard._hasCapacity(card, player)) {
-			return "space";
 		}
 
 		// Broadcast `PlayCardUnsafe` event without adding it to the history

@@ -370,7 +370,7 @@ export class Card {
 	 * assert.equal(card[0].name, 'The Coin');
 	 */
 	static allFromName(name: string, refer = true): Card[] {
-		const id = Card.fromId(game.lodash.parseInt(name));
+		const id = Card.fromID(game.lodash.parseInt(name));
 
 		/*
 		 * For some reason, "10 Mana" turns into 10 when passed through `parseInt`.
@@ -403,12 +403,12 @@ export class Card {
 	 * Returns the card with the id of `id`.
 	 *
 	 * @example
-	 * const card = Card.fromId(2);
+	 * const card = Card.fromID(2);
 	 *
 	 * assert.ok(card instanceof Card);
 	 * assert.equal(card.name, 'The Coin');
 	 */
-	static fromId(id: number): Card | undefined {
+	static fromID(id: number): Card | undefined {
 		return Card.all(false).find((c) => c.id === id);
 	}
 
@@ -1540,6 +1540,82 @@ export class Card {
 	}
 
 	/**
+	 * Replaces placeholders in the description of this card.
+	 *
+	 * @param overrideText The description. If empty, it uses this card's description instead.
+	 * @param _depth The depth of recursion.
+	 *
+	 * @returns The modified description with placeholders replaced.
+	 */
+	doPlaceholders(overrideText = "", _depth = 0): string {
+		let reg = /{ph:(.*?)}/;
+
+		let text = overrideText;
+		if (!overrideText) {
+			text = this.text || "";
+		}
+
+		let running = true;
+		while (running) {
+			const regedDesc = reg.exec(text);
+
+			// There is nothing more to extract
+			if (!regedDesc) {
+				running = false;
+				break;
+			}
+
+			// Get the capturing group result
+			const key = regedDesc[1];
+
+			this.replacePlaceholders();
+			const rawReplacement = this.placeholder;
+			if (!rawReplacement) {
+				throw new Error("Card placeholder not found.");
+			}
+
+			let replacement = rawReplacement[key] as string | Card;
+
+			if (replacement instanceof Card) {
+				// The replacement is a card
+				const onlyShowName =
+					game.config.advanced.getReadableCardNoRecursion ||
+					!game.player.detailedView;
+
+				const alwaysShowFullCard =
+					game.config.advanced.getReadableCardAlwaysShowFullCard;
+
+				replacement =
+					onlyShowName && !alwaysShowFullCard
+						? replacement.colorFromRarity()
+						: replacement.readable(-1, _depth + 1);
+			}
+
+			text = game.functions.color.fromTags(text.replace(reg, replacement));
+		}
+
+		// Replace spell damage placeholders
+		reg = /\$(\d+)/;
+
+		running = true;
+		while (running) {
+			const regedDesc = reg.exec(text);
+			if (!regedDesc) {
+				running = false;
+				break;
+			}
+
+			// Get the capturing group result
+			const key = regedDesc[1];
+			const replacement = game.lodash.parseInt(key) + game.player.spellDamage;
+
+			text = text.replace(reg, replacement.toString());
+		}
+
+		return text;
+	}
+
+	/**
 	 * Return a perfect copy of this card. This will perfectly clone the card. This happens when, for example, a card gets temporarily removed from the board using card.destroy, then put back on the board.
 	 *
 	 * @example
@@ -1841,82 +1917,6 @@ export class Card {
 	}
 
 	/**
-	 * Replaces placeholders in the description of this card.
-	 *
-	 * @param overrideText The description. If empty, it uses this card's description instead.
-	 * @param _depth The depth of recursion.
-	 *
-	 * @returns The modified description with placeholders replaced.
-	 */
-	doPlaceholders(overrideText = "", _depth = 0): string {
-		let reg = /{ph:(.*?)}/;
-
-		let text = overrideText;
-		if (!overrideText) {
-			text = this.text || "";
-		}
-
-		let running = true;
-		while (running) {
-			const regedDesc = reg.exec(text);
-
-			// There is nothing more to extract
-			if (!regedDesc) {
-				running = false;
-				break;
-			}
-
-			// Get the capturing group result
-			const key = regedDesc[1];
-
-			this.replacePlaceholders();
-			const rawReplacement = this.placeholder;
-			if (!rawReplacement) {
-				throw new Error("Card placeholder not found.");
-			}
-
-			let replacement = rawReplacement[key] as string | Card;
-
-			if (replacement instanceof Card) {
-				// The replacement is a card
-				const onlyShowName =
-					game.config.advanced.getReadableCardNoRecursion ||
-					!game.player.detailedView;
-
-				const alwaysShowFullCard =
-					game.config.advanced.getReadableCardAlwaysShowFullCard;
-
-				replacement =
-					onlyShowName && !alwaysShowFullCard
-						? replacement.colorFromRarity()
-						: replacement.readable(-1, _depth + 1);
-			}
-
-			text = game.functions.color.fromTags(text.replace(reg, replacement));
-		}
-
-		// Replace spell damage placeholders
-		reg = /\$(\d+)/;
-
-		running = true;
-		while (running) {
-			const regedDesc = reg.exec(text);
-			if (!regedDesc) {
-				running = false;
-				break;
-			}
-
-			// Get the capturing group result
-			const key = regedDesc[1];
-			const replacement = game.lodash.parseInt(key) + game.player.spellDamage;
-
-			text = text.replace(reg, replacement.toString());
-		}
-
-		return text;
-	}
-
-	/**
 	 * Returns this card in a human readable state. If you "console.log" the result of this, the user will get all the information they need from this card.
 	 *
 	 * @param i If this is set, this function will add `[i]` to the beginning of the string. This is useful if there are many different cards to choose from.
@@ -1925,12 +1925,14 @@ export class Card {
 	 * @returns The human readable card string
 	 */
 	readable(i = -1, _depth = 0): string {
+		const { branch } = game.functions.info.version();
+
 		/**
 		 * If it should show detailed errors regarding depth.
 		 */
 		const showDetailedError: boolean =
 			game.config.general.debug ||
-			game.config.info.branch !== "stable" ||
+			branch !== "stable" ||
 			game.player.detailedView;
 
 		if (_depth > 0 && game.config.advanced.getReadableCardNoRecursion) {

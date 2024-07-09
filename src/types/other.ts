@@ -164,10 +164,6 @@ export type GameConfig = {
 	};
 
 	info: {
-		version: string;
-		branch: "stable" | "beta" | "alpha" | "topic";
-		build: number;
-
 		versionText: string;
 
 		stableIntroText: string;

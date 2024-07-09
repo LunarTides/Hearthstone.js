@@ -260,22 +260,6 @@ export const config: GameConfig = {
 	info: {
 		// DONT CHANGE ANY OF THESE VALUES UNLESS YOU KNOW WHAT YOU'RE DOING.
 
-		/*
-		 * The version of the game.
-		 * =<2.0.0, this used 'huge.major.(minor/patch)' notation.
-		 * >2.0.0, this uses semver
-		 */
-		version: "3.0.0",
-
-		/*
-		 * The branch that the version is on.
-		 * This can be "stable", "beta", "alpha" or "topic"
-		 */
-		branch: "beta",
-
-		// The build number of the game.
-		build: 0,
-
 		// The text that is displayed along this specific version/branch combination.
 		versionText: "Make the project use typescript instead of javascript",
 

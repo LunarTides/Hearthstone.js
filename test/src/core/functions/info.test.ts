@@ -9,43 +9,55 @@ import { createGame, infoFunctions } from "@Game/internal.js";
 createGame();
 
 describe("src/core/functions/info", () => {
-	test("version", async () => {
-		const { info } = game.config;
+	test.todo("version", async () => {
+		expect(false).toBe(true);
+	});
 
-		expect(infoFunctions.version(1)).toEqual(format("%s", info.version));
-		expect(infoFunctions.version(2)).toEqual(
-			format("%s-%s", info.version, info.branch),
-		);
+	test("versionString", async () => {
+		const { version, branch } = infoFunctions.version();
+
+		expect(
+			infoFunctions.versionString(1, () => {
+				return { version, branch, build: 0 };
+			}),
+		).toEqual(format("%s", version));
+
+		expect(
+			infoFunctions.versionString(2, () => {
+				return { version, branch, build: 0 };
+			}),
+		).toEqual(format("%s-%s", version, branch));
 
 		// If the build is 0, we don't want to show it
-		info.build = 0;
-		expect(infoFunctions.version(3)).toEqual(
-			format("%s-%s", info.version, info.branch),
-		);
-		expect(infoFunctions.version(4)).toEqual(
-			format(
-				"%s-%s (%s)",
-				info.version,
-				info.branch,
-				infoFunctions.latestCommit(),
-			),
+		expect(
+			infoFunctions.versionString(3, () => {
+				return { version, branch, build: 0 };
+			}),
+		).toEqual(format("%s-%s", version, branch));
+
+		expect(
+			infoFunctions.versionString(4, () => {
+				return { version, branch, build: 0 };
+			}),
+		).toEqual(
+			format("%s-%s (%s)", version, branch, infoFunctions.latestCommit()),
 		);
 
-		info.build = 1;
-		expect(infoFunctions.version(3)).toEqual(
-			format("%s-%s.%s", info.version, info.branch, info.build),
-		);
-		expect(infoFunctions.version(4)).toEqual(
-			format(
-				"%s-%s.%s (%s)",
-				info.version,
-				info.branch,
-				info.build,
-				infoFunctions.latestCommit(),
-			),
+		expect(
+			infoFunctions.versionString(3, () => {
+				return { version, branch, build: 1 };
+			}),
+		).toEqual(format("%s-%s.1", version, branch));
+
+		expect(
+			infoFunctions.versionString(4, () => {
+				return { version, branch, build: 1 };
+			}),
+		).toEqual(
+			format("%s-%s.1 (%s)", version, branch, infoFunctions.latestCommit()),
 		);
 
-		expect(infoFunctions.version.bind(infoFunctions, 5)).toThrow(
+		expect(infoFunctions.versionString.bind(infoFunctions, 5)).toThrow(
 			"Invalid detail amount",
 		);
 	});

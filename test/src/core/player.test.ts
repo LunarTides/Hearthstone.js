@@ -1,31 +1,96 @@
 import { describe, expect, test } from "bun:test";
-import { Player } from "@Game/internal.js";
+import { Player, createGame } from "@Game/internal.js";
 
 /*
  * Need to create a game in case the functions need it
  * This is a pretty big performance hit.
  */
-// createGame();
+createGame();
 
 describe("src/core/player", () => {
-	test.todo("getOpponent", async () => {
-		expect(false).toEqual(true);
+	test("fromID - static", async () => {
+		expect(Player.fromID(0)).toEqual(game.player1);
+		expect(Player.fromID(1)).toEqual(game.player2);
+		// This is so that Player.fromID always returns Player instead of Player | undefined
+		expect(Player.fromID(2)).toEqual(game.player2);
 	});
 
-	test.todo("getBoard", async () => {
-		expect(false).toEqual(true);
+	test("getOpponent", async () => {
+		expect(game.player1.getOpponent()).toEqual(game.player2);
+		expect(game.player2.getOpponent()).toEqual(game.player1);
 	});
 
-	test.todo("refreshMana", async () => {
-		expect(false).toEqual(true);
+	test("refreshMana", async () => {
+		const player = new Player("Test");
+
+		expect(player.mana).toBe(0);
+
+		expect(player.refreshMana(10)).toBe(true);
+		expect(player.mana).toBe(0);
+		expect(player.emptyMana).toBe(0);
+
+		player.mana = 0;
+
+		expect(player.refreshMana(5, player.maxMana)).toBe(false);
+		expect(player.mana).toBe(5);
+		expect(player.emptyMana).toBe(0);
+
+		player.mana = 0;
+		player.emptyMana = 10;
+
+		expect(player.refreshMana(10)).toBe(false);
+		expect(player.mana).toBe(10);
+
+		player.mana = 5;
+
+		expect(player.refreshMana(10)).toBe(true);
+		expect(player.mana).toBe(10);
 	});
 
-	test.todo("addEmptyMana", async () => {
-		expect(false).toEqual(true);
+	test("addEmptyMana", async () => {
+		const player = new Player("Test");
+
+		expect(player.emptyMana).toBe(0);
+
+		expect(player.addEmptyMana(1)).toBe(false);
+		expect(player.emptyMana).toBe(1);
+
+		expect(player.addEmptyMana(5)).toBe(false);
+		expect(player.emptyMana).toBe(6);
+
+		expect(player.addEmptyMana(9)).toBe(true);
+		expect(player.emptyMana).toBe(10);
 	});
 
-	test.todo("addMana", async () => {
-		expect(false).toEqual(true);
+	test("addMana", async () => {
+		const player = new Player("Test");
+
+		expect(player.mana).toBe(0);
+		expect(player.emptyMana).toBe(0);
+
+		expect(player.addMana(2)).toBe(false);
+		expect(player.mana).toBe(2);
+		expect(player.emptyMana).toBe(2);
+
+		expect(player.addMana(5)).toBe(false);
+		expect(player.mana).toBe(7);
+		expect(player.emptyMana).toBe(7);
+
+		expect(player.addMana(5)).toBe(true);
+		expect(player.mana).toBe(10);
+		expect(player.emptyMana).toBe(10);
+
+		player.mana = 2;
+
+		expect(player.addMana(5)).toBe(true);
+		expect(player.mana).toBe(7);
+		expect(player.emptyMana).toBe(10);
+
+		player.emptyMana = 2;
+
+		expect(player.addMana(5)).toBe(true);
+		expect(player.mana).toBe(10);
+		expect(player.emptyMana).toBe(7);
 	});
 
 	test.todo("addOverload", async () => {
@@ -40,8 +105,19 @@ describe("src/core/player", () => {
 		expect(false).toEqual(true);
 	});
 
-	test.todo("addArmor", async () => {
-		expect(false).toEqual(true);
+	test("addArmor", async () => {
+		const player = new Player("Test");
+
+		expect(player.armor).toBe(0);
+
+		expect(player.addArmor(1)).toBe(true);
+		expect(player.armor).toBe(1);
+
+		expect(player.addArmor(4)).toBe(true);
+		expect(player.armor).toBe(5);
+
+		expect(player.addArmor(100)).toBe(true);
+		expect(player.armor).toBe(105);
 	});
 
 	test.todo("addAttack", async () => {
@@ -68,7 +144,7 @@ describe("src/core/player", () => {
 		expect(false).toEqual(true);
 	});
 
-	test.todo("drawCard", async () => {
+	test.todo("drawCards", async () => {
 		expect(false).toEqual(true);
 	});
 
@@ -132,6 +208,10 @@ describe("src/core/player", () => {
 		expect(false).toEqual(true);
 	});
 
+	test.todo("createJade", async () => {
+		expect(false).toEqual(true);
+	});
+
 	test.todo("discard", async () => {
 		expect(false).toEqual(true);
 	});
@@ -169,6 +249,10 @@ describe("src/core/player", () => {
 	});
 
 	test.todo("attackTarget", async () => {
+		expect(false).toEqual(true);
+	});
+
+	test.todo("spawnInDIYCard", async () => {
 		expect(false).toEqual(true);
 	});
 });

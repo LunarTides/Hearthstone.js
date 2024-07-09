@@ -300,7 +300,7 @@ export const commands: CommandList = {
 	},
 
 	version(): boolean {
-		const { version, branch, build } = game.config.info;
+		const { version, branch, build } = game.functions.info.version();
 
 		let running = true;
 		while (running) {
@@ -382,7 +382,9 @@ export const commands: CommandList = {
 						break;
 					}
 
-					// No default
+					default: {
+						throw new Error(`Invalid branch: ${branch}`);
+					}
 				}
 
 				console.log(introText);

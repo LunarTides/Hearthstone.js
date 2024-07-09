@@ -1,6 +1,19 @@
 import { format } from "node:util";
+import { version } from "@Game/../package.json";
 
 export const infoFunctions = {
+	version(): { version: string; branch: string; build: number } {
+		const ver = version.split("-")[0];
+		const branch = version.split("-")[1].split(".")[0];
+		const build = Number.parseInt(version.split("-")[1].split(".")[1]);
+
+		return {
+			version: ver,
+			branch,
+			build,
+		};
+	},
+
 	/**
 	 * Returns the version of the game.
 	 *
@@ -16,43 +29,40 @@ export const infoFunctions = {
 	 * If detail is 4:
 	 * version-branch.build (commit hash)
 	 */
-	version(detail = 1): string {
-		const { info } = game.config;
+	versionString(
+		detail = 1,
+		versionGetter:
+			| undefined
+			| (() => { version: string; branch: string; build: number }) = undefined,
+	): string {
+		const actualVersionGetter =
+			versionGetter === undefined ? this.version : versionGetter;
+
+		const { version: ver, branch, build } = actualVersionGetter();
 
 		switch (detail) {
 			case 1: {
-				return format("%s", info.version);
+				return format("%s", ver);
 			}
 
 			case 2: {
-				return format("%s-%s", info.version, info.branch);
+				return format("%s-%s", ver, branch);
 			}
 
 			case 3: {
-				if (info.build === 0) {
-					return format("%s-%s", info.version, info.branch);
+				if (build === 0) {
+					return format("%s-%s", ver, branch);
 				}
 
-				return format("%s-%s.%s", info.version, info.branch, info.build);
+				return format("%s-%s.%s", ver, branch, build);
 			}
 
 			case 4: {
-				if (info.build === 0) {
-					return format(
-						"%s-%s (%s)",
-						info.version,
-						info.branch,
-						this.latestCommit(),
-					);
+				if (build === 0) {
+					return format("%s-%s (%s)", ver, branch, this.latestCommit());
 				}
 
-				return format(
-					"%s-%s.%s (%s)",
-					info.version,
-					info.branch,
-					info.build,
-					this.latestCommit(),
-				);
+				return format("%s-%s.%s (%s)", ver, branch, build, this.latestCommit());
 			}
 
 			default: {
