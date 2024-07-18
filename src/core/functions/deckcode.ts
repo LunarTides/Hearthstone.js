@@ -612,7 +612,7 @@ export const deckcodeFunctions = {
 		// Get the full card object from the dbfId
 		const deckDefinition: Array<[VanillaCard | undefined, number]> =
 			deck.cards.map((c) => [vanillaCards.find((a) => a.dbfId === c[0]), c[1]]);
-		const createdCards: Card[] = Card.all(false);
+		const createdCards: Card[] = Card.all(true);
 
 		const invalidCards: VanillaCard[] = [];
 		for (const vanillaCardObject of deckDefinition) {

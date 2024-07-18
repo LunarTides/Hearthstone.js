@@ -7,7 +7,7 @@
 	"type": "module",
 	"scripts": {
 		"start": "bunx tsc && bun .",
-		"test": "bunx biome ci && bun test && bunx tsc && bun run cardtest && bun run crashtest",
+		"ci": "bunx biome ci && bun test && bunx tsc && bun run cardtest && bun run crashtest",
 		"cardtest": "bun run script:testcards",
 		"crashtest": "bun run script:crashtest && bun run script:crashtest && bun run script:crashtest && bun run script:crashtest && bun run script:crashtest",
 		"script:vanilla:generate": "bun ./scripts/vanilla/generate.ts",

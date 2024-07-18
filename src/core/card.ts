@@ -380,7 +380,7 @@ export class Card {
 			return [id];
 		}
 
-		return Card.all(false).filter(
+		return Card.all(true).filter(
 			(c) => c.name.toLowerCase() === name.toLowerCase(),
 		);
 	}
@@ -409,15 +409,15 @@ export class Card {
 	 * assert.equal(card.name, 'The Coin');
 	 */
 	static fromID(id: number): Card | undefined {
-		return Card.all(false).find((c) => c.id === id);
+		return Card.all(true).find((c) => c.id === id);
 	}
 
 	/**
 	 * Returns all cards added to Hearthstone.js from the "cards" folder.
 	 *
-	 * @param uncollectible If it should filter out all uncollectible cards
+	 * @param include_uncollectible If it should include all uncollectible cards
 	 */
-	static all(uncollectible = true): Card[] {
+	static all(include_uncollectible = false): Card[] {
 		// Don't broadcast CreateCard event here since it would spam the history and log files
 		if (game.cards.length <= 0) {
 			game.cards = game.blueprints.map(
@@ -427,7 +427,7 @@ export class Card {
 			game.functions.card.generateIdsFile();
 		}
 
-		return game.cards.filter((c) => c.collectible || !uncollectible);
+		return game.cards.filter((c) => c.collectible || include_uncollectible);
 	}
 
 	/**

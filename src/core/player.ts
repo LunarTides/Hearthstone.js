@@ -1374,7 +1374,7 @@ export class Player {
 			return;
 		}
 
-		const list = Card.all(false).filter((card) => /DIY \d+/.test(card.name));
+		const list = Card.all(true).filter((card) => /DIY \d+/.test(card.name));
 		const card = game.lodash.sample(list);
 		if (!card) {
 			return;

@@ -18,4 +18,4 @@ jobs:
         bun-version: latest
     - run: bun install
     # - run: bun run generate
-    - run: bun run test
+    - run: bun run ci

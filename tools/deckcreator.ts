@@ -16,7 +16,7 @@ const { game, player1 } = createGame();
 
 const { config } = game;
 const classes = game.functions.card.getClasses();
-const cards = Card.all(!game.config.advanced.dcShowUncollectible);
+const cards = Card.all(game.config.advanced.dcShowUncollectible);
 
 let chosenClass: CardClassNoNeutral;
 let filteredCards: Card[] = [];

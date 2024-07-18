@@ -15,8 +15,8 @@ logger.debug("Starting Hub...");
 
 // These are here so we don't have to recalculate them every watermark call.
 const version = game.functions.info.versionString(4);
-const customCardsAmount = Card.all(false).length;
-const collectibleCardsAmount = Card.all(true).length;
+const customCardsAmount = Card.all(true).length;
+const collectibleCardsAmount = Card.all(false).length;
 let vanillaCardsAmount = Number.NaN;
 let collectibleVanillaCardsAmount = Number.NaN;
 
@@ -35,7 +35,9 @@ try {
 const watermark = () => {
 	game.interact.cls();
 
-	console.log(` /$$   /$$  /$$$$$$        /$$$$$  /$$$$$$ 
+	console.log(
+		`
+ /$$   /$$  /$$$$$$        /$$$$$  /$$$$$$ 
 | $$  | $$ /$$__  $$      |__  $$ /$$__  $$
 | $$  | $$| $$  \\__/         | $$| $$  \\__/
 | $$$$$$$$|  $$$$$$          | $$|  $$$$$$ 
@@ -43,7 +45,8 @@ const watermark = () => {
 | $$  | $$ /$$  \\ $$   | $$  | $$ /$$  \\ $$
 | $$  | $$|  $$$$$$//$$|  $$$$$$/|  $$$$$$/
 |__/  |__/ \\______/|__/ \\______/  \\______/ 
-    `);
+    `.replace("\n", ""),
+	); // Remove the first newline in order to improve formatting in source code.
 
 	console.log("Version: %s", version);
 	console.log(

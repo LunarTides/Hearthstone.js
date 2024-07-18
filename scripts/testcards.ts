@@ -8,7 +8,7 @@ import process from "node:process";
 import { Card, type Player, createGame } from "@Game/internal.js";
 
 const { game } = createGame();
-const cards = Card.all(false);
+const cards = Card.all(true);
 
 /**
  * Tests that a card works properly by triggering the `test` ability.
