@@ -194,6 +194,7 @@ const cardTypeFunctions: { [x in CardType]: () => Blueprint } = {
 				"Durability (How many times you can trigger this location before it is destroyed): ",
 			),
 		);
+
 		const cooldown =
 			game.lodash.parseInt(input("Cooldown (Default: 2): ")) ?? 2;
 

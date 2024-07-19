@@ -47,6 +47,7 @@ export const infoInteract = {
 		console.log(
 			`|||     This program is licensed under the GPL-3.0 license.  ${" ".repeat(branch.length)}|||`,
 		);
+
 		if (disappear) {
 			console.log(
 				`|||         This will disappear once you end your turn.      ${" ".repeat(branch.length)}|||`,

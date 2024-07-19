@@ -27,6 +27,7 @@ export const deckcodeFunctions = {
 				"<red>This deck is not valid!\nError Code: <yellow>%s</yellow red>",
 				errorCode,
 			);
+
 			if (cardName) {
 				console.log(
 					"<red>Specific Card that caused this error: <yellow>%s</yellow red>",
@@ -206,6 +207,7 @@ export const deckcodeFunctions = {
 				game.pause(
 					`<red>${error}.\nSpecific Card that caused the error: <yellow>${card.name} (${card.id})</yellow red>\n`,
 				);
+
 				returnValueInvalid = true;
 			}
 
@@ -231,9 +233,11 @@ export const deckcodeFunctions = {
 				min === max
 					? `exactly <yellow>${max}</yellow>`
 					: `between <yellow>${min}-${max}</yellow>`;
+
 			game.pause(
 				`<red>The deck needs ${grammar} cards. Your deck has: <yellow>${newDeck.length}</yellow>.\n`,
 			);
+
 			return undefined;
 		}
 
@@ -482,6 +486,7 @@ export const deckcodeFunctions = {
 
 			return new Card(c.id, player, true);
 		});
+
 		const trueCards = cardsSplitCard.map((c) => c.name);
 
 		// Cards is now a list of names
@@ -524,6 +529,7 @@ export const deckcodeFunctions = {
 			let matches = vanillaCards.filter(
 				(a) => a.name.toLowerCase() === cardName.toLowerCase(),
 			);
+
 			matches = game.functions.card.vanilla.filter(
 				matches,
 				true,
@@ -560,6 +566,7 @@ export const deckcodeFunctions = {
 					"<yellow>Multiple cards with the name '</yellow>%s<yellow>' detected! Please choose one:</yellow>",
 					cardName,
 				);
+
 				const chosen = game.input();
 
 				match = matches[game.lodash.parseInt(chosen) - 1];
@@ -612,6 +619,7 @@ export const deckcodeFunctions = {
 		// Get the full card object from the dbfId
 		const deckDefinition: Array<[VanillaCard | undefined, number]> =
 			deck.cards.map((c) => [vanillaCards.find((a) => a.dbfId === c[0]), c[1]]);
+
 		const createdCards: Card[] = Card.all(true);
 
 		const invalidCards: VanillaCard[] = [];
@@ -638,6 +646,7 @@ export const deckcodeFunctions = {
 			console.error(
 				`<red>ERROR: Card <yellow>${vanillaCard.name} <bright:yellow>(${vanillaCard.dbfId})</yellow bright:yellow> doesn't exist!</red>`,
 			);
+
 			invalidCards.push(vanillaCard);
 		}
 
@@ -647,6 +656,7 @@ export const deckcodeFunctions = {
 			 * Add a newline
 			 */
 			console.error();
+
 			throw new Error(
 				"Some cards do not currently exist. You cannot play on this deck without them.",
 			);

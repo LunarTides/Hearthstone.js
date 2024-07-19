@@ -221,6 +221,7 @@ export const interact = {
 			"<red>Unexpected input: '<yellow>%s</yellow>'. Valid inputs: </red>[<bright:green>Y</bright:green> | <red>N</red>]",
 			rawChoice,
 		);
+
 		game.pause();
 
 		return this.yesNoQuestion(prompt, player);
@@ -283,6 +284,7 @@ export const interact = {
 			[prompt, card, forceSide, forceClass, flags],
 			game.player,
 		);
+
 		const target = this._selectTarget(
 			prompt,
 			card,
@@ -616,6 +618,7 @@ export const interact = {
 				side === "c"
 					? (game.player.id + 1).toString()
 					: (game.opponent.id + 1).toString();
+
 			where = where.replaceAll("[x]", side);
 
 			code = code.replace(line, `${where}[${index} - 1]`);

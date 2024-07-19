@@ -69,6 +69,7 @@ function main(): void {
 
 			if (Object.keys(props).includes(key)) {
 				const storedType = props[key][0];
+
 				if (storedType !== (typeof value).toString()) {
 					console.warn(
 						"<yellow>Discrepancy found. Stored type: %s, Found type %s.</yellow>",
@@ -99,6 +100,7 @@ function main(): void {
 			"\nexport type %s =",
 			key.slice(0, 1).toUpperCase() + key.slice(1),
 		);
+
 		for (let i = 0; i < value.length; i++) {
 			const v = value[i];
 

@@ -224,6 +224,7 @@ ${mainContent}
 			filename,
 			game.config.info.githubUrl,
 		);
+
 		game.pause();
 
 		return true;
@@ -258,6 +259,7 @@ ${mainContent}
 		const [watermark, date, version, os, logVersion] = contentSplit.map(
 			(l) => l.split(": ")[1],
 		);
+
 		const history = content.split("-- History --")[1].trim();
 		const ai = content.split("-- AI Logs --")[1].trim();
 		const config = content.split("-- Config --")[1].trim();
@@ -339,8 +341,8 @@ ${mainContent}
 						actualCommand,
 					)
 					.replace("|", "");
-				console.log(toLog);
 
+				console.log(toLog);
 				attempts.push(testCommand);
 
 				try {
@@ -378,6 +380,7 @@ ${mainContent}
 				console.log(
 					"If you're not using linux, open up an issue on the github page.",
 				);
+
 				// Game.pause(); <- It is your job to pause the program when you run this, since function.ts functions should generally not pause the game.
 
 				return false;
@@ -399,6 +402,7 @@ ${mainContent}
 				: process.platform === "win32"
 					? "start"
 					: "xdg-open";
+
 		game.functions.util.runCommand(`${start} ${link}`);
 	},
 
@@ -416,7 +420,7 @@ ${mainContent}
 	 * Returns a language map based on the game's locale.
 	 *
 	 * @param refresh Whether to refresh the cache
-	 * @return The language map
+	 * @returns The language map
 	 */
 	getLanguageMap(refresh = false): Record<string, string> {
 		if (!this.fs("exists", `/locale/${game.config.general.locale}.json`)) {
@@ -567,8 +571,8 @@ ${mainContent}
 			"\\",
 			"/",
 		);
-		dirname = dirname.split("/src")[0];
 
+		dirname = dirname.split("/src")[0];
 		return dirname;
 	},
 

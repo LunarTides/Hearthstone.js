@@ -21,13 +21,12 @@ describe("src/core/functions/util", () => {
 	});
 
 	test("createWall", async () => {
-		const bricks = [];
-		bricks.push(
+		const bricks = [
 			"Example - Example",
 			"Test - Hello World",
 			"This is the longest - Short",
 			"Tiny - This is even longer then that one!",
-		);
+		];
 
 		const wall = utilFunctions.createWall(bricks, "-");
 

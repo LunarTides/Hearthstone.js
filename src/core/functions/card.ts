@@ -216,6 +216,7 @@ export const cardFunctions = {
 				blueprint.id,
 				errorMessage,
 			);
+
 			valid = false;
 		}
 

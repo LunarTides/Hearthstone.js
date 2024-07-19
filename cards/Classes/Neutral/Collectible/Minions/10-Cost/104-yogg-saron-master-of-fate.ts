@@ -32,6 +32,7 @@ export const blueprint: Blueprint = {
 			"Mysterybox",
 			"Rod of Roasting",
 		];
+
 		const choice = game.lodash.sample(choices);
 		if (!choice) {
 			throw new Error("No choice found");

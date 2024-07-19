@@ -64,6 +64,7 @@ export const blueprint: Blueprint = {
 		);
 
 		game.interact.verifyDiySolution(solved, self);
+
 		if (!solved) {
 			self.kill();
 		}

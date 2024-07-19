@@ -28,6 +28,7 @@ export const blueprint: Blueprint = {
 			self.attack === 1 && self.health === 2,
 			self,
 		);
+
 		if (!success) {
 			self.kill();
 		}

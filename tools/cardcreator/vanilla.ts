@@ -87,6 +87,7 @@ export function create(
 		const heroPower = game.functions.card.vanilla
 			.getAll()
 			.find((c) => c.dbfId === card.heroPowerDbfId);
+
 		if (!heroPower) {
 			throw new Error("No hero power found");
 		}
@@ -191,6 +192,7 @@ export function main(debug = false, overrideType?: lib.CcType): boolean {
 				c.name.toLowerCase() === cardName.toLowerCase() ||
 				c.dbfId === game.lodash.parseInt(cardName),
 		);
+
 		filteredCards = game.functions.card.vanilla.filter(
 			filteredCards,
 			false,
@@ -228,6 +230,7 @@ export function main(debug = false, overrideType?: lib.CcType): boolean {
 			const picked = game.lodash.parseInt(
 				logger.inputTranslate("Pick one (1-%s): ", filteredCards.length),
 			);
+
 			if (!picked || !filteredCards[picked - 1]) {
 				console.log("Invalid number.\n");
 				continue;

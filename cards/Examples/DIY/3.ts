@@ -97,6 +97,7 @@ export const blueprint: Blueprint = {
 			game.pause(
 				"You cancelled the card. The verification process depends on a minion actually being killed. Try again.\n",
 			);
+
 			return Card.REFUND;
 		}
 

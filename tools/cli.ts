@@ -63,6 +63,7 @@ export function main(
 		const parsedArguments = JSON.parse(
 			`[${args.map((arg) => `"${arg.replaceAll('"', "'")}"`)}]`,
 		) as string[];
+
 		for (const parsedArgument of parsedArguments) {
 			// Parse -dt
 			if (/^-\w\w+/.test(parsedArgument)) {
@@ -73,6 +74,7 @@ export function main(
 					const option = commandOptions.find((option) =>
 						option.includes(`-${argument}`),
 					)?.[0];
+
 					if (!option) {
 						continue;
 					}
@@ -88,6 +90,7 @@ export function main(
 			const option = commandOptions.find((option) =>
 				option.includes(parsedArgument),
 			)?.[0];
+
 			if (!option) {
 				continue;
 			}
@@ -189,6 +192,7 @@ export function main(
 						game.pause(
 							"<red>Missing card id! Set `id=0` before the type-specific fields to generate a correctly formatted card.</red>\n",
 						);
+
 						return;
 					}
 

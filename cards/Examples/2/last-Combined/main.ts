@@ -24,6 +24,7 @@ export const blueprint: Blueprint = {
 			game.cardIds.null0,
 			game.cardIds.rightArm47,
 		]);
+
 		self.addKeyword("Corrupt", game.cardIds.combinedExample2Corrupted49);
 
 		// The summoned minions get Dormant automatically if the main minion has dormant.

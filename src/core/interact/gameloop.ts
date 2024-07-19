@@ -20,6 +20,7 @@ const overrideConsole = {
 		);
 	},
 };
+
 overrideConsole.log = console.log;
 overrideConsole.warn = console.warn;
 overrideConsole.error = console.error;
@@ -106,6 +107,7 @@ export const gameloopInteract = {
 				? game.functions.color.fromTags(logger.translate(i))
 				: i,
 		);
+
 		callback(...newData);
 	},
 
@@ -168,6 +170,7 @@ export const gameloopInteract = {
 				"friendly",
 				"any",
 			);
+
 			if (!attacker) {
 				return false;
 			}
@@ -178,6 +181,7 @@ export const gameloopInteract = {
 				"enemy",
 				"any",
 			);
+
 			if (!target) {
 				return false;
 			}
@@ -258,6 +262,7 @@ export const gameloopInteract = {
 					"An unknown error occurred. Error code: UnexpectedAttackingResult@%s",
 					errorCode,
 				);
+
 				break;
 			}
 		}
@@ -297,6 +302,7 @@ export const gameloopInteract = {
 		const commandName = Object.keys(commands).find((cmd) =>
 			cmd.startsWith(name),
 		);
+
 		if (commandName) {
 			const command = commands[commandName];
 			const result = command(args, flags);
@@ -312,6 +318,7 @@ export const gameloopInteract = {
 		const debugCommandName = Object.keys(debugCommands).find((cmd) =>
 			cmd.startsWith(debugName),
 		);
+
 		if (debugCommandName) {
 			if (!game.config.general.debug) {
 				game.pause("<red>You are not allowed to use this command.</red>\n");
@@ -372,6 +379,7 @@ export const gameloopInteract = {
 				rawInput instanceof Card
 					? (game.player.hand.indexOf(rawInput) + 1).toString()
 					: rawInput;
+
 			const turn = this.doTurnLogic(input);
 
 			game.event.broadcast("Input", input, game.player);

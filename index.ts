@@ -49,16 +49,19 @@ const watermark = () => {
 	); // Remove the first newline in order to improve formatting in source code.
 
 	console.log("Version: %s", version);
+
 	console.log(
 		"Custom Cards: <yellow>%s</yellow> (<green>%s</green> Collectible)",
 		customCardsAmount,
 		collectibleCardsAmount,
 	);
+
 	console.log(
 		"Vanilla Cards: <blue>%s</blue> (<cyan>%s</cyan> Collectible)",
 		vanillaCardsAmount,
 		collectibleVanillaCardsAmount,
 	);
+
 	console.log();
 };
 

@@ -47,6 +47,7 @@ export const blueprint: Blueprint = {
 		const amount = game.functions.card.galakrondFormula(
 			self.storage.invokeCount as number,
 		);
+
 		const multiple = amount > 1;
 		const plural = multiple ? "s" : "";
 

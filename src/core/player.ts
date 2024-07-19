@@ -757,14 +757,14 @@ export class Player {
 	 * This works
 	 * ```
 	 * // Get a random card from the player's deck
-	 * const card = game.functions.randList(player.deck).actual;
+	 * const card = game.functions.randList(player.deck);
 	 *
 	 * player.drawSpecific(card);
 	 * ```
 	 *
 	 * This doesn't work
 	 * ```
-	 * const card = game.functions.randList(player.deck).copy;
+	 * const card = game.functions.randList(player.deck).perfectCopy();
 	 *
 	 * player.drawSpecific(card);
 	 * ```
@@ -791,8 +791,8 @@ export class Player {
 		game.functions.event.withSuppressed("AddCardToHand", () =>
 			this.addToHand(card),
 		);
-		game.event.broadcast("DrawCard", card, this);
 
+		game.event.broadcast("DrawCard", card, this);
 		return card;
 	}
 
@@ -1191,6 +1191,7 @@ export class Player {
 			callback,
 			next,
 		});
+
 		return true;
 	}
 
@@ -1204,9 +1205,11 @@ export class Player {
 		const deckGalakrond = this.deck.find((c) =>
 			c.name.startsWith("Galakrond, the "),
 		);
+
 		const handGalakrond = this.hand.find((c) =>
 			c.name.startsWith("Galakrond, the "),
 		);
+
 		if (
 			!deckGalakrond &&
 			!handGalakrond &&
@@ -1293,6 +1296,7 @@ export class Player {
 		const friendlyCard = game.lodash.sample(
 			this.deck.filter((card) => predicate?.(card)),
 		);
+
 		const enemyCard = game.lodash.sample(
 			this.getOpponent().deck.filter((card) => predicate?.(card)),
 		);
@@ -1375,6 +1379,7 @@ export class Player {
 		}
 
 		const list = Card.all(true).filter((card) => /DIY \d+/.test(card.name));
+
 		const card = game.lodash.sample(list);
 		if (!card) {
 			return;

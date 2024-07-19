@@ -27,6 +27,7 @@ export const blueprint: Blueprint = {
 		owner.forceTarget = target;
 
 		const pool = Card.all().filter((card) => card.type === "Spell");
+
 		for (let i = 0; i < 4; i++) {
 			const card = game.lodash.sample(pool)?.imperfectCopy();
 			if (!card) {

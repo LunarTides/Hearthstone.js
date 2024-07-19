@@ -23,6 +23,7 @@ export const blueprint: Blueprint = {
 		const amount = game.functions.card.galakrondFormula(
 			self.storage.invokeCount as number,
 		);
+
 		const shouldGiveWeapon = amount >= 7;
 
 		// Summon the two minions
@@ -57,6 +58,7 @@ export const blueprint: Blueprint = {
 		const amount = game.functions.card.galakrondFormula(
 			self.storage.invokeCount as number,
 		);
+
 		const weapon = amount >= 7 ? " Equip a 5/2 Claw." : "";
 
 		return { amount, weapon };

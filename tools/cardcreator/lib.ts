@@ -377,6 +377,7 @@ ${createAbility}${ability}
 		const success = game.functions.util.runCommandAsChildProcess(
 			`${game.config.general.editor} "${filePath}"`,
 		);
+
 		if (!success) {
 			game.pause();
 		}

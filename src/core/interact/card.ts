@@ -23,6 +23,7 @@ export const cardInteract = {
 			"friendly",
 			["allowLocations"],
 		);
+
 		if (!location) {
 			return "refund";
 		}

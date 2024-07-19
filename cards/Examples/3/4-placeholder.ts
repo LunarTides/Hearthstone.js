@@ -53,10 +53,12 @@ export const blueprint: Blueprint = {
 
 	test(owner, self) {
 		self.replacePlaceholders();
+
 		assert.equal(
 			self.text,
 			"Battlecry: Gain mana equal to the turn counter. (Currently {ph:turns}, {ph:laugh}, {ph:turns}, {ph:next thing is} {ph:test}, {placeholder without replacement})",
 		);
+
 		assert.equal(
 			self.doPlaceholders(),
 			"Battlecry: Gain mana equal to the turn counter. (Currently 1, haha lol, 1, The next thing is: test, {placeholder without replacement})",

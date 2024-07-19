@@ -19,6 +19,7 @@ export const blueprint: Blueprint = {
 	cast(owner, self) {
 		// Fill your board with 2/1 Whelps with Rush.
 		const remainingBoardSpace = owner.getRemainingBoardSpace();
+
 		for (let index = 0; index < remainingBoardSpace; index++) {
 			const whelp = new Card(game.cardIds.onyxianWhelp99, owner);
 			owner.summon(whelp);

@@ -76,7 +76,7 @@ async function getData(url: string): Promise<unknown> {
 /**
  * Reach out to an api and save the result to a file.
  *
- * @return Promise that resolves to void.
+ * @returns Promise that resolves to void.
  */
 async function main(): Promise<void> {
 	await getData(

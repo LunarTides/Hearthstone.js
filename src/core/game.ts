@@ -648,6 +648,7 @@ const playCard = {
 		 */
 		const typeFunction: (card: Card, player: Player) => GamePlayCardReturn =
 			playCard.typeSpecific[card.type as never];
+
 		if (!typeFunction) {
 			throw new TypeError(`Cannot handle playing card of type: ${card.type}`);
 		}
@@ -967,6 +968,7 @@ const playCard = {
 			undefined,
 			"friendly",
 		);
+
 		if (!mech) {
 			return false;
 		}
@@ -1344,6 +1346,7 @@ export class Game {
 			// Suppress "AddCardToHand" and "DrawCard" events in the loop since the events need to be unsuppressed by the time any `card.activate` is called
 			const unsuppressAddCardToHand =
 				this.functions.event.suppress("AddCardToHand");
+
 			const unsuppressDrawCard = this.functions.event.suppress("DrawCard");
 
 			// Set the player's hero to the starting hero for the class
@@ -1395,6 +1398,7 @@ export class Game {
 
 		// Give the coin to the second player
 		const coin = new Card(this.cardIds.theCoin2, this.player2);
+
 		this.functions.event.withSuppressed("AddCardToHand", () =>
 			this.player2.addToHand(coin),
 		);
@@ -1423,6 +1427,7 @@ export class Game {
 		const history = this.interact.gameLoop.handleCmds("history", {
 			echo: false,
 		});
+
 		console.log(history);
 
 		this.pause(`Player ${winner.name} wins!\n`);
@@ -1643,7 +1648,7 @@ export class Game {
 /**
  * Creates a new game instance, initializes players, sets up the game, imports all cards, and configures AI.
  *
- * @return An object containing the game instance, player 1, and player 2.
+ * @returns An object containing the game instance, player 1, and player 2.
  */
 export function createGame() {
 	const game = new Game();
@@ -1651,10 +1656,9 @@ export function createGame() {
 	const player2 = new Player("Player 2");
 	game.functions.util.importConfig();
 	Card.registerAll();
+	Logger.setup();
 	game.setup(player1, player2);
 	game.doConfigAi();
-
-	globalThis.logger = new Logger();
 
 	// Check if the date is the 14th of February
 	const currentDate = new Date();

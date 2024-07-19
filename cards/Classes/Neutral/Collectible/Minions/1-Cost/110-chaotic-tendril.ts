@@ -23,7 +23,9 @@ export const blueprint: Blueprint = {
 		const pool = Card.all().filter(
 			(card) => card.type === "Spell" && card.cost === 1,
 		);
+
 		const spell = game.lodash.sample(pool)?.imperfectCopy();
+
 		if (spell) {
 			spell.activate("cast");
 		}

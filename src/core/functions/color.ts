@@ -173,6 +173,7 @@ export const colorFunctions = {
 			// RGB
 			if (newTag.startsWith("rgb")) {
 				newTag = newTag.replace(/rgb:?/, "");
+
 				const [red, green, blue] = newTag
 					.split(",")
 					.map((s) => game.lodash.parseInt(s.replace(/[()]/, "")));

@@ -112,6 +112,7 @@ function askClass(): CardClassNoNeutral {
 	let heroClass = game.input(
 		`What class do you want to choose?\n${classes.join(", ")}\n`,
 	);
+
 	if (heroClass) {
 		heroClass = game.lodash.startCase(heroClass);
 	}
@@ -132,6 +133,7 @@ function askClass(): CardClassNoNeutral {
 				"What runes do you want to add (%s more)\nBlood, Frost, Unholy\n",
 				3 - runes.length,
 			);
+
 			if (!rune || !["B", "F", "U"].includes(rune[0].toUpperCase())) {
 				continue;
 			}
@@ -344,6 +346,7 @@ function showCards(): void {
 		[settings.view.class ?? chosenClass],
 		chosenClass,
 	);
+
 	if (!settings.view.class || !correctClass) {
 		settings.view.class = chosenClass;
 	}
@@ -358,6 +361,7 @@ function showCards(): void {
 			card.classes,
 			settings.view.class ?? chosenClass,
 		);
+
 		if (correctClass) {
 			filteredCards.push(card);
 		}
@@ -389,6 +393,7 @@ function showCards(): void {
 			"<yellow>No cards found for the viewed class '%s'.</yellow>",
 			settings.view.class,
 		);
+
 		return;
 	}
 
@@ -406,6 +411,7 @@ function showCards(): void {
 			game.pause(
 				`<red>Search failed at '${query}'! Reverting back to last successful query.\n</red>`,
 			);
+
 			searchFailed = true;
 			continue;
 		}
@@ -542,6 +548,7 @@ function showRules(): void {
 		"#\n# Rule 1. Minimum Deck Length: <yellow>%s</yellow>",
 		config.decks.minLength,
 	);
+
 	console.log(
 		"# Rule 2. Maximum Deck Length: %s <yellow>%s</yellow>",
 		config.decks.maxLength,
@@ -551,6 +558,7 @@ function showRules(): void {
 		"#\n# Rule 3. Maximum amount of cards for each card (eg. You can only have: <yellow>x</yellow> Seances in a deck): <yellow>%s</yellow>",
 		config.decks.maxOfOneCard,
 	);
+
 	console.log(
 		"# Rule 4. Maximum amount of cards for each legendary card (Same as Rule 3 but for legendaries): <yellow>%s</yellow>",
 		config.decks.maxOfOneLegendary,
@@ -561,13 +569,16 @@ function showRules(): void {
 	console.log(
 		"# There are 3 types of deck states: Valid, Pseudo-Valid, Invalid",
 	);
+
 	console.log("# Valid decks will work properly");
 	console.log(
 		"# Pseudo-valid decks will be rejected by the deck importer for violating a rule",
 	);
+
 	console.log(
 		"# Invalid decks are decks with a fundemental problem that the deck importer cannot resolve. Eg. An invalid card in the deck.",
 	);
+
 	console.log(
 		"# Violating any of these rules while validation is enabled will result in a pseudo-valid deck.",
 	);
@@ -735,6 +746,7 @@ function generateDeckcode(parseVanillaOnPseudo = false) {
 			case "EmptyDeck": {
 				log =
 					"<red>ERROR: Could not generate deckcode as your deck is empty. The resulting deckcode would be invalid.</red>";
+
 				break;
 			}
 
@@ -744,6 +756,7 @@ function generateDeckcode(parseVanillaOnPseudo = false) {
 					config.decks.maxOfOneCard,
 					`{ Id: "${error.info?.card?.id}", Copies: "${error.info?.amount}" }`,
 				);
+
 				break;
 			}
 
@@ -753,6 +766,7 @@ function generateDeckcode(parseVanillaOnPseudo = false) {
 					config.decks.maxOfOneLegendary,
 					`{ Id: "${error.info?.card?.id}", Copies: "${error.info?.amount}" }`,
 				);
+
 				break;
 			}
 
@@ -837,6 +851,7 @@ function help(): void {
 		setSubcommandBricks,
 		"-",
 	);
+
 	for (const brick of setSubcommandWall) {
 		console.log(brick);
 	}
@@ -865,9 +880,11 @@ function help(): void {
 	console.log(
 		"\nNote: If you don't specify a state (off / on) it will toggle the state of the warning.",
 	);
+
 	console.log(
 		"Note: The word 'off' can be exchanged with 'disable', 'false', or '0'.",
 	);
+
 	console.log(
 		"Note: The word 'on' can be exchanged with 'enable', 'true', or '1'.",
 	);
@@ -986,6 +1003,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
 			"<yellow>Unable to find command. Trying '%s'</yellow>",
 			tryCommand,
 		);
+
 		return handleCmds(tryCommand);
 	}
 
@@ -1032,6 +1050,7 @@ const commands: CommandList = {
 			console.log(
 				"<red>Internal Error: Something went wrong while adding a card. Please report this. Error code: DcAddInternal</red>",
 			);
+
 			game.pause();
 
 			success = false;
@@ -1119,10 +1138,12 @@ const commands: CommandList = {
 			[heroClass],
 			chosenClass,
 		);
+
 		if (!correctClass) {
 			game.pause(
 				`<yellow>Class '${heroClass}' is a different class. To see these cards, please switch class from '${chosenClass}' to '${heroClass}' to avoid confusion.</yellow>\n`,
 			);
+
 			return false;
 		}
 
@@ -1227,10 +1248,12 @@ const commands: CommandList = {
 		const commandSplit = game.lodash
 			.last(settings.commands.undoableHistory)
 			?.split(" ");
+
 		if (!commandSplit) {
 			game.pause(
 				"<red>Could not find anything to undo. This is a bug.</red>\n",
 			);
+
 			return false;
 		}
 
@@ -1285,6 +1308,7 @@ const commands: CommandList = {
 				game.pause(
 					`<red>${value} is not a valid state. View 'help' for more information.</red>\n`,
 				);
+
 				return false;
 			}
 		}
@@ -1295,6 +1319,7 @@ const commands: CommandList = {
 			game.pause(
 				`<yellow>Warning '<bright:yellow>${key}</bright:yellow>' is already ${newStateName}.</yellow>\n`,
 			);
+
 			return false;
 		}
 
@@ -1324,6 +1349,7 @@ const commands: CommandList = {
 						"Reset deckcode format to: <yellow>%s</yellow>",
 						defaultSettings.deckcode.format,
 					);
+
 					break;
 				}
 
@@ -1346,6 +1372,7 @@ const commands: CommandList = {
 						"Reset cards per page to: <yellow>%s</yellow>",
 						defaultSettings.view.cpp,
 					);
+
 					break;
 				}
 
@@ -1361,6 +1388,7 @@ const commands: CommandList = {
 						"Set default command to: <yellow>%s</yellow>",
 						defaultSettings.commands.default,
 					);
+
 					break;
 				}
 

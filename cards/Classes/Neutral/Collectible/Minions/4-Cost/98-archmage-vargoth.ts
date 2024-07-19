@@ -34,6 +34,7 @@ export const blueprint: Blueprint = {
 					object[1] === game.turn,
 			)
 			.map((object) => object[0] as Card);
+
 		if (!spells || spells.length <= 0) {
 			return;
 		}

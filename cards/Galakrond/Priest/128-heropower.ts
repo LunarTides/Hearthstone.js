@@ -21,6 +21,7 @@ export const blueprint: Blueprint = {
 				c.type === "Minion" &&
 				game.functions.card.validateClasses(c.classes, "Priest"),
 		);
+
 		if (possibleCards.length <= 0) {
 			return;
 		}

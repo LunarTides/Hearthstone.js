@@ -8,6 +8,10 @@ export class Logger {
 	input = game.input;
 	pause = game.pause;
 
+	static setup() {
+		globalThis.logger = new Logger();
+	}
+
 	/**
 	 * @example
 	 * logger.debug("Starting...");

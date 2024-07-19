@@ -370,6 +370,7 @@ export class Card {
 	 * assert.equal(card[0].name, 'The Coin');
 	 */
 	static allFromName(name: string, refer = true): Card[] {
+		// First, check if `name` is actually an id instead of a name.
 		const id = Card.fromID(game.lodash.parseInt(name));
 
 		/*
@@ -976,6 +977,7 @@ export class Card {
 			!this.hasKeyword("Frozen") &&
 			!this.hasKeyword("Dormant") &&
 			!this.hasKeyword("Cant Attack");
+
 		const numbers = (this.attack ?? 0) > 0 && (this.attackTimes ?? 0) > 0;
 
 		return booleans && numbers;
@@ -1189,6 +1191,7 @@ export class Card {
 				_unknownValue,
 				eventPlayer,
 			);
+
 			if (Array.isArray(returnValue)) {
 				returnValue.push(result);
 			}
@@ -1470,6 +1473,7 @@ export class Card {
 		const enchantment = this.enchantments.find(
 			(c) => c.enchantment === enchantmentString && c.owner === card,
 		);
+
 		if (!enchantment) {
 			return false;
 		}
@@ -1731,6 +1735,7 @@ export class Card {
 			["Shrouding Mist", "Stealth until your next turn."],
 			["Poison Spit", "Poisonous"],
 		];
+
 		const values = _values;
 
 		if (values.length === 0) {

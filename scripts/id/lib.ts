@@ -173,6 +173,7 @@ export function validate(log: boolean): [number, number] {
 	const latestId = game.lodash.parseInt(
 		(game.functions.util.fs("read", "/cards/.latestId") as string).trim(),
 	);
+
 	if (latestId !== currentId) {
 		if (log) {
 			console.log(

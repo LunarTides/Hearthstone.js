@@ -40,8 +40,6 @@ const helpDebugBricks = [
 	"ai - Gives you a list of the actions the ai(s) have taken in the order they took it",
 ];
 
-const getGame = () => game;
-
 export const commands: CommandList = {
 	end(): boolean {
 		game.endTurn();
@@ -63,6 +61,7 @@ export const commands: CommandList = {
 			game.pause(
 				"<red>You have already used your hero power this turn.</red>\n",
 			);
+
 			return false;
 		}
 
@@ -76,6 +75,7 @@ export const commands: CommandList = {
 			`<yellow>${game.player.hero.heropower?.text}</yellow> Are you sure you want to use this hero power?`,
 			game.player,
 		);
+
 		if (!ask) {
 			return false;
 		}
@@ -134,6 +134,7 @@ export const commands: CommandList = {
 			undefined,
 			"friendly",
 		);
+
 		if (!card) {
 			return false;
 		}
@@ -176,6 +177,7 @@ export const commands: CommandList = {
 			game.functions.event.withSuppressed("DiscardCard", () =>
 				ability.discard(),
 			);
+
 			return false;
 		}
 
@@ -195,9 +197,11 @@ export const commands: CommandList = {
 
 	help(): boolean {
 		game.interact.info.watermark();
+
 		console.log(
 			"\n(In order to run a command; input the name of the command and follow further instruction.)\n",
 		);
+
 		console.log("Available commands:");
 
 		const bricks = [
@@ -214,7 +218,9 @@ export const commands: CommandList = {
 		}
 
 		const condColor = (text: string) =>
+			// We can't use `game.functions.color.if` here since the text should be uncolored if the condition is met.
 			game.config.general.debug ? text : `<gray>${text}</gray>`;
+
 		const debugEnabled = game.config.general.debug
 			? "<bright:green>ON</bright:green>"
 			: "<red>OFF</red>";
@@ -242,6 +248,7 @@ export const commands: CommandList = {
 			"Do you want to view a minion on the board, or in your hand?",
 			["Board", "Hand"],
 		);
+
 		const isHand = isHandAnswer === "Hand";
 
 		if (!isHand) {
@@ -252,12 +259,12 @@ export const commands: CommandList = {
 				"any",
 				["allowLocations"],
 			);
+
 			if (!card) {
 				return false;
 			}
 
 			card.view();
-
 			return true;
 		}
 
@@ -280,22 +287,24 @@ export const commands: CommandList = {
 
 	concede(): boolean {
 		game.interact.info.showGame(game.player);
+
 		const confirmation = game.interact.yesNoQuestion(
 			"Are you sure you want to concede?",
 			game.player,
 		);
-		if (!confirmation) {
-			return false;
+
+		if (confirmation) {
+			game.endGame(game.player.getOpponent());
 		}
 
-		game.endGame(game.player.getOpponent());
-		return true;
+		return confirmation;
 	},
 
 	license(): boolean {
 		game.functions.util.openInBrowser(
 			`${game.config.info.githubUrl}/blob/main/LICENSE`,
 		);
+
 		return true;
 	},
 
@@ -307,7 +316,6 @@ export const commands: CommandList = {
 			const todos = Object.entries(game.config.todo);
 
 			const printInfo = () => {
-				const game = getGame();
 				game.interact.info.showGame(game.player);
 
 				let strbuilder = `\nYou are on version: ${version}, on `;
@@ -465,6 +473,7 @@ export const commands: CommandList = {
 					"\nType the id of a todo to see more information about it (eg. 1): ",
 				),
 			);
+
 			if (!todoIndex || todoIndex > todos.length || todoIndex <= 0) {
 				running = false;
 				break;
@@ -478,6 +487,7 @@ export const commands: CommandList = {
 			const command = game.input(
 				'\nType "issue" to open the todo in your webbrowser.\n',
 			);
+
 			if (command === "issue") {
 				const link = `${game.config.info.githubUrl}/issues/${todo[1].issue}`;
 				game.functions.util.openInBrowser(link);
@@ -525,12 +535,12 @@ export const commands: CommandList = {
 			// It has has been revealed, show it.
 			for (const historyValue of Object.values(history)) {
 				if (revealed) {
-					continue;
+					break;
 				}
 
 				for (const historyKey of historyValue) {
 					if (revealed) {
-						continue;
+						break;
 					}
 
 					const [key, newValue] = historyKey;
@@ -637,6 +647,7 @@ export const commands: CommandList = {
 							| Card
 							| SelectTargetFlag[]
 							| undefined;
+
 						strbuilder += `${v?.toString()}, `;
 					}
 
@@ -757,6 +768,7 @@ export const debugCommands: CommandList = {
 		success &&= game.interact.info.withStatus("Reloading config", () =>
 			game.functions.util.importConfig(),
 		);
+
 		success &&= game.interact.info.withStatus("Reloading language map", () =>
 			Boolean(game.functions.util.getLanguageMap(true)),
 		);
@@ -773,6 +785,7 @@ export const debugCommands: CommandList = {
 		game.pause(
 			"\nSome steps failed. The game could not be fully reloaded. Please report this.\nPress enter to continue...",
 		);
+
 		return false;
 	},
 
@@ -788,6 +801,7 @@ export const debugCommands: CommandList = {
 
 		const eventCards: Array<[Card, number]> =
 			game.event.events.PlayCard[game.player.id];
+
 		if (eventCards.length <= 0) {
 			game.pause("<red>No cards to undo.</red>\n");
 			return false;
@@ -810,10 +824,6 @@ export const debugCommands: CommandList = {
 			if (card.type === "Minion" && !card.isAlive()) {
 				card.health = card.storage.init.health;
 			} else if (card.type === "Location" && (card.durability ?? 0) <= 0) {
-				if (!card.durability) {
-					throw new Error("Location has undefined durability!");
-				}
-
 				card.durability = card.storage.init.durability;
 			}
 		}

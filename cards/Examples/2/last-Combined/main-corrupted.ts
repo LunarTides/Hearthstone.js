@@ -22,6 +22,7 @@ export const blueprint: Blueprint = {
 			game.cardIds.null0,
 			game.cardIds.rightArm47,
 		]);
+
 		self.addKeyword("Dormant", 2);
 	},
 

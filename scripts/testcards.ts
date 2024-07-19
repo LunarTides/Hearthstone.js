@@ -5,7 +5,7 @@
  */
 
 import process from "node:process";
-import { Card, type Player, createGame } from "@Game/internal.js";
+import { Card, Logger, type Player, createGame } from "@Game/internal.js";
 
 const { game } = createGame();
 const cards = Card.all(true);
@@ -75,6 +75,7 @@ export function main(): void {
 			console.error(
 				`<red>ERROR: ${card.name} (${card.id}) didn't pass its test. Here is the error. THIS ERROR IS PART OF THE SCRIPT, NOT AN ACTUAL ERROR.</red>`,
 			);
+
 			console.error(error.stack);
 			console.error();
 			process.exitCode = 1;

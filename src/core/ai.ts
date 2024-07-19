@@ -299,6 +299,7 @@ export class Ai {
 					m.cooldown === 0 &&
 					!this.usedLocationsThisTurn.includes(m),
 			);
+
 			this.usedLocationsThisTurn.push(locations[0]);
 
 			if (locations.length > 0) {
@@ -651,6 +652,7 @@ export class Ai {
 
 				// Remove the last "s" or "d" in order to account for plurals
 				const sentimentWithoutPlural = entry[0].replace(/^(.*)[sd]$/, "$1");
+
 				if (
 					!new RegExp(entry[0]).test(word) &&
 					!new RegExp(sentimentWithoutPlural).test(word)
@@ -660,7 +662,8 @@ export class Ai {
 
 				// If the sentiment is "positive", add to the score. If it is "negative", subtract from the score.
 				let pos = entry[1];
-				if (context && /enemy|enemies|opponent/.test(sentance)) {
+
+				if (context && ["enemy", "enemies", "opponent"].includes(sentance)) {
 					pos = -pos;
 				}
 
@@ -896,6 +899,7 @@ export class Ai {
 
 		const winner =
 			score > opponentScore ? this.player : this.player.getOpponent();
+
 		const winnerScore = winner === this.player ? score : opponentScore;
 
 		return [winner, winnerScore];
