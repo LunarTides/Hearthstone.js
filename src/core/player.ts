@@ -1249,29 +1249,29 @@ export class Player {
 	 *
 	 * @returns Returns the cards recruited.
 	 */
-	recruit(list: Card[], amount = 1): Card[] {
-		let recruitList = list ?? this.deck;
-		const clonedList = game.lodash.clone(list);
-
-		recruitList = game.lodash.shuffle([...list]);
+	recruit(
+		list: Card[],
+		amount = 1,
+		filterPredicate = (card: Card) => true,
+	): Card[] {
+		const recruitList = game.lodash
+			.shuffle([...list])
+			.filter((c) => c.type === "Minion" && filterPredicate(c));
 
 		let times = 0;
 		const cards: Card[] = [];
 
-		recruitList = list.filter((c) => c.type === "Minion");
-		for (const card of list) {
+		for (const card of recruitList) {
 			if (times >= amount) {
 				continue;
 			}
 
-			this.summon(card.imperfectCopy());
+			card.reset();
+			this.summon(card);
 
 			times++;
 			cards.push(card);
-		}
-
-		for (const card of cards) {
-			game.functions.util.remove(clonedList, card);
+			game.functions.util.remove(list, card);
 		}
 
 		return cards;

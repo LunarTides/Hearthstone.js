@@ -5,7 +5,10 @@
 
 	"<green>(P)lay</green>, <blue>Create a (D)eck</blue>, <yellow>Developer (M)ode</yellow>, <red>(E)xit</red>: ": "<green>S(p)ill</green>, <blue>Lag ett (D)eck</blue>, <yellow>Utvikler (M)odus</yellow>, <red>(E)ksitt</red>: ",
 	"<green>Create a (C)ard</green>, <blue>Create a Clas(s)</blue>, <yellow>Enter CLI (m)ode</yellow>, <red>Go (B)ack to Normal Mode</red>: ": "<green>Lag et Kort (C)</green>, <blue>Lag en Klas(s)e</blue>, <yellow>Sett inn CLI (M)odus</yellow>, <red>Gå til(b)ake til Normal Modus</red>: ",
-	"<green>Create a (C)ustom Card</green>, <blue>Import a (V)anilla Card</blue>, <red>Go (B)ack</red>: ": "<green>Lag en Tilpasset Kort (C)</green>, <blue>Importer ett (V)anilla Kort</blue>, <red>Gå til(b)ake</red>: ",
+	"<green>Create a (C)ustom Card</green>, <blue>Import a (V)anilla Card</blue>, <red>Go (B)ack</red>: ": "<green>Lag ett Tilpasset Kort (C)</green>, <blue>Importer ett (V)anilla Kort</blue>, <red>Gå til(b)ake</red>: ",
 
-	"Which card do you want to play? ": "Hvilket kort vil du spille? "
+	"Which card do you want to play? ": "Hvilket kort vil du spille? ",
+	"----- Board (You) ------": "------ Bord (Deg) ------",
+	"--- Board (Opponent) ---": "--- Bord (Motstander) --",
+	"<gray>Empty</gray>": "<gray>Ingenting</gray>"
 }

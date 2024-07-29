@@ -18,9 +18,7 @@ export const blueprint: Blueprint = {
 	cast(owner, self) {
 		// Gain 6 Armor. Recruit a minion that costs (4) or less.
 		owner.addArmor(6);
-
-		const list = owner.deck.filter((card) => card.cost <= 4);
-		owner.recruit(list);
+		owner.recruit(owner.deck, 1, (card) => card.cost <= 4);
 	},
 
 	test(owner, self) {

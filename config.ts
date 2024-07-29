@@ -261,7 +261,7 @@ export const config: GameConfig = {
 		// DONT CHANGE ANY OF THESE VALUES UNLESS YOU KNOW WHAT YOU'RE DOING.
 
 		// The text that is displayed along this specific version/branch combination.
-		versionText: "Make the project use typescript instead of javascript",
+		versionText: "",
 
 		// Some stuff that should really be constants
 		stableIntroText:
