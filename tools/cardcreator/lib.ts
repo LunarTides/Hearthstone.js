@@ -153,10 +153,12 @@ export function create(
 	 */
 
 	// Validate
-	const error = game.functions.card.validateBlueprint(blueprint);
-	if (error !== true) {
-		console.error(error);
-		return "";
+	if (blueprint.type !== "Heropower") {
+		const error = game.functions.card.validateBlueprint(blueprint);
+		if (error !== true) {
+			console.error(error);
+			return "";
+		}
 	}
 
 	const debugMode = debug || mainDebugSwitch;
@@ -175,7 +177,7 @@ export function create(
 		extraPassiveCode = `
 
         // Only proceed if the correct event key was broadcast
-        if (key !== '') {
+        if (key !== "") {
             return;
         }
 
@@ -193,14 +195,14 @@ export function create(
 
 	// `create` ability
 	const runes = blueprint.runes
-		? `        self.runes = '${blueprint.runes}'\n`
+		? `        self.runes = "${blueprint.runes}"\n`
 		: "";
 	let keywords = "";
 
 	if (blueprint.keywords) {
 		for (const keyword of blueprint.keywords) {
 			// 8 spaces
-			keywords += `        self.addKeyword('${keyword}');\n`;
+			keywords += `        self.addKeyword("${keyword}");\n`;
 		}
 	}
 
@@ -268,7 +270,7 @@ ${runes}${keywords}
 		/**
 		 * Adds double quotes around the string
 		 */
-		const stringify = (text: string) => `'${text.replaceAll("'", "\\'")}'`;
+		const stringify = (text: string) => `"${text.replaceAll('"', '\\"')}"`;
 
 		// If the value is an array, put "["value1", "value2"]", or "[1, 2]", or any combination of those two.
 		if (Array.isArray(value)) {
@@ -302,18 +304,18 @@ ${runes}${keywords}
 	// Add the key/value pairs to the content
 	const contentArray = Object.entries(blueprint).map((c) => {
 		const value = getTypeValue(c[1]);
-		if (!value) {
+		if (value === undefined) {
 			return "";
 		}
 
-		return `${c[0].replaceAll("'", "\\'")}: ${value},\n    `;
+		return `${c[0].replaceAll('"', '\\"')}: ${value},\n    `;
 	});
 
 	// Add the content
 	const content = `// Created by the ${creatorType} Card Creator
 
-import assert from 'node:assert';
-import type { Blueprint${passiveImport} } from '@Game/types.js';
+import assert from "node:assert";
+import type { Blueprint${passiveImport} } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
     ${contentArray.join("")}id: ${id},
@@ -338,7 +340,7 @@ ${createAbility}${ability}
 		game.functions.color.parseTags = false;
 
 		console.log("New ID: %s", id);
-		console.log("Would be path: '%s'", filePath.replaceAll("\\", "/"));
+		console.log("Would be path: %s", filePath.replaceAll("\\", "/"));
 		console.log("Content:");
 		console.log(content);
 
