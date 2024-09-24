@@ -25,19 +25,18 @@
 	"license": "GPL-3.0-or-later",
 	"dependencies": {
 		"chalk": "^5.3.0",
-		"date-and-time": "^3.3.0",
+		"date-and-time": "^3.5.0",
 		"deckstrings": "^3.1.2",
 		"lodash": "^4.17.21",
 		"strip-ansi": "^7.1.0"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^1.8.3",
-		"@hearthstonejs/vanillatypes": "^5.1.0",
-		"@types/bun": "^1.1.6",
-		"@types/lodash": "^4.17.6",
-		"@types/node": "^20.14.9",
-		"bun": "^1.1.17",
+		"@biomejs/biome": "^1.9.2",
+		"@hearthstonejs/vanillatypes": "^5.3.0",
+		"@types/lodash": "^4.17.9",
+		"@types/node": "^22.6.1",
 		"generate-changelog": "^1.8.0",
-		"typescript": "^5.5.3"
-	}
+		"typescript": "^5.6.2"
+	},
+	"trustedDependencies": ["@biomejs/biome"]
 }
