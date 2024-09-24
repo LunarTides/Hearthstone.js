@@ -1475,7 +1475,7 @@ export class Game {
 
 		console.log(history);
 
-		this.pause(`Player ${winner.name} wins!\n`);
+		await this.pause(`Player ${winner.name} wins!\n`);
 
 		this.running = false;
 
