@@ -15,81 +15,89 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "None",
 
-	cast(owner, self) {
-		owner.addQuest("Quest", self, "PlayCard", 3, (_unknownValue, done) => {
-			const value = _unknownValue as EventValue<"PlayCard">;
+	async cast(owner, self) {
+		await owner.addQuest(
+			"Quest",
+			self,
+			"PlayCard",
+			3,
+			async (_unknownValue, done) => {
+				const value = _unknownValue as EventValue<"PlayCard">;
 
-			if (value === self) {
-				return false;
-			}
-
-			if (!done) {
-				return true;
-			}
-
-			/*
-			 * The quest is done.
-			 * Add the `-1 cost` enchantment constantly
-			 */
-			const unhook = game.functions.event.hookToTick(() => {
-				// Only add the enchantment to minions
-				for (const minion of owner.hand.filter(
-					(card) => card.type === "Minion",
-				)) {
-					if (minion.enchantmentExists("-1 cost", self)) {
-						continue;
-					}
-
-					minion.addEnchantment("-1 cost", self);
+				if (value === self) {
+					return false;
 				}
-			});
 
-			// Add an event listener to check if you've played 10 cards
-			let amount = 0;
+				if (!done) {
+					return true;
+				}
 
-			game.functions.event.addListener(
-				"PlayCard",
-				(_unknownValue, eventPlayer) => {
-					const value = _unknownValue as EventValue<"PlayCard">;
+				/*
+				 * The quest is done.
+				 * Add the `-1 cost` enchantment constantly
+				 */
+				const unhook = game.functions.event.hookToTick(async () => {
+					// Only add the enchantment to minions
+					for (const minion of owner.hand.filter(
+						(card) => card.type === "Minion",
+					)) {
+						if (minion.enchantmentExists("-1 cost", self)) {
+							continue;
+						}
 
-					// Only continue if the player that triggered the event is this card's owner and the played card is a minion.
-					if (!(eventPlayer === owner && value.type === "Minion")) {
-						return false;
+						minion.addEnchantment("-1 cost", self);
 					}
+				});
 
-					// Every time YOU play a MINION, increment `amount` by 1.
-					amount++;
+				// Add an event listener to check if you've played 10 cards
+				let amount = 0;
 
-					// If `amount` is less than 10, don't do anything. Return true since it was a success
-					if (amount < 10) {
-						return true;
-					}
+				game.functions.event.addListener(
+					"PlayCard",
+					async (_unknownValue, eventPlayer) => {
+						const value = _unknownValue as EventValue<"PlayCard">;
 
-					// You have now played 10 minions
+						// Only continue if the player that triggered the event is this card's owner and the played card is a minion.
+						if (!(eventPlayer === owner && value.type === "Minion")) {
+							return false;
+						}
 
-					// Destroy the tick hook
-					unhook();
+						// Every time YOU play a MINION, increment `amount` by 1.
+						amount++;
 
-					/*
-					 * Reverse the enchantment
-					 * You might be able to just do `for (const minion of owner.hand)` instead, since `removeEnchantment` only removes enchantments if it's there.
-					 */
-					for (const minion of owner.hand.filter((c) => c.type === "Minion")) {
-						minion.removeEnchantment("-1 cost", self);
-					}
+						// If `amount` is less than 10, don't do anything. Return true since it was a success
+						if (amount < 10) {
+							return true;
+						}
 
-					// Destroy this event listener so it doesn't run again
-					return "destroy";
-				},
-				-1,
-			); // The event listener shouldn't destruct on its own, and should only be manually destroyed.
+						// You have now played 10 minions
 
-			// The quest event was a success. The game will remove this quest from the player.
-			return true;
-		});
+						// Destroy the tick hook
+						unhook();
+
+						/*
+						 * Reverse the enchantment
+						 * You might be able to just do `for (const minion of owner.hand)` instead, since `removeEnchantment` only removes enchantments if it's there.
+						 */
+						for (const minion of owner.hand.filter(
+							(c) => c.type === "Minion",
+						)) {
+							minion.removeEnchantment("-1 cost", self);
+						}
+
+						// Destroy this event listener so it doesn't run again
+						return "destroy";
+					},
+					-1,
+				); // The event listener shouldn't destruct on its own, and should only be manually destroyed.
+
+				// The quest event was a success. The game will remove this quest from the player.
+				return true;
+			},
+		);
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		// TODO: Add proper tests. #325
 		return true;
 	},

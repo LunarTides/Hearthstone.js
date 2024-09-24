@@ -13,17 +13,17 @@ export const blueprint: Blueprint = {
 	collectible: false,
 	id: 117,
 
-	heropower(owner, self) {
+	async heropower(owner, self) {
 		// Gain 2 Armor.
 
 		// Give the player +2 armor.
 		owner.addArmor(2);
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		// The player should have 0 armor
 		assert.equal(owner.armor, 0);
-		self.activate("heropower");
+		await self.activate("heropower");
 
 		// The player should now have 2 armor
 		assert.equal(owner.armor, 2);

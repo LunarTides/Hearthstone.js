@@ -29,16 +29,6 @@ export class Player {
 	 * 0: if this is the starting player
 	 *
 	 * 1: if this is the player that starts with the coin
-	 *
-	 * You can use this in `player.board` in order to get this player's side of the board.
-	 *
-	 * # Examples
-	 * @example
-	 * const board = player.board;
-	 *
-	 * for (const card of board) {
-	 *     console.log(card.name);
-	 * }
 	 */
 	id = -1;
 
@@ -132,7 +122,7 @@ export class Player {
 	 * # Examples
 	 * ```
 	 * player.maxMana = 20;
-	 * // Now `player.maxMana` will increment every turn until it reaches 20.
+	 * // Now `player.emptyMana` will increment every turn until it reaches 20.
 	 * ```
 	 */
 	maxMana = 10;
@@ -175,6 +165,7 @@ export class Player {
 	 *
 	 * # Examples
 	 * ```
+	 * // Use `player.addArmor(3)` instead in a real situation.
 	 * player.armor += 3;
 	 * ```
 	 */
@@ -190,7 +181,7 @@ export class Player {
 	 * assert.equal(player.hero.name, "Priest Starting Hero");
 	 *
 	 * // Activate the hero's hero power. (`Restore 2 Health.`)
-	 * player.hero.activate("heropower");
+	 * await player.hero.activate("heropower");
 	 * ```
 	 */
 	hero: Card;
@@ -298,7 +289,7 @@ export class Player {
 	 * # Example
 	 * ```
 	 * player.forceTarget = target;
-	 * const chosen = game.interact.selectTarget("Example", null, "any", "any");
+	 * const chosen = await game.interact.selectTarget("Example", null, "any", "any");
 	 * player.forceTarget = null;
 	 *
 	 * assert.equal(chosen, target);
@@ -481,7 +472,7 @@ export class Player {
 	 * ```
 	 * assert.equal(player.overload, 0);
 	 *
-	 * player.addOverload(2);
+	 * await player.addOverload(2);
 	 *
 	 * assert.equal(player.overload, 2);
 	 * ```
@@ -490,10 +481,10 @@ export class Player {
 	 *
 	 * @returns Success
 	 */
-	addOverload(overload: number): boolean {
+	async addOverload(overload: number): Promise<boolean> {
 		this.overload += overload;
 
-		game.event.broadcast("GainOverload", overload, this);
+		await game.event.broadcast("GainOverload", overload, this);
 		return true;
 	}
 
@@ -505,15 +496,15 @@ export class Player {
 	 * # Examples
 	 * ```
 	 * const weapon = game.createCard(game.cardIds.notRealExampleWeapon0, player);
-	 * player.setWeapon(weapon);
+	 * await player.setWeapon(weapon);
 	 * ```
 	 *
 	 * @param weapon The weapon to set
 	 *
 	 * @returns Success
 	 */
-	setWeapon(weapon: Card): boolean {
-		this.destroyWeapon();
+	async setWeapon(weapon: Card): Promise<boolean> {
+		await this.destroyWeapon();
 		this.weapon = weapon;
 		this.attack += weapon.attack ?? 0;
 
@@ -529,7 +520,7 @@ export class Player {
 	 * assert.equal(player.weapon.attack, 5);
 	 * assert.equal(player.attack, 5);
 	 *
-	 * player.destroyWeapon();
+	 * await player.destroyWeapon();
 	 *
 	 * assert.equal(player.weapon, null);
 	 * assert.equal(player.attack, 0);
@@ -537,15 +528,15 @@ export class Player {
 	 *
 	 * @returns Success
 	 */
-	destroyWeapon(): boolean {
+	async destroyWeapon(): Promise<boolean> {
 		if (!this.weapon) {
 			return false;
 		}
 
-		this.weapon.activate("deathrattle");
+		await this.weapon.activate("deathrattle");
 		this.attack -= this.weapon.attack ?? 0;
 
-		this.weapon.destroy();
+		await this.weapon.destroy();
 		this.weapon = undefined;
 
 		return true;
@@ -572,10 +563,10 @@ export class Player {
 	 *
 	 * @returns Success
 	 */
-	addAttack(amount: number): boolean {
+	async addAttack(amount: number): Promise<boolean> {
 		this.attack += amount;
 
-		game.event.broadcast("GainHeroAttack", amount, this);
+		await game.event.broadcast("GainHeroAttack", amount, this);
 		return true;
 	}
 
@@ -607,7 +598,7 @@ export class Player {
 	 *
 	 * @returns Success
 	 */
-	remHealth(amount: number): boolean {
+	async remHealth(amount: number): Promise<boolean> {
 		if (this.immune) {
 			return true;
 		}
@@ -629,14 +620,14 @@ export class Player {
 
 		this.health -= actualAmount;
 
-		game.event.broadcast("TakeDamage", actualAmount, this);
+		await game.event.broadcast("TakeDamage", actualAmount, this);
 
 		if (!this.isAlive()) {
-			game.event.broadcast("FatalDamage", undefined, this);
+			await game.event.broadcast("FatalDamage", undefined, this);
 
 			// This is done to allow secrets to prevent death
 			if (!this.isAlive()) {
-				game.endGame(this.getOpponent());
+				await game.endGame(this.getOpponent());
 			}
 		}
 
@@ -662,7 +653,7 @@ export class Player {
 	 * assert.equal(player.deck.length, 30);
 	 *
 	 * const card = game.createCard(game.cardIds.sheep1, player);
-	 * player.shuffleIntoDeck(card);
+	 * await player.shuffleIntoDeck(card);
 	 *
 	 * assert.equal(player.deck.length, 31);
 	 * ```
@@ -671,12 +662,12 @@ export class Player {
 	 *
 	 * @returns Success
 	 */
-	shuffleIntoDeck(card: Card): boolean {
+	async shuffleIntoDeck(card: Card): Promise<boolean> {
 		// Push the card to the top of the deck, then shuffle it
 		this.deck.push(card);
 		this.shuffleDeck();
 
-		game.event.broadcast("AddCardToDeck", card, this);
+		await game.event.broadcast("AddCardToDeck", card, this);
 		return true;
 	}
 
@@ -688,10 +679,10 @@ export class Player {
 	 *
 	 * @returns Success
 	 */
-	addToBottomOfDeck(card: Card): boolean {
+	async addToBottomOfDeck(card: Card): Promise<boolean> {
 		this.deck.unshift(card);
 
-		game.event.broadcast("AddCardToDeck", card, this);
+		await game.event.broadcast("AddCardToDeck", card, this);
 		return true;
 	}
 
@@ -702,7 +693,7 @@ export class Player {
 	 * @param amount The amount of cards to draw
 	 * @returns The cards drawn
 	 */
-	drawCards(amount: number): Card[] {
+	async drawCards(amount: number): Promise<Card[]> {
 		const cards: Card[] = [];
 
 		const unsuppress = game.functions.event.suppress("AddCardToHand");
@@ -717,7 +708,7 @@ export class Player {
 			if (deckLength <= 0 || !card) {
 				this.fatigue++;
 
-				this.remHealth(this.fatigue);
+				await this.remHealth(this.fatigue);
 				continue;
 			}
 
@@ -725,7 +716,7 @@ export class Player {
 			if (
 				card.type === "Spell" &&
 				card.hasKeyword("Cast On Draw") &&
-				card.activate("cast")
+				(await card.activate("cast"))
 			) {
 				drawAmount += 1;
 				continue;
@@ -733,14 +724,14 @@ export class Player {
 
 			// Summon on draw
 			if (card.hasKeyword("Summon On Draw") && card.canBeOnBoard()) {
-				this.summon(card);
+				await this.summon(card);
 
 				drawAmount += 1;
 				continue;
 			}
 
-			this.addToHand(card);
-			game.event.broadcast("DrawCard", card, this);
+			await this.addToHand(card);
+			await game.event.broadcast("DrawCard", card, this);
 			cards.push(card);
 		}
 
@@ -759,21 +750,21 @@ export class Player {
 	 * // Get a random card from the player's deck
 	 * const card = game.functions.randList(player.deck);
 	 *
-	 * player.drawSpecific(card);
+	 * await player.drawSpecific(card);
 	 * ```
 	 *
 	 * This doesn't work
 	 * ```
 	 * const card = game.functions.randList(player.deck).perfectCopy();
 	 *
-	 * player.drawSpecific(card);
+	 * await player.drawSpecific(card);
 	 * ```
 	 *
 	 * @param card The card to draw
 	 *
 	 * @returns The card drawn
 	 */
-	drawSpecific(card: Card): Card | undefined {
+	async drawSpecific(card: Card): Promise<Card | undefined> {
 		if (this.deck.length <= 0) {
 			return undefined;
 		}
@@ -783,16 +774,16 @@ export class Player {
 		if (
 			card.type === "Spell" &&
 			card.hasKeyword("Cast On Draw") &&
-			card.activate("cast")
+			(await card.activate("cast"))
 		) {
 			return undefined;
 		}
 
-		game.functions.event.withSuppressed("AddCardToHand", () =>
+		await game.functions.event.withSuppressed("AddCardToHand", async () =>
 			this.addToHand(card),
 		);
 
-		game.event.broadcast("DrawCard", card, this);
+		await game.event.broadcast("DrawCard", card, this);
 		return card;
 	}
 
@@ -804,14 +795,14 @@ export class Player {
 	 *
 	 * @returns Success
 	 */
-	addToHand(card: Card): boolean {
+	async addToHand(card: Card): Promise<boolean> {
 		if (this.hand.length >= game.config.general.maxHandLength) {
 			return false;
 		}
 
 		this.hand.push(card);
 
-		game.event.broadcast("AddCardToHand", card, this);
+		await game.event.broadcast("AddCardToHand", card, this);
 		return true;
 	}
 
@@ -842,16 +833,20 @@ export class Player {
 	 *
 	 * @returns Success
 	 */
-	setToStartingHero(heroClass = this.heroClass): boolean {
-		const heroCardId = game.cardCollections.classes
-			.map((heroId) => new Card(heroId, this, true))
-			.find((card) => card.classes.includes(heroClass))?.id;
+	async setToStartingHero(heroClass = this.heroClass): Promise<boolean> {
+		const heroCardId = (
+			await Promise.all(
+				game.cardCollections.classes.map(async (heroId) =>
+					Card.create(heroId, this, true),
+				),
+			)
+		).find((card) => card.classes.includes(heroClass))?.id;
 
 		if (!heroCardId) {
 			return false;
 		}
 
-		this.setHero(new Card(heroCardId, this), false);
+		this.setHero(await Card.create(heroCardId, this), false);
 
 		return true;
 	}
@@ -861,7 +856,7 @@ export class Player {
 	 *
 	 * @returns Success | Cancelled
 	 */
-	heroPower(): boolean | -1 {
+	async heroPower(): Promise<boolean | -1> {
 		if (!this.canUseHeroPower()) {
 			return false;
 		}
@@ -870,18 +865,18 @@ export class Player {
 			return false;
 		}
 
-		if (this.hero.heropower?.activate("heropower") === Card.REFUND) {
+		if ((await this.hero.heropower?.activate("heropower")) === Card.REFUND) {
 			return -1;
 		}
 
 		for (const card of this.board) {
-			card.activate("inspire");
+			await card.activate("inspire");
 		}
 
 		this.mana -= this.hero.heropower?.cost ?? 0;
 		this.hasUsedHeroPowerThisTurn = true;
 
-		game.event.broadcast("HeroPower", this.hero.heropower, this);
+		await game.event.broadcast("HeroPower", this.hero.heropower, this);
 		return true;
 	}
 
@@ -1009,13 +1004,13 @@ export class Player {
 	 *
 	 * @returns The cards mulligan'd
 	 */
-	mulligan(input: string): Card[] {
+	async mulligan(input: string): Promise<Card[]> {
 		if (input === "") {
 			return [];
 		}
 
 		if (!game.lodash.parseInt(input)) {
-			game.pause("<red>Invalid input!</red>\n");
+			await game.pause("<red>Invalid input!</red>\n");
 			return this.mulligan(input);
 		}
 
@@ -1034,11 +1029,15 @@ export class Player {
 
 			game.functions.util.remove(mulligan, card);
 
-			game.functions.event.withSuppressed("DrawCard", () => this.drawCards(1));
-			game.functions.event.withSuppressed("AddCardToDeck", () =>
+			await game.functions.event.withSuppressed("DrawCard", async () =>
+				this.drawCards(1),
+			);
+			await game.functions.event.withSuppressed("AddCardToDeck", async () =>
 				this.shuffleIntoDeck(card),
 			);
-			game.functions.event.withSuppressed("DiscardCard", () => card.discard());
+			await game.functions.event.withSuppressed("DiscardCard", async () =>
+				card.discard(),
+			);
 
 			cards.push(card);
 		}
@@ -1051,7 +1050,7 @@ export class Player {
 	 *
 	 * @returns The jade golem
 	 */
-	createJade(): Card {
+	async createJade(): Promise<Card> {
 		if (this.jadeCounter < 30) {
 			this.jadeCounter += 1;
 		}
@@ -1059,8 +1058,8 @@ export class Player {
 		const count = this.jadeCounter;
 		const cost = count < 10 ? count : 10;
 
-		const jade = new Card(game.cardIds.jadeGolem85, this);
-		jade.setStats(count, count);
+		const jade = await Card.create(game.cardIds.jadeGolem85, this);
+		await jade.setStats(count, count);
 		jade.cost = cost;
 
 		return jade;
@@ -1073,7 +1072,7 @@ export class Player {
 	 *
 	 * @returns If the card was successfully discarded
 	 */
-	discard(card: Card): boolean {
+	async discard(card: Card): Promise<boolean> {
 		return card.discard(this);
 	}
 
@@ -1142,14 +1141,14 @@ export class Player {
 	 *
 	 * @returns Success
 	 */
-	addQuest(
+	async addQuest(
 		type: "Quest" | "Sidequest" | "Secret",
 		card: Card,
 		key: EventKey,
 		amount: number,
 		callback: QuestCallback,
 		next?: number,
-	): boolean {
+	): Promise<boolean> {
 		let quests: QuestType[];
 
 		switch (type) {
@@ -1179,7 +1178,7 @@ export class Player {
 				type.toLowerCase() === "sidequest") &&
 				(quests.length >= 3 || quests.some((s) => s.name === card.name)))
 		) {
-			this.addToHand(card);
+			await this.addToHand(card);
 			return false;
 		}
 
@@ -1200,7 +1199,7 @@ export class Player {
 	 *
 	 * @returns Success
 	 */
-	invoke(): boolean {
+	async invoke(): Promise<boolean> {
 		// Find the card in player's deck/hand/hero that begins with "Galakrond, the "
 		const deckGalakrond = this.deck.find((c) =>
 			c.name.startsWith("Galakrond, the "),
@@ -1219,23 +1218,23 @@ export class Player {
 		}
 
 		for (const card of this.deck) {
-			card.activate("invoke");
+			await card.activate("invoke");
 		}
 
 		for (const card of this.hand) {
-			card.activate("invoke");
+			await card.activate("invoke");
 		}
 
 		for (const card of this.board) {
-			card.activate("invoke");
+			await card.activate("invoke");
 		}
 
 		if (this.hero.name.startsWith("Galakrond, the ")) {
-			this.hero.heropower?.activate("cast");
+			await this.hero.heropower?.activate("cast");
 		} else if (deckGalakrond) {
-			deckGalakrond.heropower?.activate("cast");
+			await deckGalakrond.heropower?.activate("cast");
 		} else if (handGalakrond) {
-			handGalakrond.heropower?.activate("cast");
+			await handGalakrond.heropower?.activate("cast");
 		}
 
 		return true;
@@ -1249,11 +1248,11 @@ export class Player {
 	 *
 	 * @returns Returns the cards recruited.
 	 */
-	recruit(
+	async recruit(
 		list: Card[],
 		amount = 1,
 		filterPredicate = (card: Card) => true,
-	): Card[] {
+	): Promise<Card[]> {
 		const recruitList = game.lodash
 			.shuffle([...list])
 			.filter((c) => c.type === "Minion" && filterPredicate(c));
@@ -1266,8 +1265,8 @@ export class Player {
 				continue;
 			}
 
-			card.reset();
-			this.summon(card);
+			await card.reset();
+			await this.summon(card);
 
 			times++;
 			cards.push(card);
@@ -1287,11 +1286,11 @@ export class Player {
 	 *
 	 * @returns If this player won the joust
 	 */
-	joust(
+	async joust(
 		predicate: (card: Card) => boolean = () => true,
 		winCondition: (c1: Card, c2: Card) => boolean = (c1, c2) =>
 			c1.cost > c2.cost,
-	): boolean {
+	): Promise<boolean> {
 		// Select a random card from both player's deck.
 		const friendlyCard = game.lodash.sample(
 			this.deck.filter((card) => predicate?.(card)),
@@ -1328,16 +1327,16 @@ export class Player {
 		this.getOpponent().shuffleDeck();
 
 		// Reveal them to both players
-		game.event.broadcast("RevealCard", [friendlyCard, "Joust"], this);
-		game.event.broadcast("RevealCard", [enemyCard, "Joust"], this);
+		await game.event.broadcast("RevealCard", [friendlyCard, "Joust"], this);
+		await game.event.broadcast("RevealCard", [enemyCard, "Joust"], this);
 
 		console.log("\n--- JOUST ---");
-		console.log("Yours: %s", friendlyCard.readable());
-		console.log("Opponent: %s", enemyCard.readable());
+		console.log("Yours: %s", await friendlyCard.readable());
+		console.log("Opponent: %s", await enemyCard.readable());
 		console.log("-------------");
 
 		console.log(win ? "You win!" : "You lose!");
-		game.pause("");
+		await game.pause("");
 
 		return win;
 	}
@@ -1372,13 +1371,15 @@ export class Player {
 	/**
 	 * Spawns a DIY card for this player.
 	 */
-	spawnInDIYCard(): void {
+	async spawnInDIYCard(): Promise<void> {
 		// Don't allow ai's to get diy cards
 		if (this.ai) {
 			return;
 		}
 
-		const list = Card.all(true).filter((card) => /DIY \d+/.test(card.name));
+		const list = (await Card.all(true)).filter((card) =>
+			/DIY \d+/.test(card.name),
+		);
 
 		const card = game.lodash.sample(list);
 		if (!card) {
@@ -1386,6 +1387,6 @@ export class Player {
 		}
 
 		card.owner = this;
-		this.addToHand(card);
+		await this.addToHand(card);
 	}
 }

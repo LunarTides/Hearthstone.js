@@ -17,29 +17,33 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "None",
 
-	cast(owner, self) {
+	async cast(owner, self) {
 		// Destroy an enemy minion.
 
 		// Select an enemy minion to destroy
-		const target = game.interact.selectCardTarget(self.text, self, "enemy");
+		const target = await game.interact.selectCardTarget(
+			self.text,
+			self,
+			"enemy",
+		);
 		if (!target) {
 			return Card.REFUND;
 		}
 
-		target.kill();
+		await target.kill();
 		return true;
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		const opponent = owner.getOpponent();
 
 		// Create a sheep and summon it on the opponent's side of the board
-		const sheep = new Card(game.cardIds.sheep1, opponent);
-		opponent.summon(sheep);
+		const sheep = await Card.create(game.cardIds.sheep1, opponent);
+		await opponent.summon(sheep);
 
 		// Kill the sheep
 		owner.inputQueue = ["1"];
-		self.activate("cast");
+		await self.activate("cast");
 
 		// Check if the sheep is dead
 		assert.equal(owner.board.length, 0);

@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
 	 * Note the new `key`, `_unknownValue` and `eventPlayer` arguments.
 	 * These are only used in the `passive` and `handpassive` abilities.
 	 */
-	passive(owner, self, key, _unknownValue, eventPlayer) {
+	async passive(owner, self, key, _unknownValue, eventPlayer) {
 		/*
 		 * Your battlecries trigger twice.
 		 * ^ In order to do this, we wait until a minion is played, then manually trigger its battlecry.
@@ -79,10 +79,10 @@ export const blueprint: Blueprint = {
 		 * Remember, this passive triggers after the minion's battlecry (in order to handle refunding).
 		 * This means that once we trigger the battlecry here, the minion's battlecry will have triggered twice in total.
 		 */
-		value.activate("battlecry");
+		await value.activate("battlecry");
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		// TODO: Add proper tests. #325
 		return true;
 	},

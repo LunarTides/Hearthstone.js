@@ -17,22 +17,30 @@ type EventManagerType = {
 	forced: EventKey[];
 	stats: Record<string, [number, number]>;
 
-	tick(key: EventKey, value: UnknownEventValue, player: Player): boolean;
-	cardUpdate(key: EventKey, value: UnknownEventValue, player: Player): boolean;
+	tick(
+		key: EventKey,
+		value: UnknownEventValue,
+		player: Player,
+	): Promise<boolean>;
+	cardUpdate(
+		key: EventKey,
+		value: UnknownEventValue,
+		player: Player,
+	): Promise<boolean>;
 	questUpdate(
 		questsName: "secrets" | "sidequests" | "quests",
 		key: EventKey,
 		value: UnknownEventValue,
 		player: Player,
-	): boolean;
+	): Promise<boolean>;
 	broadcast(
 		key: EventKey,
 		value: UnknownEventValue,
 		player: Player,
 		updateHistory?: boolean,
-	): boolean;
+	): Promise<boolean>;
 	addHistory(key: EventKey, value: UnknownEventValue, player: Player): void;
-	broadcastDummy(player: Player): boolean;
+	broadcastDummy(player: Player): Promise<boolean>;
 	increment(player: Player, key: string, amount?: number): number;
 };
 
@@ -91,7 +99,7 @@ export const eventManager: EventManagerType = {
 	 * @param value The value of the event that triggered the tick
 	 * @param player The player that triggered the tick
 	 */
-	tick(key, value, player): boolean {
+	async tick(key, value, player): Promise<boolean> {
 		/*
 		 * The code in here gets executed very often
 		 * So don't do any expensive stuff here
@@ -100,7 +108,7 @@ export const eventManager: EventManagerType = {
 		// Infuse
 		if (key === "KillCard") {
 			for (const card of player.hand) {
-				card.tryInfuse();
+				await card.tryInfuse();
 			}
 		}
 
@@ -108,12 +116,12 @@ export const eventManager: EventManagerType = {
 			const player = Player.fromID(i);
 
 			for (const card of player.hand) {
-				card.condition();
+				await card.condition();
 
 				// Just in case. Remove for small performance boost
 				card.applyEnchantments();
 
-				card.activate("handtick", key, value, player);
+				await card.activate("handtick", key, value, player);
 				if (card.cost < 0) {
 					card.cost = 0;
 				}
@@ -124,12 +132,12 @@ export const eventManager: EventManagerType = {
 					continue;
 				}
 
-				card.activate("tick", key, value, player);
+				await card.activate("tick", key, value, player);
 			}
 		}
 
 		for (const hook of this.tickHooks) {
-			hook(key, value, player);
+			await hook(key, value, player);
 		}
 
 		return true;
@@ -144,7 +152,7 @@ export const eventManager: EventManagerType = {
 	 *
 	 * @returns Success
 	 */
-	cardUpdate(key, value, player): boolean {
+	async cardUpdate(key, value, player): Promise<boolean> {
 		for (const player of [game.player1, game.player2]) {
 			for (const card of player.board) {
 				// This function gets called directly after a minion is killed.
@@ -152,7 +160,7 @@ export const eventManager: EventManagerType = {
 					continue;
 				}
 
-				card.activate("passive", key, value, player);
+				await card.activate("passive", key, value, player);
 			}
 		}
 
@@ -161,13 +169,13 @@ export const eventManager: EventManagerType = {
 
 			// Activate spells in the players hand
 			for (const card of player.hand) {
-				card.activate("handpassive", key, value, player);
+				await card.activate("handpassive", key, value, player);
 
 				if (card.type !== "Spell") {
 					continue;
 				}
 
-				card.activate("passive", key, value, player);
+				await card.activate("passive", key, value, player);
 			}
 
 			const { weapon } = player;
@@ -175,10 +183,10 @@ export const eventManager: EventManagerType = {
 				continue;
 			}
 
-			weapon.activate("passive", key, value, player);
+			await weapon.activate("passive", key, value, player);
 		}
 
-		game.triggerEventListeners(key, value, player);
+		await game.triggerEventListeners(key, value, player);
 		return true;
 	},
 
@@ -192,7 +200,7 @@ export const eventManager: EventManagerType = {
 	 *
 	 * @returns Success
 	 */
-	questUpdate(questsName, key, value, player): boolean {
+	async questUpdate(questsName, key, value, player): Promise<boolean> {
 		for (const quest of player[questsName]) {
 			if (quest.key !== key) {
 				continue;
@@ -201,7 +209,7 @@ export const eventManager: EventManagerType = {
 			const [current, max] = quest.progress;
 
 			const done = current + 1 >= max;
-			if (!quest.callback(value, done)) {
+			if (!(await quest.callback(value, done))) {
 				continue;
 			}
 
@@ -215,11 +223,12 @@ export const eventManager: EventManagerType = {
 			player[questsName].splice(player[questsName].indexOf(quest), 1);
 
 			if (questsName === "secrets") {
-				game.pause(`\nYou triggered the opponents's '${quest.name}'.\n`);
+				await game.pause(`\nYou triggered the opponents's '${quest.name}'.\n`);
 			}
 
 			if (quest.next) {
-				new Card(quest.next, player).activate("cast");
+				const nextQuest = await Card.create(quest.next, player);
+				await nextQuest.activate("cast");
 			}
 		}
 
@@ -236,8 +245,8 @@ export const eventManager: EventManagerType = {
 	 *
 	 * @returns Success
 	 */
-	broadcast(key, value, player, updateHistory = true): boolean {
-		this.tick(key, value, player);
+	async broadcast(key, value, player, updateHistory = true): Promise<boolean> {
+		await this.tick(key, value, player);
 
 		// Check if the event is suppressed
 		if (this.suppressed.includes(key) && !this.forced.includes(key)) {
@@ -265,11 +274,11 @@ export const eventManager: EventManagerType = {
 
 		this.events[key]?.[player.id].push([value, game.turn]);
 
-		this.cardUpdate(key, value, player);
+		await this.cardUpdate(key, value, player);
 
-		this.questUpdate("secrets", key, value, player.getOpponent());
-		this.questUpdate("sidequests", key, value, player);
-		this.questUpdate("quests", key, value, player);
+		await this.questUpdate("secrets", key, value, player.getOpponent());
+		await this.questUpdate("sidequests", key, value, player);
+		await this.questUpdate("quests", key, value, player);
 
 		return true;
 	},
@@ -298,7 +307,7 @@ export const eventManager: EventManagerType = {
 	 *
 	 * @returns Success
 	 */
-	broadcastDummy(player): boolean {
+	async broadcastDummy(player): Promise<boolean> {
 		return this.broadcast("Dummy", undefined, player, false);
 	},
 

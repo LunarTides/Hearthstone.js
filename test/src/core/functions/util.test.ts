@@ -85,8 +85,8 @@ describe("src/core/functions/util", () => {
 		let counter = utilFunctions.getTraditionalTurnCounter();
 		expect(counter).toEqual(1);
 
-		game.endTurn();
-		game.endTurn();
+		await game.endTurn();
+		await game.endTurn();
 
 		// Turn starts at 1, every `game.endTurn` increments it by 1, 1 + 2 = 3
 		expect(game.turn).toEqual(3);

@@ -17,20 +17,20 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribe: "None",
 
-	create(owner, self) {
+	async create(owner, self) {
 		// Cant Attack
 
 		self.addKeyword("Cant Attack");
 	},
 
-	test(owner, self) {
-		owner.summon(self);
+	async test(owner, self) {
+		await owner.summon(self);
 
 		// The card should be sleepy by default
 		assert.ok(self.sleepy);
 
-		game.endTurn();
-		game.endTurn();
+		await game.endTurn();
+		await game.endTurn();
 
 		// But the card should still be sleepy on the next turn
 		assert.ok(self.sleepy);

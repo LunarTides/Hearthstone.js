@@ -16,35 +16,35 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "Nature",
 
-	cast(owner, self) {
+	async cast(owner, self) {
 		// Choose One - Summon a 6/6 Orca with Taunt; or six 1/1 Otters with Rush.
-		game.interact.chooseOne(
+		await game.interact.chooseOne(
 			1,
 			[
 				"Summon a 6/6 Orca with <b>Taunt</b>",
-				() => {
+				async () => {
 					// Summon a 6/6 Orca with Taunt
-					const orca = new Card(game.cardIds.orca96, owner);
-					owner.summon(orca);
+					const orca = await Card.create(game.cardIds.orca96, owner);
+					await owner.summon(orca);
 				},
 			],
 			[
 				"Summon six 1/1 Otters with <b>Rush</b>",
-				() => {
+				async () => {
 					// Summon six 1/1 Otters with Rush
 					for (let index = 0; index < 6; index++) {
-						const otter = new Card(game.cardIds.otter95, owner);
-						owner.summon(otter);
+						const otter = await Card.create(game.cardIds.otter95, owner);
+						await owner.summon(otter);
 					}
 				},
 			],
 		);
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		// Summon a 6/6 Orca with Taunt
 		owner.inputQueue = ["1"];
-		self.activate("cast");
+		await self.activate("cast");
 
 		// There should be 1 Orca on the board
 		assert.equal(
@@ -57,7 +57,7 @@ export const blueprint: Blueprint = {
 
 		// Summon six 1/1 Otters with Rush
 		owner.inputQueue = ["2"];
-		self.activate("cast");
+		await self.activate("cast");
 
 		// There should be 6 Otters on the board
 		assert.equal(

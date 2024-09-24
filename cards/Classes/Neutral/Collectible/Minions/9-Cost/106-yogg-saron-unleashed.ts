@@ -18,7 +18,7 @@ export const blueprint: Blueprint = {
 	health: 5,
 	tribe: "None",
 
-	create(owner, self) {
+	async create(owner, self) {
 		// Add additional fields here
 		self.addKeyword("Titan", [
 			game.cardIds.induceInsanity107,
@@ -27,7 +27,7 @@ export const blueprint: Blueprint = {
 		]);
 	},
 
-	passive(owner, self, key, _unknownValue) {
+	async passive(owner, self, key, _unknownValue) {
 		// After this uses an ability, cast two random spells
 
 		// Only proceed if the correct event key was broadcast
@@ -45,19 +45,19 @@ export const blueprint: Blueprint = {
 			return;
 		}
 
-		const pool = Card.all().filter((card) => card.type === "Spell");
+		const pool = (await Card.all()).filter((card) => card.type === "Spell");
 
 		for (let i = 0; i < 2; i++) {
-			const card = game.lodash.sample(pool)?.imperfectCopy();
+			const card = await game.lodash.sample(pool)?.imperfectCopy();
 			if (!card) {
 				continue;
 			}
 
-			card.activate("cast");
+			await card.activate("cast");
 		}
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		// TODO: Add proper tests. #325
 		return true;
 	},

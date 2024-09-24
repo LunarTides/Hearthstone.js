@@ -18,7 +18,7 @@ export const blueprint: Blueprint = {
 	health: 2,
 	tribe: "None",
 
-	battlecry(owner, self) {
+	async battlecry(owner, self) {
 		const manathirst = self.manathirst(6);
 
 		// Make the prompt.
@@ -34,7 +34,7 @@ export const blueprint: Blueprint = {
 		 *
 		 * Ask the user to select a target based on the `prompt`, the user can only select enemy minions
 		 */
-		const target = game.interact.selectCardTarget(prompt, self, "enemy");
+		const target = await game.interact.selectCardTarget(prompt, self, "enemy");
 
 		// If target is false it means that the user cancelled their selection. Return `Card.REFUND` to refund the card.
 		if (!target) {
@@ -43,25 +43,25 @@ export const blueprint: Blueprint = {
 
 		// If the manathirst was successful, silence the target first
 		if (manathirst) {
-			target.silence();
+			await target.silence();
 		}
 
 		// Freeze the target
-		target.freeze();
+		await target.freeze();
 
 		// Return true since otherwise, typescript will complain about the function not returning a value in all branches
 		return true;
 	},
 
 	// This is optional, you will learn more about it in the `condition` example in `3-3`.
-	condition(owner, self) {
+	async condition(owner, self) {
 		return self.manathirst(6);
 	},
 
-	test(owner, self) {
-		const sheep = new Card(game.cardIds.sheep1, owner.getOpponent());
-		sheep.addStats(4, 4);
-		owner.getOpponent().summon(sheep);
+	async test(owner, self) {
+		const sheep = await Card.create(game.cardIds.sheep1, owner.getOpponent());
+		await sheep.addStats(4, 4);
+		await owner.getOpponent().summon(sheep);
 
 		assert.equal(sheep.attack, 5);
 		assert.equal(sheep.health, 5);
@@ -70,7 +70,7 @@ export const blueprint: Blueprint = {
 		owner.emptyMana = 1;
 		assert.equal(owner.emptyMana, 1);
 		owner.inputQueue = ["1"];
-		self.activate("battlecry");
+		await self.activate("battlecry");
 
 		assert(sheep.hasKeyword("Frozen"));
 		sheep.remKeyword("Frozen");
@@ -78,7 +78,7 @@ export const blueprint: Blueprint = {
 
 		owner.emptyMana = 6;
 		owner.inputQueue = ["1"];
-		self.activate("battlecry");
+		await self.activate("battlecry");
 
 		assert(sheep.hasKeyword("Frozen"));
 		assert.equal(sheep.attack, 1);

@@ -17,31 +17,36 @@ export const blueprint: Blueprint = {
 	durability: 3,
 	cooldown: 2,
 
-	use(owner, self) {
+	async use(owner, self) {
 		// Choose a character. Cast 4 random spells (targeting it if possible).
-		const target = game.interact.selectTarget(self.text, self, "any", "any");
+		const target = await game.interact.selectTarget(
+			self.text,
+			self,
+			"any",
+			"any",
+		);
 		if (!target) {
 			return Card.REFUND;
 		}
 
 		owner.forceTarget = target;
 
-		const pool = Card.all().filter((card) => card.type === "Spell");
+		const pool = (await Card.all()).filter((card) => card.type === "Spell");
 
 		for (let i = 0; i < 4; i++) {
-			const card = game.lodash.sample(pool)?.imperfectCopy();
+			const card = await game.lodash.sample(pool)?.imperfectCopy();
 			if (!card) {
 				continue;
 			}
 
-			card.activate("cast");
+			await card.activate("cast");
 		}
 
 		owner.forceTarget = undefined;
 		return true;
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		// TODO: Add proper tests. #325
 		return true;
 	},

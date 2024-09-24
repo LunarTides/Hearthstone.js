@@ -25,7 +25,7 @@ export type TickHookCallback = (
 	key: EventKey,
 	value: UnknownEventValue,
 	eventPlayer: Player,
-) => void;
+) => Promise<void>;
 
 /**
  * The event listener callback return value.
@@ -37,7 +37,7 @@ export type EventListenerMessage = boolean | "destroy" | "reset";
 export type EventListenerCallback = (
 	value: UnknownEventValue,
 	eventPlayer: Player,
-) => EventListenerMessage;
+) => Promise<EventListenerMessage>;
 
 export type HistoryKey = [EventKey, UnknownEventValue, Player | undefined];
 
@@ -47,7 +47,7 @@ export type HistoryKey = [EventKey, UnknownEventValue, Player | undefined];
 export type QuestCallback = (
 	value: UnknownEventValue,
 	done: boolean,
-) => boolean;
+) => Promise<boolean>;
 
 /**
  * The backend of a quest.

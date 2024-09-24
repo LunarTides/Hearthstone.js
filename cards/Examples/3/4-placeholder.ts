@@ -18,7 +18,7 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "None",
 
-	cast(owner, self) {
+	async cast(owner, self) {
 		// Gain mana equal to the turn counter.
 		const turns = game.functions.util.getTraditionalTurnCounter();
 
@@ -26,7 +26,7 @@ export const blueprint: Blueprint = {
 	},
 
 	// This function will be run every tick, and will replace the placeholders in the description with this function's return value.
-	placeholders(owner, self) {
+	async placeholders(owner, self) {
 		/*
 		 * All occurances of `{turns}` will be replaced by the value in `game.turns`
 		 * All `{laugh}` will be replaced by 'haha lol'
@@ -51,8 +51,8 @@ export const blueprint: Blueprint = {
 		};
 	},
 
-	test(owner, self) {
-		self.replacePlaceholders();
+	async test(owner, self) {
+		await self.replacePlaceholders();
 
 		assert.equal(
 			self.text,
@@ -60,15 +60,15 @@ export const blueprint: Blueprint = {
 		);
 
 		assert.equal(
-			self.doPlaceholders(),
+			await self.doPlaceholders(),
 			"Battlecry: Gain mana equal to the turn counter. (Currently 1, haha lol, 1, The next thing is: test, {placeholder without replacement})",
 		);
 
-		game.endTurn();
-		game.endTurn();
+		await game.endTurn();
+		await game.endTurn();
 
 		assert.equal(
-			self.doPlaceholders(),
+			await self.doPlaceholders(),
 			"Battlecry: Gain mana equal to the turn counter. (Currently 2, haha lol, 2, The next thing is: test, {placeholder without replacement})",
 		);
 	},

@@ -18,7 +18,7 @@ export const blueprint: Blueprint = {
 	health: 5,
 	tribe: "None",
 
-	battlecry(owner, self) {
+	async battlecry(owner, self) {
 		// Cast a random spell for each spell you've cast this game (targets chosen randomly).
 		const amount = game.event.events.PlayCard?.[owner.id].filter(
 			(object) => object[0] instanceof Card && object[0].type === "Spell",
@@ -27,20 +27,20 @@ export const blueprint: Blueprint = {
 			return;
 		}
 
-		const pool = Card.all().filter((card) => card.type === "Spell");
+		const pool = (await Card.all()).filter((card) => card.type === "Spell");
 
 		for (let i = 0; i < amount; i++) {
-			const card = game.lodash.sample(pool)?.imperfectCopy();
+			const card = await game.lodash.sample(pool)?.imperfectCopy();
 
 			if (!card) {
 				continue;
 			}
 
-			card.activate("cast");
+			await card.activate("cast");
 		}
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		// TODO: Add proper tests. #325
 		return true;
 	},

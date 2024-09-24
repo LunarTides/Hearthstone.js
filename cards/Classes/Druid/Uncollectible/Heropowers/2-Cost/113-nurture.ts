@@ -13,20 +13,20 @@ export const blueprint: Blueprint = {
 	collectible: false,
 	id: 113,
 
-	heropower(owner, self) {
+	async heropower(owner, self) {
 		// Choose One - Draw a card; or Gain an empty Mana Crystal.
-		game.interact.chooseOne(
+		await game.interact.chooseOne(
 			1,
 			[
 				"Draw a card",
-				() => {
+				async () => {
 					// Draw a card
-					owner.drawCards(1);
+					await owner.drawCards(1);
 				},
 			],
 			[
 				"Gain an empty Mana Crystal",
-				() => {
+				async () => {
 					// Gain an empty ManaCrystal
 					owner.addEmptyMana(1);
 				},
@@ -34,12 +34,12 @@ export const blueprint: Blueprint = {
 		);
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		// Draw a card
 		const handSize = owner.hand.length;
 
 		owner.inputQueue = ["1"];
-		self.activate("heropower");
+		await self.activate("heropower");
 
 		assert.equal(owner.hand.length, handSize + 1);
 
@@ -47,7 +47,7 @@ export const blueprint: Blueprint = {
 		const { emptyMana } = owner;
 
 		owner.inputQueue = ["2"];
-		self.activate("heropower");
+		await self.activate("heropower");
 
 		assert.equal(owner.emptyMana, emptyMana + 1);
 	},

@@ -15,8 +15,8 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "None",
 
-	cast(owner, self) {
-		if (!self.condition()) {
+	async cast(owner, self) {
+		if (!(await self.condition())) {
 			return;
 		}
 
@@ -31,7 +31,7 @@ export const blueprint: Blueprint = {
 		owner.addMana(turns);
 	},
 
-	condition(owner, self) {
+	async condition(owner, self) {
 		let turns = game.functions.util.getTraditionalTurnCounter();
 		if (turns > 10) {
 			turns = 10;
@@ -45,7 +45,7 @@ export const blueprint: Blueprint = {
 		return even || manathirst;
 	},
 
-	placeholders(owner, self) {
+	async placeholders(owner, self) {
 		let turns = game.functions.util.getTraditionalTurnCounter();
 		if (turns > 10) {
 			turns = 10;
@@ -54,7 +54,7 @@ export const blueprint: Blueprint = {
 		return { turns };
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		const turn = () => {
 			let turns = game.functions.util.getTraditionalTurnCounter();
 			if (turns > 10) {
@@ -67,30 +67,30 @@ export const blueprint: Blueprint = {
 		// The condition is not cleared
 		let { mana } = owner;
 		assert.equal(turn(), 1);
-		self.activate("cast");
+		await self.activate("cast");
 
 		assert.equal(owner.mana, mana);
 
 		// Next
-		game.endTurn();
-		game.endTurn();
+		await game.endTurn();
+		await game.endTurn();
 
 		// The condition is cleared, gain 2 mana.
 		mana = owner.mana;
 		assert.equal(turn(), 2);
-		self.activate("cast");
+		await self.activate("cast");
 
 		assert.equal(owner.mana, mana + 2);
 
 		// Next
-		game.endTurn();
-		game.endTurn();
+		await game.endTurn();
+		await game.endTurn();
 
 		// The manathirst is cleared, but not the condition, still gain 3 mana.
 		owner.emptyMana = 7;
 		mana = owner.mana;
 		assert.equal(turn(), 3);
-		self.activate("cast");
+		await self.activate("cast");
 
 		assert.equal(owner.mana, mana + 3);
 	},

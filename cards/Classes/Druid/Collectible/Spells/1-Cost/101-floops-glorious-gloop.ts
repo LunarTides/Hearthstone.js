@@ -15,11 +15,11 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "Nature",
 
-	cast(owner, self) {
+	async cast(owner, self) {
 		// Whenever a minion dies this turn, gain 1 Mana Crystal this turn only.
 		const destroy = game.functions.event.addListener(
 			"KillCard",
-			() => {
+			async () => {
 				// Gain 1 Mana Crystal
 				owner.refreshMana(1, owner.maxMana);
 
@@ -28,10 +28,10 @@ export const blueprint: Blueprint = {
 			-1,
 		);
 
-		game.functions.event.addListener("EndTurn", destroy);
+		game.functions.event.addListener("EndTurn", async () => destroy());
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		// TODO: Add proper tests. #325
 		return true;
 	},

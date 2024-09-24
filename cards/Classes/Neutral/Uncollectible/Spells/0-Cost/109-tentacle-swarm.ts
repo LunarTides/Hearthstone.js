@@ -18,19 +18,19 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "None",
 
-	cast(owner, self) {
+	async cast(owner, self) {
 		// Fill your hand with 1/1 Chaotic Tendrils.
 		const remaining = owner.getRemainingHandSpace();
 
 		for (let index = 0; index < remaining; index++) {
-			const card = new Card(game.cardIds.chaoticTendril110, owner);
-			owner.addToHand(card);
+			const card = await Card.create(game.cardIds.chaoticTendril110, owner);
+			await owner.addToHand(card);
 		}
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		const handSize = owner.hand.length;
-		self.activate("cast");
+		await self.activate("cast");
 
 		// Check if the player's hand was filled with tendrils
 		const amountOfCards = owner.hand.length - handSize;

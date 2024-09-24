@@ -18,11 +18,11 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribe: "None",
 
-	battlecry(owner, self) {
+	async battlecry(owner, self) {
 		// Give a friendly minion +1 Attack and Rush.
 
 		// Prompt the user to select a friendly minion
-		const target = game.interact.selectCardTarget(
+		const target = await game.interact.selectCardTarget(
 			"Give a friendly minion +1 Attack and Rush",
 			self,
 			"friendly",
@@ -34,21 +34,21 @@ export const blueprint: Blueprint = {
 		}
 
 		// Add +1 Attack
-		target.addStats(1, 0);
+		await target.addStats(1, 0);
 
 		// Add Rush
 		target.addKeyword("Rush");
 		return true;
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		// Summon a sheep
-		const sheep = new Card(game.cardIds.sheep1, owner);
-		owner.summon(sheep);
+		const sheep = await Card.create(game.cardIds.sheep1, owner);
+		await owner.summon(sheep);
 
 		// Activate the battlecry, choose the sheep
 		owner.inputQueue = ["1"];
-		self.activate("battlecry");
+		await self.activate("battlecry");
 
 		// The sheep should have 2 attack and rush
 		assert.equal(sheep.attack, 2);

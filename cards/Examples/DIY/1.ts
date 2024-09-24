@@ -16,7 +16,7 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribe: "None",
 
-	battlecry(owner, self) {
+	async battlecry(owner, self) {
 		// Give this minion +1/+1.
 
 		// Try to give this minion +1/+1 yourself.
@@ -24,13 +24,13 @@ export const blueprint: Blueprint = {
 		// DON'T CHANGE ANYTHING BELOW THIS LINE
 
 		// Testing your solution.
-		const success = game.interact.verifyDiySolution(
+		const success = await game.interact.verifyDiySolution(
 			self.attack === 1 && self.health === 2,
 			self,
 		);
 
 		if (!success) {
-			self.kill();
+			await self.kill();
 		}
 
 		return true;

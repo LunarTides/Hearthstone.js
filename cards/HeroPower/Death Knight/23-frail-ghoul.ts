@@ -17,11 +17,11 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribe: "Undead",
 
-	create(owner, self) {
+	async create(owner, self) {
 		self.addKeyword("Charge");
 	},
 
-	passive(owner, self, key, value, eventPlayer) {
+	async passive(owner, self, key, value, eventPlayer) {
 		// At the end of your turn, this minion dies.
 
 		// Only continue if the event that triggered this is the EndTurn event, and the player that triggered the event is this card's owner.
@@ -30,23 +30,23 @@ export const blueprint: Blueprint = {
 		}
 
 		// Kill this minion
-		self.kill();
+		await self.kill();
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		const checkIfThisCardIsOnTheBoard = () =>
 			owner.board.some((card) => card.uuid === self.uuid);
 
 		// Summon the minion, the minion should now be on the board
-		owner.summon(self);
+		await owner.summon(self);
 		assert(checkIfThisCardIsOnTheBoard());
 
 		// Broadcast a dummy event, the minion should still be on the board
-		game.event.broadcastDummy(owner);
+		await game.event.broadcastDummy(owner);
 		assert(checkIfThisCardIsOnTheBoard());
 
 		// End the player's turn, the minion should no longer be on the board
-		game.endTurn();
+		await game.endTurn();
 		assert(!checkIfThisCardIsOnTheBoard());
 	},
 };

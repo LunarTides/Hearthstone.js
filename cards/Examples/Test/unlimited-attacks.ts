@@ -17,15 +17,15 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribe: "None",
 
-	create(owner, self) {
+	async create(owner, self) {
 		// Can attack any number of times.
 
 		// This keyword can be added to weapons as well.
 		self.addKeyword("Unlimited Attacks");
 	},
 
-	test(owner, self) {
-		owner.summon(self);
+	async test(owner, self) {
+		await owner.summon(self);
 
 		self.ready();
 		self.resetAttackTimes();
@@ -33,7 +33,7 @@ export const blueprint: Blueprint = {
 		// The card should be not be sleepy
 		assert.ok(!self.sleepy);
 
-		game.attack(self, owner.getOpponent());
+		await game.attack(self, owner.getOpponent());
 
 		// The card should still not be sleepy
 		assert.ok(!self.sleepy);

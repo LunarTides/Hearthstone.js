@@ -49,24 +49,24 @@ export class Logger {
 		this.log(this.translate(text, ...args));
 	}
 
-	inputTranslate(text: string, ...args: unknown[]): string {
+	async inputTranslate(text: string, ...args: unknown[]): Promise<string> {
 		const newText = this.translate(text, ...args);
 
-		return game.input(newText);
+		return await game.input(newText);
 	}
 
-	inputTranslateWithOptions(
+	async inputTranslateWithOptions(
 		text: string,
 		overrideNoInput = false,
 		useInputQueue = true,
 		...args: unknown[]
-	): string {
+	): Promise<string> {
 		const newText = this.translate(text, ...args);
 
-		return game.input(newText, overrideNoInput, useInputQueue);
+		return await game.input(newText, overrideNoInput, useInputQueue);
 	}
 
-	pauseTranslate(text: string, ...args: unknown[]): void {
-		game.pause(this.translate(text, ...args));
+	async pauseTranslate(text: string, ...args: unknown[]): Promise<void> {
+		await game.pause(this.translate(text, ...args));
 	}
 }

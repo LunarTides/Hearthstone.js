@@ -16,7 +16,7 @@ export const blueprint: Blueprint = {
 	health: 2,
 	tribe: "Totem",
 
-	create(owner, self) {
+	async create(owner, self) {
 		self.addKeyword("Taunt");
 	},
 };

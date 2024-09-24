@@ -40,13 +40,13 @@ export const eventFunctions = {
 			return true;
 		};
 
-		game.event.listeners[id] = (_key, _unknownValue, eventPlayer) => {
+		game.event.listeners[id] = async (_key, _unknownValue, eventPlayer) => {
 			// Validate key. If key is empty, match any key.
 			if (key !== "" && _key !== key) {
 				return;
 			}
 
-			const message = callback(_unknownValue, eventPlayer);
+			const message = await callback(_unknownValue, eventPlayer);
 			times++;
 
 			switch (message) {
@@ -146,7 +146,10 @@ export const eventFunctions = {
 	 *
 	 * @returns The return value of the callback.
 	 */
-	withSuppressed<T>(key: EventKey | EventKey[], callback: () => T): T {
+	async withSuppressed<T>(
+		key: EventKey | EventKey[],
+		callback: () => Promise<T>,
+	): Promise<T> {
 		const unsuppressed: Array<() => boolean> = [];
 
 		if (Array.isArray(key)) {
@@ -157,7 +160,7 @@ export const eventFunctions = {
 			unsuppressed.push(this.suppress(key));
 		}
 
-		const returnValue = callback();
+		const returnValue = await callback();
 		for (const unsuppress of unsuppressed) {
 			unsuppress();
 		}

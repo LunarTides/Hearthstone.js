@@ -23,11 +23,11 @@ const { game } = createGame();
  * @param card The vanilla card
  * @param debug If it should use debug mode
  */
-export function create(
+export async function create(
 	card: VanillaCard,
 	debug: boolean,
 	overrideType?: lib.CcType,
-): void {
+): Promise<void> {
 	// Harvest info
 	let cardClass = game.lodash.capitalize(
 		card.cardClass ?? "Neutral",
@@ -69,12 +69,12 @@ export function create(
 	text = text.replaceAll("\n", " ");
 	text = text.replaceAll("[x]", "");
 
-	const classes = game.functions.card.getClasses() as CardClass[];
+	const classes = (await game.functions.card.getClasses()) as CardClass[];
 	classes.push("Neutral");
 
 	while (!classes.includes(cardClass)) {
 		cardClass = game.lodash.startCase(
-			game.input(
+			await game.input(
 				"<red>Was not able to find the class of this card.\nWhat is the class of this card? </red>",
 			),
 		) as CardClass;
@@ -92,7 +92,7 @@ export function create(
 			throw new Error("No hero power found");
 		}
 
-		create(heroPower, debug, overrideType);
+		await create(heroPower, debug, overrideType);
 	}
 
 	let blueprint: Blueprint = {
@@ -166,7 +166,7 @@ export function create(
 		cctype = overrideType;
 	}
 
-	lib.create(cctype, blueprint, undefined, undefined, debug);
+	await lib.create(cctype, blueprint, undefined, undefined, debug);
 }
 
 /**
@@ -174,14 +174,19 @@ export function create(
  *
  * @returns If a card was created
  */
-export function main(debug = false, overrideType?: lib.CcType): boolean {
+export async function main(
+	debug = false,
+	overrideType?: lib.CcType,
+): Promise<boolean> {
 	console.log("Hearthstone.js Vanilla Card Creator (C) 2022\n");
 
 	const vanillaCards = game.functions.card.vanilla.getAll();
 
 	let running = true;
 	while (running) {
-		const cardName = game.input("\nName / dbfId (Type 'back' to cancel): ");
+		const cardName = await game.input(
+			"\nName / dbfId (Type 'back' to cancel): ",
+		);
 		if (game.interact.shouldExit(cardName)) {
 			running = false;
 			break;
@@ -228,7 +233,7 @@ export function main(debug = false, overrideType?: lib.CcType): boolean {
 			}
 
 			const picked = game.lodash.parseInt(
-				logger.inputTranslate("Pick one (1-%s): ", filteredCards.length),
+				await logger.inputTranslate("Pick one (1-%s): ", filteredCards.length),
 			);
 
 			if (!picked || !filteredCards[picked - 1]) {
@@ -243,7 +248,7 @@ export function main(debug = false, overrideType?: lib.CcType): boolean {
 
 		console.log("Found '%s'\n", card.name);
 
-		create(card, debug, overrideType);
+		await create(card, debug, overrideType);
 	}
 
 	return true;

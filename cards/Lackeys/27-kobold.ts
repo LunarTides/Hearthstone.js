@@ -18,11 +18,11 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribe: "None",
 
-	battlecry(owner, self) {
+	async battlecry(owner, self) {
 		// Deal 2 damage.
 
 		// Select a target
-		const target = game.interact.selectTarget(
+		const target = await game.interact.selectTarget(
 			"Deal 2 damage.",
 			self,
 			"any",
@@ -35,13 +35,13 @@ export const blueprint: Blueprint = {
 		}
 
 		// Deal 2 damage to the target
-		game.attack(2, target);
+		await game.attack(2, target);
 		return true;
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		owner.inputQueue = ["face", "y"];
-		self.activate("battlecry");
+		await self.activate("battlecry");
 
 		assert.equal(owner.getOpponent().health, 30 - 2);
 		assert.equal(owner.inputQueue, undefined);

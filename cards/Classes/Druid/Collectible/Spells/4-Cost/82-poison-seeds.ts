@@ -16,29 +16,29 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "Nature",
 
-	cast(owner, self) {
+	async cast(owner, self) {
 		// Destroy all minions and summon 2/2 Treants to replace them.
 		for (const player of [game.player1, game.player2]) {
 			for (const card of player.board) {
-				card.kill();
+				await card.kill();
 
-				const treant = new Card(game.cardIds.treant83, player);
-				player.summon(treant);
+				const treant = await Card.create(game.cardIds.treant83, player);
+				await player.summon(treant);
 			}
 		}
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		const amountOfCards = 3;
 
 		// Summon n Sheep
 		for (let i = 0; i < amountOfCards; i++) {
-			const sheep = new Card(game.cardIds.sheep1, owner);
-			owner.summon(sheep);
+			const sheep = await Card.create(game.cardIds.sheep1, owner);
+			await owner.summon(sheep);
 		}
 
 		// Replace with Treants
-		self.activate("cast");
+		await self.activate("cast");
 
 		// Check if every card is a Treant
 		const board = owner.board;

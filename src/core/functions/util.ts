@@ -121,7 +121,7 @@ export const utilFunctions = {
 	 *
 	 * @returns Success
 	 */
-	createLogFile(error?: Error): boolean {
+	async createLogFile(error?: Error): Promise<boolean> {
 		// Create a (crash-)log file
 		if (!this.fs("exists", "/logs")) {
 			this.fs("mkdir", "/logs");
@@ -134,7 +134,7 @@ export const utilFunctions = {
 		const dateStringFileFriendly = date.format(now, "DD.MM.YY-HH.mm.ss");
 
 		// Grab the history of the game
-		let history = game.interact.gameLoop.handleCmds("history", {
+		let history = await game.interact.gameLoop.handleCmds("history", {
 			echo: false,
 			debug: true,
 		});
@@ -151,7 +151,9 @@ export const utilFunctions = {
 		 * Do this so it can actually run '/ai'
 		 */
 		game.config.general.debug = true;
-		const aiHistory = game.interact.gameLoop.handleCmds("/ai", { echo: false });
+		const aiHistory = await game.interact.gameLoop.handleCmds("/ai", {
+			echo: false,
+		});
 
 		const name = error ? "Crash Log" : "Log";
 
@@ -225,7 +227,7 @@ ${mainContent}
 			game.config.info.githubUrl,
 		);
 
-		game.pause();
+		await game.pause();
 
 		return true;
 	},
@@ -317,7 +319,7 @@ ${mainContent}
 	 * const success = runCommandAsChildProcess("notepad foo.txt");
 	 *
 	 * // Wait until the user presses enter. This function automatically prints a traceback to the screen but will not pause by itself.
-	 * if (!success) game.pause();
+	 * if (!success) await game.pause();
 	 */
 	runCommandAsChildProcess(command: string): boolean {
 		// Windows vs Linux. Pros and Cons:
@@ -381,7 +383,7 @@ ${mainContent}
 					"If you're not using linux, open up an issue on the github page.",
 				);
 
-				// Game.pause(); <- It is your job to pause the program when you run this, since function.ts functions should generally not pause the game.
+				// Await game.pause(); <- It is your job to pause the program when you run this, since function.ts functions should generally not pause the game.
 
 				return false;
 			}

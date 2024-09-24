@@ -15,15 +15,15 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "Nature",
 
-	cast(owner, self) {
+	async cast(owner, self) {
 		// Gain 6 Armor. Recruit a minion that costs (4) or less.
 		owner.addArmor(6);
-		owner.recruit(owner.deck, 1, (card) => card.cost <= 4);
+		await owner.recruit(owner.deck, 1, (card) => card.cost <= 4);
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		for (let index = 1; index <= 10; index++) {
-			self.activate("cast");
+			await self.activate("cast");
 
 			// Check if the armor is correct
 			assert.equal(owner.armor, 6 * index);

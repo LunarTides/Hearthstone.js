@@ -13,7 +13,7 @@ import { createGame } from "./internal.js";
 /**
  * Starts the game.
  */
-export function main(): void {
+export async function main(): Promise<void> {
 	logger.debug("Creating game...");
 	const { game, player1, player2 } = createGame();
 	logger.debug("Creating game...OK");
@@ -32,7 +32,7 @@ export function main(): void {
 		 * If there were holes or dupes, pause the game so that the user gets a
 		 * chance to see what the problem was
 		 */
-		game.pause();
+		await game.pause();
 	}
 
 	// Ask the players for deck codes.
@@ -44,7 +44,7 @@ export function main(): void {
 		}
 
 		// Put this in a while loop to make sure the function repeats if it fails.
-		while (!game.interact.deckCode(player)) {
+		while (!(await game.interact.deckCode(player))) {
 			// Pass
 		}
 	}
@@ -52,12 +52,12 @@ export function main(): void {
 	logger.debug("Asking players for deck codes...OK");
 
 	logger.debug("Starting game...");
-	game.startGame();
+	await game.startGame();
 	logger.debug("Starting game...OK");
 
 	logger.debug("Performing mulligan...");
-	game.interact.card.mulligan(player1);
-	game.interact.card.mulligan(player2);
+	await game.interact.card.mulligan(player1);
+	await game.interact.card.mulligan(player2);
 	logger.debug("Performing mulligan...OK");
 
 	logger.debug("Finished setting up game.");
@@ -66,7 +66,7 @@ export function main(): void {
 	try {
 		// Game loop
 		while (game.running) {
-			game.interact.gameLoop.doTurn();
+			await game.interact.gameLoop.doTurn();
 		}
 
 		logger.debug("Starting game loop...OK");
@@ -83,7 +83,7 @@ export function main(): void {
 		logger.debug("Throwing error, goodbye!");
 
 		// Create error report file
-		game.functions.util.createLogFile(error);
+		await game.functions.util.createLogFile(error);
 
 		throw error;
 	}
@@ -91,5 +91,5 @@ export function main(): void {
 	logger.debug("Game finished successfully.");
 
 	// Create log file
-	game.functions.util.createLogFile();
+	await game.functions.util.createLogFile();
 }

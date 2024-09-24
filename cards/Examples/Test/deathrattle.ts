@@ -18,27 +18,27 @@ export const blueprint: Blueprint = {
 	health: 2,
 	tribe: "None",
 
-	deathrattle(owner, self) {
+	async deathrattle(owner, self) {
 		// Summon two 1/1 Sheep.
 
 		for (let i = 0; i < 2; i++) {
 			// Create the sheep
-			const sheep = new Card(game.cardIds.sheep1, owner);
+			const sheep = await Card.create(game.cardIds.sheep1, owner);
 
 			// Summon the sheep
-			owner.summon(sheep);
+			await owner.summon(sheep);
 		}
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		// There should be 0 minions on the board
 		assert.equal(owner.board.length, 0);
-		owner.summon(self);
+		await owner.summon(self);
 
 		// There should be 1 minion on the board
 		assert.equal(owner.board.length, 1);
 
-		game.attack(2, self);
+		await game.attack(2, self);
 
 		// There should be 2 minions on the board since the deathrattle should have triggered
 		assert.equal(owner.board.length, 2);

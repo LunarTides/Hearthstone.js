@@ -14,20 +14,20 @@ export const blueprint: Blueprint = {
 	collectible: false,
 	id: 122,
 
-	heropower(owner, self) {
+	async heropower(owner, self) {
 		// Equip a 1/2 Dagger.
 
 		// Create the weapon card
-		const weapon = new Card(game.cardIds.wickedKnife22, owner);
+		const weapon = await Card.create(game.cardIds.wickedKnife22, owner);
 
 		// Equip the weapon
-		owner.setWeapon(weapon);
+		await owner.setWeapon(weapon);
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		// The player should not have a weapon
 		assert.equal(owner.weapon, undefined);
-		self.activate("heropower");
+		await self.activate("heropower");
 
 		// The player should now have the wicked knife weapon
 		assert.ok(owner.weapon);

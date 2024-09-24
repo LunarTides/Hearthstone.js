@@ -18,30 +18,30 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribe: "None",
 
-	battlecry(owner, self) {
+	async battlecry(owner, self) {
 		// Discover a spell.
 
 		// Filter out all cards that aren't spells
-		const pool = Card.all().filter((c) => c.type === "Spell");
+		const pool = (await Card.all()).filter((c) => c.type === "Spell");
 		if (pool.length <= 0) {
 			return;
 		}
 
 		// Prompt a discover
-		const card = game.interact.card.discover("Discover a spell.", pool);
+		const card = await game.interact.card.discover("Discover a spell.", pool);
 		if (!card) {
 			return Card.REFUND;
 		}
 
 		// Add the card to the player's hand
-		owner.addToHand(card);
+		await owner.addToHand(card);
 		return true;
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		// If there are no spells, pass the test
 		if (
-			Card.all().filter(
+			(await Card.all()).filter(
 				(c) =>
 					c.type === "Spell" &&
 					game.functions.card.validateClasses(self.classes, owner.heroClass),
@@ -57,7 +57,7 @@ export const blueprint: Blueprint = {
 		for (let i = 0; i < 50; i++) {
 			// Activate the battlecry and get the card from the player's hand.
 			owner.hand = [];
-			self.activate("battlecry");
+			await self.activate("battlecry");
 			const card = owner.hand[0];
 
 			assert.equal(card.type, "Spell");

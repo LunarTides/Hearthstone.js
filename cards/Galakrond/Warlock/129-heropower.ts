@@ -14,26 +14,26 @@ export const blueprint: Blueprint = {
 	collectible: false,
 	id: 129,
 
-	heropower(owner, self) {
+	async heropower(owner, self) {
 		// Summon two 1/1 Imps.
 		for (let i = 0; i < 2; i++) {
-			const card = new Card(game.cardIds.draconicImp21, owner);
+			const card = await Card.create(game.cardIds.draconicImp21, owner);
 			if (!card) {
 				break;
 			}
 
-			owner.summon(card);
+			await owner.summon(card);
 		}
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		const countImps = () => owner.board.filter((card) => card.id === 21).length;
 
 		// There should be 0 imps by default
 		assert.equal(countImps(), 0);
 
 		// There should be 2 imps when using the hero power
-		self.activate("heropower");
+		await self.activate("heropower");
 		assert.equal(countImps(), 2);
 	},
 };

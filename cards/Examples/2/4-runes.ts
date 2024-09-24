@@ -16,12 +16,12 @@ export const blueprint: Blueprint = {
 	health: 2,
 	tribe: "None",
 
-	create(owner, self) {
+	async create(owner, self) {
 		// You need 2 frost runes and 1 blood rune to use this card.
 		self.runes = "FFB";
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		// TODO: Test. #325
 	},
 };

@@ -294,9 +294,8 @@ export class Card {
 	 *
 	 * @param name The name of this card
 	 * @param owner This card's owner.
-	 * @param [suppressEvent=false] If the "CreateCard" event should be suppressed.
 	 */
-	constructor(id: number, owner: Player, suppressEvent = false) {
+	constructor(id: number, owner: Player) {
 		// Get the blueprint from the cards list
 		const blueprint = game.blueprints.find((c) => c.id === id);
 		if (!blueprint) {
@@ -317,43 +316,7 @@ export class Card {
 		this.maxHealth = this.blueprint.health;
 		this.owner = owner;
 
-		// Override the properties from the blueprint
-		this.doBlueprint(false);
 		this.randomizeUUID();
-
-		const placeholder = this.activate("placeholders");
-
-		// This is a list of replacements.
-		if (Array.isArray(placeholder)) {
-			this.placeholder = placeholder[0] as Record<string, string>;
-		}
-
-		this.activate("create");
-		this.replacePlaceholders();
-
-		/*
-		 * Properties after this point can't be overriden
-		 * Make a backup of "this" to be used when silencing this card
-		 */
-		if (!this.backups.init) {
-			this.backups.init = {} as CardBackup;
-		}
-
-		for (const entry of Object.entries(this)) {
-			// HACK: Never usage
-			this.backups.init[entry[0] as never] = entry[1] as never;
-		}
-
-		let unsuppress: undefined | (() => boolean);
-		if (suppressEvent) {
-			unsuppress = game.functions.event.suppress("CreateCard");
-		}
-
-		game.event.broadcast("CreateCard", this, this.owner);
-
-		if (unsuppress) {
-			unsuppress();
-		}
 	}
 
 	static REFUND: -1 = -1;
@@ -364,14 +327,14 @@ export class Card {
 	 * @param refer If this should call `getCardById` if it doesn't find the card from the name
 	 *
 	 * @example
-	 * const cards = Card.allFromName('The Coin');
+	 * const cards = await Card.allFromName('The Coin');
 	 *
 	 * assert.ok(card[0] instanceof Card);
 	 * assert.equal(card[0].name, 'The Coin');
 	 */
-	static allFromName(name: string, refer = true): Card[] {
+	static async allFromName(name: string, refer = true): Promise<Card[]> {
 		// First, check if `name` is actually an id instead of a name.
-		const id = Card.fromID(game.lodash.parseInt(name));
+		const id = await Card.fromID(game.lodash.parseInt(name));
 
 		/*
 		 * For some reason, "10 Mana" turns into 10 when passed through `parseInt`.
@@ -381,9 +344,20 @@ export class Card {
 			return [id];
 		}
 
-		return Card.all(true).filter(
+		return (await Card.all(true)).filter(
 			(c) => c.name.toLowerCase() === name.toLowerCase(),
 		);
+	}
+
+	static async create(
+		id: number,
+		player: Player,
+		suppressEvent = false,
+	): Promise<Card> {
+		const card = new Card(id, player);
+		await card.setup(suppressEvent);
+
+		return card;
 	}
 
 	/**
@@ -391,26 +365,29 @@ export class Card {
 	 *
 	 * @returns The created card, or undefined if no card is found.
 	 */
-	static fromName(name: string, player: Player): Card | undefined {
-		const cards = Card.allFromName(name);
+	static async fromName(
+		name: string,
+		player: Player,
+	): Promise<Card | undefined> {
+		const cards = await Card.allFromName(name);
 		if (cards.length <= 0) {
 			return undefined;
 		}
 
-		return new Card(cards[0].id, player, true);
+		return Card.create(cards[0].id, player, true);
 	}
 
 	/**
 	 * Returns the card with the id of `id`.
 	 *
 	 * @example
-	 * const card = Card.fromID(2);
+	 * const card = await Card.fromID(2);
 	 *
 	 * assert.ok(card instanceof Card);
 	 * assert.equal(card.name, 'The Coin');
 	 */
-	static fromID(id: number): Card | undefined {
-		return Card.all(true).find((c) => c.id === id);
+	static async fromID(id: number): Promise<Card | undefined> {
+		return (await Card.all(true)).find((c) => c.id === id);
 	}
 
 	/**
@@ -418,11 +395,11 @@ export class Card {
 	 *
 	 * @param include_uncollectible If it should include all uncollectible cards
 	 */
-	static all(include_uncollectible = false): Card[] {
+	static async all(include_uncollectible = false): Promise<Card[]> {
 		// Don't broadcast CreateCard event here since it would spam the history and log files
 		if (game.cards.length <= 0) {
-			game.cards = game.blueprints.map(
-				(card) => new Card(card.id, game.player, true),
+			game.cards = await Promise.all(
+				game.blueprints.map(async (card) => Card.create(card.id, game.player)),
 			);
 
 			game.functions.card.generateIdsFile();
@@ -508,6 +485,52 @@ export class Card {
 	}
 
 	/**
+	 * Does some stuff that can't be done in the constructer since it is async.
+	 *
+	 * Don't call manually.
+	 *
+	 * @param [suppressEvent=false] If the "CreateCard" event should be suppressed.
+	 */
+	async setup(suppressEvent = false): Promise<void> {
+		const placeholder = await this.activate("placeholders");
+
+		// This is a list of replacements.
+		if (Array.isArray(placeholder)) {
+			this.placeholder = placeholder[0] as Record<string, string>;
+		}
+
+		// Override the properties from the blueprint
+		await this.doBlueprint(false);
+
+		await this.activate("create");
+		await this.replacePlaceholders();
+
+		let unsuppress: undefined | (() => boolean);
+		if (suppressEvent) {
+			unsuppress = game.functions.event.suppress("CreateCard");
+		}
+
+		await game.event.broadcast("CreateCard", this, this.owner);
+
+		if (unsuppress) {
+			unsuppress();
+		}
+
+		/*
+		 * Properties after this point can't be overriden
+		 * Make a backup of "this" to be used when silencing this card
+		 */
+		if (!this.backups.init) {
+			this.backups.init = {} as CardBackup;
+		}
+
+		for (const entry of Object.entries(this)) {
+			// HACK: Never usage
+			this.backups.init[entry[0] as never] = entry[1] as never;
+		}
+	}
+
+	/**
 	 * Randomizes the uuid for this card to prevent cards from being "linked"
 	 */
 	randomizeUUID(): void {
@@ -519,7 +542,7 @@ export class Card {
 	 *
 	 * @param activate If it should trigger the card's `create` ability.
 	 */
-	doBlueprint(activate = true): void {
+	async doBlueprint(activate = true): Promise<void> {
 		// Reset the blueprint
 		this.blueprint =
 			game.blueprints.find((c) => c.id === this.id) ?? this.blueprint;
@@ -553,12 +576,12 @@ export class Card {
 		this.maxHealth = this.blueprint.health;
 
 		if (this.heropowerId) {
-			this.heropower = new Card(this.heropowerId, this.owner);
+			this.heropower = await Card.create(this.heropowerId, this.owner);
 		}
 
 		this.text = game.functions.color.fromTags(this.text || "");
 		if (activate) {
-			this.activate("create");
+			await this.activate("create");
 		}
 	}
 
@@ -691,10 +714,10 @@ export class Card {
 	 *
 	 * @returns Success
 	 */
-	freeze(): boolean {
+	async freeze(): Promise<boolean> {
 		this.addKeyword("Frozen");
 
-		game.event.broadcast("FreezeCard", this, this.owner);
+		await game.event.broadcast("FreezeCard", this, this.owner);
 
 		return true;
 	}
@@ -755,11 +778,11 @@ export class Card {
 	 *
 	 * @returns Success
 	 */
-	setStats(
+	async setStats(
 		attack: number | undefined = this.attack,
 		health: number | undefined = this.health,
 		changeMaxHealth = true,
-	): boolean {
+	): Promise<boolean> {
 		if (this.attack === undefined || this.health === undefined) {
 			return false;
 		}
@@ -771,7 +794,7 @@ export class Card {
 			this.resetMaxHealth(false);
 		}
 
-		game.killCardsOnBoard();
+		await game.killCardsOnBoard();
 
 		return true;
 	}
@@ -784,13 +807,13 @@ export class Card {
 	 *
 	 * @returns Success
 	 */
-	addStats(attack = 0, health = 0): boolean {
+	async addStats(attack = 0, health = 0): Promise<boolean> {
 		if (this.attack === undefined || this.health === undefined) {
 			return false;
 		}
 
 		this.attack += attack;
-		this.addHealth(health, false);
+		await this.addHealth(health, false);
 
 		return true;
 	}
@@ -803,13 +826,13 @@ export class Card {
 	 *
 	 * @returns Success
 	 */
-	remStats(attack = 0, health = 0): boolean {
+	async remStats(attack = 0, health = 0): Promise<boolean> {
 		if (this.attack === undefined || this.health === undefined) {
 			return false;
 		}
 
 		this.attack -= attack;
-		this.remHealth(health);
+		await this.remHealth(health);
 
 		return true;
 	}
@@ -822,7 +845,7 @@ export class Card {
 	 *
 	 * @returns Success
 	 */
-	addHealth(amount: number, restore = true): boolean {
+	async addHealth(amount: number, restore = true): Promise<boolean> {
 		if (this.health === undefined) {
 			return false;
 		}
@@ -841,15 +864,19 @@ export class Card {
 			// Too much health
 
 			// Overheal keyword
-			this.activate("overheal");
+			await this.activate("overheal");
 
 			this.health = this.maxHealth ?? -1;
 
 			if (this.health > before) {
-				game.event.broadcast("HealthRestored", this.maxHealth, this.owner);
+				await game.event.broadcast(
+					"HealthRestored",
+					this.maxHealth,
+					this.owner,
+				);
 			}
 		} else if (this.health > before) {
-			game.event.broadcast("HealthRestored", this.health, this.owner);
+			await game.event.broadcast("HealthRestored", this.health, this.owner);
 		}
 
 		return true;
@@ -864,7 +891,7 @@ export class Card {
 	 *
 	 * @returns Success
 	 */
-	remHealth(amount: number): boolean {
+	async remHealth(amount: number): Promise<boolean> {
 		if (this.health === undefined) {
 			return false;
 		}
@@ -882,14 +909,14 @@ export class Card {
 			return true;
 		}
 
-		this.setStats(this.attack, this.health - amount);
-		game.event.broadcast("DamageCard", [this, amount], this.owner);
+		await this.setStats(this.attack, this.health - amount);
+		await game.event.broadcast("DamageCard", [this, amount], this.owner);
 
 		if (this.type === "Weapon" && !this.isAlive()) {
-			this.owner.destroyWeapon();
+			await this.owner.destroyWeapon();
 		}
 
-		game.killCardsOnBoard();
+		await game.killCardsOnBoard();
 
 		return true;
 	}
@@ -1031,10 +1058,10 @@ export class Card {
 	 *
 	 * @param player
 	 */
-	bounce(player: Player = this.owner): boolean {
+	async bounce(player: Player = this.owner): Promise<boolean> {
 		this.owner = player;
-		player.addToHand(this.perfectCopy());
-		this.destroy();
+		await player.addToHand(this.perfectCopy());
+		await this.destroy();
 		return true;
 	}
 
@@ -1045,9 +1072,9 @@ export class Card {
 	 *
 	 * @returns Success
 	 */
-	kill(): boolean {
-		this.setStats(this.attack, 0);
-		game.killCardsOnBoard();
+	async kill(): Promise<boolean> {
+		await this.setStats(this.attack, 0);
+		await game.killCardsOnBoard();
 		return true;
 	}
 
@@ -1056,13 +1083,13 @@ export class Card {
 	 *
 	 * @returns Success
 	 */
-	silence(): boolean {
+	async silence(): Promise<boolean> {
 		/*
 		 * Tell the minion to undo it's passive.
 		 * The false tells the minion that this is the last time it will call remove
 		 * so it should finish whatever it is doing.
 		 */
-		const removeReturn = this.activate("remove", "SilenceCard");
+		const removeReturn = await this.activate("remove", "SilenceCard");
 
 		// If the remove function returned false, then we should not silence.
 		if (Array.isArray(removeReturn) && removeReturn[0] === false) {
@@ -1111,26 +1138,29 @@ export class Card {
 		// Remove active enchantments.
 		this.applyEnchantments();
 
-		game.event.broadcast("SilenceCard", this, this.owner);
+		await game.event.broadcast("SilenceCard", this, this.owner);
 
-		game.killCardsOnBoard();
+		await game.killCardsOnBoard();
 		return true;
 	}
 
 	/**
 	 * Silences, then kills the card.
 	 */
-	destroy(): void {
-		this.silence();
-		this.kill();
+	async destroy(): Promise<void> {
+		await this.silence();
+		await this.kill();
 	}
 
 	/**
 	 * Resets this card to its original state.
 	 */
-	reset(): void {
+	async reset(): Promise<void> {
 		// Silence it to remove any new abilities
-		game.functions.event.withSuppressed("SilenceCard", () => this.silence());
+		await game.functions.event.withSuppressed(
+			"SilenceCard",
+			async () => await this.silence(),
+		);
 		this.restoreBackup(this.backups.init);
 	}
 
@@ -1141,9 +1171,9 @@ export class Card {
 	 *
 	 * Run this after having reloaded the blueprints to apply the new changes to this card.
 	 */
-	reload(): void {
-		this.reset();
-		this.doBlueprint();
+	async reload(): Promise<void> {
+		await this.reset();
+		await this.doBlueprint();
 	}
 
 	// Handling functions
@@ -1158,12 +1188,12 @@ export class Card {
 	 *
 	 * @returns All the return values of the method keywords
 	 */
-	activate(
+	async activate(
 		name: CardAbility,
 		key?: EventKey | string | undefined,
 		_unknownValue?: UnknownEventValue,
 		eventPlayer?: Player,
-	): unknown[] | -1 | false {
+	): Promise<unknown[] | -1 | false> {
 		/*
 		 * This activates a function
 		 * Example: activate("cast")
@@ -1184,7 +1214,7 @@ export class Card {
 				continue;
 			}
 
-			const result = callback(
+			const result = await callback(
 				this.owner,
 				this,
 				key as EventKey,
@@ -1202,7 +1232,7 @@ export class Card {
 			}
 
 			// If the return value is -1, meaning "refund", refund the card and stop the for loop
-			game.event.broadcast("CancelCard", [this, name], this.owner);
+			await game.event.broadcast("CancelCard", [this, name], this.owner);
 
 			returnValue = Card.REFUND;
 
@@ -1215,7 +1245,7 @@ export class Card {
 			 * We have to suppress inside the loop in order to not have the event suppressed when calling the ability
 			 * It's a bit hacky, and not very efficient, but it works
 			 */
-			game.functions.event.withSuppressed("AddCardToHand", () =>
+			await game.functions.event.withSuppressed("AddCardToHand", async () =>
 				this.owner.addToHand(this),
 			);
 
@@ -1244,11 +1274,11 @@ export class Card {
 	 *
 	 * @returns If the card was successfully discarded
 	 */
-	discard(player = this.owner): boolean {
+	async discard(player = this.owner): Promise<boolean> {
 		const returnValue = game.functions.util.remove(player.hand, this);
 
 		if (returnValue) {
-			game.event.broadcast("DiscardCard", this, player);
+			await game.event.broadcast("DiscardCard", this, player);
 		}
 
 		return returnValue;
@@ -1259,7 +1289,7 @@ export class Card {
 	 *
 	 * @returns If the condition is met
 	 */
-	condition(): boolean {
+	async condition(): Promise<boolean> {
 		const clearedText = " <bright:green>(Condition cleared!)</bright:green>";
 		const clearedTextAlternative =
 			"<bright:green>Condition cleared!</bright:green>";
@@ -1269,7 +1299,7 @@ export class Card {
 		this.text = this.text.replace(clearedTextAlternative, "");
 
 		// Check if the condition is met
-		const condition = this.activate("condition");
+		const condition = await this.activate("condition");
 		if (!Array.isArray(condition) || condition[0] === false) {
 			return false;
 		}
@@ -1511,19 +1541,19 @@ export class Card {
 	 *
 	 *     return { turns };
 	 * }];
-	 * card.replacePlaceholders();
+	 * await card.replacePlaceholders();
 	 *
 	 * // The `{ph:turns}` tag is replaced when displaying the card.
 	 * assert.equal(card.text, "The current turn count is {ph:turns}");
 	 *
 	 * @returns Success
 	 */
-	replacePlaceholders(): boolean {
+	async replacePlaceholders(): Promise<boolean> {
 		if (!this.abilities.placeholders) {
 			return false;
 		}
 
-		const temporaryPlaceholder = this.activate("placeholders");
+		const temporaryPlaceholder = await this.activate("placeholders");
 		if (!Array.isArray(temporaryPlaceholder)) {
 			return false;
 		}
@@ -1551,7 +1581,7 @@ export class Card {
 	 *
 	 * @returns The modified description with placeholders replaced.
 	 */
-	doPlaceholders(overrideText = "", _depth = 0): string {
+	async doPlaceholders(overrideText = "", _depth = 0): Promise<string> {
 		let reg = /{ph:(.*?)}/;
 
 		let text = overrideText;
@@ -1572,7 +1602,7 @@ export class Card {
 			// Get the capturing group result
 			const key = regedDesc[1];
 
-			this.replacePlaceholders();
+			await this.replacePlaceholders();
 			const rawReplacement = this.placeholder;
 			if (!rawReplacement) {
 				throw new Error("Card placeholder not found.");
@@ -1592,7 +1622,7 @@ export class Card {
 				replacement =
 					onlyShowName && !alwaysShowFullCard
 						? replacement.colorFromRarity()
-						: replacement.readable(-1, _depth + 1);
+						: await replacement.readable(-1, _depth + 1);
 			}
 
 			text = game.functions.color.fromTags(text.replace(reg, replacement));
@@ -1644,16 +1674,16 @@ export class Card {
 	 * Return an imperfect copy of this card. This happens when, for example, a card gets shuffled into your deck in vanilla Hearthstone.
 	 *
 	 * @example
-	 * const cloned = card.imperfectCopy();
-	 * const cloned2 = game.createCard(card.id, card.owner);
+	 * const cloned = await card.imperfectCopy();
+	 * const cloned2 = await Card.create(card.id, card.owner);
 	 *
 	 * // This will actually fail since they're slightly different, but you get the point
 	 * assert.equal(cloned, cloned2);
 	 *
 	 * @returns An imperfect copy of this card.
 	 */
-	imperfectCopy(): Card {
-		return new Card(this.id, this.owner);
+	async imperfectCopy(): Promise<Card> {
+		return Card.create(this.id, this.owner);
 	}
 
 	/**
@@ -1720,8 +1750,11 @@ export class Card {
 	 *
 	 * @returns An array with the name of the adapt(s) chosen, or -1 if the user cancelled.
 	 */
-	adapt(prompt = "Choose One:", _values: string[][] = []): string | -1 {
-		game.interact.info.showGame(game.player);
+	async adapt(
+		prompt = "Choose One:",
+		_values: string[][] = [],
+	): Promise<string | -1> {
+		await game.interact.info.showGame(game.player);
 
 		const possibleCards = [
 			["Crackling Shield", "Divine Shield"],
@@ -1762,9 +1795,9 @@ export class Card {
 		p = p.slice(0, -2);
 		p += "\n] ";
 
-		let choice = game.input(p);
+		let choice = await game.input(p);
 		if (!game.lodash.parseInt(choice)) {
-			game.pause("<red>Invalid choice!</red>\n");
+			await game.pause("<red>Invalid choice!</red>\n");
 			return this.adapt(prompt, values);
 		}
 
@@ -1781,14 +1814,14 @@ export class Card {
 			}
 
 			case "Flaming Claws": {
-				this.addStats(3, 0);
+				await this.addStats(3, 0);
 				break;
 			}
 
 			case "Living Spores": {
-				this.addAbility("deathrattle", (owner, _) => {
-					owner.summon(new Card(game.cardIds.plant3, owner));
-					owner.summon(new Card(game.cardIds.plant3, owner));
+				this.addAbility("deathrattle", async (owner, _) => {
+					owner.summon(await Card.create(game.cardIds.plant3, owner));
+					owner.summon(await Card.create(game.cardIds.plant3, owner));
 				});
 				break;
 			}
@@ -1809,12 +1842,12 @@ export class Card {
 			}
 
 			case "Volcanic Might": {
-				this.addStats(1, 1);
+				await this.addStats(1, 1);
 				break;
 			}
 
 			case "Rocky Carapace": {
-				this.addStats(0, 3);
+				await this.addStats(0, 3);
 				break;
 			}
 
@@ -1860,7 +1893,7 @@ export class Card {
 	 *
 	 * @returns Success
 	 */
-	tryInfuse(): boolean {
+	async tryInfuse(): Promise<boolean> {
 		const infuse = this.getKeyword("Infuse") as number | undefined;
 		if (!infuse || infuse <= 0) {
 			return false;
@@ -1873,7 +1906,7 @@ export class Card {
 			return false;
 		}
 
-		this.activate("infuse");
+		await this.activate("infuse");
 		return true;
 	}
 
@@ -1900,11 +1933,11 @@ export class Card {
 	 *
 	 * @param newOwner The new owner of the card.
 	 */
-	takeControl(newOwner: Player): void {
+	async takeControl(newOwner: Player): Promise<void> {
 		game.functions.util.remove(this.owner.board, this);
 
 		this.owner = newOwner;
-		newOwner.summon(this);
+		await newOwner.summon(this);
 	}
 
 	/**
@@ -1929,7 +1962,7 @@ export class Card {
 	 *
 	 * @returns The human readable card string
 	 */
-	readable(i = -1, _depth = 0): string {
+	async readable(i = -1, _depth = 0): Promise<string> {
 		const { branch } = game.functions.info.version();
 
 		/**
@@ -1962,7 +1995,7 @@ export class Card {
 
 		// Extract placeholder value, remove the placeholder header and footer
 		if (this.placeholder ?? /\$(\d+)/.test(this.text || "")) {
-			text = this.doPlaceholders(text, _depth);
+			text = await this.doPlaceholders(text, _depth);
 		}
 
 		let cost = `{${this.cost}} `;
@@ -2041,8 +2074,8 @@ export class Card {
 	 *
 	 * @param help If it should show a help message which displays what the different fields mean.
 	 */
-	view(help = true): void {
-		const cardInfo = this.readable();
+	async view(help = true): Promise<void> {
+		const cardInfo = await this.readable();
 		const classInfo = `<gray>${this.classes.join(" / ")}</gray>`;
 
 		let tribe = "";
@@ -2090,6 +2123,6 @@ export class Card {
 		);
 
 		console.log();
-		game.pause();
+		await game.pause();
 	}
 }

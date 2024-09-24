@@ -22,29 +22,29 @@ export const blueprint: Blueprint = {
 	// You can set the tribe to "All" for "This has all minion types"
 	tribe: "All",
 
-	create(owner, self) {
+	async create(owner, self) {
 		// Taunt, Divine Shield
 
 		self.addKeyword("Taunt");
 		self.addKeyword("Divine Shield");
 	},
 
-	battlecry(owner, self) {
+	async battlecry(owner, self) {
 		// Dredge. Gain +1/+1.
 
 		// Ordering is important. In the description it says that it dredges first, then adds +1/+1.
-		game.interact.card.dredge();
+		await game.interact.card.dredge();
 
-		self.addStats(1, 1);
+		await self.addStats(1, 1);
 	},
 
 	// Ignore this
-	test(owner, self) {
+	async test(owner, self) {
 		// Makes the player answer "1" to the next question
 		owner.inputQueue = ["1"];
 
 		// We can't really check the dredged card here.
-		self.activate("battlecry");
+		await self.activate("battlecry");
 
 		// Check that the stats went up by 1
 		assert.equal((self.blueprint.attack ?? 0) + 1, self.attack);

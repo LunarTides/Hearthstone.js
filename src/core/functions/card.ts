@@ -1,4 +1,4 @@
-import { Card, CardError, type Player } from "@Game/internal.js";
+import { Card } from "@Game/internal.js";
 import type {
 	Blueprint,
 	CardClass,
@@ -226,10 +226,14 @@ export const cardFunctions = {
 	/**
 	 * Returns all classes in the game
 	 */
-	getClasses(): CardClassNoNeutral[] {
-		return game.cardCollections.classes.map(
-			(heroId) => new Card(heroId, game.player, true).classes[0],
-		) as CardClassNoNeutral[];
+	async getClasses(): Promise<CardClassNoNeutral[]> {
+		const cards = await Promise.all(
+			game.cardCollections.classes.map((heroId) =>
+				Card.create(heroId, game.player, true),
+			),
+		);
+
+		return cards.map((card) => card.classes[0]) as CardClassNoNeutral[];
 	},
 
 	/**

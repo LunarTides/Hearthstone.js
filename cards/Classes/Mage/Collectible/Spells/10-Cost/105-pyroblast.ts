@@ -16,23 +16,28 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "Fire",
 
-	cast(owner, self) {
+	async cast(owner, self) {
 		// Deal $10 damage.
-		const target = game.interact.selectTarget(self.text, self, "any", "any");
+		const target = await game.interact.selectTarget(
+			self.text,
+			self,
+			"any",
+			"any",
+		);
 		if (!target) {
 			return Card.REFUND;
 		}
 
-		game.attack("$10", target);
+		await game.attack("$10", target);
 		return true;
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		const enemyHealth = owner.getOpponent().health;
 		owner.forceTarget = owner.getOpponent();
 
 		// If no spellDamage
-		self.activate("cast");
+		await self.activate("cast");
 		assert.equal(owner.getOpponent().health, enemyHealth - 10);
 
 		// Reset health
@@ -41,7 +46,7 @@ export const blueprint: Blueprint = {
 		// If 5 spellDamage
 		owner.spellDamage = 5;
 
-		self.activate("cast");
+		await self.activate("cast");
 		assert.equal(owner.getOpponent().health, enemyHealth - 15);
 	},
 };

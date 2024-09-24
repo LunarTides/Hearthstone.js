@@ -14,11 +14,11 @@ export const blueprint: Blueprint = {
 	collectible: false,
 	id: 118,
 
-	heropower(owner, self) {
+	async heropower(owner, self) {
 		// Restore 2 Health.
 
 		// Hero power targets need to use the `forceElusive` flag.
-		const target = game.interact.selectTarget(
+		const target = await game.interact.selectTarget(
 			"Restore 2 health.",
 			self,
 			"any",
@@ -32,22 +32,22 @@ export const blueprint: Blueprint = {
 		}
 
 		// Restore 2 health to the target
-		target.addHealth(2, true);
+		await target.addHealth(2, true);
 		return true;
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		// Health: 1->3
 		owner.health = 1;
 		owner.inputQueue = ["face", "n"];
-		self.activate("heropower");
+		await self.activate("heropower");
 
 		assert.equal(owner.health, 1 + 2);
 
 		// Health: 29->30 (cap at 30)
 		owner.health = 29;
 		owner.inputQueue = ["face", "n"];
-		self.activate("heropower");
+		await self.activate("heropower");
 
 		assert.equal(owner.health, 30);
 	},

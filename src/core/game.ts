@@ -42,11 +42,11 @@ const attack = {
 	 *
 	 * @returns Success | Errorcode
 	 */
-	attack(
+	async attack(
 		attacker: Target | number | string,
 		target: Target,
 		force = false,
-	): GameAttackReturn {
+	): Promise<GameAttackReturn> {
 		let returnValue: GameAttackReturn;
 
 		// Target is the same as the attacker
@@ -56,7 +56,7 @@ const attack = {
 
 		// Attacker is a number
 		if (typeof attacker === "string" || typeof attacker === "number") {
-			return attack._attackerIsNum(attacker, target, force);
+			return await attack._attackerIsNum(attacker, target, force);
 		}
 
 		// Check if there is a minion with taunt
@@ -72,10 +72,10 @@ const attack = {
 
 		if (attacker instanceof Player) {
 			// Attacker is a player
-			returnValue = attack._attackerIsPlayer(attacker, target, force);
+			returnValue = await attack._attackerIsPlayer(attacker, target, force);
 		} else if (attacker instanceof Card) {
 			// Attacker is a minion
-			returnValue = attack._attackerIsCard(attacker, target, force);
+			returnValue = await attack._attackerIsCard(attacker, target, force);
 		} else {
 			// Otherwise
 			return "invalid";
@@ -85,11 +85,11 @@ const attack = {
 	},
 
 	// Attacker is a number
-	_attackerIsNum(
+	async _attackerIsNum(
 		attacker: number | string,
 		target: Target,
 		force: boolean,
-	): GameAttackReturn {
+	): Promise<GameAttackReturn> {
 		if (!force) {
 			if (target instanceof Player && target.immune) {
 				return "immune";
@@ -118,10 +118,10 @@ const attack = {
 		 * Attacker is a number
 		 * Spell damage
 		 */
-		const damage = attack._spellDamage(attacker, target);
+		const damage = await attack._spellDamage(attacker, target);
 
 		if (target instanceof Player) {
-			target.remHealth(damage);
+			await target.remHealth(damage);
 			return true;
 		}
 
@@ -130,20 +130,20 @@ const attack = {
 			return "divineshield";
 		}
 
-		target.remStats(0, damage);
+		await target.remHealth(damage);
 
 		// Remove frenzy
-		attack._doFrenzy(target);
+		await attack._doFrenzy(target);
 
 		return true;
 	},
 
 	// Attacker is a player
-	_attackerIsPlayer(
+	async _attackerIsPlayer(
 		attacker: Player,
 		target: Target,
 		force: boolean,
-	): GameAttackReturn {
+	): Promise<GameAttackReturn> {
 		if (!force) {
 			if (attacker.frozen) {
 				return "frozen";
@@ -160,12 +160,20 @@ const attack = {
 
 		// Target is a player
 		if (target instanceof Player) {
-			return attack._attackerIsPlayerAndTargetIsPlayer(attacker, target, force);
+			return await attack._attackerIsPlayerAndTargetIsPlayer(
+				attacker,
+				target,
+				force,
+			);
 		}
 
 		// Target is a card
 		if (target instanceof Card) {
-			return attack._attackerIsPlayerAndTargetIsCard(attacker, target, force);
+			return await attack._attackerIsPlayerAndTargetIsCard(
+				attacker,
+				target,
+				force,
+			);
 		}
 
 		// Otherwise
@@ -173,11 +181,11 @@ const attack = {
 	},
 
 	// Attacker is a player and target is a player
-	_attackerIsPlayerAndTargetIsPlayer(
+	async _attackerIsPlayerAndTargetIsPlayer(
 		attacker: Player,
 		target: Player,
 		force: boolean,
-	): GameAttackReturn {
+	): Promise<GameAttackReturn> {
 		if (!force) {
 			if (target.immune) {
 				return "immune";
@@ -189,21 +197,21 @@ const attack = {
 		}
 
 		// Get the attacker's attack damage, and attack the target with it
-		attack.attack(attacker.attack, target);
+		await attack.attack(attacker.attack, target);
 
 		// The attacker can't attack anymore this turn.
-		attack._removeDurabilityFromWeapon(attacker, target);
+		await attack._removeDurabilityFromWeapon(attacker, target);
 
-		game.event.broadcast("Attack", [attacker, target], attacker);
+		await game.event.broadcast("Attack", [attacker, target], attacker);
 		return true;
 	},
 
 	// Attacker is a player and target is a card
-	_attackerIsPlayerAndTargetIsCard(
+	async _attackerIsPlayerAndTargetIsCard(
 		attacker: Player,
 		target: Card,
 		force: boolean,
-	): GameAttackReturn {
+	): Promise<GameAttackReturn> {
 		// If the target has stealth, the attacker can't attack it
 		if (!force) {
 			if (target.hasKeyword("Stealth")) {
@@ -224,23 +232,23 @@ const attack = {
 		}
 
 		// The attacker should damage the target
-		game.attack(attacker.attack, target);
-		game.attack(target.attack ?? 0, attacker);
+		await game.attack(attacker.attack, target);
+		await game.attack(target.attack ?? 0, attacker);
 
 		// Remove frenzy
-		attack._doFrenzy(target);
-		attack._removeDurabilityFromWeapon(attacker, target);
+		await attack._doFrenzy(target);
+		await attack._removeDurabilityFromWeapon(attacker, target);
 
-		game.event.broadcast("Attack", [attacker, target], attacker);
+		await game.event.broadcast("Attack", [attacker, target], attacker);
 		return true;
 	},
 
 	// Attacker is a card
-	_attackerIsCard(
+	async _attackerIsCard(
 		attacker: Card,
 		target: Target,
 		force: boolean,
-	): GameAttackReturn {
+	): Promise<GameAttackReturn> {
 		if (!force) {
 			if (attacker.hasKeyword("Dormant")) {
 				return "dormant";
@@ -327,7 +335,7 @@ const attack = {
 					}
 
 					// If this doesn't work, it tries again do to the loop
-					result = game.attack(attacker, target);
+					result = await game.attack(attacker, target);
 				}
 
 				// After the loop, set the forgetful state back to 1 so we can do the coin flip again next time
@@ -344,12 +352,20 @@ const attack = {
 
 		// Target is a player
 		if (target instanceof Player) {
-			return attack._attackerIsCardAndTargetIsPlayer(attacker, target, force);
+			return await attack._attackerIsCardAndTargetIsPlayer(
+				attacker,
+				target,
+				force,
+			);
 		}
 
 		// Target is a minion
 		if (target instanceof Card) {
-			return attack._attackerIsCardAndTargetIsCard(attacker, target, force);
+			return await attack._attackerIsCardAndTargetIsCard(
+				attacker,
+				target,
+				force,
+			);
 		}
 
 		// Otherwise
@@ -357,11 +373,11 @@ const attack = {
 	},
 
 	// Attacker is a card and target is a player
-	_attackerIsCardAndTargetIsPlayer(
+	async _attackerIsCardAndTargetIsPlayer(
 		attacker: Card,
 		target: Player,
 		force: boolean,
-	): GameAttackReturn {
+	): Promise<GameAttackReturn> {
 		if (!force) {
 			if (target.immune) {
 				return "immune";
@@ -383,21 +399,21 @@ const attack = {
 		attack._doLifesteal(attacker);
 
 		// Deal damage
-		attack.attack(attacker.attack ?? 0, target);
+		await attack.attack(attacker.attack ?? 0, target);
 
 		// Remember this attack
 		attacker.decAttack();
 
-		game.event.broadcast("Attack", [attacker, target], attacker.owner);
+		await game.event.broadcast("Attack", [attacker, target], attacker.owner);
 		return true;
 	},
 
 	// Attacker is a card and target is a card
-	_attackerIsCardAndTargetIsCard(
+	async _attackerIsCardAndTargetIsCard(
 		attacker: Card,
 		target: Card,
 		force: boolean,
-	): GameAttackReturn {
+	): Promise<GameAttackReturn> {
 		if (!force) {
 			if (target.hasKeyword("Stealth")) {
 				return "stealth";
@@ -416,18 +432,18 @@ const attack = {
 			}
 		}
 
-		attack._attackerIsCardAndTargetIsCardDoAttacker(attacker, target);
-		attack._attackerIsCardAndTargetIsCardDoTarget(attacker, target);
+		await attack._attackerIsCardAndTargetIsCardDoAttacker(attacker, target);
+		await attack._attackerIsCardAndTargetIsCardDoTarget(attacker, target);
 
-		game.event.broadcast("Attack", [attacker, target], attacker.owner);
+		await game.event.broadcast("Attack", [attacker, target], attacker.owner);
 		return true;
 	},
-	_attackerIsCardAndTargetIsCardDoAttacker(
+	async _attackerIsCardAndTargetIsCardDoAttacker(
 		attacker: Card,
 		target: Card,
-	): GameAttackReturn {
+	): Promise<GameAttackReturn> {
 		// Cleave
-		attack._cleave(attacker, target);
+		await attack._cleave(attacker, target);
 
 		attacker.decAttack();
 		attacker.remKeyword("Stealth");
@@ -437,38 +453,38 @@ const attack = {
 			return true;
 		}
 
-		attack.attack(target.attack ?? 0, attacker);
+		await attack.attack(target.attack ?? 0, attacker);
 
 		// Remove frenzy
-		attack._doFrenzy(attacker);
+		await attack._doFrenzy(attacker);
 
 		// If the target has poison, kill the attacker
-		attack._doPoison(target, attacker);
+		await attack._doPoison(target, attacker);
 
 		return true;
 	},
-	_attackerIsCardAndTargetIsCardDoTarget(
+	async _attackerIsCardAndTargetIsCardDoTarget(
 		attacker: Card,
 		target: Card,
-	): GameAttackReturn {
+	): Promise<GameAttackReturn> {
 		const shouldDamage = attack._cardAttackHelper(target);
 		if (!shouldDamage) {
 			return true;
 		}
 
-		attack.attack(attacker.attack ?? 0, target);
+		await attack.attack(attacker.attack ?? 0, target);
 
 		attack._doLifesteal(attacker);
-		attack._doPoison(attacker, target);
+		await attack._doPoison(attacker, target);
 
 		// Remove frenzy
-		attack._doFrenzy(target);
+		await attack._doFrenzy(target);
 		if (target.health && target.health < 0) {
-			attacker.activate("overkill");
+			await attacker.activate("overkill");
 		}
 
 		if (target.health && target.health === 0) {
-			attacker.activate("honorablekill");
+			await attacker.activate("honorablekill");
 		}
 
 		return true;
@@ -488,7 +504,7 @@ const attack = {
 		return true;
 	},
 
-	_cleave(attacker: Card, target: Card): void {
+	async _cleave(attacker: Card, target: Card): Promise<void> {
 		if (!attacker.hasKeyword("Cleave")) {
 			return;
 		}
@@ -501,33 +517,33 @@ const attack = {
 
 		// If there is a card below the target, also deal damage to it.
 		if (below) {
-			game.attack(attacker.attack ?? 0, below);
+			await game.attack(attacker.attack ?? 0, below);
 		}
 
 		// If there is a card above the target, also deal damage to it.
 		if (above) {
-			game.attack(attacker.attack ?? 0, above);
+			await game.attack(attacker.attack ?? 0, above);
 		}
 	},
 
-	_doFrenzy(card: Card): void {
+	async _doFrenzy(card: Card): Promise<void> {
 		if (!card.isAlive()) {
 			return;
 		}
 
 		// The card has more than 0 health
-		if (card.activate("frenzy") !== -1) {
+		if ((await card.activate("frenzy")) !== -1) {
 			card.abilities.frenzy = undefined;
 		}
 	},
 
-	_doPoison(poisonCard: Card, other: Card): void {
+	async _doPoison(poisonCard: Card, other: Card): Promise<void> {
 		if (!poisonCard.hasKeyword("Poisonous")) {
 			return;
 		}
 
 		// The attacker has poison
-		other.kill();
+		await other.kill();
 	},
 
 	_doLifesteal(attacker: Card): void {
@@ -539,7 +555,10 @@ const attack = {
 		attacker.owner.addHealth(attacker.attack ?? 0);
 	},
 
-	_spellDamage(attacker: number | string, target: Target): number {
+	async _spellDamage(
+		attacker: number | string,
+		target: Target,
+	): Promise<number> {
 		if (typeof attacker !== "string") {
 			return attacker;
 		}
@@ -555,11 +574,14 @@ const attack = {
 		let dmg = game.lodash.parseInt(match[1]);
 		dmg += game.player.spellDamage;
 
-		game.event.broadcast("SpellDealsDamage", [target, dmg], game.player);
+		await game.event.broadcast("SpellDealsDamage", [target, dmg], game.player);
 		return dmg;
 	},
 
-	_removeDurabilityFromWeapon(attacker: Player, target: Target): void {
+	async _removeDurabilityFromWeapon(
+		attacker: Player,
+		target: Target,
+	): Promise<void> {
 		const { weapon } = attacker;
 		if (!weapon) {
 			attacker.canAttack = false;
@@ -572,7 +594,7 @@ const attack = {
 
 			// Only remove 1 durability if the weapon is not unbreakable
 			if (!weapon.hasKeyword("Unbreakable")) {
-				weapon.remStats(0, 1);
+				await weapon.remHealth(1);
 			}
 
 			// If the weapon is alive and it has unlimited attacks, the player can attack again this turn
@@ -581,7 +603,7 @@ const attack = {
 			}
 
 			if (target instanceof Card) {
-				attack._doPoison(weapon, target);
+				await attack._doPoison(weapon, target);
 			}
 		}
 	},
@@ -594,15 +616,15 @@ const playCard = {
 	 * @param card The card to play
 	 * @param player The card's owner
 	 */
-	play(card: Card, player: Player): GamePlayCardReturn {
+	async play(card: Card, player: Player): Promise<GamePlayCardReturn> {
 		// Forge
-		const forge = playCard._forge(card, player);
+		const forge = await playCard._forge(card, player);
 		if (forge !== "invalid") {
 			return forge;
 		}
 
 		// Trade
-		const trade = playCard._trade(card, player);
+		const trade = await playCard._trade(card, player);
 		if (trade !== "invalid") {
 			return trade;
 		}
@@ -613,18 +635,20 @@ const playCard = {
 		}
 
 		// If the board has max capacity, and the card played is a minion or location card, prevent it.
-		if (!playCard._hasCapacity(card, player)) {
+		if (!(await playCard._hasCapacity(card, player))) {
 			return "space";
 		}
 
 		// Condition
-		if (!playCard._condition(card, player)) {
+		if (!(await playCard._condition(card, player))) {
 			return "refund";
 		}
 
 		// Charge you for the card
 		player[card.costType] -= card.cost;
-		game.functions.event.withSuppressed("DiscardCard", () => card.discard());
+		await game.functions.event.withSuppressed("DiscardCard", async () =>
+			card.discard(),
+		);
 
 		// Counter
 		if (playCard._countered(card, player)) {
@@ -632,11 +656,11 @@ const playCard = {
 		}
 
 		// Broadcast `PlayCardUnsafe` event without adding it to the history
-		game.event.broadcast("PlayCardUnsafe", card, player, false);
+		await game.event.broadcast("PlayCardUnsafe", card, player, false);
 
 		// Finale
 		if (player[card.costType] === 0) {
-			card.activate("finale");
+			await card.activate("finale");
 		}
 
 		// Store the result of the type-specific code
@@ -646,14 +670,17 @@ const playCard = {
 		 * Type specific code
 		 * HACK: Use of never
 		 */
-		const typeFunction: (card: Card, player: Player) => GamePlayCardReturn =
+		const typeFunction: (
+			card: Card,
+			player: Player,
+		) => Promise<GamePlayCardReturn> =
 			playCard.typeSpecific[card.type as never];
 
 		if (!typeFunction) {
 			throw new TypeError(`Cannot handle playing card of type: ${card.type}`);
 		}
 
-		result = typeFunction(card, player);
+		result = await typeFunction(card, player);
 
 		// Refund
 		if (result === "refund") {
@@ -664,38 +691,41 @@ const playCard = {
 		game.event.addHistory("PlayCardUnsafe", card, player);
 
 		// Echo
-		playCard._echo(card, player);
+		await playCard._echo(card, player);
 
 		// Combo
-		playCard._combo(card, player);
+		await playCard._combo(card, player);
 
 		// Corrupt
-		playCard._corrupt(card, player);
+		await playCard._corrupt(card, player);
 
 		// Broadcast `PlayCard` event
-		game.event.broadcast("PlayCard", card, player);
+		await game.event.broadcast("PlayCard", card, player);
 		return result;
 	},
 
 	// Card type specific code
 	typeSpecific: {
-		Minion(card: Card, player: Player): GamePlayCardReturn {
+		async Minion(card: Card, player: Player): Promise<GamePlayCardReturn> {
 			// Magnetize
-			if (playCard._magnetize(card, player)) {
+			if (await playCard._magnetize(card, player)) {
 				return "magnetize";
 			}
 
-			if (!card.hasKeyword("Dormant") && card.activate("battlecry") === -1) {
+			if (
+				!card.hasKeyword("Dormant") &&
+				(await card.activate("battlecry")) === -1
+			) {
 				return "refund";
 			}
 
-			return game.functions.event.withSuppressed("SummonCard", () =>
+			return game.functions.event.withSuppressed("SummonCard", async () =>
 				player.summon(card),
 			);
 		},
 
-		Spell(card: Card, player: Player): GamePlayCardReturn {
-			if (card.activate("cast") === -1) {
+		async Spell(card: Card, player: Player): Promise<GamePlayCardReturn> {
+			if ((await card.activate("cast")) === -1) {
 				return "refund";
 			}
 
@@ -704,29 +734,29 @@ const playCard = {
 				card.remKeyword("Twinspell");
 				card.text = card.text.split("Twinspell")[0].trim();
 
-				player.addToHand(card);
+				await player.addToHand(card);
 			}
 
 			// Spellburst functionality
 			for (const card of player.board) {
-				card.activate("spellburst");
+				await card.activate("spellburst");
 				card.abilities.spellburst = undefined;
 			}
 
 			return true;
 		},
 
-		Weapon(card: Card, player: Player): GamePlayCardReturn {
-			if (card.activate("battlecry") === -1) {
+		async Weapon(card: Card, player: Player): Promise<GamePlayCardReturn> {
+			if ((await card.activate("battlecry")) === -1) {
 				return "refund";
 			}
 
-			player.setWeapon(card);
+			await player.setWeapon(card);
 			return true;
 		},
 
-		Hero(card: Card, player: Player): GamePlayCardReturn {
-			if (card.activate("battlecry") === -1) {
+		async Hero(card: Card, player: Player): Promise<GamePlayCardReturn> {
+			if ((await card.activate("battlecry")) === -1) {
 				return "refund";
 			}
 
@@ -734,17 +764,17 @@ const playCard = {
 			return true;
 		},
 
-		Location(card: Card, player: Player): GamePlayCardReturn {
-			card.setStats(0, card.health);
+		async Location(card: Card, player: Player): Promise<GamePlayCardReturn> {
+			await card.setStats(0, card.health);
 			card.addKeyword("Immune");
 			card.cooldown = 0;
 
-			return game.functions.event.withSuppressed("SummonCard", () =>
+			return game.functions.event.withSuppressed("SummonCard", async () =>
 				player.summon(card),
 			);
 		},
 
-		Heropower(card: Card, player: Player): GamePlayCardReturn {
+		async Heropower(card: Card, player: Player): Promise<GamePlayCardReturn> {
 			// A hero power card shouldn't really be played, but oh well.
 			player.hero.heropowerId = card.id;
 			player.hero.heropower = card;
@@ -753,7 +783,7 @@ const playCard = {
 		},
 	},
 
-	_trade(card: Card, player: Player): GamePlayCardReturn {
+	async _trade(card: Card, player: Player): Promise<GamePlayCardReturn> {
 		if (!card.hasKeyword("Tradeable")) {
 			return "invalid";
 		}
@@ -763,8 +793,8 @@ const playCard = {
 		if (player.ai) {
 			q = player.ai.trade(card);
 		} else {
-			game.interact.info.showGame(player);
-			q = game.interact.yesNoQuestion(
+			await game.interact.info.showGame(player);
+			q = await game.interact.yesNoQuestion(
 				`Would you like to trade ${card.colorFromRarity()} for a random card in your deck?`,
 				player,
 			);
@@ -788,15 +818,17 @@ const playCard = {
 
 		player.mana -= 1;
 
-		game.functions.event.withSuppressed("DiscardCard", () => card.discard());
-		player.drawCards(1);
-		player.shuffleIntoDeck(card);
+		await game.functions.event.withSuppressed("DiscardCard", async () =>
+			card.discard(),
+		);
+		await player.drawCards(1);
+		await player.shuffleIntoDeck(card);
 
-		game.event.broadcast("TradeCard", card, player);
+		await game.event.broadcast("TradeCard", card, player);
 		return true;
 	},
 
-	_forge(card: Card, player: Player): GamePlayCardReturn {
+	async _forge(card: Card, player: Player): Promise<GamePlayCardReturn> {
 		const forgeId = card.getKeyword("Forge") as number | undefined;
 
 		if (!forgeId) {
@@ -808,8 +840,8 @@ const playCard = {
 		if (player.ai) {
 			q = player.ai.forge(card);
 		} else {
-			game.interact.info.showGame(player);
-			q = game.interact.yesNoQuestion(
+			await game.interact.info.showGame(player);
+			q = await game.interact.yesNoQuestion(
 				`Would you like to forge ${card.colorFromRarity()}?`,
 				player,
 			);
@@ -825,15 +857,17 @@ const playCard = {
 
 		player.mana -= 2;
 
-		game.functions.event.withSuppressed("DiscardCard", () => card.discard());
-		const forged = new Card(forgeId, player);
-		player.addToHand(forged);
+		await game.functions.event.withSuppressed("DiscardCard", async () =>
+			card.discard(),
+		);
+		const forged = await Card.create(forgeId, player);
+		await player.addToHand(forged);
 
-		game.event.broadcast("ForgeCard", card, player);
+		await game.event.broadcast("ForgeCard", card, player);
 		return true;
 	},
 
-	_hasCapacity(card: Card, player: Player): boolean {
+	async _hasCapacity(card: Card, player: Player): Promise<boolean> {
 		// If the board has max capacity, and the card played is a minion or location card, prevent it.
 		if (
 			player.board.length < game.config.general.maxBoardSpace ||
@@ -843,7 +877,7 @@ const playCard = {
 		}
 
 		// Refund
-		game.functions.event.withSuppressed("AddCardToHand", () =>
+		await game.functions.event.withSuppressed("AddCardToHand", async () =>
 			player.addToHand(card),
 		);
 
@@ -856,8 +890,8 @@ const playCard = {
 		return false;
 	},
 
-	_condition(card: Card, player: Player): boolean {
-		const condition = card.activate("condition");
+	async _condition(card: Card, player: Player): Promise<boolean> {
+		const condition = await card.activate("condition");
 		if (!Array.isArray(condition)) {
 			return true;
 		}
@@ -872,8 +906,8 @@ const playCard = {
 		const warnMessage =
 			"<yellow>WARNING: This card's condition is not fulfilled. Are you sure you want to play this card?</yellow>";
 
-		game.interact.info.showGame(player);
-		const warn = game.interact.yesNoQuestion(warnMessage, player);
+		await game.interact.info.showGame(player);
+		const warn = await game.interact.yesNoQuestion(warnMessage, player);
 
 		if (!warn) {
 			return false;
@@ -894,7 +928,7 @@ const playCard = {
 		return false;
 	},
 
-	_echo(card: Card, player: Player): boolean {
+	async _echo(card: Card, player: Player): Promise<boolean> {
 		if (!card.hasKeyword("Echo")) {
 			return false;
 		}
@@ -903,11 +937,11 @@ const playCard = {
 		const echo = card.perfectCopy();
 		echo.addKeyword("Echo");
 
-		player.addToHand(echo);
+		await player.addToHand(echo);
 		return true;
 	},
 
-	_combo(card: Card, player: Player): boolean {
+	async _combo(card: Card, player: Player): Promise<boolean> {
 		if (!game.event.events.PlayCard) {
 			return false;
 		}
@@ -924,13 +958,13 @@ const playCard = {
 
 		// If the previous card played was played on the same turn as this one, activate combo
 		if (latestCard.turn === game.turn) {
-			card.activate("combo");
+			await card.activate("combo");
 		}
 
 		return true;
 	},
 
-	_corrupt(card: Card, player: Player): boolean {
+	async _corrupt(card: Card, player: Player): Promise<boolean> {
 		for (const toCorrupt of player.hand) {
 			const corruptId = toCorrupt.getKeyword("Corrupt") as number | undefined;
 			if (!corruptId || card.cost <= toCorrupt.cost) {
@@ -938,10 +972,12 @@ const playCard = {
 			}
 
 			// Corrupt that card
-			const corrupted = new Card(corruptId, player);
+			const corrupted = await Card.create(corruptId, player);
 
-			game.functions.event.withSuppressed("DiscardCard", () => card.discard());
-			game.functions.event.withSuppressed("AddCardToHand", () =>
+			await game.functions.event.withSuppressed("DiscardCard", async () =>
+				card.discard(),
+			);
+			await game.functions.event.withSuppressed("AddCardToHand", async () =>
 				player.addToHand(corrupted),
 			);
 		}
@@ -949,7 +985,7 @@ const playCard = {
 		return true;
 	},
 
-	_magnetize(card: Card, player: Player): boolean {
+	async _magnetize(card: Card, player: Player): Promise<boolean> {
 		const board = player.board;
 
 		if (!card.hasKeyword("Magnetic") || board.length <= 0) {
@@ -963,7 +999,7 @@ const playCard = {
 		}
 
 		// I'm using while loops to prevent a million indents
-		const mech = game.interact.selectCardTarget(
+		const mech = await game.interact.selectCardTarget(
 			"Which minion do you want this card to Magnetize to:",
 			undefined,
 			"friendly",
@@ -978,7 +1014,7 @@ const playCard = {
 			return playCard._magnetize(card, player);
 		}
 
-		mech.addStats(card.attack, card.health);
+		await mech.addStats(card.attack, card.health);
 
 		for (const entry of Object.entries(card.keywords)) {
 			mech.addKeyword(entry[0] as CardKeyword, entry[1]);
@@ -998,10 +1034,10 @@ const playCard = {
 		}
 
 		// Echo
-		playCard._echo(card, player);
+		await playCard._echo(card, player);
 
 		// Corrupt
-		playCard._corrupt(card, player);
+		await playCard._corrupt(card, player);
 
 		return true;
 	},
@@ -1020,11 +1056,11 @@ const cards = {
 	 *
 	 * @returns The minion summoned
 	 */
-	summon(
+	async summon(
 		card: Card,
 		player: Player,
 		colossal = true,
-	): true | "space" | "colossal" | "invalid" {
+	): Promise<true | "space" | "colossal" | "invalid"> {
 		if (!card.canBeOnBoard()) {
 			return "invalid";
 		}
@@ -1052,6 +1088,7 @@ const cards = {
 		const colossalMinionIds = card.getKeyword("Colossal") as
 			| number[]
 			| undefined;
+
 		if (colossalMinionIds && colossal) {
 			/*
 			 * Minion.colossal is an id array.
@@ -1064,18 +1101,18 @@ const cards = {
 			for (const cardId of colossalMinionIds) {
 				if (cardId <= 0) {
 					// Summon this minion without triggering colossal again
-					player.summon(card, false);
+					await player.summon(card, false);
 					continue;
 				}
 
-				const cardToSummon = new Card(cardId, player);
+				const cardToSummon = await Card.create(cardId, player);
 
 				// If this card has dormant, add it to the summoned minions as well.
 				if (dormant) {
 					cardToSummon.addKeyword("Dormant", dormant);
 				}
 
-				player.summon(cardToSummon);
+				await player.summon(cardToSummon);
 			}
 
 			unsuppress();
@@ -1112,7 +1149,7 @@ const cards = {
 			}
 		}
 
-		game.event.broadcast("SummonCard", card, player);
+		await game.event.broadcast("SummonCard", card, player);
 		return true;
 	},
 };
@@ -1276,8 +1313,16 @@ export class Game {
 	 *
 	 * @returns What the user answered
 	 */
-	input(prompt = "", overrideNoInput = false, useInputQueue = true): string {
-		return this.interact.gameLoop.input(prompt, overrideNoInput, useInputQueue);
+	async input(
+		prompt = "",
+		overrideNoInput = false,
+		useInputQueue = true,
+	): Promise<string> {
+		return await this.interact.gameLoop.input(
+			prompt,
+			overrideNoInput,
+			useInputQueue,
+		);
 	}
 
 	/**
@@ -1286,8 +1331,8 @@ export class Game {
 	 *
 	 * @param [prompt="Press enter to continue..."] The prompt to show the user
 	 */
-	pause(prompt = "Press enter to continue..."): void {
-		this.interact.gameLoop.input(prompt);
+	async pause(prompt = "Press enter to continue..."): Promise<void> {
+		await this.interact.gameLoop.input(prompt);
 	}
 
 	/**
@@ -1321,13 +1366,13 @@ export class Game {
 	 *
 	 * @returns Return values of all the executed functions
 	 */
-	triggerEventListeners(
+	async triggerEventListeners(
 		key: EventKey,
 		value: UnknownEventValue,
 		player: Player,
-	): void {
+	): Promise<void> {
 		for (const eventListener of Object.values(this.event.listeners)) {
-			eventListener(key, value, player);
+			await eventListener(key, value, player);
 		}
 	}
 
@@ -1338,7 +1383,7 @@ export class Game {
 	 *
 	 * @returns Success
 	 */
-	startGame(): boolean {
+	async startGame(): Promise<boolean> {
 		// Make players draw cards
 		for (let i = 0; i < 2; i++) {
 			const player = Player.fromID(i);
@@ -1350,7 +1395,7 @@ export class Game {
 			const unsuppressDrawCard = this.functions.event.suppress("DrawCard");
 
 			// Set the player's hero to the starting hero for the class
-			const success = player.setToStartingHero();
+			const success = await player.setToStartingHero();
 			if (!success) {
 				// The starting hero for that class doesn't exist
 				throw new Error(
@@ -1368,24 +1413,24 @@ export class Game {
 					continue;
 				}
 
-				player.drawSpecific(card);
+				await player.drawSpecific(card);
 			}
 
 			// Draw 3-4 cards
 			const amountOfCards = player.id === 0 ? 3 : 4;
 
 			// This accounts for the quest cards
-			player.drawCards(amountOfCards - player.hand.length);
+			await player.drawCards(amountOfCards - player.hand.length);
 
 			unsuppressAddCardToHand();
 			unsuppressDrawCard();
 
 			for (const card of player.deck) {
-				card.activate("startofgame");
+				await card.activate("startofgame");
 			}
 
 			for (const card of player.hand) {
-				card.activate("startofgame");
+				await card.activate("startofgame");
 			}
 		}
 
@@ -1397,9 +1442,9 @@ export class Game {
 		this.player1.mana = 1;
 
 		// Give the coin to the second player
-		const coin = new Card(this.cardIds.theCoin2, this.player2);
+		const coin = await Card.create(this.cardIds.theCoin2, this.player2);
 
-		this.functions.event.withSuppressed("AddCardToHand", () =>
+		await this.functions.event.withSuppressed("AddCardToHand", async () =>
 			this.player2.addToHand(coin),
 		);
 
@@ -1415,7 +1460,7 @@ export class Game {
 	 *
 	 * @returns Success
 	 */
-	endGame(winner: Player): boolean {
+	async endGame(winner: Player): Promise<boolean> {
 		if (!winner) {
 			return false;
 		}
@@ -1424,7 +1469,7 @@ export class Game {
 		console.log();
 
 		// Do this to bypass 'Press enter to continue' prompt when showing history
-		const history = this.interact.gameLoop.handleCmds("history", {
+		const history = await this.interact.gameLoop.handleCmds("history", {
 			echo: false,
 		});
 
@@ -1442,7 +1487,7 @@ export class Game {
 	 *
 	 * @returns Success
 	 */
-	endTurn(): boolean {
+	async endTurn(): Promise<boolean> {
 		// Everything after this comment happens when the player's turn ends
 		const { player, opponent } = this;
 
@@ -1458,10 +1503,10 @@ export class Game {
 
 		// Trigger unspent mana
 		if (player.mana > 0) {
-			this.event.broadcast("UnspentMana", player.mana, player);
+			await this.event.broadcast("UnspentMana", player.mana, player);
 		}
 
-		this.event.broadcast("EndTurn", this.turn, player);
+		await this.event.broadcast("EndTurn", this.turn, player);
 
 		// Everything after this comment happens when the opponent's turn starts
 		this.turn++;
@@ -1484,7 +1529,7 @@ export class Game {
 				this.config.advanced.diyCardSpawnChance &&
 			this.config.advanced.spawnInDiyCards
 		) {
-			opponent.spawnInDIYCard();
+			await opponent.spawnInDIYCard();
 		}
 
 		// Minion start of turn
@@ -1510,7 +1555,7 @@ export class Game {
 
 				// HACK: If the battlecry use a function that depends on `game.player`
 				this.player = opponent;
-				card.activate("battlecry");
+				await card.activate("battlecry");
 				this.player = player;
 
 				continue;
@@ -1539,14 +1584,14 @@ export class Game {
 		}
 
 		// Draw card
-		opponent.drawCards(1);
+		await opponent.drawCards(1);
 
 		opponent.hasUsedHeroPowerThisTurn = false;
 
 		this.player = opponent;
 		this.opponent = player;
 
-		this.event.broadcast("StartTurn", this.turn, opponent);
+		await this.event.broadcast("StartTurn", this.turn, opponent);
 		return true;
 	}
 
@@ -1557,7 +1602,7 @@ export class Game {
 	 *
 	 * @returns The amount of minions killed
 	 */
-	killCardsOnBoard(): number {
+	async killCardsOnBoard(): Promise<number> {
 		let amount = 0;
 
 		for (let p = 0; p < 2; p++) {
@@ -1576,7 +1621,7 @@ export class Game {
 					continue;
 				}
 
-				card.activate("deathrattle");
+				await card.activate("deathrattle");
 			}
 
 			for (const card of player.board) {
@@ -1587,7 +1632,7 @@ export class Game {
 				}
 
 				// Calmly tell the minion that it is going to die
-				const removeReturn = card.activate("remove", "KillCard");
+				const removeReturn = await card.activate("remove", "KillCard");
 
 				// If the "remove" ability returns false, the card is not removed from the board
 				if (Array.isArray(removeReturn) && removeReturn[0] === false) {
@@ -1601,25 +1646,25 @@ export class Game {
 				player.corpses++;
 				player.graveyard.push(card);
 
-				this.event.broadcast("KillCard", card, this.player);
+				await this.event.broadcast("KillCard", card, this.player);
 
 				if (!card.hasKeyword("Reborn")) {
 					continue;
 				}
 
 				// Reborn
-				const minion = card.imperfectCopy();
+				const minion = await card.imperfectCopy();
 				minion.remKeyword("Reborn");
 
 				// Reduce the minion's health to 1, keep the minion's attack the same
-				minion.setStats(minion.attack, 1);
+				await minion.setStats(minion.attack, 1);
 
 				/*
 				 * Suppress the event here since we activate some abilities on the minion further up.
 				 * This isn't great performance wise, but there's not much we can do about it.
 				 * Although the performance hit is only a few milliseconds in total every time (This function does get called often), so there's bigger performance gains to be had elsewhere.
 				 */
-				this.functions.event.withSuppressed("SummonCard", () =>
+				await this.functions.event.withSuppressed("SummonCard", async () =>
 					this.summon(minion, player),
 				);
 
@@ -1633,7 +1678,7 @@ export class Game {
 				 * So it looks like this:
 				 * minion.activate(key, reason, minion);
 				 */
-				minion.activate("passive", "reborn", card, this.player);
+				await minion.activate("passive", "reborn", card, this.player);
 
 				spared.push(minion);
 			}

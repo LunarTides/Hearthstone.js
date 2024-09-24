@@ -15,33 +15,33 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "Nature",
 
-	cast(owner, self) {
+	async cast(owner, self) {
 		// Choose One - Gain an empty Mana Crystal; or Draw a card.
-		game.interact.chooseOne(
+		await game.interact.chooseOne(
 			1,
 			[
 				"Gain an empty Mana Crystal",
-				() => {
+				async () => {
 					// Gain an empty Mana Crystal
 					owner.addEmptyMana(1);
 				},
 			],
 			[
 				"Draw a card",
-				() => {
+				async () => {
 					// Draw a card
-					owner.drawCards(1);
+					await owner.drawCards(1);
 				},
 			],
 		);
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		// Gain an empty Mana Crystal
 		const { emptyMana } = owner;
 
 		owner.inputQueue = ["1"];
-		self.activate("cast");
+		await self.activate("cast");
 
 		assert.equal(owner.emptyMana, emptyMana + 1);
 
@@ -49,7 +49,7 @@ export const blueprint: Blueprint = {
 		const handSize = owner.hand.length;
 
 		owner.inputQueue = ["2"];
-		self.activate("cast");
+		await self.activate("cast");
 
 		assert.equal(owner.hand.length, handSize + 1);
 	},

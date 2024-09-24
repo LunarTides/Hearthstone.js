@@ -15,14 +15,14 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "None",
 
-	cast(owner, self) {
+	async cast(owner, self) {
 		// Gain 10 Mana.
 		owner.addMana(10);
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		owner.mana = 5;
-		self.activate("cast");
+		await self.activate("cast");
 
 		assert.equal(owner.mana, 10);
 	},

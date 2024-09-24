@@ -17,20 +17,20 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribe: "None",
 
-	battlecry(owner, self) {
+	async battlecry(owner, self) {
 		// Reveal a minion from each player's deck. If yours costs more, gain +1/+1.
 
 		// Joust. Only allow minion cards to be selected
-		const win = owner.joust((card) => card.type === "Minion");
+		const win = await owner.joust((card) => card.type === "Minion");
 
 		if (!win) {
 			return;
 		}
 
-		self.addStats(1, 1);
+		await self.addStats(1, 1);
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		// TODO: Test #325
 		assert(true);
 	},

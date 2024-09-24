@@ -28,7 +28,7 @@ export const blueprint: Blueprint = {
 	 * This is an ability. More on abilities in `1-5`.
 	 * Be careful when interacting with `owner` or `self.owner` in the create ability, it might not always be the player you're expecting.
 	 */
-	create(owner, self) {
+	async create(owner, self) {
 		// Add the Taunt keyword to this card
 		self.addKeyword("Taunt");
 	},

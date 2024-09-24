@@ -18,9 +18,9 @@ export const blueprint: Blueprint = {
 	health: 5,
 	tribe: "None",
 
-	battlecry(owner, self) {
+	async battlecry(owner, self) {
 		// If you've cast 10 spells this game, spin the Wheel of Yogg-Saron. ({amount} left!)
-		if (!self.condition()) {
+		if (!(await self.condition())) {
 			return;
 		}
 
@@ -38,7 +38,7 @@ export const blueprint: Blueprint = {
 			throw new Error("No choice found");
 		}
 
-		const pool = Card.all();
+		const pool = await Card.all();
 
 		const minionPool = pool.filter((card) => card.type === "Minion");
 		const spellPool = pool.filter((card) => card.type === "Spell");
@@ -54,7 +54,7 @@ export const blueprint: Blueprint = {
 						player.getRemainingBoardSpace() - (player === owner ? 1 : 0);
 
 					for (let index = 0; index < remaining; index++) {
-						const card = game.lodash.sample(minionPool)?.imperfectCopy();
+						const card = await game.lodash.sample(minionPool)?.imperfectCopy();
 						if (!card) {
 							continue;
 						}
@@ -63,7 +63,7 @@ export const blueprint: Blueprint = {
 							card.addKeyword("Rush");
 						}
 
-						player.summon(card);
+						await player.summon(card);
 					}
 				}
 
@@ -78,8 +78,8 @@ export const blueprint: Blueprint = {
 							continue;
 						}
 
-						card.kill();
-						self.addStats(card.attack, card.health);
+						await card.kill();
+						await self.addStats(card.attack, card.health);
 					}
 				}
 
@@ -91,16 +91,16 @@ export const blueprint: Blueprint = {
 				const remaining = owner.getRemainingHandSpace();
 
 				for (let index = 0; index < remaining; index++) {
-					const card = game.lodash.sample(spellPool)?.imperfectCopy();
+					const card = await game.lodash.sample(spellPool)?.imperfectCopy();
 					if (!card) {
 						continue;
 					}
 
 					card.addEnchantment("cost = 0", self);
-					owner.addToHand(card);
+					await owner.addToHand(card);
 				}
 
-				game.functions.event.addListener("EndTurn", () => {
+				game.functions.event.addListener("EndTurn", async () => {
 					for (const card of owner.hand) {
 						card.removeEnchantment("cost = 0", self);
 					}
@@ -121,7 +121,7 @@ export const blueprint: Blueprint = {
 						continue;
 					}
 
-					card.takeControl(owner);
+					await card.takeControl(owner);
 				}
 
 				break;
@@ -129,19 +129,22 @@ export const blueprint: Blueprint = {
 
 			case "Mysterybox": {
 				// Cast a random spell for every spell you've cast this game (targets chosen randomly).
-				const oldYogg = new Card(game.cardIds.yoggSaronHopesEnd103, owner);
-				oldYogg.activate("battlecry");
+				const oldYogg = await Card.create(
+					game.cardIds.yoggSaronHopesEnd103,
+					owner,
+				);
+				await oldYogg.activate("battlecry");
 
 				break;
 			}
 
 			case "Rod of Roasting": {
 				// Cast 'Pyroblast' randomly until a hero dies.
-				const rod = new Card(game.cardIds.pyroblast105, owner);
+				const rod = await Card.create(game.cardIds.pyroblast105, owner);
 
 				while (game.player1.isAlive() && game.player2.isAlive()) {
 					owner.forceTarget = game.functions.util.getRandomTarget();
-					rod.activate("cast");
+					await rod.activate("cast");
 				}
 
 				owner.forceTarget = undefined;
@@ -152,10 +155,10 @@ export const blueprint: Blueprint = {
 			// No default
 		}
 
-		game.event.broadcast("CardEvent", [self, choice], owner);
+		await game.event.broadcast("CardEvent", [self, choice], owner);
 	},
 
-	placeholders(owner, self) {
+	async placeholders(owner, self) {
 		const amount = game.event.events.PlayCard?.[owner.id].filter(
 			(object) => object[0] instanceof Card && object[0].type === "Spell",
 		).length;
@@ -170,7 +173,7 @@ export const blueprint: Blueprint = {
 		return { left: ` <i>(${10 - amount} left!)</i>` };
 	},
 
-	condition(owner, self) {
+	async condition(owner, self) {
 		const amount = game.event.events.PlayCard?.[owner.id].filter(
 			(object) => object[0] instanceof Card && object[0].type === "Spell",
 		).length;
@@ -181,7 +184,7 @@ export const blueprint: Blueprint = {
 		return amount >= 10;
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		// TODO: Add proper tests. #325
 		return true;
 	},

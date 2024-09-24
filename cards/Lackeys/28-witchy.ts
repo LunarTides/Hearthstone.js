@@ -18,11 +18,11 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribe: "None",
 
-	battlecry(owner, self) {
+	async battlecry(owner, self) {
 		// Transform a friendly minion into one that costs (1) more.
 
 		// Ask the user which minion to transform
-		const target = game.interact.selectCardTarget(
+		const target = await game.interact.selectCardTarget(
 			"Transform a friendly minion into one that costs (1) more.",
 			self,
 			"friendly",
@@ -39,7 +39,7 @@ export const blueprint: Blueprint = {
 		}
 
 		// Filter minions that cost (1) more than the target
-		const minions = Card.all().filter(
+		const minions = (await Card.all()).filter(
 			(card) => card.type === "Minion" && card.cost === target.cost + 1,
 		);
 
@@ -50,30 +50,30 @@ export const blueprint: Blueprint = {
 		}
 
 		// Create the card
-		const minion = new Card(random.id, owner);
+		const minion = await Card.create(random.id, owner);
 
 		// Destroy the target and summon the new minion in order to get the illusion that the card was transformed
-		target.destroy();
+		await target.destroy();
 
 		// Summon the card to the player's side of the board
-		owner.summon(minion);
+		await owner.summon(minion);
 		return true;
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		const existsMinionWithCost = (cost: number) =>
 			owner.board.some((card) => card.cost === cost);
 
 		// Summon a sheep
-		const sheep = new Card(game.cardIds.sheep1, owner);
-		owner.summon(sheep);
+		const sheep = await Card.create(game.cardIds.sheep1, owner);
+		await owner.summon(sheep);
 
 		// There shouldn't exist a minion with 1 more cost than the sheep.
 		assert(!existsMinionWithCost(sheep.cost + 1));
 
 		// If there doesn't exist any 2-Cost minions, pass the test
 		if (
-			!Card.all().some(
+			!(await Card.all()).some(
 				(card) => card.cost === sheep.cost + 1 && card.type === "Minion",
 			)
 		) {
@@ -82,7 +82,7 @@ export const blueprint: Blueprint = {
 
 		// Activate the battlecry, select the sheep.
 		owner.inputQueue = ["1"];
-		self.activate("battlecry");
+		await self.activate("battlecry");
 
 		// There should now exist a minion with 1 more cost than the sheep.
 		assert(existsMinionWithCost(sheep.cost + 1));

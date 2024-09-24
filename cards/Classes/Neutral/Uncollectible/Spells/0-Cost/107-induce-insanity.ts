@@ -17,7 +17,7 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "None",
 
-	cast(owner, self) {
+	async cast(owner, self) {
 		// Force each enemy minion to attack a random enemy minion.
 		const board = owner.getOpponent().board;
 
@@ -27,11 +27,11 @@ export const blueprint: Blueprint = {
 				continue;
 			}
 
-			game.attack(enemyMinion, targetMinion);
+			await game.attack(enemyMinion, targetMinion);
 		}
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		// TODO: Add proper tests. #325
 		return true;
 	},

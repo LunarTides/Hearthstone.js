@@ -21,8 +21,8 @@ export const deckcodeFunctions = {
 	 *
 	 * @returns The deck
 	 */
-	import(player: Player, code: string): Card[] | undefined {
-		const panic = (errorCode: string, cardName?: string) => {
+	async import(player: Player, code: string): Promise<Card[] | undefined> {
+		const panic = async (errorCode: string, cardName?: string) => {
 			console.log(
 				"<red>This deck is not valid!\nError Code: <yellow>%s</yellow red>",
 				errorCode,
@@ -35,7 +35,7 @@ export const deckcodeFunctions = {
 				);
 			}
 
-			game.pause();
+			await game.pause();
 		};
 
 		let vanilla = false;
@@ -53,7 +53,7 @@ export const deckcodeFunctions = {
 
 		// We don't convert the code in the try-catch block, since this function could throw an error which would be ignored
 		if (vanilla) {
-			actualCode = this.fromVanilla(player, actualCode);
+			actualCode = await this.fromVanilla(player, actualCode);
 		}
 
 		// BFU
@@ -77,20 +77,22 @@ export const deckcodeFunctions = {
 		actualCode = sep[1] + actualCode.split(sep)[1];
 
 		if (
-			!game.functions.card.getClasses().includes(hero as CardClassNoNeutral)
+			!(await game.functions.card.getClasses()).includes(
+				hero as CardClassNoNeutral,
+			)
 		) {
-			panic("INVALIDHERO");
+			await panic("INVALIDHERO");
 			return;
 		}
 
 		player.heroClass = hero as CardClass;
 		const runeClass = player.canUseRunes();
 
-		const addRunes = (runes: string) => {
+		const addRunes = async (runes: string) => {
 			if (runeClass) {
 				player.runes = runes;
 			} else {
-				game.pause(
+				await game.pause(
 					`<yellow>WARNING: This deck has runes in it, but the class is <bright:yellow>${hero}</bright:yellow>.\n`,
 				);
 			}
@@ -102,7 +104,7 @@ export const deckcodeFunctions = {
 			const rune = actualCode[2];
 
 			actualCode = actualCode.slice(5);
-			addRunes(rune.repeat(3));
+			await addRunes(rune.repeat(3));
 		} else if (runeRegex.test(actualCode)) {
 			// [BFU]
 			let runes = "";
@@ -112,9 +114,9 @@ export const deckcodeFunctions = {
 			}
 
 			actualCode = actualCode.slice(6);
-			addRunes(runes);
+			await addRunes(runes);
 		} else if (runeClass) {
-			game.pause(
+			await game.pause(
 				`<yellow>WARNING: This class supports runes but there are no runes in this deck. This deck's class: <bright:yellow>${hero}</bright:yellow>.\n`,
 			);
 		}
@@ -122,7 +124,7 @@ export const deckcodeFunctions = {
 		// Find /3:5,2:8,1/
 		const copyDefinitionFormat = /\/(\d+:\d+,)*\d+\/ /;
 		if (!copyDefinitionFormat.test(actualCode)) {
-			panic("COPYDEFNOTFOUND");
+			await panic("COPYDEFNOTFOUND");
 			return;
 		}
 
@@ -151,14 +153,14 @@ export const deckcodeFunctions = {
 			for (const cardId of cards) {
 				const id = game.lodash.parseInt(cardId, 36);
 
-				const blueprint = Card.fromID(id);
+				const blueprint = await Card.fromID(id);
 				if (!blueprint) {
-					panic("NONEXISTANTCARD", id.toString());
+					await panic("NONEXISTANTCARD", id.toString());
 					returnValueInvalid = true;
 					continue;
 				}
 
-				const card = new Card(blueprint.id, player, true);
+				const card = await Card.create(blueprint.id, player, true);
 
 				for (let i = 0; i < game.lodash.parseInt(copies); i++) {
 					newDeck.push(card.perfectCopy());
@@ -204,7 +206,7 @@ export const deckcodeFunctions = {
 					}
 				}
 
-				game.pause(
+				await game.pause(
 					`<red>${error}.\nSpecific Card that caused the error: <yellow>${card.name} (${card.id})</yellow red>\n`,
 				);
 
@@ -234,7 +236,7 @@ export const deckcodeFunctions = {
 					? `exactly <yellow>${max}</yellow>`
 					: `between <yellow>${min}-${max}</yellow>`;
 
-			game.pause(
+			await game.pause(
 				`<red>The deck needs ${grammar} cards. Your deck has: <yellow>${newDeck.length}</yellow>.\n`,
 			);
 
@@ -261,7 +263,7 @@ export const deckcodeFunctions = {
 			}
 
 			if (
-				Card.fromName(cardName, game.player)?.rarity === "Legendary" &&
+				(await Card.fromName(cardName, game.player))?.rarity === "Legendary" &&
 				amount > localSettings.decks.maxOfOneLegendary
 			) {
 				errorcode = "legendary";
@@ -425,7 +427,11 @@ export const deckcodeFunctions = {
 	 *
 	 * @returns The vanilla deckcode
 	 */
-	toVanilla(player: Player, code: string, extraFiltering = true): string {
+	async toVanilla(
+		player: Player,
+		code: string,
+		extraFiltering = true,
+	): Promise<string> {
 		/*
 		 * HACK: Jank code ahead. Beware!
 		 *
@@ -478,14 +484,16 @@ export const deckcodeFunctions = {
 		const vanillaCards = game.functions.card.vanilla.getAll();
 
 		const cardsSplit = cards.split(",").map((i) => game.lodash.parseInt(i, 36));
-		const cardsSplitId = cardsSplit.map(Card.fromID);
-		const cardsSplitCard = cardsSplitId.map((c) => {
-			if (!c) {
-				throw new Error("c is an invalid card");
-			}
+		const cardsSplitId = await Promise.all(cardsSplit.map(Card.fromID));
+		const cardsSplitCard = await Promise.all(
+			cardsSplitId.map(async (c) => {
+				if (!c) {
+					throw new Error("c is an invalid card");
+				}
 
-			return new Card(c.id, player, true);
-		});
+				return Card.create(c.id, player, true);
+			}),
+		);
 
 		const trueCards = cardsSplitCard.map((c) => c.name);
 
@@ -538,7 +546,7 @@ export const deckcodeFunctions = {
 
 			if (matches.length === 0) {
 				// Invalid card
-				game.pause("<red>ERROR: Invalid card found!</red>\n");
+				await game.pause("<red>ERROR: Invalid card found!</red>\n");
 				continue;
 			}
 
@@ -567,7 +575,7 @@ export const deckcodeFunctions = {
 					cardName,
 				);
 
-				const chosen = game.input();
+				const chosen = await game.input();
 
 				match = matches[game.lodash.parseInt(chosen) - 1];
 			} else {
@@ -591,7 +599,7 @@ export const deckcodeFunctions = {
 	 *
 	 * @returns The Hearthstone.js deckcode
 	 */
-	fromVanilla(player: Player, code: string): string {
+	async fromVanilla(player: Player, code: string): Promise<string> {
 		// Use the 'deckstrings' library's decode
 		const deckWithFormat: deckstrings.DeckDefinition = deckstrings.decode(code);
 
@@ -620,7 +628,7 @@ export const deckcodeFunctions = {
 		const deckDefinition: Array<[VanillaCard | undefined, number]> =
 			deck.cards.map((c) => [vanillaCards.find((a) => a.dbfId === c[0]), c[1]]);
 
-		const createdCards: Card[] = Card.all(true);
+		const createdCards: Card[] = await Card.all(true);
 
 		const invalidCards: VanillaCard[] = [];
 		for (const vanillaCardObject of deckDefinition) {
@@ -681,7 +689,7 @@ export const deckcodeFunctions = {
 			}
 
 			// TODO: Use ids instead
-			const card = Card.fromName(name, player);
+			const card = await Card.fromName(name, player);
 			if (!card) {
 				throw new Error("Invalid card name");
 			}

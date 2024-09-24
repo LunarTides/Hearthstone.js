@@ -14,11 +14,11 @@ export const blueprint: Blueprint = {
 	collectible: false,
 	id: 114,
 
-	heropower(owner, self) {
+	async heropower(owner, self) {
 		// Deal 1 damage.
 
 		// Use of `selectTarget` in the `heropower` ability requires the use of the `forceElusive` flag
-		const target = game.interact.selectTarget(
+		const target = await game.interact.selectTarget(
 			"Deal 1 damage.",
 			self,
 			"any",
@@ -32,16 +32,16 @@ export const blueprint: Blueprint = {
 		}
 
 		// Deal 1 damage to the target
-		game.attack(1, target);
+		await game.attack(1, target);
 		return true;
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		// The opponent should have 30 health.
 		assert.equal(owner.getOpponent().health, 30);
 
 		owner.inputQueue = ["face", "y"];
-		self.activate("heropower");
+		await self.activate("heropower");
 
 		// The opponent should have 29 health.
 		assert.equal(owner.getOpponent().health, 30 - 1);

@@ -14,9 +14,9 @@ export const blueprint: Blueprint = {
 	collectible: false,
 	id: 128,
 
-	heropower(owner, self) {
+	async heropower(owner, self) {
 		// Add a random Priest minion to your hand.
-		const possibleCards = Card.all().filter(
+		const possibleCards = (await Card.all()).filter(
 			(c) =>
 				c.type === "Minion" &&
 				game.functions.card.validateClasses(c.classes, "Priest"),
@@ -31,12 +31,12 @@ export const blueprint: Blueprint = {
 			return;
 		}
 
-		card = new Card(card.id, owner);
+		card = await Card.create(card.id, owner);
 
-		owner.addToHand(card);
+		await owner.addToHand(card);
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		// TODO: Add proper tests. #325
 		return true;
 	},

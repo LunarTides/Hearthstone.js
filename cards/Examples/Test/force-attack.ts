@@ -18,13 +18,13 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribe: "None",
 
-	create(owner, self) {
+	async create(owner, self) {
 		// Store the attacker / target combo in storage.
 
 		self.storage.attack = [];
 	},
 
-	passive(owner, self, key, _unknownValue, eventPlayer) {
+	async passive(owner, self, key, _unknownValue, eventPlayer) {
 		// Whenever a minion attacks, it attacks again.
 
 		/*
@@ -63,16 +63,16 @@ export const blueprint: Blueprint = {
 		 * Force attack. Note the `true` here.
 		 * We need to force it, since the card shouldn't be able to attack two times in a row
 		 */
-		game.attack(attacker, target, true);
+		await game.attack(attacker, target, true);
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		const opponent = owner.getOpponent();
 
 		assert.equal(opponent.health, 30);
-		owner.summon(self);
+		await owner.summon(self);
 
-		game.attack(self, opponent, true);
+		await game.attack(self, opponent, true);
 		assert.equal(self.attack, 1);
 		assert.equal(opponent.health, 28);
 	},

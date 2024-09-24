@@ -21,23 +21,23 @@ export const blueprint: Blueprint = {
 	health: 2,
 	tribe: "None",
 
-	battlecry(owner, self) {
+	async battlecry(owner, self) {
 		// If your deck has no duplicates, draw a card.
 
 		// Check if the condition is cleared
-		if (!self.condition()) {
+		if (!(await self.condition())) {
 			return;
 		}
 
 		// Draw a card
-		owner.drawCards(1);
+		await owner.drawCards(1);
 	},
 
 	/*
 	 * This function will be run when the card is played.
 	 * This function will also be run every tick in order to add / remove the ` (Condition cleared!)` text, so don't do too many expensive things in here (Make use of `game.cache` if you need to).
 	 */
-	condition(owner, self) {
+	async condition(owner, self) {
 		/*
 		 * `owner.highlander()` will return true if the player has no duplicates in their deck.
 		 *
@@ -46,24 +46,24 @@ export const blueprint: Blueprint = {
 		return owner.highlander();
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		const { length } = owner.deck;
 		owner.hand = [];
 
 		// The player shouldn't fulfill the condition
 		assert(!owner.highlander());
-		self.activate("battlecry");
+		await self.activate("battlecry");
 
 		// Assert that the player didn't draw a card
 		assert.equal(owner.deck.length, length);
 		assert.equal(owner.hand.length, 0);
 
 		// The player should fulfill the condition
-		owner.deck = [new Card(game.cardIds.sheep1, owner)];
+		owner.deck = [await Card.create(game.cardIds.sheep1, owner)];
 		assert(owner.highlander());
 		assert.equal(owner.deck.length, 1);
 
-		self.activate("battlecry");
+		await self.activate("battlecry");
 
 		assert.equal(owner.hand.length, 1);
 	},

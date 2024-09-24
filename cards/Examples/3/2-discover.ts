@@ -16,7 +16,7 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "None",
 
-	cast(owner, self) {
+	async cast(owner, self) {
 		// Discover a spell.
 
 		/*
@@ -25,13 +25,13 @@ export const blueprint: Blueprint = {
 		 */
 
 		// This gets every card from the game, excluding uncollectible cards.
-		let pool = Card.all();
+		let pool = await Card.all();
 
 		// We need to filter away any non-spell cards.
 		pool = pool.filter((c) => c.type === "Spell");
 
 		// Interact.discover(prompt, pool, ifItShouldFilterAwayCardsThatAreNotThePlayersClass = true, amountOfCardsToChooseFrom = 3)
-		const spell = game.interact.card.discover("Discover a spell.", pool);
+		const spell = await game.interact.card.discover("Discover a spell.", pool);
 
 		// If no card was chosen, refund
 		if (!spell) {
@@ -39,16 +39,16 @@ export const blueprint: Blueprint = {
 		}
 
 		// Now we need to actually add the card to the player's hand
-		owner.addToHand(spell);
+		await owner.addToHand(spell);
 		return true;
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		owner.inputQueue = "1";
 		owner.hand = [];
 
 		for (let i = 0; i < 50; i++) {
-			self.activate("cast");
+			await self.activate("cast");
 
 			const card = owner.hand.pop();
 
