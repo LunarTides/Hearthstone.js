@@ -203,3 +203,5 @@ await userInputLoop(
 		}
 	},
 );
+
+process.exit();

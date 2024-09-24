@@ -91,6 +91,7 @@ async function main(): Promise<void> {
 	 */
 	createGame();
 	console.warn("\n<green>Crash test passed!</green>");
+	process.exit();
 }
 
 await main();

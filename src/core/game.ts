@@ -1088,6 +1088,7 @@ const cards = {
 		const colossalMinionIds = card.getKeyword("Colossal") as
 			| number[]
 			| undefined;
+
 		if (colossalMinionIds && colossal) {
 			/*
 			 * Minion.colossal is an id array.

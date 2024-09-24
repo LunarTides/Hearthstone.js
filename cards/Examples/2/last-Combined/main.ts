@@ -16,7 +16,7 @@ export const blueprint: Blueprint = {
 	health: 3,
 	tribe: "None",
 
-	create(owner, self) {
+	async create(owner, self) {
 		self.runes = "BBB";
 
 		self.addKeyword("Colossal", [

@@ -499,11 +499,11 @@ export class Card {
 			this.placeholder = placeholder[0] as Record<string, string>;
 		}
 
-		await this.activate("create");
-		await this.replacePlaceholders();
-
 		// Override the properties from the blueprint
 		await this.doBlueprint(false);
+
+		await this.activate("create");
+		await this.replacePlaceholders();
 
 		let unsuppress: undefined | (() => boolean);
 		if (suppressEvent) {

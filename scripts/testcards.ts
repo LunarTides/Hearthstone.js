@@ -87,6 +87,7 @@ export async function main(): Promise<void> {
 	}
 
 	console.log();
+	process.exit();
 }
 
 await main();
