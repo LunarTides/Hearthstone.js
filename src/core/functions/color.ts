@@ -93,9 +93,6 @@ export const colorFunctions = {
 	 * // Hex
 	 * '[fg:]#FF0000', 'bg:#FF0000'
 	 *
-	 * // RGB
-	 * '[fg:]rgb[:][(]255[ ],0[ ],0[)]', 'bg:rgb(255, 0, 0)' // E.g. rgb:(0, 0, 255). rgb:0,0,255). rgb:(0,0,255). rgb(0, 0, 255). bg:rgb(0, 0, 255)
-	 *
 	 * @param text The text to parse
 	 *
 	 * @returns The resulting string
@@ -120,250 +117,92 @@ export const colorFunctions = {
 	 * assert.equal(parsed, chalk.red.italic.bgHex("#0000FF")("Test") + " Another test");
 	 */
 	fromTags(text: string): string {
-		// TODO: Optimize perhaps. #333
-		if (!this.parseTags) {
+		if (!this.parseTags || !text.includes("<")) {
 			return text;
 		}
 
-		// Don't waste resources if the string doesn't contain tags
-		if (!text.includes("<") || !text.includes(">")) {
-			return text;
-		}
+		let result = "";
+		let currentTags: string[] = [];
 
-		let partOfRgb: number[] = [];
+		for (const match of text.matchAll(/(.*?)(<.*?>|$)/gs)) {
+			let [_, content = "", tag = ""] = match;
 
-		const handleSpecialTags = (
-			index: number,
-			tag: string,
-			returnValue: string,
-			bg: boolean,
-		): string => {
-			let newTag = tag;
+			[content, tag] = this._handleTildeCase(text, match, content, tag);
 
-			const readNextType = (index: number): string => {
-				if (index >= currentTypes.length - 1) {
-					return "";
-				}
-
-				return currentTypes[index + 1];
-			};
-
-			// The type is part of an rgb value. Ignore it
-			if (partOfRgb.includes(index)) {
-				return returnValue;
+			if (content) {
+				result += this._applyChalk(content, currentTags);
 			}
 
-			newTag = newTag.toLowerCase();
+			if (tag?.startsWith("<")) {
+				const tags = tag.split(" ");
 
-			// Support for rgb values with spaces after the commas
-			if (newTag.endsWith(")") && /rgb:?\(/.test(readNextType(index + 1))) {
-				newTag = readNextType(index + 1) + readNextType(index) + newTag;
-				partOfRgb.push(index + 1, index + 2);
-			}
-
-			// Hex
-			if (newTag.startsWith("#")) {
-				if (bg) {
-					return chalk.bgHex(newTag)(returnValue);
-				}
-
-				return chalk.hex(newTag)(returnValue);
-			}
-
-			// RGB
-			if (newTag.startsWith("rgb")) {
-				newTag = newTag.replace(/rgb:?/, "");
-
-				const [red, green, blue] = newTag
-					.split(",")
-					.map((s) => game.lodash.parseInt(s.replace(/[()]/, "")));
-
-				if (bg) {
-					return chalk.bgRgb(red, green, blue)(returnValue);
-				}
-
-				return chalk.rgb(red, green, blue)(returnValue);
-			}
-
-			return returnValue;
-		};
-
-		const applyColorFromTag = (
-			index: number,
-			tag: string,
-			returnValue: string,
-		): string => {
-			let newTag = tag;
-
-			// Remove `fg:` prefix
-			if (newTag.startsWith("fg:")) {
-				newTag = newTag.replace("fg:", "");
-			}
-
-			// Remove the `bg:` prefix
-			let bg = false;
-			if (newTag.startsWith("bg:")) {
-				newTag = newTag.replace("bg:", "");
-				bg = true;
-			}
-
-			// Remove the `bright:` prefix
-			let bright = false;
-			if (newTag.startsWith("bright:")) {
-				newTag = newTag.replace("bright:", "");
-				bright = true;
-			}
-
-			// Remove `dark:` prefix
-			if (newTag.startsWith("dark:")) {
-				newTag = newTag.replace("dark:", "");
-			}
-
-			let newReturnValue = handleSpecialTags(index, newTag, returnValue, bg);
-
-			if (newReturnValue !== returnValue) {
-				return newReturnValue;
-			}
-
-			// Here are the non-special color tags
-			if (newTag === "reset") {
-				currentTypes = [];
-			}
-
-			if (newTag === "b") {
-				newTag = "bold";
-			} else if (newTag === "i") {
-				newTag = "italic";
-			}
-
-			let tagFuncString = bg ? `bg${game.lodash.capitalize(newTag)}` : newTag;
-			tagFuncString = bright ? `${tagFuncString}Bright` : tagFuncString;
-
-			const callback = chalk[tagFuncString as keyof ChalkInstance] as unknown;
-			if (callback instanceof Function) {
-				newReturnValue = (callback as (...text: unknown[]) => string)(
-					newReturnValue,
-				);
-			}
-
-			return newReturnValue;
-		};
-
-		/**
-		 * Appends text styling based on the current types.
-		 *
-		 * @param c The text to be styled
-		 * @returns The text with applied styling
-		 */
-		const appendTypes = (c: string): string => {
-			let returnValue = c;
-
-			/*
-			 * This line fixes a bug that makes, for example, `</b>Test</b>.` make the `.` be red when it should be white. This bug is why all new battlecries were `<b>Battlecry:</b> Deal...` instead of `<b>Battlecry: </b>Deal...`. I will see which one i choose in the future.
-			 * Update: I discourge the use of `reset` now that you cancel tags manually. Use `</>` instead.
-			 */
-			if (currentTypes.includes("reset")) {
-				currentTypes = ["reset"];
-			}
-
-			for (const [index, tag] of currentTypes.reverse().entries()) {
-				returnValue = applyColorFromTag(index, tag, returnValue);
-			}
-
-			return returnValue;
-		};
-
-		let strbuilder = "";
-		let wordStringbuilder = "";
-		let currentTypes: string[] = [];
-
-		let tagbuilder = "";
-		let readingTag = false;
-		let removeTag = false;
-
-		const readPrevious = (i: number) => {
-			if (i <= 0) {
-				return "";
-			}
-
-			return text[i - 1];
-		};
-
-		const cancelled = (i: number): boolean => {
-			const one = readPrevious(i);
-			const two = readPrevious(i - 1);
-
-			if (two === "~") {
-				return false;
-			}
-
-			return one === "~";
-		};
-
-		// Loop through the characters in str
-		for (const [index, character] of [...text].entries()) {
-			if (cancelled(index)) {
-				wordStringbuilder += character;
-				continue;
-			}
-
-			if (character === "~") {
-				continue;
-			}
-
-			if (character === "<" && !readingTag) {
-				// Start a new tag
-				strbuilder += appendTypes(wordStringbuilder);
-				wordStringbuilder = "";
-
-				readingTag = true;
-			} else if (character === ">" && readingTag) {
-				// End tag reading
-				readingTag = false;
-
-				const currentTags = tagbuilder.split(" ");
-				tagbuilder = "";
-
-				partOfRgb = [];
-
-				if (!removeTag) {
-					currentTypes.push(...currentTags);
-					continue;
-				}
-
-				// Remove the tags
-				removeTag = false;
-
-				// If the tag is </>, remove all tags
-				if (readPrevious(index) === "/") {
-					currentTypes = [];
-					continue;
-				}
-
-				for (const tag of currentTags) {
-					const success = game.functions.util.remove(currentTypes, tag);
-					if (success) {
-						continue;
+				for (const individualTag of tags) {
+					if (individualTag.startsWith("</")) {
+						const tagName = individualTag.slice(2, -1); // Remove '</' and '>'
+						currentTags = currentTags.filter((t) => !t.startsWith(tagName));
+					} else {
+						currentTags.push(individualTag.replace(/[<>]/g, "")); // Remove < and >
 					}
-
-					currentTypes = currentTypes.filter((type) => !type.startsWith(tag));
 				}
-			} else if (
-				character === "/" &&
-				readingTag &&
-				readPrevious(index) === "<"
-			) {
-				removeTag = true;
-			} else if (readingTag) {
-				tagbuilder += character;
-			} else {
-				wordStringbuilder += character;
 			}
 		}
 
-		strbuilder += appendTypes(wordStringbuilder);
+		return result;
+	},
 
-		return strbuilder;
+	_applyChalk(text: string, tags: string[]): string {
+		return tags.reduce((styledText, _tag) => {
+			let tag = _tag;
+
+			const isBackground = tag.startsWith("bg:");
+			const isBright = tag.startsWith("bright:");
+
+			// Clean up the tag and handle specific cases
+			tag = tag.replace(/fg:|bg:|bright:|dark:/g, "");
+			if (tag === "b") tag = "bold";
+			if (tag === "i") tag = "italic";
+
+			// Hex color support
+			if (tag.startsWith("#")) {
+				return isBackground
+					? chalk.bgHex(tag)(styledText)
+					: chalk.hex(tag)(styledText);
+			}
+
+			// Format chalk method
+			let chalkMethod = isBackground ? `bg${game.lodash.capitalize(tag)}` : tag;
+
+			if (isBright) chalkMethod += "Bright";
+
+			const chalkFunc = chalk[chalkMethod as keyof ChalkInstance] as unknown;
+			return chalkFunc instanceof Function
+				? (chalkFunc as (...text: unknown[]) => string)(styledText)
+				: styledText;
+		}, text);
+	},
+
+	_handleTildeCase(
+		text: string,
+		match: RegExpMatchArray,
+		_content: string,
+		_tag: string,
+	): [string, string] {
+		let content = _content;
+		let tag = _tag;
+
+		if (/(^~~|~~$)/g.test(content)) {
+			return [content, tag];
+		}
+
+		// Handle cases where content starts or ends with tilde (~)
+		if (text[match.index ?? -1] === "~") {
+			content = tag; // The content is actually the tag here
+			tag = "";
+		} else if (content.endsWith("~") && tag.startsWith("<")) {
+			content = content.replace(/~$/, "") + tag; // Append the tagc to the content if content ends with "~"
+		}
+
+		return [content, tag];
 	},
 
 	/**
