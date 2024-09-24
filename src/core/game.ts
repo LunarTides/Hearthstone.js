@@ -160,12 +160,20 @@ const attack = {
 
 		// Target is a player
 		if (target instanceof Player) {
-			return await attack._attackerIsPlayerAndTargetIsPlayer(attacker, target, force);
+			return await attack._attackerIsPlayerAndTargetIsPlayer(
+				attacker,
+				target,
+				force,
+			);
 		}
 
 		// Target is a card
 		if (target instanceof Card) {
-			return await attack._attackerIsPlayerAndTargetIsCard(attacker, target, force);
+			return await attack._attackerIsPlayerAndTargetIsCard(
+				attacker,
+				target,
+				force,
+			);
 		}
 
 		// Otherwise
@@ -344,12 +352,20 @@ const attack = {
 
 		// Target is a player
 		if (target instanceof Player) {
-			return await attack._attackerIsCardAndTargetIsPlayer(attacker, target, force);
+			return await attack._attackerIsCardAndTargetIsPlayer(
+				attacker,
+				target,
+				force,
+			);
 		}
 
 		// Target is a minion
 		if (target instanceof Card) {
-			return await attack._attackerIsCardAndTargetIsCard(attacker, target, force);
+			return await attack._attackerIsCardAndTargetIsCard(
+				attacker,
+				target,
+				force,
+			);
 		}
 
 		// Otherwise
@@ -516,7 +532,7 @@ const attack = {
 		}
 
 		// The card has more than 0 health
-		if (await card.activate("frenzy") !== -1) {
+		if ((await card.activate("frenzy")) !== -1) {
 			card.abilities.frenzy = undefined;
 		}
 	},
@@ -539,7 +555,10 @@ const attack = {
 		attacker.owner.addHealth(attacker.attack ?? 0);
 	},
 
-	async _spellDamage(attacker: number | string, target: Target): Promise<number> {
+	async _spellDamage(
+		attacker: number | string,
+		target: Target,
+	): Promise<number> {
 		if (typeof attacker !== "string") {
 			return attacker;
 		}
@@ -559,7 +578,10 @@ const attack = {
 		return dmg;
 	},
 
-	async _removeDurabilityFromWeapon(attacker: Player, target: Target): Promise<void> {
+	async _removeDurabilityFromWeapon(
+		attacker: Player,
+		target: Target,
+	): Promise<void> {
 		const { weapon } = attacker;
 		if (!weapon) {
 			attacker.canAttack = false;
@@ -613,18 +635,20 @@ const playCard = {
 		}
 
 		// If the board has max capacity, and the card played is a minion or location card, prevent it.
-		if (!await playCard._hasCapacity(card, player)) {
+		if (!(await playCard._hasCapacity(card, player))) {
 			return "space";
 		}
 
 		// Condition
-		if (!await playCard._condition(card, player)) {
+		if (!(await playCard._condition(card, player))) {
 			return "refund";
 		}
 
 		// Charge you for the card
 		player[card.costType] -= card.cost;
-		await game.functions.event.withSuppressed("DiscardCard", async () => card.discard());
+		await game.functions.event.withSuppressed("DiscardCard", async () =>
+			card.discard(),
+		);
 
 		// Counter
 		if (playCard._countered(card, player)) {
@@ -646,7 +670,10 @@ const playCard = {
 		 * Type specific code
 		 * HACK: Use of never
 		 */
-		const typeFunction: (card: Card, player: Player) => Promise<GamePlayCardReturn> =
+		const typeFunction: (
+			card: Card,
+			player: Player,
+		) => Promise<GamePlayCardReturn> =
 			playCard.typeSpecific[card.type as never];
 
 		if (!typeFunction) {
@@ -685,7 +712,10 @@ const playCard = {
 				return "magnetize";
 			}
 
-			if (!card.hasKeyword("Dormant") && await card.activate("battlecry") === -1) {
+			if (
+				!card.hasKeyword("Dormant") &&
+				(await card.activate("battlecry")) === -1
+			) {
 				return "refund";
 			}
 
@@ -695,7 +725,7 @@ const playCard = {
 		},
 
 		async Spell(card: Card, player: Player): Promise<GamePlayCardReturn> {
-			if (await card.activate("cast") === -1) {
+			if ((await card.activate("cast")) === -1) {
 				return "refund";
 			}
 
@@ -717,7 +747,7 @@ const playCard = {
 		},
 
 		async Weapon(card: Card, player: Player): Promise<GamePlayCardReturn> {
-			if (await card.activate("battlecry") === -1) {
+			if ((await card.activate("battlecry")) === -1) {
 				return "refund";
 			}
 
@@ -726,7 +756,7 @@ const playCard = {
 		},
 
 		async Hero(card: Card, player: Player): Promise<GamePlayCardReturn> {
-			if (await card.activate("battlecry") === -1) {
+			if ((await card.activate("battlecry")) === -1) {
 				return "refund";
 			}
 
@@ -788,7 +818,9 @@ const playCard = {
 
 		player.mana -= 1;
 
-		await game.functions.event.withSuppressed("DiscardCard", async () => card.discard());
+		await game.functions.event.withSuppressed("DiscardCard", async () =>
+			card.discard(),
+		);
 		await player.drawCards(1);
 		await player.shuffleIntoDeck(card);
 
@@ -825,7 +857,9 @@ const playCard = {
 
 		player.mana -= 2;
 
-		await game.functions.event.withSuppressed("DiscardCard", async () => card.discard());
+		await game.functions.event.withSuppressed("DiscardCard", async () =>
+			card.discard(),
+		);
 		const forged = await Card.create(forgeId, player);
 		await player.addToHand(forged);
 
@@ -940,7 +974,9 @@ const playCard = {
 			// Corrupt that card
 			const corrupted = await Card.create(corruptId, player);
 
-			await game.functions.event.withSuppressed("DiscardCard", async () => card.discard());
+			await game.functions.event.withSuppressed("DiscardCard", async () =>
+				card.discard(),
+			);
 			await game.functions.event.withSuppressed("AddCardToHand", async () =>
 				player.addToHand(corrupted),
 			);
@@ -1276,8 +1312,16 @@ export class Game {
 	 *
 	 * @returns What the user answered
 	 */
-	async input(prompt = "", overrideNoInput = false, useInputQueue = true): Promise<string> {
-		return await this.interact.gameLoop.input(prompt, overrideNoInput, useInputQueue);
+	async input(
+		prompt = "",
+		overrideNoInput = false,
+		useInputQueue = true,
+	): Promise<string> {
+		return await this.interact.gameLoop.input(
+			prompt,
+			overrideNoInput,
+			useInputQueue,
+		);
 	}
 
 	/**

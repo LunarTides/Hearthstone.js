@@ -716,7 +716,7 @@ export class Player {
 			if (
 				card.type === "Spell" &&
 				card.hasKeyword("Cast On Draw") &&
-				await card.activate("cast")
+				(await card.activate("cast"))
 			) {
 				drawAmount += 1;
 				continue;
@@ -774,7 +774,7 @@ export class Player {
 		if (
 			card.type === "Spell" &&
 			card.hasKeyword("Cast On Draw") &&
-			await card.activate("cast")
+			(await card.activate("cast"))
 		) {
 			return undefined;
 		}
@@ -834,10 +834,13 @@ export class Player {
 	 * @returns Success
 	 */
 	async setToStartingHero(heroClass = this.heroClass): Promise<boolean> {
-		const heroCardId = (await Promise.all(
-				game.cardCollections.classes.map(async (heroId) => Card.create(heroId, this, true))
-			))
-			.find((card) => card.classes.includes(heroClass))?.id;
+		const heroCardId = (
+			await Promise.all(
+				game.cardCollections.classes.map(async (heroId) =>
+					Card.create(heroId, this, true),
+				),
+			)
+		).find((card) => card.classes.includes(heroClass))?.id;
 
 		if (!heroCardId) {
 			return false;
@@ -862,7 +865,7 @@ export class Player {
 			return false;
 		}
 
-		if (await this.hero.heropower?.activate("heropower") === Card.REFUND) {
+		if ((await this.hero.heropower?.activate("heropower")) === Card.REFUND) {
 			return -1;
 		}
 
@@ -1026,11 +1029,15 @@ export class Player {
 
 			game.functions.util.remove(mulligan, card);
 
-			await game.functions.event.withSuppressed("DrawCard", async () => this.drawCards(1));
+			await game.functions.event.withSuppressed("DrawCard", async () =>
+				this.drawCards(1),
+			);
 			await game.functions.event.withSuppressed("AddCardToDeck", async () =>
 				this.shuffleIntoDeck(card),
 			);
-			await game.functions.event.withSuppressed("DiscardCard", async () => card.discard());
+			await game.functions.event.withSuppressed("DiscardCard", async () =>
+				card.discard(),
+			);
 
 			cards.push(card);
 		}
@@ -1370,7 +1377,9 @@ export class Player {
 			return;
 		}
 
-		const list = (await Card.all(true)).filter((card) => /DIY \d+/.test(card.name));
+		const list = (await Card.all(true)).filter((card) =>
+			/DIY \d+/.test(card.name),
+		);
 
 		const card = game.lodash.sample(list);
 		if (!card) {

@@ -24,9 +24,11 @@ type Commands = "i" | "d" | "v" | "q";
 let running = true;
 
 while (running) {
-	let func = (await game.input(
-		"What do you want to do? ([i]ncrement, [d]ecrement, [v]alidate, [q]uit): ",
-	))[0] as Commands;
+	let func = (
+		await game.input(
+			"What do you want to do? ([i]ncrement, [d]ecrement, [v]alidate, [q]uit): ",
+		)
+	)[0] as Commands;
 	if (!func) {
 		await game.pause("<red>Invalid command.</red>\n");
 		continue;

@@ -107,7 +107,10 @@ export const interact = {
 	 * @param times The amount of times to ask
 	 * @param prompts [prompt, callback]
 	 */
-	async chooseOne(times: number, ...prompts: Array<[string, () => Promise<void>]>): Promise<void> {
+	async chooseOne(
+		times: number,
+		...prompts: Array<[string, () => Promise<void>]>
+	): Promise<void> {
 		let chosen = 0;
 
 		while (chosen < times) {
@@ -155,7 +158,11 @@ export const interact = {
 	 *
 	 * @returns Chosen
 	 */
-	async question(player: Player, prompt: string, answers: string[]): Promise<string> {
+	async question(
+		player: Player,
+		prompt: string,
+		answers: string[],
+	): Promise<string> {
 		await game.interact.info.showGame(player);
 
 		let strbuilder = `\n${prompt} [`;
@@ -235,7 +242,7 @@ export const interact = {
 		card: Card | undefined,
 		flags: SelectTargetFlag[] = [],
 	): Promise<Player | false> {
-		return await this.selectTarget(prompt, card, "any", "hero", flags) as
+		return (await this.selectTarget(prompt, card, "any", "hero", flags)) as
 			| Player
 			| false;
 	},
@@ -251,7 +258,7 @@ export const interact = {
 		side: SelectTargetAlignment,
 		flags: SelectTargetFlag[] = [],
 	): Promise<Card | false> {
-		return await this.selectTarget(prompt, card, side, "minion", flags) as
+		return (await this.selectTarget(prompt, card, side, "minion", flags)) as
 			| Card
 			| false;
 	},
@@ -474,7 +481,9 @@ export const interact = {
 				flags.includes("forceElusive")) &&
 			minion.hasKeyword("Elusive")
 		) {
-			await game.pause("<red>Can't be targeted by Spells or Hero Powers.</red>\n");
+			await game.pause(
+				"<red>Can't be targeted by Spells or Hero Powers.</red>\n",
+			);
 			return false;
 		}
 

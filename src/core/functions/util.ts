@@ -151,7 +151,9 @@ export const utilFunctions = {
 		 * Do this so it can actually run '/ai'
 		 */
 		game.config.general.debug = true;
-		const aiHistory = await game.interact.gameLoop.handleCmds("/ai", { echo: false });
+		const aiHistory = await game.interact.gameLoop.handleCmds("/ai", {
+			echo: false,
+		});
 
 		const name = error ? "Crash Log" : "Log";
 

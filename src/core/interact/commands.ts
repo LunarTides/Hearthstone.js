@@ -151,7 +151,9 @@ export const commands: CommandList = {
 			return false;
 		}
 
-		const titanCards = await Promise.all(titanIds.map(async (id) => Card.create(id, game.player, true)));
+		const titanCards = await Promise.all(
+			titanIds.map(async (id) => Card.create(id, game.player, true)),
+		);
 
 		await game.interact.info.showGame(game.player);
 		console.log(
@@ -173,7 +175,7 @@ export const commands: CommandList = {
 
 		const ability = titanCards[choice - 1];
 
-		if (await ability.activate("cast") === -1) {
+		if ((await ability.activate("cast")) === -1) {
 			await game.functions.event.withSuppressed("DiscardCard", async () =>
 				ability.discard(),
 			);
@@ -634,13 +636,17 @@ export const commands: CommandList = {
 
 				hasPrintedHeader = true;
 
-				value = await doValue(value, game.player, shouldHide) as UnknownEventValue;
+				value = (await doValue(
+					value,
+					game.player,
+					shouldHide,
+				)) as UnknownEventValue;
 
 				if (Array.isArray(value)) {
 					let strbuilder = "";
 
 					for (let v of value) {
-						v = await doValue(v, game.player, shouldHide) as
+						v = (await doValue(v, game.player, shouldHide)) as
 							| string
 							| number
 							| Player
@@ -734,8 +740,9 @@ export const debugCommands: CommandList = {
 	async rl(_, flags): Promise<boolean> {
 		let success = true;
 
-		success &&= await game.interact.info.withStatus("Reloading cards", async () =>
-			Card.reloadAll(),
+		success &&= await game.interact.info.withStatus(
+			"Reloading cards",
+			async () => Card.reloadAll(),
 		);
 
 		// Go through all the cards and reload them
@@ -765,12 +772,14 @@ export const debugCommands: CommandList = {
 			},
 		);
 
-		success &&= await game.interact.info.withStatus("Reloading config", async () =>
-			game.functions.util.importConfig(),
+		success &&= await game.interact.info.withStatus(
+			"Reloading config",
+			async () => game.functions.util.importConfig(),
 		);
 
-		success &&= await game.interact.info.withStatus("Reloading language map", async () =>
-			Boolean(game.functions.util.getLanguageMap(true)),
+		success &&= await game.interact.info.withStatus(
+			"Reloading language map",
+			async () => Boolean(game.functions.util.getLanguageMap(true)),
 		);
 
 		if (success) {
@@ -778,7 +787,9 @@ export const debugCommands: CommandList = {
 				return true;
 			}
 
-			await game.pause("\nThe cards have been reloaded.\nPress enter to continue...");
+			await game.pause(
+				"\nThe cards have been reloaded.\nPress enter to continue...",
+			);
 			return true;
 		}
 
@@ -879,15 +890,15 @@ export const debugCommands: CommandList = {
 	},
 
 	async history(): Promise<string> {
-		return await game.interact.gameLoop.handleCmds("history", {
+		return (await game.interact.gameLoop.handleCmds("history", {
 			debug: true,
-		}) as string;
+		})) as string;
 	},
 
 	async frl(): Promise<string> {
-		return await game.interact.gameLoop.handleCmds(
+		return (await game.interact.gameLoop.handleCmds(
 			`${game.config.advanced.debugCommandPrefix}rl`,
 			{ debug: true },
-		) as string;
+		)) as string;
 	},
 };

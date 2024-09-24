@@ -146,7 +146,10 @@ export const eventFunctions = {
 	 *
 	 * @returns The return value of the callback.
 	 */
-	async withSuppressed<T>(key: EventKey | EventKey[], callback: () => Promise<T>): Promise<T> {
+	async withSuppressed<T>(
+		key: EventKey | EventKey[],
+		callback: () => Promise<T>,
+	): Promise<T> {
 		const unsuppressed: Array<() => boolean> = [];
 
 		if (Array.isArray(key)) {

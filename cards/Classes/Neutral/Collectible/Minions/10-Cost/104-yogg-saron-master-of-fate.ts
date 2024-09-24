@@ -20,7 +20,7 @@ export const blueprint: Blueprint = {
 
 	async battlecry(owner, self) {
 		// If you've cast 10 spells this game, spin the Wheel of Yogg-Saron. ({amount} left!)
-		if (!await self.condition()) {
+		if (!(await self.condition())) {
 			return;
 		}
 
@@ -129,7 +129,10 @@ export const blueprint: Blueprint = {
 
 			case "Mysterybox": {
 				// Cast a random spell for every spell you've cast this game (targets chosen randomly).
-				const oldYogg = await Card.create(game.cardIds.yoggSaronHopesEnd103, owner);
+				const oldYogg = await Card.create(
+					game.cardIds.yoggSaronHopesEnd103,
+					owner,
+				);
 				await oldYogg.activate("battlecry");
 
 				break;

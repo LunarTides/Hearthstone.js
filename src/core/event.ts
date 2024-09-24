@@ -17,8 +17,16 @@ type EventManagerType = {
 	forced: EventKey[];
 	stats: Record<string, [number, number]>;
 
-	tick(key: EventKey, value: UnknownEventValue, player: Player): Promise<boolean>;
-	cardUpdate(key: EventKey, value: UnknownEventValue, player: Player): Promise<boolean>;
+	tick(
+		key: EventKey,
+		value: UnknownEventValue,
+		player: Player,
+	): Promise<boolean>;
+	cardUpdate(
+		key: EventKey,
+		value: UnknownEventValue,
+		player: Player,
+	): Promise<boolean>;
 	questUpdate(
 		questsName: "secrets" | "sidequests" | "quests",
 		key: EventKey,
@@ -201,7 +209,7 @@ export const eventManager: EventManagerType = {
 			const [current, max] = quest.progress;
 
 			const done = current + 1 >= max;
-			if (!await quest.callback(value, done)) {
+			if (!(await quest.callback(value, done))) {
 				continue;
 			}
 

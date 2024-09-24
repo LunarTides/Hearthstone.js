@@ -18,7 +18,12 @@ export const blueprint: Blueprint = {
 
 	async cast(owner, self) {
 		// Deal $10 damage.
-		const target = await game.interact.selectTarget(self.text, self, "any", "any");
+		const target = await game.interact.selectTarget(
+			self.text,
+			self,
+			"any",
+			"any",
+		);
 		if (!target) {
 			return Card.REFUND;
 		}

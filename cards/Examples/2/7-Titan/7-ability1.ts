@@ -21,7 +21,11 @@ export const blueprint: Blueprint = {
 		// Destroy an enemy minion.
 
 		// Select an enemy minion to destroy
-		const target = await game.interact.selectCardTarget(self.text, self, "enemy");
+		const target = await game.interact.selectCardTarget(
+			self.text,
+			self,
+			"enemy",
+		);
 		if (!target) {
 			return Card.REFUND;
 		}

@@ -41,7 +41,11 @@ export const blueprint: Blueprint = {
 
 	async test(owner, self) {
 		// If there doesn't exist any 2-Cost minions, pass the test
-		if (!(await Card.all()).some((card) => card.cost === 2 && card.type === "Minion")) {
+		if (
+			!(await Card.all()).some(
+				(card) => card.cost === 2 && card.type === "Minion",
+			)
+		) {
 			return;
 		}
 

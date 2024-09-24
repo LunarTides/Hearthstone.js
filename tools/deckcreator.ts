@@ -787,7 +787,10 @@ async function generateDeckcode(parseVanillaOnPseudo = false) {
 			return deckcode;
 		}
 
-		deckcode.code = await game.functions.deckcode.toVanilla(player1, deckcode.code);
+		deckcode.code = await game.functions.deckcode.toVanilla(
+			player1,
+			deckcode.code,
+		);
 	}
 
 	return deckcode;
@@ -950,7 +953,7 @@ async function getCardArg(
 	}
 
 	for (let i = 0; i < times; i++) {
-		if (!await callback(card)) {
+		if (!(await callback(card))) {
 			errorCallback();
 		}
 	}
@@ -1045,16 +1048,20 @@ const commands: CommandList = {
 	async add(args): Promise<boolean> {
 		let success = true;
 
-		await getCardArg(args, async (card) => add(card), async () => {
-			// Internal error since add shouldn't return false
-			console.log(
-				"<red>Internal Error: Something went wrong while adding a card. Please report this. Error code: DcAddInternal</red>",
-			);
+		await getCardArg(
+			args,
+			async (card) => add(card),
+			async () => {
+				// Internal error since add shouldn't return false
+				console.log(
+					"<red>Internal Error: Something went wrong while adding a card. Please report this. Error code: DcAddInternal</red>",
+				);
 
-			await game.pause();
+				await game.pause();
 
-			success = false;
-		});
+				success = false;
+			},
+		);
 
 		if (!success) {
 			return false;
@@ -1065,13 +1072,17 @@ const commands: CommandList = {
 	async remove(args): Promise<boolean> {
 		let success = true;
 
-		await getCardArg(args, async (card) => remove(card), async () => {
-			// User error
-			console.log("<red>Invalid card.</red>");
-			await game.pause();
+		await getCardArg(
+			args,
+			async (card) => remove(card),
+			async () => {
+				// User error
+				console.log("<red>Invalid card.</red>");
+				await game.pause();
 
-			success = false;
-		});
+				success = false;
+			},
+		);
 
 		if (!success) {
 			return false;
@@ -1101,7 +1112,7 @@ const commands: CommandList = {
 		return true;
 	},
 	async rules(args, flags): Promise<boolean> {
-		return await commands.config(args, flags) as boolean;
+		return (await commands.config(args, flags)) as boolean;
 	},
 	async view(args): Promise<boolean> {
 		// The callback function doesn't return anything, so we don't do anything with the return value of `getCardArg`.
@@ -1409,7 +1420,9 @@ const commands: CommandList = {
 			}
 		}
 
-		await game.pause("<bright:green>Setting successfully changed!<bright:green>\n");
+		await game.pause(
+			"<bright:green>Setting successfully changed!<bright:green>\n",
+		);
 
 		return true;
 	},

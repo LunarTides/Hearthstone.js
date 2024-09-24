@@ -18,7 +18,7 @@ export async function main(
 	) => Promise<void>,
 ): Promise<void> {
 	// Common card creator variant stuff
-	const doCardCreatorVariant = async<T> (
+	const doCardCreatorVariant = async <T>(
 		usedOptions: string[],
 		args: string[],
 		callback: (debug: boolean, overrideType?: CcType) => Promise<T>,
@@ -171,45 +171,55 @@ export async function main(
 			}
 
 			case "cclib": {
-				await doCardCreatorVariant(usedOptions, args, async (debug, overrideType) => {
-					// Here we implement our own card creator variant
+				await doCardCreatorVariant(
+					usedOptions,
+					args,
+					async (debug, overrideType) => {
+						// Here we implement our own card creator variant
 
-					// Only include args with an '=' in it.
-					args = args.filter((arg) => arg.includes("="));
+						// Only include args with an '=' in it.
+						args = args.filter((arg) => arg.includes("="));
 
-					const blueprint = {} as Blueprint;
-					for (const argument of args) {
-						let [key, value] = argument.split("=");
+						const blueprint = {} as Blueprint;
+						for (const argument of args) {
+							let [key, value] = argument.split("=");
 
-						// Parse it as its real value instead of a string.
-						value = JSON.parse(`[ ${value} ]`)[0];
+							// Parse it as its real value instead of a string.
+							value = JSON.parse(`[ ${value} ]`)[0];
 
-						// HACK: Use of never
-						blueprint[key as keyof Blueprint] = value as never;
-					}
+							// HACK: Use of never
+							blueprint[key as keyof Blueprint] = value as never;
+						}
 
-					if (!blueprint.id && blueprint.id !== 0) {
-						await game.pause(
-							"<red>Missing card id! Set `id=0` before the type-specific fields to generate a correctly formatted card.</red>\n",
+						if (!blueprint.id && blueprint.id !== 0) {
+							await game.pause(
+								"<red>Missing card id! Set `id=0` before the type-specific fields to generate a correctly formatted card.</red>\n",
+							);
+
+							return;
+						}
+
+						/*
+						 * Validate it. This will not do the compiler's job for us, only the stuff that the compiler doesn't do.
+						 * That means that the blueprint isn't very validated, which means this WILL crash if you create an invalid card.
+						 */
+						game.functions.card.validateBlueprint(blueprint);
+
+						// The default type is CLI
+						let type = "CLI";
+						if (overrideType) {
+							type = overrideType;
+						}
+
+						await cclib.create(
+							type as CcType,
+							blueprint,
+							undefined,
+							undefined,
+							debug,
 						);
-
-						return;
-					}
-
-					/*
-					 * Validate it. This will not do the compiler's job for us, only the stuff that the compiler doesn't do.
-					 * That means that the blueprint isn't very validated, which means this WILL crash if you create an invalid card.
-					 */
-					game.functions.card.validateBlueprint(blueprint);
-
-					// The default type is CLI
-					let type = "CLI";
-					if (overrideType) {
-						type = overrideType;
-					}
-
-					await cclib.create(type as CcType, blueprint, undefined, undefined, debug);
-				});
+					},
+				);
 
 				break;
 			}

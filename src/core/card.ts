@@ -349,7 +349,11 @@ export class Card {
 		);
 	}
 
-	static async create(id: number, player: Player, suppressEvent = false): Promise<Card> {
+	static async create(
+		id: number,
+		player: Player,
+		suppressEvent = false,
+	): Promise<Card> {
 		const card = new Card(id, player);
 		await card.setup(suppressEvent);
 
@@ -361,7 +365,10 @@ export class Card {
 	 *
 	 * @returns The created card, or undefined if no card is found.
 	 */
-	static async fromName(name: string, player: Player): Promise<Card | undefined> {
+	static async fromName(
+		name: string,
+		player: Player,
+	): Promise<Card | undefined> {
 		const cards = await Card.allFromName(name);
 		if (cards.length <= 0) {
 			return undefined;
@@ -391,7 +398,9 @@ export class Card {
 	static async all(include_uncollectible = false): Promise<Card[]> {
 		// Don't broadcast CreateCard event here since it would spam the history and log files
 		if (game.cards.length <= 0) {
-			game.cards = await Promise.all(game.blueprints.map(async (card) => Card.create(card.id, game.player)));
+			game.cards = await Promise.all(
+				game.blueprints.map(async (card) => Card.create(card.id, game.player)),
+			);
 
 			game.functions.card.generateIdsFile();
 		}
@@ -477,9 +486,9 @@ export class Card {
 
 	/**
 	 * Does some stuff that can't be done in the constructer since it is async.
-	 * 
+	 *
 	 * Don't call manually.
-	 * 
+	 *
 	 * @param [suppressEvent=false] If the "CreateCard" event should be suppressed.
 	 */
 	async setup(suppressEvent = false): Promise<void> {
@@ -860,7 +869,11 @@ export class Card {
 			this.health = this.maxHealth ?? -1;
 
 			if (this.health > before) {
-				await game.event.broadcast("HealthRestored", this.maxHealth, this.owner);
+				await game.event.broadcast(
+					"HealthRestored",
+					this.maxHealth,
+					this.owner,
+				);
 			}
 		} else if (this.health > before) {
 			await game.event.broadcast("HealthRestored", this.health, this.owner);
@@ -1144,7 +1157,10 @@ export class Card {
 	 */
 	async reset(): Promise<void> {
 		// Silence it to remove any new abilities
-		await game.functions.event.withSuppressed("SilenceCard", async () => await this.silence());
+		await game.functions.event.withSuppressed(
+			"SilenceCard",
+			async () => await this.silence(),
+		);
 		this.restoreBackup(this.backups.init);
 	}
 
@@ -1734,7 +1750,10 @@ export class Card {
 	 *
 	 * @returns An array with the name of the adapt(s) chosen, or -1 if the user cancelled.
 	 */
-	async adapt(prompt = "Choose One:", _values: string[][] = []): Promise<string | -1> {
+	async adapt(
+		prompt = "Choose One:",
+		_values: string[][] = [],
+	): Promise<string | -1> {
 		await game.interact.info.showGame(game.player);
 
 		const possibleCards = [

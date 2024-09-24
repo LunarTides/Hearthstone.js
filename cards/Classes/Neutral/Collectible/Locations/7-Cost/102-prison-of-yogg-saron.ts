@@ -19,7 +19,12 @@ export const blueprint: Blueprint = {
 
 	async use(owner, self) {
 		// Choose a character. Cast 4 random spells (targeting it if possible).
-		const target = await game.interact.selectTarget(self.text, self, "any", "any");
+		const target = await game.interact.selectTarget(
+			self.text,
+			self,
+			"any",
+			"any",
+		);
 		if (!target) {
 			return Card.REFUND;
 		}

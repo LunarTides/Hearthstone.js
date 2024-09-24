@@ -1,7 +1,7 @@
+import readline from "node:readline/promises";
 import { format } from "node:util";
 import { type Ai, Card, commands, debugCommands } from "@Game/internal.js";
 import type { GamePlayCardReturn, Target } from "@Game/types.js";
-import readline from "node:readline/promises";
 
 const rl = readline.createInterface({
 	input: process.stdin,
@@ -52,7 +52,11 @@ export const gameloopInteract = {
 	 *
 	 * @returns What the user answered
 	 */
-	async input(q = "", overrideNoInput = false, useInputQueue = true): Promise<string> {
+	async input(
+		q = "",
+		overrideNoInput = false,
+		useInputQueue = true,
+	): Promise<string> {
 		let question = q;
 
 		const wrapper = async (a: string) => {
@@ -326,7 +330,9 @@ export const gameloopInteract = {
 
 		if (debugCommandName) {
 			if (!game.config.general.debug) {
-				await game.pause("<red>You are not allowed to use this command.</red>\n");
+				await game.pause(
+					"<red>You are not allowed to use this command.</red>\n",
+				);
 				return false;
 			}
 
@@ -346,7 +352,7 @@ export const gameloopInteract = {
 	 * @returns The return value of `game.playCard`
 	 */
 	async doTurnLogic(input: string): Promise<GamePlayCardReturn> {
-		if (await this.handleCmds(input) !== -1) {
+		if ((await this.handleCmds(input)) !== -1) {
 			return true;
 		}
 

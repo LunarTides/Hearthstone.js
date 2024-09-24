@@ -7,11 +7,7 @@ export const cardInteract = {
 	 * @returns Success
 	 */
 	async useLocation(): Promise<
-		| boolean
-		| "nolocations"
-		| "invalidtype"
-		| "cooldown"
-		| "refund"
+		boolean | "nolocations" | "invalidtype" | "cooldown" | "refund"
 	> {
 		const locations = game.player.board.filter((m) => m.type === "Location");
 		if (locations.length <= 0) {
@@ -37,7 +33,7 @@ export const cardInteract = {
 			return "cooldown";
 		}
 
-		if (await location.activate("use") === Card.REFUND) {
+		if ((await location.activate("use")) === Card.REFUND) {
 			return "refund";
 		}
 

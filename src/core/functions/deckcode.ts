@@ -77,7 +77,9 @@ export const deckcodeFunctions = {
 		actualCode = sep[1] + actualCode.split(sep)[1];
 
 		if (
-			!(await game.functions.card.getClasses()).includes(hero as CardClassNoNeutral)
+			!(await game.functions.card.getClasses()).includes(
+				hero as CardClassNoNeutral,
+			)
 		) {
 			await panic("INVALIDHERO");
 			return;
@@ -425,7 +427,11 @@ export const deckcodeFunctions = {
 	 *
 	 * @returns The vanilla deckcode
 	 */
-	async toVanilla(player: Player, code: string, extraFiltering = true): Promise<string> {
+	async toVanilla(
+		player: Player,
+		code: string,
+		extraFiltering = true,
+	): Promise<string> {
 		/*
 		 * HACK: Jank code ahead. Beware!
 		 *
@@ -479,13 +485,15 @@ export const deckcodeFunctions = {
 
 		const cardsSplit = cards.split(",").map((i) => game.lodash.parseInt(i, 36));
 		const cardsSplitId = await Promise.all(cardsSplit.map(Card.fromID));
-		const cardsSplitCard = await Promise.all(cardsSplitId.map(async (c) => {
-			if (!c) {
-				throw new Error("c is an invalid card");
-			}
+		const cardsSplitCard = await Promise.all(
+			cardsSplitId.map(async (c) => {
+				if (!c) {
+					throw new Error("c is an invalid card");
+				}
 
-			return Card.create(c.id, player, true);
-		}));
+				return Card.create(c.id, player, true);
+			}),
+		);
 
 		const trueCards = cardsSplitCard.map((c) => c.name);
 

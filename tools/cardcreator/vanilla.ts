@@ -69,7 +69,7 @@ export async function create(
 	text = text.replaceAll("\n", " ");
 	text = text.replaceAll("[x]", "");
 
-	const classes = await game.functions.card.getClasses() as CardClass[];
+	const classes = (await game.functions.card.getClasses()) as CardClass[];
 	classes.push("Neutral");
 
 	while (!classes.includes(cardClass)) {
@@ -174,14 +174,19 @@ export async function create(
  *
  * @returns If a card was created
  */
-export async function main(debug = false, overrideType?: lib.CcType): Promise<boolean> {
+export async function main(
+	debug = false,
+	overrideType?: lib.CcType,
+): Promise<boolean> {
 	console.log("Hearthstone.js Vanilla Card Creator (C) 2022\n");
 
 	const vanillaCards = game.functions.card.vanilla.getAll();
 
 	let running = true;
 	while (running) {
-		const cardName = await game.input("\nName / dbfId (Type 'back' to cancel): ");
+		const cardName = await game.input(
+			"\nName / dbfId (Type 'back' to cancel): ",
+		);
 		if (game.interact.shouldExit(cardName)) {
 			running = false;
 			break;

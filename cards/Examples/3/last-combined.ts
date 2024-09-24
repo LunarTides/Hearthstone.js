@@ -16,7 +16,7 @@ export const blueprint: Blueprint = {
 	spellSchool: "None",
 
 	async cast(owner, self) {
-		if (!await self.condition()) {
+		if (!(await self.condition())) {
 			return;
 		}
 

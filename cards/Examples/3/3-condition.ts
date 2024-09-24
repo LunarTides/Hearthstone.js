@@ -25,7 +25,7 @@ export const blueprint: Blueprint = {
 		// If your deck has no duplicates, draw a card.
 
 		// Check if the condition is cleared
-		if (!await self.condition()) {
+		if (!(await self.condition())) {
 			return;
 		}
 

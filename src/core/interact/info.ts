@@ -65,7 +65,10 @@ export const infoInteract = {
 	 *
 	 * @returns The return value of the callback.
 	 */
-	async withStatus(status: string, callback: () => Promise<boolean>): Promise<boolean> {
+	async withStatus(
+		status: string,
+		callback: () => Promise<boolean>,
+	): Promise<boolean> {
 		process.stdout.write(`${status}...`);
 		const success = await callback();
 

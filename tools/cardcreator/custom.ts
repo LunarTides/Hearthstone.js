@@ -98,8 +98,8 @@ async function common(): Promise<BlueprintWithOptional> {
 	const name = await input("Name: ");
 	const text = await input("Text: ");
 	const cost = game.lodash.parseInt(await input("Cost: "));
-	const classes = await input("Classes: ") as CardClass;
-	const rarity = await input("Rarity: ") as CardRarity;
+	const classes = (await input("Classes: ")) as CardClass;
+	const rarity = (await input("Rarity: ")) as CardRarity;
 	const keywords = await input("Keywords: ");
 
 	player1.heroClass = classes;
@@ -134,7 +134,7 @@ const cardTypeFunctions: { [x in CardType]: () => Promise<Blueprint> } = {
 
 		const attack = game.lodash.parseInt(await input("Attack: "));
 		const health = game.lodash.parseInt(await input("Health: "));
-		const tribe = await input("Tribe: ") as MinionTribe;
+		const tribe = (await input("Tribe: ")) as MinionTribe;
 
 		return applyCard({
 			...card,
@@ -147,7 +147,7 @@ const cardTypeFunctions: { [x in CardType]: () => Promise<Blueprint> } = {
 	async Spell(): Promise<Blueprint> {
 		const card = await common();
 
-		const spellSchool = await input("Spell School: ") as SpellSchool;
+		const spellSchool = (await input("Spell School: ")) as SpellSchool;
 
 		return applyCard({
 			...card,
@@ -174,7 +174,7 @@ const cardTypeFunctions: { [x in CardType]: () => Promise<Blueprint> } = {
 		const armor = game.lodash.parseInt(await input("Armor (Default: 5):")) ?? 5;
 
 		console.log("Make the Hero Power:");
-		if (!await main()) {
+		if (!(await main())) {
 			throw new Error("Failed to create hero power");
 		}
 
@@ -221,7 +221,10 @@ const cardTypeFunctions: { [x in CardType]: () => Promise<Blueprint> } = {
  *
  * @returns The path to the file
  */
-export async function main(debug = false, overrideType?: lib.CcType): Promise<string | false> {
+export async function main(
+	debug = false,
+	overrideType?: lib.CcType,
+): Promise<string | false> {
 	// Reset the shouldExit switch so that the program doesn't immediately exit when the user enters the ccc, exits, then enters ccc again
 	shouldExit = false;
 

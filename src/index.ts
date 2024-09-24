@@ -44,7 +44,7 @@ export async function main(): Promise<void> {
 		}
 
 		// Put this in a while loop to make sure the function repeats if it fails.
-		while (!await game.interact.deckCode(player)) {
+		while (!(await game.interact.deckCode(player))) {
 			// Pass
 		}
 	}
