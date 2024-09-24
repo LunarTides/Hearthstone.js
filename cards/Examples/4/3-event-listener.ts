@@ -16,7 +16,7 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribe: "None",
 
-	battlecry(owner, self) {
+	async battlecry(owner, self) {
 		// For the rest of the game, your battlecries trigger twice.
 
 		/*
@@ -33,7 +33,7 @@ export const blueprint: Blueprint = {
 		 */
 		const destroy = game.functions.event.addListener(
 			"PlayCard",
-			(_unknownValue, eventPlayer) => {
+			async (_unknownValue, eventPlayer) => {
 				// This function will be run if the correct event was broadcast
 
 				// addListener can't figure out the type of `val` by itself, so we have to do the same thing as with passives
@@ -51,7 +51,7 @@ export const blueprint: Blueprint = {
 				}
 
 				// Activate the battlecry
-				value.activate("battlecry");
+				await value.activate("battlecry");
 
 				/*
 				 * You have to return a message to the event listener handler to tell it what to do next.
@@ -66,10 +66,10 @@ export const blueprint: Blueprint = {
 			-1,
 		); // This number is how many times the callback function can run before the event listener self-destructs. If this is set to `-1`, it lasts forever.
 
-		// destroy(); // Run this function to destroy the event listener
+		// await destroy(); // Run this function to destroy the event listener
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		// TODO: Add proper tests. #325
 		return true;
 	},

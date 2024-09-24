@@ -1,7 +1,12 @@
 import { format } from "node:util";
 import { type Ai, Card, commands, debugCommands } from "@Game/internal.js";
 import type { GamePlayCardReturn, Target } from "@Game/types.js";
-import rl from "readline-sync";
+import readline from "node:readline/promises";
+
+const rl = readline.createInterface({
+	input: process.stdin,
+	output: process.stdout,
+});
 
 const overrideConsole = {
 	log(..._data: unknown[]): void {
@@ -47,11 +52,11 @@ export const gameloopInteract = {
 	 *
 	 * @returns What the user answered
 	 */
-	input(q = "", overrideNoInput = false, useInputQueue = true): string {
+	async input(q = "", overrideNoInput = false, useInputQueue = true): Promise<string> {
 		let question = q;
 
-		const wrapper = (a: string) => {
-			game.event.broadcast("Input", a, game.player);
+		const wrapper = async (a: string) => {
+			await game.event.broadcast("Input", a, game.player);
 			return a;
 		};
 
@@ -76,7 +81,7 @@ export const gameloopInteract = {
 
 			// Invalid queue
 			if (!Array.isArray(queue)) {
-				return wrapper(rl.question(question));
+				return wrapper(await rl.question(question));
 			}
 
 			const answer = queue[0];
@@ -89,7 +94,7 @@ export const gameloopInteract = {
 			return wrapper(answer);
 		}
 
-		return wrapper(rl.question(question));
+		return wrapper(await rl.question(question));
 	},
 
 	/**
@@ -140,7 +145,7 @@ export const gameloopInteract = {
 	 *
 	 * @returns Cancel | Success
 	 */
-	doTurnAttack(): -1 | boolean | Card {
+	async doTurnAttack(): Promise<-1 | boolean | Card> {
 		let attacker: Target | -1 | false;
 		let target: Target | -1 | false;
 
@@ -164,7 +169,7 @@ export const gameloopInteract = {
 				return false;
 			}
 		} else {
-			attacker = game.interact.selectTarget(
+			attacker = await game.interact.selectTarget(
 				"Which minion do you want to attack with?",
 				undefined,
 				"friendly",
@@ -175,7 +180,7 @@ export const gameloopInteract = {
 				return false;
 			}
 
-			target = game.interact.selectTarget(
+			target = await game.interact.selectTarget(
 				"Which minion do you want to attack?",
 				undefined,
 				"enemy",
@@ -187,7 +192,7 @@ export const gameloopInteract = {
 			}
 		}
 
-		const errorCode = game.attack(attacker, target);
+		const errorCode = await game.attack(attacker, target);
 
 		const ignore = ["divineshield"];
 		if (errorCode === true || ignore.includes(errorCode)) {
@@ -268,7 +273,7 @@ export const gameloopInteract = {
 		}
 
 		console.log("<red>%s.</red>", logger.translate(error));
-		game.pause("");
+		await game.pause("");
 		return false;
 	},
 
@@ -280,14 +285,14 @@ export const gameloopInteract = {
 	 *
 	 * @returns A string if "echo" is false
 	 */
-	handleCmds(
+	async handleCmds(
 		cmd: string,
 		flags?: { echo?: boolean; debug?: boolean },
-	): boolean | string | -1 {
+	): Promise<boolean | string | -1> {
 		const args = cmd.split(" ");
 		const name = args.shift()?.toLowerCase();
 		if (!name) {
-			game.pause("<red>Invalid command.</red>\n");
+			await game.pause("<red>Invalid command.</red>\n");
 			return false;
 		}
 
@@ -305,7 +310,7 @@ export const gameloopInteract = {
 
 		if (commandName) {
 			const command = commands[commandName];
-			const result = command(args, flags);
+			const result = await command(args, flags);
 			return getReturn(result);
 		}
 
@@ -321,12 +326,12 @@ export const gameloopInteract = {
 
 		if (debugCommandName) {
 			if (!game.config.general.debug) {
-				game.pause("<red>You are not allowed to use this command.</red>\n");
+				await game.pause("<red>You are not allowed to use this command.</red>\n");
 				return false;
 			}
 
 			const command = debugCommands[debugCommandName];
-			const result = command(args, flags);
+			const result = await command(args, flags);
 			return getReturn(result);
 		}
 
@@ -340,8 +345,8 @@ export const gameloopInteract = {
 	 *
 	 * @returns The return value of `game.playCard`
 	 */
-	doTurnLogic(input: string): GamePlayCardReturn {
-		if (this.handleCmds(input) !== -1) {
+	async doTurnLogic(input: string): Promise<GamePlayCardReturn> {
+		if (await this.handleCmds(input) !== -1) {
 			return true;
 		}
 
@@ -353,7 +358,7 @@ export const gameloopInteract = {
 		}
 
 		if (parsedInput === game.player.hand.length || parsedInput === 1) {
-			card.activate("outcast");
+			await card.activate("outcast");
 		}
 
 		return game.play(card, game.player);
@@ -366,8 +371,8 @@ export const gameloopInteract = {
 	 *
 	 * @returns Success | Ignored error code | The return value of doTurnLogic
 	 */
-	doTurn(): boolean | string | GamePlayCardReturn {
-		game.event.tick("GameLoop", "doTurn", game.player);
+	async doTurn(): Promise<boolean | string | GamePlayCardReturn> {
+		await game.event.tick("GameLoop", "doTurn", game.player);
 
 		if (game.player.ai) {
 			const rawInput = game.player.ai.calcMove();
@@ -380,13 +385,13 @@ export const gameloopInteract = {
 					? (game.player.hand.indexOf(rawInput) + 1).toString()
 					: rawInput;
 
-			const turn = this.doTurnLogic(input);
+			const turn = await this.doTurnLogic(input);
 
-			game.event.broadcast("Input", input, game.player);
+			await game.event.broadcast("Input", input, game.player);
 			return turn;
 		}
 
-		game.interact.info.showGame(game.player);
+		await game.interact.info.showGame(game.player);
 		console.log();
 
 		let input = "Which card do you want to play? ";
@@ -395,8 +400,8 @@ export const gameloopInteract = {
 				"(type 'help' for further information <- This will disappear once you end your turn) ";
 		}
 
-		const user = game.input(input);
-		const returnValue = this.doTurnLogic(user);
+		const user = await game.input(input);
+		const returnValue = await this.doTurnLogic(user);
 
 		// If there were no errors, return true.
 		if (returnValue === true) {
@@ -449,7 +454,7 @@ export const gameloopInteract = {
 			}
 		}
 
-		game.pause(`<red>${error}.</red>\n`);
+		await game.pause(`<red>${error}.</red>\n`);
 
 		return false;
 	},

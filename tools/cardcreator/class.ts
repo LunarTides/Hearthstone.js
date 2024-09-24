@@ -13,7 +13,7 @@ const { game } = createGame();
  * Asks the user a series of questions, and creates a class card using it.
  * This is not meant to be a library. Running this function will temporarily give control to this function.
  */
-export function main(debug = false, overrideType?: lib.CcType): void {
+export async function main(debug = false, overrideType?: lib.CcType): Promise<void> {
 	const watermark = () => {
 		game.interact.cls();
 		console.log("Hearthstone.js Class Creator (C) 2022\n");
@@ -38,7 +38,7 @@ export function main(debug = false, overrideType?: lib.CcType): void {
 		}
 
 		watermark();
-		const value = game.input(`${question} `);
+		const value = await game.input(`${question} `);
 		if (!value || game.interact.shouldExit(value)) {
 			exited = true;
 		}
@@ -85,7 +85,7 @@ export function main(debug = false, overrideType?: lib.CcType): void {
 		cctype = overrideType;
 	}
 
-	lib.create(
+	await lib.create(
 		cctype,
 		heroBlueprint,
 		`/cards/StartingHeroes/${game.lodash.startCase(className)}/`,
@@ -93,7 +93,7 @@ export function main(debug = false, overrideType?: lib.CcType): void {
 		debug,
 	);
 
-	lib.create(
+	await lib.create(
 		cctype,
 		heropowerBlueprint,
 		`/cards/StartingHeroes/${game.lodash.startCase(className)}/`,
@@ -125,5 +125,5 @@ export function main(debug = false, overrideType?: lib.CcType): void {
 	);
 
 	console.log("Enjoy!");
-	game.pause();
+	await game.pause();
 }

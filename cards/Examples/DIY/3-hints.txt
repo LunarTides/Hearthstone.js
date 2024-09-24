@@ -152,7 +152,7 @@ SPOILERS FURTHER DOWN. BE WARNED!
 Make sure to set the `target` to the return value.
 
 Criterias to solve the card are the following:
-1. You NEED to use `game.interact.selectTarget`.
+1. You NEED to use `game.interact.selectTarget` or `game.interact.selectCardTarget`.
 2. When using `game.interact.selectTarget`, you need to set the following parameters:
     a. `card` = self               // The caller is the diy card (`self`)
     b. `forceSide` = null         // Don't force a side. The description says: Choose a minion. Not: Choose a FRIENDLY minion, or Choose an ENEMY minion.

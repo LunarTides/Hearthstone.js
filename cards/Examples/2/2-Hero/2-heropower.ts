@@ -17,16 +17,16 @@ export const blueprint: Blueprint = {
 	id: 130,
 
 	// This gets triggered when the player uses their hero power.
-	heropower(owner, self) {
+	async heropower(owner, self) {
 		// Restore 2 Health to your hero.
 
 		owner.addHealth(2);
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		// Test hero power
 		owner.health = 1;
-		self.activate("heropower");
+		await self.activate("heropower");
 		assert.equal(owner.health, 1 + 2);
 	},
 };

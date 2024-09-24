@@ -17,7 +17,7 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribe: "None",
 
-	remove(owner, self, key) {
+	async remove(owner, self, key) {
 		// This minion cannot be removed from the battlefield.
 
 		// If you return false in the `remove` ability, the card will not be removed.
@@ -37,10 +37,10 @@ export const blueprint: Blueprint = {
 		return true;
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		// Summon this minion
-		owner.summon(self);
-		self.kill();
+		await owner.summon(self);
+		await self.kill();
 
 		assert(owner.board.includes(self));
 	},

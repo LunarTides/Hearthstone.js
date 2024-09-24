@@ -15,7 +15,7 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "None",
 
-	cast(owner, self) {
+	async cast(owner, self) {
 		// Choose a minion to kill.
 
 		/*
@@ -48,7 +48,7 @@ export const blueprint: Blueprint = {
 		// Make sure the parameters are correct
 		game.functions.event.addListener(
 			"TargetSelectionStarts",
-			(_unknownValue) => {
+			async (_unknownValue) => {
 				const value = _unknownValue as EventValue<"TargetSelectionStarts">;
 
 				// Don't check for `prompt` since there is no correct prompt
@@ -71,7 +71,7 @@ export const blueprint: Blueprint = {
 		// Find the target
 		game.functions.event.addListener(
 			"TargetSelected",
-			(_unknownValue) => {
+			async (_unknownValue) => {
 				const value = _unknownValue as EventValue<"TargetSelected">;
 
 				if (value[0] !== self) {
@@ -94,7 +94,7 @@ export const blueprint: Blueprint = {
 		 * That only happens if the card was cancelled after the `TargetSelectionStarts` event fired
 		 */
 		if (potentiallyCancelled) {
-			game.pause(
+			await game.pause(
 				"You cancelled the card. The verification process depends on a minion actually being killed. Try again.\n",
 			);
 
@@ -109,7 +109,7 @@ export const blueprint: Blueprint = {
 			(game.player1.graveyard.includes(target) ||
 				game.player2.graveyard.includes(target));
 
-		game.interact.verifyDiySolution(solved, self);
+		await game.interact.verifyDiySolution(solved, self);
 
 		return true;
 	},

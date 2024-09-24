@@ -15,8 +15,8 @@ logger.debug("Starting Hub...");
 
 // These are here so we don't have to recalculate them every watermark call.
 const version = game.functions.info.versionString(4);
-const customCardsAmount = Card.all(true).length;
-const collectibleCardsAmount = Card.all(false).length;
+const customCardsAmount = (await Card.all(true)).length;
+const collectibleCardsAmount = (await Card.all(false)).length;
 let vanillaCardsAmount = Number.NaN;
 let collectibleVanillaCardsAmount = Number.NaN;
 
@@ -72,16 +72,16 @@ const watermark = () => {
  * @param exitCharacter If the input's first character is this, exit the loop
  * @param callback The callback to call for each input
  */
-function userInputLoop(
+async function userInputLoop(
 	prompt: string,
 	exitCharacter: string | undefined,
-	callback: (input: string) => void,
+	callback: (input: string) => Promise<void>,
 ) {
 	let running = true;
 	while (running) {
 		watermark();
 
-		const user = game.input(prompt);
+		const user = await game.input(prompt);
 		if (!user) {
 			continue;
 		}
@@ -94,18 +94,18 @@ function userInputLoop(
 			break;
 		}
 
-		callback(user);
+		await callback(user);
 	}
 }
 
 /**
  * Asks the user which card creator variant they want to use.
  */
-function cardCreator() {
+async function cardCreator() {
 	userInputLoop(
 		"<green>Create a (C)ustom Card</green>, <blue>Import a (V)anilla Card</blue>, <red>Go (B)ack</red>: ",
 		"b",
-		(input) => {
+		async (input) => {
 			const type = input[0].toLowerCase();
 
 			game.interact.cls();
@@ -115,11 +115,11 @@ function cardCreator() {
 				game.functions.card.vanilla.getAll();
 
 				logger.debug("Starting Vanilla Card Creator...");
-				vcc.main();
+				await vcc.main();
 				logger.debug("Starting Vanilla Card Creator...OK");
 			} else if (type === "c") {
 				logger.debug("Starting Custom Card Creator...");
-				ccc.main();
+				await ccc.main();
 				logger.debug("Starting Custom Card Creator...OK");
 			}
 		},
@@ -129,31 +129,31 @@ function cardCreator() {
 /**
  * More developer friendly options.
  */
-function devmode() {
+async function devmode() {
 	userInputLoop(
 		"<green>Create a (C)ard</green>, <blue>Create a Clas(s)</blue>, <yellow>Enter CLI (m)ode</yellow>, <red>Go (B)ack to Normal Mode</red>: ",
 		"b",
-		(input) => {
+		async (input) => {
 			const command = input[0].toLowerCase();
 
 			switch (command) {
 				case "c": {
 					logger.debug("Loading Card Creator options...");
-					cardCreator();
+					await cardCreator();
 					logger.debug("Loading Card Creator options...OK");
 					break;
 				}
 
 				case "s": {
 					logger.debug("Starting Class Creator...");
-					clc.main();
+					await clc.main();
 					logger.debug("Starting Class Creator...OK");
 					break;
 				}
 
 				case "m": {
 					logger.debug("Starting CLI...");
-					cli.main(userInputLoop);
+					await cli.main(userInputLoop);
 					logger.debug("Starting CLI...OK");
 					break;
 				}
@@ -166,16 +166,16 @@ function devmode() {
 
 logger.debug("Starting Hub...OK");
 
-userInputLoop(
+await userInputLoop(
 	"<green>(P)lay</green>, <blue>Create a (D)eck</blue>, <yellow>Developer (M)ode</yellow>, <red>(E)xit</red>: ",
 	"e",
-	(input) => {
+	async (input) => {
 		const command = input[0].toLowerCase();
 
 		switch (command) {
 			case "p": {
 				logger.debug("Starting Game...");
-				src.main();
+				await src.main();
 
 				/*
 				 * This line will likely never be seen in a log file, since the log file gets generated before this line.
@@ -187,14 +187,14 @@ userInputLoop(
 
 			case "d": {
 				logger.debug("Starting Deck Creator...");
-				dc.main();
+				await dc.main();
 				logger.debug("Starting Deck Creator...OK");
 				break;
 			}
 
 			case "m": {
 				logger.debug("Loading Developer Mode options...");
-				devmode();
+				await devmode();
 				logger.debug("Loading Developer Mode options...OK");
 				break;
 			}

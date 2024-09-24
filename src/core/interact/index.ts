@@ -46,7 +46,7 @@ export const interact = {
 	 *
 	 * @returns Success
 	 */
-	deckCode(player: Player): boolean {
+	async deckCode(player: Player): Promise<boolean> {
 		game.interact.info.watermark();
 		console.log();
 
@@ -62,7 +62,7 @@ export const interact = {
 		const debugStatement = allowTestDeck
 			? " <gray>(Leave this empty for a test deck)</gray>"
 			: "";
-		const deckcode = logger.inputTranslate(
+		const deckcode = await logger.inputTranslate(
 			"Player %s, please type in your deckcode%s: ",
 			player.id + 1,
 			debugStatement,
@@ -72,7 +72,7 @@ export const interact = {
 
 		if (deckcode.length > 0) {
 			logger.debug(`${player.name} chose deck code: ${deckcode}...`);
-			result = Boolean(game.functions.deckcode.import(player, deckcode));
+			result = Boolean(await game.functions.deckcode.import(player, deckcode));
 
 			if (result) {
 				logger.debug(`${player.name} chose deck code: ${deckcode}...OK`);
@@ -82,7 +82,7 @@ export const interact = {
 		} else {
 			if (!allowTestDeck) {
 				// Give error message
-				game.pause("<red>Please enter a deckcode!</red>\n");
+				await game.pause("<red>Please enter a deckcode!</red>\n");
 				return false;
 			}
 
@@ -90,7 +90,7 @@ export const interact = {
 
 			// Debug mode is enabled, use the 30 Sheep debug deck.
 			while (player.deck.length < 30) {
-				player.deck.push(new Card(game.cardIds.sheep1, player, true));
+				player.deck.push(await Card.create(game.cardIds.sheep1, player, true));
 			}
 
 			logger.debug(`${player.name} chose debug deck...OK`);
@@ -107,11 +107,11 @@ export const interact = {
 	 * @param times The amount of times to ask
 	 * @param prompts [prompt, callback]
 	 */
-	chooseOne(times: number, ...prompts: Array<[string, () => void]>): void {
+	async chooseOne(times: number, ...prompts: Array<[string, () => Promise<void>]>): Promise<void> {
 		let chosen = 0;
 
 		while (chosen < times) {
-			game.interact.info.showGame(game.player);
+			await game.interact.info.showGame(game.player);
 
 			if (game.player.ai) {
 				const aiChoice = game.player.ai.chooseOne(prompts.map((p) => p[0]));
@@ -122,7 +122,7 @@ export const interact = {
 				chosen++;
 
 				// Call the callback function
-				prompts[aiChoice][1]();
+				await prompts[aiChoice][1]();
 				continue;
 			}
 
@@ -132,9 +132,9 @@ export const interact = {
 				p += `${index + 1}: ${promptObject[0]},\n`;
 			}
 
-			const choice = game.lodash.parseInt(game.input(p)) - 1;
+			const choice = game.lodash.parseInt(await game.input(p)) - 1;
 			if (Number.isNaN(choice) || choice < 0 || choice >= prompts.length) {
-				game.pause("<red>Invalid input!</red>\n");
+				await game.pause("<red>Invalid input!</red>\n");
 				this.chooseOne(times, ...prompts);
 				return;
 			}
@@ -142,7 +142,7 @@ export const interact = {
 			chosen++;
 
 			// Call the callback function
-			prompts[choice][1]();
+			await prompts[choice][1]();
 		}
 	},
 
@@ -155,10 +155,8 @@ export const interact = {
 	 *
 	 * @returns Chosen
 	 */
-	question(player: Player, prompt: string, answers: string[]): string {
-		const retry = () => this.question(player, prompt, answers);
-
-		game.interact.info.showGame(player);
+	async question(player: Player, prompt: string, answers: string[]): Promise<string> {
+		await game.interact.info.showGame(player);
 
 		let strbuilder = `\n${prompt} [`;
 
@@ -182,13 +180,13 @@ export const interact = {
 
 			choice = aiChoice;
 		} else {
-			choice = game.lodash.parseInt(game.input(strbuilder));
+			choice = game.lodash.parseInt(await game.input(strbuilder));
 		}
 
 		const answer = answers[choice - 1];
 		if (!answer) {
-			game.pause("<red>Invalid input!</red>\n");
-			retry();
+			await game.pause("<red>Invalid input!</red>\n");
+			return await this.question(player, prompt, answers);
 		}
 
 		return answer;
@@ -202,14 +200,14 @@ export const interact = {
 	 *
 	 * @returns `true` if Yes / `false` if No
 	 */
-	yesNoQuestion(prompt: string, player?: Player): boolean {
+	async yesNoQuestion(prompt: string, player?: Player): Promise<boolean> {
 		const ask = `\n${prompt} [<bright:green>Y</bright:green> | <red>N</red>] `;
 
 		if (player?.ai) {
 			return player.ai.yesNoQuestion(prompt);
 		}
 
-		const rawChoice = game.input(ask);
+		const rawChoice = await game.input(ask);
 		const choice = rawChoice.toUpperCase()[0];
 
 		if (["Y", "N"].includes(choice)) {
@@ -222,7 +220,7 @@ export const interact = {
 			rawChoice,
 		);
 
-		game.pause();
+		await game.pause();
 
 		return this.yesNoQuestion(prompt, player);
 	},
@@ -232,12 +230,12 @@ export const interact = {
 	 *
 	 * The advantage of this function is that it returns `Player | false` instead of `Target | false`.
 	 */
-	selectPlayerTarget(
+	async selectPlayerTarget(
 		prompt: string,
 		card: Card | undefined,
 		flags: SelectTargetFlag[] = [],
-	): Player | false {
-		return this.selectTarget(prompt, card, "any", "hero", flags) as
+	): Promise<Player | false> {
+		return await this.selectTarget(prompt, card, "any", "hero", flags) as
 			| Player
 			| false;
 	},
@@ -247,13 +245,13 @@ export const interact = {
 	 *
 	 * The advantage of this function is that it returns `Card | false` instead of `Target | false`.
 	 */
-	selectCardTarget(
+	async selectCardTarget(
 		prompt: string,
 		card: Card | undefined,
 		side: SelectTargetAlignment,
 		flags: SelectTargetFlag[] = [],
-	): Card | false {
-		return this.selectTarget(prompt, card, side, "minion", flags) as
+	): Promise<Card | false> {
+		return await this.selectTarget(prompt, card, side, "minion", flags) as
 			| Card
 			| false;
 	},
@@ -272,20 +270,20 @@ export const interact = {
 	 *
 	 * @returns The card or hero chosen
 	 */
-	selectTarget(
+	async selectTarget(
 		prompt: string,
 		card: Card | undefined,
 		forceSide: SelectTargetAlignment,
 		forceClass: SelectTargetClass,
 		flags: SelectTargetFlag[] = [],
-	): Target | false {
-		game.event.broadcast(
+	): Promise<Target | false> {
+		await game.event.broadcast(
 			"TargetSelectionStarts",
 			[prompt, card, forceSide, forceClass, flags],
 			game.player,
 		);
 
-		const target = this._selectTarget(
+		const target = await this._selectTarget(
 			prompt,
 			card,
 			forceSide,
@@ -294,7 +292,7 @@ export const interact = {
 		);
 
 		if (target) {
-			game.event.broadcast("TargetSelected", [card, target], game.player);
+			await game.event.broadcast("TargetSelected", [card, target], game.player);
 		}
 
 		return target;
@@ -303,13 +301,13 @@ export const interact = {
 	/**
 	 * # USE `selectTarget` INSTEAD.
 	 */
-	_selectTarget(
+	async _selectTarget(
 		prompt: string,
 		card: Card | undefined,
 		forceSide: SelectTargetAlignment,
 		forceClass: SelectTargetClass,
 		flags: SelectTargetFlag[] = [],
-	): Target | false {
+	): Promise<Target | false> {
 		// If the player is forced to select a target, select that target.
 		if (game.player.forceTarget) {
 			return game.player.forceTarget;
@@ -355,7 +353,7 @@ export const interact = {
 				return game.player;
 			}
 
-			const target = game.input(
+			const target = await game.input(
 				"Do you want to select the enemy hero, or your own hero? (y: enemy, n: friendly) ",
 			);
 
@@ -379,7 +377,7 @@ export const interact = {
 
 		p += "type 'back' to go back) ";
 
-		const target = game.input(p);
+		const target = await game.input(p);
 
 		// Player chose to go back
 		if (target.startsWith("b") || this.shouldExit(target)) {
@@ -409,7 +407,7 @@ export const interact = {
 
 		// If the player didn't choose to attack a hero, and no minions could be found at the index requested, try again.
 		if (!boardFriendlyTarget && !boardOpponentTarget) {
-			game.pause("<red>Invalid input / minion!</red>\n");
+			await game.pause("<red>Invalid input / minion!</red>\n");
 
 			// Try again
 			return this._selectTarget(newPrompt, card, forceSide, forceClass, flags);
@@ -427,7 +425,7 @@ export const interact = {
 				const opponentTargetName = boardOpponentTarget.colorFromRarity();
 				const friendlyTargetName = boardFriendlyTarget.colorFromRarity();
 
-				const alignment = logger.inputTranslate(
+				const alignment = await logger.inputTranslate(
 					"Do you want to select your opponent's (%s) or your own (%s)? (y: opponent, n: friendly | type 'back' to go back) ",
 					opponentTargetName,
 					friendlyTargetName,
@@ -465,7 +463,7 @@ export const interact = {
 
 		// If you didn't select a valid minion, return.
 		if (minion === undefined) {
-			game.pause("<red>Invalid minion.</red>\n");
+			await game.pause("<red>Invalid minion.</red>\n");
 			return false;
 		}
 
@@ -476,20 +474,20 @@ export const interact = {
 				flags.includes("forceElusive")) &&
 			minion.hasKeyword("Elusive")
 		) {
-			game.pause("<red>Can't be targeted by Spells or Hero Powers.</red>\n");
+			await game.pause("<red>Can't be targeted by Spells or Hero Powers.</red>\n");
 			return false;
 		}
 
 		// If the minion has stealth, don't allow the opponent to target it.
 		if (minion.hasKeyword("Stealth") && game.player !== minion.owner) {
-			game.pause("<red>This minion has stealth.</red>\n");
+			await game.pause("<red>This minion has stealth.</red>\n");
 
 			return false;
 		}
 
 		// If the minion is a location, don't allow it to be selected unless the `allowLocations` flag was set.
 		if (minion.type === "Location" && !flags.includes("allowLocations")) {
-			game.pause("<red>You cannot target location cards.</red>\n");
+			await game.pause("<red>You cannot target location cards.</red>\n");
 
 			return false;
 		}
@@ -514,7 +512,7 @@ export const interact = {
 	 *
 	 * @returns Success
 	 */
-	verifyDiySolution(condition: boolean, card: Card): boolean {
+	async verifyDiySolution(condition: boolean, card: Card): Promise<boolean> {
 		if (card.owner.ai) {
 			return false;
 		}
@@ -534,16 +532,16 @@ export const interact = {
 			);
 		}
 
-		game.pause();
+		await game.pause();
 		return success;
 	},
 
 	/**
 	 * Parses the given arguments for the eval command and returns the code to evaluate
 	 */
-	parseEvalArgs(args: string[]): string {
+	async parseEvalArgs(args: string[]): Promise<string> {
 		if (args.length <= 0) {
-			game.pause("<red>Too few arguments.</red>\n");
+			await game.pause("<red>Too few arguments.</red>\n");
 			return args.join(" ");
 		}
 
@@ -629,7 +627,7 @@ export const interact = {
 				code = code.slice(0, -1);
 			}
 
-			code = `console.log(${code});game.pause();`;
+			code = `console.log(${code});await game.pause();`;
 		}
 
 		if (trueLog) {
@@ -637,7 +635,7 @@ export const interact = {
 				code = code.slice(0, -1);
 			}
 
-			code = `${code});game.pause();`;
+			code = `${code});await game.pause();`;
 		}
 
 		return code;

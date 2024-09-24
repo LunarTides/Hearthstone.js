@@ -13,15 +13,15 @@ export const blueprint: Blueprint = {
 	collectible: false,
 	id: 127,
 
-	heropower(owner, self) {
+	async heropower(owner, self) {
 		// Give your hero +3 Attack this turn.
 
 		owner.attack += 3;
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		assert.equal(owner.attack, 0);
-		self.activate("heropower");
+		await self.activate("heropower");
 
 		assert.equal(owner.attack, 3);
 	},

@@ -14,7 +14,7 @@ export const blueprint: Blueprint = {
 	collectible: false,
 	id: 119,
 
-	heropower(owner, self) {
+	async heropower(owner, self) {
 		// Filter away totem cards that is already on the player's side of the board.
 		const filteredTotemCardNames = game.cardCollections.totems.filter(
 			(id) => !owner.board.some((m) => m.id === id),
@@ -32,14 +32,14 @@ export const blueprint: Blueprint = {
 		}
 
 		// Create a card from the name.
-		const card = new Card(cardName, owner);
+		const card = await Card.create(cardName, owner);
 
 		// Summon the card on the player's side of the board
-		owner.summon(card);
+		await owner.summon(card);
 		return true;
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		const totemCardIds = game.cardCollections.totems;
 		const checkForTotemCard = (amount: number) =>
 			owner.board.filter((card) => totemCardIds.includes(card.id)).length ===
@@ -49,7 +49,7 @@ export const blueprint: Blueprint = {
 		assert(checkForTotemCard(0));
 
 		for (let index = 1; index <= totemCardIds.length + 1; index++) {
-			self.activate("heropower");
+			await self.activate("heropower");
 
 			// If all totem cards are on the board, it shouldn't summon a new one
 			if (index > totemCardIds.length) {

@@ -6,18 +6,19 @@ export const cardInteract = {
 	 *
 	 * @returns Success
 	 */
-	useLocation():
+	async useLocation(): Promise<
 		| boolean
 		| "nolocations"
 		| "invalidtype"
 		| "cooldown"
-		| "refund" {
+		| "refund"
+	> {
 		const locations = game.player.board.filter((m) => m.type === "Location");
 		if (locations.length <= 0) {
 			return "nolocations";
 		}
 
-		const location = game.interact.selectCardTarget(
+		const location = await game.interact.selectCardTarget(
 			"Which location do you want to use?",
 			undefined,
 			"friendly",
@@ -36,7 +37,7 @@ export const cardInteract = {
 			return "cooldown";
 		}
 
-		if (location.activate("use") === Card.REFUND) {
+		if (await location.activate("use") === Card.REFUND) {
 			return "refund";
 		}
 
@@ -56,8 +57,8 @@ export const cardInteract = {
 	 *
 	 * @returns A string of the indexes of the cards the player mulligan'd
 	 */
-	mulligan(player: Player): string {
-		game.interact.info.showGame(player);
+	async mulligan(player: Player): Promise<string> {
+		await game.interact.info.showGame(player);
 
 		let sb = "\nChoose the cards to mulligan (1, 2, 3, ...):\n";
 		if (!game.config.general.debug) {
@@ -65,8 +66,8 @@ export const cardInteract = {
 				"<gray>(Example: 13 will mulligan the cards with the ids 1 and 3, 123 will mulligan the cards with the ids 1, 2 and 3, just pressing enter will not mulligan any cards):</gray>\n";
 		}
 
-		const input = player.ai ? player.ai.mulligan() : game.input(sb);
-		player.mulligan(input);
+		const input = player.ai ? player.ai.mulligan() : await game.input(sb);
+		await player.mulligan(input);
 
 		return input;
 	},
@@ -78,7 +79,7 @@ export const cardInteract = {
 	 *
 	 * @returns The card chosen
 	 */
-	dredge(prompt = "Choose a card to Dredge:"): Card | undefined {
+	async dredge(prompt = "Choose a card to Dredge:"): Promise<Card | undefined> {
 		// Look at the bottom three cards of the deck and put one on the top.
 		const cards = game.player.deck.slice(0, 3);
 
@@ -96,7 +97,7 @@ export const cardInteract = {
 			return card;
 		}
 
-		game.interact.info.showGame(game.player);
+		await game.interact.info.showGame(game.player);
 
 		console.log("\n%s", prompt);
 
@@ -105,10 +106,10 @@ export const cardInteract = {
 		}
 
 		for (const [index, card] of cards.entries()) {
-			console.log(card.readable(index + 1));
+			console.log(await card.readable(index + 1));
 		}
 
-		const choice = game.input("> ");
+		const choice = await game.input("> ");
 
 		const cardId = game.lodash.parseInt(choice) - 1;
 		const card = cards[cardId];
@@ -135,20 +136,20 @@ export const cardInteract = {
 	 *
 	 * @returns The card chosen.
 	 */
-	discover(
+	async discover(
 		prompt: string,
 		cards: Card[] = [],
 		filterClassCards = true,
 		amount = 3,
 		_static_cards: Card[] = [],
-	): Card | undefined {
+	): Promise<Card | undefined> {
 		let actualCards = cards;
 
-		game.interact.info.showGame(game.player);
+		await game.interact.info.showGame(game.player);
 		let values: Card[] = _static_cards;
 
 		if (actualCards.length <= 0) {
-			actualCards = Card.all();
+			actualCards = await Card.all();
 		}
 
 		if (actualCards.length <= 0 || !actualCards) {
@@ -191,10 +192,10 @@ export const cardInteract = {
 		console.log("\n%s:", prompt);
 
 		for (const [index, card] of values.entries()) {
-			console.log(card.readable(index + 1));
+			console.log(await card.readable(index + 1));
 		}
 
-		const choice = game.input();
+		const choice = await game.input();
 
 		if (!values[game.lodash.parseInt(choice) - 1]) {
 			/*

@@ -15,7 +15,7 @@ export const blueprint: Blueprint = {
 	armor: 5,
 	heropowerId: 125,
 
-	battlecry(owner, self) {
+	async battlecry(owner, self) {
 		// Draw {amount} cards. They cost (0).
 
 		// Get the amount of cards to draw
@@ -23,7 +23,7 @@ export const blueprint: Blueprint = {
 			self.storage.invokeCount as number,
 		);
 
-		const cards = owner.drawCards(amount);
+		const cards = await owner.drawCards(amount);
 
 		for (const card of cards) {
 			// Set the cost to 0
@@ -31,11 +31,11 @@ export const blueprint: Blueprint = {
 		}
 	},
 
-	invoke(owner, self) {
+	async invoke(owner, self) {
 		self.galakrondBump("invokeCount");
 	},
 
-	placeholders(owner, self) {
+	async placeholders(owner, self) {
 		if (!self.storage.invokeCount) {
 			return { amount: 0, plural: "s", plural2: "They" };
 		}

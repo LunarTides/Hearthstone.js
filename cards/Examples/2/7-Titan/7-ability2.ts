@@ -16,15 +16,15 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "None",
 
-	cast(owner, self) {
+	async cast(owner, self) {
 		// Heal 3 damage.
 
 		owner.addHealth(3);
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		owner.health = owner.maxHealth - 5;
-		self.activate("cast");
+		await self.activate("cast");
 
 		assert.equal(owner.health, owner.maxHealth - 2);
 	},

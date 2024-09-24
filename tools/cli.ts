@@ -10,19 +10,19 @@ import type { CcType } from "./cardcreator/lib.js";
 /**
  * Runs the CLI.
  */
-export function main(
+export async function main(
 	userInputLoop: (
 		prompt: string,
 		exitCharacter: string | undefined,
-		callback: (input: string) => void,
-	) => void,
-): void {
+		callback: (input: string) => Promise<void>,
+	) => Promise<void>,
+): Promise<void> {
 	// Common card creator variant stuff
-	const doCardCreatorVariant = (
+	const doCardCreatorVariant = async<T> (
 		usedOptions: string[],
 		args: string[],
-		callback: (debug: boolean, overrideType?: CcType) => void,
-	): void => {
+		callback: (debug: boolean, overrideType?: CcType) => Promise<T>,
+	): Promise<void> => {
 		const doDryRun = usedOptions.includes("--dry-run");
 		const doCcType = usedOptions.includes("--cc-type");
 
@@ -34,16 +34,16 @@ export function main(
 
 			if (!ccType) {
 				console.error("<red>Invalid cc type!</red>");
-				game.pause();
+				await game.pause();
 				return;
 			}
 		}
 
-		callback(doDryRun, ccType);
+		await callback(doDryRun, ccType);
 	};
 
 	// Main loop
-	userInputLoop("> ", undefined, (input) => {
+	await userInputLoop("> ", undefined, async (input) => {
 		let args = input.replaceAll("%20", " ").split(" ");
 		const name = args.shift()?.toLowerCase();
 		if (!name) {
@@ -147,31 +147,31 @@ export function main(
 				);
 				console.log('        CC type is "Test"   The description of the card');
 				console.log();
-				game.pause();
+				await game.pause();
 
 				break;
 			}
 
 			case "ccc": {
-				doCardCreatorVariant(usedOptions, args, ccc.main);
+				await doCardCreatorVariant(usedOptions, args, ccc.main);
 
 				break;
 			}
 
 			case "vcc": {
-				doCardCreatorVariant(usedOptions, args, vcc.main);
+				await doCardCreatorVariant(usedOptions, args, vcc.main);
 
 				break;
 			}
 
 			case "clc": {
-				doCardCreatorVariant(usedOptions, args, clc.main);
+				await doCardCreatorVariant(usedOptions, args, clc.main);
 
 				break;
 			}
 
 			case "cclib": {
-				doCardCreatorVariant(usedOptions, args, (debug, overrideType) => {
+				await doCardCreatorVariant(usedOptions, args, async (debug, overrideType) => {
 					// Here we implement our own card creator variant
 
 					// Only include args with an '=' in it.
@@ -189,7 +189,7 @@ export function main(
 					}
 
 					if (!blueprint.id && blueprint.id !== 0) {
-						game.pause(
+						await game.pause(
 							"<red>Missing card id! Set `id=0` before the type-specific fields to generate a correctly formatted card.</red>\n",
 						);
 
@@ -208,31 +208,31 @@ export function main(
 						type = overrideType;
 					}
 
-					cclib.create(type as CcType, blueprint, undefined, undefined, debug);
+					await cclib.create(type as CcType, blueprint, undefined, undefined, debug);
 				});
 
 				break;
 			}
 
 			case "dc": {
-				dc.main();
+				await dc.main();
 
 				break;
 			}
 
 			case "game": {
-				src.main();
+				await src.main();
 
 				break;
 			}
 
 			case "eval": {
 				if (args.length <= 0) {
-					game.pause("<red>Too few arguments.</red>\n");
+					await game.pause("<red>Too few arguments.</red>\n");
 					break;
 				}
 
-				const code = game.interact.parseEvalArgs(args);
+				const code = await game.interact.parseEvalArgs(args);
 
 				try {
 					// biome-ignore lint/security/noGlobalEval: This is a security issue yes, but it's a debug command.
@@ -251,10 +251,10 @@ export function main(
 					console.log(error.stack);
 					game.functions.color.parseTags = true;
 
-					game.pause();
+					await game.pause();
 				}
 
-				game.event.broadcast("Eval", code, game.player);
+				await game.event.broadcast("Eval", code, game.player);
 				break;
 			}
 
@@ -263,7 +263,7 @@ export function main(
 					const name = args[0];
 					if (!name) {
 						console.error("<red>Invalid script name!</red>");
-						game.pause();
+						await game.pause();
 						return;
 					}
 
@@ -272,7 +272,7 @@ export function main(
 				}
 
 				console.warn("<yellow>That is not a valid command.</yellow>");
-				game.pause();
+				await game.pause();
 			}
 		}
 	});

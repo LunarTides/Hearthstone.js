@@ -140,13 +140,13 @@ export function getLatestId(): number {
  *
  * @returns The path of the created file.
  */
-export function create(
+export async function create(
 	creatorType: CcType,
 	blueprint: BlueprintWithOptional,
 	overridePath?: string,
 	overrideFilename?: string,
 	debug?: boolean,
-): string {
+): Promise<string> {
 	/*
 	 * TODO: Search for keywords in the card text and don't add a passive ability if one was found. And vice versa
 	 * TODO: Look for placeholders in the text and add a placeholder ability if it finds one
@@ -345,7 +345,7 @@ ${createAbility}${ability}
 		console.log(content);
 
 		game.functions.color.parseTags = true;
-		game.pause();
+		await game.pause();
 	} else {
 		// If debug mode is disabled, write the card to disk.
 
@@ -381,7 +381,7 @@ ${createAbility}${ability}
 		);
 
 		if (!success) {
-			game.pause();
+			await game.pause();
 		}
 	}
 

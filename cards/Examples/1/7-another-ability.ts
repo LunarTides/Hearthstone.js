@@ -8,12 +8,12 @@ import type { Ability, Blueprint } from "@Game/types.js";
  * You might want to do this if you make a very complicated card
  * however it is not _as_ supported by scripts as the default method.
  */
-const battlecry: Ability = (owner, self) => {
-	self.addStats(1, 1);
+const battlecry: Ability = async (owner, self) => {
+	await self.addStats(1, 1);
 };
 
-const theTestAbility: Ability = (owner, self) => {
-	self.activate("battlecry");
+const theTestAbility: Ability = async (owner, self) => {
+	await self.activate("battlecry");
 
 	assert.equal((self.blueprint.attack ?? 0) + 1, self.attack);
 	assert.equal((self.blueprint.health ?? 0) + 1, self.health);

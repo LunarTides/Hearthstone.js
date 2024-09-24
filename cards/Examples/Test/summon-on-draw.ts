@@ -18,7 +18,7 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribe: "None",
 
-	create(owner, self) {
+	async create(owner, self) {
 		self.addKeyword("Summon On Draw");
 
 		// Use the preexisting colossal example minions
@@ -29,13 +29,13 @@ export const blueprint: Blueprint = {
 		]);
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		// Set the player's deck and hand
-		owner.deck = [new Card(game.cardIds.sheep1, owner), self];
+		owner.deck = [await Card.create(game.cardIds.sheep1, owner), self];
 		owner.hand = [];
 
 		// Make the player draw this card
-		owner.drawCards(1);
+		await owner.drawCards(1);
 
 		const board = owner.board;
 

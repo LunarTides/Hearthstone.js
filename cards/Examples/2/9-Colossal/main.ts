@@ -17,7 +17,7 @@ export const blueprint: Blueprint = {
 	health: 3,
 	tribe: "Beast",
 
-	create(owner, self) {
+	async create(owner, self) {
 		/*
 		 * Put the names of the cards here. The "null0" is this card. You could replace it with `0`
 		 *
@@ -33,8 +33,8 @@ export const blueprint: Blueprint = {
 		]);
 	},
 
-	test(owner, self) {
-		owner.summon(self);
+	async test(owner, self) {
+		await owner.summon(self);
 
 		const board = owner.board;
 

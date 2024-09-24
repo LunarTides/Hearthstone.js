@@ -14,7 +14,6 @@ import type {
 	MinionTribe,
 	SpellSchool,
 } from "@Game/types.js";
-import rl from "readline-sync";
 import * as lib from "./lib.js";
 
 const { player1, game } = createGame();
@@ -26,12 +25,12 @@ let type: CardType;
  * Asks the user a question and returns the result.
  * This is a wrapper for `game.input` that might set the global `shouldExit` variable.
  */
-function input(prompt: string): string {
+async function input(prompt: string): Promise<string> {
 	if (shouldExit) {
 		return "";
 	}
 
-	const returnValue = game.input(prompt);
+	const returnValue = await game.input(prompt);
 
 	if (game.interact.shouldExit(returnValue)) {
 		shouldExit = true;
@@ -95,19 +94,19 @@ function applyCard(_card: BlueprintWithOptional): Blueprint {
 /**
  * Asks the user questions that apply to every card type.
  */
-function common(): BlueprintWithOptional {
-	const name = input("Name: ");
-	const text = input("Text: ");
-	const cost = game.lodash.parseInt(input("Cost: "));
-	const classes = input("Classes: ") as CardClass;
-	const rarity = input("Rarity: ") as CardRarity;
-	const keywords = input("Keywords: ");
+async function common(): Promise<BlueprintWithOptional> {
+	const name = await input("Name: ");
+	const text = await input("Text: ");
+	const cost = game.lodash.parseInt(await input("Cost: "));
+	const classes = await input("Classes: ") as CardClass;
+	const rarity = await input("Rarity: ") as CardRarity;
+	const keywords = await input("Keywords: ");
 
 	player1.heroClass = classes;
 
 	let runes = "";
 	if (player1.canUseRunes()) {
-		runes = input("Runes: ");
+		runes = await input("Runes: ");
 	}
 
 	let realKeywords: CardKeyword[] | undefined;
@@ -129,13 +128,13 @@ function common(): BlueprintWithOptional {
 	};
 }
 
-const cardTypeFunctions: { [x in CardType]: () => Blueprint } = {
-	Minion(): Blueprint {
-		const card = common();
+const cardTypeFunctions: { [x in CardType]: () => Promise<Blueprint> } = {
+	async Minion(): Promise<Blueprint> {
+		const card = await common();
 
-		const attack = game.lodash.parseInt(input("Attack: "));
-		const health = game.lodash.parseInt(input("Health: "));
-		const tribe = input("Tribe: ") as MinionTribe;
+		const attack = game.lodash.parseInt(await input("Attack: "));
+		const health = game.lodash.parseInt(await input("Health: "));
+		const tribe = await input("Tribe: ") as MinionTribe;
 
 		return applyCard({
 			...card,
@@ -145,10 +144,10 @@ const cardTypeFunctions: { [x in CardType]: () => Blueprint } = {
 		});
 	},
 
-	Spell(): Blueprint {
-		const card = common();
+	async Spell(): Promise<Blueprint> {
+		const card = await common();
 
-		const spellSchool = input("Spell School: ") as SpellSchool;
+		const spellSchool = await input("Spell School: ") as SpellSchool;
 
 		return applyCard({
 			...card,
@@ -156,11 +155,11 @@ const cardTypeFunctions: { [x in CardType]: () => Blueprint } = {
 		});
 	},
 
-	Weapon(): Blueprint {
-		const card = common();
+	async Weapon(): Promise<Blueprint> {
+		const card = await common();
 
-		const attack = game.lodash.parseInt(input("Attack: "));
-		const health = game.lodash.parseInt(input("Health: "));
+		const attack = game.lodash.parseInt(await input("Attack: "));
+		const health = game.lodash.parseInt(await input("Health: "));
 
 		return applyCard({
 			...card,
@@ -169,13 +168,13 @@ const cardTypeFunctions: { [x in CardType]: () => Blueprint } = {
 		});
 	},
 
-	Hero(): Blueprint {
-		const card = common();
+	async Hero(): Promise<Blueprint> {
+		const card = await common();
 
-		const armor = game.lodash.parseInt(game.input("Armor (Default: 5):")) ?? 5;
+		const armor = game.lodash.parseInt(await input("Armor (Default: 5):")) ?? 5;
 
 		console.log("Make the Hero Power:");
-		if (!main()) {
+		if (!await main()) {
 			throw new Error("Failed to create hero power");
 		}
 
@@ -186,17 +185,17 @@ const cardTypeFunctions: { [x in CardType]: () => Blueprint } = {
 		});
 	},
 
-	Location(): Blueprint {
-		const card = common();
+	async Location(): Promise<Blueprint> {
+		const card = await common();
 
 		const durability = game.lodash.parseInt(
-			input(
+			await input(
 				"Durability (How many times you can trigger this location before it is destroyed): ",
 			),
 		);
 
 		const cooldown =
-			game.lodash.parseInt(input("Cooldown (Default: 2): ")) ?? 2;
+			game.lodash.parseInt(await input("Cooldown (Default: 2): ")) ?? 2;
 
 		return applyCard({
 			...card,
@@ -205,13 +204,13 @@ const cardTypeFunctions: { [x in CardType]: () => Blueprint } = {
 		});
 	},
 
-	Heropower(): Blueprint {
-		const card = common();
+	async Heropower(): Promise<Blueprint> {
+		const card = await common();
 
 		return applyCard(card);
 	},
 
-	Undefined(): Blueprint {
+	async Undefined(): Promise<Blueprint> {
 		throw new TypeError("Undefined type");
 	},
 };
@@ -222,7 +221,7 @@ const cardTypeFunctions: { [x in CardType]: () => Blueprint } = {
  *
  * @returns The path to the file
  */
-export function main(debug = false, overrideType?: lib.CcType): string | false {
+export async function main(debug = false, overrideType?: lib.CcType): Promise<string | false> {
 	// Reset the shouldExit switch so that the program doesn't immediately exit when the user enters the ccc, exits, then enters ccc again
 	shouldExit = false;
 
@@ -230,27 +229,26 @@ export function main(debug = false, overrideType?: lib.CcType): string | false {
 	console.log("type 'back' at any step to cancel.\n");
 
 	// Ask the user for the type of card they want to make
-	type = game.lodash.startCase(input("Type: ")) as CardType;
+	type = game.lodash.startCase(await input("Type: ")) as CardType;
 	if (shouldExit) {
 		return false;
 	}
 
 	if (!Object.keys(cardTypeFunctions).includes(type)) {
 		console.log("That is not a valid type!");
-		game.pause();
+		await game.pause();
 		return false;
 	}
 
-	// HACK: Use of never
-	const cardFunction: () => Blueprint = cardTypeFunctions[type as never];
-	const card = cardFunction();
+	const cardFunction = cardTypeFunctions[type];
+	const card = await cardFunction();
 
 	if (shouldExit) {
 		return false;
 	}
 
 	// Ask the user if the card should be uncollectible
-	const uncollectible = rl.keyInYN("Uncollectible?");
+	const uncollectible = await game.interact.yesNoQuestion("Uncollectible?");
 	if (uncollectible) {
 		card.collectible = !uncollectible;
 	}
@@ -263,8 +261,8 @@ export function main(debug = false, overrideType?: lib.CcType): string | false {
 		cctype = overrideType;
 	}
 
-	const filePath = lib.create(cctype, card, undefined, undefined, debug);
+	const filePath = await lib.create(cctype, card, undefined, undefined, debug);
 
-	game.pause();
+	await game.pause();
 	return filePath;
 }

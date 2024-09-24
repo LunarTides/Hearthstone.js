@@ -18,7 +18,7 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "None",
 
-	cast(owner, self) {
+	async cast(owner, self) {
 		// Quest: Play 3 cards. Reward: Return those cards back to your hand.
 
 		// Create a list of cards to put the 3 cards into
@@ -36,7 +36,7 @@ export const blueprint: Blueprint = {
 		 *     ) -> if the event should count towards the quest: bool
 		 * );
 		 */
-		owner.addQuest("Quest", self, "PlayCard", 3, (_unknownValue, done) => {
+		await owner.addQuest("Quest", self, "PlayCard", 3, async (_unknownValue, done) => {
 			/*
 			 * This code runs every time the `PlayCard` event gets broadcast.
 			 * This is like the callback function in event listeners.
@@ -86,10 +86,10 @@ export const blueprint: Blueprint = {
 				 * If we were to do `owner.addToHand(playedCard)`, the card added to the player's hand would be (most likely) linked to the original card.
 				 */
 
-				const card = playedCard.imperfectCopy();
+				const card = await playedCard.imperfectCopy();
 
 				// Add the imperfect copy of the card to the player's hand
-				owner.addToHand(card);
+				await owner.addToHand(card);
 			}
 
 			/*
@@ -100,7 +100,7 @@ export const blueprint: Blueprint = {
 		}); // Put `}, id of the next spell);`, to make a questline. When the quest gets completed, a card with that name gets created and the game immediately activates its cast ability.
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		// TODO: Add proper tests. #325
 		return true;
 	},

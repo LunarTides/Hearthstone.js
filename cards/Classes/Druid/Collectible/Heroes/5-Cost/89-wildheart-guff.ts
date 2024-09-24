@@ -16,21 +16,21 @@ export const blueprint: Blueprint = {
 	armor: 5,
 	heropowerId: 113,
 
-	battlecry(owner, self) {
+	async battlecry(owner, self) {
 		// Set your maximum Mana to 20. Gain an empty Mana Crystal. Draw a card.
 		owner.maxMana = 20;
 		owner.addEmptyMana(1);
-		owner.drawCards(1);
+		await owner.drawCards(1);
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		const handSize = owner.hand.length;
 		const { emptyMana } = owner;
 
 		// Update if changing the default max mana.
 		assert.equal(owner.maxMana, 10);
 
-		self.activate("battlecry");
+		await self.activate("battlecry");
 
 		assert.equal(owner.maxMana, 20);
 		assert.equal(owner.emptyMana, emptyMana + 1);

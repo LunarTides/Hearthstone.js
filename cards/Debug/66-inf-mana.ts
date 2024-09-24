@@ -16,33 +16,33 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "None",
 
-	cast(owner, self) {
+	async cast(owner, self) {
 		// Fill up your mana. For the rest of the game, your mana never decreases.
 
 		/*
 		 * Gain max mana every tick.
 		 * This lasts for the rest of the game, since we don't unhook it.
 		 */
-		game.functions.event.hookToTick(() => {
+		game.functions.event.hookToTick(async () => {
 			owner.addMana(owner.maxMana);
 		});
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		owner.mana = 5;
-		self.activate("cast");
+		await self.activate("cast");
 
 		// The game hasn't ticked yet
 		assert.equal(owner.mana, 5);
 
 		// Manually tick the game
-		game.event.tick("GameLoop", undefined, owner);
+		await game.event.tick("GameLoop", undefined, owner);
 
 		assert.equal(owner.mana, 10);
 
 		// Play a card to verify that the mana doesn't decrease
-		const card = new Card(game.cardIds.sheep1, owner);
-		const result = game.play(card, owner);
+		const card = await Card.create(game.cardIds.sheep1, owner);
+		const result = await game.play(card, owner);
 
 		assert.equal(result, true);
 		assert.equal(owner.mana, 10);

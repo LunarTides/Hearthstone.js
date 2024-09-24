@@ -65,9 +65,9 @@ export const infoInteract = {
 	 *
 	 * @returns The return value of the callback.
 	 */
-	withStatus(status: string, callback: () => boolean): boolean {
+	async withStatus(status: string, callback: () => Promise<boolean>): Promise<boolean> {
 		process.stdout.write(`${status}...`);
-		const success = callback();
+		const success = await callback();
 
 		const message = success ? "OK" : "FAIL";
 		process.stdout.write(`\r\u001B[K${status}...${message}\n`);
@@ -80,7 +80,7 @@ export const infoInteract = {
 	 *
 	 * @param player The player
 	 */
-	showGame(player: Player): void {
+	async showGame(player: Player): Promise<void> {
 		this.watermark();
 		console.log();
 
@@ -89,22 +89,22 @@ export const infoInteract = {
 			console.log();
 		}
 
-		this.printPlayerStats(player);
+		await this.printPlayerStats(player);
 		console.log();
-		this.printBoard(player);
+		await this.printBoard(player);
 		console.log();
-		this.printHand(player);
+		await this.printHand(player);
 	},
 
 	/**
 	 * Prints the player stats.
 	 */
-	printPlayerStats(currentPlayer: Player): void {
+	async printPlayerStats(currentPlayer: Player): Promise<void> {
 		let finished = "";
 
-		const doStat = (callback: (player: Player) => string) => {
-			const player = callback(currentPlayer);
-			const opponent = callback(currentPlayer.getOpponent());
+		const doStat = async (callback: (player: Player) => Promise<string>) => {
+			const player = await callback(currentPlayer);
+			const opponent = await callback(currentPlayer.getOpponent());
 
 			if (!player && !opponent) {
 				return;
@@ -148,25 +148,25 @@ export const infoInteract = {
 			currentPlayer.detailedView ? detail : noDetail;
 
 		// Mana
-		doStat(
-			(player) =>
+		await doStat(
+			async (player) =>
 				`Mana: <cyan>${player.mana}</cyan> / <cyan>${player.emptyMana}</cyan>`,
 		);
 
 		// Health
-		doStat(
-			(player) =>
+		await doStat(
+			async (player) =>
 				`Health: <red>${player.health}</red> <gray>[${player.armor}]</gray> / <red>${player.maxHealth}</red>`,
 		);
 
 		// Deck Size
-		doStat(
-			(player) =>
+		await doStat(
+			async (player) =>
 				`Deck Size: <yellow>${player.deck.length}</yellow> & <yellow>${player.hand.length}</yellow>`,
 		);
 
 		// Hero Power
-		doStat((player) => {
+		await doStat(async (player) => {
 			const heroPowerCost = colorIf(
 				player.canUseHeroPower(),
 				"cyan",
@@ -177,18 +177,18 @@ export const infoInteract = {
 		});
 
 		// Weapon
-		doStat((player) => {
+		await doStat(async (player) => {
 			if (!player.weapon) {
 				return "";
 			}
 
-			return `Weapon: ${detail(player.weapon.colorFromRarity(), player.weapon.readable())}`;
+			return `Weapon: ${detail(player.weapon.colorFromRarity(), await player.weapon.readable())}`;
 		});
 
 		// TODO: Add quests, secrets, etc...
 
 		// Attack
-		doStat((player) => {
+		await doStat(async (player) => {
 			// If the player doesn't have any attack, don't show the attack.
 			if (player.attack <= 0) {
 				return "";
@@ -198,7 +198,7 @@ export const infoInteract = {
 		});
 
 		// Corpses
-		doStat((player) => {
+		await doStat(async (player) => {
 			if (player.corpses <= 0 || !player.canUseCorpses()) {
 				return "";
 			}
@@ -212,7 +212,7 @@ export const infoInteract = {
 	/**
 	 * Prints the board for a specific player.
 	 */
-	printBoard(player: Player): void {
+	async printBoard(player: Player): Promise<void> {
 		for (const plr of [game.player1, game.player2]) {
 			const sideMessage =
 				plr === player
@@ -226,7 +226,7 @@ export const infoInteract = {
 			}
 
 			for (const [index, card] of plr.board.entries()) {
-				console.log(card.readable(index + 1));
+				console.log(await card.readable(index + 1));
 			}
 		}
 
@@ -236,7 +236,7 @@ export const infoInteract = {
 	/**
 	 * Prints the hand of the specified player.
 	 */
-	printHand(player: Player): void {
+	async printHand(player: Player): Promise<void> {
 		console.log("--- %s (%s)'s Hand ---", player.name, player.heroClass);
 		// Add the help message
 		console.log(
@@ -244,7 +244,7 @@ export const infoInteract = {
 		);
 
 		for (const [index, card] of player.hand.entries()) {
-			console.log(card.readable(index + 1));
+			console.log(await card.readable(index + 1));
 		}
 	},
 };

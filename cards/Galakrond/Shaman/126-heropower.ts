@@ -14,17 +14,17 @@ export const blueprint: Blueprint = {
 	collectible: false,
 	id: 126,
 
-	heropower(owner, self) {
+	async heropower(owner, self) {
 		// Summon a 2/1 Elemental with Rush.
-		const card = new Card(game.cardIds.windsweptElemental19, owner);
+		const card = await Card.create(game.cardIds.windsweptElemental19, owner);
 		if (!card) {
 			return;
 		}
 
-		owner.summon(card);
+		await owner.summon(card);
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		// TODO: Add proper tests. #325
 		return true;
 	},

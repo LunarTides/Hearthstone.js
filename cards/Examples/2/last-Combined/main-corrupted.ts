@@ -16,7 +16,7 @@ export const blueprint: Blueprint = {
 	health: 9,
 	tribe: "None",
 
-	create(owner, self) {
+	async create(owner, self) {
 		self.addKeyword("Colossal", [
 			game.cardIds.leftArm46,
 			game.cardIds.null0,
@@ -26,9 +26,9 @@ export const blueprint: Blueprint = {
 		self.addKeyword("Dormant", 2);
 	},
 
-	battlecry(owner, self) {
+	async battlecry(owner, self) {
 		// Dredge.
 
-		game.interact.card.dredge();
+		await game.interact.card.dredge();
 	},
 };

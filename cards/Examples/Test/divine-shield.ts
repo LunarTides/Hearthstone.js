@@ -17,24 +17,24 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribe: "None",
 
-	create(owner, self) {
+	async create(owner, self) {
 		self.addKeyword("Divine Shield");
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		// There should be no minions on the board
 		assert.equal(owner.board.length, 0);
 
 		// There should be 1 minion on the board
-		owner.summon(self);
+		await owner.summon(self);
 		assert.equal(owner.board.length, 1);
 
 		// There should be 1 minion on the board since the divine shield saves it
-		game.attack(9999, self);
+		await game.attack(9999, self);
 		assert.equal(owner.board.length, 1);
 
 		// There should be no minions on the board since the divine shield is gone
-		game.attack(9999, self);
+		await game.attack(9999, self);
 		assert.equal(owner.board.length, 0);
 	},
 };

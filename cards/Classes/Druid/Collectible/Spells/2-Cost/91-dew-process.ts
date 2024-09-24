@@ -15,32 +15,32 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "Nature",
 
-	cast(owner, self) {
+	async cast(owner, self) {
 		// For the rest of the game, players draw an extra card at the start of their turn.
 		game.functions.event.addListener(
 			"StartTurn",
-			(_unknownValue, eventPlayer) => {
-				eventPlayer.drawCards(1);
+			async (_unknownValue, eventPlayer) => {
+				await eventPlayer.drawCards(1);
 				return true;
 			},
 			-1,
 		);
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		let handSize = owner.hand.length;
 
 		// When the card hasn't been played, draw 1 card every turn.
-		game.endTurn();
-		game.endTurn();
+		await game.endTurn();
+		await game.endTurn();
 
 		// Increment handSize by 1 so that we can do handSize + 2
 		assert.equal(owner.hand.length, ++handSize);
 
-		self.activate("cast");
+		await self.activate("cast");
 
-		game.endTurn();
-		game.endTurn();
+		await game.endTurn();
+		await game.endTurn();
 
 		assert.equal(owner.hand.length, handSize + 2);
 	},

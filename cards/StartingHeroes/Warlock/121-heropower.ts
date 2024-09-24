@@ -13,15 +13,15 @@ export const blueprint: Blueprint = {
 	collectible: false,
 	id: 121,
 
-	heropower(owner, self) {
+	async heropower(owner, self) {
 		// Draw a card and take 2 damage.
 
 		// Deal 2 damage to the player.
-		game.attack(2, owner);
-		owner.drawCards(1);
+		await game.attack(2, owner);
+		await owner.drawCards(1);
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		// Clear the player's hand
 		owner.hand = [];
 
@@ -29,7 +29,7 @@ export const blueprint: Blueprint = {
 		assert.equal(owner.hand.length, 0);
 		assert.equal(owner.health, 30);
 
-		self.activate("heropower");
+		await self.activate("heropower");
 
 		// The player should now have 1 card in their hand, and 28 health.
 		assert.equal(owner.hand.length, 1);

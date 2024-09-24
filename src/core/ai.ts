@@ -275,7 +275,7 @@ export class Ai {
 	/**
 	 * Makes the ai select a target.
 	 *
-	 * Gets automatically called by `Interactive.selectTarget`, so use that instead.
+	 * Gets automatically called by `Interact.selectTarget`, so use that instead.
 	 *
 	 * @param prompt The prompt to show the ai.
 	 * @param card The card that called this function

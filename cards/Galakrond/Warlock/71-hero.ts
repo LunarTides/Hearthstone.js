@@ -16,7 +16,7 @@ export const blueprint: Blueprint = {
 	armor: 5,
 	heropowerId: 129,
 
-	battlecry(owner, self) {
+	async battlecry(owner, self) {
 		// Summon 1 random Demon.
 		const amount = game.functions.card.galakrondFormula(
 			self.storage.invokeCount as number,
@@ -32,7 +32,7 @@ export const blueprint: Blueprint = {
 
 		for (let i = 0; i < amount; i++) {
 			// Find all demons
-			const possibleCards = Card.all().filter(
+			const possibleCards = (await Card.all()).filter(
 				(c) => c.type === "Minion" && testDemoness(c),
 			);
 
@@ -43,16 +43,16 @@ export const blueprint: Blueprint = {
 			}
 
 			// Summon it
-			card = new Card(card.id, owner);
-			owner.summon(card);
+			card = await Card.create(card.id, owner);
+			await owner.summon(card);
 		}
 	},
 
-	invoke(owner, self) {
+	async invoke(owner, self) {
 		self.galakrondBump("invokeCount");
 	},
 
-	placeholders(owner, self) {
+	async placeholders(owner, self) {
 		if (!self.storage.invokeCount) {
 			return { amount: 0, plural: "s", plural2: "They" };
 		}

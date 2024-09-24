@@ -15,17 +15,17 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "None",
 
-	cast(owner, self) {
+	async cast(owner, self) {
 		// Dredge. If you have the Mana to play the card this turn, draw it.
-		const card = game.interact.card.dredge();
+		const card = await game.interact.card.dredge();
 		if (!card || owner.mana < card.cost) {
 			return;
 		}
 
-		owner.drawCards(1);
+		await owner.drawCards(1);
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		const handSize = owner.hand.length;
 
 		// Make the player answer 1
@@ -34,13 +34,13 @@ export const blueprint: Blueprint = {
 		// Shouldn't draw any cards
 		owner.mana = -1;
 
-		self.activate("cast");
+		await self.activate("cast");
 		assert.equal(owner.hand.length, handSize);
 
 		// Should draw a card
 		owner.mana = 10;
 
-		self.activate("cast");
+		await self.activate("cast");
 		assert.equal(owner.hand.length, handSize + 1);
 	},
 };

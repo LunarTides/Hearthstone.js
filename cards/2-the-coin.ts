@@ -15,7 +15,7 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "None",
 
-	cast(owner, self) {
+	async cast(owner, self) {
 		// Gain 1 Mana Crystal this turn only.
 
 		/*
@@ -26,16 +26,16 @@ export const blueprint: Blueprint = {
 		owner.refreshMana(1, owner.maxMana);
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		// Assert 5->6
 		owner.mana = 5;
-		self.activate("cast");
+		await self.activate("cast");
 
 		assert.equal(owner.mana, 6);
 
 		// Assert 10->10
 		owner.mana = 10;
-		self.activate("cast");
+		await self.activate("cast");
 
 		assert.equal(owner.mana, 10);
 	},

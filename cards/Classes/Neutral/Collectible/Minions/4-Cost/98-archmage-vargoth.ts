@@ -18,7 +18,7 @@ export const blueprint: Blueprint = {
 	health: 6,
 	tribe: "None",
 
-	passive(owner, self, key, _unknownValue) {
+	async passive(owner, self, key, _unknownValue) {
 		// At the end of your turn, cast a spell you've cast this turn (targets are random).
 
 		// Only proceed if the correct event key was broadcast
@@ -42,11 +42,11 @@ export const blueprint: Blueprint = {
 		const spell = game.lodash.sample(spells);
 
 		owner.forceTarget = game.functions.util.getRandomTarget();
-		spell?.activate("cast");
+		await spell?.activate("cast");
 		owner.forceTarget = undefined;
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		// TODO: Add proper tests. #325
 		return true;
 	},

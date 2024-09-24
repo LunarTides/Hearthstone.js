@@ -16,19 +16,19 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "None",
 
-	cast(owner, self) {
+	async cast(owner, self) {
 		// Fill your board with 2/1 Whelps with Rush.
 		const remainingBoardSpace = owner.getRemainingBoardSpace();
 
 		for (let index = 0; index < remainingBoardSpace; index++) {
-			const whelp = new Card(game.cardIds.onyxianWhelp99, owner);
-			owner.summon(whelp);
+			const whelp = await Card.create(game.cardIds.onyxianWhelp99, owner);
+			await owner.summon(whelp);
 		}
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		assert.equal(owner.board.length, 0);
-		self.activate("cast");
+		await self.activate("cast");
 
 		// Check if the board has been filled
 		assert.equal(owner.board.length, game.config.general.maxBoardSpace);

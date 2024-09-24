@@ -30,7 +30,7 @@ export const blueprint: Blueprint = {
 	 *
 	 * Instead of "battlecry", you could put "deathrattle", or "inspire", for example.
 	 */
-	battlecry(owner, self) {
+	async battlecry(owner, self) {
 		// Give this minion +1/+1.
 
 		/*
@@ -41,7 +41,7 @@ export const blueprint: Blueprint = {
 		 */
 
 		// The card class has the "addStats" function that takes in an attack and health, then adds that to the current stats.
-		self.addStats(1, 1);
+		await self.addStats(1, 1);
 	},
 
 	/*
@@ -49,8 +49,8 @@ export const blueprint: Blueprint = {
 	 * I encourage you to make tests like these yourself. Run `bun run cardtest` to run these tests.
 	 * These tests are run in an isolated environment. The side-effect of the code here won't carry over to other tests or the game.
 	 */
-	test(owner, self) {
-		self.activate("battlecry");
+	async test(owner, self) {
+		await self.activate("battlecry");
 
 		assert.equal((self.blueprint.attack ?? 0) + 1, self.attack);
 		assert.equal((self.blueprint.health ?? 0) + 1, self.health);

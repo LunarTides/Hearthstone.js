@@ -17,18 +17,18 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribe: "None",
 
-	battlecry(owner, self) {
+	async battlecry(owner, self) {
 		// Dredge.
 
 		// "game.interact" is an instance of the Interact object as defined in `src/core/interact/index.ts`.
-		game.interact.card.dredge();
+		await game.interact.card.dredge();
 	},
 
 	// Ignore this
-	test(owner, self) {
+	async test(owner, self) {
 		// Makes the player answer "1" to the next question
 		owner.inputQueue = ["1"];
-		const card = game.interact.card.dredge();
+		const card = await game.interact.card.dredge();
 
 		// Check if the top card of the player's deck is the card that was dredged
 		assert.equal(game.lodash.last(owner.deck), card);

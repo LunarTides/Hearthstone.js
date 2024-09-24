@@ -15,8 +15,8 @@ import type {
 const { game, player1 } = createGame();
 
 const { config } = game;
-const classes = game.functions.card.getClasses();
-const cards = Card.all(game.config.advanced.dcShowUncollectible);
+const classes = await game.functions.card.getClasses();
+const cards = await Card.all(game.config.advanced.dcShowUncollectible);
 
 let chosenClass: CardClassNoNeutral;
 let filteredCards: Card[] = [];
@@ -106,10 +106,10 @@ function watermark(): void {
 /**
  * Asks the user which class to choose, and returns it.
  */
-function askClass(): CardClassNoNeutral {
+async function askClass(): Promise<CardClassNoNeutral> {
 	watermark();
 
-	let heroClass = game.input(
+	let heroClass = await game.input(
 		`What class do you want to choose?\n${classes.join(", ")}\n`,
 	);
 
@@ -129,7 +129,7 @@ function askClass(): CardClassNoNeutral {
 		while (runes.length < 3) {
 			watermark();
 
-			const rune = logger.inputTranslate(
+			const rune = await logger.inputTranslate(
 				"What runes do you want to add (%s more)\nBlood, Frost, Unholy\n",
 				3 - runes.length,
 			);
@@ -337,7 +337,7 @@ function searchCards(_cards: Card[], searchQuery: string): Card[] | false {
 /**
  * Shows the possible cards that the user can add to their deck.
  */
-function showCards(): void {
+async function showCards(): Promise<void> {
 	filteredCards = [];
 	watermark();
 
@@ -408,7 +408,7 @@ function showCards(): void {
 		const searchedCards = searchCards(classCards, query);
 
 		if (searchedCards === false) {
-			game.pause(
+			await game.pause(
 				`<red>Search failed at '${query}'! Reverting back to last successful query.\n</red>`,
 			);
 
@@ -420,13 +420,13 @@ function showCards(): void {
 	}
 
 	if (classCards.length <= 0) {
-		game.pause("<yellow>\nNo cards match search.\n</yellow>");
+		await game.pause("<yellow>\nNo cards match search.\n</yellow>");
 		searchFailed = true;
 	}
 
 	if (searchFailed) {
 		settings.search.query = settings.search.prevQuery;
-		showCards();
+		await showCards();
 		return;
 	}
 
@@ -510,7 +510,7 @@ function showCards(): void {
 	}
 
 	console.log("\nCurrent deckcode output:");
-	const deckcode = generateDeckcode();
+	const deckcode = await generateDeckcode();
 
 	if (!deckcode.error) {
 		console.log("<bright:green>Valid deck!</bright:green>");
@@ -639,7 +639,7 @@ function remove(card: Card): boolean {
 /**
  * Shows the cards that are in the users deck. This is a replacement for `showCards`.
  */
-function showDeck(): void {
+async function showDeck(): Promise<void> {
 	watermark();
 
 	console.log("Deck Size: <yellow>%s</yellow>\n", deck.length);
@@ -714,7 +714,7 @@ function showDeck(): void {
 	}
 
 	console.log("\nCurrent deckcode output:");
-	const deckcode = generateDeckcode();
+	const deckcode = await generateDeckcode();
 	if (!deckcode.error) {
 		console.log("<bright:green>Valid deck!</bright:green>");
 		console.log(deckcode.code);
@@ -726,7 +726,7 @@ function showDeck(): void {
  *
  * @param parseVanillaOnPseudo Converts the deckcode to a vanilla one even if the deck is pseudo-valid. This will decrease performance.
  */
-function generateDeckcode(parseVanillaOnPseudo = false) {
+async function generateDeckcode(parseVanillaOnPseudo = false) {
 	const deckcode = game.functions.deckcode.export(deck, chosenClass, runes);
 	const { error } = deckcode;
 
@@ -787,7 +787,7 @@ function generateDeckcode(parseVanillaOnPseudo = false) {
 			return deckcode;
 		}
 
-		deckcode.code = game.functions.deckcode.toVanilla(player1, deckcode.code);
+		deckcode.code = await game.functions.deckcode.toVanilla(player1, deckcode.code);
 	}
 
 	return deckcode;
@@ -796,7 +796,7 @@ function generateDeckcode(parseVanillaOnPseudo = false) {
 /**
  * Show the help message. To be used by the "help" command.
  */
-function help(): void {
+async function help(): Promise<void> {
 	watermark();
 
 	// Commands
@@ -898,7 +898,7 @@ function help(): void {
 		"There is a known bug where if you add 'Prince Renathal', and then remove him, the deck will still require 40 cards. The only way around this is to restart the deck creator.",
 	);
 
-	game.pause("\nPress enter to continue...\n");
+	await game.pause("\nPress enter to continue...\n");
 }
 
 /**
@@ -910,11 +910,11 @@ function help(): void {
  *
  * @returns Success
  */
-function getCardArg(
+async function getCardArg(
 	args: string[],
-	callback: (card: Card) => boolean,
+	callback: (card: Card) => Promise<boolean>,
 	errorCallback: () => void,
-): boolean {
+): Promise<boolean> {
 	let times = 1;
 
 	const cardFromFullString = findCard(args.join(" "));
@@ -936,7 +936,7 @@ function getCardArg(
 
 	if (!card && eligibleForLatest) {
 		if (warnings.latestCard) {
-			game.pause(
+			await game.pause(
 				"<yellow>Card not found. Using latest valid card instead.</yellow>",
 			);
 		}
@@ -945,12 +945,12 @@ function getCardArg(
 	}
 
 	if (!card) {
-		game.pause("<red>Invalid card.</red>\n");
+		await game.pause("<red>Invalid card.</red>\n");
 		return false;
 	}
 
 	for (let i = 0; i < times; i++) {
-		if (!callback(card)) {
+		if (!await callback(card)) {
 			errorCallback();
 		}
 	}
@@ -967,7 +967,7 @@ function getCardArg(
  *
  * @returns Success
  */
-function handleCmds(cmd: string, addToHistory = true): boolean {
+async function handleCmds(cmd: string, addToHistory = true): Promise<boolean> {
 	if (findCard(cmd)) {
 		// You just typed the name of a card.
 		return handleCmds(`${settings.commands.default} ${cmd}`);
@@ -976,7 +976,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
 	const args = cmd.split(" ");
 	const name = args.shift()?.toLowerCase();
 	if (!name) {
-		game.pause("<red>Invalid command.</red>\n");
+		await game.pause("<red>Invalid command.</red>\n");
 		return false;
 	}
 
@@ -993,7 +993,7 @@ function handleCmds(cmd: string, addToHistory = true): boolean {
 
 	if (commandName) {
 		foundCommand = true;
-		commands[commandName](args);
+		await commands[commandName](args);
 	}
 
 	if (!foundCommand) {
@@ -1024,34 +1024,34 @@ let running = true;
 /**
  * Runs the deck creator.
  */
-export function main(): void {
+export async function main(): Promise<void> {
 	running = true;
 	Card.registerAll();
 
-	chosenClass = askClass();
+	chosenClass = await askClass();
 
 	while (running) {
 		if (settings.view.type === "cards") {
-			showCards();
+			await showCards();
 		} else if (settings.view.type === "deck") {
-			showDeck();
+			await showDeck();
 		}
 
-		handleCmds(game.input("\n> "));
+		await handleCmds(await game.input("\n> "));
 	}
 }
 
 const commands: CommandList = {
-	add(args): boolean {
+	async add(args): Promise<boolean> {
 		let success = true;
 
-		getCardArg(args, add, () => {
+		await getCardArg(args, async (card) => add(card), async () => {
 			// Internal error since add shouldn't return false
 			console.log(
 				"<red>Internal Error: Something went wrong while adding a card. Please report this. Error code: DcAddInternal</red>",
 			);
 
-			game.pause();
+			await game.pause();
 
 			success = false;
 		});
@@ -1062,13 +1062,13 @@ const commands: CommandList = {
 
 		return true;
 	},
-	remove(args): boolean {
+	async remove(args): Promise<boolean> {
 		let success = true;
 
-		getCardArg(args, remove, () => {
+		await getCardArg(args, async (card) => remove(card), async () => {
 			// User error
 			console.log("<red>Invalid card.</red>");
-			game.pause();
+			await game.pause();
 
 			success = false;
 		});
@@ -1079,7 +1079,7 @@ const commands: CommandList = {
 
 		return true;
 	},
-	page(args): boolean {
+	async page(args): Promise<boolean> {
 		let page = game.lodash.parseInt(args.join(" "));
 		if (!page) {
 			return false;
@@ -1093,22 +1093,22 @@ const commands: CommandList = {
 
 		return true;
 	},
-	config(): boolean {
+	async config(): Promise<boolean> {
 		watermark();
 		showRules();
-		game.pause("\nPress enter to continue...\n");
+		await game.pause("\nPress enter to continue...\n");
 
 		return true;
 	},
-	rules(args, flags): boolean {
-		return commands.config(args, flags) as boolean;
+	async rules(args, flags): Promise<boolean> {
+		return await commands.config(args, flags) as boolean;
 	},
-	view(args): boolean {
+	async view(args): Promise<boolean> {
 		// The callback function doesn't return anything, so we don't do anything with the return value of `getCardArg`.
-		getCardArg(
+		await getCardArg(
 			args,
-			(card) => {
-				card.view();
+			async (card) => {
+				await card.view();
 				return true;
 			},
 			() => {
@@ -1118,7 +1118,7 @@ const commands: CommandList = {
 
 		return true;
 	},
-	cards(args): boolean {
+	async cards(args): Promise<boolean> {
 		if (args.length <= 0) {
 			return false;
 		}
@@ -1130,7 +1130,7 @@ const commands: CommandList = {
 			!classes.includes(heroClass as CardClassNoNeutral) &&
 			heroClass !== "Neutral"
 		) {
-			game.pause("<red>Invalid class!</red>\n");
+			await game.pause("<red>Invalid class!</red>\n");
 			return false;
 		}
 
@@ -1140,7 +1140,7 @@ const commands: CommandList = {
 		);
 
 		if (!correctClass) {
-			game.pause(
+			await game.pause(
 				`<yellow>Class '${heroClass}' is a different class. To see these cards, please switch class from '${chosenClass}' to '${heroClass}' to avoid confusion.</yellow>\n`,
 			);
 
@@ -1151,19 +1151,19 @@ const commands: CommandList = {
 
 		return true;
 	},
-	deckcode(): boolean {
-		const deckcode = generateDeckcode(true);
+	async deckcode(): Promise<boolean> {
+		const deckcode = await generateDeckcode(true);
 
 		let toPrint = `${deckcode.code}\n`;
 		if (deckcode.error && !deckcode.error.recoverable) {
 			toPrint = "";
 		}
 
-		game.pause(toPrint);
+		await game.pause(toPrint);
 
 		return true;
 	},
-	sort(args): boolean {
+	async sort(args): Promise<boolean> {
 		if (args.length <= 0) {
 			return false;
 		}
@@ -1175,7 +1175,7 @@ const commands: CommandList = {
 
 		return true;
 	},
-	search(args): boolean {
+	async search(args): Promise<boolean> {
 		if (args.length <= 0) {
 			settings.search.query = [];
 			return false;
@@ -1185,16 +1185,16 @@ const commands: CommandList = {
 
 		return true;
 	},
-	deck(): boolean {
+	async deck(): Promise<boolean> {
 		settings.view.type = settings.view.type === "cards" ? "deck" : "cards";
 
 		return true;
 	},
-	import(args): boolean {
+	async import(args): Promise<boolean> {
 		const deckcode = args.join(" ");
 
 		config.decks.validate = false;
-		let newDeck = game.functions.deckcode.import(player1, deckcode);
+		let newDeck = await game.functions.deckcode.import(player1, deckcode);
 		config.decks.validate = true;
 
 		if (!newDeck) {
@@ -1208,7 +1208,7 @@ const commands: CommandList = {
 		// Update the filtered cards
 		chosenClass = player1.heroClass as CardClassNoNeutral;
 		runes = player1.runes;
-		showCards();
+		await showCards();
 
 		/*
 		 * Add the cards using handleCmds instead of add because for some reason, adding them with add
@@ -1217,17 +1217,17 @@ const commands: CommandList = {
 		 * You can just set deck = functions.importDeck(), but doing it that way doesn't account for renathal or any other card that changes the config in any way since that is done using the add function.
 		 */
 		for (const card of newDeck) {
-			handleCmds(`add ${card.id}`);
+			await handleCmds(`add ${card.id}`);
 		}
 
 		return true;
 	},
-	class(): boolean {
+	async class(): Promise<boolean> {
 		const oldRunes = game.lodash.clone(runes);
-		const newClass = askClass();
+		const newClass = await askClass();
 
 		if (newClass === chosenClass && runes === oldRunes) {
-			game.pause("<yellow>Your class was not changed</yellow>\n");
+			await game.pause("<yellow>Your class was not changed</yellow>\n");
 			return false;
 		}
 
@@ -1239,9 +1239,9 @@ const commands: CommandList = {
 
 		return true;
 	},
-	undo(): boolean {
+	async undo(): Promise<boolean> {
 		if (settings.commands.undoableHistory.length <= 0) {
-			game.pause("<red>Nothing to undo.</red>\n");
+			await game.pause("<red>Nothing to undo.</red>\n");
 			return false;
 		}
 
@@ -1250,7 +1250,7 @@ const commands: CommandList = {
 			?.split(" ");
 
 		if (!commandSplit) {
-			game.pause(
+			await game.pause(
 				"<red>Could not find anything to undo. This is a bug.</red>\n",
 			);
 
@@ -1272,23 +1272,23 @@ const commands: CommandList = {
 			return false;
 		}
 
-		handleCmds(`${reverse} ${args.join(" ")}`, false);
+		await handleCmds(`${reverse} ${args.join(" ")}`, false);
 
 		settings.commands.undoableHistory.pop();
 		settings.commands.history.pop();
 
 		return true;
 	},
-	help(): boolean {
-		help();
+	async help(): Promise<boolean> {
+		await help();
 
 		return true;
 	},
-	warning(args): boolean {
+	async warning(args): Promise<boolean> {
 		const key = args[0];
 
 		if (!Object.keys(warnings).includes(key)) {
-			game.pause(`<red>'${key}' is not a valid warning!</red>\n`);
+			await game.pause(`<red>'${key}' is not a valid warning!</red>\n`);
 			return false;
 		}
 
@@ -1305,7 +1305,7 @@ const commands: CommandList = {
 			} else if (["on", "enable", "true", "yes", "1"].includes(value)) {
 				newState = true;
 			} else {
-				game.pause(
+				await game.pause(
 					`<red>${value} is not a valid state. View 'help' for more information.</red>\n`,
 				);
 
@@ -1316,7 +1316,7 @@ const commands: CommandList = {
 		if (warnings[key] === newState) {
 			const newStateName = newState ? "enabled" : "disabled";
 
-			game.pause(
+			await game.pause(
 				`<yellow>Warning '<bright:yellow>${key}</bright:yellow>' is already ${newStateName}.</yellow>\n`,
 			);
 
@@ -1328,14 +1328,14 @@ const commands: CommandList = {
 		const newStateName = newState
 			? "<bright:green>Enabled warning</bright:green>"
 			: "<red>Disabled warning</red>";
-		game.pause(`${newStateName} <yellow>'${key}'</yellow>\n`);
+		await game.pause(`${newStateName} <yellow>'${key}'</yellow>\n`);
 
 		return true;
 	},
-	set(args): boolean {
+	async set(args): Promise<boolean> {
 		if (args.length <= 0) {
 			console.log("<yellow>Too few arguments</yellow>");
-			game.pause();
+			await game.pause();
 			return false;
 		}
 
@@ -1355,7 +1355,7 @@ const commands: CommandList = {
 
 				if (!["vanilla", "js"].includes(args[0])) {
 					console.log("<red>Invalid format!</red>");
-					game.pause();
+					await game.pause();
 					return false;
 				}
 
@@ -1404,22 +1404,22 @@ const commands: CommandList = {
 			}
 
 			default: {
-				game.pause(`<red>'${setting}' is not a valid setting.</red>\n`);
+				await game.pause(`<red>'${setting}' is not a valid setting.</red>\n`);
 				return false;
 			}
 		}
 
-		game.pause("<bright:green>Setting successfully changed!<bright:green>\n");
+		await game.pause("<bright:green>Setting successfully changed!<bright:green>\n");
 
 		return true;
 	},
-	eval(args): boolean {
+	async eval(args): Promise<boolean> {
 		if (args.length <= 0) {
-			game.pause("<red>Too few arguments.</red>\n");
+			await game.pause("<red>Too few arguments.</red>\n");
 			return false;
 		}
 
-		const code = game.interact.parseEvalArgs(args);
+		const code = await game.interact.parseEvalArgs(args);
 
 		try {
 			// biome-ignore lint/security/noGlobalEval: This is a security issue yes, but it's a debug command.
@@ -1438,10 +1438,10 @@ const commands: CommandList = {
 			console.log(error.stack);
 			game.functions.color.parseTags = true;
 
-			game.pause();
+			await game.pause();
 		}
 
-		game.event.broadcast("Eval", code, game.player);
+		await game.event.broadcast("Eval", code, game.player);
 		return true;
 	},
 };

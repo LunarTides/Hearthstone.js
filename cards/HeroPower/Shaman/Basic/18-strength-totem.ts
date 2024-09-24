@@ -18,7 +18,7 @@ export const blueprint: Blueprint = {
 	health: 2,
 	tribe: "Totem",
 
-	passive(owner, self, key, value, eventPlayer) {
+	async passive(owner, self, key, value, eventPlayer) {
 		// At the end of your turn, give another friendly minion +1 Attack.
 
 		// Only continue if the event that triggered this is the EndTurn event, and the player that triggered the event is this card's owner.
@@ -37,14 +37,14 @@ export const blueprint: Blueprint = {
 		}
 
 		// Give that minion +1 Attack
-		minion.addStats(1, 0);
+		await minion.addStats(1, 0);
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		// Summon 5 Sheep with 2 max health.
 		for (let i = 0; i < 5; i++) {
-			const card = new Card(game.cardIds.sheep1, owner);
-			owner.summon(card);
+			const card = await Card.create(game.cardIds.sheep1, owner);
+			await owner.summon(card);
 		}
 
 		const checkSheepAttack = (shouldBeMore: boolean) =>
@@ -58,11 +58,11 @@ export const blueprint: Blueprint = {
 				);
 
 		// Summon this minion. All sheep should have 1 attack.
-		owner.summon(self);
+		await owner.summon(self);
 		assert(checkSheepAttack(false));
 
 		// Broadcast a dummy event. All sheep should still have 1 attack.
-		game.event.broadcastDummy(owner);
+		await game.event.broadcastDummy(owner);
 		assert(checkSheepAttack(false));
 
 		// Check this 50 times
@@ -71,14 +71,14 @@ export const blueprint: Blueprint = {
 			owner.fatigue = 0;
 			owner.getOpponent().fatigue = 0;
 
-			game.endTurn();
+			await game.endTurn();
 
 			// At least 1 sheep should have more than 1 attack.
 			assert(checkSheepAttack(true));
 			// This card should not get more attack.
 			assert.equal(self.attack, self.blueprint.attack);
 
-			game.endTurn();
+			await game.endTurn();
 		}
 	},
 };

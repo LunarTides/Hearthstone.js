@@ -15,8 +15,8 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "None",
 
-	cast(owner, self) {
-		owner.addQuest("Quest", self, "PlayCard", 3, (_unknownValue, done) => {
+	async cast(owner, self) {
+		await owner.addQuest("Quest", self, "PlayCard", 3, async (_unknownValue, done) => {
 			const value = _unknownValue as EventValue<"PlayCard">;
 
 			if (value === self) {
@@ -31,7 +31,7 @@ export const blueprint: Blueprint = {
 			 * The quest is done.
 			 * Add the `-1 cost` enchantment constantly
 			 */
-			const unhook = game.functions.event.hookToTick(() => {
+			const unhook = game.functions.event.hookToTick(async () => {
 				// Only add the enchantment to minions
 				for (const minion of owner.hand.filter(
 					(card) => card.type === "Minion",
@@ -49,7 +49,7 @@ export const blueprint: Blueprint = {
 
 			game.functions.event.addListener(
 				"PlayCard",
-				(_unknownValue, eventPlayer) => {
+				async (_unknownValue, eventPlayer) => {
 					const value = _unknownValue as EventValue<"PlayCard">;
 
 					// Only continue if the player that triggered the event is this card's owner and the played card is a minion.
@@ -89,7 +89,7 @@ export const blueprint: Blueprint = {
 		});
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		// TODO: Add proper tests. #325
 		return true;
 	},

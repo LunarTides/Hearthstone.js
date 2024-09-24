@@ -18,7 +18,7 @@ export const blueprint: Blueprint = {
 	health: 2,
 	tribe: "Totem",
 
-	passive(owner, self, key, value, eventPlayer) {
+	async passive(owner, self, key, value, eventPlayer) {
 		// At the end of your turn, restore 1 Health to all friendly minions.
 
 		// Only continue if the event that triggered this is the EndTurn event, and the player that triggered the event is this card's owner.
@@ -28,16 +28,16 @@ export const blueprint: Blueprint = {
 
 		// Restore 1 Health to all friendly minions
 		for (const card of owner.board.filter((card) => card.type === "Minion")) {
-			card.addHealth(1, true);
+			await card.addHealth(1, true);
 		}
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		// Summon 5 Sheep with 2 max health.
 		for (let i = 0; i < 5; i++) {
-			const card = new Card(game.cardIds.sheep1, owner);
+			const card = await Card.create(game.cardIds.sheep1, owner);
 			card.maxHealth = 2;
-			owner.summon(card);
+			await owner.summon(card);
 		}
 
 		const checkSheepHealth = (expected: number) =>
@@ -46,23 +46,23 @@ export const blueprint: Blueprint = {
 				.every((card) => card.health === expected && card.attack === 1);
 
 		// Summon this minion. All sheep should have 1 health.
-		owner.summon(self);
+		await owner.summon(self);
 		assert(checkSheepHealth(1));
 
 		// Broadcast a dummy event. All sheep should still have 1 health.
-		game.event.broadcastDummy(owner);
+		await game.event.broadcastDummy(owner);
 		assert(checkSheepHealth(1));
 
 		// End the player's turn. All sheep should now have 2 health.
-		game.endTurn();
+		await game.endTurn();
 		assert(checkSheepHealth(2));
 
 		/*
 		 * End the player's turn again. All sheep should still have 2 health since it is their max health.
 		 * We end the turn twice since we also end the opponent's turn.
 		 */
-		game.endTurn();
-		game.endTurn();
+		await game.endTurn();
+		await game.endTurn();
 		assert(checkSheepHealth(2));
 	},
 };

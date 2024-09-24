@@ -41,24 +41,24 @@ const helpDebugBricks = [
 ];
 
 export const commands: CommandList = {
-	end(): boolean {
-		game.endTurn();
+	async end(): Promise<boolean> {
+		await game.endTurn();
 		return true;
 	},
 
-	"hero power"(): boolean {
+	async "hero power"(): Promise<boolean> {
 		if (game.player.ai) {
-			game.player.heroPower();
+			await game.player.heroPower();
 			return true;
 		}
 
 		if (game.player.mana < (game.player.hero.heropower?.cost ?? 0)) {
-			game.pause("<red>You do not have enough mana.</red>\n");
+			await game.pause("<red>You do not have enough mana.</red>\n");
 			return false;
 		}
 
 		if (game.player.hasUsedHeroPowerThisTurn) {
-			game.pause(
+			await game.pause(
 				"<red>You have already used your hero power this turn.</red>\n",
 			);
 
@@ -66,12 +66,12 @@ export const commands: CommandList = {
 		}
 
 		if (game.player.disableHeroPower) {
-			game.pause("<red>Your hero power is currently disabled.</red>\n");
+			await game.pause("<red>Your hero power is currently disabled.</red>\n");
 			return false;
 		}
 
-		game.interact.info.showGame(game.player);
-		const ask = game.interact.yesNoQuestion(
+		await game.interact.info.showGame(game.player);
+		const ask = await game.interact.yesNoQuestion(
 			`<yellow>${game.player.hero.heropower?.text}</yellow> Are you sure you want to use this hero power?`,
 			game.player,
 		);
@@ -80,19 +80,19 @@ export const commands: CommandList = {
 			return false;
 		}
 
-		game.interact.info.showGame(game.player);
-		game.player.heroPower();
+		await game.interact.info.showGame(game.player);
+		await game.player.heroPower();
 		return true;
 	},
 
-	attack(): boolean {
-		game.interact.gameLoop.doTurnAttack();
+	async attack(): Promise<boolean> {
+		await game.interact.gameLoop.doTurnAttack();
 		return true;
 	},
 
-	use(): boolean {
+	async use(): Promise<boolean> {
 		// Use location
-		const errorCode = game.interact.card.useLocation();
+		const errorCode = await game.interact.card.useLocation();
 
 		if (errorCode === true || errorCode === "refund" || game.player.ai) {
 			return true;
@@ -123,13 +123,13 @@ export const commands: CommandList = {
 		}
 
 		console.log("<red>%s.</red>", error);
-		game.pause();
+		await game.pause();
 		return true;
 	},
 
-	titan(): boolean {
+	async titan(): Promise<boolean> {
 		// Use titan card
-		const card = game.interact.selectCardTarget(
+		const card = await game.interact.selectCardTarget(
 			"Which card do you want to use?",
 			undefined,
 			"friendly",
@@ -140,26 +140,26 @@ export const commands: CommandList = {
 		}
 
 		if (card.sleepy) {
-			game.pause("<red>That card is exhausted.</red>\n");
+			await game.pause("<red>That card is exhausted.</red>\n");
 			return false;
 		}
 
 		const titanIds = card.getKeyword("Titan") as number[] | undefined;
 
 		if (!titanIds) {
-			game.pause("<red>That card is not a titan.</red>\n");
+			await game.pause("<red>That card is not a titan.</red>\n");
 			return false;
 		}
 
-		const titanCards = titanIds.map((id) => new Card(id, game.player, true));
+		const titanCards = await Promise.all(titanIds.map(async (id) => Card.create(id, game.player, true)));
 
-		game.interact.info.showGame(game.player);
+		await game.interact.info.showGame(game.player);
 		console.log(
 			"\nWhich ability do you want to trigger?\n%s",
 			titanCards.map((c) => c.readable).join(",\n"),
 		);
 
-		const choice = game.lodash.parseInt(game.input());
+		const choice = game.lodash.parseInt(await game.input());
 
 		if (
 			!choice ||
@@ -167,14 +167,14 @@ export const commands: CommandList = {
 			choice > titanCards.length ||
 			Number.isNaN(choice)
 		) {
-			game.pause("<red>Invalid choice.</red>\n");
+			await game.pause("<red>Invalid choice.</red>\n");
 			return false;
 		}
 
 		const ability = titanCards[choice - 1];
 
-		if (ability.activate("cast") === -1) {
-			game.functions.event.withSuppressed("DiscardCard", () =>
+		if (await ability.activate("cast") === -1) {
+			await game.functions.event.withSuppressed("DiscardCard", async () =>
 				ability.discard(),
 			);
 
@@ -191,11 +191,11 @@ export const commands: CommandList = {
 			card.sleepy = true;
 		}
 
-		game.event.broadcast("Titan", [card, ability], game.player);
+		await game.event.broadcast("Titan", [card, ability], game.player);
 		return true;
 	},
 
-	help(): boolean {
+	async help(): Promise<boolean> {
 		game.interact.info.watermark();
 
 		console.log(
@@ -238,12 +238,12 @@ export const commands: CommandList = {
 			),
 		);
 
-		game.pause("\nPress enter to continue...\n");
+		await game.pause("\nPress enter to continue...\n");
 		return true;
 	},
 
-	view(): boolean {
-		const isHandAnswer = game.interact.question(
+	async view(): Promise<boolean> {
+		const isHandAnswer = await game.interact.question(
 			game.player,
 			"Do you want to view a minion on the board, or in your hand?",
 			["Board", "Hand"],
@@ -253,7 +253,7 @@ export const commands: CommandList = {
 
 		if (!isHand) {
 			// AllowLocations Makes selecting location cards allowed. This is disabled by default to prevent, for example, spells from killing the card.
-			const card = game.interact.selectCardTarget(
+			const card = await game.interact.selectCardTarget(
 				"Which minion do you want to view?",
 				undefined,
 				"any",
@@ -264,43 +264,43 @@ export const commands: CommandList = {
 				return false;
 			}
 
-			card.view();
+			await card.view();
 			return true;
 		}
 
 		// View minion on the board
-		const cardIndex = game.input("\nWhich card do you want to view? ");
+		const cardIndex = await game.input("\nWhich card do you want to view? ");
 		if (!cardIndex || !game.lodash.parseInt(cardIndex)) {
 			return false;
 		}
 
 		const card = game.player.hand[game.lodash.parseInt(cardIndex) - 1];
 
-		card.view();
+		await card.view();
 		return true;
 	},
 
-	detail(): boolean {
+	async detail(): Promise<boolean> {
 		game.player.detailedView = !game.player.detailedView;
 		return true;
 	},
 
-	concede(): boolean {
-		game.interact.info.showGame(game.player);
+	async concede(): Promise<boolean> {
+		await game.interact.info.showGame(game.player);
 
-		const confirmation = game.interact.yesNoQuestion(
+		const confirmation = await game.interact.yesNoQuestion(
 			"Are you sure you want to concede?",
 			game.player,
 		);
 
 		if (confirmation) {
-			game.endGame(game.player.getOpponent());
+			await game.endGame(game.player.getOpponent());
 		}
 
 		return confirmation;
 	},
 
-	license(): boolean {
+	async license(): Promise<boolean> {
 		game.functions.util.openInBrowser(
 			`${game.config.info.githubUrl}/blob/main/LICENSE`,
 		);
@@ -308,15 +308,15 @@ export const commands: CommandList = {
 		return true;
 	},
 
-	version(): boolean {
+	async version(): Promise<boolean> {
 		const { version, branch, build } = game.functions.info.version();
 
 		let running = true;
 		while (running) {
 			const todos = Object.entries(game.config.todo);
 
-			const printInfo = () => {
-				game.interact.info.showGame(game.player);
+			const printInfo = async () => {
+				await game.interact.info.showGame(game.player);
 
 				let strbuilder = `\nYou are on version: ${version}, on `;
 
@@ -408,11 +408,11 @@ export const commands: CommandList = {
 				}
 			};
 
-			printInfo();
+			await printInfo();
 
 			// This is the todo list
 			if (todos.length <= 0) {
-				game.pause("\nPress enter to continue...");
+				await game.pause("\nPress enter to continue...");
 				running = false;
 				break;
 			}
@@ -469,7 +469,7 @@ export const commands: CommandList = {
 			}
 
 			const todoIndex = game.lodash.parseInt(
-				game.input(
+				await game.input(
 					"\nType the id of a todo to see more information about it (eg. 1): ",
 				),
 			);
@@ -481,10 +481,10 @@ export const commands: CommandList = {
 
 			const todo = todos[todoIndex - 1];
 
-			printInfo();
+			await printInfo();
 			printTodo(todo, todoIndex, true);
 
-			const command = game.input(
+			const command = await game.input(
 				'\nType "issue" to open the todo in your webbrowser.\n',
 			);
 
@@ -497,24 +497,24 @@ export const commands: CommandList = {
 		return true;
 	},
 
-	history(_, flags): string {
+	async history(_, flags): Promise<string> {
 		// History
 		const { history } = game.event;
 		let finished = "";
 
-		const showCard = (value: Card) =>
-			`${value.readable()} which belongs to: <blue>${value.owner.name}</blue>, and has uuid: ${value.coloredUUID()}`;
+		const showCard = async (value: Card) =>
+			`${await value.readable()} which belongs to: <blue>${value.owner.name}</blue>, and has uuid: ${value.coloredUUID()}`;
 
 		/**
 		 * Transform the `value` into a readable string
 		 *
 		 * @param hide If it should hide the card
 		 */
-		const doValue = (
+		const doValue = async (
 			value: unknown,
 			player: Player,
 			hide: boolean,
-		): unknown => {
+		): Promise<unknown> => {
 			if (value instanceof Player) {
 				return `Player ${value.id + 1}`;
 			}
@@ -526,7 +526,7 @@ export const commands: CommandList = {
 
 			// If the card is not hidden, or the card belongs to the current player, show it
 			if (!hide || value.owner === player) {
-				return showCard(value);
+				return await showCard(value);
 			}
 
 			// Hide the card
@@ -575,7 +575,7 @@ export const commands: CommandList = {
 			}
 
 			if (revealed) {
-				return `Hidden > Revealed as: ${showCard(value)}`;
+				return `Hidden > Revealed as: ${await showCard(value)}`;
 			}
 
 			return "Hidden";
@@ -634,13 +634,13 @@ export const commands: CommandList = {
 
 				hasPrintedHeader = true;
 
-				value = doValue(value, game.player, shouldHide) as UnknownEventValue;
+				value = await doValue(value, game.player, shouldHide) as UnknownEventValue;
 
 				if (Array.isArray(value)) {
 					let strbuilder = "";
 
 					for (let v of value) {
-						v = doValue(v, game.player, shouldHide) as
+						v = await doValue(v, game.player, shouldHide) as
 							| string
 							| number
 							| Player
@@ -666,7 +666,7 @@ export const commands: CommandList = {
 		} else {
 			console.log(finished);
 
-			game.pause("\nPress enter to continue...");
+			await game.pause("\nPress enter to continue...");
 		}
 
 		return finished;
@@ -674,37 +674,37 @@ export const commands: CommandList = {
 };
 
 export const debugCommands: CommandList = {
-	give(args): boolean {
+	async give(args): Promise<boolean> {
 		if (args.length <= 0) {
-			game.pause("<red>Too few arguments.</red>\n");
+			await game.pause("<red>Too few arguments.</red>\n");
 			return false;
 		}
 
 		const cardName = args.join(" ");
 
 		// TODO: Get all cards from the name and ask the user which one they want
-		const card = Card.fromName(cardName, game.player);
+		const card = await Card.fromName(cardName, game.player);
 		if (!card) {
-			game.pause(`<red>Invalid card: <yellow>${cardName}</yellow>.\n`);
+			await game.pause(`<red>Invalid card: <yellow>${cardName}</yellow>.\n`);
 			return false;
 		}
 
-		game.player.addToHand(card);
+		await game.player.addToHand(card);
 		return true;
 	},
 
-	exit(): boolean {
+	async exit(): Promise<boolean> {
 		game.running = false;
 		return true;
 	},
 
-	eval(args): boolean {
+	async eval(args): Promise<boolean> {
 		if (args.length <= 0) {
-			game.pause("<red>Too few arguments.</red>\n");
+			await game.pause("<red>Too few arguments.</red>\n");
 			return false;
 		}
 
-		const code = game.interact.parseEvalArgs(args);
+		const code = await game.interact.parseEvalArgs(args);
 		console.log(`Running: ${code}\n`);
 
 		try {
@@ -724,40 +724,40 @@ export const debugCommands: CommandList = {
 			console.log(error.stack);
 			game.functions.color.parseTags = true;
 
-			game.pause();
+			await game.pause();
 		}
 
-		game.event.broadcast("Eval", code, game.player);
+		await game.event.broadcast("Eval", code, game.player);
 		return true;
 	},
 
-	rl(_, flags): boolean {
+	async rl(_, flags): Promise<boolean> {
 		let success = true;
 
-		success &&= game.interact.info.withStatus("Reloading cards", () =>
+		success &&= await game.interact.info.withStatus("Reloading cards", async () =>
 			Card.reloadAll(),
 		);
 
 		// Go through all the cards and reload them
-		success &&= game.interact.info.withStatus(
+		success &&= await game.interact.info.withStatus(
 			"Applying changes to existing cards",
-			() => {
+			async () => {
 				// Hand and decks of the players
 				for (const player of [game.player1, game.player2]) {
 					for (const card of player.hand) {
-						card.reload();
+						await card.reload();
 					}
 
 					for (const card of player.deck) {
-						card.reload();
+						await card.reload();
 					}
 
 					for (const card of player.board) {
-						card.reload();
+						await card.reload();
 					}
 
 					for (const card of player.graveyard) {
-						card.reload();
+						await card.reload();
 					}
 				}
 
@@ -765,11 +765,11 @@ export const debugCommands: CommandList = {
 			},
 		);
 
-		success &&= game.interact.info.withStatus("Reloading config", () =>
+		success &&= await game.interact.info.withStatus("Reloading config", async () =>
 			game.functions.util.importConfig(),
 		);
 
-		success &&= game.interact.info.withStatus("Reloading language map", () =>
+		success &&= await game.interact.info.withStatus("Reloading language map", async () =>
 			Boolean(game.functions.util.getLanguageMap(true)),
 		);
 
@@ -778,24 +778,24 @@ export const debugCommands: CommandList = {
 				return true;
 			}
 
-			game.pause("\nThe cards have been reloaded.\nPress enter to continue...");
+			await game.pause("\nThe cards have been reloaded.\nPress enter to continue...");
 			return true;
 		}
 
-		game.pause(
+		await game.pause(
 			"\nSome steps failed. The game could not be fully reloaded. Please report this.\nPress enter to continue...",
 		);
 
 		return false;
 	},
 
-	undo(): boolean {
+	async undo(): Promise<boolean> {
 		// Get the last played card
 		if (
 			!game.event.events.PlayCard ||
 			game.event.events.PlayCard[game.player.id].length <= 0
 		) {
-			game.pause("<red>No cards to undo.</red>\n");
+			await game.pause("<red>No cards to undo.</red>\n");
 			return false;
 		}
 
@@ -803,13 +803,13 @@ export const debugCommands: CommandList = {
 			game.event.events.PlayCard[game.player.id];
 
 		if (eventCards.length <= 0) {
-			game.pause("<red>No cards to undo.</red>\n");
+			await game.pause("<red>No cards to undo.</red>\n");
 			return false;
 		}
 
 		let card = game.lodash.last(eventCards)?.[0];
 		if (!card) {
-			game.pause("<red>No cards found.</red>\n");
+			await game.pause("<red>No cards found.</red>\n");
 			return false;
 		}
 
@@ -832,20 +832,20 @@ export const debugCommands: CommandList = {
 
 		// If the card is a weapon, destroy it before adding it to the player's hand.
 		if (card.type === "Weapon") {
-			game.player.destroyWeapon();
+			await game.player.destroyWeapon();
 		}
 
 		// If the card is a hero, reset the player's hero to the default one from their class.
 		if (card.type === "Hero") {
-			game.player.setToStartingHero();
+			await game.player.setToStartingHero();
 		}
 
-		game.player.addToHand(card);
+		await game.player.addToHand(card);
 		game.player.refreshMana(card.cost);
 		return true;
 	},
 
-	ai(_, flags): string {
+	async ai(_, flags): Promise<string> {
 		let finished = "";
 
 		if (flags?.echo) {
@@ -872,20 +872,20 @@ export const debugCommands: CommandList = {
 		} else {
 			console.log(finished);
 
-			game.pause("\nPress enter to continue...");
+			await game.pause("\nPress enter to continue...");
 		}
 
 		return finished;
 	},
 
-	history(): string {
-		return game.interact.gameLoop.handleCmds("history", {
+	async history(): Promise<string> {
+		return await game.interact.gameLoop.handleCmds("history", {
 			debug: true,
 		}) as string;
 	},
 
-	frl(): string {
-		return game.interact.gameLoop.handleCmds(
+	async frl(): Promise<string> {
+		return await game.interact.gameLoop.handleCmds(
 			`${game.config.advanced.debugCommandPrefix}rl`,
 			{ debug: true },
 		) as string;

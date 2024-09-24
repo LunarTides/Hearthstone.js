@@ -70,7 +70,7 @@ export type CommandList = Record<
 	(
 		args: string[],
 		flags?: { echo?: boolean; debug?: boolean },
-	) => string | boolean
+	) => Promise<string | boolean>
 >;
 
 /**

@@ -184,7 +184,7 @@ export type Ability = (
 	key?: EventKey,
 	_unknownValue?: UnknownEventValue,
 	eventPlayer?: Player,
-) => unknown;
+) => Promise<unknown>;
 
 /**
  * The abilities that a blueprint can have. (From CardAbility)

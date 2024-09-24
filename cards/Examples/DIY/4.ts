@@ -16,7 +16,7 @@ export const blueprint: Blueprint = {
 	health: 10,
 	tribe: "None",
 
-	passive(owner, self, key, _unknownValue, eventPlayer) {
+	async passive(owner, self, key, _unknownValue, eventPlayer) {
 		// Whenever a minion dies, Resurrect it with 1/1 stats.
 
 		// If the key is for a different event, stop the function.
@@ -63,10 +63,10 @@ export const blueprint: Blueprint = {
 				card.owner === owner,
 		);
 
-		game.interact.verifyDiySolution(solved, self);
+		await game.interact.verifyDiySolution(solved, self);
 
 		if (!solved) {
-			self.kill();
+			await self.kill();
 		}
 
 		self.storage.solved = true;

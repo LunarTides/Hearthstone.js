@@ -14,7 +14,7 @@ games = Number.isNaN(games) ? 10 : games;
 /**
  * Executes the main function for the program.
  */
-function main(): void {
+async function main(): Promise<void> {
 	const decks = JSON.parse(
 		game.functions.util.fs("read", "/decks.json") as string,
 	) as string[];
@@ -51,17 +51,17 @@ function main(): void {
 
 			const deck = game.lodash.sample(decks);
 			if (typeof deck === "string") {
-				game.functions.deckcode.import(player, deck);
+				await game.functions.deckcode.import(player, deck);
 			}
 		}
 
-		game.startGame();
-		game.interact.card.mulligan(player1);
-		game.interact.card.mulligan(player2);
+		await game.startGame();
+		await game.interact.card.mulligan(player1);
+		await game.interact.card.mulligan(player2);
 
 		try {
 			while (game.running) {
-				game.interact.gameLoop.doTurn();
+				await game.interact.gameLoop.doTurn();
 			}
 		} catch (error) {
 			if (!(error instanceof Error)) {
@@ -72,10 +72,10 @@ function main(): void {
 
 			// If it crashes, show the ai's actions, and the history of the game before actually crashing
 			game.config.general.debug = true;
-			game.functions.util.createLogFile(error);
+			await game.functions.util.createLogFile(error);
 
-			game.interact.gameLoop.handleCmds("/ai");
-			game.interact.gameLoop.handleCmds("history", { debug: true });
+			await game.interact.gameLoop.handleCmds("/ai");
+			await game.interact.gameLoop.handleCmds("history", { debug: true });
 
 			console.log(
 				"THE GAME CRASHED: LOOK ABOVE FOR THE HISTORY, AND THE AI'S LOGS.",
@@ -93,4 +93,4 @@ function main(): void {
 	console.warn("\n<green>Crash test passed!</green>");
 }
 
-main();
+await main();

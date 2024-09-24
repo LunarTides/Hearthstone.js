@@ -24,11 +24,11 @@ type Commands = "i" | "d" | "v" | "q";
 let running = true;
 
 while (running) {
-	let func = game.input(
+	let func = (await game.input(
 		"What do you want to do? ([i]ncrement, [d]ecrement, [v]alidate, [q]uit): ",
-	)[0] as Commands;
+	))[0] as Commands;
 	if (!func) {
-		game.pause("<red>Invalid command.</red>\n");
+		await game.pause("<red>Invalid command.</red>\n");
 		continue;
 	}
 
@@ -45,9 +45,9 @@ while (running) {
 
 	switch (func) {
 		case "i": {
-			startId = Number(game.input("What id to start at: "));
+			startId = Number(await game.input("What id to start at: "));
 			if (!startId) {
-				game.pause("<red>Invalid start id.</red>\n");
+				await game.pause("<red>Invalid start id.</red>\n");
 				break;
 			}
 
@@ -56,9 +56,9 @@ while (running) {
 		}
 
 		case "d": {
-			startId = Number(game.input("What id to start at: "));
+			startId = Number(await game.input("What id to start at: "));
 			if (!startId) {
-				game.pause("<red>Invalid start id.</red>\n");
+				await game.pause("<red>Invalid start id.</red>\n");
 				break;
 			}
 
@@ -77,7 +77,7 @@ while (running) {
 		}
 
 		default: {
-			game.pause("<red>Invalid command.</red>\n");
+			await game.pause("<red>Invalid command.</red>\n");
 			break;
 		}
 	}

@@ -5,10 +5,10 @@
  */
 
 import process from "node:process";
-import { Card, Logger, type Player, createGame } from "@Game/internal.js";
+import { Card, type Player, createGame } from "@Game/internal.js";
 
 const { game } = createGame();
-const cards = Card.all(true);
+const cards = await Card.all(true);
 
 /**
  * Tests that a card works properly by triggering the `test` ability.
@@ -17,9 +17,9 @@ const cards = Card.all(true);
  *
  * @returns Success | Error
  */
-function testCard(card: Card): boolean | Error {
+async function testCard(card: Card): Promise<boolean | Error> {
 	try {
-		card.activate("test");
+		await card.activate("test");
 	} catch (error) {
 		if (error instanceof Error) {
 			return error;
@@ -30,8 +30,8 @@ function testCard(card: Card): boolean | Error {
 }
 
 // Assign decks
-const assignDeck = (player: Player) => {
-	const deck = game.functions.deckcode.import(player, "Mage /30/ 1");
+const assignDeck = async (player: Player) => {
+	const deck = await game.functions.deckcode.import(player, "Mage /30/ 1");
 	if (!deck || deck.length <= 0) {
 		throw new Error("Invalid deckcode");
 	}
@@ -42,7 +42,7 @@ const assignDeck = (player: Player) => {
 /**
  * Executes a series of tests on the cards in the 'cards' array.
  */
-export function main(): void {
+export async function main(): Promise<void> {
 	for (const [index, blueprint] of cards.entries()) {
 		process.stderr.write(
 			`\r\u001B[KTesting card ${index + 1} / ${cards.length}...`,
@@ -59,16 +59,16 @@ export function main(): void {
 		game.opponent = player2;
 
 		game.config.decks.validate = false;
-		assignDeck(player1);
-		assignDeck(player2);
+		await assignDeck(player1);
+		await assignDeck(player2);
 
-		game.startGame();
+		await game.startGame();
 
-		const card = blueprint.imperfectCopy();
+		const card = await blueprint.imperfectCopy();
 		card.owner = player1;
 
 		game.noOutput = true;
-		const error = testCard(card);
+		const error = await testCard(card);
 		game.noOutput = false;
 
 		if (error instanceof Error) {
@@ -89,4 +89,4 @@ export function main(): void {
 	console.log();
 }
 
-main();
+await main();

@@ -14,7 +14,7 @@ export const blueprint: Blueprint = {
 
 	spellSchool: "None",
 
-	cast(owner, self) {
+	async cast(owner, self) {
 		// Restore 3 health to the hero.
 
 		// Try to heal the player by 3 hp.
@@ -56,7 +56,7 @@ export const blueprint: Blueprint = {
 
 		owner.health = trueOgHealth;
 
-		game.interact.verifyDiySolution(solved, self);
+		await game.interact.verifyDiySolution(solved, self);
 
 		return true;
 	},

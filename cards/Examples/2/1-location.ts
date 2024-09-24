@@ -30,15 +30,15 @@ export const blueprint: Blueprint = {
 	 * For spells, the ability is `cast`.
 	 * And for location cards, the ability is `use`.
 	 */
-	use(owner, self) {
+	async use(owner, self) {
 		// Restore 2 Health to your hero.
 
 		owner.addHealth(2);
 	},
 
-	test(owner, self) {
+	async test(owner, self) {
 		owner.health = 1;
-		self.activate("use");
+		await self.activate("use");
 
 		assert.equal(owner.health, 1 + 2);
 	},
