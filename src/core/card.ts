@@ -47,8 +47,8 @@ export class Card {
 	/**
 	 * The card's description / text.
 	 *
-	 * Might include color tags like `Example [033Example 2[142`.
-	 * Use `stripAnsi()` to remove these.
+	 * Might include color tags like `Example <red>Example 2</red>`.
+	 * Use `game.functions.color.stripAll` to remove these.
 	 */
 	text: string;
 
@@ -170,7 +170,7 @@ export class Card {
 	 * If this is "health", the card costs `Player.health`.
 	 * etc...
 	 *
-	 * This can be any value, as long as it is a defined _number_ in the `Player` class.
+	 * This can be any value, as long as it is a defined _number_ in the `Player` class (although the typescript compiler would complain if you don't update this type).
 	 */
 	costType: CostType = "mana";
 
@@ -178,7 +178,7 @@ export class Card {
 	 * Information stored in the card.
 	 * This information can be anything, and the card can access it at any point.
 	 *
-	 * I do not recommend changing this in any other context than in a card's blueprint, unless you know what you are doing.
+	 * I do not recommend changing this in any other context than in this card's abilities, unless you know what you are doing.
 	 */
 	// biome-ignore lint/suspicious/noExplicitAny: Cards should be able to store any value. It is hacky, but oh well.
 	storage: Record<string, any> = {};
@@ -196,7 +196,7 @@ export class Card {
 	 * [
 	 *     {
 	 *         "enchantment": "-1 cost",
-	 *         "owner": // someCard
+	 *         "owner": someCard,
 	 *     }
 	 * ]
 	 * ```
@@ -262,7 +262,7 @@ export class Card {
 	stealthDuration?: number = 0;
 
 	/**
-	 * If the card can attack the hero.
+	 * If the card can attack the hero this turn.
 	 *
 	 * This will be set to true if the card is a spell and other card types, so verify the type of the card before using this.
 	 */
@@ -290,7 +290,7 @@ export class Card {
 	abilities: { [key in CardAbility]?: Ability[] } = {};
 
 	/**
-	 * Create a card.
+	 * **USE `Card.create` INSTEAD.**
 	 *
 	 * @param name The name of this card
 	 * @param owner This card's owner.
@@ -349,6 +349,13 @@ export class Card {
 		);
 	}
 
+	/**
+	 * Creates a card with the specified id.
+	 *
+	 * @param id The id of the card to create.
+	 * @param player The player that should own the card.
+	 * @param [suppressEvent=false] If the `CreateCard` event should be suppressed.
+	 */
 	static async create(
 		id: number,
 		player: Player,
@@ -399,7 +406,9 @@ export class Card {
 		// Don't broadcast CreateCard event here since it would spam the history and log files
 		if (game.cards.length <= 0) {
 			game.cards = await Promise.all(
-				game.blueprints.map(async (card) => Card.create(card.id, game.player)),
+				game.blueprints.map(async (card) =>
+					Card.create(card.id, game.player, true),
+				),
 			);
 
 			game.functions.card.generateIdsFile();
@@ -576,7 +585,7 @@ export class Card {
 		this.maxHealth = this.blueprint.health;
 
 		if (this.heropowerId) {
-			this.heropower = await Card.create(this.heropowerId, this.owner);
+			this.heropower = await Card.create(this.heropowerId, this.owner, true);
 		}
 
 		this.text = game.functions.color.fromTags(this.text || "");

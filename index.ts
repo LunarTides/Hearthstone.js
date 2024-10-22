@@ -45,8 +45,8 @@ const watermark = () => {
 | $$  | $$ /$$  \\ $$   | $$  | $$ /$$  \\ $$
 | $$  | $$|  $$$$$$//$$|  $$$$$$/|  $$$$$$/
 |__/  |__/ \\______/|__/ \\______/  \\______/ 
-    `.replace("\n", ""),
-	); // Remove the first newline in order to improve formatting in source code.
+    `.replace("\n", ""), // Remove the first newline in order to improve formatting in source code.
+	);
 
 	console.log("Version: %s", version);
 
@@ -66,7 +66,7 @@ const watermark = () => {
 };
 
 /**
- * Simulates a user input loop.
+ * Creates a user input loop.
  *
  * @param prompt The prompt to ask
  * @param exitCharacter If the input's first character is this, exit the loop
@@ -178,7 +178,7 @@ await userInputLoop(
 				await src.main();
 
 				/*
-				 * This line will likely never be seen in a log file, since the log file gets generated before this line.
+				 * This line will never be seen in the log file, since the log file gets generated before this line.
 				 * All the other similar lines are fine, since only the game generates log files for now.
 				 */
 				logger.debug("Starting Game...OK");

@@ -31,7 +31,7 @@ async function main(): Promise<void> {
 	);
 
 	for (let index = 0; index < games; index++) {
-		// If you're redirecting output to a file, show a progress bar
+		// Show a progress bar
 		process.stderr.write(`\r\u001B[KPlaying game ${index + 1} / ${games}...`);
 
 		// Test the main game

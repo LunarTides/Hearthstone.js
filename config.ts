@@ -2,13 +2,20 @@ import type { GameConfig } from "@Game/types.js";
 
 export const config: GameConfig = {
 	general: {
-		// The locale to use. If the specified locale doesn't exist, it will default to 'en_US'.
+		// The locale (aka. language) to use. If the specified locale doesn't exist, it will default to 'en_US'.
 		locale: "en_US",
 
-		// Debug mode enables debug commands, and hides redundant information.
+		/*
+		 * Debug mode enables debug commands, and hides redundant information.
+		 * Only enable this if you want to test the game / add cards.
+		 */
 		debug: true,
 
-		// The editor that gets launched.
+		/*
+		 * The editor that gets launched whenever the game wants to launch an editor.
+		 * This happens after creating a card using the Custom Card Creator, for example.
+		 * You can set this to any path you want. (e.g. /usr/bin/code or vim)
+		 */
 		editor: "code",
 
 		// If the game should warn you about being on a topic branch.
@@ -17,12 +24,15 @@ export const config: GameConfig = {
 		// How many cards can be on a player's board at once.
 		maxBoardSpace: 7,
 
-		// The maximum amount of cards that is allowed in a hand. Don't go under 4
+		// The maximum amount of cards that is allowed in a hand. Don't go under 4 or the game will crash on start.
 		maxHandLength: 10,
 	},
 
 	decks: {
-		// If the game should validate deck codes.
+		/*
+		 * If the game should validate deck codes.
+		 * If this is disabled, the game will accept ANY correctly formatted deckcode.
+		 */
 		validate: true,
 
 		// The minimum amount of cards that is allowed in a deck
@@ -69,24 +79,34 @@ export const config: GameConfig = {
 
 		/*
 		 * How much the ai values stats.
+		 * The formula is: score += (attack + health) * statsBias
 		 * For example, at 0.2, 1/1 stats is valued at 0.4
 		 * Another example, at 1, 1/1 stats is valued at 2
 		 */
 		statsBias: 0.2,
 
-		// How much the ai dislikes mana cost.
+		/*
+		 * How much the ai dislikes mana cost.
+		 * The formula is: score -= cost * costBias
+		 */
 		costBias: 0.75,
 
 		/*
 		 * How much the ai values spells. This exists for equality with minions, since minions gets stats.
-		 * The formula is: spellValue * statsBias
+		 * The formula is: score += spellValue * statsBias
 		 */
 		spellValue: 4,
 
-		// How much the ai values keywords.
+		/*
+		 * How much the ai values keywords.
+		 * The formula is: score += amountOfKeywords * keywordValue
+		 */
 		keywordValue: 2,
 
-		// How much the ai values abilities
+		/*
+		 * How much the ai values abilites.
+		 * The formula is: score += amountOfAbilities * abilityValue
+		 */
 		abilityValue: 1,
 
 		/*
@@ -102,8 +122,8 @@ export const config: GameConfig = {
 		ignoreThreshold: -1,
 
 		/*
-		 * How much of an advantage the ai needs to be at in order to enter "risky mode".
-		 * While in risky mode, the ai ignores all minions on your board and tries to rush your face to kill you as fast as possible.
+		 * How much of an advantage the ai needs to be at in order to enter "risk mode".
+		 * While in risk mode, the ai ignores all minions on your board and tries to rush your face to kill you as fast as possible.
 		 */
 		riskThreshold: 10,
 
@@ -181,15 +201,14 @@ export const config: GameConfig = {
 		diyCardSpawnChance: 1 / 100,
 
 		/*
-		 * If this is true, the deckcreator will also show collectible cards.
-		 * These deckcodes will be rejected by the game as psuedo-valid if `config.decks.validate` is false.
+		 * If this is true, the deckcreator will also show uncollectible cards.
+		 * These deckcodes will be rejected by the game as psuedo-valid if `Decks > Validate` is true.
 		 */
 		dcShowUncollectible: false,
 
 		/*
 		 * If this is true, `Card.readable` will only show the top level of a card.
-		 * This will prevent cards from referencing other cards in their description
-		 * however it will still show that card's name.
+		 * This will prevent cards from referencing other cards in their description however it will still show that card's name.
 		 * Enable this if you don't like cards showing other cards in their description.
 		 */
 		getReadableCardNoRecursion: false,
@@ -203,7 +222,7 @@ export const config: GameConfig = {
 		/*
 		 * This is how many cards `Card.readable` can display at once.
 		 * This is to prevent a card from referencing itself, which would cause an infinite loop.
-		 * I highly recommend keeping this value below 20.
+		 * I highly recommend keeping this value below 20 since there is no real reason to go above it.
 		 */
 		getReadableCardMaxDepth: 10,
 
@@ -247,6 +266,7 @@ export const config: GameConfig = {
 
 		/*
 		 * These keys will have their value hidden when running the history command unless you caused the event.
+		 * This is to, for example, hide the opponent's drawn card from the history while still showing that event happened.
 		 * The log files override this list and shows the value regardless.
 		 */
 		hideValueHistoryKeys: [

@@ -1,5 +1,6 @@
 /**
  * The AI
+ * // TODO: Remove all module docstrings.
  * @module AI
  */
 import { Card, Player } from "@Game/internal.js";
@@ -16,7 +17,9 @@ import type {
 // TODO: Ai gets stuck in infinite loop when using cathedral of atonement (location) | shadowcloth needle (0 attack wpn) | that minion has no attack.
 
 /**
- * The AI class.
+ * Uses Sentiment Analysis to play the game.
+ *
+ * **Don't directly call any methods in this class since they get called automatically in various function in-game that requires player input.**
  */
 export class Ai {
 	/**
@@ -722,9 +725,7 @@ export class Ai {
 		score -= c.cost * game.config.ai.costBias;
 
 		// Keywords
-		for (const _ of Object.keys(c.keywords)) {
-			score += game.config.ai.keywordValue;
-		}
+		score += Object.keys(c.keywords).length * game.config.ai.keywordValue;
 
 		// Abilities
 		for (const value of Object.values(c)) {
@@ -942,7 +943,7 @@ export class Ai {
 	private _attackGeneral(board: ScoredCard[][]): Array<Target | -1> {
 		const winner = this._findWinner(board);
 
-		// Risky
+		// Calculate risk mode
 		const opponentScore = this._scorePlayer(this.player.getOpponent(), board);
 
 		// If the ai is winner by more than 'threshold' points, enable risk mode

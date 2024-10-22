@@ -122,8 +122,10 @@ export function increment(startId: number, log: boolean): number {
 }
 
 /**
- * Check for holes in the ids.
+ * Check for holes and duplicates in the ids.
+ *
  * If there is a card with an id of 58 and a card with an id of 60, but no card with an id of 59, that is a hole.
+ * If there are more than 1 card with an id of 60, that is a duplicate.
  *
  * @param log If it should log what it's doing. This should probably be false when using this as a library.
  *
@@ -138,7 +140,7 @@ export function validate(log: boolean): [number, number] {
 
 	ids.sort((a, b) => a[0] - b[0]);
 
-	// Check if there are any holes
+	// Check if there are any holes / duplicates.
 	let currentId = 0;
 	let holes = 0;
 	let duplicates = 0;

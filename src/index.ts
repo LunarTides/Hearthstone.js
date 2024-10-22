@@ -1,9 +1,6 @@
 /**
  * The entry point of the game.
  *
- * Hearthstone.js - Hearthstone but console based.
- * Copyright (C) 2022  LunarTides
- *
  * @module Index
  */
 

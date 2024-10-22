@@ -31,7 +31,7 @@ export const blueprint: Blueprint = {
 	async test(owner, self) {
 		const amountOfCards = 3;
 
-		// Summon n Sheep
+		// Summon some amount of Sheep
 		for (let i = 0; i < amountOfCards; i++) {
 			const sheep = await Card.create(game.cardIds.sheep1, owner);
 			await owner.summon(sheep);

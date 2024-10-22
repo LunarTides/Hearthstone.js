@@ -9,67 +9,31 @@ import process from "node:process";
 import { createGame } from "@Game/internal.js";
 import type { VanillaCard } from "@Game/types.js";
 
+const API_URL = "https://api.hearthstonejson.com/v1/latest/enUS/cards.json";
+
 const filterAwayUseless = process.argv[2] !== "--no-filter";
 
 const { game } = createGame();
 
-/*
- * Copy-and-pasted from this stackoverflow answer:
- * https://stackoverflow.com/a/62588602
- */
-
-/**
- * Sends an HTTP GET request to the specified URL and resolves or rejects a promise based on the response.
- *
- * @param url The URL to send the GET request to.
- * @param resolve A callback function that resolves the promise with the response value.
- * @param reject A callback function that rejects the promise with the error reason.
- */
-function get(
-	url: string,
-	resolve: (value: unknown) => void,
-	reject: (reason: unknown) => void,
-): void {
-	https.get(url, (response) => {
-		// If any other status codes are returned, those needed to be added here
-		if (response.statusCode === 301 || response.statusCode === 302) {
-			if (!response.headers.location) {
-				throw new Error(
-					"No redirect found. Something must be wrong with the api?",
-				);
-			}
-
-			get(response.headers.location, resolve, reject);
-			return;
-		}
-
-		const body: Uint8Array[] = [];
-
-		response.on("data", (chunk) => {
-			body.push(chunk);
-		});
-
-		response.on("end", () => {
-			try {
-				// Remove JSON.parse(...) for plain data
-				resolve(JSON.parse(Buffer.concat(body).toString()));
-			} catch (error) {
-				reject(error);
-			}
-		});
-	});
-}
-
-/**
- * Retrieves data from the specified URL.
- *
- * @param url The URL to fetch data from.
- *
- * @returns A promise that resolves with the fetched data.
- */
-async function getData(url: string): Promise<unknown> {
+// Function to fetch data from the API
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+function fetchData(url: string): Promise<any> {
 	return new Promise((resolve, reject) => {
-		get(url, resolve, reject);
+		https
+			.get(url, (response) => {
+				// Follow redirects
+				if ([301, 302].includes(response.statusCode ?? 500)) {
+					return resolve(fetchData(response.headers.location ?? ""));
+				}
+
+				const chunks: Uint8Array[] = [];
+
+				response.on("data", (chunk) => chunks.push(chunk));
+				response.on("end", () =>
+					resolve(JSON.parse(Buffer.concat(chunks).toString())),
+				);
+			})
+			.on("error", reject);
 	});
 }
 
@@ -79,12 +43,8 @@ async function getData(url: string): Promise<unknown> {
  * @returns Promise that resolves to void.
  */
 async function main(): Promise<void> {
-	await getData(
-		"https://api.hearthstonejson.com/v1/latest/enUS/cards.json",
-	).then((r) => {
+	await fetchData(API_URL).then((r) => {
 		let data = r as VanillaCard[];
-
-		// Let data = JSON.parse(r);
 		const oldLength = data.length;
 
 		if (filterAwayUseless) {
