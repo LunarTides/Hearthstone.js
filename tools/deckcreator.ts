@@ -485,13 +485,14 @@ async function showCards(): Promise<void> {
 
 	const bricks: string[] = [];
 	for (const card of classCards) {
-		bricks.push(`${card.name} - ${card.id}`);
+		// Can't seperate using "-" since that would break, for example, "Yogg-Saron, ..."
+		bricks.push(`${card.name} __HSJS_SEPERATOR__ ${card.id}`);
 	}
 
-	const wall = game.functions.util.createWall(bricks, "-");
+	const wall = game.functions.util.createWall(bricks, "__HSJS_SEPERATOR__");
 
 	for (const brick of wall) {
-		const brickSplit = brick.split("-");
+		const brickSplit = brick.split("__HSJS_SEPERATOR__");
 
 		// Find the card before the '-'
 		const card = findCard(brickSplit[0].trim());
