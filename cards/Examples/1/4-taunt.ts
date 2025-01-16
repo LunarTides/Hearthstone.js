@@ -9,7 +9,7 @@ export const blueprint: Blueprint = {
 	 * The description doesn't really matter, but it's nice to explain what the card does.
 	 * The "<b>" will bold all characters after it, and the "</b>" stops the bolding. This just makes the word "Taunt." bold, but nothing after it.
 	 * You can also use "<bold>" and "</bold>" if you want to be more verbose. Bold and Italic are currently the only tags that supports this.
-	 * Look in `game.functions.color.fromTags` for a list of these tags.
+	 * Look in `import "chalk-tags"; > parseTags` for a list of these tags.
 	 */
 	text: "<b>Taunt.</b> This is an example card to show how to add keywords to cards.",
 

@@ -1,5 +1,6 @@
 import * as src from "@Game/index.js"; // Source Code
 import type { Blueprint } from "@Game/types.js";
+import { resumeTagParsing, stopTagParsing } from "chalk-tags";
 import * as clc from "../tools/cardcreator/class.js"; // Class Creator
 import * as ccc from "../tools/cardcreator/custom.js"; // Custom Card Creator
 import * as cclib from "../tools/cardcreator/lib.js"; // Class Creator
@@ -257,9 +258,9 @@ export async function main(
 					);
 
 					// The stack includes "<anonymous>", which would be parsed as a tag, which would cause another error
-					game.functions.color.parseTags = false;
+					stopTagParsing();
 					console.log(error.stack);
-					game.functions.color.parseTags = true;
+					resumeTagParsing();
 
 					await game.pause();
 				}

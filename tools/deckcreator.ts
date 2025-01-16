@@ -11,6 +11,7 @@ import type {
 	CommandList,
 	GameConfig,
 } from "@Game/types.js";
+import { resumeTagParsing, stopTagParsing } from "chalk-tags";
 
 const { game, player1 } = createGame();
 
@@ -1448,9 +1449,9 @@ const commands: CommandList = {
 			);
 
 			// The stack includes "<anonymous>", which would be parsed as a tag, which would cause another error
-			game.functions.color.parseTags = false;
+			stopTagParsing();
 			console.log(error.stack);
-			game.functions.color.parseTags = true;
+			resumeTagParsing();
 
 			await game.pause();
 		}

@@ -5,6 +5,7 @@
 
 import { createGame } from "@Game/internal.js";
 import type { BlueprintWithOptional, CardType } from "@Game/types.js";
+import { resumeTagParsing, stopTagParsing } from "chalk-tags";
 
 const { game } = createGame();
 
@@ -337,14 +338,14 @@ ${createAbility}${ability}
 			console.warn("<yellow>Main Debug Switch is enabled.</yellow>");
 		}
 
-		game.functions.color.parseTags = false;
+		stopTagParsing();
 
 		console.log("New ID: %s", id);
 		console.log("Would be path: %s", filePath.replaceAll("\\", "/"));
 		console.log("Content:");
 		console.log(content);
 
-		game.functions.color.parseTags = true;
+		resumeTagParsing();
 		await game.pause();
 	} else {
 		// If debug mode is disabled, write the card to disk.

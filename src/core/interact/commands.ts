@@ -5,6 +5,7 @@ import type {
 	Todo,
 	UnknownEventValue,
 } from "@Game/types.js";
+import { resumeTagParsing, stopTagParsing } from "chalk-tags";
 
 /*
  * This is the list of commands that can be used in the game
@@ -726,9 +727,9 @@ export const debugCommands: CommandList = {
 			);
 
 			// The stack includes "<anonymous>", which would be parsed as a tag, which would cause another error
-			game.functions.color.parseTags = false;
+			stopTagParsing();
 			console.log(error.stack);
-			game.functions.color.parseTags = true;
+			resumeTagParsing();
 
 			await game.pause();
 		}

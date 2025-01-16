@@ -22,6 +22,7 @@ import type {
 	Target,
 	UnknownEventValue,
 } from "@Game/types.js";
+import { parseTags } from "chalk-tags";
 
 /**
  * Use this error type when throwing an error in a card
@@ -588,7 +589,7 @@ export class Card {
 			this.heropower = await Card.create(this.heropowerId, this.owner, true);
 		}
 
-		this.text = game.functions.color.fromTags(this.text || "");
+		this.text = parseTags(this.text || "");
 		if (activate) {
 			await this.activate("create");
 		}
@@ -1634,7 +1635,7 @@ export class Card {
 						: await replacement.readable(-1, _depth + 1);
 			}
 
-			text = game.functions.color.fromTags(text.replace(reg, replacement));
+			text = parseTags(text.replace(reg, replacement));
 		}
 
 		// Replace spell damage placeholders
@@ -1932,7 +1933,7 @@ export class Card {
 	 * @returns A colored version of the card's UUID.
 	 */
 	coloredUUID(length = 7): string {
-		return game.functions.color.fromTags(
+		return parseTags(
 			`<#${this.uuid.slice(0, 6)}>${this.uuid.slice(0, length)}</#>`,
 		);
 	}

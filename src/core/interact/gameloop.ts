@@ -2,6 +2,7 @@ import readline from "node:readline/promises";
 import { format } from "node:util";
 import { type Ai, Card, commands, debugCommands } from "@Game/internal.js";
 import type { GamePlayCardReturn, Target } from "@Game/types.js";
+import { parseTags } from "chalk-tags";
 
 const rl = readline.createInterface({
 	input: process.stdin,
@@ -9,26 +10,10 @@ const rl = readline.createInterface({
 });
 
 const overrideConsole = {
-	log(..._data: unknown[]): void {
-		throw new Error(
-			"Attempting to use override console before being given the `log` function.",
-		);
-	},
-	warn(..._data: unknown[]): void {
-		throw new Error(
-			"Attempting to use override console before being given the `warn` function.",
-		);
-	},
-	error(..._data: unknown[]): void {
-		throw new Error(
-			"Attempting to use override console before being given the `error` function.",
-		);
-	},
+	log: console.log.bind(console),
+	warn: console.warn.bind(console),
+	error: console.error.bind(console),
 };
-
-overrideConsole.log = console.log;
-overrideConsole.warn = console.warn;
-overrideConsole.error = console.error;
 
 console.log = (...data) => {
 	game.interact.gameLoop.log(...data);
@@ -73,7 +58,7 @@ export const gameloopInteract = {
 		}
 
 		question = logger.translate(question);
-		question = game.functions.color.fromTags(question);
+		question = parseTags(question);
 
 		// Let the game make choices for the user
 		if (game.player.inputQueue && useInputQueue) {
@@ -112,9 +97,7 @@ export const gameloopInteract = {
 
 		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 		const newData = data.map((i: any) =>
-			typeof i === "string"
-				? game.functions.color.fromTags(logger.translate(i))
-				: i,
+			typeof i === "string" ? parseTags(logger.translate(i)) : i,
 		);
 
 		callback(...newData);
