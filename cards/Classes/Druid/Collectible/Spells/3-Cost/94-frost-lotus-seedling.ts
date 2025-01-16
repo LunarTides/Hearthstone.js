@@ -23,7 +23,7 @@ export const blueprint: Blueprint = {
 
 	async passive(owner, self, key, _unknownValue, eventPlayer) {
 		// Increment blossom counter at the end of the owner's turn
-		if (!(key === "EndTurn" && eventPlayer === owner)) {
+		if (key !== "EndTurn" || eventPlayer !== owner) {
 			return;
 		}
 

@@ -532,7 +532,7 @@ const attack = {
 		}
 
 		// The card has more than 0 health
-		if ((await card.activate("frenzy")) !== -1) {
+		if ((await card.activate("frenzy")) !== Card.REFUND) {
 			card.abilities.frenzy = undefined;
 		}
 	},
@@ -714,7 +714,7 @@ const playCard = {
 
 			if (
 				!card.hasKeyword("Dormant") &&
-				(await card.activate("battlecry")) === -1
+				(await card.activate("battlecry")) === Card.REFUND
 			) {
 				return "refund";
 			}
@@ -725,7 +725,7 @@ const playCard = {
 		},
 
 		async Spell(card: Card, player: Player): Promise<GamePlayCardReturn> {
-			if ((await card.activate("cast")) === -1) {
+			if ((await card.activate("cast")) === Card.REFUND) {
 				return "refund";
 			}
 
@@ -747,7 +747,7 @@ const playCard = {
 		},
 
 		async Weapon(card: Card, player: Player): Promise<GamePlayCardReturn> {
-			if ((await card.activate("battlecry")) === -1) {
+			if ((await card.activate("battlecry")) === Card.REFUND) {
 				return "refund";
 			}
 
@@ -756,7 +756,7 @@ const playCard = {
 		},
 
 		async Hero(card: Card, player: Player): Promise<GamePlayCardReturn> {
-			if ((await card.activate("battlecry")) === -1) {
+			if ((await card.activate("battlecry")) === Card.REFUND) {
 				return "refund";
 			}
 

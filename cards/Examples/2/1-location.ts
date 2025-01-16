@@ -6,7 +6,6 @@ import type { Blueprint } from "@Game/types.js";
 // This is the first card in this stage. The next card in this stage is the `2-Hero` folder.
 
 export const blueprint: Blueprint = {
-	// This is the blueprint format for a location card.
 	name: "Location Example",
 	text: "Restore 2 Health to your hero.",
 	cost: 1,

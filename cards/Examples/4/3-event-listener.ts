@@ -20,32 +20,33 @@ export const blueprint: Blueprint = {
 		// For the rest of the game, your battlecries trigger twice.
 
 		/*
-		 * Add an event listener.
 		 * Event listeners behave exactly like passives, except they aren't tied to a card's location.
 		 * It is important to destroy the event listener when you're done with it, which is why there are 3 ways for an event listener to be destroyed.
 		 * For this example, the event listener lasts forever, so we won't destroy it.
 		 */
 
 		/*
-		 * The first argument is the key to listen for.
-		 * The second argument is a callback function.
+		 * The first argument is the event key to listen for.
+		 * The second argument is a callback function that gets called when the event key is triggered.
 		 * The third argument is the event listeners' lifespan.
 		 */
 		const destroy = game.functions.event.addListener(
 			"PlayCard",
 			async (_unknownValue, eventPlayer) => {
-				// This function will be run if the correct event was broadcast
+				// This function will be run when the correct event is broadcast.
 
-				// addListener can't figure out the type of `val` by itself, so we have to do the same thing as with passives
+				// addListener can't figure out the type of `val` by itself, so we have to do the same thing as with passives.
 				const value = _unknownValue as EventValue<"PlayCard">;
 
 				/*
-				 * Only continue if the player that triggered the event is this card's owner and the played card is a minion and it is not this card
+				 * Only continue if the player that triggered the event is this card's owner and the played card is a minion and it is not this card.
 				 * The `PlayCard` event gets triggered after this battlecry, remember? So we need to prevent it from calling this card's battlecry again.
-				 * The return value will be explained below
+				 * The return value will be explained below.
 				 */
 				if (
-					!(value.type === "Minion" && eventPlayer === owner && value !== self)
+					value.type !== "Minion" ||
+					eventPlayer !== owner ||
+					value === self
 				) {
 					return false;
 				}
@@ -60,11 +61,10 @@ export const blueprint: Blueprint = {
 				 * If you return false, this event does not count towards the event listeners lifetime.
 				 * If you return true, nothing happens. The event will count towards the event listeners lifetime. This is the most useful / default option.
 				 */
-
 				return true;
 			},
-			-1,
-		); // This number is how many times the callback function can run before the event listener self-destructs. If this is set to `-1`, it lasts forever.
+			-1, // This number is how many times the callback function can run before the event listener self-destructs. If this is set to `-1`, it lasts forever.
+		);
 
 		// await destroy(); // Run this function to destroy the event listener
 	},

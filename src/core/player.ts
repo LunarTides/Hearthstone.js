@@ -856,7 +856,7 @@ export class Player {
 	 *
 	 * @returns Success | Cancelled
 	 */
-	async heroPower(): Promise<boolean | -1> {
+	async heroPower(): Promise<boolean | typeof Card.REFUND> {
 		if (!this.canUseHeroPower()) {
 			return false;
 		}
@@ -866,7 +866,7 @@ export class Player {
 		}
 
 		if ((await this.hero.heropower?.activate("heropower")) === Card.REFUND) {
-			return -1;
+			return Card.REFUND;
 		}
 
 		for (const card of this.board) {

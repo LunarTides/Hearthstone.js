@@ -209,7 +209,7 @@ export async function create(
 
 	const createAbility = blueprint.text
 		? `
-    create(owner, self) {
+    async create(owner, self) {
         // Add additional fields here
 ${runes}${keywords}
     },`
@@ -228,11 +228,11 @@ ${runes}${keywords}
 
 		ability = `
 
-    ${ability.toLowerCase()}(owner, self${triggerText} {
+    async ${ability.toLowerCase()}(owner, self${triggerText} {
         // ${cleanedDescription}${extraPassiveCode}${extraNewline}
     },
 
-    test(owner, self) {
+    async test(owner, self) {
         // Unit testing
         assert(false);
     },`;

@@ -75,8 +75,7 @@ export class Card {
 
 	/**
 	 * The id tied to the blueprint of the card.
-	 * This differentiates cards from each other, but not cards with the same blueprint.
-	 * Use uuid for that.
+	 * This differentiates cards from each other, but not cards with the same blueprint, use {@link uuid} for that.
 	 *
 	 * @example
 	 * const sheep = game.createCard(game.cardIds.sheep1, player);
@@ -91,19 +90,23 @@ export class Card {
 
 	/**
 	 * If the card is collectible.
-	 * - Uncollectible cards cannot be added to a deck, and cannot be found in card pools unless explicitly stated otherwise.
+	 * - Uncollectible cards cannot be added to decks, and cannot be found in card pools unless explicitly stated otherwise.
 	 * - Uncollectible cards can mostly only be explicitly created by other collectible cards.
 	 */
 	collectible = false;
 
 	/**
-	 * The keywords that the card has. E.g. ["Taunt", "Divine Shield", etc...]
+	 * The keywords that the card has. E.g. "Taunt", "Divine Shield", etc...
+	 *
+	 * There is also some arbitrary information stored alongside the keywords in this object, which can be added by the user in a user-friendly way, or be used for internal purposes.
+	 *
+	 * E.g. The `Corrupt` keyword stores the id of the corrupted card, supplied by the user in the `create` ability.
+	 * E.g. The `Forgetful` keyword stores its state, which is an internal number only used in the attack code.
 	 */
 	keywords: { [key in CardKeyword]?: unknown } = {};
 
 	/**
-	 * The card's blueprint.
-	 * This is the baseline of the card
+	 * The card's blueprint. This is the baseline of the card.
 	 */
 	blueprint: Blueprint;
 
@@ -122,6 +125,8 @@ export class Card {
 	 * - Default: 1
 	 * - With Windfury: 2
 	 * - With Mega-Windfury: 4
+	 *
+	 * This decreases every time the minion attacks, and is reset at the end of the player's turn.
 	 */
 	attackTimes?: number = 1;
 
@@ -140,20 +145,31 @@ export class Card {
 	// Spell
 
 	/**
-	 * If the card is a spell, this is the school of the spell. E.g. "Fire" or "Frost" or "Fel".
+	 * If the card is a spell, this is the school of the spell. E.g. "Fire", "Frost", or "Fel".
 	 */
 	spellSchool?: SpellSchool;
 
 	// Hero
 
+	/**
+	 * The amount of armor the hero card gives when played.
+	 */
 	armor?: number;
+
+	/**
+	 * The id of the hero power card associated with this hero card.
+	 */
 	heropowerId?: number;
+
+	/**
+	 * The hero power card associated with this hero card.
+	 */
 	heropower?: Card;
 
 	// Location
 
 	/**
-	 * The durability of the location card
+	 * The durability of the location card.
 	 */
 	durability?: number;
 
@@ -171,7 +187,7 @@ export class Card {
 	 * If this is "health", the card costs `Player.health`.
 	 * etc...
 	 *
-	 * This can be any value, as long as it is a defined _number_ in the `Player` class (although the typescript compiler would complain if you don't update this type).
+	 * This can be any value, as long as it is a defined _number_ in the `Player` class (although the typescript compiler would complain if you don't update the `CostType` type).
 	 */
 	costType: CostType = "mana";
 
@@ -180,6 +196,8 @@ export class Card {
 	 * This information can be anything, and the card can access it at any point.
 	 *
 	 * I do not recommend changing this in any other context than in this card's abilities, unless you know what you are doing.
+	 *
+	 * See also `game.cache` for global storage.
 	 */
 	// biome-ignore lint/suspicious/noExplicitAny: Cards should be able to store any value. It is hacky, but oh well.
 	storage: Record<string, any> = {};
@@ -513,7 +531,7 @@ export class Card {
 		await this.doBlueprint(false);
 
 		await this.activate("create");
-		await this.replacePlaceholders();
+		await this.formatPlaceholders();
 
 		let unsuppress: undefined | (() => boolean);
 		if (suppressEvent) {
@@ -1203,7 +1221,7 @@ export class Card {
 		key?: EventKey | string | undefined,
 		_unknownValue?: UnknownEventValue,
 		eventPlayer?: Player,
-	): Promise<unknown[] | -1 | false> {
+	): Promise<unknown[] | typeof Card.REFUND | false> {
 		/*
 		 * This activates a function
 		 * Example: activate("cast")
@@ -1217,7 +1235,7 @@ export class Card {
 			return false;
 		}
 
-		let returnValue: unknown[] | -1 = [];
+		let returnValue: unknown[] | typeof Card.REFUND = [];
 
 		for (const callback of ability) {
 			if (returnValue === Card.REFUND) {
@@ -1241,7 +1259,7 @@ export class Card {
 				continue;
 			}
 
-			// If the return value is -1, meaning "refund", refund the card and stop the for loop
+			// If the return value is Card.REFUND, refund the card and stop the for loop
 			await game.event.broadcast("CancelCard", [this, name], this.owner);
 
 			returnValue = Card.REFUND;
@@ -1558,7 +1576,8 @@ export class Card {
 	 *
 	 * @returns Success
 	 */
-	async replacePlaceholders(): Promise<boolean> {
+	// TODO: Is this function needed?
+	async formatPlaceholders(): Promise<boolean> {
 		if (!this.abilities.placeholders) {
 			return false;
 		}
@@ -1591,7 +1610,7 @@ export class Card {
 	 *
 	 * @returns The modified description with placeholders replaced.
 	 */
-	async doPlaceholders(overrideText = "", _depth = 0): Promise<string> {
+	async replacePlaceholders(overrideText = "", _depth = 0): Promise<string> {
 		let reg = /{ph:(.*?)}/;
 
 		let text = overrideText;
@@ -1612,7 +1631,7 @@ export class Card {
 			// Get the capturing group result
 			const key = regedDesc[1];
 
-			await this.replacePlaceholders();
+			await this.formatPlaceholders();
 			const rawReplacement = this.placeholder;
 			if (!rawReplacement) {
 				throw new Error("Card placeholder not found.");
@@ -2005,7 +2024,7 @@ export class Card {
 
 		// Extract placeholder value, remove the placeholder header and footer
 		if (this.placeholder ?? /\$(\d+)/.test(this.text || "")) {
-			text = await this.doPlaceholders(text, _depth);
+			text = await this.replacePlaceholders(text, _depth);
 		}
 
 		let cost = `{${this.cost}} `;

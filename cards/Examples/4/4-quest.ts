@@ -29,10 +29,10 @@ export const blueprint: Blueprint = {
 		 *     type of quest,
 		 *     the card that created the quest,
 		 *     the key of the event to listen to,
-		 *     the amount of times that event has to be broadcast for the quest to be done,
+		 *     the amount of times that event has to be broadcast for the quest to be considered done,
 		 *     the function to run for each event broadcast: Function(
 		 *         value of the event,
-		 *         if the quest has triggered enough times,
+		 *         if the quest is considered done,
 		 *     ) -> if the event should count towards the quest: bool
 		 * );
 		 */
@@ -81,16 +81,13 @@ export const blueprint: Blueprint = {
 				for (const playedCard of cards) {
 					/*
 					 * Create an imperfect copy of the card.
-					 * This is what heartstone does when a card gets bounced back to a player's hand, for example.
+					 * This is what hearthstone does when a card gets bounced back to a player's hand, for example.
 					 * This puts the card back to its original state. Defined by this blueprint.
-					 */
-
-					/*
+					 *
 					 * This also prevents cards from being `linked`. If two cards are linked, anything that happens to one of them will happen to the other.
 					 * If you don't want the card to be reset, but you want to avoid it being linked, use `perfectCopy`
 					 * If we were to do `owner.addToHand(playedCard)`, the card added to the player's hand would be (most likely) linked to the original card.
 					 */
-
 					const card = await playedCard.imperfectCopy();
 
 					// Add the imperfect copy of the card to the player's hand
@@ -103,7 +100,8 @@ export const blueprint: Blueprint = {
 				 */
 				return true;
 			},
-		); // Put `}, id of the next spell);`, to make a questline. When the quest gets completed, a card with that name gets created and the game immediately activates its cast ability.
+			// Put the id of a spell here to make a questline. When the quest gets completed, a card with that id gets created and the game immediately activates its cast ability.
+		);
 	},
 
 	async test(owner, self) {

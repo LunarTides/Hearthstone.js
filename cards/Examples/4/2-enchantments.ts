@@ -42,7 +42,7 @@ export const blueprint: Blueprint = {
 	},
 
 	/*
-	 * This "ability" triggers whenever this card is about to be removed from the game.
+	 * This ability triggers whenever this card is about to be removed from the game.
 	 * It exists to allow cards to undo changes made by `passive`-related effects (e.g. tick).
 	 */
 	async remove(owner, self) {

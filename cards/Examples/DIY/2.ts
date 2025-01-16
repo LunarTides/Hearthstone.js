@@ -31,7 +31,14 @@ export const blueprint: Blueprint = {
 			// Put all your code in this function please
 		}
 
-		// DON'T CHANGE ANYTHING BELOW THIS LINE
+		/*
+		 * -----------------------------------------
+		 * | DON'T CHANGE ANYTHING BELOW THIS LINE |
+		 * -----------------------------------------
+		 *
+		 * There are also some spoilers about the solution in the verification process down below,
+		 * so if you don't want to see it, don't scroll down
+		 */
 
 		// Testing your solution.
 		let solved = true;

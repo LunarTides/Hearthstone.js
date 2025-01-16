@@ -14,7 +14,7 @@ export const blueprint: Blueprint = {
 	id: 69,
 
 	armor: 5,
-	heropowerId: 127,
+	heropowerId: game.cardIds.galakrondsMight127,
 
 	async battlecry(owner, self) {
 		// Draw 1 minion. Give them +4/+4.

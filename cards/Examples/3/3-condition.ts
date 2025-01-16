@@ -35,7 +35,8 @@ export const blueprint: Blueprint = {
 
 	/*
 	 * This function will be run when the card is played.
-	 * This function will also be run every tick in order to add / remove the ` (Condition cleared!)` text, so don't do too many expensive things in here (Make use of `game.cache` if you need to).
+	 * This function will also be run every tick in order to add / remove the ` (Condition cleared!)` text,
+	 * so don't do too many expensive things in here (Make use of `self.storage` or `game.cache` if you need to).
 	 */
 	async condition(owner, self) {
 		/*

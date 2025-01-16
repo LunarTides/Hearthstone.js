@@ -13,7 +13,7 @@ export const blueprint: Blueprint = {
 	id: 70,
 
 	armor: 5,
-	heropowerId: 128,
+	heropowerId: game.cardIds.galakrondsWit128,
 
 	async battlecry(owner, self) {
 		// Destroy 1 random enemy minion.

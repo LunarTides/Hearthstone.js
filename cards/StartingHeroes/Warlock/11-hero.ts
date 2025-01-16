@@ -13,5 +13,5 @@ export const blueprint: Blueprint = {
 	id: 11,
 
 	armor: 0,
-	heropowerId: 121,
+	heropowerId: game.cardIds.lifeTap121,
 };

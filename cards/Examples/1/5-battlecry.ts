@@ -8,7 +8,7 @@ export const blueprint: Blueprint = {
 
 	/*
 	 * Remember to look at the text of these example cards to know what they're trying to do.
-	 * Beyond this point, no(*) cards will have comments like these above the text.
+	 * Beyond this point, few cards will have comments like these above the text.
 	 */
 	text: "<b>Battlecry:</b> Give this minion +1/+1.",
 

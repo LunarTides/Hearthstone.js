@@ -58,14 +58,14 @@ export const blueprint: Blueprint = {
 						const value = _unknownValue as EventValue<"PlayCard">;
 
 						// Only continue if the player that triggered the event is this card's owner and the played card is a minion.
-						if (!(eventPlayer === owner && value.type === "Minion")) {
+						if (eventPlayer !== owner || value.type !== "Minion") {
 							return false;
 						}
 
 						// Every time YOU play a MINION, increment `amount` by 1.
 						amount++;
 
-						// If `amount` is less than 10, don't do anything. Return true since it was a success
+						// If `amount` is less than 10, don't do anything. Return true since it was a success.
 						if (amount < 10) {
 							return true;
 						}
@@ -76,20 +76,18 @@ export const blueprint: Blueprint = {
 						unhook();
 
 						/*
-						 * Reverse the enchantment
-						 * You might be able to just do `for (const minion of owner.hand)` instead, since `removeEnchantment` only removes enchantments if it's there.
+						 * Remove the enchantments.
+						 * You don't need to filter the hand since `removeEnchantment` only removes enchantments if they're there.
 						 */
-						for (const minion of owner.hand.filter(
-							(c) => c.type === "Minion",
-						)) {
+						for (const minion of owner.hand) {
 							minion.removeEnchantment("-1 cost", self);
 						}
 
-						// Destroy this event listener so it doesn't run again
+						// Destroy this event listener so it doesn't run again.
 						return "destroy";
 					},
-					-1,
-				); // The event listener shouldn't destruct on its own, and should only be manually destroyed.
+					-1, // The event listener shouldn't destruct on its own, and should only be manually destroyed.
+				);
 
 				// The quest event was a success. The game will remove this quest from the player.
 				return true;

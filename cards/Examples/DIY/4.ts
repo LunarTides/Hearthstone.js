@@ -37,14 +37,17 @@ export const blueprint: Blueprint = {
 
 		/*
 		 * Try to:
-		 * 1. Resurrect the minion (val) with 1/1 stats.
+		 * 1. Resurrect the minion (value) with 1/1 stats.
 		 */
 
 		// THIS ONLY GETS VALIDATED ONCE A MINION DIES. PLEASE TRY TO CAUSE A MINION TO DIE IN ORDER TO VALIDATE YOUR SOLUTION
 
 		/*
-		 * DON'T CHANGE ANYTHING BELOW THIS LINE
-		 * Also there are some spoilers about the solution in the verification process down below
+		 * -----------------------------------------
+		 * | DON'T CHANGE ANYTHING BELOW THIS LINE |
+		 * -----------------------------------------
+		 *
+		 * There are also some spoilers about the solution in the verification process down below,
 		 * so if you don't want to see it, don't scroll down
 		 */
 

@@ -294,7 +294,7 @@ export class Ai {
 		forceSide: SelectTargetAlignment,
 		forceClass: SelectTargetClass,
 		flags: SelectTargetFlag[] = [],
-	): Target | false {
+	): Target | null {
 		if (flags.includes("allowLocations") && forceClass !== "hero") {
 			const locations = this.player.board.filter(
 				(m) =>
@@ -331,11 +331,11 @@ export class Ai {
 		if (sidePlayer.board.length <= 0 && forceClass === "minion") {
 			this.history.push({ type: "selectTarget", data: "0,1" });
 
-			return false;
+			return null;
 		}
 
 		if (forceClass === "hero") {
-			let returnValue: Player | false = false;
+			let returnValue: Player | null = null;
 
 			if (side === "self") {
 				returnValue = this.player;
@@ -353,7 +353,7 @@ export class Ai {
 
 		// The player has no minions, select their face
 		if (sidePlayer.board.length <= 0) {
-			let returnValue: Player | false = false;
+			let returnValue: Player | null = null;
 
 			if (forceClass === "minion") {
 				this.history.push({ type: "selectTarget", data: -1 });
@@ -403,7 +403,7 @@ export class Ai {
 		}
 
 		this.history.push({ type: "selectTarget", data: -1 });
-		return false;
+		return null;
 	}
 
 	/**

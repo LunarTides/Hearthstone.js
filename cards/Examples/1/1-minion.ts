@@ -6,7 +6,7 @@ import type { Blueprint } from "@Game/types.js";
 export const blueprint: Blueprint = {
 	/*
 	 * A blueprint only has ESSENTIAL properties, and type-specific properties (like stats or tribe)
-	 * Other properties, like keywords, has to be added in the 'create' ability. More on that in `1-4`. (`Examples/1/4-???.ts`)
+	 * Other properties, like keywords, has to be added in the 'create' ability. More on that in `1-4`. (`Examples/1/4-taunt.ts`)
 	 */
 
 	// Essential properties first (all cards have these)
@@ -17,7 +17,7 @@ export const blueprint: Blueprint = {
 	// The description of the card. This can be anything.
 	text: "Just an example card (Does nothing)",
 
-	// How much mana the card costs.
+	// How much mana the card costs. This is usually in mana.
 	cost: 1,
 
 	// The type of the card. E.g. "Minion", "Spell", "Weapon", etc...

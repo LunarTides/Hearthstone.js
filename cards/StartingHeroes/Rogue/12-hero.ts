@@ -13,5 +13,5 @@ export const blueprint: Blueprint = {
 	id: 12,
 
 	armor: 0,
-	heropowerId: 122,
+	heropowerId: game.cardIds.daggerMastery122,
 };

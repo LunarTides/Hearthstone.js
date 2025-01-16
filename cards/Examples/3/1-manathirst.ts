@@ -36,7 +36,7 @@ export const blueprint: Blueprint = {
 		 */
 		const target = await game.interact.selectCardTarget(prompt, self, "enemy");
 
-		// If target is false it means that the user cancelled their selection. Return `Card.REFUND` to refund the card.
+		// If target is null, it means that the user cancelled their selection. Return `Card.REFUND` to refund the card.
 		if (!target) {
 			return Card.REFUND;
 		}

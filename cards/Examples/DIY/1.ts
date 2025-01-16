@@ -21,7 +21,14 @@ export const blueprint: Blueprint = {
 
 		// Try to give this minion +1/+1 yourself.
 
-		// DON'T CHANGE ANYTHING BELOW THIS LINE
+		/*
+		 * -----------------------------------------
+		 * | DON'T CHANGE ANYTHING BELOW THIS LINE |
+		 * -----------------------------------------
+		 *
+		 * There are also some spoilers about the solution in the verification process down below,
+		 * so if you don't want to see it, don't scroll down
+		 */
 
 		// Testing your solution.
 		const success = await game.interact.verifyDiySolution(

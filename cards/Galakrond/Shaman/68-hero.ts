@@ -14,7 +14,7 @@ export const blueprint: Blueprint = {
 	id: 68,
 
 	armor: 5,
-	heropowerId: 126,
+	heropowerId: game.cardIds.galakrondsFury126,
 
 	async battlecry(owner, self) {
 		// Summon two 1/1 Storms with Rush. (Equip a 5/2 Claw.)

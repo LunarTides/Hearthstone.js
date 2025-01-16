@@ -16,21 +16,25 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribe: "None",
 
+	async create(owner, self) {
+		// Initialize storage
+		self.storage.unhooks = [];
+	},
+
 	async battlecry(owner, self) {
 		// Your cards cost (1) less.
 
 		/*
-		 * Ticks are called more often than passives
-		 * Passives get called when an event gets broadcast
-		 * Ticks get called when an event gets broadcast AND every game loop
+		 * Ticks are called more often than passives.
+		 * Passives get called when an event gets broadcast, ticks get called when an event gets broadcast AND every game loop.
 		 * So ticks might be better to use in some situations where you don't want it to be dependent on events (events can be suppressed),
 		 * or you want it to be triggered every game loop no matter what.
 		 */
 
 		/*
-		 * This returns a function that, when called, will remove the hook
-		 * You are given the key and value of the event, but i don't think you will need them for tick hooks,
-		 * since they are supposed to not be (dependent on / specific to certain) events, but you are free to use them if you want.
+		 * This returns a function that, when called, will remove the hook.
+		 * You are given the key and value of the event.
+		 * I don't think you will need them for tick hooks, since they are not supposed to be dependent on events, but you are free to use them if you want.
 		 */
 		const unhook = game.functions.event.hookToTick(
 			async (key, _unknownValue) => {
@@ -49,20 +53,19 @@ export const blueprint: Blueprint = {
 		 * You can store anything in a card, and it shouldn't be messed with by other cards / the game.
 		 * Speaking of, you should never mess with another card's storage since it can cause unexpected behavior.
 		 */
-		if (Array.isArray(self.storage.unhooks)) {
-			self.storage.unhooks.push(unhook);
-		} else {
-			self.storage.unhooks = [unhook];
-		}
+		self.storage.unhooks.push(unhook);
 	},
 
 	// Unhook from the tick when the card is removed
 	async remove(owner, self) {
-		// This is kind of a bad example, since this is what the `tick` ability is supposed to do anyway, but oh well
+		/*
+		 * TODO: Change this example card to use a better example. I'm sure there is a card that uses tick hooks in a better way that we can copy.
+		 * This is a bad example, since this is what the `tick` ability is supposed to do anyway.
+		 */
 
 		/*
 		 * Unhook from all ticks that the card is hooked to.
-		 * It is important to unhook before removing the enchantments, since removing the enchantments can cause a tick, which would add the enchantments back.
+		 * It is important to unhook before removing the enchantments, since removing the enchantments could possibly cause a tick, which would add the enchantments back.
 		 */
 		if (Array.isArray(self.storage.unhooks)) {
 			for (const unhook of self.storage.unhooks) {

@@ -19,7 +19,7 @@ export const blueprint: Blueprint = {
 
 	async create(owner, self) {
 		/*
-		 * Put the names of the cards here. The "null0" is this card. You could replace it with `0`
+		 * Put the names of the cards here. The "null0" is this card. You could replace it with `0`, but thats bad practice.
 		 *
 		 * The board will look like this
 		 * Left Arm

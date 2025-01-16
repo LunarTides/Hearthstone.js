@@ -241,26 +241,34 @@ export const interact = {
 		prompt: string,
 		card: Card | undefined,
 		flags: SelectTargetFlag[] = [],
-	): Promise<Player | false> {
-		return (await this.selectTarget(prompt, card, "any", "hero", flags)) as
-			| Player
-			| false;
+	): Promise<Player | null> {
+		return (await this.selectTarget(
+			prompt,
+			card,
+			"any",
+			"hero",
+			flags,
+		)) as Player | null;
 	},
 
 	/**
 	 * Like `selectTarget` but restricts the user to selecting minions.
 	 *
-	 * The advantage of this function is that it returns `Card | false` instead of `Target | false`.
+	 * The advantage of this function is that it returns `Card | null` instead of `Target | null`.
 	 */
 	async selectCardTarget(
 		prompt: string,
 		card: Card | undefined,
 		side: SelectTargetAlignment,
 		flags: SelectTargetFlag[] = [],
-	): Promise<Card | false> {
-		return (await this.selectTarget(prompt, card, side, "minion", flags)) as
-			| Card
-			| false;
+	): Promise<Card | null> {
+		return (await this.selectTarget(
+			prompt,
+			card,
+			side,
+			"minion",
+			flags,
+		)) as Card | null;
 	},
 
 	/**
@@ -283,7 +291,7 @@ export const interact = {
 		forceSide: SelectTargetAlignment,
 		forceClass: SelectTargetClass,
 		flags: SelectTargetFlag[] = [],
-	): Promise<Target | false> {
+	): Promise<Target | null> {
 		await game.event.broadcast(
 			"TargetSelectionStarts",
 			[prompt, card, forceSide, forceClass, flags],
@@ -314,7 +322,7 @@ export const interact = {
 		forceSide: SelectTargetAlignment,
 		forceClass: SelectTargetClass,
 		flags: SelectTargetFlag[] = [],
-	): Promise<Target | false> {
+	): Promise<Target | null> {
 		// If the player is forced to select a target, select that target.
 		if (game.player.forceTarget) {
 			return game.player.forceTarget;
@@ -389,7 +397,7 @@ export const interact = {
 		// Player chose to go back
 		if (target.startsWith("b") || this.shouldExit(target)) {
 			// This should always be safe.
-			return false;
+			return null;
 		}
 
 		// If the player chose to target a hero, it will ask which hero.
@@ -471,7 +479,7 @@ export const interact = {
 		// If you didn't select a valid minion, return.
 		if (minion === undefined) {
 			await game.pause("<red>Invalid minion.</red>\n");
-			return false;
+			return null;
 		}
 
 		// If the minion has elusive, and the card that called this function is a spell
@@ -484,21 +492,19 @@ export const interact = {
 			await game.pause(
 				"<red>Can't be targeted by Spells or Hero Powers.</red>\n",
 			);
-			return false;
+			return null;
 		}
 
 		// If the minion has stealth, don't allow the opponent to target it.
 		if (minion.hasKeyword("Stealth") && game.player !== minion.owner) {
 			await game.pause("<red>This minion has stealth.</red>\n");
-
-			return false;
+			return null;
 		}
 
 		// If the minion is a location, don't allow it to be selected unless the `allowLocations` flag was set.
 		if (minion.type === "Location" && !flags.includes("allowLocations")) {
 			await game.pause("<red>You cannot target location cards.</red>\n");
-
-			return false;
+			return null;
 		}
 
 		return minion;

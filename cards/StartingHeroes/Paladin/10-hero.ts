@@ -13,5 +13,5 @@ export const blueprint: Blueprint = {
 	id: 10,
 
 	armor: 0,
-	heropowerId: 120,
+	heropowerId: game.cardIds.reinforce120,
 };

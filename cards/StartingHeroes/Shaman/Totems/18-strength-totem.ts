@@ -22,7 +22,7 @@ export const blueprint: Blueprint = {
 		// At the end of your turn, give another friendly minion +1 Attack.
 
 		// Only continue if the event that triggered this is the EndTurn event, and the player that triggered the event is this card's owner.
-		if (!(key === "EndTurn" && eventPlayer === owner)) {
+		if (key !== "EndTurn" || eventPlayer !== owner) {
 			return;
 		}
 
