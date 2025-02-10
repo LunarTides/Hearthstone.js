@@ -11,18 +11,17 @@ import { validate as validateIds } from "../scripts/id/lib.js";
  * Starts the game.
  */
 export async function main(): Promise<void> {
-	logger.debug("Creating game...");
 	const { game, player1, player2 } = createGame();
-	logger.debug("Creating game...OK");
+	game.logger.debug("Creating game...OK");
 
 	game.functions.interact.printWatermark();
 
 	// Find holes and dupes in the ids
 	console.warn("\nValidating ids...");
-	logger.debug("Validating ids...");
+	game.logger.debug("Validating ids...");
 
 	const [holes, dupes] = validateIds(true);
-	logger.debug(`Validating ids...${holes} holes, ${dupes} duplicates`);
+	game.logger.debug(`Validating ids...${holes} holes, ${dupes} duplicates`);
 
 	if (holes > 0 || dupes > 0) {
 		/*
@@ -33,7 +32,7 @@ export async function main(): Promise<void> {
 	}
 
 	// Ask the players for deck codes.
-	logger.debug("Asking players for deck codes...");
+	game.logger.debug("Asking players for deck codes...");
 
 	for (const player of [player1, player2]) {
 		if (player.deck.length > 0) {
@@ -46,19 +45,19 @@ export async function main(): Promise<void> {
 		}
 	}
 
-	logger.debug("Asking players for deck codes...OK");
+	game.logger.debug("Asking players for deck codes...OK");
 
-	logger.debug("Starting game...");
+	game.logger.debug("Starting game...");
 	await game.startGame();
-	logger.debug("Starting game...OK");
+	game.logger.debug("Starting game...OK");
 
-	logger.debug("Performing mulligan...");
+	game.logger.debug("Performing mulligan...");
 	await game.functions.card.promptMulligan(player1);
 	await game.functions.card.promptMulligan(player2);
-	logger.debug("Performing mulligan...OK");
+	game.logger.debug("Performing mulligan...OK");
 
-	logger.debug("Finished setting up game.");
-	logger.debug("Starting game loop...");
+	game.logger.debug("Finished setting up game.");
+	game.logger.debug("Starting game loop...");
 
 	try {
 		// Game loop
@@ -66,7 +65,7 @@ export async function main(): Promise<void> {
 			await game.functions.interact.gameloop();
 		}
 
-		logger.debug("Starting game loop...OK");
+		game.logger.debug("Starting game loop...OK");
 	} catch (error) {
 		if (!(error instanceof Error)) {
 			throw new TypeError(
@@ -74,10 +73,10 @@ export async function main(): Promise<void> {
 			);
 		}
 
-		logger.debug("Starting game loop...OK");
-		logger.debug("Crash at game loop.");
-		logger.debug("Creating log file...");
-		logger.debug("Throwing error, goodbye!");
+		game.logger.debug("Starting game loop...OK");
+		game.logger.debug("Crash at game loop.");
+		game.logger.debug("Creating log file...");
+		game.logger.debug("Throwing error, goodbye!");
 
 		// Create error report file
 		await game.functions.util.createLogFile(error);
@@ -85,7 +84,7 @@ export async function main(): Promise<void> {
 		throw error;
 	}
 
-	logger.debug("Game finished successfully.");
+	game.logger.debug("Game finished successfully.");
 
 	// Create log file
 	await game.functions.util.createLogFile();

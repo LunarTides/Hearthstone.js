@@ -131,7 +131,7 @@ async function askClass(): Promise<CardClassNoNeutral> {
 		while (runes.length < 3) {
 			watermark();
 
-			const rune = await logger.inputTranslate(
+			const rune = await game.logger.inputTranslate(
 				"What runes do you want to add (%s more)\nBlood, Frost, Unholy\n",
 				3 - runes.length,
 			);
@@ -540,7 +540,7 @@ function showRules(): void {
 
 	console.log(
 		"# Validation: %s",
-		logger.translate(
+		game.logger.translate(
 			config.decks.validate
 				? "<bright:green>ON</bright:green>"
 				: "<red>OFF</red>",

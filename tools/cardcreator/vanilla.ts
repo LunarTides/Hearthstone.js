@@ -233,7 +233,10 @@ export async function main(
 			}
 
 			const picked = game.lodash.parseInt(
-				await logger.inputTranslate("Pick one (1-%s): ", filteredCards.length),
+				await game.logger.inputTranslate(
+					"Pick one (1-%s): ",
+					filteredCards.length,
+				),
 			);
 
 			if (!picked || !filteredCards[picked - 1]) {

@@ -2,7 +2,7 @@ import { Ai } from "@Core/ai.js";
 import { Card } from "@Core/card.js";
 import { eventManager } from "@Core/event.js";
 import { functions } from "@Core/functions/index.js";
-import { Logger } from "@Core/logger.js";
+import { logger } from "@Core/logger.js";
 import { Player } from "@Core/player.js";
 import type {
 	Blueprint,
@@ -1182,6 +1182,11 @@ export class Game {
 	event = eventManager;
 
 	/**
+	 * Functions that are used for debug/internal logging and translating.
+	 */
+	logger = logger;
+
+	/**
 	 * Some configuration for the game.
 	 *
 	 * Look in the `config` folder.
@@ -1700,8 +1705,14 @@ export function createGame() {
 	const game = new Game(player1, player2);
 	game.functions.util.importConfig();
 	Card.registerAll();
-	Logger.setup();
 	game.doConfigAi();
 
 	return { game, player1, player2 };
+}
+
+declare global {
+	/**
+	 * The global game
+	 */
+	var game: Game;
 }

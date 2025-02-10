@@ -209,8 +209,8 @@ export const commands: CommandList = {
 		console.log("Available commands:");
 
 		const bricks = [
-			logger.translate("(name) - (description)\n"),
-			...helpBricks.map((brick) => logger.translate(brick)),
+			game.logger.translate("(name) - (description)\n"),
+			...helpBricks.map((brick) => game.logger.translate(brick)),
 		];
 
 		const wall = game.functions.util.createWall(bricks, "-");

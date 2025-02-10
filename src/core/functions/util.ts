@@ -173,7 +173,7 @@ ${error.stack}
 `;
 		}
 
-		const debugLogContent = `-- Log --\n${logger.debugLog.join("\n")}\n-- Log --\n`;
+		const debugLogContent = `-- Log --\n${game.logger.debugLog.join("\n")}\n-- Log --\n`;
 		const historyContent = `\n-- History --${history}-- History --\n`;
 		const aiContent = `\n-- AI Logs --\n${aiHistory}-- AI Logs --\n`;
 
@@ -342,7 +342,7 @@ ${mainContent}
 				testCommand: string,
 				argsSpecifier: string,
 			) => {
-				const toLog = logger
+				const toLog = game.logger
 					.translate(
 						"Trying '%s %s|%s'...",
 						testCommand,

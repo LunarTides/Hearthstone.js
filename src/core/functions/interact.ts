@@ -66,7 +66,7 @@ export const interactFunctions = {
 		const debugStatement = allowTestDeck
 			? " <gray>(Leave this empty for a test deck)</gray>"
 			: "";
-		const deckcode = await logger.inputTranslate(
+		const deckcode = await game.logger.inputTranslate(
 			"Player %s, please type in your deckcode%s: ",
 			player.id + 1,
 			debugStatement,
@@ -75,13 +75,13 @@ export const interactFunctions = {
 		let result = true;
 
 		if (deckcode.length > 0) {
-			logger.debug(`${player.name} chose deck code: ${deckcode}...`);
+			game.logger.debug(`${player.name} chose deck code: ${deckcode}...`);
 			result = Boolean(await game.functions.deckcode.import(player, deckcode));
 
 			if (result) {
-				logger.debug(`${player.name} chose deck code: ${deckcode}...OK`);
+				game.logger.debug(`${player.name} chose deck code: ${deckcode}...OK`);
 			} else {
-				logger.debug(`${player.name} chose deck code: ${deckcode}...FAIL`);
+				game.logger.debug(`${player.name} chose deck code: ${deckcode}...FAIL`);
 			}
 		} else {
 			if (!allowTestDeck) {
@@ -90,14 +90,14 @@ export const interactFunctions = {
 				return false;
 			}
 
-			logger.debug(`${player.name} chose debug deck...`);
+			game.logger.debug(`${player.name} chose debug deck...`);
 
 			// Debug mode is enabled, use the 30 Sheep debug deck.
 			while (player.deck.length < 30) {
 				player.deck.push(await Card.create(game.cardIds.sheep1, player, true));
 			}
 
-			logger.debug(`${player.name} chose debug deck...OK`);
+			game.logger.debug(`${player.name} chose debug deck...OK`);
 		}
 
 		return result;
@@ -444,7 +444,7 @@ export const interactFunctions = {
 				const opponentTargetName = boardOpponentTarget.colorFromRarity();
 				const friendlyTargetName = boardFriendlyTarget.colorFromRarity();
 
-				const alignment = await logger.inputTranslate(
+				const alignment = await game.logger.inputTranslate(
 					"Do you want to select your opponent's (%s) or your own (%s)? (y: opponent, n: friendly | type 'back' to go back) ",
 					opponentTargetName,
 					friendlyTargetName,
@@ -825,7 +825,7 @@ export const interactFunctions = {
 			return wrapper("");
 		}
 
-		question = logger.translate(question);
+		question = game.logger.translate(question);
 		question = parseTags(question);
 
 		// Let the game make choices for the user
@@ -865,7 +865,7 @@ export const interactFunctions = {
 
 		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 		const newData = data.map((i: any) =>
-			typeof i === "string" ? parseTags(logger.translate(i)) : i,
+			typeof i === "string" ? parseTags(game.logger.translate(i)) : i,
 		);
 
 		callback(...newData);
@@ -1029,7 +1029,7 @@ export const interactFunctions = {
 			}
 		}
 
-		console.log("<red>%s.</red>", logger.translate(error));
+		console.log("<red>%s.</red>", game.logger.translate(error));
 		await game.pause("");
 		return false;
 	},

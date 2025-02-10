@@ -11,7 +11,7 @@ import * as vcc from "./tools/cardcreator/vanilla.js"; // Vanilla Card Creator
 import * as cli from "./tools/cli.js"; // Command Line Interface
 import * as dc from "./tools/deckcreator.js"; // Deck Creator
 
-logger.debug("Starting Hub...");
+game.logger.debug("Starting Hub...");
 
 // These are here so we don't have to recalculate them every watermark call.
 const version = game.functions.info.versionString(4);
@@ -114,13 +114,13 @@ async function cardCreator() {
 				// This is to throw an error if it can't find the vanilla cards
 				game.functions.card.vanilla.getAll();
 
-				logger.debug("Starting Vanilla Card Creator...");
+				game.logger.debug("Starting Vanilla Card Creator...");
 				await vcc.main();
-				logger.debug("Starting Vanilla Card Creator...OK");
+				game.logger.debug("Starting Vanilla Card Creator...OK");
 			} else if (type === "c") {
-				logger.debug("Starting Custom Card Creator...");
+				game.logger.debug("Starting Custom Card Creator...");
 				await ccc.main();
-				logger.debug("Starting Custom Card Creator...OK");
+				game.logger.debug("Starting Custom Card Creator...OK");
 			}
 		},
 	);
@@ -138,23 +138,23 @@ async function devmode() {
 
 			switch (command) {
 				case "c": {
-					logger.debug("Loading Card Creator options...");
+					game.logger.debug("Loading Card Creator options...");
 					await cardCreator();
-					logger.debug("Loading Card Creator options...OK");
+					game.logger.debug("Loading Card Creator options...OK");
 					break;
 				}
 
 				case "s": {
-					logger.debug("Starting Class Creator...");
+					game.logger.debug("Starting Class Creator...");
 					await clc.main();
-					logger.debug("Starting Class Creator...OK");
+					game.logger.debug("Starting Class Creator...OK");
 					break;
 				}
 
 				case "m": {
-					logger.debug("Starting CLI...");
+					game.logger.debug("Starting CLI...");
 					await cli.main(userInputLoop);
-					logger.debug("Starting CLI...OK");
+					game.logger.debug("Starting CLI...OK");
 					break;
 				}
 
@@ -164,7 +164,7 @@ async function devmode() {
 	);
 }
 
-logger.debug("Starting Hub...OK");
+game.logger.debug("Starting Hub...OK");
 
 await userInputLoop(
 	"<green>(P)lay</green>, <blue>Create a (D)eck</blue>, <yellow>Developer (M)ode</yellow>, <red>(E)xit</red>: ",
@@ -174,28 +174,28 @@ await userInputLoop(
 
 		switch (command) {
 			case "p": {
-				logger.debug("Starting Game...");
+				game.logger.debug("Starting Game...");
 				await src.main();
 
 				/*
 				 * This line will never be seen in the log file, since the log file gets generated before this line.
 				 * All the other similar lines are fine, since only the game generates log files for now.
 				 */
-				logger.debug("Starting Game...OK");
+				game.logger.debug("Starting Game...OK");
 				break;
 			}
 
 			case "d": {
-				logger.debug("Starting Deck Creator...");
+				game.logger.debug("Starting Deck Creator...");
 				await dc.main();
-				logger.debug("Starting Deck Creator...OK");
+				game.logger.debug("Starting Deck Creator...OK");
 				break;
 			}
 
 			case "m": {
-				logger.debug("Loading Developer Mode options...");
+				game.logger.debug("Loading Developer Mode options...");
 				await devmode();
-				logger.debug("Loading Developer Mode options...OK");
+				game.logger.debug("Loading Developer Mode options...OK");
 				break;
 			}
 
