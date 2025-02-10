@@ -100,7 +100,7 @@ export const blueprint: Blueprint = {
 					await owner.addToHand(card);
 				}
 
-				game.functions.event.addListener("EndTurn", async () => {
+				game.event.addListener("EndTurn", async () => {
 					for (const card of owner.hand) {
 						card.removeEnchantment("cost = 0", self);
 					}

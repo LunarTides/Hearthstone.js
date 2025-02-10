@@ -535,7 +535,7 @@ export class Card {
 
 		let unsuppress: undefined | (() => boolean);
 		if (suppressEvent) {
-			unsuppress = game.functions.event.suppress("CreateCard");
+			unsuppress = game.event.suppress("CreateCard");
 		}
 
 		await game.event.broadcast("CreateCard", this, this.owner);
@@ -1185,7 +1185,7 @@ export class Card {
 	 */
 	async reset(): Promise<void> {
 		// Silence it to remove any new abilities
-		await game.functions.event.withSuppressed(
+		await game.event.withSuppressed(
 			"SilenceCard",
 			async () => await this.silence(),
 		);
@@ -1273,7 +1273,7 @@ export class Card {
 			 * We have to suppress inside the loop in order to not have the event suppressed when calling the ability
 			 * It's a bit hacky, and not very efficient, but it works
 			 */
-			await game.functions.event.withSuppressed("AddCardToHand", async () =>
+			await game.event.withSuppressed("AddCardToHand", async () =>
 				this.owner.addToHand(this),
 			);
 

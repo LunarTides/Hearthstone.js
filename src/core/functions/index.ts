@@ -7,7 +7,6 @@ import {
 	cardFunctions,
 	colorFunctions,
 	deckcodeFunctions,
-	eventFunctions,
 	infoFunctions,
 	utilFunctions,
 } from "@Game/internal.js";
@@ -38,9 +37,4 @@ export const functions = {
 	 * Info functions
 	 */
 	info: infoFunctions,
-
-	/**
-	 * Event related functions
-	 */
-	event: eventFunctions,
 };

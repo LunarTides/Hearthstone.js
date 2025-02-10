@@ -49,7 +49,7 @@ export const blueprint: Blueprint = {
 		let potentiallyCancelled = false;
 
 		// Make sure the parameters are correct
-		game.functions.event.addListener(
+		game.event.addListener(
 			"TargetSelectionStarts",
 			async (_unknownValue) => {
 				const value = _unknownValue as EventValue<"TargetSelectionStarts">;
@@ -72,7 +72,7 @@ export const blueprint: Blueprint = {
 		);
 
 		// Find the target
-		game.functions.event.addListener(
+		game.event.addListener(
 			"TargetSelected",
 			async (_unknownValue) => {
 				const value = _unknownValue as EventValue<"TargetSelected">;

@@ -17,7 +17,7 @@ export const blueprint: Blueprint = {
 
 	async cast(owner, self) {
 		// For the rest of the game, players draw an extra card at the start of their turn.
-		game.functions.event.addListener(
+		game.event.addListener(
 			"StartTurn",
 			async (_unknownValue, eventPlayer) => {
 				await eventPlayer.drawCards(1);

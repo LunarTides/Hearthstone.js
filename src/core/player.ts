@@ -696,7 +696,7 @@ export class Player {
 	async drawCards(amount: number): Promise<Card[]> {
 		const cards: Card[] = [];
 
-		const unsuppress = game.functions.event.suppress("AddCardToHand");
+		const unsuppress = game.event.suppress("AddCardToHand");
 
 		let drawAmount = amount;
 		for (let i = 0; i < drawAmount; i++) {
@@ -779,7 +779,7 @@ export class Player {
 			return undefined;
 		}
 
-		await game.functions.event.withSuppressed("AddCardToHand", async () =>
+		await game.event.withSuppressed("AddCardToHand", async () =>
 			this.addToHand(card),
 		);
 
@@ -1029,13 +1029,13 @@ export class Player {
 
 			game.functions.util.remove(mulligan, card);
 
-			await game.functions.event.withSuppressed("DrawCard", async () =>
+			await game.event.withSuppressed("DrawCard", async () =>
 				this.drawCards(1),
 			);
-			await game.functions.event.withSuppressed("AddCardToDeck", async () =>
+			await game.event.withSuppressed("AddCardToDeck", async () =>
 				this.shuffleIntoDeck(card),
 			);
-			await game.functions.event.withSuppressed("DiscardCard", async () =>
+			await game.event.withSuppressed("DiscardCard", async () =>
 				card.discard(),
 			);
 

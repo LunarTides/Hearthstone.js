@@ -36,7 +36,7 @@ export const blueprint: Blueprint = {
 				 * The quest is done.
 				 * Add the `-1 cost` enchantment constantly
 				 */
-				const unhook = game.functions.event.hookToTick(async () => {
+				const unhook = game.event.hookToTick(async () => {
 					// Only add the enchantment to minions
 					for (const minion of owner.hand.filter(
 						(card) => card.type === "Minion",
@@ -52,7 +52,7 @@ export const blueprint: Blueprint = {
 				// Add an event listener to check if you've played 10 cards
 				let amount = 0;
 
-				game.functions.event.addListener(
+				game.event.addListener(
 					"PlayCard",
 					async (_unknownValue, eventPlayer) => {
 						const value = _unknownValue as EventValue<"PlayCard">;

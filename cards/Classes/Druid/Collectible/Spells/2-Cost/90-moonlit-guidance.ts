@@ -30,7 +30,7 @@ export const blueprint: Blueprint = {
 		await owner.addToHand(card);
 
 		// Wait for the player to play the card
-		const destroy = game.functions.event.addListener(
+		const destroy = game.event.addListener(
 			"PlayCard",
 			async (_unknownValue, eventPlayer) => {
 				const value = _unknownValue as EventValue<"PlayCard">;
@@ -45,7 +45,7 @@ export const blueprint: Blueprint = {
 		);
 
 		// Destroy the event listener when the turn ends
-		game.functions.event.addListener("EndTurn", async () => destroy());
+		game.event.addListener("EndTurn", async () => destroy());
 	},
 
 	async test(owner, self) {

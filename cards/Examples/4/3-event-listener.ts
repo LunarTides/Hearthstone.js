@@ -30,7 +30,7 @@ export const blueprint: Blueprint = {
 		 * The second argument is a callback function that gets called when the event key is triggered.
 		 * The third argument is the event listeners' lifespan.
 		 */
-		const destroy = game.functions.event.addListener(
+		const destroy = game.event.addListener(
 			"PlayCard",
 			async (_unknownValue, eventPlayer) => {
 				// This function will be run when the correct event is broadcast.

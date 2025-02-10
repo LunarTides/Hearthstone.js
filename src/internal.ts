@@ -19,7 +19,6 @@ export { infoFunctions } from "./core/functions/info.js";
 export { deckcodeFunctions } from "./core/functions/deckcode.js";
 export { cardFunctions } from "./core/functions/card.js";
 export { utilFunctions } from "./core/functions/util.js";
-export { eventFunctions } from "./core/functions/event.js";
 
 export * from "./core/functions/index.js";
 

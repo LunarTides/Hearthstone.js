@@ -36,17 +36,15 @@ export const blueprint: Blueprint = {
 		 * You are given the key and value of the event.
 		 * I don't think you will need them for tick hooks, since they are not supposed to be dependent on events, but you are free to use them if you want.
 		 */
-		const unhook = game.functions.event.hookToTick(
-			async (key, _unknownValue) => {
-				for (const card of owner.hand) {
-					if (card.enchantmentExists("-1 cost", self)) {
-						continue;
-					}
-
-					card.addEnchantment("-1 cost", self);
+		const unhook = game.event.hookToTick(async (key, _unknownValue) => {
+			for (const card of owner.hand) {
+				if (card.enchantmentExists("-1 cost", self)) {
+					continue;
 				}
-			},
-		);
+
+				card.addEnchantment("-1 cost", self);
+			}
+		});
 
 		/*
 		 * Store the unhook to be used later in the `remove` ability. This is the only supported way to transfer information between abilities.

@@ -7,6 +7,7 @@
 	"type": "module",
 	"scripts": {
 		"start": "bunx tsc && bun .",
+		"format": "bunx biome check --fix",
 		"ci": "bunx biome ci && bun test && bunx tsc && bun run cardtest && bun run crashtest",
 		"cardtest": "bun run script:testcards",
 		"crashtest": "bun run script:crashtest && bun run script:crashtest && bun run script:crashtest && bun run script:crashtest && bun run script:crashtest",

@@ -1,54 +1,21 @@
 import { Card, Player } from "@Game/internal.js";
 import type {
 	EventKey,
+	EventListenerCallback,
 	EventManagerEvents,
 	HistoryKey,
 	TickHookCallback,
 	UnknownEventValue,
 } from "@Game/types.js";
 
-type EventManagerType = {
-	listeners: Record<number, TickHookCallback>;
-	listenerCount: number;
-	tickHooks: TickHookCallback[];
-	history: Record<number, HistoryKey[]>;
-	events: EventManagerEvents;
-	suppressed: EventKey[];
-	forced: EventKey[];
-	stats: Record<string, [number, number]>;
-
-	tick(
-		key: EventKey,
-		value: UnknownEventValue,
-		player: Player,
-	): Promise<boolean>;
-	cardUpdate(
-		key: EventKey,
-		value: UnknownEventValue,
-		player: Player,
-	): Promise<boolean>;
-	questUpdate(
-		questsName: "secrets" | "sidequests" | "quests",
-		key: EventKey,
-		value: UnknownEventValue,
-		player: Player,
-	): Promise<boolean>;
-	broadcast(
-		key: EventKey,
-		value: UnknownEventValue,
-		player: Player,
-		updateHistory?: boolean,
-	): Promise<boolean>;
-	addHistory(key: EventKey, value: UnknownEventValue, player: Player): void;
-	broadcastDummy(player: Player): Promise<boolean>;
-	increment(player: Player, key: string, amount?: number): number;
-};
-
-export const eventManager: EventManagerType = {
+export const eventManager = {
 	/**
 	 * The event listeners that are attached to the game currently.
 	 */
-	listeners: {},
+	listeners: {} as Record<
+		number,
+		(key: EventKey, value: UnknownEventValue, player: Player) => Promise<void>
+	>,
 
 	/**
 	 * The amount of event listeners that have been added to the game, this never decreases.
@@ -58,14 +25,14 @@ export const eventManager: EventManagerType = {
 	/**
 	 * The hooks that will be run when the game ticks.
 	 */
-	tickHooks: [],
+	tickHooks: [] as TickHookCallback[],
 
 	/**
 	 * The history of the game.
 	 *
 	 * It looks like this: `history[turn] = [[key, val, player], ...]`
 	 */
-	history: {},
+	history: {} as Record<number, HistoryKey[]>,
 
 	/**
 	 * Used like this:
@@ -73,24 +40,24 @@ export const eventManager: EventManagerType = {
 	 * events[key] = {player1id: [[val1, turn], [val2, turn], [val3, turn], ...], player2id: [...]};
 	 * ```
 	 */
-	events: {},
+	events: {} as EventManagerEvents,
 
 	/**
 	 * A list of event keys to suppress.
 	 *
 	 * If an event with a key in this list is broadcast, it will add it to the history, and tick the game, but will not activate any passives / event listeners.
 	 */
-	suppressed: [],
+	suppressed: [] as EventKey[],
 
 	/**
 	 * A list of event keys to never suppress.
 	 */
-	forced: [],
+	forced: [] as EventKey[],
 
 	/**
 	 * Some general stats for each player.
 	 */
-	stats: {},
+	stats: {} as Record<string, [number, number]>,
 
 	/**
 	 * Tick the game
@@ -99,7 +66,11 @@ export const eventManager: EventManagerType = {
 	 * @param value The value of the event that triggered the tick
 	 * @param player The player that triggered the tick
 	 */
-	async tick(key, value, player): Promise<boolean> {
+	async tick(
+		key: EventKey,
+		value: UnknownEventValue,
+		player: Player,
+	): Promise<boolean> {
 		/*
 		 * The code in here gets executed very often
 		 * So don't do any expensive stuff here
@@ -152,7 +123,11 @@ export const eventManager: EventManagerType = {
 	 *
 	 * @returns Success
 	 */
-	async cardUpdate(key, value, player): Promise<boolean> {
+	async cardUpdate(
+		key: EventKey,
+		value: UnknownEventValue,
+		player: Player,
+	): Promise<boolean> {
 		for (const player of [game.player1, game.player2]) {
 			for (const card of player.board) {
 				// This function gets called directly after a minion is killed.
@@ -200,7 +175,12 @@ export const eventManager: EventManagerType = {
 	 *
 	 * @returns Success
 	 */
-	async questUpdate(questsName, key, value, player): Promise<boolean> {
+	async questUpdate(
+		questsName: "quests" | "sidequests" | "secrets",
+		key: EventKey,
+		value: UnknownEventValue,
+		player: Player,
+	): Promise<boolean> {
 		for (const quest of player[questsName]) {
 			if (quest.key !== key) {
 				continue;
@@ -245,7 +225,12 @@ export const eventManager: EventManagerType = {
 	 *
 	 * @returns Success
 	 */
-	async broadcast(key, value, player, updateHistory = true): Promise<boolean> {
+	async broadcast(
+		key: EventKey,
+		value: UnknownEventValue,
+		player: Player,
+		updateHistory = true,
+	): Promise<boolean> {
 		await this.tick(key, value, player);
 
 		// Check if the event is suppressed
@@ -290,7 +275,7 @@ export const eventManager: EventManagerType = {
 	 * @param value The value of the event
 	 * @param player The player who caused the event to happen
 	 */
-	addHistory(key, value, player): void {
+	addHistory(key: EventKey, value: UnknownEventValue, player: Player): void {
 		if (!this.history[game.turn]) {
 			this.history[game.turn] = [["GameLoop", `Init ${key}`, player]];
 		}
@@ -307,7 +292,7 @@ export const eventManager: EventManagerType = {
 	 *
 	 * @returns Success
 	 */
-	async broadcastDummy(player): Promise<boolean> {
+	async broadcastDummy(player: Player): Promise<boolean> {
 		return this.broadcast("Dummy", undefined, player, false);
 	},
 
@@ -320,7 +305,7 @@ export const eventManager: EventManagerType = {
 	 *
 	 * @returns The new value
 	 */
-	increment(player, key, amount = 1): number {
+	increment(player: Player, key: string, amount = 1): number {
 		if (!this.stats[key]) {
 			this.stats[key] = [0, 0];
 		}
@@ -328,5 +313,171 @@ export const eventManager: EventManagerType = {
 		this.stats[key][player.id] += amount;
 
 		return this.stats[key][player.id];
+	},
+
+	/**
+	 * Add an event listener.
+	 *
+	 * @param key The event to listen for. If this is an empty string, it will listen for any event.
+	 * @param callback The code that will be ran if the event listener gets triggered.
+	 * @param lifespan How many times the event listener will trigger and call "callback" before self-destructing. Set this to -1 to make it last forever, or until it is manually destroyed using "callback".
+	 *
+	 * @returns If you call this function, it will destroy the event listener.
+	 */
+	addListener(
+		key: EventKey | "",
+		callback: EventListenerCallback,
+		lifespan = 1,
+	): () => boolean {
+		let times = 0;
+
+		const id = this.listenerCount;
+		let alive = true;
+
+		/**
+		 * Destroys the eventlistener and removes it from the game event listeners.
+		 *
+		 * @returns Returns true if the object was successfully destroyed, false otherwise.
+		 */
+		const destroy = () => {
+			if (!alive) {
+				return false;
+			}
+
+			delete this.listeners[id];
+
+			alive = false;
+			return true;
+		};
+
+		this.listeners[id] = async (
+			_key: EventKey,
+			_unknownValue: UnknownEventValue,
+			eventPlayer: Player,
+		) => {
+			// Validate key. If key is empty, match any key.
+			if (key !== "" && _key !== key) {
+				return;
+			}
+
+			const message = await callback(_unknownValue, eventPlayer);
+			times++;
+
+			switch (message) {
+				case "destroy": {
+					destroy();
+					break;
+				}
+
+				case "reset": {
+					times = 0;
+					break;
+				}
+
+				case false: {
+					times--;
+					break;
+				}
+
+				case true: {
+					break;
+				}
+
+				default: {
+					break;
+				}
+			}
+
+			if (times === lifespan) {
+				destroy();
+			}
+		};
+
+		this.listenerCount++;
+
+		return destroy;
+	},
+
+	/**
+	 * Hooks a callback function to the tick event.
+	 *
+	 * @param callback The callback function to be hooked.
+	 *
+	 * @returns A function that, when called, will remove the hook from the tick event.
+	 */
+	hookToTick(callback: TickHookCallback): () => void {
+		this.tickHooks.push(callback);
+
+		const unhook = () => {
+			game.functions.util.remove(this.tickHooks, callback);
+		};
+
+		return unhook;
+	},
+
+	/**
+	 * Suppresses the specified event key by adding it to the list of suppressed events.
+	 *
+	 * @param key The event key to be suppressed.
+	 *
+	 * @returns A function that undoes the suppression.
+	 */
+	suppress(key: EventKey): () => boolean {
+		this.suppressed.push(key);
+
+		/**
+		 * Unsuppresses the event key.
+		 */
+		const unsuppress = () => game.functions.util.remove(this.suppressed, key);
+
+		return unsuppress;
+	},
+
+	/**
+	 * Ignores suppression for the specified event key.
+	 *
+	 * @param key The event key to be forced.
+	 *
+	 * @returns A function that undoes this.
+	 */
+	ignoreSuppression(key: EventKey): () => boolean {
+		this.forced.push(key);
+
+		/**
+		 * Stops ignoring suppressions for that key
+		 */
+		const undo = () => game.functions.util.remove(this.suppressed, key);
+
+		return undo;
+	},
+
+	/**
+	 * Executes the given callback while suppressing the specified key or keys.
+	 *
+	 * @param key The key or keys to suppress.
+	 * @param callback The callback to execute.
+	 *
+	 * @returns The return value of the callback.
+	 */
+	async withSuppressed<T>(
+		key: EventKey | EventKey[],
+		callback: () => Promise<T>,
+	): Promise<T> {
+		const unsuppressed: Array<() => boolean> = [];
+
+		if (Array.isArray(key)) {
+			for (const _key of key) {
+				unsuppressed.push(this.suppress(_key));
+			}
+		} else {
+			unsuppressed.push(this.suppress(key));
+		}
+
+		const returnValue = await callback();
+		for (const unsuppress of unsuppressed) {
+			unsuppress();
+		}
+
+		return returnValue;
 	},
 };

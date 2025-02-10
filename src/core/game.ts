@@ -646,9 +646,7 @@ const playCard = {
 
 		// Charge you for the card
 		player[card.costType] -= card.cost;
-		await game.functions.event.withSuppressed("DiscardCard", async () =>
-			card.discard(),
-		);
+		await game.event.withSuppressed("DiscardCard", async () => card.discard());
 
 		// Counter
 		if (playCard._countered(card, player)) {
@@ -719,7 +717,7 @@ const playCard = {
 				return "refund";
 			}
 
-			return game.functions.event.withSuppressed("SummonCard", async () =>
+			return game.event.withSuppressed("SummonCard", async () =>
 				player.summon(card),
 			);
 		},
@@ -769,7 +767,7 @@ const playCard = {
 			card.addKeyword("Immune");
 			card.cooldown = 0;
 
-			return game.functions.event.withSuppressed("SummonCard", async () =>
+			return game.event.withSuppressed("SummonCard", async () =>
 				player.summon(card),
 			);
 		},
@@ -818,9 +816,7 @@ const playCard = {
 
 		player.mana -= 1;
 
-		await game.functions.event.withSuppressed("DiscardCard", async () =>
-			card.discard(),
-		);
+		await game.event.withSuppressed("DiscardCard", async () => card.discard());
 		await player.drawCards(1);
 		await player.shuffleIntoDeck(card);
 
@@ -857,9 +853,7 @@ const playCard = {
 
 		player.mana -= 2;
 
-		await game.functions.event.withSuppressed("DiscardCard", async () =>
-			card.discard(),
-		);
+		await game.event.withSuppressed("DiscardCard", async () => card.discard());
 		const forged = await Card.create(forgeId, player);
 		await player.addToHand(forged);
 
@@ -877,7 +871,7 @@ const playCard = {
 		}
 
 		// Refund
-		await game.functions.event.withSuppressed("AddCardToHand", async () =>
+		await game.event.withSuppressed("AddCardToHand", async () =>
 			player.addToHand(card),
 		);
 
@@ -974,10 +968,10 @@ const playCard = {
 			// Corrupt that card
 			const corrupted = await Card.create(corruptId, player);
 
-			await game.functions.event.withSuppressed("DiscardCard", async () =>
+			await game.event.withSuppressed("DiscardCard", async () =>
 				card.discard(),
 			);
-			await game.functions.event.withSuppressed("AddCardToHand", async () =>
+			await game.event.withSuppressed("AddCardToHand", async () =>
 				player.addToHand(corrupted),
 			);
 		}
@@ -1096,7 +1090,7 @@ const cards = {
 			 * the null0 / 0 gets replaced with the main minion
 			 */
 
-			const unsuppress = game.functions.event.suppress("SummonCard");
+			const unsuppress = game.event.suppress("SummonCard");
 
 			for (const cardId of colossalMinionIds) {
 				if (cardId <= 0) {
@@ -1389,10 +1383,9 @@ export class Game {
 			const player = Player.fromID(i);
 
 			// Suppress "AddCardToHand" and "DrawCard" events in the loop since the events need to be unsuppressed by the time any `card.activate` is called
-			const unsuppressAddCardToHand =
-				this.functions.event.suppress("AddCardToHand");
+			const unsuppressAddCardToHand = this.event.suppress("AddCardToHand");
 
-			const unsuppressDrawCard = this.functions.event.suppress("DrawCard");
+			const unsuppressDrawCard = this.event.suppress("DrawCard");
 
 			// Set the player's hero to the starting hero for the class
 			const success = await player.setToStartingHero();
@@ -1444,7 +1437,7 @@ export class Game {
 		// Give the coin to the second player
 		const coin = await Card.create(this.cardIds.theCoin2, this.player2);
 
-		await this.functions.event.withSuppressed("AddCardToHand", async () =>
+		await this.event.withSuppressed("AddCardToHand", async () =>
 			this.player2.addToHand(coin),
 		);
 
@@ -1664,7 +1657,7 @@ export class Game {
 				 * This isn't great performance wise, but there's not much we can do about it.
 				 * Although the performance hit is only a few milliseconds in total every time (This function does get called often), so there's bigger performance gains to be had elsewhere.
 				 */
-				await this.functions.event.withSuppressed("SummonCard", async () =>
+				await this.event.withSuppressed("SummonCard", async () =>
 					this.summon(minion, player),
 				);
 
