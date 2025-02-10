@@ -156,7 +156,7 @@ export const gameloopInteract = {
 				return false;
 			}
 		} else {
-			attacker = await game.interact.selectTarget(
+			attacker = await game.interact.promptTarget(
 				"Which minion do you want to attack with?",
 				undefined,
 				"friendly",
@@ -167,7 +167,7 @@ export const gameloopInteract = {
 				return false;
 			}
 
-			target = await game.interact.selectTarget(
+			target = await game.interact.promptTarget(
 				"Which minion do you want to attack?",
 				undefined,
 				"enemy",
@@ -334,7 +334,7 @@ export const gameloopInteract = {
 	 *
 	 * @returns The return value of `game.playCard`
 	 */
-	async doTurnLogic(input: string): Promise<GamePlayCardReturn> {
+	async gameloopHandleInput(input: string): Promise<GamePlayCardReturn> {
 		if ((await this.handleCmds(input)) !== -1) {
 			return true;
 		}
@@ -354,13 +354,13 @@ export const gameloopInteract = {
 	},
 
 	/**
-	 * Show the game state and asks the user for an input which is put into `doTurnLogic`.
+	 * Show the game state and asks the user for an input which is put into `gameloopLogic`.
 	 *
 	 * This is the core of the game loop.
 	 *
 	 * @returns Success | Ignored error code | The return value of doTurnLogic
 	 */
-	async doTurn(): Promise<boolean | string | GamePlayCardReturn> {
+	async gameloop(): Promise<boolean | string | GamePlayCardReturn> {
 		await game.event.tick("GameLoop", "doTurn", game.player);
 
 		if (game.player.ai) {
@@ -374,13 +374,13 @@ export const gameloopInteract = {
 					? (game.player.hand.indexOf(rawInput) + 1).toString()
 					: rawInput;
 
-			const turn = await this.doTurnLogic(input);
+			const turn = await this.gameloopHandleInput(input);
 
 			await game.event.broadcast("Input", input, game.player);
 			return turn;
 		}
 
-		await game.interact.info.showGame(game.player);
+		await game.interact.info.printGameState(game.player);
 		console.log();
 
 		let input = "Which card do you want to play? ";
@@ -390,7 +390,7 @@ export const gameloopInteract = {
 		}
 
 		const user = await game.input(input);
-		const returnValue = await this.doTurnLogic(user);
+		const returnValue = await this.gameloopHandleInput(user);
 
 		// If there were no errors, return true.
 		if (returnValue === true) {

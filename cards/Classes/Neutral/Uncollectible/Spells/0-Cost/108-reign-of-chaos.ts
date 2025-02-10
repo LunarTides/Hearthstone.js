@@ -20,7 +20,7 @@ export const blueprint: Blueprint = {
 
 	async cast(owner, self) {
 		// Take control of an enemy minion.
-		const card = await game.interact.selectCardTarget(self.text, self, "enemy");
+		const card = await game.interact.promptTargetCard(self.text, self, "enemy");
 		if (!card) {
 			return Card.REFUND;
 		}

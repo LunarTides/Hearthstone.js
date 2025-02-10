@@ -42,7 +42,7 @@ export async function main(
 
 		watermark();
 		const value = await game.input(`${question} `);
-		if (!value || game.interact.shouldExit(value)) {
+		if (!value || game.interact.isInputExit(value)) {
 			exited = true;
 		}
 

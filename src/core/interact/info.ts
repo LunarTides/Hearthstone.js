@@ -5,7 +5,7 @@ export const infoInteract = {
 	/**
 	 * Prints the "watermark" border
 	 */
-	watermark(): void {
+	printWatermark(): void {
 		game.interact.cls();
 
 		const versionDetail =
@@ -38,7 +38,7 @@ export const infoInteract = {
 	 *
 	 * @param disappear If this is true, "This will disappear once you end your turn" will show up.
 	 */
-	license(disappear = true): void {
+	printLicense(disappear = true): void {
 		if (game.config.general.debug) {
 			return;
 		}
@@ -89,12 +89,12 @@ export const infoInteract = {
 	 *
 	 * @param player The player
 	 */
-	async showGame(player: Player): Promise<void> {
-		this.watermark();
+	async printGameState(player: Player): Promise<void> {
+		this.printWatermark();
 		console.log();
 
 		if (game.turn <= 2 && !game.config.general.debug) {
-			this.license();
+			this.printLicense();
 			console.log();
 		}
 

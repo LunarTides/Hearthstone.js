@@ -56,12 +56,12 @@ async function main(): Promise<void> {
 		}
 
 		await game.startGame();
-		await game.interact.card.mulligan(player1);
-		await game.interact.card.mulligan(player2);
+		await game.interact.card.promptMulligan(player1);
+		await game.interact.card.promptMulligan(player2);
 
 		try {
 			while (game.running) {
-				await game.interact.gameLoop.doTurn();
+				await game.interact.gameLoop.gameloop();
 			}
 		} catch (error) {
 			if (!(error instanceof Error)) {

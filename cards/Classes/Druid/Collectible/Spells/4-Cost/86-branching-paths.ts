@@ -18,7 +18,7 @@ export const blueprint: Blueprint = {
 
 	async cast(owner, self) {
 		// Choose Twice - Draw a card; Give your minions +1 Attack; Gain 6 Armor.
-		await game.interact.chooseOne(
+		await game.interact.promptChooseOne(
 			2,
 			[
 				"Draw a card",

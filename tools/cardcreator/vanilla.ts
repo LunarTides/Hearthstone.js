@@ -187,7 +187,7 @@ export async function main(
 		const cardName = await game.input(
 			"\nName / dbfId (Type 'back' to cancel): ",
 		);
-		if (game.interact.shouldExit(cardName)) {
+		if (game.interact.isInputExit(cardName)) {
 			running = false;
 			break;
 		}

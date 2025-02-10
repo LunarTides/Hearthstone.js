@@ -87,7 +87,7 @@ async function userInputLoop(
 		}
 
 		if (
-			game.interact.shouldExit(user) ||
+			game.interact.isInputExit(user) ||
 			user[0].toLowerCase() === exitCharacter?.toLowerCase()
 		) {
 			running = false;

@@ -34,7 +34,7 @@ export const blueprint: Blueprint = {
 		 *
 		 * Ask the user to select a target based on the `prompt`, the user can only select enemy minions
 		 */
-		const target = await game.interact.selectCardTarget(prompt, self, "enemy");
+		const target = await game.interact.promptTargetCard(prompt, self, "enemy");
 
 		// If target is null, it means that the user cancelled their selection. Return `Card.REFUND` to refund the card.
 		if (!target) {

@@ -18,7 +18,7 @@ export const blueprint: Blueprint = {
 		// Deal 1 damage.
 
 		// Use of `selectTarget` in the `heropower` ability requires the use of the `forceElusive` flag
-		const target = await game.interact.selectTarget(
+		const target = await game.interact.promptTarget(
 			"Deal 1 damage.",
 			self,
 			"any",

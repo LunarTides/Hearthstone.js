@@ -6,7 +6,7 @@ export const cardInteract = {
 	 *
 	 * @returns Success
 	 */
-	async useLocation(): Promise<
+	async promptUseLocation(): Promise<
 		boolean | "nolocations" | "invalidtype" | "cooldown" | "refund"
 	> {
 		const locations = game.player.board.filter((m) => m.type === "Location");
@@ -14,7 +14,7 @@ export const cardInteract = {
 			return "nolocations";
 		}
 
-		const location = await game.interact.selectCardTarget(
+		const location = await game.interact.promptTargetCard(
 			"Which location do you want to use?",
 			undefined,
 			"friendly",
@@ -53,8 +53,8 @@ export const cardInteract = {
 	 *
 	 * @returns A string of the indexes of the cards the player mulligan'd
 	 */
-	async mulligan(player: Player): Promise<string> {
-		await game.interact.info.showGame(player);
+	async promptMulligan(player: Player): Promise<string> {
+		await game.interact.info.printGameState(player);
 
 		let sb = "\nChoose the cards to mulligan (1, 2, 3, ...):\n";
 		if (!game.config.general.debug) {
@@ -75,7 +75,9 @@ export const cardInteract = {
 	 *
 	 * @returns The card chosen
 	 */
-	async dredge(prompt = "Choose a card to Dredge:"): Promise<Card | undefined> {
+	async promptDredge(
+		prompt = "Choose a card to Dredge:",
+	): Promise<Card | undefined> {
 		// Look at the bottom three cards of the deck and put one on the top.
 		const cards = game.player.deck.slice(0, 3);
 
@@ -93,7 +95,7 @@ export const cardInteract = {
 			return card;
 		}
 
-		await game.interact.info.showGame(game.player);
+		await game.interact.info.printGameState(game.player);
 
 		console.log("\n%s", prompt);
 
@@ -111,7 +113,7 @@ export const cardInteract = {
 		const card = cards[cardId];
 
 		if (!card) {
-			return this.dredge(prompt);
+			return this.promptDredge(prompt);
 		}
 
 		// Removes the selected card from the players deck.
@@ -132,7 +134,7 @@ export const cardInteract = {
 	 *
 	 * @returns The card chosen.
 	 */
-	async discover(
+	async promptDiscover(
 		prompt: string,
 		cards: Card[] = [],
 		filterClassCards = true,
@@ -141,7 +143,7 @@ export const cardInteract = {
 	): Promise<Card | undefined> {
 		let actualCards = cards;
 
-		await game.interact.info.showGame(game.player);
+		await game.interact.info.printGameState(game.player);
 		let values: Card[] = _static_cards;
 
 		if (actualCards.length <= 0) {
@@ -198,7 +200,7 @@ export const cardInteract = {
 			 * Invalid input
 			 * We still want the user to be able to select a card, so we force it to be valid
 			 */
-			return this.discover(
+			return this.promptDiscover(
 				prompt,
 				actualCards,
 				filterClassCards,

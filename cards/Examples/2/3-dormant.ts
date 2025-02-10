@@ -29,7 +29,7 @@ export const blueprint: Blueprint = {
 	async battlecry(owner, self) {
 		// Dredge.
 
-		await game.interact.card.dredge();
+		await game.interact.card.promptDredge();
 	},
 
 	async test(owner, self) {

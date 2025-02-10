@@ -28,7 +28,10 @@ export const blueprint: Blueprint = {
 		}
 
 		// Prompt a discover
-		const card = await game.interact.card.discover("Discover a spell.", pool);
+		const card = await game.interact.card.promptDiscover(
+			"Discover a spell.",
+			pool,
+		);
 		if (!card) {
 			return Card.REFUND;
 		}

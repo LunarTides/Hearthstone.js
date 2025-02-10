@@ -46,8 +46,8 @@ export const interact = {
 	 *
 	 * @returns Success
 	 */
-	async deckCode(player: Player): Promise<boolean> {
-		game.interact.info.watermark();
+	async promptDeckcode(player: Player): Promise<boolean> {
+		game.interact.info.printWatermark();
 		console.log();
 
 		const { branch } = game.functions.info.version();
@@ -107,14 +107,14 @@ export const interact = {
 	 * @param times The amount of times to ask
 	 * @param prompts [prompt, callback]
 	 */
-	async chooseOne(
+	async promptChooseOne(
 		times: number,
 		...prompts: Array<[string, () => Promise<void>]>
 	): Promise<void> {
 		let chosen = 0;
 
 		while (chosen < times) {
-			await game.interact.info.showGame(game.player);
+			await game.interact.info.printGameState(game.player);
 
 			if (game.player.ai) {
 				const aiChoice = game.player.ai.chooseOne(prompts.map((p) => p[0]));
@@ -138,7 +138,7 @@ export const interact = {
 			const choice = game.lodash.parseInt(await game.input(p)) - 1;
 			if (Number.isNaN(choice) || choice < 0 || choice >= prompts.length) {
 				await game.pause("<red>Invalid input!</red>\n");
-				this.chooseOne(times, ...prompts);
+				this.promptChooseOne(times, ...prompts);
 				return;
 			}
 
@@ -158,12 +158,12 @@ export const interact = {
 	 *
 	 * @returns Chosen
 	 */
-	async question(
+	async promptChooseFromList(
 		player: Player,
 		prompt: string,
 		answers: string[],
 	): Promise<string> {
-		await game.interact.info.showGame(player);
+		await game.interact.info.printGameState(player);
 
 		let strbuilder = `\n${prompt} [`;
 
@@ -193,7 +193,7 @@ export const interact = {
 		const answer = answers[choice - 1];
 		if (!answer) {
 			await game.pause("<red>Invalid input!</red>\n");
-			return await this.question(player, prompt, answers);
+			return await this.promptChooseFromList(player, prompt, answers);
 		}
 
 		return answer;
@@ -207,7 +207,7 @@ export const interact = {
 	 *
 	 * @returns `true` if Yes / `false` if No
 	 */
-	async yesNoQuestion(prompt: string, player?: Player): Promise<boolean> {
+	async promptYN(prompt: string, player?: Player): Promise<boolean> {
 		const ask = `\n${prompt} [<bright:green>Y</bright:green> | <red>N</red>] `;
 
 		if (player?.ai) {
@@ -229,20 +229,20 @@ export const interact = {
 
 		await game.pause();
 
-		return this.yesNoQuestion(prompt, player);
+		return this.promptYN(prompt, player);
 	},
 
 	/**
-	 * Like `selectTarget` but restricts the user to selecting heroes.
+	 * Like `promptTarget` but restricts the user to selecting heroes.
 	 *
 	 * The advantage of this function is that it returns `Player | false` instead of `Target | false`.
 	 */
-	async selectPlayerTarget(
+	async promptTargetPlayer(
 		prompt: string,
 		card: Card | undefined,
 		flags: SelectTargetFlag[] = [],
 	): Promise<Player | null> {
-		return (await this.selectTarget(
+		return (await this.promptTarget(
 			prompt,
 			card,
 			"any",
@@ -252,17 +252,17 @@ export const interact = {
 	},
 
 	/**
-	 * Like `selectTarget` but restricts the user to selecting minions.
+	 * Like `promptTarget` but restricts the user to selecting minions.
 	 *
 	 * The advantage of this function is that it returns `Card | null` instead of `Target | null`.
 	 */
-	async selectCardTarget(
+	async promptTargetCard(
 		prompt: string,
 		card: Card | undefined,
 		side: SelectTargetAlignment,
 		flags: SelectTargetFlag[] = [],
 	): Promise<Card | null> {
-		return (await this.selectTarget(
+		return (await this.promptTarget(
 			prompt,
 			card,
 			side,
@@ -272,7 +272,7 @@ export const interact = {
 	},
 
 	/**
-	 * #### You might want to use `selectPlayerTarget` or `selectCardTarget` instead.
+	 * #### You might want to use `promptTargetPlayer` or `promptTargetCard` instead.
 	 *
 	 * Asks the user a `prompt`, the user can then select a minion or hero.
 	 * Broadcasts the `TargetSelectionStarts` and the `TargetSelected` event.
@@ -285,7 +285,7 @@ export const interact = {
 	 *
 	 * @returns The card or hero chosen
 	 */
-	async selectTarget(
+	async promptTarget(
 		prompt: string,
 		card: Card | undefined,
 		forceSide: SelectTargetAlignment,
@@ -298,7 +298,7 @@ export const interact = {
 			game.player,
 		);
 
-		const target = await this._selectTarget(
+		const target = await this._promptTarget(
 			prompt,
 			card,
 			forceSide,
@@ -316,7 +316,7 @@ export const interact = {
 	/**
 	 * # USE `selectTarget` INSTEAD.
 	 */
-	async _selectTarget(
+	async _promptTarget(
 		prompt: string,
 		card: Card | undefined,
 		forceSide: SelectTargetAlignment,
@@ -395,14 +395,14 @@ export const interact = {
 		const target = await game.input(p);
 
 		// Player chose to go back
-		if (target.startsWith("b") || this.shouldExit(target)) {
+		if (target.startsWith("b") || this.isInputExit(target)) {
 			// This should always be safe.
 			return null;
 		}
 
 		// If the player chose to target a hero, it will ask which hero.
 		if (target.startsWith("face") && forceClass !== "minion") {
-			return this._selectTarget(newPrompt, card, forceSide, "hero", flags);
+			return this._promptTarget(newPrompt, card, forceSide, "hero", flags);
 		}
 
 		// From this point, the player has chosen a minion.
@@ -425,7 +425,7 @@ export const interact = {
 			await game.pause("<red>Invalid input / minion!</red>\n");
 
 			// Try again
-			return this._selectTarget(newPrompt, card, forceSide, forceClass, flags);
+			return this._promptTarget(newPrompt, card, forceSide, forceClass, flags);
 		}
 
 		if (forceSide === "any") {
@@ -446,9 +446,9 @@ export const interact = {
 					friendlyTargetName,
 				);
 
-				if (alignment.startsWith("b") || this.shouldExit(alignment)) {
+				if (alignment.startsWith("b") || this.isInputExit(alignment)) {
 					// Go back.
-					return this._selectTarget(
+					return this._promptTarget(
 						newPrompt,
 						card,
 						forceSide,
@@ -513,7 +513,7 @@ export const interact = {
 	/**
 	 * Returns if the input is a command to exit / go back.
 	 */
-	shouldExit(input: string): boolean {
+	isInputExit(input: string): boolean {
 		return ["exit", "stop", "quit", "back", "close"].includes(
 			input.toLowerCase(),
 		);

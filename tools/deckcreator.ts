@@ -987,7 +987,7 @@ async function handleCmds(cmd: string, addToHistory = true): Promise<boolean> {
 
 	let foundCommand = false;
 
-	if (game.interact.shouldExit(name)) {
+	if (game.interact.isInputExit(name)) {
 		running = false;
 		return true;
 	}

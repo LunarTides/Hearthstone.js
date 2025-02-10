@@ -32,7 +32,7 @@ async function input(prompt: string): Promise<string> {
 
 	const returnValue = await game.input(prompt);
 
-	if (game.interact.shouldExit(returnValue)) {
+	if (game.interact.isInputExit(returnValue)) {
 		shouldExit = true;
 	}
 
@@ -251,7 +251,7 @@ export async function main(
 	}
 
 	// Ask the user if the card should be uncollectible
-	const uncollectible = await game.interact.yesNoQuestion("Uncollectible?");
+	const uncollectible = await game.interact.promptYN("Uncollectible?");
 	if (uncollectible) {
 		card.collectible = !uncollectible;
 	}

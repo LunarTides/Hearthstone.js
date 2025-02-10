@@ -791,8 +791,8 @@ const playCard = {
 		if (player.ai) {
 			q = player.ai.trade(card);
 		} else {
-			await game.interact.info.showGame(player);
-			q = await game.interact.yesNoQuestion(
+			await game.interact.info.printGameState(player);
+			q = await game.interact.promptYN(
 				`Would you like to trade ${card.colorFromRarity()} for a random card in your deck?`,
 				player,
 			);
@@ -836,8 +836,8 @@ const playCard = {
 		if (player.ai) {
 			q = player.ai.forge(card);
 		} else {
-			await game.interact.info.showGame(player);
-			q = await game.interact.yesNoQuestion(
+			await game.interact.info.printGameState(player);
+			q = await game.interact.promptYN(
 				`Would you like to forge ${card.colorFromRarity()}?`,
 				player,
 			);
@@ -900,8 +900,8 @@ const playCard = {
 		const warnMessage =
 			"<yellow>WARNING: This card's condition is not fulfilled. Are you sure you want to play this card?</yellow>";
 
-		await game.interact.info.showGame(player);
-		const warn = await game.interact.yesNoQuestion(warnMessage, player);
+		await game.interact.info.printGameState(player);
+		const warn = await game.interact.promptYN(warnMessage, player);
 
 		if (!warn) {
 			return false;
@@ -993,7 +993,7 @@ const playCard = {
 		}
 
 		// I'm using while loops to prevent a million indents
-		const mech = await game.interact.selectCardTarget(
+		const mech = await game.interact.promptTargetCard(
 			"Which minion do you want this card to Magnetize to:",
 			undefined,
 			"friendly",
@@ -1476,7 +1476,7 @@ export class Game {
 			return false;
 		}
 
-		this.interact.info.watermark();
+		this.interact.info.printWatermark();
 		console.log();
 
 		// Do this to bypass 'Press enter to continue' prompt when showing history
