@@ -8,7 +8,6 @@ import * as src from "./src/index.js"; // Source Code
 import * as clc from "./tools/cardcreator/class.js"; // Class Creator
 import * as ccc from "./tools/cardcreator/custom.js"; // Custom Card Creator
 import * as vcc from "./tools/cardcreator/vanilla.js"; // Vanilla Card Creator
-import * as cli from "./tools/cli.js"; // Command Line Interface
 import * as dc from "./tools/deckcreator.js"; // Deck Creator
 
 game.logger.debug("Starting Hub...");
@@ -131,7 +130,7 @@ async function cardCreator() {
  */
 async function devmode() {
 	userInputLoop(
-		"<green>Create a (C)ard</green>, <blue>Create a Clas(s)</blue>, <yellow>Enter CLI (m)ode</yellow>, <red>Go (B)ack to Normal Mode</red>: ",
+		"<green>Create a (C)ard</green>, <blue>Create a Clas(s)</blue>, <red>Go (B)ack to Normal Mode</red>: ",
 		"b",
 		async (input) => {
 			const command = input[0].toLowerCase();
@@ -148,13 +147,6 @@ async function devmode() {
 					game.logger.debug("Starting Class Creator...");
 					await clc.main();
 					game.logger.debug("Starting Class Creator...OK");
-					break;
-				}
-
-				case "m": {
-					game.logger.debug("Starting CLI...");
-					await cli.main(userInputLoop);
-					game.logger.debug("Starting CLI...OK");
 					break;
 				}
 
