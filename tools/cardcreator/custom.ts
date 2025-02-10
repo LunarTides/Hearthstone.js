@@ -3,7 +3,7 @@
  * @module Custom Card Creator
  */
 
-import { createGame } from "@Game/internal.js";
+import { createGame } from "@Core/game.js";
 import type {
 	Blueprint,
 	BlueprintWithOptional,

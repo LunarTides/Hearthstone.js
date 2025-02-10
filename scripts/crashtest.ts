@@ -3,7 +3,8 @@
  * @module Crash Test
  */
 import process from "node:process";
-import { Player, createGame } from "@Game/internal.js";
+import { createGame } from "@Core/game.js";
+import { Player } from "@Core/player.js";
 
 const { game } = createGame();
 

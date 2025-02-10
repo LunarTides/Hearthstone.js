@@ -1,4 +1,5 @@
-import type { Card, Player } from "@Game/internal.js";
+import type { Card } from "@Core/card.js";
+import type { Player } from "@Core/player.js";
 import type { Blueprint, EventKey } from "@Game/types.js";
 
 /**

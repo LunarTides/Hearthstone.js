@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { deckcodeFunctions } from "@Game/internal.js";
+import { deckcodeFunctions } from "@Core/functions/deckcode.js";
 
 /*
  * Need to create a game in case the functions need it

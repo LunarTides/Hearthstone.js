@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { colorFunctions, createGame } from "@Game/internal.js";
+import { colorFunctions } from "@Core/functions/color.js";
+import { createGame } from "@Core/game.js";
 import { stopTagParsing } from "chalk-tags";
 
 /*

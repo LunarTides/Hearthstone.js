@@ -1,11 +1,9 @@
-import {
-	Ai,
-	Card,
-	Logger,
-	Player,
-	eventManager,
-	functions,
-} from "@Game/internal.js";
+import { Ai } from "@Core/ai.js";
+import { Card } from "@Core/card.js";
+import { eventManager } from "@Core/event.js";
+import { functions } from "@Core/functions/index.js";
+import { Logger } from "@Core/logger.js";
+import { Player } from "@Core/player.js";
 import type {
 	Blueprint,
 	CardAbility,

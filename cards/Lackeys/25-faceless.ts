@@ -1,7 +1,7 @@
 // Created by Hand (before the Card Creator Existed)
 
 import assert from "node:assert";
-import { Card } from "@Game/internal.js";
+import { Card } from "@Core/card.js";
 import type { Blueprint } from "@Game/types.js";
 
 export const blueprint: Blueprint = {

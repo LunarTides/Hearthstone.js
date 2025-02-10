@@ -2,7 +2,8 @@
  * Player
  * @module Player
  */
-import { type Ai, Card } from "@Game/internal.js";
+import type { Ai } from "@Core/ai.js";
+import { Card } from "@Core/card.js";
 
 import type {
 	CardClass,

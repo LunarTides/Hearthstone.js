@@ -4,7 +4,7 @@
  * @module Id Script
  */
 
-import { createGame } from "@Game/internal.js";
+import { createGame } from "@Core/game.js";
 
 const { game } = createGame();
 

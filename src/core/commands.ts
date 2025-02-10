@@ -1,4 +1,5 @@
-import { Card, Player } from "@Game/internal.js";
+import { Card } from "@Core/card.js";
+import { Player } from "@Core/player.js";
 import type {
 	CommandList,
 	SelectTargetFlag,

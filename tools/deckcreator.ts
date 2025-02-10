@@ -3,7 +3,8 @@
  * @module Deck Creator
  */
 import util from "node:util";
-import { Card, createGame } from "@Game/internal.js";
+import { Card } from "@Core/card.js";
+import { createGame } from "@Core/game.js";
 import type {
 	CardClass,
 	CardClassNoNeutral,

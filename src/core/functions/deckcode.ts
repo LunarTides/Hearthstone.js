@@ -1,5 +1,5 @@
-import { Card, type Player } from "@Game/internal.js";
-
+import { Card } from "@Core/card.js";
+import type { Player } from "@Core/player.js";
 import type {
 	CardClass,
 	CardClassNoNeutral,

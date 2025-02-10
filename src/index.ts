@@ -4,8 +4,8 @@
  * @module Index
  */
 
+import { createGame } from "@Core/game.js";
 import { validate as validateIds } from "../scripts/id/lib.js";
-import { createGame } from "./internal.js";
 
 /**
  * Starts the game.

@@ -3,7 +3,7 @@
  * @module Card
  */
 import { randomUUID } from "node:crypto";
-import type { Player } from "@Game/internal.js";
+import type { Player } from "@Core/player.js";
 import type {
 	Ability,
 	Blueprint,

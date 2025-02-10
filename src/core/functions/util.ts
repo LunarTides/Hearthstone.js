@@ -7,7 +7,6 @@ import { dirname as pathDirname } from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { format } from "node:util";
-import { Player } from "@Game/internal.js";
 import type { GameConfig, Target } from "@Game/types.js";
 import date from "date-and-time";
 

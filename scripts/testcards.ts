@@ -5,7 +5,9 @@
  */
 
 import process from "node:process";
-import { Card, type Player, createGame } from "@Game/internal.js";
+import { Card } from "@Core/card.js";
+import { createGame } from "@Core/game.js";
+import type { Player } from "@Core/player.js";
 
 const { game } = createGame();
 const cards = await Card.all(true);

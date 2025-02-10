@@ -3,7 +3,8 @@
  * // TODO: Remove all module docstrings.
  * @module AI
  */
-import { Card, Player } from "@Game/internal.js";
+import { Card } from "@Core/card.js";
+import { Player } from "@Core/player.js";
 import type {
 	AiCalcMoveOption,
 	AiHistory,

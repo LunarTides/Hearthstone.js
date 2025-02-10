@@ -1,6 +1,6 @@
 // Created by Hand
 
-import type { Card } from "@Game/core/card.js";
+import type { Card } from "@Core/card.js";
 import type { Blueprint, EventValue } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
