@@ -318,7 +318,7 @@ export const interactFunctions = {
 	},
 
 	/**
-	 * # USE `selectTarget` INSTEAD.
+	 * # USE `promptTarget` INSTEAD.
 	 */
 	async _promptTarget(
 		prompt: string,
@@ -352,7 +352,7 @@ export const interactFunctions = {
 
 		// If the player is an ai, hand over control to the ai.
 		if (game.player.ai) {
-			return game.player.ai.selectTarget(
+			return game.player.ai.promptTarget(
 				newPrompt,
 				card,
 				forceSide,
@@ -1104,7 +1104,7 @@ export const interactFunctions = {
 	 *
 	 * @returns The return value of `game.playCard`
 	 */
-	async gameloopHandleInput(input: string): Promise<GamePlayCardReturn> {
+	async _gameloopHandleInput(input: string): Promise<GamePlayCardReturn> {
 		if ((await this.processCommand(input)) !== -1) {
 			return true;
 		}
@@ -1144,7 +1144,7 @@ export const interactFunctions = {
 					? (game.player.hand.indexOf(rawInput) + 1).toString()
 					: rawInput;
 
-			const turn = await this.gameloopHandleInput(input);
+			const turn = await this._gameloopHandleInput(input);
 
 			await game.event.broadcast("Input", input, game.player);
 			return turn;
@@ -1160,7 +1160,7 @@ export const interactFunctions = {
 		}
 
 		const user = await game.input(input);
-		const returnValue = await this.gameloopHandleInput(user);
+		const returnValue = await this._gameloopHandleInput(user);
 
 		// If there were no errors, return true.
 		if (returnValue === true) {

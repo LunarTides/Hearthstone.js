@@ -22,76 +22,45 @@ let filteredCards: Card[] = [];
 let deck: Card[] = [];
 let runes = "";
 
-const warnings: Record<string, boolean> = {
+const warnings = {
 	latestCard: true,
 };
 
-type Settings = {
+const settings = {
 	card: {
-		history: Card[];
-	};
-	view: {
-		type: "cards" | "deck";
-		page: number;
-		maxPage?: number;
-		cpp: number;
-		class?: CardClass;
-	};
-	sort: {
-		type: keyof Card;
-		order: "asc" | "desc";
-	};
-	search: {
-		query: string[];
-		prevQuery: string[];
-	};
-	deckcode: {
-		cardId: "id" | "name";
-		format: "js" | "vanilla";
-	};
-	commands: {
-		default: string;
-		history: string[];
-		undoableHistory: string[];
-	};
-	other: {
-		firstScreen: boolean;
-	};
-};
-
-const settings: Settings = {
-	card: {
-		history: [],
+		history: [] as Card[],
 	},
 	view: {
-		type: "cards",
+		type: "cards" as "cards" | "deck",
 		page: 1,
+		maxPage: undefined as number | undefined,
 		// Cards per page
 		cpp: 15,
+		class: undefined as CardClass | undefined,
 	},
 	sort: {
-		type: "rarity",
-		order: "asc",
+		type: "rarity" as keyof Card,
+		order: "asc" as "asc" | "desc",
 	},
 	search: {
-		query: [],
-		prevQuery: [],
+		query: [] as string[],
+		prevQuery: [] as string[],
 	},
 	deckcode: {
-		cardId: "id",
-		format: "js",
+		cardId: "id" as "id" | "name",
+		format: "js" as "js" | "vanilla",
 	},
 	commands: {
 		default: "add",
-		history: [],
-		undoableHistory: [],
+		history: [] as string[],
+		undoableHistory: [] as string[],
 	},
 	other: {
 		firstScreen: true,
 	},
 };
 
-const defaultSettings: Settings = game.lodash.cloneDeep(settings);
+const defaultSettings = game.lodash.cloneDeep(settings);
 
 /**
  * Shows the watermark for the Deck Creator
@@ -1295,7 +1264,7 @@ const commands: CommandList = {
 		return true;
 	},
 	async warning(args): Promise<boolean> {
-		const key = args[0];
+		const key = args[0] as keyof typeof warnings;
 
 		if (!Object.keys(warnings).includes(key)) {
 			await game.pause(`<red>'${key}' is not a valid warning!</red>\n`);

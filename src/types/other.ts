@@ -54,15 +54,15 @@ export type FunctionsExportDeckError =
 export type AiCalcMoveOption = Card | "hero power" | "attack" | "use" | "end";
 
 /**
- * SelectTarget alignment
+ * promptTarget alignment
  */
 export type SelectTargetAlignment = "friendly" | "enemy" | "any";
 /**
- * SelectTarget class
+ * promptTarget class
  */
 export type SelectTargetClass = "hero" | "minion" | "any";
 /**
- * SelectTarget flags
+ * promptTarget flags
  */
 export type SelectTargetFlag = "allowLocations" | "forceElusive";
 

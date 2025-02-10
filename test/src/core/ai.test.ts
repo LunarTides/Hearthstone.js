@@ -20,7 +20,7 @@ describe("src/core/ai", () => {
 		expect(false).toEqual(true);
 	});
 
-	test.todo("selectTarget", async () => {
+	test.todo("promptTarget", async () => {
 		expect(false).toEqual(true);
 	});
 
