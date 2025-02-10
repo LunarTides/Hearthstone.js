@@ -1,7 +1,3 @@
-/**
- * This is the deck creator.
- * @module Deck Creator
- */
 import util from "node:util";
 import { Card } from "@Core/card.js";
 import { createGame } from "@Core/game.js";

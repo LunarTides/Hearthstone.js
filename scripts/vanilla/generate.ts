@@ -1,6 +1,5 @@
 /**
  * Importing this module will reach out to an api and save the result to a file.
- * @module Vanilla Card Generator
  */
 
 import { Buffer } from "node:buffer";

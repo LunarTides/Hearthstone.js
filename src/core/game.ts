@@ -16,10 +16,6 @@ import type {
 	UnknownEventValue,
 } from "@Game/types.js";
 import date from "date-and-time";
-/**
- * Game
- * @module Game
- */
 import _ from "lodash";
 import { cardIds } from "../../cards/ids.js";
 

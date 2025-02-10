@@ -1,8 +1,3 @@
-/**
- * The AI
- * // TODO: Remove all module docstrings.
- * @module AI
- */
 import { Card } from "@Core/card.js";
 import { Player } from "@Core/player.js";
 import type {

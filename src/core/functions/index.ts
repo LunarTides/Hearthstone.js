@@ -1,8 +1,3 @@
-/**
- * Functions
- * @module Functions
- */
-
 import { cardFunctions } from "./card.js";
 import { colorFunctions } from "./color.js";
 import { deckcodeFunctions } from "./deckcode.js";

@@ -1,8 +1,3 @@
-/**
- * This is a library
- * @module Card Creator Library
- */
-
 import { createGame } from "@Core/game.js";
 import type { BlueprintWithOptional, CardType } from "@Game/types.js";
 import { resumeTagParsing, stopTagParsing } from "chalk-tags";

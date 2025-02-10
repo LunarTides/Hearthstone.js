@@ -1,7 +1,7 @@
 /**
  * The entry point of the program. Acts like a hub between the tools / scripts and the game.
- * @module Hub
  */
+
 import { Card } from "@Core/card.js";
 
 import * as src from "./src/index.js"; // Source Code

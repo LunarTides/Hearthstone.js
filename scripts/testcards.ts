@@ -1,7 +1,6 @@
 /**
- * Tests that cards works properly. Executes the `test` ability on all cards in its own env.
- *
- * @module Test Cards
+ * Tests that cards works properly.
+ * Executes the `test` ability on all cards in its own env.
  */
 
 import process from "node:process";

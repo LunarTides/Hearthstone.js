@@ -1,8 +1,3 @@
-/**
- * This is the custom card creator.
- * @module Custom Card Creator
- */
-
 import { createGame } from "@Core/game.js";
 import type {
 	Blueprint,

@@ -1,7 +1,5 @@
 /**
- * The entry point of the game.
- *
- * @module Index
+ * The actual entry point of the game.
  */
 
 import { createGame } from "@Core/game.js";

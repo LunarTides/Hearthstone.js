@@ -1,7 +1,3 @@
-/**
- * Player
- * @module Player
- */
 import type { Ai } from "@Core/ai.js";
 import { Card } from "@Core/card.js";
 

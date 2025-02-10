@@ -1,8 +1,3 @@
-/**
- * This is the class creator.
- * @module Class Creator
- */
-
 import { createGame } from "@Core/game.js";
 import type { Blueprint, CardClass, CardRarity } from "@Game/types.js";
 import * as lib from "./lib.js";

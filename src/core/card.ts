@@ -1,7 +1,3 @@
-/**
- * Card
- * @module Card
- */
 import { randomUUID } from "node:crypto";
 import type { Player } from "@Core/player.js";
 import type {

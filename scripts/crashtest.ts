@@ -1,7 +1,3 @@
-/**
- * The crash test script.
- * @module Crash Test
- */
 import process from "node:process";
 import { createGame } from "@Core/game.js";
 import { Player } from "@Core/player.js";

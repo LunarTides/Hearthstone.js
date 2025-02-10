@@ -1,8 +1,3 @@
-/**
- * This is the vanilla card creator.
- * @module Vanilla Card Creator
- */
-
 import { createGame } from "@Core/game.js";
 import type {
 	Blueprint,
