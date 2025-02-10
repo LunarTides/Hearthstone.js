@@ -18,7 +18,7 @@ export const blueprint: Blueprint = {
 
 	async cast(owner, self) {
 		// Deal $10 damage.
-		const target = await game.interact.promptTarget(
+		const target = await game.functions.interact.promptTarget(
 			self.text,
 			self,
 			"any",

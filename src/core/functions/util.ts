@@ -142,7 +142,7 @@ export const utilFunctions = {
 		const dateStringFileFriendly = date.format(now, "DD.MM.YY-HH.mm.ss");
 
 		// Grab the history of the game
-		let history = await game.interact.gameLoop.handleCmds("history", {
+		let history = await game.functions.interact.processCommand("history", {
 			echo: false,
 			debug: true,
 		});
@@ -159,7 +159,7 @@ export const utilFunctions = {
 		 * Do this so it can actually run '/ai'
 		 */
 		game.config.general.debug = true;
-		const aiHistory = await game.interact.gameLoop.handleCmds("/ai", {
+		const aiHistory = await game.functions.interact.processCommand("/ai", {
 			echo: false,
 		});
 
@@ -619,5 +619,110 @@ ${mainContent}
 		}
 
 		return game.lodash.sample(targets);
+	},
+
+	/**
+	 * Parses the given arguments for the eval command and returns the code to evaluate
+	 */
+	async parseEvalArgs(args: string[]): Promise<string> {
+		if (args.length <= 0) {
+			await game.pause("<red>Too few arguments.</red>\n");
+			return args.join(" ");
+		}
+
+		let log = false;
+
+		if (args[0] === "log") {
+			log = true;
+			args.shift();
+		}
+
+		let code = args.join(" ");
+
+		// Allow for stuff like `/eval @Player1.addToHand(@00ff00.perfectCopy());`
+		code = code.replaceAll("@Player", "game.player");
+
+		let trueLog = false;
+
+		const uuidRegex = /@\w+/g;
+		for (const match of code.matchAll(uuidRegex)) {
+			const uuid = match[0].slice(1);
+
+			// HACK: Do this or logging doesn't work.
+			if (log) {
+				code = code.replace(
+					`@${uuid}`,
+					`let __card = Card.fromUUID("${uuid}");if (!__card) throw new Error("Card with uuid \\"${uuid}\\" not found");console.log(__card`,
+				);
+
+				log = false;
+				trueLog = true;
+			} else {
+				code = code.replace(
+					`@${uuid}`,
+					`let __card = Card.fromUUID("${uuid}");if (!__card) throw new Error("Card with uuid \\"${uuid}\\" not found");__card`,
+				);
+			}
+		}
+
+		/*
+		 * Allow for stuff like `/eval h#c#1.addAttack(b#o#2.attack)`;
+		 * ^^ This adds the second card on the opponent's side of the board's attack to the card at index 1 in the current player's hand
+		 */
+		const indexBasedRegex = /([hbdg])#([co])#(\d+)/g;
+		for (const match of code.matchAll(indexBasedRegex)) {
+			let [line, where, side, index] = match;
+
+			switch (where) {
+				case "h": {
+					where = "game.player[x].hand";
+					break;
+				}
+
+				case "d": {
+					where = "game.player[x].deck";
+					break;
+				}
+
+				case "b": {
+					where = "game.player[x].board";
+					break;
+				}
+
+				case "g": {
+					where = "game.player[x].graveyard";
+					break;
+				}
+
+				// No default
+			}
+
+			side =
+				side === "c"
+					? (game.player.id + 1).toString()
+					: (game.opponent.id + 1).toString();
+
+			where = where.replaceAll("[x]", side);
+
+			code = code.replace(line, `${where}[${index} - 1]`);
+		}
+
+		if (log) {
+			if (code.at(-1) === ";") {
+				code = code.slice(0, -1);
+			}
+
+			code = `console.log(${code});await game.pause();`;
+		}
+
+		if (trueLog) {
+			if (code.at(-1) === ";") {
+				code = code.slice(0, -1);
+			}
+
+			code = `${code});await game.pause();`;
+		}
+
+		return code;
 	},
 };

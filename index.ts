@@ -33,7 +33,7 @@ try {
  * Clears the console and prints the version information of the Hearthstone.js Hub.
  */
 const watermark = () => {
-	game.interact.cls();
+	game.functions.interact.cls();
 
 	console.log(
 		`
@@ -87,7 +87,7 @@ async function userInputLoop(
 		}
 
 		if (
-			game.interact.isInputExit(user) ||
+			game.functions.interact.isInputExit(user) ||
 			user[0].toLowerCase() === exitCharacter?.toLowerCase()
 		) {
 			running = false;
@@ -108,7 +108,7 @@ async function cardCreator() {
 		async (input) => {
 			const type = input[0].toLowerCase();
 
-			game.interact.cls();
+			game.functions.interact.cls();
 
 			if (type === "v") {
 				// This is to throw an error if it can't find the vanilla cards

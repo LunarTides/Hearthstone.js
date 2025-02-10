@@ -29,6 +29,6 @@ export const blueprint: Blueprint = {
 	async battlecry(owner, self) {
 		// Dredge.
 
-		await game.interact.card.promptDredge();
+		await game.functions.card.promptDredge();
 	},
 };

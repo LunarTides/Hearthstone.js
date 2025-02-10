@@ -56,12 +56,12 @@ async function main(): Promise<void> {
 		}
 
 		await game.startGame();
-		await game.interact.card.promptMulligan(player1);
-		await game.interact.card.promptMulligan(player2);
+		await game.functions.card.promptMulligan(player1);
+		await game.functions.card.promptMulligan(player2);
 
 		try {
 			while (game.running) {
-				await game.interact.gameLoop.gameloop();
+				await game.functions.interact.gameloop();
 			}
 		} catch (error) {
 			if (!(error instanceof Error)) {
@@ -74,8 +74,8 @@ async function main(): Promise<void> {
 			game.config.general.debug = true;
 			await game.functions.util.createLogFile(error);
 
-			await game.interact.gameLoop.handleCmds("/ai");
-			await game.interact.gameLoop.handleCmds("history", { debug: true });
+			await game.functions.interact.processCommand("/ai");
+			await game.functions.interact.processCommand("history", { debug: true });
 
 			console.log(
 				"THE GAME CRASHED: LOOK ABOVE FOR THE HISTORY, AND THE AI'S LOGS.",

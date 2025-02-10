@@ -18,7 +18,7 @@ export async function main(
 	overrideType?: lib.CcType,
 ): Promise<void> {
 	const watermark = () => {
-		game.interact.cls();
+		game.functions.interact.cls();
 		console.log("Hearthstone.js Class Creator (C) 2022\n");
 		console.log("type 'back' at any step to cancel.\n");
 	};
@@ -42,7 +42,7 @@ export async function main(
 
 		watermark();
 		const value = await game.input(`${question} `);
-		if (!value || game.interact.isInputExit(value)) {
+		if (!value || game.functions.interact.isInputExit(value)) {
 			exited = true;
 		}
 

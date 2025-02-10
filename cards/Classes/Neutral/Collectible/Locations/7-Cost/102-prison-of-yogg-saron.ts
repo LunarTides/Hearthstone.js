@@ -19,7 +19,7 @@ export const blueprint: Blueprint = {
 
 	async use(owner, self) {
 		// Choose a character. Cast 4 random spells (targeting it if possible).
-		const target = await game.interact.promptTarget(
+		const target = await game.functions.interact.promptTarget(
 			self.text,
 			self,
 			"any",

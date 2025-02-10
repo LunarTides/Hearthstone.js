@@ -18,7 +18,7 @@ export const blueprint: Blueprint = {
 		// Restore 2 Health.
 
 		// Hero power targets need to use the `forceElusive` flag.
-		const target = await game.interact.promptTarget(
+		const target = await game.functions.interact.promptTarget(
 			"Restore 2 health.",
 			self,
 			"any",

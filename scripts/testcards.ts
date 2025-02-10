@@ -54,6 +54,12 @@ export async function main(): Promise<void> {
 		game.config.ai.player2 = false;
 		game.doConfigAi();
 
+		// NOTE: For some bizzare reason, if we remove these lines,
+		// the game will get stuck in an infinite loop.
+		// This makes no sense, but whatever...
+		game.player = player1;
+		game.opponent = player2;
+
 		game.config.decks.validate = false;
 		await assignDeck(player1);
 		await assignDeck(player2);

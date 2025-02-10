@@ -31,7 +31,7 @@ export const blueprint: Blueprint = {
 		 */
 
 		// Testing your solution.
-		const success = await game.interact.verifyDiySolution(
+		const success = await game.functions.card.verifyDiySolution(
 			self.attack === 1 && self.health === 2,
 			self,
 		);

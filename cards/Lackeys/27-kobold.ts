@@ -22,7 +22,7 @@ export const blueprint: Blueprint = {
 		// Deal 2 damage.
 
 		// Select a target
-		const target = await game.interact.promptTarget(
+		const target = await game.functions.interact.promptTarget(
 			"Deal 2 damage.",
 			self,
 			"any",

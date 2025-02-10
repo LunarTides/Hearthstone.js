@@ -5,7 +5,6 @@ import {
 	Player,
 	eventManager,
 	functions,
-	interact,
 } from "@Game/internal.js";
 import type {
 	Blueprint,
@@ -791,8 +790,8 @@ const playCard = {
 		if (player.ai) {
 			q = player.ai.trade(card);
 		} else {
-			await game.interact.info.printGameState(player);
-			q = await game.interact.promptYN(
+			await game.functions.interact.printGameState(player);
+			q = await game.functions.interact.promptYN(
 				`Would you like to trade ${card.colorFromRarity()} for a random card in your deck?`,
 				player,
 			);
@@ -836,8 +835,8 @@ const playCard = {
 		if (player.ai) {
 			q = player.ai.forge(card);
 		} else {
-			await game.interact.info.printGameState(player);
-			q = await game.interact.promptYN(
+			await game.functions.interact.printGameState(player);
+			q = await game.functions.interact.promptYN(
 				`Would you like to forge ${card.colorFromRarity()}?`,
 				player,
 			);
@@ -900,8 +899,8 @@ const playCard = {
 		const warnMessage =
 			"<yellow>WARNING: This card's condition is not fulfilled. Are you sure you want to play this card?</yellow>";
 
-		await game.interact.info.printGameState(player);
-		const warn = await game.interact.promptYN(warnMessage, player);
+		await game.functions.interact.printGameState(player);
+		const warn = await game.functions.interact.promptYN(warnMessage, player);
 
 		if (!warn) {
 			return false;
@@ -993,7 +992,7 @@ const playCard = {
 		}
 
 		// I'm using while loops to prevent a million indents
-		const mech = await game.interact.promptTargetCard(
+		const mech = await game.functions.interact.promptTargetCard(
 			"Which minion do you want this card to Magnetize to:",
 			undefined,
 			"friendly",
@@ -1185,14 +1184,6 @@ export class Game {
 	event = eventManager;
 
 	/**
-	 * This has a lot of functions for interacting with the user.
-	 *
-	 * This is generally less useful than the `functions` object, since the majority of these functions are only used once in the source code.
-	 * However, some functions are still useful. For example, the `selectTarget` function.
-	 */
-	interact = interact;
-
-	/**
 	 * Some configuration for the game.
 	 *
 	 * Look in the `config` folder.
@@ -1330,7 +1321,7 @@ export class Game {
 		overrideNoInput = false,
 		useInputQueue = true,
 	): Promise<string> {
-		return await this.interact.gameLoop.input(
+		return await this.functions.interact.input(
 			prompt,
 			overrideNoInput,
 			useInputQueue,
@@ -1344,7 +1335,7 @@ export class Game {
 	 * @param [prompt="Press enter to continue..."] The prompt to show the user
 	 */
 	async pause(prompt = "Press enter to continue..."): Promise<void> {
-		await this.interact.gameLoop.input(prompt);
+		await this.functions.interact.input(prompt);
 	}
 
 	/**
@@ -1402,7 +1393,6 @@ export class Game {
 
 			// Suppress "AddCardToHand" and "DrawCard" events in the loop since the events need to be unsuppressed by the time any `card.activate` is called
 			const unsuppressAddCardToHand = this.event.suppress("AddCardToHand");
-
 			const unsuppressDrawCard = this.event.suppress("DrawCard");
 
 			// Set the player's hero to the starting hero for the class
@@ -1476,11 +1466,11 @@ export class Game {
 			return false;
 		}
 
-		this.interact.info.printWatermark();
+		this.functions.interact.printWatermark();
 		console.log();
 
 		// Do this to bypass 'Press enter to continue' prompt when showing history
-		const history = await this.interact.gameLoop.handleCmds("history", {
+		const history = await this.functions.interact.processCommand("history", {
 			echo: false,
 		});
 

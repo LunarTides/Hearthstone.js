@@ -17,7 +17,7 @@ export const blueprint: Blueprint = {
 
 	async cast(owner, self) {
 		// Dredge. If you have the Mana to play the card this turn, draw it.
-		const card = await game.interact.card.promptDredge();
+		const card = await game.functions.card.promptDredge();
 		if (!card || owner.mana < card.cost) {
 			return;
 		}

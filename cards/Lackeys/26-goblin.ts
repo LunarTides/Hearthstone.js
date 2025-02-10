@@ -22,7 +22,7 @@ export const blueprint: Blueprint = {
 		// Give a friendly minion +1 Attack and Rush.
 
 		// Prompt the user to select a friendly minion
-		const target = await game.interact.promptTargetCard(
+		const target = await game.functions.interact.promptTargetCard(
 			"Give a friendly minion +1 Attack and Rush",
 			self,
 			"friendly",

@@ -21,14 +21,14 @@ export const blueprint: Blueprint = {
 		// Dredge.
 
 		// "game.interact" is an instance of the Interact object as defined in `src/core/interact/index.ts`.
-		await game.interact.card.promptDredge();
+		await game.functions.card.promptDredge();
 	},
 
 	// Ignore this
 	async test(owner, self) {
 		// Makes the player answer "1" to the next question
 		owner.inputQueue = ["1"];
-		const card = await game.interact.card.promptDredge();
+		const card = await game.functions.card.promptDredge();
 
 		// Check if the top card of the player's deck is the card that was dredged
 		assert.equal(game.lodash.last(owner.deck), card);

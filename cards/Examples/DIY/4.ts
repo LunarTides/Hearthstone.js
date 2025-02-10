@@ -66,7 +66,7 @@ export const blueprint: Blueprint = {
 				card.owner === owner,
 		);
 
-		await game.interact.verifyDiySolution(solved, self);
+		await game.functions.card.verifyDiySolution(solved, self);
 
 		if (!solved) {
 			await self.kill();

@@ -100,7 +100,7 @@ const defaultSettings: Settings = game.lodash.cloneDeep(settings);
  * Shows the watermark for the Deck Creator
  */
 function watermark(): void {
-	game.interact.cls();
+	game.functions.interact.cls();
 	console.log("Hearthstone.js Deck Creator (C) 2022\n");
 }
 
@@ -987,7 +987,7 @@ async function handleCmds(cmd: string, addToHistory = true): Promise<boolean> {
 
 	let foundCommand = false;
 
-	if (game.interact.isInputExit(name)) {
+	if (game.functions.interact.isInputExit(name)) {
 		running = false;
 		return true;
 	}
@@ -1434,7 +1434,7 @@ const commands: CommandList = {
 			return false;
 		}
 
-		const code = await game.interact.parseEvalArgs(args);
+		const code = await game.functions.util.parseEvalArgs(args);
 
 		try {
 			// biome-ignore lint/security/noGlobalEval: This is a security issue yes, but it's a debug command.

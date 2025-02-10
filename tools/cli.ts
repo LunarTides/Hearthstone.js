@@ -243,7 +243,7 @@ export async function main(
 					break;
 				}
 
-				const code = await game.interact.parseEvalArgs(args);
+				const code = await game.functions.util.parseEvalArgs(args);
 
 				try {
 					// biome-ignore lint/security/noGlobalEval: This is a security issue yes, but it's a debug command.
