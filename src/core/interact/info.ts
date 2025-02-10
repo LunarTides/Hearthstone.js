@@ -25,6 +25,12 @@ export const infoInteract = {
 				"\n<yellow>WARNING: YOU ARE ON A TOPIC BRANCH. THIS VERSION IS NOT READY.</yellow>",
 			);
 		}
+
+		if (game.time.events.anniversary) {
+			console.log(
+				`\n<b>[${game.time.year - 2022} YEAR ANNIVERSARY! Enjoy some fun-facts about Hearthstone.js!]</b>`,
+			);
+		}
 	},
 
 	/**
@@ -210,6 +216,12 @@ export const infoInteract = {
 		});
 
 		console.log(wallify(finished));
+
+		if (game.time.events.anniversary) {
+			console.log(
+				"<i>[Anniversary: The code for the stats above was rewritten 3 times in total]</i>",
+			);
+		}
 	},
 
 	/**

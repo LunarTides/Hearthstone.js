@@ -133,8 +133,8 @@ export const gameloopInteract = {
 	 * @returns Cancel | Success
 	 */
 	async doTurnAttack(): Promise<-1 | boolean | Card> {
-		let attacker: Target | -1 | false;
-		let target: Target | -1 | false;
+		let attacker: Target | -1 | null;
+		let target: Target | -1 | null;
 
 		if (game.player.ai) {
 			const alternativeModel = `legacyAttack${game.config.ai.attackModel}`;

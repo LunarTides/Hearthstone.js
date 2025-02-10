@@ -1266,13 +1266,18 @@ export class Game {
 	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	cache: Record<string, any> = {};
 
+	time = {
+		year: 0,
+
+		events: {
+			anniversary: false,
+			prideMonth: false,
+		},
+	};
+
 	cardCollections = cardCollections;
 	lodash = _;
 	cardIds = cardIds;
-
-	constructor() {
-		globalThis.game = this;
-	}
 
 	/**
 	 * Sets up the game by assigning players and initializing game state.
@@ -1280,7 +1285,9 @@ export class Game {
 	 * @param player1 The first player.
 	 * @param player2 The second player.
 	 */
-	setup(player1: Player, player2: Player): void {
+	constructor(player1: Player, player2: Player) {
+		globalThis.game = this;
+
 		// Choose a random player to be player 1 and player 2
 		if (this.lodash.random(0, 1)) {
 			this.player1 = player1;
@@ -1297,6 +1304,17 @@ export class Game {
 		// Set the player's ids
 		this.player1.id = 0;
 		this.player2.id = 1;
+
+		// Check if the date is the 14th of February
+		const currentDate = new Date();
+		this.time.year = currentDate.getFullYear();
+
+		this.time.events.anniversary =
+			date.format(currentDate, "MM-DD") === "02-14";
+		this.time.events.prideMonth = date.format(currentDate, "MM") === "06";
+
+		// this.time.events.anniversary = true;
+		// this.time.events.prideMonth = true;
 	}
 
 	/**
@@ -1689,22 +1707,13 @@ export class Game {
  * @returns An object containing the game instance, player 1, and player 2.
  */
 export function createGame() {
-	const game = new Game();
 	const player1 = new Player("Player 1");
 	const player2 = new Player("Player 2");
+	const game = new Game(player1, player2);
 	game.functions.util.importConfig();
 	Card.registerAll();
 	Logger.setup();
-	game.setup(player1, player2);
 	game.doConfigAi();
-
-	// Check if the date is the 14th of February
-	const currentDate = new Date();
-	const isFebruary14th = date.format(currentDate, "MM-DD") === "02-14";
-
-	if (isFebruary14th && game.config.general.locale === "en_US") {
-		game.config.general.locale = "anniversary";
-	}
 
 	return { game, player1, player2 };
 }
