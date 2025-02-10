@@ -613,14 +613,14 @@ export const deckcodeFunctions = {
 		)?.cardClass;
 		let heroClassName = game.lodash.capitalize(
 			heroClass?.toString() ?? game.player2.heroClass,
-		);
+		) as CardClass;
 
 		// Wtf hearthstone?
-		if (heroClassName === "Deathknight") {
+		if (heroClassName === ("Deathknight" as CardClass)) {
 			heroClassName = "Death Knight";
 		}
 
-		if (heroClassName === "Demonhunter") {
+		if (heroClassName === ("Demonhunter" as CardClass)) {
 			heroClassName = "Demon Hunter";
 		}
 

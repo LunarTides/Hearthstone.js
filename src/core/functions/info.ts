@@ -1,11 +1,11 @@
 import { format } from "node:util";
-import { version } from "@Game/../package.json";
+import pkg from "@Game/../package.json" with { type: "json" };
 
 export const infoFunctions = {
 	version(): { version: string; branch: string; build: number } {
-		const ver = version.split("-")[0];
-		const branch = version.split("-")[1].split(".")[0];
-		const build = Number.parseInt(version.split("-")[1].split(".")[1]);
+		const ver = pkg.version.split("-")[0];
+		const branch = pkg.version.split("-")[1].split(".")[0];
+		const build = Number.parseInt(pkg.version.split("-")[1].split(".")[1]);
 
 		return {
 			version: ver,
