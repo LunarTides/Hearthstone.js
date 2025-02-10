@@ -219,6 +219,8 @@ export type Blueprint = {
 	classes: CardClass[];
 	/** The rarity of the card. This doesn't really do much in this game since there isn't any lootbox mechanics here. Examples of rarities: "Legendary", "Epic", "Free", etc... */
 	rarity: CardRarity;
+	/** The tags of the card. */
+	tags: string[];
 	/** If the card should be allowed in decks / card pools. */
 	collectible: boolean;
 	/**

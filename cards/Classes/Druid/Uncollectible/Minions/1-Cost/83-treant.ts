@@ -10,6 +10,7 @@ export const blueprint: Blueprint = {
 	classes: ["Druid"],
 	rarity: "Free",
 	collectible: false,
+	tags: [],
 	id: 83,
 
 	attack: 2,

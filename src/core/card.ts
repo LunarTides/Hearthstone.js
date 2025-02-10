@@ -101,6 +101,8 @@ export class Card {
 	 */
 	keywords: { [key in CardKeyword]?: unknown } = {};
 
+	tags: string[] = [];
+
 	/**
 	 * The card's blueprint. This is the baseline of the card.
 	 */
@@ -430,6 +432,18 @@ export class Card {
 		}
 
 		return game.cards.filter((c) => c.collectible || include_uncollectible);
+	}
+
+	/**
+	 * Returns all cards that have at least one of the specified tags.
+	 *
+	 * @param tags An array of tags to filter the cards by.
+	 * @returns An array of cards that have any of the specified tags.
+	 */
+	static async allWithTags(tags: string[]): Promise<Card[]> {
+		return (await Card.all()).filter((c) =>
+			tags.some((tag) => c.tags.includes(tag)),
+		);
 	}
 
 	/**

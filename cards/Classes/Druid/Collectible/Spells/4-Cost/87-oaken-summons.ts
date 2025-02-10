@@ -11,6 +11,7 @@ export const blueprint: Blueprint = {
 	classes: ["Druid"],
 	rarity: "Common",
 	collectible: true,
+	tags: [],
 	id: 87,
 
 	spellSchool: "Nature",
