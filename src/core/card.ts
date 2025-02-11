@@ -2077,8 +2077,17 @@ export class Card {
 		sb += this.colorFromRarity(name);
 
 		if (game.config.general.debug) {
+			sb += " (";
+
 			const idHex = (this.id + 1000).toString(16).repeat(6).slice(0, 6);
-			sb += ` (#<#${idHex}>${this.id}</#> @${this.coloredUUID()})`;
+			sb += `#<#${idHex}>${this.id}</#>`;
+			sb += ` @${this.coloredUUID()}`;
+
+			if (this.tags.length > 0) {
+				sb += ` <gray>[${this.tags.join(", ")}]</gray>`;
+			}
+
+			sb += ")";
 		}
 
 		if (this.hasStats()) {

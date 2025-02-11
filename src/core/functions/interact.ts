@@ -786,9 +786,14 @@ export const interactFunctions = {
 	 */
 	async printHand(player: Player): Promise<void> {
 		console.log("--- %s (%s)'s Hand ---", player.name, player.heroClass);
+
+		const debugInfo = game.config.general.debug
+			? "(<gray>Debug Info -></gray> #id @uuid <gray>[tags]</gray>) "
+			: "";
+
 		// Add the help message
 		console.log(
-			"([index] <cyan>{Cost}</cyan> <b>Name</b> <bright:green>[attack / health]</bright:green> <yellow>(type)</yellow>)\n",
+			`([index] <cyan>{Cost}</cyan> <b>Name</b> ${debugInfo}<bright:green>[attack / health]</bright:green> <yellow>(type)</yellow>)\n`,
 		);
 
 		for (const [index, card] of player.hand.entries()) {
