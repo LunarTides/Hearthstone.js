@@ -212,7 +212,7 @@ export const cardFunctions = {
 
 			// Validation error
 			console.log(
-				"<red>Card <bold>'%s'</bold> (%s) is invalid since %s</red>",
+				"<red>ERROR: Card <bold>'%s'</bold> (%s) is invalid since %s</red>",
 				blueprint.name,
 				blueprint.id,
 				errorMessage,
@@ -302,9 +302,8 @@ export const cardFunctions = {
 				}
 
 				// We have an unwanted field
-
 				if (blueprint[field as keyof Blueprint]) {
-					result = `<bold>${field} SHOULD NOT</bold> exist on card type ${blueprint.type}.`;
+					result = `<bold>'${field}' SHOULD NOT</bold> exist on card type ${blueprint.type}.`;
 				}
 			}
 		}
