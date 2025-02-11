@@ -53,8 +53,8 @@ async function main(): Promise<void> {
 		}
 
 		await game.startGame();
-		await game.functions.card.promptMulligan(player1);
-		await game.functions.card.promptMulligan(player2);
+		await game.functions.interact.promptMulligan(player1);
+		await game.functions.interact.promptMulligan(player2);
 
 		try {
 			while (game.running) {

@@ -94,7 +94,7 @@ export const commands: CommandList = {
 
 	async use(): Promise<boolean> {
 		// Use location
-		const errorCode = await game.functions.card.promptUseLocation();
+		const errorCode = await game.functions.interact.promptUseLocation();
 
 		if (errorCode === true || errorCode === "refund" || game.player.ai) {
 			return true;

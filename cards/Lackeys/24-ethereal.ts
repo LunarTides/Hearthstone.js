@@ -29,7 +29,7 @@ export const blueprint: Blueprint = {
 		}
 
 		// Prompt a discover
-		const card = await game.functions.card.promptDiscover(
+		const card = await game.functions.interact.promptDiscover(
 			"Discover a spell.",
 			pool,
 		);

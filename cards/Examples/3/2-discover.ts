@@ -31,8 +31,8 @@ export const blueprint: Blueprint = {
 		// We need to filter away any non-spell cards.
 		pool = pool.filter((c) => c.type === "Spell");
 
-		// game.functions.card.discover(prompt, pool, ifItShouldFilterAwayCardsThatAreNotThePlayersClass = true, amountOfCardsToChooseFrom = 3)
-		const spell = await game.functions.card.promptDiscover(
+		// game.functions.interact.discover(prompt, pool, ifItShouldFilterAwayCardsThatAreNotThePlayersClass = true, amountOfCardsToChooseFrom = 3)
+		const spell = await game.functions.interact.promptDiscover(
 			"Discover a spell.",
 			pool,
 		);

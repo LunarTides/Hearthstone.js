@@ -50,8 +50,8 @@ export async function main(): Promise<void> {
 	game.logger.debug("Starting game...OK");
 
 	game.logger.debug("Performing mulligan...");
-	await game.functions.card.promptMulligan(player1);
-	await game.functions.card.promptMulligan(player2);
+	await game.functions.interact.promptMulligan(player1);
+	await game.functions.interact.promptMulligan(player2);
 	game.logger.debug("Performing mulligan...OK");
 
 	game.logger.debug("Finished setting up game.");
