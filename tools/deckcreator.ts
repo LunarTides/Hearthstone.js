@@ -470,7 +470,7 @@ async function showCards(): Promise<void> {
 		/*
 		 * The card's name should be colored, while the id should not
 		 * I don't add colors above, since createWall breaks when colors are used.
-		 * ^^^^^^^^ Update 05.06.2024: TODO: This is no longer true, please re-evaluate.
+		 * ^^^^^^^^ Update 05.06.2024: TODO: This is no longer true, please re-evaluate. #277
 		 */
 		const toDisplay = `${card.colorFromRarity(brickSplit[0])}-${brickSplit[1]}`;
 
@@ -659,7 +659,7 @@ async function showDeck(): Promise<void> {
 			const amount = nameAndAmount.split(regex);
 			const card = findCard(nameAndAmount.replace(regex, "").trim());
 
-			// TODO: Maybe throw an error?
+			// TODO: Maybe throw an error? #277
 			if (!card) {
 				continue;
 			}

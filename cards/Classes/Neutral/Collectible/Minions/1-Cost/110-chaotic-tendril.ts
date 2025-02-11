@@ -31,7 +31,7 @@ export const blueprint: Blueprint = {
 			await spell.activate("cast");
 		}
 
-		// TODO: Improve your future Chaotic Tendrils
+		// TODO: Improve your future Chaotic Tendrils. #372
 	},
 
 	async test(owner, self) {

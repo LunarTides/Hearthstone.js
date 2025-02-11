@@ -29,7 +29,6 @@ describe("src/core/functions/card", () => {
 		expect(cardFunctions.matchTribe("Beast", "Demon")).toEqual(false);
 		expect(cardFunctions.matchTribe("Beast", "Beast")).toEqual(true);
 		expect(cardFunctions.matchTribe("All", "Beast")).toEqual(true);
-		// TODO: Should this return true?
 		expect(cardFunctions.matchTribe("Beast", "All")).toEqual(false);
 	});
 

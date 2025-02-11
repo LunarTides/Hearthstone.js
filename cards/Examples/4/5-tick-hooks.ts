@@ -60,6 +60,7 @@ export const blueprint: Blueprint = {
 		/*
 		 * TODO: Change this example card to use a better example. I'm sure there is a card that uses tick hooks in a better way that we can copy.
 		 * This is a bad example, since this is what the `tick` ability is supposed to do anyway.
+		 * #373
 		 */
 
 		/*

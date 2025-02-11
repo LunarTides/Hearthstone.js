@@ -1116,7 +1116,7 @@ const cards = {
 			card.setKeyword("Dormant", dormant + game.turn);
 			card.addKeyword("Immune");
 
-			// TODO: Why are we readying the dormant minion?
+			// TODO: Why are we readying the dormant minion? #277
 			card.ready();
 			card.resetAttackTimes();
 		}
@@ -1542,7 +1542,7 @@ export class Game {
 
 				/*
 				 * Set the card's turn to this turn.
-				 * TODO: Should this happen?
+				 * TODO: Should this happen? #277
 				 */
 				card.turn = this.turn;
 

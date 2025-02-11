@@ -688,7 +688,7 @@ export const deckcodeFunctions = {
 				throw new Error("Could not get name from card in deckdefinition");
 			}
 
-			// TODO: Use ids instead
+			// TODO: Use ids instead. #277
 			const card = await Card.fromName(name, player);
 			if (!card) {
 				throw new Error("Invalid card name");

@@ -727,7 +727,7 @@ export const interactFunctions = {
 			return `Weapon: ${detail(player.weapon.colorFromRarity(), await player.weapon.readable())}`;
 		});
 
-		// TODO: Add quests, secrets, etc...
+		// TODO: Add quests, secrets, etc... #277
 
 		// Attack
 		await doStat(async (player) => {

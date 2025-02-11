@@ -10,7 +10,7 @@ import type {
 	Target,
 } from "@Game/types.js";
 
-// TODO: Ai gets stuck in infinite loop when using cathedral of atonement (location) | shadowcloth needle (0 attack wpn) | that minion has no attack.
+// TODO: Ai gets stuck in infinite loop when using cathedral of atonement (location) | shadowcloth needle (0 attack wpn) | that minion has no attack. #374
 
 /**
  * Uses Sentiment Analysis to play the game.
@@ -476,7 +476,7 @@ export class Ai {
 		 * I know this is a bad solution
 		 * "Deal 2 damage to a minion; or Restore 5 Health."
 		 * ^^^^^ It will always choose to restore 5 health, since it sees deal 2 damage as bad but oh well, future me problem.
-		 * ^^^^^ Update 29/05/23  TODO: Fix this
+		 * ^^^^^ Update 29/05/23  TODO: Fix this. #277
 		 */
 		let bestChoice: number | undefined;
 		let bestScore = -100_000;
@@ -1118,7 +1118,7 @@ export class Ai {
 
 		const attacker = lowestScore[0];
 
-		// TODO: Does this never fail?
+		// TODO: Does this never fail? #277
 		if (!attacker && this.player.attack > 0 && this.player.canAttack) {
 			return this.player;
 		}

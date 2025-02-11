@@ -1593,7 +1593,7 @@ export class Card {
 	 *
 	 * @returns Success
 	 */
-	// TODO: Is this function needed?
+	// TODO: Is this function needed? #277
 	async formatPlaceholders(): Promise<boolean> {
 		if (!this.abilities.placeholders) {
 			return false;

@@ -594,7 +594,7 @@ export const commands: CommandList = {
 			for (const [historyIndex, historyKey] of historyList.entries()) {
 				let [key, value, player] = historyKey;
 				if (!player) {
-					// TODO: Maybe throw an error
+					// TODO: Maybe throw an error. #277
 					continue;
 				}
 
@@ -690,7 +690,7 @@ export const debugCommands: CommandList = {
 
 		const cardName = args.join(" ");
 
-		// TODO: Get all cards from the name and ask the user which one they want
+		// TODO: Get all cards from the name and ask the user which one they want. #277
 		const card = await Card.fromName(cardName, game.player);
 		if (!card) {
 			await game.pause(`<red>Invalid card: <yellow>${cardName}</yellow>.\n`);

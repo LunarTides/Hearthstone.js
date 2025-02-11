@@ -186,8 +186,8 @@ export const cardFunctions = {
 	 * assert.equal(result, true);
 	 */
 	matchTribe(cardTribe: MinionTribe, tribe: MinionTribe): boolean {
-		// If the card's tribe is "All".
-		if (cardTribe === "All") {
+		// I'm not sure why you would set `tribe` to `All`, but I'll support it anyway.
+		if (cardTribe === "All" || tribe === "All") {
 			return true;
 		}
 
