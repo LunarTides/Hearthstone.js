@@ -77,6 +77,7 @@ export type CommandList = Record<
 /**
  * A card-like object.
  */
+// TODO: Is this needed? If not, remove it. #277
 export type CardLike = Card | Blueprint;
 /**
  * A target.
