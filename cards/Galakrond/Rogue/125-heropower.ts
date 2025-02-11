@@ -17,14 +17,12 @@ export const blueprint: Blueprint = {
 
 	async heropower(owner, self) {
 		// Add a lacky to your hand.
-		const lackeyId = game.lodash.sample(await Card.allWithTags(["lackey"]));
-		if (!lackeyId) {
+		const lackey = game.lodash.sample(await Card.allWithTags(["lackey"]));
+		if (!lackey) {
 			return;
 		}
 
-		const lackey = await Card.create(lackeyId.id, owner);
-
-		await owner.addToHand(lackey);
+		await owner.addToHand(await lackey.imperfectCopy());
 	},
 
 	async test(owner, self) {
