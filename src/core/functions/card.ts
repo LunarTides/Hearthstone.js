@@ -242,7 +242,11 @@ export const cardFunctions = {
 	},
 
 	/**
-	 * Returns the result of the galakrond formula
+	 * Returns the result of the galakrond formula:
+	 *
+	 * 1. Returns 1 if `invokeCount` is less than or equal to 2.
+	 * 2. Otherwise, returns 2 if `invokeCount` is less than or equal to 4.
+	 * 3. Otherwise, returns 4.
 	 *
 	 * @param invokeCount How many times that the card has been invoked.
 	 */
@@ -562,11 +566,11 @@ export const cardFunctions = {
 			success = true;
 		} else {
 			const match = /DIY (\d+)/.exec(card.name);
-			const fileName = match ? match[1] : "unknown";
+			const index = match ? match[1] : "unknown";
 
 			console.log(
 				"Hm. This card doesn't seem to do what it's supposed to do... Maybe you should try to fix it? The card is in: './cards/Examples/DIY/%s.ts'.",
-				fileName,
+				index,
 			);
 		}
 

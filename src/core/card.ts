@@ -101,6 +101,13 @@ export class Card {
 	 */
 	keywords: { [key in CardKeyword]?: unknown } = {};
 
+	/**
+	 * Any tags that should be applied to the card.
+	 * Tags are used to group cards together. They should be lowercase.
+	 * E.g. "lackey"
+	 *
+	 * This can be queried like this: `Card.allWithTags(["lackey"]);`
+	 */
 	tags: string[] = [];
 
 	/**
