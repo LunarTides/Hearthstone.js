@@ -10,6 +10,7 @@ export const blueprint: Blueprint = {
 	classes: ["Paladin"],
 	rarity: "Free",
 	collectible: false,
+	tags: ["starting_hero"],
 	id: 10,
 
 	armor: 0,

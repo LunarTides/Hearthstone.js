@@ -12,18 +12,17 @@ export const blueprint: Blueprint = {
 	classes: ["Rogue"],
 	rarity: "Legendary",
 	collectible: false,
+	tags: [],
 	id: 125,
 
 	async heropower(owner, self) {
 		// Add a lacky to your hand.
-		const lackeyId = game.lodash.sample(game.cardCollections.lackeys);
-		if (!lackeyId) {
+		const lackey = game.lodash.sample(await Card.allWithTags(["lackey"]));
+		if (!lackey) {
 			return;
 		}
 
-		const lackey = await Card.create(lackeyId, owner);
-
-		await owner.addToHand(lackey);
+		await owner.addToHand(await lackey.imperfectCopy());
 	},
 
 	async test(owner, self) {

@@ -12,6 +12,7 @@ export const blueprint: Blueprint = {
 	classes: ["Mage"],
 	rarity: "Free",
 	collectible: false,
+	tags: [],
 	id: 114,
 
 	async heropower(owner, self) {

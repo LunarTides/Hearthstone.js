@@ -12,6 +12,7 @@ export const blueprint: Blueprint = {
 	classes: ["Death Knight"],
 	rarity: "Free",
 	collectible: false,
+	tags: [],
 	id: 124,
 
 	async heropower(owner, self) {

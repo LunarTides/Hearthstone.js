@@ -12,6 +12,7 @@ export const blueprint: Blueprint = {
 	classes: ["Mage"],
 	rarity: "Epic",
 	collectible: true,
+	tags: [],
 	id: 105,
 
 	spellSchool: "Fire",

@@ -14,6 +14,7 @@ export const blueprint: Blueprint = {
 	classes: ["Neutral"],
 	rarity: "Free",
 	collectible: false,
+	tags: [],
 	id: 31,
 
 	// Weapons have attack / health, but no tribe

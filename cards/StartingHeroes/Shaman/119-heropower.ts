@@ -12,47 +12,46 @@ export const blueprint: Blueprint = {
 	classes: ["Shaman"],
 	rarity: "Free",
 	collectible: false,
+	tags: [],
 	id: 119,
 
 	async heropower(owner, self) {
 		// Filter away totem cards that is already on the player's side of the board.
-		const filteredTotemCardNames = game.cardCollections.totems.filter(
-			(id) => !owner.board.some((m) => m.id === id),
+		const filteredTotemCards = (await Card.allWithTags(["totem"])).filter(
+			(card) => !owner.board.some((c) => c.id === card.id),
 		);
 
 		// If there are no totem cards to summon, refund the hero power, which gives the player back their mana
-		if (filteredTotemCardNames.length === 0) {
+		if (filteredTotemCards.length === 0) {
 			return Card.REFUND;
 		}
 
 		// Randomly choose one of the totem cards.
-		const cardName = game.lodash.sample(filteredTotemCardNames);
-		if (!cardName) {
+		const card = game.lodash.sample(filteredTotemCards);
+		if (!card) {
 			throw new CardError("null found when randomly choosing totem card name");
 		}
 
-		// Create a card from the name.
-		const card = await Card.create(cardName, owner);
-
 		// Summon the card on the player's side of the board
-		await owner.summon(card);
+		await owner.summon(await card.imperfectCopy());
 		return true;
 	},
 
 	async test(owner, self) {
-		const totemCardIds = game.cardCollections.totems;
+		const totemCards = await Card.allWithTags(["totem"]);
 		const checkForTotemCard = (amount: number) =>
-			owner.board.filter((card) => totemCardIds.includes(card.id)).length ===
-			amount;
+			owner.board.filter((card) =>
+				totemCards.map((c) => c.id).includes(card.id),
+			).length === amount;
 
 		// There should be 0 totem cards on the board
 		assert(checkForTotemCard(0));
 
-		for (let index = 1; index <= totemCardIds.length + 1; index++) {
+		for (let index = 1; index <= totemCards.length + 1; index++) {
 			await self.activate("heropower");
 
 			// If all totem cards are on the board, it shouldn't summon a new one
-			if (index > totemCardIds.length) {
+			if (index > totemCards.length) {
 				assert(checkForTotemCard(index - 1));
 				continue;
 			}
@@ -62,11 +61,11 @@ export const blueprint: Blueprint = {
 		}
 
 		// Assert that all of the totem cards are on the board
-		for (const id of totemCardIds) {
-			assert(owner.board.some((card) => card.id === id));
+		for (const card of totemCards) {
+			assert(owner.board.some((c) => c.id === card.id));
 		}
 
 		// Assert that the board's length is equal to the amount of totem cards.
-		assert.equal(owner.board.length, totemCardIds.length);
+		assert.equal(owner.board.length, totemCards.length);
 	},
 };

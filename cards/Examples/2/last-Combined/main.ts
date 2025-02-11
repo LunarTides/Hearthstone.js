@@ -10,6 +10,7 @@ export const blueprint: Blueprint = {
 	classes: ["Neutral"],
 	rarity: "Legendary",
 	collectible: false,
+	tags: [],
 	id: 48,
 
 	attack: 5,

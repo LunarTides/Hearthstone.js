@@ -11,6 +11,7 @@ export const blueprint: Blueprint = {
 	classes: ["Neutral"],
 	rarity: "Free",
 	collectible: false,
+	tags: ["diy"],
 	id: 63,
 
 	spellSchool: "None",

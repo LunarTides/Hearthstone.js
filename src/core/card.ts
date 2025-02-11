@@ -102,6 +102,15 @@ export class Card {
 	keywords: { [key in CardKeyword]?: unknown } = {};
 
 	/**
+	 * Any tags that should be applied to the card.
+	 * Tags are used to group cards together. They should be lowercase.
+	 * E.g. "lackey"
+	 *
+	 * This can be queried like this: `Card.allWithTags(["lackey"]);`
+	 */
+	tags: string[] = [];
+
+	/**
 	 * The card's blueprint. This is the baseline of the card.
 	 */
 	blueprint: Blueprint;
@@ -430,6 +439,18 @@ export class Card {
 		}
 
 		return game.cards.filter((c) => c.collectible || include_uncollectible);
+	}
+
+	/**
+	 * Returns all cards that have at least one of the specified tags.
+	 *
+	 * @param tags An array of tags to filter the cards by.
+	 * @returns An array of cards that have any of the specified tags.
+	 */
+	static async allWithTags(tags: string[]): Promise<Card[]> {
+		return (await Card.all(true)).filter((c) =>
+			tags.some((tag) => c.tags.includes(tag)),
+		);
 	}
 
 	/**
@@ -2056,8 +2077,17 @@ export class Card {
 		sb += this.colorFromRarity(name);
 
 		if (game.config.general.debug) {
+			sb += " (";
+
 			const idHex = (this.id + 1000).toString(16).repeat(6).slice(0, 6);
-			sb += ` (#<#${idHex}>${this.id}</#> @${this.coloredUUID()})`;
+			sb += `#<#${idHex}>${this.id}</#>`;
+			sb += ` @${this.coloredUUID()}`;
+
+			if (this.tags.length > 0) {
+				sb += ` <gray>[${this.tags.join(", ")}]</gray>`;
+			}
+
+			sb += ")";
 		}
 
 		if (this.hasStats()) {

@@ -13,6 +13,7 @@ export const blueprint: Blueprint = {
 	classes: ["Neutral"],
 	rarity: "Free",
 	collectible: false,
+	tags: [],
 	id: 37,
 
 	// The amount of armor that the player will gain when playing this card.

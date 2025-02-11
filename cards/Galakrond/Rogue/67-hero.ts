@@ -10,6 +10,7 @@ export const blueprint: Blueprint = {
 	classes: ["Rogue"],
 	rarity: "Legendary",
 	collectible: true,
+	tags: ["galakrond"],
 	id: 67,
 
 	armor: 5,

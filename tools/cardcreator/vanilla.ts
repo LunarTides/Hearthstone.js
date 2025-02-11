@@ -98,6 +98,7 @@ export async function create(
 		classes: [cardClass],
 		rarity,
 		collectible,
+		tags: [],
 		id: 0,
 	};
 

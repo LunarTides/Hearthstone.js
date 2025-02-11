@@ -833,9 +833,15 @@ export class Player {
 	async setToStartingHero(heroClass = this.heroClass): Promise<boolean> {
 		const heroCardId = (
 			await Promise.all(
-				game.cardCollections.classes.map(async (heroId) =>
-					Card.create(heroId, this, true),
-				),
+				(
+					await Card.allWithTags(["starting_hero"])
+				).map(async (hero) => {
+					const unsuppress = game.event.suppress("CreateCard");
+					const card = await hero.imperfectCopy();
+					unsuppress();
+
+					return card;
+				}),
 			)
 		).find((card) => card.classes.includes(heroClass))?.id;
 
@@ -1197,20 +1203,17 @@ export class Player {
 	 * @returns Success
 	 */
 	async invoke(): Promise<boolean> {
-		// Find the card in player's deck/hand/hero that begins with "Galakrond, the "
-		const deckGalakrond = this.deck.find((c) =>
-			c.name.startsWith("Galakrond, the "),
+		const isCurrentlyGalakrond = this.hero.tags.includes("galakrond");
+
+		const hasGalakrondInDeck = this.deck.find((c) =>
+			c.tags.includes("galakrond"),
 		);
 
-		const handGalakrond = this.hand.find((c) =>
-			c.name.startsWith("Galakrond, the "),
+		const hasGalakrondInHand = this.hand.find((c) =>
+			c.tags.includes("galakrond"),
 		);
 
-		if (
-			!deckGalakrond &&
-			!handGalakrond &&
-			!this.hero.name.startsWith("Galakrond, the ")
-		) {
+		if (!hasGalakrondInDeck && !hasGalakrondInHand && !isCurrentlyGalakrond) {
 			return false;
 		}
 
@@ -1226,12 +1229,12 @@ export class Player {
 			await card.activate("invoke");
 		}
 
-		if (this.hero.name.startsWith("Galakrond, the ")) {
+		if (isCurrentlyGalakrond) {
 			await this.hero.heropower?.activate("cast");
-		} else if (deckGalakrond) {
-			await deckGalakrond.heropower?.activate("cast");
-		} else if (handGalakrond) {
-			await handGalakrond.heropower?.activate("cast");
+		} else if (hasGalakrondInDeck) {
+			await hasGalakrondInDeck.heropower?.activate("cast");
+		} else if (hasGalakrondInHand) {
+			await hasGalakrondInHand.heropower?.activate("cast");
 		}
 
 		return true;
@@ -1374,9 +1377,7 @@ export class Player {
 			return;
 		}
 
-		const list = (await Card.all(true)).filter((card) =>
-			/DIY \d+/.test(card.name),
-		);
+		const list = await Card.allWithTags(["diy"]);
 
 		const card = game.lodash.sample(list);
 		if (!card) {

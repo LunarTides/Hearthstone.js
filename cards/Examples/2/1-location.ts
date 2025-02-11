@@ -13,6 +13,7 @@ export const blueprint: Blueprint = {
 	classes: ["Neutral"],
 	rarity: "Free",
 	collectible: false,
+	tags: [],
 	id: 36,
 
 	// This is the amount of times you can trigger the location card before it breaking.

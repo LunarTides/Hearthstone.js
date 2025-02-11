@@ -10,6 +10,7 @@ export const blueprint: Blueprint = {
 	classes: ["Rogue"],
 	rarity: "Free",
 	collectible: false,
+	tags: ["starting_hero"],
 	id: 12,
 
 	armor: 0,

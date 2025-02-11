@@ -12,6 +12,7 @@ export const blueprint: Blueprint = {
 	classes: ["Druid"],
 	rarity: "Common",
 	collectible: true,
+	tags: [],
 	id: 100,
 
 	spellSchool: "None",

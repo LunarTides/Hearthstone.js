@@ -59,6 +59,7 @@ export async function main(
 		classes: [className] as CardClass[],
 		rarity: "Free" as CardRarity,
 		collectible: false,
+		tags: ["starting_hero"],
 		// This will be overwritten by the library
 		id: 0,
 
@@ -74,6 +75,7 @@ export async function main(
 		classes: [className] as CardClass[],
 		rarity: "Free" as CardRarity,
 		collectible: false,
+		tags: [],
 		// This will be overwritten by the library
 		id: 0,
 	};
