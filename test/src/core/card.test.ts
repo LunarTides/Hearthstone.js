@@ -12,6 +12,10 @@ describe("src/core/card", () => {
 		expect(false).toEqual(true);
 	});
 
+	test.todo("create - static", async () => {
+		expect(false).toEqual(true);
+	});
+
 	test.todo("fromName - static", async () => {
 		expect(false).toEqual(true);
 	});
@@ -24,6 +28,10 @@ describe("src/core/card", () => {
 		expect(false).toEqual(true);
 	});
 
+	test.todo("allWithTags - static", async () => {
+		expect(false).toEqual(true);
+	});
+
 	test.todo("fromUUID - static", async () => {
 		expect(false).toEqual(true);
 	});
@@ -33,6 +41,10 @@ describe("src/core/card", () => {
 	});
 
 	test.todo("reloadAll - static", async () => {
+		expect(false).toEqual(true);
+	});
+
+	test.todo("setup", async () => {
 		expect(false).toEqual(true);
 	});
 
@@ -188,11 +200,11 @@ describe("src/core/card", () => {
 		expect(false).toEqual(true);
 	});
 
-	test.todo("replacePlaceholders", async () => {
+	test.todo("formatPlaceholders", async () => {
 		expect(false).toEqual(true);
 	});
 
-	test.todo("doPlaceholders", async () => {
+	test.todo("replacePlaceholders", async () => {
 		expect(false).toEqual(true);
 	});
 

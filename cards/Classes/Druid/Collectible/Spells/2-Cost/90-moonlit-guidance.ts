@@ -18,7 +18,7 @@ export const blueprint: Blueprint = {
 
 	async cast(owner, self) {
 		// Discover a copy of a card in your deck. If you play it this turn, draw the original.
-		const original = await game.functions.interact.promptDiscover(
+		const original = await game.functions.interact.prompt.discover(
 			self.text,
 			owner.deck,
 			false,

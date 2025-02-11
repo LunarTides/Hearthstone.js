@@ -8,23 +8,11 @@ import { Game } from "@Core/game.js";
 // createGame();
 
 describe("src/core/game", () => {
-	test.todo("setup", async () => {
-		expect(false).toEqual(true);
-	});
-
 	test.todo("input", async () => {
 		expect(false).toEqual(true);
 	});
 
 	test.todo("pause", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("log", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("logDebug", async () => {
 		expect(false).toEqual(true);
 	});
 

@@ -36,9 +36,7 @@ console.error = (...data) => {
 	game.functions.interact.logError(...data);
 };
 
-export const interactFunctions = {
-	// Deck stuff
-
+const prompt = {
 	/**
 	 * Asks the player to supply a deck code.
 	 *
@@ -50,8 +48,8 @@ export const interactFunctions = {
 	 *
 	 * @returns Success
 	 */
-	async promptDeckcode(player: Player): Promise<boolean> {
-		this.printWatermark();
+	async deckcode(player: Player): Promise<boolean> {
+		game.functions.interact.print.watermark();
 		console.log();
 
 		const { branch } = game.functions.info.version();
@@ -103,22 +101,20 @@ export const interactFunctions = {
 		return result;
 	},
 
-	// One-time things
-
 	/**
 	 * Asks the player to choose an option.
 	 *
 	 * @param times The amount of times to ask
 	 * @param prompts [prompt, callback]
 	 */
-	async promptChooseOne(
+	async chooseOne(
 		times: number,
 		...prompts: Array<[string, () => Promise<void>]>
 	): Promise<void> {
 		let chosen = 0;
 
 		while (chosen < times) {
-			await this.printGameState(game.player);
+			await game.functions.interact.print.gameState(game.player);
 
 			if (game.player.ai) {
 				const aiChoice = game.player.ai.chooseOne(prompts.map((p) => p[0]));
@@ -142,7 +138,7 @@ export const interactFunctions = {
 			const choice = game.lodash.parseInt(await game.input(p)) - 1;
 			if (Number.isNaN(choice) || choice < 0 || choice >= prompts.length) {
 				await game.pause("<red>Invalid input!</red>\n");
-				this.promptChooseOne(times, ...prompts);
+				this.chooseOne(times, ...prompts);
 				return;
 			}
 
@@ -162,12 +158,12 @@ export const interactFunctions = {
 	 *
 	 * @returns Chosen
 	 */
-	async promptChooseFromList(
+	async chooseFromList(
 		player: Player,
 		prompt: string,
 		answers: string[],
 	): Promise<string> {
-		await this.printGameState(player);
+		await game.functions.interact.print.gameState(player);
 
 		let strbuilder = `\n${prompt} [`;
 
@@ -197,7 +193,7 @@ export const interactFunctions = {
 		const answer = answers[choice - 1];
 		if (!answer) {
 			await game.pause("<red>Invalid input!</red>\n");
-			return await this.promptChooseFromList(player, prompt, answers);
+			return await this.chooseFromList(player, prompt, answers);
 		}
 
 		return answer;
@@ -211,7 +207,7 @@ export const interactFunctions = {
 	 *
 	 * @returns `true` if Yes / `false` if No
 	 */
-	async promptYN(prompt: string, player?: Player): Promise<boolean> {
+	async yesNo(prompt: string, player?: Player): Promise<boolean> {
 		const ask = `\n${prompt} [<bright:green>Y</bright:green> | <red>N</red>] `;
 
 		if (player?.ai) {
@@ -233,20 +229,20 @@ export const interactFunctions = {
 
 		await game.pause();
 
-		return this.promptYN(prompt, player);
+		return this.yesNo(prompt, player);
 	},
 
 	/**
-	 * Like `promptTarget` but restricts the user to selecting heroes.
+	 * Like `target` but restricts the user to selecting heroes.
 	 *
 	 * The advantage of this function is that it returns `Player | false` instead of `Target | false`.
 	 */
-	async promptTargetPlayer(
+	async targetPlayer(
 		prompt: string,
 		card: Card | undefined,
 		flags: SelectTargetFlag[] = [],
 	): Promise<Player | null> {
-		return (await this.promptTarget(
+		return (await this.target(
 			prompt,
 			card,
 			"any",
@@ -256,17 +252,17 @@ export const interactFunctions = {
 	},
 
 	/**
-	 * Like `promptTarget` but restricts the user to selecting minions.
+	 * Like `target` but restricts the user to selecting minions.
 	 *
 	 * The advantage of this function is that it returns `Card | null` instead of `Target | null`.
 	 */
-	async promptTargetCard(
+	async targetCard(
 		prompt: string,
 		card: Card | undefined,
 		side: SelectTargetAlignment,
 		flags: SelectTargetFlag[] = [],
 	): Promise<Card | null> {
-		return (await this.promptTarget(
+		return (await this.target(
 			prompt,
 			card,
 			side,
@@ -276,7 +272,7 @@ export const interactFunctions = {
 	},
 
 	/**
-	 * #### You might want to use `promptTargetPlayer` or `promptTargetCard` instead.
+	 * #### You might want to use `targetPlayer` or `targetCard` instead.
 	 *
 	 * Asks the user a `prompt`, the user can then select a minion or hero.
 	 * Broadcasts the `TargetSelectionStarts` and the `TargetSelected` event.
@@ -289,7 +285,7 @@ export const interactFunctions = {
 	 *
 	 * @returns The card or hero chosen
 	 */
-	async promptTarget(
+	async target(
 		prompt: string,
 		card: Card | undefined,
 		forceSide: SelectTargetAlignment,
@@ -302,7 +298,7 @@ export const interactFunctions = {
 			game.player,
 		);
 
-		const target = await this._promptTarget(
+		const target = await this._target(
 			prompt,
 			card,
 			forceSide,
@@ -318,9 +314,9 @@ export const interactFunctions = {
 	},
 
 	/**
-	 * # USE `promptTarget` INSTEAD.
+	 * # USE `target` INSTEAD.
 	 */
-	async _promptTarget(
+	async _target(
 		prompt: string,
 		card: Card | undefined,
 		forceSide: SelectTargetAlignment,
@@ -399,14 +395,14 @@ export const interactFunctions = {
 		const target = await game.input(p);
 
 		// Player chose to go back
-		if (target.startsWith("b") || this.isInputExit(target)) {
+		if (target.startsWith("b") || game.functions.interact.isInputExit(target)) {
 			// This should always be safe.
 			return null;
 		}
 
 		// If the player chose to target a hero, it will ask which hero.
 		if (target.startsWith("face") && forceClass !== "minion") {
-			return this._promptTarget(newPrompt, card, forceSide, "hero", flags);
+			return this._target(newPrompt, card, forceSide, "hero", flags);
 		}
 
 		// From this point, the player has chosen a minion.
@@ -429,7 +425,7 @@ export const interactFunctions = {
 			await game.pause("<red>Invalid input / minion!</red>\n");
 
 			// Try again
-			return this._promptTarget(newPrompt, card, forceSide, forceClass, flags);
+			return this._target(newPrompt, card, forceSide, forceClass, flags);
 		}
 
 		if (forceSide === "any") {
@@ -450,15 +446,12 @@ export const interactFunctions = {
 					friendlyTargetName,
 				);
 
-				if (alignment.startsWith("b") || this.isInputExit(alignment)) {
+				if (
+					alignment.startsWith("b") ||
+					game.functions.interact.isInputExit(alignment)
+				) {
 					// Go back.
-					return this._promptTarget(
-						newPrompt,
-						card,
-						forceSide,
-						forceClass,
-						flags,
-					);
+					return this._target(newPrompt, card, forceSide, forceClass, flags);
 				}
 
 				minion = alignment.startsWith("y")
@@ -519,7 +512,7 @@ export const interactFunctions = {
 	 *
 	 * @returns Success
 	 */
-	async promptUseLocation(): Promise<
+	async useLocation(): Promise<
 		boolean | "nolocations" | "invalidtype" | "cooldown" | "refund"
 	> {
 		const locations = game.player.board.filter((m) => m.type === "Location");
@@ -527,7 +520,7 @@ export const interactFunctions = {
 			return "nolocations";
 		}
 
-		const location = await game.functions.interact.promptTargetCard(
+		const location = await this.targetCard(
 			"Which location do you want to use?",
 			undefined,
 			"friendly",
@@ -566,8 +559,8 @@ export const interactFunctions = {
 	 *
 	 * @returns A string of the indexes of the cards the player mulligan'd
 	 */
-	async promptMulligan(player: Player): Promise<string> {
-		await game.functions.interact.printGameState(player);
+	async mulligan(player: Player): Promise<string> {
+		await game.functions.interact.print.gameState(player);
 
 		let sb = "\nChoose the cards to mulligan (1, 2, 3, ...):\n";
 		if (!game.config.general.debug) {
@@ -588,9 +581,7 @@ export const interactFunctions = {
 	 *
 	 * @returns The card chosen
 	 */
-	async promptDredge(
-		prompt = "Choose a card to Dredge:",
-	): Promise<Card | undefined> {
+	async dredge(prompt = "Choose a card to Dredge:"): Promise<Card | undefined> {
 		// Look at the bottom three cards of the deck and put one on the top.
 		const cards = game.player.deck.slice(0, 3);
 
@@ -608,7 +599,7 @@ export const interactFunctions = {
 			return card;
 		}
 
-		await game.functions.interact.printGameState(game.player);
+		await game.functions.interact.print.gameState(game.player);
 
 		console.log("\n%s", prompt);
 
@@ -626,7 +617,7 @@ export const interactFunctions = {
 		const card = cards[cardId];
 
 		if (!card) {
-			return this.promptDredge(prompt);
+			return this.dredge(prompt);
 		}
 
 		// Removes the selected card from the players deck.
@@ -647,7 +638,7 @@ export const interactFunctions = {
 	 *
 	 * @returns The card chosen.
 	 */
-	async promptDiscover(
+	async discover(
 		prompt: string,
 		cards: Card[] = [],
 		filterClassCards = true,
@@ -656,7 +647,7 @@ export const interactFunctions = {
 	): Promise<Card | undefined> {
 		let actualCards = cards;
 
-		await game.functions.interact.printGameState(game.player);
+		await game.functions.interact.print.gameState(game.player);
 		let values: Card[] = _static_cards;
 
 		if (actualCards.length <= 0) {
@@ -713,7 +704,7 @@ export const interactFunctions = {
 			 * Invalid input
 			 * We still want the user to be able to select a card, so we force it to be valid
 			 */
-			return this.promptDiscover(
+			return this.discover(
 				prompt,
 				actualCards,
 				filterClassCards,
@@ -728,51 +719,150 @@ export const interactFunctions = {
 	},
 
 	/**
-	 * Returns if the input is a command to exit / go back.
+	 * DO NOT CALL THIS FUNCTION.
+	 *
+	 * Asks the user to attack a minion or hero. Used in the gameloop.
+	 *
+	 * @returns Cancel | Success
 	 */
-	isInputExit(input: string): boolean {
-		return ["exit", "stop", "quit", "back", "close"].includes(
-			input.toLowerCase(),
-		);
-	},
+	async gameloopAttack(): Promise<-1 | boolean | Card> {
+		let attacker: Target | -1 | null;
+		let target: Target | -1 | null;
 
-	/**
-	 * Clears the screen.
-	 */
-	cls(): void {
-		if (game?.noOutput) {
-			return;
+		if (game.player.ai) {
+			const alternativeModel = `legacyAttack${game.config.ai.attackModel}`;
+
+			// Run the correct ai attack model
+			const model = game.player.ai[alternativeModel as keyof Ai];
+			const aiSelections = model
+				? (model as () => Array<-1 | Target>)()
+				: game.player.ai.attack();
+
+			attacker = aiSelections[0];
+			target = aiSelections[1];
+
+			if (attacker === -1 || target === -1) {
+				return -1;
+			}
+
+			if (attacker === null || target === null) {
+				return false;
+			}
+		} else {
+			attacker = await this.target(
+				"Which minion do you want to attack with?",
+				undefined,
+				"friendly",
+				"any",
+			);
+
+			if (!attacker) {
+				return false;
+			}
+
+			target = await this.target(
+				"Which minion do you want to attack?",
+				undefined,
+				"enemy",
+				"any",
+			);
+
+			if (!target) {
+				return false;
+			}
 		}
 
-		console.clear();
-		process.stdout.write("\u001Bc");
+		const errorCode = await game.attack(attacker, target);
+
+		const ignore = ["divineshield"];
+		if (errorCode === true || ignore.includes(errorCode)) {
+			return true;
+		}
+
+		let error: string;
+
+		switch (errorCode) {
+			case "taunt": {
+				error = "There is a minion with taunt in the way";
+				break;
+			}
+
+			case "stealth": {
+				error = "That minion has stealth";
+				break;
+			}
+
+			case "frozen": {
+				error = "That minion is frozen";
+				break;
+			}
+
+			case "playernoattack": {
+				error = "You don't have any attack";
+				break;
+			}
+
+			case "noattack": {
+				error = "That minion has no attack";
+				break;
+			}
+
+			case "playerhasattacked": {
+				error = "Your hero has already attacked this turn";
+				break;
+			}
+
+			case "hasattacked": {
+				error = "That minion has already attacked this turn";
+				break;
+			}
+
+			case "sleepy": {
+				error = "That minion is exhausted";
+				break;
+			}
+
+			case "cantattackhero": {
+				error = "That minion cannot attack heroes";
+				break;
+			}
+
+			case "immune": {
+				error = "That minion is immune";
+				break;
+			}
+
+			case "dormant": {
+				error = "That minion is dormant";
+				break;
+			}
+
+			case "titan": {
+				error = "That minion has titan abilities that hasn't been used";
+				break;
+			}
+
+			default: {
+				error = format(
+					"An unknown error occurred. Error code: UnexpectedAttackingResult@%s",
+					errorCode,
+				);
+
+				break;
+			}
+		}
+
+		console.log("<red>%s.</red>", game.logger.translate(error));
+		await game.pause("");
+		return false;
 	},
+};
 
-	/**
-	 * Shows `status...`, calls `callback`, then adds 'OK' or 'FAIL' to the end of that line depending on the result the callback
-	 *
-	 * @param status The status to show.
-	 * @param callback The callback to call.
-	 *
-	 * @returns The return value of the callback.
-	 */
-	async withStatus(
-		status: string,
-		callback: () => Promise<boolean>,
-	): Promise<boolean> {
-		process.stdout.write(`${status}...`);
-		const success = await callback();
-
-		const message = success ? "OK" : "FAIL";
-		process.stdout.write(`\r\u001B[K${status}...${message}\n`);
-
-		return success;
-	},
-
+const print = {
 	/**
 	 * Prints the "watermark" border
 	 */
-	printWatermark(): void {
+	watermark(): void {
 		game.functions.interact.cls();
 
 		const versionDetail =
@@ -805,14 +895,14 @@ export const interactFunctions = {
 	 *
 	 * @param disappear If this is true, "This will disappear once you end your turn" will show up.
 	 */
-	printLicense(disappear = true): void {
+	license(disappear = true): void {
 		if (game.config.general.debug) {
 			return;
 		}
 
 		const { branch } = game.functions.info.version();
 
-		this.cls();
+		game.functions.interact.cls();
 
 		const version = `Hearthstone.js V${game.functions.info.versionString(2)} | Copyright (C) 2022 | LunarTides`;
 		console.log("|".repeat(version.length + 8));
@@ -835,26 +925,26 @@ export const interactFunctions = {
 	 *
 	 * @param player The player
 	 */
-	async printGameState(player: Player): Promise<void> {
-		this.printWatermark();
+	async gameState(player: Player): Promise<void> {
+		this.watermark();
 		console.log();
 
 		if (game.turn <= 2 && !game.config.general.debug) {
-			this.printLicense();
+			this.license();
 			console.log();
 		}
 
-		await this.printPlayerStats(player);
+		await this.playerStats(player);
 		console.log();
-		await this.printBoard(player);
+		await this.board(player);
 		console.log();
-		await this.printHand(player);
+		await this.hand(player);
 	},
 
 	/**
 	 * Prints the player stats.
 	 */
-	async printPlayerStats(currentPlayer: Player): Promise<void> {
+	async playerStats(currentPlayer: Player): Promise<void> {
 		let finished = "";
 
 		const doStat = async (callback: (player: Player) => Promise<string>) => {
@@ -973,7 +1063,7 @@ export const interactFunctions = {
 	/**
 	 * Prints the board for a specific player.
 	 */
-	async printBoard(player: Player): Promise<void> {
+	async board(player: Player): Promise<void> {
 		for (const plr of [game.player1, game.player2]) {
 			const sideMessage =
 				plr === player
@@ -997,7 +1087,7 @@ export const interactFunctions = {
 	/**
 	 * Prints the hand of the specified player.
 	 */
-	async printHand(player: Player): Promise<void> {
+	async hand(player: Player): Promise<void> {
 		console.log("--- %s (%s)'s Hand ---", player.name, player.heroClass);
 
 		const debugInfo = game.config.general.debug
@@ -1012,6 +1102,60 @@ export const interactFunctions = {
 		for (const [index, card] of player.hand.entries()) {
 			console.log(await card.readable(index + 1));
 		}
+	},
+};
+
+export const interactFunctions = {
+	/**
+	 * Prompt related functions.
+	 */
+	prompt,
+
+	/**
+	 * Print related functions.
+	 */
+	print,
+
+	/**
+	 * Returns if the input is a command to exit / go back.
+	 */
+	isInputExit(input: string): boolean {
+		return ["exit", "stop", "quit", "back", "close"].includes(
+			input.toLowerCase(),
+		);
+	},
+
+	/**
+	 * Clears the screen.
+	 */
+	cls(): void {
+		if (game?.noOutput) {
+			return;
+		}
+
+		console.clear();
+		process.stdout.write("\u001Bc");
+	},
+
+	/**
+	 * Shows `status...`, calls `callback`, then adds 'OK' or 'FAIL' to the end of that line depending on the result the callback
+	 *
+	 * @param status The status to show.
+	 * @param callback The callback to call.
+	 *
+	 * @returns The return value of the callback.
+	 */
+	async withStatus(
+		status: string,
+		callback: () => Promise<boolean>,
+	): Promise<boolean> {
+		process.stdout.write(`${status}...`);
+		const success = await callback();
+
+		const message = success ? "OK" : "FAIL";
+		process.stdout.write(`\r\u001B[K${status}...${message}\n`);
+
+		return success;
 	},
 
 	/**
@@ -1111,145 +1255,6 @@ export const interactFunctions = {
 	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	logWarn(...data: any): void {
 		this._logWrapper(overrideConsole.warn, ...data);
-	},
-
-	/**
-	 * DO NOT CALL THIS FUNCTION.
-	 *
-	 * Asks the user to attack a minion or hero. Used in the gameloop.
-	 *
-	 * @returns Cancel | Success
-	 */
-	async promptGameloopAttack(): Promise<-1 | boolean | Card> {
-		let attacker: Target | -1 | null;
-		let target: Target | -1 | null;
-
-		if (game.player.ai) {
-			const alternativeModel = `legacyAttack${game.config.ai.attackModel}`;
-
-			// Run the correct ai attack model
-			const model = game.player.ai[alternativeModel as keyof Ai];
-			const aiSelections = model
-				? (model as () => Array<-1 | Target>)()
-				: game.player.ai.attack();
-
-			attacker = aiSelections[0];
-			target = aiSelections[1];
-
-			if (attacker === -1 || target === -1) {
-				return -1;
-			}
-
-			if (attacker === null || target === null) {
-				return false;
-			}
-		} else {
-			attacker = await this.promptTarget(
-				"Which minion do you want to attack with?",
-				undefined,
-				"friendly",
-				"any",
-			);
-
-			if (!attacker) {
-				return false;
-			}
-
-			target = await this.promptTarget(
-				"Which minion do you want to attack?",
-				undefined,
-				"enemy",
-				"any",
-			);
-
-			if (!target) {
-				return false;
-			}
-		}
-
-		const errorCode = await game.attack(attacker, target);
-
-		const ignore = ["divineshield"];
-		if (errorCode === true || ignore.includes(errorCode)) {
-			return true;
-		}
-
-		let error: string;
-
-		switch (errorCode) {
-			case "taunt": {
-				error = "There is a minion with taunt in the way";
-				break;
-			}
-
-			case "stealth": {
-				error = "That minion has stealth";
-				break;
-			}
-
-			case "frozen": {
-				error = "That minion is frozen";
-				break;
-			}
-
-			case "playernoattack": {
-				error = "You don't have any attack";
-				break;
-			}
-
-			case "noattack": {
-				error = "That minion has no attack";
-				break;
-			}
-
-			case "playerhasattacked": {
-				error = "Your hero has already attacked this turn";
-				break;
-			}
-
-			case "hasattacked": {
-				error = "That minion has already attacked this turn";
-				break;
-			}
-
-			case "sleepy": {
-				error = "That minion is exhausted";
-				break;
-			}
-
-			case "cantattackhero": {
-				error = "That minion cannot attack heroes";
-				break;
-			}
-
-			case "immune": {
-				error = "That minion is immune";
-				break;
-			}
-
-			case "dormant": {
-				error = "That minion is dormant";
-				break;
-			}
-
-			case "titan": {
-				error = "That minion has titan abilities that hasn't been used";
-				break;
-			}
-
-			default: {
-				error = format(
-					"An unknown error occurred. Error code: UnexpectedAttackingResult@%s",
-					errorCode,
-				);
-
-				break;
-			}
-		}
-
-		console.log("<red>%s.</red>", game.logger.translate(error));
-		await game.pause("");
-		return false;
 	},
 
 	/**
@@ -1368,7 +1373,7 @@ export const interactFunctions = {
 			return turn;
 		}
 
-		await game.functions.interact.printGameState(game.player);
+		await game.functions.interact.print.gameState(game.player);
 		console.log();
 
 		let input = "Which card do you want to play? ";

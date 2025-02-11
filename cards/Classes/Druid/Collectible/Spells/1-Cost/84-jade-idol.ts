@@ -18,7 +18,7 @@ export const blueprint: Blueprint = {
 
 	async cast(owner, self) {
 		// Choose One - Summon a Jade Golem; or Shuffle 3 copies of this card into your deck.
-		await game.functions.interact.promptChooseOne(
+		await game.functions.interact.prompt.chooseOne(
 			1,
 			[
 				"Summon a Jade Golem",

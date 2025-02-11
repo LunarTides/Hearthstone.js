@@ -96,6 +96,14 @@ describe("src/core/functions/util", () => {
 		expect(counter).toEqual(2);
 	});
 
+	test.todo("getLanguageMap", async () => {
+		expect(false).toEqual(true);
+	});
+
+	test.todo("translate", async () => {
+		expect(false).toEqual(true);
+	});
+
 	test.todo("fs", async () => {
 		expect(false).toEqual(true);
 	});
@@ -145,6 +153,10 @@ describe("src/core/functions/util", () => {
 	});
 
 	test.todo("getRandomTarget", async () => {
+		expect(false).toEqual(true);
+	});
+
+	test.todo("parseEvalArgs", async () => {
 		expect(false).toEqual(true);
 	});
 });

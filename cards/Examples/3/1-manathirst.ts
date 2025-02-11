@@ -35,7 +35,7 @@ export const blueprint: Blueprint = {
 		 *
 		 * Ask the user to select a target based on the `prompt`, the user can only select enemy minions
 		 */
-		const target = await game.functions.interact.promptTargetCard(
+		const target = await game.functions.interact.prompt.targetCard(
 			prompt,
 			self,
 			"enemy",

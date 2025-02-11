@@ -35,4 +35,24 @@ describe("src/core/event", () => {
 	test.todo("increment", async () => {
 		expect(false).toEqual(true);
 	});
+
+	test.todo("addListener", async () => {
+		expect(false).toEqual(true);
+	});
+
+	test.todo("hookToTick", async () => {
+		expect(false).toEqual(true);
+	});
+
+	test.todo("suppress", async () => {
+		expect(false).toEqual(true);
+	});
+
+	test.todo("ignoreSuppression", async () => {
+		expect(false).toEqual(true);
+	});
+
+	test.todo("withSuppressed", async () => {
+		expect(false).toEqual(true);
+	});
 });

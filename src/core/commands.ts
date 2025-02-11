@@ -72,8 +72,8 @@ export const commands: CommandList = {
 			return false;
 		}
 
-		await game.functions.interact.printGameState(game.player);
-		const ask = await game.functions.interact.promptYN(
+		await game.functions.interact.print.gameState(game.player);
+		const ask = await game.functions.interact.prompt.yesNo(
 			`<yellow>${game.player.hero.heropower?.text}</yellow> Are you sure you want to use this hero power?`,
 			game.player,
 		);
@@ -82,19 +82,19 @@ export const commands: CommandList = {
 			return false;
 		}
 
-		await game.functions.interact.printGameState(game.player);
+		await game.functions.interact.print.gameState(game.player);
 		await game.player.heroPower();
 		return true;
 	},
 
 	async attack(): Promise<boolean> {
-		await game.functions.interact.promptGameloopAttack();
+		await game.functions.interact.prompt.gameloopAttack();
 		return true;
 	},
 
 	async use(): Promise<boolean> {
 		// Use location
-		const errorCode = await game.functions.interact.promptUseLocation();
+		const errorCode = await game.functions.interact.prompt.useLocation();
 
 		if (errorCode === true || errorCode === "refund" || game.player.ai) {
 			return true;
@@ -131,7 +131,7 @@ export const commands: CommandList = {
 
 	async titan(): Promise<boolean> {
 		// Use titan card
-		const card = await game.functions.interact.promptTargetCard(
+		const card = await game.functions.interact.prompt.targetCard(
 			"Which card do you want to use?",
 			undefined,
 			"friendly",
@@ -157,7 +157,7 @@ export const commands: CommandList = {
 			titanIds.map(async (id) => Card.create(id, game.player, true)),
 		);
 
-		await game.functions.interact.printGameState(game.player);
+		await game.functions.interact.print.gameState(game.player);
 		console.log(
 			"\nWhich ability do you want to trigger?\n%s",
 			titanCards.map((c) => c.readable).join(",\n"),
@@ -200,7 +200,7 @@ export const commands: CommandList = {
 	},
 
 	async help(): Promise<boolean> {
-		game.functions.interact.printWatermark();
+		game.functions.interact.print.watermark();
 
 		console.log(
 			"\n(In order to run a command; input the name of the command and follow further instruction.)\n",
@@ -247,7 +247,7 @@ export const commands: CommandList = {
 	},
 
 	async view(): Promise<boolean> {
-		const isHandAnswer = await game.functions.interact.promptChooseFromList(
+		const isHandAnswer = await game.functions.interact.prompt.chooseFromList(
 			game.player,
 			"Do you want to view a minion on the board, or in your hand?",
 			["Board", "Hand"],
@@ -257,7 +257,7 @@ export const commands: CommandList = {
 
 		if (!isHand) {
 			// AllowLocations Makes selecting location cards allowed. This is disabled by default to prevent, for example, spells from killing the card.
-			const card = await game.functions.interact.promptTargetCard(
+			const card = await game.functions.interact.prompt.targetCard(
 				"Which minion do you want to view?",
 				undefined,
 				"any",
@@ -290,9 +290,9 @@ export const commands: CommandList = {
 	},
 
 	async concede(): Promise<boolean> {
-		await game.functions.interact.printGameState(game.player);
+		await game.functions.interact.print.gameState(game.player);
 
-		const confirmation = await game.functions.interact.promptYN(
+		const confirmation = await game.functions.interact.prompt.yesNo(
 			"Are you sure you want to concede?",
 			game.player,
 		);
@@ -320,7 +320,7 @@ export const commands: CommandList = {
 			const todos = Object.entries(game.config.todo);
 
 			const printInfo = async () => {
-				await game.functions.interact.printGameState(game.player);
+				await game.functions.interact.print.gameState(game.player);
 
 				let strbuilder = `\nYou are on version: ${version}, on `;
 

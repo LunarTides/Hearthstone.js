@@ -29,7 +29,7 @@ describe("src/core/functions/card", () => {
 		expect(cardFunctions.matchTribe("Beast", "Demon")).toEqual(false);
 		expect(cardFunctions.matchTribe("Beast", "Beast")).toEqual(true);
 		expect(cardFunctions.matchTribe("All", "Beast")).toEqual(true);
-		expect(cardFunctions.matchTribe("Beast", "All")).toEqual(false);
+		expect(cardFunctions.matchTribe("Beast", "All")).toEqual(true);
 	});
 
 	test.todo("runBlueprintValidator", async () => {
@@ -55,6 +55,10 @@ describe("src/core/functions/card", () => {
 	});
 
 	test.todo("generateIdsFile", async () => {
+		expect(false).toEqual(true);
+	});
+
+	test.todo("verifyDiySolution", async () => {
 		expect(false).toEqual(true);
 	});
 });

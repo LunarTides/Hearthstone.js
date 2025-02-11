@@ -32,5 +32,8 @@ export const functions = {
 	 */
 	info: infoFunctions,
 
+	/**
+	 * Interaction functions
+	 */
 	interact: interactFunctions,
 };

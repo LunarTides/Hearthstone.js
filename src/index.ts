@@ -12,7 +12,7 @@ export async function main(): Promise<void> {
 	const { game, player1, player2 } = createGame();
 	game.logger.debug("Creating game...OK");
 
-	game.functions.interact.printWatermark();
+	game.functions.interact.print.watermark();
 
 	// Find holes and dupes in the ids
 	console.warn("\nValidating ids...");
@@ -38,7 +38,7 @@ export async function main(): Promise<void> {
 		}
 
 		// Put this in a while loop to make sure the function repeats if it fails.
-		while (!(await game.functions.interact.promptDeckcode(player))) {
+		while (!(await game.functions.interact.prompt.deckcode(player))) {
 			// Pass
 		}
 	}
@@ -50,8 +50,8 @@ export async function main(): Promise<void> {
 	game.logger.debug("Starting game...OK");
 
 	game.logger.debug("Performing mulligan...");
-	await game.functions.interact.promptMulligan(player1);
-	await game.functions.interact.promptMulligan(player2);
+	await game.functions.interact.prompt.mulligan(player1);
+	await game.functions.interact.prompt.mulligan(player2);
 	game.logger.debug("Performing mulligan...OK");
 
 	game.logger.debug("Finished setting up game.");

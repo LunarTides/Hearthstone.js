@@ -1800,7 +1800,7 @@ export class Card {
 		prompt = "Choose One:",
 		_values: string[][] = [],
 	): Promise<string | -1> {
-		await game.functions.interact.printGameState(game.player);
+		await game.functions.interact.print.gameState(game.player);
 
 		const possibleCards = [
 			["Crackling Shield", "Divine Shield"],

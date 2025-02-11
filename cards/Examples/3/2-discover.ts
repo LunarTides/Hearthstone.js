@@ -32,7 +32,7 @@ export const blueprint: Blueprint = {
 		pool = pool.filter((c) => c.type === "Spell");
 
 		// game.functions.interact.discover(prompt, pool, ifItShouldFilterAwayCardsThatAreNotThePlayersClass = true, amountOfCardsToChooseFrom = 3)
-		const spell = await game.functions.interact.promptDiscover(
+		const spell = await game.functions.interact.prompt.discover(
 			"Discover a spell.",
 			pool,
 		);

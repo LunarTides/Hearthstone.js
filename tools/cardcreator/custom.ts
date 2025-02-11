@@ -248,7 +248,7 @@ export async function main(
 
 	// Ask the user if the card should be uncollectible
 	const uncollectible =
-		await game.functions.interact.promptYN("Uncollectible?");
+		await game.functions.interact.prompt.yesNo("Uncollectible?");
 	if (uncollectible) {
 		card.collectible = !uncollectible;
 	}
