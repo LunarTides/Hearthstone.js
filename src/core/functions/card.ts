@@ -229,9 +229,13 @@ export const cardFunctions = {
 	 */
 	async getClasses(): Promise<CardClassNoNeutral[]> {
 		const cards = await Promise.all(
-			game.cardCollections.classes.map((heroId) =>
-				Card.create(heroId, game.player, true),
-			),
+			(await Card.allWithTags(["starting_hero"])).map(async (hero) => {
+				const unsuppress = game.event.suppress("CreateCard");
+				const card = await hero.imperfectCopy();
+				unsuppress();
+
+				return card;
+			}),
 		);
 
 		return cards.map((card) => card.classes[0]) as CardClassNoNeutral[];

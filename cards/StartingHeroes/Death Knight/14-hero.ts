@@ -10,6 +10,7 @@ export const blueprint: Blueprint = {
 	classes: ["Death Knight"],
 	rarity: "Free",
 	collectible: false,
+	tags: ["starting_hero"],
 	id: 14,
 
 	armor: 0,

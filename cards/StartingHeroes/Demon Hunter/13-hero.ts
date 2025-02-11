@@ -10,6 +10,7 @@ export const blueprint: Blueprint = {
 	classes: ["Demon Hunter"],
 	rarity: "Free",
 	collectible: false,
+	tags: ["starting_hero"],
 	id: 13,
 
 	armor: 0,

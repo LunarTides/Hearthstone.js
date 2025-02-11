@@ -119,6 +119,7 @@ async function common(): Promise<BlueprintWithOptional> {
 		runes,
 		keywords: realKeywords,
 		collectible: true,
+		tags: [],
 		id: 0,
 	};
 }

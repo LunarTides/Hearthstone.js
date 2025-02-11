@@ -11,6 +11,7 @@ export const blueprint: Blueprint = {
 	classes: ["Warlock"],
 	rarity: "Free",
 	collectible: false,
+	tags: [],
 	id: 121,
 
 	async heropower(owner, self) {

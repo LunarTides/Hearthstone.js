@@ -35,6 +35,15 @@ export const blueprint: Blueprint = {
 	 */
 	collectible: false,
 
+	/**
+	 * Any tags that should be applied to the card.
+	 * Tags are used to group cards together. They should be lowercase.
+	 * E.g. "lackey"
+	 *
+	 * This can be queried like this: `Card.allWithTags(["lackey"]);`
+	 */
+	tags: [],
+
 	/*
 	 * The ID of the card. This is used in deckcodes, and should be unique per blueprint. This gets generated automatically by the card creator.
 	 * If you have debug mode enabled, you can type `/give (id)` to give yourself the card with that id.

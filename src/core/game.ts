@@ -19,11 +19,6 @@ import date from "date-and-time";
 import _ from "lodash";
 import { cardIds } from "../../cards/ids.js";
 
-const cardCollections = {
-	totems: [15, 16, 17, 18],
-	classes: [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
-};
-
 const attack = {
 	/**
 	 * Makes a minion or hero attack another minion or hero
@@ -1264,7 +1259,6 @@ export class Game {
 		},
 	};
 
-	cardCollections = cardCollections;
 	lodash = _;
 	cardIds = cardIds;
 

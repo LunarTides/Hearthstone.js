@@ -14,6 +14,7 @@ export const blueprint: Blueprint = {
 	classes: ["Priest", "Paladin"],
 	rarity: "Legendary",
 	collectible: false,
+	tags: [],
 	id: 35,
 
 	attack: 4,

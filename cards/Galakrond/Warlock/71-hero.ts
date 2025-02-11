@@ -11,6 +11,7 @@ export const blueprint: Blueprint = {
 	classes: ["Warlock"],
 	rarity: "Legendary",
 	collectible: true,
+	tags: [],
 	id: 71,
 
 	armor: 5,

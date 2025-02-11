@@ -11,6 +11,7 @@ export const blueprint: Blueprint = {
 	classes: ["Warrior"],
 	rarity: "Legendary",
 	collectible: true,
+	tags: [],
 	id: 69,
 
 	armor: 5,

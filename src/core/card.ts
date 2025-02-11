@@ -441,7 +441,7 @@ export class Card {
 	 * @returns An array of cards that have any of the specified tags.
 	 */
 	static async allWithTags(tags: string[]): Promise<Card[]> {
-		return (await Card.all()).filter((c) =>
+		return (await Card.all(true)).filter((c) =>
 			tags.some((tag) => c.tags.includes(tag)),
 		);
 	}

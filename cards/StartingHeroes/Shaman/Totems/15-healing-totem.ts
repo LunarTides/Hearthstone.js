@@ -12,6 +12,7 @@ export const blueprint: Blueprint = {
 	classes: ["Shaman"],
 	rarity: "Free",
 	collectible: false,
+	tags: ["totem"],
 	id: 15,
 
 	attack: 0,

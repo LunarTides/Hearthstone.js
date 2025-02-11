@@ -833,9 +833,15 @@ export class Player {
 	async setToStartingHero(heroClass = this.heroClass): Promise<boolean> {
 		const heroCardId = (
 			await Promise.all(
-				game.cardCollections.classes.map(async (heroId) =>
-					Card.create(heroId, this, true),
-				),
+				(
+					await Card.allWithTags(["starting_hero"])
+				).map(async (hero) => {
+					const unsuppress = game.event.suppress("CreateCard");
+					const card = await hero.imperfectCopy();
+					unsuppress();
+
+					return card;
+				}),
 			)
 		).find((card) => card.classes.includes(heroClass))?.id;
 

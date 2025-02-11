@@ -11,6 +11,7 @@ export const blueprint: Blueprint = {
 	classes: ["Demon Hunter"],
 	rarity: "Free",
 	collectible: false,
+	tags: [],
 	id: 123,
 
 	async heropower(owner, self) {

@@ -10,6 +10,7 @@ export const blueprint: Blueprint = {
 	classes: ["Warlock"],
 	rarity: "Free",
 	collectible: false,
+	tags: [],
 	id: 21,
 
 	attack: 1,

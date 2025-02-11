@@ -10,6 +10,7 @@ export const blueprint: Blueprint = {
 	classes: ["Priest"],
 	rarity: "Free",
 	collectible: false,
+	tags: ["starting_hero"],
 	id: 8,
 
 	armor: 0,
