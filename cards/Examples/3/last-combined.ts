@@ -1,20 +1,27 @@
 // Created by Hand
 
 import assert from "node:assert";
-import type { Blueprint } from "@Game/types.js";
+import {
+	Ability,
+	type Blueprint,
+	Class,
+	Rarity,
+	SpellSchool,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Combined Example 3",
 	text: "If the turn counter is an even number, gain mana equal to the turn counter (up to 10). Manathirst (7): Remove the condition. (Currently: {turns})",
 	cost: 0,
-	type: "Spell",
-	classes: ["Neutral"],
-	rarity: "Legendary",
+	type: Type.Spell,
+	classes: [Class.Neutral],
+	rarity: Rarity.Legendary,
 	collectible: false,
 	tags: [],
 	id: 54,
 
-	spellSchool: "None",
+	spellSchool: SpellSchool.None,
 
 	async cast(owner, self) {
 		if (!(await self.condition())) {
@@ -68,7 +75,7 @@ export const blueprint: Blueprint = {
 		// The condition is not cleared
 		let { mana } = owner;
 		assert.equal(turn(), 1);
-		await self.activate("cast");
+		await self.activate(Ability.Cast);
 
 		assert.equal(owner.mana, mana);
 
@@ -79,7 +86,7 @@ export const blueprint: Blueprint = {
 		// The condition is cleared, gain 2 mana.
 		mana = owner.mana;
 		assert.equal(turn(), 2);
-		await self.activate("cast");
+		await self.activate(Ability.Cast);
 
 		assert.equal(owner.mana, mana + 2);
 
@@ -91,7 +98,7 @@ export const blueprint: Blueprint = {
 		owner.emptyMana = 7;
 		mana = owner.mana;
 		assert.equal(turn(), 3);
-		await self.activate("cast");
+		await self.activate(Ability.Cast);
 
 		assert.equal(owner.mana, mana + 3);
 	},

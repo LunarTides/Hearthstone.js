@@ -1,16 +1,16 @@
 // Created by the Custom Card Creator
 
-import type { Blueprint } from "@Game/types.js";
+import { type Blueprint, CardTag, Class, Rarity, Type } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Thrall",
 	text: "Shaman starting hero",
 	cost: 0,
-	type: "Hero",
-	classes: ["Shaman"],
-	rarity: "Free",
+	type: Type.Hero,
+	classes: [Class.Shaman],
+	rarity: Rarity.Free,
 	collectible: false,
-	tags: ["starting_hero"],
+	tags: [CardTag.StartingHero],
 	id: 9,
 
 	armor: 0,

@@ -1,10 +1,15 @@
 import { Card } from "@Core/card.js";
 import { Player } from "@Core/player.js";
-import type {
-	CommandList,
-	SelectTargetFlag,
-	Todo,
-	UnknownEventValue,
+import {
+	Ability,
+	type CommandList,
+	Event,
+	Keyword,
+	TargetAlignment,
+	TargetFlag,
+	type Todo,
+	Type,
+	type UnknownEventValue,
 } from "@Game/types.js";
 import { resumeTagParsing, stopTagParsing } from "chalk-tags";
 
@@ -134,7 +139,7 @@ export const commands: CommandList = {
 		const card = await game.functions.interact.prompt.targetCard(
 			"Which card do you want to use?",
 			undefined,
-			"friendly",
+			TargetAlignment.Friendly,
 		);
 
 		if (!card) {
@@ -146,7 +151,7 @@ export const commands: CommandList = {
 			return false;
 		}
 
-		const titanIds = card.getKeyword("Titan") as number[] | undefined;
+		const titanIds = card.getKeyword(Keyword.Titan) as number[] | undefined;
 
 		if (!titanIds) {
 			await game.pause("<red>That card is not a titan.</red>\n");
@@ -177,8 +182,8 @@ export const commands: CommandList = {
 
 		const ability = titanCards[choice - 1];
 
-		if ((await ability.activate("cast")) === Card.REFUND) {
-			await game.event.withSuppressed("DiscardCard", async () =>
+		if ((await ability.activate(Ability.Cast)) === Card.REFUND) {
+			await game.event.withSuppressed(Event.DiscardCard, async () =>
 				ability.discard(),
 			);
 
@@ -187,15 +192,15 @@ export const commands: CommandList = {
 
 		titanIds.splice(choice - 1, 1);
 
-		card.setKeyword("Titan", titanIds);
+		card.setKeyword(Keyword.Titan, titanIds);
 
 		if (titanIds.length <= 0) {
-			card.remKeyword("Titan");
+			card.remKeyword(Keyword.Titan);
 		} else {
 			card.sleepy = true;
 		}
 
-		await game.event.broadcast("Titan", [card, ability], game.player);
+		await game.event.broadcast(Event.Titan, [card, ability], game.player);
 		return true;
 	},
 
@@ -260,8 +265,8 @@ export const commands: CommandList = {
 			const card = await game.functions.interact.prompt.targetCard(
 				"Which minion do you want to view?",
 				undefined,
-				"any",
-				["allowLocations"],
+				TargetAlignment.Any,
+				[TargetFlag.AllowLocations],
 			);
 
 			if (!card) {
@@ -614,14 +619,14 @@ export const commands: CommandList = {
 				}
 
 				/*
-				 * If the `key` is "AddCardToHand", check if the previous history entry was `DrawCard`, and they both contained the exact same `val`.
+				 * If the `key` is `AddCardToHand`, check if the previous history entry was `DrawCard`, and they both contained the exact same `val`.
 				 * If so, ignore it.
 				 */
-				if (key === "AddCardToHand" && historyIndex > 0) {
+				if (key === Event.AddCardToHand && historyIndex > 0) {
 					const lastEntry = history[historyListIndex][historyIndex - 1];
 
 					if (
-						lastEntry[0] === "DrawCard" &&
+						lastEntry[0] === Event.DrawCard &&
 						(lastEntry[1] as Card).uuid === (value as Card).uuid
 					) {
 						continue;
@@ -653,7 +658,7 @@ export const commands: CommandList = {
 							| number
 							| Player
 							| Card
-							| SelectTargetFlag[]
+							| TargetFlag[]
 							| undefined;
 
 						strbuilder += `${v?.toString()}, `;
@@ -663,7 +668,7 @@ export const commands: CommandList = {
 					value = strbuilder;
 				}
 
-				const finishedKey = key[0].toUpperCase() + key.slice(1);
+				const finishedKey = game.lodash.capitalize(key);
 
 				finished += `${finishedKey}: ${value?.toString()}\n`;
 			}
@@ -735,7 +740,7 @@ export const debugCommands: CommandList = {
 			await game.pause();
 		}
 
-		await game.event.broadcast("Eval", code, game.player);
+		await game.event.broadcast(Event.Eval, code, game.player);
 		return true;
 	},
 
@@ -834,9 +839,9 @@ export const debugCommands: CommandList = {
 			game.functions.util.remove(game.player.board, card);
 
 			// If the card has 0 or less health, restore it to its original health (according to the blueprint)
-			if (card.type === "Minion" && !card.isAlive()) {
+			if (card.type === Type.Minion && !card.isAlive()) {
 				card.health = card.storage.init.health;
-			} else if (card.type === "Location" && (card.durability ?? 0) <= 0) {
+			} else if (card.type === Type.Location && (card.durability ?? 0) <= 0) {
 				card.durability = card.storage.init.durability;
 			}
 		}
@@ -844,12 +849,12 @@ export const debugCommands: CommandList = {
 		card = card.perfectCopy();
 
 		// If the card is a weapon, destroy it before adding it to the player's hand.
-		if (card.type === "Weapon") {
+		if (card.type === Type.Weapon) {
 			await game.player.destroyWeapon();
 		}
 
 		// If the card is a hero, reset the player's hero to the default one from their class.
-		if (card.type === "Hero") {
+		if (card.type === Type.Hero) {
 			await game.player.setToStartingHero();
 		}
 

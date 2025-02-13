@@ -2,15 +2,23 @@
 
 import assert from "node:assert";
 import { Card } from "@Core/card.js";
-import type { Blueprint } from "@Game/types.js";
+import {
+	Ability,
+	type Blueprint,
+	Class,
+	Rarity,
+	TargetAlignment,
+	TargetClass,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Prison of Yogg-Saron",
 	text: "Choose a character. Cast 4 random spells <i>(targeting it if possible)</i>.",
 	cost: 7,
-	type: "Location",
-	classes: ["Neutral"],
-	rarity: "Legendary",
+	type: Type.Location,
+	classes: [Class.Neutral],
+	rarity: Rarity.Legendary,
 	collectible: true,
 	tags: [],
 	id: 102,
@@ -23,8 +31,8 @@ export const blueprint: Blueprint = {
 		const target = await game.functions.interact.prompt.target(
 			self.text,
 			self,
-			"any",
-			"any",
+			TargetAlignment.Any,
+			TargetClass.Any,
 		);
 		if (!target) {
 			return Card.REFUND;
@@ -32,7 +40,7 @@ export const blueprint: Blueprint = {
 
 		owner.forceTarget = target;
 
-		const pool = (await Card.all()).filter((card) => card.type === "Spell");
+		const pool = (await Card.all()).filter((card) => card.type === Type.Spell);
 
 		for (let i = 0; i < 4; i++) {
 			const card = await game.lodash.sample(pool)?.imperfectCopy();
@@ -40,7 +48,7 @@ export const blueprint: Blueprint = {
 				continue;
 			}
 
-			await card.activate("cast");
+			await card.activate(Ability.Cast);
 		}
 
 		owner.forceTarget = undefined;

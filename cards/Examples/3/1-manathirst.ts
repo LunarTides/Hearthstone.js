@@ -2,22 +2,31 @@
 
 import assert from "node:assert";
 import { Card } from "@Core/card.js";
-import type { Blueprint } from "@Game/types.js";
+import {
+	Ability,
+	type Blueprint,
+	Class,
+	Keyword,
+	MinionTribe,
+	Rarity,
+	TargetAlignment,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Manathirst Example",
 	text: "<b>Battlecry:</b> Freeze an enemy minion. Manathirst (6): Silence it first.",
 	cost: 1,
-	type: "Minion",
-	classes: ["Neutral"],
-	rarity: "Free",
+	type: Type.Minion,
+	classes: [Class.Neutral],
+	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
 	id: 50,
 
 	attack: 1,
 	health: 2,
-	tribe: "None",
+	tribe: MinionTribe.None,
 
 	async battlecry(owner, self) {
 		const manathirst = self.manathirst(6);
@@ -38,7 +47,7 @@ export const blueprint: Blueprint = {
 		const target = await game.functions.interact.prompt.targetCard(
 			prompt,
 			self,
-			"enemy",
+			TargetAlignment.Enemy,
 		);
 
 		// If target is null, it means that the user cancelled their selection. Return `Card.REFUND` to refund the card.
@@ -70,22 +79,22 @@ export const blueprint: Blueprint = {
 
 		assert.equal(sheep.attack, 5);
 		assert.equal(sheep.health, 5);
-		assert(!sheep.hasKeyword("Frozen"));
+		assert(!sheep.hasKeyword(Keyword.Frozen));
 
 		owner.emptyMana = 1;
 		assert.equal(owner.emptyMana, 1);
 		owner.inputQueue = ["1"];
-		await self.activate("battlecry");
+		await self.activate(Ability.Battlecry);
 
-		assert(sheep.hasKeyword("Frozen"));
-		sheep.remKeyword("Frozen");
-		assert(!sheep.hasKeyword("Frozen"));
+		assert(sheep.hasKeyword(Keyword.Frozen));
+		sheep.remKeyword(Keyword.Frozen);
+		assert(!sheep.hasKeyword(Keyword.Frozen));
 
 		owner.emptyMana = 6;
 		owner.inputQueue = ["1"];
-		await self.activate("battlecry");
+		await self.activate(Ability.Battlecry);
 
-		assert(sheep.hasKeyword("Frozen"));
+		assert(sheep.hasKeyword(Keyword.Frozen));
 		assert.equal(sheep.attack, 1);
 		assert.equal(sheep.health, 1);
 	},

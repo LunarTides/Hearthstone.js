@@ -2,28 +2,35 @@
 
 import assert from "node:assert";
 import { Card } from "@Core/card.js";
-import type { Blueprint } from "@Game/types.js";
+import {
+	type Blueprint,
+	Class,
+	Keyword,
+	MinionTribe,
+	Rarity,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Summon On Draw Test",
 	text: "<b>Summon on Draw. Colossal +2.</b>",
 	cost: 1,
-	type: "Minion",
-	classes: ["Neutral"],
-	rarity: "Free",
+	type: Type.Minion,
+	classes: [Class.Neutral],
+	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
 	id: 133,
 
 	attack: 1,
 	health: 1,
-	tribe: "None",
+	tribe: MinionTribe.None,
 
 	async create(owner, self) {
-		self.addKeyword("Summon On Draw");
+		self.addKeyword(Keyword.SummonOnDraw);
 
 		// Use the preexisting colossal example minions
-		self.addKeyword("Colossal", [
+		self.addKeyword(Keyword.Colossal, [
 			game.cardIds.leftArm46,
 			game.cardIds.null0,
 			game.cardIds.rightArm47,

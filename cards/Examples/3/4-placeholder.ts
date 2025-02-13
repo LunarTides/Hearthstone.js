@@ -1,7 +1,13 @@
 // Created by Hand
 
 import assert from "node:assert";
-import type { Blueprint } from "@Game/types.js";
+import {
+	type Blueprint,
+	Class,
+	Rarity,
+	SpellSchool,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Placeholder Example",
@@ -10,14 +16,14 @@ export const blueprint: Blueprint = {
 	text: "Battlecry: Gain mana equal to the turn counter. (Currently {turns}, {laugh}, {turns}, {next thing is} {test}, {placeholder without replacement})",
 
 	cost: 0,
-	type: "Spell",
-	classes: ["Neutral"],
-	rarity: "Free",
+	type: Type.Spell,
+	classes: [Class.Neutral],
+	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
 	id: 53,
 
-	spellSchool: "None",
+	spellSchool: SpellSchool.None,
 
 	async cast(owner, self) {
 		// Gain mana equal to the turn counter.

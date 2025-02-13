@@ -2,19 +2,19 @@ import { createGame } from "@Core/game.js";
 import type {
 	Blueprint,
 	BlueprintWithOptional,
-	CardClass,
-	CardKeyword,
-	CardRarity,
-	CardType,
+	Class,
+	Keyword,
 	MinionTribe,
+	Rarity,
 	SpellSchool,
+	Type,
 } from "@Game/types.js";
 import * as lib from "./lib.js";
 
 const { player1, game } = createGame();
 
 let shouldExit = false;
-let type: CardType;
+let type: Type;
 
 /**
  * Asks the user a question and returns the result.
@@ -93,8 +93,8 @@ async function common(): Promise<BlueprintWithOptional> {
 	const name = await input("Name: ");
 	const text = await input("Text: ");
 	const cost = game.lodash.parseInt(await input("Cost: "));
-	const classes = (await input("Classes: ")) as CardClass;
-	const rarity = (await input("Rarity: ")) as CardRarity;
+	const classes = game.lodash.startCase(await input("Classes: ")) as Class;
+	const rarity = game.lodash.startCase(await input("Rarity: ")) as Rarity;
 	const keywords = await input("Keywords: ");
 
 	player1.heroClass = classes;
@@ -104,9 +104,11 @@ async function common(): Promise<BlueprintWithOptional> {
 		runes = await input("Runes: ");
 	}
 
-	let realKeywords: CardKeyword[] | undefined;
+	let realKeywords: Keyword[] | undefined;
 	if (keywords) {
-		realKeywords = keywords.split(", ") as CardKeyword[];
+		realKeywords = keywords
+			.split(", ")
+			.map((k) => game.lodash.startCase(k) as Keyword);
 	}
 
 	return {
@@ -124,13 +126,15 @@ async function common(): Promise<BlueprintWithOptional> {
 	};
 }
 
-const cardTypeFunctions: { [x in CardType]: () => Promise<Blueprint> } = {
+const cardTypeFunctions: {
+	[x in Type]: () => Promise<Blueprint>;
+} = {
 	async Minion(): Promise<Blueprint> {
 		const card = await common();
 
 		const attack = game.lodash.parseInt(await input("Attack: "));
 		const health = game.lodash.parseInt(await input("Health: "));
-		const tribe = (await input("Tribe: ")) as MinionTribe;
+		const tribe = game.lodash.startCase(await input("Tribe: ")) as MinionTribe;
 
 		return applyCard({
 			...card,
@@ -143,7 +147,9 @@ const cardTypeFunctions: { [x in CardType]: () => Promise<Blueprint> } = {
 	async Spell(): Promise<Blueprint> {
 		const card = await common();
 
-		const spellSchool = (await input("Spell School: ")) as SpellSchool;
+		const spellSchool = game.lodash.startCase(
+			await input("Spell School: "),
+		) as SpellSchool;
 
 		return applyCard({
 			...card,
@@ -200,7 +206,7 @@ const cardTypeFunctions: { [x in CardType]: () => Promise<Blueprint> } = {
 		});
 	},
 
-	async Heropower(): Promise<Blueprint> {
+	async HeroPower(): Promise<Blueprint> {
 		const card = await common();
 
 		return applyCard(card);
@@ -228,7 +234,7 @@ export async function main(
 	console.log("type 'back' at any step to cancel.\n");
 
 	// Ask the user for the type of card they want to make
-	type = game.lodash.startCase(await input("Type: ")) as CardType;
+	type = game.lodash.startCase(await input("Type: ")) as Type;
 	if (shouldExit) {
 		return false;
 	}

@@ -1,5 +1,5 @@
 import { createGame } from "@Core/game.js";
-import type { BlueprintWithOptional, CardType } from "@Game/types.js";
+import { type BlueprintWithOptional, Type } from "@Game/types.js";
 import { resumeTagParsing, stopTagParsing } from "chalk-tags";
 
 const { game } = createGame();
@@ -21,28 +21,28 @@ function getCardAbility(blueprint: BlueprintWithOptional): string {
 
 	// If the card is a spell, the ability is 'cast'
 	switch (blueprint.type) {
-		case "Spell": {
+		case Type.Spell: {
 			ability = "Cast";
 			break;
 		}
 
-		case "Hero": {
+		case Type.Hero: {
 			ability = "Battlecry";
 			break;
 		}
 
-		case "Location": {
+		case Type.Location: {
 			ability = "Use";
 			break;
 		}
 
-		case "Heropower": {
+		case Type.HeroPower: {
 			ability = "Heropower";
 			break;
 		}
 
-		case "Minion":
-		case "Weapon": {
+		case Type.Minion:
+		case Type.Weapon: {
 			// Try to extract an ability from the card's description
 			const reg = /([A-Z][a-z].*?):/g;
 			const foundAbility = reg.exec(blueprint.text);
@@ -61,7 +61,7 @@ function getCardAbility(blueprint: BlueprintWithOptional): string {
 			break;
 		}
 
-		case "Undefined": {
+		case Type.Undefined: {
 			throw new Error("undefined type");
 		}
 
@@ -90,11 +90,11 @@ function generateCardPath(blueprint: BlueprintWithOptional): string {
 
 	// If the card has the word "Secret" in its description, put it in the ".../Secrets/..." folder.
 	if (blueprint.text.includes("Secret:")) {
-		type = "Secret" as CardType;
+		type = "Secret" as Type;
 	}
 
 	// If the type is Hero, we want the card to go to '.../Heroes/...' and not to '.../Heros/...'
-	const typeString = type === "Hero" ? "Heroe" : type;
+	const typeString = type === Type.Hero ? "Heroe" : type;
 
 	const collectibleString = blueprint.collectible
 		? "Collectible"
@@ -149,7 +149,7 @@ export async function create(
 	 */
 
 	// Validate
-	if (blueprint.type !== "Heropower") {
+	if (blueprint.type !== Type.HeroPower) {
 		const error = game.functions.card.validateBlueprint(blueprint);
 		if (error !== true) {
 			console.error(error);

@@ -1,7 +1,15 @@
 // Created by Hand
 
 import type { Card } from "@Core/card.js";
-import type { Blueprint, EventValue } from "@Game/types.js";
+import {
+	type Blueprint,
+	Class,
+	Event,
+	type EventValue,
+	Rarity,
+	SpellSchool,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Quest Example",
@@ -10,14 +18,14 @@ export const blueprint: Blueprint = {
 	text: "Quest: Play 3 cards. Reward: Return those cards back to your hand.",
 
 	cost: 1,
-	type: "Spell",
-	classes: ["Neutral"],
-	rarity: "Free",
+	type: Type.Spell,
+	classes: [Class.Neutral],
+	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
 	id: 58,
 
-	spellSchool: "None",
+	spellSchool: SpellSchool.None,
 
 	async cast(owner, self) {
 		// Quest: Play 3 cards. Reward: Return those cards back to your hand.
@@ -40,7 +48,7 @@ export const blueprint: Blueprint = {
 		await owner.addQuest(
 			"Quest",
 			self,
-			"PlayCard",
+			Event.PlayCard,
 			3,
 			async (_unknownValue, done) => {
 				/*
@@ -49,7 +57,7 @@ export const blueprint: Blueprint = {
 				 */
 
 				// Get the value of the event
-				const value = _unknownValue as EventValue<"PlayCard">;
+				const value = _unknownValue as EventValue<Event.PlayCard>;
 
 				/*
 				 * Returning false will prevent this event from counting towards the quest

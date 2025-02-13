@@ -1,16 +1,16 @@
 // Created by the Custom Card Creator
 
-import type { Blueprint } from "@Game/types.js";
+import { type Blueprint, CardTag, Class, Rarity, Type } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Gul'dan",
 	text: "Warlock starting hero",
 	cost: 0,
-	type: "Hero",
-	classes: ["Warlock"],
-	rarity: "Free",
+	type: Type.Hero,
+	classes: [Class.Warlock],
+	rarity: Rarity.Free,
 	collectible: false,
-	tags: ["starting_hero"],
+	tags: [CardTag.StartingHero],
 	id: 11,
 
 	armor: 0,

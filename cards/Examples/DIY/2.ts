@@ -1,19 +1,26 @@
 // Created by Hand
 
-import type { Blueprint } from "@Game/types.js";
+import {
+	type Blueprint,
+	CardTag,
+	Class,
+	Rarity,
+	SpellSchool,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "DIY 2",
 	text: "<b>This is a DIY card, it does not work by default.</b> Restore 3 health to your hero.",
 	cost: 0,
-	type: "Spell",
-	classes: ["Neutral"],
-	rarity: "Free",
+	type: Type.Spell,
+	classes: [Class.Neutral],
+	rarity: Rarity.Free,
 	collectible: false,
-	tags: ["diy"],
+	tags: [CardTag.DIY],
 	id: 62,
 
-	spellSchool: "None",
+	spellSchool: SpellSchool.None,
 
 	async cast(owner, self) {
 		// Restore 3 health to the hero.

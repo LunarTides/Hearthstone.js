@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { cardFunctions } from "@Core/functions/card.js";
+import { Class, MinionTribe } from "@Game/types.js";
 
 /*
  * Need to create a game in case the functions need it
@@ -17,19 +18,33 @@ describe("src/core/functions/card", () => {
 	});
 
 	test("validateClasses", async () => {
-		expect(cardFunctions.validateClasses(["Mage"], "Druid")).toEqual(false);
-		expect(cardFunctions.validateClasses(["Mage"], "Mage")).toEqual(true);
-		expect(cardFunctions.validateClasses(["Mage", "Druid"], "Druid")).toEqual(
+		expect(cardFunctions.validateClasses([Class.Mage], Class.Druid)).toEqual(
+			false,
+		);
+		expect(cardFunctions.validateClasses([Class.Mage], Class.Mage)).toEqual(
 			true,
 		);
-		expect(cardFunctions.validateClasses(["Neutral"], "Druid")).toEqual(true);
+		expect(
+			cardFunctions.validateClasses([Class.Mage, Class.Druid], Class.Druid),
+		).toEqual(true);
+		expect(cardFunctions.validateClasses([Class.Neutral], Class.Druid)).toEqual(
+			true,
+		);
 	});
 
 	test("matchTribe", async () => {
-		expect(cardFunctions.matchTribe("Beast", "Demon")).toEqual(false);
-		expect(cardFunctions.matchTribe("Beast", "Beast")).toEqual(true);
-		expect(cardFunctions.matchTribe("All", "Beast")).toEqual(true);
-		expect(cardFunctions.matchTribe("Beast", "All")).toEqual(true);
+		expect(
+			cardFunctions.matchTribe(MinionTribe.Beast, MinionTribe.Demon),
+		).toEqual(false);
+		expect(
+			cardFunctions.matchTribe(MinionTribe.Beast, MinionTribe.Beast),
+		).toEqual(true);
+		expect(
+			cardFunctions.matchTribe(MinionTribe.All, MinionTribe.Beast),
+		).toEqual(true);
+		expect(
+			cardFunctions.matchTribe(MinionTribe.Beast, MinionTribe.All),
+		).toEqual(true);
 	});
 
 	test.todo("runBlueprintValidator", async () => {

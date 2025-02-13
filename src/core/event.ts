@@ -1,12 +1,15 @@
 import { Card } from "@Core/card.js";
 import { Player } from "@Core/player.js";
-import type {
-	EventKey,
-	EventListenerCallback,
-	EventManagerEvents,
-	HistoryKey,
-	TickHookCallback,
-	UnknownEventValue,
+import {
+	Ability,
+	Event,
+	type EventListenerCallback,
+	EventListenerMessage,
+	type EventManagerEvents,
+	type HistoryKey,
+	type TickHookCallback,
+	Type,
+	type UnknownEventValue,
 } from "@Game/types.js";
 
 export const eventManager = {
@@ -15,7 +18,7 @@ export const eventManager = {
 	 */
 	listeners: {} as Record<
 		number,
-		(key: EventKey, value: UnknownEventValue, player: Player) => Promise<void>
+		(key: Event, value: UnknownEventValue, player: Player) => Promise<void>
 	>,
 
 	/**
@@ -48,12 +51,12 @@ export const eventManager = {
 	 *
 	 * If an event with a key in this list is broadcast, it will add it to the history, and tick the game, but will not activate any passives / event listeners.
 	 */
-	suppressed: [] as EventKey[],
+	suppressed: [] as Event[],
 
 	/**
 	 * A list of event keys to never suppress.
 	 */
-	forced: [] as EventKey[],
+	forced: [] as Event[],
 
 	/**
 	 * Some general stats for each player.
@@ -68,7 +71,7 @@ export const eventManager = {
 	 * @param player The player that triggered the tick
 	 */
 	async tick(
-		key: EventKey,
+		key: Event,
 		value: UnknownEventValue,
 		player: Player,
 	): Promise<boolean> {
@@ -78,7 +81,7 @@ export const eventManager = {
 		 */
 
 		// Infuse
-		if (key === "KillCard") {
+		if (key === Event.KillCard) {
 			for (const card of player.hand) {
 				await card.tryInfuse();
 			}
@@ -93,18 +96,18 @@ export const eventManager = {
 				// Just in case. Remove for small performance boost
 				card.applyEnchantments();
 
-				await card.activate("handtick", key, value, player);
+				await card.activate(Ability.HandTick, key, value, player);
 				if (card.cost < 0) {
 					card.cost = 0;
 				}
 			}
 
 			for (const card of player.board) {
-				if (card.type === "Minion" && !card.isAlive()) {
+				if (card.type === Type.Minion && !card.isAlive()) {
 					continue;
 				}
 
-				await card.activate("tick", key, value, player);
+				await card.activate(Ability.Tick, key, value, player);
 			}
 		}
 
@@ -125,7 +128,7 @@ export const eventManager = {
 	 * @returns Success
 	 */
 	async cardUpdate(
-		key: EventKey,
+		key: Event,
 		value: UnknownEventValue,
 		player: Player,
 	): Promise<boolean> {
@@ -136,7 +139,7 @@ export const eventManager = {
 					continue;
 				}
 
-				await card.activate("passive", key, value, player);
+				await card.activate(Ability.Passive, key, value, player);
 			}
 		}
 
@@ -145,13 +148,13 @@ export const eventManager = {
 
 			// Activate spells in the players hand
 			for (const card of player.hand) {
-				await card.activate("handpassive", key, value, player);
+				await card.activate(Ability.HandPassive, key, value, player);
 
-				if (card.type !== "Spell") {
+				if (card.type !== Type.Spell) {
 					continue;
 				}
 
-				await card.activate("passive", key, value, player);
+				await card.activate(Ability.Passive, key, value, player);
 			}
 
 			const { weapon } = player;
@@ -159,7 +162,7 @@ export const eventManager = {
 				continue;
 			}
 
-			await weapon.activate("passive", key, value, player);
+			await weapon.activate(Ability.Passive, key, value, player);
 		}
 
 		await game.triggerEventListeners(key, value, player);
@@ -178,7 +181,7 @@ export const eventManager = {
 	 */
 	async questUpdate(
 		questsName: "quests" | "sidequests" | "secrets",
-		key: EventKey,
+		key: Event,
 		value: UnknownEventValue,
 		player: Player,
 	): Promise<boolean> {
@@ -209,7 +212,7 @@ export const eventManager = {
 
 			if (quest.next) {
 				const nextQuest = await Card.create(quest.next, player);
-				await nextQuest.activate("cast");
+				await nextQuest.activate(Ability.Cast);
 			}
 		}
 
@@ -227,7 +230,7 @@ export const eventManager = {
 	 * @returns Success
 	 */
 	async broadcast(
-		key: EventKey,
+		key: Event,
 		value: UnknownEventValue,
 		player: Player,
 		updateHistory = true,
@@ -276,9 +279,9 @@ export const eventManager = {
 	 * @param value The value of the event
 	 * @param player The player who caused the event to happen
 	 */
-	addHistory(key: EventKey, value: UnknownEventValue, player: Player): void {
+	addHistory(key: Event, value: UnknownEventValue, player: Player): void {
 		if (!this.history[game.turn]) {
-			this.history[game.turn] = [["GameLoop", `Init ${key}`, player]];
+			this.history[game.turn] = [[Event.GameLoop, `Init ${key}`, player]];
 		}
 
 		this.history[game.turn].push([key, value, player]);
@@ -294,7 +297,7 @@ export const eventManager = {
 	 * @returns Success
 	 */
 	async broadcastDummy(player: Player): Promise<boolean> {
-		return this.broadcast("Dummy", undefined, player, false);
+		return this.broadcast(Event.Dummy, undefined, player, false);
 	},
 
 	/**
@@ -326,7 +329,7 @@ export const eventManager = {
 	 * @returns If you call this function, it will destroy the event listener.
 	 */
 	addListener(
-		key: EventKey | "",
+		key: Event | "",
 		callback: EventListenerCallback,
 		lifespan = 1,
 	): () => boolean {
@@ -352,7 +355,7 @@ export const eventManager = {
 		};
 
 		this.listeners[id] = async (
-			_key: EventKey,
+			_key: Event,
 			_unknownValue: UnknownEventValue,
 			eventPlayer: Player,
 		) => {
@@ -365,22 +368,22 @@ export const eventManager = {
 			times++;
 
 			switch (message) {
-				case "destroy": {
+				case EventListenerMessage.Destroy: {
 					destroy();
 					break;
 				}
 
-				case "reset": {
+				case EventListenerMessage.Reset: {
 					times = 0;
 					break;
 				}
 
-				case false: {
+				case EventListenerMessage.Ignore: {
 					times--;
 					break;
 				}
 
-				case true: {
+				case EventListenerMessage.Success: {
 					break;
 				}
 
@@ -423,7 +426,7 @@ export const eventManager = {
 	 *
 	 * @returns A function that undoes the suppression.
 	 */
-	suppress(key: EventKey): () => boolean {
+	suppress(key: Event): () => boolean {
 		this.suppressed.push(key);
 
 		/**
@@ -441,7 +444,7 @@ export const eventManager = {
 	 *
 	 * @returns A function that undoes this.
 	 */
-	ignoreSuppression(key: EventKey): () => boolean {
+	ignoreSuppression(key: Event): () => boolean {
 		this.forced.push(key);
 
 		/**
@@ -461,7 +464,7 @@ export const eventManager = {
 	 * @returns The return value of the callback.
 	 */
 	async withSuppressed<T>(
-		key: EventKey | EventKey[],
+		key: Event | Event[],
 		callback: () => Promise<T>,
 	): Promise<T> {
 		const unsuppressed: Array<() => boolean> = [];

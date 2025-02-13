@@ -1,16 +1,16 @@
 // Created by the Custom Card Creator
 
-import type { Blueprint } from "@Game/types.js";
+import { type Blueprint, CardTag, Class, Rarity, Type } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Anduin Wrynn",
 	text: "Priest starting hero",
 	cost: 0,
-	type: "Hero",
-	classes: ["Priest"],
-	rarity: "Free",
+	type: Type.Hero,
+	classes: [Class.Priest],
+	rarity: Rarity.Free,
 	collectible: false,
-	tags: ["starting_hero"],
+	tags: [CardTag.StartingHero],
 	id: 8,
 
 	armor: 0,

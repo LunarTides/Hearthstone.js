@@ -1,15 +1,15 @@
 // Created by the Custom Card Creator
 
 import assert from "node:assert";
-import type { Blueprint } from "@Game/types.js";
+import { Ability, type Blueprint, Class, Rarity, Type } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Armor Up",
 	text: "Gain 2 Armor.",
 	cost: 2,
-	type: "Heropower",
-	classes: ["Warrior"],
-	rarity: "Free",
+	type: Type.HeroPower,
+	classes: [Class.Warrior],
+	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
 	id: 117,
@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
 	async test(owner, self) {
 		// The player should have 0 armor
 		assert.equal(owner.armor, 0);
-		await self.activate("heropower");
+		await self.activate(Ability.HeroPower);
 
 		// The player should now have 2 armor
 		assert.equal(owner.armor, 2);

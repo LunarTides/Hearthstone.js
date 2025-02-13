@@ -1,21 +1,29 @@
 // Created by Hand
 
-import type { Blueprint, EventValue } from "@Game/types.js";
+import {
+	type Blueprint,
+	CardTag,
+	Class,
+	type EventValue,
+	MinionTribe,
+	Rarity,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "DIY 4",
 	text: "<b>This is a DIY card, it does not work by default.</b> Whenever a friendly minion dies, Resurrect it with 1/1 stats.",
 	cost: 0,
-	type: "Minion",
-	classes: ["Neutral"],
-	rarity: "Free",
+	type: Type.Minion,
+	classes: [Class.Neutral],
+	rarity: Rarity.Free,
 	collectible: false,
-	tags: ["diy"],
+	tags: [CardTag.DIY],
 	id: 64,
 
 	attack: 0,
 	health: 10,
-	tribe: "None",
+	tribe: MinionTribe.None,
 
 	async passive(owner, self, key, _unknownValue, eventPlayer) {
 		// Whenever a minion dies, Resurrect it with 1/1 stats.

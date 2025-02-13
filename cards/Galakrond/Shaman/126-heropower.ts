@@ -2,15 +2,15 @@
 
 import assert from "node:assert";
 import { Card } from "@Core/card.js";
-import type { Blueprint } from "@Game/types.js";
+import { type Blueprint, Class, Rarity, Type } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Galakrond's Fury",
 	text: "Summon a 2/1 Elemental with <b>Rush</b>.",
 	cost: 2,
-	type: "Heropower",
-	classes: ["Shaman"],
-	rarity: "Legendary",
+	type: Type.HeroPower,
+	classes: [Class.Shaman],
+	rarity: Rarity.Legendary,
 	collectible: false,
 	tags: [],
 	id: 126,

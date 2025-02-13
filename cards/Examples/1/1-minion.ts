@@ -1,7 +1,13 @@
 // Created by Hand
 
 // You shouldn't touch anything outside of the blueprint object.
-import type { Blueprint } from "@Game/types.js";
+import {
+	type Blueprint,
+	Class,
+	MinionTribe,
+	Rarity,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	/*
@@ -21,13 +27,13 @@ export const blueprint: Blueprint = {
 	cost: 1,
 
 	// The type of the card. E.g. "Minion", "Spell", "Weapon", etc...
-	type: "Minion",
+	type: Type.Minion,
 
 	// The classes of the card. E.g. "Neutral", "Warrior", "Hunter", etc...
-	classes: ["Neutral"],
+	classes: [Class.Neutral],
 
 	// The rarity of the card. E.g. "Free", "Common", "Rare", etc...
-	rarity: "Free",
+	rarity: Rarity.Free,
 
 	/*
 	 * If the card should be allowed in decks or card pools.
@@ -59,5 +65,5 @@ export const blueprint: Blueprint = {
 	health: 1,
 
 	// The tribe of the minion. E.g. "Undead", "Naga", "Beast", etc...
-	tribe: "None",
+	tribe: MinionTribe.None,
 };

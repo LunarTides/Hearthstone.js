@@ -1,6 +1,12 @@
 // Created by Hand
 
-import type { Blueprint } from "@Game/types.js";
+import {
+	type Blueprint,
+	Class,
+	MinionTribe,
+	Rarity,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	/*
@@ -10,14 +16,14 @@ export const blueprint: Blueprint = {
 	name: "Left Arm",
 	text: "",
 	cost: 1,
-	type: "Minion",
-	classes: ["Neutral"],
-	rarity: "Free",
+	type: Type.Minion,
+	classes: [Class.Neutral],
+	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
 	id: 43,
 
 	attack: 2,
 	health: 1,
-	tribe: "Beast",
+	tribe: MinionTribe.Beast,
 };

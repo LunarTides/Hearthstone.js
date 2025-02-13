@@ -2,22 +2,29 @@
 
 import assert from "node:assert";
 import { Card } from "@Core/card.js";
-import type { Blueprint } from "@Game/types.js";
+import {
+	type Blueprint,
+	CardTag,
+	Class,
+	MinionTribe,
+	Rarity,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Healing Totem",
 	text: "At the end of your turn, restore 1 Health to all friendly minions.",
 	cost: 1,
-	type: "Minion",
-	classes: ["Shaman"],
-	rarity: "Free",
+	type: Type.Minion,
+	classes: [Class.Shaman],
+	rarity: Rarity.Free,
 	collectible: false,
-	tags: ["totem"],
+	tags: [CardTag.Totem],
 	id: 15,
 
 	attack: 0,
 	health: 2,
-	tribe: "Totem",
+	tribe: MinionTribe.Totem,
 
 	async passive(owner, self, key, value, eventPlayer) {
 		// At the end of your turn, restore 1 Health to all friendly minions.
@@ -28,7 +35,9 @@ export const blueprint: Blueprint = {
 		}
 
 		// Restore 1 Health to all friendly minions
-		for (const card of owner.board.filter((card) => card.type === "Minion")) {
+		for (const card of owner.board.filter(
+			(card) => card.type === Type.Minion,
+		)) {
 			await card.addHealth(1, true);
 		}
 	},

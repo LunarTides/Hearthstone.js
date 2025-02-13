@@ -2,22 +2,32 @@
 
 import assert from "node:assert";
 import { Card } from "@Core/card.js";
-import type { Blueprint } from "@Game/types.js";
+import {
+	Ability,
+	type Blueprint,
+	CardTag,
+	Class,
+	MinionTribe,
+	Rarity,
+	TargetAlignment,
+	TargetClass,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Kobold Lackey",
 	text: "<b>Battlecry:</b> Deal 2 damage.",
 	cost: 1,
-	type: "Minion",
-	classes: ["Neutral"],
-	rarity: "Free",
+	type: Type.Minion,
+	classes: [Class.Neutral],
+	rarity: Rarity.Free,
 	collectible: false,
-	tags: ["lackey"],
+	tags: [CardTag.Lackey],
 	id: 27,
 
 	attack: 1,
 	health: 1,
-	tribe: "None",
+	tribe: MinionTribe.None,
 
 	async battlecry(owner, self) {
 		// Deal 2 damage.
@@ -26,8 +36,8 @@ export const blueprint: Blueprint = {
 		const target = await game.functions.interact.prompt.target(
 			"Deal 2 damage.",
 			self,
-			"any",
-			"any",
+			TargetAlignment.Any,
+			TargetClass.Any,
 		);
 
 		// If no target was selected, refund
@@ -42,7 +52,7 @@ export const blueprint: Blueprint = {
 
 	async test(owner, self) {
 		owner.inputQueue = ["face", "y"];
-		await self.activate("battlecry");
+		await self.activate(Ability.Battlecry);
 
 		assert.equal(owner.getOpponent().health, 30 - 2);
 		assert.equal(owner.inputQueue, undefined);

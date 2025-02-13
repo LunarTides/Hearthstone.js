@@ -1,14 +1,14 @@
 // Created by Hand (before the Card Creator Existed)
 
-import type { Blueprint } from "@Game/types.js";
+import { type Blueprint, Class, Rarity, Type } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Wicked Knife",
 	text: "",
 	cost: 1,
-	type: "Weapon",
-	classes: ["Rogue"],
-	rarity: "Free",
+	type: Type.Weapon,
+	classes: [Class.Rogue],
+	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
 	id: 22,

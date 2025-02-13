@@ -2,22 +2,28 @@
 
 import assert from "node:assert";
 import { Card } from "@Core/card.js";
-import type { Blueprint } from "@Game/types.js";
+import {
+	type Blueprint,
+	Class,
+	MinionTribe,
+	Rarity,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Deathrattle Test",
 	text: "<b>Deathrattle:</b> Summon two 1/1 Sheep.",
 	cost: 1,
-	type: "Minion",
-	classes: ["Neutral"],
-	rarity: "Free",
+	type: Type.Minion,
+	classes: [Class.Neutral],
+	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
 	id: 72,
 
 	attack: 1,
 	health: 2,
-	tribe: "None",
+	tribe: MinionTribe.None,
 
 	async deathrattle(owner, self) {
 		// Summon two 1/1 Sheep.

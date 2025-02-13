@@ -1,20 +1,27 @@
 // Created by the Vanilla Card Creator
 
 import assert from "node:assert";
-import type { Blueprint } from "@Game/types.js";
+import {
+	Ability,
+	type Blueprint,
+	Class,
+	Rarity,
+	SpellSchool,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Aquatic Form",
 	text: "<b>Dredge</b>. If you have the Mana to play the card this turn, draw it.",
 	cost: 0,
-	type: "Spell",
-	classes: ["Druid"],
-	rarity: "Rare",
+	type: Type.Spell,
+	classes: [Class.Druid],
+	rarity: Rarity.Rare,
 	collectible: true,
 	tags: [],
 	id: 93,
 
-	spellSchool: "None",
+	spellSchool: SpellSchool.None,
 
 	async cast(owner, self) {
 		// Dredge. If you have the Mana to play the card this turn, draw it.
@@ -35,13 +42,13 @@ export const blueprint: Blueprint = {
 		// Shouldn't draw any cards
 		owner.mana = -1;
 
-		await self.activate("cast");
+		await self.activate(Ability.Cast);
 		assert.equal(owner.hand.length, handSize);
 
 		// Should draw a card
 		owner.mana = 10;
 
-		await self.activate("cast");
+		await self.activate(Ability.Cast);
 		assert.equal(owner.hand.length, handSize + 1);
 	},
 };

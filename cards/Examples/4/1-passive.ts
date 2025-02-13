@@ -1,6 +1,14 @@
 // Created by Hand
 
-import type { Blueprint, EventValue } from "@Game/types.js";
+import {
+	Ability,
+	type Blueprint,
+	Class,
+	type EventValue,
+	MinionTribe,
+	Rarity,
+	Type,
+} from "@Game/types.js";
 
 // Im sorry, things are about to become a lot more complicated from this point on.
 export const blueprint: Blueprint = {
@@ -10,16 +18,16 @@ export const blueprint: Blueprint = {
 	text: "Your battlecries trigger twice.",
 
 	cost: 1,
-	type: "Minion",
-	classes: ["Neutral"],
-	rarity: "Free",
+	type: Type.Minion,
+	classes: [Class.Neutral],
+	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
 	id: 55,
 
 	attack: 1,
 	health: 1,
-	tribe: "None",
+	tribe: MinionTribe.None,
 
 	/*
 	 * Note the new `key`, `_unknownValue` and `eventPlayer` arguments.
@@ -66,7 +74,7 @@ export const blueprint: Blueprint = {
 		 */
 
 		// We check if the card played is not a minion (this is not neccessary in this case since if the card doesn't have a battlecry, it won't do anything, but it is here for clarity)
-		if (value.type !== "Minion") {
+		if (value.type !== Type.Minion) {
 			return;
 		}
 
@@ -77,7 +85,7 @@ export const blueprint: Blueprint = {
 		 * Remember, this passive triggers after the minion's battlecry (in order to handle refunding).
 		 * This means that once we trigger the battlecry here, the minion's battlecry will have triggered twice in total.
 		 */
-		await value.activate("battlecry");
+		await value.activate(Ability.Battlecry);
 	},
 
 	async test(owner, self) {

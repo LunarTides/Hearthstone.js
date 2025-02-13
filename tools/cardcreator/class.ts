@@ -1,5 +1,11 @@
 import { createGame } from "@Core/game.js";
-import type { Blueprint, CardClass, CardRarity } from "@Game/types.js";
+import {
+	type Blueprint,
+	CardTag,
+	type Class,
+	Rarity,
+	Type,
+} from "@Game/types.js";
 import * as lib from "./lib.js";
 
 const { game } = createGame();
@@ -54,12 +60,12 @@ export async function main(
 		name: heroName,
 		text: `${game.lodash.capitalize(className)} starting hero`,
 		cost: 0,
-		type: "Hero",
+		type: Type.Hero,
 		// We do +2 since the hero card will be created first (+1), then the heropower (+1)
-		classes: [className] as CardClass[],
-		rarity: "Free" as CardRarity,
+		classes: [game.lodash.startCase(className) as Class],
+		rarity: Rarity.Free,
 		collectible: false,
-		tags: ["starting_hero"],
+		tags: [CardTag.StartingHero],
 		// This will be overwritten by the library
 		id: 0,
 
@@ -71,9 +77,9 @@ export async function main(
 		name: hpName,
 		text: hpText,
 		cost: game.lodash.parseInt(hpCost),
-		type: "Heropower",
-		classes: [className] as CardClass[],
-		rarity: "Free" as CardRarity,
+		type: Type.HeroPower,
+		classes: [game.lodash.startCase(className) as Class],
+		rarity: Rarity.Free,
 		collectible: false,
 		tags: [],
 		// This will be overwritten by the library

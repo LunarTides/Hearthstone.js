@@ -1,12 +1,13 @@
 import util from "node:util";
 import { Card } from "@Core/card.js";
 import { createGame } from "@Core/game.js";
-import type {
-	CardClass,
-	CardClassNoNeutral,
-	CardType,
-	CommandList,
-	GameConfig,
+import {
+	Class,
+	type CommandList,
+	Event,
+	type GameConfig,
+	Rarity,
+	Type,
 } from "@Game/types.js";
 import { resumeTagParsing, stopTagParsing } from "chalk-tags";
 
@@ -16,7 +17,7 @@ const { config } = game;
 const classes = await game.functions.card.getClasses();
 const cards = await Card.all(game.config.advanced.dcShowUncollectible);
 
-let chosenClass: CardClassNoNeutral;
+let chosenClass: Class;
 let filteredCards: Card[] = [];
 
 let deck: Card[] = [];
@@ -36,7 +37,7 @@ const settings = {
 		maxPage: undefined as number | undefined,
 		// Cards per page
 		cpp: 15,
-		class: undefined as CardClass | undefined,
+		class: undefined as Class | undefined,
 	},
 	sort: {
 		type: "rarity" as keyof Card,
@@ -73,7 +74,7 @@ function watermark(): void {
 /**
  * Asks the user which class to choose, and returns it.
  */
-async function askClass(): Promise<CardClassNoNeutral> {
+async function askClass(): Promise<Class> {
 	watermark();
 
 	let heroClass = await game.input(
@@ -84,11 +85,12 @@ async function askClass(): Promise<CardClassNoNeutral> {
 		heroClass = game.lodash.startCase(heroClass);
 	}
 
-	if (!classes.includes(heroClass as CardClassNoNeutral)) {
+	if (!classes.includes(heroClass)) {
 		return askClass();
 	}
 
-	player1.heroClass = heroClass as CardClass;
+	const actualClass = game.lodash.startCase(heroClass) as Class;
+	player1.heroClass = actualClass;
 
 	if (player1.canUseRunes()) {
 		runes = "";
@@ -111,7 +113,7 @@ async function askClass(): Promise<CardClassNoNeutral> {
 		player1.runes = runes;
 	}
 
-	return heroClass as CardClassNoNeutral;
+	return actualClass;
 }
 
 /**
@@ -136,7 +138,13 @@ function sortCards(_cards: Card[]): Card[] {
 	};
 
 	if (type === "rarity") {
-		const sortScores = ["Free", "Common", "Rare", "Epic", "Legendary"];
+		const sortScores = [
+			Rarity.Free,
+			Rarity.Common,
+			Rarity.Rare,
+			Rarity.Epic,
+			Rarity.Legendary,
+		];
 
 		return _cards.sort((a, b) => {
 			const scoreA = sortScores.indexOf(a.rarity);
@@ -148,8 +156,8 @@ function sortCards(_cards: Card[]): Card[] {
 
 	if (["name", "type"].includes(type)) {
 		return _cards.sort((a, b) => {
-			let typeA: string | CardType;
-			let typeB: string | CardType;
+			let typeA: string;
+			let typeB: string;
 
 			if (type === "name") {
 				typeA = a.name;
@@ -1102,13 +1110,9 @@ const commands: CommandList = {
 			return false;
 		}
 
-		let heroClass = args.join(" ") as CardClass;
-		heroClass = game.lodash.startCase(heroClass) as CardClass;
+		const heroClass = game.lodash.startCase(args.join(" ")) as Class;
 
-		if (
-			!classes.includes(heroClass as CardClassNoNeutral) &&
-			heroClass !== "Neutral"
-		) {
+		if (!classes.includes(heroClass) && heroClass !== Class.Neutral) {
 			await game.pause("<red>Invalid class!</red>\n");
 			return false;
 		}
@@ -1185,7 +1189,7 @@ const commands: CommandList = {
 		deck = [];
 
 		// Update the filtered cards
-		chosenClass = player1.heroClass as CardClassNoNeutral;
+		chosenClass = player1.heroClass;
 		runes = player1.runes;
 		await showCards();
 
@@ -1212,7 +1216,7 @@ const commands: CommandList = {
 
 		deck = [];
 		chosenClass = newClass;
-		if (settings.view.class !== "Neutral") {
+		if (settings.view.class !== Class.Neutral) {
 			settings.view.class = chosenClass;
 		}
 
@@ -1422,7 +1426,7 @@ const commands: CommandList = {
 			await game.pause();
 		}
 
-		await game.event.broadcast("Eval", code, game.player);
+		await game.event.broadcast(Event.Eval, code, game.player);
 		return true;
 	},
 };

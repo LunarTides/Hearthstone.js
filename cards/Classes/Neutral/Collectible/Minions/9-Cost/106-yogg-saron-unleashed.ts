@@ -2,26 +2,35 @@
 
 import assert from "node:assert";
 import { Card } from "@Core/card.js";
-import type { Blueprint, EventValue } from "@Game/types.js";
+import {
+	Ability,
+	type Blueprint,
+	Class,
+	type EventValue,
+	Keyword,
+	MinionTribe,
+	Rarity,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Yogg-Saron, Unleashed",
 	text: "<b>Titan</b> After this uses an ability, cast two random spells.",
 	cost: 9,
-	type: "Minion",
-	classes: ["Neutral"],
-	rarity: "Legendary",
+	type: Type.Minion,
+	classes: [Class.Neutral],
+	rarity: Rarity.Legendary,
 	collectible: true,
 	tags: [],
 	id: 106,
 
 	attack: 7,
 	health: 5,
-	tribe: "None",
+	tribe: MinionTribe.None,
 
 	async create(owner, self) {
 		// Add additional fields here
-		self.addKeyword("Titan", [
+		self.addKeyword(Keyword.Titan, [
 			game.cardIds.induceInsanity107,
 			game.cardIds.reignOfChaos108,
 			game.cardIds.tentacleSwarm109,
@@ -46,7 +55,7 @@ export const blueprint: Blueprint = {
 			return;
 		}
 
-		const pool = (await Card.all()).filter((card) => card.type === "Spell");
+		const pool = (await Card.all()).filter((card) => card.type === Type.Spell);
 
 		for (let i = 0; i < 2; i++) {
 			const card = await game.lodash.sample(pool)?.imperfectCopy();
@@ -54,7 +63,7 @@ export const blueprint: Blueprint = {
 				continue;
 			}
 
-			await card.activate("cast");
+			await card.activate(Ability.Cast);
 		}
 	},
 

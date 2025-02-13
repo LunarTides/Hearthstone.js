@@ -2,20 +2,27 @@
 
 import assert from "node:assert";
 import { Card } from "@Core/card.js";
-import type { Blueprint } from "@Game/types.js";
+import {
+	Ability,
+	type Blueprint,
+	Class,
+	Rarity,
+	SpellSchool,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Discover Example",
 	text: "Discover a spell.",
 	cost: 1,
-	type: "Spell",
-	classes: ["Neutral"],
-	rarity: "Free",
+	type: Type.Spell,
+	classes: [Class.Neutral],
+	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
 	id: 51,
 
-	spellSchool: "None",
+	spellSchool: SpellSchool.None,
 
 	async cast(owner, self) {
 		// Discover a spell.
@@ -29,7 +36,7 @@ export const blueprint: Blueprint = {
 		let pool = await Card.all();
 
 		// We need to filter away any non-spell cards.
-		pool = pool.filter((c) => c.type === "Spell");
+		pool = pool.filter((c) => c.type === Type.Spell);
 
 		// game.functions.interact.discover(prompt, pool, ifItShouldFilterAwayCardsThatAreNotThePlayersClass = true, amountOfCardsToChooseFrom = 3)
 		const spell = await game.functions.interact.prompt.discover(
@@ -52,7 +59,7 @@ export const blueprint: Blueprint = {
 		owner.hand = [];
 
 		for (let i = 0; i < 50; i++) {
-			await self.activate("cast");
+			await self.activate(Ability.Cast);
 
 			const card = owner.hand.pop();
 

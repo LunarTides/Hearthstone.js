@@ -1,41 +1,43 @@
 import type { Card } from "@Core/card.js";
 import type { Player } from "@Core/player.js";
-import type { Blueprint, EventKey } from "@Game/types.js";
+import type { Blueprint, Event } from "@Game/types.js";
 
 /**
- * Game.PlayCard return value
+ * Game.play return value
  */
-export type GamePlayCardReturn =
-	| true
-	| "cost"
-	| "traded"
-	| "forged"
-	| "space"
-	| "magnetize"
-	| "colossal"
-	| "refund"
-	| "counter"
-	| "invalid";
+export enum GamePlayCardReturn {
+	Invalid = "Invalid",
+	Success = "Success",
+	Cost = "Cost",
+	Traded = "Traded",
+	Forged = "Forged",
+	Space = "Space",
+	Magnetize = "Magnetize",
+	Colossal = "Colossal",
+	Refund = "Refund",
+	Counter = "Counter",
+}
 
 /**
  * Attack return value
  */
-export type GameAttackReturn =
-	| true
-	| "divineshield"
-	| "taunt"
-	| "stealth"
-	| "frozen"
-	| "playernoattack"
-	| "noattack"
-	| "playerhasattacked"
-	| "hasattacked"
-	| "sleepy"
-	| "cantattackhero"
-	| "immune"
-	| "dormant"
-	| "titan"
-	| "invalid";
+export enum GameAttackReturn {
+	Invalid = "Invalid",
+	Success = "Success",
+	DivineShield = "DivineShield",
+	Taunt = "Taunt",
+	Stealth = "Stealth",
+	Frozen = "Frozen",
+	PlayerNoAttack = "PlayerNoAttack",
+	CardNoAttack = "CardNoAttack",
+	PlayerHasAttacked = "PlayerHasAttacked",
+	CardHasAttacked = "CardHasAttacked",
+	Sleepy = "Sleepy",
+	CantAttackHero = "CantAttackHero",
+	Immune = "Immune",
+	Dormant = "Dormant",
+	Titan = "Titan",
+}
 
 /**
  * ExportDeck error return value
@@ -48,23 +50,41 @@ export type FunctionsExportDeckError =
 			recoverable: boolean;
 	  };
 
+export enum AiCalcMoveMessage {
+	End = "End",
+	Attack = "Attack",
+	HeroPower = "HeroPower",
+	Use = "Use",
+}
+
 /**
  * CalcMove return value
  */
-export type AiCalcMoveOption = Card | "hero power" | "attack" | "use" | "end";
+export type AiCalcMoveOption = Card | AiCalcMoveMessage;
 
 /**
  * promptTarget alignment
  */
-export type SelectTargetAlignment = "friendly" | "enemy" | "any";
+export enum TargetAlignment {
+	Friendly = "Friendly",
+	Enemy = "Enemy",
+	Any = "Any",
+}
 /**
  * promptTarget class
  */
-export type SelectTargetClass = "hero" | "minion" | "any";
+export enum TargetClass {
+	Player = "Player",
+	Card = "Card",
+	Any = "Any",
+}
 /**
  * promptTarget flags
  */
-export type SelectTargetFlag = "allowLocations" | "forceElusive";
+export enum TargetFlag {
+	AllowLocations = "AllowLocations",
+	ForceElusive = "ForceElusive",
+}
 
 export type CommandList = Record<
 	string,
@@ -161,8 +181,8 @@ export type GameConfig = {
 
 		forgetfulRandomTargetFailAmount: number;
 
-		whitelistedHistoryKeys: EventKey[];
-		hideValueHistoryKeys: EventKey[];
+		whitelistedHistoryKeys: Event[];
+		hideValueHistoryKeys: Event[];
 	};
 
 	info: {

@@ -1,6 +1,13 @@
 // Created by Hand
 
-import type { Blueprint } from "@Game/types.js";
+import {
+	type Blueprint,
+	Class,
+	Keyword,
+	MinionTribe,
+	Rarity,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Taunt Example",
@@ -14,10 +21,10 @@ export const blueprint: Blueprint = {
 	text: "<b>Taunt.</b> This is an example card to show how to add keywords to cards.",
 
 	cost: 1,
-	type: "Minion",
-	tribe: "None",
-	classes: ["Neutral"],
-	rarity: "Free",
+	type: Type.Minion,
+	tribe: MinionTribe.None,
+	classes: [Class.Neutral],
+	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
 	id: 32,
@@ -31,6 +38,6 @@ export const blueprint: Blueprint = {
 	 */
 	async create(owner, self) {
 		// Add the Taunt keyword to this card
-		self.addKeyword("Taunt");
+		self.addKeyword(Keyword.Taunt);
 	},
 };

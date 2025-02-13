@@ -1,22 +1,28 @@
 // Created by the Custom Card Creator
 
 import assert from "node:assert";
-import type { Blueprint } from "@Game/types.js";
+import {
+	type Blueprint,
+	Class,
+	MinionTribe,
+	Rarity,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Immortal Test",
 	text: "<i>This minion cannot be removed from the battlefield.</i>",
 	cost: 1,
-	type: "Minion",
-	classes: ["Neutral"],
-	rarity: "Free",
+	type: Type.Minion,
+	classes: [Class.Neutral],
+	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
 	id: 135,
 
 	attack: 1,
 	health: 1,
-	tribe: "None",
+	tribe: MinionTribe.None,
 
 	async remove(owner, self, key) {
 		// This minion cannot be removed from the battlefield.

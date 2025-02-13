@@ -2,28 +2,36 @@
 
 import assert from "node:assert";
 import { Card } from "@Core/card.js";
-import type { Blueprint } from "@Game/types.js";
+import {
+	Ability,
+	type Blueprint,
+	CardTag,
+	Class,
+	MinionTribe,
+	Rarity,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Ethereal Lackey",
 	text: "<b>Battlecry: Discover</b> a spell.",
 	cost: 1,
-	type: "Minion",
-	classes: ["Neutral"],
-	rarity: "Free",
+	type: Type.Minion,
+	classes: [Class.Neutral],
+	rarity: Rarity.Free,
 	collectible: false,
-	tags: ["lackey"],
+	tags: [CardTag.Lackey],
 	id: 24,
 
 	attack: 1,
 	health: 1,
-	tribe: "None",
+	tribe: MinionTribe.None,
 
 	async battlecry(owner, self) {
 		// Discover a spell.
 
 		// Filter out all cards that aren't spells
-		const pool = (await Card.all()).filter((c) => c.type === "Spell");
+		const pool = (await Card.all()).filter((c) => c.type === Type.Spell);
 		if (pool.length <= 0) {
 			return;
 		}
@@ -47,7 +55,7 @@ export const blueprint: Blueprint = {
 		if (
 			(await Card.all()).filter(
 				(c) =>
-					c.type === "Spell" &&
+					c.type === Type.Spell &&
 					game.functions.card.validateClasses(self.classes, owner.heroClass),
 			).length <= 0
 		) {
@@ -61,7 +69,7 @@ export const blueprint: Blueprint = {
 		for (let i = 0; i < 50; i++) {
 			// Activate the battlecry and get the card from the player's hand.
 			owner.hand = [];
-			await self.activate("battlecry");
+			await self.activate(Ability.Battlecry);
 			const card = owner.hand[0];
 
 			assert.equal(card.type, "Spell");

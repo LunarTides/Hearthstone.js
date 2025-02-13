@@ -2,22 +2,29 @@
 
 import assert from "node:assert";
 import { Card } from "@Core/card.js";
-import type { Blueprint } from "@Game/types.js";
+import {
+	Ability,
+	type Blueprint,
+	Class,
+	MinionTribe,
+	Rarity,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Archmage Vargoth",
 	text: "At the end of your turn, cast a spell you've cast this turn <i>(targets are random)</i>.",
 	cost: 4,
-	type: "Minion",
-	classes: ["Neutral"],
-	rarity: "Legendary",
+	type: Type.Minion,
+	classes: [Class.Neutral],
+	rarity: Rarity.Legendary,
 	collectible: true,
 	tags: [],
 	id: 98,
 
 	attack: 2,
 	health: 6,
-	tribe: "None",
+	tribe: MinionTribe.None,
 
 	async passive(owner, self, key, _unknownValue) {
 		// At the end of your turn, cast a spell you've cast this turn (targets are random).
@@ -31,7 +38,7 @@ export const blueprint: Blueprint = {
 			.filter(
 				(object) =>
 					object[0] instanceof Card &&
-					object[0].type === "Spell" &&
+					object[0].type === Type.Spell &&
 					object[1] === game.turn,
 			)
 			.map((object) => object[0] as Card);
@@ -43,7 +50,7 @@ export const blueprint: Blueprint = {
 		const spell = game.lodash.sample(spells);
 
 		owner.forceTarget = game.functions.util.getRandomTarget();
-		await spell?.activate("cast");
+		await spell?.activate(Ability.Cast);
 		owner.forceTarget = undefined;
 	},
 

@@ -1,17 +1,17 @@
 // Created by the Custom Card Creator
 
 import { Card } from "@Core/card.js";
-import type { Blueprint } from "@Game/types.js";
+import { type Blueprint, CardTag, Class, Rarity, Type } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Galakrond, the Tempest",
 	text: "<b>Battlecry:</b> Summon two {amount}/{amount} Storms with <b>Rush</b>.{weapon}",
 	cost: 7,
-	type: "Hero",
-	classes: ["Shaman"],
-	rarity: "Legendary",
+	type: Type.Hero,
+	classes: [Class.Shaman],
+	rarity: Rarity.Legendary,
 	collectible: true,
-	tags: ["galakrond"],
+	tags: [CardTag.Galakrond],
 	id: 68,
 
 	armor: 5,

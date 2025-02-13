@@ -1,25 +1,32 @@
 // Created by the Custom Card Creator
 
 import assert from "node:assert";
-import type { Blueprint } from "@Game/types.js";
+import {
+	type Blueprint,
+	Class,
+	Keyword,
+	MinionTribe,
+	Rarity,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Divine Shield Test",
 	text: "<b>Divine Shield</b>",
 	cost: 1,
-	type: "Minion",
-	classes: ["Neutral"],
-	rarity: "Free",
+	type: Type.Minion,
+	classes: [Class.Neutral],
+	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
 	id: 73,
 
 	attack: 1,
 	health: 1,
-	tribe: "None",
+	tribe: MinionTribe.None,
 
 	async create(owner, self) {
-		self.addKeyword("Divine Shield");
+		self.addKeyword(Keyword.DivineShield);
 	},
 
 	async test(owner, self) {

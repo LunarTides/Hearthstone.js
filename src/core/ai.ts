@@ -1,13 +1,16 @@
 import { Card } from "@Core/card.js";
 import { Player } from "@Core/player.js";
-import type {
-	AiCalcMoveOption,
-	AiHistory,
-	ScoredCard,
-	SelectTargetAlignment,
-	SelectTargetClass,
-	SelectTargetFlag,
-	Target,
+import {
+	AiCalcMoveMessage,
+	type AiCalcMoveOption,
+	type AiHistory,
+	Keyword,
+	type ScoredCard,
+	type Target,
+	TargetAlignment,
+	TargetClass,
+	TargetFlag,
+	Type,
 } from "@Game/types.js";
 
 // TODO: Ai gets stuck in infinite loop when using cathedral of atonement (location) | shadowcloth needle (0 attack wpn) | that minion has no attack. #374
@@ -105,13 +108,13 @@ export class Ai {
 		// If a card wasn't chosen
 		if (!bestMove) {
 			if (this._canHeroPower()) {
-				bestMove = "hero power";
+				bestMove = AiCalcMoveMessage.HeroPower;
 			} else if (this._canAttack()) {
-				bestMove = "attack";
+				bestMove = AiCalcMoveMessage.Attack;
 			} else if (this._canUseLocation()) {
-				bestMove = "use";
+				bestMove = AiCalcMoveMessage.Use;
 			} else {
-				bestMove = "end";
+				bestMove = AiCalcMoveMessage.End;
 			}
 
 			this.history.push({ type: "calcMove", data: bestMove });
@@ -121,7 +124,7 @@ export class Ai {
 			this.cardsPlayedThisTurn.push(bestMove);
 		}
 
-		if (bestMove === "end") {
+		if (bestMove === AiCalcMoveMessage.End) {
 			for (const [index, historyEntry] of this.history.entries()) {
 				if (
 					Array.isArray(historyEntry) &&
@@ -287,14 +290,17 @@ export class Ai {
 	promptTarget(
 		prompt: string,
 		card: Card | undefined,
-		forceSide: SelectTargetAlignment,
-		forceClass: SelectTargetClass,
-		flags: SelectTargetFlag[] = [],
+		forceSide: TargetAlignment,
+		forceClass: TargetClass,
+		flags: TargetFlag[] = [],
 	): Target | null {
-		if (flags.includes("allowLocations") && forceClass !== "hero") {
+		if (
+			flags.includes(TargetFlag.AllowLocations) &&
+			forceClass !== TargetClass.Player
+		) {
 			const locations = this.player.board.filter(
 				(m) =>
-					m.type === "Location" &&
+					m.type === Type.Location &&
 					m.cooldown === 0 &&
 					!this.usedLocationsThisTurn.includes(m),
 			);
@@ -318,19 +324,19 @@ export class Ai {
 			side = "enemy";
 		}
 
-		if (forceSide !== "any") {
+		if (forceSide !== TargetAlignment.Any) {
 			side = forceSide;
 		}
 
 		const sidePlayer = side === "self" ? this.player : opponent;
 
-		if (sidePlayer.board.length <= 0 && forceClass === "minion") {
+		if (sidePlayer.board.length <= 0 && forceClass === TargetClass.Card) {
 			this.history.push({ type: "selectTarget", data: "0,1" });
 
 			return null;
 		}
 
-		if (forceClass === "hero") {
+		if (forceClass === TargetClass.Player) {
 			let returnValue: Player | null = null;
 
 			if (side === "self") {
@@ -351,7 +357,7 @@ export class Ai {
 		if (sidePlayer.board.length <= 0) {
 			let returnValue: Player | null = null;
 
-			if (forceClass === "minion") {
+			if (forceClass === TargetClass.Card) {
 				this.history.push({ type: "selectTarget", data: -1 });
 			} else {
 				returnValue = sidePlayer;
@@ -373,8 +379,10 @@ export class Ai {
 			}
 
 			if (
-				(card && card.type === "Spell" && target.hasKeyword("Elusive")) ??
-				target.type === "Location"
+				(card &&
+					card.type === Type.Spell &&
+					target.hasKeyword(Keyword.Elusive)) ??
+				target.type === Type.Location
 			) {
 				continue;
 			}
@@ -774,7 +782,7 @@ export class Ai {
 
 		const validLocations = this.player.board.filter(
 			(m) =>
-				m.type === "Location" &&
+				m.type === Type.Location &&
 				m.cooldown === 0 &&
 				!this.usedLocationsThisTurn.includes(m),
 		);
@@ -906,7 +914,9 @@ export class Ai {
 	 * @returns The taunts on the board
 	 */
 	private _findTaunts(): Card[] {
-		return this.player.getOpponent().board.filter((m) => m.hasKeyword("Taunt"));
+		return this.player
+			.getOpponent()
+			.board.filter((m) => m.hasKeyword(Keyword.Taunt));
 	}
 
 	/**
@@ -1015,7 +1025,7 @@ export class Ai {
 
 		const target =
 			!this.focus ||
-			(this._findTaunts().length > 0 && !this.focus.hasKeyword("Taunt"))
+			(this._findTaunts().length > 0 && !this.focus.hasKeyword(Keyword.Taunt))
 				? this._attackGeneralChooseTarget()
 				: this.focus;
 

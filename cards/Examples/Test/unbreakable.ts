@@ -1,15 +1,15 @@
 // Created by the Custom Card Creator
 
 import assert from "node:assert";
-import type { Blueprint } from "@Game/types.js";
+import { type Blueprint, Class, Keyword, Rarity, Type } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Unbreakable Test",
 	text: "<i>This weapon is unbreakable.</i>",
 	cost: 1,
-	type: "Weapon",
-	classes: ["Neutral"],
-	rarity: "Free",
+	type: Type.Weapon,
+	classes: [Class.Neutral],
+	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
 	id: 140,
@@ -19,7 +19,7 @@ export const blueprint: Blueprint = {
 
 	async create(owner, self) {
 		// Add additional fields here
-		self.addKeyword("Unbreakable");
+		self.addKeyword(Keyword.Unbreakable);
 	},
 
 	async test(owner, self) {

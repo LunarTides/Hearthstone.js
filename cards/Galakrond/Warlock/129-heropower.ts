@@ -2,15 +2,15 @@
 
 import assert from "node:assert";
 import { Card } from "@Core/card.js";
-import type { Blueprint } from "@Game/types.js";
+import { Ability, type Blueprint, Class, Rarity, Type } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Galakrond's Malice",
 	text: "Summon two 1/1 Imps.",
 	cost: 2,
-	type: "Heropower",
-	classes: ["Warlock"],
-	rarity: "Legendary",
+	type: Type.HeroPower,
+	classes: [Class.Warlock],
+	rarity: Rarity.Legendary,
 	collectible: false,
 	tags: [],
 	id: 129,
@@ -34,7 +34,7 @@ export const blueprint: Blueprint = {
 		assert.equal(countImps(), 0);
 
 		// There should be 2 imps when using the hero power
-		await self.activate("heropower");
+		await self.activate(Ability.HeroPower);
 		assert.equal(countImps(), 2);
 	},
 };

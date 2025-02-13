@@ -1,21 +1,28 @@
 // Created by Hand (before the Card Creator Existed)
 
 import assert from "node:assert";
-import type { Blueprint } from "@Game/types.js";
+import {
+	Ability,
+	type Blueprint,
+	Class,
+	Rarity,
+	SpellSchool,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	// Look in `titan.ts` first.
 	name: "Ability 3",
 	text: "Restore 2 mana.",
 	cost: 0,
-	type: "Spell",
-	classes: ["Neutral"],
-	rarity: "Free",
+	type: Type.Spell,
+	classes: [Class.Neutral],
+	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
 	id: 81,
 
-	spellSchool: "None",
+	spellSchool: SpellSchool.None,
 
 	async cast(owner, self) {
 		// Restore 2 mana.
@@ -28,7 +35,7 @@ export const blueprint: Blueprint = {
 		owner.emptyMana = 10;
 
 		const { mana } = owner;
-		await self.activate("cast");
+		await self.activate(Ability.Cast);
 
 		assert.equal(owner.mana, mana + 2);
 	},

@@ -1,21 +1,28 @@
 // Created by Hand
 
-import type { Blueprint } from "@Game/types.js";
+import {
+	type Blueprint,
+	CardTag,
+	Class,
+	MinionTribe,
+	Rarity,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "DIY 1",
 	text: "<b>This is a DIY card, it does not work by default. Battlecry:</b> Give this minion +1/+1.",
 	cost: 0,
-	type: "Minion",
-	classes: ["Neutral"],
-	rarity: "Free",
+	type: Type.Minion,
+	classes: [Class.Neutral],
+	rarity: Rarity.Free,
 	collectible: false,
-	tags: ["diy"],
+	tags: [CardTag.DIY],
 	id: 61,
 
 	attack: 0,
 	health: 1,
-	tribe: "None",
+	tribe: MinionTribe.None,
 
 	async battlecry(owner, self) {
 		// Give this minion +1/+1.

@@ -4,27 +4,35 @@
 
 import assert from "node:assert";
 import { Card } from "@Core/card.js";
-import type { Blueprint } from "@Game/types.js";
+import {
+	Ability,
+	type Blueprint,
+	Class,
+	Rarity,
+	SpellSchool,
+	TargetAlignment,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Reign of Chaos",
 	text: "Take control of an enemy minion.",
 	cost: 0,
-	type: "Spell",
-	classes: ["Neutral"],
-	rarity: "Free",
+	type: Type.Spell,
+	classes: [Class.Neutral],
+	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
 	id: 108,
 
-	spellSchool: "None",
+	spellSchool: SpellSchool.None,
 
 	async cast(owner, self) {
 		// Take control of an enemy minion.
 		const card = await game.functions.interact.prompt.targetCard(
 			self.text,
 			self,
-			"enemy",
+			TargetAlignment.Enemy,
 		);
 		if (!card) {
 			return Card.REFUND;
@@ -49,7 +57,7 @@ export const blueprint: Blueprint = {
 
 		// Activate cast and make the player choose the sheep
 		owner.inputQueue = ["1"];
-		await self.activate("cast");
+		await self.activate(Ability.Cast);
 
 		// Check if the sheep's owner is the friendly player, is on this side of the board, and not the opponent's side of the board
 		assert.equal(sheep.owner, owner);

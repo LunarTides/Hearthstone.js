@@ -1,16 +1,16 @@
 // Created by the Custom Card Creator
 
-import type { Blueprint } from "@Game/types.js";
+import { type Blueprint, CardTag, Class, Rarity, Type } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Malfurion Stormrage",
 	text: "Druid starting hero",
 	cost: 0,
-	type: "Hero",
-	classes: ["Druid"],
-	rarity: "Free",
+	type: Type.Hero,
+	classes: [Class.Druid],
+	rarity: Rarity.Free,
 	collectible: false,
-	tags: ["starting_hero"],
+	tags: [CardTag.StartingHero],
 	id: 5,
 
 	armor: 0,

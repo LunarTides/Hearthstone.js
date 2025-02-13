@@ -1,7 +1,14 @@
 // Created by Hand
 
 import assert from "node:assert";
-import type { Blueprint } from "@Game/types.js";
+import {
+	Ability,
+	type Blueprint,
+	Class,
+	MinionTribe,
+	Rarity,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Battlecry Example",
@@ -13,16 +20,16 @@ export const blueprint: Blueprint = {
 	text: "<b>Battlecry:</b> Give this minion +1/+1.",
 
 	cost: 1,
-	type: "Minion",
-	classes: ["Neutral"],
-	rarity: "Free",
+	type: Type.Minion,
+	classes: [Class.Neutral],
+	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
 	id: 33,
 
 	attack: 1,
 	health: 2,
-	tribe: "None",
+	tribe: MinionTribe.None,
 
 	/*
 	 * Here we put the name of the ability we want to add.
@@ -51,7 +58,7 @@ export const blueprint: Blueprint = {
 	 * These tests are run in an isolated environment. The side-effect of the code here won't carry over to other tests or the game.
 	 */
 	async test(owner, self) {
-		await self.activate("battlecry");
+		await self.activate(Ability.Battlecry);
 
 		assert.equal((self.blueprint.attack ?? 0) + 1, self.attack);
 		assert.equal((self.blueprint.health ?? 0) + 1, self.health);

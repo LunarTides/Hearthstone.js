@@ -1,6 +1,6 @@
 // Created by Hand
 
-import type { Blueprint } from "@Game/types.js";
+import { type Blueprint, Class, Rarity, Type } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	// This looks like a minion card except for the type and no tribe.
@@ -9,10 +9,10 @@ export const blueprint: Blueprint = {
 	cost: 1,
 
 	// Remember to properly set the type (Done automatically by the card creator)
-	type: "Weapon",
+	type: Type.Weapon,
 
-	classes: ["Neutral"],
-	rarity: "Free",
+	classes: [Class.Neutral],
+	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
 	id: 31,

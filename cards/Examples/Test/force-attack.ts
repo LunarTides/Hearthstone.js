@@ -2,22 +2,29 @@
 
 import assert from "node:assert";
 import { Card } from "@Core/card.js";
-import type { Blueprint, EventValue } from "@Game/types.js";
+import {
+	type Blueprint,
+	Class,
+	type EventValue,
+	MinionTribe,
+	Rarity,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Force Attack Test",
 	text: "Whenever a minion attacks, it attacks again.",
 	cost: 1,
-	type: "Minion",
-	classes: ["Neutral"],
-	rarity: "Free",
+	type: Type.Minion,
+	classes: [Class.Neutral],
+	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
 	id: 137,
 
 	attack: 1,
 	health: 1,
-	tribe: "None",
+	tribe: MinionTribe.None,
 
 	async create(owner, self) {
 		// Store the attacker / target combo in storage.

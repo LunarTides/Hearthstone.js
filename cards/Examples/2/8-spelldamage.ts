@@ -1,7 +1,14 @@
 // Created by Hand
 
 import assert from "node:assert";
-import type { Blueprint } from "@Game/types.js";
+import {
+	Ability,
+	type Blueprint,
+	Class,
+	Rarity,
+	SpellSchool,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Spell Damage Example",
@@ -15,14 +22,14 @@ export const blueprint: Blueprint = {
 	text: "Deal $3 damage to the enemy hero.",
 
 	cost: 0,
-	type: "Spell",
-	classes: ["Neutral"],
-	rarity: "Free",
+	type: Type.Spell,
+	classes: [Class.Neutral],
+	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
 	id: 42,
 
-	spellSchool: "None",
+	spellSchool: SpellSchool.None,
 
 	async cast(owner, self) {
 		// Deal $3 damage to the enemy hero.
@@ -38,7 +45,7 @@ export const blueprint: Blueprint = {
 		const oldHealth = owner.getOpponent().health;
 
 		owner.spellDamage = 3;
-		await self.activate("cast");
+		await self.activate(Ability.Cast);
 
 		assert.equal(
 			owner.getOpponent().health,

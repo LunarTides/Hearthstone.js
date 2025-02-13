@@ -1,7 +1,7 @@
 // Created by Hand
 
 import assert from "node:assert";
-import type { Blueprint } from "@Game/types.js";
+import { Ability, type Blueprint, Class, Rarity, Type } from "@Game/types.js";
 
 // This is the first card in this stage. The next card in this stage is the `2-Hero` folder.
 
@@ -9,9 +9,9 @@ export const blueprint: Blueprint = {
 	name: "Location Example",
 	text: "Restore 2 Health to your hero.",
 	cost: 1,
-	type: "Location",
-	classes: ["Neutral"],
-	rarity: "Free",
+	type: Type.Location,
+	classes: [Class.Neutral],
+	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
 	id: 36,
@@ -38,7 +38,7 @@ export const blueprint: Blueprint = {
 
 	async test(owner, self) {
 		owner.health = 1;
-		await self.activate("use");
+		await self.activate(Ability.Use);
 
 		assert.equal(owner.health, 1 + 2);
 	},

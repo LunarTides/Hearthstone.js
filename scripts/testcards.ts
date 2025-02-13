@@ -7,6 +7,7 @@ import process from "node:process";
 import { Card } from "@Core/card.js";
 import { createGame } from "@Core/game.js";
 import type { Player } from "@Core/player.js";
+import { Ability } from "@Game/types.js";
 
 const { game } = createGame();
 const cards = await Card.all(true);
@@ -20,7 +21,7 @@ const cards = await Card.all(true);
  */
 async function testCard(card: Card): Promise<boolean | Error> {
 	try {
-		await card.activate("test");
+		await card.activate(Ability.Test);
 	} catch (error) {
 		if (error instanceof Error) {
 			return error;

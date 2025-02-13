@@ -2,20 +2,27 @@
 
 import assert from "node:assert";
 import { Card } from "@Core/card.js";
-import type { Blueprint } from "@Game/types.js";
+import {
+	Ability,
+	type Blueprint,
+	Class,
+	Rarity,
+	SpellSchool,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Scale of Onyxia",
 	text: "Fill your board with 2/1 Whelps with <b>Rush</b>.",
 	cost: 7,
-	type: "Spell",
-	classes: ["Druid"],
-	rarity: "Common",
+	type: Type.Spell,
+	classes: [Class.Druid],
+	rarity: Rarity.Common,
 	collectible: true,
 	tags: [],
 	id: 100,
 
-	spellSchool: "None",
+	spellSchool: SpellSchool.None,
 
 	async cast(owner, self) {
 		// Fill your board with 2/1 Whelps with Rush.
@@ -29,7 +36,7 @@ export const blueprint: Blueprint = {
 
 	async test(owner, self) {
 		assert.equal(owner.board.length, 0);
-		await self.activate("cast");
+		await self.activate(Ability.Cast);
 
 		// Check if the board has been filled
 		assert.equal(owner.board.length, game.config.general.maxBoardSpace);

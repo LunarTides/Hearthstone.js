@@ -2,7 +2,14 @@
 
 import assert from "node:assert";
 import { Card } from "@Core/card.js";
-import type { Blueprint } from "@Game/types.js";
+import {
+	Ability,
+	type Blueprint,
+	Class,
+	MinionTribe,
+	Rarity,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Condition Example",
@@ -11,16 +18,16 @@ export const blueprint: Blueprint = {
 	text: "<b>Battlecry:</b> If your deck has no duplicates, draw a card.",
 
 	cost: 1,
-	type: "Minion",
-	classes: ["Neutral"],
-	rarity: "Free",
+	type: Type.Minion,
+	classes: [Class.Neutral],
+	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
 	id: 52,
 
 	attack: 5,
 	health: 2,
-	tribe: "None",
+	tribe: MinionTribe.None,
 
 	async battlecry(owner, self) {
 		// If your deck has no duplicates, draw a card.
@@ -54,7 +61,7 @@ export const blueprint: Blueprint = {
 
 		// The player shouldn't fulfill the condition
 		assert(!owner.highlander());
-		await self.activate("battlecry");
+		await self.activate(Ability.Battlecry);
 
 		// Assert that the player didn't draw a card
 		assert.equal(owner.deck.length, length);
@@ -65,7 +72,7 @@ export const blueprint: Blueprint = {
 		assert(owner.highlander());
 		assert.equal(owner.deck.length, 1);
 
-		await self.activate("battlecry");
+		await self.activate(Ability.Battlecry);
 
 		assert.equal(owner.hand.length, 1);
 	},

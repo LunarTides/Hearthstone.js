@@ -1,12 +1,12 @@
 import { Card } from "@Core/card.js";
-import type { Player } from "@Core/player.js";
-import type {
-	Blueprint,
-	CardClass,
-	CardClassNoNeutral,
-	CardType,
+import {
+	type Blueprint,
+	CardTag,
+	Class,
+	Event,
 	MinionTribe,
-	VanillaCard,
+	Type,
+	type VanillaCard,
 } from "@Game/types.js";
 
 const vanilla = {
@@ -160,8 +160,8 @@ export const cardFunctions = {
 	/**
 	 * Returns if `classes` includes `cardClass` (also Neutral logic).
 	 */
-	validateClasses(classes: CardClass[], cardClass: CardClass): boolean {
-		if (classes.includes("Neutral")) {
+	validateClasses(classes: Class[], cardClass: Class): boolean {
+		if (classes.includes(Class.Neutral)) {
 			return true;
 		}
 
@@ -187,7 +187,7 @@ export const cardFunctions = {
 	 */
 	matchTribe(cardTribe: MinionTribe, tribe: MinionTribe): boolean {
 		// I'm not sure why you would set `tribe` to `All`, but I'll support it anyway.
-		if (cardTribe === "All" || tribe === "All") {
+		if (cardTribe === MinionTribe.All || tribe === MinionTribe.All) {
 			return true;
 		}
 
@@ -225,12 +225,12 @@ export const cardFunctions = {
 	},
 
 	/**
-	 * Returns all classes in the game
+	 * Returns the name of all classes in the game
 	 */
-	async getClasses(): Promise<CardClassNoNeutral[]> {
+	async getClasses(): Promise<string[]> {
 		const cards = await Promise.all(
-			(await Card.allWithTags(["starting_hero"])).map(async (hero) => {
-				const unsuppress = game.event.suppress("CreateCard");
+			(await Card.allWithTags([CardTag.StartingHero])).map(async (hero) => {
+				const unsuppress = game.event.suppress(Event.CreateCard);
 				const card = await hero.imperfectCopy();
 				unsuppress();
 
@@ -238,7 +238,7 @@ export const cardFunctions = {
 			}),
 		);
 
-		return cards.map((card) => card.classes[0]) as CardClassNoNeutral[];
+		return cards.map((card) => card.classes[0]);
 	},
 
 	/**
@@ -266,22 +266,23 @@ export const cardFunctions = {
 	 */
 	validateBlueprint(blueprint: Blueprint): string | boolean {
 		// These are the required fields for all card types.
-		const requiredFieldsTable: { [x in CardType]: string[] } = {
-			Minion: ["attack", "health", "tribe"],
-			Spell: ["spellSchool"],
-			Weapon: ["attack", "health"],
-			Hero: ["armor", "heropowerId"],
-			Location: ["durability", "cooldown"],
-			Heropower: ["heropower"],
-			Undefined: [],
+		const requiredFieldsTable: { [x in Type]: string[] } = {
+			[Type.Minion]: ["attack", "health", "tribe"],
+			[Type.Spell]: ["spellSchool"],
+			[Type.Weapon]: ["attack", "health"],
+			[Type.Hero]: ["armor", "heropowerId"],
+			[Type.Location]: ["durability", "cooldown"],
+			[Type.HeroPower]: ["heropower"],
+			[Type.Undefined]: [],
 		};
 
 		// We trust the typescript compiler to do most of the work for us, but the type specific code is handled here.
 		const required = requiredFieldsTable[blueprint.type];
 
-		const unwanted = Object.keys(requiredFieldsTable);
+		// NOTE: I don't know why Object.keys returns `string[]` here but ok.
+		const unwanted = Object.keys(requiredFieldsTable) as unknown as Type[];
 		game.functions.util.remove(unwanted, blueprint.type);
-		game.functions.util.remove(unwanted, "Undefined");
+		game.functions.util.remove(unwanted, Type.Undefined);
 
 		let result: string | boolean = true;
 		for (const field of required) {
@@ -293,7 +294,7 @@ export const cardFunctions = {
 		}
 
 		for (const key of unwanted) {
-			const fields = requiredFieldsTable[key as CardType];
+			const fields = requiredFieldsTable[key as Type];
 
 			for (const field of fields) {
 				// We already require that field. For example, both minions and weapons require stats

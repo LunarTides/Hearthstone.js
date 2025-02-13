@@ -1,20 +1,27 @@
 // Created by the Vanilla Card Creator
 
 import assert from "node:assert";
-import type { Blueprint } from "@Game/types.js";
+import {
+	Ability,
+	type Blueprint,
+	Class,
+	Rarity,
+	SpellSchool,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Oaken Summons",
 	text: "Gain 6 Armor. <b>Recruit</b> a minion that costs (4) or less.",
 	cost: 4,
-	type: "Spell",
-	classes: ["Druid"],
-	rarity: "Common",
+	type: Type.Spell,
+	classes: [Class.Druid],
+	rarity: Rarity.Common,
 	collectible: true,
 	tags: [],
 	id: 87,
 
-	spellSchool: "Nature",
+	spellSchool: SpellSchool.Nature,
 
 	async cast(owner, self) {
 		// Gain 6 Armor. Recruit a minion that costs (4) or less.
@@ -24,7 +31,7 @@ export const blueprint: Blueprint = {
 
 	async test(owner, self) {
 		for (let index = 1; index <= 10; index++) {
-			await self.activate("cast");
+			await self.activate(Ability.Cast);
 
 			// Check if the armor is correct
 			assert.equal(owner.armor, 6 * index);
@@ -33,7 +40,9 @@ export const blueprint: Blueprint = {
 			assert.ok(
 				owner.board.some(
 					(card) =>
-						card.cost <= 4 && card.type === "Minion" && card.uuid !== self.uuid,
+						card.cost <= 4 &&
+						card.type === Type.Minion &&
+						card.uuid !== self.uuid,
 				),
 			);
 
