@@ -266,12 +266,19 @@ ${runes}${keywords}
 		filename = `${id}-${overrideFilename}`;
 	}
 
+	let usesTags = false;
+
 	/*
 	 * Generate the content of the card
 	 * If the value is a string, put '"value"'. If it is not a string, put 'value'.
 	 */
 	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	const getTypeValue = (key: string, value: any) => {
+		if (key === "id") {
+			// Id gets handled elsewhere.
+			return;
+		}
+
 		let returnValue = value;
 
 		/**
@@ -286,7 +293,10 @@ ${runes}${keywords}
 					if (typeof v === "string") {
 						switch (key) {
 							case "classes":
-								return `Class.${v}`;
+								return `Class.${v.replaceAll(" ", "")}`;
+							case "tags":
+								usesTags = true;
+								return `CardTag.${v.replaceAll(" ", "")}`;
 
 							default:
 								return stringify(v);
@@ -322,15 +332,32 @@ ${runes}${keywords}
 		}
 
 		// Turn the value into a string.
-		if (returnValue) {
+		if (returnValue || returnValue === 0 || returnValue === false) {
 			return returnValue.toString();
 		}
 
 		return undefined;
 	};
 
+	// Add the key/value pairs to the content
+	const contentArray = Object.entries(blueprint).map((c) => {
+		const key = c[0].replaceAll('"', '\\"');
+		const value = getTypeValue(...c);
+		if (value === undefined) {
+			return "";
+		}
+
+		let returnValue = `${key}: ${value},\n\t`;
+		if (key === "tags") {
+			returnValue += `id: ${id},\n\n\t`;
+		}
+
+		return returnValue;
+	});
+
 	// If the function is passive, add `EventValue` to the list of imports
 	const passiveImport = isPassive ? "\n\tEvent,\n\ttype EventValue," : "";
+	const tagImport = usesTags ? "\n\tCardTag," : "";
 	let typeImport = "\n\t";
 
 	switch (blueprint.type) {
@@ -349,28 +376,12 @@ ${runes}${keywords}
 			break;
 	}
 
-	// Add the key/value pairs to the content
-	const contentArray = Object.entries(blueprint).map((c) => {
-		const key = c[0].replaceAll('"', '\\"');
-		const value = getTypeValue(...c);
-		if (value === undefined) {
-			return "";
-		}
-
-		let returnValue = `${key}: ${value},\n\t`;
-		if (key === "tags") {
-			returnValue += `id: ${id},\n\n\t`;
-		}
-
-		return returnValue;
-	});
-
 	// Add the content
 	const content = `// Created by the ${creatorType} Card Creator
 
 import assert from "node:assert";
 import {
-	type Blueprint,
+	type Blueprint,${tagImport}
 	Class,${passiveImport}${typeImport}${keywordImport}
 	Rarity,
 	Type,

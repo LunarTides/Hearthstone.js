@@ -436,9 +436,9 @@ async function showCards(): Promise<void> {
 	const oldSortType = settings.sort.type;
 	const oldSortOrder = settings.sort.order;
 	console.log(
-		"Sorting by %s, %sending.",
+		"Sorting by %s, %s.",
 		settings.sort.type.toUpperCase(),
-		settings.sort.order,
+		settings.sort.order.toLowerCase(),
 	);
 
 	// Sort
@@ -457,17 +457,17 @@ async function showCards(): Promise<void> {
 
 	if (sortOrderInvalid) {
 		console.log(
-			"<yellow>Ordering by </yellow>'%sending'<yellow> failed! Falling back to </yellow>%sending.",
+			"<yellow>Ordering by </yellow>'%sending'<yellow> failed! Falling back to </yellow>%s.",
 			oldSortOrder,
-			settings.sort.order,
+			settings.sort.order.toLowerCase(),
 		);
 	}
 
 	if (sortTypeInvalid || sortOrderInvalid) {
 		console.log(
-			"\nSorting by %s, %sending.",
+			"\nSorting by %s, %s.",
 			settings.sort.type.toUpperCase(),
-			settings.sort.order,
+			settings.sort.order.toLowerCase(),
 		);
 	}
 

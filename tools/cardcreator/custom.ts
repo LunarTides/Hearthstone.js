@@ -188,17 +188,24 @@ const cardTypeFunctions: {
 	async Hero(): Promise<Blueprint> {
 		const card = await common();
 
-		const armor = game.lodash.parseInt(await input("Armor (Default: 5):")) ?? 5;
+		const armor =
+			game.lodash.parseInt(await input("Armor (Default: 5): ")) ?? 5;
+		const heropowerId =
+			game.lodash.parseInt(
+				await input("Hero Power ID (Leave blank to create a new one): "),
+			) ?? 0;
 
-		console.log("\n<green bold>Make the Hero Power:<green bold>\n");
-		if (!(await main())) {
-			throw new Error("Failed to create hero power");
+		if (heropowerId === 0) {
+			console.log("\n<green bold>Make the Hero Power:<green bold>\n");
+			if (!(await main())) {
+				throw new Error("Failed to create hero power");
+			}
 		}
 
 		return applyCard({
 			...card,
 			armor,
-			heropowerId: lib.getLatestId(),
+			heropowerId: heropowerId || lib.getLatestId(),
 		});
 	},
 
@@ -252,6 +259,10 @@ export async function main(
 	type = game.lodash.startCase(await input("Type: ")) as Type;
 	if (shouldExit) {
 		return false;
+	}
+
+	if (type === ("Heropower" as Type) || type === ("Hero Power" as Type)) {
+		type = Type.HeroPower;
 	}
 
 	if (!Object.keys(cardTypeFunctions).includes(type)) {
