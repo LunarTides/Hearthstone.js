@@ -26,6 +26,9 @@ export const config: GameConfig = {
 
 		// The maximum amount of cards that is allowed in a hand. Don't go under 4 or the game will crash on start.
 		maxHandLength: 10,
+
+		// If you are a no-fun partypooper, you can set this to `true` to disable all time-based events.
+		disableEvents: false,
 	},
 
 	decks: {

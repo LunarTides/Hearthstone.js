@@ -1384,6 +1384,15 @@ export class Game {
 	}
 
 	/**
+	 * Returns if a time-based event is currently active.
+	 *
+	 * @param key The name of the event.
+	 */
+	isEventActive(key: keyof typeof this.time.events): boolean {
+		return this.time.events[key] && !this.config.general.disableEvents;
+	}
+
+	/**
 	 * Broadcast event to event listeners
 	 *
 	 * @param key The name of the event (see `EventKey`)

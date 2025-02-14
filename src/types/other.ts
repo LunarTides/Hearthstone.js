@@ -151,6 +151,7 @@ export type GameConfig = {
 		topicBranchWarning: boolean;
 		maxBoardSpace: number;
 		maxHandLength: number;
+		disableEvents: boolean;
 	};
 
 	decks: {

@@ -112,7 +112,7 @@ export const utilFunctions = {
 		game.config = require("../../../config.ts").config as GameConfig;
 
 		if (
-			game.time.events.anniversary &&
+			game.isEventActive("anniversary") &&
 			game.config.general.locale === "en_US"
 		) {
 			game.config.general.locale = "anniversary";
