@@ -178,7 +178,7 @@ export async function create(
 		extraPassiveCode = `
 
         // Only proceed if the correct event key was broadcast
-        if (key !== "") {
+        if (key !== Event.ChangeMe) {
             return;
         }
 
@@ -203,10 +203,16 @@ export async function create(
 	if (blueprint.keywords) {
 		for (const keyword of blueprint.keywords) {
 			// 8 spaces
-			keywords += `        self.addKeyword("${keyword}");\n`;
+			keywords += `        self.addKeyword(Keyword.${keyword});\n`;
 		}
+
+		// Remove the last newline.
+		keywords = keywords.slice(0, -1);
 	}
 
+	// Do this here because of the `blueprint.keywords = undefined` line below.
+	const keywordImport =
+		(blueprint.keywords?.length ?? 0) > 0 ? "\n\tKeyword," : "";
 	const createAbility = blueprint.text
 		? `
     async create(owner, self) {
@@ -265,7 +271,7 @@ ${runes}${keywords}
 	 * If the value is a string, put '"value"'. If it is not a string, put 'value'.
 	 */
 	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-	const getTypeValue = (value: any) => {
+	const getTypeValue = (key: string, value: any) => {
 		let returnValue = value;
 
 		/**
@@ -278,7 +284,13 @@ ${runes}${keywords}
 			returnValue = `[${value
 				.map((v: unknown) => {
 					if (typeof v === "string") {
-						return stringify(v);
+						switch (key) {
+							case "classes":
+								return `Class.${v}`;
+
+							default:
+								return stringify(v);
+						}
 					}
 
 					return v;
@@ -288,7 +300,25 @@ ${runes}${keywords}
 
 		// If the value is a string, put "value"
 		if (typeof value === "string") {
-			returnValue = stringify(value);
+			switch (key) {
+				case "type":
+					returnValue = `Type.${value}`;
+					break;
+				case "rarity":
+					returnValue = `Rarity.${value}`;
+					break;
+
+				case "tribe":
+					returnValue = `MinionTribe.${value}`;
+					break;
+				case "spellSchool":
+					returnValue = `SpellSchool.${value}`;
+					break;
+
+				default:
+					returnValue = stringify(value);
+					break;
+			}
 		}
 
 		// Turn the value into a string.
@@ -300,27 +330,54 @@ ${runes}${keywords}
 	};
 
 	// If the function is passive, add `EventValue` to the list of imports
-	const passiveImport = isPassive ? ", EventValue" : "";
+	const passiveImport = isPassive ? "\n\tEvent,\n\ttype EventValue," : "";
+	let typeImport = "\n\t";
+
+	switch (blueprint.type) {
+		case Type.Minion:
+			typeImport += "MinionTribe,";
+			break;
+		case Type.Spell:
+			typeImport += "SpellSchool,";
+			break;
+		case Type.Weapon:
+		case Type.Location:
+		case Type.Hero:
+		case Type.HeroPower:
+		case Type.Undefined:
+			typeImport = "";
+			break;
+	}
 
 	// Add the key/value pairs to the content
 	const contentArray = Object.entries(blueprint).map((c) => {
-		const value = getTypeValue(c[1]);
+		const key = c[0].replaceAll('"', '\\"');
+		const value = getTypeValue(...c);
 		if (value === undefined) {
 			return "";
 		}
 
-		return `${c[0].replaceAll('"', '\\"')}: ${value},\n    `;
+		let returnValue = `${key}: ${value},\n\t`;
+		if (key === "tags") {
+			returnValue += `id: ${id},\n\n\t`;
+		}
+
+		return returnValue;
 	});
 
 	// Add the content
 	const content = `// Created by the ${creatorType} Card Creator
 
 import assert from "node:assert";
-import type { Blueprint${passiveImport} } from "@Game/types.js";
+import {
+	type Blueprint,
+	Class,${passiveImport}${typeImport}${keywordImport}
+	Rarity,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
-    ${contentArray.join("")}id: ${id},
-${createAbility}${ability}
+    ${contentArray.join("")}${createAbility}${ability}
 };
 `;
 

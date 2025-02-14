@@ -1,9 +1,9 @@
 import { createGame } from "@Core/game.js";
-import type {
-	Blueprint,
-	BlueprintWithOptional,
+import {
+	type Blueprint,
+	type BlueprintWithOptional,
 	Class,
-	Keyword,
+	type Keyword,
 	MinionTribe,
 	Rarity,
 	SpellSchool,
@@ -44,16 +44,21 @@ function applyCard(_card: BlueprintWithOptional): Blueprint {
 		let [key, value] = entry;
 
 		// These are the required fields and their default values.
-		const defaults = {
+		const defaults: Blueprint = {
+			type: Type.Undefined,
 			name: "CHANGE THIS",
 			text: "",
 			cost: 0,
-			classes: ["Neutral"],
-			rarity: "Free",
+			classes: [Class.Neutral],
+			rarity: Rarity.Free,
+			collectible: false,
+			tags: [],
+			id: 0,
+
 			attack: 1,
 			health: 1,
-			tribe: "None",
-			spellSchool: "None",
+			tribe: MinionTribe.None,
+			spellSchool: SpellSchool.None,
 			armor: 5,
 			heropowerId: game.cardIds.null0,
 			durability: 2,
@@ -93,15 +98,15 @@ async function common(): Promise<BlueprintWithOptional> {
 	const name = await input("Name: ");
 	const text = await input("Text: ");
 	const cost = game.lodash.parseInt(await input("Cost: "));
-	const classes = game.lodash.startCase(await input("Classes: ")) as Class;
+	const classes = await input("Classes: ");
 	const rarity = game.lodash.startCase(await input("Rarity: ")) as Rarity;
 	const keywords = await input("Keywords: ");
 
-	player1.heroClass = classes;
-
-	let runes = "";
-	if (player1.canUseRunes()) {
-		runes = await input("Runes: ");
+	let realClasses: Class[] = [];
+	if (classes) {
+		realClasses = classes
+			.split(", ")
+			.map((k) => game.lodash.startCase(k) as Class);
 	}
 
 	let realKeywords: Keyword[] | undefined;
@@ -111,12 +116,22 @@ async function common(): Promise<BlueprintWithOptional> {
 			.map((k) => game.lodash.startCase(k) as Keyword);
 	}
 
+	let runes = "";
+	for (const c of realClasses) {
+		player1.heroClass = c;
+
+		if (player1.canUseRunes()) {
+			runes = await input("Runes: ");
+			break;
+		}
+	}
+
 	return {
 		name,
 		text,
 		cost,
 		type,
-		classes: [classes],
+		classes: realClasses,
 		rarity,
 		runes,
 		keywords: realKeywords,

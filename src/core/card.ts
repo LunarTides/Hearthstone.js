@@ -1245,7 +1245,7 @@ export class Card {
 	): Promise<unknown[] | typeof Card.REFUND | false> {
 		/*
 		 * This activates a function
-		 * Example: activate("cast")
+		 * Example: activate(Ability.Cast)
 		 * Do: this.cast.forEach(castFunc => castFunc(owner, card))
 		 * Returns a list of the return values from all the function calls
 		 */
