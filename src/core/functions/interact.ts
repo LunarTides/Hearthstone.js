@@ -12,6 +12,7 @@ import {
 	TargetClass,
 	TargetFlag,
 	Type,
+	UseLocationError,
 } from "@Game/types.js";
 import { parseTags } from "chalk-tags";
 import type { Ai } from "../ai.js";
@@ -534,12 +535,10 @@ const prompt = {
 	 *
 	 * @returns Success
 	 */
-	async useLocation(): Promise<
-		boolean | "nolocations" | "invalidtype" | "cooldown" | "refund"
-	> {
+	async useLocation(): Promise<UseLocationError> {
 		const locations = game.player.board.filter((m) => m.type === Type.Location);
 		if (locations.length <= 0) {
-			return "nolocations";
+			return UseLocationError.NoLocationsFound;
 		}
 
 		const location = await this.targetCard(
@@ -550,19 +549,19 @@ const prompt = {
 		);
 
 		if (!location) {
-			return "refund";
+			return UseLocationError.Refund;
 		}
 
 		if (location.type !== Type.Location) {
-			return "invalidtype";
+			return UseLocationError.InvalidType;
 		}
 
 		if (location.cooldown && location.cooldown > 0) {
-			return "cooldown";
+			return UseLocationError.Cooldown;
 		}
 
 		if ((await location.activate(Ability.Use)) === Card.REFUND) {
-			return "refund";
+			return UseLocationError.Refund;
 		}
 
 		if (location.durability === undefined) {
@@ -571,7 +570,7 @@ const prompt = {
 
 		location.durability -= 1;
 		location.cooldown = location.backups.init.cooldown;
-		return true;
+		return UseLocationError.Success;
 	},
 
 	/**

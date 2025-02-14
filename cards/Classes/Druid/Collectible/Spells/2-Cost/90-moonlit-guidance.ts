@@ -46,7 +46,7 @@ export const blueprint: Blueprint = {
 				const value = _unknownValue as EventValue<Event.PlayCard>;
 
 				if (value !== card) {
-					return EventListenerMessage.Ignore;
+					return EventListenerMessage.Skip;
 				}
 
 				await owner.drawSpecific(original);

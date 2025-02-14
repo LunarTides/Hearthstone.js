@@ -59,7 +59,7 @@ export const blueprint: Blueprint = {
 					eventPlayer !== owner ||
 					value === self
 				) {
-					return EventListenerMessage.Ignore;
+					return EventListenerMessage.Skip;
 				}
 
 				// Activate the battlecry
@@ -69,7 +69,7 @@ export const blueprint: Blueprint = {
 				 * You have to return a message to the event listener handler to tell it what to do next.
 				 * If you return `Destroy`, the event listener gets destroyed (this is the same as running the `destroy` function).
 				 * If you return `Reset`, the event listener's lifetime is reset to 1, resetting the event listeners age. This is rarely useful, but is an option.
-				 * If you return `Ignore`, this event does not count towards the event listeners lifetime.
+				 * If you return `Skip`, this event does not count towards the event listeners lifetime.
 				 * If you return `Success`, nothing happens. The event will count towards the event listeners lifetime. This is the most useful / default option.
 				 */
 				return EventListenerMessage.Success;

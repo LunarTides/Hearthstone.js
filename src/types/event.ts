@@ -31,7 +31,7 @@ export type TickHookCallback = (
  * The event listener callback return value.
  */
 export enum EventListenerMessage {
-	Ignore = "Ignore",
+	Skip = "Skip",
 	Success = "Success",
 	Reset = "Reset",
 	Destroy = "Destroy",
@@ -46,18 +46,24 @@ export type EventListenerCallback = (
 
 export type HistoryKey = [Event, UnknownEventValue, Player | undefined];
 
+export enum QuestType {
+	Quest = "Quest",
+	Sidequest = "Sidequest",
+	Secret = "Secret",
+}
+
 /**
  * The quest callback used in card blueprints.
  */
 export type QuestCallback = (
 	value: UnknownEventValue,
 	done: boolean,
-) => Promise<boolean>;
+) => Promise<EventListenerMessage>;
 
 /**
  * The backend of a quest.
  */
-export type QuestType = {
+export type QuestObject = {
 	name: string;
 	progress: [number, number];
 	key: Event;

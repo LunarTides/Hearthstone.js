@@ -6,6 +6,7 @@ import {
 	Event,
 	EventListenerMessage,
 	type EventValue,
+	QuestType,
 	Rarity,
 	SpellSchool,
 	Type,
@@ -27,7 +28,7 @@ export const blueprint: Blueprint = {
 
 	async cast(owner, self) {
 		await owner.addQuest(
-			"Quest",
+			QuestType.Quest,
 			self,
 			Event.PlayCard,
 			3,
@@ -35,11 +36,11 @@ export const blueprint: Blueprint = {
 				const value = _unknownValue as EventValue<Event.PlayCard>;
 
 				if (value === self) {
-					return false;
+					return EventListenerMessage.Skip;
 				}
 
 				if (!done) {
-					return true;
+					return EventListenerMessage.Success;
 				}
 
 				/*
@@ -69,7 +70,7 @@ export const blueprint: Blueprint = {
 
 						// Only continue if the player that triggered the event is this card's owner and the played card is a minion.
 						if (eventPlayer !== owner || value.type !== Type.Minion) {
-							return EventListenerMessage.Ignore;
+							return EventListenerMessage.Skip;
 						}
 
 						// Every time YOU play a MINION, increment `amount` by 1.
@@ -100,7 +101,7 @@ export const blueprint: Blueprint = {
 				);
 
 				// The quest event was a success. The game will remove this quest from the player.
-				return true;
+				return EventListenerMessage.Success;
 			},
 		);
 	},

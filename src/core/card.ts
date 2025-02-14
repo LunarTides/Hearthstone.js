@@ -8,6 +8,7 @@ import {
 	type CardTag,
 	Class,
 	CostType,
+	DeckValidationError,
 	type EnchantmentDefinition,
 	Event,
 	type GameConfig,
@@ -66,7 +67,7 @@ export class Card {
 	type = Type.Undefined;
 
 	/**
-	 * This is the rarity of the card. E.g. "Common" | "Rare" | etc...
+	 * This is the rarity of the card. E.g. Common, Rare, etc...
 	 */
 	rarity = Rarity.Free;
 
@@ -1769,26 +1770,26 @@ export class Card {
 	 *
 	 * @returns Success | Errorcode
 	 */
-	validateForDeck(): true | "class" | "uncollectible" | "runes" {
+	validateForDeck(): DeckValidationError {
 		if (!this.classes.includes(this.owner.heroClass)) {
 			// If it is a neutral card, it is valid
 			if (this.classes.includes(Class.Neutral)) {
 				// Valid
 			} else {
-				return "class";
+				return DeckValidationError.Class;
 			}
 		}
 
 		if (!this.collectible) {
-			return "uncollectible";
+			return DeckValidationError.Uncollectible;
 		}
 
 		// Runes
 		if (this.runes && !this.owner.testRunes(this.runes)) {
-			return "runes";
+			return DeckValidationError.Runes;
 		}
 
-		return true;
+		return DeckValidationError.Success;
 	}
 
 	/**

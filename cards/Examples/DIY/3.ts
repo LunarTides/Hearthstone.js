@@ -91,7 +91,7 @@ export const blueprint: Blueprint = {
 				const value = _unknownValue as EventValue<Event.TargetSelected>;
 
 				if (value[0] !== self) {
-					return EventListenerMessage.Ignore;
+					return EventListenerMessage.Skip;
 				}
 
 				// At this point we know that the card wasn't cancelled, since the `TargetSelected` event doesn't fire if the card is cancelled

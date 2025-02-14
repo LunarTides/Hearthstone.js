@@ -225,7 +225,7 @@ const cardTypeFunctions: {
  */
 export async function main(
 	debug = false,
-	overrideType?: lib.CcType,
+	overrideType?: lib.CCType,
 ): Promise<string | false> {
 	// Reset the shouldExit switch so that the program doesn't immediately exit when the user enters the ccc, exits, then enters ccc again
 	shouldExit = false;
@@ -262,7 +262,7 @@ export async function main(
 	// Actually create the card
 	console.log("Creating file...");
 
-	let cctype: lib.CcType = "Custom";
+	let cctype: lib.CCType = lib.CCType.Custom;
 	if (overrideType) {
 		cctype = overrideType;
 	}

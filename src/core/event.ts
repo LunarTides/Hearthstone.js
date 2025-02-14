@@ -7,6 +7,7 @@ import {
 	EventListenerMessage,
 	type EventManagerEvents,
 	type HistoryKey,
+	QuestType,
 	type TickHookCallback,
 	Type,
 	type UnknownEventValue,
@@ -172,7 +173,7 @@ export const eventManager = {
 	/**
 	 * Update quests and secrets
 	 *
-	 * @param questsName The type of quest to update
+	 * @param questType The type of quest to update
 	 * @param key The key of the event
 	 * @param value The value of the event
 	 * @param player The owner of the quest
@@ -180,11 +181,16 @@ export const eventManager = {
 	 * @returns Success
 	 */
 	async questUpdate(
-		questsName: "quests" | "sidequests" | "secrets",
+		questType: QuestType,
 		key: Event,
 		value: UnknownEventValue,
 		player: Player,
 	): Promise<boolean> {
+		const questsName = `${questType.toLowerCase()}s` as
+			| "quests"
+			| "sidequests"
+			| "secrets";
+
 		for (const quest of player[questsName]) {
 			if (quest.key !== key) {
 				continue;
@@ -193,8 +199,19 @@ export const eventManager = {
 			const [current, max] = quest.progress;
 
 			const done = current + 1 >= max;
-			if (!(await quest.callback(value, done))) {
-				continue;
+			const message = await quest.callback(value, done);
+
+			switch (message) {
+				case EventListenerMessage.Skip:
+					continue;
+				case EventListenerMessage.Reset:
+					quest.progress = [0, max];
+					continue;
+				case EventListenerMessage.Destroy:
+					player[questsName].splice(player[questsName].indexOf(quest), 1);
+					continue;
+				case EventListenerMessage.Success:
+					break;
 			}
 
 			quest.progress[0]++;
@@ -265,9 +282,9 @@ export const eventManager = {
 
 		await this.cardUpdate(key, value, player);
 
-		await this.questUpdate("secrets", key, value, player.getOpponent());
-		await this.questUpdate("sidequests", key, value, player);
-		await this.questUpdate("quests", key, value, player);
+		await this.questUpdate(QuestType.Secret, key, value, player.getOpponent());
+		await this.questUpdate(QuestType.Sidequest, key, value, player);
+		await this.questUpdate(QuestType.Quest, key, value, player);
 
 		return true;
 	},
@@ -378,7 +395,7 @@ export const eventManager = {
 					break;
 				}
 
-				case EventListenerMessage.Ignore: {
+				case EventListenerMessage.Skip: {
 					times--;
 					break;
 				}

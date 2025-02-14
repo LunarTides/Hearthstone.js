@@ -7,9 +7,28 @@ import {
 	Event,
 	type GameConfig,
 	Rarity,
-	Type,
 } from "@Game/types.js";
 import { resumeTagParsing, stopTagParsing } from "chalk-tags";
+
+enum ViewType {
+	Cards = "Cards",
+	Deck = "Deck",
+}
+
+enum SortOrder {
+	Ascending = "Ascending",
+	Descending = "Descending",
+}
+
+enum CardIdOrName {
+	Id = "Id",
+	Name = "Name",
+}
+
+enum DeckcodeFormat {
+	Vanilla = "Vanilla",
+	JS = "JS",
+}
 
 const { game, player1 } = createGame();
 
@@ -32,7 +51,7 @@ const settings = {
 		history: [] as Card[],
 	},
 	view: {
-		type: "cards" as "cards" | "deck",
+		type: ViewType.Cards,
 		page: 1,
 		maxPage: undefined as number | undefined,
 		// Cards per page
@@ -41,15 +60,15 @@ const settings = {
 	},
 	sort: {
 		type: "rarity" as keyof Card,
-		order: "asc" as "asc" | "desc",
+		order: SortOrder.Ascending,
 	},
 	search: {
 		query: [] as string[],
 		prevQuery: [] as string[],
 	},
 	deckcode: {
-		cardId: "id" as "id" | "name",
-		format: "js" as "js" | "vanilla",
+		cardId: CardIdOrName.Id,
+		format: DeckcodeFormat.JS,
 	},
 	commands: {
 		default: "add",
@@ -123,14 +142,16 @@ async function askClass(): Promise<Class> {
  */
 function sortCards(_cards: Card[]): Card[] {
 	// If the order is invalid, fall back to ascending
-	if (!["asc", "desc"].includes(settings.sort.order)) {
+	if (
+		![SortOrder.Ascending, SortOrder.Descending].includes(settings.sort.order)
+	) {
 		settings.sort.order = defaultSettings.sort.order;
 	}
 
 	const { type, order } = settings.sort;
 
 	const calcOrder = (a: number, b: number) => {
-		if (order === "asc") {
+		if (order === SortOrder.Ascending) {
 			return a - b;
 		}
 
@@ -168,7 +189,7 @@ function sortCards(_cards: Card[]): Card[] {
 			}
 
 			let returnValue = typeA.localeCompare(typeB);
-			if (order === "desc") {
+			if (order === SortOrder.Descending) {
 				returnValue = -returnValue;
 			}
 
@@ -755,7 +776,7 @@ async function generateDeckcode(parseVanillaOnPseudo = false) {
 	}
 
 	if (
-		settings.deckcode.format === "vanilla" &&
+		settings.deckcode.format === DeckcodeFormat.Vanilla &&
 		(parseVanillaOnPseudo || !deckcode.error)
 	) {
 		// Don't convert if the error is unrecoverable
@@ -1010,9 +1031,9 @@ export async function main(): Promise<void> {
 	chosenClass = await askClass();
 
 	while (running) {
-		if (settings.view.type === "cards") {
+		if (settings.view.type === ViewType.Cards) {
 			await showCards();
-		} else if (settings.view.type === "deck") {
+		} else if (settings.view.type === ViewType.Deck) {
 			await showDeck();
 		}
 
@@ -1153,7 +1174,11 @@ const commands: CommandList = {
 
 		settings.sort.type = args[0] as keyof Card;
 		if (args.length > 1) {
-			settings.sort.order = args[1] as "asc" | "desc";
+			if (args[1] === "asc") {
+				settings.sort.order = SortOrder.Ascending;
+			} else if (args[1] === "desc") {
+				settings.sort.order = SortOrder.Descending;
+			}
 		}
 
 		return true;
@@ -1169,7 +1194,8 @@ const commands: CommandList = {
 		return true;
 	},
 	async deck(): Promise<boolean> {
-		settings.view.type = settings.view.type === "cards" ? "deck" : "cards";
+		settings.view.type =
+			settings.view.type === ViewType.Cards ? ViewType.Deck : ViewType.Cards;
 
 		return true;
 	},
@@ -1336,13 +1362,16 @@ const commands: CommandList = {
 					break;
 				}
 
-				if (!["vanilla", "js"].includes(args[0])) {
+				if (args[0] === "js") {
+					settings.deckcode.format = DeckcodeFormat.JS;
+				} else if (args[0] === "vanilla") {
+					settings.deckcode.format = DeckcodeFormat.Vanilla;
+				} else {
 					console.log("<red>Invalid format!</red>");
 					await game.pause();
 					return false;
 				}
 
-				settings.deckcode.format = args[0] as "vanilla" | "js";
 				console.log("Set deckcode format to: <yellow>%s</yellow>", args[0]);
 				break;
 			}

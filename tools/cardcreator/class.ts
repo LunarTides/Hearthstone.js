@@ -16,7 +16,7 @@ const { game } = createGame();
  */
 export async function main(
 	debug = false,
-	overrideType?: lib.CcType,
+	overrideType?: lib.CCType,
 ): Promise<void> {
 	const watermark = () => {
 		game.functions.interact.cls();
@@ -86,7 +86,7 @@ export async function main(
 		id: 0,
 	};
 
-	let cctype: lib.CcType = "Class";
+	let cctype: lib.CCType = lib.CCType.Class;
 	if (overrideType) {
 		cctype = overrideType;
 	}

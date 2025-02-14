@@ -6,8 +6,8 @@ import type { Blueprint, Event } from "@Game/types.js";
  * Game.play return value
  */
 export enum GamePlayCardReturn {
-	Invalid = "Invalid",
 	Success = "Success",
+	Invalid = "Invalid",
 	Cost = "Cost",
 	Traded = "Traded",
 	Forged = "Forged",
@@ -22,8 +22,8 @@ export enum GamePlayCardReturn {
  * Attack return value
  */
 export enum GameAttackReturn {
-	Invalid = "Invalid",
 	Success = "Success",
+	Invalid = "Invalid",
 	DivineShield = "DivineShield",
 	Taunt = "Taunt",
 	Stealth = "Stealth",
@@ -37,6 +37,13 @@ export enum GameAttackReturn {
 	Immune = "Immune",
 	Dormant = "Dormant",
 	Titan = "Titan",
+}
+
+export enum DeckValidationError {
+	Success = "Success",
+	Class = "Class",
+	Uncollectible = "Uncollectible",
+	Runes = "Runes",
 }
 
 /**
@@ -84,6 +91,14 @@ export enum TargetClass {
 export enum TargetFlag {
 	AllowLocations = "AllowLocations",
 	ForceElusive = "ForceElusive",
+}
+
+export enum UseLocationError {
+	Success = "Success",
+	NoLocationsFound = "NoLocationsFound",
+	InvalidType = "InvalidType",
+	Cooldown = "Cooldown",
+	Refund = "Refund",
 }
 
 export type CommandList = Record<

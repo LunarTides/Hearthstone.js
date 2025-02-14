@@ -3,6 +3,7 @@ import type { Player } from "@Core/player.js";
 import {
 	type CardLike,
 	Class,
+	DeckValidationError,
 	type FunctionsExportDeckError,
 	type GameConfig,
 	Rarity,
@@ -173,24 +174,27 @@ export const deckcodeFunctions = {
 
 				const validationError = card.validateForDeck();
 
-				if (!localSettings.decks.validate || validationError === true) {
+				if (
+					!localSettings.decks.validate ||
+					validationError === DeckValidationError.Success
+				) {
 					continue;
 				}
 
 				let error: string;
 
 				switch (validationError) {
-					case "class": {
+					case DeckValidationError.Class: {
 						error = "You have a card from a different class in your deck";
 						break;
 					}
 
-					case "uncollectible": {
+					case DeckValidationError.Uncollectible: {
 						error = "You have an uncollectible card in your deck";
 						break;
 					}
 
-					case "runes": {
+					case DeckValidationError.Runes: {
 						error = "A card does not support your current runes";
 						break;
 					}

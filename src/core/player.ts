@@ -8,7 +8,8 @@ import {
 	Event,
 	Keyword,
 	type QuestCallback,
-	type QuestType,
+	type QuestObject,
+	QuestType,
 	type Target,
 	Type,
 } from "@Game/types.js";
@@ -254,17 +255,17 @@ export class Player {
 	/**
 	 * The secrets that the player has.
 	 */
-	secrets: QuestType[] = [];
+	secrets: QuestObject[] = [];
 
 	/**
 	 * The sidequests that the player has.
 	 */
-	sidequests: QuestType[] = [];
+	sidequests: QuestObject[] = [];
 
 	/**
 	 * The quest that the player has.
 	 */
-	quests: QuestType[] = [];
+	quests: QuestObject[] = [];
 
 	/**
 	 * How much attack/health (+1) the player's next jade golem will have.
@@ -1150,27 +1151,27 @@ export class Player {
 	 * @returns Success
 	 */
 	async addQuest(
-		type: "Quest" | "Sidequest" | "Secret",
+		type: QuestType,
 		card: Card,
 		key: Event,
 		amount: number,
 		callback: QuestCallback,
 		next?: number,
 	): Promise<boolean> {
-		let quests: QuestType[];
+		let quests: QuestObject[];
 
 		switch (type) {
-			case "Quest": {
+			case QuestType.Quest: {
 				quests = this.quests;
 				break;
 			}
 
-			case "Sidequest": {
+			case QuestType.Sidequest: {
 				quests = this.sidequests;
 				break;
 			}
 
-			case "Secret": {
+			case QuestType.Secret: {
 				quests = this.secrets;
 				break;
 			}
@@ -1181,9 +1182,8 @@ export class Player {
 		}
 
 		if (
-			(type.toLowerCase() === "quest" && quests.length > 0) ||
-			((type.toLowerCase() === "secret" ||
-				type.toLowerCase() === "sidequest") &&
+			(type === QuestType.Quest && quests.length > 0) ||
+			((type === QuestType.Secret || type === QuestType.Sidequest) &&
 				(quests.length >= 3 || quests.some((s) => s.name === card.name)))
 		) {
 			await this.addToHand(card);

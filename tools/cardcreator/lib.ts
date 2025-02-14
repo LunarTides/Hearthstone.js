@@ -7,7 +7,12 @@ const { game } = createGame();
 // If this is set to true, this will force debug mode.
 const mainDebugSwitch = false;
 
-export type CcType = "Unknown" | "Class" | "Custom" | "Vanilla";
+export enum CCType {
+	Unknown = "Unknown",
+	Class = "Class",
+	Custom = "Custom",
+	Vanilla = "Vanilla",
+}
 
 /**
  * Returns the ability of a card based on its type.
@@ -137,7 +142,7 @@ export function getLatestId(): number {
  * @returns The path of the created file.
  */
 export async function create(
-	creatorType: CcType,
+	creatorType: CCType,
 	blueprint: BlueprintWithOptional,
 	overridePath?: string,
 	overrideFilename?: string,

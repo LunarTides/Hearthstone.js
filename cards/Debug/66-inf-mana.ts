@@ -7,6 +7,7 @@ import {
 	type Blueprint,
 	Class,
 	Event,
+	GamePlayCardReturn,
 	Rarity,
 	SpellSchool,
 	Type,
@@ -53,7 +54,7 @@ export const blueprint: Blueprint = {
 		const card = await Card.create(game.cardIds.sheep1, owner);
 		const result = await game.play(card, owner);
 
-		assert.equal(result, true);
+		assert.equal(result, GamePlayCardReturn.Success);
 		assert.equal(owner.mana, 10);
 	},
 };

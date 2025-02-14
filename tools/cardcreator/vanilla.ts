@@ -21,7 +21,7 @@ const { game } = createGame();
 export async function create(
 	card: VanillaCard,
 	debug: boolean,
-	overrideType?: lib.CcType,
+	overrideType?: lib.CCType,
 ): Promise<void> {
 	// Harvest info
 	let cardClass = game.lodash.capitalize(card.cardClass ?? "Neutral") as Class;
@@ -155,7 +155,7 @@ export async function create(
 		// No default
 	}
 
-	let cctype: lib.CcType = "Vanilla";
+	let cctype: lib.CCType = lib.CCType.Vanilla;
 	if (overrideType) {
 		cctype = overrideType;
 	}
@@ -170,7 +170,7 @@ export async function create(
  */
 export async function main(
 	debug = false,
-	overrideType?: lib.CcType,
+	overrideType?: lib.CCType,
 ): Promise<boolean> {
 	console.log("Hearthstone.js Vanilla Card Creator (C) 2022\n");
 

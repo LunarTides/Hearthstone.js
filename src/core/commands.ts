@@ -10,6 +10,7 @@ import {
 	type Todo,
 	Type,
 	type UnknownEventValue,
+	UseLocationError,
 } from "@Game/types.js";
 import { resumeTagParsing, stopTagParsing } from "chalk-tags";
 
@@ -100,25 +101,28 @@ export const commands: CommandList = {
 	async use(): Promise<boolean> {
 		// Use location
 		const errorCode = await game.functions.interact.prompt.useLocation();
-
-		if (errorCode === true || errorCode === "refund" || game.player.ai) {
+		if (
+			errorCode === UseLocationError.Success ||
+			errorCode === UseLocationError.Refund ||
+			game.player.ai
+		) {
 			return true;
 		}
 
 		let error: string;
 
 		switch (errorCode) {
-			case "nolocations": {
+			case UseLocationError.NoLocationsFound: {
 				error = "You have no location cards";
 				break;
 			}
 
-			case "invalidtype": {
+			case UseLocationError.InvalidType: {
 				error = "That card is not a location card";
 				break;
 			}
 
-			case "cooldown": {
+			case UseLocationError.Cooldown: {
 				error = "That location is on cooldown";
 				break;
 			}
