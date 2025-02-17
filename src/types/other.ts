@@ -211,6 +211,4 @@ export type GameConfig = {
 
 		githubUrl: string;
 	};
-
-	todo: Record<string, Todo>;
 };

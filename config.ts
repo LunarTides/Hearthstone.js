@@ -298,16 +298,4 @@ export const config: GameConfig = {
 
 		githubUrl: "https://github.com/LunarTides/Hearthstone.js",
 	},
-
-	todo: {
-		// A todo list
-		/*
-		 * For example:
-		 * Add_Battlecry: { state: 'first pass', description: 'Description.' },
-		 * Two: { 'second pass', 'Another description.' },
-		 * Three: { 'not done", "A third description.' },
-		 * Four: { 'doing", "A fourth description.' },
-		 * Five: { 'done", "A fifth description.' },
-		 */
-	},
 };

@@ -324,187 +324,92 @@ export const commands: CommandList = {
 	async version(): Promise<boolean> {
 		const { version, branch, build } = game.functions.info.version();
 
-		let running = true;
-		while (running) {
-			const todos = Object.entries(game.config.todo);
+		await game.functions.interact.print.gameState(game.player);
 
-			const printInfo = async () => {
-				await game.functions.interact.print.gameState(game.player);
+		let strbuilder = `\nYou are on version: <yellow>${version}</yellow>, on `;
 
-				let strbuilder = `\nYou are on version: ${version}, on `;
-
-				switch (branch) {
-					case "topic": {
-						strbuilder += "a topic branch";
-
-						break;
-					}
-
-					case "alpha": {
-						strbuilder += "the alpha branch";
-
-						break;
-					}
-
-					case "beta": {
-						strbuilder += "the beta branch";
-
-						break;
-					}
-
-					case "stable": {
-						strbuilder += "the stable (release) branch";
-
-						break;
-					}
-
-					// No default
-				}
-
-				strbuilder += `, on build ${build}`;
-				strbuilder += `, with latest commit hash '${game.functions.info.latestCommit()}',`;
-
-				if (game.config.general.debug && game.config.ai.player2) {
-					strbuilder += " using the debug settings preset";
-				} else if (!game.config.general.debug && !game.config.ai.player2) {
-					strbuilder += " using the recommended settings preset";
-				} else {
-					strbuilder += " using custom settings";
-				}
-
-				console.log(`${strbuilder}.\n`);
-
-				console.log("Version Description:");
-
-				let introText: string;
-
-				switch (branch) {
-					case "topic": {
-						introText = game.config.info.topicIntroText;
-
-						break;
-					}
-
-					case "alpha": {
-						introText = game.config.info.alphaIntroText;
-
-						break;
-					}
-
-					case "beta": {
-						introText = game.config.info.betaIntroText;
-
-						break;
-					}
-
-					case "stable": {
-						introText = game.config.info.stableIntroText;
-
-						break;
-					}
-
-					default: {
-						throw new Error(`Invalid branch: ${branch}`);
-					}
-				}
-
-				console.log(introText);
-				if (game.config.info.versionText) {
-					console.log(game.config.info.versionText);
-				}
-
-				console.log();
-
-				console.log("Todo List:");
-				if (todos.length <= 0) {
-					console.log("None.");
-				}
-			};
-
-			await printInfo();
-
-			// This is the todo list
-			if (todos.length <= 0) {
-				await game.pause("\nPress enter to continue...");
-				running = false;
+		switch (branch) {
+			case "topic": {
+				strbuilder += "a <yellow>topic</yellow> branch";
 				break;
 			}
 
-			const printTodo = (
-				todo: [string, Todo],
-				id: number,
-				printDesc = false,
-			) => {
-				let [name, info] = todo;
-
-				name = name.replaceAll("_", " ");
-				let state: string;
-
-				switch (info.state) {
-					case "done": {
-						state = "x";
-
-						break;
-					}
-
-					case "doing": {
-						state = "o";
-
-						break;
-					}
-
-					case "not done": {
-						state = " ";
-
-						break;
-					}
-
-					case "first pass":
-					case "second pass":
-					case "third pass": {
-						state = info.state;
-
-						break;
-					}
-
-					// No default
-				}
-
-				if (printDesc) {
-					console.log("{%s} [%s] %s\n%s", id, state, name, info.description);
-				} else {
-					console.log("{%s} [%s] %s", id, state, name);
-				}
-			};
-
-			for (const [index, todo] of todos.entries()) {
-				printTodo(todo, index + 1);
-			}
-
-			const todoIndex = game.lodash.parseInt(
-				await game.input(
-					"\nType the id of a todo to see more information about it (eg. 1): ",
-				),
-			);
-
-			if (!todoIndex || todoIndex > todos.length || todoIndex <= 0) {
-				running = false;
+			case "alpha": {
+				strbuilder += "the <yellow>alpha</yellow> branch";
 				break;
 			}
 
-			const todo = todos[todoIndex - 1];
-
-			await printInfo();
-			printTodo(todo, todoIndex, true);
-
-			const command = await game.input(
-				'\nType "issue" to open the todo in your webbrowser.\n',
-			);
-
-			if (command === "issue") {
-				const link = `${game.config.info.githubUrl}/issues/${todo[1].issue}`;
-				game.functions.util.openInBrowser(link);
+			case "beta": {
+				strbuilder += "the <yellow>beta</yellow> branch";
+				break;
 			}
+
+			case "stable": {
+				strbuilder += "the <yellow>stable (release)</yellow> branch";
+				break;
+			}
+
+			default: {
+				strbuilder += "an unknown branch";
+				break;
+			}
+		}
+
+		strbuilder += `, on build <yellow>${build}</yellow>`;
+		strbuilder += `, with latest commit hash <yellow>${game.functions.info.latestCommit()}</yellow>,`;
+
+		if (game.config.general.debug && game.config.ai.player2) {
+			strbuilder += " using the <yellow>debug settings</yellow> preset";
+		} else if (!game.config.general.debug && !game.config.ai.player2) {
+			strbuilder += " using the <yellow>recommended settings</yellow> preset";
+		} else {
+			strbuilder += " using custom settings";
+		}
+
+		console.log(`${strbuilder}.\n`);
+		console.log("Version Description:");
+
+		let introText: string;
+
+		switch (branch) {
+			case "topic": {
+				introText = game.config.info.topicIntroText;
+				break;
+			}
+
+			case "alpha": {
+				introText = game.config.info.alphaIntroText;
+				break;
+			}
+
+			case "beta": {
+				introText = game.config.info.betaIntroText;
+				break;
+			}
+
+			case "stable": {
+				introText = game.config.info.stableIntroText;
+				break;
+			}
+
+			default: {
+				introText = "This is an unknown branch.";
+				break;
+			}
+		}
+
+		console.log(introText);
+		if (game.config.info.versionText) {
+			console.log(game.config.info.versionText);
+		}
+
+		const openIssues = await game.functions.interact.prompt.yesNo(
+			"Do you want to open the todo list in your browser?",
+			game.player,
+		);
+
+		if (openIssues) {
+			game.functions.util.openInBrowser(`${game.config.info.githubUrl}/issues`);
 		}
 
 		return true;
