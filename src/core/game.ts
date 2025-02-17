@@ -1054,117 +1054,6 @@ const playCard = {
 	},
 };
 
-const cards = {
-	play: playCard,
-
-	/**
-	 * Summon a minion.
-	 * Broadcasts the `SummonCard` event
-	 *
-	 * @param card The minion to summon
-	 * @param player The player who gets the minion
-	 * @param colossal If the minion has colossal, summon the other minions.
-	 *
-	 * @returns The minion summoned
-	 */
-	async summon(
-		card: Card,
-		player: Player,
-		colossal = true,
-	): Promise<GamePlayCardReturn> {
-		if (!card.canBeOnBoard()) {
-			return GamePlayCardReturn.Invalid;
-		}
-
-		// If the board has max capacity, and the card played is a minion or location card, prevent it.
-		if (player.board.length >= game.config.general.maxBoardSpace) {
-			return GamePlayCardReturn.Space;
-		}
-
-		player.spellDamage = 0;
-
-		if (card.hasKeyword(Keyword.Charge) || card.hasKeyword(Keyword.Titan)) {
-			card.ready();
-			card.resetAttackTimes();
-		}
-
-		if (card.hasKeyword(Keyword.Rush)) {
-			card.ready();
-			card.resetAttackTimes();
-			card.canAttackHero = false;
-		}
-
-		const dormant = card.getKeyword(Keyword.Dormant) as number | undefined;
-
-		const colossalMinionIds = card.getKeyword(Keyword.Colossal) as
-			| number[]
-			| undefined;
-
-		if (colossalMinionIds && colossal) {
-			/*
-			 * Minion.colossal is an id array.
-			 * example: [game.cardIds.leftArm36, game.cardIds.null0, game.cardIds.rightArm37]
-			 * the null0 / 0 gets replaced with the main minion
-			 */
-
-			const unsuppress = game.event.suppress(Event.SummonCard);
-
-			for (const cardId of colossalMinionIds) {
-				if (cardId <= 0) {
-					// Summon this minion without triggering colossal again
-					await player.summon(card, false);
-					continue;
-				}
-
-				const cardToSummon = await Card.create(cardId, player);
-
-				// If this card has dormant, add it to the summoned minions as well.
-				if (dormant) {
-					cardToSummon.addKeyword(Keyword.Dormant, dormant);
-				}
-
-				await player.summon(cardToSummon);
-			}
-
-			unsuppress();
-
-			/*
-			 * Return since we already handled the main minion up in the "cardId <= 0" if statement
-			 * You should probably just ignore this error code
-			 */
-			return GamePlayCardReturn.Colossal;
-		}
-
-		if (dormant) {
-			/*
-			 * Oh no... Why is this not documented?
-			 *
-			 * If the minion that got summoned has dormant, it sets the dormant value to itself plus the current turn.
-			 * This is so that the game can know when to remove the dormant by checking which turn it is.
-			 * We should really document this somewhere, since it can easily be overriden by a card after it has been summoned, which would cause unexpected behavior.
-			 */
-			card.setKeyword(Keyword.Dormant, dormant + game.turn);
-			card.addKeyword(Keyword.Immune);
-
-			// TODO: Why are we readying the dormant minion? #277
-			card.ready();
-			card.resetAttackTimes();
-		}
-
-		player.board.push(card);
-
-		// Calculate new spell damage
-		for (const card of player.board) {
-			if (card.spellDamage) {
-				player.spellDamage += card.spellDamage;
-			}
-		}
-
-		await game.event.broadcast(Event.SummonCard, card, player);
-		return GamePlayCardReturn.Success;
-	},
-};
-
 export class Game {
 	/**
 	 * Some general functions that can be used.
@@ -1228,8 +1117,7 @@ export class Game {
 	 */
 	cards: Card[] = [];
 
-	play = cards.play.play;
-	summon = cards.summon;
+	play = playCard.play;
 
 	/**
 	 * Makes a minion or hero attack another minion or hero
@@ -1628,6 +1516,113 @@ export class Game {
 	}
 
 	// Interacting with minions
+
+	/**
+	 * Summon a minion.
+	 * Broadcasts the `SummonCard` event
+	 *
+	 * @param card The minion to summon
+	 * @param player The player who gets the minion
+	 * @param colossal If the minion has colossal, summon the other minions.
+	 *
+	 * @returns The minion summoned
+	 */
+	async summon(
+		card: Card,
+		player: Player,
+		colossal = true,
+	): Promise<GamePlayCardReturn> {
+		if (!card.canBeOnBoard()) {
+			return GamePlayCardReturn.Invalid;
+		}
+
+		// If the board has max capacity, and the card played is a minion or location card, prevent it.
+		if (player.board.length >= game.config.general.maxBoardSpace) {
+			return GamePlayCardReturn.Space;
+		}
+
+		player.spellDamage = 0;
+
+		if (card.hasKeyword(Keyword.Charge) || card.hasKeyword(Keyword.Titan)) {
+			card.ready();
+			card.resetAttackTimes();
+		}
+
+		if (card.hasKeyword(Keyword.Rush)) {
+			card.ready();
+			card.resetAttackTimes();
+			card.canAttackHero = false;
+		}
+
+		const dormant = card.getKeyword(Keyword.Dormant) as number | undefined;
+
+		const colossalMinionIds = card.getKeyword(Keyword.Colossal) as
+			| number[]
+			| undefined;
+
+		if (colossalMinionIds && colossal) {
+			/*
+			 * Minion.colossal is an id array.
+			 * example: [game.cardIds.leftArm36, game.cardIds.null0, game.cardIds.rightArm37]
+			 * the null0 / 0 gets replaced with the main minion
+			 */
+
+			const unsuppress = game.event.suppress(Event.SummonCard);
+
+			for (const cardId of colossalMinionIds) {
+				if (cardId <= 0) {
+					// Summon this minion without triggering colossal again
+					await player.summon(card, false);
+					continue;
+				}
+
+				const cardToSummon = await Card.create(cardId, player);
+
+				// If this card has dormant, add it to the summoned minions as well.
+				if (dormant) {
+					cardToSummon.addKeyword(Keyword.Dormant, dormant);
+				}
+
+				await player.summon(cardToSummon);
+			}
+
+			unsuppress();
+
+			/*
+			 * Return since we already handled the main minion up in the "cardId <= 0" if statement
+			 * You should probably just ignore this error code
+			 */
+			return GamePlayCardReturn.Colossal;
+		}
+
+		if (dormant) {
+			/*
+			 * Oh no... Why is this not documented?
+			 *
+			 * If the minion that got summoned has dormant, it sets the dormant value to itself plus the current turn.
+			 * This is so that the game can know when to remove the dormant by checking which turn it is.
+			 * We should really document this somewhere, since it can easily be overriden by a card after it has been summoned, which would cause unexpected behavior.
+			 */
+			card.setKeyword(Keyword.Dormant, dormant + game.turn);
+			card.addKeyword(Keyword.Immune);
+
+			// TODO: Why are we readying the dormant minion? #277
+			card.ready();
+			card.resetAttackTimes();
+		}
+
+		player.board.push(card);
+
+		// Calculate new spell damage
+		for (const card of player.board) {
+			if (card.spellDamage) {
+				player.spellDamage += card.spellDamage;
+			}
+		}
+
+		await game.event.broadcast(Event.SummonCard, card, player);
+		return GamePlayCardReturn.Success;
+	}
 
 	/**
 	 * Kill all minions with 0 or less health
