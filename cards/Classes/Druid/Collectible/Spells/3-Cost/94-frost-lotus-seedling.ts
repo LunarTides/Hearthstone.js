@@ -20,7 +20,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: 94,
 
-	spellSchool: SpellSchool.Nature,
+	spellSchools: [SpellSchool.Nature],
 
 	async create(owner, self) {
 		// Initialize storage

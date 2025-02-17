@@ -23,7 +23,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: 53,
 
-	spellSchool: SpellSchool.None,
+	spellSchools: [SpellSchool.None],
 
 	async cast(owner, self) {
 		// Gain mana equal to the turn counter.

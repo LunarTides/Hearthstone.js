@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: 60,
 
-	spellSchool: SpellSchool.None,
+	spellSchools: [SpellSchool.None],
 
 	async cast(owner, self) {
 		await owner.addQuest(

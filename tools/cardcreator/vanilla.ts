@@ -46,13 +46,13 @@ export async function create(
 	const health = card.health ?? -1;
 	let races: MinionTribe[] = [];
 	if (card.races) {
-		races = card.races.map((r) => game.lodash.capitalize(r) as MinionTribe);
+		races = card.races.map((r) => game.lodash.startCase(r) as MinionTribe);
 	}
 
 	// Spell info
-	let spellSchool = SpellSchool.None;
+	let spellSchools = [SpellSchool.None];
 	if (card.spellSchool) {
-		spellSchool = game.lodash.capitalize(card.spellSchool) as SpellSchool;
+		spellSchools = [game.lodash.startCase(card.spellSchool) as SpellSchool];
 	}
 
 	// Weapon Info
@@ -113,7 +113,7 @@ export async function create(
 
 		case Type.Spell: {
 			blueprint = Object.assign(blueprint, {
-				spellSchool,
+				spellSchools,
 			});
 
 			break;

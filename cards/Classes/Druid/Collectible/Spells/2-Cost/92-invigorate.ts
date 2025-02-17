@@ -21,7 +21,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: 92,
 
-	spellSchool: SpellSchool.Nature,
+	spellSchools: [SpellSchool.Nature],
 
 	async cast(owner, self) {
 		// Choose One - Gain an empty Mana Crystal; or Draw a card.

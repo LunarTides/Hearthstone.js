@@ -300,6 +300,8 @@ ${runes}${keywords}
 
 							case "tribes":
 								return `MinionTribe.${v.replaceAll(" ", "")}`;
+							case "spellSchools":
+								return `SpellSchool.${v.replaceAll(" ", "")}`;
 
 							default:
 								return stringify(v);

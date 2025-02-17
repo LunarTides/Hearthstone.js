@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: 105,
 
-	spellSchool: SpellSchool.Fire,
+	spellSchools: [SpellSchool.Fire],
 
 	async cast(owner, self) {
 		// Deal $10 damage.

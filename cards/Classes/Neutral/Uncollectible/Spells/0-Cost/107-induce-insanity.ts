@@ -22,7 +22,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: 107,
 
-	spellSchool: SpellSchool.None,
+	spellSchools: [SpellSchool.None],
 
 	async cast(owner, self) {
 		// Force each enemy minion to attack a random enemy minion.

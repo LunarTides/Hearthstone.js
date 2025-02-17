@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: 109,
 
-	spellSchool: SpellSchool.None,
+	spellSchools: [SpellSchool.None],
 
 	async cast(owner, self) {
 		// Fill your hand with 1/1 Chaotic Tendrils.

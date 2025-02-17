@@ -22,7 +22,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: 97,
 
-	spellSchool: SpellSchool.Nature,
+	spellSchools: [SpellSchool.Nature],
 
 	async cast(owner, self) {
 		// Choose One - Summon a 6/6 Orca with Taunt; or six 1/1 Otters with Rush.

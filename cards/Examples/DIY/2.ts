@@ -20,7 +20,7 @@ export const blueprint: Blueprint = {
 	tags: [CardTag.DIY],
 	id: 62,
 
-	spellSchool: SpellSchool.None,
+	spellSchools: [SpellSchool.None],
 
 	async cast(owner, self) {
 		// Restore 3 health to the hero.

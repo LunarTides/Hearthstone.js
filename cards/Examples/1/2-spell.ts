@@ -20,6 +20,6 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: 30,
 
-	// The school of the spell.
-	spellSchool: SpellSchool.Shadow,
+	// The schools of the spell.
+	spellSchools: [SpellSchool.Shadow],
 };

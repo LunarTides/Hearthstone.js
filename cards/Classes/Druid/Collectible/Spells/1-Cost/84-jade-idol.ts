@@ -21,7 +21,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: 84,
 
-	spellSchool: SpellSchool.None,
+	spellSchools: [SpellSchool.None],
 
 	async cast(owner, self) {
 		// Choose One - Summon a Jade Golem; or Shuffle 3 copies of this card into your deck.

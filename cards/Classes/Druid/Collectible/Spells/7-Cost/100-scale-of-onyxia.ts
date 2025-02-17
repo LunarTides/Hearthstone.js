@@ -22,7 +22,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: 100,
 
-	spellSchool: SpellSchool.None,
+	spellSchools: [SpellSchool.None],
 
 	async cast(owner, self) {
 		// Fill your board with 2/1 Whelps with Rush.

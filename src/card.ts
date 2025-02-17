@@ -152,9 +152,9 @@ export class Card {
 	// Spell
 
 	/**
-	 * If the card is a spell, this is the school of the spell. E.g. "Fire", "Frost", or "Fel".
+	 * If the card is a spell, this is the schools of the spell. E.g. "Fire", "Frost", or "Fel".
 	 */
-	spellSchool?: SpellSchool;
+	spellSchools?: SpellSchool[];
 
 	// Hero
 
@@ -2150,8 +2150,8 @@ export class Card {
 			}
 
 			case Type.Spell: {
-				spellSchool = this.spellSchool
-					? ` (<cyan>${this.spellSchool}</cyan>)`
+				spellSchool = this.spellSchools
+					? ` (<cyan>${this.spellSchools?.join(" / ")}</cyan>)`
 					: " (None)";
 				break;
 			}

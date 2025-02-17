@@ -22,7 +22,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: 101,
 
-	spellSchool: SpellSchool.Nature,
+	spellSchools: [SpellSchool.Nature],
 
 	async cast(owner, self) {
 		// Whenever a minion dies this turn, gain 1 Mana Crystal this turn only.

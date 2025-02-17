@@ -22,7 +22,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: 82,
 
-	spellSchool: SpellSchool.Nature,
+	spellSchools: [SpellSchool.Nature],
 
 	async cast(owner, self) {
 		// Destroy all minions and summon 2/2 Treants to replace them.

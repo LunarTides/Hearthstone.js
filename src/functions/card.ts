@@ -266,9 +266,9 @@ export const cardFunctions = {
 	 */
 	validateBlueprint(blueprint: Blueprint): string | boolean {
 		// These are the required fields for all card types.
-		const requiredFieldsTable: { [x in Type]: string[] } = {
+		const requiredFieldsTable: { [x in Type]: (keyof Card)[] } = {
 			[Type.Minion]: ["attack", "health", "tribes"],
-			[Type.Spell]: ["spellSchool"],
+			[Type.Spell]: ["spellSchools"],
 			[Type.Weapon]: ["attack", "health"],
 			[Type.Hero]: ["armor", "heropowerId"],
 			[Type.Location]: ["durability", "cooldown"],

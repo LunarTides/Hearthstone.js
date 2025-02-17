@@ -64,6 +64,6 @@ export const blueprint: Blueprint = {
 	// The amount of health the minion has.
 	health: 1,
 
-	// The tribe of the minion. E.g. "Undead", "Naga", "Beast", etc...
+	// The tribes of the minion. E.g. "Undead", "Naga", "Beast", etc...
 	tribes: [MinionTribe.None],
 };

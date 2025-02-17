@@ -21,7 +21,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: 2,
 
-	spellSchool: SpellSchool.None,
+	spellSchools: [SpellSchool.None],
 
 	async cast(owner, self) {
 		// Gain 1 Mana Crystal this turn only.

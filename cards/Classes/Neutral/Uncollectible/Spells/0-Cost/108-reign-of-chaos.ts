@@ -25,7 +25,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: 108,
 
-	spellSchool: SpellSchool.None,
+	spellSchools: [SpellSchool.None],
 
 	async cast(owner, self) {
 		// Take control of an enemy minion.

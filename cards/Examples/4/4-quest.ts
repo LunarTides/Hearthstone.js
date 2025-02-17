@@ -27,7 +27,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: 58,
 
-	spellSchool: SpellSchool.None,
+	spellSchools: [SpellSchool.None],
 
 	async cast(owner, self) {
 		// Quest: Play 3 cards. Reward: Return those cards back to your hand.

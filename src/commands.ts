@@ -580,9 +580,7 @@ export const commands: CommandList = {
 					value = strbuilder;
 				}
 
-				const finishedKey = game.lodash.capitalize(key);
-
-				finished += `${finishedKey}: ${value?.toString()}\n`;
+				finished += `${key}: ${value?.toString()}\n`;
 			}
 		}
 

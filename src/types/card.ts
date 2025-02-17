@@ -268,16 +268,16 @@ export interface Blueprint extends BlueprintAbilities {
 	/**
 	 * ### This is required for Minions
 	 *
-	 * The tribe of the card. For example; "Beast", "Naga", "All", "None", etc...
+	 * The tribes of the card. For example; "Beast", "Naga", "All", "None", etc...
 	 */
 	tribes?: MinionTribe[];
 
 	/**
 	 * ### This is required for Spells
 	 *
-	 * The school of the spell. For example; "Fire", "Arcane", "Fel", etc...
+	 * The schools of the spell. For example; "Fire", "Arcane", "Fel", etc...
 	 */
-	spellSchool?: SpellSchool;
+	spellSchools?: SpellSchool[];
 
 	/**
 	 * ### This is required for Locations

@@ -23,7 +23,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: 79,
 
-	spellSchool: SpellSchool.None,
+	spellSchools: [SpellSchool.None],
 
 	async cast(owner, self) {
 		// Destroy a random enemy minion.

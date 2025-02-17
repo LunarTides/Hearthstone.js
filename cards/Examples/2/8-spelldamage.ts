@@ -29,7 +29,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: 42,
 
-	spellSchool: SpellSchool.None,
+	spellSchools: [SpellSchool.None],
 
 	async cast(owner, self) {
 		// Deal $3 damage to the enemy hero.

@@ -23,7 +23,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: 91,
 
-	spellSchool: SpellSchool.Nature,
+	spellSchools: [SpellSchool.Nature],
 
 	async cast(owner, self) {
 		// For the rest of the game, players draw an extra card at the start of their turn.

@@ -23,7 +23,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: 90,
 
-	spellSchool: SpellSchool.Arcane,
+	spellSchools: [SpellSchool.Arcane],
 
 	async cast(owner, self) {
 		// Discover a copy of a card in your deck. If you play it this turn, draw the original.

@@ -26,7 +26,7 @@ export const blueprint: Blueprint = {
 	tags: [CardTag.DIY],
 	id: 63,
 
-	spellSchool: SpellSchool.None,
+	spellSchools: [SpellSchool.None],
 
 	async cast(owner, self) {
 		// Choose a minion to kill.

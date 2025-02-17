@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: 66,
 
-	spellSchool: SpellSchool.None,
+	spellSchools: [SpellSchool.None],
 
 	async cast(owner, self) {
 		// Fill up your mana. For the rest of the game, your mana never decreases.

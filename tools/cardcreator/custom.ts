@@ -58,7 +58,7 @@ function applyCard(_card: BlueprintWithOptional): Blueprint {
 			attack: 1,
 			health: 1,
 			tribes: [MinionTribe.None],
-			spellSchool: SpellSchool.None,
+			spellSchools: [SpellSchool.None],
 			armor: 5,
 			heropowerId: game.cardIds.null0,
 			durability: 2,
@@ -169,13 +169,18 @@ const cardTypeFunctions: {
 	async Spell(): Promise<Blueprint> {
 		const card = await common();
 
-		const spellSchool = game.lodash.startCase(
-			await input("Spell School: "),
-		) as SpellSchool;
+		const spellSchools = await input("Spell School: ");
+
+		let realSpellSchools: SpellSchool[] = [];
+		if (spellSchools) {
+			realSpellSchools = spellSchools
+				.split(", ")
+				.map((k) => game.lodash.startCase(k) as SpellSchool);
+		}
 
 		return applyCard({
 			...card,
-			spellSchool,
+			spellSchools: realSpellSchools,
 		});
 	},
 
