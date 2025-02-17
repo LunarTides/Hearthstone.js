@@ -107,9 +107,9 @@ export const utilFunctions = {
 	 * @returns Success
 	 */
 	importConfig(): boolean {
-		delete require.cache[require.resolve("../../../config.ts")];
+		delete require.cache[require.resolve("../../config.ts")];
 
-		game.config = require("../../../config.ts").config as GameConfig;
+		game.config = require("../../config.ts").config as GameConfig;
 
 		if (
 			game.isEventActive("anniversary") &&

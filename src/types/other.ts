@@ -128,18 +128,6 @@ export type AiHistory = {
 	data: any;
 };
 
-export type Todo = {
-	state:
-		| "not done"
-		| "doing"
-		| "done"
-		| "first pass"
-		| "second pass"
-		| "third pass";
-	description: string;
-	issue: number;
-};
-
 /**
  * Game configuration.
  */

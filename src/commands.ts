@@ -7,7 +7,6 @@ import {
 	Keyword,
 	TargetAlignment,
 	TargetFlag,
-	type Todo,
 	Type,
 	type UnknownEventValue,
 	UseLocationError,
