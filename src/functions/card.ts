@@ -169,29 +169,29 @@ export const cardFunctions = {
 	},
 
 	/**
-	 * Returns if the `cardTribe` is `tribe` or 'All'
+	 * Returns if the `cardTribes` includes `tribe` or 'All'
 	 *
 	 * @example
-	 * assert.equal(card.tribe, "Beast");
+	 * assert.equal(card.tribes, [MinionTribe.Beast]);
 	 *
 	 * // This should return true
-	 * const result = matchTribe(card.tribe, "Beast");
+	 * const result = matchTribe(card.tribes, MinionTribe.Beast);
 	 * assert.equal(result, true);
 	 *
 	 * @example
-	 * assert.equal(card.tribe, "All");
+	 * assert.equal(card.tribes, MinionTribe.All);
 	 *
 	 * // This should return true
-	 * const result = matchTribe(card.tribe, "Beast");
+	 * const result = matchTribe(card.tribes, MinionTribe.Beast);
 	 * assert.equal(result, true);
 	 */
-	matchTribe(cardTribe: MinionTribe, tribe: MinionTribe): boolean {
+	matchTribe(cardTribes: MinionTribe[], tribe: MinionTribe): boolean {
 		// I'm not sure why you would set `tribe` to `All`, but I'll support it anyway.
-		if (cardTribe === MinionTribe.All || tribe === MinionTribe.All) {
+		if (cardTribes.includes(MinionTribe.All) || tribe === MinionTribe.All) {
 			return true;
 		}
 
-		return cardTribe === tribe;
+		return cardTribes.includes(tribe);
 	},
 
 	/**
@@ -267,7 +267,7 @@ export const cardFunctions = {
 	validateBlueprint(blueprint: Blueprint): string | boolean {
 		// These are the required fields for all card types.
 		const requiredFieldsTable: { [x in Type]: string[] } = {
-			[Type.Minion]: ["attack", "health", "tribe"],
+			[Type.Minion]: ["attack", "health", "tribes"],
 			[Type.Spell]: ["spellSchool"],
 			[Type.Weapon]: ["attack", "health"],
 			[Type.Hero]: ["armor", "heropowerId"],

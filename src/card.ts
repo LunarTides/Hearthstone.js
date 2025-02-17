@@ -123,9 +123,9 @@ export class Card {
 	health?: number;
 
 	/**
-	 * The tribe the card belongs to.
+	 * The tribes the card belongs to.
 	 */
-	tribe?: MinionTribe;
+	tribes?: MinionTribe[];
 
 	/**
 	 * The number of times a minion can attack in a turn;
@@ -2145,7 +2145,7 @@ export class Card {
 
 		switch (type) {
 			case Type.Minion: {
-				tribe = ` (<gray>${this.tribe ?? "None"}</gray>)`;
+				tribe = ` (<gray>${this.tribes?.join(" / ") ?? "None"}</gray>)`;
 				break;
 			}
 

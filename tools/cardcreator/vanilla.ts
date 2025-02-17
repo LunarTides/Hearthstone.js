@@ -105,8 +105,7 @@ export async function create(
 			blueprint = Object.assign(blueprint, {
 				attack,
 				health,
-				// TODO: Add support for more than 1 tribe. #334
-				tribe: races[0] || "None",
+				tribes: races,
 			});
 
 			break;

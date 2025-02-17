@@ -23,7 +23,7 @@ export const blueprint: Blueprint = {
 
 	attack: 5,
 	health: 4,
-	tribe: MinionTribe.None,
+	tribes: [MinionTribe.None],
 
 	async create(owner, self) {
 		// Forgetful

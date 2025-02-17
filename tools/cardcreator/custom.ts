@@ -57,7 +57,7 @@ function applyCard(_card: BlueprintWithOptional): Blueprint {
 
 			attack: 1,
 			health: 1,
-			tribe: MinionTribe.None,
+			tribes: [MinionTribe.None],
 			spellSchool: SpellSchool.None,
 			armor: 5,
 			heropowerId: game.cardIds.null0,
@@ -149,13 +149,20 @@ const cardTypeFunctions: {
 
 		const attack = game.lodash.parseInt(await input("Attack: "));
 		const health = game.lodash.parseInt(await input("Health: "));
-		const tribe = game.lodash.startCase(await input("Tribe: ")) as MinionTribe;
+		const tribes = await input("Tribes: ");
+
+		let realTribes: MinionTribe[] = [];
+		if (tribes) {
+			realTribes = tribes
+				.split(", ")
+				.map((k) => game.lodash.startCase(k) as MinionTribe);
+		}
 
 		return applyCard({
 			...card,
 			attack,
 			health,
-			tribe,
+			tribes: realTribes,
 		});
 	},
 

@@ -270,7 +270,7 @@ export interface Blueprint extends BlueprintAbilities {
 	 *
 	 * The tribe of the card. For example; "Beast", "Naga", "All", "None", etc...
 	 */
-	tribe?: MinionTribe;
+	tribes?: MinionTribe[];
 
 	/**
 	 * ### This is required for Spells

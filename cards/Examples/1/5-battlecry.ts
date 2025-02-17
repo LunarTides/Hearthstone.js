@@ -29,7 +29,7 @@ export const blueprint: Blueprint = {
 
 	attack: 1,
 	health: 2,
-	tribe: MinionTribe.None,
+	tribes: [MinionTribe.None],
 
 	/*
 	 * Here we put the name of the ability we want to add.

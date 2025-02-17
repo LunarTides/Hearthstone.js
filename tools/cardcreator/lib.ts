@@ -298,6 +298,9 @@ ${runes}${keywords}
 								usesTags = true;
 								return `CardTag.${v.replaceAll(" ", "")}`;
 
+							case "tribes":
+								return `MinionTribe.${v.replaceAll(" ", "")}`;
+
 							default:
 								return stringify(v);
 						}

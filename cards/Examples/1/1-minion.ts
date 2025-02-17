@@ -65,5 +65,5 @@ export const blueprint: Blueprint = {
 	health: 1,
 
 	// The tribe of the minion. E.g. "Undead", "Naga", "Beast", etc...
-	tribe: MinionTribe.None,
+	tribes: [MinionTribe.None],
 };

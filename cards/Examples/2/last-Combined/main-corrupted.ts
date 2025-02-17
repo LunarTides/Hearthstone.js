@@ -22,7 +22,7 @@ export const blueprint: Blueprint = {
 
 	attack: 9,
 	health: 9,
-	tribe: MinionTribe.None,
+	tribes: [MinionTribe.None],
 
 	async create(owner, self) {
 		self.addKeyword(Keyword.Colossal, [

@@ -25,5 +25,5 @@ export const blueprint: Blueprint = {
 
 	attack: 1,
 	health: 2,
-	tribe: MinionTribe.Beast,
+	tribes: [MinionTribe.Beast],
 };

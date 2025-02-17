@@ -27,7 +27,7 @@ export const blueprint: Blueprint = {
 
 	attack: 1,
 	health: 1,
-	tribe: MinionTribe.None,
+	tribes: [MinionTribe.None],
 
 	/*
 	 * Note the new `key`, `_unknownValue` and `eventPlayer` arguments.

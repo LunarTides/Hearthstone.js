@@ -29,7 +29,7 @@ export const blueprint: Blueprint = {
 	health: 4,
 
 	// You can set the tribe to "All" for "This has all minion types"
-	tribe: MinionTribe.All,
+	tribes: [MinionTribe.All],
 
 	async create(owner, self) {
 		// Taunt, Divine Shield

@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
 
 	attack: 1,
 	health: 1,
-	tribe: MinionTribe.None,
+	tribes: [MinionTribe.None],
 
 	async create(owner, self) {
 		// Store the attacker / target combo in storage.

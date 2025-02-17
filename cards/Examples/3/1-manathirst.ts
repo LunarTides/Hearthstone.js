@@ -26,7 +26,7 @@ export const blueprint: Blueprint = {
 
 	attack: 1,
 	health: 2,
-	tribe: MinionTribe.None,
+	tribes: [MinionTribe.None],
 
 	async battlecry(owner, self) {
 		const manathirst = self.manathirst(6);

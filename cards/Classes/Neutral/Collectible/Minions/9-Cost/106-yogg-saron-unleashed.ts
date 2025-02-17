@@ -26,7 +26,7 @@ export const blueprint: Blueprint = {
 
 	attack: 7,
 	health: 5,
-	tribe: MinionTribe.None,
+	tribes: [MinionTribe.None],
 
 	async create(owner, self) {
 		// Add additional fields here

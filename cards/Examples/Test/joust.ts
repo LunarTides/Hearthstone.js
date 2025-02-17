@@ -22,7 +22,7 @@ export const blueprint: Blueprint = {
 
 	attack: 1,
 	health: 1,
-	tribe: MinionTribe.None,
+	tribes: [MinionTribe.None],
 
 	async battlecry(owner, self) {
 		// Reveal a minion from each player's deck. If yours costs more, gain +1/+1.

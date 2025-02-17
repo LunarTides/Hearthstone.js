@@ -25,7 +25,7 @@ export const blueprint: Blueprint = {
 
 	attack: 1,
 	health: 1,
-	tribe: MinionTribe.None,
+	tribes: [MinionTribe.None],
 
 	async battlecry(owner, self) {
 		// Summon a random 2-Cost minion.

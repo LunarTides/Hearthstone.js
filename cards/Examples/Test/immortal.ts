@@ -22,7 +22,7 @@ export const blueprint: Blueprint = {
 
 	attack: 1,
 	health: 1,
-	tribe: MinionTribe.None,
+	tribes: [MinionTribe.None],
 
 	async remove(owner, self, key) {
 		// This minion cannot be removed from the battlefield.

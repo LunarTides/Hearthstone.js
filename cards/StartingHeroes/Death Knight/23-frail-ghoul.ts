@@ -23,7 +23,7 @@ export const blueprint: Blueprint = {
 
 	attack: 1,
 	health: 1,
-	tribe: MinionTribe.Undead,
+	tribes: [MinionTribe.Undead],
 
 	async create(owner, self) {
 		self.addKeyword(Keyword.Charge);

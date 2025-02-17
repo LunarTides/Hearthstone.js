@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
 
 	attack: 2,
 	health: 6,
-	tribe: MinionTribe.None,
+	tribes: [MinionTribe.None],
 
 	async passive(owner, self, key, _unknownValue) {
 		// At the end of your turn, cast a spell you've cast this turn (targets are random).

@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
 
 	attack: 7,
 	health: 5,
-	tribe: MinionTribe.None,
+	tribes: [MinionTribe.None],
 
 	async battlecry(owner, self) {
 		// Cast a random spell for each spell you've cast this game (targets chosen randomly).

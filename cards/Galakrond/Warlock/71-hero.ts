@@ -31,11 +31,11 @@ export const blueprint: Blueprint = {
 		);
 
 		const testDemoness = (card: Card) => {
-			if (!card.tribe) {
+			if (!card.tribes) {
 				return false;
 			}
 
-			return game.functions.card.matchTribe(card.tribe, MinionTribe.Demon);
+			return game.functions.card.matchTribe(card.tribes, MinionTribe.Demon);
 		};
 
 		for (let i = 0; i < amount; i++) {

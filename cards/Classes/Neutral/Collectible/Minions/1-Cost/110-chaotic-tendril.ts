@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
 
 	attack: 1,
 	health: 1,
-	tribe: MinionTribe.None,
+	tribes: [MinionTribe.None],
 
 	async battlecry(owner, self) {
 		// Cast a random 1-Cost spell. Improve your future Chaotic Tendrils.

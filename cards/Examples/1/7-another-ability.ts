@@ -40,7 +40,7 @@ export const blueprint: Blueprint = {
 
 	attack: 1,
 	health: 2,
-	tribe: MinionTribe.None,
+	tribes: [MinionTribe.None],
 
 	// If the function is named correctly, you can just write the name of the ability
 	battlecry,

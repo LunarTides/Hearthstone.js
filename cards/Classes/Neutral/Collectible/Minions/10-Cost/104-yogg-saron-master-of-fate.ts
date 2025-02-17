@@ -28,7 +28,7 @@ export const blueprint: Blueprint = {
 
 	attack: 7,
 	health: 5,
-	tribe: MinionTribe.None,
+	tribes: [MinionTribe.None],
 
 	async battlecry(owner, self) {
 		// If you've cast 10 spells this game, spin the Wheel of Yogg-Saron. ({amount} left!)

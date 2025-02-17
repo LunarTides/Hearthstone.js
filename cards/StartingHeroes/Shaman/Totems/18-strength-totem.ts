@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
 
 	attack: 0,
 	health: 2,
-	tribe: MinionTribe.Totem,
+	tribes: [MinionTribe.Totem],
 
 	async passive(owner, self, key, value, eventPlayer) {
 		// At the end of your turn, give another friendly minion +1 Attack.

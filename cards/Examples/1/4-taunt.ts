@@ -22,7 +22,7 @@ export const blueprint: Blueprint = {
 
 	cost: 1,
 	type: Type.Minion,
-	tribe: MinionTribe.None,
+	tribes: [MinionTribe.None],
 	classes: [Class.Neutral],
 	rarity: Rarity.Free,
 	collectible: false,

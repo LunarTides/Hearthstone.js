@@ -34,16 +34,16 @@ describe("src/core/functions/card", () => {
 
 	test("matchTribe", async () => {
 		expect(
-			cardFunctions.matchTribe(MinionTribe.Beast, MinionTribe.Demon),
+			cardFunctions.matchTribe([MinionTribe.Beast], MinionTribe.Demon),
 		).toEqual(false);
 		expect(
-			cardFunctions.matchTribe(MinionTribe.Beast, MinionTribe.Beast),
+			cardFunctions.matchTribe([MinionTribe.Beast], MinionTribe.Beast),
 		).toEqual(true);
 		expect(
-			cardFunctions.matchTribe(MinionTribe.All, MinionTribe.Beast),
+			cardFunctions.matchTribe([MinionTribe.All], MinionTribe.Beast),
 		).toEqual(true);
 		expect(
-			cardFunctions.matchTribe(MinionTribe.Beast, MinionTribe.All),
+			cardFunctions.matchTribe([MinionTribe.Beast], MinionTribe.All),
 		).toEqual(true);
 	});
 

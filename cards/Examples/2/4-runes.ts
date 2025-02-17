@@ -21,7 +21,7 @@ export const blueprint: Blueprint = {
 
 	attack: 1,
 	health: 2,
-	tribe: MinionTribe.None,
+	tribes: [MinionTribe.None],
 
 	async create(owner, self) {
 		// You need 2 frost runes and 1 blood rune to use this card.

@@ -1002,8 +1002,7 @@ const playCard = {
 		}
 
 		// Find the mechs on the board
-		// TODO: Support multiple tribes. #277
-		const mechs = board.filter((m) => m.tribe === MinionTribe.Mech);
+		const mechs = board.filter((m) => m.tribes?.includes(MinionTribe.Mech));
 		if (mechs.length <= 0) {
 			return false;
 		}
@@ -1019,8 +1018,7 @@ const playCard = {
 			return false;
 		}
 
-		// TODO: Support multiple tribes. #277
-		if (mech.tribe !== MinionTribe.Mech) {
+		if (!mech.tribes?.includes(MinionTribe.Mech)) {
 			console.log("That minion is not a Mech.");
 			return playCard._magnetize(card, player);
 		}

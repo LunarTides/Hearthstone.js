@@ -22,7 +22,7 @@ export const blueprint: Blueprint = {
 
 	attack: 10,
 	health: 10,
-	tribe: MinionTribe.None,
+	tribes: [MinionTribe.None],
 
 	async create(owner, self) {
 		// Put the ids of the titan ability cards, like in corrupt, but a list.
