@@ -424,7 +424,7 @@ export const commands: CommandList = {
 		let finished = "";
 
 		const showCard = async (value: Card) =>
-			`${await value.readable()} which belongs to: <blue>${value.owner.name}</blue>, and has uuid: ${value.coloredUUID()}`;
+			`${await value.readable()} which belongs to: <blue>${value.owner.getName()}</blue>, and has uuid: ${value.coloredUUID()}`;
 
 		/**
 		 * Transform the `value` into a readable string
@@ -550,7 +550,7 @@ export const commands: CommandList = {
 					!flags?.debug;
 
 				if (!hasPrintedHeader) {
-					finished += `\nTurn ${historyListIndex} - Player [${player.name}]\n`;
+					finished += `\nTurn ${historyListIndex} - ${player.getName()}\n`;
 				}
 
 				hasPrintedHeader = true;

@@ -22,7 +22,7 @@ describe("src/core/player", () => {
 	});
 
 	test("refreshMana", async () => {
-		const player = new Player("Test");
+		const player = new Player();
 
 		expect(player.mana).toBe(0);
 
@@ -49,7 +49,7 @@ describe("src/core/player", () => {
 	});
 
 	test("addEmptyMana", async () => {
-		const player = new Player("Test");
+		const player = new Player();
 
 		expect(player.emptyMana).toBe(0);
 
@@ -64,7 +64,7 @@ describe("src/core/player", () => {
 	});
 
 	test("addMana", async () => {
-		const player = new Player("Test");
+		const player = new Player();
 
 		expect(player.mana).toBe(0);
 		expect(player.emptyMana).toBe(0);
@@ -107,7 +107,7 @@ describe("src/core/player", () => {
 	});
 
 	test("addArmor", async () => {
-		const player = new Player("Test");
+		const player = new Player();
 
 		expect(player.armor).toBe(0);
 

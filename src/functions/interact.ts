@@ -79,13 +79,17 @@ const prompt = {
 		let result = true;
 
 		if (deckcode.length > 0) {
-			game.logger.debug(`${player.name} chose deck code: ${deckcode}...`);
+			game.logger.debug(`${player.getName()} chose deck code: ${deckcode}...`);
 			result = Boolean(await game.functions.deckcode.import(player, deckcode));
 
 			if (result) {
-				game.logger.debug(`${player.name} chose deck code: ${deckcode}...OK`);
+				game.logger.debug(
+					`${player.getName()} chose deck code: ${deckcode}...OK`,
+				);
 			} else {
-				game.logger.debug(`${player.name} chose deck code: ${deckcode}...FAIL`);
+				game.logger.debug(
+					`${player.getName()} chose deck code: ${deckcode}...FAIL`,
+				);
 			}
 		} else {
 			if (!allowTestDeck) {
@@ -94,14 +98,14 @@ const prompt = {
 				return false;
 			}
 
-			game.logger.debug(`${player.name} chose debug deck...`);
+			game.logger.debug(`${player.getName()} chose debug deck...`);
 
 			// Debug mode is enabled, use the 30 Sheep debug deck.
 			while (player.deck.length < 30) {
 				player.deck.push(await Card.create(game.cardIds.sheep1, player, true));
 			}
 
-			game.logger.debug(`${player.name} chose debug deck...OK`);
+			game.logger.debug(`${player.getName()} chose debug deck...OK`);
 		}
 
 		return result;
@@ -1108,7 +1112,7 @@ const print = {
 	 * Prints the hand of the specified player.
 	 */
 	async hand(player: Player): Promise<void> {
-		console.log("--- %s (%s)'s Hand ---", player.name, player.heroClass);
+		console.log("--- %s (%s)'s Hand ---", player.getName(), player.heroClass);
 
 		const debugInfo = game.config.general.debug
 			? "(<gray>Debug Info -></gray> #id @uuid <gray>[tags]</gray>) "

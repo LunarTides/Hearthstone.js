@@ -1395,7 +1395,7 @@ export class Game {
 
 		console.log(history);
 
-		await this.pause(`Player ${winner.name} wins!\n`);
+		await this.pause(`${winner.getName()} wins!\n`);
 
 		this.running = false;
 
@@ -1723,8 +1723,8 @@ export class Game {
  * @returns An object containing the game instance, player 1, and player 2.
  */
 export function createGame() {
-	const player1 = new Player("Player 1");
-	const player2 = new Player("Player 2");
+	const player1 = new Player();
+	const player2 = new Player();
 	const game = new Game(player1, player2);
 	game.functions.util.importConfig();
 	Card.registerAll();

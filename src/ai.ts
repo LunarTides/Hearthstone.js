@@ -970,7 +970,7 @@ export class Ai {
 		const returned = returnValue as Target[];
 
 		const getHistoryDataForReturned = (returned: Target) =>
-			returned instanceof Card ? returned.uuid : returned.name;
+			returned instanceof Card ? returned.uuid : returned.getName();
 
 		this.history.push({
 			type: "attack",

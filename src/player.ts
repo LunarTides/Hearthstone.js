@@ -16,15 +16,6 @@ import {
 
 export class Player {
 	/**
-	 * You might be looking for `Player.id`.
-	 *
-	 * The player's name. For example: "Player 1".
-	 *
-	 * There is no real use for this outside of the source code, so i would advise you to not use this.
-	 */
-	name = "Unknown";
-
-	/**
 	 * This is:
 	 *
 	 * 0: if this is the starting player
@@ -329,10 +320,6 @@ export class Player {
 	 */
 	detailedView = false;
 
-	constructor(name: string) {
-		this.name = name;
-	}
-
 	/**
 	 * Retrieves the player corresponding to the given id.
 	 * 0 is Player 1.
@@ -348,6 +335,17 @@ export class Player {
 		}
 
 		return game.player2;
+	}
+
+	/**
+	 * Returns the name of the player.
+	 *
+	 * This is the name of the player in the format "Player X" where X is the id of the player plus 1.
+	 *
+	 * @returns The name of the player.
+	 */
+	getName() {
+		return `Player ${this.id + 1}`;
 	}
 
 	/**
