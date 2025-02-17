@@ -3,7 +3,7 @@
 // This is the Yogg-Saron, Unleashed Tentacle Swarm card.
 
 import assert from "node:assert";
-import { Card } from "@Core/card.js";
+import { Card } from "@Game/card.js";
 import {
 	Ability,
 	type Blueprint,

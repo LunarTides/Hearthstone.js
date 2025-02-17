@@ -1,9 +1,9 @@
-import { Ai } from "@Core/ai.js";
-import { Card } from "@Core/card.js";
-import { eventManager } from "@Core/event.js";
-import { functions } from "@Core/functions/index.js";
-import { logger } from "@Core/logger.js";
-import { Player } from "@Core/player.js";
+import { Ai } from "@Game/ai.js";
+import { Card } from "@Game/card.js";
+import { eventManager } from "@Game/event.js";
+import { functions } from "@Game/functions/index.js";
+import { logger } from "@Game/logger.js";
+import { Player } from "@Game/player.js";
 import {
 	Ability,
 	type Blueprint,
@@ -20,7 +20,7 @@ import {
 } from "@Game/types.js";
 import date from "date-and-time";
 import _ from "lodash";
-import { cardIds } from "../../cards/ids.js";
+import { cardIds } from "../cards/ids.js";
 
 const attack = {
 	/**

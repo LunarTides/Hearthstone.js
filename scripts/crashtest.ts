@@ -1,6 +1,6 @@
 import process from "node:process";
-import { createGame } from "@Core/game.js";
-import { Player } from "@Core/player.js";
+import { createGame } from "@Game/game.js";
+import { Player } from "@Game/player.js";
 
 const { game } = createGame();
 

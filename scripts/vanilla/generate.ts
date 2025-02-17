@@ -5,7 +5,7 @@
 import { Buffer } from "node:buffer";
 import https from "node:https";
 import process from "node:process";
-import { createGame } from "@Core/game.js";
+import { createGame } from "@Game/game.js";
 import type { VanillaCard } from "@Game/types.js";
 
 const API_URL = "https://api.hearthstonejson.com/v1/latest/enUS/cards.json";

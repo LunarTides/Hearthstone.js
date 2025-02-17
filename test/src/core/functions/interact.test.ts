@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { interactFunctions } from "@Core/functions/interact.js";
+import { interactFunctions } from "@Game/functions/interact.js";
 
 /*
  * Need to create a game in case the functions need it

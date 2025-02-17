@@ -1,7 +1,7 @@
 // Created by the Custom Card Creator
 
 import assert from "node:assert";
-import { Card, CardError } from "@Core/card.js";
+import { Card, CardError } from "@Game/card.js";
 import {
 	Ability,
 	type Blueprint,

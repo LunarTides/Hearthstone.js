@@ -1,8 +1,11 @@
 import readline from "node:readline/promises";
 import { format } from "node:util";
+import type { Ai } from "@Game/ai.js";
+import { Card } from "@Game/card.js";
+import { commands, debugCommands } from "@Game/commands.js";
+import type { Player } from "@Game/player.js";
 import {
 	Ability,
-	CostType,
 	Event,
 	GameAttackReturn,
 	GamePlayCardReturn,
@@ -15,10 +18,6 @@ import {
 	UseLocationError,
 } from "@Game/types.js";
 import { parseTags } from "chalk-tags";
-import type { Ai } from "../ai.js";
-import { Card } from "../card.js";
-import { commands, debugCommands } from "../commands.js";
-import type { Player } from "../player.js";
 
 const rl = readline.createInterface({
 	input: process.stdin,

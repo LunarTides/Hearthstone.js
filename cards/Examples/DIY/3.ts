@@ -1,6 +1,6 @@
 // Created by Hand
 
-import { Card } from "@Core/card.js";
+import { Card } from "@Game/card.js";
 import {
 	type Blueprint,
 	CardTag,

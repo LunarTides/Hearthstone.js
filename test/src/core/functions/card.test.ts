@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { cardFunctions } from "@Core/functions/card.js";
+import { cardFunctions } from "@Game/functions/card.js";
 import { Class, MinionTribe } from "@Game/types.js";
 
 /*

@@ -2,7 +2,7 @@
  * The actual entry point of the game.
  */
 
-import { createGame } from "@Core/game.js";
+import { createGame } from "@Game/game.js";
 import { validate as validateIds } from "../scripts/id/lib.js";
 
 /**

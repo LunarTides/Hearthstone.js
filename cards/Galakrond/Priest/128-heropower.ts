@@ -1,7 +1,7 @@
 // Created by the Custom Card Creator
 
 import assert from "node:assert";
-import { Card } from "@Core/card.js";
+import { Card } from "@Game/card.js";
 import { type Blueprint, Class, Rarity, Type } from "@Game/types.js";
 
 export const blueprint: Blueprint = {

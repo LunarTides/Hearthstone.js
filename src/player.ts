@@ -1,5 +1,5 @@
-import type { Ai } from "@Core/ai.js";
-import { Card } from "@Core/card.js";
+import type { Ai } from "@Game/ai.js";
+import { Card } from "@Game/card.js";
 
 import {
 	Ability,

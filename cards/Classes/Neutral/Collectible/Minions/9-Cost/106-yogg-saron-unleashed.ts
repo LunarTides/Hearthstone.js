@@ -1,7 +1,7 @@
 // Created by the Vanilla Card Creator
 
 import assert from "node:assert";
-import { Card } from "@Core/card.js";
+import { Card } from "@Game/card.js";
 import {
 	Ability,
 	type Blueprint,

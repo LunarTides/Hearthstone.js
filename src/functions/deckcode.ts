@@ -1,5 +1,5 @@
-import { Card } from "@Core/card.js";
-import type { Player } from "@Core/player.js";
+import { Card } from "@Game/card.js";
+import type { Player } from "@Game/player.js";
 import {
 	type CardLike,
 	Class,

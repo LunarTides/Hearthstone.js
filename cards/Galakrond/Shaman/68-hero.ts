@@ -1,6 +1,6 @@
 // Created by the Custom Card Creator
 
-import { Card } from "@Core/card.js";
+import { Card } from "@Game/card.js";
 import { type Blueprint, CardTag, Class, Rarity, Type } from "@Game/types.js";
 
 export const blueprint: Blueprint = {

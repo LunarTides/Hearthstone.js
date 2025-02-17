@@ -4,9 +4,9 @@
  */
 
 import process from "node:process";
-import { Card } from "@Core/card.js";
-import { createGame } from "@Core/game.js";
-import type { Player } from "@Core/player.js";
+import { Card } from "@Game/card.js";
+import { createGame } from "@Game/game.js";
+import type { Player } from "@Game/player.js";
 import { Ability } from "@Game/types.js";
 
 const { game } = createGame();

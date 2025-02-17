@@ -1,5 +1,5 @@
-import { Card } from "@Core/card.js";
-import { Player } from "@Core/player.js";
+import { Card } from "@Game/card.js";
+import { Player } from "@Game/player.js";
 import {
 	Ability,
 	Event,

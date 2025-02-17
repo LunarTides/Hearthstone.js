@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import type { Player } from "@Core/player.js";
+import type { Player } from "@Game/player.js";
 import {
 	Ability,
 	type AbilityCallback,

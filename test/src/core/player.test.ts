@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { createGame } from "@Core/game.js";
-import { Player } from "@Core/player.js";
+import { createGame } from "@Game/game.js";
+import { Player } from "@Game/player.js";
 
 /*
  * Need to create a game in case the functions need it
