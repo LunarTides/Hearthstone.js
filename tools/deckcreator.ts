@@ -547,7 +547,7 @@ function showRules(): void {
 	);
 
 	console.log(
-		"# Rule 2. Maximum Deck Length: %s <yellow>%s</yellow>",
+		"# Rule 2. Maximum Deck Length: <yellow>%s</yellow>",
 		config.decks.maxLength,
 	);
 
@@ -806,24 +806,24 @@ async function help(): Promise<void> {
 	);
 
 	const bricks = [
-		"(name) [optional] (required) - (description)\n",
+		"(name) (required) [optional] - (description)\n",
 
 		"add (name | id) - Add a card to the deck",
 		"remove (card | id) - Remove a card from the deck",
 		"view (card | id) - View a card",
-		"page (num) - View a different page",
+		"page (num) - Switch to a different page",
 		"cards (class) - Show cards from 'class'",
-		"sort (type) [order] - Sorts by 'type' in 'order'ending order. (Type can be: ('rarity', 'name', 'cost', 'id', 'type'), Order can be: ('asc', 'desc')) (Example: sort cost asc - Will show cards ordered by cost cost, ascending.)",
-		"search [query] - Searches by query. Keys: ('name', 'text', 'cost', 'rarity', 'id'), Examples: (search the - Search for all cards with the word 'the' in the name or description, case insensitive.), (search cost:2 - Search for all cards that costs 2 cost, search cost:even name:r - Search for all even cost cards with 'r' in its name)",
-		"undo - Undo the last action.",
+		"sort (type) [order] - Sorts by 'type' in 'order'ending order. (Type can be: ('rarity', 'name', 'cost', 'id', 'type'), Order can be: ('asc', 'desc')) (Example: sort cost asc - Will show cards ordered by cost cost, ascending)",
+		"search [query] - Search by query. Keys: ('name', 'text', 'cost', 'rarity', 'id'), Examples: (search the - Search for all cards with the word 'the' in the name or description, case insensitive.), (search cost:2 - Search for all cards that costs 2 cost, search cost:even name:r - Search for all even cost cards with 'r' in its name)",
+		"undo - Undo the last action",
 		"deck - Toggle deck-view",
 		"deckcode - View the current deckcode",
-		"import (deckcode) - Imports a deckcode (Overrides your deck)",
-		"set (setting) (value) - Change some settings. Look down to 'Set Subcommands' to see available settings",
-		"warning (name) [off | on] - Change some warnings. Look down to 'Warnings' to see available warnings",
+		"import (deckcode) - Import a deckcode (Overrides your deck)",
+		"set (setting) (value) - Change a setting. Look down to 'Set Subcommands' to see available settings",
+		"warning (name) [off | on] - Change a warning. Look down to 'Warnings' to see available warnings",
 		"class - Change the class",
-		"eval - Runs some code. Be careful with this, it can be used to break the program",
-		"config | rules - Shows the rules for valid decks and invalid decks",
+		"eval - Run some code. Be careful with this, it can be used to break the program",
+		"config | rules - Show the rules for valid decks and invalid decks",
 		"help - Displays this message",
 		"exit - Quits the program",
 	];
@@ -840,11 +840,11 @@ async function help(): Promise<void> {
 	);
 
 	const setSubcommandBricks = [
-		"(name) [optional] (required) - (description)\n",
+		"(name) (required) [optional] - (description)\n",
 
-		"format (format) - Makes the deckcode generator output the deckcode as a different format. If you set this to 'vanilla', it is only going to show the deckcode as vanilla. If you set it to 'vanilla', you will be asked to choose a card if there are multiple vanilla cards with the same name. This should be rare, but just know that it might happen. ('js', 'vanilla') [default = 'js']",
+		"format (format) - Output the deckcode in a different format ('js', 'vanilla') [default = 'js']",
 		"cardsPerPage | cpp (num) - How many cards to show per page [default = 15]",
-		"defaultCommand | dcmd (cmd) - The command that should run when the command is unspecified. ('add', 'remove', 'view') [default = 'add']",
+		"defaultCommand | dcmd (cmd) - The command that should run when the command is unspecified ('add', 'remove', 'view') [default = 'add']",
 	];
 
 	const setSubcommandWall = game.functions.util.createWall(
@@ -857,7 +857,7 @@ async function help(): Promise<void> {
 	}
 
 	console.log(
-		"\n<gray>Note the 'cardsPerPage' commands has 2 different subcommands; cpp & cardsPerPage. Both do the same thing.</gray>",
+		"<gray>NOTE: the 'cardsPerPage' setting has 2 different names; cpp & cardsPerPage. You can use either.</gray>",
 	);
 
 	// Warning
@@ -878,25 +878,16 @@ async function help(): Promise<void> {
 	}
 
 	console.log(
-		"\nNote: If you don't specify a state (off / on) it will toggle the state of the warning.",
-	);
-
-	console.log(
-		"Note: The word 'off' can be exchanged with 'disable', 'false', or '0'.",
-	);
-
-	console.log(
-		"Note: The word 'on' can be exchanged with 'enable', 'true', or '1'.",
+		`<gray>NOTE: If you don't specify a state (off / on) it will toggle the state of the warning.
+NOTE: The word 'off' can be exchanged with 'disable', 'false', or '0'.
+NOTE: The word 'on' can be exchanged with 'enable', 'true', or '1'.</gray>`,
 	);
 
 	// Notes
-	console.log("\n<b>Notes:</b>");
-
-	console.log("Type 'cards Neutral' to see Neutral cards.");
-	// TODO: #245 Fix this
-	console.log(
-		"There is a known bug where if you add 'Prince Renathal', and then remove him, the deck will still require 40 cards. The only way around this is to restart the deck creator.",
-	);
+	// TODO: #245 Fix the known bug.
+	console.log(`\n<gray>NOTE: Type 'cards Neutral' to see Neutral cards.
+BUG: There is a known bug where if you add 'Prince Renathal', and then remove him, the deck will still require 40 cards. The only way around this is to restart the deck creator.
+`);
 
 	await game.pause("\nPress enter to continue...\n");
 }

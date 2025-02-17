@@ -14,37 +14,41 @@ import {
 import { resumeTagParsing, stopTagParsing } from "chalk-tags";
 
 /*
- * This is the list of commands that can be used in the game
- * This will be shown when using the 'help' command
+ * This is the list of commands that can be used in the game.
+ * This will be shown when using the "help" command.
  */
 const helpBricks = [
-	"end - Ends your turn",
-	"attack - Attack",
+	"(name) - (description)\n",
+
+	"end - End your turn",
+	"attack - Attack a target",
 	"hero power - Use your hero power",
-	"history - Displays a history of actions",
-	"concede - Forfeits the game",
-	"view - View a minion",
+	"history - Show a list of actions that have happened",
+	"concede - Forfeit the game",
+	"view - View additional information about a card",
 	"use - Use a location card",
 	"titan - Use a titan card",
-	"detail - Get more details about opponent",
-	"help - Displays this message",
-	"version - Displays the version, branch, your settings preset, and some information about your current version.",
-	"license - Opens a link to this project's license",
+	"detail - Get more details about the game",
+	"help - Show this message",
+	"version - Show information about the version, branch, and settings of this game",
+	"license - Open a link to this project's license",
 ];
 
 /*
- * This is the list of debug commands that can be used in the game
- * This will also be shown when using the 'help' command
+ * This is the list of debug commands that can be used in the game.
+ * This will also be shown when using the "help" command.
  */
 const helpDebugBricks = [
-	"give (name) - Adds a card to your hand",
-	"eval [log] (code) - Runs the code specified. If the word 'log' is before the code, instead console.log the code and wait for user input to continue. Examples: `/eval game.endGame(game.player)` (Win the game) `/eval @Player1.addToHand(@fe48ac1.perfectCopy())` (Adds a perfect copy of the card with uuid \"fe48ac1\" to player 1's hand) `/eval log h#c#1.attack + d#o#26.health + b#c#1.attack` (Logs the card in the current player's hand with index 1's attack value + the 26th card in the opponent's deck's health value + the card on the current player's side of the board with index 1's attack value)",
-	"exit - Force exits the game. There will be no winner, and it will take you straight back to the hub.",
-	"history - Displays a history of actions. This doesn't hide any information, and is the same thing the log files uses.",
-	"rl - Reloads the cards and config in the game.",
-	"frl - Does the same thing as rl, but doesn't wait for you to press enter before continuing.",
-	"undo - Undoes the last card played. It gives the card back to your hand, and removes it from where it was. (This does not undo the actions of the card)",
-	"ai - Gives you a list of the actions the ai(s) have taken in the order they took it",
+	"(name) (required) [optional] - (description)\n",
+
+	"give (name | id) - Add a card to your hand",
+	"eval [log] (code) - Run some code",
+	"exit - Force exit the game. There will be no winner, and it will take you straight back to the hub",
+	"history - Show a list of actions that have happened. Unlike the normal history command, this doesn't hide any information, and is the same thing the log files uses",
+	"rl - Reload the cards, config, and translation files",
+	"frl - Do the same thing as 'rl', but doesn't wait for you to press enter before continuing",
+	"undo - Undo the last card played. It gives the card back to your hand, and removes it from where it was. (This does not undo the actions of the card)",
+	"ai - Give you a list of the actions the ai(s) have taken in the order they took it",
 ];
 
 export const commands: CommandList = {
@@ -216,13 +220,13 @@ export const commands: CommandList = {
 
 		console.log("Available commands:");
 
-		const bricks = [
-			game.logger.translate("(name) - (description)\n"),
-			...helpBricks.map((brick) => game.logger.translate(brick)),
-		];
-
+		const bricks = helpBricks.map((brick) => game.logger.translate(brick));
 		const wall = game.functions.util.createWall(bricks, "-");
-		const debugWall = game.functions.util.createWall(helpDebugBricks, "-");
+
+		const debugBricks = helpDebugBricks.map((brick) =>
+			game.logger.translate(brick),
+		);
+		const debugWall = game.functions.util.createWall(debugBricks, "-");
 
 		// Normal commands
 		for (const brick of wall) {
