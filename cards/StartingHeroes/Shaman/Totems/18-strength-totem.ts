@@ -2,22 +2,29 @@
 
 import assert from "node:assert";
 import { Card } from "@Core/card.js";
-import type { Blueprint } from "@Game/types.js";
+import {
+	type Blueprint,
+	CardTag,
+	Class,
+	MinionTribe,
+	Rarity,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Strength Totem",
 	text: "At the end of your turn, give another friendly minion +1 Attack.",
 	cost: 1,
-	type: "Minion",
-	classes: ["Shaman"],
-	rarity: "Free",
+	type: Type.Minion,
+	classes: [Class.Shaman],
+	rarity: Rarity.Free,
 	collectible: false,
-	tags: ["totem"],
+	tags: [CardTag.Totem],
 	id: 18,
 
 	attack: 0,
 	health: 2,
-	tribe: "Totem",
+	tribe: MinionTribe.Totem,
 
 	async passive(owner, self, key, value, eventPlayer) {
 		// At the end of your turn, give another friendly minion +1 Attack.
@@ -28,7 +35,7 @@ export const blueprint: Blueprint = {
 		}
 
 		// The list that to choose from. Remove this minion from the list
-		const board = owner.board.filter((card) => card.type === "Minion");
+		const board = owner.board.filter((card) => card.type === Type.Minion);
 		game.functions.util.remove(board, self);
 
 		// Choose the random minion

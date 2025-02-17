@@ -1,15 +1,15 @@
 // Created by the Custom Card Creator
 
 import assert from "node:assert";
-import type { Blueprint } from "@Game/types.js";
+import { Ability, type Blueprint, Class, Rarity, Type } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Nurture",
 	text: "<b>Choose One -</b> Draw a card; or Gain an empty Mana Crystal.",
 	cost: 2,
-	type: "Heropower",
-	classes: ["Druid"],
-	rarity: "Free",
+	type: Type.HeroPower,
+	classes: [Class.Druid],
+	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
 	id: 113,
@@ -40,7 +40,7 @@ export const blueprint: Blueprint = {
 		const handSize = owner.hand.length;
 
 		owner.inputQueue = ["1"];
-		await self.activate("heropower");
+		await self.activate(Ability.HeroPower);
 
 		assert.equal(owner.hand.length, handSize + 1);
 
@@ -48,7 +48,7 @@ export const blueprint: Blueprint = {
 		const { emptyMana } = owner;
 
 		owner.inputQueue = ["2"];
-		await self.activate("heropower");
+		await self.activate(Ability.HeroPower);
 
 		assert.equal(owner.emptyMana, emptyMana + 1);
 	},

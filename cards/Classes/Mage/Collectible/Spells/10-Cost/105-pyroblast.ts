@@ -2,28 +2,37 @@
 
 import assert from "node:assert";
 import { Card } from "@Core/card.js";
-import type { Blueprint } from "@Game/types.js";
+import {
+	Ability,
+	type Blueprint,
+	Class,
+	Rarity,
+	SpellSchool,
+	TargetAlignment,
+	TargetClass,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Pyroblast",
 	text: "Deal $10 damage.",
 	cost: 10,
-	type: "Spell",
-	classes: ["Mage"],
-	rarity: "Epic",
+	type: Type.Spell,
+	classes: [Class.Mage],
+	rarity: Rarity.Epic,
 	collectible: true,
 	tags: [],
 	id: 105,
 
-	spellSchool: "Fire",
+	spellSchool: SpellSchool.Fire,
 
 	async cast(owner, self) {
 		// Deal $10 damage.
 		const target = await game.functions.interact.prompt.target(
 			self.text,
 			self,
-			"any",
-			"any",
+			TargetAlignment.Any,
+			TargetClass.Any,
 		);
 		if (!target) {
 			return Card.REFUND;
@@ -38,7 +47,7 @@ export const blueprint: Blueprint = {
 		owner.forceTarget = owner.getOpponent();
 
 		// If no spellDamage
-		await self.activate("cast");
+		await self.activate(Ability.Cast);
 		assert.equal(owner.getOpponent().health, enemyHealth - 10);
 
 		// Reset health
@@ -47,7 +56,7 @@ export const blueprint: Blueprint = {
 		// If 5 spellDamage
 		owner.spellDamage = 5;
 
-		await self.activate("cast");
+		await self.activate(Ability.Cast);
 		assert.equal(owner.getOpponent().health, enemyHealth - 15);
 	},
 };

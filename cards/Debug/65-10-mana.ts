@@ -1,20 +1,27 @@
 // Created by Hand
 
 import assert from "node:assert";
-import type { Blueprint } from "@Game/types.js";
+import {
+	Ability,
+	type Blueprint,
+	Class,
+	Rarity,
+	SpellSchool,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "10 Mana",
 	text: "Gain 10 Mana.",
 	cost: 0,
-	type: "Spell",
-	classes: ["Neutral"],
-	rarity: "Free",
+	type: Type.Spell,
+	classes: [Class.Neutral],
+	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
 	id: 65,
 
-	spellSchool: "None",
+	spellSchool: SpellSchool.None,
 
 	async cast(owner, self) {
 		// Gain 10 Mana.
@@ -23,7 +30,7 @@ export const blueprint: Blueprint = {
 
 	async test(owner, self) {
 		owner.mana = 5;
-		await self.activate("cast");
+		await self.activate(Ability.Cast);
 
 		assert.equal(owner.mana, 10);
 	},

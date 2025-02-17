@@ -2,15 +2,15 @@
 
 import assert from "node:assert";
 import { Card } from "@Core/card.js";
-import type { Blueprint } from "@Game/types.js";
+import { Ability, type Blueprint, Class, Rarity, Type } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Reinforce",
 	text: "Summon a 1/1 Silver Hand Recruit.",
 	cost: 2,
-	type: "Heropower",
-	classes: ["Paladin"],
-	rarity: "Free",
+	type: Type.HeroPower,
+	classes: [Class.Paladin],
+	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
 	id: 120,
@@ -31,7 +31,7 @@ export const blueprint: Blueprint = {
 
 		// The minion should not exist
 		assert(!checkIfMinionExists());
-		await self.activate("heropower");
+		await self.activate(Ability.HeroPower);
 
 		// The minion should now exist
 		assert(checkIfMinionExists());

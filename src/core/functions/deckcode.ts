@@ -1,12 +1,13 @@
 import { Card } from "@Core/card.js";
 import type { Player } from "@Core/player.js";
-import type {
-	CardClass,
-	CardClassNoNeutral,
-	CardLike,
-	FunctionsExportDeckError,
-	GameConfig,
-	VanillaCard,
+import {
+	type CardLike,
+	Class,
+	DeckValidationError,
+	type FunctionsExportDeckError,
+	type GameConfig,
+	Rarity,
+	type VanillaCard,
 } from "@Game/types.js";
 
 // To decode vanilla deckcodes
@@ -76,16 +77,12 @@ export const deckcodeFunctions = {
 		hero = hero.trim();
 		actualCode = sep[1] + actualCode.split(sep)[1];
 
-		if (
-			!(await game.functions.card.getClasses()).includes(
-				hero as CardClassNoNeutral,
-			)
-		) {
+		if (!(await game.functions.card.getClasses()).includes(hero)) {
 			await panic("INVALIDHERO");
 			return;
 		}
 
-		player.heroClass = hero as CardClass;
+		player.heroClass = game.lodash.startCase(hero) as Class;
 		const runeClass = player.canUseRunes();
 
 		const addRunes = async (runes: string) => {
@@ -177,24 +174,27 @@ export const deckcodeFunctions = {
 
 				const validationError = card.validateForDeck();
 
-				if (!localSettings.decks.validate || validationError === true) {
+				if (
+					!localSettings.decks.validate ||
+					validationError === DeckValidationError.Success
+				) {
 					continue;
 				}
 
 				let error: string;
 
 				switch (validationError) {
-					case "class": {
+					case DeckValidationError.Class: {
 						error = "You have a card from a different class in your deck";
 						break;
 					}
 
-					case "uncollectible": {
+					case DeckValidationError.Uncollectible: {
 						error = "You have an uncollectible card in your deck";
 						break;
 					}
 
-					case "runes": {
+					case DeckValidationError.Runes: {
 						error = "A card does not support your current runes";
 						break;
 					}
@@ -263,7 +263,8 @@ export const deckcodeFunctions = {
 			}
 
 			if (
-				(await Card.fromName(cardName, game.player))?.rarity === "Legendary" &&
+				(await Card.fromName(cardName, game.player))?.rarity ===
+					Rarity.Legendary &&
 				amount > localSettings.decks.maxOfOneLegendary
 			) {
 				errorcode = "legendary";
@@ -395,7 +396,7 @@ export const deckcodeFunctions = {
 
 			if (
 				copies > game.config.decks.maxOfOneLegendary &&
-				card.rarity === "Legendary"
+				card.rarity === Rarity.Legendary
 			) {
 				error = {
 					msg: "TooManyLegendaryCopies",
@@ -445,24 +446,25 @@ export const deckcodeFunctions = {
 		};
 
 		// List of vanilla heroes dbfIds
-		const vanillaHeroes: { [key in CardClass]?: number } = {
-			Warrior: 7,
-			Hunter: 31,
-			Druid: 274,
-			Mage: 637,
-			Paladin: 671,
-			Priest: 813,
-			Warlock: 893,
-			Rogue: 930,
-			Shaman: 1066,
-			"Demon Hunter": 56_550,
-			"Death Knight": 78_065,
+		const vanillaHeroes: { [key in Class]?: number } = {
+			[Class.Warrior]: 7,
+			[Class.Hunter]: 31,
+			[Class.Druid]: 274,
+			[Class.Mage]: 637,
+			[Class.Paladin]: 671,
+			[Class.Priest]: 813,
+			[Class.Warlock]: 893,
+			[Class.Rogue]: 930,
+			[Class.Shaman]: 1066,
+			[Class.DemonHunter]: 56_550,
+			[Class.DeathKnight]: 78_065,
 		};
 
 		const codeSplit = code.split(/[[/]/);
 		const heroClass = codeSplit[0].trim();
 
-		const heroClassId = vanillaHeroes[heroClass as CardClass];
+		const heroClassId =
+			vanillaHeroes[game.lodash.startCase(heroClass) as Class];
 		if (!heroClassId) {
 			throw new Error(`Invalid hero class: ${heroClass}`);
 		}
@@ -613,14 +615,14 @@ export const deckcodeFunctions = {
 		)?.cardClass;
 		let heroClassName = game.lodash.capitalize(
 			heroClass?.toString() ?? game.player2.heroClass,
-		) as CardClass;
+		) as string;
 
 		// Wtf hearthstone?
-		if (heroClassName === ("Deathknight" as CardClass)) {
+		if (heroClassName === "Deathknight") {
 			heroClassName = "Death Knight";
 		}
 
-		if (heroClassName === ("Demonhunter" as CardClass)) {
+		if (heroClassName === "Demonhunter") {
 			heroClassName = "Demon Hunter";
 		}
 
@@ -712,7 +714,7 @@ export const deckcodeFunctions = {
 		// Generate runes
 		let runes = "";
 
-		player.heroClass = heroClassName as CardClass;
+		player.heroClass = game.lodash.startCase(heroClassName) as Class;
 
 		if (player.canUseRunes()) {
 			for (const cardAmountObject of newDeck) {

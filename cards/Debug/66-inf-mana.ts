@@ -2,20 +2,29 @@
 
 import assert from "node:assert";
 import { Card } from "@Core/card.js";
-import type { Blueprint } from "@Game/types.js";
+import {
+	Ability,
+	type Blueprint,
+	Class,
+	Event,
+	GamePlayCardReturn,
+	Rarity,
+	SpellSchool,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Inf Mana",
 	text: "Fill up your mana. For the rest of the game, your mana never decreases.",
 	cost: 0,
-	type: "Spell",
-	classes: ["Neutral"],
-	rarity: "Free",
+	type: Type.Spell,
+	classes: [Class.Neutral],
+	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
 	id: 66,
 
-	spellSchool: "None",
+	spellSchool: SpellSchool.None,
 
 	async cast(owner, self) {
 		// Fill up your mana. For the rest of the game, your mana never decreases.
@@ -31,13 +40,13 @@ export const blueprint: Blueprint = {
 
 	async test(owner, self) {
 		owner.mana = 5;
-		await self.activate("cast");
+		await self.activate(Ability.Cast);
 
 		// The game hasn't ticked yet
 		assert.equal(owner.mana, 5);
 
 		// Manually tick the game
-		await game.event.tick("GameLoop", undefined, owner);
+		await game.event.tick(Event.GameLoop, undefined, owner);
 
 		assert.equal(owner.mana, 10);
 
@@ -45,7 +54,7 @@ export const blueprint: Blueprint = {
 		const card = await Card.create(game.cardIds.sheep1, owner);
 		const result = await game.play(card, owner);
 
-		assert.equal(result, true);
+		assert.equal(result, GamePlayCardReturn.Success);
 		assert.equal(owner.mana, 10);
 	},
 };

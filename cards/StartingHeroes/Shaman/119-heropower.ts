@@ -2,22 +2,29 @@
 
 import assert from "node:assert";
 import { Card, CardError } from "@Core/card.js";
-import type { Blueprint } from "@Game/types.js";
+import {
+	Ability,
+	type Blueprint,
+	CardTag,
+	Class,
+	Rarity,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Totemic Call",
 	text: "Summon a random basic Totem.",
 	cost: 2,
-	type: "Heropower",
-	classes: ["Shaman"],
-	rarity: "Free",
+	type: Type.HeroPower,
+	classes: [Class.Shaman],
+	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
 	id: 119,
 
 	async heropower(owner, self) {
 		// Filter away totem cards that is already on the player's side of the board.
-		const filteredTotemCards = (await Card.allWithTags(["totem"])).filter(
+		const filteredTotemCards = (await Card.allWithTags([CardTag.Totem])).filter(
 			(card) => !owner.board.some((c) => c.id === card.id),
 		);
 
@@ -38,7 +45,7 @@ export const blueprint: Blueprint = {
 	},
 
 	async test(owner, self) {
-		const totemCards = await Card.allWithTags(["totem"]);
+		const totemCards = await Card.allWithTags([CardTag.Totem]);
 		const checkForTotemCard = (amount: number) =>
 			owner.board.filter((card) =>
 				totemCards.map((c) => c.id).includes(card.id),
@@ -48,7 +55,7 @@ export const blueprint: Blueprint = {
 		assert(checkForTotemCard(0));
 
 		for (let index = 1; index <= totemCards.length + 1; index++) {
-			await self.activate("heropower");
+			await self.activate(Ability.HeroPower);
 
 			// If all totem cards are on the board, it shouldn't summon a new one
 			if (index > totemCards.length) {

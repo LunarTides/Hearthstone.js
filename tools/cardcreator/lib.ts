@@ -1,5 +1,5 @@
 import { createGame } from "@Core/game.js";
-import type { BlueprintWithOptional, CardType } from "@Game/types.js";
+import { type BlueprintWithOptional, Type } from "@Game/types.js";
 import { resumeTagParsing, stopTagParsing } from "chalk-tags";
 
 const { game } = createGame();
@@ -7,7 +7,12 @@ const { game } = createGame();
 // If this is set to true, this will force debug mode.
 const mainDebugSwitch = false;
 
-export type CcType = "Unknown" | "Class" | "Custom" | "Vanilla";
+export enum CCType {
+	Unknown = "Unknown",
+	Class = "Class",
+	Custom = "Custom",
+	Vanilla = "Vanilla",
+}
 
 /**
  * Returns the ability of a card based on its type.
@@ -21,28 +26,28 @@ function getCardAbility(blueprint: BlueprintWithOptional): string {
 
 	// If the card is a spell, the ability is 'cast'
 	switch (blueprint.type) {
-		case "Spell": {
+		case Type.Spell: {
 			ability = "Cast";
 			break;
 		}
 
-		case "Hero": {
+		case Type.Hero: {
 			ability = "Battlecry";
 			break;
 		}
 
-		case "Location": {
+		case Type.Location: {
 			ability = "Use";
 			break;
 		}
 
-		case "Heropower": {
+		case Type.HeroPower: {
 			ability = "Heropower";
 			break;
 		}
 
-		case "Minion":
-		case "Weapon": {
+		case Type.Minion:
+		case Type.Weapon: {
 			// Try to extract an ability from the card's description
 			const reg = /([A-Z][a-z].*?):/g;
 			const foundAbility = reg.exec(blueprint.text);
@@ -61,7 +66,7 @@ function getCardAbility(blueprint: BlueprintWithOptional): string {
 			break;
 		}
 
-		case "Undefined": {
+		case Type.Undefined: {
 			throw new Error("undefined type");
 		}
 
@@ -90,11 +95,11 @@ function generateCardPath(blueprint: BlueprintWithOptional): string {
 
 	// If the card has the word "Secret" in its description, put it in the ".../Secrets/..." folder.
 	if (blueprint.text.includes("Secret:")) {
-		type = "Secret" as CardType;
+		type = "Secret" as Type;
 	}
 
 	// If the type is Hero, we want the card to go to '.../Heroes/...' and not to '.../Heros/...'
-	const typeString = type === "Hero" ? "Heroe" : type;
+	const typeString = type === Type.Hero ? "Heroe" : type;
 
 	const collectibleString = blueprint.collectible
 		? "Collectible"
@@ -137,7 +142,7 @@ export function getLatestId(): number {
  * @returns The path of the created file.
  */
 export async function create(
-	creatorType: CcType,
+	creatorType: CCType,
 	blueprint: BlueprintWithOptional,
 	overridePath?: string,
 	overrideFilename?: string,
@@ -149,7 +154,7 @@ export async function create(
 	 */
 
 	// Validate
-	if (blueprint.type !== "Heropower") {
+	if (blueprint.type !== Type.HeroPower) {
 		const error = game.functions.card.validateBlueprint(blueprint);
 		if (error !== true) {
 			console.error(error);
@@ -173,7 +178,7 @@ export async function create(
 		extraPassiveCode = `
 
         // Only proceed if the correct event key was broadcast
-        if (key !== "") {
+        if (key !== Event.ChangeMe) {
             return;
         }
 
@@ -198,10 +203,16 @@ export async function create(
 	if (blueprint.keywords) {
 		for (const keyword of blueprint.keywords) {
 			// 8 spaces
-			keywords += `        self.addKeyword("${keyword}");\n`;
+			keywords += `        self.addKeyword(Keyword.${keyword});\n`;
 		}
+
+		// Remove the last newline.
+		keywords = keywords.slice(0, -1);
 	}
 
+	// Do this here because of the `blueprint.keywords = undefined` line below.
+	const keywordImport =
+		(blueprint.keywords?.length ?? 0) > 0 ? "\n\tKeyword," : "";
 	const createAbility = blueprint.text
 		? `
     async create(owner, self) {
@@ -255,12 +266,19 @@ ${runes}${keywords}
 		filename = `${id}-${overrideFilename}`;
 	}
 
+	let usesTags = false;
+
 	/*
 	 * Generate the content of the card
 	 * If the value is a string, put '"value"'. If it is not a string, put 'value'.
 	 */
 	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-	const getTypeValue = (value: any) => {
+	const getTypeValue = (key: string, value: any) => {
+		if (key === "id") {
+			// Id gets handled elsewhere.
+			return;
+		}
+
 		let returnValue = value;
 
 		/**
@@ -273,7 +291,16 @@ ${runes}${keywords}
 			returnValue = `[${value
 				.map((v: unknown) => {
 					if (typeof v === "string") {
-						return stringify(v);
+						switch (key) {
+							case "classes":
+								return `Class.${v.replaceAll(" ", "")}`;
+							case "tags":
+								usesTags = true;
+								return `CardTag.${v.replaceAll(" ", "")}`;
+
+							default:
+								return stringify(v);
+						}
 					}
 
 					return v;
@@ -283,39 +310,85 @@ ${runes}${keywords}
 
 		// If the value is a string, put "value"
 		if (typeof value === "string") {
-			returnValue = stringify(value);
+			switch (key) {
+				case "type":
+					returnValue = `Type.${value}`;
+					break;
+				case "rarity":
+					returnValue = `Rarity.${value}`;
+					break;
+
+				case "tribe":
+					returnValue = `MinionTribe.${value}`;
+					break;
+				case "spellSchool":
+					returnValue = `SpellSchool.${value}`;
+					break;
+
+				default:
+					returnValue = stringify(value);
+					break;
+			}
 		}
 
 		// Turn the value into a string.
-		if (returnValue) {
+		if (returnValue || returnValue === 0 || returnValue === false) {
 			return returnValue.toString();
 		}
 
 		return undefined;
 	};
 
-	// If the function is passive, add `EventValue` to the list of imports
-	const passiveImport = isPassive ? ", EventValue" : "";
-
 	// Add the key/value pairs to the content
 	const contentArray = Object.entries(blueprint).map((c) => {
-		const value = getTypeValue(c[1]);
+		const key = c[0].replaceAll('"', '\\"');
+		const value = getTypeValue(...c);
 		if (value === undefined) {
 			return "";
 		}
 
-		return `${c[0].replaceAll('"', '\\"')}: ${value},\n    `;
+		let returnValue = `${key}: ${value},\n\t`;
+		if (key === "tags") {
+			returnValue += `id: ${id},\n\n\t`;
+		}
+
+		return returnValue;
 	});
+
+	// If the function is passive, add `EventValue` to the list of imports
+	const passiveImport = isPassive ? "\n\tEvent,\n\ttype EventValue," : "";
+	const tagImport = usesTags ? "\n\tCardTag," : "";
+	let typeImport = "\n\t";
+
+	switch (blueprint.type) {
+		case Type.Minion:
+			typeImport += "MinionTribe,";
+			break;
+		case Type.Spell:
+			typeImport += "SpellSchool,";
+			break;
+		case Type.Weapon:
+		case Type.Location:
+		case Type.Hero:
+		case Type.HeroPower:
+		case Type.Undefined:
+			typeImport = "";
+			break;
+	}
 
 	// Add the content
 	const content = `// Created by the ${creatorType} Card Creator
 
 import assert from "node:assert";
-import type { Blueprint${passiveImport} } from "@Game/types.js";
+import {
+	type Blueprint,${tagImport}
+	Class,${passiveImport}${typeImport}${keywordImport}
+	Rarity,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
-    ${contentArray.join("")}id: ${id},
-${createAbility}${ability}
+    ${contentArray.join("")}${createAbility}${ability}
 };
 `;
 

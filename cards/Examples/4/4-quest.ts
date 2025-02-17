@@ -1,7 +1,17 @@
 // Created by Hand
 
 import type { Card } from "@Core/card.js";
-import type { Blueprint, EventValue } from "@Game/types.js";
+import {
+	type Blueprint,
+	Class,
+	Event,
+	EventListenerMessage,
+	type EventValue,
+	QuestType,
+	Rarity,
+	SpellSchool,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Quest Example",
@@ -10,14 +20,14 @@ export const blueprint: Blueprint = {
 	text: "Quest: Play 3 cards. Reward: Return those cards back to your hand.",
 
 	cost: 1,
-	type: "Spell",
-	classes: ["Neutral"],
-	rarity: "Free",
+	type: Type.Spell,
+	classes: [Class.Neutral],
+	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
 	id: 58,
 
-	spellSchool: "None",
+	spellSchool: SpellSchool.None,
 
 	async cast(owner, self) {
 		// Quest: Play 3 cards. Reward: Return those cards back to your hand.
@@ -34,13 +44,13 @@ export const blueprint: Blueprint = {
 		 *     the function to run for each event broadcast: Function(
 		 *         value of the event,
 		 *         if the quest is considered done,
-		 *     ) -> if the event should count towards the quest: bool
+		 *     ) -> a message to deliver to the event manager
 		 * );
 		 */
 		await owner.addQuest(
-			"Quest",
+			QuestType.Quest,
 			self,
-			"PlayCard",
+			Event.PlayCard,
 			3,
 			async (_unknownValue, done) => {
 				/*
@@ -49,7 +59,7 @@ export const blueprint: Blueprint = {
 				 */
 
 				// Get the value of the event
-				const value = _unknownValue as EventValue<"PlayCard">;
+				const value = _unknownValue as EventValue<Event.PlayCard>;
 
 				/*
 				 * Returning false will prevent this event from counting towards the quest
@@ -62,7 +72,7 @@ export const blueprint: Blueprint = {
 				 * which triggers this quest. So we need to prevent that event from counting towards the quest.
 				 */
 				if (value === self) {
-					return false;
+					return EventListenerMessage.Skip;
 				}
 
 				// Otherwise, add it to the cards array, and count it.
@@ -73,7 +83,7 @@ export const blueprint: Blueprint = {
 				 * Only return if the quest isn't considered done. It is considered done if the quest has been triggered enough times (in this case 3).
 				 */
 				if (!done) {
-					return true;
+					return EventListenerMessage.Success;
 				}
 
 				// The quest is done. The code above has been triggered 3 times in total.
@@ -96,10 +106,10 @@ export const blueprint: Blueprint = {
 				}
 
 				/*
-				 * Return true to count this event towards the quest
+				 * Return `Success` to count this event towards the quest
 				 * This finishes the quest
 				 */
-				return true;
+				return EventListenerMessage.Success;
 			},
 			// Put the id of a spell here to make a questline. When the quest gets completed, a card with that id gets created and the game immediately activates its cast ability.
 		);

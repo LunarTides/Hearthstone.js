@@ -1,20 +1,20 @@
 import { createGame } from "@Core/game.js";
-import type {
-	Blueprint,
-	BlueprintWithOptional,
-	CardClass,
-	CardKeyword,
-	CardRarity,
-	CardType,
+import {
+	type Blueprint,
+	type BlueprintWithOptional,
+	Class,
+	type Keyword,
 	MinionTribe,
+	Rarity,
 	SpellSchool,
+	Type,
 } from "@Game/types.js";
 import * as lib from "./lib.js";
 
 const { player1, game } = createGame();
 
 let shouldExit = false;
-let type: CardType;
+let type: Type;
 
 /**
  * Asks the user a question and returns the result.
@@ -44,16 +44,21 @@ function applyCard(_card: BlueprintWithOptional): Blueprint {
 		let [key, value] = entry;
 
 		// These are the required fields and their default values.
-		const defaults = {
+		const defaults: Blueprint = {
+			type: Type.Undefined,
 			name: "CHANGE THIS",
 			text: "",
 			cost: 0,
-			classes: ["Neutral"],
-			rarity: "Free",
+			classes: [Class.Neutral],
+			rarity: Rarity.Free,
+			collectible: false,
+			tags: [],
+			id: 0,
+
 			attack: 1,
 			health: 1,
-			tribe: "None",
-			spellSchool: "None",
+			tribe: MinionTribe.None,
+			spellSchool: SpellSchool.None,
 			armor: 5,
 			heropowerId: game.cardIds.null0,
 			durability: 2,
@@ -93,20 +98,32 @@ async function common(): Promise<BlueprintWithOptional> {
 	const name = await input("Name: ");
 	const text = await input("Text: ");
 	const cost = game.lodash.parseInt(await input("Cost: "));
-	const classes = (await input("Classes: ")) as CardClass;
-	const rarity = (await input("Rarity: ")) as CardRarity;
+	const classes = await input("Classes: ");
+	const rarity = game.lodash.startCase(await input("Rarity: ")) as Rarity;
 	const keywords = await input("Keywords: ");
 
-	player1.heroClass = classes;
-
-	let runes = "";
-	if (player1.canUseRunes()) {
-		runes = await input("Runes: ");
+	let realClasses: Class[] = [];
+	if (classes) {
+		realClasses = classes
+			.split(", ")
+			.map((k) => game.lodash.startCase(k) as Class);
 	}
 
-	let realKeywords: CardKeyword[] | undefined;
+	let realKeywords: Keyword[] | undefined;
 	if (keywords) {
-		realKeywords = keywords.split(", ") as CardKeyword[];
+		realKeywords = keywords
+			.split(", ")
+			.map((k) => game.lodash.startCase(k) as Keyword);
+	}
+
+	let runes = "";
+	for (const c of realClasses) {
+		player1.heroClass = c;
+
+		if (player1.canUseRunes()) {
+			runes = await input("Runes: ");
+			break;
+		}
 	}
 
 	return {
@@ -114,7 +131,7 @@ async function common(): Promise<BlueprintWithOptional> {
 		text,
 		cost,
 		type,
-		classes: [classes],
+		classes: realClasses,
 		rarity,
 		runes,
 		keywords: realKeywords,
@@ -124,13 +141,15 @@ async function common(): Promise<BlueprintWithOptional> {
 	};
 }
 
-const cardTypeFunctions: { [x in CardType]: () => Promise<Blueprint> } = {
+const cardTypeFunctions: {
+	[x in Type]: () => Promise<Blueprint>;
+} = {
 	async Minion(): Promise<Blueprint> {
 		const card = await common();
 
 		const attack = game.lodash.parseInt(await input("Attack: "));
 		const health = game.lodash.parseInt(await input("Health: "));
-		const tribe = (await input("Tribe: ")) as MinionTribe;
+		const tribe = game.lodash.startCase(await input("Tribe: ")) as MinionTribe;
 
 		return applyCard({
 			...card,
@@ -143,7 +162,9 @@ const cardTypeFunctions: { [x in CardType]: () => Promise<Blueprint> } = {
 	async Spell(): Promise<Blueprint> {
 		const card = await common();
 
-		const spellSchool = (await input("Spell School: ")) as SpellSchool;
+		const spellSchool = game.lodash.startCase(
+			await input("Spell School: "),
+		) as SpellSchool;
 
 		return applyCard({
 			...card,
@@ -167,17 +188,24 @@ const cardTypeFunctions: { [x in CardType]: () => Promise<Blueprint> } = {
 	async Hero(): Promise<Blueprint> {
 		const card = await common();
 
-		const armor = game.lodash.parseInt(await input("Armor (Default: 5):")) ?? 5;
+		const armor =
+			game.lodash.parseInt(await input("Armor (Default: 5): ")) ?? 5;
+		const heropowerId =
+			game.lodash.parseInt(
+				await input("Hero Power ID (Leave blank to create a new one): "),
+			) ?? 0;
 
-		console.log("\n<green bold>Make the Hero Power:<green bold>\n");
-		if (!(await main())) {
-			throw new Error("Failed to create hero power");
+		if (heropowerId === 0) {
+			console.log("\n<green bold>Make the Hero Power:<green bold>\n");
+			if (!(await main())) {
+				throw new Error("Failed to create hero power");
+			}
 		}
 
 		return applyCard({
 			...card,
 			armor,
-			heropowerId: lib.getLatestId(),
+			heropowerId: heropowerId || lib.getLatestId(),
 		});
 	},
 
@@ -200,7 +228,7 @@ const cardTypeFunctions: { [x in CardType]: () => Promise<Blueprint> } = {
 		});
 	},
 
-	async Heropower(): Promise<Blueprint> {
+	async HeroPower(): Promise<Blueprint> {
 		const card = await common();
 
 		return applyCard(card);
@@ -219,7 +247,7 @@ const cardTypeFunctions: { [x in CardType]: () => Promise<Blueprint> } = {
  */
 export async function main(
 	debug = false,
-	overrideType?: lib.CcType,
+	overrideType?: lib.CCType,
 ): Promise<string | false> {
 	// Reset the shouldExit switch so that the program doesn't immediately exit when the user enters the ccc, exits, then enters ccc again
 	shouldExit = false;
@@ -228,9 +256,13 @@ export async function main(
 	console.log("type 'back' at any step to cancel.\n");
 
 	// Ask the user for the type of card they want to make
-	type = game.lodash.startCase(await input("Type: ")) as CardType;
+	type = game.lodash.startCase(await input("Type: ")) as Type;
 	if (shouldExit) {
 		return false;
+	}
+
+	if (type === ("Heropower" as Type) || type === ("Hero Power" as Type)) {
+		type = Type.HeroPower;
 	}
 
 	if (!Object.keys(cardTypeFunctions).includes(type)) {
@@ -256,7 +288,7 @@ export async function main(
 	// Actually create the card
 	console.log("Creating file...");
 
-	let cctype: lib.CcType = "Custom";
+	let cctype: lib.CCType = lib.CCType.Custom;
 	if (overrideType) {
 		cctype = overrideType;
 	}

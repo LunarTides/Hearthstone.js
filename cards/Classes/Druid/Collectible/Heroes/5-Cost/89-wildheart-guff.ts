@@ -1,15 +1,15 @@
 // Created by the Vanilla Card Creator
 
 import assert from "node:assert";
-import type { Blueprint } from "@Game/types.js";
+import { Ability, type Blueprint, Class, Rarity, Type } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Wildheart Guff",
 	text: "<b>Battlecry:</b> Set your maximum Mana to 20. Gain an empty Mana Crystal. Draw a card.",
 	cost: 5,
-	type: "Hero",
-	classes: ["Druid"],
-	rarity: "Legendary",
+	type: Type.Hero,
+	classes: [Class.Druid],
+	rarity: Rarity.Legendary,
 	collectible: true,
 	tags: [],
 	id: 89,
@@ -31,7 +31,7 @@ export const blueprint: Blueprint = {
 		// Update if changing the default max mana.
 		assert.equal(owner.maxMana, 10);
 
-		await self.activate("battlecry");
+		await self.activate(Ability.Battlecry);
 
 		assert.equal(owner.maxMana, 20);
 		assert.equal(owner.emptyMana, emptyMana + 1);

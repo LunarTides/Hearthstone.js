@@ -2,21 +2,28 @@
 
 import assert from "node:assert";
 import { Card } from "@Core/card.js";
-import type { Blueprint } from "@Game/types.js";
+import {
+	Ability,
+	type Blueprint,
+	Class,
+	Rarity,
+	SpellSchool,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	// Look in `titan.ts` first.
 	name: "Ability 1",
 	text: "Destroy a random enemy minion.",
 	cost: 0,
-	type: "Spell",
-	classes: ["Neutral"],
-	rarity: "Free",
+	type: Type.Spell,
+	classes: [Class.Neutral],
+	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
 	id: 79,
 
-	spellSchool: "None",
+	spellSchool: SpellSchool.None,
 
 	async cast(owner, self) {
 		// Destroy a random enemy minion.
@@ -49,7 +56,7 @@ export const blueprint: Blueprint = {
 		await opponent.summon(sheep);
 
 		// Kill the sheep
-		await self.activate("cast");
+		await self.activate(Ability.Cast);
 
 		// Check if the sheep is dead
 		assert.equal(owner.board.length, 0);

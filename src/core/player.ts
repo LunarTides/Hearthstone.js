@@ -1,13 +1,17 @@
 import type { Ai } from "@Core/ai.js";
 import { Card } from "@Core/card.js";
 
-import type {
-	CardClass,
-	CardType,
-	EventKey,
-	QuestCallback,
+import {
+	Ability,
+	CardTag,
+	Class,
+	Event,
+	Keyword,
+	type QuestCallback,
+	type QuestObject,
 	QuestType,
-	Target,
+	type Target,
+	Type,
 } from "@Game/types.js";
 
 export class Player {
@@ -178,7 +182,7 @@ export class Player {
 	 * assert.equal(player.hero.name, "Priest Starting Hero");
 	 *
 	 * // Activate the hero's hero power. (`Restore 2 Health.`)
-	 * await player.hero.activate("heropower");
+	 * await player.hero.activate(Ability.Heropower);
 	 * ```
 	 */
 	hero: Card;
@@ -186,7 +190,7 @@ export class Player {
 	/**
 	 * The class the player is. This is set to either: Mage, Priest, Warlock, Warrior, ...
 	 */
-	heroClass: CardClass = "Mage";
+	heroClass = Class.Mage;
 
 	/**
 	 * If the player can use their hero power.
@@ -246,22 +250,22 @@ export class Player {
 	 *
 	 * If this player's counter includes "Minion", and this player plays a Minion, it gets countered.
 	 */
-	counter: CardType[] = [];
+	counter: Type[] = [];
 
 	/**
 	 * The secrets that the player has.
 	 */
-	secrets: QuestType[] = [];
+	secrets: QuestObject[] = [];
 
 	/**
 	 * The sidequests that the player has.
 	 */
-	sidequests: QuestType[] = [];
+	sidequests: QuestObject[] = [];
 
 	/**
 	 * The quest that the player has.
 	 */
-	quests: QuestType[] = [];
+	quests: QuestObject[] = [];
 
 	/**
 	 * How much attack/health (+1) the player's next jade golem will have.
@@ -481,7 +485,7 @@ export class Player {
 	async addOverload(overload: number): Promise<boolean> {
 		this.overload += overload;
 
-		await game.event.broadcast("GainOverload", overload, this);
+		await game.event.broadcast(Event.GainOverload, overload, this);
 		return true;
 	}
 
@@ -530,7 +534,7 @@ export class Player {
 			return false;
 		}
 
-		await this.weapon.activate("deathrattle");
+		await this.weapon.activate(Ability.Deathrattle);
 		this.attack -= this.weapon.attack ?? 0;
 
 		await this.weapon.destroy();
@@ -563,7 +567,7 @@ export class Player {
 	async addAttack(amount: number): Promise<boolean> {
 		this.attack += amount;
 
-		await game.event.broadcast("GainHeroAttack", amount, this);
+		await game.event.broadcast(Event.GainHeroAttack, amount, this);
 		return true;
 	}
 
@@ -617,10 +621,10 @@ export class Player {
 
 		this.health -= actualAmount;
 
-		await game.event.broadcast("TakeDamage", actualAmount, this);
+		await game.event.broadcast(Event.TakeDamage, actualAmount, this);
 
 		if (!this.isAlive()) {
-			await game.event.broadcast("FatalDamage", undefined, this);
+			await game.event.broadcast(Event.FatalDamage, undefined, this);
 
 			// This is done to allow secrets to prevent death
 			if (!this.isAlive()) {
@@ -664,7 +668,7 @@ export class Player {
 		this.deck.push(card);
 		this.shuffleDeck();
 
-		await game.event.broadcast("AddCardToDeck", card, this);
+		await game.event.broadcast(Event.AddCardToDeck, card, this);
 		return true;
 	}
 
@@ -679,7 +683,7 @@ export class Player {
 	async addToBottomOfDeck(card: Card): Promise<boolean> {
 		this.deck.unshift(card);
 
-		await game.event.broadcast("AddCardToDeck", card, this);
+		await game.event.broadcast(Event.AddCardToDeck, card, this);
 		return true;
 	}
 
@@ -693,7 +697,7 @@ export class Player {
 	async drawCards(amount: number): Promise<Card[]> {
 		const cards: Card[] = [];
 
-		const unsuppress = game.event.suppress("AddCardToHand");
+		const unsuppress = game.event.suppress(Event.AddCardToHand);
 
 		let drawAmount = amount;
 		for (let i = 0; i < drawAmount; i++) {
@@ -711,16 +715,16 @@ export class Player {
 
 			// Cast on draw
 			if (
-				card.type === "Spell" &&
-				card.hasKeyword("Cast On Draw") &&
-				(await card.activate("cast"))
+				card.type === Type.Spell &&
+				card.hasKeyword(Keyword.CastOnDraw) &&
+				(await card.activate(Ability.Cast))
 			) {
 				drawAmount += 1;
 				continue;
 			}
 
 			// Summon on draw
-			if (card.hasKeyword("Summon On Draw") && card.canBeOnBoard()) {
+			if (card.hasKeyword(Keyword.SummonOnDraw) && card.canBeOnBoard()) {
 				await this.summon(card);
 
 				drawAmount += 1;
@@ -728,7 +732,7 @@ export class Player {
 			}
 
 			await this.addToHand(card);
-			await game.event.broadcast("DrawCard", card, this);
+			await game.event.broadcast(Event.DrawCard, card, this);
 			cards.push(card);
 		}
 
@@ -769,18 +773,18 @@ export class Player {
 		game.functions.util.remove(this.deck, card);
 
 		if (
-			card.type === "Spell" &&
-			card.hasKeyword("Cast On Draw") &&
-			(await card.activate("cast"))
+			card.type === Type.Spell &&
+			card.hasKeyword(Keyword.CastOnDraw) &&
+			(await card.activate(Ability.Cast))
 		) {
 			return undefined;
 		}
 
-		await game.event.withSuppressed("AddCardToHand", async () =>
+		await game.event.withSuppressed(Event.AddCardToHand, async () =>
 			this.addToHand(card),
 		);
 
-		await game.event.broadcast("DrawCard", card, this);
+		await game.event.broadcast(Event.DrawCard, card, this);
 		return card;
 	}
 
@@ -799,7 +803,7 @@ export class Player {
 
 		this.hand.push(card);
 
-		await game.event.broadcast("AddCardToHand", card, this);
+		await game.event.broadcast(Event.AddCardToHand, card, this);
 		return true;
 	}
 
@@ -834,9 +838,9 @@ export class Player {
 		const heroCardId = (
 			await Promise.all(
 				(
-					await Card.allWithTags(["starting_hero"])
+					await Card.allWithTags([CardTag.StartingHero])
 				).map(async (hero) => {
-					const unsuppress = game.event.suppress("CreateCard");
+					const unsuppress = game.event.suppress(Event.CreateCard);
 					const card = await hero.imperfectCopy();
 					unsuppress();
 
@@ -868,18 +872,20 @@ export class Player {
 			return false;
 		}
 
-		if ((await this.hero.heropower?.activate("heropower")) === Card.REFUND) {
+		if (
+			(await this.hero.heropower?.activate(Ability.HeroPower)) === Card.REFUND
+		) {
 			return Card.REFUND;
 		}
 
 		for (const card of this.board) {
-			await card.activate("inspire");
+			await card.activate(Ability.Inspire);
 		}
 
 		this.mana -= this.hero.heropower?.cost ?? 0;
 		this.hasUsedHeroPowerThisTurn = true;
 
-		await game.event.broadcast("HeroPower", this.hero.heropower, this);
+		await game.event.broadcast(Event.HeroPower, this.hero.heropower, this);
 		return true;
 	}
 
@@ -912,14 +918,14 @@ export class Player {
 	 * @returns Whether or not the player can use corpses
 	 */
 	canUseCorpses(): boolean {
-		return ["Death Knight"].includes(this.heroClass);
+		return [Class.DeathKnight].includes(this.heroClass);
 	}
 
 	/**
 	 * @returns Whether or not the player can use runes
 	 */
 	canUseRunes(): boolean {
-		return ["Death Knight"].includes(this.heroClass);
+		return [Class.DeathKnight].includes(this.heroClass);
 	}
 
 	/**
@@ -1032,13 +1038,13 @@ export class Player {
 
 			game.functions.util.remove(mulligan, card);
 
-			await game.event.withSuppressed("DrawCard", async () =>
+			await game.event.withSuppressed(Event.DrawCard, async () =>
 				this.drawCards(1),
 			);
-			await game.event.withSuppressed("AddCardToDeck", async () =>
+			await game.event.withSuppressed(Event.AddCardToDeck, async () =>
 				this.shuffleIntoDeck(card),
 			);
-			await game.event.withSuppressed("DiscardCard", async () =>
+			await game.event.withSuppressed(Event.DiscardCard, async () =>
 				card.discard(),
 			);
 
@@ -1145,27 +1151,27 @@ export class Player {
 	 * @returns Success
 	 */
 	async addQuest(
-		type: "Quest" | "Sidequest" | "Secret",
+		type: QuestType,
 		card: Card,
-		key: EventKey,
+		key: Event,
 		amount: number,
 		callback: QuestCallback,
 		next?: number,
 	): Promise<boolean> {
-		let quests: QuestType[];
+		let quests: QuestObject[];
 
 		switch (type) {
-			case "Quest": {
+			case QuestType.Quest: {
 				quests = this.quests;
 				break;
 			}
 
-			case "Sidequest": {
+			case QuestType.Sidequest: {
 				quests = this.sidequests;
 				break;
 			}
 
-			case "Secret": {
+			case QuestType.Secret: {
 				quests = this.secrets;
 				break;
 			}
@@ -1176,9 +1182,8 @@ export class Player {
 		}
 
 		if (
-			(type.toLowerCase() === "quest" && quests.length > 0) ||
-			((type.toLowerCase() === "secret" ||
-				type.toLowerCase() === "sidequest") &&
+			(type === QuestType.Quest && quests.length > 0) ||
+			((type === QuestType.Secret || type === QuestType.Sidequest) &&
 				(quests.length >= 3 || quests.some((s) => s.name === card.name)))
 		) {
 			await this.addToHand(card);
@@ -1203,14 +1208,14 @@ export class Player {
 	 * @returns Success
 	 */
 	async invoke(): Promise<boolean> {
-		const isCurrentlyGalakrond = this.hero.tags.includes("galakrond");
+		const isCurrentlyGalakrond = this.hero.tags.includes(CardTag.Galakrond);
 
 		const hasGalakrondInDeck = this.deck.find((c) =>
-			c.tags.includes("galakrond"),
+			c.tags.includes(CardTag.Galakrond),
 		);
 
 		const hasGalakrondInHand = this.hand.find((c) =>
-			c.tags.includes("galakrond"),
+			c.tags.includes(CardTag.Galakrond),
 		);
 
 		if (!hasGalakrondInDeck && !hasGalakrondInHand && !isCurrentlyGalakrond) {
@@ -1218,23 +1223,23 @@ export class Player {
 		}
 
 		for (const card of this.deck) {
-			await card.activate("invoke");
+			await card.activate(Ability.Invoke);
 		}
 
 		for (const card of this.hand) {
-			await card.activate("invoke");
+			await card.activate(Ability.Invoke);
 		}
 
 		for (const card of this.board) {
-			await card.activate("invoke");
+			await card.activate(Ability.Invoke);
 		}
 
 		if (isCurrentlyGalakrond) {
-			await this.hero.heropower?.activate("cast");
+			await this.hero.heropower?.activate(Ability.Cast);
 		} else if (hasGalakrondInDeck) {
-			await hasGalakrondInDeck.heropower?.activate("cast");
+			await hasGalakrondInDeck.heropower?.activate(Ability.Cast);
 		} else if (hasGalakrondInHand) {
-			await hasGalakrondInHand.heropower?.activate("cast");
+			await hasGalakrondInHand.heropower?.activate(Ability.Cast);
 		}
 
 		return true;
@@ -1255,7 +1260,7 @@ export class Player {
 	): Promise<Card[]> {
 		const recruitList = game.lodash
 			.shuffle([...list])
-			.filter((c) => c.type === "Minion" && filterPredicate(c));
+			.filter((c) => c.type === Type.Minion && filterPredicate(c));
 
 		let times = 0;
 		const cards: Card[] = [];
@@ -1327,8 +1332,8 @@ export class Player {
 		this.getOpponent().shuffleDeck();
 
 		// Reveal them to both players
-		await game.event.broadcast("RevealCard", [friendlyCard, "Joust"], this);
-		await game.event.broadcast("RevealCard", [enemyCard, "Joust"], this);
+		await game.event.broadcast(Event.RevealCard, [friendlyCard, "Joust"], this);
+		await game.event.broadcast(Event.RevealCard, [enemyCard, "Joust"], this);
 
 		console.log("\n--- JOUST ---");
 		console.log("Yours: %s", await friendlyCard.readable());
@@ -1377,7 +1382,7 @@ export class Player {
 			return;
 		}
 
-		const list = await Card.allWithTags(["diy"]);
+		const list = await Card.allWithTags([CardTag.DIY]);
 
 		const card = game.lodash.sample(list);
 		if (!card) {

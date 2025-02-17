@@ -1,11 +1,18 @@
 import readline from "node:readline/promises";
 import { format } from "node:util";
-import type {
+import {
+	Ability,
+	CostType,
+	Event,
+	GameAttackReturn,
 	GamePlayCardReturn,
-	SelectTargetAlignment,
-	SelectTargetClass,
-	SelectTargetFlag,
-	Target,
+	Keyword,
+	type Target,
+	TargetAlignment,
+	TargetClass,
+	TargetFlag,
+	Type,
+	UseLocationError,
 } from "@Game/types.js";
 import { parseTags } from "chalk-tags";
 import type { Ai } from "../ai.js";
@@ -240,13 +247,13 @@ const prompt = {
 	async targetPlayer(
 		prompt: string,
 		card: Card | undefined,
-		flags: SelectTargetFlag[] = [],
+		flags: TargetFlag[] = [],
 	): Promise<Player | null> {
 		return (await this.target(
 			prompt,
 			card,
-			"any",
-			"hero",
+			TargetAlignment.Any,
+			TargetClass.Player,
 			flags,
 		)) as Player | null;
 	},
@@ -259,14 +266,14 @@ const prompt = {
 	async targetCard(
 		prompt: string,
 		card: Card | undefined,
-		side: SelectTargetAlignment,
-		flags: SelectTargetFlag[] = [],
+		side: TargetAlignment,
+		flags: TargetFlag[] = [],
 	): Promise<Card | null> {
 		return (await this.target(
 			prompt,
 			card,
 			side,
-			"minion",
+			TargetClass.Card,
 			flags,
 		)) as Card | null;
 	},
@@ -288,12 +295,12 @@ const prompt = {
 	async target(
 		prompt: string,
 		card: Card | undefined,
-		forceSide: SelectTargetAlignment,
-		forceClass: SelectTargetClass,
-		flags: SelectTargetFlag[] = [],
+		forceSide: TargetAlignment,
+		forceClass: TargetClass,
+		flags: TargetFlag[] = [],
 	): Promise<Target | null> {
 		await game.event.broadcast(
-			"TargetSelectionStarts",
+			Event.TargetSelectionStarts,
 			[prompt, card, forceSide, forceClass, flags],
 			game.player,
 		);
@@ -307,7 +314,11 @@ const prompt = {
 		);
 
 		if (target) {
-			await game.event.broadcast("TargetSelected", [card, target], game.player);
+			await game.event.broadcast(
+				Event.TargetSelected,
+				[card, target],
+				game.player,
+			);
 		}
 
 		return target;
@@ -319,9 +330,9 @@ const prompt = {
 	async _target(
 		prompt: string,
 		card: Card | undefined,
-		forceSide: SelectTargetAlignment,
-		forceClass: SelectTargetClass,
-		flags: SelectTargetFlag[] = [],
+		forceSide: TargetAlignment,
+		forceClass: TargetClass,
+		flags: TargetFlag[] = [],
 	): Promise<Target | null> {
 		// If the player is forced to select a target, select that target.
 		if (game.player.forceTarget) {
@@ -357,14 +368,14 @@ const prompt = {
 			);
 		}
 
-		// If the player is forced to select a hero
-		if (forceClass === "hero") {
-			// You shouldn't really force a side while forcing a hero, but it should still work
-			if (forceSide === "enemy") {
+		// If the player is forced to select a player
+		if (forceClass === TargetClass.Player) {
+			// You shouldn't really force a side while forcing a player, but it should still work
+			if (forceSide === TargetAlignment.Enemy) {
 				return game.opponent;
 			}
 
-			if (forceSide === "friendly") {
+			if (forceSide === TargetAlignment.Friendly) {
 				return game.player;
 			}
 
@@ -378,14 +389,15 @@ const prompt = {
 		/*
 		 * From this point, forceClass is either
 		 * 1. any
-		 * 2. minion
+		 * 2. card
 		 */
 
 		// Ask the player to choose a target.
 		let p = `\n${newPrompt} (`;
-		if (forceClass === "any") {
-			let possibleHeroes = forceSide === "enemy" ? "the enemy" : "your";
-			possibleHeroes = forceSide === "any" ? "a" : possibleHeroes;
+		if (forceClass === TargetClass.Any) {
+			let possibleHeroes =
+				forceSide === TargetAlignment.Enemy ? "the enemy" : "your";
+			possibleHeroes = forceSide === TargetAlignment.Any ? "a" : possibleHeroes;
 
 			p += `type 'face' to select ${possibleHeroes} hero | `;
 		}
@@ -400,9 +412,15 @@ const prompt = {
 			return null;
 		}
 
-		// If the player chose to target a hero, it will ask which hero.
-		if (target.startsWith("face") && forceClass !== "minion") {
-			return this._target(newPrompt, card, forceSide, "hero", flags);
+		// If the player chose to target a player, it will ask which player.
+		if (target.startsWith("face") && forceClass !== TargetClass.Card) {
+			return this._target(
+				newPrompt,
+				card,
+				forceSide,
+				TargetClass.Player,
+				flags,
+			);
 		}
 
 		// From this point, the player has chosen a minion.
@@ -428,7 +446,7 @@ const prompt = {
 			return this._target(newPrompt, card, forceSide, forceClass, flags);
 		}
 
-		if (forceSide === "any") {
+		if (forceSide === TargetAlignment.Any) {
 			/*
 			 * If both players have a minion with the same index,
 			 * ask them which minion to select
@@ -470,7 +488,9 @@ const prompt = {
 			 * Select the minion on the correct side of the board.
 			 */
 			minion =
-				forceSide === "enemy" ? boardOpponentTarget : boardFriendlyTarget;
+				forceSide === TargetAlignment.Enemy
+					? boardOpponentTarget
+					: boardFriendlyTarget;
 		}
 
 		// If you didn't select a valid minion, return.
@@ -481,10 +501,10 @@ const prompt = {
 
 		// If the minion has elusive, and the card that called this function is a spell
 		if (
-			(card?.type === "Spell" ||
-				card?.type === "Heropower" ||
-				flags.includes("forceElusive")) &&
-			minion.hasKeyword("Elusive")
+			(card?.type === Type.Spell ||
+				card?.type === Type.HeroPower ||
+				flags.includes(TargetFlag.ForceElusive)) &&
+			minion.hasKeyword(Keyword.Elusive)
 		) {
 			await game.pause(
 				"<red>Can't be targeted by Spells or Hero Powers.</red>\n",
@@ -493,13 +513,16 @@ const prompt = {
 		}
 
 		// If the minion has stealth, don't allow the opponent to target it.
-		if (minion.hasKeyword("Stealth") && game.player !== minion.owner) {
+		if (minion.hasKeyword(Keyword.Stealth) && game.player !== minion.owner) {
 			await game.pause("<red>This minion has stealth.</red>\n");
 			return null;
 		}
 
 		// If the minion is a location, don't allow it to be selected unless the `allowLocations` flag was set.
-		if (minion.type === "Location" && !flags.includes("allowLocations")) {
+		if (
+			minion.type === Type.Location &&
+			!flags.includes(TargetFlag.AllowLocations)
+		) {
 			await game.pause("<red>You cannot target location cards.</red>\n");
 			return null;
 		}
@@ -512,35 +535,33 @@ const prompt = {
 	 *
 	 * @returns Success
 	 */
-	async useLocation(): Promise<
-		boolean | "nolocations" | "invalidtype" | "cooldown" | "refund"
-	> {
-		const locations = game.player.board.filter((m) => m.type === "Location");
+	async useLocation(): Promise<UseLocationError> {
+		const locations = game.player.board.filter((m) => m.type === Type.Location);
 		if (locations.length <= 0) {
-			return "nolocations";
+			return UseLocationError.NoLocationsFound;
 		}
 
 		const location = await this.targetCard(
 			"Which location do you want to use?",
 			undefined,
-			"friendly",
-			["allowLocations"],
+			TargetAlignment.Friendly,
+			[TargetFlag.AllowLocations],
 		);
 
 		if (!location) {
-			return "refund";
+			return UseLocationError.Refund;
 		}
 
-		if (location.type !== "Location") {
-			return "invalidtype";
+		if (location.type !== Type.Location) {
+			return UseLocationError.InvalidType;
 		}
 
 		if (location.cooldown && location.cooldown > 0) {
-			return "cooldown";
+			return UseLocationError.Cooldown;
 		}
 
-		if ((await location.activate("use")) === Card.REFUND) {
-			return "refund";
+		if ((await location.activate(Ability.Use)) === Card.REFUND) {
+			return UseLocationError.Refund;
 		}
 
 		if (location.durability === undefined) {
@@ -549,7 +570,7 @@ const prompt = {
 
 		location.durability -= 1;
 		location.cooldown = location.backups.init.cooldown;
-		return true;
+		return UseLocationError.Success;
 	},
 
 	/**
@@ -752,8 +773,8 @@ const prompt = {
 			attacker = await this.target(
 				"Which minion do you want to attack with?",
 				undefined,
-				"friendly",
-				"any",
+				TargetAlignment.Friendly,
+				TargetClass.Any,
 			);
 
 			if (!attacker) {
@@ -763,8 +784,8 @@ const prompt = {
 			target = await this.target(
 				"Which minion do you want to attack?",
 				undefined,
-				"enemy",
-				"any",
+				TargetAlignment.Enemy,
+				TargetClass.Any,
 			);
 
 			if (!target) {
@@ -774,70 +795,70 @@ const prompt = {
 
 		const errorCode = await game.attack(attacker, target);
 
-		const ignore = ["divineshield"];
-		if (errorCode === true || ignore.includes(errorCode)) {
+		const ignore = [GameAttackReturn.DivineShield];
+		if (errorCode === GameAttackReturn.Success || ignore.includes(errorCode)) {
 			return true;
 		}
 
 		let error: string;
 
 		switch (errorCode) {
-			case "taunt": {
+			case GameAttackReturn.Taunt: {
 				error = "There is a minion with taunt in the way";
 				break;
 			}
 
-			case "stealth": {
+			case GameAttackReturn.Stealth: {
 				error = "That minion has stealth";
 				break;
 			}
 
-			case "frozen": {
+			case GameAttackReturn.Frozen: {
 				error = "That minion is frozen";
 				break;
 			}
 
-			case "playernoattack": {
+			case GameAttackReturn.PlayerNoAttack: {
 				error = "You don't have any attack";
 				break;
 			}
 
-			case "noattack": {
+			case GameAttackReturn.CardNoAttack: {
 				error = "That minion has no attack";
 				break;
 			}
 
-			case "playerhasattacked": {
+			case GameAttackReturn.PlayerHasAttacked: {
 				error = "Your hero has already attacked this turn";
 				break;
 			}
 
-			case "hasattacked": {
+			case GameAttackReturn.CardHasAttacked: {
 				error = "That minion has already attacked this turn";
 				break;
 			}
 
-			case "sleepy": {
+			case GameAttackReturn.Sleepy: {
 				error = "That minion is exhausted";
 				break;
 			}
 
-			case "cantattackhero": {
+			case GameAttackReturn.CantAttackHero: {
 				error = "That minion cannot attack heroes";
 				break;
 			}
 
-			case "immune": {
+			case GameAttackReturn.Immune: {
 				error = "That minion is immune";
 				break;
 			}
 
-			case "dormant": {
+			case GameAttackReturn.Dormant: {
 				error = "That minion is dormant";
 				break;
 			}
 
-			case "titan": {
+			case GameAttackReturn.Titan: {
 				error = "That minion has titan abilities that hasn't been used";
 				break;
 			}
@@ -883,7 +904,7 @@ const print = {
 			);
 		}
 
-		if (game.time.events.anniversary) {
+		if (game.isEventActive("anniversary")) {
 			console.log(
 				`\n<b>[${game.time.year - 2022} YEAR ANNIVERSARY! Enjoy some fun-facts about Hearthstone.js!]</b>`,
 			);
@@ -1053,7 +1074,7 @@ const print = {
 
 		console.log(wallify(finished));
 
-		if (game.time.events.anniversary) {
+		if (game.isEventActive("anniversary")) {
 			console.log(
 				"<i>[Anniversary: The code for the stats above was rewritten 3 times in total]</i>",
 			);
@@ -1175,7 +1196,7 @@ export const interactFunctions = {
 		let question = q;
 
 		const wrapper = async (a: string) => {
-			await game.event.broadcast("Input", a, game.player);
+			await game.event.broadcast(Event.Input, a, game.player);
 			return a;
 		};
 
@@ -1329,18 +1350,18 @@ export const interactFunctions = {
 	 */
 	async _gameloopHandleInput(input: string): Promise<GamePlayCardReturn> {
 		if ((await this.processCommand(input)) !== -1) {
-			return true;
+			return GamePlayCardReturn.Success;
 		}
 
 		const parsedInput = game.lodash.parseInt(input);
 
 		const card = game.player.hand[parsedInput - 1];
 		if (!card) {
-			return "invalid";
+			return GamePlayCardReturn.Invalid;
 		}
 
 		if (parsedInput === game.player.hand.length || parsedInput === 1) {
-			await card.activate("outcast");
+			await card.activate(Ability.Outcast);
 		}
 
 		return game.play(card, game.player);
@@ -1354,7 +1375,7 @@ export const interactFunctions = {
 	 * @returns Success | Ignored error code | The return value of doTurnLogic
 	 */
 	async gameloop(): Promise<boolean | string | GamePlayCardReturn> {
-		await game.event.tick("GameLoop", "doTurn", game.player);
+		await game.event.tick(Event.GameLoop, "doTurn", game.player);
 
 		if (game.player.ai) {
 			const rawInput = game.player.ai.calcMove();
@@ -1369,7 +1390,7 @@ export const interactFunctions = {
 
 			const turn = await this._gameloopHandleInput(input);
 
-			await game.event.broadcast("Input", input, game.player);
+			await game.event.broadcast(Event.Input, input, game.player);
 			return turn;
 		}
 
@@ -1386,7 +1407,7 @@ export const interactFunctions = {
 		const returnValue = await this._gameloopHandleInput(user);
 
 		// If there were no errors, return true.
-		if (returnValue === true) {
+		if (returnValue === GamePlayCardReturn.Success) {
 			return returnValue;
 		}
 
@@ -1394,39 +1415,36 @@ export const interactFunctions = {
 
 		// Get the card
 		const card = game.player.hand[game.lodash.parseInt(user) - 1];
-		let cost = "mana";
-		if (card) {
-			cost = card.costType;
-		}
+		const cost = card ? card.costType : "mana";
 
 		// Error Codes
 		switch (returnValue) {
-			case "cost": {
+			case GamePlayCardReturn.Cost: {
 				error = `Not enough ${cost}`;
 				break;
 			}
 
-			case "counter": {
+			case GamePlayCardReturn.Counter: {
 				error = "Your card has been countered";
 				break;
 			}
 
-			case "space": {
+			case GamePlayCardReturn.Space: {
 				error = `You can only have ${game.config.general.maxBoardSpace} minions on the board`;
 				break;
 			}
 
-			case "invalid": {
+			case GamePlayCardReturn.Invalid: {
 				error = "Invalid card";
 				break;
 			}
 
 			// Ignore these error codes
-			case "refund":
-			case "magnetize":
-			case "traded":
-			case "forged":
-			case "colossal": {
+			case GamePlayCardReturn.Refund:
+			case GamePlayCardReturn.Magnetize:
+			case GamePlayCardReturn.Traded:
+			case GamePlayCardReturn.Forged:
+			case GamePlayCardReturn.Colossal: {
 				return returnValue;
 			}
 

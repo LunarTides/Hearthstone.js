@@ -1,20 +1,27 @@
 // Created by Hand (before the Card Creator Existed)
 
 import assert from "node:assert";
-import type { Blueprint } from "@Game/types.js";
+import {
+	Ability,
+	type Blueprint,
+	Class,
+	Rarity,
+	SpellSchool,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "The Coin",
 	text: "Gain 1 Mana Crystal this turn only.",
 	cost: 0,
-	type: "Spell",
-	classes: ["Neutral"],
-	rarity: "Free",
+	type: Type.Spell,
+	classes: [Class.Neutral],
+	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
 	id: 2,
 
-	spellSchool: "None",
+	spellSchool: SpellSchool.None,
 
 	async cast(owner, self) {
 		// Gain 1 Mana Crystal this turn only.
@@ -30,13 +37,13 @@ export const blueprint: Blueprint = {
 	async test(owner, self) {
 		// Assert 5->6
 		owner.mana = 5;
-		await self.activate("cast");
+		await self.activate(Ability.Cast);
 
 		assert.equal(owner.mana, 6);
 
 		// Assert 10->10
 		owner.mana = 10;
-		await self.activate("cast");
+		await self.activate(Ability.Cast);
 
 		assert.equal(owner.mana, 10);
 	},

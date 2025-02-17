@@ -1,22 +1,29 @@
 // Created by Hand
 
 import assert from "node:assert";
-import type { Blueprint } from "@Game/types.js";
+import {
+	type Blueprint,
+	Class,
+	Keyword,
+	MinionTribe,
+	Rarity,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Colossal Example",
 	text: "Colossal +2.",
 	cost: 2,
-	type: "Minion",
-	classes: ["Neutral"],
-	rarity: "Free",
+	type: Type.Minion,
+	classes: [Class.Neutral],
+	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
 	id: 45,
 
 	attack: 5,
 	health: 3,
-	tribe: "Beast",
+	tribe: MinionTribe.Beast,
 
 	async create(owner, self) {
 		/*
@@ -27,7 +34,7 @@ export const blueprint: Blueprint = {
 		 * Colossal Example
 		 * Right Arm
 		 */
-		self.addKeyword("Colossal", [
+		self.addKeyword(Keyword.Colossal, [
 			game.cardIds.leftArm43,
 			game.cardIds.null0,
 			game.cardIds.rightArm44,

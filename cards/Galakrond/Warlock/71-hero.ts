@@ -1,17 +1,24 @@
 // Created by the Custom Card Creator
 
 import { Card } from "@Core/card.js";
-import type { Blueprint } from "@Game/types.js";
+import {
+	type Blueprint,
+	CardTag,
+	Class,
+	MinionTribe,
+	Rarity,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Galakrond, the Wretched",
 	text: "<b>Battlecry:</b> Summon {amount} random Demon{plural}.",
 	cost: 7,
-	type: "Hero",
-	classes: ["Warlock"],
-	rarity: "Legendary",
+	type: Type.Hero,
+	classes: [Class.Warlock],
+	rarity: Rarity.Legendary,
 	collectible: true,
-	tags: ["galakrond"],
+	tags: [CardTag.Galakrond],
 	id: 71,
 
 	armor: 5,
@@ -28,13 +35,13 @@ export const blueprint: Blueprint = {
 				return false;
 			}
 
-			return game.functions.card.matchTribe(card.tribe, "Demon");
+			return game.functions.card.matchTribe(card.tribe, MinionTribe.Demon);
 		};
 
 		for (let i = 0; i < amount; i++) {
 			// Find all demons
 			const possibleCards = (await Card.all()).filter(
-				(c) => c.type === "Minion" && testDemoness(c),
+				(c) => c.type === Type.Minion && testDemoness(c),
 			);
 
 			// Choose a random one

@@ -1,16 +1,16 @@
 // Created by the Custom Card Creator
 
-import type { Blueprint } from "@Game/types.js";
+import { type Blueprint, CardTag, Class, Rarity, Type } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Galakrond, the Nightmare",
 	text: "<b>Battlecry:</b> Draw {amount} card{plural}. {plural2} costs (0).",
 	cost: 7,
-	type: "Hero",
-	classes: ["Rogue"],
-	rarity: "Legendary",
+	type: Type.Hero,
+	classes: [Class.Rogue],
+	rarity: Rarity.Legendary,
 	collectible: true,
-	tags: ["galakrond"],
+	tags: [CardTag.Galakrond],
 	id: 67,
 
 	armor: 5,

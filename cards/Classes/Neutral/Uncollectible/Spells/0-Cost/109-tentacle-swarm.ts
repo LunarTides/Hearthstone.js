@@ -4,20 +4,27 @@
 
 import assert from "node:assert";
 import { Card } from "@Core/card.js";
-import type { Blueprint } from "@Game/types.js";
+import {
+	Ability,
+	type Blueprint,
+	Class,
+	Rarity,
+	SpellSchool,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Tentacle Swarm",
 	text: "Fill your hand with 1/1 Chaotic Tendrils.",
 	cost: 0,
-	type: "Spell",
-	classes: ["Neutral"],
-	rarity: "Free",
+	type: Type.Spell,
+	classes: [Class.Neutral],
+	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
 	id: 109,
 
-	spellSchool: "None",
+	spellSchool: SpellSchool.None,
 
 	async cast(owner, self) {
 		// Fill your hand with 1/1 Chaotic Tendrils.
@@ -31,7 +38,7 @@ export const blueprint: Blueprint = {
 
 	async test(owner, self) {
 		const handSize = owner.hand.length;
-		await self.activate("cast");
+		await self.activate(Ability.Cast);
 
 		// Check if the player's hand was filled with tendrils
 		const amountOfCards = owner.hand.length - handSize;

@@ -3,22 +3,32 @@
 import assert from "node:assert";
 import { Card } from "@Core/card.js";
 import { Player } from "@Core/player.js";
-import type { Blueprint } from "@Game/types.js";
+import {
+	Ability,
+	type Blueprint,
+	Class,
+	Event,
+	EventListenerMessage,
+	Keyword,
+	MinionTribe,
+	Rarity,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Yogg-Saron, Master of Fate",
 	text: "<b>Battlecry:</b> If you've cast 10 spells this game, spin the Wheel of Yogg-Saron.{left}",
 	cost: 10,
-	type: "Minion",
-	classes: ["Neutral"],
-	rarity: "Legendary",
+	type: Type.Minion,
+	classes: [Class.Neutral],
+	rarity: Rarity.Legendary,
 	collectible: true,
 	tags: [],
 	id: 104,
 
 	attack: 7,
 	health: 5,
-	tribe: "None",
+	tribe: MinionTribe.None,
 
 	async battlecry(owner, self) {
 		// If you've cast 10 spells this game, spin the Wheel of Yogg-Saron. ({amount} left!)
@@ -42,8 +52,8 @@ export const blueprint: Blueprint = {
 
 		const pool = await Card.all();
 
-		const minionPool = pool.filter((card) => card.type === "Minion");
-		const spellPool = pool.filter((card) => card.type === "Spell");
+		const minionPool = pool.filter((card) => card.type === Type.Minion);
+		const spellPool = pool.filter((card) => card.type === Type.Spell);
 
 		switch (choice) {
 			case "Curse of Flesh": {
@@ -62,7 +72,7 @@ export const blueprint: Blueprint = {
 						}
 
 						if (player === owner) {
-							card.addKeyword("Rush");
+							card.addKeyword(Keyword.Rush);
 						}
 
 						await player.summon(card);
@@ -102,12 +112,12 @@ export const blueprint: Blueprint = {
 					await owner.addToHand(card);
 				}
 
-				game.event.addListener("EndTurn", async () => {
+				game.event.addListener(Event.EndTurn, async () => {
 					for (const card of owner.hand) {
 						card.removeEnchantment("cost = 0", self);
 					}
 
-					return "destroy";
+					return EventListenerMessage.Destroy;
 				});
 
 				break;
@@ -135,7 +145,7 @@ export const blueprint: Blueprint = {
 					game.cardIds.yoggSaronHopesEnd103,
 					owner,
 				);
-				await oldYogg.activate("battlecry");
+				await oldYogg.activate(Ability.Battlecry);
 
 				break;
 			}
@@ -146,7 +156,7 @@ export const blueprint: Blueprint = {
 
 				while (game.player1.isAlive() && game.player2.isAlive()) {
 					owner.forceTarget = game.functions.util.getRandomTarget();
-					await rod.activate("cast");
+					await rod.activate(Ability.Cast);
 				}
 
 				owner.forceTarget = undefined;
@@ -157,12 +167,12 @@ export const blueprint: Blueprint = {
 			// No default
 		}
 
-		await game.event.broadcast("CardEvent", [self, choice], owner);
+		await game.event.broadcast(Event.CardEvent, [self, choice], owner);
 	},
 
 	async placeholders(owner, self) {
 		const amount = game.event.events.PlayCard?.[owner.id].filter(
-			(object) => object[0] instanceof Card && object[0].type === "Spell",
+			(object) => object[0] instanceof Card && object[0].type === Type.Spell,
 		).length;
 		if (!amount) {
 			return { left: " <i>(10 left!)</i>" };
@@ -177,7 +187,7 @@ export const blueprint: Blueprint = {
 
 	async condition(owner, self) {
 		const amount = game.event.events.PlayCard?.[owner.id].filter(
-			(object) => object[0] instanceof Card && object[0].type === "Spell",
+			(object) => object[0] instanceof Card && object[0].type === Type.Spell,
 		).length;
 		if (!amount) {
 			return false;

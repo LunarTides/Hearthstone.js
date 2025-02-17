@@ -1,20 +1,27 @@
 // Created by the Vanilla Card Creator
 
 import assert from "node:assert";
-import type { Blueprint } from "@Game/types.js";
+import {
+	Ability,
+	type Blueprint,
+	Class,
+	Rarity,
+	SpellSchool,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Jade Idol",
 	text: "<b>Choose One -</b> Summon a <b>Jade Golem</b>; or Shuffle 3 copies of this card into your deck.",
 	cost: 1,
-	type: "Spell",
-	classes: ["Druid"],
-	rarity: "Rare",
+	type: Type.Spell,
+	classes: [Class.Druid],
+	rarity: Rarity.Rare,
 	collectible: true,
 	tags: [],
 	id: 84,
 
-	spellSchool: "None",
+	spellSchool: SpellSchool.None,
 
 	async cast(owner, self) {
 		// Choose One - Summon a Jade Golem; or Shuffle 3 copies of this card into your deck.
@@ -43,14 +50,14 @@ export const blueprint: Blueprint = {
 	async test(owner, self) {
 		// Summon a Jade Golem
 		owner.inputQueue = ["1"];
-		await self.activate("cast");
+		await self.activate(Ability.Cast);
 
 		// There should be a jade golem
 		assert.ok(owner.board.some((card) => card.id === game.cardIds.jadeGolem85));
 
 		// Shuffle 3 copies
 		owner.inputQueue = ["2"];
-		await self.activate("cast");
+		await self.activate(Ability.Cast);
 
 		// There should be 3 copies of this card in the player's deck
 		assert.equal(owner.deck.filter((card) => card.id === self.id).length, 3);

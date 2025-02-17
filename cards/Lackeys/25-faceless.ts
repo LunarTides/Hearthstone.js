@@ -2,29 +2,37 @@
 
 import assert from "node:assert";
 import { Card } from "@Core/card.js";
-import type { Blueprint } from "@Game/types.js";
+import {
+	Ability,
+	type Blueprint,
+	CardTag,
+	Class,
+	MinionTribe,
+	Rarity,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Faceless Lackey",
 	text: "<b>Battlecry:</b> Summon a random 2-Cost minion.",
 	cost: 1,
-	type: "Minion",
-	classes: ["Neutral"],
-	rarity: "Free",
+	type: Type.Minion,
+	classes: [Class.Neutral],
+	rarity: Rarity.Free,
 	collectible: false,
-	tags: ["lackey"],
+	tags: [CardTag.Lackey],
 	id: 25,
 
 	attack: 1,
 	health: 1,
-	tribe: "None",
+	tribe: MinionTribe.None,
 
 	async battlecry(owner, self) {
 		// Summon a random 2-Cost minion.
 
 		// filter out all cards that aren't 2-cost minions
 		const minions = (await Card.all()).filter(
-			(card) => card.type === "Minion" && card.cost === 2,
+			(card) => card.type === Type.Minion && card.cost === 2,
 		);
 
 		// Choose a random minion
@@ -44,7 +52,7 @@ export const blueprint: Blueprint = {
 		// If there doesn't exist any 2-Cost minions, pass the test
 		if (
 			!(await Card.all()).some(
-				(card) => card.cost === 2 && card.type === "Minion",
+				(card) => card.cost === 2 && card.type === Type.Minion,
 			)
 		) {
 			return;
@@ -54,7 +62,7 @@ export const blueprint: Blueprint = {
 
 		// There shouldn't exist any 2-Cost minions right now.
 		assert(!exists2CostMinion());
-		await self.activate("battlecry");
+		await self.activate(Ability.Battlecry);
 
 		// There should exist a 2-Cost minion now.
 		assert(exists2CostMinion());

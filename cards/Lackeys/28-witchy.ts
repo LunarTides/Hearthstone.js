@@ -2,22 +2,31 @@
 
 import assert from "node:assert";
 import { Card } from "@Core/card.js";
-import type { Blueprint } from "@Game/types.js";
+import {
+	Ability,
+	type Blueprint,
+	CardTag,
+	Class,
+	MinionTribe,
+	Rarity,
+	TargetAlignment,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Witchy Lackey",
 	text: "<b>Battlecry:</b> Transform a friendly minion into one that costs (1) more.",
 	cost: 1,
-	type: "Minion",
-	classes: ["Neutral"],
-	rarity: "Free",
+	type: Type.Minion,
+	classes: [Class.Neutral],
+	rarity: Rarity.Free,
 	collectible: false,
-	tags: ["lackey"],
+	tags: [CardTag.Lackey],
 	id: 28,
 
 	attack: 1,
 	health: 1,
-	tribe: "None",
+	tribe: MinionTribe.None,
 
 	async battlecry(owner, self) {
 		// Transform a friendly minion into one that costs (1) more.
@@ -26,7 +35,7 @@ export const blueprint: Blueprint = {
 		const target = await game.functions.interact.prompt.targetCard(
 			"Transform a friendly minion into one that costs (1) more.",
 			self,
-			"friendly",
+			TargetAlignment.Friendly,
 		);
 
 		// If no target was selected, refund
@@ -41,7 +50,7 @@ export const blueprint: Blueprint = {
 
 		// Filter minions that cost (1) more than the target
 		const minions = (await Card.all()).filter(
-			(card) => card.type === "Minion" && card.cost === target.cost + 1,
+			(card) => card.type === Type.Minion && card.cost === target.cost + 1,
 		);
 
 		// Choose a random minion from the filtered list.
@@ -75,7 +84,7 @@ export const blueprint: Blueprint = {
 		// If there doesn't exist any 2-Cost minions, pass the test
 		if (
 			!(await Card.all()).some(
-				(card) => card.cost === sheep.cost + 1 && card.type === "Minion",
+				(card) => card.cost === sheep.cost + 1 && card.type === Type.Minion,
 			)
 		) {
 			return;
@@ -83,7 +92,7 @@ export const blueprint: Blueprint = {
 
 		// Activate the battlecry, select the sheep.
 		owner.inputQueue = ["1"];
-		await self.activate("battlecry");
+		await self.activate(Ability.Battlecry);
 
 		// There should now exist a minion with 1 more cost than the sheep.
 		assert(existsMinionWithCost(sheep.cost + 1));

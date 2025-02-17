@@ -2,15 +2,15 @@
 
 import assert from "node:assert";
 import { Card } from "@Core/card.js";
-import type { Blueprint } from "@Game/types.js";
+import { type Blueprint, Class, Rarity, Type } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Galakrond's Wit",
 	text: "Add a random Priest minion to your hand.",
 	cost: 2,
-	type: "Heropower",
-	classes: ["Priest"],
-	rarity: "Legendary",
+	type: Type.HeroPower,
+	classes: [Class.Priest],
+	rarity: Rarity.Legendary,
 	collectible: false,
 	tags: [],
 	id: 128,
@@ -19,8 +19,8 @@ export const blueprint: Blueprint = {
 		// Add a random Priest minion to your hand.
 		const possibleCards = (await Card.all()).filter(
 			(c) =>
-				c.type === "Minion" &&
-				game.functions.card.validateClasses(c.classes, "Priest"),
+				c.type === Type.Minion &&
+				game.functions.card.validateClasses(c.classes, Class.Priest),
 		);
 
 		if (possibleCards.length <= 0) {

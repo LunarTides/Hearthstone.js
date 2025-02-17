@@ -1,25 +1,32 @@
 // Created by the Custom Card Creator
 
 import assert from "node:assert";
-import type { Blueprint } from "@Game/types.js";
+import {
+	type Blueprint,
+	Class,
+	Keyword,
+	MinionTribe,
+	Rarity,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Frail Ghoul",
 	text: "<b>Charge</b> At the end of your turn, this minion dies.",
 	cost: 1,
-	type: "Minion",
-	classes: ["Death Knight"],
-	rarity: "Free",
+	type: Type.Minion,
+	classes: [Class.DeathKnight],
+	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
 	id: 23,
 
 	attack: 1,
 	health: 1,
-	tribe: "Undead",
+	tribe: MinionTribe.Undead,
 
 	async create(owner, self) {
-		self.addKeyword("Charge");
+		self.addKeyword(Keyword.Charge);
 	},
 
 	async passive(owner, self, key, value, eventPlayer) {

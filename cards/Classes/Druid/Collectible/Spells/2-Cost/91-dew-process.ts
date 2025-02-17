@@ -1,28 +1,37 @@
 // Created by the Vanilla Card Creator
 
 import assert from "node:assert";
-import type { Blueprint } from "@Game/types.js";
+import {
+	Ability,
+	type Blueprint,
+	Class,
+	Event,
+	EventListenerMessage,
+	Rarity,
+	SpellSchool,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Dew Process",
 	text: "For the rest of the game, players draw an extra card at the start of their turn.",
 	cost: 2,
-	type: "Spell",
-	classes: ["Druid"],
-	rarity: "Rare",
+	type: Type.Spell,
+	classes: [Class.Druid],
+	rarity: Rarity.Rare,
 	collectible: true,
 	tags: [],
 	id: 91,
 
-	spellSchool: "Nature",
+	spellSchool: SpellSchool.Nature,
 
 	async cast(owner, self) {
 		// For the rest of the game, players draw an extra card at the start of their turn.
 		game.event.addListener(
-			"StartTurn",
+			Event.StartTurn,
 			async (_unknownValue, eventPlayer) => {
 				await eventPlayer.drawCards(1);
-				return true;
+				return EventListenerMessage.Success;
 			},
 			-1,
 		);
@@ -38,7 +47,7 @@ export const blueprint: Blueprint = {
 		// Increment handSize by 1 so that we can do handSize + 2
 		assert.equal(owner.hand.length, ++handSize);
 
-		await self.activate("cast");
+		await self.activate(Ability.Cast);
 
 		await game.endTurn();
 		await game.endTurn();

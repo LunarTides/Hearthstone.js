@@ -1,4 +1,4 @@
-import type { GameConfig } from "@Game/types.js";
+import { Event, type GameConfig } from "@Game/types.js";
 
 export const config: GameConfig = {
 	general: {
@@ -26,6 +26,9 @@ export const config: GameConfig = {
 
 		// The maximum amount of cards that is allowed in a hand. Don't go under 4 or the game will crash on start.
 		maxHandLength: 10,
+
+		// If you are a no-fun partypooper, you can set this to `true` to disable all time-based events.
+		disableEvents: false,
 	},
 
 	decks: {
@@ -238,30 +241,30 @@ export const config: GameConfig = {
 		 * Also, the log files override this list and instead shows every valid key
 		 */
 		whitelistedHistoryKeys: [
-			"HealthRestored",
-			"UnspentMana",
-			"GainOverload",
-			"GainHeroAttack",
-			"TakeDamage",
-			"PlayCard",
-			"SummonCard",
-			"KillCard",
-			"DamageCard",
-			"SilenceCard",
-			"DiscardCard",
-			"TradeCard",
-			"ForgeCard",
-			"FreezeCard",
-			"RevealCard",
-			"Titan",
-			"AddCardToDeck",
-			"AddCardToHand",
-			"DrawCard",
-			"Attack",
-			"HeroPower",
-			"TargetSelectionStarts",
-			"TargetSelected",
-			"CardEvent",
+			Event.HealthRestored,
+			Event.UnspentMana,
+			Event.GainOverload,
+			Event.GainHeroAttack,
+			Event.TakeDamage,
+			Event.PlayCard,
+			Event.SummonCard,
+			Event.KillCard,
+			Event.DamageCard,
+			Event.SilenceCard,
+			Event.DiscardCard,
+			Event.TradeCard,
+			Event.ForgeCard,
+			Event.FreezeCard,
+			Event.RevealCard,
+			Event.Titan,
+			Event.AddCardToDeck,
+			Event.AddCardToHand,
+			Event.DrawCard,
+			Event.Attack,
+			Event.HeroPower,
+			Event.TargetSelectionStarts,
+			Event.TargetSelected,
+			Event.CardEvent,
 		],
 
 		/*
@@ -270,10 +273,10 @@ export const config: GameConfig = {
 		 * The log files override this list and shows the value regardless.
 		 */
 		hideValueHistoryKeys: [
-			"DrawCard",
-			"ForgeCard",
-			"AddCardToHand",
-			"AddCardToDeck",
+			Event.DrawCard,
+			Event.ForgeCard,
+			Event.AddCardToHand,
+			Event.AddCardToDeck,
 		],
 	},
 

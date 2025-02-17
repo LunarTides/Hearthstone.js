@@ -1,19 +1,26 @@
 // Created by Hand (before the Card Creator Existed)
 
-import type { Blueprint } from "@Game/types.js";
+import {
+	type Blueprint,
+	CardTag,
+	Class,
+	MinionTribe,
+	Rarity,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Searing Totem",
 	text: "",
 	cost: 1,
-	type: "Minion",
-	classes: ["Shaman"],
-	rarity: "Free",
+	type: Type.Minion,
+	classes: [Class.Shaman],
+	rarity: Rarity.Free,
 	collectible: false,
-	tags: ["totem"],
+	tags: [CardTag.Totem],
 	id: 16,
 
 	attack: 1,
 	health: 1,
-	tribe: "Totem",
+	tribe: MinionTribe.Totem,
 };

@@ -1,27 +1,34 @@
 // Created by the Custom Card Creator
 
 import assert from "node:assert";
-import type { Blueprint } from "@Game/types.js";
+import {
+	type Blueprint,
+	Class,
+	Keyword,
+	MinionTribe,
+	Rarity,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Forgetful Test",
 	text: "<i>50% Chance to attack the wrong enemy.</i>",
 	cost: 1,
-	type: "Minion",
-	classes: ["Neutral"],
-	rarity: "Free",
+	type: Type.Minion,
+	classes: [Class.Neutral],
+	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
 	id: 138,
 
 	attack: 5,
 	health: 4,
-	tribe: "None",
+	tribe: MinionTribe.None,
 
 	async create(owner, self) {
 		// Forgetful
 
-		self.addKeyword("Forgetful");
+		self.addKeyword(Keyword.Forgetful);
 	},
 
 	async test(owner, self) {

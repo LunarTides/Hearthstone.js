@@ -1,16 +1,16 @@
 // Created by the Custom Card Creator
 
-import type { Blueprint } from "@Game/types.js";
+import { type Blueprint, CardTag, Class, Rarity, Type } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Galakrond, the Unspeakable",
 	text: "<b>Battlecry:</b> Destroy {amount} random enemy minion{plural}.",
 	cost: 7,
-	type: "Hero",
-	classes: ["Priest"],
-	rarity: "Legendary",
+	type: Type.Hero,
+	classes: [Class.Priest],
+	rarity: Rarity.Legendary,
 	collectible: true,
-	tags: ["galakrond"],
+	tags: [CardTag.Galakrond],
 	id: 70,
 
 	armor: 5,

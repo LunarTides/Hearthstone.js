@@ -1,15 +1,15 @@
 // Created by the Custom Card Creator
 
 import assert from "node:assert";
-import type { Blueprint } from "@Game/types.js";
+import { Ability, type Blueprint, Class, Rarity, Type } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Life Tap",
 	text: "Draw a card and take 2 damage.",
 	cost: 2,
-	type: "Heropower",
-	classes: ["Warlock"],
-	rarity: "Free",
+	type: Type.HeroPower,
+	classes: [Class.Warlock],
+	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
 	id: 121,
@@ -30,7 +30,7 @@ export const blueprint: Blueprint = {
 		assert.equal(owner.hand.length, 0);
 		assert.equal(owner.health, 30);
 
-		await self.activate("heropower");
+		await self.activate(Ability.HeroPower);
 
 		// The player should now have 1 card in their hand, and 28 health.
 		assert.equal(owner.hand.length, 1);

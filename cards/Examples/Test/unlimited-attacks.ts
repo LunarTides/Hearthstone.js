@@ -1,28 +1,35 @@
 // Created by the Custom Card Creator
 
 import assert from "node:assert";
-import type { Blueprint } from "@Game/types.js";
+import {
+	type Blueprint,
+	Class,
+	Keyword,
+	MinionTribe,
+	Rarity,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Unlimited Attacks Test",
 	text: "<i>Can attack any number of times.</i>",
 	cost: 1,
-	type: "Minion",
-	classes: ["Neutral"],
-	rarity: "Free",
+	type: Type.Minion,
+	classes: [Class.Neutral],
+	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
 	id: 141,
 
 	attack: 1,
 	health: 1,
-	tribe: "None",
+	tribe: MinionTribe.None,
 
 	async create(owner, self) {
 		// Can attack any number of times.
 
 		// This keyword can be added to weapons as well.
-		self.addKeyword("Unlimited Attacks");
+		self.addKeyword(Keyword.UnlimitedAttacks);
 	},
 
 	async test(owner, self) {

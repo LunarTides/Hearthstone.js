@@ -1,6 +1,6 @@
 import type { Card } from "@Core/card.js";
 import type { Player } from "@Core/player.js";
-import type { EventKey, UnknownEventValue } from "@Game/types.js";
+import type { Event, UnknownEventValue } from "@Game/types.js";
 import type { Card as _VanillaCard } from "@hearthstonejs/vanillatypes";
 
 export type VanillaCard = _VanillaCard;
@@ -16,150 +16,170 @@ export type ScoredCard = {
 /**
  * The type of the card.
  */
-export type CardType =
-	| "Minion"
-	| "Spell"
-	| "Weapon"
-	| "Hero"
-	| "Location"
-	| "Heropower"
-	| "Undefined";
-
-/**
- * The class that the card belongs to. (without "Neutral")
- */
-export type CardClassNoNeutral =
-	| "Death Knight"
-	| "Demon Hunter"
-	| "Druid"
-	| "Hunter"
-	| "Mage"
-	| "Paladin"
-	| "Priest"
-	| "Rogue"
-	| "Shaman"
-	| "Warlock"
-	| "Warrior";
+export enum Type {
+	Minion = "Minion",
+	Spell = "Spell",
+	Weapon = "Weapon",
+	Hero = "Hero",
+	Location = "Location",
+	HeroPower = "HeroPower",
+	Undefined = "Undefined",
+}
 
 /**
  * The class that the card belongs to.
  */
-export type CardClass = CardClassNoNeutral | "Neutral";
+export enum Class {
+	Neutral = "Neutral",
+	DeathKnight = "DeathKnight",
+	DemonHunter = "DemonHunter",
+	Druid = "Druid",
+	Hunter = "Hunter",
+	Mage = "Mage",
+	Paladin = "Paladin",
+	Priest = "Priest",
+	Rogue = "Rogue",
+	Shaman = "Shaman",
+	Warlock = "Warlock",
+	Warrior = "Warrior",
+}
 
 /**
  * The rarity of the card.
  */
-export type CardRarity = "Free" | "Common" | "Rare" | "Epic" | "Legendary";
+export enum Rarity {
+	Free = "Free",
+	Common = "Common",
+	Rare = "Rare",
+	Epic = "Epic",
+	Legendary = "Legendary",
+}
 
 /**
  * What the card costs.
  */
-export type CostType = "mana" | "armor" | "health";
+export enum CostType {
+	// NOTE: Use camelCase for these values since it accesses fields of the players.
+	Mana = "mana",
+	Armor = "armor",
+	Health = "health",
+}
 
 /**
  * The school of the spell.
  */
-export type SpellSchool =
-	| "Arcane"
-	| "Fel"
-	| "Fire"
-	| "Frost"
-	| "Holy"
-	| "Nature"
-	| "Shadow"
-	| "None";
+export enum SpellSchool {
+	None = "None",
+	Arcane = "Arcane",
+	Fel = "Fel",
+	Fire = "Fire",
+	Frost = "Frost",
+	Holy = "Holy",
+	Nature = "Nature",
+	Shadow = "Shadow",
+}
 
 /**
  * The tribe of the minion.
  */
-export type MinionTribe =
-	| "Beast"
-	| "Demon"
-	| "Dragon"
-	| "Elemental"
-	| "Mech"
-	| "Murloc"
-	| "Naga"
-	| "Pirate"
-	| "Quilboar"
-	| "Totem"
-	| "Undead"
-	| "All"
-	| "None";
+export enum MinionTribe {
+	None = "None",
+	All = "All",
+	Beast = "Beast",
+	Demon = "Demon",
+	Dragon = "Dragon",
+	Elemental = "Elemental",
+	Mech = "Mech",
+	Murloc = "Murloc",
+	Naga = "Naga",
+	Pirate = "Pirate",
+	Quilboar = "Quilboar",
+	Totem = "Totem",
+	Undead = "Undead",
+}
 
 /**
  * Card keywords.
  */
-export type CardKeyword =
-	| "Divine Shield"
-	| "Dormant"
-	| "Lifesteal"
-	| "Poisonous"
-	| "Reborn"
-	| "Rush"
-	| "Stealth"
-	| "Taunt"
-	| "Tradeable"
-	| "Forge"
-	| "Windfury"
-	| "Outcast"
-	| "Cast On Draw"
-	| "Summon On Draw"
-	| "Unbreakable"
-	| "Unlimited Attacks"
-	| "Charge"
-	| "Mega-Windfury"
-	| "Echo"
-	| "Magnetic"
-	| "Twinspell"
-	| "Elusive"
-	| "Frozen"
-	| "Immune"
-	| "Corrupt"
-	| "Colossal"
-	| "Infuse"
-	| "Cleave"
-	| "Titan"
-	| "Forgetful"
-	| "Cant Attack";
+export enum Keyword {
+	DivineShield = "DivineShield",
+	Dormant = "Dormant",
+	Lifesteal = "Lifesteal",
+	Poisonous = "Poisonous",
+	Reborn = "Reborn",
+	Rush = "Rush",
+	Stealth = "Stealth",
+	Taunt = "Taunt",
+	Tradeable = "Tradeable",
+	Forge = "Forge",
+	Windfury = "Windfury",
+	Outcast = "Outcast",
+	CastOnDraw = "CastOnDraw",
+	SummonOnDraw = "SummonOnDraw",
+	Unbreakable = "Unbreakable",
+	UnlimitedAttacks = "UnlimitedAttacks",
+	Charge = "Charge",
+	MegaWindfury = "MegaWindfury",
+	Echo = "Echo",
+	Magnetic = "Magnetic",
+	Twinspell = "Twinspell",
+	Elusive = "Elusive",
+	Frozen = "Frozen",
+	Immune = "Immune",
+	Corrupt = "Corrupt",
+	Colossal = "Colossal",
+	Infuse = "Infuse",
+	Cleave = "Cleave",
+	Titan = "Titan",
+	Forgetful = "Forgetful",
+	CantAttack = "CantAttack",
+}
 
 /**
- * Card abilities that is from vanilla Hearthstone.
+ * Card tags.
  */
-export type CardAbilityReal =
-	| "adapt"
-	| "battlecry"
-	| "cast"
-	| "combo"
-	| "deathrattle"
-	| "finale"
-	| "frenzy"
-	| "honorablekill"
-	| "infuse"
-	| "inspire"
-	| "invoke"
-	| "outcast"
-	| "overheal"
-	| "overkill"
-	| "passive"
-	| "spellburst"
-	| "startofgame"
-	| "heropower"
-	| "use";
+export enum CardTag {
+	StartingHero = "StartingHero",
+	Galakrond = "Galakrond",
+	Totem = "Totem",
+	Lackey = "Lackey",
+	DIY = "Diy",
+}
 
 /**
  * All Card abilities.
  */
-export type CardAbility =
-	| CardAbilityReal
-	| "placeholders"
-	| "condition"
-	| "remove"
-	| "handpassive"
-	| "tick"
-	| "handtick"
-	| "test"
-	| "create";
+export enum Ability {
+	// NOTE: Use camelCase here since these will be converted to methods.
+	Adapt = "adapt",
+	Battlecry = "battlecry",
+	Cast = "cast",
+	Combo = "combo",
+	Deathrattle = "deathrattle",
+	Finale = "finale",
+	Frenzy = "frenzy",
+	HonorableKill = "honorableKill",
+	Infuse = "infuse",
+	Inspire = "inspire",
+	Invoke = "invoke",
+	Outcast = "outcast",
+	Overheal = "overheal",
+	Overkill = "overkill",
+	Passive = "passive",
+	Spellburst = "spellburst",
+	StartOfGame = "startOfGame",
+	HeroPower = "heropower",
+	Use = "use",
+
+	Placeholders = "placeholders",
+	Condition = "condition",
+	Remove = "remove",
+	HandPassive = "handPassive",
+	Tick = "tick",
+	HandTick = "handTick",
+	Test = "test",
+	Create = "create",
+}
 
 /**
  * Card Enchantment object.
@@ -179,10 +199,10 @@ export type CardBackup = {
 /**
  * The ability of a card.
  */
-export type Ability = (
+export type AbilityCallback = (
 	owner: Player,
 	self: Card,
-	key?: EventKey,
+	key?: Event,
 	_unknownValue?: UnknownEventValue,
 	eventPlayer?: Player,
 ) => Promise<unknown>;
@@ -191,7 +211,7 @@ export type Ability = (
  * The abilities that a blueprint can have. (From CardAbility)
  */
 type BlueprintAbilities = {
-	[Property in CardAbility]?: Ability;
+	[key in Ability]?: AbilityCallback;
 };
 
 /**
@@ -201,7 +221,7 @@ type BlueprintAbilities = {
  * ### This is required for Xs and Ys
  * Then it is required by every card.
  */
-export type Blueprint = {
+export interface Blueprint extends BlueprintAbilities {
 	// Common
 	/** The name of the card. This doesn't have to be unique. */
 	name: string;
@@ -214,13 +234,13 @@ export type Blueprint = {
 	/** How much the card should cost. This is normally in mana. */
 	cost: number;
 	/** The type of the card. For example; "Minion" / "Spell" / "Weapon", etc... */
-	type: CardType;
+	type: Type;
 	/** The classes that the card belongs to. For example; ["Neutral"], ["Mage"], ["Paladin", "Rogue"] */
-	classes: CardClass[];
+	classes: Class[];
 	/** The rarity of the card. This doesn't really do much in this game since there isn't any lootbox mechanics here. Examples of rarities: "Legendary", "Epic", "Free", etc... */
-	rarity: CardRarity;
+	rarity: Rarity;
 	/** The tags of the card. */
-	tags: string[];
+	tags: CardTag[];
 	/** If the card should be allowed in decks / card pools. */
 	collectible: boolean;
 	/**
@@ -290,9 +310,9 @@ export type Blueprint = {
 	 * The hero power card should be of type "Heropower", and its `heropower` ability will be triggered every time the player uses their hero power.
 	 */
 	heropowerId?: number;
-} & BlueprintAbilities;
+}
 
 export type BlueprintWithOptional = Blueprint & {
 	runes?: string;
-	keywords?: CardKeyword[];
+	keywords?: Keyword[];
 };

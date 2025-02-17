@@ -1,7 +1,7 @@
 // Created by Hand
 
 import assert from "node:assert";
-import type { Blueprint } from "@Game/types.js";
+import { Ability, type Blueprint, Class, Rarity, Type } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Heropower Example",
@@ -9,10 +9,10 @@ export const blueprint: Blueprint = {
 	cost: 2,
 
 	// Remember to set the type to "Heropower"
-	type: "Heropower",
+	type: Type.HeroPower,
 
-	classes: ["Neutral"],
-	rarity: "Free",
+	classes: [Class.Neutral],
+	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
 	id: 130,
@@ -27,7 +27,7 @@ export const blueprint: Blueprint = {
 	async test(owner, self) {
 		// Test hero power
 		owner.health = 1;
-		await self.activate("heropower");
+		await self.activate(Ability.HeroPower);
 		assert.equal(owner.health, 1 + 2);
 	},
 };

@@ -2,22 +2,32 @@
 
 import assert from "node:assert";
 import { Card } from "@Core/card.js";
-import type { Blueprint } from "@Game/types.js";
+import {
+	Ability,
+	type Blueprint,
+	CardTag,
+	Class,
+	Keyword,
+	MinionTribe,
+	Rarity,
+	TargetAlignment,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Goblin Lackey",
 	text: "<b>Battlecry:</b> Give a friendly minion +1 Attack and <b>Rush</b>.",
 	cost: 1,
-	type: "Minion",
-	classes: ["Neutral"],
-	rarity: "Free",
+	type: Type.Minion,
+	classes: [Class.Neutral],
+	rarity: Rarity.Free,
 	collectible: false,
-	tags: ["lackey"],
+	tags: [CardTag.Lackey],
 	id: 26,
 
 	attack: 1,
 	health: 1,
-	tribe: "None",
+	tribe: MinionTribe.None,
 
 	async battlecry(owner, self) {
 		// Give a friendly minion +1 Attack and Rush.
@@ -26,7 +36,7 @@ export const blueprint: Blueprint = {
 		const target = await game.functions.interact.prompt.targetCard(
 			"Give a friendly minion +1 Attack and Rush",
 			self,
-			"friendly",
+			TargetAlignment.Friendly,
 		);
 
 		// If no target was selected, refund
@@ -38,7 +48,7 @@ export const blueprint: Blueprint = {
 		await target.addStats(1, 0);
 
 		// Add Rush
-		target.addKeyword("Rush");
+		target.addKeyword(Keyword.Rush);
 		return true;
 	},
 
@@ -49,10 +59,10 @@ export const blueprint: Blueprint = {
 
 		// Activate the battlecry, choose the sheep
 		owner.inputQueue = ["1"];
-		await self.activate("battlecry");
+		await self.activate(Ability.Battlecry);
 
 		// The sheep should have 2 attack and rush
 		assert.equal(sheep.attack, 2);
-		assert(sheep.hasKeyword("Rush"));
+		assert(sheep.hasKeyword(Keyword.Rush));
 	},
 };

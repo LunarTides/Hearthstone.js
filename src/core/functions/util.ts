@@ -112,7 +112,7 @@ export const utilFunctions = {
 		game.config = require("../../../config.ts").config as GameConfig;
 
 		if (
-			game.time.events.anniversary &&
+			game.isEventActive("anniversary") &&
 			game.config.general.locale === "en_US"
 		) {
 			game.config.general.locale = "anniversary";
@@ -528,7 +528,7 @@ ${mainContent}
 		}) as fs.Dirent[]) {
 			const fullPath = `${actualPath}/${file.name}`;
 
-			if (file.name === "exports.ts") {
+			if (file.name === "ids.ts") {
 				continue;
 			}
 

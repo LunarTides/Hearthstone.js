@@ -1,16 +1,16 @@
 // Created by the Custom Card Creator
 
-import type { Blueprint } from "@Game/types.js";
+import { type Blueprint, CardTag, Class, Rarity, Type } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Jaina Proudmoore",
 	text: "Mage starting hero",
 	cost: 0,
-	type: "Hero",
-	classes: ["Mage"],
-	rarity: "Free",
+	type: Type.Hero,
+	classes: [Class.Mage],
+	rarity: Rarity.Free,
 	collectible: false,
-	tags: ["starting_hero"],
+	tags: [CardTag.StartingHero],
 	id: 4,
 
 	armor: 0,

@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { colorFunctions } from "@Core/functions/color.js";
 import { createGame } from "@Core/game.js";
+import { Rarity } from "@Game/types.js";
 import { stopTagParsing } from "chalk-tags";
 
 /*
@@ -14,21 +15,21 @@ describe("src/core/functions/color", () => {
 		// Disable parsing tags so the output from `fromRarity` is easier to parse.
 		stopTagParsing();
 
-		expect(colorFunctions.fromRarity("Test01", "Free")).toEqual("Test01");
+		expect(colorFunctions.fromRarity("Test01", Rarity.Free)).toEqual("Test01");
 
-		expect(colorFunctions.fromRarity("Test02", "Common")).toEqual(
+		expect(colorFunctions.fromRarity("Test02", Rarity.Common)).toEqual(
 			"<gray>Test02</gray>",
 		);
 
-		expect(colorFunctions.fromRarity("Test03", "Rare")).toEqual(
+		expect(colorFunctions.fromRarity("Test03", Rarity.Rare)).toEqual(
 			"<blue>Test03</blue>",
 		);
 
-		expect(colorFunctions.fromRarity("Test04", "Epic")).toEqual(
+		expect(colorFunctions.fromRarity("Test04", Rarity.Epic)).toEqual(
 			"<bright:magenta>Test04</bright:magenta>",
 		);
 
-		expect(colorFunctions.fromRarity("Test05", "Legendary")).toEqual(
+		expect(colorFunctions.fromRarity("Test05", Rarity.Legendary)).toEqual(
 			"<yellow>Test05</yellow>",
 		);
 

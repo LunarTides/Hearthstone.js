@@ -1,15 +1,15 @@
 // Created by the Custom Card Creator
 
 import assert from "node:assert";
-import type { Blueprint } from "@Game/types.js";
+import { Ability, type Blueprint, Class, Rarity, Type } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Galakrond's Might",
 	text: "Give your hero +3 Attack this turn.",
 	cost: 2,
-	type: "Heropower",
-	classes: ["Warrior"],
-	rarity: "Legendary",
+	type: Type.HeroPower,
+	classes: [Class.Warrior],
+	rarity: Rarity.Legendary,
 	collectible: false,
 	tags: [],
 	id: 127,
@@ -22,7 +22,7 @@ export const blueprint: Blueprint = {
 
 	async test(owner, self) {
 		assert.equal(owner.attack, 0);
-		await self.activate("heropower");
+		await self.activate(Ability.HeroPower);
 
 		assert.equal(owner.attack, 3);
 	},

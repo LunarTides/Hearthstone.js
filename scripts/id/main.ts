@@ -20,7 +20,13 @@ console.log(
 	"<green>The validate and quit commands are safe to use without issue.</green>\n",
 );
 
-type Commands = "i" | "d" | "v" | "q";
+enum Commands {
+	Increment = "i",
+	Decrement = "d",
+	Validate = "v",
+	Quit = "q",
+}
+
 let running = true;
 
 while (running) {
@@ -29,13 +35,14 @@ while (running) {
 			"What do you want to do? ([i]ncrement, [d]ecrement, [v]alidate, [q]uit): ",
 		)
 	)[0] as Commands;
+
 	if (!func) {
 		await game.pause("<red>Invalid command.</red>\n");
 		continue;
 	}
 
 	func = func.toLowerCase() as Commands;
-	const destructive = ["i", "d"] as Commands[];
+	const destructive = [Commands.Increment, Commands.Decrement];
 
 	if (destructive.includes(func)) {
 		console.error(

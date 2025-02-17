@@ -2,20 +2,27 @@
 
 import assert from "node:assert";
 import { Card } from "@Core/card.js";
-import type { Blueprint } from "@Game/types.js";
+import {
+	Ability,
+	type Blueprint,
+	Class,
+	Rarity,
+	SpellSchool,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Branching Paths",
 	text: "<b>Choose Twice -</b> Draw a card; Give your minions +1 Attack; Gain 6 Armor.",
 	cost: 4,
-	type: "Spell",
-	classes: ["Druid"],
-	rarity: "Epic",
+	type: Type.Spell,
+	classes: [Class.Druid],
+	rarity: Rarity.Epic,
 	collectible: true,
 	tags: [],
 	id: 86,
 
-	spellSchool: "None",
+	spellSchool: SpellSchool.None,
 
 	async cast(owner, self) {
 		// Choose Twice - Draw a card; Give your minions +1 Attack; Gain 6 Armor.
@@ -58,14 +65,14 @@ export const blueprint: Blueprint = {
 
 		// Test 'Draw a Card', and 'Give your minions +1 Attack'.
 		owner.inputQueue = ["1", "2"];
-		await self.activate("cast");
+		await self.activate(Ability.Cast);
 
 		assert.equal(owner.hand.length, handSize + 1);
 		assert.equal(sheep.attack, 2);
 
 		// Test '+1 Attack', and 'Gain 6 Armor'.
 		owner.inputQueue = ["2", "3"];
-		await self.activate("cast");
+		await self.activate(Ability.Cast);
 
 		assert.equal(sheep.attack, 3);
 		assert.equal(owner.armor, 6);

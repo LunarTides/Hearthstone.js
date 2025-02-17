@@ -1,16 +1,16 @@
 // Created by the Custom Card Creator
 
-import type { Blueprint } from "@Game/types.js";
+import { type Blueprint, CardTag, Class, Rarity, Type } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Valeera Sanguinar",
 	text: "Rogue starting hero",
 	cost: 0,
-	type: "Hero",
-	classes: ["Rogue"],
-	rarity: "Free",
+	type: Type.Hero,
+	classes: [Class.Rogue],
+	rarity: Rarity.Free,
 	collectible: false,
-	tags: ["starting_hero"],
+	tags: [CardTag.StartingHero],
 	id: 12,
 
 	armor: 0,

@@ -2,20 +2,27 @@
 
 import assert from "node:assert";
 import { Card } from "@Core/card.js";
-import type { Blueprint } from "@Game/types.js";
+import {
+	Ability,
+	type Blueprint,
+	Class,
+	Rarity,
+	SpellSchool,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Poison Seeds",
 	text: "Destroy all minions and summon 2/2 Treants to replace them.",
 	cost: 4,
-	type: "Spell",
-	classes: ["Druid"],
-	rarity: "Common",
+	type: Type.Spell,
+	classes: [Class.Druid],
+	rarity: Rarity.Common,
 	collectible: true,
 	tags: [],
 	id: 82,
 
-	spellSchool: "Nature",
+	spellSchool: SpellSchool.Nature,
 
 	async cast(owner, self) {
 		// Destroy all minions and summon 2/2 Treants to replace them.
@@ -39,7 +46,7 @@ export const blueprint: Blueprint = {
 		}
 
 		// Replace with Treants
-		await self.activate("cast");
+		await self.activate(Ability.Cast);
 
 		// Check if every card is a Treant
 		const board = owner.board;

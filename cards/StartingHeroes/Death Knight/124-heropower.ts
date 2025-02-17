@@ -2,15 +2,15 @@
 
 import assert from "node:assert";
 import { Card } from "@Core/card.js";
-import type { Blueprint } from "@Game/types.js";
+import { Ability, type Blueprint, Class, Rarity, Type } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Ghoul Charge",
 	text: "Summon a 1/1 Ghoul with Charge. It dies at end of turn.",
 	cost: 2,
-	type: "Heropower",
-	classes: ["Death Knight"],
-	rarity: "Free",
+	type: Type.HeroPower,
+	classes: [Class.DeathKnight],
+	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
 	id: 124,
@@ -32,7 +32,7 @@ export const blueprint: Blueprint = {
 
 		// The minion shouldn't be on the board at first.
 		assert(!lookForMinion());
-		await self.activate("heropower");
+		await self.activate(Ability.HeroPower);
 
 		// The minion should now be on the board.
 		assert(lookForMinion());

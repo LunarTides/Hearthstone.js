@@ -1,20 +1,26 @@
 // Created by the Vanilla Card Creator
 
 import assert from "node:assert";
-import type { Blueprint } from "@Game/types.js";
+import {
+	type Blueprint,
+	Class,
+	Rarity,
+	SpellSchool,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Frost Lotus Seedling",
 	text: "{placeholder}",
 	cost: 3,
-	type: "Spell",
-	classes: ["Druid"],
-	rarity: "Rare",
+	type: Type.Spell,
+	classes: [Class.Druid],
+	rarity: Rarity.Rare,
 	collectible: true,
 	tags: [],
 	id: 94,
 
-	spellSchool: "Nature",
+	spellSchool: SpellSchool.Nature,
 
 	async create(owner, self) {
 		// Initialize storage

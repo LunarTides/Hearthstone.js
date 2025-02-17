@@ -2,15 +2,15 @@
 
 import assert from "node:assert";
 import { Card } from "@Core/card.js";
-import type { Blueprint } from "@Game/types.js";
+import { Ability, type Blueprint, Class, Rarity, Type } from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Dagger Mastery",
 	text: "Equip a 1/2 Dagger.",
 	cost: 2,
-	type: "Heropower",
-	classes: ["Rogue"],
-	rarity: "Free",
+	type: Type.HeroPower,
+	classes: [Class.Rogue],
+	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
 	id: 122,
@@ -28,7 +28,7 @@ export const blueprint: Blueprint = {
 	async test(owner, self) {
 		// The player should not have a weapon
 		assert.equal(owner.weapon, undefined);
-		await self.activate("heropower");
+		await self.activate(Ability.HeroPower);
 
 		// The player should now have the wicked knife weapon
 		assert.ok(owner.weapon);

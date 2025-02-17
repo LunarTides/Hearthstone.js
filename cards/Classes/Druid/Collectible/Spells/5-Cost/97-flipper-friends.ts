@@ -2,20 +2,27 @@
 
 import assert from "node:assert";
 import { Card } from "@Core/card.js";
-import type { Blueprint } from "@Game/types.js";
+import {
+	Ability,
+	type Blueprint,
+	Class,
+	Rarity,
+	SpellSchool,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Flipper Friends",
 	text: "<b>Choose One</b> - Summon a 6/6 Orca with <b>Taunt</b>; or six 1/1 Otters with <b>Rush</b>.",
 	cost: 5,
-	type: "Spell",
-	classes: ["Druid"],
-	rarity: "Common",
+	type: Type.Spell,
+	classes: [Class.Druid],
+	rarity: Rarity.Common,
 	collectible: true,
 	tags: [],
 	id: 97,
 
-	spellSchool: "Nature",
+	spellSchool: SpellSchool.Nature,
 
 	async cast(owner, self) {
 		// Choose One - Summon a 6/6 Orca with Taunt; or six 1/1 Otters with Rush.
@@ -45,7 +52,7 @@ export const blueprint: Blueprint = {
 	async test(owner, self) {
 		// Summon a 6/6 Orca with Taunt
 		owner.inputQueue = ["1"];
-		await self.activate("cast");
+		await self.activate(Ability.Cast);
 
 		// There should be 1 Orca on the board
 		assert.equal(
@@ -58,7 +65,7 @@ export const blueprint: Blueprint = {
 
 		// Summon six 1/1 Otters with Rush
 		owner.inputQueue = ["2"];
-		await self.activate("cast");
+		await self.activate(Ability.Cast);
 
 		// There should be 6 Otters on the board
 		assert.equal(
