@@ -528,7 +528,7 @@ ${mainContent}
 		}) as fs.Dirent[]) {
 			const fullPath = `${actualPath}/${file.name}`;
 
-			if (file.name === "exports.ts") {
+			if (file.name === "ids.ts") {
 				continue;
 			}
 
