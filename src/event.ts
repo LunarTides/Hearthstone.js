@@ -38,7 +38,7 @@ export const eventManager = {
 	 *
 	 * It looks like this: `history[turn] = [[key, val, player], ...]`
 	 */
-	history: {} as Record<number, HistoryKey[]>,
+	history: {} as Record<number, HistoryKey<Event>[]>,
 
 	/**
 	 * Used like this:
@@ -483,5 +483,20 @@ export const eventManager = {
 		}
 
 		return returnValue;
+	},
+
+	/**
+	 * Checks if the given `key` matches the given `expected` Event.
+	 *
+	 * @param key The key to check.
+	 * @param value The value to narrow.
+	 * @param expected The expected Event.
+	 */
+	is<E extends Event>(
+		key: Event | undefined,
+		value: unknown,
+		expected: E,
+	): value is EventValue<E> {
+		return key === expected;
 	},
 };

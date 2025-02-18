@@ -4,6 +4,7 @@ import assert from "node:assert";
 import {
 	type Blueprint,
 	Class,
+	Event,
 	MinionTribe,
 	Rarity,
 	Type,
@@ -28,10 +29,10 @@ export const blueprint: Blueprint = {
 		await self.freeze();
 	},
 
-	async passive(owner, self, key, _unknownValue, eventPlayer) {
+	async passive(owner, self, key, value, eventPlayer) {
 		// This is forever Frozen
 
-		if (key !== "StartTurn") {
+		if (!game.event.is(key, value, Event.StartTurn)) {
 			return;
 		}
 

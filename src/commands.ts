@@ -8,7 +8,6 @@ import {
 	TargetAlignment,
 	type TargetFlag,
 	Type,
-	type UnknownEventValue,
 	UseLocationError,
 } from "@Game/types.js";
 import { resumeTagParsing, stopTagParsing } from "chalk-tags";
@@ -470,7 +469,7 @@ export const commands: CommandList = {
 			let previousPlayer: Player | undefined;
 
 			for (const [historyIndex, historyKey] of historyList.entries()) {
-				let [key, value, player] = historyKey;
+				const [key, value, player] = historyKey;
 				if (!player) {
 					// TODO: Maybe throw an error. #277
 					continue;
@@ -516,16 +515,16 @@ export const commands: CommandList = {
 
 				hasPrintedHeader = true;
 
-				value = (await doValue(
+				let newValue = (await doValue(
 					value,
 					game.player,
 					shouldHide,
-				)) as UnknownEventValue;
+				)) as unknown;
 
-				if (Array.isArray(value)) {
+				if (Array.isArray(newValue)) {
 					let strbuilder = "";
 
-					for (let v of value) {
+					for (let v of newValue) {
 						v = (await doValue(v, game.player, shouldHide)) as
 							| string
 							| number
@@ -538,10 +537,10 @@ export const commands: CommandList = {
 					}
 
 					strbuilder = strbuilder.slice(0, -2);
-					value = strbuilder;
+					newValue = strbuilder;
 				}
 
-				finished += `${key}: ${value?.toString()}\n`;
+				finished += `${key}: ${newValue?.toString()}\n`;
 			}
 		}
 

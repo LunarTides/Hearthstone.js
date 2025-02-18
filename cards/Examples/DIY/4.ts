@@ -4,7 +4,7 @@ import {
 	type Blueprint,
 	CardTag,
 	Class,
-	type EventValue,
+	Event,
 	MinionTribe,
 	Rarity,
 	Type,
@@ -25,19 +25,13 @@ export const blueprint: Blueprint = {
 	health: 10,
 	tribes: [MinionTribe.None],
 
-	async passive(owner, self, key, _unknownValue, eventPlayer) {
+	async passive(owner, self, key, value, eventPlayer) {
 		// Whenever a minion dies, Resurrect it with 1/1 stats.
 
 		// If the key is for a different event, stop the function.
-		if (key !== "KillCard") {
+		if (!game.event.is(key, value, Event.KillCard)) {
 			return;
 		}
-
-		/*
-		 * Here we cast the value to the correct type.
-		 * Do not use the '_unknownValue' variable after this.
-		 */
-		const value = _unknownValue as EventValue<typeof key>;
 
 		// Don't change this line
 		if (value.owner !== owner) {

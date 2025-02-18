@@ -8,8 +8,6 @@ import type {
 	TargetFlag,
 } from "@Game/types.js";
 
-export type UnknownEventValue = EventValue<Event>;
-
 /**
  * Game events.
  */
@@ -43,7 +41,11 @@ export type EventListenerCallback<E extends Event> = (
 	eventPlayer: Player,
 ) => Promise<EventListenerMessage>;
 
-export type HistoryKey = [Event, UnknownEventValue, Player | undefined];
+export type HistoryKey<E extends Event> = [
+	E,
+	EventValue<E>,
+	Player | undefined,
+];
 
 export enum QuestType {
 	Quest = "Quest",

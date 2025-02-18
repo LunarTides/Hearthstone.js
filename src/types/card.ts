@@ -1,6 +1,6 @@
 import type { Card } from "@Game/card.js";
 import type { Player } from "@Game/player.js";
-import type { Event, UnknownEventValue } from "@Game/types.js";
+import type { Event } from "@Game/types.js";
 import type { Card as _VanillaCard } from "@hearthstonejs/vanillatypes";
 
 export type VanillaCard = _VanillaCard;
@@ -203,7 +203,7 @@ export type AbilityCallback = (
 	owner: Player,
 	self: Card,
 	key?: Event,
-	_unknownValue?: UnknownEventValue,
+	value?: unknown,
 	eventPlayer?: Player,
 ) => Promise<unknown>;
 

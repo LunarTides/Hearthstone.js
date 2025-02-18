@@ -4,6 +4,7 @@ import assert from "node:assert";
 import {
 	type Blueprint,
 	Class,
+	Event,
 	Keyword,
 	MinionTribe,
 	Rarity,
@@ -33,7 +34,7 @@ export const blueprint: Blueprint = {
 		// At the end of your turn, this minion dies.
 
 		// Only continue if the event that triggered this is the EndTurn event, and the player that triggered the event is this card's owner.
-		if (key !== "EndTurn" || eventPlayer !== owner) {
+		if (!game.event.is(key, value, Event.EndTurn) || eventPlayer !== owner) {
 			return;
 		}
 

@@ -4,6 +4,7 @@ import assert from "node:assert";
 import {
 	type Blueprint,
 	Class,
+	Event,
 	Rarity,
 	SpellSchool,
 	Type,
@@ -28,9 +29,9 @@ export const blueprint: Blueprint = {
 		self.storage.blossomed = false;
 	},
 
-	async passive(owner, self, key, _unknownValue, eventPlayer) {
+	async passive(owner, self, key, value, eventPlayer) {
 		// Increment blossom counter at the end of the owner's turn
-		if (key !== "EndTurn" || eventPlayer !== owner) {
+		if (!game.event.is(key, value, Event.EndTurn) || eventPlayer !== owner) {
 			return;
 		}
 

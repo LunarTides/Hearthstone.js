@@ -6,7 +6,6 @@ import {
 	Class,
 	Event,
 	EventListenerMessage,
-	type EventValue,
 	QuestType,
 	Rarity,
 	SpellSchool,

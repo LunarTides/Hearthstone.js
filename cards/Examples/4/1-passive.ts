@@ -4,7 +4,7 @@ import {
 	Ability,
 	type Blueprint,
 	Class,
-	type EventValue,
+	Event,
 	MinionTribe,
 	Rarity,
 	Type,
@@ -30,10 +30,10 @@ export const blueprint: Blueprint = {
 	tribes: [MinionTribe.None],
 
 	/*
-	 * Note the new `key`, `_unknownValue` and `eventPlayer` arguments.
+	 * Note the new `key`, `value` and `eventPlayer` arguments.
 	 * These are only used in the `passive`, `handpassive`, `tick`, and `handtick` abilities.
 	 */
-	async passive(owner, self, key, _unknownValue, eventPlayer) {
+	async passive(owner, self, key, value, eventPlayer) {
 		/*
 		 * Your battlecries trigger twice.
 		 * ^ In order to do this, we wait until a minion is played, then manually trigger its battlecry.
@@ -48,8 +48,8 @@ export const blueprint: Blueprint = {
 		/*
 		 * `key` is the key of the event. Look in `src/types.ts` > `EventKey` type for all keys.
 		 * `eventPlayer` is the player that triggered the event.
-		 * `_unknownValue` is some additional information about the event. The type of this variable is different for each `key`, which is why it's unknown.
-		 * We will narrow the type of `_unknownValue` once we know what `key` is.
+		 * `value` is some additional information about the event. The type of this variable is different for each `key`, so it's currently unknown.
+		 * We will narrow the type of `value` once we know what `key` is.
 		 *
 		 * We want to execute code when a card gets played. There exists an event with the key `PlayCard` that does this.
 		 * That event's value is the card played (type `Card`).
@@ -60,17 +60,13 @@ export const blueprint: Blueprint = {
 		 * We don't refund here, since refunding from passives is not supported, and currently doesn't do anything.
 		 * We only want YOUR battlecries to trigger twice. (`eventPlayer` is the player that triggered the event)
 		 */
-		if (key !== "PlayCard" || eventPlayer !== owner) {
+		if (!game.event.is(key, value, Event.PlayCard) || eventPlayer !== owner) {
 			return;
 		}
 
-		// Since we now know that the key is `PlayCard`, we can retrieve the correct value by doing this.
-		// This narrows the type of `_unknownValue` since the type of key is now "PlayCard".
-		const value = _unknownValue as EventValue<typeof key>;
-
 		/*
-		 * `value` is now the correct type for that key (in this case `Card`)
-		 * If i change the event's value in the future, this will correctly cause an error instead of unexpected behavior.
+		 * `value` is now the correct type for that key (in this case `Card`) since `game.event.is` helpfully narrows down the type of `value`.
+		 * If I change the event's value in the future, this will correctly cause an error instead of unexpected behavior.
 		 */
 
 		// We check if the card played is not a minion (this is not neccessary in this case since if the card doesn't have a battlecry, it won't do anything, but it is here for clarity)

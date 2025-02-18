@@ -6,7 +6,7 @@ import {
 	Ability,
 	type Blueprint,
 	Class,
-	type EventValue,
+	Event,
 	Keyword,
 	MinionTribe,
 	Rarity,
@@ -37,19 +37,13 @@ export const blueprint: Blueprint = {
 		]);
 	},
 
-	async passive(owner, self, key, _unknownValue) {
+	async passive(owner, self, key, value) {
 		// After this uses an ability, cast two random spells
 
 		// Only proceed if the correct event key was broadcast
-		if (key !== "Titan") {
+		if (!game.event.is(key, value, Event.Titan)) {
 			return;
 		}
-
-		/*
-		 * Here we cast the value to the correct type.
-		 * Do not use the '_unknownValue' variable after this.
-		 */
-		const value = _unknownValue as EventValue<typeof key>;
 
 		if (value[0] !== self) {
 			return;

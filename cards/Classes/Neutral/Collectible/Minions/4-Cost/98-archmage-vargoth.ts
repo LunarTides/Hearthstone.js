@@ -6,6 +6,7 @@ import {
 	Ability,
 	type Blueprint,
 	Class,
+	Event,
 	MinionTribe,
 	Rarity,
 	Type,
@@ -26,11 +27,11 @@ export const blueprint: Blueprint = {
 	health: 6,
 	tribes: [MinionTribe.None],
 
-	async passive(owner, self, key, _unknownValue) {
+	async passive(owner, self, key, value) {
 		// At the end of your turn, cast a spell you've cast this turn (targets are random).
 
 		// Only proceed if the correct event key was broadcast
-		if (key !== "EndTurn") {
+		if (!game.event.is(key, value, Event.EndTurn)) {
 			return;
 		}
 

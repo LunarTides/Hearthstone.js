@@ -6,6 +6,7 @@ import {
 	type Blueprint,
 	CardTag,
 	Class,
+	Event,
 	MinionTribe,
 	Rarity,
 	Type,
@@ -30,7 +31,7 @@ export const blueprint: Blueprint = {
 		// At the end of your turn, give another friendly minion +1 Attack.
 
 		// Only continue if the event that triggered this is the EndTurn event, and the player that triggered the event is this card's owner.
-		if (key !== "EndTurn" || eventPlayer !== owner) {
+		if (!game.event.is(key, value, Event.EndTurn) || eventPlayer !== owner) {
 			return;
 		}
 

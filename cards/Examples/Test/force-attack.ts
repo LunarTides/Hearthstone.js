@@ -5,7 +5,7 @@ import { Card } from "@Game/card.js";
 import {
 	type Blueprint,
 	Class,
-	type EventValue,
+	Event,
 	MinionTribe,
 	Rarity,
 	Type,
@@ -32,22 +32,21 @@ export const blueprint: Blueprint = {
 		self.storage.attack = [];
 	},
 
-	async passive(owner, self, key, _unknownValue, eventPlayer) {
+	async passive(owner, self, key, value, eventPlayer) {
 		// Whenever a minion attacks, it attacks again.
 
 		/*
 		 * If the turn ends, clear the storage.
 		 * This is so that you can attack with that combo next turn and it still works.
 		 */
-		if (key === "EndTurn") {
+		if (key === Event.EndTurn) {
 			self.storage.attack = [];
 		}
 
-		if (key !== "Attack") {
+		if (!game.event.is(key, value, Event.Attack)) {
 			return;
 		}
 
-		const value = _unknownValue as EventValue<typeof key>;
 		const [attacker, target] = value;
 
 		/*

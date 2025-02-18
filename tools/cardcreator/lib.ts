@@ -170,7 +170,7 @@ export async function create(
 	const isPassive = ability.toLowerCase() === "passive";
 	let triggerText = ")";
 	if (isPassive) {
-		triggerText = ", key, _unknownValue, eventPlayer)";
+		triggerText = ", key, value, eventPlayer)";
 	}
 
 	let extraPassiveCode = "";
@@ -178,15 +178,9 @@ export async function create(
 		extraPassiveCode = `
 
         // Only proceed if the correct event key was broadcast
-        if (key !== Event.ChangeMe) {
+        if (!game.event.is(key, value, Event.ChangeMe)) {
             return;
-        }
-
-        /**
-         * Here we cast the value to the correct type.
-         * Do not use the '_unknownValue' variable after this.
-         */
-        const value = _unknownValue as EventValue<typeof key>;`;
+        }`;
 	}
 
 	// If the text has `<b>Battlecry:</b> Dredge.`, add `// Dredge.` to the battlecry ability
@@ -226,7 +220,7 @@ ${runes}${keywords}
 
 	/*
 	 * Normal ability
-	 * Example 1: '\n\n    passive(owner, self, key, _unknownValue, eventPlayer) {\n        // Your battlecries trigger twice.\n        ...\n    }',
+	 * Example 1: '\n\n    passive(owner, self, key, value, eventPlayer) {\n        // Your battlecries trigger twice.\n        ...\n    }',
 	 * Example 2: '\n\n    battlecry(owner, self) {\n        // Deal 2 damage to the opponent.\n        \n    }'
 	 */
 	if (ability) {
@@ -360,8 +354,8 @@ ${runes}${keywords}
 		return returnValue;
 	});
 
-	// If the function is passive, add `EventValue` to the list of imports
-	const passiveImport = isPassive ? "\n\tEvent,\n\ttype EventValue," : "";
+	// If the function is passive, add `Event` to the list of imports
+	const passiveImport = isPassive ? "\n\tEvent," : "";
 	const tagImport = usesTags ? "\n\tCardTag," : "";
 	let typeImport = "\n\t";
 
