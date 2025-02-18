@@ -1429,7 +1429,7 @@ const commands: CommandList = {
 
 		try {
 			// biome-ignore lint/security/noGlobalEval: This is a security issue yes, but it's a debug command.
-			eval(code);
+			await eval(code);
 		} catch (error) {
 			if (!(error instanceof Error)) {
 				throw new TypeError("`error` is not an instance of Error");

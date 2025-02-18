@@ -722,6 +722,6 @@ ${mainContent}
 			code = `${code});await game.pause();`;
 		}
 
-		return code;
+		return `(async () => { ${code} })()`;
 	},
 };
