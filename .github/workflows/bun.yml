@@ -17,5 +17,20 @@ jobs:
       with:
         bun-version: latest
     - run: bun install
-    # - run: bun run generate
-    - run: bun run ci
+    # - run: bun run script:vanilla:generate
+
+    # NOTE: `bun ci` is currently broken.
+    # - run: bun ci
+
+    - run: bunx biome ci
+    - run: bun test
+    - run: bunx tsc
+    - run: bun ./scripts/testcards.ts
+
+    - name: Crashtest
+      run: |
+        bun ./scripts/crashtest.ts &&
+        bun ./scripts/crashtest.ts &&
+        bun ./scripts/crashtest.ts &&
+        bun ./scripts/crashtest.ts &&
+        bun ./scripts/crashtest.ts
