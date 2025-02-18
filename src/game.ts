@@ -7,6 +7,7 @@ import { Player } from "@Game/player.js";
 import {
 	Ability,
 	type Blueprint,
+	CardTag,
 	Event,
 	type EventValue,
 	GameAttackReturn,
@@ -1319,16 +1320,12 @@ export class Game {
 			}
 
 			/*
-			 * Add quest cards to the players hands
-			 * Loop through the player's deck and find cards that have the text "Quest: " or "Questline: " and add them to the player's hand
+			 * Add quest cards to the player's hand.
 			 */
 			for (const card of player.deck) {
-				const rawText = game.functions.color.stripTags(card.text);
-				if (!/^Quest(?:line)?: /.test(rawText)) {
-					continue;
+				if (card.tags.includes(CardTag.Quest)) {
+					await player.drawSpecific(card);
 				}
-
-				await player.drawSpecific(card);
 			}
 
 			// Draw 3-4 cards

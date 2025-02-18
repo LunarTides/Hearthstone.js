@@ -144,6 +144,7 @@ export enum CardTag {
 	Totem = "Totem",
 	Lackey = "Lackey",
 	DIY = "Diy",
+	Quest = "Quest",
 }
 
 /**

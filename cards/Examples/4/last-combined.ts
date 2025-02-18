@@ -2,6 +2,7 @@
 
 import {
 	type Blueprint,
+	CardTag,
 	Class,
 	Event,
 	EventListenerMessage,
@@ -20,7 +21,7 @@ export const blueprint: Blueprint = {
 	classes: [Class.Neutral],
 	rarity: Rarity.Legendary,
 	collectible: false,
-	tags: [],
+	tags: [CardTag.Quest],
 	id: 60,
 
 	spellSchools: [SpellSchool.None],

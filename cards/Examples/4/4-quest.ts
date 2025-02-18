@@ -3,6 +3,7 @@
 import type { Card } from "@Game/card.js";
 import {
 	type Blueprint,
+	CardTag,
 	Class,
 	Event,
 	EventListenerMessage,
@@ -23,7 +24,14 @@ export const blueprint: Blueprint = {
 	classes: [Class.Neutral],
 	rarity: Rarity.Free,
 	collectible: false,
-	tags: [],
+
+	/*
+	 * Quest cards NEED to have the `Quest` tag.
+	 * DON'T add it to sidequest cards though.
+	 * Otherwise, the game won't add it to the player's hand at the start of the game.
+	 */
+	tags: [CardTag.Quest],
+
 	id: 58,
 
 	spellSchools: [SpellSchool.None],
