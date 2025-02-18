@@ -36,7 +36,7 @@ export const blueprint: Blueprint = {
 		 */
 
 		for (const card of owner.hand) {
-			// If the card was already given the "-1 cost" enchantment from this card, ignore it
+			// If the card was already given the "-1 cost" enchantment from this card, ignore it.
 			if (card.enchantmentExists("-1 cost", self)) {
 				continue;
 			}
@@ -44,7 +44,7 @@ export const blueprint: Blueprint = {
 			// Give the card the "-1 cost" enchantment.
 			card.addEnchantment("-1 cost", self);
 
-			// You can also give "+x cost", or "cost = x" enchantments
+			// You can also give "+x cost", or "cost = x" enchantments.
 		}
 	},
 

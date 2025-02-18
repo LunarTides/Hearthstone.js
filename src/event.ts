@@ -98,7 +98,7 @@ export const eventManager = {
 				// Just in case. Remove for small performance boost
 				card.applyEnchantments();
 
-				await card.activate(Ability.HandTick, key, value, player);
+				await card.trigger(Ability.HandTick, key, value, player);
 				if (card.cost < 0) {
 					card.cost = 0;
 				}
@@ -109,7 +109,7 @@ export const eventManager = {
 					continue;
 				}
 
-				await card.activate(Ability.Tick, key, value, player);
+				await card.trigger(Ability.Tick, key, value, player);
 			}
 		}
 
@@ -141,7 +141,7 @@ export const eventManager = {
 					continue;
 				}
 
-				await card.activate(Ability.Passive, key, value, player);
+				await card.trigger(Ability.Passive, key, value, player);
 			}
 		}
 
@@ -150,13 +150,13 @@ export const eventManager = {
 
 			// Activate spells in the players hand
 			for (const card of player.hand) {
-				await card.activate(Ability.HandPassive, key, value, player);
+				await card.trigger(Ability.HandPassive, key, value, player);
 
 				if (card.type !== Type.Spell) {
 					continue;
 				}
 
-				await card.activate(Ability.Passive, key, value, player);
+				await card.trigger(Ability.Passive, key, value, player);
 			}
 
 			const { weapon } = player;
@@ -164,7 +164,7 @@ export const eventManager = {
 				continue;
 			}
 
-			await weapon.activate(Ability.Passive, key, value, player);
+			await weapon.trigger(Ability.Passive, key, value, player);
 		}
 
 		await game.triggerEventListeners(key, value, player);
@@ -230,7 +230,7 @@ export const eventManager = {
 
 			if (quest.next) {
 				const nextQuest = await Card.create(quest.next, player);
-				await nextQuest.activate(Ability.Cast);
+				await nextQuest.trigger(Ability.Cast);
 			}
 		}
 

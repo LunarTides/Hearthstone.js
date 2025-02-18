@@ -56,10 +56,10 @@ export const blueprint: Blueprint = {
 		await opponent.summon(sheep);
 
 		// Kill the sheep
-		await self.activate(Ability.Cast);
+		await self.trigger(Ability.Cast);
 
 		// Check if the sheep is dead
 		assert.equal(owner.board.length, 0);
-		assert.equal(sheep.health, 0);
+		assert.ok(!sheep.isAlive());
 	},
 };

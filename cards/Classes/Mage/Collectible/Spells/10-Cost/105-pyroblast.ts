@@ -47,7 +47,7 @@ export const blueprint: Blueprint = {
 		owner.forceTarget = owner.getOpponent();
 
 		// If no spellDamage
-		await self.activate(Ability.Cast);
+		await self.trigger(Ability.Cast);
 		assert.equal(owner.getOpponent().health, enemyHealth - 10);
 
 		// Reset health
@@ -56,7 +56,7 @@ export const blueprint: Blueprint = {
 		// If 5 spellDamage
 		owner.spellDamage = 5;
 
-		await self.activate(Ability.Cast);
+		await self.trigger(Ability.Cast);
 		assert.equal(owner.getOpponent().health, enemyHealth - 15);
 	},
 };

@@ -7,7 +7,7 @@ import { Card } from "@Game/card.js";
  */
 // createGame();
 
-describe("src/core/card", () => {
+describe("src/card", () => {
 	test.todo("allFromName - static", async () => {
 		expect(false).toEqual(true);
 	});

@@ -32,7 +32,7 @@ export const blueprint: Blueprint = {
 
 	async test(owner, self) {
 		owner.health = owner.maxHealth - 5;
-		await self.activate(Ability.Cast);
+		await self.trigger(Ability.Cast);
 
 		assert.equal(owner.health, owner.maxHealth - 2);
 	},

@@ -19,7 +19,13 @@ export const blueprint: Blueprint = {
 	// The amount of armor that the player will gain when playing this card.
 	armor: 5,
 
-	// The id of the hero power card. Here we use the `2-heropower.ts` card.
+	/*
+	 * The id of the hero power card. Here we use the `2-heropower.ts` card.
+	 *
+	 * The `game.cardIds` object contains the ids of every card in the game.
+	 * It exists because doing `heropowerId: 130` is not very readable.
+	 * The `game.cardIds` representation of the card is its name, followed by its id.
+	 */
 	heropowerId: game.cardIds.heropowerExample130,
 
 	async battlecry(owner, self) {
@@ -34,9 +40,8 @@ export const blueprint: Blueprint = {
 	},
 
 	async test(owner, self) {
-		// Test battlecry
 		owner.health = 1;
-		await self.activate(Ability.Battlecry);
+		await self.trigger(Ability.Battlecry);
 		assert.equal(owner.health, owner.maxHealth);
 	},
 };

@@ -7,7 +7,7 @@ import { Ai } from "@Game/ai.js";
  */
 // createGame();
 
-describe("src/core/ai", () => {
+describe("src/ai", () => {
 	test.todo("calcMove", async () => {
 		expect(false).toEqual(true);
 	});

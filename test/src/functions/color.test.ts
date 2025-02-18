@@ -10,7 +10,7 @@ import { stopTagParsing } from "chalk-tags";
  */
 createGame();
 
-describe("src/core/functions/color", () => {
+describe("src/functions/color", () => {
 	test("fromRarity", async () => {
 		// Disable parsing tags so the output from `fromRarity` is easier to parse.
 		stopTagParsing();

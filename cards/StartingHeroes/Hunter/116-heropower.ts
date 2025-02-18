@@ -22,7 +22,7 @@ export const blueprint: Blueprint = {
 	async test(owner, self) {
 		// The opponent should have 30 health
 		assert.equal(owner.getOpponent().health, 30);
-		await self.activate(Ability.HeroPower);
+		await self.trigger(Ability.HeroPower);
 
 		// The opponent should now have 28 health.
 		assert.equal(owner.getOpponent().health, 30 - 2);

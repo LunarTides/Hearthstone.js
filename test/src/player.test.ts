@@ -8,7 +8,7 @@ import { Player } from "@Game/player.js";
  */
 createGame();
 
-describe("src/core/player", () => {
+describe("src/player", () => {
 	test("fromID - static", async () => {
 		expect(Player.fromID(0)).toEqual(game.player1);
 		expect(Player.fromID(1)).toEqual(game.player2);

@@ -52,7 +52,7 @@ export const blueprint: Blueprint = {
 
 	async test(owner, self) {
 		owner.inputQueue = ["face", "y"];
-		await self.activate(Ability.Battlecry);
+		await self.trigger(Ability.Battlecry);
 
 		assert.equal(owner.getOpponent().health, 30 - 2);
 		assert.equal(owner.inputQueue, undefined);

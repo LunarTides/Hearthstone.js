@@ -7,7 +7,7 @@ import { interactFunctions } from "@Game/functions/interact.js";
  */
 // createGame();
 
-describe("src/core/functions/interact", () => {
+describe("src/functions/interact", () => {
 	test.todo("prompt > deckcode", async () => {
 		expect(false).toEqual(true);
 	});

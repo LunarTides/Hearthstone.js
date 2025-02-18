@@ -13,7 +13,10 @@ export const blueprint: Blueprint = {
 	name: "Spell Example",
 	text: "Just an example card (Does nothing)",
 	cost: 1,
+
+	// Remember to properly set the type. (Done automatically by the card creator)
 	type: Type.Spell,
+
 	classes: [Class.Neutral],
 	rarity: Rarity.Free,
 	collectible: false,

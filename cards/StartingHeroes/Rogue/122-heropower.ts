@@ -28,7 +28,7 @@ export const blueprint: Blueprint = {
 	async test(owner, self) {
 		// The player should not have a weapon
 		assert.equal(owner.weapon, undefined);
-		await self.activate(Ability.HeroPower);
+		await self.trigger(Ability.HeroPower);
 
 		// The player should now have the wicked knife weapon
 		assert.ok(owner.weapon);

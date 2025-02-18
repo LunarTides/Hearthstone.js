@@ -8,7 +8,7 @@ import { createGame } from "@Game/game.js";
  */
 createGame();
 
-describe("src/core/functions/util", () => {
+describe("src/functions/util", () => {
 	test("remove", async () => {
 		const list = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5];
 

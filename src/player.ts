@@ -532,7 +532,7 @@ export class Player {
 			return false;
 		}
 
-		await this.weapon.activate(Ability.Deathrattle);
+		await this.weapon.trigger(Ability.Deathrattle);
 		this.attack -= this.weapon.attack ?? 0;
 
 		await this.weapon.destroy();
@@ -715,7 +715,7 @@ export class Player {
 			if (
 				card.type === Type.Spell &&
 				card.hasKeyword(Keyword.CastOnDraw) &&
-				(await card.activate(Ability.Cast))
+				(await card.trigger(Ability.Cast))
 			) {
 				drawAmount += 1;
 				continue;
@@ -773,7 +773,7 @@ export class Player {
 		if (
 			card.type === Type.Spell &&
 			card.hasKeyword(Keyword.CastOnDraw) &&
-			(await card.activate(Ability.Cast))
+			(await card.trigger(Ability.Cast))
 		) {
 			return undefined;
 		}
@@ -871,13 +871,13 @@ export class Player {
 		}
 
 		if (
-			(await this.hero.heropower?.activate(Ability.HeroPower)) === Card.REFUND
+			(await this.hero.heropower?.trigger(Ability.HeroPower)) === Card.REFUND
 		) {
 			return Card.REFUND;
 		}
 
 		for (const card of this.board) {
-			await card.activate(Ability.Inspire);
+			await card.trigger(Ability.Inspire);
 		}
 
 		this.mana -= this.hero.heropower?.cost ?? 0;
@@ -1221,23 +1221,23 @@ export class Player {
 		}
 
 		for (const card of this.deck) {
-			await card.activate(Ability.Invoke);
+			await card.trigger(Ability.Invoke);
 		}
 
 		for (const card of this.hand) {
-			await card.activate(Ability.Invoke);
+			await card.trigger(Ability.Invoke);
 		}
 
 		for (const card of this.board) {
-			await card.activate(Ability.Invoke);
+			await card.trigger(Ability.Invoke);
 		}
 
 		if (isCurrentlyGalakrond) {
-			await this.hero.heropower?.activate(Ability.Cast);
+			await this.hero.heropower?.trigger(Ability.Cast);
 		} else if (hasGalakrondInDeck) {
-			await hasGalakrondInDeck.heropower?.activate(Ability.Cast);
+			await hasGalakrondInDeck.heropower?.trigger(Ability.Cast);
 		} else if (hasGalakrondInHand) {
-			await hasGalakrondInHand.heropower?.activate(Ability.Cast);
+			await hasGalakrondInHand.heropower?.trigger(Ability.Cast);
 		}
 
 		return true;

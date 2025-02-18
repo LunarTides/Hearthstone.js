@@ -62,7 +62,7 @@ export const blueprint: Blueprint = {
 
 		// There shouldn't exist any 2-Cost minions right now.
 		assert(!exists2CostMinion());
-		await self.activate(Ability.Battlecry);
+		await self.trigger(Ability.Battlecry);
 
 		// There should exist a 2-Cost minion now.
 		assert(exists2CostMinion());

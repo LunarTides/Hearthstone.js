@@ -539,7 +539,7 @@ export class Card {
 	 * @param [suppressEvent=false] If the "CreateCard" event should be suppressed.
 	 */
 	async setup(suppressEvent = false): Promise<void> {
-		const placeholder = await this.activate(Ability.Placeholders);
+		const placeholder = await this.trigger(Ability.Placeholders);
 
 		// This is a list of replacements.
 		if (Array.isArray(placeholder)) {
@@ -549,7 +549,7 @@ export class Card {
 		// Override the properties from the blueprint
 		await this.doBlueprint(false);
 
-		await this.activate(Ability.Create);
+		await this.trigger(Ability.Create);
 		await this.formatPlaceholders();
 
 		let unsuppress: undefined | (() => boolean);
@@ -587,9 +587,9 @@ export class Card {
 	/**
 	 * Sets fields based on the blueprint of the card.
 	 *
-	 * @param activate If it should trigger the card's `create` ability.
+	 * @param trigger If it should trigger the card's `create` ability.
 	 */
-	async doBlueprint(activate = true): Promise<void> {
+	async doBlueprint(trigger = true): Promise<void> {
 		// Reset the blueprint
 		this.blueprint =
 			game.blueprints.find((c) => c.id === this.id) ?? this.blueprint;
@@ -627,8 +627,8 @@ export class Card {
 		}
 
 		this.text = parseTags(this.text || "");
-		if (activate) {
-			await this.activate(Ability.Create);
+		if (trigger) {
+			await this.trigger(Ability.Create);
 		}
 	}
 
@@ -913,7 +913,7 @@ export class Card {
 			// Too much health
 
 			// Overheal keyword
-			await this.activate(Ability.Overheal);
+			await this.trigger(Ability.Overheal);
 
 			this.health = this.maxHealth ?? -1;
 
@@ -1138,7 +1138,7 @@ export class Card {
 		 * The false tells the minion that this is the last time it will call remove
 		 * so it should finish whatever it is doing.
 		 */
-		const removeReturn = await this.activate(Ability.Remove, "SilenceCard");
+		const removeReturn = await this.trigger(Ability.Remove, "SilenceCard");
 
 		// If the remove function returned false, then we should not silence.
 		if (Array.isArray(removeReturn) && removeReturn[0] === false) {
@@ -1228,42 +1228,38 @@ export class Card {
 	// Handling functions
 
 	/**
-	 * Activates an ability
+	 * Trigger one of this card's abilities.
 	 *
-	 * @param name The method to activate
+	 * @param name The ability to trigger.
 	 * @param key The key of the event. ONLY PASS THIS IN PASSIVE, REMOVE, OR TICK ABILITIES.
 	 * @param value The raw value of the event. ONLY PASS THIS IN PASSIVE, REMOVE, OR TICK ABILITIES.
 	 * @param eventPlayer The player who caused the event. ONLY PASS THIS IN PASSIVE, REMOVE, OR TICK ABILITIES.
 	 *
-	 * @returns All the return values of the method keywords
+	 * @returns All the return values of the abilities.
 	 */
-	async activate<E extends Event>(
+	async trigger<E extends Event>(
 		name: Ability,
 		key?: E | string,
 		value?: EventValue<E>,
 		eventPlayer?: Player,
 	): Promise<unknown[] | typeof Card.REFUND | false> {
 		/*
-		 * This activates a function
-		 * Example: activate(Ability.Cast)
-		 * Do: this.cast.forEach(castFunc => castFunc(owner, card))
-		 * Returns a list of the return values from all the function calls
+		 * Example: trigger(Ability.Cast)
+		 * Does: this.cast.forEach(castFunc => castFunc(owner, card))
 		 */
-		const ability: AbilityCallback[] | undefined = this.abilities[name];
-
-		// If the card has the function
-		if (!ability) {
+		const abilities: AbilityCallback[] | undefined = this.abilities[name];
+		if (!abilities) {
 			return false;
 		}
 
 		let returnValue: unknown[] | typeof Card.REFUND = [];
 
-		for (const callback of ability) {
+		for (const ability of abilities) {
 			if (returnValue === Card.REFUND) {
 				continue;
 			}
 
-			const result = await callback(
+			const result = await ability(
 				this.owner,
 				this,
 				key as Event,
@@ -1299,17 +1295,15 @@ export class Card {
 			);
 
 			this.owner[this.costType] += this.cost;
-
-			// Return from the for loop
 		}
 
 		return returnValue;
 	}
 
 	/**
-	 * @param m The mana to test
+	 * @param m How much mana the player needs to succeed the manathirst test.
 	 *
-	 * @returns Manathirst for `m`
+	 * @returns If the player has enough mana
 	 */
 	manathirst(m: number): boolean {
 		return this.owner.emptyMana >= m;
@@ -1348,7 +1342,7 @@ export class Card {
 		this.text = this.text.replace(clearedTextAlternative, "");
 
 		// Check if the condition is met
-		const condition = await this.activate(Ability.Condition);
+		const condition = await this.trigger(Ability.Condition);
 		if (!Array.isArray(condition) || condition[0] === false) {
 			return false;
 		}
@@ -1590,7 +1584,7 @@ export class Card {
 	 *
 	 *     return { turns };
 	 * }];
-	 * await card.replacePlaceholders();
+	 * await card.formatPlaceholders();
 	 *
 	 * // The `{ph:turns}` tag is replaced when displaying the card.
 	 * assert.equal(card.text, "The current turn count is {ph:turns}");
@@ -1603,7 +1597,7 @@ export class Card {
 			return false;
 		}
 
-		const temporaryPlaceholder = await this.activate(Ability.Placeholders);
+		const temporaryPlaceholder = await this.trigger(Ability.Placeholders);
 		if (!Array.isArray(temporaryPlaceholder)) {
 			return false;
 		}
@@ -1956,7 +1950,7 @@ export class Card {
 			return false;
 		}
 
-		await this.activate(Ability.Infuse);
+		await this.trigger(Ability.Infuse);
 		return true;
 	}
 

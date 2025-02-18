@@ -12,7 +12,13 @@ import {
 
 export const blueprint: Blueprint = {
 	name: "Combined Example 3",
+
+	/*
+	 * This is less complicated than it looks.
+	 * The actual complicated stuff is delaying *code* until certain conditions are met.
+	 */
 	text: "If the turn counter is an even number, gain mana equal to the turn counter (up to 10). Manathirst (7): Remove the condition. (Currently: {turns})",
+
 	cost: 0,
 	type: Type.Spell,
 	classes: [Class.Neutral],
@@ -45,7 +51,7 @@ export const blueprint: Blueprint = {
 			turns = 10;
 		}
 
-		// `turns` % 2 will always return 0 if it is an even number, and always return 1 if it is an odd number.
+		// Check if the turn counter is an even number.
 		const even = turns % 2 === 0;
 		const manathirst = self.manathirst(7);
 
@@ -75,7 +81,7 @@ export const blueprint: Blueprint = {
 		// The condition is not cleared
 		let { mana } = owner;
 		assert.equal(turn(), 1);
-		await self.activate(Ability.Cast);
+		await self.trigger(Ability.Cast);
 
 		assert.equal(owner.mana, mana);
 
@@ -86,7 +92,7 @@ export const blueprint: Blueprint = {
 		// The condition is cleared, gain 2 mana.
 		mana = owner.mana;
 		assert.equal(turn(), 2);
-		await self.activate(Ability.Cast);
+		await self.trigger(Ability.Cast);
 
 		assert.equal(owner.mana, mana + 2);
 
@@ -98,7 +104,7 @@ export const blueprint: Blueprint = {
 		owner.emptyMana = 7;
 		mana = owner.mana;
 		assert.equal(turn(), 3);
-		await self.activate(Ability.Cast);
+		await self.trigger(Ability.Cast);
 
 		assert.equal(owner.mana, mana + 3);
 	},

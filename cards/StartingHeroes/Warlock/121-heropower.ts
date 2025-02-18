@@ -30,7 +30,7 @@ export const blueprint: Blueprint = {
 		assert.equal(owner.hand.length, 0);
 		assert.equal(owner.health, 30);
 
-		await self.activate(Ability.HeroPower);
+		await self.trigger(Ability.HeroPower);
 
 		// The player should now have 1 card in their hand, and 28 health.
 		assert.equal(owner.hand.length, 1);

@@ -31,7 +31,7 @@ export const blueprint: Blueprint = {
 		// Update if changing the default max mana.
 		assert.equal(owner.maxMana, 10);
 
-		await self.activate(Ability.Battlecry);
+		await self.trigger(Ability.Battlecry);
 
 		assert.equal(owner.maxMana, 20);
 		assert.equal(owner.emptyMana, emptyMana + 1);

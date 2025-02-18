@@ -52,7 +52,7 @@ export const blueprint: Blueprint = {
 	async test(owner, self) {
 		// Summon a 6/6 Orca with Taunt
 		owner.inputQueue = ["1"];
-		await self.activate(Ability.Cast);
+		await self.trigger(Ability.Cast);
 
 		// There should be 1 Orca on the board
 		assert.equal(
@@ -65,7 +65,7 @@ export const blueprint: Blueprint = {
 
 		// Summon six 1/1 Otters with Rush
 		owner.inputQueue = ["2"];
-		await self.activate(Ability.Cast);
+		await self.trigger(Ability.Cast);
 
 		// There should be 6 Otters on the board
 		assert.equal(

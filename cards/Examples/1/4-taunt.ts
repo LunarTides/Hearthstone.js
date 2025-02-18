@@ -34,6 +34,8 @@ export const blueprint: Blueprint = {
 
 	/*
 	 * This is an ability. More on abilities in `1-5`.
+	 *
+	 * The `self` variable is the actual card itself in-game.
 	 * Be careful when interacting with `owner` or `self.owner` in the create ability, it might not always be the player you're expecting.
 	 */
 	async create(owner, self) {

@@ -8,7 +8,7 @@ export const blueprint: Blueprint = {
 	text: "Restore 2 Health to your hero.",
 	cost: 2,
 
-	// Remember to set the type to "Heropower"
+	// Remember to set the type to `HeroPower`.
 	type: Type.HeroPower,
 
 	classes: [Class.Neutral],
@@ -25,9 +25,8 @@ export const blueprint: Blueprint = {
 	},
 
 	async test(owner, self) {
-		// Test hero power
 		owner.health = 1;
-		await self.activate(Ability.HeroPower);
+		await self.trigger(Ability.HeroPower);
 		assert.equal(owner.health, 1 + 2);
 	},
 };

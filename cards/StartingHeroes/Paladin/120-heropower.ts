@@ -31,7 +31,7 @@ export const blueprint: Blueprint = {
 
 		// The minion should not exist
 		assert(!checkIfMinionExists());
-		await self.activate(Ability.HeroPower);
+		await self.trigger(Ability.HeroPower);
 
 		// The minion should now exist
 		assert(checkIfMinionExists());

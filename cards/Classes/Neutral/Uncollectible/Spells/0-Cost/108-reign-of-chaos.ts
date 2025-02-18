@@ -57,7 +57,7 @@ export const blueprint: Blueprint = {
 
 		// Activate cast and make the player choose the sheep
 		owner.inputQueue = ["1"];
-		await self.activate(Ability.Cast);
+		await self.trigger(Ability.Cast);
 
 		// Check if the sheep's owner is the friendly player, is on this side of the board, and not the opponent's side of the board
 		assert.equal(sheep.owner, owner);

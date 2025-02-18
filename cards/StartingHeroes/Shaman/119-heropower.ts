@@ -55,7 +55,7 @@ export const blueprint: Blueprint = {
 		assert(checkForTotemCard(0));
 
 		for (let index = 1; index <= totemCards.length + 1; index++) {
-			await self.activate(Ability.HeroPower);
+			await self.trigger(Ability.HeroPower);
 
 			// If all totem cards are on the board, it shouldn't summon a new one
 			if (index > totemCards.length) {

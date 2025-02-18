@@ -28,7 +28,7 @@ export const blueprint: Blueprint = {
 	attack: 4,
 	health: 4,
 
-	// You can set the tribe to "All" for "This has all minion types"
+	// You can set the tribe to "All" to mean "This has all minion types."
 	tribes: [MinionTribe.All],
 
 	async create(owner, self) {
@@ -43,7 +43,6 @@ export const blueprint: Blueprint = {
 
 		// Ordering is important. In the description it says that it dredges first, then adds +1/+1.
 		await game.functions.interact.prompt.dredge();
-
 		await self.addStats(1, 1);
 	},
 
@@ -53,7 +52,7 @@ export const blueprint: Blueprint = {
 		owner.inputQueue = ["1"];
 
 		// We can't really check the dredged card here.
-		await self.activate(Ability.Battlecry);
+		await self.trigger(Ability.Battlecry);
 
 		// Check that the stats went up by 1
 		assert.equal((self.blueprint.attack ?? 0) + 1, self.attack);

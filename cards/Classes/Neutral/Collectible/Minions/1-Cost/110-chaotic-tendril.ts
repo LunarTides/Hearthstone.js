@@ -35,7 +35,7 @@ export const blueprint: Blueprint = {
 		const spell = await game.lodash.sample(pool)?.imperfectCopy();
 
 		if (spell) {
-			await spell.activate(Ability.Cast);
+			await spell.trigger(Ability.Cast);
 		}
 
 		// TODO: Improve your future Chaotic Tendrils. #372

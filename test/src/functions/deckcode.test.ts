@@ -7,7 +7,7 @@ import { deckcodeFunctions } from "@Game/functions/deckcode.js";
  */
 // createGame();
 
-describe("src/core/functions/deckcode", () => {
+describe("src/functions/deckcode", () => {
 	test.todo("import", async () => {
 		expect(false).toEqual(true);
 	});

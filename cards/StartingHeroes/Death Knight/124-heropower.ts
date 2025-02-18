@@ -32,7 +32,7 @@ export const blueprint: Blueprint = {
 
 		// The minion shouldn't be on the board at first.
 		assert(!lookForMinion());
-		await self.activate(Ability.HeroPower);
+		await self.trigger(Ability.HeroPower);
 
 		// The minion should now be on the board.
 		assert(lookForMinion());

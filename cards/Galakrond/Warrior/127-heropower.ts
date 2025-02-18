@@ -22,7 +22,7 @@ export const blueprint: Blueprint = {
 
 	async test(owner, self) {
 		assert.equal(owner.attack, 0);
-		await self.activate(Ability.HeroPower);
+		await self.trigger(Ability.HeroPower);
 
 		assert.equal(owner.attack, 3);
 	},

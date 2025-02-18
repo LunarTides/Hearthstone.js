@@ -40,7 +40,7 @@ export const blueprint: Blueprint = {
 		const handSize = owner.hand.length;
 
 		owner.inputQueue = ["1"];
-		await self.activate(Ability.HeroPower);
+		await self.trigger(Ability.HeroPower);
 
 		assert.equal(owner.hand.length, handSize + 1);
 
@@ -48,7 +48,7 @@ export const blueprint: Blueprint = {
 		const { emptyMana } = owner;
 
 		owner.inputQueue = ["2"];
-		await self.activate(Ability.HeroPower);
+		await self.trigger(Ability.HeroPower);
 
 		assert.equal(owner.emptyMana, emptyMana + 1);
 	},

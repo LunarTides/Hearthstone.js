@@ -59,7 +59,7 @@ export const blueprint: Blueprint = {
 
 		// Activate the battlecry, choose the sheep
 		owner.inputQueue = ["1"];
-		await self.activate(Ability.Battlecry);
+		await self.trigger(Ability.Battlecry);
 
 		// The sheep should have 2 attack and rush
 		assert.equal(sheep.attack, 2);

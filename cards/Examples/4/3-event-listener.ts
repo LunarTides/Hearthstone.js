@@ -30,7 +30,7 @@ export const blueprint: Blueprint = {
 		// For the rest of the game, your battlecries trigger twice.
 
 		/*
-		 * Event listeners behave exactly like passives, except they aren't tied to a card's location.
+		 * Event listeners behave exactly like passives, except they aren't tied to the card's location.
 		 * It is important to destroy the event listener when you're done with it, which is why there are 3 ways for an event listener to be destroyed.
 		 * For this example, the event listener lasts forever, so we won't destroy it.
 		 */
@@ -44,9 +44,10 @@ export const blueprint: Blueprint = {
 			Event.PlayCard,
 			async (value, eventPlayer) => {
 				// This function will be run when the correct event is broadcast.
+				// `value` is already narrowed, so no need for `game.event.is`.
 
 				/*
-				 * Only continue if the player that triggered the event is this card's owner and the played card is a minion and it is not this card.
+				 * Only continue if the player that triggered the event is this card's owner, the played card is a minion, and it is not this card.
 				 * The `PlayCard` event gets triggered after this battlecry, remember? So we need to prevent it from calling this card's battlecry again.
 				 * The return value will be explained below.
 				 */
@@ -59,7 +60,7 @@ export const blueprint: Blueprint = {
 				}
 
 				// Activate the battlecry
-				await value.activate(Ability.Battlecry);
+				await value.trigger(Ability.Battlecry);
 
 				/*
 				 * You have to return a message to the event listener handler to tell it what to do next.
@@ -70,7 +71,7 @@ export const blueprint: Blueprint = {
 				 */
 				return EventListenerMessage.Success;
 			},
-			-1, // This number is how many times the callback function can run before the event listener self-destructs. If this is set to `-1`, it lasts forever.
+			-1, // The lifetime of the event listener. This number is how many times the callback function can run before the event listener self-destructs. If this is set to `-1`, it lasts forever.
 		);
 
 		// await destroy(); // Run this function to destroy the event listener

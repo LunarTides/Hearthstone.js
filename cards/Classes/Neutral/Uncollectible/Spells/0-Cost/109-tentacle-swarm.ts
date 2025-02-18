@@ -38,7 +38,7 @@ export const blueprint: Blueprint = {
 
 	async test(owner, self) {
 		const handSize = owner.hand.length;
-		await self.activate(Ability.Cast);
+		await self.trigger(Ability.Cast);
 
 		// Check if the player's hand was filled with tendrils
 		const amountOfCards = owner.hand.length - handSize;

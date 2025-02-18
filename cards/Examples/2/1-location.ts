@@ -9,26 +9,29 @@ export const blueprint: Blueprint = {
 	name: "Location Example",
 	text: "Restore 2 Health to your hero.",
 	cost: 1,
+
+	// Remember to use the correct type.
 	type: Type.Location,
+
 	classes: [Class.Neutral],
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
 	id: 36,
 
-	// This is the amount of times you can trigger the location card before it breaking.
+	// This is the amount of times you can trigger the location card before it breaks.
 	durability: 3,
 
 	/*
 	 * How many turns you have to wait until you can use the location card again.
-	 * Afaik, in hearthstone, this is always 2.
+	 * As far as I know, this is always 2 in Hearthstone.
 	 */
 	cooldown: 2,
 
 	/*
-	 * Remember to use the correct ability
-	 * For spells, the ability is `cast`.
-	 * And for location cards, the ability is `use`.
+	 * Remember to use the correct ability.
+	 * For spells the ability is `cast`.
+	 * For location cards, the ability is `use`.
 	 */
 	async use(owner, self) {
 		// Restore 2 Health to your hero.
@@ -38,7 +41,7 @@ export const blueprint: Blueprint = {
 
 	async test(owner, self) {
 		owner.health = 1;
-		await self.activate(Ability.Use);
+		await self.trigger(Ability.Use);
 
 		assert.equal(owner.health, 1 + 2);
 	},

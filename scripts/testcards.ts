@@ -21,7 +21,7 @@ const cards = await Card.all(true);
  */
 async function testCard(card: Card): Promise<boolean | Error> {
 	try {
-		await card.activate(Ability.Test);
+		await card.trigger(Ability.Test);
 	} catch (error) {
 		if (error instanceof Error) {
 			return error;

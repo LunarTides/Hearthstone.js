@@ -7,7 +7,7 @@ import { commands } from "@Game/commands.js";
  */
 // createGame();
 
-describe("src/core/commands", () => {
+describe("src/commands", () => {
 	test.todo("end", async () => {
 		expect(false).toEqual(true);
 	});

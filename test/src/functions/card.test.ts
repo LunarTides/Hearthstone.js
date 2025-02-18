@@ -8,7 +8,7 @@ import { Class, MinionTribe } from "@Game/types.js";
  */
 // createGame();
 
-describe("src/core/functions/card", () => {
+describe("src/functions/card", () => {
 	test.todo("vanilla > getAll", async () => {
 		expect(false).toEqual(true);
 	});

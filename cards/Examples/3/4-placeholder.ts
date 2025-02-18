@@ -48,7 +48,7 @@ export const blueprint: Blueprint = {
 		 * The use of static placeholders is discouraged, but we'll use them for demonstration purposes.
 		 *
 		 * This should give us "Battlecry: Gain mana equal to the turn counter. (Currently x, haha lol, x, The next thing is: test, {placeholder without replacement})"
-		 * where x is the turn counter
+		 * where x is the turn counter.
 		 */
 		return {
 			turns,

@@ -30,7 +30,7 @@ export const blueprint: Blueprint = {
 
 	async test(owner, self) {
 		owner.mana = 5;
-		await self.activate(Ability.Cast);
+		await self.trigger(Ability.Cast);
 
 		assert.equal(owner.mana, 10);
 	},

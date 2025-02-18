@@ -563,7 +563,7 @@ const prompt = {
 			return UseLocationError.Cooldown;
 		}
 
-		if ((await location.activate(Ability.Use)) === Card.REFUND) {
+		if ((await location.trigger(Ability.Use)) === Card.REFUND) {
 			return UseLocationError.Refund;
 		}
 
@@ -1364,7 +1364,7 @@ export const interactFunctions = {
 		}
 
 		if (parsedInput === game.player.hand.length || parsedInput === 1) {
-			await card.activate(Ability.Outcast);
+			await card.trigger(Ability.Outcast);
 		}
 
 		return game.play(card, game.player);

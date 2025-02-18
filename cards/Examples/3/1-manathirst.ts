@@ -40,7 +40,7 @@ export const blueprint: Blueprint = {
 		 * Select a target to freeze (and silence)
 		 * The first argument is the prompt to ask the user.
 		 * The second argument is this card (aka `self`).
-		 * The third argument is the alignment of the target the user is restricted to. If this is "enemy", the user can only select enemy targets, if this is "friendly", the user can only select friendly targets, if this is "any", the user can select any target.
+		 * The third argument is the alignment of the target the user is restricted to. If this is `Enemy`, the user can only select enemy targets, if this is `Friendly`, the user can only select friendly targets, if this is `Any`, the user can select any target.
 		 *
 		 * Ask the user to select a target based on the `prompt`, the user can only select enemy minions
 		 */
@@ -50,12 +50,15 @@ export const blueprint: Blueprint = {
 			TargetAlignment.Enemy,
 		);
 
-		// If target is null, it means that the user cancelled their selection. Return `Card.REFUND` to refund the card.
+		/*
+		 * If target is null, it means that the user cancelled their selection.
+		 * Return `Card.REFUND` to refund the card.
+		 */
 		if (!target) {
 			return Card.REFUND;
 		}
 
-		// If the manathirst was successful, silence the target first
+		// If the manathirst was successful, silence the target first.
 		if (manathirst) {
 			await target.silence();
 		}
@@ -63,7 +66,7 @@ export const blueprint: Blueprint = {
 		// Freeze the target
 		await target.freeze();
 
-		// Return true since otherwise, typescript will complain about the function not returning a value in all branches
+		// Return true since otherwise, typescript will complain about the function not returning a value in all branches.
 		return true;
 	},
 
@@ -84,7 +87,7 @@ export const blueprint: Blueprint = {
 		owner.emptyMana = 1;
 		assert.equal(owner.emptyMana, 1);
 		owner.inputQueue = ["1"];
-		await self.activate(Ability.Battlecry);
+		await self.trigger(Ability.Battlecry);
 
 		assert(sheep.hasKeyword(Keyword.Frozen));
 		sheep.remKeyword(Keyword.Frozen);
@@ -92,7 +95,7 @@ export const blueprint: Blueprint = {
 
 		owner.emptyMana = 6;
 		owner.inputQueue = ["1"];
-		await self.activate(Ability.Battlecry);
+		await self.trigger(Ability.Battlecry);
 
 		assert(sheep.hasKeyword(Keyword.Frozen));
 		assert.equal(sheep.attack, 1);

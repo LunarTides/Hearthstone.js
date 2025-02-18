@@ -16,8 +16,8 @@ export const blueprint: Blueprint = {
 	/*
 	 * Put a $ sign before the number to show spell damage in the description.
 	 * It's like a mini-placeholder, which is something you will learn about in the next chapter.
-	 * If you have debug mode enabled, do `/eval game.player.spellDamage += 5` in order to see it working.
-	 * You can also set `self.spellDamage = 5` in a minion's create ability.
+	 * If you have debug mode enabled, do `/eval @Player.spellDamage = 5` in order to see it working.
+	 * You can also set `self.spellDamage = 5` in a minion's create ability to passively provide spell damage to the friendly player.
 	 */
 	text: "Deal $3 damage to the enemy hero.",
 
@@ -45,7 +45,7 @@ export const blueprint: Blueprint = {
 		const oldHealth = owner.getOpponent().health;
 
 		owner.spellDamage = 3;
-		await self.activate(Ability.Cast);
+		await self.trigger(Ability.Cast);
 
 		assert.equal(
 			owner.getOpponent().health,

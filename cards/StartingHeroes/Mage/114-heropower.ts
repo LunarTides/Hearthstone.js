@@ -51,7 +51,7 @@ export const blueprint: Blueprint = {
 		assert.equal(owner.getOpponent().health, 30);
 
 		owner.inputQueue = ["face", "y"];
-		await self.activate(Ability.HeroPower);
+		await self.trigger(Ability.HeroPower);
 
 		// The opponent should have 29 health.
 		assert.equal(owner.getOpponent().health, 30 - 1);

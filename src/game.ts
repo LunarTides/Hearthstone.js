@@ -480,11 +480,11 @@ const attack = {
 		// Remove frenzy
 		await attack._doFrenzy(target);
 		if (target.health && target.health < 0) {
-			await attacker.activate(Ability.Overkill);
+			await attacker.trigger(Ability.Overkill);
 		}
 
 		if (target.health && target.health === 0) {
-			await attacker.activate(Ability.HonorableKill);
+			await attacker.trigger(Ability.HonorableKill);
 		}
 
 		return GameAttackReturn.Success;
@@ -532,7 +532,7 @@ const attack = {
 		}
 
 		// The card has more than 0 health
-		if ((await card.activate(Ability.Frenzy)) !== Card.REFUND) {
+		if ((await card.trigger(Ability.Frenzy)) !== Card.REFUND) {
 			card.abilities.frenzy = undefined;
 		}
 	},
@@ -664,7 +664,7 @@ const playCard = {
 
 		// Finale
 		if (player[card.costType] === 0) {
-			await card.activate(Ability.Finale);
+			await card.trigger(Ability.Finale);
 		}
 
 		// Store the result of the type-specific code
@@ -718,7 +718,7 @@ const playCard = {
 
 			if (
 				!card.hasKeyword(Keyword.Dormant) &&
-				(await card.activate(Ability.Battlecry)) === Card.REFUND
+				(await card.trigger(Ability.Battlecry)) === Card.REFUND
 			) {
 				return GamePlayCardReturn.Refund;
 			}
@@ -729,7 +729,7 @@ const playCard = {
 		},
 
 		async Spell(card: Card, player: Player): Promise<GamePlayCardReturn> {
-			if ((await card.activate(Ability.Cast)) === Card.REFUND) {
+			if ((await card.trigger(Ability.Cast)) === Card.REFUND) {
 				return GamePlayCardReturn.Refund;
 			}
 
@@ -743,7 +743,7 @@ const playCard = {
 
 			// Spellburst functionality
 			for (const card of player.board) {
-				await card.activate(Ability.Spellburst);
+				await card.trigger(Ability.Spellburst);
 				card.abilities.spellburst = undefined;
 			}
 
@@ -751,7 +751,7 @@ const playCard = {
 		},
 
 		async Weapon(card: Card, player: Player): Promise<GamePlayCardReturn> {
-			if ((await card.activate(Ability.Battlecry)) === Card.REFUND) {
+			if ((await card.trigger(Ability.Battlecry)) === Card.REFUND) {
 				return GamePlayCardReturn.Refund;
 			}
 
@@ -760,7 +760,7 @@ const playCard = {
 		},
 
 		async Hero(card: Card, player: Player): Promise<GamePlayCardReturn> {
-			if ((await card.activate(Ability.Battlecry)) === Card.REFUND) {
+			if ((await card.trigger(Ability.Battlecry)) === Card.REFUND) {
 				return GamePlayCardReturn.Refund;
 			}
 
@@ -895,7 +895,7 @@ const playCard = {
 	},
 
 	async _condition(card: Card, player: Player): Promise<boolean> {
-		const condition = await card.activate(Ability.Condition);
+		const condition = await card.trigger(Ability.Condition);
 		if (!Array.isArray(condition)) {
 			return true;
 		}
@@ -962,7 +962,7 @@ const playCard = {
 
 		// If the previous card played was played on the same turn as this one, activate combo
 		if (latest[0].turn === game.turn) {
-			await card.activate(Ability.Combo);
+			await card.trigger(Ability.Combo);
 		}
 
 		return true;
@@ -1341,11 +1341,11 @@ export class Game {
 			unsuppressDrawCard();
 
 			for (const card of player.deck) {
-				await card.activate(Ability.StartOfGame);
+				await card.trigger(Ability.StartOfGame);
 			}
 
 			for (const card of player.hand) {
-				await card.activate(Ability.StartOfGame);
+				await card.trigger(Ability.StartOfGame);
 			}
 		}
 
@@ -1470,7 +1470,7 @@ export class Game {
 
 				// HACK: If the battlecry use a function that depends on `game.player`
 				this.player = opponent;
-				await card.activate(Ability.Battlecry);
+				await card.trigger(Ability.Battlecry);
 				this.player = player;
 
 				continue;
@@ -1643,7 +1643,7 @@ export class Game {
 					continue;
 				}
 
-				await card.activate(Ability.Deathrattle);
+				await card.trigger(Ability.Deathrattle);
 			}
 
 			for (const card of player.board) {
@@ -1654,7 +1654,7 @@ export class Game {
 				}
 
 				// Calmly tell the minion that it is going to die
-				const removeReturn = await card.activate(Ability.Remove, "KillCard");
+				const removeReturn = await card.trigger(Ability.Remove, "KillCard");
 
 				// If the "remove" ability returns false, the card is not removed from the board
 				if (Array.isArray(removeReturn) && removeReturn[0] === false) {
@@ -1700,7 +1700,7 @@ export class Game {
 				 * So it looks like this:
 				 * minion.activate(key, reason, minion);
 				 */
-				await minion.activate(Ability.Passive, "reborn", card, this.player);
+				await minion.trigger(Ability.Passive, "reborn", card, this.player);
 
 				spared.push(minion);
 			}

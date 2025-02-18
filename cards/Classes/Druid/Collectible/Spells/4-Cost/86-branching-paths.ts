@@ -65,14 +65,14 @@ export const blueprint: Blueprint = {
 
 		// Test 'Draw a Card', and 'Give your minions +1 Attack'.
 		owner.inputQueue = ["1", "2"];
-		await self.activate(Ability.Cast);
+		await self.trigger(Ability.Cast);
 
 		assert.equal(owner.hand.length, handSize + 1);
 		assert.equal(sheep.attack, 2);
 
 		// Test '+1 Attack', and 'Gain 6 Armor'.
 		owner.inputQueue = ["2", "3"];
-		await self.activate(Ability.Cast);
+		await self.trigger(Ability.Cast);
 
 		assert.equal(sheep.attack, 3);
 		assert.equal(owner.armor, 6);

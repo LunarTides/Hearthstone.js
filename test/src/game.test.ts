@@ -7,7 +7,7 @@ import { Game } from "@Game/game.js";
  */
 // createGame();
 
-describe("src/core/game", () => {
+describe("src/game", () => {
 	test.todo("input", async () => {
 		expect(false).toEqual(true);
 	});

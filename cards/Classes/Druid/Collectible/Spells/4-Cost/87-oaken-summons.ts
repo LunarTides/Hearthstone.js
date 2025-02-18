@@ -31,7 +31,7 @@ export const blueprint: Blueprint = {
 
 	async test(owner, self) {
 		for (let index = 1; index <= 10; index++) {
-			await self.activate(Ability.Cast);
+			await self.trigger(Ability.Cast);
 
 			// Check if the armor is correct
 			assert.equal(owner.armor, 6 * index);

@@ -42,13 +42,13 @@ export const blueprint: Blueprint = {
 		// Shouldn't draw any cards
 		owner.mana = -1;
 
-		await self.activate(Ability.Cast);
+		await self.trigger(Ability.Cast);
 		assert.equal(owner.hand.length, handSize);
 
 		// Should draw a card
 		owner.mana = 10;
 
-		await self.activate(Ability.Cast);
+		await self.trigger(Ability.Cast);
 		assert.equal(owner.hand.length, handSize + 1);
 	},
 };

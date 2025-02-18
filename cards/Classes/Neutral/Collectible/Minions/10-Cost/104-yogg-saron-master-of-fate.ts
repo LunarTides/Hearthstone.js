@@ -145,7 +145,7 @@ export const blueprint: Blueprint = {
 					game.cardIds.yoggSaronHopesEnd103,
 					owner,
 				);
-				await oldYogg.activate(Ability.Battlecry);
+				await oldYogg.trigger(Ability.Battlecry);
 
 				break;
 			}
@@ -156,7 +156,7 @@ export const blueprint: Blueprint = {
 
 				while (game.player1.isAlive() && game.player2.isAlive()) {
 					owner.forceTarget = game.functions.util.getRandomTarget();
-					await rod.activate(Ability.Cast);
+					await rod.trigger(Ability.Cast);
 				}
 
 				owner.forceTarget = undefined;

@@ -1,6 +1,5 @@
 // Created by Hand
 
-// You shouldn't touch anything outside of the blueprint object.
 import {
 	type Blueprint,
 	Class,
@@ -23,16 +22,16 @@ export const blueprint: Blueprint = {
 	// The description of the card. This can be anything.
 	text: "Just an example card (Does nothing)",
 
-	// How much mana the card costs. This is usually in mana.
+	// How much the card costs. This is usually in mana.
 	cost: 1,
 
-	// The type of the card. E.g. "Minion", "Spell", "Weapon", etc...
+	// The type of the card. E.g. `Type.Minion`, `Type.Spell`, `Type.Weapon`, etc...
 	type: Type.Minion,
 
-	// The classes of the card. E.g. "Neutral", "Warrior", "Hunter", etc...
+	// The classes of the card. E.g. `Class.Neutral`, `Class.Warrior`, `Class.Hunter`, etc...
 	classes: [Class.Neutral],
 
-	// The rarity of the card. E.g. "Free", "Common", "Rare", etc...
+	// The rarity of the card. E.g. `Rarity.Free`, `Rarity.Common`, `Rarity.Rare`, etc...
 	rarity: Rarity.Free,
 
 	/*
@@ -44,9 +43,9 @@ export const blueprint: Blueprint = {
 	/**
 	 * Any tags that should be applied to the card.
 	 * Tags are used to group cards together. They should be lowercase.
-	 * E.g. "lackey"
+	 * E.g. `CardTag.Lackey`, `CardTag.Galakrond`, `CardTag.StartingHero`, etc...
 	 *
-	 * This can be queried like this: `Card.allWithTags(["lackey"]);`
+	 * This can be queried like this: `Card.allWithTags([CardTag.Lackey]);`
 	 */
 	tags: [],
 
@@ -56,7 +55,10 @@ export const blueprint: Blueprint = {
 	 */
 	id: 29,
 
-	// After the id property, all properties below (except for abilities) are type-specific
+	/*
+	 * After the id property, all properties below (except for abilities) are type-specific
+	 * Don't worry if you forget one of them, the game will throw an error immediately if you do.
+	 */
 
 	// The amount of attack the minion has.
 	attack: 2,
@@ -64,6 +66,6 @@ export const blueprint: Blueprint = {
 	// The amount of health the minion has.
 	health: 1,
 
-	// The tribes of the minion. E.g. "Undead", "Naga", "Beast", etc...
+	// The tribes of the minion. E.g. `Undead`, `Naga`, `Beast`, etc...
 	tribes: [MinionTribe.None],
 };

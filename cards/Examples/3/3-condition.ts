@@ -14,7 +14,7 @@ import {
 export const blueprint: Blueprint = {
 	name: "Condition Example",
 
-	// This is a common condition
+	// This is a common condition.
 	text: "<b>Battlecry:</b> If your deck has no duplicates, draw a card.",
 
 	cost: 1,
@@ -32,7 +32,7 @@ export const blueprint: Blueprint = {
 	async battlecry(owner, self) {
 		// If your deck has no duplicates, draw a card.
 
-		// Check if the condition is cleared
+		// Check if the condition is cleared.
 		if (!(await self.condition())) {
 			return;
 		}
@@ -42,9 +42,9 @@ export const blueprint: Blueprint = {
 	},
 
 	/*
-	 * This function will be run when the card is played.
-	 * This function will also be run every tick in order to add / remove the ` (Condition cleared!)` text,
-	 * so don't do too many expensive things in here (Make use of `self.storage` or `game.cache` if you need to).
+	 * This function will run when the card is played.
+	 * It will also run every tick in order to add / remove the `(Condition cleared!)` text,
+	 * so don't do too many expensive things in here. (Make use of `self.storage` or `game.cache` if you need to.)
 	 */
 	async condition(owner, self) {
 		/*
@@ -61,7 +61,7 @@ export const blueprint: Blueprint = {
 
 		// The player shouldn't fulfill the condition
 		assert(!owner.highlander());
-		await self.activate(Ability.Battlecry);
+		await self.trigger(Ability.Battlecry);
 
 		// Assert that the player didn't draw a card
 		assert.equal(owner.deck.length, length);
@@ -72,7 +72,7 @@ export const blueprint: Blueprint = {
 		assert(owner.highlander());
 		assert.equal(owner.deck.length, 1);
 
-		await self.activate(Ability.Battlecry);
+		await self.trigger(Ability.Battlecry);
 
 		assert.equal(owner.hand.length, 1);
 	},

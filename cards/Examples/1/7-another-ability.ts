@@ -12,16 +12,16 @@ import {
 } from "@Game/types.js";
 
 /*
- * This is another way to write blueprints
- * You might want to do this if you make a very complicated card
- * however it is not _as_ supported by scripts as the default method.
+ * This is another way to write blueprints.
+ * You might want to do this if you make a very complicated card.
+ * however it is not *as* supported by scripts as the normal way.
  */
 const battlecry: AbilityCallback = async (owner, self) => {
 	await self.addStats(1, 1);
 };
 
 const theTestAbility: AbilityCallback = async (owner, self) => {
-	await self.activate(Ability.Battlecry);
+	await self.trigger(Ability.Battlecry);
 
 	assert.equal((self.blueprint.attack ?? 0) + 1, self.attack);
 	assert.equal((self.blueprint.health ?? 0) + 1, self.health);
@@ -42,7 +42,7 @@ export const blueprint: Blueprint = {
 	health: 2,
 	tribes: [MinionTribe.None],
 
-	// If the function is named correctly, you can just write the name of the ability
+	// If the function is named correctly, you can just write the name of the ability.
 	battlecry,
 
 	// Otherwise, do `nameOfAbility: nameOfFunction`.

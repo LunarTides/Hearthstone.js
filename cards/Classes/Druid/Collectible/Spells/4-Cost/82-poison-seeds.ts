@@ -46,7 +46,7 @@ export const blueprint: Blueprint = {
 		}
 
 		// Replace with Treants
-		await self.activate(Ability.Cast);
+		await self.trigger(Ability.Cast);
 
 		// Check if every card is a Treant
 		const board = owner.board;

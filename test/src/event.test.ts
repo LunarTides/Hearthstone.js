@@ -7,7 +7,7 @@ import { eventManager } from "@Game/event.js";
  */
 // createGame();
 
-describe("src/core/event", () => {
+describe("src/event", () => {
 	test.todo("tick", async () => {
 		expect(false).toEqual(true);
 	});

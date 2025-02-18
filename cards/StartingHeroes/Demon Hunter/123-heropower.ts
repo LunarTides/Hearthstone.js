@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
 	async test(owner, self) {
 		// The player should start with 0 attack
 		assert.equal(owner.attack, 0);
-		await self.activate(Ability.HeroPower);
+		await self.trigger(Ability.HeroPower);
 
 		// The player should gain 1 attack
 		assert.equal(owner.attack, 1);

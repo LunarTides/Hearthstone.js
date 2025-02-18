@@ -9,7 +9,7 @@ import { createGame } from "@Game/game.js";
  */
 createGame();
 
-describe("src/core/functions/info", () => {
+describe("src/functions/info", () => {
 	test.todo("version", async () => {
 		expect(false).toBe(true);
 	});

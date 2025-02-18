@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
 	async test(owner, self) {
 		// The player should have 0 armor
 		assert.equal(owner.armor, 0);
-		await self.activate(Ability.HeroPower);
+		await self.trigger(Ability.HeroPower);
 
 		// The player should now have 2 armor
 		assert.equal(owner.armor, 2);

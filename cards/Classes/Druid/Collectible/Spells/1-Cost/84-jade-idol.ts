@@ -50,14 +50,14 @@ export const blueprint: Blueprint = {
 	async test(owner, self) {
 		// Summon a Jade Golem
 		owner.inputQueue = ["1"];
-		await self.activate(Ability.Cast);
+		await self.trigger(Ability.Cast);
 
 		// There should be a jade golem
 		assert.ok(owner.board.some((card) => card.id === game.cardIds.jadeGolem85));
 
 		// Shuffle 3 copies
 		owner.inputQueue = ["2"];
-		await self.activate(Ability.Cast);
+		await self.trigger(Ability.Cast);
 
 		// There should be 3 copies of this card in the player's deck
 		assert.equal(owner.deck.filter((card) => card.id === self.id).length, 3);

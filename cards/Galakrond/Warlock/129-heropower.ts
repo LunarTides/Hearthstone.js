@@ -34,7 +34,7 @@ export const blueprint: Blueprint = {
 		assert.equal(countImps(), 0);
 
 		// There should be 2 imps when using the hero power
-		await self.activate(Ability.HeroPower);
+		await self.trigger(Ability.HeroPower);
 		assert.equal(countImps(), 2);
 	},
 };

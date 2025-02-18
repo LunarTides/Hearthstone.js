@@ -37,7 +37,7 @@ export const blueprint: Blueprint = {
 	},
 
 	async test(owner, self) {
-		await self.activate(Ability.Battlecry);
+		await self.trigger(Ability.Battlecry);
 		assert.equal(self.health, 4);
 	},
 };

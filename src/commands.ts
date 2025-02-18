@@ -187,7 +187,7 @@ export const commands: CommandList = {
 
 		const ability = titanCards[choice - 1];
 
-		if ((await ability.activate(Ability.Cast)) === Card.REFUND) {
+		if ((await ability.trigger(Ability.Cast)) === Card.REFUND) {
 			await game.event.withSuppressed(Event.DiscardCard, async () =>
 				ability.discard(),
 			);

@@ -47,7 +47,7 @@ export const blueprint: Blueprint = {
 		// Increment handSize by 1 so that we can do handSize + 2
 		assert.equal(owner.hand.length, ++handSize);
 
-		await self.activate(Ability.Cast);
+		await self.trigger(Ability.Cast);
 
 		await game.endTurn();
 		await game.endTurn();

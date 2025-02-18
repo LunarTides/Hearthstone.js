@@ -48,7 +48,7 @@ export const blueprint: Blueprint = {
 				continue;
 			}
 
-			await card.activate(Ability.Cast);
+			await card.trigger(Ability.Cast);
 		}
 
 		owner.forceTarget = undefined;

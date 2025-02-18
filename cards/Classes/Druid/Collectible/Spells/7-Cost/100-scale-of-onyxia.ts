@@ -36,7 +36,7 @@ export const blueprint: Blueprint = {
 
 	async test(owner, self) {
 		assert.equal(owner.board.length, 0);
-		await self.activate(Ability.Cast);
+		await self.trigger(Ability.Cast);
 
 		// Check if the board has been filled
 		assert.equal(owner.board.length, game.config.general.maxBoardSpace);
