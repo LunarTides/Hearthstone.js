@@ -46,7 +46,7 @@ export const blueprint: Blueprint = {
 		assert.equal(owner.mana, 5);
 
 		// Manually tick the game
-		await game.event.tick(Event.GameLoop, undefined, owner);
+		await game.event.tick(Event.GameLoop, -1, owner);
 
 		assert.equal(owner.mana, 10);
 

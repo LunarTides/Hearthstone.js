@@ -1378,7 +1378,7 @@ export const interactFunctions = {
 	 * @returns Success | Ignored error code | The return value of doTurnLogic
 	 */
 	async gameloop(): Promise<boolean | string | GamePlayCardReturn> {
-		await game.event.tick(Event.GameLoop, "doTurn", game.player);
+		await game.event.tick(Event.GameLoop, game.turn, game.player);
 
 		if (game.player.ai) {
 			const rawInput = game.player.ai.calcMove();

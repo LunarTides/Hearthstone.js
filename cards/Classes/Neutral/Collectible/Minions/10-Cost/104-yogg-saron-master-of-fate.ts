@@ -172,7 +172,7 @@ export const blueprint: Blueprint = {
 
 	async placeholders(owner, self) {
 		const amount = game.event.events.PlayCard?.[owner.id].filter(
-			(object) => object[0] instanceof Card && object[0].type === Type.Spell,
+			(object) => object[0].type === Type.Spell,
 		).length;
 		if (!amount) {
 			return { left: " <i>(10 left!)</i>" };
@@ -187,7 +187,7 @@ export const blueprint: Blueprint = {
 
 	async condition(owner, self) {
 		const amount = game.event.events.PlayCard?.[owner.id].filter(
-			(object) => object[0] instanceof Card && object[0].type === Type.Spell,
+			(object) => object[0].type === Type.Spell,
 		).length;
 		if (!amount) {
 			return false;

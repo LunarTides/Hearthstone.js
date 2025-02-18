@@ -14,16 +14,15 @@ export type UnknownEventValue = EventValue<Event>;
  * Game events.
  */
 export type EventManagerEvents = {
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-	[key in Event]?: [[[any, number]], [[any, number]]];
+	[key in Event]?: [[[EventValue<key>, number]], [[EventValue<key>, number]]];
 };
 
 /**
  * Callback for tick hooks. Used in hookToTick.
  */
-export type TickHookCallback = (
-	key: Event,
-	value: UnknownEventValue,
+export type TickHookCallback<E extends Event> = (
+	key: E,
+	value: EventValue<E>,
 	eventPlayer: Player,
 ) => Promise<void>;
 
@@ -39,8 +38,8 @@ export enum EventListenerMessage {
 /**
  * The event listener callback function.
  */
-export type EventListenerCallback = (
-	value: UnknownEventValue,
+export type EventListenerCallback<E extends Event> = (
+	value: EventValue<E>,
 	eventPlayer: Player,
 ) => Promise<EventListenerMessage>;
 
@@ -55,20 +54,20 @@ export enum QuestType {
 /**
  * The quest callback used in card blueprints.
  */
-export type QuestCallback = (
-	value: UnknownEventValue,
+export type QuestCallback<E extends Event> = (
+	value: EventValue<E>,
 	done: boolean,
 ) => Promise<EventListenerMessage>;
 
 /**
  * The backend of a quest.
  */
-export type QuestObject = {
+export type QuestObject<E extends Event> = {
 	name: string;
 	progress: [number, number];
-	key: Event;
+	key: E;
 	value: number;
-	callback: QuestCallback;
+	callback: QuestCallback<E>;
 	next?: number;
 };
 
@@ -297,4 +296,11 @@ export type EventValue<Key extends Event> =
 																																				),
 																																				Target,
 																																			]
-																																		: never;
+																																		: /**
+																																			 * The turn that the gameloop happened on.
+																																			 */
+																																			Key extends Event.GameLoop
+																																			? number
+																																			: Key extends Event.Dummy
+																																				? undefined
+																																				: never;

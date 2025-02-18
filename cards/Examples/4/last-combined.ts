@@ -5,7 +5,6 @@ import {
 	Class,
 	Event,
 	EventListenerMessage,
-	type EventValue,
 	QuestType,
 	Rarity,
 	SpellSchool,
@@ -32,9 +31,7 @@ export const blueprint: Blueprint = {
 			self,
 			Event.PlayCard,
 			3,
-			async (_unknownValue, done) => {
-				const value = _unknownValue as EventValue<Event.PlayCard>;
-
+			async (value, done) => {
 				if (value === self) {
 					return EventListenerMessage.Skip;
 				}
@@ -65,9 +62,7 @@ export const blueprint: Blueprint = {
 
 				game.event.addListener(
 					Event.PlayCard,
-					async (_unknownValue, eventPlayer) => {
-						const value = _unknownValue as EventValue<Event.PlayCard>;
-
+					async (value, eventPlayer) => {
 						// Only continue if the player that triggered the event is this card's owner and the played card is a minion.
 						if (eventPlayer !== owner || value.type !== Type.Minion) {
 							return EventListenerMessage.Skip;

@@ -1,7 +1,7 @@
 // Created by the Vanilla Card Creator
 
 import assert from "node:assert";
-import { Card } from "@Game/card.js";
+import type { Card } from "@Game/card.js";
 import {
 	Ability,
 	type Blueprint,
@@ -36,10 +36,7 @@ export const blueprint: Blueprint = {
 
 		const spells: Card[] | undefined = game.event.events.PlayCard?.[owner.id]
 			.filter(
-				(object) =>
-					object[0] instanceof Card &&
-					object[0].type === Type.Spell &&
-					object[1] === game.turn,
+				(object) => object[0].type === Type.Spell && object[1] === game.turn,
 			)
 			.map((object) => object[0] as Card);
 

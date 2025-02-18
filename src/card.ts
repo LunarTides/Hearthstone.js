@@ -11,6 +11,7 @@ import {
 	DeckValidationError,
 	type EnchantmentDefinition,
 	Event,
+	type EventValue,
 	type GameConfig,
 	Keyword,
 	type MinionTribe,
@@ -18,7 +19,6 @@ import {
 	type SpellSchool,
 	type Target,
 	Type,
-	type UnknownEventValue,
 } from "@Game/types.js";
 import { parseTags } from "chalk-tags";
 
@@ -1232,15 +1232,15 @@ export class Card {
 	 *
 	 * @param name The method to activate
 	 * @param key The key of the event. ONLY PASS THIS IN PASSIVE, REMOVE, OR TICK ABILITIES.
-	 * @param _unknownValue The raw value of the event. ONLY PASS THIS IN PASSIVE, REMOVE, OR TICK ABILITIES.
+	 * @param value The raw value of the event. ONLY PASS THIS IN PASSIVE, REMOVE, OR TICK ABILITIES.
 	 * @param eventPlayer The player who caused the event. ONLY PASS THIS IN PASSIVE, REMOVE, OR TICK ABILITIES.
 	 *
 	 * @returns All the return values of the method keywords
 	 */
-	async activate(
+	async activate<E extends Event>(
 		name: Ability,
-		key?: Event | string | undefined,
-		_unknownValue?: UnknownEventValue,
+		key?: E | string,
+		value?: EventValue<E>,
 		eventPlayer?: Player,
 	): Promise<unknown[] | typeof Card.REFUND | false> {
 		/*
@@ -1267,7 +1267,7 @@ export class Card {
 				this.owner,
 				this,
 				key as Event,
-				_unknownValue,
+				value,
 				eventPlayer,
 			);
 

@@ -7,7 +7,6 @@ import {
 	Class,
 	Event,
 	EventListenerMessage,
-	type EventValue,
 	Rarity,
 	SpellSchool,
 	TargetAlignment,
@@ -64,9 +63,7 @@ export const blueprint: Blueprint = {
 		// Make sure the parameters are correct
 		game.event.addListener(
 			Event.TargetSelectionStarts,
-			async (_unknownValue) => {
-				const value = _unknownValue as EventValue<Event.TargetSelectionStarts>;
-
+			async (value) => {
 				// Don't check for `prompt` since there is no correct prompt
 				const [prompt, card, forceSide, forceClass, flags] = value;
 
@@ -87,9 +84,7 @@ export const blueprint: Blueprint = {
 		// Find the target
 		game.event.addListener(
 			Event.TargetSelected,
-			async (_unknownValue) => {
-				const value = _unknownValue as EventValue<Event.TargetSelected>;
-
+			async (value) => {
 				if (value[0] !== self) {
 					return EventListenerMessage.Skip;
 				}

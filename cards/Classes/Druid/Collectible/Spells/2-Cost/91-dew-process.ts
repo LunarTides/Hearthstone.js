@@ -29,7 +29,7 @@ export const blueprint: Blueprint = {
 		// For the rest of the game, players draw an extra card at the start of their turn.
 		game.event.addListener(
 			Event.StartTurn,
-			async (_unknownValue, eventPlayer) => {
+			async (value, eventPlayer) => {
 				await eventPlayer.drawCards(1);
 				return EventListenerMessage.Success;
 			},

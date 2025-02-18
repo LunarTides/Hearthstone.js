@@ -6,7 +6,6 @@ import {
 	Class,
 	Event,
 	EventListenerMessage,
-	type EventValue,
 	Rarity,
 	SpellSchool,
 	Type,
@@ -42,9 +41,7 @@ export const blueprint: Blueprint = {
 		// Wait for the player to play the card
 		const destroy = game.event.addListener(
 			Event.PlayCard,
-			async (_unknownValue, eventPlayer) => {
-				const value = _unknownValue as EventValue<Event.PlayCard>;
-
+			async (value, eventPlayer) => {
 				if (value !== card) {
 					return EventListenerMessage.Skip;
 				}

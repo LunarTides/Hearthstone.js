@@ -52,21 +52,14 @@ export const blueprint: Blueprint = {
 			self,
 			Event.PlayCard,
 			3,
-			async (_unknownValue, done) => {
+			async (value, done) => {
 				/*
 				 * This code runs every time the `PlayCard` event gets broadcast.
 				 * This is like the callback function in event listeners.
-				 */
-
-				// Get the value of the event
-				const value = _unknownValue as EventValue<Event.PlayCard>;
-
-				/*
+				 *
 				 * Returning false will prevent this event from counting towards the quest
 				 * If the card played was this card, it doesn't count towards this quest.
-				 */
-
-				/*
+				 *
 				 * The `PlayCard` event gets triggered after the text of the card played.
 				 * That means when you play this card, the quest gets added, then the `PlayCard` event gets broadcast,
 				 * which triggers this quest. So we need to prevent that event from counting towards the quest.

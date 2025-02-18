@@ -29,7 +29,7 @@ export const blueprint: Blueprint = {
 	async battlecry(owner, self) {
 		// Cast a random spell for each spell you've cast this game (targets chosen randomly).
 		const amount = game.event.events.PlayCard?.[owner.id].filter(
-			(object) => object[0] instanceof Card && object[0].type === Type.Spell,
+			(object) => object[0].type === Type.Spell,
 		).length;
 		if (!amount) {
 			return;

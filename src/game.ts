@@ -8,6 +8,7 @@ import {
 	Ability,
 	type Blueprint,
 	Event,
+	type EventValue,
 	GameAttackReturn,
 	type GameConfig,
 	GamePlayCardReturn,
@@ -16,7 +17,6 @@ import {
 	type Target,
 	TargetAlignment,
 	Type,
-	type UnknownEventValue,
 } from "@Game/types.js";
 import date from "date-and-time";
 import _ from "lodash";
@@ -955,16 +955,13 @@ const playCard = {
 
 		// Get the player's PlayCard event history
 		const stat = game.event.events.PlayCard[player.id];
-		if (stat.length <= 0) {
+		const latest = game.lodash.last(stat);
+		if (!latest) {
 			return false;
 		}
 
-		// Get the latest event
-		const latest = game.lodash.last(stat);
-		const latestCard = latest?.[0] as Card;
-
 		// If the previous card played was played on the same turn as this one, activate combo
-		if (latestCard.turn === game.turn) {
+		if (latest[0].turn === game.turn) {
 			await card.activate(Ability.Combo);
 		}
 
@@ -1286,9 +1283,9 @@ export class Game {
 	 *
 	 * @returns Return values of all the executed functions
 	 */
-	async triggerEventListeners(
-		key: Event,
-		value: UnknownEventValue,
+	async triggerEventListeners<E extends Event>(
+		key: E,
+		value: EventValue<E>,
 		player: Player,
 	): Promise<void> {
 		for (const eventListener of Object.values(this.event.listeners)) {

@@ -246,17 +246,17 @@ export class Player {
 	/**
 	 * The secrets that the player has.
 	 */
-	secrets: QuestObject[] = [];
+	secrets: QuestObject<Event>[] = [];
 
 	/**
 	 * The sidequests that the player has.
 	 */
-	sidequests: QuestObject[] = [];
+	sidequests: QuestObject<Event>[] = [];
 
 	/**
 	 * The quest that the player has.
 	 */
-	quests: QuestObject[] = [];
+	quests: QuestObject<Event>[] = [];
 
 	/**
 	 * How much attack/health (+1) the player's next jade golem will have.
@@ -866,7 +866,7 @@ export class Player {
 			return false;
 		}
 
-		if (!this.hero) {
+		if (!this.hero || !this.hero.heropower) {
 			return false;
 		}
 
@@ -1148,29 +1148,29 @@ export class Player {
 	 *
 	 * @returns Success
 	 */
-	async addQuest(
+	async addQuest<E extends Event>(
 		type: QuestType,
 		card: Card,
-		key: Event,
+		key: E,
 		amount: number,
-		callback: QuestCallback,
+		callback: QuestCallback<E>,
 		next?: number,
 	): Promise<boolean> {
-		let quests: QuestObject[];
+		let quests: QuestObject<E>[];
 
 		switch (type) {
 			case QuestType.Quest: {
-				quests = this.quests;
+				quests = this.quests as QuestObject<E>[];
 				break;
 			}
 
 			case QuestType.Sidequest: {
-				quests = this.sidequests;
+				quests = this.sidequests as QuestObject<E>[];
 				break;
 			}
 
 			case QuestType.Secret: {
-				quests = this.secrets;
+				quests = this.secrets as QuestObject<E>[];
 				break;
 			}
 

@@ -688,9 +688,7 @@ export const debugCommands: CommandList = {
 			return false;
 		}
 
-		const eventCards: Array<[Card, number]> =
-			game.event.events.PlayCard[game.player.id];
-
+		const eventCards = game.event.events.PlayCard[game.player.id];
 		if (eventCards.length <= 0) {
 			await game.pause("<red>No cards to undo.</red>\n");
 			return false;

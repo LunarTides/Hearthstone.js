@@ -6,11 +6,11 @@ import {
 	type EventListenerCallback,
 	EventListenerMessage,
 	type EventManagerEvents,
+	type EventValue,
 	type HistoryKey,
 	QuestType,
 	type TickHookCallback,
 	Type,
-	type UnknownEventValue,
 } from "@Game/types.js";
 
 export const eventManager = {
@@ -19,7 +19,8 @@ export const eventManager = {
 	 */
 	listeners: {} as Record<
 		number,
-		(key: Event, value: UnknownEventValue, player: Player) => Promise<void>
+		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+		(key: any, value: any, player: Player) => Promise<void>
 	>,
 
 	/**
@@ -30,7 +31,7 @@ export const eventManager = {
 	/**
 	 * The hooks that will be run when the game ticks.
 	 */
-	tickHooks: [] as TickHookCallback[],
+	tickHooks: [] as TickHookCallback<Event>[],
 
 	/**
 	 * The history of the game.
@@ -71,9 +72,9 @@ export const eventManager = {
 	 * @param value The value of the event that triggered the tick
 	 * @param player The player that triggered the tick
 	 */
-	async tick(
-		key: Event,
-		value: UnknownEventValue,
+	async tick<E extends Event>(
+		key: E,
+		value: EventValue<E>,
 		player: Player,
 	): Promise<boolean> {
 		/*
@@ -128,9 +129,9 @@ export const eventManager = {
 	 *
 	 * @returns Success
 	 */
-	async cardUpdate(
-		key: Event,
-		value: UnknownEventValue,
+	async cardUpdate<E extends Event>(
+		key: E,
+		value: EventValue<E>,
 		player: Player,
 	): Promise<boolean> {
 		for (const player of [game.player1, game.player2]) {
@@ -180,10 +181,10 @@ export const eventManager = {
 	 *
 	 * @returns Success
 	 */
-	async questUpdate(
+	async questUpdate<E extends Event>(
 		questType: QuestType,
-		key: Event,
-		value: UnknownEventValue,
+		key: E,
+		value: EventValue<E>,
 		player: Player,
 	): Promise<boolean> {
 		const questsName = `${questType.toLowerCase()}s` as
@@ -246,9 +247,9 @@ export const eventManager = {
 	 *
 	 * @returns Success
 	 */
-	async broadcast(
-		key: Event,
-		value: UnknownEventValue,
+	async broadcast<E extends Event>(
+		key: E,
+		value: EventValue<E>,
 		player: Player,
 		updateHistory = true,
 	): Promise<boolean> {
@@ -260,25 +261,22 @@ export const eventManager = {
 		}
 
 		if (updateHistory) {
-			// Clone the value if it is a card.
-			let historyValue = value;
 			if (value instanceof Card) {
-				historyValue = value.perfectCopy();
-				historyValue.uuid = value.uuid;
+				// Clone the value if it is a card.
+				const card = value.perfectCopy();
+				card.uuid = value.uuid;
+				this.addHistory(key, card as EventValue<E>, player);
+			} else {
+				this.addHistory(key, value, player);
 			}
-
-			this.addHistory(key, historyValue, player);
 		}
 
 		if (player.id === -1) {
 			return false;
 		}
 
-		if (!this.events[key]) {
-			this.events[key] = [[["GameLoop", game.turn]], [["GameLoop", game.turn]]];
-		}
-
-		this.events[key]?.[player.id].push([value, game.turn]);
+		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+		this.events[key]?.[player.id].push([value as any, game.turn]);
 
 		await this.cardUpdate(key, value, player);
 
@@ -296,7 +294,11 @@ export const eventManager = {
 	 * @param value The value of the event
 	 * @param player The player who caused the event to happen
 	 */
-	addHistory(key: Event, value: UnknownEventValue, player: Player): void {
+	addHistory<E extends Event>(
+		key: E,
+		value: EventValue<E>,
+		player: Player,
+	): void {
 		if (!this.history[game.turn]) {
 			this.history[game.turn] = [[Event.GameLoop, `Init ${key}`, player]];
 		}
@@ -318,25 +320,6 @@ export const eventManager = {
 	},
 
 	/**
-	 * Increment a stat
-	 *
-	 * @param player The player to update
-	 * @param key The key to increment
-	 * @param amount The amount to increment by
-	 *
-	 * @returns The new value
-	 */
-	increment(player: Player, key: string, amount = 1): number {
-		if (!this.stats[key]) {
-			this.stats[key] = [0, 0];
-		}
-
-		this.stats[key][player.id] += amount;
-
-		return this.stats[key][player.id];
-	},
-
-	/**
 	 * Add an event listener.
 	 *
 	 * @param key The event to listen for. If this is an empty string, it will listen for any event.
@@ -345,9 +328,9 @@ export const eventManager = {
 	 *
 	 * @returns If you call this function, it will destroy the event listener.
 	 */
-	addListener(
-		key: Event | "",
-		callback: EventListenerCallback,
+	addListener<E extends Event>(
+		key: E | "",
+		callback: EventListenerCallback<E>,
 		lifespan = 1,
 	): () => boolean {
 		let times = 0;
@@ -372,8 +355,8 @@ export const eventManager = {
 		};
 
 		this.listeners[id] = async (
-			_key: Event,
-			_unknownValue: UnknownEventValue,
+			_key: E,
+			value: EventValue<E>,
 			eventPlayer: Player,
 		) => {
 			// Validate key. If key is empty, match any key.
@@ -381,7 +364,7 @@ export const eventManager = {
 				return;
 			}
 
-			const message = await callback(_unknownValue, eventPlayer);
+			const message = await callback(value, eventPlayer);
 			times++;
 
 			switch (message) {
@@ -426,8 +409,8 @@ export const eventManager = {
 	 *
 	 * @returns A function that, when called, will remove the hook from the tick event.
 	 */
-	hookToTick(callback: TickHookCallback): () => void {
-		this.tickHooks.push(callback);
+	hookToTick<E extends Event>(callback: TickHookCallback<E>): () => void {
+		(this.tickHooks as TickHookCallback<E>[]).push(callback);
 
 		const unhook = () => {
 			game.functions.util.remove(this.tickHooks, callback);

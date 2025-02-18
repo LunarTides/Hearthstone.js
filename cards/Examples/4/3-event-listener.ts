@@ -6,7 +6,6 @@ import {
 	Class,
 	Event,
 	EventListenerMessage,
-	type EventValue,
 	MinionTribe,
 	Rarity,
 	Type,
@@ -43,11 +42,8 @@ export const blueprint: Blueprint = {
 		 */
 		const destroy = game.event.addListener(
 			Event.PlayCard,
-			async (_unknownValue, eventPlayer) => {
+			async (value, eventPlayer) => {
 				// This function will be run when the correct event is broadcast.
-
-				// addListener can't figure out the type of `val` by itself, so we have to do the same thing as with passives.
-				const value = _unknownValue as EventValue<Event.PlayCard>;
 
 				/*
 				 * Only continue if the player that triggered the event is this card's owner and the played card is a minion and it is not this card.
