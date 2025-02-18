@@ -6,7 +6,7 @@ import {
 	Event,
 	Keyword,
 	TargetAlignment,
-	TargetFlag,
+	type TargetFlag,
 	Type,
 	type UnknownEventValue,
 	UseLocationError,
@@ -25,7 +25,6 @@ const helpBricks = [
 	"hero power - Use your hero power",
 	"history - Show a list of actions that have happened",
 	"concede - Forfeit the game",
-	"view - View additional information about a card",
 	"use - Use a location card",
 	"titan - Use a titan card",
 	"detail - Get more details about the game",
@@ -255,44 +254,6 @@ export const commands: CommandList = {
 		);
 
 		await game.pause("\nPress enter to continue...\n");
-		return true;
-	},
-
-	async view(): Promise<boolean> {
-		const isHandAnswer = await game.functions.interact.prompt.chooseFromList(
-			game.player,
-			"Do you want to view a minion on the board, or in your hand?",
-			["Board", "Hand"],
-		);
-
-		const isHand = isHandAnswer === "Hand";
-
-		if (!isHand) {
-			// AllowLocations Makes selecting location cards allowed. This is disabled by default to prevent, for example, spells from killing the card.
-			const card = await game.functions.interact.prompt.targetCard(
-				"Which minion do you want to view?",
-				undefined,
-				TargetAlignment.Any,
-				[TargetFlag.AllowLocations],
-			);
-
-			if (!card) {
-				return false;
-			}
-
-			await card.view();
-			return true;
-		}
-
-		// View minion on the board
-		const cardIndex = await game.input("\nWhich card do you want to view? ");
-		if (!cardIndex || !game.lodash.parseInt(cardIndex)) {
-			return false;
-		}
-
-		const card = game.player.hand[game.lodash.parseInt(cardIndex) - 1];
-
-		await card.view();
 		return true;
 	},
 

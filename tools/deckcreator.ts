@@ -1107,7 +1107,8 @@ const commands: CommandList = {
 		await getCardArg(
 			args,
 			async (card) => {
-				await card.view();
+				console.log(`${await card.readable()}\n`);
+				await game.pause();
 				return true;
 			},
 			() => {
