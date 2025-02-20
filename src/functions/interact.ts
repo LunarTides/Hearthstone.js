@@ -42,6 +42,8 @@ console.error = (...data) => {
 	game.functions.interact.logError(...data);
 };
 
+let seenFunFacts: string[] = [];
+
 const prompt = {
 	/**
 	 * Asks the player to supply a deck code.
@@ -884,7 +886,7 @@ const prompt = {
 
 const print = {
 	/**
-	 * Prints the "watermark" border
+	 * Prints the "watermark" border.
 	 */
 	watermark(): void {
 		game.functions.interact.cls();
@@ -911,6 +913,36 @@ const print = {
 			console.log(
 				`\n<b>[${game.time.year - 2022} YEAR ANNIVERSARY! Enjoy some fun-facts about Hearthstone.js!]</b>`,
 			);
+		}
+
+		// Fun facts.
+		if (!game.config.general.disableFunFacts) {
+			// Cycle through the fun facts. If it has been seen, don't show it again.
+			// Once all the fun facts have been shown, cycle through them again.
+			let funFacts = game.config.funFacts.filter(
+				(funFact) => !seenFunFacts.includes(funFact),
+			);
+
+			// If all the fun facts have been shown, show them again.
+			if (funFacts.length === 0 && seenFunFacts.length > 0) {
+				// If the fun fact ends with a dash, keep it in the list.
+				// This is so that the fun facts that are cut off only appear once.
+				seenFunFacts = seenFunFacts.filter((funFact: string) =>
+					funFact.endsWith("-"),
+				);
+
+				funFacts = game.config.funFacts;
+			}
+
+			const funFact = game.lodash.sample(funFacts);
+			if (funFact) {
+				seenFunFacts.push(funFact);
+
+				console.log(
+					game.logger.translate("<gray>(Fun Fact: %s)</gray>"),
+					game.logger.translate(funFact),
+				);
+			}
 		}
 	},
 

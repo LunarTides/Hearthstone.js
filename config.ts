@@ -29,6 +29,10 @@ export const config: GameConfig = {
 
 		// If you are a no-fun partypooper, you can set this to `true` to disable all time-based events.
 		disableEvents: false,
+
+		// If you are the type of person to set `disableEvents` to `true` (see above) or if you have already seen all the fun facts,
+		// you can set this to `true` to disable fun facts. You monster...
+		disableFunFacts: false,
 	},
 
 	decks: {
@@ -298,4 +302,52 @@ export const config: GameConfig = {
 
 		githubUrl: "https://github.com/LunarTides/Hearthstone.js",
 	},
+
+	// Just add a bunch of fun facts about the project here. It's nice to relive its history considering it is 3 years old now. Time sure does fly...
+	funFacts: [
+		// AI
+		"The AI was added before the card creator. I always forget that for some reason...",
+		"The AI works by analyzing the cards in its hand, and playing the ones with the highest 'score'. It also does some basic sentiment analysis by looking at the card's description.",
+		"The AI doesn't know more than you do. Except for the cards in its own hand, of course. Incidentally, did you know that the AI is more scared of you than you are of it? I don't blame it...",
+		"The AI is currently pretty stupid. I plan on improving it later by running it in a simulation and evaluating the game state after certain moves.",
+
+		// 2.0
+		"Version 2.0 originally started as version 1.7, but then I concluded that rewriting the entire codebase in TypeScript would somehow be a quick and easy job.",
+		"Version 2.0 began development on August 21, 2023, and released on December 31st, 2023. It was released since ~7 hours before 2024 I decided I would release it before the new year.",
+		"Version 2.0 originally came with a script to upgrade pre-2.0 cards. The problem was that the update ended up having so many breaking changes that it was unreasonable to write an upgrade script that would cover all the edge-cases.",
+		"Hearthstone.js was originally going to be renamed to Hearthstone.ts after 2.0, but it just didn't sound right to me. Maybe I just got used to the name...",
+		"Shortly after 2.0 was released, I got majorly burned out. I made 120 commits throughout the <i>entirety</i> of 2024. Compared to the ~1.3k commits in total, that was not much. I have gotten better recently though.",
+		"The amount of lines of code in Hearthstone.js between 1.6.2 and 2.0 is pretty much the same, despite the codebase being incredibly different. Most of that comes from the cards that were removed in 2.0.",
+
+		// Tools / Scripts
+		"The card creator was originally created in Python, but was changed to JavaScript later on to improve readability, compatability, and maintainability. The holy trinity of coding...",
+		"The deck creator has, surpisingly enough, not undergone too many changes since its creation.",
+		"The id script was originally made to change ids in the early stages of 2.0 development, but ended up being useful for discovering holes and duplicates in ids, so it stayed.",
+		"I have scripts to ensure that cards work correctly and that the game doesn't crash, but it can still happen. Please report any bugs you find.",
+
+		// Bugs
+		"There existed an ancient bug that terrorized me ever since Hearthstone.py V1. I called this dreaded bug 'The Linking Bug'. It was so dastardly, so tutungerdly, that it defies words. It is truly the most photosynthesis bug of them all.",
+		"I know I shouldn't talk about it but I will anyways. The linking bug-",
+
+		// History
+		"The first commit of Hearthstone.js was made on February 14th, 2022, but it had been in development for a while before that. Unfortunately, the versions before the first commit are lost to time.",
+		"There existed 2 versions of Hearthstone.js before this one. These were later called 'Hearthstone.py V1' and 'Hearthstone.py V2'. They are still available under my 'Python' repository.",
+		"From August 22nd, 2022 to August 31st, 2023, I used an alt account (IsakSkole123) to work on Hearthstone.js when I didn't have access to my main computer.",
+		"The earliest versions of Hearthstone.js used the JSON format to store cards. This was changed to JS in a4805f9, commit number 10.",
+		"The Hearthstone.js code structure has been radically changed over the course of the project's lifetime.",
+		"When I began working on Hearthstone.js, I knew next to nothing about JavaScript, and even less about TypeScript. I feel the appropriate amount of shame looking back.",
+		"The very first version of Hearthstone.js was written in Python. I changed the language to JavaScript since I couldn't figure out how to dynamically import the cards in Python.",
+		"I originally didn't format my code using a formatter. When I realized that I should probably do that, I began using 'xo'. I switched to 'biome' after I saw people discussing it in other repos.",
+		"I accidentally included a backup of the code in the first commit. That is the earliest version of Hearthstone.js in existance.",
+
+		// Other
+		"Hearthstone.js is the project I am most proud of. I hope you enjoy it.",
+		"Hearthstone.js has reached 10 stars on GitHub. Thanks for the support!",
+		"English is my second language, so expect some typos, grammar errors, and (probably) most of all, punctuation errors. Please report them if you see any.",
+		"I switched to Bun since it actually solved some issues I had. I don't know if Node.js was bugged, but with Bun I was able to re-add card reloading, for example.",
+		"As of writing this, there is an usused event in Hearthstone.js called 'Pride Month' which is active all of June. Make of that what you will.",
+		"I have still not learned everything TypeScript has to offer. Only 2 days ago (at the time of writing), I discovered type guard functions, which were used in ad6394d to narrow down the type of the 'value' parameter in passives. If that doesn't mean anything to you, please accept this emoji of a bunny as an apology: 🐿️",
+		"New features are constantly added and removed in the main branch. Don't be surprised if you see something new, or if something old / useless is removed.",
+		"One of my philosophies with Hearthstone.js is to make it <i>incredibly</i> easy to add new stuff. I achieve this not only by making tools like the card creators, but through making the codebase highly modular and extendable.",
+	],
 };

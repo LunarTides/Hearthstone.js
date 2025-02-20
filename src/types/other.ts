@@ -140,6 +140,7 @@ export type GameConfig = {
 		maxBoardSpace: number;
 		maxHandLength: number;
 		disableEvents: boolean;
+		disableFunFacts: boolean;
 	};
 
 	decks: {
@@ -199,4 +200,6 @@ export type GameConfig = {
 
 		githubUrl: string;
 	};
+
+	funFacts: string[];
 };
