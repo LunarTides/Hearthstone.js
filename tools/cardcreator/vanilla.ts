@@ -36,7 +36,7 @@ export async function create(
 	let text = card.text ?? "";
 	let typeString = game.lodash.capitalize(card.type);
 	if (typeString === "Hero_power") {
-		typeString = "Heropower" as typeof typeString;
+		typeString = "HeroPower" as typeof typeString;
 	}
 
 	const type = typeString as Type;

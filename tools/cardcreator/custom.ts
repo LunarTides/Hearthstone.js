@@ -202,14 +202,13 @@ const cardTypeFunctions: {
 
 		const armor =
 			game.lodash.parseInt(await input("Armor (Default: 5): ")) ?? 5;
-		const heropowerId =
-			game.lodash.parseInt(
-				await input("Hero Power ID (Leave blank to create a new one): "),
-			) ?? 0;
+		const heropowerId = game.lodash.parseInt(
+			(await input("Hero Power ID (Leave blank to create a new one): ")) || "0",
+		);
 
 		if (heropowerId === 0) {
 			console.log("\n<green bold>Make the Hero Power:<green bold>\n");
-			if (!(await main())) {
+			if (!(await main({ overrideCardType: Type.HeroPower }))) {
 				throw new Error("Failed to create hero power");
 			}
 		}
@@ -257,20 +256,30 @@ const cardTypeFunctions: {
  *
  * @returns The path to the file
  */
-export async function main(
+export async function main({
 	debug = false,
-	overrideType?: lib.CCType,
-): Promise<string | false> {
+	overrideCCType,
+	overrideCardType,
+}: {
+	debug?: boolean;
+	overrideCCType?: lib.CCType;
+	overrideCardType?: Type;
+}): Promise<string | false> {
 	// Reset the shouldExit switch so that the program doesn't immediately exit when the user enters the ccc, exits, then enters ccc again
 	shouldExit = false;
 
 	console.log("Hearthstone.js Custom Card Creator (C) 2022\n");
 	console.log("type 'back' at any step to cancel.\n");
 
-	// Ask the user for the type of card they want to make
-	type = game.lodash.startCase(await input("Type: ")) as Type;
-	if (shouldExit) {
-		return false;
+	if (overrideCardType) {
+		type = overrideCardType;
+		console.log("Type: %s", type);
+	} else {
+		// Ask the user for the type of card they want to make
+		type = game.lodash.startCase(await input("Type: ")) as Type;
+		if (shouldExit) {
+			return false;
+		}
 	}
 
 	if (type === ("Heropower" as Type) || type === ("Hero Power" as Type)) {
@@ -301,8 +310,8 @@ export async function main(
 	console.log("Creating file...");
 
 	let cctype: lib.CCType = lib.CCType.Custom;
-	if (overrideType) {
-		cctype = overrideType;
+	if (overrideCCType) {
+		cctype = overrideCCType;
 	}
 
 	const filePath = await lib.create(cctype, card, undefined, undefined, debug);

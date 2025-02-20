@@ -430,27 +430,24 @@ export const blueprint: Blueprint = {
 
 		console.log(`File created at: "${filePath}"`);
 
-		console.log("Trying to compile...");
-		if (game.functions.util.tryCompile()) {
-			console.log("<bright:green>Success!</bright:green>");
-		} else {
-			console.error(
-				"<yellow>WARNING: Compiler error occurred. Please fix the errors in the card.</yellow>",
-			);
-		}
+		// TODO: Fix this. #277 #382
+		// console.log("Trying to compile...");
+		// if (game.functions.util.tryCompile()) {
+		// 	console.log("<bright:green>Success!</bright:green>");
+		// } else {
+		// 	console.error(
+		// 		"<yellow>WARNING: Compiler error occurred. Please fix the errors in the card.</yellow>",
+		// 	);
+		// }
 	}
 
 	game.functions.card.generateIdsFile();
 
 	// Open the defined editor on that card if it has a function to edit, and debug mode is disabled
 	if (ability && !debugMode) {
-		const success = game.functions.util.runCommandAsChildProcess(
+		game.functions.util.runCommand(
 			`${game.config.general.editor} "${filePath}"`,
 		);
-
-		if (!success) {
-			await game.pause();
-		}
 	}
 
 	return filePath;

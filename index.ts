@@ -118,7 +118,7 @@ async function cardCreator() {
 				game.logger.debug("Starting Vanilla Card Creator...OK");
 			} else if (type === "c") {
 				game.logger.debug("Starting Custom Card Creator...");
-				await ccc.main();
+				await ccc.main({});
 				game.logger.debug("Starting Custom Card Creator...OK");
 			}
 		},
