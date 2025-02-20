@@ -66,10 +66,6 @@ describe("src/functions/util", () => {
 		expect(false).toEqual(true);
 	});
 
-	test.todo("runCommandAsChildProcess", async () => {
-		expect(false).toEqual(true);
-	});
-
 	test.todo("openInBrowser", async () => {
 		expect(false).toEqual(true);
 	});
