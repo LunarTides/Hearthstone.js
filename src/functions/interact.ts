@@ -72,7 +72,7 @@ const prompt = {
 		const debugStatement = allowTestDeck
 			? " <gray>(Leave this empty for a test deck)</gray>"
 			: "";
-		const deckcode = await game.logger.inputTranslate(
+		const deckcode = await game.inputTranslate(
 			"Player %s, please type in your deckcode%s: ",
 			player.id + 1,
 			debugStatement,
@@ -81,15 +81,13 @@ const prompt = {
 		let result = true;
 
 		if (deckcode.length > 0) {
-			game.logger.debug(`${player.getName()} chose deck code: ${deckcode}...`);
+			game.interest(`${player.getName()} chose deck code: ${deckcode}...`);
 			result = Boolean(await game.functions.deckcode.import(player, deckcode));
 
 			if (result) {
-				game.logger.debug(
-					`${player.getName()} chose deck code: ${deckcode}...OK`,
-				);
+				game.interest(`${player.getName()} chose deck code: ${deckcode}...OK`);
 			} else {
-				game.logger.debug(
+				game.interest(
 					`${player.getName()} chose deck code: ${deckcode}...FAIL`,
 				);
 			}
@@ -100,14 +98,14 @@ const prompt = {
 				return false;
 			}
 
-			game.logger.debug(`${player.getName()} chose debug deck...`);
+			game.interest(`${player.getName()} chose debug deck...`);
 
 			// Debug mode is enabled, use the 30 Sheep debug deck.
 			while (player.deck.length < 30) {
 				player.deck.push(await Card.create(game.cardIds.sheep1, player, true));
 			}
 
-			game.logger.debug(`${player.getName()} chose debug deck...OK`);
+			game.interest(`${player.getName()} chose debug deck...OK`);
 		}
 
 		return result;
@@ -463,7 +461,7 @@ const prompt = {
 				const opponentTargetName = boardOpponentTarget.colorFromRarity();
 				const friendlyTargetName = boardFriendlyTarget.colorFromRarity();
 
-				const alignment = await game.logger.inputTranslate(
+				const alignment = await game.inputTranslate(
 					"Do you want to select your opponent's (%s) or your own (%s)? (y: opponent, n: friendly | type 'back' to go back) ",
 					opponentTargetName,
 					friendlyTargetName,
@@ -878,7 +876,7 @@ const prompt = {
 			}
 		}
 
-		console.log("<red>%s.</red>", game.logger.translate(error));
+		console.log("<red>%s.</red>", game.translate(error));
 		await game.pause("");
 		return false;
 	},
@@ -939,8 +937,8 @@ const print = {
 				seenFunFacts.push(funFact);
 
 				console.log(
-					game.logger.translate("<gray>(Fun Fact: %s)</gray>"),
-					game.logger.translate(funFact),
+					game.translate("<gray>(Fun Fact: %s)</gray>"),
+					game.translate(funFact),
 				);
 			}
 		}
@@ -1243,7 +1241,7 @@ export const interactFunctions = {
 			return wrapper("");
 		}
 
-		question = game.logger.translate(question);
+		question = game.translate(question);
 		question = parseTags(question);
 
 		// Let the game make choices for the user
@@ -1283,7 +1281,7 @@ export const interactFunctions = {
 
 		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 		const newData = data.map((i: any) =>
-			typeof i === "string" ? parseTags(game.logger.translate(i)) : i,
+			typeof i === "string" ? parseTags(game.translate(i)) : i,
 		);
 
 		callback(...newData);

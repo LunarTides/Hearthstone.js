@@ -218,12 +218,10 @@ export const commands: CommandList = {
 
 		console.log("Available commands:");
 
-		const bricks = helpBricks.map((brick) => game.logger.translate(brick));
+		const bricks = helpBricks.map((brick) => game.translate(brick));
 		const wall = game.functions.util.createWall(bricks, "-");
 
-		const debugBricks = helpDebugBricks.map((brick) =>
-			game.logger.translate(brick),
-		);
+		const debugBricks = helpDebugBricks.map((brick) => game.translate(brick));
 		const debugWall = game.functions.util.createWall(debugBricks, "-");
 
 		// Normal commands

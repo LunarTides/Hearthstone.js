@@ -6,7 +6,6 @@ import os from "node:os";
 import { dirname as pathDirname } from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
-import { format } from "node:util";
 import type { GameConfig, Target } from "@Game/types.js";
 import date from "date-and-time";
 
@@ -173,7 +172,7 @@ ${error.stack}
 `;
 		}
 
-		const debugLogContent = `-- Log --\n${game.logger.debugLog.join("\n")}\n-- Log --\n`;
+		const debugLogContent = `-- Log --\n${game.debugLog.join("\n")}\n-- Log --\n`;
 		const historyContent = `\n-- History --${history}-- History --\n`;
 		const aiContent = `\n-- AI Logs --\n${aiHistory}-- AI Logs --\n`;
 
@@ -356,18 +355,6 @@ ${mainContent}
 				invalidateCache: refresh,
 			}) as string,
 		);
-	},
-
-	/**
-	 * Translates the input text to the current locale using the language map, or returns the input text if no translation is found.
-	 *
-	 * @param text The text to be translated
-	 * @returns The translated text or the original text if no translation is found
-	 */
-	translate(text: string, ...args: unknown[]): string {
-		const newText = this.getLanguageMap()[text] || text;
-
-		return format(newText, ...args);
 	},
 
 	/**

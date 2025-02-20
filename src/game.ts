@@ -1,8 +1,8 @@
+import { format } from "node:util";
 import { Ai } from "@Game/ai.js";
 import { Card } from "@Game/card.js";
 import { eventManager } from "@Game/event.js";
 import { functions } from "@Game/functions/index.js";
-import { logger } from "@Game/logger.js";
 import { Player } from "@Game/player.js";
 import {
 	Ability,
@@ -1087,9 +1087,9 @@ export class Game {
 	event = eventManager;
 
 	/**
-	 * Functions that are used for debug/internal logging and translating.
+	 * Debug information saved to the log files.
 	 */
-	logger = logger;
+	debugLog: string[] = [];
 
 	/**
 	 * Some configuration for the game.
@@ -1242,6 +1242,85 @@ export class Game {
 	 */
 	async pause(prompt = "Press enter to continue..."): Promise<void> {
 		await this.functions.interact.input(prompt);
+	}
+
+	/**
+	 * @example
+	 * game.interest("Starting...");
+	 * assert.equal(game.debugLog[0], "Starting...");
+	 * game.interest("Something else");
+	 * assert.equal(game.debugLog[1], "Something else");
+	 *
+	 * game.interest("Starting...OK");
+	 * assert.equal(game.debugLog[0], "Starting...OK");
+	 * assert.equal(game.debugLog[1], "Something else");
+	 */
+	interest(...data: string[]): void {
+		for (const string of data) {
+			if (typeof string !== "string") {
+				continue;
+			}
+
+			const split = `${string.split("...")[0]}...`;
+
+			if (this.debugLog.includes(split)) {
+				this.debugLog.splice(this.debugLog.indexOf(split), 1, string);
+
+				game.functions.util.remove(data, string);
+			}
+		}
+
+		this.debugLog.push(...data);
+	}
+
+	/**
+	 * Translates the input text to the current locale using the language map, or returns the input text if no translation is found.
+	 *
+	 * @param text The text to be translated
+	 * @returns The translated text or the original text if no translation is found
+	 */
+	translate(text: string, ...args: unknown[]): string {
+		const newText = this.functions.util.getLanguageMap()[text] || text;
+
+		return format(newText, ...args);
+	}
+
+	/**
+	 * Logs the translated text to the console.
+	 *
+	 * @param text The text to be translated
+	 * @param args The arguments to be passed to the translation string
+	 */
+	logTranslate(text: string, ...args: unknown[]): void {
+		console.log(this.translate(text, ...args));
+	}
+
+	/**
+	 * A combination of {@link Game.translate} and {@link Game.input}.
+	 *
+	 * @param text The text to be translated
+	 * @param args The arguments to be passed to the translation string
+	 * @returns The user's answer
+	 */
+	async inputTranslate(text: string, ...args: unknown[]): Promise<string> {
+		return await game.input(this.translate(text, ...args));
+	}
+
+	async inputTranslateWithOptions(
+		text: string,
+		overrideNoInput = false,
+		useInputQueue = true,
+		...args: unknown[]
+	): Promise<string> {
+		return await game.input(
+			this.translate(text, ...args),
+			overrideNoInput,
+			useInputQueue,
+		);
+	}
+
+	async pauseTranslate(text: string, ...args: unknown[]): Promise<void> {
+		await game.pause(this.translate(text, ...args));
 	}
 
 	/**
