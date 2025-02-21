@@ -48,7 +48,7 @@ async function change(
 ): Promise<number> {
 	let updated = 0;
 
-	await searchCards((path, content, id) => {
+	await searchCards(async (path, content, id) => {
 		if (id < startId) {
 			if (log) {
 				console.log("<bright:yellow>Skipping %s</bright:yellow>", path);
@@ -60,8 +60,8 @@ async function change(
 		const newId = callback(id);
 
 		// Set the new id
-		game.functions.util.fs(
-			"write",
+		await game.functions.util.fs(
+			"writeFile",
 			path,
 			content.replace(idRegex, `id: ${newId}`),
 		);
@@ -74,10 +74,16 @@ async function change(
 	});
 
 	if (updated > 0) {
-		const latestId = Number(game.functions.util.fs("read", "/cards/.latestId"));
+		const latestId = Number(
+			await game.functions.util.fs("readFile", "/cards/.latestId"),
+		);
 		const newLatestId = callback(latestId);
 
-		game.functions.util.fs("write", "/cards/.latestId", newLatestId.toString());
+		await game.functions.util.fs(
+			"writeFile",
+			"/cards/.latestId",
+			newLatestId.toString(),
+		);
 	}
 
 	if (log) {
@@ -177,7 +183,9 @@ export async function validate(log: boolean): Promise<[number, number]> {
 
 	// Check if the .latestId is valid
 	const latestId = game.lodash.parseInt(
-		(game.functions.util.fs("read", "/cards/.latestId") as string).trim(),
+		(
+			(await game.functions.util.fs("readFile", "/cards/.latestId")) as string
+		).trim(),
 	);
 
 	if (latestId !== currentId) {
@@ -189,7 +197,11 @@ export async function validate(log: boolean): Promise<[number, number]> {
 			);
 		}
 
-		game.functions.util.fs("write", "/cards/.latestId", currentId.toString());
+		await game.functions.util.fs(
+			"writeFile",
+			"/cards/.latestId",
+			currentId.toString(),
+		);
 	}
 
 	if (log) {

@@ -14,7 +14,7 @@ games = Number.isNaN(games) ? 10 : games;
  */
 async function main(): Promise<void> {
 	const decks = JSON.parse(
-		game.functions.util.fs("read", "/decks.json") as string,
+		(await game.functions.util.fs("readFile", "/decks.json")) as string,
 	) as string[];
 
 	console.warn("Looking for crashes... This might take a while...");

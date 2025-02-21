@@ -23,7 +23,7 @@ let collectibleVanillaCardsAmount = Number.NaN;
 
 try {
 	// `vanilla.getAll` will throw an error if the `vanillacards.json` file is missing.
-	const vanillaCards = game.functions.card.vanilla.getAll();
+	const vanillaCards = await game.functions.card.vanilla.getAll();
 	vanillaCardsAmount = vanillaCards.length;
 	collectibleVanillaCardsAmount = vanillaCards.filter(
 		(card) => card.collectible,
@@ -113,7 +113,7 @@ async function cardCreator() {
 
 			if (type === "v") {
 				// This is to throw an error if it can't find the vanilla cards
-				game.functions.card.vanilla.getAll();
+				await game.functions.card.vanilla.getAll();
 
 				game.interest("Starting Vanilla Card Creator...");
 				await vcc.main();

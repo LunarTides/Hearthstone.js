@@ -654,7 +654,7 @@ export const debugCommands: CommandList = {
 
 		success &&= await game.functions.interact.withStatus(
 			"Reloading language map",
-			async () => Boolean(game.functions.util.getLanguageMap(true)),
+			async () => Boolean(await game.functions.util.importLanguageMap(true)),
 		);
 
 		if (success) {

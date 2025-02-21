@@ -1,14 +1,21 @@
 import childProcess from "node:child_process";
 import { createHash } from "node:crypto";
+import type { Dirent } from "node:fs";
 // It only confines these functions to the Hearthstone.js directory. Look in the fs wrapper functions in this file to confirm.
-import fs from "node:fs";
-import fsp from "node:fs/promises";
+import fs from "node:fs/promises";
 import os from "node:os";
 import { dirname as pathDirname, resolve } from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import type { GameConfig, Target } from "@Game/types.js";
 import date from "date-and-time";
+
+type FsFunctionKeys = {
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+	[K in keyof typeof fs]: (typeof fs)[K] extends (...args: any) => any
+		? K
+		: never;
+}[keyof typeof fs];
 
 export const utilFunctions = {
 	/**
@@ -130,8 +137,8 @@ export const utilFunctions = {
 	 */
 	async createLogFile(error?: Error): Promise<boolean> {
 		// Create a (crash-)log file
-		if (!this.fs("exists", "/logs")) {
-			this.fs("mkdir", "/logs");
+		if (!(await this.fs("exists", "/logs"))) {
+			await this.fs("mkdir", "/logs");
 		}
 
 		const now = new Date();
@@ -222,7 +229,7 @@ ${mainContent}
 		const checksum = createHash("sha256").update(content).digest("hex");
 		content += `\n${checksum}  ${filename}`;
 
-		this.fs("write", `/logs/${filename}`, content);
+		await this.fs("writeFile", `/logs/${filename}`, content);
 
 		if (!error) {
 			return true;
@@ -246,12 +253,12 @@ ${mainContent}
 	 *
 	 * @returns An object containing the parsed log data.
 	 */
-	parseLogFile(path: string) {
-		if (!this.fs("exists", path)) {
+	async parseLogFile(path: string) {
+		if (!(await this.fs("exists", path))) {
 			throw new Error("File does not exist");
 		}
 
-		let content = (this.fs("read", path) as string).trim();
+		let content = ((await this.fs("readFile", path)) as string).trim();
 		const contentSplit = content.split("\n");
 		const fileName = path.split("/").pop();
 
@@ -343,74 +350,94 @@ ${mainContent}
 	/**
 	 * Returns a language map based on the game's locale.
 	 *
-	 * @param refresh Whether to refresh the cache
 	 * @returns The language map
 	 */
-	getLanguageMap(refresh = false): Record<string, string> {
-		if (!this.fs("exists", `/locale/${game.config.general.locale}.json`)) {
+	getCachedLanguageMap(): Record<string, string> | undefined {
+		return game.cache.languageMap;
+	},
+
+	/**
+	 * Returns a language map based on the game's locale. Automatically updates it if it's not there.
+	 *
+	 * @param invalidateCache Whether to refresh the cache
+	 * @returns The language map
+	 */
+	async importLanguageMap(
+		invalidateCache = false,
+	): Promise<Record<string, string>> {
+		if (!invalidateCache && game.cache.languageMap) {
+			return game.cache.languageMap;
+		}
+
+		if (
+			!(await this.fs("exists", `/locale/${game.config.general.locale}.json`))
+		) {
 			return {};
 		}
 
-		return JSON.parse(
-			this.fs("read", `/locale/${game.config.general.locale}.json`, {
-				invalidateCache: refresh,
-			}) as string,
+		const languageMap = JSON.parse(
+			(await this.fs(
+				"readFile",
+				`/locale/${game.config.general.locale}.json`,
+				{},
+				{
+					invalidateCache: invalidateCache,
+				},
+			)) as string,
 		);
+
+		game.cache.languageMap = languageMap;
+		return languageMap;
 	},
 
 	/**
 	 * Executes a file system operation based on the provided callback.
 	 *
 	 * @param callback The name of the fs operation to execute.
-	 * @param path The path of the file or directory.
 	 * @param args Additional arguments for the fs operation.
 	 *
 	 * @returns The result of the fs operation.
 	 */
-	// biome-ignore lint/suspicious/noExplicitAny: I need to access "invalidateCache" in the args so they can't be unknown.
-	fs(callback: keyof typeof fs, path: string, ...args: any[]): unknown {
+	fs<F extends FsFunctionKeys>(
+		callback: F,
+		...args: [...Parameters<(typeof fs)[F]>, { invalidateCache?: boolean }?]
+	): Promise<ReturnType<(typeof fs)[F]>> {
+		const path = args[0];
+		if (typeof path !== "string") {
+			throw new TypeError("Path must be a string");
+		}
+
 		const actualPath = this.restrictPath(path);
-		let actualCallback = callback;
+		args.splice(0, 1);
 
-		let object = fs as typeof fs | typeof fsp;
-
-		if (actualCallback.endsWith("Sync")) {
-			actualCallback = callback.replace("Sync", "") as keyof typeof fs;
-		}
-
-		if (actualCallback === "write") {
-			actualCallback = "writeFile";
-		} else if (actualCallback === "read") {
-			actualCallback = "readFile";
-		}
-
-		if (args[0]?.async) {
-			object = fsp;
-		} else {
-			actualCallback += "Sync";
-		}
-
-		const callbackFunction = object[actualCallback as keyof typeof object] as (
+		const callbackFunction = fs[callback] as (
 			actualPath: string,
 			...args: unknown[]
-		) => unknown;
+		) => Promise<ReturnType<(typeof fs)[F]>>;
 
 		if (typeof callbackFunction !== "function") {
-			throw new TypeError(`Invalid fs function: ${actualCallback}`);
+			throw new TypeError(`Invalid fs function: ${callback}`);
 		}
 
 		// Cache files when they are read
-		if (actualCallback.includes("readFile")) {
+		if (callback === "readFile") {
 			if (!game.cache.files) {
 				game.cache.files = {};
 			}
 
+			let invalidateCache = false;
+
+			const lastArg = game.lodash.last(args);
+			if (typeof lastArg === "object" && "invalidateCache" in lastArg) {
+				invalidateCache = lastArg.invalidateCache ?? false;
+			}
+
 			const cached = game.cache.files[actualPath] as string | undefined;
 
-			if (args[0]?.invalidateCache && cached) {
+			if (invalidateCache && cached) {
 				delete game.cache.files[actualPath];
 			} else if (cached) {
-				return cached;
+				return Promise.resolve(cached) as Promise<ReturnType<(typeof fs)[F]>>;
 			}
 
 			const content = callbackFunction(actualPath, { encoding: "utf8" });
@@ -428,29 +455,27 @@ ${mainContent}
 	 * @param extension The extension to look for in cards. By default, this is ".ts"
 	 */
 	async searchCardsFolder(
-		callback: (path: string, content: string, file: fs.Dirent) => void,
+		callback: (path: string, content: string, file: Dirent) => void,
 		path = "/cards",
 		extension = ".ts",
 	): Promise<void> {
 		const actualPath = this.restrictPath(path);
 
-		const files = await (this.fs("readdir", actualPath, {
+		const files = await this.fs("readdir", actualPath, {
+			encoding: "utf8",
 			withFileTypes: true,
-			async: true,
 			recursive: true,
-		}) as Promise<fs.Dirent[]>);
+		});
 
 		// Use Promise.all to read all the files in parallel
 		await Promise.all(
 			files
 				.filter(
-					(file: fs.Dirent) => file.isFile() && file.name.endsWith(extension),
+					(file: Dirent) => file.isFile() && file.name.endsWith(extension),
 				)
 				.map(async (file) => {
 					const fullPath = resolve(actualPath, file.parentPath, file.name);
-					const content = await (this.fs("read", fullPath, {
-						async: true,
-					}) as Promise<string>);
+					const content = (await this.fs("readFile", fullPath)) as string;
 
 					return callback(fullPath, content, file);
 				}),

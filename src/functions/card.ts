@@ -16,7 +16,7 @@ const vanilla = {
 	 * This will throw an error if the user has not run the vanilla card generator,
 	 *
 	 * @example
-	 * const vanillaCards = getAll();
+	 * const vanillaCards = await getAll();
 	 *
 	 * for (const vanillaCard of vanillaCard) {
 	 *     console.log(vanillaCard.dbfId);
@@ -24,11 +24,11 @@ const vanilla = {
 	 *
 	 * @returns The vanilla cards
 	 */
-	getAll(): VanillaCard[] {
+	async getAll(): Promise<VanillaCard[]> {
 		const fileLocation = "/vanillacards.json";
-		if (game.functions.util.fs("exists", fileLocation)) {
+		if (await game.functions.util.fs("exists", fileLocation)) {
 			return JSON.parse(
-				game.functions.util.fs("read", fileLocation) as string,
+				(await game.functions.util.fs("readFile", fileLocation)) as string,
 			) as VanillaCard[];
 		}
 
@@ -317,7 +317,7 @@ export const cardFunctions = {
 	 *
 	 * Don't use this function manually unless you know what you're doing.
 	 */
-	generateIdsFile(): void {
+	async generateIdsFile(): Promise<void> {
 		let idsContent =
 			"// This file has been automatically generated. Do not change this file.\n\n";
 		idsContent += "export const cardIds = {\n";
@@ -330,7 +330,7 @@ export const cardFunctions = {
 
 		idsContent += "\n};\n";
 
-		game.functions.util.fs("write", "/cards/ids.ts", idsContent);
+		await game.functions.util.fs("writeFile", "/cards/ids.ts", idsContent);
 	},
 
 	/**

@@ -42,7 +42,7 @@ function fetchData(url: string): Promise<any> {
  * @returns Promise that resolves to void.
  */
 async function main(): Promise<void> {
-	await fetchData(API_URL).then((r) => {
+	await fetchData(API_URL).then(async (r) => {
 		let data = r as VanillaCard[];
 		const oldLength = data.length;
 
@@ -50,7 +50,11 @@ async function main(): Promise<void> {
 			data = game.functions.card.vanilla.filter(data, false, false, true);
 		}
 
-		game.functions.util.fs("write", "/vanillacards.json", JSON.stringify(data));
+		await game.functions.util.fs(
+			"writeFile",
+			"/vanillacards.json",
+			JSON.stringify(data),
+		);
 
 		const difference = oldLength - data.length;
 		console.log(

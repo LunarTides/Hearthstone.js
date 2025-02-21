@@ -437,7 +437,7 @@ export class Card {
 				),
 			);
 
-			game.functions.card.generateIdsFile();
+			await game.functions.card.generateIdsFile();
 		}
 
 		return game.cards.filter((c) => c.collectible || include_uncollectible);
