@@ -1,6 +1,5 @@
 import util from "node:util";
 import { Card } from "@Game/card.js";
-import { createGame } from "@Game/game.js";
 import {
 	Class,
 	type CommandList,
@@ -30,9 +29,7 @@ enum DeckcodeFormat {
 	JS = "JS",
 }
 
-const { game, player1 } = createGame();
-
-const { config } = game;
+const { config, player1 } = game;
 const classes = await game.functions.card.getClasses();
 const cards = await Card.all(game.config.advanced.dcShowUncollectible);
 
@@ -1017,7 +1014,7 @@ let running = true;
  */
 export async function main(): Promise<void> {
 	running = true;
-	Card.registerAll();
+	await Card.registerAll();
 
 	chosenClass = await askClass();
 

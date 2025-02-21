@@ -60,7 +60,7 @@ while (running) {
 				break;
 			}
 
-			lib.increment(startId, true);
+			await lib.increment(startId, true);
 			break;
 		}
 
@@ -71,12 +71,12 @@ while (running) {
 				break;
 			}
 
-			lib.decrement(startId, true);
+			await lib.decrement(startId, true);
 			break;
 		}
 
 		case "v": {
-			lib.validate(true);
+			await lib.validate(true);
 			break;
 		}
 

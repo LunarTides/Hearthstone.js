@@ -1,8 +1,5 @@
-import { createGame } from "@Game/game.js";
 import { type BlueprintWithOptional, Type } from "@Game/types.js";
 import { resumeTagParsing, stopTagParsing } from "chalk-tags";
-
-const { game } = createGame();
 
 // If this is set to true, this will force debug mode.
 const mainDebugSwitch = false;

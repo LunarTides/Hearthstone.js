@@ -2,7 +2,8 @@ import process from "node:process";
 import { createGame } from "@Game/game.js";
 import { Player } from "@Game/player.js";
 
-const { game } = createGame();
+const { game } = await createGame();
+const blueprints = game.blueprints;
 
 const gamesEnv = process.env.GAMES ?? "";
 let games = game.lodash.parseInt(gamesEnv);
@@ -32,7 +33,8 @@ async function main(): Promise<void> {
 		process.stderr.write(`\r\u001B[KPlaying game ${index + 1} / ${games}...`);
 
 		// Test the main game
-		const { game, player1, player2 } = createGame();
+		const { game, player1, player2 } = await createGame(false);
+		game.blueprints = blueprints;
 
 		// Setup the ais
 		game.config.ai.player1 = true;
@@ -86,7 +88,7 @@ async function main(): Promise<void> {
 	 * Create a new game to reset `noOutput` to false.
 	 * Trust me, it doesn't log anything without this
 	 */
-	createGame();
+	await createGame();
 	console.warn("\n<green>Crash test passed!</green>");
 	process.exit();
 }

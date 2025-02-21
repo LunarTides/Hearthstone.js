@@ -617,7 +617,7 @@ export const debugCommands: CommandList = {
 
 		success &&= await game.functions.interact.withStatus(
 			"Reloading cards",
-			async () => Card.reloadAll(),
+			async () => await Card.reloadAll(),
 		);
 
 		// Go through all the cards and reload them

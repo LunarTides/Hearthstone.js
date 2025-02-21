@@ -1,4 +1,3 @@
-import { createGame } from "@Game/game.js";
 import {
 	type Blueprint,
 	type BlueprintWithOptional,
@@ -11,7 +10,7 @@ import {
 } from "@Game/types.js";
 import * as lib from "./lib.js";
 
-const { player1, game } = createGame();
+const player1 = game.player1;
 
 let shouldExit = false;
 let type: Type;

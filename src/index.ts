@@ -9,7 +9,7 @@ import { validate as validateIds } from "../scripts/id/lib.js";
  * Starts the game.
  */
 export async function main(): Promise<void> {
-	const { game, player1, player2 } = createGame();
+	const { game, player1, player2 } = await createGame();
 	game.interest("Creating game...OK");
 
 	game.functions.interact.print.watermark();
@@ -18,7 +18,7 @@ export async function main(): Promise<void> {
 	console.warn("\nValidating ids...");
 	game.interest("Validating ids...");
 
-	const [holes, dupes] = validateIds(true);
+	const [holes, dupes] = await validateIds(true);
 	game.interest(`Validating ids...${holes} holes, ${dupes} duplicates`);
 
 	if (holes > 0 || dupes > 0) {

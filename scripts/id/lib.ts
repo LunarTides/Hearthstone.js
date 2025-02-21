@@ -4,7 +4,7 @@
 
 import { createGame } from "@Game/game.js";
 
-const { game } = createGame();
+const { game } = await createGame();
 
 const idRegex = /id: (\d+)/;
 
@@ -17,10 +17,10 @@ const idRegex = /id: (\d+)/;
  *                 - content: the content of the card file
  *                 - id: the ID of the card
  */
-function searchCards(
+async function searchCards(
 	callback: (path: string, content: string, id: number) => void,
-): void {
-	game.functions.util.searchCardsFolder((fullPath, content) => {
+): Promise<void> {
+	await game.functions.util.searchCardsFolder((fullPath, content) => {
 		const idMatch = idRegex.exec(content);
 		if (!idMatch) {
 			console.error(`No id found in ${fullPath}`);
@@ -41,14 +41,14 @@ function searchCards(
  *
  * @returns The number of cards that were updated.
  */
-function change(
+async function change(
 	startId: number,
 	callback: (id: number) => number,
 	log: boolean,
-): number {
+): Promise<number> {
 	let updated = 0;
 
-	searchCards((path, content, id) => {
+	await searchCards((path, content, id) => {
 		if (id < startId) {
 			if (log) {
 				console.log("<bright:yellow>Skipping %s</bright:yellow>", path);
@@ -101,8 +101,11 @@ function change(
  *
  * @returns The number of cards that were updated
  */
-export function decrement(startId: number, log: boolean): number {
-	return change(startId, (id) => id - 1, log);
+export async function decrement(
+	startId: number,
+	log: boolean,
+): Promise<number> {
+	return await change(startId, (id) => id - 1, log);
 }
 
 /**
@@ -115,8 +118,11 @@ export function decrement(startId: number, log: boolean): number {
  *
  * @returns The number of cards that were updated
  */
-export function increment(startId: number, log: boolean): number {
-	return change(startId, (id) => id + 1, log);
+export async function increment(
+	startId: number,
+	log: boolean,
+): Promise<number> {
+	return await change(startId, (id) => id + 1, log);
 }
 
 /**
@@ -129,10 +135,10 @@ export function increment(startId: number, log: boolean): number {
  *
  * @returns Amount of holes, and amount of duplicates
  */
-export function validate(log: boolean): [number, number] {
+export async function validate(log: boolean): Promise<[number, number]> {
 	const ids: [[number, string]] = [[-1, ""]];
 
-	searchCards((path, content, id) => {
+	await searchCards((path, content, id) => {
 		ids.push([id, path]);
 	});
 

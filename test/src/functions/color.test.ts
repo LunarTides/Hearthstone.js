@@ -8,7 +8,7 @@ import { stopTagParsing } from "chalk-tags";
  * Need to create a game in case the functions need it
  * This is a pretty big performance hit.
  */
-createGame();
+await createGame();
 
 describe("src/functions/color", () => {
 	test("fromRarity", async () => {

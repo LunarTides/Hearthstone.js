@@ -3,6 +3,7 @@
  */
 
 import { Card } from "@Game/card.js";
+import { createGame } from "@Game/game.js";
 
 import * as src from "./src/index.js"; // Source Code
 import * as clc from "./tools/cardcreator/class.js"; // Class Creator
@@ -10,6 +11,7 @@ import * as ccc from "./tools/cardcreator/custom.js"; // Custom Card Creator
 import * as vcc from "./tools/cardcreator/vanilla.js"; // Vanilla Card Creator
 import * as dc from "./tools/deckcreator.js"; // Deck Creator
 
+const { game } = await createGame();
 game.interest("Starting Hub...");
 
 // These are here so we don't have to recalculate them every watermark call.

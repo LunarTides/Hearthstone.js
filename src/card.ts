@@ -494,8 +494,8 @@ export class Card {
 	 *
 	 * @returns Success
 	 */
-	static registerAll(): boolean {
-		game.functions.util.searchCardsFolder((fullPath) => {
+	static async registerAll(): Promise<boolean> {
+		await game.functions.util.searchCardsFolder((fullPath) => {
 			const blueprint = require(fullPath).blueprint as Blueprint;
 			game.blueprints.push(blueprint);
 		});
@@ -517,7 +517,7 @@ export class Card {
 	 *
 	 * @returns Success
 	 */
-	static reloadAll(): boolean {
+	static async reloadAll(): Promise<boolean> {
 		game.blueprints = [];
 
 		for (const key of Object.keys(require.cache)) {
@@ -528,7 +528,7 @@ export class Card {
 			delete require.cache[key];
 		}
 
-		return Card.registerAll();
+		return await Card.registerAll();
 	}
 
 	/**

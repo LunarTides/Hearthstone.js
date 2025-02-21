@@ -1,4 +1,3 @@
-import { createGame } from "@Game/game.js";
 import {
 	type Blueprint,
 	CardTag,
@@ -7,8 +6,6 @@ import {
 	Type,
 } from "@Game/types.js";
 import * as lib from "./lib.js";
-
-const { game } = createGame();
 
 /**
  * Asks the user a series of questions, and creates a class card using it.

@@ -9,7 +9,8 @@ import { createGame } from "@Game/game.js";
 import type { Player } from "@Game/player.js";
 import { Ability } from "@Game/types.js";
 
-const { game } = createGame();
+const { game } = await createGame();
+const blueprints = game.blueprints;
 const cards = await Card.all(true);
 
 /**
@@ -51,7 +52,8 @@ export async function main(): Promise<void> {
 		);
 
 		// Create a game
-		const { game, player1, player2 } = createGame();
+		const { game, player1, player2 } = await createGame(false);
+		game.blueprints = blueprints;
 		game.config.ai.player1 = false;
 		game.config.ai.player2 = false;
 		game.doConfigAi();

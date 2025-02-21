@@ -1,4 +1,3 @@
-import { createGame } from "@Game/game.js";
 import {
 	type Blueprint,
 	Class,
@@ -9,8 +8,6 @@ import {
 	type VanillaCard,
 } from "@Game/types.js";
 import * as lib from "./lib.js";
-
-const { game } = createGame();
 
 /**
  * Create a card from a vanilla card.

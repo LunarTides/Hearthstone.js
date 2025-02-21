@@ -2,8 +2,9 @@ import childProcess from "node:child_process";
 import { createHash } from "node:crypto";
 // It only confines these functions to the Hearthstone.js directory. Look in the fs wrapper functions in this file to confirm.
 import fs from "node:fs";
+import fsp from "node:fs/promises";
 import os from "node:os";
-import { dirname as pathDirname } from "node:path";
+import { dirname as pathDirname, resolve } from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import type { GameConfig, Target } from "@Game/types.js";
@@ -371,25 +372,35 @@ ${mainContent}
 		const actualPath = this.restrictPath(path);
 		let actualCallback = callback;
 
+		let object = fs as typeof fs | typeof fsp;
+
 		if (actualCallback.endsWith("Sync")) {
 			actualCallback = callback.replace("Sync", "") as keyof typeof fs;
 		}
 
 		if (actualCallback === "write") {
 			actualCallback = "writeFile";
-		}
-
-		if (actualCallback === "read") {
+		} else if (actualCallback === "read") {
 			actualCallback = "readFile";
 		}
 
-		const callbackFunction = fs[`${actualCallback}Sync` as keyof typeof fs];
+		if (args[0]?.async) {
+			object = fsp;
+		} else {
+			actualCallback += "Sync";
+		}
+
+		const callbackFunction = object[actualCallback as keyof typeof object] as (
+			actualPath: string,
+			...args: unknown[]
+		) => unknown;
+
 		if (typeof callbackFunction !== "function") {
-			throw new TypeError(`Invalid fs function: ${actualCallback}Sync`);
+			throw new TypeError(`Invalid fs function: ${actualCallback}`);
 		}
 
 		// Cache files when they are read
-		if (actualCallback === "readFile") {
+		if (actualCallback.includes("readFile")) {
 			if (!game.cache.files) {
 				game.cache.files = {};
 			}
@@ -402,14 +413,12 @@ ${mainContent}
 				return cached;
 			}
 
-			const content = fs.readFileSync(actualPath, { encoding: "utf8" });
+			const content = callbackFunction(actualPath, { encoding: "utf8" });
 			game.cache.files[actualPath] = content;
 			return content;
 		}
 
-		return (
-			callbackFunction as (actualPath: string, ...args: unknown[]) => unknown
-		)(actualPath, ...args);
+		return callbackFunction(actualPath, ...args);
 	},
 
 	/**
@@ -418,31 +427,34 @@ ${mainContent}
 	 * @param path By default, this is the cards folder (not in dist)
 	 * @param extension The extension to look for in cards. By default, this is ".ts"
 	 */
-	searchCardsFolder(
+	async searchCardsFolder(
 		callback: (path: string, content: string, file: fs.Dirent) => void,
 		path = "/cards",
 		extension = ".ts",
-	): void {
+	): Promise<void> {
 		const actualPath = this.restrictPath(path);
 
-		for (const file of this.fs("readdir", actualPath, {
+		const files = await (this.fs("readdir", actualPath, {
 			withFileTypes: true,
-		}) as fs.Dirent[]) {
-			const fullPath = `${actualPath}/${file.name}`;
+			async: true,
+			recursive: true,
+		}) as Promise<fs.Dirent[]>);
 
-			if (file.name === "ids.ts") {
-				continue;
-			}
+		// Use Promise.all to read all the files in parallel
+		await Promise.all(
+			files
+				.filter(
+					(file: fs.Dirent) => file.isFile() && file.name.endsWith(extension),
+				)
+				.map(async (file) => {
+					const fullPath = resolve(actualPath, file.parentPath, file.name);
+					const content = await (this.fs("read", fullPath, {
+						async: true,
+					}) as Promise<string>);
 
-			if (file.name.endsWith(extension)) {
-				// It is an actual card.
-				const data = this.fs("read", fullPath) as string;
-
-				callback(fullPath, data, file);
-			} else if (file.isDirectory()) {
-				this.searchCardsFolder(callback, fullPath, extension);
-			}
-		}
+					return callback(fullPath, content, file);
+				}),
+		);
 	},
 
 	/**

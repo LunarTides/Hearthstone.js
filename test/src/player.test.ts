@@ -6,7 +6,7 @@ import { Player } from "@Game/player.js";
  * Need to create a game in case the functions need it
  * This is a pretty big performance hit.
  */
-createGame();
+await createGame();
 
 describe("src/player", () => {
 	test("fromID - static", async () => {

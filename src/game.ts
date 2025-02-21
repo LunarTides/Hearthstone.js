@@ -1791,15 +1791,19 @@ export class Game {
 /**
  * Creates a new game instance, initializes players, sets up the game, imports all cards, and configures AI.
  *
+ * @param [registerCards=true] Whether to register all cards. Disable for optimization purposes.
+ *
  * @returns An object containing the game instance, player 1, and player 2.
  */
-export function createGame() {
+export async function createGame(registerCards = true) {
 	const player1 = new Player();
 	const player2 = new Player();
 	const game = new Game(player1, player2);
 	game.functions.util.importConfig();
-	Card.registerAll();
 	game.doConfigAi();
+	if (registerCards) {
+		await Card.registerAll();
+	}
 
 	return { game, player1, player2 };
 }
