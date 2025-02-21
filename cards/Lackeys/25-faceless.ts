@@ -40,12 +40,8 @@ export const blueprint: Blueprint = {
 		if (!random) {
 			return;
 		}
-
-		// Create a new minion since we shouldn't directly use the cards from `game.functions.card.getAll()`.
-		const minion = await Card.create(random.id, owner);
-
 		// Summon the minion
-		await owner.summon(minion);
+		await owner.summon(await random.imperfectCopy());
 	},
 
 	async test(owner, self) {

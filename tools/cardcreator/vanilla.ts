@@ -74,9 +74,9 @@ export async function create(
 		// Add the hero power
 		console.log("<green>Adding the hero power</green>");
 
-		const heroPower = game.functions.card.vanilla
-			.getAll()
-			.find((c) => c.dbfId === card.heroPowerDbfId);
+		const heroPower = (await game.functions.card.vanilla.getAll()).find(
+			(c) => c.dbfId === card.heroPowerDbfId,
+		);
 
 		if (!heroPower) {
 			throw new Error("No hero power found");
@@ -128,7 +128,7 @@ export async function create(
 		case Type.Hero: {
 			blueprint = Object.assign(blueprint, {
 				armor: card.armor,
-				heropowerId: lib.getLatestId(),
+				heropowerId: await lib.getLatestId(),
 			});
 
 			break;
@@ -170,7 +170,7 @@ export async function main(
 ): Promise<boolean> {
 	console.log("Hearthstone.js Vanilla Card Creator (C) 2022\n");
 
-	const vanillaCards = game.functions.card.vanilla.getAll();
+	const vanillaCards = await game.functions.card.vanilla.getAll();
 
 	let running = true;
 	while (running) {

@@ -1280,7 +1280,7 @@ export class Game {
 	 * @returns The translated text or the original text if no translation is found
 	 */
 	translate(text: string, ...args: unknown[]): string {
-		const newText = this.functions.util.getLanguageMap()[text] || text;
+		const newText = this.functions.util.getCachedLanguageMap()?.[text] || text;
 
 		return format(newText, ...args);
 	}
@@ -1800,6 +1800,7 @@ export async function createGame(registerCards = true) {
 	const player2 = new Player();
 	const game = new Game(player1, player2);
 	game.functions.util.importConfig();
+	await game.functions.util.importLanguageMap();
 	game.doConfigAi();
 	if (registerCards) {
 		await Card.registerAll();

@@ -67,7 +67,7 @@ export async function main(
 		id: 0,
 
 		armor: 0,
-		heropowerId: lib.getLatestId() + 2,
+		heropowerId: (await lib.getLatestId()) + 2,
 	};
 
 	const heropowerBlueprint: Blueprint = {
@@ -114,7 +114,7 @@ export async function main(
 	console.log(
 		"2. Open 'cards/StartingHeroes/%s/%s-heropower.ts' and add logic to the 'cast' function.",
 		game.lodash.startCase(className),
-		lib.getLatestId(),
+		await lib.getLatestId(),
 	);
 
 	console.log(

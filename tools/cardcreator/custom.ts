@@ -215,7 +215,7 @@ const cardTypeFunctions: {
 		return applyCard({
 			...card,
 			armor,
-			heropowerId: heropowerId || lib.getLatestId(),
+			heropowerId: heropowerId || (await lib.getLatestId()),
 		});
 	},
 

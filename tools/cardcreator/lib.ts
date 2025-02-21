@@ -118,11 +118,16 @@ function generateCardPath(blueprint: BlueprintWithOptional): string {
  *
  * @returns The latest ID.
  */
-export function getLatestId(): number {
+export async function getLatestId(): Promise<number> {
 	return game.lodash.parseInt(
-		game.functions.util.fs("readFile", "/cards/.latestId", {
-			invalidateCache: true,
-		}) as string,
+		(await game.functions.util.fs(
+			"readFile",
+			"/cards/.latestId",
+			{},
+			{
+				invalidateCache: true,
+			},
+		)) as string,
 	);
 }
 
@@ -236,7 +241,7 @@ ${runes}${keywords}
 	}
 
 	// Get the latest card-id
-	const id = getLatestId() + 1;
+	const id = (await getLatestId()) + 1;
 
 	// Create a path to put the card in.
 	let path = generateCardPath(blueprint).replaceAll("\\", "/");
@@ -415,7 +420,11 @@ export const blueprint: Blueprint = {
 		// If debug mode is disabled, write the card to disk.
 
 		// Increment the id in '.latestId' by 1
-		game.functions.util.fs("write", "/cards/.latestId", id.toString());
+		await game.functions.util.fs(
+			"writeFile",
+			"/cards/.latestId",
+			id.toString(),
+		);
 
 		// If the path the card would be written to doesn't exist, create it.
 		if (!game.functions.util.fs("exists", path)) {
@@ -423,11 +432,11 @@ export const blueprint: Blueprint = {
 		}
 
 		// Write the file to the path
-		game.functions.util.fs("write", filePath, content);
+		await game.functions.util.fs("writeFile", filePath, content);
 
 		console.log(`File created at: "${filePath}"`);
 
-		// TODO: Fix this. #277 #382
+		// TODO: Fix this. #382
 		// console.log("Trying to compile...");
 		// if (game.functions.util.tryCompile()) {
 		// 	console.log("<bright:green>Success!</bright:green>");
@@ -438,7 +447,7 @@ export const blueprint: Blueprint = {
 		// }
 	}
 
-	game.functions.card.generateIdsFile();
+	await game.functions.card.generateIdsFile();
 
 	// Open the defined editor on that card if it has a function to edit, and debug mode is disabled
 	if (ability && !debugMode) {
