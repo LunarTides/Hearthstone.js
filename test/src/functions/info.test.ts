@@ -1,13 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { format } from "node:util";
 import { infoFunctions } from "@Game/functions/info.js";
-import { createGame } from "@Game/game.js";
-
-/*
- * Need to create a game in case the functions need it
- * This is a pretty big performance hit.
- */
-await createGame();
 
 describe("src/functions/info", () => {
 	test.todo("version", async () => {

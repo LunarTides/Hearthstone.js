@@ -1,14 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { colorFunctions } from "@Game/functions/color.js";
-import { createGame } from "@Game/game.js";
 import { Rarity } from "@Game/types.js";
 import { stopTagParsing } from "chalk-tags";
-
-/*
- * Need to create a game in case the functions need it
- * This is a pretty big performance hit.
- */
-await createGame();
 
 describe("src/functions/color", () => {
 	test("fromRarity", async () => {

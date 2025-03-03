@@ -1,12 +1,5 @@
 import { describe, expect, test } from "bun:test";
 import { utilFunctions } from "@Game/functions/util.js";
-import { createGame } from "@Game/game.js";
-
-/*
- * Need to create a game in case the functions need it
- * This is a pretty big performance hit.
- */
-await createGame();
 
 describe("src/functions/util", () => {
 	test("remove", async () => {
@@ -92,7 +85,11 @@ describe("src/functions/util", () => {
 		expect(counter).toEqual(2);
 	});
 
-	test.todo("getLanguageMap", async () => {
+	test.todo("getCachedLanguageMap", async () => {
+		expect(false).toEqual(true);
+	});
+
+	test.todo("importLanguageMap", async () => {
 		expect(false).toEqual(true);
 	});
 
@@ -152,7 +149,84 @@ describe("src/functions/util", () => {
 		expect(false).toEqual(true);
 	});
 
-	test.todo("parseEvalArgs", async () => {
-		expect(false).toEqual(true);
+	test("parseEvalArgs", async () => {
+		expect(
+			await utilFunctions.parseEvalArgs(["console.log('Hello World')"]),
+		).toEqual("(async () => { console.log('Hello World') })()");
+
+		expect(await utilFunctions.parseEvalArgs(["log", '"Hello World"'])).toEqual(
+			'(async () => { console.log("Hello World");await game.pause(); })()',
+		);
+
+		expect(
+			await utilFunctions.parseEvalArgs([
+				"log",
+				"await",
+				"game.functions.util.parseEvalArgs([\"console.log('hi')\"])",
+			]),
+		).toEqual(
+			"(async () => { console.log(await game.functions.util.parseEvalArgs([\"console.log('hi')\"]));await game.pause(); })()",
+		);
+
+		// @
+		expect(
+			await utilFunctions.parseEvalArgs(["log", "@Player1.getName()"]),
+		).toEqual(
+			"(async () => { console.log(game.player1.getName());await game.pause(); })()",
+		);
+
+		expect(
+			await utilFunctions.parseEvalArgs(["log", "@Player2.getName()"]),
+		).toEqual(
+			"(async () => { console.log(game.player2.getName());await game.pause(); })()",
+		);
+
+		expect(
+			await utilFunctions.parseEvalArgs(["log", "@Player.getName()"]),
+		).toEqual(
+			"(async () => { console.log(game.player.getName());await game.pause(); })()",
+		);
+
+		// Location codes
+		expect(await utilFunctions.parseEvalArgs(["log", "h#c#1.name"])).toEqual(
+			"(async () => { console.log(game.player1.hand[1 - 1].name);await game.pause(); })()",
+		);
+
+		expect(await utilFunctions.parseEvalArgs(["log", "h#c#2.name"])).toEqual(
+			"(async () => { console.log(game.player1.hand[2 - 1].name);await game.pause(); })()",
+		);
+
+		expect(await utilFunctions.parseEvalArgs(["log", "h#o#1.name"])).toEqual(
+			"(async () => { console.log(game.player2.hand[1 - 1].name);await game.pause(); })()",
+		);
+
+		expect(await utilFunctions.parseEvalArgs(["log", "d#c#1.name"])).toEqual(
+			"(async () => { console.log(game.player1.deck[1 - 1].name);await game.pause(); })()",
+		);
+
+		expect(await utilFunctions.parseEvalArgs(["log", "d#o#2.name"])).toEqual(
+			"(async () => { console.log(game.player2.deck[2 - 1].name);await game.pause(); })()",
+		);
+
+		expect(await utilFunctions.parseEvalArgs(["log", "b#c#1.name"])).toEqual(
+			"(async () => { console.log(game.player1.board[1 - 1].name);await game.pause(); })()",
+		);
+
+		expect(await utilFunctions.parseEvalArgs(["log", "b#o#5.name"])).toEqual(
+			"(async () => { console.log(game.player2.board[5 - 1].name);await game.pause(); })()",
+		);
+
+		expect(await utilFunctions.parseEvalArgs(["log", "g#c#1.name"])).toEqual(
+			"(async () => { console.log(game.player1.graveyard[1 - 1].name);await game.pause(); })()",
+		);
+
+		expect(await utilFunctions.parseEvalArgs(["log", "g#o#5.name"])).toEqual(
+			"(async () => { console.log(game.player2.graveyard[5 - 1].name);await game.pause(); })()",
+		);
+
+		// UUID
+		expect(await utilFunctions.parseEvalArgs(["log", "@ffffff.name"])).toEqual(
+			'(async () => { let __card = Card.fromUUID("ffffff");if (!__card) throw new Error("Card with uuid \\"ffffff\\" not found");console.log(__card.name);await game.pause(); })()',
+		);
 	});
 });

@@ -1,12 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { interactFunctions } from "@Game/functions/interact.js";
 
-/*
- * Need to create a game in case the functions need it
- * This is a pretty big performance hit.
- */
-// createGame();
-
 describe("src/functions/interact", () => {
 	test.todo("prompt > deckcode", async () => {
 		expect(false).toEqual(true);
