@@ -42,6 +42,11 @@ console.error = (...data) => {
 	game.functions.interact.logError(...data);
 };
 
+// Exit on ctrl+c
+rl.on("SIGINT", () => {
+	process.exit();
+});
+
 let seenFunFacts: string[] = [];
 
 const prompt = {

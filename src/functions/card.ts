@@ -330,7 +330,7 @@ export const cardFunctions = {
 
 		idsContent += "\n};\n";
 
-		await game.functions.util.fs("writeFile", "/cards/ids.ts", idsContent);
+		game.functions.util.fs("writeFile", "/cards/ids.ts", idsContent);
 	},
 
 	/**

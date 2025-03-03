@@ -103,7 +103,7 @@ async function userInputLoop(
  * Asks the user which card creator variant they want to use.
  */
 async function cardCreator() {
-	userInputLoop(
+	await userInputLoop(
 		"<green>Create a (C)ustom Card</green>, <blue>Import a (V)anilla Card</blue>, <red>Go (B)ack</red>: ",
 		"b",
 		async (input) => {
@@ -131,7 +131,7 @@ async function cardCreator() {
  * More developer friendly options.
  */
 async function devmode() {
-	userInputLoop(
+	await userInputLoop(
 		"<green>Create a (C)ard</green>, <blue>Create a Clas(s)</blue>, <red>Go (B)ack to Normal Mode</red>: ",
 		"b",
 		async (input) => {

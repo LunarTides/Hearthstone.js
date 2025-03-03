@@ -229,7 +229,7 @@ ${mainContent}
 		const checksum = createHash("sha256").update(content).digest("hex");
 		content += `\n${checksum}  ${filename}`;
 
-		await this.fs("writeFile", `/logs/${filename}`, content);
+		this.fs("writeFile", `/logs/${filename}`, content);
 
 		if (!error) {
 			return true;
