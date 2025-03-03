@@ -521,11 +521,9 @@ export class Card {
 		game.blueprints = [];
 
 		for (const key of Object.keys(require.cache)) {
-			if (!key.includes("/cards/")) {
-				continue;
+			if (key.includes("/cards/") || key.includes("\\cards\\")) {
+				delete require.cache[key];
 			}
-
-			delete require.cache[key];
 		}
 
 		return await Card.registerAll();
