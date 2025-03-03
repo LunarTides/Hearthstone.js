@@ -1,8 +1,10 @@
 // Created by Hand
 
+import assert from "node:assert";
 import {
 	type Blueprint,
 	Class,
+	EventListenerMessage,
 	Keyword,
 	MinionTribe,
 	Rarity,
@@ -37,5 +39,10 @@ export const blueprint: Blueprint = {
 
 		// The summoned minions get Dormant automatically if the main minion has dormant.
 		self.addKeyword(Keyword.Dormant, 2);
+	},
+
+	async test(owner, self) {
+		// TODO: Test. #325
+		return EventListenerMessage.Skip;
 	},
 };

@@ -1,6 +1,5 @@
 // Created by the Vanilla Card Creator
 
-import assert from "node:assert";
 import {
 	type Blueprint,
 	Class,

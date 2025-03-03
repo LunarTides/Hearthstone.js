@@ -21,10 +21,14 @@ export const blueprint: Blueprint = {
 
 	async test(owner, self) {
 		// The opponent should have 30 health
-		assert.equal(owner.getOpponent().health, 30);
-		await self.trigger(Ability.HeroPower);
+		assert.equal(owner.getOpponent().health, owner.maxHealth);
 
 		// The opponent should now have 28 health.
-		assert.equal(owner.getOpponent().health, 30 - 2);
+		await self.trigger(Ability.HeroPower);
+		assert.equal(owner.getOpponent().health, owner.maxHealth - 2);
+
+		// The opponent should now have 26 health.
+		await self.trigger(Ability.HeroPower);
+		assert.equal(owner.getOpponent().health, owner.maxHealth - 4);
 	},
 };

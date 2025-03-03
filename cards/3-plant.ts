@@ -2,7 +2,6 @@
 
 // This is used in Adapt
 
-import assert from "node:assert";
 import {
 	type Blueprint,
 	Class,

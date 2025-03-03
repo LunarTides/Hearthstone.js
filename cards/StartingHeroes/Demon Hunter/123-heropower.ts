@@ -28,5 +28,9 @@ export const blueprint: Blueprint = {
 
 		// The player should gain 1 attack
 		assert.equal(owner.attack, 1);
+
+		// The player should gain 1 attack
+		await self.trigger(Ability.HeroPower);
+		assert.equal(owner.attack, 2);
 	},
 };

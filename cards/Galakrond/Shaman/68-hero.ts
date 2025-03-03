@@ -1,7 +1,15 @@
 // Created by the Custom Card Creator
 
+import assert from "node:assert";
 import { Card } from "@Game/card.js";
-import { type Blueprint, CardTag, Class, Rarity, Type } from "@Game/types.js";
+import {
+	type Blueprint,
+	CardTag,
+	Class,
+	EventListenerMessage,
+	Rarity,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Galakrond, the Tempest",
@@ -63,5 +71,10 @@ export const blueprint: Blueprint = {
 		const weapon = amount >= 7 ? " Equip a 5/2 Claw." : "";
 
 		return { amount, weapon };
+	},
+
+	async test(owner, self) {
+		// TODO: Test. #325
+		return EventListenerMessage.Skip;
 	},
 };

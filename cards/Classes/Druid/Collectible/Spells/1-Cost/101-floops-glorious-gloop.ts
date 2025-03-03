@@ -46,6 +46,6 @@ export const blueprint: Blueprint = {
 
 	async test(owner, self) {
 		// TODO: Add proper tests. #325
-		return true;
+		return EventListenerMessage.Skip;
 	},
 };

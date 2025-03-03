@@ -1,8 +1,10 @@
 // Created by the Custom Card Creator
 
+import assert from "node:assert";
 import {
 	type Blueprint,
 	Class,
+	EventListenerMessage,
 	Keyword,
 	MinionTribe,
 	Rarity,
@@ -33,5 +35,10 @@ export const blueprint: Blueprint = {
 			game.cardIds.ability280,
 			game.cardIds.ability381,
 		]);
+	},
+
+	async test(owner, self) {
+		// TODO: Test. #325
+		return EventListenerMessage.Skip;
 	},
 };

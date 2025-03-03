@@ -7,7 +7,7 @@ import process from "node:process";
 import { Card } from "@Game/card.js";
 import { createGame } from "@Game/game.js";
 import type { Player } from "@Game/player.js";
-import { Ability } from "@Game/types.js";
+import { Ability, EventListenerMessage } from "@Game/types.js";
 
 const { game } = await createGame();
 const blueprints = game.blueprints;
@@ -20,16 +20,23 @@ const cards = await Card.all(true);
  *
  * @returns Success | Error
  */
-async function testCard(card: Card): Promise<boolean | Error> {
+async function testCard(card: Card): Promise<Error | "todo" | undefined> {
 	try {
-		await card.trigger(Ability.Test);
+		const returnValue = await card.trigger(Ability.Test);
+
+		if (
+			Array.isArray(returnValue) &&
+			returnValue.includes(EventListenerMessage.Skip)
+		) {
+			return "todo";
+		}
 	} catch (error) {
 		if (error instanceof Error) {
 			return error;
 		}
 	}
 
-	return true;
+	return undefined;
 }
 
 // Assign decks
@@ -46,6 +53,8 @@ const assignDeck = async (player: Player) => {
  * Executes a series of tests on the cards in the 'cards' array.
  */
 export async function main(): Promise<void> {
+	let todos = 0;
+
 	for (const [index, blueprint] of cards.entries()) {
 		process.stderr.write(
 			`\r\u001B[KTesting card ${index + 1} / ${cards.length}...`,
@@ -85,11 +94,19 @@ export async function main(): Promise<void> {
 			console.error(error.stack);
 			console.error();
 			process.exitCode = 1;
+		} else if (error === "todo") {
+			todos++;
 		}
 	}
 
+	console.log();
+
 	if (process.exitCode !== 1) {
-		console.log("\n<bright:green>All tests passed!</bright:green>");
+		console.log("<bright:green>All tests passed!</bright:green>");
+	}
+
+	if (todos > 0) {
+		console.log("<cyan>%d todos.</cyan>", todos);
 	}
 
 	console.log();

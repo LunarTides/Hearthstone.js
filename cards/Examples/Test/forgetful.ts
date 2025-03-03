@@ -4,6 +4,7 @@ import assert from "node:assert";
 import {
 	type Blueprint,
 	Class,
+	EventListenerMessage,
 	Keyword,
 	MinionTribe,
 	Rarity,
@@ -33,7 +34,7 @@ export const blueprint: Blueprint = {
 
 	async test(owner, self) {
 		// TODO: Test #325
-		assert(true);
+		return EventListenerMessage.Skip;
 
 		// 1 await owner.summon(self);
 

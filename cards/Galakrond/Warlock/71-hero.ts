@@ -1,10 +1,12 @@
 // Created by the Custom Card Creator
 
+import assert from "node:assert";
 import { Card } from "@Game/card.js";
 import {
 	type Blueprint,
 	CardTag,
 	Class,
+	EventListenerMessage,
 	MinionTribe,
 	Rarity,
 	Type,
@@ -73,5 +75,10 @@ export const blueprint: Blueprint = {
 		const plural = multiple ? "s" : "";
 
 		return { amount, plural };
+	},
+
+	async test(owner, self) {
+		// TODO: Test. #325
+		return EventListenerMessage.Skip;
 	},
 };

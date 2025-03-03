@@ -1,8 +1,10 @@
 // Created by Hand
 
+import assert from "node:assert";
 import {
 	type Blueprint,
 	Class,
+	EventListenerMessage,
 	Keyword,
 	MinionTribe,
 	Rarity,
@@ -38,5 +40,10 @@ export const blueprint: Blueprint = {
 		// Dredge.
 
 		await game.functions.interact.prompt.dredge();
+	},
+
+	async test(owner, self) {
+		// TODO: Test. #325
+		return EventListenerMessage.Skip;
 	},
 };

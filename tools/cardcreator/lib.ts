@@ -236,7 +236,7 @@ ${runes}${keywords}
 
     async test(owner, self) {
         // Unit testing
-        assert(false);
+        return EventListenerMessage.Skip;
     },`;
 	}
 
@@ -383,7 +383,8 @@ ${runes}${keywords}
 import assert from "node:assert";
 import {
 	type Blueprint,${tagImport}
-	Class,${passiveImport}${typeImport}${keywordImport}
+	Class,${passiveImport}
+	EventListenerMessage,${typeImport}${keywordImport}
 	Rarity,
 	Type,
 } from "@Game/types.js";

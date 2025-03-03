@@ -1,8 +1,10 @@
 // Created by the Custom Card Creator
 
+import assert from "node:assert";
 import {
 	type Blueprint,
 	Class,
+	EventListenerMessage,
 	Keyword,
 	MinionTribe,
 	Rarity,
@@ -27,5 +29,10 @@ export const blueprint: Blueprint = {
 	async create(owner, self) {
 		// Put the id of the forged counterpart, like in corrupt.
 		self.addKeyword(Keyword.Forge, game.cardIds.forgedExample76);
+	},
+
+	async test(owner, self) {
+		// TODO: Test. #325
+		return EventListenerMessage.Skip;
 	},
 };

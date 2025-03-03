@@ -3,6 +3,7 @@
 import {
 	type Blueprint,
 	Class,
+	EventListenerMessage,
 	Keyword,
 	MinionTribe,
 	Rarity,
@@ -34,5 +35,6 @@ export const blueprint: Blueprint = {
 
 	async test(owner, self) {
 		// TODO: Test. #325
+		return EventListenerMessage.Skip;
 	},
 };

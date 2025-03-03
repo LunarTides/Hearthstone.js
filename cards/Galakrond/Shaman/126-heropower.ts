@@ -2,7 +2,13 @@
 
 import assert from "node:assert";
 import { Card } from "@Game/card.js";
-import { type Blueprint, Class, Rarity, Type } from "@Game/types.js";
+import {
+	type Blueprint,
+	Class,
+	EventListenerMessage,
+	Rarity,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Galakrond's Fury",
@@ -27,6 +33,6 @@ export const blueprint: Blueprint = {
 
 	async test(owner, self) {
 		// TODO: Add proper tests. #325
-		return true;
+		return EventListenerMessage.Skip;
 	},
 };

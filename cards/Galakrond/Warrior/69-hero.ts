@@ -1,6 +1,14 @@
 // Created by the Custom Card Creator
 
-import { type Blueprint, CardTag, Class, Rarity, Type } from "@Game/types.js";
+import assert from "node:assert";
+import {
+	type Blueprint,
+	CardTag,
+	Class,
+	EventListenerMessage,
+	Rarity,
+	Type,
+} from "@Game/types.js";
 
 export const blueprint: Blueprint = {
 	name: "Galakrond, the Unbreakable",
@@ -50,5 +58,10 @@ export const blueprint: Blueprint = {
 		const plural2 = multiple ? "them" : "it";
 
 		return { amount, plural, plural2 };
+	},
+
+	async test(owner, self) {
+		// TODO: Test. #325
+		return EventListenerMessage.Skip;
 	},
 };

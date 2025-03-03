@@ -1,6 +1,5 @@
 // Created by Hand (before the Card Creator Existed)
 
-import assert from "node:assert";
 import {
 	type Blueprint,
 	Class,
