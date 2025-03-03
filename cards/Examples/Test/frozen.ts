@@ -5,6 +5,7 @@ import {
 	type Blueprint,
 	Class,
 	Event,
+	GameAttackReturn,
 	MinionTribe,
 	Rarity,
 	Type,
@@ -46,7 +47,7 @@ export const blueprint: Blueprint = {
 		for (let i = 0; i < 5; i++) {
 			// Attacking the enemy hero this this minion should always return "frozen"
 			const returnValue = await game.attack(self, owner.getOpponent());
-			assert.equal(returnValue, "frozen");
+			assert.equal(returnValue, GameAttackReturn.Frozen);
 
 			await game.endTurn();
 			await game.endTurn();
