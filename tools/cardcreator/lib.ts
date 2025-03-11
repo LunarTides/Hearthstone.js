@@ -428,8 +428,8 @@ export const blueprint: Blueprint = {
 		);
 
 		// If the path the card would be written to doesn't exist, create it.
-		if (!game.functions.util.fs("exists", path)) {
-			game.functions.util.fs("mkdir", path, { recursive: true });
+		if (!(await game.functions.util.fs("exists", path))) {
+			await game.functions.util.fs("mkdir", path, { recursive: true });
 		}
 
 		// Write the file to the path
