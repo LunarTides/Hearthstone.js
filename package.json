@@ -9,13 +9,13 @@
 		"start": "bunx tsc && bun .",
 		"format": "bunx biome check --fix",
 		"ci": "bunx biome ci && bun test && bunx tsc && bun run cardtest && bun run crashtest",
-		"cardtest": "bun run script:testcards",
+		"cardtest": "bun run script:cardtest",
 		"crashtest": "bun run script:crashtest && bun run script:crashtest && bun run script:crashtest && bun run script:crashtest && bun run script:crashtest",
 		"script:vanilla:generate": "bun ./scripts/vanilla/generate.ts",
 		"script:vanilla:generate-no-filter": "bun ./scripts/vanilla/generate.ts --no-filter",
 		"script:crashtest": "bun ./scripts/crashtest.ts",
 		"script:idscript": "bun ./scripts/id/main.ts",
-		"script:testcards": "bun ./scripts/testcards.ts"
+		"script:cardtest": "bun ./scripts/cardtest.ts"
 	},
 	"repository": {
 		"type": "git",

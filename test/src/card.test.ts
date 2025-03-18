@@ -200,10 +200,6 @@ describe("src/card", () => {
 		expect(false).toEqual(true);
 	});
 
-	test.todo("formatPlaceholders", async () => {
-		expect(false).toEqual(true);
-	});
-
 	test.todo("replacePlaceholders", async () => {
 		expect(false).toEqual(true);
 	});

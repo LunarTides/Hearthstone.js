@@ -296,22 +296,6 @@ export class Card {
 	canAttackHero?: boolean = true;
 
 	/**
-	 * Placeholder key-value pairs.
-	 *
-	 * This should not be used directly, unless you know what you are doing.
-	 *
-	 * @example
-	 * this.placeholder = {
-	 *     "turn": game.turns.toString(),
-	 * }
-	 *
-	 * assert.equal(this.text, "The current turn is: {turn}");
-	 * // Eventually...
-	 * assert.equal(this.text, "The current turn is: 1");
-	 */
-	placeholder?: Record<string, string> = {};
-
-	/**
 	 * The abilities of the card (battlecry, deathrattle, etc...)
 	 */
 	abilities: { [key in Ability]?: AbilityCallback[] } = {};
@@ -538,18 +522,9 @@ export class Card {
 	 * @param [suppressEvent=false] If the "CreateCard" event should be suppressed.
 	 */
 	async setup(suppressEvent = false): Promise<void> {
-		const placeholder = await this.trigger(Ability.Placeholders);
-
-		// This is a list of replacements.
-		if (Array.isArray(placeholder)) {
-			this.placeholder = placeholder[0] as Record<string, string>;
-		}
-
 		// Override the properties from the blueprint
 		await this.doBlueprint(false);
-
 		await this.trigger(Ability.Create);
-		await this.formatPlaceholders();
 
 		let unsuppress: undefined | (() => boolean);
 		if (suppressEvent) {
@@ -1574,49 +1549,6 @@ export class Card {
 	}
 
 	/**
-	 * Replaces the placeholders (`{placeholder}`) with a more technical format that the rest of the game can understand.
-	 *
-	 * @example
-	 * card.text = "The current turn count is {turns}";
-	 * card.placeholders = [(owner, self) => {
-	 *     const turns = game.functions.util.getTraditionalTurnCounter();
-	 *
-	 *     return { turns };
-	 * }];
-	 * await card.formatPlaceholders();
-	 *
-	 * // The `{ph:turns}` tag is replaced when displaying the card.
-	 * assert.equal(card.text, "The current turn count is {ph:turns}");
-	 *
-	 * @returns Success
-	 */
-	// TODO: Is this function needed? #277
-	async formatPlaceholders(): Promise<boolean> {
-		if (!this.abilities.placeholders) {
-			return false;
-		}
-
-		const temporaryPlaceholder = await this.trigger(Ability.Placeholders);
-		if (!Array.isArray(temporaryPlaceholder)) {
-			return false;
-		}
-
-		const placeholder = temporaryPlaceholder[0];
-		if (!(placeholder instanceof Object)) {
-			return false;
-		}
-
-		this.placeholder = placeholder as Record<string, string>;
-
-		for (const placeholderObject of Object.entries(placeholder)) {
-			const [key] = placeholderObject;
-			this.text = this.text.replaceAll(`{${key}}`, `{ph:${key}}`);
-		}
-
-		return true;
-	}
-
-	/**
 	 * Replaces placeholders in the description of this card.
 	 *
 	 * @param overrideText The description. If empty, it uses this card's description instead.
@@ -1625,12 +1557,23 @@ export class Card {
 	 * @returns The modified description with placeholders replaced.
 	 */
 	async replacePlaceholders(overrideText = "", _depth = 0): Promise<string> {
-		let reg = /{ph:(.*?)}/;
+		let text = overrideText || this.text;
 
-		let text = overrideText;
-		if (!overrideText) {
-			text = this.text || "";
+		if (!this.abilities.placeholders && !/\$(\d+)/.test(this.text || "")) {
+			return text;
 		}
+
+		const temporaryPlaceholders = await this.trigger(Ability.Placeholders);
+		if (!Array.isArray(temporaryPlaceholders)) {
+			return text;
+		}
+
+		const placeholders = temporaryPlaceholders[0] as Record<string, string>;
+		if (!(placeholders instanceof Object)) {
+			throw new Error("Invalid placeholders");
+		}
+
+		let reg = /{(.*?)}/;
 
 		let running = true;
 		while (running) {
@@ -1645,13 +1588,17 @@ export class Card {
 			// Get the capturing group result
 			const key = regedDesc[1];
 
-			await this.formatPlaceholders();
-			const rawReplacement = this.placeholder;
-			if (!rawReplacement) {
-				throw new Error("Card placeholder not found.");
+			let replacement = placeholders[key] as string | Card | undefined;
+			if (replacement === undefined) {
+				/*
+				 * Replace the key with something else to ignore it.
+				 * This will prevent infinite recursion.
+				 * Later on, if we replace `__hsjs__ignore:` with `{`,
+				 * it will restore the original text.
+				 */
+				text = text.replace(reg, `__hsjs__ignore:${key}}`);
+				continue;
 			}
-
-			let replacement = rawReplacement[key] as string | Card;
 
 			if (replacement instanceof Card) {
 				// The replacement is a card
@@ -1689,7 +1636,7 @@ export class Card {
 			text = text.replace(reg, replacement.toString());
 		}
 
-		return text;
+		return text.replaceAll("__hsjs__ignore:", "{");
 	}
 
 	/**
@@ -2035,11 +1982,7 @@ export class Card {
 		let sb = "";
 
 		let text = (this.text || "").length > 0 ? ` (${this.text}) ` : " ";
-
-		// Extract placeholder value, remove the placeholder header and footer
-		if (this.placeholder ?? /\$(\d+)/.test(this.text || "")) {
-			text = await this.replacePlaceholders(text, _depth);
-		}
+		text = await this.replacePlaceholders(text, _depth);
 
 		let cost = `{${this.cost}} `;
 
