@@ -32,7 +32,7 @@ export const blueprint: Blueprint = {
 	},
 
 	async battlecry(owner, self) {
-		// Taunt Battlecry: Deal 6 damage to this minion.
+		// Taunt. Battlecry: Deal 6 damage to this minion.
 		await game.attack(6, self);
 	},
 

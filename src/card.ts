@@ -12,6 +12,7 @@ import {
 	type EnchantmentDefinition,
 	Event,
 	type EventValue,
+	type GameAttackFlags,
 	type GameConfig,
 	Keyword,
 	type MinionTribe,
@@ -1985,15 +1986,15 @@ export class Card {
 	/**
 	 * Makes this card attack a minion or hero
 	 *
-	 * This is just a shortcut for `game.attack(this, target, force)`. Whether to use this or `game.attack` is up to you and your preferences.
+	 * This is just a shortcut for `game.attack(this, target, force, spellDamage)`. Whether to use this or `game.attack` is up to you and your preferences.
 	 *
 	 * @param target The target
-	 * @param force Whether to force the attack. This will bypass any attack restrictions. By default, this is false.
+	 * @param flags Some flags to modify the behaviour of the attack
 	 *
 	 * @returns Success | Errorcode
 	 */
-	attackTarget(target: Target, force = false) {
-		return game.attack(this, target, force);
+	attackTarget(target: Target, flags: GameAttackFlags[] = []) {
+		return game.attack(this, target, flags);
 	}
 
 	/**

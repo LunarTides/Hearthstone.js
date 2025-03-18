@@ -5,6 +5,7 @@ import {
 	Ability,
 	type Blueprint,
 	Class,
+	GameAttackFlags,
 	Rarity,
 	SpellSchool,
 	Type,
@@ -34,11 +35,8 @@ export const blueprint: Blueprint = {
 	async cast(owner, self) {
 		// Deal $3 damage to the enemy hero.
 
-		/*
-		 * Put the $ sign here to make the game apply spell damage correctly.
-		 * Ideally you wouldn't need to do that and the game would figure it out, but I wasn't able to get it to work.
-		 */
-		await game.attack("$3", owner.getOpponent());
+		// Add the `SpellDamage` flag to the attack in order to deal spell damage correctly.
+		await game.attack(3, owner.getOpponent(), [GameAttackFlags.SpellDamage]);
 	},
 
 	async test(owner, self) {

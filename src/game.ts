@@ -10,6 +10,7 @@ import {
 	CardTag,
 	Event,
 	type EventValue,
+	GameAttackFlags,
 	GameAttackReturn,
 	type GameConfig,
 	GamePlayCardReturn,
@@ -29,32 +30,32 @@ const attack = {
 	 *
 	 * @param attacker attacker | Amount of damage to deal
 	 * @param target The target
-	 * @param force Whether to force the attack. This will bypass any attack restrictions. By default, this is false.
+	 * @param flags Some flags to modify the behaviour of the attack
 	 *
 	 * @returns Success | Errorcode
 	 */
 	async attack(
-		attacker: Target | number | string,
+		attacker: Target | number,
 		target: Target,
-		force = false,
+		flags: GameAttackFlags[] = [],
 	): Promise<GameAttackReturn> {
 		let returnValue: GameAttackReturn;
 
 		// Target is the same as the attacker
-		if (!force && attacker === target) {
+		if (!flags.includes(GameAttackFlags.Force) && attacker === target) {
 			return GameAttackReturn.Invalid;
 		}
 
 		// Attacker is a number
-		if (typeof attacker === "string" || typeof attacker === "number") {
-			return await attack._attackerIsNum(attacker, target, force);
+		if (typeof attacker === "number") {
+			return await attack._attackerIsNum(attacker, target, flags);
 		}
 
 		// Check if there is a minion with taunt
 		const taunts = game.opponent.board.filter((m) =>
 			m.hasKeyword(Keyword.Taunt),
 		);
-		if (taunts.length > 0 && !force) {
+		if (taunts.length > 0 && !flags.includes(GameAttackFlags.Force)) {
 			// If the target is a card and has taunt, you are allowed to attack it
 			if (target instanceof Card && target.hasKeyword(Keyword.Taunt)) {
 				// Allow the attack since the target also has taunt
@@ -65,10 +66,10 @@ const attack = {
 
 		if (attacker instanceof Player) {
 			// Attacker is a player
-			returnValue = await attack._attackerIsPlayer(attacker, target, force);
+			returnValue = await attack._attackerIsPlayer(attacker, target, flags);
 		} else if (attacker instanceof Card) {
 			// Attacker is a minion
-			returnValue = await attack._attackerIsCard(attacker, target, force);
+			returnValue = await attack._attackerIsCard(attacker, target, flags);
 		} else {
 			// Otherwise
 			return GameAttackReturn.Invalid;
@@ -79,11 +80,11 @@ const attack = {
 
 	// Attacker is a number
 	async _attackerIsNum(
-		attacker: number | string,
+		attacker: number,
 		target: Target,
-		force: boolean,
+		flags: GameAttackFlags[],
 	): Promise<GameAttackReturn> {
-		if (!force) {
+		if (!flags.includes(GameAttackFlags.Force)) {
 			if (target instanceof Player && target.immune) {
 				return GameAttackReturn.Immune;
 			}
@@ -111,7 +112,7 @@ const attack = {
 		 * Attacker is a number
 		 * Spell damage
 		 */
-		const damage = await attack._spellDamage(attacker, target);
+		const damage = await attack._spellDamage(attacker, target, flags);
 
 		if (target instanceof Player) {
 			await target.remHealth(damage);
@@ -135,9 +136,9 @@ const attack = {
 	async _attackerIsPlayer(
 		attacker: Player,
 		target: Target,
-		force: boolean,
+		flags: GameAttackFlags[],
 	): Promise<GameAttackReturn> {
-		if (!force) {
+		if (!flags.includes(GameAttackFlags.Force)) {
 			if (attacker.frozen) {
 				return GameAttackReturn.Frozen;
 			}
@@ -156,7 +157,7 @@ const attack = {
 			return await attack._attackerIsPlayerAndTargetIsPlayer(
 				attacker,
 				target,
-				force,
+				flags,
 			);
 		}
 
@@ -165,7 +166,7 @@ const attack = {
 			return await attack._attackerIsPlayerAndTargetIsCard(
 				attacker,
 				target,
-				force,
+				flags,
 			);
 		}
 
@@ -177,9 +178,9 @@ const attack = {
 	async _attackerIsPlayerAndTargetIsPlayer(
 		attacker: Player,
 		target: Player,
-		force: boolean,
+		flags: GameAttackFlags[],
 	): Promise<GameAttackReturn> {
-		if (!force) {
+		if (!flags.includes(GameAttackFlags.Force)) {
 			if (target.immune) {
 				return GameAttackReturn.Immune;
 			}
@@ -195,7 +196,11 @@ const attack = {
 		// The attacker can't attack anymore this turn.
 		await attack._removeDurabilityFromWeapon(attacker, target);
 
-		await game.event.broadcast(Event.Attack, [attacker, target], attacker);
+		await game.event.broadcast(
+			Event.Attack,
+			[attacker, target, flags],
+			attacker,
+		);
 		return GameAttackReturn.Success;
 	},
 
@@ -203,10 +208,10 @@ const attack = {
 	async _attackerIsPlayerAndTargetIsCard(
 		attacker: Player,
 		target: Card,
-		force: boolean,
+		flags: GameAttackFlags[],
 	): Promise<GameAttackReturn> {
 		// If the target has stealth, the attacker can't attack it
-		if (!force) {
+		if (!flags.includes(GameAttackFlags.Force)) {
 			if (target.hasKeyword(Keyword.Stealth)) {
 				return GameAttackReturn.Stealth;
 			}
@@ -232,7 +237,11 @@ const attack = {
 		await attack._doFrenzy(target);
 		await attack._removeDurabilityFromWeapon(attacker, target);
 
-		await game.event.broadcast(Event.Attack, [attacker, target], attacker);
+		await game.event.broadcast(
+			Event.Attack,
+			[attacker, target, flags],
+			attacker,
+		);
 		return GameAttackReturn.Success;
 	},
 
@@ -240,9 +249,9 @@ const attack = {
 	async _attackerIsCard(
 		attacker: Card,
 		target: Target,
-		force: boolean,
+		flags: GameAttackFlags[],
 	): Promise<GameAttackReturn> {
-		if (!force) {
+		if (!flags.includes(GameAttackFlags.Force)) {
 			if (attacker.hasKeyword(Keyword.Dormant)) {
 				return GameAttackReturn.Dormant;
 			}
@@ -328,7 +337,7 @@ const attack = {
 					}
 
 					// If this doesn't work, it tries again do to the loop
-					result = await game.attack(attacker, target);
+					result = await game.attack(attacker, target, flags);
 				}
 
 				// After the loop, set the forgetful state back to 1 so we can do the coin flip again next time
@@ -348,7 +357,7 @@ const attack = {
 			return await attack._attackerIsCardAndTargetIsPlayer(
 				attacker,
 				target,
-				force,
+				flags,
 			);
 		}
 
@@ -357,7 +366,7 @@ const attack = {
 			return await attack._attackerIsCardAndTargetIsCard(
 				attacker,
 				target,
-				force,
+				flags,
 			);
 		}
 
@@ -369,9 +378,9 @@ const attack = {
 	async _attackerIsCardAndTargetIsPlayer(
 		attacker: Card,
 		target: Player,
-		force: boolean,
+		flags: GameAttackFlags[],
 	): Promise<GameAttackReturn> {
-		if (!force) {
+		if (!flags.includes(GameAttackFlags.Force)) {
 			if (target.immune) {
 				return GameAttackReturn.Immune;
 			}
@@ -399,7 +408,7 @@ const attack = {
 
 		await game.event.broadcast(
 			Event.Attack,
-			[attacker, target],
+			[attacker, target, flags],
 			attacker.owner,
 		);
 		return GameAttackReturn.Success;
@@ -409,9 +418,9 @@ const attack = {
 	async _attackerIsCardAndTargetIsCard(
 		attacker: Card,
 		target: Card,
-		force: boolean,
+		flags: GameAttackFlags[],
 	): Promise<GameAttackReturn> {
-		if (!force) {
+		if (!flags.includes(GameAttackFlags.Force)) {
 			if (target.hasKeyword(Keyword.Stealth)) {
 				return GameAttackReturn.Stealth;
 			}
@@ -429,12 +438,20 @@ const attack = {
 			}
 		}
 
-		await attack._attackerIsCardAndTargetIsCardDoAttacker(attacker, target);
-		await attack._attackerIsCardAndTargetIsCardDoTarget(attacker, target);
+		await attack._attackerIsCardAndTargetIsCardDoAttacker(
+			attacker,
+			target,
+			flags,
+		);
+		await attack._attackerIsCardAndTargetIsCardDoTarget(
+			attacker,
+			target,
+			flags,
+		);
 
 		await game.event.broadcast(
 			Event.Attack,
-			[attacker, target],
+			[attacker, target, flags],
 			attacker.owner,
 		);
 		return GameAttackReturn.Success;
@@ -442,6 +459,7 @@ const attack = {
 	async _attackerIsCardAndTargetIsCardDoAttacker(
 		attacker: Card,
 		target: Card,
+		flags: GameAttackFlags[],
 	): Promise<GameAttackReturn> {
 		// Cleave
 		await attack._cleave(attacker, target);
@@ -467,6 +485,7 @@ const attack = {
 	async _attackerIsCardAndTargetIsCardDoTarget(
 		attacker: Card,
 		target: Card,
+		flags: GameAttackFlags[],
 	): Promise<GameAttackReturn> {
 		const shouldDamage = attack._cardAttackHelper(target);
 		if (!shouldDamage) {
@@ -557,29 +576,23 @@ const attack = {
 	},
 
 	async _spellDamage(
-		attacker: number | string,
+		attacker: number,
 		target: Target,
+		flags: GameAttackFlags[],
 	): Promise<number> {
-		if (typeof attacker !== "string") {
+		if (!flags.includes(GameAttackFlags.SpellDamage)) {
 			return attacker;
 		}
 
 		// The attacker is a string but not spelldamage syntax
-		const spellDamageRegex = /\$(\d+)/;
-		const match = spellDamageRegex.exec(attacker);
-
-		if (!match) {
-			throw new TypeError("Non-spelldamage string passed into attack.");
-		}
-
-		let dmg = game.lodash.parseInt(match[1]);
-		dmg += game.player.spellDamage;
+		const dmg = attacker + game.player.spellDamage;
 
 		await game.event.broadcast(
 			Event.SpellDealsDamage,
 			[target, dmg],
 			game.player,
 		);
+
 		return dmg;
 	},
 

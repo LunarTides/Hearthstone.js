@@ -2,6 +2,7 @@ import type { Card } from "@Game/card.js";
 import type { Player } from "@Game/player.js";
 import type {
 	Ability,
+	GameAttackFlags,
 	Target,
 	TargetAlignment,
 	TargetClass,
@@ -252,7 +253,11 @@ export type EventValue<Key extends Event> =
 																												 * The attacker, and the target
 																												 */
 																												Key extends Event.Attack
-																												? [Target, Target]
+																												? [
+																														Target,
+																														Target,
+																														GameAttackFlags[],
+																													]
 																												: /**
 																													 * The hero power card
 																													 */

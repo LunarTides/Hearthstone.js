@@ -19,6 +19,14 @@ export enum GamePlayCardReturn {
 }
 
 /**
+ * Game.attack flags
+ */
+export enum GameAttackFlags {
+	Force = "Force",
+	SpellDamage = "SpellDamage",
+}
+
+/**
  * Attack return value
  */
 export enum GameAttackReturn {

@@ -6,6 +6,7 @@ import {
 	Ability,
 	type Blueprint,
 	Class,
+	GameAttackFlags,
 	Rarity,
 	SpellSchool,
 	TargetAlignment,
@@ -38,7 +39,7 @@ export const blueprint: Blueprint = {
 			return Card.REFUND;
 		}
 
-		await game.attack("$10", target);
+		await game.attack(10, target, [GameAttackFlags.SpellDamage]);
 		return true;
 	},
 
