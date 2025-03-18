@@ -27,13 +27,11 @@ export const blueprint: Blueprint = {
 	async heropower(owner, self) {
 		// Restore 2 Health.
 
-		// Hero power targets need to use the `ForceElusive` flag.
 		const target = await game.functions.interact.prompt.target(
 			"Restore 2 health.",
 			self,
 			TargetAlignment.Any,
 			TargetClass.Any,
-			[TargetFlag.ForceElusive],
 		);
 
 		// If no target was selected, refund the hero power

@@ -507,7 +507,7 @@ const prompt = {
 			return null;
 		}
 
-		// If the minion has elusive, and the card that called this function is a spell
+		// If the minion has elusive, and the card that called this function is a spell or heropower.
 		if (
 			(card?.type === Type.Spell ||
 				card?.type === Type.HeroPower ||
