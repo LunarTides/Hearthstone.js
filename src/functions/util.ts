@@ -569,9 +569,17 @@ ${mainContent}
 		}
 
 		let log = false;
+		let useAwait = false;
+		let hasUsedAwait = false;
 
 		if (args[0] === "log") {
 			log = true;
+			args.shift();
+		}
+
+		// Make sure the await keyword is in the right place.
+		if (args[0] === "await") {
+			useAwait = true;
 			args.shift();
 		}
 
@@ -590,7 +598,7 @@ ${mainContent}
 			if (log) {
 				code = code.replace(
 					`@${uuid}`,
-					`let __card = Card.fromUUID("${uuid}");if (!__card) throw new Error("Card with uuid \\"${uuid}\\" not found");console.log(__card`,
+					`let __card = Card.fromUUID("${uuid}");if (!__card) throw new Error("Card with uuid \\"${uuid}\\" not found");console.log(${useAwait ? "await " : ""}__card`,
 				);
 
 				log = false;
@@ -598,9 +606,11 @@ ${mainContent}
 			} else {
 				code = code.replace(
 					`@${uuid}`,
-					`let __card = Card.fromUUID("${uuid}");if (!__card) throw new Error("Card with uuid \\"${uuid}\\" not found");__card`,
+					`let __card = Card.fromUUID("${uuid}");if (!__card) throw new Error("Card with uuid \\"${uuid}\\" not found");${useAwait ? "await " : ""}__card`,
 				);
 			}
+
+			hasUsedAwait = true;
 		}
 
 		/*
@@ -646,11 +656,13 @@ ${mainContent}
 		}
 
 		if (log) {
+			// This only happens if there isn't a uuid query in the code.
 			if (code.at(-1) === ";") {
 				code = code.slice(0, -1);
 			}
 
-			code = `console.log(${code});await game.pause();`;
+			code = `console.log(${useAwait ? "await " : ""}${code});await game.pause();`;
+			hasUsedAwait = true;
 		}
 
 		if (trueLog) {
@@ -661,6 +673,6 @@ ${mainContent}
 			code = `${code});await game.pause();`;
 		}
 
-		return `(async () => { ${code} })()`;
+		return `(async () => { ${!useAwait || hasUsedAwait ? "" : "await "}${code} })()`;
 	},
 };

@@ -451,35 +451,11 @@ export class Card {
 	/**
 	 * Returns the card with the given UUID wherever it is.
 	 *
-	 * This searches both players' deck, hand, board, and graveyard.
-	 *
 	 * @param uuid The UUID to search for. This matches if the card's UUID starts with the given UUID (this).
 	 * @returns The card that matches the UUID, or undefined if no match is found.
 	 */
 	static fromUUID(uuid: string): Card | undefined {
-		let card: Card | undefined;
-
-		/**
-		 * Searches for a UUID in the given array of cards and updates the 'card' variable if found.
-		 *
-		 * @param where The array of cards to search
-		 */
-		function lookForUUID(where: Card[]): void {
-			const foundCard = where.find((card) => card.uuid.startsWith(uuid));
-
-			if (foundCard) {
-				card = foundCard;
-			}
-		}
-
-		for (const player of [game.player1, game.player2]) {
-			lookForUUID(player.deck);
-			lookForUUID(player.hand);
-			lookForUUID(player.board);
-			lookForUUID(player.graveyard);
-		}
-
-		return card;
+		return game.activeCards.find((card) => card.uuid.startsWith(uuid));
 	}
 
 	/**
