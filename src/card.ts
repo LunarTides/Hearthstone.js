@@ -15,6 +15,7 @@ import {
 	type GameAttackFlags,
 	type GameConfig,
 	Keyword,
+	Location,
 	type MinionTribe,
 	Rarity,
 	type SpellSchool,
@@ -262,6 +263,11 @@ export class Card {
 	 */
 	uuid: string;
 
+	/**
+	 * Where the card currently is.
+	 */
+	location: Location = Location.None;
+
 	// Could be null
 
 	/**
@@ -328,6 +334,8 @@ export class Card {
 		this.owner = owner;
 
 		this.randomizeUUID();
+
+		game.activeCards.push(this);
 	}
 
 	static REFUND: -1 = -1;
@@ -1003,6 +1011,27 @@ export class Card {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Sets the location of the card.
+	 *
+	 * @param location The new location of the card.
+	 */
+	async setLocation(location: Location): Promise<void> {
+		this.location = location;
+
+		if (location === Location.None) {
+			game.functions.util.remove(game.activeCards, this);
+		} else if (!game.activeCards.includes(this)) {
+			game.activeCards.push(this);
+		}
+
+		await game.event.broadcast(
+			Event.ChangeLocation,
+			[this, location],
+			this.owner,
+		);
 	}
 
 	/**

@@ -15,6 +15,7 @@ import {
 	type GameConfig,
 	GamePlayCardReturn,
 	Keyword,
+	Location,
 	MinionTribe,
 	type Target,
 	TargetAlignment,
@@ -1126,6 +1127,12 @@ export class Game {
 	 */
 	cards: Card[] = [];
 
+	/**
+	 * All of the cards that are currently active.
+	 * This means that they are being referenced somewhere.
+	 */
+	activeCards: Card[] = [];
+
 	play = playCard.play;
 
 	/**
@@ -1696,6 +1703,7 @@ export class Game {
 		}
 
 		player.board.push(card);
+		await card.setLocation(Location.Board);
 
 		// Calculate new spell damage
 		for (const card of player.board) {
@@ -1756,6 +1764,7 @@ export class Game {
 
 				player.corpses++;
 				player.graveyard.push(card);
+				await card.setLocation(Location.Graveyard);
 
 				await this.event.broadcast(Event.KillCard, card, this.player);
 

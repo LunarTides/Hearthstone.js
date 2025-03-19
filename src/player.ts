@@ -8,6 +8,7 @@ import {
 	Event,
 	type GameAttackFlags,
 	Keyword,
+	Location,
 	type QuestCallback,
 	type QuestObject,
 	QuestType,
@@ -637,6 +638,20 @@ export class Player {
 	// Hand / Deck
 
 	/**
+	 * Adds a card to this player's deck at a specific index.
+	 * Broadcasts the `AddCardToDeck` event.
+	 *
+	 * @param card The card to add to the deck
+	 * @param index The index to add the card to
+	 */
+	async addToDeck(card: Card, index: number = this.deck.length): Promise<void> {
+		this.deck.splice(index, 0, card);
+		await card.setLocation(Location.Deck);
+
+		await game.event.broadcast(Event.AddCardToDeck, card, this);
+	}
+
+	/**
 	 * Shuffles this player's deck
 	 */
 	shuffleDeck(): void {
@@ -664,10 +679,8 @@ export class Player {
 	 */
 	async shuffleIntoDeck(card: Card): Promise<boolean> {
 		// Push the card to the top of the deck, then shuffle it
-		this.deck.push(card);
+		this.addToDeck(card);
 		this.shuffleDeck();
-
-		await game.event.broadcast(Event.AddCardToDeck, card, this);
 		return true;
 	}
 
@@ -680,9 +693,7 @@ export class Player {
 	 * @returns Success
 	 */
 	async addToBottomOfDeck(card: Card): Promise<boolean> {
-		this.deck.unshift(card);
-
-		await game.event.broadcast(Event.AddCardToDeck, card, this);
+		this.addToDeck(card, 0);
 		return true;
 	}
 
@@ -801,9 +812,30 @@ export class Player {
 		}
 
 		this.hand.push(card);
+		await card.setLocation(Location.Hand);
 
 		await game.event.broadcast(Event.AddCardToHand, card, this);
 		return true;
+	}
+
+	/**
+	 * Removes a card from the player's hand and returns it.
+	 * Broadcasts no events.
+	 *
+	 * @param index The index of the card to remove
+	 *
+	 * @returns The removed card, or undefined if no card was found at the index
+	 */
+	async popFromHand(
+		index: number = this.hand.length - 1,
+	): Promise<Card | undefined> {
+		const card = this.hand.splice(index, 1)[0];
+		if (!card) {
+			return undefined;
+		}
+
+		await card.setLocation(Location.None);
+		return card;
 	}
 
 	// Hero power / Class

@@ -10,6 +10,7 @@ import {
 	GameAttackReturn,
 	GamePlayCardReturn,
 	Keyword,
+	Location,
 	type Target,
 	TargetAlignment,
 	TargetClass,
@@ -107,7 +108,8 @@ const prompt = {
 
 			// Debug mode is enabled, use the 30 Sheep debug deck.
 			while (player.deck.length < 30) {
-				player.deck.push(await Card.create(game.cardIds.sheep1, player, true));
+				const sheep = await Card.create(game.cardIds.sheep1, player, true);
+				player.addToDeck(sheep);
 			}
 
 			game.interest(`${player.getName()} chose debug deck...OK`);
@@ -623,7 +625,7 @@ const prompt = {
 
 			// Removes the selected card from the players deck.
 			game.functions.util.remove(game.player.deck, card);
-			game.player.deck.push(card);
+			game.player.addToDeck(card);
 
 			return card;
 		}
@@ -651,7 +653,7 @@ const prompt = {
 
 		// Removes the selected card from the players deck.
 		game.functions.util.remove(game.player.deck, card);
-		game.player.deck.push(card);
+		game.player.addToDeck(card);
 
 		return card;
 	},

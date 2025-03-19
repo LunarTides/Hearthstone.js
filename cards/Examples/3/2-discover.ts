@@ -61,7 +61,7 @@ export const blueprint: Blueprint = {
 		for (let i = 0; i < 50; i++) {
 			await self.trigger(Ability.Cast);
 
-			const card = owner.hand.pop();
+			const card = await owner.popFromHand();
 
 			assert(card);
 			assert.equal(card.type, "Spell");

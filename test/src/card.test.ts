@@ -124,6 +124,10 @@ describe("src/card", () => {
 		expect(false).toEqual(true);
 	});
 
+	test.todo("setLocation", async () => {
+		expect(false).toEqual(true);
+	});
+
 	test.todo("canAttack", async () => {
 		expect(false).toEqual(true);
 	});

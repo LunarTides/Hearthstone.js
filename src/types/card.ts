@@ -183,6 +183,18 @@ export enum Ability {
 }
 
 /**
+ * The location of a card.
+ */
+export enum Location {
+	None = "None",
+	Hand = "Hand",
+	Deck = "Deck",
+	Board = "Board",
+	Graveyard = "Graveyard",
+	Other = "Other",
+}
+
+/**
  * Card Enchantment object.
  */
 export type EnchantmentDefinition = {

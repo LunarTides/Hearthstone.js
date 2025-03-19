@@ -133,6 +133,10 @@ describe("src/player", () => {
 		expect(false).toEqual(true);
 	});
 
+	test.todo("addToDeck", async () => {
+		expect(false).toEqual(true);
+	});
+
 	test.todo("shuffleDeck", async () => {
 		expect(false).toEqual(true);
 	});
@@ -154,6 +158,10 @@ describe("src/player", () => {
 	});
 
 	test.todo("addToHand", async () => {
+		expect(false).toEqual(true);
+	});
+
+	test.todo("popFromHand", async () => {
 		expect(false).toEqual(true);
 	});
 

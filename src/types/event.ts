@@ -3,6 +3,7 @@ import type { Player } from "@Game/player.js";
 import type {
 	Ability,
 	GameAttackFlags,
+	Location,
 	Target,
 	TargetAlignment,
 	TargetClass,
@@ -103,6 +104,7 @@ export enum Event {
 	AddCardToDeck = "AddCardToDeck",
 	AddCardToHand = "AddCardToHand",
 	DrawCard = "DrawCard",
+	ChangeLocation = "ChangeLocation",
 	SpellDealsDamage = "SpellDealsDamage",
 	Attack = "Attack",
 	HeroPower = "HeroPower",
@@ -245,69 +247,74 @@ export type EventValue<Key extends Event> =
 																										Key extends Event.DrawCard
 																										? Card
 																										: /**
-																											 * The target, and the amount of damage
+																											 * The card, the new location
 																											 */
-																											Key extends Event.SpellDealsDamage
-																											? [Target, number]
+																											Key extends Event.ChangeLocation
+																											? [Card, Location]
 																											: /**
-																												 * The attacker, and the target
+																												 * The target, and the amount of damage
 																												 */
-																												Key extends Event.Attack
-																												? [
-																														Target,
-																														Target,
-																														GameAttackFlags[],
-																													]
+																												Key extends Event.SpellDealsDamage
+																												? [Target, number]
 																												: /**
-																													 * The hero power card
+																													 * The attacker, and the target
 																													 */
-																													Key extends Event.HeroPower
-																													? Card
+																													Key extends Event.Attack
+																													? [
+																															Target,
+																															Target,
+																															GameAttackFlags[],
+																														]
 																													: /**
-																														 * The card, some information about the event
+																														 * The hero power card
 																														 */
-																														Key extends Event.CardEvent
-																														? [Card, string]
+																														Key extends Event.HeroPower
+																														? Card
 																														: /**
-																															 * The code to evaluate
+																															 * The card, some information about the event
 																															 */
-																															Key extends Event.Eval
-																															? string
+																															Key extends Event.CardEvent
+																															? [Card, string]
 																															: /**
-																																 * The input
+																																 * The code to evaluate
 																																 */
-																																Key extends Event.Input
+																																Key extends Event.Eval
 																																? string
 																																: /**
-																																	 * The prompt, the card that requested target selection, the alignment that the target should be, the class of the target (hero | card), and the flags (if any).
+																																	 * The input
 																																	 */
-																																	Key extends Event.TargetSelectionStarts
-																																	? [
-																																			string,
-																																			(
-																																				| Card
-																																				| undefined
-																																			),
-																																			TargetAlignment,
-																																			TargetClass,
-																																			TargetFlag[],
-																																		]
+																																	Key extends Event.Input
+																																	? string
 																																	: /**
-																																		 * The card that requested target selection, and the target
+																																		 * The prompt, the card that requested target selection, the alignment that the target should be, the class of the target (hero | card), and the flags (if any).
 																																		 */
-																																		Key extends Event.TargetSelected
+																																		Key extends Event.TargetSelectionStarts
 																																		? [
+																																				string,
 																																				(
 																																					| Card
 																																					| undefined
 																																				),
-																																				Target,
+																																				TargetAlignment,
+																																				TargetClass,
+																																				TargetFlag[],
 																																			]
 																																		: /**
-																																			 * The turn that the gameloop happened on.
+																																			 * The card that requested target selection, and the target
 																																			 */
-																																			Key extends Event.GameLoop
-																																			? number
-																																			: Key extends Event.Dummy
-																																				? undefined
-																																				: never;
+																																			Key extends Event.TargetSelected
+																																			? [
+																																					(
+																																						| Card
+																																						| undefined
+																																					),
+																																					Target,
+																																				]
+																																			: /**
+																																				 * The turn that the gameloop happened on.
+																																				 */
+																																				Key extends Event.GameLoop
+																																				? number
+																																				: Key extends Event.Dummy
+																																					? undefined
+																																					: never;
