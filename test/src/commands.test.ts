@@ -26,10 +26,6 @@ describe("src/commands", () => {
 		expect(false).toEqual(true);
 	});
 
-	test.todo("view", async () => {
-		expect(false).toEqual(true);
-	});
-
 	test.todo("detail", async () => {
 		expect(false).toEqual(true);
 	});

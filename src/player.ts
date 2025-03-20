@@ -698,7 +698,7 @@ export class Player {
 	}
 
 	/**
-	 * Draws `amount` cards from this player's deck.
+	 * Removes and returns the last `amount` cards from the deck.
 	 * Broadcasts the `DrawCard` event for each card drawn
 	 *
 	 * @param amount The amount of cards to draw
@@ -776,7 +776,7 @@ export class Player {
 	 * @returns The card drawn
 	 */
 	async drawSpecific(card: Card): Promise<Card | undefined> {
-		if (this.deck.length <= 0) {
+		if (this.deck.length <= 0 || !this.deck.includes(card)) {
 			return undefined;
 		}
 
