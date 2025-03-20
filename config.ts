@@ -319,6 +319,9 @@ export const config: GameConfig = {
 		"Shortly after 2.0 was released, I got majorly burned out. I made 120 commits throughout the <i>entirety</i> of 2024. Compared to the ~1.3k commits in total, that was not much. I have gotten better recently though.",
 		"The amount of lines of code in Hearthstone.js between 1.6.2 and 2.0 is pretty much the same, despite the codebase being incredibly different. Most of that comes from the cards that were removed in 2.0.",
 
+		// 3.0
+		"Version 3.0 began development on January 4th, 2024, and is currently still in development 15 months later.",
+
 		// Tools / Scripts
 		"The card creator was originally created in Python, but was changed to JavaScript later on to improve readability, compatability, and maintainability. The holy trinity of coding...",
 		"The deck creator has, surpisingly enough, not undergone too many changes since its creation.",
@@ -339,6 +342,7 @@ export const config: GameConfig = {
 		"The very first version of Hearthstone.js was written in Python. I changed the language to JavaScript since I couldn't figure out how to dynamically import the cards in Python.",
 		"I originally didn't format my code using a formatter. When I realized that I should probably do that, I began using 'xo'. I switched to 'biome' after I saw people discussing it in other repos.",
 		"I accidentally included a backup of the code in the first commit. That is the earliest version of Hearthstone.js in existance.",
+		"In the oldest versions of Hearthstone.js, you had to name the players before playing. This was removed for the sake of debugging speed, but names remained. They were finally properly removed in 70f80b6.",
 
 		// Other
 		"Hearthstone.js is the project I am most proud of. I hope you enjoy it.",
@@ -349,5 +353,7 @@ export const config: GameConfig = {
 		"I have still not learned everything TypeScript has to offer. Only 2 days ago (at the time of writing), I discovered type guard functions, which were used in ad6394d to narrow down the type of the 'value' parameter in passives. If that doesn't mean anything to you, please accept this emoji of a bunny as an apology: 🐿️",
 		"New features are constantly added and removed in the main branch. Don't be surprised if you see something new, or if something old / useless is removed.",
 		"One of my philosophies with Hearthstone.js is to make it <i>incredibly</i> easy to add new stuff. I achieve this not only by making tools like the card creators, but through making the codebase highly modular and extendable.",
+		"Check out Hearthstone.gd for a version of Hearthstone.js made in Godot. Although it is currently in very early stages of development. It is currently stuck in limbo.",
+		"There is currently another Hearthstone.py (not to be confused with Hearthstone.py V1 / V2) currently in development. It might not see the light of day, but it exists.",
 	],
 };

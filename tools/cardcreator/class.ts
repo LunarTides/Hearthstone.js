@@ -24,7 +24,7 @@ export async function main(
 	const questions = [
 		"What should the name of the class be?",
 		"What should the default hero's name be?",
-		"What should the name of the heropower be?",
+		"What should the name of the hero power be?",
 		"What should the description of the hero power be? (example: Deal 2 damage to the enemy hero.):",
 		"How much should the hero power cost? (Default is 2):",
 	];

@@ -470,6 +470,11 @@ export const commands: CommandList = {
 		for (const [historyListIndex, historyList] of Object.values(
 			history,
 		).entries()) {
+			// Ignore everything that happens on turn 0.
+			if (historyListIndex <= 0 && !flags?.debug) {
+				continue;
+			}
+
 			let hasPrintedHeader = false;
 			let previousPlayer: Player | undefined;
 
@@ -477,6 +482,13 @@ export const commands: CommandList = {
 				const [key, value, player] = historyKey;
 				if (!player) {
 					// TODO: Maybe throw an error. #277
+					continue;
+				}
+
+				// Ignore everything the second player does on turn 1.
+				// The turn counter goes up at the end of every player's turn,
+				// so it should be impossible for the second player to do things on turn 1.
+				if (historyListIndex === 1 && player.id === 1 && !flags?.debug) {
 					continue;
 				}
 
