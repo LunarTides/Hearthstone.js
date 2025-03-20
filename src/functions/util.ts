@@ -36,76 +36,61 @@ export const utilFunctions = {
 	},
 
 	/**
-	 * Creates a wall.
+	 * Align columns by padding them with spaces.
 	 *
-	 * Walls are a formatting tool for strings, which makes them easier to read.
-	 * Look at the example below.
+	 * This function takes a list of strings and pads them with spaces to make them the same length.
 	 *
-	 * @param bricks The array
-	 * @param sep The seperator.
+	 * @param columns The columns to align
+	 * @param sep The seperator. Only the left side of the seperator will be padded
 	 *
 	 * @example
-	 * const bricks = [];
-	 * bricks.push('Example - Example');
-	 * bricks.push('Test - Hello World');
-	 * bricks.push('This is the longest - Short');
-	 * bricks.push('Tiny - This is even longer then that one!');
+	 * const columns = [];
+	 * columns.push('Example - Example');
+	 * columns.push('Test - Hello World');
+	 * columns.push('This is the longest - Short');
+	 * columns.push('Tiny - This is even longer then that one!');
 	 *
-	 * const wall = createWall(bricks, "-");
+	 * const alignedColumns = alignColumns(columns, "-");
 	 *
-	 * for (const brick of wall) {
-	 *     console.log(brick);
+	 * for (const alignedColumn of alignedColumns) {
+	 *     console.log(alignedColumn);
 	 * }
 	 * // Example             - Example
 	 * // Test                - Hello World
 	 * // This is the longest - Short
 	 * // Tiny                - This is even longer then that one!
 	 *
-	 * assert.equal(wall, ["Example             - Example", "Test                - Hello World", "This is the longest - Short", "Tiny                - This is even longer then that one!"]);
+	 * assert.equal(alignedColumns, ["Example             - Example", "Test                - Hello World", "This is the longest - Short", "Tiny                - This is even longer then that one!"]);
 	 *
-	 * @returns The wall
+	 * @returns The aligned columns
 	 */
-	createWall(bricks: string[], sep: string): string[] {
-		// Find the longest brick, most characters to the left of the seperator.
+	alignColumns(columns: string[], sep: string): string[] {
+		// Find the longest column, most characters to the left of the seperator.
+		let longestColumn: [string, number] = ["", Number.NEGATIVE_INFINITY];
 
-		/**
-		 * The longest brick
-		 */
-		let longestBrick: [string, number] = ["", Number.NEGATIVE_INFINITY];
+		for (const column of columns) {
+			const columnSplit = column.split(sep);
 
-		for (const brick of bricks) {
-			const splitBrick = brick.split(sep);
-
-			const { length } = game.functions.color.stripAll(splitBrick[0]);
-
-			if (length <= longestBrick[1]) {
+			const { length } = game.functions.color.stripAll(columnSplit[0]);
+			if (length <= longestColumn[1]) {
 				continue;
 			}
 
-			longestBrick = [brick, length];
+			longestColumn = [column, length];
 		}
 
-		/**
-		 * The wall to return.
-		 */
-		const wall: string[] = [];
+		const alignedColumns: string[] = [];
 
-		for (const brick of bricks) {
-			const splitBrick = brick.split(sep);
-
-			let strbuilder = "";
+		for (const column of columns) {
+			const columnSplit = column.split(sep);
 			const difference =
-				longestBrick[1] - game.functions.color.stripAll(splitBrick[0]).length;
+				longestColumn[1] - game.functions.color.stripAll(columnSplit[0]).length;
 
-			strbuilder += splitBrick[0];
-			strbuilder += " ".repeat(difference);
-			strbuilder += sep;
-			strbuilder += game.lodash.tail(splitBrick).join(sep);
-
-			wall.push(strbuilder);
+			const alignedColumn = `${columnSplit[0]}${" ".repeat(difference)}${sep}${game.lodash.tail(columnSplit).join(sep)}`;
+			alignedColumns.push(alignedColumn);
 		}
 
-		return wall;
+		return alignedColumns;
 	},
 
 	/**

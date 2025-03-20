@@ -475,15 +475,15 @@ async function showCards(): Promise<void> {
 
 	console.log("<underline>%s</underline>", settings.view.class);
 
-	const bricks: string[] = [];
+	const columns: string[] = [];
 	for (const card of classCards) {
 		// Can't seperate using "-" since that would break, for example, "Yogg-Saron, ..."
-		bricks.push(`${card.colorFromRarity()} __HSJS_SEPERATOR__ ${card.id}`);
+		columns.push(`${card.colorFromRarity()} __HSJS_SEPERATOR__ ${card.id}`);
 	}
 
 	console.log(
 		game.functions.util
-			.createWall(bricks, "__HSJS_SEPERATOR__")
+			.alignColumns(columns, "__HSJS_SEPERATOR__")
 			.join("\n")
 			.replaceAll("__HSJS_SEPERATOR__", "-"),
 	);
@@ -628,20 +628,20 @@ async function showDeck(): Promise<void> {
 		return acc;
 	}, {});
 
-	const bricks: string[] = [];
+	const columns: string[] = [];
 
 	for (const cardObject of Object.values(cards)) {
 		const card = cardObject[0];
 		const amount = cardObject[1];
 
-		const brick = `${amount > 1 ? `x${amount} ` : ""}${card.colorFromRarity()} __HSJS_SEPERATOR__ ${card.id}`;
-		bricks.push(brick);
+		const column = `${amount > 1 ? `x${amount} ` : ""}${card.colorFromRarity()} __HSJS_SEPERATOR__ ${card.id}`;
+		columns.push(column);
 	}
 
 	console.log(
 		game.functions.util
 			// Can't seperate using "-" since that would break, for example, "Yogg-Saron, ..."
-			.createWall(bricks, "__HSJS_SEPERATOR__")
+			.alignColumns(columns, "__HSJS_SEPERATOR__")
 			.join("\n")
 			.replaceAll("__HSJS_SEPERATOR__", "-"),
 	);
@@ -742,7 +742,7 @@ async function help(): Promise<void> {
 		"(In order to run a command; input the name of the command and follow further instruction.)\n",
 	);
 
-	const bricks = [
+	const columns = [
 		"(name) (required) [optional] - (description)\n",
 
 		"add (name | id) - Add a card to the deck",
@@ -765,9 +765,9 @@ async function help(): Promise<void> {
 		"exit - Quits the program",
 	];
 
-	const wall = game.functions.util.createWall(bricks, "-");
-	for (const bricks of wall) {
-		console.log(bricks);
+	const alignedColumns = game.functions.util.alignColumns(columns, "-");
+	for (const alignedColumn of alignedColumns) {
+		console.log(alignedColumn);
 	}
 
 	// Set
@@ -776,7 +776,7 @@ async function help(): Promise<void> {
 		"(In order to use these; input 'set ', then one of the subcommands. Example: 'set cpp 20')\n",
 	);
 
-	const setSubcommandBricks = [
+	const setSubcommandColumns = [
 		"(name) (required) [optional] - (description)\n",
 
 		"format (format) - Output the deckcode in a different format ('js', 'vanilla') [default = 'js']",
@@ -784,13 +784,13 @@ async function help(): Promise<void> {
 		"defaultCommand | dcmd (cmd) - The command that should run when the command is unspecified ('add', 'remove', 'view') [default = 'add']",
 	];
 
-	const setSubcommandWall = game.functions.util.createWall(
-		setSubcommandBricks,
+	const setSubcommandAlignedColumns = game.functions.util.alignColumns(
+		setSubcommandColumns,
 		"-",
 	);
 
-	for (const brick of setSubcommandWall) {
-		console.log(brick);
+	for (const alignedColumns of setSubcommandAlignedColumns) {
+		console.log(alignedColumns);
 	}
 
 	console.log(
@@ -803,15 +803,18 @@ async function help(): Promise<void> {
 		"(In order to use these; input 'warning (name) [off | on]'. Example: 'warning latestCard off')\n",
 	);
 
-	const warningBricks = [
+	const warningColumns = [
 		"(name) - (description)\n",
 
 		"latestCard - Warning that shows up when attemping to use the latest card. The latest card is used if the card chosen in a command is invalid and the name specified begins with 'l'. Example: 'add latest' - Adds a copy of the latest card to the deck.",
 	];
 
-	const warningWall = game.functions.util.createWall(warningBricks, "-");
-	for (const brick of warningWall) {
-		console.log(brick);
+	const warningAlignedColumns = game.functions.util.alignColumns(
+		warningColumns,
+		"-",
+	);
+	for (const alignedColumns of warningAlignedColumns) {
+		console.log(alignedColumns);
 	}
 
 	console.log(

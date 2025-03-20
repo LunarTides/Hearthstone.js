@@ -16,7 +16,7 @@ import { resumeTagParsing, stopTagParsing } from "chalk-tags";
  * This is the list of commands that can be used in the game.
  * This will be shown when using the "help" command.
  */
-const helpBricks = [
+const helpColumns = [
 	"(name) - (description)\n",
 
 	"end - End your turn",
@@ -36,7 +36,7 @@ const helpBricks = [
  * This is the list of debug commands that can be used in the game.
  * This will also be shown when using the "help" command.
  */
-const helpDebugBricks = [
+const helpDebugColumns = [
 	"(name) (required) [optional] - (description)\n",
 
 	"give (name | id) - Add a card to your hand",
@@ -218,15 +218,20 @@ export const commands: CommandList = {
 
 		console.log("Available commands:");
 
-		const bricks = helpBricks.map((brick) => game.translate(brick));
-		const wall = game.functions.util.createWall(bricks, "-");
+		const columns = helpColumns.map((column) => game.translate(column));
+		const alignedColumns = game.functions.util.alignColumns(columns, "-");
 
-		const debugBricks = helpDebugBricks.map((brick) => game.translate(brick));
-		const debugWall = game.functions.util.createWall(debugBricks, "-");
+		const debugColumns = helpDebugColumns.map((column) =>
+			game.translate(column),
+		);
+		const debugAlignedColumns = game.functions.util.alignColumns(
+			debugColumns,
+			"-",
+		);
 
 		// Normal commands
-		for (const brick of wall) {
-			console.log(brick);
+		for (const alignedColumn of alignedColumns) {
+			console.log(alignedColumn);
 		}
 
 		const condColor = (text: string) =>
@@ -240,8 +245,10 @@ export const commands: CommandList = {
 		console.log(condColor(`\n--- Debug Commands (${debugEnabled}) ---`));
 
 		// Debug Commands
-		for (const brick of debugWall) {
-			console.log(condColor(game.config.advanced.debugCommandPrefix + brick));
+		for (const alignedColumn of debugAlignedColumns) {
+			console.log(
+				condColor(game.config.advanced.debugCommandPrefix + alignedColumn),
+			);
 		}
 
 		console.log(

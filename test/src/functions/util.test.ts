@@ -14,17 +14,17 @@ describe("src/functions/util", () => {
 		expect(list).toEqual([1, 1, 2, 2, 3, 4, 4, 5, 5]);
 	});
 
-	test("createWall", async () => {
-		const bricks = [
+	test("alignColumns", async () => {
+		const columns = [
 			"Example - Example",
 			"Test - Hello World",
 			"This is the longest - Short",
 			"Tiny - This is even longer then that one!",
 		];
 
-		const wall = utilFunctions.createWall(bricks, "-");
+		const alignedColumns = utilFunctions.alignColumns(columns, "-");
 
-		expect(wall).toEqual([
+		expect(alignedColumns).toEqual([
 			"Example             - Example",
 			"Test                - Hello World",
 			"This is the longest - Short",

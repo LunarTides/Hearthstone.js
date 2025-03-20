@@ -1027,26 +1027,28 @@ const print = {
 			finished += "\n";
 		};
 
-		const wallify = (text: string) => {
+		const align = (text: string) => {
 			const textSplit = game.lodash.initial(text.split("\n"));
 
-			// Wallify the ':' in the first half
+			// Align the ':' in the first half
 			const firstHalf = textSplit.map((line) => line.split("|")[0]);
-			const firstHalfWall = game.functions.util.createWall(firstHalf, ":");
+			const firstHalfAligned = game.functions.util.alignColumns(firstHalf, ":");
 
-			// Wallify the ':' in the second half
+			// Align the ':' in the second half
 			const secondHalf = textSplit.map((line) => line.split("|")[1]);
-			const secondHalfWall = game.functions.util.createWall(secondHalf, ":");
-
-			// Combine the two halves
-			const newText = firstHalfWall.map(
-				(line, index) => `${line}|${secondHalfWall[index]}`,
+			const secondHalfAligned = game.functions.util.alignColumns(
+				secondHalf,
+				":",
 			);
 
-			// Wallify the '|' in the final result
-			const wall = game.functions.util.createWall(newText, "|");
+			// Combine the two halves
+			const newText = firstHalfAligned.map(
+				(line, index) => `${line}|${secondHalfAligned[index]}`,
+			);
 
-			return wall.join("\n");
+			// Align the '|' in the final result
+			const aligned = game.functions.util.alignColumns(newText, "|");
+			return aligned.join("\n");
 		};
 
 		const colorIf = game.functions.color.if;
@@ -1112,7 +1114,7 @@ const print = {
 			return `Corpses: <gray>${player.corpses}</gray>`;
 		});
 
-		console.log(wallify(finished));
+		console.log(align(finished));
 
 		if (game.isEventActive("anniversary")) {
 			console.log(
