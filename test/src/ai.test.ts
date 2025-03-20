@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { Ai } from "@Game/ai.js";
+import { Ai } from "@Game/ai.ts";
 
 /*
  * Need to create a game in case the functions need it

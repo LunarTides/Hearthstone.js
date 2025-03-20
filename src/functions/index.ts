@@ -1,9 +1,9 @@
-import { cardFunctions } from "./card.js";
-import { colorFunctions } from "./color.js";
-import { deckcodeFunctions } from "./deckcode.js";
-import { infoFunctions } from "./info.js";
-import { interactFunctions } from "./interact.js";
-import { utilFunctions } from "./util.js";
+import { cardFunctions } from "./card.ts";
+import { colorFunctions } from "./color.ts";
+import { deckcodeFunctions } from "./deckcode.ts";
+import { infoFunctions } from "./info.ts";
+import { interactFunctions } from "./interact.ts";
+import { utilFunctions } from "./util.ts";
 
 export const functions = {
 	// TODO: Create better docstrings. (remember to also change the docstrings for, for example, functions.card.vanilla). #324

@@ -1,9 +1,9 @@
 import { format } from "node:util";
-import { Ai } from "@Game/ai.js";
-import { Card } from "@Game/card.js";
-import { eventManager } from "@Game/event.js";
-import { functions } from "@Game/functions/index.js";
-import { Player } from "@Game/player.js";
+import { Ai } from "@Game/ai.ts";
+import { Card } from "@Game/card.ts";
+import { eventManager } from "@Game/event.ts";
+import { functions } from "@Game/functions/index.ts";
+import { Player } from "@Game/player.ts";
 import {
 	Ability,
 	type Blueprint,
@@ -20,10 +20,10 @@ import {
 	type Target,
 	TargetAlignment,
 	Type,
-} from "@Game/types.js";
+} from "@Game/types.ts";
 import date from "date-and-time";
 import _ from "lodash";
-import { cardIds } from "../cards/ids.js";
+import { cardIds } from "../cards/ids.ts";
 
 const attack = {
 	/**
@@ -1821,7 +1821,7 @@ export async function createGame(registerCards = true) {
 	const player1 = new Player();
 	const player2 = new Player();
 	const game = new Game(player1, player2);
-	game.functions.util.importConfig();
+	await game.functions.util.importConfig();
 	await game.functions.util.importLanguageMap();
 	game.doConfigAi();
 	if (registerCards) {

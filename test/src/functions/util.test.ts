@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { utilFunctions } from "@Game/functions/util.js";
+import { utilFunctions } from "@Game/functions/util.ts";
 
 describe("src/functions/util", () => {
 	test("remove", async () => {

@@ -10,7 +10,7 @@ import {
 	Rarity,
 	SpellSchool,
 	Type,
-} from "@Game/types.js";
+} from "@Game/types.ts";
 
 // This is the big one
 export const blueprint: Blueprint = {

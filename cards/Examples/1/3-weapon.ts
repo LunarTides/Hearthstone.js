@@ -1,6 +1,6 @@
 // Created by Hand
 
-import { type Blueprint, Class, Rarity, Type } from "@Game/types.js";
+import { type Blueprint, Class, Rarity, Type } from "@Game/types.ts";
 
 export const blueprint: Blueprint = {
 	// This looks like a minion card except for the type and no tribe.

@@ -1,4 +1,4 @@
-import { type BlueprintWithOptional, Type } from "@Game/types.js";
+import { type BlueprintWithOptional, Type } from "@Game/types.ts";
 import { resumeTagParsing, stopTagParsing } from "chalk-tags";
 
 // If this is set to true, this will force debug mode.
@@ -387,7 +387,7 @@ import {
 	EventListenerMessage,${typeImport}${keywordImport}
 	Rarity,
 	Type,
-} from "@Game/types.js";
+} from "@Game/types.ts";
 
 export const blueprint: Blueprint = {
     ${contentArray.join("")}${createAbility}${ability}

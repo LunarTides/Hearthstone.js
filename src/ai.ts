@@ -1,5 +1,5 @@
-import { Card } from "@Game/card.js";
-import { Player } from "@Game/player.js";
+import { Card } from "@Game/card.ts";
+import { Player } from "@Game/player.ts";
 import {
 	AiCalcMoveMessage,
 	type AiCalcMoveOption,
@@ -11,7 +11,7 @@ import {
 	TargetClass,
 	TargetFlag,
 	Type,
-} from "@Game/types.js";
+} from "@Game/types.ts";
 
 // TODO: Ai gets stuck in infinite loop when using cathedral of atonement (location) | shadowcloth needle (0 attack wpn) | that minion has no attack. #374
 

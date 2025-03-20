@@ -6,7 +6,7 @@ import {
 	Rarity,
 	SpellSchool,
 	Type,
-} from "@Game/types.js";
+} from "@Game/types.ts";
 
 export const blueprint: Blueprint = {
 	// If a field doesn't get a comment to itself, it has already been explained in a previous example card.

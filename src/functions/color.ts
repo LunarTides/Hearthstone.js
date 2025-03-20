@@ -1,4 +1,4 @@
-import { Rarity } from "@Game/types.js";
+import { Rarity } from "@Game/types.ts";
 import { parseTags } from "chalk-tags";
 import stripAnsi from "strip-ansi";
 

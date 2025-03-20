@@ -9,7 +9,7 @@ import {
 	MinionTribe,
 	Rarity,
 	Type,
-} from "@Game/types.js";
+} from "@Game/types.ts";
 
 /*
  * This is another way to write blueprints.

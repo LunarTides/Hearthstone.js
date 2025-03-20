@@ -1,7 +1,7 @@
 // Created by the Vanilla Card Creator
 
 import assert from "node:assert";
-import type { Card } from "@Game/card.js";
+import type { Card } from "@Game/card.ts";
 import {
 	Ability,
 	type Blueprint,
@@ -11,7 +11,7 @@ import {
 	MinionTribe,
 	Rarity,
 	Type,
-} from "@Game/types.js";
+} from "@Game/types.ts";
 
 export const blueprint: Blueprint = {
 	name: "Archmage Vargoth",

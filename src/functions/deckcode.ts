@@ -1,5 +1,5 @@
-import { Card } from "@Game/card.js";
-import type { Player } from "@Game/player.js";
+import { Card } from "@Game/card.ts";
+import type { Player } from "@Game/player.ts";
 import {
 	type CardLike,
 	Class,
@@ -8,7 +8,7 @@ import {
 	type GameConfig,
 	Rarity,
 	type VanillaCard,
-} from "@Game/types.js";
+} from "@Game/types.ts";
 
 // To decode vanilla deckcodes
 import deckstrings from "deckstrings";

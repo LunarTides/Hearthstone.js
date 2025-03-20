@@ -1,7 +1,7 @@
 // Created by Hand (before the Card Creator Existed)
 
 import assert from "node:assert";
-import { Card } from "@Game/card.js";
+import { Card } from "@Game/card.ts";
 import {
 	Ability,
 	type Blueprint,
@@ -12,7 +12,7 @@ import {
 	Rarity,
 	TargetAlignment,
 	Type,
-} from "@Game/types.js";
+} from "@Game/types.ts";
 
 export const blueprint: Blueprint = {
 	name: "Goblin Lackey",

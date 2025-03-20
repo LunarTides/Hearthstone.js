@@ -1,6 +1,6 @@
 import process from "node:process";
-import { createGame } from "@Game/game.js";
-import { Player } from "@Game/player.js";
+import { createGame } from "@Game/game.ts";
+import { Player } from "@Game/player.ts";
 
 const { game } = await createGame();
 const blueprints = game.blueprints;

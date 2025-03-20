@@ -1,6 +1,6 @@
-import type { Card } from "@Game/card.js";
-import type { Player } from "@Game/player.js";
-import type { Blueprint, Event } from "@Game/types.js";
+import type { Card } from "@Game/card.ts";
+import type { Player } from "@Game/player.ts";
+import type { Blueprint, Event } from "@Game/types.ts";
 
 /**
  * Game.play return value

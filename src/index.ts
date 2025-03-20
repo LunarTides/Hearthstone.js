@@ -2,8 +2,8 @@
  * The actual entry point of the game.
  */
 
-import { createGame } from "@Game/game.js";
-import { validate as validateIds } from "../scripts/id/lib.js";
+import { createGame } from "@Game/game.ts";
+import { validate as validateIds } from "../scripts/id/lib.ts";
 
 /**
  * Starts the game.

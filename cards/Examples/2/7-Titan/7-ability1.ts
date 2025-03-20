@@ -1,7 +1,7 @@
 // Created by Hand (before the Card Creator Existed)
 
 import assert from "node:assert";
-import { Card } from "@Game/card.js";
+import { Card } from "@Game/card.ts";
 import {
 	Ability,
 	type Blueprint,
@@ -9,7 +9,7 @@ import {
 	Rarity,
 	SpellSchool,
 	Type,
-} from "@Game/types.js";
+} from "@Game/types.ts";
 
 export const blueprint: Blueprint = {
 	// Look in `titan.ts` first.

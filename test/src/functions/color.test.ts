@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { colorFunctions } from "@Game/functions/color.js";
-import { Rarity } from "@Game/types.js";
+import { colorFunctions } from "@Game/functions/color.ts";
+import { Rarity } from "@Game/types.ts";
 import { stopTagParsing } from "chalk-tags";
 
 describe("src/functions/color", () => {

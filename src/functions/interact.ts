@@ -1,9 +1,9 @@
 import readline from "node:readline/promises";
 import { format } from "node:util";
-import type { Ai } from "@Game/ai.js";
-import { Card } from "@Game/card.js";
-import { commands, debugCommands } from "@Game/commands.js";
-import type { Player } from "@Game/player.js";
+import type { Ai } from "@Game/ai.ts";
+import { Card } from "@Game/card.ts";
+import { commands, debugCommands } from "@Game/commands.ts";
+import type { Player } from "@Game/player.ts";
 import {
 	Ability,
 	Event,
@@ -17,7 +17,7 @@ import {
 	TargetFlag,
 	Type,
 	UseLocationError,
-} from "@Game/types.js";
+} from "@Game/types.ts";
 import { parseTags } from "chalk-tags";
 
 const rl = readline.createInterface({

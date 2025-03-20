@@ -1,5 +1,5 @@
-import type { Ai } from "@Game/ai.js";
-import { Card } from "@Game/card.js";
+import type { Ai } from "@Game/ai.ts";
+import { Card } from "@Game/card.ts";
 
 import {
 	Ability,
@@ -14,7 +14,7 @@ import {
 	QuestType,
 	type Target,
 	Type,
-} from "@Game/types.js";
+} from "@Game/types.ts";
 
 export class Player {
 	/**

@@ -1,4 +1,4 @@
-import { Event, type GameConfig } from "@Game/types.js";
+import { Event, type GameConfig } from "@Game/types.ts";
 
 export const config: GameConfig = {
 	general: {

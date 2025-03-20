@@ -1,5 +1,5 @@
-import { Card } from "@Game/card.js";
-import { Player } from "@Game/player.js";
+import { Card } from "@Game/card.ts";
+import { Player } from "@Game/player.ts";
 import {
 	Ability,
 	Event,
@@ -11,7 +11,7 @@ import {
 	QuestType,
 	type TickHookCallback,
 	Type,
-} from "@Game/types.js";
+} from "@Game/types.ts";
 
 export const eventManager = {
 	/**

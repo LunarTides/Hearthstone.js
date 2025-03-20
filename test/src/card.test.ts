@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { Card } from "@Game/card.js";
+import { Card } from "@Game/card.ts";
 
 /*
  * Need to create a game in case the functions need it

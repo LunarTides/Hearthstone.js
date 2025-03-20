@@ -6,8 +6,8 @@ import {
 	SpellSchool,
 	Type,
 	type VanillaCard,
-} from "@Game/types.js";
-import * as lib from "./lib.js";
+} from "@Game/types.ts";
+import * as lib from "./lib.ts";
 
 /**
  * Create a card from a vanilla card.

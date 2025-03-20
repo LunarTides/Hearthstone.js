@@ -9,7 +9,7 @@ import {
 	MinionTribe,
 	Rarity,
 	Type,
-} from "@Game/types.js";
+} from "@Game/types.ts";
 
 // Im sorry, things are about to become a lot more complicated from this point on.
 export const blueprint: Blueprint = {

@@ -1,5 +1,5 @@
-import { Card } from "@Game/card.js";
-import { Player } from "@Game/player.js";
+import { Card } from "@Game/card.ts";
+import { Player } from "@Game/player.ts";
 import {
 	Ability,
 	type CommandList,
@@ -9,7 +9,7 @@ import {
 	type TargetFlag,
 	Type,
 	UseLocationError,
-} from "@Game/types.js";
+} from "@Game/types.ts";
 import { resumeTagParsing, stopTagParsing } from "chalk-tags";
 
 /*
@@ -656,7 +656,7 @@ export const debugCommands: CommandList = {
 
 		success &&= await game.functions.interact.withStatus(
 			"Reloading config",
-			async () => game.functions.util.importConfig(),
+			async () => await game.functions.util.importConfig(),
 		);
 
 		success &&= await game.functions.interact.withStatus(

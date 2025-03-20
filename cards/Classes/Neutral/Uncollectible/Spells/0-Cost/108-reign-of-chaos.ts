@@ -3,7 +3,7 @@
 // This is the Yogg-Saron, Unleashed Reign of Chaos card.
 
 import assert from "node:assert";
-import { Card } from "@Game/card.js";
+import { Card } from "@Game/card.ts";
 import {
 	Ability,
 	type Blueprint,
@@ -12,7 +12,7 @@ import {
 	SpellSchool,
 	TargetAlignment,
 	Type,
-} from "@Game/types.js";
+} from "@Game/types.ts";
 
 export const blueprint: Blueprint = {
 	name: "Reign of Chaos",

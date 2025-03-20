@@ -11,7 +11,7 @@ import {
 	Rarity,
 	SpellSchool,
 	Type,
-} from "@Game/types.js";
+} from "@Game/types.ts";
 
 export const blueprint: Blueprint = {
 	name: "Induce Insanity",

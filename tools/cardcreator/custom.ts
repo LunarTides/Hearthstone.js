@@ -7,8 +7,8 @@ import {
 	Rarity,
 	SpellSchool,
 	Type,
-} from "@Game/types.js";
-import * as lib from "./lib.js";
+} from "@Game/types.ts";
+import * as lib from "./lib.ts";
 
 const player1 = game.player1;
 

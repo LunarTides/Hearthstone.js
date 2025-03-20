@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { format } from "node:util";
-import { infoFunctions } from "@Game/functions/info.js";
+import { infoFunctions } from "@Game/functions/info.ts";
 
 describe("src/functions/info", () => {
 	test.todo("version", async () => {

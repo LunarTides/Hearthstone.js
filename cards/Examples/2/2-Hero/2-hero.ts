@@ -1,7 +1,7 @@
 // Created by Hand
 
 import assert from "node:assert";
-import { Ability, type Blueprint, Class, Rarity, Type } from "@Game/types.js";
+import { Ability, type Blueprint, Class, Rarity, Type } from "@Game/types.ts";
 
 // This is the second card in this stage. The first card in this stage is the `1-location.ts` file.
 

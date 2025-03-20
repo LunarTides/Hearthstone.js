@@ -1,6 +1,6 @@
 // Created by the Custom Card Creator
 
-import { type Blueprint, CardTag, Class, Rarity, Type } from "@Game/types.js";
+import { type Blueprint, CardTag, Class, Rarity, Type } from "@Game/types.ts";
 
 export const blueprint: Blueprint = {
 	name: "Anduin Wrynn",

@@ -2,14 +2,14 @@
  * The entry point of the program. Acts like a hub between the tools / scripts and the game.
  */
 
-import { Card } from "@Game/card.js";
-import { createGame } from "@Game/game.js";
+import { Card } from "@Game/card.ts";
+import { createGame } from "@Game/game.ts";
 
-import * as src from "./src/index.js"; // Source Code
-import * as clc from "./tools/cardcreator/class.js"; // Class Creator
-import * as ccc from "./tools/cardcreator/custom.js"; // Custom Card Creator
-import * as vcc from "./tools/cardcreator/vanilla.js"; // Vanilla Card Creator
-import * as dc from "./tools/deckcreator.js"; // Deck Creator
+import * as src from "./src/index.ts"; // Source Code
+import * as clc from "./tools/cardcreator/class.ts"; // Class Creator
+import * as ccc from "./tools/cardcreator/custom.ts"; // Custom Card Creator
+import * as vcc from "./tools/cardcreator/vanilla.ts"; // Vanilla Card Creator
+import * as dc from "./tools/deckcreator.ts"; // Deck Creator
 
 const { game } = await createGame();
 game.interest("Starting Hub...");

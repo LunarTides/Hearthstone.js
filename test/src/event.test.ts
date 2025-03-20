@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { eventManager } from "@Game/event.js";
+import { eventManager } from "@Game/event.ts";
 
 /*
  * Need to create a game in case the functions need it

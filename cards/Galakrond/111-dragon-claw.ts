@@ -1,6 +1,6 @@
 // Created by the Vanilla Card Creator
 
-import { type Blueprint, Class, Rarity, Type } from "@Game/types.js";
+import { type Blueprint, Class, Rarity, Type } from "@Game/types.ts";
 
 export const blueprint: Blueprint = {
 	name: "Dragon Claw",

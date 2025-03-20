@@ -1,8 +1,8 @@
 // Created by the Vanilla Card Creator
 
 import assert from "node:assert";
-import { Card } from "@Game/card.js";
-import { Player } from "@Game/player.js";
+import { Card } from "@Game/card.ts";
+import { Player } from "@Game/player.ts";
 import {
 	Ability,
 	type Blueprint,
@@ -13,7 +13,7 @@ import {
 	MinionTribe,
 	Rarity,
 	Type,
-} from "@Game/types.js";
+} from "@Game/types.ts";
 
 export const blueprint: Blueprint = {
 	name: "Yogg-Saron, Master of Fate",

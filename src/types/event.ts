@@ -1,5 +1,5 @@
-import type { Card } from "@Game/card.js";
-import type { Player } from "@Game/player.js";
+import type { Card } from "@Game/card.ts";
+import type { Player } from "@Game/player.ts";
 import type {
 	Ability,
 	GameAttackFlags,
@@ -8,7 +8,7 @@ import type {
 	TargetAlignment,
 	TargetClass,
 	TargetFlag,
-} from "@Game/types.js";
+} from "@Game/types.ts";
 
 /**
  * Game events.

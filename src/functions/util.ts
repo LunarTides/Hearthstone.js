@@ -7,7 +7,7 @@ import os from "node:os";
 import { dirname as pathDirname, resolve } from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
-import type { GameConfig, Target } from "@Game/types.js";
+import type { GameConfig, Target } from "@Game/types.ts";
 import date from "date-and-time";
 
 type FsFunctionKeys = {
@@ -98,10 +98,10 @@ export const utilFunctions = {
 	 *
 	 * @returns Success
 	 */
-	importConfig(): boolean {
+	async importConfig(): Promise<boolean> {
 		delete require.cache[require.resolve("../../config.ts")];
 
-		game.config = require("../../config.ts").config as GameConfig;
+		game.config = (await import("../../config.ts")).config as GameConfig;
 
 		if (
 			game.isEventActive("anniversary") &&

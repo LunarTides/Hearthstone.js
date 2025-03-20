@@ -1,4 +1,4 @@
-import * as lib from "./lib.js";
+import * as lib from "./lib.ts";
 
 // Check if your git is clean
 try {

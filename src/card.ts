@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import type { Player } from "@Game/player.js";
+import type { Player } from "@Game/player.ts";
 import {
 	Ability,
 	type AbilityCallback,
@@ -21,7 +21,7 @@ import {
 	type SpellSchool,
 	type Target,
 	Type,
-} from "@Game/types.js";
+} from "@Game/types.ts";
 import { parseTags } from "chalk-tags";
 
 /**
@@ -464,8 +464,8 @@ export class Card {
 	 * @returns Success
 	 */
 	static async registerAll(): Promise<boolean> {
-		await game.functions.util.searchCardsFolder((fullPath) => {
-			const blueprint = require(fullPath).blueprint as Blueprint;
+		await game.functions.util.searchCardsFolder(async (fullPath) => {
+			const blueprint = (await import(fullPath)).blueprint as Blueprint;
 			game.blueprints.push(blueprint);
 		});
 

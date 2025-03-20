@@ -4,8 +4,8 @@ import {
 	type Class,
 	Rarity,
 	Type,
-} from "@Game/types.js";
-import * as lib from "./lib.js";
+} from "@Game/types.ts";
+import * as lib from "./lib.ts";
 
 /**
  * Asks the user a series of questions, and creates a class card using it.

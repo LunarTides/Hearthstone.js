@@ -4,10 +4,10 @@
  */
 
 import process from "node:process";
-import { Card } from "@Game/card.js";
-import { createGame } from "@Game/game.js";
-import type { Player } from "@Game/player.js";
-import { Ability, EventListenerMessage } from "@Game/types.js";
+import { Card } from "@Game/card.ts";
+import { createGame } from "@Game/game.ts";
+import type { Player } from "@Game/player.ts";
+import { Ability, EventListenerMessage } from "@Game/types.ts";
 
 const { game } = await createGame();
 const blueprints = game.blueprints;

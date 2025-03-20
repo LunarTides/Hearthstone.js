@@ -2,7 +2,7 @@
  * A collection of functions relating to reading and writing ids of blueprints.
  */
 
-import { createGame } from "@Game/game.js";
+import { createGame } from "@Game/game.ts";
 
 const { game } = await createGame();
 

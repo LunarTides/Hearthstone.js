@@ -1,7 +1,7 @@
 // Created by the Custom Card Creator
 
 import assert from "node:assert";
-import { Card, CardError } from "@Game/card.js";
+import { Card, CardError } from "@Game/card.ts";
 import {
 	Ability,
 	type Blueprint,
@@ -9,7 +9,7 @@ import {
 	Class,
 	Rarity,
 	Type,
-} from "@Game/types.js";
+} from "@Game/types.ts";
 
 export const blueprint: Blueprint = {
 	name: "Totemic Call",

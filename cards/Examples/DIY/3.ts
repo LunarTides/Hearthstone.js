@@ -1,6 +1,6 @@
 // Created by Hand
 
-import { Card } from "@Game/card.js";
+import { Card } from "@Game/card.ts";
 import {
 	type Blueprint,
 	CardTag,
@@ -12,7 +12,7 @@ import {
 	TargetAlignment,
 	TargetClass,
 	Type,
-} from "@Game/types.js";
+} from "@Game/types.ts";
 
 export const blueprint: Blueprint = {
 	name: "DIY 3",

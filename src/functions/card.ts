@@ -1,4 +1,4 @@
-import { Card } from "@Game/card.js";
+import { Card } from "@Game/card.ts";
 import {
 	type Blueprint,
 	CardTag,
@@ -7,7 +7,7 @@ import {
 	MinionTribe,
 	Type,
 	type VanillaCard,
-} from "@Game/types.js";
+} from "@Game/types.ts";
 
 const vanilla = {
 	/**

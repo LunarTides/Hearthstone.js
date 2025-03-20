@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { commands } from "@Game/commands.js";
+import { commands } from "@Game/commands.ts";
 
 /*
  * Need to create a game in case the functions need it

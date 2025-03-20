@@ -1,12 +1,12 @@
 import util from "node:util";
-import { Card } from "@Game/card.js";
+import { Card } from "@Game/card.ts";
 import {
 	Class,
 	type CommandList,
 	Event,
 	type GameConfig,
 	Rarity,
-} from "@Game/types.js";
+} from "@Game/types.ts";
 import { resumeTagParsing, stopTagParsing } from "chalk-tags";
 
 enum ViewType {

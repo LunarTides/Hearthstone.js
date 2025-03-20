@@ -1,14 +1,14 @@
 // Created by the Custom Card Creator
 
 import assert from "node:assert";
-import { Card } from "@Game/card.js";
+import { Card } from "@Game/card.ts";
 import {
 	type Blueprint,
 	Class,
 	EventListenerMessage,
 	Rarity,
 	Type,
-} from "@Game/types.js";
+} from "@Game/types.ts";
 
 export const blueprint: Blueprint = {
 	name: "Galakrond's Wit",
