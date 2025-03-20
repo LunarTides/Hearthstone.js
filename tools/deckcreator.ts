@@ -371,7 +371,6 @@ async function showCards(): Promise<void> {
 	let { page } = settings.view;
 
 	// Search
-
 	if (settings.search.query.length > 0) {
 		console.log("Searching for '%s'.", settings.search.query.join(" "));
 	}
@@ -479,29 +478,15 @@ async function showCards(): Promise<void> {
 	const bricks: string[] = [];
 	for (const card of classCards) {
 		// Can't seperate using "-" since that would break, for example, "Yogg-Saron, ..."
-		bricks.push(`${card.name} __HSJS_SEPERATOR__ ${card.id}`);
+		bricks.push(`${card.colorFromRarity()} __HSJS_SEPERATOR__ ${card.id}`);
 	}
 
-	const wall = game.functions.util.createWall(bricks, "__HSJS_SEPERATOR__");
-
-	for (const brick of wall) {
-		const brickSplit = brick.split("__HSJS_SEPERATOR__");
-
-		// Find the card before the '-'
-		const card = findCard(brickSplit[0].trim());
-		if (!card) {
-			continue;
-		}
-
-		/*
-		 * The card's name should be colored, while the id should not
-		 * I don't add colors above, since createWall breaks when colors are used.
-		 * ^^^^^^^^ Update 05.06.2024: TODO: This is no longer true, please re-evaluate. #277
-		 */
-		const toDisplay = `${card.colorFromRarity(brickSplit[0])}-${brickSplit[1]}`;
-
-		console.log(toDisplay);
-	}
+	console.log(
+		game.functions.util
+			.createWall(bricks, "__HSJS_SEPERATOR__")
+			.join("\n")
+			.replaceAll("__HSJS_SEPERATOR__", "-"),
+	);
 
 	console.log("\nCurrent deckcode output:");
 	const deckcode = await generateDeckcode();
@@ -638,16 +623,10 @@ async function showDeck(): Promise<void> {
 
 	console.log("Deck Size: <yellow>%s</yellow>\n", deck.length);
 
-	// Why are we doing this? Can't this be done better?
-	const cards: Record<number, [Card, number]> = {};
-
-	for (const card of deck) {
-		if (!cards[card.id]) {
-			cards[card.id] = [card, 0];
-		}
-
-		cards[card.id][1]++;
-	}
+	const cards = deck.reduce<Record<number, [Card, number]>>((acc, card) => {
+		acc[card.id] = [card, (acc[card.id]?.[1] ?? 0) + 1];
+		return acc;
+	}, {});
 
 	const bricks: string[] = [];
 
@@ -655,60 +634,21 @@ async function showDeck(): Promise<void> {
 		const card = cardObject[0];
 		const amount = cardObject[1];
 
-		let viewed = "";
-
-		if (amount > 1) {
-			viewed += `x${amount} `;
-		}
-
-		viewed += `${card.name.replaceAll("-", "`")} - ${card.id}`;
-
-		bricks.push(viewed);
+		const brick = `${amount > 1 ? `x${amount} ` : ""}${card.colorFromRarity()} __HSJS_SEPERATOR__ ${card.id}`;
+		bricks.push(brick);
 	}
 
-	const wall = game.functions.util.createWall(bricks, "-");
-
-	for (const brick of wall) {
-		const brickSplit = brick.split("-");
-
-		// Replace '`' with '-'
-		brickSplit[0] = brickSplit[0].replaceAll("`", "-");
-
-		const [nameAndAmount, id] = brickSplit;
-
-		// Color name by rarity
-		const regex = /^x\d+ /;
-
-		// Extract amount from name
-		if (regex.test(nameAndAmount)) {
-			// Amount specified
-			const amount = nameAndAmount.split(regex);
-			const card = findCard(nameAndAmount.replace(regex, "").trim());
-
-			// TODO: Maybe throw an error? #277
-			if (!card) {
-				continue;
-			}
-
-			const name = card.colorFromRarity(amount[1]);
-
-			const amountString = regex.exec(nameAndAmount) ?? "undefined";
-			console.log("%s%s-%s", amountString, name, id);
-			continue;
-		}
-
-		const card = findCard(nameAndAmount.trim());
-		if (!card) {
-			continue;
-		}
-
-		const name = card.colorFromRarity(nameAndAmount);
-
-		console.log("%s-%s", name, id);
-	}
+	console.log(
+		game.functions.util
+			// Can't seperate using "-" since that would break, for example, "Yogg-Saron, ..."
+			.createWall(bricks, "__HSJS_SEPERATOR__")
+			.join("\n")
+			.replaceAll("__HSJS_SEPERATOR__", "-"),
+	);
 
 	console.log("\nCurrent deckcode output:");
 	const deckcode = await generateDeckcode();
+
 	if (!deckcode.error) {
 		console.log("<bright:green>Valid deck!</bright:green>");
 		console.log(deckcode.code);

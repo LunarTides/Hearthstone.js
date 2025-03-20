@@ -424,7 +424,7 @@ export const commands: CommandList = {
 
 					const [key, newValue] = historyKey;
 
-					// This shouldn't happen?
+					// TODO: This shouldn't happen?
 					if (!newValue) {
 						continue;
 					}
