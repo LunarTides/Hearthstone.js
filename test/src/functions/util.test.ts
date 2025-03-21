@@ -228,5 +228,11 @@ describe("src/functions/util", () => {
 		expect(await utilFunctions.parseEvalArgs(["log", "@ffffff.name"])).toEqual(
 			'(async () => { let __card = Card.fromUUID("ffffff");if (!__card) throw new Error("Card with uuid \\"ffffff\\" not found");console.log(__card.name);await game.pause(); })()',
 		);
+
+		expect(
+			await utilFunctions.parseEvalArgs(["log", "await", "@ffffff.readable()"]),
+		).toEqual(
+			'(async () => { let __card = Card.fromUUID("ffffff");if (!__card) throw new Error("Card with uuid \\"ffffff\\" not found");console.log(await __card.readable());await game.pause(); })()',
+		);
 	});
 });

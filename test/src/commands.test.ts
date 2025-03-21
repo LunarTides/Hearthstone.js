@@ -1,12 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { commands } from "@Game/commands.ts";
 
-/*
- * Need to create a game in case the functions need it
- * This is a pretty big performance hit.
- */
-// createGame();
-
 describe("src/commands", () => {
 	test.todo("end", async () => {
 		expect(false).toEqual(true);
@@ -29,10 +23,6 @@ describe("src/commands", () => {
 	});
 
 	test.todo("help", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("view", async () => {
 		expect(false).toEqual(true);
 	});
 
