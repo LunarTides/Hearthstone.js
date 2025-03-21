@@ -1564,69 +1564,77 @@ export class Card {
 	async replacePlaceholders(overrideText = "", _depth = 0): Promise<string> {
 		let text = overrideText || this.text;
 
-		if (!this.abilities.placeholders && !/\$(\d+)/.test(this.text || "")) {
+		const spellDamage = /\$(\d+)/.test(this.text || "");
+		if (!spellDamage && !this.abilities.placeholders) {
 			return text;
 		}
 
 		const temporaryPlaceholders = await this.trigger(Ability.Placeholders);
-		if (!Array.isArray(temporaryPlaceholders)) {
+		if (!spellDamage && !Array.isArray(temporaryPlaceholders)) {
 			return text;
 		}
 
-		const placeholders = temporaryPlaceholders[0] as Record<string, string>;
-		if (!(placeholders instanceof Object)) {
-			throw new Error("Invalid placeholders");
-		}
+		if (Array.isArray(temporaryPlaceholders)) {
+			const placeholders = temporaryPlaceholders[0] as Record<
+				string,
+				string | Card | undefined
+			>;
 
-		let reg = /{(.*?)}/;
-
-		let running = true;
-		while (running) {
-			const regedDesc = reg.exec(text);
-
-			// There is nothing more to extract
-			if (!regedDesc) {
-				running = false;
-				break;
+			if (!(placeholders instanceof Object)) {
+				console.log(this.name);
+				throw new Error("Invalid placeholders");
 			}
 
-			// Get the capturing group result
-			const key = regedDesc[1];
+			const reg = /{(.*?)}/;
 
-			let replacement = placeholders[key] as string | Card | undefined;
-			if (replacement === undefined) {
-				/*
-				 * Replace the key with something else to ignore it.
-				 * This will prevent infinite recursion.
-				 * Later on, if we replace `__hsjs__ignore:` with `{`,
-				 * it will restore the original text.
-				 */
-				text = text.replace(reg, `__hsjs__ignore:${key}}`);
-				continue;
+			let running = true;
+			while (running) {
+				const regedDesc = reg.exec(text);
+
+				// There is nothing more to extract
+				if (!regedDesc) {
+					running = false;
+					break;
+				}
+
+				// Get the capturing group result
+				const key = regedDesc[1];
+
+				let replacement = placeholders[key];
+				if (replacement === undefined) {
+					/*
+					 * Replace the key with something else to ignore it.
+					 * This will prevent infinite recursion.
+					 * Later on, if we replace `__hsjs__ignore:` with `{`,
+					 * it will restore the original text.
+					 */
+					text = text.replace(reg, `__hsjs__ignore:${key}}`);
+					continue;
+				}
+
+				if (replacement instanceof Card) {
+					// The replacement is a card
+					const onlyShowName =
+						game.config.advanced.getReadableCardNoRecursion ||
+						!game.player.detailedView;
+
+					const alwaysShowFullCard =
+						game.config.advanced.getReadableCardAlwaysShowFullCard;
+
+					replacement =
+						onlyShowName && !alwaysShowFullCard
+							? replacement.colorFromRarity()
+							: await replacement.readable(-1, _depth + 1);
+				}
+
+				text = parseTags(text.replace(reg, replacement));
 			}
-
-			if (replacement instanceof Card) {
-				// The replacement is a card
-				const onlyShowName =
-					game.config.advanced.getReadableCardNoRecursion ||
-					!game.player.detailedView;
-
-				const alwaysShowFullCard =
-					game.config.advanced.getReadableCardAlwaysShowFullCard;
-
-				replacement =
-					onlyShowName && !alwaysShowFullCard
-						? replacement.colorFromRarity()
-						: await replacement.readable(-1, _depth + 1);
-			}
-
-			text = parseTags(text.replace(reg, replacement));
 		}
 
 		// Replace spell damage placeholders
-		reg = /\$(\d+)/;
+		const reg = /\$(\d+)/;
 
-		running = true;
+		let running = true;
 		while (running) {
 			const regedDesc = reg.exec(text);
 			if (!regedDesc) {
@@ -1662,6 +1670,7 @@ export class Card {
 		clone.sleepy = true;
 		clone.turn = game.turn;
 
+		game.activeCards.push(clone);
 		return clone;
 	}
 

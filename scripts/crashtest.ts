@@ -1,9 +1,12 @@
 import process from "node:process";
+import { Card } from "@Game/card.ts";
 import { createGame } from "@Game/game.ts";
 import { Player } from "@Game/player.ts";
 
 const { game } = await createGame();
 const blueprints = game.blueprints;
+
+const cards = await Card.all(true);
 
 const gamesEnv = process.env.GAMES ?? "";
 let games = game.lodash.parseInt(gamesEnv);
@@ -13,12 +16,8 @@ games = Number.isNaN(games) ? 10 : games;
  * Executes the main function for the program.
  */
 async function main(): Promise<void> {
-	const decks = JSON.parse(
-		(await game.functions.util.fs("readFile", "/decks.json")) as string,
-	) as string[];
-
 	console.warn("Looking for crashes... This might take a while...");
-	if (!process.env.GAMES) {
+	if (!gamesEnv) {
 		console.warn(
 			"Set the GAMES env variable to change how many games to play.",
 		);
@@ -33,7 +32,7 @@ async function main(): Promise<void> {
 		process.stderr.write(`\r\u001B[KPlaying game ${index + 1} / ${games}...`);
 
 		// Test the main game
-		const { game, player1, player2 } = await createGame(false);
+		const { game } = await createGame(false);
 		game.blueprints = blueprints;
 
 		// Setup the ais
@@ -48,15 +47,17 @@ async function main(): Promise<void> {
 		for (let i = 0; i < 2; i++) {
 			const player = Player.fromID(i);
 
-			const deck = game.lodash.sample(decks);
-			if (typeof deck === "string") {
-				await game.functions.deckcode.import(player, deck);
+			for (let j = 0; j < 30; j++) {
+				const card = game.lodash.sample(cards);
+				if (!card) {
+					throw new Error("No cards found");
+				}
+
+				player.addToDeck(await card.imperfectCopy());
 			}
 		}
 
 		await game.startGame();
-		await game.functions.interact.prompt.mulligan(player1);
-		await game.functions.interact.prompt.mulligan(player2);
 
 		try {
 			while (game.running) {

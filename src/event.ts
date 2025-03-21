@@ -93,6 +93,12 @@ export const eventManager = {
 			const player = Player.fromID(i);
 
 			for (const card of player.hand) {
+				if (!card.backups.init) {
+					throw new Error(
+						`Card is not initialized: ${card.name}. Use Card.create instead of new Card.`,
+					);
+				}
+
 				await card.condition();
 
 				// Just in case. Remove for small performance boost

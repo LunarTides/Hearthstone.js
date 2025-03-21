@@ -793,7 +793,7 @@ const playCard = {
 			);
 		},
 
-		async Heropower(card: Card, player: Player): Promise<GamePlayCardReturn> {
+		async HeroPower(card: Card, player: Player): Promise<GamePlayCardReturn> {
 			// A hero power card shouldn't really be played, but oh well.
 			player.hero.heropowerId = card.id;
 			player.hero.heropower = card;
