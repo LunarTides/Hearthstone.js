@@ -1,7 +1,15 @@
 import { describe, expect, test } from "bun:test";
 import { Card } from "@Game/card.ts";
 import { Player } from "@Game/player.ts";
-import { Ability, Event, EventListenerMessage } from "@Game/types.ts";
+import {
+	Ability,
+	Blueprint,
+	Class,
+	Event,
+	EventListenerMessage,
+	Rarity,
+	Type,
+} from "@Game/types.ts";
 
 describe("src/player", () => {
 	test("fromID - static", async () => {
@@ -447,12 +455,36 @@ describe("src/player", () => {
 		expect(await player.popFromHand(0)).toBe(sheep2);
 	});
 
-	test.todo("setHero", async () => {
-		expect(false).toEqual(true);
+	test("setHero", async () => {
+		const player = new Player();
+
+		const hero = await Card.create(game.cardIds.jainaProudmoore4, player);
+		hero.armor = 5;
+
+		expect(player.hero).not.toBe(hero);
+		expect(player.armor).toBe(0);
+
+		player.setHero(hero);
+
+		expect(player.hero).toBe(hero);
+		expect(player.armor).toBe(5);
 	});
 
-	test.todo("setToStartingHero", async () => {
-		expect(false).toEqual(true);
+	test("setToStartingHero", async () => {
+		const player = new Player();
+
+		const hero = await Card.create(game.cardIds.jainaProudmoore4, player);
+		hero.id = -1;
+
+		player.setHero(hero);
+
+		expect(player.hero).toBe(hero);
+		expect(player.hero.id).toBe(-1);
+
+		expect(await player.setToStartingHero()).toBe(true);
+
+		expect(player.hero).not.toBe(hero);
+		expect(player.hero.id).toBe(game.cardIds.jainaProudmoore4);
 	});
 
 	test.todo("heroPower", async () => {
