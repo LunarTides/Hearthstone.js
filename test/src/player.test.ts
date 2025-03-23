@@ -1,15 +1,8 @@
 import { describe, expect, test } from "bun:test";
 import { Card } from "@Game/card.ts";
+import { createGame } from "@Game/game.ts";
 import { Player } from "@Game/player.ts";
-import {
-	Ability,
-	Blueprint,
-	Class,
-	Event,
-	EventListenerMessage,
-	Rarity,
-	Type,
-} from "@Game/types.ts";
+import { Ability, Event, EventListenerMessage } from "@Game/types.ts";
 
 describe("src/player", () => {
 	test("fromID - static", async () => {
@@ -487,8 +480,28 @@ describe("src/player", () => {
 		expect(player.hero.id).toBe(game.cardIds.jainaProudmoore4);
 	});
 
-	test.todo("heroPower", async () => {
-		expect(false).toEqual(true);
+	test("heroPower", async () => {
+		const { player1: player, player2: opponent } = game;
+		player.emptyMana = 10;
+		player.mana = 10;
+
+		game.player = player;
+		game.opponent = opponent;
+
+		await player.setToStartingHero();
+		expect(player.hero.heropower?.id).toBe(game.cardIds.fireblast114);
+		expect(opponent.health).toBe(opponent.maxHealth);
+
+		player.forceTarget = opponent;
+		expect(await player.heroPower()).toBe(true);
+
+		expect(opponent.health).toBe(opponent.maxHealth - 1);
+		expect(await player.heroPower()).toBe(false);
+
+		expect(opponent.health).toBe(opponent.maxHealth - 1);
+		expect(player.mana).toBe(
+			player.emptyMana - (player.hero.heropower?.cost ?? 0),
+		);
 	});
 
 	test.todo("tradeCorpses", async () => {

@@ -283,7 +283,7 @@ export class Player {
 	 * # Example
 	 * ```
 	 * player.forceTarget = target;
-	 * const chosen = await game.functions.interact.prompt.promptTarget("Example", null, "any", "any");
+	 * const chosen = await game.functions.interact.prompt.target("Example", null, "any", "any");
 	 * player.forceTarget = null;
 	 *
 	 * assert.equal(chosen, target);
@@ -885,7 +885,6 @@ export class Player {
 		}
 
 		this.setHero(await Card.create(heroCardId, this), false);
-
 		return true;
 	}
 

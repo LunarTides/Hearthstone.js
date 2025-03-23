@@ -10,7 +10,6 @@ import {
 	GameAttackReturn,
 	GamePlayCardReturn,
 	Keyword,
-	Location,
 	type Target,
 	TargetAlignment,
 	TargetClass,
