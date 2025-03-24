@@ -659,9 +659,7 @@ describe("src/player", () => {
 		expect(player.testRunes("U")).toBe(false);
 	});
 
-	test.todo("mulligan", async () => {
-		expect(false).toEqual(true);
-	});
+	test.todo("mulligan", async () => {});
 
 	test("createJade", async () => {
 		const player = new Player();
@@ -709,39 +707,13 @@ describe("src/player", () => {
 		expect(targets[5]).toBe(player);
 	});
 
-	test.todo("highlander", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("progressQuest", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("addQuest", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("invoke", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("recruit", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("joust", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("summon", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("attackTarget", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("spawnInDIYCard", async () => {
-		expect(false).toEqual(true);
-	});
+	test.todo("highlander", async () => {});
+	test.todo("progressQuest", async () => {});
+	test.todo("addQuest", async () => {});
+	test.todo("invoke", async () => {});
+	test.todo("recruit", async () => {});
+	test.todo("joust", async () => {});
+	test.todo("summon", async () => {});
+	test.todo("attackTarget", async () => {});
+	test.todo("spawnInDIYCard", async () => {});
 });

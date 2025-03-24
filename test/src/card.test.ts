@@ -2,263 +2,69 @@ import { describe, expect, test } from "bun:test";
 import { Card } from "@Game/card.ts";
 
 describe("src/card", () => {
-	test.todo("allFromName - static", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("create - static", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("fromName - static", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("fromID - static", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("all - static", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("allWithTags - static", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("fromUUID - static", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("registerAll - static", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("reloadAll - static", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("setup", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("randomizeUUID", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("doBlueprint", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("addAbility", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("hasKeyword", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("addKeyword", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("remKeyword", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("getKeyword", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("setKeyword", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("freeze", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("decAttack", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("ready", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("setStats", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("addStats", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("remStats", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("addHealth", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("remHealth", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("resetMaxHealth", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("setStealthDuration", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("resetAttackTimes", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("setLocation", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("canAttack", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("canBeAttacked", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("createBackup", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("restoreBackup", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("bounce", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("kill", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("silence", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("destroy", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("reset", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("reload", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("activate", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("manathirst", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("discard", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("condition", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("getEnchantmentInfo", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("applyEnchantments", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("addEnchantment", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("enchantmentExists", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("removeEnchantment", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("replacePlaceholders", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("perfectCopy", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("imperfectCopy", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("canBeOnBoard", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("hasStats", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("isAlive", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("validateForDeck", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("adapt", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("galakrondBump", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("tryInfuse", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("colorFromRarity", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("coloredUUID", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("takeControl", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("attackTarget", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("readable", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("view", async () => {
-		expect(false).toEqual(true);
-	});
+	test.todo("allFromName - static", async () => {});
+	test.todo("create - static", async () => {});
+	test.todo("fromName - static", async () => {});
+	test.todo("fromID - static", async () => {});
+	test.todo("all - static", async () => {});
+	test.todo("allWithTags - static", async () => {});
+	test.todo("fromUUID - static", async () => {});
+	test.todo("registerAll - static", async () => {});
+	test.todo("reloadAll - static", async () => {});
+	test.todo("setup", async () => {});
+	test.todo("randomizeUUID", async () => {});
+	test.todo("doBlueprint", async () => {});
+	test.todo("addAbility", async () => {});
+	test.todo("hasKeyword", async () => {});
+	test.todo("addKeyword", async () => {});
+	test.todo("remKeyword", async () => {});
+	test.todo("getKeyword", async () => {});
+	test.todo("setKeyword", async () => {});
+	test.todo("freeze", async () => {});
+	test.todo("decAttack", async () => {});
+	test.todo("ready", async () => {});
+	test.todo("setStats", async () => {});
+	test.todo("addStats", async () => {});
+	test.todo("remStats", async () => {});
+	test.todo("addHealth", async () => {});
+	test.todo("remHealth", async () => {});
+	test.todo("resetMaxHealth", async () => {});
+	test.todo("setStealthDuration", async () => {});
+	test.todo("resetAttackTimes", async () => {});
+	test.todo("setLocation", async () => {});
+	test.todo("canAttack", async () => {});
+	test.todo("canBeAttacked", async () => {});
+	test.todo("createBackup", async () => {});
+	test.todo("restoreBackup", async () => {});
+	test.todo("bounce", async () => {});
+	test.todo("kill", async () => {});
+	test.todo("silence", async () => {});
+	test.todo("destroy", async () => {});
+	test.todo("reset", async () => {});
+	test.todo("reload", async () => {});
+	test.todo("activate", async () => {});
+	test.todo("manathirst", async () => {});
+	test.todo("discard", async () => {});
+	test.todo("condition", async () => {});
+	test.todo("getEnchantmentInfo", async () => {});
+	test.todo("applyEnchantments", async () => {});
+	test.todo("addEnchantment", async () => {});
+	test.todo("enchantmentExists", async () => {});
+	test.todo("removeEnchantment", async () => {});
+	test.todo("replacePlaceholders", async () => {});
+	test.todo("perfectCopy", async () => {});
+	test.todo("imperfectCopy", async () => {});
+	test.todo("canBeOnBoard", async () => {});
+	test.todo("hasStats", async () => {});
+	test.todo("isAlive", async () => {});
+	test.todo("validateForDeck", async () => {});
+	test.todo("adapt", async () => {});
+	test.todo("galakrondBump", async () => {});
+	test.todo("tryInfuse", async () => {});
+	test.todo("colorFromRarity", async () => {});
+	test.todo("coloredUUID", async () => {});
+	test.todo("takeControl", async () => {});
+	test.todo("attackTarget", async () => {});
+	test.todo("readable", async () => {});
+	test.todo("view", async () => {});
 });

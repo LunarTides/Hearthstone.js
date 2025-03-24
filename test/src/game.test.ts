@@ -8,51 +8,16 @@ import { createGame } from "@Game/game.ts";
 await createGame();
 
 describe("src/game", () => {
-	test.todo("input", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("pause", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("doConfigAi", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("triggerEventListeners", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("startGame", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("endGame", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("endTurn", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("killCardsOnBoard", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("createGame", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("attack", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("play", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("summon", async () => {
-		expect(false).toEqual(true);
-	});
+	test.todo("input", async () => {});
+	test.todo("pause", async () => {});
+	test.todo("doConfigAi", async () => {});
+	test.todo("triggerEventListeners", async () => {});
+	test.todo("startGame", async () => {});
+	test.todo("endGame", async () => {});
+	test.todo("endTurn", async () => {});
+	test.todo("killCardsOnBoard", async () => {});
+	test.todo("createGame", async () => {});
+	test.todo("attack", async () => {});
+	test.todo("play", async () => {});
+	test.todo("summon", async () => {});
 });
