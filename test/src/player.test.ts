@@ -1,8 +1,14 @@
 import { describe, expect, test } from "bun:test";
 import { Card } from "@Game/card.ts";
-import { createGame } from "@Game/game.ts";
 import { Player } from "@Game/player.ts";
-import { Ability, Event, EventListenerMessage } from "@Game/types.ts";
+import {
+	Ability,
+	Class,
+	Event,
+	EventListenerMessage,
+	Location,
+	type Target,
+} from "@Game/types.ts";
 
 describe("src/player", () => {
 	test("fromID - static", async () => {
@@ -504,56 +510,203 @@ describe("src/player", () => {
 		);
 	});
 
-	test.todo("tradeCorpses", async () => {
-		expect(false).toEqual(true);
+	test("tradeCorpses", async () => {
+		const player = new Player();
+
+		const func = (expected: boolean) => {
+			let didCallback = false;
+
+			expect(
+				player.tradeCorpses(3, () => {
+					didCallback = true;
+				}),
+			).toBe(expected);
+
+			if (expected) {
+				expect(didCallback).toBe(true);
+			}
+		};
+
+		func(false);
+		player.heroClass = Class.DeathKnight;
+		func(false);
+		player.heroClass = Class.Mage;
+		player.corpses = 7;
+		func(false);
+		player.heroClass = Class.DeathKnight;
+		func(true);
+		func(true);
+		func(false);
 	});
 
-	test.todo("canUseCorpses", async () => {
-		expect(false).toEqual(true);
+	test("canUseCorpses", async () => {
+		const player = new Player();
+
+		expect(player.canUseCorpses()).toBe(false);
+		player.heroClass = Class.DeathKnight;
+		expect(player.canUseCorpses()).toBe(true);
 	});
 
-	test.todo("canUseRunes", async () => {
-		expect(false).toEqual(true);
+	test("canUseRunes", async () => {
+		const player = new Player();
+
+		expect(player.canUseCorpses()).toBe(false);
+		player.heroClass = Class.DeathKnight;
+		expect(player.canUseCorpses()).toBe(true);
 	});
 
-	test.todo("canBeAttacked", async () => {
-		expect(false).toEqual(true);
+	test("canBeAttacked", async () => {
+		const player = new Player();
+
+		expect(player.canBeAttacked()).toBe(true);
+		player.immune = true;
+		expect(player.canBeAttacked()).toBe(false);
 	});
 
-	test.todo("canUseHeroPower", async () => {
-		expect(false).toEqual(true);
+	test("canUseHeroPower", async () => {
+		const player = new Player();
+		player.hero = await Card.create(game.cardIds.jainaProudmoore4, player);
+
+		expect(player.canUseHeroPower()).toBe(false);
+		player.mana = 10;
+		expect(player.canUseHeroPower()).toBe(true);
+		player.hasUsedHeroPowerThisTurn = true;
+		expect(player.canUseHeroPower()).toBe(false);
+		player.hasUsedHeroPowerThisTurn = false;
+		player.disableHeroPower = true;
+		expect(player.canUseHeroPower()).toBe(false);
 	});
 
-	test.todo("isAlive", async () => {
-		expect(false).toEqual(true);
+	test("isAlive", async () => {
+		const player = new Player();
+
+		expect(player.isAlive()).toBe(true);
+		player.health = 10;
+		expect(player.isAlive()).toBe(true);
+		player.health = 0;
+		expect(player.isAlive()).toBe(false);
 	});
 
-	test.todo("getRemainingBoardSpace", async () => {
-		expect(false).toEqual(true);
+	test("getRemainingBoardSpace", async () => {
+		const player = new Player();
+
+		expect(player.getRemainingBoardSpace()).toBe(
+			game.config.general.maxBoardSpace,
+		);
+
+		for (let i = 0; i < 5; i++) {
+			player.summon(await Card.create(game.cardIds.sheep1, player));
+			expect(player.getRemainingBoardSpace()).toBe(
+				game.config.general.maxBoardSpace - player.board.length,
+			);
+		}
 	});
 
-	test.todo("getRemainingHandSpace", async () => {
-		expect(false).toEqual(true);
+	test("getRemainingHandSpace", async () => {
+		const player = new Player();
+
+		expect(player.getRemainingHandSpace()).toBe(
+			game.config.general.maxHandLength,
+		);
+
+		for (let i = 0; i < 5; i++) {
+			player.addToHand(await Card.create(game.cardIds.sheep1, player));
+			expect(player.getRemainingHandSpace()).toBe(
+				game.config.general.maxHandLength - player.hand.length,
+			);
+		}
 	});
 
-	test.todo("testRunes", async () => {
-		expect(false).toEqual(true);
+	test("testRunes", async () => {
+		const player = new Player();
+		player.runes = "BFU";
+
+		expect(player.testRunes("BFU")).toBe(true);
+		expect(player.testRunes("BF")).toBe(true);
+		expect(player.testRunes("B")).toBe(true);
+		expect(player.testRunes("BU")).toBe(true);
+		expect(player.testRunes("FU")).toBe(true);
+
+		expect(player.testRunes("BBF")).toBe(false);
+		expect(player.testRunes("BFF")).toBe(false);
+		expect(player.testRunes("BUU")).toBe(false);
+		expect(player.testRunes("FUF")).toBe(false);
+		expect(player.testRunes("FFU")).toBe(false);
+		expect(player.testRunes("FFF")).toBe(false);
+
+		player.runes = "BBU";
+
+		expect(player.testRunes("BBU")).toBe(true);
+		expect(player.testRunes("BB")).toBe(true);
+		expect(player.testRunes("B")).toBe(true);
+		expect(player.testRunes("BU")).toBe(true);
+		expect(player.testRunes("UB")).toBe(true);
+		expect(player.testRunes("U")).toBe(true);
+
+		expect(player.testRunes("F")).toBe(false);
+		expect(player.testRunes("FU")).toBe(false);
+		expect(player.testRunes("UBU")).toBe(false);
+
+		player.runes = "BBB";
+
+		expect(player.testRunes("BBB")).toBe(true);
+		expect(player.testRunes("BB")).toBe(true);
+		expect(player.testRunes("B")).toBe(true);
+
+		expect(player.testRunes("F")).toBe(false);
+		expect(player.testRunes("FU")).toBe(false);
+		expect(player.testRunes("UBU")).toBe(false);
+		expect(player.testRunes("U")).toBe(false);
 	});
 
 	test.todo("mulligan", async () => {
 		expect(false).toEqual(true);
 	});
 
-	test.todo("createJade", async () => {
-		expect(false).toEqual(true);
+	test("createJade", async () => {
+		const player = new Player();
+
+		for (let i = 0; i < 40; i++) {
+			const jade = await player.createJade();
+
+			expect(jade.attack).toBe(Math.min(i + 1, 30));
+			expect(jade.health).toBe(Math.min(i + 1, 30));
+			expect(jade.cost).toBe(Math.min(i + 1, 10));
+		}
 	});
 
-	test.todo("discard", async () => {
-		expect(false).toEqual(true);
+	test("discard", async () => {
+		const player = new Player();
+
+		const sheep = await Card.create(game.cardIds.sheep1, player);
+		await player.addToHand(sheep);
+
+		expect(player.hand.length).toBe(1);
+		expect(sheep.location).toBe(Location.Hand);
+
+		await player.discard(sheep);
+
+		expect(player.hand.length).toBe(0);
+		expect(sheep.location).toBe(Location.None);
 	});
 
-	test.todo("doTargets", async () => {
-		expect(false).toEqual(true);
+	test("doTargets", async () => {
+		const player = new Player();
+
+		for (let i = 0; i < 5; i++) {
+			player.summon(await Card.create(game.cardIds.sheep1, player));
+		}
+
+		const targets: Target[] = [];
+		expect(player.doTargets((target) => targets.push(target))).toBe(true);
+
+		expect(targets.length).toBe(6);
+		expect(targets[0]).toBe(player.board[0]);
+		expect(targets[1]).toBe(player.board[1]);
+		expect(targets[2]).toBe(player.board[2]);
+		expect(targets[3]).toBe(player.board[3]);
+		expect(targets[4]).toBe(player.board[4]);
+		expect(targets[5]).toBe(player);
 	});
 
 	test.todo("highlander", async () => {

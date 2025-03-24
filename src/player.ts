@@ -1128,7 +1128,6 @@ export class Player {
 		}
 
 		callback(this);
-
 		return true;
 	}
 

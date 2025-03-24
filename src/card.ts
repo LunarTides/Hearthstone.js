@@ -1300,6 +1300,7 @@ export class Card {
 		const returnValue = game.functions.util.remove(player.hand, this);
 
 		if (returnValue) {
+			this.location = Location.None;
 			await game.event.broadcast(Event.DiscardCard, this, player);
 		}
 
