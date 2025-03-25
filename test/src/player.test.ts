@@ -3,11 +3,16 @@ import { Card } from "@Game/card.ts";
 import { Player } from "@Game/player.ts";
 import {
 	Ability,
+	CardTag,
 	Class,
 	Event,
 	EventListenerMessage,
 	Location,
+	QuestType,
+	Rarity,
+	SpellSchool,
 	type Target,
+	Type,
 } from "@Game/types.ts";
 
 describe("src/player", () => {
@@ -707,8 +712,67 @@ describe("src/player", () => {
 		expect(targets[5]).toBe(player);
 	});
 
-	test.todo("highlander", async () => {});
-	test.todo("progressQuest", async () => {});
+	test("highlander", async () => {
+		const player = new Player();
+
+		const sheep = await Card.create(game.cardIds.sheep1, player);
+		await player.addToDeck(sheep);
+		expect(player.highlander()).toBe(true);
+
+		await player.addToDeck(await sheep.imperfectCopy());
+		expect(player.highlander()).toBe(false);
+	});
+
+	test("progressQuest", async () => {
+		const player = game.player1;
+		player.mana = 1;
+
+		game.blueprints.push({
+			name: "Quest Test",
+			text: "",
+			cost: 1,
+			type: Type.Spell,
+			classes: [Class.Neutral],
+			rarity: Rarity.Free,
+			collectible: false,
+			tags: [CardTag.Quest],
+			id: -1,
+
+			spellSchools: [SpellSchool.None],
+
+			async cast(owner, self) {
+				await owner.addQuest(
+					QuestType.Quest,
+					self,
+					Event.Dummy,
+					3,
+					async (value, done) => {
+						if (value === self) {
+							return EventListenerMessage.Skip;
+						}
+
+						return EventListenerMessage.Success;
+					},
+				);
+			},
+		});
+
+		const card = await Card.create(-1, player);
+		await game.play(card, player);
+
+		expect(player.quests.length).toBe(1);
+		expect(player.quests[0].progress).toEqual([0, 3]);
+
+		expect(player.progressQuest(card.name, 1)).toBe(1);
+		expect(player.quests[0].progress).toEqual([1, 3]);
+
+		expect(player.progressQuest(card.name, 2)).toBe(3);
+		expect(player.quests[0].progress).toEqual([3, 3]);
+
+		expect(await game.event.broadcastDummy(player)).toBe(true);
+		expect(player.quests.length).toBe(0);
+	});
+
 	test.todo("addQuest", async () => {});
 	test.todo("invoke", async () => {});
 	test.todo("recruit", async () => {});

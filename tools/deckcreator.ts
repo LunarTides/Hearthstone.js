@@ -957,8 +957,6 @@ let running = true;
  */
 export async function main(): Promise<void> {
 	running = true;
-	await Card.registerAll();
-
 	chosenClass = await askClass();
 
 	while (running) {
