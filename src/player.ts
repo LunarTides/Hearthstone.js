@@ -283,7 +283,7 @@ export class Player {
 	 * # Example
 	 * ```
 	 * player.forceTarget = target;
-	 * const chosen = await game.functions.interact.prompt.promptTarget("Example", null, "any", "any");
+	 * const chosen = await game.functions.interact.prompt.target("Example", null, "any", "any");
 	 * player.forceTarget = null;
 	 *
 	 * assert.equal(chosen, target);
@@ -698,7 +698,7 @@ export class Player {
 	}
 
 	/**
-	 * Draws `amount` cards from this player's deck.
+	 * Removes and returns the last `amount` cards from the deck.
 	 * Broadcasts the `DrawCard` event for each card drawn
 	 *
 	 * @param amount The amount of cards to draw
@@ -776,7 +776,7 @@ export class Player {
 	 * @returns The card drawn
 	 */
 	async drawSpecific(card: Card): Promise<Card | undefined> {
-		if (this.deck.length <= 0) {
+		if (this.deck.length <= 0 || !this.deck.includes(card)) {
 			return undefined;
 		}
 
@@ -885,7 +885,6 @@ export class Player {
 		}
 
 		this.setHero(await Card.create(heroCardId, this), false);
-
 		return true;
 	}
 
@@ -1129,7 +1128,6 @@ export class Player {
 		}
 
 		callback(this);
-
 		return true;
 	}
 
@@ -1218,6 +1216,7 @@ export class Player {
 				(quests.length >= 3 || quests.some((s) => s.name === card.name)))
 		) {
 			await this.addToHand(card);
+			this[card.costType] += card.cost;
 			return false;
 		}
 

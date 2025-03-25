@@ -1,58 +1,17 @@
 import { describe, expect, test } from "bun:test";
 import { eventManager } from "@Game/event.ts";
 
-/*
- * Need to create a game in case the functions need it
- * This is a pretty big performance hit.
- */
-// createGame();
-
 describe("src/event", () => {
-	test.todo("tick", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("cardUpdate", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("questUpdate", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("broadcast", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("addHistory", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("broadcastDummy", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("increment", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("addListener", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("hookToTick", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("suppress", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("ignoreSuppression", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("withSuppressed", async () => {
-		expect(false).toEqual(true);
-	});
+	test.todo("tick", async () => {});
+	test.todo("cardUpdate", async () => {});
+	test.todo("questUpdate", async () => {});
+	test.todo("broadcast", async () => {});
+	test.todo("addHistory", async () => {});
+	test.todo("broadcastDummy", async () => {});
+	test.todo("increment", async () => {});
+	test.todo("addListener", async () => {});
+	test.todo("hookToTick", async () => {});
+	test.todo("suppress", async () => {});
+	test.todo("ignoreSuppression", async () => {});
+	test.todo("withSuppressed", async () => {});
 });

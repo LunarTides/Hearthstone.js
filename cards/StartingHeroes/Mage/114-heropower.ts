@@ -9,7 +9,6 @@ import {
 	Rarity,
 	TargetAlignment,
 	TargetClass,
-	TargetFlag,
 	Type,
 } from "@Game/types.ts";
 

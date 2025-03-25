@@ -10,13 +10,8 @@ import {
 } from "@Game/types.ts";
 
 describe("src/functions/card", () => {
-	test.todo("vanilla > getAll", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("vanilla > filter", async () => {
-		expect(false).toEqual(true);
-	});
+	test.todo("vanilla > getAll", async () => {});
+	test.todo("vanilla > filter", async () => {});
 
 	test("validateClasses", async () => {
 		expect(cardFunctions.validateClasses([Class.Mage], Class.Druid)).toEqual(
@@ -48,13 +43,8 @@ describe("src/functions/card", () => {
 		).toEqual(true);
 	});
 
-	test.todo("runBlueprintValidator", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("getClasses", async () => {
-		expect(false).toEqual(true);
-	});
+	test.todo("runBlueprintValidator", async () => {});
+	test.todo("getClasses", async () => {});
 
 	test("galakrondFormula", async () => {
 		expect(cardFunctions.galakrondFormula(0)).toEqual(1);
@@ -217,11 +207,6 @@ describe("src/functions/card", () => {
 		);
 	});
 
-	test.todo("generateIdsFile", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("verifyDiySolution", async () => {
-		expect(false).toEqual(true);
-	});
+	test.todo("generateIdsFile", async () => {});
+	test.todo("verifyDiySolution", async () => {});
 });

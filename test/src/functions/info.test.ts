@@ -3,9 +3,7 @@ import { format } from "node:util";
 import { infoFunctions } from "@Game/functions/info.ts";
 
 describe("src/functions/info", () => {
-	test.todo("version", async () => {
-		expect(false).toBe(true);
-	});
+	test.todo("version", async () => {});
 
 	test("versionString", async () => {
 		const { version, branch } = infoFunctions.version();

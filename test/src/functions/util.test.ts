@@ -32,17 +32,9 @@ describe("src/functions/util", () => {
 		]);
 	});
 
-	test.todo("importConfig", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("createLogFile", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("parseLogFile", async () => {
-		expect(false).toEqual(true);
-	});
+	test.todo("importConfig", async () => {});
+	test.todo("createLogFile", async () => {});
+	test.todo("parseLogFile", async () => {});
 
 	test("runCommand", async () => {
 		/*
@@ -55,13 +47,8 @@ describe("src/functions/util", () => {
 		expect(result).toStartWith(Bun.version);
 	});
 
-	test.todo("tryCompile", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("openInBrowser", async () => {
-		expect(false).toEqual(true);
-	});
+	test.todo("tryCompile", async () => {});
+	test.todo("openInBrowser", async () => {});
 
 	test("getTraditionalTurnCounter", async () => {
 		/*
@@ -85,25 +72,11 @@ describe("src/functions/util", () => {
 		expect(counter).toEqual(2);
 	});
 
-	test.todo("getCachedLanguageMap", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("importLanguageMap", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("translate", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("fs", async () => {
-		expect(false).toEqual(true);
-	});
-
-	test.todo("searchCardsFolder", async () => {
-		expect(false).toEqual(true);
-	});
+	test.todo("getCachedLanguageMap", async () => {});
+	test.todo("importLanguageMap", async () => {});
+	test.todo("translate", async () => {});
+	test.todo("fs", async () => {});
+	test.todo("searchCardsFolder", async () => {});
 
 	test("restrictPath", async () => {
 		const match = (path: string) => {
@@ -140,14 +113,8 @@ describe("src/functions/util", () => {
 		match("....././cards/");
 	});
 
-	test.todo("dirname", async () => {
-		// I don't know how to test this
-		expect(false).toEqual(true);
-	});
-
-	test.todo("getRandomTarget", async () => {
-		expect(false).toEqual(true);
-	});
+	test.todo("dirname", async () => {});
+	test.todo("getRandomTarget", async () => {});
 
 	test("parseEvalArgs", async () => {
 		expect(
@@ -227,6 +194,12 @@ describe("src/functions/util", () => {
 		// UUID
 		expect(await utilFunctions.parseEvalArgs(["log", "@ffffff.name"])).toEqual(
 			'(async () => { let __card = Card.fromUUID("ffffff");if (!__card) throw new Error("Card with uuid \\"ffffff\\" not found");console.log(__card.name);await game.pause(); })()',
+		);
+
+		expect(
+			await utilFunctions.parseEvalArgs(["log", "await", "@ffffff.readable()"]),
+		).toEqual(
+			'(async () => { let __card = Card.fromUUID("ffffff");if (!__card) throw new Error("Card with uuid \\"ffffff\\" not found");console.log(await __card.readable());await game.pause(); })()',
 		);
 	});
 });
