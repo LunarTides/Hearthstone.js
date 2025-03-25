@@ -53,9 +53,10 @@ const attack = {
 		}
 
 		// Check if there is a minion with taunt
-		const taunts = game.opponent.board.filter((m) =>
-			m.hasKeyword(Keyword.Taunt),
-		);
+		const taunts = (
+			target instanceof Player ? target : target.owner
+		).board.filter((m) => m.hasKeyword(Keyword.Taunt));
+
 		if (taunts.length > 0 && !flags.includes(GameAttackFlags.Force)) {
 			// If the target is a card and has taunt, you are allowed to attack it
 			if (target instanceof Card && target.hasKeyword(Keyword.Taunt)) {
@@ -585,7 +586,6 @@ const attack = {
 			return attacker;
 		}
 
-		// The attacker is a string but not spelldamage syntax
 		const dmg = attacker + game.player.spellDamage;
 
 		await game.event.broadcast(
@@ -709,13 +709,8 @@ const playCard = {
 		// Add the `PlayCardUnsafe` event to the history, now that it's safe to do so
 		game.event.addHistory(Event.PlayCardUnsafe, card, player);
 
-		// Echo
 		await playCard._echo(card, player);
-
-		// Combo
 		await playCard._combo(card, player);
-
-		// Corrupt
 		await playCard._corrupt(card, player);
 
 		// Broadcast `PlayCard` event
