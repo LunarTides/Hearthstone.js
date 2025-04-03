@@ -1,5 +1,13 @@
 import { describe, expect, test } from "bun:test";
 import { Card } from "@Game/card.ts";
+import { Keyword, Location, Type } from "@Game/types.ts";
+import { createGame } from "@Game/game.ts";
+
+/*
+ * Need to create a game in case the functions need it
+ * This is a pretty big performance hit.
+ */
+await createGame();
 
 describe("src/card", () => {
 	test.todo("allFromName - static", async () => {});
@@ -15,23 +23,267 @@ describe("src/card", () => {
 	test.todo("randomizeUUID", async () => {});
 	test.todo("doBlueprint", async () => {});
 	test.todo("addAbility", async () => {});
-	test.todo("hasKeyword", async () => {});
-	test.todo("addKeyword", async () => {});
-	test.todo("remKeyword", async () => {});
-	test.todo("getKeyword", async () => {});
-	test.todo("setKeyword", async () => {});
-	test.todo("freeze", async () => {});
-	test.todo("decAttack", async () => {});
-	test.todo("ready", async () => {});
-	test.todo("setStats", async () => {});
-	test.todo("addStats", async () => {});
-	test.todo("remStats", async () => {});
-	test.todo("addHealth", async () => {});
-	test.todo("remHealth", async () => {});
-	test.todo("resetMaxHealth", async () => {});
-	test.todo("setStealthDuration", async () => {});
-	test.todo("resetAttackTimes", async () => {});
-	test.todo("setLocation", async () => {});
+
+	test("hasKeyword", async () => {
+		const card = await Card.create(game.cardIds.sheep1, game.player);
+		expect(card.hasKeyword(Keyword.Dormant)).toBe(false);
+
+		card.addKeyword(Keyword.Dormant);
+		expect(card.hasKeyword(Keyword.Dormant)).toBe(true);
+	});
+
+	test("addKeyword", async () => {
+		const card = await Card.create(game.cardIds.sheep1, game.player);
+		expect(card.addKeyword(Keyword.Dormant)).toBe(true);
+		expect(card.hasKeyword(Keyword.Dormant)).toBe(true);
+
+		card.attackTimes = 0;
+
+		expect(card.sleepy).toBe(true);
+		expect(card.addKeyword(Keyword.Charge)).toBe(true);
+		expect(card.attackTimes).toBe(0);
+		expect(card.sleepy).toBe(false);
+		expect(card.canAttackHero).toBe(true);
+
+		card.sleepy = true;
+		expect(card.addKeyword(Keyword.Rush)).toBe(true);
+		expect(card.attackTimes).toBe(0);
+		expect(card.sleepy).toBe(false);
+		expect(card.canAttackHero).toBe(false);
+
+		expect(card.addKeyword(Keyword.CantAttack)).toBe(true);
+		expect(card.sleepy).toBe(true);
+
+		expect(card.remKeyword(Keyword.CantAttack)).toBe(true);
+		// remKeyword shouldn't reverse the effect of addKeyword.
+		expect(card.sleepy).toBe(true);
+
+		expect(card.addKeyword(Keyword.UnlimitedAttacks)).toBe(true);
+		expect(card.attackTimes).toBe(1);
+		expect(card.sleepy).toBe(false);
+	});
+
+	test("remKeyword", async () => {
+		const card = await Card.create(game.cardIds.sheep1, game.player);
+		card.addKeyword(Keyword.Dormant);
+		expect(card.hasKeyword(Keyword.Dormant)).toBe(true);
+
+		expect(card.remKeyword(Keyword.Dormant)).toBe(true);
+		expect(card.hasKeyword(Keyword.Dormant)).toBe(false);
+	});
+
+	test("getKeyword", async () => {
+		const card = await Card.create(game.cardIds.sheep1, game.player);
+		expect(card.setKeyword(Keyword.Dormant, 3)).toBe(false);
+
+		card.addKeyword(Keyword.Dormant);
+		expect(card.hasKeyword(Keyword.Dormant)).toBe(true);
+
+		expect(card.setKeyword(Keyword.Dormant, 3)).toBe(true);
+		expect(card.getKeyword(Keyword.Dormant)).toBe(3);
+	});
+
+	test("setKeyword", async () => {
+		const card = await Card.create(game.cardIds.sheep1, game.player);
+		expect(card.setKeyword(Keyword.Dormant, 3)).toBe(false);
+
+		card.addKeyword(Keyword.Dormant);
+		expect(card.hasKeyword(Keyword.Dormant)).toBe(true);
+
+		expect(card.setKeyword(Keyword.Dormant, 3)).toBe(true);
+		expect(card.getKeyword(Keyword.Dormant)).toBe(3);
+	});
+
+	test("freeze", async () => {
+		const card = await Card.create(game.cardIds.sheep1, game.player);
+		expect(card.hasKeyword(Keyword.Frozen)).toBe(false);
+
+		await card.freeze();
+		expect(card.hasKeyword(Keyword.Frozen)).toBe(true);
+	});
+
+	test("decAttack", async () => {
+		const card = await Card.create(game.cardIds.sheep1, game.player);
+		expect(card.attackTimes).toBe(1);
+
+		expect(card.decAttack()).toBe(true);
+		expect(card.attackTimes).toBe(0);
+		expect(card.sleepy).toBe(true);
+
+		card.sleepy = false;
+
+		expect(card.decAttack()).toBe(false);
+
+		card.attackTimes = 2;
+		expect(card.decAttack()).toBe(true);
+		expect(card.attackTimes).toBe(1);
+		expect(card.sleepy).toBe(false);
+
+		expect(card.decAttack()).toBe(true);
+		expect(card.attackTimes).toBe(0);
+		expect(card.sleepy).toBe(true);
+
+		expect(card.decAttack()).toBe(false);
+	});
+
+	test("ready", async () => {
+		const card = await Card.create(game.cardIds.sheep1, game.player);
+		expect(card.sleepy).toBe(true);
+
+		card.ready();
+		expect(card.sleepy).toBe(false);
+
+		card.sleepy = true;
+
+		card.addKeyword(Keyword.CantAttack);
+		expect(card.ready()).toBe(false);
+		expect(card.sleepy).toBe(true);
+	});
+
+	test("setStats", async () => {
+		const card = await Card.create(game.cardIds.sheep1, game.player);
+		expect(card.attack).toBe(1);
+		expect(card.health).toBe(1);
+
+		card.setStats(2, 3);
+		expect(card.attack).toBe(2);
+		expect(card.health).toBe(3);
+		expect(card.maxHealth).toBe(3);
+
+		card.setStats(2, 4, false);
+		expect(card.attack).toBe(2);
+		expect(card.health).toBe(4);
+		expect(card.maxHealth).toBe(3);
+	});
+
+	test("addStats", async () => {
+		const card = await Card.create(game.cardIds.sheep1, game.player);
+		expect(card.attack).toBe(1);
+		expect(card.health).toBe(1);
+
+		card.addStats(2, 3);
+		expect(card.attack).toBe(3);
+		expect(card.health).toBe(4);
+		expect(card.maxHealth).toBe(4);
+	});
+
+	test("remStats", async () => {
+		const card = await Card.create(game.cardIds.sheep1, game.player);
+		expect(card.attack).toBe(1);
+		expect(card.health).toBe(1);
+		expect(card.maxHealth).toBe(1);
+
+		await card.remStats(1, 1);
+		expect(card.attack).toBe(0);
+		expect(card.health).toBe(0);
+		expect(card.maxHealth).toBe(0);
+	});
+
+	test("addHealth", async () => {
+		const card = await Card.create(game.cardIds.sheep1, game.player);
+		expect(card.health).toBe(1);
+		await card.addHealth(2);
+		expect(card.health).toBe(1);
+		expect(card.maxHealth).toBe(1);
+
+		await card.addHealth(2, false);
+		expect(card.health).toBe(3);
+		expect(card.maxHealth).toBe(3);
+	});
+
+	test("remHealth", async () => {
+		const card = await Card.create(game.cardIds.sheep1, game.player);
+		expect(card.health).toBe(1);
+
+		expect(await card.remHealth(1)).toBe(true);
+		expect(card.health).toBe(0);
+
+		await card.addHealth(1);
+
+		card.type = Type.Location;
+		expect(await card.remHealth(1)).toBe(false);
+		expect(card.health).toBe(1);
+		card.type = Type.Minion;
+
+		expect(await card.remHealth(1)).toBe(true);
+		await card.addHealth(1);
+
+		// Check if keywords actually prevent damage.
+		card.addKeyword(Keyword.Stealth);
+		expect(await card.remHealth(1)).toBe(false);
+
+		card.remKeyword(Keyword.Stealth);
+		expect(await card.remHealth(1)).toBe(true);
+		expect(card.health).toBe(0);
+
+		await card.addHealth(1);
+
+		card.addKeyword(Keyword.Immune);
+		// Immune should not prevent damage, but it returns true.
+		expect(await card.remHealth(1)).toBe(true);
+		expect(card.health).toBe(1);
+		card.remKeyword(Keyword.Immune);
+
+		// Check if it actually destroys the weapon.
+		const weapon = await Card.create(game.cardIds.wickedKnife22, game.player);
+		await game.player.setWeapon(weapon);
+		expect(game.player.weapon).not.toBeUndefined();
+		expect(await weapon.remHealth(9999)).toBe(true);
+		expect(game.player.weapon).toBeUndefined();
+	});
+
+	test("resetMaxHealth", async () => {
+		const card = await Card.create(game.cardIds.sheep1, game.player);
+		expect(card.maxHealth).toBe(1);
+
+		card.health = 3;
+		card.resetMaxHealth();
+		expect(card.maxHealth).toBe(3);
+	});
+
+	test("setStealthDuration", async () => {
+		const card = await Card.create(game.cardIds.sheep1, game.player);
+		expect(card.stealthDuration).toBe(0);
+
+		game.turn = 3;
+
+		card.setStealthDuration(1);
+		expect(card.stealthDuration).toBe(game.turn + 1);
+	});
+
+	test("resetAttackTimes", async () => {
+		const card = await Card.create(game.cardIds.sheep1, game.player);
+		expect(card.attackTimes).toBe(1);
+
+		card.addKeyword(Keyword.Windfury);
+		card.resetAttackTimes();
+		expect(card.attackTimes).toBe(2);
+
+		card.addKeyword(Keyword.MegaWindfury);
+		card.resetAttackTimes();
+		expect(card.attackTimes).toBe(4);
+
+		card.remKeyword(Keyword.Windfury);
+		card.remKeyword(Keyword.MegaWindfury);
+
+		card.resetAttackTimes();
+		expect(card.attackTimes).toBe(1);
+	});
+
+	test("setLocation", async () => {
+		const card = await Card.create(game.cardIds.sheep1, game.player);
+		expect(card.location).toBe(Location.None);
+
+		await card.setLocation(Location.Board);
+		expect(card.location).toBe(Location.Board);
+
+		expect(game.activeCards).toContain(card);
+
+		await card.setLocation(Location.None);
+		expect(card.location).toBe(Location.None);
+		expect(game.activeCards).not.toContain(card);
+	});
+
 	test.todo("canAttack", async () => {});
 	test.todo("canBeAttacked", async () => {});
 	test.todo("createBackup", async () => {});
@@ -42,7 +294,7 @@ describe("src/card", () => {
 	test.todo("destroy", async () => {});
 	test.todo("reset", async () => {});
 	test.todo("reload", async () => {});
-	test.todo("activate", async () => {});
+	test.todo("trigger", async () => {});
 	test.todo("manathirst", async () => {});
 	test.todo("discard", async () => {});
 	test.todo("condition", async () => {});

@@ -770,7 +770,6 @@ export class Card {
 		}
 
 		this.sleepy = false;
-
 		return true;
 	}
 
@@ -848,7 +847,7 @@ export class Card {
 	 * Adds `amount` to the card's health
 	 *
 	 * @param amount The health to add
-	 * @param restore Should reset health to it's max health if it goes over it's max health
+	 * @param restore If it should prevent the health from going over the max health. Defaults to true.
 	 *
 	 * @returns Success
 	 */
