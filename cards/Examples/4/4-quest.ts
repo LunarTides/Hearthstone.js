@@ -64,7 +64,7 @@ export const blueprint: Blueprint = {
 				 * This code runs every time the `PlayCard` event gets broadcast.
 				 * This is like the callback function in event listeners.
 				 *
-				 * Returning false will prevent this event from counting towards the quest
+				 * Returning `EventListenerMessage.Skip` will prevent this event from counting towards the quest
 				 * If the card played was this card, it doesn't count towards this quest.
 				 *
 				 * The `PlayCard` event gets triggered after the text of the card played.
@@ -79,7 +79,7 @@ export const blueprint: Blueprint = {
 				cards.push(value);
 
 				/*
-				 * Return true to count this event towards the quest
+				 * Return `EventListenerMessage.Success` to count this event towards the quest
 				 * Only return if the quest isn't considered done. It is considered done if the quest has been triggered enough times (in this case 3).
 				 */
 				if (!done) {

@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { Card } from "@Game/card.ts";
-import { Keyword, Location, Type } from "@Game/types.ts";
 import { createGame } from "@Game/game.ts";
+import { Keyword, Location, Type } from "@Game/types.ts";
 
 /*
  * Need to create a game in case the functions need it

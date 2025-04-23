@@ -219,7 +219,7 @@ export const eventManager = {
 
 			const [current, max] = quest.progress;
 			if (current === max) {
-				removeQuest(quest);
+				await removeQuest(quest);
 				continue;
 			}
 

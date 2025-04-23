@@ -527,9 +527,7 @@ describe("src/player", () => {
 				}),
 			).toBe(expected);
 
-			if (expected) {
-				expect(didCallback).toBe(true);
-			}
+			expect(didCallback).toBe(expected);
 		};
 
 		func(false);

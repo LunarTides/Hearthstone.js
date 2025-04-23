@@ -935,7 +935,9 @@ const print = {
 					funFact.endsWith("-"),
 				);
 
-				funFacts = game.config.funFacts;
+				funFacts = game.config.funFacts.filter(
+					(funFact) => !seenFunFacts.includes(funFact),
+				);
 			}
 
 			const funFact = game.lodash.sample(funFacts);

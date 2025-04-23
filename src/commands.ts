@@ -19,17 +19,17 @@ import { resumeTagParsing, stopTagParsing } from "chalk-tags";
 const helpColumns = [
 	"(name) - (description)\n",
 
-	"end - End your turn",
-	"attack - Attack a target",
-	"hero power - Use your hero power",
-	"history - Show a list of actions that have happened",
-	"concede - Forfeit the game",
-	"use - Use a location card",
-	"titan - Use a titan card",
-	"detail - Get more details about the game",
-	"help - Show this message",
-	"version - Show information about the version, branch, and settings of this game",
-	"license - Open a link to this project's license",
+	"end - End your turn.",
+	"attack - Attack a target.",
+	"hero power - Use your hero power.",
+	"concede - Forfeit the game.",
+	"use - Use a location card.",
+	"titan - Use a titan card.",
+	"history - Show a list of things that have happened this game.",
+	"detail - Toggle showing more details about the game.",
+	"version - Show information about the version, branch, and settings of the game.",
+	"help - Show this message.",
+	"license - Open a link to this project's license.",
 ];
 
 /*
@@ -39,14 +39,14 @@ const helpColumns = [
 const helpDebugColumns = [
 	"(name) (required) [optional] - (description)\n",
 
-	"give (name | id) - Add a card to your hand",
-	"eval [log] (code) - Run some code",
-	"exit - Force exit the game. There will be no winner, and it will take you straight back to the hub",
-	"history - Show a list of actions that have happened. Unlike the normal history command, this doesn't hide any information, and is the same thing the log files uses",
-	"rl - Reload the cards, config, and translation files",
-	"frl - Do the same thing as 'rl', but doesn't wait for you to press enter before continuing",
+	"give (name | id) - Add a card to your hand.",
+	"eval [log] (code) - Run some code. Be careful with copying code from the internet since it could be malicious.",
+	"exit - Force exit the game. There will be no winner, and it will take you straight back to the hub.",
+	"history - Show a list of things that have happened this game. Unlike the normal history command, this doesn't hide any information, and is the same thing the log files uses.",
+	"rl - Reload the cards, config, and translation files.",
+	"frl - Reload the cards, config, and translation files. Don't wait for user input before continuing.",
 	"undo - Undo the last card played. It gives the card back to your hand, and removes it from where it was. (This does not undo the actions of the card)",
-	"ai - Give you a list of the actions the ai(s) have taken in the order they took it",
+	"ai - Show a list of the actions the ai(s) have taken this game.",
 ];
 
 export const commands: CommandList = {
