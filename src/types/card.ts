@@ -191,6 +191,7 @@ export enum Location {
 	Deck = "Deck",
 	Board = "Board",
 	Graveyard = "Graveyard",
+	Hero = "Hero",
 	Other = "Other",
 }
 

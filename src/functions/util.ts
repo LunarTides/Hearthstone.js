@@ -626,8 +626,6 @@ ${mainContent}
 					where = "game.player[x].graveyard";
 					break;
 				}
-
-				// No default
 			}
 
 			side =

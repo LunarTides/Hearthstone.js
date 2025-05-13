@@ -278,79 +278,10 @@ const attack = {
 				return GameAttackReturn.Sleepy;
 			}
 
-			/*
-			 * Do Forgetful last
-			 * It is in a while loop so that it can be returned early
-			 */
-			while (attacker.hasKeyword(Keyword.Forgetful)) {
-				// Get the forgetful state
-				let forgetfulState = attacker.getKeyword(Keyword.Forgetful) as
-					| undefined
-					| number;
-
-				// If the forgetful state is undefined, set it to 1
-				if (forgetfulState === undefined) {
-					attacker.setKeyword(Keyword.Forgetful, 1);
-					forgetfulState = 1;
-				}
-
-				/*
-				 * We only do the coin flip if the forgetful state is 1
-				 * This is so we can disable forgetful when attacking the random target
-				 */
-				if (forgetfulState !== 1 || game.lodash.random(0, 1) === 0) {
-					break;
-				}
-
-				// Attack a random target instead
-				let result: GameAttackReturn = GameAttackReturn.Invalid;
-
-				// Get the owner of the attacker, so we can exclude them from the target selection
-				const ownerIsPlayer1 = attacker.owner === game.player1;
-				const ownerIsPlayer2 = attacker.owner === game.player2;
-
-				// Set the forgetful state to 2, so we don't do the coin flip again when attacking the random target
-				attacker.setKeyword(Keyword.Forgetful, 2);
-
-				// Keep on trying to attack random targets until it works, or we've tried the max times
-				for (
-					let i = 0;
-					i < game.config.advanced.forgetfulRandomTargetFailAmount &&
-					result !== GameAttackReturn.Success;
-					i++
-				) {
-					/*
-					 * Choose a random enemy target
-					 * Only include "Player 1" if player 1 isn't the owner of the attacker
-					 * Only include "Player 2" if player 2 isn't the owner of the attacker
-					 * Only include player 1's side of the board if player 1 isn't the owner of the attacker
-					 * Only include player 2's side of the board if player 2 isn't the owner of the attacker
-					 */
-					const target = game.functions.util.getRandomTarget(
-						!ownerIsPlayer1,
-						!ownerIsPlayer2,
-						!ownerIsPlayer1,
-						!ownerIsPlayer2,
-					);
-
-					// If a target wasn't found, just continue with the attack
-					if (!target) {
-						break;
-					}
-
-					// If this doesn't work, it tries again do to the loop
-					result = await game.attack(attacker, target, flags);
-				}
-
-				// After the loop, set the forgetful state back to 1 so we can do the coin flip again next time
-				attacker.setKeyword(Keyword.Forgetful, 1);
-
-				// If the attack was successful, return since it already attacked a random target and this attack is useless now.
-				if (result === GameAttackReturn.Success) {
-					return GameAttackReturn.Success;
-				}
-
-				break;
+			if (
+				(await this._forgetful(attacker, flags)) === GameAttackReturn.Invalid
+			) {
+				return GameAttackReturn.Success;
 			}
 		}
 
@@ -625,6 +556,84 @@ const attack = {
 				await attack._doPoison(weapon, target);
 			}
 		}
+	},
+
+	async _forgetful(
+		attacker: Card,
+		flags: GameAttackFlags[],
+	): Promise<GameAttackReturn> {
+		if (!attacker.hasKeyword(Keyword.Forgetful)) {
+			return GameAttackReturn.Success;
+		}
+
+		// Get the forgetful state
+		let forgetfulState = attacker.getKeyword(Keyword.Forgetful) as
+			| undefined
+			| number;
+
+		// If the forgetful state is undefined, set it to 1
+		if (forgetfulState === undefined) {
+			attacker.setKeyword(Keyword.Forgetful, 1);
+			forgetfulState = 1;
+		}
+
+		/*
+		 * We only do the coin flip if the forgetful state is 1
+		 * This is so we can disable forgetful when attacking the random target
+		 */
+		if (forgetfulState !== 1 || game.lodash.random(0, 1) === 0) {
+			return GameAttackReturn.Success;
+		}
+
+		// Attack a random target instead
+		let result: GameAttackReturn = GameAttackReturn.Invalid;
+
+		// Get the owner of the attacker, so we can exclude them from the target selection
+		const ownerIsPlayer1 = attacker.owner === game.player1;
+		const ownerIsPlayer2 = attacker.owner === game.player2;
+
+		// Set the forgetful state to 2, so we don't do the coin flip again when attacking the random target
+		attacker.setKeyword(Keyword.Forgetful, 2);
+
+		// Keep on trying to attack random targets until it works, or we've tried the max times
+		for (
+			let i = 0;
+			i < game.config.advanced.forgetfulRandomTargetFailAmount &&
+			result !== GameAttackReturn.Success;
+			i++
+		) {
+			/*
+			 * Choose a random enemy target
+			 * Only include "Player 1" if player 1 isn't the owner of the attacker
+			 * Only include "Player 2" if player 2 isn't the owner of the attacker
+			 * Only include player 1's side of the board if player 1 isn't the owner of the attacker
+			 * Only include player 2's side of the board if player 2 isn't the owner of the attacker
+			 */
+			const target = game.functions.util.getRandomTarget(
+				!ownerIsPlayer1,
+				!ownerIsPlayer2,
+				!ownerIsPlayer1,
+				!ownerIsPlayer2,
+			);
+
+			// If a target wasn't found, just continue with the attack
+			if (!target) {
+				break;
+			}
+
+			// If this doesn't work, it tries again do to the loop
+			result = await game.attack(attacker, target, flags);
+		}
+
+		// After the loop, set the forgetful state back to 1 so we can do the coin flip again next time
+		attacker.setKeyword(Keyword.Forgetful, 1);
+
+		// If the attack was successful, return since it already attacked a random target and this attack is useless now.
+		if (result === GameAttackReturn.Success) {
+			return GameAttackReturn.Invalid;
+		}
+
+		return GameAttackReturn.Success;
 	},
 };
 
@@ -1222,7 +1231,7 @@ export class Game {
 		this.time.year = currentDate.getFullYear();
 
 		this.time.events.anniversary =
-			date.format(currentDate, "MM-DD") === "02-14";
+			date.format(currentDate, "DD/MM") === "14/02";
 		this.time.events.prideMonth = date.format(currentDate, "MM") === "06";
 
 		// this.time.events.anniversary = true;
@@ -1321,6 +1330,16 @@ export class Game {
 		return await game.input(this.translate(text, ...args));
 	}
 
+	/**
+	 * Translates the input text to the current locale using the language map and prompts the user for input.
+	 * Allows overriding the noInput setting and using the player's input queue.
+	 *
+	 * @param text The text to be translated
+	 * @param overrideNoInput If true, overrides the `game.noInput` setting
+	 * @param useInputQueue If true, allows using the player's input queue
+	 * @param args The arguments to be passed to the translation string
+	 * @returns The user's input as a string
+	 */
 	async inputTranslateWithOptions(
 		text: string,
 		overrideNoInput = false,
@@ -1334,6 +1353,13 @@ export class Game {
 		);
 	}
 
+	/**
+	 * Translates the input text to the current locale using the language map and pauses the game, displaying the translated text as a prompt.
+	 *
+	 * @param text The text to be translated.
+	 * @param args The arguments to be passed to the translation string.
+	 * @returns A Promise that resolves when the pause is complete.
+	 */
 	async pauseTranslate(text: string, ...args: unknown[]): Promise<void> {
 		await game.pause(this.translate(text, ...args));
 	}

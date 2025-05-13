@@ -537,7 +537,7 @@ export class Player {
 		await this.weapon.trigger(Ability.Deathrattle);
 		this.attack -= this.weapon.attack ?? 0;
 
-		await this.weapon.destroy();
+		await this.weapon.kill();
 		this.weapon = undefined;
 
 		return true;
@@ -849,7 +849,14 @@ export class Player {
 	 * @returns Success
 	 */
 	setHero(hero: Card, setHeroClass = true): boolean {
+		if (this.hero) {
+			// Set the previous hero's location to None.
+			this.hero.location = Location.None;
+		}
+
 		this.hero = hero;
+		this.hero.location = Location.Hero;
+
 		if (setHeroClass) {
 			this.heroClass = hero.classes[0];
 		}
@@ -866,25 +873,16 @@ export class Player {
 	 * @returns Success
 	 */
 	async setToStartingHero(heroClass = this.heroClass): Promise<boolean> {
-		const heroCardId = (
-			await Promise.all(
-				(
-					await Card.allWithTags([CardTag.StartingHero])
-				).map(async (hero) => {
-					const unsuppress = game.event.suppress(Event.CreateCard);
-					const card = await hero.imperfectCopy();
-					unsuppress();
+		const hero = (await Card.allWithTags([CardTag.StartingHero])).find((card) =>
+			card.classes.includes(heroClass),
+		);
 
-					return card;
-				}),
-			)
-		).find((card) => card.classes.includes(heroClass))?.id;
-
-		if (!heroCardId) {
+		if (!hero) {
 			return false;
 		}
 
-		this.setHero(await Card.create(heroCardId, this), false);
+		hero.owner = this;
+		this.setHero(await hero.imperfectCopy(), false);
 		return true;
 	}
 

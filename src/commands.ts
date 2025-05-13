@@ -643,23 +643,21 @@ export const debugCommands: CommandList = {
 		success &&= await game.functions.interact.withStatus(
 			"Applying changes to existing cards",
 			async () => {
-				// Hand and decks of the players
-				for (const player of [game.player1, game.player2]) {
-					for (const card of player.hand) {
-						await card.reload();
+				const uuids: string[] = [];
+
+				for (const card of game.activeCards) {
+					/*
+					 * For some reason, without this, the game gets stuck on `Frozen Test`.
+					 * It just loops over and over again on the same card with the same uuid,
+					 * even if it reports that there are only 2 `Frozen Test` cards in `activeCards`.
+					 * Very vexing...
+					 */
+					if (uuids.includes(card.uuid)) {
+						continue;
 					}
 
-					for (const card of player.deck) {
-						await card.reload();
-					}
-
-					for (const card of player.board) {
-						await card.reload();
-					}
-
-					for (const card of player.graveyard) {
-						await card.reload();
-					}
+					uuids.push(card.uuid);
+					await card.reload();
 				}
 
 				return true;

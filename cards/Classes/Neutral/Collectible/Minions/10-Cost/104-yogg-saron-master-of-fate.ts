@@ -163,8 +163,6 @@ export const blueprint: Blueprint = {
 
 				break;
 			}
-
-			// No default
 		}
 
 		await game.event.broadcast(Event.CardEvent, [self, choice], owner);

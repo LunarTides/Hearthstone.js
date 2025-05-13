@@ -59,7 +59,7 @@ export async function main(): Promise<void> {
 
 			if (error instanceof Error) {
 				console.error(
-					`<red>ERROR: ${card.name} (${card.id}) didn't pass its test. Here is the error. THIS ERROR IS PART OF THE SCRIPT, NOT AN ACTUAL ERROR.</red>`,
+					`<red>ERROR: ${card.name} (${card.id}) didn't pass its test. Here is the error:</red>`,
 				);
 
 				console.error(error.stack);

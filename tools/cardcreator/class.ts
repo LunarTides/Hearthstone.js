@@ -58,7 +58,6 @@ export async function main(
 		text: `${game.lodash.capitalize(className)} starting hero`,
 		cost: 0,
 		type: Type.Hero,
-		// We do +2 since the hero card will be created first (+1), then the heropower (+1)
 		classes: [game.lodash.startCase(className) as Class],
 		rarity: Rarity.Free,
 		collectible: false,
@@ -67,6 +66,7 @@ export async function main(
 		id: 0,
 
 		armor: 0,
+		// We do +2 since the hero card will be created first (+1), then the heropower (+1)
 		heropowerId: (await lib.getLatestId()) + 2,
 	};
 
