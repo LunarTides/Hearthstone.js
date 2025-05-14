@@ -111,7 +111,7 @@ describe("src/player", () => {
 		});
 
 		expect(player.overload).toBe(0);
-		player.addOverload(1);
+		await player.addOverload(1);
 
 		expect(player.overload).toBe(1);
 	});
@@ -196,7 +196,7 @@ describe("src/player", () => {
 		});
 
 		expect(player.attack).toBe(0);
-		player.addAttack(1);
+		await player.addAttack(1);
 
 		expect(player.attack).toBe(1);
 	});
@@ -553,9 +553,9 @@ describe("src/player", () => {
 	test("canUseRunes", async () => {
 		const player = new Player();
 
-		expect(player.canUseCorpses()).toBe(false);
+		expect(player.canUseRunes()).toBe(false);
 		player.heroClass = Class.DeathKnight;
-		expect(player.canUseCorpses()).toBe(true);
+		expect(player.canUseRunes()).toBe(true);
 	});
 
 	test("canBeAttacked", async () => {

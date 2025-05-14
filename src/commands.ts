@@ -647,7 +647,7 @@ export const debugCommands: CommandList = {
 
 				for (const card of game.activeCards) {
 					/*
-					 * For some reason, without this, the game gets stuck on `Frozen Test`.
+					 * For some reason, without this, the game gets stuck on the `Frozen Test` card (id: 74).
 					 * It just loops over and over again on the same card with the same uuid,
 					 * even if it reports that there are only 2 `Frozen Test` cards in `activeCards`.
 					 * Very vexing...

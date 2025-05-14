@@ -14,8 +14,14 @@ const cards = await Card.all(true);
 
 export async function main(): Promise<void> {
 	let todos = 0;
+	let skips = 0;
 
 	for (const [index, card] of cards.entries()) {
+		if (!card.abilities.test) {
+			skips++;
+			continue;
+		}
+
 		process.stderr.write(
 			`\r\u001B[KTesting card ${index + 1} / ${cards.length}...`,
 		);
@@ -79,6 +85,10 @@ export async function main(): Promise<void> {
 
 	if (todos > 0) {
 		console.log("<cyan>%d todos.</cyan>", todos);
+	}
+
+	if (skips > 0) {
+		console.log("<gray>%d cards without tests.</gray>", skips);
 	}
 
 	console.log();

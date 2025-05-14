@@ -219,7 +219,7 @@ describe("src/card", () => {
 		await card.addHealth(1);
 
 		card.addKeyword(Keyword.Immune);
-		// Immune should not prevent damage, but it returns true.
+		// Immune prevents damage. remHealth returns true, and health remains unchanged.
 		expect(await card.remHealth(1)).toBe(true);
 		expect(card.health).toBe(1);
 		card.remKeyword(Keyword.Immune);

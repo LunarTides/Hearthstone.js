@@ -278,9 +278,7 @@ const attack = {
 				return GameAttackReturn.Sleepy;
 			}
 
-			if (
-				(await this._forgetful(attacker, flags)) === GameAttackReturn.Invalid
-			) {
+			if (await this._forgetful(attacker, flags)) {
 				return GameAttackReturn.Success;
 			}
 		}
@@ -558,12 +556,9 @@ const attack = {
 		}
 	},
 
-	async _forgetful(
-		attacker: Card,
-		flags: GameAttackFlags[],
-	): Promise<GameAttackReturn> {
+	async _forgetful(attacker: Card, flags: GameAttackFlags[]): Promise<boolean> {
 		if (!attacker.hasKeyword(Keyword.Forgetful)) {
-			return GameAttackReturn.Success;
+			return false;
 		}
 
 		// Get the forgetful state
@@ -582,7 +577,7 @@ const attack = {
 		 * This is so we can disable forgetful when attacking the random target
 		 */
 		if (forgetfulState !== 1 || game.lodash.random(0, 1) === 0) {
-			return GameAttackReturn.Success;
+			return false;
 		}
 
 		// Attack a random target instead
@@ -630,10 +625,10 @@ const attack = {
 
 		// If the attack was successful, return since it already attacked a random target and this attack is useless now.
 		if (result === GameAttackReturn.Success) {
-			return GameAttackReturn.Invalid;
+			return true;
 		}
 
-		return GameAttackReturn.Success;
+		return false;
 	},
 };
 

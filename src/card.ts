@@ -1299,7 +1299,7 @@ export class Card {
 		const returnValue = game.functions.util.remove(player.hand, this);
 
 		if (returnValue) {
-			this.location = Location.None;
+			this.setLocation(Location.None);
 			await game.event.broadcast(Event.DiscardCard, this, player);
 		}
 
@@ -1564,7 +1564,7 @@ export class Card {
 	async replacePlaceholders(overrideText = "", _depth = 0): Promise<string> {
 		let text = overrideText || this.text;
 
-		const spellDamage = /\$(\d+)/.test(this.text || "");
+		const spellDamage = /\$(\d+)/.test(text);
 		if (!spellDamage && !this.abilities.placeholders) {
 			return text;
 		}

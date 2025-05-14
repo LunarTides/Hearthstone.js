@@ -851,11 +851,11 @@ export class Player {
 	setHero(hero: Card, setHeroClass = true): boolean {
 		if (this.hero) {
 			// Set the previous hero's location to None.
-			this.hero.location = Location.None;
+			this.hero.setLocation(Location.None);
 		}
 
 		this.hero = hero;
-		this.hero.location = Location.Hero;
+		this.hero.setLocation(Location.Hero);
 
 		if (setHeroClass) {
 			this.heroClass = hero.classes[0];
