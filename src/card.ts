@@ -1088,18 +1088,20 @@ export class Card {
 	async bounce(player: Player = this.owner): Promise<boolean> {
 		this.owner = player;
 		await player.addToHand(this.perfectCopy());
-		await this.destroy();
+		await this.removeFromPlay();
 		return true;
 	}
 
 	// Doom buttons
 
 	/**
-	 * Kills the card.
+	 * Destroys the card.
+	 *
+	 * This sets the card's health to 0, then forces the game to remove dead cards from the board.
 	 *
 	 * @returns Success
 	 */
-	async kill(): Promise<boolean> {
+	async destroy(): Promise<boolean> {
 		await this.setStats(this.attack, 0);
 		await game.killCardsOnBoard();
 		return true;
@@ -1172,11 +1174,15 @@ export class Card {
 	}
 
 	/**
-	 * Silences, then kills the card.
+	 * Removes the card from play.
+	 *
+	 * This will silence the card and destroy it.
 	 */
-	async destroy(): Promise<void> {
+	async removeFromPlay(): Promise<void> {
 		await this.silence();
-		await this.kill();
+		await this.destroy();
+
+		await this.setLocation(Location.None);
 	}
 
 	/**

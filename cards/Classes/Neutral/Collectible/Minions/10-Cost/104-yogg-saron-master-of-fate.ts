@@ -90,7 +90,7 @@ export const blueprint: Blueprint = {
 							continue;
 						}
 
-						await card.kill();
+						await card.destroy();
 						await self.addStats(card.attack, card.health);
 					}
 				}

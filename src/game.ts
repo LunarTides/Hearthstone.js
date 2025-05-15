@@ -494,7 +494,7 @@ const attack = {
 		}
 
 		// The attacker has poison
-		await other.kill();
+		await other.destroy();
 	},
 
 	_doLifesteal(attacker: Card): void {
@@ -1767,7 +1767,7 @@ export class Game {
 				}
 
 				// Calmly tell the minion that it is going to die
-				const removeReturn = await card.trigger(Ability.Remove, "KillCard");
+				const removeReturn = await card.trigger(Ability.Remove, "DestroyCard");
 
 				// If the "remove" ability returns false, the card is not removed from the board
 				if (Array.isArray(removeReturn) && removeReturn[0] === false) {
@@ -1782,7 +1782,7 @@ export class Game {
 				player.graveyard.push(card);
 				await card.setLocation(Location.Graveyard);
 
-				await this.event.broadcast(Event.KillCard, card, this.player);
+				await this.event.broadcast(Event.DestroyCard, card, this.player);
 
 				if (!card.hasKeyword(Keyword.Reborn)) {
 					continue;

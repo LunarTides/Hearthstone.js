@@ -44,7 +44,7 @@ export const blueprint: Blueprint = {
 			return Card.REFUND;
 		}
 
-		await target.kill();
+		await target.destroy();
 		return true;
 	},
 

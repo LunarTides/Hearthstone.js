@@ -252,7 +252,7 @@ export const config: GameConfig = {
 			Event.TakeDamage,
 			Event.PlayCard,
 			Event.SummonCard,
-			Event.KillCard,
+			Event.DestroyCard,
 			Event.DamageCard,
 			Event.SilenceCard,
 			Event.DiscardCard,

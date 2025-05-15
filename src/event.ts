@@ -84,7 +84,7 @@ export const eventManager = {
 		 */
 
 		// Infuse
-		if (key === Event.KillCard) {
+		if (key === Event.DestroyCard) {
 			for (const card of player.hand) {
 				await card.tryInfuse();
 			}

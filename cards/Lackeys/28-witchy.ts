@@ -63,7 +63,7 @@ export const blueprint: Blueprint = {
 		const minion = await Card.create(random.id, owner);
 
 		// Destroy the target and summon the new minion in order to get the illusion that the card was transformed
-		await target.destroy();
+		await target.removeFromPlay();
 
 		// Summon the card to the player's side of the board
 		await owner.summon(minion);

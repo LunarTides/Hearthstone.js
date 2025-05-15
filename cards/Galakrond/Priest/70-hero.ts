@@ -39,8 +39,8 @@ export const blueprint: Blueprint = {
 				continue;
 			}
 
-			// Kill it
-			await minion.kill();
+			// Destroy it
+			await minion.destroy();
 		}
 	},
 

@@ -205,7 +205,7 @@ export class Player {
 	 * # Examples
 	 * ```
 	 * // Use `player.destroyWeapon()` instead in a real situation.
-	 * player.weapon.kill();
+	 * player.weapon.destroy();
 	 * ```
 	 */
 	weapon?: Card;
@@ -537,7 +537,7 @@ export class Player {
 		await this.weapon.trigger(Ability.Deathrattle);
 		this.attack -= this.weapon.attack ?? 0;
 
-		await this.weapon.kill();
+		await this.weapon.destroy();
 		this.weapon = undefined;
 
 		return true;

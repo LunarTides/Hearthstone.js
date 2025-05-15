@@ -90,7 +90,7 @@ export enum Event {
 	PlayCard = "PlayCard",
 	PlayCardUnsafe = "PlayCardUnsafe",
 	SummonCard = "SummonCard",
-	KillCard = "KillCard",
+	DestroyCard = "DestroyCard",
 	DamageCard = "DamageCard",
 	SilenceCard = "SilenceCard",
 	DiscardCard = "DiscardCard",
@@ -177,9 +177,9 @@ export type EventValue<Key extends Event> =
 												Key extends Event.SummonCard
 												? Card
 												: /**
-													 * The card that was killed
+													 * The card that was destroyed
 													 */
-													Key extends Event.KillCard
+													Key extends Event.DestroyCard
 													? Card
 													: /**
 														 * The card that was damaged, and the amount of damage

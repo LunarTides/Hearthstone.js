@@ -45,7 +45,7 @@ export const blueprint: Blueprint = {
 		assert(!owner.canUseHeroPower());
 
 		// When this card dies, you can use your hero power.
-		await self.kill();
+		await self.destroy();
 		assert(owner.canUseHeroPower());
 	},
 };
