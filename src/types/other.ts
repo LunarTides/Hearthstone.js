@@ -19,14 +19,6 @@ export enum GamePlayCardReturn {
 }
 
 /**
- * Game.attack flags
- */
-export enum GameAttackFlags {
-	Force = "Force",
-	SpellDamage = "SpellDamage",
-}
-
-/**
  * Attack return value
  */
 export enum GameAttackReturn {
@@ -77,28 +69,16 @@ export enum AiCalcMoveMessage {
  */
 export type AiCalcMoveOption = Card | AiCalcMoveMessage;
 
-/**
- * promptTarget alignment
- */
-export enum TargetAlignment {
-	Friendly = "Friendly",
-	Enemy = "Enemy",
-	Any = "Any",
+export interface TargetFlags {
+	alignment?: "friendly" | "enemy";
+	class?: "player" | "card";
+	allowLocations?: boolean;
+	forceElusive?: boolean;
 }
-/**
- * promptTarget class
- */
-export enum TargetClass {
-	Player = "Player",
-	Card = "Card",
-	Any = "Any",
-}
-/**
- * promptTarget flags
- */
-export enum TargetFlag {
-	AllowLocations = "AllowLocations",
-	ForceElusive = "ForceElusive",
+
+export interface GameAttackFlags {
+	force?: boolean;
+	spellDamage?: boolean;
 }
 
 export enum UseLocationError {

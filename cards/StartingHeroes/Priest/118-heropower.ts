@@ -2,16 +2,7 @@
 
 import assert from "node:assert";
 import { Card } from "@Game/card.ts";
-import {
-	Ability,
-	type Blueprint,
-	Class,
-	Rarity,
-	TargetAlignment,
-	TargetClass,
-	TargetFlag,
-	Type,
-} from "@Game/types.ts";
+import { Ability, type Blueprint, Class, Rarity, Type } from "@Game/types.ts";
 
 export const blueprint: Blueprint = {
 	name: "Lesser Heal",
@@ -30,8 +21,6 @@ export const blueprint: Blueprint = {
 		const target = await game.functions.interact.prompt.target(
 			"Restore 2 health.",
 			self,
-			TargetAlignment.Any,
-			TargetClass.Any,
 		);
 
 		// If no target was selected, refund the hero power

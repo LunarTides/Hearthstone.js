@@ -12,7 +12,13 @@ const { game } = await createGame();
 const blueprints = game.blueprints;
 const cards = await Card.all(true);
 
+function calculatePercentage(x: number, subtract = 0) {
+	return Math.round((x / (cards.length - subtract)) * 100);
+}
+
 export async function main(): Promise<void> {
+	let passed = 0;
+	let fails = 0;
 	let todos = 0;
 	let skips = 0;
 
@@ -60,10 +66,13 @@ export async function main(): Promise<void> {
 			) {
 				todos++;
 			}
+
+			passed++;
 		} catch (error) {
 			game.noOutput = false;
 
 			if (error instanceof Error) {
+				fails++;
 				console.error(
 					`<red>ERROR: ${card.name} (${card.id}) didn't pass its test. Here is the error:</red>`,
 				);
@@ -77,20 +86,31 @@ export async function main(): Promise<void> {
 		game.noOutput = false;
 	}
 
-	console.log();
-
+	console.log(
+		"\n\n<bright:green>Passed: %d/%d (%d%)</bright:green>",
+		passed - todos,
+		cards.length - skips,
+		calculatePercentage(passed - todos, skips),
+	);
+	console.log(
+		"<red>Failed: %d/%d (%d%)</red>",
+		fails,
+		cards.length - skips,
+		calculatePercentage(fails, skips),
+	);
+	console.log(
+		"<cyan>Todos: %d/%d (%d%)</cyan>",
+		todos,
+		cards.length - skips,
+		calculatePercentage(todos, skips),
+	);
+	console.log("<gray>Untestable: %d/%d</gray>", skips, cards.length);
+	console.log(
+		"<gray>(Untestable cards aren't included in the percentages.)</gray>",
+	);
 	if (process.exitCode !== 1) {
-		console.log("<bright:green>All tests passed!</bright:green>");
+		console.log("\n<bright:green>All tests passed!</bright:green>");
 	}
-
-	if (todos > 0) {
-		console.log("<cyan>%d todos.</cyan>", todos);
-	}
-
-	if (skips > 0) {
-		console.log("<gray>%d cards without tests.</gray>", skips);
-	}
-
 	console.log();
 	process.exit();
 }

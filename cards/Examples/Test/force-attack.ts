@@ -6,7 +6,6 @@ import {
 	type Blueprint,
 	Class,
 	Event,
-	GameAttackFlags,
 	MinionTribe,
 	Rarity,
 	Type,
@@ -68,10 +67,10 @@ export const blueprint: Blueprint = {
 		self.storage.attack = value;
 
 		/*
-		 * Force attack. Note the flag here.
+		 * Force attack. Note the { force: true } flag here.
 		 * We need to force it, since the card shouldn't be able to attack two times in a row
 		 */
-		await game.attack(attacker, target, [GameAttackFlags.Force]);
+		await game.attack(attacker, target, { force: true });
 	},
 
 	async test(owner, self) {
@@ -80,7 +79,7 @@ export const blueprint: Blueprint = {
 		assert.equal(opponent.health, 30);
 		await owner.summon(self);
 
-		await game.attack(self, opponent, [GameAttackFlags.Force]);
+		await game.attack(self, opponent, { force: true });
 		assert.equal(self.attack, 1);
 		assert.equal(opponent.health, 28);
 	},

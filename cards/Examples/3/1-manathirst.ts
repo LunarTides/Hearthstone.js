@@ -9,7 +9,6 @@ import {
 	Keyword,
 	MinionTribe,
 	Rarity,
-	TargetAlignment,
 	Type,
 } from "@Game/types.ts";
 
@@ -40,14 +39,14 @@ export const blueprint: Blueprint = {
 		 * Select a target to freeze (and silence)
 		 * The first argument is the prompt to ask the user.
 		 * The second argument is this card (aka `self`).
-		 * The third argument is the alignment of the target the user is restricted to. If this is `Enemy`, the user can only select enemy targets, if this is `Friendly`, the user can only select friendly targets, if this is `Any`, the user can select any target.
+		 * The third argument is an options object with targeting flags. For example, if `alignment` is set to "enemy", the user can only select enemy targets, if it's "friendly", the user can only select friendly targets, if it's omitted, the user can select any target.
 		 *
 		 * Ask the user to select a target based on the `prompt`, the user can only select enemy minions
 		 */
 		const target = await game.functions.interact.prompt.targetCard(
 			prompt,
 			self,
-			TargetAlignment.Enemy,
+			{ alignment: "enemy" },
 		);
 
 		/*

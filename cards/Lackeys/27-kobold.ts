@@ -9,8 +9,6 @@ import {
 	Class,
 	MinionTribe,
 	Rarity,
-	TargetAlignment,
-	TargetClass,
 	Type,
 } from "@Game/types.ts";
 
@@ -36,8 +34,6 @@ export const blueprint: Blueprint = {
 		const target = await game.functions.interact.prompt.target(
 			"Deal 2 damage.",
 			self,
-			TargetAlignment.Any,
-			TargetClass.Any,
 		);
 
 		// If no target was selected, refund

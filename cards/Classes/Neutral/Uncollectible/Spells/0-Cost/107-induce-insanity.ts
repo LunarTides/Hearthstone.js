@@ -7,7 +7,6 @@ import {
 	type Blueprint,
 	Class,
 	EventListenerMessage,
-	GameAttackFlags,
 	Rarity,
 	SpellSchool,
 	Type,
@@ -36,8 +35,8 @@ export const blueprint: Blueprint = {
 				continue;
 			}
 
-			// TODO: Make sure that `GameAttackFlags.Force` is actually correct here.
-			await game.attack(enemyMinion, targetMinion, [GameAttackFlags.Force]);
+			// TODO: Make sure that `force` is actually correct here.
+			await game.attack(enemyMinion, targetMinion, { force: true });
 		}
 	},
 

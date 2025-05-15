@@ -1393,11 +1393,11 @@ export class Player {
 	 * This is just a shortcut for `game.attack(this, target, flags)`. Whether to use this or `game.attack` is up to you and your preferences.
 	 *
 	 * @param target The target
-	 * @param flags Some flags to modify the behaviour of the attack
+	 * @param flags An object with boolean properties to modify the behavior of the attack (e.g., { force: true })
 	 *
 	 * @returns Success | Errorcode
 	 */
-	attackTarget(target: Target, flags: GameAttackFlags[] = []) {
+	attackTarget(target: Target, flags: GameAttackFlags = {}) {
 		return game.attack(this, target, flags);
 	}
 

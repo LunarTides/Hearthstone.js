@@ -2,15 +2,7 @@
 
 import assert from "node:assert";
 import { Card } from "@Game/card.ts";
-import {
-	Ability,
-	type Blueprint,
-	Class,
-	Rarity,
-	TargetAlignment,
-	TargetClass,
-	Type,
-} from "@Game/types.ts";
+import { Ability, type Blueprint, Class, Rarity, Type } from "@Game/types.ts";
 
 export const blueprint: Blueprint = {
 	name: "Fireblast",
@@ -29,8 +21,6 @@ export const blueprint: Blueprint = {
 		const target = await game.functions.interact.prompt.target(
 			"Deal 1 damage.",
 			self,
-			TargetAlignment.Any,
-			TargetClass.Any,
 		);
 
 		// If no target was selected, refund the hero power

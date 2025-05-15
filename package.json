@@ -8,14 +8,10 @@
 	"scripts": {
 		"start": "bunx tsc && bun .",
 		"format": "bunx biome check --fix",
-		"ci": "bunx biome ci && bun test && bunx tsc && bun run cardtest && bun run crashtest",
-		"cardtest": "bun run script:cardtest",
-		"crashtest": "bun run script:crashtest && bun run script:crashtest && bun run script:crashtest && bun run script:crashtest && bun run script:crashtest",
+		"ci": "bunx biome ci && bun test && bunx tsc && bun ./scripts/test/cards.ts && bun ./scripts/test/crash.ts && bun ./scripts/test/crash.ts && bun ./scripts/test/crash.ts && bun ./scripts/test/crash.ts && bun ./scripts/test/crash.ts",
 		"script:vanilla:generate": "bun ./scripts/vanilla/generate.ts",
 		"script:vanilla:generate-no-filter": "bun ./scripts/vanilla/generate.ts --no-filter",
-		"script:crashtest": "bun ./scripts/crashtest.ts",
-		"script:idscript": "bun ./scripts/id/main.ts",
-		"script:cardtest": "bun ./scripts/cardtest.ts"
+		"script:id": "bun ./scripts/id/main.ts"
 	},
 	"repository": {
 		"type": "git",

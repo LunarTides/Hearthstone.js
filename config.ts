@@ -316,7 +316,7 @@ export const config: GameConfig = {
 		"Version 2.0 began development on August 21, 2023, and released on December 31st, 2023. It was released since ~7 hours before 2024 I decided I would release it before the new year.",
 		"Version 2.0 originally came with a script to upgrade pre-2.0 cards. The problem was that the update ended up having so many breaking changes that it was unreasonable to write an upgrade script that would cover all the edge-cases.",
 		"Hearthstone.js was originally going to be renamed to Hearthstone.ts after 2.0, but it just didn't sound right to me. Maybe I just got used to the name...",
-		"Shortly after 2.0 was released, I got majorly burned out. I made 120 commits throughout the <i>entirety</i> of 2024. Compared to the ~1.3k commits in total, that was not much. I have gotten better recently though.",
+		"Shortly after 2.0 was released, I got majorly burned out. I made 120 commits throughout the <i>entirety</i> of 2024. Compared to the ~1.4k commits in total, that was not much. I have gotten better recently though.",
 		"The amount of lines of code in Hearthstone.js between 1.6.2 and 2.0 is pretty much the same, despite the codebase being incredibly different. Most of that comes from the cards that were removed in 2.0.",
 
 		// 3.0

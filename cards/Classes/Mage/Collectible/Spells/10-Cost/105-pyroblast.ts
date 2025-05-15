@@ -6,11 +6,8 @@ import {
 	Ability,
 	type Blueprint,
 	Class,
-	GameAttackFlags,
 	Rarity,
 	SpellSchool,
-	TargetAlignment,
-	TargetClass,
 	Type,
 } from "@Game/types.ts";
 
@@ -29,17 +26,12 @@ export const blueprint: Blueprint = {
 
 	async cast(owner, self) {
 		// Deal $10 damage.
-		const target = await game.functions.interact.prompt.target(
-			self.text,
-			self,
-			TargetAlignment.Any,
-			TargetClass.Any,
-		);
+		const target = await game.functions.interact.prompt.target(self.text, self);
 		if (!target) {
 			return Card.REFUND;
 		}
 
-		await game.attack(10, target, [GameAttackFlags.SpellDamage]);
+		await game.attack(10, target, { spellDamage: true });
 		return true;
 	},
 

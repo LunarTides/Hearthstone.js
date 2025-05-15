@@ -7,9 +7,7 @@ import {
 	Keyword,
 	type ScoredCard,
 	type Target,
-	TargetAlignment,
-	TargetClass,
-	TargetFlag,
+	type TargetFlags,
 	Type,
 } from "@Game/types.ts";
 
@@ -281,8 +279,6 @@ export class Ai {
 	 *
 	 * @param prompt The prompt to show the ai.
 	 * @param card The card that called this function
-	 * @param forceSide The side the ai should be constrained to.
-	 * @param forceClass The type of target the ai should be constrained to.
 	 * @param flags Some flags
 	 *
 	 * @returns The target selected.
@@ -290,14 +286,9 @@ export class Ai {
 	promptTarget(
 		prompt: string,
 		card: Card | undefined,
-		forceSide: TargetAlignment,
-		forceClass: TargetClass,
-		flags: TargetFlag[] = [],
+		flags: TargetFlags,
 	): Target | null {
-		if (
-			flags.includes(TargetFlag.AllowLocations) &&
-			forceClass !== TargetClass.Player
-		) {
+		if (flags.allowLocations && flags.class !== "player") {
 			const locations = this.player.board.filter(
 				(m) =>
 					m.type === Type.Location &&
@@ -305,43 +296,42 @@ export class Ai {
 					!this.usedLocationsThisTurn.includes(m),
 			);
 
-			this.usedLocationsThisTurn.push(locations[0]);
-
 			if (locations.length > 0) {
+				this.usedLocationsThisTurn.push(locations[0]);
 				return locations[0];
 			}
 		}
 
 		const opponent = this.player.getOpponent();
 
-		let side = null;
+		let alignment: "friendly" | "enemy" | null = null;
 
 		const score = this.analyzePositive(prompt, false);
 
 		if (score > 0) {
-			side = "self";
+			alignment = "friendly";
 		} else if (score < 0) {
-			side = "enemy";
+			alignment = "enemy";
 		}
 
-		if (forceSide !== TargetAlignment.Any) {
-			side = forceSide;
+		if (flags.alignment) {
+			alignment = flags.alignment;
 		}
 
-		const sidePlayer = side === "self" ? this.player : opponent;
+		const sidePlayer = alignment === "friendly" ? this.player : opponent;
 
-		if (sidePlayer.board.length <= 0 && forceClass === TargetClass.Card) {
+		if (sidePlayer.board.length <= 0 && flags.class === "card") {
 			this.history.push({ type: "selectTarget", data: "0,1" });
 
 			return null;
 		}
 
-		if (forceClass === TargetClass.Player) {
+		if (flags.class === "player") {
 			let returnValue: Player | null = null;
 
-			if (side === "self") {
+			if (alignment === "friendly") {
 				returnValue = this.player;
-			} else if (side === "enemy") {
+			} else if (alignment === "enemy") {
 				returnValue = opponent;
 			}
 
@@ -357,7 +347,7 @@ export class Ai {
 		if (sidePlayer.board.length <= 0) {
 			let returnValue: Player | null = null;
 
-			if (forceClass === TargetClass.Card) {
+			if (flags.class === "card") {
 				this.history.push({ type: "selectTarget", data: -1 });
 			} else {
 				returnValue = sidePlayer;

@@ -10,7 +10,6 @@ import {
 	Keyword,
 	MinionTribe,
 	Rarity,
-	TargetAlignment,
 	Type,
 } from "@Game/types.ts";
 
@@ -36,7 +35,7 @@ export const blueprint: Blueprint = {
 		const target = await game.functions.interact.prompt.targetCard(
 			"Give a friendly minion +1 Attack and Rush",
 			self,
-			TargetAlignment.Friendly,
+			{ alignment: "friendly" },
 		);
 
 		// If no target was selected, refund

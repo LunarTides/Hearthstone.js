@@ -1,14 +1,7 @@
 // Created by the Custom Card Creator
 
 import assert from "node:assert";
-import {
-	type Blueprint,
-	Class,
-	GameAttackFlags,
-	Keyword,
-	Rarity,
-	Type,
-} from "@Game/types.ts";
+import { type Blueprint, Class, Keyword, Rarity, Type } from "@Game/types.ts";
 
 export const blueprint: Blueprint = {
 	name: "Unbreakable Test",
@@ -34,7 +27,7 @@ export const blueprint: Blueprint = {
 		assert.equal(self.health, 4);
 		await owner.setWeapon(self);
 
-		await game.attack(owner, owner.getOpponent(), [GameAttackFlags.Force]);
+		await game.attack(owner, owner.getOpponent(), { force: true });
 		assert.equal(self.health, 4);
 	},
 };

@@ -10,7 +10,6 @@ import {
 	Class,
 	Rarity,
 	SpellSchool,
-	TargetAlignment,
 	Type,
 } from "@Game/types.ts";
 
@@ -32,7 +31,7 @@ export const blueprint: Blueprint = {
 		const card = await game.functions.interact.prompt.targetCard(
 			self.text,
 			self,
-			TargetAlignment.Enemy,
+			{ alignment: "enemy" },
 		);
 		if (!card) {
 			return Card.REFUND;

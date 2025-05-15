@@ -9,8 +9,6 @@ import {
 	EventListenerMessage,
 	Rarity,
 	SpellSchool,
-	TargetAlignment,
-	TargetClass,
 	Type,
 } from "@Game/types.ts";
 
@@ -65,13 +63,12 @@ export const blueprint: Blueprint = {
 			Event.TargetSelectionStarts,
 			async (value) => {
 				// Don't check for `prompt` since there is no correct prompt
-				const [prompt, card, forceSide, forceClass, flags] = value;
+				const [prompt, card, flags] = value;
 
 				correctParameters =
 					card === self &&
-					forceSide === TargetAlignment.Any &&
-					forceClass === TargetClass.Card &&
-					flags.length === 0;
+					flags.alignment === undefined &&
+					flags.class === "card";
 
 				// The `TargetSelectionStarts` event fired. This means that the card has a chance of being cancelled.
 				potentiallyCancelled = true;

@@ -5,9 +5,7 @@ import type {
 	GameAttackFlags,
 	Location,
 	Target,
-	TargetAlignment,
-	TargetClass,
-	TargetFlag,
+	TargetFlags,
 } from "@Game/types.ts";
 
 /**
@@ -263,7 +261,7 @@ export type EventValue<Key extends Event> =
 																													? [
 																															Target,
 																															Target,
-																															GameAttackFlags[],
+																															GameAttackFlags,
 																														]
 																													: /**
 																														 * The hero power card
@@ -286,7 +284,7 @@ export type EventValue<Key extends Event> =
 																																	Key extends Event.Input
 																																	? string
 																																	: /**
-																																		 * The prompt, the card that requested target selection, the alignment that the target should be, the class of the target (hero | card), and the flags (if any).
+																																		 * The prompt, the card that requested target selection, and the flags.
 																																		 */
 																																		Key extends Event.TargetSelectionStarts
 																																		? [
@@ -295,9 +293,7 @@ export type EventValue<Key extends Event> =
 																																					| Card
 																																					| undefined
 																																				),
-																																				TargetAlignment,
-																																				TargetClass,
-																																				TargetFlag[],
+																																				TargetFlags,
 																																			]
 																																		: /**
 																																			 * The card that requested target selection, and the target

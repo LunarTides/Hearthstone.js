@@ -5,8 +5,7 @@ import {
 	type CommandList,
 	Event,
 	Keyword,
-	TargetAlignment,
-	type TargetFlag,
+	type TargetFlags,
 	Type,
 	UseLocationError,
 } from "@Game/types.ts";
@@ -144,7 +143,7 @@ export const commands: CommandList = {
 		const card = await game.functions.interact.prompt.targetCard(
 			"Which card do you want to use?",
 			undefined,
-			TargetAlignment.Friendly,
+			{ alignment: "friendly" },
 		);
 
 		if (!card) {
@@ -547,7 +546,7 @@ export const commands: CommandList = {
 							| number
 							| Player
 							| Card
-							| TargetFlag[]
+							| TargetFlags
 							| undefined;
 
 						strbuilder += `${v?.toString()}, `;

@@ -5,7 +5,6 @@ import {
 	Ability,
 	type Blueprint,
 	Class,
-	GameAttackFlags,
 	Rarity,
 	SpellSchool,
 	Type,
@@ -35,8 +34,8 @@ export const blueprint: Blueprint = {
 	async cast(owner, self) {
 		// Deal $3 damage to the enemy hero.
 
-		// Add the `SpellDamage` flag to the attack in order to deal spell damage correctly.
-		await game.attack(3, owner.getOpponent(), [GameAttackFlags.SpellDamage]);
+		// Set the `spellDamage` flag to the attack in order to deal spell damage correctly.
+		await game.attack(3, owner.getOpponent(), { spellDamage: true });
 	},
 
 	async test(owner, self) {

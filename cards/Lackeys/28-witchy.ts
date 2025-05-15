@@ -9,7 +9,6 @@ import {
 	Class,
 	MinionTribe,
 	Rarity,
-	TargetAlignment,
 	Type,
 } from "@Game/types.ts";
 
@@ -35,7 +34,7 @@ export const blueprint: Blueprint = {
 		const target = await game.functions.interact.prompt.targetCard(
 			"Transform a friendly minion into one that costs (1) more.",
 			self,
-			TargetAlignment.Friendly,
+			{ alignment: "friendly" },
 		);
 
 		// If no target was selected, refund

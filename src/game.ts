@@ -10,7 +10,7 @@ import {
 	CardTag,
 	Event,
 	type EventValue,
-	GameAttackFlags,
+	type GameAttackFlags,
 	GameAttackReturn,
 	type GameConfig,
 	GamePlayCardReturn,
@@ -18,7 +18,6 @@ import {
 	Location,
 	MinionTribe,
 	type Target,
-	TargetAlignment,
 	Type,
 } from "@Game/types.ts";
 import date from "date-and-time";
@@ -31,19 +30,19 @@ const attack = {
 	 *
 	 * @param attacker attacker | Amount of damage to deal
 	 * @param target The target
-	 * @param flags Some flags to modify the behaviour of the attack
+	 * @param flags An object with boolean properties to modify the behavior of the attack (e.g., { force: true })
 	 *
 	 * @returns Success | Errorcode
 	 */
 	async attack(
 		attacker: Target | number,
 		target: Target,
-		flags: GameAttackFlags[] = [],
+		flags: GameAttackFlags = {},
 	): Promise<GameAttackReturn> {
 		let returnValue: GameAttackReturn;
 
 		// Target is the same as the attacker
-		if (!flags.includes(GameAttackFlags.Force) && attacker === target) {
+		if (!flags.force && attacker === target) {
 			return GameAttackReturn.Invalid;
 		}
 
@@ -57,7 +56,7 @@ const attack = {
 			target instanceof Player ? target : target.owner
 		).board.filter((m) => m.hasKeyword(Keyword.Taunt));
 
-		if (taunts.length > 0 && !flags.includes(GameAttackFlags.Force)) {
+		if (taunts.length > 0 && !flags.force) {
 			// If the target is a card and has taunt, you are allowed to attack it
 			if (target instanceof Card && target.hasKeyword(Keyword.Taunt)) {
 				// Allow the attack since the target also has taunt
@@ -84,9 +83,9 @@ const attack = {
 	async _attackerIsNum(
 		attacker: number,
 		target: Target,
-		flags: GameAttackFlags[],
+		flags: GameAttackFlags = {},
 	): Promise<GameAttackReturn> {
-		if (!flags.includes(GameAttackFlags.Force)) {
+		if (!flags.force) {
 			if (target instanceof Player && target.immune) {
 				return GameAttackReturn.Immune;
 			}
@@ -138,9 +137,9 @@ const attack = {
 	async _attackerIsPlayer(
 		attacker: Player,
 		target: Target,
-		flags: GameAttackFlags[],
+		flags: GameAttackFlags = {},
 	): Promise<GameAttackReturn> {
-		if (!flags.includes(GameAttackFlags.Force)) {
+		if (!flags.force) {
 			if (attacker.frozen) {
 				return GameAttackReturn.Frozen;
 			}
@@ -180,9 +179,9 @@ const attack = {
 	async _attackerIsPlayerAndTargetIsPlayer(
 		attacker: Player,
 		target: Player,
-		flags: GameAttackFlags[],
+		flags: GameAttackFlags = {},
 	): Promise<GameAttackReturn> {
-		if (!flags.includes(GameAttackFlags.Force)) {
+		if (!flags.force) {
 			if (target.immune) {
 				return GameAttackReturn.Immune;
 			}
@@ -210,10 +209,10 @@ const attack = {
 	async _attackerIsPlayerAndTargetIsCard(
 		attacker: Player,
 		target: Card,
-		flags: GameAttackFlags[],
+		flags: GameAttackFlags = {},
 	): Promise<GameAttackReturn> {
 		// If the target has stealth, the attacker can't attack it
-		if (!flags.includes(GameAttackFlags.Force)) {
+		if (!flags.force) {
 			if (target.hasKeyword(Keyword.Stealth)) {
 				return GameAttackReturn.Stealth;
 			}
@@ -251,9 +250,9 @@ const attack = {
 	async _attackerIsCard(
 		attacker: Card,
 		target: Target,
-		flags: GameAttackFlags[],
+		flags: GameAttackFlags = {},
 	): Promise<GameAttackReturn> {
-		if (!flags.includes(GameAttackFlags.Force)) {
+		if (!flags.force) {
 			if (attacker.hasKeyword(Keyword.Dormant)) {
 				return GameAttackReturn.Dormant;
 			}
@@ -309,9 +308,9 @@ const attack = {
 	async _attackerIsCardAndTargetIsPlayer(
 		attacker: Card,
 		target: Player,
-		flags: GameAttackFlags[],
+		flags: GameAttackFlags = {},
 	): Promise<GameAttackReturn> {
-		if (!flags.includes(GameAttackFlags.Force)) {
+		if (!flags.force) {
 			if (target.immune) {
 				return GameAttackReturn.Immune;
 			}
@@ -349,9 +348,9 @@ const attack = {
 	async _attackerIsCardAndTargetIsCard(
 		attacker: Card,
 		target: Card,
-		flags: GameAttackFlags[],
+		flags: GameAttackFlags = {},
 	): Promise<GameAttackReturn> {
-		if (!flags.includes(GameAttackFlags.Force)) {
+		if (!flags.force) {
 			if (target.hasKeyword(Keyword.Stealth)) {
 				return GameAttackReturn.Stealth;
 			}
@@ -390,7 +389,7 @@ const attack = {
 	async _attackerIsCardAndTargetIsCardDoAttacker(
 		attacker: Card,
 		target: Card,
-		flags: GameAttackFlags[],
+		flags: GameAttackFlags = {},
 	): Promise<GameAttackReturn> {
 		// Cleave
 		await attack._cleave(attacker, target);
@@ -416,7 +415,7 @@ const attack = {
 	async _attackerIsCardAndTargetIsCardDoTarget(
 		attacker: Card,
 		target: Card,
-		flags: GameAttackFlags[],
+		flags: GameAttackFlags = {},
 	): Promise<GameAttackReturn> {
 		const shouldDamage = attack._cardAttackHelper(target);
 		if (!shouldDamage) {
@@ -509,9 +508,9 @@ const attack = {
 	async _spellDamage(
 		attacker: number,
 		target: Target,
-		flags: GameAttackFlags[],
+		flags: GameAttackFlags = {},
 	): Promise<number> {
-		if (!flags.includes(GameAttackFlags.SpellDamage)) {
+		if (!flags.spellDamage) {
 			return attacker;
 		}
 
@@ -556,7 +555,10 @@ const attack = {
 		}
 	},
 
-	async _forgetful(attacker: Card, flags: GameAttackFlags[]): Promise<boolean> {
+	async _forgetful(
+		attacker: Card,
+		flags: GameAttackFlags = {},
+	): Promise<boolean> {
 		if (!attacker.hasKeyword(Keyword.Forgetful)) {
 			return false;
 		}
@@ -1022,7 +1024,7 @@ const playCard = {
 		const mech = await game.functions.interact.prompt.targetCard(
 			"Which minion do you want this card to Magnetize to:",
 			undefined,
-			TargetAlignment.Friendly,
+			{ alignment: "friendly" },
 		);
 
 		if (!mech) {

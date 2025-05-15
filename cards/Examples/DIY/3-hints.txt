@@ -154,8 +154,6 @@ Make sure to set the `target` to the return value.
 Criterias to solve the card are the following:
 1. You NEED to use `prompt.target` or `prompt.targetCard`.
 2. When using `prompt.target`, you need to set the following parameters:
-    a. `card` = self               // The caller is the diy card (`self`)
-    b. `forceSide` = null          // Don't force a side. The description says: Choose a minion. Not: Choose a FRIENDLY minion, or Choose an ENEMY minion.
-    c. `forceClass` = "minion"     // If using `prompt.target`. This Only allow minions to be targetted, the user isn't allowed to target the enemy hero, for example.
-    d. Don't set `flags`           // No special flags
+    a. `card` = self                // The caller is the diy card (`self`)
+    b. Set `class` flag to "minion" // Don't force a side. The description says: Choose a minion. Not: Choose a FRIENDLY minion, or Choose an ENEMY minion.
 3. You need to have set the `target` variable, and it needs to be killed (no health and in the graveyard).
