@@ -745,24 +745,24 @@ async function help(): Promise<void> {
 	const columns = [
 		"(name) (required) [optional] - (description)\n",
 
-		"add (name | id) - Add a card to the deck",
-		"remove (card | id) - Remove a card from the deck",
-		"view (card | id) - View a card",
-		"page (num) - Switch to a different page",
-		"cards (class) - Show cards from 'class'",
-		"sort (type) [order] - Sorts by 'type' in 'order'ending order. (Type can be: ('rarity', 'name', 'cost', 'id', 'type'), Order can be: ('asc', 'desc')) (Example: sort cost asc - Will show cards ordered by cost cost, ascending)",
+		"add (name | id) - Add a card to the deck.",
+		"remove (card | id) - Remove a card from the deck.",
+		"view (card | id) - View a card.",
+		"page (num) - Switch to a different page.",
+		"cards (class) - Show cards from 'class'.",
+		"sort (type) [order] - Sort by 'type' in 'order'ending order. (Type can be: ('rarity', 'name', 'cost', 'id', 'type'), Order can be: ('asc', 'desc')) (Example: sort cost asc - Will show cards ordered by cost cost, ascending)",
 		"search [query] - Search by query. Keys: ('name', 'text', 'cost', 'rarity', 'id'), Examples: (search the - Search for all cards with the word 'the' in the name or description, case insensitive.), (search cost:2 - Search for all cards that costs 2 cost, search cost:even name:r - Search for all even cost cards with 'r' in its name)",
-		"undo - Undo the last action",
-		"deck - Toggle deck-view",
-		"deckcode - View the current deckcode",
-		"import (deckcode) - Import a deckcode (Overrides your deck)",
-		"set (setting) (value) - Change a setting. Look down to 'Set Subcommands' to see available settings",
-		"warning (name) [off | on] - Change a warning. Look down to 'Warnings' to see available warnings",
-		"class - Change the class",
-		"eval - Run some code. Be careful with this, it can be used to break the program",
-		"config | rules - Show the rules for valid decks and invalid decks",
-		"help - Displays this message",
-		"exit - Quits the program",
+		"undo - Undo the last action.",
+		"deck - Toggle deck-view.",
+		"deckcode - View the current deckcode.",
+		"import (deckcode) - Import a deckcode. (Overrides your deck)",
+		"set (setting) (value) - Change a setting. Look down to 'Set Subcommands' to see available settings.",
+		"warning (name) [off | on] - Change a warning. Look down to 'Warnings' to see available warnings.",
+		"class - Change the class.",
+		"eval - Run some code. Be careful with copying code from the internet since it could be malicious.",
+		"config | rules - Show the rules for valid decks and invalid decks.",
+		"help - Show this message.",
+		"exit - Quits the program.",
 	];
 
 	const alignedColumns = game.functions.util.alignColumns(columns, "-");
@@ -957,8 +957,6 @@ let running = true;
  */
 export async function main(): Promise<void> {
 	running = true;
-	await Card.registerAll();
-
 	chosenClass = await askClass();
 
 	while (running) {

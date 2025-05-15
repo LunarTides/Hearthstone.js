@@ -19,17 +19,17 @@ import { resumeTagParsing, stopTagParsing } from "chalk-tags";
 const helpColumns = [
 	"(name) - (description)\n",
 
-	"end - End your turn",
-	"attack - Attack a target",
-	"hero power - Use your hero power",
-	"history - Show a list of actions that have happened",
-	"concede - Forfeit the game",
-	"use - Use a location card",
-	"titan - Use a titan card",
-	"detail - Get more details about the game",
-	"help - Show this message",
-	"version - Show information about the version, branch, and settings of this game",
-	"license - Open a link to this project's license",
+	"end - End your turn.",
+	"attack - Attack a target.",
+	"hero power - Use your hero power.",
+	"concede - Forfeit the game.",
+	"use - Use a location card.",
+	"titan - Use a titan card.",
+	"history - Show a list of things that have happened this game.",
+	"detail - Toggle showing more details about the game.",
+	"version - Show information about the version, branch, and settings of the game.",
+	"help - Show this message.",
+	"license - Open a link to this project's license.",
 ];
 
 /*
@@ -39,14 +39,14 @@ const helpColumns = [
 const helpDebugColumns = [
 	"(name) (required) [optional] - (description)\n",
 
-	"give (name | id) - Add a card to your hand",
-	"eval [log] (code) - Run some code",
-	"exit - Force exit the game. There will be no winner, and it will take you straight back to the hub",
-	"history - Show a list of actions that have happened. Unlike the normal history command, this doesn't hide any information, and is the same thing the log files uses",
-	"rl - Reload the cards, config, and translation files",
-	"frl - Do the same thing as 'rl', but doesn't wait for you to press enter before continuing",
+	"give (name | id) - Add a card to your hand.",
+	"eval [log] (code) - Run some code. Be careful with copying code from the internet since it could be malicious.",
+	"exit - Force exit the game. There will be no winner, and it will take you straight back to the hub.",
+	"history - Show a list of things that have happened this game. Unlike the normal history command, this doesn't hide any information, and is the same thing the log files uses.",
+	"rl - Reload the cards, config, and translation files.",
+	"frl - Reload the cards, config, and translation files. Don't wait for user input before continuing.",
 	"undo - Undo the last card played. It gives the card back to your hand, and removes it from where it was. (This does not undo the actions of the card)",
-	"ai - Give you a list of the actions the ai(s) have taken in the order they took it",
+	"ai - Show a list of the actions the ai(s) have taken this game.",
 ];
 
 export const commands: CommandList = {
@@ -643,23 +643,21 @@ export const debugCommands: CommandList = {
 		success &&= await game.functions.interact.withStatus(
 			"Applying changes to existing cards",
 			async () => {
-				// Hand and decks of the players
-				for (const player of [game.player1, game.player2]) {
-					for (const card of player.hand) {
-						await card.reload();
+				const uuids: string[] = [];
+
+				for (const card of game.activeCards) {
+					/*
+					 * For some reason, without this, the game gets stuck on the `Frozen Test` card (id: 74).
+					 * It just loops over and over again on the same card with the same uuid,
+					 * even if it reports that there are only 2 `Frozen Test` cards in `activeCards`.
+					 * Very vexing...
+					 */
+					if (uuids.includes(card.uuid)) {
+						continue;
 					}
 
-					for (const card of player.deck) {
-						await card.reload();
-					}
-
-					for (const card of player.board) {
-						await card.reload();
-					}
-
-					for (const card of player.graveyard) {
-						await card.reload();
-					}
+					uuids.push(card.uuid);
+					await card.reload();
 				}
 
 				return true;

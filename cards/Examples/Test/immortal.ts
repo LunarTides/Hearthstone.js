@@ -31,9 +31,9 @@ export const blueprint: Blueprint = {
 
 		/*
 		 * The key is the reason for removing the card.
-		 * It can currently only be "KillCard" or "SilenceCard"
+		 * It can currently only be "DestroyCard" or "SilenceCard"
 		 */
-		if (key === "KillCard") {
+		if (key === "DestroyCard") {
 			return false;
 		}
 
@@ -47,7 +47,7 @@ export const blueprint: Blueprint = {
 	async test(owner, self) {
 		// Summon this minion
 		await owner.summon(self);
-		await self.kill();
+		await self.destroy();
 
 		assert(owner.board.includes(self));
 	},

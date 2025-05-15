@@ -12,7 +12,7 @@ const API_URL = "https://api.hearthstonejson.com/v1/latest/enUS/cards.json";
 
 const filterAwayUseless = process.argv[2] !== "--no-filter";
 
-const { game } = await createGame();
+const { game } = await createGame(false);
 
 // Function to fetch data from the API
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>

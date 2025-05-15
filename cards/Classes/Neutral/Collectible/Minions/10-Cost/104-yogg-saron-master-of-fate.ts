@@ -90,7 +90,7 @@ export const blueprint: Blueprint = {
 							continue;
 						}
 
-						await card.kill();
+						await card.destroy();
 						await self.addStats(card.attack, card.health);
 					}
 				}
@@ -163,8 +163,6 @@ export const blueprint: Blueprint = {
 
 				break;
 			}
-
-			// No default
 		}
 
 		await game.event.broadcast(Event.CardEvent, [self, choice], owner);

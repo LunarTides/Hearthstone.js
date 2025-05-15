@@ -205,7 +205,7 @@ export class Player {
 	 * # Examples
 	 * ```
 	 * // Use `player.destroyWeapon()` instead in a real situation.
-	 * player.weapon.kill();
+	 * player.weapon.destroy();
 	 * ```
 	 */
 	weapon?: Card;
@@ -283,7 +283,7 @@ export class Player {
 	 * # Example
 	 * ```
 	 * player.forceTarget = target;
-	 * const chosen = await game.functions.interact.prompt.promptTarget("Example", null, "any", "any");
+	 * const chosen = await game.functions.interact.prompt.target("Example", null, "any", "any");
 	 * player.forceTarget = null;
 	 *
 	 * assert.equal(chosen, target);
@@ -698,7 +698,7 @@ export class Player {
 	}
 
 	/**
-	 * Draws `amount` cards from this player's deck.
+	 * Removes and returns the last `amount` cards from the deck.
 	 * Broadcasts the `DrawCard` event for each card drawn
 	 *
 	 * @param amount The amount of cards to draw
@@ -776,7 +776,7 @@ export class Player {
 	 * @returns The card drawn
 	 */
 	async drawSpecific(card: Card): Promise<Card | undefined> {
-		if (this.deck.length <= 0) {
+		if (this.deck.length <= 0 || !this.deck.includes(card)) {
 			return undefined;
 		}
 
@@ -849,7 +849,14 @@ export class Player {
 	 * @returns Success
 	 */
 	setHero(hero: Card, setHeroClass = true): boolean {
+		if (this.hero) {
+			// Set the previous hero's location to None.
+			this.hero.setLocation(Location.None);
+		}
+
 		this.hero = hero;
+		this.hero.setLocation(Location.Hero);
+
 		if (setHeroClass) {
 			this.heroClass = hero.classes[0];
 		}
@@ -866,26 +873,16 @@ export class Player {
 	 * @returns Success
 	 */
 	async setToStartingHero(heroClass = this.heroClass): Promise<boolean> {
-		const heroCardId = (
-			await Promise.all(
-				(
-					await Card.allWithTags([CardTag.StartingHero])
-				).map(async (hero) => {
-					const unsuppress = game.event.suppress(Event.CreateCard);
-					const card = await hero.imperfectCopy();
-					unsuppress();
+		const hero = (await Card.allWithTags([CardTag.StartingHero])).find((card) =>
+			card.classes.includes(heroClass),
+		);
 
-					return card;
-				}),
-			)
-		).find((card) => card.classes.includes(heroClass))?.id;
-
-		if (!heroCardId) {
+		if (!hero) {
 			return false;
 		}
 
-		this.setHero(await Card.create(heroCardId, this), false);
-
+		hero.owner = this;
+		this.setHero(await hero.imperfectCopy(), false);
 		return true;
 	}
 
@@ -1129,7 +1126,6 @@ export class Player {
 		}
 
 		callback(this);
-
 		return true;
 	}
 
@@ -1218,6 +1214,7 @@ export class Player {
 				(quests.length >= 3 || quests.some((s) => s.name === card.name)))
 		) {
 			await this.addToHand(card);
+			this[card.costType] += card.cost;
 			return false;
 		}
 

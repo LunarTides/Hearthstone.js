@@ -45,7 +45,7 @@ export const blueprint: Blueprint = {
 		);
 
 		if (!success) {
-			await self.kill();
+			await self.destroy();
 		}
 
 		return true;

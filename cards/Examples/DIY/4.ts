@@ -29,7 +29,7 @@ export const blueprint: Blueprint = {
 		// Whenever a minion dies, Resurrect it with 1/1 stats.
 
 		// If the key is for a different event, stop the function.
-		if (!game.event.is(key, value, Event.KillCard)) {
+		if (!game.event.is(key, value, Event.DestroyCard)) {
 			return;
 		}
 
@@ -72,7 +72,7 @@ export const blueprint: Blueprint = {
 		await game.functions.card.verifyDiySolution(solved, self);
 
 		if (!solved) {
-			await self.kill();
+			await self.destroy();
 		}
 
 		self.storage.solved = true;

@@ -38,8 +38,8 @@ export const blueprint: Blueprint = {
 			return;
 		}
 
-		// Kill this minion
-		await self.kill();
+		// Destroy this minion
+		await self.destroy();
 	},
 
 	async test(owner, self) {

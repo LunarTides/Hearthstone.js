@@ -151,8 +151,6 @@ async function devmode() {
 					game.interest("Starting Class Creator...OK");
 					break;
 				}
-
-				// No default
 			}
 		},
 	);
@@ -192,8 +190,6 @@ await userInputLoop(
 				game.interest("Loading Developer Mode options...OK");
 				break;
 			}
-
-			// No default
 		}
 	},
 );

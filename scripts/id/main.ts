@@ -7,7 +7,7 @@ try {
 	console.error(
 		"<yellow>WARNING: You have uncommitted changes. Please commit them before running a non-safe command.</yellow>",
 	);
-	// Process.exit(1);
+	// process.exit(1);
 } catch {
 	// Do nothing
 }
@@ -53,7 +53,7 @@ while (running) {
 	let startId: number;
 
 	switch (func) {
-		case "i": {
+		case Commands.Increment: {
 			startId = Number(await game.input("What id to start at: "));
 			if (!startId) {
 				await game.pause("<red>Invalid start id.</red>\n");
@@ -64,7 +64,7 @@ while (running) {
 			break;
 		}
 
-		case "d": {
+		case Commands.Decrement: {
 			startId = Number(await game.input("What id to start at: "));
 			if (!startId) {
 				await game.pause("<red>Invalid start id.</red>\n");
@@ -75,12 +75,12 @@ while (running) {
 			break;
 		}
 
-		case "v": {
+		case Commands.Validate: {
 			await lib.validate(true);
 			break;
 		}
 
-		case "q": {
+		case Commands.Quit: {
 			running = false;
 			break;
 		}

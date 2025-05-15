@@ -770,7 +770,6 @@ export class Card {
 		}
 
 		this.sleepy = false;
-
 		return true;
 	}
 
@@ -848,7 +847,7 @@ export class Card {
 	 * Adds `amount` to the card's health
 	 *
 	 * @param amount The health to add
-	 * @param restore Should reset health to it's max health if it goes over it's max health
+	 * @param restore If it should prevent the health from going over the max health. Defaults to true.
 	 *
 	 * @returns Success
 	 */
@@ -1089,18 +1088,20 @@ export class Card {
 	async bounce(player: Player = this.owner): Promise<boolean> {
 		this.owner = player;
 		await player.addToHand(this.perfectCopy());
-		await this.destroy();
+		await this.removeFromPlay();
 		return true;
 	}
 
 	// Doom buttons
 
 	/**
-	 * Kills the card.
+	 * Destroys the card.
+	 *
+	 * This sets the card's health to 0, then forces the game to remove dead cards from the board.
 	 *
 	 * @returns Success
 	 */
-	async kill(): Promise<boolean> {
+	async destroy(): Promise<boolean> {
 		await this.setStats(this.attack, 0);
 		await game.killCardsOnBoard();
 		return true;
@@ -1173,11 +1174,15 @@ export class Card {
 	}
 
 	/**
-	 * Silences, then kills the card.
+	 * Removes the card from play.
+	 *
+	 * This will silence the card and destroy it.
 	 */
-	async destroy(): Promise<void> {
+	async removeFromPlay(): Promise<void> {
 		await this.silence();
-		await this.kill();
+		await this.destroy();
+
+		await this.setLocation(Location.None);
 	}
 
 	/**
@@ -1300,6 +1305,7 @@ export class Card {
 		const returnValue = game.functions.util.remove(player.hand, this);
 
 		if (returnValue) {
+			this.setLocation(Location.None);
 			await game.event.broadcast(Event.DiscardCard, this, player);
 		}
 
@@ -1564,69 +1570,77 @@ export class Card {
 	async replacePlaceholders(overrideText = "", _depth = 0): Promise<string> {
 		let text = overrideText || this.text;
 
-		if (!this.abilities.placeholders && !/\$(\d+)/.test(this.text || "")) {
+		const spellDamage = /\$(\d+)/.test(text);
+		if (!spellDamage && !this.abilities.placeholders) {
 			return text;
 		}
 
 		const temporaryPlaceholders = await this.trigger(Ability.Placeholders);
-		if (!Array.isArray(temporaryPlaceholders)) {
+		if (!spellDamage && !Array.isArray(temporaryPlaceholders)) {
 			return text;
 		}
 
-		const placeholders = temporaryPlaceholders[0] as Record<string, string>;
-		if (!(placeholders instanceof Object)) {
-			throw new Error("Invalid placeholders");
-		}
+		if (Array.isArray(temporaryPlaceholders)) {
+			const placeholders = temporaryPlaceholders[0] as Record<
+				string,
+				string | Card | undefined
+			>;
 
-		let reg = /{(.*?)}/;
-
-		let running = true;
-		while (running) {
-			const regedDesc = reg.exec(text);
-
-			// There is nothing more to extract
-			if (!regedDesc) {
-				running = false;
-				break;
+			if (!(placeholders instanceof Object)) {
+				console.log(this.name);
+				throw new Error("Invalid placeholders");
 			}
 
-			// Get the capturing group result
-			const key = regedDesc[1];
+			const reg = /{(.*?)}/;
 
-			let replacement = placeholders[key] as string | Card | undefined;
-			if (replacement === undefined) {
-				/*
-				 * Replace the key with something else to ignore it.
-				 * This will prevent infinite recursion.
-				 * Later on, if we replace `__hsjs__ignore:` with `{`,
-				 * it will restore the original text.
-				 */
-				text = text.replace(reg, `__hsjs__ignore:${key}}`);
-				continue;
+			let running = true;
+			while (running) {
+				const regedDesc = reg.exec(text);
+
+				// There is nothing more to extract
+				if (!regedDesc) {
+					running = false;
+					break;
+				}
+
+				// Get the capturing group result
+				const key = regedDesc[1];
+
+				let replacement = placeholders[key];
+				if (replacement === undefined) {
+					/*
+					 * Replace the key with something else to ignore it.
+					 * This will prevent infinite recursion.
+					 * Later on, if we replace `__hsjs__ignore:` with `{`,
+					 * it will restore the original text.
+					 */
+					text = text.replace(reg, `__hsjs__ignore:${key}}`);
+					continue;
+				}
+
+				if (replacement instanceof Card) {
+					// The replacement is a card
+					const onlyShowName =
+						game.config.advanced.getReadableCardNoRecursion ||
+						!game.player.detailedView;
+
+					const alwaysShowFullCard =
+						game.config.advanced.getReadableCardAlwaysShowFullCard;
+
+					replacement =
+						onlyShowName && !alwaysShowFullCard
+							? replacement.colorFromRarity()
+							: await replacement.readable(-1, _depth + 1);
+				}
+
+				text = parseTags(text.replace(reg, replacement));
 			}
-
-			if (replacement instanceof Card) {
-				// The replacement is a card
-				const onlyShowName =
-					game.config.advanced.getReadableCardNoRecursion ||
-					!game.player.detailedView;
-
-				const alwaysShowFullCard =
-					game.config.advanced.getReadableCardAlwaysShowFullCard;
-
-				replacement =
-					onlyShowName && !alwaysShowFullCard
-						? replacement.colorFromRarity()
-						: await replacement.readable(-1, _depth + 1);
-			}
-
-			text = parseTags(text.replace(reg, replacement));
 		}
 
 		// Replace spell damage placeholders
-		reg = /\$(\d+)/;
+		const reg = /\$(\d+)/;
 
-		running = true;
+		let running = true;
 		while (running) {
 			const regedDesc = reg.exec(text);
 			if (!regedDesc) {
@@ -1662,6 +1676,7 @@ export class Card {
 		clone.sleepy = true;
 		clone.turn = game.turn;
 
+		game.activeCards.push(clone);
 		return clone;
 	}
 

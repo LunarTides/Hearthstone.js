@@ -28,7 +28,7 @@ export const blueprint: Blueprint = {
 		// Destroy all minions and summon 2/2 Treants to replace them.
 		for (const player of [game.player1, game.player2]) {
 			for (const card of player.board) {
-				await card.kill();
+				await card.destroy();
 
 				const treant = await Card.create(game.cardIds.treant83, player);
 				await player.summon(treant);

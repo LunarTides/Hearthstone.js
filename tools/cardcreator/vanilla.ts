@@ -147,8 +147,6 @@ export async function create(
 		case Type.Undefined: {
 			break;
 		}
-
-		// No default
 	}
 
 	let cctype: lib.CCType = lib.CCType.Vanilla;

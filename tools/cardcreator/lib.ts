@@ -14,33 +14,25 @@ export enum CCType {
 /**
  * Returns the ability of a card based on its type.
  *
- * @param cardType The type of the card.
+ * @param blueprint The blueprint of the card
  * @returns The ability of the card.
  */
 function getCardAbility(blueprint: BlueprintWithOptional): string {
-	// Get the card's ability
-	let ability: string;
-
-	// If the card is a spell, the ability is 'cast'
 	switch (blueprint.type) {
 		case Type.Spell: {
-			ability = "Cast";
-			break;
+			return "Cast";
 		}
 
 		case Type.Hero: {
-			ability = "Battlecry";
-			break;
+			return "Battlecry";
 		}
 
 		case Type.Location: {
-			ability = "Use";
-			break;
+			return "Use";
 		}
 
 		case Type.HeroPower: {
-			ability = "Heropower";
-			break;
+			return "Heropower";
 		}
 
 		case Type.Minion:
@@ -51,32 +43,28 @@ function getCardAbility(blueprint: BlueprintWithOptional): string {
 
 			if (!blueprint.text) {
 				// If the card doesn't have a description, it doesn't get an ability.
-				ability = "";
-			} else if (foundAbility) {
-				// If it didn't find an ability, but the card has text in it's description, the ability is 'passive'
-				ability = foundAbility[1];
-			} else {
-				// If it found an ability, and the card has a description, the ability is the ability it found in the description.
-				ability = "Passive";
+				return "";
 			}
 
-			break;
+			if (foundAbility) {
+				// If it found an ability, and the card has a description, the ability is the ability it found in the description.
+				return foundAbility[1];
+			}
+
+			// If it didn't find an ability, but the card has text in it's description, the ability is 'passive'
+			return "Passive";
 		}
 
 		case Type.Undefined: {
 			throw new Error("undefined type");
 		}
-
-		// No default
 	}
-
-	return ability;
 }
 
 /**
  * Generates a path for a card based on its classes and type.
  *
- * @param args [The classes of the card, The type of the card]
+ * @param blueprint The blueprint of the card
  * @returns The generated card path
  */
 function generateCardPath(blueprint: BlueprintWithOptional): string {
@@ -135,7 +123,6 @@ export async function getLatestId(): Promise<number> {
  * Generates a new card based on the provided arguments and saves it to a file.
  *
  * @param creatorType The type of card creator.
- * @param cardType The type of card.
  * @param blueprint The blueprint for the card.
  * @param overridePath The override path for the card.
  * @param overrideFilename The override filename for the card.

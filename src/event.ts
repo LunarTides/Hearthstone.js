@@ -8,6 +8,7 @@ import {
 	type EventManagerEvents,
 	type EventValue,
 	type HistoryKey,
+	type QuestObject,
 	QuestType,
 	type TickHookCallback,
 	Type,
@@ -83,7 +84,7 @@ export const eventManager = {
 		 */
 
 		// Infuse
-		if (key === Event.KillCard) {
+		if (key === Event.DestroyCard) {
 			for (const card of player.hand) {
 				await card.tryInfuse();
 			}
@@ -93,6 +94,12 @@ export const eventManager = {
 			const player = Player.fromID(i);
 
 			for (const card of player.hand) {
+				if (!card.backups.init) {
+					throw new Error(
+						`Card is not initialized: ${card.name}. Use Card.create instead of new Card.`,
+					);
+				}
+
 				await card.condition();
 
 				// Just in case. Remove for small performance boost
@@ -192,12 +199,29 @@ export const eventManager = {
 			| "sidequests"
 			| "secrets";
 
+		const removeQuest = async (quest: QuestObject<Event>) => {
+			game.functions.util.remove(player[questsName], quest);
+
+			if (questsName === "secrets") {
+				await game.pause(`\nYou triggered the opponents's '${quest.name}'.\n`);
+			}
+
+			if (quest.next) {
+				const nextQuest = await Card.create(quest.next, player);
+				await nextQuest.trigger(Ability.Cast);
+			}
+		};
+
 		for (const quest of player[questsName]) {
 			if (quest.key !== key) {
 				continue;
 			}
 
 			const [current, max] = quest.progress;
+			if (current === max) {
+				await removeQuest(quest);
+				continue;
+			}
 
 			const done = current + 1 >= max;
 			const message = await quest.callback(value, done);
@@ -222,16 +246,7 @@ export const eventManager = {
 			}
 
 			// The quest/secret is done
-			player[questsName].splice(player[questsName].indexOf(quest), 1);
-
-			if (questsName === "secrets") {
-				await game.pause(`\nYou triggered the opponents's '${quest.name}'.\n`);
-			}
-
-			if (quest.next) {
-				const nextQuest = await Card.create(quest.next, player);
-				await nextQuest.trigger(Ability.Cast);
-			}
+			await removeQuest(quest);
 		}
 
 		return true;

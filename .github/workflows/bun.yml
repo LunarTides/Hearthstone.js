@@ -8,8 +8,8 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
     - uses: actions/checkout@v3
@@ -34,3 +34,5 @@ jobs:
         bun ./scripts/crashtest.ts &&
         bun ./scripts/crashtest.ts &&
         bun ./scripts/crashtest.ts
+      # If it takes more than 10 minutes, it's probably stuck in an infinite loop.
+      timeout-minutes: 10
