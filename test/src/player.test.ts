@@ -30,7 +30,6 @@ describe("src/player", () => {
 
 	test("refreshMana", async () => {
 		const player = new Player();
-
 		expect(player.mana).toBe(0);
 
 		expect(player.refreshMana(10)).toBe(true);
@@ -173,7 +172,6 @@ describe("src/player", () => {
 
 	test("addArmor", async () => {
 		const player = new Player();
-
 		expect(player.armor).toBe(0);
 
 		expect(player.addArmor(1)).toBe(true);
@@ -203,10 +201,9 @@ describe("src/player", () => {
 
 	test("addHealth", async () => {
 		const player = new Player();
-
 		expect(player.health).toBe(player.maxHealth);
-		player.addHealth(1);
 
+		player.addHealth(1);
 		expect(player.health).toBe(player.maxHealth);
 
 		player.health = player.maxHealth - 10;
@@ -273,7 +270,6 @@ describe("src/player", () => {
 
 	test("addToDeck", async () => {
 		const player = new Player();
-
 		expect(player.deck.length).toBe(0);
 
 		const sheep = await Card.create(game.cardIds.sheep1, player);
@@ -299,15 +295,15 @@ describe("src/player", () => {
 
 	test("shuffleDeck", async () => {
 		const player = new Player();
-
 		expect(player.deck.length).toBe(0);
 
+		// Add 10 Sheep to the deck.
 		const sheep = await Card.create(game.cardIds.sheep1, player);
 		for (let i = 0; i < 10; i++) {
-			const sheep_copy = await sheep.imperfectCopy();
-			sheep_copy.name = i.toString();
+			const sheepCopy = await sheep.imperfectCopy();
+			sheepCopy.name = i.toString();
 
-			await player.addToDeck(sheep_copy);
+			await player.addToDeck(sheepCopy);
 		}
 
 		expect(player.deck.length).toBe(10);
@@ -320,27 +316,35 @@ describe("src/player", () => {
 
 	test("shuffleIntoDeck", async () => {
 		const player = new Player();
-
 		expect(player.deck.length).toBe(0);
 
+		// Add 10 Sheep to the deck.
 		const sheep = await Card.create(game.cardIds.sheep1, player);
 		for (let i = 0; i < 10; i++) {
-			const sheep_copy = await sheep.imperfectCopy();
-			sheep_copy.name = i.toString();
+			const sheepCopy = await sheep.imperfectCopy();
+			sheepCopy.name = i.toString();
 
-			await player.addToDeck(sheep_copy);
+			await player.addToDeck(sheepCopy);
 		}
 
 		expect(player.deck.length).toBe(10);
 		expect(await player.shuffleIntoDeck(sheep)).toBe(true);
 
+		// Make sure that the shuffling places the card somewhere in the middle.
+		let attempts = 0;
+		const maxAttempts = 10;
+
 		while (
-			player.deck.indexOf(sheep) <= 0 ||
-			player.deck.indexOf(sheep) >= player.deck.length
+			(player.deck.indexOf(sheep) <= 0 ||
+				player.deck.indexOf(sheep) >= player.deck.length) &&
+			attempts < maxAttempts
 		) {
+			attempts++;
 			game.functions.util.remove(player.deck, sheep);
 			expect(await player.shuffleIntoDeck(sheep)).toBe(true);
 		}
+
+		expect(attempts).toBeLessThanOrEqual(maxAttempts);
 
 		expect(player.deck.indexOf(sheep)).toBeGreaterThan(0);
 		expect(player.deck.indexOf(sheep)).toBeLessThan(player.deck.length);
@@ -362,14 +366,14 @@ describe("src/player", () => {
 
 	test("drawCards", async () => {
 		const player = new Player();
-
 		const sheep = await Card.create(game.cardIds.sheep1, player);
 
+		// Add 10 Sheep to the deck.
 		for (let i = 0; i < 10; i++) {
-			const sheep_copy = await sheep.imperfectCopy();
-			sheep_copy.name = i.toString();
+			const sheepCopy = await sheep.imperfectCopy();
+			sheepCopy.name = i.toString();
 
-			await player.addToDeck(sheep_copy);
+			await player.addToDeck(sheepCopy);
 		}
 
 		const toDraw = game.lodash.last(player.deck);
@@ -403,14 +407,14 @@ describe("src/player", () => {
 
 	test("drawSpecific", async () => {
 		const player = new Player();
-
 		const sheep = await Card.create(game.cardIds.sheep1, player);
 
+		// Add 10 Sheep to the deck.
 		for (let i = 0; i < 10; i++) {
-			const sheep_copy = await sheep.imperfectCopy();
-			sheep_copy.name = i.toString();
+			const sheepCopy = await sheep.imperfectCopy();
+			sheepCopy.name = i.toString();
 
-			await player.addToDeck(sheep_copy);
+			await player.addToDeck(sheepCopy);
 
 			if (i === 5) {
 				await player.addToDeck(sheep);
