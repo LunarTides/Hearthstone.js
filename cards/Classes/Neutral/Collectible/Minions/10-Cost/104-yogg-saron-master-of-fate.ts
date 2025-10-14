@@ -114,7 +114,7 @@ export const blueprint: Blueprint = {
 
 				game.event.addListener(Event.EndTurn, async () => {
 					for (const card of owner.hand) {
-						card.removeEnchantment("cost = 0", self);
+						await card.removeEnchantment("cost = 0", self);
 					}
 
 					return EventListenerMessage.Destroy;

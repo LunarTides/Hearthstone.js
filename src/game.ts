@@ -801,6 +801,12 @@ const playCard = {
 
 			return GamePlayCardReturn.Success;
 		},
+
+		async Enchantment(card: Card, player: Player): Promise<GamePlayCardReturn> {
+			// I don't *really* know how you would be able to play an enchantment, but ok.
+			// I can't really think if anything specific it should do, so...
+			return GamePlayCardReturn.Success;
+		},
 	},
 
 	async _trade(card: Card, player: Player): Promise<GamePlayCardReturn> {

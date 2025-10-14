@@ -1,10 +1,12 @@
 import { Card } from "@Game/card.ts";
 import {
+	Ability,
 	type Blueprint,
 	CardTag,
 	Class,
 	Event,
 	MinionTribe,
+	OtherAbility,
 	Type,
 	type VanillaCard,
 } from "@Game/types.ts";
@@ -266,13 +268,20 @@ export const cardFunctions = {
 	 */
 	validateBlueprint(blueprint: Blueprint): string | boolean {
 		// These are the required fields for all card types.
-		const requiredFieldsTable: { [x in Type]: (keyof Card)[] } = {
+		const requiredFieldsTable: {
+			[x in Type]: (keyof Blueprint)[];
+		} = {
 			[Type.Minion]: ["attack", "health", "tribes"],
 			[Type.Spell]: ["spellSchools"],
 			[Type.Weapon]: ["attack", "health"],
 			[Type.Hero]: ["armor", "heropowerId"],
 			[Type.Location]: ["durability", "cooldown"],
-			[Type.HeroPower]: ["heropower"],
+			[Type.HeroPower]: [Ability.HeroPower],
+			[Type.Enchantment]: [
+				"enchantmentPriority",
+				Ability.EnchantmentApply,
+				Ability.EnchantmentRemove,
+			],
 			[Type.Undefined]: [],
 		};
 

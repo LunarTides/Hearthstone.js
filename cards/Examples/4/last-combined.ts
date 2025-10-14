@@ -87,7 +87,7 @@ export const blueprint: Blueprint = {
 						 * You don't need to filter the hand since `removeEnchantment` only removes enchantments if they're there.
 						 */
 						for (const minion of owner.hand) {
-							minion.removeEnchantment("-1 cost", self);
+							await minion.removeEnchantment("-1 cost", self);
 						}
 
 						// Destroy this event listener so it doesn't run again.

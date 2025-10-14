@@ -58,7 +58,7 @@ export const blueprint: Blueprint = {
 
 		for (const card of owner.hand) {
 			// Only remove the "-1 cost" enchantment given by this card.
-			card.removeEnchantment("-1 cost", self);
+			await card.removeEnchantment("-1 cost", self);
 		}
 	},
 

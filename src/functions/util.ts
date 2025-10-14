@@ -544,6 +544,27 @@ ${mainContent}
 	},
 
 	/**
+	 * The same as `getRandomTarget` but uses relative terms (current & opposing) rather than absolute terms (player1 & player2).
+	 */
+	getRandomTargetRelative(
+		includeCurrentPlayer = true,
+		includeOpponent = true,
+		includeCurrentBoard = true,
+		includeOpponentBoard = true,
+	): Target | undefined {
+		return this.getRandomTarget(
+			(includeCurrentPlayer && game.player.id === 0) ||
+				(includeOpponent && game.opponent.id === 0),
+			(includeCurrentPlayer && game.player.id === 1) ||
+				(includeOpponent && game.opponent.id === 1),
+			(includeCurrentBoard && game.player.id === 0) ||
+				(includeOpponentBoard && game.opponent.id === 0),
+			(includeCurrentBoard && game.player.id === 1) ||
+				(includeOpponentBoard && game.opponent.id === 1),
+		);
+	},
+
+	/**
 	 * Parses the given arguments for the eval command and returns the code to evaluate
 	 */
 	async parseEvalArgs(args: string[]): Promise<string> {

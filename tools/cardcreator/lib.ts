@@ -35,6 +35,11 @@ function getCardAbility(blueprint: BlueprintWithOptional): string {
 			return "Heropower";
 		}
 
+		case Type.Enchantment: {
+			// TODO: Also add `EnchantmentRemove`.
+			return "EnchantmentApply";
+		}
+
 		case Type.Minion:
 		case Type.Weapon: {
 			// Try to extract an ability from the card's description
@@ -311,6 +316,9 @@ ${runes}${keywords}
 				case "spellSchool":
 					returnValue = `SpellSchool.${value}`;
 					break;
+				case "enchantmentPriority":
+					returnValue = `EnchantmentPriority.${value}`;
+					break;
 
 				default:
 					returnValue = stringify(value);
@@ -353,6 +361,9 @@ ${runes}${keywords}
 			break;
 		case Type.Spell:
 			typeImport += "SpellSchool,";
+			break;
+		case Type.Enchantment:
+			typeImport += "EnchantmentPriority,";
 			break;
 		case Type.Weapon:
 		case Type.Location:

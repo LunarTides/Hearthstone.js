@@ -2,6 +2,7 @@ import {
 	type Blueprint,
 	type BlueprintWithOptional,
 	Class,
+	EnchantmentPriority,
 	type Keyword,
 	MinionTribe,
 	Rarity,
@@ -62,6 +63,7 @@ function applyCard(_card: BlueprintWithOptional): Blueprint {
 			heropowerId: game.cardIds.null_0,
 			durability: 2,
 			cooldown: 2,
+			enchantmentPriority: EnchantmentPriority.Normal,
 		};
 
 		let valueUndefined = !value;
@@ -242,6 +244,19 @@ const cardTypeFunctions: {
 		const card = await common();
 
 		return applyCard(card);
+	},
+
+	async Enchantment(): Promise<Blueprint> {
+		const card = await common();
+
+		const enchantmentPriority = (await input(
+			"EnchantmentPriority (lowest | low | normal | high | highest): ",
+		)) as EnchantmentPriority;
+
+		return applyCard({
+			...card,
+			enchantmentPriority,
+		});
 	},
 
 	async Undefined(): Promise<Blueprint> {

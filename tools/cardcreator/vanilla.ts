@@ -143,6 +143,11 @@ export async function create(
 			break;
 		}
 
+		case Type.Enchantment: {
+			// TODO: Do something here.
+			break;
+		}
+
 		case Type.HeroPower:
 		case Type.Undefined: {
 			break;
