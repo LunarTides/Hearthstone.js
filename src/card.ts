@@ -1215,6 +1215,7 @@ export class Card {
 		this.keywords = {};
 
 		// Remove active enchantments.
+		this.activeEnchantments = [];
 		await this.applyEnchantments();
 
 		await game.event.broadcast(Event.SilenceCard, this, this.owner);
@@ -1435,10 +1436,16 @@ export class Card {
 		});
 
 		const callOnActiveEnchantments = async (
-			callback: (enchantment: Card) => Promise<unknown>,
+			callback: (
+				enchantment: Card,
+				applied: boolean,
+				i: number,
+			) => Promise<unknown>,
 		) => {
+			let i = 0;
 			for (const activeEnchantment of this.activeEnchantments) {
 				// const owner = activeEnchantment.owner;
+				const applied = activeEnchantment.applied;
 				const enchantment = activeEnchantment.enchantment;
 				const priority = enchantment.enchantmentPriority;
 				if (!priority) {
@@ -1447,22 +1454,25 @@ export class Card {
 					);
 				}
 
-				await callback(enchantment);
+				await callback(enchantment, applied, i);
+				i++;
 			}
 		};
 
 		// FIXME: No workie :(
 		// Remove ALL enchantment effects.
-		await callOnActiveEnchantments(
-			async (enchantment) =>
-				await enchantment._trigger(Ability.EnchantmentRemove, this),
-		);
+		await callOnActiveEnchantments(async (enchantment, applied, i) => {
+			if (applied) {
+				await enchantment._trigger(Ability.EnchantmentRemove, this);
+				this.activeEnchantments[i].applied = false;
+			}
+		});
 
 		// Re-add ALL enchantment effects.
-		await callOnActiveEnchantments(
-			async (enchantment) =>
-				await enchantment._trigger(Ability.EnchantmentApply, this),
-		);
+		await callOnActiveEnchantments(async (enchantment, _, i) => {
+			await enchantment._trigger(Ability.EnchantmentApply, this);
+			this.activeEnchantments[i].applied = true;
+		});
 
 		return true;
 	}
@@ -1486,6 +1496,7 @@ export class Card {
 		this.activeEnchantments.push({
 			enchantment: await enchantment.imperfectCopy(),
 			owner,
+			applied: false,
 		});
 		await this.applyEnchantments();
 		return true;

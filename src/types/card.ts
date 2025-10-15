@@ -40,6 +40,7 @@ export enum EnchantmentPriority {
 export type EnchantmentDefinition = {
 	enchantment: Card;
 	owner: Card;
+	applied: boolean;
 };
 
 /**

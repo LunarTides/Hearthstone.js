@@ -101,7 +101,7 @@ export const eventManager = {
 
 				await card.condition();
 
-				// Just in case. Remove for small performance boost
+				// Just in case. Remove for performance boost.
 				await card.applyEnchantments();
 
 				await card.trigger(Ability.HandTick, key, value, player);
