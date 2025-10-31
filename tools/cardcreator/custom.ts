@@ -204,7 +204,9 @@ const cardTypeFunctions: {
 		const armor =
 			game.lodash.parseInt(await input("Armor (Default: 5): ")) ?? 5;
 		const heropowerId = game.lodash.parseInt(
-			(await input("Hero Power ID (Leave blank to create a new one): ")) || "0",
+			(await input(
+				"Hero Power ID (Leave blank to create a new one): ",
+			)) || "0",
 		);
 
 		if (heropowerId === 0) {
@@ -249,9 +251,11 @@ const cardTypeFunctions: {
 	async Enchantment(): Promise<Blueprint> {
 		const card = await common();
 
-		const enchantmentPriority = (await input(
-			"EnchantmentPriority (lowest | low | normal | high | highest): ",
-		)) as EnchantmentPriority;
+		const enchantmentPriority = Number.parseInt(
+			await input(
+				"EnchantmentPriority (-2: lowest | -1: low | 0: normal | -1: high | -2: highest): ",
+			),
+		) as EnchantmentPriority;
 
 		return applyCard({
 			...card,
@@ -328,7 +332,13 @@ export async function main({
 		cctype = overrideCCType;
 	}
 
-	const filePath = await lib.create(cctype, card, undefined, undefined, debug);
+	const filePath = await lib.create(
+		cctype,
+		card,
+		undefined,
+		undefined,
+		debug,
+	);
 
 	await game.pause();
 	return filePath;

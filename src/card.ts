@@ -612,7 +612,11 @@ export class Card {
 		this.maxHealth = this.blueprint.health;
 
 		if (this.heropowerId) {
-			this.heropower = await Card.create(this.heropowerId, this.owner, true);
+			this.heropower = await Card.create(
+				this.heropowerId,
+				this.owner,
+				true,
+			);
 		}
 
 		this.text = parseTags(this.text || "");
@@ -913,7 +917,11 @@ export class Card {
 				);
 			}
 		} else if (this.health > before) {
-			await game.event.broadcast(Event.HealthRestored, this.health, this.owner);
+			await game.event.broadcast(
+				Event.HealthRestored,
+				this.health,
+				this.owner,
+			);
 		}
 
 		return true;
@@ -1302,7 +1310,11 @@ export class Card {
 			}
 
 			// If the return value is Card.REFUND, refund the card and stop the for loop
-			await game.event.broadcast(Event.CancelCard, [this, name], this.owner);
+			await game.event.broadcast(
+				Event.CancelCard,
+				[this, name],
+				this.owner,
+			);
 
 			returnValue = Card.REFUND;
 
@@ -1378,7 +1390,8 @@ export class Card {
 	 * @returns If the condition is met
 	 */
 	async condition(): Promise<boolean> {
-		const clearedText = " <bright:green>(Condition cleared!)</bright:green>";
+		const clearedText =
+			" <bright:green>(Condition cleared!)</bright:green>";
 		const clearedTextAlternative =
 			"<bright:green>Condition cleared!</bright:green>";
 
@@ -1409,30 +1422,22 @@ export class Card {
 			return false;
 		}
 
-		const priorityWeights = {
-			[EnchantmentPriority.Highest]: 2,
-			[EnchantmentPriority.High]: 1,
-			[EnchantmentPriority.Normal]: 0,
-			[EnchantmentPriority.Low]: -1,
-			[EnchantmentPriority.Lowest]: -2,
-		};
-
-		this.activeEnchantments.toSorted((aeA, aeB) => {
+		this.activeEnchantments.sort((aeA, aeB) => {
 			const priorityA = aeA.enchantment.enchantmentPriority;
-			if (!priorityA) {
+			if (priorityA === undefined) {
 				throw new Error(
 					`Enchantment with id ${aeA.enchantment.id} does not specify a priority.`,
 				);
 			}
 
 			const priorityB = aeB.enchantment.enchantmentPriority;
-			if (!priorityB) {
+			if (priorityB === undefined) {
 				throw new Error(
 					`Enchantment with id ${aeB.enchantment.id} does not specify a priority.`,
 				);
 			}
 
-			return priorityWeights[priorityA] - priorityWeights[priorityB];
+			return priorityA - priorityB;
 		});
 
 		const callOnActiveEnchantments = async (
@@ -1448,7 +1453,9 @@ export class Card {
 				const applied = activeEnchantment.applied;
 				const enchantment = activeEnchantment.enchantment;
 				const priority = enchantment.enchantmentPriority;
-				if (!priority) {
+
+				// A priority of 0 (Normal) is valid.
+				if (priority === undefined) {
 					throw new Error(
 						`Enchantment with id ${enchantment.id} does not specify a priority.`,
 					);
@@ -1524,7 +1531,10 @@ export class Card {
 	 *
 	 * @returns Success
 	 */
-	async removeEnchantment(enchantmentId: number, card: Card): Promise<boolean> {
+	async removeEnchantment(
+		enchantmentId: number,
+		card: Card,
+	): Promise<boolean> {
 		const activeEnchantment = this.activeEnchantments.find(
 			(c) => c.enchantment.id === enchantmentId && c.owner === card,
 		);
@@ -1631,7 +1641,8 @@ export class Card {
 
 			// Get the capturing group result
 			const key = regedDesc[1];
-			const replacement = game.lodash.parseInt(key) + game.player.spellDamage;
+			const replacement =
+				game.lodash.parseInt(key) + game.player.spellDamage;
 
 			text = text.replace(reg, replacement.toString());
 		}
@@ -1792,7 +1803,9 @@ export class Card {
 			for (let i = 0; i < 3; i++) {
 				const card = game.lodash.sample(possibleCards);
 				if (!card) {
-					throw new Error("undefined when randomly choosing adapt option");
+					throw new Error(
+						"undefined when randomly choosing adapt option",
+					);
 				}
 
 				values.push(card);

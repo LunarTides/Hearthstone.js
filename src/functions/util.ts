@@ -83,7 +83,8 @@ export const utilFunctions = {
 		for (const column of columns) {
 			const columnSplit = column.split(sep);
 			const difference =
-				longestColumn[1] - game.functions.color.stripAll(columnSplit[0]).length;
+				longestColumn[1] -
+				game.functions.color.stripAll(columnSplit[0]).length;
 
 			const alignedColumn = `${columnSplit[0]}${" ".repeat(difference)}${sep}${game.lodash.tail(columnSplit).join(sep)}`;
 			alignedColumns.push(alignedColumn);
@@ -138,7 +139,9 @@ export const utilFunctions = {
 		});
 
 		if (typeof history !== "string") {
-			throw new TypeError("createLogFile history did not return a string.");
+			throw new TypeError(
+				"createLogFile history did not return a string.",
+			);
 		}
 
 		// Strip the color codes from the history
@@ -354,7 +357,10 @@ ${mainContent}
 		}
 
 		if (
-			!(await this.fs("exists", `/locale/${game.config.general.locale}.json`))
+			!(await this.fs(
+				"exists",
+				`/locale/${game.config.general.locale}.json`,
+			))
 		) {
 			return {};
 		}
@@ -421,7 +427,9 @@ ${mainContent}
 			if (invalidateCache && cached) {
 				delete game.cache.files[actualPath];
 			} else if (cached) {
-				return Promise.resolve(cached) as Promise<ReturnType<(typeof fs)[F]>>;
+				return Promise.resolve(cached) as Promise<
+					ReturnType<(typeof fs)[F]>
+				>;
 			}
 
 			const content = callbackFunction(actualPath, { encoding: "utf8" });
@@ -455,11 +463,19 @@ ${mainContent}
 		await Promise.all(
 			files
 				.filter(
-					(file: Dirent) => file.isFile() && file.name.endsWith(extension),
+					(file: Dirent) =>
+						file.isFile() && file.name.endsWith(extension),
 				)
 				.map(async (file) => {
-					const fullPath = resolve(actualPath, file.parentPath, file.name);
-					const content = (await this.fs("readFile", fullPath)) as string;
+					const fullPath = resolve(
+						actualPath,
+						file.parentPath,
+						file.name,
+					);
+					const content = (await this.fs(
+						"readFile",
+						fullPath,
+					)) as string;
 
 					return callback(fullPath, content, file);
 				}),
@@ -548,19 +564,19 @@ ${mainContent}
 	 */
 	getRandomTargetRelative(
 		includeCurrentPlayer = true,
-		includeOpponent = true,
+		includeOpposingPlayer = true,
 		includeCurrentBoard = true,
-		includeOpponentBoard = true,
+		includeOpposingBoard = true,
 	): Target | undefined {
 		return this.getRandomTarget(
 			(includeCurrentPlayer && game.player.id === 0) ||
-				(includeOpponent && game.opponent.id === 0),
+				(includeOpposingPlayer && game.opponent.id === 0),
 			(includeCurrentPlayer && game.player.id === 1) ||
-				(includeOpponent && game.opponent.id === 1),
+				(includeOpposingPlayer && game.opponent.id === 1),
 			(includeCurrentBoard && game.player.id === 0) ||
-				(includeOpponentBoard && game.opponent.id === 0),
+				(includeOpposingBoard && game.opponent.id === 0),
 			(includeCurrentBoard && game.player.id === 1) ||
-				(includeOpponentBoard && game.opponent.id === 1),
+				(includeOpposingBoard && game.opponent.id === 1),
 		);
 	},
 

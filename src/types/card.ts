@@ -27,11 +27,11 @@ export enum Location {
 }
 
 export enum EnchantmentPriority {
-	Highest = "highest",
-	High = "high",
-	Normal = "normal",
-	Low = "low",
-	Lowest = "lowest",
+	Highest = 2,
+	High = 1,
+	Normal = 0,
+	Low = -1,
+	Lowest = -2,
 }
 
 /**
