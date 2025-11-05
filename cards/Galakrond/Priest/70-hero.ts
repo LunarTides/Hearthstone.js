@@ -27,7 +27,7 @@ export const blueprint: Blueprint = {
 	async battlecry(self, owner) {
 		// Destroy 1 random enemy minion.
 		const amount = game.functions.card.galakrondFormula(
-			self.storage.invokeCount as number,
+			self.getStorage(self.uuid, "invokeCount") as number,
 		);
 
 		for (let i = 0; i < amount; i++) {
@@ -49,13 +49,12 @@ export const blueprint: Blueprint = {
 	},
 
 	async placeholders(self, owner) {
-		if (!self.storage.invokeCount) {
+		const invokeCount = self.getStorage(self.uuid, "invokeCount");
+		if (!invokeCount) {
 			return { amount: 0, plural: "s", plural2: "They" };
 		}
 
-		const amount = game.functions.card.galakrondFormula(
-			self.storage.invokeCount as number,
-		);
+		const amount = game.functions.card.galakrondFormula(invokeCount);
 
 		const multiple = amount > 1;
 		const plural = multiple ? "s" : "";

@@ -29,7 +29,7 @@ export const blueprint: Blueprint = {
 	async create(self, owner) {
 		// Store the attacker / target combo in storage.
 
-		self.storage.attack = [];
+		self.setStorage(self.uuid, "attack", []);
 	},
 
 	async passive(self, owner, key, value, eventPlayer) {
@@ -40,7 +40,7 @@ export const blueprint: Blueprint = {
 		 * This is so that you can attack with that combo next turn and it still works.
 		 */
 		if (key === Event.EndTurn) {
-			self.storage.attack = [];
+			self.setStorage(self.uuid, "attack", []);
 		}
 
 		if (!game.event.is(key, value, Event.Attack)) {
@@ -53,18 +53,18 @@ export const blueprint: Blueprint = {
 		 * If the combo is the same, don't do anything
 		 * This is so that it doesn't get stuck in an infinite loop
 		 */
-		if (game.lodash.isEqual(value, self.storage.attack)) {
+		if (game.lodash.isEqual(value, self.getStorage(self.uuid, "attack"))) {
 			return;
 		}
 
 		// If it is not the same, clear the storage.
-		self.storage.attack = [];
+		self.setStorage(self.uuid, "attack", []);
 
 		if (!(attacker instanceof Card)) {
 			return;
 		}
 
-		self.storage.attack = value;
+		self.setStorage(self.uuid, "attack", value);
 
 		/*
 		 * Force attack. Note the { force: true } flag here.

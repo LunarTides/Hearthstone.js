@@ -30,7 +30,7 @@ export const blueprint: Blueprint = {
 
 		// Get the stats
 		const amount = game.functions.card.galakrondFormula(
-			self.storage.invokeCount as number,
+			self.getStorage(self.uuid, "invokeCount") as number,
 		);
 
 		const shouldGiveWeapon = amount >= 7;
@@ -60,14 +60,13 @@ export const blueprint: Blueprint = {
 	},
 
 	async placeholders(self, owner) {
-		if (!self.storage.invokeCount) {
+		const invokeCount = self.getStorage(self.uuid, "invokeCount");
+
+		if (!invokeCount) {
 			return { amount: 0, plural: "s", plural2: "They" };
 		}
 
-		const amount = game.functions.card.galakrondFormula(
-			self.storage.invokeCount as number,
-		);
-
+		const amount = game.functions.card.galakrondFormula(invokeCount);
 		const weapon = amount >= 7 ? " Equip a 5/2 Claw." : "";
 
 		return { amount, weapon };

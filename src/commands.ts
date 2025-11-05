@@ -722,9 +722,9 @@ export const debugCommands: CommandList = {
 
 			// If the card has 0 or less health, restore it to its original health (according to the blueprint)
 			if (card.type === Type.Minion && !card.isAlive()) {
-				card.health = card.storage.init.health;
+				card.health = card.backups.init.health;
 			} else if (card.type === Type.Location && card.durability! <= 0) {
-				card.durability = card.storage.init.durability;
+				card.durability = card.backups.init.durability;
 			}
 		}
 

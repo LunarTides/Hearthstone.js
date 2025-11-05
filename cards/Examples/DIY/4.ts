@@ -55,7 +55,7 @@ export const blueprint: Blueprint = {
 		 */
 
 		// Testing your solution.
-		if (self.storage.solved) {
+		if (self.getStorage(self.uuid, "solved")) {
 			return true;
 		}
 
@@ -75,7 +75,7 @@ export const blueprint: Blueprint = {
 			await self.destroy();
 		}
 
-		self.storage.solved = true;
+		self.setStorage(self.uuid, "solved", true);
 		return true;
 	},
 };

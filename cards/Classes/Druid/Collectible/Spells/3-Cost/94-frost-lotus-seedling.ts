@@ -26,8 +26,8 @@ export const blueprint: Blueprint = {
 
 	async create(self, owner) {
 		// Initialize storage
-		self.storage.blossom = 0;
-		self.storage.blossomed = false;
+		self.setStorage(self.uuid, "blossom", 0);
+		self.setStorage(self.uuid, "blossomed", false);
 	},
 
 	async passive(self, owner, key, value, eventPlayer) {
@@ -36,10 +36,15 @@ export const blueprint: Blueprint = {
 			return;
 		}
 
-		self.storage.blossom++;
+		// FIXME: It gives 2 blossom points per turn?
+		self.setStorage(
+			self.uuid,
+			"blossom",
+			self.getStorage(self.uuid, "blossom") + 1,
+		);
 
-		if (self.storage.blossom >= 3) {
-			self.storage.blossomed = true;
+		if (self.getStorage(self.uuid, "blossom") >= 3) {
+			self.setStorage(self.uuid, "blossomed", true);
 		}
 	},
 
@@ -48,7 +53,7 @@ export const blueprint: Blueprint = {
 		 * Draw {1|2} card{|s}. Gain {5|10} Armor.{ (Blossoms in 3 turns.)|}
 		 *       ^ ^ Left side is if not blossomed, right side if blossomed
 		 */
-		const { blossomed } = self.storage;
+		const blossomed = self.getStorage(self.uuid, "blossomed");
 
 		if (blossomed) {
 			await owner.drawCards(2);
@@ -60,13 +65,13 @@ export const blueprint: Blueprint = {
 	},
 
 	async condition(self, owner) {
-		return Boolean(self.storage.blossomed);
+		return Boolean(self.getStorage(self.uuid, "blossomed"));
 	},
 
 	async placeholders(self, owner) {
-		const placeholder = self.storage.blossomed
+		const placeholder = self.getStorage(self.uuid, "blossomed")
 			? "Draw 2 cards. Gain 10 Armor."
-			: `Draw 1 card. Gain 5 Armor. <i>(Blossoms in ${3 - self.storage.blossom} turns.)</i>`;
+			: `Draw 1 card. Gain 5 Armor. <i>(Blossoms in ${3 - self.getStorage(self.uuid, "blossom")} turns.)</i>`;
 
 		return { placeholder };
 	},

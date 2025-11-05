@@ -202,13 +202,32 @@ export class Card {
 
 	/**
 	 * Information stored in the card.
-	 * This information can be anything, and the card can access it at any point.
+	 * This information can be anything, and the card can access it at any point. Use {@link getStorage} and {@link setStorage} to manage this.
 	 *
-	 * I do not recommend changing this in any other context than in this card's abilities, unless you know what you are doing.
+	 * Access it like this:
+	 * ```
+	 * // The "host" is the card who should store the information. The "manager" is the card who manages the information.
+	 * host.storage[manager.uuid].someProperty = "some value";
 	 *
-	 * See also `game.cache` for global storage.
+	 * // Most times, the host and manager are the same.
+	 * self.storage[self.uuid].somePersistantState = 3;
+	 *
+	 * // But sometimes, they're not.
+	 * target.storage[self.uuid].affected = true;
+	 *
+	 * // Later...
+	 * for (const card of game.activeCards) {
+	 *     if (card.storage[self.uuid]?.affected) {
+	 *         card.addStats(1, 1);
+	 *     }
+	 * }
+	 * ```
+	 *
+	 * Be careful changing a card's storage that's managed by another card. You might break it.
+	 *
+	 * See also `game.cache` for global storage (no clear managers).
 	 */
-	storage: Record<string, any> = {};
+	storage: Record<string, Record<string, any>> = {};
 
 	/**
 	 * The turn that the card was played / created.
@@ -1655,6 +1674,32 @@ export class Card {
 	}
 
 	/**
+	 * Sets a value in this card's storage. @see {@link storage} for more info.
+	 *
+	 * @param uuid The manager's uuid.
+	 * @param key The key to store the value in.
+	 * @param value The value to store.
+	 */
+	setStorage(uuid: string, key: string, value: any) {
+		if (!this.storage[uuid]) {
+			this.storage[uuid] = {};
+		}
+
+		this.storage[uuid][key] = value;
+	}
+
+	/**
+	 * Gets a value from this card's storage. @see {@link storage} for more info.
+	 *
+	 * @param uuid The manager's uuid.
+	 * @param key The key that the value is stored in.
+	 * @returns The value.
+	 */
+	getStorage(uuid: string, key: string): any | undefined {
+		return this.storage[uuid]?.[key];
+	}
+
+	/**
 	 * Return a perfect copy of this card. This will perfectly clone the card. This happens when, for example, a card gets temporarily removed from the board using card.destroy, then put back on the board.
 	 *
 	 * @example
@@ -1879,18 +1924,18 @@ export class Card {
 	/**
 	 * Bumps the invoke count for a card.
 	 *
-	 * @param storageName The name where the info is stored. I recommend "invokeCount". You can get that information from `card.storage[storageName]` afterwards.
+	 * @param storageName The name where the info is stored. I recommend "invokeCount". You can get that information using `card.getStorage(self.uuid, storageName)` afterwards.
 	 */
 	galakrondBump(storageName: string): void {
-		if (!this.storage[storageName]) {
-			this.storage[storageName] = 0;
+		if (!this.storage[this.uuid][storageName]) {
+			this.storage[this.uuid][storageName] = 0;
 		}
 
-		if (this.storage[storageName] >= 3) {
-			this.storage[storageName] = 3;
+		if (this.storage[this.uuid][storageName] >= 3) {
+			this.storage[this.uuid][storageName] = 3;
 		}
 
-		this.storage[storageName]++;
+		this.storage[this.uuid][storageName]++;
 	}
 
 	/**

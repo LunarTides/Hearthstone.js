@@ -27,7 +27,11 @@ export const blueprint: Blueprint = {
 
 	async create(self, owner) {
 		// Store a coin for later
-		self.storage.the_coin = await Card.create(game.cardIds.theCoin_2, owner);
+		self.setStorage(
+			self.uuid,
+			"theCoin",
+			await Card.create(game.cardIds.theCoin_2, owner),
+		);
 	},
 
 	async placeholders(self, owner) {
@@ -36,7 +40,7 @@ export const blueprint: Blueprint = {
 		 * Go in-game, give yourself this card, and type 'detail' to see how it works.
 		 * We use the card's storage so we don't create a bajillion cards and cause memory leaks.
 		 */
-		const coin = self.storage.the_coin as Card | undefined;
+		const coin = self.getStorage(self.uuid, "theCoin") as Card | undefined;
 
 		return { coin };
 	},
