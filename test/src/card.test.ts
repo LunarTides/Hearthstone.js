@@ -4,7 +4,7 @@ import { createGame } from "@Game/game.ts";
 import { Keyword, Location, Type } from "@Game/types.ts";
 
 /*
- * Need to create a game in case the functions need it
+ * Need to create a game in case the functions need it.
  * This is a pretty big performance hit.
  */
 await createGame();

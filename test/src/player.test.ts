@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { Card } from "@Game/card.ts";
+import { createGame } from "@Game/game.ts";
 import { Player } from "@Game/player.ts";
 import {
 	Ability,
@@ -14,6 +15,12 @@ import {
 	type Target,
 	Type,
 } from "@Game/types.ts";
+
+/*
+ * Need to create a game in case the functions need it.
+ * This is a pretty big performance hit.
+ */
+await createGame();
 
 describe("src/player", () => {
 	test("fromID - static", async () => {

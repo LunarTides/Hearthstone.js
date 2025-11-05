@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { createGame } from "@Game/game.ts";
 
 /*
- * Need to create a game in case the functions need it
+ * Need to create a game in case the functions need it.
  * This is a pretty big performance hit.
  */
 await createGame();
