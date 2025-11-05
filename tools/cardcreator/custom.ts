@@ -204,9 +204,7 @@ const cardTypeFunctions: {
 		const armor =
 			game.lodash.parseInt(await input("Armor (Default: 5): ")) ?? 5;
 		const heropowerId = game.lodash.parseInt(
-			(await input(
-				"Hero Power ID (Leave blank to create a new one): ",
-			)) || "0",
+			(await input("Hero Power ID (Leave blank to create a new one): ")) || "0",
 		);
 
 		if (heropowerId === 0) {
@@ -332,13 +330,7 @@ export async function main({
 		cctype = overrideCCType;
 	}
 
-	const filePath = await lib.create(
-		cctype,
-		card,
-		undefined,
-		undefined,
-		debug,
-	);
+	const filePath = await lib.create(cctype, card, undefined, undefined, debug);
 
 	await game.pause();
 	return filePath;

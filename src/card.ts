@@ -10,7 +10,7 @@ import {
 	CostType,
 	DeckValidationError,
 	type EnchantmentDefinition,
-	EnchantmentPriority,
+	type EnchantmentPriority,
 	Event,
 	type EventValue,
 	type GameAttackFlags,
@@ -612,11 +612,7 @@ export class Card {
 		this.maxHealth = this.blueprint.health;
 
 		if (this.heropowerId) {
-			this.heropower = await Card.create(
-				this.heropowerId,
-				this.owner,
-				true,
-			);
+			this.heropower = await Card.create(this.heropowerId, this.owner, true);
 		}
 
 		this.text = parseTags(this.text || "");
@@ -917,11 +913,7 @@ export class Card {
 				);
 			}
 		} else if (this.health > before) {
-			await game.event.broadcast(
-				Event.HealthRestored,
-				this.health,
-				this.owner,
-			);
+			await game.event.broadcast(Event.HealthRestored, this.health, this.owner);
 		}
 
 		return true;
@@ -1298,7 +1290,7 @@ export class Card {
 				continue;
 			}
 
-			const result = await ability(this.owner, this, ...parameters);
+			const result = await ability(this, this.owner, ...parameters);
 
 			if (Array.isArray(returnValue)) {
 				returnValue.push(result);
@@ -1310,11 +1302,7 @@ export class Card {
 			}
 
 			// If the return value is Card.REFUND, refund the card and stop the for loop
-			await game.event.broadcast(
-				Event.CancelCard,
-				[this, name],
-				this.owner,
-			);
+			await game.event.broadcast(Event.CancelCard, [this, name], this.owner);
 
 			returnValue = Card.REFUND;
 
@@ -1390,8 +1378,7 @@ export class Card {
 	 * @returns If the condition is met
 	 */
 	async condition(): Promise<boolean> {
-		const clearedText =
-			" <bright:green>(Condition cleared!)</bright:green>";
+		const clearedText = " <bright:green>(Condition cleared!)</bright:green>";
 		const clearedTextAlternative =
 			"<bright:green>Condition cleared!</bright:green>";
 
@@ -1531,10 +1518,7 @@ export class Card {
 	 *
 	 * @returns Success
 	 */
-	async removeEnchantment(
-		enchantmentId: number,
-		card: Card,
-	): Promise<boolean> {
+	async removeEnchantment(enchantmentId: number, card: Card): Promise<boolean> {
 		const activeEnchantment = this.activeEnchantments.find(
 			(c) => c.enchantment.id === enchantmentId && c.owner === card,
 		);
@@ -1641,8 +1625,7 @@ export class Card {
 
 			// Get the capturing group result
 			const key = regedDesc[1];
-			const replacement =
-				game.lodash.parseInt(key) + game.player.spellDamage;
+			const replacement = game.lodash.parseInt(key) + game.player.spellDamage;
 
 			text = text.replace(reg, replacement.toString());
 		}
@@ -1803,9 +1786,7 @@ export class Card {
 			for (let i = 0; i < 3; i++) {
 				const card = game.lodash.sample(possibleCards);
 				if (!card) {
-					throw new Error(
-						"undefined when randomly choosing adapt option",
-					);
+					throw new Error("undefined when randomly choosing adapt option");
 				}
 
 				values.push(card);

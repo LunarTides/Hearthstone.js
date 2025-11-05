@@ -22,12 +22,12 @@ export const blueprint: Blueprint = {
 
 	enchantmentPriority: EnchantmentPriority.Normal,
 
-	async enchantmentApply(owner, self, host) {
+	async enchantmentApply(self, owner, host) {
 		await host.addStats(1, 2);
 	},
 
-	async enchantmentRemove(owner, self, host) {
-		await host.remStats(1, 2);
+	async enchantmentRemove(self, owner, host) {
+		await host.removeStats(1, 2);
 	},
 
 	async test(owner, self) {

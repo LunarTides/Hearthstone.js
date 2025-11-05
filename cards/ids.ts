@@ -143,4 +143,6 @@ export const cardIds = {
 	joustTest_139: 139,
 	unbreakableTest_140: 140,
 	unlimitedAttacksTest_141: 141,
+	enchantmentTest_142: 142,
+	enchantmentApplyTest_143: 143,
 };

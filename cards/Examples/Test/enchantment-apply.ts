@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
 
 	spellSchools: [SpellSchool.None],
 
-	async cast(owner, self) {
+	async cast(self, owner) {
 		// Select a friendly minion. Give it +1 Attack and +2 Health.
 
 		const target = await game.functions.interact.prompt.targetCard(
@@ -39,16 +39,19 @@ export const blueprint: Blueprint = {
 		}
 
 		// Give the enchantment.
-		target.addEnchantment(game.cardIds.enchantmentTest142, self);
+		await target.addEnchantment(game.cardIds.enchantmentTest_142, self);
 		return true;
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
+		await game.summon(await Card.create(game.cardIds.sheep_1, owner), owner);
+
 		const target = game.functions.util.getRandomTargetRelative(
 			false,
 			false,
 			true,
 			false,
+			(target) => target instanceof Card && target.type === Type.Minion,
 		);
 		const originalTargetAttack = target?.attack;
 		const originalTargetHealth = target?.health;

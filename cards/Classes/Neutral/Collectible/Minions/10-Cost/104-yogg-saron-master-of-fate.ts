@@ -108,7 +108,7 @@ export const blueprint: Blueprint = {
 						continue;
 					}
 
-					card.addEnchantment("cost = 0", self);
+					await card.addEnchantment("cost = 0", self);
 					await owner.addToHand(card);
 				}
 

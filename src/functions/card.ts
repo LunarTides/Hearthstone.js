@@ -29,10 +29,7 @@ const vanilla = {
 		const fileLocation = "/vanillacards.json";
 		if (await game.functions.util.fs("exists", fileLocation)) {
 			return JSON.parse(
-				(await game.functions.util.fs(
-					"readFile",
-					fileLocation,
-				)) as string,
+				(await game.functions.util.fs("readFile", fileLocation)) as string,
 			) as VanillaCard[];
 		}
 
@@ -82,9 +79,7 @@ const vanilla = {
 
 		// Idk what 'PVPDR' means, but ok
 		vanillaCards = vanillaCards.filter((a) => !a.id.startsWith("PVPDR"));
-		vanillaCards = vanillaCards.filter(
-			(a) => !a.id.startsWith("DRGA_BOSS"),
-		);
+		vanillaCards = vanillaCards.filter((a) => !a.id.startsWith("DRGA_BOSS"));
 
 		// Battlegrounds
 		vanillaCards = vanillaCards.filter((a) => !a.id.startsWith("BG"));
@@ -98,26 +93,20 @@ const vanilla = {
 		vanillaCards = vanillaCards.filter((a) => !a.id.startsWith("TRLA_"));
 		vanillaCards = vanillaCards.filter((a) => !a.id.startsWith("DALA_"));
 		vanillaCards = vanillaCards.filter((a) => !a.id.startsWith("ULDA_"));
-		vanillaCards = vanillaCards.filter(
-			(a) => !a.id.startsWith("BTA_BOSS_"),
-		);
+		vanillaCards = vanillaCards.filter((a) => !a.id.startsWith("BTA_BOSS_"));
 		vanillaCards = vanillaCards.filter((a) => !a.id.startsWith("Story_"));
 
 		// Book of mercenaries
 		vanillaCards = vanillaCards.filter((a) => !a.id.startsWith("BOM_"));
 		vanillaCards = vanillaCards.filter(
-			(a) =>
-				!a.mechanics || !a.mechanics.includes("DUNGEON_PASSIVE_BUFF"),
+			(a) => !a.mechanics || !a.mechanics.includes("DUNGEON_PASSIVE_BUFF"),
 		);
 		vanillaCards = vanillaCards.filter(
 			(a) =>
 				a.set &&
-				![
-					"battlegrounds",
-					"placeholder",
-					"vanilla",
-					"credits",
-				].includes(a.set.toLowerCase()),
+				!["battlegrounds", "placeholder", "vanilla", "credits"].includes(
+					a.set.toLowerCase(),
+				),
 		);
 		vanillaCards = vanillaCards.filter(
 			(a) => a.set && !a.set.includes("PLACEHOLDER_"),
@@ -246,9 +235,8 @@ export const cardFunctions = {
 				const card = await hero.imperfectCopy();
 				unsuppress();
 
-					return card;
-				},
-			),
+				return card;
+			}),
 		);
 
 		return cards.map((card) => card.classes[0]);
@@ -267,8 +255,7 @@ export const cardFunctions = {
 		return (
 			Math.min(
 				4,
-				Math.ceil((invokeCount + 1) / 2) +
-					Math.round(invokeCount * 0.15),
+				Math.ceil((invokeCount + 1) / 2) + Math.round(invokeCount * 0.15),
 			) || 1
 		);
 	},

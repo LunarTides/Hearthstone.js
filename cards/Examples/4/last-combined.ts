@@ -54,7 +54,7 @@ export const blueprint: Blueprint = {
 							continue;
 						}
 
-						minion.addEnchantment("-1 cost", self);
+						await minion.addEnchantment("-1 cost", self);
 					}
 				});
 

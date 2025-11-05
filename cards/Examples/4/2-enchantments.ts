@@ -43,7 +43,7 @@ export const blueprint: Blueprint = {
 			}
 
 			// Give the card the "-1 cost" enchantment.
-			card.addEnchantment("-1 cost", self);
+			await card.addEnchantment("-1 cost", self);
 
 			// You can also give "+x cost", or "cost = x" enchantments.
 		}

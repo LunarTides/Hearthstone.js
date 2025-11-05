@@ -36,7 +36,7 @@ export const blueprint: Blueprint = {
 
 		for (const card of cards) {
 			// Set the cost to 0
-			card.addEnchantment("cost = 0", self);
+			await card.addEnchantment("cost = 0", self);
 		}
 	},
 
