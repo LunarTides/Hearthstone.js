@@ -255,7 +255,6 @@ ${runes}${keywords}
 	 * Generate the content of the card
 	 * If the value is a string, put '"value"'. If it is not a string, put 'value'.
 	 */
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	const getTypeValue = (key: string, value: any) => {
 		if (key === "id") {
 			// Id gets handled elsewhere.

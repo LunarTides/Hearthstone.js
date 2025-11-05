@@ -112,7 +112,6 @@ export type Target = Card | Player;
  */
 export type AiHistory = {
 	type: string;
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	data: any;
 };
 

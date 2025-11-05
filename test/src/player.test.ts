@@ -130,7 +130,7 @@ describe("src/player", () => {
 		expect(await player.setWeapon(weapon)).toBe(true);
 
 		expect(player.weapon).not.toBeUndefined();
-		expect(player.attack).toBe(weapon.attack ?? 0);
+		expect(player.attack).toBe(weapon.attack!);
 
 		expect(deathrattleTriggered).toBe(false);
 
@@ -161,7 +161,7 @@ describe("src/player", () => {
 		expect(await player.setWeapon(weapon)).toBe(true);
 
 		expect(player.weapon).not.toBeUndefined();
-		expect(player.attack).toBe(weapon.attack ?? 0);
+		expect(player.attack).toBe(weapon.attack!);
 
 		expect(await player.destroyWeapon()).toBe(true);
 		expect(player.weapon).toBeUndefined();
@@ -514,9 +514,7 @@ describe("src/player", () => {
 		expect(await player.heroPower()).toBe(false);
 
 		expect(opponent.health).toBe(opponent.maxHealth - 1);
-		expect(player.mana).toBe(
-			player.emptyMana - (player.hero.heropower?.cost ?? 0),
-		);
+		expect(player.mana).toBe(player.emptyMana - player.hero.heropower!.cost);
 	});
 
 	test("tradeCorpses", async () => {

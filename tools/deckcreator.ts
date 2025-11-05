@@ -600,8 +600,6 @@ function add(card: Card): boolean {
 
 	for (const setting of Object.entries(card.deckSettings)) {
 		const [key, value] = setting;
-
-		// biome-ignore lint/suspicious/noExplicitAny: Typescript doesn't allow doing this without that ugly any for some reason. I wrote this code a while ago so i'm not entirely sure.
 		config[key as keyof GameConfig] = value as any;
 	}
 

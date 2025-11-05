@@ -60,7 +60,7 @@ export const commands: CommandList = {
 			return true;
 		}
 
-		if (game.player.mana < (game.player.hero.heropower?.cost ?? 0)) {
+		if (game.player.mana < game.player.hero.heropower!.cost) {
 			await game.pause("<red>You do not have enough mana.</red>\n");
 			return false;
 		}
@@ -723,7 +723,7 @@ export const debugCommands: CommandList = {
 			// If the card has 0 or less health, restore it to its original health (according to the blueprint)
 			if (card.type === Type.Minion && !card.isAlive()) {
 				card.health = card.storage.init.health;
-			} else if (card.type === Type.Location && (card.durability ?? 0) <= 0) {
+			} else if (card.type === Type.Location && card.durability! <= 0) {
 				card.durability = card.storage.init.durability;
 			}
 		}

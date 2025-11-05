@@ -23,8 +23,8 @@ const battlecry: AbilityCallback = async (owner, self) => {
 const theTestAbility: AbilityCallback = async (owner, self) => {
 	await self.trigger(Ability.Battlecry);
 
-	assert.equal((self.blueprint.attack ?? 0) + 1, self.attack);
-	assert.equal((self.blueprint.health ?? 0) + 1, self.health);
+	assert.equal(self.blueprint.attack! + 1, self.attack);
+	assert.equal(self.blueprint.health! + 1, self.health);
 };
 
 export const blueprint: Blueprint = {

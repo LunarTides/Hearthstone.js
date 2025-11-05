@@ -15,7 +15,6 @@ const filterAwayUseless = process.argv[2] !== "--no-filter";
 const { game } = await createGame(false);
 
 // Function to fetch data from the API
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 function fetchData(url: string): Promise<any> {
 	return new Promise((resolve, reject) => {
 		https

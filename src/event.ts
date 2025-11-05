@@ -20,7 +20,6 @@ export const eventManager = {
 	 */
 	listeners: {} as Record<
 		number,
-		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 		(key: any, value: any, player: Player) => Promise<void>
 	>,
 
@@ -290,7 +289,6 @@ export const eventManager = {
 			return false;
 		}
 
-		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 		this.events[key]?.[player.id].push([value as any, game.turn]);
 
 		await this.cardUpdate(key, value, player);

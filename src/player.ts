@@ -507,7 +507,7 @@ export class Player {
 	async setWeapon(weapon: Card): Promise<boolean> {
 		await this.destroyWeapon();
 		this.weapon = weapon;
-		this.attack += weapon.attack ?? 0;
+		this.attack += weapon.attack!;
 
 		return true;
 	}
@@ -535,7 +535,7 @@ export class Player {
 		}
 
 		await this.weapon.trigger(Ability.Deathrattle);
-		this.attack -= this.weapon.attack ?? 0;
+		this.attack -= this.weapon.attack!;
 
 		await this.weapon.destroy();
 		this.weapon = undefined;
@@ -861,7 +861,7 @@ export class Player {
 			this.heroClass = hero.classes[0];
 		}
 
-		this.armor += hero.armor ?? 0;
+		this.armor += hero.armor!;
 		return true;
 	}
 
@@ -910,7 +910,7 @@ export class Player {
 			await card.trigger(Ability.Inspire);
 		}
 
-		this.mana -= this.hero.heropower?.cost ?? 0;
+		this.mana -= this.hero.heropower!.cost;
 		this.hasUsedHeroPowerThisTurn = true;
 
 		await game.event.broadcast(Event.HeroPower, this.hero.heropower, this);
@@ -968,7 +968,7 @@ export class Player {
 	 */
 	canUseHeroPower(): boolean {
 		return (
-			this.mana >= (this.hero.heropower?.cost ?? 0) &&
+			this.mana >= this.hero.heropower!.cost &&
 			!this.hasUsedHeroPowerThisTurn &&
 			!this.disableHeroPower
 		);

@@ -1246,13 +1246,11 @@ export const interactFunctions = {
 	/**
 	 * Helper function for the `console.log` functions. Don't use.
 	 */
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	_logWrapper(callback: (...data: any) => void, ...data: any): void {
 		if (game.noOutput) {
 			return;
 		}
 
-		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 		const newData = data.map((i: any) =>
 			typeof i === "string" ? parseTags(game.translate(i)) : i,
 		);
@@ -1263,7 +1261,6 @@ export const interactFunctions = {
 	/**
 	 * Wrapper for console.log
 	 */
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	log(...data: any): void {
 		this._logWrapper(overrideConsole.log, ...data);
 	},
@@ -1271,7 +1268,6 @@ export const interactFunctions = {
 	/**
 	 * Wrapper for console.error
 	 */
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	logError(...data: any): void {
 		this._logWrapper(overrideConsole.error, ...data);
 	},
@@ -1279,7 +1275,6 @@ export const interactFunctions = {
 	/**
 	 * Wrapper for console.warn
 	 */
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	logWarn(...data: any): void {
 		this._logWrapper(overrideConsole.warn, ...data);
 	},

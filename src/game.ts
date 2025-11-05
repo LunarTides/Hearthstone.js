@@ -1182,7 +1182,6 @@ export class Game {
 	/**
 	 * Cache for the game.
 	 */
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	cache: Record<string, any> = {};
 
 	time = {

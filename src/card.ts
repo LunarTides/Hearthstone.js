@@ -208,7 +208,6 @@ export class Card {
 	 *
 	 * See also `game.cache` for global storage.
 	 */
-	// biome-ignore lint/suspicious/noExplicitAny: Cards should be able to store any value. It is hacky, but oh well.
 	storage: Record<string, any> = {};
 
 	/**
@@ -1014,7 +1013,7 @@ export class Card {
 	 */
 	canAttack(): boolean {
 		if (this.type === Type.Weapon) {
-			return (this.attackTimes ?? 0) > 0;
+			return this.attackTimes! > 0;
 		}
 
 		if (this.type !== Type.Minion) {
@@ -1032,7 +1031,7 @@ export class Card {
 			!this.hasKeyword(Keyword.Dormant) &&
 			!this.hasKeyword(Keyword.CantAttack);
 
-		const numbers = (this.attack ?? 0) > 0 && (this.attackTimes ?? 0) > 0;
+		const numbers = this.attack! > 0 && this.attackTimes! > 0;
 
 		return booleans && numbers;
 	}
@@ -1131,10 +1130,7 @@ export class Card {
 		}
 
 		for (const key of Object.keys(this)) {
-			if (
-				key === "health" &&
-				(this.health ?? 0) < (this.backups.init.health ?? 0)
-			) {
+			if (key === "health" && this.health! < this.backups.init.health!) {
 				continue;
 			}
 
@@ -2067,7 +2063,7 @@ export class Card {
 		} else if (this.type === Type.Location) {
 			const { durability } = this;
 			const maxDurability = this.backups.init.durability;
-			const maxCooldown = this.backups.init.cooldown ?? 0;
+			const maxCooldown = this.backups.init.cooldown!;
 
 			sb += ` {<bright:green>Durability: ${durability} / ${maxDurability}</bright:green>,`;
 			sb += ` <cyan>Cooldown: ${this.cooldown} / ${maxCooldown}</cyan>}`;

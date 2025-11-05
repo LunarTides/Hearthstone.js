@@ -11,7 +11,6 @@ import type { GameConfig, Target } from "@Game/types.ts";
 import date from "date-and-time";
 
 type FsFunctionKeys = {
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	[K in keyof typeof fs]: (typeof fs)[K] extends (...args: any) => any
 		? K
 		: never;
