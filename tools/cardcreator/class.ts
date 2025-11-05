@@ -108,7 +108,7 @@ export async function main(
 	console.log("Next steps:");
 
 	console.log(
-		"1. Open 'src/types.ts', navigate to 'CardClass', and add the name of the class to that. There is unfortunately no way to automate that.",
+		"1. Open 'src/types/card.ts', navigate to 'Class', and add the name of the class to that. There is unfortunately no way to automate that.",
 	);
 
 	console.log(
