@@ -142,7 +142,7 @@ export const blueprint: Blueprint = {
 			case "Mysterybox": {
 				// Cast a random spell for every spell you've cast this game (targets chosen randomly).
 				const oldYogg = await Card.create(
-					game.cardIds.yoggSaronHopesEnd103,
+					game.cardIds.yoggSaronHopesEnd_103,
 					owner,
 				);
 				await oldYogg.trigger(Ability.Battlecry);
@@ -152,7 +152,7 @@ export const blueprint: Blueprint = {
 
 			case "Rod of Roasting": {
 				// Cast 'Pyroblast' randomly until a hero dies.
-				const rod = await Card.create(game.cardIds.pyroblast105, owner);
+				const rod = await Card.create(game.cardIds.pyroblast_105, owner);
 
 				while (game.player1.isAlive() && game.player2.isAlive()) {
 					owner.forceTarget = game.functions.util.getRandomTarget();

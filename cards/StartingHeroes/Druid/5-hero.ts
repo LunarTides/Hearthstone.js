@@ -14,5 +14,5 @@ export const blueprint: Blueprint = {
 	id: 5,
 
 	armor: 0,
-	heropowerId: game.cardIds.shapeshift115,
+	heropowerId: game.cardIds.shapeshift_115,
 };

@@ -1470,7 +1470,7 @@ export class Game {
 		this.player1.mana = 1;
 
 		// Give the coin to the second player
-		const coin = await Card.create(this.cardIds.theCoin2, this.player2);
+		const coin = await Card.create(this.cardIds.theCoin_2, this.player2);
 
 		await this.event.withSuppressed(Event.AddCardToHand, async () =>
 			this.player2.addToHand(coin),
@@ -1671,7 +1671,7 @@ export class Game {
 		if (colossalMinionIds && colossal) {
 			/*
 			 * Minion.colossal is an id array.
-			 * example: [game.cardIds.leftArm36, game.cardIds.null0, game.cardIds.rightArm37]
+			 * example: [game.cardIds.leftArm_36, game.cardIds.null_0, game.cardIds.rightArm_37]
 			 * the null0 / 0 gets replaced with the main minion
 			 */
 

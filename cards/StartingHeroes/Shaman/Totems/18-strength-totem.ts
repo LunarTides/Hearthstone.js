@@ -52,7 +52,7 @@ export const blueprint: Blueprint = {
 	async test(self, owner) {
 		// Summon 5 Sheep with 2 max health.
 		for (let i = 0; i < 5; i++) {
-			const card = await Card.create(game.cardIds.sheep1, owner);
+			const card = await Card.create(game.cardIds.sheep_1, owner);
 			await owner.summon(card);
 		}
 

@@ -53,7 +53,9 @@ export const blueprint: Blueprint = {
 		await self.trigger(Ability.Cast);
 
 		// There should be a jade golem
-		assert.ok(owner.board.some((card) => card.id === game.cardIds.jadeGolem85));
+		assert.ok(
+			owner.board.some((card) => card.id === game.cardIds.jadeGolem_85),
+		);
 
 		// Shuffle 3 copies
 		owner.inputQueue = ["2"];

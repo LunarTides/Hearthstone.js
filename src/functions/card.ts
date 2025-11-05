@@ -321,11 +321,11 @@ export const cardFunctions = {
 		let idsContent =
 			"// This file has been automatically generated. Do not change this file.\n\n";
 		idsContent += "export const cardIds = {\n";
-		idsContent += "\tnull0: 0,";
+		idsContent += "\tnull_0: 0,";
 
 		for (const card of game.cards.sort((a, b) => a.id - b.id)) {
 			const numberIdentifier = /^\d/.test(card.name) ? "n" : "";
-			idsContent += `\n\t${numberIdentifier}${game.lodash.camelCase(card.name)}${card.id}: ${card.id},`;
+			idsContent += `\n\t${numberIdentifier}${game.lodash.camelCase(card.name)}_${card.id}: ${card.id},`;
 		}
 
 		idsContent += "\n};\n";

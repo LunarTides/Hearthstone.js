@@ -18,7 +18,7 @@ export const blueprint: Blueprint = {
 	async heropower(self, owner) {
 		// Summon two 1/1 Imps.
 		for (let i = 0; i < 2; i++) {
-			const card = await Card.create(game.cardIds.draconicImp21, owner);
+			const card = await Card.create(game.cardIds.draconicImp_21, owner);
 			if (!card) {
 				break;
 			}

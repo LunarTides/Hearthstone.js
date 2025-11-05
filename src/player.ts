@@ -496,7 +496,7 @@ export class Player {
 	 *
 	 * # Examples
 	 * ```
-	 * const weapon = game.createCard(game.cardIds.notRealExampleWeapon0, player);
+	 * const weapon = game.createCard(game.cardIds.notRealExampleWeapon_0, player);
 	 * await player.setWeapon(weapon);
 	 * ```
 	 *
@@ -667,7 +667,7 @@ export class Player {
 	 * ```
 	 * assert.equal(player.deck.length, 30);
 	 *
-	 * const card = game.createCard(game.cardIds.sheep1, player);
+	 * const card = game.createCard(game.cardIds.sheep_1, player);
 	 * await player.shuffleIntoDeck(card);
 	 *
 	 * assert.equal(player.deck.length, 31);
@@ -1095,7 +1095,7 @@ export class Player {
 		const count = this.jadeCounter;
 		const cost = count < 10 ? count : 10;
 
-		const jade = await Card.create(game.cardIds.jadeGolem85, this);
+		const jade = await Card.create(game.cardIds.jadeGolem_85, this);
 		await jade.setStats(count, count);
 		jade.cost = cost;
 

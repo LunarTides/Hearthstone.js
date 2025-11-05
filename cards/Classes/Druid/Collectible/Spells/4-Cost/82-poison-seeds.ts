@@ -30,7 +30,7 @@ export const blueprint: Blueprint = {
 			for (const card of player.board) {
 				await card.destroy();
 
-				const treant = await Card.create(game.cardIds.treant83, player);
+				const treant = await Card.create(game.cardIds.treant_83, player);
 				await player.summon(treant);
 			}
 		}
@@ -41,7 +41,7 @@ export const blueprint: Blueprint = {
 
 		// Summon some amount of Sheep
 		for (let i = 0; i < amountOfCards; i++) {
-			const sheep = await Card.create(game.cardIds.sheep1, owner);
+			const sheep = await Card.create(game.cardIds.sheep_1, owner);
 			await owner.summon(sheep);
 		}
 
@@ -52,6 +52,6 @@ export const blueprint: Blueprint = {
 		const board = owner.board;
 
 		assert.equal(board.length, amountOfCards);
-		assert.ok(board.every((card) => card.id === game.cardIds.treant83));
+		assert.ok(board.every((card) => card.id === game.cardIds.treant_83));
 	},
 };

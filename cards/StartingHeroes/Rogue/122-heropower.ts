@@ -19,7 +19,7 @@ export const blueprint: Blueprint = {
 		// Equip a 1/2 Dagger.
 
 		// Create the weapon card
-		const weapon = await Card.create(game.cardIds.wickedKnife22, owner);
+		const weapon = await Card.create(game.cardIds.wickedKnife_22, owner);
 
 		// Equip the weapon
 		await owner.setWeapon(weapon);

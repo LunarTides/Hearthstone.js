@@ -53,7 +53,7 @@ export const blueprint: Blueprint = {
 
 	async test(self, owner) {
 		// Summon a sheep
-		const sheep = await Card.create(game.cardIds.sheep1, owner);
+		const sheep = await Card.create(game.cardIds.sheep_1, owner);
 		await owner.summon(sheep);
 
 		// Activate the battlecry, choose the sheep

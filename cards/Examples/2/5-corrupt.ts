@@ -30,7 +30,7 @@ export const blueprint: Blueprint = {
 		 * Put the id of the corrupted counterpart here. This is the id of 5-corrupted.ts
 		 * Corrupted is another system that is very untested and might get a rewrite.
 		 */
-		self.addKeyword(Keyword.Corrupt, game.cardIds.corruptedExample41);
+		self.addKeyword(Keyword.Corrupt, game.cardIds.corruptedExample_41);
 	},
 
 	async test(self, owner) {

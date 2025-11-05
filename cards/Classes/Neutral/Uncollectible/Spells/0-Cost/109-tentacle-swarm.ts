@@ -31,7 +31,7 @@ export const blueprint: Blueprint = {
 		const remaining = owner.getRemainingHandSpace();
 
 		for (let index = 0; index < remaining; index++) {
-			const card = await Card.create(game.cardIds.chaoticTendril110, owner);
+			const card = await Card.create(game.cardIds.chaoticTendril_110, owner);
 			await owner.addToHand(card);
 		}
 	},
@@ -43,7 +43,7 @@ export const blueprint: Blueprint = {
 		// Check if the player's hand was filled with tendrils
 		const amountOfCards = owner.hand.length - handSize;
 		assert.equal(
-			owner.hand.filter((card) => card.id === game.cardIds.chaoticTendril110)
+			owner.hand.filter((card) => card.id === game.cardIds.chaoticTendril_110)
 				.length,
 			amountOfCards,
 		);

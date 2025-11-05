@@ -48,8 +48,8 @@ export async function main(): Promise<void> {
 		game.opponent = player2;
 
 		for (let i = 0; i < 30; i++) {
-			const sheep1 = await Card.create(game.cardIds.sheep1, game.player1);
-			const sheep2 = await Card.create(game.cardIds.sheep1, game.player2);
+			const sheep1 = await Card.create(game.cardIds.sheep_1, game.player1);
+			const sheep2 = await Card.create(game.cardIds.sheep_1, game.player2);
 			game.player1.deck.push(sheep1);
 			game.player2.deck.push(sheep2);
 		}

@@ -105,7 +105,7 @@ const prompt = {
 
 			// Debug mode is enabled, use the 30 Sheep debug deck.
 			while (player.deck.length < 30) {
-				const sheep = await Card.create(game.cardIds.sheep1, player, true);
+				const sheep = await Card.create(game.cardIds.sheep_1, player, true);
 				player.addToDeck(sheep);
 			}
 

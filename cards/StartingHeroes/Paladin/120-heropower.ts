@@ -19,7 +19,7 @@ export const blueprint: Blueprint = {
 		// Summon a 1/1 Silver Hand Recruit.
 
 		// Create the Silver Hand Recruit card.
-		const card = await Card.create(game.cardIds.silverHandRecruit20, owner);
+		const card = await Card.create(game.cardIds.silverHandRecruit_20, owner);
 
 		// Summon the card
 		await owner.summon(card);

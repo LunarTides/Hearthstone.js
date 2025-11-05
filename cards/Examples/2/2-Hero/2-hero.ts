@@ -26,7 +26,7 @@ export const blueprint: Blueprint = {
 	 * It exists because doing `heropowerId: 130` is not very readable.
 	 * The `game.cardIds` representation of the card is its name, followed by its id.
 	 */
-	heropowerId: game.cardIds.heropowerExample130,
+	heropowerId: game.cardIds.heropowerExample_130,
 
 	async battlecry(self, owner) {
 		// Restore your hero to full health.

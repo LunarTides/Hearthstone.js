@@ -27,7 +27,7 @@ export const blueprint: Blueprint = {
 
 	async create(self, owner) {
 		// Store a coin for later
-		self.storage.the_coin = await Card.create(game.cardIds.theCoin2, owner);
+		self.storage.the_coin = await Card.create(game.cardIds.theCoin_2, owner);
 	},
 
 	async placeholders(self, owner) {

@@ -22,7 +22,7 @@ export const blueprint: Blueprint = {
 	id: 67,
 
 	armor: 5,
-	heropowerId: game.cardIds.galakrondsGuile125,
+	heropowerId: game.cardIds.galakrondsGuile_125,
 
 	async battlecry(self, owner) {
 		// Draw {amount} cards. They cost (0).

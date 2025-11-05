@@ -69,7 +69,7 @@ export const blueprint: Blueprint = {
 		assert.equal(owner.mana, 10);
 
 		// Play a card to verify that the mana doesn't decrease
-		const card = await Card.create(game.cardIds.sheep1, owner);
+		const card = await Card.create(game.cardIds.sheep_1, owner);
 		const result = await game.play(card, owner);
 
 		assert.equal(result, GamePlayCardReturn.Success);

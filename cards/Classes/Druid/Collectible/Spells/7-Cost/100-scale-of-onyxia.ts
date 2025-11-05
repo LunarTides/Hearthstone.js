@@ -29,7 +29,7 @@ export const blueprint: Blueprint = {
 		const remainingBoardSpace = owner.getRemainingBoardSpace();
 
 		for (let index = 0; index < remainingBoardSpace; index++) {
-			const whelp = await Card.create(game.cardIds.onyxianWhelp99, owner);
+			const whelp = await Card.create(game.cardIds.onyxianWhelp_99, owner);
 			await owner.summon(whelp);
 		}
 	},
@@ -43,7 +43,7 @@ export const blueprint: Blueprint = {
 
 		// Check if every card on the board is a whelp
 		assert.ok(
-			owner.board.every((card) => card.id === game.cardIds.onyxianWhelp99),
+			owner.board.every((card) => card.id === game.cardIds.onyxianWhelp_99),
 		);
 	},
 };

@@ -19,7 +19,7 @@ export const blueprint: Blueprint = {
 		// Summon a 1/1 Ghoul with Charge. It dies at end of turn.
 
 		// Create the Ghoul
-		const minion = await Card.create(game.cardIds.frailGhoul23, owner);
+		const minion = await Card.create(game.cardIds.frailGhoul_23, owner);
 
 		// Summon the Ghoul
 		await owner.summon(minion);

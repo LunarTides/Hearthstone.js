@@ -59,7 +59,7 @@ function applyCard(_card: BlueprintWithOptional): Blueprint {
 			tribes: [MinionTribe.None],
 			spellSchools: [SpellSchool.None],
 			armor: 5,
-			heropowerId: game.cardIds.null0,
+			heropowerId: game.cardIds.null_0,
 			durability: 2,
 			cooldown: 2,
 		};

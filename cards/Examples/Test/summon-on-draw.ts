@@ -31,15 +31,15 @@ export const blueprint: Blueprint = {
 
 		// Use the preexisting colossal example minions
 		self.addKeyword(Keyword.Colossal, [
-			game.cardIds.leftArm46,
-			game.cardIds.null0,
-			game.cardIds.rightArm47,
+			game.cardIds.leftArm_46,
+			game.cardIds.null_0,
+			game.cardIds.rightArm_47,
 		]);
 	},
 
 	async test(self, owner) {
 		// Set the player's deck and hand
-		owner.deck = [await Card.create(game.cardIds.sheep1, owner), self];
+		owner.deck = [await Card.create(game.cardIds.sheep_1, owner), self];
 		owner.hand = [];
 
 		// Make the player draw this card
@@ -48,9 +48,9 @@ export const blueprint: Blueprint = {
 		const board = owner.board;
 
 		// Check if this minion and the two arms are on the board
-		assert.ok(board.some((card) => card.id === game.cardIds.leftArm46));
+		assert.ok(board.some((card) => card.id === game.cardIds.leftArm_46));
 		assert.ok(board.some((card) => card.id === self.id));
-		assert.ok(board.some((card) => card.id === game.cardIds.rightArm47));
+		assert.ok(board.some((card) => card.id === game.cardIds.rightArm_47));
 
 		// Check that the player's deck is empty and the player's hand has one card (the sheep)
 		assert.equal(owner.deck.length, 0);

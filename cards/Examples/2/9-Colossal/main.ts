@@ -35,9 +35,9 @@ export const blueprint: Blueprint = {
 		 * Right Arm
 		 */
 		self.addKeyword(Keyword.Colossal, [
-			game.cardIds.leftArm43,
-			game.cardIds.null0,
-			game.cardIds.rightArm44,
+			game.cardIds.leftArm_43,
+			game.cardIds.null_0,
+			game.cardIds.rightArm_44,
 		]);
 	},
 
@@ -46,8 +46,8 @@ export const blueprint: Blueprint = {
 
 		const board = owner.board;
 
-		assert.ok(board.some((card) => card.id === game.cardIds.leftArm43));
+		assert.ok(board.some((card) => card.id === game.cardIds.leftArm_43));
 		assert.ok(board.some((card) => card.id === self.id));
-		assert.ok(board.some((card) => card.id === game.cardIds.rightArm44));
+		assert.ok(board.some((card) => card.id === game.cardIds.rightArm_44));
 	},
 };

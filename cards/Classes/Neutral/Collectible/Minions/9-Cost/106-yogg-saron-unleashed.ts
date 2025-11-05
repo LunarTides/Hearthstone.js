@@ -32,9 +32,9 @@ export const blueprint: Blueprint = {
 	async create(self, owner) {
 		// Add additional fields here
 		self.addKeyword(Keyword.Titan, [
-			game.cardIds.induceInsanity107,
-			game.cardIds.reignOfChaos108,
-			game.cardIds.tentacleSwarm109,
+			game.cardIds.induceInsanity_107,
+			game.cardIds.reignOfChaos_108,
+			game.cardIds.tentacleSwarm_109,
 		]);
 	},
 

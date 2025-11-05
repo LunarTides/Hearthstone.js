@@ -75,7 +75,7 @@ export const blueprint: Blueprint = {
 	},
 
 	async test(self, owner) {
-		const sheep = await Card.create(game.cardIds.sheep1, owner.getOpponent());
+		const sheep = await Card.create(game.cardIds.sheep_1, owner.getOpponent());
 		await sheep.addStats(4, 4);
 		await owner.getOpponent().summon(sheep);
 

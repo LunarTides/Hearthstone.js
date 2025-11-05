@@ -58,7 +58,7 @@ export const blueprint: Blueprint = {
 
 	async test(self, owner) {
 		// Summon a Sheep
-		const sheep = await Card.create(game.cardIds.sheep1, owner);
+		const sheep = await Card.create(game.cardIds.sheep_1, owner);
 		await owner.summon(sheep);
 
 		const handSize = owner.hand.length;

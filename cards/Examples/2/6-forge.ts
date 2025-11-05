@@ -28,7 +28,7 @@ export const blueprint: Blueprint = {
 
 	async create(self, owner) {
 		// Put the id of the forged counterpart, like in corrupt.
-		self.addKeyword(Keyword.Forge, game.cardIds.forgedExample76);
+		self.addKeyword(Keyword.Forge, game.cardIds.forgedExample_76);
 	},
 
 	async test(self, owner) {

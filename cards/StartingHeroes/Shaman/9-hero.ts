@@ -14,5 +14,5 @@ export const blueprint: Blueprint = {
 	id: 9,
 
 	armor: 0,
-	heropowerId: game.cardIds.totemicCall119,
+	heropowerId: game.cardIds.totemicCall_119,
 };

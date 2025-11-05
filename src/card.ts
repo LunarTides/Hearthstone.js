@@ -78,10 +78,10 @@ export class Card {
 	 * This differentiates cards from each other, but not cards with the same blueprint, use {@link uuid} for that.
 	 *
 	 * @example
-	 * const sheep = game.createCard(game.cardIds.sheep1, player);
-	 * const anotherSheep = game.createCard(game.cardIds.sheep1, player);
+	 * const sheep = game.createCard(game.cardIds.sheep_1, player);
+	 * const anotherSheep = game.createCard(game.cardIds.sheep_1, player);
 	 *
-	 * const theCoin = game.createCard(game.cardIds.theCoin2, player);
+	 * const theCoin = game.createCard(game.cardIds.theCoin_2, player);
 	 *
 	 * assert.equal(sheep.id, anotherSheep.id);
 	 * assert.notEqual(sheep.id, theCoin.id);
@@ -1826,8 +1826,8 @@ export class Card {
 
 			case "Living Spores": {
 				this.addAbility(Ability.Deathrattle, async (_, owner) => {
-					owner.summon(await Card.create(game.cardIds.plant3, owner));
-					owner.summon(await Card.create(game.cardIds.plant3, owner));
+					owner.summon(await Card.create(game.cardIds.plant_3, owner));
+					owner.summon(await Card.create(game.cardIds.plant_3, owner));
 				});
 				break;
 			}
