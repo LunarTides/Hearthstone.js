@@ -116,16 +116,16 @@ const attack = {
 		const damage = await attack._spellDamage(attacker, target, flags);
 
 		if (target instanceof Player) {
-			await target.remHealth(damage);
+			await target.removeHealth(damage);
 			return GameAttackReturn.Success;
 		}
 
 		if (target.hasKeyword(Keyword.DivineShield)) {
-			target.remKeyword(Keyword.DivineShield);
+			target.removeKeyword(Keyword.DivineShield);
 			return GameAttackReturn.DivineShield;
 		}
 
-		await target.remHealth(damage);
+		await target.removeHealth(damage);
 
 		// Remove frenzy
 		await attack._doFrenzy(target);
@@ -325,7 +325,7 @@ const attack = {
 		}
 
 		// If attacker has stealth, remove it
-		attacker.remKeyword(Keyword.Stealth);
+		attacker.removeKeyword(Keyword.Stealth);
 
 		// If attacker has lifesteal, heal it's owner
 		attack._doLifesteal(attacker);
@@ -395,7 +395,7 @@ const attack = {
 		await attack._cleave(attacker, target);
 
 		attacker.decAttack();
-		attacker.remKeyword(Keyword.Stealth);
+		attacker.removeKeyword(Keyword.Stealth);
 
 		const shouldDamage = attack._cardAttackHelper(attacker);
 		if (!shouldDamage) {
@@ -447,7 +447,7 @@ const attack = {
 		}
 
 		if (card.hasKeyword(Keyword.DivineShield)) {
-			card.remKeyword(Keyword.DivineShield);
+			card.removeKeyword(Keyword.DivineShield);
 			return false;
 		}
 
@@ -541,7 +541,7 @@ const attack = {
 
 			// Only remove 1 durability if the weapon is not unbreakable
 			if (!weapon.hasKeyword(Keyword.Unbreakable)) {
-				await weapon.remHealth(1);
+				await weapon.removeHealth(1);
 			}
 
 			// If the weapon is alive and it has unlimited attacks, the player can attack again this turn
@@ -751,7 +751,7 @@ const playCard = {
 
 			// Twinspell functionality
 			if (card.hasKeyword(Keyword.Twinspell)) {
-				card.remKeyword(Keyword.Twinspell);
+				card.removeKeyword(Keyword.Twinspell);
 				card.text = card.text.split("Twinspell")[0].trim();
 
 				await player.addToHand(card);
@@ -1572,7 +1572,7 @@ export class Game {
 				}
 
 				// Remove dormant
-				card.remKeyword(Keyword.Dormant);
+				card.removeKeyword(Keyword.Dormant);
 				card.sleepy = true;
 
 				/*
@@ -1590,7 +1590,7 @@ export class Game {
 			}
 
 			card.canAttackHero = true;
-			card.remKeyword(Keyword.Frozen);
+			card.removeKeyword(Keyword.Frozen);
 
 			card.ready();
 			card.resetAttackTimes();
@@ -1602,7 +1602,7 @@ export class Game {
 				this.turn > card.stealthDuration
 			) {
 				card.stealthDuration = 0;
-				card.remKeyword(Keyword.Stealth);
+				card.removeKeyword(Keyword.Stealth);
 			}
 
 			// Location cooldown
@@ -1791,7 +1791,7 @@ export class Game {
 
 				// Reborn
 				const minion = await card.imperfectCopy();
-				minion.remKeyword(Keyword.Reborn);
+				minion.removeKeyword(Keyword.Reborn);
 
 				// Reduce the minion's health to 1, keep the minion's attack the same
 				await minion.setStats(minion.attack, 1);

@@ -199,7 +199,7 @@ export const commands: CommandList = {
 		card.setKeyword(Keyword.Titan, titanIds);
 
 		if (titanIds.length <= 0) {
-			card.remKeyword(Keyword.Titan);
+			card.removeKeyword(Keyword.Titan);
 		} else {
 			card.sleepy = true;
 		}

@@ -54,8 +54,8 @@ describe("src/card", () => {
 		expect(card.addKeyword(Keyword.CantAttack)).toBe(true);
 		expect(card.sleepy).toBe(true);
 
-		expect(card.remKeyword(Keyword.CantAttack)).toBe(true);
-		// remKeyword shouldn't reverse the effect of addKeyword.
+		expect(card.removeKeyword(Keyword.CantAttack)).toBe(true);
+		// removeKeyword shouldn't reverse the effect of addKeyword.
 		expect(card.sleepy).toBe(true);
 
 		expect(card.addKeyword(Keyword.UnlimitedAttacks)).toBe(true);
@@ -63,12 +63,12 @@ describe("src/card", () => {
 		expect(card.sleepy).toBe(false);
 	});
 
-	test("remKeyword", async () => {
+	test("removeKeyword", async () => {
 		const card = await Card.create(game.cardIds.sheep1, game.player);
 		card.addKeyword(Keyword.Dormant);
 		expect(card.hasKeyword(Keyword.Dormant)).toBe(true);
 
-		expect(card.remKeyword(Keyword.Dormant)).toBe(true);
+		expect(card.removeKeyword(Keyword.Dormant)).toBe(true);
 		expect(card.hasKeyword(Keyword.Dormant)).toBe(false);
 	});
 
@@ -167,13 +167,13 @@ describe("src/card", () => {
 		expect(card.maxHealth).toBe(4);
 	});
 
-	test("remStats", async () => {
+	test("removeStats", async () => {
 		const card = await Card.create(game.cardIds.sheep1, game.player);
 		expect(card.attack).toBe(1);
 		expect(card.health).toBe(1);
 		expect(card.maxHealth).toBe(1);
 
-		await card.remStats(1, 1);
+		await card.removeStats(1, 1);
 		expect(card.attack).toBe(0);
 		expect(card.health).toBe(0);
 		expect(card.maxHealth).toBe(0);
@@ -191,44 +191,44 @@ describe("src/card", () => {
 		expect(card.maxHealth).toBe(3);
 	});
 
-	test("remHealth", async () => {
+	test("removeHealth", async () => {
 		const card = await Card.create(game.cardIds.sheep1, game.player);
 		expect(card.health).toBe(1);
 
-		expect(await card.remHealth(1)).toBe(true);
+		expect(await card.removeHealth(1)).toBe(true);
 		expect(card.health).toBe(0);
 
 		await card.addHealth(1);
 
 		card.type = Type.Location;
-		expect(await card.remHealth(1)).toBe(false);
+		expect(await card.removeHealth(1)).toBe(false);
 		expect(card.health).toBe(1);
 		card.type = Type.Minion;
 
-		expect(await card.remHealth(1)).toBe(true);
+		expect(await card.removeHealth(1)).toBe(true);
 		await card.addHealth(1);
 
 		// Check if keywords actually prevent damage.
 		card.addKeyword(Keyword.Stealth);
-		expect(await card.remHealth(1)).toBe(false);
+		expect(await card.removeHealth(1)).toBe(false);
 
-		card.remKeyword(Keyword.Stealth);
-		expect(await card.remHealth(1)).toBe(true);
+		card.removeKeyword(Keyword.Stealth);
+		expect(await card.removeHealth(1)).toBe(true);
 		expect(card.health).toBe(0);
 
 		await card.addHealth(1);
 
 		card.addKeyword(Keyword.Immune);
-		// Immune prevents damage. remHealth returns true, and health remains unchanged.
-		expect(await card.remHealth(1)).toBe(true);
+		// Immune prevents damage. removeHealth returns true, and health remains unchanged.
+		expect(await card.removeHealth(1)).toBe(true);
 		expect(card.health).toBe(1);
-		card.remKeyword(Keyword.Immune);
+		card.removeKeyword(Keyword.Immune);
 
 		// Check if it actually destroys the weapon.
 		const weapon = await Card.create(game.cardIds.wickedKnife22, game.player);
 		await game.player.setWeapon(weapon);
 		expect(game.player.weapon).not.toBeUndefined();
-		expect(await weapon.remHealth(9999)).toBe(true);
+		expect(await weapon.removeHealth(9999)).toBe(true);
 		expect(game.player.weapon).toBeUndefined();
 	});
 
@@ -263,8 +263,8 @@ describe("src/card", () => {
 		card.resetAttackTimes();
 		expect(card.attackTimes).toBe(4);
 
-		card.remKeyword(Keyword.Windfury);
-		card.remKeyword(Keyword.MegaWindfury);
+		card.removeKeyword(Keyword.Windfury);
+		card.removeKeyword(Keyword.MegaWindfury);
 
 		card.resetAttackTimes();
 		expect(card.attackTimes).toBe(1);

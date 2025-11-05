@@ -89,7 +89,7 @@ export const blueprint: Blueprint = {
 		await self.trigger(Ability.Battlecry);
 
 		assert(sheep.hasKeyword(Keyword.Frozen));
-		sheep.remKeyword(Keyword.Frozen);
+		sheep.removeKeyword(Keyword.Frozen);
 		assert(!sheep.hasKeyword(Keyword.Frozen));
 
 		owner.emptyMana = 6;

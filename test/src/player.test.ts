@@ -211,7 +211,7 @@ describe("src/player", () => {
 		expect(player.health).toBe(player.maxHealth - 10 + 1);
 	});
 
-	test("remHealth", async () => {
+	test("removeHealth", async () => {
 		const player = new Player();
 		let times = 0;
 		// let fatalDamageTriggered = false;
@@ -235,26 +235,26 @@ describe("src/player", () => {
 
 		expect(player.health).toBe(player.maxHealth);
 		expect(player.armor).toBe(0);
-		expect(await player.remHealth(1)).toBe(true);
+		expect(await player.removeHealth(1)).toBe(true);
 
 		expect(player.health).toBe(player.maxHealth - 1);
 		// TODO: This fails for some reason.
 		// expect(times).toBe(1);
 
 		player.armor = 5;
-		expect(await player.remHealth(3)).toBe(true);
+		expect(await player.removeHealth(3)).toBe(true);
 
 		expect(player.health).toBe(player.maxHealth - 1);
 		expect(player.armor).toBe(2);
 		// expect(times).toBe(1);
 
-		expect(await player.remHealth(3)).toBe(true);
+		expect(await player.removeHealth(3)).toBe(true);
 
 		expect(player.health).toBe(player.maxHealth - 2);
 		expect(player.armor).toBe(0);
 		// expect(times).toBe(2);
 
-		// expect(await player.remHealth(9999)).toBe(true);
+		// expect(await player.removeHealth(9999)).toBe(true);
 		// expect(player.health).toBe(1);
 		// expect(times).toBe(3);
 		// expect(fatalDamageTriggered).toBe(true);
@@ -262,7 +262,7 @@ describe("src/player", () => {
 		player.health = player.maxHealth;
 		player.immune = true;
 
-		expect(await player.remHealth(1)).toBe(true);
+		expect(await player.removeHealth(1)).toBe(true);
 		expect(player.health).toBe(player.maxHealth);
 
 		destroy();

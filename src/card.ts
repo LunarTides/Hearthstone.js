@@ -676,7 +676,7 @@ export class Card {
 	 *
 	 * @returns Success
 	 */
-	remKeyword(keyword: Keyword): boolean {
+	removeKeyword(keyword: Keyword): boolean {
 		if (!this.hasKeyword(keyword)) {
 			return false;
 		}
@@ -831,13 +831,13 @@ export class Card {
 	 *
 	 * @returns Success
 	 */
-	async remStats(attack = 0, health = 0): Promise<boolean> {
+	async removeStats(attack = 0, health = 0): Promise<boolean> {
 		if (this.attack === undefined || this.health === undefined) {
 			return false;
 		}
 
 		this.attack -= attack;
-		await this.remHealth(health);
+		await this.removeHealth(health);
 
 		return true;
 	}
@@ -896,7 +896,7 @@ export class Card {
 	 *
 	 * @returns Success
 	 */
-	async remHealth(amount: number): Promise<boolean> {
+	async removeHealth(amount: number): Promise<boolean> {
 		if (this.health === undefined) {
 			return false;
 		}
