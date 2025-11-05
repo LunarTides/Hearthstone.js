@@ -36,7 +36,6 @@ export const blueprint: Blueprint = {
 			return;
 		}
 
-		// FIXME: It gives 2 blossom points per turn?
 		self.setStorage(
 			self.uuid,
 			"blossom",

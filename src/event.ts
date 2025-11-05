@@ -152,10 +152,10 @@ export const eventManager = {
 		}
 
 		for (let i = 0; i < 2; i++) {
-			const player = Player.fromID(i);
+			const pI = Player.fromID(i);
 
 			// Activate spells in the players hand
-			for (const card of player.hand) {
+			for (const card of pI.hand) {
 				await card.trigger(Ability.HandPassive, key, value, player);
 
 				if (card.type !== Type.Spell) {
@@ -165,7 +165,7 @@ export const eventManager = {
 				await card.trigger(Ability.Passive, key, value, player);
 			}
 
-			const { weapon } = player;
+			const { weapon } = pI;
 			if (!weapon) {
 				continue;
 			}
