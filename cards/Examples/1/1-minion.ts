@@ -45,7 +45,7 @@ export const blueprint: Blueprint = {
 	 * Tags are used to group cards together.
 	 * E.g. `CardTag.Lackey`, `CardTag.Galakrond`, `CardTag.StartingHero`, etc...
 	 *
-	 * This can be queried like this: `Card.allWithTags([CardTag.Lackey]);`
+	 * This can be queried like this: `Card.allWithTags(CardTag.Lackey);`
 	 */
 	tags: [],
 

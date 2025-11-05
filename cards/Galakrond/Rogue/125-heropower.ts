@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
 
 	async heropower(self, owner) {
 		// Add a lacky to your hand.
-		const lackey = game.lodash.sample(await Card.allWithTags([CardTag.Lackey]));
+		const lackey = game.lodash.sample(await Card.allWithTags(CardTag.Lackey));
 		if (!lackey) {
 			return;
 		}

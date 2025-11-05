@@ -229,7 +229,7 @@ export const cardFunctions = {
 	 */
 	async getClasses(): Promise<string[]> {
 		const cards = await Promise.all(
-			(await Card.allWithTags([CardTag.StartingHero])).map(async (hero) => {
+			(await Card.allWithTags(CardTag.StartingHero)).map(async (hero) => {
 				const unsuppress = game.event.suppress(Event.CreateCard);
 				const card = await hero.imperfectCopy();
 				unsuppress();

@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
 
 	async heropower(self, owner) {
 		// Filter away totem cards that is already on the player's side of the board.
-		const filteredTotemCards = (await Card.allWithTags([CardTag.Totem])).filter(
+		const filteredTotemCards = (await Card.allWithTags(CardTag.Totem)).filter(
 			(card) => !owner.board.some((c) => c.id === card.id),
 		);
 
@@ -45,7 +45,7 @@ export const blueprint: Blueprint = {
 	},
 
 	async test(self, owner) {
-		const totemCards = await Card.allWithTags([CardTag.Totem]);
+		const totemCards = await Card.allWithTags(CardTag.Totem);
 		const checkForTotemCard = (amount: number) =>
 			owner.board.filter((card) =>
 				totemCards.map((c) => c.id).includes(card.id),

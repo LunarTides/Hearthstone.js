@@ -873,7 +873,7 @@ export class Player {
 	 * @returns Success
 	 */
 	async setToStartingHero(heroClass = this.heroClass): Promise<boolean> {
-		const hero = (await Card.allWithTags([CardTag.StartingHero])).find((card) =>
+		const hero = (await Card.allWithTags(CardTag.StartingHero)).find((card) =>
 			card.classes.includes(heroClass),
 		);
 
@@ -1410,7 +1410,7 @@ export class Player {
 			return;
 		}
 
-		const list = await Card.allWithTags([CardTag.DIY]);
+		const list = await Card.allWithTags(CardTag.DIY);
 
 		const card = game.lodash.sample(list);
 		if (!card) {

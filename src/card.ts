@@ -107,10 +107,10 @@ export class Card {
 
 	/**
 	 * Any tags that should be applied to the card.
-	 * Tags are used to group cards together. They should be lowercase.
-	 * E.g. "lackey"
+	 * Tags are used to group cards together.
+	 * E.g. CardTag.Lackey
 	 *
-	 * This can be queried like this: `Card.allWithTags(["lackey"]);`
+	 * This can be queried like this: `Card.allWithTags(CardTag.Lackey);`
 	 */
 	tags: CardTag[] = [];
 
@@ -436,14 +436,14 @@ export class Card {
 	}
 
 	/**
-	 * Returns all cards that have at least one of the specified tags.
+	 * Returns all cards that have all the matching tags.
 	 *
-	 * @param tags An array of tags to filter the cards by.
-	 * @returns An array of cards that have any of the specified tags.
+	 * @param tags The tags to filter the cards by.
+	 * @returns An array of cards that have all of the specified tags.
 	 */
-	static async allWithTags(tags: CardTag[]): Promise<Card[]> {
+	static async allWithTags(...tags: CardTag[]): Promise<Card[]> {
 		return (await Card.all(true)).filter((c) =>
-			tags.some((tag) => c.tags.includes(tag)),
+			tags.every((tag) => c.tags.includes(tag)),
 		);
 	}
 
