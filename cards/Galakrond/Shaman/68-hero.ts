@@ -25,7 +25,7 @@ export const blueprint: Blueprint = {
 	armor: 5,
 	heropowerId: game.cardIds.galakrondsFury126,
 
-	async battlecry(owner, self) {
+	async battlecry(self, owner) {
 		// Summon two 1/1 Storms with Rush. (Equip a 5/2 Claw.)
 
 		// Get the stats
@@ -55,11 +55,11 @@ export const blueprint: Blueprint = {
 		await owner.setWeapon(weapon);
 	},
 
-	async invoke(owner, self) {
+	async invoke(self, owner) {
 		self.galakrondBump("invokeCount");
 	},
 
-	async placeholders(owner, self) {
+	async placeholders(self, owner) {
 		if (!self.storage.invokeCount) {
 			return { amount: 0, plural: "s", plural2: "They" };
 		}
@@ -73,7 +73,7 @@ export const blueprint: Blueprint = {
 		return { amount, weapon };
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// TODO: Test. #325
 		return EventListenerMessage.Skip;
 	},

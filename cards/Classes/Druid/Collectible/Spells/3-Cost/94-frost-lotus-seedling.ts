@@ -24,13 +24,13 @@ export const blueprint: Blueprint = {
 
 	spellSchools: [SpellSchool.Nature],
 
-	async create(owner, self) {
+	async create(self, owner) {
 		// Initialize storage
 		self.storage.blossom = 0;
 		self.storage.blossomed = false;
 	},
 
-	async passive(owner, self, key, value, eventPlayer) {
+	async passive(self, owner, key, value, eventPlayer) {
 		// Increment blossom counter at the end of the owner's turn
 		if (!game.event.is(key, value, Event.EndTurn) || eventPlayer !== owner) {
 			return;
@@ -43,7 +43,7 @@ export const blueprint: Blueprint = {
 		}
 	},
 
-	async cast(owner, self) {
+	async cast(self, owner) {
 		/*
 		 * Draw {1|2} card{|s}. Gain {5|10} Armor.{ (Blossoms in 3 turns.)|}
 		 *       ^ ^ Left side is if not blossomed, right side if blossomed
@@ -59,11 +59,11 @@ export const blueprint: Blueprint = {
 		owner.addArmor(blossomed ? 10 : 5);
 	},
 
-	async condition(owner, self) {
+	async condition(self, owner) {
 		return Boolean(self.storage.blossomed);
 	},
 
-	async placeholders(owner, self) {
+	async placeholders(self, owner) {
 		const placeholder = self.storage.blossomed
 			? "Draw 2 cards. Gain 10 Armor."
 			: `Draw 1 card. Gain 5 Armor. <i>(Blossoms in ${3 - self.storage.blossom} turns.)</i>`;
@@ -71,7 +71,7 @@ export const blueprint: Blueprint = {
 		return { placeholder };
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// TODO: Add proper tests. #325
 		return EventListenerMessage.Skip;
 	},

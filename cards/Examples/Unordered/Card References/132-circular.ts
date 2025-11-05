@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribes: [MinionTribe.None],
 
-	async placeholders(owner, self) {
+	async placeholders(self, owner) {
 		/*
 		 * You can reference this card in placeholders.
 		 * Go in-game, give yourself this card, and type 'detail' to see how it works.
@@ -34,7 +34,7 @@ export const blueprint: Blueprint = {
 		return { card: self };
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// TODO: Add proper tests. #325
 		return EventListenerMessage.Skip;
 	},

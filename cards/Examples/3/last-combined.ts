@@ -29,7 +29,7 @@ export const blueprint: Blueprint = {
 
 	spellSchools: [SpellSchool.None],
 
-	async cast(owner, self) {
+	async cast(self, owner) {
 		if (!(await self.condition())) {
 			return;
 		}
@@ -45,7 +45,7 @@ export const blueprint: Blueprint = {
 		owner.addMana(turns);
 	},
 
-	async condition(owner, self) {
+	async condition(self, owner) {
 		let turns = game.functions.util.getTraditionalTurnCounter();
 		if (turns > 10) {
 			turns = 10;
@@ -59,7 +59,7 @@ export const blueprint: Blueprint = {
 		return even || manathirst;
 	},
 
-	async placeholders(owner, self) {
+	async placeholders(self, owner) {
 		let turns = game.functions.util.getTraditionalTurnCounter();
 		if (turns > 10) {
 			turns = 10;
@@ -68,7 +68,7 @@ export const blueprint: Blueprint = {
 		return { turns };
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		const turn = () => {
 			let turns = game.functions.util.getTraditionalTurnCounter();
 			if (turns > 10) {

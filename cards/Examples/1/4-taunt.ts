@@ -38,7 +38,7 @@ export const blueprint: Blueprint = {
 	 * The `self` variable is the actual card itself in-game.
 	 * Be careful when interacting with `owner` or `self.owner` in the create ability, it might not always be the player you're expecting.
 	 */
-	async create(owner, self) {
+	async create(self, owner) {
 		// Add the Taunt keyword to this card
 		self.addKeyword(Keyword.Taunt);
 	},

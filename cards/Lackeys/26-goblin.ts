@@ -28,7 +28,7 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribes: [MinionTribe.None],
 
-	async battlecry(owner, self) {
+	async battlecry(self, owner) {
 		// Give a friendly minion +1 Attack and Rush.
 
 		// Prompt the user to select a friendly minion
@@ -51,7 +51,7 @@ export const blueprint: Blueprint = {
 		return true;
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// Summon a sheep
 		const sheep = await Card.create(game.cardIds.sheep1, owner);
 		await owner.summon(sheep);

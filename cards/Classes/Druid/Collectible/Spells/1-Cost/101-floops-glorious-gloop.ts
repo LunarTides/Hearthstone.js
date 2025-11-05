@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
 
 	spellSchools: [SpellSchool.Nature],
 
-	async cast(owner, self) {
+	async cast(self, owner) {
 		// Whenever a minion dies this turn, gain 1 Mana Crystal this turn only.
 		const destroy = game.event.addListener(
 			Event.DestroyCard,
@@ -44,7 +44,7 @@ export const blueprint: Blueprint = {
 		});
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// TODO: Add proper tests. #325
 		return EventListenerMessage.Skip;
 	},

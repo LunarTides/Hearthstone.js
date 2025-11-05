@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribes: [MinionTribe.Totem],
 
-	async create(owner, self) {
+	async create(self, owner) {
 		self.addKeyword(Keyword.Rush);
 	},
 };

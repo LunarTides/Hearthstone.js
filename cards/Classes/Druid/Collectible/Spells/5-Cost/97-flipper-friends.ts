@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
 
 	spellSchools: [SpellSchool.Nature],
 
-	async cast(owner, self) {
+	async cast(self, owner) {
 		// Choose One - Summon a 6/6 Orca with Taunt; or six 1/1 Otters with Rush.
 		await game.functions.interact.prompt.chooseOne(
 			1,
@@ -49,7 +49,7 @@ export const blueprint: Blueprint = {
 		);
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// Summon a 6/6 Orca with Taunt
 		owner.inputQueue = ["1"];
 		await self.trigger(Ability.Cast);

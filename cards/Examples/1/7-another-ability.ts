@@ -16,11 +16,11 @@ import {
  * You might want to do this if you make a very complicated card.
  * however it is not *as* supported by scripts as the normal way.
  */
-const battlecry: AbilityCallback = async (owner, self) => {
+const battlecry: AbilityCallback = async (self, owner) => {
 	await self.addStats(1, 1);
 };
 
-const theTestAbility: AbilityCallback = async (owner, self) => {
+const theTestAbility: AbilityCallback = async (self, owner) => {
 	await self.trigger(Ability.Battlecry);
 
 	assert.equal(self.blueprint.attack! + 1, self.attack);

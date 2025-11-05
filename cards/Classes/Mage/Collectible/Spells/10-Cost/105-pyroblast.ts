@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
 
 	spellSchools: [SpellSchool.Fire],
 
-	async cast(owner, self) {
+	async cast(self, owner) {
 		// Deal $10 damage.
 		const target = await game.functions.interact.prompt.target(self.text, self);
 		if (!target) {
@@ -35,7 +35,7 @@ export const blueprint: Blueprint = {
 		return true;
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		const enemyHealth = owner.getOpponent().health;
 		owner.forceTarget = owner.getOpponent();
 

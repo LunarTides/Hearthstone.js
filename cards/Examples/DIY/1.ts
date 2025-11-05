@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribes: [MinionTribe.None],
 
-	async battlecry(owner, self) {
+	async battlecry(self, owner) {
 		// Give this minion +1/+1.
 
 		// Try to give this minion +1/+1 yourself.

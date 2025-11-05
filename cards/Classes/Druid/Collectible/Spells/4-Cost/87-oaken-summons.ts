@@ -23,13 +23,13 @@ export const blueprint: Blueprint = {
 
 	spellSchools: [SpellSchool.Nature],
 
-	async cast(owner, self) {
+	async cast(self, owner) {
 		// Gain 6 Armor. Recruit a minion that costs (4) or less.
 		owner.addArmor(6);
 		await owner.recruit(owner.deck, 1, (card) => card.cost <= 4);
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		for (let index = 1; index <= 10; index++) {
 			await self.trigger(Ability.Cast);
 

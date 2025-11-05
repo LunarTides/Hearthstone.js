@@ -14,12 +14,12 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: 116,
 
-	async heropower(owner, self) {
+	async heropower(self, owner) {
 		// Deal 2 damage to the enemy hero.
 		await game.attack(2, owner.getOpponent());
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// The opponent should have 30 health
 		assert.equal(owner.getOpponent().health, owner.maxHealth);
 

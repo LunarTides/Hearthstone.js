@@ -26,11 +26,11 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribes: [MinionTribe.None],
 
-	async create(owner, self) {
+	async create(self, owner) {
 		await self.freeze();
 	},
 
-	async passive(owner, self, key, value, eventPlayer) {
+	async passive(self, owner, key, value, eventPlayer) {
 		// This is forever Frozen
 
 		if (!game.event.is(key, value, Event.StartTurn)) {
@@ -40,7 +40,7 @@ export const blueprint: Blueprint = {
 		await self.freeze();
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// Summon this minion
 		await owner.summon(self);
 

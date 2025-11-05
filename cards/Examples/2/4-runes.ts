@@ -24,12 +24,12 @@ export const blueprint: Blueprint = {
 	health: 2,
 	tribes: [MinionTribe.None],
 
-	async create(owner, self) {
+	async create(self, owner) {
 		// You need 2 frost runes and 1 blood rune to use this card.
 		self.runes = "FFB";
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// TODO: Test. #325
 		return EventListenerMessage.Skip;
 	},

@@ -15,7 +15,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: 114,
 
-	async heropower(owner, self) {
+	async heropower(self, owner) {
 		// Deal 1 damage.
 
 		const target = await game.functions.interact.prompt.target(
@@ -33,7 +33,7 @@ export const blueprint: Blueprint = {
 		return true;
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// The opponent should have 30 health.
 		assert.equal(owner.getOpponent().health, 30);
 

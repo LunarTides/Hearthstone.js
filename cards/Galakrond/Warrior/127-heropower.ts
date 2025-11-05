@@ -14,13 +14,13 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: 127,
 
-	async heropower(owner, self) {
+	async heropower(self, owner) {
 		// Give your hero +3 Attack this turn.
 
 		owner.attack += 3;
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		assert.equal(owner.attack, 0);
 		await self.trigger(Ability.HeroPower);
 

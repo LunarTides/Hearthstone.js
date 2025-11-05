@@ -30,7 +30,7 @@ export const blueprint: Blueprint = {
 	health: 5,
 	tribes: [MinionTribe.None],
 
-	async battlecry(owner, self) {
+	async battlecry(self, owner) {
 		// If you've cast 10 spells this game, spin the Wheel of Yogg-Saron. ({amount} left!)
 		if (!(await self.condition())) {
 			return;
@@ -168,7 +168,7 @@ export const blueprint: Blueprint = {
 		await game.event.broadcast(Event.CardEvent, [self, choice], owner);
 	},
 
-	async placeholders(owner, self) {
+	async placeholders(self, owner) {
 		const amount = game.event.events.PlayCard?.[owner.id].filter(
 			(object) => object[0].type === Type.Spell,
 		).length;
@@ -183,7 +183,7 @@ export const blueprint: Blueprint = {
 		return { left: ` <i>(${10 - amount} left!)</i>` };
 	},
 
-	async condition(owner, self) {
+	async condition(self, owner) {
 		const amount = game.event.events.PlayCard?.[owner.id].filter(
 			(object) => object[0].type === Type.Spell,
 		).length;
@@ -194,7 +194,7 @@ export const blueprint: Blueprint = {
 		return amount >= 10;
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// TODO: Add proper tests. #325
 		return EventListenerMessage.Skip;
 	},

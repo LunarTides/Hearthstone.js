@@ -34,7 +34,7 @@ export const blueprint: Blueprint = {
 	 * Note the new `key`, `value` and `eventPlayer` arguments.
 	 * These are only used in the `passive`, `handPassive`, `tick`, and `handTick` abilities.
 	 */
-	async passive(owner, self, key, value, eventPlayer) {
+	async passive(self, owner, key, value, eventPlayer) {
 		/*
 		 * Your battlecries trigger twice.
 		 * ^ In order to do this, we wait until a minion is played, then manually trigger its battlecry.
@@ -84,7 +84,7 @@ export const blueprint: Blueprint = {
 		await value.trigger(Ability.Battlecry);
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// TODO: Add proper tests. #325
 		return EventListenerMessage.Skip;
 	},

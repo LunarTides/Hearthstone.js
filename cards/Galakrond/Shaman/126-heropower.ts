@@ -21,7 +21,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: 126,
 
-	async heropower(owner, self) {
+	async heropower(self, owner) {
 		// Summon a 2/1 Elemental with Rush.
 		const card = await Card.create(game.cardIds.windsweptElemental19, owner);
 		if (!card) {
@@ -31,7 +31,7 @@ export const blueprint: Blueprint = {
 		await owner.summon(card);
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// TODO: Add proper tests. #325
 		return EventListenerMessage.Skip;
 	},

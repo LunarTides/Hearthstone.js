@@ -28,7 +28,7 @@ export const blueprint: Blueprint = {
 	health: 6,
 	tribes: [MinionTribe.None],
 
-	async passive(owner, self, key, value) {
+	async passive(self, owner, key, value) {
 		// At the end of your turn, cast a spell you've cast this turn (targets are random).
 
 		// Only proceed if the correct event key was broadcast
@@ -53,7 +53,7 @@ export const blueprint: Blueprint = {
 		owner.forceTarget = undefined;
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// TODO: Add proper tests. #325
 		return EventListenerMessage.Skip;
 	},

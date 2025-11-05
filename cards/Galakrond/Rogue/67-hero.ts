@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
 	armor: 5,
 	heropowerId: game.cardIds.galakrondsGuile125,
 
-	async battlecry(owner, self) {
+	async battlecry(self, owner) {
 		// Draw {amount} cards. They cost (0).
 
 		// Get the amount of cards to draw
@@ -40,11 +40,11 @@ export const blueprint: Blueprint = {
 		}
 	},
 
-	async invoke(owner, self) {
+	async invoke(self, owner) {
 		self.galakrondBump("invokeCount");
 	},
 
-	async placeholders(owner, self) {
+	async placeholders(self, owner) {
 		if (!self.storage.invokeCount) {
 			return { amount: 0, plural: "s", plural2: "They" };
 		}
@@ -61,7 +61,7 @@ export const blueprint: Blueprint = {
 		return { amount, plural, plural2 };
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// TODO: Test. #325
 		return EventListenerMessage.Skip;
 	},

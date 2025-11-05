@@ -29,7 +29,7 @@ export const blueprint: Blueprint = {
 	health: 5,
 	tribes: [MinionTribe.None],
 
-	async create(owner, self) {
+	async create(self, owner) {
 		// Add additional fields here
 		self.addKeyword(Keyword.Titan, [
 			game.cardIds.induceInsanity107,
@@ -38,7 +38,7 @@ export const blueprint: Blueprint = {
 		]);
 	},
 
-	async passive(owner, self, key, value) {
+	async passive(self, owner, key, value) {
 		// After this uses an ability, cast two random spells
 
 		// Only proceed if the correct event key was broadcast
@@ -62,7 +62,7 @@ export const blueprint: Blueprint = {
 		}
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// TODO: Add proper tests. #325
 		return EventListenerMessage.Skip;
 	},

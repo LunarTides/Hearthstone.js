@@ -26,7 +26,7 @@ export const blueprint: Blueprint = {
 	health: 10,
 	tribes: [MinionTribe.None],
 
-	async create(owner, self) {
+	async create(self, owner) {
 		// Put the ids of the titan ability cards, like in corrupt, but a list.
 		self.addKeyword(Keyword.Titan, [
 			// This looks a bit confusing.
@@ -37,7 +37,7 @@ export const blueprint: Blueprint = {
 		]);
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// TODO: Test. #325
 		return EventListenerMessage.Skip;
 	},

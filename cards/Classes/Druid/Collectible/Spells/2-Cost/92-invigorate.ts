@@ -23,7 +23,7 @@ export const blueprint: Blueprint = {
 
 	spellSchools: [SpellSchool.Nature],
 
-	async cast(owner, self) {
+	async cast(self, owner) {
 		// Choose One - Gain an empty Mana Crystal; or Draw a card.
 		await game.functions.interact.prompt.chooseOne(
 			1,
@@ -44,7 +44,7 @@ export const blueprint: Blueprint = {
 		);
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// Gain an empty Mana Crystal
 		const { emptyMana } = owner;
 

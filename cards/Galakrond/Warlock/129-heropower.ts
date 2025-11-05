@@ -15,7 +15,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: 129,
 
-	async heropower(owner, self) {
+	async heropower(self, owner) {
 		// Summon two 1/1 Imps.
 		for (let i = 0; i < 2; i++) {
 			const card = await Card.create(game.cardIds.draconicImp21, owner);
@@ -27,7 +27,7 @@ export const blueprint: Blueprint = {
 		}
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		const countImps = () => owner.board.filter((card) => card.id === 21).length;
 
 		// There should be 0 imps by default

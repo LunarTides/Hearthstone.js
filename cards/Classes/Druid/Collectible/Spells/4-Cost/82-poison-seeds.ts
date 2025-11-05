@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
 
 	spellSchools: [SpellSchool.Nature],
 
-	async cast(owner, self) {
+	async cast(self, owner) {
 		// Destroy all minions and summon 2/2 Treants to replace them.
 		for (const player of [game.player1, game.player2]) {
 			for (const card of player.board) {
@@ -36,7 +36,7 @@ export const blueprint: Blueprint = {
 		}
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		const amountOfCards = 3;
 
 		// Summon some amount of Sheep

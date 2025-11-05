@@ -198,7 +198,7 @@ export async function create(
 		(blueprint.keywords?.length ?? 0) > 0 ? "\n\tKeyword," : "";
 	const createAbility = blueprint.text
 		? `
-    async create(owner, self) {
+    async create(self, owner) {
         // Add additional fields here
 ${runes}${keywords}
     },`
@@ -209,19 +209,19 @@ ${runes}${keywords}
 
 	/*
 	 * Normal ability
-	 * Example 1: '\n\n    passive(owner, self, key, value, eventPlayer) {\n        // Your battlecries trigger twice.\n        ...\n    }',
-	 * Example 2: '\n\n    battlecry(owner, self) {\n        // Deal 2 damage to the opponent.\n        \n    }'
+	 * Example 1: '\n\n    passive(self, owner, key, value, eventPlayer) {\n        // Your battlecries trigger twice.\n        ...\n    }',
+	 * Example 2: '\n\n    battlecry(self, owner) {\n        // Deal 2 damage to the opponent.\n        \n    }'
 	 */
 	if (ability) {
 		const extraNewline = extraPassiveCode ? "" : "\n";
 
 		ability = `
 
-    async ${ability.toLowerCase()}(owner, self${triggerText} {
+    async ${ability.toLowerCase()}(self, owner${triggerText} {
         // ${cleanedDescription}${extraPassiveCode}${extraNewline}
     },
 
-    async test(owner, self) {
+    async test(self, owner) {
         // Unit testing
         return EventListenerMessage.Skip;
     },`;

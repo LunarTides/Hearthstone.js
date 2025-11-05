@@ -25,7 +25,7 @@ export const blueprint: Blueprint = {
 	health: 8,
 	tribes: [MinionTribe.None],
 
-	async create(owner, self) {
+	async create(self, owner) {
 		/*
 		 * The 2 is how many turns this minion should be dormant for.
 		 * Full disclosure: The dormant system is one of the most untested parts of this game.
@@ -35,13 +35,13 @@ export const blueprint: Blueprint = {
 	},
 
 	// The battlecry only triggers when the minion is no longer dormant.
-	async battlecry(owner, self) {
+	async battlecry(self, owner) {
 		// Dredge.
 
 		await game.functions.interact.prompt.dredge();
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// TODO: Test. #325
 		return EventListenerMessage.Skip;
 	},

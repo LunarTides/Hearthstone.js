@@ -17,12 +17,12 @@ export const blueprint: Blueprint = {
 	attack: 2,
 	health: 4,
 
-	async create(owner, self) {
+	async create(self, owner) {
 		// Add additional fields here
 		self.addKeyword(Keyword.Unbreakable);
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// Unit testing
 		assert.equal(self.health, 4);
 		await owner.setWeapon(self);

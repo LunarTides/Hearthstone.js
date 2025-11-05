@@ -28,7 +28,7 @@ export const blueprint: Blueprint = {
 	 */
 	heropowerId: game.cardIds.heropowerExample130,
 
-	async battlecry(owner, self) {
+	async battlecry(self, owner) {
 		// Restore your hero to full health.
 
 		/*
@@ -39,7 +39,7 @@ export const blueprint: Blueprint = {
 		owner.addHealth(owner.maxHealth);
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		owner.health = 1;
 		await self.trigger(Ability.Battlecry);
 		assert.equal(owner.health, owner.maxHealth);

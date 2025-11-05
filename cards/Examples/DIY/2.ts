@@ -22,7 +22,7 @@ export const blueprint: Blueprint = {
 
 	spellSchools: [SpellSchool.None],
 
-	async cast(owner, self) {
+	async cast(self, owner) {
 		// Restore 3 health to the hero.
 
 		// Try to heal the player by 3 hp.

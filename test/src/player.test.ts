@@ -123,7 +123,7 @@ describe("src/player", () => {
 		expect(player.weapon).toBeUndefined();
 
 		const weapon = await Card.create(game.cardIds.wickedKnife22, player);
-		weapon.addAbility(Ability.Deathrattle, async (owner, self) => {
+		weapon.addAbility(Ability.Deathrattle, async (self, owner) => {
 			deathrattleTriggered = true;
 		});
 
@@ -154,7 +154,7 @@ describe("src/player", () => {
 		expect(await player.destroyWeapon()).toBe(false);
 
 		const weapon = await Card.create(game.cardIds.wickedKnife22, player);
-		weapon.addAbility(Ability.Deathrattle, async (owner, self) => {
+		weapon.addAbility(Ability.Deathrattle, async (self, owner) => {
 			deathrattleTriggered = true;
 		});
 
@@ -740,7 +740,7 @@ describe("src/player", () => {
 
 			spellSchools: [SpellSchool.None],
 
-			async cast(owner, self) {
+			async cast(self, owner) {
 				await owner.addQuest(
 					QuestType.Quest,
 					self,

@@ -25,7 +25,7 @@ export const blueprint: Blueprint = {
 
 	spellSchools: [SpellSchool.Nature],
 
-	async cast(owner, self) {
+	async cast(self, owner) {
 		// For the rest of the game, players draw an extra card at the start of their turn.
 		game.event.addListener(
 			Event.StartTurn,
@@ -37,7 +37,7 @@ export const blueprint: Blueprint = {
 		);
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		let handSize = owner.hand.length;
 
 		// When the card hasn't been played, draw 1 card every turn.

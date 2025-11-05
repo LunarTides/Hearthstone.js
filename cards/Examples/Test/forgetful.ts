@@ -26,13 +26,13 @@ export const blueprint: Blueprint = {
 	health: 4,
 	tribes: [MinionTribe.None],
 
-	async create(owner, self) {
+	async create(self, owner) {
 		// Forgetful
 
 		self.addKeyword(Keyword.Forgetful);
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// TODO: Test #325
 		return EventListenerMessage.Skip;
 

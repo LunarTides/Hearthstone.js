@@ -15,7 +15,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: 124,
 
-	async heropower(owner, self) {
+	async heropower(self, owner) {
 		// Summon a 1/1 Ghoul with Charge. It dies at end of turn.
 
 		// Create the Ghoul
@@ -27,7 +27,7 @@ export const blueprint: Blueprint = {
 		// The `It dies at end of turn.` part is handled by the ghoul itself, so we don't need to do anything extra here
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		const lookForMinion = () => owner.board.some((card) => card.id === 23);
 
 		// The minion shouldn't be on the board at first.

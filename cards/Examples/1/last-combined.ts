@@ -31,14 +31,14 @@ export const blueprint: Blueprint = {
 	// You can set the tribe to "All" to mean "This has all minion types."
 	tribes: [MinionTribe.All],
 
-	async create(owner, self) {
+	async create(self, owner) {
 		// Taunt, Divine Shield
 
 		self.addKeyword(Keyword.Taunt);
 		self.addKeyword(Keyword.DivineShield);
 	},
 
-	async battlecry(owner, self) {
+	async battlecry(self, owner) {
 		// Dredge. Gain +1/+1.
 
 		// Ordering is important. In the description it says that it dredges first, then adds +1/+1.
@@ -47,7 +47,7 @@ export const blueprint: Blueprint = {
 	},
 
 	// Ignore this
-	async test(owner, self) {
+	async test(self, owner) {
 		// Makes the player answer "1" to the next question
 		owner.inputQueue = ["1"];
 

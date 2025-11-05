@@ -26,17 +26,17 @@ export const blueprint: Blueprint = {
 	health: 10,
 	tribes: [MinionTribe.None],
 
-	async create(owner, self) {
+	async create(self, owner) {
 		// Add additional fields here
 		self.addKeyword(Keyword.Taunt);
 	},
 
-	async battlecry(owner, self) {
+	async battlecry(self, owner) {
 		// Taunt. Battlecry: Deal 6 damage to this minion.
 		await game.attack(6, self);
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		await self.trigger(Ability.Battlecry);
 		assert.equal(self.health, 4);
 	},

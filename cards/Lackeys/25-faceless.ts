@@ -27,7 +27,7 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribes: [MinionTribe.None],
 
-	async battlecry(owner, self) {
+	async battlecry(self, owner) {
 		// Summon a random 2-Cost minion.
 
 		// filter out all cards that aren't 2-cost minions
@@ -44,7 +44,7 @@ export const blueprint: Blueprint = {
 		await owner.summon(await random.imperfectCopy());
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// If there doesn't exist any 2-Cost minions, pass the test
 		if (
 			!(await Card.all()).some(

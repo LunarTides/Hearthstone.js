@@ -15,7 +15,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: 122,
 
-	async heropower(owner, self) {
+	async heropower(self, owner) {
 		// Equip a 1/2 Dagger.
 
 		// Create the weapon card
@@ -25,7 +25,7 @@ export const blueprint: Blueprint = {
 		await owner.setWeapon(weapon);
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// The player should not have a weapon
 		assert.equal(owner.weapon, undefined);
 		await self.trigger(Ability.HeroPower);

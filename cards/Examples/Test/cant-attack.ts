@@ -25,13 +25,13 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribes: [MinionTribe.None],
 
-	async create(owner, self) {
+	async create(self, owner) {
 		// Cant Attack
 
 		self.addKeyword(Keyword.CantAttack);
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		await owner.summon(self);
 
 		// The card should be sleepy by default

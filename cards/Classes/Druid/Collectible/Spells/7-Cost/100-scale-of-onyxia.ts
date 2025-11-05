@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
 
 	spellSchools: [SpellSchool.None],
 
-	async cast(owner, self) {
+	async cast(self, owner) {
 		// Fill your board with 2/1 Whelps with Rush.
 		const remainingBoardSpace = owner.getRemainingBoardSpace();
 
@@ -34,7 +34,7 @@ export const blueprint: Blueprint = {
 		}
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		assert.equal(owner.board.length, 0);
 		await self.trigger(Ability.Cast);
 

@@ -25,7 +25,7 @@ export const blueprint: Blueprint = {
 	health: 10,
 	tribes: [MinionTribe.None],
 
-	async passive(owner, self, key, value, eventPlayer) {
+	async passive(self, owner, key, value, eventPlayer) {
 		// Whenever a minion dies, Resurrect it with 1/1 stats.
 
 		// If the key is for a different event, stop the function.

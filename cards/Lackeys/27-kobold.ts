@@ -27,7 +27,7 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribes: [MinionTribe.None],
 
-	async battlecry(owner, self) {
+	async battlecry(self, owner) {
 		// Deal 2 damage.
 
 		// Select a target
@@ -46,7 +46,7 @@ export const blueprint: Blueprint = {
 		return true;
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		owner.inputQueue = ["face", "y"];
 		await self.trigger(Ability.Battlecry);
 

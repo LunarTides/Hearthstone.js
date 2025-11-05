@@ -25,11 +25,11 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribes: [MinionTribe.None],
 
-	async create(owner, self) {
+	async create(self, owner) {
 		self.addKeyword(Keyword.DivineShield);
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// There should be no minions on the board
 		assert.equal(owner.board.length, 0);
 

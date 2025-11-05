@@ -27,7 +27,7 @@ export const blueprint: Blueprint = {
 	health: 5,
 	tribes: [MinionTribe.None],
 
-	async battlecry(owner, self) {
+	async battlecry(self, owner) {
 		// Cast a random spell for each spell you've cast this game (targets chosen randomly).
 		const amount = game.event.events.PlayCard?.[owner.id].filter(
 			(object) => object[0].type === Type.Spell,
@@ -49,7 +49,7 @@ export const blueprint: Blueprint = {
 		}
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// TODO: Add proper tests. #325
 		return EventListenerMessage.Skip;
 	},

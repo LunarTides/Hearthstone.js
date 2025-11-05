@@ -29,7 +29,7 @@ export const blueprint: Blueprint = {
 	health: 2,
 	tribes: [MinionTribe.None],
 
-	async battlecry(owner, self) {
+	async battlecry(self, owner) {
 		// If your deck has no duplicates, draw a card.
 
 		// Check if the condition is cleared.
@@ -46,7 +46,7 @@ export const blueprint: Blueprint = {
 	 * It will also run every tick in order to add / remove the `(Condition cleared!)` text,
 	 * so don't do too many expensive things in here. (Make use of `self.storage` or `game.cache` if you need to.)
 	 */
-	async condition(owner, self) {
+	async condition(self, owner) {
 		/*
 		 * `owner.highlander()` will return true if the player has no duplicates in their deck.
 		 *
@@ -55,7 +55,7 @@ export const blueprint: Blueprint = {
 		return owner.highlander();
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		const { length } = owner.deck;
 		owner.hand = [];
 

@@ -25,7 +25,7 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribes: [MinionTribe.None],
 
-	async create(owner, self) {
+	async create(self, owner) {
 		/*
 		 * Put the id of the corrupted counterpart here. This is the id of 5-corrupted.ts
 		 * Corrupted is another system that is very untested and might get a rewrite.
@@ -33,7 +33,7 @@ export const blueprint: Blueprint = {
 		self.addKeyword(Keyword.Corrupt, game.cardIds.corruptedExample41);
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// TODO: Test. #325
 		return EventListenerMessage.Skip;
 	},

@@ -27,7 +27,7 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribes: [MinionTribe.None],
 
-	async battlecry(owner, self) {
+	async battlecry(self, owner) {
 		// Cast a random 1-Cost spell. Improve your future Chaotic Tendrils.
 		const pool = (await Card.all()).filter(
 			(card) => card.type === Type.Spell && card.cost === 1,
@@ -42,7 +42,7 @@ export const blueprint: Blueprint = {
 		// TODO: Improve your future Chaotic Tendrils. #372
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// TODO: Add proper tests. #325
 		return EventListenerMessage.Skip;
 	},

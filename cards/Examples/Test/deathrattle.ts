@@ -25,7 +25,7 @@ export const blueprint: Blueprint = {
 	health: 2,
 	tribes: [MinionTribe.None],
 
-	async deathrattle(owner, self) {
+	async deathrattle(self, owner) {
 		// Summon two 1/1 Sheep.
 
 		for (let i = 0; i < 2; i++) {
@@ -37,7 +37,7 @@ export const blueprint: Blueprint = {
 		}
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// There should be 0 minions on the board
 		assert.equal(owner.board.length, 0);
 		await owner.summon(self);

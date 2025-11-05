@@ -25,7 +25,7 @@ export const blueprint: Blueprint = {
 	health: 3,
 	tribes: [MinionTribe.Beast],
 
-	async create(owner, self) {
+	async create(self, owner) {
 		/*
 		 * Put the names of the cards here. The "null0" is this card. You could replace it with `0`, but thats bad practice.
 		 *
@@ -41,7 +41,7 @@ export const blueprint: Blueprint = {
 		]);
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		await owner.summon(self);
 
 		const board = owner.board;

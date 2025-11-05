@@ -25,12 +25,12 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribes: [MinionTribe.None],
 
-	async create(owner, self) {
+	async create(self, owner) {
 		// Store a coin for later
 		self.storage.the_coin = await Card.create(game.cardIds.theCoin2, owner);
 	},
 
-	async placeholders(owner, self) {
+	async placeholders(self, owner) {
 		/*
 		 * You can reference entire cards in placeholders.
 		 * Go in-game, give yourself this card, and type 'detail' to see how it works.
@@ -41,7 +41,7 @@ export const blueprint: Blueprint = {
 		return { coin };
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// TODO: Add proper tests. #325
 		return EventListenerMessage.Skip;
 	},

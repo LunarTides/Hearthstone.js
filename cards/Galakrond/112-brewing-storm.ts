@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
 	health: 2,
 	tribes: [MinionTribe.Elemental],
 
-	async create(owner, self) {
+	async create(self, owner) {
 		// Add additional fields here
 		self.addKeyword(Keyword.Rush);
 	},

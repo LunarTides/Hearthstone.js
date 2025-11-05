@@ -26,12 +26,12 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribes: [MinionTribe.None],
 
-	async create(owner, self) {
+	async create(self, owner) {
 		// Put the id of the forged counterpart, like in corrupt.
 		self.addKeyword(Keyword.Forge, game.cardIds.forgedExample76);
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// TODO: Test. #325
 		return EventListenerMessage.Skip;
 	},

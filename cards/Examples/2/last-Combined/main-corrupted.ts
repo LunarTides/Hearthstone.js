@@ -26,7 +26,7 @@ export const blueprint: Blueprint = {
 	health: 9,
 	tribes: [MinionTribe.None],
 
-	async create(owner, self) {
+	async create(self, owner) {
 		self.addKeyword(Keyword.Colossal, [
 			game.cardIds.leftArm46,
 			game.cardIds.null0,
@@ -36,13 +36,13 @@ export const blueprint: Blueprint = {
 		self.addKeyword(Keyword.Dormant, 2);
 	},
 
-	async battlecry(owner, self) {
+	async battlecry(self, owner) {
 		// Dredge.
 
 		await game.functions.interact.prompt.dredge();
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// TODO: Test. #325
 		return EventListenerMessage.Skip;
 	},

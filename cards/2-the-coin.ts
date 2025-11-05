@@ -23,7 +23,7 @@ export const blueprint: Blueprint = {
 
 	spellSchools: [SpellSchool.None],
 
-	async cast(owner, self) {
+	async cast(self, owner) {
 		// Gain 1 Mana Crystal this turn only.
 
 		/*
@@ -34,7 +34,7 @@ export const blueprint: Blueprint = {
 		owner.refreshMana(1, owner.maxMana);
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// Assert 5->6
 		owner.mana = 5;
 		await self.trigger(Ability.Cast);

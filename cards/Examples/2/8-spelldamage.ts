@@ -31,14 +31,14 @@ export const blueprint: Blueprint = {
 
 	spellSchools: [SpellSchool.None],
 
-	async cast(owner, self) {
+	async cast(self, owner) {
 		// Deal $3 damage to the enemy hero.
 
 		// Set the `spellDamage` flag to the attack in order to deal spell damage correctly.
 		await game.attack(3, owner.getOpponent(), { spellDamage: true });
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		const oldHealth = owner.getOpponent().health;
 
 		owner.spellDamage = 3;

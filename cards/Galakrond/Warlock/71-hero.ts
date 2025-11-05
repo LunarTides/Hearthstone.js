@@ -26,7 +26,7 @@ export const blueprint: Blueprint = {
 	armor: 5,
 	heropowerId: game.cardIds.galakrondsMalice129,
 
-	async battlecry(owner, self) {
+	async battlecry(self, owner) {
 		// Summon 1 random Demon.
 		const amount = game.functions.card.galakrondFormula(
 			self.storage.invokeCount as number,
@@ -58,11 +58,11 @@ export const blueprint: Blueprint = {
 		}
 	},
 
-	async invoke(owner, self) {
+	async invoke(self, owner) {
 		self.galakrondBump("invokeCount");
 	},
 
-	async placeholders(owner, self) {
+	async placeholders(self, owner) {
 		if (!self.storage.invokeCount) {
 			return { amount: 0, plural: "s", plural2: "They" };
 		}
@@ -77,7 +77,7 @@ export const blueprint: Blueprint = {
 		return { amount, plural };
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// TODO: Test. #325
 		return EventListenerMessage.Skip;
 	},

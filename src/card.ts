@@ -560,7 +560,7 @@ export class Card {
 		 * Do: this.test = true
 		 *
 		 * Function Example:
-		 * Blueprint: { name: "The Coin", cost: 0, cast(owner, self): { owner.refreshMana(1, owner.maxMana) } }
+		 * Blueprint: { name: "The Coin", cost: 0, cast(self, owner): { owner.refreshMana(1, owner.maxMana) } }
 		 *                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 		 * Do: this.abilities.cast = [{ owner.addMana(1) }]
 		 *                           ^                  ^
@@ -1225,7 +1225,7 @@ export class Card {
 	): Promise<unknown[] | typeof Card.REFUND | false> {
 		/*
 		 * Example: trigger(Ability.Cast)
-		 * Does: this.cast.forEach(castFunc => castFunc(owner, card))
+		 * Does: this.cast.forEach(castFunc => castFunc(card, owner))
 		 */
 		const abilities: AbilityCallback[] | undefined = this.abilities[name];
 		if (!abilities) {
@@ -1240,8 +1240,8 @@ export class Card {
 			}
 
 			const result = await ability(
-				this.owner,
 				this,
+				this.owner,
 				key as Event,
 				value,
 				eventPlayer,
@@ -1825,7 +1825,7 @@ export class Card {
 			}
 
 			case "Living Spores": {
-				this.addAbility(Ability.Deathrattle, async (owner, _) => {
+				this.addAbility(Ability.Deathrattle, async (_, owner) => {
 					owner.summon(await Card.create(game.cardIds.plant3, owner));
 					owner.summon(await Card.create(game.cardIds.plant3, owner));
 				});

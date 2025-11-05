@@ -14,14 +14,14 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: 117,
 
-	async heropower(owner, self) {
+	async heropower(self, owner) {
 		// Gain 2 Armor.
 
 		// Give the player +2 armor.
 		owner.addArmor(2);
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// The player should have 0 armor
 		assert.equal(owner.armor, 0);
 		await self.trigger(Ability.HeroPower);

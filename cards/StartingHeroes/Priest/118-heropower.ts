@@ -15,7 +15,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: 118,
 
-	async heropower(owner, self) {
+	async heropower(self, owner) {
 		// Restore 2 Health.
 
 		const target = await game.functions.interact.prompt.target(
@@ -33,7 +33,7 @@ export const blueprint: Blueprint = {
 		return true;
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// Health: 1->3
 		owner.health = 1;
 		owner.inputQueue = ["face", "n"];

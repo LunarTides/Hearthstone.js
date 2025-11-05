@@ -38,12 +38,12 @@ export const blueprint: Blueprint = {
 	 *
 	 * Instead of "battlecry", you could put "deathrattle", or "inspire", for example.
 	 */
-	async battlecry(owner, self) {
+	async battlecry(self, owner) {
 		// Give this minion +1/+1.
 
 		/*
-		 * The `owner` variable is the card's owner. This is an instance of the Player class as defined in `src/player.ts`.
 		 * The `self` variable is the actual card itself in-game. This is an instance of the Card class as defined in `src/card.ts`.
+		 * The `owner` variable is the card's owner. This is an instance of the Player class as defined in `src/player.ts`.
 		 *
 		 * The global `game` variable (used later on) is the current game. This is an instance of the Game class as defined in `src/game.ts`.
 		 */
@@ -57,7 +57,7 @@ export const blueprint: Blueprint = {
 	 * I encourage you to make tests like these yourself. Run `bun ./scripts/test/cards.ts` to run these tests.
 	 * These tests are run in an isolated environment. The side-effect of the code here won't carry over to other tests or the game.
 	 */
-	async test(owner, self) {
+	async test(self, owner) {
 		await self.trigger(Ability.Battlecry);
 
 		assert.equal(self.blueprint.attack! + 1, self.attack);

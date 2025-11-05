@@ -24,17 +24,17 @@ export const blueprint: Blueprint = {
 	health: 2,
 	tribes: [MinionTribe.None],
 
-	async tick(owner, self) {
+	async tick(self, owner) {
 		// Disable your hero power.
 
 		owner.disableHeroPower = true;
 	},
 
-	async remove(owner, self) {
+	async remove(self, owner) {
 		owner.disableHeroPower = false;
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		owner.mana = 10;
 
 		// By default, you can use your hero power.

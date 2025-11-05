@@ -14,7 +14,7 @@ export const blueprint: Blueprint = {
 	 * Other properties, like keywords, has to be added in the 'create' ability. More on that in `1-4`. (`Examples/1/4-taunt.ts`)
 	 */
 
-	// Essential properties first (all cards have these)
+	// Essential properties first. (All cards have these.)
 
 	// The name of the card.
 	name: "Minion Example",
@@ -42,7 +42,7 @@ export const blueprint: Blueprint = {
 
 	/**
 	 * Any tags that should be applied to the card.
-	 * Tags are used to group cards together. They should be lowercase.
+	 * Tags are used to group cards together.
 	 * E.g. `CardTag.Lackey`, `CardTag.Galakrond`, `CardTag.StartingHero`, etc...
 	 *
 	 * This can be queried like this: `Card.allWithTags([CardTag.Lackey]);`
@@ -57,7 +57,7 @@ export const blueprint: Blueprint = {
 
 	/*
 	 * After the id property, all properties below (except for abilities) are type-specific
-	 * Don't worry if you forget one of them, the game will throw an error immediately if you do.
+	 * Don't worry if you forget to add one of them, the game will throw an error immediately if you do.
 	 */
 
 	// The amount of attack the minion has.

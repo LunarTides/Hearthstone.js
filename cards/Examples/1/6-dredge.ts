@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribes: [MinionTribe.None],
 
-	async battlecry(owner, self) {
+	async battlecry(self, owner) {
 		// Dredge.
 
 		// "game.functions.interact" is an instance of the interact object as defined in `src/functions/interact.ts`.
@@ -32,7 +32,7 @@ export const blueprint: Blueprint = {
 	},
 
 	// Ignore this
-	async test(owner, self) {
+	async test(self, owner) {
 		// Makes the player answer "1" to the next question
 		owner.inputQueue = ["1"];
 		const card = await game.functions.interact.prompt.dredge();

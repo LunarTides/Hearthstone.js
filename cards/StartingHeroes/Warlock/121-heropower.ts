@@ -14,7 +14,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: 121,
 
-	async heropower(owner, self) {
+	async heropower(self, owner) {
 		// Draw a card and take 2 damage.
 
 		// Deal 2 damage to the player.
@@ -22,7 +22,7 @@ export const blueprint: Blueprint = {
 		await owner.drawCards(1);
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// Clear the player's hand
 		owner.hand = [];
 

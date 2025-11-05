@@ -28,7 +28,7 @@ export const blueprint: Blueprint = {
 	 * `tick` works the same as passive, except it's called more often, and isn't dependent on events.
 	 * More on ticks in '4-5'
 	 */
-	async tick(owner, self, key, value) {
+	async tick(self, owner, key, value) {
 		// Your cards cost 1 less.
 
 		/*
@@ -53,7 +53,7 @@ export const blueprint: Blueprint = {
 	 * This ability triggers whenever this card is about to be removed from the game.
 	 * It exists to allow cards to undo changes made by `passive`-related effects (e.g. tick).
 	 */
-	async remove(owner, self) {
+	async remove(self, owner) {
 		// Remove the "-1 cost" enchantments that was given by this card from all cards in the player's hand.
 
 		for (const card of owner.hand) {
@@ -62,7 +62,7 @@ export const blueprint: Blueprint = {
 		}
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// TODO: Add proper tests. #325
 		return EventListenerMessage.Skip;
 	},

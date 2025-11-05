@@ -14,7 +14,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: 115,
 
-	async heropower(owner, self) {
+	async heropower(self, owner) {
 		// +1 Attack this turn. +1 Armor.
 
 		// Give the player +1 attack.
@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
 		owner.addArmor(1);
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// The player should start with 0 attack
 		assert.equal(owner.attack, 0);
 		assert.equal(owner.armor, 0);

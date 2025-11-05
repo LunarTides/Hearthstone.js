@@ -36,7 +36,7 @@ export const blueprint: Blueprint = {
 
 	spellSchools: [SpellSchool.None],
 
-	async cast(owner, self) {
+	async cast(self, owner) {
 		// Quest: Play 3 cards. Reward: Return those cards back to your hand.
 
 		// Create a list of cards to put the 3 cards into
@@ -115,7 +115,7 @@ export const blueprint: Blueprint = {
 		);
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// TODO: Add proper tests. #325
 		return EventListenerMessage.Skip;
 	},

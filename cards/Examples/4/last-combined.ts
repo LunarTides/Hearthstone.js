@@ -26,7 +26,7 @@ export const blueprint: Blueprint = {
 
 	spellSchools: [SpellSchool.None],
 
-	async cast(owner, self) {
+	async cast(self, owner) {
 		await owner.addQuest(
 			QuestType.Quest,
 			self,
@@ -102,7 +102,7 @@ export const blueprint: Blueprint = {
 		);
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// TODO: Add proper tests. #325
 		return EventListenerMessage.Skip;
 	},

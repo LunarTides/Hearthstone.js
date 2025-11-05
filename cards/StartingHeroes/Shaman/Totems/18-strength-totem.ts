@@ -27,7 +27,7 @@ export const blueprint: Blueprint = {
 	health: 2,
 	tribes: [MinionTribe.Totem],
 
-	async passive(owner, self, key, value, eventPlayer) {
+	async passive(self, owner, key, value, eventPlayer) {
 		// At the end of your turn, give another friendly minion +1 Attack.
 
 		// Only continue if the event that triggered this is the EndTurn event, and the player that triggered the event is this card's owner.
@@ -49,7 +49,7 @@ export const blueprint: Blueprint = {
 		await minion.addStats(1, 0);
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// Summon 5 Sheep with 2 max health.
 		for (let i = 0; i < 5; i++) {
 			const card = await Card.create(game.cardIds.sheep1, owner);

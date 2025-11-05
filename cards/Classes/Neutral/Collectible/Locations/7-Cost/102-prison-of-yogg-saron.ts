@@ -25,7 +25,7 @@ export const blueprint: Blueprint = {
 	durability: 3,
 	cooldown: 2,
 
-	async use(owner, self) {
+	async use(self, owner) {
 		// Choose a character. Cast 4 random spells (targeting it if possible).
 		const target = await game.functions.interact.prompt.target(self.text, self);
 		if (!target) {
@@ -49,7 +49,7 @@ export const blueprint: Blueprint = {
 		return true;
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// TODO: Add proper tests. #325
 		return EventListenerMessage.Skip;
 	},

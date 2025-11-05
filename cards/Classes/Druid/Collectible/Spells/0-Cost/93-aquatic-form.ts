@@ -23,7 +23,7 @@ export const blueprint: Blueprint = {
 
 	spellSchools: [SpellSchool.None],
 
-	async cast(owner, self) {
+	async cast(self, owner) {
 		// Dredge. If you have the Mana to play the card this turn, draw it.
 		const card = await game.functions.interact.prompt.dredge();
 		if (!card || owner.mana < card.cost) {
@@ -33,7 +33,7 @@ export const blueprint: Blueprint = {
 		await owner.drawCards(1);
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		const handSize = owner.hand.length;
 
 		// Make the player answer 1

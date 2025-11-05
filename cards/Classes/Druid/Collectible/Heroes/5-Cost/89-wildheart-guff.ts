@@ -17,14 +17,14 @@ export const blueprint: Blueprint = {
 	armor: 5,
 	heropowerId: game.cardIds.nurture113,
 
-	async battlecry(owner, self) {
+	async battlecry(self, owner) {
 		// Set your maximum Mana to 20. Gain an empty Mana Crystal. Draw a card.
 		owner.maxMana = 20;
 		owner.addEmptyMana(1);
 		await owner.drawCards(1);
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		const handSize = owner.hand.length;
 		const { emptyMana } = owner;
 

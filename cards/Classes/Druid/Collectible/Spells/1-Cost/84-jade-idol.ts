@@ -23,7 +23,7 @@ export const blueprint: Blueprint = {
 
 	spellSchools: [SpellSchool.None],
 
-	async cast(owner, self) {
+	async cast(self, owner) {
 		// Choose One - Summon a Jade Golem; or Shuffle 3 copies of this card into your deck.
 		await game.functions.interact.prompt.chooseOne(
 			1,
@@ -47,7 +47,7 @@ export const blueprint: Blueprint = {
 		);
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// Summon a Jade Golem
 		owner.inputQueue = ["1"];
 		await self.trigger(Ability.Cast);

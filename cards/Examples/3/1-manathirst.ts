@@ -27,7 +27,7 @@ export const blueprint: Blueprint = {
 	health: 2,
 	tribes: [MinionTribe.None],
 
-	async battlecry(owner, self) {
+	async battlecry(self, owner) {
 		const manathirst = self.manathirst(6);
 
 		// Make the prompt.
@@ -70,11 +70,11 @@ export const blueprint: Blueprint = {
 	},
 
 	// This is optional, you will learn more about it in the `condition` example in `3-3`.
-	async condition(owner, self) {
+	async condition(self, owner) {
 		return self.manathirst(6);
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		const sheep = await Card.create(game.cardIds.sheep1, owner.getOpponent());
 		await sheep.addStats(4, 4);
 		await owner.getOpponent().summon(sheep);

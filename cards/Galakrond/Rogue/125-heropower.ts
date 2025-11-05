@@ -22,7 +22,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: 125,
 
-	async heropower(owner, self) {
+	async heropower(self, owner) {
 		// Add a lacky to your hand.
 		const lackey = game.lodash.sample(await Card.allWithTags([CardTag.Lackey]));
 		if (!lackey) {
@@ -32,7 +32,7 @@ export const blueprint: Blueprint = {
 		await owner.addToHand(await lackey.imperfectCopy());
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// TODO: Add proper tests. #325
 		return EventListenerMessage.Skip;
 	},

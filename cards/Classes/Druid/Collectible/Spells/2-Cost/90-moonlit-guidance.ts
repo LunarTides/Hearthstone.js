@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
 
 	spellSchools: [SpellSchool.Arcane],
 
-	async cast(owner, self) {
+	async cast(self, owner) {
 		// Discover a copy of a card in your deck. If you play it this turn, draw the original.
 		const original = await game.functions.interact.prompt.discover(
 			self.text,
@@ -59,7 +59,7 @@ export const blueprint: Blueprint = {
 		});
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// TODO: Add proper tests. #325
 		return EventListenerMessage.Skip;
 	},

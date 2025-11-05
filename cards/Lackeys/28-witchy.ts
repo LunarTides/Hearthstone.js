@@ -27,7 +27,7 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribes: [MinionTribe.None],
 
-	async battlecry(owner, self) {
+	async battlecry(self, owner) {
 		// Transform a friendly minion into one that costs (1) more.
 
 		// Ask the user which minion to transform
@@ -69,7 +69,7 @@ export const blueprint: Blueprint = {
 		return true;
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		const existsMinionWithCost = (cost: number) =>
 			owner.board.some((card) => card.cost === cost);
 

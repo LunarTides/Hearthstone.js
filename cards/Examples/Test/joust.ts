@@ -25,7 +25,7 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribes: [MinionTribe.None],
 
-	async battlecry(owner, self) {
+	async battlecry(self, owner) {
 		// Reveal a minion from each player's deck. If yours costs more, gain +1/+1.
 
 		// Joust. Only allow minion cards to be selected
@@ -38,7 +38,7 @@ export const blueprint: Blueprint = {
 		await self.addStats(1, 1);
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// TODO: Test #325
 		return EventListenerMessage.Skip;
 	},

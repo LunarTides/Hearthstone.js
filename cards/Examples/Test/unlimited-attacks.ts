@@ -25,14 +25,14 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribes: [MinionTribe.None],
 
-	async create(owner, self) {
+	async create(self, owner) {
 		// Can attack any number of times.
 
 		// This keyword can be added to weapons as well.
 		self.addKeyword(Keyword.UnlimitedAttacks);
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		await owner.summon(self);
 
 		self.ready();

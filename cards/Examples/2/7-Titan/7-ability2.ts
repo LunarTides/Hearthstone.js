@@ -24,13 +24,13 @@ export const blueprint: Blueprint = {
 
 	spellSchools: [SpellSchool.None],
 
-	async cast(owner, self) {
+	async cast(self, owner) {
 		// Heal 3 damage.
 
 		owner.addHealth(3);
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		owner.health = owner.maxHealth - 5;
 		await self.trigger(Ability.Cast);
 

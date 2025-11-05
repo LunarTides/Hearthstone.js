@@ -26,13 +26,13 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribes: [MinionTribe.None],
 
-	async create(owner, self) {
+	async create(self, owner) {
 		// Store the attacker / target combo in storage.
 
 		self.storage.attack = [];
 	},
 
-	async passive(owner, self, key, value, eventPlayer) {
+	async passive(self, owner, key, value, eventPlayer) {
 		// Whenever a minion attacks, it attacks again.
 
 		/*
@@ -73,7 +73,7 @@ export const blueprint: Blueprint = {
 		await game.attack(attacker, target, { force: true });
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		const opponent = owner.getOpponent();
 
 		assert.equal(opponent.health, 30);

@@ -24,13 +24,13 @@ export const blueprint: Blueprint = {
 
 	spellSchools: [SpellSchool.None],
 
-	async cast(owner, self) {
+	async cast(self, owner) {
 		// Restore 2 mana.
 
 		owner.refreshMana(2);
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		owner.mana = 5;
 		owner.emptyMana = 10;
 

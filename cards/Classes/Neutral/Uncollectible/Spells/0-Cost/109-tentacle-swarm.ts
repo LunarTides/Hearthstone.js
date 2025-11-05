@@ -26,7 +26,7 @@ export const blueprint: Blueprint = {
 
 	spellSchools: [SpellSchool.None],
 
-	async cast(owner, self) {
+	async cast(self, owner) {
 		// Fill your hand with 1/1 Chaotic Tendrils.
 		const remaining = owner.getRemainingHandSpace();
 
@@ -36,7 +36,7 @@ export const blueprint: Blueprint = {
 		}
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		const handSize = owner.hand.length;
 		await self.trigger(Ability.Cast);
 

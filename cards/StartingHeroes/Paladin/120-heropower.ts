@@ -15,7 +15,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: 120,
 
-	async heropower(owner, self) {
+	async heropower(self, owner) {
 		// Summon a 1/1 Silver Hand Recruit.
 
 		// Create the Silver Hand Recruit card.
@@ -25,7 +25,7 @@ export const blueprint: Blueprint = {
 		await owner.summon(card);
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		const checkIfMinionExists = () =>
 			owner.board.some((card) => card.id === 20);
 

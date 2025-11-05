@@ -26,7 +26,7 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribes: [MinionTribe.None],
 
-	async create(owner, self) {
+	async create(self, owner) {
 		self.addKeyword(Keyword.SummonOnDraw);
 
 		// Use the preexisting colossal example minions
@@ -37,7 +37,7 @@ export const blueprint: Blueprint = {
 		]);
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// Set the player's deck and hand
 		owner.deck = [await Card.create(game.cardIds.sheep1, owner), self];
 		owner.hand = [];

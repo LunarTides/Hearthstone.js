@@ -26,7 +26,7 @@ export const blueprint: Blueprint = {
 
 	spellSchools: [SpellSchool.None],
 
-	async cast(owner, self) {
+	async cast(self, owner) {
 		// Fill up your mana. For the rest of the game, your mana never decreases.
 
 		/*
@@ -38,7 +38,7 @@ export const blueprint: Blueprint = {
 		});
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		owner.mana = 5;
 		await self.trigger(Ability.Cast);
 

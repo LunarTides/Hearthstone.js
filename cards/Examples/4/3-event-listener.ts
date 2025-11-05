@@ -26,7 +26,7 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribes: [MinionTribe.None],
 
-	async battlecry(owner, self) {
+	async battlecry(self, owner) {
 		// For the rest of the game, your battlecries trigger twice.
 
 		/*
@@ -77,7 +77,7 @@ export const blueprint: Blueprint = {
 		// await destroy(); // Run this function to destroy the event listener
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// TODO: Add proper tests. #325
 		return EventListenerMessage.Skip;
 	},

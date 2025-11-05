@@ -25,7 +25,7 @@ export const blueprint: Blueprint = {
 
 	spellSchools: [SpellSchool.None],
 
-	async cast(owner, self) {
+	async cast(self, owner) {
 		// Destroy a random enemy minion.
 
 		// Select an enemy minion to destroy
@@ -48,7 +48,7 @@ export const blueprint: Blueprint = {
 		return true;
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		const opponent = owner.getOpponent();
 
 		// Create a sheep and summon it on the opponent's side of the board

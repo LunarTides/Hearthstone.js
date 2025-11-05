@@ -21,7 +21,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: 128,
 
-	async heropower(owner, self) {
+	async heropower(self, owner) {
 		// Add a random Priest minion to your hand.
 		const possibleCards = (await Card.all()).filter(
 			(c) =>
@@ -43,7 +43,7 @@ export const blueprint: Blueprint = {
 		await owner.addToHand(card);
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// TODO: Add proper tests. #325
 		return EventListenerMessage.Skip;
 	},

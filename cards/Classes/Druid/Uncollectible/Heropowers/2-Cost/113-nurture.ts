@@ -14,7 +14,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: 113,
 
-	async heropower(owner, self) {
+	async heropower(self, owner) {
 		// Choose One - Draw a card; or Gain an empty Mana Crystal.
 		await game.functions.interact.prompt.chooseOne(
 			1,
@@ -35,7 +35,7 @@ export const blueprint: Blueprint = {
 		);
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// Draw a card
 		const handSize = owner.hand.length;
 

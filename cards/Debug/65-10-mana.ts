@@ -23,12 +23,12 @@ export const blueprint: Blueprint = {
 
 	spellSchools: [SpellSchool.None],
 
-	async cast(owner, self) {
+	async cast(self, owner) {
 		// Gain 10 Mana.
 		owner.addMana(10);
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		owner.mana = 5;
 		await self.trigger(Ability.Cast);
 

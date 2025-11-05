@@ -26,7 +26,7 @@ export const blueprint: Blueprint = {
 
 	spellSchools: [SpellSchool.None],
 
-	async cast(owner, self) {
+	async cast(self, owner) {
 		// Take control of an enemy minion.
 		const card = await game.functions.interact.prompt.targetCard(
 			self.text,
@@ -41,7 +41,7 @@ export const blueprint: Blueprint = {
 		return true;
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// Get the opponent
 		const opponent = owner.getOpponent();
 

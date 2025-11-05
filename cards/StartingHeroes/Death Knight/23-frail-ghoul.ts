@@ -26,11 +26,11 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribes: [MinionTribe.Undead],
 
-	async create(owner, self) {
+	async create(self, owner) {
 		self.addKeyword(Keyword.Charge);
 	},
 
-	async passive(owner, self, key, value, eventPlayer) {
+	async passive(self, owner, key, value, eventPlayer) {
 		// At the end of your turn, this minion dies.
 
 		// Only continue if the event that triggered this is the EndTurn event, and the player that triggered the event is this card's owner.
@@ -42,7 +42,7 @@ export const blueprint: Blueprint = {
 		await self.destroy();
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		const checkIfThisCardIsOnTheBoard = () =>
 			owner.board.some((card) => card.uuid === self.uuid);
 

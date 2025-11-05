@@ -27,7 +27,7 @@ export const blueprint: Blueprint = {
 	health: 1,
 	tribes: [MinionTribe.None],
 
-	async battlecry(owner, self) {
+	async battlecry(self, owner) {
 		// Discover a spell.
 
 		// Filter out all cards that aren't spells
@@ -50,7 +50,7 @@ export const blueprint: Blueprint = {
 		return true;
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// If there are no spells, pass the test
 		if (
 			(await Card.all()).filter(

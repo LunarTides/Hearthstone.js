@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
 
 	spellSchools: [SpellSchool.None],
 
-	async cast(owner, self) {
+	async cast(self, owner) {
 		// Choose Twice - Draw a card; Give your minions +1 Attack; Gain 6 Armor.
 		await game.functions.interact.prompt.chooseOne(
 			2,
@@ -56,7 +56,7 @@ export const blueprint: Blueprint = {
 		);
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// Summon a Sheep
 		const sheep = await Card.create(game.cardIds.sheep1, owner);
 		await owner.summon(sheep);

@@ -26,7 +26,7 @@ export const blueprint: Blueprint = {
 	health: 3,
 	tribes: [MinionTribe.None],
 
-	async create(owner, self) {
+	async create(self, owner) {
 		self.runes = "BBB";
 
 		self.addKeyword(Keyword.Colossal, [
@@ -41,7 +41,7 @@ export const blueprint: Blueprint = {
 		self.addKeyword(Keyword.Dormant, 2);
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// TODO: Test. #325
 		return EventListenerMessage.Skip;
 	},
