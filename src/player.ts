@@ -138,7 +138,7 @@ export class Player {
 	 *
 	 * # Examples
 	 * ```
-	 * // Use `player.removeHealth(3)` instead in a real situation.
+	 * // Use `player.damage(3)` instead in a real situation.
 	 * player.health -= 3;
 	 * ```
 	 */
@@ -599,7 +599,7 @@ export class Player {
 	 *
 	 * @returns Success
 	 */
-	async removeHealth(amount: number): Promise<boolean> {
+	async damage(amount: number): Promise<boolean> {
 		if (this.immune) {
 			return true;
 		}
@@ -719,7 +719,7 @@ export class Player {
 			if (deckLength <= 0 || !card) {
 				this.fatigue++;
 
-				await this.removeHealth(this.fatigue);
+				await this.damage(this.fatigue);
 				continue;
 			}
 

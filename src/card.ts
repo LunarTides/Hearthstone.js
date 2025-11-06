@@ -907,15 +907,42 @@ export class Card {
 	}
 
 	/**
-	 * Damages a card.
-	 *
-	 * Doesn't damage the card if it is a location card, is immune, or has Stealth.
+	 * Manually decreases this card's health. Ignores keywords. Consider calling {@link confirmAliveness} afterwards.
 	 *
 	 * @param amount The health to remove
-	 *
 	 * @returns Success
 	 */
 	async removeHealth(amount: number): Promise<boolean> {
+		if (this.health === undefined) {
+			return false;
+		}
+
+		await this.setStats(this.attack, this.health - amount);
+		return true;
+	}
+
+	/**
+	 * Makes sure that this card is alive. If not, remove it from wherever it is.
+	 */
+	async confirmAliveness(): Promise<void> {
+		if (this.type === Type.Weapon && this.owner.weapon === this) {
+			await this.owner.destroyWeapon();
+		}
+
+		await game.killCardsOnBoard();
+	}
+
+	/**
+	 * Damages this card.
+	 *
+	 * Doesn't damage the card if it is a location card, is immune, or has Stealth.
+	 *
+	 * ### Use `game.damage` instead unless you have a good reason not to.
+	 *
+	 * @param amount The amount to damage this card by.
+	 * @returns Success
+	 */
+	async damage(amount: number): Promise<boolean> {
 		if (this.health === undefined) {
 			return false;
 		}
@@ -933,14 +960,9 @@ export class Card {
 			return true;
 		}
 
-		await this.setStats(this.attack, this.health - amount);
+		await this.removeHealth(amount);
 		await game.event.broadcast(Event.DamageCard, [this, amount], this.owner);
-
-		if (this.type === Type.Weapon && !this.isAlive()) {
-			await this.owner.destroyWeapon();
-		}
-
-		await game.killCardsOnBoard();
+		await this.confirmAliveness();
 
 		return true;
 	}

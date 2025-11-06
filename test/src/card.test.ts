@@ -201,8 +201,8 @@ describe("src/card", () => {
 		await card.addHealth(1);
 
 		card.type = Type.Location;
-		expect(await card.removeHealth(1)).toBe(false);
-		expect(card.health).toBe(1);
+		expect(await card.removeHealth(1)).toBe(true);
+		expect(card.health).toBe(0);
 		card.type = Type.Minion;
 
 		expect(await card.removeHealth(1)).toBe(true);
@@ -210,17 +210,59 @@ describe("src/card", () => {
 
 		// Check if keywords actually prevent damage.
 		card.addKeyword(Keyword.Stealth);
-		expect(await card.removeHealth(1)).toBe(false);
+		expect(await card.removeHealth(1)).toBe(true);
 
 		card.removeKeyword(Keyword.Stealth);
 		expect(await card.removeHealth(1)).toBe(true);
+		expect(card.health).toBe(-2);
+
+		await card.addHealth(3);
+
+		card.addKeyword(Keyword.Immune);
+		expect(await card.removeHealth(1)).toBe(true);
+		expect(card.health).toBe(0);
+		card.removeKeyword(Keyword.Immune);
+
+		// Make sure it DOESN'T destroy the weapon.
+		const weapon = await Card.create(game.cardIds.wickedKnife_22, game.player);
+		await game.player.setWeapon(weapon);
+		expect(game.player.weapon).not.toBeUndefined();
+		expect(await weapon.removeHealth(9999)).toBe(true);
+		expect(game.player.weapon).not.toBeUndefined();
+	});
+
+	test.todo("confirmAliveness", async () => {});
+
+	test("damage", async () => {
+		const card = await Card.create(game.cardIds.sheep_1, game.player);
+		expect(card.health).toBe(1);
+
+		expect(await card.damage(1)).toBe(true);
+		expect(card.health).toBe(0);
+
+		await card.addHealth(1);
+
+		card.type = Type.Location;
+		expect(await card.damage(1)).toBe(false);
+		expect(card.health).toBe(1);
+		card.type = Type.Minion;
+
+		expect(await card.damage(1)).toBe(true);
+		await card.addHealth(1);
+
+		// Check if keywords actually prevent damage.
+		card.addKeyword(Keyword.Stealth);
+		expect(await card.damage(1)).toBe(false);
+
+		card.removeKeyword(Keyword.Stealth);
+		expect(await card.damage(1)).toBe(true);
 		expect(card.health).toBe(0);
 
 		await card.addHealth(1);
 
 		card.addKeyword(Keyword.Immune);
-		// Immune prevents damage. removeHealth returns true, and health remains unchanged.
-		expect(await card.removeHealth(1)).toBe(true);
+		// Immune prevents damage. damage returns true, and health remains unchanged.
+		expect(await card.damage(1)).toBe(true);
 		expect(card.health).toBe(1);
 		card.removeKeyword(Keyword.Immune);
 
@@ -228,7 +270,7 @@ describe("src/card", () => {
 		const weapon = await Card.create(game.cardIds.wickedKnife_22, game.player);
 		await game.player.setWeapon(weapon);
 		expect(game.player.weapon).not.toBeUndefined();
-		expect(await weapon.removeHealth(9999)).toBe(true);
+		expect(await weapon.damage(9999)).toBe(true);
 		expect(game.player.weapon).toBeUndefined();
 	});
 

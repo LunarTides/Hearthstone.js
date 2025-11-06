@@ -116,7 +116,7 @@ const attack = {
 		const damage = await attack._spellDamage(attacker, target, flags);
 
 		if (target instanceof Player) {
-			await target.removeHealth(damage);
+			await target.damage(damage);
 			return GameAttackReturn.Success;
 		}
 
@@ -125,7 +125,7 @@ const attack = {
 			return GameAttackReturn.DivineShield;
 		}
 
-		await target.removeHealth(damage);
+		await target.damage(damage);
 
 		// Remove frenzy
 		await attack._doFrenzy(target);
@@ -541,7 +541,7 @@ const attack = {
 
 			// Only remove 1 durability if the weapon is not unbreakable
 			if (!weapon.hasKeyword(Keyword.Unbreakable)) {
-				await weapon.removeHealth(1);
+				await weapon.damage(1);
 			}
 
 			// If the weapon is alive and it has unlimited attacks, the player can attack again this turn
