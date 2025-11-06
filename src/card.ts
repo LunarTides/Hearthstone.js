@@ -831,8 +831,6 @@ export class Card {
 			this.resetMaxHealth(false);
 		}
 
-		await game.killCardsOnBoard();
-
 		return true;
 	}
 
@@ -1453,7 +1451,6 @@ export class Card {
 			}
 		};
 
-		// FIXME: No workie :(
 		// Remove ALL enchantment effects.
 		await callOnActiveEnchantments(async (enchantment, applied, i) => {
 			if (applied) {
@@ -1800,7 +1797,7 @@ export class Card {
 			// Check for a TypeError and ignore it
 			try {
 				p += `${index + 1}: ${value[0]}; ${value[1]},\n`;
-			} catch {}
+			} catch { }
 		}
 
 		p = p.slice(0, -2);
@@ -2056,15 +2053,15 @@ export class Card {
 
 			sb += titan
 				? game.functions.color.if(
-						!this.sleepy,
-						"bright:green",
-						` [${titan.length} Abilities Left]`,
-					)
+					!this.sleepy,
+					"bright:green",
+					` [${titan.length} Abilities Left]`,
+				)
 				: game.functions.color.if(
-						this.canAttack(),
-						"bright:green",
-						` [${this.attack} / ${this.health}]`,
-					);
+					this.canAttack(),
+					"bright:green",
+					` [${this.attack} / ${this.health}]`,
+				);
 		} else if (this.type === Type.Location) {
 			const { durability } = this;
 			const maxDurability = this.backups.init.durability;
