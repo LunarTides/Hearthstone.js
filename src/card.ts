@@ -248,16 +248,7 @@ export class Card {
 	turn: number;
 
 	/**
-	 * The card's enchantments.
-	 * Formatted like this:
-	 *
-	 * ```json
-	 * [
-	 *     {
-	 *         "enchantment": "-1 cost",
-	 *         "owner": someCard,
-	 *     }
-	 * ]
+	 * The card's active enchantments.
 	 * ```
 	 */
 	activeEnchantments: EnchantmentDefinition[] = [];
@@ -1397,7 +1388,7 @@ export class Card {
 	}
 
 	/**
-	 * Runs through this card's enchantments list and applies each enchantment in order.
+	 * Runs through this card's enchantments list and applies each enchantment based on their priorities.
 	 *
 	 * @returns Success
 	 */
