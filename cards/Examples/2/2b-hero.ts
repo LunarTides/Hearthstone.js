@@ -3,8 +3,6 @@
 import assert from "node:assert";
 import { Ability, type Blueprint, Class, Rarity, Type } from "@Game/types.ts";
 
-// This is the second card in this stage. The first card in this stage is the `1-location.ts` file.
-
 export const blueprint: Blueprint = {
 	name: "Hero Example",
 	text: "<b>Battlecry:</b> Restore your hero to full health.",

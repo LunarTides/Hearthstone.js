@@ -12,7 +12,6 @@ import {
 } from "@Game/types.ts";
 
 export const blueprint: Blueprint = {
-	// Look in `titan.ts` first.
 	name: "Ability 1",
 	text: "Destroy a random enemy minion.",
 	cost: 0,

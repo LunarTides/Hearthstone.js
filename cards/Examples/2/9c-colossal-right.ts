@@ -9,10 +9,7 @@ import {
 } from "@Game/types.ts";
 
 export const blueprint: Blueprint = {
-	/*
-	 * Look in `main.ts` first.
-	 * This will be summoned below the main minion
-	 */
+	// This will be summoned below the main minion
 	name: "Right Arm",
 	text: "",
 	cost: 1,
