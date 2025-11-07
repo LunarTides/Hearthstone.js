@@ -10,10 +10,13 @@ import {
 } from "@Game/types.ts";
 
 export const blueprint: Blueprint = {
-	name: "Enchantment Test",
+	name: "Enchantment Example",
 	text: "This card costs (1) less.",
 	cost: 0,
+
+	// `New type.
 	type: Type.Enchantment,
+
 	classes: [Class.Neutral],
 	rarity: Rarity.Free,
 	collectible: false,
@@ -37,6 +40,7 @@ export const blueprint: Blueprint = {
 	enchantmentPriority: EnchantmentPriority.Normal,
 
 	// This ability is called when the enchantment is first applied to the host. It only runs once.
+	// You can use this to set up something related to the host when the enchantment is first added.
 	async enchantmentSetup(self, owner, host) {
 		// This card costs (1) less.
 	},

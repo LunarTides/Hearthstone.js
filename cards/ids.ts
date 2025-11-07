@@ -147,6 +147,6 @@ export const cardIds = {
 	enchantmentApplyTest_143: 143,
 	fatesBlessing_144: 144,
 	galakrondsBlessing_145: 145,
-	enchantmentTest_146: 146,
+	enchantmentExample_146: 146,
 	combinedExample4Enchantment_147: 147,
 };

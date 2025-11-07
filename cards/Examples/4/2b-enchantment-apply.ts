@@ -38,12 +38,12 @@ export const blueprint: Blueprint = {
 
 		for (const card of owner.hand) {
 			// If the card was already given the enchantment from this card, ignore it.
-			if (card.enchantmentExists(game.cardIds.enchantmentTest_146, self)) {
+			if (card.enchantmentExists(game.cardIds.enchantmentExample_146, self)) {
 				continue;
 			}
 
 			// Give the card the enchantment.
-			await card.addEnchantment(game.cardIds.enchantmentTest_146, self);
+			await card.addEnchantment(game.cardIds.enchantmentExample_146, self);
 		}
 	},
 
@@ -56,7 +56,7 @@ export const blueprint: Blueprint = {
 
 		for (const card of owner.hand) {
 			// Only remove the enchantment given by this card.
-			await card.removeEnchantment(game.cardIds.enchantmentTest_146, self);
+			await card.removeEnchantment(game.cardIds.enchantmentExample_146, self);
 		}
 	},
 
