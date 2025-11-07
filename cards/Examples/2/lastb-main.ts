@@ -1,6 +1,5 @@
 // Created by Hand
 
-import assert from "node:assert";
 import {
 	type Blueprint,
 	Class,

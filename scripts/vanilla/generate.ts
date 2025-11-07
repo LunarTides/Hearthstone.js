@@ -2,11 +2,11 @@
  * Importing this module will reach out to an api and save the result to a file.
  */
 
+import { createGame } from "@Game/game.ts";
+import type { VanillaCard } from "@Game/types.ts";
 import { Buffer } from "node:buffer";
 import https from "node:https";
 import process from "node:process";
-import { createGame } from "@Game/game.ts";
-import type { VanillaCard } from "@Game/types.ts";
 
 const API_URL = "https://api.hearthstonejson.com/v1/latest/enUS/cards.json";
 

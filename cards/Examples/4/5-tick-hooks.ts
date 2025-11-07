@@ -1,6 +1,5 @@
 // Created by Hand
 
-import assert from "node:assert";
 import { Card } from "@Game/card.ts";
 import {
 	Ability,
@@ -12,6 +11,7 @@ import {
 	SpellSchool,
 	Type,
 } from "@Game/types.ts";
+import assert from "node:assert";
 
 export const blueprint: Blueprint = {
 	name: "Tick Hook Example",
@@ -48,7 +48,7 @@ export const blueprint: Blueprint = {
 		 * This is *technically* not what the text says,
 		 * but the user won't notice the difference since the mana gets refilled too quickly.
 		 */
-		const unhook = game.event.hookToTick(async () => {
+		const _unhook = game.event.hookToTick(async () => {
 			owner.addMana(owner.maxMana);
 		});
 

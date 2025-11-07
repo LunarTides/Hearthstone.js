@@ -1,6 +1,5 @@
 // Created by Hand
 
-import assert from "node:assert";
 import {
 	type Blueprint,
 	Class,
@@ -8,6 +7,7 @@ import {
 	SpellSchool,
 	Type,
 } from "@Game/types.ts";
+import assert from "node:assert";
 
 export const blueprint: Blueprint = {
 	name: "Placeholder Example",

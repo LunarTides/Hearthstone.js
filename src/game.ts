@@ -1,4 +1,3 @@
-import { format } from "node:util";
 import { Ai } from "@Game/ai.ts";
 import { Card } from "@Game/card.ts";
 import { eventManager } from "@Game/event.ts";
@@ -20,7 +19,8 @@ import {
 	type Target,
 	Type,
 } from "@Game/types.ts";
-import date from "date-and-time";
+import { format } from "node:util";
+import { format as formatDate } from "date-and-time";
 import _ from "lodash";
 import { cardIds } from "../cards/ids.ts";
 
@@ -1232,9 +1232,8 @@ export class Game {
 		const currentDate = new Date();
 		this.time.year = currentDate.getFullYear();
 
-		this.time.events.anniversary =
-			date.format(currentDate, "DD/MM") === "14/02";
-		this.time.events.prideMonth = date.format(currentDate, "MM") === "06";
+		this.time.events.anniversary = formatDate(currentDate, "DD/MM") === "14/02";
+		this.time.events.prideMonth = formatDate(currentDate, "MM") === "06";
 
 		// this.time.events.anniversary = true;
 		// this.time.events.prideMonth = true;

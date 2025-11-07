@@ -1,9 +1,9 @@
 // FIXME: Incredibly unstable after #400.
 
-import process from "node:process";
 import { Card } from "@Game/card.ts";
 import { createGame } from "@Game/game.ts";
 import { Player } from "@Game/player.ts";
+import process from "node:process";
 
 const { game } = await createGame();
 const blueprints = game.blueprints;

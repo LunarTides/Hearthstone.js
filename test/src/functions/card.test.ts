@@ -1,4 +1,3 @@
-import { describe, expect, test } from "bun:test";
 import { cardFunctions } from "@Game/functions/card.ts";
 import {
 	type Blueprint,
@@ -8,6 +7,7 @@ import {
 	SpellSchool,
 	Type,
 } from "@Game/types.ts";
+import { describe, expect, test } from "bun:test";
 
 describe("src/functions/card", () => {
 	test.todo("vanilla > getAll", async () => {});

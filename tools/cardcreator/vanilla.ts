@@ -210,18 +210,15 @@ export async function main(
 			// Prompt the user to pick one
 			for (const [index, vanillaCard] of filteredCards.entries()) {
 				// Get rid of useless information
-				// biome-ignore lint/performance/noDelete: <explanation>
-				delete vanillaCard.elite;
-				// biome-ignore lint/performance/noDelete: <explanation>
-				delete vanillaCard.heroPowerDbfId;
-				// biome-ignore lint/performance/noDelete: <explanation>
-				delete vanillaCard.artist;
-				// biome-ignore lint/performance/noDelete: <explanation>
-				delete vanillaCard.flavor;
-				// biome-ignore lint/performance/noDelete: <explanation>
-				delete vanillaCard.mechanics;
-
-				const { id, ...card } = vanillaCard;
+				const {
+					id: _id,
+					elite: _elite,
+					heroPowerDbfId: _heroPowerDbfId,
+					artist: _artist,
+					flavor: _flavor,
+					mechanics: _mechanics,
+					...card
+				} = vanillaCard;
 
 				console.log("\n%s:", index + 1);
 				console.log(card);

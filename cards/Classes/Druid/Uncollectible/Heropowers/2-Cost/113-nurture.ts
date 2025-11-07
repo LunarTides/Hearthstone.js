@@ -1,7 +1,7 @@
 // Created by the Custom Card Creator
 
-import assert from "node:assert";
 import { Ability, type Blueprint, Class, Rarity, Type } from "@Game/types.ts";
+import assert from "node:assert";
 
 export const blueprint: Blueprint = {
 	name: "Nurture",

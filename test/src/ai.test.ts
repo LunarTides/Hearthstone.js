@@ -1,5 +1,5 @@
-import { describe, expect, test } from "bun:test";
-import { Ai } from "@Game/ai.ts";
+// import { Ai } from "@Game/ai.ts";
+import { describe, test } from "bun:test";
 
 describe("src/ai", () => {
 	test.todo("calcMove", async () => {});

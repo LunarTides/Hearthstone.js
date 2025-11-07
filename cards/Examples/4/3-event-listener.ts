@@ -40,7 +40,7 @@ export const blueprint: Blueprint = {
 		 * The second argument is a callback function that gets called when the event key is triggered.
 		 * The third argument is the event listeners' lifespan.
 		 */
-		const destroy = game.event.addListener(
+		const _destroy = game.event.addListener(
 			Event.PlayCard,
 			async (value, eventPlayer) => {
 				// This function will be run when the correct event is broadcast.
@@ -74,7 +74,7 @@ export const blueprint: Blueprint = {
 			-1, // The lifetime of the event listener. This number is how many times the callback function can run before the event listener self-destructs. If this is set to `-1`, it lasts forever.
 		);
 
-		// await destroy(); // Run this function to destroy the event listener
+		// await _destroy(); // Run this function to destroy the event listener
 	},
 
 	async test(self, owner) {

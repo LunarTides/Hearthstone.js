@@ -1,4 +1,3 @@
-import { describe, expect, test } from "bun:test";
 import { Card } from "@Game/card.ts";
 import { createGame } from "@Game/game.ts";
 import { Player } from "@Game/player.ts";
@@ -15,6 +14,7 @@ import {
 	type Target,
 	Type,
 } from "@Game/types.ts";
+import { describe, expect, test } from "bun:test";
 
 /*
  * Need to create a game in case the functions need it.
@@ -219,15 +219,16 @@ describe("src/player", () => {
 	});
 
 	test("damage", async () => {
+		// TODO: Fix
 		const player = new Player();
-		let times = 0;
+		// let times = 0;
 		// let fatalDamageTriggered = false;
 
 		const destroy = game.event.addListener(
 			Event.TakeDamage,
 			async (value, eventPlayer) => {
 				expect(value).toBe(1);
-				times++;
+				// times++;
 				return EventListenerMessage.Success;
 			},
 			-1,

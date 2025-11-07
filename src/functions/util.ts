@@ -1,3 +1,4 @@
+import type { GameConfig, Target } from "@Game/types.ts";
 import childProcess from "node:child_process";
 import { createHash } from "node:crypto";
 import type { Dirent } from "node:fs";
@@ -7,8 +8,7 @@ import os from "node:os";
 import { dirname as pathDirname, resolve } from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
-import type { GameConfig, Target } from "@Game/types.ts";
-import date from "date-and-time";
+import { format as formatDate } from "date-and-time";
 
 type FsFunctionKeys = {
 	[K in keyof typeof fs]: (typeof fs)[K] extends (...args: any) => any
@@ -126,10 +126,10 @@ export const utilFunctions = {
 		}
 
 		const now = new Date();
-		const dateString = date.format(now, "DD/MM/YYYY HH:mm:ss");
+		const dateString = formatDate(now, "DD/MM/YYYY HH:mm:ss");
 
 		// 01.01.23-23.59.59
-		const dateStringFileFriendly = date.format(now, "DD.MM.YY-HH.mm.ss");
+		const dateStringFileFriendly = formatDate(now, "DD.MM.YY-HH.mm.ss");
 
 		// Grab the history of the game
 		let history = await game.functions.interact.processCommand("history", {
@@ -403,6 +403,8 @@ ${mainContent}
 			throw new TypeError(`Invalid fs function: ${callback}`);
 		}
 
+		const options = game.lodash.last(args);
+
 		// Cache files when they are read
 		if (callback === "readFile") {
 			if (!game.cache.files) {
@@ -411,9 +413,13 @@ ${mainContent}
 
 			let invalidateCache = false;
 
-			const lastArg = game.lodash.last(args);
-			if (typeof lastArg === "object" && "invalidateCache" in lastArg) {
-				invalidateCache = lastArg.invalidateCache ?? false;
+			if (
+				options &&
+				typeof options === "object" &&
+				"invalidateCache" in options &&
+				options.invalidateCache
+			) {
+				invalidateCache = options.invalidateCache ?? false;
 			}
 
 			const cached = game.cache.files[actualPath] as string | undefined;
@@ -439,13 +445,14 @@ ${mainContent}
 	 * @param extension The extension to look for in cards. By default, this is ".ts"
 	 */
 	async searchCardsFolder(
-		callback: (path: string, content: string, file: Dirent) => void,
+		callback: (path: string, content: string, file: Dirent<string>) => void,
 		path = "/cards",
 		extension = ".ts",
 	): Promise<void> {
 		const actualPath = this.restrictPath(path);
 
-		const files = await this.fs("readdir", actualPath, {
+		// Native readdir due to node 24 bs.
+		const files = await fs.readdir(actualPath, {
 			encoding: "utf8",
 			withFileTypes: true,
 			recursive: true,
@@ -455,7 +462,8 @@ ${mainContent}
 		await Promise.all(
 			files
 				.filter(
-					(file: Dirent) => file.isFile() && file.name.endsWith(extension),
+					(file: Dirent<string>) =>
+						file.isFile() && file.name.endsWith(extension),
 				)
 				.map(async (file) => {
 					const fullPath = resolve(actualPath, file.parentPath, file.name);

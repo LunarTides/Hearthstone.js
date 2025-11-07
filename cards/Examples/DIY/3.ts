@@ -63,7 +63,7 @@ export const blueprint: Blueprint = {
 			Event.TargetSelectionStarts,
 			async (value) => {
 				// Don't check for `prompt` since there is no correct prompt
-				const [prompt, card, flags] = value;
+				const [_, card, flags] = value;
 
 				correctParameters =
 					card === self &&

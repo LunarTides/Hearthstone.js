@@ -1,6 +1,5 @@
 // Created by the Custom Card Creator
 
-import assert from "node:assert";
 import {
 	type Blueprint,
 	CardTag,

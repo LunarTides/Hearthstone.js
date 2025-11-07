@@ -1,5 +1,3 @@
-import readline from "node:readline/promises";
-import { format } from "node:util";
 import type { Ai } from "@Game/ai.ts";
 import { Card } from "@Game/card.ts";
 import { commands, debugCommands } from "@Game/commands.ts";
@@ -15,6 +13,8 @@ import {
 	Type,
 	UseLocationError,
 } from "@Game/types.ts";
+import readline from "node:readline/promises";
+import { format } from "node:util";
 import { parseTags } from "chalk-tags";
 
 const rl = readline.createInterface({

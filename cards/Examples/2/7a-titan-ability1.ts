@@ -1,6 +1,5 @@
 // Created by Hand (before the Card Creator Existed)
 
-import assert from "node:assert";
 import { Card } from "@Game/card.ts";
 import {
 	Ability,
@@ -10,6 +9,7 @@ import {
 	SpellSchool,
 	Type,
 } from "@Game/types.ts";
+import assert from "node:assert";
 
 export const blueprint: Blueprint = {
 	name: "Ability 1",

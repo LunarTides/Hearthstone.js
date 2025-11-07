@@ -1,6 +1,5 @@
 // Created by Hand
 
-import assert from "node:assert";
 import {
 	Ability,
 	type AbilityCallback,
@@ -10,6 +9,7 @@ import {
 	Rarity,
 	Type,
 } from "@Game/types.ts";
+import assert from "node:assert";
 
 /*
  * This is another way to write blueprints.

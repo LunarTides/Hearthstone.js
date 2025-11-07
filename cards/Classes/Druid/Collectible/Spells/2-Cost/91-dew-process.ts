@@ -1,6 +1,5 @@
 // Created by the Vanilla Card Creator
 
-import assert from "node:assert";
 import {
 	Ability,
 	type Blueprint,
@@ -11,6 +10,7 @@ import {
 	SpellSchool,
 	Type,
 } from "@Game/types.ts";
+import assert from "node:assert";
 
 export const blueprint: Blueprint = {
 	name: "Dew Process",

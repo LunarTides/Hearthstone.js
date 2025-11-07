@@ -1,6 +1,5 @@
 // Created by the Vanilla Card Creator
 
-import assert from "node:assert";
 import type { Card } from "@Game/card.ts";
 import {
 	Ability,

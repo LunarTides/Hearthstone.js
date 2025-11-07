@@ -1,6 +1,5 @@
 // Created by the Custom Card Creator
 
-import assert from "node:assert";
 import {
 	type Blueprint,
 	Class,
@@ -10,6 +9,7 @@ import {
 	Rarity,
 	Type,
 } from "@Game/types.ts";
+import assert from "node:assert";
 
 export const blueprint: Blueprint = {
 	name: "Frail Ghoul",

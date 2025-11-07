@@ -1,5 +1,5 @@
-import { describe, expect, test } from "bun:test";
-import { commands } from "@Game/commands.ts";
+// import { commands } from "@Game/commands.ts";
+import { describe, test } from "bun:test";
 
 describe("src/commands", () => {
 	test.todo("end", async () => {});

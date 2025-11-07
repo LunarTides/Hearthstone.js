@@ -1,5 +1,5 @@
-import { format } from "node:util";
 import pkg from "@Game/../package.json" with { type: "json" };
+import { format } from "node:util";
 
 export const infoFunctions = {
 	version(): { version: string; branch: string; build: number } {

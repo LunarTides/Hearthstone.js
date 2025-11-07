@@ -3,10 +3,10 @@
  * Executes the `test` ability on all cards in its own env.
  */
 
-import process from "node:process";
 import { Card } from "@Game/card.ts";
 import { createGame } from "@Game/game.ts";
 import { Ability, EventListenerMessage } from "@Game/types.ts";
+import process from "node:process";
 
 const { game } = await createGame();
 const blueprints = game.blueprints;

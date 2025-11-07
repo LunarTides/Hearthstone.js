@@ -608,7 +608,7 @@ export const deckcodeFunctions = {
 		const vanillaCards = await game.functions.card.vanilla.getAll();
 
 		// We don't care about the format
-		const { format, ...deck } = deckWithFormat;
+		const { format: _, ...deck } = deckWithFormat;
 
 		const heroClass = vanillaCards.find(
 			(a) => a.dbfId === deck.heroes[0],

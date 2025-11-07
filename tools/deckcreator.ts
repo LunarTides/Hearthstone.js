@@ -1,4 +1,3 @@
-import util from "node:util";
 import { Card } from "@Game/card.ts";
 import {
 	Class,
@@ -7,6 +6,7 @@ import {
 	type GameConfig,
 	Rarity,
 } from "@Game/types.ts";
+import util from "node:util";
 import { resumeTagParsing, stopTagParsing } from "chalk-tags";
 
 enum ViewType {

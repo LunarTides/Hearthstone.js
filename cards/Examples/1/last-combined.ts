@@ -1,6 +1,5 @@
 // Created by Hand
 
-import assert from "node:assert";
 import {
 	Ability,
 	type Blueprint,
@@ -10,6 +9,7 @@ import {
 	Rarity,
 	Type,
 } from "@Game/types.ts";
+import assert from "node:assert";
 
 export const blueprint: Blueprint = {
 	name: "Combined Example 1",

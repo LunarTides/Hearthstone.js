@@ -1,5 +1,5 @@
-import { describe, expect, test } from "bun:test";
-import { eventManager } from "@Game/event.ts";
+// import { eventManager } from "@Game/event.ts";
+import { describe, test } from "bun:test";
 
 describe("src/event", () => {
 	test.todo("tick", async () => {});

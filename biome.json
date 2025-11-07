@@ -1,8 +1,5 @@
 {
-	"$schema": "https://biomejs.dev/schemas/1.8.0/schema.json",
-	"organizeImports": {
-		"enabled": true
-	},
+	"$schema": "https://biomejs.dev/schemas/2.3.4/schema.json",
 	"linter": {
 		"enabled": true,
 		"rules": {
@@ -10,12 +7,15 @@
 			"style": {
 				"noNonNullAssertion": "off"
 			},
+			"correctness": {
+				"noUnusedFunctionParameters": "off"
+			},
 			"suspicious": {
 				"noExplicitAny": "off"
 			}
 		}
 	},
 	"files": {
-		"ignore": ["vanillacards.json"]
+		"includes": ["**", "!vanillacards.json"]
 	}
 }

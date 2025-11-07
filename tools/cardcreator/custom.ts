@@ -258,6 +258,7 @@ const cardTypeFunctions: {
 			await input(
 				"Enchantment Priority (-2: lowest | -1: low | 0: normal | 1: high | 2: highest): ",
 			),
+			10,
 		) as EnchantmentPriority;
 
 		return applyCard({

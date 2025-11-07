@@ -334,7 +334,7 @@ ${runes}${keywords}
 				break;
 			case "enchantmentPriority": {
 				let priority =
-					typeof value === "number" ? value : Number.parseInt(`${value}`);
+					typeof value === "number" ? value : Number.parseInt(`${value}`, 10);
 
 				if (
 					Number.isNaN(priority) ||
@@ -406,7 +406,6 @@ ${runes}${keywords}
 	// Add the content
 	const content = `// Created by the ${creatorType} Card Creator
 
-import assert from "node:assert";
 import {
 	type Blueprint,${tagImport}
 	Class,${passiveImport}
@@ -414,6 +413,7 @@ import {
 	Rarity,
 	Type,
 } from "@Game/types.ts";
+import assert from "node:assert";
 
 export const blueprint: Blueprint = {
     ${contentArray.join("")}${createAbility}${ability}

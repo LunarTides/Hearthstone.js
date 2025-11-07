@@ -2,7 +2,6 @@
 
 // This is the Yogg-Saron, Unleashed Induce Insanity card.
 
-import assert from "node:assert";
 import {
 	type Blueprint,
 	Class,

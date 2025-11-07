@@ -1,5 +1,5 @@
-import { describe, expect, test } from "bun:test";
-import { interactFunctions } from "@Game/functions/interact.ts";
+// import { interactFunctions } from "@Game/functions/interact.ts";
+import { describe, test } from "bun:test";
 
 describe("src/functions/interact", () => {
 	test.todo("prompt > deckcode", async () => {});

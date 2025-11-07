@@ -1,4 +1,3 @@
-import { randomUUID } from "node:crypto";
 import type { Player } from "@Game/player.ts";
 import {
 	Ability,
@@ -23,6 +22,7 @@ import {
 	type Target,
 	Type,
 } from "@Game/types.ts";
+import { randomUUID } from "node:crypto";
 import { parseTags } from "chalk-tags";
 
 /**
@@ -1258,7 +1258,7 @@ export class Card {
 	 *
 	 * @returns All the return values of the abilities.
 	 */
-	async _trigger<E extends Event>(
+	async _trigger(
 		name: Ability,
 		...parameters: any[]
 	): Promise<unknown[] | typeof Card.REFUND | false> {
