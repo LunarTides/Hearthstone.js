@@ -1195,7 +1195,20 @@ export class Game {
 
 		events: {
 			anniversary: false,
-			prideMonth: false,
+
+			pride: {
+				month: false,
+				agender: false,
+				aro: false,
+				ace: false,
+				bi: false,
+				genderfluid: false,
+				intersex: false,
+				lesbian: false,
+				enby: false,
+				pan: false,
+				trans: false,
+			},
 		},
 	};
 
@@ -1233,10 +1246,10 @@ export class Game {
 		this.time.year = currentDate.getFullYear();
 
 		this.time.events.anniversary = formatDate(currentDate, "DD/MM") === "14/02";
-		this.time.events.prideMonth = formatDate(currentDate, "MM") === "06";
+		this.functions.util.setupPrideEvents(currentDate);
 
 		// this.time.events.anniversary = true;
-		// this.time.events.prideMonth = true;
+		// this.time.events.pride.month = true;
 	}
 
 	/**
@@ -1391,10 +1404,11 @@ export class Game {
 	/**
 	 * Returns if a time-based event is currently active.
 	 *
-	 * @param key The name of the event.
+	 * @param event Pass something in `game.time.events` here.
 	 */
-	isEventActive(key: keyof typeof this.time.events): boolean {
-		return this.time.events[key] && !this.config.general.disableEvents;
+	isEventActive(event: boolean): boolean {
+		// return true; // CHAOS CHAOS!!!
+		return event && !this.config.general.disableEvents;
 	}
 
 	/**

@@ -861,7 +861,13 @@ const print = {
 		const versionDetail =
 			game.player.detailedView || game.config.general.debug ? 4 : 3;
 
-		const watermark = `HEARTHSTONE.JS V${game.functions.info.versionString(versionDetail)}`;
+		const eventEmojis = game.functions.util.getCurrentPrideEmojis();
+		let eventEmojisText = eventEmojis.join("");
+		if (eventEmojis.length > 0) {
+			eventEmojisText += " ";
+		}
+
+		const watermark = `HEARTHSTONE.JS ${eventEmojisText}V${game.functions.info.versionString(versionDetail)}`;
 		const border = "-".repeat(watermark.length + 2);
 
 		console.log("|%s|", border);
@@ -876,7 +882,7 @@ const print = {
 			);
 		}
 
-		if (game.isEventActive("anniversary")) {
+		if (game.isEventActive(game.time.events.anniversary)) {
 			console.log(
 				`\n<b>[${game.time.year - 2022} YEAR ANNIVERSARY! Enjoy some fun-facts about Hearthstone.js!]</b>`,
 			);
@@ -1080,7 +1086,7 @@ const print = {
 
 		console.log(align(finished));
 
-		if (game.isEventActive("anniversary")) {
+		if (game.isEventActive(game.time.events.anniversary)) {
 			console.log(
 				"<i>[Anniversary: The code for the stats above was rewritten 3 times in total]</i>",
 			);

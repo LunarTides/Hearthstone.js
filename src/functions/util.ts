@@ -103,7 +103,7 @@ export const utilFunctions = {
 		game.config = (await import("../../config.ts")).config as GameConfig;
 
 		if (
-			game.isEventActive("anniversary") &&
+			game.isEventActive(game.time.events.anniversary) &&
 			game.config.general.locale === "en_US"
 		) {
 			game.config.general.locale = "anniversary";
@@ -574,6 +574,68 @@ ${mainContent}
 				(includeOpposingBoard && game.opponent.id === 1),
 			filter,
 		);
+	},
+
+	/**
+	 * Sets the values in `game.time.events.pride` to be accurate.
+	 */
+	setupPrideEvents(currentDate: Date) {
+		// https://en.wikipedia.org/wiki/List_of_LGBTQ_awareness_periods
+		const m = formatDate(currentDate, "MM");
+		const d = formatDate(currentDate, "DD/MM");
+
+		game.time.events.pride.month = m === "06";
+		game.time.events.pride.agender = d === "19/05";
+		game.time.events.pride.aro = d === "05/06";
+		game.time.events.pride.ace = d === "06/04";
+		game.time.events.pride.bi = d === "23/09";
+		game.time.events.pride.genderfluid =
+			m === "10" &&
+			currentDate.getUTCDay() >= 17 &&
+			currentDate.getUTCDay() <= 24;
+		game.time.events.pride.intersex = d === "26/10";
+		game.time.events.pride.lesbian = d === "08/10";
+		game.time.events.pride.enby = d === "14/07";
+		game.time.events.pride.pan = d === "24/05";
+		game.time.events.pride.trans = d === "31/03";
+	},
+
+	/**
+	 * @returns A list of emojis that correspond to the active pride events.
+	 */
+	getCurrentPrideEmojis(): string[] {
+		const eventEmojis = [];
+
+		if (game.isEventActive(game.time.events.anniversary)) {
+			eventEmojis.push("🎂");
+		}
+
+		// Unicode inclusion is pretty bad...
+		if (
+			game.isEventActive(game.time.events.pride.month) ||
+			game.isEventActive(game.time.events.pride.agender) ||
+			game.isEventActive(game.time.events.pride.aro) ||
+			game.isEventActive(game.time.events.pride.ace) ||
+			game.isEventActive(game.time.events.pride.enby) ||
+			game.isEventActive(game.time.events.pride.pan) ||
+			game.isEventActive(game.time.events.pride.genderfluid)
+		) {
+			eventEmojis.push("🏳️‍🌈");
+		}
+		if (game.isEventActive(game.time.events.pride.trans)) {
+			eventEmojis.push("🏳️‍⚧️");
+		}
+		if (game.isEventActive(game.time.events.pride.bi)) {
+			eventEmojis.push("⚤");
+		}
+		if (game.isEventActive(game.time.events.pride.intersex)) {
+			eventEmojis.push("⚥");
+		}
+		if (game.isEventActive(game.time.events.pride.lesbian)) {
+			eventEmojis.push("⚢");
+		}
+
+		return eventEmojis;
 	},
 
 	/**
