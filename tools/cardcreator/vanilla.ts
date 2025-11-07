@@ -1,6 +1,7 @@
 import {
 	type Blueprint,
 	Class,
+	EnchantmentPriority,
 	type MinionTribe,
 	Rarity,
 	SpellSchool,
@@ -138,6 +139,14 @@ export async function create(
 			blueprint = Object.assign(blueprint, {
 				durability: health,
 				cooldown: 2,
+			});
+
+			break;
+		}
+
+		case Type.Enchantment: {
+			blueprint = Object.assign(blueprint, {
+				enchantmentPriority: EnchantmentPriority.Normal,
 			});
 
 			break;

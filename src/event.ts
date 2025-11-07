@@ -101,8 +101,8 @@ export const eventManager = {
 
 				await card.condition();
 
-				// Just in case. Remove for small performance boost
-				card.applyEnchantments();
+				// Some enchantments may be dependant on the game state, and so need to be refreshed.
+				await card.refreshEnchantments();
 
 				await card.trigger(Ability.HandTick, key, value, player);
 				if (card.cost < 0) {

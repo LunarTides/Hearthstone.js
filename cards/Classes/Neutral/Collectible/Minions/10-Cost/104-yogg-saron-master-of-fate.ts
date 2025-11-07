@@ -108,13 +108,13 @@ export const blueprint: Blueprint = {
 						continue;
 					}
 
-					card.addEnchantment("cost = 0", self);
+					await card.addEnchantment(game.cardIds.fatesBlessing_144, self);
 					await owner.addToHand(card);
 				}
 
 				game.event.addListener(Event.EndTurn, async () => {
 					for (const card of owner.hand) {
-						card.removeEnchantment("cost = 0", self);
+						await card.removeEnchantment(game.cardIds.fatesBlessing_144, self);
 					}
 
 					return EventListenerMessage.Destroy;

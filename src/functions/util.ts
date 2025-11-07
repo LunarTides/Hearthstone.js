@@ -515,12 +515,14 @@ ${mainContent}
 	 * @param includePlayer2 If it should include `game.player2` in the list of targets.
 	 * @param includePlayer1Board If it should include player1's board in the list of targets.
 	 * @param includePlayer2Board If it should include player2's board in the list of targets.
+	 * @param [filter=() => true] Filter predicate.
 	 */
 	getRandomTarget(
 		includePlayer1 = true,
 		includePlayer2 = true,
 		includePlayer1Board = true,
 		includePlayer2Board = true,
+		filter: (target: Target) => boolean = () => true,
 	): Target | undefined {
 		const targets: Target[] = [];
 
@@ -540,7 +542,30 @@ ${mainContent}
 			targets.push(...game.player2.board);
 		}
 
-		return game.lodash.sample(targets);
+		return game.lodash.sample(targets.filter(filter));
+	},
+
+	/**
+	 * The same as `getRandomTarget` but uses relative terms (current & opposing) rather than absolute terms (player1 & player2).
+	 */
+	getRandomTargetRelative(
+		includeCurrentPlayer = true,
+		includeOpposingPlayer = true,
+		includeCurrentBoard = true,
+		includeOpposingBoard = true,
+		filter: (target: Target) => boolean = () => true,
+	): Target | undefined {
+		return this.getRandomTarget(
+			(includeCurrentPlayer && game.player.id === 0) ||
+				(includeOpposingPlayer && game.opponent.id === 0),
+			(includeCurrentPlayer && game.player.id === 1) ||
+				(includeOpposingPlayer && game.opponent.id === 1),
+			(includeCurrentBoard && game.player.id === 0) ||
+				(includeOpposingBoard && game.opponent.id === 0),
+			(includeCurrentBoard && game.player.id === 1) ||
+				(includeOpposingBoard && game.opponent.id === 1),
+			filter,
+		);
 	},
 
 	/**

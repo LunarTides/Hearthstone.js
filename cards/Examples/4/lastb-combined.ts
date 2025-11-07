@@ -43,18 +43,26 @@ export const blueprint: Blueprint = {
 
 				/*
 				 * The quest is done.
-				 * Add the `-1 cost` enchantment constantly
+				 * Add the enchantment constantly.
 				 */
 				const unhook = game.event.hookToTick(async () => {
 					// Only add the enchantment to minions
 					for (const minion of owner.hand.filter(
 						(card) => card.type === Type.Minion,
 					)) {
-						if (minion.enchantmentExists("-1 cost", self)) {
+						if (
+							minion.enchantmentExists(
+								game.cardIds.combinedExample4Enchantment_147,
+								self,
+							)
+						) {
 							continue;
 						}
 
-						minion.addEnchantment("-1 cost", self);
+						await minion.addEnchantment(
+							game.cardIds.combinedExample4Enchantment_147,
+							self,
+						);
 					}
 				});
 
@@ -83,11 +91,14 @@ export const blueprint: Blueprint = {
 						unhook();
 
 						/*
-						 * Remove the enchantments.
-						 * You don't need to filter the hand since `removeEnchantment` only removes enchantments if they're there.
+						 * Remove the enchantment.
+						 * You don't need to filter the hand since `removeEnchantment` only removes the enchantment if they're there.
 						 */
 						for (const minion of owner.hand) {
-							minion.removeEnchantment("-1 cost", self);
+							await minion.removeEnchantment(
+								game.cardIds.combinedExample4Enchantment_147,
+								self,
+							);
 						}
 
 						// Destroy this event listener so it doesn't run again.

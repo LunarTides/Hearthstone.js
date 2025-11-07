@@ -10,6 +10,7 @@ import {
 	CostType,
 	DeckValidationError,
 	type EnchantmentDefinition,
+	type EnchantmentPriority,
 	Event,
 	type EventValue,
 	type GameAttackFlags,
@@ -185,7 +186,19 @@ export class Card {
 	/**
 	 * The cooldown of the location card.
 	 */
-	cooldown?: number = 2;
+	cooldown = 2;
+
+	// Enchantment
+
+	/**
+	 * The priority of the enchantment.
+	 *
+	 * A higher priority means that the enchantment will be applied before others. The order of the enchantments can affect the resulting card.
+	 *
+	 * For example, an enchantment setting a card's attack to 0 should be applied before ones that increase the cards attack.
+	 * Otherwise, if the card has a +1 Attack and a Attack = 0 enchantment, the order of events can look like this: 3 -> 4 -> 0, which is not the intended effect. Instead it should look like: 3 -> 0 -> 1
+	 */
+	enchantmentPriority?: EnchantmentPriority;
 
 	// Not-null
 
@@ -235,19 +248,9 @@ export class Card {
 	turn: number;
 
 	/**
-	 * The card's enchantments.
-	 * Formatted like this:
-	 *
-	 * ```json
-	 * [
-	 *     {
-	 *         "enchantment": "-1 cost",
-	 *         "owner": someCard,
-	 *     }
-	 * ]
-	 * ```
+	 * The card's active enchantments.
 	 */
-	enchantments: EnchantmentDefinition[] = [];
+	activeEnchantments: EnchantmentDefinition[] = [];
 
 	/**
 	 * This overrides `game.config` for the card's owner while importing the card in a deck.
@@ -818,8 +821,6 @@ export class Card {
 			this.resetMaxHealth(false);
 		}
 
-		await game.killCardsOnBoard();
-
 		return true;
 	}
 
@@ -1202,7 +1203,8 @@ export class Card {
 		this.keywords = {};
 
 		// Remove active enchantments.
-		this.applyEnchantments();
+		this.activeEnchantments = [];
+		await this.refreshEnchantments();
 
 		await game.event.broadcast(Event.SilenceCard, this, this.owner);
 
@@ -1252,17 +1254,13 @@ export class Card {
 	 * Trigger one of this card's abilities.
 	 *
 	 * @param name The ability to trigger.
-	 * @param key The key of the event. ONLY PASS THIS IN PASSIVE, REMOVE, OR TICK ABILITIES.
-	 * @param value The raw value of the event. ONLY PASS THIS IN PASSIVE, REMOVE, OR TICK ABILITIES.
-	 * @param eventPlayer The player who caused the event. ONLY PASS THIS IN PASSIVE, REMOVE, OR TICK ABILITIES.
+	 * @param parameters The parameters to pass to the ability callback.
 	 *
 	 * @returns All the return values of the abilities.
 	 */
-	async trigger<E extends Event>(
+	async _trigger<E extends Event>(
 		name: Ability,
-		key?: E | string,
-		value?: EventValue<E>,
-		eventPlayer?: Player,
+		...parameters: any[]
 	): Promise<unknown[] | typeof Card.REFUND | false> {
 		/*
 		 * Example: trigger(Ability.Cast)
@@ -1280,13 +1278,7 @@ export class Card {
 				continue;
 			}
 
-			const result = await ability(
-				this,
-				this.owner,
-				key as Event,
-				value,
-				eventPlayer,
-			);
+			const result = await ability(this, this.owner, ...parameters);
 
 			if (Array.isArray(returnValue)) {
 				returnValue.push(result);
@@ -1319,6 +1311,25 @@ export class Card {
 		}
 
 		return returnValue;
+	}
+
+	/**
+	 * Trigger one of this card's abilities.
+	 *
+	 * @param name The ability to trigger.
+	 * @param key The key of the event. ONLY PASS THIS IN PASSIVE, REMOVE, OR TICK ABILITIES.
+	 * @param value The raw value of the event. ONLY PASS THIS IN PASSIVE, REMOVE, OR TICK ABILITIES.
+	 * @param eventPlayer The player who caused the event. ONLY PASS THIS IN PASSIVE, REMOVE, OR TICK ABILITIES.
+	 *
+	 * @returns All the return values of the abilities.
+	 */
+	async trigger<E extends Event>(
+		name: Ability,
+		key?: E | string,
+		value?: EventValue<E>,
+		eventPlayer?: Player,
+	): Promise<unknown[] | typeof Card.REFUND | false> {
+		return this._trigger(name, key, value, eventPlayer);
 	}
 
 	/**
@@ -1376,223 +1387,146 @@ export class Card {
 	}
 
 	/**
-	 * Get information from an enchantment.
-	 *
-	 * @param enchantment The enchantment string
-	 *
-	 * @example
-	 * const info = getEnchantmentInfo("cost = 1");
-	 * assert.equal(info, {"key": "cost", "val": "1", "op": "="});
-	 *
-	 * @returns The info
-	 */
-	getEnchantmentInfo(enchantment: string): {
-		key: string;
-		val: string;
-		op: string;
-	} {
-		const equalsRegex = /\w+ = \w+/;
-		const otherRegex = /[-+*/^]\d+ \w+/;
-
-		const opEquals = equalsRegex.test(enchantment);
-		const opOther = otherRegex.test(enchantment);
-
-		let key = "undefined";
-		let value = "undefined";
-		let op = "=";
-
-		if (opEquals) {
-			[key, value] = enchantment.split(" = ");
-		} else if (opOther) {
-			[value, key] = enchantment.split(" ");
-			value = value.slice(1);
-
-			op = enchantment[0];
-		}
-
-		return { key, val: value, op };
-	}
-
-	/**
-	 * Runs through this card's enchantments list and applies each enchantment in order.
+	 * Runs through this card's enchantments list and applies each enchantment based on their priorities.
 	 *
 	 * @returns Success
 	 */
-	applyEnchantments(): boolean {
+	async refreshEnchantments(): Promise<boolean> {
 		// Don't waste resources if this card doesn't have any enchantments, this gets called every tick after all.
-		if (this.enchantments.length <= 0) {
+		if (this.activeEnchantments.length <= 0) {
 			return false;
 		}
 
-		// Apply baseline for int values.
-		const allowedKeys = new Set(["maxHealth", "cost"]);
+		if (this.activeEnchantments.length > 1) {
+			this.activeEnchantments.sort((aeA, aeB) => {
+				const priorityA = aeA.enchantment.enchantmentPriority;
+				if (priorityA === undefined) {
+					throw new Error(
+						`Enchantment with id ${aeA.enchantment.id} does not specify a priority.`,
+					);
+				}
 
-		let entries = Object.entries(this);
-		// Filter for only numbers
-		entries = entries.filter((c) => typeof c[1] === "number");
+				const priorityB = aeB.enchantment.enchantmentPriority;
+				if (priorityB === undefined) {
+					throw new Error(
+						`Enchantment with id ${aeB.enchantment.id} does not specify a priority.`,
+					);
+				}
 
-		// Filter for vars in the whitelist
-		entries = entries.filter((c) => allowedKeys.has(c[0]));
-
-		// Get a list of enchantments
-		const enchantments = this.enchantments.map(
-			(enchantment) => enchantment.enchantment,
-		);
-
-		// Get keys
-		const keys = new Set(
-			enchantments.map(
-				(enchantment) => this.getEnchantmentInfo(enchantment).key,
-			),
-		);
-
-		// Only reset the variables if the variable name is in the enchantments list
-		entries = entries.filter((c) => keys.has(c[0]));
-		for (const entry of entries) {
-			const [key] = entry;
-
-			// Apply backup if it exists, otherwise keep it the same.
-			if (this.backups.init ? [key] : false) {
-				// HACK: Never usage
-				this[key as never] = this.backups.init[key as never];
-			}
+				return priorityB - priorityA;
+			});
 		}
 
-		for (const enchantmentObject of this.enchantments) {
-			const { enchantment } = enchantmentObject;
+		const callOnActiveEnchantments = async (
+			callback: (
+				enchantment: Card,
+				applied: boolean,
+				i: number,
+			) => Promise<unknown>,
+		) => {
+			let i = 0;
+			for (const activeEnchantment of this.activeEnchantments) {
+				// const owner = activeEnchantment.owner;
+				const applied = activeEnchantment.applied;
+				const enchantment = activeEnchantment.enchantment;
+				const priority = enchantment.enchantmentPriority;
 
-			// Seperate the keys and values
-			const info = this.getEnchantmentInfo(enchantment);
-			const [anyKey, value, operation] = Object.values(info);
+				// A priority of 0 (Normal) is valid.
+				if (priority === undefined) {
+					throw new Error(
+						`Enchantment with id ${enchantment.id} does not specify a priority.`,
+					);
+				}
 
-			const key = anyKey as keyof this;
-
-			const numberValue = game.lodash.parseInt(value);
-			if (typeof this[key] !== "number") {
-				continue;
+				await callback(enchantment, applied, i);
+				i++;
 			}
+		};
 
-			switch (operation) {
-				case "=": {
-					(this[key] as number) = numberValue;
-					break;
-				}
-
-				case "+": {
-					(this[key] as number) += numberValue;
-					break;
-				}
-
-				case "-": {
-					(this[key] as number) -= numberValue;
-					break;
-				}
-
-				case "*": {
-					(this[key] as number) *= numberValue;
-					break;
-				}
-
-				case "/": {
-					(this[key] as number) /= numberValue;
-					break;
-				}
-
-				case "^": {
-					(this[key] as number) = (this[key] as number) ** numberValue;
-					break;
-				}
-
-				default: {
-					break;
-				}
+		// Remove ALL enchantment effects.
+		await callOnActiveEnchantments(async (enchantment, applied, i) => {
+			if (applied) {
+				await enchantment._trigger(Ability.EnchantmentRemove, this);
+			} else {
+				await enchantment._trigger(Ability.EnchantmentSetup, this);
 			}
-		}
+		});
+
+		// Re-add ALL enchantment effects.
+		await callOnActiveEnchantments(async (enchantment, _, i) => {
+			await enchantment._trigger(Ability.EnchantmentApply, this);
+			this.activeEnchantments[i].applied = true;
+		});
 
 		return true;
 	}
 
 	/**
-	 * Add an enchantment to the card. The enchantments look something like this: `cost = 1`, `+1 cost`, `-1 cost`.
+	 * Add an enchantment to the card.
 	 *
-	 * @param enchantment The enchantment string
+	 * @param enchantmentId The id of the enhantment card.
 	 * @param owner The creator of the enchantment. This will allow removing or looking up enchantment later.
 	 *
 	 * @returns Success
 	 */
-	addEnchantment(enchantment: string, owner: Card): boolean {
-		const info = this.getEnchantmentInfo(enchantment);
-
-		// Add the enchantment to the beginning of the list, equal enchantments should apply first
-		if (info.op === "=") {
-			this.enchantments.unshift({ enchantment, owner });
-		} else {
-			this.enchantments.push({ enchantment, owner });
+	async addEnchantment(enchantmentId: number, owner: Card): Promise<boolean> {
+		const enchantment = await Card.fromID(enchantmentId);
+		if (!enchantment) {
+			throw new Error(
+				`Failed when adding enchantment. A card with an id of ${enchantmentId} does not exist.`,
+			);
 		}
 
-		this.applyEnchantments();
-
+		this.activeEnchantments.push({
+			enchantment: await enchantment.imperfectCopy(),
+			owner,
+			applied: false,
+		});
+		await this.refreshEnchantments();
 		return true;
 	}
 
 	/**
 	 * Checks if an enchantment exists.
 	 *
-	 * @param enchantment The enchantment to look for.
+	 * @param enchantmentId The id of the enchantment to check for.
 	 * @param card The owner of the enchantment. This needs to be correct to find the right enchantment.
-	 * @see {@link addEnchantment} for more info about `card`.
 	 *
 	 * @returns If the enchantment exists
 	 */
-	enchantmentExists(enchantment: string, card: Card): boolean {
-		return this.enchantments.some(
-			(c) => c.enchantment === enchantment && c.owner === card,
+	enchantmentExists(enchantmentId: number, card: Card): boolean {
+		return this.activeEnchantments.some(
+			(c) => c.enchantment.id === enchantmentId && c.owner === card,
 		);
 	}
 
 	/**
-	 * Removes an enchantment
+	 * Removes an enchantment.
 	 *
-	 * @param enchantmentString The enchantment to remove
+	 * @param enchantmentId The id of the enchantment to remove
 	 * @param card The owner of the enchantment.
-	 * @see {@link enchantmentExists} for more info about `card`.
-	 * @param update Keep this enabled unless you know what you're doing.
 	 *
 	 * @returns Success
 	 */
-	removeEnchantment(
-		enchantmentString: string,
-		card: Card,
-		update = true,
-	): boolean {
-		const enchantment = this.enchantments.find(
-			(c) => c.enchantment === enchantmentString && c.owner === card,
+	async removeEnchantment(enchantmentId: number, card: Card): Promise<boolean> {
+		const activeEnchantment = this.activeEnchantments.find(
+			(c) => c.enchantment.id === enchantmentId && c.owner === card,
 		);
 
-		if (!enchantment) {
+		if (!activeEnchantment) {
 			return false;
 		}
 
-		const index = this.enchantments.indexOf(enchantment);
-		if (index === -1) {
-			return false;
-		}
+		// Trigger remove.
+		await activeEnchantment.enchantment._trigger(
+			Ability.EnchantmentRemove,
+			this,
+		);
 
-		this.enchantments.splice(index, 1);
+		game.functions.util.remove(this.activeEnchantments, activeEnchantment);
+		await activeEnchantment.enchantment.removeFromPlay();
 
-		if (!update) {
-			this.applyEnchantments();
-			return true;
-		}
-
-		// Update is enabled
-		const info = this.getEnchantmentInfo(enchantmentString);
-		const newEnchantment = `+0 ${info.key}`;
-
-		// This will cause the variable to be reset since it is in the enchantments list.
-		this.addEnchantment(newEnchantment, this);
-		this.removeEnchantment(newEnchantment, this, false);
-
+		await this.refreshEnchantments();
 		return true;
 	}
 

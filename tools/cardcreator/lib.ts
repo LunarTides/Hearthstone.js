@@ -1,4 +1,8 @@
-import { type BlueprintWithOptional, Type } from "@Game/types.ts";
+import {
+	type BlueprintWithOptional,
+	EnchantmentPriority,
+	Type,
+} from "@Game/types.ts";
 import { resumeTagParsing, stopTagParsing } from "chalk-tags";
 
 // If this is set to true, this will force debug mode.
@@ -20,19 +24,24 @@ export enum CCType {
 function getCardAbility(blueprint: BlueprintWithOptional): string {
 	switch (blueprint.type) {
 		case Type.Spell: {
-			return "Cast";
+			return "cast";
 		}
 
 		case Type.Hero: {
-			return "Battlecry";
+			return "battlecry";
 		}
 
 		case Type.Location: {
-			return "Use";
+			return "use";
 		}
 
 		case Type.HeroPower: {
-			return "Heropower";
+			return "heropower";
+		}
+
+		case Type.Enchantment: {
+			// TODO: Also add `EnchantmentRemove`.
+			return "enchantmentApply";
 		}
 
 		case Type.Minion:
@@ -52,7 +61,7 @@ function getCardAbility(blueprint: BlueprintWithOptional): string {
 			}
 
 			// If it didn't find an ability, but the card has text in it's description, the ability is 'passive'
-			return "Passive";
+			return "passive";
 		}
 
 		case Type.Undefined: {
@@ -143,7 +152,12 @@ export async function create(
 	 */
 
 	// Validate
-	if (blueprint.type !== Type.HeroPower) {
+	if (
+		// TODO: Why can't we validate Hero Powers?
+		blueprint.type !== Type.HeroPower &&
+		// TODO: Remove when ability to add 2 abilities is added.
+		blueprint.type !== Type.Enchantment
+	) {
 		const error = game.functions.card.validateBlueprint(blueprint);
 		if (error !== true) {
 			console.error(error);
@@ -156,10 +170,17 @@ export async function create(
 	let ability = getCardAbility(blueprint);
 
 	// Here it creates a default function signature
-	const isPassive = ability.toLowerCase() === "passive";
-	let triggerText = ")";
+	let extraTriggerText = "";
+
+	const isPassive = ability === "passive";
 	if (isPassive) {
-		triggerText = ", key, value, eventPlayer)";
+		extraTriggerText = ", key, value, eventPlayer";
+	}
+
+	const isEnchantmentAbility =
+		ability === "enchantmentApply" || ability === "enchantmentRemove";
+	if (isEnchantmentAbility) {
+		extraTriggerText = ", host";
 	}
 
 	let extraPassiveCode = "";
@@ -175,7 +196,7 @@ export async function create(
 	// If the text has `<b>Battlecry:</b> Dredge.`, add `// Dredge.` to the battlecry ability
 	const cleanedDescription = game.functions.color
 		.stripTags(blueprint.text)
-		.replace(`${ability}: `, "");
+		.replace(new RegExp(`${ability}: `, "i"), "");
 
 	// `create` ability
 	const runes = blueprint.runes
@@ -217,7 +238,7 @@ ${runes}${keywords}
 
 		ability = `
 
-    async ${ability.toLowerCase()}(self, owner${triggerText} {
+    async ${ability}(self, owner${extraTriggerText}) {
         // ${cleanedDescription}${extraPassiveCode}${extraNewline}
     },
 
@@ -296,27 +317,43 @@ ${runes}${keywords}
 		}
 
 		// If the value is a string, put "value"
-		if (typeof value === "string") {
-			switch (key) {
-				case "type":
-					returnValue = `Type.${value}`;
-					break;
-				case "rarity":
-					returnValue = `Rarity.${value}`;
-					break;
+		// if (typeof value === "string") {
+		switch (key) {
+			case "type":
+				returnValue = `Type.${value}`;
+				break;
+			case "rarity":
+				returnValue = `Rarity.${value}`;
+				break;
 
-				case "tribe":
-					returnValue = `MinionTribe.${value}`;
-					break;
-				case "spellSchool":
-					returnValue = `SpellSchool.${value}`;
-					break;
+			case "tribe":
+				returnValue = `MinionTribe.${value}`;
+				break;
+			case "spellSchool":
+				returnValue = `SpellSchool.${value}`;
+				break;
+			case "enchantmentPriority": {
+				let priority =
+					typeof value === "number" ? value : Number.parseInt(`${value}`);
 
-				default:
-					returnValue = stringify(value);
-					break;
+				if (
+					Number.isNaN(priority) ||
+					EnchantmentPriority[priority] === undefined
+				) {
+					priority = EnchantmentPriority.Normal;
+				}
+
+				returnValue = `EnchantmentPriority.${EnchantmentPriority[priority]}`;
+				break;
 			}
+
+			default:
+				if (typeof value === "string") {
+					returnValue = stringify(value);
+				}
+				break;
 		}
+		// }
 
 		// Turn the value into a string.
 		if (returnValue || returnValue === 0 || returnValue === false) {
@@ -353,6 +390,9 @@ ${runes}${keywords}
 			break;
 		case Type.Spell:
 			typeImport += "SpellSchool,";
+			break;
+		case Type.Enchantment:
+			typeImport += "EnchantmentPriority,";
 			break;
 		case Type.Weapon:
 		case Type.Location:

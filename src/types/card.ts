@@ -14,6 +14,43 @@ export type ScoredCard = {
 };
 
 /**
+ * The location of a card.
+ */
+export enum Location {
+	None = "None",
+	Hand = "Hand",
+	Deck = "Deck",
+	Board = "Board",
+	Graveyard = "Graveyard",
+	Hero = "Hero",
+	Other = "Other",
+}
+
+export enum EnchantmentPriority {
+	Highest = 2,
+	High = 1,
+	Normal = 0,
+	Low = -1,
+	Lowest = -2,
+}
+
+/**
+ * Card Enchantment object.
+ */
+export type EnchantmentDefinition = {
+	enchantment: Card;
+	owner: Card;
+	applied: boolean;
+};
+
+/**
+ * A backup of a card.
+ */
+export type CardBackup = {
+	[key in keyof Card]: Card[key];
+};
+
+/**
  * The type of the card.
  */
 export enum Type {
@@ -23,6 +60,7 @@ export enum Type {
 	Hero = "Hero",
 	Location = "Location",
 	HeroPower = "HeroPower",
+	Enchantment = "Enchantment",
 	Undefined = "Undefined",
 }
 
@@ -147,8 +185,8 @@ export enum CardTag {
 	Quest = "Quest",
 }
 
-/**
- * All Card abilities.
+/*
+ * These are the abilities that cards can have.
  */
 export enum Ability {
 	// NOTE: Use camelCase here since these will be converted to methods.
@@ -172,6 +210,9 @@ export enum Ability {
 	HeroPower = "heropower",
 	Use = "use",
 
+	EnchantmentApply = "enchantmentApply",
+	EnchantmentRemove = "enchantmentRemove",
+	EnchantmentSetup = "enchantmentSetup",
 	Placeholders = "placeholders",
 	Condition = "condition",
 	Remove = "remove",
@@ -183,35 +224,7 @@ export enum Ability {
 }
 
 /**
- * The location of a card.
- */
-export enum Location {
-	None = "None",
-	Hand = "Hand",
-	Deck = "Deck",
-	Board = "Board",
-	Graveyard = "Graveyard",
-	Hero = "Hero",
-	Other = "Other",
-}
-
-/**
- * Card Enchantment object.
- */
-export type EnchantmentDefinition = {
-	enchantment: string;
-	owner: Card;
-};
-
-/**
- * A backup of a card.
- */
-export type CardBackup = {
-	[key in keyof Card]: Card[key];
-};
-
-/**
- * The ability of a card.
+ * The ability callback used by most abilities.
  */
 export type AbilityCallback = (
 	self: Card,
@@ -222,10 +235,52 @@ export type AbilityCallback = (
 ) => Promise<unknown>;
 
 /**
+ * The ability callback used by the enchantment abilities.
+ */
+export type EnchantmentAbilityCallback = (
+	self: Card,
+	owner: Player,
+	host: Card,
+) => Promise<unknown>;
+
+export type AbilityCallbacks = {
+	[Ability.Adapt]: AbilityCallback;
+	[Ability.Battlecry]: AbilityCallback;
+	[Ability.Cast]: AbilityCallback;
+	[Ability.Combo]: AbilityCallback;
+	[Ability.Condition]: AbilityCallback;
+	[Ability.Create]: AbilityCallback;
+	[Ability.Deathrattle]: AbilityCallback;
+	[Ability.EnchantmentApply]: EnchantmentAbilityCallback;
+	[Ability.EnchantmentRemove]: EnchantmentAbilityCallback;
+	[Ability.EnchantmentSetup]: EnchantmentAbilityCallback;
+	[Ability.Finale]: AbilityCallback;
+	[Ability.Frenzy]: AbilityCallback;
+	[Ability.HandPassive]: AbilityCallback;
+	[Ability.HandTick]: AbilityCallback;
+	[Ability.HeroPower]: AbilityCallback;
+	[Ability.HonorableKill]: AbilityCallback;
+	[Ability.Infuse]: AbilityCallback;
+	[Ability.Inspire]: AbilityCallback;
+	[Ability.Invoke]: AbilityCallback;
+	[Ability.Outcast]: AbilityCallback;
+	[Ability.Overheal]: AbilityCallback;
+	[Ability.Overkill]: AbilityCallback;
+	[Ability.Passive]: AbilityCallback;
+	[Ability.Placeholders]: AbilityCallback;
+	[Ability.Remove]: AbilityCallback;
+	[Ability.Spellburst]: AbilityCallback;
+	[Ability.StartOfGame]: AbilityCallback;
+	[Ability.Test]: AbilityCallback;
+	[Ability.Tick]: AbilityCallback;
+	[Ability.Use]: AbilityCallback;
+};
+
+/**
  * The abilities that a blueprint can have. (From CardAbility)
  */
 type BlueprintAbilities = {
-	[key in Ability]?: AbilityCallback;
+	[key in Ability]?: AbilityCallbacks[key];
 };
 
 /**
@@ -316,6 +371,7 @@ export interface Blueprint extends BlueprintAbilities {
 	 * The amount of armor that the player should gain when playing the card.
 	 */
 	armor?: number;
+
 	/**
 	 * ### This is required for Heroes
 	 *
@@ -324,6 +380,18 @@ export interface Blueprint extends BlueprintAbilities {
 	 * The hero power card should be of type "Heropower", and its `heropower` ability will be triggered every time the player uses their hero power.
 	 */
 	heropowerId?: number;
+
+	/**
+	 * ### This is required for Enchantments
+	 *
+	 * The priority of the enchantment.
+	 *
+	 * A higher priority means that the enchantment will be applied before others. The order of the enchantments can affect the resulting card.
+	 *
+	 * For example, an enchantment setting a card's attack to 0 should be applied before ones that increase the cards attack.
+	 * Otherwise, if the card has a +1 Attack and a Attack = 0 enchantment, the order of events can look like this: 3 -> 4 -> 0, which is not the intended effect. Instead it should look like: 3 -> 0 -> 1
+	 */
+	enchantmentPriority?: EnchantmentPriority;
 }
 
 export type BlueprintWithOptional = Blueprint & {
